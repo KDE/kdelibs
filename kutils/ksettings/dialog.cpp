@@ -21,7 +21,8 @@
 #include "dialog_p.h"
 
 #include "dispatcher.h"
-#include "componentsdialog_p.h"
+#include "pagewidget_p.h"
+//#include "componentsdialog_p.h"
 
 #include <klocale.h>
 #include <kservicegroup.h>
@@ -32,31 +33,32 @@
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 #include <kiconloader.h>
+#include <QtCore/QFile>
+#include <QtGui/QCheckBox>
+#include <QtCore/QStack>
+
+uint qHash(const KCModuleInfo &info)
+{
+    return qHash(info.fileName());
+}
 
 namespace KSettings
 {
 
 Dialog::Dialog(QWidget *parent)
-    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent))
+    : KCMultiDialog(*new DialogPrivate, new KPageWidget, parent)
 {
-    Q_D(Dialog);
-    d->q_ptr = this;
-    d->services = d->instanceServices();
-    d->removeDuplicateServices();
 }
 
 Dialog::Dialog(const QStringList &components, QWidget *parent)
-    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent))
+    : KCMultiDialog(*new DialogPrivate, new KPageWidget, parent)
 {
     Q_D(Dialog);
-    d->q_ptr = this;
-    d->services = d->instanceServices() + d->parentComponentsServices(components);
-    d->removeDuplicateServices();
+    d->components = components;
 }
 
 Dialog::~Dialog()
 {
-    delete d_ptr;
 }
 
 void Dialog::setComponentSelection(ComponentSelection selection)
@@ -84,40 +86,59 @@ void Dialog::addPluginInfos( const QList<KPluginInfo*> & plugininfos )
 			it != plugininfos.end(); ++it )
 	{
 		d->registeredComponents.append( ( *it )->pluginName() );
-		d->services += ( *it )->kcmServices();
-		d->plugininfomap[ ( *it )->pluginName() ] = *it;
-	}
+        foreach (const KService::Ptr &service, (*it)->kcmServices()) {
+            d->kcmInfos << KCModuleInfo(service);
+        }
+    }
+
+    // The plugin, when disabled, disables all the KCMs described by kcmServices().
+    // - Normally they are grouped using a .setdlg file so that the group parent can get a
+    // checkbox to enable/disable the plugin.
+    // - If the plugin does not belong to a group and has only one KCM the checkbox can be
+    // used with this KCM.
+    // - If the plugin belongs to a group but there are other modules in the group that do not
+    // belong to this plugin we give a kError and show no checkbox
+    // - If the plugin belongs to multiple groups we give a kError and show no checkbox
+    d->plugininfos = plugininfos;
 }
 
-void Dialog::show()
+QList<KPluginInfo *> Dialog::pluginInfos() const
+{
+    return d_func()->plugininfos;
+}
+
+void Dialog::showEvent(QShowEvent *)
 {
     Q_D(Dialog);
-    if (0 == d->dlg) {
-        d->createDialogFromServices(this);
+    if (d->firstshow) {
+        d->kcmInfos += d->instanceServices();
+        if (!d->components.isEmpty()) {
+            d->kcmInfos += d->parentComponentsServices(d->components);
+        }
+        d->createDialogFromServices();
+        d->firstshow = false;
     }
     Dispatcher::syncConfiguration();
-	return d->dlg->show();
 }
 
-DialogPrivate::DialogPrivate(Dialog *d, QWidget *p)
-    : pagetree(d), dlg(0), parentwidget(p), staticlistview(true)
+DialogPrivate::DialogPrivate()
+    : staticlistview(true), firstshow(true), pluginStateDirty(false)
 {
 }
 
-QList<KService::Ptr> DialogPrivate::instanceServices()
+QSet<KCModuleInfo> DialogPrivate::instanceServices()
 {
-	kDebug( 700 ) << k_funcinfo << endl;
+    //kDebug(700) << k_funcinfo << endl;
 	QString componentName = KGlobal::mainComponent().componentName();
     registeredComponents.append(componentName);
-	kDebug( 700 ) << "calling KServiceGroup::childGroup( " << componentName
-		<< " )" << endl;
+    //kDebug(700) << "calling KServiceGroup::childGroup( " << componentName << " )" << endl;
 	KServiceGroup::Ptr service = KServiceGroup::childGroup( componentName );
 
-	QList<KService::Ptr> ret;
+    QSet<KCModuleInfo> ret;
 
 	if( service && service->isValid() )
 	{
-		kDebug( 700 ) << "call was successful" << endl;
+        //kDebug(700) << "call was successful" << endl;
 		KServiceGroup::List list = service->entries();
 		for( KServiceGroup::List::ConstIterator it = list.begin();
 				it != list.end(); ++it )
@@ -126,7 +147,7 @@ QList<KService::Ptr> DialogPrivate::instanceServices()
 			if( p->isType( KST_KService ) )
 			{
 				//kDebug( 700 ) << "found service" << endl;
-				ret << KService::Ptr::staticCast( p );
+                ret << KCModuleInfo(KService::Ptr::staticCast(p));
 			}
 			else
 				kWarning( 700 ) << "KServiceGroup::childGroup returned"
@@ -137,23 +158,27 @@ QList<KService::Ptr> DialogPrivate::instanceServices()
 	return ret;
 }
 
-QList<KService::Ptr> DialogPrivate::parentComponentsServices(const QStringList &kcdparents)
+QSet<KCModuleInfo> DialogPrivate::parentComponentsServices(const QStringList &kcdparents)
 {
     registeredComponents += kcdparents;
     QString constraint = kcdparents.join("' in [X-KDE-ParentComponents]) or ('");
 	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
 
-	kDebug( 700 ) << "constraint = " << constraint << endl;
-	return KServiceTypeTrader::self()->query( "KCModule", constraint );
+    //kDebug(700) << "constraint = " << constraint << endl;
+    const QList<KService::Ptr> services = KServiceTypeTrader::self()->query("KCModule", constraint);
+    QSet<KCModuleInfo> ret;
+    foreach (const KService::Ptr &service, services) {
+        ret << KCModuleInfo(service);
+    }
+    return ret;
 }
 
-bool DialogPrivate::isPluginForKCMEnabled(KCModuleInfo *moduleinfo) const
+bool DialogPrivate::isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPluginInfo *pinfo) const
 {
 	// if the user of this class requested to hide disabled modules
 	// we check whether it should be enabled or not
 	bool enabled = true;
-	kDebug( 700 ) << "check whether the " << moduleinfo->moduleName()
-		<< " KCM should be shown" << endl;
+    //kDebug(700) << "check whether the '" << moduleinfo->moduleName() << "' KCM should be shown" << endl;
 	// for all parent components
 	QStringList parentComponents = moduleinfo->service()->property(
 			"X-KDE-ParentComponents" ).toStringList();
@@ -166,47 +191,91 @@ bool DialogPrivate::isPluginForKCMEnabled(KCModuleInfo *moduleinfo) const
         }
 
 		// we check if the parent component is a plugin
-        if (!plugininfomap.contains(*pcit)) {
-			// if not the KCModule must be enabled
-			enabled = true;
-			// we're done for this KCModuleInfo
-			break;
-		}
-		// if it is a plugin we check whether the plugin is enabled
-        KPluginInfo *pinfo = plugininfomap[*pcit];
-		pinfo->load();
-		enabled = pinfo->isPluginEnabled();
-		kDebug( 700 ) << "parent " << *pcit << " is "
-			<< ( enabled ? "enabled" : "disabled" ) << endl;
-		// if it is enabled we're done for this KCModuleInfo
-		if( enabled )
-			break;
+        // if not the KCModule must be enabled
+        enabled = true;
+        if (pinfo->pluginName() == *pcit) {
+            // it is a plugin: we check whether the plugin is enabled
+            pinfo->load();
+            enabled = pinfo->isPluginEnabled();
+            //kDebug(700) << "parent " << *pcit << " is " << (enabled ? "enabled" : "disabled") << endl;
+        }
+        // if it is enabled we're done for this KCModuleInfo
+        if (enabled) {
+            return true;
+        }
 	}
 	return enabled;
 }
 
 void DialogPrivate::parseGroupFile( const QString & filename )
 {
+    Q_Q(Dialog);
 	KConfig file( filename, KConfig::OnlyLocal );
-	QStringList groups = file.groupList();
-	for( QStringList::ConstIterator it = groups.begin(); it != groups.end();
-			++it )
-	{
-		GroupInfo group;
-		QString id = *it;
-                KConfigGroup conf(&file, id.toUtf8() );
-		group.id = id;
-		group.name = conf.readEntry( "Name" );
-		group.comment = conf.readEntry( "Comment" );
-		group.weight = conf.readEntry( "Weight", 100 );
-		group.parentid = conf.readEntry( "Parent" );
-		group.icon = conf.readEntry( "Icon" );
-        pagetree.insert(group);
-	}
+    const QStringList groups = file.groupList();
+    foreach (const QString &group, groups) {
+        if (group.isEmpty()) {
+            continue;
+        }
+        KConfigGroup conf(&file, group);
+
+        KVBox *page = new KVBox();
+        const QString iconName = conf.readEntry("Icon");
+        QCheckBox *checkBox = new QCheckBox(i18n("component enabled:"), page);
+        QLabel *iconLabel = new QLabel(page);
+        QLabel *comment = new QLabel(conf.readEntry("Comment"), page);
+        comment->setTextFormat(Qt::RichText);
+
+        KPageWidgetItem *item = new KPageWidgetItem(page, conf.readEntry("Name"));
+        item->setIcon(KIcon(iconName));
+        iconLabel->setPixmap(item->icon().pixmap(128, 128));
+        const int weight = conf.readEntry("Weight", 100);
+        item->setProperty("_k_weight", weight);
+        item->setProperty("_k_checkbox", QVariant::fromValue(static_cast<QWidget *>(checkBox)));
+
+        const KPageWidgetModel *model = qobject_cast<const KPageWidgetModel *>(q->pageWidget()->model());
+        Q_ASSERT(model);
+        const QString parentId = conf.readEntry("Parent");
+        KPageWidgetItem *parentItem = pageItemForGroupId.value(parentId);
+        if (parentItem) {
+            const QModelIndex parentIndex = model->index(parentItem);
+            const int siblingCount = model->rowCount(parentIndex);
+            int row = 0;
+            for (; row < siblingCount; ++row) {
+                KPageWidgetItem *siblingItem = model->item(parentIndex.child(row, 0));
+                if (siblingItem->property("_k_weight").toInt() > weight) {
+                    // the item we found is heavier than the new module
+                    q->insertPage(siblingItem, item);
+                    break;
+                }
+            }
+            if (row == siblingCount) {
+                // the new module is either the first or the heaviest item
+                q->addSubPage(parentItem, item);
+            }
+        } else {
+            const int siblingCount = model->rowCount();
+            int row = 0;
+            for (; row < siblingCount; ++row) {
+                KPageWidgetItem *siblingItem = model->item(model->index(row, 0));
+                if (siblingItem->property("_k_weight").toInt() > weight) {
+                    // the item we found is heavier than the new module
+                    q->insertPage(siblingItem, item);
+                    break;
+                }
+            }
+            if (row == siblingCount) {
+                // the new module is either the first or the heaviest item
+                q->addPage(item);
+            }
+        }
+
+        pageItemForGroupId.insert(group, item);
+    }
 }
 
-void DialogPrivate::createDialogFromServices(KCMultiDialog *parent)
+void DialogPrivate::createDialogFromServices()
 {
+    Q_Q(Dialog);
 	// read .setdlg files
 	QString setdlgpath = KStandardDirs::locate( "appdata",
                                                     KGlobal::mainComponent().componentName() + ".setdlg" );
@@ -221,43 +290,73 @@ void DialogPrivate::createDialogFromServices(KCMultiDialog *parent)
         }
     }
 
-	// now we process the KCModule services
-    for (QList<KService::Ptr>::ConstIterator it = services.begin(); it != services.end(); ++it) {
-		// we create the KCModuleInfo
-		KCModuleInfo * info = new KCModuleInfo( *it );
+    //kDebug(700) << k_funcinfo << kcmInfos.count() << endl;
+    foreach (const KCModuleInfo &info, kcmInfos) {
+        const QStringList parentComponents = info.service()->property("X-KDE-ParentComponents").toStringList();
         bool blacklisted = false;
-        foreach(QString comp, (*it)->property( "X-KDE-ParentComponents" ).toStringList())
-        {
-            if( componentBlacklist.contains(comp) ) {
+        foreach (const QString &parentComponent, parentComponents) {
+            if (componentBlacklist.contains(parentComponent)) {
                 blacklisted = true;
                 break;
             }
         }
-        if( blacklisted ) {
+        if (blacklisted) {
             continue;
         }
-		QString parentid;
-		QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
-			QVariant::String );
-		if( tmp.isValid() )
-			parentid = tmp.toString();
-        pagetree.insert(info, parentid);
-	}
-
-    // At this point pagetree holds a nice structure of the pages we want
-	// to show. It's not going to change anymore so we can sort it now.
-    pagetree.sort();
-
-	KPageDialog::FaceType faceType = KPageDialog::List;
-    if (pagetree.needTree()) {
-		faceType = KPageDialog::Tree;
-    } else if(pagetree.singleChild()) {
-		faceType = KPageDialog::Plain;
+        const QString parentId = info.service()->property("X-KDE-CfgDlgHierarchy", QVariant::String).toString();
+        KPageWidgetItem *parent = pageItemForGroupId.value(parentId);
+        KPageWidgetItem *item = q->addModule(info, parent, arguments);
+        kDebug(700) << k_funcinfo << "added KCM '" << info.moduleName() << "'" << endl;
+        foreach (KPluginInfo *pinfo, plugininfos) {
+            kDebug(700) << k_funcinfo << pinfo->pluginName() << endl;
+            if (pinfo->kcmServices().contains(info.service())) {
+                const bool isEnabled = isPluginForKCMEnabled(&info, pinfo);
+                item->setEnabled(isEnabled);
+                kDebug(700) << "correct KPluginInfo for this KCM" << endl;
+                // this KCM belongs to a plugin
+                if (parent && pinfo->kcmServices().count() > 1) {
+                    QVariant plugin = parent->property("_k_plugin");
+                    if (plugin.isValid()) {
+                        if (qvariant_cast<void *>(plugin) != pinfo) {
+                            kError(700) << "A group contains more than one plugin: '"
+                                << plugin.toString() << "' and '" << pinfo->pluginName()
+                                << "'. Now it won't be possible to enable/disable the plugin."
+                                << endl;
+                            parent->setCheckable(false);
+                            q->disconnect(parent, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
+                        }
+                    } else {
+                        QWidget *checkBox = qvariant_cast<QWidget *>(parent->property("_k_checkbox"));
+                        parent->setProperty("_k_plugin", QVariant::fromValue(reinterpret_cast<void *>(pinfo)));
+                        Q_ASSERT(qvariant_cast<void *>(parent->property("_k_plugin")) == pinfo);
+                        parent->setCheckable(true);
+                        parent->setChecked(isEnabled);
+                        q->connect(parent, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
+                        q->connect(checkBox, SIGNAL(toggled(bool)), parent, SLOT(setChecked(bool)));
+                    }
+                } else {
+                    item->setProperty("_k_plugin", QVariant::fromValue(reinterpret_cast<void *>(pinfo)));
+                    item->setCheckable(true);
+                    item->setChecked(isEnabled);
+                    q->connect(item, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
+                }
+                break;
+            }
+        }
     }
-
-	kDebug( 700 ) << "creating KCMultiDialog" << endl;
-    dlg = parent;
-    dlg->setFaceType(faceType);
+    // now that the KCMs are in, check for empty groups and remove them again
+    {
+        const KPageWidgetModel *model = qobject_cast<const KPageWidgetModel *>(q->pageWidget()->model());
+        const QHash<QString, KPageWidgetItem *>::ConstIterator end = pageItemForGroupId.constEnd();
+        QHash<QString, KPageWidgetItem *>::ConstIterator it = pageItemForGroupId.constBegin();
+        for (; it != end; ++it) {
+            const QModelIndex index = model->index(it.value());
+            if (!index.child(0, 0).isValid()) {
+                // no children => remove this item
+                q->removePage(it.value());
+            }
+        }
+    }
 
 	// TODO: Don't show the reset button until the issue with the
 	// KPluginSelector::load() method is solved.
@@ -269,20 +368,12 @@ void DialogPrivate::createDialogFromServices(KCMultiDialog *parent)
 	// KPluginSelector to only reset the current visible plugin KCM and not
 	// touch the plugin selections.
 	// I have no idea how to check that in KPluginSelector::load()...
-    //dlg->showButton(KDialog::User1, true);
+    //q->showButton(KDialog::User1, true);
 
-/** tokoe: FIXME
-    if(!staticlistview) {
-        dlg->addButtonBelowList(i18n("Select Components..."), this, SLOT(_k_configureTree()));
-    }
-*/
-    Q_Q(Dialog);
-    QObject::connect(dlg, SIGNAL(okClicked()), q, SLOT(_k_syncConfiguration()));
-    QObject::connect(dlg, SIGNAL(applyClicked()), q, SLOT(_k_syncConfiguration()));
-    QObject::connect(dlg, SIGNAL(configCommitted(const QByteArray &)), q,
+    QObject::connect(q, SIGNAL(okClicked()), q, SLOT(_k_syncConfiguration()));
+    QObject::connect(q, SIGNAL(applyClicked()), q, SLOT(_k_syncConfiguration()));
+    QObject::connect(q, SIGNAL(configCommitted(const QByteArray &)), q,
             SLOT(_k_reparseConfiguration(const QByteArray &)));
-
-    pagetree.addToDialog(dlg, arguments);
 }
 
 void DialogPrivate::_k_syncConfiguration()
@@ -295,47 +386,75 @@ void DialogPrivate::_k_reparseConfiguration(const QByteArray &a)
     Dispatcher::reparseConfiguration(a);
 }
 
+/*
 void DialogPrivate::_k_configureTree()
 {
 	kDebug( 700 ) << k_funcinfo << endl;
-    ComponentsDialog *subdlg = new ComponentsDialog(dlg);
-    subdlg->setPluginInfos(plugininfomap);
-	subdlg->show();
-    Q_Q(Dialog);
     QObject::connect(subdlg, SIGNAL(okClicked()), q, SLOT(_k_updateTreeList()));
     QObject::connect(subdlg, SIGNAL(applyClicked()), q, SLOT(_k_updateTreeList()));
     QObject::connect(subdlg, SIGNAL(okClicked()), q, SIGNAL(pluginSelectionChanged()));
     QObject::connect(subdlg, SIGNAL(applyClicked()), q, SIGNAL(pluginSelectionChanged()));
-    QObject::connect(subdlg, SIGNAL(finished()), subdlg, SLOT(delayedDestruct()));
 }
+*/
 
-void DialogPrivate::_k_updateTreeList()
+void DialogPrivate::_k_updateEnabledState(bool enabled)
 {
-	kDebug( 700 ) << k_funcinfo << endl;
+    Q_Q(Dialog);
+    KPageWidgetItem *item = qobject_cast<KPageWidgetItem *>(q->sender());
+    if (!item) {
+        kWarning(700) << k_funcinfo << "invalid sender" << endl;
+        return;
+    }
 
-    pagetree.makeDirty();
+    // iterate over all child KPageWidgetItem objects and check whether they need to be enabled/disabled
+    const KPageWidgetModel *model = qobject_cast<const KPageWidgetModel *>(q->pageWidget()->model());
+    Q_ASSERT(model);
+    QModelIndex index = model->index(item);
+    if (!index.isValid()) {
+        kWarning(700) << k_funcinfo << "could not find item in model" << endl;
+        return;
+    }
 
-	// remove all pages from the dialog and then add them again. This is needed
-	// because KDialogBase/KJanusWidget can only append to the end of the list
-	// and we need to have a predefined order.
+    QVariant plugin = item->property("_k_plugin");
+    if (!plugin.isValid()) {
+        kWarning(700) << k_funcinfo << "could not find KPluginInfo in item" << endl;
+        return;
+    }
+    KPluginInfo *pinfo = reinterpret_cast<KPluginInfo *>(qvariant_cast<void *>(plugin));
+    Q_ASSERT(pinfo);
+    //pinfo->setPluginEnabled(enabled);
 
-    pagetree.removeFromDialog(dlg);
-    pagetree.addToDialog(dlg, arguments);
-}
+    //kDebug(700) << k_funcinfo << endl;
+    pluginStateDirty = true;
 
-void DialogPrivate::removeDuplicateServices()
-{
-	QSet<QString> usedNames;
-	QList<KService::Ptr> newlist;
-    foreach (KService::Ptr svc, services) {
-		if( !usedNames.contains( svc->desktopEntryPath() ) )
-		{
-			usedNames.insert( svc->desktopEntryPath() );
-			newlist.append( svc );
-		}
-	}
-    services.clear();
-    services = newlist;
+    QModelIndex firstborn = index.child(0, 0);
+    if (firstborn.isValid()) {
+        //kDebug(700) << k_funcinfo << "iterating over children" << endl;
+        // change all children
+        index = firstborn;
+        QStack<QModelIndex> stack;
+        while (index.isValid()) {
+            //kDebug(700) << k_funcinfo << index << endl;
+            KPageWidgetItem *item = model->item(index);
+            //kDebug(700) << "item->setEnabled(" << enabled << ')' << endl;
+            item->setEnabled(enabled);
+            firstborn = index.child(0, 0);
+            if (firstborn.isValid()) {
+                stack.push(index);
+                index = firstborn;
+            } else {
+                index = index.sibling(index.row() + 1, 0);
+                while (!index.isValid() && !stack.isEmpty()) {
+                    index = stack.pop();
+                    index = index.sibling(index.row() + 1, 0);
+                }
+            }
+        }
+    } else {
+        // change only this item
+        kDebug(700) << "item->setEnabled(" << enabled << ')' << endl;
+        item->setEnabled(enabled);
+    }
 }
 
 } //namespace

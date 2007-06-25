@@ -163,12 +163,17 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
          * @param selection the selection mode for component list
          */
         void setComponentSelection(ComponentSelection selection);
-    public Q_SLOTS:
+
         /**
-         * Show the config dialog. The slot immediately returns since the dialog
-         * is non-modal.
+         * Returns a list of all KPluginInfo objects the dialog uses.
          */
-        void show();
+        QList<KPluginInfo *> pluginInfos() const;
+
+    protected:
+        /**
+         * Reimplemented to lazy create the dialog on first show.
+         */
+        void showEvent(QShowEvent *);
 
     Q_SIGNALS:
         /**
@@ -180,12 +185,9 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
          */
         void pluginSelectionChanged();
 
-    protected:
-        DialogPrivate *const d_ptr;
-
     private:
-        Q_PRIVATE_SLOT(d_func(), void _k_configureTree())
-        Q_PRIVATE_SLOT(d_func(), void _k_updateTreeList())
+        //Q_PRIVATE_SLOT(d_func(), void _k_configureTree())
+        Q_PRIVATE_SLOT(d_func(), void _k_updateEnabledState(bool))
         Q_PRIVATE_SLOT(d_func(), void _k_syncConfiguration())
         Q_PRIVATE_SLOT(d_func(), void _k_reparseConfiguration(const QByteArray &))
 };
