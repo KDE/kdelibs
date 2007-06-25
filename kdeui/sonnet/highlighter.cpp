@@ -264,7 +264,7 @@ QString Highlighter::currentLanguage() const
 void Highlighter::setCurrentLanguage(const QString &lang)
 {
     if (!d->dictCache.contains(lang)) {
-        d->dict->changeLanguage(lang);
+        d->dict->setLanguage(lang);
         if (d->dict->isValid()) {
             d->dictCache.insert(lang, d->dict);
         } else {

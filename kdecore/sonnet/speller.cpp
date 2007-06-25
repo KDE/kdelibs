@@ -1,0 +1,246 @@
+#include "speller.h"
+#include "loader.h"
+#include "settings.h"
+#include "spellerplugin_p.h"
+
+#include <kconfig.h>
+
+namespace Sonnet
+{
+
+class Speller::Private
+{
+public:
+    ~Private()
+    {
+        delete dict;
+        dict = 0;
+    }
+    void init(const QString &lang)
+    {
+        Loader *loader = Loader::openLoader();
+        settings = loader->settings();
+
+        language = lang;
+
+        if (language.isEmpty())
+            language = settings->defaultLanguage();
+
+        dict = loader->createSpeller(language);
+    }
+    bool isValid()
+    {
+        if (settings->modified()) {
+            recreateDict();
+            settings->setModified(false);
+        }
+        return dict;
+    }
+    void recreateDict()
+    {
+        delete dict;
+        dict = Loader::openLoader()->createSpeller(language);
+    }
+
+    SpellerPlugin *dict;
+    Settings      *settings;
+
+    QString        language;
+};
+
+Speller::Speller(const QString &lang)
+    : d(new Private)
+{
+    d->init(lang);
+}
+
+
+Speller::~Speller()
+{
+    delete d;
+}
+
+
+Speller::Speller(const Speller &speller)
+    : d(new Private)
+{
+    d->language = speller.language();
+    d->init(d->language);
+}
+
+
+Speller & Speller::operator=(const Speller &speller)
+{
+    d->language = speller.language();
+    d->recreateDict();
+    return *this;
+}
+
+
+bool Speller::isCorrect(const QString &word) const
+{
+    if (!d->isValid())
+        return true;
+    return d->dict->isCorrect(word);
+}
+
+
+bool Speller::isMisspelled(const QString &word) const
+{
+    if (!d->isValid())
+        return false;
+    return d->dict->isMisspelled(word);
+}
+
+QStringList Sonnet::Speller::suggest(const QString &word) const
+{
+    if (!d->isValid())
+        return QStringList();
+    return d->dict->suggest(word);
+}
+
+bool Speller::checkAndSuggest(const QString &word,
+                              QStringList &suggestions) const
+{
+    if (!d->isValid())
+        return true;
+    return d->dict->checkAndSuggest(word, suggestions);
+}
+
+
+bool Speller::storeReplacement(const QString &bad,
+                               const QString &good)
+{
+    if (!d->isValid())
+        return false;
+    return d->dict->storeReplacement(bad, good);
+}
+
+
+bool Speller::addToPersonal(const QString &word)
+{
+    if (!d->isValid())
+        return false;
+    return d->dict->addToPersonal(word);
+}
+
+
+bool Speller::addToSession(const QString &word)
+{
+    if (!d->isValid())
+        return false;
+    return d->dict->addToSession(word);
+}
+
+
+QString Speller::language() const
+{
+    if (!d->isValid())
+        return QString();
+    return d->dict->language();
+}
+
+
+void Speller::save(KConfig *config)
+{
+    if (d->settings) {
+        d->settings->save(config);
+    }
+}
+
+
+void Speller::restore(KConfig *config)
+{
+    if (d->settings) {
+        d->settings->restore(config);
+        d->recreateDict();
+    }
+}
+
+
+QStringList Speller::availableBackends() const
+{
+    Loader *l = Loader::openLoader();
+    return l->clients();
+}
+
+
+QStringList Speller::availableLanguages() const
+{
+    Loader *l = Loader::openLoader();
+    return l->languages();
+}
+
+
+QStringList Speller::availableLanguageNames() const
+{
+    Loader *l = Loader::openLoader();
+    return l->languageNames();
+}
+
+
+void Speller::setDefaultLanguage(const QString &lang)
+{
+    d->settings->setDefaultLanguage(lang);
+}
+
+
+QString Speller::defaultLanguage() const
+{
+    return d->settings->defaultLanguage();
+}
+
+
+void Speller::setDefaultClient(const QString &client)
+{
+    d->settings->setDefaultClient(client);
+}
+
+
+QString Speller::defaultClient() const
+{
+    return d->settings->defaultClient();
+}
+
+
+void Speller::setAttribute(Attribute attr, bool b)
+{
+    switch (attr) {
+    case CheckUppercase:
+        d->settings->setCheckUppercase(b);
+        break;
+    case SkipRunTogether:
+        d->settings->setSkipRunTogether(b);
+        break;
+    }
+}
+
+
+bool Speller::testAttribute(Attribute attr) const
+{
+    switch (attr) {
+    case CheckUppercase:
+        return d->settings->checkUppercase();
+        break;
+    case SkipRunTogether:
+        return d->settings->skipRunTogether();
+        break;
+    }
+    return false;
+}
+
+bool Speller::isValid() const
+{
+    return d->dict;
+}
+
+void Speller::setLanguage(const QString &lang)
+{
+    d->language = lang;
+    d->recreateDict();
+}
+
+}
+
+
+

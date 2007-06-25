@@ -55,7 +55,7 @@ QString BackgroundEngine::text() const
 
 void BackgroundEngine::changeLanguage(const QString &lang)
 {
-    m_dict.changeLanguage(lang);
+    m_dict.setLanguage(lang);
 }
 
 QString BackgroundEngine::language() const
