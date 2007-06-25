@@ -64,7 +64,7 @@ BackgroundChecker::~BackgroundChecker()
     delete d;
 }
 
-void BackgroundChecker::checkText(const QString &text)
+void BackgroundChecker::setText(const QString &text)
 {
     d->currentText = text;
     d->engine->setText(text);
@@ -73,7 +73,7 @@ void BackgroundChecker::checkText(const QString &text)
 
 void BackgroundChecker::start()
 {
-    d->currentText = getMoreText();
+    d->currentText = fetchMoreText();
     // ## what if d->currentText.isEmpty()?
     //kDebug()<<"Sonnet BackgroundChecker: starting with : \"" << d->currentText << "\""<<endl;
     d->engine->setText(d->currentText);
@@ -85,7 +85,7 @@ void BackgroundChecker::stop()
     d->engine->stop();
 }
 
-QString BackgroundChecker::getMoreText()
+QString BackgroundChecker::fetchMoreText()
 {
     return QString();
 }
@@ -109,7 +109,7 @@ bool BackgroundChecker::checkWord(const QString &word)
     return d->engine->checkWord( word );
 }
 
-bool BackgroundChecker::addWord(const QString &word)
+bool BackgroundChecker::addWordToPersonal(const QString &word)
 {
     return d->engine->addWord(word);
 }
@@ -132,7 +132,7 @@ void BackgroundChecker::continueChecking()
 void BackgroundChecker::slotEngineDone()
 {
     finishedCurrentFeed();
-    d->currentText = getMoreText();
+    d->currentText = fetchMoreText();
 
     if ( d->currentText.isNull() ) {
         emit done();

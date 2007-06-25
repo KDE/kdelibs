@@ -188,15 +188,15 @@ void Dialog::updateDialog( const QString& word )
 void Dialog::show()
 {
     kDebug()<<"Showing dialog"<<endl;
-    if ( d->originalBuffer.isEmpty() )
+    if (d->originalBuffer.isEmpty())
         d->checker->start();
     else
-        d->checker->checkText( d->originalBuffer );
+        d->checker->setText(d->originalBuffer);
 }
 
 void Dialog::slotAddWord()
 {
-   d->checker->addWord( d->currentWord.word );
+   d->checker->addWordToPersonal(d->currentWord.word);
    d->checker->continueChecking();
 }
 
@@ -276,11 +276,11 @@ void Dialog::slotDone()
 {
     kDebug()<<"Dialog done!"<<endl;
     QString buffer(d->originalBuffer);
-    emit done( d->checker->text() );
+    emit done(d->checker->text());
     if (buffer==d->originalBuffer)
         accept();
     else
-        d->checker->checkText( d->originalBuffer );
+        d->checker->setText(d->originalBuffer);
 }
 
 }

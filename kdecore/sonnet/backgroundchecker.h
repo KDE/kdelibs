@@ -60,25 +60,25 @@ namespace Sonnet
          * This method is used to spell check static text.
          * It automatically invokes start().
          *
-         * Use getMoreText() with start() to spell check a stream.
+         * Use fetchMoreText() with start() to spell check a stream.
          */
-        void checkText(const QString &text);
-
+        void setText(const QString &text);
         QString text() const;
+
         QString currentContext() const;
 
         Speller speller() const;
         void setSpeller(const Speller &speller);
-        void changeLanguage( const QString& lang );
+        void changeLanguage(const QString &lang);
 
-        bool checkWord( const QString& word );
-        QStringList suggest( const QString& ) const;
-        bool addWord( const QString& word );
+        bool checkWord(const QString &word);
+        QStringList suggest(const QString &word) const;
+        bool addWordToPersonal(const QString &word);
     public Q_SLOTS:
         virtual void start();
         virtual void stop();
-        virtual void replace(int start, const QString &oldText,
-                             const QString &newText);
+        void replace(int start, const QString &oldText,
+                     const QString &newText);
 
         /**
          * After emitting misspelling signal the background
@@ -102,23 +102,21 @@ namespace Sonnet
         /**
          * This function is called to get the text to spell check.
          * It will be called continuesly until it returns QString()
-         * in which case the done() singnal is emitted.
+         * in which case the done() signal is emitted.
          * Note: the start parameter in mispelling() is not a combined
          * position but a position in the last string returned
-         * by getMoreText. You need to store the state in the derivatives.
+         * by fetchMoreText. You need to store the state in the derivatives.
          */
-        virtual QString getMoreText();
+        virtual QString fetchMoreText();
 
         /**
          * This function will be called whenever the background checker
-         * will be finished text which it got from getMoreText.
+         * will be finished text which it got from fetchMoreText.
          */
         virtual void finishedCurrentFeed();
 
     protected Q_SLOTS:
         void slotEngineDone();
-    protected:
-        //void customEvent( QCustomEvent *event );
     private:
         class Private;
         Private *const d;
