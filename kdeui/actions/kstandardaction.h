@@ -41,6 +41,8 @@ class KToggleFullScreenAction;
  * All of the documentation for KAction holds for KStandardAction
  * also.  When in doubt on how things work, check the KAction
  * documention first.
+ * Please note that calling any of these methods automatically adds the action
+ * to the actionCollection() of the QObject given by the 'parent' parameter.
  *
  * <b>Simple Example:</b>\n
  *

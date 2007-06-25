@@ -452,15 +452,19 @@ KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *pare
   ret->setObjectName(name(ShowMenubar));
   ret->setIcon( KIcon( "show-menu" ) );
 
-  if ( recvr && slot )
-    QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
-
   ret->setShortcut( KStandardShortcut::shortcut( KStandardShortcut::ShowMenubar ) );
 
   ret->setWhatsThis( i18n( "Show Menubar<p>"
                            "Shows the menubar again after it has been hidden" ) );
 
   ret->setChecked( true );
+
+  if ( recvr && slot )
+    QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
+
+  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
+  if (ret && collection)
+    collection->addAction(ret->objectName(), ret);
 
   return ret;
 }
@@ -470,13 +474,17 @@ KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *pa
   KToggleAction *ret = new KToggleAction(i18n( "Show St&atusbar" ), parent);
   ret->setObjectName(name(ShowStatusbar));
 
-  if ( recvr && slot )
-    QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
-
   ret->setWhatsThis( i18n( "Show Statusbar<p>"
                            "Shows the statusbar, which is the bar at the bottom of the window used for status information." ) );
 
   ret->setChecked( true );
+
+  if ( recvr && slot )
+    QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
+
+  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
+  if (ret && collection)
+    collection->addAction(ret->objectName(), ret);
 
   return ret;
 }
