@@ -23,6 +23,7 @@
 */
 
 #include "kcmultidialog.h"
+#include "kcmultidialog_p.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QProcess>
@@ -39,35 +40,7 @@
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
 
-class KCMultiDialog::Private
-{
-  public:
-
-    Private( KCMultiDialog *_parent )
-      : currentModule( 0 ),
-        parent( _parent )
-    {
-    }
-
-    KCModuleProxy* currentModule;
-    KCMultiDialog* parent;
-
-    struct CreatedModule
-    {
-      KCModuleProxy *kcm;
-      KPageWidgetItem *item;
-      QStringList componentNames;
-    };
-
-    typedef QList<CreatedModule> ModuleList;
-    ModuleList modules;
-
-    void _k_slotCurrentPageChanged( KPageWidgetItem* );
-    void _k_clientChanged( bool state );
-    void _k_dialogClosed();
-};
-
-void KCMultiDialog::Private::_k_slotCurrentPageChanged( KPageWidgetItem *item )
+void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *item )
 {
   kDebug(710) << k_funcinfo << endl;
 
@@ -88,23 +61,25 @@ void KCMultiDialog::Private::_k_slotCurrentPageChanged( KPageWidgetItem *item )
 
   currentModule = module;
 
-  parent->enableButton( KDialog::Help, currentModule->buttons() & KCModule::Help );
-  parent->enableButton( KDialog::Default, currentModule->buttons() & KCModule::Default );
+    Q_Q(KCMultiDialog);
+    q->enableButton(KDialog::Help, currentModule->buttons() & KCModule::Help);
+    q->enableButton(KDialog::Default, currentModule->buttons() & KCModule::Default);
 }
 
-void KCMultiDialog::Private::_k_clientChanged( bool )
+void KCMultiDialogPrivate::_k_clientChanged( bool )
 {
+    Q_Q(KCMultiDialog);
   for ( int i = 0; i < modules.count(); ++i ) {
     if ( modules[ i ].kcm->changed() ) {
-      parent->enableButton( Apply, true );
+            q->enableButton(KDialog::Apply, true);
       return;
     }
   }
 
-  parent->enableButton( Apply, false );
+    q->enableButton(KDialog::Apply, false);
 }
 
-void KCMultiDialog::Private::_k_dialogClosed()
+void KCMultiDialogPrivate::_k_dialogClosed()
 {
   kDebug(710) << k_funcinfo << endl;
 
@@ -117,43 +92,59 @@ void KCMultiDialog::Private::_k_dialogClosed()
     modules[ i ].kcm->deleteClient();
 }
 
+void KCMultiDialogPrivate::init()
+{
+    Q_Q(KCMultiDialog);
+    q->setFaceType(KPageDialog::Auto);
+    q->setCaption(i18n("Configure"));
+    q->setButtons(KDialog::Help | KDialog::Default |KDialog::Cancel | KDialog::Apply | KDialog::Ok | KDialog::User1);
+    q->setButtonGuiItem(KDialog::User1, KStandardGuiItem::reset());
+    q->setDefaultButton(KDialog::Ok);
+    q->setModal(false);
+    q->showButtonSeparator(true);
+
+    q->connect(q, SIGNAL(finished()), SLOT(_k_dialogClosed()));
+
+    q->showButton(KDialog::User1, false);
+    q->enableButton(KDialog::Apply, false);
+
+    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*, KPageWidgetItem*)),
+            SLOT(_k_slotCurrentPageChanged(KPageWidgetItem*)));
+
+    q->connect(q, SIGNAL(applyClicked()), SLOT(slotApplyClicked()));
+    q->connect(q, SIGNAL(okClicked()), SLOT(slotOkClicked()));
+    q->connect(q, SIGNAL(defaultClicked()), SLOT(slotDefaultClicked()));
+    q->connect(q, SIGNAL(helpClicked()), SLOT(slotHelpClicked()));
+    q->connect(q, SIGNAL(user1Clicked()), SLOT(slotUser1Clicked()));
+
+    q->setInitialSize(QSize(640, 480));
+}
 
 KCMultiDialog::KCMultiDialog( QWidget *parent )
-  : KPageDialog( parent ),
-    d( new Private( this ) )
+    : KPageDialog(*new KCMultiDialogPrivate, NULL, parent)
 {
-  setFaceType( Auto );
-  setCaption( i18n("Configure") );
-  setButtons( Help | Default |Cancel | Apply | Ok | User1 );
-  setButtonGuiItem( User1, KStandardGuiItem::reset() );
-  setDefaultButton( Ok );
-  setModal( false );
-  showButtonSeparator( true );
+    d_func()->init();
+}
 
-  connect( this, SIGNAL( finished() ), SLOT( _k_dialogClosed() ) );
+KCMultiDialog::KCMultiDialog(KPageWidget *pageWidget, QWidget *parent, Qt::WFlags flags)
+    : KPageDialog(*new KCMultiDialogPrivate, pageWidget, parent, flags)
+{
+    d_func()->init();
+}
 
-  showButton( User1, false );
-  enableButton( Apply, false );
-
-  connect( this, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ),
-           this, SLOT( _k_slotCurrentPageChanged( KPageWidgetItem* ) ) );
-
-  connect( this, SIGNAL( applyClicked() ), SLOT( slotApplyClicked() ) );
-  connect( this, SIGNAL( okClicked() ), SLOT( slotOkClicked() ) );
-  connect( this, SIGNAL( defaultClicked() ), SLOT( slotDefaultClicked() ) );
-  connect( this, SIGNAL( helpClicked() ), SLOT( slotHelpClicked() ) );
-  connect( this, SIGNAL( user1Clicked() ), SLOT( slotUser1Clicked() ) );
-
-  setInitialSize( QSize( 640, 480 ) );
+KCMultiDialog::KCMultiDialog(KCMultiDialogPrivate &dd, KPageWidget *pageWidget, QWidget *parent, Qt::WFlags flags)
+    : KPageDialog(dd, pageWidget, parent, flags)
+{
+    d_func()->init();
 }
 
 KCMultiDialog::~KCMultiDialog()
 {
-  delete d;
 }
 
 void KCMultiDialog::slotDefaultClicked()
 {
+    Q_D(KCMultiDialog);
   const KPageWidgetItem *item = currentPage();
   if ( !item )
     return;
@@ -173,6 +164,7 @@ void KCMultiDialog::slotUser1Clicked()
   if ( !item )
     return;
 
+    Q_D(KCMultiDialog);
   for ( int i = 0; i < d->modules.count(); ++i ) {
     if ( d->modules[ i ].item == item ) {
       d->modules[ i ].kcm->load();
@@ -182,42 +174,43 @@ void KCMultiDialog::slotUser1Clicked()
   }
 }
 
-void KCMultiDialog::apply()
+void KCMultiDialogPrivate::apply()
 {
-  QStringList updatedComponents;
+    Q_Q(KCMultiDialog);
+    QStringList updatedComponents;
 
-  for ( int i = 0; i < d->modules.count(); ++i ) {
-    KCModuleProxy *proxy = d->modules[ i ].kcm;
+    foreach (const CreatedModule &module, modules) {
+        KCModuleProxy *proxy = module.kcm;
 
-    if ( proxy->changed() ) {
-      proxy->save();
+        if (proxy->changed()) {
+            proxy->save();
 
-      /**
-       * Add name of the components the kcm belongs to the list
-       * of updated components.
-       */
-      const QStringList componentNames = d->modules[ i ].componentNames;
-      for ( int j = 0; j < componentNames.count(); ++j ) {
-        if ( !updatedComponents.contains( componentNames[ j ] ) )
-          updatedComponents.append( componentNames[ j ] );
-      }
+            /**
+             * Add name of the components the kcm belongs to the list
+             * of updated components.
+             */
+            const QStringList componentNames = module.componentNames;
+            foreach (const QString &componentName, module.componentNames) {
+                if (!updatedComponents.contains(componentName)) {
+                    updatedComponents.append(componentName);
+                }
+            }
+        }
     }
-  }
 
-  /**
-   * Send the configCommitted signal for every updated component.
-   */
-  for ( int i = 0; i < updatedComponents.count(); ++i )
-    emit configCommitted( updatedComponents[ i ].toLatin1() );
+    // Send the configCommitted signal for every updated component.
+    foreach (const QString &name, updatedComponents) {
+        emit q->configCommitted(name.toLatin1());
+    }
 
-  emit configCommitted();
+    emit q->configCommitted();
 }
 
 void KCMultiDialog::slotApplyClicked()
 {
   setButtonFocus( Apply );
 
-  apply();
+    d_func()->apply();
 }
 
 
@@ -225,7 +218,7 @@ void KCMultiDialog::slotOkClicked()
 {
   setButtonFocus( Ok );
 
-  apply();
+    d_func()->apply();
   accept();
 }
 
@@ -235,6 +228,7 @@ void KCMultiDialog::slotHelpClicked()
   if ( !item )
     return;
 
+    Q_D(KCMultiDialog);
   QString docPath;
   for ( int i = 0; i < d->modules.count(); ++i ) {
     if ( d->modules[ i ].item == item ) {
@@ -275,23 +269,58 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
   if ( moduleInfo.service()->noDisplay() )
     return 0;
 
-  KHBox *widget = new KHBox();
+    KCModuleProxy *kcm = new KCModuleProxy(moduleInfo, 0, args);
 
-  KPageWidgetItem *item = new KPageWidgetItem( widget, moduleInfo.moduleName() );
+    kDebug(710) << k_funcinfo << moduleInfo.moduleName() << endl;
+    KPageWidgetItem *item = new KPageWidgetItem(kcm, moduleInfo.moduleName());
   item->setHeader( moduleInfo.comment() );
   item->setIcon( KIcon( moduleInfo.icon() ) );
+    item->setProperty("_k_weight", moduleInfo.weight());
 
-  if ( parentItem )
-    addSubPage( parentItem, item );
-  else
-    addPage( item );
-
-  KCModuleProxy *kcm = new KCModuleProxy( moduleInfo, widget, args );
+    const KPageWidgetModel *model = qobject_cast<const KPageWidgetModel *>(pageWidget()->model());
+    Q_ASSERT(model);
+    if (parentItem) {
+        const QModelIndex parentIndex = model->index(parentItem);
+        const int siblingCount = model->rowCount(parentIndex);
+        int row = 0;
+        for (; row < siblingCount; ++row) {
+            KPageWidgetItem *siblingItem = model->item(parentIndex.child(row, 0));
+            if (siblingItem->property("_k_weight").toInt() > moduleInfo.weight()) {
+                // the item we found is heavier than the new module
+                kDebug(710) << "adding KCM " << item->name() << " before " << siblingItem->name() << endl;
+                insertPage(siblingItem, item);
+                break;
+            }
+        }
+        if (row >= siblingCount) {
+            // the new module is either the first or the heaviest item
+            kDebug(710) << "adding KCM " << item->name() << " with parent " << parentItem->name() << endl;
+            addSubPage(parentItem, item);
+        }
+    } else {
+        const int siblingCount = model->rowCount();
+        int row = 0;
+        for (; row < siblingCount; ++row) {
+            KPageWidgetItem *siblingItem = model->item(model->index(row, 0));
+            if (siblingItem->property("_k_weight").toInt() > moduleInfo.weight()) {
+                // the item we found is heavier than the new module
+                kDebug(710) << "adding KCM " << item->name() << " before " << siblingItem->name() << endl;
+                insertPage(siblingItem, item);
+                break;
+            }
+        }
+        if (row == siblingCount) {
+            // the new module is either the first or the heaviest item
+            kDebug(710) << "adding KCM " << item->name() << " at the top level" << endl;
+            addPage(item);
+        }
+    }
 
   connect( kcm, SIGNAL( changed( bool ) ), this, SLOT( _k_clientChanged( bool ) ) );
 
 
-  Private::CreatedModule cm;
+    Q_D(KCMultiDialog);
+  KCMultiDialogPrivate::CreatedModule cm;
   cm.kcm = kcm;
   cm.item = item;
   cm.componentNames = moduleInfo.service()->property( "X-KDE-ParentComponents" ).toStringList();
@@ -305,6 +334,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 
 void KCMultiDialog::clear()
 {
+    Q_D(KCMultiDialog);
   kDebug( 710 ) << k_funcinfo << endl;
 
   for ( int i = 0; i < d->modules.count(); ++i ) {

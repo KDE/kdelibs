@@ -26,6 +26,8 @@
 #include <kcmoduleinfo.h>
 #include <kpagedialog.h>
 
+class KCMultiDialogPrivate;
+
 /**
  * @short A method that offers a KPageDialog containing arbitrary
  *        KControl Modules.
@@ -35,6 +37,7 @@
 class KUTILS_EXPORT KCMultiDialog : public KPageDialog
 {
   Q_OBJECT
+    Q_DECLARE_PRIVATE(KCMultiDialog)
 
   public:
     /**
@@ -53,6 +56,9 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
     /**
      * Add a module.
      *
+     * The module is added according to its KCModuleInfo::weight(). The weight determines where in the list
+     * the module will appear. Lighter modules on top, heavier modules at the bottom.
+     *
      * @param module Specify the name of the module that is to be added
      *               to the list of modules the dialog will show.
      *
@@ -65,6 +71,9 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
 
     /**
      * Add a module.
+     *
+     * The module is added according to its KCModuleInfo::weight(). The weight determines where in the list
+     * the module will appear. Lighter modules on top, heavier modules at the bottom.
      *
      * @param moduleinfo Pass a KCModuleInfo object which will be
      *                   used for creating the module. It will be added
@@ -108,6 +117,13 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
      *                     configuration.
      */
     void configCommitted( const QByteArray & componentName );
+
+    protected:
+        /**
+         * This constructor can be used by subclasses to provide a custom KPageWidget.
+         */
+        KCMultiDialog(KPageWidget *pageWidget, QWidget *parent, Qt::WFlags flags = 0);
+        KCMultiDialog(KCMultiDialogPrivate &dd, KPageWidget *pageWidget, QWidget *parent, Qt::WFlags flags = 0);
 
   protected Q_SLOTS:
     /**
@@ -154,16 +170,10 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
      **/
     void slotHelpClicked();
 
-  private:
-    void init();
-    void apply();
-
-    class Private;
-    Private* const d;
-
-    Q_PRIVATE_SLOT( d, void _k_slotCurrentPageChanged( KPageWidgetItem* ) )
-    Q_PRIVATE_SLOT( d, void _k_clientChanged( bool ) )
-    Q_PRIVATE_SLOT( d, void _k_dialogClosed() )
+    private:
+        Q_PRIVATE_SLOT(d_func(), void _k_slotCurrentPageChanged(KPageWidgetItem *))
+        Q_PRIVATE_SLOT(d_func(), void _k_clientChanged(bool))
+        Q_PRIVATE_SLOT(d_func(), void _k_dialogClosed())
 };
 
 #endif
