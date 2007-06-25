@@ -243,7 +243,7 @@ public:
     int execute(int msecs = -1);
 
     /**
-     * Start the process, wait for it to finish, and return the exit code.
+     * @overload
      *
      * @param exe the program to execute
      * @param args the command line arguments for the program,
@@ -264,11 +264,47 @@ public:
     static int execute(const QStringList &argv, int msecs = -1);
 
     /**
+     * Start the process and detach from it. See QProcess::startDetached()
+     * for details.
+     *
+     * Unlike the other startDetached() variants this method is not static,
+     * so the process can be parametrized properly.
+     * @note Currently, only the setProgram()/setShellCommand() and
+     * setWorkingDirectory() parametrizations are supported.
+     *
+     * The KProcess object may be re-used immediately after calling this
+     * function.
+     *
+     * @return the PID of the started process or 0 on error
+     */
+    int startDetached();
+
+    /**
+     * @overload
+     *
+     * @param exe the program to start
+     * @param args the command line arguments for the program,
+     *   one per list element
+     * @return the PID of the started process or 0 on error
+     */
+    static int startDetached(const QString &exe, const QStringList &args);
+
+    /**
+     * @overload
+     *
+     * @param argv the program to start and the command line arguments
+     *   for the program, one per list element
+     * @return the PID of the started process or 0 on error
+     */
+    static int startDetached(const QStringList &argv);
+
+    /**
      * Obtain the process' ID as known to the system.
      *
      * Unlike with QProcess::pid(), this is a real PID also on Windows.
      *
      * This function can be called only while the process is running.
+     * It cannot be applied to detached processes.
      *
      * @return the process ID
      */

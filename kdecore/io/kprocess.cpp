@@ -317,6 +317,33 @@ int KProcess::execute(const QStringList &argv, int msecs)
     return p.execute(msecs);
 }
 
+int KProcess::startDetached()
+{
+    Q_D(KProcess);
+
+    qint64 pid;
+    if (!QProcess::startDetached(d->prog, d->args, workingDirectory(), &pid))
+        return 0;
+    return (int) pid;
+}
+
+// static
+int KProcess::startDetached(const QString &exe, const QStringList &args)
+{
+    qint64 pid;
+    if (!QProcess::startDetached(exe, args, QString(), &pid))
+        return 0;
+    return (int) pid;
+}
+
+// static
+int KProcess::startDetached(const QStringList &argv)
+{
+    QStringList args = argv;
+    QString prog = args.takeFirst();
+    return startDetached(prog, args);
+}
+
 int KProcess::pid() const
 {
 #ifdef Q_OS_UNIX
