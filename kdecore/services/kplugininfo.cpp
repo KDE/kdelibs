@@ -36,14 +36,8 @@ class KPluginInfo::KPluginInfoPrivate
             : hidden( false )
             , enabledbydefault( false )
             , pluginenabled( false )
-            , config( 0 )
             , kcmservicesCached( false )
             {}
-
-        ~KPluginInfoPrivate()
-        {
-            delete config;
-        }
 
         QString specfile; // the filename of the file containing all the info
         QString name;
@@ -62,8 +56,7 @@ class KPluginInfo::KPluginInfoPrivate
         bool enabledbydefault;
         bool pluginenabled;
 
-        KConfig * config;
-        QString configgroup;
+        KConfigGroup config;
         KService::Ptr service;
         QList<KService::Ptr> kcmservices;
         bool kcmservicesCached;
@@ -135,7 +128,7 @@ KPluginInfo::~KPluginInfo()
     delete d;
 }
 
-QList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & services, KConfig * config, const QString & group )
+QList<KPluginInfo*> KPluginInfo::fromServices(const KService::List &services, const KConfigGroup &config)
 {
     QList<KPluginInfo*> infolist;
     KPluginInfo * info;
@@ -143,30 +136,30 @@ QList<KPluginInfo*> KPluginInfo::fromServices( const KService::List & services, 
             it != services.end(); ++it )
     {
         info = new KPluginInfo( *it );
-        info->setConfig( config, group );
+        info->setConfig(config);
         infolist += info;
     }
     return infolist;
 }
 
-QList<KPluginInfo*> KPluginInfo::fromFiles( const QStringList & files, KConfig * config, const QString & group )
+QList<KPluginInfo*> KPluginInfo::fromFiles(const QStringList &files, const KConfigGroup &config)
 {
     QList<KPluginInfo*> infolist;
     for( QStringList::ConstIterator it = files.begin(); it != files.end(); ++it )
     {
         KPluginInfo * info = new KPluginInfo( *it );
-        info->setConfig( config, group );
+        info->setConfig(config);
         infolist += info;
     }
     return infolist;
 }
 
-QList<KPluginInfo*> KPluginInfo::fromKPartsInstanceName( const QString & name, KConfig * config, const QString & group )
+QList<KPluginInfo*> KPluginInfo::fromKPartsInstanceName(const QString &name, const KConfigGroup &config)
 {
     QStringList files = KGlobal::dirs()->findAllResources( "data",
                                                            name + "/kpartplugins/*.desktop",
                                                            KStandardDirs::Recursive );
-    return fromFiles( files, config, group );
+    return fromFiles(files, config);
 }
 
 bool KPluginInfo::isHidden() const
@@ -272,20 +265,14 @@ QList<KService::Ptr> KPluginInfo::kcmServices() const
     return d->kcmservices;
 }
 
-void KPluginInfo::setConfig( KConfig * config, const QString & group )
+void KPluginInfo::setConfig(const KConfigGroup &config)
 {
     d->config = config;
-    d->configgroup = group;
 }
 
-KConfig * KPluginInfo::config() const
+KConfigGroup KPluginInfo::config() const
 {
     return d->config;
-}
-
-QString KPluginInfo::configgroup() const
-{
-    return d->configgroup;
 }
 
 QVariant KPluginInfo::property( const QString & key ) const
@@ -301,38 +288,32 @@ QVariant KPluginInfo::operator[]( const QString & key ) const
     return property( key );
 }
 
-void KPluginInfo::save( KConfigGroup * config )
+void KPluginInfo::save(KConfigGroup config)
 {
     kDebug( 703 ) << k_funcinfo << endl;
-    if( 0 == config )
-    {
-        if( 0 == d->config )
-        {
+    if (config.isValid()) {
+        config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
+    } else {
+        if (!d->config.isValid()) {
             kWarning( 703 ) << "no KConfigGroup, cannot save" << endl;
             return;
         }
-        KConfigGroup cg(d->config, d->configgroup );
-        cg.writeEntry( d->pluginName + "Enabled", isPluginEnabled() );
+        d->config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
     }
-    else
-        config->writeEntry( d->pluginName + "Enabled", isPluginEnabled() );
 }
 
-void KPluginInfo::load( KConfigGroup * config )
+void KPluginInfo::load(const KConfigGroup &config)
 {
     kDebug( 703 ) << k_funcinfo << endl;
-    if( 0 == config )
-    {
-        if( 0 == d->config )
-        {
+    if (config.isValid()) {
+        setPluginEnabled(config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
+    } else {
+        if (!d->config.isValid()) {
             kWarning( 703 ) << "no KConfigGroup, cannot load" << endl;
             return;
         }
-        KConfigGroup cg( d->config, d->configgroup );
-        setPluginEnabled( cg.readEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );
+        setPluginEnabled(d->config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
     }
-    else
-        setPluginEnabled( config->readEntry( d->pluginName + "Enabled", isPluginEnabledByDefault() ) );
 }
 
 void KPluginInfo::defaults()

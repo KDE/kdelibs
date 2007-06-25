@@ -24,10 +24,9 @@
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
 
+#include <kconfiggroup.h>
 #include <kservice.h>
 #include <QtCore/QList>
-
-class KConfigGroup;
 
 /**
  * Information about a plugin.
@@ -120,23 +119,32 @@ class KDECORE_EXPORT KPluginInfo
          * @return A list of KPluginInfo objects constructed from a list of
          * KService objects. If you get a trader offer of the plugins you want
          * to use you can just pass them to this function.
+         *
+         * @param services The list of services to construct the list of KPluginInfo objects from
+         * @param config The config group where to save/load whether the plugin is enabled/disabled
          */
-        static KPluginInfo::List fromServices( const KService::List & services, KConfig * config = 0, const QString & group = QString() );
+        static KPluginInfo::List fromServices(const KService::List &services, const KConfigGroup &config = KConfigGroup());
 
         /**
          * @return A list of KPluginInfo objects constructed from a list of
          * filenames. If you make a lookup using, for example,
          * KStandardDirs::findAllResources() you pass the list of files to this
          * function.
+         *
+         * @param files The list of files to construct the list of KPluginInfo objects from
+         * @param config The config group where to save/load whether the plugin is enabled/disabled
          */
-        static KPluginInfo::List fromFiles( const QStringList & files, KConfig * config = 0, const QString & group = QString() );
+        static KPluginInfo::List fromFiles(const QStringList &files, const KConfigGroup &config = KConfigGroup());
 
         /**
          * @return A list of KPluginInfo objects for the KParts plugins of a
          * component. You only need the name of the component not a pointer to the
          * KComponentData object.
+         *
+         * @param componentName Use the component name to look up all KParts plugins for it.
+         * @param config The config group where to save/load whether the plugin is enabled/disabled
          */
-        static KPluginInfo::List fromKPartsInstanceName(const QString &componentName, KConfig *config = 0, const QString &group = QString());
+        static KPluginInfo::List fromKPartsInstanceName(const QString &componentName, const KConfigGroup &config = KConfigGroup());
 
         /**
          * @return Whether the plugin should be hidden.
@@ -273,19 +281,13 @@ class KDECORE_EXPORT KPluginInfo
          * configuration. This will be overridden by the KConfigGroup passed to
          * save() or load() (if one is passed).
          */
-        void setConfig( KConfig * config, const QString & group );
+        void setConfig(const KConfigGroup &config);
 
         /**
          * @return If the KPluginInfo object has a KConfig object set return
          * it, else return 0.
          */
-        KConfig * config() const;
-
-        /**
-         * @return The groupname used in the KConfig object for load()ing and
-         * save()ing whether the plugin is enabled.
-         */
-        QString configgroup() const;
+        KConfigGroup config() const;
 
         /**
          * Save state of the plugin - enabled or not. This function is provided
@@ -293,7 +295,7 @@ class KDECORE_EXPORT KPluginInfo
          * @param config    The KConfigGroup holding the information whether
          *                  plugin is enabled.
          */
-        virtual void save( KConfigGroup * config = 0 );
+        virtual void save(KConfigGroup config = KConfigGroup());
 
         /**
          * Load the state of the plugin - enabled or not. This function is provided
@@ -301,7 +303,7 @@ class KDECORE_EXPORT KPluginInfo
          * @param config    The KConfigGroup holding the information whether
          *                  plugin is enabled.
          */
-        virtual void load( KConfigGroup * config = 0 );
+        virtual void load(const KConfigGroup &config = KConfigGroup());
 
         /**
          * Restore defaults (enabled or not).
@@ -316,5 +318,4 @@ class KDECORE_EXPORT KPluginInfo
         KPluginInfoPrivate* const d;
 };
 
-// vim: sw=4 sts=4 et tw=80
 #endif // KPLUGININFO_H
