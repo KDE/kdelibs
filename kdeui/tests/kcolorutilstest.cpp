@@ -41,9 +41,6 @@ void tst_KColorUtils::testOverlay()
     QCOMPARE(blended.blue(), color2.blue());
 }
 
-void compareColors( const QColor& c1, const QColor& c2 )
-{
-}
 #define compareColors(c1, c2) \
     if ( c1 != c2 ) { \
         fprintf( stderr, "%08x != expected value %08x\n", c1.rgb(), c2.rgb() ); \
