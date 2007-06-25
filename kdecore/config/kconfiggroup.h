@@ -26,11 +26,13 @@
 #include <kdecore_export.h>
 #include <kdebug.h>
 #include <kconfigflags.h>
+#include <QtCore/QExplicitlySharedDataPointer>
 #include <QtGui/QColor>
 #include <QtCore/QVariant>
 
 class KConfigBase;
 class KSharedConfigPtr;
+class KConfigGroupPrivate;
 
 /**
  * A class for one specific group in a KConfig object.
@@ -38,6 +40,13 @@ class KSharedConfigPtr;
 class KDECORE_EXPORT KConfigGroup : public KConfigFlags
 {
 public:
+    /**
+     * Constructs a null group. A null group is invalid.
+     *
+     * \see isValid
+     */
+    KConfigGroup();
+
     /**
      * Construct a config group corresponding to @p group in @p master.
      * @p group is the group name encoded in UTF-8.
@@ -63,6 +72,14 @@ public:
     KConfigGroup(KSharedConfigPtr master, const char * group);
 
     ~KConfigGroup();
+
+    /**
+     * Returns \p true if the group is valid; otherwise returns \p false. A group is invalid if it
+     * was constructed without arguments.
+     *
+     * You should not call any functions on an invalid group.
+     */
+    bool isValid() const;
 
     /**
      * Delete all entries in the entire group
@@ -562,8 +579,7 @@ protected:
     void init(KConfigBase *master);
 
 private:
-    class Private;
-    Private * const d;
+    QExplicitlySharedDataPointer<KConfigGroupPrivate> d;
 };
 
 #define KCONFIGGROUP_DECLARE_ENUM_QOBJECT(Class, Enum)                         \

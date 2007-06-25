@@ -30,6 +30,7 @@
 #include "kstandarddirs.h"
 
 #include <QtCore/QDate>
+#include <QtCore/QSharedData>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QPoint>
@@ -37,14 +38,22 @@
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QTextIStream>
 
-
-class KConfigGroup::Private
+class KConfigGroupPrivate : public QSharedData
 {
-public:
-  KConfigBase *master;
-  KSharedConfig::Ptr masterShared;
-  QByteArray group;
+    public:
+        KConfigBase *master;
+        KSharedConfig::Ptr masterShared;
+        QByteArray group;
 };
+
+KConfigGroup::KConfigGroup()
+{
+}
+
+bool KConfigGroup::isValid() const
+{
+    return 0 != d.constData();
+}
 
 KConfigGroupGui _kde_internal_KConfigGroupGui;
 static inline bool readEntryGui(const KConfigGroup *cg, const char *key, const QVariant &input,
@@ -64,28 +73,28 @@ static inline bool writeEntryGui(KConfigGroup *cg, const char *key, const QVaria
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
- : d(new Private())
+ : d(new KConfigGroupPrivate())
 {
     init( master );
     changeGroup( _group.toUtf8( ) );
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QByteArray &_group)
- : d(new Private())
+ : d(new KConfigGroupPrivate())
 {
     init( master );
     changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const char * _group)
- : d(new Private())
+ : d(new KConfigGroupPrivate())
 {
     init( master );
     changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QString &_group)
- : d(new Private())
+ : d(new KConfigGroupPrivate())
 {
     init( master.data() );
     changeGroup( _group.toUtf8() );
@@ -93,7 +102,7 @@ KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QString &_group)
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QByteArray &_group)
- : d(new Private())
+ : d(new KConfigGroupPrivate())
 {
     init( master.data() );
     changeGroup( _group );
@@ -101,7 +110,7 @@ KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QByteArray &_group)
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const char * _group)
- : d(new Private())
+ : d(new KConfigGroupPrivate())
 {
     init( master.data() );
     changeGroup( _group );
@@ -116,19 +125,17 @@ void KConfigGroup::init(KConfigBase *master)
 
 KConfigGroup &KConfigGroup::operator=(const KConfigGroup &rhs)
 {
-  *d = *rhs.d;
-  return *this;
+    d = rhs.d;
+    return *this;
 }
 
 KConfigGroup::KConfigGroup(const KConfigGroup &rhs)
- : d(new Private())
+    : d(rhs.d)
 {
-  *this = rhs;
 }
 
 KConfigGroup::~KConfigGroup()
 {
-  delete d;
 }
 
 void KConfigGroup::deleteGroup(KConfigBase::WriteConfigFlags pFlags)
