@@ -29,8 +29,8 @@ int main(int argc, char **argv) {
     KAboutData aboutData("kprotocolinfotest", "KProtocolinfo Test",
                         "1.0");
 
-    KCmdLineArgs::init(argc, argv, &aboutData);
     KComponentData componentData(&aboutData);
+    QCoreApplication app(argc,argv); // needed by QEventLoop in ksycoca.cpp
 
     KUrl url("/tmp");
     assert( KProtocolManager::supportsListing( KUrl( "ftp://10.1.1.10") ) );

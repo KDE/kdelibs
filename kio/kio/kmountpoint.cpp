@@ -101,7 +101,7 @@ public:
     void finalizeCurrentMountPoint(DetailsNeededFlags infoNeeded);
 
     QString mountedFrom;
-    QString device;
+    QString device; // Only available when the NeedRealDeviceName flag was set.
     QString mountPoint;
     QString mountType;
     QStringList mountOptions;
@@ -459,8 +459,11 @@ KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
 KMountPoint::Ptr KMountPoint::List::findByDevice(const QString& device) const
 {
     const QString realDevice = KStandardDirs::realFilePath(device);
+    if (realDevice.isEmpty()) // d->device can be empty in the loop below, don't match empty with it
+        return Ptr();
     for (const_iterator it = begin(); it != end(); ++it) {
-        if ((*it)->d->mountedFrom == realDevice)
+        if ((*it)->d->device == realDevice ||
+            (*it)->d->mountedFrom == realDevice)
             return *it;
     }
     return Ptr();
