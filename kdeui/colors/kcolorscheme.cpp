@@ -77,10 +77,10 @@ public:
     explicit KColorSchemePrivate(const KSharedConfigPtr&, const char*, DefaultColors);
     KColorSchemePrivate(const KColorSchemePrivate&);
 
-    QColor background(KColorScheme::BackgroundRole);
-    QColor foreground(KColorScheme::ForegroundRole);
-    QColor decoration(KColorScheme::DecorationRole);
-    qreal contrast();
+    QColor background(KColorScheme::BackgroundRole) const;
+    QColor foreground(KColorScheme::ForegroundRole) const;
+    QColor decoration(KColorScheme::DecorationRole) const;
+    qreal contrast() const;
 private:
     KConfigGroup _config;
     DefaultColors _defaults;
@@ -101,7 +101,7 @@ KColorSchemePrivate::KColorSchemePrivate(const KColorSchemePrivate& other)
 
 #define DEFAULT(a) QColor( _defaults.a[0], _defaults.a[1], _defaults.a[2] )
 
-QColor KColorSchemePrivate::background(KColorScheme::BackgroundRole role)
+QColor KColorSchemePrivate::background(KColorScheme::BackgroundRole role) const
 {
     switch (role) {
         case KColorScheme::AlternateBackground:
@@ -111,7 +111,7 @@ QColor KColorSchemePrivate::background(KColorScheme::BackgroundRole role)
     }
 }
 
-QColor KColorSchemePrivate::foreground(KColorScheme::ForegroundRole role)
+QColor KColorSchemePrivate::foreground(KColorScheme::ForegroundRole role) const
 {
     switch (role) {
         case KColorScheme::InactiveText:
@@ -133,7 +133,7 @@ QColor KColorSchemePrivate::foreground(KColorScheme::ForegroundRole role)
     }
 }
 
-QColor KColorSchemePrivate::decoration(KColorScheme::DecorationRole role)
+QColor KColorSchemePrivate::decoration(KColorScheme::DecorationRole role) const
 {
     switch (role) {
         case KColorScheme::FocusColor:
@@ -143,7 +143,7 @@ QColor KColorSchemePrivate::decoration(KColorScheme::DecorationRole role)
     }
 }
 
-qreal KColorSchemePrivate::contrast()
+qreal KColorSchemePrivate::contrast() const
 {
     return 0.1 * (qreal)_contrast;
 }
