@@ -162,6 +162,7 @@ set(kdecore_LIB_SRCS
    sonnet/loader.cpp
    sonnet/client.cpp
    sonnet/spellerplugin.cpp
+   sonnet/speller.cpp
    sonnet/filter.cpp
    sonnet/settings.cpp
    sonnet/backgroundchecker.cpp
@@ -386,9 +387,7 @@ endif (UNIX)
 
 install( FILES
         sonnet/backgroundchecker.h
-        sonnet/filter.h
-        sonnet/settings.h
-        sonnet/loader.h
+        sonnet/speller.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet)
 
 install( FILES

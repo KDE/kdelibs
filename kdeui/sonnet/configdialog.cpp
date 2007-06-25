@@ -33,8 +33,9 @@ public:
     ConfigWidget *ui;
 };
 
-ConfigDialog::ConfigDialog( Loader::Ptr loader, QWidget *parent )
-    : KDialog( parent ),d(new Private)
+ConfigDialog::ConfigDialog(KConfig *config, QWidget *parent)
+    : KDialog(parent),
+      d(new Private)
 {
     setObjectName( "SonnetConfigDialog" );
     setModal( true );
@@ -43,7 +44,7 @@ ConfigDialog::ConfigDialog( Loader::Ptr loader, QWidget *parent )
     setDefaultButton( Ok );
     showButtonSeparator( true );
 
-    init( loader );
+    init(config);
 }
 
 ConfigDialog::~ConfigDialog()
@@ -51,12 +52,14 @@ ConfigDialog::~ConfigDialog()
     delete d;
 }
 
-void ConfigDialog::init( Loader::Ptr loader )
+void ConfigDialog::init(KConfig *config)
 {
-    d->ui = new ConfigWidget( loader, this );
-    setMainWidget( d->ui );
-    connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
-    connect(this,SIGNAL(applyClicked()), this, SLOT(slotApply()));
+    d->ui = new ConfigWidget(config, this);
+    setMainWidget(d->ui);
+    connect(this, SIGNAL(okClicked()),
+            this, SLOT(slotOk()));
+    connect(this, SIGNAL(applyClicked()),
+            this, SLOT(slotApply()));
 }
 
 void ConfigDialog::slotOk()

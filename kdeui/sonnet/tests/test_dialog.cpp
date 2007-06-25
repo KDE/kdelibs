@@ -22,7 +22,6 @@
 #include "test_dialog.moc"
 
 #include "backgroundchecker.h"
-#include "filter.h"
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -30,19 +29,17 @@
 using namespace Sonnet;
 
 TestDialog::TestDialog()
-    : QObject( 0 )
+    : QObject(0)
 {
-
 }
 
 void TestDialog::check( const QString& buffer )
 {
     Sonnet::Dialog *dlg = new Sonnet::Dialog(
-        new BackgroundChecker(Loader::openLoader(), this),
-        0);
-    connect( dlg, SIGNAL(done(const QString&)),
-             SLOT(doneChecking(const QString&)) );
-    dlg->setBuffer( buffer );
+        new BackgroundChecker(this), 0);
+    connect(dlg, SIGNAL(done(const QString&)),
+            SLOT(doneChecking(const QString&)));
+    dlg->setBuffer(buffer);
     dlg->show();
 }
 

@@ -22,6 +22,7 @@
 
 #include "loader.h"
 #include "backgroundengine_p.h"
+#include "filter.h"
 
 #include <kdebug.h>
 
@@ -34,15 +35,28 @@ public:
     QString currentText;
 };
 
-BackgroundChecker::BackgroundChecker( const Loader::Ptr& loader, QObject* parent )
-    : QObject( parent ),d(new Private)
+
+BackgroundChecker::BackgroundChecker(QObject *parent)
+    : QObject(parent),
+      d(new Private)
 {
-    d->engine = new BackgroundEngine( this );
-    d->engine->setLoader( loader );
-    connect( d->engine, SIGNAL(misspelling( const QString&, int )),
-             SIGNAL(misspelling( const QString&, int )) );
-    connect( d->engine, SIGNAL(done()),
-             SLOT(slotEngineDone()) );
+    d->engine = new BackgroundEngine(this);
+    connect(d->engine, SIGNAL(misspelling(const QString&, int)),
+            SIGNAL(misspelling(const QString&, int)));
+    connect(d->engine, SIGNAL(done()),
+            SLOT(slotEngineDone()));
+}
+
+BackgroundChecker::BackgroundChecker(const Speller &speller, QObject *parent)
+    : QObject(parent),
+      d(new Private)
+{
+    d->engine = new BackgroundEngine(this);
+    d->engine->setSpeller(speller);
+    connect(d->engine, SIGNAL(misspelling(const QString&, int)),
+            SIGNAL(misspelling(const QString&, int)));
+    connect(d->engine, SIGNAL(done()),
+            SLOT(slotEngineDone()));
 }
 
 BackgroundChecker::~BackgroundChecker()
@@ -50,10 +64,10 @@ BackgroundChecker::~BackgroundChecker()
     delete d;
 }
 
-void BackgroundChecker::checkText( const QString& text )
+void BackgroundChecker::checkText(const QString &text)
 {
     d->currentText = text;
-    d->engine->setText( text );
+    d->engine->setText(text);
     d->engine->start();
 }
 
@@ -62,7 +76,7 @@ void BackgroundChecker::start()
     d->currentText = getMoreText();
     // ## what if d->currentText.isEmpty()?
     //kDebug()<<"Sonnet BackgroundChecker: starting with : \"" << d->currentText << "\""<<endl;
-    d->engine->setText( d->currentText );
+    d->engine->setText(d->currentText);
     d->engine->start();
 }
 
@@ -80,39 +94,34 @@ void BackgroundChecker::finishedCurrentFeed()
 {
 }
 
-void BackgroundChecker::setFilter( Filter *filter )
+void BackgroundChecker::setSpeller(const Speller &speller)
 {
-    d->engine->setFilter( filter );
+    d->engine->setSpeller(speller);
 }
 
-Filter *BackgroundChecker::filter() const
+Speller BackgroundChecker::speller() const
 {
-    return d->engine->filter();
+    return d->engine->speller();
 }
 
-Loader *BackgroundChecker::loader() const
-{
-    return d->engine->loader();
-}
-
-bool BackgroundChecker::checkWord( const QString& word )
+bool BackgroundChecker::checkWord(const QString &word)
 {
     return d->engine->checkWord( word );
 }
 
-bool BackgroundChecker::addWord( const QString& word )
+bool BackgroundChecker::addWord(const QString &word)
 {
-    return d->engine->addWord( word );
+    return d->engine->addWord(word);
 }
 
-QStringList BackgroundChecker::suggest( const QString& word ) const
+QStringList BackgroundChecker::suggest(const QString &word) const
 {
-    return d->engine->suggest( word );
+    return d->engine->suggest(word);
 }
 
-void BackgroundChecker::changeLanguage( const QString& lang )
+void BackgroundChecker::changeLanguage(const QString &lang)
 {
-    d->engine->changeLanguage( lang );
+    d->engine->changeLanguage(lang);
 }
 
 void BackgroundChecker::continueChecking()
@@ -131,6 +140,24 @@ void BackgroundChecker::slotEngineDone()
         d->engine->setText( d->currentText );
         d->engine->start();
     }
+}
+
+QString BackgroundChecker::text() const
+{
+    return d->engine->filter()->buffer();
+}
+
+
+QString BackgroundChecker::currentContext() const
+{
+    return d->engine->filter()->context();
+}
+
+void Sonnet::BackgroundChecker::replace(int start, const QString &oldText,
+                                        const QString &newText)
+{
+    Word w(oldText, start);
+    d->engine->filter()->replace(w, newText);
 }
 
 #include "backgroundchecker.moc"

@@ -28,7 +28,6 @@ class QListWidgetItem;
 
 namespace Sonnet
 {
-    class Filter;
     class BackgroundChecker;
 
     /**
@@ -36,7 +35,7 @@ namespace Sonnet
      *
      * \code
      * Sonnet::Dialog = dlg=new Sonnet::Dialog(new Sonnet::BackgroundChecker(
-     *       Sonnet::Loader::openLoader(),this), this);
+     *          this), this);
      * //connect signals
      * ...
      * dlg->setBuffer( someText );
@@ -48,19 +47,18 @@ namespace Sonnet
     {
         Q_OBJECT
     public:
-        Dialog( BackgroundChecker *checker,
-                QWidget *parent );
+        Dialog(BackgroundChecker *checker,
+               QWidget *parent);
         ~Dialog();
 
         QString originalBuffer() const;
         QString buffer() const;
 
         void show();
-        void activeAutoCorrect( bool _active );
+        void activeAutoCorrect(bool _active);
 
     public Q_SLOTS:
-        void setBuffer( const QString& );
-        void setFilter( Filter* filter );
+        void setBuffer(const QString &);
 
     Q_SIGNALS:
         /**

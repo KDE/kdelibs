@@ -412,8 +412,7 @@ void KTextEdit::setReadOnly( bool readOnly )
 void KTextEdit::checkSpelling()
 {
   Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
-      new Sonnet::BackgroundChecker(
-          Sonnet::Loader::openLoader(KSharedConfig::openConfig(d->spellChechingConfigFileName)), this), 0);
+      new Sonnet::BackgroundChecker(this), 0);
   connect(spellDialog, SIGNAL(replace( const QString&, int,const QString&)),
           this, SLOT(spellCheckerCorrected( const QString&, int,const QString&)));
   connect(spellDialog, SIGNAL(misspelling( const QString&, int)),
@@ -426,7 +425,7 @@ void KTextEdit::checkSpelling()
           this, SLOT(spellCheckerCanceled()));
   connect(spellDialog, SIGNAL(stop()),
           this, SLOT(spellCheckerFinished()));
-  d->originalBuffer=toPlainText();
+  d->originalBuffer = toPlainText();
   spellDialog->setBuffer(toPlainText());
   spellDialog->show();
 }

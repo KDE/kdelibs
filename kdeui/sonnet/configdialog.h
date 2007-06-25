@@ -22,7 +22,7 @@
 #define SONNET_CONFIGDIALOG_H
 
 #include <kdialog.h>
-#include "loader.h"
+#include <kconfig.h>
 
 namespace Sonnet
 {
@@ -31,8 +31,8 @@ namespace Sonnet
     {
         Q_OBJECT
     public:
-        ConfigDialog( Loader::Ptr loader,
-                      QWidget *parent );
+        ConfigDialog(KConfig *config,
+                     QWidget *parent);
         ~ConfigDialog();
 
     protected Q_SLOTS:
@@ -40,11 +40,11 @@ namespace Sonnet
         virtual void slotApply();
 
     private:
-        void init( Loader::Ptr loader );
+        void init(KConfig *config);
     private:
         class Private;
-        Private* const d;
-        Q_DISABLE_COPY( ConfigDialog )
+        Private *const d;
+        Q_DISABLE_COPY(ConfigDialog)
     };
 }
 

@@ -26,6 +26,7 @@
 
 #include <keditlistbox.h>
 #include <kcombobox.h>
+#include <kconfig.h>
 #include <klocale.h>
 
 #include <QtGui/QCheckBox>
@@ -36,15 +37,17 @@ using namespace Sonnet;
 class ConfigWidget::Private
 {
 public:
-    Loader::Ptr loader;
+    Loader *loader;
     Ui_SonnetConfigUI ui;
     QWidget *wdg;
+    KConfig *config;
 };
 
-ConfigWidget::ConfigWidget( Loader::Ptr loader, QWidget *parent )
-    : QWidget( parent ),d(new Private)
+ConfigWidget::ConfigWidget(KConfig *config, QWidget *parent)
+    : QWidget(parent),
+      d(new Private)
 {
-    init( loader );
+    init(config);
 }
 
 ConfigWidget::~ConfigWidget()
@@ -52,9 +55,10 @@ ConfigWidget::~ConfigWidget()
     delete d;
 }
 
-void ConfigWidget::init( Loader::Ptr loader )
+void ConfigWidget::init(KConfig *config)
 {
-    d->loader = loader;
+    d->loader = Loader::openLoader();
+    d->loader->settings()->restore(config);
 
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->setMargin( 0 );
@@ -64,7 +68,7 @@ void ConfigWidget::init( Loader::Ptr loader )
     d->ui.setupUi( d->wdg );
 
     //QStringList clients = d->loader->clients();
-    d->ui.m_langCombo->insertItems( 0, d->loader->languagesName() );
+    d->ui.m_langCombo->insertItems( 0, d->loader->languageNames() );
     setCorrectLanguage( d->loader->languages() );
     //d->ui->m_clientCombo->insertStringList( clients );
     d->ui.m_skipUpperCB->setChecked( !d->loader->settings()->checkUppercase() );
@@ -81,15 +85,15 @@ void ConfigWidget::init( Loader::Ptr loader )
 
 void ConfigWidget::save()
 {
-    setFromGUI();
-    d->loader->settings()->save();
+    setFromGui();
+    d->loader->settings()->save(d->config);
 }
 
-void ConfigWidget::setFromGUI()
+void ConfigWidget::setFromGui()
 {
     d->loader->settings()->setDefaultLanguage(
         d->loader->languages()[
-            d->loader->languagesName().indexOf(
+            d->loader->languageNames().indexOf(
                 d->ui.m_langCombo->currentText() ) ] );
     d->loader->settings()->setCheckUppercase(
         !d->ui.m_skipUpperCB->isChecked() );

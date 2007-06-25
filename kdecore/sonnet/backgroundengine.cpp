@@ -32,20 +32,15 @@ BackgroundEngine::BackgroundEngine(QObject *parent)
     : QObject(parent)
 {
     m_filter = Filter::defaultFilter();
-    m_dict = 0;
 }
 
 BackgroundEngine::~BackgroundEngine()
 {
-    delete m_dict; m_dict = 0;
 }
 
-void BackgroundEngine::setLoader(const Loader::Ptr &loader)
+void BackgroundEngine::setSpeller(const Speller &speller)
 {
-    m_loader = loader;
-    delete m_dict;
-    m_dict = m_loader->createSpeller();
-    m_filter->setSettings(m_loader->settings());
+    m_dict = speller;
 }
 
 void BackgroundEngine::setText(const QString &text)
@@ -60,19 +55,12 @@ QString BackgroundEngine::text() const
 
 void BackgroundEngine::changeLanguage(const QString &lang)
 {
-    delete m_dict;
-    if (lang.isEmpty()) {
-        m_dict = 0;
-    } else {
-        m_dict = m_loader->createSpeller(lang);
-    }
+    m_dict.changeLanguage(lang);
 }
 
 QString BackgroundEngine::language() const
 {
-    if (m_dict)
-        return m_dict->language();
-    return QString();
+    return m_dict.language();
 }
 
 void BackgroundEngine::setFilter(Filter *filter)
@@ -104,7 +92,7 @@ void BackgroundEngine::checkNext()
         return;
     }
 
-    if (m_dict->isMisspelled(w.word)) {
+    if (m_dict.isMisspelled(w.word)) {
         //kDebug()<<"found misspelling "<< w.word <<endl;
         emit misspelling(w.word, w.start);
         //wait for the handler. the parent will decide itself when to continue
@@ -114,17 +102,17 @@ void BackgroundEngine::checkNext()
 
 bool BackgroundEngine::checkWord(const QString &word)
 {
-    return m_dict->isCorrect(word);
+    return m_dict.isCorrect(word);
 }
 
 bool BackgroundEngine::addWord(const QString &word)
 {
-    return m_dict->addToPersonal(word);
+    return m_dict.addToPersonal(word);
 }
 
 QStringList BackgroundEngine::suggest(const QString &word)
 {
-    return m_dict->suggest(word);
+    return m_dict.suggest(word);
 }
 
 #include "backgroundengine_p.moc"

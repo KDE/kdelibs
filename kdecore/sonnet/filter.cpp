@@ -24,13 +24,15 @@
 
 #include "settings.h"
 
+#include <kglobal.h>
 #include <kdebug.h>
 
 namespace Sonnet
 {
 
 static Word endWord;
-K_GLOBAL_STATIC(Filter, defFilter)
+
+K_GLOBAL_STATIC(Filter, s_defFilter)
 
 class Filter::Private
 {
@@ -43,7 +45,7 @@ public:
 
 Filter* Filter::defaultFilter()
 {
-    return defFilter;
+    return s_defFilter;
 }
 
 Word Filter::end()

@@ -22,8 +22,9 @@
 
 #include "highlighter.h"
 #include "highlighter.moc"
+#include "speller.h"
 #include "loader.h"
-#include "spellerplugin_p.h"
+#include "filter.h"
 #include "settings.h"
 
 #include <kconfig.h>
@@ -45,9 +46,9 @@ class Highlighter::Private
 {
 public:
     Filter     *filter;
-    Loader::Ptr loader;
-    SpellerPlugin *dict;
-    QHash<QString, SpellerPlugin*>dictCache;
+    Loader     *loader;
+    Speller    *dict;
+    QHash<QString, Speller*> dictCache;
     QTextEdit *edit;
     bool active;
     bool automatic;
@@ -61,12 +62,13 @@ public:
     QColor spellColor;
 };
 
-Highlighter::Highlighter( QTextEdit *textEdit,
-                          const QString& configFile,
-                          Filter *filter, const QColor& _col)
-    : QSyntaxHighlighter( textEdit ),d(new Private)
+Highlighter::Highlighter(QTextEdit *textEdit,
+                         const QString& configFile,
+                         const QColor& _col)
+    : QSyntaxHighlighter(textEdit),
+      d(new Private)
 {
-    d->filter = filter;
+    d->filter = Filter::defaultFilter();
     d->edit = textEdit;
     d->active = true;
     d->automatic = true;
@@ -80,39 +82,34 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     textEdit->installEventFilter( this );
     textEdit->viewport()->installEventFilter( this );
 
-    if ( !configFile.isEmpty() )
-        d->loader = Loader::openLoader( KSharedConfig::openConfig( configFile ) );
-    else
-        d->loader = Loader::openLoader();
-
-    d->filter->setSettings( d->loader->settings() );
-    d->dict   = d->loader->createSpeller();
-    if(!d->dict)
-    {
+    d->loader = Loader::openLoader();
+    KConfig conf(configFile);
+    d->loader->settings()->restore(&conf);
+    d->filter->setSettings(d->loader->settings());
+    d->dict   = new Sonnet::Speller();
+    if(d->dict->isValid()) {
 	d->spellCheckerFound = false;
 	KMessageBox::error(textEdit, i18n("Sorry any dict was found. Please reconfigure it"));
-    }
-    else
-    {
-    d->dictCache.insert( d->loader->settings()->defaultLanguage(),
-                         d->dict );
+    } else {
+        d->dictCache.insert(d->dict->language(),
+                            d->dict);
 
-    d->disablePercentage = d->loader->settings()->disablePercentageWordError();
+        d->disablePercentage = d->loader->settings()->disablePercentageWordError();
 
-    d->disableWordCount = d->loader->settings()->disableWordErrorCount();
+        d->disableWordCount = d->loader->settings()->disableWordErrorCount();
 
-    //Add kde personal word
-    const QStringList l = Highlighter::personalWords();
-    for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
-        d->dict->addToSession( *it );
-    }
-    d->rehighlightRequest = new QTimer(this);
-    connect( d->rehighlightRequest, SIGNAL( timeout() ),
-	     this, SLOT( slotRehighlight() ));
-    d->completeRehighlightRequired = true;
-    d->rehighlightRequest->setInterval(0);
-    d->rehighlightRequest->setSingleShot(true);
-    d->rehighlightRequest->start();
+        //Add kde personal word
+        const QStringList l = Highlighter::personalWords();
+        for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
+            d->dict->addToSession( *it );
+        }
+        d->rehighlightRequest = new QTimer(this);
+        connect( d->rehighlightRequest, SIGNAL( timeout() ),
+                 this, SLOT( slotRehighlight() ));
+        d->completeRehighlightRequired = true;
+        d->rehighlightRequest->setInterval(0);
+        d->rehighlightRequest->setSingleShot(true);
+        d->rehighlightRequest->start();
     }
 }
 
@@ -130,7 +127,7 @@ void Highlighter::slotRehighlight()
 {
     kDebug(0) << "Highlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
-    rehighlight();
+        rehighlight();
 
     } else {
 	//rehighlight the current para only (undo/redo safe)
@@ -259,17 +256,6 @@ void Highlighter::highlightBlock ( const QString & text )
     setCurrentBlockState(0);
 }
 
-Filter *Highlighter::currentFilter() const
-{
-    return d->filter;
-}
-
-void Highlighter::setCurrentFilter(Filter *filter)
-{
-    d->filter = filter;
-    d->filter->setSettings(d->loader->settings());
-}
-
 QString Highlighter::currentLanguage() const
 {
     return d->dict->language();
@@ -278,14 +264,14 @@ QString Highlighter::currentLanguage() const
 void Highlighter::setCurrentLanguage(const QString &lang)
 {
     if (!d->dictCache.contains(lang)) {
-        SpellerPlugin *dict = d->loader->createSpeller(lang);
-        if ( dict ) {
-            d->dictCache.insert(lang, dict);
+        d->dict->changeLanguage(lang);
+        if (d->dict->isValid()) {
+            d->dictCache.insert(lang, d->dict);
         } else {
             kDebug()<<"No dictionary for \""
-                     <<lang
-                     <<"\" staying with the current language."
-                     <<endl;
+                    <<lang
+                    <<"\" staying with the current language."
+                    <<endl;
             return;
         }
     }
@@ -368,7 +354,7 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
     }
 
     else if ( o == d->edit->viewport() &&
-	 ( e->type() == QEvent::MouseButtonPress )) {
+              ( e->type() == QEvent::MouseButtonPress )) {
 	//d->autoReady = true;
 	if ( intraWordEditing() ) {
 	    setIntraWordEditing( false );
@@ -383,15 +369,15 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 
 
 /*
-void Highlighter::checkWords()
-{
-    Word w = d->filter->nextWord();
-    if ( !w.end ) {
-        if ( !d->dict->check( w.word ) ) {
-            setFormat( w.start, w.word.length(),
-                       Qt::red );
-        }
-    }
-}*/
+  void Highlighter::checkWords()
+  {
+  Word w = d->filter->nextWord();
+  if ( !w.end ) {
+  if ( !d->dict->check( w.word ) ) {
+  setFormat( w.start, w.word.length(),
+  Qt::red );
+  }
+  }
+  }*/
 
 }

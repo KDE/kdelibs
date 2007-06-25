@@ -74,7 +74,7 @@ namespace Sonnet
         /**
          * Sets the Settings object for this Filter
          */
-        void setSettings( Settings* );
+        void setSettings(Settings*);
 
         /**
          * Returns currently used Settings object

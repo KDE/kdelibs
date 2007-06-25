@@ -19,9 +19,10 @@
  * 02110-1301  USA
  */
 #include "configdialog.h"
-#include "loader.h"
+#include "speller.h"
 
 #include <kapplication.h>
+#include <kconfig.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 using namespace Sonnet;
@@ -32,8 +33,8 @@ int main( int argc, char** argv )
     KCmdLineArgs::init( argc, argv, "test_configdialog", 0, 0, 0, 0 );
     KApplication app; // with GUI
 
-    Loader::Ptr loader = Loader::openLoader();
-    ConfigDialog *dialog = new ConfigDialog(loader, 0);
+    KConfig config("sonnetrc");
+    ConfigDialog *dialog = new ConfigDialog(&config, 0);
 
     dialog->show();
 

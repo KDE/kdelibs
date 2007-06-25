@@ -23,7 +23,8 @@
 
 #include <QtGui/QWidget>
 #include <kdeui_export.h>
-#include "loader.h"
+
+class KConfig;
 
 namespace Sonnet
 {
@@ -32,7 +33,7 @@ namespace Sonnet
     {
         Q_OBJECT
     public:
-        ConfigWidget( Loader::Ptr loader, QWidget *parent );
+        ConfigWidget(KConfig *config, QWidget *parent);
         ~ConfigWidget();
 
         bool backgroundCheckingButtonShown() const;
@@ -45,8 +46,8 @@ namespace Sonnet
         void slotChanged();
 
     private:
-        void init( Loader::Ptr loader );
-        void setFromGUI();
+        void init(KConfig *config);
+        void setFromGui();
         void setCorrectLanguage( const QStringList& langs );
 
     private:

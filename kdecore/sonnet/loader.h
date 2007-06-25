@@ -28,7 +28,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QString>
-#include <ksharedconfig.h>
 
 class KService;
 namespace Sonnet
@@ -43,12 +42,10 @@ namespace Sonnet
      * Sonnet class, you can think of it as the kernel or manager
      * of the Sonnet architecture.
      */
-    class KDECORE_EXPORT Loader : public QObject,
-                                  public KShared
+    class KDECORE_EXPORT Loader : public QObject
     {
         Q_OBJECT
     public:
-        typedef KSharedPtr<Loader> Ptr;
         /**
          * Constructs the loader.
          *
@@ -62,10 +59,10 @@ namespace Sonnet
          *        and default client values. If no value will
          *        be passed Loader will use global sonnetrc file.
          */
-        static Loader::Ptr openLoader(
-            KSharedConfig::Ptr config = KSharedConfig::Ptr());
+        static Loader *openLoader();
 
     public:
+        Loader();
         ~Loader();
 
         /**
@@ -99,7 +96,7 @@ namespace Sonnet
         /**
          * Returns a localized list of names of supported languages.
          */
-        QStringList languagesName() const;
+        QStringList languageNames() const;
 
         /**
          * Returns the Settings object used by the loader.
@@ -116,12 +113,11 @@ namespace Sonnet
         friend class Settings;
         void changed();
     private:
-        Loader(KSharedConfig::Ptr config);
         void loadPlugins();
         void loadPlugin(const KSharedPtr<KService>&);
     private:
         class Private;
-        Private* const d;
+        Private *const d;
     };
 }
 

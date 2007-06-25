@@ -22,7 +22,7 @@
 #include "ui_sonnetui.h"
 
 #include "backgroundchecker.h"
-#include "loader.h"
+#include "speller.h"
 #include "filter.h"
 #include "settings.h"
 
@@ -118,14 +118,15 @@ void Dialog::initConnections()
 
 void Dialog::initGui()
 {
-    d->wdg = new QWidget( this );
-    d->ui.setupUi( d->wdg );
+    d->wdg = new QWidget(this);
+    d->ui.setupUi(d->wdg);
 
     //d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui.m_language->clear();
-    d->ui.m_language->insertItems( 0, d->checker->loader()->languagesName() );
-    d->ui.m_language->setCurrentIndex( d->checker->loader()->languages().indexOf(
-                                 d->checker->loader()->settings()->defaultLanguage() ) );
+    Speller speller = d->checker->speller();
+    d->ui.m_language->insertItems(0, speller.availableLanguageNames());
+    d->ui.m_language->setCurrentIndex(speller.availableLanguages().indexOf(
+                                          speller.language()));
 }
 
 void Dialog::activeAutoCorrect( bool _active )
@@ -148,7 +149,7 @@ void Dialog::slotFinished()
     kDebug()<<"void Dialog::slotFinished() \n";
     emit stop();
     //FIXME: should we emit done here?
-    emit done( d->checker->filter()->buffer() );
+    emit done(d->checker->text());
     accept();
 }
 
@@ -166,7 +167,7 @@ QString Dialog::originalBuffer() const
 
 QString Dialog::buffer() const
 {
-    return d->checker->filter()->buffer();
+    return d->checker->text();
 }
 
 void Dialog::setBuffer( const QString& buf )
@@ -174,16 +175,11 @@ void Dialog::setBuffer( const QString& buf )
     d->originalBuffer = buf;
 }
 
-void Dialog::setFilter( Filter *filter )
-{
-    filter->setBuffer( d->checker->filter()->buffer() );
-    d->checker->setFilter( filter );
-}
 
 void Dialog::updateDialog( const QString& word )
 {
     d->ui.m_unknownWord->setText( word );
-    d->ui.m_contextLabel->setText( d->checker->filter()->context() );
+    d->ui.m_contextLabel->setText( d->checker->currentContext() );
     QStringList suggs = d->checker->suggest( word );
     d->ui.m_replacement->setText( suggs.first() );
     fillSuggestions( suggs );
@@ -208,7 +204,9 @@ void Dialog::slotReplaceWord()
 {
     emit replace( d->currentWord.word, d->currentWord.start,
                   d->ui.m_replacement->text() );
-    d->checker->filter()->replace( d->currentWord, d->ui.m_replacement->text() );
+    d->checker->replace(d->currentWord.start,
+                        d->currentWord.word,
+                        d->ui.m_replacement->text());
     d->checker->continueChecking();
 }
 
@@ -227,7 +225,9 @@ void Dialog::slotSkip()
 void Dialog::slotSkipAll()
 {
     //### do we want that or should we have a d->ignoreAll list?
-    d->checker->loader()->settings()->addWordToIgnore( d->ui.m_replacement->text() );
+    Speller speller = d->checker->speller();
+    speller.addToPersonal(d->ui.m_replacement->text());
+    d->checker->setSpeller(speller);
     d->checker->continueChecking();
 }
 
@@ -239,9 +239,10 @@ void Dialog::slotSuggest()
 
 void Dialog::slotChangeLanguage( const QString& lang )
 {
+    Speller speller = d->checker->speller();
     d->checker->changeLanguage(
-        d->checker->loader()->languages()[
-            d->checker->loader()->languagesName().indexOf( lang ) ] );
+        speller.availableLanguages()[
+            speller.availableLanguageNames().indexOf(lang)]);
     slotSuggest();
 }
 
@@ -258,7 +259,7 @@ void Dialog::fillSuggestions( const QStringList& suggs )
     }
 }
 
-void Dialog::slotMisspelling(const QString& word, int start )
+void Dialog::slotMisspelling(const QString& word, int start)
 {
     kDebug()<<"Dialog misspelling!!"<<endl;
     d->currentWord = Word( word, start );
@@ -275,7 +276,7 @@ void Dialog::slotDone()
 {
     kDebug()<<"Dialog done!"<<endl;
     QString buffer(d->originalBuffer);
-    emit done( d->checker->filter()->buffer() );
+    emit done( d->checker->text() );
     if (buffer==d->originalBuffer)
         accept();
     else

@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <kservicetypetrader.h>
 
-#include <ksharedconfig.h>
+#include <kconfig.h>
 #include <kdebug.h>
 
 #include <QtCore/QHash>
@@ -50,37 +50,29 @@ public:
     QStringList languagesNameCache;
 };
 
-typedef QHash<KSharedConfig*, Loader*> LoaderConfigHash;
-K_GLOBAL_STATIC(LoaderConfigHash, s_loaders)
+K_GLOBAL_STATIC(Loader, s_loader)
 
-Loader::Ptr Loader::openLoader(KSharedConfig::Ptr config)
+Loader *Loader::openLoader()
 {
-    if (!config)
-        config = KSharedConfig::openConfig(DEFAULT_CONFIG_FILE);
-
-    if (s_loaders) {
-        Loader *loader = s_loaders->value(config.data());
-        if (loader)
-            return Ptr(loader);
+    if (s_loader.isDestroyed()) {
+        return 0;
     }
 
-    Loader *loader = new Loader(config);
-    return Ptr(loader);
+    return s_loader;
 }
 
-Loader::Loader(KSharedConfig::Ptr config)
+Loader::Loader()
     :d(new Private)
 {
-    s_loaders->insert(config.data(), this);
-
-    d->settings = new Settings(this, config);
+    d->settings = new Settings(this);
+    KConfig config(DEFAULT_CONFIG_FILE);
+    d->settings->restore(&config);
     loadPlugins();
 }
 
 Loader::~Loader()
 {
     kDebug()<<"Removing loader : "<< this << endl;
-    s_loaders->remove(d->settings->sharedConfig());
     d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;
@@ -139,7 +131,7 @@ QStringList Loader::languages() const
     return d->languageClients.keys();
 }
 
-QStringList Loader::languagesName() const
+QStringList Loader::languageNames() const
 {
     /* For whatever reason languages() might change. So,
      * to be in sync with it let's do the following check.

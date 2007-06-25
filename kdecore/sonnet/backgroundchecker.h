@@ -21,13 +21,15 @@
 #ifndef SONNET_BACKGROUNDCHECKER_H
 #define SONNET_BACKGROUNDCHECKER_H
 
-#include "loader.h"
+#include "speller.h"
 
-class QCustomEvent;
+#include <kdecore_export.h>
+
+#include <QtCore/QObject>
 
 namespace Sonnet
 {
-    class Filter;
+    class Speller;
 
     /**
      *
@@ -50,7 +52,8 @@ namespace Sonnet
     {
         Q_OBJECT
     public:
-        explicit BackgroundChecker( const Loader::Ptr& loader, QObject *parent =0 );
+        explicit BackgroundChecker(QObject *parent =0);
+        explicit BackgroundChecker(const Speller &speller, QObject *parent =0);
         ~BackgroundChecker();
 
         /**
@@ -59,20 +62,23 @@ namespace Sonnet
          *
          * Use getMoreText() with start() to spell check a stream.
          */
-        void checkText( const QString& );
+        void checkText(const QString &text);
 
-        Filter *filter() const;
+        QString text() const;
+        QString currentContext() const;
 
-        Loader *loader() const;
+        Speller speller() const;
+        void setSpeller(const Speller &speller);
         void changeLanguage( const QString& lang );
 
         bool checkWord( const QString& word );
         QStringList suggest( const QString& ) const;
         bool addWord( const QString& word );
     public Q_SLOTS:
-        virtual void setFilter( Sonnet::Filter *filter );
         virtual void start();
         virtual void stop();
+        virtual void replace(int start, const QString &oldText,
+                             const QString &newText);
 
         /**
          * After emitting misspelling signal the background
@@ -85,7 +91,7 @@ namespace Sonnet
         /**
          * Emitted whenever a misspelled word is found
          */
-        void misspelling( const QString& word, int start );
+        void misspelling(const QString &word, int start);
 
         /**
          * Emitted after the whole text has been spell checked.
@@ -115,7 +121,7 @@ namespace Sonnet
         //void customEvent( QCustomEvent *event );
     private:
         class Private;
-        Private* const d;
+        Private *const d;
     };
 
 }

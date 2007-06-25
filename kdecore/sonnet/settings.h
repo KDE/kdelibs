@@ -25,7 +25,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 #include <kdecore_export.h>
-#include <ksharedconfig.h>
+
+class KConfig;
 
 namespace Sonnet
 {
@@ -36,45 +37,45 @@ namespace Sonnet
     public:
         ~Settings();
 
-        void setDefaultLanguage( const QString& lang );
+        bool modified() const;
+        void setModified(bool modified);
+
+        void setDefaultLanguage(const QString &lang);
         QString defaultLanguage() const;
 
-        void setDefaultClient( const QString& client );
+        void setDefaultClient(const QString &client);
         QString defaultClient() const;
 
-        void setCheckUppercase( bool );
+        void setCheckUppercase(bool);
         bool checkUppercase() const;
 
-        void setSkipRunTogether( bool );
+        void setSkipRunTogether(bool);
         bool skipRunTogether() const;
 
-        void setBackgroundCheckerEnabled( bool );
+        void setBackgroundCheckerEnabled(bool);
         bool backgroundCheckerEnabled() const;
 
-        void setCurrentIgnoreList( const QStringList& ignores );
-        void addWordToIgnore( const QString& word );
+        void setCurrentIgnoreList(const QStringList &ignores);
+        void addWordToIgnore(const QString &word);
         QStringList currentIgnoreList() const;
-        bool ignore( const QString& word );
+        bool ignore(const QString &word);
 
-        void save();
-
-        KSharedConfig *sharedConfig() const;
+        void save(KConfig *config);
+        void restore(KConfig *config);
 
         int disablePercentageWordError() const;
         int disableWordErrorCount() const;
 
-
     private:
-        void loadConfig();
-        void readIgnoreList();
-        void setQuietIgnoreList( const QStringList& ignores );
+        void readIgnoreList(KConfig *config);
+        void setQuietIgnoreList(const QStringList &ignores);
 
     private:
         friend class Loader;
-        Settings( Loader *loader, KSharedConfig::Ptr config );
+        Settings(Loader *loader);
     private:
         class Private;
-        Private* const d;
+        Private *const d;
     };
 }
 

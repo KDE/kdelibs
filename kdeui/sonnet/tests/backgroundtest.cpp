@@ -21,7 +21,7 @@
 #include "backgroundtest.h"
 #include "backgroundtest.moc"
 
-#include "loader.h"
+#include "speller.h"
 using namespace Sonnet;
 
 #include <kapplication.h>
@@ -133,11 +133,11 @@ If you want to talk about this code feel free to mail us.";
 BackgroundTest::BackgroundTest()
     : QObject( 0 )
 {
-    m_checker = new BackgroundChecker( Loader::openLoader(), this );
-    connect( m_checker, SIGNAL(done()),
-             SLOT(slotDone()) );
-    connect( m_checker, SIGNAL(misspelling(const QString&, int)),
-             SLOT(slotMisspelling(const QString&, int)) );
+    m_checker = new BackgroundChecker(this);
+    connect(m_checker, SIGNAL(done()),
+            SLOT(slotDone()));
+    connect(m_checker, SIGNAL(misspelling(const QString&, int)),
+            SLOT(slotMisspelling(const QString&, int)));
     m_len = strlen( text );
     m_checker->checkText( text );
     m_timer.start();

@@ -17,8 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "spellerplugin_p.h"
-#include "loader.h"
+#include "speller.h"
 #include "test_core.h"
 
 #include <qtest_kde.h>
@@ -31,12 +30,10 @@ using namespace Sonnet;
 
 void SonnetCoreTest::testCore()
 {
-    Loader::Ptr loader = Loader::openLoader();
+    Speller dict("en_US");
 
-    kDebug()<< "Clients are "   << loader->clients()   << endl;
-    kDebug()<< "Languages are " << loader->languages() << endl;
-
-    SpellerPlugin *dict = loader->createSpeller("en_US");
+    kDebug()<< "Clients are "   << dict.availableBackends()   << endl;
+    kDebug()<< "Languages are " << dict.availableLanguages() << endl;
 
     QStringList words;
 
@@ -85,16 +82,14 @@ void SonnetCoreTest::testCore()
     mtime.start();
     for (QStringList::Iterator itr = words.begin();
          itr != words.end(); ++itr) {
-        if (dict && !dict->isCorrect(*itr)) {
+        if (!dict.isCorrect(*itr)) {
             //kDebug()<<"Word " << *itr <<" is misspelled"<<endl;
-            QStringList sug = dict->suggest(*itr);
+            QStringList sug = dict.suggest(*itr);
             //kDebug()<<"Suggestions : "<<sug<<endl;
         }
     }
     //mtime.stop();
     kDebug()<<"Elapsed time is "<<mtime.elapsed()<<endl;
-
-    delete dict;
 }
 
 #include "test_core.moc"

@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "loader.h"
-#include "spellerplugin_p.h"
+#include "speller.h"
 
 #include <QCoreApplication>
 #include <kdebug.h>
@@ -32,12 +31,10 @@ int main( int argc, char** argv )
 {
     QCoreApplication app(argc,argv);
 
-    Loader::Ptr loader = Loader::openLoader();
+    Speller dict("en_US");
 
-    kDebug()<< "Clients are "   << loader->clients()   << endl;
-    kDebug()<< "Languages are " << loader->languages() << endl;
-
-    SpellerPlugin *dict = loader->createSpeller("en_US");
+    kDebug()<< "Clients are "   << dict.availableBackends()   << endl;
+    kDebug()<< "Languages are " << dict.availableLanguages() << endl;
 
     QStringList words;
 
@@ -86,16 +83,14 @@ int main( int argc, char** argv )
     mtime.start();
     for (QStringList::Iterator itr = words.begin();
          itr != words.end(); ++itr) {
-        if (dict && !dict->isCorrect(*itr)) {
+        if (!dict.isCorrect(*itr)) {
             //kDebug()<<"Word " << *itr <<" is misspelled"<<endl;
-            QStringList sug = dict->suggest(*itr);
+            QStringList sug = dict.suggest(*itr);
             //kDebug()<<"Suggestions : "<<sug<<endl;
         }
     }
     //mtime.stop();
     kDebug()<<"Elapsed time is "<<mtime.elapsed()<<endl;
-
-    delete dict;
 
     return 0;
 }

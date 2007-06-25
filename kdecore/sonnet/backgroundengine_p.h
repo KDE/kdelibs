@@ -21,6 +21,7 @@
 #ifndef SONNET_BACKGROUNDENGINE_H
 #define SONNET_BACKGROUNDENGINE_H
 
+#include "speller.h"
 #include "loader.h"
 
 #include <QtCore/QObject>
@@ -38,8 +39,8 @@ namespace Sonnet
         explicit BackgroundEngine(QObject *parent);
         ~BackgroundEngine();
 
-        void setLoader(const Loader::Ptr &loader);
-        Loader *loader() { return m_loader.data(); }
+        void setSpeller(const Speller &speller);
+        Speller speller() const { return m_dict; }
 
         void setText(const QString &);
         QString text() const;
@@ -73,8 +74,7 @@ namespace Sonnet
         void checkNext();
     private:
         Filter            *m_filter;
-        Loader::Ptr        m_loader;
-        SpellerPlugin     *m_dict;
+        Speller            m_dict;
     };
 }
 

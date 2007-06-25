@@ -21,12 +21,11 @@
 #ifndef SONNET_HIGHLIGHTER_H
 #define SONNET_HIGHLIGHTER_H
 
-#include "filter.h"
-
 #include <QtGui/QSyntaxHighlighter>
 #include <QtCore/QStringList>
 #include <kdemacros.h>
 #include <kdeui_export.h>
+
 class QTextEdit;
 
 namespace Sonnet
@@ -37,19 +36,15 @@ namespace Sonnet
     public:
         Highlighter(QTextEdit *textEdit,
                     const QString &configFile = QString(),
-                    Filter *filter = Filter::defaultFilter(),
                     const QColor &col=QColor());
         ~Highlighter();
 
 	bool spellCheckerFound() const;
 
-	virtual void highlightBlock (const QString &text);
-
-        Filter *currentFilter() const;
-        void setCurrentFilter( Filter *filter );
+	virtual void highlightBlock(const QString &text);
 
         QString currentLanguage() const;
-        void setCurrentLanguage( const QString& lang );
+        void setCurrentLanguage(const QString &lang);
 
 	static QStringList personalWords();
 
@@ -95,10 +90,9 @@ namespace Sonnet
 	 *
 	 * @param originalWord missspelled word
 	 *
-	 * @param suggestions list of word which can replace missspelled word 
+	 * @param suggestions list of word which can replace missspelled word
 	 */
-
-	void newSuggestions(const QString& originalWord, const QStringList& suggestions);
+	void newSuggestions(const QString &originalWord, const QStringList &suggestions);
 
     protected:
         virtual void setMisspelled(int start, int count);
