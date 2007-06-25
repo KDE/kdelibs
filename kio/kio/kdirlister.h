@@ -33,6 +33,8 @@ class KJob;
 namespace KIO { class Job; class ListJob; }
 
 /**
+ * @short Helper class for the kiojob used to list and update a directory.
+ *
  * The dir lister deals with the kiojob used to list and update a directory
  * and has signals for the user of this class (e.g. konqueror view or
  * kdesktop) to create/destroy its items when asked.
@@ -50,7 +52,6 @@ namespace KIO { class Job; class ListJob; }
  * Advanced usage : call openUrl with _keep = true to list directories
  * without forgetting the ones previously read (e.g. for a tree view)
  *
- * @short Helper class for the kiojob used to list and update a directory.
  * @author Michael Brade <brade@kde.org>
  */
 class KIO_EXPORT KDirLister : public QObject

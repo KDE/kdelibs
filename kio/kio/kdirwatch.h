@@ -30,6 +30,8 @@
 class KDirWatchPrivate;
 
  /**
+  * @short Class for watching directory and file changes.
+  *
   * Watch directories and files for changes.
   * The watched directories or files don't have to exist yet.
   *
@@ -58,7 +60,6 @@ class KDirWatchPrivate;
   * directories.
   *
   * @see self()
-  * @short Class for watching directory and file changes.
   * @author Sven Radej <sven@lisa.exp.univie.ac.at>
   */
 class KIO_EXPORT KDirWatch : public QObject

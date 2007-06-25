@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
  *
  * Copyright (C) 2000 Waldo Bastian <bastian@kde.org>
+ * Copyright (C) 2007 Nick Shaforostoff <shafff@ukr.net>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,9 +21,11 @@
 
 #include "khtml_pagecache.h"
 
-#include <ktemporaryfile.h>
+#include <kfilterdev.h>
+#include <QTemporaryFile>
 #include <kstandarddirs.h>
 
+#include <QQueue>
 #include <Qt3Support/Q3IntDict>
 #include <Qt3Support/Q3PtrList>
 #include <QtCore/QTimer>
@@ -47,18 +50,18 @@ public:
   ~KHTMLPageCacheEntry();
 
   void addData(const QByteArray &data);
-
   void endData();
 
-  bool isComplete()
-   { return m_complete; }
+  bool isComplete() {return m_complete;}
+  QString fileName() {return m_fileName;}
 
   KHTMLPageCacheDelivery *fetchData(QObject *recvObj, const char *recvSlot);
 private:
   long m_id;
   bool m_complete;
-  QList<QByteArray> m_data;
-  KTemporaryFile *m_file;
+  QByteArray m_buffer;
+  QIODevice* m_file;
+  QString m_fileName;
 };
 
 class KHTMLPageCachePrivate
@@ -67,39 +70,45 @@ public:
   long newId;
   Q3IntDict<KHTMLPageCacheEntry> dict;
   Q3PtrList<KHTMLPageCacheDelivery> delivery;
-  Q3PtrList<KHTMLPageCacheEntry> expireQueue;
+  QQueue<long> expireQueue;
   bool deliveryActive;
 };
 
-KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id) : m_id(id), m_complete(false)
+KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id)
+    : m_id(id)
+    , m_complete(false)
 {
-  m_file = new KTemporaryFile();
-  m_file->setPrefix("khtmlcache");
-  m_file->open();
+  //get tmp file name
+  QTemporaryFile* f=new QTemporaryFile(KStandardDirs::locateLocal("tmp", "")+"khtmlcacheXXXXXX.tmp");
+  f->open();
+  m_fileName=f->fileName();
+  f->setAutoRemove(false);
+  delete f;
+
+  m_file = KFilterDev::deviceForFile(m_fileName, "application/x-gzip"/*,false*/);
+  m_file->open(QIODevice::WriteOnly);
 }
 
 KHTMLPageCacheEntry::~KHTMLPageCacheEntry()
 {
   delete m_file;
+  QFile::remove(m_fileName);
 }
 
 
 void
 KHTMLPageCacheEntry::addData(const QByteArray &data)
 {
-  if (m_file->error() == QFile::NoError) {
-    m_file->write(data.data(), data.size());
-  }
+    m_buffer+=data;
 }
 
 void
 KHTMLPageCacheEntry::endData()
 {
   m_complete = true;
-  if (m_file->error() == QFile::NoError) {
-    m_file->flush();
-    m_file->seek(0);
-  }
+ m_file->write(m_buffer);
+ m_buffer.clear();
+ m_file->close();
 }
 
 
@@ -107,9 +116,11 @@ KHTMLPageCacheDelivery *
 KHTMLPageCacheEntry::fetchData(QObject *recvObj, const char *recvSlot)
 {
   // Duplicate fd so that entry can be safely deleted while delivering the data.
-  int fd = dup(m_file->handle());
-  lseek(fd, 0, SEEK_SET);
-  KHTMLPageCacheDelivery *delivery = new KHTMLPageCacheDelivery(fd);
+  KHTMLPageCacheDelivery *delivery=new KHTMLPageCacheDelivery(
+                                                              KFilterDev::deviceForFile (m_fileName, "application/x-gzip")
+                                                             );
+  delivery->file->open(QIODevice::ReadOnly);
+
   recvObj->connect(delivery, SIGNAL(emitData(const QByteArray&)), recvSlot);
   delivery->recvObj = recvObj;
   return delivery;
@@ -139,21 +150,19 @@ KHTMLPageCache::~KHTMLPageCache()
 long
 KHTMLPageCache::createCacheEntry()
 {
+
   KHTMLPageCacheEntry *entry = new KHTMLPageCacheEntry(d->newId);
   d->dict.insert(d->newId, entry);
-  d->expireQueue.append(entry);
+  d->expireQueue.append(d->newId);
   if (d->expireQueue.count() > KHTML_PAGE_CACHE_SIZE)
-  {
-     KHTMLPageCacheEntry *entry = d->expireQueue.take(0);
-     d->dict.remove(entry->m_id);
-     delete entry;
-  }
+     delete d->dict.take(d->expireQueue.dequeue());
   return (d->newId++);
 }
 
 void
 KHTMLPageCache::addData(long id, const QByteArray &data)
 {
+
   KHTMLPageCacheEntry *entry = d->dict.find(id);
   if (entry)
      entry->addData(data);
@@ -173,7 +182,7 @@ KHTMLPageCache::cancelEntry(long id)
   KHTMLPageCacheEntry *entry = d->dict.take(id);
   if (entry)
   {
-     d->expireQueue.removeRef(entry);
+     d->expireQueue.removeAll(entry->m_id);
      delete entry;
   }
 }
@@ -200,8 +209,8 @@ KHTMLPageCache::fetchData(long id, QObject *recvObj, const char *recvSlot)
   if (!entry || !entry->isComplete()) return;
 
   // Make this entry the most recent entry.
-  d->expireQueue.removeRef(entry);
-  d->expireQueue.append(entry);
+  d->expireQueue.removeAll(entry->m_id);
+  d->expireQueue.enqueue(entry->m_id);
 
   d->delivery.append( entry->fetchData(recvObj, recvSlot) );
   if (!d->deliveryActive)
@@ -236,31 +245,24 @@ KHTMLPageCache::sendData()
      d->deliveryActive = false;
      return;
   }
+
   KHTMLPageCacheDelivery *delivery = d->delivery.take(0);
   assert(delivery);
 
-  char buf[8192];
-  QByteArray byteArray;
+  QByteArray byteArray(delivery->file->read(64*1024));
+  delivery->emitData(byteArray);
 
-  int n = read(delivery->fd, buf, 8192);
-
-  if ((n < 0) && (errno == EINTR))
+  //put back in queue
+  if (delivery->file->atEnd())
   {
-     // try again later
-     d->delivery.append( delivery );
-  }
-  else if (n <= 0)
-  {
-     // done.
-     delivery->emitData(byteArray); // Empty array
-     delete delivery;
+    // done.
+    delivery->file->close();
+    delivery->emitData(QByteArray()); // Empty array
+    delete delivery;
   }
   else
-  {
-     byteArray = QByteArray(buf, n);
-     delivery->emitData(byteArray);
-     d->delivery.append( delivery );
-  }
+    d->delivery.append( delivery );
+
   QTimer::singleShot(0, this, SLOT(sendData()));
 }
 
@@ -270,40 +272,27 @@ KHTMLPageCache::saveData(long id, QDataStream *str)
   KHTMLPageCacheEntry *entry = d->dict.find(id);
   assert(entry);
 
-  int fd = entry->m_file->handle();
-  if ( fd < 0 ) return;
-
-  off_t pos = lseek(fd, 0, SEEK_CUR);
-  lseek(fd, 0, SEEK_SET);
-
-  char buf[8192];
-
-  while(true)
+  if (!entry->isComplete())
   {
-     int n = read(fd, buf, 8192);
-     if ((n < 0) && (errno == EINTR))
-     {
-        // try again
-        continue;
-     }
-     else if (n <= 0)
-     {
-        // done.
-        break;
-     }
-     else
-     {
-        str->writeRawData(buf, n);
-     }
+      QTimer::singleShot(20, this, SLOT(saveData()));
+      return;
   }
 
-  if (pos != (off_t)-1)
-    lseek(fd, pos, SEEK_SET);
+  QIODevice* file = KFilterDev::deviceForFile (entry->fileName(), "application/x-gzip");
+  if (!file->open(QIODevice::ReadOnly))
+    return;
+
+  QByteArray byteArray(file->readAll());
+  file->close();
+
+  str->writeRawData(byteArray.constData(), byteArray.length());
+
 }
 
 KHTMLPageCacheDelivery::~KHTMLPageCacheDelivery()
 {
-  close(fd);
+  file->close();
+  delete file;
 }
 
 #include "khtml_pagecache.moc"

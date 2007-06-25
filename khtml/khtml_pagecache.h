@@ -94,6 +94,7 @@ public:
    */
   void cancelFetch(QObject *recvObj);
 
+public Q_SLOTS:
   /**
    * Save the data of cache entry @p id to the datastream @p str
    */
@@ -102,19 +103,19 @@ public:
 private Q_SLOTS:
   void sendData();
 
-private:  
+private:
   KHTMLPageCache();
 
   KHTMLPageCachePrivate* const d;
 };
 
+class QIODevice;
 class KHTMLPageCacheDelivery : public QObject
 {
    friend class KHTMLPageCache;
 Q_OBJECT
 public:
-   KHTMLPageCacheDelivery(int _fd)
-    : fd(_fd) { }
+   KHTMLPageCacheDelivery(QIODevice *_file): file(_file) {}
    ~KHTMLPageCacheDelivery();
 
 Q_SIGNALS:
@@ -122,7 +123,7 @@ Q_SIGNALS:
 
 public: 
    QObject *recvObj;
-   int fd;      
+   QIODevice *file;
 };
 
 
