@@ -46,8 +46,8 @@ class Highlighter::Private
 public:
     Filter     *filter;
     Loader::Ptr loader;
-    Speller *dict;
-    QHash<QString, Speller*>dictCache;
+    SpellerPlugin *dict;
+    QHash<QString, SpellerPlugin*>dictCache;
     QTextEdit *edit;
     bool active;
     bool automatic;
@@ -278,7 +278,7 @@ QString Highlighter::currentLanguage() const
 void Highlighter::setCurrentLanguage(const QString &lang)
 {
     if (!d->dictCache.contains(lang)) {
-        Speller *dict = d->loader->createSpeller(lang);
+        SpellerPlugin *dict = d->loader->createSpeller(lang);
         if ( dict ) {
             d->dictCache.insert(lang, dict);
         } else {

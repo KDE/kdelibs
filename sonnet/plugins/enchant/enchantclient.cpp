@@ -58,7 +58,8 @@ QSpellEnchantClient::~QSpellEnchantClient()
     enchant_broker_free(m_broker);
 }
 
-Speller *QSpellEnchantClient::createSpeller(const QString &language)
+SpellerPlugin *QSpellEnchantClient::createSpeller(
+    const QString &language)
 {
     EnchantDict *dict = enchant_broker_request_dict(m_broker,
                                                     language.toUtf8());

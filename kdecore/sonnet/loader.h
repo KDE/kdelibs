@@ -34,7 +34,7 @@ class KService;
 namespace Sonnet
 {
     class Settings;
-    class Speller;
+    class SpellerPlugin;
 
     /**
      * @short Class used to deal with dictionaries
@@ -82,7 +82,7 @@ namespace Sonnet
          *               reliability value is returned.
          *
          */
-        Speller *createSpeller(
+        SpellerPlugin *createSpeller(
             const QString& language = QString(),
             const QString& client = QString()) const;
 

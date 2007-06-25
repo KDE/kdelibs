@@ -27,7 +27,7 @@ using namespace Sonnet;
 QSpellEnchantDict::QSpellEnchantDict(EnchantBroker *broker,
                                      EnchantDict *dict,
                                      const QString &language)
-    : Speller(language),
+    : SpellerPlugin(language),
       m_broker(broker),
       m_dict(dict)
 {

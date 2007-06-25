@@ -36,10 +36,10 @@ namespace Sonnet
      * @author Zack Rusin <zack@kde.org>
      * @short class used for actuall spell checking
      */
-    class KDECORE_EXPORT Speller
+    class KDECORE_EXPORT SpellerPlugin
     {
     public:
-        virtual ~Speller();
+        virtual ~SpellerPlugin();
 
         /**
          * Checks the given word.
@@ -92,7 +92,7 @@ namespace Sonnet
         QString language() const;
 
     protected:
-        Speller(const QString &lang);
+        SpellerPlugin(const QString &lang);
     private:
         class Private;
         Private* const d;

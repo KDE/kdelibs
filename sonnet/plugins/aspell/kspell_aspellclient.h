@@ -27,22 +27,22 @@
 #include "aspell.h"
 
 namespace Sonnet {
-    class Speller;
+    class SpellerPlugin;
 }
-using Sonnet::Speller;
+using Sonnet::SpellerPlugin;
 
 class ASpellClient : public Sonnet::Client
 {
     Q_OBJECT
 public:
-    ASpellClient( QObject *parent, const QStringList & /* args */  );
+    ASpellClient(QObject *parent, const QStringList & /* args */);
     ~ASpellClient();
 
     virtual int reliability() const {
         return 20;
     }
 
-    virtual Speller* createSpeller(const QString &language);
+    virtual SpellerPlugin *createSpeller(const QString &language);
 
     virtual QStringList languages() const;
 

@@ -37,7 +37,7 @@ int main( int argc, char** argv )
     kDebug()<< "Clients are "   << loader->clients()   << endl;
     kDebug()<< "Languages are " << loader->languages() << endl;
 
-    Speller *dict = loader->createSpeller("en_US");
+    SpellerPlugin *dict = loader->createSpeller("en_US");
 
     QStringList words;
 

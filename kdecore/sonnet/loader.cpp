@@ -87,8 +87,8 @@ Loader::~Loader()
     delete d;
 }
 
-Speller *Loader::createSpeller(const QString& language,
-                               const QString& clientName) const
+SpellerPlugin *Loader::createSpeller(const QString& language,
+                                     const QString& clientName) const
 {
     QString pclient = clientName;
     QString plang   = language;
@@ -115,13 +115,13 @@ Speller *Loader::createSpeller(const QString& language,
         Client* item = itr.next();
         if (!pclient.isEmpty()) {
             if (pclient == item->name()) {
-                Speller *dict = item->createSpeller(plang);
+                SpellerPlugin *dict = item->createSpeller(plang);
                 return dict;
             }
         } else {
             //the first one is the one with the highest
             //reliability
-            Speller *dict = item->createSpeller(plang);
+            SpellerPlugin *dict = item->createSpeller(plang);
             Q_ASSERT(dict);
             return dict;
         }

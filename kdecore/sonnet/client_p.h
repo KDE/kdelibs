@@ -34,7 +34,7 @@
  */
 namespace Sonnet
 {
-    class Speller;
+    class SpellerPlugin;
 
     class KDECORE_EXPORT Client : public QObject
     {
@@ -57,7 +57,7 @@ namespace Sonnet
          *
          * @returns a dictionary for the language or 0 if there was an error.
          */
-        virtual Speller *createSpeller(const QString &language) =0;
+        virtual SpellerPlugin *createSpeller(const QString &language) =0;
 
         /**
          * @returns a list of supported languages.

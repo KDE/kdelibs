@@ -30,7 +30,7 @@ namespace Sonnet
 {
     class Filter;
     class Loader;
-    class Speller;
+    class SpellerPlugin;
     class BackgroundEngine : public QObject
     {
         Q_OBJECT
@@ -74,7 +74,7 @@ namespace Sonnet
     private:
         Filter            *m_filter;
         Loader::Ptr        m_loader;
-        Speller           *m_dict;
+        SpellerPlugin     *m_dict;
     };
 }
 

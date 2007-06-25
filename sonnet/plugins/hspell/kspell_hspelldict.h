@@ -28,7 +28,7 @@ extern "C" {
 #include "hspell.h"
 }
 
-class HSpellDict : public Sonnet::Speller
+class HSpellDict : public Sonnet::SpellerPlugin
 {
 public:
     explicit HSpellDict( const QString& lang );

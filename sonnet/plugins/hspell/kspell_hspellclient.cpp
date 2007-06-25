@@ -31,8 +31,9 @@ K_EXPORT_COMPONENT_FACTORY( kspell_hspell, HSpellClientFactory( "kspell_hspell" 
 
 using namespace Sonnet;
 
-HSpellClient::HSpellClient( QObject *parent, const QStringList& /* args */  )
-    : Client( parent )
+HSpellClient::HSpellClient(QObject *parent,
+                           const QStringList &/* args */)
+    : Client(parent)
 {
 }
 
@@ -40,9 +41,9 @@ HSpellClient::~HSpellClient()
 {
 }
 
-Speller* HSpellClient::createSpeller( const QString& language )
+SpellerPlugin *HSpellClient::createSpeller(const QString &language)
 {
-    HSpellDict *ad = new HSpellDict( language );
+    HSpellDict *ad = new HSpellDict(language);
     return ad;
 }
 

@@ -28,9 +28,9 @@
 #include <enchant/enchant.h>
 
 namespace Sonnet {
-    class Speller;
+    class SpellerPlugin;
 }
-using Sonnet::Speller;
+using Sonnet::SpellerPlugin;
 
 class QSpellEnchantClient : public Sonnet::Client
 {
@@ -43,7 +43,7 @@ public:
         return 30;
     }
 
-    virtual Speller *createSpeller(const QString &language);
+    virtual SpellerPlugin *createSpeller(const QString &language);
 
     virtual QStringList languages() const;
 

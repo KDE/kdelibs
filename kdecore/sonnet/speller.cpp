@@ -24,35 +24,35 @@
 namespace Sonnet
 {
 
-class Speller::Private
+class SpellerPlugin::Private
 {
 public:
     QString language;
 };
 
-Speller::Speller(const QString &lang)
+SpellerPlugin::SpellerPlugin(const QString &lang)
     : d(new Private)
 {
     d->language = lang;
 }
 
-Speller::~Speller()
+SpellerPlugin::~SpellerPlugin()
 {
     delete d;
 }
 
-QString Speller::language() const
+QString SpellerPlugin::language() const
 {
     return d->language;
 }
 
-bool Speller::isMisspelled(const QString &word) const
+bool SpellerPlugin::isMisspelled(const QString &word) const
 {
     return !isCorrect(word);
 }
 
-bool Speller::checkAndSuggest(const QString &word,
-                              QStringList &suggestions) const
+bool SpellerPlugin::checkAndSuggest(const QString &word,
+                                    QStringList &suggestions) const
 {
     bool c = isCorrect(word);
     if (!c)

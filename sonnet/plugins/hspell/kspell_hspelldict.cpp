@@ -28,7 +28,7 @@
 using namespace Sonnet;
 
 HSpellDict::HSpellDict( const QString& lang )
-    : Speller( lang )
+    : SpellerPlugin( lang )
 {
    int int_error = hspell_init( &m_speller, HSPELL_OPT_DEFAULT );
    if ( int_error == -1 )

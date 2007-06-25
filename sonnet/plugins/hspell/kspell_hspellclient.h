@@ -31,22 +31,22 @@ extern "C" {
 }
 
 namespace Sonnet {
-    class Speller;
+    class SpellerPlugin;
 }
-using Sonnet::Speller;
+using Sonnet::SpellerPlugin;
 
 class HSpellClient : public Sonnet::Client
 {
     Q_OBJECT
 public:
-    HSpellClient( QObject *parent, const QStringList & /* args */  );
+    HSpellClient(QObject *parent, const QStringList &/* args */);
     ~HSpellClient();
 
     virtual int reliability() const {
         return 20;
     }
 
-    virtual Speller* createSpeller( const QString& language );
+    virtual SpellerPlugin *createSpeller(const QString &language);
 
     virtual QStringList languages() const;
 
