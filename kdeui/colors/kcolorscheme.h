@@ -22,6 +22,7 @@
 
 #include <kdeui_export.h>
 
+class KConfigBase;
 class QColor;
 class QBrush;
 
@@ -175,9 +176,10 @@ public:
     KColorScheme& operator=(const KColorScheme&);
 
     /**
-     * Construct a palette from the system colors in the given color set.
+     * Construct a palette from given color set, using the colors from the
+     * given KConfig (if null, the system colors are used).
      */
-    explicit KColorScheme(ColorSet = View);
+    explicit KColorScheme(ColorSet = View, KConfigBase* = 0);
 
     /**
      * Retrieve the requested background brush.
@@ -197,7 +199,9 @@ public:
     /**
      * Retrieve the requested shade color, using
      * KColorScheme::background(KColorScheme::NormalBackground)
-     * as the base color and the system contrast setting.
+     * as the base color and the contrast setting from the KConfig used to
+     * create this KColorScheme instance (the system contrast setting, if no
+     * KConfig was specified).
      *
      * @note Shades are chosen such that all shades would contrast with the
      * base color. This means that if base is very dark, the 'dark' shades will

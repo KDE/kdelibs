@@ -253,6 +253,7 @@ int KGlobalSettings::contrast()
     return g.readEntry( "contrast", 7 );
 }
 
+// NOTE This must be kept in sync with KColorSchemePrivate::contrast
 qreal KGlobalSettings::contrastF()
 {
     return 0.1 * (qreal)contrast();
@@ -844,12 +845,21 @@ void KGlobalSettings::applyGUIStyle()
 
 QPalette KGlobalSettings::createApplicationPalette()
 {
-    KColorScheme schemeView(KColorScheme::View);
-    KColorScheme schemeWindow(KColorScheme::Window);
-    KColorScheme schemeButton(KColorScheme::Button);
-    KColorScheme schemeSelection(KColorScheme::Selection);
+    // Use null for the group. KColorScheme interprets this as
+    // 'use KGlobal::config', which is what we want.
+    return createApplicationPalette(0);
+}
+
+QPalette KGlobalSettings::createApplicationPalette(KConfigBase *config)
+{
+    KColorScheme schemeView(KColorScheme::View, config);
+    KColorScheme schemeWindow(KColorScheme::Window, config);
+    KColorScheme schemeButton(KColorScheme::Button, config);
+    KColorScheme schemeSelection(KColorScheme::Selection, config);
 
     QPalette palette;
+
+    // normal palette
     palette.setBrush( QPalette::WindowText, schemeWindow.foreground() );
     palette.setBrush( QPalette::Window, schemeWindow.background() );
     palette.setBrush( QPalette::Base, schemeView.background() );
@@ -869,7 +879,7 @@ QPalette KGlobalSettings::createApplicationPalette()
     palette.setBrush( QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
     palette.setBrush( QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
 
-
+    // disabled palette
     palette.setBrush( QPalette::Disabled, QPalette::WindowText, schemeWindow.foreground( KColorScheme::InactiveText ) );
     palette.setBrush( QPalette::Disabled, QPalette::Window, schemeWindow.background() );
     palette.setBrush( QPalette::Disabled, QPalette::Base, schemeView.background() );
@@ -891,11 +901,6 @@ QPalette KGlobalSettings::createApplicationPalette()
     palette.setBrush( QPalette::Disabled, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
 
     return palette;
-}
-
-QPalette KGlobalSettings::createApplicationPalette( const KConfigGroup & /*config*/, int /*contrast_*/ )
-{
-    return createApplicationPalette();
 }
 
 

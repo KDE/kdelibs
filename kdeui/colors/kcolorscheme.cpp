@@ -70,28 +70,40 @@ DefaultColors defaultTooltipColors = {
     { 232, 185, 149 }
 };
 
-// BEGIN KColorSchemePrivate
+//BEGIN KColorSchemePrivate
 class KColorSchemePrivate
 {
 public:
-    explicit KColorSchemePrivate(const char* group, DefaultColors);
+    explicit KColorSchemePrivate(KConfigBase*, const char*, DefaultColors);
+    explicit KColorSchemePrivate(const KSharedConfigPtr&, const char*, DefaultColors);
     KColorSchemePrivate(const KColorSchemePrivate&);
 
     QColor background(KColorScheme::BackgroundRole);
     QColor foreground(KColorScheme::ForegroundRole);
     QColor decoration(KColorScheme::DecorationRole);
+    qreal contrast();
 private:
     KConfigGroup _config;
     DefaultColors _defaults;
+    int _contrast;
 };
 
-KColorSchemePrivate::KColorSchemePrivate(const char *group, DefaultColors defaults)
-    : _config( KGlobal::config(), group ), _defaults( defaults )
+KColorSchemePrivate::KColorSchemePrivate(KConfigBase *config, const char *group, DefaultColors defaults)
+    : _config( config, group ), _defaults( defaults )
 {
+    KConfigGroup g( config, "KDE" );
+    _contrast = g.readEntry( "contrast", 7 );
+}
+
+KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config, const char *group, DefaultColors defaults)
+    : _config( config, group ), _defaults( defaults )
+{
+    KConfigGroup g( config, "KDE" );
+    _contrast = g.readEntry( "contrast", 7 );
 }
 
 KColorSchemePrivate::KColorSchemePrivate(const KColorSchemePrivate& other)
-    : _config( other._config )
+    : _config( other._config ), _defaults( other._defaults), _contrast( other._contrast )
 {
 }
 
@@ -138,7 +150,12 @@ QColor KColorSchemePrivate::decoration(KColorScheme::DecorationRole role)
             return _config.readEntry( "DecorationHover", QColor(72,177,60) );
     }
 }
-// END KColorSchemePrivate
+
+qreal KColorSchemePrivate::contrast()
+{
+    return 0.1 * (qreal)_contrast;
+}
+//END KColorSchemePrivate
 
 KColorScheme::KColorScheme(const KColorScheme &other)
 {
@@ -157,24 +174,43 @@ KColorScheme::~KColorScheme()
     delete d;
 }
 
-KColorScheme::KColorScheme(ColorSet set)
+KColorScheme::KColorScheme(ColorSet set, KConfigBase *config)
 {
-    KConfigGroup cg( KGlobal::config(), "KDE" );
-    switch (set) {
-        case Window:
-            d = new KColorSchemePrivate( "Colors:Window", defaultWindowColors );
-            break;
-        case Button:
-            d = new KColorSchemePrivate( "Colors:Button", defaultButtonColors );
-            break;
-        case Selection:
-            d = new KColorSchemePrivate( "Colors:Selection", defaultSelectionColors );
-            break;
-        case Tooltip:
-            d = new KColorSchemePrivate( "Colors:Tooltip", defaultTooltipColors );
-            break;
-        default:
-            d = new KColorSchemePrivate( "Colors:View", defaultViewColors );
+    if (!config) {
+        switch (set) {
+            case Window:
+                d = new KColorSchemePrivate( KGlobal::config(), "Colors:Window", defaultWindowColors );
+                break;
+            case Button:
+                d = new KColorSchemePrivate( KGlobal::config(), "Colors:Button", defaultButtonColors );
+                break;
+            case Selection:
+                d = new KColorSchemePrivate( KGlobal::config(), "Colors:Selection", defaultSelectionColors );
+                break;
+            case Tooltip:
+                d = new KColorSchemePrivate( KGlobal::config(), "Colors:Tooltip", defaultTooltipColors );
+                break;
+            default:
+                d = new KColorSchemePrivate( KGlobal::config(), "Colors:View", defaultViewColors );
+        }
+    }
+    else {
+        switch (set) {
+            case Window:
+                d = new KColorSchemePrivate( config, "Colors:Window", defaultWindowColors );
+                break;
+            case Button:
+                d = new KColorSchemePrivate( config, "Colors:Button", defaultButtonColors );
+                break;
+            case Selection:
+                d = new KColorSchemePrivate( config, "Colors:Selection", defaultSelectionColors );
+                break;
+            case Tooltip:
+                d = new KColorSchemePrivate( config, "Colors:Tooltip", defaultTooltipColors );
+                break;
+            default:
+                d = new KColorSchemePrivate( config, "Colors:View", defaultViewColors );
+        }
     }
 }
 
@@ -195,7 +231,7 @@ QBrush KColorScheme::decoration(DecorationRole role) const
 
 QColor KColorScheme::shade(ShadeRole role) const
 {
-    return shade(background().color(), role);
+    return shade(background().color(), role, d->contrast());
 }
 
 QColor KColorScheme::shade(const QColor &color, ShadeRole role)

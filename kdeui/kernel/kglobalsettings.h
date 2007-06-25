@@ -36,7 +36,7 @@
 #define KDE_DEFAULT_BUTTON_LAYOUT 0
 #define KDE_DEFAULT_SHADE_SORT_COLUMN true
 
-class KConfigGroup;
+class KConfigBase;
 class KUrl;
 
 class QColor;
@@ -530,12 +530,10 @@ public:
      * @internal
      * Raw access for use by KDM.
      * note: expects config to be in the correct group already.
-     * @deprecated use createApplicationPalette()
      */
-    // FIXME Currently this does not do anything different from
-    // createApplicationPalette() and will possibly be removed before 4.0 final.
-    // If KDM really needs it we need to figure out something else.
-    static KDE_DEPRECATED QPalette createApplicationPalette( const KConfigGroup &config, int contrast );
+    // TODO is the doc really correct? With KColorScheme also exposing being
+    // able to use a KConfig* maybe other people will want to use this...
+    static QPalette createApplicationPalette( KConfigBase *config );
 
     /**
      * An identifier for change signals.
