@@ -86,12 +86,9 @@ public:
    */
   KCModuleInfo &operator=( const KCModuleInfo &rhs );
 
-  /**
-   * Equal operator
-   *
-   * @return true if @p rhs equals itself
-   */
-
+    /**
+     * Returns true if @p rhs describes the same KCModule as this object.
+     */
   bool operator==( const KCModuleInfo &rhs ) const;
 
   /**
