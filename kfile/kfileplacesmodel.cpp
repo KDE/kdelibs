@@ -64,7 +64,7 @@ public:
     void _k_devicesInserted(const QModelIndex &parent, int start, int end);
     void _k_devicesRemoved(const QModelIndex &parent, int start, int end);
     void _k_reloadBookmarks();
-    void _k_storageSetupDone(Solid::StorageAccess::SetupResult result, QVariant resultData);
+    void _k_storageSetupDone(Solid::ErrorType error, QVariant errorData);
 };
 
 KFilePlacesModel::KFilePlacesModel(QObject *parent)
@@ -667,14 +667,14 @@ void KFilePlacesModel::requestSetup(const QModelIndex &index)
 
         d->setupInProgress[access] = index;
 
-        connect(access, SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant)),
-                this, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
+        connect(access, SIGNAL(setupDone(Solid::ErrorType, QVariant)),
+                this, SLOT(_k_storageSetupDone(Solid::ErrorType, QVariant)));
 
         access->setup();
     }
 }
 
-void KFilePlacesModel::Private::_k_storageSetupDone(Solid::StorageAccess::SetupResult result, QVariant resultData)
+void KFilePlacesModel::Private::_k_storageSetupDone(Solid::ErrorType error, QVariant errorData)
 {
     QPersistentModelIndex index = setupInProgress.take(q->sender());
 
@@ -682,13 +682,13 @@ void KFilePlacesModel::Private::_k_storageSetupDone(Solid::StorageAccess::SetupR
         return;
     }
 
-    if (result==Solid::StorageAccess::SetupSucceed) {
+    if (!error) {
         emit q->setupDone(index, true);
     } else {
-        if (resultData.isValid()) {
+        if (errorData.isValid()) {
             emit q->errorMessage(i18n("An error occurred while accessing '%1', the system said: %2",
                                       q->text(index),
-                                      resultData.toString()));
+                                      errorData.toString()));
         } else {
             emit q->errorMessage(i18n("An error occurred while accessing '%1'",
                                       q->text(index)));
