@@ -583,10 +583,7 @@ void MediaObjectTest::testPlayBeforeFinish()
     m_media->setCurrentSource(m_url);
     m_media->play();
     if (m_stateChangedSignalSpy->isEmpty()) {
-        QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
-        if (0 == m_stateChangedSignalSpy->size()) {
-            QFAIL("no state change after setCurrentSource() and play() were called");
-        }
+        QVERIFY(QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000));
     }
     // first (optional) state to reach is StoppedState
     QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
@@ -595,33 +592,26 @@ void MediaObjectTest::testPlayBeforeFinish()
     state = qvariant_cast<Phonon::State>(args.at(0));
     if (state == Phonon::StoppedState) {
         if (m_stateChangedSignalSpy->isEmpty()) {
-            QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
-            if (0 == m_stateChangedSignalSpy->size()) {
-                QFAIL("no state change after StoppedState after setCurrentSource() and play() were called");
-            }
+            QVERIFY(QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000));
         }
-        // next LoadingState
         args = m_stateChangedSignalSpy->takeFirst();
         oldstate = qvariant_cast<Phonon::State>(args.at(1));
         QCOMPARE(oldstate, state);
         state = qvariant_cast<Phonon::State>(args.at(0));
     }
+    // next LoadingState
     QCOMPARE(state, Phonon::LoadingState);
     if (m_stateChangedSignalSpy->isEmpty()) {
-        QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
-        if (0 == m_stateChangedSignalSpy->size()) {
-            QFAIL("no state change after LoadingState after setCurrentSource() and play() were called");
-        }
+        QVERIFY(QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000));
     }
     // next either BufferingState or PlayingState
     args = m_stateChangedSignalSpy->takeFirst();
     oldstate = qvariant_cast<Phonon::State>(args.at(1));
     QCOMPARE(oldstate, state);
     state = qvariant_cast<Phonon::State>(args.at(0));
-    if (state == Phonon::BufferingState && m_stateChangedSignalSpy->isEmpty()) {
-        QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000); // buffering can take a while
-        if (0 == m_stateChangedSignalSpy->size()) {
-            QFAIL("no state change after BufferingState after setCurrentSource() and play() were called");
+    if (state == Phonon::BufferingState) {
+        if (m_stateChangedSignalSpy->isEmpty()) {
+            QVERIFY(QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000)); // buffering can take a while
         }
         args = m_stateChangedSignalSpy->takeFirst();
         oldstate = qvariant_cast<Phonon::State>(args.at(1));
