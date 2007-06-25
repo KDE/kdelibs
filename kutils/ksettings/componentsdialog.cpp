@@ -156,10 +156,9 @@ void ComponentsDialog::savePluginInfos()
     for( QList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
             it != d->plugininfolist.end(); ++it )
     {
-        if( ( *it )->config() )
-        {
+        if ((*it)->config().isValid()) {
             ( *it )->save();
-            ( *it )->config()->sync();
+            (*it)->config().sync();
         }
     }
 }
