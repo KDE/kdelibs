@@ -124,10 +124,6 @@ InfoOutput=4
 [7010]
 InfoOutput=4
 
-# KMimeMagic debug info off
-[7018]
-InfoOutput=4
-
 # KGame debug info off
 [11001]
 InfoOutput=4

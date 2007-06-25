@@ -245,14 +245,13 @@
 7007        kio (KIOJob)
 7009        kio (KMimeType)
 7010        kio (KRun)
-7011        kio (KSycoca)
+7011        kdecore (KSycoca)
 7012        kio (KService*)
 7013        kio (KPing)
 7014        kio (KTrader)
 7015        kio (KAutoMount)
 7016        kio (KLauncher)
 7017        kio (KIOConnection)
-7018        kio (KMimeMagic)
 7019        kio (kioslave)
 7020        kded
 7021        kbuildsycoca4
