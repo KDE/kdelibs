@@ -76,25 +76,6 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
     Q_OBJECT
     public:
         /**
-         * Tells the dialog whether the entries in the listview are all static
-         * or whether it should add a Configure... button to select which parts
-         * of the optional functionality should be active or not.
-         *
-         * The default for new KSettings::Dialog instances is NoComponentSelection
-         */
-        enum ComponentSelection
-        {
-            /**
-             * While running no entries are added or deleted
-             */
-            NoComponentSelection,
-            /**
-             * The user can select what functionality he wants.
-             */
-            AllowComponentSelection
-        };
-
-        /**
          * Construct a new Preferences Dialog for the application. It uses all
          * KCMs with X-KDE-ParentApp set to KGlobal::mainComponent().componentName().
          *
@@ -153,16 +134,21 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
          */
         void setComponentBlacklist(const QStringList& blacklist);
 
-
         /**
-         * Sets the selection mode for the component list.
-         * @see ComponentSelection
+         * Tells the dialog whether the entries in the listview are all static
+         * or whether it should add checkboxes to select which parts
+         * of the optional functionality should be active or not.
          *
-         * Note that this function only works before showing the
-         * KSettings::Dialog for the first time.
-         * @param selection the selection mode for component list
+         * Note that this function only works before showing the dialog for the first time.
+         *
+         * Defaults to \p false.
+         *
+         * @param allowSelection \p true The user can select what functionality he wants.
+         * @param allowSelection \p false While running no entries are added or deleted
          */
-        void setComponentSelection(ComponentSelection selection);
+        void setAllowComponentSelection(bool allowSelection);
+
+        bool allowComponentSelection() const;
 
         /**
          * Returns a list of all KPluginInfo objects the dialog uses.

@@ -61,10 +61,14 @@ Dialog::~Dialog()
 {
 }
 
-void Dialog::setComponentSelection(ComponentSelection selection)
+void Dialog::setAllowComponentSelection(bool selection)
 {
-    Q_D(Dialog);
-    d->staticlistview = (selection == NoComponentSelection);
+    d_func()->staticlistview = !selection;
+}
+
+bool Dialog::allowComponentSelection() const
+{
+    return !d_func()->staticlistview;
 }
 
 void Dialog::setKCMArguments(const QStringList& arguments)
