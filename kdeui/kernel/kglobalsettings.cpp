@@ -317,6 +317,12 @@ bool KGlobalSettings::shadeSortColumn()
     return g.readEntry( "shadeSortColumn", KDE_DEFAULT_SHADE_SORT_COLUMN );
 }
 
+bool KGlobalSettings::allowDefaultBackgroundImages()
+{
+    KConfigGroup g( KGlobal::config(), "General" );
+    return g.readEntry( "allowDefaultBackgroundImages", KDE_DEFAULT_ALLOW_DEFAULT_BACKGROUND_IMAGES );
+}
+
 QColor KGlobalSettings::linkColor()
 {
     return KColorScheme(KColorScheme::View).foreground(KColorScheme::LinkText).color();
