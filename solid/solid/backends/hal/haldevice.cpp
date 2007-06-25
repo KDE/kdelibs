@@ -53,11 +53,12 @@ public:
                   udi,
                   "org.freedesktop.Hal.Device",
                   QDBusConnection::systemBus()),
-          cacheSynced(false) { }
+          cacheSynced(false), parent(0) { }
 
     QDBusInterface device;
     QMap<QString,QVariant> cache;
     bool cacheSynced;
+    HalDevice *parent;
 };
 
 Q_DECLARE_METATYPE(ChangeDescription)
@@ -97,6 +98,7 @@ HalDevice::HalDevice(const QString &udi)
 
 HalDevice::~HalDevice()
 {
+    delete d->parent;
     delete d;
 }
 
@@ -122,23 +124,98 @@ QString HalDevice::product() const
 
 QString HalDevice::icon() const
 {
+    QString category = property("info.category").toString();
+
     if(parentUdi().isEmpty()) {
-        return "system";
-    } else if (queryDeviceInterface(Solid::DeviceInterface::OpticalDrive)) {
-        return "cdrom-unmount";
-    } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
-        return "ipod-unmount";
-    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
-        return "camera-unmount";
-    } else if(queryDeviceInterface(Solid::DeviceInterface::Processor)) {
-        return "ksim-cpu";
-    } else if (queryDeviceInterface(Solid::DeviceInterface::StorageDrive)) {
-        return "hdd-unmount";
-    } else if (queryDeviceInterface(Solid::DeviceInterface::Block)) {
-        return "blockdevice";
-    } else {
-        return "hwinfo";
+
+        QString formfactor = property("system.formfactor").toString();
+        if (formfactor=="laptop") {
+            return "computer-laptop";
+        } else {
+            return "computer";
+        }
+
+    } else if (category=="storage") {
+
+        if (property("storage.hotpluggable").toBool()) {
+            if (property("storage.bus").toString()=="usb") {
+                if (property("storage.no_partitions_hint").toBool()
+                 || property("storage.removable.media_size").toLongLong()<1000000000) {
+                    return "drive-removable-media-usb-pendrive";
+                } else {
+                    return "drive-removable-media-usb";
+                }
+            }
+
+            return "drive-removable-media";
+        }
+
+        return "drive-harddisk";
+
+    } else if (category=="volume") {
+
+        QStringList capabilities = property("info.capabilities").toStringList();
+
+        if (capabilities.contains("volume.disc")) {
+            bool has_video = property("volume.disc.is_vcd").toBool()
+                          || property("volume.disc.is_svcd").toBool()
+                          || property("volume.disc.is_videodvd").toBool();
+            bool has_audio = property("volume.disc.has_audio").toBool();
+            bool recordable = property("volume.disc.is_blank").toBool()
+                          || property("volume.disc.is_appendable").toBool()
+                          || property("volume.disc.is_rewritable").toBool();
+
+            if (has_video) {
+                return "media-optical-video";
+            } else if (has_audio) {
+                return "media-optical-audio";
+            } else if (recordable) {
+                return "media-optical-recordable";
+            } else {
+                return "media-optical";
+            }
+
+        } else {
+            if (!d->parent) {
+                d->parent = new HalDevice(parentUdi());
+            }
+            QString iconName = d->parent->icon();
+
+            if (!iconName.isEmpty()) {
+                return iconName;
+            }
+
+            return "drive-harddisk";
+        }
+
+    } else if (category=="input") {
+        QStringList capabilities = property("info.capabilities").toStringList();
+
+        if (capabilities.contains("input.mouse")) {
+            return "input-mouse";
+        } else if (capabilities.contains("input.keyboard")) {
+            return "input-keyboard";
+        } else if (capabilities.contains("input.joystick")) {
+            return "input-gaming";
+        } else if (capabilities.contains("input.tablet")) {
+            return "input-tablet";
+        }
+
+    } else if (category=="portable_audio_player") {
+        QStringList protocols = property("portable_audio_player.access_method.protocols").toStringList();
+
+        if (protocols.contains("ipod")) {
+            return "multimedia-player-ipod";
+        } else {
+            return "multimedia-player";
+        }
+    } else if (category=="battery") {
+        return "battery";
+    } else if (category=="processor") {
+        return "ksim-cpu"; // FIXME: Doesn't follow icon spec
     }
+
+    return QString();
 }
 
 QVariant HalDevice::property(const QString &key) const
