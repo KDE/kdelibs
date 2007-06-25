@@ -1,16 +1,16 @@
 <ui version="4.0" >
  <class>Config</class>
- <widget class="QDialog" name="Config" >
+ <widget class="QWidget" name="Config" >
   <property name="geometry" >
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>518</width>
-    <height>655</height>
+    <width>494</width>
+    <height>622</height>
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Qxygen Setup</string>
+   <string>Form</string>
   </property>
   <layout class="QGridLayout" >
    <item row="0" column="0" >
@@ -307,16 +307,6 @@
        <widget class="QComboBox" name="gradProgress" />
       </item>
      </layout>
-    </widget>
-   </item>
-   <item row="7" column="0" colspan="3" >
-    <widget class="QDialogButtonBox" name="buttonBox" >
-     <property name="orientation" >
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons" >
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok|QDialogButtonBox::Reset|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
-     </property>
     </widget>
    </item>
   </layout>

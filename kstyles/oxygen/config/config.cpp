@@ -3,12 +3,13 @@
 #include <QApplication>
 #include <QSettings>
 #include <QTimer>
+#include <QDialogButtonBox>
 
 extern "C"
 {
    Q_DECL_EXPORT QWidget* allocate_kstyle_config(QWidget* parent)
    {
-      return new Config;
+      return new Config(parent);
    }
 }
 
@@ -108,7 +109,37 @@ static const Values defaultValues = {
 
 static Values initValues;
 
-Config::Config(QWidget *parent) : QDialog(parent) {
+ConfigDialog::ConfigDialog(QWidget *parent) : QDialog(parent) {
+   Config *config = new Config(this);
+   
+   QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+   QObject *btn;
+   btn = (QObject*)buttonBox->addButton ( QDialogButtonBox::Ok );
+   connect(btn, SIGNAL(clicked(bool)), config, SLOT(save()));
+   connect(btn, SIGNAL(clicked(bool)), this, SLOT(accept()));
+   btn = (QObject*)buttonBox->addButton ( QDialogButtonBox::Save );
+   connect(btn, SIGNAL(clicked(bool)), config, SLOT(save()));
+   btn = (QObject*)buttonBox->addButton ( QDialogButtonBox::Apply );
+   connect(btn, SIGNAL(clicked(bool)), config, SLOT(save()));
+   
+   btn = (QObject*)buttonBox->addButton ( QDialogButtonBox::Reset );
+   connect(btn, SIGNAL(clicked(bool)), config, SLOT(reset()));
+   
+   btn = (QObject*)buttonBox->addButton ( QDialogButtonBox::RestoreDefaults );
+   connect(btn, SIGNAL(clicked(bool)), config, SLOT(defaults()));
+   
+   btn = (QObject*)buttonBox->addButton ( QDialogButtonBox::Cancel );
+   connect(btn, SIGNAL(clicked(bool)), this, SLOT(reject()));
+
+   
+   QVBoxLayout *vl = new QVBoxLayout;
+   vl->addWidget(config);
+   vl->addWidget(buttonBox);
+   setLayout(vl);
+}
+
+
+Config::Config(QWidget *parent) : QWidget(parent) {
    infoItemHovered = false;
    ui.setupUi(this);
    ui.info->setMinimumWidth( 160 );
@@ -137,36 +168,11 @@ Config::Config(QWidget *parent) : QDialog(parent) {
    handleEvents(crTabBar);
    handleEvents(crPopup);
    handleEvents(tabTransition);
-   connect(ui.buttonBox, SIGNAL(clicked ( QAbstractButton *)),
-           this, SLOT(handleButton(QAbstractButton *)));
    connect(ui.bgMode, SIGNAL(highlighted(int)), this, SLOT(setBgModeInfo(int)));
    connect(ui.tabTransition, SIGNAL(highlighted(int)), this, SLOT(setTabTransInfo(int)));
 }
 
-void Config::handleButton(QAbstractButton *btn) {
-   QDialogButtonBox::StandardButton stdBtn = ui.buttonBox->standardButton(btn);
-   switch (stdBtn) {
-   case QDialogButtonBox::Ok:
-   case QDialogButtonBox::Save:
-   case QDialogButtonBox::Apply:
-      save();
-      if (stdBtn == QDialogButtonBox::Ok)
-         accept();
-      break;
-   case QDialogButtonBox::Reset:
-      resetValues();
-      break;
-   case QDialogButtonBox::RestoreDefaults:
-      setDefaults();
-      break;
-   case QDialogButtonBox::Cancel:
-      reject();
-   default:
-      break;
-   }
-}
-
-void Config::resetValues() {
+void Config::reset() {
 #define SET(_ELEMENT_) ui._ELEMENT_->setCurrentIndex( initValues._ELEMENT_ )
    SET(bgMode);
    SET(tabTransition);
@@ -193,7 +199,7 @@ void Config::resetValues() {
 #undef SET
 }
 
-void Config::setDefaults() {
+void Config::defaults() {
 #define SET(_ELEMENT_) ui._ELEMENT_->setCurrentIndex( defaultValues._ELEMENT_ )
    SET(bgMode);
    SET(tabTransition);
@@ -356,7 +362,7 @@ bool Config::eventFilter ( QObject * o, QEvent * e) {
 int main(int argc, char *argv[])
 {
    QApplication app(argc, argv);
-   Config *window = new Config;
+   ConfigDialog *window = new ConfigDialog;
    window->show();
    return app.exec();
 }

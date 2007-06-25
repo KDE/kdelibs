@@ -4,7 +4,7 @@
 #include "ui_config.h"
 #include <QDialog>
 
-class Config : public QDialog
+class Config : public QWidget
 {
    Q_OBJECT
 public:
@@ -16,15 +16,23 @@ private:
    bool infoItemHovered;
    void generateColorModes(QComboBox *box);
    void generateGradientTypes(QComboBox *box);
-   void setDefaults();
-   void resetValues();
-   void save();
    void loadSettings();
+signals:
+   void changed(bool);
+public slots:
+   void save();
+   void defaults();
+   void reset();
 private slots:
    void resetInfo();
-   void handleButton(QAbstractButton *);
    void setBgModeInfo(int index);
    void setTabTransInfo(int index);
+};
+
+class ConfigDialog : public QDialog {
+   Q_OBJECT
+public:
+   ConfigDialog(QWidget *parent = 0L);
 };
 
 #endif
