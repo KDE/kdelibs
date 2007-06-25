@@ -152,7 +152,7 @@ public:
      * @param args the command line arguments for the program,
      *   one per list element
      */
-    void setProgram(const QString &exe, const QStringList &args);
+    void setProgram(const QString &exe, const QStringList &args = QStringList());
 
     /**
      * @overload
@@ -251,7 +251,7 @@ public:
      * @param msecs time to wait for process to exit before killing it
      * @return the exit code of the process or -1 on error
      */
-    static int execute(const QString &exe, const QStringList &args, int msecs = -1);
+    static int execute(const QString &exe, const QStringList &args = QStringList(), int msecs = -1);
 
     /**
      * @overload
@@ -287,7 +287,7 @@ public:
      *   one per list element
      * @return the PID of the started process or 0 on error
      */
-    static int startDetached(const QString &exe, const QStringList &args);
+    static int startDetached(const QString &exe, const QStringList &args = QStringList());
 
     /**
      * @overload
