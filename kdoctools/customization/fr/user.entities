@@ -185,8 +185,11 @@
 <!ENTITY traducteurBriceRothschild '<othercredit role="translator"><firstname>Brice</firstname><surname>Rothschild</surname><affiliation><address><email>brice.rothschild@gmail.com</email></address> </affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurBriceRothschild         '<othercredit role="reviewer"><firstname>Brice</firstname><surname>Rothschild</surname><affiliation><address><email>brice.rothschild@gmail.com</email></address> </affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
-<!ENTITY traducteurMickaelSibelle   '<othercredit role="translator"><firstname>Mickaël</firstname><surname>Sibelle</surname><affiliation><address><email></email>kimael@gmail.com</address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY traducteurMickaelSibelle   '<othercredit role="translator"><firstname>Mickaël</firstname><surname>Sibelle</surname><affiliation><address><email>kimael@gmail.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurMickaelSibelle    '<othercredit role="reviewer"><firstname>Mickaël</firstname><surname>Sibelle</surname><affiliation><address><email>kimael@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
+<!ENTITY traducteurArnaudMuchembled   '<othercredit role="translator"><firstname>Arnaud</firstname><surname>Muchembled</surname><affiliation><address><email>arno.muchembled@orange.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurArnaudMuchembled    '<othercredit role="reviewer"><firstname>Arnaud</firstname><surname>Muchembled</surname><affiliation><address><email>arno.muchembled@orange.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
 <!ENTITY traducteurPenelopeSorveyron   '<othercredit role="translator"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email></email>goneri@free.fr</address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPenelopeSorveyron    '<othercredit role="reviewer"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email>goneri@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
@@ -268,6 +271,7 @@
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
 <!ENTITY BriceRothschild 'Brice Rothschild <email>brice.rothschild@gmail.com</email>'>
 <!ENTITY MickaelSibelle 'Mickaël Sibelle <email>kimael@gmail.com</email>'>
+<!ENTITY ArnaudMuchembled 'Arnaud Muchembled <email>arno.muchembled@orange.fr</email>'>
 <!ENTITY PenelopeSorveyron 'Pénélope Sorveyron <email>goneri@free.fr</email>'>
 <!ENTITY NicolasTernissien   'Nicolas Ternissien <email>nicolast@libertysurf.fr</email>'>
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
