@@ -23,112 +23,106 @@
  */
 
 #include "kpagedialog.h"
+#include "kpagedialog_p.h"
 
 #include <QTimer>
 #include <QLayout>
 
-class KPageDialog::Private
-{
-  public:
-    Private( KPageDialog *parent )
-      : mParent( parent ), mPageWidget( 0 )
-    {
-    }
-
-    KPageDialog *mParent;
-    KPageWidget *mPageWidget;
-
-    void init()
-    {
-      connect( mPageWidget, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ),
-               mParent, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ) );
-
-      mParent->setMainWidget( mPageWidget );
-      mPageWidget->layout()->setMargin( 0 );
-    }
-};
-
 KPageDialog::KPageDialog( QWidget *parent, Qt::WFlags flags )
-  : KDialog( parent, flags ),
-    d( new Private( this ) )
+    : KDialog(*new KPageDialogPrivate, parent, flags)
 {
+    Q_D(KPageDialog);
   d->mPageWidget = new KPageWidget( this );
 
   d->init();
 }
 
 KPageDialog::KPageDialog( KPageWidget *widget, QWidget *parent, Qt::WFlags flags )
-  : KDialog( parent, flags ),
-    d( new Private( this ) )
+    : KDialog(*new KPageDialogPrivate, parent, flags)
 {
+    Q_D(KPageDialog);
+    Q_ASSERT(widget);
+    widget->setParent(this);
   d->mPageWidget = widget;
 
   d->init();
 }
 
+KPageDialog::KPageDialog(KPageDialogPrivate &dd, KPageWidget *widget, QWidget *parent, Qt::WFlags flags)
+    : KDialog(dd, parent, flags)
+{
+    Q_D(KPageDialog);
+    if (widget) {
+        widget->setParent(this);
+        d->mPageWidget = widget;
+    } else {
+        d->mPageWidget = new KPageWidget(this);
+    }
+    d->init();
+}
+
 KPageDialog::~KPageDialog()
 {
-  delete d;
 }
 
 void KPageDialog::setFaceType( FaceType faceType )
 {
-  d->mPageWidget->setFaceType( (KPageWidget::FaceType)faceType );
+    d_func()->mPageWidget->setFaceType(static_cast<KPageWidget::FaceType>(faceType));
 }
 
 KPageWidgetItem* KPageDialog::addPage( QWidget *widget, const QString &name )
 {
-  return d->mPageWidget->addPage( widget, name );
+    return d_func()->mPageWidget->addPage(widget, name);
 }
 
 void KPageDialog::addPage( KPageWidgetItem *item )
 {
-  d->mPageWidget->addPage( item );
+    d_func()->mPageWidget->addPage(item);
 }
 
 KPageWidgetItem* KPageDialog::insertPage( KPageWidgetItem *before, QWidget *widget, const QString &name )
 {
-  return d->mPageWidget->insertPage( before, widget, name );
+    return d_func()->mPageWidget->insertPage(before, widget, name);
 }
 
 void KPageDialog::insertPage( KPageWidgetItem *before, KPageWidgetItem *item )
 {
-  d->mPageWidget->insertPage( before, item );
+    d_func()->mPageWidget->insertPage(before, item);
 }
 
 KPageWidgetItem* KPageDialog::addSubPage( KPageWidgetItem *parent, QWidget *widget, const QString &name )
 {
-  return d->mPageWidget->addSubPage( parent, widget, name );
+    return d_func()->mPageWidget->addSubPage(parent, widget, name);
 }
 
 void KPageDialog::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *item )
 {
-  d->mPageWidget->addSubPage( parent, item );
+    d_func()->mPageWidget->addSubPage(parent, item);
 }
 
 void KPageDialog::removePage( KPageWidgetItem *item )
 {
-  d->mPageWidget->removePage( item );
+    d_func()->mPageWidget->removePage(item);
 }
 
 void KPageDialog::setCurrentPage( KPageWidgetItem *item )
 {
-  d->mPageWidget->setCurrentPage( item );
+    d_func()->mPageWidget->setCurrentPage(item);
 }
 
 KPageWidgetItem* KPageDialog::currentPage() const
 {
-  return d->mPageWidget->currentPage();
+    return d_func()->mPageWidget->currentPage();
 }
 
 KPageWidget* KPageDialog::pageWidget()
 {
-  return d->mPageWidget;
+    return d_func()->mPageWidget;
 }
 
 const KPageWidget* KPageDialog::pageWidget() const
 {
-  return d->mPageWidget;
+    return d_func()->mPageWidget;
 }
 
 #include "kpagedialog.moc"

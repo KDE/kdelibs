@@ -55,6 +55,12 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
   Q_PROPERTY( KIcon icon READ icon WRITE setIcon )
   Q_PROPERTY( bool checkable READ isCheckable WRITE setCheckable )
   Q_PROPERTY( bool checked READ isChecked WRITE setChecked )
+    /**
+     * This property holds whether the item is enabled.
+     *
+     * It dis-/enables both the widget and the item in the list-/treeview.
+     */
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled)
 
   public:
     /**
@@ -129,14 +135,19 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
     bool isCheckable() const;
 
     /**
-     * Sets whether the page widget item is checked.
-     */
-    void setChecked( bool checked );
-
-    /**
      * Returns whether the page widget item is checked.
      */
     bool isChecked() const;
+
+    bool isEnabled() const;
+
+    public Q_SLOTS:
+        void setEnabled(bool);
+
+        /**
+         * Sets whether the page widget item is checked.
+         */
+        void setChecked( bool checked );
 
   Q_SIGNALS:
     /**
@@ -156,6 +167,8 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
     Private* const d;
 };
 
+class KPageWidgetModelPrivate;
+
 /**
  * This page model is used by @see KPageWidget to provide
  * a hierarchical layout of pages.
@@ -163,6 +176,7 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
 class KDEUI_EXPORT KPageWidgetModel : public KPageModel
 {
   Q_OBJECT
+    Q_DECLARE_PRIVATE(KPageWidgetModel)
 
   public:
     /**
@@ -255,7 +269,7 @@ class KDEUI_EXPORT KPageWidgetModel : public KPageModel
     /**
      * Returns the @see KPageWidgetItem for a given index or 0 if the index is invalid.
      */
-    KPageWidgetItem* item( const QModelIndex &index );
+    KPageWidgetItem *item(const QModelIndex &index) const;
 
     /**
      * Returns the index for a given @see KPageWidgetItem. The index is invalid if the
@@ -271,11 +285,8 @@ class KDEUI_EXPORT KPageWidgetModel : public KPageModel
     void toggled( KPageWidgetItem *page, bool checked );
 
   private:
-    class Private;
-    Private* const d;
-
-    Q_PRIVATE_SLOT( d, void itemChanged() )
-    Q_PRIVATE_SLOT( d, void itemToggled( bool ) )
+        Q_PRIVATE_SLOT(d_func(), void _k_itemChanged())
+        Q_PRIVATE_SLOT(d_func(), void _k_itemToggled(bool))
 };
 
 #endif

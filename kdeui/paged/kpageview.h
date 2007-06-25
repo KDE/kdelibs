@@ -31,6 +31,8 @@ class KPageModel;
 class QAbstractItemDelegate;
 class QAbstractItemView;
 class QModelIndex;
+class KPageViewPrivate;
+class QAbstractItemModel;
 
 /**
  * @short A base class which can handle multiple pages.
@@ -60,6 +62,7 @@ class KDEUI_EXPORT KPageView : public QWidget
   Q_OBJECT
   Q_ENUMS( FaceType )
   Q_PROPERTY( FaceType faceType READ faceType WRITE setFaceType )
+    Q_DECLARE_PRIVATE(KPageView)
 
   public:
     /**
@@ -99,14 +102,16 @@ class KDEUI_EXPORT KPageView : public QWidget
     virtual ~KPageView();
 
     /**
-     * Sets the @param model of the page view.
+     * Sets the @p model of the page view.
+     *
+     * The model has to provide data for the roles defined in KPageModel::Role.
      */
-    void setModel( KPageModel *model );
+    void setModel(QAbstractItemModel *model);
 
     /**
      * Returns the model of the page view.
      */
-    KPageModel* model() const;
+    QAbstractItemModel* model() const;
 
     /**
      * Sets the face type of the page view.
@@ -175,15 +180,14 @@ class KDEUI_EXPORT KPageView : public QWidget
      */
     Qt::Alignment viewPosition() const;
 
-  private:
-    class Private;
-    Private* const d;
+        KPageView(KPageViewPrivate &dd, QWidget *parent);
+        KPageViewPrivate *const d_ptr;
 
-    Q_PRIVATE_SLOT( d, void rebuildGui() )
-    Q_PRIVATE_SLOT( d, void pageSelected( const QModelIndex&, const QModelIndex& ) )
-    Q_PRIVATE_SLOT( d, void modelChanged() )
-    Q_PRIVATE_SLOT( d, void dataChanged( const QModelIndex&, const QModelIndex& ) )
-
+    private:
+        Q_PRIVATE_SLOT(d_func(), void _k_rebuildGui())
+        Q_PRIVATE_SLOT(d_func(), void _k_modelChanged())
+        Q_PRIVATE_SLOT(d_func(), void _k_pageSelected(const QModelIndex &, const QModelIndex &))
+        Q_PRIVATE_SLOT(d_func(), void _k_dataChanged(const QModelIndex &, const QModelIndex &))
 };
 
 #endif

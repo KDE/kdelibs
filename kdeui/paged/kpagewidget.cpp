@@ -20,94 +20,101 @@
 */
 
 #include "kpagewidget.h"
+#include "kpagewidget_p.h"
 
 #include "kpagewidgetmodel.h"
 
-class KPageWidget::Private
+KPageWidgetPrivate::KPageWidgetPrivate(KPageWidget *q)
+    : KPageViewPrivate(q)
 {
-  public:
-    Private( KPageWidget *_parent )
-      : parent( _parent )
-    {
-    }
+}
 
-    KPageWidgetModel *model;
-
-    void slotCurrentPageChanged( const QModelIndex&, const QModelIndex& );
-
-    KPageWidget *parent;
-};
-
-void KPageWidget::Private::slotCurrentPageChanged( const QModelIndex &current, const QModelIndex &before )
+void KPageWidgetPrivate::_k_slotCurrentPageChanged(const QModelIndex &current, const QModelIndex &before)
 {
   KPageWidgetItem *currentItem = 0;
   if ( current.isValid() )
-    currentItem = model->item( current );
+    currentItem = model()->item( current );
 
   KPageWidgetItem *beforeItem = 0;
   if ( before.isValid() )
-    beforeItem = model->item( before );
+    beforeItem = model()->item( before );
 
-  emit parent->currentPageChanged( currentItem, beforeItem );
+    Q_Q(KPageWidget);
+    emit q->currentPageChanged(currentItem, beforeItem);
+}
+
+KPageWidget::KPageWidget(KPageWidgetPrivate &dd, QWidget *parent)
+    : KPageView(dd, parent)
+{
+    Q_D(KPageWidget);
+    connect(this, SIGNAL(currentPageChanged(const QModelIndex &, const QModelIndex &)),
+            this, SLOT(_k_slotCurrentPageChanged(const QModelIndex &, const QModelIndex &)));
+
+    if (!d->KPageViewPrivate::model) {
+        setModel(new KPageWidgetModel(this));
+    } else {
+        Q_ASSERT(qobject_cast<KPageWidgetModel *>(d->KPageViewPrivate::model));
+    }
+
+    connect(d->model(), SIGNAL(toggled(KPageWidgetItem *, bool)),
+            this, SIGNAL(pageToggled(KPageWidgetItem *, bool)));
 }
 
 KPageWidget::KPageWidget( QWidget *parent )
-  : KPageView( parent ), d( new Private( this ) )
+    : KPageView(*new KPageWidgetPrivate(this), parent)
 {
-  d->model = new KPageWidgetModel( this );
+    Q_D(KPageWidget);
+    connect(this, SIGNAL(currentPageChanged(const QModelIndex &, const QModelIndex &)),
+            this, SLOT(_k_slotCurrentPageChanged(const QModelIndex &, const QModelIndex &)));
 
-  connect( this, SIGNAL( currentPageChanged( const QModelIndex&, const QModelIndex& ) ),
-           this, SLOT( slotCurrentPageChanged( const QModelIndex&, const QModelIndex& ) ) );
+    setModel(new KPageWidgetModel(this));
 
-  connect( d->model, SIGNAL( toggled( KPageWidgetItem*, bool ) ),
-           this, SIGNAL( pageToggled( KPageWidgetItem*, bool ) ) );
-
-  setModel( d->model );
+    connect(d->model(), SIGNAL(toggled(KPageWidgetItem *, bool)),
+            this, SIGNAL(pageToggled(KPageWidgetItem *, bool)));
 }
 
 KPageWidget::~KPageWidget()
 {
-  delete d;
 }
 
 KPageWidgetItem* KPageWidget::addPage( QWidget *widget, const QString &name )
 {
-  return d->model->addPage( widget, name );
+    return d_func()->model()->addPage(widget, name);
 }
 
 void KPageWidget::addPage( KPageWidgetItem *item )
 {
-  d->model->addPage( item );
+    d_func()->model()->addPage(item);
 }
 
 KPageWidgetItem* KPageWidget::insertPage( KPageWidgetItem *before, QWidget *widget, const QString &name )
 {
-  return d->model->insertPage( before, widget, name );
+    return d_func()->model()->insertPage(before, widget, name);
 }
 
 void KPageWidget::insertPage( KPageWidgetItem *before, KPageWidgetItem *item )
 {
-  d->model->insertPage( before, item );
+    d_func()->model()->insertPage(before, item);
 }
 
 KPageWidgetItem* KPageWidget::addSubPage( KPageWidgetItem *parent, QWidget *widget, const QString &name )
 {
-  return d->model->addSubPage( parent, widget, name );
+    return d_func()->model()->addSubPage(parent, widget, name);
 }
 
 void KPageWidget::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *item )
 {
-  d->model->addSubPage( parent, item );
+    d_func()->model()->addSubPage(parent, item);
 }
 
 void KPageWidget::removePage( KPageWidgetItem *item )
 {
-  d->model->removePage( item );
+    d_func()->model()->removePage(item);
 }
 
 void KPageWidget::setCurrentPage( KPageWidgetItem *item )
 {
-  const QModelIndex index = d->model->index( item );
+    const QModelIndex index = d_func()->model()->index(item);
   if ( !index.isValid() )
     return;
 
@@ -121,7 +128,7 @@ KPageWidgetItem* KPageWidget::currentPage() const
   if ( !index.isValid() )
     return 0;
 
-  return d->model->item( index );
+    return d_func()->model()->item(index);
 }
 
 #include "kpagewidget.moc"

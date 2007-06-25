@@ -26,6 +26,8 @@
 
 #include <QtCore/QAbstractItemModel>
 
+class KPageModelPrivate;
+
 /**
  *  @short A base class for a model used by KPageView.
  *
@@ -54,19 +56,29 @@
 class KDEUI_EXPORT KPageModel : public QAbstractItemModel
 {
   Q_OBJECT
+    Q_DECLARE_PRIVATE(KPageModel)
 
   public:
-    /**
-     * Additional KPageModel specific roles.
-     *
-     * @li HeaderRole - The data to be rendered as page header (usually text).
-     * @li WidgetRole - The data which contains a pointer to the page widget.
-     */
-    enum Role
-    {
-      HeaderRole = Qt::UserRole + 1,
-      WidgetRole
-    };
+        /**
+         * Additional roles that KPageView uses.
+         */
+        enum Role {
+            /**
+             * A string to be rendered as page header.
+             */
+            HeaderRole = Qt::UserRole + 1,
+            /**
+             * A pointer to the page widget. This is the widget that is shown when the item is
+             * selected.
+             *
+             * You can make QVariant take a QWidget using
+             * \code
+             * QWidget *myWidget = new QWidget;
+             * QVariant v = QVariant::fromValue(myWidget);
+             * \endcode
+             */
+            WidgetRole
+        };
 
     /**
      * Constructs a page model with the given parent.
@@ -78,9 +90,9 @@ class KDEUI_EXPORT KPageModel : public QAbstractItemModel
      */
     virtual ~KPageModel();
 
-  private:
-    class Private;
-    Private* const d;
+    protected:
+        KPageModel(KPageModelPrivate &dd, QObject *parent);
+        KPageModelPrivate *const d_ptr;
 };
 
 #endif

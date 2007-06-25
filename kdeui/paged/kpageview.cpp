@@ -35,72 +35,17 @@
 #include <QStackedWidget>
 #include <QTimer>
 
-class KPageStackedWidget : public QStackedWidget
-{
-  public:
-    KPageStackedWidget( QWidget *parent = 0 )
-      : QStackedWidget( parent )
-    {
-    }
-
-    void setMinimumSize( const QSize& size )
-    {
-      mMinimumSize = size;
-    }
-
-    virtual QSize minimumSizeHint () const
-    {
-      return mMinimumSize.expandedTo( QStackedWidget::minimumSizeHint() );
-    }
-
-  private:
-    QSize mMinimumSize;
-};
-
-class KPageView::Private
-{
-  public:
-    Private( KPageView *_parent )
-      : parent( _parent ), model( 0 ),
-        faceType( Auto ), view( 0 )
-    {
-    }
-
-    void updateTitleWidget( const QModelIndex& index );
-
-    KPageView* parent;
-
-    // data
-    KPageModel *model;
-    FaceType faceType;
-
-    // gui
-    KPageStackedWidget *stack;
-    KTitleWidget *titleWidget;
-    QGridLayout *layout;
-
-    QAbstractItemView *view;
-
-    void rebuildGui();
-    void updateSelection();
-    void cleanupPages();
-    QList<QWidget*> collectPages( const QModelIndex &parent = QModelIndex() );
-    FaceType detectAutoFace() const;
-    void modelChanged();
-    void dataChanged( const QModelIndex&, const QModelIndex& );
-    void pageSelected( const QModelIndex&, const QModelIndex& );
-};
-
-void KPageView::Private::rebuildGui()
+void KPageViewPrivate::_k_rebuildGui()
 {
   // clean up old view
+    Q_Q(KPageView);
   if ( view && view->selectionModel() ) {
-    disconnect( view->selectionModel(), SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
-                parent, SLOT( pageSelected( const QModelIndex&, const QModelIndex& ) ) );
+        QObject::disconnect(view->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+                q, SLOT(_k_pageSelected(const QModelIndex &, const QModelIndex &)));
   }
 
   delete view;
-  view = parent->createView();
+    view = q->createView();
 
   Q_ASSERT( view );
 
@@ -113,16 +58,16 @@ void KPageView::Private::rebuildGui()
 
   // setup new view
   if ( view->selectionModel() ) {
-    connect( view->selectionModel(), SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
-             parent, SLOT( pageSelected( const QModelIndex&, const QModelIndex& ) ) );
+        QObject::connect(view->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+                q, SLOT(_k_pageSelected(const QModelIndex &, const QModelIndex &)));
 
     if ( model )
       view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
   }
 
-  titleWidget->setVisible( parent->showPageHeader() );
+    titleWidget->setVisible(q->showPageHeader());
 
-  Qt::Alignment alignment = parent->viewPosition();
+    Qt::Alignment alignment = q->viewPosition();
   if ( alignment & Qt::AlignTop )
     layout->addWidget( view, 0, 1 );
   else if ( alignment & Qt::AlignRight )
@@ -133,7 +78,7 @@ void KPageView::Private::rebuildGui()
     layout->addWidget( view, 1, 0, 3, 1 );
 }
 
-void KPageView::Private::updateSelection()
+void KPageViewPrivate::updateSelection()
 {
   /**
    * Select the first item in the view if not done yet.
@@ -150,7 +95,7 @@ void KPageView::Private::updateSelection()
     view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
 }
 
-void KPageView::Private::cleanupPages()
+void KPageViewPrivate::cleanupPages()
 {
   /**
    * Remove all orphan pages from the stacked widget.
@@ -172,7 +117,7 @@ void KPageView::Private::cleanupPages()
   }
 }
 
-QList<QWidget*> KPageView::Private::collectPages( const QModelIndex &parentIndex )
+QList<QWidget *> KPageViewPrivate::collectPages(const QModelIndex &parentIndex)
 {
   /**
    * Traverse through the model recursive and collect all widgets in
@@ -193,7 +138,7 @@ QList<QWidget*> KPageView::Private::collectPages( const QModelIndex &parentIndex
   return retval;
 }
 
-KPageView::FaceType KPageView::Private::detectAutoFace() const
+KPageView::FaceType KPageViewPrivate::detectAutoFace() const
 {
   if ( !model )
     return KPageView::Plain;
@@ -219,10 +164,12 @@ KPageView::FaceType KPageView::Private::detectAutoFace() const
   return KPageView::Plain;
 }
 
-void KPageView::Private::modelChanged()
+void KPageViewPrivate::_k_modelChanged()
 {
   if ( !model )
     return;
+
+    Q_Q(KPageView);
 
   /**
    * If the face type is Auto, we rebuild the GUI whenever the layout
@@ -231,8 +178,9 @@ void KPageView::Private::modelChanged()
    * We have to decouple the method call here, since the view which
    * called use is deleted.
    */
-  if ( faceType == Auto )
-    QTimer::singleShot( 0, parent, SLOT( rebuildGui() ) );
+    if (faceType == KPageView::Auto) {
+        QTimer::singleShot(0, q, SLOT(_k_rebuildGui()));
+    }
 
   /**
    * Set the stack to the minimum size of the largest widget.
@@ -249,7 +197,7 @@ void KPageView::Private::modelChanged()
   updateSelection();
 }
 
-void KPageView::Private::pageSelected( const QModelIndex &index, const QModelIndex &previous )
+void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelIndex &previous)
 {
   if ( !model )
     return;
@@ -270,11 +218,13 @@ void KPageView::Private::pageSelected( const QModelIndex &index, const QModelInd
 
   updateTitleWidget(index);
 
-  emit parent->currentPageChanged( index, previous );
+    Q_Q(KPageView);
+    emit q->currentPageChanged(index, previous);
 }
 
-void KPageView::Private::updateTitleWidget(const QModelIndex& index)
+void KPageViewPrivate::updateTitleWidget(const QModelIndex& index)
 {
+    Q_Q(KPageView);
     QString header = model->data( index, KPageModel::HeaderRole ).toString();
     if ( header.isEmpty() ) {
         header = model->data( index, Qt::DisplayRole ).toString();
@@ -284,10 +234,10 @@ void KPageView::Private::updateTitleWidget(const QModelIndex& index)
 
     const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
     titleWidget->setPixmap( icon.pixmap( 22, 22 ) );
-    titleWidget->setVisible( parent->showPageHeader() );
+    titleWidget->setVisible(q->showPageHeader());
 }
 
-void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
+void KPageViewPrivate::_k_dataChanged(const QModelIndex &, const QModelIndex &)
 {
   /**
    * When data has changed we update the header and icon for the currently selected
@@ -303,73 +253,92 @@ void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
   updateTitleWidget( index );
 }
 
+KPageViewPrivate::KPageViewPrivate(KPageView *_parent)
+    : q_ptr(_parent), model(0), faceType(KPageView::Auto),
+    layout(0), stack(0), titleWidget(0), view(0)
+{
+}
+
+void KPageViewPrivate::init()
+{
+    Q_Q(KPageView);
+    layout = new QGridLayout(q);
+    stack = new KPageStackedWidget(q);
+    titleWidget = new KTitleWidget(q);
+    layout->addWidget(titleWidget, 1, 1);
+    layout->addWidget(stack, 2, 1);
+
+    // stack should use most space
+    layout->setColumnStretch(1, 1);
+    layout->setRowStretch(2, 1);
+}
+
 /**
  * KPageView Implementation
  */
 KPageView::KPageView( QWidget *parent )
-  : QWidget( parent ), d( new Private( this ) )
+    : QWidget(parent), d_ptr(new KPageViewPrivate(this))
 {
-  d->layout = new QGridLayout( this );
-  d->stack = new KPageStackedWidget( this );
+    d_ptr->init();
+}
 
-  d->titleWidget = new KTitleWidget( this );
-
-  d->layout->addWidget(d->titleWidget, 1, 1);
-  d->layout->addWidget( d->stack, 2, 1 );
-
-  // stack should use most space
-  d->layout->setColumnStretch( 1, 1 );
-  d->layout->setRowStretch( 2, 1 );
+KPageView::KPageView(KPageViewPrivate &dd, QWidget *parent)
+    : QWidget(parent), d_ptr(&dd)
+{
+    d_ptr->init();
 }
 
 KPageView::~KPageView()
 {
-  delete d;
+    delete d_ptr;
 }
 
-void KPageView::setModel( KPageModel *model )
+void KPageView::setModel(QAbstractItemModel *model)
 {
+    Q_D(KPageView);
   // clean up old model
   if ( d->model ) {
-    disconnect( d->model, SIGNAL( layoutChanged() ), this, SLOT( modelChanged() ) );
-    disconnect( d->model, SIGNAL( dataChanged( const QModelIndex&, const QModelIndex& ) ),
-                this, SLOT( dataChanged( const QModelIndex&, const QModelIndex& ) ) );
+        disconnect(d->model, SIGNAL(layoutChanged()), this, SLOT(_k_modelChanged()));
+        disconnect(d->model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+                this, SLOT(_k_dataChanged(const QModelIndex &, const QModelIndex &)));
   }
 
   d->model = model;
 
   if ( d->model ) {
-    connect( d->model, SIGNAL( layoutChanged() ), this, SLOT( modelChanged() ) );
-    connect( d->model, SIGNAL( dataChanged( const QModelIndex&, const QModelIndex& ) ),
-             this, SLOT( dataChanged( const QModelIndex&, const QModelIndex& ) ) );
+        connect(d->model, SIGNAL(layoutChanged()), this, SLOT(_k_modelChanged()));
+        connect(d->model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
+                this, SLOT(_k_dataChanged(const QModelIndex &, const QModelIndex &)));
 
     // set new model in navigation view
     if ( d->view )
       d->view->setModel( model );
   }
 
-  d->rebuildGui();
+    d->_k_rebuildGui();
 }
 
-KPageModel* KPageView::model() const
+QAbstractItemModel* KPageView::model() const
 {
-  return d->model;
+    return d_func()->model;
 }
 
 void KPageView::setFaceType( FaceType faceType )
 {
+    Q_D(KPageView);
   d->faceType = faceType;
 
-  d->rebuildGui();
+    d->_k_rebuildGui();
 }
 
 KPageView::FaceType KPageView::faceType() const
 {
-  return d->faceType;
+    return d_func()->faceType;
 }
 
 void KPageView::setCurrentPage( const QModelIndex &index )
 {
+    Q_D(KPageView);
   if ( !d->view || !d->view->selectionModel() )
     return;
 
@@ -378,6 +347,7 @@ void KPageView::setCurrentPage( const QModelIndex &index )
 
 QModelIndex KPageView::currentPage() const
 {
+    Q_D(const KPageView);
   if ( !d->view || !d->view->selectionModel() )
     return QModelIndex();
 
@@ -386,12 +356,14 @@ QModelIndex KPageView::currentPage() const
 
 void KPageView::setItemDelegate( QAbstractItemDelegate *delegate )
 {
+    Q_D(KPageView);
   if ( d->view )
     d->view->setItemDelegate( delegate );
 }
 
 QAbstractItemDelegate* KPageView::itemDelegate() const
 {
+    Q_D(const KPageView);
   if ( d->view )
     return d->view->itemDelegate();
   else
@@ -401,6 +373,7 @@ QAbstractItemDelegate* KPageView::itemDelegate() const
 
 QAbstractItemView* KPageView::createView()
 {
+    Q_D(KPageView);
   if ( d->faceType == Auto ) {
     const FaceType faceType = d->detectAutoFace();
 
@@ -426,6 +399,7 @@ QAbstractItemView* KPageView::createView()
 
 bool KPageView::showPageHeader() const
 {
+    Q_D(const KPageView);
   FaceType faceType = d->faceType;
 
   if ( faceType == Auto )
@@ -440,6 +414,7 @@ bool KPageView::showPageHeader() const
 
 Qt::Alignment KPageView::viewPosition() const
 {
+    Q_D(const KPageView);
   FaceType faceType = d->faceType;
 
   if ( faceType == Auto )

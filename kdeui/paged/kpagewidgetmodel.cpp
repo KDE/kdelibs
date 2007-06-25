@@ -20,6 +20,7 @@
 */
 
 #include "kpagewidgetmodel.h"
+#include "kpagewidgetmodel_p.h"
 
 #include <QPointer>
 #include <QWidget>
@@ -30,7 +31,7 @@ class KPageWidgetItem::Private
 {
   public:
     Private()
-      : checkable( false ), checked( false )
+            : checkable(false), checked(false), enabled(true)
     {
     }
 
@@ -44,8 +45,9 @@ class KPageWidgetItem::Private
     QString header;
     KIcon icon;
     QPointer<QWidget> widget;
-    bool checkable;
-    bool checked;
+    bool checkable : 1;
+    bool checked : 1;
+    bool enabled : 1;
 };
 
 KPageWidgetItem::KPageWidgetItem( QWidget *widget )
@@ -80,6 +82,20 @@ KPageWidgetItem::KPageWidgetItem( QWidget *widget, const QString &name )
 KPageWidgetItem::~KPageWidgetItem()
 {
   delete d;
+}
+
+void KPageWidgetItem::setEnabled(bool enabled)
+{
+    d->enabled = enabled;
+    if (d->widget) {
+        d->widget->setEnabled(enabled);
+    }
+    emit changed();
+}
+
+bool KPageWidgetItem::isEnabled() const
+{
+    return d->enabled;
 }
 
 QWidget* KPageWidgetItem::widget() const
@@ -145,35 +161,6 @@ bool KPageWidgetItem::isChecked() const
 {
   return d->checked;
 }
-
-class PageItem
-{
-  public:
-    PageItem( KPageWidgetItem *pageItem, PageItem *parent = 0);
-    ~PageItem();
-
-    void appendChild( PageItem *child );
-    void insertChild( int row, PageItem *child );
-    void removeChild( int row );
-
-    PageItem *child( int row );
-    int childCount() const;
-    int columnCount() const;
-    int row() const;
-    PageItem *parent();
-
-    KPageWidgetItem* pageWidgetItem() const;
-
-    PageItem *findChild( const KPageWidgetItem *item );
-
-    void dump( int indent = 0 );
-
-  private:
-    KPageWidgetItem *mPageWidgetItem;
-
-    QList<PageItem*> mChildItems;
-    PageItem *mParentItem;
-};
 
 PageItem::PageItem( KPageWidgetItem *pageWidgetItem, PageItem *parent )
   : mPageWidgetItem( pageWidgetItem ), mParentItem( parent )
@@ -262,57 +249,13 @@ void PageItem::dump( int indent )
     mChildItems[ i ]->dump( indent + 2 );
 }
 
-
-class KPageWidgetModel::Private
-{
-  public:
-    Private( KPageWidgetModel *_parent )
-      : parent( _parent )
-    {
-      rootItem = new PageItem( 0, 0 );
-    }
-
-    ~Private()
-    {
-      delete rootItem;
-      rootItem = 0;
-    }
-
-    KPageWidgetModel *parent;
-    PageItem *rootItem;
-
-    void itemChanged()
-    {
-      KPageWidgetItem *item = static_cast<KPageWidgetItem*>( parent->sender() );
-      if ( !item )
-        return;
-
-      const QModelIndex index = parent->index( item );
-      if ( !index.isValid() )
-        return;
-
-      emit parent->dataChanged( index, index );
-    }
-
-    void itemToggled( bool checked )
-    {
-      KPageWidgetItem *item = static_cast<KPageWidgetItem*>( parent->sender() );
-      if ( !item )
-        return;
-
-      emit parent->toggled( item, checked );
-    }
-};
-
 KPageWidgetModel::KPageWidgetModel( QObject *parent )
-  : KPageModel( parent ),
-    d( new Private( this ) )
+    : KPageModel(*new KPageWidgetModelPrivate, parent)
 {
 }
 
 KPageWidgetModel::~KPageWidgetModel()
 {
-  delete d;
 }
 
 int KPageWidgetModel::columnCount( const QModelIndex& ) const
@@ -372,11 +315,14 @@ Qt::ItemFlags KPageWidgetModel::flags( const QModelIndex &index ) const
   if ( !index.isValid() )
     return 0;
 
-  Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+  Qt::ItemFlags flags = Qt::ItemIsSelectable;
 
   PageItem *item = static_cast<PageItem*>( index.internalPointer() );
   if ( item->pageWidgetItem()->isCheckable() )
     flags |= Qt::ItemIsUserCheckable;
+  if (item->pageWidgetItem()->isEnabled()) {
+      flags |= Qt::ItemIsEnabled;
+  }
 
   return flags;
 }
@@ -388,7 +334,7 @@ QModelIndex KPageWidgetModel::index( int row, int column, const QModelIndex &par
   if ( parent.isValid() )
     parentItem = static_cast<PageItem*>( parent.internalPointer() );
   else
-    parentItem = d->rootItem;
+        parentItem = d_func()->rootItem;
 
   PageItem *childItem = parentItem->child( row );
   if ( childItem )
@@ -405,7 +351,7 @@ QModelIndex KPageWidgetModel::parent( const QModelIndex &index ) const
   PageItem *item = static_cast<PageItem*>( index.internalPointer() );
   PageItem *parentItem = item->parent();
 
-  if ( parentItem == d->rootItem )
+    if ( parentItem == d_func()->rootItem )
     return QModelIndex();
   else
     return createIndex( parentItem->row(), 0, parentItem );
@@ -416,7 +362,7 @@ int KPageWidgetModel::rowCount( const QModelIndex &parent ) const
   PageItem *parentItem;
 
   if ( !parent.isValid() )
-    parentItem = d->rootItem;
+        parentItem = d_func()->rootItem;
   else
     parentItem = static_cast<PageItem*>( parent.internalPointer() );
 
@@ -434,8 +380,9 @@ KPageWidgetItem* KPageWidgetModel::addPage( QWidget *widget, const QString &name
 
 void KPageWidgetModel::addPage( KPageWidgetItem *item )
 {
-  connect( item, SIGNAL( changed() ), this, SLOT( itemChanged() ) );
-  connect( item, SIGNAL( toggled( bool ) ), this, SLOT( itemToggled( bool ) ) );
+    Q_D(KPageWidgetModel);
+    connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
+    connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
 
   PageItem *pageItem = new PageItem( item, d->rootItem );
   d->rootItem->appendChild( pageItem );
@@ -454,14 +401,14 @@ KPageWidgetItem* KPageWidgetModel::insertPage( KPageWidgetItem *before, QWidget 
 
 void KPageWidgetModel::insertPage( KPageWidgetItem *before, KPageWidgetItem *item )
 {
-  PageItem *beforePageItem = d->rootItem->findChild( before );
+    PageItem *beforePageItem = d_func()->rootItem->findChild(before);
   if ( !beforePageItem ) {
     qDebug( "Invalid KPageWidgetItem passed!" );
     return;
   }
 
-  connect( item, SIGNAL( changed() ), this, SLOT( itemChanged() ) );
-  connect( item, SIGNAL( toggled( bool ) ), this, SLOT( itemToggled( bool ) ) );
+    connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
+    connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
 
   PageItem *parent = beforePageItem->parent();
 
@@ -482,14 +429,14 @@ KPageWidgetItem* KPageWidgetModel::addSubPage( KPageWidgetItem *parent, QWidget 
 
 void KPageWidgetModel::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *item )
 {
-  PageItem *parentPageItem = d->rootItem->findChild( parent );
+    PageItem *parentPageItem = d_func()->rootItem->findChild(parent);
   if ( !parentPageItem ) {
     qDebug( "Invalid KPageWidgetItem passed!" );
     return;
   }
 
-  connect( item, SIGNAL( changed() ), this, SLOT( itemChanged() ) );
-  connect( item, SIGNAL( toggled( bool ) ), this, SLOT( itemToggled( bool ) ) );
+    connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
+    connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
 
   PageItem *newPageItem = new PageItem( item, parentPageItem );
   parentPageItem->appendChild( newPageItem );
@@ -502,14 +449,16 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
   if ( !item )
     return;
 
+  Q_D(KPageWidgetModel);
+
   PageItem *pageItem = d->rootItem->findChild( item );
   if ( !pageItem ) {
     qDebug( "Invalid KPageWidgetItem passed!" );
     return;
   }
 
-  disconnect( item, SIGNAL( changed() ), this, SLOT( itemChanged() ) );
-  disconnect( item, SIGNAL( toggled( bool ) ), this, SLOT( itemToggled( bool ) ) );
+    disconnect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
+    disconnect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
 
   PageItem *parentPageItem = pageItem->parent();
   int row = parentPageItem->row();
@@ -518,7 +467,7 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
   if ( parentPageItem != d->rootItem )
     index = createIndex( row, 0, parentPageItem );
 
-  beginRemoveRows( index, pageItem->row(), 1 );
+    beginRemoveRows(index, pageItem->row(), pageItem->row() + 1);
 
   parentPageItem->removeChild( pageItem->row() );
   delete pageItem;
@@ -528,7 +477,7 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
   emit layoutChanged();
 }
 
-KPageWidgetItem* KPageWidgetModel::item( const QModelIndex &index )
+KPageWidgetItem *KPageWidgetModel::item(const QModelIndex &index) const
 {
   if ( !index.isValid() )
     return 0;
@@ -545,7 +494,7 @@ QModelIndex KPageWidgetModel::index( const KPageWidgetItem *item ) const
   if ( !item )
     return QModelIndex();
 
-  const PageItem *pageItem = d->rootItem->findChild( item );
+    const PageItem *pageItem = d_func()->rootItem->findChild(item);
   if ( !pageItem ) {
     return QModelIndex();
   }

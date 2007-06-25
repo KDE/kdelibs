@@ -26,6 +26,7 @@
 
 #include "kpageview.h"
 
+class KPageWidgetPrivate;
 /**
  * @short Page widget with many layouts (faces).
  * @see KPageView with hierarchical page model.
@@ -35,6 +36,7 @@
 class KDEUI_EXPORT KPageWidget : public KPageView
 {
   Q_OBJECT
+    Q_DECLARE_PRIVATE(KPageWidget)
 
   public:
     /**
@@ -139,11 +141,11 @@ class KDEUI_EXPORT KPageWidget : public KPageView
      */
     void pageToggled( KPageWidgetItem *page, bool checked );
 
-  private:
-    class Private;
-    Private* const d;
+    protected:
+        KPageWidget(KPageWidgetPrivate &dd, QWidget *parent);
 
-    Q_PRIVATE_SLOT( d, void slotCurrentPageChanged( const QModelIndex&, const QModelIndex& ) )
+    private:
+        Q_PRIVATE_SLOT(d_func(), void _k_slotCurrentPageChanged(const QModelIndex &, const QModelIndex &))
 };
 
 #endif

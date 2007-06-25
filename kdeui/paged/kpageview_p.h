@@ -22,11 +22,74 @@
 #ifndef KPAGEVIEW_P_H
 #define KPAGEVIEW_P_H
 
+#include "kpageview.h"
+
 #include <QAbstractItemDelegate>
+#include <QtGui/QGridLayout>
+#include <QtGui/QStackedWidget>
 #include <QAbstractProxyModel>
 #include <QListView>
 #include <QTabBar>
 #include <QTreeView>
+#include <ktitlewidget.h>
+
+class KPageStackedWidget : public QStackedWidget
+{
+  public:
+    KPageStackedWidget( QWidget *parent = 0 )
+      : QStackedWidget( parent )
+    {
+    }
+
+    void setMinimumSize( const QSize& size )
+    {
+      mMinimumSize = size;
+    }
+
+    virtual QSize minimumSizeHint () const
+    {
+      return mMinimumSize.expandedTo( QStackedWidget::minimumSizeHint() );
+    }
+
+  private:
+    QSize mMinimumSize;
+};
+
+class KPageViewPrivate
+{
+    Q_DECLARE_PUBLIC(KPageView)
+    protected:
+        KPageViewPrivate(KPageView *);
+
+        KPageView* q_ptr;
+
+        // data
+        QAbstractItemModel *model;
+        KPageView::FaceType faceType;
+
+        // gui
+        QGridLayout *layout;
+        KPageStackedWidget *stack;
+        KTitleWidget *titleWidget;
+
+        QAbstractItemView *view;
+
+        void updateTitleWidget(const QModelIndex& index);
+
+        void updateSelection();
+        void cleanupPages();
+        QList<QWidget*> collectPages(const QModelIndex &parent = QModelIndex());
+        KPageView::FaceType detectAutoFace() const;
+
+        // private slots
+        void _k_rebuildGui();
+        void _k_modelChanged();
+        void _k_dataChanged(const QModelIndex&, const QModelIndex&);
+        void _k_pageSelected(const QModelIndex&, const QModelIndex&);
+
+    private:
+        void init();
+};
 
 namespace KDEPrivate {
 

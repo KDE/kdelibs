@@ -20,14 +20,22 @@
 */
 
 #include "kpagemodel.h"
+#include "kpagemodel_p.h"
 
 KPageModel::KPageModel( QObject *parent )
-  : QAbstractItemModel( parent ), d( 0 )
+    : QAbstractItemModel(parent), d_ptr(0)
 {
+}
+
+KPageModel::KPageModel(KPageModelPrivate &dd, QObject *parent)
+    : QAbstractItemModel(parent), d_ptr(&dd)
+{
+    d_ptr->q_ptr = this;
 }
 
 KPageModel::~KPageModel()
 {
+    delete d_ptr;
 }
 
 #include "kpagemodel.moc"

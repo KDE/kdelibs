@@ -28,6 +28,8 @@
 #include <kdialog.h>
 #include <kpagewidget.h>
 
+class KPageDialogPrivate;
+
 /**
  * @short A dialog base class which can handle multiple pages.
  *
@@ -63,6 +65,7 @@
 class KDEUI_EXPORT KPageDialog : public KDialog
 {
   Q_OBJECT
+    Q_DECLARE_PRIVATE(KPageDialog)
 
   public:
 
@@ -193,8 +196,12 @@ class KDEUI_EXPORT KPageDialog : public KDialog
   protected:
     /**
      * This constructor can be used by subclasses to provide a custom page widget.
+     *
+     * \param widget The KPageWidget object will be reparented to this object, so you can create
+     * it without parent and you are not allowed to delete it.
      */
-    explicit KPageDialog( KPageWidget *widget, QWidget *parent = 0, Qt::WFlags flags = 0 );
+    KPageDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags = 0);
+    KPageDialog(KPageDialogPrivate &dd, KPageWidget *widget, QWidget *parent, Qt::WFlags flags = 0);
 
     /**
      * Returns the page widget of the dialog or 0 if no page widget is set.
@@ -205,10 +212,6 @@ class KDEUI_EXPORT KPageDialog : public KDialog
      * Returns the page widget of the dialog or 0 if no page widget is set.
      */
     const KPageWidget *pageWidget() const;
-
-  private:
-    class Private;
-    Private* const d;
 };
 
 #endif
