@@ -21,7 +21,6 @@
 #include "dialog_p.h"
 
 #include "dispatcher.h"
-#include "pagewidget_p.h"
 //#include "componentsdialog_p.h"
 
 #include <klocale.h>
