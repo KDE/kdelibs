@@ -172,6 +172,8 @@ public:
     KColorScheme(const KColorScheme&);
     virtual ~KColorScheme();
 
+    KColorScheme& operator=(const KColorScheme&);
+
     /**
      * Construct a palette from the system colors in the given color set.
      */

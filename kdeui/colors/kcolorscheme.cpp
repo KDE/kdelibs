@@ -145,6 +145,12 @@ KColorScheme::KColorScheme(const KColorScheme &other)
     d = new KColorSchemePrivate(*other.d);
 }
 
+KColorScheme& KColorScheme::operator=(const KColorScheme& other)
+{
+    delete d;
+    d = new KColorSchemePrivate(*other.d);
+}
+
 KColorScheme::~KColorScheme()
 {
     delete d;
