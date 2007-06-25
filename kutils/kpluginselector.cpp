@@ -261,13 +261,12 @@ KPluginSelector::Private::PluginModel::PluginModel(KPluginSelector::Private *par
 
 KPluginSelector::Private::PluginModel::~PluginModel()
 {
-    qDeleteAll(groupsToRemove);
 }
 
 void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::List &pluginInfoList,
                                                              const QString &categoryName,
                                                              const QString &categoryKey,
-                                                             KConfigGroup *configGroup,
+                                                             const KConfigGroup &configGroup,
                                                              PluginLoadMethod pluginLoadMethod,
                                                              AddMethod addMethod)
 {
@@ -278,7 +277,7 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
         pluginInfoByCategory.insert(categoryName, KPluginInfo::List());
     }
 
-    KConfigGroup *providedConfigGroup = 0;
+    KConfigGroup providedConfigGroup;
     int addedPlugins = 0;
     bool alternateColor = pluginCount.contains(categoryName) ? ((pluginCount[categoryName] % 2) != 0) : false;
     foreach (KPluginInfo *pluginInfo, pluginInfoList)
@@ -287,12 +286,11 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
              ((myCategoryKey.isEmpty()) ||
               (pluginInfo->category().toLower() == myCategoryKey)))
         {
-            if ((pluginLoadMethod == ReadConfigFile) && !pluginInfo->config())
+            if ((pluginLoadMethod == ReadConfigFile) && !pluginInfo->config().isValid())
                 pluginInfo->load(configGroup);
             else if (pluginLoadMethod == ReadConfigFile)
             {
-                providedConfigGroup = new KConfigGroup(pluginInfo->config(), pluginInfo->configgroup());
-                groupsToRemove.append(providedConfigGroup);
+                providedConfigGroup = pluginInfo->config();
                 pluginInfo->load(providedConfigGroup);
             }
 
@@ -307,7 +305,7 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
 
             pluginAdditionalInfo.alternateColor = alternateColor;
 
-            pluginAdditionalInfo.configGroup = pluginInfo->config() ? providedConfigGroup : configGroup;
+            pluginAdditionalInfo.configGroup = pluginInfo->config().isValid() ? providedConfigGroup : configGroup;
             pluginAdditionalInfo.addMethod = addMethod;
 
             additionalInfo.insert(pluginInfo, pluginAdditionalInfo);
@@ -471,7 +469,7 @@ QList<KService::Ptr> KPluginSelector::Private::PluginModel::services(const QMode
     return QList<KService::Ptr>(); // We were asked for a category
 }
 
-KConfigGroup *KPluginSelector::Private::PluginModel::configGroup(const QModelIndex &index) const
+KConfigGroup KPluginSelector::Private::PluginModel::configGroup(const QModelIndex &index) const
 {
     return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).configGroup;
 }
@@ -607,7 +605,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
     KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
 
-    d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, cfgGroup);
+    d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, *cfgGroup);
 }
 
 void KPluginSelector::addPlugins(const KComponentData &instance,
@@ -630,7 +628,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo*> &pluginInfoList,
     KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
 
-    d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, cfgGroup, pluginLoadMethod, Private::PluginModel::ManuallyAdded);
+    d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, *cfgGroup, pluginLoadMethod, Private::PluginModel::ManuallyAdded);
 }
 
 void KPluginSelector::load()
@@ -657,7 +655,7 @@ void KPluginSelector::save()
 {
     QModelIndex currentIndex;
     KPluginInfo *currentPlugin;
-    KConfigGroup *configGroup;
+    KConfigGroup configGroup;
     for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
         currentIndex = d->pluginModel->index(i, 0);
@@ -670,7 +668,7 @@ void KPluginSelector::save()
 
             currentPlugin->save(configGroup);
 
-            configGroup->sync();
+            configGroup.sync();
         }
     }
 
@@ -717,10 +715,7 @@ void KPluginSelector::updatePluginsState()
 
 
 KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Private *parent)
-    : QItemDelegate(0)
-    , configDialog(0)
-    , currentModuleProxyList(0)
-    , parent(parent)
+    : QItemDelegate(0), currentModuleProxyList(0), configDialog(0), parent(parent)
 {
     iconLoader = new KIconLoader();
 }

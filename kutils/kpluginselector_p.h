@@ -152,7 +152,7 @@ public:
     struct AdditionalInfo
     {
         int itemChecked;
-        KConfigGroup *configGroup;
+        KConfigGroup configGroup;
         QStringList parentComponents;
         AddMethod addMethod; // If the plugin was added with the method
                              // addPlugins(const QList<KPluginInfo*> &pluginInfoList ...
@@ -167,7 +167,7 @@ public:
     void appendPluginList(const KPluginInfo::List &pluginInfoList,
                           const QString &categoryName,
                           const QString &categoryKey,
-                          KConfigGroup *configGroup,
+                          const KConfigGroup &configGroup,
                           PluginLoadMethod pluginLoadMethod = ReadConfigFile,
                           AddMethod addMethod = AutomaticallyAdded);
 
@@ -185,7 +185,7 @@ public:
 
     QList<KService::Ptr> services(const QModelIndex &index) const;
 
-    KConfigGroup *configGroup(const QModelIndex &index) const;
+    KConfigGroup configGroup(const QModelIndex &index) const;
 
     void setParentComponents(const QModelIndex &index, const QStringList &parentComponents);
 
@@ -200,7 +200,6 @@ public:
     bool alternateColor(KPluginInfo *pluginInfo) const;
 
 private:
-    QList<KConfigGroup*> groupsToRemove;
     QMap<QString, KPluginInfo::List> pluginInfoByCategory;
     QHash<KPluginInfo *, KCModuleProxy *> moduleProxies;
     QMap<QString, int> pluginCount;
