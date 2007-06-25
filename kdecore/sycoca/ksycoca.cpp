@@ -323,6 +323,7 @@ QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
 {
    if ( !m_str )
        d->checkDatabase(KSycocaPrivate::IfNotFoundRecreate | KSycocaPrivate::IfNotFoundOpenDummy);
+   Q_ASSERT(m_str);
    //kDebug(7011) << QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16) << endl;
    m_str->device()->seek(offset);
    qint32 aType;
