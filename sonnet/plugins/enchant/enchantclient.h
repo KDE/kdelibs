@@ -27,12 +27,12 @@
 #include <QtCore/QSet>
 #include <enchant/enchant.h>
 
-namespace KSpell2 {
+namespace Sonnet {
     class Speller;
 }
-using KSpell2::Speller;
+using Sonnet::Speller;
 
-class QSpellEnchantClient : public KSpell2::Client
+class QSpellEnchantClient : public Sonnet::Client
 {
     Q_OBJECT
 public:

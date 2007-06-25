@@ -24,7 +24,7 @@
 
 #include <QtCore/QTextCodec>
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 ASpellDict::ASpellDict( const QString& lang )
     : Speller(lang)

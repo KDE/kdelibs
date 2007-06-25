@@ -30,12 +30,12 @@ extern "C" {
 #include "hspell.h"
 }
 
-namespace KSpell2 {
+namespace Sonnet {
     class Speller;
 }
-using KSpell2::Speller;
+using Sonnet::Speller;
 
-class HSpellClient : public KSpell2::Client
+class HSpellClient : public Sonnet::Client
 {
     Q_OBJECT
 public:

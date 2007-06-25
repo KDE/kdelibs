@@ -1,7 +1,6 @@
 /**
- * test.cpp
  *
- * Copyright (C)  2004  Zack Rusin <zack@kde.org>
+ * Copyright 2007  Zack Rusin <zack@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,20 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "loader.h"
 #include "speller.h"
+#include "loader.h"
+#include "test_core.h"
 
-#include <QCoreApplication>
+#include <qtest_kde.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
-#include <QtCore/QDate>
+
+QTEST_KDEMAIN_CORE( SonnetCoreTest )
 
 using namespace Sonnet;
 
-int main( int argc, char** argv )
+void SonnetCoreTest::testCore()
 {
-    QCoreApplication app(argc,argv);
-
     Loader::Ptr loader = Loader::openLoader();
 
     kDebug()<< "Clients are "   << loader->clients()   << endl;
@@ -96,6 +95,6 @@ int main( int argc, char** argv )
     kDebug()<<"Elapsed time is "<<mtime.elapsed()<<endl;
 
     delete dict;
-
-    return 0;
 }
+
+#include "test_core.moc"

@@ -19,15 +19,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_SETTINGS_H
-#define KSPELL_SETTINGS_H
+#ifndef SONNET_SETTINGS_H
+#define SONNET_SETTINGS_H
 
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 #include <kdecore_export.h>
 #include <ksharedconfig.h>
 
-namespace KSpell2
+namespace Sonnet
 {
     class Loader;
 

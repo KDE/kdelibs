@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_BROKER_H
-#define KSPELL_BROKER_H
+#ifndef SONNET_BROKER_H
+#define SONNET_BROKER_H
 
 #include <kdecore_export.h>
 #include <ksharedptr.h>
@@ -31,21 +31,20 @@
 #include <ksharedconfig.h>
 
 class KService;
-namespace KSpell2
+namespace Sonnet
 {
     class Settings;
     class Speller;
-    class DefaultDictionary;
 
     /**
      * @short Class used to deal with dictionaries
      *
      * This class manages all dictionaries. It's the top level
-     * KSpell2 class, you can think of it as the kernel or manager
-     * of the KSpell2 architecture.
+     * Sonnet class, you can think of it as the kernel or manager
+     * of the Sonnet architecture.
      */
     class KDECORE_EXPORT Loader : public QObject,
-                                     public KShared
+                                  public KShared
     {
         Q_OBJECT
     public:
@@ -61,22 +60,13 @@ namespace KSpell2
          * @param config is the name of config file which
          *        loader should use to read default language
          *        and default client values. If no value will
-         *        be passed Loader will use global kspellrc file.
+         *        be passed Loader will use global sonnetrc file.
          */
         static Loader::Ptr openLoader(
             KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
     public:
         ~Loader();
-
-        /**
-         * Function returns the so-called DefaultDictionary. It's a
-         * special form a dictionary which automatically mutates
-         * according to changes tot the KSpell2::Settings object.
-         * You also can't delete it like other dictionaries since
-         * it's owned by the Loader and it will take care of it.
-         */
-        DefaultDictionary *defaultDictionary() const;
 
         /**
          * Returns dictionary for the given language and preferred client.

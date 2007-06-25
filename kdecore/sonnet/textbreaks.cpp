@@ -19,10 +19,14 @@
 
 #include "textbreaks.h"
 
+namespace Sonnet
+{
+
 QHash<quint32,qint8> TextBreaks::data;
 QHash<QString,qint8> TextBreaks::catalog;
 
-TextBreaks::TextBreaks( const QString & text ) : m_text(text)
+TextBreaks::TextBreaks(const QString &text)
+    : m_text(text)
 {
     init();
 }
@@ -42,16 +46,14 @@ void TextBreaks::init()
     quint32 keys, code;
 
     in >> keys;
-    while (keys)
-    {
+    while (keys) {
         in >> catKey >> cat;
         catalog.insert(cat,catKey);
         --keys;
     }
 
     in >> keys;
-    while (keys)
-    {
+    while (keys) {
         in >> code >> catKey;
         data.insert(code,catKey);
         --keys;
@@ -63,17 +65,19 @@ QString TextBreaks::text() const
     return    m_text;
 }
 
-void TextBreaks::setText( const QString & text )
+void TextBreaks::setText(const QString &text)
 {
     m_text = text;
 }
-TextBreaks::Positions TextBreaks::graphemeBreaks( const QString & text )
+
+TextBreaks::Positions TextBreaks::graphemeBreaks(const QString &text)
 {
     init();
     Q_UNUSED(text);
     return Positions();
 }
-TextBreaks::Positions TextBreaks::wordBreaks( const QString & text )
+
+TextBreaks::Positions TextBreaks::wordBreaks(const QString &text)
 {
     init();
     const QChar * grapheme  = text.constData();
@@ -248,21 +252,26 @@ TextBreaks::Positions TextBreaks::wordBreaks( const QString & text )
 
     return Positions();
 }
-TextBreaks::Positions TextBreaks::sentenceBreaks( const QString & text )
+
+TextBreaks::Positions TextBreaks::sentenceBreaks(const QString &text)
 {
     init();
     Q_UNUSED(text);
     return Positions();
 }
-TextBreaks::Positions TextBreaks::graphemeBreaks( ) const
+TextBreaks::Positions TextBreaks::graphemeBreaks() const
 {
     return graphemeBreaks(m_text);
 }
-TextBreaks::Positions TextBreaks::wordBreaks( ) const
+
+TextBreaks::Positions TextBreaks::wordBreaks() const
 {
     return wordBreaks(m_text);
 }
-TextBreaks::Positions TextBreaks::sentenceBreaks( ) const
+
+TextBreaks::Positions TextBreaks::sentenceBreaks() const
 {
     return sentenceBreaks(m_text);
+}
+
 }

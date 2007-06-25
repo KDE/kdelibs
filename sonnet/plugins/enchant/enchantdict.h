@@ -24,7 +24,7 @@
 
 #include <enchant/enchant.h>
 
-class QSpellEnchantDict : public KSpell2::Speller
+class QSpellEnchantDict : public Sonnet::Speller
 {
 public:
     ~QSpellEnchantDict();

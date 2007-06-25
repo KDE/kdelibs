@@ -36,7 +36,7 @@ public Q_SLOTS:
     void check( const QString& buffer );
     void doneChecking( const QString& );
 private:
-    KSpell2::Loader *m_loader;
+    Sonnet::Loader *m_loader;
 };
 
 #endif

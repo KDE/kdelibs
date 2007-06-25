@@ -24,7 +24,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
-using namespace KSpell2;
+using namespace Sonnet;
 
 int main( int argc, char** argv )
 {

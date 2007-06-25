@@ -74,7 +74,7 @@ class KTextEdit::Private
     bool checkSpellingEnabled;
     QString originalBuffer;
     QString spellChechingConfigFileName;
-    KSpell2::Highlighter *highlighter;
+    Sonnet::Highlighter *highlighter;
 };
 
 void KTextEdit::Private::spellCheckerCanceled()
@@ -327,17 +327,17 @@ void KTextEdit::wheelEvent( QWheelEvent *event )
 
 void KTextEdit::createHighlighter()
 {
-    setHightighter(new KSpell2::Highlighter( this, d->spellChechingConfigFileName ));
+    setHightighter(new Sonnet::Highlighter(this, d->spellChechingConfigFileName));
 }
 
-KSpell2::Highlighter* KTextEdit::hightighter() const
+Sonnet::Highlighter* KTextEdit::hightighter() const
 {
     return d->highlighter;
 }
 
-void KTextEdit::setHightighter(KSpell2::Highlighter *_highLighter)
+void KTextEdit::setHightighter(Sonnet::Highlighter *_highLighter)
 {
-    delete d->highlighter;	
+    delete d->highlighter;
     d->highlighter = _highLighter;
 }
 
@@ -411,13 +411,21 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
-  KSpell2::Dialog *spellDialog = new KSpell2::Dialog(new KSpell2::BackgroundChecker( KSpell2::Loader::openLoader(KSharedConfig::openConfig(d->spellChechingConfigFileName)), this ), 0 );
-  connect(spellDialog,SIGNAL(replace( const QString&, int,const QString&)),this,SLOT(spellCheckerCorrected( const QString&, int,const QString&) ) );
-  connect(spellDialog,SIGNAL(misspelling( const QString&, int)),this,SLOT(spellCheckerMisspelling(const QString &,int)));
-  connect(spellDialog,SIGNAL(autoCorrect( const QString &, const QString &)),this,SLOT(spellCheckerAutoCorrect(const QString &, const QString &)));
-  connect(spellDialog,SIGNAL(done( const QString& )),this,SLOT(spellCheckerFinished()));
-  connect(spellDialog,SIGNAL(cancel()),this,SLOT(spellCheckerCanceled()));
-  connect(spellDialog,SIGNAL(stop()),this,SLOT(spellCheckerFinished()));
+  Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
+      new Sonnet::BackgroundChecker(
+          Sonnet::Loader::openLoader(KSharedConfig::openConfig(d->spellChechingConfigFileName)), this), 0);
+  connect(spellDialog, SIGNAL(replace( const QString&, int,const QString&)),
+          this, SLOT(spellCheckerCorrected( const QString&, int,const QString&)));
+  connect(spellDialog, SIGNAL(misspelling( const QString&, int)),
+          this, SLOT(spellCheckerMisspelling(const QString &,int)));
+  connect(spellDialog, SIGNAL(autoCorrect(const QString&, const QString&)),
+          this, SLOT(spellCheckerAutoCorrect(const QString&, const QString&)));
+  connect(spellDialog, SIGNAL(done(const QString&)),
+          this, SLOT(spellCheckerFinished()));
+  connect(spellDialog, SIGNAL(cancel()),
+          this, SLOT(spellCheckerCanceled()));
+  connect(spellDialog, SIGNAL(stop()),
+          this, SLOT(spellCheckerFinished()));
   d->originalBuffer=toPlainText();
   spellDialog->setBuffer(toPlainText());
   spellDialog->show();

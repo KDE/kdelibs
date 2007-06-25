@@ -19,14 +19,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_DIALOG_H
-#define KSPELL_DIALOG_H
+#ifndef SONNET_DIALOG_H
+#define SONNET_DIALOG_H
 
 #include <kdialog.h>
 
 class QListWidgetItem;
 
-namespace KSpell2
+namespace Sonnet
 {
     class Filter;
     class BackgroundChecker;
@@ -35,7 +35,8 @@ namespace KSpell2
      * @short Spellcheck dialog
      *
      * \code
-     * KSpell2::Dialog = dlg=new KSpell2::Dialog(new KSpell2::BackgroundChecker(KSpell2::Loader::openLoader(),this), this);
+     * Sonnet::Dialog = dlg=new Sonnet::Dialog(new Sonnet::BackgroundChecker(
+     *       Sonnet::Loader::openLoader(),this), this);
      * //connect signals
      * ...
      * dlg->setBuffer( someText );

@@ -17,34 +17,35 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef TEXTBREAKS
-#define TEXTBREAKS
+#ifndef SONNET_TEXTBREAKS_P_H
+#define SONNET_TEXTBREAKS_P_H
 
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QHash>
 
-class TextBreaks
+namespace Sonnet
 {
-public:
+    class TextBreaks
+    {
+    public:
+        typedef QList<int> Positions;
 
-    typedef QList<int> Positions;
+        TextBreaks( const QString & text = QString() );
+        QString text() const;
+        void setText( const QString & text );
+        static Positions graphemeBreaks( const QString & text );
+        static Positions wordBreaks( const QString & text );
+        static Positions sentenceBreaks( const QString & text );
+        Positions graphemeBreaks( ) const;
+        Positions wordBreaks( ) const;
+        Positions sentenceBreaks( ) const;
+    private:
+        static void init();
 
-    TextBreaks( const QString & text = QString() );
-    QString text() const;
-    void setText( const QString & text );
-    static Positions graphemeBreaks( const QString & text );
-    static Positions wordBreaks( const QString & text );
-    static Positions sentenceBreaks( const QString & text );
-    Positions graphemeBreaks( ) const;
-    Positions wordBreaks( ) const;
-    Positions sentenceBreaks( ) const;
-
-private:
-    static void init();
-
-    QString m_text;
-    static QHash<quint32,qint8> data;
-    static QHash<QString,qint8> catalog;
-};
+        QString m_text;
+        static QHash<quint32,qint8> data;
+        static QHash<QString,qint8> catalog;
+    };
+}
 #endif

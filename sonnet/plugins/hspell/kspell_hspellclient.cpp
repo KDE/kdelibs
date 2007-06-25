@@ -29,7 +29,7 @@
 typedef KGenericFactory<HSpellClient> HSpellClientFactory;
 K_EXPORT_COMPONENT_FACTORY( kspell_hspell, HSpellClientFactory( "kspell_hspell" )  )
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 HSpellClient::HSpellClient( QObject *parent, const QStringList& /* args */  )
     : Client( parent )

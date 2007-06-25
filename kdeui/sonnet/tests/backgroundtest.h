@@ -37,7 +37,7 @@ protected Q_SLOTS:
     void slotMisspelling( const QString& word, int start );
 
 private:
-    KSpell2::BackgroundChecker *m_checker;
+    Sonnet::BackgroundChecker *m_checker;
     QTime m_timer;
     int m_len;
 };

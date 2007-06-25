@@ -19,15 +19,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_DICTIONARY_H
-#define KSPELL_DICTIONARY_H
+#ifndef SONNET_SPELLER_H
+#define SONNET_SPELLER_H
 
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 
 #include <kdecore_export.h>
 
-namespace KSpell2
+namespace Sonnet
 {
     /**
      * Class is returned by from Loader. It acts
@@ -65,14 +65,14 @@ namespace KSpell2
          * if the word isn't correct.
          */
         virtual bool checkAndSuggest(const QString& word,
-                                     QStringList& suggestions) const;
+                                     QStringList &suggestions) const;
 
         /**
          * Stores user defined good replacement for the bad word.
          * @returns true on success
          */
-        virtual bool storeReplacement(const QString& bad,
-                                      const QString& good) =0;
+        virtual bool storeReplacement(const QString &bad,
+                                      const QString &good) =0;
 
         /**
          * Adds word to the list of of personal words.

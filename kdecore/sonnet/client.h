@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_CLIENT_H
-#define KSPELL_CLIENT_H
+#ifndef SONNET_CLIENT_H
+#define SONNET_CLIENT_H
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
@@ -33,7 +33,7 @@
  * I don't really feel like writing my own KLibFactory
  * that would load anything else then QObject derivatives.
  */
-namespace KSpell2
+namespace Sonnet
 {
     class Speller;
 

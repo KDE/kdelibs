@@ -28,7 +28,7 @@
 typedef KGenericFactory<ASpellClient> ASpellClientFactory;
 K_EXPORT_COMPONENT_FACTORY( kspell_aspell, ASpellClientFactory( "kspell_aspell" )  )
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 ASpellClient::ASpellClient( QObject *parent, const QStringList& /* args */  )
     : Client( parent )

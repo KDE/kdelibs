@@ -39,7 +39,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 
-namespace KSpell2 {
+namespace Sonnet {
 
 class Highlighter::Private
 {
@@ -153,7 +153,7 @@ QStringList Highlighter::personalWords()
     l.append( "KIO" );
     l.append( "KJS" );
     l.append( "Konqueror" );
-    l.append( "KSpell" );
+    l.append( "Sonnet" );
     l.append( "Kontact" );
     l.append( "Qt" );
     return l;

@@ -26,9 +26,7 @@
 
 #include <kdebug.h>
 
-
-
-namespace KSpell2
+namespace Sonnet
 {
 
 static Word endWord;

@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-class KSpell2FilterTest : public QObject
+class SonnetFilterTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:

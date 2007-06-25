@@ -33,7 +33,7 @@
 #include <QtCore/QMutableStringListIterator>
 #include <kconfiggroup.h>
 
-namespace KSpell2
+namespace Sonnet
 {
 class Settings::Private
 {
@@ -219,24 +219,24 @@ void Settings::save()
 
 void Settings::loadConfig()
 {
-    KConfigGroup conf( d->config.data(), "Spelling" );
+    KConfigGroup conf(d->config.data(), "Spelling");
     d->defaultClient = conf.readEntry( "defaultClient",
-                                        QString() );
+                                        QString());
     d->defaultLanguage = conf.readEntry(
-        "defaultLanguage", KGlobal::locale()->language() );
+        "defaultLanguage", KGlobal::locale()->language());
 
     //same defaults are in the default filter (filter.cpp)
     d->checkUppercase = conf.readEntry(
-        "checkUppercase", true );
+        "checkUppercase", true);
 
     d->skipRunTogether = conf.readEntry(
-        "skipRunTogether", true );
+        "skipRunTogether", true);
 
     d->backgroundCheckerEnabled = conf.readEntry(
         "backgroundCheckerEnabled", true);
 
-    d->disablePercentage = conf.readEntry( "KSpell_AsYouTypeDisablePercentage", 42 );
-    d->disableWordCount = conf.readEntry( "KSpell_AsYouTypeDisableWordCount", 100 );
+    d->disablePercentage = conf.readEntry("Sonnet_AsYouTypeDisablePercentage", 42);
+    d->disableWordCount = conf.readEntry("Sonnet_AsYouTypeDisableWordCount", 100);
 
     readIgnoreList();
 }

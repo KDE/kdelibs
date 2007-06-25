@@ -21,7 +21,7 @@
  */
 #include "speller.h"
 
-namespace KSpell2
+namespace Sonnet
 {
 
 class Speller::Private

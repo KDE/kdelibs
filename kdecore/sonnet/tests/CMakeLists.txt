@@ -23,6 +23,15 @@ target_link_libraries(test_filter ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 ########### install files ###############
 
 
+########### next target ###############
 
+set(test_core_SRCS test_core.cpp )
 
+kde4_automoc(${test_core_SRCS})
+
+kde4_add_unit_test(test_core ${test_core_SRCS})
+
+target_link_libraries(test_core ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+
+########### install files ###############
 

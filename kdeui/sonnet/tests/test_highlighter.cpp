@@ -30,37 +30,37 @@
 #include <QAction>
 #include <QMenu>
 #include <QContextMenuEvent>
+
 TestSpell::TestSpell()
-	: QTextEdit()
+    : QTextEdit()
 {
-    hl = new KSpell2::Highlighter( this );
+    hl = new Sonnet::Highlighter( this );
 }
 
 void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 {
-	kDebug()<<"TestSpell::contextMenuEvent\n";
-	QMenu *popup = createStandardContextMenu();
-        QMenu *subMenu = new QMenu( popup );
-        subMenu->setTitle( "Text highlighting" );
-	connect( subMenu, SIGNAL( triggered ( QAction* ) ),this, SLOT( slotActivate( ) ) );
-	QAction *action = new QAction( "active or not", popup );
-	popup->addSeparator();
-	popup->addMenu( subMenu );
-	subMenu->addAction(action);
-	popup->exec(e->globalPos());
-	delete popup;
-			
+    kDebug()<<"TestSpell::contextMenuEvent\n";
+    QMenu *popup = createStandardContextMenu();
+    QMenu *subMenu = new QMenu( popup );
+    subMenu->setTitle( "Text highlighting" );
+    connect( subMenu, SIGNAL( triggered ( QAction* ) ),this, SLOT( slotActivate( ) ) );
+    QAction *action = new QAction( "active or not", popup );
+    popup->addSeparator();
+    popup->addMenu( subMenu );
+    subMenu->addAction(action);
+    popup->exec(e->globalPos());
+    delete popup;
 }
 
 void TestSpell::slotActivate()
 {
-	kDebug()<<"Activate or not highlight :"<<endl;
-	hl->setActive(!hl->isActive());
+    kDebug()<<"Activate or not highlight :"<<endl;
+    hl->setActive(!hl->isActive());
 }
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
+    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, 0, 0, 0);
 
     KApplication app;
 
@@ -69,4 +69,3 @@ int main( int argc, char** argv )
 
     return app.exec();
 }
-

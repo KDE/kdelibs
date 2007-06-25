@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_HIGHLIGHTER_H
-#define KSPELL_HIGHLIGHTER_H
+#ifndef SONNET_HIGHLIGHTER_H
+#define SONNET_HIGHLIGHTER_H
 
 #include "filter.h"
 
@@ -29,7 +29,7 @@
 #include <kdeui_export.h>
 class QTextEdit;
 
-namespace KSpell2
+namespace Sonnet
 {
     class KDEUI_EXPORT Highlighter : public QSyntaxHighlighter
     {

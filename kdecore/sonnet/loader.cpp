@@ -22,7 +22,6 @@
 #include "loader.h"
 #include "settings.h"
 #include "client.h"
-#include "defaultdictionary.h"
 #include "speller.h"
 
 #include <klocale.h>
@@ -36,7 +35,7 @@
 
 #define DEFAULT_CONFIG_FILE   "sonnetrc"
 
-namespace KSpell2
+namespace Sonnet
 {
 
 class Loader::Private
@@ -48,7 +47,6 @@ public:
     // <language, Clients with that language >
     QMap<QString, QList<Client*> > languageClients;
     QStringList clients;
-    DefaultDictionary *defaultDictionary;
 
     QStringList languagesNameCache;
 };
@@ -72,16 +70,12 @@ Loader::Ptr Loader::openLoader(KSharedConfig::Ptr config)
 }
 
 Loader::Loader(KSharedConfig::Ptr config)
-	:d(new Private)
+    :d(new Private)
 {
     s_loaders->insert(config.data(), this);
 
     d->settings = new Settings(this, config);
     loadPlugins();
-
-    d->defaultDictionary = new DefaultDictionary(
-        d->settings->defaultLanguage(),
-        this);
 }
 
 Loader::~Loader()
@@ -91,11 +85,6 @@ Loader::~Loader()
     d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;
-}
-
-DefaultDictionary* Loader::defaultDictionary() const
-{
-    return d->defaultDictionary;
 }
 
 Speller *Loader::createSpeller(const QString& language,
@@ -162,15 +151,15 @@ QStringList Loader::languagesName() const
     QStringList allLocalizedDictionaries;
     QStringList allDictionaries = languages();
     QString currentDictionary,   // e.g. en_GB-ize-wo_accents
-                                  lISOName,            // language ISO name
-                                  cISOName,            // country ISO name
-                                  variantName,         // dictionary variant name e.g. w_accents
-                                  localizedLang,       // localized language
-                                  localizedCountry;    // localized country
+        lISOName,            // language ISO name
+        cISOName,            // country ISO name
+        variantName,         // dictionary variant name e.g. w_accents
+        localizedLang,       // localized language
+        localizedCountry;    // localized country
     const char*  variantEnglish = 0; // dictionary variant in English
 
     int underscorePos,     // position of "_" char
-                       minusPos,          // position of "-" char
+        minusPos,          // position of "-" char
         variantCount = 0;  // used to iterate over variantList
 
     struct variantListType
@@ -280,10 +269,10 @@ Settings* Loader::settings() const
 
 void Loader::loadPlugins()
 {
-    d->plugins = KServiceTypeTrader::self()->query("KSpell/Client");
+    d->plugins = KServiceTypeTrader::self()->query("Sonnet/SpellClient");
 
-    for ( KService::List::const_iterator itr = d->plugins.begin();
-          itr != d->plugins.end(); ++itr ) {
+    for (KService::List::const_iterator itr = d->plugins.begin();
+         itr != d->plugins.end(); ++itr ) {
         loadPlugin((*itr));
     }
 }

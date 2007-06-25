@@ -19,7 +19,7 @@
  * 02110-1301  USA
  */
 #include "dialog.h"
-#include "ui_kspell2ui.h"
+#include "ui_sonnetui.h"
 
 #include "backgroundchecker.h"
 #include "loader.h"
@@ -39,7 +39,7 @@
 #include <QtGui/QLabel>
 #include <QtCore/QTimer>
 
-namespace KSpell2
+namespace Sonnet
 {
 
 //to initially disable sorting in the suggestions listview
@@ -48,7 +48,7 @@ namespace KSpell2
 class Dialog::Private
 {
 public:
-    Ui_KSpell2UI ui;
+    Ui_SonnetUi ui;
     QWidget *wdg;
     QString   originalBuffer;
     BackgroundChecker *checker;

@@ -21,7 +21,7 @@
  */
 #include "client.h"
 
-namespace KSpell2
+namespace Sonnet
 {
 
 Client::Client( QObject *parent )

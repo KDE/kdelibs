@@ -91,9 +91,9 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     virtual void createHighlighter();
 
-    KSpell2::Highlighter* hightighter() const;
+    Sonnet::Highlighter* hightighter() const;
 
-    void setHightighter(KSpell2::Highlighter *_highLighter);
+    void setHightighter(Sonnet::Highlighter *_highLighter);
   public Q_SLOTS:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return

@@ -26,12 +26,12 @@
 
 #include "aspell.h"
 
-namespace KSpell2 {
+namespace Sonnet {
     class Speller;
 }
-using KSpell2::Speller;
+using Sonnet::Speller;
 
-class ASpellClient : public KSpell2::Client
+class ASpellClient : public Sonnet::Client
 {
     Q_OBJECT
 public:

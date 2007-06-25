@@ -1,6 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * filter.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
  *
@@ -20,13 +19,13 @@
  * 02110-1301  USA
  */
 
-#ifndef KSPELL_FILTER_H
-#define KSPELL_FILTER_H
+#ifndef SONNET_FILTER_H
+#define SONNET_FILTER_H
 
 #include <QtCore/QString>
 #include <kdecore_export.h>
 
-namespace KSpell2
+namespace Sonnet
 {
     class Settings;
 

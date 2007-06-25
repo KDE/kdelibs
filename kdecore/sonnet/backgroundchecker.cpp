@@ -22,17 +22,14 @@
 
 #include "loader.h"
 #include "backgroundengine.h"
-//#include "backgroundthread.h"
-//#include "threadevents.h"
 
 #include <kdebug.h>
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 class BackgroundChecker::Private
 {
 public:
-    //BackgroundThread thread;
     BackgroundEngine *engine;
     QString currentText;
 };
@@ -40,8 +37,6 @@ public:
 BackgroundChecker::BackgroundChecker( const Loader::Ptr& loader, QObject* parent )
     : QObject( parent ),d(new Private)
 {
-    //d->thread.setReceiver( this );
-    //d->thread.setLoader( loader );
     d->engine = new BackgroundEngine( this );
     d->engine->setLoader( loader );
     connect( d->engine, SIGNAL(misspelling( const QString&, int )),
@@ -58,7 +53,6 @@ BackgroundChecker::~BackgroundChecker()
 void BackgroundChecker::checkText( const QString& text )
 {
     d->currentText = text;
-    //d->thread.setText( text );
     d->engine->setText( text );
     d->engine->start();
 }
@@ -67,15 +61,13 @@ void BackgroundChecker::start()
 {
     d->currentText = getMoreText();
     // ## what if d->currentText.isEmpty()?
-    //kDebug()<<"KSpell BackgroundChecker: starting with : \"" << d->currentText << "\""<<endl;
-    //d->thread.setText( d->currentText );
+    //kDebug()<<"Sonnet BackgroundChecker: starting with : \"" << d->currentText << "\""<<endl;
     d->engine->setText( d->currentText );
     d->engine->start();
 }
 
 void BackgroundChecker::stop()
 {
-    //d->thread.stop();
     d->engine->stop();
 }
 
@@ -90,25 +82,21 @@ void BackgroundChecker::finishedCurrentFeed()
 
 void BackgroundChecker::setFilter( Filter *filter )
 {
-    //d->thread.setFilter( filter );
     d->engine->setFilter( filter );
 }
 
 Filter *BackgroundChecker::filter() const
 {
-    //return d->thread.filter();
     return d->engine->filter();
 }
 
 Loader *BackgroundChecker::loader() const
 {
-    //return d->thread.loader();
     return d->engine->loader();
 }
 
 bool BackgroundChecker::checkWord( const QString& word )
 {
-    //kDebug()<<"checking word \""<<word<< "\""<<endl;
     return d->engine->checkWord( word );
 }
 
@@ -119,13 +107,11 @@ bool BackgroundChecker::addWord( const QString& word )
 
 QStringList BackgroundChecker::suggest( const QString& word ) const
 {
-    //return d->thread.suggest( word );
     return d->engine->suggest( word );
 }
 
 void BackgroundChecker::changeLanguage( const QString& lang )
 {
-    //d->thread.changeLanguage( lang );
     d->engine->changeLanguage( lang );
 }
 
@@ -142,36 +128,9 @@ void BackgroundChecker::slotEngineDone()
     if ( d->currentText.isNull() ) {
         emit done();
     } else {
-        //d->thread.setText( d->currentText );
         d->engine->setText( d->currentText );
         d->engine->start();
     }
 }
-
-//////////////////////////////////////////////////////////////////
-#if 0
-void BackgroundChecker::customEvent( QCustomEvent *event )
-{
-    if ( (int)event->type() == FoundMisspelling ) {
-        MisspellingEvent *me = static_cast<MisspellingEvent*>( event );
-        kDebug()<<"Found misspelling of \"" << me->word() << "\"" <<endl;
-        QString currentWord = d->currentText.mid( me->position(), me->word().length() );
-        if ( currentWord == me->word() )
-            emit misspelling( me->word(), me->position() );
-        else {
-            kDebug()<<"Cleaning up misspelling for old text which is \""<<currentWord
-                     <<"\" and should be \""<<me->word()<<"\""<<endl;
-        }
-    } else if ( (int)event->type() == FinishedChecking ) {
-        d->currentText = getMoreText();
-        if ( d->currentText.isEmpty() )
-            emit done();
-        else
-            d->thread.setText( d->currentText );
-    } else {
-        QObject::customEvent( event );
-    }
-}
-#endif
 
 #include "backgroundchecker.moc"

@@ -2,8 +2,8 @@
  <author>Zack Rusin &lt;zack@kde.org></author>
  <comment>Licensed under GNU LGPL</comment>
  <exportmacro></exportmacro>
- <class>KSpell2ConfigUI</class>
- <widget class="QWidget" name="KSpell2ConfigUI" >
+ <class>SonnetConfigUI</class>
+ <widget class="QWidget" name="SonnetConfigUI" >
   <property name="geometry" >
    <rect>
     <x>0</x>

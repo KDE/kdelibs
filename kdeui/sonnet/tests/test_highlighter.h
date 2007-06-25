@@ -29,13 +29,13 @@
 class QContextMenuEvent;
 class TestSpell : public QTextEdit
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-		TestSpell();
+    TestSpell();
 public Q_SLOTS:
-		void slotActivate();
+    void slotActivate();
 protected:
-	virtual void contextMenuEvent( QContextMenuEvent * );
-	KSpell2::Highlighter *hl;
+    virtual void contextMenuEvent( QContextMenuEvent * );
+    Sonnet::Highlighter *hl;
 };
 #endif

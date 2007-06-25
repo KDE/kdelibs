@@ -27,7 +27,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
-using namespace KSpell2;
+using namespace Sonnet;
 
 TestDialog::TestDialog()
     : QObject( 0 )
@@ -37,7 +37,7 @@ TestDialog::TestDialog()
 
 void TestDialog::check( const QString& buffer )
 {
-    KSpell2::Dialog *dlg = new KSpell2::Dialog(
+    Sonnet::Dialog *dlg = new Sonnet::Dialog(
         new BackgroundChecker( Loader::openLoader(), this ),
         0 );
     connect( dlg, SIGNAL(done(const QString&)),

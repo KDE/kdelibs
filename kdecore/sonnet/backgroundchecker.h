@@ -18,14 +18,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_BACKGROUNDCHECKER_H
-#define KSPELL_BACKGROUNDCHECKER_H
+#ifndef SONNET_BACKGROUNDCHECKER_H
+#define SONNET_BACKGROUNDCHECKER_H
 
 #include "loader.h"
 
 class QCustomEvent;
 
-namespace KSpell2
+namespace Sonnet
 {
     class Filter;
 
@@ -70,7 +70,7 @@ namespace KSpell2
         QStringList suggest( const QString& ) const;
         bool addWord( const QString& word );
     public Q_SLOTS:
-        virtual void setFilter( KSpell2::Filter *filter );
+        virtual void setFilter( Sonnet::Filter *filter );
         virtual void start();
         virtual void stop();
 

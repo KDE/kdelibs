@@ -25,7 +25,7 @@
 
 #include <kvbox.h>
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 class ConfigDialog::Private
 {
@@ -36,9 +36,9 @@ public:
 ConfigDialog::ConfigDialog( Loader::Ptr loader, QWidget *parent )
     : KDialog( parent ),d(new Private)
 {
-    setObjectName( "KSpell2ConfigDialog" );
+    setObjectName( "SonnetConfigDialog" );
     setModal( true );
-    setCaption( i18n( "KSpell2 Configuration" ) );
+    setCaption( i18n( "Sonnet Configuration" ) );
     setButtons( Ok | Apply | Cancel );
     setDefaultButton( Ok );
     showButtonSeparator( true );

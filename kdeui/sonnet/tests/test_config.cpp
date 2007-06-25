@@ -22,13 +22,13 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
-using namespace KSpell2;
+using namespace Sonnet;
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
+    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, 0, 0, 0);
 
-    KApplication app(argc, argv, "KSpell2Test");
+    KApplication app(argc, argv, "SonnetTest");
 
     SettingsDialog *dialog = new SettingsDialog( 0 );
 

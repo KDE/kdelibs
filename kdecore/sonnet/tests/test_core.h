@@ -1,7 +1,5 @@
 /**
- * test_config.cpp
- *
- * Copyright (C)  2004  Zack Rusin <zack@kde.org>
+ * Copyright 2007 Zack Rusin <zack@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,23 +16,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "configdialog.h"
+#ifndef TEST_CORE_H
+#define TEST_CORE_H
 
-#include <kapplication.h>
-#include <kdebug.h>
-using namespace Sonnet;
-
-int main( int argc, char** argv )
+class SonnetCoreTest : public QObject
 {
-    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, 0, 0, 0);
+    Q_OBJECT
+private Q_SLOTS:
+    void testCore();
+};
 
-    KApplication app(argc, argv, "SonnetTest");
-
-    SettingsDialog *dialog = new SettingsDialog( 0 );
-
-    dialog->show();
-
-    app.setMainWidget( dialog );
-
-    return app.exec();
-}
+#endif

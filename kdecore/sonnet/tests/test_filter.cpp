@@ -25,9 +25,9 @@
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 
-QTEST_KDEMAIN_CORE( KSpell2FilterTest )
+QTEST_KDEMAIN_CORE( SonnetFilterTest )
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 struct Hit {
     Hit( const QString& w, int s ) : word( w ), start( s ) {}
@@ -35,7 +35,7 @@ struct Hit {
     int start;
 };
 
-void KSpell2FilterTest::testFilter()
+void SonnetFilterTest::testFilter()
 {
     QString buffer( "This is     a sample buffer.      Please test me." );
     QList<Hit> hits;

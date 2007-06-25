@@ -18,13 +18,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_CONFIGDIALOG_H
-#define KSPELL_CONFIGDIALOG_H
+#ifndef SONNET_CONFIGDIALOG_H
+#define SONNET_CONFIGDIALOG_H
 
 #include <kdialog.h>
 #include "loader.h"
 
-namespace KSpell2
+namespace Sonnet
 {
     class Loader;
     class KDEUI_EXPORT ConfigDialog : public KDialog

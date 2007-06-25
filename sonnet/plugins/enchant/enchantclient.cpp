@@ -26,7 +26,7 @@
 typedef KGenericFactory<QSpellEnchantClient> EnchantClientFactory;
 K_EXPORT_COMPONENT_FACTORY(kspell_enchant, EnchantClientFactory("kspell_enchant"))
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 static void enchantDictDescribeFn(const char * const lang_tag,
                                   const char * const provider_name,

@@ -165,9 +165,7 @@ set(kdecore_LIB_SRCS
    sonnet/filter.cpp
    sonnet/settings.cpp
    sonnet/backgroundchecker.cpp
-   sonnet/backgroundthread.cpp
    sonnet/backgroundengine.cpp
-   sonnet/defaultdictionary.cpp
    network/k3socketdevice.cpp # must be before the rest of network/, for enable-final
    network/k3bufferedsocket.cpp
    network/k3clientsocketbase.cpp
@@ -388,7 +386,6 @@ endif (UNIX)
 
 install( FILES
         sonnet/backgroundchecker.h
-        sonnet/defaultdictionary.h
         sonnet/filter.h
         sonnet/settings.h
         sonnet/loader.h

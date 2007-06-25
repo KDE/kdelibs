@@ -18,14 +18,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_CONFIGWIDGET_H
-#define KSPELL_CONFIGWIDGET_H
+#ifndef SONNET_CONFIGWIDGET_H
+#define SONNET_CONFIGWIDGET_H
 
 #include <QtGui/QWidget>
 #include <kdeui_export.h>
 #include "loader.h"
 
-namespace KSpell2
+namespace Sonnet
 {
     class Loader;
     class KDEUI_EXPORT ConfigWidget : public QWidget

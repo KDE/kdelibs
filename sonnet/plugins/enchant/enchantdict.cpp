@@ -22,7 +22,7 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QDebug>
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 QSpellEnchantDict::QSpellEnchantDict(EnchantBroker *broker,
                                      EnchantDict *dict,

@@ -25,7 +25,7 @@
 
 #include "aspell.h"
 
-class ASpellDict : public KSpell2::Speller
+class ASpellDict : public Sonnet::Speller
 {
 public:
     explicit ASpellDict(const QString &lang);

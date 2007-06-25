@@ -31,13 +31,13 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 
-using namespace KSpell2;
+using namespace Sonnet;
 
 class ConfigWidget::Private
 {
 public:
     Loader::Ptr loader;
-    Ui_KSpell2ConfigUI ui;
+    Ui_SonnetConfigUI ui;
     QWidget *wdg;
 };
 
@@ -59,7 +59,7 @@ void ConfigWidget::init( Loader::Ptr loader )
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->setMargin( 0 );
     layout->setSpacing( 0 );
-    layout->setObjectName( "KSpell2ConfigUILayout" );
+    layout->setObjectName( "SonnetConfigUILayout" );
     d->wdg = new QWidget( this );
     d->ui.setupUi( d->wdg );
 
@@ -79,7 +79,7 @@ void ConfigWidget::init( Loader::Ptr loader )
     layout->addWidget( d->wdg );
 }
 
-void KSpell2::ConfigWidget::save()
+void ConfigWidget::save()
 {
     setFromGUI();
     d->loader->settings()->save();

@@ -249,7 +249,7 @@ set( kdeui_UI
    dialogs/knewpassworddialog.ui
    dialogs/kshortcutsdialog.ui
    widgets/kshortcutwidget.ui
-   sonnet/kspell2ui.ui
+   sonnet/sonnetui.ui
    sonnet/configui.ui
    )
 

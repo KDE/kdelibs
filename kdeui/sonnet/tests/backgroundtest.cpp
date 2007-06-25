@@ -22,7 +22,7 @@
 #include "backgroundtest.moc"
 
 #include "loader.h"
-using namespace KSpell2;
+using namespace Sonnet;
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -159,7 +159,7 @@ void BackgroundTest::slotMisspelling( const QString& word, int start )
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "KSpell2Test", 0, 0, 0, 0);
+    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, 0, 0, 0);
     KApplication app;
 
     BackgroundTest test;
