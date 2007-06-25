@@ -21,7 +21,7 @@
  */
 #include "loader.h"
 #include "settings.h"
-#include "client.h"
+#include "client_p.h"
 #include "speller.h"
 
 #include <klocale.h>

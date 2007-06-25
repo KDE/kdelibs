@@ -21,7 +21,7 @@
 #ifndef KSPELL_ASPELLCLIENT_H
 #define KSPELL_ASPELLCLIENT_H
 
-#include "client.h"
+#include "client_p.h"
 #include <QtCore/QObject>
 
 #include "aspell.h"

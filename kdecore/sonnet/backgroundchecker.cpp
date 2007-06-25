@@ -21,7 +21,7 @@
 #include "backgroundchecker.h"
 
 #include "loader.h"
-#include "backgroundengine.h"
+#include "backgroundengine_p.h"
 
 #include <kdebug.h>
 

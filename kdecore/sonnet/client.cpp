@@ -1,6 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * client.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
  *
@@ -19,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "client.h"
+#include "client_p.h"
 
 namespace Sonnet
 {
@@ -31,4 +30,4 @@ Client::Client( QObject *parent )
 
 }
 
-#include "client.moc"
+#include "client_p.moc"

@@ -21,7 +21,7 @@
 #define QSPELL_ENCHANTCLIENT_H
 
 #include "speller.h"
-#include "client.h"
+#include "client_p.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QSet>

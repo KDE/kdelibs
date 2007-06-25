@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "backgroundengine.h"
+#include "backgroundengine_p.h"
 
 #include "speller.h"
 #include "filter.h"
@@ -128,4 +128,4 @@ QStringList BackgroundEngine::suggest(const QString &word)
     return m_dict->suggest(word);
 }
 
-#include "backgroundengine.moc"
+#include "backgroundengine_p.moc"
