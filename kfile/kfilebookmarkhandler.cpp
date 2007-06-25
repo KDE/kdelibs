@@ -41,7 +41,7 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileWidget *widget )
     if ( file.isEmpty() )
         file = KStandardDirs::locateLocal( "data", "kfile/bookmarks.xml" );
 
-    KBookmarkManager *manager = KBookmarkManager::managerForFile( file, "kfile", false);
+    KBookmarkManager *manager = KBookmarkManager::managerForFile( file, "kfile" );
 
     // import old bookmarks
     if ( !KStandardDirs::exists( file ) ) {

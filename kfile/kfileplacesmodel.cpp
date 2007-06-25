@@ -71,7 +71,7 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     : QAbstractItemModel(parent), d(new Private(this))
 {
     const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
-    d->bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces", false);
+    d->bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
 
     // Let's put some places in there if it's empty
     KBookmarkGroup root = d->bookmarkManager->root();

@@ -74,12 +74,8 @@ protected:
      * konqueror bookmarks, "kfile" for KFileDialog bookmarks, etc.
      * The final DBus object path is /KBookmarkManager/dbusObjectName
      * An empty dbusObjectName disables the registration to dbus (used for temporary managers)
-     *
-     * @param bImportDesktopFiles if true, and if the bookmarksFile
-     * doesn't already exist, import bookmarks from desktop files
      */
-    KBookmarkManager( const QString & bookmarksFile, const QString& dbusObjectName, bool bImportDesktopFiles = true );
-
+    KBookmarkManager( const QString & bookmarksFile, const QString& dbusObjectName );
 
     KBookmarkManager();
 
@@ -201,13 +197,9 @@ public:
      * The final DBus object path is /KBookmarkManager/dbusObjectName
      * An empty dbusObjectName disables the registration to dbus (used for temporary managers)
      *
-     * @param bImportDesktopFiles if true, and if the bookmarksFile
-     * doesn't already exist, import bookmarks from desktop files
-     * @return a pointer to an instance of the KBookmarkManager.
      */
     static KBookmarkManager* managerForFile( const QString& bookmarksFile,
-                                             const QString& dbusObjectName,
-                                             bool bImportDesktopFiles = true );
+                                             const QString& dbusObjectName );
     /**
      * only used for KBookmarkBar
      */
@@ -271,10 +263,10 @@ protected:
 private:
     /**
     * You need to pass a dbusObjectName as the second parameter
-    * In kde 3 managerForFile had the parameters (const  QString &, bool)
+    * In kde 3 managerForFile had the parameters (const QString &, bool)
     * We want old calls which pass a bool as a second parameter to fail.
-    * Unfourtanetly C++ can convert a bool to a QString, via QString(char(bool))
-    * This private overloaded method pervents this, as it is a better match,
+    * Unfortunately C++ can convert a bool to a QString, via QString(char(bool))
+    * This private overloaded method prevents this, as it is a better match,
     * and thus old calls fail at compile time.
     */
     static KBookmarkManager* managerForFile( const QString&, int);

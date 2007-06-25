@@ -130,7 +130,6 @@ set(kbookmarks_STAT_SRCS
   bookmarks/kbookmarkimporter_opera.cc
   bookmarks/kbookmarkimporter_ie.cc
   bookmarks/kbookmarkimporter_ns.cc
-  bookmarks/kbookmarkimporter_kde1.cc
   bookmarks/kbookmarkdombuilder.cc
 )
 
@@ -372,7 +371,6 @@ install( FILES
   bookmarks/kbookmarkimporter_opera.h
   bookmarks/kbookmarkimporter_ie.h
   bookmarks/kbookmarkimporter_ns.h
-  bookmarks/kbookmarkimporter_kde1.h
   bookmarks/kbookmarkdombuilder.h
   bookmarks/konqbookmarkmenu.h
   DESTINATION ${INCLUDE_INSTALL_DIR})

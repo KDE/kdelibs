@@ -110,14 +110,14 @@ public:
 
 // ################
 // KBookmarkManager
-KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, const QString& dbusObjectName, bool bImportDesktopFiles )
+KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile, const QString& dbusObjectName )
 {
     for ( KBookmarkManagerList::ConstIterator bmit = s_pSelf->constBegin(), bmend = s_pSelf->constEnd();
           bmit != bmend; ++bmit )
         if ( (*bmit)->path() == bookmarksFile )
             return *bmit;
 
-    KBookmarkManager* mgr = new KBookmarkManager( bookmarksFile, dbusObjectName, bImportDesktopFiles );
+    KBookmarkManager* mgr = new KBookmarkManager( bookmarksFile, dbusObjectName );
     s_pSelf->append( mgr );
     return mgr;
 }
@@ -132,7 +132,7 @@ KBookmarkManager* KBookmarkManager::createTempManager()
 
 #define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
 
-KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString & dbusObjectName, bool bImportDesktopFiles )
+KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString & dbusObjectName )
  : d(new Private(false, dbusObjectName))
 {
     init( "/KBookmarkManager/"+dbusObjectName );
@@ -147,8 +147,6 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString
         QDomElement topLevel = d->m_doc.createElement("xbel");
         d->m_doc.appendChild( topLevel );
         d->m_doc.insertBefore( d->m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
-        if ( bImportDesktopFiles )
-            importDesktopFiles();
         d->m_docIsLoaded = true;
     }
 }
@@ -314,16 +312,6 @@ void KBookmarkManager::convertAttribute( QDomElement elem, const QString & oldNa
         elem.setAttribute( newName, elem.attribute( oldName ) );
         elem.removeAttribute( oldName );
     }
-}
-
-void KBookmarkManager::importDesktopFiles()
-{
-    KBookmarkImporter importer( const_cast<QDomDocument *>(&internalDocument()) );
-    QString path(KGlobal::dirs()->saveLocation("data", "kfm/bookmarks", true));
-    importer.import( path );
-    //kDebug(7043) << internalDocument().toCString() << endl;
-
-    save();
 }
 
 bool KBookmarkManager::save( bool toolbarCache ) const
@@ -679,7 +667,7 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
 KBookmarkManager* KBookmarkManager::userBookmarksManager()
 {
    QString bookmarksFile = KStandardDirs::locateLocal("data", QLatin1String("konqueror/bookmarks.xml"));
-   return KBookmarkManager::managerForFile( bookmarksFile, "konqueror", true );
+   return KBookmarkManager::managerForFile( bookmarksFile, "konqueror" );
 }
 
 KBookmarkSettings* KBookmarkSettings::s_self = 0;
