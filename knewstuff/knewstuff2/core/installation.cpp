@@ -33,6 +33,7 @@ Installation::Installation()
 	d = NULL;
 	m_checksumpolicy = CheckIfPossible;
 	m_signaturepolicy = CheckIfPossible;
+	m_scope = ScopeUser;
 	m_customname = false;
 }
 
@@ -73,6 +74,11 @@ void Installation::setChecksumPolicy(Policy policy)
 void Installation::setSignaturePolicy(Policy policy)
 {
 	m_signaturepolicy = policy;
+}
+
+void Installation::setScope(Scope scope)
+{
+	m_scope = scope;
 }
 
 void Installation::setCustomName(bool customname)
@@ -128,4 +134,8 @@ bool Installation::customName()
 	return m_customname;
 }
 
+Installation::Scope Installation::scope()
+{
+	return m_scope;
+}
 

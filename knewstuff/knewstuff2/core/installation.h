@@ -60,6 +60,12 @@ class KNEWSTUFF_EXPORT Installation
       CheckAlways
     };
 
+    enum Scope
+    {
+      ScopeUser,
+      ScopeSystem
+    };
+
     void setUncompression(const QString& uncompression);
     void setCommand(const QString& command);
 
@@ -67,6 +73,7 @@ class KNEWSTUFF_EXPORT Installation
     void setTargetDir(const QString& dir);
     void setInstallPath(const QString& dir);
 
+    void setScope(Scope scope);
     void setChecksumPolicy(Policy policy);
     void setSignaturePolicy(Policy policy);
 
@@ -82,6 +89,7 @@ class KNEWSTUFF_EXPORT Installation
 
     Policy checksumPolicy();
     Policy signaturePolicy();
+    Scope scope();
 
     bool customName();
 
@@ -93,6 +101,7 @@ class KNEWSTUFF_EXPORT Installation
     QString m_installpath;
     Policy m_checksumpolicy;
     Policy m_signaturepolicy;
+    Scope m_scope;
     bool m_customname;
     class InstallationPrivate *d;
 };

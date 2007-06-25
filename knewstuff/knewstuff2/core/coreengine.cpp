@@ -106,6 +106,7 @@ bool CoreEngine::init(const QString &configfile)
 
 	QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
 	QString signaturepolicy = group.readEntry("SignaturePolicy", QString());
+	QString scope = group.readEntry("Scope", QString());
 	if(!checksumpolicy.isEmpty())
 	{
 		if(checksumpolicy == "never")
@@ -132,6 +133,27 @@ bool CoreEngine::init(const QString &configfile)
 		{
 			kError(550) << "The signature policy '" + signaturepolicy + "' is unknown." << endl;
 			return false;
+		}
+	}
+	if(!scope.isEmpty())
+	{
+		if(scope == "user")
+			m_installation->setScope(Installation::ScopeUser);
+		else if(scope == "system")
+			m_installation->setScope(Installation::ScopeSystem);
+		else
+		{
+			kError(550) << "The scope '" + scope + "' is unknown." << endl;
+			return false;
+		}
+
+		if(m_installation->scope() == Installation::ScopeSystem)
+		{
+			if(!m_installation->installPath().isEmpty())
+			{
+				kError(550) << "System installation cannot be mixed with InstallPath." << endl;
+				return false;
+			}
 		}
 	}
 
@@ -1254,6 +1276,7 @@ bool CoreEngine::install(QString payloadfile)
 	kDebug(550) << "INSTALL resourceDir " << m_installation->standardResourceDir() << endl;
 	kDebug(550) << "INSTALL targetDir " << m_installation->targetDir() << endl;
 	kDebug(550) << "INSTALL installPath " << m_installation->installPath() << endl;
+	kDebug(550) << "INSTALL + scope " << m_installation->scope() << endl;
 	kDebug(550) << "INSTALL + customName" << m_installation->customName() << endl;
 	kDebug(550) << "INSTALL + uncompression " << m_installation->uncompression() << endl;
 	kDebug(550) << "INSTALL + command " << m_installation->command() << endl;
@@ -1277,12 +1300,18 @@ bool CoreEngine::install(QString payloadfile)
 	int pathcounter = 0;
 	if(!m_installation->standardResourceDir().isEmpty())
 	{
-		installdir = KStandardDirs::locateLocal(m_installation->standardResourceDir().toUtf8(), "/");
+		if(m_installation->scope() == Installation::ScopeUser)
+			installdir = KStandardDirs::locateLocal(m_installation->standardResourceDir().toUtf8(), "/");
+		else
+			installdir = KStandardDirs::locate(m_installation->standardResourceDir().toUtf8(), "/");
 		pathcounter++;
 	}
 	if(!m_installation->targetDir().isEmpty())
 	{
-		installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
+		if(m_installation->scope() == Installation::ScopeUser)
+			installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
+		else
+			installdir = KStandardDirs::locate("data", m_installation->targetDir() + '/');
 		pathcounter++;
 	}
 	if(!m_installation->installPath().isEmpty())
