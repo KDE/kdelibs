@@ -20,9 +20,9 @@
  */
 #include "backgroundchecker.h"
 
-#include "loader.h"
+#include "loader_p.h"
 #include "backgroundengine_p.h"
-#include "filter.h"
+#include "filter_p.h"
 
 #include <kdebug.h>
 

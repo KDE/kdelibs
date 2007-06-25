@@ -23,8 +23,8 @@
 
 #include "backgroundchecker.h"
 #include "speller.h"
-#include "filter.h"
-#include "settings.h"
+#include "filter_p.h"
+#include "settings_p.h"
 
 #include <kconfig.h>
 #include <kguiitem.h>

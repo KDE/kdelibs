@@ -21,8 +21,8 @@
 #include "configwidget.h"
 #include "ui_configui.h"
 
-#include "loader.h"
-#include "settings.h"
+#include "loader_p.h"
+#include "settings_p.h"
 
 #include <keditlistbox.h>
 #include <kcombobox.h>

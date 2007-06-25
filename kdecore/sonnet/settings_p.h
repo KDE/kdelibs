@@ -1,6 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * settings.h
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
  *

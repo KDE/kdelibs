@@ -22,7 +22,7 @@
 #define SONNET_BACKGROUNDENGINE_H
 
 #include "speller.h"
-#include "loader.h"
+#include "loader_p.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>

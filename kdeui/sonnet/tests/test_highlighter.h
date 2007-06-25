@@ -23,7 +23,7 @@
 #define KTESTSPELL_H
 
 #include "highlighter.h"
-#include "filter.h"
+#include "filter_p.h"
 #include <QTextEdit>
 
 class QContextMenuEvent;

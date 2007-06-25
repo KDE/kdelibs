@@ -22,7 +22,7 @@
 #define TEST_DIALOG_H
 
 #include "dialog.h"
-#include "loader.h"
+#include "loader_p.h"
 
 #include <QtCore/QObject>
 

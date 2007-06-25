@@ -20,9 +20,9 @@
  * 02110-1301  USA
  */
 
-#include "filter.h"
+#include "filter_p.h"
 
-#include "settings.h"
+#include "settings_p.h"
 
 #include <kglobal.h>
 #include <kdebug.h>

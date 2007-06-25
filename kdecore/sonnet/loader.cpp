@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "loader.h"
-#include "settings.h"
+#include "loader_p.h"
+#include "settings_p.h"
 #include "client_p.h"
 #include "spellerplugin_p.h"
 
@@ -308,4 +308,4 @@ void Loader::changed()
 
 }
 
-#include "loader.moc"
+#include "loader_p.moc"

@@ -20,7 +20,7 @@
 #include "backgroundengine_p.h"
 
 #include "spellerplugin_p.h"
-#include "filter.h"
+#include "filter_p.h"
 
 #include <kdebug.h>
 

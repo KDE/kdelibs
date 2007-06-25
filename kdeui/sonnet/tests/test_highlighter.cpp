@@ -21,7 +21,7 @@
 #include "highlighter.h"
 #include "test_highlighter.h"
 #include "test_highlighter.moc"
-#include "filter.h"
+#include "filter_p.h"
 
 #include <kapplication.h>
 #include <kdebug.h>

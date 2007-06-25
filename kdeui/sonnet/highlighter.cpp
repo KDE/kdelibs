@@ -22,10 +22,11 @@
 
 #include "highlighter.h"
 #include "highlighter.moc"
+
 #include "speller.h"
-#include "loader.h"
-#include "filter.h"
-#include "settings.h"
+#include "loader_p.h"
+#include "filter_p.h"
+#include "settings_p.h"
 
 #include <kconfig.h>
 #include <kdebug.h>

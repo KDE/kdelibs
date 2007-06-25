@@ -19,9 +19,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "settings.h"
+#include "settings_p.h"
 
-#include "loader.h"
+#include "loader_p.h"
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
