@@ -76,7 +76,7 @@
 900        kdesu (kdelibs)
 912        ksmartcard (kdelibs)
 920        Solid (kdelibs)
-
+921        Solid Networking
 
 1000        kparts
 1001        kparts (mainwindow)
@@ -103,6 +103,7 @@
 1219        media kioslave
 1220        remote kioslave
 1221        ktimezoned
+1222        networkstatus
 
 1400        khelpcenter (kdebase)
 1401        kcmhelpcenter
