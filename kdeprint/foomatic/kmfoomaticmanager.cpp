@@ -21,7 +21,7 @@
 #include "kpipeprocess.h"
 #include "driver.h"
 
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kshell.h>

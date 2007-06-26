@@ -22,7 +22,7 @@
 
 #include <kdeprint_export.h>
 
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 #include <QtCore/QMap>
 #include <QtCore/QObject>
 
