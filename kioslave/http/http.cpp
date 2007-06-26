@@ -3,6 +3,7 @@
    Copyright (C) 2000-2002 George Staikos <staikos@kde.org>
    Copyright (C) 2000-2002 Dawit Alemayehu <adawit@kde.org>
    Copyright (C) 2001,2002 Hamish Rodda <rodda@kde.org>
+   Copyright (C) 2007      Nick Shaforostoff <shafff@ukr.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -31,6 +32,7 @@
 #include <fcntl.h>
 #include <utime.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -189,24 +191,19 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 
 HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
                             const QByteArray &app )
-             :TCPSlaveBase( 0, protocol , pool, app,
-                            (protocol == "https" || protocol == "webdavs") )
+    : TCPSlaveBase(0, protocol, pool, app, (protocol=="https"||protocol=="webdavs"))
+    , m_iSize(NO_SIZE)
+    , m_lineBufUnget(0)
+    , m_bBusy(false)
+    , m_bFirstRequest(false)
+    , m_maxCacheAge(DEFAULT_MAX_CACHE_AGE)
+    , m_maxCacheSize(DEFAULT_MAX_CACHE_SIZE/2)
+    , m_bProxyAuthValid(false)
+    , m_protocol(protocol)
+    , m_proxyConnTimeout(DEFAULT_PROXY_CONNECT_TIMEOUT)
+    , m_remoteConnTimeout(DEFAULT_CONNECT_TIMEOUT)
+    , m_remoteRespTimeout(DEFAULT_RESPONSE_TIMEOUT)
 {
-
-  m_bBusy = false;
-  m_bFirstRequest = false;
-  m_bProxyAuthValid = false;
-
-  m_iSize = NO_SIZE;
-  m_lineBufUnget = 0;
-
-  m_protocol = protocol;
-
-  m_maxCacheAge = DEFAULT_MAX_CACHE_AGE;
-  m_maxCacheSize = DEFAULT_MAX_CACHE_SIZE / 2;
-  m_remoteConnTimeout = DEFAULT_CONNECT_TIMEOUT;
-  m_remoteRespTimeout = DEFAULT_RESPONSE_TIMEOUT;
-  m_proxyConnTimeout = DEFAULT_PROXY_CONNECT_TIMEOUT;
 
   m_pid = getpid();
 
@@ -1193,7 +1190,7 @@ void HTTPProtocol::get( const KUrl& url )
   m_request.path = url.path();
   m_request.query = url.query();
 
-  QString tmp = metaData("cache");
+  QString tmp(metaData("cache"));
   if (!tmp.isEmpty())
     m_request.cache = parseCacheControl(tmp);
   else
@@ -2120,7 +2117,7 @@ bool HTTPProtocol::httpOpen()
      if (m_request.cache == CC_Reload && m_request.fcache)
      {
         if (m_request.fcache)
-          fclose(m_request.fcache);
+          gzclose(m_request.fcache);
         m_request.fcache = 0;
      }
      if ((m_request.cache == KIO::CC_CacheOnly) || (m_request.cache == KIO::CC_Cache))
@@ -2613,7 +2610,7 @@ try_again:
      m_responseHeader << "HTTP-CACHE";
      // Read header from cache...
      char buffer[4097];
-     if (!fgets(buffer, 4096, m_request.fcache) )
+     if (!gzgets(m_request.fcache, buffer, 4096) )
      {
         // Error, delete cache entry
         kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
@@ -2627,7 +2624,7 @@ try_again:
      kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: cached "
                    << "data mimetype: " << m_strMimeType << endl;
 
-     if (!fgets(buffer, 4096, m_request.fcache) )
+     if (!gzgets(m_request.fcache, buffer, 4096) )
      {
         // Error, delete cache entry
         kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
@@ -3444,7 +3441,7 @@ try_again:
     {
       // Yippie, we can use the cached version.
       // Update the cache with new "Expire" headers.
-      fclose(m_request.fcache);
+      gzclose(m_request.fcache);
       m_request.fcache = 0;
       updateExpireDate( expireDate, true );
       m_request.fcache = checkCacheEntry( ); // Re-read cache entry
@@ -3462,7 +3459,7 @@ try_again:
      else
      {
        // Validation failed. Close cache.
-       fclose(m_request.fcache);
+       gzclose(m_request.fcache);
        m_request.fcache = 0;
      }
   }
@@ -3865,7 +3862,7 @@ void HTTPProtocol::httpClose( bool keepAlive )
 
   if (m_request.fcache)
   {
-     fclose(m_request.fcache);
+     gzclose(m_request.fcache);
      m_request.fcache = 0;
      if (m_request.bCachedWrite)
      {
@@ -4258,9 +4255,10 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     m_iContentLeft = NO_SIZE;
 
     // Jippie! It's already in the cache :-)
-    while (!feof(m_request.fcache) && !ferror(m_request.fcache))
+    //int zliberrnum;
+    while (!gzeof(m_request.fcache)/* && !gzerror(m_request.fcache,&zliberrnum)*/)
     {
-      int nbytes = fread( buffer, 1, MAX_IPC_SIZE, m_request.fcache);
+      int nbytes = gzread( m_request.fcache, buffer, MAX_IPC_SIZE);
 
       if (nbytes > 0)
       {
@@ -4500,7 +4498,7 @@ void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDat
      m_request.fcache = checkCacheEntry( );
      if (m_request.fcache)
      {
-       fclose(m_request.fcache);
+       gzclose(m_request.fcache);
        m_request.fcache = 0;
        ::unlink( QFile::encodeName(m_request.cef) );
      }
@@ -4516,7 +4514,7 @@ void HTTPProtocol::cacheUpdate( const KUrl& url, bool no_cache, time_t expireDat
 // The following code should be kept in sync
 // with the code in http_cache_cleaner.cpp
 
-FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
+gzFile HTTPProtocol::checkCacheEntry( bool readWrite)
 {
    const QChar separator = '_';
 
@@ -4567,7 +4565,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
 
    const char *mode = (readWrite ? "r+" : "r");
 
-   FILE *fs = fopen( QFile::encodeName(CEF), mode); // Open for reading and writing
+   gzFile fs = gzopen( QFile::encodeName(CEF), mode); // Open for reading and writing
    if (!fs)
       return 0;
 
@@ -4575,7 +4573,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    bool ok = true;
 
   // CacheRevision
-  if (ok && (!fgets(buffer, 400, fs)))
+  if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
       ok = false;
@@ -4584,7 +4582,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    time_t currentDate = time(0);
 
    // URL
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
@@ -4598,7 +4596,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    }
 
    // Creation Date
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
@@ -4612,8 +4610,8 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    }
 
    // Expiration Date
-   m_request.cacheExpireDateOffset = ftell(fs);
-   if (ok && (!fgets(buffer, 400, fs)))
+   m_request.cacheExpireDateOffset = gztell(fs);
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
@@ -4633,7 +4631,7 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    }
 
    // ETag
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
@@ -4641,17 +4639,42 @@ FILE* HTTPProtocol::checkCacheEntry( bool readWrite)
    }
 
    // Last-Modified
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
+      m_request.bytesCached=0;
       m_request.lastModified = QString(buffer).trimmed();
+//    }
+
+//    if (ok)
+//    {
+
+      //write hit frequency data
+      int freq=0;
+      FILE* hitdata = fopen( QFile::encodeName(CEF+"_freq"), "r+");
+         if (hitdata)
+         {
+             freq=fgetc(hitdata);
+             if (freq!=EOF)
+                freq+=fgetc(hitdata)<<8;
+             else
+                freq=0;
+            fseek(hitdata,0,SEEK_SET);
+         }
+         if (hitdata||(hitdata=fopen(QFile::encodeName(CEF+"_freq"), "w")))
+         {
+             fputc(++freq,hitdata);
+             fputc(freq>>8,hitdata);
+             fclose(hitdata);
+         }
+
+
+
+      return fs;
    }
 
-   if (ok)
-      return fs;
-
-   fclose(fs);
+   gzclose(fs);
    unlink( QFile::encodeName(CEF));
    return 0;
 }
@@ -4660,20 +4683,20 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
 {
     bool ok = true;
 
-    FILE *fs = checkCacheEntry(true);
+    gzFile fs = checkCacheEntry(true);
     if (fs)
     {
         QString date;
         char buffer[401];
         time_t creationDate;
 
-        fseek(fs, 0, SEEK_SET);
-        if (ok && !fgets(buffer, 400, fs))
+        gzseek(fs, 0, SEEK_SET);
+        if (ok && !gzgets(fs, buffer, 400))
             ok = false;
-        if (ok && !fgets(buffer, 400, fs))
+        if (ok && !gzgets(fs, buffer, 400))
             ok = false;
-        long cacheCreationDateOffset = ftell(fs);
-        if (ok && !fgets(buffer, 400, fs))
+        long cacheCreationDateOffset = gztell(fs);
+        if (ok && !gzgets(fs, buffer, 400))
             ok = false;
         creationDate = strtoul(buffer, 0, 10);
         if (!creationDate)
@@ -4681,13 +4704,13 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
 
         if (updateCreationDate)
         {
-           if (!ok || fseek(fs, cacheCreationDateOffset, SEEK_SET))
+           if (!ok || gzseek(fs, cacheCreationDateOffset, SEEK_SET))
               return;
            QString date;
            date.setNum( time(0) );
            date = date.leftJustified(16);
-           fputs(date.toLatin1(), fs);      // Creation date
-           fputc('\n', fs);
+           gzputs(fs, date.toLatin1());      // Creation date
+           gzputc(fs, '\n');
         }
 
         if (expireDate>(30*365*24*60*60))
@@ -4706,11 +4729,11 @@ void HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
             date.setNum( creationDate + expireDate );
         }
         date = date.leftJustified(16);
-        if (!ok || fseek(fs, m_request.cacheExpireDateOffset, SEEK_SET))
+        if (!ok || gzseek(fs, m_request.cacheExpireDateOffset, SEEK_SET))
             return;
-        fputs(date.toLatin1(), fs);      // Expire date
-        fseek(fs, 0, SEEK_END);
-        fclose(fs);
+        gzputs(fs, date.toLatin1());      // Expire date
+        gzseek(fs, 0, SEEK_END);
+        gzclose(fs);
     }
 }
 
@@ -4732,44 +4755,44 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
 //   kDebug( 7103 ) <<  "creating new cache entry: " << filename << endl;
 
-   m_request.fcache = fopen( QFile::encodeName(filename), "w");
+   m_request.fcache = gzopen( QFile::encodeName(filename), "w");
    if (!m_request.fcache)
    {
       kWarning(7113) << "(" << m_pid << ")createCacheEntry: opening " << filename << " failed." << endl;
       return; // Error.
    }
 
-   fputs(CACHE_REVISION, m_request.fcache);    // Revision
+   gzputs(m_request.fcache, CACHE_REVISION);    // Revision
 
-   fputs(m_request.url.url().toLatin1(), m_request.fcache);  // Url
-   fputc('\n', m_request.fcache);
+   gzputs(m_request.fcache, m_request.url.url().toLatin1());  // Url
+   gzputc(m_request.fcache, '\n');
 
    QString date;
    m_request.creationDate = time(0);
    date.setNum( m_request.creationDate );
    date = date.leftJustified(16);
-   fputs(date.toLatin1(), m_request.fcache);      // Creation date
-   fputc('\n', m_request.fcache);
+   gzputs(m_request.fcache, date.toLatin1());      // Creation date
+   gzputc(m_request.fcache, '\n');
 
    date.setNum( expireDate );
    date = date.leftJustified(16);
-   fputs(date.toLatin1(), m_request.fcache);      // Expire date
-   fputc('\n', m_request.fcache);
+   gzputs(m_request.fcache, date.toLatin1());      // Expire date
+   gzputc(m_request.fcache, '\n');
 
    if (!m_request.etag.isEmpty())
-      fputs(m_request.etag.toLatin1(), m_request.fcache);    //ETag
-   fputc('\n', m_request.fcache);
+      gzputs(m_request.fcache, m_request.etag.toLatin1());    //ETag
+   gzputc(m_request.fcache, '\n');
 
    if (!m_request.lastModified.isEmpty())
-      fputs(m_request.lastModified.toLatin1(), m_request.fcache);    // Last modified
-   fputc('\n', m_request.fcache);
+      gzputs(m_request.fcache, m_request.lastModified.toLatin1());    // Last modified
+   gzputc(m_request.fcache, '\n');
 
-   fputs(mimetype.toLatin1(), m_request.fcache);  // Mimetype
-   fputc('\n', m_request.fcache);
+   gzputs(m_request.fcache, mimetype.toLatin1());  // Mimetype
+   gzputc(m_request.fcache, '\n');
 
    if (!m_request.strCharset.isEmpty())
-      fputs(m_request.strCharset.toLatin1(), m_request.fcache);    // Charset
-   fputc('\n', m_request.fcache);
+      gzputs(m_request.fcache, m_request.strCharset.toLatin1());    // Charset
+   gzputc(m_request.fcache, '\n');
 
    return;
 }
@@ -4779,21 +4802,21 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
 void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
 {
-   if (fwrite( buffer, nbytes, 1, m_request.fcache) != 1)
+   if (gzwrite(m_request.fcache, buffer, nbytes) == 0)
    {
       kWarning(7113) << "(" << m_pid << ") writeCacheEntry: writing " << nbytes << " bytes failed." << endl;
-      fclose(m_request.fcache);
+      gzclose(m_request.fcache);
       m_request.fcache = 0;
       QString filename = m_request.cef + ".new";
       ::unlink( QFile::encodeName(filename) );
       return;
    }
-   long file_pos = ftell( m_request.fcache ) / 1024;
-   if ( file_pos > m_maxCacheSize )
+   m_request.bytesCached+=nbytes;
+   if ( m_request.bytesCached>>10 > m_maxCacheSize )
    {
-      kDebug(7113) << "writeCacheEntry: File size reaches " << file_pos
+      kDebug(7113) << "writeCacheEntry: File size reaches " << (m_request.bytesCached>>10)
                     << "Kb, exceeds cache limits. (" << m_maxCacheSize << "Kb)" << endl;
-      fclose(m_request.fcache);
+      gzclose(m_request.fcache);
       m_request.fcache = 0;
       QString filename = m_request.cef + ".new";
       ::unlink( QFile::encodeName(filename) );
@@ -4804,7 +4827,7 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
 void HTTPProtocol::closeCacheEntry()
 {
    QString filename = m_request.cef + ".new";
-   int result = fclose( m_request.fcache);
+   int result = gzclose( m_request.fcache);
    m_request.fcache = 0;
    if (result == 0)
    {

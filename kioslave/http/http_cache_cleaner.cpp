@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <time.h>
 #include <stdlib.h>
+#include <zlib.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QString>
@@ -62,11 +63,12 @@ static const KCmdLineOptions options[] =
 struct FileInfo {
    QString name;
    int size; // Size in Kb.
-   int age;
+//    int age;
+   int rating;
 
    bool operator<( const struct FileInfo &info )
    {
-     return ( age < info.age );
+     return ( rating < info.rating);
    }
 };
 
@@ -84,8 +86,9 @@ public:
 
 FileInfo *readEntry( const QString &filename)
 {
+   kWarning()<<"readEntry"<<endl;
    QByteArray CEF = QFile::encodeName(filename);
-   FILE *fs = fopen( CEF.data(), "r");
+   gzFile fs = gzopen( CEF.data(), "r");
    if (!fs)
       return 0;
 
@@ -93,20 +96,20 @@ FileInfo *readEntry( const QString &filename)
    bool ok = true;
 
   // CacheRevision
-  if (ok && (!fgets(buffer, 400, fs)))
+  if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
       ok = false;
 
    // Full URL
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
 
    time_t creationDate;
    int age =0;
 
    // Creation Date
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
@@ -119,7 +122,7 @@ FileInfo *readEntry( const QString &filename)
    }
 
    // Expiration Date
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
@@ -133,7 +136,7 @@ FileInfo *readEntry( const QString &filename)
    }
 
    // ETag
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
@@ -141,7 +144,7 @@ FileInfo *readEntry( const QString &filename)
    }
 
    // Last-Modified
-   if (ok && (!fgets(buffer, 400, fs)))
+   if (ok && (!gzgets(fs, buffer, 400)))
       ok = false;
    if (ok)
    {
@@ -149,11 +152,24 @@ FileInfo *readEntry( const QString &filename)
    }
 
 
-   fclose(fs);
+   gzclose(fs);
    if (ok)
    {
       FileInfo *info = new FileInfo;
-      info->age = age;
+
+      int freq=0;
+      FILE* hitdata = fopen( QFile::encodeName(CEF+"_freq"), "r+");
+      if (hitdata && (freq=fgetc(hitdata))!=EOF)
+      {
+         freq+=fgetc(hitdata)<<8;
+         if (freq>0)
+            info->rating=age/freq;
+         else
+            info->rating=age;
+         fclose(hitdata);
+      }
+      else
+         info->rating = age;
       return info;
    }
 
@@ -242,7 +258,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
        it != dirs.end();
        it++)
    {
-      if ((*it)[0] != '.')
+      if (it->at(0) != '.')
       {
          scanDirectory( cachedEntries, *it, strCacheDir + '/' + *it);
       }

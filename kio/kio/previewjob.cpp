@@ -96,6 +96,8 @@ struct KIO::PreviewJobPrivate
     bool bScale;
     // Whether we should save the thumbnail
     bool bSave;
+    bool ignoreMaximumSize;
+    bool succeeded;
     // If the file to create a thumb for was a temp file, this is its name
     QString tempName;
     // Over that, it's too much
@@ -109,10 +111,8 @@ struct KIO::PreviewJobPrivate
     int shmid;
     // And the data area
     uchar *shmaddr;
-    bool succeeded;
     // Root of thumbnail cache
     QString thumbRoot;
-    bool ignoreMaximumSize;
 };
 
 PreviewJob::PreviewJob( const QList<KFileItem> &items, int width, int height,

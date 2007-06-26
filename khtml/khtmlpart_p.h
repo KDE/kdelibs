@@ -104,10 +104,10 @@ namespace khtml
     QString m_name;
     KParts::URLArgs m_args;
     QPointer<KHTMLRun> m_run;
-    bool m_bPreloaded;
     KUrl m_workingURL;
     Type m_type;
     QStringList m_params;
+    bool m_bPreloaded;
     bool m_bNotify;
     bool m_bPendingRedirection;
   protected Q_SLOTS:
@@ -310,7 +310,6 @@ public:
 
   // QStrings for SSL metadata
   // Note: When adding new variables don't forget to update ::saveState()/::restoreState()!
-  bool m_ssl_in_use;
   QString m_ssl_peer_certificate,
           m_ssl_peer_chain,
           m_ssl_peer_ip,
@@ -322,6 +321,7 @@ public:
           m_ssl_cert_state,
           m_ssl_parent_ip,
           m_ssl_parent_cert;
+  bool m_ssl_in_use;
 
   bool m_bComplete;
   bool m_bLoadEventEmitted;
@@ -407,9 +407,9 @@ public:
   QString m_overURL;
   QString m_overURLTarget;
 
-  bool m_startBeforeEnd;
-  bool m_extendAtEnd;		// true if selection is to be extended at its end
   enum { ExtendByChar, ExtendByWord, ExtendByLine } m_extendMode;
+  bool m_extendAtEnd;		// true if selection is to be extended at its end
+  bool m_startBeforeEnd;
   bool m_bDnd;
   bool m_bFirstData;
   bool m_bClearing;

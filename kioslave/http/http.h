@@ -28,6 +28,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <stdio.h>
+#include <zlib.h>
 #include <time.h>
 
 #include <QtCore/QByteRef>
@@ -117,6 +118,7 @@ public:
       bUseCookiejar = false;
       expireDate = 0;
       creationDate = 0;
+      bytesCached=0;
     }
 
     QString hostname;
@@ -129,40 +131,42 @@ public:
     KIO::HTTP_METHOD method;
     KIO::CacheControl cache;
     KIO::filesize_t offset;
-    bool doProxy;
     KUrl url;
     QString window;                 // Window Id this request is related to.
     QString referrer;
     QString charsets;
     QString languages;
-    bool allowCompressedPage;
-    bool disablePassDlg;
     QString userAgent;
     QString id;
     DAVRequest davData;
-
+    bool doProxy;
+    bool allowCompressedPage;
+    bool disablePassDlg;
     bool bNoAuth; // Do not authenticate
-
-    // Cache related
-    QString cef; // Cache Entry File belonging to this URL.
-    bool bUseCache; // Whether the cache is active
-    bool bCachedRead; // Whether the file is to be read from m_fcache.
-    bool bCachedWrite; // Whether the file is to be written to m_fcache.
-    FILE* fcache; // File stream of a cache entry
-    QString etag; // ETag header.
-    QString lastModified; // Last modified.
-    bool bMustRevalidate; // Cache entry is expired.
-    long cacheExpireDateOffset; // Position in the cache entry where the
-                                  // 16 byte expire date is stored.
-    time_t expireDate; // Date when the cache entry will expire
-    time_t creationDate; // Date when the cache entry was created
-    QString strCharset; // Charset
 
     // Indicates whether an error-page or error-msg should is preferred.
     bool bErrorPage;
 
     // Cookie flags
     bool bUseCookiejar;
+
+    // Cache related
+    bool bUseCache; // Whether the cache is active
+    bool bCachedRead; // Whether the file is to be read from m_fcache.
+    bool bCachedWrite; // Whether the file is to be written to m_fcache.
+    bool bMustRevalidate; // Cache entry is expired.
+    QString cef; // Cache Entry File belonging to this URL.
+    gzFile fcache; // File stream of a cache entry
+    QString etag; // ETag header.
+    QString lastModified; // Last modified.
+    long cacheExpireDateOffset; // Position in the cache entry where the
+                                  // 16 byte expire date is stored.
+    long bytesCached;
+    time_t expireDate; // Date when the cache entry will expire
+    time_t creationDate; // Date when the cache entry was created
+    QString strCharset; // Charset
+
+    // Cookie flags
     enum { CookiesAuto, CookiesManual, CookiesNone } cookieMode;
   };
 
@@ -346,7 +350,7 @@ protected:
    *         0 if no cache entry could be found, or if the entry is not
    *         valid (any more).
    */
-  FILE *checkCacheEntry(bool readWrite = false);
+  gzFile checkCacheEntry(bool readWrite = false);
 
   /**
    * Create a cache entry for the current url. (m_state.url)
@@ -468,33 +472,33 @@ protected:
   HTTPRequest m_request;
   QList<HTTPRequest*> m_requestQueue;
 
-  bool m_bBusy; // Busy handling request queue.
-  bool m_bEOF;
-  bool m_bEOD;
-
-//--- Settings related to a single response only
-  QStringList m_responseHeader; // All headers
-  bool m_bRedirect; // Indicates current request is a redirection
-
   // Processing related
-  bool m_bChunked; // Chunked transfer encoding
   KIO::filesize_t m_iSize; // Expected size of message
   KIO::filesize_t m_iBytesLeft; // # of bytes left to receive in this message.
   KIO::filesize_t m_iContentLeft; // # of content bytes left
   QByteArray m_bufReceive; // Receive buffer
-  bool m_dataInternal; // Data is for internal consumption
   char m_lineBuf[1024];
   char m_rewindBuf[4096];
   size_t m_rewindCount;
-  char *m_linePtr;
   size_t m_lineCount;
+  size_t m_lineCountUnget;
+  char *m_linePtr;
   char *m_lineBufUnget;
   char *m_linePtrUnget;
-  size_t m_lineCountUnget;
+  bool m_dataInternal; // Data is for internal consumption
+  bool m_bChunked; // Chunked transfer encoding
 
-  // Mimetype determination
-  bool m_cpMimeBuffer;
-  QByteArray m_mimeTypeBuffer;
+  bool m_bBusy; // Busy handling request queue.
+  bool m_bEOF;
+  bool m_bEOD;
+
+  // First request on a connection
+  bool m_bFirstRequest;
+
+//--- Settings related to a single response only
+  bool m_bRedirect; // Indicates current request is a redirection
+  QStringList m_responseHeader; // All headers
+
 
   // Language/Encoding related
   QStringList m_qTransferEncodings;
@@ -511,6 +515,11 @@ protected:
   bool m_davHostOk;
   bool m_davHostUnsupported;
 //----------
+
+  // Mimetype determination
+  bool m_cpMimeBuffer;
+  QByteArray m_mimeTypeBuffer;
+
 
   // Holds the POST data so it won't get lost on if we
   // happend to get a 401/407 response when submitting,
@@ -542,16 +551,9 @@ protected:
   QString m_strProxyAuthorization;
   HTTP_AUTH Authentication;
   HTTP_AUTH ProxyAuthentication;
-  bool m_bUnauthorized;
   short unsigned int m_iProxyAuthCount;
   short unsigned int m_iWWWAuthCount;
-
-  // First request on a connection
-  bool m_bFirstRequest;
-
-  // Persistent connections
-  bool m_bKeepAlive;
-  int m_keepAliveTimeout; // Timeout in seconds.
+  bool m_bUnauthorized;
 
   // Persistent proxy connections
   bool m_bPersistentProxyConnection;
@@ -559,6 +561,10 @@ protected:
 
   // Indicates whether there was some connection error.
   bool m_bError;
+
+  // Persistent connections
+  bool m_bKeepAlive;
+  int m_keepAliveTimeout; // Timeout in seconds.
 
   // Previous and current response codes
   unsigned int m_responseCode;

@@ -68,10 +68,10 @@ class KHTMLPageCachePrivate
 {
 public:
   long newId;
+  bool deliveryActive;
   Q3IntDict<KHTMLPageCacheEntry> dict;
   Q3PtrList<KHTMLPageCacheDelivery> delivery;
   QQueue<long> expireQueue;
-  bool deliveryActive;
 };
 
 KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id)
