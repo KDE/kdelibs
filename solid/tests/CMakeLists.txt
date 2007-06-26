@@ -51,21 +51,22 @@ target_link_libraries(solidhwtest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT
 
 ########### solidnettestdbusservice ###############
 
-set(solidnettestdbusservice_SRCS
-   solidnettestdbusservice.cpp )
+#set(solidnettestdbusservice_SRCS
+#   solidnettestdbusservice.cpp )
 
-kde4_automoc(${solidnettestdbusservice_SRCS})
+#kde4_automoc(${solidnettestdbusservice_SRCS})
 
-QT4_ADD_DBUS_ADAPTOR(solidnettestdbusservice_SRCS ../solid/org.kde.Solid.Networking.xml
-                         solidnettestdbusservice.h TestNetworkingService)
+#QT4_ADD_DBUS_ADAPTOR(solidnettestdbusservice_SRCS ../solid/org.kde.Solid.Networking.Client.xml
+#                         solidnettestdbusservice.h TestNetworkingService)
 
-kde4_add_test_executable(solidnettestdbusservice ${solidnettestdbusservice_SRCS})
+#kde4_add_test_executable(solidnettestdbusservice ${solidnettestdbusservice_SRCS})
 
-target_link_libraries(solidnettestdbusservice ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY})
+#target_link_libraries(solidnettestdbusservice ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY})
 
 ########### networkingclient ###############
 
-include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES} ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_INCLUDES})
+include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
+    ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_INCLUDES} ${KDE4_KIO_INCLUDES})
 
 set(networkingclient_SRCS networkingclient.cpp)
 
@@ -75,7 +76,7 @@ qt4_add_dbus_interface(networkingclient_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../soli
 
 kde4_automoc(${networkingclient_SRCS})
 
-kde4_add_executable(networkingclient ${networkingclient_SRCS})
+kde4_add_test_executable(networkingclient ${networkingclient_SRCS})
 
 target_link_libraries(networkingclient solid_static ${KDE4_KIO_LIBS})
 ########### install files ###############
