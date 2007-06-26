@@ -117,8 +117,8 @@ extern "C" {
 #include <kvbox.h>
 #include <kacl.h>
 #include <kconfiggroup.h>
-#ifndef Q_OS_WIN
 #include <kshell.h>
+#ifndef Q_OS_WIN
 #include "kfilesharedialog.h"
 #endif
 
