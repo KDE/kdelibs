@@ -26,6 +26,8 @@
    $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
 */
 
+//krazy:excludeall=inline
+
 #ifndef DEBUGGINGAIDS_H
 #define DEBUGGINGAIDS_H
 
