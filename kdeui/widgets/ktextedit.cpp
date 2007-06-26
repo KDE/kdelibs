@@ -66,10 +66,10 @@ class KTextEdit::Private
     void menuActivated( QAction* action );
 
     KTextEdit *parent;
-    bool customPalette;
     QAction *autoSpellCheckAction;
     QAction *allowTab;
     QAction *spellCheckAction;
+    bool customPalette;
 
     bool checkSpellingEnabled;
     QString originalBuffer;

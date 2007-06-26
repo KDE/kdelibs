@@ -89,18 +89,18 @@ public:
     int status;
     int timeout;
     int rblockSz;      // Size for reading blocks in readLine()
+    MetaData savedMetaData;
     bool block;
     bool useSSLTunneling;
     bool needSSLHandShake;
     bool militantSSL;              // If true, we just drop a connection silently
     // if SSL certificate check fails in any way.
     bool userAborted;
-    MetaData savedMetaData;
 
+    bool isSSL;
     quint16 port;
     quint16 defaultPort;
     QByteArray serviceName;
-    bool isSSL;
 };
 
 QIODevice *TCPSlaveBase::socket() const

@@ -27,8 +27,12 @@ class KPlotAxis::Private
 {
     public:
         Private( KPlotAxis *qq )
-            : q( qq ), m_visible( true ), m_showTickLabels( false ),
-              m_labelFieldWidth( 0 ), m_labelFmt( 'g' ), m_labelPrec( -1 )
+            : q( qq )
+            , m_visible( true )
+            , m_showTickLabels( false )
+            , m_labelFmt( 'g' )
+            , m_labelFieldWidth( 0 )
+            , m_labelPrec( -1 )
         {
         }
 
@@ -36,9 +40,9 @@ class KPlotAxis::Private
 
         bool m_visible; // Property "visible" defines if Axis is drawn or not.
         bool m_showTickLabels;
+        char m_labelFmt; // Number format for number labels, see QString::arg()
         QString m_label; // The label of the axis.
         int m_labelFieldWidth; // Field width for number labels, see QString::arg()
-        char m_labelFmt; // Number format for number labels, see QString::arg()
         int m_labelPrec; // Number precision for number labels, see QString::arg()
         QList<double> m_MajorTickMarks, m_MinorTickMarks;
 };

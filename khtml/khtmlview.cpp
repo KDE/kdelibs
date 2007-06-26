@@ -335,13 +335,13 @@ public:
     int borderX, borderY;
     KConfig *formCompletions;
 
-    bool paged;
-
     int clickX, clickY, clickCount;
     bool isDoubleClick;
 
-    int contentsX, contentsY;
+    bool paged;
+
     bool scrollingSelf;
+    int contentsX, contentsY;
     int layoutTimerId;
     QKeyEvent* postponed_autorepeat;
 

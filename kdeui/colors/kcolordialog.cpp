@@ -139,11 +139,11 @@ public:
 
     KColorCells *q;
     QColor *colors;
-    bool inMouse;
     QPoint mousePos;
     int	selected;
     bool shade;
     bool acceptDrags;
+    bool inMouse;
 };
 
 KColorCells::KColorCells( QWidget *parent, int rows, int cols )

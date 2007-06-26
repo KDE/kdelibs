@@ -61,13 +61,13 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
 
 struct KFind::Private
 {
-    Private() :
-      findDialog(0),
-      patternChanged(false),
-      matchedPattern(""),
-      emptyMatch(0),
-      currentId(0),
-      customIds(false)
+    Private()
+        : findDialog(0)
+        , currentId(0)
+        , customIds(false)
+        , patternChanged(false)
+        , matchedPattern("")
+        , emptyMatch(0)
     {
     }
 
@@ -110,13 +110,13 @@ struct KFind::Private
     };
 
     QPointer<QWidget>  findDialog;
+    int                   currentId;
+    bool                  customIds;
     bool                  patternChanged;
     QString               matchedPattern;
     QHash<QString,Match>  incrementalPath;
     Match *               emptyMatch;
     QList<Data>           data; // used like a vector, not like a linked-list
-    int                   currentId;
-    bool                  customIds;
 };
 
 ////

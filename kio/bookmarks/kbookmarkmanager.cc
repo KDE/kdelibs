@@ -92,20 +92,22 @@ class KBookmarkManager::Private
 {
 public:
     Private(bool bDocIsloaded, const QString &dbusObjectName = QString())
-      : m_doc("xbel"),
-        m_docIsLoaded(bDocIsloaded),
-        m_dbusObjectName(dbusObjectName)
+      : m_doc("xbel")
+      , m_dbusObjectName(dbusObjectName)
+      , m_docIsLoaded(bDocIsloaded)
+
     {}
 
-    QString m_bookmarksFile;
     mutable QDomDocument m_doc;
     mutable QDomDocument m_toolbarDoc;
+    QString m_bookmarksFile;
+    QString m_dbusObjectName;
     mutable bool m_docIsLoaded;
     bool m_update;
-    QString m_dbusObjectName;
 
-    QString m_editorCaption;
     bool m_browserEditor;
+    QString m_editorCaption;
+
 };
 
 // ################

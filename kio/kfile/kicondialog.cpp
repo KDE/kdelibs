@@ -674,8 +674,8 @@ class KIconButton::KIconButtonPrivate
 
     KIconButton *q;
 
-    bool m_bStrictIconSize;
     int iconSize;
+    bool m_bStrictIconSize;
 
     bool mbUser;
     K3Icon::Group mGroup;

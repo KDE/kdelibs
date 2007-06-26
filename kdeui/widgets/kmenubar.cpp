@@ -90,13 +90,15 @@ public:
         delete selection;
 #endif
         }
-    bool forcedTopLevel;
-    bool topLevel;
-    bool wasTopLevel; // when TLW is fullscreen, remember state
     int frameStyle; // only valid in toplevel mode
     int lineWidth;  // dtto
     int margin;     // dtto
     bool fallback_mode; // dtto
+
+    bool forcedTopLevel;
+    bool topLevel;
+    bool wasTopLevel; // when TLW is fullscreen, remember state
+
 #ifdef Q_WS_X11
     KSelectionWatcher* selection;
 #endif

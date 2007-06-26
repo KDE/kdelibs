@@ -442,6 +442,7 @@ public:
     void _k_slotOK();
 
     bool saveNewApps;
+    bool m_terminaldirty;
     KService::Ptr curService;
     KApplicationView *view;
     KUrlRequester *edit;
@@ -449,7 +450,6 @@ public:
     QLabel *label;
     QString qName;
     QString qMimeType;
-    bool m_terminaldirty;
     QCheckBox *terminal;
     QCheckBox *remember;
     QCheckBox *nocloseonexit;

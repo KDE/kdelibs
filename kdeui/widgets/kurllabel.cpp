@@ -70,12 +70,12 @@ class KUrlLabel::Private
     KUrlLabel *parent;
 
     QString url;
-    bool textUnderlined;
-    bool realUnderlined;
     QString tipText;
     QColor linkColor;
     QColor highlightedLinkColor;
     QCursor* cursor;
+    bool textUnderlined;
+    bool realUnderlined;
     bool useTips;
     bool useCursor;
     bool glowEnabled;

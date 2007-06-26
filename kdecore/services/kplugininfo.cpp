@@ -56,10 +56,10 @@ class KPluginInfo::KPluginInfoPrivate
         bool enabledbydefault;
         bool pluginenabled;
 
+        bool kcmservicesCached;
         KConfigGroup config;
         KService::Ptr service;
         QList<KService::Ptr> kcmservices;
-        bool kcmservicesCached;
 };
 
 KPluginInfo::KPluginInfo( const QString & filename, const char* resource )

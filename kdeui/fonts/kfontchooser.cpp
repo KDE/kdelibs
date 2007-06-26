@@ -107,6 +107,8 @@ public:
     QPalette m_palette;
     bool signalsAllowed;
 
+    bool usingFixed;
+
     KIntNumInput *sizeOfFont;
 
     QLineEdit    *sampleEdit;
@@ -129,7 +131,6 @@ public:
     int          selectedSize;
     QMap<QString, QString> currentStyles;
 
-    bool usingFixed;
 };
 
 

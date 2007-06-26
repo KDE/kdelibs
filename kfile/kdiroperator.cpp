@@ -91,8 +91,8 @@ public:
     }
 
     bool dirHighlighting;
-    QString lastURL; // used for highlighting a directory on cdUp
     bool onlyDoubleClickSelectsFiles;
+    QString lastURL; // used for highlighting a directory on cdUp
     QTimer *progressDelayTimer;
     QAction *viewActionSeparator;
     int dropOptions;

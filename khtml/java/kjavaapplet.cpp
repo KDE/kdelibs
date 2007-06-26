@@ -32,6 +32,7 @@ class KJavaAppletPrivate
 {
 public:
    bool    reallyExists;
+   bool    failed;
    QString className;
    QString appName;
    QString baseURL;
@@ -40,7 +41,6 @@ public:
    QSize   size;
    QString windowName;
    KJavaApplet::AppletState state;
-   bool    failed;
 
    KJavaAppletWidget* UIwidget;
 };

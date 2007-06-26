@@ -66,9 +66,9 @@ class KToolBar::Private
         unlockedMovable( true ),
         xmlguiClient( 0 ),
         contextLockAction( 0 ),
-        HiddenDefault( false ),
         IconSizeDefault( 22 ),
         ToolButtonStyleDefault( Qt::ToolButtonTextUnderIcon ),
+        HiddenDefault( false ),
         NewLineDefault( false ),
         OffsetDefault( 0 ),
         PositionDefault( "Top" ),
@@ -151,9 +151,9 @@ class KToolBar::Private
     QMap<QAction*,int> contextIconSizes;
 
     // Default Values.
-    bool HiddenDefault;
     int IconSizeDefault;
     Qt::ToolButtonStyle ToolButtonStyleDefault;
+    bool HiddenDefault;
     bool NewLineDefault;
     int OffsetDefault;
     QString PositionDefault;

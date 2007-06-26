@@ -40,13 +40,13 @@ public:
     KColorButtonPrivate(KColorButton *q): q(q) {}
   
     KColorButton *q;
-    bool m_bdefaultColor;
     QColor m_defaultColor;
-  
+    bool m_bdefaultColor;
+
+    bool dragFlag;
     QColor col;
     QPoint mPos;
-    bool dragFlag;
-    
+
     void initStyleOption(QStyleOptionButton* opt) const;    
 };
 
