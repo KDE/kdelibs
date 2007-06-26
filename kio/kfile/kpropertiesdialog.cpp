@@ -3370,7 +3370,7 @@ void KDesktopPropsPlugin::slotBrowseExec()
   }
 
   QString path = f.path();
-  KRun::shellQuote( path );
+  path = KShell::quoteArg( path );
   w->commandEdit->setText( path );
 }
 
