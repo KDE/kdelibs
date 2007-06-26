@@ -24,6 +24,8 @@
 //   hack. </understatement>  It might be time to rewrite it soon.
 //
 
+#include "crypto.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -90,7 +92,6 @@
 #include <ksslall.h>
 #include <kopenssl.h>
 
-#include "crypto.h"
 #include "certexport.h"
 #include "kdatetimedlg.h"
 

@@ -22,6 +22,8 @@
 #define _CRYPTO_H
 
 #include <ksslconfig.h>
+#include <ksslall.h>
+#include <klocale.h>
 #include <QCheckBox>
 #include <QDateTime>
 #include <QLineEdit>
@@ -37,6 +39,9 @@
 
 class QGridLayout;
 class Q3VButtonGroup;
+class QRadioButton;
+class QGroupBox;
+class Q3HButtonGroup;
 
 class KComboBox;
 class KCryptoConfig;
