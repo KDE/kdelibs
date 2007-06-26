@@ -205,7 +205,7 @@ QString HalDevice::icon() const
         QStringList protocols = property("portable_audio_player.access_method.protocols").toStringList();
 
         if (protocols.contains("ipod")) {
-            return "multimedia-player-ipod";
+            return "multimedia-player-apple-ipod";
         } else {
             return "multimedia-player";
         }
