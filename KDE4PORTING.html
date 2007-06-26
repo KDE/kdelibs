@@ -2163,7 +2163,36 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <h4>KSpell</h4>
 
 <ul>
-<li>All of the features of KSpell have been moved to Sonnet</li>
+<li>All of the features of KSpell and KSpell2 have been moved to Sonnet</li>
+<li>The KSpell2's initialization procedure of:
+<pre>
+KSpell2::Loader::Ptr loader = KSpell2::Loader::openLoader();
+KSpell2::Speller *speller = loader->createSpeller("en_US");
+if (speller) {
+   if (speller->isMisspelled("word")) {
+          //do something
+   }
+}
+</pre>
+has been replaced with:
+<pre>
+Sonnet:Speller speller("en_US");
+if (speller.isMisspelled("word")) {
+    //do something
+}
+</pre>
+</li>
+<li>The configuration class of KSpell2 (KSpell2::Settings) have been
+folded back into Sonnet::Speller.</li>
+<li>Sonnet doesn't automatically overwrite configuration anymore. To
+  save and restore setting from a KConfig file one has to use
+<pre>
+  Sonnet::Speller::save(KConfig *config);
+  Sonnet::Speller::restore(KConfig *config);
+</pre>
+methods.</li>
+<li>KSpell2::Filter has been temporarily removed from the public api.
+Proper text segmentation api is planned for KDE 4.1</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
