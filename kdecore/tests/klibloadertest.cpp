@@ -68,6 +68,8 @@ void KLibLoaderTest::testWorking()
     if ( error )
         kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
     QVERIFY( obj != 0 );
+    // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
+    //delete obj;
 }
 
 void KLibLoaderTest::testWorking4()
@@ -77,6 +79,8 @@ void KLibLoaderTest::testWorking4()
     if ( error )
         kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
     QVERIFY( obj != 0 );
+    // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
+    //delete obj;
 }
 
 void KLibLoaderTest::testWrongClass()
@@ -89,4 +93,6 @@ void KLibLoaderTest::testWrongClass()
     QString errorString = KLibLoader::errorString( error );
     kDebug() << errorString << endl;
     QVERIFY( !errorString.isEmpty() );
+    // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
+    //delete obj;
 }

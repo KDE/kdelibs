@@ -69,19 +69,13 @@ void KStandarddirsTest::testFindResource()
 #endif
     const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" EXT );
     QVERIFY( !bin.isEmpty() );
-    QVERIFY( bin.endsWith( "bin/kioslave" EXT ) );
-#ifndef Q_WS_WIN
-		// @TODO unix specific
-    QVERIFY( bin.startsWith( "/" ) );
-#endif
+    QVERIFY( bin.endsWith( "kde4/libexec/kioslave" EXT ) );
+    QVERIFY( !QDir::isRelativePath(bin) );
 
     const QString data = KGlobal::dirs()->findResource( "data", "katepart/syntax/sql.xml" );
     QVERIFY( !data.isEmpty() );
     QVERIFY( data.endsWith( "share/apps/katepart/syntax/sql.xml" ) );
-#ifndef Q_WS_WIN
-		// @TODO unix specific
-    QVERIFY( data.startsWith( "/" ) );
-#endif
+    QVERIFY( !QDir::isRelativePath(data) );
 }
 
 static bool oneEndsWith( const QStringList& lst, const QString& str)

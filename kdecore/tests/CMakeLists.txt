@@ -21,7 +21,7 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 
 ########### next target ###############
 
-set(kdecore_unittests
+KDECORE_UNIT_TESTS(
  klocaletest
  klocalizedstringtest
  kstandarddirstest
@@ -58,12 +58,12 @@ set(kdecore_unittests
 )
 
 if(UNIX)
- set(kdecore_unittests ${kdecore_unittests} klocalsockettest klocalsocketservertest kptyprocesstest)
+ KDECORE_UNIT_TESTS(
+  klocalsockettest
+  klocalsocketservertest
+  kptyprocesstest
+ )
 endif(UNIX)
-
-KDECORE_UNIT_TESTS(
- ${kdecore_unittests}
-)
 
 KDECORE_EXECUTABLE_TESTS(
  krandomsequencetest
