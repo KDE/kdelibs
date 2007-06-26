@@ -1668,7 +1668,7 @@ void KStandardDirs::addKDEDefaults()
         addResourceType(types_string + types_indices[index], 0, types_string + types_indices[index+1], true);
         index+=2;
     }
-    addResourceDir("exe", LIBEXEC_INSTALL_DIR, false );
+    addResourceDir("exe", LIBEXEC_INSTALL_DIR, true );
 
     addResourceDir("home", QDir::homePath(), false);
 }
