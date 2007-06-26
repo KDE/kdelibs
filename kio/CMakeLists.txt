@@ -88,6 +88,7 @@ set(kiocore_STAT_SRCS
   kio/kservicegroup.cpp
   kio/kservicegroupfactory.cpp
   kio/kshellcompletion.cpp
+  kio/kstatusbarofflineindicator.cpp
   kio/ktar.cpp
   kio/kurifilter.cpp
   kio/kurlcompletion.cpp
@@ -336,6 +337,7 @@ install( FILES
   kio/kscan.h
   kio/kservicegroup.h
   kio/kshellcompletion.h
+  kio/kstatusbarofflineindicator.h
   kio/ktar.h
   kio/kurifilter.h
   kio/kurlcompletion.h
