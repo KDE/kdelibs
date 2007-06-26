@@ -20,8 +20,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "solid/ifaces/camera.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/camera.h>
+#include "haldeviceinterface.h"
 
 class Camera : public DeviceInterface, virtual public Solid::Ifaces::Camera
 {

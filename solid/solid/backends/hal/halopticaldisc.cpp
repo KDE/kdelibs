@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/hal/halopticaldisc.h"
+#include "halopticaldisc.h"
 
 OpticalDisc::OpticalDisc(HalDevice *device)
     : Volume(device)

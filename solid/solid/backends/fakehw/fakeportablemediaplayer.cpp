@@ -18,9 +18,9 @@
 
 */
 
-#include <QtCore/QStringList>
+#include "fakeportablemediaplayer.h"
 
-#include "backends/fakehw/fakeportablemediaplayer.h"
+#include <QtCore/QStringList>
 
 FakePortableMediaPlayer::FakePortableMediaPlayer(FakeDevice *device)
     : FakeDeviceInterface(device)

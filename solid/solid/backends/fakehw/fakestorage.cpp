@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakestorage.h"
+#include "fakestorage.h"
 
 FakeStorage::FakeStorage(FakeDevice *device)
     : FakeBlock(device)

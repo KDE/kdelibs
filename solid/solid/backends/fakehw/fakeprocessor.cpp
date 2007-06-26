@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakeprocessor.h"
+#include "fakeprocessor.h"
 
 FakeProcessor::FakeProcessor(FakeDevice *device)
  : FakeDeviceInterface(device)

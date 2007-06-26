@@ -20,8 +20,8 @@
 #ifndef ACADAPTER_H
 #define ACADAPTER_H
 
-#include "solid/ifaces/acadapter.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/acadapter.h>
+#include "haldeviceinterface.h"
 
 class AcAdapter : public DeviceInterface, virtual public Solid::Ifaces::AcAdapter
 {

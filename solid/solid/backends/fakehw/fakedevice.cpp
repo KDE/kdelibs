@@ -16,30 +16,29 @@
     Boston, MA 02110-1301, USA.
 
 */
-#include "backends/fakehw/fakedevice.h"
+#include "fakedevice.h"
 
-#include "backends/fakehw/fakedeviceinterface.h"
-#include "backends/fakehw/fakegenericinterface.h"
-#include "backends/fakehw/fakeprocessor.h"
-#include "backends/fakehw/fakeblock.h"
-#include "backends/fakehw/fakestorage.h"
-#include "backends/fakehw/fakecdrom.h"
-#include "backends/fakehw/fakevolume.h"
-#include "backends/fakehw/fakeopticaldisc.h"
-#include "backends/fakehw/fakecamera.h"
-#include "backends/fakehw/fakeportablemediaplayer.h"
-#include "backends/fakehw/fakenetworkinterface.h"
-#include "backends/fakehw/fakeacadapter.h"
-#include "backends/fakehw/fakebattery.h"
-#include "backends/fakehw/fakebutton.h"
-#include "backends/fakehw/fakeaudiointerface.h"
-#include "backends/fakehw/fakedvbinterface.h"
+#include "fakedeviceinterface.h"
+#include "fakegenericinterface.h"
+#include "fakeprocessor.h"
+#include "fakeblock.h"
+#include "fakestorage.h"
+#include "fakecdrom.h"
+#include "fakevolume.h"
+#include "fakeopticaldisc.h"
+#include "fakecamera.h"
+#include "fakeportablemediaplayer.h"
+#include "fakenetworkinterface.h"
+#include "fakeacadapter.h"
+#include "fakebattery.h"
+#include "fakebutton.h"
+#include "fakeaudiointerface.h"
+#include "fakedvbinterface.h"
 
 #include <QtCore/QStringList>
 #include <QtDBus/QDBusConnection>
 
 #include <solid/genericinterface.h>
-#include "fakedevice.h"
 
 class FakeDevice::Private
 {

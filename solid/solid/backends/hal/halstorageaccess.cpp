@@ -17,7 +17,6 @@
 
 */
 
-#include "backends/hal/halstorageaccess.h"
 #include "halstorageaccess.h"
 
 #include <QtDBus/QDBusConnection>

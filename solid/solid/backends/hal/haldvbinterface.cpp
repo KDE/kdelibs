@@ -17,9 +17,9 @@
 
 */
 
-#include "backends/hal/haldvbinterface.h"
+#include "haldvbinterface.h"
 
-#include "backends/hal/haldevice.h"
+#include "haldevice.h"
 
 DvbInterface::DvbInterface(HalDevice *device)
     : DeviceInterface(device)

@@ -17,9 +17,9 @@
 
 */
 
-#include "backends/hal/halaudiointerface.h"
+#include "halaudiointerface.h"
 
-#include "backends/hal/haldevice.h"
+#include "haldevice.h"
 
 AudioInterface::AudioInterface(HalDevice *device)
     : DeviceInterface(device),

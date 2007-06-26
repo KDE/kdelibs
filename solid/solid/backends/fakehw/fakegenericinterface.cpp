@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakegenericinterface.h"
+#include "fakegenericinterface.h"
 
 FakeGenericInterface::FakeGenericInterface(FakeDevice *device)
     : FakeDeviceInterface(device)

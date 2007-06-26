@@ -20,8 +20,8 @@
 #ifndef STORAGE_H
 #define STORAGE_H
 
-#include "solid/ifaces/storagedrive.h"
-#include "solid/backends/hal/halblock.h"
+#include <solid/ifaces/storagedrive.h>
+#include "halblock.h"
 
 class Storage : public Block, virtual public Solid::Ifaces::StorageDrive
 {

@@ -20,8 +20,8 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
-#include "solid/ifaces/processor.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/processor.h>
+#include "haldeviceinterface.h"
 
 class HalDevice;
 

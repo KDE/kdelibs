@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/hal/halbutton.h"
+#include "halbutton.h"
 
 Button::Button(HalDevice *device)
     : DeviceInterface(device)

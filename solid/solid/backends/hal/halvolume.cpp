@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/hal/halvolume.h"
+#include "halvolume.h"
 
 Volume::Volume(HalDevice *device)
     : Block(device)

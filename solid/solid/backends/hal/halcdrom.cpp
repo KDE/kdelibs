@@ -17,13 +17,12 @@
 
 */
 
-#include "backends/hal/halcdrom.h"
+#include "halcdrom.h"
 
 #include <QtCore/QStringList>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
 #include <QtDBus/QDBusError>
-#include "halcdrom.h"
 
 Cdrom::Cdrom(HalDevice *device)
     : Storage(device), m_ejectInProgress(false)

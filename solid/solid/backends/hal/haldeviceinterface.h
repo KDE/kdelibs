@@ -20,12 +20,11 @@
 #ifndef DEVICEINTERFACE_H
 #define DEVICEINTERFACE_H
 
+#include <solid/ifaces/deviceinterface.h>
+#include "haldevice.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-
-#include <solid/ifaces/deviceinterface.h>
-
-#include "solid/backends/hal/haldevice.h"
 
 class DeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
 {

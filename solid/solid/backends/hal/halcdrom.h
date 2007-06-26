@@ -20,8 +20,8 @@
 #ifndef CDROM_H
 #define CDROM_H
 
-#include "solid/ifaces/opticaldrive.h"
-#include "solid/backends/hal/halstorage.h"
+#include <solid/ifaces/opticaldrive.h>
+#include "halstorage.h"
 
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>

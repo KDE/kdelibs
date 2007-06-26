@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/hal/halbattery.h"
+#include "halbattery.h"
 
 Battery::Battery(HalDevice *device)
     : DeviceInterface(device)

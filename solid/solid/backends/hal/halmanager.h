@@ -20,11 +20,11 @@
 #ifndef HALMANAGER_H
 #define HALMANAGER_H
 
-#include "solid/ifaces/devicemanager.h"
+#include <solid/ifaces/devicemanager.h>
+#include <solid/deviceinterface.h>
+
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
-
-#include "solid/deviceinterface.h"
 
 class HalManagerPrivate;
 

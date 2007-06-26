@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/hal/halacadapter.h"
+#include "halacadapter.h"
 
 AcAdapter::AcAdapter(HalDevice *device)
     : DeviceInterface(device)

@@ -20,8 +20,8 @@
 #ifndef OPTICALDISC_H
 #define OPTICALDISC_H
 
-#include "solid/ifaces/opticaldisc.h"
-#include "solid/backends/hal/halvolume.h"
+#include <solid/ifaces/opticaldisc.h>
+#include "halvolume.h"
 
 class OpticalDisc : public Volume, virtual public Solid::Ifaces::OpticalDisc
 {

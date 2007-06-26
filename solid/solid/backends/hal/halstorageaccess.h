@@ -20,8 +20,8 @@
 #ifndef STORAGEACCESS_H
 #define STORAGEACCESS_H
 
-#include "solid/ifaces/storageaccess.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/storageaccess.h>
+#include "haldeviceinterface.h"
 
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>

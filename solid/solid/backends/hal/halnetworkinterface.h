@@ -20,8 +20,8 @@
 #ifndef NETWORKHW_H
 #define NETWORKHW_H
 
-#include "solid/ifaces/networkinterface.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/networkinterface.h>
+#include "haldeviceinterface.h"
 
 class HalDevice;
 

@@ -17,9 +17,9 @@
 
 */
 
-#include "backends/hal/halprocessor.h"
+#include "halprocessor.h"
 
-#include "backends/hal/haldevice.h"
+#include "haldevice.h"
 
 Processor::Processor(HalDevice *device)
     : DeviceInterface(device)

@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakevolume.h"
+#include "fakevolume.h"
 
 #include <QtDBus/QDBusConnection>
 

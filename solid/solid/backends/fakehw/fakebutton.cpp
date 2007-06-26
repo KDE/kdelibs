@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakebutton.h"
+#include "fakebutton.h"
 
 FakeButton::FakeButton(FakeDevice *device)
     : FakeDeviceInterface(device)

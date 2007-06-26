@@ -18,7 +18,7 @@
 
 */
 
-#include "backends/hal/halportablemediaplayer.h"
+#include "halportablemediaplayer.h"
 
 PortableMediaPlayer::PortableMediaPlayer(HalDevice *device)
     : DeviceInterface(device)

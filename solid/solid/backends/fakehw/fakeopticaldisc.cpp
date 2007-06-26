@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakeopticaldisc.h"
+#include "fakeopticaldisc.h"
 
 #include <QtCore/QStringList>
 

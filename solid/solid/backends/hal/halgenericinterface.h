@@ -20,9 +20,9 @@
 #ifndef GENERICINTERFACE_H
 #define GENERICINTERFACE_H
 
-#include "solid/ifaces/genericinterface.h"
-#include "solid/genericinterface.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/genericinterface.h>
+#include <solid/genericinterface.h>
+#include "haldeviceinterface.h"
 
 class HalDevice;
 

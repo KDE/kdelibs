@@ -16,7 +16,9 @@
     Boston, MA 02110-1301, USA.
 
 */
-#include "backends/fakehw/fakemanager.h"
+#include "fakemanager.h"
+
+#include "fakedevice.h"
 
 // Qt includes
 #include <QtXml/QDomDocument>
@@ -27,8 +29,6 @@
 #include <QtCore/QString>
 #include <QtCore/QTimer>
 #include <QtDBus/QDBusConnection>
-
-#include "backends/fakehw/fakedevice.h"
 
 
 class FakeManager::Private

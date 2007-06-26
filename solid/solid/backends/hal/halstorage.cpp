@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/hal/halstorage.h"
+#include "halstorage.h"
 
 Storage::Storage(HalDevice *device)
     : Block(device)

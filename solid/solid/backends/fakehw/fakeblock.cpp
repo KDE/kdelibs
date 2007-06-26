@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakeblock.h"
+#include "fakeblock.h"
 
 FakeBlock::FakeBlock(FakeDevice *device)
     : FakeDeviceInterface(device)

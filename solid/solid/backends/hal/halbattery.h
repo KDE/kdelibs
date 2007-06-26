@@ -20,8 +20,8 @@
 #ifndef BATTERY_H
 #define BATTERY_H
 
-#include "solid/ifaces/battery.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/battery.h>
+#include "haldeviceinterface.h"
 
 class Battery : public DeviceInterface, virtual public Solid::Ifaces::Battery
 {

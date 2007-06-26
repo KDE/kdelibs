@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 
 */
-#include "backends/fakehw/fakedeviceinterface.h"
+#include "fakedeviceinterface.h"
 
 FakeDeviceInterface::FakeDeviceInterface(FakeDevice *device)
     : QObject(device), m_device(device)

@@ -20,8 +20,8 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "solid/ifaces/button.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/button.h>
+#include "haldeviceinterface.h"
 
 class HalDevice;
 

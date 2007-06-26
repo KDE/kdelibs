@@ -17,7 +17,6 @@
 
 */
 
-#include "backends/fakehw/fakecamera.h"
 #include "fakecamera.h"
 
 FakeCamera::FakeCamera(FakeDevice *device)

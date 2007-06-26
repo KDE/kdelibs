@@ -17,9 +17,9 @@
 
 */
 
-#include "backends/hal/halnetworkinterface.h"
+#include "halnetworkinterface.h"
 
-#include "backends/hal/haldevice.h"
+#include "haldevice.h"
 
 #include <QtCore/QStringList>
 

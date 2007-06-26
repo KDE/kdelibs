@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakenetworkinterface.h"
+#include "fakenetworkinterface.h"
 
 FakeNetworkInterface::FakeNetworkInterface(FakeDevice *device)
  : FakeDeviceInterface(device)

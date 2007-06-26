@@ -17,9 +17,9 @@
 
 */
 
-#include "backends/hal/halgenericinterface.h"
+#include "halgenericinterface.h"
 
-#include "backends/hal/haldevice.h"
+#include "haldevice.h"
 
 GenericInterface::GenericInterface(HalDevice *device)
     : DeviceInterface(device)

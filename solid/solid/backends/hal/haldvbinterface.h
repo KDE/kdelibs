@@ -20,8 +20,8 @@
 #ifndef DVBHW_H
 #define DVBHW_H
 
-#include "solid/ifaces/dvbinterface.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/dvbinterface.h>
+#include "haldeviceinterface.h"
 
 class DvbInterface : public DeviceInterface, virtual public Solid::Ifaces::DvbInterface
 {

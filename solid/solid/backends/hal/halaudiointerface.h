@@ -20,8 +20,8 @@
 #ifndef AUDIOHW_H
 #define AUDIOHW_H
 
-#include "solid/ifaces/audiointerface.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/audiointerface.h>
+#include "haldeviceinterface.h"
 
 class HalDevice;
 

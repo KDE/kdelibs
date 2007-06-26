@@ -20,8 +20,8 @@
 #ifndef VOLUME_H
 #define VOLUME_H
 
-#include "solid/ifaces/storagevolume.h"
-#include "solid/backends/hal/halblock.h"
+#include <solid/ifaces/storagevolume.h>
+#include "halblock.h"
 
 class Volume : public Block, virtual public Solid::Ifaces::StorageVolume
 {

@@ -17,7 +17,6 @@
 
 */
 
-#include "backends/hal/halcamera.h"
 #include "halcamera.h"
 
 Camera::Camera(HalDevice *device)

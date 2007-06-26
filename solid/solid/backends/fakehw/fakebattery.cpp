@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakebattery.h"
+#include "fakebattery.h"
 
 FakeBattery::FakeBattery(FakeDevice *device)
     : FakeDeviceInterface(device)

@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakedvbinterface.h"
+#include "fakedvbinterface.h"
 
 FakeDvbInterface::FakeDvbInterface(FakeDevice *device)
     : FakeDeviceInterface(device)

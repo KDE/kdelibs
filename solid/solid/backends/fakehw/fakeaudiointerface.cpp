@@ -17,9 +17,9 @@
 
 */
 
-#include <QtCore/QStringList>
+#include "fakeaudiointerface.h"
 
-#include "backends/fakehw/fakeaudiointerface.h"
+#include <QtCore/QStringList>
 
 
 FakeAudioInterface::FakeAudioInterface(FakeDevice *device)

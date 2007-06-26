@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/fakehw/fakeacadapter.h"
+#include "fakeacadapter.h"
 
 FakeAcAdapter::FakeAcAdapter(FakeDevice *device)
     : FakeDeviceInterface(device)

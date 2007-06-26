@@ -17,7 +17,7 @@
 
 */
 
-#include "backends/hal/haldeviceinterface.h"
+#include "haldeviceinterface.h"
 
 DeviceInterface::DeviceInterface(HalDevice *device)
     : QObject(device), m_device(device)

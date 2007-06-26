@@ -20,8 +20,8 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include "solid/ifaces/block.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include <solid/ifaces/block.h>
+#include "haldeviceinterface.h"
 
 class Block : public DeviceInterface, virtual public Solid::Ifaces::Block
 {

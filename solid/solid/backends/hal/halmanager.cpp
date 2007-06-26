@@ -17,14 +17,14 @@
 
 */
 
+#include "halmanager.h"
+#include "haldevice.h"
+#include "haldeviceinterface.h"
+
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
-
-#include "backends/hal/halmanager.h"
-#include "backends/hal/haldevice.h"
-#include "backends/hal/haldeviceinterface.h"
 
 class HalManagerPrivate
 {

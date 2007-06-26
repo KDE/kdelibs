@@ -17,9 +17,9 @@
 
 */
 
-#include "backends/hal/halblock.h"
+#include "halblock.h"
 
-#include "backends/hal/haldevice.h"
+#include "haldevice.h"
 
 Block::Block(HalDevice *device)
     : DeviceInterface(device)
