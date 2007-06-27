@@ -38,14 +38,12 @@ PHONON_EXECUTABLE_TESTS(
 	videocapturedevicetest
 	#bytestreamtest
 	#bytestreamtest2
-	audiodevicelisttest
 	seekslidertest
 	volumeslidertest
 	guitest
 	mediaplayer
 	)
 PHONON_UNIT_TESTS(
-	mediasourcetest
 	audiodevicelisttest
 	)
 PHONON_UNIT_TESTS_FAKE(
@@ -78,7 +76,7 @@ SET_TARGET_PROPERTIES(methodtest_fake PROPERTIES COMPILE_FLAGS "-DUSE_FAKE_BACKE
 SET(mediasourcetest_SRCS mediasourcetest.cpp)
 QT4_ADD_RESOURCES(mediasourcetest_SRCS testresources.qrc)
 kde4_automoc(${mediasourcetest_SRCS})
-kde4_add_test_executable(mediasourcetest ${mediasourcetest_SRCS})
+kde4_add_unit_test(mediasourcetest ${mediasourcetest_SRCS})
 target_link_libraries(mediasourcetest ${KDE4_PHONON_LIBS} ${QT_QTTEST_LIBRARY})
 
 SET(backendtester_SRCS backendtester.cpp)
