@@ -62,12 +62,27 @@ QWidget(parent) {
    }
    _thickness = t;
    _off[0] = o1; _off[1] = o2; _off[2] = o3; _off[3] = o4;
+   connect(frame, SIGNAL(destroyed(QObject*)), this, SLOT(hide()));
    connect(frame, SIGNAL(destroyed(QObject*)), this, SLOT(deleteLater()));
+   if (frame->isVisible()) show(); else hide();
    frame->installEventFilter(this);
    this->installEventFilter(this);
 //    setMouseTracking ( true );
 //    setAcceptDrops(true);
-   show();
+}
+
+void VisualFrame::rise() {
+   QWidgetList widgets = parentWidget()->findChildren<QWidget*>();
+   QWidget *up = 0; int cnt = widgets.size()-1;
+   for (int i = 0; i < cnt; ++i)
+      if (widgets.at(i) == _frame) {
+         up = widgets.at(i+1);
+         break;
+      }
+   if (up)
+      stackUnder(up);
+   else
+      raise();
 }
 
 #include <QtDebug>
@@ -150,7 +165,7 @@ void VisualFrame::wheelEvent ( QWheelEvent * event ) {
 bool VisualFrame::eventFilter ( QObject * o, QEvent * ev ) {
    if (o == this) {
       if (ev->type() == QEvent::ZOrderChange)
-         this->raise();
+         rise();
       return false;
    }
    if (o != _frame) {
@@ -168,7 +183,7 @@ bool VisualFrame::eventFilter ( QObject * o, QEvent * ev ) {
          const int y = _frame->frameRect().y();
          const int w = _frame->frameRect().right()+1;
          const int h = _frame->frameRect().bottom()+1;
-         QRegion mask(_frame->frameRect());
+         QRegion mask(_frame->rect());
          mask -= corner[0].translated(x, y); // tl
          QRect br = corner[1].boundingRect();
          mask -= corner[1].translated(w-br.width(), y); // tr
@@ -197,17 +212,25 @@ bool VisualFrame::eventFilter ( QObject * o, QEvent * ev ) {
       }
       return false;
    }
-   if (ev->type() == QEvent::ParentChange) {
-      qWarning("parent changed?");
-      _frame->parentWidget() ?
-         setParent(_frame->parentWidget() ) :
-         setParent(_frame );
-      raise();
+   if (ev->type() == QEvent::Show) {
+      show();
+      return false;
+   }
+   if (ev->type() == QEvent::Hide) {
+      hide();
+      return false;
    }
    if (ev->type() == QEvent::FocusIn ||
        ev->type() == QEvent::FocusOut) {
       update();
       return false;
+   }
+   if (ev->type() == QEvent::ParentChange) {
+      qWarning("parent changed?");
+      _frame->parentWidget() ?
+         setParent(_frame->parentWidget() ) :
+         setParent(_frame );
+      rise();
    }
    return false;
 }

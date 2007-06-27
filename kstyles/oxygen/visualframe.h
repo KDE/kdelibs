@@ -49,6 +49,7 @@ protected:
    void wheelEvent ( QWheelEvent * event );
 private:
    void passDownEvent(QEvent *ev, const QPoint &gMousePos);
+   void rise();
    int _thickness;
    int _off[4];
    int _ext;
