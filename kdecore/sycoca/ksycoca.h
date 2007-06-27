@@ -35,7 +35,7 @@ class KSycocaPrivate;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
  */
-#define KSYCOCA_VERSION 106
+#define KSYCOCA_VERSION 107
 
 /**
  * Sycoca file name, used internally (by kbuildsycoca)
