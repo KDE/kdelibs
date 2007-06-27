@@ -385,18 +385,10 @@ Notes:
   </mime-type>
 
   <!-- fonts/ fake mime types -->
-  <mime-type type="fonts/folder">
-    <sub-class-of type="inode/directory"/>
-    <comment>fonts folder</comment>
-  </mime-type>
   <mime-type type="fonts/package">
     <sub-class-of type="application/zip"/>
     <comment>fonts package</comment>
     <glob pattern="*.fonts.zip"/>
-  </mime-type>
-  <mime-type type="fonts/system-folder">
-    <sub-class-of type="inode/directory"/>
-    <comment>system fonts folder</comment>
   </mime-type>
 
   <mime-type type="application/x-konsole">
