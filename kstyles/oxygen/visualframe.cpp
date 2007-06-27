@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "visualframe.h"
+#include <QBitmap>
 #include <QCoreApplication>
 #include <QFrame>
 #include <QMouseEvent>
@@ -28,51 +29,82 @@
 #include <QStyle>
 #include <QWheelEvent>
 
-VisualFrame::VisualFrame(QFrame *parent, Side side, uint t, uint o1, uint o2) :
+#include <QtDebug>
+
+static QRegion corner[4];
+
+VisualFrame::VisualFrame(QWidget *parent, QFrame *frame, Side side, uint t,
+                         int e, uint o1, uint o2, uint o3, uint o4) :
 QWidget(parent) {
-   if (!(parent && t)) {
+   if (!(frame && t)) {
       deleteLater(); return;
    }
+   _frame = frame;
    _side = side;
+   _ext = e;
+   if (corner[0].isEmpty()) {
+      int $5 = 4;
+      QBitmap bm(2*$5, 2*$5);
+      bm.fill(Qt::black);
+      QPainter p(&bm);
+      p.setPen(Qt::NoPen);
+      p.setBrush(Qt::white);
+      p.drawEllipse(0,0,2*$5,2*$5);
+      p.end();
+      QRegion circle(bm);
+      corner[0] = circle & QRegion(0,0,$5,$5); // tl
+      corner[1] = circle & QRegion($5,0,$5,$5); // tr
+      corner[1].translate(-corner[1].boundingRect().left(), 0);
+      corner[2] = circle & QRegion(0,$5,$5,$5); // bl
+      corner[2].translate(0, -corner[2].boundingRect().top());
+      corner[3] = circle & QRegion($5,$5,$5,$5); // br
+      corner[3].translate(-corner[3].boundingRect().topLeft());
+   }
    _thickness = t;
-   _off[0] = o1; _off[1] = o2;
-   connect(parent, SIGNAL(destroyed(QObject*)), this, SLOT(deleteLater()));
-   parent->installEventFilter(this);
+   _off[0] = o1; _off[1] = o2; _off[2] = o3; _off[3] = o4;
+   connect(frame, SIGNAL(destroyed(QObject*)), this, SLOT(deleteLater()));
+   frame->installEventFilter(this);
    this->installEventFilter(this);
 //    setMouseTracking ( true );
 //    setAcceptDrops(true);
    show();
 }
 
+#include <QtDebug>
+
 void VisualFrame::paintEvent ( QPaintEvent * event ) {
-   if (!parent()) {
-      deleteLater(); return;
-   }
-   QFrame *frame = static_cast<QFrame*>(parent());
    QPainter p(this);
    p.setClipRegion(event->region(), Qt::IntersectClip);
    QStyleOption opt;
-   if (frame->frameShadow() == QFrame::Raised)
+   if (_frame->frameShadow() == QFrame::Raised)
       opt.state |= QStyle::State_Raised;
-   else if (frame->frameShadow() == QFrame::Sunken)
+   else if (_frame->frameShadow() == QFrame::Sunken)
       opt.state |= QStyle::State_Sunken;
-   if (frame->hasFocus())
+   if (_frame->hasFocus())
       opt.state |= QStyle::State_HasFocus;
-   if (frame->isEnabled())
+   if (_frame->isEnabled())
       opt.state |= QStyle::State_Enabled;
-   opt.rect = frame->frameRect();
+   opt.rect = _frame->frameRect();
    switch (_side) {
    case North:
+      opt.rect.setWidth(opt.rect.width()+_off[0]+_off[1]);
+      opt.rect.setHeight(opt.rect.height()+_ext);
       opt.rect.moveTopLeft(rect().topLeft());
       break;
    case South:
+      opt.rect.setWidth(opt.rect.width()+_off[0]+_off[1]);
+      opt.rect.setHeight(opt.rect.height()+_ext);
       opt.rect.moveBottomLeft(rect().bottomLeft());
       break;
    case West:
-      opt.rect.moveTopLeft(QPoint(0, -_off[0]));
+      opt.rect.setWidth(opt.rect.width()+_ext);
+      opt.rect.setHeight(opt.rect.height()+_off[2]+_off[3]);
+      opt.rect.moveTopLeft(QPoint(0, -_off[2]));
       break;
    case East:
-      opt.rect.moveTopRight(QPoint(width(), -_off[0]));
+      opt.rect.setWidth(opt.rect.width()+_ext);
+      opt.rect.setHeight(opt.rect.height()+_off[2]+_off[3]);
+      opt.rect.moveTopRight(QPoint(width()-1, -_off[2]));
       break;
    }
    style()->drawPrimitive(QStyle::PE_Frame, &opt, &p, this);
@@ -80,14 +112,10 @@ void VisualFrame::paintEvent ( QPaintEvent * event ) {
 }
 
 void VisualFrame::passDownEvent(QEvent *ev, const QPoint &gMousePos) {
-   if (!parent()) {
-      deleteLater(); return;
-   }
-   QFrame *frame = static_cast<QFrame*>(parentWidget());
    // the raised frames don't look like you could click in, we'll see if this should be changed...
-   if (frame->frameShadow() == QFrame::Raised)
+   if (_frame->frameShadow() == QFrame::Raised)
       return;
-   QList<QWidget *> candidates = frame->findChildren<QWidget *>();
+   QList<QWidget *> candidates = _frame->findChildren<QWidget *>();
    QList<QWidget *>::const_iterator i = candidates.constEnd();
    QWidget *match = 0;
    while (i != candidates.constBegin()) {
@@ -99,7 +127,7 @@ void VisualFrame::passDownEvent(QEvent *ev, const QPoint &gMousePos) {
          break;
       }
    }
-   if (!match) match = frame;
+   if (!match) match = _frame;
    QCoreApplication::sendEvent( match, ev );
 }
 
@@ -125,31 +153,56 @@ bool VisualFrame::eventFilter ( QObject * o, QEvent * ev ) {
          this->raise();
       return false;
    }
-   if (o != parent()) {
+   if (o != _frame) {
       o->removeEventFilter(this);
       return false;
    }
    if (ev->type() == QEvent::Resize) {
-      const QRect &rect = static_cast<QFrame*>(o)->frameRect();
+      QRect rect = _frame->frameRect();
+      rect.translate(_frame->mapTo(parentWidget(), QPoint(0,0)));
+      int offs = _off[0]+_off[1];
       switch (_side) {
-      case North:
-         resize(rect.width(), _thickness);
-         move(rect.topLeft());
+      case North: {
+         
+         const int x = _frame->frameRect().x();
+         const int y = _frame->frameRect().y();
+         const int w = _frame->frameRect().right()+1;
+         const int h = _frame->frameRect().bottom()+1;
+         QRegion mask(_frame->frameRect());
+         mask -= corner[0].translated(x, y); // tl
+         QRect br = corner[1].boundingRect();
+         mask -= corner[1].translated(w-br.width(), y); // tr
+         br = corner[2].boundingRect();
+         mask -= corner[2].translated(x, h-br.height()); // bl
+         br = corner[3].boundingRect();
+         mask -= corner[3].translated(w-br.width(), h-br.height()); // br
+         _frame->setMask(mask);
+         
+         resize(rect.width()+offs, _thickness);
+         move(rect.x()-_off[0], rect.y()-_ext);
          break;
+      }
       case South:
-         resize(rect.width(), _thickness);
-         move(rect.x(), rect.bottom()+1-_thickness);
+         resize(rect.width()+offs, _thickness);
+         move(rect.x()-_off[0], rect.bottom()+1+_ext-_thickness);
          break;
       case West:
-         resize(_thickness, rect.height()-_off[0]-_off[1]);
-         move(rect.x(), rect.y()+_off[0]);
+         resize(_thickness, rect.height()-offs);
+         move(rect.x()-_ext, rect.y()+_off[0]);
          break;
       case East:
-         resize(_thickness, rect.height()-_off[0]-_off[1]);
-         move(rect.right()+1-_thickness, rect.y()+_off[0]);
+         resize(_thickness, rect.height()-offs);
+         move(rect.right()+1-_thickness+_ext, rect.y()+_off[0]);
          break;
       }
       return false;
+   }
+   if (ev->type() == QEvent::ParentChange) {
+      qWarning("parent changed?");
+      _frame->parentWidget() ?
+         setParent(_frame->parentWidget() ) :
+         setParent(_frame );
+      raise();
    }
    if (ev->type() == QEvent::FocusIn ||
        ev->type() == QEvent::FocusOut) {

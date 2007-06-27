@@ -502,13 +502,13 @@ void OxygenStyle::generatePixmaps()
    // see oxygen.cpp#OxygenStyle::eventfilter as well
 //    QRegion circle = QRegion(0,0,2*$9,2*$9, QRegion::Ellipse);
 //    QRegion rect = QRegion(0,0,$9,$9);
-//    masks.popupCorner[0] = rect - (circle & rect);
+//    masks.corner[0] = rect - (circle & rect);
 //    circle.translate(-$9, 0);
-//    masks.popupCorner[1] = rect - (circle & rect);
+//    masks.corner[1] = rect - (circle & rect);
 //    circle.translate(0, -$9);
-//    masks.popupCorner[3] = rect - (circle & rect);
+//    masks.corner[3] = rect - (circle & rect);
 //    circle.translate($9, 0);
-//    masks.popupCorner[2] = rect - (circle & rect);
+//    masks.corner[2] = rect - (circle & rect);
    // ================================================================
 #define _INITPIX_(_PIX_,_W_,_H_)\
    _PIX_ = QPixmap(_W_, _H_);\

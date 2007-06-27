@@ -32,10 +32,13 @@ class VisualFrame : public QWidget {
    Q_OBJECT
 public:
    enum Side { North, South, East, West };
-   VisualFrame(QFrame *parent, Side side,
-               uint thickness = 0, uint off1 = 0, uint off2 = 0);
+   VisualFrame(QWidget *parent, QFrame *frame, Side side,
+               uint thickness = 0, int ext = 0,
+               uint off1 = 0, uint off2 = 0,
+               uint off3 = 0, uint off4 = 0);
    bool eventFilter ( QObject * o, QEvent * ev );
    void paintEvent ( QPaintEvent * event );
+   inline QFrame *frame() { return _frame; }
 protected:
 //    void enterEvent ( QEvent * event ) { passDownEvent(event, event->globalPos()); }
 //    void leaveEvent ( QEvent * event ) { passDownEvent(event, event->globalPos()); }
@@ -47,8 +50,10 @@ protected:
 private:
    void passDownEvent(QEvent *ev, const QPoint &gMousePos);
    int _thickness;
-   int _off[2];
+   int _off[4];
+   int _ext;
    Side _side;
+   QFrame *_frame;
 };
 
 #endif //VISUALFRAME_H

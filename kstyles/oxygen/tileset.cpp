@@ -215,14 +215,18 @@ Picture Set::render(int W, int H, PosFlags pf) const
 void Set::outline(const QRect &r, QPainter *p, QColor c, bool strong,
                   PosFlags pf, int size) const
 {
+   int d = size/2;
+   QRect rect = r.adjusted(d,d,-d,-d);
+   if (rect.isNull()) return;
+   int rx = (int)ceil((float)rxf/rect.width()),
+      ry = (int)ceil((float)ryf/rect.height());
+   
    p->save();
    p->setRenderHint(QPainter::Antialiasing, false);
    QPen pen = p->pen();
    pen.setColor(c); pen.setWidth(size);
    p->setPen(pen);
    p->setBrush(Qt::NoBrush);
-   int d = size/2;
-   QRect rect = r.adjusted(d,d,-d,-d);
    if (! (pf & Top))
       rect.setTop(rect.top()-100);
    else if (strong)
@@ -241,7 +245,7 @@ void Set::outline(const QRect &r, QPainter *p, QColor c, bool strong,
       p->drawLine(r.right(), r.top()+height(TopRight), r.right(), r.bottom()-height(BtmRight));
    p->setClipRect(r, Qt::IntersectClip);
    p->setRenderHint(QPainter::Antialiasing);
-   p->drawRoundRect(rect, ceil((float)rxf/rect.width()), ceil((float)ryf/rect.height()));
+   p->drawRoundRect(rect, rx, ry);
    p->restore();
 }
 
@@ -436,7 +440,7 @@ Line::Line(const QPixmap &pix, Qt::Orientation o, int d1, int d2) {
       pixmap[1] = QPixmap(pix.width(), MAX(32,d));
       pixmap[1].fill(Qt::transparent);
       p.begin(&pixmap[1]);
-      for (int i = 0; i+d < height(1); i+=d)
+      for (int i = 0; i+d <= height(1); i+=d)
          p.drawPixmap(0,i,pix,0,d1,pix.width(),MIN(d,height(1)-i));
       p.end();
       
@@ -451,7 +455,7 @@ Line::Line(const QPixmap &pix, Qt::Orientation o, int d1, int d2) {
 void Line::render(const QRect &rect, QPainter *p, PosFlags pf, bool btmRight) const {
    int d0,d2;
    if (_o == Qt::Horizontal) {
-      int y = btmRight?rect.bottom()-_thickness-1:rect.y();
+      int y = btmRight?rect.bottom()-_thickness+1:rect.y();
       d0 = (pf & Left) ? width(0) : 0;
       d2 = (pf & Right) ? width(2) : 0;
       if ((pf & Center) && rect.width() >= d0+d2)
@@ -466,7 +470,7 @@ void Line::render(const QRect &rect, QPainter *p, PosFlags pf, bool btmRight) co
          p->drawPixmap(rect.right()+1-d2,y, pixmap[2], width(2)-d2,0,d2,height(2));
    }
    else {
-      int x = btmRight?rect.right()-_thickness-1:rect.x();
+      int x = btmRight?rect.right()-_thickness+1:rect.x();
       d0 = (pf & Top) ? height(0) : 0;
       d2 = (pf & Bottom) ? height(2) : 0;
       if ((pf & Center) && rect.height() >= d0+d2) {

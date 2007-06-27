@@ -115,10 +115,12 @@ QSize OxygenStyle::sizeFromContents ( ContentsType ct, const QStyleOption * opti
             return ( QSize( contentsSize.width() + dpi.$8, contentsSize.height() + dpi.$8 ) );
          else {
             int w = contentsSize.width() + dpi.$20;
-            if (widget)
-            if (const QAbstractButton* btn =
+            if (btn->features & QStyleOptionButton::HasMenu)
+               w += contentsSize.height()/2+dpi.$10;
+            else if (widget)
+            if (const QAbstractButton* abn =
                 qobject_cast<const QAbstractButton*>(widget))
-            if (btn->isCheckable())
+            if (abn->isCheckable())
                w += contentsSize.height()/2+dpi.$10;
             if (w < dpi.$80) w = dpi.$80;
             return QSize(w, contentsSize.height() + dpi.$8);

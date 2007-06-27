@@ -110,7 +110,12 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
 //             int mbi = pixelMetric(PM_MenuButtonIndicator, btn, widget);
             QStyleOptionButton newBtn = *btn;
             int sz = (RECT.height()-dpi.$6)/2;
-            newBtn.rect = QRect(RECT.right() - (dpi.$4+sz), (RECT.height()-sz)/2+dpi.$2, sz, sz);
+            newBtn.rect = RECT;
+            newBtn.rect.setLeft(RECT.right() - (dpi.$10+sz));
+            shadows.line[1][Sunken].render(newBtn.rect, painter);
+            newBtn.rect.setLeft(newBtn.rect.left() + dpi.$4);
+            newBtn.rect.setTop((RECT.height()-sz)/2 + dpi.$2);
+            newBtn.rect.setHeight(sz); newBtn.rect.setWidth(sz);
             painter->save();
             painter->setPen(Qt::NoPen);
             painter->setBrush(midColor(COLOR(Window),COLOR(WindowText)));
@@ -162,24 +167,32 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          }
          else
             tf |= Qt::AlignHCenter;
-
-         if (widget)
+             
+         if (btn->features & QStyleOptionButton::HasMenu) {
+            ir.setRight(ir.right() - ir.height()/2 - dpi.$10);
+         }
+         else if (widget)
          if (const QAbstractButton* btn =
              qobject_cast<const QAbstractButton*>(widget))
          if (btn->isCheckable())
             ir.setRight(ir.right() - ir.height()/2 - dpi.$10);
+         
          if (btn->features & QStyleOptionButton::Flat) {
             drawItemText(painter, ir, tf, PAL, isEnabled, btn->text,
                          QPalette::WindowText);
             break;
          }
          painter->save();
+         QColor fg = btnFgColor(PAL, isEnabled, hover);
          if (btn->features & QStyleOptionButton::DefaultButton) {
-            QFont tmpFnt = painter->font();
-            tmpFnt.setBold(true);
-            painter->setFont(tmpFnt);
+            painter->setPen(midColor(btnBgColor(PAL, isEnabled, hover), fg, 3,1));
+            ir.translate(0,1);
+            drawItemText(painter, ir, tf, PAL, isEnabled, btn->text);
+//             ir.translate(2,2);
+//             drawItemText(painter, ir, tf, PAL, isEnabled, btn->text);
+            ir.translate(0,-1);
          }
-         painter->setPen(btnFgColor(PAL, isEnabled, hover));
+         painter->setPen(fg);
          drawItemText(painter, ir, tf, PAL, isEnabled, btn->text);
          painter->restore();
       }
@@ -337,9 +350,6 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                size = fillRect.width();
                break;
             }
-//             QPoint zero = fillRect.topLeft();
-//             if (widget)
-//                zero = widget->mapTo(widget->topLevelWidget(), zero);
             masks.tab.render(fillRect, painter, Gradients::brush(COLOR(Window),
                size, o, config.gradChoose), pf | Tile::Center);
             shadows.tab[1][0].render(rect, painter, pf);

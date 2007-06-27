@@ -618,17 +618,35 @@ void OxygenStyle::polish( QWidget * widget) {
          if (widget->inherits("QTextEdit") && frame->lineWidth() == 1)
             frame->setLineWidth(dpi.$4);
          else {
-            QList<VisualFrame*> vfs = frame->findChildren<VisualFrame*>();
+            QWidget *grampa = frame->parentWidget();
+            if (!grampa) grampa = frame;
+            QList<VisualFrame*> vfs = grampa->findChildren<VisualFrame*>();
             bool addVF = true;
             foreach (VisualFrame* vf, vfs)
-               if (vf->parent() == frame) addVF = false;
+               if (vf->frame() == frame) { addVF = false; break; }
             if (addVF) {
-               int bs =
-                  frame->frameShadow() == QFrame::Sunken ? dpi.$2 : dpi.$4;
-               new VisualFrame(frame, VisualFrame::North, dpi.$4);
-               new VisualFrame(frame, VisualFrame::South, bs);
-               new VisualFrame(frame, VisualFrame::West, dpi.$4, dpi.$4, bs);
-               new VisualFrame(frame, VisualFrame::East, dpi.$4, dpi.$4, bs);
+               int $2 = dpi.$2, $3 = dpi.$3, $4 = dpi.$4, $6 = dpi.$6;
+               int s[4]; uint t[4]; // t/b/l/r
+               if (frame->frameShadow() == QFrame::Sunken) {
+                  s[0] = s[2] = s[3] = 0; s[1] = $3;
+                  t[0] = t[1] = t[2] = t[3] = $4;
+               }
+               else if (frame->frameShadow() == QFrame::Raised) {
+                  s[0] = $2; s[1] = $4; s[2] = s[3] = $2;
+                  t[0] = t[2] = t[3] = $4; t[1] = $6;
+               }
+               else { // plain
+                  s[0] = s[1] = s[2] = s[3] = $2;
+                  t[0] = t[1] = t[2] = t[3] = $2;
+               }
+               new VisualFrame(grampa, frame, VisualFrame::North,
+                               t[0], s[0], s[2], s[3]);
+               new VisualFrame(grampa, frame, VisualFrame::South,
+                               t[1], s[1], s[2], s[3]);
+               new VisualFrame(grampa, frame, VisualFrame::West,
+                               t[2], s[2], t[0]-s[0], t[1]-s[1], t[0], t[1]);
+               new VisualFrame(grampa, frame, VisualFrame::East,
+                               t[3], s[3], t[0]-s[0], t[1]-s[1], t[0], t[1]);
             }
          }
       }

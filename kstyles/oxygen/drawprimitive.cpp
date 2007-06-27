@@ -605,8 +605,8 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
             break;
          }
          
-         bool inverse = true, niceFrame = false;
-         QRect rect = RECT; const QRect *outerRect = 0;
+         bool niceFrame = false;
+         QRect rect = RECT;
          
          const Tile::Mask *mask = 0L; const Tile::Set *shadow = 0L;
          if (sunken) {
@@ -622,7 +622,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
          if (qobject_cast<const QFrame*>(widget)) { // frame, can be killed unless...
             if (widget->inherits("QTextEdit")) { // ...it's a TextEdit!
                niceFrame = true; fastFocus = true;
-               inverse = false; brush = &PAL.brush(QPalette::Base);
+               brush = &PAL.brush(QPalette::Base);
             }
             else { // maybe we need to corect a textlabels margin
                if (const QLabel* label = qobject_cast<const QLabel*>(widget))
@@ -636,7 +636,6 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
                brush = &PAL.brush(widget->parentWidget()->parentWidget()->backgroundRole());
             niceFrame = true;
             zero = widget->mapTo(widget->topLevelWidget(), QPoint(0,0));
-            outerRect = &RECT;
             if (!sunken) {
                if (option->state & State_Raised)
                   rect.adjust(dpi.$2,dpi.$1,-dpi.$2,-dpi.$4);
@@ -647,10 +646,8 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
                rect.adjust(0,0,0,-dpi.$1);
          }
          if (niceFrame) {
-//             Tile::PosFlags pf = Tile::Ring;
-            if (mask)
-               mask->render(rect, painter, *brush, Tile::Full, false, zero,
-                            inverse, outerRect);
+            if (fastFocus)
+               mask->render(rect, painter, *brush, Tile::Full, false, zero);
             if (hasFocus) {
                QColor h;
                if (fastFocus)
@@ -658,8 +655,8 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
                else {
                   h = COLOR(Highlight); h.setAlpha(80);
                }
-               mask->outline(RECT.adjusted(0,0,0,-dpi.$1), painter, h, false,
-                             Tile::Ring, dpi.$3);
+               rect = RECT.adjusted(0,0,0,-dpi.$1);
+               mask->outline(rect, painter, h, false, Tile::Ring, dpi.$3);
             }
             if (shadow)
                shadow->render(RECT, painter);
@@ -803,14 +800,16 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
          shadows.tabSunken.render(rect, painter, pf);
       }
       break;
-   case PE_FrameLineEdit: // Panel frame for line edits.
-      shadows.lineEdit[isEnabled].render(RECT.adjusted(0,0,0,-dpi.$2),painter);
+   case PE_FrameLineEdit: { // Panel frame for line edits.
+      QRect r = RECT.adjusted(0,0,0,-dpi.$2);
+      shadows.lineEdit[isEnabled].render(r, painter);
       if (hasFocus) {
          QColor h = COLOR(Highlight); h.setAlpha(80);
-         masks.button.outline(RECT.adjusted(0,0,0,-dpi.$1), painter, h, false,
-                     Tile::Ring, dpi.$3);
+         r.setBottom(r.bottom()+dpi.$1);
+         masks.button.outline(r, painter, h, false, Tile::Ring, dpi.$3);
       }
       break;
+   }
    case PE_FrameGroupBox: { // Panel frame around group boxes.
       QRect rect = RECT.adjusted(dpi.$4,dpi.$2,-dpi.$4,0);
       rect.setHeight(qMin(2*dpi.$32, RECT.height()));
