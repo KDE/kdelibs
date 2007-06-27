@@ -31,7 +31,6 @@
 #include "misc/shared.h"
 
 #include <Qt3Support/Q3IntDict>
-#include <Qt3Support/Q3PaintDeviceMetrics>
 
 namespace khtml {
     class RenderStyle;
@@ -190,9 +189,9 @@ public:
      * this is screen/printer dependent, so we probably need a config option for this,
      * and some tool to calibrate.
      */
-    int computeLength( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics );
+    int computeLength( khtml::RenderStyle *style, int logicalDpiY);
 
-    double computeLengthFloat( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics );
+    double computeLengthFloat( khtml::RenderStyle *style, int logicalDpiY);
 
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }

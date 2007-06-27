@@ -429,7 +429,7 @@ bool Font::isFontScalable(QFontDatabase& db, const QFont& font)
     return s->scaleable;
 }
 
-void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
+void Font::update(int logicalDpiY) const
 {
     f.setFamily( fontDef.family.isEmpty() ? KHTMLFactory::defaultHTMLSettings()->stdFontName() : fontDef.family );
     f.setItalic( fontDef.italic );
@@ -438,7 +438,7 @@ void Font::update( Q3PaintDeviceMetrics* devMetrics ) const
     QFontDatabase db;
 
     int size = fontDef.size;
-    const int lDpiY = qMax(devMetrics->logicalDpiY(), 96);
+    const int lDpiY = qMax(logicalDpiY, 96);
 
     // ok, now some magic to get a nice unscaled font
     // all other font properties should be set before this one!!!!

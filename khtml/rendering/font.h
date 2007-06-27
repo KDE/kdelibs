@@ -82,7 +82,7 @@ public:
 
     const FontDef& getFontDef() const { return fontDef; }
 
-    void update( Q3PaintDeviceMetrics *devMetrics ) const;
+    void update( int logicalDpiY ) const;
 
     /**
      * Draws a piece from the given piece of text.

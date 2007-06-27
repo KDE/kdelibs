@@ -25,7 +25,6 @@
 
 #include "rendering/render_block.h"
 #include <QtCore/QObject>
-#include <Qt3Support/Q3ScrollView>
 #include <QAbstractScrollArea>
 #include <QScrollBar>
 
@@ -160,10 +159,6 @@ public:
     virtual int borderRight() const { return canHaveBorder() ? RenderReplaced::borderRight() : 0; }
 
     class EventPropagator : public QWidget {
-    public:
-        void sendEvent(QEvent *e);
-    };
-    class ScrollViewEventPropagator : public Q3ScrollView {
     public:
         void sendEvent(QEvent *e);
     };

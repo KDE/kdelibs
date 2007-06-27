@@ -46,7 +46,6 @@
 #include <ecma/kjs_binding.h>
 
 #include <QtCore/QStack>
-#include <Qt3Support/Q3PaintDeviceMetrics>
 //Added by qt3to4:
 #include <QTimerEvent>
 #include <Q3PtrList>
@@ -311,7 +310,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_document.resetSkippingRef(this); //Make getDocument return us..
     m_selfOnlyRefCount = 0;
 
-    m_paintDeviceMetrics = 0;
     m_paintDevice = 0;
     //m_decoderMibEnum = 0;
     m_textColor = Qt::black;
@@ -454,7 +452,6 @@ DocumentImpl::~DocumentImpl()
     if (m_doctype)
         m_doctype->deref();
     m_implementation->deref();
-    delete m_paintDeviceMetrics;
     delete m_elementMap;
     delete m_attrMap;
     delete m_namespaceMap;
@@ -1147,7 +1144,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
 
         //kDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
         _style->setFontDef(fontDef);
-	_style->htmlFont().update( paintDeviceMetrics() );
+	_style->htmlFont().update( 0 );
         if ( inCompatMode() )
             _style->setHtmlHacks(true); // enable html specific rendering tricks
 
@@ -1243,7 +1240,7 @@ void DocumentImpl::attach()
     m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
                                             !inCompatMode() );
     m_render = new (m_renderArena.get()) RenderCanvas(this, m_view);
-    m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
+    m_styleSelector->computeFontSizes(m_paintDevice->logicalDpiY(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
 
     RenderObject* render = m_render;
@@ -1300,13 +1297,9 @@ khtml::Tokenizer *DocumentImpl::createTokenizer()
     return new khtml::XMLTokenizer(docPtr(),m_view);
 }
 
-void DocumentImpl::setPaintDevice( QPaintDevice *dev )
+int DocumentImpl::logicalDpiY()
 {
-    if (m_paintDevice != dev) {
-        m_paintDevice = dev;
-        delete m_paintDeviceMetrics;
-        m_paintDeviceMetrics = new Q3PaintDeviceMetrics( dev );
-    }
+    return m_paintDevice->logicalDpiY();
 }
 
 void DocumentImpl::open( bool clearEventListeners )

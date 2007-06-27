@@ -608,22 +608,22 @@ void CSSPrimitiveValueImpl::cleanup()
     m_type = 0;
 }
 
-int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics )
+int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, int logicalDpiY)
 {
-    double result = computeLengthFloat( style, devMetrics );
+    double result = computeLengthFloat( style, logicalDpiY );
     // This conversion is imprecise, often resulting in values of, e.g., 44.99998.  We
     // need to go ahead and round if we're really close to the next integer value.
     int intResult = (int)(result + (result < 0 ? -0.01 : +0.01));
     return intResult;
 }
 
-double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, Q3PaintDeviceMetrics *devMetrics )
+double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, int logicalDpiY)
 {
     unsigned short type = primitiveType();
 
     double dpiY = 72.; // fallback
-    if ( devMetrics )
-        dpiY = devMetrics->logicalDpiY();
+    if ( logicalDpiY )
+        dpiY = logicalDpiY;
     if ( !khtml::printpainter && dpiY < 96 )
         dpiY = 96.;
 

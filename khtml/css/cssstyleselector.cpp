@@ -65,7 +65,6 @@ using namespace DOM;
 #include <kdebug.h>
 #include <kurl.h>
 #include <assert.h>
-#include <Qt3Support/Q3PaintDeviceMetrics>
 #include <stdlib.h>
 
 #undef RELATIVE
@@ -225,10 +224,10 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     properties = 0;
     userStyle = 0;
     userSheet = 0;
-    paintDeviceMetrics = doc->paintDeviceMetrics();
+    logicalDpiY = doc->logicalDpiY();
 
-    if(paintDeviceMetrics) // this may be null, not everyone uses khtmlview (Niko)
-        computeFontSizes(paintDeviceMetrics, view ? view->part()->zoomFactor() : 100);
+    if(logicalDpiY) // this may be null, not everyone uses khtmlview (Niko)
+        computeFontSizes(logicalDpiY, view ? view->part()->zoomFactor() : 100);
 
     if ( !userStyleSheet.isEmpty() ) {
         userSheet = new DOM::CSSStyleSheetImpl(doc);
@@ -286,7 +285,7 @@ void CSSStyleSelector::init(const KHTMLSettings* _settings, DocumentImpl* doc)
 {
     element = 0;
     settings = _settings;
-    paintDeviceMetrics = 0;
+    logicalDpiY = 0;
     propsToApply = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
     pseudoProps = (CSSOrderedProperty **)malloc(128*sizeof(CSSOrderedProperty *));
     propsToApplySize = 128;
@@ -393,13 +392,13 @@ void CSSStyleSelector::reparseConfiguration()
 
 #define MAXFONTSIZES 8
 
-void CSSStyleSelector::computeFontSizes(Q3PaintDeviceMetrics* paintDeviceMetrics,  int zoomFactor)
+void CSSStyleSelector::computeFontSizes(int logicalDpiY,  int zoomFactor)
 {
-    computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fontSizes, false);
-    computeFontSizesFor(paintDeviceMetrics, zoomFactor, m_fixedFontSizes, true);
+    computeFontSizesFor(logicalDpiY, zoomFactor, m_fontSizes, false);
+    computeFontSizesFor(logicalDpiY, zoomFactor, m_fixedFontSizes, true);
 }
 
-void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QVector<int>& fontSizes, bool isFixed)
+void CSSStyleSelector::computeFontSizesFor(int logicalDpiY, int zoomFactor, QVector<int>& fontSizes, bool isFixed)
 {
 #ifdef APPLE_CHANGES
     // We don't want to scale the settings by the dpi.
@@ -408,7 +407,7 @@ void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetr
     Q_UNUSED( isFixed );
 
     // ### get rid of float / double
-    float toPix = paintDeviceMetrics->logicalDpiY()/72.0f;
+    float toPix = logicalDpiY/72.0f;
     if (toPix  < 96.0f/72.0f)
          toPix = 96.0f/72.0f;
 #endif // ######### fix isFixed code again.
@@ -429,7 +428,7 @@ void CSSStyleSelector::computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetr
         minFontSize = settings->minFontSize() * toPix;
     }
     else {
-        // ## depending on something / configurable ?
+        // ### depending on something / configurable ?
         mediumFontSize = 12;
         minFontSize = 6;
     }
@@ -484,7 +483,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
     view = element->getDocument()->view();
     part = view->part();
     settings = part->settings();
-    paintDeviceMetrics = element->getDocument()->paintDeviceMetrics();
+    logicalDpiY = element->getDocument()->logicalDpiY();
 
     // reset dynamic DOM dependencies
     e->getDocument()->dynamicDomRestyler().resetDependencies(e);
@@ -564,7 +563,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 #ifdef APPLE_CHANGES
 		    checkForGenericFamilyChange(style, parentStyle);
 #endif
-		    CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
+		    CSSStyleSelector::style->htmlFont().update( logicalDpiY );
 		    fontDirty = false;
 		}
 		DOM::CSSProperty *prop = propsToApply[i]->prop;
@@ -576,7 +575,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 #ifdef APPLE_CHANGES
 	        checkForGenericFamilyChange(style, parentStyle);
 #endif
-		CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
+		CSSStyleSelector::style->htmlFont().update( logicalDpiY );
             }
         }
 
@@ -593,7 +592,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 		    //We have to do this for all pseudo styles
 		    RenderStyle *pseudoStyle = style->pseudoStyle;
 		    while ( pseudoStyle ) {
-			pseudoStyle->htmlFont().update( paintDeviceMetrics );
+			pseudoStyle->htmlFont().update( logicalDpiY );
 			pseudoStyle = pseudoStyle->pseudoStyle;
 		    }
 		    fontDirty = false;
@@ -623,7 +622,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 	    if ( fontDirty ) {
 		RenderStyle *pseudoStyle = style->pseudoStyle;
 		while ( pseudoStyle ) {
-		    pseudoStyle->htmlFont().update( paintDeviceMetrics );
+		    pseudoStyle->htmlFont().update( logicalDpiY );
 		    pseudoStyle = pseudoStyle->pseudoStyle;
 		}
 	    }
@@ -1921,7 +1920,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
 // -------------------------------------------------------------------------------------
 // this is mostly boring stuff on how to apply a certain rule to the renderstyle...
 
-static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyle *style, Q3PaintDeviceMetrics *paintDeviceMetrics, bool *ok = 0 )
+static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyle *style, int logicalDpiY, bool *ok = 0 )
 {
     Length l;
     if ( !primitiveValue ) {
@@ -1930,7 +1929,7 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
     } else {
 	int type = primitiveValue->primitiveType();
 	if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-	    l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
+	    l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed);
 	else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	    l = Length(int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
 	else if(type == CSSPrimitiveValue::CSS_NUMBER)
@@ -2550,14 +2549,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING: {
         HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(borderHorizontalSpacing, BorderHorizontalSpacing)
         if (!primitiveValue) break;
-        short spacing =  primitiveValue->computeLength(style, paintDeviceMetrics);
+        short spacing =  primitiveValue->computeLength(style, logicalDpiY);
         style->setBorderHorizontalSpacing(spacing);
         break;
     }
     case CSS_PROP__KHTML_BORDER_VERTICAL_SPACING: {
         HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(borderVerticalSpacing, BorderVerticalSpacing)
         if (!primitiveValue) break;
-        short spacing =  primitiveValue->computeLength(style, paintDeviceMetrics);
+        short spacing =  primitiveValue->computeLength(style, logicalDpiY);
         style->setBorderVerticalSpacing(spacing);
         break;
     }
@@ -2728,7 +2727,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             break;
         case CSS_VAL_INVALID:
         {
-            double widthd = primitiveValue->computeLengthFloat(style, paintDeviceMetrics);
+            double widthd = primitiveValue->computeLengthFloat(style, logicalDpiY);
             width = (int)widthd;
             // somewhat resemble Mozilla's granularity
             // this makes border-width: 0.5pt borders visible
@@ -2779,7 +2778,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         int width = 0;
         if (primitiveValue->getIdent() != CSS_VAL_NORMAL)
-	    width = primitiveValue->computeLength(style, paintDeviceMetrics);
+	    width = primitiveValue->computeLength(style, logicalDpiY);
 
         switch(id)
         {
@@ -2870,7 +2869,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
                 // Handle our quirky margin units if we have them.
-                l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed,
+                l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed,
                            primitiveValue->isQuirkValue());
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
@@ -2948,7 +2947,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
+                l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
             else
@@ -3006,7 +3005,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	  int type = primitiveValue->primitiveType();
 	  Length l;
 	  if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-	    l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed );
+	    l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed );
 	  else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	    l = Length( int( primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE) ), Percent );
 
@@ -3021,7 +3020,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         int oldSize;
         int size = 0;
 
-        float toPix = paintDeviceMetrics->logicalDpiY()/72.0f;
+        float toPix = logicalDpiY/72.0f;
         if (toPix  < 96.0f/72.0f)
             toPix = 96.0f/72.0f;
 
@@ -3070,10 +3069,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
                 if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
                      view && view->part())
-                    size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) *
+                    size = int( primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) *
                                 view->part()->zoomFactor() ) / 100;
 		else
-                    size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) );
+                    size = int( primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) );
             }
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 size = int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
@@ -3150,10 +3149,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             // already based on the font size.
 		if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
                     view && view->part())
-                    lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics) *
+                    lineHeight = Length(primitiveValue->computeLength(style, logicalDpiY) *
                                         view->part()->zoomFactor()/100, Fixed );
                 else
-                    lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed );
+                    lineHeight = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed );
         } else if (type == CSSPrimitiveValue::CSS_PERCENTAGE)
             lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
         else if (type == CSSPrimitiveValue::CSS_NUMBER)
@@ -3194,10 +3193,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             RectImpl *rect = primitiveValue->getRectValue();
             if (rect) {
                 hasClip = true;
-                top = convertToLength( rect->top(), style, paintDeviceMetrics );
-                right = convertToLength( rect->right(), style, paintDeviceMetrics );
-                bottom = convertToLength( rect->bottom(), style, paintDeviceMetrics );
-                left = convertToLength( rect->left(), style, paintDeviceMetrics );
+                top = convertToLength( rect->top(), style, logicalDpiY );
+                right = convertToLength( rect->right(), style, logicalDpiY );
+                bottom = convertToLength( rect->bottom(), style, logicalDpiY );
+                left = convertToLength( rect->left(), style, logicalDpiY );
             }
         }
 
@@ -3602,7 +3601,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             // before we evaluate line-height, e.g., font: 1em/1em.  FIXME: Still not
             // good enough: style="font:1em/1em; font-size:36px" should have a line-height of 36px.
             if (fontDirty)
-                CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
+                CSSStyleSelector::style->htmlFont().update( logicalDpiY );
 
 	    applyRule( CSS_PROP_LINE_HEIGHT, font->lineHeight );
 	    applyRule( CSS_PROP_FONT_FAMILY, font->family );
@@ -3643,7 +3642,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_OUTLINE_OFFSET: {
         HANDLE_INITIAL_AND_INHERIT_ON_NONINHERITED_PROPERTY(outlineOffset, OutlineOffset)
 
-        int offset = primitiveValue->computeLength(style, paintDeviceMetrics);
+        int offset = primitiveValue->computeLength(style, logicalDpiY);
         if (offset < 0) return;
 
         style->setOutlineOffset(offset);
@@ -3670,9 +3669,9 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         for (int i = 0; i < len; i++) {
             ShadowValueImpl *item = static_cast<ShadowValueImpl*>(list->item(i));
 
-            int x = item->x->computeLength(style, paintDeviceMetrics);
-            int y = item->y->computeLength(style, paintDeviceMetrics);
-            int blur = item->blur ? item->blur->computeLength(style, paintDeviceMetrics) : 0;
+            int x = item->x->computeLength(style, logicalDpiY);
+            int y = item->y->computeLength(style, logicalDpiY);
+            int blur = item->blur ? item->blur->computeLength(style, logicalDpiY) : 0;
             QColor col = khtml::transparentColor;
             if (item->color) {
                 int ident = item->color->getIdent();
@@ -3756,7 +3755,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         }
         else {
             bool ok = true;
-            Length l = convertToLength(primitiveValue, style, paintDeviceMetrics, &ok);
+            Length l = convertToLength(primitiveValue, style, logicalDpiY, &ok);
             if (ok)
                 style->setMarqueeIncrement(l);
         }
@@ -3965,7 +3964,7 @@ void CSSStyleSelector::mapBackgroundSize(BackgroundLayer* layer, CSSValueImpl* v
     if (firstType == CSSPrimitiveValue::CSS_UNKNOWN)
         firstLength = Length(Variable);
     else if (firstType > CSSPrimitiveValue::CSS_PERCENTAGE && firstType < CSSPrimitiveValue::CSS_DEG)
-        firstLength = Length(first->computeLength(style, paintDeviceMetrics), Fixed);
+        firstLength = Length(first->computeLength(style, logicalDpiY), Fixed);
     else if (firstType == CSSPrimitiveValue::CSS_PERCENTAGE)
         firstLength = Length((int)first->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
     else
@@ -3974,7 +3973,7 @@ void CSSStyleSelector::mapBackgroundSize(BackgroundLayer* layer, CSSValueImpl* v
     if (secondType == CSSPrimitiveValue::CSS_UNKNOWN)
         secondLength = Length(Variable);
     else if (secondType > CSSPrimitiveValue::CSS_PERCENTAGE && secondType < CSSPrimitiveValue::CSS_DEG)
-        secondLength = Length(second->computeLength(style, paintDeviceMetrics), Fixed);
+        secondLength = Length(second->computeLength(style, logicalDpiY), Fixed);
     else if (secondType == CSSPrimitiveValue::CSS_PERCENTAGE)
         secondLength = Length((int)second->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
     else
@@ -3997,7 +3996,7 @@ void CSSStyleSelector::mapBackgroundXPosition(BackgroundLayer* layer, DOM::CSSVa
     Length l;
     int type = primitiveValue->primitiveType();
     if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-        l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
+        l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed);
     else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
         l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
     else
@@ -4017,7 +4016,7 @@ void CSSStyleSelector::mapBackgroundYPosition(BackgroundLayer* layer, DOM::CSSVa
     Length l;
     int type = primitiveValue->primitiveType();
     if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-        l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
+        l = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed);
     else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
         l = Length((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
     else

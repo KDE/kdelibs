@@ -140,8 +140,9 @@ namespace khtml
 	    QString file;
 	} encodedurl;
 
-        void computeFontSizes(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor);
-	void computeFontSizesFor(Q3PaintDeviceMetrics* paintDeviceMetrics, int zoomFactor, QVector<int>& fontSizes, bool isFixed);
+        // called from KHTMLView::print()
+	void computeFontSizes(int logicalDpiY, int zoomFactor);
+	void computeFontSizesFor(int logicalDpiY, int zoomFactor, QVector<int>& fontSizes, bool isFixed);
 
 	static void precomputeAttributeDependencies(DOM::DocumentImpl* doc, DOM::CSSSelector* sel);
     protected:
@@ -247,7 +248,7 @@ public:
 	KHTMLView *view;
 	KHTMLPart *part;
 	const KHTMLSettings *settings;
-	Q3PaintDeviceMetrics *paintDeviceMetrics;
+	int logicalDpiY;
         QVector<int>     m_fontSizes;
 	QVector<int>     m_fixedFontSizes;
 

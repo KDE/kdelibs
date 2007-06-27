@@ -84,7 +84,6 @@
 #include <QtGui/QBitmap>
 #include <QtGui/QLabel>
 #include <QtCore/QObject>
-#include <Qt3Support/Q3PaintDeviceMetrics>
 #include <QtGui/QPainter>
 #include <QtCore/QHash>
 #include <QtGui/QToolTip>
@@ -93,7 +92,6 @@
 #include <QtCore/QTimer>
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QVector>
-#include <Qt3Support/Q3ListBox>
 #include <QtGui/QAbstractScrollArea>
 
 //#define DEBUG_FLICKER
@@ -2007,8 +2005,8 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    x += ap.x();
 		    y += ap.y();
 
-		    QRect pr = isUpdate ? static_cast<QUpdateLaterEvent*>(e)->region().boundingRect() : static_cast<QPaintEvent *>(e)->rect();
-                    bool asap = !isUpdate && !d->contentsMoving && (qobject_cast<Q3ScrollView*>(c) || qobject_cast<QAbstractScrollArea*>(c));
+		    QRect pr = isUpdate ? static_cast<QUpdateLaterEvent*>(e)->region().boundingRect() : static_cast<QPaintEvent*>(e)->rect();
+                    bool asap = !isUpdate && !d->contentsMoving && qobject_cast<QAbstractScrollArea*>(c);
 
                     if (isUpdate) {
                         // ### horrible - FIXME
@@ -2920,19 +2918,17 @@ void KHTMLView::print(bool quick)
 						  "html { margin: 0px !important; }"
 						  );
 
-        Q3PaintDeviceMetrics metrics( printer );
-
-        kDebug(6000) << "printing: physical page width = " << metrics.width()
-                      << " height = " << metrics.height() << endl;
+        kDebug(6000) << "printing: physical page width = " << printer->width()
+                      << " height = " << printer->height() << endl;
         root->setStaticMode(true);
         root->setPagedMode(true);
-        root->setWidth(metrics.width());
-//         root->setHeight(metrics.height());
+        root->setWidth(printer->width());
+//         root->setHeight(printer->height());
         root->setPageTop(0);
         root->setPageBottom(0);
         d->paged = true;
 
-        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(&metrics, 100);
+        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(printer->logicalDpiY(), 100);
         m_part->xmlDocImpl()->updateStyleSelector();
         root->setPrintImages( printer->option("app-khtml-printimages") == "true");
         root->makePageBreakAvoidBlocks();
@@ -2963,12 +2959,12 @@ void KHTMLView::print(bool quick)
                       << " height = " << root->docHeight() << endl;
         kDebug(6000) << "printing: margins left = " << printer->margins().width()
                       << " top = " << printer->margins().height() << endl;
-        kDebug(6000) << "printing: paper width = " << metrics.width()
-                      << " height = " << metrics.height() << endl;
+        kDebug(6000) << "printing: paper width = " << printer->width()
+                      << " height = " << printer->height() << endl;
         // if the width is too large to fit on the paper we just scale
         // the whole thing.
-        int pageWidth = metrics.width();
-        int pageHeight = metrics.height();
+        int pageWidth = printer->width();
+        int pageHeight = printer->height();
         p->setClipRect(0,0, pageWidth, pageHeight);
 
         pageHeight -= headerHeight;
@@ -2976,9 +2972,9 @@ void KHTMLView::print(bool quick)
         bool scalePage = false;
         double scale = 0.0;
 #ifndef QT_NO_TRANSFORMATIONS
-        if(root->docWidth() > metrics.width()) {
+        if(root->docWidth() > printer->width()) {
             scalePage = true;
-            scale = ((double) metrics.width())/((double) root->docWidth());
+            scale = ((double) printer->width())/((double) root->docWidth());
             pageHeight = (int) (pageHeight/scale);
             pageWidth = (int) (pageWidth/scale);
             headerHeight = (int) (headerHeight/scale);
@@ -2996,16 +2992,16 @@ void KHTMLView::print(bool quick)
         // Squeeze header to make it it on the page.
         if (printHeader)
         {
-            int available_width = metrics.width() - 10 -
-                2 * qMax(p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerLeft).width(),
-                         p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerRight).width());
+            int available_width = printer->width() - 10 -
+                2 * qMax(p->boundingRect(0, 0, printer->width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerLeft).width(),
+                         p->boundingRect(0, 0, printer->width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerRight).width());
             if (available_width < 150)
                available_width = 150;
             int mid_width;
             int squeeze = 120;
             do {
                 headerMid = KStringHandler::csqueeze(docname, squeeze);
-                mid_width = p->boundingRect(0, 0, metrics.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerMid).width();
+                mid_width = p->boundingRect(0, 0, printer->width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerMid).width();
                 squeeze -= 10;
             } while (mid_width > available_width);
         }
@@ -3027,9 +3023,9 @@ void KHTMLView::print(bool quick)
 
                 headerRight = QString("#%1").arg(page);
 
-                p->drawText(0, 0, metrics.width(), dy, Qt::AlignLeft, headerLeft);
-                p->drawText(0, 0, metrics.width(), dy, Qt::AlignHCenter, headerMid);
-                p->drawText(0, 0, metrics.width(), dy, Qt::AlignRight, headerRight);
+                p->drawText(0, 0, printer->width(), dy, Qt::AlignLeft, headerLeft);
+                p->drawText(0, 0, printer->width(), dy, Qt::AlignHCenter, headerMid);
+                p->drawText(0, 0, printer->width(), dy, Qt::AlignRight, headerRight);
             }
 
 
@@ -3071,7 +3067,7 @@ void KHTMLView::print(bool quick)
         khtml::setPrintPainter( 0 );
         setMediaType( oldMediaType );
         m_part->xmlDocImpl()->setPaintDevice( this );
-        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(m_part->xmlDocImpl()->paintDeviceMetrics(), m_part->zoomFactor());
+        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(m_part->xmlDocImpl()->logicalDpiY(), m_part->zoomFactor());
         m_part->xmlDocImpl()->updateStyleSelector();
         viewport()->unsetCursor();
     }

@@ -47,7 +47,6 @@
 
 class QPaintDevice;
 class QTextCodec;
-class Q3PaintDeviceMetrics;
 class KHTMLView;
 
 namespace khtml {
@@ -335,9 +334,9 @@ public:
     virtual khtml::Tokenizer *createTokenizer();
     khtml::Tokenizer *tokenizer() { return m_tokenizer; }
 
-    Q3PaintDeviceMetrics *paintDeviceMetrics() { return m_paintDeviceMetrics; }
-    QPaintDevice *paintDevice() const { return m_paintDevice; }
-    void setPaintDevice( QPaintDevice *dev );
+    void setPaintDevice(QPaintDevice *dev){m_paintDevice = dev;}
+    QPaintDevice *paintDevice() const {return m_paintDevice;}
+    int logicalDpiY();
 
     enum HTMLMode {
         Html3 = 0,
@@ -573,7 +572,6 @@ protected:
     CSSStyleSheetImpl *m_elemSheet;
 
     QPaintDevice *m_paintDevice;
-    Q3PaintDeviceMetrics *m_paintDeviceMetrics;
     ParseMode pMode;
     HTMLMode hMode;
 
@@ -685,7 +683,7 @@ public:
         if (!m_selfOnlyRefCount && !refCount())
             delete this;
     }
-    
+
     // This is called when our last outside reference dies
     virtual void removedLastRef();
 };

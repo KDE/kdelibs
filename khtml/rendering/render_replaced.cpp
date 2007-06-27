@@ -41,8 +41,6 @@
 #include <QVector>
 #include <QMatrix>
 #include <QtGui/QPaintEngine>
-#include <Q3ListBox>
-#include <Q3ScrollView>
 
 #include "khtml_ext.h"
 #include "khtmlview.h"
@@ -730,31 +728,6 @@ void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
     }
 }
 
-void RenderWidget::ScrollViewEventPropagator::sendEvent(QEvent *e) {
-    switch(e->type()) {
-    case QEvent::MouseButtonPress:
-        viewportMousePressEvent(static_cast<QMouseEvent *>(e));
-        break;
-    case QEvent::MouseButtonRelease:
-        viewportMouseReleaseEvent(static_cast<QMouseEvent *>(e));
-        break;
-    case QEvent::MouseButtonDblClick:
-        viewportMouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
-        break;
-    case QEvent::MouseMove:
-        viewportMouseMoveEvent(static_cast<QMouseEvent *>(e));
-        break;
-    case QEvent::KeyPress:
-        keyPressEvent(static_cast<QKeyEvent *>(e));
-        break;
-    case QEvent::KeyRelease:
-        keyReleaseEvent(static_cast<QKeyEvent *>(e));
-        break;
-    default:
-        break;
-    }
-}
-
 bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
     bool ret = false;
@@ -862,11 +835,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         QEvent *e = (ev.id() == EventImpl::KHTML_MOUSEWHEEL_EVENT) ?
                     static_cast<QEvent*>(new QWheelEvent(p, -me.detail()*40, buttons, state, orient)) :
                     static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state));
-        Q3ScrollView * sc = ::qobject_cast<Q3ScrollView*>(target);
-        if (sc && !::qobject_cast<Q3ListBox*>(m_widget))
-            static_cast<ScrollViewEventPropagator *>(sc)->sendEvent(e);
-        else
-            static_cast<EventPropagator *>(target)->sendEvent(e);
+        static_cast<EventPropagator *>(target)->sendEvent(e);
 
         ret = e->isAccepted();
 
