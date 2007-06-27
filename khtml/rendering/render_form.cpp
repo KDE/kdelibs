@@ -66,11 +66,11 @@ using namespace khtml;
 
 RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
     : RenderWidget(element)
+//     , m_state(0)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
 
-    m_state = 0;
 }
 
 RenderFormElement::~RenderFormElement()

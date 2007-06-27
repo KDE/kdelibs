@@ -92,8 +92,8 @@ protected:
     virtual bool isEditable() const { return false; }
 	Qt::AlignmentFlag textAlignment() const;
 
-    QPoint m_mousePos;
-    int m_state;
+//     QPoint m_mousePos;
+//     int m_state;
 };
 
 // -------------------------------------------------------------------------
