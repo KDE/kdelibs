@@ -31,9 +31,11 @@ sizewidget.cpp
 
 kde4_automoc(${cupsdconf_KDEINIT_SRCS})
 
-kde4_add_library(cupsdconf ${cupsdconf_KDEINIT_SRCS})
+kde4_add_library(cupsdconf SHARED ${cupsdconf_KDEINIT_SRCS})
 
 target_link_libraries(cupsdconf  ${KDE4_KDECORE_LIBS} kio ${CUPS_LIBRARIES})
+set_target_properties(cupsdconf PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+
 
 install(TARGETS cupsdconf  DESTINATION ${LIB_INSTALL_DIR} )
 
