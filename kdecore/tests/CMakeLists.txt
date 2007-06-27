@@ -28,7 +28,6 @@ KDECORE_UNIT_TESTS(
  kurltest
  kstringhandlertest
  cplusplustest
- kdatetimetest
  ksortablelisttest
  kcharsetstest
  kcalendartest
