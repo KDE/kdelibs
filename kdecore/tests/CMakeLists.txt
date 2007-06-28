@@ -1,6 +1,3 @@
-# This can be used for finding data files in the source dir, without installing them
-add_definitions( -DKDESRCDIR=\\""${CMAKE_CURRENT_SOURCE_DIR}"\\" )
-
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 MACRO(KDECORE_UNIT_TESTS)
