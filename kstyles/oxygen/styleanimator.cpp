@@ -192,50 +192,92 @@ void TabAnimInfo::updatePixmaps(TabTransition tabTransition) {
    }
 }
 
+#include <QStyleOption>
+
+// to get an idea about what the bg of out tabs looks like - seems as if we
+// need to paint it
+static QPixmap dumpBackground(QWidget *target, const QRect &r, const QStyle *style) {
+   if (!target) return QPixmap();
+   QPoint zero(0,0);
+   QPixmap pix(r.size());
+   QWidgetList widgets; widgets << target;
+   QWidget *w = target->parentWidget();
+   while (w) {
+      if (!w->isVisible()) { w = w->parentWidget(); continue; }
+      widgets << w;
+      if (w->isTopLevel() || w->autoFillBackground()) break;
+      w = w->parentWidget();
+   }
+
+   QPainter p(&pix);
+   const QBrush bg = w->palette().brush(w->backgroundRole());
+   if (bg.style() == Qt::TexturePattern)
+      p.drawTiledPixmap(pix.rect(), bg.texture(), target->mapTo(w, r.topLeft()));
+   else
+      p.fillRect(pix.rect(), bg);
+   
+   if (w->isTopLevel() && w->testAttribute(Qt::WA_StyledBackground)) {
+      QStyleOption opt; opt.initFrom(w);// opt.rect = r;
+      opt.rect.translate(-target->mapTo(w, r.topLeft()));
+      style->drawPrimitive ( QStyle::PE_Widget, &opt, &p, w);
+   }
+   p.end();
+
+   QPaintEvent e(r); int i = widgets.size();
+   while (i) {
+      w = widgets.at(--i);
+      QPainter::setRedirected( w, &pix, target->mapTo(w, r.topLeft()) );
+      e = QPaintEvent(QRect(zero, r.size()));
+      QCoreApplication::sendEvent(w, &e);
+      QPainter::restoreRedirected(w);
+   }
+   return pix;
+}
+
 // QPixmap::grabWidget(.) currently fails on the background offset,
 // so we use our own implementation
 //TODO: fix scrollareas (the scrollbars aren't painted, so check for availability and usage...)
-QPixmap grabWidget(QWidget * root) {
+static void grabWidget(QWidget * root, QPixmap *pix) {
     if (!root)
-        return QPixmap();
+        return;
 
-   QPixmap pix(root->size());
    QPoint zero(0,0);
-   QPainter p(&pix);
-   const QBrush bg = root->palette().brush(root->backgroundRole());
-   if (bg.style() == Qt::TexturePattern)
-      p.drawTiledPixmap(root->rect(), bg.texture(),
-                        root->mapTo(root->topLevelWidget(), zero));
-   else
-      p.fillRect(root->rect(), bg);
-   p.end();
+//    QPainter p(pix);
+//    const QBrush bg = root->palette().brush(root->backgroundRole());
+//    if (bg.style() == Qt::TexturePattern)
+//       p.drawTiledPixmap(root->rect(), bg.texture(),
+//                         root->mapTo(root->topLevelWidget(), zero));
+//    else
+//       p.fillRect(root->rect(), bg);
+//    p.end();
    
    QList <QWidget*> widgets = root->findChildren<QWidget*>();
    
-   // resizing (in case)
-   if (root->testAttribute(Qt::WA_PendingResizeEvent) ||
-       !root->testAttribute(Qt::WA_WState_Created)) {
-      QResizeEvent e(root->size(), QSize());
-      QApplication::sendEvent(root, &e);
-   }
-   foreach (QWidget *w, widgets) {
-      if (root->testAttribute(Qt::WA_PendingResizeEvent) ||
-         !root->testAttribute(Qt::WA_WState_Created)) {
-         QResizeEvent e(w->size(), QSize());
-         QApplication::sendEvent(w, &e);
-      }
-   }
+   // resizing (in case) -- NOTICE may be dropped for performance...?!
+//    if (root->testAttribute(Qt::WA_PendingResizeEvent) ||
+//        !root->testAttribute(Qt::WA_WState_Created)) {
+//       QResizeEvent e(root->size(), QSize());
+//       QApplication::sendEvent(root, &e);
+//    }
+//    foreach (QWidget *w, widgets) {
+//       if (root->testAttribute(Qt::WA_PendingResizeEvent) ||
+//          !root->testAttribute(Qt::WA_WState_Created)) {
+//          QResizeEvent e(w->size(), QSize());
+//          QApplication::sendEvent(w, &e);
+//       }
+//    }
    // painting
-   QPainter::setRedirected( root, &pix );
-   QPaintEvent e = QPaintEvent(QRect(zero, root->size()));
+   QPainter::setRedirected( root, pix );
+   QPaintEvent e(QRect(zero, root->size()));
    QCoreApplication::sendEvent(root, &e);
    QPainter::restoreRedirected(root);
    
+   QPainter p;
    foreach (QWidget *w, widgets) {
       if (w->isVisibleTo(root)) {
          if (w->autoFillBackground()) {
             const QBrush bg = w->palette().brush(w->backgroundRole());
-            QPainter p(&pix);
+            p.begin(pix);
             QRect wrect = QRect(zero, w->size()).translated(w->mapTo(root, zero));
             if (bg.style() == Qt::TexturePattern)
                p.drawTiledPixmap(wrect, bg.texture(),
@@ -244,14 +286,12 @@ QPixmap grabWidget(QWidget * root) {
                p.fillRect(wrect, bg);
             p.end();
          }
-         QPainter::setRedirected( w, &pix, -w->mapTo(root, zero) );
+         QPainter::setRedirected( w, pix, -w->mapTo(root, zero) );
          e = QPaintEvent(QRect(zero, w->size()));
          QCoreApplication::sendEvent(w, &e);
          QPainter::restoreRedirected(w);
       }
    }
-   
-   return pix;
 }
 
 // --- ProgressBars --------------------
@@ -309,6 +349,7 @@ void StyleAnimator::progressbarDestroyed(QObject* obj) {
 void StyleAnimator::tabChanged(int index) {
    if (tabTransition == TabAnimInfo::Jump) return; // ugly nothing ;)
    QTabWidget* tw = (QTabWidget*)sender();
+   if (!tw->currentWidget()) return;
    QHash<QTabWidget*, TabAnimInfo*>::iterator i = tabwidgets.find(tw);
    if (i == tabwidgets.end()) // this tab isn't handled for some reason?
       return;
@@ -317,17 +358,14 @@ void StyleAnimator::tabChanged(int index) {
    
    QWidget *ctw = tw->widget(tai->lastTab);
    tai->lastTab = index;
-   if (!ctw)
-      return;
-   tai->tabPix[0] = /*QPixmap::*/grabWidget(ctw);
-   
-   ctw = tw->currentWidget();
-   if (!ctw) {
-      tai->tabPix[0] = QPixmap();
-      return;
-   }
-   tai->tabPix[1] = grabWidget(ctw);
+   if (!ctw) return;
+   tai->tabPix[0] = tai->tabPix[1] =
+      dumpBackground(tw, QRect(ctw->mapTo(tw, QPoint(0,0)), ctw->size()),
+                     qApp->style());
+   grabWidget(ctw, &tai->tabPix[0]);
    tai->tabPix[2] = tai->tabPix[0];
+   ctw = tw->currentWidget();
+   grabWidget(ctw, &tai->tabPix[1]);
    
    tai->animStep = 6;
    tai->updatePixmaps(tabTransition);

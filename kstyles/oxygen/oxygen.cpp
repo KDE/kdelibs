@@ -697,11 +697,15 @@ bool OxygenStyle::eventFilter( QObject *object, QEvent *ev ) {
       if (QFrame *frame = qobject_cast<QFrame*>(object)) {
          if (frame->frameShape() == QFrame::HLine ||
              frame->frameShape() == QFrame::VLine) {
-            QPainter p(frame);
-            Orientation3D o3D = (frame->frameShadow() == QFrame::Sunken) ? Sunken:
-               (frame->frameShadow() == QFrame::Raised) ? Raised : Relief;
-            shadows.line[frame->frameShape() == QFrame::VLine][o3D].render(frame->rect(), &p);
-            p.end();
+            if (frame->isVisible()) {
+               QPainter p(frame);
+               Orientation3D o3D =
+                  (frame->frameShadow() == QFrame::Sunken) ? Sunken:
+                  (frame->frameShadow() == QFrame::Raised) ? Raised : Relief;
+               const bool v = frame->frameShape() == QFrame::VLine;
+               shadows.line[v][o3D].render(frame->rect(), &p);
+               p.end();
+            }
             return true;
          }
       }

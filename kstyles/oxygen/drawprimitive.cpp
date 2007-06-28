@@ -744,7 +744,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
             shadows.tab[1][0].render(RECT, painter);
             break;
          }
-             
+
          QRect rect(RECT), tabRect(RECT), fillRect;
          int offset = 8;
          Qt::Orientation o = Qt::Vertical;
@@ -795,7 +795,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
          painter->restore();
          masks.tab.render(rect, painter,
                           Gradients::brush(PAL.color(config.role_tab[0]),
-                                         baseHeight, o, config.gradChoose),
+                                           baseHeight, o, config.gradChoose),
                           pf | Tile::Center);
          shadows.tabSunken.render(rect, painter, pf);
       }
