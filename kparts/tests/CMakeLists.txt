@@ -1,8 +1,6 @@
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 
-add_definitions( -DKDESRCDIR=\\"${CMAKE_CURRENT_SOURCE_DIR}\\" )
-
 ########### next target ###############
 
 set(kpartstest_SRCS
