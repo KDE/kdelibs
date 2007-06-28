@@ -151,7 +151,7 @@ void KProtocolCombo::paintEvent(QPaintEvent* event)
 void KProtocolCombo::setProtocol(QAction* action)
 {
     const int index = action->data().toInt();
-    Q_ASSERT((index > 0) && (index < m_protocols.count()));
+    Q_ASSERT((index >= 0) && (index < m_protocols.count()));
     const QString protocol = m_protocols[index];
     setText(protocol);
     emit activated(protocol);
