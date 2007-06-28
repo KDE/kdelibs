@@ -845,35 +845,23 @@ void KUrlNavigator::setUrl(const KUrl& url)
         }
     }
 
-    if (this->url() == transformedUrl) {
+    if (this->url() != transformedUrl) {
         // don't insert duplicate history elements
 //         kDebug() << "current url == transformedUrl" << endl;
-        return;
-    }
+        d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl));
 
-    d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl));
+        emit urlChanged(transformedUrl);
+        emit historyChanged();
+
+        // Prevent an endless growing of the history: remembering
+        // the last 100 Urls should be enough...
+        if (d->m_historyIndex > 100) {
+            d->m_history.removeFirst();
+            --d->m_historyIndex;
+        }
+    }
 
     d->updateContent();
-
-    emit urlChanged(transformedUrl);
-    emit historyChanged();
-
-    // Prevent an endless growing of the history: remembering
-    // the last 100 Urls should be enough...
-    if (d->m_historyIndex > 100) {
-        d->m_history.removeFirst();
-        --d->m_historyIndex;
-    }
-
-    /*    kDebug() << "history starting ====================" << endl;
-        int i = 0;
-        for (QValueListIterator<KUrlNavigator::HistoryElem> it = d->m_history.begin();
-             it != d->m_history.end();
-             ++it, ++i)
-        {
-            kDebug() << i << ": " << (*it).url() << endl;
-        }
-        kDebug() << "history done ========================" << endl;*/
 
     requestActivation();
 }
