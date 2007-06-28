@@ -66,6 +66,7 @@ kde4_automoc(${notepadpart_PART_SRCS})
 kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
 
 target_link_libraries(notepadpart  ${KDE4_KPARTS_LIBS} )
+set_target_properties(notepadpart PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
 
 install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
