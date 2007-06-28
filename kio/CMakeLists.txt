@@ -28,7 +28,10 @@ include_directories(
 )
 
 macro_bool_to_01(FAM_FOUND HAVE_FAM)
-check_include_files(sys/inotify.h HAVE_SYS_INOTIFY_H)
+
+check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
+macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
+
 configure_file(kio/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kdirwatch.h )
 
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
