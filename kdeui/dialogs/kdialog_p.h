@@ -42,6 +42,8 @@ class KDialogPrivate
         {
         }
 
+        virtual ~KDialogPrivate() {}
+
         KDialog *q_ptr;
 
         void setupLayout();
