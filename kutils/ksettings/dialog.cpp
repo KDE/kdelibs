@@ -331,13 +331,17 @@ void DialogPrivate::createDialogFromServices()
                             q->disconnect(parent, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
                         }
                     } else {
-                        QWidget *checkBox = qvariant_cast<QWidget *>(parent->property("_k_checkbox"));
+                        QCheckBox *checkBox = qobject_cast<QCheckBox *>(qvariant_cast<QWidget *>(
+                                    parent->property("_k_checkbox")));
+                        Q_ASSERT(checkBox);
                         parent->setProperty("_k_plugin", QVariant::fromValue(reinterpret_cast<void *>(pinfo)));
                         Q_ASSERT(qvariant_cast<void *>(parent->property("_k_plugin")) == pinfo);
                         parent->setCheckable(true);
                         parent->setChecked(isEnabled);
+                        checkBox->setChecked(isEnabled);
                         q->connect(parent, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
-                        q->connect(checkBox, SIGNAL(toggled(bool)), parent, SLOT(setChecked(bool)));
+                        q->connect(parent, SIGNAL(toggled(bool)), checkBox, SLOT(setChecked(bool)));
+                        q->connect(checkBox, SIGNAL(clicked(bool)), parent, SLOT(setChecked(bool)));
                     }
                 } else {
                     item->setProperty("_k_plugin", QVariant::fromValue(reinterpret_cast<void *>(pinfo)));
