@@ -126,7 +126,7 @@ namespace KColorUtils {
      * @p bias >= 1 gives @p c2. @p bias == 0.5 gives a 50% blend of @p c1
      * and @p c2.
      */
-    KDEUI_EXPORT QColor mix(const QColor &one, const QColor &two,
+    KDEUI_EXPORT QColor mix(const QColor &c1, const QColor &c2,
                             qreal bias = 0.5);
 
     /**
