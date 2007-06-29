@@ -114,12 +114,14 @@ void Dialog::showEvent(QShowEvent *)
 {
     Q_D(Dialog);
     if (d->firstshow) {
+        setUpdatesEnabled(false);
         d->kcmInfos += d->instanceServices();
         if (!d->components.isEmpty()) {
             d->kcmInfos += d->parentComponentsServices(d->components);
         }
         d->createDialogFromServices();
         d->firstshow = false;
+        setUpdatesEnabled(true);
     }
     Dispatcher::syncConfiguration();
 }
