@@ -36,6 +36,8 @@
 #include <kplugininfo.h>
 #include <kvbox.h>
 
+class QCheckBox;
+
 namespace KSettings
 {
 
@@ -47,6 +49,8 @@ class DialogPrivate : public KCMultiDialogPrivate
         DialogPrivate();
 
         QHash<QString, KPageWidgetItem *> pageItemForGroupId;
+        QHash<KPageWidgetItem *, KPluginInfo *> pluginForItem;
+        QHash<KPageWidgetItem *, QCheckBox *> checkBoxForItem;
         QList<KPluginInfo *> plugininfos;
 
         QStringList registeredComponents;

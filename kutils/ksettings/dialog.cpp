@@ -235,7 +235,7 @@ void DialogPrivate::parseGroupFile( const QString & filename )
         iconLabel->setPixmap(item->icon().pixmap(128, 128));
         const int weight = conf.readEntry("Weight", 100);
         item->setProperty("_k_weight", weight);
-        item->setProperty("_k_checkbox", QVariant::fromValue(static_cast<QWidget *>(checkBox)));
+        checkBoxForItem.insert(item, checkBox);
 
         const KPageWidgetModel *model = qobject_cast<const KPageWidgetModel *>(q->pageWidget()->model());
         Q_ASSERT(model);
@@ -320,22 +320,21 @@ void DialogPrivate::createDialogFromServices()
                 kDebug(700) << "correct KPluginInfo for this KCM" << endl;
                 // this KCM belongs to a plugin
                 if (parent && pinfo->kcmServices().count() > 1) {
-                    QVariant plugin = parent->property("_k_plugin");
-                    if (plugin.isValid()) {
-                        if (qvariant_cast<void *>(plugin) != pinfo) {
+                    KPluginInfo *plugin = pluginForItem.value(parent);
+                    if (plugin) {
+                        if (plugin != pinfo) {
                             kError(700) << "A group contains more than one plugin: '"
-                                << plugin.toString() << "' and '" << pinfo->pluginName()
+                                << plugin->pluginName() << "' and '" << pinfo->pluginName()
                                 << "'. Now it won't be possible to enable/disable the plugin."
                                 << endl;
                             parent->setCheckable(false);
                             q->disconnect(parent, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
                         }
+                        // else everything is fine
                     } else {
-                        QCheckBox *checkBox = qobject_cast<QCheckBox *>(qvariant_cast<QWidget *>(
-                                    parent->property("_k_checkbox")));
+                        QCheckBox *checkBox = checkBoxForItem.value(parent);
                         Q_ASSERT(checkBox);
-                        parent->setProperty("_k_plugin", QVariant::fromValue(reinterpret_cast<void *>(pinfo)));
-                        Q_ASSERT(qvariant_cast<void *>(parent->property("_k_plugin")) == pinfo);
+                        pluginForItem.insert(parent, pinfo);
                         parent->setCheckable(true);
                         parent->setChecked(isEnabled);
                         checkBox->setChecked(isEnabled);
@@ -344,7 +343,7 @@ void DialogPrivate::createDialogFromServices()
                         q->connect(checkBox, SIGNAL(clicked(bool)), parent, SLOT(setChecked(bool)));
                     }
                 } else {
-                    item->setProperty("_k_plugin", QVariant::fromValue(reinterpret_cast<void *>(pinfo)));
+                    pluginForItem.insert(item, pinfo);
                     item->setCheckable(true);
                     item->setChecked(isEnabled);
                     q->connect(item, SIGNAL(toggled(bool)), q, SLOT(_k_updateEnabledState(bool)));
@@ -424,13 +423,11 @@ void DialogPrivate::_k_updateEnabledState(bool enabled)
         return;
     }
 
-    QVariant plugin = item->property("_k_plugin");
-    if (!plugin.isValid()) {
+    KPluginInfo *pinfo = pluginForItem.value(item);
+    if (!pinfo) {
         kWarning(700) << k_funcinfo << "could not find KPluginInfo in item" << endl;
         return;
     }
-    KPluginInfo *pinfo = reinterpret_cast<KPluginInfo *>(qvariant_cast<void *>(plugin));
-    Q_ASSERT(pinfo);
     //pinfo->setPluginEnabled(enabled);
 
     //kDebug(700) << k_funcinfo << endl;
