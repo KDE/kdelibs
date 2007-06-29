@@ -16,6 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <config.h>
+
 #include <ktranslit_p.h>
 
 #include <QHash>
@@ -73,6 +75,10 @@ void splitLangScript (const QString &lang, QString &ln, QString &scr)
 QString KTranslit::higherPriorityScript (const QString &lang,
                                          const KLocale *locale)
 {
+    if (locale == NULL) {
+        return QString();
+    }
+
     // Split into pure language and script part.
     QString ln, scr;
     splitLangScript(lang, ln, scr);

@@ -191,6 +191,8 @@ set(kdecore_LIB_SRCS
    localization/klocale.cpp
    localization/klocalizedstring.cpp
    localization/ktranslit.cpp
+   localization/kuitsemantics.cpp
+   localization/kuitformats.cpp
    sycoca/ksycoca.cpp
    sycoca/ksycocadict.cpp
    sycoca/ksycocaentry.cpp
@@ -222,7 +224,7 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${UTIL_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${UTIL_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 set_target_properties(kdecore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kdecore DESTINATION ${LIB_INSTALL_DIR} )

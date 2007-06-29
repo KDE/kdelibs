@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <config.h>
+
 #include <klocalizedstring.h>
 
 #include <kglobal.h>
@@ -27,7 +29,8 @@
 #include <kstandarddirs.h>
 #include <ktranscript_p.h>
 #include <ktranslit_p.h>
-
+#include <ktranslit_p.h>
+#include <kuitsemantics_p.h>
 
 #include <QStringList>
 #include <QByteArray>
@@ -37,16 +40,18 @@
 #include <QVector>
 
 // Truncates string, for output of long messages.
-QString shorten (const QString &str)
+static QString shorten (const QString &str)
 {
     const int maxlen = 20;
     if (str.length() <= maxlen)
         return str;
     else
-        return str.left(maxlen).append("|...");
+        return str.left(maxlen).append("...");
 }
 
 typedef qulonglong pluraln;
+typedef qlonglong intn;
+typedef double realn;
 
 class KLocalizedStringPrivateStatics;
 
@@ -80,7 +85,6 @@ class KLocalizedStringPrivate
     static void notifyCatalogsUpdated (const QStringList &languages,
                                        const QStringList &catalogs);
     static void loadTranscript ();
-
 };
 
 class KLocalizedStringPrivateStatics
@@ -100,6 +104,8 @@ class KLocalizedStringPrivateStatics
     KTranscript *ktrs;
 
     QHash<QString, KTranslit*> translits;
+
+    QHash<QString, KuitSemantics*> formatters;
 
     KLocalizedStringPrivateStatics () :
         theFence("|/|"),
@@ -196,7 +202,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     #endif
 
     // Get raw translation.
-    QString lang, rawtrans;
+    QString lang, rawtrans, lscr;
     if (locale != NULL)
     {
         if (!ctxt.isEmpty() && !plural.isEmpty())
@@ -207,6 +213,9 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
             locale->translateRaw(ctxt, msg, &lang, &rawtrans);
         else
             locale->translateRaw(msg, &lang, &rawtrans);
+
+        // Find any higher priority writing script for the current language.
+        lscr = KTranslit::higherPriorityScript(lang, locale);
     }
     else
     {
@@ -221,9 +230,6 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         else
             rawtrans = QString::fromUtf8(msg);
     }
-
-    // Find possible higher priority writing script for the current language.
-    QString lscr = KTranslit::higherPriorityScript(lang, locale);
 
     // Set ordinary translation and possibly scripted translation.
     QString trans, strans;
@@ -255,19 +261,21 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     // Substitute placeholders in ordinary translations.
     QString final = substituteSimple(trans, lang, lscr);
 
-    if (strans.isEmpty())
-        // No script, ordinary translation is final.
-        return final;
-    else
+    if (!strans.isEmpty()) // scripted translation exists
     {
         // Evaluate scripted translation.
         QString sfinal = substituteTranscript(strans, lang, lscr, final);
 
-        if (!sfinal.isEmpty()) // scripted translation evaluated successfully
-            return sfinal;
-        else // scripted translation failed, fallback to ordinary
-            return final;
+        if (!sfinal.isEmpty()) // evaluated successfully
+            final = sfinal;
     }
+
+    // Transform any semantic markup into visual formatting.
+    QString finalVisual = final;
+    if (s->formatters.contains(lang))
+        finalVisual = s->formatters[lang]->format(final, ctxt);
+
+    return finalVisual;
 }
 
 QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
@@ -368,7 +376,7 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
     final.append(tsegs.last());
 
     // Possibly do transliteration.
-    if (s->translits[lang] != NULL)
+    if (s->translits.contains(lang))
         final = s->translits[lang]->transliterate(final, lscr);
 
     #ifndef NDEBUG
@@ -452,7 +460,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
             else
             {
                 // Possibly do language script conversion.
-                if (s->translits[lang] != NULL)
+                if (s->translits.contains(lang))
                     interp = s->translits[lang]->transliterate(interp, lscr);
 
                 sfinal.append(interp);
@@ -587,6 +595,16 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
     return tpos;
 }
 
+static QString wrapInt (const QString &numstr)
+{
+    return "<"KUIT_NUMINTG">" + numstr + "</"KUIT_NUMINTG">";
+}
+
+static QString wrapReal (const QString &numstr)
+{
+    return "<"KUIT_NUMREAL">" + numstr + "</"KUIT_NUMREAL">";
+}
+
 KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
                                          const QChar &fillChar) const
 {
@@ -597,7 +615,7 @@ KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,
         d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
+    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     return kls;
 }
 
@@ -611,7 +629,7 @@ KLocalizedString KLocalizedString::subs (uint a, int fieldWidth, int base,
         d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
+    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     return kls;
 }
 
@@ -625,7 +643,7 @@ KLocalizedString KLocalizedString::subs (long a, int fieldWidth, int base,
         d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
+    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     return kls;
 }
 
@@ -639,7 +657,7 @@ KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth, int base,
         d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
+    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     return kls;
 }
 
@@ -653,7 +671,7 @@ KLocalizedString KLocalizedString::subs (qlonglong a, int fieldWidth, int base,
         d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
+    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     return kls;
 }
 
@@ -667,7 +685,7 @@ KLocalizedString KLocalizedString::subs (qulonglong a, int fieldWidth, int base,
         d->numberOrd = d->args.size();
     }
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, base, fillChar));
+    kls.d->args.append(wrapInt(QString("%1").arg(a, fieldWidth, base, fillChar)));
     return kls;
 }
 
@@ -676,8 +694,7 @@ KLocalizedString KLocalizedString::subs (double a, int fieldWidth,
                                          const QChar &fillChar) const
 {
     KLocalizedString kls(*this);
-    kls.d->args.append(QString("%1").arg(a, fieldWidth, format, precision,
-                                         fillChar));
+    kls.d->args.append(wrapReal(QString("%1").arg(a, fieldWidth, format, precision, fillChar)));
     return kls;
 }
 
@@ -793,10 +810,20 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
         }
     }
 
-    // Create writing script transliterator objects for each new language.
+    // Create writing script transliterators for each new language.
     foreach (const QString &lang, languages) {
         if (!s->translits.contains(lang)) {
-            s->translits.insert(lang, KTranslit::create(lang));
+            KTranslit *t = KTranslit::create(lang);
+            if (t != NULL) {
+                s->translits.insert(lang, t);
+            }
+        }
+    }
+
+    // Create visual formatters for each new language.
+    foreach (const QString &lang, languages) {
+        if (!s->formatters.contains(lang)) {
+            s->formatters.insert(lang, new KuitSemantics(lang));
         }
     }
 }
