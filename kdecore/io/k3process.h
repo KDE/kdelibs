@@ -37,6 +37,7 @@ class KPty;
  * @obsolete Use KProcess and KPtyProcess instead.
  *
  * Child process invocation, monitoring and control.
+ * This class works only in the application's main thread.
  *
  * <b>General usage and features:</b>\n
  *
@@ -374,6 +375,8 @@ public:
    *
    * If all the data has been sent to the client, the signal
    * wroteStdin() will be emitted.
+   *
+   * This function does not work when the process is start()ed in Block mode.
    *
    * @param buffer the buffer to write
    * @param buflen the length of the buffer
