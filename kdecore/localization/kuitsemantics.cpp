@@ -94,7 +94,7 @@ namespace Kuit {
 
     namespace Numfmt { // number formats
         typedef enum {
-            Posix, US, Euro,
+            Posix, US, Euro
         } Var;
     }
 
