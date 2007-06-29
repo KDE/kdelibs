@@ -113,7 +113,7 @@ namespace KColorUtils {
      * @param amount how strongly to tint the base; 0.0 gives @p base,
      * 1.0 gives @p color
      */
-    KDEUI_EXPORT QColor tint(const QColor &base, const QColor &color, qreal amount = 0.2);
+    KDEUI_EXPORT QColor tint(const QColor &base, const QColor &color, qreal amount = 0.3);
 
     /**
      * Blend two colors into a new color by linear combination.
