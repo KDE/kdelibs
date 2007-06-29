@@ -33,6 +33,26 @@ class KColorSchemePrivate;
 
 /**
  * A set of methods used to work with colors.
+ *
+ * KColorScheme currently provides access to the system color palette that the
+ * user has selected (In the future, it is expected to do more). As of KDE4,
+ * this class is the correct way to look up colors from the system palette,
+ * as opposed to KGlobalSettings (such usage is deprecated). It greatly expands
+ * on KGlobalSettings and QPalette by providing five distinct "sets" with
+ * several color choices each, covering background, foreground, and decoration
+ * colors.
+ *
+ * A KColorScheme instance represents colors corresponding to a "set", where a
+ * set consists of those colors used to draw a particular type of element, such
+ * as a menu, button, view, selected text, or tooltip. Each set has a distinct
+ * set of colors, so you should always use the correct set for drawing and
+ * never assume that a particular foreground for one set is the same as the
+ * foreground for any other set. Individual colors may be quickly referenced by
+ * creating an anonymous instance and invoking a lookup member.
+ *
+ * @see KColorScheme::ColorSet, KColorScheme::ForegroundRole,
+ * KColorScheme::BackgroundRole, KColorScheme::DecorationRole,
+ * KColorScheme::ShadeRole
  */
 class KDEUI_EXPORT KColorScheme {
 public:
@@ -40,34 +60,57 @@ public:
     /**
      * This enumeration describes the color set for which a color is being
      * selected.
+     *
+     * Color sets define a color "environment", suitable for drawing all parts
+     * of a given region. Colors from different sets should not be combined.
      */
     enum ColorSet {
         /**
          * Views; e.g. frames, input fields, etc.
+         *
+         * If it contains things that can be selected, it is probably a View.
          */
         View,
         /**
          * Non-editable window elements; e.g. menus.
+         *
+         * If it isn't a Button, View, or Tooltip, it is probably a Window.
          */
         Window,
         /**
-         * Buttons
+         * Buttons.
+         *
+         * In addition to buttons, "button-like" controls such as non-editable
+         * dropdowns should also use this role.
          */
         Button,
         /**
          * Selected items in views.
+         *
+         * Note that unfocused or disabled selections should use the Window
+         * role. This makes it more obvious to the user that the view
+         * containing the selection does not have input focus.
          */
         Selection,
         /**
          * Tooltips.
+         *
+         * The tooltip set can often be substituted for the view
+         * set when editing is not possible, but the Window set is deemed
+         * inappropriate. "What's This" help is an excellent example, another
+         * might be pop-up notifications (depending on taste).
          */
         Tooltip
     };
 
     /**
      * This enumeration describes the background color being selected from the
-     * given set. Background colors are suitable for drawing under text, and
-     * should never be used to draw text. All roles are valid for all sets.
+     * given set.
+     *
+     * Background colors are suitable for drawing under text, and should never
+     * be used to draw text. In combination with one of the overloads of
+     * KColorScheme::shade, they may be used to generate colors for drawing
+     * frames, bevels, and similar decorations.
      */
     enum BackgroundRole {
         /**
@@ -76,18 +119,18 @@ public:
         NormalBackground = 0,
         /**
          * Alternate background, e.g. for use in lists. May be the same as
-         * BackgroundNormal.
+         * BackgroundNormal, especially in sets other than View and Window.
          */
         AlternateBackground = 1
     };
 
     /**
      * This enumeration describes the foreground color being selected from the
-     * given set. Foreground colors are suitable for drawing text, and should
-     * never be used to draw backgrounds. All roles are valid for all sets.
+     * given set.
      *
-     * As an exception to the above, you may use TODO to produce new background
-     * colors from foreground colors.
+     * Foreground colors are suitable for drawing text, and should never be
+     * used to draw backgrounds. As an exception, you may use KColorUtils::tint
+     * to produce new background colors from background/foreground pairs.
      */
     enum ForegroundRole {
         /**
@@ -128,10 +171,12 @@ public:
 
     /**
      * This enumeration describes the decoration color being selected from the
-     * given set. Decoration colors are used to draw decorations (such as
-     * frames) for special purposes. They should be treated as foreground
-     * colors, but they are not intended for drawing text. All roles are valid
-     * for all sets.
+     * given set.
+     *
+     * Decoration colors are used to draw decorations (such as frames) for
+     * special purposes. Like color shades, they are neither foreground nor
+     * background colors. Text should not be painted over a decoration color,
+     * and decoration colors should not be used to draw text.
      */
     enum DecorationRole {
         /**
@@ -147,8 +192,11 @@ public:
 
     /**
      * This enumeration describes the color shade being selected from the given
-     * set. Color shades are used to draw "3d" elements, such as frames and
-     * bevels. All roles are valid for all sets.
+     * set.
+     *
+     * Color shades are used to draw "3d" elements, such as frames and bevels.
+     * They are neither foreground nor background colors. Text should not be
+     * painted over a shade, and shades should not be used to draw text.
      */
     enum ShadeRole {
         /**
