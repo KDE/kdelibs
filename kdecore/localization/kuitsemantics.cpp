@@ -82,7 +82,7 @@ namespace Kuit {
             Slider, Spinbox, Listbox, Textbox, Chooser,
             Check, Radio,
             Inlistbox, Intable, Inrange,
-            Tooltip, Whatsthis, Status, Progress, Tipoftheday, Shell
+            Tooltip, Whatsthis, Status, Progress, Tipoftheday, Credit, Shell
         } Var;
     }
 
@@ -233,7 +233,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
               Inmenu << Inlistbox << Intable << Inrange);
     SETUP_ROL(Info, "info", Rich,
                  Tooltip << Whatsthis << Status << Progress
-              << Tipoftheday << Shell);
+              << Tipoftheday << Credit << Shell);
 
     // Setup override formats by subcue.
     #undef SETUP_ROLCUEFMT
@@ -271,6 +271,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_CUE(Status, "status");
     SETUP_CUE(Progress, "progress");
     SETUP_CUE(Tipoftheday, "tipoftheday");
+    SETUP_CUE(Credit, "credit");
     SETUP_CUE(Shell, "shell");
 
     // Collect all Qt's rich text engine HTML tags, for some checks later.
