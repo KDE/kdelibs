@@ -61,12 +61,13 @@ class DialogPrivate : public KCMultiDialogPrivate
 
         bool staticlistview : 1;
         bool firstshow : 1;
-        bool pluginStateDirty : 1;
+        quint32 pluginStateDirty : 30;
 
         //void _k_configureTree();
         void _k_updateEnabledState(bool);
         void _k_syncConfiguration();
         void _k_reparseConfiguration(const QByteArray &a);
+        virtual void _k_clientChanged();
 
     private:
         /**

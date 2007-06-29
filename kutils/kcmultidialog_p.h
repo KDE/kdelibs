@@ -50,7 +50,7 @@ class KCMultiDialogPrivate : public KPageDialogPrivate
         ModuleList modules;
 
         void _k_slotCurrentPageChanged(KPageWidgetItem *);
-        void _k_clientChanged(bool state);
+        virtual void _k_clientChanged();
         void _k_dialogClosed();
 
     private:

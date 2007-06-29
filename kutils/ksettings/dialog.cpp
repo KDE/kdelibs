@@ -127,7 +127,7 @@ void Dialog::showEvent(QShowEvent *)
 }
 
 DialogPrivate::DialogPrivate()
-    : staticlistview(true), firstshow(true), pluginStateDirty(false)
+    : staticlistview(true), firstshow(true), pluginStateDirty(0)
 {
 }
 
@@ -386,6 +386,15 @@ void DialogPrivate::createDialogFromServices()
 
 void DialogPrivate::_k_syncConfiguration()
 {
+    const QHash<KPageWidgetItem *, KPluginInfo *>::ConstIterator endIt = pluginForItem.constEnd();
+    QHash<KPageWidgetItem *, KPluginInfo *>::ConstIterator it = pluginForItem.constBegin();
+    for (; it != endIt; ++it) {
+        KPageWidgetItem *item = it.key();
+        KPluginInfo *pinfo = it.value();
+        pinfo->setPluginEnabled(item->isChecked());
+        pinfo->save();
+    }
+    pluginStateDirty = 0;
     Dispatcher::syncConfiguration();
 }
 
@@ -404,6 +413,16 @@ void DialogPrivate::_k_configureTree()
     QObject::connect(subdlg, SIGNAL(applyClicked()), q, SIGNAL(pluginSelectionChanged()));
 }
 */
+
+void DialogPrivate::_k_clientChanged()
+{
+    if (pluginStateDirty > 0) {
+        Q_Q(Dialog);
+        q->enableButton(KDialog::Apply, true);
+    } else {
+        KCMultiDialogPrivate::_k_clientChanged();
+    }
+}
 
 void DialogPrivate::_k_updateEnabledState(bool enabled)
 {
@@ -428,10 +447,16 @@ void DialogPrivate::_k_updateEnabledState(bool enabled)
         kWarning(700) << k_funcinfo << "could not find KPluginInfo in item" << endl;
         return;
     }
-    //pinfo->setPluginEnabled(enabled);
+    if (pinfo->isPluginEnabled() != enabled) {
+        ++pluginStateDirty;
+    } else {
+        --pluginStateDirty;
+    }
+    if (pluginStateDirty < 2) {
+        _k_clientChanged();
+    }
 
     //kDebug(700) << k_funcinfo << endl;
-    pluginStateDirty = true;
 
     QModelIndex firstborn = index.child(0, 0);
     if (firstborn.isValid()) {

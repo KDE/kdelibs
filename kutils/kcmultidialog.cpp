@@ -66,7 +66,7 @@ void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *item )
     q->enableButton(KDialog::Default, currentModule->buttons() & KCModule::Default);
 }
 
-void KCMultiDialogPrivate::_k_clientChanged( bool )
+void KCMultiDialogPrivate::_k_clientChanged()
 {
     Q_Q(KCMultiDialog);
   for ( int i = 0; i < modules.count(); ++i ) {
@@ -152,7 +152,7 @@ void KCMultiDialog::slotDefaultClicked()
   for ( int i = 0; i < d->modules.count(); ++i ) {
     if ( d->modules[ i ].item == item ) {
       d->modules[ i ].kcm->defaults();
-      d->_k_clientChanged( true );
+            d->_k_clientChanged();
       return;
     }
   }
@@ -168,7 +168,7 @@ void KCMultiDialog::slotUser1Clicked()
   for ( int i = 0; i < d->modules.count(); ++i ) {
     if ( d->modules[ i ].item == item ) {
       d->modules[ i ].kcm->load();
-      d->_k_clientChanged( false );
+            d->_k_clientChanged();
       return;
     }
   }
@@ -316,7 +316,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
         }
     }
 
-  connect( kcm, SIGNAL( changed( bool ) ), this, SLOT( _k_clientChanged( bool ) ) );
+    connect(kcm, SIGNAL(changed(bool)), this, SLOT(_k_clientChanged()));
 
 
     Q_D(KCMultiDialog);
@@ -344,7 +344,7 @@ void KCMultiDialog::clear()
 
   d->modules.clear();
 
-  d->_k_clientChanged( false );
+    d->_k_clientChanged();
 }
 
 
