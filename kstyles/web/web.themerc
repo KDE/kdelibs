@@ -1,7 +1,6 @@
 [Misc]
 Name=Web style
 Name[af]=Web styl
-Name[ar]=مظهر الويب
 Name[be]=Стыль Сеціва
 Name[br]=Giz gwiad
 Name[ca]=Estil Web
@@ -64,7 +63,6 @@ Name[zh_HK]=網站風格
 Name[zh_TW]=網站風格
 Comment=Web widget style
 Comment[af]=Web gui-element styl
-Comment[ar]=مظهر ويدجات الويب
 Comment[be]=Стыль Сеціва
 Comment[br]=Giz widget gwiad
 Comment[ca]=Estil d'objectes web

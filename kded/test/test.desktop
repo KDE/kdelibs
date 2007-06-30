@@ -10,7 +10,6 @@ X-KDE-Kded-load-on-demand=true
 
 Name=KDED Test Module
 Name[af]=Kded Toets Module
-Name[ar]=وحدة KDED اختبارية
 Name[be]=Тэставы модуль KDED
 Name[ca]=Mòdul de proves per a KDED
 Name[cs]=Testovací KDED modul
@@ -72,7 +71,6 @@ Name[zh_HK]=KDED 測試模組
 Name[zh_TW]=KDED 測試模組
 Comment=A Test Module for KDED
 Comment[af]='n Toets Module vir Kded
-Comment[ar]=وحدة اختبارية لKDED
 Comment[be]=Тэставы модуль для KDED
 Comment[ca]=Un mòdul de prova per a KDED
 Comment[cs]=Testovací modul pro KDED

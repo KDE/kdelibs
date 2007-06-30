@@ -1,7 +1,6 @@
 [Misc]
 Name=Light Style, 3rd revision
 Name[af]=Ligte Styl, 3de hersiening
-Name[ar]=نمط خفيف، التنقيح الثالث
 Name[be]=Лёгкі стыль 3
 Name[br]=Giz sklerijenn, trede stumm
 Name[ca]=Estil Light, 3era revisió
@@ -63,7 +62,6 @@ Name[zh_HK]=輕靈風格，第三版
 Name[zh_TW]=輕靈風格，第三版
 Comment=Third revision of the simple and elegant 'Light' widget style.
 Comment[af]=Derde hersiening van die eenvoudige en elegante 'Light' gui-element styl.
-Comment[ar]=التنقيح الثالث لنمط الكائن 'الخفيف' الأنيق والبسيط
 Comment[be]=Просты і элегантны стыль 3.
 Comment[ca]=Tercera revisió de l'elegant estil d'estris 'Light'.
 Comment[cs]=Třetí revize jednoduchého a elegantního stylu prvků uživatelského prostředí 'Light'.

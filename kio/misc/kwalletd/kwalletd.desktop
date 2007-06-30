@@ -8,7 +8,6 @@ X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true
 Name=KWallet Daemon Module
 Name[af]=KBeursie Bediener Module
-Name[ar]=مراقب وحدة KWallet
 Name[be]=Модуль сервіса KWallet
 Name[br]=Mollad an diaoul KWallet
 Name[ca]=Mòdul del dimoni KWallet
