@@ -69,6 +69,10 @@ bool KUniqueApplication::s_multipleInstances = false;
 bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::s_handleAutoStarted = false;
 
+#ifdef Q_WS_MAC
+void KApplication_early_init_mac();
+#endif
+
 static KCmdLineOptions kunique_options[] =
 {
   { "nofork", "Don't run in the background.", 0 },
@@ -99,6 +103,7 @@ KUniqueApplication::start()
   if( s_kuniqueapplication_startCalled )
     return true;
   s_kuniqueapplication_startCalled = true;
+
   addCmdLineOptions(); // Make sure to add cmd line options
 #ifdef Q_WS_WIN
   s_nofork = true;
@@ -118,6 +123,10 @@ KUniqueApplication::start()
         appName.prepend(QLatin1Char('.'));
         appName.prepend(s);
      }
+
+#ifdef Q_WS_MAC
+  KApplication_early_init_mac();
+#endif
 
   if (s_nofork)
   {

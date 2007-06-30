@@ -37,16 +37,27 @@
  * @internal
 */
 
+bool mac_initialized;
+
 void KApplication_early_init_mac()
 {
+    if (mac_initialized)
+        return;
+
     KConfigGroup g( KGlobal::config(), "General" );
-    QStringList newPath = g.readPathListEntry("AddDirectoriesToPath");
-    QStringList path = QFile::decodeName(getenv("PATH")).split(':');
-    for (int i = 0; i < path.size(); ++i) {
-        newPath.append(path.at(i));
+    QStringList envVars, envAppend, path, newPath;
+    envVars << "XDG_DATA_DIRS" << "XDG_CONFIG_DIRS" << "PATH";
+    envAppend << "AddDirectoriesToXdgDataDirs" << "AddDirectoriesToXdgConfigDirs" << "AddDirectoriesToPath";
+
+    for (int i = 0; i < envVars.size(); ++i) {
+        newPath = g.readPathListEntry(envAppend.at(i));
+        path = QFile::decodeName(getenv(envVars.at(i).toLocal8Bit())).split(":");
+        for (int j = 0; j < path.size(); ++j) {
+            newPath.append(path.at(j));
+        }
+        ::setenv(envVars.at(i).toLocal8Bit(), newPath.join(":").toLocal8Bit(), 1);
+        kDebug() << envVars.at(i) << "=" << newPath.join(":") << endl;
     }
-    ::setenv("PATH", newPath.join(":").toLocal8Bit(), 1);
-    kDebug() << "PATH=" << newPath.join(":") << endl;
 
     /* temporary until we implement autolaunch for dbus  on Mac OS X */
     QString dbusSession;
@@ -88,4 +99,5 @@ void KApplication_early_init_mac()
             qp.waitForFinished(-1);
         }
     }
+    mac_initialized = true;
 }
