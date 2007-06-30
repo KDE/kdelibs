@@ -485,27 +485,27 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
       case CE_ProgressBar: // CE_ProgressBarGroove, CE_ProgressBarContents, CE_ProgressBarLabel
       if (const QStyleOptionProgressBar *pb
           = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
-         if (animationUpdate) {
-            painter->save();
-            painter->setClipRect(RECT.adjusted(dpi.$3,dpi.$4,-dpi.$3,-dpi.$5),
-                                 Qt::IntersectClip);
-         }
+//          if (animationUpdate) {
+//             painter->save();
+//             painter->setClipRect(RECT.adjusted(dpi.$3,dpi.$4,-dpi.$3,-dpi.$5),
+//                                  Qt::IntersectClip);
+//          }
          QStyleOptionProgressBarV2 subopt = *pb;
          // groove
-         subopt.rect = subElementRect(SE_ProgressBarGroove, pb, widget);
-         drawControl(CE_ProgressBarGroove, &subopt, painter, widget);
+//          subopt.rect = subElementRect(SE_ProgressBarGroove, pb, widget);
+         drawControl(CE_ProgressBarGroove, pb, painter, widget);
          // contents
          subopt.rect = subElementRect(SE_ProgressBarContents, pb, widget);
          drawControl(CE_ProgressBarContents, &subopt, painter, widget);
-#if 0
+#if 1
          // label?
-         if (false && pb->textVisible) {
+         if (pb->textVisible) {
             subopt.rect = subElementRect(SE_ProgressBarLabel, pb, widget);
             drawControl(CE_ProgressBarLabel, &subopt, painter, widget);
          }
 #endif
-         if (animationUpdate)
-            painter->restore();
+//          if (animationUpdate)
+//             painter->restore();
       }
       break;
    case CE_ProgressBarGroove: // The groove where the progress indicator is drawn in a QProgressBar
@@ -520,8 +520,8 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          const QPixmap &groove = Gradients::pix(PAL.color(config.role_progress[0]), size,
                                           o, config.glassProgress ? Gradients::Glass : Gradients::Sunken);
          fillWithMask(painter, RECT.adjusted(0,0,0,-dpi.$2), groove, &masks.button, Tile::Full);
-         if (!animationUpdate)
-            shadows.lineEdit[isEnabled].render(RECT, painter);
+//          if (!animationUpdate)
+//             shadows.lineEdit[isEnabled].render(RECT, painter);
       }
       break;
    case CE_ProgressBarContents: // The progress indicator of a QProgressBar
@@ -540,15 +540,15 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             size = r.width();
             o = Qt::Horizontal;
             r.setTop(r.bottom() -
-                  (int)(val*RECT.height()));
+                  (int)(val*RECT.height())+1);
          }
          else if (reverse) {
             r.setLeft(r.right() -
-                  (int)(val*RECT.width()));
+                  (int)(val*RECT.width())+1);
          }
          else {
             r.setRight(r.left() +
-                     (int)(val*RECT.width()));
+                     (int)(val*RECT.width())-1);
          }
          const bool unicolor = config.role_progress[0] == config.role_progress[1];
          const QColor c1 = (pb->progress == pb->maximum || unicolor ) ?
@@ -581,11 +581,11 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
       }
       break;
    case CE_ProgressBarLabel: // The text label of a QProgressBar
-      break;
+//       break;
       if (const QStyleOptionProgressBarV2 *progress =
           qstyleoption_cast<const QStyleOptionProgressBarV2*>(option)) {
-         if (!animationUpdate)
-            painter->save();
+//          if (!animationUpdate)
+         painter->save();
          QFont fnt = painter->font();
          fnt.setBold(true);
          painter->setFont(fnt);
@@ -594,7 +594,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          bool reverse = option->direction == Qt::RightToLeft;
          if (progress->invertedAppearance) reverse = !reverse;
          val = val / (progress->maximum - progress->minimum);
-         QMatrix m; QPalette::ColorRole role;
+         QMatrix m;
          if (progress->orientation == Qt::Vertical) {
             rect.setRect(RECT.x(), RECT.y(), RECT.height(), RECT.width());
             if (progress->bottomToTop) {
@@ -637,26 +637,14 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
 //             painter->setClipRegion(cr);
             painter->setClipRect(cr);
             painter->setMatrix(m);
-#if 1
-            role = hasFocus?QPalette::HighlightedText:QPalette::Window;
-#else
-            role = hasFocus?QPalette::HighlightedText:QPalette::WindowText;
-#endif
             drawItemText(painter, rect, Qt::AlignCenter | Qt::TextSingleLine, PAL, isEnabled,
-                         progress->text, role);
+                         progress->text, QPalette::WindowText); // config.role_progress[4]
             painter->resetMatrix();
             painter->setClipRegion(QRegion(RECT).subtract(cr));
          }
-         if (animationUpdate)
-            break;
          painter->setMatrix(m);
-#if 1
-         role = hasFocus?QPalette::Highlight:QPalette::WindowText;
-#else
-         role = hasFocus?QPalette::Highlight:QPalette::Window;
-#endif
          drawItemText(painter, rect, Qt::AlignCenter | Qt::TextSingleLine, PAL, isEnabled,
-                      progress->text, role);
+                      progress->text, QPalette::WindowText); // config.role_progress[3]
          painter->restore();
       }
       break;
@@ -743,7 +731,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             QRect r = RECT.adjusted(0, dpi.$2, 0, -dpi.$4);
             if (step) {
                step = 6-step;
-               int dx = step*r.width()/18, dy = step*r.height()/18;
+               int dx = step*r.width()/18/*, dy = step*r.height()/18*/;
                r.adjust(dx, 0, -dx, -0);
             }
             
@@ -1025,12 +1013,16 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
       }
       break;
 //    case CE_SizeGrip: // Window resize handle; see also QSizeGrip.
+//       painter->save();
+//       painter->setPen()
+//       painter->fillRect(RECT, Qt::red);
+//       break;
    case CE_Header: // A header
    if (const QStyleOptionHeader *header =
        qstyleoption_cast<const QStyleOptionHeader *>(option)) {
       // init
       const QRegion clipRegion = painter->clipRegion();
-      painter->setClipRect(option->rect);
+      painter->setClipRect(option->rect, Qt::IntersectClip);
       QStyleOptionHeader subopt = *header;
       const QHeaderView* hdv = qobject_cast<const QHeaderView*>(widget);
       // extend the sunken state on sorting headers

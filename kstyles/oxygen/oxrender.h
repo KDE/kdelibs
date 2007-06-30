@@ -60,7 +60,8 @@ namespace OXRender {
                       const OXPicture &fromThisPict,
                       const QRect &rect = QRect(),
                       const QRect &alphaRect = QRect());
-   
+#if 0
+// -- couple of XRender versions don't know + others are broken, so we'll leave it for the moment
    void setGradient(XLinearGradient &lg, QPoint p1, QPoint p2);
    void setGradient(XLinearGradient &lg,
                     XFixed x1, XFixed y1,
@@ -71,7 +72,7 @@ namespace OXRender {
    OXPicture gradient(const QPoint c1, int r1, const QPoint c2, int r2,
                       const ColorArray &colors,
                       const PointArray &stops = PointArray());
-   
+#endif
    void freePicture(OXPicture pict);
 }
 

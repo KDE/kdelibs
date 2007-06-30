@@ -172,7 +172,7 @@ bool VisualFrame::eventFilter ( QObject * o, QEvent * ev ) {
       o->removeEventFilter(this);
       return false;
    }
-   if (ev->type() == QEvent::Resize) {
+   if (ev->type() == QEvent::Resize || ev->type() == QEvent::Show) {
       QRect rect = _frame->frameRect();
       rect.translate(_frame->mapTo(parentWidget(), QPoint(0,0)));
       int offs = _off[0]+_off[1];
@@ -210,10 +210,8 @@ bool VisualFrame::eventFilter ( QObject * o, QEvent * ev ) {
          move(rect.right()+1-_thickness+_ext, rect.y()+_off[0]);
          break;
       }
-      return false;
-   }
-   if (ev->type() == QEvent::Show) {
-      show();
+      if (ev->type() == QEvent::Show)
+         show();
       return false;
    }
    if (ev->type() == QEvent::Hide) {

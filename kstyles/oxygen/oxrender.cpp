@@ -149,7 +149,7 @@ void OXRender::setColor(XRenderColor &xc, QColor qc) {
    xc.red = qc.red()*0x101; xc.green = qc.green()*0x101;
    xc.blue = qc.blue()*0x101; xc.alpha = qc.alpha()*0x101;
 }
-
+# if 0
 void OXRender::setGradient(XLinearGradient &lg, QPoint p1, QPoint p2) {
    lg.p1.x = p1.x(); lg.p1.y = p1.y();
    lg.p2.x = p2.x(); lg.p2.y = p2.y();
@@ -223,7 +223,7 @@ OXPicture OXRender::gradient(const QPoint c1, int r1, const QPoint c2, int r2,
    delete[] stps;
    return lgp;
 }
-
+#endif
 void OXRender::freePicture(OXPicture pict) {
    XRenderFreePicture (dpy, pict);
 }

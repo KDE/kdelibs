@@ -24,6 +24,7 @@
 #include <QResizeEvent>
 #include <QPaintEvent>
 #include <QProgressBar>
+#include <QAbstractScrollArea>
 
 #include "styleanimator.h"
 #ifndef QT_NO_XRENDER
@@ -234,6 +235,17 @@ static QPixmap dumpBackground(QWidget *target, const QRect &r, const QStyle *sty
    return pix;
 }
 
+static inline QAbstractScrollArea* scrollAncestor(QWidget *w, QWidget *root) {
+   QWidget *parent = w;
+   while (parent != root && (parent = parent->parentWidget())) {
+      if (qobject_cast<QAbstractScrollArea*>(parent)) break;
+   }
+   if (parent != root) return static_cast<QAbstractScrollArea*>(parent);
+   return 0L;
+}
+
+#include <QtDebug>
+
 // QPixmap::grabWidget(.) currently fails on the background offset,
 // so we use our own implementation
 //TODO: fix scrollareas (the scrollbars aren't painted, so check for availability and usage...)
@@ -251,7 +263,7 @@ static void grabWidget(QWidget * root, QPixmap *pix) {
 //       p.fillRect(root->rect(), bg);
 //    p.end();
    
-   QList <QWidget*> widgets = root->findChildren<QWidget*>();
+   QWidgetList widgets = root->findChildren<QWidget*>();
    
    // resizing (in case) -- NOTICE may be dropped for performance...?!
 //    if (root->testAttribute(Qt::WA_PendingResizeEvent) ||
@@ -272,7 +284,10 @@ static void grabWidget(QWidget * root, QPixmap *pix) {
    QCoreApplication::sendEvent(root, &e);
    QPainter::restoreRedirected(root);
    
-   QPainter p;
+   bool hasScrollAreas = false;
+   QAbstractScrollArea *scrollarea;
+   QWidget *scrollbar;
+   QPainter p; QRegion rgn;
    foreach (QWidget *w, widgets) {
       if (w->isVisibleTo(root)) {
          if (w->autoFillBackground()) {
@@ -287,7 +302,33 @@ static void grabWidget(QWidget * root, QPixmap *pix) {
             p.end();
          }
          QPainter::setRedirected( w, pix, -w->mapTo(root, zero) );
-         e = QPaintEvent(QRect(zero, w->size()));
+//          if (scrollarea = qobject_cast<QAbstractScrollArea*>(w))
+//             hasScrollAreas = true;
+//          if (hasScrollAreas && (scrollarea = scrollAncestor(w, root))) {
+//             QRect rect = scrollarea->frameRect();
+//             if (rect == scrollarea->rect()) {
+//                qDebug() << "equal rects";
+//                if (scrollarea->horizontalScrollBar()) {
+//                   scrollbar = (QWidget*)scrollarea->horizontalScrollBar();
+//                   if (scrollbar->isVisibleTo(scrollarea)) {
+//                      qDebug() << "...and a H scrollbar" << scrollbar->height();
+//                      rect.setHeight(rect.height() - scrollbar->height());
+//                   }
+//                }
+//                if (scrollarea->verticalScrollBar()) {
+//                   scrollbar = (QWidget*)scrollarea->verticalScrollBar();
+//                   if (scrollbar->isVisibleTo(scrollarea)) {
+//                      qDebug() << "...and a V scrollbar" << scrollbar->width();
+//                      rect.setHeight(rect.height() - scrollbar->width());
+//                   }
+//                }
+//             }
+//             rect.translate(w->mapFrom(scrollarea, rect.topLeft()));
+//             rgn = QRegion(rect).intersected(w->rect());
+//             e = QPaintEvent(rgn);
+//          }
+//          else
+            e = QPaintEvent(QRect(zero, w->size()));
          QCoreApplication::sendEvent(w, &e);
          QPainter::restoreRedirected(w);
       }
