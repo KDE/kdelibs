@@ -2303,7 +2303,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     {
         FontDef fontDef = style->htmlFont().fontDef;
         if (isInherit)
-            fontDef.smallCaps = parentStyle->htmlFont().fontDef.weight;
+            fontDef.smallCaps = parentStyle->htmlFont().fontDef.smallCaps;
         else if (isInitial)
             fontDef.smallCaps = false;
         else {
