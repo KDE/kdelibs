@@ -236,8 +236,8 @@ void KGzipFilter::writeFooter()
     if (!d->headerWritten) kDebug() << kBacktrace();
     Bytef *p = d->zStream.next_out;
     int i = d->zStream.avail_out;
-    //kDebug(7005) << "KGzipFilter::writeFooter writing CRC= " << QString::number( d->mode, 16 ) << endl;
-    put_long( d->mode );
+    //kDebug(7005) << "KGzipFilter::writeFooter writing CRC= " << QString::number( d->crc, 16 ) << endl;
+    put_long( d->crc );
     //kDebug(7005) << "KGzipFilter::writing writing totalin= " << d->zStream.total_in << endl;
     put_long( d->zStream.total_in );
     i -= p - d->zStream.next_out;
@@ -323,7 +323,7 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
     if ( d->headerWritten )
     {
         //kDebug(7005) << "Computing CRC for the next " << len - d->zStream.avail_in << " bytes" << endl;
-        d->crc = crc32(d->mode, p, len - d->zStream.avail_in);
+        d->crc = crc32(d->crc, p, len - d->zStream.avail_in);
     }
     if ( result == Z_STREAM_END && d->headerWritten )
     {
