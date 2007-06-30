@@ -45,9 +45,10 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
 
 if(WIN32)
   set_target_properties(solidhwtest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
+  set (LIBS ${KDEWIN32_LIBRARIES})
 endif(WIN32)
 
-target_link_libraries(solidhwtest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} solid_static)
+target_link_libraries(solidhwtest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} solid_static)
 
 ########### solidnettestdbusservice ###############
 
