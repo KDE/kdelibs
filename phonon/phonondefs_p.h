@@ -208,4 +208,6 @@ void PHONON_CLASSNAME::functionname(argtype1 x) \
     } \
 }
 
+Q_DECLARE_METATYPE(QList<int>)
+
 #endif // PHONONDEFS_P_H

@@ -19,6 +19,7 @@
 
 #include "phononnamespace.h"
 #include "phononnamespace_p.h"
+#include "phonondefs_p.h"
 
 #include "factory.h"
 #include "globalstatic_p.h"
@@ -49,7 +50,6 @@ namespace Phonon
     }
 }
 
-Q_DECLARE_METATYPE(QList<int>)
 static int registerPhononMetaTypes()
 {
     qRegisterMetaType<Phonon::State>();

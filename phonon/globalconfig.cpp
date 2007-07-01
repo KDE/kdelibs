@@ -28,8 +28,6 @@
 #include <QtCore/QSet>
 #include <QtCore/QVariant>
 
-Q_DECLARE_METATYPE(QList<int>)
-
 namespace Phonon
 {
 class QSettingsGroup
