@@ -23,7 +23,8 @@
 
 #include <knewstuff2/core/entry.h>
 
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
+#include <QtXml/QDomElement>
 #include <QtCore/QString>
 
 namespace KNS
