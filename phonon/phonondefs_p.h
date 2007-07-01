@@ -20,6 +20,8 @@
 #ifndef PHONONDEFS_P_H
 #define PHONONDEFS_P_H
 
+#include <QtCore/QMetaType>
+
 #define K_D(Class) Class##Private *const d = k_func()
 
 #define PHONON_CONCAT_HELPER_INTERNAL(x, y) x ## y
