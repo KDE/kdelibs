@@ -352,9 +352,9 @@ bool KConfigINIBackEnd::parseConfigFiles()
                              findAllResources("config", QLatin1String("kdeglobals"));
 
 #ifdef Q_WS_WIN
-        QString etc_kderc = QFile::decodeName( QByteArray(getenv("WINDIR")) + "\\kderc" );
+        QString etc_kderc = QFile::decodeName( QByteArray(getenv("WINDIR")) + "\\kde4rc" );
 #else
-        QString etc_kderc = QLatin1String("/etc/kderc");
+        QString etc_kderc = QLatin1String("/etc/kde4rc");
 #endif
 
         if (KStandardDirs::checkAccess(etc_kderc, R_OK))
