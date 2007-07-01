@@ -995,7 +995,6 @@ bool KEncodingDetector::analyze(const char *data, int len)
             if (tmp[0]=='m'&&tmp[1]=='e'&&tmp[2]=='t'&&tmp[3]=='a')
             {
                 // found a meta tag...
-                ptr += 3;
                 const char* end = ptr;
                 while(*end != '>' && *end != '\0' && end<pEnd)
                     end++;
