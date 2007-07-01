@@ -20,11 +20,13 @@
 
 #include <QEvent>
 #include <QPainter>
+#include <QBitmap>
 #include <QApplication>
 #include <QResizeEvent>
 #include <QPaintEvent>
 #include <QProgressBar>
 #include <QAbstractScrollArea>
+#include <QScrollBar>
 
 #include "styleanimator.h"
 #ifndef QT_NO_XRENDER
@@ -254,14 +256,6 @@ static void grabWidget(QWidget * root, QPixmap *pix) {
         return;
 
    QPoint zero(0,0);
-//    QPainter p(pix);
-//    const QBrush bg = root->palette().brush(root->backgroundRole());
-//    if (bg.style() == Qt::TexturePattern)
-//       p.drawTiledPixmap(root->rect(), bg.texture(),
-//                         root->mapTo(root->topLevelWidget(), zero));
-//    else
-//       p.fillRect(root->rect(), bg);
-//    p.end();
    
    QWidgetList widgets = root->findChildren<QWidget*>();
    
@@ -278,18 +272,22 @@ static void grabWidget(QWidget * root, QPixmap *pix) {
 //          QApplication::sendEvent(w, &e);
 //       }
 //    }
-   // painting
+   
+   // painting ------------
    QPainter::setRedirected( root, pix );
    QPaintEvent e(QRect(zero, root->size()));
    QCoreApplication::sendEvent(root, &e);
    QPainter::restoreRedirected(root);
    
    bool hasScrollAreas = false;
-   QAbstractScrollArea *scrollarea;
-   QWidget *scrollbar;
+   QAbstractScrollArea *scrollarea = 0;
    QPainter p; QRegion rgn;
+   QPixmap *saPix = 0L;
+   
    foreach (QWidget *w, widgets) {
       if (w->isVisibleTo(root)) {
+         
+         // solids
          if (w->autoFillBackground()) {
             const QBrush bg = w->palette().brush(w->backgroundRole());
             p.begin(pix);
@@ -301,38 +299,36 @@ static void grabWidget(QWidget * root, QPixmap *pix) {
                p.fillRect(wrect, bg);
             p.end();
          }
-         QPainter::setRedirected( w, pix, -w->mapTo(root, zero) );
-//          if (scrollarea = qobject_cast<QAbstractScrollArea*>(w))
-//             hasScrollAreas = true;
-//          if (hasScrollAreas && (scrollarea = scrollAncestor(w, root))) {
-//             QRect rect = scrollarea->frameRect();
-//             if (rect == scrollarea->rect()) {
-//                qDebug() << "equal rects";
-//                if (scrollarea->horizontalScrollBar()) {
-//                   scrollbar = (QWidget*)scrollarea->horizontalScrollBar();
-//                   if (scrollbar->isVisibleTo(scrollarea)) {
-//                      qDebug() << "...and a H scrollbar" << scrollbar->height();
-//                      rect.setHeight(rect.height() - scrollbar->height());
-//                   }
-//                }
-//                if (scrollarea->verticalScrollBar()) {
-//                   scrollbar = (QWidget*)scrollarea->verticalScrollBar();
-//                   if (scrollbar->isVisibleTo(scrollarea)) {
-//                      qDebug() << "...and a V scrollbar" << scrollbar->width();
-//                      rect.setHeight(rect.height() - scrollbar->width());
-//                   }
-//                }
-//             }
-//             rect.translate(w->mapFrom(scrollarea, rect.topLeft()));
-//             rgn = QRegion(rect).intersected(w->rect());
-//             e = QPaintEvent(rgn);
-//          }
-//          else
+         
+         // scrollarea workaround
+         if (scrollarea = qobject_cast<QAbstractScrollArea*>(w))
+            hasScrollAreas = true;
+         if (hasScrollAreas && !qobject_cast<QScrollBar*>(w) &&
+             (scrollarea = scrollAncestor(w, root))) {
+            QRect rect = scrollarea->frameRect();
+            rect.translate(scrollarea->mapTo(root, zero));
+            if (!saPix || saPix->size() != rect.size()) {
+               delete saPix; saPix = new QPixmap(rect.size());
+            }
+            p.begin(saPix); p.drawPixmap(zero, *pix, rect);
+            p.end();
+            const QPoint &pt = scrollarea->frameRect().topLeft();
+            QPainter::setRedirected( w, saPix, w->mapFrom(scrollarea, pt) );
             e = QPaintEvent(QRect(zero, w->size()));
-         QCoreApplication::sendEvent(w, &e);
-         QPainter::restoreRedirected(w);
+            QCoreApplication::sendEvent(w, &e);
+            QPainter::restoreRedirected(w);
+            p.begin(pix); p.drawPixmap(rect.topLeft(), *saPix); p.end();
+         }
+         // default painting redirection
+         else {
+            QPainter::setRedirected( w, pix, w->mapFrom(root, zero) );
+            e = QPaintEvent(QRect(zero, w->size()));
+            QCoreApplication::sendEvent(w, &e);
+            QPainter::restoreRedirected(w);
+         }
       }
    }
+   delete saPix;
 }
 
 // --- ProgressBars --------------------

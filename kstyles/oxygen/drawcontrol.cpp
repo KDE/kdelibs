@@ -1012,11 +1012,52 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                       pal, isEnabled, txt, role);
       }
       break;
-//    case CE_SizeGrip: // Window resize handle; see also QSizeGrip.
-//       painter->save();
-//       painter->setPen()
-//       painter->fillRect(RECT, Qt::red);
-//       break;
+   case CE_SizeGrip: {
+      painter->save();
+      int x1, y1, x2, y2;
+      RECT.getRect(&x1, &y1, &x2, &y2);
+      int dx = x2/4, dy = y2/4;
+
+      Qt::Corner corner;
+      if (const QStyleOptionSizeGrip *sgOpt =
+         qstyleoption_cast<const QStyleOptionSizeGrip *>(option))
+         corner = sgOpt->corner;
+      else if (option->direction == Qt::RightToLeft)
+         corner = Qt::BottomLeftCorner;
+      else
+         corner = Qt::BottomRightCorner;
+      
+      x2 += x1; y2 += y1; // turn w/h into coords
+      switch (corner) {
+      default:
+      case Qt::BottomRightCorner:
+         break;
+      case Qt::BottomLeftCorner: {
+         int help = y2; y2 = y1; y1 = help; // swap y1/y2
+         dx = -dx;
+         break;
+      }
+      case Qt::TopRightCorner: {
+         int help = y2; y2 = y1; y1 = help; // swap y1/y2
+         dy = -dy;
+         break;
+      }
+      case Qt::TopLeftCorner: {
+         int help = x2; x2 = x1; x1 = help; // swap x1/x2
+         help = y2; y2 = y1; y1 = help; // swap y1/y2
+         dx = -dx; dy = -dy; // invert both directions
+      }
+      }
+      
+      for (int i = 1; i < 5; ++i) {
+         painter->setPen(QPen(midColor(COLOR(Window), COLOR(WindowText), 14, 11-2*i), dpi.$1));
+         painter->drawLine(x1, y2, x2, y1);
+         x1 += dx; y1 += dy;
+      }
+      
+      painter->restore();
+      break;
+   }
    case CE_Header: // A header
    if (const QStyleOptionHeader *header =
        qstyleoption_cast<const QStyleOptionHeader *>(option)) {
