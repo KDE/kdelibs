@@ -91,16 +91,16 @@ class KDECORE_EXPORT KCmdLineOptions
      * @param defaultValue default option value, when the value is not specifed
      *                     on the command line; can be left off
      */
-    void add (const QByteArray &name,
-              const KLocalizedString &description = KLocalizedString(),
-              const QByteArray &defaultValue = QByteArray());
+    KCmdLineOptions &add (const QByteArray &name,
+                          const KLocalizedString &description = KLocalizedString(),
+                          const QByteArray &defaultValue = QByteArray());
 
     /**
      * Add all options from another KCmdLineOptions object.
      *
      * @param options options to add
      */
-    void add (const KCmdLineOptions &options);
+    KCmdLineOptions &add (const KCmdLineOptions &options);
 
     private:
 

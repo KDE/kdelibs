@@ -137,20 +137,22 @@ KCmdLineOptions& KCmdLineOptions::operator= (const KCmdLineOptions &options)
     return *this;
 }
 
-void KCmdLineOptions::add (const QByteArray &name,
-                           const KLocalizedString &description,
-                           const QByteArray &defaultValue)
+KCmdLineOptions &KCmdLineOptions::add (const QByteArray &name,
+                                       const KLocalizedString &description,
+                                       const QByteArray &defaultValue)
 {
     d->names.append(QString::fromUtf8(name));
     d->descriptions.append(description);
     d->defaults.append(QString::fromUtf8(defaultValue));
+    return *this;
 }
 
-void KCmdLineOptions::add (const KCmdLineOptions &other)
+KCmdLineOptions &KCmdLineOptions::add (const KCmdLineOptions &other)
 {
     d->names += other.d->names;
     d->descriptions += other.d->descriptions;
     d->defaults += other.d->defaults;
+    return *this;
 }
 
 //
