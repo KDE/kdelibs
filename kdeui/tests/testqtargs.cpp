@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   KCmdLineArgs *qtargs = KCmdLineArgs::parsedArgs("qt");
   for (int i = 0; i < qtargs->count(); i++)
   {
-    qDebug("qt arg[%d] = %s", i, qtargs->arg(i).toLocal8Bit());
+    qDebug("qt arg[%d] = %s", i, qtargs->arg(i).toLocal8Bit().data());
   }
 
   KApplication app;
@@ -78,17 +78,17 @@ int main(int argc, char *argv[])
   // An arg set by Qt
   if(qtargs->isSet("background"))
   {
-    qDebug("arg bg = %s", qtargs->getOption("background").toLocal8Bit());
+    qDebug("arg bg = %s", qtargs->getOption("background").toLocal8Bit().data());
   }
   // An arg set by KDE
   if(kdeargs->isSet("caption"))
   {
-    qDebug("arg caption = %s", kdeargs->getOption("caption").toLocal8Bit());
+    qDebug("arg caption = %s", kdeargs->getOption("caption").toLocal8Bit().data());
   }
   // An arg set by us.
   if(args->isSet("hello"))
   {
-    qDebug("arg hello = %s", args->getOption("hello").toLocal8Bit());
+    qDebug("arg hello = %s", args->getOption("hello").toLocal8Bit().data());
   }
   args->clear();
 
