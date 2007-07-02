@@ -164,6 +164,7 @@ if(NOT WIN32)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
     kfile/kfilesharedialog.cpp
+    kfile/kfsprocess.cpp
   )
 endif(NOT WIN32)
 

@@ -18,14 +18,13 @@
 */
 
 #include "kfilesharedialog.h"
+#include "kfsprocess.h"
 #include <kvbox.h>
 #include <QtGui/QLabel>
 #include <QtCore/QDir>
 #include <QtGui/QRadioButton>
 #include <QtGui/QButtonGroup>
 #include <QtGui/QLayout>
-#include <k3process.h>
-#include <k3procio.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kstandarddirs.h>
@@ -44,7 +43,7 @@ class KFileSharePropsPlugin::Private
 {
 public:
     KVBox *m_vBox;
-    K3Process *m_configProc;
+    KfsProcess *m_configProc;
     bool m_bAllShared;
     bool m_bAllUnshared;
 };
@@ -206,15 +205,15 @@ void KFileSharePropsPlugin::slotConfigureFileSharing()
 {
     if (d->m_configProc) return;
 
-    d->m_configProc = new K3Process(this);
+    d->m_configProc = new KfsProcess(this);
     (*d->m_configProc) << KStandardDirs::findExe("kdesu") << "kcmshell" << "fileshare";
-    if (!d->m_configProc->start( K3Process::NotifyOnExit ))
+    if (!d->m_configProc->start())
     {
        delete d->m_configProc;
        d->m_configProc = 0;
        return;
     }
-    connect(d->m_configProc, SIGNAL(processExited(K3Process *)),
+    connect(d->m_configProc, SIGNAL(processExited()),
             this, SLOT(slotConfigureFileSharingDone()));
     m_pbConfig->setEnabled(false);
 }
