@@ -57,6 +57,9 @@
 	* - <a href="solid/html/index.html"><b>Solid</b></a>
         *   (<a href="solid/html/classes.html">classes</a>)\n
 	*   <i>KDE Hardware Discovery and Management classes.</i>
+	* - <a href="nepomuk/html/index.html"><b>Nepomuk</b></a>
+        *   (<a href="nepomuk/html/classes.html">classes</a>)\n
+	*   <i>The KDE Meta Data library.</i>
 
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
