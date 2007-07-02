@@ -233,7 +233,7 @@ void KComboBoxTest::quitApp()
 
 int main ( int argc, char **argv)
 {
-  KAboutData about("kcomboboxtest", "kcomboboxtest", "version");
+  KAboutData about("kcomboboxtest", 0, ki18n("kcomboboxtest"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication a;

@@ -135,7 +135,7 @@ KLedTest::timeout()
 
 int main( int argc, char **argv )
 {
-    KAboutData about("KLedTest", "KLedTest", "version");
+    KAboutData about("KLedTest", 0, ki18n("KLedTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication a;

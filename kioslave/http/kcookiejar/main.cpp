@@ -27,25 +27,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kapplication.h>
 #include "kcookieserverinterface.h"
 
-static const char description[] =
-	I18N_NOOP("HTTP Cookie Daemon");
-
-static const char version[] = "1.0";
-
-static const KCmdLineOptions options[] =
-{
- { "shutdown", I18N_NOOP("Shut down cookie jar"), 0 },
- { "remove <domain>", I18N_NOOP("Remove cookies for domain"), 0 },
- { "remove-all", I18N_NOOP("Remove all cookies"), 0 },
- { "reload-config", I18N_NOOP("Reload configuration file"), 0 },
- KCmdLineLastOption
-};
-
 int main(int argc, char *argv[])
 {
-   KLocale::setMainCatalog("kdelibs");
-   KCmdLineArgs::init(argc, argv, "kcookiejar", I18N_NOOP("HTTP cookie daemon"),
-		      description, version);
+   KLocalizedString description = ki18n("HTTP Cookie Daemon");
+
+   const char version[] = "1.0";
+
+   KCmdLineArgs::init(argc, argv, "kcookiejar", "kdelibs", ki18n("HTTP cookie daemon"), version, description);
+
+   KCmdLineOptions options;
+   options.add("shutdown", ki18n("Shut down cookie jar"));
+   options.add("remove <domain>", ki18n("Remove cookies for domain"));
+   options.add("remove-all", ki18n("Remove all cookies"));
+   options.add("reload-config", ki18n("Reload configuration file"));
 
    KCmdLineArgs::addCmdLineOptions( options );
 

@@ -566,28 +566,6 @@ ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj
 
 // -------------------------------------------------------------------------
 
-static KCmdLineOptions options[] =
-{
-    { "b", 0, 0 },
-    { "base <base_dir>", "Directory containing tests, basedir and output directories.", 0},
-    { "d", 0, 0 },
-    { "debug", "Do not suppress debug output", 0},
-    { "g", 0, 0 } ,
-    { "genoutput", "Regenerate baseline (instead of checking)", 0 } ,
-    { "s", 0, 0 } ,
-    { "noshow", "Do not show the window while running tests", 0 } ,
-    { "t", 0, 0 } ,
-    { "test <filename>", "Only run a single test. Multiple options allowed.", 0 } ,
-    { "js",  "Only run .js tests", 0 },
-    { "html", "Only run .html tests", 0},
-    { "noxvfb", "Do not use Xvfb", 0},
-    { "o", 0, 0 },
-    { "output <directory>", "Put output in <directory> instead of <base_dir>/output", 0 } ,
-    { "+[base_dir]", "Directory containing tests,basedir and output directories. Only regarded if -b is not specified.", 0 } ,
-    { "+[testcases]", "Relative path to testcase, or directory of testcases to be run (equivalent to -t).", 0 } ,
-    KCmdLineLastOption
-};
-
 int main(int argc, char *argv[])
 {
     // forget about any settings
@@ -613,13 +591,32 @@ int main(int argc, char *argv[])
     // workaround various Qt crashes by always enforcing a TrueColor visual
     QApplication::setColorSpec( QApplication::ManyColor );
 
-    KCmdLineArgs::init(argc, argv, "testregression", "TestRegression",
-                       "Regression tester for khtml", "1.0");
+    KCmdLineOptions options;
+    options.add("b");
+    options.add("base <base_dir>", ki18n("Directory containing tests, basedir and output directories."));
+    options.add("d");
+    options.add("debug", ki18n("Do not suppress debug output"));
+    options.add("g");
+    options.add("genoutput", ki18n("Regenerate baseline (instead of checking)"));
+    options.add("s");
+    options.add("noshow", ki18n("Do not show the window while running tests"));
+    options.add("t");
+    options.add("test <filename>", ki18n("Only run a single test. Multiple options allowed."));
+    options.add("js", ki18n("Only run .js tests"));
+    options.add("html", ki18n("Only run .html tests"));
+    options.add("noxvfb", ki18n("Do not use Xvfb"));
+    options.add("o");
+    options.add("output <directory>", ki18n("Put output in <directory> instead of <base_dir>/output"));
+    options.add("+[base_dir]", ki18n("Directory containing tests,basedir and output directories. Only regarded if -b is not specified."));
+    options.add("+[testcases]", ki18n("Relative path to testcase, or directory of testcases to be run (equivalent to -t)."));
+
+    KCmdLineArgs::init(argc, argv, "testregression", 0, ki18n("TestRegression"),
+                       "1.0", ki18n("Regression tester for khtml"));
     KCmdLineArgs::addCmdLineOptions(options);
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
 
-    QByteArray baseDir = args->getOption("base");
+    QString baseDir = args->getOption("base");
 
     if ( args->count() < 1 && baseDir.isEmpty() ) {
 	KCmdLineArgs::usage();
@@ -777,12 +774,12 @@ int main(int argc, char *argv[])
 		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
 
     bool result = false;
-    QByteArrayList tests = args->getOptionList("test");
+    QStringList tests = args->getOptionList("test");
     // merge testcases specified on command line
     for (; testcase_index < args->count(); testcase_index++)
         tests << args->arg(testcase_index);
     if (tests.count() > 0)
-        foreach (QByteArray test, tests) {
+        foreach (QString test, tests) {
 	    result = regressionTest->runTests(test,true);
             if (!result) break;
         }

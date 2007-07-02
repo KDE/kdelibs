@@ -32,26 +32,23 @@
 
 #include "runner.h"
 
-static const char description[] =
-    I18N_NOOP("A command-line application that can be used to run KUnitTest modules.");
-
-static const char version[] = "0.1";
-
-static KCmdLineOptions options[] =
-{
-    {"query [regexp]", I18N_NOOP("Only run modules whose filenames match the regexp."), "^kunittest_.*\\.la$"},
-    {"folder [folder]", I18N_NOOP("Only run tests modules which are found in the folder. Use the query option to select modules."), "."},
-    { "enable-dbgcap", I18N_NOOP("Disables debug capturing. You typically use this option when you use the GUI."), 0},
-    KCmdLineLastOption
-};
-
 
 int main( int argc, char **argv )
 {    
     KComponentData componentData("modrunner");
 
-    KAboutData about("KUnitTest Module Runner", I18N_NOOP("KUnitTest ModRunner"), version, description,
-                     KAboutData::License_BSD, "(C) 2005 Jeroen Wijnhout", 0, 0,
+    KLocalizedString description = 
+        ki18n("A command-line application that can be used to run KUnitTest modules.");
+
+    const char version[] = "0.1";
+
+    KCmdLineOptions options;
+    options.add("query [regexp]", ki18n("Only run modules whose filenames match the regexp."), "^kunittest_.*\\.la$");
+    options.add("folder [folder]", ki18n("Only run tests modules which are found in the folder. Use the query option to select modules."), ".");
+    options.add("enable-dbgcap", ki18n("Disables debug capturing. You typically use this option when you use the GUI."));
+
+    KAboutData about("KUnitTest Module Runner", 0, ki18n("KUnitTest ModRunner"), version, description,
+                     KAboutData::License_BSD, ki18n("(C) 2005 Jeroen Wijnhout"), KLocalizedString(), 0,
                      "Jeroen.Wijnhout@kdemail.net");
 
     KCmdLineArgs::init(argc, argv, &about);

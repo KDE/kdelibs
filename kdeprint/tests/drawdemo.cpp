@@ -248,7 +248,7 @@ void DrawView::resizeEvent( QResizeEvent * )
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "drawdemo",0,0,0,0 );
+    KCmdLineArgs::init( argc, argv, "drawdemo", 0, ki18n("drawdemo"), 0);
     KApplication app;
     DrawView   draw;
     draw.show();

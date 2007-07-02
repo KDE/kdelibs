@@ -24,22 +24,16 @@
 #include <klocale.h>
 #include <kglobal.h>
 
-static KCmdLineOptions options[] =
-{
-	{ "kdeconfig", I18N_NOOP("Configure KDE Print"), 0 },
-	{ "serverconfig", I18N_NOOP("Configure print server"), 0 },
-	KCmdLineLastOption
-};
-
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
-	KCmdLineArgs::init(argc, argv, "kaddprinterwizard",I18N_NOOP("KAddPrinterWizard"),
-			I18N_NOOP("Start the add printer wizard"),
-			"0.1");
+	KCmdLineOptions options;
+	options.add("kdeconfig", ki18n("Configure KDE Print"));
+	options.add("serverconfig", ki18n("Configure print server"));
+
+	KCmdLineArgs::init(argc, argv, "kaddprinterwizard", "kdelibs", ki18n("KAddPrinterWizard"),
+			"0.1", ki18n("Start the add printer wizard"));
 	KCmdLineArgs::addCmdLineOptions(options);
 	
-	KGlobal::locale()->setMainCatalog("kdelibs");
-
 	KApplication app;
 	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();
 	bool	doConfig = args->isSet("kdeconfig");

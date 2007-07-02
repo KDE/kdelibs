@@ -34,10 +34,10 @@ PhononKcm::PhononKcm(QWidget *parent, const QStringList &args)
     : KCModule(PhononKcmFactory::componentData(), parent, args)
 {
     KAboutData *about = new KAboutData(
-            "kcm_phonon", I18N_NOOP("Phonon Configuration Module"),
-            KDE_VERSION_STRING, 0, KAboutData::License_GPL,
-            I18N_NOOP("Copyright 2006 Matthias Kretz"));
-    about->addAuthor("Matthias Kretz", 0, "kretz@kde.org");
+            "kcm_phonon", 0, ki18n("Phonon Configuration Module"),
+            KDE_VERSION_STRING, KLocalizedString(), KAboutData::License_GPL,
+            ki18n("Copyright 2006 Matthias Kretz"));
+    about->addAuthor(ki18n("Matthias Kretz"), KLocalizedString(), "kretz@kde.org");
     setAboutData(about);
 
     setLayout(new QHBoxLayout);

@@ -89,8 +89,10 @@ public:
      * Constructor.
      *
      * @param componentName the name of the component.
+     * @param catalogName the name of the translation catalog;
+     *                    if left empty @p componentName is used
      */
-    explicit KComponentData(const QByteArray &componentName);
+    explicit KComponentData(const QByteArray &componentName, const QByteArray &catalogName = QByteArray());
 
     /**
      * Constructor.
@@ -147,7 +149,14 @@ public:
      *
      * @return The component name.
      */
-    QByteArray componentName() const;
+    QString componentName() const;
+
+    /**
+     * Returns the name of the translation catalog.
+     *
+     * @return The catalog name.
+     */
+    QString catalogName() const;
 
 protected:
     friend class KApplication;

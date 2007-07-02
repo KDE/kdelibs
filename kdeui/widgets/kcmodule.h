@@ -69,10 +69,10 @@ class KComponentData;
  *   : KCModule( YourKCModuleFactory::componentData(), parent )
  * {
  *   KAboutData *about = new KAboutData(
- *     <kcm name>, I18N_NOOP( "..." ),
- *     KDE_VERSION_STRING, 0, KAboutData::License_GPL,
- *     I18N_NOOP( "Copyright 2006 ..." ) );
- *   about->addAuthor( ... );
+ *     <kcm name>, 0, ki18n( "..." ),
+ *     KDE_VERSION_STRING, KLocalizedString(), KAboutData::License_GPL,
+ *     ki18n( "Copyright 2006 ..." ) );
+ *   about->addAuthor( ki18n(...) );
  *   setAboutData( about );
  *   .
  *   .

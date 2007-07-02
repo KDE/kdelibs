@@ -31,19 +31,11 @@
 
 #include "../kcookiejar.cpp"
 
-static const char *description = "KCookiejar regression test";
-
 static KCookieJar *jar;
 static QString *lastYear;
 static QString *nextYear;
 static KConfig *config = 0;
 
-
-static KCmdLineOptions options[] =
-{
-    { "+testfile", "Regression test to run", 0},
-    KCmdLineLastOption
-};
 
 static void FAIL(const QString &msg)
 {
@@ -237,8 +229,13 @@ int main(int argc, char *argv[])
    lastYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(-1).toString("%:a, %e-%:b-%Y")));
    nextYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(1).toString("%:a, %e-%:b-%Y")));
 
-   KAboutData about("kcookietest", "kcookietest", "1.0", description, KAboutData::License_GPL, "(C) 2004 Waldo Bastian");
+   KLocalizedString description = ki18n("KCookiejar regression test");
+
+   KAboutData about("kcookietest", 0, ki18n("kcookietest"), "1.0", description, KAboutData::License_GPL, ki18n("(C) 2004 Waldo Bastian"));
    KCmdLineArgs::init( argc, argv, &about);
+
+   KCmdLineOptions options;
+   options.add("+testfile", ki18n("Regression test to run"));
 
    KCmdLineArgs::addCmdLineOptions( options );
 

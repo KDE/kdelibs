@@ -58,13 +58,13 @@ namespace Dispatcher
     /**
      * @return the KConfig object that belongs to the componentName
      */
-    KUTILS_EXPORT KSharedConfig::Ptr configForComponentName(const QByteArray &componentName);
+    KUTILS_EXPORT KSharedConfig::Ptr configForComponentName(const QString &componentName);
 
     /**
      * @return a list of all the componentData names that are currently
      * registered
      */
-    KUTILS_EXPORT QList<QByteArray> componentNames();
+    KUTILS_EXPORT QList<QString> componentNames();
 
     /**
      * Call this function when the configuration belonging to the associated
@@ -72,7 +72,7 @@ namespace Dispatcher
      *
      * @param componentName The value of X-KDE-ParentComponents.
      */
-    KUTILS_EXPORT void reparseConfiguration(const QByteArray &componentName);
+    KUTILS_EXPORT void reparseConfiguration(const QString &componentName);
 
     /**
      * When this function is called the KConfig objects of all the registered

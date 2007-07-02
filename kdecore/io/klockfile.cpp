@@ -147,7 +147,7 @@ static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &
   hostname[0] = 0;
   gethostname(hostname, 255);
   hostname[255] = 0;
-  QByteArray componentName = componentData.componentName();
+  QString componentName = componentData.componentName();
 
   QTextStream stream(&uniqueFile);
   stream << QString::number(getpid()) << endl

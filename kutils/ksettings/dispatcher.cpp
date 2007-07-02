@@ -39,7 +39,7 @@ void registerComponent(const KComponentData &componentData, QObject *recv, const
     Q_ASSERT(componentData.isValid());
     // keep the KComponentData around and call
     // componentData.config()->reparseConfiguration when the app should reparse
-    QByteArray componentName = componentData.componentName();
+    QString componentName = componentData.componentName();
     kDebug(701) << k_funcinfo << componentName << endl;
     d->m_componentName[recv] = componentName;
     if (!d->m_componentInfo.contains(componentName)) {
@@ -51,7 +51,7 @@ void registerComponent(const KComponentData &componentData, QObject *recv, const
     QObject::connect(recv, SIGNAL(destroyed(QObject *)), d, SLOT(unregisterComponent(QObject *)));
 }
 
-KSharedConfig::Ptr configForComponentName(const QByteArray &componentName)
+KSharedConfig::Ptr configForComponentName(const QString &componentName)
 {
     kDebug(701) << k_funcinfo << endl;
     if (d->m_componentInfo.contains(componentName)) {
@@ -66,11 +66,11 @@ KSharedConfig::Ptr configForComponentName(const QByteArray &componentName)
     return d->m_componentInfo.constBegin()->componentData.config();
 }
 
-QList<QByteArray> componentNames()
+QList<QString> componentNames()
 {
     kDebug(701) << k_funcinfo << endl;
-    QList<QByteArray> names;
-    for (QMap<QByteArray, ComponentInfo>::ConstIterator it = d->m_componentInfo.begin(); it != d->m_componentInfo.end(); ++it) {
+    QList<QString> names;
+    for (QMap<QString, ComponentInfo>::ConstIterator it = d->m_componentInfo.begin(); it != d->m_componentInfo.end(); ++it) {
         if ((*it).count > 0) {
             names.append(it.key());
         }
@@ -78,7 +78,7 @@ QList<QByteArray> componentNames()
     return names;
 }
 
-void reparseConfiguration(const QByteArray & componentName)
+void reparseConfiguration(const QString & componentName)
 {
     kDebug(701) << k_funcinfo << componentName << endl;
     // check if the componentName is valid:
@@ -96,7 +96,7 @@ void reparseConfiguration(const QByteArray & componentName)
 
 void syncConfiguration()
 {
-    for (QMap<QByteArray, ComponentInfo>::ConstIterator it = d->m_componentInfo.begin(); it != d->m_componentInfo.end(); ++it) {
+    for (QMap<QString, ComponentInfo>::ConstIterator it = d->m_componentInfo.begin(); it != d->m_componentInfo.end(); ++it) {
         KSharedConfig::Ptr config = (*it).componentData.config();
         config->sync();
     }
@@ -105,7 +105,7 @@ void syncConfiguration()
 void DispatcherPrivate::unregisterComponent(QObject *obj)
 {
     kDebug(701) << k_funcinfo << endl;
-    QByteArray name = m_componentName[obj];
+    QString name = m_componentName[obj];
     m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
     --(m_componentInfo[name].count);
     if (m_componentInfo[name].count == 0) {

@@ -136,7 +136,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
         if ( KGlobal::mainComponent().aboutData() )
             appName = KGlobal::mainComponent().aboutData()->programName();
         if ( appName.isEmpty() )
-            appName = QLatin1String( KGlobal::mainComponent().componentName() );
+            appName = KGlobal::mainComponent().componentName();
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)",  appName ), box );
         m_appLocal->setChecked( appLocal );
         m_appLocal->setWhatsThis(i18n("<qt>Select this setting if you want this "

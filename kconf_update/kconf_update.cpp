@@ -38,14 +38,6 @@
 #include <ktemporaryfile.h>
 #include <kurl.h>
 
-static KCmdLineOptions options[] =
-{
-        { "debug", I18N_NOOP("Keep output results from scripts"), 0 },
-	{ "check <update-file>", I18N_NOOP("Check whether config file itself requires updating"), 0 },
-	{ "+[file]", I18N_NOOP("File to read update instructions from"), 0 },
-        KCmdLineLastOption
-};
-
 class KonfUpdate
 {
 public:
@@ -126,11 +118,11 @@ KonfUpdate::KonfUpdate()
    if (args->isSet("check"))
    {
       m_bUseConfigInfo = true;
-      QString file = KStandardDirs::locate("data", "kconf_update/"+QFile::decodeName(args->getOption("check")));
+      QString file = KStandardDirs::locate("data", "kconf_update/"+args->getOption("check"));
       if (file.isEmpty())
       {
-         qWarning("File '%s' not found.", args->getOption("check").data());
-         log() << "File '" << QFile::decodeName(args->getOption("check")) << "' passed on command line not found" << endl;
+         qWarning("File '%s' not found.", args->getOption("check").toLocal8Bit().data());
+         log() << "File '" << args->getOption("check") << "' passed on command line not found" << endl;
          return;
       }
       updateFiles.append(file);
@@ -141,7 +133,7 @@ KonfUpdate::KonfUpdate()
       {
          KUrl url = args->url(i);
          if (!url.isLocalFile())
-            KCmdLineArgs::usage(i18n("Only local files are supported."));
+            KCmdLineArgs::usageError(i18n("Only local files are supported."));
          updateFiles.append(url.path());
       }
    }
@@ -957,13 +949,18 @@ void KonfUpdate::resetOptions()
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
-   KAboutData aboutData("kconf_update", I18N_NOOP("KConf Update"),
-                        "1.0.2",
-                        I18N_NOOP("KDE Tool for updating user configuration files"),
-                        KAboutData::License_GPL,
-                        "(c) 2001, Waldo Bastian");
+   KCmdLineOptions options;
+   options.add("debug", ki18n("Keep output results from scripts"));
+   options.add("check <update-file>", ki18n("Check whether config file itself requires updating"));
+   options.add("+[file]", ki18n("File to read update instructions from"));
 
-   aboutData.addAuthor("Waldo Bastian", 0, "bastian@kde.org");
+   KAboutData aboutData("kconf_update", 0, ki18n("KConf Update"),
+                        "1.0.2",
+                        ki18n("KDE Tool for updating user configuration files"),
+                        KAboutData::License_GPL,
+                        ki18n("(c) 2001, Waldo Bastian"));
+
+   aboutData.addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
 
    KCmdLineArgs::init(argc, argv, &aboutData);
    KCmdLineArgs::addCmdLineOptions(options);

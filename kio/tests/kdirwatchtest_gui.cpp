@@ -35,9 +35,10 @@
 
 int main(int argc, char **argv)
 {
-    KAboutData about("KDirWatchTest_GUI", "KDirWatchTest_GUI", "0.1", "KDirWatchTest_GUI",
-        KAboutData::License_LGPL, "(C) 2006 Dirk Stoecker", 0, 0, "kde@dstoecker.de");
-    about.addAuthor( "Dirk Stoecker", 0, "kde@dstoecker.de" );
+    KAboutData about("KDirWatchTest_GUI", 0, ki18n("KDirWatchTest_GUI"), "0.1",
+        ki18n("KDirWatchTest_GUI"), KAboutData::License_LGPL,
+        ki18n("(C) 2006 Dirk Stoecker"), KLocalizedString(), 0, "kde@dstoecker.de");
+    about.addAuthor( ki18n("Dirk Stoecker"), KLocalizedString(), "kde@dstoecker.de" );
     KCmdLineArgs::init(argc, argv, &about);
     KApplication app;
 

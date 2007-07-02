@@ -16,17 +16,13 @@
 
 #include "kdirwatchtest.h"
 
-static const KCmdLineOptions options[] =
-{
-  {"+[directory ...]", "Directory(ies) to watch", 0},
-  KCmdLineLastOption
-};
-
-
 int main (int argc, char **argv)
 {
-  KCmdLineArgs::init(argc, argv, "kdirwatchtest", "KDirWatchTest",
-		     "Test for KDirWatch", "1.0");
+  KCmdLineOptions options;
+  options.add("+[directory ...]", ki18n("Directory(ies) to watch"));
+
+  KCmdLineArgs::init(argc, argv, "kdirwatchtest", 0, ki18n("KDirWatchTest"),
+		     "1.0", ki18n("Test for KDirWatch"));
   KCmdLineArgs::addCmdLineOptions( options );
   KCmdLineArgs::addStdCmdLineOptions();
 
@@ -45,7 +41,7 @@ int main (int argc, char **argv)
   if (args->count() >0) {
     for(int i = 0; i < args->count(); i++) {
       kDebug() << "Watching: " << args->arg(i) << endl;
-      dirwatch2->addDir( QFile::decodeName( args->arg(i)));
+      dirwatch2->addDir( args->arg(i));
     }
   }
 

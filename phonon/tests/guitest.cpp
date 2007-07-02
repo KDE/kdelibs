@@ -933,10 +933,10 @@ void MainWidget::madeConnection2(const QPoint &a, const QPoint &b)
 
 int main(int argc, char **argv)
 {
-    KAboutData about("phonontest", "KDE Multimedia Test",
-            "0.2", "Testprogram",
-            KAboutData::License_LGPL, 0);
-    about.addAuthor("Matthias Kretz", 0, "kretz@kde.org");
+    KAboutData about("phonontest", 0, ki18n("KDE Multimedia Test"),
+            "0.2", ki18n("Testprogram"),
+            KAboutData::License_LGPL);
+    about.addAuthor(ki18n("Matthias Kretz"), KLocalizedString(), "kretz@kde.org");
     KCmdLineArgs::init(argc, argv, &about);
     KApplication app;
     MainWidget w;

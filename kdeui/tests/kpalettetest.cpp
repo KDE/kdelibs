@@ -14,7 +14,7 @@
 
 int main( int argc, char **argv )
 {
-    KAboutData about("KPaletteTest", "KPaletteTest", "version");
+    KAboutData about("KPaletteTest", 0, ki18n("KPaletteTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
     KApplication a;
 

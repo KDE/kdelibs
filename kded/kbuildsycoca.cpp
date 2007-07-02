@@ -696,33 +696,30 @@ QStringList KBuildSycoca::existingResourceDirs()
    return *dirs;
 }
 
-static KCmdLineOptions options[] = {
-   { "nosignal", I18N_NOOP("Do not signal applications to update"), 0 },
-   { "noincremental", I18N_NOOP("Disable incremental update, re-read everything"), 0 },
-   { "checkstamps", I18N_NOOP("Check file timestamps"), 0 },
-   { "nocheckfiles", I18N_NOOP("Disable checking files (dangerous)"), 0 },
-   { "global", I18N_NOOP("Create global database"), 0 },
-   { "menutest", I18N_NOOP("Perform menu generation test run only"), 0 },
-   { "track <menu-id>", I18N_NOOP("Track menu id for debug purposes"), 0 },
-#ifdef KBUILDSYCOCA_GUI
-   { "silent", I18N_NOOP("Silent - work without windows and stderr"), 0 },
-   { "showprogress", I18N_NOOP("Show progress information (even if 'silent' mode is on)"), 0 },
-#endif
-   KCmdLineLastOption
-};
-
 static const char appFullName[] = "org.kde.kbuildsycoca";
 static const char appName[] = "kbuildsycoca4";
 static const char appVersion[] = "1.1";
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
-   KLocale::setMainCatalog("kdelibs");
-   KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
-                I18N_NOOP("Rebuilds the system configuration cache."),
-                KAboutData::License_GPL, "(c) 1999-2002 KDE Developers");
-   d.addAuthor("David Faure", I18N_NOOP("Author"), "faure@kde.org");
-   d.addAuthor("Waldo Bastian", I18N_NOOP("Author"), "bastian@kde.org");
+   KAboutData d(appName, "kdelibs", ki18n("KBuildSycoca"), appVersion,
+                ki18n("Rebuilds the system configuration cache."),
+                KAboutData::License_GPL, ki18n("(c) 1999-2002 KDE Developers"));
+   d.addAuthor(ki18n("David Faure"), ki18n("Author"), "faure@kde.org");
+   d.addAuthor(ki18n("Waldo Bastian"), ki18n("Author"), "bastian@kde.org");
+
+   KCmdLineOptions options;
+   options.add("nosignal", ki18n("Do not signal applications to update"));
+   options.add("noincremental", ki18n("Disable incremental update, re-read everything"));
+   options.add("checkstamps", ki18n("Check file timestamps"));
+   options.add("nocheckfiles", ki18n("Disable checking files (dangerous)"));
+   options.add("global", ki18n("Create global database"));
+   options.add("menutest", ki18n("Perform menu generation test run only"));
+   options.add("track <menu-id>", ki18n("Track menu id for debug purposes"));
+#ifdef KBUILDSYCOCA_GUI
+   options.add("silent", ki18n("Silent - work without windows and stderr"));
+   options.add("showprogress", ki18n("Show progress information (even if 'silent' mode is on)"));
+#endif
 
    KCmdLineArgs::init(argc, argv, &d);
    KCmdLineArgs::addCmdLineOptions(options);
@@ -894,7 +891,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
       KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
       if (args->isSet("track"))
-         sycoca->setTrackId(QString::fromLocal8Bit(args->getOption("track")));
+         sycoca->setTrackId(args->getOption("track"));
       if (!sycoca->recreate()) {
 #ifdef KBUILDSYCOCA_GUI
         if (!silent || showprogress)

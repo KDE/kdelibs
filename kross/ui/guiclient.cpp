@@ -91,7 +91,7 @@ void GUIClient::initialize(Kross::ActionCollection* collection)
         finalize();
     d->collection = collection;
 
-    QByteArray partname = d->guiclient->componentData().componentName(); //KApplication::kApplication()->objectName()
+    QString partname = d->guiclient->componentData().componentName(); //KApplication::kApplication()->objectName()
     foreach(QString file, KGlobal::dirs()->findAllResources("data", partname + "/scripts/*.rc"))
         d->collection->readXmlFile(file);
 }

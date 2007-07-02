@@ -576,11 +576,11 @@ void KMultiPart::slotProgressInfo()
 
 KAboutData* KMultiPart::createAboutData()
 {
-    KAboutData* aboutData = new KAboutData( "kmultipart", I18N_NOOP("KMultiPart"),
-                                             "0.1",
-                                            I18N_NOOP( "Embeddable component for multipart/mixed" ),
-                                             KAboutData::License_GPL,
-                                             "(c) 2001, David Faure <david@mandrakesoft.com>");
+    KAboutData* aboutData = new KAboutData( "kmultipart", 0, ki18n("KMultiPart"),
+                                            "0.1",
+                                            ki18n( "Embeddable component for multipart/mixed" ),
+                                            KAboutData::License_GPL,
+                                            ki18n("(c) 2001, David Faure <david@mandrakesoft.com>"));
     return aboutData;
 }
 

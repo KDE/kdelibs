@@ -34,13 +34,13 @@
 #include "domtreeview.h"
 #include "kxmlguifactory.h"
 
-static KCmdLineOptions options[] = { { "+file", "url to open", 0 } , KCmdLineLastOption };
-
 int main(int argc, char *argv[])
 {
+    KCmdLineOptions options;
+    options.add("+file", ki18n("url to open"));
 
-    KCmdLineArgs::init(argc, argv, "testkhtml", "Testkhtml",
-            "a basic web browser using the KHTML library", "1.0");
+    KCmdLineArgs::init(argc, argv, "testkhtml", 0, ki18n("Testkhtml"),
+            "1.0", ki18n("a basic web browser using the KHTML library"));
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication a;

@@ -404,7 +404,7 @@ void TestWindow::slotMakeItem3Current()
 int main( int argc, char *argv[] )
 {
     int i;
-    KCmdLineArgs::init(argc, argv, "kwindowtest", "KWindowTest", "description", "version");
+    KCmdLineArgs::init(argc, argv, "kwindowtest", 0, ki18n("KWindowTest"), "version", ki18n("description"));
 
     KApplication myApp;
     TestWindow *test = new TestWindow;

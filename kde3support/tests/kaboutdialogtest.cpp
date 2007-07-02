@@ -20,23 +20,23 @@
 
 int main(int argc, char** argv)
 {
-  KAboutData aboutData("K3AboutDialogTest", "K3AboutDialogTest", "version", "K3AboutDialog Test, Enjoy!", KAboutData::License_GPL, I18N_NOOP("(c) 1997-2006, The KDE Developers"));
-  aboutData.addAuthor("Bob Dobbs", I18N_NOOP("Current Maintainer"), "bob@subgenius.com");
-  aboutData.addAuthor("Gregory S. Hayes", I18N_NOOP("Developer"), "syncomm@gmail.com");
-  aboutData.addAuthor("Random Authors from KFind");
-  aboutData.addAuthor("Beppe Grimaldi", I18N_NOOP("UI Design & more search options"), "grimalkin@ciaoweb.it");
-  aboutData.addAuthor("Martin Hartig");
-  aboutData.addAuthor("Stephan Kulow", 0, "coolo@kde.org");
-  aboutData.addAuthor("Mario Weilguni",0, "mweilguni@sime.com");
-  aboutData.addAuthor("Alex Zepeda",0, "zipzippy@sonic.net");
-  aboutData.addAuthor("Miroslav Fl�r",0, "flidr@kky.zcu.cz");
-  aboutData.addAuthor("Harri Porten",0, "porten@kde.org");
-  aboutData.addAuthor("Dima Rogozin",0, "dima@mercury.co.il");
-  aboutData.addAuthor("Carsten Pfeiffer",0, "pfeiffer@kde.org");
-  aboutData.addAuthor("Hans Petter Bieker", 0, "bieker@kde.org");
-  aboutData.addAuthor("Waldo Bastian", I18N_NOOP("UI Design"), "bastian@kde.org");
-  aboutData.addAuthor("Alexander Neundorf", 0, "neundorf@kde.org");
-  aboutData.addAuthor("Clarence Dang", 0, "dang@kde.org");
+  KAboutData aboutData("K3AboutDialogTest", 0, ki18n("K3AboutDialogTest"), "version", ki18n("K3AboutDialog Test, Enjoy!"), KAboutData::License_GPL, ki18n("(c) 1997-2006, The KDE Developers"));
+  aboutData.addAuthor(ki18n("Bob Dobbs"), ki18n("Current Maintainer"), "bob@subgenius.com");
+  aboutData.addAuthor(ki18n("Gregory S. Hayes"), ki18n("Developer"), "syncomm@gmail.com");
+  aboutData.addAuthor(ki18n("Random Authors from KFind"));
+  aboutData.addAuthor(ki18n("Beppe Grimaldi"), ki18n("UI Design & more search options"), "grimalkin@ciaoweb.it");
+  aboutData.addAuthor(ki18n("Martin Hartig"));
+  aboutData.addAuthor(ki18n("Stephan Kulow"), KLocalizedString(), "coolo@kde.org");
+  aboutData.addAuthor(ki18n("Mario Weilguni"), KLocalizedString(), "mweilguni@sime.com");
+  aboutData.addAuthor(ki18n("Alex Zepeda"), KLocalizedString(), "zipzippy@sonic.net");
+  aboutData.addAuthor(ki18n("Miroslav Fl�r"), KLocalizedString(), "flidr@kky.zcu.cz");
+  aboutData.addAuthor(ki18n("Harri Porten"), KLocalizedString(), "porten@kde.org");
+  aboutData.addAuthor(ki18n("Dima Rogozin"), KLocalizedString(), "dima@mercury.co.il");
+  aboutData.addAuthor(ki18n("Carsten Pfeiffer"), KLocalizedString(), "pfeiffer@kde.org");
+  aboutData.addAuthor(ki18n("Hans Petter Bieker"), KLocalizedString(), "bieker@kde.org");
+  aboutData.addAuthor(ki18n("Waldo Bastian"), ki18n("UI Design"), "bastian@kde.org");
+  aboutData.addAuthor(ki18n("Alexander Neundorf"), KLocalizedString(), "neundorf@kde.org");
+  aboutData.addAuthor(ki18n("Clarence Dang"), KLocalizedString(), "dang@kde.org");
 
   KCmdLineArgs::init(argc, argv, &aboutData);
 

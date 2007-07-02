@@ -25,17 +25,14 @@
 #include <kapplication.h>
 #include <kurl.h>
 
-static KCmdLineOptions options[] =
-{
-	{ "+[file]", I18N_NOOP("Configuration file to load"), 0},
-	KCmdLineLastOption
-};
-
 extern "C" int main(int argc, char *argv[])
 {
-	KCmdLineArgs::init(argc,argv,"cupsdconf",
-			   I18N_NOOP("A CUPS configuration tool"),
-			   I18N_NOOP("A CUPS configuration tool"),"0.0.1");
+	KCmdLineArgs::init(argc,argv,"cupsdconf", 0,
+			   ki18n("A CUPS configuration tool"),"0.0.1",
+			   ki18n("A CUPS configuration tool"));
+
+	KCmdLineOptions options;
+	options.add("+[file]", ki18n("Configuration file to load"));
 	KCmdLineArgs::addCmdLineOptions(options);
 	KApplication	app;
 	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();

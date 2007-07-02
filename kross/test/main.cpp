@@ -50,15 +50,6 @@
 
 KApplication *app = 0;
 
-static KCmdLineOptions options[] =
-{
-    { "+file", "Scriptfile", 0 },
-
-    //{ "functionname <functioname>", I18N_NOOP("Execute the function in the defined script file."), "" },
-    //{ "functionargs <functioarguments>", I18N_NOOP("List of arguments to pass to the function on execution."), "" },
-    { 0, 0, 0 }
-};
-
 QString getInterpreterName(const QString& scriptfile)
 {
     Kross::InterpreterInfo* interpreterinfo = Kross::Manager::self().interpreterInfo( Kross::Manager::self().interpreternameForFile(scriptfile) );
@@ -136,15 +127,21 @@ int main(int argc, char **argv)
     int result = 0;
 
     KAboutData about("krosstest",
-                     "KrossTest",
+                     0,
+                     ki18n("KrossTest"),
                      "0.1",
-                     "KDE application to test the Kross framework.",
+                     ki18n("KDE application to test the Kross framework."),
                      KAboutData::License_LGPL,
-                     "(C) 2005-2007 Sebastian Sauer",
-                     "Test the Kross framework!",
+                     ki18n("(C) 2005-2007 Sebastian Sauer"),
+                     ki18n("Test the Kross framework!"),
                      "http://kross.dipe.org",
                      "kross@dipe.org");
-    about.addAuthor("Sebastian Sauer", "Author", "mail@dipe.org");
+    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
+
+    KCmdLineOptions options;
+    options.add("+file", ki18n("Scriptfile"));
+    //options.add("functionname <functioname>", ki18n("Execute the function in the defined script file."));
+    //options.add("functionargs <functioarguments>", ki18n("List of arguments to pass to the function on execution."));
 
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);
@@ -153,7 +150,7 @@ int main(int argc, char **argv)
 
     QStringList scriptfiles;
     for(int i = 0; i < args->count(); i++)
-        scriptfiles.append( QFile::decodeName(args->arg(i)) );
+        scriptfiles.append( args->arg(i) );
 
     if(scriptfiles.count() < 1) {
         std::cerr << "No scriptfile to execute defined. See --help" << std::endl;

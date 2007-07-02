@@ -50,15 +50,7 @@ int m_maxCacheSize;
 static const char appFullName[] = "org.kde.kio_http_cache_cleaner";
 static const char appName[] = "kio_http_cache_cleaner";
 
-static const char description[] = I18N_NOOP("KDE HTTP cache maintenance tool");
-
 static const char version[] = "1.0.0";
-
-static const KCmdLineOptions options[] =
-{
-   {"clear-all", I18N_NOOP("Empty the cache"), 0},
-   KCmdLineLastOption
-};
 
 struct FileInfo {
    QString name;
@@ -204,10 +196,12 @@ void scanDirectory(FileInfoList &fileEntries, const QString &name, const QString
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
-   KLocale::setMainCatalog("kdelibs");
-   KCmdLineArgs::init( argc, argv, appName,
-		       I18N_NOOP("KDE HTTP cache maintenance tool"),
-		       description, version, KCmdLineArgs::CmdLineArgNone);
+   KCmdLineArgs::init( argc, argv, appName, "kdelibs",
+		       ki18n("KDE HTTP cache maintenance tool"), version,
+		       ki18n("KDE HTTP cache maintenance tool"), KCmdLineArgs::CmdLineArgNone);
+
+   KCmdLineOptions options;
+   options.add("clear-all", ki18n("Empty the cache"));
 
    KCmdLineArgs::addCmdLineOptions( options );
 

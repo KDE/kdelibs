@@ -884,7 +884,7 @@ void KCertPart::slotImportAll() {
 
 KAboutData *KCertPart::createAboutData()
 {
-	return new KAboutData("KCertPart", I18N_NOOP("KDE Certificate Part"), "1.0");
+	return new KAboutData("KCertPart", 0, ki18n("KDE Certificate Part"), "1.0");
 }
 
 #include "kcertpart.moc"

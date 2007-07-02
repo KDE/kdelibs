@@ -49,21 +49,17 @@ application palette (light and dark shades are\ncalculated)."), 0},
 #include <kaboutdata.h>
 #include <klocale.h>
 
-static const KCmdLineOptions options[] =
-{
-  { "hello ", I18N_NOOP("Says hello"), 0 },
-  KCmdLineLastOption
-};
-
 int main(int argc, char *argv[])
 {
   for (int i = 0; i < argc; i++)
   {
     qDebug("argv[%d] = %s", i, argv[i]);
   }
-  KAboutData aboutData( "testqtargs", I18N_NOOP("testqtargs"),
-    "1.0", I18N_NOOP("testqtargs"), KAboutData::License_GPL,
-    "", "", "", "");
+  KAboutData aboutData( "testqtargs", 0, ki18n("testqtargs"),
+    "1.0", ki18n("testqtargs"), KAboutData::License_GPL);
+	
+  KCmdLineOptions options;
+  options.add("hello ", ki18n("Says hello"));
 
   KCmdLineArgs::init(argc, argv, &aboutData);
   KCmdLineArgs::addCmdLineOptions(options);
@@ -71,7 +67,7 @@ int main(int argc, char *argv[])
   KCmdLineArgs *qtargs = KCmdLineArgs::parsedArgs("qt");
   for (int i = 0; i < qtargs->count(); i++)
   {
-    qDebug("qt arg[%d] = %s", i, qtargs->arg(i));
+    qDebug("qt arg[%d] = %s", i, qtargs->arg(i).toLocal8Bit());
   }
 
   KApplication app;
@@ -82,17 +78,17 @@ int main(int argc, char *argv[])
   // An arg set by Qt
   if(qtargs->isSet("background"))
   {
-    qDebug("arg bg = %s", (const char*)qtargs->getOption("background"));
+    qDebug("arg bg = %s", qtargs->getOption("background").toLocal8Bit());
   }
   // An arg set by KDE
   if(kdeargs->isSet("caption"))
   {
-    qDebug("arg caption = %s", (const char*)kdeargs->getOption("caption"));
+    qDebug("arg caption = %s", kdeargs->getOption("caption").toLocal8Bit());
   }
   // An arg set by us.
   if(args->isSet("hello"))
   {
-    qDebug("arg hello = %s", (const char*)args->getOption("hello"));
+    qDebug("arg hello = %s", args->getOption("hello").toLocal8Bit());
   }
   args->clear();
 

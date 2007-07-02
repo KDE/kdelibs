@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-  KAboutData about("DialogTest", "DialogTest", "version");
+  KAboutData about("DialogTest", 0, ki18n("DialogTest"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication app;

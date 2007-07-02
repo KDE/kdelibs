@@ -311,27 +311,25 @@ void MD5_string (const char *input, const char* expected, bool rawOutput )
 
 int main (int argc, char *argv[])
 {
-    const char *version = "1.0";
-    const char *description = "Unit test for md5, base64 encode/decode and uuencode/decode facilities";
-    KCmdLineOptions options[] =
-    {
-        { "c <digest>", "compare <digest> with the calculated digest for a string or file.", 0 },
-        { "d", "decode the given string or file using base64", 0 },
-        { "e", "encode the given string or file using base64", 0 },
-        { "f", "the filename to be used as input", "default" },
-        { "p", "encode the given string or file using quoted-printable", 0},
-        { "q", "decode the given string or file using quoted-printable", 0},
-        { "r", "calculate the raw md5 for the given string or file", 0 },
-        { "s", "the string to be used as input", 0 },
-        { "t", "perform a timed message-digest test", 0 },
-        { "u", "uuencode the given string or file", 0 },
-        { "x", "uudecode the given string or file", 0 },
-        { "z", "run a preset message-digest test", 0 },
-        { "+command", "[input1, input2,...]", 0 },
-        KCmdLineLastOption
-    };
+    KCmdLineOptions options;
+    options.add("c <digest>", ki18n("compare <digest> with the calculated digest for a string or file."));
+    options.add("d", ki18n("decode the given string or file using base64"));
+    options.add("e", ki18n("encode the given string or file using base64"));
+    options.add("f", ki18n("the filename to be used as input"), "default");
+    options.add("p", ki18n("encode the given string or file using quoted-printable"));
+    options.add("q", ki18n("decode the given string or file using quoted-printable"));
+    options.add("r", ki18n("calculate the raw md5 for the given string or file"));
+    options.add("s", ki18n("the string to be used as input"));
+    options.add("t", ki18n("perform a timed message-digest test"));
+    options.add("u", ki18n("uuencode the given string or file"));
+    options.add("x", ki18n("uudecode the given string or file"));
+    options.add("z", ki18n("run a preset message-digest test"));
+    options.add("+command", ki18n("[input1, input2,...]"));
 
-    KCmdLineArgs::init( argc, argv, "kmdcodectest", "KMDCodecTest", description, version );
+    KCmdLineArgs::init( argc, argv, "kmdcodectest", 0,
+                        ki18n("KMDCodecTest"), "1.0",
+                        ki18n("Unit test for md5, base64 encode/decode "
+                                   "and uuencode/decode facilities" ) );
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();
@@ -367,22 +365,22 @@ int main (int argc, char *argv[])
           type = QPDecode;
        if ( isVerify )
        {
-          const char* opt = args->getOption( "c" ).data();
+          const char* opt = args->getOption( "c" ).toLocal8Bit().data();
           for ( int i=0 ; i < count; i++ )
-            MD5_verify ( QByteArray(args->arg(i)), opt, (isString || !isFile) );
+            MD5_verify ( args->arg(i).toLocal8Bit(), opt, (isString || !isFile) );
        }
        else
        {
           for ( int i=0 ; i < count; i++ )
           {
             if ( type != Unspecified )
-              testCodec( args->arg(i), type, isFile );
+              testCodec( args->arg(i).toLocal8Bit(), type, isFile );
             else
             {
               if ( isString )
-                MD5_string( args->arg( i ), 0, args->isSet("r") );
+                MD5_string( args->arg(i).toLocal8Bit(), 0, args->isSet("r") );
               else
-                MD5_file( args->arg( i ), args->isSet("r") );
+                MD5_file( args->arg(i).toLocal8Bit(), args->isSet("r") );
             }
           }
        }

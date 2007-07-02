@@ -11,15 +11,12 @@
 #include "java/kjavaappletcontext.h"
 #include "java/kjavaappletwidget.h"
 
-static KCmdLineOptions options[] =
-{
-    { "+kdelibspath", "path to kdelibs directory", 0 },
-    KCmdLineLastOption
-};
-
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init( argc, argv, "testKJASSever", "testKJASServer", "test program", "0.0" );
+    KCmdLineArgs::init( argc, argv, "testKJASSever", 0, ki18n("testKJASServer"), "0.0", ki18n("test program"));
+
+    KCmdLineOptions options;
+    options.add("+kdelibspath", ki18n("path to kdelibs directory"));
 
     KCmdLineArgs::addCmdLineOptions( options );
     //KCmdLineArgs::addStdCmdLineOptions();

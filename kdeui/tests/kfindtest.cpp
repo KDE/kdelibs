@@ -123,7 +123,7 @@ void KFindTest::slotHighlight(int id, int index, int matchedLength)
 
 int main(int argc, char **argv)
 {
-	KCmdLineArgs::init(argc, argv, "kfindtest", "KFindTest", 0, 0, false);
+	KCmdLineArgs::init(argc, argv, "kfindtest", 0, ki18n("KFindTest"), 0);
         //KApplication::disableAutoDcopRegistration();
 	KApplication app;
 

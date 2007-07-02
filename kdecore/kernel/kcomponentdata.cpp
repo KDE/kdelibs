@@ -64,13 +64,14 @@ bool KComponentData::operator==(const KComponentData &rhs) const
     return d == rhs.d;
 }
 
-KComponentData::KComponentData(const QByteArray &name)
+KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog)
     : d(new KComponentDataPrivate)
 {
     Q_ASSERT(!name.isEmpty());
 
-    d->name = name;
-    d->aboutData = new KAboutData(name, "", 0);
+    d->name = QString::fromUtf8(name);
+    d->catalog = QString::fromUtf8(catalog);
+    d->aboutData = new KAboutData(name, catalog, KLocalizedString(), "", KLocalizedString());
 
     if (name != "kdeinit4") {
         KGlobal::newComponentData(*this);
@@ -81,6 +82,7 @@ KComponentData::KComponentData(const KAboutData *aboutData)
     : d(new KComponentDataPrivate)
 {
     d->name = aboutData->appName();
+    d->catalog = aboutData->catalogName();
     d->aboutData = aboutData;
     d->ownAboutdata = false;
 
@@ -216,10 +218,18 @@ const KAboutData *KComponentData::aboutData() const
     return d->aboutData;
 }
 
-QByteArray KComponentData::componentName() const
+QString KComponentData::componentName() const
 {
     Q_ASSERT(d);
     return d->name;
+}
+
+QString KComponentData::catalogName() const
+{
+    Q_ASSERT(d);
+    if (d->catalog.isEmpty())
+        return componentName();
+    return d->catalog;
 }
 
 void KComponentData::virtual_hook(int, void*)

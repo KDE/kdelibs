@@ -27,15 +27,12 @@
 
 #include "test_regression_gui_window.h"
 
-static KCmdLineOptions options[] =
-{
-	KCmdLineLastOption
-};
-
 int main(int argc, char *argv[])
 {
-	KCmdLineArgs::init(argc, argv, "testregressiongui", "TestRegressionGui",
-								   "GUI for the khtml regression tester", "1.0");
+    KCmdLineOptions options;
+
+	KCmdLineArgs::init(argc, argv, "testregressiongui", 0, ki18n("TestRegressionGui"),
+								   "1.0", ki18n("GUI for the khtml regression tester"));
 
 	KCmdLineArgs::addCmdLineOptions(options);
 

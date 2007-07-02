@@ -22,7 +22,7 @@
 
 #include "kcomponentdata.h"
 #include <QtDebug>
-#include <QByteArray>
+#include <QString>
 
 #include <kconfig.h>
 #include <kaboutdata.h>
@@ -70,7 +70,8 @@ public:
     void checkConfig();
 
     KStandardDirs *dirs;
-    QByteArray name;
+    QString name;
+    QString catalog;
     const KAboutData *aboutData;
     QString configName;
     KSharedConfig::Ptr sharedConfig;

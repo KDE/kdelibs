@@ -85,7 +85,7 @@ void KMessage_Test::showWarning()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kmessagetest", "KMessage_Test", "description", "version");
+    KCmdLineArgs::init(argc, argv, "kmessagetest", 0, ki18n("KMessage_Test"), "version", ki18n("description"));
 
     KApplication app;
     app.setQuitOnLastWindowClosed( false );

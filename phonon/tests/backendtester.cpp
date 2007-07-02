@@ -32,7 +32,7 @@ MainWindow::~MainWindow()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "backendtester", "Backend Tester", 0, 0);
+    KCmdLineArgs::init(argc, argv, "backendtester", 0, ki18n("Backend Tester"), 0);
     KApplication app;
     MainWindow mw;
     mw.show();

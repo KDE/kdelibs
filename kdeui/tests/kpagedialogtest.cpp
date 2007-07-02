@@ -57,7 +57,7 @@ KPageDialogTest::~KPageDialogTest()
 
 int main( int argc, char **argv )
 {
-  KAboutData about("KPageDialogTest", "KPageDialogTest", "version");
+  KAboutData about("KPageDialogTest", 0, ki18n("KPageDialogTest"), "version");
   KCmdLineArgs::init( argc, argv, &about );
 
   KApplication app;

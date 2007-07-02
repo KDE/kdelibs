@@ -326,8 +326,8 @@ KApplication::KApplication(bool GUIenabled)
     d(new Private)
 {
     read_app_startup_id();
-    setApplicationName(QLatin1String(d->componentData.componentName()));
-    setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
+    setApplicationName(d->componentData.componentName());
+    setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
     init(GUIenabled);
 }
@@ -338,8 +338,8 @@ KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
     d(new Private)
 {
     read_app_startup_id();
-    setApplicationName(QLatin1String(d->componentData.componentName()));
-    setOrganizationDomain( KCmdLineArgs::about->organizationDomain() );
+    setApplicationName(d->componentData.componentName());
+    setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
     init();
 }
@@ -349,7 +349,7 @@ KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
     d (new Private(cData))
 {
     read_app_startup_id();
-    setApplicationName(QLatin1String(d->componentData.componentName()));
+    setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
     init();
@@ -361,7 +361,7 @@ KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
     d (new Private(cData))
 {
     read_app_startup_id();
-    setApplicationName(QLatin1String(d->componentData.componentName()));
+    setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
     init();
@@ -804,7 +804,7 @@ void KApplication::parseCommandLine( )
     if (args && args->isSet("style"))
     {
         extern QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
-        QString reqStyle(QLatin1String(args->getOption("style").toLower()));
+        QString reqStyle(args->getOption("style").toLower());
         if (QStyleFactory::keys().contains(reqStyle, Qt::CaseInsensitive))
             kde_overrideStyle = reqStyle;
         else
@@ -815,14 +815,14 @@ void KApplication::parseCommandLine( )
     if ( type() != Tty ) {
         if (args && args->isSet("icon"))
         {
-            QPixmap largeIcon = DesktopIcon(QFile::decodeName(args->getOption("icon")));
+            QPixmap largeIcon = DesktopIcon(args->getOption("icon"));
             QIcon icon = windowIcon();
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
             setWindowIcon(icon);
         }
         else {
             QIcon icon = windowIcon();
-            QPixmap largeIcon = DesktopIcon(QFile::decodeName(d->componentData.componentName()));
+            QPixmap largeIcon = DesktopIcon(d->componentData.componentName());
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
             setWindowIcon(icon);
         }
@@ -833,7 +833,7 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("config"))
     {
-        QString config = QString::fromLocal8Bit(args->getOption("config"));
+        QString config = args->getOption("config");
         d->componentData.setConfigName(config);
     }
 
@@ -844,7 +844,7 @@ void KApplication::parseCommandLine( )
         KCrash::setCrashHandler(KCrash::defaultCrashHandler);
         KCrash::setEmergencySaveFunction(NULL);
 
-        KCrash::setApplicationName(QLatin1String(args->appName()));
+        KCrash::setApplicationName(args->appName());
     }
 
 #ifdef Q_WS_X11
@@ -871,7 +871,7 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("smkey"))
     {
-        d->sessionKey = QLatin1String(args->getOption("smkey"));
+        d->sessionKey = args->getOption("smkey");
     }
 
 }

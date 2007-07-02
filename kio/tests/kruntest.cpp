@@ -86,7 +86,7 @@ void Receiver::slotStart()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc,argv,"kruntest", 0, 0, 0, 0);
+    KCmdLineArgs::init(argc,argv, "kruntest", 0, ki18n("kruntest"), 0);
     KApplication app;
 
     Receiver receiver;

@@ -25,12 +25,6 @@
 #include <kdebug.h>
 #include <QtCore/QTimer>
 
-static KCmdLineOptions options[] =
-{
-    { "!+[argument]", "arguments passed to new instance", 0},
-    KCmdLineLastOption
-};
-
 class TestApp : public KUniqueApplication
 {
 public:
@@ -60,7 +54,10 @@ TestApp::newInstance( )
 int
 main(int argc, char *argv[])
 {
-    KAboutData about("kuniqueapptest", "kuniqueapptest", "version");
+    KCmdLineOptions options;
+    options.add("!+[argument]", ki18n("arguments passed to new instance"));
+
+    KAboutData about("kuniqueapptest", 0, ki18n("kuniqueapptest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions( options );
     KUniqueApplication::addCmdLineOptions();

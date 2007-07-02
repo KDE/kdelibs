@@ -7,27 +7,20 @@
 #include <QtCore/QDir>
 #include <kdebug.h>
 
-// we use our own macro to not bother translators
-// but still demonstrate the use. You would use I18N_NOOP
-#define I18N_NOP(x) x
-
-static const char version[] = "v0.0.2 1999 (c) Waldo Bastian";
-static const char description[] = I18N_NOP("This is a test program.");
-
-static KCmdLineOptions options[] =
-{
- { "test",		I18N_NOP("do a short test only, note that\n"
-				  "this is rather long comment"), 0 },
- { "baud <baudrate>",	I18N_NOP("set baudrate"), "9600" },
- { "+file(s)",		I18N_NOP("Files to load"), 0 },
- KCmdLineLastOption
-};
-
 #if 1
 int
 main(int argc, char *argv[])
 {
-   KCmdLineArgs::init( argc, argv, "testapp", "TestApp", description, version);
+   KCmdLineOptions options;
+   options.add("test", ki18n("do a short test only, note that\n"
+                             "this is rather long comment"));
+   options.add("baud <baudrate>", ki18n("set baudrate"), "9600");
+   options.add("+file(s)", ki18n("Files to load"));
+
+   KCmdLineArgs::init(argc, argv, "testapp", 0,
+                      ki18n("TestApp"), "v0.0.2",
+                      ki18n("This is a test program.\n"
+                            "1999 (c) Waldo Bastian"));
 
    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
@@ -52,24 +45,24 @@ main(int argc, char *argv[])
    }
 
    // Read the value of an option.
-   QByteArray baudrate = args->getOption("baud"); // 9600 is the default value.
+   QString baudrate = args->getOption("baud"); // 9600 is the default value.
 
-   printf("Baudrate = %s\n", baudrate.data());
+   printf("Baudrate = %s\n", baudrate.toLocal8Bit().data());
 
    printf("Full list of baudrates:\n");
-   QByteArrayList result = args->getOptionList("baud");
-   for(QByteArrayList::ConstIterator it=result.begin();
+   QStringList result = args->getOptionList("baud");
+   for(QStringList::ConstIterator it=result.begin();
        it != result.end();
        ++it)
    {
-      printf("Baudrate = %s\n", (*it).data());
+      printf("Baudrate = %s\n", (*it).toLocal8Bit().data());
    }
    printf("End of list\n");
 
    for(int i = 0; i < args->count(); i++)
    {
-      printf("%d: %s\n", i, args->arg(i));
-      printf("%d: %s\n", i, args->url(i).url().toAscii().constData());
+      printf("%d: %s\n", i, args->arg(i).toLocal8Bit().data());
+      printf("%d: %s\n", i, args->url(i).url().toLocal8Bit().data());
    }
 
    // Check how KCmdLineArgs::url() works

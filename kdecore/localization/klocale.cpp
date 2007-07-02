@@ -1930,7 +1930,7 @@ void KLocale::initInstance()
 
     KComponentData app = KGlobal::mainComponent();
     if (app.isValid()) {
-        KLocale *locale = new KLocale(QString::fromLatin1(app.componentName()));
+        KLocale *locale = new KLocale(app.catalogName());
         KGlobal::setLocale(locale);
 
         // only do this for the global instance

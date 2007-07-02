@@ -115,7 +115,7 @@ struct kDebugPrivate
         delete kDebugDBusIface;
     }
 
-    QByteArray getDescrFromNum(unsigned int num)
+    QString getDescrFromNum(unsigned int num)
     {
         if (!cache.isEmpty()) { // areas already loaded
             return cache.value(num);
@@ -123,13 +123,13 @@ struct kDebugPrivate
 
         QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
         if (filename.isEmpty()) {
-            return QByteArray();
+            return QString();
         }
         QFile file(filename);
         if (!file.open(QIODevice::ReadOnly)) {
             qWarning("Couldn't open %s", filename.toLocal8Bit().constData());
             file.close();
-            return QByteArray();
+            return QString();
         }
 
         uint lineNumber=0;
@@ -163,7 +163,7 @@ struct kDebugPrivate
             while (line[i] && line[i] <= ' ')
                 i++;
 
-            cache.insert(number, line.mid(i, len-i-1));
+            cache.insert(number, QString::fromUtf8(line.mid(i, len-i-1)));
         }
         file.close();
 
@@ -221,11 +221,11 @@ struct kDebugPrivate
 #endif
 #endif 
 
-    QByteArray aAreaName;
+    QString aAreaName;
     unsigned int oldarea;
     KConfig *config;
     KDebugDBusIface *kDebugDBusIface;
-    QHash<unsigned int, QByteArray> cache;
+    QHash<unsigned int, QString> cache;
     QMutex mutex;
 };
 
@@ -305,7 +305,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 #endif
 
     if (!kDebug_data.isDestroyed() && !kDebug_data->aAreaName.isEmpty()) {
-        strlcat(buf, kDebug_data->aAreaName.data(), BUFSIZE);
+        strlcat(buf, kDebug_data->aAreaName.toUtf8().data(), BUFSIZE);
         strlcat(buf, ": ", BUFSIZE);
         strlcat(buf, data, BUFSIZE);
     } else {
@@ -348,7 +348,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       // Since we are in kdecore here, we cannot use KMsgBox 
       // if nOutput != 2 then kDebug_data is still valid
       if ( !kDebug_data->aAreaName.isEmpty() )
-          aCaption += QString::fromAscii("(%1)").arg( QString::fromUtf8( kDebug_data->aAreaName.data() ) );
+          aCaption += QString::fromAscii("(%1)").arg( kDebug_data->aAreaName );
       KMessage::message( KMessage::Information , QString::fromUtf8( data ) , aCaption );
       break;
   }

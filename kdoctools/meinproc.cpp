@@ -72,34 +72,29 @@ void parseEntry(PairList &list, xmlNodePtr cur, int base)
 
 }
 
-static KCmdLineOptions options[] =
-{
-    { "stylesheet <xsl>",  I18N_NOOP( "Stylesheet to use" ), 0 },
-    { "stdout", I18N_NOOP( "Output whole document to stdout" ), 0 },
-    { "o", 0, 0 },
-    { "output <file>", I18N_NOOP("Output whole document to file" ), 0 },
-    { "htdig", I18N_NOOP( "Create a ht://dig compatible index" ), 0 },
-    { "check", I18N_NOOP( "Check the document for validity" ), 0 },
-    { "cache <file>", I18N_NOOP( "Create a cache file for the document" ), 0},
-    { "srcdir <dir>", I18N_NOOP( "Set the srcdir, for kdelibs" ), 0},
-    { "param <key>=<value>", I18N_NOOP( "Parameters to pass to the stylesheet" ), 0},
-    { "+xml", I18N_NOOP("The file to transform"), 0},
-    KCmdLineLastOption // End of options.
-};
-
-
 int main(int argc, char **argv) {
 
     // xsltSetGenericDebugFunc(stderr, NULL);
 
-    KAboutData aboutData( "meinproc", I18N_NOOP("XML-Translator" ),
+    KCmdLineOptions options;
+    options.add("stylesheet <xsl>", ki18n("Stylesheet to use"));
+    options.add("stdout", ki18n("Output whole document to stdout"));
+    options.add("o");
+    options.add("output <file>", ki18n("Output whole document to file"));
+    options.add("htdig", ki18n("Create a ht://dig compatible index"));
+    options.add("check", ki18n("Check the document for validity"));
+    options.add("cache <file>", ki18n("Create a cache file for the document"));
+    options.add("srcdir <dir>", ki18n("Set the srcdir, for kdelibs"));
+    options.add("param <key>=<value>", ki18n("Parameters to pass to the stylesheet"));
+    options.add("+xml", ki18n("The file to transform"));
+
+    KAboutData aboutData( "meinproc", "kio_help", ki18n("XML-Translator" ),
 	"$Revision$",
-	I18N_NOOP("KDE Translator for XML"));
+	ki18n("KDE Translator for XML"));
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions( options );
 
-    KLocale::setMainCatalog("kio_help");
     KComponentData ins("meinproc");
     KGlobal::locale();
 
@@ -113,12 +108,12 @@ int main(int argc, char **argv) {
     // Need to set SRCDIR before calling fillInstance
     QString srcdir;
     if ( args->isSet( "srcdir" ) )
-        srcdir = QDir( QFile::decodeName( args->getOption( "srcdir" ) ) ).absolutePath();
+        srcdir = QDir( args->getOption( "srcdir" ) ).absolutePath();
     fillInstance(ins,srcdir);
 
     LIBXML_TEST_VERSION
 
-    QString checkFilename = QFile::decodeName(args->arg( 0 ));
+    QString checkFilename = args->arg( 0 );
     QFileInfo checkFile(checkFilename);
     if (!checkFile.exists())
     {
@@ -138,7 +133,7 @@ int main(int argc, char **argv) {
 
     if ( args->isSet( "check" ) ) {
         QString pwd_buffer = QDir::currentPath();
-        QFileInfo file( QFile::decodeName(args->arg( 0 )) );
+        QFileInfo file( args->arg( 0 ) );
 
         QString catalogs;
         catalogs += KStandardDirs::locate( "dtd", "customization/catalog" );
@@ -189,21 +184,21 @@ int main(int argc, char **argv) {
     QVector<const char *> params;
     if (args->isSet( "output" ) ) {
         params.append( qstrdup( "outputFile" ) );
-        params.append( qstrdup( QFile::decodeName( args->getOption( "output" ) ).toLatin1() ) );
+        params.append( qstrdup( args->getOption( "output" ).toLocal8Bit() ) );
     }
     {
-        const QByteArrayList paramList = args->getOptionList( "param" );
-        QByteArrayList::ConstIterator it = paramList.begin();
-        QByteArrayList::ConstIterator end = paramList.end();
+        const QStringList paramList = args->getOptionList( "param" );
+        QStringList::ConstIterator it = paramList.begin();
+        QStringList::ConstIterator end = paramList.end();
         for ( ; it != end; ++it ) {
-            const QByteArray tuple = *it;
+            const QString tuple = *it;
             const int ch = tuple.indexOf( '=' );
             if ( ch == -1 ) {
                 kError() << "Key-Value tuple '" << tuple << "' lacks a '='!" << endl;
                 return( 2 );
             }
-            params.append( qstrdup( tuple.left( ch ) ) );
-            params.append( qstrdup( tuple.mid( ch + 1 ) )  );
+            params.append( qstrdup( tuple.left( ch ).toUtf8() ) );
+            params.append( qstrdup( tuple.mid( ch + 1 ).toUtf8() )  );
         }
     }
     params.append( NULL );
@@ -255,7 +250,7 @@ int main(int argc, char **argv) {
     } else {
         QString output = transform(args->arg( 0 ) , tss, params);
         if (output.isEmpty()) {
-            fprintf(stderr, "unable to parse %s\n", args->arg( 0 ));
+            fprintf(stderr, "unable to parse %s\n", args->arg( 0 ).toLocal8Bit().data());
             return(1);
         }
 
@@ -274,7 +269,7 @@ int main(int argc, char **argv) {
                 file.open( stdout, QIODevice::WriteOnly );
             } else {
                 if (args->isSet( "output" ) )
-                   file.setFileName( QFile::decodeName(args->getOption( "output" )));
+                   file.setFileName( args->getOption( "output" ));
                 else
                    file.setFileName( "index.html" );
                 file.open(QIODevice::WriteOnly);

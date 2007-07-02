@@ -32,8 +32,8 @@ template <class T>
 class KGenericFactoryBase
 {
 public:
-    explicit KGenericFactoryBase( const char *componentName )
-        : m_componentName( componentName )
+    explicit KGenericFactoryBase( const char *componentName, const char *catalogName = 0L )
+        : m_componentName( componentName ), m_catalogName ( catalogName )
     {
         m_aboutData=0L;
         s_self = this;
@@ -50,7 +50,7 @@ public:
     {
         if (s_componentData) {
             if (KGlobal::hasLocale() && s_componentData->isValid())
-                KGlobal::locale()->removeCatalog(QString::fromAscii(s_componentData->componentName()));
+                KGlobal::locale()->removeCatalog(s_componentData->catalogName());
             delete s_componentData;
             s_componentData = 0;
         }
@@ -69,13 +69,13 @@ protected:
             kWarning() << "KGenericFactory: componentData requested but no component name or about data passed to the constructor!" << endl;
             return 0;
         }
-        return new KComponentData(m_componentName);
+        return new KComponentData(m_componentName, m_catalogName);
     }
 
     virtual void setupTranslations( void )
     {
         if (componentData().isValid()) {
-            KGlobal::locale()->insertCatalog(QString::fromAscii(s_componentData->componentName()));
+            KGlobal::locale()->insertCatalog(s_componentData->catalogName());
         }
     }
 
@@ -90,6 +90,7 @@ protected:
 
 private:
     QByteArray m_componentName;
+    QByteArray m_catalogName;
     const KAboutData *m_aboutData;
     bool m_catalogInitialized;
 
@@ -150,8 +151,8 @@ KComponentData KGenericFactoryBase<T>::componentData()
  *
  * In addition upon instantiation this template provides a central
  * KComponentData object for your component, accessible through the
- * static componentData() method. The componentName argument of the
- * KGenericFactory constructor is passed to the KComponentData object.
+ * static componentData() method. The componentName and catalogName arguments
+ * of the KGenericFactory constructor are passed to the KComponentData object.
  *
  * The creation of the KComponentData object can be customized by inheriting
  * from this template class and re-implementing the virtual createComponentData
@@ -180,8 +181,8 @@ template <class Product, class ParentType = QObject>
 class KGenericFactory : public KLibFactory, public KGenericFactoryBase<Product>
 {
 public:
-    explicit KGenericFactory( const char *componentName = 0 )
-        : KGenericFactoryBase<Product>( componentName )
+    explicit KGenericFactory( const char *componentName = 0, const char *catalogName = 0 )
+        : KGenericFactoryBase<Product>( componentName, catalogName )
     {}
 
     explicit KGenericFactory( const KAboutData *data )
@@ -229,8 +230,8 @@ protected:
  *
  * In addition upon instantiation this template provides a central
  * KComponentData object for your component, accessible through the
- * static componentData() method. The componentName argument of the
- * KGenericFactory constructor is passed to the KComponentData object.
+ * static componentData() method. The componentName and catalogName arguments
+ * of the KGenericFactory constructor are passed to the KComponentData object.
  *
  * The creation of the KComponentData object can be customized by inheriting
  * from this template class and re-implementing the virtual createComponentData
@@ -272,8 +273,8 @@ class KGenericFactory< KTypeList<Product, ProductListTail>, QObject >
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
 public:
-    explicit KGenericFactory( const char *componentName  = 0 )
-        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( componentName )
+    explicit KGenericFactory( const char *componentName  = 0, const char *catalogName  = 0 )
+        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( componentName, catalogName )
     {}
 
     explicit KGenericFactory( const KAboutData *data )
@@ -321,8 +322,8 @@ protected:
  *
  * In addition upon instantiation this template provides a central
  * KComponentData object for your component, accessible through the
- * static componentData() method. The componentName argument of the
- * KGenericFactory constructor is passed to the KComponentData object.
+ * static componentData() method. The componentName and catalogNames arguments
+ * of the KGenericFactory constructor are passed to the KComponentData object.
  *
  * The creation of the KComponentData object can be customized by inheriting
  * from this template class and re-implementing the virtual createComponentData
@@ -366,8 +367,8 @@ class KGenericFactory< KTypeList<Product, ProductListTail>,
       public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
 {
 public:
-    explicit KGenericFactory( const char *componentName  = 0 )
-        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( componentName )
+    explicit KGenericFactory( const char *componentName  = 0, const char *catalogName  = 0 )
+        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( componentName, catalogName )
     {}
     explicit KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )

@@ -147,10 +147,10 @@ void MediaPlayer::setUrl(const KUrl &url)
 
 int main(int argc, char ** argv)
 {
-    KAboutData about("phononmediaplayer", "Phonon Media Player",
-            "0.1", "Media Player",
-            KAboutData::License_GPL, 0);
-    about.addAuthor("Matthias Kretz", 0, "kretz@kde.org");
+    KAboutData about("phononmediaplayer", 0, ki18n("Phonon Media Player"),
+            "0.1", ki18n("Media Player"),
+            KAboutData::License_GPL);
+    about.addAuthor(ki18n("Matthias Kretz"), KLocalizedString(), "kretz@kde.org");
     KCmdLineArgs::init(argc, argv, &about);
     KApplication app;
     MediaPlayer foo;

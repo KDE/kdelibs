@@ -13,7 +13,7 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kcodecactiontest", "KCodecActionTest", "kselectaction test app", "1.0" );
+    KCmdLineArgs::init( argc, argv, "kcodecactiontest", 0, ki18n("KCodecActionTest"), "1.0", ki18n("kselectaction test app"));
     KApplication app;
 
     CodecActionTest* test = new CodecActionTest;

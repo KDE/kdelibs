@@ -195,7 +195,7 @@ QStringList Form1::defaultItems() const
 
 int main(int argc, char **argv )
 {
-    KAboutData about("kcompletiontest", "kcompletiontest", "version");
+    KAboutData about("kcompletiontest", 0, ki18n("kcompletiontest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication app;

@@ -478,23 +478,22 @@ void KioslaveTest::stopJob() {
   pbStart->setEnabled( true );
 }
 
-static const char version[] = "v0.0.0 0000";   // :-)
-static const char description[] = "Test for kioslaves";
-static KCmdLineOptions options[] =
-{
- { "s", 0, 0 },
- { "src <src>", "Source URL", "" },
- { "d", 0, 0 },
- { "dest <dest>", "Destination URL", "" },
- { "o", 0, 0 },
- { "operation <operation>", "Operation (list,listrecursive,stat,get,put,copy,move,del,shred,mkdir)", "copy" },
- { "p", 0, 0 },
- { "progress <progress>", "Progress Type (none,default,status)", "default" },
- KCmdLineLastOption
-};
-
 int main(int argc, char **argv) {
-  KCmdLineArgs::init( argc, argv, "kioslavetest", "KIOSlave test", description, version );
+
+  KCmdLineOptions options;
+  options.add("s");
+  options.add("src <src>", ki18n("Source URL"), "");
+  options.add("d");
+  options.add("dest <dest>", ki18n("Destination URL"), "");
+  options.add("o");
+  options.add("operation <operation>", ki18n("Operation (list,listrecursive,stat,get,put,copy,move,del,shred,mkdir)"), "copy");
+  options.add("p");
+  options.add("progress <progress>", ki18n("Progress Type (none,default,status)"), "default");
+
+  const char version[] = "v0.0.0 0000";   // :-)
+  KLocalizedString description = ki18n("Test for kioslaves");
+
+  KCmdLineArgs::init( argc, argv, "kioslavetest", 0, ki18n("KIOSlave test"), version, description );
   KCmdLineArgs::addCmdLineOptions( options );
   KApplication app;
 

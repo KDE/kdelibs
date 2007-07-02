@@ -86,17 +86,15 @@ void Shell::slotFileOpen()
         openUrl( url );
 }
 
-static KCmdLineOptions options[] =
-{
-    { "+file(s)",          "Files to load", 0 },
-    KCmdLineLastOption
-};
-static const char version[] = "v0.0.1 2000 (c) David Faure";
-static const char description[] = "This is a test shell for the kghostview part.";
-
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "ghostviewtest","ghostviewtest", description, version);
+    KCmdLineOptions options;
+    options.add("+file(s)", ki18n("Files to load"));
+
+    const char version[] = "v0.0.1 2000 (c) David Faure";
+    KLocalizedString description = ki18n("This is a test shell for the kghostview part.");
+
+    KCmdLineArgs::init(argc, argv, "ghostviewtest", 0, ki18n("ghostviewtest"), version, description);
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
     KApplication app;
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

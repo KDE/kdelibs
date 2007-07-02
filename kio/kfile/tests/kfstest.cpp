@@ -43,16 +43,13 @@
 #include "kfdtest.h"
 #include <kconfiggroup.h>
 
-static const KCmdLineOptions options[] =
-{
-    { "+[cmd]", "", 0 },
-    { "+[url]", "", 0 },
-    KCmdLineLastOption
-};
-
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kfstest","kfstest","test app","0");
+    KCmdLineOptions options;
+    options.add("+[cmd]");
+    options.add("+[url]");
+
+    KCmdLineArgs::init(argc, argv, "kfstest", 0, ki18n("kfstest"), "0", ki18n("test app"));
     KCmdLineArgs::addCmdLineOptions(options);
     KApplication a;
     a.setQuitOnLastWindowClosed(false);

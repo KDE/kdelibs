@@ -27,7 +27,7 @@
 
 int main( int argc, char** argv )
 {
-    KAboutData about("tagcloudtest", "tagcloudtest", "1.0");
+    KAboutData about("tagcloudtest", 0, ki18n("tagcloudtest"), "1.0");
     KCmdLineArgs::init( argc, argv, &about );
     KApplication app;
     Nepomuk::KMetaData::ResourceManager::instance()->init();

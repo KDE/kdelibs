@@ -28,7 +28,7 @@
 int main(int argc, char *argv[])
 {
    KToolInvocation::kdeinitExec("konsole");
-   KCmdLineArgs::init( argc, argv, "klaunchertest", 0, 0, 0, 0);
+   KCmdLineArgs::init( argc, argv, "klaunchertest", 0, ki18n("klaunchertest"), 0);
    KApplication k;
 
    //KApplication::dcopClient()->registerAs( kapp->objectName().toLatin1()) ;

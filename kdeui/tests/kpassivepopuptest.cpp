@@ -48,7 +48,7 @@ void Test::showIt6(QSystemTrayIcon::ActivationReason reason)
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "test", "Test" ,"test app" ,"1.0" );
+    KCmdLineArgs::init( argc, argv, "test", 0, ki18n("Test"), "1.0", ki18n("test app"));
     KApplication app;
 
     Test *t = new Test();

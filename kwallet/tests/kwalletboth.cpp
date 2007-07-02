@@ -69,7 +69,7 @@ void WalletReceiver::walletOpened( bool got )
 
 int main( int argc, char *argv[] )
 {
-	KAboutData aboutData( "kwalletboth", "kwalletboth", "version" );
+	KAboutData aboutData("kwalletboth", 0, ki18n("kwalletboth"), "version");
 	KComponentData componentData(&aboutData);
 	QApplication app( argc, argv );
 

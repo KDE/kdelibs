@@ -375,7 +375,7 @@ public:
     */
   static inline KDE_DEPRECATED QString geometryArgument() {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-    return args->isSet("geometry") ? QString::fromLatin1( args->getOption("geometry") ) : QString();
+    return args->isSet("geometry") ? args->getOption("geometry") : QString();
   }
 #endif
 

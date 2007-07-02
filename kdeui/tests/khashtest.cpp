@@ -129,7 +129,7 @@ void KHashWidget::paintEvent(QPaintEvent * /*ev*/)
 
 int main(int argc, char **argv)
 {
-    KAboutData about("KHashTest", "KHashTest", "version");
+    KAboutData about("KHashTest", 0, ki18n("KHashTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication *app=new KApplication();

@@ -144,13 +144,13 @@ K3AboutApplication::K3AboutApplication( const KAboutData *aboutData, QWidget *pa
     }
   }
 
-  const QList<KAboutTranslator> translatorList = aboutData->translators();
+  const QList<KAboutPerson> translatorList = aboutData->translators();
 
   if(translatorList.count() > 0)
   {
       QString text = "<qt>";
 
-      QList<KAboutTranslator>::ConstIterator it;
+      QList<KAboutPerson>::ConstIterator it;
       for(it = translatorList.begin(); it != translatorList.end(); ++it)
       {
         text += QString("<p>%1<br>&nbsp;&nbsp;&nbsp;"

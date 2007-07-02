@@ -26,7 +26,7 @@ void openWallet()
 
 int main( int argc, char *argv[] )
 {
-	KAboutData aboutData( "kwalletsync", "kwalletsync", "version" );
+	KAboutData aboutData("kwalletsync", 0, ki18n("kwalletsync"), "version");
 	KComponentData componentData(&aboutData);
 	QApplication app( argc, argv );
 

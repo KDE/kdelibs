@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
-    KAboutData aboutData( componentName, "qttest", "version" );  \
+    KAboutData aboutData( componentName, 0, ki18n("qttest"), "version" );  \
     KDEMainFlags mainFlags = flags;                         \
     KComponentData cData(&aboutData); \
     QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
-    KAboutData aboutData( "qttest", "qttest", "version" );  \
+    KAboutData aboutData( "qttest", 0, ki18n("qttest"), "version" );  \
     KComponentData cData(&aboutData); \
     QCoreApplication app( argc, argv ); \
     app.setApplicationName( "qttest" ); \

@@ -7,8 +7,7 @@
 
 int main(int argc, char** argv)
 {
-  KLocale::setMainCatalog("kdelibs");
-  KAboutData about("KDateWidgettest", "KDateWidgettest", "version");
+  KAboutData about("KDateWidgettest", "kdelibs", ki18n("KDateWidgettest"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication app;

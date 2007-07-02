@@ -26,7 +26,7 @@
 #include <assert.h>
 
 int main(int argc, char **argv) {
-    KAboutData aboutData("kprotocolinfotest", "KProtocolinfo Test",
+    KAboutData aboutData("kprotocolinfotest", 0, ki18n("KProtocolinfo Test"),
                         "1.0");
 
     KComponentData componentData(&aboutData);

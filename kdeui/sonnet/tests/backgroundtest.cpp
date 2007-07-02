@@ -159,7 +159,7 @@ void BackgroundTest::slotMisspelling( const QString& word, int start )
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, 0, 0, 0);
+    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, ki18n("SonnetTest"), 0 );
     KApplication app;
 
     BackgroundTest test;

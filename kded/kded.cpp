@@ -694,12 +694,6 @@ void KHostnameD::checkHostname()
 }
 
 
-static KCmdLineOptions options[] =
-{
-  { "check", I18N_NOOP("Check Sycoca database only once"), 0 },
-  KCmdLineLastOption
-};
-
 #if 0
 // Thiago: I have no idea what the following class is here for
 // David: the commit log was:
@@ -811,19 +805,19 @@ public:
 
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
-     KAboutData aboutData( "kded" /*don't change this one to kded4! dbus registration should be org.kde.kded etc.*/,
-        I18N_NOOP("KDE Daemon"),
+     KAboutData aboutData( "kded" /*don't change this one to kded4! dbus registration should be org.kde.kded etc.*/, 
+        "kdelibs", ki18n("KDE Daemon"),
         "$Id$",
-        I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed"));
+        ki18n("KDE Daemon - triggers Sycoca database updates when needed"));
+
+     KCmdLineOptions options;
+     options.add("check", ki18n("Check Sycoca database only once"));
 
      KCmdLineArgs::init(argc, argv, &aboutData);
 
      KUniqueApplication::addCmdLineOptions();
 
      KCmdLineArgs::addCmdLineOptions( options );
-
-     // this program is in kdelibs so it uses kdelibs as catalog
-     KLocale::setMainCatalog("kdelibs");
 
      // WABA: Make sure not to enable session management.
      putenv(strdup("SESSION_MANAGER="));

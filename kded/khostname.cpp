@@ -38,12 +38,6 @@
 #include <kde_file.h>
 #include <QtDBus/QtDBus>
 
-static KCmdLineOptions options[] = {
-   { "+old", I18N_NOOP("Old hostname"), 0 },
-   { "+new", I18N_NOOP("New hostname"), 0 },
-   KCmdLineLastOption
-};
-
 static const char appName[] = "kdontchangethehostname";
 static const char appVersion[] = "1.1";
 
@@ -57,8 +51,8 @@ public:
    void changeSessionManager();
 
 protected:
-   QByteArray oldName;
-   QByteArray newName;
+   QString oldName;
+   QString newName;
    QString display;
    QByteArray home;
 };
@@ -153,8 +147,8 @@ void KHostName::changeX()
       if (i == -1)
          continue;
 
-      QByteArray newNetId = newName+netId.mid(i);
-      QByteArray oldNetId = netId.left(i);
+      QString newNetId = newName+netId.mid(i);
+      QString oldNetId = netId.left(i);
 
       if (oldNetId != oldName)
 	continue;
@@ -203,7 +197,7 @@ void KHostName::changeStdDirs(const QByteArray &type)
 
 void KHostName::changeSessionManager()
 {
-   QByteArray sm = qgetenv("SESSION_MANAGER");
+   QString sm = qgetenv("SESSION_MANAGER");
    if (sm.isEmpty())
    {
       fprintf(stderr, "Warning: No session management specified.\n");
@@ -212,7 +206,7 @@ void KHostName::changeSessionManager()
    int i = sm.lastIndexOf(':');
    if ((i == -1) || (sm.left(6) != "local/"))
    {
-      fprintf(stderr, "Warning: Session Management socket '%s' has unexpected format.\n", sm.constData());
+      fprintf(stderr, "Warning: Session Management socket '%s' has unexpected format.\n", sm.toLocal8Bit().constData());
       return;
    }
    sm = "local/"+newName+sm.mid(i);
@@ -221,11 +215,14 @@ void KHostName::changeSessionManager()
 
 int main(int argc, char **argv)
 {
-   KLocale::setMainCatalog("kdelibs");
-   KAboutData d(appName, I18N_NOOP("KDontChangeTheHostName"), appVersion,
-                I18N_NOOP("Informs KDE about a change in hostname"),
-                KAboutData::License_GPL, "(c) 2001 Waldo Bastian");
-   d.addAuthor("Waldo Bastian", I18N_NOOP("Author"), "bastian@kde.org");
+   KAboutData d(appName, "kdelibs", ki18n("KDontChangeTheHostName"), appVersion,
+                ki18n("Informs KDE about a change in hostname"),
+                KAboutData::License_GPL, ki18n("(c) 2001 Waldo Bastian"));
+   d.addAuthor(ki18n("Waldo Bastian"), ki18n("Author"), "bastian@kde.org");
+
+   KCmdLineOptions options;
+   options.add("+old", ki18n("Old hostname"));
+   options.add("+new", ki18n("New hostname"));
 
    KCmdLineArgs::init(argc, argv, &d);
    KCmdLineArgs::addCmdLineOptions(options);

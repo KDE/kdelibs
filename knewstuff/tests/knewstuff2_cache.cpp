@@ -89,7 +89,7 @@ void KNewStuff2Cache::quitTest()
 
 int main(int argc, char **argv)
 {
-	KCmdLineArgs::init(argc, argv, "knewstuff2_cache", NULL, NULL, NULL);
+	KCmdLineArgs::init(argc, argv, "knewstuff2_cache", 0, ki18n("knewstuff2_cache"), 0);
 	KApplication app(false);
 
 	// Take source directory into account

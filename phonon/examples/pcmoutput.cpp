@@ -131,10 +131,10 @@ QByteArray PcmPlayer::pcmBlock(int freq) const
 
 int main(int argc, char ** argv)
 {
-    KAboutData about("videoplayandforget", "Phonon VideoPlayer Example",
-            "1.0", "",
-            KAboutData::License_LGPL, 0);
-    about.addAuthor("Matthias Kretz", 0, "kretz@kde.org");
+    KAboutData about("videoplayandforget", 0, ki18n("Phonon VideoPlayer Example"),
+            "1.0", KLocalizedString(),
+            KAboutData::License_LGPL);
+    about.addAuthor(ki18n("Matthias Kretz"), KLocalizedString(), "kretz@kde.org");
     KCmdLineArgs::init(argc, argv, &about);
     KApplication app;
     PcmPlayer player;

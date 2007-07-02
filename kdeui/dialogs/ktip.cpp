@@ -127,7 +127,7 @@ KTipDatabase::KTipDatabase( const QString &_tipFile )
   QString tipFile = _tipFile;
 
   if ( tipFile.isEmpty() )
-    tipFile = QString::fromLatin1( KGlobal::mainComponent().aboutData()->appName() ) + "/tips";
+    tipFile = KGlobal::mainComponent().aboutData()->appName() + "/tips";
 
   d->loadTips( tipFile );
 
@@ -139,7 +139,7 @@ KTipDatabase::KTipDatabase( const QStringList& tipsFiles )
   : d( new Private )
 {
   if ( tipsFiles.isEmpty() || ( ( tipsFiles.count() == 1 ) && tipsFiles.first().isEmpty() ) ) {
-    d->addTips( QString::fromLatin1( KGlobal::mainComponent().aboutData()->appName() ) + "/tips" );
+    d->addTips( KGlobal::mainComponent().aboutData()->appName() + "/tips" );
   } else {
     for ( QStringList::ConstIterator it = tipsFiles.begin(); it != tipsFiles.end(); ++it )
       d->addTips( *it );

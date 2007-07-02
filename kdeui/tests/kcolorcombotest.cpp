@@ -136,7 +136,7 @@ void KColorComboTest::quitApp()
 
 int main(int argc, char **argv)
 {
-    KAboutData about("kcolorcombotest", "kcolorcombotest", "version");
+    KAboutData about("kcolorcombotest", 0, ki18n("kcolorcombotest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication a;

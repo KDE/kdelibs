@@ -8,12 +8,13 @@
 int main(int argc, char **argv)
 {
 	KAboutData about("kdxspreview",
-		I18N_NOOP("KDXS Preview"),
-		"0.1",
-		I18N_NOOP("KNewstuff2 DXS Preview"),
-		KAboutData::License_GPL,
-		"(C) 2005, 2006 Josef Spillner",
 		0,
+		ki18n("KDXS Preview"),
+		"0.1",
+		ki18n("KNewstuff2 DXS Preview"),
+		KAboutData::License_GPL,
+		ki18n("(C) 2005, 2006 Josef Spillner"),
+		KLocalizedString(),
 		0,
 		"spillner@kde.org");
 

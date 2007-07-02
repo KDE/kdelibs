@@ -12,7 +12,7 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kselectactiontest", "KSelectActionTest", "kselectaction test app", "1.0" );
+    KCmdLineArgs::init( argc, argv, "kselectactiontest", 0, ki18n("KSelectActionTest"), "1.0", ki18n("kselectaction test app"));
     KApplication app;
 
     SelectActionTest* test = new SelectActionTest;

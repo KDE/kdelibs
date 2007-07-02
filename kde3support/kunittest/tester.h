@@ -147,8 +147,8 @@ SampleTest - 1 test passed, 1 test failed
  *
  * int main( int argc, char** argv )
  * {
- *     KAboutData about("SampleTests", I18N_NOOP("SampleTests"), version, description,
- *                     KAboutData::License_BSD, "(C) 2005 You!", 0, 0, "mail@provider");
+ *     KAboutData about("SampleTests", 0, ki18n("SampleTests"), version, ki18n(description),
+ *                     KAboutData::License_BSD, ki18n("(C) 2005 You!"), KLocalizedString(), 0, "mail@provider");
  *
  *     KCmdLineArgs::init(argc, argv, &about);
  *     KCmdLineArgs::addCmdLineOptions( options );

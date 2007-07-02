@@ -484,7 +484,7 @@ void KEditToolBar::slotDefault()
             if (QDir::isRelativePath(file))
             {
                 const KComponentData cData = client->componentData().isValid() ? client->componentData() : KGlobal::mainComponent();
-                file = KStandardDirs::locateLocal("data", QLatin1String( cData.componentName() + '/' ) + file);
+                file = KStandardDirs::locateLocal("data", cData.componentName() + '/' + file);
             }
             else
             {
@@ -506,7 +506,7 @@ void KEditToolBar::slotDefault()
         int slash = d->m_file.lastIndexOf('/')+1;
         if (slash)
             d->m_file = d->m_file.mid(slash);
-        QString xml_file = KStandardDirs::locateLocal("data", QLatin1String( KGlobal::mainComponent().componentName() + '/' ) + d->m_file);
+        QString xml_file = KStandardDirs::locateLocal("data", KGlobal::mainComponent().componentName() + '/' + d->m_file);
 
         if ( QFile::exists( xml_file ) )
             if ( !QFile::remove( xml_file ) )

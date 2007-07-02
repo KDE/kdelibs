@@ -103,7 +103,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
 
 int main(int argc, char **argv)
 {
-    KAboutData about("KGradientTest", "KGradientTest", "version");
+    KAboutData about("KGradientTest", 0, ki18n("KGradientTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication *app=new KApplication();

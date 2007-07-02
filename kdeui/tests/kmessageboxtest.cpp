@@ -65,7 +65,7 @@ void showResult(int test, int i)
 int main( int argc, char *argv[] )
 {
     int i, test;
-    KAboutData about("KMessageBoxTest", "KMessageBoxTest", "version");
+    KAboutData about("KMessageBoxTest", 0, ki18n("KMessageBoxTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     new KApplication();

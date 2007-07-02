@@ -20,7 +20,6 @@
 #ifndef DISPATCHER_P_H
 #define DISPATCHER_P_H
 
-#include <QtCore/QByteArray>
 #include <QtCore/QList>
 #include <QtCore/QPair>
 #include <QtCore/QMap>
@@ -46,8 +45,8 @@ class DispatcherPrivate : public QObject
 {
     Q_OBJECT
     public:
-        QMap<QByteArray, ComponentInfo> m_componentInfo;
-        QMap<QObject *, QByteArray> m_componentName;
+        QMap<QString, ComponentInfo> m_componentInfo;
+        QMap<QObject *, QString> m_componentName;
 
     public Q_SLOTS:
         void unregisterComponent(QObject *);

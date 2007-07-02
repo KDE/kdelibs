@@ -57,7 +57,7 @@ void KDesatWidget::paintEvent(QPaintEvent * /*ev*/)
 
 int main(int argc, char **argv)
 {
-    KAboutData about("KDesatTest", "KDesatTest", "version");
+    KAboutData about("KDesatTest", 0, ki18n("KDesatTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication *app=new KApplication();

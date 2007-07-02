@@ -22,14 +22,22 @@
 #include <kdecore_export.h>
 #include <QtCore/QBool>
 
+#include <klocale.h>
+
 template <class T> class QList;
-typedef QList<QByteArray> QByteArrayList;
 class QString;
+class QStringList;
+class QByteArray;
 class QDataStream;
 class KUrl;
 
+class KCmdLineArgs;
+class KCmdLineArgsPrivate;
+class KCmdLineArgsStatic;
+class KCmdLineOptionsPrivate;
+
 /**
- * @short Structure that holds command line options.
+ * @short Class that holds command line options.
  *
  * This class is intended to be used with the KCmdLineArgs class, which
  * provides convenient and powerful command line argument parsing and
@@ -37,35 +45,67 @@ class KUrl;
  *
  * @see KCmdLineArgs for additional usage information
  */
-struct KCmdLineOptions
+class KDECORE_EXPORT KCmdLineOptions
 {
-   /**
-    * The name of the argument as it should be called on the command line and
-    * appear in <i>myapp --help</i>.
-    *
-    * Note that if this option starts with "no" that you will need to test for
-    * the name without the "no" and the result will be the inverse of what is
-    * specified. i.e. if "nofoo" is the name of the option and
-    * <i>myapp --nofoo</i> is called:
-    *
-    * @code
-    * KCmdLineArgs::parsedArgs()->isSet("foo"); // false
-    * @endcode
-    */
-   const char *name;
-   /**
-    * The text description of the option as should appear in
-    * <i>myapp --help</i>.  This value should be wrapped with I18N_NOOP().
-    */
-   const char *description;
-   /**
-    * The default value for the option, if it is not specified on the
-    * command line.
-    */
-   const char *def; // Default
-};
+    friend class KCmdLineArgs;
+    friend class KCmdLineArgsStatic;
 
-#define KCmdLineLastOption { 0, 0, 0 }
+    public:
+    /**
+     * Constructor.
+     */
+    KCmdLineOptions ();
+
+    /**
+     * Copy constructor.
+     */
+    KCmdLineOptions (const KCmdLineOptions &options);
+
+    /**
+     * Assignment operator.
+     */
+    KCmdLineOptions& operator= (const KCmdLineOptions &options);
+
+    /**
+     * Destructor.
+     */
+    ~KCmdLineOptions ();
+
+    /**
+     * Add command line option, by providing its name, description, and
+     * possibly a default value. These will print out when <i>myapp --help</i>
+     * is called on the command line.
+     *
+     * Note that if the option name begins with "no" that you will need to test
+     * for the name without the "no" and the result will be the inverse of what
+     * is specified. i.e. if "nofoo" is the name of the option and
+     * <i>myapp --nofoo</i> is called:
+     *
+     * @code
+     * KCmdLineArgs::parsedArgs()->isSet("foo"); // false
+     * @endcode
+     *
+     * @param name option name
+     * @param description option description, made available for translation;
+     *                    can be left off
+     * @param defaultValue default option value, when the value is not specifed
+     *                     on the command line; can be left off
+     */
+    void add (const QByteArray &name,
+              const KLocalizedString &description = KLocalizedString(),
+              const QByteArray &defaultValue = QByteArray());
+
+    /**
+     * Add all options from another KCmdLineOptions object.
+     *
+     * @param options options to add
+     */
+    void add (const KCmdLineOptions &options);
+
+    private:
+
+    KCmdLineOptionsPrivate *d;
+};
 
 class KCmdLineArgsList;
 class KApplication;
@@ -88,9 +128,13 @@ class KAboutData;
  *  int main(int argc, char *argv[])
  *  {
  *     // Initialize command line args
- *     KCmdLineArgs::init(argc, argv, appName, programName, description, version);
+ *     KCmdLineArgs::init(argc, argv, appName, programName, version, description);
  *
- *     // Tell which options are supported
+ *     // Define the command line options using KCmdLineOptions
+ *     KCmdLineOptions options;
+ *     ....
+ *
+ *     // Register the supported options
  *     KCmdLineArgs::addCmdLineOptions( options );
  *
  *     // Add options from other components
@@ -115,13 +159,12 @@ class KAboutData;
  *        ....
  *
  *     // An option which takes an additional argument
- *     QByteArray anotherOptionArg = args->getOption("another-option");
+ *     QString anotherOptionArg = args->getOption("another-option");
  *
  *     // Arguments (e.g. files to open)
  *     for(int i = 0; i < args->count(); i++) // Counting start at 0!
  *     {
- *        // don't forget to convert to Unicode!
- *        openFile( QFile::decodeName( args->arg(i)));
+ *        openFile( args->arg(i));
  *        // Or more convenient:
  *        // openUrl( args->url(i));
  *
@@ -136,35 +179,31 @@ class KAboutData;
  *  KCmdLineOptions class. An example is shown below:
  *
  *  @code
- *  static const KCmdLineOptions options[] =
- *  {
- *     { "a", I18N_NOOP("A short binary option"), 0 },
- *     { "b \<file>", I18N_NOOP("A short option which takes an argument"), 0 },
- *     { "c \<speed>", I18N_NOOP("As above but with a default value"), "9600" },
- *     { "option1", I18N_NOOP("A long binary option, off by default"), 0 },
- *     { "nooption2", I18N_NOOP("A long binary option, on by default"), 0 },
- *     { ":", I18N_NOOP("Extra options:"), 0 },
- *     { "option3 \<file>", I18N_NOOP("A long option which takes an argument"), 0 },
- *     { "option4 \<speed>", I18N_NOOP("A long option which takes an argument, defaulting to 9600"), "9600" },
- *     { "d", 0, 0 },
- *     { "option5", I18N_NOOP("A long option which has a short option as alias"), 0 },
- *     { "e", 0, 0 },
- *     { "nooption6", I18N_NOOP("Another long option with an alias"), 0 },
- *     { "f", 0, 0 },
- *     { "option7 \<speed>", I18N_NOOP("'--option7 speed' is the same as '-f speed'"), 0 },
- *     { "!option8 \<cmd>", I18N_NOOP("All options following this one will be treated as arguments"), 0 },
- *     { "+file", I18N_NOOP("A required argument 'file'"), 0 },
- *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'"), 0 },
- *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'"), 0 },
- *     { "", I18N_NOOP("Additional help text not associated with any particular option"), 0 },
- *     KCmdLineLastOption // End of options.
- *  };
+ *  KCmdLineOptions options;
+ *  options.add("a", ki18n("A short binary option"));
+ *  options.add("b \<file>", ki18n("A short option which takes an argument"));
+ *  options.add("c \<speed>", ki18n("As above but with a default value"), "9600");
+ *  options.add("option1", ki18n("A long binary option, off by default"));
+ *  options.add("nooption2", ki18n("A long binary option, on by default"));
+ *  options.add(":", ki18n("Extra options:"));
+ *  options.add("option3 \<file>", ki18n("A long option which takes an argument"));
+ *  options.add("option4 \<speed>", ki18n("A long option which takes an argument, defaulting to 9600"), "9600");
+ *  options.add("d");
+ *  options.add("option5", ki18n("A long option which has a short option as alias"));
+ *  options.add("e");
+ *  options.add("nooption6", ki18n("Another long option with an alias"));
+ *  options.add("f");
+ *  options.add("option7 \<speed>", ki18n("'--option7 speed' is the same as '-f speed'"));
+ *  options.add("!option8 \<cmd>", ki18n("All options following this one will be treated as arguments"));
+ *  options.add("+file", ki18n("A required argument 'file'"));
+ *  options.add("+[arg1]", ki18n("An optional argument 'arg1'"));
+ *  options.add("!+command", ki18n("A required argument 'command', that can contain multiple words, even starting with '-'"));
+ *  options.add("", ki18n("Additional help text not associated with any particular option"));
  *  @endcode
  *
- *  The I18N_NOOP macro is used to indicate that these strings should be
- *  marked for translation. The actual translation is done by KCmdLineArgs.
- *  You can't use i18n() here because we are setting up a static data
- *  structure and can't do translations at compile time.
+ *  The ki18n calls are used for translation instead of the more usual i18n
+ *  calls, because the translation needs to be delayed until after the
+ *  message catalogs have been initialized.
  *
  *  Note that a program should define the options before any arguments.
  *
@@ -221,6 +260,7 @@ class KDECORE_EXPORT KCmdLineArgs
   friend class KApplication;
   friend class KUniqueApplication;
   friend class KCmdLineArgsList;
+  friend class KCmdLineArgsStatic;
 public:
   // Static functions:
 
@@ -237,20 +277,25 @@ public:
    *
    * This function should be called as the very first thing in
    *  your application.
-   * @param _argc As passed to @p main(...).
-   * @param _argv As passed to @p main(...).
-   * @param _appname The untranslated name of your application. This should
+   * @param argc As passed to @p main(...).
+   * @param argv As passed to @p main(...).
+   * @param appname The untranslated name of your application. This should
    *                match with @p argv[0].
+   * @param catalog Translation catalog name, if empty @p appname will be used.
    * @param programName A program name string to be used for display
-   *        purposes. This string should be marked for
-   *        translation. Example: I18N_NOOP("KEdit")
-   * @param _description A short description of what your application is about.
-   * @param _version A version.
+   *        purposes. This string should be marked for translation.
+   *        Example: ki18n("KEdit")
+   * @param version A version.
+   * @param description A short description of what your application is about.
+   *                    Also marked for translation.
    * @param stdargs KDE/Qt or no default parameters
    */
-   static void init(int _argc, char **_argv, const char *_appname,
-                    const char* programName, const char *_description,
-                    const char *_version,
+   static void init(int argc, char **argv,
+                    const QByteArray &appname,
+                    const QByteArray &catalog,
+                    const KLocalizedString &programName,
+                    const QByteArray &version,
+                    const KLocalizedString &description = KLocalizedString(),
                     StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE));
 
   /**
@@ -298,15 +343,12 @@ public:
    * The list of options should look like this:
    *
    * @code
-   * static KCmdLineOptions options[] =
-   * {
-   *    { "option1 \<argument>", I18N_NOOP("Description 1"), "my_extra_arg" },
-   *    { "o", 0, 0 },
-   *    { "option2", I18N_NOOP("Description 2"), 0 },
-   *    { "nooption3", I18N_NOOP("Description 3"), 0 },
-   *    { "+file", I18N_NOOP("A required argument 'file'"), 0 },
-   *    KCmdLineLastOption
-   * }
+   * KCmdLineOptions options;
+   * options.add("option1 \<argument>", ki18n("Description 1"), "my_extra_arg");
+   * options.add("o");
+   * options.add("option2", ki18n("Description 2"));
+   * options.add("nooption3", ki18n("Description 3"));
+   * options.add("+file", ki18n("A required argument 'file'"));
    * @endcode
    *
    * @li "option1" is an option that requires an additional argument,
@@ -351,13 +393,14 @@ public:
    *
    * @param options A list of options that your code supplies.
    * @param name the name of the option list, as displayed by
-   *             the help output. Can be 0.
-   * @param id A name with which these options can be identified, can be 0.
-   * @param afterId The options are inserted after this set of options, can be 0.
+   *             the help output. Can be empty.
+   * @param id A name with which these options can be identified, can be empty.
+   * @param afterId The options are inserted after this set of options, can be empty.
    */
-  static void addCmdLineOptions( const KCmdLineOptions *options,
-				 const char *name=0, const char *id = 0,
-				 const char *afterId=0);
+  static void addCmdLineOptions(const KCmdLineOptions &options,
+                                const KLocalizedString &name = KLocalizedString(),
+                                const QByteArray &id = QByteArray(),
+                                const QByteArray &afterId = QByteArray());
 
   /**
    * Access parsed arguments.
@@ -366,9 +409,9 @@ public:
    * handles. If unknown command-line arguments are encountered the program
    * is aborted and usage information is shown.
    *
-   * @param id The name of the options you are interested in, can be 0.
+   * @param id The name of the options you are interested in, can be empty.
    */
-  static KCmdLineArgs *parsedArgs(const char *id=0);
+  static KCmdLineArgs *parsedArgs(const QByteArray &id = QByteArray());
 
   /**
    * Get the CWD (Current Working Directory) associated with the
@@ -385,22 +428,22 @@ public:
    * Get the appname according to argv[0].
    * @return the name of the application
    **/
-  static const char *appName();
+  static QString appName();
 
   /**
    * Print the usage help to stdout and exit.
    *
-   * @param id if 0, print all options. If id is set, only print the
+   * @param id if empty, print all options. If id is set, only print the
    *        option specified by id. The id is the value set by
    *        addCmdLineOptions().
    **/
-  static void usage(const char *id = 0);
+  static void usage(const QByteArray &id = QByteArray());
 
   /**
    * Print an error to stderr and the usage help to stdout and exit.
    * @param error the error to print
    **/
-  static void usage(const QString &error);
+  static void usageError(const QString &error);
 
   /**
    * Enable i18n to be able to print a translated error message.
@@ -419,13 +462,10 @@ public:
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
    *  @code
-   *    { "option \<argument>", I18N_NOOP("Description"), "default" }
+   *    options.add("option \<argument>", ki18n("Description"), "default");
    *  @endcode
    *  You cannot test for the presence of an alias - you must always
    *  test for the full option.
-   *
-   *  @note When an option is locale dependant you have to convert
-   *        the QByteArray by using QString::fromLocal8Bit().
    *
    *  @param option The name of the option without '-'.
    *
@@ -434,7 +474,7 @@ public:
    *          If the option was present more than once, the value of the
    *          last occurrence is used.
    */
-  QByteArray getOption(const char *option) const;
+  QString getOption(const QByteArray &option) const;
 
   /**
    *  Read out all occurrences of a string option.
@@ -442,7 +482,7 @@ public:
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
    *  @code
-   *    { "option \<argument>", I18N_NOOP("Description"), "default" }
+   *    options.add("option \<argument>", ki18n("Description"), "default");
    *  @endcode
    *  You cannot test for the presence of an alias - you must always
    *  test for the full option.
@@ -452,7 +492,7 @@ public:
    *  @return A list of all option values. If no option was present
    *          on the command line, an empty list is returned.
    */
-  QByteArrayList getOptionList(const char *option) const;
+  QStringList getOptionList(const QByteArray &option) const;
 
   /**
    *  Read out a boolean option or check for the presence of string option.
@@ -468,7 +508,7 @@ public:
    *  the KCmdLineOptions list) and was not specifically turned on in
    *  the command line.
    */
-  bool isSet(const char *option) const;
+  bool isSet(const QByteArray &option) const;
 
   /**
    *  Read the number of arguments that aren't options (but,
@@ -484,9 +524,9 @@ public:
    *  @param n The argument to read. 0 is the first argument.
    *           count()-1 is the last argument.
    *
-   *  @return A @p const @p char @p * pointer to the n'th argument.
+   *  @return n-th argument
    */
-  const char *arg(int n) const;
+  QString arg(int n) const;
 
   /**
    *  Read out an argument representing a URL.
@@ -509,7 +549,7 @@ public:
    * @param urlArg the argument
    * @return the url.
    */
-  static KUrl makeURL( const char * urlArg );
+  static KUrl makeURL( const QByteArray &urlArg );
 
   /**
    * Made public for apps that don't use KCmdLineArgs
@@ -517,15 +557,8 @@ public:
    * directory in case makeURL needs it.
    * @param cwd the new working directory
    */
-  static void setCwd( const char * cwd );
+  static void setCwd( const QByteArray &cwd );
 
-  /**
-   * Made public for apps that don't use KCmdLineArgs
-   * To be done before makeURL, to set the current working
-   * directory in case makeURL needs it.
-   * @param cwd the new working directory
-   */
-  static void setCwd( const QString & cwd );
   /**
    *  Clear all options and arguments.
    */
@@ -584,8 +617,8 @@ protected:
    * @internal
    *  Constructor.
    */
-  KCmdLineArgs( const KCmdLineOptions *_options, const char *_name,
-                const char *_id);
+  KCmdLineArgs( const KCmdLineOptions &_options, const KLocalizedString &_name,
+                const QByteArray &_id);
 
   /**
    *  @internal use only.
@@ -597,29 +630,6 @@ protected:
   ~KCmdLineArgs();
 
 private:
-  /**
-   * @internal
-   *
-   * Checks what to do with a single option
-   */
-  static void findOption(const char *_opt, QByteArray opt, int &i, bool enabled, bool &moreOptions);
-
-  /**
-   * @internal
-   *
-   * Parse all arguments, verify correct syntax and put all arguments
-   * where they belong.
-   */
-  static void parseAllArgs();
-
-  /**
-   * @internal
-   *
-   * Remove named options.
-   *
-   * @param id The name of the options to be removed.
-   */
-  static void removeArgs(const char *id);
 
   /**
    * @internal for KUniqueApplication only:
@@ -627,41 +637,6 @@ private:
    * Save all but the Qt and KDE arguments to a stream.
    */
   static void saveAppArgs( QDataStream &);
-
-  /**
-   * @internal
-   *
-   *  Set a boolean option
-   */
-  void setOption(const QByteArray &option, bool enabled);
-
-  /**
-   * @internal
-   *
-   *  Set a string option
-   */
-  void setOption(const QByteArray &option, const char *value);
-
-  /**
-   * @internal
-   *
-   * Add an argument
-   */
-  void addArgument(const char *argument);
-
-  /**
-   * @internal
-   *
-   * Save to a stream.
-   */
-  void save( QDataStream &) const;
-
-  /**
-   * @internal
-   *
-   * Restore from a stream.
-   */
-  void load( QDataStream &);
 
   /**
    * @internal for KApplication only
@@ -678,23 +653,9 @@ private:
    * This function makes KCmdLineArgs ignore all unknown options as well as
    * all arguments.
    */
-  static void initIgnore(int _argc, char **_argv, const char *_appname);
+  static void initIgnore(int _argc, char **_argv, const QByteArray &_appname);
 
-  static void printQ(const QString &msg);
-
-  static KCmdLineArgsList *argsList; // All options.
-  static const KAboutData *about;
-
-  static int argc; // The original argc
-  static char **argv; // The original argv
-  static bool parsed; // Whether we have parsed the arguments since calling init
-  static bool ignoreUnknown; // Ignore unknown options and arguments
-  static QString mCwd; // Current working directory. Important for KUnqiueApp!
-  static bool parseArgs;
-  static StdCmdLineArgs mStdargs;
-
-  class Private;
-  Private *const d;
+  KCmdLineArgsPrivate *const d;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCmdLineArgs::StdCmdLineArgs)

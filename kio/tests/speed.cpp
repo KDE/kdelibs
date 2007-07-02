@@ -55,15 +55,12 @@ void SpeedTest::finished(KJob*) {
     qApp->quit();
 }
 
-static KCmdLineOptions options[] =
-{
-  { "+[URL]", "the URL to list", 0 },
-  KCmdLineLastOption
-};
-
 int main(int argc, char **argv) {
 
-    KCmdLineArgs::init( argc, argv, "speedapp", "SpeedApp", "A KIO::listRecursive testing tool", "0.0" );
+    KCmdLineArgs::init( argc, argv, "speedapp", 0, ki18n("SpeedApp"), "0.0", ki18n("A KIO::listRecursive testing tool"));
+
+    KCmdLineOptions options;
+    options.add("+[URL]", ki18n("the URL to list"));
 
     KCmdLineArgs::addCmdLineOptions( options );
 

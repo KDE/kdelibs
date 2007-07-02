@@ -21,16 +21,12 @@
 #include <klocale.h>
 #include <kcmdlineargs.h>
 
-static const KCmdLineOptions options[] =
-{
-    { "+url", 0, 0 },
-    KCmdLineLastOption
-};
-
 int main( int argc, char **argv )
 {
-    KLocale::setMainCatalog("kdelibs");
-    KCmdLineArgs::init( argc, argv, "kmailservice", I18N_NOOP("KMailService"), I18N_NOOP("Mail service"), "unknown" );
+    KCmdLineOptions options;
+    options.add("+url");
+
+    KCmdLineArgs::init( argc, argv, "kmailservice", "kdelibs", ki18n("KMailService"), "unknown", ki18n("Mail service") );
     KCmdLineArgs::addCmdLineOptions( options );
 
     KApplication a( false );

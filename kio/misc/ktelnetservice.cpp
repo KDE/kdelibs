@@ -29,17 +29,13 @@
 #include <klocale.h>
 #include <kconfig.h>
 
-static const KCmdLineOptions options[] =
-{
-    {"+url", 0, 0},
-    KCmdLineLastOption
-};
-
 int main(int argc, char **argv)
 {
-    KLocale::setMainCatalog("kdelibs");
-    KCmdLineArgs::init(argc, argv, "ktelnetservice", I18N_NOOP("telnet service"),
-               I18N_NOOP("telnet protocol handler"), "unknown");
+    KCmdLineOptions options;
+    options.add("+url");
+
+    KCmdLineArgs::init(argc, argv, "ktelnetservice", "kdelibs", ki18n("telnet service"),
+               "unknown", ki18n("telnet protocol handler"));
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication app;

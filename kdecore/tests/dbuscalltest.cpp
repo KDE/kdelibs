@@ -7,7 +7,7 @@
 
 int main( int argc, char** argv )
 {
-    KAboutData about("DBusCallTest", "DBusCallTest", "version");
+    KAboutData about("DBusCallTest", 0, ki18n("DBusCallTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 //   KApplication app(false);
 

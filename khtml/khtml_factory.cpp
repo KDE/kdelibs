@@ -163,18 +163,18 @@ const KComponentData &KHTMLFactory::componentData()
 
   if ( !s_componentData )
   {
-    s_about = new KAboutData( "khtml", I18N_NOOP( "KHTML" ), "4.0",
-                              I18N_NOOP( "Embeddable HTML component" ),
+    s_about = new KAboutData( "khtml", 0, ki18n( "KHTML" ), "4.0",
+                              ki18n( "Embeddable HTML component" ),
                               KAboutData::License_LGPL );
-    s_about->addAuthor( "Lars Knoll", 0, "knoll@kde.org" );
-    s_about->addAuthor( "Antti Koivisto", 0, "koivisto@kde.org" );
-    s_about->addAuthor( "Waldo Bastian", 0, "bastian@kde.org" );
-    s_about->addAuthor( "Dirk Mueller", 0, "mueller@kde.org" );
-    s_about->addAuthor( "Peter Kelly", 0, "pmk@kde.org" );
-    s_about->addAuthor( "Torben Weis", 0, "weis@kde.org" );
-    s_about->addAuthor( "Martin Jones", 0, "mjones@kde.org" );
-    s_about->addAuthor( "Simon Hausmann", 0, "hausmann@kde.org" );
-    s_about->addAuthor( "Tobias Anton", 0, "anton@stud.fbi.fh-darmstadt.de" );
+    s_about->addAuthor(ki18n("Lars Knoll"), KLocalizedString(), "knoll@kde.org");
+    s_about->addAuthor(ki18n("Antti Koivisto"), KLocalizedString(), "koivisto@kde.org");
+    s_about->addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
+    s_about->addAuthor(ki18n("Dirk Mueller"), KLocalizedString(), "mueller@kde.org");
+    s_about->addAuthor(ki18n("Peter Kelly"), KLocalizedString(), "pmk@kde.org");
+    s_about->addAuthor(ki18n("Torben Weis"), KLocalizedString(), "weis@kde.org");
+    s_about->addAuthor(ki18n("Martin Jones"), KLocalizedString(), "mjones@kde.org");
+    s_about->addAuthor(ki18n("Simon Hausmann"), KLocalizedString(), "hausmann@kde.org");
+    s_about->addAuthor(ki18n("Tobias Anton"), KLocalizedString(), "anton@stud.fbi.fh-darmstadt.de");
 
     s_componentData = new KComponentData( s_about );
   }

@@ -93,7 +93,7 @@ void KBlendWidget::paintEvent(QPaintEvent * /*ev*/)
 
 int main(int argc, char **argv)
 {
-    KAboutData about("KBlendTest", "KBlendTest", "version");
+    KAboutData about("KBlendTest", 0, ki18n("KBlendTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication app;

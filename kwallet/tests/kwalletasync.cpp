@@ -46,7 +46,7 @@ void WalletReceiver::walletOpened( bool got )
 
 int main( int argc, char *argv[] )
 {
-	KAboutData aboutData( "kwalletasync", "kwalletasync", "version" );
+	KAboutData aboutData("kwalletasync", 0, ki18n("kwalletasync"), "version");
 	KComponentData componentData(&aboutData);
 	QApplication app( argc, argv );
 

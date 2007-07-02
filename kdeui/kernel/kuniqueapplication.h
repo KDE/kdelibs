@@ -100,7 +100,7 @@ public:
    * Typically this is used like:
    * \code
    * int main(int argc, char **argv) {
-   *    KAboutData about("myappname", "myAppName", .....);
+   *    KAboutData about("myappname", 0, ki18n("myAppName"), .....);
    *    KCmdLineArgs::init(argc, argv, &about);
    *    KCmdLineArgs::addCmdLineOptions( myCmdOptions );
    *    KUniqueApplication::addCmdLineOptions();

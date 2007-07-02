@@ -144,10 +144,10 @@ void PartBase::setComponentData(const KComponentData &componentData, bool bLoadP
     Q_D(PartBase);
 
     KXMLGUIClient::setComponentData(componentData);
-    KGlobal::locale()->insertCatalog(componentData.componentName());
+    KGlobal::locale()->insertCatalog(componentData.catalogName());
     // install 'instancename'data resource type
-    KGlobal::dirs()->addResourceType(componentData.componentName() + "data",
-                                     "data", QLatin1String(componentData.componentName()));
+    KGlobal::dirs()->addResourceType((componentData.componentName() + "data").toUtf8(),
+                                     "data", componentData.componentName());
     if (bLoadPlugins) {
         loadPlugins(d->m_obj, this, componentData);
     }

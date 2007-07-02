@@ -32,17 +32,13 @@
 
 //#include "kdirmodeltest_gui.h"
 
-static const KCmdLineOptions options[] =
-{
-  {"+[directory ...]", "Directory(ies) to model", 0},
-  KCmdLineLastOption
-};
-
-
 int main (int argc, char **argv)
 {
-  KCmdLineArgs::init(argc, argv, "kdirmodeltest", "KDirModelTest",
-		     "Test for KDirModel", "1.0");
+  KCmdLineOptions options;
+  options.add("+[directory ...]", ki18n("Directory(ies) to model"));
+
+  KCmdLineArgs::init(argc, argv, "kdirmodeltest", 0, ki18n("KDirModelTest"),
+		     "1.0", ki18n("Test for KDirModel"));
   KCmdLineArgs::addCmdLineOptions( options );
   KCmdLineArgs::addStdCmdLineOptions();
 

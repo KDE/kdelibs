@@ -37,14 +37,11 @@ void output( const KUrl& u )
 int main(int argc, char **argv)
 {
     const char *version = "0.5";
-    const char *description = "Unit test for .netrc and kionetrc parser.";
-    KCmdLineOptions options[] =
-    {
-        { "+command", "[url1,url2 ,...]", 0 },
-        KCmdLineLastOption
-    };
+    KLocalizedString description = ki18n("Unit test for .netrc and kionetrc parser.");
+    KCmdLineOptions options;
+    options.add("+command", ki18n("[url1,url2 ,...]"));
 
-    KCmdLineArgs::init( argc, argv, "kionetrctest", "KIO-netrc-test", description, version );
+    KCmdLineArgs::init( argc, argv, "kionetrctest", 0, ki18n("KIO-netrc-test"), version, description );
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();

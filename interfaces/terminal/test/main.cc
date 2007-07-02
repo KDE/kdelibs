@@ -31,7 +31,7 @@ Win::Win()
 
 int main( int argc, char** argv )
 {
-    KAboutData* about = new KAboutData( "tetest", "TETest", "0.1" );
+    KAboutData* about = new KAboutData( "tetest", 0, ki18n("TETest"), "0.1" );
     KCmdLineArgs::init( argc, argv, about );
     KApplication a;
     Win* win = new Win();

@@ -15,7 +15,7 @@
 #include <kcmdlineargs.h>
 int main( int argc, char ** argv )
 {
-    KCmdLineArgs::init( argc, argv, "helpviewer", 0, 0, 0, 0);
+    KCmdLineArgs::init( argc, argv, "helpviewer", 0, ki18n("helpviewer"), 0);
     KApplication a;
 
     QString home;

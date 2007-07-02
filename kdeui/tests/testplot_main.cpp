@@ -21,21 +21,15 @@
 #include <kaboutdata.h>
 #include <klocale.h>
 
-static const char description[] = I18N_NOOP("KPlotWidget test program");
-static const char notice[] = I18N_NOOP("Performs various tests of KPlotWidget");
-
-static KCmdLineOptions options[] =
-{
-	KCmdLineLastOption
-};
-
 int main( int argc, char *argv[] )
 {
-	KAboutData aboutData( "testplot", I18N_NOOP("Test KPlotWidget"),
-				"0.1", description, KAboutData::License_GPL,
-				I18N_NOOP("(c) 2006, Jason Harris"), notice,
+	KAboutData aboutData( "testplot", 0, ki18n("Test KPlotWidget"), "0.1",
+				ki18n("KPlotWidget test program"),
+				KAboutData::License_GPL,
+				ki18n("(c) 2006, Jason Harris"),
+				ki18n("Performs various tests of KPlotWidget"),
 				"http://edu.kde.org/");
-	aboutData.addAuthor("Jason Harris", 0,
+	aboutData.addAuthor(ki18n("Jason Harris"), ki18n("no task"),
 				"kstars@30doradus.org", "http://edu.kde.org/");
 
 	KCmdLineArgs::init( argc, argv, &aboutData );

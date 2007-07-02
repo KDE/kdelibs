@@ -38,8 +38,8 @@
 
 int main( int argc, char **argv )
 {
-  KAboutData aboutData( "example", I18N_NOOP("autoconfig example"), "0.1" );
-  aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
+  KAboutData aboutData( "example", 0, ki18n("autoconfig example"), "0.1" );
+  aboutData.addAuthor(ki18n("Cornelius Schumacher"), KLocalizedString(), "schumacher@kde.org");
 
   KCmdLineArgs::init( argc, argv, &aboutData );
 

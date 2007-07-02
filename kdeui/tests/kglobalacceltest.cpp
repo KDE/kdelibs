@@ -7,7 +7,7 @@
 
 int main( int argc, char **argv )
 {
-    KAboutData aboutData( "kglobalacceltest", "kglobalacceltest", "1.0" );
+    KAboutData aboutData( "kglobalacceltest", 0, ki18n("kglobalacceltest"), "1.0" );
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 

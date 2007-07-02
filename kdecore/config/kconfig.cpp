@@ -77,7 +77,7 @@ KConfig::KConfig(const KComponentData &componentData,
     QString fileName = _fileName;
 
     if (fileName.isEmpty() &&
-        componentData.aboutData()->appName()) {
+        !componentData.aboutData()->appName().isEmpty()) {
         fileName = componentData.aboutData()->appName();
         fileName.append("rc");
     }
@@ -122,7 +122,7 @@ KConfig::KConfig( const QString& _fileName,
     QString fileName = _fileName;
 
     if (fileName.isEmpty() &&
-        componentData().aboutData()->appName()) {
+        !componentData().aboutData()->appName().isEmpty()) {
         fileName = componentData().aboutData()->appName();
         fileName.append("rc");
     }
@@ -168,7 +168,7 @@ KConfig::KConfig( const char* resType,
     QString fileName = _fileName;
 
     if (fileName.isEmpty() &&
-        componentData().aboutData()->appName()) {
+        !componentData().aboutData()->appName().isEmpty()) {
         fileName = componentData().aboutData()->appName();
         fileName.append("rc");
     }

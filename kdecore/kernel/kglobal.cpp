@@ -165,7 +165,7 @@ void KGlobal::setActiveComponent(const KComponentData &c)
     PRIVATE_DATA;
     d->activeComponent = c;
     if (c.isValid() && d->locale) {
-        d->locale->setActiveCatalog(QString::fromUtf8(c.componentName()));
+        d->locale->setActiveCatalog(c.catalogName());
     }
 }
 
@@ -218,7 +218,7 @@ QString KGlobal::caption()
     // Caption set from command line ?
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     if (args && args->isSet("caption")) {
-        return QString::fromLocal8Bit(args->getOption("caption"));
+        return args->getOption("caption");
     } else {
         // We have some about data ?
         if (d->mainComponent.aboutData()) {

@@ -3,7 +3,7 @@
 #include <kcmdlineargs.h>
 
 int main(int argc, char **argv) {
-	KCmdLineArgs::init(argc, argv, "safesitetest", 0, 0, 0, 0);
+	KCmdLineArgs::init(argc, argv, "safesitetest", 0, ki18n("safesitetest"), 0);
 	KApplication app;
 
 	SafeSite::Report *r = SafeSite::Agent::obtainReport(KUrl("http://www.example.com/"));

@@ -270,7 +270,7 @@ static void testReplacementHistory()
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kreplacetest", "KReplaceTest", "kreplace test", 0);
+    KCmdLineArgs::init(argc, argv, "kreplacetest", 0, ki18n("KReplaceTest"), 0, ki18n("kreplace test"));
     //KApplication::disableAutoDcopRegistration();
     KApplication app;
 

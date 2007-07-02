@@ -188,12 +188,12 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         tabWidget->addTab(creditsTextBrowser, i18n("&Thanks To"));
     }
 
-    const QList<KAboutTranslator> translatorList = aboutData->translators();
+    const QList<KAboutPerson> translatorList = aboutData->translators();
 
     if(translatorList.count() > 0) {
         QString translatorPageText = QString();
 
-        QList<KAboutTranslator>::ConstIterator it;
+        QList<KAboutPerson>::ConstIterator it;
         for(it = translatorList.begin(); it != translatorList.end(); ++it) {
             translatorPageText += QString("<br />%1<br />").arg((*it).name());
             if (!(*it).emailAddress().isEmpty())

@@ -26,9 +26,8 @@
 
 int main( int argc, char *argv[] )
 {
-	KLocale::setMainCatalog("kdelibs");
 	QApplication::setColorSpec( QApplication::CustomColor );
-	KAboutData about("KColorDialogTest", "KColorDialogTest", "version");
+	KAboutData about("KColorDialogTest", "kdelibs", ki18n("KColorDialogTest"), "version");
 	KCmdLineArgs::init(argc, argv, &about);
 	//KApplication::disableAutoDcopRegistration();
 

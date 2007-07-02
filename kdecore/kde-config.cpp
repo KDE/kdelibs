@@ -16,24 +16,6 @@
 #include <kconfiggroup.h>
 #include <kkernel_win.h>
 
-static const char *description = I18N_NOOP("A little program to output installation paths");
-
-static KCmdLineOptions options[] =
-{
-    { "expandvars", I18N_NOOP("Left for legacy support"), 0 },
-    { "prefix",	   I18N_NOOP("Compiled in prefix for KDE libraries"), 0 },
-    { "exec-prefix", I18N_NOOP("Compiled in exec_prefix for KDE libraries"), 0 },
-    { "libsuffix", I18N_NOOP("Compiled in library path suffix"), 0 },
-    { "localprefix", I18N_NOOP("Prefix in $HOME used to write files"), 0},
-    { "version",   I18N_NOOP("Compiled in version string for KDE libraries"), 0 },
-    { "types",     I18N_NOOP("Available KDE resource types"), 0 },
-    { "path type", I18N_NOOP("Search path for resource type"), 0 },
-    { "locate filename", I18N_NOOP("Find filename inside the resource type given to --path"), 0},
-    { "userpath type", I18N_NOOP("User path: desktop|autostart|document"), 0 },
-    { "install type", I18N_NOOP("Prefix to install resource files to"), 0},
-    { 0,0,0 }
-};
-
 static void printResult(const QString &s)
 {
     if (s.isEmpty())
@@ -46,13 +28,27 @@ static void printResult(const QString &s)
 
 int main(int argc, char **argv)
 {
-    KLocale::setMainCatalog("kdelibs");
-    KAboutData about("kde4-config", "kde4-config", "1.0", description, KAboutData::License_GPL, "(C) 2000 Stephan Kulow");
+    KAboutData about("kde4-config", "kdelibs", ki18n("kde4-config"), "1.0",
+                     ki18n("A little program to output installation paths"),
+                     KAboutData::License_GPL,
+                     ki18n("(C) 2000 Stephan Kulow"));
     KCmdLineArgs::init( argc, argv, &about);
 
+    KCmdLineOptions options;
+    options.add("expandvars",  ki18n("Left for legacy support"));
+    options.add("prefix",      ki18n("Compiled in prefix for KDE libraries"));
+    options.add("exec-prefix", ki18n("Compiled in exec_prefix for KDE libraries"));
+    options.add("libsuffix",   ki18n("Compiled in library path suffix"));
+    options.add("localprefix", ki18n("Prefix in $HOME used to write files"));
+    options.add("version",     ki18n("Compiled in version string for KDE libraries"));
+    options.add("types",       ki18n("Available KDE resource types"));
+    options.add("path type",       ki18n("Search path for resource type"));
+    options.add("locate filename", ki18n("Find filename inside the resource type given to --path"));
+    options.add("userpath type",   ki18n("User path: desktop|autostart|document"));
+    options.add("install type",    ki18n("Prefix to install resource files to"));
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
-    KComponentData a("kde4-config");
+    KComponentData a(&about);
     (void)KGlobal::dirs(); // trigger the creation
     (void)KGlobal::config();
 

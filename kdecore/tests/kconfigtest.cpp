@@ -386,10 +386,15 @@ void KConfigTest::testDelete()
 
 void KConfigTest::testKAboutDataOrganizationDomain()
 {
-    KAboutData data( "app", "program", "version", 0, KAboutData::License_LGPL,
-                     0, "hello world", "http://www.koffice.org" );
+    KAboutData data( "app", 0, ki18n("program"), "version",
+                     ki18n("description"), KAboutData::License_LGPL,
+                     ki18n("copyright"), ki18n("hello world"),
+                     "http://www.koffice.org" );
     QCOMPARE( data.organizationDomain(), QString::fromLatin1( "koffice.org" ) );
-    KAboutData data2( "app", "program", "version", 0, KAboutData::License_LGPL,
-                     0, "hello world", "http://edu.kde.org/kig" );
+
+    KAboutData data2( "app", 0, ki18n("program"), "version",
+                      ki18n("description"), KAboutData::License_LGPL,
+                      ki18n("copyright"), ki18n("hello world"),
+                      "http://edu.kde.org/kig" );
     QCOMPARE( data2.organizationDomain(), QString::fromLatin1( "kde.org" ) );
 }

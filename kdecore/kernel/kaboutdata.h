@@ -25,12 +25,14 @@
 #include <kdecore_export.h>
 #include <QtCore/QString>
 
+#include <klocale.h>
+
 template <class T> class QList;
-class KLocalizedString;
 class QVariant;
+class KAboutData;
 
 /**
- * This structure is used to store information about a person or developer.
+ * This class is used to store information about a person or developer.
  * It can store the person's name, a task, an email address and a
  * link to a home page. This class is intended for use in the
  * KAboutData class, but it can be used elsewhere as well.
@@ -43,36 +45,42 @@ class QVariant;
  * with a program and re-using data from one of them:
  *
  * @code
- * KAboutData about("khello", I18N_NOOP("KHello"), "0.1",
- *                   I18N_NOOP("A KDE version of Hello, world!"),
+ * KAboutData about("khello", "khello", ki18n("KHello"), "0.1",
+ *                   k18n("A KDE version of Hello, world!"),
  *                   KAboutData::License_LGPL,
- *                   I18N_NOOP("Copyright (c) 2003 Developer"));
+ *                   ki18n("Copyright (c) 2003 Developer"));
  *
- * about.addAuthor("Joe Developer", I18N_NOOP("developer"), "joe@host.com", 0);
+ * about.addAuthor(ki18n("Joe Developer"), ki18n("developer"), "joe@host.com", 0);
  * QList<KAboutPerson> people = about.authors();
  * about.addCredit(people[0].name(), people[0].task());
  * @endcode
+ *
+ * @note Instead of the more usual i18n calls, for translatable text the ki18n
+ * calls are used to produce KLocalizedStrings, which can delay the translation
+ * lookup. This is necessary because the translation catalogs are usualy not
+ * yet initialized at the point where KAboutData is constructed.
  *
  * @bc KDE4
  */
 class KDECORE_EXPORT KAboutPerson
 {
+    friend class KAboutData;
 public:
     /**
      * Convenience constructor
      *
      * @param name The name of the person.
      *
-     * @param task The task of this person. This string should be
-     *              marked for translation, e.g. use
-     *              I18N_NOOP() on it.
+     * @param task The task of this person.
      *
      * @param emailAddress The email address of the person.
      *
      * @param webAddress Home page of the person.
      */
-    explicit KAboutPerson( const char *name=0, const char *task=0,
-                           const char *emailAddress=0, const char *webAddress=0 );
+    explicit KAboutPerson( const KLocalizedString &name,
+                           const KLocalizedString &task = KLocalizedString(),
+                           const QByteArray &emailAddress = QByteArray(),
+                           const QByteArray &ewebAddress = QByteArray() );
 
     /**
      * Copy constructor.  Performs a deep copy.
@@ -92,94 +100,40 @@ public:
     /**
      * The person's name
      * @return the person's name (can be QString(), if it has been
-     *           constructed with a NULL name)
+     *           constructed with an empty name)
      */
     QString name() const;
 
     /**
      * The person's task
      * @return the person's task (can be QString(), if it has been
-     *           constructed with a NULL task)
+     *           constructed with an empty task)
      */
     QString task() const;
 
     /**
      * The person's email address
      * @return the person's email address (can be QString(), if it has been
-     *           constructed with a NULL email)
+     *           constructed with an empty email)
      */
     QString emailAddress() const;
 
     /**
      * The home page or a relevant link
      * @return the persons home page (can be QString(), if it has been
-     *           constructed with a NULL home page)
+     *           constructed with an empty home page)
      */
     QString webAddress() const;
 
 private:
+    /**
+     * @internal Used by KAboutData to construct translator data.
+     */
+    explicit KAboutPerson( const QString &name, const QString &email );
+
     class Private;
     Private *const d;
 };
-
-/**
- * This structure is used to store information about a translator.
- * It can store the translator's name and an email address.
- * This class is intended for use in the KAboutData class,
- * but it can be used elsewhere as well.
- * Normally you should at least define the translator's name.
- *
- * It's not possible to use KAboutPerson for this, because
- * KAboutPerson stores internally only const char* pointers, but the
- * translator information is generated dynamically from the translation
- * of a dummy string.
-*/
-class KDECORE_EXPORT KAboutTranslator
-{
-public:
-    /**
-     * Convenience constructor
-     *
-     * @param name The name of the person.
-     *
-     * @param emailAddress The email address of the person.
-     */
-    explicit KAboutTranslator(const QString & name=QString(),
-                              const QString & emailAddress=QString());
-
-    /**
-     * Copy constructor.  Performs a deep copy.
-     * @param other object to copy
-     */
-    KAboutTranslator(const KAboutTranslator& other);
-
-    ~KAboutTranslator();
-
-    /**
-     * Assignment operator.  Performs a deep copy.
-     * @param other object to copy
-     */
-    KAboutTranslator& operator=(const KAboutTranslator& other);
-
-    /**
-     * The translator's name
-     * @return the translators's name (can be QString(), if it has been
-     *           constructed with a null name)
-     */
-    QString name() const;
-
-    /**
-     * The translator's email
-     * @return the translator's email address (can be QString(), if it has been
-     *           constructed with a null email)
-     */
-    QString emailAddress() const;
-
-private:
-    class Private;
-    Private *const d;
-};
-
 
 /**
  * This class is used to store information about a program. It can store
@@ -190,6 +144,11 @@ private:
  * Currently, the values set here are shown by the "About" box
  * (see KAboutDialog), used by the bug report dialog (see KBugReport),
  * and by the help shown on command line (see KCmdLineArgs).
+ *
+ * @note Instead of the more usual i18n calls, for translatable text the ki18n
+ * calls are used to produce KLocalizedStrings, which can delay the translation
+ * lookup. This is necessary because the translation catalogs are usualy not
+ * yet initialized at the point where KAboutData is constructed.
  *
  * @short Holds information needed by the "About" box and other
  * classes.
@@ -231,22 +190,26 @@ class KDECORE_EXPORT KAboutData
      *
      * @param appName The program name used internally. Example: "kedit"
      *
+     * @param catalogName The translation catalog name; if null or empty, the
+     *        @p appName will be used. You may want the catalog name to
+     *        differ from program name, for example, when you want to group
+     *        translations of several smaller utilities under the same catalog.
+     *
      * @param programName A displayable program name string. This string
-     *        should be marked for translation. Example: I18N_NOOP("KEdit")
+     *        should be marked for translation. Example: ki18n("KEdit")
      *
      * @param version The program version string.
      *
      * @param shortDescription A short description of what the program does.
      *        This string should be marked for translation.
-     *        Example: I18N_NOOP("A simple text editor.")
+     *        Example: ki18n("A simple text editor.")
      *
      * @param licenseType The license identifier. Use setLicenseText if
      *        you use a license not predefined here.
      *
      * @param copyrightStatement A copyright statement, that can look like this:
-     *        "(c) 1999-2000, Name". The string specified here is not modified
-     *        in any manner. The author information from addAuthor is not
-     *        used.
+     *        ki18n("(c) 1999-2000, Name"). The string specified here is not
+     *        taken verbatim; the author information from addAuthor is not used.
      *
      * @param text Some free form text, that can contain any kind of
      *        information. The text can contain newlines. This string
@@ -260,16 +223,17 @@ class KDECORE_EXPORT KAboutData
      *        This defaults to the kde.org bug system.
      *
      */
-    KAboutData( const char *appName,
-                const char *programName,
-		const char *version,
-		const char *shortDescription = 0,
-		enum LicenseKey licenseType = License_Unknown,
-		const char *copyrightStatement = 0,
-		const char *text = 0,
-		const char *homePageAddress = 0,
-		const char *bugsEmailAddress = "submit@bugs.kde.org"
-		);
+    KAboutData( const QByteArray &appName,
+                const QByteArray &catalogName,
+                const KLocalizedString &programName,
+                const QByteArray &version,
+                const KLocalizedString &shortDescription = KLocalizedString(),
+                enum LicenseKey licenseType = License_Unknown,
+                const KLocalizedString &copyrightStatement = KLocalizedString(),
+                const KLocalizedString &text = KLocalizedString(),
+                const QByteArray &homePageAddress = QByteArray(),
+                const QByteArray &bugsEmailAddress = "submit@bugs.kde.org"
+              );
 
     /**
      * Copy constructor.  Performs a deep copy.
@@ -292,24 +256,25 @@ class KDECORE_EXPORT KAboutData
      * appended to a list. The person in the first entry is assumed to be
      * the leader of the project.
      *
-     * @param name The developer's name in UTF-8 encoding.
+     * @param name The developer's name. It should be marked for translation
+     *             like this: ki18n("Developer Name")
      *
      * @param task What the person is responsible for. This text can contain
      *             newlines. It should be marked for translation like this:
-     *             I18N_NOOP("Task description..."). Can be 0.
+     *             ki18n("Task description..."). Can be left empty.
      *
      * @param emailAddress An Email address where the person can be reached.
-     *                     Can be 0.
+     *                     Can be left empty.
      *
      * @param webAddress The person's homepage or a relevant link.
      *        Start the address with "http://". "http://some.domain" is
-     *        correct, "some.domain" is not. Can be 0.
+     *        correct, "some.domain" is not. Can be left empty.
      *
      */
-    void addAuthor( const char *name,
-		    const char *task=0,
-		    const char *emailAddress=0,
-		    const char *webAddress=0 );
+    KAboutData &addAuthor( const KLocalizedString &name,
+                           const KLocalizedString &task = KLocalizedString(),
+                           const QByteArray &emailAddress = QByteArray(),
+                           const QByteArray &webAddress = QByteArray() );
 
     /**
      * Defines a person that deserves credit.
@@ -317,35 +282,38 @@ class KDECORE_EXPORT KAboutData
      * You can call this function as many times as you need. Each entry
      * is appended to a list.
      *
-     * @param name The person's name in UTF-8 encoding.
+     * @param name The person's name. It should be marked for translation
+     *             like this: ki18n("Contributor Name")
      *
      * @param task What the person has done to deserve the honor. The
      *        text can contain newlines. It should be marked for
-     *        translation like this: I18N_NOOP("Task description...")
-     *        Can be 0.
+     *        translation like this: ki18n("Task description...")
+     *        Can be left empty.
      *
-     * @param emailAddress An Email address when the person can be reached.
-     *        Can be 0.
+     * @param emailAddress An email address when the person can be reached.
+     *        Can be left empty.
      *
      * @param webAddress The person's homepage or a relevant link.
      *        Start the address with "http://". "http://some.domain" is
-     *        is correct, "some.domain" is not. Can be 0.
+     *        is correct, "some.domain" is not. Can be left empty.
      *
      */
-    void addCredit( const char *name,
-                    const char *task=0,
-		    const char *emailAddress=0,
-		    const char *webAddress=0 );
+    KAboutData &addCredit( const KLocalizedString &name,
+                           const KLocalizedString &task = KLocalizedString(),
+                           const QByteArray &emailAddress = QByteArray(),
+                           const QByteArray &webAddress = QByteArray() );
 
     /**
      * @brief Sets the name(s) of the translator(s) of the GUI. 
      *
-     * Since this depends on the language, just use a dummy text marked for translation.
+     * Since this depends on the language, just use a dummy text marked for
+     * translation.
      *
-     * For example:
+     * The canonical use is:
+     *
      * \code
-     * setTranslator(ki18nc("NAME OF TRANSLATORS","Your names")
-     * ,ki18nc("EMAIL OF TRANSLATORS","Your emails"));
+     * setTranslator(ki18nc("NAME OF TRANSLATORS", "Your names"),
+     *               ki18nc("EMAIL OF TRANSLATORS", "Your emails"));
      * \endcode
      *
      * The translator can then translate this dummy text with his name
@@ -357,47 +325,43 @@ class KDECORE_EXPORT KAboutData
      * @param emailAddress the email address(es) of the translator(s)
      * @see KAboutTranslator
      */
-    void setTranslator(const KLocalizedString& name, const KLocalizedString& emailAddress);
+    KAboutData &setTranslator( const KLocalizedString& name,
+                               const KLocalizedString& emailAddress );
 
     /**
-     * Defines a license text.
-     *
-     * The text will be translated if it got marked for
-     * translations with the I18N_NOOP() macro.
+     * Defines a license text, which is marked for translation.
      *
      * Example:
      * \code
-     * setLicenseText( I18N_NOOP("This is my license"));
+     * setLicenseText( ki18n("This is my license") );
      * \endcode
      *
-     * NOTE: No copy of the text is made.
-     *
-     * @param license The license text in utf8 encoding.
+     * @param license The license text.
      */
-    void setLicenseText( const char *license );
+    KAboutData &setLicenseText( const KLocalizedString &license );
 
     /**
-     * Defines a license text.
+     * Defines a license text by pointing to a file where it resides.
      *
      * @param file File containing the license text.
      */
-    void setLicenseTextFile( const QString &file );
+    KAboutData &setLicenseTextFile( const QString &file );
 
     /**
      * Defines the program name used internally.
      *
      * @param appName The application name. Example: "kate".
      */
-    void setAppName( const char *appName );
+    KAboutData &setAppName( const QByteArray &appName );
 
     /**
      * Defines the displayable program name string.
      *
      * @param programName The program name. This string should be
      *        marked for translation.
-     *        Example: I18N_NOOP("Advanced Text Editor").
+     *        Example: ki18n("Advanced Text Editor").
      */
-    void setProgramName( const char* programName );
+    KAboutData &setProgramName( const KLocalizedString &programName );
 
     /**
      * Defines the program logo.
@@ -411,40 +375,46 @@ class KDECORE_EXPORT KAboutData
      * @param image logo image.
      * @see programLogo()
     */
-    void setProgramLogo(const QVariant& image);
+    KAboutData &setProgramLogo(const QVariant& image);
 
     /**
      * Defines the program version string.
      *
      * @param version The program version.
      */
-    void setVersion( const char* version );
+    KAboutData &setVersion( const QByteArray &version );
 
     /**
      * Defines a short description of what the program does.
      *
      * @param shortDescription The program description. This string should
-     *        be marked for translation. Example: I18N_NOOP("An advanced
-     *        text editor with syntax highlighting support.").
+     *        be marked for translation. Example: ki18n("An advanced text
+     *        editor with syntax highlighting support.").
      */
-    void setShortDescription( const char *shortDescription );
+    KAboutData &setShortDescription( const KLocalizedString &shortDescription );
+
+    /**
+     * Defines the translation catalog that the program uses.
+     *
+     * @param catalogName The translation catalog name.
+     */
+    KAboutData &setCatalogName( const QByteArray &catalogName );
 
     /**
      * Defines the license identifier.
      *
      * @param licenseKey The license identifier.
      */
-    void setLicense( LicenseKey licenseKey);
+    KAboutData &setLicense( LicenseKey licenseKey);
 
     /**
      * Defines the copyright statement to show when displaying the license.
      *
      * @param copyrightStatement A copyright statement, that can look like
-     *        this: "(c) 1999-2000, Name". The string specified here is not
-     *        modified in any manner. The author information from addAuthor
-     *        is not used.
+     *        this: ki18n("(c) 1999-2000, Name"). The string specified here is
+     *        taken verbatim; the author information from addAuthor is not used.
      */
-    void setCopyrightStatement( const char *copyrightStatement );
+    KAboutData &setCopyrightStatement( const KLocalizedString &copyrightStatement );
 
     /**
      * Defines the additional text to show in the about dialog.
@@ -453,7 +423,7 @@ class KDECORE_EXPORT KAboutData
      *        information. The text can contain newlines. This string
      *        should be marked for translation.
      */
-    void setOtherText( const char *otherText );
+    KAboutData &setOtherText( const KLocalizedString &otherText );
 
     /**
      * Defines the program homepage.
@@ -462,7 +432,7 @@ class KDECORE_EXPORT KAboutData
      *        Start the address with "http://". "http://kate.kde.org"
      *        is correct but "kate.kde.org" is not.
      */
-    void setHomepage( const char *homepage );
+    KAboutData &setHomepage( const QByteArray &homepage );
 
     /**
      * Defines the address where bug reports should be sent.
@@ -470,7 +440,7 @@ class KDECORE_EXPORT KAboutData
      * @param bugAddress The bug report email address string.
      *        This defaults to the kde.org bug system.
      */
-    void setBugAddress( const char *bugAddress );
+    KAboutData &setBugAddress( const QByteArray &bugAddress );
 
     /**
      * Defines the Internet domain of the organization that wrote this application.
@@ -481,7 +451,7 @@ class KDECORE_EXPORT KAboutData
      *
      * @param domain the domain name, for instance kde.org, koffice.org, kdevelop.org, etc.
      */
-    void setOrganizationDomain( const char *domain );
+    KAboutData &setOrganizationDomain( const QByteArray &domain );
 
     /**
      * Defines the product name which will be used in the KBugReport dialog.
@@ -491,13 +461,13 @@ class KDECORE_EXPORT KAboutData
      *
      * @param name The name of product
      */
-    void setProductName( const char *name );
+    KAboutData &setProductName( const QByteArray &name );
 
     /**
      * Returns the application's internal name.
      * @return the internal program name.
      */
-    const char *appName() const;
+    QString appName() const;
 
     /**
      * Returns the application's product name, which will be used in KBugReport
@@ -506,7 +476,7 @@ class KDECORE_EXPORT KAboutData
      *
      * @return the product name.
      */
-    const char *productName() const;
+    QString productName() const;
 
     /**
      * Returns the translated program name.
@@ -564,6 +534,12 @@ class KDECORE_EXPORT KAboutData
     QString shortDescription() const;
 
     /**
+     * Returns the program's translation catalog name.
+     * @return the catalog name.
+     */
+    QString catalogName() const;
+
+    /**
      * Returns the application homepage.
      * @return the application homepage URL. Can be QString() if
      *         not set.
@@ -598,7 +574,7 @@ class KDECORE_EXPORT KAboutData
      * Returns a list of translators.
      * @return translators information (list of persons)
      */
-    QList<KAboutTranslator> translators() const;
+    QList<KAboutPerson> translators() const;
 
     /**
      * Returns a message about the translation team.
@@ -668,18 +644,19 @@ class KDECORE_EXPORT KAboutData
      * @param plainText The plain text.
      * @param richText The rich text.
      *
-     * Setting both to parameters to QString() will cause no message to be
+     * Setting both to parameters to KLocalizedString() will cause no message to be
      * displayed at all.  Call unsetCustomAuthorText() to revert to the default
      * message.
      */
-    void setCustomAuthorText(const QString &plainText, const QString &richText);
+    KAboutData &setCustomAuthorText(const KLocalizedString &plainText,
+                                    const KLocalizedString &richText);
 
     /**
      * Clears any custom text displayed around the list of authors and falls
      * back to the default message telling users to send bug reports to
      * bugAddress().
      */
-    void unsetCustomAuthorText();
+    KAboutData &unsetCustomAuthorText();
 
   private:
 

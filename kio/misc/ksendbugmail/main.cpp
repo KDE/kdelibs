@@ -35,12 +35,6 @@
 
 #include "smtp.h"
 
-static KCmdLineOptions options[] = {
-    { "subject <argument>", I18N_NOOP("Subject line"), 0 },
-    { "recipient <argument>", I18N_NOOP("Recipient"), "submit@bugs.kde.org" },
-    KCmdLineLastOption
-};
-
 void BugMailer::slotError(int errornum) {
     kDebug() << "slotError\n";
     QString str, lstr;
@@ -75,11 +69,14 @@ void BugMailer::slotSend() {
 
 int main(int argc, char **argv) {
 
-    KLocale::setMainCatalog("kdelibs");
-    KAboutData d("ksendbugmail", I18N_NOOP("KSendBugMail"), "1.0",
-                 I18N_NOOP("Sends a short bug report to submit@bugs.kde.org"),
-                 KAboutData::License_GPL, "(c) 2000 Stephan Kulow");
-    d.addAuthor("Stephan Kulow", I18N_NOOP("Author"), "coolo@kde.org");
+    KAboutData d("ksendbugmail", "kdelibs", ki18n("KSendBugMail"), "1.0",
+                 ki18n("Sends a short bug report to submit@bugs.kde.org"),
+                 KAboutData::License_GPL, ki18n("(c) 2000 Stephan Kulow"));
+    d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");
+
+    KCmdLineOptions options;
+    options.add("subject <argument>", ki18n("Subject line"));
+    options.add("recipient <argument>", ki18n("Recipient"), "submit@bugs.kde.org");
 
     KCmdLineArgs::init(argc, argv, &d);
     KCmdLineArgs::addCmdLineOptions(options);
@@ -87,7 +84,7 @@ int main(int argc, char **argv) {
 
     KApplication a(false);
 
-    QByteArray recipient = args->getOption("recipient");
+    QString recipient = args->getOption("recipient");
     if (recipient.isEmpty())
         recipient = "submit@bugs.kde.org";
     else {
@@ -97,7 +94,7 @@ int main(int argc, char **argv) {
     }
     kDebug() << "recp \"" << recipient << "\"\n";
 
-    QByteArray subject = args->getOption("subject");
+    QString subject = args->getOption("subject");
     if (subject.isEmpty())
         subject = "(no subject)";
     else {

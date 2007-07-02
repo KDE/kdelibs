@@ -25,7 +25,7 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "ktextedittest", "KTextEditTest", "ktextedit test app", "1.0" );
+    KCmdLineArgs::init( argc, argv, "ktextedittest", 0, ki18n("KTextEditTest"), "1.0", ki18n("ktextedit test app"));
     KApplication app;
     KTextEdit *edit = new KTextEdit();
 

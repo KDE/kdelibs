@@ -184,7 +184,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   d->appcombo->addItems(packageList);
   connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
   d->appname = d->m_aboutData
-                                    ? QString::fromLatin1(d->m_aboutData->productName())
+                                    ? d->m_aboutData->productName()
                                     : qApp->applicationName() ;
   glay->addWidget( d->appcombo, row, 1 );
   int index = 0;

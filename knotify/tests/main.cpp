@@ -8,18 +8,14 @@
 
 #include "knotifytestwindow.h"
 
-static const KCmdLineOptions options[] =
-{
-    KCmdLineLastOption
-};
-
 int main( int argc, char ** argv )
 {
-  KAboutData aboutData( "knotifytest", I18N_NOOP("KNotifyTest"),
-			"0.1", I18N_NOOP( "A test program for KDE Notifications" ),
+  KCmdLineOptions options;
+  KAboutData aboutData( "knotifytest", 0, ki18n("KNotifyTest"), "0.1",
+			ki18n( "A test program for KDE Notifications" ),
 			KAboutData::License_GPL,
-			"(c) 2006, Olivier Goffart");
-  aboutData.addAuthor("Olivier Goffart",0, "ogoffart @ kde.org");
+			ki18n("(c) 2006, Olivier Goffart"));
+  aboutData.addAuthor(ki18n("Olivier Goffart"), KLocalizedString(), "ogoffart @ kde.org");
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 

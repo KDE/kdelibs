@@ -7,7 +7,7 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kdirselectdialogtest","kdirselectdialogtest","test app","0");
+    KCmdLineArgs::init(argc, argv, "kdirselectdialogtest", 0, ki18n("kdirselectdialogtest"), "0", ki18n("test app"));
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
 

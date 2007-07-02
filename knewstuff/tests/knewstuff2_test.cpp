@@ -252,15 +252,12 @@ void KNewStuff2Test::quitTest()
 	}
 }
 
-static KCmdLineOptions options[] =
-{
-	{"testall", "Downloads all previews and payloads", 0},
-	KCmdLineLastOption
-};
-
 int main(int argc, char **argv)
 {
-	KCmdLineArgs::init(argc, argv, "knewstuff2_test", NULL, NULL, NULL);
+	KCmdLineOptions options;
+	options.add("testall", ki18n("Downloads all previews and payloads"));
+
+	KCmdLineArgs::init(argc, argv, "knewstuff2_test", 0, ki18n("knewstuff2_test"), 0);
 	KCmdLineArgs::addCmdLineOptions(options);
 	KApplication app(false);
 

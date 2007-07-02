@@ -163,13 +163,11 @@ int main(int argc, char **argv)
 	printf("Usage: %s [int_vs_fade | fullscreen [old_way]]\n ", argv[0]);
     }
 
-    static KCmdLineOptions options[] =
-    {
-        { "fullscreen <old_way>", "", "test" },
-        { "int_vs_fade", "", 0 },
-        KCmdLineLastOption
-    };
-    KAboutData about("KColorTest", "KColorTest", "version");
+    KCmdLineOptions options;
+    options.add("fullscreen <old_way>", ki18n("no description"), "test");
+    options.add("int_vs_fade", ki18n("no description"));
+
+    KAboutData about("KColorTest", 0, ki18n("KColorTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions( options );
 

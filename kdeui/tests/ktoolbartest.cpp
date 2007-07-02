@@ -8,7 +8,7 @@
 
 int main( int argc, char **argv )
 {
-    KAboutData aboutData( "kactiontest", "kactiontest", "1.0" );
+    KAboutData aboutData( "kactiontest", 0, ki18n("kactiontest"), "1.0" );
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 

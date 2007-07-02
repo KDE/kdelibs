@@ -319,9 +319,9 @@ void KNotification::sendEventSync()
 		if(d->flags & DefaultEvent)
 			appname = QLatin1String("kde");
                 else if(d->componentData.isValid()) {
-                    appname = QString::fromLatin1(d->componentData.componentName());
+                    appname = d->componentData.componentName();
                 } else {
-                    appname = QString::fromLatin1(KGlobal::mainComponent().componentName());
+                    appname = KGlobal::mainComponent().componentName();
                 }
 
 		if(!(d->flags & Persistant))

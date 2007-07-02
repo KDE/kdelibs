@@ -73,16 +73,12 @@ bool KUniqueApplication::s_handleAutoStarted = false;
 void KApplication_early_init_mac();
 #endif
 
-static KCmdLineOptions kunique_options[] =
-{
-  { "nofork", "Don't run in the background.", 0 },
-  KCmdLineLastOption
-};
-
 void
 KUniqueApplication::addCmdLineOptions()
 {
-  KCmdLineArgs::addCmdLineOptions(kunique_options, 0, "kuniqueapp", "kde" );
+  KCmdLineOptions kunique_options;
+  kunique_options.add("nofork", ki18n("Don't run in the background."));
+  KCmdLineArgs::addCmdLineOptions(kunique_options, KLocalizedString(), "kuniqueapp", "kde");
 }
 
 static QDBusConnectionInterface *tryToInitDBusConnection()
@@ -113,8 +109,8 @@ KUniqueApplication::start()
   delete args;
 #endif
 
-  QString appName = QString::fromLatin1(KCmdLineArgs::about->appName());
-  const QStringList parts = KCmdLineArgs::about->organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
+  QString appName = KCmdLineArgs::aboutData()->appName();
+  const QStringList parts = KCmdLineArgs::aboutData()->organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
   if (parts.isEmpty())
      appName.prepend(QLatin1String("local."));
   else
@@ -269,7 +265,7 @@ KUniqueApplication::start()
      if (!iface.isValid() || !(reply = iface.call("newInstance", new_asn_id, saved_args)).isValid())
      {
        QDBusError err = iface.lastError();
-        kError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl
+        kError() << "Communication problem with " << KCmdLineArgs::aboutData()->appName() << ", it probably crashed." << endl
                  << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
         ::exit(255);
      }
@@ -325,7 +321,7 @@ KUniqueApplication::~KUniqueApplication()
 // this gets called before even entering QApplication::QApplication()
 KComponentData KUniqueApplication::initHack(bool configUnique)
 {
-  KComponentData cData(KCmdLineArgs::about);
+  KComponentData cData(KCmdLineArgs::aboutData());
   if (configUnique)
   {
      KConfigGroup cg(cData.config(), "KDE");

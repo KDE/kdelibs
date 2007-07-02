@@ -6,7 +6,7 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kurlrequestertest","kurlrequestertest","test app","0");
+    KCmdLineArgs::init(argc, argv, "kurlrequestertest", 0, ki18n("kurlrequestertest"), "0", ki18n("test app"));
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
  

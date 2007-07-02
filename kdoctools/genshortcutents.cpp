@@ -33,11 +33,6 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTextStream>
 #include <QtCore/QStringList>
-static const KCmdLineOptions cmdLineOptions[] = {
-	{ "o", 0, 0 },
-	{ "output <file>", I18N_NOOP( "Output file" ), "kde-standard-accels.entities" },
-	KCmdLineLastOption
-};
 
 static KStandardShortcut::StandardShortcut accelerators[] = {
 	KStandardShortcut::Open,
@@ -303,9 +298,12 @@ QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 
 int main( int argc, char **argv )
 {
-	KAboutData aboutData( "genshortcutents", "genshortcutents",
-	                      I18N_NOOP( "Generates DocBook entities for key shortcuts of standard actions" ),
-	                      "1.0" );
+        KCmdLineOptions cmdLineOptions;
+	cmdLineOptions.add("o");
+	cmdLineOptions.add("output <file>", ki18n("Output file"), "kde-standard-accels.entities");
+
+	KAboutData aboutData( "genshortcutents", 0, ki18n("genshortcutents"), "1.0",
+	                      ki18n( "Generates DocBook entities for key shortcuts of standard actions" ));
 
 	KCmdLineArgs::init( argc, argv, &aboutData );
 	KCmdLineArgs::addCmdLineOptions( cmdLineOptions );

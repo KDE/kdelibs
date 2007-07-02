@@ -64,7 +64,7 @@ QString Plugin::xmlFile() const
     if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = KStandardDirs::locate( "data", QLatin1String( d->m_parentInstance.componentName() ) + '/' + path );
+    QString absPath = KStandardDirs::locate( "data", d->m_parentInstance.componentName() + '/' + path );
     assert( !absPath.isEmpty() );
     return absPath;
 }
@@ -76,7 +76,7 @@ QString Plugin::localXMLFile() const
     if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = KStandardDirs::locateLocal( "data", QLatin1String( d->m_parentInstance.componentName() ) + '/' + path );
+    QString absPath = KStandardDirs::locateLocal( "data", d->m_parentInstance.componentName() + '/' + path );
     assert( !absPath.isEmpty() );
     return absPath;
 }
@@ -216,7 +216,7 @@ bool Plugin::hasPlugin( QObject* parent, const QString& library )
 
 void Plugin::setComponentData(const KComponentData &componentData)
 {
-    KGlobal::locale()->insertCatalog(componentData.componentName());
+    KGlobal::locale()->insertCatalog(componentData.catalogName());
     KXMLGUIClient::setComponentData(componentData);
 }
 

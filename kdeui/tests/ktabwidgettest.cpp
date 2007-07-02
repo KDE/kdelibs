@@ -365,7 +365,7 @@ void Test::toggleLabels(bool state)
 
 int main(int argc, char** argv )
 {
-    KCmdLineArgs::init(argc, argv, "ktabwidgettest", "KTabWidgetTest", "ktabwidget test app", "1.0");
+    KCmdLineArgs::init(argc, argv, "ktabwidgettest", 0, ki18n("KTabWidgetTest"), "1.0", ki18n("ktabwidget test app"));
     //KApplication::disableAutoDcopRegistration();
     KApplication app;
     Test *t = new Test();

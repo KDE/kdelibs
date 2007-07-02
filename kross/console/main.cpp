@@ -90,29 +90,29 @@ int main(int argc, char **argv)
     int result = ERROR_OK;
 
     KAboutData about("kross",
-                     "kross",
+                     0,
+                     ki18n("Kross"),
                      "0.1",
-                     "KDE application to run Kross scripts.",
+                     ki18n("KDE application to run Kross scripts."),
                      KAboutData::License_LGPL,
-                     "(C) 2006 Sebastian Sauer",
-                     "Run Kross scripts.",
+                     ki18n("(C) 2006 Sebastian Sauer"),
+                     ki18n("Run Kross scripts."),
                      "http://kross.dipe.org",
                      "kross@dipe.org");
-    about.addAuthor("Sebastian Sauer", "Author", "mail@dipe.org");
+    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
 
     // Initialize command line args
     KCmdLineArgs::init(argc, argv, &about);
     // Tell which options are supported and parse them.
-    static KCmdLineOptions options[] = {
-        { "+file", "Scriptfile", 0 },
-        KCmdLineLastOption
-    };
+    KCmdLineOptions options;
+    options.add("+file", ki18n("Scriptfile"));
+
     KCmdLineArgs::addCmdLineOptions(options);
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
     // If no options are defined.
     if(args->count() < 1) {
-        std::cout << "Syntax: " << KCmdLineArgs::appName() << " scriptfile1 [scriptfile2] [scriptfile3] ..." << std::endl;
+        std::cout << "Syntax: " << KCmdLineArgs::appName().toLocal8Bit().constData() << " scriptfile1 [scriptfile2] [scriptfile3] ..." << std::endl;
         return ERROR_HELP;
     }
 
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 
     // Each argument is a scriptfile to open
     for(int i = 0; i < args->count(); i++) {
-        result = runScriptFile(QFile::decodeName(args->arg(i)));
+        result = runScriptFile(args->arg(i));
         if(result != ERROR_OK)
             break;
     }

@@ -157,7 +157,7 @@ TopLevel::TopLevel(QWidget *parent)
 
 int main( int argc, char ** argv )
 {
-    KAboutData about("KNuminputTest", "KNuminputTest", "version");
+    KAboutData about("KNuminputTest", 0, ki18n("KNuminputTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     a = new KApplication ( );

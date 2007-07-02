@@ -59,19 +59,16 @@ void Crossfader::finished()
     }
 }
 
-static const KCmdLineOptions options[] =
-{
-    { "+URL1", I18N_NOOP("The first URL to play"), 0 },
-    { "+URL2", I18N_NOOP("The second URL to play"), 0 },
-    KCmdLineLastOption // End of options.
-};
-
 int main(int argc, char ** argv)
 {
-    KAboutData about("crossfade", "Phonon Crossfade Example",
-            "1.0", "",
-            KAboutData::License_LGPL, 0);
-    about.addAuthor("Matthias Kretz", 0, "kretz@kde.org");
+    KCmdLineOptions options;
+    options.add("+URL1", ki18n("The first URL to play"));
+    options.add("+URL2", ki18n("The second URL to play"));
+
+    KAboutData about("crossfade", 0, ki18n("Phonon Crossfade Example"),
+            "1.0", KLocalizedString(),
+            KAboutData::License_LGPL);
+    about.addAuthor(ki18n("Matthias Kretz"), KLocalizedString(), "kretz@kde.org");
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);
     KApplication app;

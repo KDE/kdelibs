@@ -23,14 +23,17 @@
 #include <kbugreport.h>
 
 int main(int argc, char **argv) {
-   KAboutData about("kbugreporttest", "kbugreporttest", "version");
+   KAboutData about("kbugreporttest", 0, ki18n("kbugreporttest"), "version");
    KCmdLineArgs::init(argc, argv, &about);
 
    KApplication a;
    a.setQuitOnLastWindowClosed(false);
    KBugReport rep(0,true,&about);
    rep.exec();
-   KAboutData about1("kbugreporttest", "kbugreporttest", "version",0,KAboutData::License_Unknown,0,0,0,"test@bugs.kde.org");
+   KAboutData about1("kbugreporttest", 0, ki18n("kbugreporttest"), "version",
+                     ki18n("description"), KAboutData::License_Unknown,
+                     ki18n("copyright"), ki18n("bug report tool"),
+                     "test@bugs.kde.org");
    KBugReport rep1(0,true,&about1);
    rep1.exec();
    return 0;

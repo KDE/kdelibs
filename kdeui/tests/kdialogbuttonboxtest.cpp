@@ -27,7 +27,7 @@
 #include <QtGui/QBoxLayout>
 
 int main(int argc, char **argv) {
-   KAboutData about("kdialogbuttonboxtest", "kbuttonboxtest", "version");
+   KAboutData about("kdialogbuttonboxtest", 0, ki18n("kbuttonboxtest"), "version");
    KCmdLineArgs::init(argc, argv, &about);
 
    KApplication a;

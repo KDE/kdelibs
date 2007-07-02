@@ -29,23 +29,53 @@
 #include <QVariant>
 #include <QList>
 
+// -----------------------------------------------------------------------------
+// Design notes:
+//
+// These classes deal with a lot of text, some of which needs to be
+// marked for translation. Since at the time when these object and calls are
+// made the translation catalogs are usually still not initialized, the
+// translation has to be delayed. This is achieved by using KLocalizedString
+// for translatable strings. KLocalizedStrings are produced by ki18n* calls,
+// instead of the more usuall i18n* calls which produce QString by trying to
+// translate immediately.
+//
+// All the non-translatable string arguments to methods are taken QByteArray,
+// all the translatable are KLocalizedString. The getter methods always return
+// proper QString: the non-translatable strings supplied by the code are
+// treated with QString::fromUtf8(), those comming from the outside with
+// QTextCodec::toUnicode(), and translatable strings are finalized to QStrings
+// at the point of getter calls (i.e. delayed translation).
+// -----------------------------------------------------------------------------
+
 class KAboutPerson::Private
 {
 public:
-   const char *_name;
-   const char *_task;
-   const char *_emailAddress;
-   const char *_webAddress;
+   KLocalizedString _name;
+   KLocalizedString _task;
+   QString _emailAddress;
+   QString _webAddress;
+
+   QString _nameNoop;
 };
 
-KAboutPerson::KAboutPerson( const char* _name, const char* _task,
-                  const char* _emailAddress, const char* _webAddress )
+KAboutPerson::KAboutPerson( const KLocalizedString &_name,
+                            const KLocalizedString &_task,
+                            const QByteArray &_emailAddress,
+                            const QByteArray &_webAddress )
   : d(new Private)
 {
    d->_name = _name;
    d->_task = _task;
-   d->_emailAddress = _emailAddress;
-   d->_webAddress = _webAddress;
+   d->_emailAddress = QString::fromUtf8(_emailAddress);
+   d->_webAddress = QString::fromUtf8(_webAddress);
+}
+
+KAboutPerson::KAboutPerson( const QString &_name, const QString &_email )
+  : d(new Private)
+{
+   d->_nameNoop = _name;
+   d->_emailAddress = _email;
 }
 
 KAboutPerson::KAboutPerson(const KAboutPerson& other): d(new Private)
@@ -61,28 +91,30 @@ KAboutPerson::~KAboutPerson()
 QString
 KAboutPerson::name() const
 {
-   return QString::fromUtf8(d->_name);
+   if (!d->_nameNoop.isEmpty())
+      return d->_nameNoop;
+   return d->_name.toString();
 }
 
 QString
 KAboutPerson::task() const
 {
-   if (d->_task && *d->_task)
-      return i18n(d->_task);
+   if (!d->_task.isEmpty())
+      return d->_task.toString();
    return QString();
 }
 
 QString
 KAboutPerson::emailAddress() const
 {
-   return QString::fromUtf8(d->_emailAddress);
+   return d->_emailAddress;
 }
 
 
 QString
 KAboutPerson::webAddress() const
 {
-   return QString::fromUtf8(d->_webAddress);
+   return d->_webAddress;
 }
 
 
@@ -93,133 +125,82 @@ KAboutPerson::operator=(const KAboutPerson& other)
    return *this;
 }
 
-class KAboutTranslator::Private
-{
-public:
-   QString _name;
-   QString _email;
-
-};
-
-KAboutTranslator::KAboutTranslator(const QString & _name,
-                const QString & _emailAddress)
-  : d(new Private)
-{
-    d->_name = _name;
-    d->_email = _emailAddress;
-}
-
-KAboutTranslator::~KAboutTranslator()
-{
-    delete d;
-}
-
-KAboutTranslator&
-KAboutTranslator::operator=(const KAboutTranslator& other)
-{
-    *d = *other.d;
-    return *this;
-}
-
-KAboutTranslator::KAboutTranslator(const KAboutTranslator& other): d(new Private)
-{
-    *d = *other.d;
-}
-
-QString KAboutTranslator::name() const
-{
-    return d->_name;
-}
-
-QString KAboutTranslator::emailAddress() const
-{
-    return d->_email;
-}
-
-#define NAME_OF_TRANSLATORS "Your names"
-#define EMAIL_OF_TRANSLATORS "Your emails"
 class KAboutData::Private
 {
 public:
     Private()
-        : mTranslatorName(ki18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS))
-        , mTranslatorEmail(ki18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS))
-        , productName(0)
-        , customAuthorTextEnabled(false)
-        , mTranslatedProgramName( 0 )
+        : customAuthorTextEnabled(false)
         {}
-    ~Private()
-        {
-             if (_licenseKey == License_File)
-                 delete [] _licenseText;
-             delete[] mTranslatedProgramName;
-        }
-    const char *_appName;
-    const char *_programName;
-    const char *_version;
-    const char *_shortDescription;
+    QString _appName;
+    KLocalizedString _programName;
+    QString _version;
+    KLocalizedString _shortDescription;
+    QString _catalogName;
     enum KAboutData::LicenseKey  _licenseKey;
-    const char *_copyrightStatement;
-    const char *_otherText;
-    const char *_homepageAddress;
-    const char *_bugEmailAddress;
+    KLocalizedString _copyrightStatement;
+    KLocalizedString _otherText;
+    QString _homepageAddress;
+    QString _bugEmailAddress;
     QList<KAboutPerson> _authorList;
     QList<KAboutPerson> _creditList;
-    const char *_licenseText;
-    KLocalizedString mTranslatorName;
-    KLocalizedString mTranslatorEmail;
-    const char *productName;
+    KLocalizedString _licenseText;
+    QString _licenseTextFile;
+    KLocalizedString translatorName;
+    KLocalizedString translatorEmail;
+    QString productName;
     QVariant programLogo;
-    QString customAuthorPlainText, customAuthorRichText;
+    KLocalizedString customAuthorPlainText, customAuthorRichText;
     bool customAuthorTextEnabled;
-    const char *mTranslatedProgramName;
+    QString _translatedProgramName;
     QString organizationDomain;
 };
 
 
 
-KAboutData::KAboutData( const char* _appName,
-                        const char* _programName,
-                        const char* _version,
-                        const char* _shortDescription,
-			enum LicenseKey licenseType,
-			const char* _copyrightStatement,
-			const char* text,
-			const char* homePageAddress,
-			const char* bugsEmailAddress
-			)
+KAboutData::KAboutData( const QByteArray &_appName,
+                        const QByteArray &_catalogName,
+                        const KLocalizedString &_programName,
+                        const QByteArray &_version,
+                        const KLocalizedString &_shortDescription,
+                        enum LicenseKey licenseType,
+                        const KLocalizedString &_copyrightStatement,
+                        const KLocalizedString &text,
+                        const QByteArray &homePageAddress,
+                        const QByteArray &bugsEmailAddress
+                      )
   : d(new Private)
 {
+    d->_appName = QString::fromUtf8(_appName);
+    int p = d->_appName.indexOf('/');
+    if (p >= 0) {
+        d->_appName = d->_appName.mid(p + 1);
+    }
 
-   if( _appName ) {
-     const char *p = strrchr(_appName, '/');
-     if( p )
-	 d->_appName = p+1;
-     else
-	 d->_appName = _appName;
-   } else
-     d->_appName = 0;
-   d->_programName = _programName;
-   d->_version = _version;
-   d->_shortDescription = _shortDescription;
-   d->_licenseKey = licenseType;
-   d->_copyrightStatement = _copyrightStatement;
-   d->_otherText = text;
-   d->_homepageAddress = homePageAddress;
-   d->_bugEmailAddress = bugsEmailAddress;
-   if ( homePageAddress && strncmp( homePageAddress, "http://", 7 ) == 0 ) {
-       const QByteArray addr = homePageAddress;
-       const int dot = addr.indexOf( '.' );
-       if ( dot > -1 ) {
-           d->organizationDomain = homePageAddress + dot + 1;
-           const int slash = d->organizationDomain.indexOf( '/' );
-           if ( slash > -1 )
-               d->organizationDomain.truncate( slash );
-       }
-       else
-           d->organizationDomain = "kde.org";
-   } else
-       d->organizationDomain = "kde.org";
+    d->_catalogName = _catalogName;
+    d->_programName = _programName;
+    d->_version = _version;
+    d->_shortDescription = _shortDescription;
+    d->_licenseKey = licenseType;
+    d->_copyrightStatement = _copyrightStatement;
+    d->_otherText = text;
+    d->_homepageAddress = homePageAddress;
+    d->_bugEmailAddress = bugsEmailAddress;
+
+    if (d->_homepageAddress.contains("http://")) {
+        int dot = d->_homepageAddress.indexOf('.');
+        if (dot >= 0) {
+            d->organizationDomain = d->_homepageAddress.mid(dot + 1);
+            int slash = d->organizationDomain.indexOf('/');
+            if (slash >= 0)
+                d->organizationDomain.truncate(slash);
+        }
+        else {
+            d->organizationDomain = "kde.org";
+        }
+    }
+    else {
+        d->organizationDomain = "kde.org";
+    }
 }
 
 KAboutData::~KAboutData()
@@ -239,118 +220,146 @@ KAboutData::operator=(const KAboutData& other)
     return *this;
 }
 
-void
-KAboutData::addAuthor( const char *name, const char *task,
-		    const char *emailAddress, const char *webAddress )
+KAboutData &
+KAboutData::addAuthor( const KLocalizedString &name,
+                       const KLocalizedString &task,
+                       const QByteArray &emailAddress,
+                       const QByteArray &webAddress )
 {
   d->_authorList.append(KAboutPerson(name,task,emailAddress,webAddress));
+  return *this;
 }
 
-void
-KAboutData::addCredit( const char *name, const char *task,
-		    const char *emailAddress, const char *webAddress )
+KAboutData &
+KAboutData::addCredit( const KLocalizedString &name,
+                       const KLocalizedString &task,
+                       const QByteArray &emailAddress,
+                       const QByteArray &webAddress )
 {
   d->_creditList.append(KAboutPerson(name,task,emailAddress,webAddress));
+  return *this;
 }
 
-void
-KAboutData::setTranslator( const KLocalizedString& name, const KLocalizedString& emailAddress )
+KAboutData &
+KAboutData::setTranslator( const KLocalizedString& name,
+                           const KLocalizedString& emailAddress )
 {
-  d->mTranslatorName = name;
-  d->mTranslatorEmail = emailAddress;
+  d->translatorName = name;
+  d->translatorEmail = emailAddress;
+  return *this;
 }
 
-void
-KAboutData::setLicenseText( const char *licenseText )
+KAboutData &
+KAboutData::setLicenseText( const KLocalizedString &licenseText )
 {
   d->_licenseText = licenseText;
   d->_licenseKey = License_Custom;
+  return *this;
 }
 
-void
+KAboutData &
 KAboutData::setLicenseTextFile( const QString &file )
 {
-  d->_licenseText = qstrdup(QFile::encodeName(file));
+  d->_licenseTextFile = file;
   d->_licenseKey = License_File;
+  return *this;
 }
 
-void
-KAboutData::setAppName( const char* _appName )
+KAboutData &
+KAboutData::setAppName( const QByteArray &_appName )
 {
-  d->_appName = _appName;
+  d->_appName = QString::fromUtf8(_appName);
+  return *this;
 }
 
-void
-KAboutData::setProgramName( const char* _programName )
+KAboutData &
+KAboutData::setProgramName( const KLocalizedString &_programName )
 {
   d->_programName = _programName;
   translateInternalProgramName();
+  return *this;
 }
 
-void
-KAboutData::setVersion( const char* _version )
+KAboutData &
+KAboutData::setVersion( const QByteArray &_version )
 {
-  d->_version = _version;
+  d->_version = QString::fromUtf8(_version);
+  return *this;
 }
 
-void
-KAboutData::setShortDescription( const char* _shortDescription )
+KAboutData &
+KAboutData::setShortDescription( const KLocalizedString &_shortDescription )
 {
   d->_shortDescription = _shortDescription;
+  return *this;
 }
 
-void
+KAboutData &
+KAboutData::setCatalogName( const QByteArray &_catalogName )
+{
+  d->_catalogName = _catalogName;
+  return *this;
+}
+
+KAboutData &
 KAboutData::setLicense( LicenseKey licenseKey)
 {
   d->_licenseKey = licenseKey;
+  return *this;
 }
 
-void
-KAboutData::setCopyrightStatement( const char* _copyrightStatement )
+KAboutData &
+KAboutData::setCopyrightStatement( const KLocalizedString &_copyrightStatement )
 {
   d->_copyrightStatement = _copyrightStatement;
+  return *this;
 }
 
-void
-KAboutData::setOtherText( const char* _otherText )
+KAboutData &
+KAboutData::setOtherText( const KLocalizedString &_otherText )
 {
   d->_otherText = _otherText;
+  return *this;
 }
 
-void
-KAboutData::setHomepage( const char* _homepage )
+KAboutData &
+KAboutData::setHomepage( const QByteArray &_homepage )
 {
-  d->_homepageAddress = _homepage;
+  d->_homepageAddress = QString::fromUtf8(_homepage);
+  return *this;
 }
 
-void
-KAboutData::setBugAddress( const char* _bugAddress )
+KAboutData &
+KAboutData::setBugAddress( const QByteArray &_bugAddress )
 {
-  d->_bugEmailAddress = _bugAddress;
+  d->_bugEmailAddress = QString::fromUtf8(_bugAddress);
+  return *this;
 }
 
-void
-KAboutData::setOrganizationDomain( const char *domain )
+KAboutData &
+KAboutData::setOrganizationDomain( const QByteArray &domain )
 {
-  d->organizationDomain = domain;
+  d->organizationDomain = QString::fromUtf8(domain);
+  return *this;
 }
 
-void
-KAboutData::setProductName( const char* _productName )
+KAboutData &
+KAboutData::setProductName( const QByteArray &_productName )
 {
-  d->productName = _productName;
+  d->productName = QString::fromUtf8(_productName);
+  return *this;
 }
 
-const char *
+QString
 KAboutData::appName() const
 {
    return d->_appName;
 }
 
-const char *
+QString
 KAboutData::productName() const
 {
-   if (d->productName)
+   if (!d->productName.isEmpty())
       return d->productName;
    return appName();
 }
@@ -358,8 +367,8 @@ KAboutData::productName() const
 QString
 KAboutData::programName() const
 {
-   if (d->_programName && *d->_programName)
-      return i18n(d->_programName);
+   if (!d->_programName.isEmpty())
+      return d->_programName.toString();
    return QString();
 }
 
@@ -370,10 +379,10 @@ KAboutData::programName() const
 const char*
 KAboutData::internalProgramName() const
 {
-   if (d->mTranslatedProgramName)
-      return d->mTranslatedProgramName;
+   if (!d->_translatedProgramName.isEmpty())
+      return d->_translatedProgramName.toUtf8().data();
    else
-      return d->_programName;
+      return d->_programName.toString(0).toUtf8().data();
 }
 
 /// @internal
@@ -383,10 +392,9 @@ KAboutData::internalProgramName() const
 void
 KAboutData::translateInternalProgramName() const
 {
-  delete[] d->mTranslatedProgramName;
-  d->mTranslatedProgramName = 0;
+  d->_translatedProgramName.clear();
   if( KGlobal::locale())
-      d->mTranslatedProgramName = qstrdup( programName().toUtf8() );
+      d->_translatedProgramName = programName().toUtf8();
 }
 
 QVariant 
@@ -395,16 +403,17 @@ KAboutData::programLogo() const
     return d->programLogo;
 }
 
-void
+KAboutData &
 KAboutData::setProgramLogo(const QVariant& image)
 {
     d->programLogo = image ;
+    return *this;
 }
 
 QString
 KAboutData::version() const
 {
-   return QLatin1String(d->_version);
+   return d->_version;
 }
 
 /// @internal
@@ -413,27 +422,36 @@ KAboutData::version() const
 const char*
 KAboutData::internalVersion() const
 {
-   return d->_version;
+   return d->_version.toUtf8().data();
 }
 
 QString
 KAboutData::shortDescription() const
 {
-   if (d->_shortDescription && *d->_shortDescription)
-      return i18n(d->_shortDescription);
+   if (!d->_shortDescription.isEmpty())
+      return d->_shortDescription.toString();
    return QString();
+}
+
+QString
+KAboutData::catalogName() const
+{
+   if (!d->_catalogName.isEmpty())
+      return d->_catalogName;
+   // Fallback to appname for catalog name if empty.
+   return d->_appName;
 }
 
 QString
 KAboutData::homepage() const
 {
-   return QLatin1String(d->_homepageAddress);
+   return d->_homepageAddress;
 }
 
 QString
 KAboutData::bugAddress() const
 {
-   return QLatin1String(d->_bugEmailAddress);
+   return d->_bugEmailAddress;
 }
 
 QString
@@ -449,7 +467,7 @@ KAboutData::organizationDomain() const
 const char*
 KAboutData::internalBugAddress() const
 {
-   return d->_bugEmailAddress;
+   return d->_bugEmailAddress.toUtf8().data();
 }
 
 QList<KAboutPerson>
@@ -464,12 +482,28 @@ KAboutData::credits() const
    return d->_creditList;
 }
 
-QList<KAboutTranslator>
+#define NAME_OF_TRANSLATORS "Your names"
+#define EMAIL_OF_TRANSLATORS "Your emails"
+QList<KAboutPerson>
 KAboutData::translators() const
 {
-    QList<KAboutTranslator> personList;
-    QString translatorName = d->mTranslatorName.toString();
-    QString translatorEmail = d->mTranslatorEmail.toString();
+    QList<KAboutPerson> personList;
+
+    QString translatorName;
+    if (!d->translatorName.isEmpty()) {
+        translatorName = d->translatorName.toString();
+    }
+    else {
+        translatorName = i18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS);
+    }
+
+    QString translatorEmail;
+    if (!d->translatorEmail.isEmpty()) {
+        translatorEmail = d->translatorEmail.toString();
+    }
+    else {
+        translatorEmail = i18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS);
+    }
 
     if ( translatorName.isEmpty() || translatorName == QString::fromUtf8( NAME_OF_TRANSLATORS ) )
         return personList;
@@ -494,7 +528,7 @@ KAboutData::translators() const
             ++eit;
         }
 
-        personList.append( KAboutTranslator( (*nit).trimmed(), email.trimmed() ) );
+        personList.append( KAboutPerson( (*nit).trimmed(), email.trimmed() ) );
     }
 
     return personList;
@@ -514,8 +548,8 @@ KAboutData::aboutTranslationTeam()
 QString
 KAboutData::otherText() const
 {
-   if (d->_otherText && *d->_otherText)
-      return i18n(d->_otherText);
+   if (!d->_otherText.isEmpty())
+      return d->_otherText.toString();
    return QString();
 }
 
@@ -531,7 +565,7 @@ KAboutData::license() const
   switch ( d->_licenseKey )
   {
     case License_File:
-       f = QFile::decodeName(d->_licenseText);
+       f = d->_licenseTextFile;
        break;
     case License_GPL_V2:
        l = "GPL v2";
@@ -554,8 +588,8 @@ KAboutData::license() const
        f = KStandardDirs::locate("data", "LICENSES/QPL_V1.0");
        break;
     case License_Custom:
-       if (d->_licenseText && *d->_licenseText)
-          return( i18n(d->_licenseText) );
+       if (!d->_licenseText.isEmpty())
+          return d->_licenseText.toString();
        // fall through
     default:
        result += i18n("No licensing terms for this program have been specified.\n"
@@ -633,21 +667,25 @@ QString KAboutData::licenseName(NameFormat formatName) const
 QString
 KAboutData::copyrightStatement() const
 {
-  if (d->_copyrightStatement && *d->_copyrightStatement)
-     return i18n(d->_copyrightStatement);
+  if (!d->_copyrightStatement.isEmpty())
+    return d->_copyrightStatement.toString();
   return QString();
 }
 
 QString
 KAboutData::customAuthorPlainText() const
 {
-  return d->customAuthorPlainText;
+  if (!d->customAuthorPlainText.isEmpty())
+    return d->customAuthorPlainText.toString();
+  return QString();
 }
 
 QString
 KAboutData::customAuthorRichText() const
 {
-  return d->customAuthorRichText;
+  if (!d->customAuthorRichText.isEmpty())
+    return d->customAuthorRichText.toString();
+  return QString();
 }
 
 bool
@@ -656,21 +694,26 @@ KAboutData::customAuthorTextEnabled() const
   return d->customAuthorTextEnabled;
 }
 
-void
-KAboutData::setCustomAuthorText(const QString &plainText, const QString &richText)
+KAboutData &
+KAboutData::setCustomAuthorText(const KLocalizedString &plainText,
+                                const KLocalizedString &richText)
 {
   d->customAuthorPlainText = plainText;
   d->customAuthorRichText = richText;
 
   d->customAuthorTextEnabled = true;
+
+  return *this;
 }
 
-void
+KAboutData &
 KAboutData::unsetCustomAuthorText()
 {
-  d->customAuthorPlainText.clear();
-  d->customAuthorRichText.clear();
+  d->customAuthorPlainText = KLocalizedString();
+  d->customAuthorRichText = KLocalizedString();
 
   d->customAuthorTextEnabled = false;
+
+  return *this;
 }
 

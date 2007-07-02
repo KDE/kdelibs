@@ -121,7 +121,7 @@ void Shell::slotFileEdit()
 int main( int argc, char **argv )
 {
     // we cheat and call ourselves kpartstest for Shell::slotFileOpen()
-    KCmdLineArgs::init( argc, argv, "kpartstest" , 0, 0, 0, 0 );
+    KCmdLineArgs::init( argc, argv, "kpartstest", 0, ki18n("kpartstest"), 0);
     KApplication app;
 
     Shell *shell = new Shell;
