@@ -23,6 +23,8 @@
 
 class KUrlNavigator;
 
+class QMenu;
+
 /**
  * @brief A combobox listing available protocols.
  *
@@ -40,6 +42,8 @@ public:
 
     QString currentProtocol() const;
 
+    void setCustomProtocols(const QStringList &protocols);
+
     virtual QSize sizeHint() const;
 
 public Q_SLOTS:
@@ -55,9 +59,13 @@ private Q_SLOTS:
     void setProtocol(QAction* action);
 
 private:
+    void updateMenu();
+
     enum { ArrowSize = 10 };
 
     QStringList m_protocols;
+
+    QMenu *menu;
 };
 
 #endif

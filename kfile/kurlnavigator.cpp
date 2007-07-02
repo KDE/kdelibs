@@ -192,6 +192,7 @@ public:
     QLinkedList<KUrlNavigatorButton*> m_navButtons;
     KUrlButton* m_toggleEditableMode;
     QString m_homeUrl;
+    QStringList m_customProtocols;
     KUrlNavigator* q;
 };
 
@@ -208,6 +209,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_host(0),
     m_dropDownButton(0),
     m_toggleEditableMode(0),
+    m_customProtocols(QStringList()),
     q(q)
 {
     m_layout->setSpacing(0);
@@ -464,6 +466,9 @@ void KUrlNavigator::Private::updateContent()
                 deleteButtons();
                 m_protocols = new KProtocolCombo(protocol, q);
                 appendWidget(m_protocols);
+                if (!m_customProtocols.isEmpty()) {
+                    m_protocols->setCustomProtocols(m_customProtocols);
+                }
                 connect(m_protocols, SIGNAL(activated(QString)),
                         q, SLOT(slotProtocolChanged(QString)));
             } else {
@@ -924,6 +929,18 @@ QPoint KUrlNavigator::savedPosition() const
 {
     const HistoryElem& histElem = d->m_history[d->m_historyIndex];
     return QPoint(histElem.contentsX(), histElem.contentsY());
+}
+
+void KUrlNavigator::setCustomProtocols(const QStringList &protocols)
+{
+    d->m_customProtocols = protocols;
+
+    d->m_protocols->setCustomProtocols(d->m_customProtocols);
+}
+
+QStringList KUrlNavigator::customProtocols() const
+{
+    return d->m_customProtocols;
 }
 
 #include "kurlnavigator.moc"

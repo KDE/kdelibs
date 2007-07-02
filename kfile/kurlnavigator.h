@@ -2,6 +2,7 @@
  * Copyright (C) 2006 by Peter Penz <peter.penz@gmx.at>                      *
  * Copyright (C) 2006 by Aaron J. Seigo <aseigo@kde.org>                     *
  * Copyright (C) 2007 by Kevin Ottens <ervin@kde.org>                        *
+ * Copyright (C) 2007 by Urs Wolfer <uwolfer @ kde.org>                      *
  *                                                                           *
  * This library is free software; you can redistribute it and/or             *
  * modify it under the terms of the GNU Library General Public               *
@@ -178,6 +179,17 @@ public:
      * for the current URL.
      */
     QPoint savedPosition() const;
+
+    /**
+     * If an application supports only some special protocols, they can be set
+     * with \a protocols .
+     */
+    void setCustomProtocols(const QStringList &protocols);
+
+    /**
+     * Returns the custom protocols if they are set, QStringList() otherwise.
+     */
+    QStringList customProtocols() const;
 
 public Q_SLOTS:
     /**

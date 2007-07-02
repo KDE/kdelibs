@@ -30,8 +30,6 @@
 #include <kprotocolmanager.h>
 #include <kurlnavigator.h>
 
-//const static int customProtocolIndex = 0;
-
 KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
     : KUrlButton(parent),
       m_protocols(KProtocolInfo::protocols())
@@ -39,7 +37,7 @@ KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
     qSort(m_protocols);
     QStringList::iterator it = m_protocols.begin();
     QStringList::iterator itEnd = m_protocols.end();
-    QMenu* menu = new QMenu(this);
+    menu = new QMenu(this);
     while (it != itEnd)
     {
         //kDebug() << "info for " << *it << " "
@@ -65,21 +63,18 @@ KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
         }
     }
 
-//    setEditable(true);
-//    menu->insertItem("", customProtocolIndex);
-//    menu->insertStringList(m_protocols);
-    int i = 0;
-    for (QStringList::const_iterator it = m_protocols.constBegin();
-         it != m_protocols.constEnd();
-         ++it, ++i)
-    {
-        QAction* action = menu->addAction(*it);
-        action->setData(i);
-    }
+    updateMenu();
 
     connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(setProtocol(QAction*)));
     setText(protocol);
     setMenu(menu);
+}
+
+void KProtocolCombo::setCustomProtocols(const QStringList &protocols)
+{
+    m_protocols = protocols;
+
+    updateMenu();
 }
 
 QSize KProtocolCombo::sizeHint() const
@@ -96,17 +91,6 @@ QSize KProtocolCombo::sizeHint() const
 void KProtocolCombo::setProtocol(const QString& protocol)
 {
     setText(protocol);
-//    if (KProtocolInfo::isKnownProtocol(protocol))
-//     int index = m_protocols.findIndex(protocol);
-//     if (index == -1)
-//     {
-//         changeItem(protocol, customProtocolIndex);
-//         setCurrentItem(customProtocolIndex);
-//     }
-//     else
-//     {
-//         setCurrentItem(index + 1);
-//     }
 }
 
 QString KProtocolCombo::currentProtocol() const
@@ -155,6 +139,17 @@ void KProtocolCombo::setProtocol(QAction* action)
     const QString protocol = m_protocols[index];
     setText(protocol);
     emit activated(protocol);
+}
+
+void KProtocolCombo::updateMenu()
+{
+    menu->clear();
+
+    int i = 0;
+    foreach (QString protocol, m_protocols) {
+        QAction *action = menu->addAction(protocol);
+        action->setData(i++);
+    }
 }
 
 #include "kprotocolcombo_p.moc"
