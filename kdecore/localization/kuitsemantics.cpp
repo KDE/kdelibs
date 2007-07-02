@@ -404,7 +404,7 @@ KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
     // call of format(); however, even so it is preferable to do raw reads
     // from the catalog, as we must assure that the exact supplied language
     // is being used for translation (normal i18n calls do fallbacks).
-    KCatalog cat("kdelibs4", m_lang);
+    KCatalog cat("kdelibs", m_lang);
 
     // Get formatting patterns for all tag/att/fmt combinations.
     setFormattingPatterns(cat);
@@ -590,7 +590,7 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
     SET_PATTERN(Tag::Command, Att::None, Fmt::Rich,
                 I18N_NOOP2("@command/rich",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
-                           "<tt>%1<tt>"));
+                           "<tt>%1</tt>"));
     SET_PATTERN(Tag::Command, Att::Section, Fmt::Plain,
                 I18N_NOOP2("@command-with-section/plain\n"
                            "%1 is the command name, %2 is its man section",
@@ -600,7 +600,7 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
                 I18N_NOOP2("@command-with-section/rich\n"
                            "%1 is the command name, %2 is its man section",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
-                           "<tt>%1(%2)<tt>"));
+                           "<tt>%1(%2)</tt>"));
 
     // -------> Resource
     SET_PATTERN(Tag::Resource, Att::None, Fmt::Plain,
@@ -704,11 +704,11 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
 
     // -------> Message
     SET_PATTERN(Tag::Message, Att::None, Fmt::Plain,
-                I18N_NOOP2("@/plain",
+                I18N_NOOP2("@message/plain",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
                            "/%1/"));
     SET_PATTERN(Tag::Message, Att::None, Fmt::Rich,
-                I18N_NOOP2("@/rich",
+                I18N_NOOP2("@message/rich",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
                            "<i>%1</i>"));
 }
