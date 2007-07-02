@@ -350,8 +350,21 @@ cg.readXXX("entry name");
 
 <h4>KCmdLineArgs</h4>
 <ul>
-<li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const char *_appname, const char* programName, const char *_description, const char *_version, bool noKApp = false);
+<li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const QByteArray &appname, const QByteArray &catalog, const KLocalizedString &programName, const QByteArray &version, const KLocalizedString &description = KLocalizedString(), StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE)));
 <li> noKApp parameter is gone, instead:   Q_FLAGS(StdCmdLineArgs)</li>
+<li> new catalog parameter can be null or empty, then appname is used as catalog name</li>
+<li> KLocalizedString objects produced by ki18n()/ki18nc() calls (instead of previous I18N_NOOPs), or just KLocalizedString() if needed empty</li>
+<li> static void usage(const QString &error) -&gt; static void usageError(const QString &error)</li>
+</ul>
+
+<h4>KCmdLineOptions</h4>
+Now a proper class, instead of statically initialized struct. Use add() method for adding options (option syntax same as before); add() returns object reference, so calls can be chained to avoid repeating variable name all the way.
+
+<h4>KAboutData</h4>
+I18N_NOOPs in general replaced with KLocalizedString, produced by ki18n()/ki18nc() calls, or just KLocalizedString() if wanted empty.
+<ul>
+<li>new catalogName parameter to constructor can be null or empty, then appName is used as catalog name</li>
+<li>all setter methods return object reference, so they can be chained to avoid repeating object name (eg. for addAuthor(), addCredits(), etc.)</li>
 </ul>
 
 <h4>KDesktopFile</h4>
