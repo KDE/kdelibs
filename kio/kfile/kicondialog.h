@@ -124,23 +124,16 @@ public:
 
     /**
      * Allows you to set the same parameters as in the class method
-     * getIcon().
-     */
-    void setup( K3Icon::Group group,
-                K3Icon::Context context = K3Icon::Application,
-                bool strictIconSize = false, int iconSize = 0,
-                bool user = false );
-
-    /**
-     * Allows you to set the same parameters as in the class method
      * getIcon(), as well as two additional parameters to lock
      * the choice between system and user dirs and to lock the custom user
      * dir itself.
      */
 
-    void setup( K3Icon::Group group, K3Icon::Context context,
-                bool strictIconSize, int iconSize, bool user, bool lockUser,
-                bool lockCustomDir );
+    void setup( K3Icon::Group group,
+                K3Icon::Context context = K3Icon::Application,
+                bool strictIconSize = false, int iconSize = 0,
+                bool user = false, bool lockUser = false,
+                bool lockCustomDir = false );
 
     /**
      * exec()utes this modal dialog and returns the name of the selected icon,

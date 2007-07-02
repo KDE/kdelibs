@@ -485,19 +485,6 @@ int KIconDialog::iconSize() const
 }
 
 void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
-                        bool strictIconSize, int iconSize, bool user )
-{
-    d->m_bStrictIconSize = strictIconSize;
-    d->mGroupOrSize = (iconSize == 0) ? group : -iconSize;
-    d->mpRb1->setChecked(!user);
-    d->mpRb2->setChecked(user);
-    d->mpCombo->setEnabled(!user);
-    d->mpBrowseBut->setEnabled(user);
-    d->mContext = context;
-    d->setContext(context);
-}
-
-void KIconDialog::setup(K3Icon::Group group, K3Icon::Context context,
                         bool strictIconSize, int iconSize, bool user,
                         bool lockUser, bool lockCustomDir )
 {
