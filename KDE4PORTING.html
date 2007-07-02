@@ -2171,9 +2171,9 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <li>The KSpell2's initialization procedure of:
 <pre>
 KSpell2::Loader::Ptr loader = KSpell2::Loader::openLoader();
-KSpell2::Speller *speller = loader->createSpeller("en_US");
+KSpell2::Speller *speller = loader-&gt;createSpeller("en_US");
 if (speller) {
-   if (speller->isMisspelled("word")) {
+   if (speller-&gt;isMisspelled("word")) {
           //do something
    }
 }
