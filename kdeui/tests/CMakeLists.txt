@@ -57,7 +57,7 @@ KDEUI_EXECUTABLE_TESTS(
   klineedittest
   kmessageboxtest
   knuminputtest
-  kpalettetest
+  kcolorcollectiontest
   kpopuptest
   kprogressdialogtest
   krulertest

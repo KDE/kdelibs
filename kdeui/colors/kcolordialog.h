@@ -31,7 +31,7 @@
 #include <QtGui/QTableWidget>
 #include <kcolorchoosermode.h>
 
-class KPalette;
+class KColorCollection;
 class KColorCells;
 
 /**
@@ -39,20 +39,20 @@ class KColorCells;
  *
  * @author Waldo Bastian <bastian@kde.org>
  **/
-class KDEUI_EXPORT KPaletteTable : public QWidget
+class KDEUI_EXPORT KColorTable : public QWidget
 {
   Q_OBJECT
 public:
-  KPaletteTable( QWidget *parent, int minWidth=210, int cols = 16);
-  ~KPaletteTable();
+  KColorTable( QWidget *parent, int minWidth=210, int cols = 16);
+  ~KColorTable();
   
   void addToCustomColors( const QColor &);
   void addToRecentColors( const QColor &);
   
-  QString palette() const;
+  QString name() const;
   
 public Q_SLOTS:
-  void setPalette(const QString &paletteName);
+  void setColors(const QString &collectionName);
 
 Q_SIGNALS:
   void colorSelected( const QColor &, const QString & );
@@ -62,7 +62,7 @@ private:
   Q_PRIVATE_SLOT(d, void slotColorCellSelected( int index , const QColor& ))
   Q_PRIVATE_SLOT(d, void slotColorCellDoubleClicked( int index , const QColor& ))
   Q_PRIVATE_SLOT(d, void slotColorTextSelected( const QString &colorText ))
-  Q_PRIVATE_SLOT(d, void slotSetPalette( const QString &_paletteName ))
+  Q_PRIVATE_SLOT(d, void slotSetColors( const QString &_collectionName ))
   Q_PRIVATE_SLOT(d, void slotShowNamedColorReadError( void ))
 
   void readNamedColor( void );
@@ -71,11 +71,11 @@ private:
   virtual void setPalette(const QPalette& p) { QWidget::setPalette(p); }
   
 private:
-  class KPaletteTablePrivate;
-  friend class KPaletteTablePrivate;
-  KPaletteTablePrivate *const d;
+  class KColorTablePrivate;
+  friend class KColorTablePrivate;
+  KColorTablePrivate *const d;
   
-  Q_DISABLE_COPY(KPaletteTable)
+  Q_DISABLE_COPY(KColorTable)
 };
 
 
@@ -209,8 +209,8 @@ private:
  * the dialog is a KXYSelector. Right next to it is a KHSSelector
  * for choosing hue/saturation.
  *
- * On the right side of the dialog you see a KPaletteTable showing
- * up to 40 colors with a combo box which offers several predefined
+ * On the right side of the dialog you see a KColorTable showing
+ * a number of colors with a combo box which offers several predefined
  * palettes or a palette configured by the user. The small field showing
  * the currently selected color is a KColorPatch.
  *

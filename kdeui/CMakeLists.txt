@@ -56,6 +56,7 @@ set(kdeui_LIB_SRCS
  colors/kcolorspaces.cpp
  colors/kcolorutils.cpp
  colors/kcolorscheme.cpp
+ colors/kcolorcollection.cpp
  colors/kcolorbutton.cpp
  colors/kcolorcombo.cpp
  colors/kcolordialog.cpp
@@ -143,7 +144,6 @@ set(kdeui_LIB_SRCS
  util/knotificationmanager.cpp
  util/knotificationrestrictions.cpp
  util/knumvalidator.cpp
- util/kpalette.cpp
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapprovider.cpp
@@ -304,6 +304,7 @@ install( FILES
  actions/ktoolbarspaceraction.h
  colors/kcolorutils.h
  colors/kcolorscheme.h
+ colors/kcolorcollection.h
  colors/kcolorbutton.h
  colors/kcolorchoosermode.h
  colors/kcolorcombo.h
@@ -382,7 +383,6 @@ install( FILES
  util/knotification.h
  util/knotificationrestrictions.h
  util/knumvalidator.h
- util/kpalette.h
  util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
  util/kpixmapprovider.h

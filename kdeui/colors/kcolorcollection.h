@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 //-----------------------------------------------------------------------------
-// KDE color palette.
+// KDE color collection.
 
 #ifndef KDELIBS_KPALETTE_H
 #define KDELIBS_KPALETTE_H
@@ -29,123 +29,118 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
-class KPalettePrivate;
-
 /**
- * Class for handling Palettes.
+ * Class for handling color collections ("palettes").
  *
- * This class makes it easy to handle palettes.
- * A palette is a set of colors. This class can read
- * and write palettes from and to a file.
+ * This class makes it easy to handle color collections, sometimes referred to
+ * as "palettes". This class can read and write collections from and to a file.
  *
  * This class uses the "GIMP" palette file format.
  *
- * This class is totally unrelated to QPalette.
- *
  * @author Waldo Bastian (bastian@kde.org)
  **/
-class KDEUI_EXPORT KPalette
+class KDEUI_EXPORT KColorCollection
 {
 public:
    /**
-    * Query which KDE palettes are installed.
+    * Query which KDE color collections are installed.
     *
-    * @return A list with a palette names.
+    * @return A list with installed color collection names.
     */
-   static QStringList getPaletteList();
+   static QStringList installedCollections();
 
    /**
-    * KPalette constructor. Creates a KPalette from a file
+    * KColorCollection constructor. Creates a KColorCollection from a file
     * the filename is derived from the name.
-    * @param name The name of palette as returned by getPaletteList()
+    * @param name The name of collection as returned by installedCollections()
     **/
-   explicit KPalette(const QString &name=QString());
+   explicit KColorCollection(const QString &name=QString());
 
    /**
-    * KPalette copy constructor.
+    * KColorCollection copy constructor.
     **/
-   KPalette(const KPalette &);
+   KColorCollection(const KColorCollection &);
 
    /**
-    * KPalette destructor.
+    * KColorCollection destructor.
     **/
-   ~KPalette();
+   ~KColorCollection();
    
    /**
-    * KPalette assignment operator
+    * KColorCollection assignment operator
     **/
-   KPalette& operator=( const KPalette &);
+   KColorCollection& operator=( const KColorCollection &);
 
    /**
-    * Save the palette
+    * Save the collection
     *
     * @return 'true' if successful
     **/
    bool save();
 
    /**
-    * Get the description of the palette.
-    * @return the description of the palette.
+    * Get the description of the collection.
+    * @return the description of the collection.
     **/
    QString description() const;
 
    /**   	
-    * Set the description of the palette.
+    * Set the description of the collection.
     * @param desc the new description
     **/
    void setDescription(const QString &desc);
 
    /**
-    * Get the name of the palette. 
-    * @return the name of the palette
+    * Get the name of the collection.
+    * @return the name of the collection
     **/
    QString name() const;
 
    /**
-    * Set the name of the palette.
-    * @param name the name of the palette
+    * Set the name of the collection.
+    * @param name the name of the collection
     **/
    void setName(const QString &name);
 
    /**
-    * Used to specify whether a palette may be edited.
+    * Used to specify whether a collection may be edited.
     * @see editable()
     * @see setEditable()
     */
-   enum Editable { Yes, ///< Palette may be edited 
-		   No,  ///< Palette may not be edited
+   enum Editable { Yes, ///< Collection may be edited
+                  No,  ///< Collection may not be edited
 		   Ask  ///< Ask user before editing
    };
   
    /**
-    * Returns whether the palette may be edited.
-    * @return the state of the palette
+    * Returns whether the collection may be edited.
+    * @return the state of the collection
     **/
    Editable editable() const;
 
    /**
-    * Change whether the palette may be edited.
-    * @param editable the state of the palette
+    * Change whether the collection may be edited.
+    * @param editable the state of the collection
     **/
    void setEditable(Editable editable);
 
    /**
-    * Return the number of colors in the palette.
+    * Return the number of colors in the collection.
     * @return the number of colors
     **/
-   int nrColors() const;
+   int count() const;
 
    /**
     * Find color by index.
     * @param index the index of the desired color
-    * @return The @p index -th color of the palette, null if not found.
+    * @return The @p index -th color of the collection, null if not found.
     **/
    QColor color(int index) const;
    
    /**
     * Find index by @p color.
     * @param color the color to find
-    * @return The index of the color in the palette or -1 if the
+    * @return The index of the color in the collection or -1 if the
     * color is not found.
     **/
    int findColor(const QColor &color) const;
@@ -154,19 +149,19 @@ public:
     * Find color name by @p index.
     * @param index the index of the color
     * @return The name of the @p index -th color.
-    * Note that not all palettes have named the colors. Null is
+    * Note that not all collections have named the colors. Null is
     * returned if the color does not exist or has no name.
     **/
-   QString colorName(int index) const;
+   QString name(int index) const;
    
    /**
     * Find color name by @p color.
-    * @return The name of color according to this palette.
-    * Note that not all palettes have named the colors.
-    * Note also that each palette can give the same color
+    * @return The name of color according to this collection.
+    * Note that not all collections have named the colors.
+    * Note also that each collection can give the same color
     * a different name.
     **/
-   QString colorName(const QColor &color) const;
+   QString name(const QColor &color) const;
 
    /**
     * Add a color.
@@ -205,19 +200,7 @@ public:
                    const QString &newColorName = QString());
 
 private:
-   struct ColorNode 
-   {
-       ColorNode(const QColor &c, const QString &n)
-         : color(c), name(n) {}
-       QColor color; QString name;
-   };
-   QList<ColorNode> mColorList;
-   
-   QString mName;
-   QString mDesc;
-   Editable mEditable;
-
-   KPalettePrivate *d;
+   class KColorCollectionPrivate *d;
 };
 
 

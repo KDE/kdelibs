@@ -229,7 +229,7 @@ ToolTip=The KColorPatch widget is a (usually small) widget showing a selected co
 Group=Display (KDE)
 ConstructorArgs=(parent)
 
-[KPaletteTable]
+[KColorTable]
 IncludeFile=kcolordialog.h
 ToolTip=A color palette in table form.
 Group=Display (KDE)

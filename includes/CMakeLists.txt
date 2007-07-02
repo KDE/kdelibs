@@ -114,10 +114,12 @@ install( FILES
   KColor
   KColorButton
   KColorCells
+  KColorCollection
   KColorCombo
   KColorDialog
   KColorMimeData
   KColorPatch
+  KColorTable
   KColorValueSelector
   KCombiView
   KComboBox
@@ -310,8 +312,6 @@ install( FILES
   KPageWidget
   KPageWidgetItem
   KPageWidgetModel
-  KPalette
-  KPaletteTable
   KPassivePopup
   KPassivePopupMessageHandler
   KPasswordDialog

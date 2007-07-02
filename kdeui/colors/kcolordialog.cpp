@@ -62,7 +62,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kseparator.h>
-#include <kpalette.h>
+#include <kcolorcollection.h>
 
 #include "kcolormimedata.h"
 #include <config.h>
@@ -80,7 +80,7 @@
 #include <X11/Xlib.h>
 #endif
 
-struct ColorPaletteNameType
+struct ColorCollectionNameType
 {
     const char* m_fileName;
     const char* m_displayName;
@@ -88,7 +88,7 @@ struct ColorPaletteNameType
 
 
 
-const ColorPaletteNameType colorPaletteName[]=
+const ColorCollectionNameType colorCollectionName[]=
 {
     { "Recent_Colors", I18N_NOOP2( "palette name", "* Recent Colors *" ) },
     { "Custom_Colors", I18N_NOOP2( "palette name", "* Custom Colors *" ) },
@@ -445,31 +445,31 @@ void KColorPatch::dropEvent( QDropEvent *event)
      }
 }
 
-class KPaletteTable::KPaletteTablePrivate
+class KColorTable::KColorTablePrivate
 {
 public:
-  KPaletteTablePrivate(KPaletteTable *q): q(q) {}
+  KColorTablePrivate(KColorTable *q): q(q) {}
 
   void slotColorCellSelected( int index , const QColor& );
   void slotColorCellDoubleClicked( int index , const QColor& );
   void slotColorTextSelected( const QString &colorText );
-  void slotSetPalette( const QString &_paletteName );
+  void slotSetColors( const QString &_collectionName );
   void slotShowNamedColorReadError( void );
 
-  KPaletteTable *q;
+  KColorTable *q;
   QString i18n_namedColors;
   QComboBox *combo;
   KColorCells *cells;
   QScrollArea *sv;
   KListWidget *mNamedColorList;
-  KPalette *mPalette;
+  KColorCollection *mPalette;
   int mMinWidth;
   int mCols;
   QMap<QString,QColor> m_namedColorMap;
 };
 
-KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
-    : QWidget( parent ), d(new KPaletteTablePrivate(this))
+KColorTable::KColorTable( QWidget *parent, int minWidth, int cols)
+    : QWidget( parent ), d(new KColorTablePrivate(this))
 {
   d->cells = 0;
   d->mPalette = 0;
@@ -477,14 +477,14 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   d->mCols = cols;
   d->i18n_namedColors  = i18n("Named Colors");
 
-  QStringList diskPaletteList = KPalette::getPaletteList();
+  QStringList diskPaletteList = KColorCollection::installedCollections();
   QStringList paletteList;
 
   // We must replace the untranslated file names by translate names (of course only for KDE's standard palettes)
-  for ( int i = 0; colorPaletteName[i].m_fileName; ++i )
+  for ( int i = 0; colorCollectionName[i].m_fileName; ++i )
   {
-      diskPaletteList.removeAll( colorPaletteName[i].m_fileName );
-      paletteList.append( i18nc( "palette name", colorPaletteName[i].m_displayName ) );
+      diskPaletteList.removeAll( colorCollectionName[i].m_fileName );
+      paletteList.append( i18nc( "palette name", colorCollectionName[i].m_displayName ) );
   }
   paletteList += diskPaletteList;
   paletteList.append( d->i18n_namedColors );
@@ -516,17 +516,17 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 
   setFixedSize( sizeHint());
   connect( d->combo, SIGNAL(activated(const QString &)),
-	this, SLOT(slotSetPalette( const QString &)));
+       this, SLOT(slotSetColors( const QString &)));
 }
 
-KPaletteTable::~KPaletteTable()
+KColorTable::~KColorTable()
 {
    delete d->mPalette;
    delete d;
 }
 
 QString
-KPaletteTable::palette() const
+KColorTable::name() const
 {
   return d->combo->currentText();
 }
@@ -555,7 +555,7 @@ static const char * const *namedColorFilePath( void )
 
 
 void
-KPaletteTable::readNamedColor( void )
+KColorTable::readNamedColor( void )
 {
   if( d->mNamedColorList->count() != 0 )
   {
@@ -565,7 +565,7 @@ KPaletteTable::readNamedColor( void )
   KGlobal::locale()->insertCatalog("kdelibs_colors");
 
   //
-  // Code somewhat inspired by KPalette.
+  // Code somewhat inspired by KColorCollection.
   //
 
   const char * const *path = namedColorFilePath();
@@ -630,7 +630,7 @@ KPaletteTable::readNamedColor( void )
 
 
 void
-KPaletteTable::KPaletteTablePrivate::slotShowNamedColorReadError( void )
+KColorTable::KColorTablePrivate::slotShowNamedColorReadError( void )
 {
   if( mNamedColorList->count() == 0 )
   {
@@ -651,18 +651,18 @@ KPaletteTable::KPaletteTablePrivate::slotShowNamedColorReadError( void )
 
 //
 // 2000-02-12 Espen Sand
-// Set the color in two steps. The setPalette() slot will not emit a signal
-// with the current color setting. The reason is that setPalette() is used
+// Set the color in two steps. The setColors() slot will not emit a signal
+// with the current color setting. The reason is that setColors() is used
 // by the color selector dialog on startup. In the color selector dialog
 // we normally want to display a startup color which we specify
-// when the dialog is started. The slotSetPalette() slot below will
+// when the dialog is started. The slotSetColors() slot below will
 // set the palette and then use the information to emit a signal with the
 // new color setting. It is only used by the combobox widget.
 //
 void
-KPaletteTable::KPaletteTablePrivate::slotSetPalette( const QString &_paletteName )
+KColorTable::KColorTablePrivate::slotSetColors( const QString &_collectionName )
 {
-  q->setPalette( _paletteName );
+  q->setColors( _collectionName );
   if( mNamedColorList->isVisible() )
   {
     int item = mNamedColorList->currentRow();
@@ -677,16 +677,16 @@ KPaletteTable::KPaletteTablePrivate::slotSetPalette( const QString &_paletteName
 
 
 void
-KPaletteTable::setPalette( const QString &_paletteName )
+KColorTable::setColors( const QString &_collectionName )
 {
-  QString paletteName( _paletteName);
+  QString collectionName( _collectionName);
 
-  if (d->combo->currentText() != paletteName)
+  if (d->combo->currentText() != collectionName)
   {
      bool found = false;
      for(int i = 0; i < d->combo->count(); i++)
      {
-        if (d->combo->itemText(i) == paletteName)
+        if (d->combo->itemText(i) == collectionName)
         {
            d->combo->setCurrentIndex(i);
            found = true;
@@ -695,17 +695,17 @@ KPaletteTable::setPalette( const QString &_paletteName )
      }
      if (!found)
      {
-        d->combo->addItem(paletteName);
+        d->combo->addItem(collectionName);
         d->combo->setCurrentIndex(d->combo->count()-1);
      }
   }
 
   // We must again find the file name of the palette from the eventual translation
-  for ( int i = 0; colorPaletteName[i].m_fileName; ++i )
+  for ( int i = 0; colorCollectionName[i].m_fileName; ++i )
   {
-      if ( paletteName == i18nc( "palette name", colorPaletteName[i].m_displayName ) )
+      if ( collectionName == i18nc( "palette name", colorCollectionName[i].m_displayName ) )
       {
-          paletteName = colorPaletteName[i].m_fileName;
+          collectionName = colorCollectionName[i].m_fileName;
           break;
       }
   }
@@ -713,15 +713,16 @@ KPaletteTable::setPalette( const QString &_paletteName )
 
   //
   // 2000-02-12 Espen Sand
-  // The palette mode "i18n_namedColors" does not use the KPalette class.
-  // In fact, 'mPalette' and 'cells' are 0 when in this mode. The reason
-  // for this is maninly that KPalette reads from and writes to files using
-  // "locate()". The colors used in "i18n_namedColors" mode comes from the
-  // X11 diretory and is not writable. I don't think this fit in KPalette.
+  // The palette mode "i18n_namedColors" does not use the KColorCollection
+  // class. In fact, 'mPalette' and 'cells' are 0 when in this mode. The reason
+  // for this is maninly that KColorCollection reads from and writes to files
+  // using "locate()". The colors used in "i18n_namedColors" mode comes from
+  // the X11 diretory and is not writable. I don't think this fit in
+  // KColorCollection.
   //
-  if( !d->mPalette || d->mPalette->name() != paletteName )
+  if( !d->mPalette || d->mPalette->name() != collectionName )
   {
-    if( paletteName == d->i18n_namedColors )
+    if( collectionName == d->i18n_namedColors )
     {
       d->sv->hide();
       d->mNamedColorList->show();
@@ -737,15 +738,15 @@ KPaletteTable::setPalette( const QString &_paletteName )
 
       delete d->cells;
       delete d->mPalette;
-      d->mPalette = new KPalette(paletteName);
-      int rows = (d->mPalette->nrColors()+d->mCols-1) / d->mCols;
+      d->mPalette = new KColorCollection(collectionName);
+      int rows = (d->mPalette->count()+d->mCols-1) / d->mCols;
       if (rows < 1) rows = 1;
       d->cells = new KColorCells(d->sv->viewport(), rows, d->mCols);
       d->cells->setShading(false);
       d->cells->setAcceptDrags(false);
       QSize cellSize = QSize( d->mMinWidth, d->mMinWidth * rows / d->mCols);
       d->cells->setFixedSize( cellSize );
-      for( int i = 0; i < d->mPalette->nrColors(); i++)
+      for( int i = 0; i < d->mPalette->count(); i++)
       {
         d->cells->setColor( i, d->mPalette->color(i) );
       }
@@ -764,55 +765,55 @@ KPaletteTable::setPalette( const QString &_paletteName )
 
 
 void
-KPaletteTable::KPaletteTablePrivate::slotColorCellSelected( int index , const QColor& /*color*/ )
+KColorTable::KColorTablePrivate::slotColorCellSelected( int index , const QColor& /*color*/ )
 {
-  if (!mPalette || (index >= mPalette->nrColors()))
+    if (!mPalette || (index >= mPalette->count()))
      return;
-  emit q->colorSelected( mPalette->color(index), mPalette->colorName(index) );
+  emit q->colorSelected( mPalette->color(index), mPalette->name(index) );
 }
 
 void
-KPaletteTable::KPaletteTablePrivate::slotColorCellDoubleClicked( int index , const QColor& /*color*/ )
+KColorTable::KColorTablePrivate::slotColorCellDoubleClicked( int index , const QColor& /*color*/ )
 {
-  if (!mPalette || (index >= mPalette->nrColors()))
+  if (!mPalette || (index >= mPalette->count()))
      return;
-  emit q->colorDoubleClicked( mPalette->color(index), mPalette->colorName(index) );
+  emit q->colorDoubleClicked( mPalette->color(index), mPalette->name(index) );
 }
 
 
 void
-KPaletteTable::KPaletteTablePrivate::slotColorTextSelected( const QString &colorText )
+KColorTable::KColorTablePrivate::slotColorTextSelected( const QString &colorText )
 {
   emit q->colorSelected( m_namedColorMap[ colorText ], colorText );
 }
 
 
 void
-KPaletteTable::addToCustomColors( const QColor &color)
+KColorTable::addToCustomColors( const QColor &color)
 {
-  setPalette(i18nc("palette name",colorPaletteName[customColorIndex].m_displayName));
+  setColors(i18nc("palette name",colorCollectionName[customColorIndex].m_displayName));
   d->mPalette->addColor( color );
   d->mPalette->save();
   delete d->mPalette;
   d->mPalette = 0;
-  setPalette(i18nc("palette name",colorPaletteName[customColorIndex].m_displayName));
+  setColors(i18nc("palette name",colorCollectionName[customColorIndex].m_displayName));
 }
 
 void
-KPaletteTable::addToRecentColors( const QColor &color)
+KColorTable::addToRecentColors( const QColor &color)
 {
   //
   // 2000-02-12 Espen Sand.
   // The 'mPalette' is always 0 when current mode is i18n_namedColors
   //
   bool recentIsSelected = false;
-  if ( d->mPalette && d->mPalette->name() == colorPaletteName[ recentColorIndex ].m_fileName )
+  if ( d->mPalette && d->mPalette->name() == colorCollectionName[ recentColorIndex ].m_fileName )
   {
      delete d->mPalette;
      d->mPalette = 0;
      recentIsSelected = true;
   }
-  KPalette *recentPal = new KPalette( colorPaletteName[ recentColorIndex ].m_fileName );
+  KColorCollection *recentPal = new KColorCollection( colorCollectionName[ recentColorIndex ].m_fileName );
   if (recentPal->findColor(color) == -1)
   {
      recentPal->addColor( color );
@@ -820,7 +821,7 @@ KPaletteTable::addToRecentColors( const QColor &color)
   }
   delete recentPal;
   if (recentIsSelected)
-      setPalette( i18nc( "palette name", colorPaletteName[ recentColorIndex ].m_displayName ) );
+      setColors( i18nc( "palette name", colorCollectionName[ recentColorIndex ].m_displayName ) );
 }
 
 class KCDPickerFilter;
@@ -872,7 +873,7 @@ public:
 	void setChooserMode (KColorChooserMode c);
 
     KColorDialog *q;
-    KPaletteTable *table;
+    KColorTable *table;
     QString originalPalette;
     bool bRecursion;
     bool bEditRgb;
@@ -900,7 +901,7 @@ public:
     KColorChooserMode _mode;
 
     KHueSaturationSelector *hsSelector;
-    KPalette *palette;
+    KColorCollection *palette;
     KColorValueSelector *valuePal;
     QVBoxLayout* l_right;
     QGridLayout* tl_layout;
@@ -1091,7 +1092,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   //
   // Add the palette table
   //
-  d->table = new KPaletteTable( page );
+  d->table = new KColorTable( page );
   d->l_right->addWidget(d->table, 10);
 
   connect( d->table, SIGNAL( colorSelected( const QColor &, const QString & ) ),
@@ -1103,7 +1104,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
     SLOT( slotColorDoubleClicked( const QColor &, const QString & ) )
   );
   // Store the default value for saving time.
-  d->originalPalette = d->table->palette();
+  d->originalPalette = d->table->name();
 
   //
   // a little space between
@@ -1370,11 +1371,11 @@ KColorDialog::readSettings()
 {
   KConfigGroup group( KGlobal::config(), "Colors" );
 
-  QString palette = group.readEntry("CurrentPalette");
-  if (palette.isEmpty())
-    palette=i18nc("palette name",colorPaletteName[fortyColorIndex].m_displayName);
+  QString collectionName = group.readEntry("CurrentPalette");
+  if (collectionName.isEmpty())
+    collectionName = i18nc("palette name", colorCollectionName[fortyColorIndex].m_displayName);
 
-  d->table->setPalette(palette);
+  d->table->setColors(collectionName);
 }
 
 void
@@ -1382,15 +1383,14 @@ KColorDialog::KColorDialogPrivate::slotWriteSettings()
 {
   KConfigGroup group( KGlobal::config(), "Colors" );
 
-  QString palette = table->palette();
-  if (!group.hasDefault("CurrentPalette") &&
-      table->palette() == originalPalette)
+  QString collectionName = table->name();
+  if (!group.hasDefault("CurrentPalette") && table->name() == originalPalette)
   {
      group.revertToDefault("CurrentPalette");
   }
   else
   {
-     group.writeEntry("CurrentPalette", table->palette()); //Shouldn't here the unstranslated name be saved ??
+     group.writeEntry("CurrentPalette", table->name()); //Shouldn't here the unstranslated name be saved ??
   }
 }
 
