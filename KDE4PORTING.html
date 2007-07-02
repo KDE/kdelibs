@@ -820,6 +820,8 @@ This class has been renamed KWindowInfo and moved to its own header: KWindowInfo
 <li>kfontcombo.h went away, use QFontComboBox</li>
 <li>libkwalletclient (which used to provide the KWallet class) has been merged with kdeui</li>
 <li>system color scheme accessors in kglobalsettings.h are deprecated, use kcolorscheme.h</li>
+<li>KPalette was renamed to KColorCollection and has been cleaned up</li>
+<li>KPaletteTable was renamed to KColorTable</li>
 </ul>
 
 <h4>KAboutContainer</h4>
@@ -1036,6 +1038,13 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 was selected and the color itself as arguments</li>
 </ul>
 
+<h4>KColorCollection</h4>
+<ul>
+<li>nrColors() was renamed to count()</li>
+<li>colorName() was renamed to name()</li>
+<li>getPaletteList() was renamed to installedCollections()</li>
+</ul>
+
 <h4>KColorDrag</h4>
 <ul>
 <li>has been renamed to K3ColorDrag and moved as kde3support</li>
@@ -1045,6 +1054,12 @@ was selected and the color itself as arguments</li>
 <h4>KColorScheme</h4>
 New class that provides access to system-wide, user configurable color roles.
 Like QPalette, the return type is now QBrush instead of QColor. As of 4.0 the brushes are solid colors, but this may change in the future.
+
+<h4>KColorScheme</h4>
+<ul>
+<li>palette() was renamed to name()</li>
+<li>slot setPalette() was renamed to slot setColors()</li>
+</ul>
 
 <h4>KComboBox</h4>
 <ul>
