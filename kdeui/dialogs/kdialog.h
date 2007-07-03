@@ -312,7 +312,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     void setButtonMenu( ButtonCode id, QMenu *menu, ButtonPopupMode popupmode=InstantPopup);
 
     /**
-     * Sets the focus to the button of the passed @c id.
+     * Sets the focus to the button of the passed @p id.
      */
     void setButtonFocus( ButtonCode id );
 
