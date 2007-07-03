@@ -117,7 +117,8 @@ void Nepomuk::ResourceData::deleteData()
     if( !m_kickoffUriOrId.isEmpty() )
         kickoffData()->remove( m_kickoffUriOrId );
 
-    delete this;
+    // FIXME: crashes
+    // delete this;
 }
 
 
