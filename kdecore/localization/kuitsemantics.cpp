@@ -17,9 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include <kuitsemantics_p.h>
+
+#include <config.h>
 
 #include <QHash>
 #include <QSet>

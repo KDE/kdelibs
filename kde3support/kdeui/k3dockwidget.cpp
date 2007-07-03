@@ -117,11 +117,21 @@ K3DockMainWindow::~K3DockMainWindow()
 	delete dockManager;
 }
 
+K3DockManager* K3DockMainWindow::manager() const
+{
+    return dockManager;
+}
+
 void K3DockMainWindow::setMainDockWidget( K3DockWidget* mdw )
 {
   if ( mainDockWidget == mdw ) return;
   mainDockWidget = mdw;
   dockManager->setMainDockWidget2(mdw);
+}
+
+K3DockWidget* K3DockMainWindow::getMainDockWidget() const
+{
+    return mainDockWidget;
 }
 
 void K3DockMainWindow::setView( QWidget *view )
@@ -140,6 +150,16 @@ void K3DockMainWindow::setView( QWidget *view )
 K3DockWidget* K3DockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
 {
   return new K3DockWidget( dockManager, name.toLatin1().constData(), pixmap, parent, strCaption, strTabPageLabel );
+}
+
+void K3DockMainWindow::activateDock()
+{
+    dockManager->activate();
+}
+
+Q3PopupMenu* K3DockMainWindow::dockHideShowMenu() const
+{
+    return dockManager->dockHideShowMenu();
 }
 
 void K3DockMainWindow::makeDockVisible( K3DockWidget* dock )
@@ -196,9 +216,22 @@ K3DockWidgetAbstractHeaderDrag::K3DockWidgetAbstractHeaderDrag( K3DockWidgetAbst
   dw = dock;
   installEventFilter( dock->dockManager() );
 }
+
+K3DockWidgetAbstractHeaderDrag::~K3DockWidgetAbstractHeaderDrag()
+{
+}
+
+K3DockWidget* K3DockWidgetAbstractHeaderDrag::dockWidget() const
+{
+    return dw;
+}
 /*************************************************************************/
 K3DockWidgetHeaderDrag::K3DockWidgetHeaderDrag( K3DockWidgetAbstractHeader* parent, K3DockWidget* dock, const char* name )
 :K3DockWidgetAbstractHeaderDrag( parent, dock, name )
+{
+}
+
+K3DockWidgetHeaderDrag::~K3DockWidgetHeaderDrag()
 {
 }
 
@@ -284,6 +317,10 @@ K3DockWidgetHeader::K3DockWidgetHeader( K3DockWidget* parent, const char* name )
 #else
   drag->setFixedHeight( layout->minimumSize().height() );
 #endif
+}
+
+K3DockWidgetHeader::~K3DockWidgetHeader()
+{
 }
 
 void K3DockWidgetHeader::setTopLevel( bool isTopLevel )
@@ -788,6 +825,21 @@ void K3DockWidget::setEnableDocking( int pos )
        ( ( K3DockWidgetHeader* ) header )->showUndockButton( pos & DockDesktop );
     updateHeader();
   }
+}
+
+int K3DockWidget::enableDocking() const
+{
+    return eDocking;
+}
+
+void K3DockWidget::setDockSite( int pos )
+{
+    sDocking = pos;
+}
+
+int K3DockWidget::dockSite() const
+{
+    return sDocking;
 }
 
 void K3DockWidget::updateHeader()
@@ -1513,6 +1565,11 @@ void K3DockWidget::setWidget( QWidget* mw )
   emit widgetSet(mw);
 }
 
+QWidget* K3DockWidget::getWidget() const
+{
+    return widget;
+}
+
 void K3DockWidget::setDockTabName( K3DockTabGroup* tab )
 {
   QString listOfName;
@@ -1544,6 +1601,21 @@ bool K3DockWidget::mayBeShow() const
 {
   bool f = (parent() != manager->main);
   return ( !isGroup && !isTabGroup && f && !isVisible() );
+}
+
+K3DockManager* K3DockWidget::dockManager() const
+{
+    return manager;
+}
+
+void K3DockWidget::setToolTipString(const QString& ttStr)
+{
+    toolTipStr = ttStr;
+}
+
+const QString& K3DockWidget::toolTipString() const
+{
+    return toolTipStr;
 }
 
 void K3DockWidget::changeHideShowState()
@@ -1640,6 +1712,16 @@ bool K3DockWidget::isDockBackPossible() const
     return false;
   else
     return true;
+}
+
+void K3DockWidget::setTabPageLabel( const QString& label)
+{
+    tabPageTitle = label;
+}
+
+const QString& K3DockWidget::tabPageLabel() const
+{
+    return tabPageTitle;
 }
 
 /**************************************************************************************/
@@ -2952,7 +3034,6 @@ void K3DockManager::slotMenuPopup()
 
   QObjectList::iterator it = childDock->begin();
   K3DockWidget * obj;
-  int numerator = 0;
   while ( (obj=(K3DockWidget*)(*it)) ) {
     ++it;
     if ( obj->mayBeHide() )
@@ -2986,6 +3067,16 @@ K3DockWidget* K3DockManager::findWidgetParentDock( QWidget* w ) const
     if ( dock->widget == w ){ found  = dock; break; }
   }
   return found;
+}
+
+void K3DockManager::makeWidgetDockVisible( QWidget* w )
+{
+    findWidgetParentDock(w)->makeDockVisible();
+}
+
+Q3PopupMenu* K3DockManager::dockHideShowMenu() const
+{
+    return menu;
 }
 
 void K3DockManager::drawDragRectangle()
@@ -3081,9 +3172,24 @@ K3DockArea::~K3DockArea()
 	delete dockManager;
 }
 
+K3DockManager* K3DockArea::manager()
+{
+    return dockManager;
+}
+
 K3DockWidget* K3DockArea::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
 {
   return new K3DockWidget( dockManager, name.toLatin1().constData(), pixmap, parent, strCaption, strTabPageLabel );
+}
+
+void K3DockArea::activateDock()
+{
+    dockManager->activate();
+}
+
+Q3PopupMenu* K3DockArea::dockHideShowMenu()
+{
+    return dockManager->dockHideShowMenu();
 }
 
 void K3DockArea::makeDockVisible( K3DockWidget* dock )
@@ -3161,6 +3267,7 @@ void K3DockArea::readDockConfig( KConfig* c, const QString &group )
 {
   dockManager->readConfig( c, group );
 }
+#endif
 
 void K3DockArea::setMainDockWidget( K3DockWidget* mdw )
 {
@@ -3168,7 +3275,11 @@ void K3DockArea::setMainDockWidget( K3DockWidget* mdw )
   mainDockWidget = mdw;
   mdw->applyToWidget(this);
 }
-#endif
+
+K3DockWidget* K3DockArea::getMainDockWidget()
+{
+    return mainDockWidget;
+}
 
 
 
@@ -3293,6 +3404,16 @@ void K3DockContainer::prepareSave(QStringList &names)
 }
 
 
+K3DockTabGroup::K3DockTabGroup( QWidget *parent, const char *name )
+  :QTabWidget( parent )
+{
+	setObjectName( QLatin1String(name) );
+}
+
+K3DockTabGroup::~K3DockTabGroup()
+{
+}
+
 QWidget *K3DockTabGroup::transientTo() {
 	QWidget *tT=0;
 	for (int i=0;i<count();i++) {
@@ -3335,7 +3456,7 @@ void K3DockWidget::virtual_hook( int, void* )
 void K3DockManager::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-void K3DockMainWindow::virtual_hook( int id, void* data )
+void K3DockMainWindow::virtual_hook( int, void* )
 { /* KMainWindow::virtual_hook( id, data ); */ }
 
 void K3DockArea::virtual_hook( int, void* )

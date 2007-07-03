@@ -17,9 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include <klocalizedstring.h>
+
+#include <config.h>
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -28,7 +28,6 @@
 #include <klibloader.h>
 #include <kstandarddirs.h>
 #include <ktranscript_p.h>
-#include <ktranslit_p.h>
 #include <ktranslit_p.h>
 #include <kuitsemantics_p.h>
 
@@ -597,12 +596,12 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
 
 static QString wrapInt (const QString &numstr)
 {
-    return "<"KUIT_NUMINTG">" + numstr + "</"KUIT_NUMINTG">";
+    return "<"KUIT_NUMINTG">" + numstr + "</"KUIT_NUMINTG">"; //krazy:exclude=doublequote_chars
 }
 
 static QString wrapReal (const QString &numstr)
 {
-    return "<"KUIT_NUMREAL">" + numstr + "</"KUIT_NUMREAL">";
+    return "<"KUIT_NUMREAL">" + numstr + "</"KUIT_NUMREAL">"; //krazy:exclude=doublequote_chars
 }
 
 KLocalizedString KLocalizedString::subs (int a, int fieldWidth, int base,

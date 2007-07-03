@@ -17,9 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include <kuitformats_p.h>
+
+#include <config.h>
 
 #include <QStringList>
 #include <QRegExp>

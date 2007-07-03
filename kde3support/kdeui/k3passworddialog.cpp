@@ -146,6 +146,11 @@ K3PasswordEdit::~K3PasswordEdit()
     delete_d(this);
 }
 
+const char *K3PasswordEdit::password() const
+{
+    return m_Password;
+}
+
 void K3PasswordEdit::insert(const QString &txt)
 {
     const QByteArray localTxt = txt.toLocal8Bit();
@@ -527,6 +532,11 @@ void K3PasswordDialog::slotKeep(bool keep)
     m_Keep = keep;
 }
 
+bool K3PasswordDialog::checkPassword(const char *)
+{
+    return true;
+}
+
 
 int K3PasswordDialog::getPassword(QWidget *parent, QByteArray &password, const QString &caption,
     const QString &prompt, bool *keep)
@@ -714,6 +724,16 @@ void K3PasswordDialog::setPasswordStrengthWarningLevel(int warningLevel) {
 
 int K3PasswordDialog::passwordStrengthWarningLevel() const {
     return d->passwordStrengthWarningLevel;
+}
+
+const char *K3PasswordDialog::password() const
+{
+    return m_pEdit->password();
+}
+
+bool K3PasswordDialog::keep() const
+{
+    return m_Keep;
 }
 
 #include "k3passworddialog.moc"

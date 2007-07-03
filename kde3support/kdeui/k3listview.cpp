@@ -1439,6 +1439,16 @@ bool K3ListView::tabOrderedRenaming() const
 	return d->tabRename;
 }
 
+bool K3ListView::below (const QRect& rect, const QPoint& p)
+{
+	return (p.y() > (rect.top() + (rect.bottom() - rect.top())/2));
+}
+
+bool K3ListView::below (Q3ListViewItem* i, const QPoint& p)
+{
+	return below (itemRect(i), contentsToViewport(p));
+}
+
 void K3ListView::keyPressEvent (QKeyEvent* e)
 {
   //don't we need a contextMenuModifier too ? (aleXXX)

@@ -127,7 +127,7 @@ public:
    *
    * @see spellStatus()
    */
-  spellStatus status() const { return m_status; }
+  spellStatus status() const;
 
   /**
    * Cleans up ISpell.
@@ -142,7 +142,7 @@ public:
    * Sets the auto-delete flag. If this is set, the K3Spell object
    * is automatically deleted after emitting death().
    */
-  void setAutoDelete(bool _autoDelete) { autoDelete = _autoDelete; }
+  void setAutoDelete(bool _autoDelete);
 
   /**
    *  Spellchecks a buffer of many words in plain text
@@ -164,8 +164,7 @@ public:
    * number (when using checkList()) of
    * the last word checked.
    */
-  int lastPosition() const
-    { return lastpos;}
+  int lastPosition() const;
 
   /**
    * Spellchecks a list of words.
@@ -219,7 +218,7 @@ public:
    *  use this to get the list of
    *  suggestions (if any were available).
    */
-  QStringList suggestions () const { return sugg; }
+  QStringList suggestions () const;
 
   /**
    * Gets the result code of the dialog box.
@@ -237,8 +236,7 @@ public:
    *    @li KS_STOP
    *
    */
-  int dlgResult () const
-    { return dlgresult; }
+  int dlgResult () const;
 
   /**
    * Moves the dialog.
@@ -264,7 +262,7 @@ public:
    *
    * You might want the full buffer in its partially-checked state.
    */
-  QString intermediateBuffer () const {return newbuffer;}
+  QString intermediateBuffer () const;
 
   /**
    * Tells ISpell/ASpell to ignore this word for the life of this K3Spell instance.
@@ -545,8 +543,7 @@ protected:
   int parseOneResponse (const QString &_buffer, QString &word, QStringList &sugg);
   QString funnyWord (const QString & word);
   void dialog (const QString & word, QStringList & sugg, const char* _slot);
-  QString replacement () const
-    { return dlgreplacement; }
+  QString replacement () const;
 
   void setUpDialog ( bool reallyusedialogbox = true);
 

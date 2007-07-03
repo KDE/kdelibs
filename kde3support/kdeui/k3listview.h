@@ -644,10 +644,7 @@ protected:
    * @param p is the point located in the rectangle, p is assumed to be in
    * viewport coordinates.
    */
-  inline bool below (const QRect& rect, const QPoint& p)
-  {
-	return (p.y() > (rect.top() + (rect.bottom() - rect.top())/2));
-  }
+  bool below (const QRect& rect, const QPoint& p);
 
   /**
    * An overloaded version of below(const QRect&, const QPoint&).
@@ -658,10 +655,7 @@ protected:
    * @param p is translated from contents coordinates to viewport coordinates
    * before being passed to the above function.
    */
-  inline bool below (Q3ListViewItem* i, const QPoint& p)
-  {
-	return below (itemRect(i), contentsToViewport(p));
-  }
+  bool below (Q3ListViewItem* i, const QPoint& p);
 
   /**
    * Reimplemented to reload the alternate background in palette changes.

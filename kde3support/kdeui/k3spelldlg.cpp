@@ -110,6 +110,11 @@ K3SpellDlg::~K3SpellDlg()
   delete d;
 }
 
+QString K3SpellDlg::replacement() const
+{
+    return newword;
+}
+
 void
 K3SpellDlg::init( const QString & _word, QStringList * _sugg )
 {
@@ -177,6 +182,11 @@ K3SpellDlg::init( const QString& _word, QStringList* _sugg,
     d->ui.m_suggestBtn->setEnabled( false );
     d->ui.m_suggestions->setSelected( d->ui.m_suggestions->firstChild(), true );
   }
+}
+
+void K3SpellDlg::standby()
+{
+    ready( false );
 }
 
 void

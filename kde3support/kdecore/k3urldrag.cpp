@@ -85,6 +85,11 @@ K3URLDrag * K3URLDrag::newDrag( const KUrl::List &urls, const QMap<QString, QStr
     return new K3URLDrag( urls, metaData, dragSource );
 }
 
+QMap<QString, QString> &K3URLDrag::metaData()
+{
+    return m_metaData;
+}
+
 bool K3URLDrag::decode( const QMimeSource *e, KUrl::List &uris )
 {
     // x-kde-urilist is the same format as text/uri-list, but contains

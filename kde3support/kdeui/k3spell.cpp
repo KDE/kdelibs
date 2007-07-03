@@ -137,10 +137,30 @@ K3Spell::K3Spell( QWidget *_parent, const QString &_caption,
               _progressbar, _modal, type );
 }
 
+K3Spell::spellStatus K3Spell::status() const
+{
+    return m_status;
+}
+
 void K3Spell::hide() { ksdlg->hide(); }
+
+QStringList K3Spell::suggestions() const
+{
+    return sugg;
+}
+
+int K3Spell::dlgResult () const
+{
+    return dlgresult;
+}
 
 int K3Spell::heightDlg() const { return ksdlg->height(); }
 int K3Spell::widthDlg() const { return ksdlg->width(); }
+
+QString K3Spell::intermediateBuffer() const
+{
+    return K3Spell::newbuffer;
+}
 
 // Check if aspell is at least version 0.6
 static bool determineASpellV6()
@@ -1058,6 +1078,11 @@ bool K3Spell::check( const QString &_buffer, bool _usedialog )
   return true;
 }
 
+int K3Spell::lastPosition() const
+{
+    return lastpos;
+}
+
 
 void K3Spell::check2()
   // invoked by KProcess when read from ispell
@@ -1263,6 +1288,11 @@ void K3Spell::dialog( const QString & word, QStringList & sugg, const char *_slo
   ksdlg->show();
 }
 
+QString K3Spell::replacement () const
+{
+    return dlgreplacement;
+}
+
 void K3Spell::dialog2( int result )
 {
   QString qs;
@@ -1340,6 +1370,11 @@ void K3Spell::cleanUp()
     m_status = Cleaning;
   }
   proc->closeWriteChannel();
+}
+
+void K3Spell::setAutoDelete(bool _autoDelete)
+{
+    autoDelete = _autoDelete;
 }
 
 void K3Spell::ispellExit()

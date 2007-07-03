@@ -67,8 +67,7 @@ public:
                       bool _progressbar = false, bool _modal = false );
   ~K3SpellDlg();
 
-  QString replacement() const
-    { return newword; }
+  QString replacement() const;
 
   /**
    * Change the misspelled word and suggested replacements
@@ -79,7 +78,7 @@ public:
   void init( const QString& _word, QStringList* _sugg,
              const QString& context );
 
-  void standby() { ready( false ); }
+  void standby();
 
   public Q_SLOTS:
   /**

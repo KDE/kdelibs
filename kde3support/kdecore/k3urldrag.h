@@ -97,7 +97,7 @@ public:
    * drag->metaData()["key"] = data;
    * @see KIO::TransferJob
    */
-  QMap<QString, QString> &metaData() { return m_metaData; }
+  QMap<QString, QString> &metaData();
 
   /**
    * Convenience method that decodes the contents of @p e

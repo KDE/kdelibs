@@ -190,7 +190,7 @@ public:
 
     /**
      * Helper for porting things. Returns ID of action, or -1 if passed null.
-     * ### KDE4: remove once we've cleaned up stuff
+     * ### KDE4: should be able to remove on Monday
      */
     static int actionId(QAction* action)
     {

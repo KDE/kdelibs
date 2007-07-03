@@ -164,12 +164,12 @@ public:
   /**
    * Destructs this.
    */
-  virtual ~K3DockWidgetAbstractHeaderDrag(){}
+  virtual ~K3DockWidgetAbstractHeaderDrag();
 
   /**
    * @return the dockwidget where this belongs to
    */
-  K3DockWidget* dockWidget() const { return dw; }
+  K3DockWidget* dockWidget() const;
 
 private:
   /**
@@ -209,7 +209,7 @@ public:
   /**
    * Destructs this.
    */
-  virtual ~K3DockWidgetHeaderDrag(){}
+  virtual ~K3DockWidgetHeaderDrag();
 
 protected:
 
@@ -248,7 +248,7 @@ public:
   /**
    * Destructs this.
    */
-  virtual ~K3DockWidgetHeader(){}
+  virtual ~K3DockWidgetHeader();
 
   /**
    * Hides the close button and stay button when switching to toplevel or vice versa shows them.
@@ -360,13 +360,12 @@ public:
   /**
    * Constructs this. It just calls the method of the base class.
    */
-  K3DockTabGroup( QWidget *parent = 0, const char *name = 0 )
-  :QTabWidget( parent ){ setObjectName( QLatin1String(name) ); }
+  K3DockTabGroup( QWidget *parent = 0, const char *name = 0 );
 
   /**
    * Destructs a K3DockTabGroup.
    */
-  virtual ~K3DockTabGroup(){}
+  virtual ~K3DockTabGroup();
 
   QWidget *transientTo();
 protected:
@@ -500,19 +499,19 @@ public:
   /**
    * @return Where it is either possible or impossible for this to dock to another dockwidget (an OR'ed set of DockPositions).
    */
-  int enableDocking() const { return eDocking; }
+  int enableDocking() const;
 
   /**
    * Specify where it is either possible or impossible for another dockwidget to dock to this.
    *
    * @param pos An OR'ed set of @p DockPositions
    */
-  void setDockSite( int pos ){ sDocking = pos;}
+  void setDockSite( int pos );
 
   /**
    * @return There it is either possible or impossible for another dockwidget to dock to this (an OR'ed set of @p DockPositions).
    */
-  int dockSite() const { return sDocking; }
+  int dockSite() const;
 
   /**
    * Sets the embedded widget.
@@ -528,7 +527,7 @@ public:
    *
    * @return The pointer to the dockwidget's child widget, 0L if there's no such child.
    */
-  QWidget* getWidget() const { return widget; }
+  QWidget* getWidget() const;
 
   /**
    * Sets the header of this dockwidget.
@@ -575,7 +574,7 @@ public:
   /**
    * @return The dockmanager that is responsible for this.
    */
-  K3DockManager* dockManager() const { return manager; }
+  K3DockManager* dockManager() const;
 
   /**
    * Stores a string for a tooltip.
@@ -587,12 +586,12 @@ public:
    *
    * @param ttStr A string for the tooltip on the tab.
    */
-  void setToolTipString(const QString& ttStr) { toolTipStr = ttStr; }
+  void setToolTipString(const QString& ttStr);
 
   /**
    * @return The tooltip string being shown on the appropriate tab page header when in dock-centered mode.
    */
-  const QString& toolTipString() const { return toolTipStr; }
+  const QString& toolTipString() const;
 
   /**
    * @return result @p true, if a dockback is possible, otherwise @p false.
@@ -603,12 +602,12 @@ public:
    * Sets a string that is used for the label of the tab page when in tab page mode
    * @param label The new tab page label.
    */
-  void setTabPageLabel( const QString& label) { tabPageTitle = label; }
+  void setTabPageLabel( const QString& label);
 
   /**
    * @return A string that is used for the label of the tab page when in tab page mode.
    */
-  const QString& tabPageLabel() const { return tabPageTitle; }
+  const QString& tabPageLabel() const;
 
   /**
    * Catches and processes some QWidget events that are interesting for dockwidgets.
@@ -987,12 +986,12 @@ public:
    *
    * @param w the widget that is encapsulated by a dockwidget that turns to visible.
    */
-  void makeWidgetDockVisible( QWidget* w ){ findWidgetParentDock(w)->makeDockVisible(); }
+  void makeWidgetDockVisible( QWidget* w );
 
   /**
    * @return the popupmenu for showing/hiding dockwidgets
    */
-  Q3PopupMenu* dockHideShowMenu() const { return menu; }
+  Q3PopupMenu* dockHideShowMenu() const;
 
   /**
    * @param dockName an internal QObject name
@@ -1307,7 +1306,7 @@ public:
    * Returns the dockmanager of this. (see K3DockManager)
    * @return pointer to the wanted dockmanager
    */
-  K3DockManager* manager() const { return dockManager; }
+  K3DockManager* manager() const;
 
   /**
    * Sets a new main dockwidget.
@@ -1322,7 +1321,7 @@ public:
    *
    * @return pointer to the main dockwidget
    */
-  K3DockWidget* getMainDockWidget() const { return mainDockWidget; }
+  K3DockWidget* getMainDockWidget() const;
 
   /**
    * This is one of the most important methods!
@@ -1371,7 +1370,7 @@ public:
    * encapsulated widget and show() for the dockwidget itself if it is not in tab mode.
    * Additionally, if the main dockwidget is not a QDialog, it will be shown.
    */
-  void activateDock(){ dockManager->activate(); }
+  void activateDock();
 
   /**
    * Returns a popup menu that contains entries for all controlled dockwidgets making hiding and showing
@@ -1379,7 +1378,7 @@ public:
    *
    * @return the wanted popup menu
    */
-  Q3PopupMenu* dockHideShowMenu() const { return dockManager->dockHideShowMenu(); }
+  Q3PopupMenu* dockHideShowMenu() const;
 
   /**
    * This method shows the given dockwidget.
@@ -1455,11 +1454,11 @@ public:
 
   virtual ~K3DockArea();
 
-  K3DockManager* manager(){ return dockManager; }
+  K3DockManager* manager();
 
 
   void setMainDockWidget( K3DockWidget* );
-  K3DockWidget* getMainDockWidget(){ return mainDockWidget; }
+  K3DockWidget* getMainDockWidget();
 
   K3DockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L,
     const QString& strCaption = QString(), const QString& strTabPageLabel = QLatin1String( " " ) );
@@ -1474,8 +1473,8 @@ public:
 
 
 
-  void activateDock(){ dockManager->activate(); }
-  Q3PopupMenu* dockHideShowMenu(){ return dockManager->dockHideShowMenu(); }
+  void activateDock();
+  Q3PopupMenu* dockHideShowMenu();
   void makeDockVisible( K3DockWidget* dock );
   void makeDockInvisible( K3DockWidget* dock );
   void makeWidgetDockVisible( QWidget* widget );

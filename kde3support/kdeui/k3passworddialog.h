@@ -73,7 +73,7 @@ public:
      * Returns the password. The memory is freed in the destructor
      * so you should make a copy.
      */
-    const char *password() const { return m_Password; }
+    const char *password() const;
 
     /**
      * Erases the current password.
@@ -300,7 +300,7 @@ public:
      * Returns the password entered. The memory is freed in the destructor,
      * so you should make a copy.
      */
-    const char *password() const { return m_pEdit->password(); }
+    const char *password() const;
 
     /**
      * Clears the password input field. You might want to use this after the
@@ -311,7 +311,7 @@ public:
     /**
      * Returns true if the user wants to keep the password.
      */
-    bool keep() const { return m_Keep; }
+    bool keep() const;
 
     /**
      * Pops up the dialog, asks the user for a password, and returns it.
@@ -374,7 +374,7 @@ protected:
      * checking in derived classes. It should return @p true if the
      * password is valid, @p false otherwise.
      */
-    virtual bool checkPassword(const char *) { return true; }
+    virtual bool checkPassword(const char *password);
 
 
 private Q_SLOTS:
