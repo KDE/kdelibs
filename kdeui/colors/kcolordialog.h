@@ -240,6 +240,8 @@ class KDEUI_EXPORT KColorDialog : public KDialog
      *
      * The selected color is returned in the argument @p theColor.
      *
+     * @param theColor if valid, specifies the color to be initially selected. On
+     *                 return, holds the selected color.
      * @returns QDialog::result().
      */
     static int getColor( QColor &theColor, QWidget *parent=0L );
@@ -254,6 +256,9 @@ class KDEUI_EXPORT KColorDialog : public KDialog
      * selected by the "default color" checkbox. When this checkbox is checked,
      * the invalid color (QColor()) is returned into @p theColor.
      *
+     * @param theColor if valid, specifies the color to be initially selected. On
+     *                 return, holds the selected color.
+     * @param defaultColor color selected by the "default color" checkbox
      * @returns QDialog::result().
      */
     static int getColor( QColor &theColor, const QColor& defaultColor, QWidget *parent=0L );
