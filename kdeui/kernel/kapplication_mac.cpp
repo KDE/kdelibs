@@ -30,10 +30,6 @@
 /**
  * Mac OS X related actions for KApplication startup.
  *
- * - Set up some default paths based on what is in kderc.
- *   Usage: set the following in /etc/kderc:
- *   AddDirectoriesToPath: /opt/kde4-deps/bin,/opt/kde4/bin
- *
  * @internal
 */
 
@@ -46,16 +42,18 @@ void KApplication_early_init_mac()
 
     /* temporary until we implement autolaunch for dbus  on Mac OS X */
     QString dbusSession;
-    // for (int i = 0; i < newPath.size(); ++i) {
+    QStringList path = QFile::decodeName(getenv("KDEDIRS")).split(':');
+    path << QFile::decodeName(getenv("PATH")).split(':') << "/opt/kde4-deps/bin" << "/sw/bin" << "/usr/local/bin";
+    for (int i = 0; i < path.size(); ++i) {
         // QString testSession = QString(newPath.at(i)).append("/start-session-bus.sh");
-        QString testSession = "/opt/kde4-deps/bin/start-session-bus.sh";
+        QString testSession = QString(path.at(i)).append("/start-session-bus.sh");
         kDebug() << "trying " << testSession << endl;
         if (QFile(testSession).exists()) {
             kDebug() << "found " << testSession << endl;
             dbusSession = testSession;
-            // break;
+            break;
         }
-    // }
+    }
 
     if (!dbusSession.isEmpty()) {
         kDebug() << "running " << dbusSession << " --kde-mac" << endl;

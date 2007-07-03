@@ -459,6 +459,10 @@ install( FILES
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
+if (Q_WS_MAC)
+  install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
+endif (Q_WS_MAC)
+
 install( FILES colors/40.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 install(FILES jobs/org.kde.UiServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
