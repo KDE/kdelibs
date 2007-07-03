@@ -120,13 +120,13 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
 //                          &masks.button, pf | Tile::Center);
             
             int dx = copy.rect.width()/4, dy = copy.rect.height()/4;
-            copy.rect.adjust(dx, 2*dy,-dx,-dpi.$1);
+            copy.rect.adjust(dx, 2*dy,-dx,-dpi._1);
             
             if (!sunken) {
                painter->setPen(COLOR(Base).dark(105));
-               copy.rect.translate(dpi.$2, dpi.$2);
+               copy.rect.translate(dpi._2, dpi._2);
                drawPrimitive(PE_IndicatorArrowUp, &copy, painter, widget);
-               copy.rect.translate(-dpi.$2, -dpi.$2);
+               copy.rect.translate(-dpi._2, -dpi._2);
             }
             
             QColor c;
@@ -158,13 +158,13 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
 //                          pf | Tile::Center, false, QPoint(0,-uh));
             
             int dx = copy.rect.width()/4, dy = copy.rect.height()/4;
-            copy.rect.adjust(dx, dpi.$1,-dx,-2*dy);
+            copy.rect.adjust(dx, dpi._1,-dx,-2*dy);
             
             if (!sunken) {
                painter->setPen(COLOR(Base).dark(105));
-               copy.rect.translate(dpi.$2, dpi.$2);
+               copy.rect.translate(dpi._2, dpi._2);
                drawPrimitive(PE_IndicatorArrowDown, &copy, painter, widget);
-               copy.rect.translate(-dpi.$2, -dpi.$2);
+               copy.rect.translate(-dpi._2, -dpi._2);
             }
             
             QColor c;
@@ -354,7 +354,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
    case CC_ComboBox: // A combobox, like QComboBox
       if (const QStyleOptionComboBox *cmb =
           qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
-         QRect ar, r = RECT.adjusted(0,0,0,-dpi.$2);
+         QRect ar, r = RECT.adjusted(0,0,0,-dpi._2);
          const QComboBox* combo = widget ?
                 qobject_cast<const QComboBox*>(widget) : 0;
          const bool listShown = combo && combo->view() &&
@@ -438,7 +438,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
             if (cmb->editable) {
                if (!sunken) {
                   painter->setPen(COLOR(Base).dark(105));
-                  tmpOpt.rect =  ar.translated(-dpi.$2, dpi.$2);
+                  tmpOpt.rect =  ar.translated(-dpi._2, dpi._2);
                   drawPrimitive(arrow, &tmpOpt, painter, widget);
                }
                if (hover || listShown)
@@ -562,7 +562,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                // the "temperature"
                if (slider->sliderPosition != ground &&
                    slider->maximum > slider->minimum) {
-                  groove.adjust(0,dpi.$1,0,-dpi.$1);
+                  groove.adjust(0,dpi._1,0,-dpi._1);
                   int groundX = groove.width() * (ground - slider->minimum) /
                         (slider->maximum - slider->minimum);
                   bool rightSide = slider->sliderPosition > ground;
@@ -586,13 +586,13 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                                &masks.button);
                }
 #else
-               groove.adjust(0,dpi.$1,0,-dpi.$1);
+               groove.adjust(0,dpi._1,0,-dpi._1);
                fillWithMask(painter, groove, Gradients::brush(COLOR(Window),
                                groove.height(), Qt::Vertical, config.gradButton),
                                &masks.button);
 #endif
                // for later (cosmetic)
-//                handle.translate(0,dpi.$3);
+//                handle.translate(0,dpi._3);
             }
             else { // Vertical
                // the groove
@@ -604,7 +604,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                // the "temperature"
                if (slider->sliderPosition != ground &&
                    slider->maximum > slider->minimum) {
-                  groove.adjust(dpi.$1,0,-dpi.$1,0);
+                  groove.adjust(dpi._1,0,-dpi._1,0);
                   int groundY = groove.height() * (ground - slider->minimum) /
                         (slider->maximum - slider->minimum);
                   bool upside = slider->sliderPosition > ground;
@@ -628,13 +628,13 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                                &masks.button);
                }
 #else
-               groove.adjust(dpi.$1,0,-dpi.$1,0);
+               groove.adjust(dpi._1,0,-dpi._1,0);
                fillWithMask(painter, groove, Gradients::brush(COLOR(Window),
                                groove.width(), Qt::Horizontal, config.gradButton),
                                &masks.button);
 #endif
                // for later (cosmetic)
-               handle.translate(slider->upsideDown ? -dpi.$3 : dpi.$3, 0);
+               handle.translate(slider->upsideDown ? -dpi._3 : dpi._3, 0);
             }
          }
          
@@ -648,9 +648,9 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
             if (slider->tickPosition == QSlider::TicksAbove) {
                direction += 2;
                if (slider->orientation == Qt::Horizontal)
-                  handle.translate(0,-dpi.$6);
+                  handle.translate(0,-dpi._6);
                else
-                  handle.translate(-dpi.$6,0);
+                  handle.translate(-dpi._6,0);
             }
             QStyleOptionSlider tmpSlider = *slider;
             tmpSlider.subControls = SC_SliderTickmarks;
@@ -670,13 +670,13 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
             }
             // shadow
             QPoint xy = handle.topLeft();
-            painter->drawPixmap(sunken ? xy + QPoint(dpi.$1,dpi.$1) : xy,
+            painter->drawPixmap(sunken ? xy + QPoint(dpi._1,dpi._1) : xy,
                                 shadows.radio[sunken][hover]);
             // gradient
-            xy += QPoint(dpi.$2, dpi.$1/*direction?dpi.$1:0*/);
+            xy += QPoint(dpi._2, dpi._1/*direction?dpi._1:0*/);
             fillWithMask(painter, xy,
                          Gradients::brush(btnBgColor(PAL, isEnabled, hover, step),
-                                        dpi.SliderControl-dpi.$4, Qt::Vertical,
+                                        dpi.SliderControl-dpi._4, Qt::Vertical,
                                         config.gradButton), masks.radio);
 //             painter->drawPixmap(xy, lights.slider[direction]);
 //             SAVE_PEN;
@@ -694,7 +694,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
          QColor c2 = widget->parentWidget()->palette().color(config.role_tab[1]);
          if (sunken) {
             int dy = (RECT.height()-RECT.width())/2;
-            QRect r = RECT.adjusted(dpi.$2,dy,-dpi.$2,-dy);
+            QRect r = RECT.adjusted(dpi._2,dy,-dpi._2,-dy);
             painter->drawTiledPixmap(r, Gradients::pix(c, r.height(), Qt::Vertical, Gradients::Sunken));
          }
          painter->save();
@@ -764,7 +764,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
          {
             ir = subControlRect(CC_TitleBar, tb, SC_TitleBarLabel, widget);
             painter->setPen(PAL.color(QPalette::WindowText));
-            painter->drawText(ir.x() + dpi.$2, ir.y(), ir.width() - dpi.$2, ir.height(), Qt::AlignCenter | Qt::TextSingleLine, tb->text);
+            painter->drawText(ir.x() + dpi._2, ir.y(), ir.width() - dpi._2, ir.height(), Qt::AlignCenter | Qt::TextSingleLine, tb->text);
          }
          
          
@@ -842,7 +842,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
             rect.setTop(rect.y()+(rect.height()-rect.width())/2); rect.setHeight(rect.width());
          }
          
-         int d = qMax(rect.width()/6, dpi.$10);
+         int d = qMax(rect.width()/6, dpi._10);
          int r = (rect.width()-d)/2;
          qreal a;
          if (dial->maximum == dial->minimum)
@@ -879,7 +879,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
          rect.moveCenter(cp);
          painter->setBrush(QColor(0,0,0,50));
          painter->drawEllipse(rect);
-         rect.adjust(dpi.$2,dpi.$1,-dpi.$2,-dpi.$2);
+         rect.adjust(dpi._2,dpi._1,-dpi._2,-dpi._2);
          painter->setBrushOrigin(rect.topLeft());
          painter->setBrush(Gradients::pix(btnBgColor(PAL, isEnabled, hover||hasFocus),
                            rect.height(), Qt::Vertical, Gradients::RadialGloss));

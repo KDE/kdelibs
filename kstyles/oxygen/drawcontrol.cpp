@@ -98,7 +98,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          else
             drawControl(CE_PushButtonBevel, &tmpBtn, painter, widget);
 //          tmpBtn.rect = subElementRect(SE_PushButtonContents, btn, widget);
-         tmpBtn.rect = btn->rect.adjusted(dpi.$4,dpi.$4,-dpi.$4,-dpi.$4);
+         tmpBtn.rect = btn->rect.adjusted(dpi._4,dpi._4,-dpi._4,-dpi._4);
          drawControl(CE_PushButtonLabel, &tmpBtn, painter, widget);
       }
       break;
@@ -109,12 +109,12 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          if (btn->features & QStyleOptionButton::HasMenu) {
 //             int mbi = pixelMetric(PM_MenuButtonIndicator, btn, widget);
             QStyleOptionButton newBtn = *btn;
-            int sz = (RECT.height()-dpi.$6)/2;
+            int sz = (RECT.height()-dpi._6)/2;
             newBtn.rect = RECT;
-            newBtn.rect.setLeft(RECT.right() - (dpi.$10+sz));
+            newBtn.rect.setLeft(RECT.right() - (dpi._10+sz));
             shadows.line[1][Sunken].render(newBtn.rect, painter);
-            newBtn.rect.setLeft(newBtn.rect.left() + dpi.$4);
-            newBtn.rect.setTop((RECT.height()-sz)/2 + dpi.$2);
+            newBtn.rect.setLeft(newBtn.rect.left() + dpi._4);
+            newBtn.rect.setTop((RECT.height()-sz)/2 + dpi._2);
             newBtn.rect.setHeight(sz); newBtn.rect.setWidth(sz);
             painter->save();
             painter->setPen(Qt::NoPen);
@@ -169,13 +169,13 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             tf |= Qt::AlignHCenter;
              
          if (btn->features & QStyleOptionButton::HasMenu) {
-            ir.setRight(ir.right() - ir.height()/2 - dpi.$10);
+            ir.setRight(ir.right() - ir.height()/2 - dpi._10);
          }
          else if (widget)
          if (const QAbstractButton* btn =
              qobject_cast<const QAbstractButton*>(widget))
          if (btn->isCheckable())
-            ir.setRight(ir.right() - ir.height()/2 - dpi.$10);
+            ir.setRight(ir.right() - ir.height()/2 - dpi._10);
          
          if (btn->features & QStyleOptionButton::Flat) {
             drawItemText(painter, ir, tf, PAL, isEnabled, btn->text,
@@ -216,8 +216,8 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
 
          const Tile::Line &line = shadows.line[0][Sunken];
          textRect.setTop(textRect.top()+(textRect.height()-line.thickness())/2);
-         int x = textRect.right()+dpi.$4;
-         textRect.setRight(textRect.left()-dpi.$4);
+         int x = textRect.right()+dpi._4;
+         textRect.setRight(textRect.left()-dpi._4);
          textRect.setLeft(qMin(RECT.x()+RECT.width()/4,textRect.x()-(textRect.x()-RECT.x())/2));
          line.render(textRect, painter, Tile::Left|Tile::Center);
          textRect.setLeft(x);
@@ -294,7 +294,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          if (!(option->state & State_Selected))
             break;
          
-         const int $2 = dpi.$2, $4 = dpi.$4;
+         const int _2 = dpi._2, _4 = dpi._4;
          Tile::PosFlags pf = Tile::Ring;
          QRect rect = RECT;
          int size = RECT.height();
@@ -316,9 +316,9 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             case QTabBar::RoundedNorth:
             case QTabBar::TriangularNorth: {
                pf &= ~Tile::Bottom;
-               const QPixmap &shadow = Gradients::shadow(fillRect.height()-$4);
-               rect.adjust(0, $2, 0, 0);
-               fillRect = rect.adjusted($2, dpi.$1, -$2, 0);
+               const QPixmap &shadow = Gradients::shadow(fillRect.height()-_4);
+               rect.adjust(0, _2, 0, 0);
+               fillRect = rect.adjusted(_2, dpi._1, -_2, 0);
                painter->drawPixmap(fillRect.topRight(), shadow);
                size = fillRect.height();
                break;
@@ -326,9 +326,9 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             case QTabBar::RoundedSouth:
             case QTabBar::TriangularSouth: {
                pf &= ~Tile::Top;
-               const QPixmap &shadow = Gradients::shadow(fillRect.height()-$4, true);
-               rect.adjust(0, 0, 0, -$2);
-               fillRect = rect.adjusted($2, 0, -$2, -$4);
+               const QPixmap &shadow = Gradients::shadow(fillRect.height()-_4, true);
+               rect.adjust(0, 0, 0, -_2);
+               fillRect = rect.adjusted(_2, 0, -_2, -_4);
                size = fillRect.height();
                painter->drawPixmap(fillRect.topRight(), shadow);
                break;
@@ -336,16 +336,16 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             case QTabBar::RoundedEast:
             case QTabBar::TriangularEast:
                pf &= ~Tile::Left;
-               fillRect.adjust(0, $2, -dpi.$6, -$4);
-               rect.adjust(0, 0, -$4, 0);
+               fillRect.adjust(0, _2, -dpi._6, -_4);
+               rect.adjust(0, 0, -_4, 0);
                o = Qt::Horizontal;
                size = fillRect.width();
                break;
             case QTabBar::RoundedWest:
             case QTabBar::TriangularWest:
                pf &= ~Tile::Right;
-               fillRect.adjust(dpi.$6, $2, 0, -$4);
-               rect.adjust($4, 0, 0, 0);
+               fillRect.adjust(dpi._6, _2, 0, -_4);
+               rect.adjust(_4, 0, 0, 0);
                o = Qt::Horizontal;
                size = fillRect.width();
                break;
@@ -373,12 +373,12 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                midColor(COLOR(Window), COLOR(WindowText), step, 6-step);
             QPoint off;
             if (sunken) {
-               rect.adjust($2, $2, -$2, -$2);
-               off = QPoint($2, $2);
+               rect.adjust(_2, _2, -_2, -_2);
+               off = QPoint(_2, _2);
             }
             else {
-               rect.adjust($4, $4, -$4, -$4);
-               off = QPoint($4, $4);
+               rect.adjust(_4, _4, -_4, -_4);
+               off = QPoint(_4, _4);
             }
             masks.tab.render(rect, painter, Gradients::pix(c, size, o, Gradients::Glass),
                              Tile::Full, false, off);
@@ -411,7 +411,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          case QTabBar::RoundedNorth:
          case QTabBar::TriangularNorth:
             if (selected)
-               tr.setTop(tr.top()+dpi.$2);
+               tr.setTop(tr.top()+dpi._2);
             break;
          case QTabBar::RoundedSouth:
          case QTabBar::TriangularSouth:
@@ -487,7 +487,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
           = qstyleoption_cast<const QStyleOptionProgressBar *>(option)) {
 //          if (animationUpdate) {
 //             painter->save();
-//             painter->setClipRect(RECT.adjusted(dpi.$3,dpi.$4,-dpi.$3,-dpi.$5),
+//             painter->setClipRect(RECT.adjusted(dpi._3,dpi._4,-dpi._3,-dpi._5),
 //                                  Qt::IntersectClip);
 //          }
          QStyleOptionProgressBarV2 subopt = *pb;
@@ -519,7 +519,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          }
          const QPixmap &groove = Gradients::pix(PAL.color(config.role_progress[0]), size,
                                           o, config.glassProgress ? Gradients::Glass : Gradients::Sunken);
-         fillWithMask(painter, RECT.adjusted(0,0,0,-dpi.$2), groove, &masks.button, Tile::Full);
+         fillWithMask(painter, RECT.adjusted(0,0,0,-dpi._2), groove, &masks.button, Tile::Full);
 //          if (!animationUpdate)
 //             shadows.lineEdit[isEnabled].render(RECT, painter);
       }
@@ -682,8 +682,8 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                
                if (toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon) {
                   int fh = painter->fontMetrics().height();
-                  pr.adjust(0, dpi.$3, 0, -fh - dpi.$5);
-                  tr.adjust(0, pr.bottom(), 0, -dpi.$3);
+                  pr.adjust(0, dpi._3, 0, -fh - dpi._5);
+                  tr.adjust(0, pr.bottom(), 0, -dpi._3);
                   if (!hasArrow)
                      drawItemPixmap(painter, pr, Qt::AlignCenter, pm);
                   else
@@ -691,7 +691,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                   alignment |= Qt::AlignCenter;
                }
                else {
-                  pr.setWidth(pmSize.width() + dpi.$8);
+                  pr.setWidth(pmSize.width() + dpi._8);
                   tr.adjust(pr.right(), 0, 0, 0);
                   if (!hasArrow)
                      drawItemPixmap(painter, pr, Qt::AlignCenter, pm);
@@ -703,7 +703,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             }
             else {
                if (hasArrow)
-                  drawArrow(this, toolbutton, RECT.adjusted(dpi.$5,dpi.$5,-dpi.$5,-dpi.$5), painter, widget);
+                  drawArrow(this, toolbutton, RECT.adjusted(dpi._5,dpi._5,-dpi._5,-dpi._5), painter, widget);
                else
                   drawItemPixmap(painter, RECT, Qt::AlignCenter, pm);
             }
@@ -728,7 +728,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
              activeAction->menu()->isHidden()))
             step = info->step((long int)action);
          if (step || option->state & State_Selected) {
-            QRect r = RECT.adjusted(0, dpi.$2, 0, -dpi.$4);
+            QRect r = RECT.adjusted(0, dpi._2, 0, -dpi._4);
             if (step) {
                step = 6-step;
                int dx = step*r.width()/18/*, dy = step*r.height()/18*/;
@@ -741,7 +741,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                               COLOR(Window), r.height(), Qt::Vertical,
                               config.gradChoose);
             fillWithMask(painter, r, fill, &masks.tab);
-            r.setHeight(r.height()+dpi.$2);
+            r.setHeight(r.height()+dpi._2);
             shadows.tabSunken.render(r, painter);
             cr = config.role_popup[1];
          }
@@ -792,7 +792,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          bool checked = checkable && menuItem->checked;
          
          if (selected && isEnabled) {
-            QRect r = RECT.adjusted(0,0,0,-dpi.$2);
+            QRect r = RECT.adjusted(0,0,0,-dpi._2);
             fillWithMask(painter, r,
                          Gradients::brush(bg, r.height(), Qt::Vertical,
                                         config.gradChoose), &masks.tab, Tile::Full);
@@ -823,11 +823,11 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          int x, y, w, h;
          RECT.getRect(&x, &y, &w, &h);
          int tab = menuitem->tabWidth;
-         int cDim = 2*(RECT.height() - dpi.$4)/3;
+         int cDim = 2*(RECT.height() - dpi._4)/3;
          int xm = windowsItemFrame + iconCol + windowsItemHMargin;
          int xpos = RECT.x() + xm;
          QRect textRect(xpos, y + windowsItemVMargin,
-                        w - xm - menuItem->menuHasCheckableItems*(cDim+dpi.$7) -
+                        w - xm - menuItem->menuHasCheckableItems*(cDim+dpi._7) -
                               windowsRightBorder - tab + 1,
                         h - 2 * windowsItemVMargin);
          QRect vTextRect = visualRect(option->direction, RECT, textRect);
@@ -858,7 +858,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                   PE_IndicatorArrowLeft : PE_IndicatorArrowRight;
             
             int dim = RECT.height()/3;
-            xpos = RECT.x() + RECT.width() - dpi.$7 - dim;
+            xpos = RECT.x() + RECT.width() - dpi._7 - dim;
             
             QStyleOptionMenuItem tmpOpt = *menuItem;
             tmpOpt.rect = visualRect(option->direction, RECT,
@@ -868,7 +868,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             drawPrimitive(arrow, &tmpOpt, painter, widget);
          }
          else if (checkable) { // Checkmark
-            xpos = RECT.right() - dpi.$7 - cDim;
+            xpos = RECT.right() - dpi._7 - cDim;
             QRect checkRect(xpos, RECT.y() + (RECT.height() - cDim)/2, cDim, cDim);
             checkRect = visualRect(menuItem->direction, menuItem->rect, checkRect);
             if (menuItem->checkType & QStyleOptionMenuItem::Exclusive) {
@@ -1050,7 +1050,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
       }
       
       for (int i = 1; i < 5; ++i) {
-         painter->setPen(QPen(midColor(COLOR(Window), COLOR(WindowText), 14, 11-2*i), dpi.$1));
+         painter->setPen(QPen(midColor(COLOR(Window), COLOR(WindowText), 14, 11-2*i), dpi._1));
          painter->drawLine(x1, y2, x2, y1);
          x1 += dx; y1 += dy;
       }
@@ -1108,7 +1108,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
       else {
          QRect r = RECT; r.setWidth(RECT.width()-1);
          painter->drawTiledPixmap(r, Gradients::pix(COLOR(Text), RECT.height(), Qt::Vertical, Gradients::Button));
-         r = RECT; r.setLeft(r.right()-dpi.$1);
+         r = RECT; r.setLeft(r.right()-dpi._1);
          painter->drawTiledPixmap(r, Gradients::pix(COLOR(Text), RECT.height(), Qt::Vertical, Gradients::Sunken));
       }
       break;
@@ -1179,11 +1179,11 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          hover = hover && alive;
          QPoint xy = RECT.topLeft();
          if (sunken || !alive)
-            painter->drawPixmap(xy+QPoint(dpi.$1,dpi.$1), shadows.radio[1][hover]);
+            painter->drawPixmap(xy+QPoint(dpi._1,dpi._1), shadows.radio[1][hover]);
          else
             painter->drawPixmap(xy, shadows.radio[0][hover]);
-         xy += QPoint(dpi.$2,dpi.$1);
-         int sz = dpi.ExclusiveIndicator - dpi.$4;
+         xy += QPoint(dpi._2,dpi._1);
+         int sz = dpi.ExclusiveIndicator - dpi._4;
          fillWithMask(painter, xy,
                       Gradients::brush(btnBgColor(PAL, alive, hover, complexStep),
                                      sz, Qt::Vertical, alive ? config.gradButton :
@@ -1201,7 +1201,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          step = 6;
       const QColor c =
          midColor(COLOR(Highlight), COLOR(WindowText), step, 8-step);
-      painter->setPen(QPen(midColor(COLOR(Window), c, 4, 1), dpi.$3));
+      painter->setPen(QPen(midColor(COLOR(Window), c, 4, 1), dpi._3));
       if (option->state & QStyle::State_Horizontal) {
          const int y = RECT.center().y();
          painter->drawLine(RECT.x(), y, RECT.right(), y);
@@ -1215,7 +1215,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
    }
    case CE_ScrollBarSlider: // Scroll bar slider.
       if (option->state & State_Item) {
-         painter->fillRect(RECT.adjusted(dpi.$2, 0, -dpi.$2, 0),
+         painter->fillRect(RECT.adjusted(dpi._2, 0, -dpi._2, 0),
                            (hover || sunken) ? COLOR(Text) :
                                  midColor(COLOR(Base), COLOR(Text), 8, 1));
          break;
@@ -1232,7 +1232,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                step = 6;
             const QColor c =
                midColor(COLOR(Highlight), COLOR(WindowText), step, 8-step);
-            painter->setPen(QPen(midColor(COLOR(Window), c, 4, 1), dpi.$3));
+            painter->setPen(QPen(midColor(COLOR(Window), c, 4, 1), dpi._3));
             if (option->state & QStyle::State_Horizontal) {
                const int y = RECT.center().y();
                painter->drawLine(RECT.x(), y, RECT.right(), y);
@@ -1247,19 +1247,19 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          
              
          // we need to paint a slider
-         const int $1 = dpi.$1, $2 = dpi.$2;
+         const int _1 = dpi._1, _2 = dpi._2;
          int step = sunken ? 0 : complexStep;
          QRect r = RECT;
       
          // shadow
          if (sunken) {
-            r.adjust($1, $1, -$1, -$2);
+            r.adjust(_1, _1, -_1, -_2);
             shadows.tab[true][true].render(r, painter);
-            r.adjust($1, $1, -$1, -$1);
+            r.adjust(_1, _1, -_1, -_1);
          }
          else {
             shadows.tab[true][false].render(r, painter);
-            r.adjust($2, $2, -$2, -dpi.$3);
+            r.adjust(_2, _2, -_2, -dpi._3);
          }
       
          // backlight & glas
@@ -1267,7 +1267,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          if (sunken || hover || step) {
             if (!step) step = 6;
 //             c = midColor(COLOR(Highlight), Qt::white, step, 5);
-//             masks.tab.outline(r.adjusted(-$1,-$1,$1,$1), painter, c);
+//             masks.tab.outline(r.adjusted(-_1,-_1,_1,_1), painter, c);
             c = midColor(COLOR(Highlight), COLOR(Window), step, 160);
          }
 //          else if (sunken)
@@ -1318,8 +1318,8 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          }
          // text
          if (!cb->currentText.isEmpty() && !cb->editable) {
-            int $3 = dpi.$3;
-            editRect.adjust($3,0, -$3, 0);
+            int _3 = dpi._3;
+            editRect.adjust(_3,0, -_3, 0);
             painter->setPen(COLOR(Text));
             painter->drawText(editRect, Qt::AlignCenter, cb->currentText);
          }

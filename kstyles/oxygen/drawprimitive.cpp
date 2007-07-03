@@ -279,7 +279,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       const Tile::Mask *btnMask = &masks.button;
       const Tile::Set (*btnShadow)[2][2] = &shadows.button;
       const Tile::Mask *btnLight = &lights.button;
-      const int $1 = dpi.$1, $2 = dpi.$2;
+      const int _1 = dpi._1, _2 = dpi._2;
       bool isOn = option->state & State_On;
       bool isToggle = false;
       
@@ -300,13 +300,13 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       
       // shadow
       if (sunken) {
-         r.adjust($1, $1, -$1, -$2);
+         r.adjust(_1, _1, -_1, -_2);
          (*btnShadow)[true][true].render(r, painter);
-         r.adjust($1, $1, -$1, -$1);
+         r.adjust(_1, _1, -_1, -_1);
       }
       else {
          (*btnShadow)[false][true].render(r, painter);
-         r.adjust($2, $2, -$2, -dpi.$3);
+         r.adjust(_2, _2, -_2, -dpi._3);
       }
       
       // backlight & plate
@@ -329,7 +329,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       if (isToggle) {
          r.setTop(r.top()+r.height()/4);
          r.setBottom(r.bottom()-r.height()/4-1);
-         r.setLeft(r.right()-r.height()-dpi.$6);
+         r.setLeft(r.right()-r.height()-dpi._6);
          r.setWidth(r.height());
          painter->save();
          painter->setBrush(Gradients::pix(isOn ? midColor(COLOR(Highlight),
@@ -377,18 +377,18 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       QRect r = RECT;
       if (isEnabled) {
          if (hasFocus) {
-            r.adjust(0,0,0,-dpi.$2);
+            r.adjust(0,0,0,-dpi._2);
             masks.button.render(r, painter, COLOR(Base));
-            r.setBottom(r.bottom()+dpi.$1);
+            r.setBottom(r.bottom()+dpi._1);
             QColor h = midColor(COLOR(Base), COLOR(Highlight), 2, 1);
-            masks.button.outline(r, painter, h, false, Tile::Ring, dpi.$3);
+            masks.button.outline(r, painter, h, false, Tile::Ring, dpi._3);
          }
          else {
             r.setBottom(r.y()+r.height()/2);
             const QPixmap &fill =
                Gradients::pix(COLOR(Base), r.height(), Qt::Vertical, Gradients::Sunken);
             masks.button.render(r, painter, fill, Tile::Full & ~Tile::Bottom);
-            r.setTop(r.bottom()+1); r.setBottom(RECT.bottom()-dpi.$2);
+            r.setTop(r.bottom()+1); r.setBottom(RECT.bottom()-dpi._2);
             masks.button.render(r, painter, COLOR(Base),
                                 Tile::Full & ~Tile::Top);
          }
@@ -497,7 +497,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       if (!(sunken || (option->state & State_Off))) {
          painter->save();
          painter->setRenderHint(QPainter::Antialiasing);
-         QRect r = RECT.adjusted(dpi.$6, dpi.$6, -dpi.$6, -dpi.$6);
+         QRect r = RECT.adjusted(dpi._6, dpi._6, -dpi._6, -dpi._6);
          const QColor fill = btnFgColor(PAL, isEnabled, hover);
 //          const QPixmap &fill = Gradients::pix(c, r.height(), Qt::Vertical, config.gradButton);
          switch (config.checkType) {
@@ -538,7 +538,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
    }
    case PE_IndicatorRadioButton: { // Exclusive on/off indicator, for example, a QRadioButton.
       bool isOn = option->state & State_On;
-      const int $2 = dpi.$2, $1 = dpi.$1;
+      const int _2 = dpi._2, _1 = dpi._1;
       int sz = dpi.ExclusiveIndicator;
       QPoint xy = RECT.topLeft();
       
@@ -562,18 +562,18 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       
       // shadow
       sunken = sunken || isOn;
-      painter->drawPixmap(sunken ? xy + QPoint($1,$1) : xy,
+      painter->drawPixmap(sunken ? xy + QPoint(_1,_1) : xy,
                           shadows.radio[sunken][true]);
       
       // plate
-      xy += QPoint($2,$1);
+      xy += QPoint(_2,_1);
       const QColor bgc = btnBgColor(PAL, isEnabled, hover, step);
       fillWithMask(painter, xy,
                    Gradients::brush( bgc, dpi.ExclusiveIndicator, Qt::Vertical,
                                      config.gradButton), masks.radio);
       
       if (isEnabled) {
-         sz = dpi.ExclusiveIndicator - dpi.$4;
+         sz = dpi.ExclusiveIndicator - dpi._4;
          painter->save();
          painter->setBrush(Qt::NoBrush);
          painter->setPen(Qt::white);
@@ -584,7 +584,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       
       // drop
       if (isOn) {
-         xy += QPoint(dpi.$4, dpi.$4);
+         xy += QPoint(dpi._4, dpi._4);
          fillWithMask(painter, xy,
                       midColor(bgc, btnFgColor(PAL, isEnabled, hover, step),
                                1, 2), masks.radioIndicator);
@@ -626,8 +626,8 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
             }
             else { // maybe we need to corect a textlabels margin
                if (const QLabel* label = qobject_cast<const QLabel*>(widget))
-                  if (label->text() != QString() && label->margin() < dpi.$3)
-                     const_cast<QLabel*>(label)->setMargin(dpi.$3);
+                  if (label->text() != QString() && label->margin() < dpi._3)
+                     const_cast<QLabel*>(label)->setMargin(dpi._3);
                break; // painted on visual frame
             }
          }
@@ -638,12 +638,12 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
             zero = widget->mapTo(widget->topLevelWidget(), QPoint(0,0));
             if (!sunken) {
                if (option->state & State_Raised)
-                  rect.adjust(dpi.$2,dpi.$1,-dpi.$2,-dpi.$4);
+                  rect.adjust(dpi._2,dpi._1,-dpi._2,-dpi._4);
                else
-                  rect.adjust(dpi.$2,dpi.$2,-dpi.$2,-dpi.$2);
+                  rect.adjust(dpi._2,dpi._2,-dpi._2,-dpi._2);
             }
             else
-               rect.adjust(0,0,0,-dpi.$1);
+               rect.adjust(0,0,0,-dpi._1);
          }
          if (niceFrame) {
             if (fastFocus)
@@ -655,8 +655,8 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
                else {
                   h = COLOR(Highlight); h.setAlpha(80);
                }
-               rect = RECT.adjusted(0,0,0,-dpi.$1);
-               mask->outline(rect, painter, h, false, Tile::Ring, dpi.$3);
+               rect = RECT.adjusted(0,0,0,-dpi._1);
+               mask->outline(rect, painter, h, false, Tile::Ring, dpi._3);
             }
             if (shadow)
                shadow->render(RECT, painter);
@@ -739,7 +739,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
          int baseHeight =
                 vertical ? twf->tabBarSize.width() : twf->tabBarSize.height();
          if (baseHeight < 0)
-            baseHeight = pixelMetric( PM_TabBarBaseHeight, option, widget )-dpi.$2;
+            baseHeight = pixelMetric( PM_TabBarBaseHeight, option, widget )-dpi._2;
          if (!baseHeight) {
             shadows.tab[1][0].render(RECT, painter);
             break;
@@ -755,17 +755,17 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
             rect.adjust(0,offset,0,-offset);
             if (mirror) { // east
                rect.setLeft(rect.right()-baseHeight);
-               fillRect = rect.adjusted(0, dpi.$2, -dpi.$3, -dpi.$3);
+               fillRect = rect.adjusted(0, dpi._2, -dpi._3, -dpi._3);
                pf &= ~Tile::Left;
                o = Qt::Horizontal;
-               tabRect.setRight(tabRect.right()-(baseHeight-dpi.$2));
+               tabRect.setRight(tabRect.right()-(baseHeight-dpi._2));
             }
             else {
                rect.setWidth(baseHeight);
-               fillRect = rect.adjusted(dpi.$3, dpi.$2, 0, -dpi.$3);
+               fillRect = rect.adjusted(dpi._3, dpi._2, 0, -dpi._3);
                pf &= ~Tile::Right;
                o = Qt::Horizontal;
-               tabRect.setLeft(tabRect.left()+(baseHeight-dpi.$2));
+               tabRect.setLeft(tabRect.left()+(baseHeight-dpi._2));
             }
             baseHeight = rect.width();
          }
@@ -773,17 +773,17 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
             rect.adjust(offset,0,-offset,0);
             if (mirror) { //south
                rect.setTop(rect.bottom()-baseHeight);
-               fillRect = rect.adjusted(dpi.$3, 0, -dpi.$3, -dpi.$3);
+               fillRect = rect.adjusted(dpi._3, 0, -dpi._3, -dpi._3);
                pf &= ~Tile::Top;
-               tabRect.setBottom(tabRect.bottom()-(baseHeight-dpi.$4));
+               tabRect.setBottom(tabRect.bottom()-(baseHeight-dpi._4));
             }
             else { // north
                rect.setHeight(baseHeight);
-               fillRect = rect.adjusted(dpi.$3, dpi.$2, -dpi.$3, 0);
+               fillRect = rect.adjusted(dpi._3, dpi._2, -dpi._3, 0);
                pf &= ~Tile::Bottom;
-               tabRect.setTop(tabRect.top()+baseHeight-dpi.$1);
+               tabRect.setTop(tabRect.top()+baseHeight-dpi._1);
                QRegion clip =
-                  QRegion(RECT).subtracted(rect.adjusted(0,0,0,dpi.$3));
+                  QRegion(RECT).subtracted(rect.adjusted(0,0,0,dpi._3));
                painter->setClipRegion(clip, Qt::IntersectClip);
             }
             baseHeight = rect.height();
@@ -801,21 +801,21 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       }
       break;
    case PE_FrameLineEdit: { // Panel frame for line edits.
-      QRect r = RECT.adjusted(0,0,0,-dpi.$2);
+      QRect r = RECT.adjusted(0,0,0,-dpi._2);
       shadows.lineEdit[isEnabled].render(r, painter);
       if (hasFocus) {
          QColor h = COLOR(Highlight); h.setAlpha(80);
-         r.setBottom(r.bottom()+dpi.$1);
-         masks.button.outline(r, painter, h, false, Tile::Ring, dpi.$3);
+         r.setBottom(r.bottom()+dpi._1);
+         masks.button.outline(r, painter, h, false, Tile::Ring, dpi._3);
       }
       break;
    }
    case PE_FrameGroupBox: { // Panel frame around group boxes.
-      QRect rect = RECT.adjusted(dpi.$4,dpi.$2,-dpi.$4,0);
-      rect.setHeight(qMin(2*dpi.$32, RECT.height()));
+      QRect rect = RECT.adjusted(dpi._4,dpi._2,-dpi._4,0);
+      rect.setHeight(qMin(2*dpi._32, RECT.height()));
       fillWithMask(painter, rect, Gradients::light(rect.height()), &masks.button,
                    Tile::Full&~Tile::Bottom);
-      rect.setBottom(RECT.bottom()-dpi.$32);
+      rect.setBottom(RECT.bottom()-dpi._32);
       shadows.group.render(RECT, painter, Tile::Ring);
       masks.button.outline(rect, painter, COLOR(Window).light(120), true,
                            Tile::Full&~Tile::Bottom);
@@ -842,7 +842,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
 //          break;
       
       bool selected = false;
-      QRect rect = RECT.adjusted(dpi.$2, dpi.$2, -dpi.$2, -dpi.$2);
+      QRect rect = RECT.adjusted(dpi._2, dpi._2, -dpi._2, -dpi._2);
       if (rect.width() > rect.height())
          rect.setWidth(rect.height());
       else
@@ -944,25 +944,25 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
    case PE_IndicatorDockWidgetResizeHandle: // Resize handle for dock windows.
    {
       QPoint *points; int num;
-      const int $12 = dpi.$12, $6 = dpi.$6;
+      const int _12 = dpi._12, _6 = dpi._6;
       if (RECT.width() > RECT.height()) {
          int x = RECT.left()+RECT.width()/3;
-         int y = RECT.top()+(RECT.height()-$6)/2;
-         num = RECT.width()/(3*$12);
-         if ((RECT.width()/3) % $12) ++num;
+         int y = RECT.top()+(RECT.height()-_6)/2;
+         num = RECT.width()/(3*_12);
+         if ((RECT.width()/3) % _12) ++num;
          points = new QPoint[num];
          for (int i = 0; i < num; ++i) {
-            points[i] = QPoint(x,y); x += $12;
+            points[i] = QPoint(x,y); x += _12;
          }
       }
       else {
-         int x = RECT.left()+(RECT.width()-$6)/2;
+         int x = RECT.left()+(RECT.width()-_6)/2;
          int y = RECT.top()+RECT.height()/3;
-         num = RECT.height()/(3*$12);
-         if ((RECT.height()/3) % $12) ++num;
+         num = RECT.height()/(3*_12);
+         if ((RECT.height()/3) % _12) ++num;
          points = new QPoint[num];
          for (int i = 0; i < num; ++i) {
-            points[i] = QPoint(x,y); y += $12;
+            points[i] = QPoint(x,y); y += _12;
          }
       }
       painter->save();
@@ -975,13 +975,13 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
       }
       if (num%2)
       {
-         fill = &Gradients::pix(midColor(COLOR(Window), PAL.color(role), 3, imp), $6, Qt::Vertical, Gradients::Sunken);
+         fill = &Gradients::pix(midColor(COLOR(Window), PAL.color(role), 3, imp), _6, Qt::Vertical, Gradients::Sunken);
          fillWithMask(painter, points[cnt], *fill, masks.notch);
       }
       --num;
       for (int i = 0; i < cnt; ++i)
       {
-         fill = &Gradients::pix(midColor(COLOR(Window), PAL.color(role), 3+cnt-i, imp), $6, Qt::Vertical, Gradients::Sunken);
+         fill = &Gradients::pix(midColor(COLOR(Window), PAL.color(role), 3+cnt-i, imp), _6, Qt::Vertical, Gradients::Sunken);
          fillWithMask(painter, points[i], *fill, masks.notch);
          fillWithMask(painter, points[num-i], *fill, masks.notch);
       }
@@ -1017,8 +1017,8 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
          painter->setBrushOrigin(rect.topLeft());
          painter->drawEllipse(rect);
          if (line) {
-            const int $1 = dpi.$1;
-            rect.adjust($1,$1,-$1,-$1);
+            const int _1 = dpi._1;
+            rect.adjust(_1,_1,-_1,-_1);
             painter->setBrush(Gradients::pix(c, rect.height(), Qt::Vertical, Gradients::Sunken));
             rect.translate(-dx,-dy);
             painter->setBrushOrigin(rect.topLeft());
@@ -1051,27 +1051,27 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
          switch (tbb->shape) {
          case QTabBar::RoundedSouth:
          case QTabBar::TriangularSouth:
-//             fillRect = RECT.adjusted(dpi.$3, dpi.$2, -dpi.$3, 0);
+//             fillRect = RECT.adjusted(dpi._3, dpi._2, -dpi._3, 0);
             pf &= ~Tile::Top;
             size = /*fillRect*/RECT.height();
             break;
          case QTabBar::RoundedNorth:
          case QTabBar::TriangularNorth:
             north = true;
-//             fillRect = RECT.adjusted(dpi.$3, 0, -dpi.$3, -dpi.$3);
+//             fillRect = RECT.adjusted(dpi._3, 0, -dpi._3, -dpi._3);
             pf &= ~Tile::Bottom;
             size = /*fillRect*/RECT.height();
             break;
          case QTabBar::RoundedWest:
          case QTabBar::TriangularWest:
-//             fillRect = RECT.adjusted(0, dpi.$2, -dpi.$3, -dpi.$3);
+//             fillRect = RECT.adjusted(0, dpi._2, -dpi._3, -dpi._3);
             pf &= ~Tile::Right;
             o = Qt::Horizontal;
             size = /*fillRect*/RECT.width();
             break;
          case QTabBar::RoundedEast:
          case QTabBar::TriangularEast:
-//             fillRect = RECT.adjusted(dpi.$3, dpi.$2, 0, -dpi.$3);
+//             fillRect = RECT.adjusted(dpi._3, dpi._2, 0, -dpi._3);
             pf &= ~Tile::Left;
             o = Qt::Horizontal;
             size = /*fillRect*/RECT.width();

@@ -38,9 +38,9 @@ QSize OxygenStyle::sizeFromContents ( ContentsType ct, const QStyleOption * opti
    case CT_ComboBox: // A combo box, like QComboBox
       if (const QStyleOptionComboBox *cb =
           qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
-         int margin = cb->frame ? dpi.$3 : 0;
+         int margin = cb->frame ? dpi._3 : 0;
          int hgt = contentsSize.height() + 2*margin;
-         return QSize(contentsSize.width()+dpi.$10+(int)(hgt/1.1), hgt);
+         return QSize(contentsSize.width()+dpi._10+(int)(hgt/1.1), hgt);
       }
 //    case CT_DialogButtons: //
 //       return QSize((contentsSize.width()+16 < 80) ? 80 : contentsSize.width()+16, contentsSize.height()+10);
@@ -49,11 +49,11 @@ QSize OxygenStyle::sizeFromContents ( ContentsType ct, const QStyleOption * opti
       if (const QStyleOptionHeader *hdr =
           qstyleoption_cast<const QStyleOptionHeader *>(option)) {
          QSize sz;
-         int margin = dpi.$2;
+         int margin = dpi._2;
          int iconSize = hdr->icon.isNull() ? 0 :
                 pixelMetric(QStyle::PM_SmallIconSize, hdr, widget);
          QSize txt = hdr->fontMetrics.size(0, hdr->text);
-         sz.setHeight(qMax(iconSize, txt.height()) + dpi.$4);
+         sz.setHeight(qMax(iconSize, txt.height()) + dpi._4);
          sz.setWidth((iconSize?margin+iconSize:0) +
                      (hdr->text.isNull()?0:margin+txt.width()) +
                      ((hdr->sortIndicator == QStyleOptionHeader::None) ? 0 :
@@ -61,37 +61,37 @@ QSize OxygenStyle::sizeFromContents ( ContentsType ct, const QStyleOption * opti
          return sz;
       }
    case CT_LineEdit: // A line edit, like QLineEdit
-      return contentsSize + QSize(dpi.$4,dpi.$5);
+      return contentsSize + QSize(dpi._4,dpi._5);
    case CT_MenuBarItem: // A menu bar item, like the buttons in a QMenuBar
-      return QSize(qMax(contentsSize.width()+dpi.$18,
-                        (contentsSize.height()+dpi.$8)*8/5),
-                   contentsSize.height()+dpi.$8);
+      return QSize(qMax(contentsSize.width()+dpi._18,
+                        (contentsSize.height()+dpi._8)*8/5),
+                   contentsSize.height()+dpi._8);
    case CT_MenuItem: // A menu item, like QMenuItem
       if (const QStyleOptionMenuItem *menuItem =
           qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
          
          if (menuItem->menuItemType == QStyleOptionMenuItem::Separator)
             return QSize(10, menuItem->text.isEmpty() ?
-                         dpi.$6 : menuItem->fontMetrics.lineSpacing());
+                         dpi._6 : menuItem->fontMetrics.lineSpacing());
              
          bool checkable = menuItem->menuHasCheckableItems;
          int maxpmw = config.showMenuIcons*menuItem->maxIconWidth;
          int w = contentsSize.width();
-         int h = qMax(contentsSize.height()+dpi.$2,
+         int h = qMax(contentsSize.height()+dpi._2,
                       menuItem->fontMetrics.lineSpacing());
          
          if (config.showMenuIcons && !menuItem->icon.isNull())
             h = qMax(h,
                      menuItem->icon.pixmap(pixelMetric(PM_SmallIconSize),
-                                             QIcon::Normal).height() + dpi.$4);
+                                             QIcon::Normal).height() + dpi._4);
          if (menuItem->text.contains('\t'))
-            w += dpi.$12;
+            w += dpi._12;
          if (maxpmw > 0)
-            w += maxpmw + dpi.$6;
+            w += maxpmw + dpi._6;
          if (checkable)
-            w += 2*(h - dpi.$4)/3 + dpi.$7;
-         w += (checkable + (maxpmw > 0))*dpi.$2;
-         w += dpi.$12;
+            w += 2*(h - dpi._4)/3 + dpi._7;
+         w += (checkable + (maxpmw > 0))*dpi._2;
+         w += dpi._12;
          if (menuItem->menuItemType == QStyleOptionMenuItem::SubMenu)
             w += 2 * windowsArrowHMargin;
          if (menuItem->menuItemType == QStyleOptionMenuItem::DefaultItem) {
@@ -112,18 +112,18 @@ QSize OxygenStyle::sizeFromContents ( ContentsType ct, const QStyleOption * opti
           qstyleoption_cast<const QStyleOptionButton *>(option)) {
          if (btn->text.isEmpty())
 //             3px for shadow & outline + 1px padding -> 4px per side
-            return ( QSize( contentsSize.width() + dpi.$8, contentsSize.height() + dpi.$8 ) );
+            return ( QSize( contentsSize.width() + dpi._8, contentsSize.height() + dpi._8 ) );
          else {
-            int w = contentsSize.width() + dpi.$20;
+            int w = contentsSize.width() + dpi._20;
             if (btn->features & QStyleOptionButton::HasMenu)
-               w += contentsSize.height()/2+dpi.$10;
+               w += contentsSize.height()/2+dpi._10;
             else if (widget)
             if (const QAbstractButton* abn =
                 qobject_cast<const QAbstractButton*>(widget))
             if (abn->isCheckable())
-               w += contentsSize.height()/2+dpi.$10;
-            if (w < dpi.$80) w = dpi.$80;
-            return QSize(w, contentsSize.height() + dpi.$8);
+               w += contentsSize.height()/2+dpi._10;
+            if (w < dpi._80) w = dpi._80;
+            return QSize(w, contentsSize.height() + dpi._8);
          }
       }
 //    case CT_RadioButton: // A radio button, like QRadioButton
@@ -144,26 +144,26 @@ QSize OxygenStyle::sizeFromContents ( ContentsType ct, const QStyleOption * opti
          switch (tab->shape) {
          case QTabBar::RoundedNorth: case QTabBar::TriangularNorth:
          case QTabBar::RoundedSouth: case QTabBar::TriangularSouth:
-            return contentsSize + QSize(dpi.$8, 0);
+            return contentsSize + QSize(dpi._8, 0);
          case QTabBar::RoundedEast: case QTabBar::TriangularEast:
          case QTabBar::RoundedWest: case QTabBar::TriangularWest:
-            return contentsSize + QSize(0, dpi.$8);
+            return contentsSize + QSize(0, dpi._8);
          }
       }
-      return contentsSize + QSize(dpi.$6, dpi.$6);
+      return contentsSize + QSize(dpi._6, dpi._6);
    case CT_TabWidget: // A tab widget, like QTabWidget
-      return contentsSize + QSize(dpi.$8,dpi.$10);
+      return contentsSize + QSize(dpi._8,dpi._10);
    case CT_ToolButton: { // A tool button, like QToolButton
       const QStyleOptionToolButton *toolbutton
          = qstyleoption_cast<const QStyleOptionToolButton *>(option);
       // get ~goldem mean ratio
-      int extraH = dpi.$8;
+      int extraH = dpi._8;
       if (toolbutton &&
           toolbutton->toolButtonStyle == Qt::ToolButtonTextUnderIcon)
-         extraH = dpi.$10;
-      int w = qMax(contentsSize.width()+dpi.$6, (contentsSize.height()+extraH)*7/5);
+         extraH = dpi._10;
+      int w = qMax(contentsSize.width()+dpi._6, (contentsSize.height()+extraH)*7/5);
       if (toolbutton && (toolbutton->subControls & SC_ToolButtonMenu))
-         w += pixelMetric(PM_MenuButtonIndicator, option, widget) + dpi.$8;
+         w += pixelMetric(PM_MenuButtonIndicator, option, widget) + dpi._8;
       return QSize(w, contentsSize.height()+extraH);
    }
    default: ;

@@ -320,16 +320,16 @@ void OxygenStyle::readSettings()
 
 void OxygenStyle::initMetrics()
 {
-   dpi.$1 = SCALE(1); dpi.$2 = SCALE(2);
-   dpi.$3 = SCALE(3); dpi.$4 = SCALE(4);
-   dpi.$5 = SCALE(5); dpi.$6 = SCALE(6);
-   dpi.$7 = SCALE(7); dpi.$8 = SCALE(8);
-   dpi.$9 = SCALE(9); dpi.$10 =SCALE(10);
+   dpi._1 = SCALE(1); dpi._2 = SCALE(2);
+   dpi._3 = SCALE(3); dpi._4 = SCALE(4);
+   dpi._5 = SCALE(5); dpi._6 = SCALE(6);
+   dpi._7 = SCALE(7); dpi._8 = SCALE(8);
+   dpi._9 = SCALE(9); dpi._10 =SCALE(10);
    
-   dpi.$12 = SCALE(12); dpi.$13 = SCALE(13);
-   dpi.$16 = SCALE(16); dpi.$18 = SCALE(18);
-   dpi.$20 = SCALE(20); dpi.$32 = SCALE(32);
-   dpi.$80 = SCALE(80);
+   dpi._12 = SCALE(12); dpi._13 = SCALE(13);
+   dpi._16 = SCALE(16); dpi._18 = SCALE(18);
+   dpi._20 = SCALE(20); dpi._32 = SCALE(32);
+   dpi._80 = SCALE(80);
    
    dpi.ScrollBarExtent = SCALE(20);
    dpi.ScrollBarSliderMin = SCALE(40);
@@ -616,7 +616,7 @@ void OxygenStyle::polish( QWidget * widget) {
 //          widget->inherits("QComboBoxPrivateContainer"))
       else if (frame->frameShape() == QFrame::StyledPanel) {
          if (widget->inherits("QTextEdit") && frame->lineWidth() == 1)
-            frame->setLineWidth(dpi.$4);
+            frame->setLineWidth(dpi._4);
          else {
             QWidget *grampa = frame->parentWidget();
             if (!grampa) grampa = frame;
@@ -625,19 +625,19 @@ void OxygenStyle::polish( QWidget * widget) {
             foreach (VisualFrame* vf, vfs)
                if (vf->frame() == frame) { addVF = false; break; }
             if (addVF) {
-               int $2 = dpi.$2, $3 = dpi.$3, $4 = dpi.$4, $6 = dpi.$6;
+               int _2 = dpi._2, _3 = dpi._3, _4 = dpi._4, _6 = dpi._6;
                int s[4]; uint t[4]; // t/b/l/r
                if (frame->frameShadow() == QFrame::Sunken) {
-                  s[0] = s[2] = s[3] = 0; s[1] = $3;
-                  t[0] = t[1] = t[2] = t[3] = $4;
+                  s[0] = s[2] = s[3] = 0; s[1] = _3;
+                  t[0] = t[1] = t[2] = t[3] = _4;
                }
                else if (frame->frameShadow() == QFrame::Raised) {
-                  s[0] = $2; s[1] = $4; s[2] = s[3] = $2;
-                  t[0] = t[2] = t[3] = $4; t[1] = $6;
+                  s[0] = _2; s[1] = _4; s[2] = s[3] = _2;
+                  t[0] = t[2] = t[3] = _4; t[1] = _6;
                }
                else { // plain
-                  s[0] = s[1] = s[2] = s[3] = $2;
-                  t[0] = t[1] = t[2] = t[3] = $2;
+                  s[0] = s[1] = s[2] = s[3] = _2;
+                  t[0] = t[1] = t[2] = t[3] = _2;
                }
                new VisualFrame(grampa, frame, VisualFrame::North,
                                t[0], s[0], s[2], s[3]);
