@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=The DCMI Types
+Name[ca]=Els tipus DCMI
 Name[csb]=Ôrtë DCMI
 Name[de]=Die DCMI-Typen
 Name[el]=Οι τύποι DCMI
@@ -13,6 +14,7 @@ Name[sv]=DCMI-typerna
 Name[zh_CN]=DCMI 类型
 Name[zh_TW]=DCMI 型態
 Comment=The Dublin Core Types namespace provides URIs for the entries of the DCMI Type Vocabulary.
+Comment[ca]=L'espai de noms dels tipus 'Dublin Core' proporciona URI per les entrades del vocabulari dels tipus DCMI.
 Comment[csb]=Rum mionów Ôrtów The Dublin Core dôwô URI dlô wpisënków słowiznë ôrtu DCMI
 Comment[de]=Der Namensraum der Dublin Core Types stellt URIs für die Einträge des DCMI-Typ-Vokabulars bereit.
 Comment[el]=Ο χώρος ονομάτων τύπων Dublin Core προσφέρει URI των καταχωρήσεων του λεξικού τύπων DCMI.

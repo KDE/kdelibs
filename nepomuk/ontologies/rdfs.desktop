@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=RDF-Schema
+Name[ca]=Esquema RDF
 Name[el]=Σχήμα RDF
 Name[es]=Esquema RDF
 Name[nl]=RDF-schema
@@ -10,6 +11,7 @@ Name[pt_BR]=Esquema RDF
 Name[sv]=RDF-schema
 Name[zh_TW]=RDF 概要
 Comment=RDF Vocabulary Description Language 1.0: RDF Schema
+Comment[ca]=Llenguatge de descripció de vocabulari RDF 1.0: esquema RDF
 Comment[de]=RDF Vocabulary Description Language 1.0: RDF-Schema
 Comment[el]=Γλώσσα περιγραφής λεξιλογίου RDF 1.0: Σχήμα RDF
 Comment[es]=Lenguaje de descripción de vocabularios RDF 1.0: Esquema RDF

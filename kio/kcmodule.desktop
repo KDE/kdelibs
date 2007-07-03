@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KCModule
 Name=KDE Configuration Module
+Name[ca]=Mòdul de configuració del KDE
 Name[csb]=Kòntrolny mòduł pùltu KDE
 Name[de]=KDE-Kontrollmodul
 Name[el]=Άρθρωμα ρύθμισης του KDE

@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Version=1.1
 Name=The Dublin Core Element Set
+Name[ca]=Conjunt d'elements 'Dublin Core'
 Name[de]=Der Dublin Core Element Set
 Name[el]=Σύνολο στοιχείων Dublin Core
 Name[es]=El conjunto de elementos Dublin Core
@@ -12,6 +13,7 @@ Name[sv]=Dublin-kärnelementmängden
 Name[zh_CN]=都柏林核心元素集
 Name[zh_TW]=Dublin 核心元素集
 Comment=The Dublin Core Element Set v1.1 namespace providing access to its content by means of an RDF Schema
+Comment[ca]=L'espai de noms del conjunt d'elements 'Dublin Core' v1.1 proporciona l'accés al seu contingut mitjançant un esquema RDF
 Comment[csb]=Rum mionów The Dublin Core Element Set v1.1 dôwô przistãp do jegò zamkłoscë bez RDF Schema 
 Comment[de]=Der Namensraum des Dublin Core Element Set v1.1, der den Zugriff auf seine Inhalte über ein RDF-Schema anbietet.
 Comment[el]=O χώρος ονομάτων συνόλου στοιχείων Dublin Core v1.1 προσφέρει πρόσβαση στο περιεχόμενό του μέσω ενός σχήματος RDF

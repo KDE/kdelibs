@@ -3,6 +3,7 @@ Encoding=UTF-8
 Version=1.0
 Name=RDF
 Comment=RDF Vocabulary Description Language 1.0
+Comment[ca]=Llenguatge de descripció de vocabulari RDF 1.0
 Comment[el]=Γλώσσα περιγραφής λεξιλογίου RDF 1.0
 Comment[es]=Lenguaje de descripción de vocabularios RDF 1.0
 Comment[nl]=RDF Vocabulaire Beschrijvingstaal 1.0

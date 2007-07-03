@@ -10,6 +10,7 @@ X-KDE-Library=crypto
 X-KDE-ParentApp=kcontrol
 
 Name=Crypto
+Name[ca]=Criptografia
 Name[de]=Krypto
 Name[el]=Κρυπτογράφηση
 Name[es]=Criptografía
@@ -18,6 +19,7 @@ Name[pt]=Cifra
 Name[pt_BR]=Cifra
 Name[sv]=Krypto
 Comment=Configure SSL, manage certificates, and other cryptography settings
+Comment[ca]=Configura l'SSL, gestiona certificats, i altres arranjaments de criptografia
 Comment[csb]=Kònfigùracëjô SSL, sprôwianié certifikatama ë jinë ùstôwë kriptografiji
 Comment[de]=Einrichtung von SSL, Zertifikat-Verwaltung und weitere kryptographische Einstellungen
 Comment[el]=Ρύθμιση SSL, διαχείριση πιστοποιητικών, και άλλες ρυθμίσεις κρυπτογραφίας
@@ -31,6 +33,7 @@ Comment[sv]=Anpassa SSL, hantera certifikat och andra kryptografiska inställnin
 Comment[zh_TW]=設定 SSL、管理憑證與其他加密設定
 
 Keywords=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,security
+Keywords[ca]=Crypto,Krypto,Criptografia,xifratge,SSL,https,certificats,xifres,TLS,assegurar,seguretat
 Keywords[de]=Crypto, Krypto, Kryptographie, Verschlüsselung, SSL, https, Zertifikate, Chiffren, TLS, sicher, Sicherheit
 Keywords[el]=Κρυπτογράφηση,Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,πιστοποιητικά,ciphers,TLS,secure,security,ασφαλές,ασφάλεια
 Keywords[es]=Criptografía,cifrado,SSL,https,certificados,código,códigos,TLS,seguro,seguridad
