@@ -232,7 +232,7 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     //actionCollection()->setWidget( this );
     QObject::connect(qApp, SIGNAL(aboutToQuit()), q, SLOT(_k_shuttingDown()));
 
-    // force KMWSessionManager creation - someone a better idea? 
+    // force KMWSessionManager creation - someone a better idea?
     ksm->dummyInit();
 
     sMemberList.append( q );
@@ -678,8 +678,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
            group.prepend(" Toolbar");
            group.prepend(configGroup);
         }
-        KConfigGroup configGroup = cg;
-        configGroup.changeGroup(group);
+        KConfigGroup configGroup(cg.config(), group);
         toolbar->applySettings(configGroup, force);
         n++;
     }

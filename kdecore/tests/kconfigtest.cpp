@@ -366,6 +366,17 @@ void KConfigTest::testInvalid()
   QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
 }
 
+void KConfigTest::testChangeGroup()
+{
+    KConfig sc( "kconfigtest" );
+    KConfigGroup sc3(&sc, "Hello");
+    QCOMPARE(sc3.group(), QString("Hello"));
+    KConfigGroup newGroup(sc3);
+    newGroup.changeGroup("FooBar");
+    QCOMPARE(newGroup.group(), QString("FooBar"));
+    QCOMPARE(sc3.group(), QString("FooBar")); // wow it changed!
+}
+
 void KConfigTest::testDelete()
 {
   KConfig sc( "kconfigtest" );
