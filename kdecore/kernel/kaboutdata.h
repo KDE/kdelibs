@@ -80,7 +80,7 @@ public:
     explicit KAboutPerson( const KLocalizedString &name,
                            const KLocalizedString &task = KLocalizedString(),
                            const QByteArray &emailAddress = QByteArray(),
-                           const QByteArray &ewebAddress = QByteArray() );
+                           const QByteArray &webAddress = QByteArray() );
 
     /**
      * Copy constructor.  Performs a deep copy.
@@ -218,6 +218,9 @@ class KDECORE_EXPORT KAboutData
      * @param homePageAddress The program homepage string.
      *        Start the address with "http://". "http://some.domain" is
      *        is correct, "some.domain" is not.
+     * IMPORTANT: if you set a home page address, this will change the "organization domain"
+     * of the application, which is used for automatic DBUS registration.
+     * @see setOrganizationDomain
      *
      * @param bugsEmailAddress The bug report email address string.
      *        This defaults to the kde.org bug system.
@@ -304,7 +307,7 @@ class KDECORE_EXPORT KAboutData
                            const QByteArray &webAddress = QByteArray() );
 
     /**
-     * @brief Sets the name(s) of the translator(s) of the GUI. 
+     * @brief Sets the name(s) of the translator(s) of the GUI.
      *
      * Since this depends on the language, just use a dummy text marked for
      * translation.
@@ -444,10 +447,18 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * Defines the Internet domain of the organization that wrote this application.
-     * The domain is set to kde.org by default (or the domain of the homePageAddress argument).
+     * The domain is set to kde.org by default, or the domain of the homePageAddress constructor argument,
+     * if set.
      *
      * Make sure to call setOrganizationDomain if your product is developed out of the
      * kde.org version-control system.
+     *
+     * Used by the automatic registration to DBus done by KApplication and KUniqueApplication.
+     *
+     * IMPORTANT: if the organization domain is set, the .desktop file that describes your
+     * application should have an entry like X-DBUS-ServiceName=reversed_domain.kmyapp
+     * For instance kwrite passes "http://www.kate-editor.org" as the homePageAddress so it needs
+     * X-DBUS-ServiceName=org.kate-editor.kwrite in its kwrite.desktop file.
      *
      * @param domain the domain name, for instance kde.org, koffice.org, kdevelop.org, etc.
      */
@@ -487,7 +498,7 @@ class KDECORE_EXPORT KAboutData
     /**
      * Returns the domain name of the organization that wrote this application.
      *
-     * Used by KUniqueApplication's registration to DBus.
+     * Used by the automatic registration to DBus done by KApplication and KUniqueApplication.
      */
     QString organizationDomain() const;
 

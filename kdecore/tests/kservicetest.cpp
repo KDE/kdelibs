@@ -164,8 +164,8 @@ void KServiceTest::testDBUSStartupType()
     KService::Ptr konsole = KService::serviceByDesktopName( "konsole" );
     if ( !konsole )
         QSKIP( "konsole.desktop not found", SkipAll );
-    qDebug() << konsole->desktopEntryPath();
-    QCOMPARE((int)konsole->DBUSStartupType(), (int)KService::DBUS_Multi);
+    //qDebug() << konsole->desktopEntryPath();
+    QCOMPARE((int)konsole->DBUSStartupType(), (int)KService::DBUS_Unique);
 }
 
 void KServiceTest::testServiceTypeTraderForReadOnlyPart()
