@@ -36,7 +36,7 @@ namespace Phonon
 }
 
 #if defined(QT_NO_DEBUG)
-#define pDebug qDebug
+#define pDebug if (false) qDebug
 #define pError() qDebug()
 #else
 #define pDebug if (!Phonon::GlobalData::instance()->showDebugOutput) {} else qDebug
