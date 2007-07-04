@@ -12,9 +12,7 @@
 
 static ipp_status_t	last_error;
 
-#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
-#warning drop the code from else section if we drop support for CUPS pre v1.2
-#else
+#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR == 1 && CUPS_VERSION_PATCH < 20
 static char		pwdstring[33];
 static  int		digest_tries;		/* Number of tries with Digest */
 static char		authstring[HTTP_MAX_VALUE];
@@ -32,12 +30,8 @@ cups_local_auth(http_t *http)	/* I - Connection */
 	/*
 	* See if we are accessing localhost...
 	*/
-#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2
-        if (!httpAddrLocalhost(http))
-#else
 	if (ntohl(*(int*)&http->hostaddr.sin_addr) != 0x7f000001 &&
 		strcasecmp(http->hostname, "localhost") != 0)
-#endif
 		return (0);
 
 	/*
@@ -340,8 +334,11 @@ cupsPutFd(http_t *http, const char *resource, int fd)
 
   return status;
 }
+#else /* CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR == 1 && CUPS_VERSION_PATCH < 20 */
 
-#endif /* CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR >= 2 */
+#warning drop compat code if we drop support for CUPS v1.1.19
+
+#endif /* CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR == 1 && CUPS_VERSION_PATCH < 20 */
 
 const char *				/* O - Filename for PPD file */
 cupsGetConf(void)
