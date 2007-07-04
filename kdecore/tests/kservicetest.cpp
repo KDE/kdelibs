@@ -157,6 +157,17 @@ static bool offerListHasService( const KService::List& offers,
     return found;
 }
 
+void KServiceTest::testDBUSStartupType()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+    KService::Ptr konsole = KService::serviceByDesktopName( "konsole" );
+    if ( !konsole )
+        QSKIP( "konsole.desktop not found", SkipAll );
+    qDebug() << konsole->desktopEntryPath();
+    QCOMPARE((int)konsole->DBUSStartupType(), (int)KService::DBUS_Multi);
+}
+
 void KServiceTest::testServiceTypeTraderForReadOnlyPart()
 {
     if ( !KSycoca::isAvailable() )
