@@ -616,7 +616,7 @@ void OxygenStyle::polish( QWidget * widget) {
          if (widget->inherits("QTextEdit") && frame->lineWidth() == 1)
             frame->setLineWidth(dpi.f4);
          else {
-            QWidget *grampa = frame->parentWidget();
+            QWidget *grampa = frame->topLevelWidget();
             if (!grampa) grampa = frame;
             QList<VisualFrame*> vfs = grampa->findChildren<VisualFrame*>();
             bool addVF = true;

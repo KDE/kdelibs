@@ -791,10 +791,9 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
          tabRect.translate(0,-1);
          masks.tab.outline(tabRect, painter, COLOR(Window).dark(130));
          painter->restore();
-         masks.tab.render(rect, painter,
-                          Gradients::brush(PAL.color(config.role_tab[0]),
-                                           baseHeight, o, config.gradChoose),
-                          pf | Tile::Center);
+         masks.tab.render(rect, painter, Gradients::brush(
+            midColor(COLOR(Window), PAL.color(config.role_tab[0])),
+            baseHeight, o, config.gradChoose), pf | Tile::Center);
          shadows.tabSunken.render(rect, painter, pf);
       }
       break;

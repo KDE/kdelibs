@@ -463,7 +463,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             cB = COLOR(Window);
          }
          else {
-            cB = PAL.color(config.role_tab[0]);
+            cB = midColor(COLOR(Window), PAL.color(config.role_tab[0]));
             cF = hover ? PAL.color(config.role_tab[1]) :
                midColor(cB, PAL.color(config.role_tab[1]), 1,2);
          }
@@ -548,6 +548,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
             r.setRight(r.left() +
                      (int)(val*RECT.width())-1);
          }
+         if (!size) break;
          const bool unicolor = config.role_progress[0] == config.role_progress[1];
          const QColor c1 = (pb->progress == pb->maximum || unicolor ) ?
                PAL.color(config.role_progress[0]) :
@@ -715,33 +716,38 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          IndexedFadeInfo *info = 0;
          QAction *action = 0, *activeAction = 0;
          int step = 0;
-         if (widget)
-         if (const QMenuBar* mbar = qobject_cast<const QMenuBar*>(widget)) {
-            action = mbar->actionAt(RECT.topLeft()); // is the action for this item!
-            activeAction = mbar->activeAction();
-            info = const_cast<IndexedFadeInfo *>
-               (animator->indexedFadeInfo(widget, (long int)activeAction));
-         }
-         if (info && (!activeAction || !activeAction->menu() ||
-             activeAction->menu()->isHidden()))
-            step = info->step((long int)action);
-         if (step || option->state & State_Selected) {
-            QRect r = RECT.adjusted(0, dpi.f2, 0, -dpi.f4);
-            if (step) {
-               step = 6-step;
-               int dx = step*r.width()/18/*, dy = step*r.height()/18*/;
-               r.adjust(dx, 0, -dx, -0);
+         if (sunken)
+            step = 12;
+         else {
+            if (widget)
+            if (const QMenuBar* mbar = qobject_cast<const QMenuBar*>(widget)) {
+               action = mbar->actionAt(RECT.topLeft()); // is the action for this item!
+               activeAction = mbar->activeAction();
+               info = const_cast<IndexedFadeInfo *>
+                  (animator->indexedFadeInfo(widget, (long int)activeAction));
             }
+            if (info && (!activeAction || !activeAction->menu() ||
+               activeAction->menu()->isHidden()))
+               step = info->step((long int)action);
+         }
+         if (step || option->state & State_Selected) {
+            QRect r = RECT.adjusted(0,dpi.f2,0,-dpi.f2);
+            if (!step) step = 6;
+//             QRect r = RECT.adjusted(0, dpi.f2, 0, -dpi.f4);
+//             if (step) {
+//                step = 6-step;
+//                int dx = step*r.width()/18/*, dy = step*r.height()/18*/;
+//                r.adjust(dx, 0, -dx, -0);
+//             }
             
-            const QBrush fill =
-               Gradients::brush(sunken ?
-                              midColor(COLOR(Highlight), COLOR(Window), 1, 3) :
-                              COLOR(Window), r.height(), Qt::Vertical,
-                              config.gradChoose);
-            fillWithMask(painter, r, fill, &masks.tab);
-            r.setHeight(r.height()+dpi.f2);
-            shadows.tabSunken.render(r, painter);
-            cr = config.role_popup[1];
+//             const QBrush fill =
+//                Gradients::brush( midColor(COLOR(Window), COLOR(WindowText), 10,
+//                                           sunken ? 1 : 0), r.height(),
+//                                  Qt::Vertical, config.gradChoose);
+            fillWithMask(painter, r, midColor(COLOR(Window), COLOR(Highlight),18,step), &masks.tab);
+//             r.setHeight(r.height()+dpi.f2);
+//             shadows.tabSunken.render(r, painter);
+//             cr = config.role_popup[1];
          }
          QPixmap pix =
                 mbi->icon.pixmap(pixelMetric(PM_SmallIconSize), isEnabled ?
@@ -779,8 +785,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          
          bool selected = menuItem->state & State_Selected;
          
-         QColor bg = midColor(COLOR(Highlight), COLOR(Window), 1,
-                              sunken ? 1 : 3);
+         QColor bg = COLOR(Window);
          QColor fg = isEnabled ? COLOR(WindowText) :
                 midColor(COLOR(Window), COLOR(WindowText), 2,1);
 
@@ -790,11 +795,13 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          bool checked = checkable && menuItem->checked;
          
          if (selected && isEnabled) {
-            QRect r = RECT.adjusted(0,0,0,-dpi.f2);
-            fillWithMask(painter, r,
-                         Gradients::brush(bg, r.height(), Qt::Vertical,
-                                        config.gradChoose), &masks.tab, Tile::Full);
-            shadows.tabSunken.render(RECT, painter);
+//             QRect r = RECT.adjusted(0,0,0,-dpi.f2);
+            bg = midColor(COLOR(Window), COLOR(Highlight),3,sunken?2:1);
+            fillWithMask(painter, RECT, bg, &masks.tab);
+//             fillWithMask(painter, r,
+//                          Gradients::brush(bg, r.height(), Qt::Vertical,
+//                                         config.gradChoose), &masks.tab, Tile::Full);
+//             shadows.tabSunken.render(RECT, painter);
          }
 
          // Text and icon, ripped from windows style

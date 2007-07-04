@@ -221,12 +221,15 @@ bool VisualFrame::eventFilter ( QObject * o, QEvent * ev ) {
       update();
       return false;
    }
-   if (ev->type() == QEvent::ParentChange) {
-      qWarning("parent changed?");
-      _frame->parentWidget() ?
-         setParent(_frame->parentWidget() ) :
-         setParent(_frame );
+   if (ev->type() == QEvent::ZOrderChange)
       rise();
-   }
+   return false;
+//    if (ev->type() == QEvent::ParentChange) {
+//       qWarning("parent changed?");
+//       _frame->parentWidget() ?
+//          setParent(_frame->parentWidget() ) :
+//          setParent(_frame );
+//       rise();
+//    }
    return false;
 }

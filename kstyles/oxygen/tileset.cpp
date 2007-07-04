@@ -371,16 +371,20 @@ void Tile::Mask::render(const QRect &r, QPainter *p, const QBrush &fill,
 #endif
       
 #define MAKE_FILL(_PIX_, _OFF_)\
-   filledPix = QPixmap(_PIX_.size());\
-   if (pixmode) {\
-      filledPix.fill(Qt::transparent);\
-      pixPainter.begin(&filledPix);\
-      pixPainter.drawTiledPixmap(filledPix.rect(), fill.texture(), _OFF_-off);\
-      pixPainter.end();\
-   }\
-   else\
-      filledPix.fill(fill.color());\
-   ADJUST_ALPHA(_PIX_);
+   if (!_PIX_.isNull()) {\
+      if (filledPix.size() != _PIX_.size()) {\
+         filledPix = QPixmap(_PIX_.size());\
+         filledPix.fill(Qt::transparent);\
+      }\
+      if (pixmode) {\
+         pixPainter.begin(&filledPix);\
+         pixPainter.drawTiledPixmap(filledPix.rect(), fill.texture(), _OFF_-off);\
+         pixPainter.end();\
+      }\
+      else\
+         filledPix.fill(fill.color());\
+      ADJUST_ALPHA(_PIX_); \
+   }
    
 #define DRAW_PIXMAP(_DX_, _DY_, _PIX_, _SX_, _SY_, _W_, _H_) {\
    MAKE_FILL(_PIX_, QPoint(_DX_, _DY_));\

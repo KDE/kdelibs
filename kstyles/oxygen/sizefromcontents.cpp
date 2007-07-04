@@ -63,7 +63,7 @@ QSize OxygenStyle::sizeFromContents ( ContentsType ct, const QStyleOption * opti
    case CT_MenuBarItem: // A menu bar item, like the buttons in a QMenuBar
       return QSize(qMax(contentsSize.width()+dpi.f18,
                         (contentsSize.height()+dpi.f8)*8/5),
-                   contentsSize.height()+dpi.f8);
+                   contentsSize.height()+dpi.f6);
    case CT_MenuItem: // A menu item, like QMenuItem
       if (const QStyleOptionMenuItem *menuItem =
           qstyleoption_cast<const QStyleOptionMenuItem *>(option)) {
