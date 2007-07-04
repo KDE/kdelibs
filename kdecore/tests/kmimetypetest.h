@@ -42,6 +42,7 @@ private Q_SLOTS:
     void testHasServiceType1();
     void testHasServiceType2();
     void testPatterns();
+    void testExtractKnownExtension();
 
     void testParseMagicFile();
     void testParseMagicFile_data();

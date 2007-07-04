@@ -196,7 +196,7 @@ KMimeType::Ptr KMimeTypeFactory::findFromPatternHelper( const QString &_filename
                 // don't return newMimeType - there may be an "other" pattern that
                 // matches best this file, like *.tar.bz
                 if (match)
-                    *match = "*."+pattern;
+                    *match = "*." + pattern.trimmed();
                 break; // but get out of the fast patterns
             }
             else

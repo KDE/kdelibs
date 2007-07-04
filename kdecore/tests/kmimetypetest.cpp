@@ -90,7 +90,7 @@ void KMimeTypeTest::testByName()
     KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("application/x-zerosize") );
-    qDebug("Comment is %s", qPrintable(s0->comment()) );
+    //qDebug("Comment is %s", qPrintable(s0->comment()) );
 
     KMimeType::Ptr s0Again = KMimeType::mimeType("application/x-zerosize");
     QCOMPARE(s0Again->name(), s0->name());
@@ -99,7 +99,7 @@ void KMimeTypeTest::testByName()
     KMimeType::Ptr s1 = KMimeType::mimeType("text/plain");
     QVERIFY( s1 );
     QCOMPARE( s1->name(), QString::fromLatin1("text/plain") );
-    qDebug("Comment is %s", qPrintable(s1->comment()) );
+    //qDebug("Comment is %s", qPrintable(s1->comment()) );
 
     KMimeType::Ptr krita = KMimeType::mimeType("application/x-krita");
     QVERIFY( krita );
@@ -509,6 +509,16 @@ void KMimeTypeTest::testPatterns()
     KMimeType::Ptr mime_pkcs7 = KMimeType::mimeType( "application/pkcs7-mime" );
     QVERIFY( mime_pkcs7 );
     QCOMPARE( mime_pkcs7->patterns().join(","), QString() );
+}
+
+void KMimeTypeTest::testExtractKnownExtension()
+{
+    const QString pdf = KMimeType::extractKnownExtension("foo.pdf");
+    QCOMPARE(pdf, QString("pdf"));
+    const QString kpt = KMimeType::extractKnownExtension("kpresenter.foo.kpt");
+    QCOMPARE(kpt, QString("kpt"));
+    const QString tarbz2 = KMimeType::extractKnownExtension("foo.tar.bz2");
+    QCOMPARE(tarbz2, QString("tar.bz2"));
 }
 
 void KMimeTypeTest::testParseMagicFile_data()
