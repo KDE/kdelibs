@@ -98,8 +98,8 @@
 		</Include>
 	</Menu>
 	<Menu>
-		<Name>Edutainment</Name>
-		<Directory>kde-edutainment.directory</Directory>
+		<Name>Education</Name>
+		<Directory>kde-education.directory</Directory>
 		<Menu>
 			<Name>Languages</Name>
 			<Directory>kde-edu-languages.directory</Directory>
