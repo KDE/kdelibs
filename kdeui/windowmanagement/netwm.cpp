@@ -2026,7 +2026,12 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		break;
 	    }
 
-	    if (XCheckTypedWindowEvent(p->display, p->root, PropertyNotify, &pe) )
+            // TODO: compaction is currently disabled, because it consumes the events, it should
+            // however let also Qt process them - this caused a problem with KRunner when
+            // doing Alt+F2, 'konsole' and Alt+F2 again didn't work - starting the Konsole
+            // slowed things down a bit, this compaction got executed and consumed PropertyNotify
+            // for WM_STATE
+	    if (false && XCheckTypedWindowEvent(p->display, p->root, PropertyNotify, &pe) )
 		compaction = True;
 	    else
 		break;
@@ -3659,7 +3664,7 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		break;
 	    }
 
-	    if (XCheckTypedWindowEvent(p->display, p->window, PropertyNotify, &pe) )
+	    if (false && XCheckTypedWindowEvent(p->display, p->window, PropertyNotify, &pe) )
 		compaction = True;
 	    else
 		break;
