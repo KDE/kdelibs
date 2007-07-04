@@ -159,5 +159,6 @@ void AbstractMediaStreamPrivate::phononObjectDestroyed(BasePrivate *bp)
 
 } // namespace Phonon
 
-#include "abstractmediastream.moc"
+#include "moc_abstractmediastream.cpp"
+
 // vim: sw=4 sts=4 et tw=100

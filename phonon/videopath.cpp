@@ -200,7 +200,7 @@ void VideoPathPrivate::phononObjectDestroyed(BasePrivate *bp)
 
 } //namespace Phonon
 
-#include "videopath.moc"
+#include "moc_videopath.cpp"
 
 #undef PHONON_CLASSNAME
 // vim: sw=4 ts=4 tw=80

@@ -160,6 +160,6 @@ void AudioPlayerPrivate::_k_stateChanged(State ns, State os)
 
 } // namespaces
 
-#include "audioplayer.moc"
+#include "moc_audioplayer.cpp"
 
 // vim: sw=4 ts=4

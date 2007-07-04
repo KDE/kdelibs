@@ -88,6 +88,7 @@ void VolumeFaderEffectPrivate::setupBackendObject()
 }
 }
 
-#include "volumefadereffect.moc"
+#include "moc_volumefadereffect.cpp"
+
 #undef PHONON_CLASSNAME
 // vim: sw=4 ts=4

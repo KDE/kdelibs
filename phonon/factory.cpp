@@ -355,7 +355,7 @@ QObject *Factory::registerQObject(QObject *o)
 
 } //namespace Phonon
 
-#include "factory.moc"
-#include "factory_p.moc"
+#include "moc_factory.cpp"
+#include "moc_factory_p.cpp"
 
 // vim: sw=4 ts=4

@@ -171,6 +171,6 @@ void VideoPlayerPrivate::_k_stateChanged(State ns, State os)
 
 } // namespaces
 
-#include "videoplayer.moc"
+#include "moc_videoplayer.cpp"
 
 // vim: sw=4 ts=4

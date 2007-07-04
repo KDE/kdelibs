@@ -58,5 +58,7 @@ void IODeviceStream::seekStream(qint64 offset)
 }
 
 } // namespace Phonon
-#include "iodevicestream.moc"
+
+#include "moc_iodevicestream.cpp"
+
 // vim: sw=4 sts=4 et tw=100

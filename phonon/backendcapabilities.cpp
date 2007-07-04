@@ -125,6 +125,7 @@ availableDevicesImpl2(VideoEffect)
 
 } // namespace Phonon
 
-#include "backendcapabilities.moc"
-#include "backendcapabilities_p.moc"
+#include "moc_backendcapabilities.cpp"
+#include "moc_backendcapabilities_p.cpp"
+
 // vim: sw=4 ts=4

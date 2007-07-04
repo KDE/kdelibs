@@ -220,5 +220,6 @@ void VolumeSlider::setSingleStep(int milliseconds)
 
 } // namespace Phonon
 
-#include "volumeslider.moc"
+#include "moc_volumeslider.cpp"
+
 // vim: sw=4 et

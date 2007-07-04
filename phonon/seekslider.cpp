@@ -233,5 +233,6 @@ void SeekSlider::setIconSize(const QSize &iconSize)
 
 } // namespace Phonon
 
-#include "seekslider.moc"
+#include "moc_seekslider.cpp"
+
 // vim: sw=4 ts=4

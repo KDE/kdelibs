@@ -178,5 +178,6 @@ void MediaController::setCurrentAngle(int titleNumber)
 
 } // namespace Phonon
 
-#include "mediacontroller.moc"
+#include "moc_mediacontroller.cpp"
+
 // vim: sw=4 sts=4 et tw=100

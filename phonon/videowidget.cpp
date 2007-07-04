@@ -186,7 +186,7 @@ QSize VideoWidget::minimumSizeHint()
 
 } //namespace Phonon
 
-#include "videowidget.moc"
+#include "moc_videowidget.cpp"
 
 #undef PHONON_CLASSNAME
 // vim: sw=4 ts=4 tw=80

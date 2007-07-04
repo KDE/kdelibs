@@ -179,6 +179,6 @@ void EffectPrivate::setupBackendObject()
 
 } //namespace Phonon
 
-#include "effect.moc"
+#include "moc_effect.cpp"
 
 // vim: sw=4 ts=4 tw=80

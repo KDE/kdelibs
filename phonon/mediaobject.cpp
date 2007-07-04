@@ -646,7 +646,7 @@ void MediaObjectPrivate::phononObjectDestroyed(BasePrivate *bp)
 
 } //namespace Phonon
 
-#include "mediaobject.moc"
+#include "moc_mediaobject.cpp"
 
 #undef PHONON_CLASSNAME
 #undef PHONON_INTERFACENAME

@@ -34,8 +34,8 @@ AbstractAudioOutput::~AbstractAudioOutput()
 
 } //namespace Phonon
 
-#include "abstractaudiooutput.moc"
-
 #undef PHONON_CLASSNAME
+
+#include "moc_abstractaudiooutput.cpp"
 
 // vim: sw=4 ts=4 tw=80

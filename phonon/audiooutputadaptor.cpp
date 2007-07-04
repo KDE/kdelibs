@@ -73,5 +73,5 @@ QString AudioOutputAdaptor::name()
     return name;
 }
 
+#include "moc_audiooutputadaptor.cpp"
 
-#include "audiooutputadaptor.moc"

@@ -49,6 +49,8 @@ void BrightnessControlPrivate::setupBackendObject()
 }
 } // namespace Phonon
 
-#include "brightnesscontrol.moc"
 #undef PHONON_CLASSNAME
+
+#include "moc_brightnesscontrol.cpp"
+
 // vim: sw=4 ts=4

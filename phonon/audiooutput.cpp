@@ -298,7 +298,7 @@ void AudioOutputPrivate::handleAutomaticDeviceChange(int newIndex, DeviceChangeT
 
 } //namespace Phonon
 
-#include "audiooutput.moc"
+#include "moc_audiooutput.cpp"
 
 #undef PHONON_CLASSNAME
 #undef PHONON_INTERFACENAME

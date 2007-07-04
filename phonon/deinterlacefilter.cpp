@@ -52,5 +52,7 @@ void DeinterlaceFilterPrivate::setupBackendObject()
 } // namespace Phonon
 
 #undef PHONON_CLASSNAME
-#include "deinterlacefilter.moc"
+
+#include "moc_deinterlacefilter.cpp"
+
 // vim: sw=4 ts=4

@@ -157,6 +157,6 @@ void EffectWidgetPrivate::_k_setDoubleParameter(double value)
 
 } // namespace Phonon
 
-#include "effectwidget.moc"
+#include "moc_effectwidget.cpp"
 
 // vim: sw=4 ts=4

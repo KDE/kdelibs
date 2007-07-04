@@ -200,7 +200,7 @@ void AudioPathPrivate::phononObjectDestroyed(BasePrivate *bp)
 
 } //namespace Phonon
 
-#include "audiopath.moc"
+#include "moc_audiopath.cpp"
 
 #undef PHONON_CLASSNAME
 // vim: sw=4 ts=4 tw=80
