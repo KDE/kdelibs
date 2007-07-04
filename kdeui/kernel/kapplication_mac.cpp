@@ -42,7 +42,7 @@ void KApplication_early_init_mac()
 
     /* temporary until we implement autolaunch for dbus  on Mac OS X */
     QString dbusSession;
-    QStringList path = QFile::decodeName(getenv("KDEDIRS")).split(':');
+    QStringList path = QFile::decodeName(getenv("KDEDIRS")).split(':').replaceInStrings(QRegExp("$"), "/bin");
     path << QFile::decodeName(getenv("PATH")).split(':') << "/opt/kde4-deps/bin" << "/sw/bin" << "/usr/local/bin";
     for (int i = 0; i < path.size(); ++i) {
         // QString testSession = QString(newPath.at(i)).append("/start-session-bus.sh");
