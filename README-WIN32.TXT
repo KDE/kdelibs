@@ -5,7 +5,16 @@ to start at http://www.kdelibs.com for an overview and status of the port.
 
 BUGS: 
 
-- kde4-config must not print the compile time installation dir, which may completly others as the real installation path. Instead it should 
-  use one level up directory where it is running as we do in dbus.
- 
+
+TODO:
+- kio/kio/kfileitem.cpp: win32 implementation of user/group/permissions handling required.
+qt's QFileInfo class has methods for platform independent user/group/permission retrieving 
+but they are not implemented complete in the win32 port.
+There may be more places where such handling is required, I haven't checked yet
+
+
+
+
+
+
 
