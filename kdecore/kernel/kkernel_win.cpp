@@ -24,8 +24,11 @@
 #ifdef Q_OS_WIN
 
 #include <QtCore/QDir>
+#include <QApplication>
+
 #include <windows.h>
 #include <shellapi.h>
+#include <process.h>
 
 #if defined(__MINGW32__)
 # define WIN32_CAST_CHAR (const WCHAR*)
@@ -151,5 +154,33 @@ QString getWin32ShellFoldersPath ( const QString& folder )
                                    QLatin1String("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"),
                                    folder );
 }
+
+static void myMessageOutput(QtMsgType type, const char *msg)
+{
+    switch (type) {
+    case QtDebugMsg:
+        fprintf(stderr, "[%4d] Qt Debug: %s\n", getpid(), msg);
+        break;
+    case QtWarningMsg:
+        fprintf(stderr, "[%4d] Qt Warning: %s\n", getpid(), msg);
+        break;
+    case QtCriticalMsg:
+        fprintf(stderr, "[%4d] Qt Critical: %s\n", getpid(), msg);
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "[%4d] Qt Fatal: %s\n", getpid(), msg);
+        //abort();
+    }
+}
+
+class GlobalClass {
+    public: 
+        GlobalClass() {
+            kDebug() << "installing qt message handler"; 
+            qInstallMsgHandler(myMessageOutput);
+        }
+}; 
+
+GlobalClass myGlobals; 
 
 #endif  // Q_OS_WIN
