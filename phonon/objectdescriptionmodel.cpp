@@ -18,7 +18,7 @@
 */
 
 #include "objectdescriptionmodel.h"
-//#include "objectdescriptionmodel_p.h"
+#include "objectdescriptionmodel_p.h"
 #include "phonondefs_p.h"
 #include <QtCore/QList>
 #include "objectdescription.h"
@@ -28,10 +28,10 @@
 #include <QtGui/QIcon>
 #include "factory.h"
 
-//X #ifdef USE_TROLLTECH_LABS_MODELTEST
-//X #include <QtCore/QSet>
-//X #include "modeltest.h"
-//X #endif
+#ifdef USE_TROLLTECH_LABS_MODELTEST
+#include <QtCore/QSet>
+#include "modeltest.h"
+#endif
 
 #if Q_MOC_OUTPUT_REVISION != 59
 #ifdef __GNUC__
@@ -124,6 +124,40 @@ template<> const QMetaObject ObjectDescriptionModel<SubtitleStreamType>::staticM
       qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
 };
 
+template<ObjectDescriptionType type>
+const QMetaObject *ObjectDescriptionModel<type>::metaObject() const
+{
+    return &staticMetaObject;
+}
+
+template<ObjectDescriptionType type>
+void *ObjectDescriptionModel<type>::qt_metacast(const char *_clname)
+{
+    if (!_clname) {
+        return 0;
+    }
+    if (!strcmp(_clname, ObjectDescriptionModel<type>::staticMetaObject.className())) {
+        return static_cast<void *>(const_cast<ObjectDescriptionModel<type> *>(this));
+    }
+    return QAbstractListModel::qt_metacast(_clname);
+}
+
+/*
+template<ObjectDescriptionType type>
+int ObjectDescriptionModel<type>::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    return QAbstractListModel::qt_metacall(_c, _id, _a);
+}
+*/
+
+int ObjectDescriptionModelData::rowCount(const QModelIndex &parent) const
+{
+    if (parent.isValid())
+        return 0;
+
+    return d->data.size();
+}
+
 QVariant ObjectDescriptionModelData::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.row() >= d->data.size() || index.column() != 0)
@@ -134,24 +168,228 @@ QVariant ObjectDescriptionModelData::data(const QModelIndex &index, int role) co
     case Qt::EditRole:
     case Qt::DisplayRole:
         return d->data.at(index.row())->name();
+        break;
     case Qt::ToolTipRole:
         return d->data.at(index.row())->description();
+        break;
     case Qt::DecorationRole:
         {
-            const QVariant icon = d->data.at(index.row())->property("icon");
-            if (icon.type() == QVariant::String) {
-                return Factory::icon(icon.toString());
-            } else if (icon.type() == QVariant::Icon) {
-                return icon;
+            QVariant icon = d->data.at(index.row())->property("icon");
+            if (icon.isValid()) {
+                if (icon.type() == QVariant::String) {
+                    return Factory::icon(icon.toString());
+                } else if (icon.type() == QVariant::Icon) {
+                    return icon;
+                }
             }
         }
-        // fall through
+        return QVariant();
     default:
         return QVariant();
-    }
+}
 }
 
-#if 0
+Qt::ItemFlags ObjectDescriptionModelData::flags(const QModelIndex &index) const
+{
+    if(!index.isValid() || index.row() >= d->data.size() || index.column() != 0) {
+        return Qt::ItemIsDropEnabled;
+    }
+
+    QVariant available = d->data.at(index.row())->property("available");
+    if (available.isValid() && available.type() == QVariant::Bool && !available.toBool()) {
+        return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    }
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+}
+
+QList<int> ObjectDescriptionModelData::tupleIndexOrder() const
+{
+    QList<int> ret;
+    for (int i = 0; i < d->data.size(); ++i) {
+        ret.append(d->data.at(i)->index());
+    }
+    return ret;
+}
+
+int ObjectDescriptionModelData::tupleIndexAtPositionIndex(int positionIndex) const
+{
+    return d->data.at(positionIndex)->index();
+}
+
+QMimeData *ObjectDescriptionModelData::mimeData(ObjectDescriptionType type, const QModelIndexList &indexes) const
+{
+    QMimeData *mimeData = new QMimeData;
+    QByteArray encodedData;
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    QModelIndexList::const_iterator end = indexes.constEnd();
+    QModelIndexList::const_iterator index = indexes.constBegin();
+    for(; index!=end; ++index) {
+        if ((*index).isValid()) {
+            stream << (*index).row();
+            stream << d->data.at((*index).row())->index();
+        }
+    }
+    //pDebug() << Q_FUNC_INFO << "setting mimeData to" << mimeTypes(type).first() << "=>" << encodedData.toHex();
+    mimeData->setData(mimeTypes(type).first(), encodedData);
+    return mimeData;
+}
+
+void ObjectDescriptionModelData::moveUp(const QModelIndex &index)
+{
+    if (!index.isValid() || index.row() >= d->data.size() || index.row() < 1 || index.column() != 0)
+        return;
+
+    emit d->model->layoutAboutToBeChanged();
+    QModelIndex above = index.sibling(index.row() - 1, index.column());
+    d->data.swap(index.row(), above.row());
+    QModelIndexList from, to;
+    from << index << above;
+    to << above << index;
+    d->model->changePersistentIndexList(from, to);
+    emit d->model->layoutChanged();
+}
+
+void ObjectDescriptionModelData::moveDown(const QModelIndex &index)
+{
+    if (!index.isValid() || index.row() >= d->data.size() - 1 || index.column() != 0)
+        return;
+
+    emit d->model->layoutAboutToBeChanged();
+    QModelIndex below = index.sibling(index.row() + 1, index.column());
+    d->data.swap(index.row(), below.row());
+    QModelIndexList from, to;
+    from << index << below;
+    to << below << index;
+    d->model->changePersistentIndexList(from, to);
+    emit d->model->layoutChanged();
+}
+
+ObjectDescriptionModelData::ObjectDescriptionModelData(QAbstractListModel *model)
+    : d(new ObjectDescriptionModelDataPrivate(model))
+{
+}
+
+ObjectDescriptionModelData::~ObjectDescriptionModelData()
+{
+    delete d;
+}
+
+void ObjectDescriptionModelData::setModelData(const QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > &newData)
+{
+    d->data = newData;
+    d->model->reset();
+#ifdef USE_TROLLTECH_LABS_MODELTEST
+    static QSet<QAbstractListModel *> modelTested;
+    if (!modelTested.contains(d->model)) {
+        new ModelTest(d->model, d->model);
+        modelTested << d->model;
+    }
+#endif
+}
+
+QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > ObjectDescriptionModelData::modelData() const
+{
+    return d->data;
+}
+
+QExplicitlySharedDataPointer<ObjectDescriptionData> ObjectDescriptionModelData::modelData(const QModelIndex &index) const
+{
+    if (!index.isValid() || index.row() >= d->data.size() || index.column() != 0) {
+        return QExplicitlySharedDataPointer<ObjectDescriptionData>(new ObjectDescriptionData(0));
+    }
+    return d->data.at(index.row());
+}
+
+Qt::DropActions ObjectDescriptionModelData::supportedDropActions() const
+{
+    //pDebug() << Q_FUNC_INFO;
+    return Qt::MoveAction;
+}
+
+bool ObjectDescriptionModelData::dropMimeData(ObjectDescriptionType type, const QMimeData *data, Qt::DropAction action,
+        int row, int column, const QModelIndex &parent)
+{
+    Q_UNUSED(action);
+    Q_UNUSED(column);
+    //pDebug() << Q_FUNC_INFO << data << action << row << column << parent;
+
+    QString format = mimeTypes(type).first();
+    if (!data->hasFormat(format)) {
+        return false;
+    }
+
+    if (parent.isValid()) {
+        row = parent.row();
+    } else {
+        if (row == -1) {
+            row = d->data.size();
+        }
+    }
+
+    QByteArray encodedData = data->data(format);
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > toInsert;
+    while (!stream.atEnd()) {
+        int previousRow;
+        int otherIndex;
+        stream >> previousRow >> otherIndex;
+        ObjectDescriptionData *obj = ObjectDescriptionData::fromIndex(type, otherIndex);
+
+        if (obj->isValid()) {
+            toInsert << QExplicitlySharedDataPointer<ObjectDescriptionData>(obj);
+            if (previousRow < row) {
+                ++row;
+            }
+        }
+    }
+    if (row > d->data.size()) {
+        row = d->data.size();
+    }
+    d->model->beginInsertRows(QModelIndex(), row, row + toInsert.size() - 1);
+    foreach (const QExplicitlySharedDataPointer<ObjectDescriptionData> &obj, toInsert) {
+        d->data.insert(row, obj);
+    }
+    d->model->endInsertRows();
+    return true;
+}
+
+
+bool ObjectDescriptionModelData::removeRows(int row, int count, const QModelIndex &parent)
+{
+    //pDebug() << Q_FUNC_INFO << row << count << parent;
+    if (parent.isValid() || row + count > d->data.size()) {
+        return false;
+    }
+    d->model->beginRemoveRows(parent, row, row + count - 1);
+    for (;count > 0; --count) {
+        d->data.removeAt(row);
+    }
+    d->model->endRemoveRows();
+    return true;
+}
+
+/*
+template<ObjectDescriptionType type>
+bool ObjectDescriptionModel<type>::insertRows(int row, int count, const QModelIndex &parent)
+{
+    pDebug() << Q_FUNC_INFO << row << count << parent;
+    if (parent.isValid() || row < 0 || row > d->data.size()) {
+        return false;
+    }
+    beginInsertRows(parent, row, row + count - 1);
+    for (;count > 0; --count) {
+        d->data.insert(row, ObjectDescription<type>());
+    }
+    endInsertRows();
+    return true;
+}
+*/
+
+QStringList ObjectDescriptionModelData::mimeTypes(ObjectDescriptionType type) const
+{
+    return QStringList(QLatin1String("application/x-phonon-objectdescription") + QString::number(static_cast<int>(type)));
+}
+
 #define INSTANTIATE_META_FUNCTIONS(type) \
 template PHONON_EXPORT const QMetaObject *ObjectDescriptionModel<type>::metaObject() const; \
 template void *ObjectDescriptionModel<type>::qt_metacast(const char *)
@@ -169,6 +407,5 @@ INSTANTIATE_META_FUNCTIONS(VisualizationType);
 INSTANTIATE_META_FUNCTIONS(AudioStreamType);
 INSTANTIATE_META_FUNCTIONS(VideoStreamType);
 INSTANTIATE_META_FUNCTIONS(SubtitleStreamType);
-#endif
 
 } // namespace Phonon
