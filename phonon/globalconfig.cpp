@@ -151,6 +151,6 @@ int GlobalConfig::audioCaptureDevice() const
 
 } // namespace Phonon
 
-#include "globalconfig.moc"
+#include "moc_globalconfig.cpp"
 
 // vim: sw=4 ts=4
