@@ -46,10 +46,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-
-#ifdef Q_OS_FREEBSD
-# include <sys/wait.h>
-#endif
+#include <sys/wait.h>
 
 #ifndef WEXITSTATUS
 #define WEXITSTATUS(status) (((status) & 0xff00) >> 8)

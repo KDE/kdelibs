@@ -144,7 +144,9 @@ KPSchedulePage::KPSchedulePage(QWidget *parent)
 	m_time->addItem(i18n("Specified Time"));
         m_time->setWhatsThis(whatsThisScheduledPrinting);
 	m_tedit = new QDateTimeEdit(this);
+#ifdef __GNUC__
 #warning "kde4: How to port m_tedit->setAutoAdvance ?"	
+#endif
 	//m_tedit->setAutoAdvance(true);
 	m_tedit->setTime(QTime::currentTime());
 	m_tedit->setEnabled(false);

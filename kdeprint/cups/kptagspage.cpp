@@ -80,7 +80,9 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 	m_tags->horizontalHeader()->setResizeMode( QHeaderView::Stretch );
 	m_tags->setVerticalHeaderLabels(lst);
 
+#ifdef __GNUC__
 #warning "kde4: port m_tags->setReadOnly(ro);!!!!!\n";
+#endif
 	//m_tags->setReadOnly(ro);
 	m_tags->setWhatsThis(whatsThisAdditionalTagsTable);
 

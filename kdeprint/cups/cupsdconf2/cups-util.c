@@ -297,7 +297,9 @@ cupsPutFd(http_t *http, const char *resource, int fd)
      /*
       * See if we can do authentication...
       */
+#ifdef __GNUC__
 #warning original code makes authentication for GET, typo?
+#endif
       if(cupsDoAuthentication(http, "PUT", resource))
         break;
 
@@ -336,7 +338,9 @@ cupsPutFd(http_t *http, const char *resource, int fd)
 }
 #else /* CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR == 1 && CUPS_VERSION_PATCH < 20 */
 
+#ifdef __GNUC__
 #warning drop compat code if we drop support for CUPS v1.1.19
+#endif
 
 #endif /* CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR == 1 && CUPS_VERSION_PATCH < 20 */
 
