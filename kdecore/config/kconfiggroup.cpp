@@ -145,6 +145,9 @@ void KConfigGroup::deleteGroup(KConfigBase::WriteConfigFlags pFlags)
 
 void KConfigGroup::changeGroup(char const* group)
 {
+    // detach (QExplicitlySharedDataPointer takes care of deleting the old d if necessary)
+    // ### temporary solution until QExplicitlySharedDataPointer has detach()
+    d = new KConfigGroupPrivate( *d );
     if ( !group || !qstrcmp( group, "") ) {
         d->group = "<default>";
     } else {

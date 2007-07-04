@@ -374,7 +374,7 @@ void KConfigTest::testChangeGroup()
     KConfigGroup newGroup(sc3);
     newGroup.changeGroup("FooBar");
     QCOMPARE(newGroup.group(), QString("FooBar"));
-    QCOMPARE(sc3.group(), QString("FooBar")); // wow it changed!
+    QCOMPARE(sc3.group(), QString("Hello")); // unchanged
 }
 
 void KConfigTest::testDelete()
