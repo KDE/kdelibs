@@ -36,6 +36,7 @@ private Q_SLOTS:
     void listen();
 
     void waitForConnection();
+    void newConnection();
 
     void accept();
 

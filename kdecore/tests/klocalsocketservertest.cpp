@@ -108,6 +108,25 @@ void tst_KLocalSocketServer::waitForConnection()
     }
 }
 
+void tst_KLocalSocketServer::newConnection()
+{
+    KLocalSocketServer server;
+    QVERIFY(server.listen(asocket));
+    QVERIFY(!server.hasPendingConnections());
+
+    // catch the signal
+    QSignalSpy spy(&server, SIGNAL(newConnection()));
+
+    KLocalSocket socket;
+    socket.connectToPath(asocket);
+    QVERIFY(socket.waitForConnected());
+
+    // let the events be processed
+    QTest::qWait(100);
+
+    QVERIFY(spy.count() == 1);
+}
+
 void tst_KLocalSocketServer::accept()
 {
     KLocalSocketServer server;
