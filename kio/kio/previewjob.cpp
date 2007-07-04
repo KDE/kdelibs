@@ -544,8 +544,10 @@ PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
     const QStringList *enabledPlugins )
 {
     QList<KFileItem> fileItems;
-    for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it)
+    for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it) {
+        Q_ASSERT( (*it).isValid() ); // please call us with valid urls only
         fileItems.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
+    }
     return new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
                           scale, save, enabledPlugins);
 }
