@@ -17,18 +17,34 @@
 
 */
 
-#include "volumeslidertest.h"
 #include "loadfakebackend.h"
 #include "../volumeslider.h"
 #include "../mediaobject.h"
 #include "../audiooutput.h"
 
+#include <QtCore/QObject>
 #include <QtGui/QSlider>
 #include <QtGui/QToolButton>
 
 #include <qtest_kde.h>
 
 #include <cstdlib>
+
+class VolumeSliderTest : public QObject
+{
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void testEnabled();
+        void seekWithSlider();
+        void cleanupTestCase();
+    private:
+        Phonon::VolumeSlider *vs;
+        QSlider *qslider;
+        QToolButton *qbutton;
+        Phonon::MediaObject *media;
+        Phonon::AudioOutput *output;
+};
 
 using namespace Phonon;
 

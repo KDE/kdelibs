@@ -17,19 +17,72 @@
 
 */
 
-#include "mediaobjecttest.h"
 #include "qtesthelper.h"
-#include <cstdlib>
+#include "loadfakebackend.h"
+
 #include <qtest_kde.h>
 #include <QtCore/QDate>
 #include <QtCore/QDebug>
-#include <phonon/videopath.h>
+#include <QtCore/QObject>
+#include <QtCore/QUrl>
+#include <QtTest/QSignalSpy>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>
+#include <phonon/mediaobject.h>
+#include <phonon/videopath.h>
 
+#include <cstdlib>
 #include <unistd.h>
-#include "loadfakebackend.h"
 
+class MediaObjectTest : public QObject
+{
+    Q_OBJECT
+
+    Q_SIGNALS:
+        void continueTestPlayOnFinish();
+    protected Q_SLOTS:
+        void setMediaAndPlay();
+
+    private Q_SLOTS:
+        void init();
+        void cleanup();
+
+        void initTestCase();
+        void checkForDefaults();
+
+        // state change tests
+        void stopToStop();
+        void stopToPause();
+        void stopToPlay();
+        void playToPlay();
+        void playToPause();
+        void playToStop();
+        void pauseToPause();
+        void pauseToPlay();
+        void pauseToStop();
+
+        void testTickSignal();
+        void testSeek();
+        void testPrefinishMark();
+        void testPlayOnFinish();
+        void testPlayBeforeFinish();
+
+        void cleanupTestCase();
+
+    private:
+        void setMedia();
+        void addPaths();
+        void initOutput();
+
+        void startPlayback(Phonon::State currentState = Phonon::StoppedState);
+        void stopPlayback(Phonon::State currentState);
+        void pausePlayback();
+        void testOneSeek(qint64 seekTo);
+
+        QUrl m_url;
+        Phonon::MediaObject *m_media;
+        QSignalSpy *m_stateChangedSignalSpy;
+};
 const qint64 ALLOWED_TIME_FOR_SEEKING = 1000; // 1s
 const qint64 ALLOWED_SEEK_INACCURACY = 300; // 0.3s
 const qint64 ALLOWED_TICK_INACCURACY = 350; // allow +/- 350 ms inaccuracy

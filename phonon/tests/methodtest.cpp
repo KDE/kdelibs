@@ -17,15 +17,64 @@
 
 */
 
-#include "methodtest.h"
+#include "loadfakebackend.h"
 #include "qtesthelper.h"
-#include "../factory.h"
+
+#include <QtCore/QObject>
+
 #include <qtest_kde.h>
+
+#include "../factory.h"
 #include <phonon/streaminterface.h>
 #include <phonon/mediaobjectinterface.h>
 #include <phonon/backendinterface.h>
 #include <phonon/audiooutputinterface.h>
 #include <phonon/addoninterface.h>
+
+class MethodTest : public QObject
+{
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase() { Phonon::loadFakeBackend(); }
+        void checkBackendInterface();
+
+//X         void checkAudioDataOutputMethods_data();
+//X         void checkAudioDataOutputMethods();
+        void checkVideoEffectMethods_data();
+        void checkVideoEffectMethods();
+        void checkAudioEffectMethods_data();
+        void checkAudioEffectMethods();
+        void checkAudioOutputMethods_data();
+        void checkAudioOutputMethods();
+        void checkAudioPathMethods_data();
+        void checkAudioPathMethods();
+        void checkBackendMethods_data();
+        void checkBackendMethods();
+        void checkBrightnessControlMethods_data();
+        void checkBrightnessControlMethods();
+        void checkMediaObjectMethods_data();
+        void checkMediaObjectMethods();
+//X         void checkVideoDataOutputMethods_data();
+//X         void checkVideoDataOutputMethods();
+        void checkVideoPathMethods_data();
+        void checkVideoPathMethods();
+//X         void checkVisualizationMethods_data();
+//X         void checkVisualizationMethods();
+        void checkVolumeFaderEffectMethods_data();
+        void checkVolumeFaderEffectMethods();
+        void checkVideoWidgetMethods_data();
+        void checkVideoWidgetMethods();
+        void checkMediaObjectInterfaces();
+        void checkAudioOutputInterface();
+
+        void checkBackendInfos();
+
+    private:
+        void addColumns();
+        void addMethod(const char *returnType, const char *signature, bool optional = false);
+        void addSignal(const char *signature);
+        void checkMethods(QObject *m_backendObject);
+};
 
 using namespace Phonon;
 

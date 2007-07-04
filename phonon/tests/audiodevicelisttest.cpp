@@ -17,10 +17,22 @@
 
 */
 
-#include "audiodevicelisttest.h"
-#include <qtest_kde.h>
 #include <QtCore/QDebug>
+#include <QtCore/QObject>
+
+#include <qtest_kde.h>
+
 #include "../libkaudiodevicelist/audiodeviceenumerator.h"
+
+class SimpleTest : public QObject
+{
+    Q_OBJECT
+
+    private Q_SLOTS:
+        void sanityChecks();
+        void listDevices();
+        void checkCopy();
+};
 
 using namespace Phonon;
 

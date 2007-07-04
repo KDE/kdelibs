@@ -17,13 +17,27 @@
 
 */
 
-#include "mediasourcetest.h"
 #include "../mediasource.h"
 #include "../abstractmediastream.h"
 #include "loadfakebackend.h"
 
 #include <QtCore/QUrl>
 #include <qtest_kde.h>
+#include <QtCore/QObject>
+
+class MediaSourceTest : public QObject
+{
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void testLocalFile();
+        void testUrl();
+        void testDiscType();
+        void testStream();
+        void testIODevice();
+        void testQtResource();
+        void cleanupTestCase();
+};
 
 using namespace Phonon;
 

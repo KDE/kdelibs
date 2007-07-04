@@ -17,10 +17,21 @@
 
 */
 
-#include <qtest_kde.h>
-#include "audiocapturedevicetest.h"
 #include "../objectdescription.h"
 #include "loadfakebackend.h"
+
+#include <QtCore/QObject>
+
+#include <qtest_kde.h>
+
+class AudioCaptureDeviceTest : public QObject
+{
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void sensibleValues();
+        void cleanupTestCase();
+};
 
 using namespace Phonon;
 

@@ -17,17 +17,31 @@
 
 */
 
+#include "loadfakebackend.h"
+
+#include <QtCore/QObject>
+#include <QtCore/QSet>
+#include <QtCore/QStringList>
+
 #include <qtest_kde.h>
-#include "backendcapabilitiestest.h"
+#include <kservice.h>
+#include <kservicetypetrader.h>
+
 #include "../backendcapabilities.h"
 #include "../factory.h"
 #include "../objectdescription.h"
-#include <QtCore/QStringList>
-#include <QtCore/QSet>
 #include "../backendinterface.h"
-#include "loadfakebackend.h"
-#include <kservice.h>
-#include <kservicetypetrader.h>
+
+class BackendCapabilitiesTest : public QObject
+{
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void checkMimeTypes();
+        void sensibleValues();
+        void checkSignals();
+        void cleanupTestCase();
+};
 
 using namespace Phonon;
 

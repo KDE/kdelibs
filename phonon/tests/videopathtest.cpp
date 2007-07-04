@@ -17,11 +17,38 @@
 
 */
 
-#include "videopathtest.h"
-#include <cstdlib>
-#include <qtest_kde.h>
 #include <QtCore/QDate>
 #include <QtCore/QDebug>
+#include <QtCore/QObject>
+#include <QtTest/QSignalSpy>
+
+#include <qtest_kde.h>
+
+#include <phonon/mediaobject.h>
+#include <phonon/videopath.h>
+#include <phonon/videooutput.h>
+
+#include <cstdlib>
+
+class VideoPathTest : public QObject
+{
+    Q_OBJECT
+
+    private Q_SLOTS:
+        void initTestCase();
+        void checkForDefaults();
+
+        void addOutputs();
+        void addEffects();
+
+        void cleanupTestCase();
+
+    private:
+        QUrl m_url;
+        Phonon::MediaObject *m_media;
+        Phonon::VideoPath *m_path;
+        Phonon::VideoOutput *m_output; //FIXME VideoWidget is in Phonon::Ui
+};
 
 using namespace Phonon;
 

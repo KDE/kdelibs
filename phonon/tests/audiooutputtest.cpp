@@ -17,13 +17,27 @@
 
 */
 
-#include "audiooutputtest.h"
-#include "../audiooutput.h"
-#include <kglobal.h>
-#include <QtCore/QString>
-#include "../phononnamespace.h"
-#include <qtest_kde.h>
 #include "loadfakebackend.h"
+#include "../audiooutput.h"
+#include "../phononnamespace.h"
+
+#include <QtCore/QObject>
+#include <QtCore/QString>
+
+#include <kglobal.h>
+#include <qtest_kde.h>
+
+class AudioOutputTest : public QObject
+{
+    Q_OBJECT
+    private slots:
+        void initTestCase();
+        void checkName();
+        void checkVolume();
+        void checkMute();
+        void checkCategory();
+        void cleanupTestCase();
+};
 
 using namespace Phonon;
 

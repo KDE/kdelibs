@@ -17,19 +17,36 @@
 
 */
 
-#include "seekslidertest.h"
 #include "loadfakebackend.h"
 #include "../seekslider.h"
 #include "../mediaobject.h"
 #include "../audiopath.h"
 #include "../audiooutput.h"
 
+#include <QtCore/QObject>
 #include <QtGui/QLabel>
 #include <QtGui/QSlider>
 
 #include <qtest_kde.h>
 
 #include <cstdlib>
+
+class SeekSliderTest : public QObject
+{
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void testEnabled();
+        void setMedia();
+        void playMedia();
+        void seekWithSlider();
+        void cleanupTestCase();
+    private:
+        Phonon::SeekSlider *ss;
+        QSlider *qslider;
+        QLabel *qlabel;
+        Phonon::MediaObject *media;
+};
 
 using namespace Phonon;
 

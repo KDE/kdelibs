@@ -17,13 +17,41 @@
 
 */
 
-#include "audiopathtest.h"
 #include "loadfakebackend.h"
 
-#include <cstdlib>
-#include <qtest_kde.h>
 #include <QtCore/QDate>
 #include <QtCore/QDebug>
+#include <QtCore/QObject>
+#include <QtCore/QUrl>
+#include <QtTest/QSignalSpy>
+
+#include <qtest_kde.h>
+
+#include <phonon/mediaobject.h>
+#include <phonon/audiopath.h>
+#include <phonon/audiooutput.h>
+
+#include <cstdlib>
+
+class AudioPathTest : public QObject
+{
+    Q_OBJECT
+
+    private Q_SLOTS:
+        void initTestCase();
+        void checkForDefaults();
+
+        void addOutputs();
+        void addEffects();
+
+        void cleanupTestCase();
+
+    private:
+        QUrl m_url;
+        Phonon::MediaObject *m_media;
+        Phonon::AudioPath *m_path;
+        Phonon::AudioOutput *m_output;
+};
 
 using namespace Phonon;
 
