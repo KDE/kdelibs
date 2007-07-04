@@ -21,6 +21,8 @@
 #include "kmainwindow_unittest.moc"
 #include <kmainwindow.h>
 #include <kglobal.h>
+#include <QResizeEvent>
+#include <ktoolbar.h>
 
 QTEST_KDEMAIN( KMainWindow_UnitTest, GUI )
 
@@ -117,4 +119,49 @@ void KMainWindow_UnitTest::testDeleteOnClose()
     QVERIFY( mw->m_queryExitCalled );
     qApp->sendPostedEvents( mw, QEvent::DeferredDelete );
     QVERIFY( s_mainWindowDeleted );
+}
+
+void KMainWindow_UnitTest::testSaveWindowSize()
+{
+    KMainWindow mw;
+    KToolBar* tb = new KToolBar(&mw); // we need a toolbar to trigger an old bug in saveMainWindowSettings
+    tb->setObjectName("testtb");
+    mw.resize(800, 600);
+
+    // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
+    QResizeEvent e(mw.size(), QSize());
+    QApplication::sendEvent(&mw, &e);
+
+    KConfigGroup cfg(KGlobal::config(), "TestWindowSize");
+    mw.saveMainWindowSettings(cfg);
+    mw.close();
+
+    KMainWindow mw2;
+    tb = new KToolBar(&mw2);
+    tb->setObjectName("testtb");
+    mw2.resize(50, 50);
+    mw2.applyMainWindowSettings(cfg);
+    QCOMPARE(mw2.size(), QSize(800, 600));
+}
+
+void KMainWindow_UnitTest::testAutoSaveSettings()
+{
+    KMainWindow mw;
+    KToolBar* tb = new KToolBar(&mw); // we need a toolbar to trigger an old bug in saveMainWindowSettings
+    tb->setObjectName("testtb");
+    const QString group("AutoSaveTestGroup");
+    mw.setAutoSaveSettings(group);
+    mw.resize(800, 600);
+
+    // Send the pending resize event (resize() only sets Qt::WA_PendingResizeEvent)
+    QResizeEvent e(mw.size(), QSize());
+    QApplication::sendEvent(&mw, &e);
+
+    mw.close();
+
+    KMainWindow mw2;
+    tb = new KToolBar(&mw2);
+    tb->setObjectName("testtb");
+    mw2.setAutoSaveSettings(group);
+    QCOMPARE(mw2.size(), QSize(800, 600));
 }

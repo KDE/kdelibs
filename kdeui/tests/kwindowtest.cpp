@@ -166,7 +166,7 @@ TestWindow::TestWindow (QWidget *parent)
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // This line is for test programs only!
     KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
-    setupGUI( Default, "kwindowtest.rc" );
+    setupGUI( QSize(400, 500), Default, "kwindowtest.rc" );
 
     tb=toolBar();
     tb1=toolBar("AnotherToolBar");
@@ -419,7 +419,6 @@ int main( int argc, char *argv[] )
         test->beYFixed();
 
     test->show();
-    test->resize(400, 500);
     myApp.setQuitOnLastWindowClosed( true );
     int ret = myApp.exec();
 
