@@ -1,22 +1,20 @@
-/***************************************************************************
- *   Copyright (C) 2006-2007 by Thomas Lübking                             *
- *   thomas.luebking@web.de                                                *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+/* Oxygen widget style for KDE 4
+   Copyright (C) 2006-2007 Thomas Luebking <thomas.luebking@web.de>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+ */
 
 #include <QAbstractButton>
 #include <QAction>
@@ -1013,6 +1011,47 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
       }
       break;
    case CE_SizeGrip: {
+      Qt::Corner corner;
+      if (const QStyleOptionSizeGrip *sgOpt =
+         qstyleoption_cast<const QStyleOptionSizeGrip *>(option))
+         corner = sgOpt->corner;
+      else if (option->direction == Qt::RightToLeft)
+         corner = Qt::BottomLeftCorner;
+      else
+         corner = Qt::BottomRightCorner;
+      
+      QRect rect = RECT;
+      rect.setWidth(7*RECT.width()/4);
+      rect.setHeight(7*RECT.height()/4);
+      painter->save();
+      painter->setRenderHint(QPainter::Antialiasing);
+      int angle = 90<<4;
+      switch (corner) {
+      default:
+      case Qt::BottomLeftCorner:
+         angle = 0;
+         rect.moveRight(RECT.right());
+      case Qt::BottomRightCorner:
+         painter->setBrush(COLOR(Window).dark(120));
+         painter->setPen(COLOR(Window).dark(140));
+         break;
+      case Qt::TopLeftCorner:
+         angle += 90<<4;
+         rect.moveBottomRight(RECT.bottomRight());
+      case Qt::TopRightCorner:
+         angle += 90<<4;
+         rect.moveBottom(RECT.bottom());
+         painter->setBrush(COLOR(Window).dark(110));
+         painter->setPen(COLOR(Window).dark(116));
+         painter->drawPie(RECT, -(90<<4), 90<<4);
+         break;
+      }
+      painter->drawPie(rect, angle, 90<<4);
+      painter->restore();
+      break;
+   }
+#if 0
+   case CE_SizeGrip: {
       painter->save();
       int x1, y1, x2, y2;
       RECT.getRect(&x1, &y1, &x2, &y2);
@@ -1058,6 +1097,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
       painter->restore();
       break;
    }
+#endif
    case CE_Header: // A header
    if (const QStyleOptionHeader *header =
        qstyleoption_cast<const QStyleOptionHeader *>(option)) {

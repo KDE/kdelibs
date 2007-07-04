@@ -1,22 +1,20 @@
-/***************************************************************************
- *   Copyright (C) 2006-2007 by Thomas Luebking                            *
- *   thomas.luebking@web.de                                                *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+/* Oxygen widget style for KDE 4
+   Copyright (C) 2006-2007 Thomas Luebking <thomas.luebking@web.de>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License version 2 as published by the Free Software Foundation.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+ */
 
 #include "visualframe.h"
 #include <QBitmap>
@@ -172,7 +170,7 @@ bool VisualFrame::eventFilter ( QObject * o, QEvent * ev ) {
       o->removeEventFilter(this);
       return false;
    }
-   if (ev->type() == QEvent::Resize || ev->type() == QEvent::Show) {
+   if (ev->type() == QEvent::Resize || ev->type() == QEvent::Move || ev->type() == QEvent::Show) {
       QRect rect = _frame->frameRect();
       rect.translate(_frame->mapTo(parentWidget(), QPoint(0,0)));
       int offs = _off[0]+_off[1];
