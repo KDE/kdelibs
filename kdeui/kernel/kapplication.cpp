@@ -413,6 +413,10 @@ int KApplication::xErrhandler( Display* dpy, void* err_ )
         // add KDE specific stuff here
         d->oldXErrorHandler( dpy, err );
     }
+    const QByteArray fatalXError = getenv("KDE_FATAL_X_ERROR");
+    if (!fatalXError.isEmpty()) {
+        abort();
+    }
 #endif
     return 0;
 }
