@@ -121,8 +121,8 @@ struct KIconGroup
 };
 
 
+static const int MAX_SVG_RENDERERS = 100;
 /*** d pointer for KIconLoader. ***/
-
 struct KIconLoaderPrivate
 {
     QStringList mThemesInTree;
@@ -137,6 +137,7 @@ struct KIconLoaderPrivate
     int lastIconThreshold; // see K3Icon::threshold
     QList<KIconThemeNode *> links;
     bool extraDesktopIconsLoaded :1;
+    QHash<QString, KSvgRenderer*> svgRenderers;
 };
 
 #define KICONLOADER_CHECKS
@@ -313,6 +314,7 @@ KIconLoader::~KIconLoader()
     delete[] d->mpGroups;
     qDeleteAll(d->imgDict);
     qDeleteAll(d->links);
+    qDeleteAll(d->svgRenderers);
     delete d;
 }
 
@@ -758,15 +760,31 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 	}
 	else
 	{
+            KSvgRenderer *renderer = d->svgRenderers[icon.path];
+            if (!renderer) {
+                renderer = new KSvgRenderer(icon.path);
+                if (renderer->isValid()) {
+                    if (d->svgRenderers.count() >= MAX_SVG_RENDERERS) {
+                        QList<QString> keys = d->svgRenderers.keys();
+                        for (int i = 0; i < MAX_SVG_RENDERERS/2; ++i) {
+                            KSvgRenderer *oldRenderer = d->svgRenderers.take(keys[i]);
+                            delete oldRenderer;
+                        }
+                    }
+                    d->svgRenderers.insert(icon.path, renderer);
+                }
+            }
 	    // Special stuff for SVG icons
-            KSvgRenderer renderer(icon.path);
-            if (renderer.isValid()) {
+
+            if (renderer && renderer->isValid()) {
                 img = new QImage(size, size, QImage::Format_ARGB32_Premultiplied);
                 img->fill(0);
                 QPainter p(img);
-                renderer.render(&p);
-            } else
+                renderer->render(&p);
+            } else {
+                delete renderer;
                 return pix;
+            }
 	}
 
         iconType = icon.type;
