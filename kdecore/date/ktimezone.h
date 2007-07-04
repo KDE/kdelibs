@@ -109,6 +109,10 @@ class KTimeZoneLeapSecondsPrivate;
  *   If it is known that two source databases are definitely compatible, they can
  *   be grouped together into the same KTimeZones instance.
  *
+ * @warning Never delete any KTimeZone instance which is still referred to by any
+ *          KDateTime instance: if you subsequently use the KDateTime value, a
+ *          crash is likely.
+ *
  *
  * \section sys System time zones
  *
@@ -277,6 +281,10 @@ class KTimeZoneLeapSecondsPrivate;
  *
  * If you want to access system time zones, use the KSystemTimeZones class.
  *
+ * @warning Do not delete a KTimeZones instance, or call clear(), if any
+ *          KDateTime instances use any of the time zones in the collection:
+ *          if you subsequently use the KDateTime values, a crash is likely.
+ *
  * @short Represents a time zone database or collection
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
@@ -355,6 +363,10 @@ public:
     /**
      * Clears the collection.
      * All time zone instances owned by the collection are deleted.
+     *
+     * @warning Do not call this method if any KDateTime instances use any of
+     *          the time zones in the collection: if you subsequently use the
+     *          KDateTime values, a crash is likely.
      *
      * @see detach()
      */
