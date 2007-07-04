@@ -156,7 +156,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename, QStri
             // don't return newServiceType - there may be an "other" pattern that
             // matches best this file, like *.tar.bz
             if (match)
-                *match = "*."+pattern;
+                *match = "*."+pattern.stripWhiteSpace();
             break; // but get out of the fast patterns
          }
          else

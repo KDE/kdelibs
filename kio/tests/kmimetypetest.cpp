@@ -63,5 +63,14 @@ int main( int argc, char** argv )
     checkIcon( "trash:/foo/", "folder" );
   }
 
+  QString pdf;
+  KMimeType::diagnoseFileName("foo.pdf", pdf);
+  qDebug("extension: '%s'", pdf.latin1());
+  assert(pdf == QString("*.pdf"));
+  QString ps;
+  KMimeType::diagnoseFileName("foo.ps", ps);
+  qDebug("extension: '%s'", ps.latin1());
+  assert(ps == QString("*.ps"));
+
   return 0;
 }
