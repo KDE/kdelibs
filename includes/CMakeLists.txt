@@ -81,12 +81,10 @@ install( FILES
   KBookmarkActionContextMenu
   KBookmarkActionInterface
   KBookmarkActionMenu
-  KBookmarkBar
   KBookmarkDomBuilder
   KBookmarkExporterBase
   KBookmarkGroup
   KBookmarkGroupTraverser
-  KBookmarkImporter
   KBookmarkImporterBase
   KBookmarkManager
   KBookmarkMenu
