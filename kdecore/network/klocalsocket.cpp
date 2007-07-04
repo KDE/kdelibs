@@ -208,6 +208,8 @@ void KLocalSocketServer::incomingConnection(int descriptor)
 
     socket->setSocketDescriptor(descriptor, QAbstractSocket::ConnectedState, QIODevice::ReadWrite);
     d->pendingConnections.enqueue(socket);
+
+    emit newConnection();
 }
 
 QAbstractSocket::SocketError KLocalSocketServer::serverError() const
