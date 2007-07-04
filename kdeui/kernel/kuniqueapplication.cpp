@@ -78,6 +78,9 @@ KUniqueApplication::addCmdLineOptions()
 {
   KCmdLineOptions kunique_options;
   kunique_options.add("nofork", ki18n("Don't run in the background."));
+#ifdef Q_WS_MACX
+  kunique_options.add("psn", ki18n("Internally added if launched from Finder"));
+#endif
   KCmdLineArgs::addCmdLineOptions(kunique_options, KLocalizedString(), "kuniqueapp", "kde");
 }
 
@@ -105,6 +108,12 @@ KUniqueApplication::start()
   s_nofork = true;
 #else
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kuniqueapp");
+#ifdef Q_WS_MACX
+  // avoid focus loss caused by extra fork when launched from Finder
+  if(args->isSet("psn"))
+     s_nofork = true;
+  else
+#endif
   s_nofork = !args->isSet("fork");
   delete args;
 #endif

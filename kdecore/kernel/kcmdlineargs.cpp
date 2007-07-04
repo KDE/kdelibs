@@ -708,6 +708,10 @@ KCmdLineArgsStatic::findOption(const QString &optv, const QString &_opt,
       argument = opt.mid(j+1);
       opt = opt.left(j);
    }
+#ifdef Q_WS_MACX
+   if(opt.startsWith("psn_"))
+      opt = "psn";
+#endif
 
    bool enabled = true;
    int result = 0;
