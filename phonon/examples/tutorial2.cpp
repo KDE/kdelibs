@@ -67,4 +67,4 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include "tutorial2.moc"
+#include "moc_tutorial2.cpp"

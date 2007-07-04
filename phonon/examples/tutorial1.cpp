@@ -53,4 +53,4 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include "tutorial1.moc"
+#include "moc_tutorial1.cpp"
