@@ -48,7 +48,7 @@ class KDialogPrivate;
  * The class takes care of the geometry management. You only need to define
  * a minimum size for the widget you want to use as the main widget.
  *
- * By default, the dialog is non-modal
+ * By default, the dialog is non-modal.
  *
  * <b>Standard buttons (action buttons):</b>\n
  *
@@ -62,11 +62,12 @@ class KDialogPrivate;
  *
  * The default action of the Help button will open the help system if you have
  * provided a path to the help text.
- * The default action of Ok and Cancel will run QDialog::accept() and QDialog::reject()
- * that you can overide. The default action of the Close button will close the dialog.
+ * The default action of Ok and Cancel will run QDialog::accept() and QDialog::reject(),
+ * which you can override by reimplementing slotButtonClicked(). The default
+ * action of the Close button will close the dialog.
  *
  * Note that the KDialog will animate a button press
- * when the user press Escape. The button that is enabled is either Cancel,
+ * when the user presses Escape. The button that is enabled is either Cancel,
  * Close or the button that is defined by setEscapeButton().
  * Your custom dialog code should reimplement the keyPressEvent and
  * animate the cancel button so that the dialog behaves like regular
@@ -86,9 +87,9 @@ class KDialogPrivate;
  * <b>Standard compliance:</b>\n
  *
  * The marginHint() and spacingHint() sizes shall be used
- * whenever you layout the interior of a dialog. One special note. If
+ * whenever you lay out the interior of a dialog. One special note. If
  * you make your own action buttons (OK, Cancel etc), the space
- * beteween the buttons shall be spacingHint(), whereas the space
+ * between the buttons shall be spacingHint(), whereas the space
  * above, below, to the right and to the left shall be marginHint().
  * If you add a separator line above the buttons, there shall be a
  * marginHint() between the buttons and the separator and a
