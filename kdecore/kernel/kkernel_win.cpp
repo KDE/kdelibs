@@ -22,6 +22,7 @@
 #include <QtCore/QBool>
 
 #ifdef Q_OS_WIN
+#include <kdebug.h>
 
 #include <QtCore/QDir>
 #include <QApplication>
