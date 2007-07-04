@@ -38,11 +38,11 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
    switch ( pm )
    {
    case PM_ButtonMargin: // Amount of whitespace between push button labels and the frame
-      return dpi._4;
+      return dpi.f4;
    case PM_ButtonDefaultIndicator: // Width of the default-button indicator frame
-      return dpi._2;
+      return dpi.f2;
    case PM_MenuButtonIndicator: // Width of the menu button indicator proportional to the widget height
-      return dpi._7;
+      return dpi.f7;
    case PM_ButtonShiftHorizontal: // Horizontal contents shift of a button when the button is down
    case PM_ButtonShiftVertical: // Vertical contents shift of a button when the button is down
       return 0;
@@ -52,14 +52,14 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
       if (widget && qobject_cast<const QFrame*>(widget) &&
           static_cast<const QFrame*>(widget)->frameShape() == QFrame::StyledPanel) {
 	 if (widget->inherits("QTextEdit"))
-	    return dpi._4;
+	    return dpi.f4;
          return 0;
       }
-      return dpi._1;
+      return dpi.f1;
    case PM_SpinBoxFrameWidth: // Frame width of a spin box, defaults to PM_DefaultFrameWidth
-      return dpi._1;
+      return dpi.f1;
    case PM_ComboBoxFrameWidth: // Frame width of a combo box, defaults to PM_DefaultFrameWidth.
-      return dpi._2;
+      return dpi.f2;
 //    case PM_MDIFrameWidth: // Frame width of an MDI window
 //    case PM_MDIMinimizedWidth: // Width of a minimized MDI window
    case PM_MaximumDragDistance: // Some feels require the scroll bar or other sliders to jump back to the original position when the mouse pointer is too far away while dragging; a value of -1 disables this behavior
@@ -68,7 +68,7 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
       return (widget && widget->parentWidget() &&
               widget->parentWidget()->parentWidget() &&
               widget->parentWidget()->parentWidget()->inherits("QComboBoxListView")) ?
-         dpi._16 : dpi.ScrollBarExtent;
+         dpi.f16 : dpi.ScrollBarExtent;
    case PM_ScrollBarSliderMin: // The minimum height of a vertical scroll bar's slider and the minimum width of a horizontal scroll bar's slider
       return dpi.ScrollBarSliderMin;
    case PM_SliderThickness: // Total slider thickness
@@ -87,41 +87,41 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
          return (widget->height() - dpi.SliderControl);
    }
    case PM_DockWidgetSeparatorExtent: // Width of a separator in a horizontal dock window and the height of a separator in a vertical dock window
-      return dpi._10;
+      return dpi.f10;
    case PM_DockWidgetHandleExtent: // Width of the handle in a horizontal dock window and the height of the handle in a vertical dock window
-      return dpi._6;
+      return dpi.f6;
    case PM_DockWidgetFrameWidth: // Frame width of a dock window
-      return dpi._1;
+      return dpi.f1;
    case PM_MenuBarPanelWidth: // Frame width of a menubar, defaults to PM_DefaultFrameWidth
       return 0;
    case PM_MenuBarItemSpacing: // Spacing between menubar items
-      return dpi._6;
+      return dpi.f6;
    case PM_MenuBarHMargin: // Spacing between menubar items and left/right of bar
-      return dpi._6;
+      return dpi.f6;
    case PM_MenuBarVMargin: // Spacing between menubar items and top/bottom of bar
       return 0;
    case PM_ToolBarFrameWidth: // Width of the frame around toolbars
-      return dpi._4;
+      return dpi.f4;
    case PM_ToolBarHandleExtent: // Width of a toolbar handle in a horizontal toolbar and the height of the handle in a vertical toolbar
-      return dpi._6;
+      return dpi.f6;
    case PM_ToolBarItemMargin: // Spacing between the toolbar frame and the items
-      return dpi._4;
+      return dpi.f4;
    case PM_ToolBarItemSpacing: // Spacing between toolbar items
       return 0;
    case PM_ToolBarSeparatorExtent: // Width of a toolbar separator in a horizontal toolbar and the height of a separator in a vertical toolbar
-      return dpi._2;
+      return dpi.f2;
    case PM_ToolBarExtensionExtent: // Width of a toolbar extension button in a horizontal toolbar and the height of the button in a vertical toolbar
-      return dpi._16;
+      return dpi.f16;
    case PM_TabBarTabOverlap: // Number of pixels the tabs should overlap
       return 0;
    case PM_TabBarTabHSpace: // Extra space added to the tab width
-      return dpi._12;
+      return dpi.f12;
    case PM_TabBarTabVSpace: // Extra space added to the tab height
-      return dpi._10;
+      return dpi.f10;
    case PM_TabBarBaseHeight: // Height of the area between the tab bar and the tab pages
    case PM_TabBarBaseOverlap: { // Number of pixels the tab bar overlaps the tab bar base
       if (!widget)
-         return dpi._16;
+         return dpi.f16;
       const QTabBar *tabBar = qobject_cast<const QTabBar*>(widget);
       if (qobject_cast<const QTabWidget*>(widget) &&
           !widget->children().isEmpty()) {
@@ -133,7 +133,7 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
          }
       }
       if (!tabBar || !tabBar->isVisible())
-         return dpi._16;
+         return dpi.f16;
       if (const QStyleOptionTabWidgetFrame *twf =
             qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option)) {
          if (twf->shape == QTabBar::RoundedEast ||
@@ -145,14 +145,14 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
       return tabBar->height();
    }
    case PM_TabBarScrollButtonWidth: //  
-      return dpi._16;
+      return dpi.f16;
    case PM_TabBarTabShiftHorizontal: // Horizontal pixel shift when a tab is selected
       return 0;
    case PM_TabBarTabShiftVertical: // Vertical pixel shift when a tab is selected
-      return dpi._2;
+      return dpi.f2;
 //    case PM_ProgressBarChunkWidth: // Width of a chunk in a progress bar indicator
    case PM_SplitterWidth: // Width of a splitter
-      return dpi._9;
+      return dpi.f9;
    case PM_TitleBarHeight: // Height of the title bar
       return dpi.ExclusiveIndicator;
    case PM_IndicatorWidth: // Width of a check box indicator
@@ -164,9 +164,9 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
    case PM_MenuPanelWidth: // Border width (applied on all sides) for a QMenu
       return 1; // cosmetic, qt hates 0 sized popupframes
    case PM_MenuHMargin: // Additional border (used on left and right) for a QMenu
-      return dpi._2;
+      return dpi.f2;
    case PM_MenuVMargin: // Additional border (used for bottom and top) for a QMenu
-      return dpi._1;
+      return dpi.f1;
 //    case PM_MenuScrollerHeight: // Height of the scroller area in a QMenu
 //    case PM_MenuTearoffHeight: // Height of a tear off area in a QMenu
 //    case PM_MenuDesktopFrameWidth: //  
@@ -178,9 +178,9 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
 //    case PM_HeaderMarkSize: //  
 //    case PM_HeaderGripMargin: //  
    case PM_HeaderMargin: //  
-      return dpi._2;
+      return dpi.f2;
    case PM_SpinBoxSliderHeight: // The height of the optional spin box slider
-      return dpi._4;
+      return dpi.f4;
 //    case PM_DefaultTopLevelMargin: //  
 //    case PM_DefaultChildMargin: //  
 //    case PM_DefaultLayoutSpacing: //  
@@ -191,9 +191,9 @@ int OxygenStyle::pixelMetric ( PixelMetric pm, const QStyleOption * option, cons
    case PM_LargeIconSize: // Default large icon size
       return 32;
    case PM_FocusFrameHMargin: // Horizontal margin that the focus frame will outset the widget by.
-      return dpi._4;
+      return dpi.f4;
    case PM_FocusFrameVMargin: // Vertical margin that the focus frame will outset the widget by.
-      return dpi._2;
+      return dpi.f2;
 //    case PM_IconViewIconSize: //  
 //    case PM_ListViewIconSize: //  
 //    case PM_ToolTipLabelFrameWidth: //  

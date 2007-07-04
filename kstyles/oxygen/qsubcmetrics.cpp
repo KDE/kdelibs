@@ -40,7 +40,7 @@ QRect OxygenStyle::subControlRect ( ComplexControl control, const QStyleOptionCo
          QSize bs = spinbox->rect.size();
          bs.setHeight(bs.height()/2);
             // 1.6 -approximate golden mean
-         bs.setWidth(qMax(dpi._18, qMin(bs.height(), bs.width() / 4)));
+         bs.setWidth(qMax(dpi.f18, qMin(bs.height(), bs.width() / 4)));
 //          bs = bs.expandedTo(QApplication::globalStrut());
          int x = spinbox->rect.width() - bs.width();
          switch (subControl) {
@@ -53,9 +53,9 @@ QRect OxygenStyle::subControlRect ( ComplexControl control, const QStyleOptionCo
          case SC_SpinBoxEditField: {
             int hfw = 0, vfw = 0;
             if (spinbox->frame) {
-               hfw = dpi._4; vfw = dpi._1;
+               hfw = dpi.f4; vfw = dpi.f1;
             }
-            ret = QRect(hfw, vfw, x-dpi._1, spinbox->rect.height() - 2*vfw);
+            ret = QRect(hfw, vfw, x-dpi.f1, spinbox->rect.height() - 2*vfw);
             break;
          }
          case SC_SpinBoxFrame:
@@ -70,7 +70,7 @@ QRect OxygenStyle::subControlRect ( ComplexControl control, const QStyleOptionCo
           qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
          int x,y,wi,he;
          cb->rect.getRect(&x,&y,&wi,&he);
-         int margin = 1;//(!cb->editable) ? dpi._1 : (cb->frame ? dpi._4 : 0);
+         int margin = 1;//(!cb->editable) ? dpi.f1 : (cb->frame ? dpi.f4 : 0);
 
          switch (subControl) {
          case SC_ComboBoxFrame:
@@ -107,20 +107,20 @@ QRect OxygenStyle::subControlRect ( ComplexControl control, const QStyleOptionCo
             ret = groupBox->rect;
             break;
          case SC_GroupBoxContents: {
-            int top = dpi._6;
+            int top = dpi.f6;
             if (!groupBox->text.isEmpty())
                top += groupBox->fontMetrics.height();
-            ret = groupBox->rect.adjusted(dpi._3,top,-dpi._3,-dpi._7);
+            ret = groupBox->rect.adjusted(dpi.f3,top,-dpi.f3,-dpi.f7);
             break;
          }
          case SC_GroupBoxCheckBox: {
             int cbsz = pixelMetric(PM_IndicatorWidth, groupBox, widget);
             if (groupBox->direction == Qt::LeftToRight) {
-               ret = groupBox->rect.adjusted(dpi._5,dpi._5,0,0);
+               ret = groupBox->rect.adjusted(dpi.f5,dpi.f5,0,0);
                ret.setWidth(cbsz);
             }
             else {
-               ret = groupBox->rect.adjusted(0,dpi._5,-dpi._5,0);
+               ret = groupBox->rect.adjusted(0,dpi.f5,-dpi.f5,0);
                ret.setLeft(ret.right()-cbsz);
             }
             ret.setHeight(cbsz);
@@ -128,11 +128,11 @@ QRect OxygenStyle::subControlRect ( ComplexControl control, const QStyleOptionCo
          }
          case SC_GroupBoxLabel: {
             QFontMetrics fontMetrics = groupBox->fontMetrics;
-            int h = fontMetrics.height()+dpi._4;
+            int h = fontMetrics.height()+dpi.f4;
             int tw = fontMetrics.size(Qt::TextShowMnemonic, groupBox->text + QLatin1Char(' ')).width();
-            int marg = (groupBox->features & QStyleOptionFrameV2::Flat) ? 0 : dpi._4;
+            int marg = (groupBox->features & QStyleOptionFrameV2::Flat) ? 0 : dpi.f4;
 
-            ret = groupBox->rect.adjusted(marg, dpi._4, -marg, 0);
+            ret = groupBox->rect.adjusted(marg, dpi.f4, -marg, 0);
             ret.setHeight(h);
 
             // Adjusted rect for label + indicatorWidth + indicatorSpace
@@ -192,16 +192,16 @@ QRect OxygenStyle::subControlRect ( ComplexControl control, const QStyleOptionCo
             break;
          case SC_ScrollBarSubPage:            // between top/left button and slider
             if (scrollbar->orientation == Qt::Horizontal)
-               ret.setRect(dpi._2, 0, sliderstart, sbextent);
+               ret.setRect(dpi.f2, 0, sliderstart, sbextent);
             else
-               ret.setRect(0, dpi._2, sbextent, sliderstart);
+               ret.setRect(0, dpi.f2, sbextent, sliderstart);
             break;
          case SC_ScrollBarAddPage:            // between bottom/right button and slider
             if (scrollbar->orientation == Qt::Horizontal)
-               ret.setRect(sliderstart + sliderlen - dpi._2, 0,
+               ret.setRect(sliderstart + sliderlen - dpi.f2, 0,
                            maxlen - sliderstart - sliderlen, sbextent);
             else
-               ret.setRect(0, sliderstart + sliderlen - dpi._3,
+               ret.setRect(0, sliderstart + sliderlen - dpi.f3,
                            sbextent, maxlen - sliderstart - sliderlen);
             break;
          case SC_ScrollBarGroove:
@@ -343,7 +343,7 @@ QRect OxygenStyle::subElementRect ( SubElement element, const QStyleOption * opt
    switch (element) {
    case SE_PushButtonContents: // Area containing the label (icon with text or pixmap)
       return visualRect(option->direction, option->rect,
-                        option->rect.adjusted(dpi._4,dpi._4,-dpi._4,-dpi._4));
+                        option->rect.adjusted(dpi.f4,dpi.f4,-dpi.f4,-dpi.f4));
 //    case SE_PushButtonFocusRect: // Area for the focus rect (usually larger than the contents rect)
    case SE_CheckBoxContents:
    case SE_ViewItemCheckIndicator: // Area for a view item's check mark
@@ -353,7 +353,7 @@ QRect OxygenStyle::subElementRect ( SubElement element, const QStyleOption * opt
       r.setRect(r.x(), r.y() + ((r.height() - h) / 2), h, h);
       if (element != SE_CheckBoxContents)
          return visualRect(option->direction, option->rect, r);
-      int spacing = dpi._5;
+      int spacing = dpi.f5;
       r.setRect(r.right() + spacing, option->rect.y(),
                 option->rect.width() - r.width() - spacing,
                 option->rect.height());
@@ -372,7 +372,7 @@ QRect OxygenStyle::subElementRect ( SubElement element, const QStyleOption * opt
       return option->rect;//.adjusted(0,0,0,0);
    case SE_ProgressBarContents: // Area for the progress indicator
    case SE_ProgressBarLabel: // Area for the text label
-      return option->rect.adjusted(dpi._1,dpi._1,-dpi._1,-dpi._3);
+      return option->rect.adjusted(dpi.f1,dpi.f1,-dpi.f1,-dpi.f3);
 //    case SE_DialogButtonAccept: // Area for a dialog's accept button
 //    case SE_DialogButtonReject: // Area for a dialog's reject button
 //    case SE_DialogButtonApply: // Area for a dialog's apply button
@@ -385,12 +385,12 @@ QRect OxygenStyle::subElementRect ( SubElement element, const QStyleOption * opt
    case SE_HeaderArrow: { //
       int x,y,w,h;
       option->rect.getRect(&x,&y,&w,&h);
-      int margin = dpi._2;// ;) pixelMetric(QStyle::PM_HeaderMargin, opt, widget);
+      int margin = dpi.f2;// ;) pixelMetric(QStyle::PM_HeaderMargin, opt, widget);
       QRect r;
       if (option->state & State_Horizontal)
          r.setRect(x + w - 2*margin - (h / 2), y + h/4 + margin, h / 2, h/2);
       else
-         r.setRect(x + dpi._5, y, h / 2, h / 2 - margin * 2);
+         r.setRect(x + dpi.f5, y, h / 2, h / 2 - margin * 2);
       r = visualRect(option->direction, option->rect, r);
       return r;
    }
@@ -401,7 +401,7 @@ QRect OxygenStyle::subElementRect ( SubElement element, const QStyleOption * opt
       if (const QStyleOptionTabWidgetFrame *twf
           = qstyleoption_cast<const QStyleOptionTabWidgetFrame *>(option)) {
          QRect r(QPoint(0,0),twf->tabBarSize);
-         int off = dpi._10;
+         int off = dpi.f10;
          switch (twf->shape) {
          case QTabBar::RoundedNorth:
          case QTabBar::TriangularNorth:
@@ -498,7 +498,7 @@ QRect OxygenStyle::subElementRect ( SubElement element, const QStyleOption * opt
          QRect r = option->rect; //subElementRect ( SE_TabWidgetTabPane, option, widget);
 //          QStyleOptionTab tabopt;
 //          tabopt.shape = twf->shape;
-         const int margin = dpi._4;
+         const int margin = dpi.f4;
 //          int baseHeight = pixelMetric(PM_TabBarBaseHeight, &tabopt, widget);
          switch (twf->shape) {
          case QTabBar::RoundedNorth:

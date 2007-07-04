@@ -347,8 +347,8 @@ void StyleAnimator::updateProgressbars() {
           !(pb->value() > pb->minimum()) || !(pb->value() < pb->maximum()))
          continue;
 //       int mod = (pb->orientation() == Qt::Horizontal) ?
-//          (pb->height()-dpi._8)*2 :
-//          (pb->width()-dpi._6)*2;
+//          (pb->height()-dpi.f8)*2 :
+//          (pb->width()-dpi.f6)*2;
 //       if (!mod)
 //          continue;
 //       ++iter.value();

@@ -53,8 +53,8 @@ class OxygenStyle;
 enum Orientation3D {Sunken = 0, Relief, Raised};
 
 typedef struct {
-   int _1, _2, _3, _4, _5, _6, _7, _8, _9, _10;
-   int _12, _13, _16, _32, _18, _20, _80;
+   int f1, f2, f3, f4, f5, f6, f7, f8, f9, f10;
+   int f12, f13, f16, f32, f18, f20, f80;
    int ScrollBarExtent;
    int ScrollBarSliderMin;
    int SliderThickness;

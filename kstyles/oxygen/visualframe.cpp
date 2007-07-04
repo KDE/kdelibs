@@ -43,21 +43,21 @@ QWidget(parent) {
    _side = side;
    _ext = e;
    if (corner[0].isEmpty()) {
-      int _5 = 4;
-      QBitmap bm(2*_5, 2*_5);
+      int f5 = 4;
+      QBitmap bm(2*f5, 2*f5);
       bm.fill(Qt::black);
       QPainter p(&bm);
       p.setPen(Qt::NoPen);
       p.setBrush(Qt::white);
-      p.drawEllipse(0,0,2*_5,2*_5);
+      p.drawEllipse(0,0,2*f5,2*f5);
       p.end();
       QRegion circle(bm);
-      corner[0] = circle & QRegion(0,0,_5,_5); // tl
-      corner[1] = circle & QRegion(_5,0,_5,_5); // tr
+      corner[0] = circle & QRegion(0,0,f5,f5); // tl
+      corner[1] = circle & QRegion(f5,0,f5,f5); // tr
       corner[1].translate(-corner[1].boundingRect().left(), 0);
-      corner[2] = circle & QRegion(0,_5,_5,_5); // bl
+      corner[2] = circle & QRegion(0,f5,f5,f5); // bl
       corner[2].translate(0, -corner[2].boundingRect().top());
-      corner[3] = circle & QRegion(_5,_5,_5,_5); // br
+      corner[3] = circle & QRegion(f5,f5,f5,f5); // br
       corner[3].translate(-corner[3].boundingRect().topLeft());
    }
    _thickness = t;
