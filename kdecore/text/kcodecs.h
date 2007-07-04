@@ -31,8 +31,8 @@
    Rik Hemsley (C) 2001.
 */
 
-#ifndef KMDBASE_H
-#define KMDBASE_H
+#ifndef KCODECS_H
+#define KCODECS_H
 
 #define KBase64 KCodecs
 
@@ -631,4 +631,4 @@ private:
 };
 
 
-#endif
+#endif // KCODECS_H

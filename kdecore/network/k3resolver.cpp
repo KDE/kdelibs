@@ -309,6 +309,11 @@ int KResolver::systemError() const
   return d->syserror;
 }
 
+QString KResolver::errorString() const
+{
+    return errorString(error(), systemError());
+}
+
 // are we running?
 bool KResolver::isRunning() const
 {

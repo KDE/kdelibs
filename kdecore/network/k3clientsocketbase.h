@@ -265,8 +265,7 @@ public:
    *
    * You should not call this function; instead, use @ref connect
    */
-  virtual inline bool open(OpenMode mode)
-  { return connect(QString(), QString(), mode); }
+  virtual bool open(OpenMode mode);
 
   /**
    * Closes the socket. Reimplemented from QIODevice.
@@ -280,8 +279,7 @@ public:
    * This call is not supported on unbuffered sockets.
    * Reimplemented from QIODevice.
    */
-  virtual bool flush()
-  { return false; }
+  virtual bool flush();
 
   /**
    * Returns the number of bytes available on this socket.

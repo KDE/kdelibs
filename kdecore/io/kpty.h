@@ -139,7 +139,7 @@ public:
    * Set whether the pty should echo input.
    *
    * Echo is on by default.
-   * If the output of automatically feeded (non-interactive) PTY clients
+   * If the output of automatically fed (non-interactive) PTY clients
    * needs to be parsed, disabling echo often makes it much simpler.
    *
    * This function can be used only while the PTY is open.

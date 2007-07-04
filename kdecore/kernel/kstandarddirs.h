@@ -20,8 +20,8 @@
   Boston, MA 02110-1301, USA.
 */
 
-#ifndef SSK_KSTDDIRS_H
-#define SSK_KSTDDIRS_H
+#ifndef KSTANDARDDIRS_H
+#define KSTANDARDDIRS_H
 
 #include <QtCore/QStringList>
 #include <kglobal.h>
@@ -786,4 +786,4 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KStandardDirs::SearchOptions)
 
-#endif // SSK_KSTDDIRS_H
+#endif // KSTANDARDDIRS_H

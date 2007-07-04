@@ -262,6 +262,11 @@ bool KClientSocketBase::disconnect()
   return false;
 }
 
+bool KClientSocketBase::open(OpenMode mode)
+{
+    return connect(QString(), QString(), mode);
+}
+
 void KClientSocketBase::close()
 {
   if (state() == Idle)
@@ -280,6 +285,11 @@ void KClientSocketBase::close()
   setState(Idle);
   emit stateChanged(Idle);
   emit closed();
+}
+
+bool KClientSocketBase::flush()
+{
+    return false;
 }
 
 // This function is unlike all the others because it is const

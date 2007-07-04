@@ -57,7 +57,7 @@ namespace KuitFormats {
      * '/', '|' or "->" as path delimiter, and replace them with the supplied
      * delimiter.
      *
-     * @param inpstr raw inteface path string
+     * @param inpstr raw interface path string
      * @param delim replacement path delimiter
      * @returns path in proper format
      */

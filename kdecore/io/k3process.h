@@ -432,7 +432,7 @@ public:
    * Lets you see what your arguments are for debugging.
    * @return the list of arguments
    */
-  const QList<QByteArray> &args() /* const */ { return arguments; }
+  const QList<QByteArray> &args() /* const */;
 
   /**
    * Controls whether the started process should drop any

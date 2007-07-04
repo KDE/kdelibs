@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KJOBUIPROXY_H
-#define KJOBUIPROXY_H
+#ifndef KJOBUIDELEGATE_H
+#define KJOBUIDELEGATE_H
 
 #include <kdecore_export.h>
 #include <QtCore/QObject>
@@ -136,4 +136,4 @@ private:
     Private * const d;
 };
 
-#endif
+#endif // KJOBUIDELEGATE_H

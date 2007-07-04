@@ -88,7 +88,7 @@ class KDECORE_EXPORT KCmdLineOptions
      * @param name option name
      * @param description option description, made available for translation;
      *                    can be left off
-     * @param defaultValue default option value, when the value is not specifed
+     * @param defaultValue default option value, when the value is not specified
      *                     on the command line; can be left off
      */
     KCmdLineOptions &add (const QByteArray &name,

@@ -43,6 +43,21 @@ void KFilterBase::setDevice( QIODevice * dev, bool autodelete )
     m_bAutoDel = autodelete;
 }
 
+QIODevice * KFilterBase::device()
+{
+    return m_dev;
+}
+
+bool KFilterBase::inBufferEmpty() const
+{
+    return inBufferAvailable() == 0;
+}
+
+bool KFilterBase::outBufferFull() const
+{
+    return outBufferAvailable() == 0;
+}
+
 KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 {
     if ( fileName.endsWith( ".gz", Qt::CaseInsensitive ) )

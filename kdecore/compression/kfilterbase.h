@@ -51,7 +51,7 @@ public:
      * Returns the device on which the filter will work.
      * @returns the device on which the filter will work
      */
-    QIODevice * device() { return m_dev; }
+    QIODevice * device();
     /** \internal */
     virtual void init( int mode ) = 0;
     /** \internal */
@@ -69,11 +69,11 @@ public:
     /** \internal */
     virtual void setInBuffer( const char * data, uint size ) = 0;
     /** \internal */
-    virtual bool inBufferEmpty() const { return inBufferAvailable() == 0; }
+    virtual bool inBufferEmpty() const;
     /** \internal */
     virtual int  inBufferAvailable() const = 0;
     /** \internal */
-    virtual bool outBufferFull() const { return outBufferAvailable() == 0; }
+    virtual bool outBufferFull() const;
     /** \internal */
     virtual int  outBufferAvailable() const = 0;
 

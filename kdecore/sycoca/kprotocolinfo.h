@@ -59,7 +59,7 @@ public:
    * Returns whether the protocol description file is valid.
    * @return true if valid, false otherwise
    */
-  virtual bool isValid() const { return !m_name.isEmpty(); }
+  virtual bool isValid() const;
 
   /**
    * Returns the name of the protocol.
@@ -69,7 +69,7 @@ public:
    * @return the name of the protocol
    * @see KUrl::protocol()
    */
-  virtual QString name() const { return m_name; }
+  virtual QString name() const;
 
   //
   // Static functions:

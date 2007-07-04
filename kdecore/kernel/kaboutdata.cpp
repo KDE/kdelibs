@@ -43,7 +43,7 @@
 // All the non-translatable string arguments to methods are taken QByteArray,
 // all the translatable are KLocalizedString. The getter methods always return
 // proper QString: the non-translatable strings supplied by the code are
-// treated with QString::fromUtf8(), those comming from the outside with
+// treated with QString::fromUtf8(), those coming from the outside with
 // QTextCodec::toUnicode(), and translatable strings are finalized to QStrings
 // at the point of getter calls (i.e. delayed translation).
 // -----------------------------------------------------------------------------

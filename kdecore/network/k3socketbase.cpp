@@ -199,6 +199,11 @@ KSocketBase::SocketError KSocketBase::error() const
   return static_cast<KSocketBase::SocketError>(d->socketError);
 }
 
+QString KSocketBase::errorString() const
+{
+    return errorString(error());
+}
+
 // static
 QString KSocketBase::errorString(KSocketBase::SocketError code)
 {

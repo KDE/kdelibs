@@ -124,8 +124,7 @@ public:
   /**
    * Returns the file descriptor for this socket.
    */
-  inline int socket() const
-  { return m_sockfd; }
+  int socket() const;
 
   /**
    * Returns the set of capabilities this socket class implements.
@@ -136,8 +135,7 @@ public:
    * is, derived implementations always return bits where they differ
    * from the system standard sockets.
    */
-  virtual int capabilities() const
-  { return 0; }
+  virtual int capabilities() const;
 
   /**
    * This implementation sets the options on the socket.
@@ -154,8 +152,7 @@ public:
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    */
-  virtual bool flush()
-  { return false; }
+  virtual bool flush();
 
   /**
    * Creates a socket but don't connect or bind anywhere.

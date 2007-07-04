@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef SONNET_CLIENT_H
-#define SONNET_CLIENT_H
+#ifndef SONNET_CLIENT_P_H
+#define SONNET_CLIENT_P_H
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
@@ -71,4 +71,4 @@ namespace Sonnet
     };
 }
 
-#endif
+#endif // SONNET_CLIENT_P_H

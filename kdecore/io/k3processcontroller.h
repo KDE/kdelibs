@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef K3PROCCTRL_H
-#define K3PROCCTRL_H
+#ifndef K3PROCESSCONTROLLER_H
+#define K3PROCESSCONTROLLER_H
 
 #include <QtCore/QList>
 #include <k3process.h>
@@ -131,5 +131,5 @@ private:
   Private * const d;
 };
 
-#endif
+#endif // K3PROCESSCONTROLLER_H
 

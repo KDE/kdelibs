@@ -19,8 +19,8 @@
  * 02110-1301  USA
  */
 
-#ifndef SONNET_FILTER_H
-#define SONNET_FILTER_H
+#ifndef SONNET_FILTER_P_H
+#define SONNET_FILTER_P_H
 
 #include <QtCore/QString>
 #include <kdecore_export.h>
@@ -118,4 +118,4 @@ namespace Sonnet
 
 }
 
-#endif
+#endif // SONNET_FILTER_P_H

@@ -650,6 +650,11 @@ void K3Process::closeAll()
   closePty();
 }
 
+const QList<QByteArray> &K3Process::args() /* const */
+{
+    return arguments;
+}
+
 /////////////////////////////
 // protected slots         //
 /////////////////////////////

@@ -90,7 +90,7 @@ public:
      * Set whether to register the process as a TTY login in utmp.
      *
      * Utmp is disabled by default.
-     * It should enabled for interactively feeded processes, like terminal
+     * It should enabled for interactively fed processes, like terminal
      * emulations.
      *
      * This function must be called before starting the process.

@@ -124,6 +124,16 @@ KSocketDevice::~KSocketDevice()
   delete d;
 }
 
+int KSocketDevice::socket() const
+{
+    return m_sockfd;
+}
+
+int KSocketDevice::capabilities() const
+{
+    return 0;
+}
+
 bool KSocketDevice::setSocketOptions(int opts)
 {
   // must call parent
@@ -244,6 +254,11 @@ void KSocketDevice::close()
   setOpenMode(0);		// closed
 
   m_sockfd = -1;
+}
+
+bool KSocketDevice::flush()
+{
+    return false;
 }
 
 bool KSocketDevice::create(int family, int type, int protocol)

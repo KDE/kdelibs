@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef KMLRMANAGER_H
-#define KMLRMANAGER_H
+#ifndef KMLPRMANAGER_H
+#define KMLPRMANAGER_H
 
 #include "kmmanager.h"
 

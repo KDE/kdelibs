@@ -948,7 +948,7 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text,
         if (s->knownTags.contains(tagname)) { // a known tag
             Kuit::TagVar tag = s->knownTags[tagname];
             if (   tag == Kuit::Tag::TopLong
-                || tag == Kuit::Tag::TopShort) { // explicitely given top tag
+                || tag == Kuit::Tag::TopShort) { // explicitly given top tag
                 toptag = tag;
                 explicitTopTag = true;
             }
@@ -969,7 +969,7 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text,
         toptag = Kuit::Tag::TopShort;
     }
 
-    // Wrap text with top tag if not explicitely given.
+    // Wrap text with top tag if not explicitly given.
     if (!explicitTopTag) {
         return   '<' + s->tagNames[toptag] + '>'
                + text

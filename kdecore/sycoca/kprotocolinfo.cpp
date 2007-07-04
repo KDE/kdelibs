@@ -262,6 +262,16 @@ KProtocolInfo::save( QDataStream& _str)
 }
 
 
+bool KProtocolInfo::isValid() const
+{
+    return !m_name.isEmpty();
+}
+
+QString KProtocolInfo::name() const
+{
+    return m_name;
+}
+
 //
 // Static functions:
 //

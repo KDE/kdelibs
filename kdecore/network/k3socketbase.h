@@ -397,8 +397,7 @@ public:
   /**
    * Returns the error string corresponding to this error condition.
    */
-  inline QString errorString() const
-  { return errorString(error()); }
+  QString errorString() const;
 
   /**
    * Returns the internal mutex for this class.
