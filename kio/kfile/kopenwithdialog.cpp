@@ -129,7 +129,7 @@ void KApplicationModelPrivate::fillNode(const QString &_relPath, AppNode *node)
    KServiceGroup::List list = root->entries();
 
    for( KServiceGroup::List::ConstIterator it = list.begin();
-       it != list.end(); it++)
+       it != list.end(); ++it)
    {
       QString icon;
       QString text;

@@ -551,7 +551,7 @@ QString KStandardDirs::findResource( const char *type,
     kDebug(180) << "Find resource: " << type << endl;
     for (QStringList::ConstIterator pit = prefixes.begin();
          pit != prefixes.end();
-         pit++)
+         ++pit)
     {
         kDebug(180) << "Prefix: " << *pit << endl;
     }
@@ -1141,7 +1141,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
     kDebug(180) << "found dirs for resource " << type << ":" << endl;
     for (QStringList::ConstIterator pit = candidates.begin();
          pit != candidates.end();
-         pit++)
+         ++pit)
     {
         fprintf(stderr, "%s\n", qPrintable(*pit));
     }

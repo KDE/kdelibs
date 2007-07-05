@@ -164,7 +164,7 @@ KUrl::List::List(const QStringList &list)
 {
   for (QStringList::ConstIterator it = list.begin();
        it != list.end();
-       it++)
+       ++it)
     {
       append( KUrl(*it) );
     }
@@ -175,7 +175,7 @@ QStringList KUrl::List::toStringList() const
   QStringList lst;
    for( KUrl::List::ConstIterator it = begin();
         it != end();
-        it++)
+        ++it)
    {
       lst.append( (*it).url() );
    }

@@ -1542,7 +1542,7 @@ static QString getExtensionFromPatternList(const QStringList &patternList)
     QStringList::ConstIterator patternListEnd = patternList.end();
     for (QStringList::ConstIterator it = patternList.begin();
          it != patternListEnd;
-         it++)
+         ++it)
     {
         kDebug (kfile_area) << "\t\ttry: \'" << (*it) << "\'" << endl;
 

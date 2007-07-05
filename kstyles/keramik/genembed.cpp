@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 	QMap<QString, int> assignID;
 	int nextID = 0;
 
-	for(QStringList::iterator it = imageList.begin(); it != imageList.end(); it++)
+	for(QStringList::iterator it = imageList.begin(); it != imageList.end(); ++it)
 	{
 		QImage input((*it));
 		input = input.convertToFormat( QImage::Format_ARGB32 );

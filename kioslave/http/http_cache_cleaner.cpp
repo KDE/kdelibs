@@ -250,7 +250,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    for(QStringList::Iterator it = dirs.begin();
        it != dirs.end();
-       it++)
+       ++it)
    {
       if (it->at(0) != '.')
       {

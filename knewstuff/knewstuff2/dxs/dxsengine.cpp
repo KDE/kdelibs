@@ -92,7 +92,7 @@ void DxsEngine::loadEntries(Provider *provider)
 void DxsEngine::slotEntriesLoaded(KNS::Entry::List list)
 {
 	// FIXME: we circumvent the cache now...
-	for(Entry::List::Iterator it = list.begin(); it != list.end(); it++)
+	for(Entry::List::Iterator it = list.begin(); it != list.end(); ++it)
 	{
 		Entry *entry = (*it);
 		// FIXME: the association to feed and provider is missing here

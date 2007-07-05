@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 
    debug(QString("Found %1 entries").arg(list.count()));
    for( KServiceGroup::List::ConstIterator it = list.begin();
-       it != list.end(); it++)
+       it != list.end(); ++it)
    {
       KSycocaEntry::Ptr p = (*it);
       if (p->isType(KST_KService))
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
    list = first->entries();
    debug(QString("Found %1 entries").arg(list.count()));
    for( KServiceGroup::List::ConstIterator it = list.begin();
-       it != list.end(); it++)
+       it != list.end(); ++it)
    {
       KSycocaEntry::Ptr p = (*it);
       if (p->isType(KST_KService))
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
    debug("--protocols--");
    QStringList stringL = KProtocolInfo::protocols();
    for( QStringList::ConstIterator it = stringL.begin();
-       it != stringL.end(); it++)
+       it != stringL.end(); ++it)
    {
       debug((*it).toAscii().constData());
    }

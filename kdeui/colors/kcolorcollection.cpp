@@ -113,7 +113,7 @@ KColorCollection::installedCollections()
   int strip = strlen("colors/");
   for(QStringList::Iterator it = paletteList.begin();
       it != paletteList.end();
-      it++)
+      ++it)
   {
       (*it) = (*it).mid(strip);
   }

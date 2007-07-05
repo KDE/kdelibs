@@ -366,7 +366,8 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
       {
          if (request->dbus_startup_type == KService::DBUS_Wait)
             request->status = KLaunchRequest::Done;
-         else if ((request->dbus_startup_type == KService::DBUS_Unique) && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name))
+         else if ((request->dbus_startup_type == KService::DBUS_Unique)
+                  && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name))
             request->status = KLaunchRequest::Running;
          else
             request->status = KLaunchRequest::Error;
@@ -829,7 +830,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
 
    for(QStringList::ConstIterator it = args.begin();
        it != args.end();
-       it++)
+       ++it)
    {
        QString arg = *it;
        request->arg_list.append(arg.toLocal8Bit());

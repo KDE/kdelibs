@@ -649,7 +649,7 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 {
 	d->categorymap.clear();
 
-	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
+	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it)
 	{
 		KNS::Category *category = (*it);
 		kDebug() << "Category: " << category->name().representation() << endl;

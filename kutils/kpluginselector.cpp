@@ -1009,7 +1009,7 @@ void KPluginSelector::Private::PluginDelegate::slotDefaultClicked()
         return;
 
     QList<KCModuleProxy*>::iterator it;
-    for (it = currentModuleProxyList->begin(); it != currentModuleProxyList->end(); it++)
+    for (it = currentModuleProxyList->begin(); it != currentModuleProxyList->end(); ++it)
     {
         (*it)->defaults();
     }

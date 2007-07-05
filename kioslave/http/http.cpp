@@ -2528,7 +2528,7 @@ bool HTTPProtocol::httpOpen()
   QStringList headerOutput = header.split("\r\n", QString::SkipEmptyParts);
   QStringList::Iterator it = headerOutput.begin();
 
-  for (; it != headerOutput.end(); it++)
+  for (; it != headerOutput.end(); ++it)
     kDebug(7103) << "(" << m_pid << ") " << (*it) << endl;
 
   if ( !moreData && !davData)
@@ -2964,7 +2964,7 @@ try_again:
           split(',',QString::SkipEmptyParts);
       for(QStringList::ConstIterator it = options.begin();
           it != options.end();
-          it++)
+          ++it)
       {
          QString option = (*it).trimmed().toLower();
          if (option.startsWith("timeout="))
@@ -2980,7 +2980,7 @@ try_again:
           split(',',QString::SkipEmptyParts);
       for(QStringList::ConstIterator it = cacheControls.begin();
           it != cacheControls.end();
-          it++)
+          ++it)
       {
          QString cacheControl = (*it).trimmed();
          if (strncasecmp(cacheControl.toLatin1(), "no-cache", 8) == 0)

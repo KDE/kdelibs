@@ -150,7 +150,7 @@ int KServiceGroup::childCount() const
      m_childCount = 0;
 
      for( List::ConstIterator it = m_serviceList.begin();
-          it != m_serviceList.end(); it++)
+          it != m_serviceList.end(); ++it)
      {
         KSycocaEntry::Ptr p = *it;
         if (p->isType(KST_KService))
@@ -252,7 +252,7 @@ void KServiceGroup::load( QDataStream& s )
   if (m_bDeep)
   {
      for(QStringList::ConstIterator it = groupList.begin();
-         it != groupList.end(); it++)
+         it != groupList.end(); ++it)
      {
         QString path = *it;
         if (path[path.length()-1] == '/')
@@ -284,7 +284,7 @@ void KServiceGroup::save( QDataStream& s )
 
   QStringList groupList;
   for( List::ConstIterator it = m_serviceList.begin();
-       it != m_serviceList.end(); it++)
+       it != m_serviceList.end(); ++it)
   {
      KSycocaEntry::Ptr p = *it;
      if (p->isType(KST_KService))

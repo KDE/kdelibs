@@ -1401,7 +1401,7 @@ static void kdeinit_library_path()
    QStringList candidates = s_instance->dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end();
-        it++)
+        ++it)
    {
       QString d = *it;
       if (ltdl_library_path.contains(d))

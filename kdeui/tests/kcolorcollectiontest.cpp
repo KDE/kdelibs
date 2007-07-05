@@ -20,7 +20,7 @@ int main( int argc, char **argv )
 
     QStringList collections = KColorCollection::installedCollections();
     for(QStringList::ConstIterator it = collections.begin();
-        it != collections.end(); it++)
+        it != collections.end(); ++it)
     {
        printf("Palette = %s\n", (*it).toAscii().constData());
 

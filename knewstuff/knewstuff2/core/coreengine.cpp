@@ -531,12 +531,12 @@ void CoreEngine::loadRegistry(const QString &registrydir)
 	kDebug(550) << "Loading registry in all directories named '" + registrydir + "'." << endl;
 
 	QStringList dirs = d.findDirs("data", registrydir);
-	for(QStringList::Iterator it = dirs.begin(); it != dirs.end(); it++)
+	for(QStringList::Iterator it = dirs.begin(); it != dirs.end(); ++it)
 	{
 		kDebug(550) << " + Load from directory '" + (*it) + "'." << endl;
 		QDir dir((*it));
 		QStringList files = dir.entryList(QDir::Files | QDir::Readable);
-		for(QStringList::iterator fit = files.begin(); fit != files.end(); fit++)
+		for(QStringList::iterator fit = files.begin(); fit != files.end(); ++fit)
 		{
 			QString filepath = (*it) + '/' + (*fit);
 			kDebug(550) << "  + Load from file '" + filepath + "'." << endl;
@@ -832,7 +832,7 @@ void CoreEngine::loadEntriesCache()
 
 	QDir dir(cachedir);
 	QStringList files = dir.entryList(QDir::Files | QDir::Readable);
-	for(QStringList::iterator fit = files.begin(); fit != files.end(); fit++)
+	for(QStringList::iterator fit = files.begin(); fit != files.end(); ++fit)
 	{
 		QString filepath = cachedir + '/' + (*fit);
 		kDebug(550) << "  + Load from file '" + filepath + "'." << endl;
@@ -891,7 +891,7 @@ bool CoreEngine::providerChanged(Provider *oldprovider, Provider *provider)
 
 void CoreEngine::mergeProviders(Provider::List providers)
 {
-	for(Provider::List::Iterator it = providers.begin(); it != providers.end(); it++)
+	for(Provider::List::Iterator it = providers.begin(); it != providers.end(); ++it)
 	{
 		Provider *p = (*it);
 
@@ -964,7 +964,7 @@ bool CoreEngine::entryChanged(Entry *oldentry, Entry *entry)
 
 void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provider *provider)
 {
-	for(Entry::List::Iterator it = entries.begin(); it != entries.end(); it++)
+	for(Entry::List::Iterator it = entries.begin(); it != entries.end(); ++it)
 	{
 		// TODO: find entry in entrycache, replace if needed
 		// don't forget marking as 'updateable'
@@ -1030,7 +1030,7 @@ void CoreEngine::cacheProvider(Provider *provider)
 	QDomDocument doc;
 	QDomElement root = doc.createElement("ghnsproviders");
 
-	for(Provider::List::Iterator it = m_provider_cache.begin(); it != m_provider_cache.end(); it++)
+	for(Provider::List::Iterator it = m_provider_cache.begin(); it != m_provider_cache.end(); ++it)
 	{
 		Provider *p = (*it);
 		ProviderHandler ph(*p);
@@ -1398,7 +1398,7 @@ bool CoreEngine::install(QString payloadfile)
 		//        but how would they help much here?
 		QStringList args;
 		QStringList list = m_installation->command().split(" ");
-		for(QStringList::iterator it = list.begin(); it != list.end(); it++)
+		for(QStringList::iterator it = list.begin(); it != list.end(); ++it)
 		{
 			args << (*it).replace("%f", installpath);
 		}

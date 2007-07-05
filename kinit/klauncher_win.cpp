@@ -826,10 +826,9 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
 
    for(QStringList::ConstIterator it = args.begin();
        it != args.end();
-       it++)
+       ++it)
    {
-       QString arg = *it;
-       request->arg_list.append(arg.toLocal8Bit());
+       request->arg_list.append((*it).toLocal8Bit());
    }
 
    request->name = app.toLocal8Bit();

@@ -116,7 +116,7 @@ void KDXSView::slotProvidersLoaded(KNS::Provider::List providers)
 	}
 
 	KUrl endpoint;
-	for(Provider::List::Iterator it = providers.begin(); it != providers.end(); it++)
+	for(Provider::List::Iterator it = providers.begin(); it != providers.end(); ++it)
 	{
 		Provider *provider = (*it);
 		if(provider->webService().isValid())

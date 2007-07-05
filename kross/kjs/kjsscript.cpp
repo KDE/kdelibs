@@ -197,7 +197,7 @@ bool KjsScript::initialize()
         KJS::ExecState* exec = kjsinterpreter->globalExec();
         KJS::PropertyNameArray props;
         obj->getPropertyNames(exec, props);
-        for(KJS::PropertyNameArrayIterator it = props.begin(); it != props.end(); it++)
+        for(KJS::PropertyNameArrayIterator it = props.begin(); it != props.end(); ++it)
             krossdebug( QString("  property name=%1").arg( it->ascii() ) );
     }
     */

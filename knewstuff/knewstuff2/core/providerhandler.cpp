@@ -68,7 +68,7 @@ Provider *ProviderHandler::providerptr()
   provider->setIcon(mProvider.icon());
 
   QStringList feeds = mProvider.feeds();
-  for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); it++)
+  for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it)
   {
     Feed *feed = mProvider.downloadUrlFeed((*it));
     provider->addDownloadUrlFeed((*it), feed);
@@ -126,7 +126,7 @@ QDomElement ProviderHandler::serializeElement(const Provider& provider)
   }
 
   QStringList feeds = provider.feeds();
-  for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); it++)
+  for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it)
   {
     Feed *feed = provider.downloadUrlFeed((*it));
     if((*it).isEmpty())

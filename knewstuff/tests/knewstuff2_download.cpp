@@ -245,7 +245,7 @@ void KNewStuff2Download::slotProviderLoaded(KNS::Provider *provider)
     m_providerlist->addItem(item);
 
     QStringList feeds = provider->feeds();
-    for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); it++) {
+    for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); ++it) {
         KNS::Feed *feed = provider->downloadUrlFeed((*it));
 
         FeedWidget *feedtab = new FeedWidget();

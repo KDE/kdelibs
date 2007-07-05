@@ -10,4 +10,5 @@ evaluate: (c-set-offset 'innamespace '0)
 kde-emacs-after-parent-string: ""
 evaluate: (c-set-offset 'inline-open '0)
 kdab-qt-version: 4
+kdab-jump-project-name: kde
 magic-parens-mode: nil
