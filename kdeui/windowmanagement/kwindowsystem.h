@@ -601,7 +601,7 @@ private:
     static void init(int);
 
     friend class KWindowSystemPrivate;
-    static inline KWindowSystemPrivate* const s_d_func();
+    static KWindowSystemPrivate* s_d_func();
 #endif
 };
 

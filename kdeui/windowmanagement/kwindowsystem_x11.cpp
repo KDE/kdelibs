@@ -306,7 +306,7 @@ KWindowSystem* KWindowSystem::self()
 }
 
 
-KWindowSystemPrivate* const KWindowSystem::s_d_func()
+KWindowSystemPrivate* KWindowSystem::s_d_func()
 {
     return g_kwmInstanceContainer->d;
 }
