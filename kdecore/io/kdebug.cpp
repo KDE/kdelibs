@@ -103,7 +103,7 @@ struct kDebugPrivate
         }
 #ifdef Q_WS_WIN
 #if _WIN32_WINNT >= 0x0500
-        // check if console is open and create if not 
+        // check if console is open and create if not
         initConsole();
 #endif
 #endif
@@ -179,15 +179,15 @@ struct kDebugPrivate
             return 1;
         FreeConsole();
         return 0;
-    }   
+    }
 
     void createConsole()
     {
         int hCrt;
         FILE *hf;
         int i;
-        
-        // connect to parent console 
+
+        // connect to parent console
         AttachConsole((DWORD)-1);
         // create separate console -> disabled for now
         // AllocConsole();
@@ -201,7 +201,7 @@ struct kDebugPrivate
         hf = _fdopen( hCrt, "w" );
         *stdout = *hf;
         i = setvbuf( stdout, NULL, _IONBF, 0 );
-        
+
         hCrt = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE),_O_TEXT);
         hf = _fdopen( hCrt, "w" );
         *stderr = *hf;
@@ -219,7 +219,7 @@ struct kDebugPrivate
         consoleChecked = true;
     }
 #endif
-#endif 
+#endif
 
     QString aAreaName;
     unsigned int oldarea;
@@ -288,7 +288,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
                 }
             }
         }
-        KConfigGroup cg(kDebug_data->config, QString::number(kDebug_data->oldarea));	
+        KConfigGroup cg(kDebug_data->config, QString::number(kDebug_data->oldarea));
         nOutput = kDebug_data->config ? cg.readEntry(key, 2) : 2;
         if (nOutput == 4 && nLevel != KDEBUG_FATAL) {
             kDebug_data->mutex.unlock();
@@ -345,7 +345,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
   case 1: // Message Box
   {
-      // Since we are in kdecore here, we cannot use KMsgBox 
+      // Since we are in kdecore here, we cannot use KMsgBox
       // if nOutput != 2 then kDebug_data is still valid
       if ( !kDebug_data->aAreaName.isEmpty() )
           aCaption += QString::fromAscii("(%1)").arg( kDebug_data->aAreaName );
@@ -356,9 +356,9 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   {
 #ifdef Q_WS_WIN
       fprintf(stderr,buf);
-#else 
+#else
       write( 2, buf, strlen( buf ) );  //fputs( buf, stderr );
-#endif      
+#endif
       break;
   }
   case 3: // syslog
@@ -607,7 +607,9 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     if (!d->print) return *this;
     bool isBinary = false;
     for ( int i = 0; i < data.size() && !isBinary ; ++i ) {
-        if ( data[i] < 32 || (unsigned char)data[i] > 127 )
+        const char ch = data[i];
+        if ( ( ch < 32 && ch != '\n' && ch != '\r' )
+                || (unsigned char)ch > 127 )
             isBinary = true;
     }
     if ( isBinary ) {
