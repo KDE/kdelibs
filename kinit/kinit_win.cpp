@@ -288,7 +288,9 @@ int main(int argc, char **argv, char **envp)
 
     if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
     {
-          pid = launch("dbus-launch.bat");
+          pid = launch("dbus-launch.exe");
+          if (!pid)
+              pid = launch("dbus-launch.bat");
           if (!pid)
               exit(1);
     }
