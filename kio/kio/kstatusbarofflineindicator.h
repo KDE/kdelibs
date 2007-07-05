@@ -49,7 +49,7 @@ public:
      */
     explicit KStatusBarOfflineIndicator( QWidget * parent );
     ~KStatusBarOfflineIndicator();
-protected slots:
+protected Q_SLOTS:
     /**
      * Hides or shows the widget, depending on the current state of the network service.
      */
