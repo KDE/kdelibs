@@ -104,8 +104,7 @@ public:
   /** Returns the color at a given index in the table */
   QColor color( int index ) const;
   /** Returns the total number of color cells in the table */
-  int count() const
-  {	return rowCount() * columnCount(); }
+  int count() const;
 
   void setShading(bool shade);
   void setAcceptDrags(bool acceptDrags);

@@ -225,7 +225,7 @@ public:
      * this is only used in classic mode if at all
      */
     void showActiveTabText(bool show);
-    void resize(){ setSize( neededSize() ); }
+    void resize();
 
 public Q_SLOTS:
     virtual void setIcon(const QString&);

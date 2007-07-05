@@ -16,8 +16,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KANIMWIDGET_H
-#define KANIMWIDGET_H
+#ifndef KANIMATEDBUTTON_H
+#define KANIMATEDBUTTON_H
 
 #include <kdeui_export.h>
 #include <QtGui/QToolButton>
@@ -102,4 +102,4 @@ private:
     Q_DISABLE_COPY(KAnimatedButton)
 };
 
-#endif // _KANIMWIDGET_H
+#endif //  KANIMATEDBUTTON_H

@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KSESSIONMANAGED_H
-#define KSESSIONMANAGED_H
+#ifndef KSESSIONMANAGER_H
+#define KSESSIONMANAGER_H
 
 #include <kdeui_export.h>
 
@@ -84,5 +84,5 @@ private:
   Q_DISABLE_COPY(KSessionManager)
 };
 
-#endif
+#endif // KSESSIONMANAGER_H
 

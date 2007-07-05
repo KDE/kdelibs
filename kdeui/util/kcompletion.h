@@ -385,7 +385,7 @@ public Q_SLOTS:
      * @param string the string to complete
      * @see makeCompletion
      */
-    void slotMakeCompletion( const QString& string ) {
+    void slotMakeCompletion( const QString& string ) { //inline (redirect)
         (void) makeCompletion( string );
     }
 
@@ -394,7 +394,7 @@ public Q_SLOTS:
      * Same as previousMatch() (just as a slot).
      * @see previousMatch
      */
-    void slotPreviousMatch() {
+    void slotPreviousMatch() { //inline (redirect)
         (void) previousMatch();
     }
 
@@ -403,7 +403,7 @@ public Q_SLOTS:
      * Same as nextMatch() (just as a slot).
      * @see nextMatch
      */
-    void slotNextMatch() {
+    void slotNextMatch() { //inline (redirect)
         (void) nextMatch();
     }
 
@@ -506,7 +506,7 @@ protected:
      * @param pMatch the match to process
      * @see postProcessMatches
      */
-    virtual void postProcessMatch( QString *pMatch ) const { Q_UNUSED(pMatch) }
+    virtual void postProcessMatch( QString *pMatch ) const;
 
     /**
      * This method is called before a list of all available completions is
@@ -518,7 +518,7 @@ protected:
      * @param pMatches the matches to process
      * @see postProcessMatch
      */
-    virtual void postProcessMatches( QStringList * pMatches ) const { Q_UNUSED(pMatches)}
+    virtual void postProcessMatches( QStringList * pMatches ) const;
 
     /**
      * This method is called before a list of all available completions is
@@ -530,7 +530,7 @@ protected:
      * @param pMatches the matches to process
      * @see postProcessMatch
      */
-    virtual void postProcessMatches( KCompletionMatches * pMatches ) const {Q_UNUSED(pMatches)}
+    virtual void postProcessMatches( KCompletionMatches * pMatches ) const;
 
 private:
     void            addWeightedItem( const QString& );
@@ -616,9 +616,7 @@ public:
      * even if true is passed to list().
      * @return true if the matches won't be sorted
      */
-    bool sorting() const {
-        return _sorting;
-    }
+    bool sorting() const;
 private:
     bool _sorting;
     KCompletionMatchesPrivate* d;
@@ -738,9 +736,7 @@ public:
      * @return true if the completion object will be deleted
      *              automatically
      */
-    bool isCompletionObjectAutoDeleted() const {
-        return m_delegate ? m_delegate->isCompletionObjectAutoDeleted() : m_bAutoDelCompObj;
-    }
+    bool isCompletionObjectAutoDeleted() const;
 
     /**
      * Sets the completion object when this widget's destructor
@@ -751,12 +747,7 @@ public:
      *
      * @param autoDelete if true, delete completion object on destruction.
      */
-    void setAutoDeleteCompletionObject( bool autoDelete ) {
-        if ( m_delegate )
-            m_delegate->setAutoDeleteCompletionObject( autoDelete );
-        else
-            m_bAutoDelCompObj = autoDelete;
-    }
+    void setAutoDeleteCompletionObject( bool autoDelete );
 
     /**
      * Sets the widget's ability to emit text completion and
@@ -778,26 +769,21 @@ public:
      *
      * @param enable if false, disables the emition of completion & rotation signals.
      */
-    void setEnableSignals( bool enable ) {
-        if ( m_delegate )
-            m_delegate->setEnableSignals( enable );
-        else
-            m_bEmitSignals = enable;
-    }
+    void setEnableSignals( bool enable );
 
     /**
      * Returns true if the object handles the signals.
      *
      * @return true if this signals are handled internally.
      */
-    bool handleSignals() const { return m_delegate ? m_delegate->handleSignals() : m_bHandleSignals; }
+    bool handleSignals() const;
 
     /**
      * Returns true if the object emits the signals.
      *
      * @return true if signals are emitted
      */
-    bool emitSignals() const { return m_delegate ? m_delegate->emitSignals() : m_bEmitSignals; }
+    bool emitSignals() const;
 
     /**
      * Sets the type of completion to be used.
@@ -829,9 +815,7 @@ public:
      *
      * @return the completion mode.
      */
-    KGlobalSettings::Completion completionMode() const {
-        return m_delegate ? m_delegate->completionMode() : m_iCompletionMode;
-    }
+    KGlobalSettings::Completion completionMode() const;
 
     /**
      * Sets the key-binding to be used for manual text
@@ -877,9 +861,7 @@ public:
      * @return the key-binding used for the feature given by @p item.
      * @see setKeyBinding
      */
-    KShortcut getKeyBinding( KeyBindingType item ) const {
-        return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ];
-    }
+    KShortcut getKeyBinding( KeyBindingType item ) const;
 
     /**
      * Sets this object to use global values for key-bindings.
@@ -930,7 +912,7 @@ public:
      *
      * @return the completion object or @c NULL if one does not exist.
      */
-    KCompletion* compObj() const { return m_delegate ? m_delegate->compObj() : static_cast<KCompletion*>(m_pCompObj); }
+    KCompletion* compObj() const;
 
 protected:
     /**
@@ -941,7 +923,7 @@ protected:
      *
      * @return the key-binding used for the feature given by @p item.
      */
-    KeyBindingMap getKeyBindings() const { return m_delegate ? m_delegate->getKeyBindings() : m_keyMap; }
+    KeyBindingMap getKeyBindings() const;
 
     /**
      * Sets or removes the delegation object. If a delegation object is
@@ -955,7 +937,7 @@ protected:
      * @return the delegation object, or 0 if there is none
      * @see setDelegate()
      */
-    KCompletionBase *delegate() const { return m_delegate; }
+    KCompletionBase *delegate() const;
 
 private:
     // This method simply sets the autodelete boolean for

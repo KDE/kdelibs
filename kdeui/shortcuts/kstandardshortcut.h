@@ -17,8 +17,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KSTDACCEL_H
-#define KSTDACCEL_H
+#ifndef KSTANDARDSHORTCUT_H
+#define KSTANDARDSHORTCUT_H
 
 #include <QtCore/QString>
 
@@ -439,4 +439,4 @@ namespace KStandardShortcut
 
 }
 
-#endif
+#endif // KSTANDARDSHORTCUT_H

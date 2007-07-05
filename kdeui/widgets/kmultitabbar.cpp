@@ -633,6 +633,11 @@ void KMultiTabBarTab::showActiveTabText(bool show)
 	d->m_showActiveTabText=show;
 }
 
+void KMultiTabBarTab::resize()
+{
+    setSize( neededSize() );
+}
+
 void KMultiTabBarTab::paintEvent(QPaintEvent *) {
 	QPainter painter(this);
 	drawButton(&painter);

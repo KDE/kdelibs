@@ -16,8 +16,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */ 
-#ifndef KCHOOSERMODE_H_
-#define KCHOOSERMODE_H_
+#ifndef KCOLORCHOOSERMODE_H_
+#define KCOLORCHOOSERMODE_H_
 
 enum KColorChooserMode
 {
@@ -30,4 +30,4 @@ enum KColorChooserMode
 	ChooserBlue      = 0x0006
 };
 
-#endif /*KCHOOSERMODE_H_*/
+#endif /* KCOLORCHOOSERMODE_H_ */

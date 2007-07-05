@@ -78,6 +78,11 @@ KFontAction::~KFontAction()
     //delete d;
 }
 
+QString KFontAction::font() const
+{
+    return currentText();
+}
+
 QWidget* KFontAction::createWidget(QWidget* _parent)
 {
     QToolBar *parent = qobject_cast<QToolBar *>(_parent);

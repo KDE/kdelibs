@@ -75,7 +75,7 @@ public:
     virtual void setGeometry( const QRect &r );
     virtual void setGeometry( int x, int y, int w, int h );
     virtual void resize( int w, int h );
-    void resize( const QSize& s ) { QMenuBar::resize( s ); }
+    void resize( const QSize& s );
 
     virtual void setFrameStyle( int );
     virtual void setLineWidth( int );

@@ -15,8 +15,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KLISTBOX_H
-#define KLISTBOX_H
+#ifndef KLISTWIDGET_H
+#define KLISTWIDGET_H
 
 #include <kdeui_export.h>
 
@@ -123,4 +123,4 @@ private:
   KListWidgetPrivate* const d;
 };
 
-#endif
+#endif // KLISTWIDGET_H

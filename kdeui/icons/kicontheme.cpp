@@ -97,6 +97,23 @@ private:
 };
 
 
+/*** K3Icon ***/
+
+K3Icon::K3Icon()
+{
+    size = 0;
+}
+
+K3Icon::~K3Icon()
+{
+}
+
+bool K3Icon::isValid() const
+{
+    return size != 0;
+}
+
+
 /*** KIconTheme ***/
 
 KIconTheme::KIconTheme(const QString& name, const QString& appName)

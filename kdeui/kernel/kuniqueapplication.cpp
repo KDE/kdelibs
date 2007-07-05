@@ -77,7 +77,7 @@ void
 KUniqueApplication::addCmdLineOptions()
 {
   KCmdLineOptions kunique_options;
-  kunique_options.add("nofork", ki18n("Don't run in the background."));
+  kunique_options.add("nofork", ki18n("Do not run in the background."));
 #ifdef Q_WS_MACX
   kunique_options.add("psn", ki18n("Internally added if launched from Finder"));
 #endif

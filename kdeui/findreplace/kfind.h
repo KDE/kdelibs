@@ -183,7 +183,7 @@ public:
      * e.g. the "All" button resets the PromptOnReplace flag.
      *
      */
-    long options() const { return m_options; }
+    long options() const;
 
     /**
      * Set new options. Usually this is used for setting or clearing the
@@ -194,7 +194,7 @@ public:
     /**
      * @return the pattern we're currently looking for
      */
-    QString pattern() const { return m_pattern; }
+    QString pattern() const;
 
     /**
      * Change the pattern we're looking for
@@ -207,7 +207,7 @@ public:
      * If 0, can be used in a dialog box to tell the user "no match was found".
      * The final dialog does so already, unless you used setDisplayFinalDialog(false).
      */
-    int numMatches() const { return m_matches; }
+    int numMatches() const;
 
     /**
      * Call this to reset the numMatches count
@@ -215,7 +215,7 @@ public:
      * Can be useful if reusing the same KReplace for different operations,
      * or when restarting from the beginning of the document.
      */
-    virtual void resetCounts() { m_matches = 0; }
+    virtual void resetCounts();
 
     /**
      * Virtual method, which allows applications to add extra checks for
@@ -227,8 +227,9 @@ public:
      * @param index The starting index where the candidate match was found
      * @param matchedlength The length of the candidate match
      */
-    virtual bool validateMatch( const QString & text, int index, int matchedlength ) {
-        Q_UNUSED(text); Q_UNUSED(index); Q_UNUSED(matchedlength); return true; }
+    virtual bool validateMatch( const QString & text,
+                                int index,
+                                int matchedlength );
 
     /**
      * Returns true if we should restart the search from scratch.
@@ -350,7 +351,7 @@ Q_SIGNALS:
 
 protected:
 
-    QWidget* parentWidget() const { return (QWidget *)parent(); }
+    QWidget* parentWidget() const;
     QWidget* dialogsParent() const;
 
 protected Q_SLOTS:

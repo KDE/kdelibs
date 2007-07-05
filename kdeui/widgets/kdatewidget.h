@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDATECTL_H
-#define KDATECTL_H
+#ifndef KDATEWIDGET_H
+#define KDATEWIDGET_H
 
 #include <kdeui_export.h>
 
@@ -83,5 +83,5 @@ private:
    KDateWidgetPrivate * const d;
 };
 
-#endif
+#endif // KDATEWIDGET_H
 

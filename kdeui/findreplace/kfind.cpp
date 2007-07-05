@@ -692,6 +692,11 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
     return yes;
 }
 
+long KFind::options() const
+{
+    return m_options;
+}
+
 void KFind::setOptions( long options )
 {
     m_options = options;
@@ -716,6 +721,11 @@ int KFind::index() const
     return m_index;
 }
 
+QString KFind::pattern() const
+{
+    return m_pattern;
+}
+
 void KFind::setPattern( const QString& pattern )
 {
     if ( m_options & KFind::FindIncremental && m_pattern != pattern )
@@ -723,6 +733,26 @@ void KFind::setPattern( const QString& pattern )
 
     m_pattern = pattern;
     setOptions( options() ); // rebuild m_regExp if necessary
+}
+
+int KFind::numMatches() const
+{
+    return m_matches;
+}
+
+void KFind::resetCounts()
+{
+    m_matches = 0;
+}
+
+bool KFind::validateMatch( const QString &, int, int )
+{
+    return true;
+}
+
+QWidget* KFind::parentWidget() const
+{
+    return (QWidget *)parent();
 }
 
 QWidget* KFind::dialogsParent() const

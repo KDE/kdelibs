@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KBARHANDLER_H
-#define KBARHANDLER_H
+#ifndef KTOOLBARHANDLER_H
+#define KTOOLBARHANDLER_H
 
 #include <QtCore/QLinkedList>
 #include <QtCore/QObject>
@@ -69,4 +69,4 @@ class ToolBarHandler : public QObject, public KXMLGUIClient
 
 } // namespace KDEPrivate
 
-#endif // KBARHANDLER_H
+#endif // KTOOLBARHANDLER_H

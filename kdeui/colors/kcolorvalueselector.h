@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
 */
 
-#ifndef KVALUESELECTOR_H
-#define KVALUESELECTOR_H
+#ifndef KCOLORVALUESELECTOR_H
+#define KCOLORVALUESELECTOR_H
 
 #include "kselector.h"
 #include "kcolorchoosermode.h"
@@ -129,5 +129,5 @@ private:
   Q_DISABLE_COPY(KColorValueSelector)
 };
 
-#endif /* KVALUESELECTOR_H */
+#endif /* KCOLORVALUESELECTOR_H */
 

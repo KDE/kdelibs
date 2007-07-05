@@ -19,8 +19,8 @@
 */
 
 
-#ifndef KCHARSELECTITEMMODEL
-#define KCHARSELECTITEMMODEL
+#ifndef KCHARSELECT_P_H
+#define KCHARSELECT_P_H
 
 #include <QAbstractTableModel>
 #include <QAbstractItemView>
@@ -254,4 +254,4 @@ Q_SIGNALS:
     void showCharRequested(const QChar& c);
 
 };
-#endif
+#endif // KCHARSELECT_P_H

@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KWINDOW_INTERFACE_H
-#define KWINDOW_INTERFACE_H
+#ifndef KMAINWINDOWIFACE_P_H
+#define KMAINWINDOWIFACE_P_H
 
 #include <kdeui_export.h>
 #include <QtDBus/QtDBus>
@@ -116,6 +116,6 @@ private:
 	KXmlGuiWindow *m_MainWindow;
 };
 
-#endif
+#endif // KMAINWINDOWIFACE_P_H
 
 

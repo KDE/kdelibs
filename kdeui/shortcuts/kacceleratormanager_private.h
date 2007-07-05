@@ -18,8 +18,8 @@
 */
 
 
-#ifndef KACCELMANAGER_PRIVATE_H
-#define KACCELMANAGER_PRIVATE_H
+#ifndef KACCELERATORMANAGER_PRIVATE_H
+#define KACCELERATORMANAGER_PRIVATE_H
 
 
 #include <QtCore/QString>
@@ -187,4 +187,4 @@ private:
 };
 
 
-#endif
+#endif // KACCELERATORMANAGER_PRIVATE_H

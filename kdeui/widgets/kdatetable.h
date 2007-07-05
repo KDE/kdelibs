@@ -17,8 +17,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KDATETBL_H
-#define KDATETBL_H
+#ifndef KDATETABLE_H
+#define KDATETABLE_H
 
 #include <kdeui_export.h>
 
@@ -251,4 +251,4 @@ private:
     Q_DISABLE_COPY(KDateTable)
 };
 
-#endif // KDATETBL_H
+#endif // KDATETABLE_H

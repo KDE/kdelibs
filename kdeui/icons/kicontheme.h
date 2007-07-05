@@ -42,12 +42,13 @@ class KIconThemeDir;
 class KDEUI_EXPORT K3Icon
 {
 public:
-    K3Icon() { size = 0; }
+    K3Icon();
+    ~K3Icon();
 
     /**
      * Return true if this icon is valid, false otherwise.
      */
-    bool isValid() const { return size != 0; }
+    bool isValid() const;
 
     /**
      * Defines the context of the icon.

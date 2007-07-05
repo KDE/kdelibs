@@ -110,6 +110,18 @@ bool KCompletion::isEmpty() const
   return (myTreeRoot->childrenCount() == 0);
 }
 
+void KCompletion::postProcessMatch( QString * ) const
+{
+}
+
+void KCompletion::postProcessMatches( QStringList * ) const
+{
+}
+
+void KCompletion::postProcessMatches( KCompletionMatches * ) const
+{
+}
+
 void KCompletion::addItem( const QString& item )
 {
     d->matches.clear();
@@ -826,6 +838,11 @@ QStringList KCompletionMatches::list( bool sort_P ) const
     return stringList;
 }
 
+bool KCompletionMatches::sorting() const
+{
+    return _sorting;
+}
+
 void KCompletionMatches::removeDuplicates()
 {
     Iterator it1, it2;
@@ -914,8 +931,5 @@ KCompTreeNode *KCompTreeNodeList::at(uint index) const
 }
 
 KZoneAllocator KCompTreeNode::alloc(8192);
-
-void KCompletionBase::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kcompletion.moc"

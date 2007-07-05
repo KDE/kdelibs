@@ -41,9 +41,7 @@ public:
     KFontAction(const KIcon &icon, const QString &text, QObject *parent);
     virtual ~KFontAction();
 
-    QString font() const {
-        return currentText();
-    }
+    QString font() const;
 
     void setFont( const QString &family );
 

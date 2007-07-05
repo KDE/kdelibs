@@ -60,6 +60,11 @@ void KCompletionBase::setDelegate( KCompletionBase *delegate )
     }
 }
 
+KCompletionBase *KCompletionBase::delegate() const
+{
+    return m_delegate;
+}
+
 KCompletion* KCompletionBase::completionObject( bool hsig )
 {
     if ( m_delegate )
@@ -99,6 +104,38 @@ void KCompletionBase::setHandleSignals( bool handle )
         m_bHandleSignals = handle;
 }
 
+bool KCompletionBase::isCompletionObjectAutoDeleted() const
+{
+    return m_delegate ? m_delegate->isCompletionObjectAutoDeleted()
+                      : m_bAutoDelCompObj;
+}
+
+void KCompletionBase::setAutoDeleteCompletionObject( bool autoDelete )
+{
+    if ( m_delegate )
+        m_delegate->setAutoDeleteCompletionObject( autoDelete );
+    else
+        m_bAutoDelCompObj = autoDelete;
+}
+
+void KCompletionBase::setEnableSignals( bool enable )
+{
+    if ( m_delegate )
+        m_delegate->setEnableSignals( enable );
+    else
+        m_bEmitSignals = enable;
+}
+
+bool KCompletionBase::handleSignals() const
+{
+    return m_delegate ? m_delegate->handleSignals() : m_bHandleSignals;
+}
+
+bool KCompletionBase::emitSignals() const
+{
+    return m_delegate ? m_delegate->emitSignals() : m_bEmitSignals;
+}
+
 void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
 {
     if ( m_delegate ) {
@@ -111,6 +148,11 @@ void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
     // are performing completions.
     if( m_pCompObj && m_iCompletionMode != KGlobalSettings::CompletionNone )
         m_pCompObj->setCompletionMode( m_iCompletionMode );
+}
+
+KGlobalSettings::Completion KCompletionBase::completionMode() const
+{
+    return m_delegate ? m_delegate->completionMode() : m_iCompletionMode;
 }
 
 bool KCompletionBase::setKeyBinding( KeyBindingType item, const KShortcut& cut )
@@ -128,6 +170,11 @@ bool KCompletionBase::setKeyBinding( KeyBindingType item, const KShortcut& cut )
     return true;
 }
 
+KShortcut KCompletionBase::getKeyBinding( KeyBindingType item ) const
+{
+    return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ];
+}
+
 void KCompletionBase::useGlobalKeyBindings()
 {
     if ( m_delegate ) {
@@ -142,6 +189,17 @@ void KCompletionBase::useGlobalKeyBindings()
     m_keyMap.insert( SubstringCompletion, KShortcut() );
 }
 
+KCompletion* KCompletionBase::compObj() const
+{
+    return m_delegate ? m_delegate->compObj()
+                      : static_cast<KCompletion*>(m_pCompObj);
+}
+
+KCompletionBase::KeyBindingMap KCompletionBase::getKeyBindings() const
+{
+    return m_delegate ? m_delegate->getKeyBindings() : m_keyMap;
+}
+
 void KCompletionBase::setup( bool autodel, bool hsig, bool esig )
 {
     if ( m_delegate ) {
@@ -153,3 +211,7 @@ void KCompletionBase::setup( bool autodel, bool hsig, bool esig )
     m_bHandleSignals = hsig;
     m_bEmitSignals = esig;
 }
+
+void KCompletionBase::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

@@ -19,8 +19,8 @@
 //-----------------------------------------------------------------------------
 // KDE color collection.
 
-#ifndef KDELIBS_KPALETTE_H
-#define KDELIBS_KPALETTE_H
+#ifndef KDELIBS_KCOLORCOLLECTION_H
+#define KDELIBS_KCOLORCOLLECTION_H
 
 #include <kdeui_export.h>
 
@@ -204,5 +204,5 @@ private:
 };
 
 
-#endif		// KDELIBS_KPALETTE_H
+#endif // KDELIBS_KCOLORCOLLECTION_H
 

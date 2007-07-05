@@ -383,6 +383,11 @@ void KMenuBar::resize( int w, int h )
 //    kDebug() << "RS:" << w << ":" << h << ":" << width() << ":" << height() << ":" << minimumWidth() << ":" << minimumHeight() << endl;
 }
 
+void KMenuBar::resize( const QSize& s )
+{
+    QMenuBar::resize( s );
+}
+
 void KMenuBar::checkSize( int& w, int& h )
 {
     if( !d->topLevel || d->fallback_mode )

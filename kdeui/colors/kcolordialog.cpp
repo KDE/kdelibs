@@ -186,6 +186,11 @@ QColor KColorCells::color(int index) const
     return d->colors[index];
 }
 
+int KColorCells::count() const
+{
+    return rowCount() * columnCount();
+}
+
 void KColorCells::setShading(bool _shade)
 {
     d->shade = _shade;

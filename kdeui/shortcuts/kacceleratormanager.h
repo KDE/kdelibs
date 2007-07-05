@@ -18,8 +18,8 @@
 */
 
 
-#ifndef K_ACCELMANAGER_H
-#define K_ACCELMANAGER_H
+#ifndef K_ACCELERATORMANAGER_H
+#define K_ACCELERATORMANAGER_H
 
 #include <kdeui_export.h>
 
@@ -73,4 +73,4 @@ public:
 };
 
 
-#endif
+#endif // K_ACCELERATORMANAGER_H
