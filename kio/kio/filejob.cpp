@@ -20,7 +20,6 @@
 
 #include "filejob.h"
 
-#include "slaveinterface.h"
 #include "slavebase.h"
 #include "connection.h"
 #include "scheduler.h"

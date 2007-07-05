@@ -38,7 +38,6 @@
 #include "jobclasses.h"
 #include "global.h"
 #include "job.h"
-#include "slaveinterface.h"
 
 #include "jobuidelegate.h"
 
