@@ -280,6 +280,11 @@ void PtyProcess::unreadLine(const QByteArray &line, bool addnl)
         d->m_Inbuf.prepend(tmp);
 }
 
+void PtyProcess::setExitString(const QByteArray &exit)
+{
+    m_Exit = exit;
+}
+
 /*
  * Fork and execute the command. This returns in the parent.
  */

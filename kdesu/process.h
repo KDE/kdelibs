@@ -73,7 +73,7 @@ public:
      * Sets the exit string. If a line of program output matches this,
      * waitForChild() will terminate the program and return.
      */
-    void setExitString(const QByteArray &exit) { m_Exit = exit; }
+    void setExitString(const QByteArray &exit);
 
     /**
      * Waits for the child to exit. See also setExitString.

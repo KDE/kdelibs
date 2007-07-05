@@ -34,17 +34,17 @@ public:
     /**
      * Set the command.
      */
-    void setCommand(const QByteArray &command) { m_Command = command; }
+    void setCommand(const QByteArray &command);
 
     /**
      * Set the target user.
      */
-    void setUser(const QByteArray &user) { m_User = user; }
+    void setUser(const QByteArray &user);
 
     /**
      * Set to "X only mode": Sycoca is not built and kdeinit is not launched.
      */
-    void setXOnly(bool xonly) { m_bXOnly = xonly; }
+    void setXOnly(bool xonly);
 
     /**
      * Set the priority of the process. The priority value must be between 0
@@ -62,7 +62,7 @@ public:
     /**
      * Set the scheduler type.
      */
-    void setScheduler(int sched) { m_Scheduler = sched; }
+    void setScheduler(int sched);
 
 protected:
 
@@ -75,12 +75,12 @@ protected:
      * This virtual function can be overloaded when special behavior is
      * desired. By default, it returns the value returned by KCookie.
      */
-    virtual QByteArray display() { return m_pCookie->display(); }
+    virtual QByteArray display();
 #ifdef Q_WS_X11
     /**
      * See display.
      */
-    virtual QByteArray displayAuth() { return m_pCookie->displayAuth(); }
+    virtual QByteArray displayAuth();
 #endif
     bool m_bXOnly;
     int m_Priority;

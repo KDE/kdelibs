@@ -40,6 +40,24 @@ StubProcess::~StubProcess()
 }
 
 
+void StubProcess::setCommand(const QByteArray &command)
+{
+    m_Command = command;
+}
+
+
+void StubProcess::setUser(const QByteArray &user)
+{
+    m_User = user;
+}
+
+
+void StubProcess::setXOnly(bool xonly)
+{
+    m_bXOnly = xonly;
+}
+
+
 void StubProcess::setPriority(int prio)
 {
     if (prio > 100)
@@ -48,6 +66,12 @@ void StubProcess::setPriority(int prio)
 	m_Priority = 0;
     else
 	m_Priority = prio;
+}
+
+
+void StubProcess::setScheduler(int sched)
+{
+    m_Scheduler = sched;
 }
 
 
@@ -146,6 +170,20 @@ int StubProcess::ConverseStub(int check)
 
     return 0;
 }
+
+
+QByteArray StubProcess::display()
+{
+    return m_pCookie->display();
+}
+
+
+#ifdef Q_WS_X11
+QByteArray StubProcess::displayAuth()
+{
+    return m_pCookie->displayAuth();
+}
+#endif
 
 
 void StubProcess::virtual_hook( int id, void* data )
