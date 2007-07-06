@@ -27,8 +27,8 @@
 
  */
 
-#ifndef __classimpls__
-#define __classimpls__
+#ifndef CLASSPREVIEWS_H
+#define CLASSPREVIEWS_H
 
 #include <kdialog.h>
 
@@ -38,4 +38,4 @@ public:
 	KDialogPreview(QWidget * parent = 0);
 };
 
-#endif
+#endif // CLASSPREVIEWS_H
