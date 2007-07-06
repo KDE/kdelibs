@@ -130,7 +130,9 @@ class KuitSemanticsStaticData
 
     QSet<QString> qtHtmlTagNames;
 
-    QHash<Kuit::TagVar, QPair<int, int> > considerNewlines;
+    QHash<Kuit::TagVar, int> leadingNewlines;
+
+    QHash<QString, QString> xmlEntities;
 
     KuitSemanticsStaticData ();
 
@@ -286,17 +288,17 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
                    << "td" << "tfoot" << "th" << "thead" << "title"
                    << "tr" << "tt" << "u" << "ul" << "var";
 
-    // Tags that format with number of leading and trailing newlines.
+    // Tags that format with number of leading newlines.
     #undef SETUP_TAG_NL
-    #define SETUP_TAG_NL(tag, nlead, ntrail) do { \
-        considerNewlines[Kuit::Tag::tag] = qMakePair(nlead, ntrail); \
+    #define SETUP_TAG_NL(tag, nlead) do { \
+        leadingNewlines[Kuit::Tag::tag] = nlead; \
     } while (0)
-    SETUP_TAG_NL(Title, 2, 2);
-    SETUP_TAG_NL(Subtitle, 2, 2);
-    SETUP_TAG_NL(Para, 2, 2);
-    SETUP_TAG_NL(List, 1, 1);
-    SETUP_TAG_NL(Bcode, 1, 1);
-    SETUP_TAG_NL(Item, 1, 1);
+    SETUP_TAG_NL(Title, 2);
+    SETUP_TAG_NL(Subtitle, 2);
+    SETUP_TAG_NL(Para, 2);
+    SETUP_TAG_NL(List, 1);
+    SETUP_TAG_NL(Bcode, 1);
+    SETUP_TAG_NL(Item, 1);
 
     // Setup names of number formats.
     #undef SETUP_NUMFMT
@@ -306,6 +308,13 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_NUMFMT(Posix, "posix");
     SETUP_NUMFMT(US, "us");
     SETUP_NUMFMT(Euro, "euro");
+
+    // Known XML entities.
+    xmlEntities["lt"] = '<';
+    xmlEntities["gt"] = '>';
+    xmlEntities["amp"] = '&';
+    xmlEntities["apos"] = '\'';
+    xmlEntities["quot"] = '"';
 }
 
 K_GLOBAL_STATIC(KuitSemanticsStaticData, staticData)
@@ -341,6 +350,10 @@ class KuitSemanticsPrivate
     // Formats the semantic into visual text.
     QString semanticToVisualText (const QString &text,
                                   Kuit::FmtVar fmt) const;
+
+    // Final touches to the formatted text.
+    QString finalizeVisualText (const QString &final,
+                                Kuit::FmtVar fmt) const;
 
     // Data for XML parsing state.
     class OpenEl
@@ -787,13 +800,13 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
 QString KuitSemanticsPrivate::format (const QString &text,
                                       const QString &ctxt) const
 {
-    // Quick check: are there any tags at all?
-    if (text.indexOf('<') < 0) {
-        return text;
-    }
-
     // Parse context marker to determine format.
     Kuit::FmtVar fmt = formatFromContextMarker(ctxt, text);
+
+    // Quick check: are there any tags at all?
+    if (text.indexOf('<') < 0) {
+        return finalizeVisualText(text, fmt);
+    }
 
     // Decide on the top tag, either TopLong or TopShort,
     // and wrap the text with it.
@@ -983,9 +996,21 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text,
 QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
                                                     Kuit::FmtVar fmt_) const
 {
-    // Replace & signs with entity, not to confuse the parser.
-    QString text = text_;
-    text.replace(QString('&'), QString("&amp;"));
+    // Replace &-shortcut marker with "&amp;", not to confuse the parser;
+    // but do not touch & in "&[a-z]+;", which is an XML entity as it is.
+    QString original = text_;
+    QString text;
+    int p = original.indexOf('&');
+    while (p >= 0) {
+        text.append(original.mid(0, p + 1));
+        original.remove(0, p + 1);
+        static QRegExp restRx("^[a-z]+;");
+        if (original.indexOf(restRx) != 0) { // not an entity
+            text.append("amp;");
+        }
+        p = original.indexOf('&');
+    }
+    text.append(original);
 
     Kuit::FmtVar fmt = fmt_;
     int numCtx = 0;
@@ -1029,21 +1054,12 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
 
             // If this was closing of the top element, we're done.
             if (openEls.isEmpty()) {
-                // Remove leading and trailing newlines.
-                QString final = oel.formattedText.trimmed();
-                // Wrap with <qt> tag if rich text.
-                if (fmt == Kuit::Fmt::Rich) {
-                    final = "<qt>" + final + "</qt>";
-                }
-                // Remove & entity if not rich text.
-                if (fmt != Kuit::Fmt::Rich) {
-                    final.replace(QString("&amp;"), QString('&'));
-                }
-                return final;
+                // Return with final touches applied.
+                return finalizeVisualText(oel.formattedText, fmt);
             }
 
             // Append formatted text segment.
-            QString pt = openEls.top().formattedText;
+            QString pt = openEls.top().formattedText; // preceeding text
             openEls.top().formattedText += formatSubText(pt, oel, fmt, numCtx);
 
             // Update numeric context.
@@ -1195,25 +1211,21 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
             ftext = pattern.arg(mtext);
         }
 
-        // Handle leading newlines.
-        if (s->considerNewlines.contains(oel.tag)) {
+        // Handle leading newlines, if this is not start of the text
+        // (ptext is the preceeding text).
+        if (!ptext.isEmpty() && s->leadingNewlines.contains(oel.tag)) {
             // Count number of present newlines.
             int pnumle, pnumtr, fnumle, fnumtr;
             countWrappingNewlines(ptext, pnumle, pnumtr);
             countWrappingNewlines(ftext, fnumle, fnumtr);
-            // Comparison sums.
+            // Number of leading newlines already present.
             int numle = pnumtr + fnumle;
-            int numtr = fnumtr;
-            // Up the required number of newlines for this tag.
+            // The required extra newlines.
             QString strle;
-            if (numle < s->considerNewlines[oel.tag].first) {
-                strle = QString(s->considerNewlines[oel.tag].first - numle, '\n');
+            if (numle < s->leadingNewlines[oel.tag]) {
+                strle = QString(s->leadingNewlines[oel.tag] - numle, '\n');
             }
-            QString strtr;
-            if (numtr < s->considerNewlines[oel.tag].second) {
-                strtr = QString(s->considerNewlines[oel.tag].second - numtr, '\n');
-            }
-            ftext = strle + ftext + strtr;
+            ftext = strle + ftext;
         }
 
         return ftext;
@@ -1288,6 +1300,40 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
 
     // Fell through, no modification.
     return text;
+}
+
+QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
+                                                  Kuit::FmtVar fmt) const
+{
+    KuitSemanticsStaticData *s = staticData;
+
+    QString text = final;
+
+    // Wrap with <qt> tag if rich text.
+    if (fmt == Kuit::Fmt::Rich) {
+        QString rich = "<qt>" + text + "</qt>";
+        return rich;
+    }
+    // Replace XML entities if not rich text.
+    else {
+        static QRegExp entRx("&([a-z]+);");
+        QString plain;
+        int p = entRx.indexIn(text);
+        while (p >= 0) {
+            QString ent = entRx.capturedTexts().at(1);
+            plain.append(text.mid(0, p));
+            text.remove(0, p + ent.length() + 2);
+            if (s->xmlEntities.contains(ent)) { // known entity
+                plain.append(s->xmlEntities[ent]);
+            }
+            else { // unknown entity, just leave as is
+                plain.append('&' + ent + ';');
+            }
+            p = entRx.indexIn(text);
+        }
+        plain.append(text);
+        return plain;
+    }
 }
 
 // -----------------------------------------------------------------------------
