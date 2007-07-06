@@ -38,7 +38,6 @@ public:
         OverwriteMetaData, DontOverwriteMetaData
     };
 
-    KDE_DUMMY_COMPARISON_OPERATOR(KBookmark)
     /**
      * KUrl::Bookmark is a QList that contains bookmarks with a few
      * convenience methods.
@@ -165,6 +164,11 @@ public:
      */
     QString address() const;
 
+    /**
+     * Return the position in the parent, i.e. the last number in the address
+     */
+    int positionInParent() const;
+
     // Hard to decide. Good design would imply that each bookmark
     // knows about its manager, so that there can be several managers.
     // But if we say there is only one manager (i.e. set of bookmarks)
@@ -238,6 +242,10 @@ public:
      */
     void populateMimeData( QMimeData* mimeData ) const;
 
+    /**
+     * Comparison operator
+     */
+    bool operator==(const KBookmark& rhs) const;
 
 protected:
     QDomElement element;
@@ -299,6 +307,11 @@ public:
      * @param current has to be one of our child bookmarks.
      */
     KBookmark next( const KBookmark & current ) const;
+
+    /**
+     * Return the index of a child bookmark, -1 if not found
+     */
+    int indexOf(const KBookmark& child) const;
 
     /**
      * Create a new bookmark folder, as the last child of this group

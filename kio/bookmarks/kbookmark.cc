@@ -86,8 +86,18 @@ KBookmark KBookmarkGroup::next( const KBookmark & current ) const
     return KBookmark( nextKnownTag( firstElement(current.element.nextSibling()), true ) );
 }
 
+int KBookmarkGroup::indexOf(const KBookmark& child) const
+{
+    uint counter = 0;
+    for ( KBookmark bk = first(); !bk.isNull(); bk = next(bk), ++counter ) {
+        if ( bk.element == child.element )
+            return counter;
+    }
+    return -1;
+}
+
 // KDE4: Change QDomElement to QDomNode so that we can get rid of
-// firstElement() and lastElement()
+// firstElement() and lastElement(). Well, no, use firstChildElement :)
 QDomElement KBookmarkGroup::nextKnownTag( const QDomElement &start, bool goNext ) const
 {
     static const QString & bookmark = KGlobal::staticQString("bookmark");
@@ -282,7 +292,7 @@ KBookmark KBookmarkGroup::closestBookmark( const KUrl& url ) const
 
 //////
 
-KBookmark::KBookmark( )
+KBookmark::KBookmark()
 {
 }
 
@@ -399,17 +409,15 @@ QString KBookmark::address() const
         }
         KBookmarkGroup group = parentGroup();
         QString parentAddress = group.address();
-        uint counter = 0;
-        // Implementation note: we don't use QDomNode's childNode list because we
-        // would have to skip "TEXT", which KBookmarkGroup already does for us.
-        for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk), ++counter )
-        {
-            if ( bk.element == element )
-                return parentAddress + '/' + QString::number(counter);
-        }
-        kWarning() << "KBookmark::address : this can't happen!  " << parentAddress << endl;
-        return "ERROR";
+        int pos = group.indexOf(*this);
+        Q_ASSERT(pos != -1);
+        return parentAddress + '/' + QString::number(pos);
     }
+}
+
+int KBookmark::positionInParent() const
+{
+    return parentGroup().indexOf(*this);
 }
 
 QDomElement KBookmark::internalElement() const
@@ -588,6 +596,14 @@ void KBookmark::setMetaDataItem( const QString &key, const QString &value, MetaD
     text.setData( value );
 }
 
+
+bool KBookmark::operator==(const KBookmark& rhs) const
+{
+    return element == rhs.element;
+}
+
+////
+
 KBookmarkGroupTraverser::~KBookmarkGroupTraverser()
 {
 }
@@ -718,3 +734,4 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
     }
     return bookmarks;
 }
+
