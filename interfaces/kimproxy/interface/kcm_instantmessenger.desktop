@@ -112,7 +112,6 @@ Comment[zh_CN]=这个即时通讯程序允许在个人和群组之间双向聊�
 Comment[zh_HK]=即時通訊軟件可以讓用戶和別的用戶或羣組通訊。
 Comment[zh_TW]=即時通訊系統允許兩個人或兩個群組間的聊天與對話
 ServiceTypeToConfigure=DBUS/InstantMessenger
-MimeTypeOfInterest=DBUS/InstantMessenger
 defaultImplementation=kopete
 storeInFile=default_components
 valueSection=InstantMessenger
