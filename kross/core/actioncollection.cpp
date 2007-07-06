@@ -305,25 +305,27 @@ QDomElement ActionCollection::writeXml()
         element.setAttribute("text", text());
     if( ! d->description.isNull() )
         element.setAttribute("comment", d->description);
-    if( ! d->description.isNull() )
-        element.setAttribute("comment", d->description);
     if( ! d->iconname.isNull() )
         element.setAttribute("icon", d->iconname);
-
-    foreach(QString name, d->collectionnames) {
-        ActionCollection* c = d->collections[name];
-        if( ! c ) continue;
-        QDomElement e = c->writeXml();
-        if( e.isNull() ) continue;
-        element.appendChild(e);
-    }
+    if( ! d->enabled )
+        element.setAttribute("enabled", d->enabled);
 
     foreach(Action* a, actions()) {
         Q_ASSERT(a);
         #ifdef KROSS_ACTIONCOLLECTION_DEBUG
             krossdebug( QString("  ActionCollection::writeXml action.objectName=\"%1\" action.file=\"%2\"").arg(a->objectName()).arg(a->file()) );
         #endif
-        element.appendChild( a->toDomElement() );
+        QDomElement e = a->toDomElement();
+        if( ! e.isNull() )
+            element.appendChild(e);
+    }
+
+    foreach(QString name, d->collectionnames) {
+        ActionCollection* c = d->collections[name];
+        if( ! c ) continue;
+        QDomElement e = c->writeXml();
+        if( ! e.isNull() )
+            element.appendChild(e);
     }
 
     return element;
@@ -332,7 +334,23 @@ QDomElement ActionCollection::writeXml()
 bool ActionCollection::writeXml(QIODevice* device, int indent)
 {
     QDomDocument document;
-    document.documentElement().appendChild( writeXml() );
+    QDomElement root = document.createElement("KrossScripting");
+
+    foreach(Action* a, actions()) {
+        QDomElement e = a->toDomElement();
+        if( ! e.isNull() )
+            root.appendChild(e);
+    }
+
+    foreach(QString name, d->collectionnames) {
+        ActionCollection* c = d->collections[name];
+        if( ! c ) continue;
+        QDomElement e = c->writeXml();
+        if( ! e.isNull() )
+            root.appendChild(e);
+    }
+
+    document.appendChild(root);
     return device->write( document.toByteArray(indent) ) != -1;
 }
 

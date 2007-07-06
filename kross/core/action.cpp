@@ -203,6 +203,8 @@ QDomElement Action::toDomElement() const
         e.setAttribute("comment", description());
     if( ! iconName().isNull() )
         e.setAttribute("icon", iconName());
+    if( ! isEnabled() )
+        e.setAttribute("enabled", "false");
     if( ! interpreter().isNull() )
         e.setAttribute("interpreter", interpreter());
 
