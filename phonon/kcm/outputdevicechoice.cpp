@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2
@@ -22,6 +22,7 @@
 #include <QtCore/QList>
 #include <QtCore/QSettings>
 #include <QtGui/QHeaderView>
+#include <QtGui/QPalette>
 
 #include <phonon/backendcapabilities.h>
 #include <phonon/objectdescription.h>
@@ -30,6 +31,7 @@
 #include "../libkaudiodevicelist/audiodevice.h"
 
 #include <klocale.h>
+#include <kstandarddirs.h>
 
 Q_DECLARE_METATYPE(QList<int>)
 
@@ -90,16 +92,23 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     //categoryTree->setAcceptDrops(true);
     //categoryTree->setDropIndicatorShown(true);
     //categoryTree->setDragDropMode(QAbstractItemView::InternalMove);
-    deviceList->setDragEnabled(true);
-    deviceList->setAcceptDrops(true);
-    deviceList->setDropIndicatorShown(true);
-    deviceList->setWrapping(true);
-    //deviceList->setSpacing(4);
+//X     deviceList->setDragEnabled(true);
+//X     deviceList->setAcceptDrops(true);
+//X     deviceList->setDropIndicatorShown(true);
     deviceList->setDragDropMode(QAbstractItemView::InternalMove);
-    /*qApp->setStyleSheet("QListView { background-image: url(/home/mkretz/KDE/src/kdelibs/phonon/kcm/speaker.svg);"
-           "background-position: bottom left;"
-          "background-repeat: no-repeat; }"); */
-    deviceList->setAlternatingRowColors(true);
+    const QColor bgColor = deviceList->viewport()->palette().color(deviceList->viewport()->backgroundRole());
+    const QString stylesheet = QString("QListView {"
+            "background-color: %1;"
+            "background-image: url(%2);"
+            "background-position: bottom left;"
+            "background-attachment: fixed;"
+            "background-repeat: no-repeat;"
+            "}")
+        .arg(bgColor.name())
+        .arg(KStandardDirs::locate("data", "kcm_phonon/listview-background.png"));
+    kDebug() << stylesheet << endl;
+    deviceList->setStyleSheet(stylesheet);
+    deviceList->setAlternatingRowColors(false);
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
     QStandardItem *outputItem = new QStandardItem(i18n("Audio Output"));
     outputItem->setEditable(false);
@@ -140,6 +149,10 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     connect(&m_captureModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), this, SIGNAL(changed()));
 
     connect(Phonon::BackendCapabilities::notifier(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(updateAudioOutputDevices()));
+
+    if (!categoryTree->currentIndex().isValid()) {
+        categoryTree->setCurrentIndex(m_categoryModel.index(0, 0).child(0, 0));
+    }
 }
 
 void OutputDeviceChoice::updateDeviceList()

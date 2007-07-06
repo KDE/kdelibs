@@ -11,18 +11,10 @@
    </rect>
   </property>
   <layout class="QHBoxLayout" >
-   <property name="margin" >
-    <number>9</number>
-   </property>
-   <property name="spacing" >
-    <number>6</number>
-   </property>
    <item>
     <widget class="QTreeView" name="categoryTree" >
      <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>4</hsizetype>
-       <vsizetype>7</vsizetype>
+      <sizepolicy vsizetype="Expanding" hsizetype="Maximum" >
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -33,9 +25,6 @@
      <property name="whatsThis" >
       <string>Various categories of outputs.  For each category you may choose what device you wish to output to.</string>
      </property>
-     <property name="alternatingRowColors" >
-      <bool>true</bool>
-     </property>
      <property name="itemsExpandable" >
       <bool>false</bool>
      </property>
@@ -43,12 +32,6 @@
    </item>
    <item>
     <layout class="QGridLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
-     <property name="spacing" >
-      <number>6</number>
-     </property>
      <item row="1" column="1" >
       <spacer>
        <property name="orientation" >
@@ -64,6 +47,9 @@
      </item>
      <item row="0" column="0" colspan="4" >
       <widget class="QListView" name="deviceList" >
+       <property name="acceptDrops" >
+        <bool>true</bool>
+       </property>
        <property name="toolTip" >
         <string>Audio Outputs found on your system.  Choose the device that you wish sound to come out of.</string>
        </property>
@@ -71,11 +57,32 @@
         <string>The order determines the preference of the output devices. If for some reason the first device cannot be used Phonon will try to use the second, and
 so on.</string>
        </property>
+       <property name="dragEnabled" >
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode" >
+        <enum>QAbstractItemView::InternalMove</enum>
+       </property>
+       <property name="selectionBehavior" >
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
        <property name="iconSize" >
         <size>
          <width>32</width>
          <height>32</height>
         </size>
+       </property>
+       <property name="textElideMode" >
+        <enum>Qt::ElideNone</enum>
+       </property>
+       <property name="verticalScrollMode" >
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+       <property name="horizontalScrollMode" >
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+       <property name="resizeMode" >
+        <enum>QListView::Adjust</enum>
        </property>
        <property name="wordWrap" >
         <bool>true</bool>
@@ -131,9 +138,9 @@ so on.</string>
    </item>
   </layout>
  </widget>
- <layoutfunction spacing="KDialog::spacingHint()" margin="KDialog::marginHint()" />
+ <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint" />
  <includes>
-  <include location="local" >kdialog.h</include>
+  <include location="global" >kdialog.h</include>
  </includes>
  <resources/>
  <connections/>

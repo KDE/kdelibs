@@ -11,4 +11,4 @@ install(TARGETS kcm_phonon  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### install files ###############
 install( FILES kcm_phonon.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
-
+install(FILES listview-background.png DESTINATION ${DATA_INSTALL_DIR}/kcm_phonon)
