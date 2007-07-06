@@ -275,7 +275,7 @@ void MediaObject::fillBuffer(QVector<float> *buffer)
 
     while (data != end)
     {
-        const float sample = sin(m_position);
+        const float sample = std::sin(m_position);
         //createdump.write(QByteArray::number(sample) + "\n");
          *(data++) = sample;
         m_position += delta;
