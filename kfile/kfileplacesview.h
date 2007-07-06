@@ -58,6 +58,8 @@ private:
     Q_PRIVATE_SLOT(d, void _k_placeClicked(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_placeActivated(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_storageSetupDone(const QModelIndex &, bool))
+    Q_PRIVATE_SLOT(d, void _k_adaptItemsUpdate(qreal))
+    Q_PRIVATE_SLOT(d, void _k_itemAppearUpdate(qreal))
 
     class Private;
     Private * const d;
