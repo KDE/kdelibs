@@ -39,7 +39,7 @@
 #include <QVector>
 
 // Truncates string, for output of long messages.
-static QString shorten (const QString &str)
+static QString shortenMessage (const QString &str)
 {
     const int maxlen = 20;
     if (str.length() <= maxlen)
@@ -197,7 +197,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     // Check whether plural argument has been supplied, if message has plural.
     if (!plural.isEmpty() && !numberSet)
         kDebug(173) << QString("Plural argument to message {%1} not supplied before conversion.")
-                              .arg(shorten(QString::fromUtf8(msg))) << endl;
+                              .arg(shortenMessage(QString::fromUtf8(msg))) << endl;
     #endif
 
     // Get raw translation.
@@ -250,7 +250,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
             #ifndef NDEBUG
             else
                 kDebug(173) << QString("Scripted message {%1} before transcript engine can be loaded.")
-                                    .arg(shorten(trans)) << endl;
+                                    .arg(shortenMessage(trans)) << endl;
             #endif
         }
     }
@@ -388,13 +388,13 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
             {
                 gaps = true;
                 kDebug(173) << QString("Placeholder %%1 skipped in message {%2}.")
-                                      .arg(QString::number(i + 1), shorten(trans)) << endl;
+                                      .arg(QString::number(i + 1), shortenMessage(trans)) << endl;
             }
         // If no gaps, check for mismatch between number of unique placeholders and
         // actually supplied arguments.
         if (!gaps && ords.size() != args.size())
             kDebug(173) << QString("%1 instead of %2 arguments to message {%3} supplied before conversion.")
-                                  .arg(args.size()).arg(ords.size()).arg(shorten(trans)) << endl;
+                                  .arg(args.size()).arg(ords.size()).arg(shortenMessage(trans)) << endl;
 
         // Some spoofs.
         if (gaps)
@@ -469,7 +469,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
         {
             #ifndef NDEBUG
             kDebug(173) << QString("Interpolation {%1} in message {%2} failed: %3")
-                                  .arg(strans.mid(mpos, tpos - mpos), shorten(strans), scriptError) << endl;
+                                  .arg(strans.mid(mpos, tpos - mpos), shortenMessage(strans), scriptError) << endl;
             #endif
             return QString();
         }
@@ -513,7 +513,7 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
         {
             #ifndef NDEBUG
             kDebug(173) << QString("Unexpected end of interpolation {%1} in message {%2}.")
-                                  .arg(strans.mid(pos, tpos - pos), shorten(strans)) << endl;
+                                  .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
             #endif
             return -1;
         }
@@ -541,7 +541,7 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
             {
                 #ifndef NDEBUG
                 kDebug(173) << QString("Unclosed quoted token in interpolation {%1} in message {%2}.")
-                                      .arg(strans.mid(pos, tpos - pos), shorten(strans)) << endl;
+                                      .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
                 #endif
                 return -1;
             }
@@ -566,7 +566,7 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
             {
                 #ifndef NDEBUG
                 kDebug(173) << QString("Non-terminated interpolation {%1} in message {%2}.")
-                                      .arg(strans.mid(pos, tpos - pos), shorten(strans)) << endl;
+                                      .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
                 #endif
                 return -1;
             }
