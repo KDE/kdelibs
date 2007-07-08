@@ -2,7 +2,7 @@
 # Generates and cleans KConfigXT source code during a API dox build
 #
 
-kcfg_compiler="`kde4-config --exec-prefix`/kconfig_compiler"
+kcfg_compiler="`kde4-config --prefix`/bin/kconfig_compiler"
 if test -z "$kcfg_compiler"; then
 	echo "kconfig_compiler not found!"
 	exit 1;
