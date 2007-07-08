@@ -216,6 +216,11 @@ public Q_SLOTS:
      */
     void savePosition(int x, int y);
 
+    /**
+     * Gives the keyboard input focus.
+     */
+    void setFocus();
+
 Q_SIGNALS:
     /**
      * Is emitted, if the URL navigator has been activated by

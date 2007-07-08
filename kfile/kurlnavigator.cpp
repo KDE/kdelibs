@@ -938,6 +938,19 @@ void KUrlNavigator::setCustomProtocols(const QStringList &protocols)
     d->m_protocols->setCustomProtocols(d->m_customProtocols);
 }
 
+void KUrlNavigator::setFocus()
+{
+    if (isUrlEditable()) {
+        d->m_pathBox->setFocus();
+    } else {
+        if (d->m_host) {
+            d->m_host->setFocus();
+        } else {
+            QWidget::setFocus();
+        }
+    }
+}
+
 QStringList KUrlNavigator::customProtocols() const
 {
     return d->m_customProtocols;
