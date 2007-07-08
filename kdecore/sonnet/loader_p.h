@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef SONNET_BROKER_P_H
-#define SONNET_BROKER_P_H
+#ifndef SONNET_LOADER_P_H
+#define SONNET_LOADER_P_H
 
 #include <kdecore_export.h>
 #include <ksharedptr.h>
@@ -120,4 +120,4 @@ namespace Sonnet
     };
 }
 
-#endif // SONNET_BROKER_P_H
+#endif // SONNET_LOADER_P_H

@@ -1059,7 +1059,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             }
 
             // Append formatted text segment.
-            QString pt = openEls.top().formattedText; // preceeding text
+            QString pt = openEls.top().formattedText; // preceding text
             openEls.top().formattedText += formatSubText(pt, oel, fmt, numCtx);
 
             // Update numeric context.
@@ -1212,7 +1212,7 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
         }
 
         // Handle leading newlines, if this is not start of the text
-        // (ptext is the preceeding text).
+        // (ptext is the preceding text).
         if (!ptext.isEmpty() && s->leadingNewlines.contains(oel.tag)) {
             // Count number of present newlines.
             int pnumle, pnumtr, fnumle, fnumtr;

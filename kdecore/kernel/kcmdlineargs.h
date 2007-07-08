@@ -104,7 +104,7 @@ class KDECORE_EXPORT KCmdLineOptions
 
     private:
 
-    KCmdLineOptionsPrivate *d;
+    KCmdLineOptionsPrivate *d; //krazy:exclude=dpointer (for operator=)
 };
 
 class KCmdLineArgsList;
