@@ -1,7 +1,7 @@
 
 include_directories( ${CMAKE_SOURCE_DIR}/kwallet/backend ${CMAKE_SOURCE_DIR}/kwallet/client )
 
-#add_subdirectory(tests)
+add_subdirectory(tests)
 
 ########### next target ###############
 
