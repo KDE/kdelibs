@@ -82,6 +82,7 @@ void KConfigDialogManager::initMaps()
   if ( s_propertyMap->isEmpty() ) {
     s_propertyMap->insert( "KButtonGroup", "current" );
     s_propertyMap->insert( "KColorButton", "color" );
+    s_propertyMap->insert( "KColorCombo", "color" );
     //s_propertyMap->insert( "KUrlRequester", "url" );
     //s_propertyMap->insert( "KUrlComboRequester", "url" );
   }
@@ -120,6 +121,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert( "KFontRequester", SIGNAL(fontSelected(const QFont &)));
     s_changedMap->insert( "KFontChooser",  SIGNAL(fontSelected(const QFont &)));
     s_changedMap->insert( "KHistoryCombo", SIGNAL(activated (int)));
+    s_changedMap->insert( "KColorCombo", SIGNAL(activated (const QColor &)));
 
     s_changedMap->insert( "KColorButton", SIGNAL(changed(const QColor &)));
     s_changedMap->insert( "KDatePicker", SIGNAL(dateSelected (QDate)));
@@ -412,23 +414,22 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
     return;
   }
 
-  QComboBox *cb = qobject_cast<QComboBox *>(w);
-  if (cb) {
-    if ( cb->isEditable() )
-    {
-      int i = cb->findText(v.toString());
-      if (i != -1)
-          cb->setCurrentIndex(i);
-      else
-          cb->setEditText(v.toString());
-    } else {
-      cb->setCurrentIndex( v.toInt() );
-    }
-    return;
-  }
-
   QByteArray userproperty = getUserProperty( w );
   if ( userproperty.isEmpty() ) {
+    QComboBox *cb = qobject_cast<QComboBox *>(w);
+    if (cb) {
+        if ( cb->isEditable() )
+        {
+            int i = cb->findText(v.toString());
+            if (i != -1)
+                cb->setCurrentIndex(i);
+            else
+                cb->setEditText(v.toString());
+        } else {
+            cb->setCurrentIndex( v.toInt() );
+        }
+        return;
+    }
     kWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
     return;
   }
@@ -441,15 +442,15 @@ QVariant KConfigDialogManager::property(QWidget *w) const
   if (bg && bg->checkedButton())
     return QVariant(bg->id(bg->checkedButton()));
 
-  QComboBox *cb = qobject_cast<QComboBox *>(w);
-  if (cb) {
-    if ( cb->isEditable() )
-      return QVariant(cb->currentText());
-    else
-      return QVariant(cb->currentIndex());
-  }
   QByteArray userproperty = getUserProperty( w );
   if ( userproperty.isEmpty() ) {
+    QComboBox *cb = qobject_cast<QComboBox *>(w);
+    if (cb) {
+        if ( cb->isEditable() )
+            return QVariant(cb->currentText());
+        else
+            return QVariant(cb->currentIndex());
+    }
     kWarning(178) << w->metaObject()->className() << " widget not handled!" << endl;
     return QVariant();
   }
