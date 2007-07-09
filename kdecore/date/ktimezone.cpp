@@ -549,6 +549,11 @@ QList<KTimeZone::LeapSeconds> KTimeZone::leapSecondChanges() const
     return d->data->leapSecondChanges();
 }
 
+KTimeZoneSource *KTimeZone::source() const
+{
+    return d->source;
+}
+
 const KTimeZoneData *KTimeZone::data(bool create) const
 {
     if (create && !d->data)
