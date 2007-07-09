@@ -88,7 +88,7 @@ KTzfileTimeZoneData &KTzfileTimeZoneData::operator=(const KTzfileTimeZoneData &r
     return *this;
 }
 
-KTimeZoneData *KTzfileTimeZoneData::clone()
+KTimeZoneData *KTzfileTimeZoneData::clone() const
 {
     return new KTzfileTimeZoneData(*this);
 }

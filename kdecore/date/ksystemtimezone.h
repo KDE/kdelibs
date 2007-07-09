@@ -364,7 +364,7 @@ public:
      *
      * @return copy of this instance. This is a KSystemTimeZoneData pointer.
      */
-    virtual KTimeZoneData *clone();
+    virtual KTimeZoneData *clone() const;
 
     /**
      * Returns the complete list of time zone abbreviations.

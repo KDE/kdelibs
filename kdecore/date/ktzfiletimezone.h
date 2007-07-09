@@ -148,7 +148,7 @@ public:
      *
      * @return copy of this instance. This is a KTzfileTimeZoneData pointer.
      */
-    virtual KTimeZoneData *clone();
+    virtual KTimeZoneData *clone() const;
 
     /**
      * Return whether daylight saving transitions are available for the time zone.

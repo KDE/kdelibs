@@ -974,7 +974,7 @@ KTimeZoneData &KTimeZoneData::operator=(const KTimeZoneData &c)
     return *this;
 }
 
-KTimeZoneData *KTimeZoneData::clone()
+KTimeZoneData *KTimeZoneData::clone() const
 {
     return new KTimeZoneData(*this);
 }

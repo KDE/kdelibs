@@ -229,7 +229,7 @@ class KTimeZoneLeapSecondsPrivate;
  *         ~NewTimeZoneData();
  *
  *         // Virtual methods which need to be reimplemented
- *         KTimeZoneData *clone();
+ *         KTimeZoneData *clone() const;
  *         QList<QByteArray> abbreviations() const;
  *         QByteArray abbreviation(const QDateTime &utcDateTime) const;
  *
@@ -1148,7 +1148,7 @@ public:
      *
      * @return copy of this instance
      */
-    virtual KTimeZoneData *clone();
+    virtual KTimeZoneData *clone() const;
 
     /**
      * Returns the complete list of time zone abbreviations. This may include
