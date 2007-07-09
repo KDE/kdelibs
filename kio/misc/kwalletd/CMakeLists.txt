@@ -1,8 +1,6 @@
 
 include_directories( ${CMAKE_SOURCE_DIR}/kwallet/backend ${CMAKE_SOURCE_DIR}/kwallet/client )
 
-add_subdirectory(tests)
-
 ########### next target ###############
 
 set(kded_kwalletd_PART_SRCS
@@ -34,3 +32,5 @@ install(TARGETS kded_kwalletd  DESTINATION ${PLUGIN_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES kwalletd.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
+
+add_subdirectory(tests)
