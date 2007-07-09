@@ -1289,6 +1289,14 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
         p = (*it) + '/';
         p += real_appname;
 
+#ifdef Q_WS_MAC
+        QString bundle = getBundle( p, (options & IgnoreExecBit) );
+        if ( !bundle.isEmpty() ) {
+            //kDebug(180) << "findExe(): returning " << bundle << endl;
+            list.append( bundle );
+        }
+#endif
+
         info.setFile( p );
 
         if( info.exists() && ( ( options & IgnoreExecBit ) || info.isExecutable())
