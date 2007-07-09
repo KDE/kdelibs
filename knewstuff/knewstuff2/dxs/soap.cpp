@@ -45,7 +45,7 @@ Soap::~Soap()
 {
 }
 
-void Soap::call(QDomElement element, QString endpoint)
+void Soap::call(const QDomElement& element, const QString &endpoint)
 {
 	if(m_inprogress)
 	{
@@ -65,7 +65,7 @@ void Soap::call(QDomElement element, QString endpoint)
 	m_inprogress = true;
 }
 
-void Soap::call_tree(QDomElement element, QString endpoint)
+void Soap::call_tree(const QDomElement& element, const QString &endpoint)
 {
 	Q_UNUSED(endpoint);
 
@@ -110,7 +110,7 @@ void Soap::call_tree(QDomElement element, QString endpoint)
 	m_buffer = QByteArray();
 }
 
-void Soap::call_soap(QDomElement element, QString endpoint)
+void Soap::call_soap(QDomElement element, const QString &endpoint)
 {
 	KUrl url(endpoint);
 
@@ -218,14 +218,14 @@ void Soap::slotResult(KJob *job)
 	}
 }
 
-QString Soap::localname(QDomNode node)
+QString Soap::localname(const QDomNode& node)
 {
 	QDomElement el = node.toElement();
 	QString s = el.tagName().section(":", -1);
 	return s;
 }
 
-QList<QDomNode> Soap::directChildNodes(QDomNode node, QString name)
+QList<QDomNode> Soap::directChildNodes(const QDomNode& node, const QString &name)
 {
 	QList<QDomNode> list;
 	QDomNode n = node.firstChild();
@@ -241,7 +241,7 @@ QList<QDomNode> Soap::directChildNodes(QDomNode node, QString name)
 	return list;
 }
 
-QString Soap::xpath(QDomNode node, QString expr)
+QString Soap::xpath(const QDomNode& node, const QString &expr)
 {
 //	if(m_model == canonicaltree)
 //	{
@@ -303,7 +303,7 @@ void Soap::slotSocket()
 	}
 }
 
-QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, QString data)
+QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, const QString& data)
 {
 	int start = -1, end = -1;
 	int offset = 0;

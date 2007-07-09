@@ -82,7 +82,7 @@ class KNEWSTUFF_EXPORT Provider
      * @param feedtype String representing the feed type
      * @param feed Feed to add to this provider
      */
-    void addDownloadUrlFeed( QString feedtype, Feed *feed );
+    void addDownloadUrlFeed( const QString& feedtype, Feed *feed );
 
     /**
      * Feed to retrieve for the given feed type.
@@ -93,7 +93,7 @@ class KNEWSTUFF_EXPORT Provider
      *
      * @return download feed of a certain feed type
      */
-    Feed *downloadUrlFeed( QString feedtype ) const;
+    Feed *downloadUrlFeed( const QString& feedtype ) const;
 
     /**
      * Returns a list of all feeds.

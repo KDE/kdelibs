@@ -41,13 +41,13 @@ Provider::~Provider()
   //qDeleteAll(mFeeds);
 }
 
-void Provider::addDownloadUrlFeed( QString feedtype, Feed *feed )
+void Provider::addDownloadUrlFeed( const QString& feedtype, Feed *feed )
 {
   mFeeds[feedtype] = feed;
   // FIXME: check for "blessed" feed types?
 }
 
-Feed *Provider::downloadUrlFeed( QString feedtype ) const
+Feed *Provider::downloadUrlFeed( const QString& feedtype ) const
 {
   if(mFeeds.contains(feedtype))
   {

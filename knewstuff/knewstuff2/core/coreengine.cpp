@@ -1217,7 +1217,7 @@ QString CoreEngine::pid(const Provider *p)
 	return QString();
 }
 
-bool CoreEngine::install(QString payloadfile)
+bool CoreEngine::install(const QString &payloadfile)
 {
 	QList<Entry*> entries = m_payloadfiles.keys(payloadfile);
 	if(entries.size() != 1)

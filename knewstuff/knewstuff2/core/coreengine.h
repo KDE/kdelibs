@@ -219,7 +219,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
      *
      * @note FIXME: use Entry as parameter
      */
-    bool install(QString payloadfile);
+    bool install(const QString& payloadfile);
 
     /**
      * Uninstalls an entry. It reverses the steps which were performed

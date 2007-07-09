@@ -32,8 +32,8 @@
 
 using namespace KNS;
 
-Engine::Engine()
-: DxsEngine()
+Engine::Engine( QWidget * parent)
+: DxsEngine(), m_parent(parent)
 {
 	m_command = command_none;
 	m_uploaddialog = NULL;
@@ -83,7 +83,7 @@ void Engine::workflow()
 			SIGNAL(signalEntriesFeedFinished(const KNS::Feed*)),
 			SLOT(slotEntriesFeedFinished(const KNS::Feed*)));
 
-		m_downloaddialog = new DownloadDialog(0);
+		m_downloaddialog = new DownloadDialog(m_parent);
 		m_downloaddialog->setEngine(this);
 		m_downloaddialog->show();
 
@@ -96,7 +96,7 @@ void Engine::workflow()
 	{
 		while((m_command == command_upload) || (m_command == command_download))
 		{
-			kapp->processEvents();
+			qApp->processEvents();
 		}
 	}
 }
@@ -151,7 +151,7 @@ void Engine::downloadDialog()
 	workflow();
 }
 
-KNS::Entry *Engine::upload(QString file)
+KNS::Entry *Engine::upload(const QString& file)
 {
 	KNS::Entry *entry = NULL;
 
@@ -174,7 +174,7 @@ KNS::Entry *Engine::upload(QString file)
 	return entry;
 }
 
-KNS::Entry *Engine::uploadDialogModal(QString file)
+KNS::Entry *Engine::uploadDialogModal(const QString& file)
 {
 	kDebug(550) << "Engine: uploadDialogModal" << endl;
 
@@ -187,7 +187,7 @@ KNS::Entry *Engine::uploadDialogModal(QString file)
 	return m_entry;
 }
 
-void Engine::uploadDialog(QString file)
+void Engine::uploadDialog(const QString& file)
 {
 	kDebug(550) << "Engine: uploadDialog" << endl;
 

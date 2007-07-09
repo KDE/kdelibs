@@ -48,7 +48,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      * As many engines as needed can be instantiated, although one should use
      * the static methods \ref download() and \ref upload() instead.
      */
-    Engine();
+    Engine( QWidget * parent = 0L);
 
     /**
      * \brief Engine destructor.
@@ -93,7 +93,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      *
      * @return Uploaded entry, or \b null in case of failures
      */
-    KNS::Entry *uploadDialogModal(QString file);
+    KNS::Entry *uploadDialogModal(const QString& file);
 
     /**
      * @brief Recommended upload workflow entry point.
@@ -108,7 +108,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      *
      * @see uploadDialogModal()
      */
-    static KNS::Entry *upload(QString file);
+    static KNS::Entry *upload(const QString &file);
 
     /**
      * @brief Asynchronous way of starting the download workflow.
@@ -130,7 +130,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      *
      * @see uploadDialogModal()
      */
-    void uploadDialog(QString file);
+    void uploadDialog(const QString& file);
 
   private Q_SLOTS:
     void slotProviderLoaded(KNS::Provider *provider);
@@ -159,6 +159,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
     Command m_command;
     UploadDialog *m_uploaddialog;
     DownloadDialog *m_downloaddialog;
+    QWidget *m_parent;
     QString m_uploadfile;
     KNS::Entry *m_entry;
     KNS::Provider::List m_providers;

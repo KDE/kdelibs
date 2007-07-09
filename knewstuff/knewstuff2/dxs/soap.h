@@ -64,10 +64,10 @@ public:
 
 	void setModel(Model m);
 
-	void call(QDomElement element, QString endpoint);
-	QString localname(QDomNode node);
-	QString xpath(QDomNode node, QString expr);
-	QList<QDomNode> directChildNodes(QDomNode node, QString name);
+	void call(const QDomElement& element, const QString &endpoint);
+	QString localname(const QDomNode& node);
+	QString xpath(const QDomNode& node, const QString &expr);
+	QList<QDomNode> directChildNodes(const QDomNode& node, const QString &name);
 
 signals:
 	void signalResult(QDomNode node);
@@ -80,9 +80,9 @@ private slots:
 	void slotSocketError(QAbstractSocket::SocketError error);
 
 private:
-	void call_soap(QDomElement element, QString endpoint);
-	void call_tree(QDomElement element, QString endpoint);
-	QDomDocument buildtree(QDomDocument doc, QDomElement cur, QString data);
+	void call_soap(QDomElement element, const QString& endpoint);
+	void call_tree(const QDomElement& element, const QString& endpoint);
+	QDomDocument buildtree(QDomDocument doc, QDomElement cur, const QString& data);
 
 	QString m_data;
 	Model m_model;
