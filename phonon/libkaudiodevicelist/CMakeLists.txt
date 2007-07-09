@@ -12,19 +12,22 @@ IF(ALSA_VERSION_STR AND NOT WIN32)
     ENDIF(VERSION_LESS OR VERSION_EQUAL)
 ENDIF(ALSA_VERSION_STR AND NOT WIN32)
 
-IF(NOT ALSA_FOUND)
-   SET(ASOUND_LIBRARY)
-   SET(ALSA_INCLUDES)
-ENDIF(NOT ALSA_FOUND)
+IF(ALSA_FOUND)
+   include_directories(${ALSA_INCLUDES})
+ENDIF(ALSA_FOUND)
 
-include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid ${ALSA_INCLUDES} ${KDE4_KIO_INCLUDES})
+include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid ${KDE4_KIO_INCLUDES})
 
 set(kaudiodevicelist_LIB_SRCS
 	audiodevice.cpp
 	audiodeviceenumerator.cpp
 	)
 kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
-target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS} ${ASOUND_LIBRARY})
+IF(ALSA_FOUND)
+  target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS} ${ASOUND_LIBRARY})
+ELSE(ALSA_FOUND)
+  target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS})
+ENDIF(ALSA_FOUND)
 
 set_target_properties(kaudiodevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
