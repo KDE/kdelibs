@@ -69,9 +69,14 @@ KDECORE_EXECUTABLE_TESTS(
  dbuscalltest
  kmdcodectest
  startserviceby
+)
+
+if(UNIX)
+KDECORE_EXECUTABLE_TESTS(
  k3processtest
  k3prociotest
 )
+endif(UNIX)
 
 ########### kmimetypetest ###############
 
