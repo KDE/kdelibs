@@ -238,7 +238,8 @@ public:
      * so the process can be parametrized properly and talked to.
      *
      * @param msecs time to wait for process to exit before killing it
-     * @return the exit code of the process or -1 on error
+     * @return -2 if the process could not be started, -1 if it crashed,
+     *  otherwise its exit code
      */
     int execute(int msecs = -1);
 
@@ -249,7 +250,8 @@ public:
      * @param args the command line arguments for the program,
      *   one per list element
      * @param msecs time to wait for process to exit before killing it
-     * @return the exit code of the process or -1 on error
+     * @return -2 if the process could not be started, -1 if it crashed,
+     *  otherwise its exit code
      */
     static int execute(const QString &exe, const QStringList &args = QStringList(), int msecs = -1);
 
@@ -259,7 +261,8 @@ public:
      * @param argv the program to execute and the command line arguments
      *   for the program, one per list element
      * @param msecs time to wait for process to exit before killing it
-     * @return the exit code of the process or -1 on error
+     * @return -2 if the process could not be started, -1 if it crashed,
+     *  otherwise its exit code
      */
     static int execute(const QStringList &argv, int msecs = -1);
 

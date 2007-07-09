@@ -296,7 +296,7 @@ int KProcess::execute(int msecs)
     if (!waitForFinished(msecs)) {
         kill();
         waitForFinished(-1);
-        return -1;
+        return -2;
     }
     return (exitStatus() == QProcess::NormalExit) ? exitCode() : -1;
 }
