@@ -46,8 +46,8 @@ public:
      * If \a listWidget is null then the widget will be disabled until a listWidget
      * is set with setListWidget().
      */
-    KListWidgetSearchLine( QWidget *parent = 0,
-                           QListWidget *listWidget = 0 );
+    explicit KListWidgetSearchLine( QWidget *parent = 0,
+                                    QListWidget *listWidget = 0 );
 
     /**
      * Destroys the KListWidgetSearchLine.

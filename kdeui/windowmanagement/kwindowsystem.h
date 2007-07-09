@@ -104,7 +104,7 @@ public:
      * higher). May be useful for pagers.
      * @return the list of all toplevel windows in stacking order
      */
-    static const QList<WId>& stackingOrder();
+    static QList<WId> stackingOrder();
     
     /**
      * Returns the currently active window, or 0 if no window is active.

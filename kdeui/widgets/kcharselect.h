@@ -103,7 +103,7 @@ public:
     /**
      * Constructor. @p controls can be used to show a custom set of widgets.
      */
-    KCharSelect(QWidget *parent, const Controls controls = AllGuiElements);
+    explicit KCharSelect(QWidget *parent, const Controls controls = AllGuiElements);
     ~KCharSelect();
     /**
      * Reimplemented.

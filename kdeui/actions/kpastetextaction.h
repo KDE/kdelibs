@@ -31,6 +31,7 @@
 
 class KMenu;
 
+class KPasteTextActionPrivate;
 /**
  * An action for pasting text from the clipboard.
  * It's useful for text handling applications as
@@ -98,11 +99,7 @@ protected Q_SLOTS:
 private:
     void init();
 
-    KMenu *m_popup;
-    bool m_mixedMode;
-
-    class KPasteTextActionPrivate;
-    KPasteTextActionPrivate *d;
+    KPasteTextActionPrivate * const d;
 };
 
 #endif

@@ -645,7 +645,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
 			                | WMPing; // or they can reply to this
     p->client_properties[ PROTOCOLS2 ] = WM2TakeActivity | WM2DesktopLayout;
 
-    role = WindowManager;
+    p->role = WindowManager;
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
@@ -705,7 +705,7 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     for( int i = 0; i < PROPERTIES_SIZE; ++i )
         p->properties[ i ] = 0;
 
-    role = Client;
+    p->role = Client;
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
@@ -751,7 +751,7 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     for( int i = 0; i < PROPERTIES_SIZE; ++i )
         p->properties[ i ] = 0;
 
-    role = Client;
+    p->role = Client;
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
@@ -768,7 +768,6 @@ NETRootInfo::NETRootInfo(const NETRootInfo &rootinfo) {
 #endif
 
     p = rootinfo.p;
-    role = rootinfo.role;
 
     p->ref++;
 }
@@ -800,7 +799,7 @@ void NETRootInfo::setDefaultProperties()
 }
 
 void NETRootInfo::activate() {
-    if (role == WindowManager) {
+    if (p->role == WindowManager) {
 
 #ifdef    NETWMDEBUG
 	fprintf(stderr,
@@ -821,7 +820,7 @@ void NETRootInfo::activate() {
 
 
 void NETRootInfo::setClientList(const Window *windows, unsigned int count) {
-    if (role != WindowManager) return;
+    if (p->role != WindowManager) return;
 
     p->clients_count = count;
 
@@ -840,7 +839,7 @@ void NETRootInfo::setClientList(const Window *windows, unsigned int count) {
 
 
 void NETRootInfo::setClientListStacking(const Window *windows, unsigned int count) {
-    if (role != WindowManager) return;
+    if (p->role != WindowManager) return;
 
     p->stacking_count = count;
     delete [] p->stacking;
@@ -863,10 +862,10 @@ void NETRootInfo::setNumberOfDesktops(int numberOfDesktops) {
 #ifdef    NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setNumberOfDesktops: setting desktop count to %d (%s)\n",
-	    numberOfDesktops, (role == WindowManager) ? "WM" : "Client");
+	    numberOfDesktops, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
-    if (role == WindowManager) {
+    if (p->role == WindowManager) {
 	p->number_of_desktops = numberOfDesktops;
  	long d = numberOfDesktops;
 	XChangeProperty(p->display, p->root, net_number_of_desktops, XA_CARDINAL, 32,
@@ -895,10 +894,10 @@ void NETRootInfo::setCurrentDesktop(int desktop, bool ignore_viewport) {
 #ifdef    NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setCurrentDesktop: setting current desktop = %d (%s)\n",
-	    desktop, (role == WindowManager) ? "WM" : "Client");
+	    desktop, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
-    if (role == WindowManager) {
+    if (p->role == WindowManager) {
 	p->current_desktop = desktop;
 	long d = p->current_desktop - 1;
 	XChangeProperty(p->display, p->root, net_current_desktop, XA_CARDINAL, 32,
@@ -967,10 +966,10 @@ void NETRootInfo::setDesktopGeometry(int , const NETSize &geometry) {
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setDesktopGeometry( -- , { %d, %d }) (%s)\n",
-	    geometry.width, geometry.height, (role == WindowManager) ? "WM" : "Client");
+	    geometry.width, geometry.height, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
-    if (role == WindowManager) {
+    if (p->role == WindowManager) {
 	p->geometry = geometry;
 
 	long data[2];
@@ -1002,12 +1001,12 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setDesktopViewport(%d, { %d, %d }) (%s)\n",
-	    desktop, viewport.x, viewport.y, (role == WindowManager) ? "WM" : "Client");
+	    desktop, viewport.x, viewport.y, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
     if (desktop < 1) return;
 
-    if (role == WindowManager) {
+    if (p->role == WindowManager) {
 	p->viewport[desktop - 1] = viewport;
 
 	int d, i, l;
@@ -1042,7 +1041,7 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
 
 
 void NETRootInfo::setSupported() {
-    if (role != WindowManager) {
+    if (p->role != WindowManager) {
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::setSupported - role != WindowManager\n");
 #endif
@@ -1502,10 +1501,10 @@ void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setActiveWindow(0x%lx) (%s)\n",
-            window, (role == WindowManager) ? "WM" : "Client");
+            window, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
-    if (role == WindowManager) {
+    if (p->role == WindowManager) {
 	p->active = window;
 	XChangeProperty(p->display, p->root, net_active_window, XA_WINDOW, 32,
 			PropModeReplace, (unsigned char *) &(p->active), 1);
@@ -1533,10 +1532,10 @@ void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea) {
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setWorkArea(%d, { %d, %d, %d, %d }) (%s)\n",
 	    desktop, workarea.pos.x, workarea.pos.y, workarea.size.width, workarea.size.height,
-	    (role == WindowManager) ? "WM" : "Client");
+	    (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
-    if (role != WindowManager || desktop < 1) return;
+    if (p->role != WindowManager || desktop < 1) return;
 
     p->workarea[desktop - 1] = workarea;
 
@@ -1558,7 +1557,7 @@ void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea) {
 
 
 void NETRootInfo::setVirtualRoots(const Window *windows, unsigned int count) {
-    if (role != WindowManager) return;
+    if (p->role != WindowManager) return;
 
     p->virtual_roots_count = count;
     delete[] p->virtual_roots;
@@ -1599,7 +1598,7 @@ void NETRootInfo::setDesktopLayout(NET::Orientation orientation, int columns, in
 
 
 void NETRootInfo::setShowingDesktop( bool showing ) {
-    if (role == WindowManager) {
+    if (p->role == WindowManager) {
 	long d = p->showing_desktop = showing;
 	XChangeProperty(p->display, p->root, net_showing_desktop, XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) &d, 1);
@@ -1728,7 +1727,7 @@ void NETRootInfo::restackRequest(Window window, RequestSource src, Window above,
 
 void NETRootInfo::sendPing( Window window, Time timestamp )
 {
-    if (role != WindowManager) return;
+    if (p->role != WindowManager) return;
 #ifdef   NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setPing: window 0x%lx, timestamp %lu\n",
 	window, timestamp );
@@ -1750,7 +1749,7 @@ void NETRootInfo::sendPing( Window window, Time timestamp )
 
 void NETRootInfo::takeActivity( Window window, Time timestamp, long flags )
 {
-    if (role != WindowManager) return;
+    if (p->role != WindowManager) return;
 #ifdef   NETWMDEBUG
     fprintf(stderr, "NETRootInfo::takeActivity: window 0x%lx, timestamp %lu, flags 0x%lx\n",
 	window, timestamp, flags );
@@ -1787,7 +1786,6 @@ const NETRootInfo &NETRootInfo::operator=(const NETRootInfo &rootinfo) {
     }
 
     p = rootinfo.p;
-    role = rootinfo.role;
     p->ref++;
 
     return *this;
@@ -1810,7 +1808,7 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 
     // the window manager will be interested in client messages... no other
     // client should get these messages
-    if (role == WindowManager && event->type == ClientMessage &&
+    if (p->role == WindowManager && event->type == ClientMessage &&
 	event->xclient.format == 32) {
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::event: handling ClientMessage event\n");
@@ -2105,7 +2103,7 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 		qsort(wins, nitems_ret, sizeof(Window), wcmp);
 
 		if (p->clients) {
-		    if (role == Client) {
+		    if (p->role == Client) {
 			unsigned long new_index = 0, old_index = 0;
 			unsigned long new_count = nitems_ret,
 				      old_count = p->clients_count;
@@ -2503,7 +2501,7 @@ const unsigned long* NETRootInfo::supportedProperties() const {
 }
 
 const unsigned long* NETRootInfo::passedProperties() const {
-    return role == WindowManager
+    return p->role == WindowManager
         ? p->properties
         : p->client_properties;
 }
@@ -2664,7 +2662,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->has_net_support = false;
     p->class_class = (char*) 0;
     p->class_name = (char*) 0;
-    p->role = (char*) 0;
+    p->window_role = (char*) 0;
     p->client_machine = (char*) 0;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
@@ -2684,7 +2682,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     p->icon_count = 0;
 
-    this->role = role;
+    p->role = role;
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
@@ -2725,7 +2723,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->has_net_support = false;
     p->class_class = (char*) 0;
     p->class_name = (char*) 0;
-    p->role = (char*) 0;
+    p->window_role = (char*) 0;
     p->client_machine = (char*) 0;
 
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
@@ -2740,7 +2738,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     p->icon_count = 0;
 
-    this->role = role;
+    p->role = role;
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
@@ -2776,7 +2774,6 @@ const NETWinInfo &NETWinInfo::operator=(const NETWinInfo &wininfo) {
     }
 
     p = wininfo.p;
-    role = wininfo.role;
     p->ref++;
 
     return *this;
@@ -2788,7 +2785,7 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
 }
 
 void NETWinInfo::setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Atom property, NETIcon icon, Bool replace) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     int proplen, i, sz, j;
 
@@ -2842,7 +2839,7 @@ void NETWinInfo::setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Ato
 
 
 void NETWinInfo::setIconGeometry(NETRect geometry) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     p->icon_geom = geometry;
 
@@ -2862,7 +2859,7 @@ void NETWinInfo::setIconGeometry(NETRect geometry) {
 
 
 void NETWinInfo::setExtendedStrut(const NETExtendedStrut& extended_strut ) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     p->extended_strut = extended_strut;
 
@@ -2886,7 +2883,7 @@ void NETWinInfo::setExtendedStrut(const NETExtendedStrut& extended_strut ) {
 
 
 void NETWinInfo::setStrut(NETStrut strut) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     p->strut = strut;
 
@@ -2914,7 +2911,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
         p->properties[ PROTOCOLS ] &= ~WMState;
     }
 
-    if (role == Client && p->mapping_state != Withdrawn) {
+    if (p->role == Client && p->mapping_state != Withdrawn) {
 
 #ifdef NETWMDEBUG
         fprintf(stderr, "NETWinInfo::setState (0x%lx, 0x%lx) (Client)\n",
@@ -3106,7 +3103,7 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
 
 
 void NETWinInfo::setWindowType(WindowType type) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     int len;
     long data[2];
@@ -3220,7 +3217,7 @@ void NETWinInfo::setWindowType(WindowType type) {
 
 
 void NETWinInfo::setName(const char *name) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     delete [] p->name;
     p->name = nstrdup(name);
@@ -3234,7 +3231,7 @@ void NETWinInfo::setName(const char *name) {
 
 
 void NETWinInfo::setVisibleName(const char *visibleName) {
-    if (role != WindowManager) return;
+    if (p->role != WindowManager) return;
 
     delete [] p->visible_name;
     p->visible_name = nstrdup(visibleName);
@@ -3248,7 +3245,7 @@ void NETWinInfo::setVisibleName(const char *visibleName) {
 
 
 void NETWinInfo::setIconName(const char *iconName) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     delete [] p->icon_name;
     p->icon_name = nstrdup(iconName);
@@ -3262,7 +3259,7 @@ void NETWinInfo::setIconName(const char *iconName) {
 
 
 void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
-    if (role != WindowManager) return;
+    if (p->role != WindowManager) return;
 
     delete [] p->visible_icon_name;
     p->visible_icon_name = nstrdup(visibleIconName);
@@ -3279,7 +3276,7 @@ void NETWinInfo::setDesktop(int desktop, bool ignore_viewport) {
     if (p->mapping_state_dirty)
 	updateWMState();
 
-    if (role == Client && p->mapping_state != Withdrawn) {
+    if (p->role == Client && p->mapping_state != Withdrawn) {
 	// we only send a ClientMessage if we are 1) a client and 2) managed
 
 	if ( desktop == 0 )
@@ -3324,7 +3321,7 @@ void NETWinInfo::setDesktop(int desktop, bool ignore_viewport) {
 
 
 void NETWinInfo::setPid(int pid) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     p->pid = pid;
     long d = pid;
@@ -3334,7 +3331,7 @@ void NETWinInfo::setPid(int pid) {
 
 
 void NETWinInfo::setHandledIcons(Bool handled) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     p->handled_icons = handled;
     long d = handled;
@@ -3343,7 +3340,7 @@ void NETWinInfo::setHandledIcons(Bool handled) {
 }
 
 void NETWinInfo::setStartupId(const char* id) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     delete[] p->startup_id;
     p->startup_id = nstrdup(id);
@@ -3353,7 +3350,7 @@ void NETWinInfo::setStartupId(const char* id) {
 }
 
 void NETWinInfo::setOpacity(unsigned long opacity) {
-//    if (role != Client) return;
+//    if (p->role != Client) return;
 
     p->opacity = opacity;
     XChangeProperty(p->display, p->window, net_wm_window_opacity, XA_CARDINAL, 32,
@@ -3361,7 +3358,7 @@ void NETWinInfo::setOpacity(unsigned long opacity) {
 }
 
 void NETWinInfo::setAllowedActions( unsigned long actions ) {
-    if( role != WindowManager )
+    if( p->role != WindowManager )
         return;
     long data[50];
     int count = 0;
@@ -3394,7 +3391,7 @@ void NETWinInfo::setAllowedActions( unsigned long actions ) {
 }
 
 void NETWinInfo::setFrameExtents(NETStrut strut) {
-    if (role != WindowManager) return;
+    if (p->role != WindowManager) return;
 
     p->frame_strut = strut;
 
@@ -3474,7 +3471,7 @@ NETIcon NETWinInfo::iconInternal(NETRArray<NETIcon>& icons, int icon_count, int 
 }
 
 void NETWinInfo::setUserTime( Time time ) {
-    if (role != Client) return;
+    if (p->role != Client) return;
 
     p->user_time = time;
     long d = time;
@@ -3497,7 +3494,7 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
     unsigned long& dirty2 = props[ PROTOCOLS2 ];
     bool do_update = false;
 
-    if (role == WindowManager && event->type == ClientMessage &&
+    if (p->role == WindowManager && event->type == ClientMessage &&
 	event->xclient.format == 32) {
 
 #ifdef NETWMDEBUG
@@ -4215,14 +4212,14 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
     }
 
     if( dirty2 & WM2WindowRole ) {
-        delete[] p->role;
-        p->role = NULL;
+        delete[] p->window_role;
+        p->window_role = NULL;
 	if (XGetWindowProperty(p->display, p->window, wm_window_role, 0l,
 			       MAX_PROP_SIZE, False, XA_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
-		p->role = nstrndup((const char *) data_ret, nitems_ret);
+		p->window_role = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 	    if( data_ret )
 		XFree(data_ret);
@@ -4373,7 +4370,7 @@ const char* NETWinInfo::windowClassName() const {
 }
 
 const char* NETWinInfo::windowRole() const {
-    return p->role;
+    return p->window_role;
 }
 
 const char* NETWinInfo::clientMachine() const {

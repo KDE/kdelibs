@@ -162,7 +162,7 @@ public:
   /**
    * Retrieves a list of all child clients.
    */
-  const QList<KXMLGUIClient*>& childClients();
+  QList<KXMLGUIClient*> childClients();
 
   /**
    * A client can have an own KXMLGUIBuilder.

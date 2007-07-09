@@ -38,7 +38,7 @@ public:
      * @param parent the parent of this object and of the widget displaying the job progresses
      * @param button true to display a stop button allowing to kill the job, false otherwise
      */
-    KStatusBarJobTracker(QWidget *parent = 0, bool button = true);
+    explicit KStatusBarJobTracker(QWidget *parent = 0, bool button = true);
 
     /**
      * Destroys a KStatusBarJobTracker

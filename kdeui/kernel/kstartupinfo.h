@@ -531,7 +531,7 @@ class KDEUI_EXPORT KStartupInfoData
 	 * @return the WM_CLASS value for the startup notification, or empty
 	 *         if not set
 	 */
-        const QByteArray& WMClass() const;
+        QByteArray WMClass() const;
 	/**
 	 * Adds a PID to the list of processes that belong to the startup notification. It
 	 * may be used to increase the chance that the windows created by the starting
@@ -544,7 +544,7 @@ class KDEUI_EXPORT KStartupInfoData
 	 * Returns all PIDs for the startup notification.
 	 * @return the list of all PIDs
 	 */
-        const QList< pid_t >& pids() const;
+        QList< pid_t > pids() const;
 	/**
 	 * Checks whether the given @p pid is in the list of PIDs for starup
 	 * notification.
@@ -561,7 +561,7 @@ class KDEUI_EXPORT KStartupInfoData
 	 * Returns the hostname for the startup notification.
 	 * @return the hostname
 	 */
-        const QByteArray& hostname() const;
+        QByteArray hostname() const;
 
 	/**
 	 *

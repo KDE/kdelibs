@@ -460,7 +460,7 @@ public:
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
     ItemProperty(const QString & _group, const QString & _key,
-                 QVariant & reference, QVariant defaultValue = 0);
+                 QVariant & reference, const QVariant & defaultValue = 0);
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);

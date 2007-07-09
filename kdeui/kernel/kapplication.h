@@ -410,9 +410,6 @@ private Q_SLOTS:
 private:
   QString sessionConfigName() const;
 
-  KConfig* pSessionConfig; //instance specific application config object
-  bool bSessionManagement;
-
   void init(bool GUIenabled=true);
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
   void preqapplicationhack();

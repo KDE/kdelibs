@@ -270,7 +270,7 @@ QTreeWidget *KTreeWidgetSearchLine::treeWidget() const
     return 0;
 }
 
-const QList<QTreeWidget *> &KTreeWidgetSearchLine::treeWidgets() const
+QList<QTreeWidget *> KTreeWidgetSearchLine::treeWidgets() const
 {
   return d->treeWidgets;
 }

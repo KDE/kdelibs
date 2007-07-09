@@ -21,8 +21,12 @@
 #include <kmessagebox.h>
 
 KMessageBoxMessageHandler::KMessageBoxMessageHandler(QWidget *parent)
- : QObject(parent), KMessageHandler()
+ : QObject(parent), KMessageHandler(), d(0)
 {}
+
+KMessageBoxMessageHandler::~KMessageBoxMessageHandler()
+{
+}
 
 void KMessageBoxMessageHandler::message(KMessage::MessageType messageType, const QString &text, const QString &caption)
 {

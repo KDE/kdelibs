@@ -324,7 +324,7 @@ public:
     /**
      * List of members of KMainWindow class.
      */
-    static const QList<KMainWindow*>& memberList();
+    static QList<KMainWindow*> memberList();
 
     /**
      * Returns a pointer to the toolbar with the specified name.

@@ -218,7 +218,7 @@ public:
     KWindowInfo& operator=( const KWindowInfo& );
 private:
     class Private;
-    Private * d;
+    Private * d; //krazy:exclude=dpointer (implicitly shared)
 };
 #endif //Q_WS_X11
 

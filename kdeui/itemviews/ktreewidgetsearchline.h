@@ -105,7 +105,7 @@ class KDEUI_EXPORT KTreeWidgetSearchLine : public KLineEdit
      *
      * @see setTreeWidgets(), addTreeWidget(), treeWidget()
      */
-    const QList<QTreeWidget *> &treeWidgets() const;
+    QList<QTreeWidget *> treeWidgets() const;
 
   public Q_SLOTS:
     /**
@@ -275,7 +275,7 @@ class KDEUI_EXPORT KTreeWidgetSearchLineWidget : public QWidget
      * Creates a KTreeWidgetSearchLineWidget for \a treeWidget with \a parent as the
      * parent.
      */
-    KTreeWidgetSearchLineWidget( QWidget *parent = 0, QTreeWidget *treeWidget = 0 );
+    explicit KTreeWidgetSearchLineWidget( QWidget *parent = 0, QTreeWidget *treeWidget = 0 );
 
     /**
      * Destroys the KTreeWidgetSearchLineWidget

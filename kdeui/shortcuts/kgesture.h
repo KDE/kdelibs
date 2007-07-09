@@ -32,6 +32,7 @@
  */
 
 
+class KShapeGesturePrivate;
 //TODO: implement operator== for special situations like in KKeyChooser.
 class KDEUI_EXPORT KShapeGesture
 {
@@ -138,10 +139,8 @@ public:
     uint hashable() const;
 private:
     inline float metric(float dx, float dy) const;
-    QPolygon m_shape;
-    QVector<float> m_lengthTo;
-    float m_curveLength;
-    QString m_friendlyName;
+
+    KShapeGesturePrivate * const d;
 };
 
 uint qHash(int);
@@ -149,6 +148,8 @@ inline uint qHash(const KShapeGesture &key)
 {
     return qHash(key.hashable());
 }
+
+class KRockerGesturePrivate;
 
 class KDEUI_EXPORT KRockerGesture
 {
@@ -236,7 +237,7 @@ public:
      */
     uint hashable() const;
 private:
-    Qt::MouseButton m_hold, m_thenPush;
+    KRockerGesturePrivate * const d;
 };
 
 inline uint qHash(const KRockerGesture &key)

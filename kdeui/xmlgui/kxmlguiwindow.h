@@ -292,7 +292,7 @@ public:
      *
      * @see StandardWindowOptions
      */
-    void setupGUI( QSize defaultSize, StandardWindowOptions options = Default, const QString& xmlfile = QString() );
+    void setupGUI( const QSize& defaultSize, StandardWindowOptions options = Default, const QString& xmlfile = QString() );
 
     /**
      * Returns a pointer to the mainwindows action responsible for the toolbars menu

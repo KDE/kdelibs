@@ -1398,7 +1398,7 @@ const QByteArray KStartupInfoData::findWMClass() const
     return bin().toUtf8();
     }
 
-const QByteArray& KStartupInfoData::WMClass() const
+QByteArray KStartupInfoData::WMClass() const
     {
     return d->wmclass;
     }
@@ -1417,7 +1417,7 @@ void KStartupInfoData::setHostname( const QByteArray& hostname_P )
         }
     }
 
-const QByteArray& KStartupInfoData::hostname() const
+QByteArray KStartupInfoData::hostname() const
     {
     return d->hostname;
     }
@@ -1433,7 +1433,7 @@ void KStartupInfoData::remove_pid( pid_t pid_P )
     d->pids.removeAll( pid_P );
     }
 
-const QList< pid_t >& KStartupInfoData::pids() const
+QList< pid_t > KStartupInfoData::pids() const
     {
     return d->pids;
     }

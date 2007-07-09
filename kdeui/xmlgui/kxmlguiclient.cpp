@@ -577,7 +577,7 @@ void KXMLGUIClient::removeChildClient( KXMLGUIClient *child )
   return true;
 }*/
 
-const QList<KXMLGUIClient*>& KXMLGUIClient::childClients()
+QList<KXMLGUIClient*> KXMLGUIClient::childClients()
 {
   return d->m_children;
 }

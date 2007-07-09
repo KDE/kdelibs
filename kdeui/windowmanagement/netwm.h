@@ -769,7 +769,6 @@ private:
     void setSupported();
     void setDefaultProperties();
     void updateSupportedProperties( Atom atom );
-    Role role;
 
 protected:
     /** Virtual hook, used to add new "virtual" functions while maintaining
@@ -777,7 +776,7 @@ protected:
     */
     virtual void virtual_hook( int id, void* data );
 private:
-    NETRootInfoPrivate *p;
+    NETRootInfoPrivate *p; // krazy:exclude=dpointer (implicitly shared)
 };
 
 /**
@@ -1265,7 +1264,6 @@ private:
     void updateWMState();
     void setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Atom property, NETIcon icon, Bool replace);
     NETIcon iconInternal(NETRArray<NETIcon>& icons, int icon_count, int width, int height) const;
-    Role role;
 
 protected:
     /** Virtual hook, used to add new "virtual" functions while maintaining
@@ -1273,7 +1271,7 @@ protected:
     */
     virtual void virtual_hook( int id, void* data );
 private:
-    NETWinInfoPrivate *p;
+    NETWinInfoPrivate *p; // krazy:exclude=dpointer (implicitly shared)
 };
 
 

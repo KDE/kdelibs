@@ -25,6 +25,7 @@
 #include <QtCore/QObject>
 
 class QWidget;
+class KMessageBoxMessageHandlerPrivate;
 /**
  * @brief This is a convience KMessageHandler that use KMessageBox.
  *
@@ -39,6 +40,8 @@ public:
      * @param parent Parent widget to use for the KMessageBox.
      */
     explicit KMessageBoxMessageHandler(QWidget *parent = 0);
+
+    virtual ~KMessageBoxMessageHandler();
 
     /**
      * @copydoc KMessageHandler::message
@@ -58,6 +61,8 @@ private:
      * @return the parent widget.
      */
     QWidget *parentWidget();
+
+    KMessageBoxMessageHandlerPrivate * const d;
 };
 
 #endif

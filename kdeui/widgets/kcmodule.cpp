@@ -216,7 +216,7 @@ QString KCModule::quickHelp() const
     return d->_quickHelp;
 }
 
-const QList<KConfigDialogManager*>& KCModule::configs() const
+QList<KConfigDialogManager*> KCModule::configs() const
 {
     return d->managers;
 }

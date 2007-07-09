@@ -145,7 +145,7 @@ public:
    * Constructs a colors selector with orientation o which
    * contains a gradient between white and black.
    */
-  KGradientSelector( Qt::Orientation o, QWidget *parent=0 );
+  explicit KGradientSelector( Qt::Orientation o, QWidget *parent=0 );
   /**
    * Destructs the widget.
    */

@@ -161,7 +161,7 @@ void KUrlLabel::setUrl( const QString& url )
   d->url = url;
 }
 
-const QString& KUrlLabel::url() const
+QString KUrlLabel::url() const
 {
   return d->url;
 }
@@ -208,7 +208,7 @@ bool KUrlLabel::useTips() const
   return d->useTips;
 }
 
-const QString& KUrlLabel::tipText() const
+QString KUrlLabel::tipText() const
 {
   return d->tipText;
 }

@@ -217,11 +217,11 @@ void KWindowSystem::doNotManage( const QString& title )
   kDebug() << "KWindowSystem::doNotManage( const QString& title ) isn't yet implemented!" << endl;
 }
 
-const QList<WId>& KWindowSystem::stackingOrder()
+QList<WId> KWindowSystem::stackingOrder()
 {
   //TODO
-  static QList<WId> lst;
-  kDebug() << "const QList<WId>& KWindowSystem::stackingOrder() isn't yet implemented!" << endl;
+  QList<WId> lst;
+  kDebug() << "QList<WId> KWindowSystem::stackingOrder() isn't yet implemented!" << endl;
   return lst;
 }
 

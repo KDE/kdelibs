@@ -68,13 +68,13 @@ public:
      * Same as above but allows one to define the icon by name that should
      * be used for the system tray icon.
      */
-    KSystemTrayIcon( const QString& icon, QWidget* parent = 0 );
+    explicit KSystemTrayIcon( const QString& icon, QWidget* parent = 0 );
 
     /**
      * Same as above but allows one to define the icon by name that should
      * be used for the system tray icon.
      */
-    KSystemTrayIcon( const QIcon& icon, QWidget* parent = 0 );
+    explicit KSystemTrayIcon( const QIcon& icon, QWidget* parent = 0 );
 
     /*
       Destructor

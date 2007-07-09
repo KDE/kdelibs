@@ -249,7 +249,7 @@ private:
 
 private:
     class Private;
-    Private *d;
+    Private * const d;
 
     Q_DISABLE_COPY(KFontChooser)
 

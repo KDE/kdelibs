@@ -532,7 +532,7 @@ QString KCharSelectData::categoryText(QChar::Category category)
     }
 }
 
-QList<QChar> KCharSelectData::find(QString needle)
+QList<QChar> KCharSelectData::find(const QString& needle)
 {
     QList<QChar> res;
     QStringList searchStrings = needle.simplified().split(' ');

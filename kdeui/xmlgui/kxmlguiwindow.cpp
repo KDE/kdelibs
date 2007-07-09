@@ -177,7 +177,7 @@ void KXmlGuiWindow::setupGUI( StandardWindowOptions options, const QString & xml
     setupGUI(QSize(), options, xmlfile);
 }
 
-void KXmlGuiWindow::setupGUI( QSize defaultSize, StandardWindowOptions options, const QString & xmlfile ) {
+void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions options, const QString & xmlfile ) {
     if( options & Keys ){
         KStandardAction::keyBindings(guiFactory(),
                     SLOT(configureShortcuts()), actionCollection());

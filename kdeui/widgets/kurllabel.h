@@ -108,12 +108,12 @@ class KDEUI_EXPORT KUrlLabel : public QLabel
     /**
      * Returns the URL.
      */
-    const QString& url() const;
+    QString url() const;
 
     /**
      * Returns the current tooltip text.
      */
-    const QString& tipText() const;
+    QString tipText() const;
 
     /**
      * @return true if a tooltip will be displayed.

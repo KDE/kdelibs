@@ -128,12 +128,12 @@ public:
    *
    * \sa addAssociatedWidget(), setAssociatedWidget(), removeAssociatedWidget(), and clearAssociatedWidgets().
    */
-  const QList<QWidget*>& associatedWidgets() const;
+  QList<QWidget*> associatedWidgets() const;
 
   /**
    * Returns the KConfig group with which settings will be loaded and saved.
    */
-  const QString& configGroup() const;
+  QString configGroup() const;
 
   /**
    * Returns whether this action collection's configuration should be global to KDE ( \e true ),
@@ -225,7 +225,7 @@ public:
   void setComponentData(const KComponentData &componentData);
 
   /** The KComponentData with which this class is associated. */
-  const KComponentData &componentData() const;
+  KComponentData componentData() const;
 
   /**
    * The parent KXMLGUIClient, or null if not available.

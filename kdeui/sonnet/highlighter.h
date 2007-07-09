@@ -34,9 +34,9 @@ namespace Sonnet
     {
 	Q_OBJECT
     public:
-        Highlighter(QTextEdit *textEdit,
-                    const QString &configFile = QString(),
-                    const QColor &col=QColor());
+        explicit Highlighter(QTextEdit *textEdit,
+                             const QString &configFile = QString(),
+                             const QColor &col=QColor());
         ~Highlighter();
 
 	bool spellCheckerFound() const;

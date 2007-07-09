@@ -74,10 +74,10 @@ public:
      *        replace with
      * @param hasSelection Whether a selection exists
      */
-    KReplaceDialog( QWidget *parent = 0, long options = 0,
-		    const QStringList &findStrings = QStringList(),
-		    const QStringList &replaceStrings = QStringList(),
-		    bool hasSelection = true );
+    explicit KReplaceDialog( QWidget *parent = 0, long options = 0,
+                             const QStringList &findStrings = QStringList(),
+                             const QStringList &replaceStrings = QStringList(),
+                             bool hasSelection = true );
 
     /**
      * Destructor.

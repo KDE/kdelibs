@@ -63,7 +63,7 @@ public:
      * Constructor that takes a KGuiItem for the text, the icon, the tooltip
      * and the what's this help
      */
-    KPushButton( const KGuiItem &item, QWidget *parent = 0 );
+    explicit KPushButton( const KGuiItem &item, QWidget *parent = 0 );
 
     /**
      * Destructs the button.

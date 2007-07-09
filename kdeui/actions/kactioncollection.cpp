@@ -155,7 +155,7 @@ void KActionCollection::setComponentData(const KComponentData &cData)
   }
 }
 
-const KComponentData &KActionCollection::componentData() const
+KComponentData KActionCollection::componentData() const
 {
   return d->m_componentData;
 }
@@ -329,12 +329,12 @@ void KActionCollection::clearAssociatedWidgets()
     removeAssociatedWidget(d->associatedWidgets.first());
 }
 
-const QList<QWidget*>& KActionCollection::associatedWidgets() const
+QList<QWidget*> KActionCollection::associatedWidgets() const
 {
   return d->associatedWidgets;
 }
 
-const QString & KActionCollection::configGroup( ) const
+QString KActionCollection::configGroup( ) const
 {
   return d->configGroup;
 }

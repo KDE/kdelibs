@@ -189,7 +189,7 @@ public:
   /**
    * @return a list of @ref KConfigDialogManager's in use, if any.
    */
-  const QList<KConfigDialogManager*>& configs() const;
+  QList<KConfigDialogManager*> configs() const;
 
 public Q_SLOTS:
   /**

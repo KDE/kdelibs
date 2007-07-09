@@ -50,9 +50,10 @@ public:
     void initStyleOption(QStyleOptionButton* opt) const;    
 };
 
-KColorButton::KColorButton( QWidget *parent ) : QPushButton( parent )
+KColorButton::KColorButton( QWidget *parent )
+  : QPushButton( parent )
+  , d( new KColorButtonPrivate(this) )
 {
-  d = new KColorButtonPrivate(this);
   d->m_bdefaultColor = false;
   d->m_defaultColor = QColor();
   setAcceptDrops( true);
@@ -61,9 +62,10 @@ KColorButton::KColorButton( QWidget *parent ) : QPushButton( parent )
   connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
 
-KColorButton::KColorButton( const QColor &c, QWidget *parent ) : QPushButton( parent )
+KColorButton::KColorButton( const QColor &c, QWidget *parent )
+  : QPushButton( parent )
+  , d( new KColorButtonPrivate(this) )
 {
-  d = new KColorButtonPrivate(this);
   d->col = c;
   d->m_bdefaultColor = false;
   d->m_defaultColor = QColor();
@@ -75,8 +77,8 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent ) : QPushButton( pa
 
 KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent )
   : QPushButton( parent )
+  , d( new KColorButtonPrivate(this) )
 {
-  d = new KColorButtonPrivate(this);
   d->col = c;
   d->m_bdefaultColor = true;
   d->m_defaultColor = defaultColor;

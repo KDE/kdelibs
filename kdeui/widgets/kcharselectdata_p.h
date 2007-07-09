@@ -56,7 +56,7 @@ public:
 
     static QString categoryText(QChar::Category category);
 
-    static QList<QChar> find(QString s);
+    static QList<QChar> find(const QString& s);
 };
 
 #endif  /* #ifndef KCHARSELECTDATA_H */

@@ -366,7 +366,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     emit clientRemoved( client );
 }
 
-const QList<KXMLGUIClient*>& KXMLGUIFactory::clients() const
+QList<KXMLGUIClient*> KXMLGUIFactory::clients() const
 {
     return d->m_clients;
 }

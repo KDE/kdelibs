@@ -35,8 +35,8 @@ class KDEUI_EXPORT KSvgRenderer : public QSvgRenderer
 
 public:
     KSvgRenderer(QObject *parent = 0);
-    KSvgRenderer(const QString &filename, QObject *parent = 0);
-    KSvgRenderer(const QByteArray &contents, QObject *parent = 0);
+    explicit KSvgRenderer(const QString &filename, QObject *parent = 0);
+    explicit KSvgRenderer(const QByteArray &contents, QObject *parent = 0);
 
 public Q_SLOTS:
     bool load(const QString &filename);

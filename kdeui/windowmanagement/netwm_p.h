@@ -81,6 +81,8 @@ private:
 **/
 
 struct NETRootInfoPrivate {
+    NET::Role role;
+
     // information about the X server
     Display *display;
     NETSize rootSize;
@@ -119,6 +121,8 @@ struct NETRootInfoPrivate {
 **/
 
 struct NETWinInfoPrivate {
+    NET::Role role;
+
     Display *display;
     Window window, root;
     NET::MappingState mapping_state;
@@ -142,7 +146,7 @@ struct NETWinInfoPrivate {
     unsigned long opacity;
     Window transient_for, window_group;
     unsigned long allowed_actions;
-    char* class_class, *class_name, *role, *client_machine;
+    char* class_class, *class_name, *window_role, *client_machine;
 
     unsigned long properties[ 2 ];
     bool has_net_support;

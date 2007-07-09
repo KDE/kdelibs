@@ -26,7 +26,7 @@
 class PageItem
 {
     public:
-        PageItem(KPageWidgetItem *pageItem, PageItem *parent = 0);
+        explicit PageItem(KPageWidgetItem *pageItem, PageItem *parent = 0);
         ~PageItem();
 
         void appendChild(PageItem *child);

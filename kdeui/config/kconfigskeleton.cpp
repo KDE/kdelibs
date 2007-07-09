@@ -234,7 +234,7 @@ QVariant KConfigSkeleton::ItemUrl::property() const
 KConfigSkeleton::ItemProperty::ItemProperty( const QString &_group,
                                         const QString &_key,
                                         QVariant &reference,
-                                        QVariant defaultValue )
+                                        const QVariant &defaultValue )
   : KConfigSkeletonGenericItem<QVariant>( _group, _key, reference, defaultValue )
 {
 }

@@ -136,7 +136,7 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
   /**
    * Returns a list of all clients currently added to this factory
    */
-  const QList<KXMLGUIClient*>& clients() const;
+  QList<KXMLGUIClient*> clients() const;
 
   /**
    * Use this method to get access to a container widget with the name specified with @p containerName

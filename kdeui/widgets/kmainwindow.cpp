@@ -989,7 +989,7 @@ QList<KToolBar*> KMainWindow::toolBars() const
     return ret;
 }
 
-const QList<KMainWindow*>& KMainWindow::memberList() { return sMemberList; }
+QList<KMainWindow*> KMainWindow::memberList() { return sMemberList; }
 
 #include "kmainwindow.moc"
 

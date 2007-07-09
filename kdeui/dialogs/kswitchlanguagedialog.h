@@ -78,7 +78,7 @@ class KDEUI_EXPORT KSwitchLanguageDialog : public KDialog
         */
         virtual void removeButtonClicked();
         
-    protected:
+    private:
         KSwitchLanguageDialogPrivate * const d;
         
         friend class KSwitchLanguageDialogPrivate;

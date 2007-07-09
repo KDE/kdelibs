@@ -374,7 +374,7 @@ bool KWindowSystem::hasWId(WId w)
     return s_d_func()->windows.contains( w );
 }
 
-const QList<WId>& KWindowSystem::stackingOrder()
+QList<WId> KWindowSystem::stackingOrder()
 {
     init( INFO_BASIC );
     return s_d_func()->stackingOrder;

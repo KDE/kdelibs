@@ -101,7 +101,7 @@ protected:
 
 private:
     class KColorButtonPrivate;
-    KColorButtonPrivate *d;
+    KColorButtonPrivate * const d;
 };
 
 #endif

@@ -43,7 +43,7 @@ class KDEUI_EXPORT KColorTable : public QWidget
 {
   Q_OBJECT
 public:
-  KColorTable( QWidget *parent, int minWidth=210, int cols = 16);
+  explicit KColorTable( QWidget *parent, int minWidth=210, int cols = 16);
   ~KColorTable();
   
   void addToCustomColors( const QColor &);
@@ -222,7 +222,7 @@ class KDEUI_EXPORT KColorDialog : public KDialog
     /**
      * Constructs a color selection dialog.
      */
-    KColorDialog( QWidget *parent = 0L, bool modal = false );
+    explicit KColorDialog( QWidget *parent = 0L, bool modal = false );
     /**
      * Destroys the color selection dialog.
      */

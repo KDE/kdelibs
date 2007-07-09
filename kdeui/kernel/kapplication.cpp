@@ -168,6 +168,8 @@ public:
       , oldXErrorHandler(0)
       , oldXIOErrorHandler(0)
 #endif
+      ,pSessionConfig( 0 )
+      ,bSessionManagement( true )
   {
   }
 
@@ -182,6 +184,8 @@ public:
       , oldXErrorHandler(0)
       , oldXIOErrorHandler(0)
 #endif
+      ,pSessionConfig( 0 )
+      ,bSessionManagement( true )
   {
   }
 
@@ -196,6 +200,8 @@ public:
       ,oldXErrorHandler( 0 )
       ,oldXIOErrorHandler( 0 )
 #endif
+      ,pSessionConfig( 0 )
+      ,bSessionManagement( true )
   {
   }
 
@@ -216,6 +222,9 @@ public:
 
   QString sessionKey;
   QString pSessionConfigFile;
+
+  KConfig* pSessionConfig; //instance specific application config object
+  bool bSessionManagement;
 };
 
 
@@ -606,9 +615,6 @@ void KApplication::init(bool GUIenabled)
       rtl = !rtl;
   setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
 
-  pSessionConfig = 0L;
-  bSessionManagement = true;
-
   qRegisterMetaType<KUrl>();
   qRegisterMetaType<KUrl::List>();
 
@@ -624,9 +630,9 @@ KApplication* KApplication::kApplication()
 
 KConfig* KApplication::sessionConfig()
 {
-    if (!pSessionConfig) // create an instance specific config object
-        pSessionConfig = new KConfig( sessionConfigName(), KConfig::NoGlobals );
-    return pSessionConfig;
+    if (!d->pSessionConfig) // create an instance specific config object
+        d->pSessionConfig = new KConfig( sessionConfigName(), KConfig::NoGlobals );
+    return d->pSessionConfig;
 }
 
 void KApplication::reparseConfiguration()
@@ -640,11 +646,11 @@ void KApplication::quit()
 }
 
 void KApplication::disableSessionManagement() {
-  bSessionManagement = false;
+  d->bSessionManagement = false;
 }
 
 void KApplication::enableSessionManagement() {
-  bSessionManagement = true;
+  d->bSessionManagement = true;
 #ifdef Q_WS_X11
   // Session management support in Qt/KDE is awfully broken.
   // If konqueror disables session management right after its startup,
@@ -708,7 +714,7 @@ commitDataRestart:
         }
     }
 
-    if ( !bSessionManagement )
+    if ( !d->bSessionManagement )
         sm.setRestartHint( QSessionManager::RestartNever );
     else
         sm.setRestartHint( QSessionManager::RestartIfRunning );
@@ -722,7 +728,7 @@ void KApplication::saveState( QSessionManager& sm )
     static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
 
-    if ( !bSessionManagement ) {
+    if ( !d->bSessionManagement ) {
         sm.setRestartHint( QSessionManager::RestartNever );
 	d->session_save = false;
         return;
@@ -742,9 +748,9 @@ void KApplication::saveState( QSessionManager& sm )
     // discard commands. In fact it would be harmful to remove the
     // file here, as the session might be stored under a different
     // name, meaning the user still might need it eventually.
-    if ( pSessionConfig ) {
-        delete pSessionConfig;
-        pSessionConfig = 0;
+    if ( d->pSessionConfig ) {
+        delete d->pSessionConfig;
+        d->pSessionConfig = 0;
     }
 
     // tell the session manager about our new lifecycle
@@ -778,8 +784,8 @@ void KApplication::saveState( QSessionManager& sm )
     }
 
     // if we created a new session config object, register a proper discard command
-    if ( pSessionConfig ) {
-        pSessionConfig->sync();
+    if ( d->pSessionConfig ) {
+        d->pSessionConfig->sync();
         QStringList discard;
         discard  << QLatin1String("rm") << KStandardDirs::locateLocal("config", sessionConfigName());
         sm.setDiscardCommand( discard );
@@ -921,7 +927,9 @@ bool KApplication::x11EventFilter( XEvent *_event )
         case ClientMessage:
         {
 #if KDE_IS_VERSION( 3, 90, 90 )
+#ifdef __GNUC__
 #warning This should be already in Qt, check.
+#endif
 #endif
         // Workaround for focus stealing prevention not working when dragging e.g. text from KWrite
         // to KDesktop -> the dialog asking for filename doesn't get activated. This is because
