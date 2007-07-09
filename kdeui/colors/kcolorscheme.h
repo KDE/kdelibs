@@ -35,7 +35,7 @@ class KColorSchemePrivate;
  * A set of methods used to work with colors.
  *
  * KColorScheme currently provides access to the system color palette that the
- * user has selected (In the future, it is expected to do more). As of KDE4,
+ * user has selected (in the future, it is expected to do more). As of KDE4,
  * this class is the correct way to look up colors from the system palette,
  * as opposed to KGlobalSettings (such usage is deprecated). It greatly expands
  * on KGlobalSettings and QPalette by providing five distinct "sets" with
