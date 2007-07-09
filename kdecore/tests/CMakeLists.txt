@@ -2,14 +2,12 @@ include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 MACRO(KDECORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_automoc(${_testname}.cpp)
                kde4_add_unit_test(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KDECORE_UNIT_TESTS)
 MACRO(KDECORE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_automoc(${_testname}.cpp)
                kde4_add_test_executable(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
@@ -82,7 +80,6 @@ endif(UNIX)
 
 # compile kmimemagicrule.cpp into the test since it's not exported and we call match().
 set(kmimetypetest_SRCS kmimetypetest.cpp ../services/kmimemagicrule.cpp)
-kde4_automoc(${kmimetypetest_SRCS})
 kde4_add_unit_test(kmimetypetest ${kmimetypetest_SRCS})
 target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 
@@ -90,7 +87,6 @@ target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 
 set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
 
-kde4_automoc(${klibloadertestmodule_PART_SRCS})
 
 kde4_add_plugin(klibloadertestmodule WITH_PREFIX ${klibloadertestmodule_PART_SRCS})
 
@@ -102,7 +98,6 @@ set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUI
 
 set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 
-kde4_automoc(${klibloadertestmodule4_PART_SRCS})
 
 kde4_add_plugin(klibloadertestmodule4 WITH_PREFIX ${klibloadertestmodule4_PART_SRCS})
 

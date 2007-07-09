@@ -48,10 +48,6 @@ set(knewstuff2_SRCS
   engine.cpp
 )
 
-kde4_automoc(${knewstuff2_core_SRCS})
-kde4_automoc(${knewstuff2_dxs_SRCS})
-kde4_automoc(${knewstuff2_ui_SRCS})
-kde4_automoc(${knewstuff2_SRCS})
 
 kde4_add_library(knewstuff2 SHARED ${knewstuff2_core_SRCS} ${knewstuff2_dxs_SRCS} ${knewstuff2_ui_SRCS} ${knewstuff2_SRCS})
 

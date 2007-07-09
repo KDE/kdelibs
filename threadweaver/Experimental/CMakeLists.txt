@@ -7,7 +7,6 @@ set(ThreadWeaverExperimental_LIB_SRCS
     FileLoaderJob.cpp
 )
 
-KDE4_AUTOMOC(${ThreadWeaverExperimental_LIB_SRCS})
 
 include_directories( ../Weaver/ )
 

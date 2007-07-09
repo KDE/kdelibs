@@ -6,7 +6,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/kwallet/backend ${CMAKE_SOURCE_DIR}/kwa
 
 set(backendtest_SRCS backendtest.cpp )
 
-kde4_automoc(${backendtest_SRCS})
 
 kde4_add_test_executable(backendtest ${backendtest_SRCS})
 
@@ -17,7 +16,6 @@ target_link_libraries(backendtest  ${KDE4_KDECORE_LIBS} )
 
 set(testbf_SRCS testbf.cpp )
 
-kde4_automoc(${testbf_SRCS})
 
 kde4_add_test_executable(testbf ${testbf_SRCS})
 
@@ -28,7 +26,6 @@ target_link_libraries(testbf  ${KDE4_KDECORE_LIBS} )
 
 set(testsha_SRCS testsha.cpp )
 
-kde4_automoc(${testsha_SRCS})
 
 kde4_add_test_executable(testsha ${testsha_SRCS})
 

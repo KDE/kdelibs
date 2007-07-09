@@ -11,7 +11,6 @@ set(nepomuk_rcgen_SRCS
   resourceclass.cpp
   ontologyparser.cpp)
 
-kde4_automoc(${nepomuk_rcgen_SRCS})
 kde4_add_executable(nepomuk-rcgen ${nepomuk_rcgen_SRCS})
 target_link_libraries(nepomuk-rcgen
   ${SOPRANO_LIBRARIES}

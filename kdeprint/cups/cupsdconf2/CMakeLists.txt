@@ -29,7 +29,6 @@ qdirmultilineedit.cpp
 sizewidget.cpp
 )
 
-kde4_automoc(${cupsdconf_KDEINIT_SRCS})
 
 kde4_add_library(cupsdconf SHARED ${cupsdconf_KDEINIT_SRCS})
 

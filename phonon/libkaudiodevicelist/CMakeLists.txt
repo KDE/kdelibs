@@ -17,7 +17,6 @@ set(kaudiodevicelist_LIB_SRCS
 	audiodevice.cpp
 	audiodeviceenumerator.cpp
 	)
-kde4_automoc(${kaudiodevicelist_LIB_SRCS})
 kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
 target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS})
 

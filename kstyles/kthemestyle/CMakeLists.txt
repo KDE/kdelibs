@@ -12,7 +12,6 @@ set(kthemestyle_PART_SRCS
    kstyledirs.cpp
 )
 
-kde4_automoc(${kthemestyle_PART_SRCS})
 
 kde4_add_plugin(kthemestyle ${kthemestyle_PART_SRCS})
 

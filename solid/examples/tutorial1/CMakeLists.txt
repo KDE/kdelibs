@@ -16,7 +16,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 add_definitions(${QT_DEFINITIONS} ${QDBUS_DEFINITIONS} ${KDE4_DEFINITIONS})
 link_directories(${KDE4_LIB_DIR})
 
-kde4_automoc(${tutorial1_SRCS})
 
 kde4_add_executable(tutorial1 ${tutorial1_SRCS})
 

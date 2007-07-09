@@ -4,7 +4,6 @@
 
 set(fakehardwaretest_SRCS fakehardwaretest.cpp )
 
-kde4_automoc(${fakehardwaretest_SRCS})
 
 kde4_add_unit_test(fakehardwaretest ${fakehardwaretest_SRCS})
 
@@ -20,7 +19,6 @@ add_definitions(-DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fa
 
 set(halbasictest_SRCS halbasictest.cpp )
 
-kde4_automoc(${halbasictest_SRCS})
 
 
 kde4_add_unit_test(halbasictest ${halbasictest_SRCS})
@@ -36,7 +34,6 @@ target_link_libraries(halbasictest solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS
 set(solidhwtest_SRCS 
    solidhwtest.cpp )
 
-kde4_automoc(${solidhwtest_SRCS})
 
 kde4_add_unit_test(solidhwtest ${solidhwtest_SRCS})
 add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
@@ -55,7 +52,6 @@ target_link_libraries(solidhwtest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT
 #set(solidnettestdbusservice_SRCS
 #   solidnettestdbusservice.cpp )
 
-#kde4_automoc(${solidnettestdbusservice_SRCS})
 
 #QT4_ADD_DBUS_ADAPTOR(solidnettestdbusservice_SRCS ../solid/org.kde.Solid.Networking.Client.xml
 #                         solidnettestdbusservice.h TestNetworkingService)
@@ -75,7 +71,6 @@ kde4_add_ui_files(networkingclient_SRCS networkingclientview.ui)
 
 qt4_add_dbus_interface(networkingclient_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../solid/org.kde.Solid.Networking.Client.xml clientinterface)
 
-kde4_automoc(${networkingclient_SRCS})
 
 kde4_add_test_executable(networkingclient ${networkingclient_SRCS})
 

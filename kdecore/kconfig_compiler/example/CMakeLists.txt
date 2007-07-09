@@ -8,7 +8,6 @@
 #exampleprefs_base.cpp
 #)
 #
-#kde4_automoc(${example_SRCS})
 
 if(KDE4_BUILD_TESTS)
 
@@ -27,7 +26,6 @@ endif(KDE4_BUILD_TESTS)
 #autoexample.cpp
 #)
 #
-#kde4_automoc(${autoexample_SRCS})
 #
 #set( autoexample_UI3
 #general_base.ui3

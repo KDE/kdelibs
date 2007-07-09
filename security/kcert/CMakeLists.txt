@@ -10,7 +10,6 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 set(kcertpart_PART_SRCS kcertpart.cc )
 
-kde4_automoc(${kcertpart_PART_SRCS})
 
 kde4_add_plugin(kcertpart WITH_PREFIX ${kcertpart_PART_SRCS})
 

@@ -10,7 +10,6 @@ set(phononexperimental_LIB_SRCS
     ../abstractaudiooutput_p.cpp
     ../abstractvideooutput_p.cpp
    )
-kde4_automoc(${phononexperimental_LIB_SRCS})
 kde4_add_library(phononexperimental SHARED ${phononexperimental_LIB_SRCS})
 target_link_libraries(phononexperimental ${KDE4_PHONON_LIBS})
 set_target_properties(phononexperimental PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})

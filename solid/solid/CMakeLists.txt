@@ -103,7 +103,6 @@ qt4_add_dbus_interfaces_no_namespace(solid_LIB_SRCS
 qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
     org_kde_solid_networking_client)
 
-kde4_automoc(${solid_LIB_SRCS})
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 

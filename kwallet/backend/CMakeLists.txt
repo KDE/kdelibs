@@ -11,7 +11,6 @@ kwalletentry.cc
 kwalletbackend.cc
 )
 
-kde4_automoc(${kwalletbackend_LIB_SRCS})
 
 kde4_add_library(kwalletbackend SHARED ${kwalletbackend_LIB_SRCS})
 

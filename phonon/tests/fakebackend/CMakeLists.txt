@@ -22,7 +22,6 @@ set(phonon_fake_PART_SRCS
    videowidget.cpp
    )
 
-kde4_automoc(${phonon_fake_PART_SRCS})
 
 kde4_add_plugin(phonon_fake ${phonon_fake_PART_SRCS})
 

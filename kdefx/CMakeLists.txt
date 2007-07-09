@@ -18,7 +18,6 @@ kstyle.cpp
 kcpuinfo.cpp
 )
 
-kde4_automoc(${kdefx_LIB_SRCS})
 
 kde4_add_library(kdefx SHARED ${kdefx_LIB_SRCS})
 

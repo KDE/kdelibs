@@ -9,7 +9,6 @@ add_subdirectory( config )
 
 set(plastik_PART_SRCS plastik.cpp misc.cpp )
 
-kde4_automoc(${plastik_PART_SRCS})
 
 kde4_add_plugin(plastik ${plastik_PART_SRCS})
 

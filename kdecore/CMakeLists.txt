@@ -216,7 +216,6 @@ set(kdecore_LIB_SRCS
    ${kdecore_OPTIONAL_SRCS}
 )
 
-kde4_automoc(${kdecore_LIB_SRCS})
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 add_definitions(-DNO_DISPLAY)

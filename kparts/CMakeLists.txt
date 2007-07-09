@@ -21,7 +21,6 @@ set(kparts_LIB_SRCS
    statusbarextension.cpp
    )
 
-kde4_automoc(${kparts_LIB_SRCS})
 
 kde4_add_library(kparts SHARED ${kparts_LIB_SRCS})
 

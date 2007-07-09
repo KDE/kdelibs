@@ -16,7 +16,6 @@ add_subdirectory( kntlm )
 
 set(kmailservice_SRCS kmailservice.cpp )
 
-kde4_automoc(${kmailservice_SRCS})
 
 kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
 
@@ -29,7 +28,6 @@ install(TARGETS kmailservice DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 set(ktelnetservice_SRCS ktelnetservice.cpp )
 
-kde4_automoc(${ktelnetservice_SRCS})
 
 kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
 

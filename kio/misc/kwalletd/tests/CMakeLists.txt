@@ -8,6 +8,5 @@ set(kwalletwizardtest_SRCS
    kwalletwizardtest.cpp
    ../kwalletwizard.cpp
 )
-kde4_automoc(${kwalletwizardtest_SRCS})
 kde4_add_test_executable(kwalletwizardtest ${kwalletwizardtest_SRCS})
 target_link_libraries(kwalletwizardtest ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})

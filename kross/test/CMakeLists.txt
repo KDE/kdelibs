@@ -4,7 +4,6 @@ set(krosstest_SRCS
    testobject.cpp 
    main.cpp )
 
-kde4_automoc(${krosstest_SRCS})
 
 kde4_add_test_executable(krosstest ${krosstest_SRCS})
 

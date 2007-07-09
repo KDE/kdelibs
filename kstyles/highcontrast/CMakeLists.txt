@@ -9,7 +9,6 @@ add_subdirectory( config )
 
 set(highcontrast_PART_SRCS highcontrast.cpp )
 
-kde4_automoc(${highcontrast_PART_SRCS})
 
 kde4_add_plugin(highcontrast ${highcontrast_PART_SRCS})
 

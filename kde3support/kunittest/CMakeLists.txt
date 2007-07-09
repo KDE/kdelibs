@@ -5,7 +5,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/kde3support )
 
 set(kunittest_LIB_SRCS runner.cpp tester.cpp )
 
-kde4_automoc(${kunittest_LIB_SRCS})
 
 kde4_add_library(kunittest SHARED ${kunittest_LIB_SRCS})
 
@@ -19,7 +18,6 @@ install(TARGETS kunittest  DESTINATION ${LIB_INSTALL_DIR} )
 
 set(kunittestmodrunner_SRCS modrunner.cpp )
 
-kde4_automoc(${kunittestmodrunner_SRCS})
 
 kde4_add_executable(kunittestmodrunner NOGUI ${kunittestmodrunner_SRCS})
 

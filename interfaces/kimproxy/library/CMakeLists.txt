@@ -13,7 +13,6 @@ qt4_add_dbus_adaptor( kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimpro
 
 QT4_ADD_DBUS_INTERFACE(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimiface )
 
-kde4_automoc(${kimproxy_LIB_SRCS})
 
 kde4_add_library(kimproxy SHARED ${kimproxy_LIB_SRCS})
 

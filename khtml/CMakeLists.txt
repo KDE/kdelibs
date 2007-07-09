@@ -316,7 +316,6 @@ set(khtml_LIB_SRCS
    ${kjava_STAT_SRCS}
    )
 
-kde4_automoc(${khtml_LIB_SRCS})
 
 qt4_add_dbus_adaptor(khtml_LIB_SRCS org.kde.KHTMLPart.xml khtml_iface.h KHTMLPartIface)
 
@@ -334,7 +333,6 @@ install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )
 
 set(khtmlpart_PART_SRCS khtml_factory_init.cpp )
 
-kde4_automoc(${khtmlpart_PART_SRCS})
 
 kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
@@ -364,7 +362,6 @@ if(NOT MSVC)
         domtreeview.cpp
     )
 
-    kde4_automoc(${testkhtml_SRCS})
 
     kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
@@ -377,7 +374,6 @@ if(NOT MSVC)
         domtreeview.cpp
     )
 
-    kde4_automoc(${testkhtml_static_SRCS})
 
     kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
@@ -395,7 +391,6 @@ if (KHTML_BUILD_TESTREGRESSION)
         test_regression_fontoverload.cpp
     )
 
-    kde4_automoc(${testregression_SRCS})
 
     kde4_add_executable(testregression ${testregression_SRCS})
 
@@ -412,7 +407,6 @@ if (KHTML_BUILD_TESTREGRESSION)
 
     kde4_add_ui_files(testregressiongui_SRCS test_regression_gui.ui)
 
-    kde4_automoc(${testregressiongui_SRCS})
 
     kde4_add_executable(testregressiongui ${testregressiongui_SRCS})
 

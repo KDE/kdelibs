@@ -15,7 +15,6 @@ set(kdesu_LIB_SRCS
    stub.cpp
    )
 
-kde4_automoc(${kdesu_LIB_SRCS})
 
 kde4_add_library(kdesu SHARED ${kdesu_LIB_SRCS})
 

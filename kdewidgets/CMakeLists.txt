@@ -15,7 +15,6 @@ include_directories(
 
 set(makekdewidgets_SRCS makekdewidgets.cpp )
 
-kde4_automoc(${makekdewidgets_SRCS})
 
 kde4_add_executable(makekdewidgets NOGUI RUN_UNINSTALLED ${makekdewidgets_SRCS})
 
@@ -41,7 +40,6 @@ set(kdewidgets_PART_SRCS
 
 qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.moc)
 
-kde4_automoc(classpreviews.cpp)
 
 qt4_add_resources(kdewidgets_PART_SRCS kdewidgets.qrc)
 

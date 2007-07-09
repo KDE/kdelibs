@@ -49,7 +49,6 @@ set(phonon_LIB_SRCS ${phonon_LIB_SRCS} modeltest.cpp)
 add_definitions(-DUSE_TROLLTECH_LABS_MODELTEST)
 ENDIF(PHONON_BUILD_MODELTEST)
 
-kde4_automoc(${phonon_LIB_SRCS})
 
 kde4_add_library(phonon SHARED ${phonon_LIB_SRCS})
 

@@ -242,7 +242,6 @@ if (Q_WS_QWS)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_qws.cpp)
 endif (Q_WS_QWS)
 
-kde4_automoc(${kdeui_LIB_SRCS} dialogs/kdialogqueue_p.h)
 
 set( kdeui_UI
    dialogs/kpassworddialog.ui

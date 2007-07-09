@@ -10,7 +10,6 @@ set(kded_kwalletd_PART_SRCS
    ktimeout.cpp
 )
 
-kde4_automoc(${kded_kwalletd_PART_SRCS})
 
 kde4_add_ui_files(kded_kwalletd_PART_SRCS
    kbetterthankdialogbase.ui

@@ -10,7 +10,6 @@ kfileaudiopreview.cpp
 mediacontrols.cpp
 )
 
-kde4_automoc(${kfileaudiopreview_PART_SRCS})
 
 kde4_add_plugin(kfileaudiopreview ${kfileaudiopreview_PART_SRCS})
 

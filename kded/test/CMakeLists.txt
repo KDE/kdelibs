@@ -4,7 +4,6 @@ include_directories( ${KDE4_KIO_INCLUDES} .. )
 
 set(kmimefileparsertest_SRCS kmimefileparsertest.cpp ../kmimefileparser.cpp ../../kdecore/services/kmimemagicrule.cpp)
 
-kde4_automoc(${kmimefileparsertest_SRCS})
 
 kde4_add_unit_test(kmimefileparsertest ${kmimefileparsertest_SRCS})
 
@@ -16,7 +15,6 @@ target_link_libraries(kmimefileparsertest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY})
 #
 # set(kded_test_PART_SRCS test.cpp )
 #
-# kde4_automoc(${kded_test_PART_SRCS})
 #
 # kde4_add_plugin(kded_test ${kded_test_PART_SRCS})
 #

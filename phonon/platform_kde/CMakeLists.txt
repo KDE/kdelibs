@@ -3,7 +3,6 @@ set(kde_PART_SRCS
 	kdepluginfactory.cpp
 	kiomediastream.cpp
 	)
-kde4_automoc(${kde_PART_SRCS})
 kde4_add_plugin(kde ${kde_PART_SRCS})
 target_link_libraries(kde ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS})
 set_target_properties(kde PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE  SKIP_BUILD_RPATH TRUE BUILD_WITH_INSTALL_RPATH TRUE INSTALL_RPATH ${LIB_INSTALL_DIR})

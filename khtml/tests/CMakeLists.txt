@@ -12,7 +12,6 @@ if(NOT MSVC)
     )
 
     qt4_add_resources( khtmltest_SRCS testkhtml.qrc )
-    kde4_automoc(${khtmltest_SRCS})
     kde4_add_test_executable(khtmltest ${khtmltest_SRCS} )
     target_link_libraries( khtmltest ${KDE4_KDECORE_LIBS} khtml )
 

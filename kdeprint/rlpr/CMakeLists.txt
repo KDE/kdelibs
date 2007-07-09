@@ -15,7 +15,6 @@ kmproxywidget.cpp
 kmconfigproxy.cpp
 )
 
-kde4_automoc(${kdeprint_rlpr_PART_SRCS})
 
 kde4_add_plugin(kdeprint_rlpr ${kdeprint_rlpr_PART_SRCS})
 

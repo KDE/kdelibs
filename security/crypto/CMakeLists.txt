@@ -9,7 +9,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kde3suppor
 
 set(kcm_crypto_PART_SRCS crypto.cpp certexport.cpp kdatetimedlg.cpp )
 
-kde4_automoc(${kcm_crypto_PART_SRCS})
 
 kde4_add_plugin(kcm_crypto ${kcm_crypto_PART_SRCS})
 

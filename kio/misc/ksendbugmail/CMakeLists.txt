@@ -4,7 +4,6 @@ set(ksendbugmail_SRCS
   ${CMAKE_SOURCE_DIR}/kio/kio/kemailsettings.cpp # not worth linking kio for just one file
 )
 
-kde4_automoc(${ksendbugmail_SRCS})
 
 kde4_add_executable(ksendbugmail NOGUI ${ksendbugmail_SRCS})
 

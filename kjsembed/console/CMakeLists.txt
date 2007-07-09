@@ -14,7 +14,6 @@ set(console_SRCS
    numberedtextview.cpp
    )
 
-kde4_automoc(${console_SRCS})
 
 kde4_add_ui_files(console_SRCS jsconsole.ui )
 

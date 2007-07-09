@@ -33,7 +33,6 @@ set(kio_http_cache_cleaner_KDEINIT_SRCS
 http_cache_cleaner.cpp
 )
 
-kde4_automoc(${kio_http_cache_cleaner_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
 
@@ -54,7 +53,6 @@ ${httpfilter_STAT_SRCS}
 ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
 )
 
-kde4_automoc(${kio_http_PART_SRCS})
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 

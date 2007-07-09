@@ -9,7 +9,6 @@ set(knotifytest_SRCS main.cpp knotifytestwindow.cpp )
 
 kde4_add_ui_files(knotifytest_SRCS knotifytestview.ui)
 
-kde4_automoc(${knotifytest_SRCS})
 
 kde4_add_test_executable(knotifytest ${knotifytest_SRCS})
 

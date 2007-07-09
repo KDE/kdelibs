@@ -10,7 +10,6 @@ set(kdeprint_lpdunix_PART_SRCS
    kmlpdunixuimanager.cpp
 )
 
-kde4_automoc(${kdeprint_lpdunix_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpdunix ${kdeprint_lpdunix_PART_SRCS})
 

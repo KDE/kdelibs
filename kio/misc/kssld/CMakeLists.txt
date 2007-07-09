@@ -3,7 +3,6 @@
 
 set(kded_kssld_PART_SRCS kssld.cpp )
 
-kde4_automoc(${kded_kssld_PART_SRCS})
 
 kde4_add_plugin(kded_kssld ${kded_kssld_PART_SRCS})
 

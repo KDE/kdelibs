@@ -43,7 +43,6 @@ set(nepomuk_LIB_SRCS
   ontology/global.cpp
 )
 
-kde4_automoc(${nepomuk_LIB_SRCS})
 
 kde4_add_library(nepomuk SHARED ${nepomuk_LIB_SRCS})
 

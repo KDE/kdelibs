@@ -8,7 +8,6 @@ set(helpviewer_SRCS
    richpage.cpp
    )
 
-kde4_automoc(${helpviewer_SRCS})
 
 kde4_add_test_executable(helpviewer ${helpviewer_SRCS})
 
@@ -19,7 +18,6 @@ target_link_libraries(helpviewer  ${KDE4_KDECORE_LIBS} kdeprint ${QT_QT3SUPPORT_
 
 set(drawdemo_SRCS drawdemo.cpp )
 
-kde4_automoc(${drawdemo_SRCS})
 
 kde4_add_test_executable(drawdemo ${drawdemo_SRCS})
 

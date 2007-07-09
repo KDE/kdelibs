@@ -10,7 +10,6 @@ include_directories(
 # the forms module
 
 set(krossmoduleforms_SRCS form.cpp)
-kde4_automoc(${krossmoduleforms_SRCS})
 kde4_add_plugin(krossmoduleforms ${krossmoduleforms_SRCS})
 
 target_link_libraries(krossmoduleforms ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${KDE4_KPARTS_LIBS} ${KDE4_KFILE_LIBS} krosscore krossui)

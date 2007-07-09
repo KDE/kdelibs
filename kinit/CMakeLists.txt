@@ -26,7 +26,6 @@ else (WIN32)
   set(kdeinit_SRCS kinit.cpp proctitle.cpp )
   set(kdeinit_LIBS kparts)
 endif (WIN32)
-kde4_automoc(${kdeinit_SRCS})
 
 kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
 
@@ -90,7 +89,6 @@ endif (WIN32)
 
 set(kioslave_SRCS kioslave.cpp)
 
-kde4_automoc(${kioslave_SRCS})
 
 kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 
@@ -119,7 +117,6 @@ endif (WIN32)
 # The adaptor is manually edited to add QDBusMessage arguments
 #qt4_add_dbus_adaptor(klauncher_KDEINIT_SRCS org.kde.KLauncher.xml klauncher.h KLauncher)
 
-kde4_automoc(${klauncher_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 

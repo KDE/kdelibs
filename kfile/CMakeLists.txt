@@ -39,7 +39,6 @@ set(kfile_LIB_SRCS
   kurltogglebutton.cpp
 )
 
-kde4_automoc(${kfile_LIB_SRCS})
 kde4_add_library(kfile SHARED ${kfile_LIB_SRCS})
 target_link_libraries(kfile ${KDE4_KIO_LIBS} ${KDE4_KDE3SUPPORT_LIBS} ${ZLIB_LIBRARY} ${STRIGI_LIBRARIES} ${KDE4_SOLID_LIBS})
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
@@ -70,7 +69,6 @@ install( FILES
 set(kfilemodule_SRCS
   kfilemodule.cpp
 )
-kde4_automoc(${kfilemodule_SRCS})
 kde4_add_plugin(kfilemodule WITH_PREFIX ${kfilemodule_SRCS})
 target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS})
 install(TARGETS kfilemodule DESTINATION ${PLUGIN_INSTALL_DIR})

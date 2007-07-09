@@ -52,7 +52,6 @@ endif (HAVE_AVAHI)
 
 
 
-kde4_automoc(${kdnssd_LIB_SRCS})
 
 kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
 

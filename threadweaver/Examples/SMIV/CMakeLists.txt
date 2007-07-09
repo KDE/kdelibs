@@ -18,7 +18,6 @@ set( SMIV_SRCS_UI
 
 qt4_wrap_ui(SMIV_SRCS ${SMIV_SRCS_UI} )
 
-KDE4_AUTOMOC(${SMIV_SRCS})
 
 add_executable(SMIV ${SMIV_SRCS})
 

@@ -10,7 +10,6 @@ set(kio_ftp_PART_SRCS
 ftp.cpp
 )
 
-kde4_automoc(${kio_ftp_PART_SRCS})
 
 kde4_add_plugin(kio_ftp ${kio_ftp_PART_SRCS})
 

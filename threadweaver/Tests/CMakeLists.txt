@@ -7,7 +7,6 @@ include_directories( ../Weaver/ )
 
 set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp)
 
-KDE4_AUTOMOC(${JobTests_SRCS})
 
 kde4_add_unit_test(JobTests ${JobTests_SRCS})
 
@@ -17,7 +16,6 @@ target_link_libraries(JobTests ${QT_QTTEST_LIBRARY} threadweaver)
 
 set(QueueTests_SRCS QueueTests.cpp AppendCharacterJob.cpp)
 
-KDE4_AUTOMOC(${QueueTests_SRCS})
 
 kde4_add_unit_test(QueueTests ${QueueTests_SRCS})
 
@@ -27,7 +25,6 @@ target_link_libraries(QueueTests ${QT_QTTEST_LIBRARY} threadweaver)
 
 set(DeleteTest_SRCS DeleteTest.cpp AppendCharacterJob.cpp)
 
-KDE4_AUTOMOC(${DeleteTest_SRCS})
 
 kde4_add_unit_test(DeleteTest ${DeleteTest_SRCS})
 

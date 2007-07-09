@@ -32,7 +32,6 @@ set(nepomuk_middleware_LIB_SRCS
   rdf/statementlistiterator.cpp
 )
 
-kde4_automoc(nepomuk-middleware ${nepomuk_middleware_LIB_SRCS})
 
 kde4_add_library(nepomuk-middleware SHARED ${nepomuk_middleware_LIB_SRCS})
 

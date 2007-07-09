@@ -8,7 +8,6 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 set(kio_file_PART_SRCS file.cpp )
 
-kde4_automoc(${kio_file_PART_SRCS})
 
 kde4_add_plugin(kio_file ${kio_file_PART_SRCS})
 

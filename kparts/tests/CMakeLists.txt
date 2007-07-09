@@ -9,7 +9,6 @@ parts.cpp
 notepad.cpp
 )
 
-kde4_automoc(${kpartstest_SRCS})
 
 kde4_add_test_executable(kpartstest ${kpartstest_SRCS})
 
@@ -24,7 +23,6 @@ parts.cpp
 notepad.cpp
 )
 
-kde4_automoc(${normalktmtest_SRCS})
 
 kde4_add_test_executable(normalktmtest ${normalktmtest_SRCS})
 
@@ -37,7 +35,6 @@ set(ghostviewtest_SRCS
 ghostview.cpp
 )
 
-kde4_automoc(${ghostviewtest_SRCS})
 
 kde4_add_test_executable(ghostviewtest ${ghostviewtest_SRCS})
 
@@ -48,7 +45,6 @@ target_link_libraries(ghostviewtest  ${KDE4_KPARTS_LIBS} )
 
 set(spellcheckplugin_PART_SRCS plugin_spellcheck.cpp )
 
-kde4_automoc(${spellcheckplugin_PART_SRCS})
 
 kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
 
@@ -61,7 +57,6 @@ install(TARGETS spellcheckplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 set(notepadpart_PART_SRCS notepadpart.cpp notepad.cpp)
 
-kde4_automoc(${notepadpart_PART_SRCS})
 
 kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
 
@@ -75,14 +70,12 @@ install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 MACRO(KPARTS_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_automoc(${_testname}.cpp)
                kde4_add_unit_test(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KPARTS_UNIT_TESTS)
 MACRO(KPARTS_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_automoc(${_testname}.cpp)
                kde4_add_test_executable(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)

@@ -11,7 +11,6 @@ set(light_PART_SRCS
    lightstyle-v3.cpp
 )
 
-kde4_automoc(${light_PART_SRCS})
 
 kde4_add_plugin(light ${light_PART_SRCS})
 

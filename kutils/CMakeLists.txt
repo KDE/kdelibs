@@ -29,7 +29,6 @@ ksettingswidgetadaptor.cpp
 ${ksettings_STAT_SRCS}
 )
 
-kde4_automoc(${kutils_LIB_SRCS})
 
 kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 

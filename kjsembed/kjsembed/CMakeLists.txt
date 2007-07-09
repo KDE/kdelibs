@@ -54,7 +54,6 @@ set(kjsembed_LIB_SRCS
    quiloader_binding.cpp
    )
 
-kde4_automoc(${kjsembed_LIB_SRCS} ) 
 
 if (NOT DEFINED QT_ONLY)
    set(KJSLIBNAME kjs)

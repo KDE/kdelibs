@@ -24,7 +24,6 @@ lprngtoolhandler.cpp
 editentrydialog.cpp
 )
 
-kde4_automoc(${kdeprint_lpr_PART_SRCS})
 
 kde4_add_plugin(kdeprint_lpr ${kdeprint_lpr_PART_SRCS})
 

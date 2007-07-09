@@ -6,7 +6,6 @@ set(Construction_SRCS
     Construction.cpp
 )
 
-KDE4_AUTOMOC(${Construction_SRCS})
 
 add_executable(Construction ${Construction_SRCS})
 
