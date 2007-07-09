@@ -67,7 +67,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      *
      * @return List of installed or deinstalled entries
      */
-    KNS::Entry::List downloadDialogModal();
+    KNS::Entry::List downloadDialogModal(QWidget *widget = 0L);
 
     /**
      * @brief Recommended download workflow entry point.

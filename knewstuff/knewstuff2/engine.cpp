@@ -124,10 +124,10 @@ KNS::Entry::List Engine::download()
 	return entries;
 }
 
-KNS::Entry::List Engine::downloadDialogModal()
+KNS::Entry::List Engine::downloadDialogModal(QWidget *parent)
 {
 	kDebug(550) << "Engine: downloadDialogModal" << endl;
-
+	m_parent = parent;
 	m_command = command_download;
 	m_modal = true;
 
