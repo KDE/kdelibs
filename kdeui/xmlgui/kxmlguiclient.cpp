@@ -38,6 +38,14 @@
 
 #include <assert.h>
 
+struct DocStruct
+{
+  QString file;
+  QString data;
+};
+
+typedef QMap<QString, QMap<QString, QString> > ActionPropertiesMap;
+
 class KXMLGUIClientPrivate
 {
 public:
@@ -64,7 +72,160 @@ public:
   KXMLGUIBuilder *m_builder;
   QString m_xmlFile;
   QString m_localXMLFile;
+
+  // Actions to enable/disable on a state change
+  QMap<QString,KXMLGUIClient::StateChange> m_actionsStateMap;
 };
+
+
+static ActionPropertiesMap extractActionProperties( const QDomDocument &doc )
+{
+  ActionPropertiesMap properties;
+
+  QDomElement actionPropElement = doc.documentElement().namedItem( "ActionProperties" ).toElement();
+
+  if ( actionPropElement.isNull() )
+    return properties;
+
+  QDomNode n = actionPropElement.firstChild();
+  while(!n.isNull())
+  {
+    QDomElement e = n.toElement();
+    n = n.nextSibling(); // Advance now so that we can safely delete e
+    if ( e.isNull() )
+      continue;
+
+    if ( e.tagName().toLower() != "action" )
+      continue;
+
+    QString actionName = e.attribute( "name" );
+
+    if ( actionName.isEmpty() )
+      continue;
+
+    QMap<QString, QMap<QString, QString> >::Iterator propIt = properties.find( actionName );
+    if ( propIt == properties.end() )
+      propIt = properties.insert( actionName, QMap<QString, QString>() );
+
+    const QDomNamedNodeMap attributes = e.attributes();
+    const uint attributeslength = attributes.length();
+
+    for ( uint i = 0; i < attributeslength; ++i )
+    {
+      const QDomAttr attr = attributes.item( i ).toAttr();
+
+      if ( attr.isNull() )
+        continue;
+
+      const QString name = attr.name();
+
+      if ( name == "name" || name.isEmpty() )
+        continue;
+
+      (*propIt)[ name ] = attr.value();
+    }
+
+  }
+
+  return properties;
+}
+
+static void storeActionProperties( QDomDocument &doc,
+                            const ActionPropertiesMap &properties )
+{
+  QDomElement actionPropElement = doc.documentElement().namedItem( "ActionProperties" ).toElement();
+
+  if ( actionPropElement.isNull() )
+  {
+    actionPropElement = doc.createElement( "ActionProperties" );
+    doc.documentElement().appendChild( actionPropElement );
+  }
+
+  while ( !actionPropElement.firstChild().isNull() )
+    actionPropElement.removeChild( actionPropElement.firstChild() );
+
+  ActionPropertiesMap::ConstIterator it = properties.begin();
+  ActionPropertiesMap::ConstIterator end = properties.end();
+  for (; it != end; ++it )
+  {
+    QDomElement action = doc.createElement( "Action" );
+    action.setAttribute( "name", it.key() );
+    actionPropElement.appendChild( action );
+
+    QMap<QString, QString> attributes = (*it);
+    QMap<QString, QString>::ConstIterator attrIt = attributes.begin();
+    QMap<QString, QString>::ConstIterator attrEnd = attributes.end();
+    for (; attrIt != attrEnd; ++attrIt )
+      action.setAttribute( attrIt.key(), attrIt.value() );
+  }
+}
+
+static QString findVersionNumber( const QString &xml )
+{
+  enum { ST_START, ST_AFTER_OPEN, ST_AFTER_GUI,
+               ST_EXPECT_VERSION, ST_VERSION_NUM} state = ST_START;
+  for (int pos = 0; pos < xml.length(); pos++)
+  {
+    switch (state)
+    {
+      case ST_START:
+        if (xml[pos] == '<')
+          state = ST_AFTER_OPEN;
+        break;
+      case ST_AFTER_OPEN:
+      {
+        //Jump to gui..
+        int guipos = xml.indexOf("gui", pos, Qt::CaseInsensitive/*case-insensitive*/);
+        if (guipos == -1)
+          return QString(); //Reject
+
+        pos = guipos + 2; //Position at i, so we're moved ahead to the next character by the ++;
+        state = ST_AFTER_GUI;
+        break;
+      }
+      case ST_AFTER_GUI:
+        state = ST_EXPECT_VERSION;
+        break;
+      case ST_EXPECT_VERSION:
+      {
+        int verpos =  xml.indexOf("version=\"", pos, Qt::CaseInsensitive /*case-insensitive*/);
+        if (verpos == -1)
+          return QString(); //Reject
+
+        pos = verpos +  8; //v = 0, e = +1, r = +2, s = +3 , i = +4, o = +5, n = +6, = = +7, " = + 8
+        state = ST_VERSION_NUM;
+        break;
+      }
+      case ST_VERSION_NUM:
+      {
+        int endpos;
+        for (endpos = pos; endpos <  xml.length(); endpos++)
+        {
+          if (xml[endpos].unicode() >= '0' && xml[endpos].unicode() <= '9')
+            continue; //Number..
+          if (xml[endpos].unicode() == '"') //End of parameter
+            break;
+          else //This shouldn't be here..
+          {
+            endpos = xml.length();
+          }
+        }
+
+        if (endpos != pos && endpos < xml.length() )
+        {
+          QString matchCandidate = xml.mid(pos, endpos - pos); //Don't include " ".
+          return matchCandidate;
+        }
+
+        state = ST_EXPECT_VERSION; //Try to match a well-formed version..
+        break;
+      } //case..
+    } //switch
+  } //for
+
+  return QString();
+}
+
 
 KXMLGUIClient::KXMLGUIClient()
     : d( new KXMLGUIClientPrivate )
@@ -708,153 +869,6 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
 
 
 
-QString KXMLGUIClient::findVersionNumber( const QString &xml )
-{
-  enum { ST_START, ST_AFTER_OPEN, ST_AFTER_GUI,
-               ST_EXPECT_VERSION, ST_VERSION_NUM} state = ST_START;
-  for (int pos = 0; pos < xml.length(); pos++)
-  {
-    switch (state)
-    {
-      case ST_START:
-        if (xml[pos] == '<')
-          state = ST_AFTER_OPEN;
-        break;
-      case ST_AFTER_OPEN:
-      {
-        //Jump to gui..
-        int guipos = xml.indexOf("gui", pos, Qt::CaseInsensitive/*case-insensitive*/);
-        if (guipos == -1)
-          return QString(); //Reject
-
-        pos = guipos + 2; //Position at i, so we're moved ahead to the next character by the ++;
-        state = ST_AFTER_GUI;
-        break;
-      }
-      case ST_AFTER_GUI:
-        state = ST_EXPECT_VERSION;
-        break;
-      case ST_EXPECT_VERSION:
-      {
-        int verpos =  xml.indexOf("version=\"", pos, Qt::CaseInsensitive /*case-insensitive*/);
-        if (verpos == -1)
-          return QString(); //Reject
-
-        pos = verpos +  8; //v = 0, e = +1, r = +2, s = +3 , i = +4, o = +5, n = +6, = = +7, " = + 8
-        state = ST_VERSION_NUM;
-        break;
-      }
-      case ST_VERSION_NUM:
-      {
-        int endpos;
-        for (endpos = pos; endpos <  xml.length(); endpos++)
-        {
-          if (xml[endpos].unicode() >= '0' && xml[endpos].unicode() <= '9')
-            continue; //Number..
-          if (xml[endpos].unicode() == '"') //End of parameter
-            break;
-          else //This shouldn't be here..
-          {
-            endpos = xml.length();
-          }
-        }
-
-        if (endpos != pos && endpos < xml.length() )
-        {
-          QString matchCandidate = xml.mid(pos, endpos - pos); //Don't include " ".
-          return matchCandidate;
-        }
-
-        state = ST_EXPECT_VERSION; //Try to match a well-formed version..
-        break;
-      } //case..
-    } //switch
-  } //for
-
-  return QString();
-}
-
-KXMLGUIClient::ActionPropertiesMap KXMLGUIClient::extractActionProperties( const QDomDocument &doc )
-{
-  ActionPropertiesMap properties;
-
-  QDomElement actionPropElement = doc.documentElement().namedItem( "ActionProperties" ).toElement();
-
-  if ( actionPropElement.isNull() )
-    return properties;
-
-  QDomNode n = actionPropElement.firstChild();
-  while(!n.isNull())
-  {
-    QDomElement e = n.toElement();
-    n = n.nextSibling(); // Advance now so that we can safely delete e
-    if ( e.isNull() )
-      continue;
-
-    if ( e.tagName().toLower() != "action" )
-      continue;
-
-    QString actionName = e.attribute( "name" );
-
-    if ( actionName.isEmpty() )
-      continue;
-
-    QMap<QString, QMap<QString, QString> >::Iterator propIt = properties.find( actionName );
-    if ( propIt == properties.end() )
-      propIt = properties.insert( actionName, QMap<QString, QString>() );
-
-    const QDomNamedNodeMap attributes = e.attributes();
-    const uint attributeslength = attributes.length();
-
-    for ( uint i = 0; i < attributeslength; ++i )
-    {
-      const QDomAttr attr = attributes.item( i ).toAttr();
-
-      if ( attr.isNull() )
-        continue;
-
-      const QString name = attr.name();
-
-      if ( name == "name" || name.isEmpty() )
-        continue;
-
-      (*propIt)[ name ] = attr.value();
-    }
-
-  }
-
-  return properties;
-}
-
-void KXMLGUIClient::storeActionProperties( QDomDocument &doc, const ActionPropertiesMap &properties )
-{
-  QDomElement actionPropElement = doc.documentElement().namedItem( "ActionProperties" ).toElement();
-
-  if ( actionPropElement.isNull() )
-  {
-    actionPropElement = doc.createElement( "ActionProperties" );
-    doc.documentElement().appendChild( actionPropElement );
-  }
-
-  while ( !actionPropElement.firstChild().isNull() )
-    actionPropElement.removeChild( actionPropElement.firstChild() );
-
-  ActionPropertiesMap::ConstIterator it = properties.begin();
-  ActionPropertiesMap::ConstIterator end = properties.end();
-  for (; it != end; ++it )
-  {
-    QDomElement action = doc.createElement( "Action" );
-    action.setAttribute( "name", it.key() );
-    actionPropElement.appendChild( action );
-
-    QMap<QString, QString> attributes = (*it);
-    QMap<QString, QString>::ConstIterator attrIt = attributes.begin();
-    QMap<QString, QString>::ConstIterator attrEnd = attributes.end();
-    for (; attrIt != attrEnd; ++attrIt )
-      action.setAttribute( attrIt.key(), attrIt.value() );
-  }
-}
-
 void KXMLGUIClient::addStateActionEnabled(const QString& state,
                                           const QString& action)
 {
@@ -863,7 +877,7 @@ void KXMLGUIClient::addStateActionEnabled(const QString& state,
   stateChange.actionsToEnable.append( action );
   //kDebug() << "KXMLGUIClient::addStateActionEnabled( " << state << ", " << action << ")" << endl;
 
-  m_actionsStateMap.insert( state, stateChange );
+  d->m_actionsStateMap.insert( state, stateChange );
 }
 
 
@@ -875,13 +889,13 @@ void KXMLGUIClient::addStateActionDisabled(const QString& state,
   stateChange.actionsToDisable.append( action );
   //kDebug() << "KXMLGUIClient::addStateActionDisabled( " << state << ", " << action << ")" << endl;
 
-  m_actionsStateMap.insert( state, stateChange );
+  d->m_actionsStateMap.insert( state, stateChange );
 }
 
 
 KXMLGUIClient::StateChange KXMLGUIClient::getActionsToChangeForState(const QString& state)
 {
-  return m_actionsStateMap[state];
+  return d->m_actionsStateMap[state];
 }
 
 
