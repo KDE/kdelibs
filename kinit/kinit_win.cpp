@@ -284,7 +284,7 @@ int main(int argc, char **argv, char **envp)
     /** Make process group leader (for shutting down children later) **/
 
     /** Create our instance **/
-    s_instance = new KComponentData("kdeinit4"); // "kdeinit4" is special cased in KComponentData to not register with KGlobal
+    s_instance = new KComponentData("kdeinit4", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
     if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
     {

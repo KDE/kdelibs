@@ -64,7 +64,7 @@ bool KComponentData::operator==(const KComponentData &rhs) const
     return d == rhs.d;
 }
 
-KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog)
+KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog, MainComponentRegistration registerAsMain)
     : d(new KComponentDataPrivate)
 {
     Q_ASSERT(!name.isEmpty());
@@ -73,7 +73,7 @@ KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog
     d->catalog = QString::fromUtf8(catalog);
     d->aboutData = new KAboutData(name, catalog, KLocalizedString(), "", KLocalizedString());
 
-    if (name != "kdeinit4") {
+    if (registerAsMain == RegisterAsMainComponent) {
         KGlobal::newComponentData(*this);
     }
 }

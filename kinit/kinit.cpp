@@ -1673,7 +1673,7 @@ int main(int argc, char **argv, char **envp)
       setsid();
 
    /** Create our instance **/
-   s_instance = new KComponentData("kdeinit4"); // "kdeinit4" is special cased in KComponentData to not register with KGlobal
+   s_instance = new KComponentData("kdeinit4", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
    /** Prepare to change process name **/
    proctitle_init(argc, argv, envp);

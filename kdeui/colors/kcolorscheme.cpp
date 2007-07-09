@@ -89,8 +89,7 @@ private:
 KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config, const char *group, DefaultColors defaults)
     : _config( config, group ), _defaults( defaults )
 {
-    KConfigGroup g( config, "KDE" );
-    _contrast = g.readEntry( "contrast", 7 );
+    _contrast = KGlobalSettings::contrastF( config );
 }
 
 #define DEFAULT(a) QColor( _defaults.a[0], _defaults.a[1], _defaults.a[2] )

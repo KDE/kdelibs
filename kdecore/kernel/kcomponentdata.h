@@ -85,6 +85,11 @@ public:
      */
     bool operator!=(const KComponentData &rhs) const { return !operator==(rhs); }
 
+    enum MainComponentRegistration {
+        RegisterAsMainComponent,
+        SkipMainComponentRegistration
+    };
+
     /**
      * Constructor.
      *
@@ -92,7 +97,7 @@ public:
      * @param catalogName the name of the translation catalog;
      *                    if left empty @p componentName is used
      */
-    explicit KComponentData(const QByteArray &componentName, const QByteArray &catalogName = QByteArray());
+    explicit KComponentData(const QByteArray &componentName, const QByteArray &catalogName = QByteArray(), MainComponentRegistration = RegisterAsMainComponent);
 
     /**
      * Constructor.
