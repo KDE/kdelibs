@@ -24,7 +24,10 @@
 #include <solid/device.h>
 #include <solid/audiointerface.h>
 #include <kconfiggroup.h>
+#include <klocale.h>
 #include <kdebug.h>
+
+#include <alsa/asoundlib.h>
 
 namespace Phonon
 {
@@ -37,10 +40,47 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
     Solid::AudioInterface *audioHw = audioDevice.as<Solid::AudioInterface>();
-    kDebug(600) << k_funcinfo << audioHw->driverHandles() << endl;
+    kDebug(600) << k_funcinfo << audioHw->driverHandle() << endl;
     d->udi = audioDevice.udi();
     d->cardName = audioHw->name();
-    d->deviceIds = audioHw->driverHandles();
+    d->driver = audioHw->driver();
+    const QVariant handle = audioHw->driverHandle();
+    switch (d->driver) {
+    case Solid::AudioInterface::UnknownAudioDriver:
+        d->valid = false;
+        return;
+    case Solid::AudioInterface::OpenSoundSystem:
+        if (handle.type() != QVariant::String) {
+            d->valid = false;
+            return;
+        }
+        d->deviceIds << handle.toString();
+        break;
+    case Solid::AudioInterface::Alsa:
+        if (handle.type() != QVariant::List) {
+            d->valid = false;
+            return;
+        }
+        const QList<QVariant> handles = handle.toList();
+        if (handles.size() < 1) {
+            d->valid = false;
+            return;
+        }
+        const QString defaultId = QLatin1String("default:CARD=") + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
+        d->deviceIds << defaultId;
+        QString dmixId   = QLatin1String("dmix:CARD=")   + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
+        QString dsnoopId = QLatin1String("dsnoop:CARD=") + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
+        if (handles.size() > 1 && handles.at(1).isValid()) {
+            dmixId   += ",DEV=" + handles.at(1).toString();
+            dsnoopId += ",DEV=" + handles.at(1).toString();
+            if (handles.size() > 2 && handles.at(2).isValid()) {
+                dmixId   += ",SUBDEV=" + handles.at(2).toString();
+                dsnoopId += ",SUBDEV=" + handles.at(2).toString();
+            }
+        }
+        d->deviceIds << dmixId << dsnoopId;
+        break;
+    }
     switch (audioHw->soundcardType()) {
     case Solid::AudioInterface::InternalSoundcard:
         d->icon = QLatin1String("audio-card");
@@ -60,7 +100,6 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         d->valid = false;
         return;
     }
-    d->driver = audioHw->driver();
     d->available = true;
     d->valid = true;
 
@@ -126,68 +165,198 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     // deviceIds stays empty because it's not available
 }
 
-#if 0
-void AudioDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
+AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr config)
+    : d(new AudioDevicePrivate)
 {
-    snd_ctl_card_info_t *cardInfo;
-    snd_ctl_card_info_malloc(&cardInfo);
+    d->driver = Solid::AudioInterface::Alsa;
+    d->deviceIds << alsaDeviceName;
+    d->cardName = alsaDeviceName;
+    d->deviceInfoFromPcmDevice(alsaDeviceName);
 
-    snd_ctl_t *ctl;
-    if (0 == snd_ctl_open(&ctl, deviceName.toLatin1().constData(), 0 /*open mode: blocking, sync */)) {
-        if (0 == snd_ctl_card_info(ctl, cardInfo)) {
-            //Get card identifier from a CTL card info.
-            internalId = snd_ctl_card_info_get_id(cardInfo);
-            kDebug(600) << k_funcinfo << internalId << endl;
-
-            if (!deviceIds.contains(deviceName)) {
-                deviceIds << deviceName;
-            }
-
-            //Get card name from a CTL card info.
-            cardName = QString(snd_ctl_card_info_get_name(cardInfo)).trimmed();
-
-            valid = true;
-
-            if (cardName.contains("headset", Qt::CaseInsensitive) ||
-                    cardName.contains("headphone", Qt::CaseInsensitive)) {
-                // it's a headset
-                icon = QLatin1String("headset");
-            } else {
-                //Get card driver name from a CTL card info.
-                QString driver = snd_ctl_card_info_get_driver(cardInfo);
-                if (driver.contains("usb", Qt::CaseInsensitive)) {
-                    // it's an external USB device
-                    icon = QLatin1String("usb-device");
-                } else {
-                    icon = QLatin1String("pci-card");
-                }
-            }
-        }
-        snd_ctl_close(ctl);
+    KConfigGroup deviceGroup(config.data(), alsaDeviceName);
+    if (config->hasGroup(alsaDeviceName)) {
+        d->index = deviceGroup.readEntry("index", -1);
     }
-    snd_ctl_card_info_free(cardInfo);
+    if (d->index == -1) {
+        KConfigGroup globalGroup(config.data(), "Globals");
+        int nextIndex = globalGroup.readEntry("nextIndex", 0);
+        d->index = nextIndex++;
+        globalGroup.writeEntry("nextIndex", nextIndex);
+
+        deviceGroup.writeEntry("index", d->index);
+        deviceGroup.writeEntry("cardName", d->cardName);
+        deviceGroup.writeEntry("icon", d->icon);
+        deviceGroup.writeEntry("driver", static_cast<int>(d->driver));
+        deviceGroup.writeEntry("captureDevice", d->captureDevice);
+        deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
+    } else {
+        if (d->captureDevice) { // only "promote" devices
+            deviceGroup.writeEntry("captureDevice", d->captureDevice);
+        }
+        if (d->playbackDevice) { // only "promote" devices
+            deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
+        }
+        deviceGroup.writeEntry("icon", d->icon);
+    }
+    config->sync();
+}
+
+AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &description, KSharedConfig::Ptr config)
+    : d(new AudioDevicePrivate)
+{
+    d->driver = Solid::AudioInterface::Alsa;
+    d->deviceIds << alsaDeviceName;
+    QStringList lines = description.split("\n");
+    d->cardName = lines.first();
+    if (lines.size() > 1) {
+        d->cardName = i18n("%1 (%2)", d->cardName, lines[1]);
+    }
+
+    snd_pcm_t *pcm;
+    const QByteArray deviceNameEnc = alsaDeviceName.toUtf8();
+    if (0 == snd_pcm_open(&pcm, deviceNameEnc.constData(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK /*open mode: non-blocking, sync */)) {
+        d->available = true;
+        d->playbackDevice = true;
+        d->valid = true;
+        snd_pcm_close(pcm);
+    }
+    if (0 == snd_pcm_open(&pcm, deviceNameEnc.constData(), SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK /*open mode: non-blocking, sync */)) {
+        d->available = true;
+        d->captureDevice = true;
+        d->valid = true;
+        snd_pcm_close(pcm);
+    }
+
+    if (description.contains("headset", Qt::CaseInsensitive) ||
+            description.contains("headphone", Qt::CaseInsensitive)) {
+        // it's a headset
+        if (description.contains("usb", Qt::CaseInsensitive)) {
+            d->icon = QLatin1String("audio-headset-usb");
+        } else {
+            d->icon = QLatin1String("audio-headset");
+        }
+    } else {
+        //Get card driver name from a CTL card info.
+        if (description.contains("usb", Qt::CaseInsensitive)) {
+            // it's an external USB device
+            d->icon = QLatin1String("audio-card-usb");
+        } else {
+            d->icon = QLatin1String("audio-card");
+        }
+    }
+
+    KConfigGroup deviceGroup(config.data(), alsaDeviceName);
+    if (config->hasGroup(alsaDeviceName)) {
+        d->index = deviceGroup.readEntry("index", -1);
+    }
+    if (d->index == -1) {
+        KConfigGroup globalGroup(config.data(), "Globals");
+        int nextIndex = globalGroup.readEntry("nextIndex", 0);
+        d->index = nextIndex++;
+        globalGroup.writeEntry("nextIndex", nextIndex);
+
+        deviceGroup.writeEntry("index", d->index);
+        deviceGroup.writeEntry("cardName", d->cardName);
+        deviceGroup.writeEntry("icon", d->icon);
+        deviceGroup.writeEntry("driver", static_cast<int>(d->driver));
+        deviceGroup.writeEntry("captureDevice", d->captureDevice);
+        deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
+    } else {
+        if (d->captureDevice) { // only "promote" devices
+            deviceGroup.writeEntry("captureDevice", d->captureDevice);
+        }
+        if (d->playbackDevice) { // only "promote" devices
+            deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
+        }
+        deviceGroup.writeEntry("icon", d->icon);
+    }
+    config->sync();
 }
 
 void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 {
+    kDebug(600) << k_funcinfo << deviceName << endl;
     snd_pcm_info_t *pcmInfo;
     snd_pcm_info_malloc(&pcmInfo);
 
     snd_pcm_t *pcm;
-    if (0 == snd_pcm_open(&pcm, deviceName.toLatin1().constData(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK /*open mode: non-blocking, sync */)) {
+    const QByteArray deviceNameEnc = deviceName.toUtf8();
+    if (0 == snd_pcm_open(&pcm, deviceNameEnc.constData(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK /*open mode: non-blocking, sync */)) {
         if (0 == snd_pcm_info(pcm, pcmInfo)) {
-            if (internalId.isNull()) {
-                internalId = snd_pcm_info_get_id(pcmInfo);
-            }
-            if (!deviceIds.contains(deviceName)) {
-                deviceIds << deviceName;
-            }
+            available = true;
+            playbackDevice = true;
+            alsaId.card = snd_pcm_info_get_card(pcmInfo);
+            alsaId.device = snd_pcm_info_get_device(pcmInfo);
+            alsaId.subdevice = snd_pcm_info_get_subdevice(pcmInfo);
+            valid = true;
         }
         snd_pcm_close(pcm);
     }
+    if (0 == snd_pcm_open(&pcm, deviceNameEnc.constData(), SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK /*open mode: non-blocking, sync */)) {
+        captureDevice = true;
+        snd_pcm_close(pcm);
+    }
+    if (valid) {
+        QByteArray hwDeviceNameEnc;
+        if (alsaId.card < 0) {
+            Q_ASSERT(false);
+            hwDeviceNameEnc = snd_pcm_info_get_id(pcmInfo);
+            if (hwDeviceNameEnc.startsWith("dmix:")) {
+                hwDeviceNameEnc = "hw:" + hwDeviceNameEnc.right(hwDeviceNameEnc.size() - 5);
+            }
+//X             if (0 == snd_pcm_open(&pcm, hwDeviceNameEnc.constData(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK /*open mode: non-blocking, sync */)) {
+//X                 if (0 == snd_pcm_info(pcm, pcmInfo)) {
+//X                     alsaId.card = snd_pcm_info_get_card(pcmInfo);
+//X                     alsaId.device = snd_pcm_info_get_device(pcmInfo);
+//X                     alsaId.subdevice = snd_pcm_info_get_subdevice(pcmInfo);
+//X                 }
+//X                 snd_pcm_close(pcm);
+//X             }
+        } else {
+            hwDeviceNameEnc = "hw:" + QByteArray::number(alsaId.card) + ","
+                + QByteArray::number(alsaId.device) + "," + QByteArray::number(alsaId.subdevice);
+        }
+
+        QString probablyTheCardName;
+        QString driver;
+        snd_ctl_card_info_t *cardInfo;
+        snd_ctl_card_info_malloc(&cardInfo);
+        snd_ctl_t *ctl;
+        if (0 == snd_ctl_open(&ctl, hwDeviceNameEnc.constData(), 0 /*open mode: blocking, sync */)) {
+            if (0 == snd_ctl_card_info(ctl, cardInfo)) {
+                //Get card identifier from a CTL card info.
+                //internalId = snd_ctl_card_info_get_id(cardInfo);
+
+                //Get card name from a CTL card info.
+                probablyTheCardName = QString(snd_ctl_card_info_get_name(cardInfo)).trimmed();
+                driver = snd_ctl_card_info_get_driver(cardInfo);
+            }
+            snd_ctl_close(ctl);
+        }
+        snd_ctl_card_info_free(cardInfo);
+
+        if (cardName.contains("headset", Qt::CaseInsensitive) ||
+                cardName.contains("headphone", Qt::CaseInsensitive) ||
+                probablyTheCardName.contains("headset", Qt::CaseInsensitive) ||
+                probablyTheCardName.contains("headphone", Qt::CaseInsensitive)) {
+            // it's a headset
+            if (driver.contains("usb", Qt::CaseInsensitive)) {
+                icon = QLatin1String("audio-headset-usb");
+            } else {
+                icon = QLatin1String("audio-headset");
+            }
+        } else {
+            //Get card driver name from a CTL card info.
+            if (driver.contains("usb", Qt::CaseInsensitive)) {
+                // it's an external USB device
+                icon = QLatin1String("audio-card-usb");
+            } else {
+                icon = QLatin1String("audio-card");
+            }
+        }
+    }
     snd_pcm_info_free(pcmInfo);
 }
-#endif
 
 QString AudioDevice::udi() const
 {

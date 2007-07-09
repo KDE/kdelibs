@@ -34,6 +34,9 @@ class AudioDeviceEnumeratorPrivate
 
         void _k_deviceAdded(const QString &);
         void _k_deviceRemoved(const QString &);
+        void _k_asoundrcChanged(const QString &file);
+        void findAsoundrcDevices(const QString &fileName);
+        void findVirtualDevices();
 
         QList<AudioDevice> playbackdevicelist;
         QList<AudioDevice> capturedevicelist;

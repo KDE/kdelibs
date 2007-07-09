@@ -88,6 +88,7 @@ namespace Phonon
             AudioDeviceEnumeratorPrivate *const d;
             Q_PRIVATE_SLOT(d, void _k_deviceAdded(const QString &))
             Q_PRIVATE_SLOT(d, void _k_deviceRemoved(const QString &))
+            Q_PRIVATE_SLOT(d, void _k_asoundrcChanged(const QString &))
     };
 } // namespace Phonon
 #endif // PHONON_AUDIODEVICEENUMERATOR_H

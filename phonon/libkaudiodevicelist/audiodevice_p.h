@@ -41,12 +41,22 @@ class AudioDevicePrivate : public QSharedData
         {
         }
 
+        void deviceInfoFromPcmDevice(const QString &deviceName);
+
         int refCount;
         QString cardName;
         QStringList deviceIds;
         QString icon;
         QString udi;
         Solid::AudioInterface::AudioDriver driver;
+        struct AlsaId
+        {
+            AlsaId() : card(-1), device(-1), subdevice(-1) {}
+            bool operator==(const AlsaId &x) const { return card == x.card && device == x.device && subdevice == x.subdevice; }
+            int card;
+            int device;
+            int subdevice;
+        } alsaId;
         int index;
         bool available : 1;
         bool valid : 1;

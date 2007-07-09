@@ -1,4 +1,4 @@
-include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid)
+include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid ${ALSA_INCLUDES} ${KDE4_KIO_INCLUDES})
 
 FIND_PACKAGE(Alsa)
 ALSA_VERSION_STRING(ALSA_VERSION_STR)
@@ -18,7 +18,7 @@ set(kaudiodevicelist_LIB_SRCS
 	audiodeviceenumerator.cpp
 	)
 kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
-target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS})
+target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS} ${ASOUND_LIBRARY})
 
 set_target_properties(kaudiodevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
