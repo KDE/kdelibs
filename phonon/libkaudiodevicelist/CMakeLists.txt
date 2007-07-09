@@ -1,5 +1,3 @@
-include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid ${ALSA_INCLUDES} ${KDE4_KIO_INCLUDES})
-
 FIND_PACKAGE(Alsa)
 ALSA_VERSION_STRING(ALSA_VERSION_STR)
 IF(ALSA_VERSION_STR AND NOT WIN32)
@@ -13,6 +11,13 @@ IF(ALSA_VERSION_STR AND NOT WIN32)
         MESSAGE(STATUS "WARNING: libasound version '${ALSA_VERSION_STR}' is not recent enough. The recommended minimum version is '${RECOMMENDED_MIN_VERSION}'. Older versions will compile correctly, but break on dmix usage.")
     ENDIF(VERSION_LESS OR VERSION_EQUAL)
 ENDIF(ALSA_VERSION_STR AND NOT WIN32)
+
+IF(NOT ALSA_FOUND)
+   SET(ASOUND_LIBRARY)
+   SET(ALSA_INCLUDES)
+ENDIF(NOT ALSA_FOUND)
+
+include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid ${ALSA_INCLUDES} ${KDE4_KIO_INCLUDES})
 
 set(kaudiodevicelist_LIB_SRCS
 	audiodevice.cpp
