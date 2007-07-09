@@ -56,7 +56,7 @@ namespace Ifaces
          *
          * @return the driver specific string to handle this device
          */
-        virtual QString driverHandler() const = 0;
+        virtual QVariant driverHandle() const = 0;
 
 
 

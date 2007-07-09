@@ -582,7 +582,7 @@
                 <property key="interfaces">AudioInterface</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
-                <property key="driverHandler">hw:0,0</property>
+                <property key="driverHandle">0,0</property>
                 <property key="type">input</property>
                 <property key="soundcardType">internal</property>
             </device>
@@ -591,7 +591,7 @@
                 <property key="interfaces">AudioInterface</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
-                <property key="driverHandler">hw:0,1</property>
+                <property key="driverHandle">0,1</property>
                 <property key="type">output</property>
                 <property key="soundcardType">internal</property>
             </device>
@@ -600,7 +600,7 @@
                 <property key="interfaces">AudioInterface</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
-                <property key="driverHandler">hw:0</property>
+                <property key="driverHandle">0</property>
                 <property key="type">control</property>
                 <property key="soundcardType">internal</property>
             </device>
@@ -609,7 +609,7 @@
                 <property key="interfaces">AudioInterface</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">oss</property>
-                <property key="driverHandler">/dev/dsp</property>
+                <property key="driverHandle">/dev/dsp</property>
                 <property key="type">input,output</property>
                 <property key="soundcardType">internal</property>
             </device>

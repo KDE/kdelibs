@@ -53,7 +53,7 @@ Solid::AudioInterface::AudioDriver AudioInterface::driver() const
     }
 }
 
-QString AudioInterface::driverHandler() const
+QVariant AudioInterface::driverHandle() const
 {
     Solid::AudioInterface::AudioDriver d = driver();
 
@@ -61,27 +61,18 @@ QString AudioInterface::driverHandler() const
     {
         QVariant card_id = m_device->property("alsa.card");
         QVariant dev_id = m_device->property("alsa.device");
+        QVariant subdev_id;
+        //TODO alsa.subdevice
 
-        if (card_id.isValid() && dev_id.isValid())
-        {
-            return QString("hw:%1,%2").arg(card_id.toInt()).arg(dev_id.toInt());
-        }
-        else if (card_id.isValid())
-        {
-            return QString("hw:%1").arg(card_id.toInt());
-        }
-        else
-        {
-            return QString();
-        }
+        return QList<QVariant>() << card_id << dev_id << subdev_id;
     }
     else if (d == Solid::AudioInterface::OpenSoundSystem)
     {
-        return m_device->property("oss.device_file").toString();
+        return m_device->property("oss.device_file");
     }
     else
     {
-        return QString();
+        return QVariant();
     }
 }
 

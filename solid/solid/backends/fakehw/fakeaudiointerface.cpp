@@ -52,9 +52,17 @@ Solid::AudioInterface::AudioDriver FakeAudioInterface::driver() const
     }
 }
 
-QString FakeAudioInterface::driverHandler() const
+QVariant FakeAudioInterface::driverHandle() const
 {
-    return fakeDevice()->property("driverHandler").toString();
+    if (driver() == Solid::AudioInterface::Alsa) {
+        const QStringList x = fakeDevice()->property("driverHandle").toString().split(',');
+        QList<QVariant> ret;
+        foreach (const QString &num, x) {
+            ret << num.toInt();
+        }
+        return ret;
+    }
+    return fakeDevice()->property("driverHandle");
 }
 
 QString FakeAudioInterface::name() const

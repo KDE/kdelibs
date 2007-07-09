@@ -24,6 +24,7 @@
 
 #include <solid/deviceinterface.h>
 
+class QVariant;
 namespace Solid
 {
     class AudioInterfacePrivate;
@@ -38,7 +39,7 @@ namespace Solid
         Q_ENUMS(AudioDriver AudioInterfaceType SoundcardType)
         Q_FLAGS(AudioInterfaceTypes)
         Q_PROPERTY(AudioDriver driver READ driver)
-        Q_PROPERTY(QStringList driverHandles READ driverHandles)
+        Q_PROPERTY(QVariant driverHandle READ driverHandle)
         Q_PROPERTY(QString name READ name)
         Q_PROPERTY(AudioInterfaceTypes deviceType READ deviceType)
         Q_PROPERTY(SoundcardType soundcardType READ soundcardType)
@@ -171,7 +172,7 @@ namespace Solid
          *
          * @return the driver specific string to handle this device
          */
-        QStringList driverHandles() const;
+        QVariant driverHandle() const;
 
 
 

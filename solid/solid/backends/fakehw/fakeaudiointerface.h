@@ -34,7 +34,7 @@ public:
 
 public Q_SLOTS:
     virtual Solid::AudioInterface::AudioDriver driver() const;
-    virtual QString driverHandler() const;
+    virtual QVariant driverHandle() const;
 
     virtual QString name() const;
     virtual Solid::AudioInterface::AudioInterfaceTypes deviceType() const;

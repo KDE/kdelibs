@@ -31,8 +31,6 @@ namespace Solid
     public:
         AudioInterfacePrivate()
             : DeviceInterfacePrivate() { }
-
-        mutable QStringList driverHandles;
     };
 }
 

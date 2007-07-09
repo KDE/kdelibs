@@ -23,6 +23,7 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/audiointerface.h>
 #include <QtCore/QStringList>
+#include <QtCore/QVariant>
 
 Solid::AudioInterface::AudioInterface(QObject *backendObject)
     : DeviceInterface(*new AudioInterfacePrivate(), backendObject)
@@ -41,86 +42,10 @@ Solid::AudioInterface::AudioDriver Solid::AudioInterface::driver() const
     return_SOLID_CALL(Ifaces::AudioInterface *, d->backendObject(), UnknownAudioDriver, driver());
 }
 
-QStringList Solid::AudioInterface::driverHandles() const
+QVariant Solid::AudioInterface::driverHandle() const
 {
     Q_D(const AudioInterface);
-
-    if (!d->driverHandles.isEmpty())
-    {
-        // cached
-        return d->driverHandles;
-    }
-
-    Ifaces::AudioInterface *iface = qobject_cast<Ifaces::AudioInterface *>(d->backendObject());
-    if (iface)
-    {
-        QString handle = iface->driverHandler();
-        if (iface->driver() == Alsa)
-        {
-            // we expect the handle to be of the form hw:X or hw:X,Y
-            const int colon = handle.indexOf(':');
-            if (-1 == colon)
-            {
-                return QStringList(handle);
-            }
-            handle = handle.right(handle.size() - colon - 1);
-
-            // get cardnum, devicenum and subdevicenum
-            int comma = handle.indexOf(',');
-            QString cardnum;
-            QString devicenum;
-            QString subdevicenum;
-            if (comma > -1)
-            {
-                cardnum = handle.left(comma);
-                handle = handle.right(handle.size() - 1 - comma);
-                comma = handle.indexOf(',');
-                if (comma > -1)
-                {
-                    devicenum = handle.left(comma);
-                    subdevicenum = handle.right(handle.size() - 1 - comma);
-                }
-                else
-                {
-                    devicenum = handle;
-                }
-            }
-            else
-            {
-                cardnum = handle;
-            }
-            handle = QLatin1String("CARD=") + cardnum;
-            if (!devicenum.isEmpty())
-            {
-                handle += QLatin1String(",DEV=") + devicenum;
-                if (!subdevicenum.isEmpty())
-                {
-                    handle += QLatin1String(",SUBDEV=") + subdevicenum;
-                }
-            }
-
-            if (iface->deviceType()  & Solid::AudioInterface::AudioOutput)
-            {
-                // first try dmix for concurrent access then plain hw and if the hw formats don't
-                // work plughw
-                d->driverHandles << QLatin1String("dmix:") + handle;
-            }
-            if (iface->deviceType()  & Solid::AudioInterface::AudioInput)
-            {
-                // first try dsnoop for concurrent access, then plain hw
-                d->driverHandles << QLatin1String("dsnoop:") + handle;
-            }
-            d->driverHandles << QLatin1String("hw:") + handle
-                << QLatin1String("plughw:") + handle;
-
-            return d->driverHandles;
-        }
-        else
-        {
-            return QStringList(handle);
-        }
-    }
-    return QStringList();
+    return_SOLID_CALL(Ifaces::AudioInterface *, d->backendObject(), QVariant(), driverHandle());
 }
 
 QString Solid::AudioInterface::name() const
