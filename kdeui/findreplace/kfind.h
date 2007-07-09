@@ -105,18 +105,19 @@ class KDEUI_EXPORT KFind :
 
 public:
 
+    /// the options
     enum Options
     {
-        WholeWordsOnly = 1,     // Match whole words only.
-        FromCursor = 2,         // Start from current cursor position.
-        SelectedText = 4,       // Only search selected area.
-        CaseSensitive = 8,      // Consider case when matching.
-        FindBackwards = 16,     // Go backwards.
-        RegularExpression = 32, // Interpret the pattern as a regular expression.
-        FindIncremental = 64,   // Find incremental.
+        WholeWordsOnly = 1,     ///< Match whole words only.
+        FromCursor = 2,         ///< Start from current cursor position.
+        SelectedText = 4,       ///< Only search selected area.
+        CaseSensitive = 8,      ///< Consider case when matching.
+        FindBackwards = 16,     ///< Go backwards.
+        RegularExpression = 32, ///< Interpret the pattern as a regular expression.
+        FindIncremental = 64,   ///< Find incremental.
         // Note that KReplaceDialog uses 256 and 512
         // User extensions can use boolean options above this value.
-        MinimumUserOption = 65536
+        MinimumUserOption = 65536 ///< user options start with this bit
     };
 
     /**
@@ -182,12 +183,15 @@ public:
      * but options might change _during_ the replace operation:
      * e.g. the "All" button resets the PromptOnReplace flag.
      *
+     * @see KFind::Options
      */
     long options() const;
 
     /**
      * Set new options. Usually this is used for setting or clearing the
      * FindBackwards options.
+     *
+     * @see KFind::Options
      */
     virtual void setOptions( long options );
 
