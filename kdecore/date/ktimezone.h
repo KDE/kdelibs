@@ -1065,7 +1065,7 @@ protected:
      *
      * @see setData()
      */
-    bool update(const KTimeZone *other);
+    bool updateBase(const KTimeZone *other);
 
 private:
     KTimeZonePrivate *const d;

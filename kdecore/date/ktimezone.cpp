@@ -565,7 +565,7 @@ void KTimeZone::setData(KTimeZoneData *data, KTimeZoneSource *source)
         d->source = source;
 }
 
-bool KTimeZone::update(const KTimeZone *other)
+bool KTimeZone::updateBase(const KTimeZone *other)
 {
     if (d->name != other->d->name)
         return false;
