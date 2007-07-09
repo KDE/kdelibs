@@ -26,16 +26,8 @@ set( oxygen_SRCS
    )
 
 
-set( oxygen_MOC_HDRS
-     eventkiller.h
-     oxygen.h
-     styleanimator.h
-     visualframe.h
-)
-
-qt4_wrap_cpp(oxygen_MOC_SRCS ${oxygen_MOC_HDRS})
-
-kde4_add_plugin(oxygen ${oxygen_SRCS} ${oxygen_MOC_SRCS})
+kde4_moc_headers(oxygen eventkiller.h)
+kde4_add_plugin(oxygen ${oxygen_SRCS})
 
 target_link_libraries( oxygen
                        ${QT_QT3SUPPORT_LIBRARY}
