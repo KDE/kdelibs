@@ -556,11 +556,24 @@ const KTimeZoneData *KTimeZone::data(bool create) const
     return d->data;
 }
 
-void KTimeZone::setData(KTimeZoneData *data)
+void KTimeZone::setData(KTimeZoneData *data, KTimeZoneSource *source)
 {
     if (d->data)
         delete d->data;
     d->data = data;
+    if (source)
+        d->source = source;
+}
+
+bool KTimeZone::update(const KTimeZone *other)
+{
+    if (d->name != other->d->name)
+        return false;
+    d->countryCode = other->d->countryCode;
+    d->comment     = other->d->comment;
+    d->latitude    = other->d->latitude;
+    d->longitude   = other->d->longitude;
+    return true;
 }
 
 bool KTimeZone::parse() const
