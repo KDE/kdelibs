@@ -35,12 +35,7 @@ public:
     virtual bool isPlugged() const;
     virtual Solid::Battery::BatteryType type() const;
 
-    virtual QString chargeValueUnit() const;
-    virtual int chargeValue(Solid::Battery::LevelType type = Solid::Battery::CurrentLevel) const;
     virtual int chargePercent() const;
-
-    virtual QString voltageUnit() const;
-    virtual int voltage() const;
 
     virtual bool isRechargeable() const;
     virtual Solid::Battery::ChargeState chargeState() const;

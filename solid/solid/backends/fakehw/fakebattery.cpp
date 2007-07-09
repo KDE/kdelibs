@@ -72,49 +72,14 @@ Solid::Battery::BatteryType FakeBattery::type() const
     }
 }
 
-QString FakeBattery::chargeValueUnit() const
-{
-    return fakeDevice()->property("chargeLevelUnit").toString();
-}
-
-int FakeBattery::chargeValue(Solid::Battery::LevelType type) const
-{
-    switch(type)
-    {
-    case Solid::Battery::MaxLevel:
-        return fakeDevice()->property("maxLevel").toInt();
-    case Solid::Battery::LastFullLevel:
-        return fakeDevice()->property("lastFullLevel").toInt();
-    case Solid::Battery::CurrentLevel:
-        return fakeDevice()->property("currentLevel").toInt();
-    case Solid::Battery::WarningLevel:
-        return fakeDevice()->property("warningLevel").toInt();
-    case Solid::Battery::LowLevel:
-        return fakeDevice()->property("lowLevel").toInt();
-    }
-
-    // Shouldn't happen...
-    return -1;
-}
-
 int FakeBattery::chargePercent() const
 {
-    int last_full = chargeValue(Solid::Battery::LastFullLevel);
-    int current = chargeValue(Solid::Battery::CurrentLevel);
+    int last_full = fakeDevice()->property("lastFullLevel").toInt();
+    int current = fakeDevice()->property("currentLevel").toInt();
 
     int percent = (100 * current) / last_full;
 
     return percent;
-}
-
-QString FakeBattery::voltageUnit() const
-{
-    return fakeDevice()->property("voltageUnit").toString();
-}
-
-int FakeBattery::voltage() const
-{
-    return fakeDevice()->property("voltage").toInt();
 }
 
 bool FakeBattery::isRechargeable() const

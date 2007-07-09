@@ -58,50 +58,12 @@ namespace Ifaces
 
 
         /**
-         * Retrieves the physical unit used by the charge level values
-         * (for example mWh).
-         *
-         * @return the charge level unit as a string
-         * @see chargeValue()
-         */
-        virtual QString chargeValueUnit() const = 0;
-
-        /**
-         * Retrieves one of the charge level of the battery as requested.
-         * By default the current charge level is returned.
-         *
-         * The unit of the returned value is determined by chargeLevelUnit()
-         *
-         * @return the requested charge level
-         * @see Solid::Battery::LevelType
-         */
-        virtual int chargeValue(Solid::Battery::LevelType type = Solid::Battery::CurrentLevel) const = 0;
-
-        /**
          * Retrieves the current charge level of the battery normalised
          * to percent.
          *
          * @return the current charge level normalised to percent
          */
         virtual int chargePercent() const = 0;
-
-
-        /**
-         * Retrieves the physical unit used by the voltage values
-         * (for example mV).
-         *
-         * @return the voltage level unit as a string
-         * @see voltage()
-         */
-        virtual QString voltageUnit() const = 0;
-
-        /**
-         * Retrieves the current voltage level of the battery.
-         *
-         * The unit of the returned value is determined by voltageUnit()
-         */
-        virtual int voltage() const = 0;
-
 
 
         /**

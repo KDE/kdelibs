@@ -35,14 +35,10 @@ namespace Solid
     class SOLID_EXPORT Battery : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS(BatteryType LevelType ChargeState)
+        Q_ENUMS(BatteryType ChargeState)
         Q_PROPERTY(bool plugged READ isPlugged)
         Q_PROPERTY(BatteryType type READ type)
-        Q_PROPERTY(QString chargeValueUnit READ chargeValueUnit)
-        Q_PROPERTY(int chargeValue READ chargeValue)
         Q_PROPERTY(int chargePercent READ chargePercent)
-        Q_PROPERTY(QString voltageUnit READ voltageUnit)
-        Q_PROPERTY(int voltage READ voltage)
         Q_PROPERTY(bool rechargeable READ isRechargeable)
         Q_PROPERTY(ChargeState chargeState READ chargeState)
         Q_DECLARE_PRIVATE(Battery)
@@ -66,21 +62,9 @@ namespace Solid
                            KeyboardMouseBattery, CameraBattery };
 
         /**
-         * This enum type defines the kind of charge level a battery can expose
-         *
-         * - MaxLevel : The maximum charge level the battery got designed for
-         * - LastFullLevel : The last charge level the battery got when full
-         * - CurrentLevel : The current charge level
-         * - WarningLevel : The battery is in 'warning' state below this level
-         * - LowLevel : The battery is in 'low' state below this level
-         */
-        enum LevelType { MaxLevel, LastFullLevel, CurrentLevel,
-                         WarningLevel, LowLevel };
-
-        /**
          * This enum type defines charge state of a battery
          *
-         * - NoCharge : Battery charge is stable, not charging or discharging or 
+         * - NoCharge : Battery charge is stable, not charging or discharging or
          *              the state is Unknown
          * - Charging : Battery is charging
          * - Discharging : Battery is discharging
@@ -132,50 +116,12 @@ namespace Solid
 
 
         /**
-         * Retrieves the physical unit used by the charge level values
-         * (for example mWh).
-         *
-         * @return the charge level unit as a string
-         * @see chargeValue()
-         */
-        QString chargeValueUnit() const;
-
-        /**
-         * Retrieves one of the charge level of the battery as requested.
-         * By default the current charge level is returned.
-         *
-         * The unit of the returned value is determined by chargeLevelUnit()
-         *
-         * @return the requested charge level
-         * @see Solid::Battery::LevelType
-         */
-        int chargeValue(LevelType type = CurrentLevel) const;
-
-        /**
          * Retrieves the current charge level of the battery normalised
          * to percent.
          *
          * @return the current charge level normalised to percent
          */
         int chargePercent() const;
-
-
-
-        /**
-         * Retrieves the physical unit used by the voltage values
-         * (for example mV).
-         *
-         * @return the voltage level unit as a string
-         * @see voltage()
-         */
-        QString voltageUnit() const;
-
-        /**
-         * Retrieves the current voltage level of the battery.
-         *
-         * The unit of the returned value is determined by voltageUnit()
-         */
-        int voltage() const;
 
 
 

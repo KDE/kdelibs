@@ -75,44 +75,9 @@ Solid::Battery::BatteryType Battery::type() const
     }
 }
 
-QString Battery::chargeValueUnit() const
-{
-    return m_device->property("battery.charge_level.unit").toString();
-}
-
-int Battery::chargeValue(Solid::Battery::LevelType type) const
-{
-    switch(type)
-    {
-    case Solid::Battery::MaxLevel:
-        return m_device->property("battery.charge_level.design").toInt();
-    case Solid::Battery::LastFullLevel:
-        return m_device->property("battery.charge_level.last_full").toInt();
-    case Solid::Battery::CurrentLevel:
-        return m_device->property("battery.charge_level.current").toInt();
-    case Solid::Battery::WarningLevel:
-        return m_device->property("battery.charge_level.warning").toInt();
-    case Solid::Battery::LowLevel:
-        return m_device->property("battery.charge_level.low").toInt();
-    }
-
-    // Shouldn't happen...
-    return -1;
-}
-
 int Battery::chargePercent() const
 {
     return m_device->property("battery.charge_level.percentage").toInt();
-}
-
-QString Battery::voltageUnit() const
-{
-    return m_device->property("battery.voltage.unit").toString();
-}
-
-int Battery::voltage() const
-{
-    return m_device->property("battery.voltage.current").toInt();
 }
 
 bool Battery::isRechargeable() const

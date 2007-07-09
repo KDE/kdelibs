@@ -53,34 +53,10 @@ Solid::Battery::BatteryType Solid::Battery::type() const
     return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), UnknownBattery, type());
 }
 
-QString Solid::Battery::chargeValueUnit() const
-{
-    Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), QString(), chargeValueUnit());
-}
-
-int Solid::Battery::chargeValue(LevelType type) const
-{
-    Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, chargeValue(type));
-}
-
 int Solid::Battery::chargePercent() const
 {
     Q_D(const Battery);
     return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, chargePercent());
-}
-
-QString Solid::Battery::voltageUnit() const
-{
-    Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), QString(), voltageUnit());
-}
-
-int Solid::Battery::voltage() const
-{
-    Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, voltage());
 }
 
 bool Solid::Battery::isRechargeable() const
