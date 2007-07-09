@@ -159,6 +159,7 @@ struct DeviceHint
 
 void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 {
+#ifdef HAS_LIBASOUND_DEVICE_NAME_HINT
     QList<DeviceHint> deviceHints;
 
     void **hints;
@@ -207,6 +208,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
             }
         }
     }
+#endif //HAS_LIBASOUND_DEVICE_NAME_HINT
 }
 
 void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)

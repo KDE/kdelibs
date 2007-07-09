@@ -8,6 +8,7 @@ IF(ALSA_VERSION_STR AND NOT WIN32)
     STRING(COMPARE EQUAL ${RECOMMENDED_MIN_VERSION} ${ALSA_VERSION_STR} VERSION_EQUAL)
     IF(VERSION_LESS OR VERSION_EQUAL)
         MESSAGE(STATUS "libasound version '${ALSA_VERSION_STR}' is recent enough")
+        ADD_DEFINITIONS(-DHAS_LIBASOUND_DEVICE_NAME_HINT)
     ELSE(VERSION_LESS OR VERSION_EQUAL)
         MESSAGE(STATUS "WARNING: libasound version '${ALSA_VERSION_STR}' is not recent enough. The recommended minimum version is '${RECOMMENDED_MIN_VERSION}'. Older versions will compile correctly, but break on dmix usage.")
     ENDIF(VERSION_LESS OR VERSION_EQUAL)
@@ -28,5 +29,3 @@ install(FILES
 	audiodevice.h
 	audiodeviceenumerator.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)
-
-# vim: noet
