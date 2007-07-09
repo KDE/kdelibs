@@ -36,6 +36,7 @@ public:
 
 KDateTimeWidget::KDateTimeWidget(QWidget * parent)
   : QWidget(parent)
+  , d( new KDateTimeWidgetPrivate )
 {
   init();
 }
@@ -43,6 +44,8 @@ KDateTimeWidget::KDateTimeWidget(QWidget * parent)
 KDateTimeWidget::KDateTimeWidget(const QDateTime & datetime,
                                  QWidget * parent)
   : QWidget(parent)
+  , d( new KDateTimeWidgetPrivate )
+
 {
   init();
 
@@ -56,8 +59,6 @@ KDateTimeWidget::~KDateTimeWidget()
 
 void KDateTimeWidget::init()
 {
-  d = new KDateTimeWidgetPrivate;
-
   QHBoxLayout *layout = new QHBoxLayout(this);
   layout->setMargin(0);
   layout->setSpacing(KDialog::spacingHint());

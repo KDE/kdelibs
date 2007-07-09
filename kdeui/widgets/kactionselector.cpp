@@ -75,8 +75,8 @@ class KActionSelectorPrivate {
 
 KActionSelector::KActionSelector( QWidget *parent )
   : QWidget( parent )
+  , d( new KActionSelectorPrivate(this) )
 {
-  d = new KActionSelectorPrivate(this);
   d->moveOnDoubleClick = true;
   d->keyboardEnabled = true;
   d->addIcon = QApplication::isRightToLeft()? "go-previous" : "go-next";

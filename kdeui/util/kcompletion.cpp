@@ -30,49 +30,66 @@
 class KCompletionPrivate
 {
 public:
-    // not a member to avoid #including kcompletion_p.h from kcompletion.h
+    KCompletionPrivate()
+        : myCompletionMode( KGlobalSettings::completionMode() )
+        , myTreeRoot( new KCompTreeNode )
+        , myBeep( true )
+        , myIgnoreCase( false )
+        , myHasMultipleMatches( false )
+        , myRotationIndex( 0 )
+    {
+    }
+    ~KCompletionPrivate()
+    {
+        delete myTreeRoot;
+    }
     // list used for nextMatch() and previousMatch()
     KCompletionMatchesWrapper matches;
+
+    KGlobalSettings::Completion myCompletionMode;
+
+    KCompletion::CompOrder myOrder;
+    QString                myLastString;
+    QString                myLastMatch;
+    QString                myCurrentMatch;
+    KCompTreeNode *        myTreeRoot;
+    //QStringList            myRotations;
+    bool                   myBeep;
+    bool                   myIgnoreCase;
+    bool                   myHasMultipleMatches;
+    int                    myRotationIndex;
 };
 
 KCompletion::KCompletion()
-	:d(new KCompletionPrivate)
+    :d(new KCompletionPrivate)
 {
-
-    myCompletionMode = KGlobalSettings::completionMode();
-    myTreeRoot = new KCompTreeNode;
-    myBeep       = true;
-    myIgnoreCase = false;
-    myHasMultipleMatches = false;
-    myRotationIndex = 0;
     setOrder( Insertion );
 }
 
 KCompletion::~KCompletion()
 {
     delete d;
-    delete myTreeRoot;
 }
 
 void KCompletion::setOrder( CompOrder order )
 {
-    myOrder = order;
+    d->myOrder = order;
     d->matches.setSorting( order == Weighted );
 }
 
 KCompletion::CompOrder KCompletion::order() const
 {
-    return myOrder;
+    return d->myOrder;
 }
 
 void KCompletion::setIgnoreCase( bool ignoreCase )
 {
-    myIgnoreCase = ignoreCase;
+    d->myIgnoreCase = ignoreCase;
 }
 
 bool KCompletion::ignoreCase() const
 {
-    return myIgnoreCase;
+    return d->myIgnoreCase;
 }
 
 void KCompletion::setItems( const QStringList& items )
@@ -84,7 +101,7 @@ void KCompletion::setItems( const QStringList& items )
 
 void KCompletion::insertItems( const QStringList& items )
 {
-    bool weighted = (myOrder == Weighted);
+    bool weighted = (d->myOrder == Weighted);
     QStringList::ConstIterator it;
     if ( weighted ) { // determine weight
         for ( it = items.begin(); it != items.end(); ++it )
@@ -99,15 +116,15 @@ void KCompletion::insertItems( const QStringList& items )
 QStringList KCompletion::items() const
 {
     KCompletionMatchesWrapper list; // unsorted
-    bool addWeight = (myOrder == Weighted);
-    extractStringsFromNode( myTreeRoot, QString(), &list, addWeight );
+    bool addWeight = (d->myOrder == Weighted);
+    extractStringsFromNode( d->myTreeRoot, QString(), &list, addWeight );
 
     return list.list();
 }
 
 bool KCompletion::isEmpty() const
 {
-  return (myTreeRoot->childrenCount() == 0);
+  return (d->myTreeRoot->childrenCount() == 0);
 }
 
 void KCompletion::postProcessMatch( QString * ) const
@@ -125,8 +142,8 @@ void KCompletion::postProcessMatches( KCompletionMatches * ) const
 void KCompletion::addItem( const QString& item )
 {
     d->matches.clear();
-    myRotationIndex = 0;
-    myLastString.clear();
+    d->myRotationIndex = 0;
+    d->myLastString.clear();
 
     addItem( item, 0 );
 }
@@ -136,11 +153,11 @@ void KCompletion::addItem( const QString& item, uint weight )
     if ( item.isEmpty() )
         return;
 
-    KCompTreeNode *node = myTreeRoot;
+    KCompTreeNode *node = d->myTreeRoot;
     uint len = item.length();
 
-    bool sorted = (myOrder == Sorted);
-    bool weighted = ((myOrder == Weighted) && weight > 1);
+    bool sorted = (d->myOrder == Sorted);
+    bool weighted = ((d->myOrder == Weighted) && weight > 1);
 
     // knowing the weight of an item, we simply add this weight to all of its
     // nodes.
@@ -160,7 +177,7 @@ void KCompletion::addItem( const QString& item, uint weight )
 
 void KCompletion::addWeightedItem( const QString& item )
 {
-    if ( myOrder != Weighted ) {
+    if ( d->myOrder != Weighted ) {
         addItem( item, 0 );
         return;
     }
@@ -187,45 +204,45 @@ void KCompletion::addWeightedItem( const QString& item )
 void KCompletion::removeItem( const QString& item )
 {
     d->matches.clear();
-    myRotationIndex = 0;
-    myLastString.clear();
+    d->myRotationIndex = 0;
+    d->myLastString.clear();
 
-    myTreeRoot->remove( item );
+    d->myTreeRoot->remove( item );
 }
 
 
 void KCompletion::clear()
 {
     d->matches.clear();
-    myRotationIndex = 0;
-    myLastString.clear();
+    d->myRotationIndex = 0;
+    d->myLastString.clear();
 
-    delete myTreeRoot;
-    myTreeRoot = new KCompTreeNode;
+    delete d->myTreeRoot;
+    d->myTreeRoot = new KCompTreeNode;
 }
 
 
 QString KCompletion::makeCompletion( const QString& string )
 {
-    if ( myCompletionMode == KGlobalSettings::CompletionNone )
+    if ( d->myCompletionMode == KGlobalSettings::CompletionNone )
         return QString();
 
     //kDebug(0) << "KCompletion: completing: " << string << endl;
 
     d->matches.clear();
-    myRotationIndex = 0;
-    myHasMultipleMatches = false;
-    myLastMatch = myCurrentMatch;
+    d->myRotationIndex = 0;
+    d->myHasMultipleMatches = false;
+    d->myLastMatch = d->myCurrentMatch;
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
-    if ( myCompletionMode == KGlobalSettings::CompletionShell &&
-         string == myLastString ) {
+    if ( d->myCompletionMode == KGlobalSettings::CompletionShell &&
+         string == d->myLastString ) {
         // Don't use d->matches since calling postProcessMatches()
         // on d->matches here would interfere with call to
         // postProcessMatch() during rotation
 
-        findAllCompletions( string, &d->matches, myHasMultipleMatches );
+        findAllCompletions( string, &d->matches, d->myHasMultipleMatches );
         QStringList l = d->matches.list();
         postProcessMatches( &l );
         emit matches( l );
@@ -238,20 +255,20 @@ QString KCompletion::makeCompletion( const QString& string )
 
     QString completion;
     // in case-insensitive popup mode, we search all completions at once
-    if ( myCompletionMode == KGlobalSettings::CompletionPopup ||
-         myCompletionMode == KGlobalSettings::CompletionPopupAuto ) {
-        findAllCompletions( string, &d->matches, myHasMultipleMatches );
+    if ( d->myCompletionMode == KGlobalSettings::CompletionPopup ||
+         d->myCompletionMode == KGlobalSettings::CompletionPopupAuto ) {
+        findAllCompletions( string, &d->matches, d->myHasMultipleMatches );
         if ( !d->matches.isEmpty() )
             completion = d->matches.first();
     }
     else
         completion = findCompletion( string );
 
-    if ( myHasMultipleMatches )
+    if ( d->myHasMultipleMatches )
         emit multipleMatches();
 
-    myLastString = string;
-    myCurrentMatch = completion;
+    d->myLastString = string;
+    d->myCurrentMatch = completion;
 
     postProcessMatch( &completion );
 
@@ -271,9 +288,9 @@ QString KCompletion::makeCompletion( const QString& string )
 QStringList KCompletion::substringCompletion( const QString& string ) const
 {
     // get all items in the tree, eventually in sorted order
-    bool sorted = (myOrder == Weighted);
+    bool sorted = (d->myOrder == Weighted);
     KCompletionMatchesWrapper allItems( sorted );
-    extractStringsFromNode( myTreeRoot, QString(), &allItems, false );
+    extractStringsFromNode( d->myTreeRoot, QString(), &allItems, false );
 
     QStringList list = allItems.list();
 
@@ -309,11 +326,11 @@ QStringList KCompletion::substringCompletion( const QString& string ) const
 
 void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
 {
-    myCompletionMode = mode;
+    d->myCompletionMode = mode;
 }
 
 KGlobalSettings::Completion KCompletion::completionMode() const {
-    return myCompletionMode;
+    return d->myCompletionMode;
 }
 
 QStringList KCompletion::allMatches()
@@ -321,9 +338,9 @@ QStringList KCompletion::allMatches()
     // Don't use d->matches since calling postProcessMatches()
     // on d->matches here would interfere with call to
     // postProcessMatch() during rotation
-    KCompletionMatchesWrapper matches( myOrder == Weighted );
+    KCompletionMatchesWrapper matches( d->myOrder == Weighted );
     bool dummy;
-    findAllCompletions( myLastString, &matches, dummy );
+    findAllCompletions( d->myLastString, &matches, dummy );
     QStringList l = matches.list();
     postProcessMatches( &l );
     return l;
@@ -334,9 +351,9 @@ KCompletionMatches KCompletion::allWeightedMatches()
     // Don't use d->matches since calling postProcessMatches()
     // on d->matches here would interfere with call to
     // postProcessMatch() during rotation
-    KCompletionMatchesWrapper matches( myOrder == Weighted );
+    KCompletionMatchesWrapper matches( d->myOrder == Weighted );
     bool dummy;
-    findAllCompletions( myLastString, &matches, dummy );
+    findAllCompletions( d->myLastString, &matches, dummy );
     KCompletionMatches ret( matches );
     postProcessMatches( &ret );
     return ret;
@@ -344,7 +361,7 @@ KCompletionMatches KCompletion::allWeightedMatches()
 
 QStringList KCompletion::allMatches( const QString &string )
 {
-    KCompletionMatchesWrapper matches( myOrder == Weighted );
+    KCompletionMatchesWrapper matches( d->myOrder == Weighted );
     bool dummy;
     findAllCompletions( string, &matches, dummy );
     QStringList l = matches.list();
@@ -354,7 +371,7 @@ QStringList KCompletion::allMatches( const QString &string )
 
 KCompletionMatches KCompletion::allWeightedMatches( const QString &string )
 {
-    KCompletionMatchesWrapper matches( myOrder == Weighted );
+    KCompletionMatchesWrapper matches( d->myOrder == Weighted );
     bool dummy;
     findAllCompletions( string, &matches, dummy );
     KCompletionMatches ret( matches );
@@ -364,17 +381,17 @@ KCompletionMatches KCompletion::allWeightedMatches( const QString &string )
 
 void KCompletion::setSoundsEnabled( bool enable )
 {
-    myBeep = enable;
+    d->myBeep = enable;
 }
 
 bool KCompletion::soundsEnabled() const
 {
-    return myBeep;
+    return d->myBeep;
 }
 
 bool KCompletion::hasMultipleMatches() const
 {
-    return myHasMultipleMatches;
+    return d->myHasMultipleMatches;
 }
 
 /////////////////////////////////////////////////////
@@ -384,29 +401,29 @@ bool KCompletion::hasMultipleMatches() const
 QString KCompletion::nextMatch()
 {
     QString completion;
-    myLastMatch = myCurrentMatch;
+    d->myLastMatch = d->myCurrentMatch;
 
     if ( d->matches.isEmpty() ) {
-        findAllCompletions( myLastString, &d->matches, myHasMultipleMatches );
+        findAllCompletions( d->myLastString, &d->matches, d->myHasMultipleMatches );
         completion = d->matches.first();
-        myCurrentMatch = completion;
-        myRotationIndex = 0;
+        d->myCurrentMatch = completion;
+        d->myRotationIndex = 0;
         postProcessMatch( &completion );
         emit match( completion );
         return completion;
     }
 
     QStringList matches = d->matches.list();
-    myLastMatch = matches[ myRotationIndex++ ];
+    d->myLastMatch = matches[ d->myRotationIndex++ ];
 
-    if ( myRotationIndex == matches.count() -1 )
+    if ( d->myRotationIndex == matches.count() -1 )
         doBeep( Rotation ); // indicate last matching item -> rotating
 
-    else if ( myRotationIndex == matches.count() )
-        myRotationIndex = 0;
+    else if ( d->myRotationIndex == matches.count() )
+        d->myRotationIndex = 0;
 
-    completion = matches[ myRotationIndex ];
-    myCurrentMatch = completion;
+    completion = matches[ d->myRotationIndex ];
+    d->myCurrentMatch = completion;
     postProcessMatch( &completion );
     emit match( completion );
     return completion;
@@ -414,37 +431,37 @@ QString KCompletion::nextMatch()
 
 const QString& KCompletion::lastMatch() const
 {
-    return myLastMatch;
+    return d->myLastMatch;
 }
 
 
 QString KCompletion::previousMatch()
 {
     QString completion;
-    myLastMatch = myCurrentMatch;
+    d->myLastMatch = d->myCurrentMatch;
 
     if ( d->matches.isEmpty() ) {
-        findAllCompletions( myLastString, &d->matches, myHasMultipleMatches );
+        findAllCompletions( d->myLastString, &d->matches, d->myHasMultipleMatches );
         completion = d->matches.last();
-        myCurrentMatch = completion;
-        myRotationIndex = 0;
+        d->myCurrentMatch = completion;
+        d->myRotationIndex = 0;
         postProcessMatch( &completion );
         emit match( completion );
         return completion;
     }
 
     QStringList matches = d->matches.list();
-    myLastMatch = matches[ myRotationIndex ];
-    if ( myRotationIndex == 1 )
+    d->myLastMatch = matches[ d->myRotationIndex ];
+    if ( d->myRotationIndex == 1 )
         doBeep( Rotation ); // indicate first item -> rotating
 
-    else if ( myRotationIndex == 0 )
-        myRotationIndex = matches.count();
+    else if ( d->myRotationIndex == 0 )
+        d->myRotationIndex = matches.count();
 
-    myRotationIndex--;
+    d->myRotationIndex--;
 
-    completion = matches[ myRotationIndex ];
-    myCurrentMatch = completion;
+    completion = matches[ d->myRotationIndex ];
+    d->myCurrentMatch = completion;
     postProcessMatch( &completion );
     emit match( completion );
     return completion;
@@ -457,7 +474,7 @@ QString KCompletion::findCompletion( const QString& string )
 {
     QChar ch;
     QString completion;
-    const KCompTreeNode *node = myTreeRoot;
+    const KCompTreeNode *node = d->myTreeRoot;
 
     // start at the tree-root and try to find the search-string
     for( int i = 0; i < string.length(); i++ ) {
@@ -482,11 +499,11 @@ QString KCompletion::findCompletion( const QString& string )
     // if multiple matches and auto-completion mode
     // -> find the first complete match
     if ( node && node->childrenCount() > 1 ) {
-        myHasMultipleMatches = true;
+        d->myHasMultipleMatches = true;
 
-        if ( myCompletionMode == KGlobalSettings::CompletionAuto ) {
-            myRotationIndex = 1;
-            if (myOrder != Weighted) {
+        if ( d->myCompletionMode == KGlobalSettings::CompletionAuto ) {
+            d->myRotationIndex = 1;
+            if (d->myOrder != Weighted) {
                 while ( (node = node->firstChild()) ) {
                     if ( !node->isNull() )
                         completion += *node;
@@ -538,15 +555,15 @@ void KCompletion::findAllCompletions(const QString& string,
     if ( string.isEmpty() )
         return;
 
-    if ( myIgnoreCase ) { // case insensitive completion
-        extractStringsFromNodeCI( myTreeRoot, QString(), string, matches );
+    if ( d->myIgnoreCase ) { // case insensitive completion
+        extractStringsFromNodeCI( d->myTreeRoot, QString(), string, matches );
         hasMultipleMatches = (matches->count() > 1);
         return;
     }
 
     QChar ch;
     QString completion;
-    const KCompTreeNode *node = myTreeRoot;
+    const KCompTreeNode *node = d->myTreeRoot;
 
     // start at the tree-root and try to find the search-string
     for( int i = 0; i < string.length(); i++ ) {
@@ -663,7 +680,7 @@ void KCompletion::extractStringsFromNodeCI( const KCompTreeNode *node,
 
 void KCompletion::doBeep( BeepMode mode ) const
 {
-    if ( !myBeep )
+    if ( !d->myBeep )
         return;
 
     QString text, event;
@@ -674,14 +691,14 @@ void KCompletion::doBeep( BeepMode mode ) const
             text = i18n("You reached the end of the list\nof matching items.\n");
             break;
         case PartialMatch:
-            if ( myCompletionMode == KGlobalSettings::CompletionShell ||
-                 myCompletionMode == KGlobalSettings::CompletionMan ) {
+            if ( d->myCompletionMode == KGlobalSettings::CompletionShell ||
+                 d->myCompletionMode == KGlobalSettings::CompletionMan ) {
                 event = QLatin1String("Textcompletion: partial match");
                 text = i18n("The completion is ambiguous, more than one\nmatch is available.\n");
             }
             break;
         case NoMatch:
-            if ( myCompletionMode == KGlobalSettings::CompletionShell ) {
+            if ( d->myCompletionMode == KGlobalSettings::CompletionShell ) {
                 event = QLatin1String("Textcompletion: no match");
                 text = i18n("There is no matching item available.\n");
             }
@@ -806,11 +823,13 @@ QStringList KCompletionMatchesWrapper::list() const
 
 KCompletionMatches::KCompletionMatches( bool sort_P )
     : _sorting( sort_P )
+    , d( 0 )
 {
 }
 
 KCompletionMatches::KCompletionMatches( const KCompletionMatchesWrapper& matches )
     : _sorting( matches.sorting())
+    , d( 0 )
 {
     if( matches.sortedList != 0L )
         KCompletionMatchesList::operator=( *matches.sortedList );

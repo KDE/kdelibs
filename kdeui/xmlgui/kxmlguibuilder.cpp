@@ -80,8 +80,8 @@ class KXMLGUIBuilderPrivate
 
 
 KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
+  : d( new KXMLGUIBuilderPrivate )
 {
-  d = new KXMLGUIBuilderPrivate;
   d->m_widget = widget;
 
   d->tagMainWindow = QLatin1String( "mainwindow" );

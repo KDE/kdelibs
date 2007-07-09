@@ -416,7 +416,7 @@ private:
 
 private:
   class KRulerPrivate;
-  KRulerPrivate *d;
+  KRulerPrivate * const d;
 };
 
 #endif

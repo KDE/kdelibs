@@ -86,7 +86,7 @@ class KDEUI_EXPORT KArrowButton : public QPushButton
 		virtual void paintEvent(QPaintEvent*);
 
 	private:
-		KArrowButtonPrivate *d;
+		KArrowButtonPrivate * const d;
 };
 
 #endif // karrowbutton_h

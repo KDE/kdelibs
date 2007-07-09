@@ -54,9 +54,10 @@ public:
  * Public Methods                                                             *
  *****************************************************************************/
 KListWidgetSearchLine::KListWidgetSearchLine( QWidget *parent, QListWidget *listWidget ) :
-        KLineEdit( parent )
+        KLineEdit( parent ),
+        d( new KListWidgetSearchLinePrivate(this) )
+
 {
-    d = 0;
     init( listWidget );
 }
 
@@ -187,9 +188,6 @@ bool KListWidgetSearchLine::itemMatches( const QListWidgetItem *item,
 
 void KListWidgetSearchLine::init( QListWidget *listWidget )
 {
-    delete d;
-    d = new KListWidgetSearchLinePrivate(this);
-
     d->listWidget = listWidget;
 
     connect( this, SIGNAL( textChanged( const QString & ) ),

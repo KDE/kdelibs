@@ -24,6 +24,7 @@
 
 #include <klineedit.h>
 
+class KRestrictedLinePrivate;
 /**
  * @short A line editor for restricted character sets.
  *
@@ -81,10 +82,7 @@ protected:
   void	keyPressEvent( QKeyEvent *e );
 
 private:
-  /// QString of valid characters for this line
-  QString	qsValidChars;
-private:
-  class KRestrictedLinePrivate* d;
+  KRestrictedLinePrivate * const d;
 };
 
 #endif // KRESTRICTEDLINE_H

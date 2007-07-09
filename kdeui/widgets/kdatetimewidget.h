@@ -85,7 +85,7 @@ private Q_SLOTS:
 
 private:
   class KDateTimeWidgetPrivate;
-  KDateTimeWidgetPrivate *d;
+  KDateTimeWidgetPrivate * const d;
 };
 
 #endif

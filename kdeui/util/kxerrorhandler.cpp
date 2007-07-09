@@ -28,6 +28,20 @@
 
 #include "netwm_def.h"
 
+class KXErrorHandlerPrivate
+{
+public:
+    KXErrorHandlerPrivate( Display* dpy ) :
+        first_request( XNextRequest( dpy )),
+        display( dpy ),
+        was_error( false )
+    {
+    }
+    unsigned long first_request;
+    Display* display;
+    bool was_error;
+};
+
 KXErrorHandler** KXErrorHandler::handlers = NULL;
 int KXErrorHandler::pos = 0;
 int KXErrorHandler::size = 0;
@@ -36,9 +50,7 @@ KXErrorHandler::KXErrorHandler( Display* dpy )
     :   user_handler1( NULL ),
         user_handler2( NULL ),
         old_handler( XSetErrorHandler( handler_wrapper )),
-        first_request( XNextRequest( dpy )),
-        display( dpy ),
-        was_error( false )
+        d( new KXErrorHandlerPrivate(dpy) )
     {
     addHandler();
     }
@@ -47,9 +59,7 @@ KXErrorHandler::KXErrorHandler( bool (*handler)( int request, int error_code, un
     :   user_handler1( handler ),
         user_handler2( NULL ),
         old_handler( XSetErrorHandler( handler_wrapper )),
-        first_request( XNextRequest( dpy )),
-        display( dpy ),
-        was_error( false )
+        d( new KXErrorHandlerPrivate(dpy) )
     {
     addHandler();
     }
@@ -58,9 +68,7 @@ KXErrorHandler::KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Displa
     :   user_handler1( NULL ),
         user_handler2( handler ),
         old_handler( XSetErrorHandler( handler_wrapper )),
-        first_request( XNextRequest( dpy )),
-        display( dpy ),
-        was_error( false )
+        d( new KXErrorHandlerPrivate(dpy) )
     {
     addHandler();
     }
@@ -70,6 +78,7 @@ KXErrorHandler::~KXErrorHandler()
     XSetErrorHandler( old_handler );
     Q_ASSERT_X( this == handlers[ pos-1 ], __FUNCTION__, "out of order" );
     --pos;
+    delete d;
     }
 
 void KXErrorHandler::addHandler()
@@ -85,8 +94,8 @@ void KXErrorHandler::addHandler()
 bool KXErrorHandler::error( bool sync ) const
     {
     if( sync )
-        XSync( display, False );
-    return was_error;
+        XSync( d->display, False );
+    return d->was_error;
     }
     
 int KXErrorHandler::handler_wrapper( Display* dpy, XErrorEvent* e )
@@ -99,17 +108,17 @@ int KXErrorHandler::handler_wrapper( Display* dpy, XErrorEvent* e )
 
 int KXErrorHandler::handle( Display* dpy, XErrorEvent* e )
     {
-    if( dpy == display
-        // e->serial >= first_request , compare like X timestamps to handle wrapping
-        && NET::timestampCompare( e->serial, first_request ) >= 0 )
+    if( dpy == d->display
+        // e->serial >= d->first_request , compare like X timestamps to handle wrapping
+        && NET::timestampCompare( e->serial, d->first_request ) >= 0 )
         { // it's for us
         //qDebug( "Handling: %p", static_cast< void* >( this ));
         if( user_handler1 != NULL && user_handler1( e->request_code, e->error_code, e->resourceid ))
-            was_error = true;
+            d->was_error = true;
         if( user_handler2 != NULL && user_handler2( dpy, e ) != 0 )
-            was_error = true;
+            d->was_error = true;
         else // no handler set, simply set that there was an error
-            was_error = true;
+            d->was_error = true;
         return 0;
         }
     //qDebug( "Going deeper: %p", static_cast< void* >( this ));

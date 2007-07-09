@@ -26,13 +26,22 @@
 #include <QtCore/QCOORD>
 #include <QtGui/QKeyEvent>
 
+class KRestrictedLinePrivate
+{
+public:
+  /// QString of valid characters for this line
+  QString qsValidChars;
+};
+
 KRestrictedLine::KRestrictedLine( QWidget *parent )
   : KLineEdit( parent )
+  , d( new KRestrictedLinePrivate )
 {
 }
 
 KRestrictedLine::~KRestrictedLine()
 {
+    delete d;
 }
 
 
@@ -48,7 +57,7 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 
   // do we have a list of valid chars &&
   // is the pressed key in the list of valid chars?
-  if (!qsValidChars.isEmpty() && !qsValidChars.contains(e->text()))
+  if (!d->qsValidChars.isEmpty() && !d->qsValidChars.contains(e->text()))
     {
       // invalid char, emit signal and return
       emit (invalidChar(e->key()));
@@ -64,12 +73,12 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
 
 void KRestrictedLine::setValidChars( const QString& valid)
 {
-  qsValidChars = valid;
+  d->qsValidChars = valid;
 }
 
 QString KRestrictedLine::validChars() const
 {
-  return qsValidChars;
+  return d->qsValidChars;
 }
 
 #include "krestrictedline.moc"

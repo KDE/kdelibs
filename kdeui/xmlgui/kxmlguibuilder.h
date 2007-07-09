@@ -91,7 +91,7 @@ class KDEUI_EXPORT KXMLGUIBuilder
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KXMLGUIBuilderPrivate *d;
+  KXMLGUIBuilderPrivate * const d;
 };
 
 #endif

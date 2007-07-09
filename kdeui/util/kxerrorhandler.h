@@ -34,6 +34,7 @@
 #include <QtGui/QX11Info>
 #include <X11/Xlib.h>
 
+class KXErrorHandlerPrivate;
 /**
  * This class simplifies handling of X errors. It shouldn't be necessary to use
  * with Qt classes, as the toolkit should handle X errors itself, so this
@@ -95,15 +96,11 @@ class KDEUI_EXPORT KXErrorHandler
         bool (*user_handler1)( int request, int error_code, unsigned long resource_id );
         int (*user_handler2)( Display*, XErrorEvent* );
         int (*old_handler)( Display*, XErrorEvent* );
-        unsigned long first_request;
-        Display* display;
-        bool was_error;
         static int handler_wrapper( Display*, XErrorEvent* );
         static KXErrorHandler** handlers;
         static int pos;
         static int size;
-        class Private;
-        Private * d;
+        KXErrorHandlerPrivate * const d;
     };
 
 #endif // Q_WS_X11

@@ -82,7 +82,7 @@ public:
 
 private:
     class KGuiItemPrivate;
-    KGuiItemPrivate *d;
+    KGuiItemPrivate *d; //krazy:exclude=dpointer (implicitly shared)
 };
 
 /* vim: et sw=4

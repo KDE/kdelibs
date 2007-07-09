@@ -154,11 +154,7 @@ class KDEUI_EXPORT KXMessages
     private:
         static void send_message_internal( WId w_P, const QString& msg_P, long mask_P,
             Display* disp, Atom atom1_P, Atom atom2_P, Window handle_P );
-        QWidget* handle;
-        Atom accept_atom2;
-        Atom accept_atom1;
-        QMap< WId, QByteArray > incoming_messages;
-        KXMessagesPrivate* d;
+        KXMessagesPrivate * const d;
     };
 
 #endif

@@ -310,18 +310,21 @@ public:
 
 KIntNumInput::KIntNumInput(KNumInput* below, int val,QWidget *parent,int _base)
     : KNumInput(parent,below)
+    , d( new KIntNumInputPrivate( this, val ) )
 {
     init(val, _base);
 }
 
 KIntNumInput::KIntNumInput(QWidget *parent)
     : KNumInput(parent)
+    , d( new KIntNumInputPrivate( this, 0 ) )
 {
     init(0, 10);
 }
 
 KIntNumInput::KIntNumInput(int val, QWidget *parent,int _base)
     : KNumInput(parent)
+    , d( new KIntNumInputPrivate( this, val ) )
 {
     init(val, _base);
 }
@@ -333,7 +336,6 @@ QSpinBox *KIntNumInput::spinBox() const
 
 void KIntNumInput::init(int val, int _base)
 {
-    d = new KIntNumInputPrivate( this, val );
     d->m_spin = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, this, _base);
     d->m_spin->setObjectName("KIntNumInput::KIntSpinBox");
     // the KIntValidator is broken beyond believe for
@@ -614,6 +616,8 @@ public:
 
 KDoubleNumInput::KDoubleNumInput(QWidget *parent)
     : KNumInput(parent)
+    , d( new KDoubleNumInputPrivate( 0.0 ) )
+
 {
     init(0.0, 0.0, 9999.0, 0.01, 2);
 }
@@ -621,6 +625,7 @@ KDoubleNumInput::KDoubleNumInput(QWidget *parent)
 KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value, QWidget *parent,
 				 double step, int precision)
     : KNumInput(parent)
+    , d( new KDoubleNumInputPrivate( value ) )
 {
     init(value, lower, upper, step, precision);
 }
@@ -629,6 +634,7 @@ KDoubleNumInput::KDoubleNumInput(KNumInput *below,
 				 double lower, double upper, double value, QWidget *parent,
 				 double step, int precision)
     : KNumInput(parent,below)
+    , d( new KDoubleNumInputPrivate( value ) )
 {
     init(value, lower, upper, step, precision);
 }
@@ -647,8 +653,6 @@ QString KDoubleNumInput::specialValueText() const
 void KDoubleNumInput::init(double value, double lower, double upper,
 			   double step, int precision )
 {
-    d = new KDoubleNumInputPrivate( value );
-
     d->spin = new KDoubleSpinBox(lower, upper, step, value, this,precision);
     d->spin->setObjectName("KDoubleNumInput::d->spin" );
     setFocusProxy(d->spin);

@@ -139,7 +139,7 @@ protected:
 
 private:
     friend class KNumInputPrivate;
-    KNumInputPrivate *d;
+    KNumInputPrivate * const d;
     
     Q_DISABLE_COPY(KNumInput)
 };
@@ -376,7 +376,7 @@ private:
 private:
     class KIntNumInputPrivate;
     friend class KIntNumInputPrivate;
-    KIntNumInputPrivate *d;
+    KIntNumInputPrivate * const d;
     
     Q_DISABLE_COPY(KIntNumInput)
 };
@@ -621,8 +621,8 @@ private:
 private:
     class KDoubleNumInputPrivate;
     friend class KDoubleNumInputPrivate;
-    KDoubleNumInputPrivate *d;
-    
+    KDoubleNumInputPrivate * const d;
+
     Q_DISABLE_COPY(KDoubleNumInput)
 };
 

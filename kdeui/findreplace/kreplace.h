@@ -223,11 +223,8 @@ private:
     void doReplace();
     static int replace( QString &text, const QString &replacement, int index, long options, int length );
 
-    QString m_replacement;
-    unsigned m_replacements;
-
     // Binary compatible extensibility.
     class KReplacePrivate;
-    KReplacePrivate *d;
+    KReplacePrivate * const d;
 };
 #endif

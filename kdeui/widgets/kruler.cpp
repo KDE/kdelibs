@@ -111,6 +111,7 @@ public:
 
 KRuler::KRuler(QWidget *parent)
   : QAbstractSlider(parent)
+  , d( new KRulerPrivate )
 {
   setRange(INIT_MIN_VALUE, INIT_MAX_VALUE);
   setPageStep(10);
@@ -123,6 +124,7 @@ KRuler::KRuler(QWidget *parent)
 KRuler::KRuler(Qt::Orientation orient,
                QWidget *parent, Qt::WFlags f)
   : QAbstractSlider(parent)
+  , d( new KRulerPrivate )
 {
   setRange(INIT_MIN_VALUE, INIT_MAX_VALUE);
   setPageStep(10);
@@ -139,6 +141,7 @@ KRuler::KRuler(Qt::Orientation orient,
 KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
                QWidget *parent, Qt::WFlags f)
   : QAbstractSlider(parent)
+  , d( new KRulerPrivate )
 {
   setRange(INIT_MIN_VALUE, INIT_MAX_VALUE);
   setPageStep(10);
@@ -158,7 +161,6 @@ void KRuler::init(Qt::Orientation orientation)
   #warning FIXME setFrameStyle(WinPanel | Raised);
 #endif
 
-  d = new KRuler::KRulerPrivate;
   d->showpointer = INIT_SHOW_POINTER;
   d->showEndL = INIT_SHOW_END_LABEL;
   d->lengthFix = INIT_LENGTH_FIX;

@@ -551,19 +551,6 @@ private:
     enum        BeepMode { NoMatch, PartialMatch, Rotation };
     void        doBeep( BeepMode ) const;
 
-    KGlobalSettings::Completion myCompletionMode;
-
-    CompOrder       myOrder;
-    QString         myLastString;
-    QString         myLastMatch;
-    QString         myCurrentMatch;
-    KCompTreeNode * myTreeRoot;
-    QStringList     myRotations;
-    bool            myBeep;
-    bool            myIgnoreCase;
-    bool            myHasMultipleMatches;
-    int            myRotationIndex;
-
 private:
     KCompletionPrivate* const d;
 };
@@ -619,7 +606,7 @@ public:
     bool sorting() const;
 private:
     bool _sorting;
-    KCompletionMatchesPrivate* d;
+    KCompletionMatchesPrivate * const d;
 };
 
 /**
@@ -945,23 +932,6 @@ private:
     // signals internally flags to the provided values.
     void setup( bool, bool, bool );
 
-    // Flag that determined whether the completion object
-    // should be deleted when this object is destroyed.
-    bool m_bAutoDelCompObj;
-    // Determines whether this widget handles completion signals
-    // internally or not
-    bool m_bHandleSignals;
-    // Determines whether this widget fires rotation signals
-    bool m_bEmitSignals;
-    // Stores the completion mode locally.
-    KGlobalSettings::Completion m_iCompletionMode;
-    // Pointer to Completion object.
-    QPointer<KCompletion> m_pCompObj;
-    // Keybindings
-    KeyBindingMap m_keyMap;
-    // we may act as a proxy to another KCompletionBase object
-    KCompletionBase *m_delegate;
-
     // BCI
 protected:
     /** Virtual hook, used to add new "virtual" functions while maintaining
@@ -969,7 +939,7 @@ protected:
     */
     virtual void virtual_hook( int id, void* data );
 private:
-    KCompletionBasePrivate* d;
+    KCompletionBasePrivate * const d;
 };
 
 #endif // KCOMPLETION_H

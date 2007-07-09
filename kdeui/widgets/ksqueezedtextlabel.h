@@ -89,7 +89,7 @@ protected:
   void squeezeTextToLabel();
 
 private:
-  KSqueezedTextLabelPrivate *d;
+  KSqueezedTextLabelPrivate * const d;
 };
 
 #endif // KSQUEEZEDTEXTLABEL_H

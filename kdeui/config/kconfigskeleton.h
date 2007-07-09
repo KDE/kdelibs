@@ -37,6 +37,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 
+  class KConfigSkeletonItemPrivate;
   /**
    * @short Class for storing a preferences setting
    * @author Cornelius Schumacher
@@ -194,10 +195,7 @@
     QString mName; ///< The name of this item
 
   private:
-    bool mIsImmutable; ///< Indicates this item is immutable
-
-    QString mLabel; ///< The label for this item
-    QString mWhatsThis; ///< The What's This text for this item
+    KConfigSkeletonItemPrivate * const d;
   };
 
 
@@ -1419,17 +1417,8 @@ protected:
   virtual void usrWriteConfig();
 
 private:
-  QString mCurrentGroup;
-
-  KSharedConfig::Ptr mConfig; // pointer to KConfig object
-
-  KConfigSkeletonItem::List mItems;
-  KConfigSkeletonItem::Dict mItemDict;
-
-  bool mUseDefaults;
-
   class Private;
-  Private *d;
+  Private * const d;
 
 };
 

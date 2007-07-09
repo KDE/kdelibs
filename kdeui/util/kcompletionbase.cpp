@@ -23,12 +23,43 @@
 
 #include <kcompletion.h>
 
-KCompletionBase::KCompletionBase()
+class KCompletionBasePrivate
 {
-    m_delegate = 0L;
-    // Assign the default completion type to use.
-    m_iCompletionMode = KGlobalSettings::completionMode();
+public:
+    KCompletionBasePrivate()
+      // Assign the default completion type to use.
+      : m_iCompletionMode( KGlobalSettings::completionMode() )
+      , m_delegate( 0 )
+    {
+    }
+    ~KCompletionBasePrivate()
+    {
+        if( m_bAutoDelCompObj && m_pCompObj )
+        {
+            delete m_pCompObj;
+        }
+    }
+    // Flag that determined whether the completion object
+    // should be deleted when this object is destroyed.
+    bool m_bAutoDelCompObj;
+    // Determines whether this widget handles completion signals
+    // internally or not
+    bool m_bHandleSignals;
+    // Determines whether this widget fires rotation signals
+    bool m_bEmitSignals;
+    // Stores the completion mode locally.
+    KGlobalSettings::Completion m_iCompletionMode;
+    // Pointer to Completion object.
+    QPointer<KCompletion> m_pCompObj;
+    // Keybindings
+    KCompletionBase::KeyBindingMap m_keyMap;
+    // we may act as a proxy to another KCompletionBase object
+    KCompletionBase *m_delegate;
+};
 
+KCompletionBase::KCompletionBase()
+    : d( new KCompletionBasePrivate )
+{
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
     useGlobalKeyBindings();
@@ -41,175 +72,172 @@ KCompletionBase::KCompletionBase()
 
 KCompletionBase::~KCompletionBase()
 {
-    if( m_bAutoDelCompObj && m_pCompObj )
-    {
-        delete m_pCompObj;
-    }
+    delete d;
 }
 
 void KCompletionBase::setDelegate( KCompletionBase *delegate )
 {
-    m_delegate = delegate;
+    d->m_delegate = delegate;
 
-    if ( m_delegate ) {
-        m_delegate->m_bAutoDelCompObj = m_bAutoDelCompObj;
-        m_delegate->m_bHandleSignals  = m_bHandleSignals;
-        m_delegate->m_bEmitSignals    = m_bEmitSignals;
-        m_delegate->m_iCompletionMode = m_iCompletionMode;
-        m_delegate->m_keyMap          = m_keyMap;
+    if ( delegate ) {
+        delegate->d->m_bAutoDelCompObj = d->m_bAutoDelCompObj;
+        delegate->d->m_bHandleSignals  = d->m_bHandleSignals;
+        delegate->d->m_bEmitSignals    = d->m_bEmitSignals;
+        delegate->d->m_iCompletionMode = d->m_iCompletionMode;
+        delegate->d->m_keyMap          = d->m_keyMap;
     }
 }
 
 KCompletionBase *KCompletionBase::delegate() const
 {
-    return m_delegate;
+    return d->m_delegate;
 }
 
 KCompletion* KCompletionBase::completionObject( bool hsig )
 {
-    if ( m_delegate )
-        return m_delegate->completionObject( hsig );
+    if ( d->m_delegate )
+        return d->m_delegate->completionObject( hsig );
     
-    if ( !m_pCompObj )
+    if ( !d->m_pCompObj )
     {
         setCompletionObject( new KCompletion(), hsig );
-	m_bAutoDelCompObj = true;
+	d->m_bAutoDelCompObj = true;
     }
-    return m_pCompObj;
+    return d->m_pCompObj;
 }
 
 void KCompletionBase::setCompletionObject( KCompletion* compObj, bool hsig )
 {
-    if ( m_delegate ) {
-        m_delegate->setCompletionObject( compObj, hsig );
+    if ( d->m_delegate ) {
+        d->m_delegate->setCompletionObject( compObj, hsig );
         return;
     }
     
-    if ( m_bAutoDelCompObj && compObj != m_pCompObj )
-        delete m_pCompObj;
+    if ( d->m_bAutoDelCompObj && compObj != d->m_pCompObj )
+        delete d->m_pCompObj;
 
-    m_pCompObj = compObj;
+    d->m_pCompObj = compObj;
 
     // We emit rotation and completion signals
     // if completion object is not NULL.
-    setup( false, hsig, !m_pCompObj.isNull() );
+    setup( false, hsig, !d->m_pCompObj.isNull() );
 }
 
 // BC: Inline this function and possibly rename it to setHandleEvents??? (DA)
 void KCompletionBase::setHandleSignals( bool handle )
 {
-    if ( m_delegate )
-        m_delegate->setHandleSignals( handle );
+    if ( d->m_delegate )
+        d->m_delegate->setHandleSignals( handle );
     else
-        m_bHandleSignals = handle;
+        d->m_bHandleSignals = handle;
 }
 
 bool KCompletionBase::isCompletionObjectAutoDeleted() const
 {
-    return m_delegate ? m_delegate->isCompletionObjectAutoDeleted()
-                      : m_bAutoDelCompObj;
+    return d->m_delegate ? d->m_delegate->isCompletionObjectAutoDeleted()
+                      : d->m_bAutoDelCompObj;
 }
 
 void KCompletionBase::setAutoDeleteCompletionObject( bool autoDelete )
 {
-    if ( m_delegate )
-        m_delegate->setAutoDeleteCompletionObject( autoDelete );
+    if ( d->m_delegate )
+        d->m_delegate->setAutoDeleteCompletionObject( autoDelete );
     else
-        m_bAutoDelCompObj = autoDelete;
+        d->m_bAutoDelCompObj = autoDelete;
 }
 
 void KCompletionBase::setEnableSignals( bool enable )
 {
-    if ( m_delegate )
-        m_delegate->setEnableSignals( enable );
+    if ( d->m_delegate )
+        d->m_delegate->setEnableSignals( enable );
     else
-        m_bEmitSignals = enable;
+        d->m_bEmitSignals = enable;
 }
 
 bool KCompletionBase::handleSignals() const
 {
-    return m_delegate ? m_delegate->handleSignals() : m_bHandleSignals;
+    return d->m_delegate ? d->m_delegate->handleSignals() : d->m_bHandleSignals;
 }
 
 bool KCompletionBase::emitSignals() const
 {
-    return m_delegate ? m_delegate->emitSignals() : m_bEmitSignals;
+    return d->m_delegate ? d->m_delegate->emitSignals() : d->m_bEmitSignals;
 }
 
 void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
 {
-    if ( m_delegate ) {
-        m_delegate->setCompletionMode( mode );
+    if ( d->m_delegate ) {
+        d->m_delegate->setCompletionMode( mode );
         return;
     }
     
-    m_iCompletionMode = mode;
+    d->m_iCompletionMode = mode;
     // Always sync up KCompletion mode with ours as long as we
     // are performing completions.
-    if( m_pCompObj && m_iCompletionMode != KGlobalSettings::CompletionNone )
-        m_pCompObj->setCompletionMode( m_iCompletionMode );
+    if( d->m_pCompObj && d->m_iCompletionMode != KGlobalSettings::CompletionNone )
+        d->m_pCompObj->setCompletionMode( d->m_iCompletionMode );
 }
 
 KGlobalSettings::Completion KCompletionBase::completionMode() const
 {
-    return m_delegate ? m_delegate->completionMode() : m_iCompletionMode;
+    return d->m_delegate ? d->m_delegate->completionMode() : d->m_iCompletionMode;
 }
 
 bool KCompletionBase::setKeyBinding( KeyBindingType item, const KShortcut& cut )
 {
-    if ( m_delegate )
-        return m_delegate->setKeyBinding( item, cut );
+    if ( d->m_delegate )
+        return d->m_delegate->setKeyBinding( item, cut );
 
 
     if( !cut.isEmpty() )
     {
-        for( KeyBindingMap::Iterator it = m_keyMap.begin(); it != m_keyMap.end(); ++it )
+        for( KeyBindingMap::Iterator it = d->m_keyMap.begin(); it != d->m_keyMap.end(); ++it )
             if( it.value() == cut )  return false;
     }
-    m_keyMap.insert( item, cut );
+    d->m_keyMap.insert( item, cut );
     return true;
 }
 
 KShortcut KCompletionBase::getKeyBinding( KeyBindingType item ) const
 {
-    return m_delegate ? m_delegate->getKeyBinding( item ) : m_keyMap[ item ];
+    return d->m_delegate ? d->m_delegate->getKeyBinding( item ) : d->m_keyMap[ item ];
 }
 
 void KCompletionBase::useGlobalKeyBindings()
 {
-    if ( m_delegate ) {
-        m_delegate->useGlobalKeyBindings();
+    if ( d->m_delegate ) {
+        d->m_delegate->useGlobalKeyBindings();
         return;
     }
     
-    m_keyMap.clear();
-    m_keyMap.insert( TextCompletion, KShortcut() );
-    m_keyMap.insert( PrevCompletionMatch, KShortcut() );
-    m_keyMap.insert( NextCompletionMatch, KShortcut() );
-    m_keyMap.insert( SubstringCompletion, KShortcut() );
+    d->m_keyMap.clear();
+    d->m_keyMap.insert( TextCompletion, KShortcut() );
+    d->m_keyMap.insert( PrevCompletionMatch, KShortcut() );
+    d->m_keyMap.insert( NextCompletionMatch, KShortcut() );
+    d->m_keyMap.insert( SubstringCompletion, KShortcut() );
 }
 
 KCompletion* KCompletionBase::compObj() const
 {
-    return m_delegate ? m_delegate->compObj()
-                      : static_cast<KCompletion*>(m_pCompObj);
+    return d->m_delegate ? d->m_delegate->compObj()
+                      : static_cast<KCompletion*>(d->m_pCompObj);
 }
 
 KCompletionBase::KeyBindingMap KCompletionBase::getKeyBindings() const
 {
-    return m_delegate ? m_delegate->getKeyBindings() : m_keyMap;
+    return d->m_delegate ? d->m_delegate->getKeyBindings() : d->m_keyMap;
 }
 
 void KCompletionBase::setup( bool autodel, bool hsig, bool esig )
 {
-    if ( m_delegate ) {
-        m_delegate->setup( autodel, hsig, esig );
+    if ( d->m_delegate ) {
+        d->m_delegate->setup( autodel, hsig, esig );
         return;
     }
     
-    m_bAutoDelCompObj = autodel;
-    m_bHandleSignals = hsig;
-    m_bEmitSignals = esig;
+    d->m_bAutoDelCompObj = autodel;
+    d->m_bHandleSignals = hsig;
+    d->m_bEmitSignals = esig;
 }
 
 void KCompletionBase::virtual_hook( int, void* )

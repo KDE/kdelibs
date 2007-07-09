@@ -348,7 +348,7 @@ private:
     Private data storage
   */
   friend class KActionSelectorPrivate;
-  KActionSelectorPrivate *d;
+  KActionSelectorPrivate * const d;
   
   Q_DISABLE_COPY(KActionSelector)
 };

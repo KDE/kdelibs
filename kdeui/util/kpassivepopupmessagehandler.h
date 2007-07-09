@@ -26,7 +26,7 @@
 
 class QWidget;
 /**
- * @brief This is a convience KMessageHandler that use KPassivePopup.
+ * @brief This is a convenience KMessageHandler that uses KPassivePopup.
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
  */

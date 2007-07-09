@@ -163,7 +163,7 @@ private:
 
 private:
     class KListWidgetSearchLinePrivate;
-    KListWidgetSearchLinePrivate *d;
+    KListWidgetSearchLinePrivate * const d;
 };
 
 

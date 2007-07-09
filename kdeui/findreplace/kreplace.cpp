@@ -65,28 +65,41 @@ void KReplaceNextDialog::setLabel( const QString& pattern, const QString& replac
 
 ////
 
-KReplace::KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent) :
-    KFind( pattern, options, parent )
+class KReplace::KReplacePrivate
 {
-    m_replacements = 0;
-    m_replacement = replacement;
+public:
+    KReplacePrivate(const QString& replacement)
+        : m_replacement( replacement )
+        , m_replacements( 0 )
+    {}
+    QString m_replacement;
+    unsigned m_replacements;
+};
+
+
+////
+
+KReplace::KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent) :
+    KFind( pattern, options, parent ),
+    d( new KReplacePrivate(replacement) )
+{
 }
 
 KReplace::KReplace(const QString &pattern, const QString &replacement, long options, QWidget *parent, QWidget *dlg) :
-    KFind( pattern, options, parent, dlg )
+    KFind( pattern, options, parent, dlg ),
+    d( new KReplacePrivate(replacement) )
 {
-    m_replacements = 0;
-    m_replacement = replacement;
 }
 
 KReplace::~KReplace()
 {
     // KFind::~KFind will delete m_dialog
+    delete d;
 }
 
 int KReplace::numReplacements() const
 {
-    return m_replacements;
+    return d->m_replacements;
 }
 
 KDialog* KReplace::replaceNextDialog( bool create )
@@ -111,10 +124,10 @@ KReplaceNextDialog* KReplace::dialog()
 
 void KReplace::displayFinalDialog() const
 {
-    if ( !m_replacements )
+    if ( !d->m_replacements )
         KMessageBox::information(parentWidget(), i18n("No text was replaced."));
     else
-        KMessageBox::information(parentWidget(), i18np("1 replacement done.", "%1 replacements done.", m_replacements ) );
+        KMessageBox::information(parentWidget(), i18np("1 replacement done.", "%1 replacements done.", d->m_replacements ) );
 }
 
 KFind::Result KReplace::replace()
@@ -154,7 +167,7 @@ KFind::Result KReplace::replace()
                     // Display accurate initial string and replacement string, they can vary
                     QString matchedText = m_text.mid( m_index, m_matchedLength );
                     QString rep = matchedText;
-                    KReplace::replace(rep, m_replacement, 0, m_options, m_matchedLength);
+                    KReplace::replace(rep, d->m_replacement, 0, m_options, m_matchedLength);
                     dialog()->setLabel( matchedText, rep );
                     dialog()->show();
 
@@ -263,7 +276,7 @@ void KReplace::slotReplace()
 
 void KReplace::doReplace()
 {
-    int replacedLength = KReplace::replace(m_text, m_replacement, m_index, m_options, m_matchedLength);
+    int replacedLength = KReplace::replace(m_text, d->m_replacement, m_index, m_options, m_matchedLength);
 
     // Tell the world about the replacement we made, in case someone wants to
     // highlight it.
@@ -271,7 +284,7 @@ void KReplace::doReplace()
 #ifdef DEBUG_REPLACE
     kDebug() << k_funcinfo << "after replace() signal: m_index=" << m_index << " replacedLength=" << replacedLength << endl;
 #endif
-    m_replacements++;
+    d->m_replacements++;
     if (m_options & KFind::FindBackwards)
         m_index--;
     else {
@@ -288,7 +301,7 @@ void KReplace::doReplace()
 void KReplace::resetCounts()
 {
     KFind::resetCounts();
-    m_replacements = 0;
+    d->m_replacements = 0;
 }
 
 bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
@@ -306,10 +319,10 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
     QString message;
     if ( showNumMatches )
     {
-        if ( !m_replacements )
+        if ( !d->m_replacements )
             message = i18n("No text was replaced.");
         else
-            message = i18np("1 replacement done.", "%1 replacements done.", m_replacements );
+            message = i18np("1 replacement done.", "%1 replacements done.", d->m_replacements );
     }
     else
     {
