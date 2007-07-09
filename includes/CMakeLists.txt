@@ -117,7 +117,9 @@ install( FILES
   KColorDialog
   KColorMimeData
   KColorPatch
+  KColorScheme
   KColorTable
+  KColorUtils
   KColorValueSelector
   KCombiView
   KComboBox
