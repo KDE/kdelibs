@@ -218,6 +218,14 @@ public:
     void setShellCommand(const QString &cmd, const QString &shell = QString());
 
     /**
+     * Obtain the currently set program and arguments.
+     *
+     * @return a list, the first element being the program, the remaining ones
+     *  being command line arguments to the program.
+     */
+    QStringList program() const;
+
+    /**
      * Start the process.
      *
      * @see QProcess::start(const QString &, const QStringList &, OpenMode)

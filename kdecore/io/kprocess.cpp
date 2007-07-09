@@ -283,6 +283,15 @@ void KProcess::setShellCommand(const QString &cmd, const QString &shell)
 #endif
 }
 
+QStringList KProcess::program() const
+{
+    Q_D(const KProcess);
+
+    QStringList argv = d->args;
+    argv.prepend(d->prog);
+    return argv;
+}
+
 void KProcess::start()
 {
     Q_D(KProcess);
