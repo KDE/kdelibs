@@ -38,18 +38,14 @@ KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
     QStringList::iterator it = m_protocols.begin();
     QStringList::iterator itEnd = m_protocols.end();
     menu = new QMenu(this);
-    while (it != itEnd)
-    {
+    while (it != itEnd) {
         const KUrl url(*it + "://");
-        if (!KProtocolManager::supportsListing(url))
-        {
+        if (!KProtocolManager::supportsListing(url)) {
             QStringList::iterator tempIt = it;
             ++tempIt;
             m_protocols.erase(it);
             it = tempIt;
-        }
-        else
-        {
+        } else {
             ++it;
         }
     }
