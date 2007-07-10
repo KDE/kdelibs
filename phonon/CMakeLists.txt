@@ -2,12 +2,13 @@
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_BINARY_DIR}/solid)
 
 add_subdirectory( tests )
-add_subdirectory( kcm )
 add_subdirectory(examples)
 add_subdirectory(experimental)
 add_subdirectory(platform_kde)
+if(CMAKE_SYSTEM_NAME MATCHES Linux)
 add_subdirectory(libkaudiodevicelist)
-
+add_subdirectory( kcm )
+endif(CMAKE_SYSTEM_NAME MATCHES Linux)
 ########### next target ###############
 
 set(phonon_LIB_SRCS
