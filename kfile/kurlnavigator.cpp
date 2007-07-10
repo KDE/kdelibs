@@ -186,7 +186,6 @@ public:
     KFilePlacesSelector* m_placesSelector;
     KUrlComboBox* m_pathBox;
     KProtocolCombo* m_protocols;
-    QLabel* m_protocolSeparator;
     KLineEdit* m_host;
     KUrlDropDownButton* m_dropDownButton;
     QLinkedList<KUrlNavigatorButton*> m_navButtons;
@@ -205,7 +204,6 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_placesSelector(0),
     m_pathBox(0),
     m_protocols(0),
-    m_protocolSeparator(0),
     m_host(0),
     m_dropDownButton(0),
     m_toggleEditableMode(0),
@@ -333,8 +331,6 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
         q->setUrl(url);
     } else {
         if (!m_host) {
-            m_protocolSeparator = new QLabel("://", q);
-            appendWidget(m_protocolSeparator);
             m_host = new KLineEdit(q);
             m_host->setClearButtonShown(true);
             appendWidget(m_host, 1);
@@ -346,7 +342,6 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
         } else {
             m_host->setText("");
         }
-        m_protocolSeparator->show();
         m_host->show();
         m_host->setFocus();
     }
@@ -422,7 +417,6 @@ void KUrlNavigator::Private::updateContent()
 
     if (m_editable) {
         delete m_protocols; m_protocols = 0;
-        delete m_protocolSeparator; m_protocolSeparator = 0;
         delete m_host; m_host = 0;
         m_dropDownButton->hide();
         deleteButtons();
@@ -489,8 +483,6 @@ void KUrlNavigator::Private::updateContent()
 
                 if (!m_host) {
                     // ######### TODO: this code is duplicated from slotProtocolChanged!
-                    m_protocolSeparator = new QLabel("://", q);
-                    appendWidget(m_protocolSeparator);
                     m_host = new KLineEdit(hostText, q);
                     m_host->setClearButtonShown(true);
                     appendWidget(m_host, 1);
@@ -502,17 +494,14 @@ void KUrlNavigator::Private::updateContent()
                 } else {
                     m_host->setText(hostText);
                 }
-                m_protocolSeparator->show();
                 m_host->show();
             } else {
-                delete m_protocolSeparator; m_protocolSeparator = 0;
                 delete m_host; m_host = 0;
             }
         } else if (m_protocols) {
             m_protocols->hide();
 
             if (m_host) {
-                m_protocolSeparator->hide();
                 m_host->hide();
             }
         }
@@ -938,6 +927,11 @@ void KUrlNavigator::setCustomProtocols(const QStringList &protocols)
     d->m_protocols->setCustomProtocols(d->m_customProtocols);
 }
 
+QStringList KUrlNavigator::customProtocols() const
+{
+    return d->m_customProtocols;
+}
+
 void KUrlNavigator::setFocus()
 {
     if (isUrlEditable()) {
@@ -949,11 +943,6 @@ void KUrlNavigator::setFocus()
             QWidget::setFocus();
         }
     }
-}
-
-QStringList KUrlNavigator::customProtocols() const
-{
-    return d->m_customProtocols;
 }
 
 #include "kurlnavigator.moc"
