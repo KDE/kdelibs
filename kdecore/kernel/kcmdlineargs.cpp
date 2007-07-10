@@ -488,10 +488,9 @@ KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions &options, const KLocalize
    QString afterId = QString::fromUtf8(_afterId);
 
    int pos = s->argsList->count();
-   // FIXME: What was the point of this check? (both id and ...name where
-   // const char * at that time)
-   // if (pos && id && argsList->last() && !argsList->last()->d->name)
-   //    pos--;
+   // To make sure that the named options come before unnamed.
+   if (pos > 0 && !id.isEmpty() && s->argsList->last()->d->name.isEmpty())
+      pos--;
 
    KCmdLineArgsList::Iterator args;
    int i = 0;
@@ -500,7 +499,9 @@ KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions &options, const KLocalize
       if (id == (*args)->d->id)
          return; // Options already present.
 
-      if (afterId == (*args)->d->id)
+      // Only check for afterId if it has been given non-empty, as the
+      // unnamed option group should come after all named groups.
+      if (!afterId.isEmpty() && afterId == (*args)->d->id)
          pos = i+1;
    }
 
