@@ -41,8 +41,6 @@ namespace Sonnet
 
 	bool spellCheckerFound() const;
 
-	virtual void highlightBlock(const QString &text);
-
         QString currentLanguage() const;
         void setCurrentLanguage(const QString &lang);
 
@@ -95,6 +93,8 @@ namespace Sonnet
 	void newSuggestions(const QString &originalWord, const QStringList &suggestions);
 
     protected:
+	virtual void highlightBlock(const QString &text);
+
         virtual void setMisspelled(int start, int count);
         virtual void unsetMisspelled(int start,  int count);
 
