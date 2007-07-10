@@ -83,7 +83,7 @@ public:
 private:
     KConfigGroup _config;
     DefaultColors _defaults;
-    int _contrast;
+    qreal _contrast;
 };
 
 KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config, const char *group, DefaultColors defaults)
@@ -138,7 +138,7 @@ QColor KColorSchemePrivate::decoration(KColorScheme::DecorationRole role) const
 
 qreal KColorSchemePrivate::contrast() const
 {
-    return 0.1 * (qreal)_contrast;
+    return _contrast;
 }
 //END KColorSchemePrivate
 
