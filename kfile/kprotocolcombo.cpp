@@ -40,18 +40,9 @@ KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
     menu = new QMenu(this);
     while (it != itEnd)
     {
-        //kDebug() << "info for " << *it << " "
-        //          << KProtocolInfo::protocolClass(*it) << endl;
-        //TODO: wow this is ugly. or .. is it? ;) we need a way to determine
-        //      if a protocol is appropriate for use in a file manager. hum!
-        //if (KProtocolInfo::capabilities(*it).findIndex("filemanager") == -1)
-
-        // DF: why not just supportsListing?
-
-        if (KProtocolInfo::protocolClass(*it) == ":" /* ||
-            !KProtocolManager::supportsWriting(*it)*/)
+        const KUrl url(*it + "://");
+        if (!KProtocolManager::supportsListing(url))
         {
-        //kDebug() << "!!! removing " << *it << endl;
             QStringList::iterator tempIt = it;
             ++tempIt;
             m_protocols.erase(it);
