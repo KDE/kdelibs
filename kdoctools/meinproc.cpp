@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     options.add("param <key>=<value>", ki18n("Parameters to pass to the stylesheet"));
     options.add("+xml", ki18n("The file to transform"));
 
-    KAboutData aboutData( "meinproc", "kio_help", ki18n("XML-Translator" ),
+    KAboutData aboutData( "meinproc", "kio_help4", ki18n("XML-Translator" ),
 	"$Revision$",
 	ki18n("KDE Translator for XML"));
 

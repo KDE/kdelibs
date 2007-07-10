@@ -26,7 +26,7 @@ int main( int argc, char **argv )
     KCmdLineOptions options;
     options.add("+url");
 
-    KCmdLineArgs::init( argc, argv, "kmailservice", "kdelibs", ki18n("KMailService"), "unknown", ki18n("Mail service") );
+    KCmdLineArgs::init( argc, argv, "kmailservice", "kdelibs4", ki18n("KMailService"), "unknown", ki18n("Mail service") );
     KCmdLineArgs::addCmdLineOptions( options );
 
     KApplication a( false );

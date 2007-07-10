@@ -123,8 +123,8 @@ CupsdDialog::CupsdDialog(QWidget *parent, const char *name)
   setModal( true );
   showButtonSeparator( true );
 
-	KIconLoader::global()->addAppDir("kdeprint");
-	KGlobal::locale()->insertCatalog("cupsdconf");
+	KIconLoader::global()->addAppDir("kdeprint4");
+	KGlobal::locale()->insertCatalog("cupsdconf4");
 
 	filename_ = "";
 	conf_ = 0;
@@ -268,7 +268,7 @@ bool CupsdDialog::configure(const QString& filename, QWidget *parent, QString *m
 	}
 	else
 	{
-		KGlobal::locale()->insertCatalog("cupsdconf"); // Must be before dialog is created to translate "Short Help"
+		KGlobal::locale()->insertCatalog("cupsdconf4"); // Must be before dialog is created to translate "Short Help"
 		CupsdDialog	dlg(parent);
 		if (dlg.setConfigFile(fn) && dlg.exec())
 		{

@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
    const char version[] = "1.0";
 
-   KCmdLineArgs::init(argc, argv, "kcookiejar", "kdelibs", ki18n("HTTP cookie daemon"), version, description);
+   KCmdLineArgs::init(argc, argv, "kcookiejar", "kdelibs4", ki18n("HTTP cookie daemon"), version, description);
 
    KCmdLineOptions options;
    options.add("shutdown", ki18n("Shut down cookie jar"));

@@ -702,7 +702,7 @@ static const char appVersion[] = "1.1";
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
-   KAboutData d(appName, "kdelibs", ki18n("KBuildSycoca"), appVersion,
+   KAboutData d(appName, "kdelibs4", ki18n("KBuildSycoca"), appVersion,
                 ki18n("Rebuilds the system configuration cache."),
                 KAboutData::License_GPL, ki18n("(c) 1999-2002 KDE Developers"));
    d.addAuthor(ki18n("David Faure"), ki18n("Author"), "faure@kde.org");
@@ -759,8 +759,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    KCrash::setEmergencySaveFunction(crashHandler);
    KCrash::setApplicationName(QString(appName));
 
-   // this program is in kdelibs so it uses kdelibs as catalog
-   KLocale::setMainCatalog("kdelibs");
    // force generating of KLocale object. if not, the database will get
    // be translated
    KGlobal::locale();

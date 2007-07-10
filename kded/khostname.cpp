@@ -215,7 +215,7 @@ void KHostName::changeSessionManager()
 
 int main(int argc, char **argv)
 {
-   KAboutData d(appName, "kdelibs", ki18n("KDontChangeTheHostName"), appVersion,
+   KAboutData d(appName, "kdelibs4", ki18n("KDontChangeTheHostName"), appVersion,
                 ki18n("Informs KDE about a change in hostname"),
                 KAboutData::License_GPL, ki18n("(c) 2001 Waldo Bastian"));
    d.addAuthor(ki18n("Waldo Bastian"), ki18n("Author"), "bastian@kde.org");

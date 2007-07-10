@@ -29,7 +29,7 @@ extern "C"
 {
     KDE_EXPORT int kdemain( int argc, char **argv )
     {
-        KComponentData componentData( "kio_help" );
+        KComponentData componentData( "kio_help", "kio_help4" );
         fillInstance(componentData);
         (void)componentData.config(); // we need this one to make sure system globals are read
 

@@ -1,2 +1,2 @@
 #! /usr/bin/env bash
-#  they get into kio.pot
+#  they get into kio4.pot

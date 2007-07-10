@@ -69,7 +69,7 @@ void BugMailer::slotSend() {
 
 int main(int argc, char **argv) {
 
-    KAboutData d("ksendbugmail", "kdelibs", ki18n("KSendBugMail"), "1.0",
+    KAboutData d("ksendbugmail", "kdelibs4", ki18n("KSendBugMail"), "1.0",
                  ki18n("Sends a short bug report to submit@bugs.kde.org"),
                  KAboutData::License_GPL, ki18n("(c) 2000 Stephan Kulow"));
     d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");

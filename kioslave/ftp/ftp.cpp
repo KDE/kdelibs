@@ -140,7 +140,7 @@ using namespace KIO;
 
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
-  KComponentData componentData( "kio_ftp", "kdelibs" );
+  KComponentData componentData( "kio_ftp", "kdelibs4" );
   ( void ) KGlobal::locale();
 
   kDebug(7102) << "Starting " << getpid() << endl;

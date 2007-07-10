@@ -28,7 +28,7 @@ static void printResult(const QString &s)
 
 int main(int argc, char **argv)
 {
-    KAboutData about("kde4-config", "kdelibs", ki18n("kde4-config"), "1.0",
+    KAboutData about("kde4-config", "kdelibs4", ki18n("kde4-config"), "1.0",
                      ki18n("A little program to output installation paths"),
                      KAboutData::License_GPL,
                      ki18n("(C) 2000 Stephan Kulow"));

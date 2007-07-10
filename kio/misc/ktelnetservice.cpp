@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     KCmdLineOptions options;
     options.add("+url");
 
-    KCmdLineArgs::init(argc, argv, "ktelnetservice", "kdelibs", ki18n("telnet service"),
+    KCmdLineArgs::init(argc, argv, "ktelnetservice", "kdelibs4", ki18n("telnet service"),
                "unknown", ki18n("telnet protocol handler"));
     KCmdLineArgs::addCmdLineOptions(options);
 

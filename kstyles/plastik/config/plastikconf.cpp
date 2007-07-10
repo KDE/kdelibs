@@ -43,7 +43,7 @@ extern "C"
 {
 	KDE_EXPORT QWidget* allocate_kstyle_config(QWidget* parent)
 	{
-		KGlobal::locale()->insertCatalog("kstyle_plastik_config");
+		KGlobal::locale()->insertCatalog("kstyle_config");
 		return new PlastikStyleConfig(parent);
 	}
 }
@@ -55,7 +55,7 @@ PlastikStyleConfig::PlastikStyleConfig(QWidget* parent): QWidget(parent)
     layout->setMargin(0);
     layout->setSpacing(0);
 
-	KGlobal::locale()->insertCatalog("kstyle_plastik_config");
+	KGlobal::locale()->insertCatalog("kstyle_config");
 
 // 	scrollBarLines = new QCheckBox(i18n("Scrollbar handle lines"), this);
 	animateProgressBar = new QCheckBox(i18n("Animate progress bars"), this);

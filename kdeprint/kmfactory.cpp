@@ -110,7 +110,7 @@ KMFactory::KMFactory()
 		settings.setValue( "/qt/embedFonts", true );
 
 	KIconLoader::global()->addAppDir("kdeprint");
-	KGlobal::locale()->insertCatalog("kdeprint");
+	KGlobal::locale()->insertCatalog("kdeprint4");
 
 	// create D-Bus signal connection
 	(void)new KMFactoryAdaptor(this);

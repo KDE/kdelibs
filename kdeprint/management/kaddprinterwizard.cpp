@@ -30,7 +30,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 	options.add("kdeconfig", ki18n("Configure KDE Print"));
 	options.add("serverconfig", ki18n("Configure print server"));
 
-	KCmdLineArgs::init(argc, argv, "kaddprinterwizard", "kdelibs", ki18n("KAddPrinterWizard"),
+	KCmdLineArgs::init(argc, argv, "kaddprinterwizard", "kdelibs4", ki18n("KAddPrinterWizard"),
 			"0.1", ki18n("Start the add printer wizard"));
 	KCmdLineArgs::addCmdLineOptions(options);
 	

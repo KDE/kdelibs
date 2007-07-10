@@ -62,7 +62,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    putenv(strdup("SESSION_MANAGER="));
 
    // Allow the locale to initialize properly
-   KLocale::setMainCatalog("kdelibs");
+   KLocale::setMainCatalog("kdelibs4");
 
    // We need a QCoreApplication to get a DBus event loop
    QCoreApplication app(argc, argv);

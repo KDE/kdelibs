@@ -806,7 +806,7 @@ public:
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
      KAboutData aboutData( "kded" /*don't change this one to kded4! dbus registration should be org.kde.kded etc.*/, 
-        "kdelibs", ki18n("KDE Daemon"),
+        "kdelibs4", ki18n("KDE Daemon"),
         "$Id$",
         ki18n("KDE Daemon - triggers Sycoca database updates when needed"));
 

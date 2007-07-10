@@ -49,8 +49,6 @@
 #include <windows.h>
 #endif
 
-static const char * const SYSTEM_MESSAGES = "kdelibs";
-
 static const char *maincatalog = 0;
 
 class KLocalePrivate
@@ -265,10 +263,10 @@ void KLocalePrivate::initMainCatalogs(const QString & catalog)
 
     // catalogs from which each application can draw translations
     numberOfSysCatalogs = 4;
-    catalogNames.append( "kdeqt" ); // always include kdeqt.gmo
-    catalogNames.append( SYSTEM_MESSAGES ); // always include kdelibs.gmo
-    catalogNames.append( "kio" );            // always include kio.gmo
-    catalogNames.append("libphonon"); // always include libphonon.gmo
+    catalogNames.append("kdeqt");
+    catalogNames.append("kdelibs4");
+    catalogNames.append("kio4");
+    catalogNames.append("libphonon");
 
     updateCatalogs(); // evaluate this for all languages
   }

@@ -94,7 +94,7 @@ class KDEUI_EXPORT KTimeZoneWidget : public QTreeWidget
      * transformed via an i18n lookup, so the caller should previously have
      * set the time zone catalog:
      * \code
-     *   KGlobal::locale()->insertCatalog( "timezones" );
+     *   KGlobal::locale()->insertCatalog( "timezones4" );
      * \endcode
      *
      * @return formatted time zone name.

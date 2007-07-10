@@ -85,7 +85,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent )
     : KPreviewWidgetBase( parent )
     , d( new Private )
 {
-    KGlobal::locale()->insertCatalog("kfileaudiopreview");
+    KGlobal::locale()->insertCatalog("kfileaudiopreview4");
 
     QGroupBox *box = new QGroupBox( i18n("Media Player"), this );
     QVBoxLayout *layout = new QVBoxLayout( this );

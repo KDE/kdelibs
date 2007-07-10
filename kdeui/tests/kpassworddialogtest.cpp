@@ -26,7 +26,6 @@
 
 int main( int argc, char *argv[] )
 {
-	//KLocale::setMainCatalog("kdelibs");
 	QApplication::setColorSpec( QApplication::CustomColor );
 	KAboutData about("KNewPasswordDialogTest", 0, ki18n("KNewPasswordDialogTest"), "1");
 	KCmdLineArgs::init(argc, argv, &about);

@@ -567,7 +567,7 @@ KColorTable::readNamedColor( void )
     return; // Strings already present
   }
 
-  KGlobal::locale()->insertCatalog("kdelibs_colors");
+  KGlobal::locale()->insertCatalog("kdelibs_colors4");
 
   //
   // Code somewhat inspired by KColorCollection.

@@ -417,7 +417,7 @@ KuitSemanticsPrivate::KuitSemanticsPrivate (const QString &lang)
     // call of format(); however, even so it is preferable to do raw reads
     // from the catalog, as we must assure that the exact supplied language
     // is being used for translation (normal i18n calls do fallbacks).
-    KCatalog cat("kdelibs", m_lang);
+    KCatalog cat("kdelibs4", m_lang);
 
     // Get formatting patterns for all tag/att/fmt combinations.
     setFormattingPatterns(cat);

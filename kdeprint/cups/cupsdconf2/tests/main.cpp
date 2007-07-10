@@ -27,7 +27,7 @@
 
 extern "C" int main(int argc, char *argv[])
 {
-	KCmdLineArgs::init(argc,argv,"cupsdconf", 0,
+	KCmdLineArgs::init(argc,argv,"cupsdconf","cupsdconf4",
 			   ki18n("A CUPS configuration tool"),"0.0.1",
 			   ki18n("A CUPS configuration tool"));
 
