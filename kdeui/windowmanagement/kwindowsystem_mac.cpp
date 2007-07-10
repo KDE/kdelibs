@@ -225,7 +225,7 @@ void KWindowSystem::doNotManage( const QString& title )
 QList<WId> KWindowSystem::stackingOrder()
 {
   //TODO
-  QList<Wid> lst;
+  QList<WId> lst;
   kDebug() << "QList<WId> KWindowSystem::stackingOrder() isn't yet implemented!" << endl;
   return lst;
 }
