@@ -3,7 +3,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-tex-gf.desktop x-gzip.desktop x-pak.desktop \
 	x-object.desktop x-tex-pk.desktop pdf.desktop \
 	x-tar.desktop x-trash.desktop x-zip.desktop \
-	x-core.desktop x-javascript.desktop \
+	x-zip-compressed.desktop x-core.desktop x-javascript.desktop \
 	java.desktop x-java.desktop x-java-applet.desktop \
 	x-jar.desktop x-arj.desktop x-tarz.desktop \
 	x-gzpostscript.desktop postscript.desktop octet-stream.desktop \
