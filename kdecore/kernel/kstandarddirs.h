@@ -697,7 +697,7 @@ public:
      */
     static QString realFilePath(const QString &filename);
 
-    /*
+    /**
      * This function is just for convenience. It simply calls
      * instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
      *
