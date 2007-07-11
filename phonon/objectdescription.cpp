@@ -99,10 +99,12 @@ ObjectDescriptionData *ObjectDescriptionData::fromIndex(ObjectDescriptionType ty
 {
     QObject *b = Factory::backend();
     BackendInterface *iface = qobject_cast<BackendInterface *>(b);
-    QSet<int> indexes = iface->objectDescriptionIndexes(type);
-    if (indexes.contains(index)) {
-        QHash<QByteArray, QVariant> properties = iface->objectDescriptionProperties(type, index);
-        return new ObjectDescriptionData(new ObjectDescriptionPrivate(index, properties));
+    if (iface) {
+        QSet<int> indexes = iface->objectDescriptionIndexes(type);
+        if (indexes.contains(index)) {
+            QHash<QByteArray, QVariant> properties = iface->objectDescriptionProperties(type, index);
+            return new ObjectDescriptionData(new ObjectDescriptionPrivate(index, properties));
+        }
     }
     return new ObjectDescriptionData(0); // invalid
 }
