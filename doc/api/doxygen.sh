@@ -95,6 +95,19 @@ else
 	fi
 fi
 
+### Normalize DOXDATA so it is an absolute path.
+if test -n "$DOXDATA"; then
+    if expr "x$DOXDATA" : "x/" > /dev/null ; then
+	# DOXDATA is absolute already
+	:
+    else
+	DOXDATA=`cd "$DOXDATA" 2> /dev/null && pwd`
+	if test ! -d "$DOXDATA" ; then
+		echo "DOXDATA ($DOXDATA) is not a directory."
+		exit 1
+	fi
+    fi
+fi
 
 
 ### Sanity check and guess QTDOCDIR.
