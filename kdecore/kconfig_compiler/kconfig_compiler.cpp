@@ -123,6 +123,7 @@ class CfgEntry
     struct Choice
     {
       QString name;
+      QString context;
       QString label;
       QString whatsThis;
     };
@@ -148,13 +149,13 @@ class CfgEntry
     };
 
     CfgEntry( const QString &group, const QString &type, const QString &key,
-              const QString &name, const QString &label,
+              const QString &name, const QString &context, const QString &label,
               const QString &whatsThis, const QString &code,
               const QString &defaultValue, const Choices &choices, const QList<Signal> signalList,
               bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
-        mLabel( label ), mWhatsThis( whatsThis ), mCode( code ),
-        mDefaultValue( defaultValue ), mChoices( choices ),
+        mContext( context ), mLabel( label ), mWhatsThis( whatsThis ),
+        mCode( code ), mDefaultValue( defaultValue ), mChoices( choices ),
         mSignalList(signalList), mHidden( hidden )
     {
     }
@@ -170,6 +171,9 @@ class CfgEntry
 
     void setName( const QString &name ) { mName = name; }
     QString name() const { return mName; }
+
+    void setContext( const QString &context ) { mContext = context; }
+    QString context() const { return mContext; }
 
     void setLabel( const QString &label ) { mLabel = label; }
     QString label() const { return mLabel; }
@@ -222,6 +226,7 @@ class CfgEntry
       std::cerr << "  type: " << qPrintable(mType) << std::endl;
       std::cerr << "  key: " << qPrintable(mKey) << std::endl;
       std::cerr << "  name: " << qPrintable(mName) << std::endl;
+      std::cerr << "  context: " << qPrintable(mContext) << std::endl;
       std::cerr << "  label: " << qPrintable(mLabel) << std::endl;
 // whatsthis
       std::cerr << "  code: " << qPrintable(mCode) << std::endl;
@@ -245,6 +250,7 @@ class CfgEntry
     QString mType;
     QString mKey;
     QString mName;
+    QString mContext;
     QString mLabel;
     QString mWhatsThis;
     QString mCode;
@@ -495,6 +501,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString name = element.attribute( "name" );
   QString key = element.attribute( "key" );
   QString hidden = element.attribute( "hidden" );
+  QString context = element.attribute( "context" );
   QString label;
   QString whatsThis;
   QString defaultValue;
@@ -512,8 +519,14 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
   for ( QDomElement e = element.firstChildElement(); !e.isNull(); e = e.nextSiblingElement() ) {
     QString tag = e.tagName();
-    if ( tag == "label" ) label = e.text();
-    else if ( tag == "whatsthis" ) whatsThis = e.text();
+    if ( tag == "label" ) {
+      label = e.text();
+      context = e.attribute( "context" );
+    }
+    else if ( tag == "whatsthis" ) {
+      whatsThis = e.text();
+      context = e.attribute( "context" );
+    }
     else if ( tag == "min" ) minValue = e.text();
     else if ( tag == "max" ) maxValue = e.text();
     else if ( tag == "code" ) code = e.text();
@@ -590,8 +603,14 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
             std::cerr << "Tag <choice> requires attribute 'name'." << std::endl;
           }
           for( QDomElement e3 = e2.firstChildElement(); !e3.isNull(); e3 = e3.nextSiblingElement() ) {
-            if ( e3.tagName() == "label" ) choice.label = e3.text();
-            if ( e3.tagName() == "whatsthis" ) choice.whatsThis = e3.text();
+            if ( e3.tagName() == "label" ) {
+              choice.label = e3.text();
+              choice.context = e3.attribute( "context" );
+            }
+            if ( e3.tagName() == "whatsthis" ) {
+              choice.whatsThis = e3.text();
+              choice.context = e3.attribute( "context" );
+            }
           }
           chlist.append( choice );
         }
@@ -721,7 +740,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     preProcessDefault(defaultValue, name, type, choices, code);
   }
 
-  CfgEntry *result = new CfgEntry( group, type, key, name, label, whatsThis,
+  CfgEntry *result = new CfgEntry( group, type, key, name, context, label, whatsThis,
                                    code, defaultValue, choices, signalList,
                                    hidden == "true" );
   if (!param.isEmpty())
@@ -959,7 +978,11 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString(), QString i
   QString txt;
   if (itemVarStr.isNull()) itemVarStr=itemPath(e);
   if ( !e->label().isEmpty() ) {
-    txt += "  " + itemVarStr + "->setLabel( i18n(";
+    txt += "  " + itemVarStr + "->setLabel( ";
+    if ( !e->context().isEmpty() )
+      txt += "i18nc(" + quoteString(e->context()) + ", ";
+    else
+      txt += "i18n(";
     if ( !e->param().isEmpty() )
       txt += quoteString(e->label().replace("$("+e->param()+')', i));
     else
@@ -967,7 +990,11 @@ QString userTextsFunctions( CfgEntry *e, QString itemVarStr=QString(), QString i
     txt+= ") );\n";
   }
   if ( !e->whatsThis().isEmpty() ) {
-    txt += "  " + itemVarStr + "->setWhatsThis( i18n(";
+    txt += "  " + itemVarStr + "->setWhatsThis( ";
+    if ( !e->context().isEmpty() )
+      txt += "i18nc(" + quoteString(e->context()) + ", ";
+    else
+      txt += "i18n(";
     if ( !e->param().isEmpty() )
       txt += quoteString(e->whatsThis().replace("$("+e->param()+')', i));
     else
@@ -1821,10 +1848,21 @@ int main( int argc, char **argv )
         cpp << "    KConfigSkeleton::ItemEnum::Choice choice;" << endl;
         cpp << "    choice.name = QLatin1String( \"" << (*it).name << "\" );" << endl;
         if ( setUserTexts ) {
-          if ( !(*it).label.isEmpty() )
-            cpp << "    choice.label = i18n(" << quoteString((*it).label) << ");" << endl;
+          if ( !(*it).label.isEmpty() ) {
+            cpp << "    choice.label = ";
+            if ( !(*it).context.isEmpty() )
+              cpp << "i18nc(" + quoteString((*it).context) + ", ";
+            else
+              cpp << "i18n(";
+            cpp << quoteString((*it).label) << ");" << endl;
+          }
           if ( !(*it).whatsThis.isEmpty() )
-            cpp << "    choice.whatsThis = i18n(" << quoteString((*it).whatsThis) << ");" << endl;
+            cpp << "    choice.whatsThis = ";
+            if ( !(*it).context.isEmpty() )
+              cpp << "i18nc(" + quoteString((*it).context) + ", ";
+            else
+              cpp << "i18n(";
+            cpp << quoteString((*it).whatsThis) << ");" << endl;
         }
         cpp << "    values" << (*itEntry)->name() << ".append( choice );" << endl;
         cpp << "  }" << endl;
