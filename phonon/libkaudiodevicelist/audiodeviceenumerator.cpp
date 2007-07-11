@@ -28,7 +28,11 @@
 #include <solid/audiointerface.h>
 #include <kconfiggroup.h>
 #include <kio/kdirwatch.h>
+#include <phonon/config-alsa.h>
+
+#ifdef HAVE_LIBASOUND2
 #include <alsa/asoundlib.h>
+#endif // HAVE_LIBASOUND2
 
 namespace Phonon
 {
@@ -213,6 +217,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 
 void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
 {
+#ifdef HAVE_LIBASOUND2
     kDebug(600) << k_funcinfo << file << endl;
     QFileInfo changedFile(file);
     QFileInfo asoundrc(QDir::homePath() + QLatin1String("/.asoundrc"));
@@ -271,6 +276,7 @@ void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
             emit q.devicePlugged(dev);
         }
     }
+#endif // HAVE_LIBASOUND2
 }
 
 void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)

@@ -27,7 +27,9 @@
 #include <klocale.h>
 #include <kdebug.h>
 
+#ifdef HAVE_LIBASOUND2
 #include <alsa/asoundlib.h>
+#endif // HAVE_LIBASOUND2
 
 namespace Phonon
 {
@@ -168,6 +170,7 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
 AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
+#ifdef HAVE_LIBASOUND2
     d->driver = Solid::AudioInterface::Alsa;
     d->deviceIds << alsaDeviceName;
     d->cardName = alsaDeviceName;
@@ -199,11 +202,13 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr confi
         deviceGroup.writeEntry("icon", d->icon);
     }
     config->sync();
+#endif // HAVE_LIBASOUND2
 }
 
 AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &description, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
+#ifdef HAVE_LIBASOUND2
     d->driver = Solid::AudioInterface::Alsa;
     d->deviceIds << alsaDeviceName;
     QStringList lines = description.split("\n");
@@ -271,8 +276,10 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
         deviceGroup.writeEntry("icon", d->icon);
     }
     config->sync();
+#endif // HAVE_LIBASOUND2
 }
 
+#ifdef HAVE_LIBASOUND2
 void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 {
     kDebug(600) << k_funcinfo << deviceName << endl;
@@ -357,6 +364,7 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
     }
     snd_pcm_info_free(pcmInfo);
 }
+#endif // HAVE_LIBASOUND2
 
 QString AudioDevice::udi() const
 {

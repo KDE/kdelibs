@@ -21,8 +21,7 @@
 #include <QtCore/QVector>
 #include <kdebug.h>
 
-#include <config.h>
-#include <config-alsa.h>
+#include <phonon/config-alsa.h>
 
 #ifdef HAVE_SYS_SOUNDCARD_H
 #include <sys/soundcard.h>

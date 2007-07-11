@@ -21,6 +21,7 @@
 #define PHONON_AUDIODEVICE_P_H
 
 #include "audiodevice.h"
+#include <phonon/config-alsa.h>
 #include <QtCore/QStringList>
 #include <QtCore/QSharedData>
 
@@ -41,7 +42,9 @@ class AudioDevicePrivate : public QSharedData
         {
         }
 
+#ifdef HAVE_LIBASOUND2
         void deviceInfoFromPcmDevice(const QString &deviceName);
+#endif // HAVE_LIBASOUND2
 
         int refCount;
         QString cardName;
