@@ -291,6 +291,9 @@ PathWidget::PathWidget(QWidget *parent)
 void PathWidget::addEffect()
 {
     int current = m_effectComboBox->currentIndex();
+    if (current < 0) {
+        return;
+    }
     QList<AudioEffectDescription> effectList = BackendCapabilities::availableAudioEffects();
     if (current < effectList.size()) {
         Effect *effect = new Effect(effectList[current], m_path);
