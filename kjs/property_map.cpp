@@ -105,7 +105,7 @@ static inline UString::Rep* deletedSentinel() { return reinterpret_cast<UString:
 // Returns true if the key is not null or the deleted sentinel, false otherwise
 static inline bool isValid(UString::Rep* key)
 {
-    return reinterpret_cast<uintptr_t>(key) & ~0x1;
+    return ((reinterpret_cast<uintptr_t>(key) & ~0x1) != 0);
 }
 
 PropertyMap::~PropertyMap()
@@ -255,7 +255,7 @@ JSValue **PropertyMap::getLocation(const Identifier &name, bool& readOnly)
 #if USE_SINGLE_ENTRY
         UString::Rep *key = _singleEntry.key;
         if (rep == key) {
-            readOnly = _singleEntry.attributes & ReadOnly;
+            readOnly = ((_singleEntry.attributes & ReadOnly) == ReadOnly);
             return &_singleEntry.value;
         }
 #endif
@@ -273,7 +273,7 @@ JSValue **PropertyMap::getLocation(const Identifier &name, bool& readOnly)
 #endif
     while (UString::Rep *key = entries[i].key) {
         if (rep == key) {
-            readOnly = entries[i].attributes & ReadOnly;
+            readOnly = ((entries[i].attributes & ReadOnly) == ReadOnly);
             return &entries[i].value;
         }
         if (k == 0)
