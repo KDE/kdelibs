@@ -40,6 +40,12 @@ int KWindowSystem::numberOfDesktops()
     return 1;
 }
 
+void KWindowSystem::setMainWindow( QWidget*, WId )
+{
+    kDebug() << "KWindowSystem::setMainWindow( QWidget, WId ) isn't yet implemented!" << endl;
+    //TODO
+}
+
 void KWindowSystem::setCurrentDesktop( int desktop )
 {
     kDebug() << "KWindowSystem::setCurrentDesktop( int desktop ) isn't yet implemented!" << endl;
