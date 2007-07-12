@@ -62,7 +62,9 @@
 #define snprintf _snprintf
 #if !COMPILER(GCC)
 #define isfinite(x) _finite(x)
+#ifndef strncasecmp
 #define strncasecmp(x, y, z) strnicmp(x, y, z)
+#endif
 #endif
 #endif
 

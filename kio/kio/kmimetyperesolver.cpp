@@ -56,7 +56,7 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
 
     if (m_pendingIndexes.count() < 20) { // for few items, it's faster to not bother
         //kDebug() << k_funcinfo << "Few items, returning first one" << endl;
-        return m_pendingIndexes.first();
+        return QModelIndex(m_pendingIndexes.first());
     }
 
     const QRect visibleArea = m_view->viewport()->rect();
@@ -66,7 +66,7 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
         const QRect rect = m_view->visualRect(*it);
         if (rect.intersects(visibleArea)) {
             //kDebug() << k_funcinfo << "found item at " << rect << " in visibleArea " << visibleArea << endl;
-            return *it;
+            return QModelIndex(*it);
         }
     }
 

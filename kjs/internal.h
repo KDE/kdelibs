@@ -92,7 +92,7 @@ namespace KJS {
   //                            Evaluation
   // ---------------------------------------------------------------------------
 
-  class AttachedInterpreter;
+  struct AttachedInterpreter;
   class DebuggerImp {
   public:
 

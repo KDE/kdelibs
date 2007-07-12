@@ -108,7 +108,7 @@ public:
             if ((doubleUnion.asBits & TagMask) != 0)
                 return 0;
 
-            return tag(doubleUnion.asBits, NumberType);
+            return tag((uintptr_t)doubleUnion.asBits, NumberType);
         } else {
             // could just return 0 without aborting, but nicer to be explicit about not supporting the platform well
             abort();
@@ -158,7 +158,7 @@ public:
     static JSValue *nullImmediate() { return tag(zeroAsBits(), UndefinedType); }
     
 private:
-    static const uintptr_t TagMask = 3; // type tags are 2 bits long
+    enum TagMaskEnum { TagMask = 3 /* type tags are 2 bits long */ };
     
     static JSValue *tag(uintptr_t bits, uintptr_t tag)
     {

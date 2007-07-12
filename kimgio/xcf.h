@@ -43,7 +43,7 @@ public:
     static bool canRead(QIODevice *device);
 };
 
-const float INCHESPERMETER = (100.0 / 2.54);
+const float INCHESPERMETER = (100.0f / 2.54f);
 
 /*!
  * Each layer in an XCF file is stored as a matrix of

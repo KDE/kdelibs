@@ -49,7 +49,7 @@ namespace WTF {
     template <typename P> struct IsPod<P *>      { static const bool value = true; };
 
     template<bool isPod, typename T>
-    class VectorTraitsBase;
+    struct VectorTraitsBase;
 
     template<typename T>
     struct VectorTraitsBase<false, T>

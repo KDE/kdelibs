@@ -98,7 +98,7 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
                 if ( file.getChar( &firstByte ) &&
                      file.getChar( &secondByte ) &&
                      file.getChar( &thirdByte ) ) {
-                    if ( firstByte == 0037 && secondByte == static_cast<char>(0213) )
+                    if ( firstByte == 0037 && static_cast<uchar>(secondByte) == static_cast<uchar>(0213) )
                         d->mimetype = "application/x-gzip";
                     else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
                         d->mimetype = "application/x-bzip";

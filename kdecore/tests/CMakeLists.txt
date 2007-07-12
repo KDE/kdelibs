@@ -96,6 +96,8 @@ set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUI
 
 ########### module for klibloadertest4 ###############
 
+if (NOT WIN32) # TODO: reenable for win32
+
 set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 
 
@@ -104,3 +106,5 @@ kde4_add_plugin(klibloadertestmodule4 WITH_PREFIX ${klibloadertestmodule4_PART_S
 target_link_libraries(klibloadertestmodule4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 
 set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
+
+endif (NOT WIN32)

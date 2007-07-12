@@ -2042,7 +2042,7 @@ Completion StaticVarStatementNode::execute(ExecState *exec)
   KJS_BREAKPOINT;
   ActivationImp* scope = static_cast<ActivationImp*>(exec->context()->activationObject());
 
-  for (int i = 0; i < initializers.size(); ++i) {
+  for (unsigned int i = 0; i < initializers.size(); ++i) {
     JSValue* val = initializers[i].initExpr->evaluate(exec);
     KJS_CHECKEXCEPTION
     scope->putLocal(initializers[i].localID, val);
@@ -2053,7 +2053,7 @@ Completion StaticVarStatementNode::execute(ExecState *exec)
 
 void StaticVarStatementNode::recurseVisit(NodeVisitor *visitor)
 {
-  for (int i = 0; i < initializers.size(); ++i) {
+  for (unsigned int i = 0; i < initializers.size(); ++i) {
    Node* oldInitializer = initializers[i].initExpr.get();
    Node* newInitializer = visitor->visit(oldInitializer);
    if (newInitializer)

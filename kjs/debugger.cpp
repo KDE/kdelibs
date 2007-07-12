@@ -33,7 +33,6 @@ using namespace KJS;
 namespace KJS {
   struct AttachedInterpreter
   {
-  public:
     AttachedInterpreter(Interpreter *i, AttachedInterpreter *ai) : interp(i), next(ai) { ++Debugger::debuggersPresent; }
     ~AttachedInterpreter() { --Debugger::debuggersPresent; }
     Interpreter *interp;
@@ -113,20 +112,20 @@ bool Debugger::exception(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
   return true;
 }
 
-bool Debugger::atStatement(ExecState */*exec*/, int /*sourceId*/, int /*firstLine*/,
+bool Debugger::atStatement(ExecState * /*exec*/, int /*sourceId*/, int /*firstLine*/,
                            int /*lastLine*/)
 {
   return true;
 }
 
-bool Debugger::callEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                         JSObject */*function*/, const List &/*args*/)
+bool Debugger::callEvent(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
+                         JSObject * /*function*/, const List &/*args*/)
 {
   return true;
 }
 
-bool Debugger::returnEvent(ExecState */*exec*/, int /*sourceId*/, int /*lineno*/,
-                           JSObject */*function*/)
+bool Debugger::returnEvent(ExecState * /*exec*/, int /*sourceId*/, int /*lineno*/,
+                           JSObject * /*function*/)
 {
   return true;
 }

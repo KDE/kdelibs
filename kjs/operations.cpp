@@ -47,7 +47,7 @@ namespace KJS {
 bool isNaN(double d)
 {
 #if HAVE(FUNC_ISNAN)
-    return isnan(d);
+    return isnan(d) != 0;
 #elif HAVE(FLOAT_H)
     return _isnan(d) != 0;
 #else

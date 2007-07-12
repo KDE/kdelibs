@@ -910,7 +910,7 @@ char *UString::ascii() const
   char *q = statBuffer;
   const UChar *limit = p + length;
   while (p != limit) {
-    *q = p->uc;
+    *q = (char)p->uc;
     ++p;
     ++q;
   }
