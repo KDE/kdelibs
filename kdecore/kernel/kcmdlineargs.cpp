@@ -1157,7 +1157,10 @@ KCmdLineArgs::usage(const QByteArray &id)
          QString description;
          QStringList dl;
 
-         QString descriptionFull = option.d->descriptions[i].toString();
+         QString descriptionFull;
+         if (!option.d->descriptions[i].isEmpty()) {
+            descriptionFull = option.d->descriptions[i].toString();
+         }
 
          // Option header
          if (option.d->names[i].startsWith(':'))
