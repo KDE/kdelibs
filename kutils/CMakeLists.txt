@@ -1,6 +1,7 @@
 
 project(kutils)
 include_directories( ${KDE4_KIO_INCLUDES} )
+#add_subdirectory(ksettings/tests)
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )
 
@@ -26,6 +27,7 @@ kcmoduleproxy.cpp
 kpluginselector.cpp
 kcmodulecontainer.cpp
 ksettingswidgetadaptor.cpp
+kcmodulefactory.cpp
 ${ksettings_STAT_SRCS}
 )
 

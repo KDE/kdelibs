@@ -22,6 +22,7 @@
 */
 
 #include "kcmoduleloader.h"
+#include "kcmodulefactory.h"
 
 #include <QtCore/QFile>
 #include <QtGui/QLabel>
@@ -70,12 +71,19 @@ static KCModule* load(const KCModuleInfo &mod, const QByteArray &libprefix,
   if (lib)
   {
     KLibFactory *factory = lib->factory( mod.handle().toLatin1() );
-    if ( factory )
-    {
-      KCModule *module = factory->create<KCModule>( parent, args );
-      if ( module )
-        return module;
-    }
+        if (factory) {
+            KCModuleFactory *kcmFactory = qobject_cast<KCModuleFactory *>(factory);
+            if (kcmFactory) {
+                KCModule *module = kcmFactory->create(mod, parent, args);
+                if (module) {
+                    return module;
+                }
+            }
+            KCModule *module = factory->create<KCModule>( parent, args );
+            if (module) {
+                return module;
+            }
+        }
     // else do a fallback
     kWarning(1208) << "Unable to load module using ComponentFactory. (symbol: init_" << mod.handle() << ") Falling back to old loader for compatibility." << endl;
 
@@ -207,6 +215,4 @@ KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & te
   return 0;
 }
 
-// vim: ts=2 sw=2 et
-
-
+// vim: ts=4
