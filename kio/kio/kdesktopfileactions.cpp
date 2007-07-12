@@ -212,6 +212,9 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
 
     if( cg.hasKey( "X-KDE-GetActionMenu" )) {
         QStringList dbuscall = cg.readEntry( "X-KDE-GetActionMenu" ).split( QLatin1Char( ' ' ) );
+        
+        if ( dbuscall.count() >= 4 ) {
+        
         const QString& app       = dbuscall.at( 0 );
         const QString& object    = dbuscall.at( 1 );
         const QString& interface = dbuscall.at( 2 );
@@ -221,6 +224,10 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
         QDBusReply<QStringList> reply = remote.call( QDBus::BlockWithGui,
                                                      function, file_list.toStringList() );
         keys = reply;               // ensures that the reply was a QStringList
+        } else {
+            qWarning() << i18n("The desktop menu %1 has an invalid X-KDE-GetActionMenu entry.",path);
+        }
+
     }
 
     keys += cg.readEntry( "Actions", QStringList(), ';' ); //the desktop standard defines ";" as separator!
