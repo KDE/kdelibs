@@ -156,8 +156,33 @@ QString getWin32ShellFoldersPath ( const QString& folder )
                                    folder );
 }
 
-static void myMessageOutput(QtMsgType type, const char *msg)
+static void kMessageOutput(QtMsgType type, const char *msg)
 {
+#if 1
+    int BUFSIZE=4096;
+    char buf[BUFSIZE];
+    switch (type) {
+        case QtDebugMsg:
+            strlcpy(buf,"Qt Debug:",BUFSIZE);
+            strlcat(buf,msg,BUFSIZE);
+            break;
+        case QtWarningMsg:
+            strlcpy(buf,"Qt Warning:",BUFSIZE);
+            strlcat(buf,msg,BUFSIZE);
+            break;
+        case QtCriticalMsg:
+            strlcpy(buf,"Qt Critial:",BUFSIZE);
+            strlcat(buf,msg,BUFSIZE);
+            break;
+        case QtFatalMsg:
+            strlcpy(buf,"Qt Fatal:",BUFSIZE);
+            strlcat(buf,msg,BUFSIZE);
+            //abort();
+            break;
+    }
+    strlcat(buf,"\n",BUFSIZE);
+    OutputDebugString(buf);
+#else
     switch (type) {
     case QtDebugMsg:
         fprintf(stderr, "[%4d] Qt Debug: %s\n", getpid(), msg);
@@ -172,16 +197,16 @@ static void myMessageOutput(QtMsgType type, const char *msg)
         fprintf(stderr, "[%4d] Qt Fatal: %s\n", getpid(), msg);
         //abort();
     }
+#endif
 }
 
-class GlobalClass {
+class kGlobalClass {
     public: 
-        GlobalClass() {
-            kDebug() << "installing qt message handler"; 
-            qInstallMsgHandler(myMessageOutput);
+        kGlobalClass() {
+            qInstallMsgHandler(kMessageOutput);
         }
 }; 
 
-GlobalClass myGlobals; 
+static kGlobalClass myGlobals; 
 
 #endif  // Q_OS_WIN
