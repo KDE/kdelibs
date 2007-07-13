@@ -2,6 +2,7 @@
 Name=Oxygen
 Name[es]=Oxígeno
 Name[pa]=ਆਕਸੀਜਨ
+Name[pt_BR]=Oxigênio
 Name[x-test]=xxOxygenxx
 ConfigPage=kstyle-oxygen-config
 Comment=A really cool style
@@ -12,7 +13,7 @@ Comment[el]=Ένα πραγματικά όμορφο στυλ
 Comment[es]=Un estilo realmente interesante
 Comment[fa]=یک سبک واقعاً cool
 Comment[pt]=Um estilo realmente bonito
-Comment[pt_BR]=Um estilo realmente bonito
+Comment[pt_BR]=Um estilo bem legal
 Comment[sv]=En verkligt häftig stil
 Comment[zh_TW]=真的很酷的風格
 [KDE]

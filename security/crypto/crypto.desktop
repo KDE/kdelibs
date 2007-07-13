@@ -17,7 +17,6 @@ Name[es]=Criptografía
 Name[fa]=رمز
 Name[ja]=暗号
 Name[pt]=Cifra
-Name[pt_BR]=Cifra
 Name[sv]=Krypto
 Comment=Configure SSL, manage certificates, and other cryptography settings
 Comment[ca]=Configura l'SSL, gestiona certificats, i altres arranjaments de criptografia
@@ -30,7 +29,7 @@ Comment[fa]=پیکربندی SSL، مدیریت گواهی‌نامه‌ها، �
 Comment[ja]=SSL の設定、証明書の管理、その他の暗号作成形式の設定
 Comment[nl]=Stel SSL in, beheer certificaten en configureer andere cryptografische instellingen
 Comment[pt]=Configurar o SSL, gerir os certificados e outras opções de criptografia
-Comment[pt_BR]=Configurar o SSL, gerir os certificados e outras opções de criptografia
+Comment[pt_BR]=Configura SSL, gerencia certificados e outras configurações de criptografia
 Comment[sv]=Anpassa SSL, hantera certifikat och andra kryptografiska inställningar
 Comment[zh_TW]=設定 SSL、管理憑證與其他加密設定
 
@@ -43,7 +42,7 @@ Keywords[fa]=رمز، Krypto، رمزنگاری، رمزبندی، SSL، https،
 Keywords[ja]=暗号化,Krypto,暗号作成形式,暗号化,SSL,http,証明書,暗号,TLS,セキュア,セキュリティ
 Keywords[nl]=Crypto,Krypto,Cryptografie,encryptie,SSL,https,certificaten,ciphers,TLS,secure,security,veiligheid,beveiliging,versleuteling,
 Keywords[pt]=Cifra,Criptografia,encriptação,SSL,HTTPS,certificados,cifras,TLS,seguro,segurança
-Keywords[pt_BR]=Cifra,Criptografia,encriptação,SSL,HTTPS,certificados,cifras,TLS,seguro,segurança
+Keywords[pt_BR]=Crypto,Krypto,Criptografia,encriptação,SSL,https,certificados,cifras,TLS,seguro,segurança
 Keywords[sv]=Krypto,Kryptografi,kryptering,SSL,https,certifikat,chiffer,TLS,säker,säkerhet
 
 Categories=Qt;KDE;X-KDE-settings-security;
