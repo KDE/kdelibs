@@ -41,11 +41,9 @@ PHONON_EXECUTABLE_TESTS(
 	mediaplayer
 	)
 
-if(CMAKE_SYSTEM_NAME MATCHES Linux)
 PHONON_UNIT_TESTS(
 	audiodevicelisttest
 	)
-endif(CMAKE_SYSTEM_NAME MATCHES Linux)
 
 PHONON_UNIT_TESTS_FAKE(
 	mediaobjecttest
@@ -61,9 +59,7 @@ PHONON_UNIT_TESTS_FAKE(
 	volumeslidertest
 )
 target_link_libraries(backendcapabilitiestest ${KDE4_KDECORE_LIBS})
-if(CMAKE_SYSTEM_NAME MATCHES Linux)
 target_link_libraries(audiodevicelisttest ${KDE4_KAUDIODEVICELIST_LIBS})
-endif(CMAKE_SYSTEM_NAME MATCHES Linux)
 target_link_libraries(mediaplayer ${KDE4_KDEUI_LIBS})
 target_link_libraries(guitest ${KDE4_KIO_LIBS})
 target_link_libraries(backendcapabilitiestest_fake ${KDE4_KDECORE_LIBS})
