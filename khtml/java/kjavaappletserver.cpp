@@ -267,7 +267,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         for( ; it != itEnd; ++it )
         {
             if( !classes.isEmpty() )
-                classes += ":";
+                classes += ':';
             classes += dir.absoluteFilePath( *it );
         }
     }

@@ -1247,11 +1247,11 @@ QString RenderStyle::createDiff( const RenderStyle &parent ) const
 {
     QString res;
       if ( color().isValid() && parent.color() != color() )
-        res += " [color=" + color().name() + "]";
+        res += " [color=" + color().name() + ']';
     if ( backgroundColor().isValid() && parent.backgroundColor() != backgroundColor() )
-        res += " [bgcolor=" + backgroundColor().name() + "]";
+        res += " [bgcolor=" + backgroundColor().name() + ']';
     if ( parent.font() != font() )
-        res += " [font=" + describeFont( font() ) + "]";
+        res += " [font=" + describeFont( font() ) + ']';
 
     return res;
 }

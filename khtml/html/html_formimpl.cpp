@@ -1380,7 +1380,7 @@ void HTMLInputElementImpl::restoreState(const QString &state)
         break;
     default:
         setValue(DOMString(state.left(state.length()-1)));
-        m_unsubmittedFormChange = state.endsWith("M");
+        m_unsubmittedFormChange = state.endsWith('M');
         break;
     }
 }
@@ -2712,7 +2712,7 @@ QString HTMLTextAreaElementImpl::state( )
 void HTMLTextAreaElementImpl::restoreState(const QString &state)
 {
     setDefaultValue(state.left(state.length()-1));
-    m_unsubmittedFormChange = state.endsWith("M");
+    m_unsubmittedFormChange = state.endsWith('M');
     // the close() in the rendertree will take care of transferring defaultvalue to 'value'
 }
 
