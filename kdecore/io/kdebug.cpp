@@ -101,12 +101,6 @@ struct kDebugPrivate
         if (kde_kdebug_enable_dbus_interface) {
             kDebugDBusIface = new KDebugDBusIface;
         }
-#ifdef Q_WS_WIN
-#if _WIN32_WINNT >= 0x0500
-        // check if console is open and create if not
-        initConsole();
-#endif
-#endif
     }
 
     ~kDebugPrivate()
@@ -170,57 +164,6 @@ struct kDebugPrivate
         return cache.value(num);
     }
 
-#ifdef Q_WS_WIN
-#if _WIN32_WINNT >= 0x0500
-
-    int isConsoleApp()
-    {
-        if (AttachConsole((DWORD)-1) == 0 &&  GetLastError() == ERROR_ACCESS_DENIED)
-            return 1;
-        FreeConsole();
-        return 0;
-    }
-
-    void createConsole()
-    {
-        int hCrt;
-        FILE *hf;
-        int i;
-
-        // connect to parent console
-        AttachConsole((DWORD)-1);
-        // create separate console -> disabled for now
-        // AllocConsole();
-
-        hCrt = _open_osfhandle((long) GetStdHandle(STD_INPUT_HANDLE),_O_TEXT);
-        hf = _fdopen( hCrt, "r" );
-        *stdin = *hf;
-        i = setvbuf( stdin, NULL, _IONBF, 0 );
-
-        hCrt = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE),_O_TEXT);
-        hf = _fdopen( hCrt, "w" );
-        *stdout = *hf;
-        i = setvbuf( stdout, NULL, _IONBF, 0 );
-
-        hCrt = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE),_O_TEXT);
-        hf = _fdopen( hCrt, "w" );
-        *stderr = *hf;
-        i = setvbuf( stderr, NULL, _IONBF, 0 );
-    }
-
-    void initConsole()
-    {
-        static bool consoleChecked = false;
-        if (consoleChecked)
-            return;
-        if (!isConsoleApp()) {
-            createConsole();
-        }
-        consoleChecked = true;
-    }
-#endif
-#endif
-
     QString aAreaName;
     unsigned int oldarea;
     KConfig *config;
@@ -265,8 +208,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         nPriority = LOG_ERR;
         break;
     }
-
     short nOutput = 2;
+
     if (!kDebug_data.isDestroyed()) {
         kDebug_data->mutex.lock();
         if (!kDebug_data->config && KGlobal::hasMainComponent()) {
@@ -299,11 +242,10 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
     const int BUFSIZE = 4096;
     char buf[BUFSIZE];
 #ifdef Q_WS_WIN
-    sprintf(buf,"[%d] ",getpid());
+    strlcpy(buf,aCaption.toAscii().data(),BUFSIZE);
 #else
     strlcpy(buf,"",BUFSIZE);
 #endif
-
     if (!kDebug_data.isDestroyed() && !kDebug_data->aAreaName.isEmpty()) {
         strlcat(buf, kDebug_data->aAreaName.toUtf8().data(), BUFSIZE);
         strlcat(buf, ": ", BUFSIZE);
@@ -313,6 +255,9 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
     }
 
 
+#ifdef Q_WS_WIN
+    OutputDebugString(buf);
+#else
   // Output
   switch( nOutput )
   {
@@ -354,11 +299,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
   case 2: // Shell
   {
-#ifdef Q_WS_WIN
-      fprintf(stderr,buf);
-#else
       write( 2, buf, strlen( buf ) );  //fputs( buf, stderr );
-#endif
       break;
   }
   case 3: // syslog
@@ -372,6 +313,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       break;
   }
   }
+#endif
 
   // check if we should abort
   if ((nLevel == KDEBUG_FATAL) && (kDebug_data.isDestroyed()
