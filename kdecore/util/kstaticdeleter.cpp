@@ -44,14 +44,14 @@ struct KStaticDeleterPrivate
     KStaticDeleterList staticDeleters;
 };
 
-K_GLOBAL_STATIC(KStaticDeleterPrivate, globalData)
+K_GLOBAL_STATIC(KStaticDeleterPrivate, staticDeleterPrivate)
 
 void KStaticDeleterPrivate::deleteStaticDeleters()
 {
-    if (globalData.isDestroyed()) {
+    if (staticDeleterPrivate.isDestroyed()) {
         return;
     }
-    KStaticDeleterPrivate *d = globalData;
+    KStaticDeleterPrivate *d = staticDeleterPrivate;
     while (!d->staticDeleters.isEmpty()) {
         d->staticDeleters.takeLast()->destructObject();
     }
@@ -59,7 +59,7 @@ void KStaticDeleterPrivate::deleteStaticDeleters()
 
 void KStaticDeleterHelpers::registerStaticDeleter(KStaticDeleterBase *obj)
 {
-    KStaticDeleterPrivate *d = globalData;
+    KStaticDeleterPrivate *d = staticDeleterPrivate;
     if (d->staticDeleters.indexOf(obj) == -1) {
         d->staticDeleters.append(obj);
     }
@@ -67,15 +67,15 @@ void KStaticDeleterHelpers::registerStaticDeleter(KStaticDeleterBase *obj)
 
 void KStaticDeleterHelpers::unregisterStaticDeleter(KStaticDeleterBase *obj)
 {
-    if (globalData.isDestroyed()) {
+    if (staticDeleterPrivate.isDestroyed()) {
         return;
     }
-    globalData->staticDeleters.removeAll(obj);
+    staticDeleterPrivate->staticDeleters.removeAll(obj);
 }
 
 void KStaticDeleterHelpers::deleteStaticDeleters()
 {
-    globalData->deleteStaticDeleters();
+    staticDeleterPrivate->deleteStaticDeleters();
 }
 
 // this helps gcc to emit the vtbl for KStaticDeleterBase
