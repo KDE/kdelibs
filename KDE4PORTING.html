@@ -794,6 +794,7 @@ use static functions and KWindowSystem::self() for connecting to signals.
 <ul>
 <li>Functions related to systemtray have been removed. They worked only with the obsolete
 KDE systray mechanism.</li>
+<li>stackingOrder() no longer returns a reference to a list. Make a copy of the value first if using iterators.</li>
 </ul>
 
 <h4>KWin::WindowInfo</h4>
