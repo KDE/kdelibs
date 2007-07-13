@@ -483,7 +483,7 @@ KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *pa
     QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
 
   KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
-  if (ret && collection)
+  if (collection)
     collection->addAction(ret->objectName(), ret);
 
   return ret;
