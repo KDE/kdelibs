@@ -88,6 +88,7 @@ MainWindow::MainWindow()
     setCentralWidget(&m_fileView);
     m_fileView.setModel(&m_model);
     m_fileView.setPreviewWidget(&m_player);
+    m_fileView.setFrameStyle(QFrame::NoFrame);
 
     connect(&m_fileView, SIGNAL(updatePreviewWidget(const QModelIndex &)), SLOT(providePlayer(const QModelIndex &)));
 }
