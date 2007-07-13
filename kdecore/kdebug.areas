@@ -174,10 +174,9 @@
 5051        libkmime (Codecs)
 5052        libkmime (Plugin Loader)
 5100        libkdenetwork
-5150        libkleopatra
-
 
 # kdepim
+5150        kdepimlibs (libkleo)
 5200        kitchensync
 5300        libkdepim
 5310        kprefs
