@@ -78,7 +78,8 @@ void ProviderLoader::slotJobResult( KJob *job )
 
   QDomElement providers = doc.documentElement();
 
-  if ( providers.tagName() != "ghnsproviders" ) {
+  if ( providers.tagName() != "ghnsproviders" && 
+       providers.tagName() != "knewstuffproviders"  ) {
     kWarning(550) << "No document in providers.xml." << endl;
     return;
   }
