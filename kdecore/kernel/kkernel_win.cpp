@@ -160,7 +160,7 @@ static void kMessageOutput(QtMsgType type, const char *msg)
 {
 #if 1
     int BUFSIZE=4096;
-    char buf[BUFSIZE];
+    char *buf = new char[BUFSIZE];
     switch (type) {
         case QtDebugMsg:
             strlcpy(buf,"Qt Debug:",BUFSIZE);
@@ -181,7 +181,8 @@ static void kMessageOutput(QtMsgType type, const char *msg)
             break;
     }
     strlcat(buf,"\n",BUFSIZE);
-    OutputDebugString(buf);
+    OutputDebugStringA(buf);
+    delete[] buf;
 #else
     switch (type) {
     case QtDebugMsg:

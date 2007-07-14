@@ -256,7 +256,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
 
 #ifdef Q_WS_WIN
-    OutputDebugString(buf);
+    OutputDebugStringA(buf);
 #else
   // Output
   switch( nOutput )
