@@ -23,7 +23,7 @@
 #ifndef _NEPOMUK_RESOURCE_H_
 #define _NEPOMUK_RESOURCE_H_
 
-#include <QtCore>
+#include <QtCore/QStringList>
 
 #include "nepomuk_export.h"
 

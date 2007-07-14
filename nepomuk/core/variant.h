@@ -26,6 +26,9 @@
 #include "nepomuk_export.h"
 #include "resource.h"
 
+#include <QtCore/QDateTime>
+#include <QtCore/QUrl>
+#include <QtCore/QVariant>
 
 namespace Nepomuk {
 

@@ -23,7 +23,7 @@
 #ifndef KDE_NETWORKSTATUS_INDICATOR_H
 #define KDE_NETWORKSTATUS_INDICATOR_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include <kio/kio_export.h>
 #include <solid/networking.h>
 

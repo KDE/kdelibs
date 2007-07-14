@@ -27,6 +27,8 @@
 #include <kglobal.h>
 #include <klocale.h>
 
+#include <QtCore/QLocale>
+
 static const char* RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 static const char* RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
 static const char* NRL_NAMESPACE = "http://semanticdesktop.org/ontologies/2006/11/24/nrl#";
