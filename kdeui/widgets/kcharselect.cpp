@@ -202,7 +202,7 @@ void KCharSelectTable::resizeEvent(QResizeEvent * e)
 {
     QTableView::resizeEvent(e);
     if (e->size().width() != e->oldSize().width()) {
-        d->resizeTimer->start();
+        d->_k_resizeCells();
     }
 }
 
