@@ -94,6 +94,34 @@ class MyEventFilter : public QObject
         }
 };
 
+/** GUI/CORE: HTML Widget to operate on AvailableItem::List */
+class ItemsView : public QScrollArea
+{
+public:
+    ItemsView( DownloadDialog * newStuffDialog, QWidget * parentWidget );
+    ~ItemsView();
+
+    void setEngine(DxsEngine *engine);
+
+    void setItems( /*const Entry::List & itemList*/ QMap<const Feed*, KNS::Entry::List> itemList );
+    void setProviders( QMap<Entry*, const Provider*> providers );
+    void setSorting( int sortType );
+    void updateItem( Entry *entry );
+
+private:
+    void buildContents();
+
+    void clear();
+
+    DownloadDialog * m_newStuffDialog;
+    QMap<const Feed*, Entry::List> m_entries;
+    QMap<Entry*, const Provider*> m_providers;
+    QWidget *m_root;
+    int m_sorting;
+    QMap<QPixmap*, QWidget*> m_pixmaps;
+    DxsEngine *m_engine;
+};
+
 
 /** GUI/CORE: HTML Widget for exactly one AvailableItem::List */
 class ItemsViewPart : public KHTMLPart
@@ -310,131 +338,107 @@ class ItemsViewPart : public KHTMLPart
         Entry *m_entry;
 };
 
-
-/** GUI/CORE: HTML Widget to operate on AvailableItem::List */
-class ItemsView : public QScrollArea
+ItemsView::ItemsView( DownloadDialog * newStuffDialog, QWidget * parentWidget )
+    : QScrollArea( parentWidget ),
+    m_newStuffDialog( newStuffDialog ), m_root( 0 ), m_sorting( 0 )
 {
-    //Q_OBJECT
-    public:
-        ItemsView( DownloadDialog * newStuffDialog, QWidget * parentWidget )
-            : QScrollArea( parentWidget ),
-            m_newStuffDialog( newStuffDialog ), m_root( 0 ), m_sorting( 0 )
+    setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
+}
+
+ItemsView::~ItemsView()
+{
+    clear();
+}
+
+void ItemsView::setEngine(DxsEngine *engine)
+{
+    m_engine = engine;
+}
+
+void ItemsView::setItems( /*const Entry::List & itemList*/ QMap<const Feed*, KNS::Entry::List> itemList )
+{
+    clear();
+    m_entries = itemList;
+    buildContents();
+}
+
+void ItemsView::setProviders( QMap<Entry*, const Provider*> providers )
+{
+    m_providers = providers;
+}
+
+void ItemsView::setSorting( int sortType )
+{
+    m_sorting = sortType;
+    buildContents();
+}
+
+void ItemsView::updateItem( Entry *entry )
+{
+    Q_UNUSED(entry);
+    // XXX ???
+    // TODO: proxy over
+}
+
+void ItemsView::buildContents()
+{
+    if(m_root)
+    {
+        m_root = takeWidget();
+        delete m_root;
+    }
+
+    if(m_entries.keys().count() == 0)
+    {
+        // FIXME: warning?
+        return;
+    }
+
+    m_root = new QWidget(this);
+    QGridLayout *layout = new QGridLayout(m_root);
+
+    Entry::List entries = m_entries[m_entries.keys().first()];
+    Entry::List::iterator it = entries.begin(), iEnd = entries.end();
+    for ( unsigned row = 0; it != iEnd; ++it, ++row )
+    {
+        Entry* entry = (*it);
+
+        ItemsViewPart *part = new ItemsViewPart();
+        layout->addWidget(part->view(), row*2, 1, 2, 1);
+        //part->view()->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+        part->view()->setFixedHeight(100);
+
+        KDXSButton *dxsbutton = new KDXSButton();
+        dxsbutton->setEntry(entry);
+        if(m_providers.contains(entry))
+            dxsbutton->setProvider(m_providers[entry]);
+        dxsbutton->setEngine(m_engine);
+
+        QString imageurl = entry->preview().representation();
+        if(!imageurl.isEmpty())
         {
-            setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
+            QAsyncFrame *f = new QAsyncFrame();
+            f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+            QAsyncPixmap *pix = new QAsyncPixmap(imageurl);
+            f->setFixedSize(64, 64);
+            connect(pix, SIGNAL(signalLoaded(QPixmap*)), f, SLOT(slotLoaded(QPixmap*)));
+            layout->addWidget(f, row*2, 0);
         }
+        layout->setRowStretch(row*2, 1);
+        layout->addWidget(dxsbutton, row*2+1, 0);
 
-        ~ItemsView()
-        {
-            clear();
-        }
+        part->setEntry(entry);
+    }
 
-	void setEngine(DxsEngine *engine)
-	{
-	    m_engine = engine;
-	}
+    setWidget(m_root);
+}
 
-        void setItems( /*const Entry::List & itemList*/ QMap<const Feed*, KNS::Entry::List> itemList )
-        {
-            clear();
-            m_entries = itemList;
-            buildContents();
-        }
-
-        void setProviders( QMap<Entry*, const Provider*> providers )
-        {
-            m_providers = providers;
-        }
-
-        void setSorting( int sortType )
-        {
-            m_sorting = sortType;
-            buildContents();
-        }
-
-        void updateItem( Entry *entry )
-        {
-            Q_UNUSED(entry);
-// XXX ???
-// TODO: proxy over
-        }
-
-    private:
-        void buildContents()
-        {
-            if(m_root)
-            {
-                m_root = takeWidget();
-                delete m_root;
-            }
-
-	    if(m_entries.keys().count() == 0)
-	    {
-	        // FIXME: warning?
-	        return;
-	    }
-
-            m_root = new QWidget();
-            QVBoxLayout *layout = new QVBoxLayout(m_root);
-
-            Entry::List entries = m_entries[m_entries.keys().first()];
-            Entry::List::iterator it = entries.begin(), iEnd = entries.end();
-            for ( ; it != iEnd; ++it )
-            {
-                Entry* entry = (*it);
-
-                QFrame *itemview = new QFrame();
-                QWidget *nav = new QWidget();
-                ItemsViewPart *part = new ItemsViewPart();
-                QHBoxLayout *l = new QHBoxLayout(itemview);
-                l->addWidget(nav);
-                l->addWidget(part->view());
-                layout->addWidget(itemview);
-		//part->view()->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-		part->view()->setFixedHeight(100);
-
-                QVBoxLayout *l2 = new QVBoxLayout(nav);
-                KDXSButton *dxsbutton = new KDXSButton();
-                dxsbutton->setEntry(entry);
-		if(m_providers.contains(entry))
-                    dxsbutton->setProvider(m_providers[entry]);
-		dxsbutton->setEngine(m_engine);
-
-                QString imageurl = entry->preview().representation();
-		if(!imageurl.isEmpty())
-		{
-                    QAsyncFrame *f = new QAsyncFrame();
-                    f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-                    QAsyncPixmap *pix = new QAsyncPixmap(imageurl);
-                    f->setFixedSize(64, 64);
-                    connect(pix, SIGNAL(signalLoaded(QPixmap*)), f, SLOT(slotLoaded(QPixmap*)));
-                    l2->addWidget(f);
-		}
-                l2->addStretch(1);
-                l2->addWidget(dxsbutton);
-
-                part->setEntry(entry);
-            }
-
-            setWidget(m_root);
-        }
-
-        // delete all the classes we own
-        void clear()
-        {
-            m_entries.clear();
-            //m_providers.clear();
-            m_pixmaps.clear();
-        }
-
-    private:
-        DownloadDialog * m_newStuffDialog;
-        QMap<const Feed*, Entry::List> m_entries;
-	QMap<Entry*, const Provider*> m_providers;
-        QWidget *m_root;
-        int m_sorting;
-        QMap<QPixmap*, QWidget*> m_pixmaps;
-	DxsEngine *m_engine;
-};
+void ItemsView::clear()
+{
+    m_entries.clear();
+    //m_providers.clear();
+    m_pixmaps.clear();
+}
 
 
 class KNS::DownloadDialogPrivate
