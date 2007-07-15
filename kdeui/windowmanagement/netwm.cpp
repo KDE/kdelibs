@@ -241,7 +241,7 @@ static int wcmp(const void *a, const void *b) {
 
 
 static const int netAtomCount = 84;
-static void create_atoms(Display *d) {
+static void create_netwm_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
 	"UTF8_STRING",
@@ -647,7 +647,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
 
     p->role = WindowManager;
 
-    if (! netwm_atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) create_netwm_atoms(p->display);
 
     if (doActivate) activate();
 }
@@ -707,7 +707,7 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
 
     p->role = Client;
 
-    if (! netwm_atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) create_netwm_atoms(p->display);
 
     if (doActivate) activate();
 }
@@ -753,7 +753,7 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
 
     p->role = Client;
 
-    if (! netwm_atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) create_netwm_atoms(p->display);
 
     if (doActivate) activate();
 }
@@ -2684,7 +2684,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     p->role = role;
 
-    if (! netwm_atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) create_netwm_atoms(p->display);
 
     update(p->properties);
 }
@@ -2740,7 +2740,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     p->role = role;
 
-    if (! netwm_atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) create_netwm_atoms(p->display);
 
     update(p->properties);
 }

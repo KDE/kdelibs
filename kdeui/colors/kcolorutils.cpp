@@ -20,6 +20,7 @@
  */
 #include <kcolorutils.h>
 #include "kcolorspaces.h"
+#include "kcolorhelpers_p.h"
 
 #include <QColor>
 #include <QImage>
@@ -30,12 +31,6 @@
 static inline qreal mixQreal(qreal a, qreal b, qreal bias)
 {
     return a + (b - a) * bias;
-}
-
-static inline qreal normalize(qreal a)
-{
-    // nan -> 0.0, not that that should ever happen here
-    return (a < 1.0 ? (a > 0.0 ? a : 0.0) : 1.0);
 }
 // END internal helper functions
 

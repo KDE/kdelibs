@@ -18,18 +18,13 @@
  * Boston, MA 02110-1301, USA.
  */
 #include "kcolorspaces.h"
+#include "kcolorhelpers_p.h"
 
 #include <QColor>
 
 #include <math.h>
 
 using namespace KColorSpaces;
-
-static inline qreal normalize(qreal a)
-{
-    // nan -> 0.0, not that that should ever happen here
-    return (a < 1.0 ? (a > 0.0 ? a : 0.0) : 1.0);
-}
 
 static inline qreal wrap(qreal a, qreal d = 1.0)
 {
