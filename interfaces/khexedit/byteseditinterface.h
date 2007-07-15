@@ -19,7 +19,6 @@
 #define KHE_BYTESEDITINTERFACE_H
 
 // KDE
-#include <khexedit/khexedit_export.h>
 #include <kservicetypetrader.h>
 // Qt
 #include <QtGui/QWidget>
@@ -71,7 +70,7 @@ namespace KHE
  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), bytesEditInterface()
  */
-class KHEXEDIT_EXPORT BytesEditInterface
+class BytesEditInterface
 {
   public:
     virtual ~BytesEditInterface() {}

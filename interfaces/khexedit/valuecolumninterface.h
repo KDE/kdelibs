@@ -18,8 +18,6 @@
 #ifndef KHE_VALUECOLUMNINTERFACE_H
 #define KHE_VALUECOLUMNINTERFACE_H
 
-#include <khexedit/khexedit_export.h>
-
 #include <QtCore/QObject>
 
 namespace KHE
@@ -32,7 +30,7 @@ namespace KHE
  * @see createBytesEditWidget(), valueColumnInterface()
  */
 
-class KHEXEDIT_EXPORT ValueColumnInterface
+class ValueColumnInterface
 {
   public:
     virtual ~ValueColumnInterface() {}

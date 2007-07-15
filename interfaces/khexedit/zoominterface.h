@@ -18,8 +18,6 @@
 #ifndef KHE_ZOOMINTERFACE_H
 #define KHE_ZOOMINTERFACE_H
 
-#include <khexedit/khexedit_export.h>
-
 #include <QtCore/QObject>
 
 namespace KHE
@@ -34,7 +32,7 @@ namespace KHE
  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), zoomInterface()
  */
-class KHEXEDIT_EXPORT ZoomInterface
+class ZoomInterface
 {
   public:
     virtual ~ZoomInterface() {}

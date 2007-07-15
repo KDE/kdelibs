@@ -18,8 +18,6 @@
 #ifndef KHE_CLIPBOARDINTERFACE_H
 #define KHE_CLIPBOARDINTERFACE_H
 
-#include <khexedit/khexedit_export.h>
-
 #include <QtCore/QObject>
 
 namespace KHE
@@ -46,7 +44,7 @@ namespace KHE
  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), clipboardInterface()
  */
-class KHEXEDIT_EXPORT ClipboardInterface
+class ClipboardInterface
 {
   public:
     virtual ~ClipboardInterface() {}

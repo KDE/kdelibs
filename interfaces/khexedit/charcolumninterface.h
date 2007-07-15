@@ -18,8 +18,6 @@
 #ifndef KHE_CHARCOLUMNINTERFACE_H
 #define KHE_CHARCOLUMNINTERFACE_H
 
-#include <khexedit/khexedit_export.h>
-
 #include <QtCore/QChar>
 #include <QtCore/QObject>
 
@@ -32,7 +30,7 @@ namespace KHE
  * @author Friedrich W. H. Kossebau <kossebau@kde.org>
  * @see createBytesEditWidget(), charColumnInterface()
  */
-class KHEXEDIT_EXPORT CharColumnInterface
+class CharColumnInterface
 {
   public:
     virtual ~CharColumnInterface(){}
