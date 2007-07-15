@@ -320,8 +320,8 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 //X                 snd_pcm_close(pcm);
 //X             }
         } else {
-            hwDeviceNameEnc = "hw:" + QByteArray::number(alsaId.card) + ","
-                + QByteArray::number(alsaId.device) + "," + QByteArray::number(alsaId.subdevice);
+            hwDeviceNameEnc = "hw:" + QByteArray::number(alsaId.card) + ','
+                + QByteArray::number(alsaId.device) + ',' + QByteArray::number(alsaId.subdevice);
         }
 
         QString probablyTheCardName;
