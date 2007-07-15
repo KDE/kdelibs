@@ -401,7 +401,8 @@ KMacroMapExpander<QString,VT>::expandPlainMacro( const QString &str, int pos, QS
     if (isIdentifier( str[pos - 1] ))
         return 0;
     int sl;
-    for (sl = 0; isIdentifier( str[pos + sl] ); sl++);
+    for (sl = 0; isIdentifier( str[pos + sl] ); sl++)
+        ;
     if (!sl)
         return 0;
     const KMacroMapExpander<QString,VT> *const_this = this;
@@ -436,7 +437,8 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, int pos, 
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
-        for (sl = 0; (rpos + sl < str.length()) && isIdentifier( str[rpos + sl] ); sl++);
+        for (sl = 0; (rpos + sl < str.length()) && isIdentifier( str[rpos + sl] ); sl++)
+            ;
         rsl = sl + 1;
     }
     if (!sl)
@@ -479,7 +481,8 @@ KWordMacroExpander::expandPlainMacro( const QString &str, int pos, QStringList &
     if (isIdentifier( str[pos - 1] ))
         return 0;
     int sl;
-    for (sl = 0; isIdentifier( str[pos + sl] ); sl++);
+    for (sl = 0; isIdentifier( str[pos + sl] ); sl++)
+        ;
     if (!sl)
         return 0;
     if (expandMacro( str.mid( pos, sl ), ret ))
@@ -503,7 +506,8 @@ KWordMacroExpander::expandEscapedMacro( const QString &str, int pos, QStringList
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
-        for (sl = 0; isIdentifier( str[rpos + sl] ); sl++);
+        for (sl = 0; isIdentifier( str[rpos + sl] ); sl++)
+            ;
         rsl = sl + 1;
     }
     if (!sl)
