@@ -20,6 +20,7 @@
 */
 
 #include "kfind.h"
+#include "kfind_p.h"
 #include "kfinddialog.h"
 
 #include <kapplication.h>
@@ -59,73 +60,12 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
 
 ////
 
-struct KFind::Private
-{
-    Private()
-        : findDialog(0)
-        , currentId(0)
-        , customIds(false)
-        , patternChanged(false)
-        , matchedPattern("")
-        , emptyMatch(0)
-    {
-    }
-
-    ~Private()
-    {
-        data.clear();
-        delete emptyMatch;
-        emptyMatch = 0;
-    }
-
-    struct Match
-    {
-        Match() : dataId(-1), index(-1), matchedLength(-1) {}
-        bool isNull() const { return index == -1; }
-        Match(int _dataId, int _index, int _matchedLength) :
-          dataId(_dataId),
-          index(_index),
-          matchedLength(_matchedLength)
-        {
-            Q_ASSERT( index != -1 );
-        }
-
-        int dataId;
-        int index;
-        int matchedLength;
-    };
-
-    struct Data
-    {
-        Data() : id(-1), dirty(false) { }
-        Data(int id, const QString &text, bool dirty = false) :
-          id(id),
-          text(text),
-          dirty(dirty)
-        { }
-
-        int     id;
-        QString text;
-        bool    dirty;
-    };
-
-    QPointer<QWidget>  findDialog;
-    int                   currentId;
-    bool                  customIds;
-    bool                  patternChanged;
-    QString               matchedPattern;
-    QHash<QString,Match>  incrementalPath;
-    Match *               emptyMatch;
-    QList<Data>           data; // used like a vector, not like a linked-list
-};
-
-////
 
 KFind::KFind( const QString &pattern, long options, QWidget *parent )
     : QObject( parent ),
 	d(new KFind::Private)
 {
-    m_options = options;
+    d->options = options;
     init( pattern );
 }
 
@@ -134,40 +74,39 @@ KFind::KFind( const QString &pattern, long options, QWidget *parent, QWidget *fi
 	d(new KFind::Private)
 {
     d->findDialog = findDialog;
-    m_options = options;
+    d->options = options;
     init( pattern );
 }
 
 void KFind::init( const QString& pattern )
 {
-    m_matches = 0;
-    m_pattern = pattern;
-    m_dialog = 0;
-    m_dialogClosed = false;
-    m_index = INDEX_NOMATCH;
-    m_lastResult = NoMatch;
-    m_regExp = 0;
-    setOptions( m_options ); // create m_regExp with the right options
+    d->matches = 0;
+    d->pattern = pattern;
+    d->dialog = 0;
+    d->dialogClosed = false;
+    d->index = INDEX_NOMATCH;
+    d->lastResult = NoMatch;
+    d->regExp = 0;
+    setOptions( d->options ); // create d->regExp with the right options
 }
 
 KFind::~KFind()
 {
-    delete m_dialog;
     delete d;
     kDebug() << k_funcinfo << endl;
 }
 
 bool KFind::needData() const
 {
-    // always true when m_text is empty.
-    if (m_options & KFind::FindBackwards)
-        // m_index==-1 and m_lastResult==Match means we haven't answered nomatch yet
+    // always true when d->text is empty.
+    if (d->options & KFind::FindBackwards)
+        // d->index==-1 and d->lastResult==Match means we haven't answered nomatch yet
         // This is important in the "replace with a prompt" case.
-        return ( m_index < 0 && m_lastResult != Match );
+        return ( d->index < 0 && d->lastResult != Match );
     else
         // "index over length" test removed: we want to get a nomatch before we set data again
         // This is important in the "replace with a prompt" case.
-        return m_index == INDEX_NOMATCH;
+        return d->index == INDEX_NOMATCH;
 }
 
 void KFind::setData( const QString& data, int startPos )
@@ -178,7 +117,7 @@ void KFind::setData( const QString& data, int startPos )
 void KFind::setData( int id, const QString& data, int startPos )
 {
     // cache the data for incremental find
-    if ( m_options & KFind::FindIncremental )
+    if ( d->options & KFind::FindIncremental )
     {
         if ( id != -1 )
             d->customIds = true;
@@ -194,21 +133,21 @@ void KFind::setData( int id, const QString& data, int startPos )
         Q_ASSERT( d->data[id].text == data );
     }
 
-    if ( !(m_options & KFind::FindIncremental) || needData() )
+    if ( !(d->options & KFind::FindIncremental) || needData() )
     {
-        m_text = data;
+        d->text = data;
 
         if ( startPos != -1 )
-            m_index = startPos;
-        else if (m_options & KFind::FindBackwards)
-            m_index = m_text.length();
+            d->index = startPos;
+        else if (d->options & KFind::FindBackwards)
+            d->index = d->text.length();
         else
-            m_index = 0;
+            d->index = 0;
 #ifdef DEBUG_FIND
-        kDebug() << "setData: '" << m_text << "' m_index=" << m_index << endl;
+        kDebug() << "setData: '" << d->text << "' d->index=" << d->index << endl;
 #endif
-        Q_ASSERT( m_index != INDEX_NOMATCH );
-        m_lastResult = NoMatch;
+        Q_ASSERT( d->index != INDEX_NOMATCH );
+        d->lastResult = NoMatch;
 
         d->currentId = id;
     }
@@ -216,85 +155,85 @@ void KFind::setData( int id, const QString& data, int startPos )
 
 KDialog* KFind::findNextDialog( bool create )
 {
-    if ( !m_dialog && create )
+    if ( !d->dialog && create )
     {
-        m_dialog = new KFindNextDialog( m_pattern, parentWidget() );
-        connect( m_dialog, SIGNAL( user1Clicked() ), this, SLOT( slotFindNext() ) );
-        connect( m_dialog, SIGNAL( finished() ), this, SLOT( slotDialogClosed() ) );
+        d->dialog = new KFindNextDialog( d->pattern, parentWidget() );
+        connect( d->dialog, SIGNAL( user1Clicked() ), this, SLOT( slotFindNext() ) );
+        connect( d->dialog, SIGNAL( finished() ), this, SLOT( slotDialogClosed() ) );
     }
-    return m_dialog;
+    return d->dialog;
 }
 
 KFind::Result KFind::find()
 {
-    Q_ASSERT( m_index != INDEX_NOMATCH || d->patternChanged );
+    Q_ASSERT( d->index != INDEX_NOMATCH || d->patternChanged );
 
-    if ( m_lastResult == Match && !d->patternChanged )
+    if ( d->lastResult == Match && !d->patternChanged )
     {
         // Move on before looking for the next match, _if_ we just found a match
-        if (m_options & KFind::FindBackwards) {
-            m_index--;
-            if ( m_index == -1 ) // don't call KFind::find with -1, it has a special meaning
+        if (d->options & KFind::FindBackwards) {
+            d->index--;
+            if ( d->index == -1 ) // don't call KFind::find with -1, it has a special meaning
             {
-                m_lastResult = NoMatch;
+                d->lastResult = NoMatch;
                 return NoMatch;
             }
         } else
-            m_index++;
+            d->index++;
     }
     d->patternChanged = false;
 
-    if ( m_options & KFind::FindIncremental )
+    if ( d->options & KFind::FindIncremental )
     {
         // if the current pattern is shorter than the matchedPattern we can
         // probably look up the match in the incrementalPath
-        if ( m_pattern.length() < d->matchedPattern.length() )
+        if ( d->pattern.length() < d->matchedPattern.length() )
         {
             Private::Match match;
-            if ( !m_pattern.isEmpty() )
-                match = d->incrementalPath.value( m_pattern );
+            if ( !d->pattern.isEmpty() )
+                match = d->incrementalPath.value( d->pattern );
             else if ( d->emptyMatch )
                 match = *d->emptyMatch;
             QString previousPattern = d->matchedPattern;
-            d->matchedPattern = m_pattern;
+            d->matchedPattern = d->pattern;
             if ( !match.isNull() )
             {
                 bool clean = true;
 
                 // find the first result backwards on the path that isn't dirty
                 while ( d->data[match.dataId].dirty == true &&
-                        !m_pattern.isEmpty() )
+                        !d->pattern.isEmpty() )
                 {
-                    m_pattern.truncate( m_pattern.length() - 1 );
+                    d->pattern.truncate( d->pattern.length() - 1 );
 
-                    match = d->incrementalPath.value( m_pattern );
+                    match = d->incrementalPath.value( d->pattern );
 
                     clean = false;
                 }
 
                 // remove all matches that lie after the current match
-                while ( m_pattern.length() < previousPattern.length() )
+                while ( d->pattern.length() < previousPattern.length() )
                 {
                     d->incrementalPath.remove(previousPattern);
                     previousPattern.truncate(previousPattern.length() - 1);
                 }
 
                 // set the current text, index, etc. to the found match
-                m_text = d->data[match.dataId].text;
-                m_index = match.index;
-                m_matchedLength = match.matchedLength;
+                d->text = d->data[match.dataId].text;
+                d->index = match.index;
+                d->matchedLength = match.matchedLength;
                 d->currentId = match.dataId;
 
                 // if the result is clean we can return it now
                 if ( clean )
                 {
                     if ( d->customIds )
-                        emit highlight(d->currentId, m_index, m_matchedLength);
+                        emit highlight(d->currentId, d->index, d->matchedLength);
                     else
-                        emit highlight(m_text, m_index, m_matchedLength);
+                        emit highlight(d->text, d->index, d->matchedLength);
 
-                    m_lastResult = Match;
-                    d->matchedPattern = m_pattern;
+                    d->lastResult = Match;
+                    d->matchedPattern = d->pattern;
                     return Match;
                 }
             }
@@ -307,18 +246,18 @@ KFind::Result KFind::find()
         }
         // if the new pattern is longer than the matchedPattern we might be
         // able to proceed from the last search
-        else if ( m_pattern.length() > d->matchedPattern.length() )
+        else if ( d->pattern.length() > d->matchedPattern.length() )
         {
             // continue from the previous pattern
-            if ( m_pattern.startsWith(d->matchedPattern) )
+            if ( d->pattern.startsWith(d->matchedPattern) )
             {
                 // we can't proceed from the previous position if the previous
                 // position already failed
-                if ( m_index == INDEX_NOMATCH )
+                if ( d->index == INDEX_NOMATCH )
                     return NoMatch;
 
-                QString temp = m_pattern;
-                m_pattern.truncate(d->matchedPattern.length() + 1);
+                QString temp = d->pattern;
+                d->pattern.truncate(d->matchedPattern.length() + 1);
                 d->matchedPattern = temp;
             }
             // start a new search
@@ -329,14 +268,14 @@ KFind::Result KFind::find()
         }
         // if the new pattern is as long as the matchedPattern, we reset if
         // they are not equal
-        else if ( m_pattern != d->matchedPattern )
+        else if ( d->pattern != d->matchedPattern )
         {
              startNewIncrementalSearch();
         }
     }
 
 #ifdef DEBUG_FIND
-    kDebug() << k_funcinfo << "m_index=" << m_index << endl;
+    kDebug() << k_funcinfo << "d->index=" << d->index << endl;
 #endif
     do
     {
@@ -345,97 +284,97 @@ KFind::Result KFind::find()
         do
         {
             // Find the next candidate match.
-            if ( m_options & KFind::RegularExpression )
-                m_index = KFind::find(m_text, *m_regExp, m_index, m_options, &m_matchedLength);
+            if ( d->options & KFind::RegularExpression )
+                d->index = KFind::find(d->text, *d->regExp, d->index, d->options, &d->matchedLength);
             else
-                m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
+                d->index = KFind::find(d->text, d->pattern, d->index, d->options, &d->matchedLength);
 
 
-            if ( m_options & KFind::FindIncremental )
+            if ( d->options & KFind::FindIncremental )
                 d->data[d->currentId].dirty = false;
 
-            if ( m_index == -1 && d->currentId < (int) d->data.count() - 1 )
+            if ( d->index == -1 && d->currentId < (int) d->data.count() - 1 )
             {
-                m_text = d->data[++d->currentId].text;
+                d->text = d->data[++d->currentId].text;
 
-                if ( m_options & KFind::FindBackwards )
-                    m_index = m_text.length();
+                if ( d->options & KFind::FindBackwards )
+                    d->index = d->text.length();
                 else
-                    m_index = 0;
+                    d->index = 0;
             }
             else
                 break;
-        } while ( !(m_options & KFind::RegularExpression) );
+        } while ( !(d->options & KFind::RegularExpression) );
 
-        if ( m_index != -1 )
+        if ( d->index != -1 )
         {
             // Flexibility: the app can add more rules to validate a possible match
-            if ( validateMatch( m_text, m_index, m_matchedLength ) )
+            if ( validateMatch( d->text, d->index, d->matchedLength ) )
             {
                 bool done = true;
 
-                if ( m_options & KFind::FindIncremental )
+                if ( d->options & KFind::FindIncremental )
                 {
-                    if ( m_pattern.isEmpty() ) {
+                    if ( d->pattern.isEmpty() ) {
                         delete d->emptyMatch;
-                        d->emptyMatch = new Private::Match( d->currentId, m_index, m_matchedLength );
+                        d->emptyMatch = new Private::Match( d->currentId, d->index, d->matchedLength );
                     } else
-                        d->incrementalPath.insert(m_pattern, Private::Match(d->currentId, m_index, m_matchedLength));
+                        d->incrementalPath.insert(d->pattern, Private::Match(d->currentId, d->index, d->matchedLength));
 
-                    if ( m_pattern.length() < d->matchedPattern.length() )
+                    if ( d->pattern.length() < d->matchedPattern.length() )
                     {
-                        m_pattern += d->matchedPattern.mid(m_pattern.length(), 1);
+                        d->pattern += d->matchedPattern.mid(d->pattern.length(), 1);
                         done = false;
                     }
                 }
 
                 if ( done )
                 {
-                    m_matches++;
+                    d->matches++;
                     // Tell the world about the match we found, in case someone wants to
                     // highlight it.
                     if ( d->customIds )
-                        emit highlight(d->currentId, m_index, m_matchedLength);
+                        emit highlight(d->currentId, d->index, d->matchedLength);
                     else
-                        emit highlight(m_text, m_index, m_matchedLength);
+                        emit highlight(d->text, d->index, d->matchedLength);
 
-                    if ( !m_dialogClosed )
+                    if ( !d->dialogClosed )
                         findNextDialog(true)->show();
 
 #ifdef DEBUG_FIND
-                    kDebug() << k_funcinfo << "Match. Next m_index=" << m_index << endl;
+                    kDebug() << k_funcinfo << "Match. Next d->index=" << d->index << endl;
 #endif
-                    m_lastResult = Match;
+                    d->lastResult = Match;
                     return Match;
                 }
             }
             else // Skip match
             {
-                if (m_options & KFind::FindBackwards)
-                    m_index--;
+                if (d->options & KFind::FindBackwards)
+                    d->index--;
                 else
-                    m_index++;
+                    d->index++;
             }
         }
         else
         {
-            if ( m_options & KFind::FindIncremental )
+            if ( d->options & KFind::FindIncremental )
             {
-                QString temp = m_pattern;
+                QString temp = d->pattern;
                 temp.truncate(temp.length() - 1);
-                m_pattern = d->matchedPattern;
+                d->pattern = d->matchedPattern;
                 d->matchedPattern = temp;
             }
 
-            m_index = INDEX_NOMATCH;
+            d->index = INDEX_NOMATCH;
         }
     }
-    while (m_index != INDEX_NOMATCH);
+    while (d->index != INDEX_NOMATCH);
 
 #ifdef DEBUG_FIND
-    kDebug() << k_funcinfo << "NoMatch. m_index=" << m_index << endl;
+    kDebug() << k_funcinfo << "NoMatch. d->index=" << d->index << endl;
 #endif
-    m_lastResult = NoMatch;
+    d->lastResult = NoMatch;
     return NoMatch;
 }
 
@@ -444,22 +383,22 @@ void KFind::startNewIncrementalSearch()
     Private::Match *match = d->emptyMatch;
     if(match == 0)
     {
-        m_text.clear();
-        m_index = 0;
+        d->text.clear();
+        d->index = 0;
         d->currentId = 0;
     }
     else
     {
-        m_text = d->data[match->dataId].text;
-        m_index = match->index;
+        d->text = d->data[match->dataId].text;
+        d->index = match->index;
         d->currentId = match->dataId;
     }
-    m_matchedLength = 0;
+    d->matchedLength = 0;
     d->incrementalPath.clear();
     delete d->emptyMatch;
     d->emptyMatch = 0;
-    d->matchedPattern = m_pattern;
-    m_pattern.clear();
+    d->matchedPattern = d->pattern;
+    d->pattern.clear();
 }
 
 // static
@@ -634,7 +573,7 @@ void KFind::slotDialogClosed()
     kDebug() << k_funcinfo << " Begin"<< endl;
 #endif
     emit dialogClosed();
-    m_dialogClosed = true;
+    d->dialogClosed = true;
 #ifdef DEBUG_FIND
     kDebug() << k_funcinfo << " End"<< endl;
 #endif
@@ -647,7 +586,7 @@ void KFind::displayFinalDialog() const
     if ( numMatches() )
         message = i18np( "1 match found.", "%1 matches found.", numMatches() );
     else
-        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>", Qt::escape(m_pattern));
+        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>", Qt::escape(d->pattern));
     KMessageBox::information(dialogsParent(), message);
 }
 
@@ -656,7 +595,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
     // Only ask if we did a "find from cursor", otherwise it's pointless.
     // Well, unless the user can modify the document during a search operation,
     // hence the force boolean.
-    if ( !forceAsking && (m_options & KFind::FromCursor) == 0 )
+    if ( !forceAsking && (d->options & KFind::FromCursor) == 0 )
     {
         displayFinalDialog();
         return false;
@@ -667,11 +606,11 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         if ( numMatches() )
             message = i18np( "1 match found.", "%1 matches found.", numMatches() );
         else
-            message = i18n("No matches found for '<b>%1</b>'.", Qt::escape(m_pattern));
+            message = i18n("No matches found for '<b>%1</b>'.", Qt::escape(d->pattern));
     }
     else
     {
-        if ( m_options & KFind::FindBackwards )
+        if ( d->options & KFind::FindBackwards )
             message = i18n( "Beginning of document reached." );
         else
             message = i18n( "End of document reached." );
@@ -680,7 +619,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
     message += "<br><br>"; // can't be in the i18n() of the first if() because of the plural form.
     // Hope this word puzzle is ok, it's a different sentence
     message +=
-        ( m_options & KFind::FindBackwards ) ?
+        ( d->options & KFind::FindBackwards ) ?
         i18n("Continue from the end?")
         : i18n("Continue from the beginning?");
 
@@ -688,61 +627,61 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
                                           QString(), KStandardGuiItem::cont(), KStandardGuiItem::stop() );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )
-        const_cast<KFind*>(this)->m_options &= ~KFind::FromCursor; // clear FromCursor option
+        const_cast<KFind*>(this)->d->options &= ~KFind::FromCursor; // clear FromCursor option
     return yes;
 }
 
 long KFind::options() const
 {
-    return m_options;
+    return d->options;
 }
 
 void KFind::setOptions( long options )
 {
-    m_options = options;
+    d->options = options;
 
-    delete m_regExp;
-    if (m_options & KFind::RegularExpression) {
-        Qt::CaseSensitivity caseSensitive = (m_options & KFind::CaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
-        m_regExp = new QRegExp(m_pattern, caseSensitive);
+    delete d->regExp;
+    if (d->options & KFind::RegularExpression) {
+        Qt::CaseSensitivity caseSensitive = (d->options & KFind::CaseSensitive) ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        d->regExp = new QRegExp(d->pattern, caseSensitive);
     } else
-        m_regExp = 0;
+        d->regExp = 0;
 }
 
 void KFind::closeFindNextDialog()
 {
-    delete m_dialog;
-    m_dialog = 0L;
-    m_dialogClosed = true;
+    delete d->dialog;
+    d->dialog = 0L;
+    d->dialogClosed = true;
 }
 
 int KFind::index() const
 {
-    return m_index;
+    return d->index;
 }
 
 QString KFind::pattern() const
 {
-    return m_pattern;
+    return d->pattern;
 }
 
 void KFind::setPattern( const QString& pattern )
 {
-    if ( m_options & KFind::FindIncremental && m_pattern != pattern )
+    if ( d->options & KFind::FindIncremental && d->pattern != pattern )
         d->patternChanged = true;
 
-    m_pattern = pattern;
-    setOptions( options() ); // rebuild m_regExp if necessary
+    d->pattern = pattern;
+    setOptions( options() ); // rebuild d->regExp if necessary
 }
 
 int KFind::numMatches() const
 {
-    return m_matches;
+    return d->matches;
 }
 
 void KFind::resetCounts()
 {
-    m_matches = 0;
+    d->matches = 0;
 }
 
 bool KFind::validateMatch( const QString &, int, int )
@@ -760,7 +699,7 @@ QWidget* KFind::dialogsParent() const
     // If the find dialog is still up, it should get the focus when closing a message box
     // Otherwise, maybe the "find next?" dialog is up
     // Otherwise, the "view" is the parent.
-    return d->findDialog ? (QWidget*)d->findDialog : ( m_dialog ? m_dialog : parentWidget() );
+    return d->findDialog ? (QWidget*)d->findDialog : ( d->dialog ? d->dialog : parentWidget() );
 }
 
 #include "kfind.moc"

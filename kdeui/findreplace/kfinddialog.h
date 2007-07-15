@@ -227,20 +227,6 @@ private Q_SLOTS:
 
 private:
 
-    QGroupBox *m_findGrp;
-    KHistoryComboBox *m_find;
-    QCheckBox *m_regExp;
-    QPushButton *m_regExpItem;
-    QGridLayout *m_findLayout;
-
-    QCheckBox *m_wholeWordsOnly;
-    QCheckBox *m_fromCursor;
-    QCheckBox *m_selectedText;
-    QCheckBox *m_caseSensitive;
-    QCheckBox *m_findBackwards;
-
-    QMenu *m_patterns;
-
     // Our dirty little secret is that we also implement the "replace" dialog. But we
     // keep that fact hidden from all but our friends.
 
@@ -248,16 +234,6 @@ private:
 
 
     void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
-
-    QGroupBox *m_replaceGrp;
-    KHistoryComboBox *m_replace;
-    QCheckBox* m_backRef;
-    QPushButton* m_backRefItem;
-    QGridLayout *m_replaceLayout;
-
-    QCheckBox* m_promptOnReplace;
-
-    QMenu *m_placeholders;
 
     class KFindDialogPrivate;
     KFindDialogPrivate* const d;

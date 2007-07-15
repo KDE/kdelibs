@@ -372,19 +372,6 @@ private:
 
     friend class KReplace;
 
-
-    QString m_pattern;
-    QRegExp *m_regExp;
-    KDialog* m_dialog;
-    long m_options;
-    unsigned m_matches;
-
-    QString m_text; // the text set by setData
-    int m_index;
-    int m_matchedLength;
-    bool m_dialogClosed;
-    bool m_lastResult;
-
     // Binary compatible extensibility.
     struct Private;
     Private* const d;

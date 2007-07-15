@@ -19,6 +19,7 @@
 */
 
 #include "kreplacedialog.h"
+#include "kfinddialog_p.h"
 
 #include <QtGui/QCheckBox>
 #include <QtGui/QGroupBox>
@@ -72,7 +73,7 @@ void KReplaceDialog::showEvent( QShowEvent *e )
         if (!d->replaceStrings.isEmpty())
         {
           setReplacementHistory(d->replaceStrings);
-          m_replace->lineEdit()->setText( d->replaceStrings[0] );
+          KFindDialog::d->replace->lineEdit()->setText( d->replaceStrings[0] );
         }
     }
 
@@ -84,9 +85,9 @@ long KReplaceDialog::options() const
     long options = 0;
 
     options = KFindDialog::options();
-    if (m_promptOnReplace->isChecked())
+    if (KFindDialog::d->promptOnReplace->isChecked())
         options |= PromptOnReplace;
-    if (m_backRef->isChecked())
+    if (KFindDialog::d->backRef->isChecked())
         options |= BackReference;
     return options;
 }
@@ -95,8 +96,8 @@ QWidget *KReplaceDialog::replaceExtension() const
 {
     if (!d->replaceExtension)
     {
-      d->replaceExtension = new QWidget(m_replaceGrp);
-      m_replaceLayout->addWidget(d->replaceExtension, 3, 0, 1, 2);
+      d->replaceExtension = new QWidget(KFindDialog::d->replaceGrp);
+      KFindDialog::d->replaceLayout->addWidget(d->replaceExtension, 3, 0, 1, 2);
     }
 
     return d->replaceExtension;
@@ -104,14 +105,14 @@ QWidget *KReplaceDialog::replaceExtension() const
 
 QString KReplaceDialog::replacement() const
 {
-    return m_replace->currentText();
+    return KFindDialog::d->replace->currentText();
 }
 
 QStringList KReplaceDialog::replacementHistory() const
 {
-    QStringList lst = m_replace->historyItems();
+    QStringList lst = KFindDialog::d->replace->historyItems();
     // historyItems() doesn't tell us about the case of replacing with an empty string
-    if ( m_replace->lineEdit()->text().isEmpty() )
+    if ( KFindDialog::d->replace->lineEdit()->text().isEmpty() )
         lst.prepend( QString() );
     return lst;
 }
@@ -119,22 +120,22 @@ QStringList KReplaceDialog::replacementHistory() const
 void KReplaceDialog::setOptions(long options)
 {
     KFindDialog::setOptions(options);
-    m_promptOnReplace->setChecked(options & PromptOnReplace);
-    m_backRef->setChecked(options & BackReference);
+    KFindDialog::d->promptOnReplace->setChecked(options & PromptOnReplace);
+    KFindDialog::d->backRef->setChecked(options & BackReference);
 }
 
 void KReplaceDialog::setReplacementHistory(const QStringList &strings)
 {
     if (strings.count() > 0)
-        m_replace->setHistoryItems(strings, true);
+        KFindDialog::d->replace->setHistoryItems(strings, true);
     else
-        m_replace->clearHistory();
+        KFindDialog::d->replace->clearHistory();
 }
 
 void KReplaceDialog::slotOk()
 {
     // If regex and backrefs are enabled, do a sanity check.
-    if ( m_regExp->isChecked() && m_backRef->isChecked() )
+    if ( KFindDialog::d->regExp->isChecked() && KFindDialog::d->backRef->isChecked() )
     {
         QRegExp r ( pattern() );
         int caps = r.numCaptures();
@@ -160,7 +161,7 @@ void KReplaceDialog::slotOk()
     }
 
     KFindDialog::slotOk();
-    m_replace->addToHistory(replacement());
+    KFindDialog::d->replace->addToHistory(replacement());
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

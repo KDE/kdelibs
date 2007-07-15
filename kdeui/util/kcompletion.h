@@ -605,7 +605,6 @@ public:
      */
     bool sorting() const;
 private:
-    bool _sorting;
     KCompletionMatchesPrivate * const d;
 };
 

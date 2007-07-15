@@ -821,15 +821,22 @@ QStringList KCompletionMatchesWrapper::list() const
     return stringList;
 }
 
+class KCompletionMatchesPrivate
+{
+public:
+    KCompletionMatchesPrivate( bool sort )
+        : sorting( sort )
+    {}
+    bool sorting;
+};
+
 KCompletionMatches::KCompletionMatches( bool sort_P )
-    : _sorting( sort_P )
-    , d( 0 )
+    : d( new KCompletionMatchesPrivate( sort_P ) )
 {
 }
 
 KCompletionMatches::KCompletionMatches( const KCompletionMatchesWrapper& matches )
-    : _sorting( matches.sorting())
-    , d( 0 )
+    : d( new KCompletionMatchesPrivate( matches.sorting() ) )
 {
     if( matches.sortedList != 0L )
         KCompletionMatchesList::operator=( *matches.sortedList );
@@ -844,11 +851,12 @@ KCompletionMatches::KCompletionMatches( const KCompletionMatchesWrapper& matches
 
 KCompletionMatches::~KCompletionMatches()
 {
+    delete d;
 }
 
 QStringList KCompletionMatches::list( bool sort_P ) const
 {
-    if( _sorting && sort_P )
+    if( d->sorting && sort_P )
         const_cast< KCompletionMatches* >( this )->sort();
     QStringList stringList;
     // high weight == sorted last -> reverse the sorting here
@@ -859,7 +867,7 @@ QStringList KCompletionMatches::list( bool sort_P ) const
 
 bool KCompletionMatches::sorting() const
 {
-    return _sorting;
+    return d->sorting;
 }
 
 void KCompletionMatches::removeDuplicates()

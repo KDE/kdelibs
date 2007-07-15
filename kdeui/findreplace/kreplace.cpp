@@ -19,6 +19,7 @@
 */
 
 #include "kreplace.h"
+#include "kfind_p.h"
 
 #include <QtGui/QLabel>
 #include <kapplication.h>
@@ -93,7 +94,6 @@ KReplace::KReplace(const QString &pattern, const QString &replacement, long opti
 
 KReplace::~KReplace()
 {
-    // KFind::~KFind will delete m_dialog
     delete d;
 }
 
@@ -104,22 +104,22 @@ int KReplace::numReplacements() const
 
 KDialog* KReplace::replaceNextDialog( bool create )
 {
-    if ( m_dialog || create )
+    if ( KFind::d->dialog || create )
         return dialog();
     return 0L;
 }
 
 KReplaceNextDialog* KReplace::dialog()
 {
-    if ( !m_dialog )
+    if ( !KFind::d->dialog )
     {
-        m_dialog = new KReplaceNextDialog( parentWidget() );
-        connect( m_dialog, SIGNAL( user1Clicked() ), this, SLOT( slotReplaceAll() ) );
-        connect( m_dialog, SIGNAL( user2Clicked() ), this, SLOT( slotSkip() ) );
-        connect( m_dialog, SIGNAL( user3Clicked() ), this, SLOT( slotReplace() ) );
-        connect( m_dialog, SIGNAL( finished() ), this, SLOT( slotDialogClosed() ) );
+        KFind::d->dialog = new KReplaceNextDialog( parentWidget() );
+        connect( KFind::d->dialog, SIGNAL( user1Clicked() ), this, SLOT( slotReplaceAll() ) );
+        connect( KFind::d->dialog, SIGNAL( user2Clicked() ), this, SLOT( slotSkip() ) );
+        connect( KFind::d->dialog, SIGNAL( user3Clicked() ), this, SLOT( slotReplace() ) );
+        connect( KFind::d->dialog, SIGNAL( finished() ), this, SLOT( slotDialogClosed() ) );
     }
-    return static_cast<KReplaceNextDialog *>(m_dialog);
+    return static_cast<KReplaceNextDialog *>(KFind::d->dialog);
 }
 
 void KReplace::displayFinalDialog() const
@@ -133,49 +133,49 @@ void KReplace::displayFinalDialog() const
 KFind::Result KReplace::replace()
 {
 #ifdef DEBUG_REPLACE
-    kDebug() << k_funcinfo << "m_index=" << m_index << endl;
+    kDebug() << k_funcinfo << "d->index=" << KFind::d->index << endl;
 #endif
-    if ( m_index == INDEX_NOMATCH && m_lastResult == Match )
+    if ( KFind::d->index == INDEX_NOMATCH && KFind::d->lastResult == Match )
     {
-        m_lastResult = NoMatch;
+        KFind::d->lastResult = NoMatch;
         return NoMatch;
     }
 
     do // this loop is only because validateMatch can fail
     {
 #ifdef DEBUG_REPLACE
-        kDebug() << k_funcinfo << "beginning of loop: m_index=" << m_index << endl;
+        kDebug() << k_funcinfo << "beginning of loop: KFind::d->index=" << KFind::d->index << endl;
 #endif
         // Find the next match.
-        if ( m_options & KFind::RegularExpression )
-            m_index = KFind::find(m_text, *m_regExp, m_index, m_options, &m_matchedLength);
+        if ( KFind::d->options & KFind::RegularExpression )
+            KFind::d->index = KFind::find(KFind::d->text, *KFind::d->regExp, KFind::d->index, KFind::d->options, &KFind::d->matchedLength);
         else
-            m_index = KFind::find(m_text, m_pattern, m_index, m_options, &m_matchedLength);
+            KFind::d->index = KFind::find(KFind::d->text, KFind::d->pattern, KFind::d->index, KFind::d->options, &KFind::d->matchedLength);
 #ifdef DEBUG_REPLACE
-        kDebug() << k_funcinfo << "KFind::find returned m_index=" << m_index << endl;
+        kDebug() << k_funcinfo << "KFind::find returned KFind::d->index=" << KFind::d->index << endl;
 #endif
-        if ( m_index != -1 )
+        if ( KFind::d->index != -1 )
         {
             // Flexibility: the app can add more rules to validate a possible match
-            if ( validateMatch( m_text, m_index, m_matchedLength ) )
+            if ( validateMatch( KFind::d->text, KFind::d->index, KFind::d->matchedLength ) )
             {
-                if ( m_options & KReplaceDialog::PromptOnReplace )
+                if ( KFind::d->options & KReplaceDialog::PromptOnReplace )
                 {
 #ifdef DEBUG_REPLACE
                     kDebug() << k_funcinfo << "PromptOnReplace" << endl;
 #endif
                     // Display accurate initial string and replacement string, they can vary
-                    QString matchedText = m_text.mid( m_index, m_matchedLength );
+                    QString matchedText = KFind::d->text.mid( KFind::d->index, KFind::d->matchedLength );
                     QString rep = matchedText;
-                    KReplace::replace(rep, d->m_replacement, 0, m_options, m_matchedLength);
+                    KReplace::replace(rep, d->m_replacement, 0, KFind::d->options, KFind::d->matchedLength);
                     dialog()->setLabel( matchedText, rep );
                     dialog()->show();
 
                     // Tell the world about the match we found, in case someone wants to
                     // highlight it.
-                    emit highlight(m_text, m_index, m_matchedLength);
+                    emit highlight(KFind::d->text, KFind::d->index, KFind::d->matchedLength);
 
-                    m_lastResult = Match;
+                    KFind::d->lastResult = Match;
                     return Match;
                 }
                 else
@@ -186,17 +186,17 @@ KFind::Result KReplace::replace()
             else
             {
                 // not validated -> move on
-                if (m_options & KFind::FindBackwards)
-                    m_index--;
+                if (KFind::d->options & KFind::FindBackwards)
+                    KFind::d->index--;
                 else
-                    m_index++;
+                    KFind::d->index++;
             }
         } else
-            m_index = INDEX_NOMATCH; // will exit the loop
+            KFind::d->index = INDEX_NOMATCH; // will exit the loop
     }
-    while (m_index != INDEX_NOMATCH);
+    while (KFind::d->index != INDEX_NOMATCH);
 
-    m_lastResult = NoMatch;
+    KFind::d->lastResult = NoMatch;
     return NoMatch;
 }
 
@@ -246,20 +246,20 @@ int KReplace::replace(QString &text, const QString &replacement, int index, long
 void KReplace::slotReplaceAll()
 {
     doReplace();
-    m_options &= ~KReplaceDialog::PromptOnReplace;
+    KFind::d->options &= ~KReplaceDialog::PromptOnReplace;
     emit optionsChanged();
     emit findNext();
 }
 
 void KReplace::slotSkip()
 {
-    if (m_options & KFind::FindBackwards)
-        m_index--;
+    if (KFind::d->options & KFind::FindBackwards)
+        KFind::d->index--;
     else
-        m_index++;
-    if ( m_dialogClosed ) {
-        delete m_dialog; // hide it again
-        m_dialog = 0L;
+        KFind::d->index++;
+    if ( KFind::d->dialogClosed ) {
+        delete KFind::d->dialog; // hide it again
+        KFind::d->dialog = 0L;
     } else
         emit findNext();
 }
@@ -267,34 +267,34 @@ void KReplace::slotSkip()
 void KReplace::slotReplace()
 {
     doReplace();
-    if ( m_dialogClosed ) {
-        delete m_dialog; // hide it again
-        m_dialog = 0L;
+    if ( KFind::d->dialogClosed ) {
+        delete KFind::d->dialog; // hide it again
+        KFind::d->dialog = 0L;
     } else
         emit findNext();
 }
 
 void KReplace::doReplace()
 {
-    int replacedLength = KReplace::replace(m_text, d->m_replacement, m_index, m_options, m_matchedLength);
+    int replacedLength = KReplace::replace(KFind::d->text, d->m_replacement, KFind::d->index, KFind::d->options, KFind::d->matchedLength);
 
     // Tell the world about the replacement we made, in case someone wants to
     // highlight it.
-    emit replace(m_text, m_index, replacedLength, m_matchedLength);
+    emit replace(KFind::d->text, KFind::d->index, replacedLength, KFind::d->matchedLength);
 #ifdef DEBUG_REPLACE
-    kDebug() << k_funcinfo << "after replace() signal: m_index=" << m_index << " replacedLength=" << replacedLength << endl;
+    kDebug() << k_funcinfo << "after replace() signal: KFind::d->index=" << KFind::d->index << " replacedLength=" << replacedLength << endl;
 #endif
     d->m_replacements++;
-    if (m_options & KFind::FindBackwards)
-        m_index--;
+    if (KFind::d->options & KFind::FindBackwards)
+        KFind::d->index--;
     else {
-        m_index += replacedLength;
+        KFind::d->index += replacedLength;
         // when replacing the empty pattern, move on. See also kjs/regexp.cpp for how this should be done for regexps.
-        if ( m_pattern.isEmpty() )
-            ++m_index;
+        if ( KFind::d->pattern.isEmpty() )
+            ++KFind::d->index;
     }
 #ifdef DEBUG_REPLACE
-    kDebug() << k_funcinfo << "after adjustement: m_index=" << m_index << endl;
+    kDebug() << k_funcinfo << "after adjustement: KFind::d->index=" << KFind::d->index << endl;
 #endif
 }
 
@@ -310,8 +310,8 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
     // ... Or if the prompt-on-replace option was set.
     // Well, unless the user can modify the document during a search operation,
     // hence the force boolean.
-    if ( !forceAsking && (m_options & KFind::FromCursor) == 0
-         && (m_options & KReplaceDialog::PromptOnReplace) == 0 )
+    if ( !forceAsking && (KFind::d->options & KFind::FromCursor) == 0
+         && (KFind::d->options & KReplaceDialog::PromptOnReplace) == 0 )
     {
         displayFinalDialog();
         return false;
@@ -326,7 +326,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
     }
     else
     {
-        if ( m_options & KFind::FindBackwards )
+        if ( KFind::d->options & KFind::FindBackwards )
             message = i18n( "Beginning of document reached." );
         else
             message = i18n( "End of document reached." );
@@ -335,7 +335,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
     message += '\n';
     // Hope this word puzzle is ok, it's a different sentence
     message +=
-        ( m_options & KFind::FindBackwards ) ?
+        ( KFind::d->options & KFind::FindBackwards ) ?
         i18n("Do you want to restart search from the end?")
         : i18n("Do you want to restart search at the beginning?");
 
