@@ -78,7 +78,12 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     if (root.first().isNull()) {
         root.addBookmark(d->bookmarkManager, i18n("Home"), KUrl(KUser().homeDir()), "user-home");
         root.addBookmark(d->bookmarkManager, i18n("Network"), KUrl("remote:/"), "network-local");
+#ifdef Q_OS_WIN
+	//c:\ as root for windows
+	root.addBookmark(d->bookmarkManager, i18n("Root"), KUrl("C:\\"), "folder-red");
+#else
         root.addBookmark(d->bookmarkManager, i18n("Root"), KUrl("/"), "folder-red");
+#endif
         root.addBookmark(d->bookmarkManager, i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
 
