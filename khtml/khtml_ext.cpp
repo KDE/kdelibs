@@ -728,7 +728,7 @@ void KHTMLPopupGUIClient::slotBlockImage()
     bool ok = false;
 
     QString url = KInputDialog::getText( i18n("Add URL to Filter"),
-                                         "Enter the URL:",
+                                         i18n("Enter the URL:"),
                                          d->m_imageURL.url(),
                                          &ok);
     if ( ok ) {
@@ -741,7 +741,7 @@ void KHTMLPopupGUIClient::slotBlockIFrame()
 {
     bool ok = false;
     QString url = KInputDialog::getText( i18n( "Add URL to Filter"),
-                                               "Enter the URL:",
+                                               i18n("Enter the URL:"),
                                                d->m_khtml->url().url(),
                                                &ok );
     if ( ok ) {
