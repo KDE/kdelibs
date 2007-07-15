@@ -57,8 +57,6 @@ public:
     QList<QChar> chars;
     QChar chr;
 
-    QTimer* resizeTimer;
-
     void _k_resizeCells();
     void _k_doubleClicked(const QModelIndex & index);
     void _k_slotCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
@@ -98,10 +96,6 @@ KCharSelectTable::KCharSelectTable(QWidget *parent, const QFont &_font)
     d->font = _font;
     d->model = 0;
 
-    d->resizeTimer = new QTimer(this);
-    d->resizeTimer->setSingleShot(true);
-    connect(d->resizeTimer, SIGNAL(timeout()), this, SLOT(_k_resizeCells()));
-
     setTabKeyNavigation(false);
     setSelectionMode(QAbstractItemView::SingleSelection);
     QPalette _palette;
@@ -120,7 +114,7 @@ KCharSelectTable::KCharSelectTable(QWidget *parent, const QFont &_font)
 
     connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(_k_doubleClicked(QModelIndex)));
 
-    d->resizeTimer->start();
+    d->_k_resizeCells();
 }
 
 KCharSelectTable::~KCharSelectTable()
@@ -133,7 +127,7 @@ void KCharSelectTable::setFont(const QFont &_font)
     QTableView::setFont(_font);
     d->font = _font;
     if (d->model) d->model->setFont(_font);
-    d->resizeTimer->start();
+    d->_k_resizeCells();
 }
 
 QChar KCharSelectTable::chr()
@@ -166,7 +160,7 @@ void KCharSelectTable::setContents(QList<QChar> chars)
     KCharSelectItemModel *m = d->model;
     d->model = new KCharSelectItemModel(chars, d->font, this);
     setModel(d->model);
-    d->resizeTimer->start();
+    d->_k_resizeCells();
     QItemSelectionModel *selectionModel = new QItemSelectionModel(d->model);
     setSelectionModel(selectionModel);
     setSelectionBehavior(QAbstractItemView::SelectItems);
@@ -635,6 +629,7 @@ void KCharSelect::KCharSelectPrivate::_k_search()
         return;
     }
     charTable->setContents(KCharSelectData::find(searchLine->text()));
+    emit q->displayedCharsChanged();
 }
 
 void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)

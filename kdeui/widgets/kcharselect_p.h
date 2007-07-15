@@ -120,8 +120,14 @@ class KCharSelectItemModel: public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    KCharSelectItemModel(QList<QChar> chars, const QFont& font, QObject *parent): QAbstractTableModel(parent), m_chars(chars), m_font(font), m_columns(2)
-    {}
+    KCharSelectItemModel(QList<QChar> chars, const QFont& font, QObject *parent): QAbstractTableModel(parent), m_chars(chars), m_font(font)
+    {
+        if(chars.count()) {
+            m_columns = chars.count();
+        } else {
+            m_columns = 1;
+        }
+    }
 
     enum internalRoles {CharacterRole = Qt::UserRole};
     int rowCount(const QModelIndex&) const
