@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DNSSDDOMAINBROWSER_P_H
-#define DNSSDDOMAINBROWSER_P_H
+#ifndef MDNSD_DOMAINBROWSER_P_H
+#define MDNSD_DOMAINBROWSER_P_H
 
 #include "mdnsd-responder.h"
 #include "domainbrowser.h"

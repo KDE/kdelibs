@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DNSSDSDEVENT_H
-#define DNSSDSDEVENT_H
+#ifndef MDNSD_SDEVENT_H
+#define MDNSD_SDEVENT_H
 
 #include <QtGui/QKeyEvent>
 #include <QtCore/QString>

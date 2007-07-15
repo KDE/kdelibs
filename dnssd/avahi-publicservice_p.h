@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DNSSDPUBLICSERVICE_P_H
-#define DNSSDPUBLICSERVICE_P_H
+#ifndef AVAHI_PUBLICSERVICE_P_H
+#define AVAHI_PUBLICSERVICE_P_H
 
 #include <QtCore/QStringList>
 #include "servicebase_p.h"

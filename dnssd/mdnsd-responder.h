@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DNSSDRESPONDER_H
-#define DNSSDRESPONDER_H
+#ifndef MDNSD_RESPONDER_H
+#define MDNSD_RESPONDER_H
 
 #include <QtCore/QObject>
 #include <QtCore/QSocketNotifier>

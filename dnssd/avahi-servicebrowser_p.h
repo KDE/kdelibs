@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DNSSDSERVICEBROWSER_P_H
-#define DNSSDSERVICEBROWSER_P_H
+#ifndef AVAHI_SERVICEBROWSER_P_H
+#define AVAHI_SERVICEBROWSER_P_H
 
 #include <QtCore/QString>
 #include <QtCore/QList>

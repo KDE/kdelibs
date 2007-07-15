@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DNSSDREMOTESERVICE_P_H
-#define DNSSDREMOTESERVICE_P_H
+#ifndef AVAHI_REMOTESERVICE_P_H
+#define AVAHI_REMOTESERVICE_P_H
 
 #include <QtCore/QString>
 #include <QtCore/QList>

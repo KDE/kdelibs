@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DNSSDSERVICEBROWSER_P_H
-#define DNSSDSERVICEBROWSER_P_H
+#ifndef MDNSD_SERVICEBROWSER_P_H
+#define MDNSD_SERVICEBROWSER_P_H
 
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
