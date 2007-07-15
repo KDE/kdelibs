@@ -219,11 +219,11 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
 
         /**
          * Constructs a time specification for a given time zone.
-         * If @p tz is KTimeZones::utc(), the time specification type is set to @c UTC.
+         * If @p tz is KTimeZone::utc(), the time specification type is set to @c UTC.
          *
          * @param tz  time zone
          */
-        Spec(const KTimeZone *tz);   // allow implicit conversion
+        Spec(const KTimeZone &tz);   // allow implicit conversion
 
         /**
          * Constructs a time specification.
@@ -263,10 +263,10 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
          * - @c UTC       : a UTC time zone is returned.
          * - @c LocalZone : the current local time zone is returned.
          *
-         * @return time zone as defined above, or null in all other cases
+         * @return time zone as defined above, or invalid in all other cases
          * @see isUtc(), isLocal()
          */
-        const KTimeZone *timeZone() const;
+        KTimeZone timeZone() const;
 
         /**
          * Returns the time specification type, i.e. whether it is
@@ -331,7 +331,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
          *                  is invalid here.
          * @param utcOffset number of seconds to add to UTC to get the local
          *                  time. Ignored if @p spec is not @c OffsetFromUTC.
-         * @see type(), setType(const KTimeZone*)
+         * @see type(), setType(const KTimeZone&)
          */
         void setType(SpecType type, int utcOffset = 0);
 
@@ -344,7 +344,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
          * @param tz new time zone
          * @see timeZone(), setType(SpecType)
          */
-        void setType(const KTimeZone *tz);
+        void setType(const KTimeZone &tz);
 
         /**
          * Comparison operator.
@@ -647,11 +647,11 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * Returns the time zone for the date/time. If the date/time is specified
      * as a UTC time, a UTC time zone is always returned.
      *
-     * @return time zone, or null if a local time at a fixed UTC offset or a
+     * @return time zone, or invalid if a local time at a fixed UTC offset or a
      *         local clock time
      * @see isUtc(), isLocal()
      */
-    const KTimeZone *timeZone() const;
+    KTimeZone timeZone() const;
 
     /**
      * Returns the time specification of the date/time, i.e. whether it is
@@ -816,7 +816,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * @return converted time
      * @see toUtc(), toOffsetFromUtc(), toLocalZone(), toTimeSpec(), KTimeZone::convert()
      */
-    KDateTime toZone(const KTimeZone *zone) const;
+    KDateTime toZone(const KTimeZone &zone) const;
 
     /**
      * Returns the time converted to a new time specification.

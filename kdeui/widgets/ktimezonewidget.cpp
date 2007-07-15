@@ -53,9 +53,9 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
 
   const KTimeZones::ZoneMap zones = db->zones();
   for ( KTimeZones::ZoneMap::ConstIterator it = zones.begin(); it != zones.end(); ++it ) {
-    const KTimeZone *zone = it.value();
-    QString tzName = zone->name();
-    QString comment = zone->comment();
+    KTimeZone zone = it.value();
+    QString tzName = zone.name();
+    QString comment = zone.comment();
 
     if ( !comment.isEmpty() )
       comment = i18n( comment.toUtf8() );
@@ -68,14 +68,14 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
 
     QTreeWidgetItem *listItem = new QTreeWidgetItem( this );
     listItem->setText( Private::CityColumn, continentCity[ continentCity.count() - 1 ] );
-    continentCity[ continentCity.count() - 1 ] = zone->countryCode();
+    continentCity[ continentCity.count() - 1 ] = zone.countryCode();
 
     listItem->setText( Private::RegionColumn, continentCity.join( "/" ) );
     listItem->setText( Private::CommentColumn, comment );
     listItem->setText( Private::ZoneColumn, tzName ); /* store complete path in ListView */
 
     // Locate the flag from /l10n/%1/flag.png.
-    QString flag = KStandardDirs::locate( "locale", QString( "l10n/%1/flag.png" ).arg( zone->countryCode().toLower() ) );
+    QString flag = KStandardDirs::locate( "locale", QString( "l10n/%1/flag.png" ).arg( zone.countryCode().toLower() ) );
     if ( QFile::exists( flag ) )
       listItem->setIcon( Private::RegionColumn, QPixmap( flag ) );
   }
@@ -89,9 +89,9 @@ KTimeZoneWidget::~KTimeZoneWidget()
   delete d;
 }
 
-QString KTimeZoneWidget::displayName( const KTimeZone *zone )
+QString KTimeZoneWidget::displayName( const KTimeZone &zone )
 {
-  return i18n( zone->name().toUtf8() ).replace( "_", " " );
+  return i18n( zone.name().toUtf8() ).replace( "_", " " );
 }
 
 QStringList KTimeZoneWidget::selection() const

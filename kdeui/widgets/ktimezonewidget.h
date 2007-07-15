@@ -99,7 +99,7 @@ class KDEUI_EXPORT KTimeZoneWidget : public QTreeWidget
      *
      * @return formatted time zone name.
      */
-    static QString displayName( const KTimeZone *zone );
+    static QString displayName( const KTimeZone &zone );
 
   private:
     class Private;

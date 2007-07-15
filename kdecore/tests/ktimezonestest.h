@@ -28,6 +28,7 @@ private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void ktimezones();
+    void refcount();
     void utc();
     void local();
     void zone();

@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -42,11 +42,11 @@ class KTzfileTimeZoneSourcePrivate;
  * time zone definition files.
  *
  * @short Represents a time zone defined in tzfile(5) format
- * @see KTzfileTimeZoneSource, KTzfileTimeZoneData
+ * @see KTzfileTimeZoneBackend, KTzfileTimeZoneSource, KTzfileTimeZoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  */
-class KDECORE_EXPORT KTzfileTimeZone : public KTimeZone
+class KDECORE_EXPORT KTzfileTimeZone : public KTimeZone  //krazy:exclude=dpointer (no d-pointer for KTimeZone derived classes)
 {
 public:
     /**
@@ -65,15 +65,53 @@ public:
 
     ~KTzfileTimeZone();
 
+private:
+    // d-pointer is in KTzfileTimeZoneBackend.
+    // This is a requirement for classes inherited from KTimeZone.
+};
+
+
+/**
+ * Backend class for KTzfileTimeZone class.
+ *
+ * This class implements KTzfileTimeZone's constructors and virtual methods. A
+ * backend class is required for all classes inherited from KTimeZone to
+ * allow KTimeZone virtual methods to work together with reference counting of
+ * private data.
+ *
+ * @short Backend class for KTzfileTimeZone class
+ * @see KTimeZoneBackend, KTzfileTimeZone, KTimeZone
+ * @ingroup timezones
+ * @author David Jarvie <software@astrojar.org.uk>.
+ */
+class KDECORE_EXPORT KTzfileTimeZoneBackend : public KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
+{
+public:
+    /** Implements KTzfileTimeZone::KTzfileTimeZone(). */
+    KTzfileTimeZoneBackend(KTzfileTimeZoneSource *source, const QString &name,
+        const QString &countryCode, float latitude, float longitude, const QString &comment);
+
+    ~KTzfileTimeZoneBackend();
+
     /**
-     * Return whether daylight saving transitions are available for the time zone.
+     * Creates a copy of this instance.
      *
+     * @return new copy
+     */
+    virtual KTimeZoneBackend *clone() const;
+
+    /**
+     * Implements KTzfileTimeZone::hasTransitions().
+     *
+     * Returns whether daylight saving transitions are available for the time zone.
+     *
+     * @param caller calling KTzfileTimeZone object
      * @return @c true
      */
-    virtual bool hasTransitions() const;
+    virtual bool hasTransitions(const KTimeZone* caller) const;
 
 private:
-    KTzfileTimeZonePrivate * const d;
+    KTzfileTimeZonePrivate *d;   // non-const
 };
 
 
@@ -114,7 +152,7 @@ public:
      *         The caller is responsible for deleting the KTimeZoneData instance.
      *         Null is returned on error.
      */
-    virtual KTimeZoneData *parse(const KTimeZone *zone) const;
+    virtual KTimeZoneData *parse(const KTimeZone &zone) const;
 
 private:
     KTzfileTimeZoneSourcePrivate * const d;

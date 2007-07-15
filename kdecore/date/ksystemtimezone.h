@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -59,8 +59,8 @@ class KSystemTimeZoneDataPrivate;
  * time of 12:15:00 on 13th November 1999:
  * \code
  * QDateTime sampleTime(QDate(1999,11,13), QTime(12,15,0), Qt::LocalTime);
- * const KTimeZone *local = KSystemTimeZones::local();
- * const KTimeZone *oman  = KSystemTimeZones::zone("Asia/Muscat");
+ * KTimeZone local = KSystemTimeZones::local();
+ * KTimeZone oman  = KSystemTimeZones::zone("Asia/Muscat");
  * QDateTime omaniTime = local->convert(oman, sampleTime);
  * \endcode
  *
@@ -107,11 +107,10 @@ public:
      * use the potentially slower method readZone().
      *
      * @param name name of time zone
-     * @return time zone (usually a KSystemTimeZone instance), or 0 if not found.
-     *         Do not delete the returned object.
+     * @return time zone (usually a KSystemTimeZone instance), or invalid if not found
      * @see readZone()
      */
-    static const KTimeZone *zone(const QString &name);
+    static KTimeZone zone(const QString &name);
 
     /**
      * Returns the time zone with the given name, containing the full time zone
@@ -120,11 +119,10 @@ public:
      * data the system holds.
      *
      * @param name name of time zone
-     * @return time zone (usually a KTzfileTimeZone instance), or 0 if not found.
-     *         It is the caller's responsibility to delete the returned object.
+     * @return time zone (usually a KTzfileTimeZone instance), or invalid if not found
      * @see zone()
      */
-    static KTimeZone *readZone(const QString &name);
+    static KTimeZone readZone(const QString &name);
 
     /**
      * Returns the current local system time zone.
@@ -148,7 +146,7 @@ public:
      *         Note that if UTC is returned as a default, it may not belong to the
      *         the collection returned by KSystemTimeZones::zones().
      */
-    static const KTimeZone *local();
+    static KTimeZone local();
 
     /**
      * Returns the location of the system time zone zoneinfo database.
@@ -191,7 +189,7 @@ private:
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  */
-class KDECORE_EXPORT KSystemTimeZone : public KTimeZone
+class KDECORE_EXPORT KSystemTimeZone : public KTimeZone  //krazy:exclude=dpointer (no d-pointer for KTimeZone derived classes)
 {
 public:
 
@@ -211,7 +209,44 @@ public:
 
     ~KSystemTimeZone();
 
+private:
+    // d-pointer is in KSystemTimeZoneBackend.
+    // This is a requirement for classes inherited from KTimeZone.
+};
+
+
+/**
+ * Backend class for KSystemTimeZone class.
+ *
+ * This class implements KSystemTimeZone's constructors and virtual methods. A
+ * backend class is required for all classes inherited from KTimeZone to
+ * allow KTimeZone virtual methods to work together with reference counting of
+ * private data.
+ *
+ * @short Backend class for KSystemTimeZone class
+ * @see KTimeZoneBackend, KSystemTimeZone, KTimeZone
+ * @ingroup timezones
+ * @author David Jarvie <software@astrojar.org.uk>.
+ */
+class KDECORE_EXPORT KSystemTimeZoneBackend : public KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
+{
+public:
+    /** Implements KSystemTimeZone::KSystemTimeZone(). */
+    KSystemTimeZoneBackend(KSystemTimeZoneSource *source, const QString &name,
+        const QString &countryCode, float latitude, float longitude, const QString &comment);
+
+    ~KSystemTimeZoneBackend();
+
     /**
+     * Creates a copy of this instance.
+     *
+     * @return new copy
+     */
+    virtual KTimeZoneBackend *clone() const;
+
+    /**
+     * Implements KSystemTimeZone::offsetAtZoneTime().
+     *
      * Returns the offset of this time zone to UTC at the given local date/time.
      * Because of daylight savings time shifts, the date/time may occur twice. Optionally,
      * the offsets at both occurrences of @p dateTime are calculated.
@@ -219,6 +254,7 @@ public:
      * The offset is the number of seconds which you must add to UTC to get
      * local time in this time zone.
      *
+     * @param caller calling KSystemTimeZone object
      * @param zoneDateTime the date/time at which the offset is to be calculated. This
      *                     is interpreted as a local time in this time zone. An error
      *                     occurs if @p zoneDateTime.timeSpec() is not Qt::LocalTime.
@@ -228,9 +264,11 @@ public:
      * @return offset in seconds. If @p zoneDateTime occurs twice, it is the offset at the
      *         first occurrence which is returned.
      */
-    virtual int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset = 0) const;
+    virtual int offsetAtZoneTime(const KTimeZone *caller, const QDateTime &zoneDateTime, int *secondOffset) const;
 
     /**
+     * Implements KSystemTimeZone::offsetAtUtc().
+     *
      * Returns the offset of this time zone to UTC at the given UTC date/time.
      *
      * The offset is the number of seconds which you must add to UTC to get
@@ -239,47 +277,57 @@ public:
      * Note that system times are represented using time_t. An error occurs if the date
      * falls outside the range supported by time_t.
      *
+     * @param caller calling KSystemTimeZone object
      * @param utcDateTime the UTC date/time at which the offset is to be calculated.
      *                    An error occurs if @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return offset in seconds, or 0 if error
      */
-    virtual int offsetAtUtc(const QDateTime &utcDateTime) const;
+    virtual int offsetAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const;
 
     /**
+     * Implements KSystemTimeZone::offset().
+     *
      * Returns the offset of this time zone to UTC at a specified UTC time.
      *
      * The offset is the number of seconds which you must add to UTC to get
      * local time in this time zone.
      *
+     * @param caller calling KSystemTimeZone object
      * @param t the UTC time at which the offset is to be calculated, measured in seconds
      *          since 00:00:00 UTC 1st January 1970 (as returned by time(2))
      * @return offset in seconds, or 0 if error
      */
-    virtual int offset(time_t t) const;
+    virtual int offset(const KTimeZone *caller, time_t t) const;
 
     /**
+     * Implements KSystemTimeZone::isDstAtUtc().
+     *
      * Returns whether daylight savings time is in operation at the given UTC date/time.
      *
      * Note that system times are represented using time_t. An error occurs if the date
      * falls outside the range supported by time_t.
      *
+     * @param caller calling KSystemTimeZone object
      * @param utcDateTime the UTC date/time. An error occurs if
      *                    @p utcDateTime.timeSpec() is not Qt::UTC.
      * @return @c true if daylight savings time is in operation, @c false otherwise
      */
-    virtual bool isDstAtUtc(const QDateTime &utcDateTime) const;
+    virtual bool isDstAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const;
 
     /**
+     * Implements KSystemTimeZone::isDst().
+     *
      * Returns whether daylight savings time is in operation at a specified UTC time.
      *
+     * @param caller calling KSystemTimeZone object
      * @param t the UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
      *          (as returned by time(2))
      * @return @c true if daylight savings time is in operation, @c false otherwise
      */
-    virtual bool isDst(time_t t) const;
+    virtual bool isDst(const KTimeZone *caller, time_t t) const;
 
 private:
-    KSystemTimeZonePrivate * const d;
+    KSystemTimeZonePrivate *d;   // non-const
 };
 
 
@@ -311,7 +359,7 @@ public:
      *         The caller is responsible for deleting the KTimeZoneData instance.
      *         Null is returned on error.
      */
-    virtual KTimeZoneData *parse(const KTimeZone *zone) const;
+    virtual KTimeZoneData *parse(const KTimeZone &zone) const;
 
     /**
      * Use in conjunction with endParseBlock() to improve efficiency when calling parse()

@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -40,23 +40,36 @@ static QDateTime fromTime_t(qint32 seconds)
 
 /******************************************************************************/
 
+KTzfileTimeZoneBackend::KTzfileTimeZoneBackend(KTzfileTimeZoneSource *source, const QString &name,
+        const QString &countryCode, float latitude, float longitude, const QString &comment)
+  : KTimeZoneBackend(source, name, countryCode, latitude, longitude, comment)
+{}
+
+KTzfileTimeZoneBackend::~KTzfileTimeZoneBackend()
+{}
+
+KTimeZoneBackend *KTzfileTimeZoneBackend::clone() const
+{
+    return new KTzfileTimeZoneBackend(*this);
+}
+
+bool KTzfileTimeZoneBackend::hasTransitions(const KTimeZone *caller) const
+{
+    Q_UNUSED(caller)
+    return true;
+}
+
+
+/******************************************************************************/
+
 KTzfileTimeZone::KTzfileTimeZone(KTzfileTimeZoneSource *source, const QString &name,
         const QString &countryCode, float latitude, float longitude,
         const QString &comment)
-  : KTimeZone(source, name, countryCode, latitude, longitude, comment)
-    , d(0)
-{
-}
+  : KTimeZone(new KTzfileTimeZoneBackend(source, name, countryCode, latitude, longitude, comment))
+{}
 
 KTzfileTimeZone::~KTzfileTimeZone()
-{
-//    delete d;
-}
-
-bool KTzfileTimeZone::hasTransitions() const
-{
-    return true;
-}
+{}
 
 
 /******************************************************************************/
@@ -122,14 +135,14 @@ KTzfileTimeZoneSource::~KTzfileTimeZoneSource()
     delete d;
 }
 
-KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
+KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
 {
     quint32 abbrCharCount;     // the number of characters of time zone abbreviation strings
     quint32 ttisgmtcnt;
     quint8  is;
     quint8  T_, Z_, i_, f_;    // tzfile identifier prefix
 
-    QFile f(d->location + '/' + zone->name());
+    QFile f(d->location + '/' + zone.name());
     if (!f.open(QIODevice::ReadOnly))
     {
         kError() << "Cannot open " << f.fileName() << endl;
@@ -172,7 +185,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone *zone) const
         qint32 time;            // time (as returned by time(2)) at which the rules for computing local time change
         quint8 localTimeIndex;  // index into the LocalTimeType array
     };
-//kDebug()<<"Reading zone "<<zone->name() <<endl;
+//kDebug()<<"Reading zone "<<zone.name() <<endl;
     TransitionTime *transitionTimes = new TransitionTime[nTransitionTimes];
     for (i = 0;  i < nTransitionTimes;  ++i)
     {

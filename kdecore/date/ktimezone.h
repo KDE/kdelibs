@@ -39,6 +39,7 @@
 #include <ctime>
 
 class KTimeZone;
+class KTimeZoneBackend;
 class KTimeZoneData;
 class KTimeZoneSource;
 class KTimeZonesPrivate;
@@ -58,7 +59,9 @@ class KTimeZoneLeapSecondsPrivate;
  * A time zone is represented by the KTimeZone class. This provides access to
  * the time zone's detailed definition and contains methods to convert times to
  * and from that zone. In order to save processing, KTimeZone obtains its time
- * zone details only when they are actually required.
+ * zone details only when they are actually required. Each KTimeZone class has
+ * a corresponding KTimeZoneBackend backend class which implements reference
+ * counting of the time zone's data.
  *
  * A collection of time zones is represented by the KTimeZones class, which acts
  * as a container of KTimeZone objects. Within any KTimeZones object, each
@@ -101,24 +104,21 @@ class KTimeZoneLeapSecondsPrivate;
  *   the KTimeZone::Phase, KTimeZone::Transition and KTimeZone::LeapSeconds data
  *   will be empty.
  *
- * - Each KTimeZoneData class will have a corresponding KTimeZone class which
- *   can interpret its data.
+ * - Each KTimeZoneData class will have a corresponding KTimeZone class, and
+ *   related KTimeZoneBackend class, which can interpret its data.
  *
  * - Each different source database will typically be represented by a different
  *   KTimeZones instance, to avoid possible conflicts between time zone definitions.
  *   If it is known that two source databases are definitely compatible, they can
  *   be grouped together into the same KTimeZones instance.
  *
- * @warning Never delete any KTimeZone instance which is still referred to by any
- *          KDateTime instance: if you subsequently use the KDateTime value, a
- *          crash is likely.
- *
  *
  * \section sys System time zones
  *
  * Access to system time zones is provided by the KSystemTimeZones class, which
  * reads the zone.tab file to obtain the list of system time zones, and creates a
- * KSystemTimeZone instance for each one. KSystemTimeZone uses the KSystemTimeZoneSource
+ * KSystemTimeZone instance for each one. KSystemTimeZone has a
+ * KSystemTimeZoneBackend backend class, and uses the KSystemTimeZoneSource
  * and KSystemTimeZoneData classes to obtain time zone data via libc library
  * functions.
  *
@@ -146,8 +146,9 @@ class KTimeZoneLeapSecondsPrivate;
  * the KSystemTimeZones::readZone() method uses the KTzfileTimeZone class to
  * read system time zone definition files.
  *
- * KTzfileTimeZone uses the KTzfileTimeZoneSource and KTzfileTimeZoneData classes
- * to obtain time zone data from tzfile files.
+ * KTzfileTimeZone has a KTzfileTimeZoneBackend backend class, and uses the
+ * KTzfileTimeZoneSource and KTzfileTimeZoneData classes to obtain time zone
+ * data from tzfile files.
  *
  *
  * \section deriving Handling time zone data from other sources
@@ -156,14 +157,14 @@ class KTimeZoneLeapSecondsPrivate;
  * as a minimum to derive a new class from KTimeZoneSource, and implement one or
  * more parse() methods. If you can know in advance what KTimeZone instances to create
  * without having to parse the source data, you should reimplement the virtual method
- * KTimeZoneSource::parse(const KTimeZone*). Otherwise, you need to define your
+ * KTimeZoneSource::parse(const KTimeZone&). Otherwise, you need to define your
  * own parse() methods with appropriate signatures, to both read and parse the new
  * data, and create new KTimeZone instances.
  *
  * If the data for each time zone which is available from the new source happens
  * to be the same as for another source for which KTimeZone classes already exist,
- * you could simply use the existing KTimeZone and KTimeZoneData derived classes
- * to receive the parsed data from your new KTimeZoneSource class:
+ * you could simply use the existing KTimeZone, KTimeZoneBackend and KTimeZoneData
+ * derived classes to receive the parsed data from your new KTimeZoneSource class:
  *
  * \code
  * class NewTimeZoneSource : public KTimeZoneSource
@@ -174,7 +175,7 @@ class KTimeZoneLeapSecondsPrivate;
  *
  *         // Option 1: reimplement KTimeZoneSource::parse() if you can
  *         // pre-create the KTimeZone instances.
- *         KTimeZoneData *parse(const KTimeZone *zone) const;
+ *         KTimeZoneData *parse(const KTimeZone &zone) const;
  *
  *         // Option 2: implement new parse() methods if you don't know
  *         // in advance what KTimeZone instances to create.
@@ -183,9 +184,9 @@ class KTimeZoneLeapSecondsPrivate;
  * };
  *
  * // Option 1:
- * KTimeZoneData *NewTimeZoneSource::parse(const KTimeZone *zone) const
+ * KTimeZoneData *NewTimeZoneSource::parse(const KTimeZone &zone) const
  * {
- *     QString zoneName = zone->name();
+ *     QString zoneName = zone.name();
  *     ExistingTimeZoneData* data = new ExistingTimeZoneData();
  *
  *     // Read the data for 'zoneName' from the new data source.
@@ -199,9 +200,9 @@ class KTimeZoneLeapSecondsPrivate;
  * \endcode
  *
  * If the data from the new source is different from what any existing
- * KTimeZoneData class contains, you will need to implement new KTimeZone and
- * KTimeZoneData classes in addition to the KTimeZoneSource class illustrated
- * above:
+ * KTimeZoneData class contains, you will need to implement new KTimeZone,
+ * KTimeZoneBackend and KTimeZoneData classes in addition to the KTimeZoneSource
+ * class illustrated above:
  *
  * \code
  * class NewTimeZone : public KTimeZone
@@ -210,14 +211,32 @@ class KTimeZoneLeapSecondsPrivate;
  *         NewTimeZone(NewTimeZoneSource *source, const QString &name, ...);
  *         ~NewTimeZone();
  *
- *         // Virtual methods which need to be reimplemented
- *         int offsetAtZoneTime(const QDateTime &zoneDateTime, int *secondOffset = 0) const;
- *         int offsetAtUtc(const QDateTime &utcDateTime) const;
- *         int offset(time_t t) const;
- *         int isDstAtUtc(const QDateTime &utcDateTime) const;
- *         bool isDst(time_t t) const;
+ *         // Methods implementing KTimeZone virtual methods are implemented
+ *         // in NewTimeZoneBackend, not here.
  *
  *         // Anything else which you need
+ *     private:
+ *         // No d-pointer !
+ * };
+ *
+ * class NewTimeZoneBackend : public KTimeZoneBackend
+ * {
+ *     public:
+ *         NewTimeZoneBackend(NewTimeZoneSource *source, const QString &name, ...);
+ *         ~NewTimeZoneBackend();
+ *
+ *         KTimeZoneBackend *clone() const;
+ *
+ *         // Virtual methods which need to be reimplemented
+ *         int offsetAtZoneTime(const KTimeZone *caller, const QDateTime &zoneDateTime, int *secondOffset = 0) const;
+ *         int offsetAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const;
+ *         int offset(const KTimeZone *caller, time_t t) const;
+ *         int isDstAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const;
+ *         bool isDst(const KTimeZone *caller, time_t t) const;
+ *
+ *         // Anything else which you need
+ *     private:
+ *         NewTimeZonePrivate *d;   // non-const !
  * };
  *
  * class NewTimeZoneData : public KTimeZoneData
@@ -241,25 +260,25 @@ class KTimeZoneLeapSecondsPrivate;
  * the case where the source data does not use time_t for its time measurement:
  *
  * \code
- * int NewTimeZone::offsetAtUtc(const QDateTime &utcDateTime) const
+ * int NewTimeZoneBackend::offsetAtUtc(const KTimeZone *caller, const QDateTime &utcDateTime) const
  * {
  *     // Access this time zone's data. If we haven't already read it,
  *     // force a read from source now.
- *     NewTimeZoneData *zdata = data(true);
+ *     NewTimeZoneData *zdata = caller->data(true);
  *
  *     // Use 'zdata' contents to work out the UTC offset
  *
  *     return offset;
  * }
  *
- * int NewTimeZone::offset(time_t t) const
+ * int NewTimeZoneBackend::offset(const KTimeZone *caller, time_t t) const
  * {
- *     return offsetAtUtc(fromTime_t(t));
+ *     return offsetAtUtc(KTimeZone::fromTime_t(t));
  * }
  * \endcode
  *
- * The other NewTimeZone methods would work in an analogous way to
- * NewTimeZone::offsetAtUtc() and NewTimeZone::offset().
+ * The other NewTimeZoneBackend methods would work in an analogous way to
+ * NewTimeZoneBackend::offsetAtUtc() and NewTimeZoneBackend::offset().
  */
 
 /**
@@ -269,8 +288,6 @@ class KTimeZoneLeapSecondsPrivate;
  * Each individual time zone is defined in a KTimeZone instance, which provides
  * generic support for private or system time zones. The time zones in the
  * collection are indexed by name, which must be unique within the collection.
- * KTimeZone instances in the collection are owned by the KTimeZones instance,
- * and are deleted when the KTimeZones instance is destructed.
  *
  * Different time zone sources could define the same time zone differently. (For
  * example, a calendar file originating from another system might hold its own
@@ -280,10 +297,6 @@ class KTimeZoneLeapSecondsPrivate;
  * create a separate KTimeZones instance for each source collection.
  *
  * If you want to access system time zones, use the KSystemTimeZones class.
- *
- * @warning Do not delete a KTimeZones instance, or call clear(), if any
- *          KDateTime instances use any of the time zones in the collection:
- *          if you subsequently use the KDateTime values, a crash is likely.
  *
  * @short Represents a time zone database or collection
  * @ingroup timezones
@@ -298,15 +311,13 @@ public:
 
     /**
      * Returns the time zone with the given name.
-     * Note that the KTimeZone returned remains a member of the KTimeZones
-     * collection, and should not be deleted without calling detach() first.
      *
      * @param name name of time zone
      * @return time zone, or 0 if not found
      */
-    const KTimeZone *zone(const QString &name) const;
+    KTimeZone zone(const QString &name) const;
 
-    typedef QMap<QString, const KTimeZone*> ZoneMap;
+    typedef QMap<QString, KTimeZone> ZoneMap;
 
     /**
      * Returns all the time zones defined in this collection.
@@ -317,73 +328,38 @@ public:
 
     /**
      * Adds a time zone to the collection.
-     * KTimeZones takes ownership of the KTimeZone instance, which will be deleted
-     * when the KTimeZones instance is destructed.
      * The time zone's name must be unique within the collection.
      *
      * @param zone time zone to add
      * @return @c true if successful, @c false if zone's name duplicates one already in the collection
-     * @see addConst(), detach()
+     * @see remove()
      */
-    bool add(KTimeZone *zone);
-
-    /**
-     * Adds a time zone to the collection.
-     * KTimeZones does not take ownership of the KTimeZone instance.
-     * The time zone's name must be unique within the collection.
-     *
-     * @param zone time zone to add
-     * @return @c true if successful, @c false if zone's name duplicates one already in the collection
-     * @see add(), detach()
-     */
-    bool addConst(const KTimeZone *zone);
+    bool add(const KTimeZone &zone);
 
     /**
      * Removes a time zone from the collection.
-     * The caller assumes responsibility for deleting the removed KTimeZone. If
-     * the removed KTimeZone was created by the caller, the constness of the return
-     * value may safely be cast away.
      *
      * @param zone time zone to remove
-     * @return the time zone which was removed, or 0 if not found or not a deletable object
-     * @see clear(), add(), addConst()
+     * @return the time zone which was removed, or invalid if not found
+     * @see clear(), add()
      */
-    const KTimeZone *detach(const KTimeZone *zone);
+    KTimeZone remove(const KTimeZone &zone);
 
     /**
      * Removes a time zone from the collection.
-     * The caller assumes responsibility for deleting the removed KTimeZone.
      *
      * @param name name of time zone to remove
-     * @return the time zone which was removed, or 0 if not found or not a deletable object
-     * @see clear(), add(), addConst()
+     * @return the time zone which was removed, or invalid if not found
+     * @see clear(), add()
      */
-    const KTimeZone *detach(const QString &name);
+    KTimeZone remove(const QString &name);
 
     /**
      * Clears the collection.
-     * All time zone instances owned by the collection are deleted.
      *
-     * @warning Do not call this method if any KDateTime instances use any of
-     *          the time zones in the collection: if you subsequently use the
-     *          KDateTime values, a crash is likely.
-     *
-     * @see detach()
+     * @see remove()
      */
     void clear();
-
-    /**
-     * Returns a standard UTC time zone, with name "UTC".
-     *
-     * @note The KTimeZone returned by this method does not belong to any
-     * KTimeZones collection, and is statically allocated and therefore cannot
-     * be deleted and cannot be added to a KTimeZones collection. Any KTimeZones
-     * instance may contain its own UTC KTimeZone, but that will be a different
-     * instance than this KTimeZone.
-     *
-     * @return UTC time zone
-     */
-    static const KTimeZone *utc();
 
 private:
     KTimeZones(const KTimeZones &);              // prohibit copying
@@ -403,7 +379,8 @@ private:
  * changes, offsets from UTC, etc. They should be tailored to deal with the type and
  * format of data held by a particular type of time zone database.
  *
- * If this base class is instantiated, it represents the UTC time zone.
+ * If this base class is instantiated as a valid instance, it always represents the
+ * UTC time zone.
  *
  * KTimeZone is designed to work in partnership with KTimeZoneSource. KTimeZone
  * provides access to individual time zones, while classes derived from
@@ -412,17 +389,28 @@ private:
  * the parsed data retured by KTimeZoneSource can vary between different sources,
  * resulting in the need to create different KTimeZone classes to handle the data.
  *
- * KTimeZone instances are often grouped into KTimeZones collections. If a KTimeZone is
- * part of such a collection, it is owned by the KTimeZones instance and should not be
- * deleted.
+ * KTimeZone instances are often grouped into KTimeZones collections.
+ *
+ * Copying KTimeZone instances is very efficient since the class data is explicitly
+ * shared, meaning that only a pointer to the data is actually copied. To achieve
+ * this, each class inherited from KTimeZone must have a corresponding backend
+ * class derived from KTimeZoneBackend.
+ *
+ * @note Classes derived from KTimeZone should not have their own d-pointer. The
+ * d-pointer is instead contained in their backend class (derived from
+ * KTimeZoneBackend). This allows KTimeZone's reference-counting of private data to
+ * take care of the derived class's data as well, ensuring that instance data is
+ * not deleted while any references to the class instance remains. All virtual
+ * methods which override KTimeZone virtual methods must be defined in the
+ * backend class instead.
  *
  * @short Base class representing a time zone
- * @see KTimeZoneSource, KTimeZoneData
+ * @see KTimeZoneBackend, KTimeZoneSource, KTimeZoneData
  * @ingroup timezones
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
-class KDECORE_EXPORT KTimeZone //krazy:exclude=dpointer (krazy can't deal with embedded classes)
+class KDECORE_EXPORT KTimeZone  //krazy:exclude=dpointer (has non-const d-pointer to Backend class)
 {
 public:
 
@@ -607,14 +595,42 @@ public:
 
 
     /**
-     * Construct a UTC time zone.
+     * Constructs a null time zone. A null time zone is invalid.
+     *
+     * @see isValid()
      */
-    explicit KTimeZone(const QString &name = QLatin1String("UTC"));
+    KTimeZone();
 
-    KTimeZone(const KTimeZone &);
+    /**
+     * Constructs a UTC time zone.
+     *
+     * @param name name of the UTC time zone
+     */
+    explicit KTimeZone(const QString &name);
+
+    KTimeZone(const KTimeZone &tz);
+    KTimeZone &operator=(const KTimeZone &tz);
+
     virtual ~KTimeZone();
 
-    KTimeZone &operator=(const KTimeZone &);
+    /**
+     * Checks whether this is the same instance as another one.
+     * Note that only the pointers to the time zone data are compared, not the
+     * contents. So it will only return equality if one instance was copied
+     * from the other.
+     *
+     * @param rhs other instance
+     * @return true if the same instance, else false
+     */
+    bool operator==(const KTimeZone &rhs) const;
+    bool operator!=(const KTimeZone &rhs) const  { return !operator==(rhs); }
+
+    /**
+     * Checks whether the instance is valid.
+     *
+     * @return true if valid, false if invalid
+     */
+    bool isValid() const;
 
     /**
      * Returns the name of the time zone.
@@ -699,7 +715,7 @@ public:
      * @return converted date/time, or invalid date/time if error
      * @see toUtc(), toZoneTime()
      */
-    QDateTime convert(const KTimeZone *newZone, const QDateTime &zoneDateTime) const;
+    QDateTime convert(const KTimeZone &newZone, const QDateTime &zoneDateTime) const;
 
     /**
      * Converts a date/time, which is interpreted as local time in this time
@@ -1005,6 +1021,18 @@ public:
      */
     static time_t toTime_t(const QDateTime &utcDateTime);
 
+    /**
+     * Returns a standard UTC time zone, with name "UTC".
+     *
+     * @note The KTimeZone returned by this method does not belong to any
+     * KTimeZones collection. Any KTimeZones instance may contain its own UTC
+     * KTimeZone defined by its time zone source data, but that will be a
+     * different instance than this KTimeZone.
+     *
+     * @return UTC time zone
+     */
+    static KTimeZone utc();
+
     /** Indicates an invalid UTC offset. This is returned by offsetAtZoneTime() when
      *  the local time does not occur due to a shift to daylight savings time.
      */
@@ -1021,22 +1049,7 @@ public:
     static const float UNKNOWN;
 
 protected:
-    /**
-     * Constructs a time zone.
-     *
-     * @param source      reader/parser for the database containing this time zone. This will
-     *                    be an instance of a class derived from KTimeZoneSource.
-     * @param name        in system-dependent format. The name must be unique within any
-     *                    KTimeZones instance which contains this KTimeZone.
-     * @param countryCode ISO 3166 2-character country code, empty if unknown
-     * @param latitude    in degrees (between -90 and +90), UNKNOWN if not known
-     * @param longitude   in degrees (between -180 and +180), UNKNOWN if not known
-     * @param comment     description of the time zone, if any
-     */
-    KTimeZone(
-        KTimeZoneSource *source, const QString &name,
-        const QString &countryCode = QString(), float latitude = UNKNOWN, float longitude = UNKNOWN,
-        const QString &comment = QString());
+    KTimeZone(KTimeZoneBackend *impl);
 
     /**
      * Sets the detailed parsed data for the time zone, and optionally
@@ -1065,12 +1078,108 @@ protected:
      *
      * @see setData()
      */
-    bool updateBase(const KTimeZone *other);
+    bool updateBase(const KTimeZone &other);
 
 private:
-    KTimeZonePrivate *const d;
+    KTimeZoneBackend *d;
 };
 
+
+/**
+ * Base backend class for KTimeZone classes.
+ *
+ * KTimeZone and each class inherited from it must have a corresponding
+ * backend class to implement its constructors and its virtual methods,
+ * and to provide a virtual clone() method. This allows KTimeZone virtual methods
+ * to work together with reference counting of private data.
+ *
+ * @note Classes derived from KTimeZoneBackend should not normally implement their
+ * own copy constructor or assignment operator, and must have a non-const d-pointer.
+ *
+ * @short Base backend class for KTimeZone classes
+ * @see KTimeZone
+ * @ingroup timezones
+ * @author David Jarvie <software@astrojar.org.uk>.
+ */
+class KDECORE_EXPORT KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
+{
+public:
+    /** Implements KTimeZone::KTimeZone(). */
+    KTimeZoneBackend();
+    /** Implements KTimeZone::KTimeZone(const QString&). */
+    explicit KTimeZoneBackend(const QString &name);
+
+    KTimeZoneBackend(const KTimeZoneBackend &other);
+    KTimeZoneBackend &operator=(const KTimeZoneBackend &other);
+    virtual ~KTimeZoneBackend();
+
+    /**
+     * Creates a copy of this instance.
+     *
+     * @note Every inherited class must reimplement clone().
+     *
+     * @return new copy
+     */
+    virtual KTimeZoneBackend *clone() const;
+
+    /**
+     * Implements KTimeZone::offsetAtZoneTime().
+     *
+     * @param caller calling KTimeZone object
+     */
+    virtual int offsetAtZoneTime(const KTimeZone* caller, const QDateTime &zoneDateTime, int *secondOffset) const;
+    /**
+     * Implements KTimeZone::offsetAtUtc().
+     *
+     * @param caller calling KTimeZone object
+     */
+    virtual int offsetAtUtc(const KTimeZone* caller, const QDateTime &utcDateTime) const;
+    /**
+     * Implements KTimeZone::offset().
+     *
+     * @param caller calling KTimeZone object
+     */
+    virtual int offset(const KTimeZone* caller, time_t t) const;
+    /**
+     * Implements KTimeZone::isDstAtUtc().
+     *
+     * @param caller calling KTimeZone object
+     */
+    virtual bool isDstAtUtc(const KTimeZone* caller, const QDateTime &utcDateTime) const;
+    /**
+     * Implements KTimeZone::isDst().
+     *
+     * @param caller calling KTimeZone object
+     */
+    virtual bool isDst(const KTimeZone* caller, time_t t) const;
+    /**
+     * Implements KTimeZone::hasTransitions().
+     *
+     * @param caller calling KTimeZone object
+     */
+    virtual bool hasTransitions(const KTimeZone* caller) const;
+
+protected:
+    /**
+     * Constructs a time zone.
+     *
+     * @param source      reader/parser for the database containing this time zone. This will
+     *                    be an instance of a class derived from KTimeZoneSource.
+     * @param name        in system-dependent format. The name must be unique within any
+     *                    KTimeZones instance which contains this KTimeZone.
+     * @param countryCode ISO 3166 2-character country code, empty if unknown
+     * @param latitude    in degrees (between -90 and +90), UNKNOWN if not known
+     * @param longitude   in degrees (between -180 and +180), UNKNOWN if not known
+     * @param comment     description of the time zone, if any
+     */
+    KTimeZoneBackend(KTimeZoneSource *source, const QString &name,
+                     const QString &countryCode = QString(), float latitude = KTimeZone::UNKNOWN,
+                     float longitude = KTimeZone::UNKNOWN, const QString &comment = QString());
+
+private:
+    KTimeZonePrivate *d;   // non-const
+    friend class KTimeZone;
+};
 
 /**
  * Base class representing a source of time zone information.
@@ -1078,7 +1187,7 @@ private:
  * Derive subclasses from KTimeZoneSource to read and parse time zone details
  * from a time zone database or other source of time zone information. If can know
  * in advance what KTimeZone instances to create without having to parse the source
- * data, you should reimplement the virtual method parse(const KTimeZone*). Otherwise,
+ * data, you should reimplement the virtual method parse(const KTimeZone&). Otherwise,
  * you need to define your own parse() methods with appropriate signatures, to both
  * read and parse the new data, and create new KTimeZone instances.
  *
@@ -1109,7 +1218,7 @@ public:
      *         KTimeZoneData instance.
      *         Null is returned on error.
      */
-    virtual KTimeZoneData *parse(const KTimeZone *zone) const;
+    virtual KTimeZoneData *parse(const KTimeZone &zone) const;
 
 private:
     KTimeZoneSourcePrivate * const d;
