@@ -555,7 +555,7 @@ public:
      * \code
      * QColor computedDefault = qApp->palette().color(QPalette::Active, QPalette::Text)
      * QColor color = config->readEntry(key, computedDefault).value<QColor>();
-     * \encode
+     * \endcode
      *
      * Then it may wish to make the following check before
      * writing back changes:
