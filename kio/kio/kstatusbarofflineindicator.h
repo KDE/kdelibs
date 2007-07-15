@@ -37,7 +37,6 @@
  * @endcode
  *
  * @author Will Stephenson <wstephenson@kde.org>
- * @since 4.0
  */
 class KDE_EXPORT KStatusBarOfflineIndicator : public QWidget
 {
