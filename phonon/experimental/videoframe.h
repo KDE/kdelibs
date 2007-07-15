@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PHONON_FRAME_H
-#define PHONON_FRAME_H
+#ifndef PHONON_EXPERIMENTAL_VIDEOFRAME_H
+#define PHONON_EXPERIMENTAL_VIDEOFRAME_H
 
 #include "export.h"
 #include "videodataoutput.h"
@@ -64,4 +64,4 @@ namespace Experimental
 } // namespace Phonon
 
 // vim: sw=4 ts=4 tw=80
-#endif // PHONON_FRAME_H
+#endif // PHONON_EXPERIMENTAL_VIDEOFRAME_H
