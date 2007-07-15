@@ -23,8 +23,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SAMPLETESTMODULE_H
-#define SAMPLETESTMODULE_H
+#ifndef SAMPLEMODULE_H
+#define SAMPLEMODULE_H
 
 #include "tester.h"
 // Outside of kdelibs you would use: #include <kunittest/tester.h>

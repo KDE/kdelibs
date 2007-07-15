@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kebdrag_h
-#define __kebdrag_h
+#ifndef K3BOOKMARKDRAG_H
+#define K3BOOKMARKDRAG_H
 
 #include <kde3support_export.h>
 

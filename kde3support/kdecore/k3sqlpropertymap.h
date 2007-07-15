@@ -17,6 +17,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifndef K3SQLPROPERTYMAP_H
+#define K3SQLPROPERTYMAP_H
+
 #ifndef QT_NO_SQL
 #include <Qt3Support/Q3SqlPropertyMap>
 #endif
@@ -72,3 +75,4 @@ static inline KDE_DEPRECATED void kInstallKDEPropertyMap()
 #endif
 }
 
+#endif // K3SQLPROPERTYMAP_H
