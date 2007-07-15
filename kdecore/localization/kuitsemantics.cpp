@@ -234,7 +234,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_ROL(Item, "item", Plain,
               Inmenu << Inlistbox << Intable << Inrange);
     SETUP_ROL(Info, "info", Rich,
-                 Tooltip << Whatsthis << Status << Progress
+                 Tooltip << Whatsthis << Kuit::Cue::Status << Progress
               << Tipoftheday << Credit << Shell);
 
     // Setup override formats by subcue.
