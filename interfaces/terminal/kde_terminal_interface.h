@@ -16,8 +16,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 // 02110-1301  USA
 
-#ifndef KDELIBS_TERMINAL_INTERFACE_H
-#define KDELIBS_TERMINAL_INTERFACE_H
+#ifndef KDELIBS_KDE_TERMINAL_INTERFACE_H
+#define KDELIBS_KDE_TERMINAL_INTERFACE_H
 
 #include <QtCore/QObject>
 
