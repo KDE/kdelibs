@@ -17,8 +17,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-struct
+#ifndef KGLOBALACCEL_P_H
+#define KGLOBALACCEL_P_H
 
+// this file is currently not used by anything
 
 
 class KGlobalAccelDBusAdaptor: public QDBusAbstractAdaptor
@@ -48,3 +50,6 @@ private Q_SLOTS:
 Q_SIGNALS:
 	void globalShortcutChanged(QString/*mainComponent*/, QString/*action*/);
 };
+
+#endif // KGLOBALACCEL_P_H
+
