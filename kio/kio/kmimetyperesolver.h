@@ -37,7 +37,7 @@ public:
     virtual void slotViewportAdjusted() = 0;
     virtual void slotProcessMimeIcons() = 0;
 protected:
-    virtual void virtual_hook( int, void* ) {};
+    virtual void virtual_hook( int, void* ) {}
 };
 
 /**
