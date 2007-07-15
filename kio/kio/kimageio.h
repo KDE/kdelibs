@@ -5,8 +5,8 @@
 * This library is distributed under the conditions of the GNU LGPL.
 */
 
-#ifndef SSK_KIMGIO_H
-#define SSK_KIMGIO_H
+#ifndef KIO_KIMAGEIO_H
+#define KIO_KIMAGEIO_H
 
 #include <QtCore/QStringList>
 #include <QtCore/QString>

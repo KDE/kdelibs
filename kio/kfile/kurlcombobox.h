@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDIRCOMBOBOX_H
-#define KDIRCOMBOBOX_H
+#ifndef KURLCOMBOBOX_H
+#define KURLCOMBOBOX_H
 
 #include <kio/kio_export.h>
 
@@ -218,4 +218,4 @@ private:
 };
 
 
-#endif // KDIRCOMBOBOX_H
+#endif // KURLCOMBOBOX_H

@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef kfilesharedlg_h
-#define kfilesharedlg_h
+#ifndef KFILESHAREDIALOG_H
+#define KFILESHAREDIALOG_H
 
 #include <kpropertiesdialog.h>
 class QRadioButton;

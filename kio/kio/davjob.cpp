@@ -26,7 +26,7 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QPointer>
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 
 #include <sys/types.h>
 #include <sys/stat.h>

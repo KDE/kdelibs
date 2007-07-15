@@ -17,9 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "kfsprocess.h"
+
+#include <config.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

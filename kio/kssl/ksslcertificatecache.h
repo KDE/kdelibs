@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef _INCLUDE_KSSLCCACHE_H
-#define _INCLUDE_KSSLCCACHE_H
+#ifndef _INCLUDE_KSSLCERTIFICATECACHE_H
+#define _INCLUDE_KSSLCERTIFICATECACHE_H
 
 class KSSLCertificate;
 #include <QtCore/QString>

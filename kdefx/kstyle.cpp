@@ -576,7 +576,7 @@ int KStyle::widgetLayoutProp(WidgetType widget, int metric,
     return widgetMetrics[metric];
 }
 
-QSize KStyle::expandDim(QSize orig, WidgetType wt, int baseMarginMetric,
+QSize KStyle::expandDim(const QSize& orig, WidgetType wt, int baseMarginMetric,
                         const QStyleOption* opt, const QWidget* w) const
 {
     int width = orig.width() +  2*widgetLayoutProp(wt, baseMarginMetric + MainMargin, opt, w) +

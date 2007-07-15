@@ -1471,7 +1471,7 @@ private:
     QVector<QVector<int> > metrics;
     
     ///Expands out the dimension to make sure it incorporates the margins
-    QSize expandDim(QSize orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
+    QSize expandDim(const QSize& orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
     
     ///Calculates the contents rectangle by subtracting out the appropriate margins
     ///from the outside

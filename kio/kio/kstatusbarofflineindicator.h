@@ -20,8 +20,8 @@
     without including the source code for Qt in the source distribution.
 */
 
-#ifndef KDE_NETWORKSTATUS_INDICATOR_H
-#define KDE_NETWORKSTATUS_INDICATOR_H
+#ifndef KDE_KSTATUSBAROFFLINEINDICATOR_H
+#define KDE_KSTATUSBAROFFLINEINDICATOR_H
 
 #include <QtGui/QWidget>
 #include <kio/kio_export.h>

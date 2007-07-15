@@ -25,8 +25,8 @@
  * display a properties dialog.
  */
 
-#ifndef __propsdialog_h
-#define __propsdialog_h
+#ifndef KPROPERTIESDIALOG_H
+#define KPROPERTIESDIALOG_H
 
 #include <QtCore/QString>
 

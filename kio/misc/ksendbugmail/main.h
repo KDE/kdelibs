@@ -17,8 +17,8 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef BUG_MAILER_H
-#define BUG_MAILER_H
+#ifndef KSENDBUGMAIL_MAIN_H
+#define KSENDBUGMAIL_MAIN_H
 
 #include <QtCore/QObject>
 
