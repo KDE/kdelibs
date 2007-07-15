@@ -242,7 +242,7 @@ public:
   /**
    * Return a list of toolbar elements given a toplevel element
    */
-  ToolBarList findToolBars(QDomNode n)
+  ToolBarList findToolBars(QDomNode n) //krazy:exclude=passbyvalue
   {
     static const QString &tagToolBar = KGlobal::staticQString( "ToolBar" );
     static const QString &attrNoEdit = KGlobal::staticQString( "noEdit" );

@@ -319,7 +319,7 @@ void ContainerNode::adjustMergingIndices( int offset,
     index += offset;
 }
 
-bool ContainerNode::destruct( QDomElement element, BuildState &state ) //krazy:exclude=pass-by-value (we need a copy for removeContainer)
+bool ContainerNode::destruct( QDomElement element, BuildState &state ) //krazy:exclude=passbyvalue (we need a copy for removeContainer)
 {
     destructChildren( element, state );
 
