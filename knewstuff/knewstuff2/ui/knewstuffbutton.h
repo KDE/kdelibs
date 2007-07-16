@@ -36,7 +36,7 @@ class Engine;
  * more convenient by encapsulating most of the details involved in
  * using KHotNewStuff in the button itself.
  */
-class KNEWSTUFF_EXPORT Button : public KPushButton
+class Button : public KPushButton
 {
     Q_OBJECT
 
@@ -58,7 +58,7 @@ class KNEWSTUFF_EXPORT Button : public KPushButton
         Button(const QString& what,
                const QString& providerList,
                const QString& resourceType,
-               QWidget* parent, const char* name);
+               QWidget* parent);
 
         /**
          * Constructor used when the details of the KHotNewStuff
@@ -67,7 +67,7 @@ class KNEWSTUFF_EXPORT Button : public KPushButton
          * @param parent the parent widget
          * @param name the name to be used for this widget
          */
-        Button(QWidget* parent, const char* name);
+        Button(QWidget* parent);
 
         /**
          * set the URL to the list of providers for this button to use

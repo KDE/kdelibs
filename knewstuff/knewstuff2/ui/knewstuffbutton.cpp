@@ -32,24 +32,22 @@ namespace KNS
 Button::Button(const QString& what,
                const QString& providerList,
                const QString& resourceType,
-               QWidget* parent, const char* name)
+               QWidget* parent)
     : KPushButton(parent),
       d(0),
       m_providerList(providerList),
       m_type(resourceType),
       m_engine(0)
 {
-    setObjectName(name);
     setButtonText(what);
     init();
 }
 
-Button::Button(QWidget* parent, const char* name)
+Button::Button(QWidget* parent)
     : KPushButton(parent),
       d(0),
       m_engine(0)
 {
-    setObjectName(name);
     setButtonText(i18n("Download New Stuff"));
     init();
 }
