@@ -325,7 +325,7 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kdeprint kde3support kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
-set_target_properties(khtml PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )
 
 
