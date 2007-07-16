@@ -124,8 +124,12 @@ void KGlobalShortcutTest::testSaveRestore()
 
 void KGlobalShortcutTest::cleanupTestCase()
 {
-    m_actionA->setGlobalShortcut(KShortcut());
-    m_actionB->setGlobalShortcut(KShortcut());
+    m_actionA->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
+                                 KAction::NoAutoloading);
+    m_actionB->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
+                                 KAction::NoAutoloading);
+    //FIXME: see initTestCase()
+    QTest::qWait(1000);
 }
 
 #include "kglobalshortcuttest.moc"
