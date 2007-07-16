@@ -39,37 +39,37 @@ class KShellCompletionPrivate;
  */
 class KIO_EXPORT KShellCompletion : public KUrlCompletion 
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-        /**
-         * Constructs a KShellCompletion object.
-         */
-	KShellCompletion();
+    /**
+     * Constructs a KShellCompletion object.
+     */
+    KShellCompletion();
 
-	/**
-	 * Finds completions to the given text.
-	 * The first match is returned and emitted in the signal match().
-	 * @param text the text to complete
-	 * @return the first match, or QString() if not found
-	 */
-	QString makeCompletion(const QString &text);
+    /**
+     * Finds completions to the given text.
+     * The first match is returned and emitted in the signal match().
+     * @param text the text to complete
+     * @return the first match, or QString() if not found
+     */
+    QString makeCompletion(const QString &text);
 
 protected:
-	// Called by KCompletion
-	void postProcessMatch( QString *match ) const;
-	void postProcessMatches( QStringList *matches ) const;
-        void postProcessMatches( KCompletionMatches *matches ) const;
+    // Called by KCompletion
+    void postProcessMatch( QString *match ) const;
+    void postProcessMatches( QStringList *matches ) const;
+    void postProcessMatches( KCompletionMatches *matches ) const;
 
 private:
-	// Find the part of text that should be completed
-	void splitText(const QString &text, QString &text_start, QString &text_compl) const;
-	// Insert quotes and neseccary escapes
-	bool quoteText(QString *text, bool force, bool skip_last) const;
-	QString unquote(const QString &text) const;
+    // Find the part of text that should be completed
+    void splitText(const QString &text, QString &text_start, QString &text_compl) const;
+    // Insert quotes and neseccary escapes
+    bool quoteText(QString *text, bool force, bool skip_last) const;
+    QString unquote(const QString &text) const;
 
-	QString m_text_start; // part of the text that was not completed
-	QString m_text_compl; // part of the text that was completed (unchanged)
+    QString m_text_start; // part of the text that was not completed
+    QString m_text_compl; // part of the text that was completed (unchanged)
 
     QChar m_word_break_char;
     QChar m_quote_char1;
