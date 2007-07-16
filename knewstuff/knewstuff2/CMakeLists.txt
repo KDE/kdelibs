@@ -35,7 +35,6 @@ set(knewstuff2_ui_SRCS
   ui/kdxstranslation.cpp
   ui/downloaddialog.cpp
   ui/qasyncpixmap.cpp
-  ui/qasyncframe.cpp
   ui/qstarframe.cpp
   ui/qnowtooltip.cpp
   ui/uploaddialog.cpp
