@@ -53,6 +53,7 @@ if (WIN32)
       kernel/ktoolinvocation_win.cpp
       network/klocalsocket_win.cpp
       util/kshell_win.cpp
+      util/kmacroexpander_win.cpp
       )
 endif (WIN32)
 
@@ -71,6 +72,7 @@ if (UNIX)
       io/kptydevice.cpp
       io/kptyprocess.cpp
       util/kshell_unix.cpp
+      util/kmacroexpander_unix.cpp
       fakes.c )
 endif (UNIX)
 
