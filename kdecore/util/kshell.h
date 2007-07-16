@@ -100,18 +100,6 @@ namespace KShell {
     KDECORE_EXPORT QString joinArgs( const QStringList &args );
 
     /**
-     * Same as above, but $'' is used instead of '' for the quoting.
-     * The output is suitable for splitArgs(), bash, zsh and possibly
-     * other bourne-compatible shells, but not for plain sh. The advantage
-     * is, that control characters (ASCII less than 32) are escaped into
-     * human-readable strings.
-     *
-     * @param args a list of strings to quote and join
-     * @return a command suitable for shell execution
-     */
-    KDECORE_EXPORT QString joinArgsDQ( const QStringList &args );
-
-    /**
      * Quotes and joins @p argv together according to POSIX shell rules.
      *
      * @param argv an array of c strings to quote and join.

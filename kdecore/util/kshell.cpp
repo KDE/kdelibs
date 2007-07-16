@@ -334,50 +334,6 @@ QString KShell::joinArgs( const char * const *args, int nargs )
     return ret;
 }
 
-QString KShell::joinArgsDQ( const QStringList &args )
-{
-    QChar q( QLatin1Char('\'') ), sp( QLatin1Char(' ') ), bs( QLatin1Char('\\') );
-    QString ret;
-    for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
-        if (!ret.isEmpty())
-            ret += sp;
-        if (!(*it).length())
-            ret.append( q ).append( q );
-        else {
-            for (int i = 0; i < (*it).length(); i++)
-                if (isSpecial((*it).unicode()[i])) {
-                    ret.append( QChar::fromAscii('$') ).append( q );
-                    for (int pos = 0; pos < (*it).length(); pos++) {
-                        int c = (*it).unicode()[pos].unicode();
-                        if (c < 32) {
-                            ret += bs;
-                            switch (c) {
-                            case '\a': ret += QLatin1Char('a'); break;
-                            case '\b': ret += QLatin1Char('b'); break;
-                            case '\033': ret += QLatin1Char('e'); break;
-                            case '\f': ret += QLatin1Char('f'); break;
-                            case '\n': ret += QLatin1Char('n'); break;
-                            case '\r': ret += QLatin1Char('r'); break;
-                            case '\t': ret += QLatin1Char('t'); break;
-                            case '\034': ret += QLatin1Char('c'); ret += QLatin1Char('|'); break;
-                            default: ret += QLatin1Char('c'); ret += c + '@'; break;
-                            }
-                        } else {
-                            if (c == '\'' || c == '\\')
-                                ret += bs;
-                            ret += c;
-                        }
-                    }
-                    ret.append( q );
-                    goto ex;
-                }
-            ret += *it;
-          ex: ;
-        }
-    }
-    return ret;
-}
-
 QString KShell::quoteArg( const QString &arg )
 {
     if (!arg.length())

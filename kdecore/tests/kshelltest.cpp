@@ -54,7 +54,7 @@ KShellTest::joinArgs()
 
 static QString sj(const QString& str, int flags, int* ret)
 {
-	return KShell::joinArgsDQ(KShell::splitArgs(str, flags, ret));
+	return KShell::joinArgs(KShell::splitArgs(str, flags, ret));
 }
 
 void
@@ -63,7 +63,7 @@ KShellTest::splitJoinDQ()
 	int err=0;
 
 	QCOMPARE(sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo ",KShell::NoOptions, &err),
-		QString("~sulli text jojo crap $'\\\\\\'\\e!' $'ha lo'"));
+		QString("~sulli text jojo crap '\\'\\''\x1b!' 'ha lo'"));
 	QVERIFY(err == 0);
 
 	QCOMPARE(sj("\"~sulli\" 'text'", KShell::TildeExpand, &err),
