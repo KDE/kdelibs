@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2005 by Enrico Ros <eros.kde@email.it>                  *
  *   Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>           *
+ *             (C) 2007 Dirk Mueller <mueller@kde.org>                     *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or         *
  *   modify it under the terms of the GNU Lesser General Public            *
@@ -28,7 +29,6 @@
 #include <QtGui/QLayout>
 #include <QtGui/QPixmap>
 #include <QtGui/QFont>
-#include <QtGui/QLabel>
 #include <QtGui/QComboBox>
 #include <QtGui/QPushButton>
 #include <QtCore/QMutableVectorIterator>
@@ -36,6 +36,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QScrollArea>
 #include <QtGui/QApplication>
+#include <QtGui/QTextDocument>
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kcomponentdata.h>
@@ -47,8 +48,6 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <khtml_part.h>
-#include <khtmlview.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
 #include <ktitlewidget.h>
@@ -65,284 +64,15 @@
 // local includes
 #include "kdxsbutton.h"
 #include "qasyncpixmap.h"
-#include "qasyncframe.h"
 
 using namespace KNS;
 
-class MyEventFilter : public QObject
-{
-    public:
-        MyEventFilter(QObject *parent)
-        : QObject(parent)
-        {
-        }
-
-    protected:
-        bool eventFilter(QObject *o, QEvent *e)
-        {
-            if(e->type() == QEvent::Wheel)
-            {
-                kapp->sendEvent((dynamic_cast<QWidget*>(o))->parentWidget(), e);
-                return true;
-            }
-	    else if(e->type() == QEvent::KeyPress)
-	    {
-                kapp->sendEvent((dynamic_cast<QWidget*>(o))->parentWidget(), e);
-	    	return true;
-	    }
-            return false;
-        }
-};
-
-/** GUI/CORE: HTML Widget to operate on AvailableItem::List */
-class ItemsView : public QScrollArea
-{
-public:
-    ItemsView( DownloadDialog * newStuffDialog, QWidget * parentWidget );
-    ~ItemsView();
-
-    void setEngine(DxsEngine *engine);
-
-    void setItems( /*const Entry::List & itemList*/ QMap<const Feed*, KNS::Entry::List> itemList );
-    void setProviders( QMap<Entry*, const Provider*> providers );
-    void setSorting( int sortType );
-    void updateItem( Entry *entry );
-
-private:
-    void buildContents();
-
-    void clear();
-
-    DownloadDialog * m_newStuffDialog;
-    QMap<const Feed*, Entry::List> m_entries;
-    QMap<Entry*, const Provider*> m_providers;
-    QWidget *m_root;
-    int m_sorting;
-    QMap<QPixmap*, QWidget*> m_pixmaps;
-    DxsEngine *m_engine;
-};
-
-
-/** GUI/CORE: HTML Widget for exactly one AvailableItem::List */
-class ItemsViewPart : public KHTMLPart
-{
-    public:
-        ItemsViewPart( QWidget * parentWidget = 0 )
-            : KHTMLPart( parentWidget )
-        {
-            // customize functionality
-            setJScriptEnabled( true );
-            setJavaEnabled( false );
-            setMetaRefreshEnabled( false );
-            setPluginsEnabled( false );
-            setStandardFont( QApplication::font().family() );
-            // 100% is too large! less is better
-            setZoomFactor( 70 );
-
-            MyEventFilter *f = new MyEventFilter(this);
-            view()->installEventFilter(f);
-        }
-
-        void setEntry( Entry *entry )
-        {
-            m_entry = entry;
-            buildContents();
-        }
-
-        void updateEntry( Entry *entry )
-        {
-            // get item id string and iformations
-            QString idString = QString::number( (unsigned long)entry );
-//            AvailableItem::State state = item->state();
-//            bool showProgress = state != AvailableItem::Normal;
-//            int pixelProgress = showProgress ? (int)(item->progress() * 80.0) : 0;
-
-            // perform internal scripting operations over the element
-//            executeScript( "document.getElementById('" + idString + "').style.color='red'" );
-//            executeScript( "document.getElementById('bar" + idString + "').style.width='" +
-//                           QString::number( pixelProgress ) + "px'" );
-//            executeScript( "document.getElementById('bc" + idString + "').style.backgroundColor='" +
-//                           (showProgress ? "gray" : "transparent") + "'" );
-//            executeScript( "document.getElementById('btn" + idString + "').value='" +
-//                           (item->installed() ? i18n( "Uninstall" ) : i18n( "Install" )) + "'" );
-        }
-
-    private:
-        // generate the HTML contents to be displayed by the class itself
-        void buildContents()
-        {
-            begin();
-            setTheAaronnesqueStyle();
-            // write the html header and contents manipulation scripts
-            write( "<html><body>" );
-
-// XXX ???
-//            write( "<div style='font-size:2em; border-bottom: 1px solid blue; background-color: #808080;'>Updated</div>" );
-
-            Entry *entry = m_entry;
-
-            // precalc the image string
-            QString imageString = entry->preview().representation();
-            if ( imageString.length() > 1 )
-                imageString = "<div class='leftImage'><img src='" + imageString + "' border='0'></div>";
-
-            // precalc the title string
-            QString titleString = entry->name().representation();
-            if ( entry->version().length() > 0 )
-                titleString += " v." + entry->version();
-
-            // precalc button's text
-///            QString buttonText = item->installed() ? i18n( "Uninstall" ) : i18n( "Install" );
-
-            // precalc item's dynamic strings
-            QString idString = QString::number( (unsigned long)entry );
-            QString clickString = "window.location.href=\"item:" + idString + "\";";
-
-            // precalc the string for displaying stars (normal+grayed)
-            int starPixels = 11 + 11 * (entry->rating() / 10);
-            QString starsString = "<div class='star' style='width: " + QString::number( starPixels ) + "px;'></div>";
-            int grayPixels = 22 + 22 * (entry->rating() / 20);
-            starsString = "<div class='starbg' style='width: " + QString::number( grayPixels ) + "px;'>" + starsString + "</div>";
-
-            // precalc the string for displaying author (parsing email)
-	    KNS::Author author = entry->author();
-            QString authorString = author.name();
-            QString emailString = author.email();
-            if (!emailString.isEmpty())
-            {
-                authorString = "<a href='mailto:" + emailString + "'>" + authorString + "</a>";
-            }
-
-            // write the HTML code for the current item
-            write( QString(
-                  "<table class='itemBox' id='" + idString + "'><tr>"
-// XXX ???
-//                     "<td class='leftColumn'>"
-//                        // image
-//                          + imageString +
-//                        // progress bar (initially transparent)
-//                        "<div class='leftProgressContainer' id='bc" + idString + "'>"
-//                          "<div id='bar" + idString + "' class='leftProgressBar'></div>"
-//                        "</div>"
-//                        // button
-//                        "<div class='leftButton'>"
-//                          "<input type='button' id='btn" + idString + "' onClick='" + clickString + "' value='" + buttonText + "'>"
-//                        "</div>"
-//                     "</td>"
-                     "<td class='contentsColumn'>"
-                        // contents header: item name/score
-                        "<table class='contentsHeader' cellspacing='2' cellpadding='0'><tr>"
-                          "<td>" + titleString + "</td>"
-                          "<td align='right'>" + starsString +  "</td>"
-                        "</tr></table>"
-                        // contents body: item description
-                        "<div class='contentsBody'>"
-                          + entry->summary().representation() +
-                        "</div>"
-                        // contents footer: author's name/date
-                        "<div class='contentsFooter'>"
-                          "<em>" + authorString + "</em>, "
-                          + KGlobal::locale()->formatDate( entry->releaseDate(), KLocale::ShortDate ) +
-                        "</div>"
-                     "</td>"
-                  "</tr></table>" )
-            );
-
-            write( "</body></html>" );
-            end();
-        }
-
-        // this is the stylesheet we use
-        void setTheAaronnesqueStyle()
-        {
-            QString hoverColor = "#000000"; //QApplication::palette().active().highlightedText().name();
-            QString hoverBackground = "#f8f8f8"; //QApplication::palette().active().highlight().name();
-            QString starIconPath = KStandardDirs::locate( "data", "kpdf/pics/ghns_star.png" );
-            QString starBgIconPath = KStandardDirs::locate( "data", "kpdf/pics/ghns_star_gray.png" );
-
-            // default elements style
-            QString style;
-            style += "body { background-color: white; color: black; padding: 0; margin: 0; }";
-            style += "table, td, th { padding: 0; margin: 0; text-align: left; }";
-            style += "input { color: #000080; font-size:120%; }";
-
-            // the main item container (custom element)
-            style += ".itemBox { background-color: white; color: black; width: 100%;  border-bottom: 1px solid gray; margin: 0px 0px; }";
-            style += ".itemBox:hover { background-color: " + hoverBackground + "; color: " + hoverColor + "; }";
-
-            // style of the item elements (4 cells with multiple containers)
-            style += ".leftColumn { width: 100px; height:100%; text-align: center; }";
-            style += ".leftImage {}";
-            style += ".leftButton {}";
-            style += ".leftProgressContainer { width: 82px; height: 10px; background-color: transparent; }";
-            style += ".leftProgressBar { left: 1px; width: 0px; top: 1px; height: 8px; background-color: red; }";
-            style += ".contentsColumn { vertical-align: top; }";
-            style += ".contentsHeader { width: 100%; font-size: 120%; font-weight: bold; border-bottom: 1px solid #c8c8c8; }";
-            style += ".contentsBody {}";
-            style += ".contentsFooter {}";
-            style += ".star { width: 0px; height: 24px; background-image: url(" + starIconPath + "); background-repeat: repeat-x; }";
-            style += ".starbg { width: 110px; height: 24px; background-image: url(" + starBgIconPath + "); background-repeat: repeat-x; }";
-            setUserStyleSheet( style );
-        }
-
-        // handle clicks on page links/buttons
-        void urlSelected( const QString &link, int button, int state, const QString &target, KParts::URLArgs args)
-        {
-	    kDebug() << "Clicked on URL " << link << endl;
-
-	    Q_UNUSED(button);
-	    Q_UNUSED(state);
-	    Q_UNUSED(target);
-	    Q_UNUSED(args);
-
-            KUrl url( link );
-            QString urlProtocol = url.protocol();
-            QString urlPath = url.path();
-
-            if ( urlProtocol == "mailto" )
-            {
-                // clicked over a mail address
-                // FIXME: if clicked with MRB, show context menu with IM etc.
-                // FIXME: but RMB never reaches this method?!
-                KToolInvocation::invokeMailer( url );
-            }
-            else if ( urlProtocol == "item" )
-            {
-                // clicked over an item
-                bool ok;
-                unsigned long itemPointer = urlPath.toULong( &ok );
-                if ( !ok )
-                {
-                    kWarning() << "ItemsView: error converting item pointer." << endl;
-                    return;
-                }
-
-                // I love to cast pointers
-                Entry *entry = (Entry*)itemPointer;
-                if ( entry != m_entry )
-                {
-                    kWarning() << "ItemsView: error retrieving item pointer." << endl;
-                    return;
-                }
-
-// XXX ???
-                // install/uninstall the item
-//                if ( item->installed() )
-//                    m_newStuffDialog->removeItem( item );   // synchronous
-//                else
-//                    m_newStuffDialog->installItem( item );  // asynchronous
-            }
-        }
-
-    private:
-        Entry *m_entry;
-};
-
-ItemsView::ItemsView( DownloadDialog * newStuffDialog, QWidget * parentWidget )
-    : QScrollArea( parentWidget ),
+ItemsView::ItemsView( DownloadDialog * newStuffDialog, QWidget* _parent )
+    : QScrollArea( _parent ),
     m_newStuffDialog( newStuffDialog ), m_root( 0 ), m_sorting( 0 )
 {
     setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
+    setWidgetResizable(true);
 }
 
 ItemsView::~ItemsView()
@@ -395,7 +125,9 @@ void ItemsView::buildContents()
     }
 
     m_root = new QWidget(this);
-    QGridLayout *layout = new QGridLayout(m_root);
+    m_root->setBackgroundRole(QPalette::Base);
+    QGridLayout* _layout = new QGridLayout(m_root);
+    _layout->setVerticalSpacing (10);
 
     Entry::List entries = m_entries[m_entries.keys().first()];
     Entry::List::iterator it = entries.begin(), iEnd = entries.end();
@@ -403,12 +135,11 @@ void ItemsView::buildContents()
     {
         Entry* entry = (*it);
 
-        ItemsViewPart *part = new ItemsViewPart();
-        layout->addWidget(part->view(), row*2, 1, 2, 1);
-        //part->view()->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-        part->view()->setFixedHeight(100);
+        EntryView *part = new EntryView(m_root);
+        part->setBackgroundRole(row & 1 ? QPalette::AlternateBase : QPalette::Base);
+        _layout->addWidget(part, row*2, 1, 2, 1);
 
-        KDXSButton *dxsbutton = new KDXSButton();
+        KDXSButton *dxsbutton = new KDXSButton(m_root);
         dxsbutton->setEntry(entry);
         if(m_providers.contains(entry))
             dxsbutton->setProvider(m_providers[entry]);
@@ -417,15 +148,16 @@ void ItemsView::buildContents()
         QString imageurl = entry->preview().representation();
         if(!imageurl.isEmpty())
         {
-            QAsyncFrame *f = new QAsyncFrame();
+            QLabel *f = new QLabel(this);
             f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-            QAsyncPixmap *pix = new QAsyncPixmap(imageurl);
+            QAsyncPixmap *pix = new QAsyncPixmap(imageurl, this);
             f->setFixedSize(64, 64);
-            connect(pix, SIGNAL(signalLoaded(QPixmap*)), f, SLOT(slotLoaded(QPixmap*)));
-            layout->addWidget(f, row*2, 0);
+            connect(pix, SIGNAL(signalLoaded(const QPixmap&)),
+                    f, SLOT(setPixmap(const QPixmap&)));
+            _layout->addWidget(f, row*2, 0);
         }
-        layout->setRowStretch(row*2, 1);
-        layout->addWidget(dxsbutton, row*2+1, 0);
+        _layout->setRowStretch(row*2, 1);
+        _layout->addWidget(dxsbutton, row*2+1, 0);
 
         part->setEntry(entry);
     }
@@ -440,50 +172,187 @@ void ItemsView::clear()
     m_pixmaps.clear();
 }
 
-
-class KNS::DownloadDialogPrivate
+EntryView::EntryView( QWidget * _parent )
+    : QLabel( _parent )
 {
-public:
-    // Contents
-    // gui related vars
-    KLineEdit * searchLine;
-    QComboBox * typeCombo;
-    QComboBox * sortCombo;
-    ItemsView * itemsView;
+    connect(this, SIGNAL(linkActivated(const QString&)), SLOT(urlSelected(const QString&)));
+}
 
-    // other classes
-    QTimer * messageTimer;
-    QTimer * networkTimer;
-    KTitleWidget* titleWidget;
-
-    DxsEngine *engine;
-    QMap<QString, QString> categorymap;
-
-    //QList<Entry*> m_entries;
-    QMap<const Feed*, Entry::List> entries;
-    QMap<Entry*, const Provider*> providers;
-};
-
-
-DownloadDialog::DownloadDialog( QWidget * parentWidget )
-    : KDialog( parentWidget ), d( new DownloadDialogPrivate )
+void EntryView::setEntry( Entry *entry )
 {
+    m_entry = entry;
+    buildContents();
+}
+
+void EntryView::updateEntry( Entry *entry )
+{
+    // get item id string and iformations
+    QString idString = QString::number( (unsigned long)entry );
+    //            AvailableItem::State state = item->state();
+    //            bool showProgress = state != AvailableItem::Normal;
+    //            int pixelProgress = showProgress ? (int)(item->progress() * 80.0) : 0;
+
+    // perform internal scripting operations over the element
+    //            executeScript( "document.getElementById('" + idString + "').style.color='red'" );
+    //            executeScript( "document.getElementById('bar" + idString + "').style.width='" +
+    //                           QString::number( pixelProgress ) + "px'" );
+    //            executeScript( "document.getElementById('bc" + idString + "').style.backgroundColor='" +
+    //                           (showProgress ? "gray" : "transparent") + "'" );
+    //            executeScript( "document.getElementById('btn" + idString + "').value='" +
+    //                           (item->installed() ? i18n( "Uninstall" ) : i18n( "Install" )) + "'" );
+}
+
+void EntryView::buildContents()
+{
+    setTheAaronnesqueStyle();
+    // write the html header and contents manipulation scripts
+    QString t;
+
+    t += "<qt>";
+
+    // precalc the image string
+    QString imageString = m_entry->preview().representation();
+    if ( !imageString.isEmpty() )
+        imageString = "<img class='leftImage' src='" + Qt::escape(imageString) + "' border='0' />";
+
+    // precalc the title string
+    QString titleString = m_entry->name().representation();
+    if ( !m_entry->version().isEmpty() ) titleString += " v." + Qt::escape(m_entry->version());
+
+    // precalc the string for displaying stars (normal+grayed)
+    int starPixels = 11 + 11 * (m_entry->rating() / 10);
+    QString starsString = "<div class='star' style='width: " + QString::number( starPixels ) + "px;'></div>";
+    int grayPixels = 22 + 22 * (m_entry->rating() / 20);
+    starsString = "<div class='starbg' style='width: " + QString::number( grayPixels ) + "px;'>" + starsString + "</div>";
+
+    // precalc the string for displaying author (parsing email)
+    KNS::Author author = m_entry->author();
+    QString authorString = author.name();
+
+    QString emailString = author.email();
+    if (!emailString.isEmpty())
+    {
+        authorString = "<a href='mailto:" + Qt::escape( emailString) + "'>"
+            + Qt::escape(authorString) + "</a>";
+    }
+
+    // write the HTML code for the current item
+    t += QLatin1String("<table class='contentsHeader' cellspacing='2' cellpadding='0'>")
+         + "<tr>"
+         +   "<td>" + Qt::escape(titleString) + "</td>"
+         +   "<td align='right'>" + starsString +  "</td>"
+         + "</tr>"
+         + "<tr>"
+         +   "<td colspan='2' class='contentsBody'>"
+         +      Qt::escape(m_entry->summary().representation())
+         +   "</td>"
+         + "</tr>"
+         + "<tr>"
+         +   "<td colspan='2' class='contentsFooter'>"
+         +     "<em>" + authorString + "</em>, "
+         +       KGlobal::locale()->formatDate( m_entry->releaseDate(), KLocale::ShortDate )
+         +   "</td>"
+         + "</tr>"
+         + "</table>";
+
+    t += "</qt>";
+    setText(t);
+}
+
+void EntryView::setTheAaronnesqueStyle()
+{
+    QString hoverColor = "#000000"; //QApplication::palette().active().highlightedText().name();
+    QString hoverBackground = "#f8f8f8"; //QApplication::palette().active().highlight().name();
+    QString starIconPath = KStandardDirs::locate( "data", "kpdf/pics/ghns_star.png" );
+    QString starBgIconPath = KStandardDirs::locate( "data", "kpdf/pics/ghns_star_gray.png" );
+
+    // default elements style
+    QString s;
+    s += "body { background-color: white; color: black; padding: 0; margin: 0; }";
+    s += "table, td, th { padding: 0; margin: 0; text-align: left; }";
+    s += "input { color: #000080; font-size:120%; }";
+
+    // the main item container (custom element)
+    s += ".itemBox { background-color: white; color: black; width: 100%;  border-bottom: 1px solid gray; margin: 0px 0px; }";
+    s += ".itemBox:hover { background-color: " + hoverBackground + "; color: " + hoverColor + "; }";
+
+    // s of the item elements (4 cells with multiple containers)
+    s += ".leftColumn { width: 100px; height:100%; text-align: center; }";
+    s += ".leftImage {}";
+    s += ".leftButton {}";
+    s += ".leftProgressContainer { width: 82px; height: 10px; background-color: transparent; }";
+    s += ".leftProgressBar { left: 1px; width: 0px; top: 1px; height: 8px; background-color: red; }";
+    s += ".contentsColumn { vertical-align: top; }";
+    s += ".contentsHeader { width: 100%; font-size: 120%; font-weight: bold; border-bottom: 1px solid #c8c8c8; }";
+    s += ".contentsBody {}";
+    s += ".contentsFooter {}";
+    s += ".star { width: 0px; height: 24px; background-image: url(" + starIconPath + "); background-repeat: repeat-x; }";
+    s += ".starbg { width: 110px; height: 24px; background-image: url(" + starBgIconPath + "); background-repeat: repeat-x; }";
+    setStyleSheet(s);
+}
+
+void EntryView::urlSelected( const QString &link)
+{
+    kDebug() << "Clicked on URL " << link << endl;
+
+    KUrl url( link );
+    QString urlProtocol = url.protocol();
+    QString urlPath = url.path();
+
+    if ( urlProtocol == "mailto" )
+    {
+        // clicked over a mail address
+        // FIXME: if clicked with MRB, show context menu with IM etc.
+        // FIXME: but RMB never reaches this method?!
+        KToolInvocation::invokeMailer( url );
+    }
+    else if ( urlProtocol == "item" )
+    {
+        // clicked over an item
+        bool ok;
+        unsigned long itemPointer = urlPath.toULong( &ok );
+        if ( !ok )
+        {
+            kWarning() << "ItemsView: error converting item pointer." << endl;
+            return;
+        }
+
+        // I love to cast pointers
+        Entry *entry = (Entry*)itemPointer;
+        if ( entry != m_entry )
+        {
+            kWarning() << "ItemsView: error retrieving item pointer." << endl;
+            return;
+        }
+
+        // XXX ???
+        // install/uninstall the item
+        //                if ( item->installed() )
+        //                    m_newStuffDialog->removeItem( item );   // synchronous
+        //                else
+        //                    m_newStuffDialog->installItem( item );  // asynchronous
+    }
+}
+
+DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
+    : KDialog( _parent )
+{
+    m_engine = _engine;
+
     setButtons(KDialog::Close);
 
     // initialize the private classes
-    d->messageTimer = new QTimer( this );
-    d->messageTimer->setSingleShot( true );
-    connect( d->messageTimer, SIGNAL( timeout() ),
-             this, SLOT( slotResetMessage() ) );
+    messageTimer = new QTimer( this );
+    messageTimer->setSingleShot( true );
+    connect( messageTimer, SIGNAL( timeout() ), SLOT( slotResetMessage() ) );
 
-    d->networkTimer = new QTimer( this );
-    connect( d->networkTimer, SIGNAL( timeout() ),
-             this, SLOT( slotNetworkTimeout() ) );
+    networkTimer = new QTimer( this );
+    connect( networkTimer, SIGNAL( timeout() ), SLOT( slotNetworkTimeout() ) );
 
     // popuplate dialog with stuff
-    QWidget* mainWidget = new QWidget(this);
-    setMainWidget(mainWidget);
-    QBoxLayout * mainLayout = new QVBoxLayout(mainWidget); // FIXME KDE4PORT
+    QWidget* _mainWidget = new QWidget(this);
+    setMainWidget(_mainWidget);
+    QBoxLayout * mainLayout = new QVBoxLayout(_mainWidget);
     mainLayout->setMargin(0);
 
     // create left picture widget (if picture found)
@@ -494,85 +363,83 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
 
 
     // create title widget
-    d->titleWidget = new KTitleWidget(mainWidget);
+    titleWidget = new KTitleWidget(_mainWidget);
 
     // create the control panel
-    QFrame * panelFrame = new QFrame(mainWidget);
+    QFrame * panelFrame = new QFrame(_mainWidget);
     panelFrame->setFrameStyle( QFrame::NoFrame );
     QGridLayout * panelLayout = new QGridLayout( panelFrame);
     panelLayout->setMargin(0);
     // add widgets to the control panel
     QLabel * label1 = new QLabel( i18n("Show:")/*, panelFrame*/ );
     panelLayout->addWidget( label1, 0, 0 );
-    d->typeCombo = new QComboBox( false/*, panelFrame*/ );
-    panelLayout->addWidget( d->typeCombo, 0, 1 );
-    d->typeCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
-    d->typeCombo->setMinimumWidth( 150 );
-    d->typeCombo->setEnabled( false );
-    connect( d->typeCombo, SIGNAL( activated(int) ),
-                this, SLOT( slotLoadProviderDXS(int) ) );
+    typeCombo = new QComboBox( false/*, panelFrame*/ );
+    panelLayout->addWidget( typeCombo, 0, 1 );
+    typeCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
+    typeCombo->setMinimumWidth( 150 );
+    typeCombo->setEnabled( false );
+    connect( typeCombo, SIGNAL( activated(int) ), SLOT( slotLoadProviderDXS(int) ) );
 
     QLabel * label2 = new QLabel( i18n("Order by:")/*, panelFrame*/ );
     panelLayout->addWidget( label2, 0, 2 );
-    d->sortCombo = new QComboBox( false/*, panelFrame*/ );
-    panelLayout->addWidget( d->sortCombo, 0, 3 );
-    d->sortCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
-    d->sortCombo->setMinimumWidth( 100 );
-    d->sortCombo->setEnabled( false );
-    d->sortCombo->addItem( SmallIcon( "text" ), i18n("Name") );
-    d->sortCombo->addItem( SmallIcon( "favorites" ), i18n("Rating") );
-    d->sortCombo->addItem( SmallIcon( "calendar-today" ), i18n("Most recent") );
-    d->sortCombo->addItem( SmallIcon( "cdcopy" ), i18n("Most downloads") );
-    connect( d->sortCombo, SIGNAL( activated(int) ),
-                this, SLOT( slotSortingSelected(int) ) );
+    sortCombo = new QComboBox( false/*, panelFrame*/ );
+    panelLayout->addWidget( sortCombo, 0, 3 );
+    sortCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
+    sortCombo->setMinimumWidth( 100 );
+    sortCombo->setEnabled( false );
+    sortCombo->addItem( SmallIcon( "text" ), i18n("Name") );
+    sortCombo->addItem( SmallIcon( "favorites" ), i18n("Rating") );
+    sortCombo->addItem( SmallIcon( "calendar-today" ), i18n("Most recent") );
+    sortCombo->addItem( SmallIcon( "cdcopy" ), i18n("Most downloads") );
+    connect( sortCombo, SIGNAL( activated(int) ), SLOT( slotSortingSelected(int) ) );
 
     QLabel * label3 = new QLabel( i18n("Search:"), panelFrame );
     panelLayout->addWidget( label3, 1, 0 );
-    d->searchLine = new KLineEdit( panelFrame );
-    panelLayout->addWidget( d->searchLine, 1, 1, 1, 3 );
-    d->searchLine->setEnabled( false );
-    d->searchLine->setClearButtonShown(true);
+    searchLine = new KLineEdit( panelFrame );
+    panelLayout->addWidget( searchLine, 1, 1, 1, 3 );
+    searchLine->setEnabled( false );
+    searchLine->setClearButtonShown(true);
 
     // create the ItemsView used to display available items
-    d->itemsView = new ItemsView( this, mainWidget ); // FIXME KDE4PORT
+    itemsView = new ItemsView( this, _mainWidget );
+    itemsView->setEngine(m_engine);
 
-    mainLayout->addWidget(d->titleWidget);
+    mainLayout->addWidget(titleWidget);
     mainLayout->addWidget(panelFrame);
-    mainLayout->addWidget(d->itemsView);
+    mainLayout->addWidget(itemsView);
+
+    statusLabel = new QLabel(_mainWidget);
+    mainLayout->addWidget(statusLabel);
 
     // start with a nice size
     // FIXME: this should load the last size the user set it to.
     resize( 700, 400 );
 
-    d->engine = NULL;
-
     setWindowTitle(i18n("Get Hot New Stuff!"));
-    d->titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
+    titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
                                   "%1 Add On Installer",
                                   KGlobal::mainComponent().aboutData()->programName()));
-    d->titleWidget->setPixmap(KGlobal::mainComponent().aboutData()->appName());
-    connect( this, SIGNAL( closeClicked() ), this, SLOT( accept() ) );
+    titleWidget->setPixmap(KGlobal::mainComponent().aboutData()->appName());
+    connect( this, SIGNAL( closeClicked() ), SLOT( accept() ) );
 }
 
 DownloadDialog::~DownloadDialog()
 {
-    // delete the private storage structure
-    delete d;
 }
 
 void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::MessageType type, int timeOutMs )
 {
     // stop the pending timer if present
-    if ( d->messageTimer )
-        d->messageTimer->stop();
+    if ( messageTimer ) 
+        messageTimer->stop();
 
     // set text to messageLabel
-    d->titleWidget->setComment( msg, type );
+    titleWidget->setComment( msg, type );
 
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
     kDebug() << "starting the message timer for " << timeOutMs << endl;
-        d->messageTimer->start( timeOutMs );
+    messageTimer->start( timeOutMs );
     }
 }
 
@@ -591,13 +458,13 @@ void DownloadDialog::installItem( Entry *entry )
 
 void DownloadDialog::removeItem( Entry *entry )
 {
-Q_UNUSED(entry);
+    Q_UNUSED(entry);
 //    displayMessage( i18n("%1 is no more installed.").arg( item->name().representation() ) );
 }
 
 void DownloadDialog::slotResetMessage() // SLOT
 {
-    d->titleWidget->setComment(QString());
+    titleWidget->setComment(QString());
 }
 
 void DownloadDialog::slotNetworkTimeout() // SLOT
@@ -607,42 +474,21 @@ void DownloadDialog::slotNetworkTimeout() // SLOT
 
 void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
 {
-    d->itemsView->setSorting( sortType );
+    itemsView->setSorting( sortType );
 }
 
 
 ///////////////// DXS ////////////////////
 
-void DownloadDialog::setEngine(DxsEngine *engine)
-{
-	d->engine = engine;
-
-	d->itemsView->setEngine(d->engine);
-
-	// FIXME: adapt to DxsEngine from Dxs!
-	/*connect(d->engine,
-		SIGNAL(signalCategories(QList<KNS::Category*>)),
-		SLOT(slotCategories(QList<KNS::Category*>)));
-	connect(d->engine,
-		SIGNAL(signalEntries(QList<KNS::Entry*>)),
-		SLOT(slotEntries(QList<KNS::Entry*>)));
-	connect(d->engine,
-		SIGNAL(signalError()),
-		SLOT(slotError()));
-	connect(d->engine,
-		SIGNAL(signalFault()),
-		SLOT(slotFault()));*/
-}
-
 void DownloadDialog::slotLoadProviderDXS(int index)
 {
-	Q_UNUSED(index);
+    Q_UNUSED(index);
 
-	QString category = d->typeCombo->currentText();
-	QString categoryname = d->categorymap[category];
+    QString category = typeCombo->currentText();
+    QString categoryname = categorymap[category];
 
-	//m_dxs->call_entries(categoryname, QString());
-	// FIXME: use d->engine
+    //m_dxs->call_entries(categoryname, QString());
+    // FIXME: use d->engine
 }
 
 void DownloadDialog::slotLoadProvidersListDXS()
@@ -651,28 +497,28 @@ void DownloadDialog::slotLoadProvidersListDXS()
 
 void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 {
-	d->categorymap.clear();
+    categorymap.clear();
 
-	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it)
-	{
-		KNS::Category *category = (*it);
-		kDebug() << "Category: " << category->name().representation() << endl;
-		QPixmap icon = DesktopIcon(category->icon().url(), 16);
-		// FIXME: use icon from remote URLs (see non-DXS providers as well)
-		d->typeCombo->addItem(icon, category->name().representation());
-		d->categorymap[category->name().representation()] = category->id();
-		// FIXME: better use global id, since names are not guaranteed
-		//        to be unique
-	}
+    for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it)
+    {
+        KNS::Category *category = (*it);
+        kDebug() << "Category: " << category->name().representation() << endl;
+        QPixmap icon = DesktopIcon(category->icon().url(), 16);
+        // FIXME: use icon from remote URLs (see non-DXS providers as well)
+        typeCombo->addItem(icon, category->name().representation());
+        categorymap[category->name().representation()] = category->id();
+        // FIXME: better use global id, since names are not guaranteed
+        //        to be unique
+    }
 
-	d->typeCombo->setEnabled(true);
+    typeCombo->setEnabled(true);
 
-	slotLoadProviderDXS(0);
+    slotLoadProviderDXS(0);
 }
 
-void DownloadDialog::slotEntries(QList<KNS::Entry*> entries)
+void DownloadDialog::slotEntries(QList<KNS::Entry*> _entries)
 {
-	Q_UNUSED(entries);
+	Q_UNUSED(_entries);
 
 	//d->itemsView->setItems( entries );
 	// FIXME: old API here
@@ -684,25 +530,25 @@ void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *pr
 {
 	Q_UNUSED(provider);
 
-	Entry::List entries = d->entries[feed];
-	entries.append(entry);
-	d->entries[feed] = entries;
+        Entry::List e = entries[feed];
+        e.append(entry);
+	entries[feed] = e;
 
 	// FIXME: what if entry belongs to more than one provider at once?
-	d->providers[entry] = provider;
+	providers[entry] = provider;
 
 	kDebug() << "downloaddialog: addEntry to list of size " << entries.size() << endl;
 }
 
 void DownloadDialog::refresh()
 {
-	d->itemsView->setProviders(d->providers);
-	d->itemsView->setItems(d->entries);
+	itemsView->setProviders(providers);
+	itemsView->setItems(entries);
 	// FIXME: this method has side effects (rebuilding HTML!!!)
 
-	for(int i = 0; i < d->entries.keys().count(); i++)
+	for(int i = 0; i < entries.keys().count(); i++)
 	{
-		const Feed *feed = d->entries.keys().at(i);
+		const Feed *feed = entries.keys().at(i);
 		if(!feed)
 		{
 			kDebug() << "INVALID FEED?!" << endl;
@@ -710,11 +556,11 @@ void DownloadDialog::refresh()
 		}
 		//QPixmap icon = DesktopIcon(QString(), 16);
 		//d->typeCombo->addItem(icon, feed->name().representation());
-		d->typeCombo->addItem(feed->name().representation());
+		typeCombo->addItem(feed->name().representation());
 		// FIXME: see DXS categories
 	}
-	d->typeCombo->setEnabled(true);
-	d->sortCombo->setEnabled(true);
+	typeCombo->setEnabled(true);
+	sortCombo->setEnabled(true);
 	// FIXME: sort combo must be filled with feeds instead of being prefilled
 }
 
