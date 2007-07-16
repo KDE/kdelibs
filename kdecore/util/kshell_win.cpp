@@ -21,6 +21,9 @@
 
 #include "kshell.h"
 
+#include <QString>
+#include <QStringList>
+
 QStringList KShell::splitArgs(const QString &args, Options flags, Errors *err)
 {
     if (err)
