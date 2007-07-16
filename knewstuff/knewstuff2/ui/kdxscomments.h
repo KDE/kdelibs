@@ -23,7 +23,7 @@
 
 #include <kdialog.h>
 
-class KHTMLPart;
+class QTextBrowser;
 
 /**
  * KNewStuff comments window.
@@ -40,14 +40,11 @@ class KDXSComments : public KDialog
 Q_OBJECT
 public:
 	KDXSComments(QWidget *parent);
-	void addComment(QString username, QString comment);
-	void finish();
+	void addComment(const QString& username, const QString& comment);
 private Q_SLOTS:
-	void slotURL(const QString& url);
+	void slotUrl(const QUrl& url);
 private:
-	void prepare();
-
-	KHTMLPart *m_part;
+	QTextBrowser *m_log;
 };
 
 #endif
