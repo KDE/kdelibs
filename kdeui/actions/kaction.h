@@ -206,7 +206,7 @@ public:
       ActiveShortcut = 0x1,
       /// The shortcut is a default shortcut - it becomes active when somebody decides to
       /// reset shortcuts to default.
-      DefaultShortcut = 0x2,
+      DefaultShortcut = 0x2
     };
     Q_DECLARE_FLAGS(ShortcutTypes, ShortcutType)
 
