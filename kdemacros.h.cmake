@@ -415,4 +415,21 @@
 #define KDE_WEAK_SYMBOL
 #endif
 
+
+/**
+ * @def KDE_MUST_USE_RESULT
+ * @ingroup KDEMacros
+ *
+ * The KDE_MUST_USE_RESULT macro can be used to tell the compiler that
+ * a particular functions return value must be checked.
+ */
+
+#ifdef __GNUC__
+#define KDE_MUST_USE_RESULT __attribute__((__warn_unused_result__))
+#else
+#define KDE_MUST_USE_RESULT
+#endif
+
+
+
 #endif /* _KDE_MACROS_H_ */
