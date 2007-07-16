@@ -100,17 +100,6 @@ namespace KShell {
     KDECORE_EXPORT QString joinArgs( const QStringList &args );
 
     /**
-     * Quotes and joins @p argv together according to POSIX shell rules.
-     *
-     * @param argv an array of c strings to quote and join.
-     *  The strings are expected to be in local-8-bit encoding.
-     * @param argc maximal number of strings in @p argv. if not supplied,
-     *  @p argv must be null-terminated.
-     * @return a command suitable for shell execution
-     */
-    KDECORE_EXPORT QString joinArgs( const char * const *argv, int argc = -1 );
-
-    /**
      * Quotes @p arg according to POSIX shell rules.
      *
      * This function can be used to quote an argument string such that

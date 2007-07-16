@@ -308,32 +308,6 @@ QString KShell::joinArgs( const QStringList &args )
     return ret;
 }
 
-QString KShell::joinArgs( const char * const *args, int nargs )
-{
-    if (!args)
-        return QString(); // well, QString::empty, in fact. qt sucks ;)
-    QChar q( QLatin1Char('\'') ), sp( QLatin1Char(' ') );
-    QString ret;
-    for (const char * const *argp = args; nargs && *argp; argp++, nargs--) {
-        if (!ret.isEmpty())
-            ret += sp;
-        if (!**argp)
-            ret.append( q ).append( q );
-        else {
-            QString tmp( QFile::decodeName( *argp ) );
-            for (int i = 0; i < tmp.length(); i++)
-                if (isSpecial(tmp.unicode()[i])) {
-                    tmp.replace( q, QLatin1String("'\\''" ));
-                    ret += q;
-                    tmp += q;
-                    break;
-                }
-            ret += tmp;
-       }
-    }
-    return ret;
-}
-
 QString KShell::quoteArg( const QString &arg )
 {
     if (!arg.length())
