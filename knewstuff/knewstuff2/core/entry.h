@@ -52,6 +52,9 @@ class KNEWSTUFF_EXPORT Entry
      */
     Entry();
 
+    Entry(const Entry& other);
+    Entry& operator=(const Entry& other);
+
     /**
      * Destructor.
      */
@@ -217,7 +220,7 @@ class KNEWSTUFF_EXPORT Entry
      *
      * @ref checksum Checksum for the entry
      */
-    void setChecksum(QString checksum);
+    void setChecksum(const QString& checksum);
 
     /**
      * Sets the signature of the entry. This will be a digital signature
@@ -225,7 +228,7 @@ class KNEWSTUFF_EXPORT Entry
      *
      * @ref signature Signature for the entry
      */
-    void setSignature(QString signature);
+    void setSignature(const QString& signature);
 
     /**
      * Returns the checksum for the entry.
@@ -278,25 +281,8 @@ class KNEWSTUFF_EXPORT Entry
      */
     Status status();
 
-  private:
-    QString mCategory;
-    QString mLicense;
-    QString mVersion;
-    QDate mReleaseDate;
-    Author mAuthor;
-    int mRelease;
-    int mRating;
-    int mDownloads;
-    KTranslatable mName;
-    KTranslatable mSummary;
-    KTranslatable mPayload;
-    KTranslatable mPreview;
-
-    QString mChecksum;
-    QString mSignature;
-    Status mStatus;
-
-    class EntryPrivate *d;
+private:
+    class EntryPrivate * const d;
 };
 
 }

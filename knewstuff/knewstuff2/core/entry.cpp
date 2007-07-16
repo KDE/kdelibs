@@ -23,20 +23,46 @@
 
 using namespace KNS;
 
-class EntryPrivate
+struct KNS::EntryPrivate
 {
-  public:
-  EntryPrivate(){}
+    EntryPrivate() : mReleaseDate(QDate::currentDate())
+       , mRelease(0)
+       , mRating(0)
+       , mDownloads(0)
+       , mStatus(Entry::Invalid) {}
+
+    QString mCategory;
+    QString mLicense;
+    QString mVersion;
+    QDate mReleaseDate;
+    Author mAuthor;
+    int mRelease;
+    int mRating;
+    int mDownloads;
+    KTranslatable mName;
+    KTranslatable mSummary;
+    KTranslatable mPayload;
+    KTranslatable mPreview;
+
+    QString mChecksum;
+    QString mSignature;
+    Entry::Status mStatus;
 };
 
-Entry::Entry() :
-  mReleaseDate(QDate::currentDate()),
-  mRelease(0),
-  mRating(0),
-  mDownloads(0),
-  mStatus(Invalid)
+Entry::Entry() 
+    : d(new EntryPrivate)
 {
-  d = NULL;
+}
+
+Entry::Entry(const Entry& other)
+    : d(new EntryPrivate(*other.d))
+{
+}
+
+Entry& Entry::operator=(const Entry& other)
+{
+    *d = *other.d;
+    return *this;
 }
 
 Entry::~Entry()
@@ -45,151 +71,151 @@ Entry::~Entry()
 
 void Entry::setName(const KTranslatable& name)
 {
-  mName = name;
+    d->mName = name;
 }
 
 KTranslatable Entry::name() const
 {
-  return mName;
+    return d->mName;
 }
 
 void Entry::setCategory(const QString& category)
 {
-  mCategory = category;
+    d->mCategory = category;
 }
 
 QString Entry::category() const
 {
-  return mCategory;
+    return d->mCategory;
 }
 
 void Entry::setAuthor(const Author &author)
 {
-  mAuthor = author;
+    d->mAuthor = author;
 }
 
 Author Entry::author() const
 {
-  return mAuthor;
+    return d->mAuthor;
 }
 
 void Entry::setLicense(const QString &license)
 {
-  mLicense = license;
+    d->mLicense = license;
 }
 
 QString Entry::license() const
 {
-  return mLicense;
+    return d->mLicense;
 }
 
 void Entry::setSummary(const KTranslatable &text)
 {
-  mSummary = text;
+    d->mSummary = text;
 }
 
 KTranslatable Entry::summary() const
 {
-  return mSummary;
+    return d->mSummary;
 }
 
 void Entry::setVersion(const QString& version)
 {
-  mVersion = version;
+    d->mVersion = version;
 }
 
 QString Entry::version() const
 {
-  return mVersion;
+    return d->mVersion;
 }
 
 void Entry::setRelease(int release)
 {
-  mRelease = release;
+    d->mRelease = release;
 }
 
 int Entry::release() const
 {
-  return mRelease;
+    return d->mRelease;
 }
 
-void Entry::setReleaseDate(const QDate& d)
+void Entry::setReleaseDate(const QDate& date)
 {
-  mReleaseDate = d;
+    d->mReleaseDate = date;
 }
 
 QDate Entry::releaseDate() const
 {
-  return mReleaseDate;
+    return d->mReleaseDate;
 }
 
 void Entry::setPayload(const KTranslatable& url)
 {
-  mPayload = url;
+    d->mPayload = url;
 }
 
 KTranslatable Entry::payload() const
 {
-  return mPayload;
+    return d->mPayload;
 }
 
 void Entry::setPreview(const KTranslatable& url)
 {
-  mPreview = url;
+    d->mPreview = url;
 }
 
 KTranslatable Entry::preview() const
 {
-  return mPreview;
+    return d->mPreview;
 }
 
 void Entry::setRating(int rating)
 {
-  mRating = rating;
+    d->mRating = rating;
 }
 
 int Entry::rating() const
 {
-  return mRating;
+    return d->mRating;
 }
 
 void Entry::setDownloads(int downloads)
 {
-  mDownloads = downloads;
+    d->mDownloads = downloads;
 }
 
 int Entry::downloads() const
 {
-  return mDownloads;
+    return d->mDownloads;
 }
 
-void Entry::setChecksum(QString checksum)
+void Entry::setChecksum(const QString& checksum)
 {
-	mChecksum = checksum;
+    d->mChecksum = checksum;
 }
 
 QString Entry::checksum() const
 {
-	return mChecksum;
+    return d->mChecksum;
 }
 
-void Entry::setSignature(QString signature)
+void Entry::setSignature(const QString& signature)
 {
-	mSignature = signature;
+    d->mSignature = signature;
 }
 
 QString Entry::signature() const
 {
-	return mSignature;
+    return d->mSignature;
 }
 
 Entry::Status Entry::status()
 {
-	return mStatus;
+    return d->mStatus;
 }
 
 void Entry::setStatus(Status status)
 {
-	mStatus = status;
+    d->mStatus = status;
 }
 

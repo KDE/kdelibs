@@ -94,16 +94,8 @@ class KNEWSTUFF_EXPORT Installation
     bool customName();
 
   private:
-    QString m_command;
-    QString m_uncompression;
-    QString m_standardresourcedir;
-    QString m_targetdir;
-    QString m_installpath;
-    Policy m_checksumpolicy;
-    Policy m_signaturepolicy;
-    Scope m_scope;
-    bool m_customname;
-    class InstallationPrivate *d;
+    Q_DISABLE_COPY (Installation)
+    class InstallationPrivate * const d;
 };
 
 }

@@ -20,21 +20,32 @@
 
 #include "installation.h"
 
-class InstallationPrivate
+struct KNS::InstallationPrivate
 {
-  public:
-  InstallationPrivate(){}
+    InstallationPrivate()
+    {
+        m_checksumpolicy = Installation::CheckIfPossible;
+        m_signaturepolicy = Installation::CheckIfPossible;
+        m_scope = Installation::ScopeUser;
+        m_customname = false;
+    }
+
+    QString m_command;
+    QString m_uncompression;
+    QString m_standardresourcedir;
+    QString m_targetdir;
+    QString m_installpath;
+    Installation::Policy m_checksumpolicy;
+    Installation::Policy m_signaturepolicy;
+    Installation::Scope m_scope;
+    bool m_customname;
 };
 
 using namespace KNS;
 
 Installation::Installation()
+    : d(new InstallationPrivate)
 {
-	d = NULL;
-	m_checksumpolicy = CheckIfPossible;
-	m_signaturepolicy = CheckIfPossible;
-	m_scope = ScopeUser;
-	m_customname = false;
 }
 
 Installation::~Installation()
@@ -43,99 +54,99 @@ Installation::~Installation()
 
 void Installation::setUncompression(const QString& uncompression)
 {
-	m_uncompression = uncompression;
+    d->m_uncompression = uncompression;
 }
 
 void Installation::setCommand(const QString& command)
 {
-	m_command = command;
+    d->m_command = command;
 }
 
 void Installation::setStandardResourceDir(const QString& dir)
 {
-	m_standardresourcedir = dir;
+    d->m_standardresourcedir = dir;
 }
 
 void Installation::setTargetDir(const QString& dir)
 {
-	m_targetdir = dir;
+    d->m_targetdir = dir;
 }
 
 void Installation::setInstallPath(const QString& dir)
 {
-	m_installpath = dir;
+    d->m_installpath = dir;
 }
 
 void Installation::setChecksumPolicy(Policy policy)
 {
-	m_checksumpolicy = policy;
+    d->m_checksumpolicy = policy;
 }
 
 void Installation::setSignaturePolicy(Policy policy)
 {
-	m_signaturepolicy = policy;
+    d->m_signaturepolicy = policy;
 }
 
 void Installation::setScope(Scope scope)
 {
-	m_scope = scope;
+    d->m_scope = scope;
 }
 
 void Installation::setCustomName(bool customname)
 {
-	m_customname = customname;
+    d->m_customname = customname;
 }
 
 QString Installation::uncompression() const
 {
-	return m_uncompression;
+    return d->m_uncompression;
 }
 
 QString Installation::command() const
 {
-	return m_command;
+    return d->m_command;
 }
 
 QString Installation::standardResourceDir() const
 {
-	return m_standardresourcedir;
+    return d->m_standardresourcedir;
 }
 
 QString Installation::targetDir() const
 {
-	return m_targetdir;
+    return d->m_targetdir;
 }
 
 QString Installation::installPath() const
 {
-	return m_installpath;
+    return d->m_installpath;
 }
 
 bool Installation::isRemote()
 {
-	if(!installPath().isEmpty()) return false;
-	if(!targetDir().isEmpty()) return false;
-	if(!standardResourceDir().isEmpty()) return false;
-	return true;
+    if(!installPath().isEmpty()) return false;
+    if(!targetDir().isEmpty()) return false;
+    if(!standardResourceDir().isEmpty()) return false;
+    return true;
 }
 
 Installation::Policy Installation::checksumPolicy()
 {
-	return m_checksumpolicy;
+    return d->m_checksumpolicy;
 }
 
 Installation::Policy Installation::signaturePolicy()
 {
-	return m_signaturepolicy;
+    return d->m_signaturepolicy;
 }
 
 bool Installation::customName()
 {
-	return m_customname;
+    return d->m_customname;
 }
 
 Installation::Scope Installation::scope()
 {
-	return m_scope;
+    return d->m_scope;
 }
 
