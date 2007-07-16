@@ -201,11 +201,11 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent)
 	  m_cpi->setWhatsThis(whatsThisCPITextPage);
 	m_cpi->setLabel(i18n("&Chars per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_cpi->setRange(1, 999, 1, false);
-	m_lpi = new KIntNumInput(m_cpi, 6,formatbox);
+	m_lpi = new KIntNumInput(6,formatbox);
 	  m_lpi->setWhatsThis(whatsThisLPITextPage);
 	m_lpi->setLabel(i18n("&Lines per inch:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_lpi->setRange(1, 999, 1, false);
-	m_columns = new KIntNumInput(m_lpi, 1,formatbox);
+	m_columns = new KIntNumInput(1,formatbox);
 	  m_columns->setWhatsThis(whatsThisColumnsTextPage);
 	m_columns->setLabel(i18n("C&olumns:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_columns->setRange(1, 10, 1, false);

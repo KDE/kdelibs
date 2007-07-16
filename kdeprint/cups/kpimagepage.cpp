@@ -250,17 +250,17 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent)
 	m_brightness->setRange(0, 200, 20, true);
 	  m_brightness->setWhatsThis(whatsThisBrightnessImagePage);
 
-	m_hue = new KIntNumInput(m_brightness, 0,colorbox);
+	m_hue = new KIntNumInput(0,colorbox);
 	m_hue->setLabel(i18n("&Hue (Color rotation):"));
 	m_hue->setRange(-360, 360, 36, true);
 	  m_hue->setWhatsThis(whatsThisHueImagePage);
 
-	m_saturation = new KIntNumInput(m_brightness, 100,colorbox);
+	m_saturation = new KIntNumInput(100,colorbox);
 	m_saturation->setLabel(i18n("&Saturation:"));
 	m_saturation->setRange(0, 200, 20, true);
 	  m_saturation->setWhatsThis(whatsThisSaturationImagePage);
 
-	m_gamma = new KIntNumInput(m_saturation, 1000,colorbox);
+	m_gamma = new KIntNumInput(1000,colorbox);
 	m_gamma->setLabel(i18n("&Gamma (Color correction):"));
 	m_gamma->setRange(1, 3000, 100, true);
 	  m_gamma->setWhatsThis(whatsThisGammaImagePage);

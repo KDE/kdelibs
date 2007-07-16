@@ -146,13 +146,13 @@ MarginWidget::MarginWidget(QWidget *parent, bool allowMetricUnit)
 
 	m_custom = new QCheckBox(i18n("&Use custom margins"), this);
 	  m_custom->setWhatsThis(whatsThisCheckboxMarginWidget);
-	m_top = new MarginValueWidget(0, 0.0, this);
+	m_top = new MarginValueWidget(0.0, this);
 	  m_top->setWhatsThis(whatsThisTopMarginWidget);
-	m_bottom = new MarginValueWidget(m_top, 0.0, this);
+	m_bottom = new MarginValueWidget(0.0, this);
 	  m_bottom->setWhatsThis(whatsThisBottomMarginWidget);
-	m_left = new MarginValueWidget(m_bottom, 0.0, this);
+	m_left = new MarginValueWidget(0.0, this);
 	  m_left->setWhatsThis(whatsThisLeftMarginWidget);
-	m_right = new MarginValueWidget(m_left, 0.0, this);
+	m_right = new MarginValueWidget(0.0, this);
 	  m_right->setWhatsThis(whatsThisRightMarginWidget);
 	m_top->setLabel(i18n("&Top:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_bottom->setLabel(i18n("&Bottom:"), Qt::AlignLeft|Qt::AlignVCenter);

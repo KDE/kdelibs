@@ -22,8 +22,8 @@
 #include <math.h>
 #include <kglobal.h>
 
-MarginValueWidget::MarginValueWidget(KNumInput *below, double value, QWidget *parent)
-: KDoubleNumInput(below, qMin(0.0,value),qMax(0.0,value),value,parent,0.01,2)
+MarginValueWidget::MarginValueWidget(double value, QWidget *parent)
+    : KDoubleNumInput(qMin(0.0,value),qMax(0.0,value),value,parent,0.01,2)
 {
 	m_mode = Pixels;
 	m_block = false;

@@ -27,7 +27,7 @@ class MarginValueWidget : public KDoubleNumInput
 	Q_OBJECT
 public:
 	enum Mode { Pixels = 0, IN, CM, MM };
-	explicit MarginValueWidget(KNumInput *below, double value = 18.0, QWidget *parent = 0);
+	explicit MarginValueWidget(double value = 18.0, QWidget *parent = 0);
 
 	float margin();
 	int resolution() const;
