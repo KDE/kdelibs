@@ -27,6 +27,8 @@
 
 namespace KNS {
 
+    struct AuthorPrivate;
+
 /**
  * @short KNewStuff author information.
  *
@@ -43,6 +45,9 @@ class KNEWSTUFF_EXPORT Author
      * Constructor.
      */
     Author();
+
+    Author(const Author& other);
+    Author& operator=(const Author& other);
 
     /**
      * Destructor.
@@ -98,12 +103,7 @@ class KNEWSTUFF_EXPORT Author
     QString homepage() const;
 
   private:
-    QString mName;
-    QString mEmail;
-    QString mJabber;
-    QString mHomepage;
-
-    class AuthorPrivate *d;
+    struct AuthorPrivate * const d;
 };
 
 }

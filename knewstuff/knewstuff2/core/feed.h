@@ -110,12 +110,7 @@ class KNEWSTUFF_EXPORT Feed
     Entry::List entries() const;
 
   private:
-    KTranslatable mName;
-    KTranslatable mDescription;
-    KUrl mFeed;
-    Entry::List mEntries;
-
-    class FeedPrivate *d;
+   class FeedPrivate * const d;
 };
 
 }

@@ -22,15 +22,17 @@
 
 using namespace KNS;
 
-class FeedPrivate
+struct KNS::FeedPrivate
 {
-  public:
-  FeedPrivate(){}
+    KTranslatable mName;
+    KTranslatable mDescription;
+    KUrl mFeed;
+    Entry::List mEntries;
 };
 
 Feed::Feed()
+    : d(new FeedPrivate)
 {
-  d = NULL;
 }
 
 Feed::~Feed()
@@ -39,41 +41,41 @@ Feed::~Feed()
 
 void Feed::setName(const KTranslatable& name)
 {
-  mName = name;
+    d->mName = name;
 }
 
 KTranslatable Feed::name() const
 {
-  return mName;
+    return d->mName;
 }
 
 void Feed::setDescription(const KTranslatable &description)
 {
-  mDescription = description;
+    d->mDescription = description;
 }
 
 KTranslatable Feed::description() const
 {
-  return mDescription;
+    return d->mDescription;
 }
 
 void Feed::setFeedUrl(const KUrl& feedurl)
 {
-  mFeed = feedurl;
+    d->mFeed = feedurl;
 }
 
 KUrl Feed::feedUrl() const
 {
-  return mFeed;
+    return d->mFeed;
 }
 
 void Feed::addEntry(Entry *entry)
 {
-  mEntries.append(entry);
+    d->mEntries.append(entry);
 }
 
 Entry::List Feed::entries() const
 {
-  return mEntries;
+    return d->mEntries;
 }
 

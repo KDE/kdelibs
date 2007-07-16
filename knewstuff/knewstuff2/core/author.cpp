@@ -23,58 +23,73 @@
 
 using namespace KNS;
 
-class AuthorPrivate
+struct KNS::AuthorPrivate
 {
-  public:
-  AuthorPrivate(){}
+    QString mName;
+    QString mEmail;
+    QString mJabber;
+    QString mHomepage;
 };
 
 Author::Author()
+    : d(new AuthorPrivate)
 {
-  d = NULL;
+}
+
+Author::Author(const Author& other)
+    : d(new AuthorPrivate(*other.d))
+
+{
+}
+
+Author& Author::operator=(const Author& other)
+{
+    *this->d = *other.d;
+    return *this;
 }
 
 Author::~Author()
 {
+    delete d;
 }
 
-void Author::setName(const QString& name)
+void Author::setName(const QString& _name)
 {
-  mName = name;
+    d->mName = _name;
 }
 
 QString Author::name() const
 {
-  return mName;
+    return d->mName;
 }
 
-void Author::setEmail(const QString& email)
+void Author::setEmail(const QString& _email)
 {
-  mEmail = email;
+    d->mEmail = _email;
 }
 
 QString Author::email() const
 {
-  return mEmail;
+    return d->mEmail;
 }
 
-void Author::setJabber(const QString& jabber)
+void Author::setJabber(const QString& _jabber)
 {
-  mJabber = jabber;
+    d->mJabber = _jabber;
 }
 
 QString Author::jabber() const
 {
-  return mJabber;
+    return d->mJabber;
 }
 
-void Author::setHomepage(const QString& homepage)
+void Author::setHomepage(const QString& _homepage)
 {
-  mHomepage = homepage;
+    d->mHomepage = _homepage;
 }
 
 QString Author::homepage() const
 {
-  return mHomepage;
+    return d->mHomepage;
 }
 
