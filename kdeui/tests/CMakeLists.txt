@@ -84,7 +84,6 @@ KDEUI_EXECUTABLE_TESTS(
   khboxtest
   kbugreporttest
   kdialogtest
-  kglobalacceltest
   knotificationrestrictionstest
   kmessagetest
   kpagedialogtest
