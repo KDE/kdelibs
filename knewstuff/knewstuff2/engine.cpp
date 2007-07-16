@@ -33,7 +33,7 @@
 using namespace KNS;
 
 Engine::Engine( QWidget * parent)
-: DxsEngine(), m_parent(parent)
+  : DxsEngine(0), m_parent(parent)
 {
 	m_command = command_none;
 	m_uploaddialog = NULL;
@@ -83,8 +83,7 @@ void Engine::workflow()
 			SIGNAL(signalEntriesFeedFinished(const KNS::Feed*)),
 			SLOT(slotEntriesFeedFinished(const KNS::Feed*)));
 
-		m_downloaddialog = new DownloadDialog(m_parent);
-		m_downloaddialog->setEngine(this);
+		m_downloaddialog = new DownloadDialog(this, m_parent);
 		m_downloaddialog->show();
 
 		connect(m_downloaddialog, SIGNAL(finished()), SLOT(slotDownloadDialogClosed()));
@@ -105,7 +104,7 @@ KNS::Entry::List Engine::download()
 {
 	KNS::Entry::List entries;
 
-	Engine *engine = new Engine();
+	Engine *engine = new Engine(0);
 
 	KComponentData component = KGlobal::mainComponent();
 	QString name = component.componentName();
@@ -155,7 +154,7 @@ KNS::Entry *Engine::upload(const QString& file)
 {
 	KNS::Entry *entry = NULL;
 
-	Engine *engine = new Engine();
+	Engine *engine = new Engine(0);
 
 	KComponentData component = KGlobal::mainComponent();
 	QString name = component.componentName();

@@ -53,7 +53,7 @@ class Soap : public QObject
 {
 Q_OBJECT
 public:
-	Soap();
+	Soap(QObject* parent);
 	~Soap();
 
 	enum Model

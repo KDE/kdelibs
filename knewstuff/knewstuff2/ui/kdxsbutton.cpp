@@ -206,7 +206,7 @@ void KDXSButton::setEngine(DxsEngine *engine)
 
 	if(m_entry) setEnabled(true);
 
-	m_dxs = new KNS::Dxs();
+	m_dxs = new KNS::Dxs(m_engine);
 	m_dxs->setEndpoint(KUrl("http://localhost/cgi-bin/hotstuff-dxs"));
 	// FIXME: use real endpoint as soon as provider is loaded
 	// FIXME: actually we would need a setProvider() here as well
@@ -263,7 +263,7 @@ void KDXSButton::slotInfo(QString provider, QString server, QString version)
 
 void KDXSButton::slotCategories(QList<KNS::Category*> categories)
 {
-	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it)
+	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
 		KNS::Category *category = (*it);
 		kDebug() << "Category: " << category->name().representation() << endl;
@@ -272,7 +272,7 @@ void KDXSButton::slotCategories(QList<KNS::Category*> categories)
 
 void KDXSButton::slotEntries(QList<KNS::Entry*> entries)
 {
-	for(QList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); ++it)
+	for(QList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		KNS::Entry *entry = (*it);
 		kDebug() << "Entry: " << entry->name().representation() << endl;
@@ -283,13 +283,11 @@ void KDXSButton::slotComments(QStringList comments)
 {
 	KDXSComments commentsdlg(this);
 
-	for(QStringList::Iterator it = comments.begin(); it != comments.end(); ++it)
+	for(QStringList::Iterator it = comments.begin(); it != comments.end(); it++)
 	{
 		kDebug() << "Comment: " << (*it) << endl;
 		commentsdlg.addComment("foo", (*it));
 	}
-
-	commentsdlg.finish();
 
 	commentsdlg.exec();
 }
@@ -298,13 +296,11 @@ void KDXSButton::slotChanges(QStringList changes)
 {
 	KDXSChanges changesdlg(this);
 
-	for(QStringList::Iterator it = changes.begin(); it != changes.end(); ++it)
+	for(QStringList::Iterator it = changes.begin(); it != changes.end(); it++)
 	{
 		kDebug() << "Changelog: " << (*it) << endl;
 		changesdlg.addChangelog("v???", (*it));
 	}
-
-	changesdlg.finish();
 
 	changesdlg.exec();
 }
@@ -314,7 +310,7 @@ void KDXSButton::slotHistory(QStringList entries)
 	m_history->clear();
 
 	int i = 0;
-	for(QStringList::Iterator it = entries.begin(); it != entries.end(); ++it)
+	for(QStringList::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		kDebug() << (*it) << endl;
 

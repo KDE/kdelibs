@@ -52,7 +52,7 @@ class KDXSButton : public QToolButton
 {
 Q_OBJECT
 public:
-	KDXSButton(QWidget *parent = 0);
+	KDXSButton(QWidget *parent);
 	~KDXSButton();
 
         void setEntry(KNS::Entry *e);

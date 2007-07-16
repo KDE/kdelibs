@@ -32,7 +32,8 @@
 
 using namespace KNS;
 
-ProviderLoader::ProviderLoader()
+ProviderLoader::ProviderLoader(QObject* parent)
+    : QObject(parent)
 {
 }
 

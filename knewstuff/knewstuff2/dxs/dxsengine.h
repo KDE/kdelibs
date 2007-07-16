@@ -38,9 +38,8 @@ class Dxs;
  */
 class KNEWSTUFF_EXPORT DxsEngine : public CoreEngine
 {
-    Q_OBJECT
-  public:
-    DxsEngine();
+public:
+    DxsEngine(QObject* parent);
     ~DxsEngine();
 
     enum Policy
@@ -59,9 +58,6 @@ class KNEWSTUFF_EXPORT DxsEngine : public CoreEngine
     // integrated base64-encoded files; maybe delay to later version?
 
     //bool uploadEntry(Provider *provider, Entry *entry);
-
-  //signals:
-    // FIXME: we need a lot more signals here for DXS!
 
   //private slots:
     // FIXME: idem for slots

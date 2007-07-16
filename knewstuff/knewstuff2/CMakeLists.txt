@@ -25,8 +25,6 @@ set(knewstuff2_dxs_SRCS
 )
 
 set(knewstuff2_ui_SRCS
-  ui/kdxs.cpp
-  ui/kdxsview.cpp
   ui/kdxsbutton.cpp
   ui/kdxsrating.cpp
   ui/kdxscomment.cpp
@@ -76,12 +74,8 @@ install(FILES
 )
 
 install(FILES
-  ui/knewstuffbutton.h
   ui/knewstuffaction.h
-  ui/downloaddialog.h
-  ui/providerdialog.h
-  ui/uploaddialog.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/ui
+  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2
 )
 
 install(FILES

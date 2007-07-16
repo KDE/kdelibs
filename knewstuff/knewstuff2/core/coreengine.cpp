@@ -43,18 +43,19 @@
 
 using namespace KNS;
 
-CoreEngine::CoreEngine()
+CoreEngine::CoreEngine(QObject* parent)
+    : QObject(parent)
 {
-	m_initialized = false;
-	m_cachepolicy = CacheNever;
-	m_automationpolicy = AutomationOff;
+    m_initialized = false;
+    m_cachepolicy = CacheNever;
+    m_automationpolicy = AutomationOff;
 
-	m_uploadedentry = NULL;
-	m_uploadprovider = NULL;
+    m_uploadedentry = NULL;
+    m_uploadprovider = NULL;
 
-	m_installation = NULL;
+    m_installation = NULL;
 
-	m_activefeeds = 0;
+    m_activefeeds = 0;
 }
 
 CoreEngine::~CoreEngine()
@@ -193,7 +194,7 @@ void CoreEngine::start()
 		return;
 	}
 
-	ProviderLoader *provider_loader = new ProviderLoader();
+	ProviderLoader *provider_loader = new ProviderLoader(this);
 	provider_loader->load(m_providersurl);
 
 	connect(provider_loader,
@@ -217,7 +218,7 @@ void CoreEngine::loadEntries(Provider *provider)
 		Feed *feed = provider->downloadUrlFeed(feeds.at(i));
 		if(feed)
 		{
-			EntryLoader *entry_loader = new EntryLoader();
+			EntryLoader *entry_loader = new EntryLoader(this);
 			entry_loader->load(provider, feed);
 
 			connect(entry_loader,

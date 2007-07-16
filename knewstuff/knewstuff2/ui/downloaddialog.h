@@ -25,6 +25,7 @@
 #include <ktitlewidget.h>
 
 #include <QtGui/QScrollArea>
+#include <QtGui/QLabel>
 
 #include <knewstuff2/dxs/dxsengine.h>
 #include <knewstuff2/core/category.h>
@@ -68,6 +69,27 @@ private:
 };
 
 
+/** GUI/CORE: HTML Widget for exactly one AvailableItem::List */
+class EntryView : public QLabel
+{
+    Q_OBJECT
+public:
+    EntryView( QWidget * parentWidget );
+
+    void setEntry( Entry *entry );
+    void updateEntry( Entry *entry );
+
+private slots:
+    void urlSelected( const QString &link);
+
+private:
+    // generate the HTML contents to be displayed by the class itself
+    void buildContents();
+
+    void setTheAaronnesqueStyle();
+
+    Entry *m_entry;
+};
 
 /**
  * KNewStuff download dialog.

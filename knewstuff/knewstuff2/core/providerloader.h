@@ -50,7 +50,7 @@ class KNEWSTUFF_EXPORT ProviderLoader : public QObject
     /**
      * Constructor.
      */
-    ProviderLoader();
+    ProviderLoader(QObject* parent);
 
     /**
      * Starts asynchronously loading the list of providers from the

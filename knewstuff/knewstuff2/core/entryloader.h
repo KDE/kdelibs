@@ -49,7 +49,7 @@ class KNEWSTUFF_EXPORT EntryLoader : public QObject
     /**
      * Constructor.
      */
-    EntryLoader();
+    EntryLoader(QObject* parent);
 
     /**
      * Starts asynchronously loading the list of entries from the

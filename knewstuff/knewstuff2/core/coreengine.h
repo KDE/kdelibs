@@ -43,14 +43,14 @@ class Installation;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT CoreEngine : public QObject
+class CoreEngine : public QObject
 {
     Q_OBJECT
   public:
     /**
      * Constructor.
      */
-    CoreEngine();
+    CoreEngine(QObject* parent);
 
     /**
      * Destructor. Frees up all the memory again which might be taken

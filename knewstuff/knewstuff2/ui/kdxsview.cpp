@@ -91,7 +91,7 @@ KDXSView::KDXSView(QWidget *parent)
 
 void KDXSView::slotRun()
 {
-	ProviderLoader *pl = new ProviderLoader(/*this*/);
+	ProviderLoader *pl = new ProviderLoader(this);
 	connect(pl,
 		SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
 		SLOT(slotProvidersLoaded(KNS::Provider::List)));
@@ -133,12 +133,11 @@ void KDXSView::slotProvidersLoaded(KNS::Provider::List providers)
 		return;
 	}
 
-	Dxs *dxs = new Dxs();
+	Dxs *dxs = new Dxs(this);
 	dxs->setEndpoint(endpoint);
 	//dxs->setMethod(m_type->currentItem());
 
-	DownloadDialog *d = new DownloadDialog(this);
-	//d->setEngine(dxs);
+	DownloadDialog *d = new DownloadDialog(0/*dxs*/, this);
 	// FIXME: use DxsEngine object here
 	d->show();
 

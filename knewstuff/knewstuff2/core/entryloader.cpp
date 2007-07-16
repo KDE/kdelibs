@@ -32,7 +32,8 @@
 
 using namespace KNS;
 
-EntryLoader::EntryLoader()
+EntryLoader::EntryLoader(QObject* parent)
+    : QObject (parent)
 {
   m_feed = 0;
   m_provider = 0;

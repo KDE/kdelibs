@@ -33,10 +33,10 @@
 
 using namespace KNS;
 
-Dxs::Dxs()
-: QObject()
+Dxs::Dxs(QObject* parent)
+    : QObject(parent)
 {
-	m_soap = new Soap();
+	m_soap = new Soap(this);
 	connect(m_soap, SIGNAL(signalResult(QDomNode)), SLOT(slotResult(QDomNode)));
 	connect(m_soap, SIGNAL(signalError()), SLOT(slotError()));
 }
