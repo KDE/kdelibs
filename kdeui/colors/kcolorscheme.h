@@ -121,7 +121,34 @@ public:
          * Alternate background, e.g. for use in lists. May be the same as
          * BackgroundNormal, especially in sets other than View and Window.
          */
-        AlternateBackground = 1
+        AlternateBackground = 1,
+        /**
+         * Third color, e.g. items which are new, active, requesting
+         * attention, etc. Alerting the user that a certain field must be
+         * filled out would be a good usage. (Unlike ActiveText, this should
+         * not be used for mouseover effects.)
+         */
+        ActiveBackground = 2,
+        /**
+         * Fourth color, e.g. (unvisited) links or other clickable items.
+         */
+        LinkBackground = 3,
+        /**
+         * Fifth color, e.g. (visited) links.
+         */
+        VisitedBackground = 4,
+        /**
+         * Sixth color, e.g. errors, untrusted content, etc.
+         */
+        NegativeBackground = 5,
+        /**
+         * Seventh color, e.g. warnings, secure/encrypted content.
+         */
+        NeutralBackground = 6,
+        /**
+         * Eigth color, e.g. success messages, trusted content.
+         */
+        PositiveBackground = 7
     };
 
     /**
@@ -129,8 +156,7 @@ public:
      * given set.
      *
      * Foreground colors are suitable for drawing text, and should never be
-     * used to draw backgrounds. As an exception, you may use KColorUtils::tint
-     * to produce new background colors from background/foreground pairs.
+     * used to draw backgrounds.
      */
     enum ForegroundRole {
         /**

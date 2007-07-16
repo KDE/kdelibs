@@ -99,6 +99,24 @@ QColor KColorSchemePrivate::background(KColorScheme::BackgroundRole role) const
     switch (role) {
         case KColorScheme::AlternateBackground:
             return _config.readEntry( "BackgroundAlternate", DEFAULT(AlternateBackground) );
+        case KColorScheme::ActiveBackground:
+            return KColorUtils::tint( background(KColorScheme::NormalBackground),
+                                      foreground(KColorScheme::ActiveText) );
+        case KColorScheme::LinkBackground:
+            return KColorUtils::tint( background(KColorScheme::NormalBackground),
+                                      foreground(KColorScheme::LinkText) );
+        case KColorScheme::VisitedBackground:
+            return KColorUtils::tint( background(KColorScheme::NormalBackground),
+                                      foreground(KColorScheme::VisitedText) );
+        case KColorScheme::NegativeBackground:
+            return KColorUtils::tint( background(KColorScheme::NormalBackground),
+                                      foreground(KColorScheme::NegativeText) );
+        case KColorScheme::NeutralBackground:
+            return KColorUtils::tint( background(KColorScheme::NormalBackground),
+                                      foreground(KColorScheme::NeutralText) );
+        case KColorScheme::PositiveBackground:
+            return KColorUtils::tint( background(KColorScheme::NormalBackground),
+                                      foreground(KColorScheme::PositiveText) );
         default:
             return _config.readEntry( "BackgroundNormal", DEFAULT(NormalBackground) );
     }
