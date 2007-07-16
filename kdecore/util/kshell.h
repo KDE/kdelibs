@@ -36,7 +36,7 @@ namespace KShell {
     /**
      * Flags for splitArgs().
      */
-    enum Options {
+    enum Option {
         NoOptions = 0,
 
         /**
@@ -56,6 +56,7 @@ namespace KShell {
          */
         AbortOnMeta = 2
     };
+	Q_DECLARE_FLAGS(Options, Option)
 
     /**
      * Status codes from splitArgs()
@@ -89,7 +90,7 @@ namespace KShell {
      *  target, see Errors
      * @return a list of unquoted words or an empty list if an error occurred
      */
-    KDECORE_EXPORT QStringList splitArgs( const QString &cmd, int flags = 0, int *err = 0 );
+    KDECORE_EXPORT QStringList splitArgs( const QString &cmd, Options flags = NoOptions, Errors *err = 0 );
 
     /**
      * Quotes and joins @p args together according to POSIX shell rules.
@@ -130,5 +131,7 @@ namespace KShell {
      */
     KDECORE_EXPORT bool matchFileName( const QString &filename, const QString &pattern );
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KShell::Options)
 
 #endif /* KSHELL_H */

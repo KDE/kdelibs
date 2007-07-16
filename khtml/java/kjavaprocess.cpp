@@ -214,7 +214,7 @@ bool KJavaProcess::invokeJVM()
     //load the extra user-defined arguments
     if( !d->extraArgs.isEmpty() )
     {
-        int err;
+        KShell::Errors err;
         args += KShell::splitArgs( d->extraArgs, KShell::AbortOnMeta, &err );
         if( err != KShell::NoError )
             kWarning(6100) << "Extra args for JVM cannot be parsed, arguments = " << d->extraArgs << endl;

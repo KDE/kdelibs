@@ -425,7 +425,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     result << "-e";
   }
 
-  int err;
+  KShell::Errors err;
   if (_service.substituteUid()) {
     if (_service.terminal())
       result << "su";

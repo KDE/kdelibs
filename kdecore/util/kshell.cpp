@@ -72,7 +72,7 @@ inline static bool isMeta( QChar cUnicode )
     return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
 }
 
-QStringList KShell::splitArgs( const QString &args, int flags, int *err )
+QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err )
 {
     QStringList ret;
     bool firstword = flags & AbortOnMeta;
@@ -278,7 +278,6 @@ inline static bool isSpecial( QChar cUnicode )
 
 QString KShell::joinArgs( const QStringList &args )
 {
-    QChar q( QLatin1Char('\'') ), sp( QLatin1Char(' ') );
     QString ret;
     for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
         if (!ret.isEmpty())
