@@ -49,20 +49,11 @@
 #include "dataprotocol.h"
 #include "kservice.h"
 #include <kio/global.h>
+#include "kio/connection.h"
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 
-#include <network/k3serversocket.h>
-
-using namespace KNetwork;
-
-#ifdef HAVE_PATHS_H
-#include <paths.h>
-#endif
-
-#ifndef _PATH_TMP
-#define _PATH_TMP "/tmp"
-#endif
+#include "slaveinterface_p.h"
 
 using namespace KIO;
 
@@ -83,14 +74,13 @@ namespace KIO {
   /**
    * @internal
    */
-  class SlavePrivate {
+    class SlavePrivate: public SlaveInterfacePrivate
+    {
     public:
-        SlavePrivate(KServerSocket *socket, const QString &protocol,
-                const QString &socketname) :
+        SlavePrivate(const QString &protocol) :
             m_protocol(protocol),
             m_slaveProtocol(protocol),
-            m_socket(socketname),
-            serv(socket),
+            slaveconnserver(new KIO::ConnectionServer),
             m_pid(0),
             m_port(0),
             contacted(false),
@@ -98,21 +88,20 @@ namespace KIO {
             contact_started(time(0)),
             m_refCount(1)
         {
+            slaveconnserver->listenForRemote();
+            Q_ASSERT(slaveconnserver->isListening());
         }
         ~SlavePrivate()
         {
-            if (serv != 0) {
-                delete serv;
-                serv = 0;
-            }
+            delete slaveconnserver;
         }
+
         QString m_protocol;
         QString m_slaveProtocol;
         QString m_host;
         QString m_user;
         QString m_passwd;
-        QString m_socket;
-        KNetwork::KServerSocket *serv;
+        KIO::ConnectionServer *slaveconnserver;
         pid_t m_pid;
         quint16 m_port;
         bool contacted;
@@ -125,24 +114,20 @@ namespace KIO {
 
 void Slave::accept()
 {
-    KStreamSocket *socket = d->serv->accept();
-    slaveconn.init(socket);
-    d->serv->deleteLater();
-    d->serv = 0;
-    slaveconn.connect(this, SLOT(gotInput()));
-    unlinkSocket();
-}
+    Q_D(Slave);
+    d->slaveconnserver->setNextPendingConnection(d->connection);
+    d->slaveconnserver->deleteLater();
+    d->slaveconnserver = 0;
 
-void Slave::unlinkSocket()
-{
-    if (d->m_socket.isEmpty()) return;
-    QFile::remove( d->m_socket );
-    d->m_socket.clear();
+    connect(d->connection, SIGNAL(readyRead()), SLOT(gotInput()));
 }
 
 void Slave::timeout()
 {
-   if (!d->serv) return;
+    Q_D(Slave);
+   if (d->connection->isConnected())
+      return;
+
    kDebug(7002) << "slave failed to connect to application pid=" << d->m_pid << " protocol=" << d->m_protocol << endl;
    if (d->m_pid && (::kill(d->m_pid, 0) == 0))
    {
@@ -155,9 +140,7 @@ void Slave::timeout()
       }
    }
    kDebug(7002) << "Houston, we lost our slave, pid=" << d->m_pid << endl;
-   delete d->serv;
-   d->serv = 0;
-   unlinkSocket();
+   d->connection->close();
    d->dead = true;
    QString arg = d->m_protocol;
    if (!d->m_host.isEmpty())
@@ -172,81 +155,90 @@ void Slave::timeout()
    deref();
 }
 
-Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &socketname)
-  : SlaveInterface(&slaveconn),
-    d(new SlavePrivate(socket, protocol, socketname))
+Slave::Slave(const QString &protocol, QObject *parent)
+    : SlaveInterface(*new SlavePrivate(protocol), parent)
 {
-    if (d->serv != 0) {
-        d->serv->setAcceptBuffered(false);
-        connect(d->serv, SIGNAL(readyAccept()),
-	        SLOT(accept() ) );
-    }
+    Q_D(Slave);
+    d->slaveconnserver->setParent(this);
+    d->connection = new Connection(this);
+    connect(d->slaveconnserver, SIGNAL(newConnection()), SLOT(accept()));
 }
 
 Slave::~Slave()
 {
     // kDebug(7002) << "destructing slave object pid = " << d->m_pid << endl;
-    unlinkSocket();
-    delete d;
+    //delete d;
 }
 
 QString Slave::protocol()
 {
+    Q_D(Slave);
     return d->m_protocol;
 }
 
 void Slave::setProtocol(const QString & protocol)
 {
+    Q_D(Slave);
     d->m_protocol = protocol;
 }
 
 QString Slave::slaveProtocol()
 {
+    Q_D(Slave);
     return d->m_slaveProtocol;
 }
 
 QString Slave::host()
 {
+    Q_D(Slave);
     return d->m_host;
 }
 
 quint16 Slave::port()
 {
+    Q_D(Slave);
     return d->m_port;
 }
 
 QString Slave::user()
 {
+    Q_D(Slave);
     return d->m_user;
 }
 
 QString Slave::passwd()
 {
+    Q_D(Slave);
     return d->m_passwd;
 }
 
 void Slave::setIdle()
 {
+    Q_D(Slave);
     d->idle_since = time(0);
 }
 
 bool Slave::isConnected()
 {
+    Q_D(Slave);
     return d->contacted;
 }
 
 void Slave::setConnected(bool c)
 {
+    Q_D(Slave);
     d->contacted = c;
 }
 
 void Slave::ref()
 {
+    Q_D(Slave);
     d->m_refCount++;
 }
 
 void Slave::deref()
 {
+    Q_D(Slave);
     d->m_refCount--;
     if (!d->m_refCount)
         delete this;
@@ -254,68 +246,79 @@ void Slave::deref()
 
 time_t Slave::idleTime()
 {
+    Q_D(Slave);
     return (time_t) difftime(time(0), d->idle_since);
 }
 
 void Slave::setPID(pid_t pid)
 {
+    Q_D(Slave);
     d->m_pid = pid;
 }
 
 int Slave::slave_pid()
 {
+    Q_D(Slave);
     return d->m_pid;
 }
 
 bool Slave::isAlive()
 {
+    Q_D(Slave);
     return !d->dead;
 }
 
 void Slave::hold(const KUrl &url)
 {
-   ref();
-   {
-      QByteArray data;
-      QDataStream stream( &data, QIODevice::WriteOnly );
-      stream << url;
-      slaveconn.send( CMD_SLAVE_HOLD, data );
-      slaveconn.close();
-      d->dead = true;
-      emit slaveDied(this);
-   }
-   deref();
-   // Call KLauncher::waitForSlave(pid);
-   {
-      KToolInvocation::klauncher()->waitForSlave(d->m_pid);
-   }
+    Q_D(Slave);
+    ref();
+    {
+        QByteArray data;
+        QDataStream stream( &data, QIODevice::WriteOnly );
+        stream << url;
+        d->connection->send( CMD_SLAVE_HOLD, data );
+        d->connection->close();
+        d->dead = true;
+        emit slaveDied(this);
+    }
+    deref();
+    // Call KLauncher::waitForSlave(pid);
+    {
+        KToolInvocation::klauncher()->waitForSlave(d->m_pid);
+    }
 }
 
 void Slave::suspend()
 {
-   slaveconn.suspend();
+    Q_D(Slave);
+    d->connection->suspend();
 }
 
 void Slave::resume()
 {
-   slaveconn.resume();
+    Q_D(Slave);
+    d->connection->resume();
 }
 
 bool Slave::suspended()
 {
-   return slaveconn.suspended();
+    Q_D(Slave);
+    return d->connection->suspended();
 }
 
-void Slave::send(int cmd, const QByteArray &arr) {
-   slaveconn.send(cmd, arr);
+void Slave::send(int cmd, const QByteArray &arr)
+{
+    Q_D(Slave);
+    d->connection->send(cmd, arr);
 }
 
 void Slave::gotInput()
 {
+    Q_D(Slave);
     ref();
     if (!dispatch())
     {
-        slaveconn.close();
+        d->connection->close();
         d->dead = true;
         QString arg = d->m_protocol;
         if (!d->m_host.isEmpty())
@@ -332,6 +335,7 @@ void Slave::gotInput()
 
 void Slave::kill()
 {
+    Q_D(Slave);
     d->dead = true; // OO can be such simple.
     kDebug(7002) << "killing slave pid=" << d->m_pid << " (" << d->m_protocol << "://"
 		  << d->m_host << ")" << endl;
@@ -344,6 +348,7 @@ void Slave::kill()
 void Slave::setHost( const QString &host, quint16 port,
                      const QString &user, const QString &passwd)
 {
+    Q_D(Slave);
     d->m_host = host;
     d->m_port = port;
     d->m_user = user;
@@ -352,20 +357,22 @@ void Slave::setHost( const QString &host, quint16 port,
     QByteArray data;
     QDataStream stream( &data, QIODevice::WriteOnly );
     stream << d->m_host << d->m_port << d->m_user << d->m_passwd;
-    slaveconn.send( CMD_HOST, data );
+    d->connection->send( CMD_HOST, data );
 }
 
 void Slave::resetHost()
 {
+    Q_D(Slave);
     d->m_host = "<reset>";
 }
 
 void Slave::setConfig(const MetaData &config)
 {
+    Q_D(Slave);
     QByteArray data;
     QDataStream stream( &data, QIODevice::WriteOnly );
     stream << config;
-    slaveconn.send( CMD_CONFIG, data );
+    d->connection->send( CMD_CONFIG, data );
 }
 
 Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text )
@@ -374,46 +381,15 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     // Firstly take into account all special slaves
     if (protocol == "data")
         return new DataProtocol();
-#ifdef Q_WS_WIN
-    // localhost could not resolved yet, this s a bug in kdecore network resolver stuff
-    // autoselect free tcp port 
-    KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
-    kss->setFamily(KResolver::InetFamily);
-    kss->listen();
-    // get used tcp port
-    QString sockname = kss->localAddress().serviceName();
-#else
-    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::mainComponent().componentName());
-    KTemporaryFile *socketfile = new KTemporaryFile();
-    socketfile->setPrefix(prefix);
-    socketfile->setSuffix(QLatin1String(".slave-socket"));
-    if ( !socketfile->open() )
-    {
-        error_text = i18n("Unable to create io-slave: %1", strerror(errno));
-        error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
-        delete socketfile;
-        return 0;
-    }
+    Slave *slave = new Slave(protocol);
+    QString slaveAddress = slave->d_func()->slaveconnserver->address();
 
-    QString sockname = socketfile->fileName();
-    delete socketfile; // can't bind if there is such a file
-
-    KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
-    kss->setFamily(KResolver::LocalFamily);
-    kss->listen();
-#endif
-    Slave *slave = new Slave(kss, protocol, sockname);
-
-    // WABA: if the dcopserver is running under another uid we don't ask
-    // klauncher for a slave, because the slave might have that other uid
-    // as well, which might either be a) undesired or b) make it impossible
-    // for the slave to connect to the application.
+#ifdef Q_OS_UNIX
     // In such case we start the slave via QProcess.
     // It's possible to force this by setting the env. variable
     // KDE_FORK_SLAVES, Clearcase seems to require this.
     static bool bForkSlaves = getenv("KDE_FORK_SLAVES");
 
-#ifdef Q_OS_UNIX
     if (!bForkSlaves)
     {
        // check the UID of klauncher
@@ -421,9 +397,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
        if (reply.isValid() && getuid() != reply)
           bForkSlaves = true;
     }
-#endif
 
-#ifdef Q_OS_UNIX
     if (bForkSlaves)
     {
        QString _name = KProtocolInfo::exec(protocol);
@@ -442,19 +416,19 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
           return 0;
        }
 
-       QStringList args = QStringList() << lib_path << protocol << "" << sockname;
-       kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << sockname << endl;
+       QStringList args = QStringList() << lib_path << protocol << "" << slaveAddress;
+       kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << slaveAddress << endl;
 
        QProcess::startDetached( KStandardDirs::locate("exe", "kioslave"), args );
-
 
        return slave;
     }
 #endif
+
     org::kde::KLauncher* klauncher = KToolInvocation::klauncher();
     QString errorStr;
-    //qDebug() << __FUNCTION__ << protocol  << " " << url.host() << " " << sockname;
-    QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), sockname, errorStr);
+    kDebug() << k_funcinfo << protocol  << " " << url.host() << " " << slaveAddress << endl;
+    QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), slaveAddress, errorStr);
     if (!reply.isValid()) {
 	error_text = i18n("Cannot talk to klauncher: %1", klauncher->lastError().message() );
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
@@ -480,28 +454,9 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     // Firstly take into account all special slaves
     if (protocol == "data")
         return 0;
-#ifdef Q_WS_WIN
-    // localhost could not resolved yet, this s a bug in kdecore network resolver stuff
-    // autoselect free tcp port
-    KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
-    QString sockname = kss->localAddress().serviceName();
-#else
-    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::mainComponent().componentName());
-    KTemporaryFile *socketfile = new KTemporaryFile();
-    socketfile->setPrefix(prefix);
-    socketfile->setSuffix(QLatin1String(".slave-socket"));
-    if ( !socketfile->open() ) {
-        delete socketfile;
-        return 0;
-    }
-
-    QString sockname = socketfile->fileName();
-    delete socketfile; // can't bind if there is such a file
-
-    KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
-#endif
-    Slave *slave = new Slave(kss, protocol, sockname);
-    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), sockname);
+    Slave *slave = new Slave(protocol);
+    QString slaveAddress = slave->d_func()->slaveconnserver->address();
+    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), slaveAddress);
     if (!reply.isValid()) {
         delete slave;
         return 0;

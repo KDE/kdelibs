@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
                        David Faure <faure@kde.org>
+    Copyright (C) 2007 Thiago Macieira <thiago@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,320 +21,724 @@
 
 #include "connection.h"
 
-#include <QtCore/QTimer>
-#include <kde_file.h>	// KDE_fdopen
-
-#include <sys/types.h>
-#include <sys/signal.h>
-#include <sys/time.h>
-
 #include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <string.h>
-#include <unistd.h>
-#include <network/k3resolver.h>
-#include <network/k3streamsocket.h>
-#include <network/k3socketdevice.h>
 
-#include <kdebug.h>
-#include <QtCore/QSocketNotifier>
+#include <QQueue>
+#include <QPointer>
+
+#include "kdebug.h"
+#include "kcomponentdata.h"
+#include "kglobal.h"
+#include "klocale.h"
+#include "kstandarddirs.h"
+#include "ktemporaryfile.h"
+#include "kurl.h"
+
+#include "connection_p.h"
 
 using namespace KIO;
 
-Connection::Connection()
+class KIO::ConnectionPrivate
 {
-    f_out = 0;
-    fd_in = -1;
-    socket = 0;
-    notifier = 0;
-    receiver = 0;
-    member = 0;
-    m_suspended = false;
+public:
+    inline ConnectionPrivate()
+        : backend(0), suspended(false)
+    { }
+
+    void dequeue();
+    void commandReceived(const Task &task);
+    void disconnected();
+
+    QQueue<Task> outgoingTasks;
+    QQueue<Task> incomingTasks;
+    AbstractConnectionBackend *backend;
+    Connection *q;
+    bool suspended;
+};
+
+class KIO::ConnectionServerPrivate
+{
+public:
+    inline ConnectionServerPrivate()
+        : backend(0)
+    { }
+
+    ConnectionServer *q;
+    AbstractConnectionBackend *backend;
+};
+
+void ConnectionPrivate::dequeue()
+{
+    if (!backend)
+	return;
+
+    while (!outgoingTasks.isEmpty()) {
+       const Task task = outgoingTasks.dequeue();
+       q->sendnow(task.cmd, task.data);
+    }
+}
+
+void ConnectionPrivate::commandReceived(const Task &task)
+{
+    //kDebug() << k_funcinfo << "Command " << task.cmd << " added to the queue" << endl;
+    incomingTasks += task;
+    if (!suspended)
+        emit q->readyRead();
+}
+
+void ConnectionPrivate::disconnected()
+{
+    q->close();
+}
+
+AbstractConnectionBackend::AbstractConnectionBackend(QObject *parent)
+    : QObject(parent), state(Idle)
+{
+}
+
+AbstractConnectionBackend::~AbstractConnectionBackend()
+{
+}
+
+LocalSocketConnectionBackend::LocalSocketConnectionBackend(QObject *parent)
+    : AbstractConnectionBackend(parent), socket(0), server(0), len(-1), cmd(0), signalEmitted(false)
+{
+}
+
+LocalSocketConnectionBackend::~LocalSocketConnectionBackend()
+{
+    if (server && server->localSocketType() == KLocalSocket::UnixSocket)
+        QFile::remove(server->localPath());
+}
+
+void LocalSocketConnectionBackend::setSuspended(bool enable)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+    Q_ASSERT(!server);
+
+    if (enable) {
+        //kDebug() << this << " suspending" << endl;
+        socket->setReadBufferSize(1);
+    } else {
+        //kDebug() << this << " resuming" << endl;
+        socket->setReadBufferSize(0);
+        if (socket->bytesAvailable()) {
+            // there are bytes available
+            QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
+        }
+    }
+}
+
+bool LocalSocketConnectionBackend::connectToRemote(const KUrl &url)
+{
+    Q_ASSERT(state == Idle);
+    Q_ASSERT(!socket);
+    Q_ASSERT(!server);
+
+    socket = new KLocalSocket(this);
+    QString path = url.path();
+    KLocalSocket::LocalSocketType type = KLocalSocket::UnixSocket;
+
+    if (url.queryItem(QLatin1String("abstract")) == QLatin1String("1"))
+        type = KLocalSocket::AbstractUnixSocket;
+
+    socket->connectToPath(path);
+    connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
+    connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
+    state = Connected;
+    return true;
+}
+
+bool LocalSocketConnectionBackend::listenForRemote()
+{
+    Q_ASSERT(state == Idle);
+    Q_ASSERT(!socket);
+    Q_ASSERT(!server);
+
+    QString prefix = KStandardDirs::locateLocal("socket", KGlobal::mainComponent().componentName());
+    KTemporaryFile *socketfile = new KTemporaryFile();
+    socketfile->setPrefix(prefix);
+    socketfile->setSuffix(QLatin1String(".slave-socket"));
+    if (!socketfile->open())
+    {
+        errorString = i18n("Unable to create io-slave: %1", strerror(errno));
+        delete socketfile;
+    }
+
+    QString sockname = socketfile->fileName();
+    KUrl addressUrl(sockname);
+    addressUrl.setProtocol("local");
+    delete socketfile; // can't bind if there is such a file
+
+    server = new KLocalSocketServer(this);
+    if (!server->listen(sockname, KLocalSocket::UnixSocket)) {
+        errorString = server->errorString();
+        delete server;
+        return false;
+    }
+
+    connect(server, SIGNAL(newConnection()), SIGNAL(newConnection()));
+    address = addressUrl.url();
+    state = Listening;
+    return true;
+}
+
+bool LocalSocketConnectionBackend::waitForIncomingTask(int ms)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+    if (socket->state() != QAbstractSocket::ConnectedState)
+        return false;           // socket has probably closed, what do we do?
+
+    signalEmitted = false;
+    if (socket->bytesAvailable())
+        socketReadyRead();
+    if (signalEmitted)
+        return true;            // there was enough data in the socket
+
+    // not enough data in the socket, so wait for more
+    QTime timer;
+    timer.start();
+
+    while (socket->state() == QAbstractSocket::ConnectedState && !signalEmitted &&
+           (ms == -1 || timer.elapsed() < ms))
+        if (!socket->waitForReadyRead(ms == -1 ? -1 : ms - timer.elapsed()))
+            break;
+
+    if (signalEmitted)
+        return true;
+    return false;
+}
+
+bool LocalSocketConnectionBackend::sendCommand(const Task &task)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+
+    static char buffer[16];
+    sprintf(buffer, "%6x_%2x_", task.data.size(), task.cmd);
+    socket->write(buffer, 10);
+    socket->write(task.data);
+
+    //kDebug() << this << " Sending command " << hex << task.cmd << " of "
+    //         << task.data.size() << " bytes (" << socket->bytesToWrite()
+    //         << " bytes left to write" << endl;
+
+    // blocking mode:
+    while (socket->bytesToWrite() > 0 && socket->state() == QAbstractSocket::ConnectedState)
+        socket->waitForBytesWritten();
+
+    return socket->state() == QAbstractSocket::ConnectedState;
+}
+
+AbstractConnectionBackend *LocalSocketConnectionBackend::nextPendingConnection()
+{
+    Q_ASSERT(state == Listening);
+    Q_ASSERT(server);
+    Q_ASSERT(!socket);
+
+    //kDebug() << k_funcinfo << "Got a new connection" << endl;
+
+    KLocalSocket *newSocket = server->nextPendingConnection();
+    if (!newSocket)
+        return 0;               // there was no connection...
+
+    LocalSocketConnectionBackend *result = new LocalSocketConnectionBackend;
+    result->state = Connected;
+    result->socket = newSocket;
+    newSocket->setParent(result);
+    connect(newSocket, SIGNAL(readyRead()), result, SLOT(socketReadyRead()));
+    connect(newSocket, SIGNAL(disconnected()), SIGNAL(disconnected()));
+
+    return result;
+}
+
+void LocalSocketConnectionBackend::socketReadyRead()
+{
+    if (!socket)
+        // might happen if the invokeMethods were delivered after we disconnected
+        return;
+ 
+    //kDebug() << k_funcinfo << "Got " << socket->bytesAvailable() << " bytes" << endl;
+    if (len == -1) {
+        // We have to read the header
+        static char buffer[10];
+
+        if (socket->bytesAvailable() < sizeof buffer) {
+            if (socket->readBufferSize() == 0) {
+                // we were suspended and there's still data in the buffer
+                // so we have to read it before QtNetwork decides to send more data
+                Q_ASSERT(socket->bytesAvailable() == 1);
+                char c;
+                Q_ASSERT(socket->getChar(&c));
+                socket->ungetChar(c);
+            }
+            return;             // wait for more data
+        }
+
+        socket->read(buffer, sizeof buffer);
+        buffer[6] = 0;
+        buffer[9] = 0;
+        buffer[12] = 0;
+
+        char *p = buffer;
+        while( *p == ' ' ) p++;
+        len = strtol( p, 0L, 16 );
+
+        p = buffer + 7;
+        while( *p == ' ' ) p++;
+        cmd = strtol( p, 0L, 16 );
+
+        //kDebug() << this << id << " Beginning of command " << hex << cmd << " of size "
+        //         << len << endl;
+    }
+
+    QPointer<LocalSocketConnectionBackend> that = this;
+
+    //kDebug() << k_funcinfo << "Want to read " << len << " bytes" << endl;
+    if (socket->bytesAvailable() >= len) {
+        Task task;
+        task.cmd = cmd;
+        if (len)
+            task.data = socket->read(len);
+        len = -1;
+
+        signalEmitted = true;
+        emit commandReceived(task);
+    }
+
+    if (!that.isNull() && socket->readBufferSize() == 0 && socket->bytesAvailable()) {
+        // we're still alive, we're not suspended and there are bytes available
+        QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
+    }
+}
+
+Connection::Connection(QObject *parent)
+    : QObject(parent), d(new ConnectionPrivate)
+{
+    d->q = this;
 }
 
 Connection::~Connection()
 {
     close();
+    delete d;
 }
 
 void Connection::suspend()
 {
-    m_suspended = true;
-    if (notifier)
-       notifier->setEnabled(false);
-    if (socket) {
-        socket->enableRead(false);
-    }
+    d->suspended = true;
+    if (d->backend)
+        d->backend->setSuspended(true);
 }
 
 void Connection::resume()
 {
-    m_suspended = false;
-    if (notifier)
-       notifier->setEnabled(true);
-    if (socket) {
-        socket->enableRead(true);
-    }
+    // send any outgoing or incoming commands that may be in queue
+    QMetaObject::invokeMethod(this, "dequeue", Qt::QueuedConnection);
+
+    d->suspended = false;
+    if (d->backend)
+        d->backend->setSuspended(false);
 }
 
 void Connection::close()
 {
-    delete notifier;
-    notifier = 0;
-    delete socket;
-    socket = 0;
-
-    // KSocket has already closed the file descriptor, but we need to
-    // close the file-stream as well otherwise we leak memory.
-    // As a result we close the file descriptor twice, but that should
-    // be harmless
-    // KDE4: fix this
-#ifndef Q_WS_WIN
-    if (f_out)
-       fclose(f_out);
-#endif
-    f_out = 0;
-    fd_in = -1;
-    m_tasks.clear();
+    d->backend->disconnect(this);
+    d->backend->deleteLater();
+    d->backend = 0;
+    d->outgoingTasks.clear();
+    d->incomingTasks.clear();
 }
 
-int Connection::fd_from() const
+bool Connection::isConnected() const
 {
-    return fd_in;
-}
-
-int Connection::fd_to() const
-{
-#ifdef Q_WS_WIN
-    return f_out;
-#else
-    return fileno( f_out );
-#endif
+    return d->backend && d->backend->state == AbstractConnectionBackend::Connected;
 }
 
 bool Connection::inited() const
 {
-    return (fd_in != -1) && (f_out != 0);
+    return d->backend;
 }
 
 bool Connection::suspended() const
 {
-    return m_suspended;
+    return d->suspended;
+}
+
+void Connection::connectToRemote(const QString &address)
+{
+    //kDebug(7017) << k_funcinfo << "Connection requested to " << address << endl;
+    KUrl url = address;
+    QString scheme = url.protocol();
+
+    if (scheme == QLatin1String("local")) {
+        d->backend = new LocalSocketConnectionBackend(this);
+    }
+    else if (scheme == QLatin1String("tcp")) {
+        d->backend = new TCPSocketConnectionBackend(this);
+    } else {
+        kWarning(7017) << k_funcinfo << "Unknown requested KIO::Connection protocol='" << scheme
+                       << "' (" << address << ")" << endl;
+        Q_ASSERT(0);
+        return;
+    }
+
+    // connection succeeded
+    if (!d->backend->connectToRemote(url)) {
+        //kWarning(7017) << k_funcinfo << "could not connect to " << url << "using scheme" << scheme ;
+        delete d->backend;
+        d->backend = 0;
+        return;
+    }
+
+    connect(d->backend, SIGNAL(commandReceived(Task)), SLOT(commandReceived(Task)));
+    d->backend->setSuspended(d->suspended);
+    d->dequeue();
+}
+
+QString Connection::errorString() const
+{
+    if (d->backend)
+        return d->backend->errorString;
+    return QString();
 }
 
 bool Connection::send(int cmd, const QByteArray& data)
 {
-    if (!inited() || !m_tasks.isEmpty()) {
+    if (!inited() || !d->outgoingTasks.isEmpty()) {
 	Task task;
 	task.cmd = cmd;
 	task.data = data;
-	m_tasks.enqueue(task);
+	d->outgoingTasks.enqueue(task);
         return true;
     } else {
-	return sendnow( cmd, data );
+	return sendnow(cmd, data);
     }
 }
 
-void Connection::dequeue()
+bool Connection::sendnow(int _cmd, const QByteArray &data)
 {
-    if (!inited())
-	return;
-
-    while (!m_tasks.isEmpty())
-    {
-       const Task task = m_tasks.dequeue();
-       sendnow( task.cmd, task.data );
-    }
-}
-
-void Connection::init(KNetwork::KStreamSocket *sock)
-{
-#ifdef Q_WS_WIN
-    sock->setFamily(KNetwork::KResolver::InetFamily);
-#else
-    sock->setFamily(KNetwork::KResolver::LocalFamily);
-#endif
-    sock->setBlocking(true);
-    sock->connect();
-
-    delete notifier;
-    notifier = 0;
-    delete socket;
-    socket = sock;
-    fd_in = socket->socketDevice()->socket();
-#ifdef Q_WS_WIN
-    f_out = fd_in;
-#else
-    f_out = KDE_fdopen( socket->socketDevice()->socket(), "wb" );
-#endif
-    if (receiver && ( fd_in != -1 )) {
-        notifier = 0L;
-	if ( m_suspended ) {
-            suspend();
-	} else {
-            QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
-	}
-    }
-    dequeue();
-}
-
-void Connection::init(int _fd_in, int fd_out)
-{
-    delete notifier;
-    notifier = 0;
-    fd_in = _fd_in;
-#ifdef Q_WS_WIN
-    f_out = fd_out;
-#else
-    f_out = KDE_fdopen( fd_out, "wb" );
-#endif
-    if (receiver && ( fd_in != -1 )) {
-	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read, this);
-	if ( m_suspended ) {
-            suspend();
-	}
-	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
-    }
-    dequeue();
-}
-
-
-void Connection::connect(QObject *_receiver, const char *_member)
-{
-    receiver = _receiver;
-    member = _member;
-    delete notifier;
-    notifier = 0;
-    if (receiver && (fd_in != -1 )) {
-        if (socket == 0L)
-	    notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read, this);
-        if ( m_suspended )
-            suspend();
-
-	if (notifier)
-	    QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
-	if (socket)
-	    QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
-    }
-}
-
-bool Connection::sendnow( int _cmd, const QByteArray &data )
-{
-    if (f_out == 0) {
-	return false;
-    }
-
     if (data.size() > 0xffffff)
         return false;
 
-    static char buffer[ 64 ];
-    sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
-#ifdef Q_WS_WIN
-    size_t n = ::send( f_out, buffer,10, 0 );
-#else
-    size_t n = fwrite( buffer, 1, 10, f_out );
-#endif
-    if ( n != 10 ) {
-	kError(7017) << "Could not send header" << endl;
+    if (!isConnected())
 	return false;
-    }
 
-#ifdef Q_WS_WIN
-    n = ::send( f_out, data.data(), data.size(), 0);
-#else
-    n = fwrite( data.data(), 1, data.size(), f_out );
-#endif
-    if ( n != (size_t)data.size() ) {
-	kError(7017) << "Could not write data" << endl;
-	return false;
-    }
-
-#ifndef Q_WS_WIN
-    fflush( f_out );
-#endif
+    Task task;
+    task.cmd = _cmd;
+    task.data = data;
+    d->backend->sendCommand(task);
     return true;
+
+}
+
+bool Connection::hasTaskAvailable() const
+{
+    return !d->incomingTasks.isEmpty();
+}
+
+bool Connection::waitForIncomingTask(int ms)
+{
+    if (!isConnected())
+	return false;
+
+    if (d->backend)
+        return d->backend->waitForIncomingTask(ms);
+    return false;
 }
 
 int Connection::read( int* _cmd, QByteArray &data )
 {
-    if (fd_in == -1 ) {
-	kError(7017) << "read: not yet inited" << endl;
-	return -1;
-    }
-
-    static char buffer[ 10 ];
-
- again1:
-#ifdef Q_WS_WIN
-    ssize_t n = ::recv( fd_in, buffer, 10, 0);
-#else
-    ssize_t n = ::read( fd_in, buffer, 10);
-#endif
-    if ( n == -1 && errno == EINTR )
-	goto again1;
-#ifdef Q_WS_WIN
-	if ( n == -1 && WSAGetLastError() == WSAEWOULDBLOCK ) {
-        kDebug(7017) << "Header read would block detected" << endl;
-        return -2;
-    }
-#endif
-    if ( n == -1) {
-	kError(7017) << "Header read failed, errno=" << errno << endl;
-    }
-
-    if ( n != 10 ) {
-      if ( n ) // 0 indicates end of file
-        kError(7017) << "Header has invalid size (" << n << ")" << endl;
-      return -1;
-    }
-
-    buffer[ 6 ] = 0;
-    buffer[ 9 ] = 0;
-
-    char *p = buffer;
-    while( *p == ' ' ) p++;
-    long int len = strtol( p, 0L, 16 );
-
-    p = buffer + 7;
-    while( *p == ' ' ) p++;
-    long int cmd = strtol( p, 0L, 16 );
-
-    data.resize( len );
-
-    if ( len > 0L ) {
-	size_t bytesToGo = len;
-	size_t bytesRead = 0;
-	do {
-#ifdef Q_WS_WIN
-      n = ::recv(fd_in, data.data()+bytesRead, bytesToGo, 0);
-#else
-	    n = ::read(fd_in, data.data()+bytesRead, bytesToGo);
-#endif
-	    if (n == -1) {
-		if (errno == EINTR)
-		    continue;
-#ifdef Q_WS_WIN
-		if (WSAGetLastError() == WSAEWOULDBLOCK) {
-            kDebug(7017) << "Would block detect" << endl;
-            Sleep(20);
-            continue;
-        }
-#endif
-		kError(7017) << "Data read failed, errno=" << errno << endl;
-		return -1;
-	    }
-
-	    bytesRead += n;
-	    bytesToGo -= n;
-	}
-	while(bytesToGo);
-    }
-
-    *_cmd = cmd;
-    return len;
+    // if it's still empty, then it's an error
+    if (d->incomingTasks.isEmpty())
+        return -1;
+    const Task task = d->incomingTasks.dequeue();
+    kDebug() << k_funcinfo << "Command " << task.cmd << " removed from the queue" << endl;
+    *_cmd = task.cmd;
+    data = task.data;
+    return data.size();
 }
 
+ConnectionServer::ConnectionServer(QObject *parent)
+    : QObject(parent), d(new ConnectionServerPrivate)
+{
+    d->q = this;
+}
+
+ConnectionServer::~ConnectionServer()
+{
+    delete d;
+}
+
+void ConnectionServer::listenForRemote()
+{
+#ifdef Q_WS_WIN
+    d->backend = new TCPSocketConnectionBackend(this);
+#else
+    // try the Local socket backend
+    d->backend = new LocalSocketConnectionBackend(this);
+#endif
+    if (!d->backend->listenForRemote()) {
+        delete d->backend;
+        d->backend = 0;
+        return;
+    }
+
+    connect(d->backend, SIGNAL(newConnection()), SIGNAL(newConnection()));
+    kDebug(7017) << k_funcinfo << "Listening on " << d->backend->address << endl;
+}
+
+QString ConnectionServer::address() const
+{
+    if (d->backend)
+        return d->backend->address;
+    return QString();
+}
+
+bool ConnectionServer::isListening() const
+{
+    return d->backend && d->backend->state == AbstractConnectionBackend::Listening;
+}
+
+void ConnectionServer::close()
+{
+    delete d->backend;
+    d->backend = 0;
+}
+
+Connection *ConnectionServer::nextPendingConnection()
+{
+    if (!isListening())
+        return 0;
+
+    AbstractConnectionBackend *newBackend = d->backend->nextPendingConnection();
+    if (!newBackend)
+        return 0;               // no new backend...
+
+    Connection *result = new Connection;
+    result->d->backend = newBackend;
+    newBackend->setParent(result);
+    connect(newBackend, SIGNAL(commandReceived(Task)), result, SLOT(commandReceived(Task)));
+
+    return result;
+}
+
+void ConnectionServer::setNextPendingConnection(Connection *conn)
+{
+    AbstractConnectionBackend *newBackend = d->backend->nextPendingConnection();
+    Q_ASSERT(newBackend);
+
+    conn->d->backend = newBackend;
+    newBackend->setParent(conn);
+    connect(newBackend, SIGNAL(commandReceived(Task)), conn, SLOT(commandReceived(Task)));
+
+    conn->d->dequeue();
+}
+
+
+TCPSocketConnectionBackend::TCPSocketConnectionBackend(QObject *parent)
+    : AbstractConnectionBackend(parent), socket(0), server(0), len(-1), cmd(0), signalEmitted(false)
+{
+}
+
+TCPSocketConnectionBackend::~TCPSocketConnectionBackend()
+{
+}
+
+void TCPSocketConnectionBackend::setSuspended(bool enable)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+    Q_ASSERT(!server);
+
+    if (enable) {
+        //kDebug() << this << " suspending" << endl;
+        socket->setReadBufferSize(1);
+    } else {
+        //kDebug() << this << " resuming" << endl;
+        socket->setReadBufferSize(0);
+        if (socket->bytesAvailable()) {
+            // there are bytes available
+            QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
+        }
+    }
+}
+
+bool TCPSocketConnectionBackend::connectToRemote(const KUrl &url)
+{
+    Q_ASSERT(state == Idle);
+    Q_ASSERT(!socket);
+    Q_ASSERT(!server);
+
+    socket = KSocketFactory::connectToHost(url,this);
+    qDebug() << k_funcinfo << socket->state(); 
+    if (!socket->waitForConnected(1000)) {
+        state = Idle;
+        qDebug() << k_funcinfo << "could not connect to " << url; 
+        return false;
+    }
+    connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
+    connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
+    state = Connected;
+    qDebug() << k_funcinfo << "connected to " << url; 
+    return true;
+}
+
+bool TCPSocketConnectionBackend::listenForRemote()
+{
+    Q_ASSERT(state == Idle);
+    Q_ASSERT(!socket);
+    Q_ASSERT(!server);
+  
+    server = KSocketFactory::listen("",QHostAddress::Any,0,this);
+    if (!server->isListening()) {
+        errorString = server->errorString();
+        delete server;
+        return false;
+    }
+
+    connect(server, SIGNAL(newConnection()), SIGNAL(newConnection()));
+    address = "tcp://127.0.0.1:" + QString::number(server->serverPort());
+    qDebug() << address;
+    state = Listening;
+    return true;
+}
+
+bool TCPSocketConnectionBackend::waitForIncomingTask(int ms)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+    if (socket->state() != QAbstractSocket::ConnectedState)
+        return false;           // socket has probably closed, what do we do?
+
+    signalEmitted = false;
+    if (socket->bytesAvailable())
+        socketReadyRead();
+    if (signalEmitted)
+        return true;            // there was enough data in the socket
+
+    // not enough data in the socket, so wait for more
+    QTime timer;
+    timer.start();
+
+    while (socket->state() == QAbstractSocket::ConnectedState && !signalEmitted &&
+           (ms == -1 || timer.elapsed() < ms))
+        if (!socket->waitForReadyRead(ms == -1 ? -1 : ms - timer.elapsed()))
+            break;
+
+    if (signalEmitted)
+        return true;
+    return false;
+}
+
+bool TCPSocketConnectionBackend::sendCommand(const Task &task)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+
+    static char buffer[16];
+    sprintf(buffer, "%6x_%2x_", task.data.size(), task.cmd);
+    socket->write(buffer, 10);
+    socket->write(task.data);
+
+    //kDebug() << this << " Sending command " << hex << task.cmd << " of "
+    //         << task.data.size() << " bytes (" << socket->bytesToWrite()
+    //         << " bytes left to write" << endl;
+
+    // blocking mode:
+    while (socket->bytesToWrite() > 0 && socket->state() == QAbstractSocket::ConnectedState)
+        socket->waitForBytesWritten();
+
+    return socket->state() == QAbstractSocket::ConnectedState;
+}
+
+AbstractConnectionBackend *TCPSocketConnectionBackend::nextPendingConnection()
+{
+    Q_ASSERT(state == Listening);
+    Q_ASSERT(server);
+    Q_ASSERT(!socket);
+
+    //kDebug() << k_funcinfo << "Got a new connection" << endl;
+
+    QTcpSocket *newSocket = server->nextPendingConnection();
+    if (!newSocket)
+        return 0;               // there was no connection...
+
+    TCPSocketConnectionBackend *result = new TCPSocketConnectionBackend;
+    result->state = Connected;
+    result->socket = newSocket;
+    newSocket->setParent(result);
+    connect(newSocket, SIGNAL(readyRead()), result, SLOT(socketReadyRead()));
+    connect(newSocket, SIGNAL(disconnected()), SIGNAL(disconnected()));
+
+    return result;
+}
+
+void TCPSocketConnectionBackend::socketReadyRead()
+{
+    qDebug() << k_funcinfo;
+    if (!socket)
+        // might happen if the invokeMethods were delivered after we disconnected
+        return;
+ 
+    //kDebug() << k_funcinfo << "Got " << socket->bytesAvailable() << " bytes" << endl;
+    if (len == -1) {
+        // We have to read the header
+        static char buffer[10];
+
+        if (socket->bytesAvailable() < sizeof buffer) {
+/*
+            if (socket->readBufferSize() == 0) {
+                // we were suspended and there's still data in the buffer
+                // so we have to read it before QtNetwork decides to send more data
+                Q_ASSERT(socket->bytesAvailable() == 1);
+                char c;
+                Q_ASSERT(socket->getChar(&c));
+                socket->ungetChar(c);
+            }
+*/
+            return;             // wait for more data
+        }
+
+        socket->read(buffer, sizeof buffer);
+        buffer[6] = 0;
+        buffer[9] = 0;
+        buffer[12] = 0;
+
+        char *p = buffer;
+        while( *p == ' ' ) p++;
+        len = strtol( p, 0L, 16 );
+
+        p = buffer + 7;
+        while( *p == ' ' ) p++;
+        cmd = strtol( p, 0L, 16 );
+
+        //kDebug() << this << id << " Beginning of command " << hex << cmd << " of size "
+        //         << len << endl;
+    }
+
+    QPointer<TCPSocketConnectionBackend> that = this;
+
+    //kDebug() << k_funcinfo << "Want to read " << len << " bytes" << endl;
+    if (socket->bytesAvailable() >= len) {
+        Task task;
+        task.cmd = cmd;
+        if (len)
+            task.data = socket->read(len);
+        len = -1;
+
+        signalEmitted = true;
+        emit commandReceived(task);
+    }
+
+    if (!that.isNull() && socket->readBufferSize() == 0 && socket->bytesAvailable()) {
+        // we're still alive, we're not suspended and there are bytes available
+        QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
+    }
+}
+
+
+#include "connection_p.moc"
 #include "connection.moc"

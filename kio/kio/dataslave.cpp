@@ -57,7 +57,7 @@ using namespace KIO;
 
 
 DataSlave::DataSlave() :
-	Slave(0, "data", QString())
+	Slave("data")
 {
   //kDebug() << this << k_funcinfo << endl;
   _suspended = false;

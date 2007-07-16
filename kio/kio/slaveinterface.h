@@ -68,17 +68,17 @@ class SlaveInterfacePrivate;
    MSG_ERROR,
    MSG_CONNECTED,
    MSG_FINISHED,
-   MSG_STAT_ENTRY,
+   MSG_STAT_ENTRY, // 105
    MSG_LIST_ENTRIES,
    MSG_RENAMED, // unused
    MSG_RESUME,
    MSG_SLAVE_STATUS,
-   MSG_SLAVE_ACK,
+   MSG_SLAVE_ACK, // 110
    MSG_NET_REQUEST,
    MSG_NET_DROP,
    MSG_NEED_SUBURL_DATA,
    MSG_CANRESUME,
-   MSG_AUTH_KEY, // deprecated.
+   MSG_AUTH_KEY, // 115 // deprecated.
    MSG_DEL_AUTH_KEY, // deprecated.
    MSG_OPENED,
    MSG_WRITTEN
@@ -96,8 +96,9 @@ class KIO_EXPORT SlaveInterface : public QObject
 {
     Q_OBJECT
 
+protected:
+    SlaveInterface(SlaveInterfacePrivate &dd, QObject *parent = 0);
 public:
-    SlaveInterface( Connection *connection );
     virtual ~SlaveInterface();
 
     void setConnection( Connection* connection );
@@ -168,10 +169,8 @@ protected Q_SLOTS:
     void calcSpeed();
 
 protected:
-    Connection * m_pConnection;
-
-private:
-    SlaveInterfacePrivate* const d;
+    SlaveInterfacePrivate* const d_ptr;
+    Q_DECLARE_PRIVATE(SlaveInterface)
 };
 
 }

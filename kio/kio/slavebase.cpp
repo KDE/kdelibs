@@ -25,11 +25,7 @@
 #include <config.h>
 
 #include <sys/time.h>
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>		// Needed on some systems.
-#endif
 
-#include <assert.h>
 #include <kdebug.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -245,76 +241,47 @@ SlaveBase::~SlaveBase()
 
 void SlaveBase::dispatchLoop()
 {
-    fd_set rfds;
-    int retval;
+    while (!d->exit_loop) {
+        if (d->timeout && (d->timeout < time(0))) {
+            QByteArray data = d->timeoutData;
+            d->timeout = 0;
+            d->timeoutData = QByteArray();
+            special(data);
+        }
 
-    while (!d->exit_loop)
-    {
-       if (d->timeout && (d->timeout < time(0)))
-       {
-          QByteArray data = d->timeoutData;
-          d->timeout = 0;
-          d->timeoutData = QByteArray();
-          special(data);
-       }
-       FD_ZERO(&rfds);
+        Q_ASSERT(appconn->inited());
 
-       assert(appconn->inited());
-       FD_SET(appconn->fd_from(), &rfds);
+        int ms = -1;
+        if (d->timeout)
+            ms = 1000 * qMax<time_t>(d->timeout - time(0), 1);
 
-       if (!d->timeout) // we can wait forever
-       {
-          retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, NULL);
-       }
-       else
-       {
-          struct timeval tv;
-          tv.tv_sec = qMax(d->timeout-time(0),(time_t) 1);
-          tv.tv_usec = 0;
-          retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
-       }
-       if ((retval>0) && FD_ISSET(appconn->fd_from(), &rfds))
-       { // dispatch application messages
-          int cmd;
-          QByteArray data;
-          int ret = appconn->read(&cmd, data);
-#ifdef Q_WS_WIN
-          if ( ret == -2 ) //win32: WSAEWOULDBLOCK condition
-          	continue;
-#endif
-          if ( ret != -1 )
-          {
-             dispatch(cmd, data);
-          }
-          else // some error occurred, perhaps no more application
-          {
-             // When the app exits, should the slave be put back in the pool ?
-             if (!d->exit_loop && mConnectedToApp && !mPoolSocket.isEmpty())
-             {
+        int ret = -1;
+        if (appconn->hasTaskAvailable() || appconn->waitForIncomingTask(ms)) {
+            // dispatch application messages
+            int cmd;
+            QByteArray data;
+            ret = appconn->read(&cmd, data);
+
+            dispatch(cmd, data);
+        }
+
+        if (ret == -1) { // some error occurred, perhaps no more applicationi
+            // When the app exits, should the slave be put back in the pool ?
+            if (!d->exit_loop && mConnectedToApp && !mPoolSocket.isEmpty()) {
                 disconnectSlave();
                 mConnectedToApp = false;
                 closeConnection();
                 connectSlave(mPoolSocket);
-             }
-             else
-             {
+            } else {
                 return;
-             }
-          }
-       }
-       else if ((retval<0) && (errno != EINTR))
-       {
-          kDebug(7019) << "dispatchLoop(): select returned " << retval << " "
-            << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
-            << " (" << errno << ")" << endl;
-          return;
-       }
-       //I think we get here when we were killed in dispatch() and not in select()
-       if (wasKilled())
-       {
-          kDebug(7019)<<" dispatchLoop() slave was killed, returning"<<endl;
-          return;
-       }
+            }
+        }
+
+        //I think we get here when we were killed in dispatch() and not in select()
+        if (wasKilled()) {
+            kDebug(7019)<<" dispatchLoop() slave was killed, returning"<<endl;
+            return;
+        }
     }
 }
 
@@ -328,21 +295,14 @@ Connection *SlaveBase::connection() const
     return m_pConnection;
 }
 
-void SlaveBase::connectSlave(const QString& path)
+void SlaveBase::connectSlave(const QString &address)
 {
-#ifdef Q_WS_WIN
-    // @TODO: localhost does not work yet
-    KNetwork::KStreamSocket *sock = new KNetwork::KStreamSocket(getenv("COMPUTERNAME"),
-#else
-    KNetwork::KStreamSocket *sock = new KNetwork::KStreamSocket(QString(),
-#endif
-						QFile::encodeName(path));
-    appconn->init(sock);
+    appconn->connectToRemote(address);
 
     if (!appconn->inited())
     {
-        kDebug(7019) << "SlaveBase: failed to connect to " << path << endl
-		      << "Reason: " << sock->errorString() << endl;
+        kDebug(7019) << "SlaveBase: failed to connect to " << address << endl
+		      << "Reason: " << appconn->errorString() << endl;
         exit();
         return;
     }
@@ -594,14 +554,15 @@ void SlaveBase::mimeType( const QString &_type)
     while(true)
     {
        cmd = 0;
-       int ret = m_pConnection->read( &cmd, data );
-       if ( ret == -1 ) {
+       int ret = -1;
+       if (m_pConnection->hasTaskAvailable() || m_pConnection->waitForIncomingTask(-1)) {
+           ret = m_pConnection->read( &cmd, data );
+       }
+       if (ret == -1) {
            kDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            exit();
            return;
        }
-       if ( ret == -2 ) // win32: WSAEWOULDBLOCK condition
-          continue;
        // kDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd << endl;
        if ( cmd == CMD_HOST) // Ignore.
           continue;
@@ -809,18 +770,18 @@ void SlaveBase::reparseConfiguration()
 
 bool SlaveBase::dispatch()
 {
-    assert( m_pConnection );
+    Q_ASSERT( m_pConnection );
 
     int cmd;
     QByteArray data;
-    int ret = m_pConnection->read( &cmd, data );
-    if ( ret == -1 )
-    {
+    int ret = -1;
+    if (m_pConnection->hasTaskAvailable() || m_pConnection->waitForIncomingTask(-1)) {
+        ret = m_pConnection->read( &cmd, data );
+    }
+    if (ret == -1) {
         kDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
         return false;
     }
-    if ( ret == -2 ) // win32: WSAEWOULDBLOCK condition
-      return true;
 
     dispatch( cmd, data );
     return true;
@@ -920,17 +881,16 @@ bool SlaveBase::canResume( KIO::filesize_t offset )
 
 int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, int *pCmd )
 {
-    int cmd, result;
+    int cmd, result = -1;
     for (;;)
     {
-        result = m_pConnection->read( &cmd, data );
-        if ( result == -1 )
-        {
+        if (m_pConnection->hasTaskAvailable() || m_pConnection->waitForIncomingTask(-1)) {
+            result = m_pConnection->read( &cmd, data );
+        }
+        if (result == -1) {
             kDebug(7019) << "SlaveBase::waitForAnswer has read error." << endl;
             return -1;
         }
-        if ( result == -2 ) // win32: WSAEWOULDBLOCK condition
-          continue;
 
         if ( cmd == expected1 || cmd == expected2 )
         {

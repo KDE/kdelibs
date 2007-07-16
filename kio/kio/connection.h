@@ -19,25 +19,22 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __connection_h__
-#define __connection_h__
+#ifndef KIO_CONNECTION_H
+#define KIO_CONNECTION_H
+
+#if !defined(MAKE_KIO_LIB) && !defined(MAKE_KLAUNCHER) && defined(__GNUC__)
+# warning "This is no longer public API"
+#endif
 
 #include "kio_export.h"
 
-#include <stdio.h>
-#include <QtCore/QQueue>
 #include <QtCore/QObject>
-
-namespace KNetwork { class KStreamSocket; }
-class QSocketNotifier;
+#include <QtCore/QString>
 
 namespace KIO {
 
-    struct KIO_EXPORT Task {
-        int cmd;
-        QByteArray data;
-    };
-
+    class ConnectionPrivate;
+    class ConnectionServer;
     /**
      * @private
      *
@@ -48,75 +45,75 @@ namespace KIO {
      */
     class KIO_EXPORT Connection : public QObject
     {
-        Q_OBJECT
+	Q_OBJECT
     public:
-        /**
-         * Creates a new connection.
-         * @see init()
-         */
-        Connection();
-        virtual ~Connection();
+	/**
+	 * Creates a new connection.
+	 * @see connectToRemote, listenForRemote
+	 */
+	Connection(QObject *parent = 0);
+	virtual ~Connection();
 
         /**
-         * Initialize this connection to use the given socket.
-         * @param sock the socket to use
-         * @see inited()
+         * Connects to the remote address.
          */
-        void init(KNetwork::KStreamSocket *sock);
-        /**
-         * Initialize the connection to use the given file
-         * descriptors.
-         * @param fd_in the input file descriptor to use
-         * @param fd_out the output file descriptor to use
-         * @see inited()
-         */
-        void init(int fd_in, int fd_out); // Used by KDENOX
-        void connect(QObject *receiver = 0, const char *member = 0);
+        void connectToRemote(const QString &address);
+
         /// Closes the connection.
-        void close();
+	void close();
+
+        QString errorString() const;
+
+        bool isConnected() const;
 
         /**
-         * Returns the input file descriptor.
-         * @return the input file descriptor
-         */
-        int fd_from() const;
-        /**
-         * Returns the output file descriptor.
-         * @return the output file descriptor
-         */
-        int fd_to() const;
-        /**
-         * Checks whether the connection has been initialized.
-         * @return true if the initialized
-         * @see init()
-         */
-        bool inited() const;
+	 * Checks whether the connection has been initialized.
+	 * @return true if the initialized
+	 * @see init()
+	 */
+	bool inited() const;
 
         /**
-         * Sends/queues the given command to be sent.
-         * @param cmd the command to set
-         * @param arr the bytes to send
-         * @return true if successful, false otherwise
-         */
-        bool send(int cmd, const QByteArray &arr = QByteArray());
+	 * Sends/queues the given command to be sent.
+	 * @param cmd the command to set
+	 * @param arr the bytes to send
+	 * @return true if successful, false otherwise
+	 */
+	bool send(int cmd, const QByteArray &arr = QByteArray());
 
         /**
-         * Sends the given command immediately.
-         * @param _cmd the command to set
-         * @param data the bytes to send
-         * @return true if successful, false otherwise
-         */
-        bool sendnow( int _cmd, const QByteArray &data );
+	 * Sends the given command immediately.
+	 * @param _cmd the command to set
+	 * @param data the bytes to send
+	 * @return true if successful, false otherwise
+	 */
+	bool sendnow( int _cmd, const QByteArray &data );
 
         /**
-         * Receive data.
+         * Returns true if there are packets to be read immediately,
+         * false if waitForIncomingTask must be called before more data
+         * is available.
+         */
+        bool hasTaskAvailable() const;
+
+        /**
+         * Waits for one more command to be handled and ready.
          *
-         * @param _cmd the received command will be written here
-         * @param data the received data will be written here
-         * @return >=0 indicates the received data size upon success
-         *         -1  indicates error
+         * @param ms   the time to wait in milliseconds
+         * @returns true if one command can be read, false if we timed out
          */
-        int read( int* _cmd, QByteArray &data );
+        bool waitForIncomingTask(int ms = 30000);
+
+	/**
+	 * Receive data.
+	 *
+	 * @param _cmd the received command will be written here
+	 * @param data the received data will be written here
+
+	 * @return >=0 indicates the received data size upon success
+	 *         -1  indicates error
+	 */
+	int read( int* _cmd, QByteArray &data );
 
         /**
          * Don't handle incoming data until resumed.
@@ -130,31 +127,58 @@ namespace KIO {
 
         /**
          * Returns status of connection.
-         * @return true if suspended, false otherwise
+	 * @return true if suspended, false otherwise
          */
         bool suspended() const;
 
-    protected Q_SLOTS:
-        void dequeue();
-
-    protected:
-
+    Q_SIGNALS:
+        void readyRead();
 
     private:
-        int fd_in;
-#ifdef Q_WS_WIN
-        int f_out;
-#else
-        FILE *f_out;
-#endif
-        KNetwork::KStreamSocket *socket;
-        QSocketNotifier *notifier;
-        QObject *receiver;
-        const char *member;
-        QQueue<Task> m_tasks;
-        bool m_suspended;
+        Q_PRIVATE_SLOT(d, void dequeue());
+        Q_PRIVATE_SLOT(d, void commandReceived(Task));
+        Q_PRIVATE_SLOT(d, void disconnected());
+        friend class ConnectionPrivate;
+        friend class ConnectionServer;
+	class ConnectionPrivate* const d;
+    };
+
+    class ConnectionServerPrivate;
+    /**
+     * @private
+     *
+     * This class provides a way to obtaining KIO::Connection connections.
+     */
+    class KIO_EXPORT ConnectionServer : public QObject
+    {
+        Q_OBJECT
+    public:
+        ConnectionServer(QObject *parent = 0);
+        ~ConnectionServer();
+
+        /**
+         * Sets this connection to listen mode. Use address() to obtain the
+         * address this is listening on.
+         */
+        void listenForRemote();
+        bool isListening() const;
+        /// Closes the connection.
+	void close();
+
+        /**
+         * Returns the address for this connection if it is listening, an empty
+         * string if not.
+         */
+        QString address() const;
+
+        Connection *nextPendingConnection();
+        void setNextPendingConnection(Connection *conn);
+    Q_SIGNALS:
+        void newConnection();
+
     private:
-        class ConnectionPrivate* d;
+        friend class ConnectionServerPrivate;
+        ConnectionServerPrivate * const d;
     };
 
 }

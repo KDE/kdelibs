@@ -33,11 +33,12 @@
 #include <ksslcertchain.h>
 #include <kmessagebox.h>
 #include <time.h>
-#include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
 #include <QPointer>
 
 using namespace KIO;
+
+#include "slaveinterface_p.h"
 
 QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
 {
@@ -81,64 +82,31 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
     return s;
 }
 
-static const unsigned int max_nums = 8;
-
-class KIO::SlaveInterfacePrivate
-{
-public:
-  SlaveInterfacePrivate() {
-    slave_calcs_speed = false;
-    start_time.tv_sec = 0;
-    start_time.tv_usec = 0;
-    last_time = 0;
-    nums = 0;
-    filesize = 0;
-    offset = 0;
-  }
-  bool slave_calcs_speed;
-  struct timeval start_time;
-  uint nums;
-  long times[max_nums];
-  KIO::filesize_t sizes[max_nums];
-  size_t last_time;
-  KIO::filesize_t filesize, offset;
-
-  QTimer speed_timer;
-
-    // We keep a copy; Job does too but we need it here for the SSL code.
-    MetaData m_incomingMetaData;
-
-  int messageBox(int type, const QString &text, const QString &caption,
-                 const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
-
-};
-
 //////////////
 
-SlaveInterface::SlaveInterface( Connection * connection )
-	:d(new SlaveInterfacePrivate)
+SlaveInterface::SlaveInterface(SlaveInterfacePrivate &dd, QObject *parent)
+    : QObject(parent), d_ptr(&dd)
 {
-    m_pConnection = connection;
-
-    connect(&d->speed_timer, SIGNAL(timeout()), SLOT(calcSpeed()));
+    connect(&d_ptr->speed_timer, SIGNAL(timeout()), SLOT(calcSpeed()));
 }
 
 SlaveInterface::~SlaveInterface()
 {
     // Note: no kDebug() here (scheduler is deleted very late)
-    m_pConnection = 0; // a bit like the "wasDeleted" of QObject...
 
-    delete d;
+    delete d_ptr;
 }
 
 void SlaveInterface::setConnection( Connection* connection )
 {
-    m_pConnection = connection;
+    Q_D(SlaveInterface);
+    d->connection = connection;
 }
 
 Connection *SlaveInterface::connection() const
 {
-    return m_pConnection;
+    const Q_D(SlaveInterface);
+    return d->connection;
 }
 
 static KIO::filesize_t readFilesize_t(QDataStream &stream)
@@ -150,22 +118,22 @@ static KIO::filesize_t readFilesize_t(QDataStream &stream)
 
 bool SlaveInterface::dispatch()
 {
-    assert( m_pConnection );
+    Q_D(SlaveInterface);
+    assert( d->connection );
 
     int cmd;
     QByteArray data;
 
-    int ret = m_pConnection->read( &cmd, data );
+    int ret = d->connection->read( &cmd, data );
     if (ret == -1)
       return false;
-    else if (ret == -2) // win32: WSAEWOULDBLOCK condition
-      return true;
 
     return dispatch( cmd, data );
 }
 
 void SlaveInterface::calcSpeed()
 {
+  Q_D(SlaveInterface);
   if (d->slave_calcs_speed) {
     d->speed_timer.stop();
     return;
@@ -211,6 +179,7 @@ void SlaveInterface::calcSpeed()
 
 bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
+    Q_D(SlaveInterface);
     //kDebug(7007) << "dispatch " << _cmd << endl;
 
     QDataStream stream( rawdata );
@@ -343,8 +312,8 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	stream >> str1;
 
 	emit mimeType( str1 );
-        if (!m_pConnection->suspended())
-            m_pConnection->sendnow( CMD_NONE, QByteArray() );
+        if (!d->connection->suspended())
+            d->connection->sendnow( CMD_NONE, QByteArray() );
 	break;
     case INF_WARNING:
 	stream >> str1;
@@ -404,18 +373,24 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
 void SlaveInterface::setOffset( KIO::filesize_t o)
 {
+    Q_D(SlaveInterface);
     d->offset = o;
 }
 
-KIO::filesize_t SlaveInterface::offset() const { return d->offset; }
+KIO::filesize_t SlaveInterface::offset() const
+{
+    const Q_D(SlaveInterface);
+    return d->offset;
+}
 
 void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 {
+    Q_D(SlaveInterface);
     kDebug(7007) << "requestNetwork " << host << slaveid << endl;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
     stream << true;
-    m_pConnection->sendnow( INF_NETWORK_STATUS, packedArgs );
+    d->connection->sendnow( INF_NETWORK_STATUS, packedArgs );
 }
 
 void SlaveInterface::dropNetwork(const QString &host, const QString &slaveid)
@@ -425,8 +400,9 @@ void SlaveInterface::dropNetwork(const QString &host, const QString &slaveid)
 
 void SlaveInterface::sendResumeAnswer( bool resume )
 {
+    Q_D(SlaveInterface);
     kDebug(7007) << "SlaveInterface::sendResumeAnswer ok for resuming :" << resume << endl;
-    m_pConnection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
+    d->connection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,
@@ -438,19 +414,20 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 void SlaveInterface::messageBox( int type, const QString &text, const QString &caption,
                                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
+    Q_D(SlaveInterface);
     kDebug(7007) << "messageBox " << type << " " << text << " - " << caption << " " << dontAskAgainName << endl;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
 
     QPointer<SlaveInterface> me = this;
-    if (m_pConnection) m_pConnection->suspend();
+    if (d->connection) d->connection->suspend();
     int result = d->messageBox( type, text, caption, buttonYes, buttonNo, dontAskAgainName );
-    if ( me && m_pConnection ) // Don't do anything if deleted meanwhile
+    if ( me && d->connection ) // Don't do anything if deleted meanwhile
     {
-        m_pConnection->resume();
+        d->connection->resume();
         kDebug(7007) << this << " SlaveInterface result=" << result << endl;
         stream << result;
-        m_pConnection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
+        d->connection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
     }
 }
 

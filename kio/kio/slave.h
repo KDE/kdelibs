@@ -30,11 +30,6 @@
 #include <kurl.h>
 
 #include "kio/slaveinterface.h"
-#include "kio/connection.h"
-
-namespace KNetwork {
-class KServerSocket;
-}
 
 namespace KIO {
 
@@ -46,8 +41,7 @@ namespace KIO {
     {
 	Q_OBJECT
     public:
-	Slave(KNetwork::KServerSocket *unixdomain,
-	      const QString &protocol, const QString &socketname);
+	Slave(const QString &protocol, QObject *parent = 0);
 
         virtual ~Slave();
 
@@ -197,12 +191,8 @@ namespace KIO {
     Q_SIGNALS:
         void slaveDied(KIO::Slave *slave);
 
-    protected:
-        void unlinkSocket();
-
     private:
-        KIO::Connection slaveconn;
-	SlavePrivate * const d;
+        Q_DECLARE_PRIVATE(Slave)
     };
 }
 

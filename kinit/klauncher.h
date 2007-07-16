@@ -30,9 +30,6 @@
 #include <QtCore/QObject>
 
 #include <kurl.h>
-#include <k3streamsocket.h>
-#include <k3serversocket.h>
-
 #include <kio/connection.h>
 
 #include <kservice.h>
@@ -49,7 +46,7 @@ class IdleSlave : public QObject
 {
    Q_OBJECT
 public:
-   IdleSlave(KNetwork::KStreamSocket *socket);
+   explicit IdleSlave(QObject *parent);
    bool match( const QString &protocol, const QString &host, bool connected);
    void connect( const QString &app_socket);
    pid_t pid() const { return mPid;}
@@ -64,8 +61,9 @@ Q_SIGNALS:
 protected Q_SLOTS:
    void gotInput();
 
-protected:
+public:
    KIO::Connection mConn;
+protected:
    QString mProtocol;
    QString mHost;
    bool mConnected;
@@ -188,10 +186,9 @@ protected:
    QList<KLaunchRequest*> requestQueue; // Requests waiting to being handled
    KLaunchRequest *lastRequest;
    QList<SlaveWaitRequest*> mSlaveWaitRequest;
-   QByteArray mPoolSocketNameEncoded;
    int kdeinitSocket;
    QSocketNotifier *kdeinitNotifier;
-   KNetwork::KServerSocket mPoolSocket;
+   KIO::ConnectionServer mConnectionServer;
    QList<IdleSlave*> mSlaveList;
    QTimer mTimer;
    QTimer mAutoTimer;
