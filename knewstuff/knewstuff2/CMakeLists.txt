@@ -54,16 +54,9 @@ install(TARGETS knewstuff2 DESTINATION ${LIB_INSTALL_DIR})
 
 install(FILES
   core/author.h
-  core/category.h
-  core/coreengine.h
   core/entry.h
-  core/entryhandler.h
-  core/entryloader.h
-  core/feed.h
+  core/category.h
   core/ktranslatable.h
-  core/provider.h
-  core/providerhandler.h
-  core/providerloader.h
   core/installation.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/core
 )
@@ -75,7 +68,7 @@ install(FILES
 
 install(FILES
   ui/knewstuffaction.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2
+  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/ui
 )
 
 install(FILES
