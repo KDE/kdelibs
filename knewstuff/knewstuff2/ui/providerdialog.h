@@ -44,7 +44,7 @@ class Provider;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT ProviderDialog : public KDialog
+class ProviderDialog : public KDialog
 {
     Q_OBJECT
   public:
