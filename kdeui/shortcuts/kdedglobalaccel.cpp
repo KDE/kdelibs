@@ -139,7 +139,7 @@ void KdedGlobalAccelPrivate::deleteAction(const QStringList actionId)
         return;
     delete componentHash->take(actionId.at(ActionField));
     if (componentHash->isEmpty())
-        delete mainComponentHashes.value(actionId.at(ComponentField));
+        delete mainComponentHashes.take(actionId.at(ComponentField));
 }
 
 
