@@ -28,6 +28,8 @@ class UploadDialog;
 class DownloadDialog;
 class Feed;
 
+struct EnginePrivate;
+
 /**
  * @brief The KNewStuff2 engine is the top-level class to handle GHNS and DXS workflows.
  *
@@ -38,17 +40,16 @@ class Feed;
  * In most cases, either \ref upload() or \ref download() will be called by the
  * application to upload or download data.
  */
-class KNEWSTUFF_EXPORT Engine : public DxsEngine
+class KNEWSTUFF_EXPORT Engine
 {
-    Q_OBJECT
-  public:
+public:
     /**
      * @brief Engine constructor.
      *
      * As many engines as needed can be instantiated, although one should use
      * the static methods \ref download() and \ref upload() instead.
      */
-    Engine( QWidget * parent = 0L);
+    Engine(QWidget* parent);
 
     /**
      * \brief Engine destructor.
@@ -67,7 +68,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      *
      * @return List of installed or deinstalled entries
      */
-    KNS::Entry::List downloadDialogModal(QWidget *widget = 0L);
+    KNS::Entry::List downloadDialogModal();
 
     /**
      * @brief Recommended download workflow entry point.
@@ -108,7 +109,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      *
      * @see uploadDialogModal()
      */
-    static KNS::Entry *upload(const QString &file);
+    static KNS::Entry *upload(const QString& file);
 
     /**
      * @brief Asynchronous way of starting the download workflow.
@@ -132,38 +133,12 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      */
     void uploadDialog(const QString& file);
 
-  private Q_SLOTS:
-    void slotProviderLoaded(KNS::Provider *provider);
-    void slotProvidersFailed();
-    void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
-    void slotEntriesFailed();
-    void slotEntryUploaded();
-    void slotEntryFailed();
-
-    void slotProvidersFinished();
-    void slotEntriesFinished();
-    void slotEntriesFeedFinished(const KNS::Feed *feed);
-
-    void slotDownloadDialogClosed();
-
   private:
-    void workflow();
+    bool init(const QString& config);
 
-    enum Command
-    {
-        command_none,
-        command_upload,
-        command_download
-    };
-
-    Command m_command;
-    UploadDialog *m_uploaddialog;
-    DownloadDialog *m_downloaddialog;
-    QWidget *m_parent;
-    QString m_uploadfile;
-    KNS::Entry *m_entry;
-    KNS::Provider::List m_providers;
-    bool m_modal;
+    friend class EnginePrivate;
+    struct EnginePrivate* const d;
+    Q_DISABLE_COPY (Engine)
 };
 
 }
