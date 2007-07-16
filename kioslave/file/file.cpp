@@ -466,6 +466,9 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
 
     QByteArray array;
 
+#if 1
+    Q_ASSERT(0);
+#else
     // Command-loop:
     int cmd = CMD_NONE;
     while (true) {
@@ -546,6 +549,7 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
         }
         break;
     }
+#endif
     kDebug( 7101 ) << "File::open -- done " << endl;
     ::close( fd );
     finished();
