@@ -642,7 +642,7 @@ public:
      */
     AppendTrailingSlash = 0x04,
     /**
-     * Opposite of ObeyTailingSlash  (default)
+     * Opposite of ObeyTrailingSlash  (default)
      */
     IgnoreTrailingSlash = 0x01
 
