@@ -26,6 +26,8 @@
 
 namespace KNS {
 
+    struct CategoryPrivate;
+
 /**
  * @short KNewStuff category.
  *
@@ -93,12 +95,9 @@ class KNEWSTUFF_EXPORT Category
     KUrl icon() const;
 
   private:
-    KTranslatable mName;
-    KTranslatable mDescription;
-    KUrl mIcon;
-    QString mId;
+    Q_DISABLE_COPY (Category)
 
-    class CategoryPrivate *d;
+    struct CategoryPrivate * const d;
 };
 
 }

@@ -22,15 +22,17 @@
 
 using namespace KNS;
 
-class CategoryPrivate
+struct KNS::CategoryPrivate
 {
-  public:
-  CategoryPrivate(){}
+    KTranslatable mName;
+    KTranslatable mDescription;
+    KUrl mIcon;
+    QString mId;
 };
 
 Category::Category()
+    : d(new CategoryPrivate)
 {
-  d = NULL;
 }
 
 Category::~Category()
@@ -39,41 +41,41 @@ Category::~Category()
 
 void Category::setId(const QString& id)
 {
-  mId = id;
+    d->mId = id;
 }
 
 QString Category::id() const
 {
-  return mId;
+    return d->mId;
 }
 
 void Category::setName(const KTranslatable& name)
 {
-  mName = name;
+    d->mName = name;
 }
 
 KTranslatable Category::name() const
 {
-  return mName;
+    return d->mName;
 }
 
 void Category::setDescription(const KTranslatable &description)
 {
-  mDescription = description;
+    d->mDescription = description;
 }
 
 KTranslatable Category::description() const
 {
-  return mDescription;
+    return d->mDescription;
 }
 
 void Category::setIcon(const KUrl& icon)
 {
-  mIcon = icon;
+    d->mIcon = icon;
 }
 
 KUrl Category::icon() const
 {
-  return mIcon;
+    return d->mIcon;
 }
 
