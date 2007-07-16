@@ -492,7 +492,7 @@ void JobTest::moveDirectoryNoPermissions()
 #else
 
     // All of /etc is a bit much, so try to find something smaller:
-    QString src = "/etc/cups";
+    QString src = "/etc/fonts";
     if ( !QFile::exists( src ) )
         src = "/etc";
 
