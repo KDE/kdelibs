@@ -363,8 +363,8 @@ void KCModuleProxy::runAsRoot()
 		*d->rootProcess << kdesu;
 		*d->rootProcess << "--nonewdcop" << "-n" << "-d" << QString( "-i%1" ).arg(moduleInfo().icon());
 
-		*d->rootProcess << QString("kcmshell %1 --embed-proxy %2 --lang %3").arg(cmd).arg
-			(d->embedWidget->winId()).arg(KGlobal::locale()->language());
+		*d->rootProcess << QString("%1 %2 --embed-proxy %3 --lang %4").arg(locate("exe", "kcmshell"))
+			.arg(cmd).arg(d->embedWidget->winId()).arg(KGlobal::locale()->language());
 
 		connect(d->rootProcess, SIGNAL(processExited(KProcess*)), SLOT(rootExited()));
 
