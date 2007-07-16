@@ -250,7 +250,7 @@ KLocaleTest::formatDateTime()
 	full = "%A %d %B %Y %H:%M";
 	fullsecs = "%A %d %B %Y %H:%M:%S";
 	KDateTime kdt;
-	const KTimeZone *tz = KSystemTimeZones::zone("Pacific/Fiji");
+	const KTimeZone tz = KSystemTimeZones::zone("Pacific/Fiji");
 	kdt = KDateTime::currentDateTime(tz);
 	today = kdt.date();
 	nowt = kdt.time();
