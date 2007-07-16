@@ -111,6 +111,9 @@
 #include <QtGui/QActionEvent>
 #include <kcomponentdata.h>
 #include <klibloader.h>
+#ifdef Q_WS_WIN
+#include "kapplication_win.cpp"
+#endif
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
