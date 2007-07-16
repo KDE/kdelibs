@@ -1,3 +1,25 @@
+/*
+ * Sofware DES functions
+ *
+ * Copyright 1988-1991 Phil Karn <karn@ka9q.net>
+ * Copyright 2003      Nikos Mavroyanopoulos <nmav@hellug.gr>
+ *
+ * Taken from libmcrypt (http://mcrypt.hellug.gr/lib/index.html).
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA  02110-1301  USA
+ */
 
 /* Sofware DES functions
  * written 12 Dec 1986 by Phil Karn, KA9Q; large sections adapted from
@@ -13,6 +35,7 @@
 /* modified in order to use the libmcrypt API by Nikos Mavroyanopoulos 
  * All modifications are placed under the license of libmcrypt.
  */
+
 
 #include "des.h"
 
