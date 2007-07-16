@@ -42,10 +42,10 @@ class QAsyncPixmap : public QObject, public QPixmap
 {
     Q_OBJECT
     public:
-        QAsyncPixmap(QString url);
+        QAsyncPixmap(const QString& url, QObject* parent);
 
     Q_SIGNALS:
-        void signalLoaded(QPixmap *pix);
+        void signalLoaded(const QPixmap& pix);
 
     private Q_SLOTS:
         void slotDownload(KJob *job);

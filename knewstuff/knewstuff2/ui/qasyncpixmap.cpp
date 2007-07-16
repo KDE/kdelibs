@@ -28,8 +28,8 @@
 
 #include <QtCore/QFile>
 
-QAsyncPixmap::QAsyncPixmap(QString url)
-: QPixmap()
+QAsyncPixmap::QAsyncPixmap(const QString& url, QObject* parent)
+    : QObject(parent), QPixmap()
 {
     if(!url.isEmpty())
     {
@@ -55,7 +55,7 @@ void QAsyncPixmap::slotDownload(KJob *job)
     kDebug(550) << "DOWNLOADed to " << m_dest << endl;
     kDebug(550) << "ret = " << ret << endl;
 
-    emit signalLoaded(this);
+    emit signalLoaded(*this);
 }
 
 #include "qasyncpixmap.moc"
