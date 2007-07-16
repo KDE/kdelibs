@@ -117,11 +117,11 @@ KUser& KUser::operator =(const KUser& user)
 }
 
 bool KUser::operator ==(const KUser& user) const {
-	return uid() == user.uid();
+	return (uid() == user.uid()) && (uid() != uid_t(-1));
 }
 
 bool KUser::operator !=(const KUser& user) const {
-	return uid() != user.uid();
+	return (uid() != user.uid()) || (uid() == uid_t(-1));
 }
 
 bool KUser::isValid() const {
@@ -288,11 +288,11 @@ KUserGroup& KUserGroup::operator =(const KUserGroup& group) {
 }
 
 bool KUserGroup::operator ==(const KUserGroup& group) const {
-	return gid() == group.gid();
+	return (gid() == group.gid()) && (gid() != gid_t(-1));
 }
 
 bool KUserGroup::operator !=(const KUserGroup& user) const {
-	return gid() != user.gid();
+	return (gid() != user.gid()) || (gid() == gid_t(-1));
 }
 
 bool KUserGroup::isValid() const {

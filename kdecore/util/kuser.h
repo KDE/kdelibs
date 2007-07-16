@@ -112,11 +112,13 @@ public:
 
   /**
    * Two KUser objects are equal if the uid() are identical.
+   * Invalid users never compare equal.
    */
   bool operator ==(const KUser& user) const;
 
   /**
    * Two KUser objects are not equal if uid() are not identical.
+   * Invalid users always compare unequal.
    */
   bool operator !=(const KUser &user) const;
 
@@ -297,15 +299,15 @@ public:
   KUserGroup& operator =(const KUserGroup& group);
 
   /**
-   * Two KUserGroup objects are equal if isValid() is true
-   * and gid() are identical
+   * Two KUserGroup objects are equal if their gid()s are identical.
+   * Invalid groups never compare equal.
    * @return true if the groups are identical
    */
   bool operator ==(const KUserGroup& group) const;
 
   /**
-   * Two KUserGroup objects are not equal if either
-   * isValid() is not true or gid() are not identical
+   * Two KUserGroup objects are not equal if their gid()s are not identical.
+   * Invalid groups always compare unequal.
    * @return true if the groups are not identical
    */
   bool operator !=(const KUserGroup& group) const;
