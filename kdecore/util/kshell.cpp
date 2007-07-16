@@ -28,6 +28,16 @@
 #include <pwd.h>
 #include <sys/types.h>
 
+static QString homeDir( const QString &user )
+{
+    if (user.isEmpty())
+        return QDir::homePath();
+    struct passwd *pw = getpwnam( QFile::encodeName( user ).data() );
+    if (!pw)
+        return QString();
+    return QFile::decodeName( pw->pw_dir );
+}
+
 static int fromHex( QChar cUnicode )
 {
     char c = cUnicode.toAscii ();
@@ -392,16 +402,6 @@ QString KShell::tildeExpand( const QString &fname )
         return ret;
     }
     return fname;
-}
-
-QString KShell::homeDir( const QString &user )
-{
-    if (user.isEmpty())
-        return QDir::homePath();
-    struct passwd *pw = getpwnam( QFile::encodeName( user ).data() );
-    if (!pw)
-        return QString();
-    return QFile::decodeName( pw->pw_dir );
 }
 
 bool KShell::matchFileName( const QString &filename, const QString &pattern )

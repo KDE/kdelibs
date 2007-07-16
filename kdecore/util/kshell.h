@@ -144,15 +144,6 @@ namespace KShell {
      */
     KDECORE_EXPORT QString tildeExpand( const QString &path );
 
-    /**
-     * Obtain a @p user's home directory.
-     *
-     * @param user The name of the user whose home dir should be obtained.
-     *  An empty string denotes the current user.
-     * @return The user's home directory.
-     */
-    KDECORE_EXPORT QString homeDir( const QString &user );
-
     /* Match a filename.
      * @param filename is the real decoded filename (or dirname
      *        without trailing '/').
