@@ -225,8 +225,6 @@ public:
 private:
   class Private;
   KSharedPtr<Private> d;
-  void fillPasswd(const passwd* p);
-  void fillName(const char *name);
 };
 
 struct group;
@@ -362,8 +360,6 @@ public:
 private:
   class Private;
   KSharedPtr<Private> d;
-  void fillGroup(const ::group* g);
-  void fillName(const char *name);
 };
 
 #endif
