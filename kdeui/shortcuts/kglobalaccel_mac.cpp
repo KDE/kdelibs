@@ -30,6 +30,7 @@
 #include <QList>
 
 #include "kglobalaccel.h"
+#include "kdedglobalaccel.h"
 #include "kkeyserver.h"
 
 OSStatus hotKeyEventHandler(EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void * inUserData)

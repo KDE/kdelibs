@@ -34,7 +34,7 @@ class KGlobalAccelImpl: public QWidget
 {
 	Q_OBJECT
 public:
-	KGlobalAccelImpl(class KdedGlobalAccel* owner);
+	KGlobalAccelImpl(KdedGlobalAccel* owner);
     ~KGlobalAccelImpl();
 
 public:
