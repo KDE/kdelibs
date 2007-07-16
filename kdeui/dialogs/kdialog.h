@@ -355,7 +355,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @note the group must be set before calling
      *
      * @param config The config group to read from.
-     * @param options passed to KConfigBase::writeEntry
+     * @param options passed to KConfigBase::writeEntry()
      */
     void saveDialogSize( KConfigGroup& config, KConfigBase::WriteConfigFlags options = 0 ) const;
 
@@ -366,6 +366,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      * "Get help..." (internationalized) is returned.
      *
      * @return The help link text.
+     *
+     * @see enableLinkedHelp()
+     * @see setHelpLinkText()
+     * @see setHelp()
      */
     QString helpLinkText() const;
 
@@ -569,6 +573,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      * Display or hide the help link area on the top of the dialog.
      *
      * @param state @p true will display the area.
+     *
+     * @see helpLinkText()
+     * @see setHelpLinkText()
+     * @see setHelp()
      */
     void enableLinkedHelp( bool state );
 
@@ -579,6 +587,10 @@ class KDEUI_EXPORT KDialog : public QDialog
      * the text "Get help..." (internationalized) is used instead.
      *
      * @param text The link text.
+     *
+     * @see helpLinkText()
+     * @see enableLinkedHelp()
+     * @see setHelp()
      */
     void setHelpLinkText( const QString &text );
 

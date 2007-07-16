@@ -76,11 +76,11 @@ namespace Kross {
      * and let the script do whatever it likes to do;
      * \code
      * # Publish a QObject instance for all Kross::Action instances.
-     * Kross::Manager::self().addChild(myqobject1, "MyFirstQObject")
+     * Kross::Manager::self().addObject(myqobject1, "MyFirstQObject")
      * # Create a new Kross::Action instance.
      * Kross::Action* action = new Kross::Action(0,"MySecondScript");
      * # Publish a QObject instance only for the Kross::Action instance.
-     * action->addChild(myqobject2, "MySecondQObject");
+     * action->addObject(myqobject2, "MySecondQObject");
      * # Set the script file we like to execute.
      * action->setFile("/home/myuser/mytest.py");
      * # Execute the script file.
@@ -113,7 +113,8 @@ namespace Kross {
              * This \a Action will be filled with the content of the
              * file (e.g. the file is readed and \a code should return
              * it's content and it's also tried to determinate the
-             * \a interpreter ).
+             * \a interpreter ). Remember to use QUrl c'tor explicitly.
+             * The name will be set to url.path()
              */
             Action(QObject* parent, const QUrl& url);
 
@@ -263,7 +264,7 @@ namespace Kross {
             QString interpreter() const;
 
             /**
-             * Set the name of the interpreter.
+             * Set the name of the interpreter (javascript, python or ruby).
              */
             void setInterpreter(const QString& interpretername);
 

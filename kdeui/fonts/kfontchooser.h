@@ -38,6 +38,8 @@ class QStringList;
  * it is preferable to use the convenience functions in
  * KFontDialog.
  *
+ * @see KFontRequester
+ *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  */
 class KDEUI_EXPORT KFontChooser : public QWidget

@@ -135,6 +135,10 @@ namespace Kross {
             QStringList collections() const;
 
             QList<Action*> actions() const;
+
+            /**
+             * \return action with given name or 0 if it wasn't found
+             */
             Action* action(const QString& name) const;
             void addAction(Action* action);
             void addAction(const QString& name, Action* action);
