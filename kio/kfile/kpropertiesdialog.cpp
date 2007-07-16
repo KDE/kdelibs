@@ -3279,7 +3279,7 @@ void KDesktopPropsPlugin::checkCommandChanged()
   if (KRun::binaryName(w->commandEdit->text(), true) !=
       KRun::binaryName(m_origCommandStr, true))
   {
-    QString m_origCommandStr = w->commandEdit->text();
+    m_origCommandStr = w->commandEdit->text();
     m_dbusStartusType.clear(); // Reset
   }
 }
