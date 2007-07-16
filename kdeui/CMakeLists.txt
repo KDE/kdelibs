@@ -218,6 +218,9 @@ endif (Q_WS_X11)
 if (Q_WS_MAC)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_mac.cpp kernel/kapplication_mac.cpp )
 endif (Q_WS_MAC)
+if (Q_WS_WIN)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_win.cpp )
+endif (Q_WS_WIN)
 
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp
