@@ -224,8 +224,8 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     KLibrary::void_function_ptr sym = q->resolveFunction( symname );
     if ( !sym )
     {
-//        KLibLoader::self()->d->errorMessage = i18n("The library %1 does not offer an qt_plugin_instance function.", libname);
-//        kDebug(150) << KLibLoader::self()->d->errorMessage << endl;
+        kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer an qt_plugin_instance function.", libname);
+        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
         return 0;
     }
 
@@ -239,8 +239,8 @@ KLibFactory *KLibraryPrivate::kde4Factory()
 
     if( !factory )
     {
-//        KLibLoader::self()->d->errorMessage = i18n("The library %1 does not offer a KDE 4 compatible factory." , libname);
-//        kDebug(150) << KLibLoader::self()->d->errorMessage << endl;
+        kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer a KDE 4 compatible factory." , libname);
+        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
         return 0;
     }
     factories.insert( symname, factory );
