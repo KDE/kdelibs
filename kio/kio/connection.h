@@ -34,8 +34,8 @@ class QSocketNotifier;
 namespace KIO {
 
     struct KIO_EXPORT Task {
-	int cmd;
-	QByteArray data;
+        int cmd;
+        QByteArray data;
     };
 
     /**
@@ -48,75 +48,75 @@ namespace KIO {
      */
     class KIO_EXPORT Connection : public QObject
     {
-	Q_OBJECT
+        Q_OBJECT
     public:
-	/**
-	 * Creates a new connection.
-	 * @see init()
-	 */
-	Connection();
-	virtual ~Connection();
+        /**
+         * Creates a new connection.
+         * @see init()
+         */
+        Connection();
+        virtual ~Connection();
 
         /**
-	 * Initialize this connection to use the given socket.
-	 * @param sock the socket to use
-	 * @see inited()
-	 */
-	void init(KNetwork::KStreamSocket *sock);
+         * Initialize this connection to use the given socket.
+         * @param sock the socket to use
+         * @see inited()
+         */
+        void init(KNetwork::KStreamSocket *sock);
         /**
-	 * Initialize the connection to use the given file
-	 * descriptors.
-	 * @param fd_in the input file descriptor to use
-	 * @param fd_out the output file descriptor to use
-	 * @see inited()
-	 */
-	void init(int fd_in, int fd_out); // Used by KDENOX
-	void connect(QObject *receiver = 0, const char *member = 0);
+         * Initialize the connection to use the given file
+         * descriptors.
+         * @param fd_in the input file descriptor to use
+         * @param fd_out the output file descriptor to use
+         * @see inited()
+         */
+        void init(int fd_in, int fd_out); // Used by KDENOX
+        void connect(QObject *receiver = 0, const char *member = 0);
         /// Closes the connection.
-	void close();
+        void close();
 
         /**
-	 * Returns the input file descriptor.
-	 * @return the input file descriptor
-	 */
-	int fd_from() const;
+         * Returns the input file descriptor.
+         * @return the input file descriptor
+         */
+        int fd_from() const;
         /**
-	 * Returns the output file descriptor.
-	 * @return the output file descriptor
-	 */
+         * Returns the output file descriptor.
+         * @return the output file descriptor
+         */
         int fd_to() const;
         /**
-	 * Checks whether the connection has been initialized.
-	 * @return true if the initialized
-	 * @see init()
-	 */
-	bool inited() const;
+         * Checks whether the connection has been initialized.
+         * @return true if the initialized
+         * @see init()
+         */
+        bool inited() const;
 
         /**
-	 * Sends/queues the given command to be sent.
-	 * @param cmd the command to set
-	 * @param arr the bytes to send
-	 * @return true if successful, false otherwise
-	 */
-	bool send(int cmd, const QByteArray &arr = QByteArray());
+         * Sends/queues the given command to be sent.
+         * @param cmd the command to set
+         * @param arr the bytes to send
+         * @return true if successful, false otherwise
+         */
+        bool send(int cmd, const QByteArray &arr = QByteArray());
 
         /**
-	 * Sends the given command immediately.
-	 * @param _cmd the command to set
-	 * @param data the bytes to send
-	 * @return true if successful, false otherwise
-	 */
-	bool sendnow( int _cmd, const QByteArray &data );
+         * Sends the given command immediately.
+         * @param _cmd the command to set
+         * @param data the bytes to send
+         * @return true if successful, false otherwise
+         */
+        bool sendnow( int _cmd, const QByteArray &data );
 
-	/**
-	 * Receive data.
-	 *
-	 * @param _cmd the received command will be written here
-	 * @param data the received data will be written here
-	 * @return >=0 indicates the received data size upon success
-	 *         -1  indicates error
-	 */
-	int read( int* _cmd, QByteArray &data );
+        /**
+         * Receive data.
+         *
+         * @param _cmd the received command will be written here
+         * @param data the received data will be written here
+         * @return >=0 indicates the received data size upon success
+         *         -1  indicates error
+         */
+        int read( int* _cmd, QByteArray &data );
 
         /**
          * Don't handle incoming data until resumed.
@@ -130,7 +130,7 @@ namespace KIO {
 
         /**
          * Returns status of connection.
-	 * @return true if suspended, false otherwise
+         * @return true if suspended, false otherwise
          */
         bool suspended() const;
 
@@ -141,20 +141,20 @@ namespace KIO {
 
 
     private:
-	int fd_in;
+        int fd_in;
 #ifdef Q_WS_WIN
-	int f_out;
+        int f_out;
 #else
-	FILE *f_out;
+        FILE *f_out;
 #endif
-	KNetwork::KStreamSocket *socket;
-	QSocketNotifier *notifier;
-	QObject *receiver;
-	const char *member;
-	QQueue<Task> m_tasks;
+        KNetwork::KStreamSocket *socket;
+        QSocketNotifier *notifier;
+        QObject *receiver;
+        const char *member;
+        QQueue<Task> m_tasks;
         bool m_suspended;
     private:
-	class ConnectionPrivate* d;
+        class ConnectionPrivate* d;
     };
 
 }
