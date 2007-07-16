@@ -18,6 +18,7 @@
 */
 
 #include "kcmoduleproxy.h"
+#include "kcmoduleproxy_p.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QCursor>
@@ -52,45 +53,6 @@
 
 #include "ksettingswidgetadaptor.h"
 
-/***************************************************************/
-class KCModuleProxy::Private
-{
-	public:
-		Private( KCModuleProxy *_parent, const KCModuleInfo &info, const QStringList &_args)
-			: args ( _args )
-			, kcm( 0 )
-			//, view( 0 )
-			, topLayout( 0 )
-			, rootInfo( 0 )
-			, modInfo( info )
-			, changed( false )
-			, bogusOccupier( false )
-			, parent( _parent )
-		{}
-
-		~Private()
-		{
-			delete rootInfo; // Delete before embedWidget!
-			delete kcm;
-		}
-
-		void loadModule();
-
-		QStringList args;
-		KCModule *kcm;
-		QVBoxLayout *topLayout; /* Contains QScrollView view, and root stuff */
-		QLabel *rootInfo;
-		QString dbusService;
-		QString dbusPath;
-		KCModuleInfo modInfo;
-		bool changed;
-		bool bogusOccupier;
-		KCModuleProxy* parent;
-};
-/***************************************************************/
-
-
-
 /*
  TODO:
 
@@ -108,6 +70,7 @@ class KCModuleProxy::Private
 /***************************************************************/
 KCModule* KCModuleProxy::realModule() const
 {
+    Q_D(const KCModuleProxy);
 	/*
 	 * Note, don't call any function that calls realModule() since
 	 * that leads to an infinite loop.
@@ -117,13 +80,13 @@ KCModule* KCModuleProxy::realModule() const
 	if( !d->kcm )
 	{
 		QApplication::setOverrideCursor( Qt::WaitCursor );
-		d->loadModule();
+        const_cast<KCModuleProxyPrivate *>(d)->loadModule();
 		QApplication::restoreOverrideCursor();
 	}
 	return d->kcm;
 }
 
-void KCModuleProxy::Private::loadModule()
+void KCModuleProxyPrivate::loadModule()
 {
 	if( !topLayout )
 	{
@@ -143,8 +106,8 @@ void KCModuleProxy::Private::loadModule()
 
 		kcm = KCModuleLoader::loadModule( modInfo, KCModuleLoader::Inline, parent, args );
 
-		QObject::connect( kcm, SIGNAL(changed(bool)), parent, SLOT(moduleChanged(bool)) );
-		QObject::connect( kcm, SIGNAL(destroyed()), parent, SLOT(moduleDestroyed()) );
+        QObject::connect(kcm, SIGNAL(changed(bool)), parent, SLOT(_k_moduleChanged(bool)));
+        QObject::connect(kcm, SIGNAL(destroyed()), parent, SLOT(_k_moduleDestroyed()));
 		QObject::connect( kcm, SIGNAL(quickHelpChanged()), parent, SIGNAL(quickHelpChanged()) );
 		parent->setWhatsThis( kcm->quickHelp() );
 
@@ -191,7 +154,7 @@ void KCModuleProxy::Private::loadModule()
 		if( reply.isValid() )
 		{
 			QObject::connect( QDBusConnection::sessionBus().interface(), SIGNAL(serviceOwnerChanged(QString,QString,QString)),
-					parent, SLOT(ownerChanged(QString,QString,QString)) );
+                    parent, SLOT(_k_ownerChanged(QString,QString,QString)));
 			kcm = KCModuleLoader::reportError( KCModuleLoader::Inline,
 					i18nc( "Argument is application name", "This configuration section is "
 						"already opened in %1" ,  reply.value() ), " ", parent );
@@ -206,21 +169,22 @@ void KCModuleProxy::Private::loadModule()
 	}
 }
 
-void KCModuleProxy::ownerChanged( const QString & service, const QString &oldOwner, const QString &)
+void KCModuleProxyPrivate::_k_ownerChanged(const QString &service, const QString &oldOwner, const QString &)
 {
-	if( service == d->dbusService && !oldOwner.isEmpty() )
-	{
-		/* Violence: Get rid of KCMError & CO, so that
-		 * realModule() attempts to reload the module */
-		delete d->kcm;
-		d->kcm = 0;
-		realModule();
-		d->kcm->show();
-	}
+    if (service == dbusService && !oldOwner.isEmpty()) {
+        // Violence: Get rid of KCMError & CO, so that
+        // realModule() attempts to reload the module
+        delete kcm;
+        kcm = 0;
+        Q_Q(KCModuleProxy);
+        q->realModule();
+        kcm->show();
+    }
 }
 
 void KCModuleProxy::showEvent( QShowEvent * ev )
 {
+    Q_D(KCModuleProxy);
 
 	kDebug(711) << k_funcinfo << endl;
 	( void )realModule();
@@ -238,75 +202,80 @@ KCModuleProxy::~KCModuleProxy()
 	deleteClient();
 	KCModuleLoader::unloadModule(moduleInfo());
 
-	delete d;
+	delete d_ptr;
 }
 
 void KCModuleProxy::deleteClient()
 {
+    Q_D(KCModuleProxy);
 	delete d->kcm;
 	d->kcm = 0;
 
 	kapp->syncX();
 }
 
-void KCModuleProxy::moduleChanged( bool c )
+void KCModuleProxyPrivate::_k_moduleChanged(bool c)
 {
-	if(  d->changed == c )
-		return;
+    if(changed == c) {
+        return;
+    }
 
-	d->changed = c;
-	emit changed( c );
-	emit changed( this );
+    Q_Q(KCModuleProxy);
+    changed = c;
+    emit q->changed(c);
+    emit q->changed(this);
 }
 
-void KCModuleProxy::moduleDestroyed()
+void KCModuleProxyPrivate::_k_moduleDestroyed()
 {
-	d->kcm = 0;
+    kcm = 0;
 }
 
 KCModuleProxy::KCModuleProxy( const KService::Ptr& service, QWidget * parent,
 		const QStringList& args )
-	: QWidget( parent ),
-	d( new Private(this,KCModuleInfo(service),args) )
+    : QWidget(parent), d_ptr(new KCModuleProxyPrivate(this, KCModuleInfo(service), args))
 {
+    d_ptr->q_ptr = this;
 }
 
 KCModuleProxy::KCModuleProxy( const KCModuleInfo& info, QWidget * parent,
 		const QStringList& args )
-	: QWidget( parent ),
-	d( new Private(this,info,args) )
+    : QWidget(parent), d_ptr(new KCModuleProxyPrivate(this, info, args))
 {
+    d_ptr->q_ptr = this;
 }
 
 KCModuleProxy::KCModuleProxy( const QString& serviceName, QWidget * parent,
 		const QStringList& args )
-	: QWidget( parent ),
-	d( new Private(this,KCModuleInfo(serviceName),args) )
+    : QWidget(parent), d_ptr(new KCModuleProxyPrivate(this, KCModuleInfo(serviceName), args))
 {
+    d_ptr->q_ptr = this;
 }
 
 
 void KCModuleProxy::load()
 {
-
+    Q_D(KCModuleProxy);
 	if( realModule() )
 	{
 		d->kcm->load();
-		moduleChanged( false );
+        d->_k_moduleChanged(false);
 	}
 }
 
 void KCModuleProxy::save()
 {
+    Q_D(KCModuleProxy);
 	if( d->changed && realModule() )
 	{
 		d->kcm->save();
-		moduleChanged( false );
+        d->_k_moduleChanged(false);
 	}
 }
 
 void KCModuleProxy::defaults()
 {
+    Q_D(KCModuleProxy);
 	if( realModule() )
 		d->kcm->defaults();
 }
@@ -345,30 +314,34 @@ KComponentData KCModuleProxy::componentData() const
 
 bool KCModuleProxy::changed() const
 {
+    Q_D(const KCModuleProxy);
 	return d->changed;
 }
 
 KCModuleInfo KCModuleProxy::moduleInfo() const
 {
+    Q_D(const KCModuleProxy);
 	return d->modInfo;
 }
 
 QString KCModuleProxy::dbusService() const
 {
+    Q_D(const KCModuleProxy);
 	return d->dbusService;
 }
 
 QString KCModuleProxy::dbusPath() const
 {
+    Q_D(const KCModuleProxy);
 	return d->dbusPath;
 }
 
-void KCModuleProxy::emitQuickHelpChanged()
-{
-	emit quickHelpChanged();
-}
+//X void KCModuleProxy::emitQuickHelpChanged()
+//X {
+//X     emit quickHelpChanged();
+//X }
 
 /***************************************************************/
 #include "kcmoduleproxy.moc"
 
-// vim: sw=4 ts=4 noet
+// vim: ts=4

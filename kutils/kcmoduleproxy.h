@@ -18,8 +18,8 @@
 
 */
 
-#ifndef KCMODULEPROXY_H
-#define KCMODULEPROXY_H
+#ifndef KUTILS_KCMODULEPROXY_H
+#define KUTILS_KCMODULEPROXY_H
 
 #include <QtGui/QImage>
 #include <QtCore/QStringList>
@@ -31,6 +31,7 @@
 class KAboutData;
 class KCModuleInfo;
 class KComponentData;
+class KCModuleProxyPrivate;
 
 /**
  *
@@ -46,12 +47,12 @@ class KComponentData;
  * Usually, an instance is created by passing one of the constructors a KService::Ptr,
  * KCModuleInfo or simply the name of the module and then added to the layout as any
  * other widget. \n
- * When the user have changed the module, changed( bool ) as well as changed ( KCModuleProxy * )
+ * When the user has changed the module, changed(bool) as well as changed(KCModuleProxy *)
  * is emitted. KCModuleProxy does not take care of prompting for saving - if the object is deleted while
  * changes is not saved the changes will be lost. changed() returns true if changes are unsaved. \n
  * \n
  * KCModuleProxy does not take care of authorization of KCModules. \n
- * KCModuleProxy do lazy loading, meaning the library will not be loaded or
+ * KCModuleProxy implements lazy loading, meaning the library will not be loaded or
  * any other initialization done before its show() function is called. This means
  * modules will only be loaded when they are actually needed as well as it is possible to
  * load many KCModuleProxy without any speed penalty.
@@ -65,6 +66,7 @@ class KComponentData;
  */
 class KUTILS_EXPORT KCModuleProxy : public QWidget
 {
+Q_DECLARE_PRIVATE(KCModuleProxy)
 Q_OBJECT
 public:
 	/**
@@ -243,36 +245,14 @@ protected:
 	 */
 	void showEvent( QShowEvent * );
 
-
-	/**
-	 * Emits the quickHelpChanged signal.
-	 */
-	void emitQuickHelpChanged();
-
-private Q_SLOTS:
-
-	/**
-	 * Makes sure the proper variables is set and signals are emitted.
-	 */
-	void moduleChanged( bool );
-
-	/**
-	 * Zeroes d->kcm
-	 */
-	void moduleDestroyed();
-
-	/**
-	 * Gets called by DCOP when an application closes.
-	 * Is used to (try to) reload a KCM which previously
-	 * was loaded.
-	 */
-	void ownerChanged( const QString &service, const QString &oldOwner, const QString &newOwner );
+protected:
+    KCModuleProxyPrivate *const d_ptr;
 
 private:
-
-	class Private;
-	Private * const d;
+    Q_PRIVATE_SLOT(d_func(), void _k_moduleChanged(bool))
+    Q_PRIVATE_SLOT(d_func(), void _k_moduleDestroyed())
+    Q_PRIVATE_SLOT(d_func(), void _k_ownerChanged(const QString &service, const QString &oldOwner, const QString &newOwner))
 };
 
-#endif // KCMODULEPROXY_H
-// vim: sw=4 ts=4 noet
+#endif // KUTILS_KCMODULEPROXY_H
+// vim: ts=4
