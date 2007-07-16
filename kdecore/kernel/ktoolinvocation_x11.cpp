@@ -276,8 +276,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     }
 
     QStringList cmdTokens = KShell::splitArgs(command);
-    QString cmd = cmdTokens[0];
-    cmdTokens.erase(cmdTokens.begin());
+    QString cmd = cmdTokens.takeFirst();
 
     KUrl url;
     //QStringList qry;
