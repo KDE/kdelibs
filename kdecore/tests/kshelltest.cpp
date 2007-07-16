@@ -52,7 +52,7 @@ KShellTest::joinArgs()
 	list.clear();
 }
 
-static QString sj(const QString& str, int flags, int* ret)
+static QString sj(const QString& str, KShell::Options flags, KShell::Errors* ret)
 {
 	return KShell::joinArgs(KShell::splitArgs(str, flags, ret));
 }
@@ -60,45 +60,45 @@ static QString sj(const QString& str, int flags, int* ret)
 void
 KShellTest::splitJoinDQ()
 {
-	int err=0;
+	KShell::Errors err = KShell::NoError;
 
 	QCOMPARE(sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo ",KShell::NoOptions, &err),
 		QString("~sulli text jojo crap '\\'\\''\x1b!' 'ha lo'"));
-	QVERIFY(err == 0);
+	QVERIFY(err == KShell::NoError);
 
 	QCOMPARE(sj("\"~sulli\" 'text'", KShell::TildeExpand, &err),
 		QString("~sulli text"));
-	QVERIFY(err == 0);
+	QVERIFY(err == KShell::NoError);
 
 	QCOMPARE(sj("~\"sulli\" 'text'", KShell::TildeExpand, &err),
 		QString("~sulli text"));
-	QVERIFY(err == 0);
+	QVERIFY(err == KShell::NoError);
 
 	QCOMPARE(sj("~/\"sulli\" 'text'", KShell::TildeExpand, &err),
 		QDir::homePath() + "/sulli text");
-	QVERIFY(err == 0);
+	QVERIFY(err == KShell::NoError);
 
 	QCOMPARE(sj("~ 'text' ~", KShell::TildeExpand, &err),
 		QDir::homePath() + " text " + QDir::homePath());
-	QVERIFY(err == 0);
+	QVERIFY(err == KShell::NoError);
 
 	QCOMPARE(sj("~sulli ~root", KShell::TildeExpand, &err),
 		QString("~sulli ") + KUser("root").homeDir());
-	QVERIFY(err == 0);
+	QVERIFY(err == KShell::NoError);
 }
 
 void
 KShellTest::abortOnMeta()
 {
-	int err1=0, err2=0;
+	KShell::Errors err1 = KShell::NoError, err2 = KShell::NoError;
 
 	QCOMPARE(sj("say \" error", KShell::NoOptions, &err1),
 		QString());
-	QVERIFY(err1 != 0);
+	QVERIFY(err1 != KShell::NoError);
 
 	QCOMPARE(sj("say \" still error", KShell::AbortOnMeta, &err1),
 		QString());
-	QVERIFY(err1 != 0);
+	QVERIFY(err1 != KShell::NoError);
 
 	QVERIFY(sj("say `echo no error`", KShell::NoOptions, &err1) !=
 		sj("say `echo no error`", KShell::AbortOnMeta, &err2));
