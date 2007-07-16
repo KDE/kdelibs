@@ -2,6 +2,7 @@
     This file is part of KNewStuff2.
     Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
     Copyright (c) 2003 - 2007 Josef Spillner <spillner@kde.org>
+              (c) 2007 Dirk Mueller <mueller@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,17 +28,22 @@ using namespace KNS;
 
 EntryHandler::EntryHandler(const Entry& entry)
 {
-  mValid = false;
-  mCompat = false;
-  mEntry = entry;
-  mEntryXML = serializeElement(entry);
+    init();
+    mEntry = entry;
+    mEntryXML = serializeElement(entry);
 }
 
 EntryHandler::EntryHandler(const QDomElement& entryxml)
 {
-  mValid = false;
-  mEntryXML = entryxml;
-  mEntry = deserializeElement(entryxml);
+    init();
+    mEntryXML = entryxml;
+    mEntry = deserializeElement(entryxml);
+}
+
+void EntryHandler::init()
+{
+    mValid = false;
+    mCompat = false;
 }
 
 void EntryHandler::setCompatibilityFormat()

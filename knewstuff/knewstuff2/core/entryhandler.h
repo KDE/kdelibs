@@ -41,9 +41,9 @@ namespace KNS
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT EntryHandler
+class EntryHandler
 {
-  public:
+public:
     EntryHandler(const QDomElement& entryxml);
     EntryHandler(const Entry& entry);
 
@@ -54,7 +54,9 @@ class KNEWSTUFF_EXPORT EntryHandler
     Entry *entryptr();
     QDomElement entryXML();
 
-  private:
+private:
+    void init();
+
     QDomElement serializeElement(const Entry& entry);
     Entry deserializeElement(const QDomElement& entryxml);
     QDomElement addElement(QDomDocument& doc, QDomElement& parent,
