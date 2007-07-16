@@ -49,7 +49,7 @@ public:
      * As many engines as needed can be instantiated, although one should use
      * the static methods \ref download() and \ref upload() instead.
      */
-    Engine(QWidget* parent);
+    Engine(QWidget* parent = 0);
 
     /**
      * \brief Engine destructor.
@@ -68,7 +68,7 @@ public:
      *
      * @return List of installed or deinstalled entries
      */
-    KNS::Entry::List downloadDialogModal();
+    KNS::Entry::List downloadDialogModal(QWidget* parent=0);
 
     /**
      * @brief Recommended download workflow entry point.
@@ -133,8 +133,9 @@ public:
      */
     void uploadDialog(const QString& file);
 
-  private:
     bool init(const QString& config);
+
+  private:
 
     friend class EnginePrivate;
     struct EnginePrivate* const d;

@@ -157,14 +157,14 @@ KNS::Entry::List Engine::download()
 	bool ret = engine->init(name + ".knsrc");
 	if(!ret) return entries;
 
-	entries = engine->downloadDialogModal();
+	entries = engine->downloadDialogModal(0);
 	delete engine;
 
 	// FIXME: refcounting?
 	return entries;
 }
 
-KNS::Entry::List Engine::downloadDialogModal()
+KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 {
 	kDebug(550) << "Engine: downloadDialogModal" << endl;
 
