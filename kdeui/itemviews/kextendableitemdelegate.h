@@ -30,7 +30,7 @@ The extender will logically belong to a column in the row above it.
 
 
 It is your responsibility to devise a way to trigger extension and contraction of items, by calling
-extendItem() and contractItem().
+extendItem() and contractItem(). You can e.g. reimplement itemActivated() and similar functions.
 */
 
 

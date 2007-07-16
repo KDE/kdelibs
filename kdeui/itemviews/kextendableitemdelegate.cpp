@@ -36,11 +36,11 @@ public:
 	//this will trigger a lot of auto-casting QModelIndex <-> QPersistentModelIndex
 	QHash<QPersistentModelIndex, QWidget *> extenders;
 	QHash<QWidget *, QPersistentModelIndex> extenderIndices;
-	//mostly for quick startup - don't look for extenders while the view
-	//is being populated.
 	QPixmap extendIcon;
 	QPixmap contractIcon;
-	/*mutable*/ bool hasExtenders;
+	//mostly for quick startup - don't look for extenders while the view
+	//is being populated.
+	bool hasExtenders;
 };
 
 
