@@ -20,22 +20,16 @@
 */
 
 #include "kshell.h"
+#include "kuser.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-
-#include <stdlib.h>
-#include <pwd.h>
-#include <sys/types.h>
 
 static QString homeDir( const QString &user )
 {
     if (user.isEmpty())
         return QDir::homePath();
-    struct passwd *pw = getpwnam( QFile::encodeName( user ).data() );
-    if (!pw)
-        return QString();
-    return QFile::decodeName( pw->pw_dir );
+    return KUser(user).homeDir();
 }
 
 static int fromHex( QChar cUnicode )
@@ -288,22 +282,8 @@ QString KShell::joinArgs( const QStringList &args )
     QString ret;
     for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
         if (!ret.isEmpty())
-            ret += sp;
-        if (!(*it).length())
-            ret.append( q ).append( q );
-        else {
-            for (int i = 0; i < (*it).length(); i++)
-                if (isSpecial((*it).unicode()[i])) {
-                    QString tmp(*it);
-                    tmp.replace( q, QLatin1String("'\\''" ) );
-                    ret += q;
-                    tmp += q;
-                    ret += tmp;
-                    goto ex;
-                }
-            ret += *it;
-          ex: ;
-        }
+            ret.append(QLatin1Char(' '));
+        ret.append(quoteArg(*it));
     }
     return ret;
 }
