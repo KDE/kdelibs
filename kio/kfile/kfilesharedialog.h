@@ -54,10 +54,6 @@ private:
     void init();
     bool setShared( const QString&path, bool shared );
 
-    QWidget *m_widget;
-    QRadioButton *m_rbShare;
-    QRadioButton *m_rbUnShare;
-    QPushButton *m_pbConfig;
     class Private;
     Private* const d;
 };

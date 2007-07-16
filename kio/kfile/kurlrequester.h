@@ -243,7 +243,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotUpdateUrl())
 };
 
-class KIO_EXPORT KUrlComboRequester : public KUrlRequester // For use in Qt Designer
+class KIO_EXPORT KUrlComboRequester : public KUrlRequester // krazy:exclude=dpointer (For use in Qt Designer)
 {
     Q_OBJECT
 public:

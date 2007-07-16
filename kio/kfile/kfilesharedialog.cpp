@@ -46,6 +46,10 @@ public:
     KfsProcess *m_configProc;
     bool m_bAllShared;
     bool m_bAllUnshared;
+    QWidget *m_widget;
+    QRadioButton *m_rbShare;
+    QRadioButton *m_rbUnShare;
+    QPushButton *m_pbConfig;
 };
 
 KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
@@ -56,7 +60,7 @@ KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
 
     d->m_configProc = 0;
     properties->setFileSharingPage(d->m_vBox);
-    m_widget = 0L;
+    d->m_widget = 0L;
     init();
 }
 
@@ -93,11 +97,11 @@ void KFileSharePropsPlugin::init()
     // We store the main widget, so that it's possible (later) to call init()
     // more than once, to update the page if something changed (e.g. after
     // the user has been authorized)
-    delete m_widget;
-    m_rbShare = 0L;
-    m_rbUnShare = 0L;
-    m_widget = new QWidget( d->m_vBox );
-    QVBoxLayout * vbox = new QVBoxLayout( m_widget );
+    delete d->m_widget;
+    d->m_rbShare = 0L;
+    d->m_rbUnShare = 0L;
+    d->m_widget = new QWidget( d->m_vBox );
+    QVBoxLayout * vbox = new QVBoxLayout( d->m_widget );
 
     switch ( KFileShare::authorization() ) {
     case KFileShare::Authorized:
@@ -127,7 +131,7 @@ void KFileSharePropsPlugin::init()
         if ( !ok )
         {
             vbox->addWidget( new QLabel( i18n( "Only folders in your home folder can be shared."),
-                                         m_widget ), 0 );
+                                         d->m_widget ), 0 );
         }
         else
         {
@@ -135,38 +139,38 @@ void KFileSharePropsPlugin::init()
             vbox->setSpacing( KDialog::spacingHint() );
             vbox->setMargin( KDialog::marginHint() );
 
-            QButtonGroup *rbGroup = new QButtonGroup( m_widget );
-            m_rbUnShare = new QRadioButton( i18n("Not shared"), m_widget );
-            connect( m_rbUnShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
-            vbox->addWidget( m_rbUnShare, 0 );
-            rbGroup->addButton( m_rbUnShare );
+            QButtonGroup *rbGroup = new QButtonGroup( d->m_widget );
+            d->m_rbUnShare = new QRadioButton( i18n("Not shared"), d->m_widget );
+            connect( d->m_rbUnShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
+            vbox->addWidget( d->m_rbUnShare, 0 );
+            rbGroup->addButton( d->m_rbUnShare );
 
-            m_rbShare = new QRadioButton( i18n("Shared"), m_widget );
-            connect( m_rbShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
-            vbox->addWidget( m_rbShare, 0 );
-            rbGroup->addButton( m_rbShare );
+            d->m_rbShare = new QRadioButton( i18n("Shared"), d->m_widget );
+            connect( d->m_rbShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
+            vbox->addWidget( d->m_rbShare, 0 );
+            rbGroup->addButton( d->m_rbShare );
 
             // Activate depending on status
             if ( d->m_bAllShared )
-                m_rbShare->setChecked(true);
+                d->m_rbShare->setChecked(true);
             if ( d->m_bAllUnshared )
-                m_rbUnShare->setChecked(true);
+                d->m_rbUnShare->setChecked(true);
 
             // Some help text
-            QLabel *label = new QLabel( i18n("Sharing this folder makes it available under Linux/UNIX (NFS) and Windows (Samba).") , m_widget );
+            QLabel *label = new QLabel( i18n("Sharing this folder makes it available under Linux/UNIX (NFS) and Windows (Samba).") , d->m_widget );
             label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter);
 	    label->setWordWrap(true);
             vbox->addWidget( label, 0 );
 
-	    KSeparator* sep=new KSeparator(m_widget);
+	    KSeparator* sep=new KSeparator(d->m_widget);
 	    vbox->addWidget( sep, 0 );
-	    label = new QLabel( i18n("You can also reconfigure file sharing authorization.") , m_widget );
+	    label = new QLabel( i18n("You can also reconfigure file sharing authorization.") , d->m_widget );
             label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter);
 	    label->setWordWrap(true);
 	    vbox->addWidget( label, 0 );
-	    m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), m_widget );
-	    connect( m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
-	    vbox->addWidget( m_pbConfig, 0, Qt::AlignHCenter );
+	    d->m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), d->m_widget );
+	    connect( d->m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
+	    vbox->addWidget( d->m_pbConfig, 0, Qt::AlignHCenter );
 
             vbox->addStretch( 10 );
         }
@@ -174,23 +178,23 @@ void KFileSharePropsPlugin::init()
     break;
     case KFileShare::ErrorNotFound:
         vbox->addWidget( new QLabel( i18n("Error running 'filesharelist'. Check if installed and in $PATH or /usr/sbin."),
-                    m_widget ), 0 );
+                    d->m_widget ), 0 );
         break;
     case KFileShare::UserNotAllowed:
     {
         vbox->setSpacing( 10 );
         if (KFileShare::sharingEnabled()) {
           vbox->addWidget( new QLabel( i18n("You need to be authorized to share folders."),
-                    m_widget ), 0 );
+                    d->m_widget ), 0 );
         } else {
           vbox->addWidget( new QLabel( i18n("File sharing is disabled."),
-                    m_widget ), 0 );
+                    d->m_widget ), 0 );
         }
         QHBoxLayout* hBox = new QHBoxLayout( (QWidget *)0L );
         vbox->addLayout( hBox, 0 );
-        m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), m_widget );
-        connect( m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
-        hBox->addWidget( m_pbConfig, 0, Qt::AlignHCenter );
+        d->m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), d->m_widget );
+        connect( d->m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
+        hBox->addWidget( d->m_pbConfig, 0, Qt::AlignHCenter );
         vbox->addStretch( 10 ); // align items on top
         break;
     }
@@ -198,7 +202,7 @@ void KFileSharePropsPlugin::init()
         kWarning() << "KFileShare Authorization still NotInitialized after calling authorization() - impossible" << endl;
         break;
     }
-    m_widget->show(); // In case the dialog was shown already.
+    d->m_widget->show(); // In case the dialog was shown already.
 }
 
 void KFileSharePropsPlugin::slotConfigureFileSharing()
@@ -215,7 +219,7 @@ void KFileSharePropsPlugin::slotConfigureFileSharing()
     }
     connect(d->m_configProc, SIGNAL(processExited()),
             this, SLOT(slotConfigureFileSharingDone()));
-    m_pbConfig->setEnabled(false);
+    d->m_pbConfig->setEnabled(false);
 }
 
 void KFileSharePropsPlugin::slotConfigureFileSharingDone()
@@ -230,9 +234,9 @@ void KFileSharePropsPlugin::slotConfigureFileSharingDone()
 void KFileSharePropsPlugin::applyChanges()
 {
     kDebug() << "KFileSharePropsPlugin::applyChanges" << endl;
-    if ( m_rbShare && m_rbUnShare )
+    if ( d->m_rbShare && d->m_rbUnShare )
     {
-        bool share = m_rbShare->isChecked();
+        bool share = d->m_rbShare->isChecked();
 
         if (share && d->m_bAllShared)
            return; // Nothing to do

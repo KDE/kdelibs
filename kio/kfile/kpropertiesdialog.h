@@ -463,21 +463,6 @@ private:
   void determineRelativePath( const QString & path );
   void applyIconChanges();
 
-  QWidget *iconArea;
-  QWidget *nameArea;
-
-  QLabel *m_sizeLabel;
-  QPushButton *m_sizeDetermineButton;
-  QPushButton *m_sizeStopButton;
-
-  QString m_sRelativePath;
-  bool m_bFromTemplate;
-
-  /**
-   * The initial filename
-   */
-  QString oldName;
-
   class KFilePropsPluginPrivate;
   KFilePropsPluginPrivate* const d;
 };
@@ -541,27 +526,6 @@ private:
   static const mode_t standardPermissions[4];
   static const char *permissionsTexts[4][4];
 
-  // unused, for binary compatibility!
-  QCheckBox *permBox[3][4];
-
-  QComboBox *grpCombo;
-
-  KLineEdit *usrEdit, *grpEdit;
-
-  /**
-   * Old permissions
-   */
-  mode_t permissions;
-  /**
-   * Old group
-   */
-  QString strGroup;
-  /**
-   * Old owner
-   */
-  QString strOwner;
-
-  // unused, for compatibility
   static mode_t fperm[3][4];
 
   class KFilePermissionsPropsPluginPrivate;
@@ -592,15 +556,6 @@ public:
   static bool supports( const KFileItemList& _items );
 
 private:
-  KUrlRequester *URLEdit;
-  KIconButton *iconBox;
-
-  QString URLStr;
-  QString iconStr;
-
-  QPixmap pixmap;
-  QString pixmapFile;
-private:
   class KUrlPropsPluginPrivate;
   KUrlPropsPluginPrivate* const d;
 };
@@ -626,13 +581,6 @@ public:
   static bool supports( const KFileItemList& _items );
 
 private:
-
-  QLineEdit *commentEdit;
-  QLineEdit *patternEdit;
-  QLineEdit *mimeEdit;
-  QString m_sMimeStr;
-
-  QCheckBox * cbAutoEmbed;
 
   class KBindingPropsPluginPrivate;
   KBindingPropsPluginPrivate* const d;
@@ -663,21 +611,6 @@ private:
   void updateInfo();
 
 private:
-  QComboBox* device;
-  QLabel* mountpoint;
-  QCheckBox* readonly;
-  void* unused;
-  //KIconButton* mounted;
-  KIconButton* unmounted;
-
-  QStringList m_devicelist;
-  int indexDevice;
-  int indexMountPoint;
-  int indexFSType;
-
-  QPixmap pixmap;
-  QString pixmapFile;
-
   class KDevicePropsPluginPrivate;
   KDevicePropsPluginPrivate* const d;
 };
@@ -716,21 +649,8 @@ private:
   void checkCommandChanged();
 
 private:
-  Ui_KPropertiesDesktopBase* w;
-  QWidget *m_frame;
-
-  QString m_origCommandStr;
-  QString m_terminalOptionStr;
-  QString m_suidUserStr;
-  QString m_dbusStartusType;
-  bool m_terminalBool;
-  bool m_terminalCloseBool;
-  bool m_suidBool;
-  bool m_startupBool;
-  bool m_systrayBool;
-
   class KDesktopPropsPluginPrivate;
-  KDesktopPropsPluginPrivate* d;
+  KDesktopPropsPluginPrivate * const d;
 };
 
 #endif
