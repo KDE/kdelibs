@@ -29,11 +29,12 @@
 template <class Key, class T> class QMap;
 template <class T> class QList;
 
+class KdedGlobalAccel;
 class KGlobalAccelImpl: public QWidget
 {
 	Q_OBJECT
 public:
-	KGlobalAccelImpl(class KGlobalAccel* owner);
+	KGlobalAccelImpl(class KdedGlobalAccel* owner);
     ~KGlobalAccelImpl();
 
 public:
@@ -59,8 +60,8 @@ private:
     friend OSStatus hotKeyEventHandler(EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void * inUserData);
     /// Called by the carbon event handler when a key is pressed.
     bool keyPressed(int key);
-    
-    KGlobalAccel* m_owner;
+
+    KdedGlobalAccel* m_owner;
     EventTargetRef m_eventTarget;
     EventHandlerUPP m_eventHandler;
     EventTypeSpec m_eventType[2];

@@ -24,6 +24,7 @@ KDEUI_UNIT_TESTS(
   kconfigskeletontest
   kfindtest
   kglobalsettingstest
+  kglobalshortcuttest
   kmainwindow_unittest
   kreplacetest
   kshortcuttest

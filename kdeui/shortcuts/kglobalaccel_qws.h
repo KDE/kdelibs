@@ -22,6 +22,7 @@
 
 #include <QWidget>
 
+class KdedGlobalAccel;
 /**
  * @internal
  *
@@ -33,7 +34,7 @@ class KGlobalAccelImpl : public QWidget
 	Q_OBJECT
 
 public:
-	KGlobalAccelImpl(class KGlobalAccel* owner);
+	KGlobalAccelImpl(class KdedGlobalAccel* owner);
 
 public:
 	/**
@@ -55,7 +56,7 @@ public:
 
 private:
 
-	KGlobalAccel* m_owner;
+	KdedGlobalAccel* m_owner;
 };
 
 #endif // _KGLOBALACCEL_QWS_H

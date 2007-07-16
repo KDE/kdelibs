@@ -213,17 +213,11 @@ set(kdeui_LIB_SRCS
 )
 
 if (Q_WS_X11)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_x11.cpp util/kkeyserver_x11.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp )
 endif (Q_WS_X11)
 if (Q_WS_MAC)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_mac.cpp util/kkeyserver_mac.cpp kernel/kapplication_mac.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_mac.cpp kernel/kapplication_mac.cpp )
 endif (Q_WS_MAC)
-if (Q_WS_WIN)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_win.cpp kernel/kapplication_win.cpp )
-endif (Q_WS_WIN)
-if (Q_WS_QWS)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_qws.cpp )
-endif (Q_WS_QWS)
 
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp
@@ -464,5 +458,28 @@ endif (Q_WS_MAC)
 
 install( FILES colors/40.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
-install(FILES jobs/org.kde.UiServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
-install(FILES jobs/org.kde.UiServerCallbacks.xml DESTINATION ${DBUS_INTERFACES_DIR})
+set( kded_globalaccel_SRCS shortcuts/kdedglobalaccel.cpp )
+if ( Q_WS_X11 )
+  set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_x11.cpp )
+endif ( Q_WS_X11 )
+if ( Q_WS_MAC )
+  set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_mac.cpp )
+endif ( Q_WS_MAC )
+if ( Q_WS_WIN )
+  set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_win.cpp )
+endif ( Q_WS_WIN )
+if ( Q_WS_QWS )
+  set( kded_globalaccel_SRCS ${kded_globalaccel_SRCS} shortcuts/kglobalaccel_qws.cpp )
+endif ( Q_WS_QWS )
+kde4_add_plugin( kded_globalaccel ${kded_globalaccel_SRCS} )
+target_link_libraries(kded_globalaccel ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} )
+
+install( TARGETS kded_globalaccel DESTINATION ${PLUGIN_INSTALL_DIR} )
+
+install( FILES shortcuts/kdedglobalaccel.desktop DESTINATION ${SERVICES_INSTALL_DIR}/kded )
+
+install( FILES
+  jobs/org.kde.UiServer.xml
+  jobs/org.kde.UiServerCallbacks.xml
+  shortcuts/org.kde.KdedGlobalAccel.xml
+  DESTINATION ${DBUS_INTERFACES_DIR})

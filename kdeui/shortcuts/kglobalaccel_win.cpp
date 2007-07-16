@@ -29,7 +29,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 
-KGlobalAccelImpl::KGlobalAccelImpl(KGlobalAccel* owner)
+KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
 	: m_owner(owner)
 {
 }

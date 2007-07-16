@@ -22,6 +22,7 @@
 
 #include <QWidget>
 
+class KdedGlobalAccel;
 /**
  * @internal
  *
@@ -33,7 +34,7 @@ class KGlobalAccelImpl : public QWidget
 	Q_OBJECT
 
 public:
-	KGlobalAccelImpl(class KGlobalAccel* owner);
+	KGlobalAccelImpl( KdedGlobalAccel *owner);
 
 public:
 	/**
@@ -65,7 +66,7 @@ private:
 	void x11MappingNotify();
 	bool x11KeyPress( const XEvent *pEvent );
 	
-	KGlobalAccel* m_owner;
+	KdedGlobalAccel *m_owner;
 };
 
 #endif // _KGLOBALACCEL_X11_H

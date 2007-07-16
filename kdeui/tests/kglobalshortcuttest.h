@@ -1,5 +1,7 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
+/*
+    This file is part of the KDE libraries
+
+    Copyright (c) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,45 +19,30 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kglobalaccel_qws.h"
+#ifndef KGLOBALSHORTCUTTEST_H
+#define KGLOBALSHORTCUTTEST_H
 
-#include <config.h>
+#include <QtCore/QObject>
 
-#include <QtGui/QWidgetList>
-#ifdef Q_WS_QWS
+class KdedGlobalAccel;
+class KAction;
 
-#include "kglobalaccel.h"
-
-#include <kapplication.h>
-#include <kdebug.h>
-
-KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
-	: m_owner(owner)
+class KGlobalShortcutTest : public QObject
 {
-}
+    Q_OBJECT
+Q_SIGNALS:
+    void writeSettingsNow();
+private Q_SLOTS:
+    void initTestCase();
+    void testSetShortcut();
+    void testFindActionByKey();
+    void testChangeShortcut();
+    void testStealShortcut();
+    void testSaveRestore();
+    void cleanupTestCase();
+private:
+    KAction *m_actionA;
+    KAction *m_actionB;
+};
 
-bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
-{
-	if( !keyQt ) {
-		kWarning(125) << k_funcinfo << "Tried to grab key with null code." << endl;
-		return false;
-	}
-
-	// TODO ...
-
-	return false;
-}
-
-void KGlobalAccelImpl::setEnabled( bool enable )
-{
-#if 0
-	if ( enable )
-		kapp->installWinEventFilter( this );
-	else
-		kapp->removeWinEventFilter( this );
 #endif
-}
-
-#include "kglobalaccel_qws.moc"
-
-#endif // Q_WS_QWS

@@ -22,12 +22,11 @@
 #define _KGLOBALACCEL_H_
 
 #include <kdeui_export.h>
+#include "kaction.h"
 
 #include <QtCore/QObject>
 
 class QWidget;
-class KAction;
-class QKeySequence;
 class KShortcut;
 
 /**
@@ -65,21 +64,6 @@ public:
     void setEnabled(bool enabled);
 
     /**
-     * Assign saved shortcuts from kdeglobals to actions where
-     * globalShortcutsAllowed() == true.
-     *
-     */
-    void readSettings();
-
-    /**
-     * Write the current global shortcuts to kdeglobals.
-     *
-     * @param oneAction pass an action here if you only want its settings to be saved
-     *                  (eg. if you know this action is the only one which has changed).
-     */
-    void writeSettings(KAction *oneAction = 0) const;
-
-    /**
      * Return the name of the action that uses the given key sequence. This applies to
      * all actions with global shortcuts in any KDE application.
      *
@@ -104,66 +88,34 @@ public:
      */
     static void stealShortcutSystemwide(const QKeySequence &seq);
 
-Q_SIGNALS:
-
-    ///notify (via DBUS) all KGlobalAccel instances in the whole session to update their global
-    ///shortcuts mapping
-    void updateGlobalShortcut();
-
-private Q_SLOTS:
-    /**
-     * Listens to action change() events and respond when the action is enabled
-     * or disabled.
-     */
-    void actionChanged();
-
-    ///to be called by DBUS via our DBUS adapter
-    //void globalShortcutChanged();
-
 private:
     friend class KAction;
-    friend class KGlobalAccelPrivate;
+    ///Propagate any shortcut changes to the KDED module that does the bookkeeping
+    ///and the key grabbing.
+    ///If this is called with an action that has an empty active global shortcut and
+    ///an empty default shortcut, the record of that action will be deleted.
+    void updateGlobalShortcut(KAction *action, /*KAction::ShortcutTypes*/uint flags);
 
-    ///Grab or release shortcuts for action as appropriate, and make any shortcut changes visible
-    ///to other applications via the global configuration file.
-    void updateGlobalShortcut(KAction *action, const KShortcut &oldShortcut);
+    ///Register or unregister the action in this class, and notify the KDED module
+    void updateGlobalShortcutAllowed(KAction *action, /*KAction::ShortcutTypes*/uint flags);
 
-    ///notification that global shortcuts were allowed/disallowed for an action.
-    void updateGlobalShortcutAllowed(KAction *action);
+    QList<int> intListFromShortcut(const KShortcut &cut);
+    KShortcut shortcutFromIntList(const QList<int> &list);
 
-    ///as the name says, but nothing is obvious here...
-    void enableAction(KAction *action, bool enable);
+//slots
+private Q_SLOTS:
+    void invokeAction(const QStringList &actionId);
+    void shortcutGotChanged(const QStringList &actionId,
+                            const QList<int> &shortcut);
 
-    /// The money slot - the global \a key was pressed
-    /// Returns whether it was consumed
-    bool keyPressed(int key);
-
-    /// Returns true if the key will be consumed (i.e. like keyPressed()
-    /// without actually processing the key)
-    bool isHandled( int key );
-
-    ///ungrab stale shortcuts and grab the ones from newGrab
-    void changeGrab(KAction *action, const KShortcut &newGrab);
-
-    /// Something necessitates a repeat grabKey() for each key
-    void regrabKeys();
-
-    void enableImpl(bool enable);
-
-    //TODO: DBus interface =), via a dbus adapter class
-    ///part of the DBus interface
-    void DBusShortcutTheftListener(const QKeySequence &loot);
-
-    ///part of the DBus interface
-    void DBusShortcutChangeListener(const QStringList &actionIdentifier, const QList<QKeySequence> &oldCuts, const QList<QKeySequence> &newCuts);
-
+private:
     /// Creates a new KGlobalAccel object
     KGlobalAccel();
 
     /// Destructor
     ~KGlobalAccel();
 
-    void grabKey(int key, bool grab, KAction *action);
+    class KGlobalAccelPrivate *const d;
 };
 
 #endif // _KGLOBALACCEL_H_

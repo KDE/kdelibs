@@ -1,0 +1,28 @@
+#incomplete, and not in active use, and qdbusxml2cpp doesn't understand arrays of ints anyway
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.kde.KdedGlobalAccel">
+    <method name="action">
+      <arg name="key" type="i" direction="in"/>
+      <arg name="actionId" type="as" direction="out"/>
+    </method>
+    <method name="shortcut">
+      <arg name="action" type="as" direction="in"/>
+      <arg name="shortcut" type="ai" direction="out"/>
+    </method>
+    <method name="setShortcut">
+      <arg name="actionId" type="as" direction="in"/>
+      <arg name="keys" type="ai" direction="in"/>
+      <arg name="flags" type="u" direction="in"/>
+      <arg name="shortcut" type="ai" direction="out"/>
+    </method>
+    <method name="setForeignShortcut">
+      <arg name="actionId" type="as" direction="in"/>
+      <arg name="keys" type="ai" direction="in"/>
+    </method>
+    <method name="setInactive">
+      <arg name="actionId" type="as" direction="in"/>
+    </method>
+  </interface>
+</node>

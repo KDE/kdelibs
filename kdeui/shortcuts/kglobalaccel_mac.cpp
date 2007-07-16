@@ -58,7 +58,7 @@ void layoutChanged(CFNotificationCenterRef center, void *observer, CFStringRef n
     static_cast<KGlobalAccelImpl *>(observer)->keyboardLayoutChanged();
 }
 
-KGlobalAccelImpl::KGlobalAccelImpl(KGlobalAccel* owner)
+KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
 	: m_owner(owner)
     , m_eventTarget(GetApplicationEventTarget())
     , m_eventHandler(NewEventHandlerUPP(hotKeyEventHandler))

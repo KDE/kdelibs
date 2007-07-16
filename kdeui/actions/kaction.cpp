@@ -93,10 +93,14 @@ KAction::KAction(const KIcon &icon, const QString &text, QObject *parent)
 
 KAction::~KAction()
 {
-    if( !d->globalShortcut.isEmpty()) {
-        d->globalShortcutAllowed = false;
-        KGlobalAccel::self()->updateGlobalShortcutAllowed(this); // unregister
+    if(d->globalShortcutAllowed) {
+      //the combination of the following lines essentially
+      //- removes the action from KGlobalAccel
+      //- marks the action as inactive in the KDED module
+      d->globalShortcutAllowed = false;
+      KGlobalAccel::self()->updateGlobalShortcutAllowed(this, (ShortcutTypes)0);
     }
+
     KGestureMap::self()->removeGesture(d->shapeGesture, this);
     KGestureMap::self()->removeGesture(d->rockerGesture, this);
     delete d;
@@ -171,35 +175,40 @@ const KShortcut & KAction::globalShortcut(ShortcutTypes type) const
   return d->globalShortcut;
 }
 
-void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type )
+void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
+                                 GlobalShortcutLoading load )
 {
   Q_ASSERT(type);
 
-  if (!d->globalShortcutAllowed) {
-    d->globalShortcutAllowed = true;
-    KGlobalAccel::self()->updateGlobalShortcutAllowed(this);
-  }
-
-  if (type & DefaultShortcut)
+  bool changed = false;
+  if ((type & DefaultShortcut) && d->defaultGlobalShortcut != shortcut) {
     d->defaultGlobalShortcut = shortcut;
+    changed = true;
+  }
 
   if ((type & ActiveShortcut) && d->globalShortcut != shortcut) {
     KShortcut oldCut = d->globalShortcut;
     d->globalShortcut = shortcut;
-
-    KGlobalAccel::self()->updateGlobalShortcut(this, oldCut);
+    changed = true;
   }
+
+  if (changed)
+    KGlobalAccel::self()->updateGlobalShortcut(this, type | load);
+
+  //This *must* be called after setting the shortcut. The shortcut will be fixed as
+  //soon as it has been enabled once. If we called updateGlobalShortcutAllowed too
+  //early, the shortcut would be fixed to empty.
+  if (!d->globalShortcutAllowed) {
+    d->globalShortcutAllowed = true;
+    KGlobalAccel::self()->updateGlobalShortcutAllowed(this, type | load);
+  }
+
 }
 
 //private
 void KAction::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
 {
-  if (d->globalShortcut != cut) {
-    KShortcut oldCut = d->globalShortcut;
-    d->globalShortcut = cut;
-
-    KGlobalAccel::self()->updateGlobalShortcut(this, oldCut);
-  }
+  d->globalShortcut = cut;
 }
 
 bool KAction::globalShortcutAllowed( ) const
@@ -207,11 +216,12 @@ bool KAction::globalShortcutAllowed( ) const
   return d->globalShortcutAllowed;
 }
 
-void KAction::setGlobalShortcutAllowed( bool allowed )
+void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading load )
 {
   if (d->globalShortcutAllowed != allowed) {
     d->globalShortcutAllowed = allowed;
-    KGlobalAccel::self()->updateGlobalShortcutAllowed(this);
+
+    KGlobalAccel::self()->updateGlobalShortcutAllowed(this, load);
   }
 }
 

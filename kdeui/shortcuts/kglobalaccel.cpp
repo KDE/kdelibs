@@ -19,6 +19,8 @@
 */
 
 #include "kglobalaccel.h"
+#include "kdedglobalaccel.h"
+#include "kdedglobalaccel_interface.h"
 
 // For KGlobalAccelImpl
 #ifdef Q_WS_X11
@@ -33,88 +35,73 @@
 #include "kglobalaccel_emb.h"
 #endif
 
-#include <QHash>
+#include <QtCore/QHash>
+#include <QtCore/QStringList>
 #include <QtCore/QCoreApplication>
-#include <QStringList>
+#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusMetaType>
 
 #include <kdebug.h>
 #include <klocale.h>
+#include <kconfig.h>
+#include <kconfiggroup.h>
 #include "kaction.h"
 #include "kactioncollection.h"
 #include "kmessagebox.h"
-#include <kconfig.h>
-#include <kconfiggroup.h>
+#include "kshortcut.h"
 
+
+//TODO what was the problem that got fixed recently in the old version? - forward port if necessary
 
 class KGlobalAccelPrivate
 {
 public:
-    KGlobalAccelPrivate();
-    ~KGlobalAccelPrivate();
-
-    KGlobalAccel q;
-
-    QHash<int, KAction*> grabbedKeys;
-    QMultiHash<KAction*, int> grabbedActions;
+    KGlobalAccelPrivate()
+     : enabled(true),
+       iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
+    {
+    }
 
     //for all actions with (isEnabled() && globalShortcutAllowed())
     QHash<QString, KAction *> nameToAction;
     QHash<KAction *, QString> actionToName;
-    //for all registered global shortcuts including those not present ATM
-    QHash<QKeySequence, QStringList> systemWideGlobalShortcuts;
 
     QString mainComponentName;
-    QString configGroup;
-    bool enabled, implEnabled;
-    KGlobalAccelImpl *const impl;
+    bool enabled;
+
+    org::kde::KdedGlobalAccelInterface iface;
 };
 
-K_GLOBAL_STATIC(KGlobalAccelPrivate, globalAccelPrivate)
-
-KGlobalAccelPrivate::KGlobalAccelPrivate()
-    : configGroup("Global Shortcuts"),
-    enabled(true),
-    implEnabled(false),
-    impl(new KGlobalAccelImpl(&q))
-{
-    if (KGlobal::hasMainComponent()) {
-        mainComponentName = KGlobal::mainComponent().componentName();
-    }
-    qAddPostRoutine(globalAccelPrivate.destroy);
-}
-
-KGlobalAccelPrivate::~KGlobalAccelPrivate()
-{
-    qRemovePostRoutine(globalAccelPrivate.destroy);
-    foreach (int key, grabbedKeys.keys()) {
-        impl->grabKey(key, false);
-    }
-
-    delete impl;
-}
-
-#define PRIVATE_DATA KGlobalAccelPrivate *d = globalAccelPrivate
-
 KGlobalAccel::KGlobalAccel()
+    : d(new KGlobalAccelPrivate)
 {
+    qDBusRegisterMetaType<QList<int> >();
+
+    connect(&d->iface, SIGNAL(invokeAction(const QStringList &)),
+            SLOT(invokeAction(const QStringList &)));
+    connect(&d->iface, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
+            SLOT(shortcutGotChanged(const QStringList &, const QList<int> &)));
+
+    if (KGlobal::hasMainComponent())
+        d->mainComponentName = KGlobal::mainComponent().componentName();
 }
 
 KGlobalAccel::~KGlobalAccel()
 {
+    //TODO *maybe* we need to ungrab/unregister all
+    delete d;
 }
 
 bool KGlobalAccel::isEnabled()
 {
-    PRIVATE_DATA;
     return d->enabled;
 }
 
 void KGlobalAccel::setEnabled( bool enabled )
 {
-    PRIVATE_DATA;
     d->enabled = enabled;
 
-//TODO: think of something sensible :|
+//TODO: implement this in KdedGlobalAccel... or not at all
 #if 0
     if (enabled) {
         foreach (KAction* action, d->actionsWithGlobalShortcuts)
@@ -130,336 +117,135 @@ void KGlobalAccel::setEnabled( bool enabled )
 }
 
 
-void KGlobalAccel::readSettings()
+KGlobalAccel *KGlobalAccel::self( )
 {
-    PRIVATE_DATA;
-    KConfigBase *config = KGlobal::config().data();
-    QStringList actionIdentifier("");
-    actionIdentifier.append(QString());
-    QString mainComponentName;
-    QString actionName;
-    KAction *action;
-    KShortcut cut;
-
-    QMap<QString, QString> entryMap = config->entryMap( d->configGroup );
-    for (QMap<QString, QString>::const_iterator it = entryMap.constBegin();
-        it != entryMap.constEnd(); ++it) {
-        int splitpos;
-
-        //TODO: what if mainComponentName contains a colon?
-        if ((splitpos = it.key().indexOf(':')) < 1)
-            continue;
-        mainComponentName = it.key().left(splitpos);
-        actionName = it.key().right(it.key().length() - splitpos - 1);
-
-        if (it.value() != "none") {
-            cut = KShortcut(it.value());
-            if (!cut.isEmpty()) {
-                actionIdentifier[0] = mainComponentName;
-                actionIdentifier[1] = actionName;
-                foreach (QKeySequence seq, cut.toList())
-                    d->systemWideGlobalShortcuts.insert(seq, actionIdentifier);
-            }
-        } else
-            cut = KShortcut();
-
-        if (mainComponentName == d->mainComponentName && (action = d->nameToAction.value(actionName)))
-            action->setActiveGlobalShortcutNoEnable(cut);
-    }
-
-//The old version of this function looked for actions in KActionCollection::allCollections().
-//This seemed weird - if an action is programmatically forbidden to have a global shortcut then
-//so be it. -- ahartmetz
-}
-
-void KGlobalAccel::writeSettings(KAction *oneAction) const
-{
-    PRIVATE_DATA;
-    KConfigGroup cg(KGlobal::config().data(), d->configGroup);
-    QStringList actionIdentifier(d->mainComponentName);
-    actionIdentifier.append(QString());
-    QString fullName;
-    QList<KAction *> actions;
-
-    //TODO: does KConfigBase::deleteEntry fail gracefully on a nonexistent entry?
-    //if (cg.hasKey(fullName)) cg.deleteEntry(fullName); looks redundant.
-    if (oneAction) {
-        actions.append(oneAction);
-    } else
-        actions = d->actionToName.keys();
-
-    foreach (KAction* action, actions) {
-        actionIdentifier[1] = action->objectName();
-        fullName = actionIdentifier.join(":");
-
-        if (!action->globalShortcut(KAction::ActiveShortcut).isEmpty())
-            cg.writeEntry(fullName, action->globalShortcut().toString());
-        else if (!action->globalShortcut(KAction::DefaultShortcut).isEmpty())
-            cg.writeEntry(fullName, "none");
-        else if (cg.hasKey(fullName))
-            cg.deleteEntry(fullName);
-    }
-
-    KGlobal::config()->sync();
-}
-
-KGlobalAccel *KGlobalAccel::self()
-{
-    PRIVATE_DATA;
-    return &d->q;
+    K_GLOBAL_STATIC(KGlobalAccel, s_instance)
+    return s_instance;
 }
 
 
-//This function is supposed to update the *internal* data of this KGlobalAccel -
-//kdeglobals will already be updated by the signaller.
-void KGlobalAccel::DBusShortcutChangeListener(const QStringList &actionIdentifier, const QList<QKeySequence> &oldCuts, const QList<QKeySequence> &newCuts)
-{
-    PRIVATE_DATA;
-    QString mainComponentName = actionIdentifier.at(0);
-    QString actionName = actionIdentifier.at(1);
-    KAction *kaction;
-
-    foreach (QKeySequence oldCut, oldCuts)
-        d->systemWideGlobalShortcuts.remove(oldCut);
-
-    if (mainComponentName == d->mainComponentName) {
-        kaction = d->nameToAction.value(actionName);
-        if (kaction) {
-            kaction->setActiveGlobalShortcutNoEnable(KShortcut(newCuts));
-            //KAction will call updateGlobalShortcut() which will do what's needed
-            return;
-        }
-    }
-
-    foreach (QKeySequence newCut, newCuts) {
-        if (!newCut.isEmpty())
-            d->systemWideGlobalShortcuts.insert(newCut, actionIdentifier);
-    }
-    
-}
-
-
-//Sadly, this cannot be done using DBusShortcutChangeListener() because it is unknown
-//to the thief which shortcuts the victim possesses.
-void KGlobalAccel::DBusShortcutTheftListener(const QKeySequence &loot)
-{
-    PRIVATE_DATA;
-    KAction *kaction;
-    QStringList shortcutIdentifier = d->systemWideGlobalShortcuts.value(loot);
-    //QString mainComponentName = shortcutIdentfier.at(0);
-    //QString actionName = shortcutIdentfier.at(1);
-
-    if (shortcutIdentifier.at(0) == d->mainComponentName) {
-        kaction = d->nameToAction.value(shortcutIdentifier.at(1));
-        if (kaction) {
-            KShortcut cut = kaction->globalShortcut();
-
-            if (loot == cut.primary())
-                cut.primary() = QKeySequence();
-            if (loot == cut.alternate())
-                cut.alternate() = QKeySequence();
-
-            //KAction will call updateGlobalShortcut() which will publish an update via DBus...
-            kaction->setActiveGlobalShortcutNoEnable(cut);
-        }
-    }
-}
-
-
-//It is only allowed to call this in case of real changes. Save some cycles...
-void KGlobalAccel::updateGlobalShortcut(KAction *action, const KShortcut &oldShortcut)
-{
-    PRIVATE_DATA;
-    //abort if any of the new shortcuts are already taken
-    foreach (QKeySequence oldSeq, oldShortcut.toList()) {
-        QStringList oldOwner;
-        if (!d->systemWideGlobalShortcuts.contains(oldSeq))
-            continue;
-
-        oldOwner = d->systemWideGlobalShortcuts.take(oldSeq);
-        if (oldOwner.at(0) != d->mainComponentName || oldOwner.at(1) != action->objectName()) {
-            //TODO: emit a warning
-            return;
-        }
-    }
-
-    //perform local changes right away to avoid inconsistent data until a DBus roundtrip has completed
-    foreach (QKeySequence oldCut, oldShortcut.toList())
-        d->systemWideGlobalShortcuts.remove(oldCut);
-
-    QStringList actionId(d->mainComponentName);
-    actionId.append(QString());
-    foreach (QKeySequence newCut, action->globalShortcut().toList()) {
-        actionId[1] = action->objectName();
-        d->systemWideGlobalShortcuts.insert(newCut, actionId);
-    }
-
-    enableImpl( isEnabled() && !d->systemWideGlobalShortcuts.isEmpty());
-    changeGrab(action, action->globalShortcut());
-
-    //update kdeglobals...
-    KConfigGroup cg(KGlobal::config().data(), d->configGroup);
-    QString fullName = d->mainComponentName;
-    fullName.append(':');
-    fullName.append(action->objectName());
-
-    if (!action->globalShortcut(KAction::ActiveShortcut).isEmpty())
-        cg.writeEntry(fullName, action->globalShortcut().toString());
-    else if (!action->globalShortcut(KAction::DefaultShortcut).isEmpty())
-        cg.writeEntry(fullName, "none");
-    else if (cg.hasKey(fullName))
-        cg.deleteEntry(fullName);
-
-    //publish changes to all KDE programs in our session
-    //TODO
-    //d->dbus.shortcutUpdate(d->mainComponentName, action->objectName());
-}
-
-
-//Note that the shortcut's entry in kdeglobals will NOT be touched.
-//This entry will document the usage status of this action's global shortcut.
-void KGlobalAccel::enableAction(KAction *action, bool enable)
-{
-    PRIVATE_DATA;
-    if (enable) {
-        //make sure that all necessary keys are grabbed
-        changeGrab(action, action->globalShortcut());
-
-        if (d->actionToName.contains(action))
-            return;
-
-        d->nameToAction.insert(action->objectName(), action);
-        d->actionToName.insert(action, action->objectName());
-
-    } else {
-        //ungrab any grabbed keys
-        changeGrab(action, KShortcut());
-
-        if (!d->actionToName.contains(action))
-            return;
-
-        d->nameToAction.remove(d->actionToName.take(action));
-    }
-}
-
-
-//slot
-void KGlobalAccel::actionChanged()
-{
-    KAction* action = qobject_cast<KAction*>(sender());
-    if (action)
-        enableAction(action, (action->globalShortcutAllowed() && action->isEnabled()));
-}
-
-
-void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action)
+void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action, uint flags)
 {
     if (!action)
         return;
 
-    enableAction (action, action->globalShortcutAllowed() && action->isEnabled());
-    if (action->globalShortcutAllowed())
-        connect(action, SIGNAL(changed()), this, SLOT(actionChanged()));
-    else
-        disconnect(action, SIGNAL(changed()), this, SLOT(actionChanged()));
-}
+    bool oldEnabled = d->actionToName.contains(action);
+    bool newEnabled = action->globalShortcutAllowed();
 
+    if (oldEnabled == newEnabled)
+        return;
 
-//ungrab oldGrab, grab newGrab, and leave unchanged what's in both
-void KGlobalAccel::changeGrab(KAction *action, const KShortcut &newGrab)
-{
-    PRIVATE_DATA;
-    QList<int> needToGrab;
-    foreach (const QKeySequence &seq, newGrab.toList())
-        needToGrab.append(seq);
+    if (action->text().isEmpty())
+        return;
+    QStringList actionId(d->mainComponentName);
+    actionId.append(action->text());
+    //TODO: what about i18ned names?
 
-    QList<int> staleGrabs = d->grabbedActions.values(action);
+    if (!oldEnabled && newEnabled) {
+        uint setterFlags = KdedGlobalAccel::SetPresent;
+        if (flags & KAction::NoAutoloading)
+            setterFlags |= KdedGlobalAccel::NoAutoloading;
+        if (action->globalShortcut(KAction::DefaultShortcut).isEmpty())
+            setterFlags |= KdedGlobalAccel::IsDefaultEmpty;
 
-    for (int i = 0, end = staleGrabs.count(); i < end; i++) {
-        if (int found = needToGrab.indexOf(staleGrabs.at(i)) != -1) {
-            needToGrab.removeAt(found);
-            staleGrabs.removeAt(i);
-            end--;
-            i--;
-        }
+        d->nameToAction.insert(actionId.at(1), action);
+        d->actionToName.insert(action, actionId.at(1));
+        QList<int> result = d->iface.setShortcut(actionId,
+                                                 intListFromShortcut(action->globalShortcut()),
+                                                 setterFlags);
+        KShortcut scResult(shortcutFromIntList(result));
+
+        if (scResult != action->globalShortcut())
+            action->setActiveGlobalShortcutNoEnable(scResult);
     }
 
-    foreach (int staleGrab, staleGrabs) {
-        d->grabbedKeys.remove(staleGrab);
-
-        //remove entry action->staleGrab
-        QMultiHash<KAction *, int>::iterator it;
-        it = d->grabbedActions.find(action);
-        while (it != d->grabbedActions.end() && it.key() == action) {
-            if (it.value() == staleGrab)
-                it = d->grabbedActions.erase(it);
-            else
-                ++it;
-        }
-
-        d->impl->grabKey(staleGrab, false);
-    }
-
-    foreach (int newGrab, needToGrab) {
-        d->grabbedKeys.insert(newGrab, action);
-        d->grabbedActions.insert(action, newGrab);
-        d->impl->grabKey(newGrab, true);
+    if (oldEnabled && !newEnabled) {
+        d->nameToAction.remove(d->actionToName.take(action));
+        d->iface.setInactive(actionId);
     }
 }
 
-bool KGlobalAccel::keyPressed( int key )
+
+void KGlobalAccel::updateGlobalShortcut(KAction *action, uint flags)
 {
-    PRIVATE_DATA;
-    bool consumed = false;
-    foreach (KAction* action, d->grabbedKeys.values(key)) {
-        consumed = true;
-        action->trigger();
-    }
-    return consumed;
+    if (!action)
+        return;
+
+    if (action->text().isEmpty())
+        return;
+    QStringList actionId(d->mainComponentName);
+    actionId.append(action->text());
+    //TODO: what about i18ned names?
+
+    uint setterFlags = 0;
+    if (flags & KAction::NoAutoloading)
+        setterFlags |= KdedGlobalAccel::NoAutoloading;
+    if (action->globalShortcut(KAction::DefaultShortcut).isEmpty())
+        setterFlags |= KdedGlobalAccel::IsDefaultEmpty;
+
+    QList<int> result = d->iface.setShortcut(actionId,
+                                             intListFromShortcut(action->globalShortcut()),
+                                             setterFlags);
+    KShortcut scResult(shortcutFromIntList(result));
+
+    if (scResult != action->globalShortcut())
+        action->setActiveGlobalShortcutNoEnable(scResult);
 }
 
-bool KGlobalAccel::isHandled( int key )
+
+QList<int> KGlobalAccel::intListFromShortcut(const KShortcut &cut)
 {
-    PRIVATE_DATA;
-    return !d->grabbedKeys.values(key).isEmpty();
+    QList<int> ret;
+    ret.append(cut.primary()[0]);
+    ret.append(cut.alternate()[0]);
+    while (!ret.isEmpty() && ret.last() == 0)
+        ret.removeLast();
+    return ret;
 }
 
-void KGlobalAccel::regrabKeys( )
-{
-    PRIVATE_DATA;
-    QMutableHashIterator<int, KAction*> it2 = d->grabbedKeys;
-    while (it2.hasNext()) {
-        it2.next();
-        if (!d->impl->grabKey(it2.key(), true)) {
-            QMultiHash<KAction*, int>::Iterator it = d->grabbedActions.find(it2.value());
-            while (it != d->grabbedActions.end() && it.key() == it2.value()) {
-                if (it.value() == it2.key()) {
-                    d->grabbedActions.erase(it);
-                    break;
-                }
-                ++it;
-            }
 
-            it2.remove();
-        }
-    }
+KShortcut KGlobalAccel::shortcutFromIntList(const QList<int> &list)
+{
+    KShortcut ret;
+    if (list.count() > 0)
+        ret.setPrimary(list[0]);
+    if (list.count() > 1)
+        ret.setAlternate(list[1]);
+    return ret;
 }
 
-void KGlobalAccel::enableImpl( bool enable )
+
+//slot
+void KGlobalAccel::invokeAction(const QStringList &actionId)
 {
-    PRIVATE_DATA;
-    if (d->implEnabled != enable) {
-        d->implEnabled = enable;
-        d->impl->setEnabled(enable);
-    }
+    //TODO: can we make it so that we don't have to check the mainComponentName? (i.e. targeted signals)
+    if (actionId.at(0) != d->mainComponentName)
+        return;
+
+    KAction *action = d->nameToAction.value(actionId.at(1));
+    if (!action)
+        return;
+
+    action->trigger();
+}
+
+
+//slot
+void KGlobalAccel::shortcutGotChanged(const QStringList &actionId,
+                                      const QList<int> &keys)
+{
+    KAction *action = d->nameToAction.value(actionId.at(1));
+    if (!action)
+        return;
+
+    action->setActiveGlobalShortcutNoEnable(shortcutFromIntList(keys));
 }
 
 
 //static
 QStringList KGlobalAccel::findActionNameSystemwide(const QKeySequence &seq)
 {
-    PRIVATE_DATA;
-    return d->systemWideGlobalShortcuts.value(seq);
+    return self()->d->iface.action(seq[0]);
 }
 
 
@@ -480,12 +266,16 @@ bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringL
 //static
 void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
 {
-    PRIVATE_DATA;
-    //TODO: mainly notification work. Use DBUS. The other side is already implemented.
-    QStringList shortcutIdentifier = d->systemWideGlobalShortcuts.value(seq);
-    //TODO: something like this... d->dbus.requestTheft(seq);
+    //get the shortcut, remove &seq, and set the new shorctut
+    QStringList actionId = self()->d->iface.action(seq[0]);
+    QList<int> sc = self()->d->iface.shortcut(actionId);
+
+    for (int i = 0; i < sc.count(); i++)
+        if (sc[i] == seq[0])
+            sc[i] = 0;
+
+    self()->d->iface.setForeignShortcut(actionId, sc);
 }
 
-#undef PRIVATE_DATA
-
 #include "kglobalaccel.moc"
+#include "kdedglobalaccel_interface.moc"

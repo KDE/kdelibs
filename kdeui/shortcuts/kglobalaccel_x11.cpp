@@ -24,7 +24,7 @@
 #include <QtGui/QWidgetList>
 
 #include "kaction.h"
-#include "kglobalaccel.h"
+#include "kdedglobalaccel.h"
 #include "kkeyserver_x11.h"
 
 #include <kapplication.h>
@@ -75,7 +75,7 @@ static void calculateGrabMasks()
 
 //----------------------------------------------------
 
-KGlobalAccelImpl::KGlobalAccelImpl(KGlobalAccel* owner)
+KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel *owner)
 	: m_owner(owner)
 {
 	calculateGrabMasks();

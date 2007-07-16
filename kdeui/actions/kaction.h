@@ -206,10 +206,22 @@ public:
       ActiveShortcut = 0x1,
       /// The shortcut is a default shortcut - it becomes active when somebody decides to
       /// reset shortcuts to default.
-      DefaultShortcut = 0x2
+      DefaultShortcut = 0x2,
     };
     Q_DECLARE_FLAGS(ShortcutTypes, ShortcutType)
 
+    /**
+     * An enum about global shortcut setter semantics
+     */
+    //This enum will be ORed with ShortcutType in calls to KGlobalAccel, so it may not contain
+    //any value equal to a value in ShortcutType.
+    enum GlobalShortcutLoading {
+      /// Look up the action name in global settings and set the shortcut as saved there
+      /// @see setGlobalShortcut()
+      Autoloading = 0x0,
+      /// Prevent autoloading of saved global shortcut for action - see setGlobalShortcut()
+      NoAutoloading = 0x4
+    };
     /**
      * Constructs an action.
      */
@@ -325,7 +337,10 @@ public:
      * \sa KGlobalAccel
      * \sa globalShortcut()
      */
-    void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
+    void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type =
+                           static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut),
+                           GlobalShortcutLoading loading = Autoloading);
+    //^ TODO: document autoloading
 
     /**
      * Returns true if this action is permitted to have a global shortcut.
@@ -339,7 +354,8 @@ public:
      *
      * \param allowed set to \e true if this action may have a global shortcut, otherwise \e false.
      */
-    void setGlobalShortcutAllowed(bool allowed);
+    void setGlobalShortcutAllowed(bool allowed, GlobalShortcutLoading loading = Autoloading);
+    //^ TODO: document autoloading
 
     KShapeGesture shapeGesture(ShortcutTypes type = ActiveShortcut) const;
     KRockerGesture rockerGesture(ShortcutTypes type = ActiveShortcut) const;

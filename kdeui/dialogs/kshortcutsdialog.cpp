@@ -392,9 +392,6 @@ void KShortcutsEditor::save()
 {
 	foreach (KActionCollection* collection, d->actionCollections)
 		collection->writeSettings();
-	//if (!KGlobalAccel::self()->actionsWithGlobalShortcut().isEmpty())
-	//TODO: only do this when needed
-	KGlobalAccel::self()->writeSettings();
 }
 
 
@@ -434,8 +431,9 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	//we have our own editing mechanism
 	ui.list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-	QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
-	                 q, SLOT(globalSettingsChangedSystemwide(int)));
+	//TODO: need to create a signal that signals on every change, not just writeout!
+	//QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
+	//                 q, SLOT(globalSettingsChangedSystemwide(int)));
 	QObject::connect(delegate, SIGNAL(shortcutChanged(QVariant, const QModelIndex &)),
 	                 q, SLOT(capturedShortcut(QVariant, const QModelIndex &)));
 }
@@ -669,8 +667,7 @@ bool KShortcutsEditorPrivate::stealRockerGesture(KShortcutsEditorItem *item, con
 void KShortcutsEditorPrivate::globalSettingsChangedSystemwide(int which)
 {
 	Q_UNUSED(which)
-	KGlobalAccel::self()->readSettings();
-	//TODO:do something about it, too?
+	//TODO:redisplay or similar
 }
 
 
