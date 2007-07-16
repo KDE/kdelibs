@@ -280,7 +280,7 @@ public:
          * @param mergeMetaData if set, the metadata received by the subjob is
          *                      merged into this job.
          */
-        void removeSubjob( KJob *job, bool mergeMetaData = false );
+        bool removeSubjob( KJob *job, bool mergeMetaData = false );
 
         /**
          * @internal

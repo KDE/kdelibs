@@ -129,13 +129,13 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
     }
 }
 
-void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
+bool Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
 {
     KIO::Job *job = dynamic_cast<KIO::Job*>( jobBase );
 
     if ( job == 0 )
     {
-        return;
+        return false;
     }
 
     //kDebug(7007) << "removeSubjob(" << job << ") this = " << this << "  subjobs = " << subjobs().count() << endl;
@@ -143,7 +143,7 @@ void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
     if ( mergeMetaData )
         m_incomingMetaData += job->metaData();
 
-    KCompositeJob::removeSubjob( job );
+    return KCompositeJob::removeSubjob( job );
 }
 
 void Job::emitMoving(const KUrl &src, const KUrl &dest)
