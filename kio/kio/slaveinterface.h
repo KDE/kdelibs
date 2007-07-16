@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KIO_SLAVEINTERFACE_H
-#define KIO_SLAVEINTERFACE_H
+#ifndef __kio_slaveinterface_h
+#define __kio_slaveinterface_h
 
 #include <unistd.h>
 #include <sys/types.h>

@@ -43,69 +43,48 @@
 
 using namespace KIO;
 
-class Connection::ConnectionPrivate
-{
-public:
-    ConnectionPrivate()
-        : fd_in( -1 )
-        , f_out( 0 )
-        , socket( 0 )
-        , notifier( 0 )
-        , receiver( 0 )
-        , member( 0 )
-        , m_suspended( false )
-    {}
-    int fd_in;
-#ifdef Q_WS_WIN
-    int f_out;
-#else
-    FILE *f_out;
-#endif
-    KNetwork::KStreamSocket *socket;
-    QSocketNotifier *notifier;
-    QObject *receiver;
-    const char *member;
-    QQueue<Task> m_tasks;
-    bool m_suspended;
-};
-
 Connection::Connection()
-    : d( new ConnectionPrivate )
 {
+    f_out = 0;
+    fd_in = -1;
+    socket = 0;
+    notifier = 0;
+    receiver = 0;
+    member = 0;
+    m_suspended = false;
 }
 
 Connection::~Connection()
 {
     close();
-    delete d;
 }
 
 void Connection::suspend()
 {
-    d->m_suspended = true;
-    if (d->notifier)
-       d->notifier->setEnabled(false);
-    if (d->socket) {
-        d->socket->enableRead(false);
+    m_suspended = true;
+    if (notifier)
+       notifier->setEnabled(false);
+    if (socket) {
+        socket->enableRead(false);
     }
 }
 
 void Connection::resume()
 {
-    d->m_suspended = false;
-    if (d->notifier)
-       d->notifier->setEnabled(true);
-    if (d->socket) {
-        d->socket->enableRead(true);
+    m_suspended = false;
+    if (notifier)
+       notifier->setEnabled(true);
+    if (socket) {
+        socket->enableRead(true);
     }
 }
 
 void Connection::close()
 {
-    delete d->notifier;
-    d->notifier = 0;
-    delete d->socket;
-    d->socket = 0;
+    delete notifier;
+    notifier = 0;
+    delete socket;
+    socket = 0;
 
     // KSocket has already closed the file descriptor, but we need to
     // close the file-stream as well otherwise we leak memory.
@@ -113,45 +92,45 @@ void Connection::close()
     // be harmless
     // KDE4: fix this
 #ifndef Q_WS_WIN
-    if (d->f_out)
-       fclose(d->f_out);
+    if (f_out)
+       fclose(f_out);
 #endif
-    d->f_out = 0;
-    d->fd_in = -1;
-    d->m_tasks.clear();
+    f_out = 0;
+    fd_in = -1;
+    m_tasks.clear();
 }
 
 int Connection::fd_from() const
 {
-    return d->fd_in;
+    return fd_in;
 }
 
 int Connection::fd_to() const
 {
 #ifdef Q_WS_WIN
-    return d->f_out;
+    return f_out;
 #else
-    return fileno( d->f_out );
+    return fileno( f_out );
 #endif
 }
 
 bool Connection::inited() const
 {
-    return (d->fd_in != -1) && (d->f_out != 0);
+    return (fd_in != -1) && (f_out != 0);
 }
 
 bool Connection::suspended() const
 {
-    return d->m_suspended;
+    return m_suspended;
 }
 
 bool Connection::send(int cmd, const QByteArray& data)
 {
-    if (!inited() || !d->m_tasks.isEmpty()) {
+    if (!inited() || !m_tasks.isEmpty()) {
 	Task task;
 	task.cmd = cmd;
 	task.data = data;
-	d->m_tasks.enqueue(task);
+	m_tasks.enqueue(task);
         return true;
     } else {
 	return sendnow( cmd, data );
@@ -163,9 +142,9 @@ void Connection::dequeue()
     if (!inited())
 	return;
 
-    while (!d->m_tasks.isEmpty())
+    while (!m_tasks.isEmpty())
     {
-       const Task task = d->m_tasks.dequeue();
+       const Task task = m_tasks.dequeue();
        sendnow( task.cmd, task.data );
     }
 }
@@ -180,22 +159,22 @@ void Connection::init(KNetwork::KStreamSocket *sock)
     sock->setBlocking(true);
     sock->connect();
 
-    delete d->notifier;
-    d->notifier = 0;
-    delete d->socket;
-    d->socket = sock;
-    d->fd_in = d->socket->socketDevice()->socket();
+    delete notifier;
+    notifier = 0;
+    delete socket;
+    socket = sock;
+    fd_in = socket->socketDevice()->socket();
 #ifdef Q_WS_WIN
-    d->f_out = d->fd_in;
+    f_out = fd_in;
 #else
-    d->f_out = KDE_fdopen( d->socket->socketDevice()->socket(), "wb" );
+    f_out = KDE_fdopen( socket->socketDevice()->socket(), "wb" );
 #endif
-    if (d->receiver && ( d->fd_in != -1 )) {
-        d->notifier = 0L;
-	if ( d->m_suspended ) {
+    if (receiver && ( fd_in != -1 )) {
+        notifier = 0L;
+	if ( m_suspended ) {
             suspend();
 	} else {
-            QObject::connect(d->socket, SIGNAL(readyRead()), d->receiver, d->member);
+            QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
 	}
     }
     dequeue();
@@ -203,20 +182,20 @@ void Connection::init(KNetwork::KStreamSocket *sock)
 
 void Connection::init(int _fd_in, int fd_out)
 {
-    delete d->notifier;
-    d->notifier = 0;
-    d->fd_in = _fd_in;
+    delete notifier;
+    notifier = 0;
+    fd_in = _fd_in;
 #ifdef Q_WS_WIN
-    d->f_out = fd_out;
+    f_out = fd_out;
 #else
-    d->f_out = KDE_fdopen( fd_out, "wb" );
+    f_out = KDE_fdopen( fd_out, "wb" );
 #endif
-    if (d->receiver && ( d->fd_in != -1 )) {
-	d->notifier = new QSocketNotifier(d->fd_in, QSocketNotifier::Read, this);
-	if ( d->m_suspended ) {
+    if (receiver && ( fd_in != -1 )) {
+	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read, this);
+	if ( m_suspended ) {
             suspend();
 	}
-	QObject::connect(d->notifier, SIGNAL(activated(int)), d->receiver, d->member);
+	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
     }
     dequeue();
 }
@@ -224,26 +203,26 @@ void Connection::init(int _fd_in, int fd_out)
 
 void Connection::connect(QObject *_receiver, const char *_member)
 {
-    d->receiver = _receiver;
-    d->member = _member;
-    delete d->notifier;
-    d->notifier = 0;
-    if (d->receiver && (d->fd_in != -1 )) {
-        if (d->socket == 0L)
-	    d->notifier = new QSocketNotifier(d->fd_in, QSocketNotifier::Read, this);
-        if ( d->m_suspended )
+    receiver = _receiver;
+    member = _member;
+    delete notifier;
+    notifier = 0;
+    if (receiver && (fd_in != -1 )) {
+        if (socket == 0L)
+	    notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read, this);
+        if ( m_suspended )
             suspend();
 
-	if (d->notifier)
-	    QObject::connect(d->notifier, SIGNAL(activated(int)), d->receiver, d->member);
-	if (d->socket)
-	    QObject::connect(d->socket, SIGNAL(readyRead()), d->receiver, d->member);
+	if (notifier)
+	    QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
+	if (socket)
+	    QObject::connect(socket, SIGNAL(readyRead()), receiver, member);
     }
 }
 
 bool Connection::sendnow( int _cmd, const QByteArray &data )
 {
-    if (d->f_out == 0) {
+    if (f_out == 0) {
 	return false;
     }
 
@@ -253,9 +232,9 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
     static char buffer[ 64 ];
     sprintf( buffer, "%6x_%2x_", data.size(), _cmd );
 #ifdef Q_WS_WIN
-    size_t n = ::send( d->f_out, buffer,10, 0 );
+    size_t n = ::send( f_out, buffer,10, 0 );
 #else
-    size_t n = fwrite( buffer, 1, 10, d->f_out );
+    size_t n = fwrite( buffer, 1, 10, f_out );
 #endif
     if ( n != 10 ) {
 	kError(7017) << "Could not send header" << endl;
@@ -263,9 +242,9 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
     }
 
 #ifdef Q_WS_WIN
-    n = ::send( d->f_out, data.data(), data.size(), 0);
+    n = ::send( f_out, data.data(), data.size(), 0);
 #else
-    n = fwrite( data.data(), 1, data.size(), d->f_out );
+    n = fwrite( data.data(), 1, data.size(), f_out );
 #endif
     if ( n != (size_t)data.size() ) {
 	kError(7017) << "Could not write data" << endl;
@@ -273,14 +252,14 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
     }
 
 #ifndef Q_WS_WIN
-    fflush( d->f_out );
+    fflush( f_out );
 #endif
     return true;
 }
 
 int Connection::read( int* _cmd, QByteArray &data )
 {
-    if (d->fd_in == -1 ) {
+    if (fd_in == -1 ) {
 	kError(7017) << "read: not yet inited" << endl;
 	return -1;
     }
@@ -289,9 +268,9 @@ int Connection::read( int* _cmd, QByteArray &data )
 
  again1:
 #ifdef Q_WS_WIN
-    ssize_t n = ::recv( d->fd_in, buffer, 10, 0);
+    ssize_t n = ::recv( fd_in, buffer, 10, 0);
 #else
-    ssize_t n = ::read( d->fd_in, buffer, 10);
+    ssize_t n = ::read( fd_in, buffer, 10);
 #endif
     if ( n == -1 && errno == EINTR )
 	goto again1;
@@ -329,9 +308,9 @@ int Connection::read( int* _cmd, QByteArray &data )
 	size_t bytesRead = 0;
 	do {
 #ifdef Q_WS_WIN
-      n = ::recv(d->fd_in, data.data()+bytesRead, bytesToGo, 0);
+      n = ::recv(fd_in, data.data()+bytesRead, bytesToGo, 0);
 #else
-	    n = ::read(d->fd_in, data.data()+bytesRead, bytesToGo);
+	    n = ::read(fd_in, data.data()+bytesRead, bytesToGo);
 #endif
 	    if (n == -1) {
 		if (errno == EINTR)

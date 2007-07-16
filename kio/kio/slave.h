@@ -201,6 +201,7 @@ namespace KIO {
         void unlinkSocket();
 
     private:
+        KIO::Connection slaveconn;
 	SlavePrivate * const d;
     };
 }
