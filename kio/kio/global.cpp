@@ -1268,3 +1268,31 @@ KUiServerJobTracker *KIO::getJobTracker()
 {
     return globalJobTracker;
 }
+
+
+KIO::UDSField::UDSField()
+{
+}
+
+KIO::UDSField::UDSField( const QString& s )
+    : m_str( s )
+{
+}
+
+KIO::UDSField::UDSField( long long l )
+    : m_long( l )
+{
+}
+
+QString KIO::UDSField::toString() const
+{
+    return m_str;
+}
+
+long long KIO::UDSField::toNumber() const
+{
+    return m_long;
+}
+
+
+

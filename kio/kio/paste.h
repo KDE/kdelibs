@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_paste_h__
-#define __kio_paste_h__
+#ifndef KIO_PASTE_H
+#define KIO_PASTE_H
 
 #include <kio/kio_export.h>
 #include <QtCore/QString>

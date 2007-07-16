@@ -140,13 +140,11 @@ public:
     /**
      * Deprecated
      **/
-    KFileMetaInfoGroupList preferredGroups() const;
+    KDE_DEPRECATED KFileMetaInfoGroupList preferredGroups() const;
     /**
      * Deprecated
      **/
-    KFileMetaInfoGroupList supportedGroups() const {
-        return KFileMetaInfoGroupList();
-    }
+    KDE_DEPRECATED KFileMetaInfoGroupList supportedGroups() const;
     KFileMetaInfoGroupList groups() const;
     QStringList keys() const;
     const KUrl& url() const;

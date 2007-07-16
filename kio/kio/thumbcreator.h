@@ -116,7 +116,7 @@ public:
      *
      * @return flags for this plugin
      */
-    virtual Flags flags() const { return None; }
+    virtual Flags flags() const { return None; } //krazy:exclude=inline
 };
 
 typedef ThumbCreator *(*newCreator)();

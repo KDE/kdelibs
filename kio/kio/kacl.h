@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kacl_h__
-#define __kacl_h__
+#ifndef KACL_H
+#define KACL_H
 
 
 #include <sys/types.h>

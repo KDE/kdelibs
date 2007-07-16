@@ -28,6 +28,25 @@
 
 using namespace KIO;
 
+class RenameDialogPlugin::FileItem::FileItemPrivate
+{
+public:
+    FileItemPrivate( const KUrl& url, const QString& mimeType,
+                     const KIO::filesize_t size, time_t ctime,
+                     time_t mtime )
+        : m_url( url )
+        , m_mimeType( mimeType )
+        , m_fileSize( size )
+        , m_ctime( ctime )
+        , m_mtime( mtime )
+    {}
+    KUrl m_url;
+    QString m_mimeType;
+    KIO::filesize_t m_fileSize;
+    time_t m_ctime;
+    time_t m_mtime;
+};
+
 /**
  * @param url     The location of the item
  * @param mimeType The actual mimetype of the item
@@ -38,31 +57,32 @@ using namespace KIO;
 RenameDialogPlugin::FileItem::FileItem( const KUrl& url, const QString& mimeType,
                                      const KIO::filesize_t size, time_t ctime,
                                      time_t mtime )
-    : m_url( url )
-    , m_mimeType( mimeType )
-    , m_fileSize( size )
-    , m_ctime( ctime )
-    , m_mtime( mtime )
+    : d( new FileItemPrivate(url, mimeType, size, ctime, mtime) )
 {}
 
+RenameDialogPlugin::FileItem::~FileItem()
+{
+    delete d;
+}
+
 KUrl RenameDialogPlugin::FileItem::url() const {
-    return m_url;
+    return d->m_url;
 }
 
 QString RenameDialogPlugin::FileItem::mimeType() const {
-    return m_mimeType;
+    return d->m_mimeType;
 }
 
 KIO::filesize_t RenameDialogPlugin::FileItem::fileSize() const {
-    return m_fileSize;
+    return d->m_fileSize;
 }
 
 time_t RenameDialogPlugin::FileItem::cTime() const {
-    return m_ctime;
+    return d->m_ctime;
 }
 
 time_t RenameDialogPlugin::FileItem::mTime() const {
-    return m_mtime;
+    return d->m_mtime;
 }
 
 

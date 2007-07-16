@@ -25,6 +25,7 @@
 
 namespace KIO {
 
+class DirectorySizeJobPrivate;
 /**
  * Computes a directory size (similar to "du", but doesn't give the same results
  * since we simply sum up the dir and file sizes, whereas du speaks disk blocks)
@@ -51,20 +52,20 @@ public:
     /**
      * @return the size we found
      */
-    KIO::filesize_t totalSize() const { return m_totalSize; }
+    KIO::filesize_t totalSize() const;
 
     /**
      * @return the total number of files (counting symlinks to files, sockets
      * and character devices as files) in this directory and all sub-directories
      */
-    KIO::filesize_t totalFiles() const { return m_totalFiles; }
+    KIO::filesize_t totalFiles() const;
 
     /**
      * @return the total number of sub-directories found (not including the
      * directory the search started from and treating symlinks to directories
      * as directories)
      */
-    KIO::filesize_t totalSubdirs() const { return m_totalSubdirs; }
+    KIO::filesize_t totalSubdirs() const;
 
 private:
     void startNextJob( const KUrl & url );
@@ -75,13 +76,7 @@ private Q_SLOTS:
     void processNextItem();
 
 private:
-    KIO::filesize_t m_totalSize;
-    KIO::filesize_t m_totalFiles;
-    KIO::filesize_t m_totalSubdirs;
-    QList<KFileItem> m_lstItems;
-    int m_currentItem;
-private:
-    class DirectorySizeJobPrivate* d;
+    DirectorySizeJobPrivate * const d;
 };
 
 /**

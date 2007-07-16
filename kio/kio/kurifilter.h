@@ -22,8 +22,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef __kurifilter_h__
-#define __kurifilter_h__
+#ifndef KURIFILTER_H
+#define KURIFILTER_H
 
 #include <kio/kio_export.h>
 #include <QtCore/QObject>

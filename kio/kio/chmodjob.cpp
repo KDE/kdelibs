@@ -41,42 +41,85 @@
 #include <unistd.h>
 #include <assert.h>
 
+namespace KIO {
+
+    struct ChmodInfo
+    {
+        KUrl url;
+        int permissions;
+    };
+
+    enum ChmodJobState {
+        STATE_LISTING,
+        STATE_CHMODING
+    };
+
+    class ChmodJobPrivate
+    {
+    public:
+        ChmodJobPrivate(const KFileItemList& lstItems, int permissions, int mask,
+                        int newOwner, int newGroup, bool recursive)
+            : state( STATE_LISTING )
+            , m_permissions( permissions )
+            , m_mask( mask )
+            , m_newOwner( newOwner )
+            , m_newGroup( newGroup )
+            , m_recursive( recursive )
+            , m_lstItems( lstItems )
+        {
+        }
+        ChmodJobState state;
+        int m_permissions;
+        int m_mask;
+        int m_newOwner;
+        int m_newGroup;
+        bool m_recursive;
+        KFileItemList m_lstItems;
+        QLinkedList<ChmodInfo> m_infos; // linkedlist since we keep removing the first item
+    };
+
+} // namespace KIO
+
 using namespace KIO;
 
 ChmodJob::ChmodJob( const KFileItemList& lstItems, int permissions, int mask,
                     int newOwner, int newGroup,
                     bool recursive)
-    : KIO::Job(), state( STATE_LISTING ),
-      m_permissions( permissions ), m_mask( mask ),
-      m_newOwner( newOwner ), m_newGroup( newGroup ),
-      m_recursive( recursive ), m_lstItems( lstItems )
+    : KIO::Job()
+    , d( new ChmodJobPrivate(lstItems,permissions,mask,
+                             newOwner,newGroup,recursive) )
 {
     QTimer::singleShot( 0, this, SLOT(processList()) );
 }
 
+ChmodJob::~ChmodJob()
+{
+    delete d;
+}
+
 void ChmodJob::processList()
 {
-    while ( !m_lstItems.isEmpty() )
+    while ( !d->m_lstItems.isEmpty() )
     {
-        KFileItem * item = m_lstItems.first();
+        KFileItem * item = d->m_lstItems.first();
         if ( !item->isLink() ) // don't do anything with symlinks
         {
             // File or directory -> remember to chmod
             ChmodInfo info;
             info.url = item->url();
             // This is a toplevel file, we apply changes directly (no +X emulation here)
-            info.permissions = ( m_permissions & m_mask ) | ( item->permissions() & ~m_mask );
+            info.permissions = ( d->m_permissions & d->m_mask ) | ( item->permissions() & ~d->m_mask );
             /*kDebug(7007) << "\n current permissions=" << QString::number(item->permissions(),8)
-                          << "\n wanted permission=" << QString::number(m_permissions,8)
-                          << "\n with mask=" << QString::number(m_mask,8)
-                          << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~m_mask,8)
-                          << "\n bits we keep =" << QString::number(item->permissions() & ~m_mask,8)
+                          << "\n wanted permission=" << QString::number(d->m_permissions,8)
+                          << "\n with mask=" << QString::number(d->m_mask,8)
+                          << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~d->m_mask,8)
+                          << "\n bits we keep =" << QString::number(item->permissions() & ~d->m_mask,8)
                           << "\n new permissions = " << QString::number(info.permissions,8)
                           << endl;*/
-            m_infos.prepend( info );
+            d->m_infos.prepend( info );
             //kDebug(7007) << "processList : Adding info for " << info.url.prettyUrl() << endl;
             // Directory and recursive -> list
-            if ( item->isDir() && m_recursive )
+            if ( item->isDir() && d->m_recursive )
             {
                 //kDebug(7007) << "ChmodJob::processList dir -> listing" << endl;
                 KIO::ListJob * listJob = KIO::listRecursive( item->url(), false /* no GUI */ );
@@ -88,11 +131,11 @@ void ChmodJob::processList()
                 return; // we'll come back later, when this one's finished
             }
         }
-        m_lstItems.removeFirst();
+        d->m_lstItems.removeFirst();
     }
     kDebug(7007) << "ChmodJob::processList -> going to STATE_CHMODING" << endl;
     // We have finished, move on
-    state = STATE_CHMODING;
+    d->state = STATE_CHMODING;
     chmodNextFile();
 }
 
@@ -109,15 +152,15 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
             const mode_t permissions = entry.numberValue( KIO::UDS_ACCESS );
 
             ChmodInfo info;
-            info.url = m_lstItems.first()->url(); // base directory
+            info.url = d->m_lstItems.first()->url(); // base directory
             info.url.addPath( relativePath );
-            int mask = m_mask;
+            int mask = d->m_mask;
             // Emulate -X: only give +x to files that had a +x bit already
             // So the check is the opposite : if the file had no x bit, don't touch x bits
             // For dirs this doesn't apply
             if ( !entry.isDir() )
             {
-                int newPerms = m_permissions & mask;
+                int newPerms = d->m_permissions & mask;
                 if ( (newPerms & 0111) && !(permissions & 0111) )
                 {
                     // don't interfere with mandatory file locking
@@ -127,9 +170,9 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
                       mask = mask & ~0111;
                 }
             }
-            info.permissions = ( m_permissions & mask ) | ( permissions & ~mask );
+            info.permissions = ( d->m_permissions & mask ) | ( permissions & ~mask );
             /*kDebug(7007) << "\n current permissions=" << QString::number(permissions,8)
-                          << "\n wanted permission=" << QString::number(m_permissions,8)
+                          << "\n wanted permission=" << QString::number(d->m_permissions,8)
                           << "\n with mask=" << QString::number(mask,8)
                           << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~mask,8)
                           << "\n bits we keep =" << QString::number(permissions & ~mask,8)
@@ -137,22 +180,22 @@ void ChmodJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
                           << endl;*/
             // Prepend this info in our todo list.
             // This way, the toplevel dirs are done last.
-            m_infos.prepend( info );
+            d->m_infos.prepend( info );
         }
     }
 }
 
 void ChmodJob::chmodNextFile()
 {
-    if ( !m_infos.isEmpty() )
+    if ( !d->m_infos.isEmpty() )
     {
-        ChmodInfo info = m_infos.takeFirst();
+        ChmodInfo info = d->m_infos.takeFirst();
         // First update group / owner (if local file)
         // (permissions have to set after, in case of suid and sgid)
-        if ( info.url.isLocalFile() && ( m_newOwner != -1 || m_newGroup != -1 ) )
+        if ( info.url.isLocalFile() && ( d->m_newOwner != -1 || d->m_newGroup != -1 ) )
         {
             QString path = info.url.path();
-            if ( chown( QFile::encodeName(path), m_newOwner, m_newGroup ) != 0 )
+            if ( chown( QFile::encodeName(path), d->m_newOwner, d->m_newGroup ) != 0 )
             {
                 int answer = KMessageBox::warningContinueCancel( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>" , path), QString(), KGuiItem(i18n("&Skip File")) );
                 if (answer == KMessageBox::Cancel)
@@ -190,12 +233,12 @@ void ChmodJob::slotResult( KJob * job )
         emitResult();
         return;
     }
-    //kDebug(7007) << " ChmodJob::slotResult( KJob * job ) m_lstItems:" << m_lstItems.count() << endl;
-    switch ( state )
+    //kDebug(7007) << " ChmodJob::slotResult( KJob * job ) d->m_lstItems:" << d->m_lstItems.count() << endl;
+    switch ( d->state )
     {
         case STATE_LISTING:
             removeSubjob(job);
-            m_lstItems.removeFirst();
+            d->m_lstItems.removeFirst();
             kDebug(7007) << "ChmodJob::slotResult -> processList" << endl;
             processList();
             return;

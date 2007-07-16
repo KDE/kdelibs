@@ -34,7 +34,7 @@ class KDBusServiceStarterPrivate;
  * ability to search the standard KDE dirs).
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT KDBusServiceStarter {
+class KIO_EXPORT KDBusServiceStarter { //krazy:exclude=dpointer (uses K_GLOBAL_STATIC)
 public:
 
     static KDBusServiceStarter* self();

@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_jobclasses_h__
-#define __kio_jobclasses_h__
+#ifndef KIO_JOBCLASSES_H
+#define KIO_JOBCLASSES_H
 
 #include <QtCore/QObject>
 #include <QtCore/QLinkedList>
@@ -971,7 +971,6 @@ public:
         virtual void slotMimetype( const QString &mimetype );
     private:
         struct GetRequest {
-        public:
            GetRequest(long _id, const KUrl &_url, const MetaData &_metaData)
              : id(_id), url(_url), metaData(_metaData) { }
            long id;
@@ -979,14 +978,10 @@ public:
            MetaData metaData;
            bool operator==( const GetRequest& req ) const;
         };
+        typedef QLinkedList<MultiGetJob::GetRequest> RequestQueue;
         bool findCurrentEntry();
         void flushQueue(QLinkedList<GetRequest> &queue);
 
-        typedef QLinkedList<GetRequest> RequestQueue;
-        RequestQueue m_waitQueue;
-        RequestQueue m_activeQueue;
-        bool b_multiGetActive;
-        GetRequest m_currentEntry;
     private:
 	class MultiGetJobPrivate;
 	MultiGetJobPrivate * const d;

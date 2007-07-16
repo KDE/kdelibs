@@ -25,6 +25,15 @@
 #include <klocale.h>
 #include <kservicetypetrader.h>
 
+class KScanDialog::KScanDialogPrivate
+{
+public:
+    KScanDialogPrivate()
+        : m_currentId( 1 )
+    {}
+    int m_currentId;
+};
+
 // static factory method
 KScanDialog * KScanDialog::getScanDialog( QWidget *parent )
 {
@@ -35,8 +44,7 @@ KScanDialog * KScanDialog::getScanDialog( QWidget *parent )
 KScanDialog::KScanDialog( int dialogFace, int buttonMask,
 			  QWidget *parent )
     : KPageDialog( parent ),
-      m_currentId( 1 ),
-      d(0)
+      d( new KScanDialogPrivate )
 {
   setFaceType( (KPageDialog::FaceType)dialogFace );
   setCaption( i18n("Acquire Image") );
@@ -46,16 +54,17 @@ KScanDialog::KScanDialog( int dialogFace, int buttonMask,
 
 KScanDialog::~KScanDialog()
 {
+    delete d;
 }
 
 int KScanDialog::id() const
 {
-    return m_currentId;
+    return d->m_currentId;
 }
 
 int KScanDialog::nextId()
 {
-    return ++m_currentId;
+    return ++d->m_currentId;
 }
 
 bool KScanDialog::setup()
@@ -65,6 +74,14 @@ bool KScanDialog::setup()
 
 ///////////////////////////////////////////////////////////////////
 
+class KOCRDialog::KOCRDialogPrivate
+{
+public:
+    KOCRDialogPrivate()
+        : m_currentId( 1 )
+    {}
+    int m_currentId;
+};
 
 // static factory method
 KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent )
@@ -76,8 +93,7 @@ KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent )
 KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
 			  QWidget *parent, bool modal )
     : KPageDialog( parent ),
-      m_currentId( 1 ),
-      d(0)
+      d( new KOCRDialogPrivate )
 {
   setFaceType( (KPageDialog::FaceType)dialogFace );
   setCaption( i18n("OCR Image") );
@@ -89,29 +105,36 @@ KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
 
 KOCRDialog::~KOCRDialog()
 {
+    delete d;
 }
 
 int KOCRDialog::id() const
 {
-    return m_currentId;
+    return d->m_currentId;
 }
 
 int KOCRDialog::nextId()
 {
-    return ++m_currentId;
+    return ++d->m_currentId;
 }
 
 
 ///////////////////////////////////////////////////////////////////
 
+class KScanDialogFactory::KScanDialogFactoryPrivate
+{
+public:
+    KComponentData m_componentData;
+};
 
 KScanDialogFactory::KScanDialogFactory( QObject *parent )
-    : KLibFactory(parent)
+    : KLibFactory(parent), d( new KScanDialogFactoryPrivate )
 {
 }
 
 KScanDialogFactory::~KScanDialogFactory()
 {
+    delete d;
 }
 
 QObject *KScanDialogFactory::createObject( QObject *parent,
@@ -131,25 +154,31 @@ QObject *KScanDialogFactory::createObject( QObject *parent,
 
 void KScanDialogFactory::setName(const QByteArray &componentName)
 {
-    m_componentData = KComponentData(componentName);
+    d->m_componentData = KComponentData(componentName);
 }
 
 const KComponentData &KScanDialogFactory::componentData() const
 {
-    return m_componentData;
+    return d->m_componentData;
 }
 
 
 ///////////////////////////////////////////////////////////////////
 
+class KOCRDialogFactory::KOCRDialogFactoryPrivate
+{
+public:
+    KComponentData m_componentData;
+};
 
 KOCRDialogFactory::KOCRDialogFactory( QObject *parent )
-    : KLibFactory(parent)
+    : KLibFactory(parent), d( new KOCRDialogFactoryPrivate )
 {
 }
 
 KOCRDialogFactory::~KOCRDialogFactory()
 {
+    delete d;
 }
 
 QObject *KOCRDialogFactory::createObject( QObject *parent,
@@ -169,12 +198,12 @@ QObject *KOCRDialogFactory::createObject( QObject *parent,
 
 void KOCRDialogFactory::setName(const QByteArray &componentName)
 {
-    m_componentData = KComponentData(componentName);
+    d->m_componentData = KComponentData(componentName);
 }
 
 const KComponentData &KOCRDialogFactory::componentData() const
 {
-    return m_componentData;
+    return d->m_componentData;
 }
 
 

@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __slavebase_h
-#define __slavebase_h
+#ifndef SLAVEBASE_H
+#define SLAVEBASE_H
 
 #include <kio/global.h>
 #include <kio/authinfo.h>

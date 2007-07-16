@@ -120,16 +120,17 @@ namespace KIO {
         time_t contact_started;
         time_t idle_since;
         int m_refCount;
+        KIO::Connection slaveconn;
   };
 }
 
 void Slave::accept()
 {
     KStreamSocket *socket = d->serv->accept();
-    slaveconn.init(socket);
+    d->slaveconn.init(socket);
     d->serv->deleteLater();
     d->serv = 0;
-    slaveconn.connect(this, SLOT(gotInput()));
+    d->slaveconn.connect(this, SLOT(gotInput()));
     unlinkSocket();
 }
 
@@ -173,9 +174,10 @@ void Slave::timeout()
 }
 
 Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &socketname)
-  : SlaveInterface(&slaveconn),
+  : SlaveInterface(0),
     d(new SlavePrivate(socket, protocol, socketname))
 {
+    setConnection(&d->slaveconn);
     if (d->serv != 0) {
         d->serv->setAcceptBuffered(false);
         connect(d->serv, SIGNAL(readyAccept()),
@@ -279,8 +281,8 @@ void Slave::hold(const KUrl &url)
       QByteArray data;
       QDataStream stream( &data, QIODevice::WriteOnly );
       stream << url;
-      slaveconn.send( CMD_SLAVE_HOLD, data );
-      slaveconn.close();
+      d->slaveconn.send( CMD_SLAVE_HOLD, data );
+      d->slaveconn.close();
       d->dead = true;
       emit slaveDied(this);
    }
@@ -293,21 +295,21 @@ void Slave::hold(const KUrl &url)
 
 void Slave::suspend()
 {
-   slaveconn.suspend();
+   d->slaveconn.suspend();
 }
 
 void Slave::resume()
 {
-   slaveconn.resume();
+   d->slaveconn.resume();
 }
 
 bool Slave::suspended()
 {
-   return slaveconn.suspended();
+   return d->slaveconn.suspended();
 }
 
 void Slave::send(int cmd, const QByteArray &arr) {
-   slaveconn.send(cmd, arr);
+   d->slaveconn.send(cmd, arr);
 }
 
 void Slave::gotInput()
@@ -315,7 +317,7 @@ void Slave::gotInput()
     ref();
     if (!dispatch())
     {
-        slaveconn.close();
+        d->slaveconn.close();
         d->dead = true;
         QString arg = d->m_protocol;
         if (!d->m_host.isEmpty())
@@ -352,7 +354,7 @@ void Slave::setHost( const QString &host, quint16 port,
     QByteArray data;
     QDataStream stream( &data, QIODevice::WriteOnly );
     stream << d->m_host << d->m_port << d->m_user << d->m_passwd;
-    slaveconn.send( CMD_HOST, data );
+    d->slaveconn.send( CMD_HOST, data );
 }
 
 void Slave::resetHost()
@@ -365,7 +367,7 @@ void Slave::setConfig(const MetaData &config)
     QByteArray data;
     QDataStream stream( &data, QIODevice::WriteOnly );
     stream << config;
-    slaveconn.send( CMD_CONFIG, data );
+    d->slaveconn.send( CMD_CONFIG, data );
 }
 
 Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text )

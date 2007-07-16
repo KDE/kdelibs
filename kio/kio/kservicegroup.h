@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kservicegroup_h__
-#define __kservicegroup_h__
+#ifndef KSERVICEGROUP_H
+#define KSERVICEGROUP_H
 
 #include <kio/kio_export.h>
 #include "ksycocaentry.h"
@@ -293,7 +293,7 @@ private:
   Private* const d;
 };
 
-class KIO_EXPORT KServiceSeparator : public KSycocaEntry
+class KIO_EXPORT KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
 {
   K_SYCOCATYPE( KST_KServiceSeparator, KSycocaEntry )
 
@@ -305,14 +305,13 @@ public:
    */
   KServiceSeparator();
 
-  bool isValid() const { return true; }
+  bool isValid() const;
 
-  // Dummy
-  virtual QString name() const { return QLatin1String("separator"); }
-  // Dummy
-  virtual void load( QDataStream& ) { }
-  // Dummy
-  virtual void save( QDataStream& ) { }
+  virtual QString name() const;
+
+  // These are dummy functions
+  virtual void load( QDataStream& ds );
+  virtual void save( QDataStream& ds );
 };
 
 #endif

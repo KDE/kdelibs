@@ -33,6 +33,7 @@ class QTimer;
 
 namespace KIO {
 
+    class DeleteJobPrivate;
     /**
      * A more complex Job to delete files and directories.
      * Don't create the job directly, but use KIO::del() instead.
@@ -51,12 +52,13 @@ namespace KIO {
 	 * @see KIO::del()
 	 */
         DeleteJob(const KUrl::List& src);
+        virtual ~DeleteJob();
 
 	/**
 	 * Returns the list of URLs.
 	 * @return the list of URLs.
 	 */
-        KUrl::List urls() const { return m_srcList; }
+        KUrl::List urls() const;
 
     Q_SIGNALS:
 
@@ -111,24 +113,7 @@ namespace KIO {
         void deleteNextDir();
 
     private:
-        enum { STATE_STATING, STATE_LISTING,
-               STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
-        KIO::filesize_t m_totalSize;
-        KIO::filesize_t m_processedSize;
-        KIO::filesize_t m_fileProcessedSize;
-        int m_processedFiles;
-        int m_processedDirs;
-        int m_totalFilesDirs;
-        KUrl m_currentURL;
-        KUrl::List files;
-        KUrl::List symlinks;
-        KUrl::List dirs;
-        KUrl::List m_srcList;
-        KUrl::List::Iterator m_currentStat;
-	QStringList m_parentDirs;
-        QTimer *m_reportTimer;
-    private:
-	class DeleteJobPrivate* d;
+        DeleteJobPrivate * const d;
     };
 
     /**

@@ -17,8 +17,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __kprotocolmanager_h__
-#define __kprotocolmanager_h__
+#ifndef KPROTOCOLMANAGER_H
+#define KPROTOCOLMANAGER_H
 
 #include <QtCore/QStringList>
 

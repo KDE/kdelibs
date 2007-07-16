@@ -80,11 +80,20 @@ KAutoMount::~KAutoMount()
 {
 }
 
+class KAutoUnmount::KAutoUnmountPrivate
+{
+public:
+    KAutoUnmountPrivate( const QString & _mountpoint, const QString & _desktopFile )
+        : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint )
+    {}
+    QString m_desktopFile;
+    QString m_mountpoint;
+};
 
 KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile )
-    : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint ), d(0)
+    : d( new KAutoUnmountPrivate(_desktopFile, _mountpoint) )
 {
-    KIO::Job * job = KIO::unmount( m_mountpoint );
+    KIO::Job * job = KIO::unmount( d->m_mountpoint );
     connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
 }
 
@@ -97,17 +106,17 @@ void KAutoUnmount::slotResult( KJob * job )
     else
     {
         // Update the desktop file which is used for mount/unmount (icon change)
-        kDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
+        kDebug(7015) << "unmount finished : updating " << d->m_desktopFile << endl;
         KUrl dfURL;
-        dfURL.setPath( m_desktopFile );
+        dfURL.setPath( d->m_desktopFile );
         org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
-        //KDirWatch::self()->setFileDirty( m_desktopFile );
+        //KDirWatch::self()->setFileDirty( d->m_desktopFile );
 
         // Notify about the new stuff in that dir, in case of opened windows showing it
         // You may think we removed files, but this may have also readded some
         // (if the mountpoint wasn't empty). The only possible behavior on FilesAdded
         // is to relist the directory anyway.
-        KUrl mp( m_mountpoint );
+        KUrl mp( d->m_mountpoint );
         org::kde::KDirNotify::emitFilesAdded( mp.url() );
 
         emit finished();
@@ -118,6 +127,7 @@ void KAutoUnmount::slotResult( KJob * job )
 
 KAutoUnmount::~KAutoUnmount()
 {
+    delete d;
 }
 
 #include "kautomount.moc"

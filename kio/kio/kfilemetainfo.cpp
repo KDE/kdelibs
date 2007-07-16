@@ -288,6 +288,10 @@ KFileMetaInfoGroupList
 KFileMetaInfo::preferredGroups() const {
     return KFileMetaInfoGroupList();
 }
+KFileMetaInfoGroupList
+KFileMetaInfo::supportedGroups() const {
+    return KFileMetaInfoGroupList();
+}
 KFileMetaInfoItemList
 KFileMetaInfoGroup::items() const {
     return KFileMetaInfoItemList();

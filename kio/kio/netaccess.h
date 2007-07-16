@@ -20,8 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_netaccess_h
-#define __kio_netaccess_h
+#ifndef KIO_NETACCESS_h
+#define KIO_NETACCESS_h
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -38,6 +38,7 @@ namespace KIO {
 
   class Job;
 
+  class NetAccessPrivate;
   /**
    * Net Transparency.
    *
@@ -443,19 +444,7 @@ private Q_SLOTS:
     void slotRedirection( KIO::Job*, const KUrl& );
 
 private:
-    UDSEntry m_entry;
-    QString m_mimetype;
-    QByteArray m_data;
-    KUrl m_url;
-    QMap<QString, QString> *m_metaData;
-
-    /**
-     * Whether the download succeeded or not
-     */
-    bool bJobOK;
-
-private:
-    class NetAccessPrivate* const d;
+    NetAccessPrivate * const d;
 };
 
 }

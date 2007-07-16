@@ -20,6 +20,13 @@
 #include <kapplication.h>
 #include <QtDBus/QtDBus>
 
+class KBuildSycocaProgressDialogPrivate
+{
+public:
+    QTimer m_timer;
+    int m_timeStep;
+};
+
 void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
 {
   KBuildSycocaProgressDialog dlg(parent,
@@ -38,15 +45,21 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
 KBuildSycocaProgressDialog::KBuildSycocaProgressDialog(QWidget *_parent,
                           const QString &_caption, const QString &text)
  : QProgressDialog(_parent)
+ , d( new KBuildSycocaProgressDialogPrivate )
 {
-  connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotProgress()));
+  connect(&d->m_timer, SIGNAL(timeout()), this, SLOT(slotProgress()));
   setWindowTitle(_caption);
   setModal(true);
   setLabelText(text);
   setRange(0, 20);
-  m_timeStep = 700;
-  m_timer.start(m_timeStep);
+  d->m_timeStep = 700;
+  d->m_timer.start(d->m_timeStep);
   setAutoClose(false);
+}
+
+KBuildSycocaProgressDialog::~KBuildSycocaProgressDialog()
+{
+    delete d;
 }
 
 void
@@ -57,8 +70,8 @@ KBuildSycocaProgressDialog::slotProgress()
   {
      reset();
      setValue(1);
-     m_timeStep = m_timeStep * 2;
-     m_timer.start(m_timeStep);
+     d->m_timeStep = d->m_timeStep * 2;
+     d->m_timer.start(d->m_timeStep);
   }
   else
   {
@@ -70,7 +83,7 @@ void
 KBuildSycocaProgressDialog::slotFinished()
 {
   setValue(20);
-  m_timer.stop();
+  d->m_timer.stop();
   QTimer::singleShot(1000, this, SLOT(close()));
 }
 

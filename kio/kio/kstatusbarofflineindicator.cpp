@@ -28,7 +28,7 @@
 #include <klocale.h>
 
 KStatusBarOfflineIndicator::KStatusBarOfflineIndicator(
-    QWidget * parent) : QWidget( parent)
+    QWidget * parent) : QWidget( parent), d( 0 )
 {
     QVBoxLayout * layout = new QVBoxLayout( this );
     layout->setMargin( 3 );

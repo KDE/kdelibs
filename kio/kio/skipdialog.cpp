@@ -35,7 +35,7 @@
 using namespace KIO;
 
 SkipDialog::SkipDialog(QWidget *parent, bool _multi, const QString& _error_text, bool _modal )
-  : KDialog ( parent ), modal( _modal )
+  : KDialog ( parent ), modal( _modal ), d( 0 )
 {
   setCaption( i18n( "Information" ) );
   setModal( _modal );

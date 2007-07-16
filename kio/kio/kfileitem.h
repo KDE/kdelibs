@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kfileitem_h__
-#define __kfileitem_h__
+#ifndef KFILEITEM_H
+#define KFILEITEM_H
 
 #include <sys/stat.h>
 

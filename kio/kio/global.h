@@ -16,8 +16,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __kio_global_h__
-#define __kio_global_h__
+#ifndef KIO_GLOBAL_H
+#define KIO_GLOBAL_H
 
 #include <kio/kio_export.h>
 
@@ -465,7 +465,7 @@ class KIO_EXPORT UDSField // KDE4: naming: I would get rid of "UDS" everywhere, 
 {
 public:
   /// @internal needed by QHash
-  UDSField() {}
+  UDSField();
   /**
    * Create a field holding a string.
    * This constructor is called implicitly when doing
@@ -473,7 +473,7 @@ public:
    * entry.insert( KIO::UDS_XXX, myString )
    * \endcode
    */
-  UDSField( const QString& s ) : m_str( s ) {}
+  UDSField( const QString& s );
   /**
    * Create a field holding a long long.
    * This constructor is called implicitly when doing
@@ -481,22 +481,20 @@ public:
    * entry.insert( KIO::UDS_XXX, myNumber )
    * \endcode
    */
-  UDSField( long long l ) : m_long( l ) {}
+  UDSField( long long l );
 
   /**
    * @return the string value held by this UDSField
    */
-  QString toString() const { return m_str; }
+  QString toString() const;
 
   /**
    * @return the number value held by this UDSField
    */
-  long long toNumber() const { return m_long; }
+  long long toNumber() const;
 
 private:
-  /// Whether 'm_str' or 'm_long' is used depends on the field type, stored as the key in UDSEntry.
   QString m_str;
-  /// Whether 'm_str' or 'm_long' is used depends on the field type, stored as the key in UDSEntry.
   long long m_long;
 };
 

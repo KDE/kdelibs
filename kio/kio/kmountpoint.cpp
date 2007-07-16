@@ -437,6 +437,11 @@ QStringList KMountPoint::mountOptions() const
     return d->mountOptions;
 }
 
+KMountPoint::List::List()
+    : QList<Ptr>()
+{
+}
+
 KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
 {
     /* If the path contains symlinks, get the real name */

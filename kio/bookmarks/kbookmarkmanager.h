@@ -213,7 +213,7 @@ public:
     /**
      * @internal
      */
-    const QDomDocument & internalDocument() const;
+    QDomDocument internalDocument() const;
 
     KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
                                       const QString & _parentBookmarkAddress = QString() );

@@ -46,6 +46,7 @@ public:
      * Constructs a KShellCompletion object.
      */
     KShellCompletion();
+    ~KShellCompletion();
 
     /**
      * Finds completions to the given text.
@@ -67,14 +68,6 @@ private:
     // Insert quotes and neseccary escapes
     bool quoteText(QString *text, bool force, bool skip_last) const;
     QString unquote(const QString &text) const;
-
-    QString m_text_start; // part of the text that was not completed
-    QString m_text_compl; // part of the text that was completed (unchanged)
-
-    QChar m_word_break_char;
-    QChar m_quote_char1;
-    QChar m_quote_char2;
-    QChar m_escape_char;
 
 private:
     KShellCompletionPrivate * const d;

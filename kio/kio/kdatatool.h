@@ -159,7 +159,7 @@ public:
      * The instance of the service.
      * @return the instance
      */
-    const KComponentData &componentData() const;
+    KComponentData componentData() const;
 
     /**
      * A DataToolInfo may be invalid if the KService passed to its constructor does

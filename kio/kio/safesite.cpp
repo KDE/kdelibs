@@ -133,50 +133,66 @@ ServiceInfo& ServiceInfo::operator=(const ServiceInfo& x) {
 }
 
 
-Report::Report()
-    : d(0) {
-    _currentService = -1;
-    _result = Unknown;
+typedef QMap<QString, QString> MetaData;
+class Report::ReportPrivate
+{
+public:
+    ReportPrivate()
+        : _result( Report::Unknown )
+        , _currentService( -1 )
+    {
+    }
+    Report::Result _result;
+    QMap<QString, Report::Result> _jobResults;
+    QMap<QString, QString> _extendedResults;
+    QMap<QString, QString> _reports;
+    QMap<QString, MetaData> _metaData;
+    int _currentService;
+};
+
+
+Report::Report() : d( new ReportPrivate ) {
 }
 
 
 Report::~Report() {
+    delete d;
 }
 
 
 Report::Result Report::result(const QString& service) const {
     if (service.isNull()) {
-        return _result;
+        return d->_result;
     }
-    return _jobResults[service];
+    return d->_jobResults[service];
 }
 
 
 QString Report::extendedResultText(const QString& service) const {
     if (service.isNull()) {
-        return _extendedResults[services()[0]];
+        return d->_extendedResults[services()[0]];
     }
-    return _extendedResults[service];
+    return d->_extendedResults[service];
 }
 
 
 QString Report::report(const QString& service) const {
     if (service.isNull()) {
-        return _reports[services()[0]];
+        return d->_reports[services()[0]];
     }
-    return _reports[service];
+    return d->_reports[service];
 }
 
 
 QMap<QString, QString> Report::metaData(const QString& service) const {
     if (service.isNull()) {
         MetaData md;
-        foreach (const MetaData &i, _metaData) {
+        foreach (const MetaData &i, d->_metaData) {
             md.unite(i);
         }
         return md;
     }
-    return _metaData[service];
+    return d->_metaData[service];
 }
 
 
@@ -191,48 +207,48 @@ ServiceInfo Report::serviceInfo(const QString& service) {
 
 
 void Report::abort() {
-    if (_currentService != -1) {
-        Service *s = servicesList->at(_currentService);
+    if (d->_currentService != -1) {
+        Service *s = servicesList->at(d->_currentService);
         s->cancel(this);
-        _currentService = -1;
-        _result = Aborted;
+        d->_currentService = -1;
+        d->_result = Aborted;
     }
 }
 
 
 // FIXME: parallelize this?  What are the implications?
 bool Report::run() {
-    if (_currentService != -1) {
+    if (d->_currentService != -1) {
         return false;
     }
-    _result = Working;
-    _currentService = 0;
-    Service *s = servicesList->at(_currentService);
+    d->_result = Working;
+    d->_currentService = 0;
+    Service *s = servicesList->at(d->_currentService);
     s->run(this);
     return true;
 }
 
 
 void Report::serviceReported(Service *s) {
-    assert(_currentService >= 0);
-    _jobResults[s->info.name()] = s->result;
-    _extendedResults[s->info.name()] = s->extendedText;
-    _reports[s->info.name()] = s->reportText;
-    _metaData[s->info.name()] = s->metaData;
+    assert(d->_currentService >= 0);
+    d->_jobResults[s->info.name()] = s->result;
+    d->_extendedResults[s->info.name()] = s->extendedText;
+    d->_reports[s->info.name()] = s->reportText;
+    d->_metaData[s->info.name()] = s->metaData;
     emit serviceReported(s->info.name());
     QTimer::singleShot(0, this, SLOT(next()));
 }
 
 
 void Report::next() {
-    if (_currentService + 1 < servicesList->size()) {
-        Service *s = servicesList->at(++_currentService);
+    if (d->_currentService + 1 < servicesList->size()) {
+        Service *s = servicesList->at(++d->_currentService);
         s->run(this);
     } else {
-        _currentService = -1;
-        _result = Indeterminate;
+        d->_currentService = -1;
+        d->_result = Indeterminate;
         uint knownPhish = 0, knownGood = 0, errors = 0;
-        for (QMap<QString, Result>::ConstIterator i = _jobResults.begin(); i != _jobResults.end(); ++i) {
+        for (QMap<QString, Result>::ConstIterator i = d->_jobResults.begin(); i != d->_jobResults.end(); ++i) {
             if (i.value() == KnownPhishing) {
                 ++knownPhish;
             } else if (i.value() == KnownGood) {
@@ -243,17 +259,17 @@ void Report::next() {
         }
         if (knownPhish) {
             if (knownGood) {
-                _result = Inconsistent;
+                d->_result = Inconsistent;
             } else {
-                _result = KnownPhishing;
+                d->_result = KnownPhishing;
             }
         } else if (knownGood) {
-            _result = KnownGood;
+            d->_result = KnownGood;
             // FIXME: deal with errors
             // Maybe set this to Indeterminate if there were errors?
             // Could be a DoS attack
         } else if (errors) {
-            _result = Error;
+            d->_result = Error;
         }
         emit done();
     }

@@ -15,8 +15,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __kar_h
-#define __kar_h
+#ifndef KAR_H
+#define KAR_H
 
 #include <karchive.h>
 
@@ -56,36 +56,23 @@ protected:
      * @return always false
      */
     virtual bool doPrepareWriting( const QString& name, const QString& user, const QString& group, qint64 size,
-                                 mode_t perm, time_t atime, time_t mtime, time_t ctime )
-    {   Q_UNUSED(name); Q_UNUSED(user); Q_UNUSED(group); Q_UNUSED(size);
-        Q_UNUSED( perm ); Q_UNUSED( atime ); Q_UNUSED( mtime ); Q_UNUSED( ctime );
-        return false;
-    }
+                                 mode_t perm, time_t atime, time_t mtime, time_t ctime );
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
-    virtual bool doFinishWriting( qint64 size ) { Q_UNUSED(size); return false; }
+    virtual bool doFinishWriting( qint64 size );
 
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
      */
     virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
-                             mode_t perm, time_t atime, time_t mtime, time_t ctime ) {
-        Q_UNUSED( name ); Q_UNUSED( user ); Q_UNUSED( group );
-        Q_UNUSED( perm ); Q_UNUSED( atime ); Q_UNUSED( mtime ); Q_UNUSED( ctime );
-        return false;
-    }
+                             mode_t perm, time_t atime, time_t mtime, time_t ctime );
 
     virtual bool doWriteSymLink( const QString &name, const QString &target,
-                                 const QString &user, const QString &group, mode_t perm, time_t atime, time_t mtime, time_t ctime )
-    {
-        Q_UNUSED( name ); Q_UNUSED( target ); Q_UNUSED( user ); Q_UNUSED( group );
-        Q_UNUSED( perm ); Q_UNUSED( atime ); Q_UNUSED( mtime ); Q_UNUSED( ctime);
-        return false;
-    }
+                                 const QString &user, const QString &group, mode_t perm, time_t atime, time_t mtime, time_t ctime );
 
     /**
      * Opens the archive for reading.

@@ -59,6 +59,29 @@ KAr::~KAr()
     delete d;
 }
 
+bool KAr::doPrepareWriting( const QString&, const QString&, const QString&,
+                            qint64, mode_t, time_t, time_t, time_t )
+{
+    return false;
+}
+
+bool KAr::doFinishWriting( qint64 size )
+{
+    return false;
+}
+
+bool KAr::doWriteDir( const QString&, const QString&, const QString&,
+                      mode_t, time_t, time_t, time_t )
+{
+    return false;
+}
+
+bool KAr::doWriteSymLink( const QString&, const QString&, const QString&,
+                          const QString&, mode_t, time_t, time_t, time_t )
+{
+    return false;
+}
+
 bool KAr::openArchive( QIODevice::OpenMode mode )
 {
     // Open archive

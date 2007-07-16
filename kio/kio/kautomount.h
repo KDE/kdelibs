@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __auto_mount_h__
-#define __auto_mount_h__
+#ifndef KAUTOMOUNT_H
+#define KAUTOMOUNT_H
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -104,12 +104,10 @@ Q_SIGNALS:
 protected Q_SLOTS:
     void slotResult( KJob * );
 private:
-    QString m_desktopFile;
-    QString m_mountpoint;
-private:
     /** KAutoUnmount deletes itself. Don't delete it manually. */
     ~KAutoUnmount();
-    class KAutoUnmountPrivate* const d;
+    class KAutoUnmountPrivate;
+    KAutoUnmountPrivate* const d;
 };
 
 #endif //Q_OS_UNIX

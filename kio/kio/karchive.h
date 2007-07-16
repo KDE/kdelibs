@@ -18,8 +18,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __karchive_h
-#define __karchive_h
+#ifndef KARCHIVE_H
+#define KARCHIVE_H
 
 #include <sys/stat.h>
 #include <sys/types.h>

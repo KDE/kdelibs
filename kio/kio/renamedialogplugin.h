@@ -53,6 +53,7 @@ public:
     class KIO_EXPORT FileItem {
     public:
         FileItem( const KUrl& url, const QString& mimeSrc, KIO::filesize_t, time_t ctime, time_t mtime);
+        ~FileItem();
 
         KUrl url() const;
         QString mimeType() const;
@@ -61,11 +62,8 @@ public:
         time_t mTime() const;
 
     private:
-        KUrl m_url;
-        QString m_mimeType;
-        KIO::filesize_t m_fileSize;
-        time_t m_ctime;
-        time_t m_mtime;
+        class FileItemPrivate;
+        FileItemPrivate * const d;
     };
 
     /**

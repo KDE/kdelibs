@@ -50,7 +50,8 @@ class DavJob::DavJobPrivate
 {
 public:
   QByteArray savedStaticData;
-	QByteArray str_response; // replaces the QString previously used in DavJob itself
+	QByteArray str_response;
+	QDomDocument m_response;
 };
 
 DavJob::DavJob(const KUrl& url, int method, const QString& request)
@@ -70,7 +71,7 @@ DavJob::DavJob(const KUrl& url, int method, const QString& request)
 
 QDomDocument& DavJob::response()
 {
-    return m_response;
+    return d->m_response;
 }
 
 void DavJob::slotData( const QByteArray& data )
@@ -99,20 +100,20 @@ void DavJob::slotFinished()
 			QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
 			stream << (int)7 << m_redirectionURL << (int)KIO::DAV_PROPFIND;
 		}
-  } else if ( ! m_response.setContent( d->str_response, true ) ) {
+  } else if ( ! d->m_response.setContent( d->str_response, true ) ) {
 		// An error occurred parsing the XML response
-		QDomElement root = m_response.createElementNS( "DAV:", "error-report" );
-		m_response.appendChild( root );
+		QDomElement root = d->m_response.createElementNS( "DAV:", "error-report" );
+		d->m_response.appendChild( root );
 
-		QDomElement el = m_response.createElementNS( "DAV:", "offending-response" );
-    QDomText textnode = m_response.createTextNode( d->str_response );
+		QDomElement el = d->m_response.createElementNS( "DAV:", "offending-response" );
+    QDomText textnode = d->m_response.createTextNode( d->str_response );
 		el.appendChild( textnode );
 		root.appendChild( el );
 		delete d; // Should be in virtual destructor
 	} else {
 		delete d; // Should be in virtual destructor
 	}
-  // kDebug(7113) << m_response.toString() << endl;
+  // kDebug(7113) << d->m_response.toString() << endl;
 	TransferJob::slotFinished();
 	if( d ) staticData = d->savedStaticData; // Need to send DAV request to this host too
 }

@@ -18,14 +18,15 @@
  *
  **/
 
-#ifndef __kio_filejob_h
-#define __kio_filejob_h
+#ifndef KIO_FILEJOB_H
+#define KIO_FILEJOB_H
 
 #include <kurl.h>
 #include <kio/jobclasses.h>
 
 namespace KIO {
 
+class FileJobPrivate;
 /**
  *  The file-job is an asynchronious version of normal file handling.
  *  It allows block-wise reading and writing, and allows seeking. Results are returned through signals.
@@ -153,6 +154,9 @@ protected:
     bool m_open;
     QString m_mimetype;
     KIO::filesize_t m_size;
+
+private:
+    FileJobPrivate * const d;
 };
 
 } // namespace

@@ -258,44 +258,8 @@ namespace KIO {
         void slotReport();
 
     private:
-        CopyMode m_mode;
-        bool m_asMethod;
-        enum DestinationState { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST };
-        DestinationState destinationState;
-        enum { STATE_STATING, STATE_RENAMING, STATE_LISTING, STATE_CREATING_DIRS,
-               STATE_CONFLICT_CREATING_DIRS, STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES,
-               STATE_DELETING_DIRS, STATE_SETTING_DIR_ATTRIBUTES } state;
-        KIO::filesize_t m_totalSize;
-        KIO::filesize_t m_processedSize;
-        KIO::filesize_t m_fileProcessedSize;
-        int m_processedFiles;
-        int m_processedDirs;
-        QList<CopyInfo> files;
-        QList<CopyInfo> dirs;
-        KUrl::List dirsToRemove;
-        KUrl::List m_srcList;
-        KUrl::List::Iterator m_currentStatSrc;
-        bool m_bCurrentSrcIsDir;
-        bool m_bCurrentOperationIsLink;
-        bool m_bSingleFileCopy;
-        bool m_bOnlyRenames;
-        KUrl m_dest;
-        KUrl m_currentDest;
-        //
-        QStringList m_skipList;
-        QStringList m_overwriteList;
-        bool m_bAutoSkip;
-        bool m_bOverwriteAll;
-        int m_conflictError;
-
-        QTimer *m_reportTimer;
-        //these both are used for progress dialog reporting
-        KUrl m_currentSrcURL;
-        KUrl m_currentDestURL;
-    private:
 	class CopyJobPrivate;
         CopyJobPrivate* const d;
-        friend class CopyJobPrivate; // for DestinationState
     };
 
     /**

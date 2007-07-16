@@ -19,8 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __k_run_h__
-#define __k_run_h__
+#ifndef KRUN_H
+#define KRUN_H
 
 #include <kio/kio_export.h>
 

@@ -26,19 +26,36 @@
 #include <QtCore/QRegExp>
 #include <kcompletion.h>
 
-//class KShellCompletionPrivate
-//{
-//};
+class KShellCompletionPrivate
+{
+public:
+    KShellCompletionPrivate()
+        : m_word_break_char(' ')
+        , m_quote_char1( '\"' )
+        , m_quote_char2( '\'' )
+        , m_escape_char( '\\' )
+    {
+    }
+    QString m_text_start; // part of the text that was not completed
+    QString m_text_compl; // part of the text that was completed (unchanged)
+
+    QChar m_word_break_char;
+    QChar m_quote_char1;
+    QChar m_quote_char2;
+    QChar m_escape_char;
+};
 
 KShellCompletion::KShellCompletion()
     : KUrlCompletion(),
-      d(0)
+      d( new KShellCompletionPrivate )
 {
-	m_word_break_char = ' ';
-	m_quote_char1 = '\"';
-	m_quote_char2 = '\'';
-	m_escape_char = '\\';
 }
+
+KShellCompletion::~KShellCompletion()
+{
+    delete d;
+}
+
 
 /*
  * makeCompletion()
@@ -49,19 +66,19 @@ QString KShellCompletion::makeCompletion(const QString &text)
 {
 	// Split text at the last unquoted space
 	//
-	splitText(text, m_text_start, m_text_compl);
+	splitText(text, d->m_text_start, d->m_text_compl);
 
 	// Remove quotes from the text to be completed
 	//
-	QString tmp = unquote(m_text_compl);
-	m_text_compl = tmp;
+	QString tmp = unquote(d->m_text_compl);
+	d->m_text_compl = tmp;
 
 	// Do exe-completion if there was no unquoted space
 	//
 	bool is_exe_completion = true;
 
-	for ( int i = 0; i < m_text_start.length(); i++ ) {
-		if ( m_text_start[i] != m_word_break_char ) {
+	for ( int i = 0; i < d->m_text_start.length(); i++ ) {
+		if ( d->m_text_start[i] != d->m_word_break_char ) {
 			is_exe_completion = false;
 			break;
 		}
@@ -73,7 +90,7 @@ QString KShellCompletion::makeCompletion(const QString &text)
 
 	// Make completion on the last part of text
 	//
-	return KUrlCompletion::makeCompletion( m_text_compl );
+	return KUrlCompletion::makeCompletion( d->m_text_compl );
 }
 
 /*
@@ -99,7 +116,7 @@ void KShellCompletion::postProcessMatch( QString *match ) const
 	else
 		quoteText( match, false, false ); // quote the whole text
 
-	match->prepend( m_text_start );
+	match->prepend( d->m_text_start );
 
 	//kDebugInfo("KShellCompletion::postProcessMatch() ut: '%s'",
 	//	match->latin1());
@@ -118,7 +135,7 @@ void KShellCompletion::postProcessMatches( QStringList *matches ) const
 			else
 				quoteText( &(*it), false, false ); // quote the whole text
 
-			(*it).prepend( m_text_start );
+			(*it).prepend( d->m_text_start );
 		}
 	}
 }
@@ -136,7 +153,7 @@ void KShellCompletion::postProcessMatches( KCompletionMatches *matches ) const
 			else
 				quoteText( &(*it).value(), false, false ); // quote the whole text
 
-			(*it).value().prepend( m_text_start );
+			(*it).value().prepend( d->m_text_start );
 		}
 	}
 }
@@ -168,22 +185,22 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
 		else if ( in_quote && text[pos] == p_last_quote_char ) {
 			in_quote = false;
 		}
-		else if ( !in_quote && text[pos] == m_quote_char1 ) {
-			p_last_quote_char = m_quote_char1;
+		else if ( !in_quote && text[pos] == d->m_quote_char1 ) {
+			p_last_quote_char = d->m_quote_char1;
 			in_quote = true;
 		}
-		else if ( !in_quote && text[pos] == m_quote_char2 ) {
-			p_last_quote_char = m_quote_char2;
+		else if ( !in_quote && text[pos] == d->m_quote_char2 ) {
+			p_last_quote_char = d->m_quote_char2;
 			in_quote = true;
 		}
-		else if ( text[pos] == m_escape_char ) {
+		else if ( text[pos] == d->m_escape_char ) {
 			escaped = true;
 		}
-		else if ( !in_quote && text[pos] == m_word_break_char ) {
+		else if ( !in_quote && text[pos] == d->m_word_break_char ) {
 
 			end_space_len = 1;
 
-			while ( pos+1 < text.length() && text[pos+1] == m_word_break_char ) {
+			while ( pos+1 < text.length() && text[pos+1] == d->m_word_break_char ) {
 				end_space_len++;
 				pos++;
 			}
@@ -219,43 +236,43 @@ bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last) cons
 	int pos = 0;
 
 	if ( !force ) {
-		pos = text->indexOf( m_word_break_char );
+		pos = text->indexOf( d->m_word_break_char );
 		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
 	}
 
 	if ( !force && pos == -1 ) {
-		pos = text->indexOf( m_quote_char1 );
+		pos = text->indexOf( d->m_quote_char1 );
 		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
 	}
 
 	if ( !force && pos == -1 ) {
-		pos = text->indexOf( m_quote_char2 );
+		pos = text->indexOf( d->m_quote_char2 );
 		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
 	}
 
 	if ( !force && pos == -1 ) {
-		pos = text->indexOf( m_escape_char );
+		pos = text->indexOf( d->m_escape_char );
 		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
 	}
 
 	if ( force || (pos >= 0) ) {
 
 		// Escape \ in the string
-		text->replace( m_escape_char,
-		               QString( m_escape_char ) + m_escape_char );
+		text->replace( d->m_escape_char,
+		               QString( d->m_escape_char ) + d->m_escape_char );
 
 		// Escape " in the string
-		text->replace( m_quote_char1,
-		               QString( m_escape_char ) + m_quote_char1 );
+		text->replace( d->m_quote_char1,
+		               QString( d->m_escape_char ) + d->m_quote_char1 );
 
 		// " at the beginning
-		text->insert( 0, m_quote_char1 );
+		text->insert( 0, d->m_quote_char1 );
 
 		// " at the end
 		if ( skip_last )
-			text->insert( text->length()-1, m_quote_char1 );
+			text->insert( text->length()-1, d->m_quote_char1 );
 		else
-			text->insert( text->length(), m_quote_char1 );
+			text->insert( text->length(), d->m_quote_char1 );
 
 		return true;
 	}
@@ -285,15 +302,15 @@ QString KShellCompletion::unquote(const QString &text) const
 		else if ( in_quote && text[pos] == p_last_quote_char ) {
 			in_quote = false;
 		}
-		else if ( !in_quote && text[pos] == m_quote_char1 ) {
-			p_last_quote_char = m_quote_char1;
+		else if ( !in_quote && text[pos] == d->m_quote_char1 ) {
+			p_last_quote_char = d->m_quote_char1;
 			in_quote = true;
 		}
-		else if ( !in_quote && text[pos] == m_quote_char2 ) {
-			p_last_quote_char = m_quote_char2;
+		else if ( !in_quote && text[pos] == d->m_quote_char2 ) {
+			p_last_quote_char = d->m_quote_char2;
 			in_quote = true;
 		}
-		else if ( text[pos] == m_escape_char ) {
+		else if ( text[pos] == d->m_escape_char ) {
 			escaped = true;
 			result.insert( result.length(), text[pos] );
 		}

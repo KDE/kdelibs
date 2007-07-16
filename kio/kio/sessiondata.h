@@ -18,8 +18,8 @@
    Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KIO_SESSIONDATA_H
-#define __KIO_SESSIONDATA_H
+#ifndef KIO_SESSIONDATA_H
+#define KIO_SESSIONDATA_H
 
 #include <QtCore/QObject>
 #include <kio/global.h>

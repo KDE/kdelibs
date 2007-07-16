@@ -30,6 +30,7 @@
 
 namespace KIO {
 
+    class ChmodJobPrivate;
     /**
      * This job changes permissions on a list of files or directories,
      * optionally in a recursive manner.
@@ -46,6 +47,8 @@ namespace KIO {
                   int newOwner, int newGroup,
                   bool recursive);
 
+        virtual ~ChmodJob();
+
     protected:
         void chmodNextFile();
 
@@ -56,21 +59,7 @@ namespace KIO {
         void processList();
 
     private:
-        struct ChmodInfo
-        {
-            KUrl url;
-            int permissions;
-        };
-        enum { STATE_LISTING, STATE_CHMODING } state;
-        int m_permissions;
-        int m_mask;
-        int m_newOwner;
-        int m_newGroup;
-        bool m_recursive;
-        KFileItemList m_lstItems;
-        QLinkedList<ChmodInfo> m_infos; // linkedlist since we keep removing the first item
-    private:
-	class ChmodJobPrivate* d;
+        ChmodJobPrivate * const d;
     };
 
 

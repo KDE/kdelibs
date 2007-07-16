@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_davjob_h__
-#define __kio_davjob_h__
+#ifndef KIO_DAVJOB_H
+#define KIO_DAVJOB_H
 
 #include <kurl.h>
 
@@ -75,8 +75,6 @@ namespace KIO {
     private:
 	class DavJobPrivate;
 	DavJobPrivate* const d;
-	QString dummy; // kept around for BC reasons
-	QDomDocument m_response;
    };
 
    /**

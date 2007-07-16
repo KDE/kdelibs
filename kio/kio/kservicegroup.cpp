@@ -710,3 +710,16 @@ KServiceSeparator::KServiceSeparator( )
  : KSycocaEntry("separator")
 {
 }
+
+bool KServiceSeparator::isValid() const
+{
+    return true;
+}
+
+QString KServiceSeparator::name() const
+{
+    return QLatin1String("separator");
+}
+
+void KServiceSeparator::load( QDataStream& ) { }
+void KServiceSeparator::save( QDataStream& ) { }

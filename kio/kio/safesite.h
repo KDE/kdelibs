@@ -83,13 +83,6 @@ protected:
     KUrl _url;
 
 private:
-    Result _result;
-    QMap<QString, Result> _jobResults;
-    QMap<QString, QString> _extendedResults;
-    QMap<QString, QString> _reports;
-    typedef QMap<QString, QString> MetaData;
-    QMap<QString, MetaData> _metaData;
-    int _currentService;
     class ReportPrivate;
     ReportPrivate * const d;
 };

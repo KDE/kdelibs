@@ -75,13 +75,13 @@ public:
     * Use this method to check if the object was modified.
     * @return true if the object has been modified
     */
-   bool isModified() const { return modified; }
+   bool isModified() const;
 
    /**
     * Use this method to indicate that this object has been modified.
     * @param flag true to mark the object as modified, false to clear
     */
-   void setModified( bool flag ) { modified = flag; }
+   void setModified( bool flag );
 
    /**
     * The URL for which authentication is to be stored.
@@ -297,7 +297,7 @@ public:
   /**
    * Reloads the auto login information.
    */
-  void reload() { isDirty = true; }
+  void reload();
 
 protected:
   QString extract( const char*, const char*, int& );
@@ -309,13 +309,8 @@ private:
   ~NetRC();
 
 private:
-  bool isDirty;
-
-  typedef QList<AutoLogin> LoginList;
-  typedef QMap<QString, LoginList> LoginMap;
-  LoginMap loginMap;
-
   static NetRC* instance;
+
   class NetRCPrivate;
   NetRCPrivate* const d;
 };

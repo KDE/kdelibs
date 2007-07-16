@@ -72,6 +72,16 @@ AuthInfo& AuthInfo::operator= ( const AuthInfo& info )
     return *this;
 }
 
+bool AuthInfo::isModified() const
+{
+    return modified;
+}
+
+void AuthInfo::setModified( bool flag )
+{
+    modified = flag;
+}
+
 QDataStream& KIO::operator<< (QDataStream& s, const AuthInfo& a)
 {
     s << a.url << a.username << a.password << a.prompt << a.caption
@@ -89,18 +99,31 @@ QDataStream& KIO::operator>> (QDataStream& s, AuthInfo& a)
 }
 
 
+typedef QList<NetRC::AutoLogin> LoginList;
+typedef QMap<QString, LoginList> LoginMap;
+
+class NetRC::NetRCPrivate
+{
+public:
+    NetRCPrivate()
+        : isDirty(false)
+    {}
+    bool isDirty;
+    LoginMap loginMap;
+};
+
 NetRC* NetRC::instance = 0L;
 
 NetRC::NetRC()
-    : d(0)
+    : d( new NetRCPrivate )
 {
-    isDirty = false;
 }
 
 NetRC::~NetRC()
 {
     delete instance;
     instance = 0L;
+    delete d;
 }
 
 NetRC* NetRC::self()
@@ -121,9 +144,9 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
   if ( type.isEmpty() )
     type = url.protocol();
 
-  if ( loginMap.isEmpty() || isDirty )
+  if ( d->loginMap.isEmpty() || d->isDirty )
   {
-    loginMap.clear();
+    d->loginMap.clear();
 
     QString filename = KStandardDirs::locateLocal("config", QLatin1String("kionetrc"));
     bool status = parse (openf (filename));
@@ -138,10 +161,10 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
       return false;
   }
 
-  if ( !loginMap.contains( type ) )
+  if ( !d->loginMap.contains( type ) )
     return false;
 
-  const LoginList& l = loginMap[type];
+  const LoginList& l = d->loginMap[type];
   if ( l.isEmpty() )
     return false;
 
@@ -185,6 +208,11 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
   }
 
   return true;
+}
+
+void NetRC::reload()
+{
+    d->isDirty = true;
 }
 
 int NetRC::openf( const QString& f )
@@ -274,7 +302,7 @@ bool NetRC::parse( int fd )
 
       QString mac = QString::fromLatin1(buf, tail).trimmed();
       if ( !mac.isEmpty() )
-        loginMap[type][index].macdef[macro].append( mac );
+        d->loginMap[type][index].macdef[macro].append( mac );
 
       continue;
     }
@@ -313,8 +341,8 @@ bool NetRC::parse( int fd )
     isMacro = !macro.isEmpty();
     // kDebug() << "Macro: " << macro << endl;
 
-    loginMap[l.type].append(l);
-    index = loginMap[l.type].count()-1;
+    d->loginMap[l.type].append(l);
+    index = d->loginMap[l.type].count()-1;
   }
 
   delete [] buf;

@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_rename_dialog__
-#define __kio_rename_dialog__
+#ifndef KIO_RENAMEDIALOG_H
+#define KIO_RENAMEDIALOG_H
 
 #include <kurl.h>
 #include <QtGui/QDialog>

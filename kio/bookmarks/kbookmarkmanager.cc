@@ -192,7 +192,7 @@ void KBookmarkManager::setUpdate( bool update )
     d->m_update = update;
 }
 
-const QDomDocument &KBookmarkManager::internalDocument() const
+QDomDocument KBookmarkManager::internalDocument() const
 {
     if(!d->m_docIsLoaded)
     {

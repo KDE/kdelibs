@@ -179,7 +179,7 @@ KService::Ptr KDataToolInfo::service() const
     return d->service;
 }
 
-const KComponentData &KDataToolInfo::componentData() const
+KComponentData KDataToolInfo::componentData() const
 {
     return d->componentData;
 }

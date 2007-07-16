@@ -162,9 +162,6 @@ Q_SIGNALS:
     void textRecognized( const QString &text, int id );
 
 private:
-    int m_currentId;
-
-private:
     class KScanDialogPrivate;
     KScanDialogPrivate *const d;
 };
@@ -212,9 +209,8 @@ protected:
     const KComponentData &componentData() const;
 
 private:
-    KComponentData m_componentData;
-private:
-    class KScanDialogFactoryPrivate* d;
+    class KScanDialogFactoryPrivate;
+    KScanDialogFactoryPrivate * const d;
 };
 
 /**
@@ -283,9 +279,6 @@ Q_SIGNALS:
     void textRecognized( const QString &text, int id );
 
 private:
-    int m_currentId;
-
-private:
     class KOCRDialogPrivate;
     KOCRDialogPrivate * const d;
 };
@@ -335,9 +328,8 @@ protected:
     const KComponentData &componentData() const;
 
 private:
-    KComponentData m_componentData;
-private:
-    class KOCRDialogFactory* d;
+    class KOCRDialogFactoryPrivate;
+    KOCRDialogFactoryPrivate * const d;
 };
 
 

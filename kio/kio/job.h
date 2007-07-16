@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_job_h__
-#define __kio_job_h__
+#ifndef KIO_JOB_H
+#define KIO_JOB_H
 
 #include <kio/jobclasses.h>
 

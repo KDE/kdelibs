@@ -42,7 +42,7 @@ public:
     class KIO_EXPORT List : public QList<Ptr>
     {
     public:
-        List() : QList<Ptr>() {}
+        List();
         /**
          * Find the mountpoint on which resides @p path
          * For instance if /home is a separate partition, findByPath("/home/user/blah")

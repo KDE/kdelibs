@@ -16,8 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kio_skip_dialog__
-#define __kio_skip_dialog__
+#ifndef KIO_SKIPDIALOG_H
+#define KIO_SKIPDIALOG_H
 
 #include <kio/kio_export.h>
 #include <kdialog.h>
@@ -28,6 +28,7 @@ namespace KIO {
 
   enum SkipDialog_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
 
+class SkipDialogPrivate;
 /**
  * @internal
  */
@@ -49,6 +50,9 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   void result( SkipDialog *_this, int _button );
+
+private:
+  SkipDialogPrivate * const d;
 };
 
 }

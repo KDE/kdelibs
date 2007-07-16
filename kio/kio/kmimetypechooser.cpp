@@ -299,6 +299,11 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
   setMainWidget(m_chooser);
 }
 
+KMimeTypeChooser* KMimeTypeChooserDialog::chooser()
+{
+    return m_chooser;
+}
+
 void KMimeTypeChooserDialog::init()
 {
   setButtons( Cancel | Ok );

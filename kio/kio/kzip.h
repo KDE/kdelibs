@@ -15,8 +15,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __kzip_h
-#define __kzip_h
+#ifndef KZIP_H
+#define KZIP_H
 
 #include <karchive.h>
 

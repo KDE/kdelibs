@@ -19,8 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __KFILEITEMDELEGATE_H
-#define __KFILEITEMDELEGATE_H
+#ifndef KFILEITEMDELEGATE_H
+#define KFILEITEMDELEGATE_H
 
 #include <QtGui/QAbstractItemDelegate>
 #include <kio/global.h>
@@ -286,6 +286,6 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
         Q_DISABLE_COPY(KFileItemDelegate)
 };
 
-#endif // __KFILEITEMDELEGATE_H
+#endif // KFILEITEMDELEGATE_H
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

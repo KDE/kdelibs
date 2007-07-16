@@ -23,6 +23,7 @@
 #include <QtGui/QProgressDialog>
 #include <kio/kio_export.h>
 
+class KBuildSycocaProgressDialogPrivate;
 /**
  * Progress dialog while ksycoca is being rebuilt (by kbuildsycoca).
  * Usage: KBuildSycocaProgressDialog::rebuildKSycoca(parentWidget)
@@ -41,13 +42,13 @@ public:
 private:
    KBuildSycocaProgressDialog(QWidget *parent,
                               const QString &caption, const QString &text);
+   ~KBuildSycocaProgressDialog();
 private Q_SLOTS:
    void slotProgress();
    void slotFinished();
 
 private:
-   QTimer m_timer;
-   int m_timeStep;
+   KBuildSycocaProgressDialogPrivate * const d;
 };
 
 #endif

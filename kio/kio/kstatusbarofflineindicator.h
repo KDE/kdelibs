@@ -27,6 +27,7 @@
 #include <kio/kio_export.h>
 #include <solid/networking.h>
 
+class KStatusBarOfflineIndicatorPrivate;
 /**
  * Widget indicating network connection status using an icon and tooltip.  This widget uses
  * Solid::Networking internally to automatically show and hide itself as required.
@@ -55,6 +56,7 @@ protected Q_SLOTS:
     void networkStatusChanged( Solid::Networking::Status status );
     void initialize();
 private:
+    KStatusBarOfflineIndicatorPrivate * const d;
 };
 
 #endif

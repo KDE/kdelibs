@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef __connection_h__
-#define __connection_h__
+#ifndef KIO_CONNECTION_H
+#define KIO_CONNECTION_H
 
 #include "kio_export.h"
 
@@ -137,24 +137,9 @@ namespace KIO {
     protected Q_SLOTS:
         void dequeue();
 
-    protected:
-
-
     private:
-        int fd_in;
-#ifdef Q_WS_WIN
-        int f_out;
-#else
-        FILE *f_out;
-#endif
-        KNetwork::KStreamSocket *socket;
-        QSocketNotifier *notifier;
-        QObject *receiver;
-        const char *member;
-        QQueue<Task> m_tasks;
-        bool m_suspended;
-    private:
-        class ConnectionPrivate* d;
+        class ConnectionPrivate;
+        ConnectionPrivate * const d;
     };
 
 }
