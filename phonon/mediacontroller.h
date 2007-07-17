@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PHONON_NAVIGATIONINTERFACE_H
-#define PHONON_NAVIGATIONINTERFACE_H
+#ifndef PHONON_MEDIACONTROLLER_H
+#define PHONON_MEDIACONTROLLER_H
 
 #include "phonon_export.h"
 #include <QtCore/QObject>
@@ -107,4 +107,4 @@ class PHONON_EXPORT MediaController : public QObject
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Phonon::MediaController::Features)
 
-#endif // PHONON_NAVIGATIONINTERFACE_H
+#endif // PHONON_MEDIACONTROLLER_H
