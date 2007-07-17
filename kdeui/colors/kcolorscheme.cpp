@@ -204,12 +204,12 @@ QBrush KColorScheme::background(BackgroundRole role) const
 
 QBrush KColorScheme::foreground(ForegroundRole role) const
 {
-    return d->foreground(role);
+    return QBrush( d->foreground(role) );
 }
 
 QBrush KColorScheme::decoration(DecorationRole role) const
 {
-    return d->decoration(role);
+    return QBrush( d->decoration(role) );
 }
 
 QColor KColorScheme::shade(ShadeRole role) const
