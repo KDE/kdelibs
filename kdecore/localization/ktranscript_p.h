@@ -41,14 +41,14 @@ class KTranscript
     /**
      * Evaluates interpolation.
      *
-     * @param argv vector of interpolation tokens
+     * @param argv list of interpolation tokens
      * @param lang language of the translation
      * @param lscr script of the translation
      * @param msgctxt message context
      * @param msgid original message
      * @param subs substitutions for message placeholders
      * @param final finalized ordinary translation
-     * @param mods extra scripting modules to load
+     * @param mods scripting modules to load; the list is cleared after loading
      * @param error set to the message detailing the problem, if the script
                     failed; set to empty otherwise
      * @param fallback set to true if the script requested fallback to ordinary
@@ -63,9 +63,18 @@ class KTranscript
                           const QString &msgid,
                           const QStringList &subs,
                           const QString &final,
-                          const QList<QStringList> &mods,
+                          QList<QStringList> &mods,
                           QString &error,
                           bool &fallback) = 0;
+
+    /**
+     * Returns the list of calls to execute an all messages after the
+     * interpolations are done, as evaluations with no parameters.
+     *
+     * @param lang language of the translation
+     * @return list of post calls
+     */
+    virtual QStringList postCalls (const QString &lang) = 0;
 
     /**
      * Destructor.

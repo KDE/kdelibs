@@ -36,7 +36,7 @@
 
 #include <QStringList>
 #include <QList>
-#include <QMap>
+#include <QHash>
 #include <QFile>
 #include <QIODevice>
 #include <QTextStream>
@@ -62,9 +62,11 @@ class KTranscriptImp : public KTranscript
                   const QString &msgid,
                   const QStringList &subs,
                   const QString &final,
-                  const QList<QStringList> &mods,
+                  QList<QStringList> &mods,
                   QString &error,
                   bool &fallback);
+
+    QStringList postCalls (const QString &lang);
 
     QString currentModulePath;
 
@@ -73,8 +75,8 @@ class KTranscriptImp : public KTranscript
     void loadModules (const QList<QStringList> &mods, QString &error);
     void setupInterpreter (const QString &lang);
 
-    QMap<QString, Interpreter*> m_jsi;
-    QMap<QString, Scriptface*> m_sface;
+    QHash<QString, Interpreter*> m_jsi;
+    QHash<QString, Scriptface*> m_sface;
 };
 
 // Script-side transcript interface.
@@ -88,6 +90,8 @@ class Scriptface : public JSObject
     JSValue *loadf (ExecState *exec, const List &fnames);
     JSValue *setcallf (ExecState *exec, JSValue *name,
                        JSValue *func, JSValue *fval);
+    JSValue *callForallf (ExecState *exec, JSValue *name,
+                          JSValue *func, JSValue *fval);
     JSValue *fallbackf (ExecState *exec);
     JSValue *nsubsf (ExecState *exec);
     JSValue *subsf (ExecState *exec, JSValue *index);
@@ -101,6 +105,7 @@ class Scriptface : public JSObject
     enum {
         Load,
         Setcall,
+        CallForall,
         Fallback,
         Nsubs,
         Subs,
@@ -132,9 +137,12 @@ class Scriptface : public JSObject
     bool *fallback;
 
     // Function register.
-    QMap<QString, JSObject*> funcs;
-    QMap<QString, JSValue*> fvals;
-    QMap<QString, QString> fpaths;
+    QHash<QString, JSObject*> funcs;
+    QHash<QString, JSValue*> fvals;
+    QHash<QString, QString> fpaths;
+
+    // Ordering of those functions which execute for all messages.
+    QList<QString> nameForalls;
 };
 
 // ----------------------------------------------------------------------
@@ -237,7 +245,7 @@ QString KTranscriptImp::eval (const QStringList &argv,
                               const QString &msgid,
                               const QStringList &subs,
                               const QString &final,
-                              const QList<QStringList> &mods,
+                              QList<QStringList> &mods,
                               QString &error,
                               bool &fallback)
 {
@@ -261,10 +269,11 @@ QString KTranscriptImp::eval (const QStringList &argv,
     }
     #endif
 
-    // Load any new modules.
+    // Load any new modules and clear the list.
     if (!mods.isEmpty())
     {
         loadModules(mods, error);
+        mods.clear();
         if (!error.isEmpty())
             return QString();
     }
@@ -355,6 +364,19 @@ QString KTranscriptImp::eval (const QStringList &argv,
     }
 }
 
+QStringList KTranscriptImp::postCalls (const QString &lang)
+{
+    // Return no calls if scripting was not already set up for this language.
+    // NOTE: This shouldn't happen, as postCalls cannot be called in such case.
+    if (!m_sface.contains(lang))
+        return QStringList();
+
+    // Shortcuts.
+    Scriptface *sface = m_sface[lang];
+
+    return sface->nameForalls;
+}
+
 void KTranscriptImp::loadModules (const QList<QStringList> &mods,
                                   QString &error)
 {
@@ -431,17 +453,18 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
 
 /* Source for ScriptfaceProtoTable.
 @begin ScriptfaceProtoTable 2
-    load        Scriptface::Load        DontDelete|ReadOnly|Function 0
-    setcall     Scriptface::Setcall     DontDelete|ReadOnly|Function 3
-    fallback    Scriptface::Fallback    DontDelete|ReadOnly|Function 0
-    nsubs       Scriptface::Nsubs       DontDelete|ReadOnly|Function 0
-    subs        Scriptface::Subs        DontDelete|ReadOnly|Function 1
-    msgctxt     Scriptface::Msgctxt     DontDelete|ReadOnly|Function 0
-    msgid       Scriptface::Msgid       DontDelete|ReadOnly|Function 0
-    msgkey      Scriptface::Msgkey      DontDelete|ReadOnly|Function 0
-    msgstrf     Scriptface::Msgstrf     DontDelete|ReadOnly|Function 0
-    dbgputs     Scriptface::Dbgputs     DontDelete|ReadOnly|Function 1
-    lscr        Scriptface::Lscr        DontDelete|ReadOnly|Function 0
+    load            Scriptface::Load            DontDelete|ReadOnly|Function 0
+    setcall         Scriptface::Setcall         DontDelete|ReadOnly|Function 3
+    callForall      Scriptface::CallForall      DontDelete|ReadOnly|Function 3
+    fallback        Scriptface::Fallback        DontDelete|ReadOnly|Function 0
+    nsubs           Scriptface::Nsubs           DontDelete|ReadOnly|Function 0
+    subs            Scriptface::Subs            DontDelete|ReadOnly|Function 1
+    msgctxt         Scriptface::Msgctxt         DontDelete|ReadOnly|Function 0
+    msgid           Scriptface::Msgid           DontDelete|ReadOnly|Function 0
+    msgkey          Scriptface::Msgkey          DontDelete|ReadOnly|Function 0
+    msgstrf         Scriptface::Msgstrf         DontDelete|ReadOnly|Function 0
+    dbgputs         Scriptface::Dbgputs         DontDelete|ReadOnly|Function 1
+    lscr            Scriptface::Lscr            DontDelete|ReadOnly|Function 0
 @end
 */
 /* Source for ScriptfaceTable.
@@ -501,6 +524,8 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->loadf(exec, args);
         case Scriptface::Setcall:
             return obj->setcallf(exec, CALLARG(0), CALLARG(1), CALLARG(2));
+        case Scriptface::CallForall:
+            return obj->callForallf(exec, CALLARG(0), CALLARG(1), CALLARG(2));
         case Scriptface::Fallback:
             return obj->fallbackf(exec);
         case Scriptface::Nsubs:
@@ -608,6 +633,38 @@ JSValue *Scriptface::setcallf (ExecState *exec, JSValue *name,
     // Set current module path as module path for this call,
     // in case it contains load subcalls.
     fpaths[qname] = globalKTI->currentModulePath;
+
+    return Undefined();
+}
+
+JSValue *Scriptface::callForallf (ExecState *exec, JSValue *name,
+                                  JSValue *func, JSValue *fval)
+{
+    if (!name->isString())
+        return throwError(exec, TypeError,
+                          SPREF"callForall: expected string as first argument");
+    if (   !func->isObject()
+        || !func->getObject()->implementsCall())
+        return throwError(exec, TypeError,
+                          SPREF"callForall: expected function as second argument");
+    if (!(fval->isObject() || fval->isNull()))
+        return throwError(exec, TypeError,
+                          SPREF"callForall: expected object or null as third argument");
+
+    QString qname = name->toString(exec).qstring();
+    funcs[qname] = func->getObject();
+    fvals[qname] = fval;
+
+    // Register values to keep GC from collecting them. Is this needed?
+    put(exec, Identifier(QString("#:fall<%1>").arg(qname)), func, Internal);
+    put(exec, Identifier(QString("#:oall<%1>").arg(qname)), fval, Internal);
+
+    // Set current module path as module path for this call,
+    // in case it contains load subcalls.
+    fpaths[qname] = globalKTI->currentModulePath;
+
+    // Put in the queue order for execution on all messages.
+    nameForalls.append(qname);
 
     return Undefined();
 }

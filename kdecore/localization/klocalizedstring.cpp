@@ -80,6 +80,10 @@ class KLocalizedStringPrivate
                             const QString &lang,
                             const QString &lscr,
                             QStringList &args) const;
+    QString postTranscript (const QString &pcall,
+                            const QString &lang,
+                            const QString &lscr,
+                            const QString &final) const;
 
     static void notifyCatalogsUpdated (const QStringList &languages,
                                        const QStringList &catalogs);
@@ -260,21 +264,37 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     // Substitute placeholders in ordinary translations.
     QString final = substituteSimple(trans, lang, lscr);
 
-    if (!strans.isEmpty()) // scripted translation exists
+    // Transform any semantic markup into visual formatting.
+    if (s->formatters.contains(lang))
+        final = s->formatters[lang]->format(final, ctxt);
+
+    // If there is also a scripted translation.
+    if (!strans.isEmpty())
     {
         // Evaluate scripted translation.
         QString sfinal = substituteTranscript(strans, lang, lscr, final);
 
-        if (!sfinal.isEmpty()) // evaluated successfully
+        // If evaluated successfully.
+        if (!sfinal.isEmpty())
+        {
             final = sfinal;
+
+            // Again transform any semantic markup into visual formatting.
+            if (s->formatters.contains(lang))
+                final = s->formatters[lang]->format(final, ctxt);
+        }
     }
 
-    // Transform any semantic markup into visual formatting.
-    QString finalVisual = final;
-    if (s->formatters.contains(lang))
-        finalVisual = s->formatters[lang]->format(final, ctxt);
+    // Execute any scripted post calls; they cannot modify the final result,
+    // but are used to set states.
+    if (s->ktrs != NULL)
+    {
+        QStringList pcalls = s->ktrs->postCalls(lang);
+        foreach(const QString &pcall, pcalls)
+            postTranscript(pcall, lang, lscr, final);
+    }
 
-    return finalVisual;
+    return final;
 }
 
 QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
@@ -448,8 +468,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
         QString interp = s->ktrs->eval(argv, lang, lscr, msgctxt, msgid, args,
                                        final, s->scriptModulesToLoad,
                                        scriptError, fallback);
-        // Transcript has loaded new modules, clear list for next invocation.
-        s->scriptModulesToLoad.clear();
+        // s->scriptModulesToLoad will be cleared during the call.
 
         // See if transcript evaluation went well.
         if (scriptError.isEmpty())
@@ -592,6 +611,43 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
     // expansion contains whitespace (like in shell filename expansions).
 
     return tpos;
+}
+
+QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
+                                                 const QString &lang,
+                                                 const QString &lscr,
+                                                 const QString &final) const
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    if (s->ktrs == NULL)
+        // Scripting engine not available.
+        // (Though this cannot happen, we wouldn't be here then.)
+        return QString();
+
+    // Resolve the post call.
+    QStringList argv;
+    argv.append(pcall);
+    QString msgctxt = QString::fromUtf8(ctxt);
+    QString msgid = QString::fromUtf8(msg);
+    QString scriptError;
+    bool fallback;
+    QString dummy = s->ktrs->eval(argv, lang, lscr, msgctxt, msgid, args,
+                                  final, s->scriptModulesToLoad,
+                                  scriptError, fallback);
+    // s->scriptModulesToLoad will be cleared during the call.
+
+    // If the evaluation went wrong.
+    if (!scriptError.isEmpty())
+    {
+        #ifndef NDEBUG
+        kDebug(173) << QString("Post call {%1} for message {%2} failed: %3")
+                              .arg(pcall, shortenMessage(msgid), scriptError) << endl;
+        #endif
+        return QString();
+    }
+
+    return final;
 }
 
 static QString wrapInt (const QString &numstr)
