@@ -21,10 +21,27 @@
 
 */
 
-#include "tutorial1.h"
-
 #include <Phonon/AudioPlayer>
 #include <QtGui/QApplication>
+#include <QtGui/QMainWindow>
+#include <QtGui/QDirModel>
+#include <QtGui/QColumnView>
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+    public:
+        MainWindow();
+
+    private slots:
+        void play(const QModelIndex &index);
+
+    private:
+        QColumnView m_fileView;
+        QDirModel m_model;
+
+        Phonon::AudioPlayer *m_audioPlayer;
+};
 
 MainWindow::MainWindow()
     : m_fileView(this),
@@ -54,4 +71,4 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include "moc_tutorial1.cpp"
+#include "tutorial1.moc"

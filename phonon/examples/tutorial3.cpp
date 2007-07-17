@@ -21,8 +21,6 @@
 
 */
 
-#include "tutorial3.h"
-
 #include <Phonon/AudioPath>
 #include <Phonon/AudioOutput>
 #include <Phonon/Global>
@@ -31,11 +29,50 @@
 #include <Phonon/VolumeSlider>
 
 #include <QtGui/QApplication>
+#include <QtGui/QColumnView>
+#include <QtGui/QDirModel>
 #include <QtGui/QFrame>
 #include <QtGui/QHBoxLayout>
+#include <QtGui/QMainWindow>
 #include <QtGui/QPushButton>
 #include <QtGui/QVBoxLayout>
+#include <QtGui/QWidget>
 
+namespace Phonon
+{
+    class MediaObject;
+} // namespace Phonon
+
+class QModelIndex;
+
+class PlayerWidget : public QWidget
+{
+    Q_OBJECT
+    public:
+        PlayerWidget();
+
+        void play(const QString &);
+
+    private:
+        void delayedInit();
+
+        Phonon::MediaObject *m_media;
+};
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+    public:
+        MainWindow();
+
+    private slots:
+        void providePlayer(const QModelIndex &index);
+
+    private:
+        QColumnView m_fileView;
+        QDirModel m_model;
+        PlayerWidget m_player;
+};
 PlayerWidget::PlayerWidget()
     : m_media(0)
 {
@@ -107,4 +144,4 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include "moc_tutorial3.cpp"
+#include "tutorial3.moc"

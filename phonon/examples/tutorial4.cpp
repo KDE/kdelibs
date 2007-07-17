@@ -21,8 +21,6 @@
 
 */
 
-#include "tutorial4.h"
-
 #include <Phonon/AudioPath>
 #include <Phonon/AudioOutput>
 #include <Phonon/Global>
@@ -31,10 +29,43 @@
 #include <Phonon/VolumeSlider>
 
 #include <QtGui/QApplication>
+#include <QtGui/QColumnView>
+#include <QtGui/QDirModel>
 #include <QtGui/QFrame>
 #include <QtGui/QHBoxLayout>
+#include <QtGui/QMainWindow>
 #include <QtGui/QPushButton>
 #include <QtGui/QVBoxLayout>
+#include <QtGui/QWidget>
+
+class PlayerWidget : public QWidget
+{
+    Q_OBJECT
+    public:
+        PlayerWidget();
+
+        void play(const QDirModel *model, const QModelIndex &index);
+
+    private:
+        void delayedInit();
+
+        Phonon::MediaObject *m_media;
+};
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+    public:
+        MainWindow();
+
+    private slots:
+        void providePlayer(const QModelIndex &index);
+
+    private:
+        QColumnView m_fileView;
+        QDirModel m_model;
+        PlayerWidget m_player;
+};
 
 PlayerWidget::PlayerWidget()
     : m_media(0)
@@ -107,10 +138,10 @@ void MainWindow::providePlayer(const QModelIndex &index)
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    QApplication::setApplicationName("Phonon Tutorial 3");
+    QApplication::setApplicationName("Phonon Tutorial 4");
     MainWindow mw;
     mw.show();
     return app.exec();
 }
 
-#include "moc_tutorial4.cpp"
+#include "tutorial4.moc"

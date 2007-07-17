@@ -21,14 +21,33 @@
 
 */
 
-#include "tutorial2.h"
-
 #include <Phonon/MediaObject>
 #include <Phonon/AudioPath>
 #include <Phonon/AudioOutput>
 #include <Phonon/Global>
 
 #include <QtGui/QApplication>
+#include <QtGui/QMainWindow>
+#include <QtGui/QDirModel>
+#include <QtGui/QColumnView>
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+    public:
+        MainWindow();
+
+    private slots:
+        void play(const QModelIndex &index);
+
+    private:
+        void delayedInit();
+
+        QColumnView m_fileView;
+        QDirModel m_model;
+
+        Phonon::MediaObject *m_media;
+};
 
 MainWindow::MainWindow()
     : m_fileView(this),
@@ -68,4 +87,4 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include "moc_tutorial2.cpp"
+#include "tutorial2.moc"
