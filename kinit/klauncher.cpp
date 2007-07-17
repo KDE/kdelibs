@@ -63,6 +63,7 @@ IdleSlave::IdleSlave(QObject *parent)
     : QObject(parent)
 {
    QObject::connect(&mConn, SIGNAL(readyRead()), this, SLOT(gotInput()));
+   // Send it a SLAVE_STATUS command.
    mConn.send( CMD_SLAVE_STATUS );
    mPid = 0;
    mBirthDate = time(0);
@@ -93,7 +94,7 @@ IdleSlave::gotInput()
    {
       QDataStream stream( data );
       pid_t pid;
-      QString protocol;
+      QByteArray protocol;
       QString host;
       qint8 b;
       stream >> pid >> protocol >> host >> b;
@@ -108,7 +109,7 @@ IdleSlave::gotInput()
 
       mPid = pid;
       mConnected = (b != 0);
-      mProtocol = protocol;
+      mProtocol = QString::fromLatin1(protocol);
       mHost = host;
       emit statusUpdate(this);
    }
@@ -893,10 +894,13 @@ pid_t
 KLauncher::requestHoldSlave(const KUrl &url, const QString &app_socket)
 {
     IdleSlave *slave = 0;
-    foreach (slave, mSlaveList)
+    foreach (IdleSlave *p, mSlaveList)
     {
-       if (slave->onHold(url))
+       if (p->onHold(url))
+       {
+          slave = p;
           break;
+       }
     }
     if (slave)
     {
@@ -915,25 +919,34 @@ KLauncher::requestSlave(const QString &protocol,
                         QString &error)
 {
     IdleSlave *slave = 0;
-    foreach (slave, mSlaveList)
+    foreach (IdleSlave *p, mSlaveList)
     {
-       if (slave->match(protocol, host, true))
-          break;
-    }
-    if (!slave)
-    {
-       foreach (slave, mSlaveList)
+       if (p->match(protocol, host, true))
        {
-          if (slave->match(protocol, host, false))
-             break;
+          slave = p;
+          break;
        }
     }
     if (!slave)
     {
-       foreach (slave, mSlaveList)
+       foreach (IdleSlave *p, mSlaveList)
        {
-          if (slave->match(protocol, QString(), false))
+          if (p->match(protocol, host, false))
+          {
+             slave = p;
              break;
+          }
+       }
+    }
+    if (!slave)
+    {
+       foreach (IdleSlave *p, mSlaveList)
+       {
+          if (p->match(protocol, QString(), false))
+          {
+             slave = p;
+             break;
+          }
        }
     }
     if (slave)
@@ -1022,7 +1035,7 @@ KLauncher::acceptSlave()
 {
     IdleSlave *slave = new IdleSlave(this);
     mConnectionServer.setNextPendingConnection(&slave->mConn);
-    // Send it a SLAVE_STATUS command.
+    kDebug(7016) << "New idle slave " << slave << " connected, asking for identification" << endl;
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
     connect(slave, SIGNAL(statusUpdate(IdleSlave *)),
