@@ -354,16 +354,16 @@ bool TCPSocketConnectionBackend::connectToRemote(const KUrl &url)
     socket = new QTcpSocket(this);
     socket->connectToHost(url.host(),url.port());
 
-    qDebug() << k_funcinfo << socket->state(); 
+    qDebug() << k_funcinfo << socket->state();
     if (!socket->waitForConnected(1000)) {
         state = Idle;
-        qDebug() << k_funcinfo << "could not connect to " << url; 
+        qDebug() << k_funcinfo << "could not connect to " << url;
         return false;
     }
     connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
     connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
     state = Connected;
-    qDebug() << k_funcinfo << "connected to " << url; 
+    qDebug() << k_funcinfo << "connected to " << url;
     return true;
 }
 
@@ -372,9 +372,9 @@ bool TCPSocketConnectionBackend::listenForRemote()
     Q_ASSERT(state == Idle);
     Q_ASSERT(!socket);
     Q_ASSERT(!server);
-  
+
     server = new QTcpServer(this);
-    server->listen();
+    server->listen(QHostAddress::LocalHost);
     if (!server->isListening()) {
         errorString = server->errorString();
         delete server;
@@ -464,7 +464,7 @@ void TCPSocketConnectionBackend::socketReadyRead()
     if (!socket)
         // might happen if the invokeMethods were delivered after we disconnected
         return;
- 
+
     //kDebug() << k_funcinfo << "Got " << socket->bytesAvailable() << " bytes" << endl;
     if (len == -1) {
         // We have to read the header
@@ -582,8 +582,7 @@ void Connection::connectToRemote(const QString &address)
 
     if (scheme == QLatin1String("local")) {
         d->backend = new LocalSocketConnectionBackend(this);
-    }
-    else if (scheme == QLatin1String("tcp")) {
+    } else if (scheme == QLatin1String("tcp")) {
         d->backend = new TCPSocketConnectionBackend(this);
     } else {
         kWarning(7017) << k_funcinfo << "Unknown requested KIO::Connection protocol='" << scheme
