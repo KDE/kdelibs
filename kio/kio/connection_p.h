@@ -55,42 +55,29 @@ namespace KIO {
         void newConnection();
     };
 
-    class LocalSocketConnectionBackend: public AbstractConnectionBackend
+    class SocketConnectionBackend: public AbstractConnectionBackend
     {
         Q_OBJECT
-        KLocalSocket *socket;
-        KLocalSocketServer *server;
-        long len;
-        int cmd;
-        bool signalEmitted;
-
     public:
-        LocalSocketConnectionBackend(QObject *parent = 0);
-        ~LocalSocketConnectionBackend();
+        enum Mode { LocalSocketMode, TcpSocketMode };
 
-        void setSuspended(bool enable);
-        bool connectToRemote(const KUrl &url);
-        bool listenForRemote();
-        bool waitForIncomingTask(int ms);
-        bool sendCommand(const Task &task);
-        AbstractConnectionBackend *nextPendingConnection();
-    public slots:
-        void socketReadyRead();
-    };
+    private:
+        enum { HeaderSize = 10 };
 
-    class TCPSocketConnectionBackend: public AbstractConnectionBackend
-    {
-        Q_OBJECT
         QTcpSocket *socket;
-        QTcpServer *server;
-        int port;
+        union {
+            KLocalSocketServer *localServer;
+            QTcpServer *tcpServer;
+        };
         long len;
         int cmd;
+        int port;
         bool signalEmitted;
+        quint8 mode;
 
     public:
-        TCPSocketConnectionBackend(QObject *parent = 0);
-        ~TCPSocketConnectionBackend();
+        SocketConnectionBackend(Mode m, QObject *parent = 0);
+        ~SocketConnectionBackend();
 
         void setSuspended(bool enable);
         bool connectToRemote(const KUrl &url);
