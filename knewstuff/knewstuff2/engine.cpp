@@ -214,12 +214,16 @@ bool Engine::init(const QString& config)
     return d->init(config);
 }
 
-#if 0
+
 KNS::Entry *Engine::upload(const QString& file)
 {
+#warning KNS::Engine::upload() not implemented!
+#if 0
     return d->upload(file);
-}
 #endif
+    Q_ASSERT(false);
+    return 0;
+}
 
 KNS::Entry *Engine::uploadDialogModal(const QString& file)
 {
