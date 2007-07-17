@@ -243,6 +243,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
     char buf[BUFSIZE];
 #ifdef Q_WS_WIN
     strlcpy(buf,aCaption.toAscii().data(),BUFSIZE);
+    strlcat(buf," ",BUFSIZE);
 #else
     strlcpy(buf,"",BUFSIZE);
 #endif
