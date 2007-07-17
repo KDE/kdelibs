@@ -635,9 +635,7 @@ bool Connection::sendnow(int _cmd, const QByteArray &data)
     Task task;
     task.cmd = _cmd;
     task.data = data;
-    d->backend->sendCommand(task);
-    return true;
-
+    return d->backend->sendCommand(task);
 }
 
 bool Connection::hasTaskAvailable() const
