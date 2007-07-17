@@ -303,7 +303,9 @@ QString KTranscriptImp::eval (const QStringList &argv,
     int argc = argv.size();
     if (argc < 1)
     {
-        error = "At least the call name must be supplied.";
+        //error = "At least the call name must be supplied.";
+        // Empty interpolation is OK, possibly used just to initialize
+        // at a given point (e.g. for Ts.setForall() to start having effect).
         return QString();
     }
     if (!sface->funcs.contains(argv[0]))
