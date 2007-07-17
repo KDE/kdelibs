@@ -24,7 +24,6 @@
 #include "kio/job.h"
 #include "kio/global.h"
 #include "kstatusbarjobtracker.h"
-#include "kio/slave.h"
 
 class KioslaveTest : public KMainWindow {
   Q_OBJECT
