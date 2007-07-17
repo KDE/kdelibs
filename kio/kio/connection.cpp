@@ -314,6 +314,213 @@ void LocalSocketConnectionBackend::socketReadyRead()
     }
 }
 
+
+TCPSocketConnectionBackend::TCPSocketConnectionBackend(QObject *parent)
+    : AbstractConnectionBackend(parent), socket(0), server(0), len(-1), cmd(0), signalEmitted(false)
+{
+}
+
+TCPSocketConnectionBackend::~TCPSocketConnectionBackend()
+{
+    delete server;
+    delete socket;
+}
+
+void TCPSocketConnectionBackend::setSuspended(bool enable)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+    Q_ASSERT(!server);
+
+    if (enable) {
+        //kDebug() << this << " suspending" << endl;
+        socket->setReadBufferSize(1);
+    } else {
+        //kDebug() << this << " resuming" << endl;
+        socket->setReadBufferSize(0);
+        if (socket->bytesAvailable()) {
+            // there are bytes available
+            QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
+        }
+    }
+}
+
+bool TCPSocketConnectionBackend::connectToRemote(const KUrl &url)
+{
+    Q_ASSERT(state == Idle);
+    Q_ASSERT(!socket);
+    Q_ASSERT(!server);
+
+    socket = new QTcpSocket(this);
+    socket->connectToHost(url.host(),url.port());
+
+    qDebug() << k_funcinfo << socket->state(); 
+    if (!socket->waitForConnected(1000)) {
+        state = Idle;
+        qDebug() << k_funcinfo << "could not connect to " << url; 
+        return false;
+    }
+    connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
+    connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
+    state = Connected;
+    qDebug() << k_funcinfo << "connected to " << url; 
+    return true;
+}
+
+bool TCPSocketConnectionBackend::listenForRemote()
+{
+    Q_ASSERT(state == Idle);
+    Q_ASSERT(!socket);
+    Q_ASSERT(!server);
+  
+    server = new QTcpServer(this);
+    server->listen();
+    if (!server->isListening()) {
+        errorString = server->errorString();
+        delete server;
+        return false;
+    }
+
+    connect(server, SIGNAL(newConnection()), SIGNAL(newConnection()));
+    address = "tcp://127.0.0.1:" + QString::number(server->serverPort());
+    qDebug() << address;
+    state = Listening;
+    return true;
+}
+
+bool TCPSocketConnectionBackend::waitForIncomingTask(int ms)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+    if (socket->state() != QAbstractSocket::ConnectedState)
+        return false;           // socket has probably closed, what do we do?
+
+    signalEmitted = false;
+    if (socket->bytesAvailable())
+        socketReadyRead();
+    if (signalEmitted)
+        return true;            // there was enough data in the socket
+
+    // not enough data in the socket, so wait for more
+    QTime timer;
+    timer.start();
+
+    while (socket->state() == QAbstractSocket::ConnectedState && !signalEmitted &&
+           (ms == -1 || timer.elapsed() < ms))
+        if (!socket->waitForReadyRead(ms == -1 ? -1 : ms - timer.elapsed()))
+            break;
+
+    if (signalEmitted)
+        return true;
+    return false;
+}
+
+bool TCPSocketConnectionBackend::sendCommand(const Task &task)
+{
+    Q_ASSERT(state == Connected);
+    Q_ASSERT(socket);
+
+    static char buffer[16];
+    sprintf(buffer, "%6x_%2x_", task.data.size(), task.cmd);
+    socket->write(buffer, 10);
+    socket->write(task.data);
+
+    //kDebug() << this << " Sending command " << hex << task.cmd << " of "
+    //         << task.data.size() << " bytes (" << socket->bytesToWrite()
+    //         << " bytes left to write" << endl;
+
+    // blocking mode:
+    while (socket->bytesToWrite() > 0 && socket->state() == QAbstractSocket::ConnectedState)
+        socket->waitForBytesWritten();
+
+    return socket->state() == QAbstractSocket::ConnectedState;
+}
+
+AbstractConnectionBackend *TCPSocketConnectionBackend::nextPendingConnection()
+{
+    Q_ASSERT(state == Listening);
+    Q_ASSERT(server);
+    Q_ASSERT(!socket);
+
+    //kDebug() << k_funcinfo << "Got a new connection" << endl;
+
+    QTcpSocket *newSocket = server->nextPendingConnection();
+    if (!newSocket)
+        return 0;               // there was no connection...
+
+    TCPSocketConnectionBackend *result = new TCPSocketConnectionBackend;
+    result->state = Connected;
+    result->socket = newSocket;
+    newSocket->setParent(result);
+    connect(newSocket, SIGNAL(readyRead()), result, SLOT(socketReadyRead()));
+    connect(newSocket, SIGNAL(disconnected()), SIGNAL(disconnected()));
+
+    return result;
+}
+
+void TCPSocketConnectionBackend::socketReadyRead()
+{
+    qDebug() << k_funcinfo;
+    if (!socket)
+        // might happen if the invokeMethods were delivered after we disconnected
+        return;
+ 
+    //kDebug() << k_funcinfo << "Got " << socket->bytesAvailable() << " bytes" << endl;
+    if (len == -1) {
+        // We have to read the header
+        static char buffer[10];
+
+        if (socket->bytesAvailable() < sizeof buffer) {
+/*
+            if (socket->readBufferSize() == 0) {
+                // we were suspended and there's still data in the buffer
+                // so we have to read it before QtNetwork decides to send more data
+                Q_ASSERT(socket->bytesAvailable() == 1);
+                char c;
+                Q_ASSERT(socket->getChar(&c));
+                socket->ungetChar(c);
+            }
+*/
+            return;             // wait for more data
+        }
+
+        socket->read(buffer, sizeof buffer);
+        buffer[6] = 0;
+        buffer[9] = 0;
+        buffer[12] = 0;
+
+        char *p = buffer;
+        while( *p == ' ' ) p++;
+        len = strtol( p, 0L, 16 );
+
+        p = buffer + 7;
+        while( *p == ' ' ) p++;
+        cmd = strtol( p, 0L, 16 );
+
+        //kDebug() << this << id << " Beginning of command " << hex << cmd << " of size "
+        //         << len << endl;
+    }
+
+    QPointer<TCPSocketConnectionBackend> that = this;
+
+    //kDebug() << k_funcinfo << "Want to read " << len << " bytes" << endl;
+    if (socket->bytesAvailable() >= len) {
+        Task task;
+        task.cmd = cmd;
+        if (len)
+            task.data = socket->read(len);
+        len = -1;
+
+        signalEmitted = true;
+        emit commandReceived(task);
+    }
+
+    if (!that.isNull() && socket->readBufferSize() == 0 && socket->bytesAvailable()) {
+        // we're still alive, we're not suspended and there are bytes available
+        QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
+    }
+}
+
 Connection::Connection(QObject *parent)
     : QObject(parent), d(new ConnectionPrivate)
 {
@@ -536,209 +743,6 @@ void ConnectionServer::setNextPendingConnection(Connection *conn)
 
     conn->d->dequeue();
 }
-
-
-TCPSocketConnectionBackend::TCPSocketConnectionBackend(QObject *parent)
-    : AbstractConnectionBackend(parent), socket(0), server(0), len(-1), cmd(0), signalEmitted(false)
-{
-}
-
-TCPSocketConnectionBackend::~TCPSocketConnectionBackend()
-{
-}
-
-void TCPSocketConnectionBackend::setSuspended(bool enable)
-{
-    Q_ASSERT(state == Connected);
-    Q_ASSERT(socket);
-    Q_ASSERT(!server);
-
-    if (enable) {
-        //kDebug() << this << " suspending" << endl;
-        socket->setReadBufferSize(1);
-    } else {
-        //kDebug() << this << " resuming" << endl;
-        socket->setReadBufferSize(0);
-        if (socket->bytesAvailable()) {
-            // there are bytes available
-            QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
-        }
-    }
-}
-
-bool TCPSocketConnectionBackend::connectToRemote(const KUrl &url)
-{
-    Q_ASSERT(state == Idle);
-    Q_ASSERT(!socket);
-    Q_ASSERT(!server);
-
-    socket = KSocketFactory::connectToHost(url,this);
-    qDebug() << k_funcinfo << socket->state(); 
-    if (!socket->waitForConnected(1000)) {
-        state = Idle;
-        qDebug() << k_funcinfo << "could not connect to " << url; 
-        return false;
-    }
-    connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
-    connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
-    state = Connected;
-    qDebug() << k_funcinfo << "connected to " << url; 
-    return true;
-}
-
-bool TCPSocketConnectionBackend::listenForRemote()
-{
-    Q_ASSERT(state == Idle);
-    Q_ASSERT(!socket);
-    Q_ASSERT(!server);
-  
-    server = KSocketFactory::listen("",QHostAddress::Any,0,this);
-    if (!server->isListening()) {
-        errorString = server->errorString();
-        delete server;
-        return false;
-    }
-
-    connect(server, SIGNAL(newConnection()), SIGNAL(newConnection()));
-    address = "tcp://127.0.0.1:" + QString::number(server->serverPort());
-    qDebug() << address;
-    state = Listening;
-    return true;
-}
-
-bool TCPSocketConnectionBackend::waitForIncomingTask(int ms)
-{
-    Q_ASSERT(state == Connected);
-    Q_ASSERT(socket);
-    if (socket->state() != QAbstractSocket::ConnectedState)
-        return false;           // socket has probably closed, what do we do?
-
-    signalEmitted = false;
-    if (socket->bytesAvailable())
-        socketReadyRead();
-    if (signalEmitted)
-        return true;            // there was enough data in the socket
-
-    // not enough data in the socket, so wait for more
-    QTime timer;
-    timer.start();
-
-    while (socket->state() == QAbstractSocket::ConnectedState && !signalEmitted &&
-           (ms == -1 || timer.elapsed() < ms))
-        if (!socket->waitForReadyRead(ms == -1 ? -1 : ms - timer.elapsed()))
-            break;
-
-    if (signalEmitted)
-        return true;
-    return false;
-}
-
-bool TCPSocketConnectionBackend::sendCommand(const Task &task)
-{
-    Q_ASSERT(state == Connected);
-    Q_ASSERT(socket);
-
-    static char buffer[16];
-    sprintf(buffer, "%6x_%2x_", task.data.size(), task.cmd);
-    socket->write(buffer, 10);
-    socket->write(task.data);
-
-    //kDebug() << this << " Sending command " << hex << task.cmd << " of "
-    //         << task.data.size() << " bytes (" << socket->bytesToWrite()
-    //         << " bytes left to write" << endl;
-
-    // blocking mode:
-    while (socket->bytesToWrite() > 0 && socket->state() == QAbstractSocket::ConnectedState)
-        socket->waitForBytesWritten();
-
-    return socket->state() == QAbstractSocket::ConnectedState;
-}
-
-AbstractConnectionBackend *TCPSocketConnectionBackend::nextPendingConnection()
-{
-    Q_ASSERT(state == Listening);
-    Q_ASSERT(server);
-    Q_ASSERT(!socket);
-
-    //kDebug() << k_funcinfo << "Got a new connection" << endl;
-
-    QTcpSocket *newSocket = server->nextPendingConnection();
-    if (!newSocket)
-        return 0;               // there was no connection...
-
-    TCPSocketConnectionBackend *result = new TCPSocketConnectionBackend;
-    result->state = Connected;
-    result->socket = newSocket;
-    newSocket->setParent(result);
-    connect(newSocket, SIGNAL(readyRead()), result, SLOT(socketReadyRead()));
-    connect(newSocket, SIGNAL(disconnected()), SIGNAL(disconnected()));
-
-    return result;
-}
-
-void TCPSocketConnectionBackend::socketReadyRead()
-{
-    qDebug() << k_funcinfo;
-    if (!socket)
-        // might happen if the invokeMethods were delivered after we disconnected
-        return;
- 
-    //kDebug() << k_funcinfo << "Got " << socket->bytesAvailable() << " bytes" << endl;
-    if (len == -1) {
-        // We have to read the header
-        static char buffer[10];
-
-        if (socket->bytesAvailable() < sizeof buffer) {
-/*
-            if (socket->readBufferSize() == 0) {
-                // we were suspended and there's still data in the buffer
-                // so we have to read it before QtNetwork decides to send more data
-                Q_ASSERT(socket->bytesAvailable() == 1);
-                char c;
-                Q_ASSERT(socket->getChar(&c));
-                socket->ungetChar(c);
-            }
-*/
-            return;             // wait for more data
-        }
-
-        socket->read(buffer, sizeof buffer);
-        buffer[6] = 0;
-        buffer[9] = 0;
-        buffer[12] = 0;
-
-        char *p = buffer;
-        while( *p == ' ' ) p++;
-        len = strtol( p, 0L, 16 );
-
-        p = buffer + 7;
-        while( *p == ' ' ) p++;
-        cmd = strtol( p, 0L, 16 );
-
-        //kDebug() << this << id << " Beginning of command " << hex << cmd << " of size "
-        //         << len << endl;
-    }
-
-    QPointer<TCPSocketConnectionBackend> that = this;
-
-    //kDebug() << k_funcinfo << "Want to read " << len << " bytes" << endl;
-    if (socket->bytesAvailable() >= len) {
-        Task task;
-        task.cmd = cmd;
-        if (len)
-            task.data = socket->read(len);
-        len = -1;
-
-        signalEmitted = true;
-        emit commandReceived(task);
-    }
-
-    if (!that.isNull() && socket->readBufferSize() == 0 && socket->bytesAvailable()) {
-        // we're still alive, we're not suspended and there are bytes available
-        QMetaObject::invokeMethod(this, "socketReadyRead", Qt::QueuedConnection);
-    }
-}
-
 
 #include "connection_p.moc"
 #include "connection.moc"

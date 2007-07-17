@@ -22,7 +22,6 @@
 
 #include <QObject>
 #include <klocalsocket.h>
-#include <ksocketfactory.h>
 
 class KUrl;
 
