@@ -61,13 +61,12 @@ QList<QProcess *>processList;
 #define SLAVE_MAX_IDLE  30
 
 using namespace KIO;
-using namespace KNetwork;
 
-IdleSlave::IdleSlave(KStreamSocket *socket)
+IdleSlave::IdleSlave(QObject *parent)
+    : QObject(parent)
 {
    TRACE();
-   mConn.init(socket);
-   mConn.connect(this, SLOT(gotInput()));
+   QObject::connect(&mConn, SIGNAL(readyRead()), this, SLOT(gotInput()));
    mConn.send( CMD_SLAVE_STATUS );
    mPid = 0;
    mBirthDate = time(0);
@@ -183,32 +182,15 @@ KLauncher::KLauncher(int _kdeinitSocket)
            SIGNAL(serviceOwnerChanged(QString,QString,QString)),
            SLOT(slotNameOwnerChanged(QString,QString,QString)));
 
-#ifndef Q_WS_WIN
-   QString prefix = KStandardDirs::locateLocal("socket", "klauncher");
-   KTemporaryFile *domainname = new KTemporaryFile();
-   domainname->setPrefix(prefix);
-   domainname->setSuffix(QLatin1String(".slave-socket"));
-   domainname->setAutoRemove(false);
-   if (!domainname->open())
+   mConnectionServer.listenForRemote();
+   connect(&mConnectionServer, SIGNAL(newConnection()), SLOT(acceptSlave()));
+   if (!mConnectionServer.isListening())
    {
-      // Sever error!
+      // Severe error!
       qDebug("KLauncher: Fatal error, can't create tempfile!");
       ::_exit(1);
    }
-   mPoolSocketNameEncoded = QFile::encodeName(domainname->fileName());
-#ifdef __CYGWIN__
-   domainname->setAutoRemove(true);
-#endif
-   delete domainname;
-   mPoolSocket.setAddress(mPoolSocketNameEncoded);
-#else
-   mPoolSocket.setAddress(QFile::encodeName("4545"));
-#endif
-   mPoolSocket.setAcceptBuffered(false); // we use KStreamSockets
-   connect(&mPoolSocket, SIGNAL(readyAccept()),
-           SLOT(acceptSlave()));
-   mPoolSocket.listen();
-
+   qDebug() << "connection address" << mConnectionServer.address();
    connect(&mTimer, SIGNAL(timeout()), SLOT(idleTimeout()));
 
 #ifndef Q_WS_WIN
@@ -220,7 +202,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
    lastRequest = 0;
    bProcessingQueue = false;
 
-   mSlaveDebug = getenv("KDE_SLAVE_TRACE_WAIT");
+   mSlaveDebug = getenv("KDE_SLAVE_DEBUG_WAIT");
    if (!mSlaveDebug.isEmpty())
    {
       qWarning("Klauncher running in slave-debug mode for slaves of protocol '%s'", qPrintable(mSlaveDebug));
@@ -248,11 +230,6 @@ KLauncher::~KLauncher()
 
 void KLauncher::close()
 {
-   TRACE();
-   if (!mPoolSocketNameEncoded.isEmpty())
-   {
-      unlink(mPoolSocketNameEncoded.data());
-   }
 #ifdef Q_WS_X11
    if( mCached_dpy != NULL )
        XCloseDisplay( mCached_dpy );
@@ -264,8 +241,8 @@ KLauncher::destruct(int exit_code)
 {
    TRACE();
     if (QCoreApplication::instance()) ((KLauncher*)QCoreApplication::instance())->close();
-   // We don't delete qApp here, that's intentional.   
-   ::_exit(exit_code);
+    // We don't delete the app here, that's intentional.
+    ::_exit(exit_code);
 }
 
 void KLauncher::setLaunchEnv(const QString &name, const QString &value)
@@ -555,7 +532,7 @@ KLauncher::requestDone(KLaunchRequest *request)
 
    if (request->transaction.type() != QDBusMessage::InvalidMessage)
    {
-      fprintf(stderr,"%s return dbus message\n",__FUNCTION__);
+      qDebug() << __FUNCTION__ << "return dbus message\n";
       if ( requestResult.dbusName.isNull() ) // null strings can't be sent
           requestResult.dbusName = "";
       Q_ASSERT( !requestResult.error.isNull() );
@@ -574,20 +551,6 @@ static void appendLong(QByteArray &ba, long l)
    const int sz = ba.size();
    ba.resize(sz + sizeof(long));
    memcpy(ba.data() + sz, &l, sizeof(long));
-}
-
-// handles all output from launched clients
-void 
-KLauncher::slotGotOutput()
-{
-#ifdef DEBUG
-	qDebug("got output signal");
-#endif
-	QByteArray _stdout;
-  foreach (QProcess *p, processList) {
-    _stdout = p->readAllStandardOutput();
-    fprintf(stderr,"%s",_stdout.data());
-	}
 }
 
 void
@@ -931,7 +894,7 @@ KLauncher::requestSlave(const QString &protocol,
                         QString &error)
 {
    TRACE();
-    fprintf(stderr,"%s %s %s\n",protocol.toAscii().data(),host.toAscii().data(),app_socket.toAscii().data());
+    qDebug() << __FUNCTION__ << "protocol="  << protocol << "host=" << host << "app_socket=" << app_socket;
     IdleSlave *slave = 0;
     foreach (slave, mSlaveList)
     {
@@ -976,8 +939,8 @@ KLauncher::requestSlave(const QString &protocol,
     QStringList arg_list;
     arg_list << name;
     arg_list << protocol;
-    arg_list << "";
-    arg_list << QString::fromLocal8Bit(QFile::encodeName(app_socket));
+    arg_list << mConnectionServer.address();
+    arg_list << app_socket;
     name = "kioslave";
 
     kDebug(7016) << "KLauncher: launching new slave " << name << " with protocol=" << protocol
@@ -1028,10 +991,9 @@ KLauncher::waitForSlave(int pid, const QDBusMessage &msg)
 void
 KLauncher::acceptSlave()
 {
-   TRACE();
-    // the cast is safe, because KServerSocket promises us so
-    KStreamSocket* slaveSocket = static_cast<KStreamSocket*>(mPoolSocket.accept());
-    IdleSlave *slave = new IdleSlave(slaveSocket);
+	TRACE();
+    IdleSlave *slave = new IdleSlave(this);
+    mConnectionServer.setNextPendingConnection(&slave->mConn);
     // Send it a SLAVE_STATUS command.
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
@@ -1096,6 +1058,20 @@ void KLauncher::reparseConfiguration()
    KProtocolManager::reparseConfiguration();
    foreach (IdleSlave *slave, mSlaveList)
       slave->reparseConfiguration();
+}
+
+// handles all output from launched clients
+void 
+KLauncher::slotGotOutput()
+{
+#ifdef DEBUG
+	qDebug("got output signal");
+#endif
+	QByteArray _stdout;
+  foreach (QProcess *p, processList) {
+    _stdout = p->readAllStandardOutput();
+    fprintf(stderr,"%s",_stdout.data());
+	}
 }
 
 #include "klauncher.moc"
