@@ -227,7 +227,7 @@ bool LocalSocketConnectionBackend::sendCommand(const Task &task)
 
     // blocking mode:
     while (socket->bytesToWrite() > 0 && socket->state() == QAbstractSocket::ConnectedState)
-        socket->waitForBytesWritten();
+        socket->waitForBytesWritten(-1);
 
     return socket->state() == QAbstractSocket::ConnectedState;
 }
@@ -431,7 +431,7 @@ bool TCPSocketConnectionBackend::sendCommand(const Task &task)
 
     // blocking mode:
     while (socket->bytesToWrite() > 0 && socket->state() == QAbstractSocket::ConnectedState)
-        socket->waitForBytesWritten();
+        socket->waitForBytesWritten(-1);
 
     return socket->state() == QAbstractSocket::ConnectedState;
 }
