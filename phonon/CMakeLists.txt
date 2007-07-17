@@ -37,6 +37,7 @@ set(phonon_LIB_SRCS
 	backendcapabilities.cpp
 	globalconfig.cpp
 	factory.cpp
+   platform.cpp
 	mediacontroller.cpp
 	videowidget.cpp
    videoplayer.cpp

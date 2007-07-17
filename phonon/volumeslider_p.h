@@ -29,6 +29,7 @@
 #include "factory.h"
 #include <QtGui/QIcon>
 #include <QtCore/QPointer>
+#include "platform_p.h"
 
 namespace Phonon
 {
@@ -42,8 +43,8 @@ class VolumeSliderPrivate
             layout(QBoxLayout::LeftToRight, parent),
             slider(Qt::Horizontal, parent),
             muteButton(parent),
-            volumeIcon(Factory::icon("player-volume")),
-            mutedIcon(Factory::icon("player-volume-muted")),
+            volumeIcon(Platform::icon("player-volume")),
+            mutedIcon(Platform::icon("player-volume-muted")),
             output(0),
             ignoreVolumeChange(false)
         {

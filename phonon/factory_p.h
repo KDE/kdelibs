@@ -27,7 +27,7 @@
 
 namespace Phonon
 {
-class PluginFactory;
+class PlatformPlugin;
 class FactoryPrivate : public Phonon::Factory::Sender
 {
     friend QObject *Factory::backend(bool);
@@ -36,11 +36,11 @@ class FactoryPrivate : public Phonon::Factory::Sender
         FactoryPrivate();
         ~FactoryPrivate();
         bool createBackend();
-        PluginFactory *pluginFactory();
+        PlatformPlugin *platformPlugin();
 
         QPointer<QObject> m_backendObject;
-        PluginFactory *m_pluginFactory;
-        bool m_noPluginFactory;
+        PlatformPlugin *m_platformPlugin;
+        bool m_noPlatformPlugin;
 
         QList<QObject *> objects;
         QList<BasePrivate *> basePrivateList;

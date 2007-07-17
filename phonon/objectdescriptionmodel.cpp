@@ -20,6 +20,7 @@
 #include "objectdescriptionmodel.h"
 #include "objectdescriptionmodel_p.h"
 #include "phonondefs_p.h"
+#include "platform_p.h"
 #include <QtCore/QList>
 #include "objectdescription.h"
 #include "phononnamespace_p.h"
@@ -177,7 +178,7 @@ QVariant ObjectDescriptionModelData::data(const QModelIndex &index, int role) co
             QVariant icon = d->data.at(index.row())->property("icon");
             if (icon.isValid()) {
                 if (icon.type() == QVariant::String) {
-                    return Factory::icon(icon.toString());
+                    return Platform::icon(icon.toString());
                 } else if (icon.type() == QVariant::Icon) {
                     return icon;
                 }

@@ -17,38 +17,33 @@
 
 */
 
-#ifndef PHONON_PLUGINFACTORY_H
-#define PHONON_PLUGINFACTORY_H
+#ifndef PHONON_PLATFORM_P_H
+#define PHONON_PLATFORM_P_H
 
-#include <QtCore/QObject>
 #include <QtCore/QStringList>
+#include <QtCore/QtGlobal>
 
-class QUrl;
-class QObject;
 class QIcon;
+class QObject;
+class QUrl;
 
 namespace Phonon
 {
 class AbstractMediaStream;
 
-class PluginFactory
+namespace Platform
 {
-    public:
-        virtual ~PluginFactory() {}
 
-        virtual AbstractMediaStream *createKioMediaStream(const QUrl &url, QObject *parent) = 0;
-        virtual QIcon icon(const QString &name) = 0;
-        virtual void notification(const char *notificationName, const QString &text,
-                const QStringList &actions = QStringList(), QObject *receiver = 0,
-                const char *actionSlot = 0) = 0;
-        virtual QString applicationName() const = 0;
-        virtual QObject *createBackend() = 0;
-        virtual QObject *createBackend(const QString &library, const QString &version) = 0;
-        virtual bool isMimeTypeAvailable(const QString &mimeType) = 0;
-};
+void saveVolume(const QString &outputName, qreal volume);
+qreal loadVolume(const QString &outputName);
+AbstractMediaStream *createMediaStream(const QUrl &url, QObject *parent);
+QIcon icon(const QString &name);
+void notification(const char *notificationName, const QString &text,
+        const QStringList &actions = QStringList(), QObject *receiver = 0,
+        const char *actionSlot = 0);
+QString applicationName();
 
+} // namespace Platform
 } // namespace Phonon
 
-Q_DECLARE_INTERFACE(Phonon::PluginFactory, "PluginFactory1.phonon.kde.org")
-
-#endif // PHONON_PLUGINFACTORY_H
+#endif // PHONON_PLATFORM_P_H

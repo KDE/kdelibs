@@ -22,6 +22,7 @@
 
 #include "audiooutput.h"
 #include "abstractaudiooutput_p.h"
+#include "platform_p.h"
 
 namespace Phonon
 {
@@ -47,7 +48,8 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
             outputDeviceOverridden(false),
             muted(false)
         {
-            name = Factory::applicationName();
+            name = Platform::applicationName();
+            volume = Platform::loadVolume(name);
         }
 
         enum DeviceChangeType {

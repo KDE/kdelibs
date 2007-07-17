@@ -29,6 +29,7 @@
 #include <QtGui/QStyle>
 #include "factory.h"
 #include <QtCore/QPointer>
+#include "platform_p.h"
 
 namespace Phonon
 {
@@ -42,7 +43,7 @@ class SeekSliderPrivate
             slider(Qt::Horizontal, parent),
             iconLabel(parent),
             ticking(false),
-            icon(Factory::icon("player-time"))
+            icon(Platform::icon("player-time"))
         {
             const int e = parent->style()->pixelMetric(QStyle::PM_ButtonIconSize);
             iconSize = QSize(e, e);

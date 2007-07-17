@@ -59,25 +59,25 @@ static const KComponentData &componentData()
     return *phononComponentData;
 }
 
-KdePluginFactory::KdePluginFactory()
+KdePlatformPlugin::KdePlatformPlugin()
 {
     ensureMainComponentData();
     KGlobal::locale()->insertCatalog(QLatin1String("phonon_kde"));
 }
 
-AbstractMediaStream *KdePluginFactory::createKioMediaStream(const QUrl &url, QObject *parent)
+AbstractMediaStream *KdePlatformPlugin::createMediaStream(const QUrl &url, QObject *parent)
 {
     return new KioMediaStream(url, parent);
 }
 
-QIcon KdePluginFactory::icon(const QString &name)
+QIcon KdePlatformPlugin::icon(const QString &name) const
 {
     return KIcon(name);
 }
 
-void KdePluginFactory::notification(const char *notificationName, const QString &text,
+void KdePlatformPlugin::notification(const char *notificationName, const QString &text,
         const QStringList &actions, QObject *receiver,
-        const char *actionSlot)
+        const char *actionSlot) const
 {
     KNotification *notification = new KNotification(notificationName);
     notification->setComponentData(componentData());
@@ -91,7 +91,7 @@ void KdePluginFactory::notification(const char *notificationName, const QString 
     notification->sendEvent();
 }
 
-QString KdePluginFactory::applicationName() const
+QString KdePlatformPlugin::applicationName() const
 {
     ensureMainComponentData();
     const KAboutData *ad = KGlobal::mainComponent().aboutData();
@@ -107,7 +107,7 @@ QString KdePluginFactory::applicationName() const
 
 #define PHONON_LOAD_BACKEND_GLOBAL 0
 
-QObject *KdePluginFactory::createBackend(KService::Ptr newService)
+QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
 {
     KLibFactory *factory = 0;
 #ifdef PHONON_LOAD_BACKEND_GLOBAL
@@ -155,7 +155,7 @@ QObject *KdePluginFactory::createBackend(KService::Ptr newService)
     return backend;
 }
 
-QObject *KdePluginFactory::createBackend()
+QObject *KdePlatformPlugin::createBackend()
 {
     ensureMainComponentData();
     const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
@@ -177,7 +177,7 @@ QObject *KdePluginFactory::createBackend()
     return 0;
 }
 
-QObject *KdePluginFactory::createBackend(const QString &library, const QString &version)
+QObject *KdePlatformPlugin::createBackend(const QString &library, const QString &version)
 {
     ensureMainComponentData();
     QString additionalConstraints = QLatin1String(" and Library == '") + library + QLatin1Char('\'');
@@ -205,7 +205,7 @@ QObject *KdePluginFactory::createBackend(const QString &library, const QString &
     return 0;
 }
 
-bool KdePluginFactory::isMimeTypeAvailable(const QString &mimeType)
+bool KdePlatformPlugin::isMimeTypeAvailable(const QString &mimeType) const
 {
     ensureMainComponentData();
     const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
@@ -216,9 +216,23 @@ bool KdePluginFactory::isMimeTypeAvailable(const QString &mimeType)
     return false;
 }
 
+void KdePlatformPlugin::saveVolume(const QString &outputName, qreal volume)
+{
+    ensureMainComponentData();
+    KConfigGroup config(KGlobal::config(), "Phonon::AudioOutput");
+    config.writeEntry(outputName + "_Volume", volume);
+}
+
+qreal KdePlatformPlugin::loadVolume(const QString &outputName) const
+{
+    ensureMainComponentData();
+    KConfigGroup config(KGlobal::config(), "Phonon::AudioOutput");
+    return config.readEntry<qreal>(outputName + "_Volume", 1.0);
+}
+
 } // namespace Phonon
 
-Q_EXPORT_PLUGIN2(phonon_platform_kde, Phonon::KdePluginFactory)
+Q_EXPORT_PLUGIN2(phonon_platform_kde, Phonon::KdePlatformPlugin)
 
 #include "kdepluginfactory.moc"
 // vim: sw=4 sts=4 et tw=100

@@ -20,30 +20,32 @@
 #ifndef PHONON_KDEPLUGINFACTORY_H
 #define PHONON_KDEPLUGINFACTORY_H
 
-#include "../pluginfactory.h"
+#include "../platformplugin.h"
 #include <QtCore/QObject>
 #include <kservice.h>
 
 namespace Phonon
 {
 
-class KdePluginFactory : public QObject, public PluginFactory
+class KdePlatformPlugin : public QObject, public PlatformPlugin
 {
-    Q_INTERFACES(Phonon::PluginFactory)
+    Q_INTERFACES(Phonon::PlatformPlugin)
     Q_OBJECT
     public:
-        KdePluginFactory();
+        KdePlatformPlugin();
 
-        AbstractMediaStream *createKioMediaStream(const QUrl &url, QObject *parent);
+        AbstractMediaStream *createMediaStream(const QUrl &url, QObject *parent);
 
-        QIcon icon(const QString &name);
+        QIcon icon(const QString &name) const;
         void notification(const char *notificationName, const QString &text,
                 const QStringList &actions, QObject *receiver,
-                const char *actionSlot);
+                const char *actionSlot) const;
         QString applicationName() const;
         QObject *createBackend();
         QObject *createBackend(const QString &library, const QString &version);
-        bool isMimeTypeAvailable(const QString &mimeType);
+        bool isMimeTypeAvailable(const QString &mimeType) const;
+        void saveVolume(const QString &outputName, qreal volume);
+        qreal loadVolume(const QString &outputName) const;
 
     private:
         QObject *createBackend(KService::Ptr newService);

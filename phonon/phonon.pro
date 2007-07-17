@@ -58,7 +58,8 @@ HEADERS += abstractaudiooutput.h \
            phonondefs_p.h \
            phononnamespace.h \
            phononnamespace_p.h \
-           pluginfactory.h \
+           platform_p.h \
+           platformplugin.h \
            seekslider.h \
            seekslider_p.h \
            streaminterface.h \
@@ -95,6 +96,7 @@ SOURCES += abstractaudiooutput.cpp \
            objectdescription.cpp \
            objectdescriptionmodel.cpp \
            phononnamespace.cpp \
+           platform.cpp \
            seekslider.cpp \
            streaminterface.cpp \
            videopath.cpp \

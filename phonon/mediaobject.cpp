@@ -35,6 +35,7 @@
 #include <QtCore/QCoreApplication>
 
 #include "phononnamespace_p.h"
+#include "platform_p.h"
 
 #define PHONON_CLASSNAME MediaObject
 #define PHONON_INTERFACENAME MediaObjectInterface
@@ -326,7 +327,7 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
 
 //X         if (url.scheme() == "http") {
 //X             if (!d->kiofallback) {
-//X                 d->kiofallback = Factory::createKioMediaStream(url, this);
+//X                 d->kiofallback = Platform::createMediaStream(url, this);
 //X                 if (d->kiofallback) {
 //X                     // k_ptr->backendObject() is a MediaObject, we want a ByteStream
 //X                     d->deleteBackendObject();
@@ -458,7 +459,7 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
 
     // backend MediaObject reached ErrorState, try a KioMediaSource
     if (newstate == Phonon::ErrorState && !kiofallback) {
-        kiofallback = Factory::createKioMediaStream(mediaSource.url(), q);
+        kiofallback = Platform::createMediaStream(mediaSource.url(), q);
         if (!kiofallback) {
             pDebug() << "backend MediaObject reached ErrorState, no KIO fallback available";
             emit q->stateChanged(newstate, oldstate);

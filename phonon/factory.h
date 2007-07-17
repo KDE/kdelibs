@@ -30,6 +30,7 @@ class QIcon;
 
 namespace Phonon
 {
+    class PlatformPlugin;
     class BasePrivate;
     class AbstractMediaStream;
 
@@ -156,8 +157,6 @@ namespace Factory
      */
     PHONON_EXPORT QObject *backend(bool createWhenNull = true);
 
-    AbstractMediaStream *createKioMediaStream(const QUrl &url, QObject *parent = 0);
-
     /**
      * Unique identifier for the Backend. Can be used in configuration files
      * for example.
@@ -205,12 +204,7 @@ namespace Factory
 
     PHONON_EXPORT void createBackend(const QString &library, const QString &version = QString());
 
-    // either uses the platform plugin or some simple implementation for the following functions
-    QIcon icon(const QString &name);
-    void notification(const char *notificationName, const QString &text,
-            const QStringList &actions = QStringList(), QObject *receiver = 0,
-            const char *actionSlot = 0);
-    QString applicationName();
+    PlatformPlugin *platformPlugin();
 
 //X    It is probably better if we can get away with internal handling of
 //X    freeing the soundcard device when it's not needed anymore and

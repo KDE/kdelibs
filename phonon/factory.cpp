@@ -25,7 +25,7 @@
 #include "audiooutput.h"
 #include "audiooutput_p.h"
 #include "globalstatic_p.h"
-#include "pluginfactory.h"
+#include "platformplugin.h"
 #include "phononnamespace_p.h"
 
 #include <QtCore/QCoreApplication>
@@ -45,7 +45,7 @@ PHONON_GLOBAL_STATIC(Phonon::FactoryPrivate, globalFactory)
 void Factory::createBackend(const QString &library, const QString &version)
 {
     Q_ASSERT(globalFactory->m_backendObject == 0);
-    PluginFactory *f = globalFactory->pluginFactory();
+    PlatformPlugin *f = globalFactory->platformPlugin();
     if (f) {
         globalFactory->m_backendObject = f->createBackend(library, version);
     }
@@ -54,7 +54,7 @@ void Factory::createBackend(const QString &library, const QString &version)
 bool FactoryPrivate::createBackend()
 {
     Q_ASSERT(m_backendObject == 0);
-    PluginFactory *f = globalFactory->pluginFactory();
+    PlatformPlugin *f = globalFactory->platformPlugin();
     if (f) {
         m_backendObject = f->createBackend();
     }
@@ -94,8 +94,8 @@ bool FactoryPrivate::createBackend()
 
 FactoryPrivate::FactoryPrivate()
     : m_backendObject(0),
-    m_pluginFactory(0),
-    m_noPluginFactory(false)
+    m_platformPlugin(0),
+    m_noPlatformPlugin(false)
 {
     // Add the post routine to make sure that all other global statics (especially the ones from Qt)
     // are still available. If the FactoryPrivate dtor is called too late many bad things can happen
@@ -117,7 +117,7 @@ FactoryPrivate::~FactoryPrivate()
         qDeleteAll(objects);
     }
     delete m_backendObject;
-    delete m_pluginFactory;
+    delete m_platformPlugin;
 }
 
 void FactoryPrivate::objectDescriptionChanged(ObjectDescriptionType type)
@@ -144,7 +144,7 @@ Factory::Sender *Factory::sender()
 
 bool Factory::isMimeTypeAvailable(const QString &mimeType)
 {
-    PluginFactory *f = globalFactory->pluginFactory();
+    PlatformPlugin *f = globalFactory->platformPlugin();
     if (f) {
         return f->isMimeTypeAvailable(mimeType);
     }
@@ -239,10 +239,10 @@ FACTORY_IMPL(VideoWidget)
 
 #undef FACTORY_IMPL
 
-PluginFactory *FactoryPrivate::pluginFactory()
+PlatformPlugin *FactoryPrivate::platformPlugin()
 {
-    if (!m_pluginFactory) {
-        if (m_noPluginFactory) {
+    if (!m_platformPlugin) {
+        if (m_noPlatformPlugin) {
             return 0;
         }
         if (!QCoreApplication::instance() || QCoreApplication::applicationName().isEmpty()) {
@@ -264,56 +264,24 @@ PluginFactory *FactoryPrivate::pluginFactory()
                 QPluginLoader pluginLoader(pluginLib.fileName());
                 Q_ASSERT(pluginLoader.load());
                 pDebug() << pluginLoader.instance();
-                m_pluginFactory = qobject_cast<PluginFactory *>(pluginLoader.instance());
-                pDebug() << m_pluginFactory;
-                if (m_pluginFactory) {
-                    return m_pluginFactory;
+                m_platformPlugin = qobject_cast<PlatformPlugin *>(pluginLoader.instance());
+                pDebug() << m_platformPlugin;
+                if (m_platformPlugin) {
+                    return m_platformPlugin;
                 }
             }
         }
-        if (!m_pluginFactory) {
+        if (!m_platformPlugin) {
             pDebug() << Q_FUNC_INFO << "phonon_platform/kde plugin could not be loaded";
-            m_noPluginFactory = true;
+            m_noPlatformPlugin = true;
         }
     }
-    return m_pluginFactory;
+    return m_platformPlugin;
 }
 
-AbstractMediaStream *Factory::createKioMediaStream(const QUrl &url, QObject *parent)
+PlatformPlugin *Factory::platformPlugin()
 {
-    PluginFactory *f = globalFactory->pluginFactory();
-    if (!f) {
-        return 0;
-    }
-    return f->createKioMediaStream(url, parent);
-}
-
-QIcon Factory::icon(const QString &name)
-{
-    PluginFactory *f = globalFactory->pluginFactory();
-    if (!f) {
-        return QIcon();
-    }
-    return f->icon(name);
-}
-
-void Factory::notification(const char *notificationName, const QString &text,
-        const QStringList &actions, QObject *receiver,
-        const char *actionSlot)
-{
-    PluginFactory *f = globalFactory->pluginFactory();
-    if (f) {
-        f->notification(notificationName, text, actions, receiver, actionSlot);
-    }
-}
-
-QString Factory::applicationName()
-{
-    const PluginFactory *f = globalFactory->pluginFactory();
-    if (f) {
-        return f->applicationName();
-    }
-    return QCoreApplication::applicationName();
+    return globalFactory->platformPlugin();
 }
 
 QObject *Factory::backend(bool createWhenNull)
