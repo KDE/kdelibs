@@ -1035,7 +1035,6 @@ KLauncher::acceptSlave()
 {
     IdleSlave *slave = new IdleSlave(this);
     mConnectionServer.setNextPendingConnection(&slave->mConn);
-    kDebug(7016) << "New idle slave " << slave << " connected, asking for identification" << endl;
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
     connect(slave, SIGNAL(statusUpdate(IdleSlave *)),
