@@ -19,11 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
-
-//Disgusting but interesting hacks to avoid DBus - we just assume that DBus would work, too.
-
 #include "kglobalshortcuttest.h"
+#include <qtest_kde.h>
 #include <kaction.h>
 #include <kglobalaccel.h>
 
