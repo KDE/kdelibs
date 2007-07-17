@@ -22,6 +22,7 @@
 #include <QtTest/QtTest>
 
 #include "solid/backends/hal/halmanager.h"
+#include <solid/device.h>
 #include <solid/ifaces/device.h>
 #include <solid/ifaces/deviceinterface.h>
 #include <solid/ifaces/processor.h>
@@ -70,6 +71,14 @@ void HalBasicTest::testBasic()
 
     delete processor;
     delete manager;
+}
+
+void HalBasicTest::testDeviceCreation()
+{
+    Solid::Device dev("/org/freedesktop/Hal/devices/computer");
+    QVERIFY(dev.isValid());
+    dev = Solid::Device("ddd/ff");
+    QVERIFY(!dev.isValid());
 }
 
 void HalBasicTest::testSignalHandling()

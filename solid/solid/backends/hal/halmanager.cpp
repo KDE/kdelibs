@@ -142,7 +142,11 @@ QStringList HalManager::devicesFromQuery(const QString &parentUdi,
 
 QObject *HalManager::createDevice(const QString &udi)
 {
-    return new HalDevice(udi);
+    if (deviceExists(udi)) {
+        return new HalDevice(udi);
+    } else {
+        return 0;
+    }
 }
 
 QStringList HalManager::findDeviceStringMatch(const QString &key, const QString &value)

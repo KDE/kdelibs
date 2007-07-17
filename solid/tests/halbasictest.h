@@ -31,6 +31,7 @@ class HalBasicTest : public QObject
     Q_OBJECT
 private slots:
     void testBasic();
+    void testDeviceCreation();
     void testSignalHandling();
 
     void slotPropertyChanged(const QMap<QString,int> &changes);
