@@ -31,6 +31,8 @@
 
 namespace KNS {
 
+struct EntryPrivate;
+
 /**
  * @short KNewStuff data entry container.
  *
@@ -282,7 +284,7 @@ class KNEWSTUFF_EXPORT Entry
     Status status();
 
 private:
-    class EntryPrivate * const d;
+    EntryPrivate * const d;
 };
 
 }

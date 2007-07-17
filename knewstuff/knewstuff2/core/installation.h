@@ -26,6 +26,8 @@
 
 namespace KNS {
 
+struct InstallationPrivate;
+
 // FIXME: maybe it's smarter to let this class perform the installation
 // so we can reduce the size of KNS::CoreEngine a bit?
 
@@ -95,7 +97,7 @@ class KNEWSTUFF_EXPORT Installation
 
   private:
     Q_DISABLE_COPY (Installation)
-    class InstallationPrivate * const d;
+    InstallationPrivate * const d;
 };
 
 }

@@ -27,6 +27,8 @@
 
 namespace KNS {
 
+struct FeedPrivate;
+
 /**
  * @short KNewStuff feed.
  *
@@ -110,7 +112,7 @@ class KNEWSTUFF_EXPORT Feed
     Entry::List entries() const;
 
   private:
-   class FeedPrivate * const d;
+    FeedPrivate * const d;
 };
 
 }

@@ -28,7 +28,7 @@ class UploadDialog;
 class DownloadDialog;
 class Feed;
 
-struct EnginePrivate;
+class EnginePrivate;
 
 /**
  * @brief The KNewStuff2 engine is the top-level class to handle GHNS and DXS workflows.
@@ -138,7 +138,7 @@ public:
   private:
 
     friend class EnginePrivate;
-    struct EnginePrivate* const d;
+    EnginePrivate* const d;
     Q_DISABLE_COPY (Engine)
 };
 

@@ -217,7 +217,9 @@ bool Engine::init(const QString& config)
 
 KNS::Entry *Engine::upload(const QString& file)
 {
+#ifdef __GNUC__
 #warning KNS::Engine::upload() not implemented!
+#endif
 #if 0
     return d->upload(file);
 #endif
