@@ -381,9 +381,11 @@ void Connection::resume()
 
 void Connection::close()
 {
-    d->backend->disconnect(this);
-    d->backend->deleteLater();
-    d->backend = 0;
+    if (d->backend) {
+        d->backend->disconnect(this);
+        d->backend->deleteLater();
+        d->backend = 0;
+    }
     d->outgoingTasks.clear();
     d->incomingTasks.clear();
 }
