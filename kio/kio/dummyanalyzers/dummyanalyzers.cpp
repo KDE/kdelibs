@@ -57,6 +57,9 @@ class STRIGI_PLUGIN_API DummyEndAnalyzerFactory : public StreamEndAnalyzerFactor
 class STRIGI_PLUGIN_API DummyThroughAnalyzer : public StreamThroughAnalyzer {
 public:
     DummyThroughAnalyzer() {}
+    const char* name() const {
+	return "DummyThroughAnalyzer";
+    }
     void setIndexable(Strigi::AnalysisResult*) {}
     InputStream* connectInputStream(InputStream *in) {
         return in;
