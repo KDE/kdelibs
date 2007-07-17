@@ -119,6 +119,7 @@ endif (WIN32)
 
 
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
+set_target_properties(kdeinit_klauncher PROPERTIES DEFINE_SYMBOL MAKE_KLAUNCHER)
 
 target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} )
 
