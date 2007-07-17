@@ -49,7 +49,7 @@ public:
      * As many engines as needed can be instantiated, although one should use
      * the static methods \ref download() and \ref upload() instead.
      */
-    Engine(QWidget* parent = 0);
+    explicit Engine(QWidget* parent = 0);
 
     /**
      * \brief Engine destructor.
