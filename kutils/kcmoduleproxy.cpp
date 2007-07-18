@@ -178,6 +178,8 @@ void KCModuleProxyPrivate::_k_ownerChanged(const QString &service, const QString
         kcm = 0;
         Q_Q(KCModuleProxy);
         q->realModule();
+
+        Q_ASSERT(kcm);
         kcm->show();
     }
 }
