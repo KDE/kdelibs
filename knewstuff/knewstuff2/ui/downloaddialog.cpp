@@ -430,16 +430,15 @@ DownloadDialog::~DownloadDialog()
 void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::MessageType type, int timeOutMs )
 {
     // stop the pending timer if present
-    if ( messageTimer ) 
-        messageTimer->stop();
+    messageTimer->stop();
 
     // set text to messageLabel
     titleWidget->setComment( msg, type );
 
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
-    kDebug() << "starting the message timer for " << timeOutMs << endl;
-    messageTimer->start( timeOutMs );
+        kDebug() << "starting the message timer for " << timeOutMs << endl;
+        messageTimer->start( timeOutMs );
     }
 }
 
