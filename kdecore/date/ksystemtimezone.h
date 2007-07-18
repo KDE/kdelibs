@@ -61,7 +61,7 @@ class KSystemTimeZoneDataPrivate;
  * QDateTime sampleTime(QDate(1999,11,13), QTime(12,15,0), Qt::LocalTime);
  * KTimeZone local = KSystemTimeZones::local();
  * KTimeZone oman  = KSystemTimeZones::zone("Asia/Muscat");
- * QDateTime omaniTime = local->convert(oman, sampleTime);
+ * QDateTime omaniTime = local.convert(oman, sampleTime);
  * \endcode
  *
  * @warning The time zones in the KSystemTimeZones collection are by default
