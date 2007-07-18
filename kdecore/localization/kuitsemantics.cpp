@@ -353,7 +353,8 @@ class KuitSemanticsPrivate
 
     // Final touches to the formatted text.
     QString finalizeVisualText (const QString &final,
-                                Kuit::FmtVar fmt) const;
+                                Kuit::FmtVar fmt,
+                                bool hadQtTag = false) const;
 
     // Data for XML parsing state.
     class OpenEl
@@ -1014,6 +1015,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
 
     Kuit::FmtVar fmt = fmt_;
     int numCtx = 0;
+    bool hadQtTag = false;
     QStack<OpenEl> openEls;
     QXmlStreamReader xml(text);
 
@@ -1032,6 +1034,9 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
 
             // Collect data about this element.
             OpenEl oel = parseOpenEl(xml, etag, text);
+            if (oel.name == "qt") {
+                hadQtTag = true;
+            }
 
             // If this is top tag, check if it overrides the context marker
             // by its ctx attribute.
@@ -1055,7 +1060,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             // If this was closing of the top element, we're done.
             if (openEls.isEmpty()) {
                 // Return with final touches applied.
-                return finalizeVisualText(oel.formattedText, fmt);
+                return finalizeVisualText(oel.formattedText, fmt, hadQtTag);
             }
 
             // Append formatted text segment.
@@ -1107,7 +1112,7 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
         oel.astr += ' ' + attnams.last() + '=' + qc + attvals.last() + qc;
     }
 
-    if (s->knownTags.contains(oel.name)) { // known element
+    if (s->knownTags.contains(oel.name)) { // known KUIT element
         oel.tag = s->knownTags[oel.name];
 
         // If this element can be contained within enclosing element,
@@ -1153,7 +1158,10 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
         }
         oel.akey = attSetKey(attset);
     }
-    else { // unknown element, leave it in verbatim
+    else if (oel.name == "qt") { // <qt> tag, drop it (gets added in the end)
+        oel.handling = OpenEl::Dropout;
+    }
+    else { // other element, leave it in verbatim
         oel.handling = OpenEl::Ignored;
         #ifndef NDEBUG
         if (!s->qtHtmlTagNames.contains(oel.name)) {
@@ -1303,7 +1311,8 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
 }
 
 QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
-                                                  Kuit::FmtVar fmt) const
+                                                  Kuit::FmtVar fmt,
+                                                  bool hadQtTag) const
 {
     KuitSemanticsStaticData *s = staticData;
 
@@ -1332,6 +1341,14 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
             p = entRx.indexIn(text);
         }
         plain.append(text);
+
+        // If there was a <qt> tag, it means the text was intended as rich
+        // but it was not equipped with KUIT. Since other HTML tags have
+        // remained preserved in that case, also put back the <qt> tag
+        // which was removed while formatting.
+        if (hadQtTag)
+            plain = "<qt>" + text + "</qt>";
+
         return plain;
     }
 }
