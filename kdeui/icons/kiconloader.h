@@ -146,8 +146,8 @@ public:
      *         @p canReturnNull.
      */
     QPixmap loadIcon(const QString& name, K3Icon::Group group, int size=0,
-		     int state=K3Icon::DefaultState, QString *path_store=0L,
-		     bool canReturnNull=false) const;
+                     int state=K3Icon::DefaultState, QString *path_store=0L,
+                     bool canReturnNull=false) const;
 
     /**
      * Loads an icon for a mimetype.
@@ -203,7 +203,7 @@ public:
      *         not found, depending on @p canReturnNull.
      */
     QString iconPath(const QString& name, int group_or_size,
-		     bool canReturnNull=false) const;
+                     bool canReturnNull=false) const;
 
     /**
      * Loads an animated icon.
@@ -264,7 +264,7 @@ public:
      * available for that context
      */
     QStringList queryIconsByContext(int group_or_size,
-				    K3Icon::Context context=K3Icon::Any) const;
+                                    K3Icon::Context context=K3Icon::Any) const;
 
     /**
      * @internal
@@ -394,7 +394,7 @@ public:
  * Load a desktop icon.
  */
 KDEUI_EXPORT QPixmap DesktopIcon(const QString& name, int size=0,
-		    int state=K3Icon::DefaultState);
+                    int state=K3Icon::DefaultState);
 
 /**
  * \relates KIconLoader
@@ -421,7 +421,7 @@ KDEUI_EXPORT_DEPRECATED QIcon BarIconSet(const QString& name, int size=0);
  * Load a small icon.
  */
 KDEUI_EXPORT QPixmap SmallIcon(const QString& name, int size=0,
-		  int state=K3Icon::DefaultState);
+                  int state=K3Icon::DefaultState);
 
 /**
  * \relates KIconLoader
@@ -435,7 +435,7 @@ KDEUI_EXPORT_DEPRECATED QIcon SmallIconSet(const QString& name, int size=0);
  * Load a main toolbar icon.
  */
 KDEUI_EXPORT QPixmap MainBarIcon(const QString& name, int size=0,
-		    int state=K3Icon::DefaultState);
+                    int state=K3Icon::DefaultState);
 
 /**
  * \relates KIconLoader
