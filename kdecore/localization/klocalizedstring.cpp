@@ -514,6 +514,7 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
     // or -1 for non-terminated interpolation.
 
     KLocalizedStringPrivateStatics *s = staticsKLSP;
+    static const QString ws(" \t\n");
 
     // Split into tokens.
     QStringList tokens;
@@ -524,8 +525,7 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
            && strans.mid(tpos, elen) != s->endInterp)
     {
         // Devour whitespace.
-        while (   tpos < slen
-               && (strans[tpos] == ' ' || strans[tpos] == '\t'))
+        while (tpos < slen && ws.indexOf(strans[tpos]) >= 0)
             ++tpos;
 
         if (tpos == slen)
@@ -572,7 +572,7 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
         {
             // Find whitespace or closing sequence.
             while (   tpos < slen
-                   && strans[tpos] != ' ' && strans[tpos] != '\t'
+                   && ws.indexOf(strans[tpos]) < 0
                    && strans.mid(tpos, elen) != s->endInterp)
             {
                 if (strans[tpos] == '\\')
