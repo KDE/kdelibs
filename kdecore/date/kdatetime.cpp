@@ -227,8 +227,7 @@ bool KDateTime::Spec::equivalentTo(const Spec &other) const
     else
     {
         if (d->type == KDateTime::UTC  &&  other.d->type == KDateTime::OffsetFromUTC  &&  other.d->utcOffset == 0
-        ||  (other.d->type == KDateTime::UTC  &&  d->type == KDateTime::OffsetFromUTC  &&
-            d->utcOffset == 0))
+        ||  (other.d->type == KDateTime::UTC  &&  d->type == KDateTime::OffsetFromUTC  &&  d->utcOffset == 0))
             return true;
         return false;
     }
@@ -2550,7 +2549,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     if (s == start)
                         return QDateTime();
                     QString z = str.mid(start, s - start);
-                    if (!zoneAbbrev.isEmpty()  &&  z != zoneAbbrev)
+                    if (!zoneAbbrev.isEmpty()  &&  z.toLatin1() != zoneAbbrev)
                         return QDateTime();
                     zoneAbbrev = z.toLatin1();
                     break;
