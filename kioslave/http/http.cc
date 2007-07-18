@@ -4269,6 +4269,9 @@ void HTTPProtocol::slotData(const QByteArray &_d)
 
         if ( m_cpMimeBuffer )
         {
+          // Do not make any assumption about the state of the QByteArray we received.
+          // Fix the crash described by BR# 130104.
+          d.detach();
           d.resize(0);
           d.resize(m_mimeTypeBuffer.size());
           memcpy( d.data(), m_mimeTypeBuffer.data(),
