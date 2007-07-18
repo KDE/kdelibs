@@ -314,7 +314,6 @@ void SocketConnectionBackend::socketReadyRead()
         socket->read(buffer, sizeof buffer);
         buffer[6] = 0;
         buffer[9] = 0;
-        buffer[12] = 0;
 
         char *p = buffer;
         while( *p == ' ' ) p++;
