@@ -75,14 +75,14 @@ void* KTraderParse_newCMP( void *_ptr1, void *_ptr2, int _i )
   return new ParseTreeCMP( (ParseTreeBase*)_ptr1, (ParseTreeBase*)_ptr2, _i );
 }
 
-void* KTraderParse_newIN( void *_ptr1, void *_ptr2 )
+void* KTraderParse_newIN( void *_ptr1, void *_ptr2, int _cs )
 {
-  return new ParseTreeIN( (ParseTreeBase*)_ptr1, (ParseTreeBase*)_ptr2 );
+  return new ParseTreeIN( (ParseTreeBase*)_ptr1, (ParseTreeBase*)_ptr2, _cs == 1 ? Qt::CaseSensitive : Qt::CaseInsensitive );
 }
 
-void* KTraderParse_newMATCH( void *_ptr1, void *_ptr2 )
+void* KTraderParse_newMATCH( void *_ptr1, void *_ptr2, int _cs )
 {
-  return new ParseTreeMATCH( (ParseTreeBase*)_ptr1, (ParseTreeBase*)_ptr2 );
+  return new ParseTreeMATCH( (ParseTreeBase*)_ptr1, (ParseTreeBase*)_ptr2, _cs == 1 ? Qt::CaseSensitive : Qt::CaseInsensitive );
 }
 
 void* KTraderParse_newCALC( void *_ptr1, void *_ptr2, int _i )

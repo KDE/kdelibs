@@ -159,13 +159,14 @@ protected:
 class ParseTreeIN : public ParseTreeBase
 {
 public:
-  ParseTreeIN( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2 ) { m_pLeft = _ptr1; m_pRight = _ptr2; }
+  ParseTreeIN( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2, Qt::CaseSensitivity cs ) { m_pLeft = _ptr1; m_pRight = _ptr2; m_cs = cs; }
 
   bool eval( ParseContext *_context ) const;
 
 protected:
   ParseTreeBase::Ptr m_pLeft;
   ParseTreeBase::Ptr m_pRight;
+  Qt::CaseSensitivity m_cs;
 };
 
 /**
@@ -174,13 +175,14 @@ protected:
 class ParseTreeMATCH : public ParseTreeBase
 {
 public:
-  ParseTreeMATCH( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2 ) { m_pLeft = _ptr1; m_pRight = _ptr2; }
+  ParseTreeMATCH( ParseTreeBase *_ptr1, ParseTreeBase *_ptr2, Qt::CaseSensitivity cs ) { m_pLeft = _ptr1; m_pRight = _ptr2; m_cs = cs; }
 
   bool eval( ParseContext *_context ) const;
 
 protected:
   ParseTreeBase::Ptr m_pLeft;
   ParseTreeBase::Ptr m_pRight;
+  Qt::CaseSensitivity m_cs;
 };
 
 /**
@@ -263,7 +265,9 @@ class ParseTreeSTRING : public ParseTreeBase
 public:
   explicit ParseTreeSTRING( const char *arg ) { m_str = QString::fromLatin1(arg); }
 
-  bool eval( ParseContext *_context ) const { _context->type = ParseContext::T_STRING; _context->str = m_str; return true; }
+  bool eval( ParseContext *_context ) const { _context->type = ParseContext::T_STRING;
+                                              _context->str = m_str;
+                                              return true; }
 
 protected:
   QString m_str;

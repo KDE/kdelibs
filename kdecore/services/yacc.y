@@ -20,7 +20,9 @@ void KTraderParse_initFlex( const char *s );
 
 %token NOT
 %token EQ
+%token EQI
 %token NEQ
+%token NEQI
 %token LEQ
 %token GEQ
 %token LE
@@ -28,6 +30,8 @@ void KTraderParse_initFlex( const char *s );
 %token OR
 %token AND
 %token TOKEN_IN
+%token MATCH_INSENSITIVE
+%token TOKEN_IN_INSENSITIVE
 %token EXIST
 %token MAX
 %token MIN
@@ -69,7 +73,9 @@ bool_and: bool_compare AND bool_and { $$ = KTraderParse_newAND( $<ptr>1, $<ptr>3
 ;
 
 bool_compare: expr_in EQ expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 1 ); }
+            | expr_in EQI expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 7 ); }
             | expr_in NEQ expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 2 ); }
+            | expr_in NEQI expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 8 ); }
             | expr_in GEQ expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 3 ); }
             | expr_in LEQ expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 4 ); }
             | expr_in LE expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 5 ); }
@@ -77,11 +83,13 @@ bool_compare: expr_in EQ expr_in { $$ = KTraderParse_newCMP( $<ptr>1, $<ptr>3, 1
             | expr_in { $$ = $<ptr>1; }
 ;
 
-expr_in: expr_twiddle TOKEN_IN VAL_ID { $$ = KTraderParse_newIN( $<ptr>1, KTraderParse_newID( $<name>3 ) ); }
+expr_in: expr_twiddle TOKEN_IN VAL_ID { $$ = KTraderParse_newIN( $<ptr>1, KTraderParse_newID( $<name>3 ), 1 ); }
+       | expr_twiddle TOKEN_IN_INSENSITIVE VAL_ID { $$ = KTraderParse_newIN( $<ptr>1, KTraderParse_newID( $<name>3 ), 0 ); }
        | expr_twiddle { $$ = $<ptr>1; }
 ;
 
-expr_twiddle: expr '~' expr { $$ = KTraderParse_newMATCH( $<ptr>1, $<ptr>3 ); }
+expr_twiddle: expr '~' expr { $$ = KTraderParse_newMATCH( $<ptr>1, $<ptr>3, 1 ); }
+            | expr_twiddle MATCH_INSENSITIVE expr { $$ = KTraderParse_newMATCH( $<ptr>1, $<ptr>3, 0 ); }
             | expr { $$ = $<ptr>1; }
 ;
 

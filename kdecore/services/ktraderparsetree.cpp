@@ -244,6 +244,7 @@ bool ParseTreeCMP::eval( ParseContext *_context ) const
   switch( m_cmd )
   {
   case 1: /* EQ */
+  case 7: /* EQI */
     if ( c1.type != c2.type )
     {
       _context->b = false;
@@ -251,7 +252,11 @@ bool ParseTreeCMP::eval( ParseContext *_context ) const
     }
     if ( c1.type == ParseContext::T_STRING )
     {
-      _context->b = ( c1.str == c2.str );
+      if (m_cmd == 7) {
+          _context->b = QString::compare(c1.str, c2.str, Qt::CaseInsensitive) == 0;
+      } else {
+          _context->b = ( c1.str == c2.str );
+      }
       return true;
     }
     if ( c1.type == ParseContext::T_BOOL )
@@ -271,15 +276,19 @@ bool ParseTreeCMP::eval( ParseContext *_context ) const
     }
     break;
   case 2: /* NEQ */
+  case 8: /* NEQI */
     if ( c1.type != c2.type )
     {
       _context->b = true;
       return true;
     }
-    if ( c1.type == ParseContext::T_STRING )
-    {
-      _context->b = ( c1.str != c2.str );
-      return true;
+    if ( c1.type == ParseContext::T_STRING ) {
+        if (m_cmd == 8) {
+            _context->b = QString::compare(c1.str, c2.str, Qt::CaseInsensitive) != 0;
+        } else  {
+            _context->b = ( c1.str != c2.str );
+        }
+        return true;
     }
     if ( c1.type == ParseContext::T_BOOL )
     {
@@ -415,7 +424,7 @@ bool ParseTreeMATCH::eval( ParseContext *_context ) const
   if ( c1.type != ParseContext::T_STRING || c2.type != ParseContext::T_STRING )
     return false;
 
-  _context->b = c2.str.contains( c1.str );
+  _context->b = c2.str.contains( c1.str, m_cs );
 
   return true;
 }
@@ -465,7 +474,7 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
 
   if ( c1.type == ParseContext::T_STRING && c2.type == ParseContext::T_STR_SEQ )
   {
-    _context->b = c2.strSeq.contains( c1.str );
+    _context->b = c2.strSeq.contains(c1.str, m_cs);
     return true;
   }
 

@@ -1,7 +1,9 @@
-/* A Bison parser, made by GNU Bison 1.875.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Skeleton interface for Bison's Yacc-like parsers in C
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,10 +20,18 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -31,63 +41,72 @@
    enum yytokentype {
      NOT = 258,
      EQ = 259,
-     NEQ = 260,
-     LEQ = 261,
-     GEQ = 262,
-     LE = 263,
-     GR = 264,
-     OR = 265,
-     AND = 266,
-     TOKEN_IN = 267,
-     EXIST = 268,
-     MAX = 269,
-     MIN = 270,
-     VAL_BOOL = 271,
-     VAL_STRING = 272,
-     VAL_ID = 273,
-     VAL_NUM = 274,
-     VAL_FLOAT = 275
+     EQI = 260,
+     NEQ = 261,
+     NEQI = 262,
+     LEQ = 263,
+     GEQ = 264,
+     LE = 265,
+     GR = 266,
+     OR = 267,
+     AND = 268,
+     TOKEN_IN = 269,
+     MATCH_INSENSITIVE = 270,
+     TOKEN_IN_INSENSITIVE = 271,
+     EXIST = 272,
+     MAX = 273,
+     MIN = 274,
+     VAL_BOOL = 275,
+     VAL_STRING = 276,
+     VAL_ID = 277,
+     VAL_NUM = 278,
+     VAL_FLOAT = 279
    };
 #endif
+/* Tokens.  */
 #define NOT 258
 #define EQ 259
-#define NEQ 260
-#define LEQ 261
-#define GEQ 262
-#define LE 263
-#define GR 264
-#define OR 265
-#define AND 266
-#define TOKEN_IN 267
-#define EXIST 268
-#define MAX 269
-#define MIN 270
-#define VAL_BOOL 271
-#define VAL_STRING 272
-#define VAL_ID 273
-#define VAL_NUM 274
-#define VAL_FLOAT 275
+#define EQI 260
+#define NEQ 261
+#define NEQI 262
+#define LEQ 263
+#define GEQ 264
+#define LE 265
+#define GR 266
+#define OR 267
+#define AND 268
+#define TOKEN_IN 269
+#define MATCH_INSENSITIVE 270
+#define TOKEN_IN_INSENSITIVE 271
+#define EXIST 272
+#define MAX 273
+#define MIN 274
+#define VAL_BOOL 275
+#define VAL_STRING 276
+#define VAL_ID 277
+#define VAL_NUM 278
+#define VAL_FLOAT 279
 
 
 
 
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef union YYSTYPE
 #line 13 "yacc.y"
-typedef union YYSTYPE {
+{
      char valb;
      int vali;
      double vald;
      char *name;
      void *ptr;
-} YYSTYPE;
-/* Line 1240 of yacc.c.  */
-#line 84 "yacc.tab.h"
+}
+/* Line 1489 of yacc.c.  */
+#line 105 "yacc.h"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE kiotraderlval;
-
-
 

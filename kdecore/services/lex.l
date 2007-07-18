@@ -21,15 +21,19 @@ DIGIT    [0-9]
 %%
 
 "==" { return EQ; }
+"=~" { return EQI; }
 "!=" { return NEQ; }
+"!~" { return NEQI; }
 "<" { return LE; }
 ">" { return GR; }
 "<=" { return LEQ; }
 ">=" { return GEQ; }
+"~~" { return MATCH_INSENSITIVE; }
 "not" { return NOT; }
 "and" { return AND; }
 "or" { return OR; }
 "in" { return TOKEN_IN; }
+"~in" { return TOKEN_IN_INSENSITIVE; }
 "exist" { return EXIST; }
 "max" { return MAX; }
 "min" { return MIN; }
