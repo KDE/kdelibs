@@ -668,6 +668,9 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
   if ( !msgid || !msgid[0] ) {
     kWarning() << "KLocale: trying to look up \"\" in catalog. "
                << "Fix the program" << endl;
+    *language = QString();
+    *translation = QString();
+    return;
   }
   if ( msgctxt && !msgctxt[0] ) {
     kWarning() << "KLocale: trying to use \"\" as context to message. "
