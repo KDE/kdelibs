@@ -286,6 +286,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
         return;
     }
 
+    m_listJob = 0;
     if (job->error() || m_subdirs.isEmpty()) {
         // clear listing
         return;
@@ -314,7 +315,6 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
         urlNavigator()->setUrl(url);
     }
 
-    m_listJob = 0;
     m_subdirs.clear();
     delete dirsMenu;
     dirsMenu = 0;
