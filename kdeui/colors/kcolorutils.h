@@ -33,7 +33,8 @@ class QColor;
 namespace KColorUtils {
     /**
      * Calculate the luma of a color. Luma is weighted sum of gamma-adjusted
-     * R'G'B' components of a color. The result is similar to qGray.
+     * R'G'B' components of a color. The result is similar to qGray. The range
+     * is from 0.0 (black) to 1.0 (white).
      *
      * KColorUtils::darken(), KColorUtils::lighten() and KColorUtils::shade()
      * operate on the luma of a color.
@@ -95,9 +96,12 @@ namespace KColorUtils {
      * to the corresponding component.
      *
      * @param lumaAmount amount by which to adjust the luma component of the
-     * color
+     * color; 0.0 results in no change, -1.0 turns anything black, 1.0 turns
+     * anything white
      * @param chromaAmount (optional) amount by which to adjust the chroma
-     * component of the color
+     * component of the color; 0.0 results in no change, -1.0 minimizes chroma,
+     * 1.0 maximizes chroma
+     * @see KColorUtils::luma
      */
     KDEUI_EXPORT QColor shade(const QColor&, qreal lumaAmount, qreal chromaAmount = 0.0);
 
