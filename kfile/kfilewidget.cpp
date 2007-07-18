@@ -60,12 +60,6 @@
 #include <kmessagebox.h>
 #include <kauthorized.h>
 
-namespace {
-    static void silenceQToolBar(QtMsgType, const char *)
-    {
-    }
-}
-
 class KFileWidgetPrivate
 {
 public:
@@ -204,11 +198,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->autoSelectExtChecked = false;
     d->placesView = 0; // delayed loading
 
-    QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
-    d->toolbar = new KToolBar( this, "KFileWidget::toolbar", true);
+    d->toolbar = new KToolBar(this, true);
+    d->toolbar->setObjectName("KFileWidget::toolbar");
     d->toolbar->setMovable(false);
-
-    qInstallMsgHandler( oldHandler );
 
     d->pathCombo = new KUrlComboBox( KUrlComboBox::Directories, true,
                                      d->toolbar);
