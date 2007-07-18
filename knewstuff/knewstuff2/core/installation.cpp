@@ -50,6 +50,7 @@ Installation::Installation()
 
 Installation::~Installation()
 {
+    delete d;
 }
 
 void Installation::setUncompression(const QString& uncompression)
