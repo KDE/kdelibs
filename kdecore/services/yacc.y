@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "ktraderparse_p.h"
 
+#define YYLTYPE_IS_TRIVIAL 0
+#define YYENABLE_NLS 0
 void yyerror(const char *s);
 int yylex();
 void KTraderParse_initFlex( const char *s );

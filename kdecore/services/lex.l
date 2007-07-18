@@ -15,6 +15,10 @@ int kiotraderlex(void);
 void KTraderParse_initFlex( const char *_code );
 
 %}
+%option nomain
+%option never-interactive
+%option noalways-interactive
+%option nostack
 
 DIGIT    [0-9]
 
