@@ -155,7 +155,11 @@ KNS::Entry::List Engine::download()
 	QString name = component.componentName();
 
 	bool ret = engine->init(name + ".knsrc");
-	if(!ret) return entries;
+	if(!ret)
+	{
+		delete engine;
+		return entries;
+	}
 
 	entries = engine->downloadDialogModal(0);
 	delete engine;
