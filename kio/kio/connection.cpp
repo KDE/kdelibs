@@ -188,6 +188,7 @@ bool SocketConnectionBackend::listenForRemote()
         {
             errorString = i18n("Unable to create io-slave: %1", strerror(errno));
             delete socketfile;
+            return false;
         }
 
         QString sockname = socketfile->fileName();
