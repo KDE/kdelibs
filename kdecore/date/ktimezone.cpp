@@ -526,7 +526,9 @@ KTimeZone::KTimeZone(const KTimeZone &tz)
 {}
 
 KTimeZone::~KTimeZone()
-{}
+{
+    delete d;
+}
 
 KTimeZone::KTimeZone(KTimeZoneBackend *impl)
   : d(impl)
