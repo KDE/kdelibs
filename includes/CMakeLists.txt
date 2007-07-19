@@ -757,8 +757,6 @@ install( FILES
   KNS/Author
   KNS/Button
   KNS/Category
-  KNS/DownloadDialog
-  KNS/DxsEngine
   KNS/Engine
   KNS/Entry
   KNS/EntryHandler
