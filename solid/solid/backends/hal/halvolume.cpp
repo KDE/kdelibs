@@ -47,6 +47,7 @@ bool Volume::isIgnored() const
     bool removable = drive.property("storage.removable").toBool();
     bool hotpluggable = drive.property("storage.hotpluggable").toBool();
 
+
     return !removable && !hotpluggable
         && mounted && !mount_point.startsWith("/media/");
 }
@@ -66,6 +67,10 @@ Solid::StorageVolume::UsageType Volume::usage() const
     else if (usage == "raid")
     {
         return Solid::StorageVolume::Raid;
+    }
+    else if (usage == "crypto")
+    {
+        return Solid::StorageVolume::Encrypted;
     }
     else if (usage == "unused")
     {

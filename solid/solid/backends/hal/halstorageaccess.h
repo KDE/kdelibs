@@ -50,9 +50,22 @@ private Q_SLOTS:
     void slotDBusReply(const QDBusMessage &reply);
     void slotDBusError(const QDBusError &error);
 
+public Q_SLOTS:
+    Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString &passphrase);
+
+private:
+    bool callVolumeMount();
+    bool callVolumeUnmount();
+
+    bool requestPassphrase();
+    void callCryptoSetup(const QString &passphrase);
+    bool callCryptoTeardown();
+
 private:
     bool m_setupInProgress;
     bool m_teardownInProgress;
+    bool m_passphraseRequested;
+    QString m_lastReturnObject;
 };
 
 #endif

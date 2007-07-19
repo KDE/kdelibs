@@ -20,9 +20,14 @@
 #include "halstorageaccess.h"
 
 #include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusReply>
+#include <QtGui/QApplication>
+#include <QtGui/QWidget>
 
 StorageAccess::StorageAccess(HalDevice *device)
-    : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false)
+    : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false),
+      m_passphraseRequested(false)
 {
     connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
              this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
@@ -36,7 +41,25 @@ StorageAccess::~StorageAccess()
 
 bool StorageAccess::isAccessible() const
 {
-    return m_device->property("volume.is_mounted").toBool();
+    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
+
+        // Might be a bit slow, but I see no cleaner way to do this with HAL...
+        QDBusInterface manager("org.freedesktop.Hal",
+                               "/org/freedesktop/Hal/Manager",
+                               "org.freedesktop.Hal.Manager",
+                               QDBusConnection::systemBus());
+
+        QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch",
+                                                     "volume.crypto_luks.clear.backing_volume",
+                                                     m_device->udi());
+
+        QStringList list = reply;
+
+        return reply.isValid() && !list.isEmpty();
+
+    } else {
+        return m_device->property("volume.is_mounted").toBool();
+    }
 }
 
 QString StorageAccess::filePath() const
@@ -53,17 +76,11 @@ bool StorageAccess::setup()
     m_setupInProgress = true;
 
 
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
-                                                      "org.freedesktop.Hal.Device.Volume",
-                                                      "Mount");
-
-    msg << "" << "" << QStringList();
-
-    return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
+        return requestPassphrase();
+    } else {
+        return callVolumeMount();
+    }
 }
 
 bool StorageAccess::teardown()
@@ -73,18 +90,11 @@ bool StorageAccess::teardown()
     }
     m_teardownInProgress = true;
 
-
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
-                                                      "org.freedesktop.Hal.Device.Volume",
-                                                      "Unmount");
-
-    msg << QStringList();
-
-    return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+    if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
+        return callCryptoTeardown();
+    } else {
+        return callVolumeUnmount();
+    }
 }
 
 void StorageAccess::slotPropertyChanged(const QMap<QString,int> &changes)
@@ -118,6 +128,111 @@ void StorageAccess::slotDBusError(const QDBusError &error)
         emit teardownDone(Solid::UnauthorizedOperation,
                           error.name()+": "+error.message());
     }
+}
+
+QString generateReturnObjectPath()
+{
+    static int number = 1;
+
+    return "/org/kde/solid/HalStorageAccess_"+QString::number(number++);
+}
+
+bool StorageAccess::requestPassphrase()
+{
+    QString udi = m_device->udi();
+    QString returnService = QDBusConnection::sessionBus().baseService();
+    m_lastReturnObject = generateReturnObjectPath();
+
+    QDBusConnection::sessionBus().registerObject(m_lastReturnObject, this,
+                                                 QDBusConnection::ExportScriptableSlots);
+
+
+    QWidget *activeWindow = QApplication::activeWindow();
+    uint wId = 0;
+    if (activeWindow!=0) {
+        wId = activeWindow->winId();
+    }
+
+    QString appId = QCoreApplication::applicationName();
+
+    QDBusInterface soliduiserver("org.kde.kded", "/modules/soliduiserver", "org.kde.kded.SolidUiServer");
+    QDBusReply<void> reply = soliduiserver.call("showPassphraseDialog", udi,
+                                                returnService, m_lastReturnObject,
+                                                wId, appId);
+    m_passphraseRequested = reply.isValid();
+    return m_passphraseRequested;
+}
+
+void StorageAccess::passphraseReply(const QString &passphrase)
+{
+    if (m_passphraseRequested) {
+        QDBusConnection::sessionBus().unregisterObject(m_lastReturnObject);
+        m_passphraseRequested = false;
+        if (!passphrase.isEmpty()) {
+            callCryptoSetup(passphrase);
+        } else {
+            m_setupInProgress = false;
+            emit setupDone(Solid::NoError, QVariant());
+        }
+    }
+}
+
+bool StorageAccess::callVolumeMount()
+{
+    QDBusConnection c = QDBusConnection::systemBus();
+    QString udi = m_device->udi();
+    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
+                                                      "org.freedesktop.Hal.Device.Volume",
+                                                      "Mount");
+
+    msg << "" << "" << QStringList();
+
+    return c.callWithCallback(msg, this,
+                              SLOT(slotDBusReply(const QDBusMessage &)),
+                              SLOT(slotDBusError(const QDBusError &)));
+}
+
+bool StorageAccess::callVolumeUnmount()
+{
+    QDBusConnection c = QDBusConnection::systemBus();
+    QString udi = m_device->udi();
+    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
+                                                      "org.freedesktop.Hal.Device.Volume",
+                                                      "Unmount");
+
+    msg << QStringList();
+
+    return c.callWithCallback(msg, this,
+                              SLOT(slotDBusReply(const QDBusMessage &)),
+                              SLOT(slotDBusError(const QDBusError &)));
+}
+
+void StorageAccess::callCryptoSetup(const QString &passphrase)
+{
+    QDBusConnection c = QDBusConnection::systemBus();
+    QString udi = m_device->udi();
+    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
+                                                      "org.freedesktop.Hal.Device.Volume.Crypto",
+                                                      "Setup");
+
+    msg << passphrase;
+
+    c.callWithCallback(msg, this,
+                       SLOT(slotDBusReply(const QDBusMessage &)),
+                       SLOT(slotDBusError(const QDBusError &)));
+}
+
+bool StorageAccess::callCryptoTeardown()
+{
+    QDBusConnection c = QDBusConnection::systemBus();
+    QString udi = m_device->udi();
+    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
+                                                      "org.freedesktop.Hal.Device.Volume.Crypto",
+                                                      "Teardown");
+
+    return c.callWithCallback(msg, this,
+                              SLOT(slotDBusReply(const QDBusMessage &)),
+                              SLOT(slotDBusError(const QDBusError &)));
 }
 
 #include "backends/hal/halstorageaccess.moc"

@@ -301,7 +301,8 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     if (type==Solid::DeviceInterface::GenericInterface) {
         return true;
     } else if (type==Solid::DeviceInterface::StorageAccess) {
-        return property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume");
+        return property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume")
+            || property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto");
     }
 
     QStringList cap_list = DeviceInterface::toStringList(type);
