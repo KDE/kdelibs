@@ -131,12 +131,8 @@ class KLocalizedStringPrivateStatics
     ~KLocalizedStringPrivateStatics ()
     {
         delete ktrs;
-        foreach (const KTranslit *t, translits) {
-            delete t;
-        }
-        foreach (const KuitSemantics *f, formatters) {
-            delete f;
-        }
+        qDeleteAll(translits);
+        qDeleteAll(formatters);
     }
 };
 K_GLOBAL_STATIC(KLocalizedStringPrivateStatics, staticsKLSP)
