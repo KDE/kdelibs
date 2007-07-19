@@ -65,6 +65,7 @@ public:
     void _k_devicesRemoved(const QModelIndex &parent, int start, int end);
     void _k_reloadBookmarks();
     void _k_storageSetupDone(Solid::ErrorType error, QVariant errorData);
+    void _k_storageTeardownDone(Solid::ErrorType error, QVariant errorData);
 };
 
 KFilePlacesModel::KFilePlacesModel(QObject *parent)
@@ -87,7 +88,7 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
         root.addBookmark(d->bookmarkManager, i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
 
-    d->deviceModel = new KDeviceListModel("[[ StorageVolume.ignored == false AND StorageVolume.usage == 'FileSystem' ]"
+    d->deviceModel = new KDeviceListModel("[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
                                           " OR "
                                           "[ IS StorageAccess AND StorageDrive.driveType == 'Floppy' ]]", this);
 
@@ -656,6 +657,11 @@ void KFilePlacesModel::requestTeardown(const QModelIndex &index)
     if (drive!=0) {
         drive->eject();
     } else {
+        Solid::StorageAccess *access = device.as<Solid::StorageAccess>();
+
+        connect(access, SIGNAL(teardownDone(Solid::ErrorType, QVariant)),
+                this, SLOT(_k_storageTeardownDone(Solid::ErrorType, QVariant)));
+
         device.as<Solid::StorageAccess>()->teardown();
     }
 }
@@ -703,5 +709,11 @@ void KFilePlacesModel::Private::_k_storageSetupDone(Solid::ErrorType error, QVar
 
 }
 
+void KFilePlacesModel::Private::_k_storageTeardownDone(Solid::ErrorType error, QVariant errorData)
+{
+    if (error && errorData.isValid()) {
+        emit q->errorMessage(errorData.toString());
+    }
+}
 
 #include "kfileplacesmodel.moc"

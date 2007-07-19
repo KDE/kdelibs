@@ -134,6 +134,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_devicesRemoved(const QModelIndex&, int, int))
     Q_PRIVATE_SLOT(d, void _k_reloadBookmarks())
     Q_PRIVATE_SLOT(d, void _k_storageSetupDone(Solid::ErrorType, QVariant))
+    Q_PRIVATE_SLOT(d, void _k_storageTeardownDone(Solid::ErrorType, QVariant))
 
     class Private;
     Private * const d;
