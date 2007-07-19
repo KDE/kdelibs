@@ -191,7 +191,7 @@ bool KIconCache::find(const QString& key, QPixmap& pix, QString* path)
     d->mLoadPath = path;
     // We can use QPixmapCache only if we don't need the path
     setUseQPixmapCache(!path);
-    kDebug() << k_funcinfo << "use QPC = " << useQPixmapCache() << endl;
+    //kDebug() << k_funcinfo << "use QPC = " << useQPixmapCache() << endl;
     bool ret = find(key, pix);
     d->mLoadPath = 0;
     return ret;

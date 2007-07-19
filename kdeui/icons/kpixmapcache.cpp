@@ -377,7 +377,7 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
         return false;
     }
 
-    kDebug() << "KPC::find(" << key << ")" << endl;
+    //kDebug() << "KPC::find(" << key << ")" << endl;
     // First try the QPixmapCache
     if (d->mUseQPixmapCache && QPixmapCache::find(key, pix)) {
         return true;
@@ -457,7 +457,7 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
         return;
     }
 
-    kDebug() << "KPC::insert(" << key << ", " << pix.width() << "x" << pix.height() << ")" << endl;
+    //kDebug() << "KPC::insert(" << key << ", " << pix.width() << "x" << pix.height() << ")" << endl;
     // Insert to QPixmapCache as well
     if (d->mUseQPixmapCache) {
         QPixmapCache::insert(key, pix);
