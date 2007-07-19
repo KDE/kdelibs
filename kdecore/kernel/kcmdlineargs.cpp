@@ -177,6 +177,8 @@ class KCmdLineArgsStatic {
 
     KCmdLineArgsStatic ();
 
+    ~KCmdLineArgsStatic ();
+
     QTextCodec *codec; // codec for converting raw input to QString
 
     /**
@@ -306,6 +308,13 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     kde_options.add("style <style>",       ki18n("sets the application GUI style"));
     kde_options.add("geometry <geometry>", ki18n("sets the client geometry of the main widget - see man X for the argument format"));
     kde_options.add("smkey <sessionKey>"); // this option is obsolete and exists only to allow smooth upgrades from sessions
+}
+
+KCmdLineArgsStatic::~KCmdLineArgsStatic ()
+{
+    delete argsList;
+    // KAboutData object is deleted by ~KCleanUpGlobalStatic.
+    //delete about;
 }
 
 //
@@ -1282,7 +1291,7 @@ KCmdLineArgs::KCmdLineArgs( const KCmdLineOptions &_options,
  */
 KCmdLineArgs::~KCmdLineArgs()
 {
-  if (s->argsList)
+  if (!s.isDestroyed() && s->argsList)
      s->argsList->removeAll(this);
   delete d;
 }
