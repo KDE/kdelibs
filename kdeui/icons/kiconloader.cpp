@@ -24,6 +24,7 @@
 #include "kiconloader.h"
 #include "kicontheme.h"
 #include "kiconeffect.h"
+#include "kiconcache.h"
 
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
@@ -53,6 +54,10 @@
 #include <dirent.h>
 #include <assert.h>
 #include <kconfiggroup.h>
+
+
+//#define NO_LAZYLOAD_ICONTHEME
+
 
 /*** KIconThemeNode: A node in the icon theme dependancy tree. ***/
 
@@ -138,6 +143,9 @@ struct KIconLoaderPrivate
     QList<KIconThemeNode *> links;
     bool extraDesktopIconsLoaded :1;
     QHash<QString, KSvgRenderer*> svgRenderers;
+    KIconCache* mIconCache;
+    bool mIconThemeInited;
+    QString appname;
 };
 
 #define KICONLOADER_CHECKS
@@ -210,42 +218,28 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     setObjectName(_appname);
     d = new KIconLoaderPrivate;
     d->extraDesktopIconsLoaded=false;
+    d->mIconThemeInited = false;
+    d->mpThemeRoot = 0;
 
     if (_dirs)
         d->mpDirs = _dirs;
     else
         d->mpDirs = KGlobal::dirs();
 
-    // If this is unequal to 0, the iconloader is initialized
-    // successfully.
-    d->mpThemeRoot = 0L;
+    d->appname = _appname;
+    if (d->appname.isEmpty())
+        d->appname = KGlobal::mainComponent().componentName();
 
-    QString appname = _appname;
-    if (appname.isEmpty())
-        appname = KGlobal::mainComponent().componentName();
-
-    // Add the default theme and its base themes to the theme tree
-    KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
-    if (!def->isValid())
-    {
-        delete def;
-        // warn, as this is actually a small penalty hit
-        kDebug(264) << "Couldn't find current icon theme, falling back to default." << endl;
-        def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
-        if (!def->isValid())
-        {
-            kError(264) << "Error: standard icon theme"
-                         << " \"" << KIconTheme::defaultThemeName() << "\" "
-                         << " not found!" << endl;
-            d->mpGroups=0L;
-            delete def;
-            return;
+    // Initialize icon cache
+    d->mIconCache = new KIconCache;
+    if (!d->mIconCache->isValid()) {
+        initIconThemes();
+        QList<KIconTheme*> allThemes;
+        foreach (KIconThemeNode* node, d->links) {
+            allThemes.append(node->theme);
         }
+        d->mIconCache->setThemeInfo(allThemes);
     }
-    d->mpThemeRoot = new KIconThemeNode(def);
-    d->links.append(d->mpThemeRoot);
-    d->mThemesInTree += KIconTheme::current();
-    addBaseThemes(d->mpThemeRoot, appname);
 
     // These have to match the order in kicontheme.h
     static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", "Dialog", 0L };
@@ -267,13 +261,49 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
             d->mpGroups[i].alphaBlending = false;
 
         if (!d->mpGroups[i].size)
-            d->mpGroups[i].size = d->mpThemeRoot->theme->defaultSize(i);
+            d->mpGroups[i].size = d->mIconCache->defaultIconSize(i);
     }
 
+#ifdef NO_LAZYLOAD_ICONTHEME
+    initIconThemes();
+#endif
+}
+
+bool KIconLoader::initIconThemes()
+{
+    if (d->mIconThemeInited) {
+        // If d->mpThemeRoot isn't 0 then initing has succeeded
+        return (d->mpThemeRoot != 0);
+    }
+    kDebug() << k_funcinfo << endl;
+    d->mIconThemeInited = true;
+
+    // Add the default theme and its base themes to the theme tree
+    KIconTheme *def = new KIconTheme(KIconTheme::current(), d->appname);
+    if (!def->isValid())
+    {
+        delete def;
+        // warn, as this is actually a small penalty hit
+        kDebug(264) << "Couldn't find current icon theme, falling back to default." << endl;
+        def = new KIconTheme(KIconTheme::defaultThemeName(), d->appname);
+        if (!def->isValid())
+        {
+            kError(264) << "Error: standard icon theme"
+                         << " \"" << KIconTheme::defaultThemeName() << "\" "
+                         << " not found!" << endl;
+            delete def;
+            return false;
+        }
+    }
+    d->mpThemeRoot = new KIconThemeNode(def);
+    d->links.append(d->mpThemeRoot);
+    d->mThemesInTree += KIconTheme::current();
+    addBaseThemes(d->mpThemeRoot, d->appname);
+
     // Insert application specific themes at the top.
-    d->mpDirs->addResourceType("appicon", "data", appname + "/pics/");
+    d->mpDirs->addResourceType("appicon", "data", d->appname + "/pics/");
     // ################## KDE4: consider removing the toolbar directory
-    d->mpDirs->addResourceType("appicon", "data", appname + "/toolbar/");
+    d->mpDirs->addResourceType("appicon", "data", d->appname + "/toolbar/");
 
     // Add legacy icon dirs.
     QStringList dirs;
@@ -291,6 +321,8 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     d->mpThemeRoot->printTree(dbgString);
     kDebug(264) << dbgString << endl;
 #endif
+
+    return true;
 }
 
 KIconLoader::~KIconLoader()
@@ -315,11 +347,14 @@ KIconLoader::~KIconLoader()
     qDeleteAll(d->imgDict);
     qDeleteAll(d->links);
     qDeleteAll(d->svgRenderers);
+    delete d->mIconCache;
     delete d;
 }
 
 void KIconLoader::addAppDir(const QString& appname)
 {
+    const_cast<KIconLoader*>(this)->initIconThemes();
+
     d->mpDirs->addResourceType("appicon", "data", appname + "/pics/");
     // ################## KDE4: consider removing the toolbar directory
     d->mpDirs->addResourceType("appicon", "data", appname + "/toolbar/");
@@ -328,6 +363,8 @@ void KIconLoader::addAppDir(const QString& appname)
 
 void KIconLoader::addAppThemes(const QString& appname)
 {
+    const_cast<KIconLoader*>(this)->initIconThemes();
+
     if ( KIconTheme::current() != KIconTheme::defaultThemeName() )
     {
         KIconTheme *def = new KIconTheme(KIconTheme::current(), appname);
@@ -371,6 +408,8 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
 void KIconLoader::addExtraDesktopThemes()
 {
     if ( d->extraDesktopIconsLoaded ) return;
+
+    const_cast<KIconLoader*>(this)->initIconThemes();
 
     QStringList list;
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
@@ -456,8 +495,9 @@ QString KIconLoader::removeIconExtension(const QString &name) const
 
 K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
 {
-    K3Icon icon;
+    const_cast<KIconLoader*>(this)->initIconThemes();
 
+    K3Icon icon;
     const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
 
    /* JRT: To follow the XDG spec, the order in which we look for an
@@ -512,8 +552,9 @@ inline QString KIconLoader::unknownIconPath( int size ) const
 QString KIconLoader::iconPath(const QString& _name, int group_or_size,
                               bool canReturnNull) const
 {
-    if (d->mpThemeRoot == 0L)
+    if (!const_cast<KIconLoader*>(this)->initIconThemes()) {
         return QString();
+    }
 
     if (!QDir::isRelativePath(_name))
         return _name;
@@ -587,12 +628,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
                               int state, QString *path_store, bool canReturnNull) const
 {
     QString name = _name;
+    QString path;
     QPixmap pix;
     QString key;
     bool absolutePath=false, favIconOverlay=false;
-
-    if (d->mpThemeRoot == 0L)
-        return pix;
 
     // Special case for absolute path icons.
     if (name.startsWith("favicons/"))
@@ -610,11 +649,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
         key = "$kicou_";
         key += QString::number(size); key += '_';
         key += name;
-        bool inCache = QPixmapCache::find(key, pix);
-        if (inCache && (path_store == 0L))
+        if (d->mIconCache->find(key, pix, path_store)) {
+            //kDebug() << "KIL: " << "found the icon from KIC" << endl;
             return pix;
+        } else if (!const_cast<KIconLoader*>(this)->initIconThemes()) {
+            return pix;  // null pixmap
+        }
 
-        QString path = (absolutePath) ? name :
+        path = (absolutePath) ? name :
                         iconPath(name, K3Icon::User, canReturnNull);
         if (path.isEmpty())
         {
@@ -631,14 +673,14 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
         if (path_store != 0L)
             *path_store = path;
-        if (inCache)
-            return pix;
+        //if (inCache)
+        //    return pix;
         QImage img(path);
         if (size != 0)
             img=img.scaled(size,size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
         pix = QPixmap::fromImage(img);
-        QPixmapCache::insert(key, pix);
+        d->mIconCache->insert(key, pix, path);
         return pix;
     }
 
@@ -700,9 +742,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
     key += overlayStr;
 
     // Is the icon in the cache?
-    bool inCache = QPixmapCache::find(key, pix);
-    if (inCache && (path_store == 0L))
+    if (d->mIconCache->find(key, pix, path_store)) {
+        //kDebug() << "KIL: " << "found icon from KIC" << endl;
         return pix;
+    } else if (!const_cast<KIconLoader*>(this)->initIconThemes()) {
+        return pix; // null pixmap
+    }
 
     QImage *img = 0;
     int iconType;
@@ -745,8 +790,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
         if (path_store != 0L)
             *path_store = icon.path;
-        if (inCache)
-            return pix;
+        //if (inCache)
+        //    return pix;
 
         // Use the extension as the format. Works for XPM and PNG, but not for SVG
         QString ext = icon.path.right(3).toUpper();
@@ -789,6 +834,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
         iconType = icon.type;
         iconThreshold = icon.threshold;
+        path = icon.path;
 
         d->lastImage = img->copy();
         d->lastImageKey = noEffectKey;
@@ -806,6 +852,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
     if (overlay)
     {
         QImage *ovl;
+        const_cast<KIconLoader*>(this)->initIconThemes();
         KIconTheme *theme = d->mpThemeRoot->theme;
         if ((overlay & K3Icon::LockOverlay) &&
                 ((ovl = loadOverlay(theme->lockOverlay(), size)) != 0L))
@@ -877,7 +924,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
     delete img;
 
-    QPixmapCache::insert(key, pix);
+    d->mIconCache->insert(key, pix, path);
     return pix;
 }
 
@@ -927,6 +974,8 @@ QMovie *KIconLoader::loadMovie(const QString& name, K3Icon::Group group, int siz
 QString KIconLoader::moviePath(const QString& name, K3Icon::Group group, int size) const
 {
     if (!d->mpGroups) return QString();
+
+    const_cast<KIconLoader*>(this)->initIconThemes();
 
     if ( (group < -1 || group >= K3Icon::LastGroup) && group != K3Icon::User )
     {
@@ -979,6 +1028,8 @@ QStringList KIconLoader::loadAnimated(const QString& name, K3Icon::Group group, 
     QStringList lst;
 
     if (!d->mpGroups) return lst;
+
+    const_cast<KIconLoader*>(this)->initIconThemes();
 
     if ((group < -1) || (group >= K3Icon::LastGroup))
     {

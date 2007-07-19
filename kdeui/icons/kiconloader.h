@@ -349,6 +349,11 @@ public:
 
     /**
      * @internal
+     */
+    bool initIconThemes();
+
+    /**
+     * @internal
      * tries to find an icon with the name. It tries some extension and
      * match strategies
      */

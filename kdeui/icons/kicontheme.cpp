@@ -59,7 +59,7 @@ public:
     QList<int> mSizes[6];
 
     int mDepth;
-    QString mDir, mName, mDesc;
+    QString mDir, mName, mInternalName, mDesc;
     QStringList mInherits;
     QList<KIconThemeDir *> mDirs;
 };
@@ -119,6 +119,8 @@ bool K3Icon::isValid() const
 KIconTheme::KIconTheme(const QString& name, const QString& appName)
     :d(new KIconThemePrivate)
 {
+
+    d->mInternalName = name;
 
     QStringList icnlibs;
     QStringList::ConstIterator it, itDir;
@@ -268,6 +270,11 @@ KIconTheme::~KIconTheme()
 QString KIconTheme::name() const
 {
     return d->mName;
+}
+
+QString KIconTheme::internalName() const
+{
+    return d->mInternalName;
 }
 
 QString KIconTheme::description() const

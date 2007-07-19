@@ -96,6 +96,8 @@ set(kdeui_LIB_SRCS
  icons/kicon.cpp
  icons/kiconloader.cpp
  icons/kicontheme.cpp
+ icons/kiconcache.cpp
+ icons/kpixmapcache.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
@@ -340,6 +342,8 @@ install( FILES
  icons/kicon.h
  icons/kiconloader.h
  icons/kicontheme.h
+ icons/kiconcache.h
+ icons/kpixmapcache.h
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h

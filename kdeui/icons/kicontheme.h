@@ -213,6 +213,13 @@ public:
     QString name() const;
 
     /**
+     * The internal name of the icon theme (same as the name argument passed
+     *  to the constructor).
+     * @return the internal name of the theme
+     */
+    QString internalName() const;
+
+    /**
      * A description for the icon theme.
      * @return a human-readable description of the theme, QString()
      *         if there is none
