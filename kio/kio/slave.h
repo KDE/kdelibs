@@ -45,7 +45,7 @@ namespace KIO {
     {
 	Q_OBJECT
     public:
-	Slave(const QString &protocol, QObject *parent = 0);
+	explicit Slave(const QString &protocol, QObject *parent = 0);
 
         virtual ~Slave();
 

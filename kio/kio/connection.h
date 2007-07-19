@@ -51,7 +51,7 @@ namespace KIO {
 	 * Creates a new connection.
 	 * @see connectToRemote, listenForRemote
 	 */
-	Connection(QObject *parent = 0);
+	explicit Connection(QObject *parent = 0);
 	virtual ~Connection();
 
         /**
