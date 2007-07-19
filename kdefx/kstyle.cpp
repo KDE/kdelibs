@@ -389,6 +389,9 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                     p->fillRect(r, pal.color(QPalette::Highlight) );
                     return;
 
+                case DockWidget::SeparatorHandle:
+                    return;
+
                 default:
                     break;
             }
@@ -781,6 +784,13 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
         case PE_FrameDockWidget:
         {
             drawKStylePrimitive(WT_DockWidget, Generic::Frame,option,r,pal,flags,painter,widget);
+            return;
+        }
+
+        case PE_IndicatorDockWidgetResizeHandle:
+        {
+            drawKStylePrimitive(WT_DockWidget, DockWidget::SeparatorHandle, option, r, pal, flags,
+                                painter, widget);
             return;
         }
 

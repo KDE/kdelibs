@@ -600,7 +600,8 @@ protected:
          */
         enum Primitive
         {
-            TitlePanel ///< the panel/background of the title bar
+            TitlePanel, ///< the panel/background of the title bar
+            SeparatorHandle ///< the splitter between dockwidgets
         };
     };
 
