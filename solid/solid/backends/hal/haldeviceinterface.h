@@ -54,7 +54,8 @@ public:
             list << "block";
             break;
         case Solid::DeviceInterface::StorageAccess:
-            // Doesn't exist with HAL
+            // Doesn't exist with HAL, but let's assume volume always cover this type
+            list << "volume";
             break;
         case Solid::DeviceInterface::StorageDrive:
             list << "storage";
