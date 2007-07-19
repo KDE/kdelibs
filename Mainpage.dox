@@ -1,79 +1,190 @@
-/**
-	* @mainpage The KDE API Reference
-	*
-	* This section contains the KDE online class reference for the current
-	* development version of KDE.
-        * Please subscribe to or read the mailing lists for any
-        * additions and/or modifications to the API.
-	*
-	* - <a href="kdecore/html/index.html"><b>kdecore</b></a>
-        *   (<a href="kdecore/html/classes.html">classes</a>)\n
-	*   <i>Core KDE classes that are not related to the user interface.</i>
-	* - <a href="kdeui/html/index.html"><b>kdeui</b></a>
-        *   (<a href="kdeui/html/classes.html">classes</a>)\n
-	*   <i>KDE User interface classes such as widgets.</i>
-	* - <a href="khtml/html/index.html"><b>khtml</b></a>
-        *   (<a href="khtml/html/classes.html">classes</a>)\n
-	*   <i>The KDE HTML component.</i>
-	* - <a href="kjs/html/index.html"><b>kjs</b></a>
-        *   (<a href="kjs/html/classes.html">classes</a>)\n
-	*   <i>Javascript (aka. ECMAScript and JScript) support.</i>
-	* - <a href="kio/html/index.html"><b>kio</b></a>
-        *   (<a href="kio/html/classes.html">classes</a>)\n
-	*   <i>KDE's input/output system.<br> Provides network transparency input
-	*   and output, file monitoring, and more</i>
-	* - <a href="kparts/html/index.html"><b>kparts</b></a>
-        *   (<a href="kparts/html/classes.html">classes</a>)\n
-	*   <i>The KDE component library.<br> Provides support for re-usable, 
-	*   embeddable, extendable componets for use in applications.</i>
-	* - <a href="kdefx/html/index.html"><b>kdefx</b></a>
-        *   (<a href="kdefx/html/classes.html">classes</a>)\n
-	*   <i>KDE's graphic effects library.</i>
-	* - <a href="kdeprint/html/index.html"><b>kdeprint</b></a>
-        *   (<a href="kdeprint/html/classes.html">classes</a>)\n
-	*   <i>High level printer control functionality.</i>
-	* - <a href="kjsembed/html/index.html"><b>kjsembed</b></a>
-        *   (<a href="kjsembed/html/classes.html">classes</a>)\n
-	*   <i>The KDE kjsembed Library.</i>
-	* - <a href="kross/html/index.html"><b>kross</b></a>
-        *   (<a href="kross/html/classes.html">classes</a>)\n
-	*   <i>Scripting Library.</i>
-	* - <a href="interfaces/html/index.html"><b>interfaces</b></a>
-        *   (<a href="interfaces/html/classes.html">classes</a>)\n
-	*   <i>Defines interfaces for common components so that new implementations
-	*   can be dropped in.</i>
-	* - <a href="kutils/html/index.html"><b>kutils</b></a>
-        *   (<a href="kutils/html/classes.html">classes</a>)\n
-	*   <i>High-level utils, like search/replace support.</i>
-	* - <a href="phonon/html/index.html"><b>Phonon</b></a>
-        *   (<a href="phonon/html/classes.html">classes</a>)\n
-	*   <i>KDE Multimedia classes.</i>
-	* - <a href="knewstuff/html/index.html"><b>knewstuff</b></a>
-        *   (<a href="knewstuff/html/classes.html">classes</a>)\n
-	*   <i>Upload and download of application data.</i>
-	* - <a href="dnssd/html/index.html"><b>dnssd</b></a>
-        *   (<a href="dnssd/html/classes.html">classes</a>)\n
-	*   <i>Network sevices publishing and discovery.</i>
-	* - <a href="solid/html/index.html"><b>Solid</b></a>
-        *   (<a href="solid/html/classes.html">classes</a>)\n
-	*   <i>KDE Hardware Discovery and Management classes.</i>
-	* - <a href="nepomuk/html/index.html"><b>Nepomuk</b></a>
-        *   (<a href="nepomuk/html/classes.html">classes</a>)\n
-	*   <i>The KDE Meta Data library.</i>
+/** @mainpage The KDE Library API Reference
 
-	*
-	* More information about the KDE architecture in form of tutorials, HOWTOs,
-	* and FAQs can be found at
-	* the <a href="http://techbase.kde.org">KDE TechBase</a>.
-	*/
+Overview |
+@ref components "Components" |
+@ref development "Development" |
+@ref search "Class Search"
 
-/**
-	* @page search Search the API documentation
-	*
-	* <br>Under construction.
-	*
-	*/
+<hr>
+
+This is the online reference for developing with the KDE libraries
+(kdelibs).
+
+The KDE libraries build on the
+<a href="http://www.trolltech.com/products/qt/">Qt</a> framework to
+provide a powerful framework to make writing applications easier,
+and provide consistency across the KDE desktop envionment.
+
+Among other things, the KDE libraries provide:
+@li network transparent input and output (KIO)
+@li a method of embedding application components in other applications (KParts)
+@li straightforward multimedia and hardware interaction (Phonon and Solid)
+@li fully-fledged JavaScript and HTML engines (KJS and KHTML)
+@li an application scripting framework (Kross)
+@li semantic information and tagging (Nepomuk)
+
+Visit the <a href="http://techbase.kde.org/Development">development section of KDE Techbase</a>
+for tutorials, architectural overviews and other useful information.
+
+
+*/
+
+/** @page components Components
+
+@ref index "Overview" |
+Components |
+@ref development "Development" |
+@ref search "Class Search"
+
+<hr>
+
+Below is a brief summary of the various libraries you may want to use
+when developing a KDE application.
+
+Note that there is more to kdelibs than these libraries: on the left
+is a complete list of kdelibs components.  However, in almost all cases
+you will only be interested in the ones listed below.  The remaining
+ones are mostly implementation details that you don't need to worry
+about.
+
+There are also several components you can use.  Interfaces to most of
+these can be found in the <a href="interfaces/html/index.html">interfaces
+section</a>, but you should also be aware of KHTMLPart, which
+provides a full web browser component.
+
+<dl>
+    <dt>KDECore</dt>
+    <dd>Core KDE classes that are not related to the user interface.<br>
+        [ <a href="kdecore/html/index.html">Documentation</a> |
+          <a href="kdecore/html/classes.html">classes</a> ]</dd>
+
+    <dt>KIO</dt>
+    <dd>KDE's network-transparent input/output system: provides
+        just about every file-management function you'll ever need.<br>
+        [ <a href="kio/html/index.html">Documentation</a> |
+          <a href="kio/html/classes.html">classes</a> ]</dd>
+
+    <dt>KDEUI</dt>
+    <dd>KDE User Interface classes such as widgets.<br>
+        [ <a href="kdeui/html/index.html">Documentation</a> |
+          <a href="kdeui/html/classes.html">classes</a> ]</dd>
+
+    <dt>Phonon</dt>
+    <dd>KDE's multimedia framework.<br>
+        [ <a href="phonon/html/index.html">Documentation</a> |
+          <a href="phonon/html/classes.html">classes</a> ]</dd>
+
+    <dt>Solid</dt>
+    <dd>KDE Hardware Discovery and Management classes.<br>
+        [ <a href="solid/html/index.html">Documentation</a> |
+          <a href="solid/html/classes.html">classes</a> ]</dd>
+
+    <dt>Nepomuk</dt>
+    <dd>The KDE Meta Data library.<br>
+        [ <a href="nepomuk/html/index.html">Documentation</a> |
+          <a href="nepomuk/html/classes.html">classes</a> ]</dd>
+
+    <dt>KParts</dt>
+    <dd>The KDE component library: provides support for re-usable,
+        embeddable, extendible components for use in applications.<br>
+        [ <a href="kparts/html/index.html">Documentation</a> |
+          <a href="kparts/html/classes.html">classes</a> ]</dd>
+
+    <dt>KNewStuff</dt>
+    <dd>Upload and download of application data.<br>
+        [ <a href="knewstuff/html/index.html">Documentation</a> |
+          <a href="knewstuff/html/classes.html">classes</a> ]</dd>
+
+    <dt>KDEPrint</dt>
+    <dd>The KDE printing system.<br>
+        [ <a href="kdeprint/html/index.html">Documentation</a> |
+          <a href="kdeprint/html/classes.html">classes</a> ]</dd>
+
+    <dt>DNSSD</dt>
+    <dd>Access to the DNSSD (aka Bonjour, Zeroconf) service publishing
+        and discovery protocol.<br>
+        [ <a href="dnssd/html/index.html">Documentation</a> |
+          <a href="dnssd/html/classes.html">classes</a> ]</dd>
+
+    <dt>KDEFX</dt>
+    <dd>KDE's graphic effects library.<br>
+        [ <a href="kdefx/html/index.html">Documentation</a> |
+          <a href="kdefx/html/classes.html">classes</a> ]</dd>
+
+    <dt>KJS</dt>
+    <dd>JavaScript (aka. ECMAScript and JScript) support.<br>
+        [ <a href="kjs/html/index.html">Documentation</a> |
+          <a href="kjs/html/classes.html">classes</a> ]</dd>
+
+    <dt>Kross</dt>
+    <dd>Allows scripting to be added to an application in an
+        interpreter-independent way.<br>
+        [ <a href="kross/html/index.html">Documentation</a> |
+          <a href="kross/html/classes.html">classes</a> ]</dd>
+
+    <dt>ThreadWeaver</dt>
+    <dd>A job-based multi-threading library<br>
+        [ <a href="threadweaver/html/index.html">Documentation</a> |
+          <a href="threadweaver/html/classes.html">classes</a> ]</dd>
+
+    <dt>KDESU</dt>
+    <dd>Run processes remotely or with elevated privileges.<br>
+        [ <a href="kdesu/html/index.html">Documentation</a> |
+          <a href="kdesu/html/classes.html">classes</a> ]</dd>
+</dl>
+
+*/
+
+/** @page development Development
+
+@ref index "Overview" |
+@ref components "Components" |
+Development |
+@ref search "Class Search"
+
+<hr>
+
+To follow or get involved with the development of the KDE libraries,
+join the <a href="https://mail.kde.org/mailman/listinfo/kde-core-devel">kde-core-devel
+mailing list</a>.
+
+Instructions for building a development version of KDE can be found in the
+<a href="http://techbase.kde.org/Getting_Started">getting started</a> section
+of the <a href="http://techbase.kde.org">KDE Techbase</a>.
+
+*/
+
+/** @page search Class Search
+
+@ref index "Overview" |
+@ref components "Components" |
+@ref development "Development" |
+Class Search
+
+<hr>
+
+You can search for any class in the public API of the KDE libraries
+here.
+
+Note: only enter the class name, without any namespace qualifiers.
+
+@htmlonly
+<form action="http://api.kde.org/classmapper.php" method="get">
+<input type="text" name="class" value="[classname]" style="width:100%;" onClick="this.value='';"/>
+<input type="submit" name="go" value="Go" />
+<input type=hidden name="module" value="kdelibs">
+<input type=hidden name="version" value="4.0">
+</form>
+@endhtmlonly
+
+If you want to search for any sort of identifier in kdelibs (and other code
+in the KDE SVN repository), you can do so using the
+<a href="http://lxr.kde.org">KDE Source Cross-Reference</a> tool.
+
+*/
 
 // DOXYGEN_VERSION=4.0
 // DOXYGEN_NAME=kdelibs
 // DOXYGEN_ENABLE=YES
+// DOXYGEN_REFERENCES = khtml kate
+// vim:ts=4:sw=4:expandtab:filetype=doxygen
