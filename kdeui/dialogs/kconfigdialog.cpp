@@ -75,6 +75,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
   connect(this, SIGNAL(okClicked()), this, SLOT(updateSettings()));
   connect(this, SIGNAL(applyClicked()), this, SLOT(updateSettings()));
   connect(this, SIGNAL(applyClicked()), this, SLOT(updateButtons()));
+  connect(this, SIGNAL(cancelClicked()), this, SLOT(updateWidgets()));
   connect(this, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
   connect(this, SIGNAL(defaultClicked()), this, SLOT(updateButtons()));
 
@@ -146,6 +147,7 @@ void KConfigDialog::setupManagerConnections(KConfigDialogManager *manager)
 
   connect(this, SIGNAL(okClicked()), manager, SLOT(updateSettings()));
   connect(this, SIGNAL(applyClicked()), manager, SLOT(updateSettings()));
+  connect(this, SIGNAL(cancelClicked()), manager, SLOT(updateWidgets()));
   connect(this, SIGNAL(defaultClicked()), manager, SLOT(updateWidgetsDefault()));
 }
 
