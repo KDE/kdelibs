@@ -385,6 +385,9 @@ void KPixmapCache::deleteCache(const QString& name)
 void KPixmapCache::discard()
 {
     deleteCache(d->mName);
+    if(d->mUseQPixmapCache)
+        QPixmapCache::clear();
+
     init();
 }
 
