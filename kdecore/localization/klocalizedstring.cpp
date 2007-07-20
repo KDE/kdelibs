@@ -67,19 +67,25 @@ class KLocalizedStringPrivate
     QByteArray plural;
 
     QString toString (const KLocale *locale) const;
+    QString selectForEnglish () const;
     QString substituteSimple (const QString &trans,
-                              const QString &lang,
-                              const QString &lscr,
                               const QChar &plchar = '%',
                               bool partial = false) const;
+    QString postFormat (const QString &text,
+                        const QString &lang,
+                        const QString &lscr,
+                        const QString &ctxt) const;
     QString substituteTranscript (const QString &trans,
                                   const QString &lang,
                                   const QString &lscr,
-                                  const QString &final) const;
-    int parseInterpolation (const QString &trans, int pos,
-                            const QString &lang,
-                            const QString &lscr,
-                            QStringList &args) const;
+                                  const QString &final,
+                                  bool &fallback) const;
+    int resolveInterpolation (const QString &trans, int pos,
+                              const QString &lang,
+                              const QString &lscr,
+                              const QString &final,
+                              QString &result,
+                              bool &fallback) const;
     QString postTranscript (const QString &pcall,
                             const QString &lang,
                             const QString &lscr,
@@ -233,21 +239,13 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     else
     {
         lang = KLocale::defaultLanguage();
-        if (!plural.isEmpty())
-        {
-            if (number == 1)
-                rawtrans = QString::fromUtf8(msg);
-            else
-                rawtrans = QString::fromUtf8(plural);
-        }
-        else
-            rawtrans = QString::fromUtf8(msg);
+        rawtrans = selectForEnglish();
     }
 
     // Set ordinary translation and possibly scripted translation.
     QString trans, strans;
     int cdpos = rawtrans.indexOf(s->theFence);
-    if (cdpos >= 0)
+    if (cdpos > 0)
     {
         // Script fence has been found, strip the scripted from the
         // ordinary translation.
@@ -268,30 +266,36 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
             #endif
         }
     }
-    else
+    else if (cdpos < 0)
+    {
+        // No script fence, use translation as is.
         trans = rawtrans;
+    }
+    else // cdpos == 0
+    {
+        // The msgstr starts with the script fence, no ordinary translation.
+        // This is not allowed, consider message not translated.
+        #ifndef NDEBUG
+        kDebug(173) << QString("Scripted message {%1} without ordinary translation, discarded.")
+                               .arg(shortenMessage(trans)) << endl;
+        #endif
+        trans = selectForEnglish();
+    }
 
-    // Substitute placeholders in ordinary translations.
-    QString final = substituteSimple(trans, lang, lscr);
-
-    // Transform any semantic markup into visual formatting.
-    if (s->formatters.contains(lang))
-        final = s->formatters[lang]->format(final, ctxt);
+    // Substitute placeholders in ordinary translation.
+    QString final = substituteSimple(trans);
+    // Post-format ordinary translation.
+    final = postFormat(final, lang, lscr, ctxt);
 
     // If there is also a scripted translation.
-    if (!strans.isEmpty())
-    {
+    if (!strans.isEmpty()) {
         // Evaluate scripted translation.
-        QString sfinal = substituteTranscript(strans, lang, lscr, final);
+        bool fallback;
+        QString sfinal = substituteTranscript(strans, lang, lscr, final, fallback);
 
-        // If evaluated successfully.
-        if (!sfinal.isEmpty())
-        {
-            final = sfinal;
-
-            // Again transform any semantic markup into visual formatting.
-            if (s->formatters.contains(lang))
-                final = s->formatters[lang]->format(final, ctxt);
+        // If any translation produced and no fallback requested.
+        if (!sfinal.isEmpty() && !fallback) {
+            final = postFormat(sfinal, lang, lscr, ctxt);
         }
     }
 
@@ -307,17 +311,32 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     return final;
 }
 
+QString KLocalizedStringPrivate::selectForEnglish () const
+{
+    QString trans;
+
+    if (!plural.isEmpty()) {
+        if (number == 1) {
+            trans = QString::fromUtf8(msg);
+        }
+        else {
+            trans = QString::fromUtf8(plural);
+        }
+    }
+    else {
+        trans = QString::fromUtf8(msg);
+    }
+
+    return trans;
+}
+
 QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
-                                                   const QString &lang,
-                                                   const QString &lscr,
                                                    const QChar &plchar,
                                                    bool partial) const
 {
     #ifdef NDEBUG
     Q_UNUSED(partial);
     #endif
-
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
 
     QStringList tsegs; // text segments per placeholder occurrence
     QList<int> plords; // ordinal numbers per placeholder occurrence
@@ -404,10 +423,6 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
     }
     final.append(tsegs.last());
 
-    // Possibly do transliteration.
-    if (s->translits.contains(lang))
-        final = s->translits[lang]->transliterate(final, lscr);
-
     #ifndef NDEBUG
     if (!partial)
     {
@@ -439,10 +454,33 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
     return final;
 }
 
+QString KLocalizedStringPrivate::postFormat (const QString &text,
+                                             const QString &lang,
+                                             const QString &lscr,
+                                             const QString &ctxt) const
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QString final = text;
+
+    // Transform any semantic markup into visual formatting.
+    if (s->formatters.contains(lang)) {
+        final = s->formatters[lang]->format(final, ctxt);
+    }
+
+    // Transliterate to alternative script.
+    if (s->translits.contains(lang)) {
+        final = s->translits[lang]->transliterate(final, lscr);
+    }
+
+    return final;
+}
+
 QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
                                                        const QString &lang,
                                                        const QString &lscr,
-                                                       const QString &final) const
+                                                       const QString &final,
+                                                       bool &fallback) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
 
@@ -452,173 +490,192 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
 
     // Iterate by interpolations.
     QString sfinal;
+    fallback = false;
     int ppos = 0;
     int tpos = strans.indexOf(s->startInterp);
     while (tpos >= 0)
     {
         // Resolve substitutions in preceding text.
         QString ptext = substituteSimple(strans.mid(ppos, tpos - ppos),
-                                         lang, lscr, s->scriptPlchar, true);
+                                         s->scriptPlchar, true);
         sfinal.append(ptext);
 
-        // Parse interpolation.
-        QStringList argv;
-        int mpos = tpos;
-        tpos = parseInterpolation(strans, tpos, lang, lscr, argv);
-        if (tpos < 0)
-            // Problem while parsing the interpolation
-            // (debug info already reported while parsing).
-            return QString();
-
         // Resolve interpolation.
-        QString msgctxt = QString::fromUtf8(ctxt);
-        QString msgid = QString::fromUtf8(msg);
-        QString scriptError;
-        bool fallback;
-        QString interp = s->ktrs->eval(argv, lang, lscr, msgctxt, msgid, args,
-                                       final, s->scriptModulesToLoad,
-                                       scriptError, fallback);
-        // s->scriptModulesToLoad will be cleared during the call.
+        QString result;
+        bool fallbackLocal;
+        tpos = resolveInterpolation(strans, tpos, lang, lscr, final,
+                                    result, fallbackLocal);
 
-        // See if transcript evaluation went well.
-        if (scriptError.isEmpty())
-        {
-            if (fallback) // script requested fallback to ordinary translation
-                return QString();
-            else
-            {
-                // Possibly do language script conversion.
-                if (s->translits.contains(lang))
-                    interp = s->translits[lang]->transliterate(interp, lscr);
-
-                sfinal.append(interp);
-            }
-        }
-        else
-        {
-            #ifndef NDEBUG
-            kDebug(173) << QString("Interpolation {%1} in message {%2} failed: %3")
-                                  .arg(strans.mid(mpos, tpos - mpos), shortenMessage(strans), scriptError) << endl;
-            #endif
+        // If there was a problem in parsing the interpolation, cannot proceed
+        // (debug info already reported while parsing).
+        if (tpos < 0) {
             return QString();
         }
+        // If fallback has been explicitly requested, indicate global fallback
+        // but proceed with evaluations (other interpolations may set states).
+        if (fallbackLocal) {
+            fallback = true;
+        }
+
+        // Add evaluated interpolation to the text.
+        sfinal.append(result);
 
         // On to next interpolation.
         ppos = tpos;
         tpos = strans.indexOf(s->startInterp, tpos);
     }
     // Last text segment.
-    sfinal.append(substituteSimple(strans.mid(ppos), lang, lscr,
-                                   s->scriptPlchar, true));
+    sfinal.append(substituteSimple(strans.mid(ppos), s->scriptPlchar, true));
 
-    return sfinal;
+    // Return empty string if fallback was requested.
+    return fallback ? QString() : sfinal;
 }
 
-int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
-                                                 const QString &lang,
-                                                 const QString &lscr,
-                                                 QStringList &argv) const
+int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int pos,
+                                                   const QString &lang,
+                                                   const QString &lscr,
+                                                   const QString &final,
+                                                   QString &result,
+                                                   bool &fallback) const
 {
     // pos is the position of opening character sequence.
     // Returns the position of first character after closing sequence,
-    // or -1 for non-terminated interpolation.
+    // or -1 in case of parsing error.
+    // result is set to result of Transcript evaluation.
+    // fallback is set to true if Transcript evaluation requested so.
 
     KLocalizedStringPrivateStatics *s = staticsKLSP;
-    static const QString ws(" \t\n");
 
-    // Split into tokens.
-    QStringList tokens;
+    result = QString();
+    fallback = false;
+
+    // Split interpolation into arguments.
+    QStringList iargs;
     int slen = strans.length();
-    int elen = s->endInterp.length();
+    int islen = s->startInterp.length();
+    int ielen = s->endInterp.length();
     int tpos = pos + s->startInterp.length();
-    while (   tpos < slen
-           && strans.mid(tpos, elen) != s->endInterp)
+    while (1)
     {
-        // Devour whitespace.
-        while (tpos < slen && ws.indexOf(strans[tpos]) >= 0)
+        // Skip whitespace.
+        while (tpos < slen && strans[tpos].isSpace()) {
             ++tpos;
-
-        if (tpos == slen)
-        {
+        }
+        if (tpos == slen) {
             #ifndef NDEBUG
-            kDebug(173) << QString("Unexpected end of interpolation {%1} in message {%2}.")
+            kDebug(173) << QString("Unclosed interpolation {%1} in message {%2}.")
                                   .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
             #endif
             return -1;
         }
-
-        // Token may be quoted and non-quoted.
-        // May contain placeholders, substitute them.
-        // Mind backslash escapes.
-        QString token;
-        QString clang;
-        bool quoted = (strans[tpos] == '\'' ? true : false);
-        if (quoted)
-        // Quoted token.
-        {
-            ++tpos; // skip opening quote
-            // Find closing quote.
-            while (tpos < slen && strans[tpos] != '\'')
-            {
-                if (strans[tpos] == '\\')
-                    ++tpos; // escape next character
-                token.append(strans[tpos]);
-                ++tpos;
-            }
-
-            if (tpos == slen)
-            {
-                #ifndef NDEBUG
-                kDebug(173) << QString("Unclosed quoted token in interpolation {%1} in message {%2}.")
-                                      .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
-                #endif
-                return -1;
-            }
-
-            ++tpos; // skip closing quote
-        }
-        else
-        // Non-quoted token.
-        {
-            // Find whitespace or closing sequence.
-            while (   tpos < slen
-                   && ws.indexOf(strans[tpos]) < 0
-                   && strans.mid(tpos, elen) != s->endInterp)
-            {
-                if (strans[tpos] == '\\')
-                    ++tpos; // escape next character
-                token.append(strans[tpos]);
-                ++tpos;
-            }
-
-            if (tpos == slen)
-            {
-                #ifndef NDEBUG
-                kDebug(173) << QString("Non-terminated interpolation {%1} in message {%2}.")
-                                      .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
-                #endif
-                return -1;
-            }
+        if (strans.mid(tpos, ielen) == s->endInterp) {
+            break; // no more arguments
         }
 
-        // Add token to arguments, possibly substituting placeholders.
-        if (!token.isEmpty() || quoted) // don't add empty unquoted tokens
+        // Parse argument: may be concatenated from free and quoted text,
+        // and sub-interpolations.
+        // Free and quoted segments may contain placeholders, substitute them;
+        // recurse into sub-interpolations.
+        // Mind backslash escapes throughout.
+        QString arg;
+        while (   !strans[tpos].isSpace()
+               && strans.mid(tpos, ielen) != s->endInterp)
         {
-            argv.append(substituteSimple(token, clang, lscr, s->scriptPlchar,
-                                         true));
-            // Set to real language after first token: first token
-            // (interpolation call name) should not be considered for
-            // transliteration in subsituteSimple.
-            clang = lang;
+            if (strans[tpos] == '\'') { // quoted segment
+                QString seg;
+                ++tpos; // skip opening quote
+                // Find closing quote.
+                while (tpos < slen && strans[tpos] != '\'') {
+                    if (strans[tpos] == '\\')
+                        ++tpos; // escape next character
+                    seg.append(strans[tpos]);
+                    ++tpos;
+                }
+                if (tpos == slen) {
+                    #ifndef NDEBUG
+                    kDebug(173) << QString("Unclosed quote in interpolation {%1} in message {%2}.")
+                                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
+                    #endif
+                    return -1;
+                }
+
+                // Append to argument, resolving placeholders.
+                arg.append(substituteSimple(seg, s->scriptPlchar, true));
+
+                ++tpos; // skip closing quote
+            }
+            else if (strans.mid(tpos, islen) == s->startInterp) { // sub-interpolation
+                QString resultLocal;
+                bool fallbackLocal;
+                tpos = resolveInterpolation(strans, tpos, lang, lscr, final,
+                                            resultLocal, fallbackLocal);
+                if (tpos < 0) { // unrecoverable problem in sub-interpolation
+                    // Error reported in the subcall.
+                    return tpos;
+                }
+                if (fallbackLocal) { // sub-interpolation requested fallback
+                    fallback = true;
+                }
+                arg.append(resultLocal);
+            }
+            else { // free segment
+                QString seg;
+                // Find whitespace, quote, opening or closing sequence.
+                while (   tpos < slen
+                       && !strans[tpos].isSpace() && strans[tpos] != '\''
+                       && strans.mid(tpos, islen) != s->startInterp
+                       && strans.mid(tpos, ielen) != s->endInterp)
+                {
+                    if (strans[tpos] == '\\')
+                        ++tpos; // escape next character
+                    seg.append(strans[tpos]);
+                    ++tpos;
+                }
+                if (tpos == slen) {
+                    #ifndef NDEBUG
+                    kDebug(173) << QString("Non-terminated interpolation {%1} in message {%2}.")
+                                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
+                    #endif
+                    return -1;
+                }
+
+                // Append to argument, resolving placeholders.
+                arg.append(substituteSimple(seg, s->scriptPlchar, true));
+            }
         }
+
+        // Append to rest of the arguments.
+        iargs.append(arg);
     }
-    tpos += elen; // skip to first character after closing sequence
+    tpos += ielen; // skip to first character after closing sequence
 
-    // NOTE: Why not make this simpler, in two passes -- a simple substitution
-    // of placeholders (via substituteSimple) in first pass, then handle
-    // interpolations in second pass? Because then user would always have to
-    // quote substitutions within interpolations, for safety in case when
-    // expansion contains whitespace (like in shell filename expansions).
+    // NOTE: Why not substitute placeholders (via substituteSimple) in one
+    // global pass, then handle interpolations in second pass? Because then
+    // there is the danger of substituted text or sub-interpolations producing
+    // quotes and escapes themselves, which would mess up the parsing.
+
+    // Evaluate interpolation.
+    QString msgctxt = QString::fromUtf8(ctxt);
+    QString msgid = QString::fromUtf8(msg);
+    QString scriptError;
+    bool fallbackLocal;
+    result = s->ktrs->eval(iargs, lang, lscr, msgctxt, msgid, args,
+                           final, s->scriptModulesToLoad,
+                           scriptError, fallbackLocal);
+    // s->scriptModulesToLoad will be cleared during the call.
+
+    if (fallbackLocal) { // evaluation requested fallback
+        fallback = true;
+    }
+    if (!scriptError.isEmpty()) { // problem with evaluation
+        fallback = true; // also signal fallback
+        #ifndef NDEBUG
+        if (!scriptError.isEmpty()) {
+            kDebug(173) << QString("Interpolation {%1} in {%2} failed: %3")
+                                  .arg(strans.mid(pos, tpos - pos), shortenMessage(strans), scriptError) << endl;
+        }
+        #endif
+    }
 
     return tpos;
 }
@@ -636,13 +693,13 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
         return QString();
 
     // Resolve the post call.
-    QStringList argv;
-    argv.append(pcall);
+    QStringList iargs;
+    iargs.append(pcall);
     QString msgctxt = QString::fromUtf8(ctxt);
     QString msgid = QString::fromUtf8(msg);
     QString scriptError;
     bool fallback;
-    QString dummy = s->ktrs->eval(argv, lang, lscr, msgctxt, msgid, args,
+    QString dummy = s->ktrs->eval(iargs, lang, lscr, msgctxt, msgid, args,
                                   final, s->scriptModulesToLoad,
                                   scriptError, fallback);
     // s->scriptModulesToLoad will be cleared during the call.
