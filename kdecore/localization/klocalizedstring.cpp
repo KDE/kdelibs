@@ -130,7 +130,8 @@ class KLocalizedStringPrivateStatics
 
     ~KLocalizedStringPrivateStatics ()
     {
-        delete ktrs;
+        // ktrs is handled by KLibLoader.
+        //delete ktrs;
         qDeleteAll(translits);
         qDeleteAll(formatters);
     }
