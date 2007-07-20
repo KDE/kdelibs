@@ -98,7 +98,6 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
     if (existingIconThemeDirs(themeNames) != themeDirs ||
             mostRecentMTime(themeDirs) != themesMTime) {
         kDebug() << k_funcinfo << "Theme directory has been modified" << endl;
-        recreateCacheFiles();
         return false;
     }
 
