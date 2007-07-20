@@ -110,7 +110,6 @@ public:
     bool enableClickMsg:1;
     bool drawClickMsg:1;
 
-    bool bEnableMenu :1; 
     bool possibleTripleClick :1;  // set in mousePressEvent, deleted in tripleClickTimeout
 
     bool clickInClear:1;
@@ -152,7 +151,7 @@ void KLineEdit::init()
     d->bgRole = backgroundRole();
 
     // Enable the context menu by default.
-    KLineEdit::setContextMenuEnabled( true );
+    QLineEdit::setContextMenuPolicy( Qt::DefaultContextMenu );
     KCursor::setAutoHideCursor( this, true, true );
     installEventFilter( this );
 
@@ -1064,7 +1063,7 @@ QMenu* KLineEdit::createStandardContextMenu()
 
 void KLineEdit::contextMenuEvent( QContextMenuEvent *e )
 {
-    if ( !d->bEnableMenu )
+    if ( QLineEdit::contextMenuPolicy() != Qt::DefaultContextMenu )
       return;
     QMenu *popup = createStandardContextMenu();
 
@@ -1557,12 +1556,12 @@ void KLineEdit::setClickMessage( const QString &msg )
 
 void KLineEdit::setContextMenuEnabled( bool showMenu )
 {
-    d->bEnableMenu = showMenu;
+    QLineEdit::setContextMenuPolicy( showMenu ? Qt::DefaultContextMenu : Qt::NoContextMenu );
 }
 
 bool KLineEdit::isContextMenuEnabled() const
 {
-    return  d->bEnableMenu;
+    return  ( contextMenuPolicy() == Qt::DefaultContextMenu );
 }
 
 void KLineEdit::setPasswordMode(bool b)
