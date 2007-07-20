@@ -6,6 +6,7 @@ install(FILES
     lgpl-license lgpl-license.html qpl-license.html x11-license.html
     xml.dcl
     doxygen.css
+    tabs.css
     header.html
     footer.html
     mainheader.html
