@@ -37,9 +37,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-// Note that this header file is installed, so think twice
-// before breaking binary compatibility (read: it is forbidden :)
-
 class KIOSLAVE_FILE_EXPORT FileProtocol : public QObject, public KIO::SlaveBase
 {
   Q_OBJECT
