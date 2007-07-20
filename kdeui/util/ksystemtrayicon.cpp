@@ -38,8 +38,8 @@
 
 #include <kconfig.h>
 #include <kiconloader.h>
+#include <kapplication.h>
 
-#include <QApplication>
 #include <QMouseEvent>
 #include <kconfiggroup.h>
 
