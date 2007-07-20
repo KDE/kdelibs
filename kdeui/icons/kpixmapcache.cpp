@@ -28,11 +28,13 @@
 #include <QtCore/QDateTime>
 #include <QtGui/QPixmapCache>
 #include <QtCore/QtGlobal>
+#include <QtGui/QPainter>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klockfile.h>
+#include <ksvgrenderer.h>
 
 #include <sys/file.h>
 
@@ -572,5 +574,63 @@ void KPixmapCache::writeIndex(const QString& key, int dataoffset)
 
     // Write the data
     stream << key << (qint32)dataoffset;
+}
+
+QPixmap KPixmapCache::loadFromFile(const QString& filename)
+{
+    QFileInfo fi(filename);
+    if (!fi.exists()) {
+        return QPixmap();
+    } else if (fi.lastModified().toTime_t() > timestamp()) {
+        // Cache is obsolete, will be regenerated
+        discard();
+    }
+
+    QPixmap pix;
+    QString key("file:" + filename);
+    if (!find(key, pix)) {
+        // It wasn't in the cache, so load it...
+        pix = QPixmap(filename);
+        if (pix.isNull()) {
+            return pix;
+        }
+        // ... and put it there
+        insert(key, pix);
+    }
+
+    return pix;
+}
+
+QPixmap KPixmapCache::loadFromSVG(const QString& filename, const QSize& size)
+{
+    QFileInfo fi(filename);
+    if (!fi.exists()) {
+        return QPixmap();
+    } else if (fi.lastModified().toTime_t() > timestamp()) {
+        // Cache is obsolete, will be regenerated
+        discard();
+    }
+
+    QPixmap pix;
+    QString key = QString("file:%1_%2_%3").arg(filename).arg(size.width()).arg(size.height());
+    if (!find(key, pix)) {
+        // It wasn't in the cache, so load it...
+        KSvgRenderer svg;
+        if (!svg.load(filename)) {
+            return pix;  // null pixmap
+        } else {
+            QSize pixSize = size.isValid() ? size : svg.defaultSize();
+            pix = QPixmap(pixSize);
+            pix.fill(Qt::transparent);
+
+            QPainter p(&pix);
+            svg.render(&p, QRectF(QPointF(), pixSize));
+        }
+
+        // ... and put it there
+        insert(key, pix);
+    }
+
+    return pix;
 }
 

@@ -25,6 +25,7 @@
 
 #include <QtCore/QList>
 #include <QtCore/QSet>
+#include <QtCore/QSize>
 
 class QString;
 class QStringList;
@@ -56,6 +57,19 @@ public:
      * Insert specified pixmap into the cache.
      **/
     virtual void insert(const QString& key, const QPixmap& pix);
+
+    /**
+     * Loads pixmap from given file, using the cache.
+     * If file's modified-time is more recent than cache's @ref timestamp() ,
+     *  then the cache is discarded.
+     **/
+    QPixmap loadFromFile(const QString& filename);
+    /**
+     * Same as above, but uses SVG file instead.
+     * @param size size of the pixmap where the SVG is render to. If not given
+     *  then SVG's default size is used.
+     **/
+    QPixmap loadFromSVG(const QString& filename, const QSize& size = QSize());
 
     /**
      * @return timestamp of the cache, set using the @p setTimestamp method.
