@@ -88,6 +88,12 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
         return false;
     }
 
+    // Make sure at least one theme was read
+    if (!themeNames.count()) {
+        kDebug() << k_funcinfo << "Empty themes list" << endl;
+        return false;
+    }
+
     // Make sure the theme dirs haven't changed
     if (existingIconThemeDirs(themeNames) != themeDirs ||
             mostRecentMTime(themeDirs) != themesMTime) {
@@ -118,7 +124,9 @@ void KIconCache::writeCustomIndexHeader(QDataStream& stream)
     stream << themeDirs;
     stream << (quint32)mostRecentMTime(themeDirs);
 
-    if (stream.status() == QDataStream::Ok) {
+    // Cache is valid if header was successfully written and we actually have
+    //  the icontheme name(s)
+    if (stream.status() == QDataStream::Ok && themeNames.count()) {
         setValid(true);
     }
 }
