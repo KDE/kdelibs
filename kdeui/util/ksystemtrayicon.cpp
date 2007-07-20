@@ -298,5 +298,12 @@ void KSystemTrayIcon::toggleActive()
     activateOrHide( QSystemTrayIcon::Trigger );
 }
 
+bool KSystemTrayIcon::parentWidgetTrayClose() const
+{
+    if( kapp != NULL && kapp->sessionSaving())
+        return false; // normal close
+    return true;
+}
+
 #include "ksystemtrayicon.moc"
 

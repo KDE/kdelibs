@@ -93,6 +93,14 @@ public:
     QWidget *parentWidget() const;
 
     /**
+       Function to be used from function handling closing of the window associated 
+       with the tray icon (i.e. QWidget::closeEvent(), KMainWindow::queryClose() or 
+       similar). When false is returned, the window closing should proceed normally, 
+       when true is returned, special systray-related handling should take place.
+     */
+    bool parentWidgetTrayClose() const;
+
+    /**
      * Loads an icon @p icon using the icon loader class of the given componentData @p componentData.
      * The icon is applied the panel effect as it should only be used to be shown in the
      * system tray.
