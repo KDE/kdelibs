@@ -20,6 +20,7 @@ set(kfile_LIB_SRCS
   kcombiview.cpp
   kdiroperator.cpp
   kdirselectdialog.cpp
+  kdirsortfilterproxymodel.cpp #used in combination with kio/kio/kdirmodel.cpp
   kfilebookmarkhandler.cpp
   kfilefiltercombo.cpp
   kfilepreview.cpp
@@ -60,6 +61,7 @@ install( FILES
   kcombiview.h
   kdiroperator.h
   kdirselectdialog.h
+  kdirsortfilterproxymodel.h
   kfilefiltercombo.h
   kfileplacesmodel.h
   kfileplacesview.h

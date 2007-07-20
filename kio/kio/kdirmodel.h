@@ -32,6 +32,8 @@ class KDirModelPrivate;
  * KDirModel implements the QAbstractItemModel interface (for use with Qt's model/view widgets)
  * around the directory listing for one directory or a tree of directories.
  *
+ * @see KDirSortFilterProxyModel
+ *
  * @author David Faure
  * Based on work by Hamish Rodda and Pascal Letourneau
  */
@@ -153,7 +155,7 @@ public:
     /// Reimplemented from QAbstractItemModel.
     /// Call this to set a new icon, e.g. a preview
     virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
-    /// Reimplemented from QAbstractItemModel. Not implemented.
+    /// Reimplemented from QAbstractItemModel. Not implemented. @see KDirSortFilterProxyModel
     virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
 
 private Q_SLOTS:
