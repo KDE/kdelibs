@@ -249,6 +249,7 @@ KPixmapCache::KPixmapCache(const QString& name)
 
 KPixmapCache::~KPixmapCache()
 {
+    delete d;
 }
 
 void KPixmapCache::init()

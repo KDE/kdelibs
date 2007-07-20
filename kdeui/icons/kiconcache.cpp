@@ -54,6 +54,7 @@ KIconCache::KIconCache()
 
 KIconCache::~KIconCache()
 {
+    delete d;
 }
 
 void KIconCache::deleteCache()
