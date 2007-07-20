@@ -16,6 +16,9 @@ provide a powerful framework to make writing applications easier,
 and provide consistency across the KDE desktop envionment.
 
 Among other things, the KDE libraries provide:
+@li standard user interface elements, on top of those provided by Qt (KDEUI)
+@li a standard configuration format and method of reading and writing configuration data (KConfig)
+@li site-independent access to standard directories, for finding resources such as icons (KStandardDirs)
 @li network transparent input and output (KIO)
 @li a method of embedding application components in other applications (KParts)
 @li straightforward multimedia and hardware interaction (Phonon and Solid)
@@ -80,7 +83,9 @@ provides a full web browser component.
           <a href="solid/html/classes.html">classes</a> ]</dd>
 
     <dt>Nepomuk</dt>
-    <dd>The KDE Meta Data library.<br>
+    <dd>The KDE Meta Data library, for metadata assigned to a
+        resource (such as a file or an email) by the user or
+        by an application, such as tags or download locations.<br>
         [ <a href="nepomuk/html/index.html">Documentation</a> |
           <a href="nepomuk/html/classes.html">classes</a> ]</dd>
 
