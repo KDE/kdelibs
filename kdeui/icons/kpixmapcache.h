@@ -46,6 +46,7 @@ public:
      **/
     explicit KPixmapCache(const QString& name);
     virtual ~KPixmapCache();
+
     /**
      * Tries to load the specified pixmap from cache.
      * @return true when pixmap was found and loaded from cache, false otherwise
@@ -55,6 +56,7 @@ public:
      * Insert specified pixmap into the cache.
      **/
     virtual void insert(const QString& key, const QPixmap& pix);
+
     /**
      * @return timestamp of the cache, set using the @p setTimestamp method.
      * It can be used by the application to check whether app-specific cache
@@ -114,6 +116,7 @@ public:
      *  will temporarily use extra disk space.
      **/
     void removeEntries(int newsize, RemoveStrategy strategy = RemoveLeastRecentlyUsed);
+
 protected:
     void init();
 
@@ -144,6 +147,7 @@ protected:
      **/
     void setValid(bool valid);
 
+    void ensureInited() const;
     bool recreateCacheFiles();
 
 private:

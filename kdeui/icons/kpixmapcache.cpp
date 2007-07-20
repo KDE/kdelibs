@@ -113,6 +113,7 @@ public:
     static const int kpc_header_len;
     int mIndexRootOffset;  // offset of the first entry in index file
 
+    bool mInited;  // Whether init() has been called (it's called on-demand)
     bool mEnabled;   // whether it's possible to use the cache
     bool mValid;  // whether cache has been inited and is ready to be used
 
@@ -243,8 +244,11 @@ KPixmapCache::KPixmapCache(const QString& name)
     :d(new Private(this))
 {
     d->mName = name;
+    d->mUseQPixmapCache = true;
 
-    init();
+    // We cannot call init() here because the subclasses haven't been
+    //  constructed yet and so their virtual methods cannot be used.
+    d->mInited = false;
 }
 
 KPixmapCache::~KPixmapCache()
@@ -254,11 +258,12 @@ KPixmapCache::~KPixmapCache()
 
 void KPixmapCache::init()
 {
+    d->mInited = true;
+
 #ifdef DISABLE_PIXMAPCACHE
     d->mValid = d->mEnabled = false;
 #else
     d->mValid = false;
-    d->mUseQPixmapCache = true;
 
     // Find locations of the files
     d->mIndexFile = KGlobal::dirs()->locateLocal("cache", "kpc/" + d->mName + ".index");
@@ -278,6 +283,13 @@ void KPixmapCache::init()
 #endif
 }
 
+void KPixmapCache::ensureInited() const
+{
+    if (!d->mInited) {
+        const_cast<KPixmapCache*>(this)->init();
+    }
+}
+
 bool KPixmapCache::loadCustomIndexHeader(QDataStream& stream)
 {
     return true;
@@ -289,26 +301,31 @@ void KPixmapCache::writeCustomIndexHeader(QDataStream& stream)
 
 bool KPixmapCache::isEnabled() const
 {
+    ensureInited();
     return d->mEnabled;
 }
 
 bool KPixmapCache::isValid() const
 {
+    ensureInited();
     return d->mValid;
 }
 
 void KPixmapCache::setValid(bool valid)
 {
+    ensureInited();
     d->mValid = valid;
 }
 
 unsigned int KPixmapCache::timestamp() const
 {
+    ensureInited();
     return d->mTimestamp;
 }
 
 void KPixmapCache::setTimestamp(unsigned int ts)
 {
+    ensureInited();
     d->mTimestamp = ts;
 
     // Write to file
@@ -323,6 +340,7 @@ void KPixmapCache::setTimestamp(unsigned int ts)
 
 int KPixmapCache::size() const
 {
+    ensureInited();
     return QFileInfo(d->mDataFile).size();
 }
 
@@ -385,9 +403,11 @@ void KPixmapCache::deleteCache(const QString& name)
 void KPixmapCache::discard()
 {
     deleteCache(d->mName);
-    if(d->mUseQPixmapCache)
+    if (d->mUseQPixmapCache) {
         QPixmapCache::clear();
+    }
 
+    d->mInited = false;
     init();
 }
 
@@ -398,6 +418,7 @@ void KPixmapCache::removeEntries(int newsize, RemoveStrategy strategy)
 
 bool KPixmapCache::find(const QString& key, QPixmap& pix)
 {
+    ensureInited();
     if (!isValid()) {
         return false;
     }
@@ -478,6 +499,7 @@ bool KPixmapCache::loadCustomData(QDataStream& stream)
 
 void KPixmapCache::insert(const QString& key, const QPixmap& pix)
 {
+    ensureInited();
     if (!isValid()) {
         return;
     }
