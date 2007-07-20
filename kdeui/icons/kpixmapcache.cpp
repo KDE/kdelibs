@@ -27,10 +27,12 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
 #include <QtGui/QPixmapCache>
+#include <QtCore/QtGlobal>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <klockfile.h>
 
 #include <sys/file.h>
 
@@ -49,6 +51,7 @@ public:
             : mFile(filename)
     {
         mValid = false;
+#ifndef Q_OS_WIN
         if (!mFile.open(QIODevice::ReadOnly)) {
             kError() << k_funcinfo << "Failed to open file '" << filename << "'" << endl;
         } else if (::flock(mFile.handle(), exclusive ? LOCK_EX : LOCK_SH)) {
@@ -57,12 +60,27 @@ public:
         } else {
             mValid = true;
         }
+#else
+        mLockFile = new KLockFile(filename);
+        if (mLockFile->lock() != KLockFile::LockOK) {
+            kError() << k_funcinfo << "Failed to lock file '" << filename << "'" << endl;
+        } else {
+            mValid = true;
+        }
+#endif
     }
     ~LockFile()
     {
+#ifndef Q_OS_WIN
         if (mValid) {
             ::flock(mFile.handle(), LOCK_UN);
         }
+#else
+        if (mValid) {
+            mLockFile->unlock();
+        }
+        delete mLockFile;
+#endif
     }
 
     bool isValid() const  { return mValid; }
@@ -70,6 +88,9 @@ public:
 private:
     QFile mFile;
     bool mValid;
+#ifdef Q_OS_WIN
+    KLockFile* mLockFile;
+#endif
 };
 
 
