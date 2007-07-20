@@ -138,6 +138,11 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
     const QString urlStr = url.url();
     KDirModelDirNode* dirNode = m_rootNode;
     KUrl nodeUrl = m_dirLister->url();
+
+    if ( !urlStr.startsWith(nodeUrl.url()) ) {
+        return qMakePair(0, static_cast<KDirModelNode*>(0));
+    }
+
     while ( nodeUrl != url ) {
         Q_ASSERT( urlStr.startsWith(nodeUrl.url()) );
         bool foundChild = false;
