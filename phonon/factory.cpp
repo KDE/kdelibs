@@ -60,7 +60,13 @@ bool FactoryPrivate::createBackend()
     }
     if (!m_backendObject) {
         // could not load a backend through the platform plugin. Falling back to the default.
-        const QString suffix("/phonon_backend");
+#if defined(Q_WS_MAC)
+        const QLatin1String pluginName("libphonon_qt7");
+        const QLatin1String suffix("/phonon/");
+#else
+        const QLatin1String pluginName("xine");
+        const QLatin1String suffix("/phonon_backend/");
+#endif
         foreach (QString libPath, QCoreApplication::libraryPaths()) {
             libPath += suffix;
             const QDir dir(libPath);
@@ -68,7 +74,7 @@ bool FactoryPrivate::createBackend()
                 pDebug() << Q_FUNC_INFO << dir.absolutePath() << "does not exist";
                 continue;
             }
-            QLibrary pluginLib(libPath + QLatin1String("/xine"));
+            QLibrary pluginLib(libPath + pluginName);
             if (pluginLib.load()) {
                 pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
                 QPluginLoader pluginLoader(pluginLib.fileName());
@@ -81,7 +87,7 @@ bool FactoryPrivate::createBackend()
             }
         }
         if (!m_backendObject) {
-            pDebug() << Q_FUNC_INFO << "phonon_backend/xine plugin could not be loaded";
+            pDebug() << Q_FUNC_INFO << "phonon plugin could not be loaded:" << pluginName;
             return false;
         }
     }
