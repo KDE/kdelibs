@@ -46,7 +46,15 @@ public:
      **/
     explicit KPixmapCache(const QString& name);
     virtual ~KPixmapCache();
-
+    /**
+     * Tries to load the specified pixmap from cache.
+     * @return true when pixmap was found and loaded from cache, false otherwise
+     **/
+    virtual bool find(const QString& key, QPixmap& pix);
+    /**
+     * Insert specified pixmap into the cache.
+     **/
+    virtual void insert(const QString& key, const QPixmap& pix);
     /**
      * @return timestamp of the cache, set using the @p setTimestamp method.
      * It can be used by the application to check whether app-specific cache
@@ -58,10 +66,10 @@ public:
      *  and can later be retrieved using @p timestamp() method.
      **/
     void setTimestamp(unsigned int time);
-
     /**
      * Sets whether QPixmapCache (memory cacheing) should be used in addition
-     * to disk cache
+     * to disk cache.
+     * QPixmapCache is used by default
      **/
     void setUseQPixmapCache(bool use);
     /**
@@ -69,12 +77,10 @@ public:
      *  addition to caching them on the disk.
      **/
     bool useQPixmapCache() const;
-
     /**
      * @return approximate size of the cache, in bytes.
      **/
     int size() const;
-
     /**
      * @return true when the cache is enabled.
      * Cache will be disabled when e.g.it's data file cannot be created or
@@ -87,7 +93,6 @@ public:
      *  the cache can be used.
      **/
     bool isValid() const;
-
     /**
      * Deletes a pixmap cache.
      * @param name unique name of the cache to be deleted
@@ -109,20 +114,6 @@ public:
      *  will temporarily use extra disk space.
      **/
     void removeEntries(int newsize, RemoveStrategy strategy = RemoveLeastRecentlyUsed);
-
-
-    /**
-     * Tries to load the specified pixmap from cache.
-     * @return true when pixmap was found and loaded from cache, false otherwise
-     **/
-    virtual bool find(const QString& key, QPixmap& pix);
-    /**
-     * Insert specified pixmap into the cache.
-     **/
-    virtual void insert(const QString& key, const QPixmap& pix);
-
-
-
 protected:
     void init();
 
