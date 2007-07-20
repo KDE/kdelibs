@@ -106,7 +106,7 @@ class KDialogPrivate;
  *   dialog->setMainWidget( widget );
  *   connect( dialog, SIGNAL( applyClicked() ), widget, SLOT( save() ) );
  *   connect( dialog, SIGNAL( okClicked() ), widget, SLOT( save() ) );
- *   connect( widget, SIGNAL( changed( bool ) ), dialog, SLOT( enabledButtonApply( bool ) ) );
+ *   connect( widget, SIGNAL( changed( bool ) ), dialog, SLOT( enableButtonApply( bool ) ) );
  *
  *   dialog->enableButtonApply( false );
  *   dialog->show();
