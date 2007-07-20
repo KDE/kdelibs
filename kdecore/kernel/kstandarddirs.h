@@ -602,8 +602,8 @@ public:
      * @li @c apps - @c share/applnk
      * @li @c sound - @c share/sounds
      * @li @c locale - @c share/locale
-     * @li @c services - @c share/services
-     * @li @c servicetypes - @c share/servicetypes
+     * @li @c services - @c share/kde4/services
+     * @li @c servicetypes - @c share/kde4/servicetypes
      * @li @c mime - @c share/mimelnk
      * @li @c cgi - @c cgi-bin
      * @li @c wallpaper - @c share/wallpapers
