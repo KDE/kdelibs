@@ -124,8 +124,8 @@ public:
         install["qtplugins"] = kde_moduledir + QLatin1String("/plugins");
         install["locale"] = share + QLatin1String("/locale");
         install["mime"] = share + QLatin1String("/mimelnk");
-        install["services"] = share + QLatin1String("/services");
-        install["servicetypes"] = share + QLatin1String("/servicetypes");
+        install["services"] = share + QLatin1String("/kde4/services");
+        install["servicetypes"] = share + QLatin1String("/kde4/servicetypes");
         install["sound"] = share + QLatin1String("/sounds");
         install["templates"] = share + QLatin1String("/templates");
         install["wallpaper"] = share + QLatin1String("/wallpapers");
