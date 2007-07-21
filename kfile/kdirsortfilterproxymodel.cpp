@@ -34,7 +34,6 @@ KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
     setDynamicSortFilter(true);
 
     // sort by the user visible string for now
-    setSortRole(KDirModel::Name);
     setSortCaseSensitivity(Qt::CaseInsensitive);
     sort(KDirModel::Name, Qt::AscendingOrder);
 }
@@ -78,7 +77,7 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
         return false;
     }
 
-    switch (sortRole()) {
+    switch (left.column()) {
     case KDirModel::Name: {
         // So we are in the same priority, what counts now is their names.
         const QVariant leftData  = dirModel->data(left, KDirModel::Name);
