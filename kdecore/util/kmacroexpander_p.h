@@ -20,7 +20,7 @@
 */
 
 #ifndef KMACROEXPANDER_P_H
-#define KMACROEXPANDER_P__H
+#define KMACROEXPANDER_P_H
 
 #include "kmacroexpander.h"
 
