@@ -72,6 +72,9 @@ void ConnectionPrivate::dequeue()
     if (!backend)
 	return;
 
+    if (!incomingTasks.isEmpty())
+        emit q->readyRead();
+
     while (!outgoingTasks.isEmpty()) {
        const Task task = outgoingTasks.dequeue();
        q->sendnow(task.cmd, task.data);
