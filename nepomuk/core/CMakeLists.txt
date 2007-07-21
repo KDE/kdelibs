@@ -46,7 +46,7 @@ set(nepomuk_LIB_SRCS
 
 kde4_add_library(nepomuk SHARED ${nepomuk_LIB_SRCS})
 
-add_dependencies(nepomuk rcgen)
+add_dependencies(nepomuk nepomuk-rcgen)
 
 target_link_libraries(nepomuk
   nepomuk-middleware
