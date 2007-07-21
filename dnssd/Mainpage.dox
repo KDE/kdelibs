@@ -1,6 +1,27 @@
-/** @mainpage DNSSD - a Library for Handling DNS-SD, DNS-based Service Discovery Protocol
- * 
- * Not much to say.
+/** @mainpage DNSSD
+
+DNSSD is a library for handling DNS-SD, DNS-based Service Discovery Protocol, also
+known as Bonjour or Zeroconf.
+
+If you are writing an application that wants to discover services on the network,
+use ServiceBrowser.  You can also find available service types using ServiceTypeBrowser.
+
+If you want to announce the availability of a service provided by your application,
+use PublicService.
+
+DomainBrowser allows you to find other domains (than the local one) it is possible to
+browse or publish to.
+
+@authors
+Jakub Stachowski
+
+@maintainers
+Jakub Stachowski
+
+@licenses
+@lgpl
+
 */
 
 // DOXYGEN_REFERENCES = kdecore
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

@@ -8,15 +8,10 @@ under the terms of the GNU Free Documentation License, Version 1.2
 or any later version published by the Free Software Foundation;
 */
 
-/** \file Mainpage.dox
-    \brief Introduction to the KHexEdit Interfaces
-*/
-/** \mainpage KHexEdit - a Set of Interfaces for Byte Level Editing Services
-
-\since KDE 3.2
+/** @mainpage KHexEdit
 
 
-\section khe_intro Introduction
+@section khe_intro Introduction
 
 The KHexEdit interfaces - also called KHE interfaces - are a set of
 well-defined interfaces which a library can implement to provide
@@ -26,12 +21,12 @@ to use. At the time of KDE 4.0 the only implementation known is the Okteta Compo
 (found in kdeutils/khexedit).
 
 
-\section khe_howto How to use the KHexEdit Interfaces
+@section khe_howto How to use the KHexEdit Interfaces
 
 This HOWTO will explain step by step how to create a KHexEdit component and
 prepare it for usage.
 
-\subsection khe_howto_source The code lines
+@subsection khe_howto_source The code lines
 
 The following source code tries to create a hexedit component.
 If the component could not be created, a simple message label is created.
@@ -39,7 +34,7 @@ Otherwise we set the data and configure it to our needs
 by using the different interfaces if available.
 
 
-\code
+@code
   // used interfaces
   #include <khexedit/byteseditinterface.h>
   #include <khexedit/valuecolumninterface.h>
@@ -98,11 +93,22 @@ by using the different interfaces if available.
   }
 
   // now you can use bytesEditWidget like any other widget object...
-\endcode
+@endcode
 
-\subsection khe_howto_notes Notes
+@subsection khe_howto_notes Notes
 As the KHexEdit interfaces are header-only, you don't need to link
 against any additional libraries.
 
-\author Friedrich W. H. Kossebau \<kossebau@kde.org\>
+@authors
+Friedrich W. H. Kossebau \<kossebau\@kde.org\>
+
+@maintainers
+Friedrich W. H. Kossebau \<kossebau\@kde.org\>
+
+@licenses
+@lgpl
+
 */
+
+// DOXYGEN_REFERENCES = kdecore kdefx kdeui kio kparts
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

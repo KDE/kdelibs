@@ -16,15 +16,15 @@ provide a powerful framework to make writing applications easier,
 and provide consistency across the KDE desktop envionment.
 
 Among other things, the KDE libraries provide:
-@li standard user interface elements, on top of those provided by Qt (KDEUI)
+@li standard user interface elements, on top of those provided by Qt (<a href="kdeui/html/index.html">KDEUI</a>)
 @li a standard configuration format and method of reading and writing configuration data (KConfig)
 @li site-independent access to standard directories, for finding resources such as icons (KStandardDirs)
-@li network transparent input and output (KIO)
-@li a method of embedding application components in other applications (KParts)
-@li straightforward multimedia and hardware interaction (Phonon and Solid)
-@li fully-fledged JavaScript and HTML engines (KJS and KHTML)
-@li an application scripting framework (Kross)
-@li semantic information and tagging (Nepomuk)
+@li network transparent input and output (<a href="kio/html/index.html">KIO</a>)
+@li a method of embedding application components in other applications (<a href="kparts/html/index.html">KParts</a>)
+@li straightforward multimedia and hardware interaction (<a href="phonon/html/index.html">Phonon</a> and <a href="solid/html/index.html">Solid</a>)
+@li fully-fledged JavaScript and HTML engines (<a href="kjs/html/index.html">KJS</a> and <a href="khtml/html/index.html">KHTML</a>)
+@li an application scripting framework (<a href="kross/html/index.html">Kross</a>)
+@li semantic information and tagging (<a href="nepomuk/html/index.html">Nepomuk</a>)
 
 Visit the <a href="http://techbase.kde.org/Development">development section of KDE Techbase</a>
 for tutorials, architectural overviews and other useful information.
@@ -72,83 +72,83 @@ provides a full web browser component.
     <dt>KDECore</dt>
     <dd>Core KDE classes that are not related to the user interface.<br>
         [ <a href="kdecore/html/index.html">Documentation</a> |
-          <a href="kdecore/html/classes.html">classes</a> ]</dd>
+          <a href="kdecore/html/classes.html">Classes</a> ]</dd>
 
     <dt>KIO</dt>
     <dd>KDE's network-transparent input/output system: provides
         just about every file-management function you'll ever need.<br>
         [ <a href="kio/html/index.html">Documentation</a> |
-          <a href="kio/html/classes.html">classes</a> ]</dd>
+          <a href="kio/html/classes.html">Classes</a> ]</dd>
 
     <dt>KDEUI</dt>
     <dd>KDE User Interface classes such as widgets.<br>
         [ <a href="kdeui/html/index.html">Documentation</a> |
-          <a href="kdeui/html/classes.html">classes</a> ]</dd>
+          <a href="kdeui/html/classes.html">Classes</a> ]</dd>
 
     <dt>Phonon</dt>
     <dd>KDE's multimedia framework.<br>
         [ <a href="phonon/html/index.html">Documentation</a> |
-          <a href="phonon/html/classes.html">classes</a> ]</dd>
+          <a href="phonon/html/classes.html">Classes</a> ]</dd>
 
     <dt>Solid</dt>
     <dd>KDE Hardware Discovery and Management classes.<br>
         [ <a href="solid/html/index.html">Documentation</a> |
-          <a href="solid/html/classes.html">classes</a> ]</dd>
+          <a href="solid/html/classes.html">Classes</a> ]</dd>
 
     <dt>Nepomuk</dt>
     <dd>The KDE Meta Data library, for metadata assigned to a
         resource (such as a file or an email) by the user or
         by an application, such as tags or download locations.<br>
         [ <a href="nepomuk/html/index.html">Documentation</a> |
-          <a href="nepomuk/html/classes.html">classes</a> ]</dd>
+          <a href="nepomuk/html/classes.html">Classes</a> ]</dd>
 
     <dt>KParts</dt>
     <dd>The KDE component library: provides support for re-usable,
         embeddable, extendible components for use in applications.<br>
         [ <a href="kparts/html/index.html">Documentation</a> |
-          <a href="kparts/html/classes.html">classes</a> ]</dd>
+          <a href="kparts/html/classes.html">Classes</a> ]</dd>
 
     <dt>KNewStuff</dt>
     <dd>Upload and download of application data.<br>
         [ <a href="knewstuff/html/index.html">Documentation</a> |
-          <a href="knewstuff/html/classes.html">classes</a> ]</dd>
+          <a href="knewstuff/html/classes.html">Classes</a> ]</dd>
 
     <dt>KDEPrint</dt>
     <dd>The KDE printing system.<br>
         [ <a href="kdeprint/html/index.html">Documentation</a> |
-          <a href="kdeprint/html/classes.html">classes</a> ]</dd>
+          <a href="kdeprint/html/classes.html">Classes</a> ]</dd>
 
     <dt>DNSSD</dt>
     <dd>Access to the DNSSD (aka Bonjour, Zeroconf) service publishing
         and discovery protocol.<br>
         [ <a href="dnssd/html/index.html">Documentation</a> |
-          <a href="dnssd/html/classes.html">classes</a> ]</dd>
+          <a href="dnssd/html/classes.html">Classes</a> ]</dd>
 
     <dt>KDEFX</dt>
     <dd>KDE's graphic effects library.<br>
         [ <a href="kdefx/html/index.html">Documentation</a> |
-          <a href="kdefx/html/classes.html">classes</a> ]</dd>
+          <a href="kdefx/html/classes.html">Classes</a> ]</dd>
 
     <dt>KJS</dt>
     <dd>JavaScript (aka. ECMAScript and JScript) support.<br>
         [ <a href="kjs/html/index.html">Documentation</a> |
-          <a href="kjs/html/classes.html">classes</a> ]</dd>
+          <a href="kjs/html/classes.html">Classes</a> ]</dd>
 
     <dt>Kross</dt>
     <dd>Allows scripting to be added to an application in an
         interpreter-independent way.<br>
         [ <a href="kross/html/index.html">Documentation</a> |
-          <a href="kross/html/classes.html">classes</a> ]</dd>
+          <a href="kross/html/classes.html">Classes</a> ]</dd>
 
     <dt>ThreadWeaver</dt>
     <dd>A job-based multi-threading library<br>
         [ <a href="threadweaver/html/index.html">Documentation</a> |
-          <a href="threadweaver/html/classes.html">classes</a> ]</dd>
+          <a href="threadweaver/html/classes.html">Classes</a> ]</dd>
 
     <dt>KDESU</dt>
     <dd>Run processes remotely or with elevated privileges.<br>
         [ <a href="kdesu/html/index.html">Documentation</a> |
-          <a href="kdesu/html/classes.html">classes</a> ]</dd>
+          <a href="kdesu/html/classes.html">Classes</a> ]</dd>
 </dl>
 
 */
@@ -204,5 +204,5 @@ in the KDE SVN repository), you can do so using the
 // DOXYGEN_VERSION=4.0
 // DOXYGEN_NAME=kdelibs
 // DOXYGEN_ENABLE=YES
-// DOXYGEN_REFERENCES = khtml kate
+// DOXYGEN_REFERENCES = khtml kate kdecore
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

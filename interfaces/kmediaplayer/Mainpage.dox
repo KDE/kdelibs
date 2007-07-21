@@ -1,0 +1,25 @@
+/** @mainpage KMediaPlayer
+
+%KMediaPlayer provides an API for re-usable media player components.
+<p>
+@ref KMediaPlayer::Player "Player" provides all the necessary media
+player operations, with an optional GUI to control them.
+
+@ref Phonon::MediaControls "MediaControls" is a simple widget providing
+standard player controls for a Phonon::MediaObject
+
+@authors
+Neil Stevens \<neil@qualityassistant.com\> (@ref KMediaPlayer::Player "Player", @ref KMediaPlayer::View "View")<br>
+Matthias Kretz \<kretz@kde.org\> (@ref Phonon::MediaControls "MediaControls")
+
+@maintainers
+Matthias Kretz \<kretz@kde.org\> (@ref Phonon::MediaControls "MediaControls")
+
+@licenses
+@x11 (@ref KMediaPlayer::Player "Player", @ref KMediaPlayer::View "View")<br>
+@lgpl (@ref Phonon::MediaControls "MediaControls")
+
+*/
+
+// DOXYGEN_REFERENCES = kdecore kdefx kdeui kio kparts phonon
+// vim:ts=4:sw=4:expandtab:filetype=doxygen
