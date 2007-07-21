@@ -39,7 +39,7 @@ class KStatusBarOfflineIndicatorPrivate;
  *
  * @author Will Stephenson <wstephenson@kde.org>
  */
-class KDE_EXPORT KStatusBarOfflineIndicator : public QWidget
+class KIO_EXPORT KStatusBarOfflineIndicator : public QWidget
 {
 Q_OBJECT
 public:
