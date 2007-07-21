@@ -1,11 +1,11 @@
 /** @mainpage The KDE Library API Reference
 
+<p><b>
 Overview |
 @ref components "Components" |
 @ref development "Development" |
-@ref search "Class Search"
-
-<hr>
+@ref search "Search"
+</b></p>
 
 This is the online reference for developing with the KDE libraries
 (kdelibs).
@@ -29,17 +29,30 @@ Among other things, the KDE libraries provide:
 Visit the <a href="http://techbase.kde.org/Development">development section of KDE Techbase</a>
 for tutorials, architectural overviews and other useful information.
 
+@authors
+Far too many to list.  See the copyright notices on the individual files,
+as well as the pages for individual components.
+
+@maintainers
+There is no single maintainer for kdelibs.  Overall direction is governed
+by the <a href="https://mail.kde.org/mailman/listinfo/kde-core-devel">kde-core-devel
+mailing list</a>.  Some of the individual components have their own maintainers:
+see the component pages for more information.
+
+@licenses
+Libraries: @lgpl; some helper binaries: @gpl. Some code may have more permissive licenses.
+
 
 */
 
 /** @page components Components
 
+<p><b>
 @ref index "Overview" |
 Components |
 @ref development "Development" |
-@ref search "Class Search"
-
-<hr>
+@ref search "Search"
+</b></p>
 
 Below is a brief summary of the various libraries you may want to use
 when developing a KDE application.
@@ -142,12 +155,12 @@ provides a full web browser component.
 
 /** @page development Development
 
+<p><b>
 @ref index "Overview" |
 @ref components "Components" |
 Development |
-@ref search "Class Search"
-
-<hr>
+@ref search "Search"
+</b></p>
 
 To follow or get involved with the development of the KDE libraries,
 join the <a href="https://mail.kde.org/mailman/listinfo/kde-core-devel">kde-core-devel
@@ -159,14 +172,14 @@ of the <a href="http://techbase.kde.org">KDE Techbase</a>.
 
 */
 
-/** @page search Class Search
+/** @page search Search
 
+<p><b>
 @ref index "Overview" |
 @ref components "Components" |
 @ref development "Development" |
-Class Search
-
-<hr>
+Search
+</b></p>
 
 You can search for any class in the public API of the KDE libraries
 here.
