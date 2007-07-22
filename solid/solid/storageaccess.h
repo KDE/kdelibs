@@ -103,26 +103,28 @@ namespace Solid
 
     Q_SIGNALS:
         /**
-         * This signal is emitted when the mount state of this device
+         * This signal is emitted when the accessiblity of this device
          * has changed.
          *
-         * @param newState true if the volume is mounted, false otherwise
+         * @param accessible true if the volume is accessible, false otherwise
          */
         void accessibilityChanged(bool accessible);
 
         /**
-         * This signal is emitted when the mount state of this device
-         * has changed.
+         * This signal is emitted when the attempted setting up of this
+         * device is completed.
          *
-         * @param newState true if the volume is mounted, false otherwise
+         * @param error type of error that occurred, if any
+         * @param errorData more information about the error, if any
          */
         void setupDone(Solid::ErrorType error, QVariant errorData);
 
         /**
-         * This signal is emitted when the mount state of this device
-         * has changed.
+         * This signal is emitted when the attempted tearing down of this
+         * device is completed.
          *
-         * @param newState true if the volume is mounted, false otherwise
+         * @param error type of error that occurred, if any
+         * @param errorData more information about the error, if any
          */
         void teardownDone(Solid::ErrorType error, QVariant errorData);
 

@@ -66,9 +66,9 @@ namespace Solid
 
         /**
          * Set a policy to manage the application's connect behaviour
-         * @param the new connection policy
+         * @param policy the new connection policy
          */
-        void setConnectPolicy( ManagementPolicy );
+        void setConnectPolicy( ManagementPolicy policy );
 
         /**
          * Retrieve a policy managing the application's connect behaviour
@@ -78,9 +78,9 @@ namespace Solid
 
         /**
          * Set a policy to manage the application's disconnect behaviour
-         * @param the new disconnection policy
+         * @param policy the new disconnection policy
          */
-        void setDisconnectPolicy( ManagementPolicy );
+        void setDisconnectPolicy( ManagementPolicy policy );
 
         /**
          * Retrieve a policy managing the application's disconnect behaviour
