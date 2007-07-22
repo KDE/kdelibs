@@ -32,7 +32,6 @@
 namespace KIO {
 
     class Slave;
-    class SlaveList;
     class SlaveConfig;
     class SessionData;
 
@@ -117,7 +116,6 @@ namespace KIO {
 
         // InfoDict needs Info, so we can't declare it private
         class ProtocolInfo;
-        class JobData;
 
         ~Scheduler();
 
@@ -266,16 +264,6 @@ namespace KIO {
 
         static void emitReparseSlaveConfiguration();
 
-        void debug_info();
-
-    public Q_SLOTS:
-        void slotSlaveDied(KIO::Slave *slave);
-        void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
-                             const QString &host, bool connected);
-
-        // connected to D-Bus signal:
-        void slotReparseSlaveConfiguration(const QString &);
-
     Q_SIGNALS:
         void slaveConnected(KIO::Slave *slave);
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
@@ -283,41 +271,26 @@ namespace KIO {
         // DBUS
         Q_SCRIPTABLE void reparseSlaveConfiguration(const QString &);
 
-    protected:
-        void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config=0);
-        bool startJobScheduled(ProtocolInfo *protInfo);
-        bool startJobDirect();
+    private:
+        Q_DISABLE_COPY(Scheduler)
         Scheduler();
-
-    protected Q_SLOTS:
-        void startStep();
-        void slotCleanIdleSlaves();
-        void slotSlaveConnected();
-        void slotSlaveError(int error, const QString &errorMsg);
-        void slotScheduleCoSlave();
-        void slotUnregisterWindow(QObject *);
-
-    private:
-        Scheduler(const Scheduler&);
         static Scheduler *self();
-        void _doJob(SimpleJob *job);
-        void _scheduleJob(SimpleJob *job);
-        void _cancelJob(SimpleJob *job);
-        void _jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
-        void _scheduleCleanup();
-        void _putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url);
-        void _removeSlaveOnHold();
-        Slave *_getConnectedSlave(const KUrl &url, const KIO::MetaData &metaData );
-        bool _assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job);
-        bool _disconnectSlave(KIO::Slave *slave);
-        void _checkSlaveOnHold(bool b);
-        void _publishSlaveOnHold();
-        void _registerWindow(QWidget *wid);
 
-        Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
-        Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl &url);
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveDied(KIO::Slave *slave))
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveStatus(pid_t pid, const QByteArray &protocol,
+                                               const QString &host, bool connected))
 
+        // connected to D-Bus signal:
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotReparseSlaveConfiguration(const QString &))
+
+        Q_PRIVATE_SLOT(schedulerPrivate, void startStep())
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotCleanIdleSlaves())
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveConnected())
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveError(int error, const QString &errorMsg))
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotScheduleCoSlave())
+        Q_PRIVATE_SLOT(schedulerPrivate, void slotUnregisterWindow(QObject *))
     private:
+        friend class SchedulerPrivate;
         SchedulerPrivate * const d;
 };
 
