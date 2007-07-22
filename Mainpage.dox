@@ -50,7 +50,9 @@ mailing list</a>.  Some of the individual components have their own maintainers:
 see the component pages for more information.
 
 @licenses
-Libraries: @lgpl; some helper binaries: @gpl. Some code may have more permissive licenses.
+Libraries: @lgpl<br>
+Some helper binaries: @gpl<br>
+Some code may have more permissive licenses.
 
 
 */
