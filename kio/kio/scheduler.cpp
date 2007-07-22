@@ -82,6 +82,7 @@ public:
     }
     ~SchedulerPrivate()
     {
+        delete q; q = 0;
         qDeleteAll( protInfoDict );
         qDeleteAll( slaveList );
         delete extraJobData; extraJobData = 0;
