@@ -112,8 +112,6 @@ namespace KIO {
         Q_OBJECT
 
     public:
-        ~Scheduler();
-
         /**
          * Register @p job with the scheduler.
          * The default is to create a new slave for the job if no slave
@@ -269,6 +267,8 @@ namespace KIO {
     private:
         Q_DISABLE_COPY(Scheduler)
         Scheduler();
+        ~Scheduler();
+
         static Scheduler *self();
 
         Q_PRIVATE_SLOT(schedulerPrivate, void slotSlaveDied(KIO::Slave *slave))
