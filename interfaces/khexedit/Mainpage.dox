@@ -111,4 +111,5 @@ Friedrich W. H. Kossebau \<kossebau\@kde.org\>
 */
 
 // DOXYGEN_REFERENCES = kdecore kdefx kdeui kio kparts
+// DOXYGEN_SET_PROJECT_NAME = KHexEdit
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

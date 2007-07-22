@@ -17,4 +17,5 @@ Adriaan de Groot \<groot@kde.org\>
 */
 
 // DOXYGEN_REFERENCES = kdecore
+// DOXYGEN_SET_PROJECT_NAME = KDEsu
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

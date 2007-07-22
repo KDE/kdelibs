@@ -24,4 +24,5 @@ Jakub Stachowski
 */
 
 // DOXYGEN_REFERENCES = kdecore
+// DOXYGEN_SET_PROJECT_NAME = DNSSD
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

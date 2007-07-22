@@ -1324,4 +1324,5 @@ Q_SIGNALS: // SIGNALS
 };
 
 // DOXYGEN_EXCLUDE = kspeechadaptor.* kspeechinterface.* kspeech.*
+// DOXYGEN_SET_PROJECT_NAME = KSpeech
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

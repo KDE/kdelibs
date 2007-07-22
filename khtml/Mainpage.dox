@@ -1,5 +1,46 @@
 /** @mainpage KDE HTML Parser and Widget
- * 
+
+If you want a fully-fledged HTML browser widget in your application,
+you can use KHTMLPart to do so.
+
+@code
+KUrl url = "http://www.kde.org";
+KHTMLPart *w = new KHTMLPart();
+w->openUrl(url);
+w->view()->resize(500, 400);
+w->show();
+@endcode
+
+For more information, see the documentation for KHTMLPart.
+
+Note that using KHTMLPart may introduce security vulnerabilities
+and unnecessary bloat to your application.  Qt's text widgets are
+rich-text capable, and will interpret a limited subset of HTML.
+
+KHTML is likely to be superseded by <a href="http://webkit.org">WebKit</a>
+in %KDE 4.1 / Qt 4.4.
+
+
+@authors
+Torben Weis \<weis@stud.uni-frankfurt.de\><br>
+Josip A. Gracin \<grac@fly.cc.fer.hr\><br>
+Martin Jones \<mjones@kde.org\><br>
+Waldo Bastian \<bastian@kde.org\><br>
+Lars Knoll \<knoll@kde.org\><br>
+Antti Koivisto \<koivisto@iki.fi\><br>
+Dirk Mueller \<mueller@kde.org\><br>
+Peter Kelly \<pmk@post.com\>
+
+@maintainers
+Lars Knoll<br>
+Dirk Mueller<br>
+Antti Koivisto
+
+@licenses
+@lgpl
+
 */
 // DOXYGEN_REFERENCES = kdecore kdeui kio kdefx kparts kjs
 // DOXYGEN_EXCLUDE =  test*.* html rendering xml misc pics test 
+// DOXYGEN_SET_PROJECT_NAME = KHTML
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

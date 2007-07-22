@@ -17,4 +17,5 @@ Cristian Tibirna \<tibirna@kde.org\>
 */
 
 // DOXYGEN_REFERENCES = kdecore kdeui kio kded
+// DOXYGEN_SET_PROJECT_NAME = KDEPrint
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
