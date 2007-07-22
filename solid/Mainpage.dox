@@ -1,20 +1,141 @@
-/** @mainpage Solid - Device Integration Framework
- *
- * And for HAL's sake, each mistake, ah, you forgave
- * And soon both of us learned to trust
- * Not run away, it was no time to play
- * We build it up and build it up and committed it
- *  
- * And now it's solid
- * Solid as a rock
- * That's what this code is
- * That's what we've got, oh, mmm?
- *  
- * Solid (Oh)
- * Solid as a rock
- * And nothing's changed it (Ooh)
- * The code is still hot, hot, hot, hot, hot, hot, hot, hot
- */
+/** \mainpage Solid
 
+%Solid is a device integration framework.  It provides a way of querying and
+interacting with hardware independently of the underlying operating system.
+
+Currently, only the
+<a href="http://www.freedesktop.org/wiki/Software/hal">HAL</a> backend is
+implemented, so %Solid will only work on Linux, but more backends will follow.
+
+See the documentation for the Solid namespace, and the
+<a href="http://techbase.kde.org/Development/Tutorials/Solid_Tutorials">tutorial
+on TechBase</a>.
+
+Examples:
+- \ref tutorial1
+- \ref tutorial2
+- \ref tutorial3
+- \ref tutorial4
+- \ref tutorial5
+
+Just for fun: \ref song
+
+
+\authors
+Kevin Ottens \<ervin@kde.org\>
+
+\maintainers
+Kevin Ottens \<ervin@kde.org\>
+
+\licenses
+\lgpl
+
+*/
+
+
+/** \page tutorial1 Tutorial 1
+
+<p><b>
+\ref index "Back to Overview" |
+Tutorial 1 |
+\ref tutorial2 |
+\ref tutorial3 |
+\ref tutorial4 |
+\ref tutorial5
+</b></p>
+
+\includelineno tutorial1/tutorial1.cpp
+
+*/
+
+
+/** \page tutorial2 Tutorial 2
+
+<p><b>
+\ref index "Back to Overview" |
+\ref tutorial1 |
+Tutorial 2 |
+\ref tutorial3 |
+\ref tutorial4 |
+\ref tutorial5
+</b></p>
+
+\includelineno tutorial2/tutorial2.cpp
+
+*/
+
+
+/** \page tutorial3 Tutorial 3
+
+<p><b>
+\ref index "Back to Overview" |
+\ref tutorial1 |
+\ref tutorial2 |
+Tutorial 3 |
+\ref tutorial4 |
+\ref tutorial5
+</b></p>
+
+\includelineno tutorial3/tutorial3.cpp
+
+*/
+
+
+/** \page tutorial4 Tutorial 4
+
+<p><b>
+\ref index "Back to Overview" |
+\ref tutorial1 |
+\ref tutorial2 |
+\ref tutorial3 |
+Tutorial 4 |
+\ref tutorial5
+</b></p>
+
+\includelineno tutorial4/tutorial4.cpp
+
+*/
+
+
+/** \page tutorial5 Tutorial 5
+
+<p><b>
+\ref index "Back to Overview" |
+\ref tutorial1 |
+\ref tutorial2 |
+\ref tutorial3 |
+\ref tutorial4 |
+Tutorial 5
+</b></p>
+
+\includelineno tutorial5/tutorial5.cpp
+
+*/
+
+
+
+
+/** \page song A Solid Song
+
+<p><b>\ref index "Back to Overview"</b></p>
+
+And for HAL's sake, each mistake, ah, you forgave<br>
+And soon both of us learned to trust<br>
+Not run away, it was no time to play;<br>
+We built it up and built it up and committed it.
+<p>
+And now it's solid,<br>
+%Solid as a rock;<br>
+That's what this code is,<br>
+That's what we've got, oh, mmm?
+
+%Solid (Oh),<br>
+%Solid as a rock;<br>
+And nothing's changed it (Ooh),<br>
+The code is still hot, hot, hot, hot, hot, hot, hot, hot
+*/
+
+// DOXYGEN_SET_EXAMPLE_PATH += @topdir@/solid/examples
 // DOXYGEN_EXCLUDE = solid/backends solid/ifaces tests
 // DOXYGEN_SET_PROJECT_NAME = Solid
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

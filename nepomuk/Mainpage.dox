@@ -13,389 +13,438 @@
  */
 
 
-/**
- * \mainpage The Nepomuk Meta Data Library
- *
- * This is the KDE Meta Data library (not to confuse with KFileMetaData).
- *
- * @warning The Nepomuk API may be subject to change before the release of
- * KDE 4.1. Using these classes in applications that are part of the KDE core
- * packages is no problem at all; API changes will be merged in quickly.
- * However, if you intend to use this API in external applications please
- * be aware that your application might stop working with KDE 4.1. Changes to
- * the API will be announced on the kde-core mailing list.
- *
- *
- * \section overview The General Idea
- *
- * Three types of meta data can be identified:
- *
- * -# Meta data that is stored with the data itself and is available at all
- * times. This includes id3 tags, the number of pages in a pdf document, or
- * even the size of a file or the subject of an email.
- * -# Meta data that is created by the user manually like annotations or tags
- * that are assigned to files, emails, or whatever resources.
- * -# Meta data that can be gathered automatically by applications such as the
- * source of a downloaded file or the email an attachment was saved from or the
- * original when copying a file locally.
- *
- * Type 1 is already handled in many implementations. KDE itself includes the
- * KMetaFileInfo classes that allow extracting this kind of meta information from
- * files and the Strigi system even creates a searchable index of this information.
- *
- * Nepomuk is intended for meta data of type 2 and 3. It provides an easy way to
- * create and read meta data for arbitrary resources (this includes for example files
- * or emails, but also contacts or maybe even a paragraph in a pdf file).
- *
- * The simplest type of meta data that can be handled with Nepomuk is a comment. It
- * is a simple string associated with a resource (a file for example). This comment
- * is created by the user using an application that is based on Nepomuk.
- *
- * Nepomuk's core is designed to allow arbitrary types of meta data, i.e. any resource
- * can be related with any other resource or value by simply naming the relation and
- * providing the value.
- * The power of Nepomuk, however, lies in that it provides a class for each type
- * of resource. Each of these classes provide convinience methods to allow a simple
- * handling of the meta data. These classes are automatcally generated from a
- * description of types and properties, i.e. an ontology (see \ref page_ontology).
- *
- * Nepomuk is resource based. Thus, working with Nepomuk is always done with instances
- * representing a certain resource. This resource has a list of properties. Properties
- * are named and have a certain type. The type can either be another resource (compare
- * a file that was an attachment from an email) or a literal (this means for example a
- * string, or an integer; the comment mentioned earlier would be a string literal).
- * Each property can either have a cadinality of 1 (again a file can only be saved from
- * one email) or greater than 1 (i.e. infinite, like one file can have arbitraty many
- * associated comments). See \ref hacking on how Nepomuk handles literals and cardinalities
- * greater than 1.
- *
- * \section toc Further Reading
- *
- * - \ref page_ontology
- * - \ref hacking
- * - \ref examples
- * - \ref nepomuk-rcgen
- */
+/** \mainpage The Nepomuk Meta Data Library
+
+<p><b>
+Overview |
+\ref hacking "Using" |
+\ref examples "Examples" |
+\ref page_ontology "Desktop Ontologies" |
+\ref nepomuk-rcgen "Resource Generator"
+</b></p>
+
+This is the KDE Meta Data library (not to confuse with KFileMetaData).
+
+@warning The Nepomuk API may be subject to change before the release of
+KDE 4.1. Using these classes in applications that are part of the KDE core
+packages is no problem at all; API changes will be merged in quickly.
+However, if you intend to use this API in external applications please
+be aware that your application might stop working with KDE 4.1. Changes to
+the API will be announced on the kde-core mailing list.
 
 
-/**
- * \page hacking Using Nepomuk
- *
- * \section hacking_resources Handling Resources
- *
- * In general there are two ways of using Nepomuk.
- *
- * -# The preferred way: use the Resource subclasses as generated from \ref page_ontology
- *    This is also the much simpler way since Nepomuk takes care of all type casting and
- *    list handling automatically.
- * -# Using Nepomuk::Resource directly. This is much harder since in this case
- *    the type names (i.e. their URIs as defined in \ref page_ontology) have to be known.
- *    On the other hand it allows to use additional resource types not defined in the ontology
- *    and handle resources without knowing their type.
- *
- * Since all resource classes are derived from Nepomuk::Resource and only add additional methods
- * both ways can be used interchangably.
- *
- * Resource objects (and thus also all objects of classes derived from Resource) with the same
- * URI share their data. Thus, if one is changed the other one is, too.
- *
- *
- * \subsection hacking_theeasyway Using Resource Subclasses
- *
- * Using Resource subclasses directly is very simple. All that is necessary to handle a
- * resource is to know its type and its URI (the URI can vary a lot between resource types;
- * The simplest example is certainly a local file: the URI is the path to the file).
- *
- * To access or create meta data for a resource one simply creates an instance of the
- * corresponding class and passes the resource URI to its constructor.
- *
- * In case of a file this would look as follows.
- *
- * \code
- * Nepomuk::File f( "/home/foo/bar.txt" );
- * \endcode
- *
- * Now meta data can be read and set via the methods provided by Nepomuk::File
- * such as Nepomuk::File::setAnnotation.
- *
- * Each resource class also provides a static method which returns all existing instances
- * of this type.
- * See Nepomuk::File::allFiles for an example.
- *
- * See also \ref nepomuk-rcgen
- *
- *
- * \subsection hacking_thehardway Using Resource Directly
- *
- * Using the Nepomuk::Resource class directly forces one to learn a little more about
- * the internals of Nepomuk. Resource provides four methods to handle the properties of a
- * resource (reminder: all Resource subclasses as generated from \ref page_ontology are based
- * one these methods):
- *
- * - Nepomuk::Resource::getProperty
- * - Nepomuk::Resource::setProperty
- * - Nepomuk::Resource::removeProperty
- * - Nepomuk::Resource::allProperties
- *
- * Each property's value is represented by a Nepomuk::Variant object which can contain
- * another Resource or a literal (string, int, ...) or even a list of the former two. Other than
- * with the Resource subclasses no automatic type conversion is performed.
- *
- * In case of a property that can have multiple values (cardinality greater than 1) Nepomuk::Resource::setProperty
- * has to be called with a list to set more than one (the Resource subclasses simplify this by
- * adding add methods in addition to the set method) and Nepomuk::Resource::getProperty
- * will also return a list (in both cases encapsulated in a Variant object).
- *
- * When creating a Resource object there are two cases that are dealt with differently:
- *
- * - The resource does not exist yet, i.e. no information about it is stored. In this case Nepomuk
- *   does not know the type of the resource and will fall back to %http://www.w3.org/2000/01/rdf-schema\#Resource.
- * - If the resource already exists the type may be empty. It will then be read from the local meta
- *   data store (where it was saved before by Nepomuk automatically).
- *
- * As a rule of thumb one should always define the type when creating meta data and leave it empty when
- * reading meta data.
- *
- * When using the plain Nepomuk::Resource class one is completely free to choose the
- * resource URIs, the type URIs, and the property URIs. However, to preserve compatibility with
- * other applications one is encouraged to stick to those define in \ref page_ontology.
- *
- * \section hacking_general Nepomuk Details
- *
- * Nepomuk is designed so the user (the developer of a client application) does not have to care about loading or
- * saving the data. All data is stored directly into the RDF storage and also read from it directly.
- *
- * Although in normal operation it is sufficient to only work with Nepomuk::Resource and
- * its subclasses errors might occur. This is where the Nepomuk::ResourceManager comes
- * in: it provides the Nepomuk::ResourceManager::init method which can be called manually
- * (the resource manager will be initialized automatically anyway) to check if the initialization was
- * successful and Nepomuk can be used. In addition it provides the Nepomuk::ResourceManager::error
- * signal which is emitted whenever an error occurs.
- *
- *
- * See \ref examples for further examples.
- */
+\section overview The General Idea
+
+Three types of meta data can be identified:
+
+-# Meta data that is stored with the data itself and is available at all
+times. This includes id3 tags, the number of pages in a pdf document, or
+even the size of a file or the subject of an email.
+-# Meta data that is created by the user manually like annotations or tags
+that are assigned to files, emails, or whatever resources.
+-# Meta data that can be gathered automatically by applications such as the
+source of a downloaded file or the email an attachment was saved from or the
+original when copying a file locally.
+
+Type 1 is already handled in many implementations. KDE itself includes the
+KMetaFileInfo classes that allow extracting this kind of meta information from
+files and the Strigi system even creates a searchable index of this information.
+
+Nepomuk is intended for meta data of type 2 and 3. It provides an easy way to
+create and read meta data for arbitrary resources (this includes for example files
+or emails, but also contacts or maybe even a paragraph in a pdf file).
+
+The simplest type of meta data that can be handled with Nepomuk is a comment. It
+is a simple string associated with a resource (a file for example). This comment
+is created by the user using an application that is based on Nepomuk.
+
+Nepomuk's core is designed to allow arbitrary types of meta data, i.e. any resource
+can be related with any other resource or value by simply naming the relation and
+providing the value.
+The power of Nepomuk, however, lies in that it provides a class for each type
+of resource. Each of these classes provide convinience methods to allow a simple
+handling of the meta data. These classes are automatcally generated from a
+description of types and properties, i.e. an ontology (see \ref page_ontology).
+
+Nepomuk is resource based. Thus, working with Nepomuk is always done with instances
+representing a certain resource. This resource has a list of properties. Properties
+are named and have a certain type. The type can either be another resource (compare
+a file that was an attachment from an email) or a literal (this means for example a
+string, or an integer; the comment mentioned earlier would be a string literal).
+Each property can either have a cadinality of 1 (again a file can only be saved from
+one email) or greater than 1 (i.e. infinite, like one file can have arbitraty many
+associated comments). See \ref hacking on how Nepomuk handles literals and cardinalities
+greater than 1.
+
+\section toc Further Reading
+
+- \ref page_ontology
+- \ref hacking
+- \ref examples
+- \ref nepomuk-rcgen
 
 
-/**
- * \page examples Nepomuk Examples
- *
- * Add an annotation (a comment) to a file.
- *
- * \code
- * Nepomuk::File f( "/home/foo/bar.txt" );
- * f.setAnnotation( "This is just a test file that contains nothing of interest." );
- * \endcode
- *
- * The following example is a little more complicated since it contains creating
- * a new tag and thus, coming up with a unique URi for this tag (future versions
- * of Nepomuk should provide a way to create a unique URI automatically.)
- *
- * \code
- * Nepomuk::Tag tag( "someURI/that/is.unique" );
- * tag.setName( "Important" );
- * Nepomuk::File f( "/home/foo/bar.txt" );
- * f.addTag( tag );
- * \endcode
- *
- * Reading the information using plain Resource methods:
- *
- * \code
- * Nepomuk::Resource f( "/home/foo/bar.txt" );
- * QString annotation = f.getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasAnnotation" ).toString();
- * QList<Resource> tags = f.getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasTag" ).toResourceList();
- * QListIterator<Resource> it( tags );
- * while( it.hasNext() )
- *   kdDebug() << "File tagged with tag: "
- *             << it.next().getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasName" ).toString();
- * \endcode
- *
- * Reading the information using the convinience classes:
- *
- * \code
- * Nepomuk::File f( "/home/foo/bar.txt" );
- * QString annotation = f.getAnnotation();
- * QList<Tag> tags = f.getTags();
- * QListIterator<Tag> it( tags );
- * while( it.hasNext() )
- *   kdDebug() << "File tagged with tag: " << it.next().getName();
- * \endcode
- *
- * Present all defined properties of an arbitrary resource to the user:
- *
- * \code
- * Nepomuk::Ontology* ont = Nepomuk::ResourceManager::instance()->ontology();
- * Nepomuk::Resource f( "/home/foo/bar.txt" );
- * QHash<QString, Variant> properties = f.allProperties();
- * QHashIterator<QString, Variant> it( properties );
- * while( it.hasNext() ) {
- *   it.next();
- *   kdDebug() << ont->propertyName( it.key() ) << ": " << it.value().toString() << endl;
- * }
- * \endcode
- */
+\authors
+Sebastian Trueg \<trueg@kde.org\>
 
-/**
- * \page page_ontology The Desktop Ontologies
- *
- * The Desktop ontologies define the possible types and properties that can be used as metadata.
- * The ontologies are based on RDF/S and NRL (The Nepomuk Representation Language which adds some
- * OWL-like properties like cardinality or also named graphs). The types and properties can either
- * be used directly with the Resource class or through generated classes.
- */
+\maintainers
+Sebastian Trueg \<trueg@kde.org\>
+
+\licenses
+\lgpl
+
+*/
 
 
-/**
- * \page nepomuk-rcgen The Nepomuk Resource Generator
- *
- * The power of Nepomuk lies in the generated classes which allows the application developer to set
- * and retrieve metadata according to standards without knowing any specific RDF URIs or names of properties.
- * The idea is that the resoruce generator (which is installed along with the Nepomuk libraries) creates
- * Resource subclasses that provide wrapper methods for Resource::getProperty and Resource::setProperty from
- * ontology descriptions.
- *
- *
- * \section rcgen_syntax Syntax
- *
- * The resource generator executable is called nepomuk-rcgen and has the following snytax:
- *
- * \code
- * nepomuk-rcgen --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] --target <sourcefolder> --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
- * \endcode
- *
- * This writes all header and source files that have been generated from the ontology in &lt;ontologyfile&gt; to
- * the destination folder &lt;sourcefolder&gt;.
- * Optionally templates can be specified (see \ref rcgen_templates for details on templates).
- *
- *
- * \code
- * nepomuk-rcgen --listsources [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
- * \endcode
- *
- * This command simply lists all source files that would be generated from the ontology in &lt;ontologyfile&gt;
- * on stdout. It can be used to create build lists.
- *
- * \code
- * nepomuk-rcgen --listheaders [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
- * \endcode
- *
- * This command simply lists all header files that would be generated from the ontology in &lt;ontologyfile&gt;
- * on stdout. It can be used to create installation lists.
- *
- * \code
- * nepomuk-rcgen --listincludes --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
- * \endcode
- *
- * This will list all headers that would be generated from &lt;ontologyfile&gt; as include statement on stdout.
- * This is a rarely used command that can help to create a header that automatically includes all classes
- * from this ontology.
- *
- *
- * \section rcgen_cmake Usage through CMake
- *
- * The simplest way to use the resource generator is through CMake. Nepomuk provides a macro to automatically
- * create a list of source and header files from an ontology file and use them to create arbitrary targets
- * (either link them into an installabe library or directly link them into the using application).
- *
- * To use the Nepomuk cmake magic one has to include the NepomukMacros:
- *
- * \code
- * include(NepomukMacros)
- * \endcode
- *
- * This will provide a macro called NEPOMUK_GENERATE_FROM_ONTOLOGY with the following paramters:
- *
- * -# The ontology file to be parsed
- * -# The target directory where to put the new files
- * -# A variable in which the list of generated headers will be stored
- * -# A variable in which the list of generated sources will be stored
- * -# A variable in which the list of includes will be stored (mostly unused)
- * -# An optional list of template files
- *
- * HELP: This macro needs improvement to make parameters optional!
- *
- *
- * \subsection rcgen_cmake_example Example
- *
- * \code
- * project(metadata_test)
- *
- * include(NepomukMacros)
- *
- * NEPOMUK_GENERATE_FROM_ONTOLOGY(
- *   myontology.nrl
- *   ${metadata_test_BINARY_DIR}
- *   TEST_HEADERS
- *   TEST_SOURCES
- *   TEST_INCLUDES
- * )
- *
- * kde4_add_library(metadata_test SHARED ${TEST_SOURCES})
- * target_link_libraries(metadata_test
- *   kmetadata
- * )
- *
- * install(TARGETS metadata_test DESTINATION ${LIB_INSTALL_DIR})
- * install(FILES ${TEST_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata)
- * \endcode
- *
- *
- * \section rcgen_templates Templates
- *
- * @warning Template usage is discuraged. Their main purpose is to support the creation of the
- * basic properties of the Resource class.
- *
- * An rcgen template has to provide the full skeleton for a generated class including
- * the proper namespace, the constructor, and the destructor. They will be assigned to the specific
- * classes according to their filename: The part before the first dot needs to match the class name
- * in lower case. If the class name if followed by ".h" the template is assigned to the header, if it
- * is followed by  ".cpp", the template is assigned to the source. The following variables
- * will be replaced:
- *
- * \subsection rcgen_templates_header Header template
- *
- * \code
- * NEPOMUK_OTHERCLASSES
- * \endcode
- *
- * Will be replaced by the declarations of the classes used in the header file.
- *
- * \code
- * NEPOMUK_METHODS
- * \endcode
- *
- * Will be replaced by the declarations of the getter and setter methods that are
- * generated for the class.
- *
- *
- * \subsection rcgen_templates_sources Source template
- *
- * \code
- * NEPOMUK_INCLUDES
- * \endcode
- *
- * Will be replaced by all the necessary includes for the types used in the class.
- *
- * \code
- * NEPOMUK_METHODS
- * \endcode
- *
- * Will be replaced with the definitions of the getter and setter methods that are
- * generated for the class.
- *
- *
- * \subsection rcgen_templates_misc All
- *
- * The following variables are also replaced:
- *
- * \code
- * NEPOMUK_RESOURCENAME
- * NEPOMUK_RESOURCENAMELOWER
- * NEPOMUK_RESOURCETYPEURI
- * NEPOMUK_PARENTRESOURCE
- * NEPOMUK_PARENTRESOURCELOWER
- * NEPOMUK_RESOURCECOMMENT
- * \endcode
- */
+/** \page hacking Using Nepomuk
+
+<p><b>
+\ref index "Overview" |
+Using |
+\ref examples "Examples" |
+\ref page_ontology "Desktop Ontologies" |
+\ref nepomuk-rcgen "Resource Generator"
+</b></p>
+
+\section hacking_resources Handling Resources
+
+In general there are two ways of using Nepomuk.
+
+-# The preferred way: use the Resource subclasses as generated from \ref page_ontology
+   This is also the much simpler way since Nepomuk takes care of all type casting and
+   list handling automatically.
+-# Using Nepomuk::Resource directly. This is much harder since in this case
+   the type names (i.e. their URIs as defined in \ref page_ontology) have to be known.
+   On the other hand it allows to use additional resource types not defined in the ontology
+   and handle resources without knowing their type.
+
+Since all resource classes are derived from Nepomuk::Resource and only add additional methods
+both ways can be used interchangably.
+
+Resource objects (and thus also all objects of classes derived from Resource) with the same
+URI share their data. Thus, if one is changed the other one is, too.
+
+
+\subsection hacking_theeasyway Using Resource Subclasses
+
+Using Resource subclasses directly is very simple. All that is necessary to handle a
+resource is to know its type and its URI (the URI can vary a lot between resource types;
+The simplest example is certainly a local file: the URI is the path to the file).
+
+To access or create meta data for a resource one simply creates an instance of the
+corresponding class and passes the resource URI to its constructor.
+
+In case of a file this would look as follows.
+
+\code
+Nepomuk::File f( "/home/foo/bar.txt" );
+\endcode
+
+Now meta data can be read and set via the methods provided by Nepomuk::File
+such as Nepomuk::File::setAnnotation.
+
+Each resource class also provides a static method which returns all existing instances
+of this type.
+See Nepomuk::File::allFiles for an example.
+
+See also \ref nepomuk-rcgen
+
+
+\subsection hacking_thehardway Using Resource Directly
+
+Using the Nepomuk::Resource class directly forces one to learn a little more about
+the internals of Nepomuk. Resource provides four methods to handle the properties of a
+resource (reminder: all Resource subclasses as generated from \ref page_ontology are based
+one these methods):
+
+- Nepomuk::Resource::getProperty
+- Nepomuk::Resource::setProperty
+- Nepomuk::Resource::removeProperty
+- Nepomuk::Resource::allProperties
+
+Each property's value is represented by a Nepomuk::Variant object which can contain
+another Resource or a literal (string, int, ...) or even a list of the former two. Other than
+with the Resource subclasses no automatic type conversion is performed.
+
+In case of a property that can have multiple values (cardinality greater than 1) Nepomuk::Resource::setProperty
+has to be called with a list to set more than one (the Resource subclasses simplify this by
+adding add methods in addition to the set method) and Nepomuk::Resource::getProperty
+will also return a list (in both cases encapsulated in a Variant object).
+
+When creating a Resource object there are two cases that are dealt with differently:
+
+- The resource does not exist yet, i.e. no information about it is stored. In this case Nepomuk
+  does not know the type of the resource and will fall back to %http://www.w3.org/2000/01/rdf-schema\#Resource.
+- If the resource already exists the type may be empty. It will then be read from the local meta
+  data store (where it was saved before by Nepomuk automatically).
+
+As a rule of thumb one should always define the type when creating meta data and leave it empty when
+reading meta data.
+
+When using the plain Nepomuk::Resource class one is completely free to choose the
+resource URIs, the type URIs, and the property URIs. However, to preserve compatibility with
+other applications one is encouraged to stick to those define in \ref page_ontology.
+
+\section hacking_general Nepomuk Details
+
+Nepomuk is designed so the user (the developer of a client application) does not have to care about loading or
+saving the data. All data is stored directly into the RDF storage and also read from it directly.
+
+Although in normal operation it is sufficient to only work with Nepomuk::Resource and
+its subclasses errors might occur. This is where the Nepomuk::ResourceManager comes
+in: it provides the Nepomuk::ResourceManager::init method which can be called manually
+(the resource manager will be initialized automatically anyway) to check if the initialization was
+successful and Nepomuk can be used. In addition it provides the Nepomuk::ResourceManager::error
+signal which is emitted whenever an error occurs.
+
+
+See \ref examples for further examples.
+*/
+
+
+/** \page examples Nepomuk Examples
+
+<p><b>
+\ref index "Overview" |
+\ref hacking "Using" |
+Examples |
+\ref page_ontology "Desktop Ontologies" |
+\ref nepomuk-rcgen "Resource Generator"
+</b></p>
+
+Add an annotation (a comment) to a file.
+
+\code
+Nepomuk::File f( "/home/foo/bar.txt" );
+f.setAnnotation( "This is just a test file that contains nothing of interest." );
+\endcode
+
+The following example is a little more complicated since it contains creating
+a new tag and thus, coming up with a unique URi for this tag (future versions
+of Nepomuk should provide a way to create a unique URI automatically.)
+
+\code
+Nepomuk::Tag tag( "someURI/that/is.unique" );
+tag.setName( "Important" );
+Nepomuk::File f( "/home/foo/bar.txt" );
+f.addTag( tag );
+\endcode
+
+Reading the information using plain Resource methods:
+
+\code
+Nepomuk::Resource f( "/home/foo/bar.txt" );
+QString annotation = f.getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasAnnotation" ).toString();
+QList<Resource> tags = f.getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasTag" ).toResourceList();
+QListIterator<Resource> it( tags );
+while( it.hasNext() )
+  kdDebug() << "File tagged with tag: "
+            << it.next().getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasName" ).toString();
+\endcode
+
+Reading the information using the convinience classes:
+
+\code
+Nepomuk::File f( "/home/foo/bar.txt" );
+QString annotation = f.getAnnotation();
+QList<Tag> tags = f.getTags();
+QListIterator<Tag> it( tags );
+while( it.hasNext() )
+  kdDebug() << "File tagged with tag: " << it.next().getName();
+\endcode
+
+Present all defined properties of an arbitrary resource to the user:
+
+\code
+Nepomuk::Ontology* ont = Nepomuk::ResourceManager::instance()->ontology();
+Nepomuk::Resource f( "/home/foo/bar.txt" );
+QHash<QString, Variant> properties = f.allProperties();
+QHashIterator<QString, Variant> it( properties );
+while( it.hasNext() ) {
+  it.next();
+  kdDebug() << ont->propertyName( it.key() ) << ": " << it.value().toString() << endl;
+}
+\endcode
+*/
+
+/** \page page_ontology The Desktop Ontologies
+
+<p><b>
+\ref index "Overview" |
+\ref hacking "Using" |
+\ref examples "Examples" |
+Desktop Ontologies |
+\ref nepomuk-rcgen "Resource Generator"
+</b></p>
+
+The Desktop ontologies define the possible types and properties that can be used as metadata.
+The ontologies are based on RDF/S and NRL (The Nepomuk Representation Language which adds some
+OWL-like properties like cardinality or also named graphs). The types and properties can either
+be used directly with the Resource class or through generated classes.
+*/
+
+
+/** \page nepomuk-rcgen The Nepomuk Resource Generator
+
+<p><b>
+\ref index "Overview" |
+\ref hacking "Using" |
+\ref examples "Examples" |
+\ref page_ontology "Desktop Ontologies" |
+Resource Generator
+</b></p>
+
+The power of Nepomuk lies in the generated classes which allows the application developer to set
+and retrieve metadata according to standards without knowing any specific RDF URIs or names of properties.
+The idea is that the resoruce generator (which is installed along with the Nepomuk libraries) creates
+Resource subclasses that provide wrapper methods for Resource::getProperty and Resource::setProperty from
+ontology descriptions.
+
+
+\section rcgen_syntax Syntax
+
+The resource generator executable is called nepomuk-rcgen and has the following snytax:
+
+\code
+nepomuk-rcgen --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] --target <sourcefolder> --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
+\endcode
+
+This writes all header and source files that have been generated from the ontology in &lt;ontologyfile&gt; to
+the destination folder &lt;sourcefolder&gt;.
+Optionally templates can be specified (see \ref rcgen_templates for details on templates).
+
+
+\code
+nepomuk-rcgen --listsources [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
+\endcode
+
+This command simply lists all source files that would be generated from the ontology in &lt;ontologyfile&gt;
+on stdout. It can be used to create build lists.
+
+\code
+nepomuk-rcgen --listheaders [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
+\endcode
+
+This command simply lists all header files that would be generated from the ontology in &lt;ontologyfile&gt;
+on stdout. It can be used to create installation lists.
+
+\code
+nepomuk-rcgen --listincludes --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
+\endcode
+
+This will list all headers that would be generated from &lt;ontologyfile&gt; as include statement on stdout.
+This is a rarely used command that can help to create a header that automatically includes all classes
+from this ontology.
+
+
+\section rcgen_cmake Usage through CMake
+
+The simplest way to use the resource generator is through CMake. Nepomuk provides a macro to automatically
+create a list of source and header files from an ontology file and use them to create arbitrary targets
+(either link them into an installabe library or directly link them into the using application).
+
+To use the Nepomuk cmake magic one has to include the NepomukMacros:
+
+\code
+include(NepomukMacros)
+\endcode
+
+This will provide a macro called NEPOMUK_GENERATE_FROM_ONTOLOGY with the following paramters:
+
+-# The ontology file to be parsed
+-# The target directory where to put the new files
+-# A variable in which the list of generated headers will be stored
+-# A variable in which the list of generated sources will be stored
+-# A variable in which the list of includes will be stored (mostly unused)
+-# An optional list of template files
+
+HELP: This macro needs improvement to make parameters optional!
+
+
+\subsection rcgen_cmake_example Example
+
+\code
+project(metadata_test)
+
+include(NepomukMacros)
+
+NEPOMUK_GENERATE_FROM_ONTOLOGY(
+  myontology.nrl
+  ${metadata_test_BINARY_DIR}
+  TEST_HEADERS
+  TEST_SOURCES
+  TEST_INCLUDES
+)
+
+kde4_add_library(metadata_test SHARED ${TEST_SOURCES})
+target_link_libraries(metadata_test
+  kmetadata
+)
+
+install(TARGETS metadata_test DESTINATION ${LIB_INSTALL_DIR})
+install(FILES ${TEST_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata)
+\endcode
+
+
+\section rcgen_templates Templates
+
+@warning Template usage is discuraged. Their main purpose is to support the creation of the
+basic properties of the Resource class.
+
+An rcgen template has to provide the full skeleton for a generated class including
+the proper namespace, the constructor, and the destructor. They will be assigned to the specific
+classes according to their filename: The part before the first dot needs to match the class name
+in lower case. If the class name if followed by ".h" the template is assigned to the header, if it
+is followed by  ".cpp", the template is assigned to the source. The following variables
+will be replaced:
+
+\subsection rcgen_templates_header Header template
+
+\code
+NEPOMUK_OTHERCLASSES
+\endcode
+
+Will be replaced by the declarations of the classes used in the header file.
+
+\code
+NEPOMUK_METHODS
+\endcode
+
+Will be replaced by the declarations of the getter and setter methods that are
+generated for the class.
+
+
+\subsection rcgen_templates_sources Source template
+
+\code
+NEPOMUK_INCLUDES
+\endcode
+
+Will be replaced by all the necessary includes for the types used in the class.
+
+\code
+NEPOMUK_METHODS
+\endcode
+
+Will be replaced with the definitions of the getter and setter methods that are
+generated for the class.
+
+
+\subsection rcgen_templates_misc All
+
+The following variables are also replaced:
+
+\code
+NEPOMUK_RESOURCENAME
+NEPOMUK_RESOURCENAMELOWER
+NEPOMUK_RESOURCETYPEURI
+NEPOMUK_PARENTRESOURCE
+NEPOMUK_PARENTRESOURCELOWER
+NEPOMUK_RESOURCECOMMENT
+\endcode
+
+*/
+
 // DOXYGEN_EXCLUDE = core/resourcedata.h
 // DOXYGEN_SET_PROJECT_NAME = Nepomuk
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

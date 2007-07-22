@@ -1,5 +1,11 @@
 /** \mainpage Phonon - Multimedia API for KDE
 
+<p><b>
+Overview |
+\ref phonon_tut1 "Application Example" |
+\ref phonon_backend_development_page "Backend Development"
+</b></p>
+
 %Phonon is the Multimedia API for %KDE. You should evaluate whether %Phonon
 supplies all you need before looking at frameworks like GStreamer, NMM or Helix.
 The range of applications goes from full featured media players and capture
@@ -23,6 +29,15 @@ If you want to write a new backend for %Phonon this is for you:
 \li \ref phonon_backend_development_page "Phonon Backend Development"
 \li \ref Backend
 
+\authors
+Matthias Kretz \<kretz@kde.org\>
+
+\maintainers
+Matthias Kretz \<kretz@kde.org\>
+
+\licenses
+\lgpl
+
 
 
 
@@ -33,7 +48,13 @@ If you want to write a new backend for %Phonon this is for you:
 
 
 \page phonon_tut1 Phonon Tutorial Part 1: a simple audio player
-\includelineno tutorial1.h
+
+<p><b>
+\ref index "Overview" |
+Application Example |
+\ref phonon_backend_development_page "Backend Development"
+</b></p>
+
 \includelineno tutorial1.cpp
 
 
@@ -44,6 +65,13 @@ If you want to write a new backend for %Phonon this is for you:
 
 
 \page phonon_backend_development_page Phonon Backend Development
+
+<p><b>
+\ref index "Overview" |
+\ref phonon_tut1 "Application Example" |
+Backend Development
+</b></p>
+
 The backend is the most important part in %Phonon to provide functionality. This
 document will get you started how backends work, how to start development of a
 new backend and how to understand existing backend code.
@@ -139,4 +167,4 @@ development. As an application developer you can safely ignore these classes.
 // DOXYGEN_SET_EXTRACT_ALL = NO
 // DOXYGEN_SET_HIDE_UNDOC_MEMBERS = YES
 // DOXYGEN_SET_SOURCE_BROWSER = NO
-// vim: tw=100
+// vim: tw=100 ts=4 sw=4 expandtab filetype=doxygen

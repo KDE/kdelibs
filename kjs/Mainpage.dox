@@ -1,5 +1,24 @@
-/** @mainpage KJS - The KDE JavaScript/EcmaScript Engine in a Library
- * 
- * Not much to say.
+/** @mainpage KDE JavaScript/EcmaScript Engine
+
+This library provides an ECMAScript compatible interpreter. The ECMA standard
+is based on well known scripting languages such as Netscape's JavaScript and
+Microsoft's JScript.
+
+@authors
+Harri Porten \<porten@kde.org\><br>
+Richard Moore \<rich@kde.org\><br>
+Daegeun Lee \<realking@mizi.com\><br>
+Marco Pinelli \<pinmc@libero.it\><br>
+Christian Kirsch \<ck@held.mind.de\>
+
+@maintainers
+Harri Porten \<porten@kde.org\>
+
+@licenses
+@lgpl
+
 */
+
 // DOXYGEN_REFERENCES = kdecore
+// DOXYGEN_SET_PROJECT_NAME = KJS
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

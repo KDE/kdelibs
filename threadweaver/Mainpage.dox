@@ -1,6 +1,51 @@
-/*! \mainpage ThreadWeaver - a Helper for Multithreaded Programming
+/** \mainpage ThreadWeaver
 
-\section UseCases Use Cases
+<p><b>
+Overview |
+\ref UseCases |
+\ref Why |
+\ref MainComponents "Main Components"
+</b></p>
+
+ThreadWeaver is a helper for multithreaded programming.  It uses a job-based
+interface to queue tasks and execute them in an efficient way.
+
+You simply divide the workload into jobs, state the dependencies between the jobs
+and ThreadWeaver will work out the most efficient way of dividing the work between
+threads within a set of resource limits.
+
+For more information, see \ref UseCases, \ref Why and \ref MainComponents.
+
+\section Tests Example Code
+<p>Example code is available in the
+<a href="http://websvn.kde.org/trunk/KDE/kdelibs/threadweaver/Examples">Examples</a>
+directory. The Construction
+program shows how to use ThreadWeaver in imperative (not event oriented)
+programs. The Jobs program provides a GUI example and displays the
+interaction with the weaver state and it's signals. The Simple
+Multithreaded Image Viewer (SMIV) example shows the use of job
+dependencies.</p>
+
+\authors
+Mirko Boehm
+
+\maintainers
+Mirko Boehm
+
+\licenses
+\lgpl
+
+
+*/
+
+/** \page UseCases Use Cases
+
+<p><b>
+\ref index "Overview" |
+Use Cases |
+\ref Why |
+\ref MainComponents "Main Components"
+</b></p>
 
 <p>ThreadWeaver provides a solution to a number (but not all)
 multithreading problems. Let's have a look:</p>
@@ -57,7 +102,16 @@ and destruction of the threads is already taken care of, but the minimum
 inventory size (thread count) should be increased accordingly to provide
 for enough threads to process the other jobs.</p>
 
-\section Why Why Multithreading?
+*/
+
+/** \page Why Why Multithreading?
+
+<p><b>
+\ref index "Overview" |
+\ref UseCases |
+Why Multithreading? |
+\ref MainComponents "Main Components"
+</b></p>
 
 <p>In the past, multithreading has been considered a powerful tool that
 is hard to handle (some call it the work of the devil). While there may
@@ -153,8 +207,16 @@ possible. Programmers should be relieved of synchronization, execution
 dependendancy and load balancing issues as much as possible. The API
 tends to be clean, extensible and easy to understand. </p>
 
+*/
 
-\section MainComponents Main Components of ThreadWeaver
+/** \page MainComponents Main Components of ThreadWeaver
+
+<p><b>
+\ref index "Overview" |
+\ref UseCases |
+\ref Why |
+Main Components
+</b></p>
 
 <p>ThreadWeaver is a Job queue. It executes jobs in threads it
 internally manages. The minimum and maximum number of threads provided
@@ -211,12 +273,8 @@ executing thread, the signals will be delivered asyncronously again.</p>
 <p>The Job class in the ThreadWeaver library itself contains such a
 helper class that can be used as a reference for this approach.</p>
 
-\section Tests Example Code
-<p>Example code is available in the Tests directory. The Construction
-test shows how to use ThreadWeaver in imperative (not event oriented)
-programs. The Jobs test provides a GUI example and displays the
-interaction with the weaver state and it's signals. The Simple
-Multithreaded Image Viewer (SMIV) example shows the use of job
-dependencies.</p>
 */
+
 // DOXYGEN_SET_PROJECT_NAME = ThreadWeaver
+// DOXYGEN_EXCLUDE = Examples Experimental Tests Docs Scripts WeaverGui
+// vim:ts=4:sw=4:expandtab:filetype=doxygen

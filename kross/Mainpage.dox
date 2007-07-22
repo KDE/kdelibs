@@ -1,45 +1,57 @@
 /** @mainpage Kross - a Scripting Framework for Applications
- *
- * Kross is a scripting bridge to embed scripting functionality
- * into an application. Kross provides an abstract API to access
- * the scripting functionality in a interpreter-independent
- * way. The application that uses Kross should not need to know
- * anything about the used interpreter-language.
- *
- * The main parts of Kross:
- * @ref core The core of Kross
- * @ref modules The optional Kross modules
- * @ref console The Kross console application
- * @ref test The unit- and regression tests.
- *
- * The by Kross supported interpreter backends:
- * @ref python The Python interpreter backend
- * @ref ruby The Ruby interpreter backend
- * @ref kjs The KDE JavaScript interpreter backend
- *
- * Links:
- * @see http://kross.dipe.org
- * @see http://www.kexi-project.org/wiki/wikiview/index.php?Scripting
- * @see http://www.koffice.org
- *
- * @section Legal
- *
- * @li copyright (C) 2004-2006 by Sebastian Sauer (mail AT dipe DOT org)
- * @li copyright (C) 2005-2006 by Cyrille Berger (cberger AT cberger DOT net)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- * You should have received a copy of the GNU Library General Public License
- * along with this program; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301, USA.
- */
+
+%Kross is a scripting bridge to embed scripting functionality
+into an application. %Kross provides an abstract API to provide
+scripting functionality in a interpreter-independent
+way. The application that uses %Kross should not need to know
+anything about the scripting language being used.
+
+<!--
+The referenced anchors (core, modules etc) should probably
+refer to pages (see eg: Mainpage.dox in the parent directory).
+
+If you have content for these sections and want
+help writing the doxygen bits for them, get in touch with me:
+Alex Merry <huntedhacker@tiscali.co.uk>.
+
+If there is no more to put, then remove the @ref, the following
+word (eg: core) and the quotation marks.  Also, putting % before
+each occurrent of Kross will prevent Doxygen linking it to the
+Kross namespace.  So the first line will end up as:
+- The core of %Kross
+
+Then you can get rid of this comment as well.
+-->
+
+The main parts of %Kross:
+- @ref core "The core of Kross"
+- @ref modules "The optional Kross modules"
+- @ref console "The Kross console application"
+- @ref test "The unit- and regression tests"
+
+The interpreter backends supported by %Kross:
+- @ref python "The Python interpreter backend"
+- @ref ruby "The Ruby interpreter backend"
+- @ref kjs "The KDE JavaScript interpreter backend"
+
+Links:
+- <a href="http://kross.dipe.org">Kross website</a>
+- <a href="http://techbase.kde.org/Development/Tutorials/Kross-Tutorial">Kross tutorial on TechBase</a>
+- <a href="http://www.kexi-project.org/wiki/wikiview/index.php?Scripting">Scripting in Kexi</a>
+- <a href="http://www.koffice.org">KOffice website</a>
+
+@authors
+Sebastian Sauer \<mail AT dipe DOT %org\><br>
+Cyrille Berger \<cberger AT cberger DOT net\>
+
+@maintainers
+[Unknown/None]
+
+@licenses
+@lgpl
+
+*/
 
 // DOXYGEN_REFERENCES = kdecore kdeui
 // DOXYGEN_SET_PROJECT_NAME = Kross
+// vim:ts=4:sw=4:expandtab:filetype=doxygen
