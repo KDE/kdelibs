@@ -65,7 +65,6 @@ public:
         q(new Scheduler),
         busy( false ),
         slaveOnHold( 0 ),
-        extraJobData( new ExtraJobData ),
         slaveConfig( SlaveConfig::self() ),
         sessionData( new SessionData ),
         checkOnHold( true ) // !! Always check with KLauncher for the first request
@@ -85,7 +84,6 @@ public:
         delete q; q = 0;
         qDeleteAll( protInfoDict );
         qDeleteAll( slaveList );
-        delete extraJobData; extraJobData = 0;
     }
     Scheduler *q;
 
@@ -104,7 +102,7 @@ public:
     JobList newJobs;
 
     CoSlaveMap coSlaves;
-    ExtraJobData *extraJobData;
+    ExtraJobData extraJobData;
     SlaveConfig *slaveConfig;
     SessionData *sessionData;
     bool checkOnHold;
@@ -355,7 +353,7 @@ void SchedulerPrivate::doJob(SimpleJob *job) {
        jobData.checkOnHold = checkOnHold;
        checkOnHold = false;
     }
-    extraJobData->insert(job, jobData);
+    extraJobData.insert(job, jobData);
     newJobs.append(job);
     slaveTimer.start(0);
 #ifndef NDEBUG
@@ -366,7 +364,7 @@ void SchedulerPrivate::doJob(SimpleJob *job) {
 
 void SchedulerPrivate::scheduleJob(SimpleJob *job) {
     newJobs.removeAll(job);
-    JobData jobData = extraJobData->value(job);
+    JobData jobData = extraJobData.value(job);
 
     QString protocol = jobData.protocol;
 //    kDebug(7006) << "SchedulerPrivate::scheduleJob protocol=" << protocol << endl;
@@ -382,7 +380,7 @@ void SchedulerPrivate::cancelJob(SimpleJob *job) {
     if ( !slave  )
     {
         // was not yet running (don't call this on a finished job!)
-        JobData jobData = extraJobData->value(job);
+        JobData jobData = extraJobData.value(job);
         newJobs.removeAll(job);
         ProtocolInfo *protInfo = protInfoDict.get(jobData.protocol);
         protInfo->joblist.removeAll(job);
@@ -399,7 +397,7 @@ void SchedulerPrivate::cancelJob(SimpleJob *job) {
         }
         if (!slave)
         {
-           extraJobData->remove(job);
+           extraJobData.remove(job);
            return; // Job was not yet running and not in a coSlave queue.
         }
     }
@@ -546,7 +544,7 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
 //       kDebug(7006) << "scheduler: job started " << job << endl;
 
 
-    SchedulerPrivate::JobData jobData = extraJobData->value(job);
+    SchedulerPrivate::JobData jobData = extraJobData.value(job);
     setupSlave(slave, job->url(), jobData.protocol, jobData.proxy, newSlave);
     job->start(slave);
 
@@ -558,7 +556,7 @@ bool SchedulerPrivate::startJobDirect()
 {
     debug_info();
     SimpleJob *job = newJobs.takeFirst();
-    SchedulerPrivate::JobData jobData = extraJobData->value(job);
+    SchedulerPrivate::JobData jobData = extraJobData.value(job);
 
     QString protocol = jobData.protocol;
     ProtocolInfo *protInfo = protInfoDict.get(protocol);
@@ -618,7 +616,7 @@ static Slave *searchIdleList(SlaveList &idleSlaves, const KUrl &url, const QStri
 Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
 {
     Slave *slave = 0;
-    JobData jobData = extraJobData->value(job);
+    JobData jobData = extraJobData.value(job);
 
     if (jobData.checkOnHold)
     {
@@ -685,7 +683,7 @@ Slave *SchedulerPrivate::createSlave(ProtocolInfo *protInfo, SimpleJob *job, con
       if (job)
       {
          protInfo->joblist.removeAll(job);
-         extraJobData->remove(job);
+         extraJobData.remove(job);
          job->slotError( error, errortext );
       }
    }
@@ -698,7 +696,7 @@ void SchedulerPrivate::slotSlaveStatus(pid_t, const QByteArray&, const QString &
 
 void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 {
-    JobData jobData = extraJobData->take(job);
+    JobData jobData = extraJobData.take(job);
 
     ProtocolInfo *protInfo = protInfoDict.get(jobData.protocol);
     slave->disconnect(job);
