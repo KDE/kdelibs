@@ -245,11 +245,6 @@ void KBufferedSocket::setInputBuffering(bool enable)
     }
 }
 
-KIOBufferBase* KBufferedSocket::inputBuffer()
-{
-  return d->input;
-}
-
 void KBufferedSocket::setOutputBuffering(bool enable)
 {
   QMutexLocker locker(mutex());
@@ -262,11 +257,6 @@ void KBufferedSocket::setOutputBuffering(bool enable)
     {
       d->output = new KSocketBuffer;
     }
-}
-
-KIOBufferBase* KBufferedSocket::outputBuffer()
-{
-  return d->output;
 }
 
 qint64 KBufferedSocket::bytesToWrite() const

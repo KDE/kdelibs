@@ -28,7 +28,6 @@
 #include <QMutex>
 #include <QByteArray>
 #include <QList>
-#include "k3iobuffer.h"
 
 namespace KNetwork {
 
@@ -45,7 +44,7 @@ class KActiveSocketBase;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KSocketBuffer: public KIOBufferBase
+class KSocketBuffer
 {
 public:
   /**
@@ -63,7 +62,7 @@ public:
   /**
    * Virtual destructor. Frees the buffer and discards its contents.
    */
-  virtual ~KSocketBuffer();
+  ~KSocketBuffer();
 
   /**
    * Assignment operator.
@@ -73,12 +72,12 @@ public:
   /**
    * Returns true if a line can be read from the buffer.
    */
-  virtual bool canReadLine() const;
+  bool canReadLine() const;
 
   /**
    * Reads a line from the buffer and discard it from the buffer.
    */
-  virtual qint64 readLine(char *data, qint64 maxSize);
+  qint64 readLine(char *data, qint64 maxSize);
 
   /**
    * Returns the number of bytes in the buffer. Note that this is not
@@ -86,7 +85,13 @@ public:
    *
    * @sa size
    */
-  virtual qint64 length() const;
+  qint64 length() const;
+
+  /**
+   * Returns true if the buffer is empty of data.
+   */
+  inline bool isEmpty() const
+  { return length() == 0; }
 
   /**
    * Retrieves the buffer size. The value of -1 indicates that
@@ -94,7 +99,7 @@ public:
    *
    * @sa length for the length of the data stored
    */
-  virtual qint64 size() const;
+  qint64 size() const;
 
   /**
    * Sets the size of the buffer, if allowed.
@@ -103,7 +108,13 @@ public:
    * @returns true on success, false if an error occurred.
    * @note if the new size is less than length(), the buffer will be truncated
    */
-  virtual bool setSize(qint64 size);
+  bool setSize(qint64 size);
+
+  /**
+   * Returns true if the buffer is full (i.e., cannot receive more data)
+   */
+  inline bool isFull() const
+  { return size() != -1 && size() == length(); }
 
   /**
    * Adds data to the end of the buffer.
@@ -112,12 +123,12 @@ public:
    * @param len		the data length, in bytes
    * @returns the number of bytes added to the end of the buffer.
    */
-  virtual qint64 feedBuffer(const char *data, qint64 len);
+  qint64 feedBuffer(const char *data, qint64 len);
 
   /**
    * Clears the buffer.
    */
-  virtual void clear();
+  void clear();
 
   /**
    * Consumes data from the beginning of the buffer.
@@ -127,7 +138,7 @@ public:
    * @param discard	if true, the bytes copied will be discarded
    * @returns the number of bytes copied from the buffer
    */
-  virtual qint64 consumeBuffer(char *data, qint64 maxlen, bool discard = true);
+  qint64 consumeBuffer(char *data, qint64 maxlen, bool discard = true);
 
   /**
    * Sends at most @p len bytes of data to the I/O Device.
@@ -137,7 +148,7 @@ public:
    * @returns the number of bytes sent and discarded from the buffer, -1
    *          indicates an error.
    */
-  virtual qint64 sendTo(KActiveSocketBase* device, qint64 len = -1);
+  qint64 sendTo(KActiveSocketBase* device, qint64 len = -1);
 
   /**
    * Tries to receive @p len bytes of data from the I/O device.
@@ -148,7 +159,7 @@ public:
    * @returns the number of bytes received and copied into the buffer,
    *	      -1 indicates an error.
    */
-  virtual qint64 receiveFrom(KActiveSocketBase* device, qint64 len = -1);
+  qint64 receiveFrom(KActiveSocketBase* device, qint64 len = -1);
 
 protected:
   mutable QMutex m_mutex;

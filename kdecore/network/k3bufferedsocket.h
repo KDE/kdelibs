@@ -32,8 +32,6 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
 
-class KIOBufferBase;
-
 namespace KNetwork {
 
 class KBufferedSocketPrivate;
@@ -121,19 +119,9 @@ public:
   void setInputBuffering(bool enable);
 
   /**
-   * Retrieves the input buffer object.
-   */
-  KIOBufferBase* inputBuffer();
-
-  /**
    * Sets the use of output buffering.
    */
   void setOutputBuffering(bool enable);
-
-  /**
-   * Retrieves the output buffer object.
-   */
-  KIOBufferBase* outputBuffer();
 
   /**
    * Returns the length of the output buffer.

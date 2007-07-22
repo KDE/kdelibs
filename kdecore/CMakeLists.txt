@@ -321,7 +321,6 @@ install( FILES
    network/k3clientsocketbase.h
    network/k3datagramsocket.h
    network/k3httpproxysocketdevice.h
-   network/k3iobuffer.h
    network/k3resolver.h
    network/k3reverseresolver.h
    network/k3serversocket.h

@@ -43,7 +43,7 @@ KSocketBuffer::KSocketBuffer(qint64 size)
 }
 
 KSocketBuffer::KSocketBuffer(const KSocketBuffer& other)
-  : KIOBufferBase(other), m_mutex(QMutex::Recursive)
+  : m_mutex(QMutex::Recursive)
 {
   *this = other;
 }
@@ -57,8 +57,6 @@ KSocketBuffer& KSocketBuffer::operator=(const KSocketBuffer& other)
 {
   QMutexLocker locker1(&m_mutex);
   QMutexLocker locker2(&other.m_mutex);
-
-  KIOBufferBase::operator=(other);
 
   m_list = other.m_list;	// copy-on-write
   m_offset = other.m_offset;
