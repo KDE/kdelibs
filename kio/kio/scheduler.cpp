@@ -125,10 +125,6 @@ class KIO::SchedulerPrivate
 public:
     SchedulerPrivate() :
         busy( false ),
-        slaveList( new SlaveList ),
-        idleSlaves( new SlaveList ),
-        coIdleSlaves( new SlaveList ),
-        protInfoDict( new ProtocolInfoDict ),
         slaveOnHold( 0 ),
         extraJobData( new ExtraJobData ),
         slaveConfig( SlaveConfig::self() ),
@@ -144,12 +140,8 @@ public:
     }
     ~SchedulerPrivate()
     {
-        qDeleteAll( *protInfoDict );
-        delete protInfoDict; protInfoDict = 0;
-        delete idleSlaves; idleSlaves = 0;
-        delete coIdleSlaves; coIdleSlaves = 0;
-        qDeleteAll( *slaveList );
-        delete slaveList; slaveList = 0;
+        qDeleteAll( protInfoDict );
+        qDeleteAll( slaveList );
         delete extraJobData; extraJobData = 0;
     }
     QTimer slaveTimer;
@@ -157,11 +149,11 @@ public:
     QTimer cleanupTimer;
     bool busy;
 
-    SlaveList *slaveList;
-    SlaveList *idleSlaves;
-    SlaveList *coIdleSlaves;
+    SlaveList slaveList;
+    SlaveList idleSlaves;
+    SlaveList coIdleSlaves;
 
-    ProtocolInfoDict *protInfoDict;
+    ProtocolInfoDict protInfoDict;
     Slave *slaveOnHold;
     KUrl urlOnHold;
     Scheduler::JobList newJobs;
@@ -305,7 +297,7 @@ void Scheduler::slotReparseSlaveConfiguration(const QString &proto)
     d->sessionData->reset();
     NetRC::self()->reload();
 
-    foreach( Slave *slave, *(d->slaveList) )
+    foreach( Slave *slave, d->slaveList )
     {
         if ( slave->slaveProtocol() == proto || proto.isEmpty() )
         {
@@ -339,7 +331,7 @@ void Scheduler::_scheduleJob(SimpleJob *job) {
 
     QString protocol = jobData.protocol;
 //    kDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
-    ProtocolInfo *protInfo = d->protInfoDict->get(protocol);
+    ProtocolInfo *protInfo = d->protInfoDict.get(protocol);
     protInfo->joblist.append(job);
 
     d->slaveTimer.start(0);
@@ -353,11 +345,11 @@ void Scheduler::_cancelJob(SimpleJob *job) {
         // was not yet running (don't call this on a finished job!)
         JobData jobData = d->extraJobData->value(job);
         d->newJobs.removeAll(job);
-        ProtocolInfo *protInfo = d->protInfoDict->get(jobData.protocol);
+        ProtocolInfo *protInfo = d->protInfoDict.get(jobData.protocol);
         protInfo->joblist.removeAll(job);
 
         // Search all slaves to see if job is in the queue of a coSlave
-        foreach( Slave* coSlave, *(d->slaveList) )
+        foreach( Slave* coSlave, d->slaveList )
         {
            JobList *list = d->coSlaves.value(slave);
            if (list && list->removeAll(job)) {
@@ -385,7 +377,7 @@ void Scheduler::startStep()
        (void) startJobDirect();
     }
 
-    QHashIterator<QString, KIO::Scheduler::ProtocolInfo*> it(*d->protInfoDict);
+    QHashIterator<QString, KIO::Scheduler::ProtocolInfo*> it(d->protInfoDict);
     while(it.hasNext()) {
        it.next();
        if (startJobScheduled(it.value())) return;
@@ -511,7 +503,7 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
     }
 
     protInfo->activeSlaves.append(slave);
-    d->idleSlaves->removeAll(slave);
+    d->idleSlaves.removeAll(slave);
     protInfo->joblist.removeAll(job);
 //       kDebug(7006) << "scheduler: job started " << job << endl;
 
@@ -531,7 +523,7 @@ bool Scheduler::startJobDirect()
     JobData jobData = d->extraJobData->value(job);
 
     QString protocol = jobData.protocol;
-    ProtocolInfo *protInfo = d->protInfoDict->get(protocol);
+    ProtocolInfo *protInfo = d->protInfoDict.get(protocol);
 
     bool newSlave = false;
     bool dummy;
@@ -548,7 +540,7 @@ bool Scheduler::startJobDirect()
     if (!slave)
        return false;
 
-    d->idleSlaves->removeAll(slave);
+    d->idleSlaves.removeAll(slave);
 //       kDebug(7006) << "scheduler: job started " << job << endl;
 
     setupSlave(slave, job->url(), protocol, jobData.proxy, newSlave);
@@ -556,7 +548,7 @@ bool Scheduler::startJobDirect()
     return true;
 }
 
-static Slave *searchIdleList(SlaveList *idleSlaves, const KUrl &url, const QString &protocol, bool &exact)
+static Slave *searchIdleList(SlaveList &idleSlaves, const KUrl &url, const QString &protocol, bool &exact)
 {
     QString host = url.host();
     int port = url.port();
@@ -565,7 +557,7 @@ static Slave *searchIdleList(SlaveList *idleSlaves, const KUrl &url, const QStri
     QString user = url.user();
     exact = true;
 
-    foreach( Slave *slave, *idleSlaves )
+    foreach( Slave *slave, idleSlaves )
     {
        if ((protocol == slave->slaveProtocol()) &&
            (host == slave->host()) &&
@@ -577,7 +569,7 @@ static Slave *searchIdleList(SlaveList *idleSlaves, const KUrl &url, const QStri
     exact = false;
 
     // Look for slightly matching slave
-    foreach( Slave *slave, *idleSlaves )
+    foreach( Slave *slave, idleSlaves )
     {
        if (protocol == slave->slaveProtocol())
           return slave;
@@ -642,8 +634,8 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl
    Slave *slave = Slave::createSlave(protInfo->protocol, url, error, errortext);
    if (slave)
    {
-      d->slaveList->append(slave);
-      d->idleSlaves->append(slave);
+      d->slaveList.append(slave);
+      d->idleSlaves.append(slave);
       connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
                 SLOT(slotSlaveDied(KIO::Slave *)));
       connect(slave, SIGNAL(slaveStatus(pid_t,const QByteArray&,const QString &, bool)),
@@ -670,7 +662,7 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 {
     JobData jobData = d->extraJobData->take(job);
 
-    ProtocolInfo *protInfo = d->protInfoDict->get(jobData.protocol);
+    ProtocolInfo *protInfo = d->protInfoDict.get(jobData.protocol);
     slave->disconnect(job);
     protInfo->activeSlaves.removeAll(slave);
     if (slave->isAlive())
@@ -679,8 +671,8 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
        if (list)
        {
           assert(slave->isConnected());
-          assert(!d->coIdleSlaves->contains(slave));
-          d->coIdleSlaves->append(slave);
+          assert(!d->coIdleSlaves.contains(slave));
+          d->coIdleSlaves.append(slave);
           if (!list->isEmpty())
              d->coSlaveTimer.start(0);
           return;
@@ -688,7 +680,7 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
        else
        {
           assert(!slave->isConnected());
-          d->idleSlaves->append(slave);
+          d->idleSlaves.append(slave);
           slave->setIdle();
           _scheduleCleanup();
 //          slave->send( CMD_SLAVE_STATUS );
@@ -703,14 +695,14 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 void Scheduler::slotSlaveDied(KIO::Slave *slave)
 {
     assert(!slave->isAlive());
-    ProtocolInfo *protInfo = d->protInfoDict->get(slave->slaveProtocol());
+    ProtocolInfo *protInfo = d->protInfoDict.get(slave->slaveProtocol());
     protInfo->activeSlaves.removeAll(slave);
     if (slave == d->slaveOnHold)
     {
        d->slaveOnHold = 0;
        d->urlOnHold = KUrl();
     }
-    d->idleSlaves->removeAll(slave);
+    d->idleSlaves.removeAll(slave);
     JobList *list = d->coSlaves.value(slave);
     if (list)
     {
@@ -718,7 +710,7 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
        disconnectSlave(slave);
     }
 
-    if (!d->slaveList->removeAll(slave))
+    if (!d->slaveList.removeAll(slave))
         kDebug(7006) << "Scheduler: BUG!! Slave " << slave << "/" << slave->slave_pid() << " died, but is NOT in slaveList!!!\n" << endl;
     else
         slave->deref(); // Delete slave
@@ -726,16 +718,16 @@ void Scheduler::slotSlaveDied(KIO::Slave *slave)
 
 void Scheduler::slotCleanIdleSlaves()
 {
-    SlaveList::iterator it = d->idleSlaves->begin();
-    for( ; it != d->idleSlaves->end(); )
+    SlaveList::iterator it = d->idleSlaves.begin();
+    for( ; it != d->idleSlaves.end(); )
     {
         Slave *slave = *it;
         if (slave->idleTime() >= MAX_SLAVE_IDLE)
         {
            // kDebug(7006) << "Removing idle slave: " << slave->slaveProtocol() << " " << slave->host() << endl;
            Slave *removeSlave = slave;
-           it = d->idleSlaves->erase( it );
-           d->slaveList->removeAll( removeSlave );
+           it = d->idleSlaves.erase( it );
+           d->slaveList.removeAll( removeSlave );
            removeSlave->connection()->close();
            removeSlave->deref();
         }
@@ -749,7 +741,7 @@ void Scheduler::slotCleanIdleSlaves()
 
 void Scheduler::_scheduleCleanup()
 {
-    if (d->idleSlaves->count())
+    if (d->idleSlaves.count())
     {
         if (!d->cleanupTimer.isActive())
             d->cleanupTimer.start( MAX_SLAVE_IDLE*1000 );
@@ -797,12 +789,12 @@ Scheduler::_getConnectedSlave(const KUrl &url, const KIO::MetaData &config )
     Slave *slave = searchIdleList(d->idleSlaves, url, protocol, dummy);
     if (!slave)
     {
-       ProtocolInfo *protInfo = d->protInfoDict->get(protocol);
+       ProtocolInfo *protInfo = d->protInfoDict.get(protocol);
        slave = createSlave(protInfo, 0, url);
     }
     if (!slave)
        return 0; // Error
-    d->idleSlaves->removeAll(slave);
+    d->idleSlaves.removeAll(slave);
 
     setupSlave(slave, url, protocol, proxy, true, &config);
 
@@ -821,8 +813,8 @@ void
 Scheduler::slotScheduleCoSlave()
 {
     d->slaveConfig = SlaveConfig::self();
-    SlaveList::iterator it = d->coIdleSlaves->begin();
-    for( ; it != d->coIdleSlaves->end(); )
+    SlaveList::iterator it = d->coIdleSlaves.begin();
+    for( ; it != d->coIdleSlaves.end(); )
     {
         Slave* slave = *it;
         JobList *list = d->coSlaves.value(slave);
@@ -830,7 +822,7 @@ Scheduler::slotScheduleCoSlave()
         if (list && !list->isEmpty())
         {
            SimpleJob *job = list->takeFirst();
-           it = d->coIdleSlaves->erase( it );
+           it = d->coIdleSlaves.erase( it );
 //           kDebug(7006) << "scheduler: job started " << job << endl;
 
            KUrl url =job->url();
@@ -869,8 +861,8 @@ Scheduler::slotSlaveConnected()
     disconnect(slave, SIGNAL(connected()),
                this, SLOT(slotSlaveConnected()));
     emit slaveConnected(slave);
-    assert(!d->coIdleSlaves->contains(slave));
-    d->coIdleSlaves->append(slave);
+    assert(!d->coIdleSlaves.contains(slave));
+    d->coIdleSlaves.append(slave);
     d->coSlaveTimer.start(0);
 }
 
@@ -878,7 +870,7 @@ void
 Scheduler::slotSlaveError(int errorNr, const QString &errorMsg)
 {
     Slave *slave = (Slave *)sender();
-    if (!slave->isConnected() || d->coIdleSlaves->contains(slave))
+    if (!slave->isConnected() || d->coIdleSlaves.contains(slave))
     {
        // Only forward to application if slave is idle or still connecting.
        emit slaveError(slave, errorNr, errorMsg);
@@ -933,15 +925,15 @@ Scheduler::_disconnectSlave(KIO::Slave *slave)
        job->kill();
     }
     delete list;
-    d->coIdleSlaves->removeAll(slave);
-    assert(!d->coIdleSlaves->contains(slave));
+    d->coIdleSlaves.removeAll(slave);
+    assert(!d->coIdleSlaves.contains(slave));
     disconnect(slave, SIGNAL(connected()),
                this, SLOT(slotSlaveConnected()));
     disconnect(slave, SIGNAL(error(int, const QString &)),
                this, SLOT(slotSlaveError(int, const QString &)));
     if (slave->isAlive())
     {
-       d->idleSlaves->append(slave);
+       d->idleSlaves.append(slave);
        slave->send( CMD_DISCONNECT );
        slave->setIdle();
        slave->setConnected(false);
