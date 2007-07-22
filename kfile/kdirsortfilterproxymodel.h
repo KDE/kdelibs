@@ -41,11 +41,7 @@
  * - item_10.png
  *
  * It is assured that directories are always sorted before files.
- *
- * Dont use it with non-KDirModel derivatives -- contract-based programming here :)
- *
- * TODO KDE 4.1: bring nepomuk stuff from dolphin to kdelibs/nepomuk
- * in the form of separate subclass
+ * Don't use it with non-KDirModel derivatives.
  *
  * @author Dominic Battre, Martin Pool and Peter Penz
  */
@@ -57,7 +53,6 @@ public:
     KDirSortFilterProxyModel(QObject* parent = 0);
     virtual ~KDirSortFilterProxyModel();
 
-
     /** Reimplemented from QAbstractItemModel. Returns true for directories. */
     virtual bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
 
@@ -67,6 +62,12 @@ public:
      */
     virtual bool canFetchMore(const QModelIndex& parent) const;
 
+    /**
+     * Does a natural comparing of the strings. -1 is returned if \a a
+     * is smaller than \a b. +1 is returned if \a a is greater than \a b. 0
+     * is returned if both values are equal.
+     */
+    static int naturalCompare(const QString& a, const QString& b);
 
 protected:
     /**
@@ -74,13 +75,6 @@ protected:
      */
     virtual bool lessThan(const QModelIndex& left,
                           const QModelIndex& right) const;
-
-public:
-    /**
-     * Made public for the case when this nice algorithm may be needed somewhere else.
-     */
-    static int naturalCompare(const QString& a, const QString& b);
-
 };
 
 

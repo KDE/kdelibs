@@ -27,6 +27,8 @@
 #include <kdatetime.h>
 #include <klocale.h>
 
+// TODO KDE 4.1: bring Nepomuk stuff from Dolphin to kdelibs/nepomuk
+// in the form of a separate subclass
 
 KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
     : QSortFilterProxyModel(parent)
@@ -54,8 +56,111 @@ bool KDirSortFilterProxyModel::canFetchMore(const QModelIndex& parent) const
     return sourceModel()->canFetchMore(sourceParent);
 }
 
+int KDirSortFilterProxyModel::naturalCompare(const QString& a,
+                                                const QString& b)
+{
+    // This method chops the input a and b into pieces of
+    // digits and non-digits (a1.05 becomes a | 1 | . | 05)
+    // and compares these pieces of a and b to each other
+    // (first with first, second with second, ...).
+    //
+    // This is based on the natural sort order code code by Martin Pool
+    // http://sourcefrog.net/projects/natsort/
+    // Martin Pool agreed to license this under LGPL or GPL.
+
+    const QChar* currA = a.unicode(); // iterator over a
+    const QChar* currB = b.unicode(); // iterator over b
+
+    if (currA == currB) {
+        return 0;
+    }
+
+    const QChar* begSeqA = currA; // beginning of a new character sequence of a
+    const QChar* begSeqB = currB;
+
+    while (!currA->isNull() && !currB->isNull()) {
+        // find sequence of characters ending at the first non-character
+        while (!currA->isNull() && !currA->isDigit()) {
+            ++currA;
+        }
+
+        while (!currB->isNull() && !currB->isDigit()) {
+            ++currB;
+        }
+
+        // compare these sequences
+        const QString subA(begSeqA, currA - begSeqA);
+        const QString subB(begSeqB, currB - begSeqB);
+        const int cmp = QString::localeAwareCompare(subA, subB);
+        if (cmp != 0) {
+            return cmp;
+        }
+
+        if (currA->isNull() || currB->isNull()) {
+            break;
+        }
+
+        // now some digits follow...
+        if ((*currA == '0') || (*currB == '0')) {
+            // one digit-sequence starts with 0 -> assume we are in a fraction part
+            // do left aligned comparison (numbers are considered left aligned)
+            while (1) {
+                if (!currA->isDigit() && !currB->isDigit()) {
+                    break;
+                } else if (!currA->isDigit()) {
+                    return -1;
+                } else if (!currB->isDigit()) {
+                    return + 1;
+                } else if (*currA < *currB) {
+                    return -1;
+                } else if (*currA > *currB) {
+                    return + 1;
+                }
+                ++currA;
+                ++currB;
+            }
+        } else {
+            // No digit-sequence starts with 0 -> assume we are looking at some integer
+            // do right aligned comparison.
+            //
+            // The longest run of digits wins. That aside, the greatest
+            // value wins, but we can't know that it will until we've scanned
+            // both numbers to know that they have the same magnitude.
+
+            int weight = 0;
+            while (1) {
+                if (!currA->isDigit() && !currB->isDigit()) {
+                    if (weight != 0) {
+                        return weight;
+                    }
+                    break;
+                } else if (!currA->isDigit()) {
+                    return -1;
+                } else if (!currB->isDigit()) {
+                    return + 1;
+                } else if ((*currA < *currB) && (weight == 0)) {
+                    weight = -1;
+                } else if ((*currA > *currB) && (weight == 0)) {
+                    weight = + 1;
+                }
+                ++currA;
+                ++currB;
+            }
+        }
+
+        begSeqA = currA;
+        begSeqB = currB;
+    }
+
+    if (currA->isNull() && currB->isNull()) {
+        return 0;
+    }
+
+    return currA->isNull() ? -1 : + 1;
+}
+
 bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
-                                           const QModelIndex& right) const
+                                        const QModelIndex& right) const
 {
     KDirModel* dirModel = static_cast<KDirModel*>(sourceModel());
 
@@ -187,106 +292,4 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
     return QSortFilterProxyModel::lessThan(left, right);
 }
 
-int KDirSortFilterProxyModel::naturalCompare(const QString& a,
-                                                const QString& b)
-{
-    // This method chops the input a and b into pieces of
-    // digits and non-digits (a1.05 becomes a | 1 | . | 05)
-    // and compares these pieces of a and b to each other
-    // (first with first, second with second, ...).
-    //
-    // This is based on the natural sort order code code by Martin Pool
-    // http://sourcefrog.net/projects/natsort/
-    // Martin Pool agreed to license this under LGPL or GPL.
-
-    const QChar* currA = a.unicode(); // iterator over a
-    const QChar* currB = b.unicode(); // iterator over b
-
-    if (currA == currB) {
-        return 0;
-    }
-
-    const QChar* begSeqA = currA; // beginning of a new character sequence of a
-    const QChar* begSeqB = currB;
-
-    while (!currA->isNull() && !currB->isNull()) {
-        // find sequence of characters ending at the first non-character
-        while (!currA->isNull() && !currA->isDigit()) {
-            ++currA;
-        }
-
-        while (!currB->isNull() && !currB->isDigit()) {
-            ++currB;
-        }
-
-        // compare these sequences
-        const QString subA(begSeqA, currA - begSeqA);
-        const QString subB(begSeqB, currB - begSeqB);
-        const int cmp = QString::localeAwareCompare(subA, subB);
-        if (cmp != 0) {
-            return cmp;
-        }
-
-        if (currA->isNull() || currB->isNull()) {
-            break;
-        }
-
-        // now some digits follow...
-        if ((*currA == '0') || (*currB == '0')) {
-            // one digit-sequence starts with 0 -> assume we are in a fraction part
-            // do left aligned comparison (numbers are considered left aligned)
-            while (1) {
-                if (!currA->isDigit() && !currB->isDigit()) {
-                    break;
-                } else if (!currA->isDigit()) {
-                    return -1;
-                } else if (!currB->isDigit()) {
-                    return + 1;
-                } else if (*currA < *currB) {
-                    return -1;
-                } else if (*currA > *currB) {
-                    return + 1;
-                }
-                ++currA;
-                ++currB;
-            }
-        } else {
-            // No digit-sequence starts with 0 -> assume we are looking at some integer
-            // do right aligned comparison.
-            //
-            // The longest run of digits wins. That aside, the greatest
-            // value wins, but we can't know that it will until we've scanned
-            // both numbers to know that they have the same magnitude.
-
-            int weight = 0;
-            while (1) {
-                if (!currA->isDigit() && !currB->isDigit()) {
-                    if (weight != 0) {
-                        return weight;
-                    }
-                    break;
-                } else if (!currA->isDigit()) {
-                    return -1;
-                } else if (!currB->isDigit()) {
-                    return + 1;
-                } else if ((*currA < *currB) && (weight == 0)) {
-                    weight = -1;
-                } else if ((*currA > *currB) && (weight == 0)) {
-                    weight = + 1;
-                }
-                ++currA;
-                ++currB;
-            }
-        }
-
-        begSeqA = currA;
-        begSeqB = currB;
-    }
-
-    if (currA->isNull() && currB->isNull()) {
-        return 0;
-    }
-
-    return currA->isNull() ? -1 : + 1;
-}
 
