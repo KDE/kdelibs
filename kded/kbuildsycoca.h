@@ -15,8 +15,8 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  **/
-#ifndef __kbuildsycoca_h__
-#define __kbuildsycoca_h__
+#ifndef KBUILDSYCOCA_H
+#define KBUILDSYCOCA_H
 
 #include <sys/stat.h>
 

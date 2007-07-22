@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef __kded_h__
-#define __kded_h__
+#ifndef KDED_H
+#define KDED_H
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
