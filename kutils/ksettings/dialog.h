@@ -107,7 +107,7 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
          * If you use a Configurable dialog you need to pass KPluginInfo
          * objects that the dialog should configure.
          */
-        void addPluginInfos( const QList<KPluginInfo*> & plugininfos );
+        void addPluginInfos(const QList<KPluginInfo> &plugininfos);
 
         /**
          * Sets the argument list that is given to all the KControlModule's when
@@ -153,7 +153,7 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
         /**
          * Returns a list of all KPluginInfo objects the dialog uses.
          */
-        QList<KPluginInfo *> pluginInfos() const;
+        QList<KPluginInfo> pluginInfos() const;
 
     protected:
         /**

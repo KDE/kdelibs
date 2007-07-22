@@ -61,11 +61,10 @@ class KUTILS_EXPORT KPluginSelector
     Q_OBJECT
 
 public:
-    typedef enum
-    {
+    enum PluginLoadMethod {
         ReadConfigFile = 0,
         IgnoreConfigFile
-    } PluginLoadMethod;
+    };
 
     /**
       * Create a new KPluginSelector
@@ -162,7 +161,7 @@ public:
       *         will load and save their information from there. For those that
       *         weren't any config object, @p config will be used
       */
-    void addPlugins(const QList<KPluginInfo*> &pluginInfoList,
+    void addPlugins(const QList<KPluginInfo> &pluginInfoList,
                     PluginLoadMethod pluginLoadMethod = ReadConfigFile,
                     const QString &categoryName = QString(),
                     const QString &categoryKey = QString(),
@@ -191,7 +190,7 @@ public:
       * be useful if you added plugins with the method:
       *
       * \code
-      * void addPlugins(const QList<KPluginInfo*> &pluginInfoList,
+      * void addPlugins(const QList<KPluginInfo> &pluginInfoList,
       *                 const QString &categoryName = QString(),
       *                 const QString &categoryKey = QString(),
       *                 const KSharedConfig::Ptr &config = KSharedConfig::Ptr());

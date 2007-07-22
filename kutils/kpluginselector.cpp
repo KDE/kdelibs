@@ -280,32 +280,32 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
     KConfigGroup providedConfigGroup;
     int addedPlugins = 0;
     bool alternateColor = pluginCount.contains(categoryName) ? ((pluginCount[categoryName] % 2) != 0) : false;
-    foreach (KPluginInfo *pluginInfo, pluginInfoList)
+    foreach (KPluginInfo pluginInfo, pluginInfoList)
     {
-        if (!pluginInfo->isHidden() &&
+        if (!pluginInfo.isHidden() &&
              ((myCategoryKey.isEmpty()) ||
-              (pluginInfo->category().toLower() == myCategoryKey)))
+              (pluginInfo.category().toLower() == myCategoryKey)))
         {
-            if ((pluginLoadMethod == ReadConfigFile) && !pluginInfo->config().isValid())
-                pluginInfo->load(configGroup);
+            if ((pluginLoadMethod == ReadConfigFile) && !pluginInfo.config().isValid())
+                pluginInfo.load(configGroup);
             else if (pluginLoadMethod == ReadConfigFile)
             {
-                providedConfigGroup = pluginInfo->config();
-                pluginInfo->load(providedConfigGroup);
+                providedConfigGroup = pluginInfo.config();
+                pluginInfo.load();
             }
 
             pluginInfoByCategory[categoryName].append(pluginInfo);
 
             struct AdditionalInfo pluginAdditionalInfo;
 
-            if (pluginInfo->isPluginEnabled())
+            if (pluginInfo.isPluginEnabled())
                 pluginAdditionalInfo.itemChecked = Qt::Checked;
             else
                 pluginAdditionalInfo.itemChecked = Qt::Unchecked;
 
             pluginAdditionalInfo.alternateColor = alternateColor;
 
-            pluginAdditionalInfo.configGroup = pluginInfo->config().isValid() ? providedConfigGroup : configGroup;
+            pluginAdditionalInfo.configGroup = pluginInfo.config().isValid() ? providedConfigGroup : configGroup;
             pluginAdditionalInfo.addMethod = addMethod;
 
             additionalInfo.insert(pluginInfo, pluginAdditionalInfo);
@@ -334,9 +334,9 @@ bool KPluginSelector::Private::PluginModel::setData(const QModelIndex &index, co
     {
         case PluginDelegate::Checked:
             if (value.toBool())
-                additionalInfo[static_cast<KPluginInfo*>(index.internalPointer())].itemChecked = Qt::Checked;
+                additionalInfo[*static_cast<KPluginInfo*>(index.internalPointer())].itemChecked = Qt::Checked;
             else
-                additionalInfo[static_cast<KPluginInfo*>(index.internalPointer())].itemChecked = Qt::Unchecked;
+                additionalInfo[*static_cast<KPluginInfo*>(index.internalPointer())].itemChecked = Qt::Unchecked;
             break;
         default:
             return false;
@@ -354,32 +354,32 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
 
     if (index.internalPointer()) // Is a plugin item
     {
-        KPluginInfo *pluginInfo = static_cast<KPluginInfo*>(index.internalPointer());
+        KPluginInfo pluginInfo = *static_cast<KPluginInfo*>(index.internalPointer());
 
         switch (role)
         {
             case PluginDelegate::Name:
-                return pluginInfo->name();
+                return pluginInfo.name();
             case PluginDelegate::Comment:
-                return pluginInfo->comment();
+                return pluginInfo.comment();
             case PluginDelegate::Icon:
-                return pluginInfo->icon();
+                return pluginInfo.icon();
             case PluginDelegate::Author:
-                return pluginInfo->author();
+                return pluginInfo.author();
             case PluginDelegate::Email:
-                return pluginInfo->email();
+                return pluginInfo.email();
             case PluginDelegate::Category:
-                return pluginInfo->category();
+                return pluginInfo.category();
             case PluginDelegate::InternalName:
-                return pluginInfo->pluginName();
+                return pluginInfo.pluginName();
             case PluginDelegate::Version:
-                return pluginInfo->version();
+                return pluginInfo.version();
             case PluginDelegate::Website:
-                return pluginInfo->website();
+                return pluginInfo.website();
             case PluginDelegate::License:
-                return pluginInfo->license();
+                return pluginInfo.license();
             case PluginDelegate::Checked:
-                return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).itemChecked;
+                return additionalInfo.value(*static_cast<KPluginInfo*>(index.internalPointer())).itemChecked;
         }
     }
     else // Is a category
@@ -387,7 +387,7 @@ QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, i
         switch (role)
         {
             case PluginDelegate::Checked:
-                return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).itemChecked;
+                return additionalInfo.value(*static_cast<KPluginInfo*>(index.internalPointer())).itemChecked;
 
             case Qt::DisplayRole:
                 int currentPosition = 0;
@@ -428,12 +428,12 @@ QModelIndex KPluginSelector::Private::PluginModel::index(int row, int column, co
         if (currentPosition == row)
             return createIndex(row, column, 0); // Is a category
 
-        foreach (KPluginInfo *pluginInfo, pluginInfoByCategory[category])
+        foreach (const KPluginInfo &pluginInfo, pluginInfoByCategory[category])
         {
             currentPosition++;
 
             if (currentPosition == row)
-                return createIndex(row, column, pluginInfo); // Is a plugin item
+                return createIndex(row, column, const_cast<KPluginInfo *>(&pluginInfo)); // Is a plugin item
         }
 
         currentPosition++;
@@ -461,9 +461,9 @@ QList<KService::Ptr> KPluginSelector::Private::PluginModel::services(const QMode
 {
     if (index.internalPointer()) // Is a plugin item
     {
-        KPluginInfo *pluginInfo = static_cast<KPluginInfo*>(index.internalPointer());
+        const KPluginInfo pluginInfo = *static_cast<KPluginInfo*>(index.internalPointer());
 
-        return pluginInfo->kcmServices();
+        return pluginInfo.kcmServices();
     }
 
     return QList<KService::Ptr>(); // We were asked for a category
@@ -471,23 +471,21 @@ QList<KService::Ptr> KPluginSelector::Private::PluginModel::services(const QMode
 
 KConfigGroup KPluginSelector::Private::PluginModel::configGroup(const QModelIndex &index) const
 {
-    return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).configGroup;
+    return additionalInfo.value(*static_cast<KPluginInfo*>(index.internalPointer())).configGroup;
 }
 
 void KPluginSelector::Private::PluginModel::setParentComponents(const QModelIndex &index, const QStringList &parentComponents)
 {
-    additionalInfo[static_cast<KPluginInfo*>(index.internalPointer())].parentComponents = parentComponents;
+    additionalInfo[*static_cast<KPluginInfo*>(index.internalPointer())].parentComponents = parentComponents;
 }
 
 QStringList KPluginSelector::Private::PluginModel::parentComponents(const QModelIndex &index) const
 {
-    return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).parentComponents;
+    return additionalInfo.value(*static_cast<KPluginInfo*>(index.internalPointer())).parentComponents;
 }
 
 void KPluginSelector::Private::PluginModel::updateDependencies(const QString &dependency, const QString &pluginCausant, CheckWhatDependencies whatDependencies, QStringList &dependenciesPushed)
 {
-    const KPluginInfo *pluginInfo;
-
     QModelIndex theIndex;
     if (whatDependencies == DependenciesINeed)
     {
@@ -497,19 +495,19 @@ void KPluginSelector::Private::PluginModel::updateDependencies(const QString &de
 
             if (data(theIndex, PluginDelegate::InternalName).toString() == dependency)
             {
-                pluginInfo = static_cast<const KPluginInfo*>(theIndex.internalPointer());
+                const KPluginInfo pluginInfo(*static_cast<const KPluginInfo*>(theIndex.internalPointer()));
 
                 if (!data(theIndex, PluginDelegate::Checked).toBool())
                 {
-                    parent->dependenciesWidget->addDependency(pluginInfo->name(), pluginCausant, true);
+                    parent->dependenciesWidget->addDependency(pluginInfo.name(), pluginCausant, true);
 
                     setData(theIndex, true, PluginDelegate::Checked);
-                    dependenciesPushed.append(pluginInfo->name());
+                    dependenciesPushed.append(pluginInfo.name());
                 }
 
-                foreach(const QString &indirectDependency, pluginInfo->dependencies())
+                foreach(const QString &indirectDependency, pluginInfo.dependencies())
                 {
-                    updateDependencies(indirectDependency, pluginInfo->name(), whatDependencies, dependenciesPushed);
+                    updateDependencies(indirectDependency, pluginInfo.name(), whatDependencies, dependenciesPushed);
                 }
             }
         }
@@ -522,31 +520,31 @@ void KPluginSelector::Private::PluginModel::updateDependencies(const QString &de
 
             if (theIndex.internalPointer())
             {
-                pluginInfo = static_cast<const KPluginInfo*>(theIndex.internalPointer());
+                const KPluginInfo pluginInfo(*static_cast<const KPluginInfo*>(theIndex.internalPointer()));
 
-                if (pluginInfo->dependencies().contains(dependency))
+                if (pluginInfo.dependencies().contains(dependency))
                 {
                     if (data(theIndex, PluginDelegate::Checked).toBool())
                     {
-                        parent->dependenciesWidget->addDependency(pluginInfo->name(), pluginCausant, false);
+                        parent->dependenciesWidget->addDependency(pluginInfo.name(), pluginCausant, false);
 
                         setData(theIndex, false, PluginDelegate::Checked);
-                        dependenciesPushed.append(pluginInfo->name());
+                        dependenciesPushed.append(pluginInfo.name());
                     }
 
-                    updateDependencies(pluginInfo->pluginName(), pluginCausant, whatDependencies, dependenciesPushed);
+                    updateDependencies(pluginInfo.pluginName(), pluginCausant, whatDependencies, dependenciesPushed);
                 }
             }
         }
     }
 }
 
-KPluginSelector::Private::PluginModel::AddMethod KPluginSelector::Private::PluginModel::addMethod(KPluginInfo *pluginInfo) const
+KPluginSelector::Private::PluginModel::AddMethod KPluginSelector::Private::PluginModel::addMethod(const KPluginInfo &pluginInfo) const
 {
     return additionalInfo[pluginInfo].addMethod;
 }
 
-bool KPluginSelector::Private::PluginModel::alternateColor(KPluginInfo *pluginInfo) const
+bool KPluginSelector::Private::PluginModel::alternateColor(const KPluginInfo &pluginInfo) const
 {
     return additionalInfo[pluginInfo].alternateColor;
 }
@@ -593,7 +591,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
     QStringList desktopFileNames = KGlobal::dirs()->findAllResources("data",
         componentName + "/kpartplugins/*.desktop", KStandardDirs::Recursive);
 
-    QList<KPluginInfo*> pluginInfoList = KPluginInfo::fromFiles(desktopFileNames);
+    QList<KPluginInfo> pluginInfoList = KPluginInfo::fromFiles(desktopFileNames);
 
     if (pluginInfoList.isEmpty())
         return;
@@ -616,7 +614,7 @@ void KPluginSelector::addPlugins(const KComponentData &instance,
     addPlugins(instance.componentName(), categoryName, categoryKey, config);
 }
 
-void KPluginSelector::addPlugins(const QList<KPluginInfo*> &pluginInfoList,
+void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
                                  PluginLoadMethod pluginLoadMethod,
                                  const QString &categoryName,
                                  const QString &categoryKey,
@@ -634,17 +632,16 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo*> &pluginInfoList,
 void KPluginSelector::load()
 {
     QModelIndex currentIndex;
-    KPluginInfo *currentPlugin;
     for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
         currentIndex = d->pluginModel->index(i, 0);
         if (currentIndex.internalPointer())
         {
-            currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
+            KPluginInfo currentPlugin(*static_cast<KPluginInfo*>(currentIndex.internalPointer()));
 
-            currentPlugin->load(d->pluginModel->configGroup(currentIndex));
+            currentPlugin.load(d->pluginModel->configGroup(currentIndex));
 
-            d->pluginModel->setData(currentIndex, currentPlugin->isPluginEnabled(), Private::PluginDelegate::Checked);
+            d->pluginModel->setData(currentIndex, currentPlugin.isPluginEnabled(), Private::PluginDelegate::Checked);
         }
     }
 
@@ -654,19 +651,18 @@ void KPluginSelector::load()
 void KPluginSelector::save()
 {
     QModelIndex currentIndex;
-    KPluginInfo *currentPlugin;
     KConfigGroup configGroup;
     for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
         currentIndex = d->pluginModel->index(i, 0);
         if (currentIndex.internalPointer())
         {
-            currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
-            currentPlugin->setPluginEnabled(d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool());
+            KPluginInfo currentPlugin(*static_cast<KPluginInfo*>(currentIndex.internalPointer()));
+            currentPlugin.setPluginEnabled(d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool());
 
             configGroup = d->pluginModel->configGroup(currentIndex);
 
-            currentPlugin->save(configGroup);
+            currentPlugin.save(configGroup);
 
             configGroup.sync();
         }
@@ -678,15 +674,14 @@ void KPluginSelector::save()
 void KPluginSelector::defaults()
 {
     QModelIndex currentIndex;
-    KPluginInfo *currentPlugin;
     for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
         currentIndex = d->pluginModel->index(i, 0);
         if (currentIndex.internalPointer())
         {
-            currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
-            currentPlugin->defaults();
-            d->pluginModel->setData(currentIndex, currentPlugin->isPluginEnabled(), Private::PluginDelegate::Checked);
+            KPluginInfo currentPlugin(*static_cast<KPluginInfo*>(currentIndex.internalPointer()));
+            currentPlugin.defaults();
+            d->pluginModel->setData(currentIndex, currentPlugin.isPluginEnabled(), Private::PluginDelegate::Checked);
         }
     }
 }
@@ -694,18 +689,17 @@ void KPluginSelector::defaults()
 void KPluginSelector::updatePluginsState()
 {
     QModelIndex currentIndex;
-    KPluginInfo *currentPlugin;
     for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
         currentIndex = d->pluginModel->index(i, 0);
         if (currentIndex.internalPointer())
         {
-            currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
+            KPluginInfo currentPlugin(*static_cast<KPluginInfo*>(currentIndex.internalPointer()));
 
             // Only the items that were added "manually" will be updated, since the others
             // are not visible from the outside
             if (d->pluginModel->addMethod(currentPlugin) == Private::PluginModel::ManuallyAdded)
-                currentPlugin->setPluginEnabled(d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool());
+                currentPlugin.setPluginEnabled(d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool());
         }
     }
 }
@@ -759,7 +753,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     if (index.internalPointer())
     {
-        KPluginInfo *info = static_cast<KPluginInfo*>(index.internalPointer());
+        const KPluginInfo info(*static_cast<KPluginInfo*>(index.internalPointer()));
 
         if (model->alternateColor(info))
             painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::AlternateBase));
@@ -968,9 +962,9 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
                 QStyleOptionViewItem optionViewItem(listView->viewOptions());
                 optionViewItem.rect = listView->visualRect(currentIndex);
 
-                if (const KPluginInfo *pluginInfo = static_cast<const KPluginInfo*>(currentIndex.internalPointer()))
-                {
-                    if (pluginInfo->kcmServices().size())
+                if (currentIndex.internalPointer()) {
+                    const KPluginInfo pluginInfo(*static_cast<const KPluginInfo*>(currentIndex.internalPointer()));
+                    if (pluginInfo.kcmServices().size())
                         updateCheckState(currentIndex, optionViewItem,
                                          viewport->mapFromGlobal(QCursor::pos()), listView, eventReceived, i18n("More Options"));
                     else
@@ -1051,7 +1045,6 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
         return;
 
     PluginModel *model = static_cast<PluginModel*>(listView->model());
-    KPluginInfo *pluginInfo = 0;
 
     switch (eventReceived)
     {
@@ -1063,13 +1056,13 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
             // We don't want to break
         case KeyboardEvent:
         {
-            pluginInfo = static_cast<KPluginInfo*>(index.internalPointer());
+            const KPluginInfo pluginInfo(*static_cast<KPluginInfo*>(index.internalPointer()));
 
             if (checkRect(index, option).contains(cursorPos))
             {
                 listView->model()->setData(index, !listView->model()->data(index, Checked).toBool(), Checked);
 
-                parent->dependenciesWidget->userOverrideDependency(pluginInfo->name());
+                parent->dependenciesWidget->userOverrideDependency(pluginInfo.name());
 
                 if (listView->model()->data(index, Checked).toBool()) // Item was checked
                     checkDependencies(model, pluginInfo, DependenciesINeed);
@@ -1084,7 +1077,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     QList<KService::Ptr> services = model->services(index);
 
                     configDialog = new KDialog(parent->parent);
-                    configDialog->setWindowTitle(pluginInfo->name());
+                    configDialog->setWindowTitle(pluginInfo.name());
                     KTabWidget *newTabWidget = new KTabWidget(configDialog);
                     bool configurable = false;
 
@@ -1122,24 +1115,24 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     layout->setSpacing(0);
                     aboutWidget->setLayout(layout);
 
-                    if (!pluginInfo->comment().isEmpty())
+                    if (!pluginInfo.comment().isEmpty())
                     {
-                        QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()), newTabWidget);
+                        QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo.comment()), newTabWidget);
                         layout->addWidget(description);
                         layout->addSpacing(20);
                     }
 
-                    if (!pluginInfo->author().isEmpty())
+                    if (!pluginInfo.author().isEmpty())
                     {
-                        QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()), newTabWidget);
+                        QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo.author()), newTabWidget);
                         layout->addWidget(author);
                         layout->addSpacing(20);
                     }
 
-                    if (!pluginInfo->email().isEmpty())
+                    if (!pluginInfo.email().isEmpty())
                     {
                         QLabel *authorEmail = new QLabel(i18n("E-Mail:"), newTabWidget);
-                        KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo->email(), '\t' + pluginInfo->email());
+                        KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo.email(), '\t' + pluginInfo.email());
 
                         sendEmail->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
                         sendEmail->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -1157,10 +1150,10 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                         layout->addSpacing(20);
                     }
 
-                    if (!pluginInfo->website().isEmpty())
+                    if (!pluginInfo.website().isEmpty())
                     {
                         QLabel *website = new QLabel(i18n("Website:"), newTabWidget);
-                        KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo->website(), '\t' + pluginInfo->website());
+                        KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo.website(), '\t' + pluginInfo.website());
 
                         visitWebsite->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
                         visitWebsite->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -1178,17 +1171,17 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                         layout->addSpacing(20);
                     }
 
-                    if (!pluginInfo->version().isEmpty())
+                    if (!pluginInfo.version().isEmpty())
                     {
-                        QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()), newTabWidget);
+                        QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo.version()), newTabWidget);
 
                         layout->addWidget(version);
                         layout->addSpacing(20);
                     }
 
-                    if (!pluginInfo->license().isEmpty())
+                    if (!pluginInfo.license().isEmpty())
                     {
-                        QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()), newTabWidget);
+                        QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo.license()), newTabWidget);
 
                         layout->addWidget(license);
                         layout->addSpacing(20);
@@ -1241,21 +1234,21 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 }
 
 void KPluginSelector::Private::PluginDelegate::checkDependencies(PluginModel *model,
-                                                                 const KPluginInfo *info,
+                                                                 const KPluginInfo &info,
                                                                  CheckWhatDependencies whatDependencies)
 {
     QStringList dependenciesPushed;
 
     if (whatDependencies == DependenciesINeed)
     {
-        foreach(const QString &dependency, info->dependencies())
+        foreach(const QString &dependency, info.dependencies())
         {
-            model->updateDependencies(dependency, info->name(), whatDependencies, dependenciesPushed);
+            model->updateDependencies(dependency, info.name(), whatDependencies, dependenciesPushed);
         }
     }
     else
     {
-        model->updateDependencies(info->pluginName(), info->name(), whatDependencies, dependenciesPushed);
+        model->updateDependencies(info.pluginName(), info.name(), whatDependencies, dependenciesPushed);
     }
 }
 

@@ -41,7 +41,6 @@ class KTabWidget;
 class KDialog;
 class QLabel;
 
-
 class KPluginSelector::Private
     : public QObject
 {
@@ -155,7 +154,7 @@ public:
         KConfigGroup configGroup;
         QStringList parentComponents;
         AddMethod addMethod; // If the plugin was added with the method
-                             // addPlugins(const QList<KPluginInfo*> &pluginInfoList ...
+                             // addPlugins(const QList<KPluginInfo> &pluginInfoList ...
                              // Mainly for only updating the plugins that were manually
                              // added when calling to updatePluginsState()
         bool alternateColor;
@@ -195,15 +194,15 @@ public:
 
     // Own methods
 
-    AddMethod addMethod(KPluginInfo *pluginInfo) const;
+    AddMethod addMethod(const KPluginInfo &pluginInfo) const;
 
-    bool alternateColor(KPluginInfo *pluginInfo) const;
+    bool alternateColor(const KPluginInfo &pluginInfo) const;
 
 private:
     QMap<QString, KPluginInfo::List> pluginInfoByCategory;
-    QHash<KPluginInfo *, KCModuleProxy *> moduleProxies;
+    QHash<KPluginInfo, KCModuleProxy *> moduleProxies;
     QMap<QString, int> pluginCount;
-    QHash<KPluginInfo *, struct AdditionalInfo> additionalInfo;
+    QHash<KPluginInfo, struct AdditionalInfo> additionalInfo;
     KPluginSelector::Private *parent;
 };
 
@@ -274,7 +273,7 @@ private:
                           const QString &caption);
 
     void checkDependencies(PluginModel *model,
-                           const KPluginInfo *info,
+                           const KPluginInfo &info,
                            CheckWhatDependencies whatDependencies);
 
     QString name(const QModelIndex &index) const;

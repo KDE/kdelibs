@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2003 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2003,2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,9 +17,10 @@
 
 */
 
-#ifndef KPLUGININFO_H
-#define KPLUGININFO_H
+#ifndef KDECORE_KPLUGININFO_H
+#define KDECORE_KPLUGININFO_H
 
+#include <QtCore/QExplicitlySharedDataPointer>
 #include <QtCore/QString>
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
@@ -27,6 +28,8 @@
 #include <kconfiggroup.h>
 #include <kservice.h>
 #include <QtCore/QList>
+
+class KPluginInfoPrivate;
 
 /**
  * Information about a plugin.
@@ -39,7 +42,7 @@
 class KDECORE_EXPORT KPluginInfo
 {
     public:
-        typedef QList<KPluginInfo*> List;
+        typedef QList<KPluginInfo> List;
 
         /**
          * Read plugin info from @p filename.
@@ -107,13 +110,14 @@ class KDECORE_EXPORT KPluginInfo
          */
         explicit KPluginInfo( const KService::Ptr service );
 
-//X         /**
-//X          * Create an empty hidden plugin.
-//X          * @internal
-//X          */
-//X         KPluginInfo();
+        /**
+         * Creates an invalid plugin.
+         *
+         * \see isValid
+         */
+        KPluginInfo();
 
-        virtual ~KPluginInfo();
+        ~KPluginInfo();
 
         /**
          * @return A list of KPluginInfo objects constructed from a list of
@@ -154,22 +158,18 @@ class KDECORE_EXPORT KPluginInfo
         /**
          * Set whether the plugin is currently loaded.
          *
-         * You might need to reimplement this method for special needs.
-         *
          * @see isPluginEnabled()
          * @see save()
          */
-        virtual void setPluginEnabled( bool enabled );
+        void setPluginEnabled(bool enabled);
 
         /**
          * @return Whether the plugin is currently loaded.
          *
-         * You might need to reimplement this method for special needs.
-         *
          * @see setPluginEnabled()
          * @see load()
          */
-        virtual bool isPluginEnabled() const;
+        bool isPluginEnabled() const;
 
         /**
          * @return The default value whether the plugin is enabled or not.
@@ -182,19 +182,8 @@ class KDECORE_EXPORT KPluginInfo
          * @return The value associated the the @p key. You can use it if you
          *         want to read custom values. To do this you need to define
          *         your own servicetype and add it to the ServiceTypes keys.
-         *
-         * @see operator[]
          */
         QVariant property( const QString & key ) const;
-
-        /**
-         * This is the same as property(). It is provided for convenience.
-         *
-         * @return The value associated with the @p key.
-         *
-         * @see property()
-         */
-        QVariant operator[]( const QString & key ) const;
 
         /**
          * @return The user visible name of the plugin.
@@ -214,7 +203,7 @@ class KDECORE_EXPORT KPluginInfo
         /**
          * @return The file containing the information about the plugin.
          */
-        QString specfile() const;
+        QString desktopEntryPath() const;
 
         /**
          * @return The author of this plugin.
@@ -285,37 +274,72 @@ class KDECORE_EXPORT KPluginInfo
 
         /**
          * @return If the KPluginInfo object has a KConfig object set return
-         * it, else return 0.
+         * it, else returns an invalid KConfigGroup.
          */
         KConfigGroup config() const;
 
         /**
-         * Save state of the plugin - enabled or not. This function is provided
-         * for reimplementation if you need to save somewhere else.
+         * Save state of the plugin - enabled or not.
+         *
          * @param config    The KConfigGroup holding the information whether
          *                  plugin is enabled.
          */
-        virtual void save(KConfigGroup config = KConfigGroup());
+        void save(KConfigGroup config = KConfigGroup());
 
         /**
-         * Load the state of the plugin - enabled or not. This function is provided
-         * for reimplementation if you need to save somewhere else.
+         * Load the state of the plugin - enabled or not.
+         *
          * @param config    The KConfigGroup holding the information whether
          *                  plugin is enabled.
          */
-        virtual void load(const KConfigGroup &config = KConfigGroup());
+        void load(const KConfigGroup &config = KConfigGroup());
 
         /**
          * Restore defaults (enabled or not).
          */
-        virtual void defaults();
+        void defaults();
+
+        /**
+         * Returns whether the object is valid. Treat invalid KPluginInfo objects like you would
+         * treat a null pointer.
+         */
+        bool isValid() const;
+
+        /**
+         * Creates a KPluginInfo object that shares the data with \p copy.
+         */
+        KPluginInfo(const KPluginInfo &copy);
+
+        /**
+         * Copies the KPluginInfo object to share the data with \p copy.
+         */
+        KPluginInfo &operator=(const KPluginInfo &rhs);
+
+        /**
+         * Compares two objects whether they share the same data.
+         */
+        bool operator==(const KPluginInfo &rhs) const;
+
+        /**
+         * Compares two objects whether they don't share the same data.
+         */
+        bool operator!=(const KPluginInfo &rhs) const;
+
+        /**
+         * Less than relation comparing the categories and if they are the same using the names.
+         */
+        bool operator<(const KPluginInfo &rhs) const;
+
+        /**
+         * Greater than relation comparing the categories and if they are the same using the names.
+         */
+        bool operator>(const KPluginInfo &rhs) const;
 
     private:
-        KPluginInfo( const KPluginInfo & );
-        const KPluginInfo & operator=( const KPluginInfo & );
-
-        class KPluginInfoPrivate;
-        KPluginInfoPrivate* const d;
+        friend uint qHash(const KPluginInfo &);
+        QExplicitlySharedDataPointer<KPluginInfoPrivate> d;
 };
 
-#endif // KPLUGININFO_H
+KDECORE_EXPORT uint qHash(const KPluginInfo &);
+
+#endif // KDECORE_KPLUGININFO_H

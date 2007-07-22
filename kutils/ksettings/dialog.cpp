@@ -82,14 +82,13 @@ void Dialog::setComponentBlacklist(const QStringList& blacklist)
     d->componentBlacklist = blacklist;
 }
 
-void Dialog::addPluginInfos( const QList<KPluginInfo*> & plugininfos )
+void Dialog::addPluginInfos(const KPluginInfo::List &plugininfos)
 {
     Q_D(Dialog);
-	for( QList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
-			it != plugininfos.end(); ++it )
-	{
-		d->registeredComponents.append( ( *it )->pluginName() );
-        foreach (const KService::Ptr &service, (*it)->kcmServices()) {
+    for (KPluginInfo::List::ConstIterator it = plugininfos.begin();
+            it != plugininfos.end(); ++it ) {
+        d->registeredComponents.append(it->pluginName());
+        foreach (const KService::Ptr &service, it->kcmServices()) {
             d->kcmInfos << KCModuleInfo(service);
         }
     }
@@ -105,7 +104,7 @@ void Dialog::addPluginInfos( const QList<KPluginInfo*> & plugininfos )
     d->plugininfos = plugininfos;
 }
 
-QList<KPluginInfo *> Dialog::pluginInfos() const
+KPluginInfo::List Dialog::pluginInfos() const
 {
     return d_func()->plugininfos;
 }
@@ -178,7 +177,7 @@ QSet<KCModuleInfo> DialogPrivate::parentComponentsServices(const QStringList &kc
     return ret;
 }
 
-bool DialogPrivate::isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPluginInfo *pinfo) const
+bool DialogPrivate::isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPluginInfo &pinfo) const
 {
 	// if the user of this class requested to hide disabled modules
 	// we check whether it should be enabled or not
@@ -198,10 +197,10 @@ bool DialogPrivate::isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPlugi
 		// we check if the parent component is a plugin
         // if not the KCModule must be enabled
         enabled = true;
-        if (pinfo->pluginName() == *pcit) {
+        if (pinfo.pluginName() == *pcit) {
             // it is a plugin: we check whether the plugin is enabled
-            pinfo->load();
-            enabled = pinfo->isPluginEnabled();
+            pinfo.load();
+            enabled = pinfo.isPluginEnabled();
             //kDebug(700) << "parent " << *pcit << " is " << (enabled ? "enabled" : "disabled") << endl;
         }
         // if it is enabled we're done for this KCModuleInfo
@@ -312,19 +311,19 @@ void DialogPrivate::createDialogFromServices()
         KPageWidgetItem *parent = pageItemForGroupId.value(parentId);
         KPageWidgetItem *item = q->addModule(info, parent, arguments);
         kDebug(700) << k_funcinfo << "added KCM '" << info.moduleName() << "'" << endl;
-        foreach (KPluginInfo *pinfo, plugininfos) {
-            kDebug(700) << k_funcinfo << pinfo->pluginName() << endl;
-            if (pinfo->kcmServices().contains(info.service())) {
+        foreach (KPluginInfo pinfo, plugininfos) {
+            kDebug(700) << k_funcinfo << pinfo.pluginName() << endl;
+            if (pinfo.kcmServices().contains(info.service())) {
                 const bool isEnabled = isPluginForKCMEnabled(&info, pinfo);
                 item->setEnabled(isEnabled);
                 kDebug(700) << "correct KPluginInfo for this KCM" << endl;
                 // this KCM belongs to a plugin
-                if (parent && pinfo->kcmServices().count() > 1) {
-                    KPluginInfo *plugin = pluginForItem.value(parent);
-                    if (plugin) {
+                if (parent && pinfo.kcmServices().count() > 1) {
+                    const KPluginInfo &plugin = pluginForItem.value(parent);
+                    if (plugin.isValid()) {
                         if (plugin != pinfo) {
                             kError(700) << "A group contains more than one plugin: '"
-                                << plugin->pluginName() << "' and '" << pinfo->pluginName()
+                                << plugin.pluginName() << "' and '" << pinfo.pluginName()
                                 << "'. Now it won't be possible to enable/disable the plugin."
                                 << endl;
                             parent->setCheckable(false);
@@ -386,13 +385,13 @@ void DialogPrivate::createDialogFromServices()
 
 void DialogPrivate::_k_syncConfiguration()
 {
-    const QHash<KPageWidgetItem *, KPluginInfo *>::ConstIterator endIt = pluginForItem.constEnd();
-    QHash<KPageWidgetItem *, KPluginInfo *>::ConstIterator it = pluginForItem.constBegin();
+    const QHash<KPageWidgetItem *, KPluginInfo>::Iterator endIt = pluginForItem.end();
+    QHash<KPageWidgetItem *, KPluginInfo>::Iterator it = pluginForItem.begin();
     for (; it != endIt; ++it) {
         KPageWidgetItem *item = it.key();
-        KPluginInfo *pinfo = it.value();
-        pinfo->setPluginEnabled(item->isChecked());
-        pinfo->save();
+        KPluginInfo pinfo = it.value();
+        pinfo.setPluginEnabled(item->isChecked());
+        pinfo.save();
     }
     pluginStateDirty = 0;
     Dispatcher::syncConfiguration();
@@ -442,12 +441,12 @@ void DialogPrivate::_k_updateEnabledState(bool enabled)
         return;
     }
 
-    KPluginInfo *pinfo = pluginForItem.value(item);
-    if (!pinfo) {
+    const KPluginInfo &pinfo = pluginForItem.value(item);
+    if (!pinfo.isValid()) {
         kWarning(700) << k_funcinfo << "could not find KPluginInfo in item" << endl;
         return;
     }
-    if (pinfo->isPluginEnabled() != enabled) {
+    if (pinfo.isPluginEnabled() != enabled) {
         ++pluginStateDirty;
     } else {
         --pluginStateDirty;

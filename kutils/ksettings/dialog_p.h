@@ -49,9 +49,9 @@ class DialogPrivate : public KCMultiDialogPrivate
         DialogPrivate();
 
         QHash<QString, KPageWidgetItem *> pageItemForGroupId;
-        QHash<KPageWidgetItem *, KPluginInfo *> pluginForItem;
+        QHash<KPageWidgetItem *, KPluginInfo> pluginForItem;
         QHash<KPageWidgetItem *, QCheckBox *> checkBoxForItem;
-        QList<KPluginInfo *> plugininfos;
+        KPluginInfo::List plugininfos;
 
         QStringList registeredComponents;
         QSet<KCModuleInfo> kcmInfos;
@@ -74,7 +74,7 @@ class DialogPrivate : public KCMultiDialogPrivate
          * @internal
          * Check whether the plugin associated with this KCM is enabled.
          */
-        bool isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPluginInfo *pinfo) const;
+        bool isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPluginInfo &pinfo) const;
 
         QSet<KCModuleInfo> instanceServices();
         QSet<KCModuleInfo> parentComponentsServices(const QStringList &);
