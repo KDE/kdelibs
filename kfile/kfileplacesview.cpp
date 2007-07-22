@@ -132,6 +132,7 @@ public:
 
     KUrl currentUrl;
     bool showAll;
+    bool smoothItemResizing;
     Solid::StorageAccess *lastClickedStorage;
     QPersistentModelIndex lastClickedIndex;
 
@@ -155,6 +156,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     : QListView(parent), d(new Private(this))
 {
     d->showAll = false;
+    d->smoothItemResizing = false;
     d->lastClickedStorage = 0;
 
     setSelectionRectVisible(false);
@@ -336,6 +338,10 @@ void KFilePlacesView::resizeEvent(QResizeEvent *event)
 {
     QListView::resizeEvent(event);
     d->adaptItemSize();
+
+    // Enable the smooth item resizing after the first resize event to
+    // prevent a smooth resizing when the widget is shown the first time.
+    d->smoothItemResizing = true;
 }
 
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
@@ -439,14 +445,16 @@ void KFilePlacesView::Private::adaptItemSize()
     }
 
     KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(q->itemDelegate());
-    if (delegate && size!=delegate->iconSize()) {
+    if (!delegate || size==delegate->iconSize()) return;
 
+    if (smoothItemResizing) {
         oldSize = delegate->iconSize();
         endSize = size;
         if (adaptItemsTimeline.state()!=QTimeLine::Running) {
             adaptItemsTimeline.start();
         }
-
+    } else {
+        delegate->setIconSize(size);
     }
 }
 
