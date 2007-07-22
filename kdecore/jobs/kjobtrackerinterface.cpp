@@ -40,7 +40,7 @@ KJobTrackerInterface::KJobTrackerInterface(QObject *parent)
 
 KJobTrackerInterface::~KJobTrackerInterface()
 {
-
+    delete d;
 }
 
 void KJobTrackerInterface::registerJob(KJob *job)
