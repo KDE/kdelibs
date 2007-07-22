@@ -112,11 +112,6 @@ namespace KIO {
         Q_OBJECT
 
     public:
-        typedef QList<SimpleJob *> JobList;
-
-        // InfoDict needs Info, so we can't declare it private
-        class ProtocolInfo;
-
         ~Scheduler();
 
         /**

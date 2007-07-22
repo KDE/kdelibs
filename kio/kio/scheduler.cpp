@@ -42,55 +42,24 @@
 
 using namespace KIO;
 
-template class QHash<QString, KIO::Scheduler::ProtocolInfo*>;
-
-typedef QMap<Slave*, Scheduler::JobList *> CoSlaveMap;
 typedef QList<Slave *> SlaveList;
-
-class KIO::Scheduler::ProtocolInfo
-{
-public:
-    ProtocolInfo() : maxSlaves(1), skipCount(0)
-    {
-    }
-
-    QList<SimpleJob *> joblist;
-    SlaveList activeSlaves;
-    int maxSlaves;
-    int skipCount;
-    QString protocol;
-};
-
-class ProtocolInfoDict : public QHash<QString, KIO::Scheduler::ProtocolInfo*>
-{
-  public:
-    ProtocolInfoDict() { }
-
-    KIO::Scheduler::ProtocolInfo *get( const QString &protocol);
-};
-
-KIO::Scheduler::ProtocolInfo *
-ProtocolInfoDict::get(const QString &protocol)
-{
-    Scheduler::ProtocolInfo *info = value(protocol, 0);
-    if (!info)
-    {
-        info = new Scheduler::ProtocolInfo;
-        info->protocol = protocol;
-        info->maxSlaves = KProtocolInfo::maxSlaves( protocol );
-
-        insert(protocol, info);
-    }
-    return info;
-}
 
 class KIO::SchedulerPrivate
 {
 public:
     class JobData;
+    class ProtocolInfo;
+    class ProtocolInfoDict : public QHash<QString, ProtocolInfo*>
+    {
+    public:
+        ProtocolInfoDict() { }
+
+        ProtocolInfo *get(const QString &protocol);
+    };
+
     typedef QHash<KIO::SimpleJob*, JobData> ExtraJobData;
-    typedef KIO::Scheduler::ProtocolInfo ProtocolInfo;
-    typedef KIO::Scheduler::JobList JobList;
+    typedef QList<SimpleJob *> JobList;
+    typedef QMap<Slave*, JobList *> CoSlaveMap;
 
     SchedulerPrivate() :
         q(new Scheduler),
@@ -131,7 +100,7 @@ public:
     ProtocolInfoDict protInfoDict;
     Slave *slaveOnHold;
     KUrl urlOnHold;
-    Scheduler::JobList newJobs;
+    JobList newJobs;
 
     CoSlaveMap coSlaves;
     ExtraJobData *extraJobData;
@@ -176,6 +145,35 @@ public:
     void slotScheduleCoSlave();
     void slotUnregisterWindow(QObject *);
 };
+
+class KIO::SchedulerPrivate::ProtocolInfo
+{
+public:
+    ProtocolInfo() : maxSlaves(1), skipCount(0)
+    {
+    }
+
+    QList<SimpleJob *> joblist;
+    SlaveList activeSlaves;
+    int maxSlaves;
+    int skipCount;
+    QString protocol;
+};
+
+KIO::SchedulerPrivate::ProtocolInfo *
+KIO::SchedulerPrivate::ProtocolInfoDict::get(const QString &protocol)
+{
+    ProtocolInfo *info = value(protocol, 0);
+    if (!info)
+    {
+        info = new ProtocolInfo;
+        info->protocol = protocol;
+        info->maxSlaves = KProtocolInfo::maxSlaves( protocol );
+
+        insert(protocol, info);
+    }
+    return info;
+}
 
 K_GLOBAL_STATIC(SchedulerPrivate, schedulerPrivate)
 Scheduler* Scheduler::self()
@@ -416,7 +414,7 @@ void SchedulerPrivate::startStep()
        (void) startJobDirect();
     }
 
-    QHashIterator<QString, KIO::Scheduler::ProtocolInfo*> it(protInfoDict);
+    QHashIterator<QString, ProtocolInfo*> it(protInfoDict);
     while(it.hasNext()) {
        it.next();
        if (startJobScheduled(it.value())) return;
