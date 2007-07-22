@@ -891,7 +891,7 @@ bool KFileItem::acceptsDrops() const
         return true;
 
     // Executable, shell script ... ?
-    if ( ::access( QFile::encodeName(d->m_url.path()), X_OK ) == 0 )
+    if ( QFileInfo(d->m_url.path()).isExecutable() )
         return true;
 
     return false;
