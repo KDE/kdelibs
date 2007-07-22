@@ -20,6 +20,7 @@
 */
 
 #include "connection.h"
+#include "connection_p.h"
 
 #include <errno.h>
 
@@ -33,8 +34,6 @@
 #include "kstandarddirs.h"
 #include "ktemporaryfile.h"
 #include "kurl.h"
-
-#include "connection_p.h"
 
 using namespace KIO;
 

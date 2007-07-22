@@ -76,7 +76,7 @@ namespace KIO {
         quint8 mode;
 
     public:
-        SocketConnectionBackend(Mode m, QObject *parent = 0);
+        explicit SocketConnectionBackend(Mode m, QObject *parent = 0);
         ~SocketConnectionBackend();
 
         void setSuspended(bool enable);

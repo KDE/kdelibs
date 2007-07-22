@@ -17,6 +17,8 @@
 */
 
 #include "slaveinterface.h"
+#include "slaveinterface_p.h"
+
 #include "slavebase.h"
 #include "connection.h"
 #include <errno.h>
@@ -38,7 +40,6 @@
 
 using namespace KIO;
 
-#include "slaveinterface_p.h"
 
 QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
 {
