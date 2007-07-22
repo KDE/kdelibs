@@ -709,8 +709,10 @@ void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                 }
                 break;
 
-                case ScrollBar::GrooveAreaVert:
-                case ScrollBar::GrooveAreaHor:
+                case ScrollBar::GrooveAreaVertTop:
+                case ScrollBar::GrooveAreaHorLeft:
+                case ScrollBar::GrooveAreaVertBottom:
+                case ScrollBar::GrooveAreaHorRight:
                 {
                     bool hor = flags & State_Horizontal;
                     bool on = flags&State_On;

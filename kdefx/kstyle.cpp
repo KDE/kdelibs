@@ -1693,11 +1693,19 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
         }
 
         case CE_ScrollBarAddPage:
+        {
+            drawKStylePrimitive(WT_ScrollBar,
+                                (flags & State_Horizontal) ? ScrollBar::GrooveAreaHorRight :
+                                        ScrollBar::GrooveAreaVertBottom,
+                                option, r, pal, flags, p, widget);
+            return;
+        }
+
         case CE_ScrollBarSubPage:
         {
             drawKStylePrimitive(WT_ScrollBar,
-                                (flags & State_Horizontal) ? ScrollBar::GrooveAreaHor :
-                                        ScrollBar::GrooveAreaVert,
+                                (flags & State_Horizontal) ? ScrollBar::GrooveAreaHorLeft :
+                                        ScrollBar::GrooveAreaVertTop,
                                 option, r, pal, flags, p, widget);
             return;
         }

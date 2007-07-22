@@ -848,8 +848,10 @@ protected:
                                          * A DoubleButtonOption is passed to say which
                                          * button is pressed. */
             DoubleButtonHor,            /** @see DoubleButtonVert */
-            GrooveAreaVert,   ///< scrollbar groove area, vertical. An interesting flag is @c State_Sunken for pressed state
-            GrooveAreaHor,    ///< scrollbar groove area, horizontal. Flags: @c State_Sunken for pressed state
+            GrooveAreaVertBottom,   ///< scrollbar groove area, vertical. An interesting flag is @c State_Sunken for pressed state
+            GrooveAreaHorRight,    ///< scrollbar groove area, horizontal. Flags: @c State_Sunken for pressed state
+            GrooveAreaVertTop,   ///< scrollbar groove area, vertical. An interesting flag is @c State_Sunken for pressed state
+            GrooveAreaHorLeft,    ///< scrollbar groove area, horizontal. Flags: @c State_Sunken for pressed state
             SliderVert,       ///< scrollbar slider, vertical. Flags: @c State_On&&State_Sunken for pressed state
             SliderHor         ///< scrollbar slider, horizontal. Flags: @c State_On&&State_Sunken for pressed state
         };

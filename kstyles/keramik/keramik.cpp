@@ -428,13 +428,15 @@ public:
 
 						return;
 					}
-					case ScrollBar::GrooveAreaHor:
+					case ScrollBar::GrooveAreaHorLeft:
+					case ScrollBar::GrooveAreaHorRight:
 					{
 						Keramik::ScrollBarPainter(KeramikGroove1, 2, true).draw(
 								p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						return;
 					}
-					case ScrollBar::GrooveAreaVert:
+					case ScrollBar::GrooveAreaVertTop:
+					case ScrollBar::GrooveAreaVertBottom:
 					{
 						Keramik::ScrollBarPainter(KeramikGroove1, 2, false).draw(
 								p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
