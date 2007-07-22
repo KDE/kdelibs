@@ -83,7 +83,7 @@ public:
      **/
     void setTimestamp(unsigned int time);
     /**
-     * Sets whether QPixmapCache (memory cacheing) should be used in addition
+     * Sets whether QPixmapCache (memory caching) should be used in addition
      * to disk cache.
      * QPixmapCache is used by default
      **/
