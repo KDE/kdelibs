@@ -51,7 +51,7 @@ public:
      * The slave emits the data through data().
      * @param size the requested amount of data
      */
-    void read( int size );
+    void read( KIO::filesize_t size );
 
     /**
      * Write block

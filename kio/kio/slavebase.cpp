@@ -3,6 +3,7 @@
  *  Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
  *  Copyright (c) 2000 David Faure <faure@kde.org>
  *  Copyright (c) 2000 Stephan Kulow <coolo@kde.org>
+ *  Copyright (c) 2007 Thiago Macieira <thiago@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -113,6 +114,7 @@ public:
     bool needSendCanResume:1;
     bool onHold:1;
     bool wasKilled:1;
+    bool inOpenLoop:1;
     bool exit_loop:1;
     MetaData configData;
     SlaveBaseConfig *config;
@@ -228,6 +230,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     connectSlave(mAppSocket);
 
     d->remotefile = 0;
+    d->inOpenLoop = false;
     d->exit_loop = false;
 }
 
@@ -262,7 +265,10 @@ void SlaveBase::dispatchLoop()
             QByteArray data;
             ret = appconn->read(&cmd, data);
 
-            dispatch(cmd, data);
+            if (d->inOpenLoop)
+                dispatchOpenCommand(cmd, data);
+            else
+                dispatch(cmd, data);
         }
 
         if (ret == -1) { // some error occurred, perhaps no more applicationi
@@ -307,6 +313,7 @@ void SlaveBase::connectSlave(const QString &address)
         return;
     }
 
+    d->inOpenLoop = false;
     setConnection(appconn);
 }
 
@@ -388,6 +395,7 @@ void SlaveBase::opened()
    if (!mOutgoingMetaData.isEmpty())
       sendMetaData();
    send( MSG_OPENED );
+   d->inOpenLoop = true;
 }
 
 void SlaveBase::error( int _errid, const QString &_text )
@@ -401,6 +409,7 @@ void SlaveBase::error( int _errid, const QString &_text )
     listEntryCurrentSize = 100;
     d->sentListEntries=0;
     d->totalSize=0;
+    d->inOpenLoop=false;
 }
 
 void SlaveBase::connected()
@@ -419,6 +428,7 @@ void SlaveBase::finished()
     listEntryCurrentSize = 100;
     d->sentListEntries=0;
     d->totalSize=0;
+    d->inOpenLoop=false;
 }
 
 void SlaveBase::needSubUrlData()
@@ -737,6 +747,14 @@ void SlaveBase::get(KUrl const & )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_GET)); }
 void SlaveBase::open(KUrl const &, QIODevice::OpenMode)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_OPEN)); }
+void SlaveBase::read(KIO::fileoffset_t)
+{ error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_READ)); }
+void SlaveBase::write(const QByteArray &)
+{ error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_WRITE)); }
+void SlaveBase::seek(KIO::fileoffset_t)
+{ error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SEEK)); }
+void SlaveBase::close()
+{ error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CLOSE)); }
 void SlaveBase::mimetype(KUrl const &url)
 { get(url); }
 void SlaveBase::rename(KUrl const &, KUrl const &, bool)
@@ -766,25 +784,6 @@ void SlaveBase::slave_status()
 
 void SlaveBase::reparseConfiguration()
 {
-}
-
-bool SlaveBase::dispatch()
-{
-    Q_ASSERT( m_pConnection );
-
-    int cmd;
-    QByteArray data;
-    int ret = -1;
-    if (m_pConnection->hasTaskAvailable() || m_pConnection->waitForIncomingTask(-1)) {
-        ret = m_pConnection->read( &cmd, data );
-    }
-    if (ret == -1) {
-        kDebug(7019) << "SlaveBase::dispatch() has read error." << endl;
-        return false;
-    }
-
-    dispatch( cmd, data );
-    return true;
 }
 
 bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
@@ -1134,6 +1133,38 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     info = authResult;
     return true;
+}
+
+void SlaveBase::dispatchOpenCommand( int command, const QByteArray &data )
+{
+    QDataStream stream( data );
+
+    switch( command ) {
+    case CMD_READ: {
+        KIO::filesize_t bytes;
+        stream >> bytes;
+        read(bytes);
+        break;
+    }
+    case CMD_WRITE: {
+        write(data);
+        break;
+    }
+    case CMD_SEEK: {
+        KIO::filesize_t offset;
+        stream >> offset;
+        seek(offset);
+    }
+    case CMD_NONE:
+        break;
+    case CMD_CLOSE:
+        close();                // must call finish(), which will set d->inOpenLoop=false
+        break;
+    default:
+        // Some command we don't understand.
+        // Just ignore it, it may come from some future version of KDE.
+        break;
+    }
 }
 
 bool SlaveBase::cacheAuthentication( const AuthInfo& info )

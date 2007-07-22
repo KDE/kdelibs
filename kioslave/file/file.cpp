@@ -3,6 +3,7 @@
    Copyright (C) 2000-2002 David Faure <faure@kde.org>
    Copyright (C) 2000-2002 Waldo Bastian <bastian@kde.org>
    Copyright (C) 2006 Allan Sandfeld Jensen <sandfeld@kde.org>
+   Copyright (C) 2007 Thiago Macieira <thiago@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -92,7 +93,6 @@
 #include <sys/mnttab.h>
 #endif
 
-#include <kio/connection.h>
 #include <kio/ioslave_defaults.h>
 #include <kde_file.h>
 #include <kglobal.h>
@@ -130,22 +130,13 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   return 0;
 }
 
-class FileProtocol::FileProtocolPrivate
-{
-public:
-  FileProtocolPrivate() {}
-  mutable QHash<uid_t, QString> mUsercache;
-  mutable QHash<gid_t, QString> mGroupcache;
-};
-
 FileProtocol::FileProtocol( const QByteArray &pool, const QByteArray &app )
-    : SlaveBase( "file", pool, app ), d(new FileProtocolPrivate)
+    : SlaveBase( "file", pool, app ), openFd(-1)
 {
 }
 
 FileProtocol::~FileProtocol()
 {
-    delete d;
 }
 
 int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
@@ -355,7 +346,7 @@ void FileProtocol::get( const KUrl& url )
           if (errno == EINTR)
               continue;
           error( KIO::ERR_COULD_NOT_READ, _path );
-          close(fd);
+          ::close(fd);
           return;
        }
        if (n == 0)
@@ -386,7 +377,7 @@ void FileProtocol::get( const KUrl& url )
 
     data( QByteArray() );
 
-    close( fd );
+    ::close( fd );
 
     processedSize( buff.st_size );
     finished();
@@ -410,27 +401,26 @@ write_all(int fd, const char *buf, size_t len)
    return 0;
 }
 
-
 void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
 {
     kDebug(7101) << "FileProtocol::open " << url.url() << endl;
 
-    QByteArray _path( QFile::encodeName(url.toLocalFile()));
+    openPath = QFile::encodeName(url.toLocalFile());
     KDE_struct_stat buff;
-    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
+    if ( KDE_stat( openPath.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, _path );
+           error( KIO::ERR_ACCESS_DENIED, openPath );
         else
-           error( KIO::ERR_DOES_NOT_EXIST, _path );
+           error( KIO::ERR_DOES_NOT_EXIST, openPath );
         return;
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-        error( KIO::ERR_IS_DIRECTORY, _path );
+        error( KIO::ERR_IS_DIRECTORY, openPath );
         return;
     }
     if ( !S_ISREG( buff.st_mode ) ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, _path );
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, openPath );
         return;
     }
 
@@ -449,9 +439,9 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
         }
     }
 
-    int fd = KDE_open( _path.data(), flags);
+    int fd = KDE_open( openPath.data(), flags);
     if ( fd < 0 ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, _path );
+        error( KIO::ERR_CANNOT_OPEN_FOR_READING, openPath );
         return;
     }
     // Determine the mimetype of the file to be retrieved, and emit it.
@@ -463,95 +453,79 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
     position( 0 );
 
     emit opened();
+    openFd = fd;
+}
 
-    QByteArray array;
+void FileProtocol::read(KIO::filesize_t bytes)
+{
+    kDebug( 7101 ) << "File::open -- read" << endl;
+    Q_ASSERT(openFd != -1);
 
-#if 1
-    Q_ASSERT(0);
-#else
-    // Command-loop:
-    int cmd = CMD_NONE;
+    QVarLengthArray<char> buffer(bytes);
     while (true) {
-        QByteArray args;
-        int stat = appconn->read(&cmd, args);
-        if ( stat == -1 )
-        {   // error
-            kDebug( 7101 ) << "File::open -- connection error" << endl;
-            break;
-        }
-        QDataStream stream( args );
-        switch( cmd ) {
-        case CMD_READ: {
-            kDebug( 7101 ) << "File::open -- read" << endl;
-            int bytes;
-            stream >> bytes;
-            QVarLengthArray<char> buffer(bytes);
-        read_retry:
-            int res = ::read(fd, buffer.data(), bytes);
-            if (res >= 0) {
-                array = array.fromRawData(buffer.data(), res);
-                data( array );
-                array.clear();
-                continue;
-            } else {
-                if (errno == EINTR) goto read_retry;
-                // empty array designates eof
-                data(QByteArray());
-                error( KIO::ERR_COULD_NOT_READ, _path );
-            }
-            break;
-        }
-        case CMD_WRITE: {
-            kDebug( 7101 ) << "File::open -- write" << endl;
-            QByteArray &buffer = args;
+        int res;
+        do {
+            res = ::read(openFd, buffer.data(), bytes);
+        } while (res == -1 && errno == EINTR);
 
-            if (write_all( fd, buffer.data(), buffer.size()))
-            {
-                if ( errno == ENOSPC ) // disk full
-                {
-                    error( KIO::ERR_DISK_FULL, _path );
-                    break;
-                }
-                else
-                {
-                    kWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
-                    error( KIO::ERR_COULD_NOT_WRITE, _path );
-                    break;
-                }
-            } else {
-                written(buffer.size());
+        if (res > 0) {
+            QByteArray array = array.fromRawData(buffer.data(), res);
+            data( array );
+            bytes -= res;
+        } else {
+            // empty array designates eof
+            data(QByteArray());
+            if (res != 0) {
+                error(KIO::ERR_COULD_NOT_READ, openPath);
+                close();
             }
-            continue;
-        }
-        case CMD_SEEK: {
-            kDebug( 7101 ) << "File::open -- seek" << endl;
-            qulonglong offset;
-            stream >> offset;
-            int res = KDE_lseek(fd, offset, SEEK_SET);
-            if (res != -1) {
-                position( offset );
-            } else {
-                error(KIO::ERR_COULD_NOT_SEEK, _path );
-                break;
-            }
-            continue;
-        }
-        case CMD_NONE:
-            kDebug( 7101 ) << "File::open -- none " << endl;
-            continue;
-        case CMD_CLOSE:
-            kDebug( 7101 ) << "File::open -- close " << endl;
-            break;
-        default:
-            kDebug( 7101 ) << "File::open -- invalid command: " << cmd << endl;
-            cmd = CMD_CLOSE;
             break;
         }
-        break;
     }
-#endif
-    kDebug( 7101 ) << "File::open -- done " << endl;
-    ::close( fd );
+}
+
+void FileProtocol::write(const QByteArray &data)
+{
+    kDebug( 7101 ) << "File::open -- write" << endl;
+    Q_ASSERT(openFd != -1);
+
+    if (write_all(openFd, data.constData(), data.size())) {
+        if (errno == ENOSPC) { // disk full
+            error( KIO::ERR_DISK_FULL, openPath );
+            close();
+        } else {
+            kWarning(7101) << "Couldn't write. Error:" << strerror(errno) << endl;
+            error( KIO::ERR_COULD_NOT_WRITE, openPath );
+            close();
+        }
+    } else {
+        written(data.size());
+    }
+}
+
+void FileProtocol::seek(KIO::filesize_t offset)
+{
+    kDebug( 7101 ) << "File::open -- seek" << endl;
+    Q_ASSERT(openFd != -1);
+
+    int res = KDE_lseek(openFd, offset, SEEK_SET);
+    if (res != -1) {
+        position( offset );
+    } else {
+        error(KIO::ERR_COULD_NOT_SEEK, openPath );
+        close();
+    }
+}
+
+void FileProtocol::close()
+{
+    kDebug( 7101 ) << "File::open -- close " << endl;
+    Q_ASSERT(openFd != -1);
+
+    ::close( openFd );
+    openFd = -1;
+    openPath.clear();
+
     finished();
 }
 
@@ -705,7 +679,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
 
         if (fd != -1)
         {
-          close(fd);
+          ::close(fd);
 
           KDE_struct_stat buff;
           if (bMarkPartial && KDE_stat( _dest.data(), &buff ) == 0)
@@ -725,7 +699,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
         return;
     }
 
-    if ( close(fd) )
+    if ( ::close(fd) )
     {
         kWarning(7101) << "Error when closing file descriptor:" << strerror(errno) << endl;
         error( KIO::ERR_COULD_NOT_WRITE, dest_orig);
@@ -868,7 +842,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
         } else {
             error( KIO::ERR_CANNOT_OPEN_FOR_WRITING, _dest );
         }
-        close(src_fd);
+        ::close(src_fd);
         return;
     }
 
@@ -928,8 +902,8 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
           } else
 #endif
           error( KIO::ERR_COULD_NOT_READ, _src );
-          close(src_fd);
-          close(dest_fd);
+          ::close(src_fd);
+          ::close(dest_fd);
 #ifdef HAVE_POSIX_ACL
           if (acl) acl_free(acl);
 #endif
@@ -942,8 +916,8 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 #endif
          if (write_all( dest_fd, buffer, n))
          {
-           close(src_fd);
-           close(dest_fd);
+           ::close(src_fd);
+           ::close(dest_fd);
 
            if ( errno == ENOSPC ) // disk full
            {
@@ -967,9 +941,9 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
        processedSize( processed_size );
     }
 
-    close( src_fd );
+    ::close( src_fd );
 
-    if (close( dest_fd))
+    if (::close( dest_fd))
     {
         kWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno) << endl;
         error( KIO::ERR_COULD_NOT_WRITE, _dest );
@@ -1153,28 +1127,28 @@ void FileProtocol::del( const KUrl& url, bool isfile)
 
 QString FileProtocol::getUserName( uid_t uid ) const
 {
-    if ( !d->mUsercache.contains( uid ) ) {
+    if ( !mUsercache.contains( uid ) ) {
         struct passwd *user = getpwuid( uid );
         if ( user ) {
-            d->mUsercache.insert( uid, QString::fromLatin1(user->pw_name) );
+            mUsercache.insert( uid, QString::fromLatin1(user->pw_name) );
         }
         else
             return QString::number( uid );
     }
-    return d->mUsercache[uid];
+    return mUsercache[uid];
 }
 
 QString FileProtocol::getGroupName( gid_t gid ) const
 {
-    if ( !d->mGroupcache.contains( gid ) ) {
+    if ( !mGroupcache.contains( gid ) ) {
         struct group *grp = getgrgid( gid );
         if ( grp ) {
-            d->mGroupcache.insert( gid, QString::fromLatin1(grp->gr_name) );
+            mGroupcache.insert( gid, QString::fromLatin1(grp->gr_name) );
         }
         else
             return QString::number( gid );
     }
-    return d->mGroupcache[gid];
+    return mGroupcache[gid];
 }
 
 bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & path, UDSEntry & entry,

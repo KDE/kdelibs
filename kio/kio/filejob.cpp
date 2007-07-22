@@ -43,7 +43,7 @@ FileJob::~FileJob()
 {
 }
 
-void FileJob::read(int size)
+void FileJob::read(KIO::filesize_t size)
 {
     if (!m_open) return;
 

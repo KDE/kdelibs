@@ -379,7 +379,7 @@ void HelpProtocol::get_file( const KUrl& url )
           if (errno == EINTR)
               continue;
           error( KIO::ERR_COULD_NOT_READ, url.path());
-          close(fd);
+          ::close(fd);
           return;
        }
        if (n == 0)
@@ -395,7 +395,7 @@ void HelpProtocol::get_file( const KUrl& url )
 
     data( QByteArray() );
 
-    close( fd );
+    ::close( fd );
 
     processedSize( buff.st_size );
 

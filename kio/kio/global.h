@@ -171,22 +171,14 @@ namespace KIO
     CMD_CONFIG = 'U', // 85
     CMD_MULTI_GET = 'V', // 86
     CMD_SETLINKDEST = 'W', // 87
-    CMD_OPEN = 'X' // 88
+    CMD_OPEN = 'X', // 88
+    // 89 unused (no reason; can be reused)
+    CMD_READ = 'Z', // 90
+    CMD_WRITE = 91,
+    CMD_SEEK = 92,
+    CMD_CLOSE = 93
     // Add new ones here once a release is done, to avoid breaking binary compatibility.
     // Note that protocol-specific commands shouldn't be added here, but should use special.
-  };
-
-  /**
-   * @internal
-   * Commands that can be invoked on a slave-file.
-   *
-   * (Move this to a non-public header)
-   */
-  enum FileCommand {
-    CMD_READ  = 90,
-    CMD_WRITE = 91,
-    CMD_SEEK  = 92,
-    CMD_CLOSE = 93
   };
 
   /**

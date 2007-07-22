@@ -379,7 +379,12 @@ public:
      *        can be assumed to be the same as in the last setHost() call.
      * @param mode see \ref QIODevice::OpenMode
      */
-    virtual void open(const KUrl &url, QIODevice::OpenMode mode);
+    virtual void open( const KUrl &url, QIODevice::OpenMode mode );
+
+    virtual void read( KIO::fileoffset_t size );
+    virtual void write( const QByteArray &data );
+    virtual void seek( KIO::fileoffset_t offset );
+    virtual void close();
 
     /**
      * put, i.e. write data into a file.
@@ -579,11 +584,12 @@ public:
     /**
      * @internal
      */
-    virtual bool dispatch();
+    virtual void dispatch( int command, const QByteArray &data );
+
     /**
      * @internal
      */
-    virtual void dispatch( int command, const QByteArray &data );
+    virtual void dispatchOpenCommand( int command, const QByteArray &data );
 
     /**
      * Read data send by the job, after a dataReq

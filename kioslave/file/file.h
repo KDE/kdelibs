@@ -60,14 +60,18 @@ public:
   virtual void chmod( const KUrl& url, int permissions );
   virtual void setModificationTime( const KUrl& url, const QDateTime& mtime );
   virtual void del( const KUrl& url, bool isfile);
-  virtual void open(const KUrl &url, QIODevice::OpenMode mode);
+  virtual void open( const KUrl &url, QIODevice::OpenMode mode );
+  virtual void read( KIO::filesize_t size );
+  virtual void write( const QByteArray &data );
+  virtual void seek( KIO::filesize_t offset );
+  virtual void close();
 
   /**
    * Special commands supported by this slave:
    * 1 - mount
    * 2 - unmount
    */
-  virtual void special( const QByteArray &data);
+  virtual void special( const QByteArray &data );
   void unmount( const QString& point );
   void mount( bool _ro, const char *_fstype, const QString& dev, const QString& point );
   bool pumount( const QString &point );
@@ -87,8 +91,10 @@ protected:
   QString getGroupName( gid_t gid ) const;
 
 private:
-  class FileProtocolPrivate;
-  FileProtocolPrivate * const d;
+  mutable QHash<uid_t, QString> mUsercache;
+  mutable QHash<gid_t, QString> mGroupcache;
+  int openFd;
+  QByteArray openPath;
 };
 
 #endif
