@@ -217,11 +217,11 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
 
 void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& group )
 {
+    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
 #ifdef Q_WS_WIN
     error( KIO::ERR_CANNOT_CHOWN, _path );
 #else
-    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
-
+    
     uid_t uid;
     gid_t gid;
 
