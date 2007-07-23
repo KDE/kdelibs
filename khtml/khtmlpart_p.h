@@ -148,6 +148,7 @@ public:
     m_bClearing = false;
     m_bCleared = false;
     m_zoomFactor = 100;
+    m_fontScaleFactor = 100;
     m_bDnd = true;
     m_startOffset = m_endOffset = 0;
     m_startBeforeEnd = true;
@@ -213,6 +214,7 @@ public:
             m_caretMode = part->d->m_caretMode;
             m_designMode = part->d->m_designMode;
             m_zoomFactor = part->d->m_zoomFactor;
+            m_fontScaleFactor = part->d->m_fontScaleFactor;
             m_autoDetectLanguage = part->d->m_autoDetectLanguage;
             m_encoding = part->d->m_encoding;
             m_haveEncoding = part->d->m_haveEncoding;
@@ -368,6 +370,7 @@ public:
   KHTMLPart::GUIProfile m_guiProfile;
 
   int m_zoomFactor;
+  int m_fontScaleFactor;
 
   QString m_strSelectedURL;
   QString m_strSelectedURLTarget;

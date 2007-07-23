@@ -3067,7 +3067,7 @@ void KHTMLView::print(bool quick)
         khtml::setPrintPainter( 0 );
         setMediaType( oldMediaType );
         m_part->xmlDocImpl()->setPaintDevice( this );
-        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(m_part->xmlDocImpl()->logicalDpiY(), m_part->zoomFactor());
+        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(m_part->xmlDocImpl()->logicalDpiY(), m_part->fontScaleFactor());
         m_part->xmlDocImpl()->updateStyleSelector();
         viewport()->unsetCursor();
     }

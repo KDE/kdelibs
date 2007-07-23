@@ -227,7 +227,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     logicalDpiY = doc->logicalDpiY();
 
     if(logicalDpiY) // this may be null, not everyone uses khtmlview (Niko)
-        computeFontSizes(logicalDpiY, view ? view->part()->zoomFactor() : 100);
+        computeFontSizes(logicalDpiY, view ? view->part()->fontScaleFactor() : 100);
 
     if ( !userStyleSheet.isEmpty() ) {
         userSheet = new DOM::CSSStyleSheetImpl(doc);
@@ -3070,7 +3070,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
                      view && view->part())
                     size = int( primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) *
-                                view->part()->zoomFactor() ) / 100;
+                                view->part()->fontScaleFactor() ) / 100;
 		else
                     size = int( primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) );
             }
@@ -3150,7 +3150,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
                     view && view->part())
                     lineHeight = Length(primitiveValue->computeLength(style, logicalDpiY) *
-                                        view->part()->zoomFactor()/100, Fixed );
+                                        view->part()->fontScaleFactor()/100, Fixed );
                 else
                     lineHeight = Length(primitiveValue->computeLength(style, logicalDpiY), Fixed );
         } else if (type == CSSPrimitiveValue::CSS_PERCENTAGE)

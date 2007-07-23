@@ -5370,6 +5370,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   stream << d->m_encoding << d->m_sheetUsed << docState;
 
   stream << d->m_zoomFactor;
+  stream << d->m_fontScaleFactor;
 
   stream << d->m_httpHeaders;
   stream << d->m_pageServices;
@@ -5455,6 +5456,10 @@ void KHTMLPart::restoreState( QDataStream &stream )
   int zoomFactor;
   stream >> zoomFactor;
   setZoomFactor(zoomFactor);
+  
+  int fontScaleFactor;
+  stream >> fontScaleFactor;
+  setFontScaleFactor(fontScaleFactor);
 
   stream >> d->m_httpHeaders;
   stream >> d->m_pageServices;
@@ -5713,14 +5718,7 @@ void KHTMLPart::setZoomFactor (int percent)
   d->m_zoomFactor = percent;
 
   if(d->m_view) {
-      QApplication::setOverrideCursor( Qt::WaitCursor );
-
-// ### make the increasing/decreasing of font size a separate setting
-//
-//    if (d->m_doc->styleSelector())
-//      d->m_doc->styleSelector()->computeFontSizes(d->m_doc->paintDeviceMetrics(), d->m_zoomFactor);
-//    d->m_doc->recalcStyle( NodeImpl::Force );
-
+    QApplication::setOverrideCursor( Qt::WaitCursor );
     d->m_view->setZoomLevel( d->m_zoomFactor );
     QApplication::restoreOverrideCursor();
   }
@@ -5738,6 +5736,36 @@ void KHTMLPart::setZoomFactor (int percent)
       d->m_paIncZoomFactor->setEnabled( d->m_zoomFactor < maxZoom );
   }
 }
+
+void KHTMLPart::setFontScaleFactor(int percent)
+{
+  if (percent < minZoom) percent = minZoom;
+  if (percent > maxZoom) percent = maxZoom;
+  if (d->m_fontScaleFactor == percent) return;
+  d->m_fontScaleFactor = percent;
+
+  if(d->m_view) {
+    QApplication::setOverrideCursor( Qt::WaitCursor );
+    if (d->m_doc->styleSelector())
+      d->m_doc->styleSelector()->computeFontSizes(d->m_doc->paintDeviceMetrics(), d->m_fontScaleFactor);
+    d->m_doc->recalcStyle( NodeImpl::Force );
+    QApplication::restoreOverrideCursor();
+  }
+
+  ConstFrameIt it = d->m_frames.begin();
+  const ConstFrameIt end = d->m_frames.end();
+  for (; it != end; ++it )
+    if ( !( *it )->m_part.isNull() && (*it)->m_part->inherits( "KHTMLPart" ) ) {
+      KParts::ReadOnlyPart* const p = ( *it )->m_part;
+      static_cast<KHTMLPart*>( p )->setFontScaleFactor(d->m_fontScaleFactor);
+    }
+}
+
+int KHTMLPart::fontScaleFactor() const
+{
+  return d->m_fontScaleFactor;
+}
+
 
 void KHTMLPart::slotZoomView( int delta )
 {

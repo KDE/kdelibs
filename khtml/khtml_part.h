@@ -735,8 +735,7 @@ public:
 
   /**
    * Sets the Zoom factor. The value is given in percent, larger values mean a
-   * generally larger font and larger page contents. It is not guaranteed that
-   * all parts of the page are scaled with the same factor though.
+   * generally larger font and larger page contents.
    *
    * The given value should be in the range of 20..300, values outside that
    * range are not guaranteed to work. A value of 100 will disable all zooming
@@ -749,6 +748,22 @@ public:
    * Returns the current zoom factor.
    */
   int zoomFactor() const;
+
+  /**
+   * Sets the scale factor to be applied to fonts. The value is given in percent, 
+   * larger values mean generally larger fonts.
+   *
+   * The given value should be in the range of 20..300, values outside that
+   * range are not guaranteed to work. A value of 100 will disable all scaling of font sizes
+   * and show the page with the sizes determined via the given lengths in the
+   * stylesheets.
+   */
+  void setFontScaleFactor(int percent);
+
+  /**
+   * Returns the current font scale factor.
+   */
+  int fontScaleFactor() const;
 
   /**
    * Returns the text the user has marked.
