@@ -274,6 +274,10 @@ if(X11_XTest_FOUND)
    target_link_libraries(kdeui ${X11_XTest_LIB})
 endif(X11_XTest_FOUND)
 
+if(X11_Xcursor_FOUND)
+   target_link_libraries(kdeui ${X11_Xcursor_LIB})
+endif(X11_Xcursor_FOUND)
+
 set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 

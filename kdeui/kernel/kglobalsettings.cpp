@@ -56,6 +56,9 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #endif
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
+#ifdef HAVE_XCURSOR
+#include <X11/Xcursor/Xcursor.h>
+#endif
 #include "fixx11h.h"
 #include <QX11Info>
 #endif
@@ -810,6 +813,10 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
         emit iconChanged(arg);
         break;
 
+    case CursorChanged:
+        applyCursorTheme();
+        break;
+
     case BlockShortcuts:
         // FIXME KAccel port
         //KGlobalAccel::blockShortcuts(arg);
@@ -951,6 +958,35 @@ void KGlobalSettings::kdisplaySetStyle()
         // already done by applyGUIStyle -> kdisplaySetPalette
         //emit appearanceChanged();
     }
+}
+
+
+void KGlobalSettings::applyCursorTheme()
+{
+#if defined(Q_WS_X11) && defined(HAVE_XCURSOR)
+    KConfig config("kcminputrc");
+    KConfigGroup g(&config, "Mouse");
+
+    QString theme = g.readEntry("cursorTheme", QString());
+    int size      = g.readEntry("cursorSize", -1);
+
+    // Default cursor size is 16 points
+    if (size == -1)
+    {
+        QApplication *app = static_cast<QApplication*>(QApplication::instance());
+        size = app->desktop()->screen(0)->logicalDpiY() * 16 / 72;
+    }
+
+    // Note that in X11R7.1 and earlier, calling XcursorSetTheme()
+    // with a NULL theme would cause Xcursor to use "default", but
+    // in 7.2 and later it will cause it to revert to the theme that
+    // was configured when the application was started.
+    XcursorSetTheme(QX11Info::display(), theme.isNull() ?
+                    "default" : QFile::encodeName(theme));
+    XcursorSetDefaultSize(QX11Info::display(), size);
+
+    emit cursorChanged();
+#endif
 }
 
 

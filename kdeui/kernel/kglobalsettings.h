@@ -545,8 +545,8 @@ public:
      * \see emitChange
      */
     enum ChangeType { PaletteChanged = 0, FontChanged, StyleChanged,
-                      SettingsChanged, IconChanged, ToolbarStyleChanged,
-                      ClipboardConfigChanged,
+                      SettingsChanged, IconChanged, CursorChanged,
+                      ToolbarStyleChanged, ClipboardConfigChanged,
                       BlockShortcuts };
 
     /**
@@ -628,6 +628,11 @@ Q_SIGNALS:
     void iconChanged(int group);
 
     /**
+     * Emitted when the cursor theme has been changed.
+     */
+    void cursorChanged();
+
+    /**
      * Emitted by BlockShortcuts
      */
     void blockShortcuts(int data);
@@ -646,6 +651,19 @@ private:
     void kdisplaySetStyle();
     void kdisplaySetFont();
     void applyGUIStyle();
+
+    /**
+     * @internal
+     *
+     * Ensures that cursors are loaded from the theme KDE is configured
+     * to use. Note that calling this function doesn't cause existing
+     * cursors to be reloaded. Reloading already created cursors is
+     * handled by the KCM when a cursor theme is applied.
+     *
+     * It is not necessary to call this function when KGlobalSettings
+     * is initialized.
+     */
+    void applyCursorTheme();
 
     /**
      * reads in all paths from kdeglobals
