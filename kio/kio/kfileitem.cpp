@@ -576,7 +576,6 @@ QString KFileItem::user() const
 #ifdef Q_WS_WIN
         QFileInfo a(QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )));
         userName = a.owner(); 
-        qDebug() << __FUNCTION__ << userName; 
         d->m_entry.insert( KIO::UDS_USER, userName );
 #else        
         KDE_struct_stat buff;
