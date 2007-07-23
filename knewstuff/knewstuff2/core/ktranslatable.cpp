@@ -27,20 +27,38 @@
 using namespace KNS;
 
 KTranslatable::KTranslatable()
+    : d(0)
 {
 }
 
-KTranslatable::KTranslatable(QString string)
+KTranslatable::KTranslatable(const KTranslatable& other)
+    : d(0)
+{
+    *this = other;
+}
+
+KTranslatable& KTranslatable::operator=(const KTranslatable& other)
+{
+    m_strings = other.m_strings;
+}
+
+KTranslatable::~KTranslatable()
+{
+    delete d;
+}
+
+KTranslatable::KTranslatable(const QString& string)
+    : d(0)
 {
 	m_strings[QString()] = string;
 }
 
-void KTranslatable::addString(QString lang, QString string)
+void KTranslatable::addString(const QString& lang, const QString& string)
 {
 	m_strings[lang] = string;
 }
 
-QString KTranslatable::representation()
+QString KTranslatable::representation() const
 {
 	if(m_strings.isEmpty()) return QString();
 
@@ -52,7 +70,7 @@ QString KTranslatable::representation()
 	else return *(m_strings.begin());
 }
 
-QString KTranslatable::language()
+QString KTranslatable::language() const
 {
 	if(m_strings.isEmpty()) return QString();
 
@@ -64,14 +82,14 @@ QString KTranslatable::language()
 	else return m_strings.begin().key();
 }
 
-QString KTranslatable::translated(QString lang)
+QString KTranslatable::translated(const QString& lang) const
 {
 	if(m_strings.contains(lang))
 		return m_strings[lang];
 	return QString();
 }
 
-QStringList KTranslatable::languages()
+QStringList KTranslatable::languages() const
 {
 	QStringList strlist;
 
@@ -85,7 +103,7 @@ QStringList KTranslatable::languages()
 	return strlist;
 }
 
-QStringList KTranslatable::strings()
+QStringList KTranslatable::strings() const
 {
 	QStringList strlist;
 
@@ -99,18 +117,18 @@ QStringList KTranslatable::strings()
 	return strlist;
 }
 
-QMap<QString, QString> KTranslatable::stringmap()
+QMap<QString, QString> KTranslatable::stringmap() const
 {
 	return m_strings;
 }
 
-bool KTranslatable::isTranslated()
+bool KTranslatable::isTranslated() const
 {
 	if(m_strings.count() > 1) return true;
 	return false;
 }
 
-bool KTranslatable::isEmpty()
+bool KTranslatable::isEmpty() const
 {
 	if(m_strings.count() > 0) return false;
 	return true;
