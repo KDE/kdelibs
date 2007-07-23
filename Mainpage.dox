@@ -2,9 +2,9 @@
 
 <p><b>
 Overview |
-@ref components "Components" |
-@ref development "Development" |
-@ref search "Search"
+@ref components |
+@ref development |
+@ref search
 </b></p>
 
 This is the online reference for developing with the KDE libraries
@@ -36,16 +36,16 @@ Among other things, the KDE libraries provide:
 - semantic information and tagging
   (<a href="nepomuk/html/index.html">Nepomuk</a>)
 
-Visit the <a href="http://techbase.kde.org/Development">development section of KDE Techbase</a>
-for tutorials, architectural overviews and other useful information.
+Visit the <a href="http://techbase.kde.org/Development">development section of KDE
+Techbase</a> for tutorials, architectural overviews and other useful information.
 
 @authors
 Far too many to list.  See the copyright notices on the individual files,
 as well as the pages for individual components.
 
 @maintainers
-There is no single maintainer for kdelibs.  Overall direction is governed
-by the <a href="https://mail.kde.org/mailman/listinfo/kde-core-devel">kde-core-devel
+There is no single maintainer for kdelibs.  Overall direction is governed by the
+<a href="https://mail.kde.org/mailman/listinfo/kde-core-devel">kde-core-devel
 mailing list</a>.  Some of the individual components have their own maintainers:
 see the component pages for more information.
 
@@ -62,8 +62,8 @@ Some code may have more permissive licenses.
 <p><b>
 @ref index "Overview" |
 Components |
-@ref development "Development" |
-@ref search "Search"
+@ref development |
+@ref search
 </b></p>
 
 Below is a brief summary of the various libraries you may want to use
@@ -169,9 +169,9 @@ provides a full web browser component.
 
 <p><b>
 @ref index "Overview" |
-@ref components "Components" |
+@ref components |
 Development |
-@ref search "Search"
+@ref search
 </b></p>
 
 To follow or get involved with the development of the KDE libraries,
@@ -188,8 +188,8 @@ of the <a href="http://techbase.kde.org">KDE Techbase</a>.
 
 <p><b>
 @ref index "Overview" |
-@ref components "Components" |
-@ref development "Development" |
+@ref components |
+@ref development |
 Search
 </b></p>
 
@@ -216,5 +216,4 @@ in the KDE SVN repository), you can do so using the
 // DOXYGEN_VERSION=4.0
 // DOXYGEN_NAME=kdelibs
 // DOXYGEN_ENABLE=YES
-// DOXYGEN_REFERENCES = khtml kate kdecore
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
