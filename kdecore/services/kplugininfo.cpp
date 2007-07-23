@@ -402,7 +402,7 @@ void KPluginInfo::defaults()
 
 uint qHash(const KPluginInfo &p)
 {
-    return reinterpret_cast<const uint>(p.d.data());
+    return qHash(reinterpret_cast<quint64>(p.d.data()));
 }
 
 #undef KPLUGININFO_ISVALID_ASSERTION
