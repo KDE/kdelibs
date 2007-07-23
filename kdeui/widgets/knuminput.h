@@ -55,8 +55,9 @@ public:
     /**
      * @param below A pointer to another KNumInput.
      * @param parent parent widget
+     * \deprecated - use the version without the below parameter instead
      */
-    KNumInput(QWidget *parent, KNumInput* below);
+    KDE_CONSTRUCTOR_DEPRECATED KNumInput(QWidget *parent, KNumInput* below);
     
     /**
      * Destructor
@@ -217,8 +218,10 @@ public:
      * @param value  initial value for the control
      * @param base   numeric base used for display
      * @param parent parent QWidget
+     * 
+     * \deprecated use the version without the below parameter instead.
      */
-    KIntNumInput(KNumInput* below, int value, QWidget *parent, int base = 10);
+    KDE_CONSTRUCTOR_DEPRECATED KIntNumInput(KNumInput* below, int value, QWidget *parent, int base = 10);
 
     /**
      * Destructor
@@ -470,8 +473,10 @@ public:
      * @param step   step size to use for up/down arrow clicks
      * @param precision number of digits after the decimal point
      * @param parent parent QWidget
+     *
+     * \deprecated use the version without below instead
      */
-    KDoubleNumInput(KNumInput* below,
+    KDE_CONSTRUCTOR_DEPRECATED KDoubleNumInput(KNumInput* below,
 		    double lower, double upper, double value, QWidget *parent=0,double step=0.02,
 		    int precision=2);
 
