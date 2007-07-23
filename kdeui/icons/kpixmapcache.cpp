@@ -41,6 +41,10 @@
 
 //#define DISABLE_PIXMAPCACHE
 
+#ifdef Q_OS_WIN
+ #define USE_KLOCKFILE
+#endif
+
 #define KPIXMAPCACHE_VERSION 0x000104
 
 
@@ -53,7 +57,7 @@ public:
             : mFile(filename)
     {
         mValid = false;
-#ifndef Q_OS_WIN
+#ifndef USE_KLOCKFILE
         if (!mFile.open(QIODevice::ReadOnly)) {
             kError() << k_funcinfo << "Failed to open file '" << filename << "'" << endl;
         } else if (::flock(mFile.handle(), exclusive ? LOCK_EX : LOCK_SH)) {
@@ -64,8 +68,9 @@ public:
         }
 #else
         mLockFile = new KLockFile(filename);
-        if (mLockFile->lock() != KLockFile::LockOK) {
-            kError() << k_funcinfo << "Failed to lock file '" << filename << "'" << endl;
+        KLockFile::LockResult result = mLockFile->lock(KLockFile::NoBlockFlag);
+        if (result != KLockFile::LockOK) {
+            kError() << k_funcinfo << "Failed to lock file '" << filename << "', result = " << result << endl;
         } else {
             mValid = true;
         }
@@ -73,7 +78,7 @@ public:
     }
     ~LockFile()
     {
-#ifndef Q_OS_WIN
+#ifndef USE_KLOCKFILE
         if (mValid) {
             ::flock(mFile.handle(), LOCK_UN);
         }
@@ -90,7 +95,7 @@ public:
 private:
     QFile mFile;
     bool mValid;
-#ifdef Q_OS_WIN
+#ifdef USE_KLOCKFILE
     KLockFile* mLockFile;
 #endif
 };
@@ -167,6 +172,17 @@ int KPixmapCache::Private::findOffset(const QString& key)
 
 bool KPixmapCache::Private::checkLockFile()
 {
+#ifdef USE_KLOCKFILE
+    // For KLockFile we need to ensure the lock file _doesn't_ exist.
+    if (QFile::exists(mLockFileName)) {
+        if (!QFile::remove(mLockFileName)) {
+            kError() << k_funcinfo << "Couldn't remove lockfile '" << mLockFileName << "'" << endl;
+            return false;
+        }
+    }
+    return true;
+#else
+    // For flock() the lockfile should exist
     if (!QFile::exists(mLockFileName)) {
         QFile tmp(mLockFileName);
         if (!tmp.open(QIODevice::WriteOnly)) {
@@ -176,6 +192,7 @@ bool KPixmapCache::Private::checkLockFile()
     }
     // TODO: check lockfile permissions?
     return true;
+#endif
 }
 
 bool KPixmapCache::Private::checkFileVersion(const QString& filename)
