@@ -49,16 +49,14 @@ namespace KIO {
 
         virtual ~ChmodJob();
 
-    protected:
-        void chmodNextFile();
-
     protected Q_SLOTS:
-
         virtual void slotResult( KJob *job );
-        void slotEntries( KIO::Job * , const KIO::UDSEntryList & );
-        void processList();
 
     private:
+        Q_PRIVATE_SLOT(d, void _k_slotEntries( KIO::Job * , const KIO::UDSEntryList & ))
+        Q_PRIVATE_SLOT(d, void _k_processList())
+
+        friend class ChmodJobPrivate;
         ChmodJobPrivate * const d;
     };
 
