@@ -5767,7 +5767,7 @@ void KHTMLPart::setFontScaleFactor(int percent)
   if(d->m_view) {
     QApplication::setOverrideCursor( Qt::WaitCursor );
     if (d->m_doc->styleSelector())
-      d->m_doc->styleSelector()->computeFontSizes(d->m_doc->paintDeviceMetrics(), d->m_fontScaleFactor);
+      d->m_doc->styleSelector()->computeFontSizes(d->m_doc->logicalDpiY(), d->m_fontScaleFactor);
     d->m_doc->recalcStyle( NodeImpl::Force );
     QApplication::restoreOverrideCursor();
   }
