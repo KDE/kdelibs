@@ -220,66 +220,6 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
         bool helpEvent(QHelpEvent * event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 
-    protected:
-        /**
-         * Convenience function that returns the display role as a QString.
-         *
-         * The supported display types are QString, double, int and unsigned int.
-         *
-         * If the value is a number, it will be formatted according to the KDE locale
-         * with the default precision, i.e. 2 for floating point values, and 0
-         * for integers. In the default locale, 123456.5 would be formatted as
-         * 123,456.50.
-         *
-         * If the value is a QString, any newline characters will be replaced
-         * with QChar::LineSeparator in the returned string.
-         *
-         * @param index The index to the item for which to retrieve the Qt::DisplayRole.
-         */
-        QString display(const QModelIndex &index) const;
-
-
-        /**
-         * Convenience function that returns the decoration role as a QPixmap.
-         *
-         * The supported decoration types are QPixmap, QIcon and QColor.
-         *
-         * If the value is a QIcon, the decoration size and state in @p options
-         * determine which pixmap in the icon is used. In the case of a QIcon,
-         * the returned pixmap may be smaller than decorationSize, but never larger.
-         *
-         * In the case of a QColor, a pixmap the size of decorationSize is created
-         * and filled with the color.
-         *
-         * Regardless of the type, the pixmap will be blended with the highlight
-         * color, if the state in @p options indicate that the item is selected,
-         * and option.showDecorationSelected is false.
-         *
-         * @param option The style options that should be used when painting the item.
-         * @param index  The index to the item for which to retrieve the Qt::DecorationRole.
-         */
-        QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-
-        /**
-         * Returns the position the decoration role pixmap should be drawn at.
-         *
-         * @param option The style options for the item.
-         * @param pixmap The decoration role pixmap.
-         */
-        QPoint iconPosition(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
-
-
-        /**
-         * Returns the rectangle that's available for the display area.
-         * The returned rectangle includes the margins around the text area.
-         *
-         * @param option The style options for the item.
-         * @param icon   The decoration role pixmap.
-         * @param string The display role string.
-         */
-        QRect labelRectangle(const QStyleOptionViewItem &option, const QPixmap &icon, const QString &string) const;
-
     private:
         class Private;
         Private * const d; /// @internal

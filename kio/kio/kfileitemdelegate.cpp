@@ -91,6 +91,10 @@ class KFileItemDelegate::Private
         QString itemSize(const QModelIndex &index, const KFileItem &item) const;
         QString information(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem &item) const;
         bool isListView(const QStyleOptionViewItem &option) const;
+        QString display(const QModelIndex &index) const;
+        QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+        QPoint iconPosition(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
+        QRect labelRectangle(const QStyleOptionViewItem &option, const QPixmap &icon, const QString &string) const;
 
     public:
         KFileItemDelegate::AdditionalInformation additionalInformation;
@@ -405,7 +409,7 @@ void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QSt
 QSize KFileItemDelegate::Private::displaySizeHint(const QStyleOptionViewItem &option,
                                                   const QModelIndex &index) const
 {
-    QString label = q->display(index);
+    QString label = display(index);
     const int maxWidth = verticalLayout(option) && wordWrapText(option) ?
             option.decorationSize.width() + 10 : 32757;
 
@@ -634,7 +638,7 @@ QSize KFileItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMod
 }
 
 
-QString KFileItemDelegate::display(const QModelIndex &index) const
+QString KFileItemDelegate::Private::display(const QModelIndex &index) const
 {
     const QVariant value = index.model()->data(index, Qt::DisplayRole);
 
@@ -643,9 +647,9 @@ QString KFileItemDelegate::display(const QModelIndex &index) const
         case QVariant::String:
         {
             if (index.column() == KDirModel::Size)
-                return d->itemSize(index, d->fileItem(index));
+                return itemSize(index, fileItem(index));
             else
-                return d->replaceNewlines(value.toString());
+                return replaceNewlines(value.toString());
         }
 
         case QVariant::Double:
@@ -673,7 +677,7 @@ KFileItemDelegate::AdditionalInformation KFileItemDelegate::additionalInformatio
 }
 
 
-QPixmap KFileItemDelegate::decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QPixmap KFileItemDelegate::Private::decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     const QVariant value = index.model()->data(index, Qt::DecorationRole);
     QPixmap pixmap;
@@ -681,7 +685,7 @@ QPixmap KFileItemDelegate::decoration(const QStyleOptionViewItem &option, const 
     switch (value.type())
     {
         case QVariant::Icon:
-            pixmap = d->toPixmap(option, qvariant_cast<QIcon>(value));
+            pixmap = toPixmap(option, qvariant_cast<QIcon>(value));
             break;
 
         case QVariant::Pixmap:
@@ -689,7 +693,7 @@ QPixmap KFileItemDelegate::decoration(const QStyleOptionViewItem &option, const 
             break;
 
         case QVariant::Color:
-            pixmap = d->toPixmap(option, qvariant_cast<QColor>(value));
+            pixmap = toPixmap(option, qvariant_cast<QColor>(value));
             break;
 
         default:
@@ -726,16 +730,16 @@ QPixmap KFileItemDelegate::decoration(const QStyleOptionViewItem &option, const 
 }
 
 
-QRect KFileItemDelegate::labelRectangle(const QStyleOptionViewItem &option, const QPixmap &icon,
-                                        const QString &string) const
+QRect KFileItemDelegate::Private::labelRectangle(const QStyleOptionViewItem &option, const QPixmap &icon,
+                                                 const QString &string) const
 {
     Q_UNUSED(string)
 
     if (icon.isNull())
         return option.rect;
 
-    const QSize decoSize = d->addMargin(option.decorationSize, Private::IconMargin);
-    const QRect itemRect = d->subtractMargin(option.rect, Private::ItemMargin);
+    const QSize decoSize = addMargin(option.decorationSize, Private::IconMargin);
+    const QRect itemRect = subtractMargin(option.rect, Private::ItemMargin);
     QRect textArea(QPoint(0, 0), itemRect.size());
 
     switch (option.decorationPosition)
@@ -762,9 +766,9 @@ QRect KFileItemDelegate::labelRectangle(const QStyleOptionViewItem &option, cons
 }
 
 
-QPoint KFileItemDelegate::iconPosition(const QStyleOptionViewItem &option, const QPixmap &pixmap) const
+QPoint KFileItemDelegate::Private::iconPosition(const QStyleOptionViewItem &option, const QPixmap &pixmap) const
 {
-    const QRect itemRect = d->subtractMargin(option.rect, Private::ItemMargin);
+    const QRect itemRect = subtractMargin(option.rect, Private::ItemMargin);
     Qt::Alignment alignment;
 
     // Convert decorationPosition to the alignment the decoration will have in option.rect
@@ -788,7 +792,7 @@ QPoint KFileItemDelegate::iconPosition(const QStyleOptionViewItem &option, const
     }
 
     // Compute the nominal decoration rectangle
-    const QSize size = d->addMargin(option.decorationSize, Private::IconMargin);
+    const QSize size = addMargin(option.decorationSize, Private::IconMargin);
     const QRect rect = QStyle::alignedRect(option.direction, alignment, size, itemRect);
 
     // Position the pixmap in the center of the rectangle
@@ -808,8 +812,8 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
-    const QString label  = display(index);
-    const QPixmap pixmap = decoration(option, index);
+    const QString label  = d->display(index);
+    const QPixmap pixmap = d->decoration(option, index);
     KFileItem item       = d->fileItem(index);
     const QString info   = d->information(option, index, item);
     bool showInformation = false;
@@ -823,7 +827,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     d->setActiveMargins(d->verticalLayout(option) ? Qt::Vertical : Qt::Horizontal);
 
     QFontMetrics fm      = QFontMetrics(labelLayout.font());
-    const QRect textArea = labelRectangle(option, pixmap, label);
+    const QRect textArea = d->labelRectangle(option, pixmap, label);
     QRect textRect       = d->subtractMargin(textArea, Private::TextMargin);
 
     // Sizes and constraints for the different text parts
@@ -902,7 +906,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // ========================================================================
     if (!pixmap.isNull())
     {
-        const QPoint pt = iconPosition(option, pixmap);
+        const QPoint pt = d->iconPosition(option, pixmap);
         painter->drawPixmap(pt, pixmap);
     }
 
