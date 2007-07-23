@@ -455,7 +455,7 @@ KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *pare
   ret->setShortcut( KStandardShortcut::shortcut( KStandardShortcut::ShowMenubar ) );
 
   ret->setWhatsThis( i18n( "Show Menubar<p>"
-                           "Shows the menubar again after it has been hidden" ) );
+                           "Shows the menubar again after it has been hidden</p>" ) );
 
   ret->setChecked( true );
 
