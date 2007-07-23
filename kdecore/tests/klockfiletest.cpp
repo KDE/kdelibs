@@ -47,11 +47,21 @@ Test_KLockFile::testLock()
 	QVERIFY(!lockFile->isLocked());
 	QCOMPARE(lockFile->lock(), KLockFile::LockOK);
 	QVERIFY(lockFile->isLocked());
+#ifdef Q_WS_WIN
+	KLockFile *lockFile2 = new KLockFile(QLatin1String(lockName));
+	QVERIFY(!lockFile2->isLocked());
+	QCOMPARE(lockFile2->lock(), KLockFile::LockFail);
+	QVERIFY(!lockFile2->isLocked());
+	delete lockFile2;
+#endif    
 }
 
 void
 Test_KLockFile::testStale()
 {
+#ifdef Q_WS_WIN
+    qDebug("unix stale lock support not implemented yet");
+#else
 	QVERIFY(lockFile->isLocked());
 
 	const int secs = 2;
@@ -72,6 +82,7 @@ Test_KLockFile::testStale()
 			QCOMPARE(host, QLatin1String(hostname));
 		QCOMPARE(app, QLatin1String("qttest")); // this is our KComponentData name
 	}
+#endif
 }
 
 void

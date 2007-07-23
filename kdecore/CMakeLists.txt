@@ -52,9 +52,10 @@ if (WIN32)
       kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
       network/klocalsocket_win.cpp
+      io/klockfile_win.cpp
       util/kshell_win.cpp
       util/kmacroexpander_win.cpp
-      )
+   )
 endif (WIN32)
 
 
@@ -71,9 +72,11 @@ if (UNIX)
       io/kpty.cpp
       io/kptydevice.cpp
       io/kptyprocess.cpp
+      io/klockfile_unix.cpp
       util/kshell_unix.cpp
       util/kmacroexpander_unix.cpp
-      fakes.c )
+      fakes.c 
+   )
 endif (UNIX)
 
 
@@ -127,7 +130,6 @@ set(kdecore_LIB_SRCS
    io/kautosavefile.cpp
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
-   io/klockfile.cpp
    io/kmessage.cpp
    io/kprocess.cpp
    io/ksavefile.cpp
