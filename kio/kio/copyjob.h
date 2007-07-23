@@ -36,7 +36,9 @@ class QTimer;
 namespace KIO {
 
     /// @internal
-    struct KIO_EXPORT CopyInfo
+    /// FIXME: If this is internal, why is being used in a public signal below?
+    /// (aboutToCreate, see also konq_operations.h/cpp
+    struct CopyInfo
     {
         KUrl uSource;
         KUrl uDest;
@@ -47,6 +49,7 @@ namespace KIO {
         KIO::filesize_t size; // 0 for dirs
     };
 
+    class CopyJobPrivate;
     /**
      * CopyJob is used to move, copy or symlink files and directories.
      * Don't create the job directly, but use KIO::copy(),
@@ -215,50 +218,17 @@ namespace KIO {
          * @param to the destination URL
          */
         void copyingLinkDone( KIO::Job *job, const KUrl &from, const QString& target, const KUrl& to );
-
-    protected:
-        void statCurrentSrc();
-        void statNextSrc();
-
-        // Those aren't slots but submethods for slotResult.
-        void slotResultStating( KJob * job );
-        void startListing( const KUrl & src );
-        void slotResultCreatingDirs( KJob * job );
-        void slotResultConflictCreatingDirs( KJob * job );
-        void createNextDir();
-        void slotResultCopyingFiles( KJob * job );
-        void slotResultConflictCopyingFiles( KJob * job );
-        void copyNextFile();
-        void slotResultDeletingDirs( KJob * job );
-        void deleteNextDir();
-        void skip( const KUrl & sourceURL );
-        void slotResultRenaming( KJob * job );
-        void slotResultSettingDirAttributes( KJob * job );
-        void setNextDirAttribute();
-    private:
-        void startRenameJob(const KUrl &slave_url);
-        bool shouldOverwrite( const QString& path ) const;
-        bool shouldSkip( const QString& path ) const;
-        void skipSrc();
-
     protected Q_SLOTS:
-        void slotStart();
-        void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KJob *job );
-        /**
-         * Forward signal from subjob
-         */
-        void slotProcessedSize( KJob*, qulonglong data_size );
-        /**
-         * Forward signal from subjob
-	 * @param size the total size
-         */
-        void slotTotalSize( KJob*, qulonglong size );
-
-        void slotReport();
 
     private:
-	class CopyJobPrivate;
+        Q_PRIVATE_SLOT(d, void slotStart())
+        Q_PRIVATE_SLOT(d, void slotEntries( KIO::Job*, const KIO::UDSEntryList& list ))
+        Q_PRIVATE_SLOT(d, void slotProcessedSize( KJob*, qulonglong data_size ))
+        Q_PRIVATE_SLOT(d, void slotTotalSize( KJob*, qulonglong size ))
+        Q_PRIVATE_SLOT(d, void slotReport())
+
+        friend class CopyJobPrivate;
         CopyJobPrivate* const d;
     };
 
