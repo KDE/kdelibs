@@ -34,9 +34,6 @@ public:
 
   virtual ~testKRun() {}
 
-  // FIXME!!
-  // This used to be virtual in KRun
-  // Now it doesn't do anything and is never called
   virtual void foundMimeType( const QString& _type );
 
 };

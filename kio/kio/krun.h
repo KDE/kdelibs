@@ -37,7 +37,6 @@ namespace KIO {
    class Job;
 }
 
-class KRunPrivate;
 /**
  * To open files with their associated applications in KDE, use KRun.
  *
@@ -345,12 +344,55 @@ Q_SIGNALS:
    */
   void error();
 
+protected Q_SLOTS:
+  void slotTimeout();
+  void slotScanFinished( KJob * );
+  void slotScanMimeType( KIO::Job *, const QString &type );
+  virtual void slotStatResult( KJob * );
+
+protected:
+  virtual void init();
+
+  virtual void scanFile();
+
+  /**
+   * Called if the mimetype has been detected. The function checks
+   * whether the document <XXX - what?> and appends the gzip protocol to the
+   * URL. Otherwise runUrl is called to finish the job.
+   */
+  virtual void foundMimeType( const QString& type );
+
+  virtual void killJob();
+
+  KUrl m_strURL;
+  bool m_bFault;
+  bool m_bAutoDelete;
+  bool m_bProgressInfo;
+  bool m_bFinished;
+  KIO::Job * m_job;
+  QTimer m_timer;
+
+  /**
+   * Used to indicate that the next action is to scan the file.
+   * This action is invoked from slotTimeout.
+   */
+  bool m_bScanFile;
+  bool m_bIsDirectory;
+
+  /**
+   * Used to indicate that the next action is to initialize.
+   * This action is invoked from slotTimeout
+   */
+  bool m_bInit;
+
+  bool m_bIsLocalFile;
+  mode_t m_mode;
+
 private:
-  Q_PRIVATE_SLOT(d, void slotTimeout())
-  Q_PRIVATE_SLOT(d, void slotScanFinished( KJob * ))
-  Q_PRIVATE_SLOT(d, void slotScanMimeType( KIO::Job *, const QString &type ))
-  Q_PRIVATE_SLOT(d, void slotStatResult( KJob * ))
-  friend class KRunPrivate;
+  void init (const KUrl& url, QWidget* window, mode_t mode,
+             bool isLocalFile, bool showProgressInfo, const QByteArray& asn);
+private:
+  class KRunPrivate;
   KRunPrivate* const d;
 };
 
