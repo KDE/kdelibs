@@ -1,4 +1,5 @@
 find_package(SharedMimeInfo REQUIRED)
 
 ########### install files ###############
-kde4_install_xdg_mimetypes( kde.xml )
+install(FILES kde.xml DESTINATION ${XDG_MIME_INSTALL_DIR})
+update_xdg_mimetypes(${XDG_MIME_INSTALL_DIR})
