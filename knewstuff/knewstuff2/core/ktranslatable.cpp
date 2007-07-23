@@ -40,11 +40,12 @@ KTranslatable::KTranslatable(const KTranslatable& other)
 KTranslatable& KTranslatable::operator=(const KTranslatable& other)
 {
     m_strings = other.m_strings;
+    return *this;
 }
 
 KTranslatable::~KTranslatable()
 {
-    delete d;
+//    delete d;
 }
 
 KTranslatable::KTranslatable(const QString& string)
