@@ -268,7 +268,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
     // Ignore unless we have the direct parent
     if(qobject_cast<QWidget *>(w->parent()) != widget) continue;
 
-    if ( !w->isVisibleTo( widget ) || w->isTopLevel() )
+    if ( !w->isVisibleTo( widget ) || (w->isTopLevel() && qobject_cast<QMenu*>(w) == NULL) )
         continue;
 
     if ( KAcceleratorManagerPrivate::ignored_widgets.find( w ) != KAcceleratorManagerPrivate::ignored_widgets.end() )
