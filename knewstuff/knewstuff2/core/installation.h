@@ -87,13 +87,13 @@ class KNEWSTUFF_EXPORT Installation
     QString standardResourceDir() const;
     QString targetDir() const;
     QString installPath() const;
-    bool isRemote();
+    bool isRemote() const;
 
-    Policy checksumPolicy();
-    Policy signaturePolicy();
-    Scope scope();
+    Policy checksumPolicy() const;
+    Policy signaturePolicy() const;
+    Scope scope() const;
 
-    bool customName();
+    bool customName() const;
 
   private:
     Q_DISABLE_COPY (Installation)

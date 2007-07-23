@@ -123,7 +123,7 @@ QString Installation::installPath() const
     return d->m_installpath;
 }
 
-bool Installation::isRemote()
+bool Installation::isRemote() const
 {
     if(!installPath().isEmpty()) return false;
     if(!targetDir().isEmpty()) return false;
@@ -131,22 +131,22 @@ bool Installation::isRemote()
     return true;
 }
 
-Installation::Policy Installation::checksumPolicy()
+Installation::Policy Installation::checksumPolicy() const
 {
     return d->m_checksumpolicy;
 }
 
-Installation::Policy Installation::signaturePolicy()
+Installation::Policy Installation::signaturePolicy() const
 {
     return d->m_signaturepolicy;
 }
 
-bool Installation::customName()
+bool Installation::customName() const
 {
     return d->m_customname;
 }
 
-Installation::Scope Installation::scope()
+Installation::Scope Installation::scope() const
 {
     return d->m_scope;
 }
