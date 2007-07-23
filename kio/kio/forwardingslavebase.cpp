@@ -38,9 +38,37 @@ public:
     ForwardingSlaveBasePrivate(QObject * eventLoopParent) :
         eventLoop(eventLoopParent)
     {}
+    ForwardingSlaveBase *q;
+
     KUrl m_processedURL;
     KUrl m_requestedURL;
     QEventLoop eventLoop;
+
+    bool internalRewriteUrl(const KUrl &url, KUrl &newURL);
+
+    void connectJob(Job *job);
+    void connectSimpleJob(SimpleJob *job);
+    void connectListJob(ListJob *job);
+    void connectTransferJob(TransferJob *job);
+
+    void _k_slotResult(KJob *job);
+    void _k_slotWarning(KJob *job, const QString &msg);
+    void _k_slotInfoMessage(KJob *job, const QString &msg);
+    void _k_slotTotalSize(KJob *job, qulonglong size);
+    void _k_slotProcessedSize(KJob *job, qulonglong size);
+    void _k_slotSpeed(KJob *job, unsigned long bytesPerSecond);
+
+    // KIO::SimpleJob subclasses
+    void _k_slotRedirection(KIO::Job *job, const KUrl &url);
+
+    // KIO::ListJob
+    void _k_slotEntries(KIO::Job *job, const KIO::UDSEntryList &entries);
+
+    // KIO::TransferJob
+    void _k_slotData(KIO::Job *job, const QByteArray &data);
+    void _k_slotDataReq(KIO::Job *job, QByteArray &data);
+    void _k_slotMimetype (KIO::Job *job, const QString &type);
+    void _k_slotCanResume (KIO::Job *job, KIO::filesize_t offset);
 };
 
 ForwardingSlaveBase::ForwardingSlaveBase(const QByteArray &protocol,
@@ -49,6 +77,7 @@ ForwardingSlaveBase::ForwardingSlaveBase(const QByteArray &protocol,
     : QObject(), SlaveBase(protocol, poolSocket, appSocket),
       d( new ForwardingSlaveBasePrivate(this) )
 {
+    d->q = this;
 }
 
 ForwardingSlaveBase::~ForwardingSlaveBase()
@@ -56,21 +85,21 @@ ForwardingSlaveBase::~ForwardingSlaveBase()
     delete d;
 }
 
-bool ForwardingSlaveBase::internalRewriteUrl(const KUrl &url, KUrl &newURL)
+bool ForwardingSlaveBasePrivate::internalRewriteUrl(const KUrl &url, KUrl &newURL)
 {
     bool result = true;
 
-    if ( url.protocol() == mProtocol )
+    if ( url.protocol() == q->mProtocol )
     {
-        result = rewriteUrl(url, newURL);
+        result = q->rewriteUrl(url, newURL);
     }
     else
     {
         newURL = url;
     }
 
-    d->m_processedURL = newURL;
-    d->m_requestedURL = url;
+    m_processedURL = newURL;
+    m_requestedURL = url;
     return result;
 }
 
@@ -143,10 +172,10 @@ void ForwardingSlaveBase::get(const KUrl &url)
     kDebug() << "ForwardingSlaveBase::get: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::get(new_url, false, false);
-        connectTransferJob(job);
+        d->connectTransferJob(job);
 
         d->eventLoop.exec();
     }
@@ -158,11 +187,11 @@ void ForwardingSlaveBase::put(const KUrl &url, int permissions,
     kDebug() << "ForwardingSlaveBase::put: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::put(new_url, permissions, overwrite,
                                          resume, false);
-        connectTransferJob(job);
+        d->connectTransferJob(job);
 
         d->eventLoop.exec();
     }
@@ -173,10 +202,10 @@ void ForwardingSlaveBase::stat(const KUrl &url)
     kDebug() << "ForwardingSlaveBase::stat: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::stat(new_url, false);
-        connectSimpleJob(job);
+        d->connectSimpleJob(job);
 
         d->eventLoop.exec();
     }
@@ -187,10 +216,10 @@ void ForwardingSlaveBase::mimetype(const KUrl &url)
     kDebug() << "ForwardingSlaveBase::mimetype: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::mimetype(new_url, false);
-        connectTransferJob(job);
+        d->connectTransferJob(job);
 
         d->eventLoop.exec();
     }
@@ -201,10 +230,10 @@ void ForwardingSlaveBase::listDir(const KUrl &url)
     kDebug() << "ForwardingSlaveBase::listDir: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::ListJob *job = KIO::listDir(new_url, false);
-        connectListJob(job);
+        d->connectListJob(job);
 
         d->eventLoop.exec();
     }
@@ -215,10 +244,10 @@ void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
     kDebug() << "ForwardingSlaveBase::mkdir: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::mkdir(new_url, permissions);
-        connectSimpleJob(job);
+        d->connectSimpleJob(job);
 
         d->eventLoop.exec();
     }
@@ -230,10 +259,10 @@ void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
     kDebug() << "ForwardingSlaveBase::rename: " << src << ", " << dest << endl;
 
     KUrl new_src, new_dest;
-    if ( internalRewriteUrl(src, new_src) && internalRewriteUrl(dest, new_dest) )
+    if ( d->internalRewriteUrl(src, new_src) && d->internalRewriteUrl(dest, new_dest) )
     {
         KIO::Job *job = KIO::rename(new_src, new_dest, overwrite);
-        connectJob(job);
+        d->connectJob(job);
 
         d->eventLoop.exec();
     }
@@ -245,10 +274,10 @@ void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
     kDebug() << "ForwardingSlaveBase::symlink: " << target << ", " << dest << endl;
 
     KUrl new_dest;
-    if ( internalRewriteUrl(dest, new_dest) )
+    if ( d->internalRewriteUrl(dest, new_dest) )
     {
         KIO::SimpleJob *job = KIO::symlink(target, new_dest, overwrite, false);
-        connectSimpleJob(job);
+        d->connectSimpleJob(job);
 
         d->eventLoop.exec();
     }
@@ -259,10 +288,10 @@ void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
     kDebug() << "ForwardingSlaveBase::chmod: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::chmod(new_url, permissions);
-        connectSimpleJob(job);
+        d->connectSimpleJob(job);
 
         d->eventLoop.exec();
     }
@@ -273,10 +302,10 @@ void ForwardingSlaveBase::setModificationTime(const KUrl& url, const QDateTime& 
     kDebug() << "ForwardingSlaveBase::setModificationTime: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::setModificationTime(new_url, mtime);
-        connectSimpleJob(job);
+        d->connectSimpleJob(job);
 
         d->eventLoop.exec();
     }
@@ -288,11 +317,11 @@ void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
     kDebug() << "ForwardingSlaveBase::copy: " << src << ", " << dest << endl;
 
     KUrl new_src, new_dest;
-    if ( internalRewriteUrl(src, new_src) && internalRewriteUrl(dest, new_dest) )
+    if ( d->internalRewriteUrl(src, new_src) && d->internalRewriteUrl(dest, new_dest) )
     {
         KIO::Job *job = KIO::file_copy(new_src, new_dest, permissions,
                                        overwrite, false);
-        connectJob(job);
+        d->connectJob(job);
 
         d->eventLoop.exec();
     }
@@ -303,17 +332,17 @@ void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
     kDebug() << "ForwardingSlaveBase::del: " << url << endl;
 
     KUrl new_url;
-    if ( internalRewriteUrl(url, new_url) )
+    if ( d->internalRewriteUrl(url, new_url) )
     {
         if (isfile)
         {
             KIO::DeleteJob *job = KIO::del(new_url, false, false);
-            connectJob(job);
+            d->connectJob(job);
         }
         else
         {
             KIO::SimpleJob *job = KIO::rmdir(new_url);
-            connectSimpleJob(job);
+            d->connectSimpleJob(job);
         }
 
         d->eventLoop.exec();
@@ -323,14 +352,14 @@ void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
 
 //////////////////////////////////////////////////////////////////////////////
 
-void ForwardingSlaveBase::connectJob(KIO::Job *job)
+void ForwardingSlaveBasePrivate::connectJob(KIO::Job *job)
 {
     // We will forward the warning message, no need to let the job
     // display it itself
     job->setUiDelegate( 0 );
 
     // Forward metadata (e.g. modification time for put())
-    job->setMetaData( allMetaData() );
+    job->setMetaData( q->allMetaData() );
 #if 0 // debug code
     kDebug() << k_funcinfo << "transferring metadata:" << endl;
     const MetaData md = allMetaData();
@@ -338,54 +367,54 @@ void ForwardingSlaveBase::connectJob(KIO::Job *job)
         kDebug() << it.key() << " = " << it.data() << endl;
 #endif
 
-    connect( job, SIGNAL( result(KJob *) ),
-             this, SLOT( slotResult(KJob *) ) );
-    connect( job, SIGNAL( warning(KJob *, const QString &, const QString &) ),
-             this, SLOT( slotWarning(KJob *, const QString &) ) );
-    connect( job, SIGNAL( infoMessage(KJob *, const QString &, const QString &) ),
-             this, SLOT( slotInfoMessage(KJob *, const QString &) ) );
-    connect( job, SIGNAL( totalSize(KJob *, qulonglong) ),
-             this, SLOT( slotTotalSize(KJob *, qulonglong) ) );
-    connect( job, SIGNAL( processedSize(KJob *, qulonglong) ),
-             this, SLOT( slotProcessedSize(KJob *, qulonglong) ) );
-    connect( job, SIGNAL( speed(KJob *, unsigned long) ),
-             this, SLOT( slotSpeed(KJob *, unsigned long) ) );
+    q->connect( job, SIGNAL( result(KJob *) ),
+                SLOT( _k_slotResult(KJob *) ) );
+    q->connect( job, SIGNAL( warning(KJob *, const QString &, const QString &) ),
+                SLOT( _k_slotWarning(KJob *, const QString &) ) );
+    q->connect( job, SIGNAL( infoMessage(KJob *, const QString &, const QString &) ),
+                SLOT( _k_slotInfoMessage(KJob *, const QString &) ) );
+    q->connect( job, SIGNAL( totalSize(KJob *, qulonglong) ),
+                SLOT( _k_slotTotalSize(KJob *, qulonglong) ) );
+    q->connect( job, SIGNAL( processedSize(KJob *, qulonglong) ),
+                SLOT( _k_slotProcessedSize(KJob *, qulonglong) ) );
+    q->connect( job, SIGNAL( speed(KJob *, unsigned long) ),
+                SLOT( _k_slotSpeed(KJob *, unsigned long) ) );
 }
 
-void ForwardingSlaveBase::connectSimpleJob(KIO::SimpleJob *job)
+void ForwardingSlaveBasePrivate::connectSimpleJob(KIO::SimpleJob *job)
 {
     connectJob(job);
-    connect( job, SIGNAL( redirection(KIO::Job *, const KUrl &) ),
-             this, SLOT( slotRedirection(KIO::Job *, const KUrl &) ) );
+    q->connect( job, SIGNAL( redirection(KIO::Job *, const KUrl &) ),
+                SLOT( _k_slotRedirection(KIO::Job *, const KUrl &) ) );
 }
 
-void ForwardingSlaveBase::connectListJob(KIO::ListJob *job)
+void ForwardingSlaveBasePrivate::connectListJob(KIO::ListJob *job)
 {
     connectSimpleJob(job);
-    connect( job, SIGNAL( entries(KIO::Job *, const KIO::UDSEntryList &) ),
-             this, SLOT( slotEntries(KIO::Job *, const KIO::UDSEntryList &) ) );
+    q->connect( job, SIGNAL( entries(KIO::Job *, const KIO::UDSEntryList &) ),
+                SLOT( _k_slotEntries(KIO::Job *, const KIO::UDSEntryList &) ) );
 }
 
-void ForwardingSlaveBase::connectTransferJob(KIO::TransferJob *job)
+void ForwardingSlaveBasePrivate::connectTransferJob(KIO::TransferJob *job)
 {
     connectSimpleJob(job);
-    connect( job, SIGNAL( data(KIO::Job *, const QByteArray &) ),
-             this, SLOT( slotData(KIO::Job *, const QByteArray &) ) );
-    connect( job, SIGNAL( dataReq(KIO::Job *, QByteArray &) ),
-             this, SLOT( slotDataReq(KIO::Job *, QByteArray &) ) );
-    connect( job, SIGNAL( mimetype(KIO::Job *, const QString &) ),
-             this, SLOT( slotMimetype(KIO::Job *, const QString &) ) );
-    connect( job, SIGNAL( canResume(KIO::Job *, KIO::filesize_t) ),
-             this, SLOT( slotCanResume(KIO::Job *, KIO::filesize_t) ) );
+    q->connect( job, SIGNAL( data(KIO::Job *, const QByteArray &) ),
+                SLOT( _k_slotData(KIO::Job *, const QByteArray &) ) );
+    q->connect( job, SIGNAL( dataReq(KIO::Job *, QByteArray &) ),
+                SLOT( _k_slotDataReq(KIO::Job *, QByteArray &) ) );
+    q->connect( job, SIGNAL( mimetype(KIO::Job *, const QString &) ),
+                SLOT( _k_slotMimetype(KIO::Job *, const QString &) ) );
+    q->connect( job, SIGNAL( canResume(KIO::Job *, KIO::filesize_t) ),
+                SLOT( _k_slotCanResume(KIO::Job *, KIO::filesize_t) ) );
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
-void ForwardingSlaveBase::slotResult(KJob *job)
+void ForwardingSlaveBasePrivate::_k_slotResult(KJob *job)
 {
     if ( job->error() != 0)
     {
-        error( job->error(), job->errorText() );
+        q->error( job->error(), job->errorText() );
     }
     else
     {
@@ -393,52 +422,52 @@ void ForwardingSlaveBase::slotResult(KJob *job)
         if ( stat_job!=0L )
         {
             KIO::UDSEntry entry = stat_job->statResult();
-	    prepareUDSEntry(entry);
-            statEntry( entry );
+	    q->prepareUDSEntry(entry);
+            q->statEntry( entry );
         }
-        finished();
+        q->finished();
     }
 
-    d->eventLoop.exit();
+    eventLoop.exit();
 }
 
-void ForwardingSlaveBase::slotWarning(KJob* /*job*/, const QString &msg)
+void ForwardingSlaveBasePrivate::_k_slotWarning(KJob* /*job*/, const QString &msg)
 {
-    warning(msg);
+    q->warning(msg);
 }
 
-void ForwardingSlaveBase::slotInfoMessage(KJob* /*job*/, const QString &msg)
+void ForwardingSlaveBasePrivate::_k_slotInfoMessage(KJob* /*job*/, const QString &msg)
 {
-    infoMessage(msg);
+    q->infoMessage(msg);
 }
 
-void ForwardingSlaveBase::slotTotalSize(KJob* /*job*/, qulonglong size)
+void ForwardingSlaveBasePrivate::_k_slotTotalSize(KJob* /*job*/, qulonglong size)
 {
-    totalSize(size);
+    q->totalSize(size);
 }
 
-void ForwardingSlaveBase::slotProcessedSize(KJob* /*job*/, qulonglong size)
+void ForwardingSlaveBasePrivate::_k_slotProcessedSize(KJob* /*job*/, qulonglong size)
 {
-    processedSize(size);
+    q->processedSize(size);
 }
 
-void ForwardingSlaveBase::slotSpeed(KJob* /*job*/, unsigned long bytesPerSecond)
+void ForwardingSlaveBasePrivate::_k_slotSpeed(KJob* /*job*/, unsigned long bytesPerSecond)
 {
-    speed(bytesPerSecond);
+    q->speed(bytesPerSecond);
 }
 
-void ForwardingSlaveBase::slotRedirection(KIO::Job *job, const KUrl &url)
+void ForwardingSlaveBasePrivate::_k_slotRedirection(KIO::Job *job, const KUrl &url)
 {
-    redirection(url);
+    q->redirection(url);
 
     // We've been redirected stop everything.
     job->kill( KJob::Quietly );
-    finished();
+    q->finished();
 
-    d->eventLoop.exit();
+    eventLoop.exit();
 }
 
-void ForwardingSlaveBase::slotEntries(KIO::Job* /*job*/,
+void ForwardingSlaveBasePrivate::_k_slotEntries(KIO::Job* /*job*/,
                                       const KIO::UDSEntryList &entries)
 {
     KIO::UDSEntryList final_entries = entries;
@@ -448,31 +477,31 @@ void ForwardingSlaveBase::slotEntries(KIO::Job* /*job*/,
 
     for(; it!=end; ++it)
     {
-        prepareUDSEntry(*it, true);
+        q->prepareUDSEntry(*it, true);
     }
 
-    listEntries( final_entries );
+    q->listEntries( final_entries );
 }
 
-void ForwardingSlaveBase::slotData(KIO::Job* /*job*/, const QByteArray &_data)
+void ForwardingSlaveBasePrivate::_k_slotData(KIO::Job* /*job*/, const QByteArray &_data)
 {
-    data(_data);
+    q->data(_data);
 }
 
-void ForwardingSlaveBase::slotDataReq(KIO::Job* /*job*/, QByteArray &data)
+void ForwardingSlaveBasePrivate::_k_slotDataReq(KIO::Job* /*job*/, QByteArray &data)
 {
-    dataReq();
-    readData(data);
+    q->dataReq();
+    q->readData(data);
 }
 
-void ForwardingSlaveBase::slotMimetype (KIO::Job* /*job*/, const QString &type)
+void ForwardingSlaveBasePrivate::_k_slotMimetype (KIO::Job* /*job*/, const QString &type)
 {
-    mimeType(type);
+    q->mimeType(type);
 }
 
-void ForwardingSlaveBase::slotCanResume (KIO::Job* /*job*/, KIO::filesize_t offset)
+void ForwardingSlaveBasePrivate::_k_slotCanResume (KIO::Job* /*job*/, KIO::filesize_t offset)
 {
-    canResume(offset);
+    q->canResume(offset);
 }
 
 }

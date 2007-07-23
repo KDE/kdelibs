@@ -162,35 +162,27 @@ protected:
     KUrl requestedUrl() const;
 
 private:
-    bool internalRewriteUrl(const KUrl &url, KUrl &newURL);
-
-    void connectJob(Job *job);
-    void connectSimpleJob(SimpleJob *job);
-    void connectListJob(ListJob *job);
-    void connectTransferJob(TransferJob *job);
-
-private Q_SLOTS:
     // KIO::Job
-    void slotResult(KJob *job);
-    void slotWarning(KJob *job, const QString &msg);
-    void slotInfoMessage(KJob *job, const QString &msg);
-    void slotTotalSize(KJob *job, qulonglong size);
-    void slotProcessedSize(KJob *job, qulonglong size);
-    void slotSpeed(KJob *job, unsigned long bytesPerSecond);
+    Q_PRIVATE_SLOT(d, void _k_slotResult(KJob *job))
+    Q_PRIVATE_SLOT(d, void _k_slotWarning(KJob *job, const QString &msg))
+    Q_PRIVATE_SLOT(d, void _k_slotInfoMessage(KJob *job, const QString &msg))
+    Q_PRIVATE_SLOT(d, void _k_slotTotalSize(KJob *job, qulonglong size))
+    Q_PRIVATE_SLOT(d, void _k_slotProcessedSize(KJob *job, qulonglong size))
+    Q_PRIVATE_SLOT(d, void _k_slotSpeed(KJob *job, unsigned long bytesPerSecond))
 
     // KIO::SimpleJob subclasses
-    void slotRedirection(KIO::Job *job, const KUrl &url);
+    Q_PRIVATE_SLOT(d, void _k_slotRedirection(KIO::Job *job, const KUrl &url))
 
     // KIO::ListJob
-    void slotEntries(KIO::Job *job, const KIO::UDSEntryList &entries);
+    Q_PRIVATE_SLOT(d, void _k_slotEntries(KIO::Job *job, const KIO::UDSEntryList &entries))
 
     // KIO::TransferJob
-    void slotData(KIO::Job *job, const QByteArray &data);
-    void slotDataReq(KIO::Job *job, QByteArray &data);
-    void slotMimetype (KIO::Job *job, const QString &type);
-    void slotCanResume (KIO::Job *job, KIO::filesize_t offset);
+    Q_PRIVATE_SLOT(d, void _k_slotData(KIO::Job *job, const QByteArray &data))
+    Q_PRIVATE_SLOT(d, void _k_slotDataReq(KIO::Job *job, QByteArray &data))
+    Q_PRIVATE_SLOT(d, void _k_slotMimetype (KIO::Job *job, const QString &type))
+    Q_PRIVATE_SLOT(d, void _k_slotCanResume (KIO::Job *job, KIO::filesize_t offset))
 
-private:
+    friend class ForwardingSlaveBasePrivate;
     ForwardingSlaveBasePrivate *const d;
 };
 
