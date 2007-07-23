@@ -773,6 +773,8 @@ void SlaveBase::chmod(KUrl const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CHMOD)); }
 void SlaveBase::setModificationTime(KUrl const &, const QDateTime&)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SETMODIFICATIONTIME)); }
+void SlaveBase::chown(KUrl const &, const QString &, const QString &)
+{ error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CHOWN)); }
 void SlaveBase::setSubUrl(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SUBURL)); }
 void SlaveBase::multiGet(const QByteArray &)
@@ -1067,6 +1069,13 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         stream >> url >> i;
         chmod( url, i);
         break;
+    case CMD_CHOWN:
+    {
+        QString owner, group;
+        stream >> url >> owner >> group;
+        chown(url, owner, group);
+        break;
+    }
     case CMD_SETMODIFICATIONTIME:
     {
         QDateTime dt;

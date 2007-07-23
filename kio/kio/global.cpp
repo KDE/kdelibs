@@ -304,6 +304,9 @@ KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText
     case  KIO::ERR_CANNOT_CHMOD:
       result = i18n( "Could not change permissions for %1." ,  errorText );
       break;
+    case  KIO::ERR_CANNOT_CHOWN:
+      result = i18n( "Could not change ownership for %1." ,  errorText );
+      break;
     case  KIO::ERR_CANNOT_DELETE:
       result = i18n( "Could not delete file %1." ,  errorText );
       break;
@@ -413,6 +416,8 @@ KIO_EXPORT QString KIO::unsupportedActionErrorString(const QString &protocol, in
       return i18n("Creating folders is not supported with protocol %1.", protocol);
     case CMD_CHMOD:
       return i18n("Changing the attributes of files is not supported with protocol %1.", protocol);
+    case CMD_CHOWN:
+      return i18n("Changing the ownership of files is not supported with protocol %1.", protocol);
     case CMD_SUBURL:
       return i18n("Using sub-URLs with %1 is not supported.", protocol);
     case CMD_MULTI_GET:
@@ -1015,6 +1020,14 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     case  KIO::ERR_CANNOT_CHMOD:
       errorName = i18n( "Could Not Alter Permissions of Resource" );
       description = i18n( "An attempt to alter the permissions on the specified "
+        "resource <strong>%1</strong> failed." ,  url );
+      causes << cAccess << cExists;
+      solutions << sAccess << sExists;
+      break;
+
+    case  KIO::ERR_CANNOT_CHOWN:
+      errorName = i18n( "Could Not Change Ownership of Resource" );
+      description = i18n( "An attempt to change the ownership of the specified "
         "resource <strong>%1</strong> failed." ,  url );
       causes << cAccess << cExists;
       solutions << sAccess << sExists;

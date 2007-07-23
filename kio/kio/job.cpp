@@ -689,6 +689,14 @@ SimpleJob *KIO::chmod( const KUrl& url, int permissions )
     return job;
 }
 
+SimpleJob *KIO::chown( const KUrl& url, const QString& owner, const QString& group )
+{
+    KIO_ARGS << url << owner << group;
+    SimpleJob *job = new SimpleJob(url, CMD_CHOWN, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
+}
+
 SimpleJob *KIO::setModificationTime( const KUrl& url, const QDateTime& mtime )
 {
     //kDebug(7007) << "setModificationTime " << url << " " << mtime << endl;

@@ -215,6 +215,59 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
         finished();
 }
 
+void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& group )
+{
+#ifdef Q_WS_WIN
+    error( KIO::ERR_CANNOT_CHOWN, _path );
+#else
+    QByteArray _path( QFile::encodeName(url.toLocalFile()) );
+
+    uid_t uid;
+    gid_t gid;
+
+    // get uid from given owner
+    {
+        struct passwd *p = ::getpwnam(owner.toAscii());
+
+        if ( ! p ) {
+            error( KIO::ERR_SLAVE_DEFINED,
+                   i18n( "Could not get user id for given user name %1", owner ) );
+            return;
+        }
+
+        uid = p->pw_uid;
+    }
+
+    // get gid from given group
+    {
+        struct group *p = ::getgrnam(group.toAscii());
+
+        if ( ! p ) {
+            error( KIO::ERR_SLAVE_DEFINED,
+                   i18n( "Could not get group id for given group name %1", group ) );
+            return;
+        }
+
+        gid = p->gr_gid;
+    }
+
+    if ( ::chown(_path, uid, gid) == -1 ) {
+        switch ( errno ) {
+            case EPERM:
+            case EACCES:
+                error( KIO::ERR_ACCESS_DENIED, _path );
+                break;
+            case ENOSPC:
+                error( KIO::ERR_DISK_FULL, _path );
+                break;
+            default:
+                error( KIO::ERR_CANNOT_CHOWN, _path );
+        }
+    } else
+        finished();
+#endif
+}
+
 void FileProtocol::setModificationTime( const KUrl& url, const QDateTime& mtime )
 {
     const QByteArray path = QFile::encodeName(url.toLocalFile());

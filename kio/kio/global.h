@@ -172,7 +172,7 @@ namespace KIO
     CMD_MULTI_GET = 'V', // 86
     CMD_SETLINKDEST = 'W', // 87
     CMD_OPEN = 'X', // 88
-    // 89 unused (no reason; can be reused)
+    CMD_CHOWN = 'Y', // 89
     CMD_READ = 'Z', // 90
     CMD_WRITE = 91,
     CMD_SEEK = 92,
@@ -260,7 +260,8 @@ namespace KIO
     ERR_POST_DENIED = KJob::UserDefinedError + 65, // Issued when trying to POST data to a certain Ports
                                                   // see job.cpp
     ERR_COULD_NOT_SEEK = KJob::UserDefinedError + 66,
-    ERR_CANNOT_SETTIME = KJob::UserDefinedError + 67 // Emitted by setModificationTime
+    ERR_CANNOT_SETTIME = KJob::UserDefinedError + 67, // Emitted by setModificationTime
+    ERR_CANNOT_CHOWN = KJob::UserDefinedError + 68
   };
 
   /**

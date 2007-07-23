@@ -468,6 +468,12 @@ public:
     virtual void chmod( const KUrl& url, int permissions );
 
     /**
+     * Change ownership of @p url
+     * The slave emits ERR_DOES_NOT_EXIST or ERR_CANNOT_CHOWN
+     */
+    virtual void chown( const KUrl& url, const QString& owner, const QString& group );
+
+    /**
      * Sets the modification time for @url
      * For instance this is what CopyJob uses to set mtime on dirs at the end of a copy.
      * It could also be used to set the mtime on any file, in theory.

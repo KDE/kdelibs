@@ -58,6 +58,7 @@ public:
   virtual void listDir( const KUrl& url );
   virtual void mkdir( const KUrl& url, int permissions );
   virtual void chmod( const KUrl& url, int permissions );
+  virtual void chown( const KUrl& url, const QString& owner, const QString& group );
   virtual void setModificationTime( const KUrl& url, const QDateTime& mtime );
   virtual void del( const KUrl& url, bool isfile);
   virtual void open( const KUrl &url, QIODevice::OpenMode mode );

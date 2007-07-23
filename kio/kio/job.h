@@ -65,6 +65,16 @@ namespace KIO {
     KIO_EXPORT SimpleJob * chmod( const KUrl& url, int permissions );
 
     /**
+     * Changes ownership and group of a file or directory.
+     *
+     * @param url The URL of file or directory.
+     * @param owner the new owner
+     * @param group the new group
+     * @return the job handling the operation.
+     */
+    KIO_EXPORT SimpleJob * chown( const KUrl& url, const QString& owner, const QString& group );
+
+    /**
      * Changes the modification time on a file or directory.
      *
      * @param url The URL of file or directory.
