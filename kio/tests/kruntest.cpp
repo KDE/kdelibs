@@ -36,11 +36,13 @@ testKRun * myArray[MAXKRUNS];
 
 void testKRun::foundMimeType( const QString& _type )
 {
+#if 0 // This function has no effect because KRun::foundMimeType is no longer virtual
   kDebug() << "testKRun::foundMimeType " << _type << endl;
   kDebug() << "testKRun::foundMimeType URL=" << m_strURL.url() << endl;
   m_bFinished = true;
   m_timer.setSingleShot( true );
   m_timer.start( 0 );
+#endif
   return;
 }
 
@@ -88,6 +90,9 @@ int main(int argc, char **argv)
 {
     KCmdLineArgs::init(argc,argv, "kruntest", 0, ki18n("kruntest"), 0);
     KApplication app;
+
+    fprintf(stderr, "Sorry, this test is disabled because KRun has changed\n");
+    return 1;
 
     Receiver receiver;
     return app.exec();
