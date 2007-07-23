@@ -126,6 +126,8 @@ public:
 
     quint32 mTimestamp;
     bool mUseQPixmapCache;
+    int mCacheLimit;
+    RemoveStrategy mRemoveStrategy;
 };
 
 // Magic in the cache files
@@ -247,6 +249,8 @@ KPixmapCache::KPixmapCache(const QString& name)
 {
     d->mName = name;
     d->mUseQPixmapCache = true;
+    d->mCacheLimit = 3 * 1024 * 1024;
+    d->mRemoveStrategy = RemoveLeastRecentlyUsed;
 
     // We cannot call init() here because the subclasses haven't been
     //  constructed yet and so their virtual methods cannot be used.
@@ -354,6 +358,27 @@ void KPixmapCache::setUseQPixmapCache(bool use)
 bool KPixmapCache::useQPixmapCache() const
 {
     return d->mUseQPixmapCache;
+}
+
+int KPixmapCache::cacheLimit() const
+{
+    return d->mCacheLimit;
+}
+
+void KPixmapCache::setCacheLimit(int bytes)
+{
+    d->mCacheLimit = bytes;
+    // TODO: cleanup if size() > cacheLimit()
+}
+
+KPixmapCache::RemoveStrategy KPixmapCache::removeEntryStrategy() const
+{
+    return d->mRemoveStrategy;
+}
+
+void KPixmapCache::setRemoveEntryStrategy(KPixmapCache::RemoveStrategy strategy)
+{
+    d->mRemoveStrategy = strategy;
 }
 
 bool KPixmapCache::recreateCacheFiles()

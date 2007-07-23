@@ -93,10 +93,40 @@ public:
      *  addition to caching them on the disk.
      **/
     bool useQPixmapCache() const;
+
     /**
      * @return approximate size of the cache, in bytes.
      **/
     int size() const;
+    /**
+     * @return maximum size of the cache (in bytes).
+     * Default setting is 3 megabytes.
+     **/
+    int cacheLimit() const;
+    /**
+     * Sets the maximum size of the cache (in bytes). If cache gets bigger the
+     * limit then some entries are removed (according to
+     *  @ref removeEntryStrategy() ).
+     * Setting cache limit to 0 disables automatic cache size limiting.
+     *
+     * Note that the cleanup might not be done immediately, so the cache might
+     *  temporarily (for a few seconds) grow bigger than the limit.
+     **/
+    void setCacheLimit(int bytes);
+    /**
+     * Describes which entries will be removed first during cache cleanup.
+     **/
+    enum RemoveStrategy { RemoveOldest, RemoveSeldomUsed, RemoveLeastRecentlyUsed };
+    /**
+     * @return current entry removal strategy.
+     * Default is RemoveLeastRecentlyUsed.
+     **/
+    RemoveStrategy removeEntryStrategy() const;
+    /**
+     * Sets the @ref removeEntryStrategy used when removing entries.
+     **/
+    void setRemoveEntryStrategy(RemoveStrategy strategy);
+
     /**
      * @return true when the cache is enabled.
      * Cache will be disabled when e.g.it's data file cannot be created or
@@ -119,7 +149,6 @@ public:
      **/
     void discard();
 
-    enum RemoveStrategy { RemoveOldest, RemoveSeldomUsed, RemoveLeastRecentlyUsed };
     /**
      * Removes some of the entries in the cache.
      * @param newsize wanted size of te cache, in bytes.
