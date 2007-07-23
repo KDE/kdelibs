@@ -1249,41 +1249,41 @@ QString KLocale::formatDate(const QDate &pDate, DateFormat format) const
 	    case '%':
 	      buffer.append(QLatin1Char('%'));
 	      break;
-	    case 'Y':
-	      buffer.append(calendar()->yearString(pDate, false));
+	    case 'Y':  //Long year numeric
+	      buffer.append(calendar()->yearString(pDate, KCalendarSystem::LongFormat));
 	      break;
-	    case 'y':
-	      buffer.append(calendar()->yearString(pDate, true));
+	    case 'y':  //Short year numeric
+	      buffer.append(calendar()->yearString(pDate, KCalendarSystem::ShortFormat));
 	      break;
-	    case 'n':
-              buffer.append(calendar()->monthString(pDate, true));
+	    case 'n':  //Short month numeric
+              buffer.append(calendar()->monthString(pDate, KCalendarSystem::ShortFormat));
 	      break;
-	    case 'e':
-              buffer.append(calendar()->dayString(pDate, true));
+	    case 'e':  //Short day numeric
+              buffer.append(calendar()->dayString(pDate, KCalendarSystem::ShortFormat));
 	      break;
-	    case 'm':
-              buffer.append(calendar()->monthString(pDate, false));
+	    case 'm':  //Long month numeric
+              buffer.append(calendar()->monthString(pDate, KCalendarSystem::LongFormat));
 	      break;
-	    case 'b':
+	    case 'b':  //Short month name
 	      if (d->nounDeclension && d->dateMonthNamePossessive)
-		buffer.append(calendar()->monthNamePossessive(month, year, true));
+		buffer.append(calendar()->monthName(month, year, KCalendarSystem::ShortNamePossessive));
 	      else
-		buffer.append(calendar()->monthName(month, year, true));
+		buffer.append(calendar()->monthName(month, year, KCalendarSystem::ShortName));
 	      break;
-	    case 'B':
+	    case 'B':  //Long month name
 	      if (d->nounDeclension && d->dateMonthNamePossessive)
-		buffer.append(calendar()->monthNamePossessive(month, year, false));
+		buffer.append(calendar()->monthName(month, year, KCalendarSystem::LongNamePossessive));
 	      else
-		buffer.append(calendar()->monthName(month, year, false));
+		buffer.append(calendar()->monthName(month, year, KCalendarSystem::LongName));
 	      break;
-	    case 'd':
-              buffer.append(calendar()->dayString(pDate, false));
+	    case 'd':  //Long day numeric
+              buffer.append(calendar()->dayString(pDate, KCalendarSystem::LongFormat));
 	      break;
-	    case 'a':
-	      buffer.append(calendar()->weekDayName(pDate, true));
+	    case 'a':  //Short weekday name
+	      buffer.append(calendar()->weekDayName(pDate, KCalendarSystem::ShortDayName));
 	      break;
-	    case 'A':
-	      buffer.append(calendar()->weekDayName(pDate, false));
+	    case 'A':  //Long weekday name
+	      buffer.append(calendar()->weekDayName(pDate, KCalendarSystem::LongDayName));
 	      break;
 	    default:
 	      buffer.append(rst.at(format_index));
@@ -1548,7 +1548,12 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
             error = true;
       j = 1;
       while (error && (j < 8)) {
-        QString s = calendar()->weekDayName(j, c == 'a').toLower();
+        QString s;
+        if ( c == 'a') {
+            s = calendar()->weekDayName(j, KCalendarSystem::ShortDayName).toLower();
+        } else {
+            s = calendar()->weekDayName(j, KCalendarSystem::LongDayName).toLower();
+        }
         int len = s.length();
         if (str.mid(strpos, len) == s)
               {
@@ -1565,7 +1570,12 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
       if (d->nounDeclension && d->dateMonthNamePossessive) {
         j = 1;
         while (error && (j < 13)) {
-          QString s = calendar()->monthNamePossessive(j, year, c == 'b').toLower();
+          QString s;
+          if ( c == 'b' ) {
+              s = calendar()->monthName(j, year, KCalendarSystem::ShortNamePossessive).toLower();
+          } else {
+              s = calendar()->monthName(j, year, KCalendarSystem::LongNamePossessive).toLower();
+          }
           int len = s.length();
           if (str.mid(strpos, len) == s) {
             month = j;
@@ -1577,7 +1587,12 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
       }
       j = 1;
       while (error && (j < 13)) {
-        QString s = calendar()->monthName(j, year, c == 'b').toLower();
+        QString s;
+        if ( c == 'b' ) {
+            s = calendar()->monthName(j, year, KCalendarSystem::ShortName).toLower();
+        } else {
+            s = calendar()->monthName(j, year, KCalendarSystem::LongName).toLower();
+        }
         int len = s.length();
         if (str.mid(strpos, len) == s) {
           month = j;

@@ -1,6 +1,7 @@
 /*
    Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
    Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2007 John Layt <john@layt.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -44,12 +45,49 @@ public:
   explicit KCalendarSystemHijri(const KLocale * locale = 0);
   virtual ~KCalendarSystemHijri();
 
+    virtual QString calendarType() const;
+
+    virtual QDate epoch() const;
+    virtual QDate earliestValidDate() const;
+    virtual QDate latestValidDate() const;
+    virtual bool isValid(int year, int month, int day) const;
+    virtual bool isValid(const QDate &date) const;
+
+    virtual bool setDate(QDate &date, int year, int month, int day) const;
+
+    virtual bool isLeapYear(int year) const;
+    virtual bool isLeapYear(const QDate &date) const;
+
+    virtual int weeksInYear(const QDate &date) const;
+    virtual int daysInWeek (const QDate &date) const;
+
+    virtual int weekStartDay() const;
+
+    virtual QString formatDate(const QDate &date, KLocale::DateFormat format = KLocale::LongDate) const;
+    virtual QDate readDate(const QString &str, bool* ok = 0) const;
+    virtual QDate readDate( const QString &intstr, const QString &fmt, bool* ok = 0) const;
+    virtual QDate readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0) const;
+
+    virtual bool isProleptic() const;
+
   virtual int year (const QDate & date) const;
+    virtual QString yearString( const QDate & pDate, StringFormat format = LongFormat ) const;
+  virtual int yearStringToInteger(const QString & sNum, int & iLength) const;
+
   virtual int month (const QDate & date) const;
+    virtual QString monthString( const QDate & pDate, StringFormat format = LongFormat ) const;
+  virtual int monthStringToInteger(const QString & sNum, int & iLength) const;
+
   virtual int day (const QDate & date) const;
+    virtual QString dayString( const QDate & pDate, StringFormat format = LongFormat ) const;
+  virtual int dayStringToInteger(const QString & sNum, int & iLength) const;
+
   virtual int dayOfWeek (const QDate & date) const;
   virtual int dayOfYear (const QDate & date) const;
 
+  /**
+   * @deprecated
+   */
   virtual bool setYMD(QDate & date, int y, int m, int d) const;
 
   virtual QDate addYears(const QDate & date, int nyears) const;
@@ -62,33 +100,22 @@ public:
   virtual int weeksInYear(int year) const;
   virtual int weekNumber(const QDate& date, int * yearNum = 0) const;
 
-  virtual QString monthName (int month, int year, bool shortName = false) const;
-  virtual QString monthName (const QDate & date, bool shortName = false ) const;
-  virtual QString monthNamePossessive(int month, int year, bool shortName = false) const;
-  virtual QString monthNamePossessive(const QDate & date, bool shortName = false ) const;
-  virtual QString weekDayName (int weekDay, bool shortName = false) const;
-  virtual QString weekDayName (const QDate & date, bool shortName = false) const;
+    virtual QString monthName( int month, int year, MonthNameFormat format = LongName ) const;
+    virtual QString monthName( const QDate & date, MonthNameFormat format = LongName ) const;
+    virtual QString weekDayName( int weekDay, WeekDayNameFormat format = LongDayName ) const;
+    virtual QString weekDayName( const QDate & date, WeekDayNameFormat format = LongDayName ) const;
 
-  virtual int minValidYear () const;
-  virtual int maxValidYear () const;
   virtual int weekDayOfPray () const;
-
-  virtual QString calendarName() const;
 
   virtual bool isLunar() const;
   virtual bool isLunisolar() const;
   virtual bool isSolar() const;
 
-  private:
-  /**
-   * Gets the number of days in a month for a given date
-   *
-   * @param month month number
-   * @param year given rear
-   * @return number of days in month
-   */
-  int hndays(int month, int year) const;
+protected:
+    virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const;
+    virtual bool dateToJulianDay(int year, int month, int day, int &jd) const;
 
+private:
   KCalendarSystemHijriPrivate * const d;
 };
 

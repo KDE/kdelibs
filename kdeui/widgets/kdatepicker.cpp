@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
     Copyright (C) 1997 Tim D. Gilman (tdgilman@best.org)
               (C) 1998-2001 Mirko Boehm (mirko@kde.org)
+              (C) 2007 John Layt <john@layt.net>
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -276,14 +277,14 @@ KDatePicker::dateChangedSlot(const QDate &date)
     const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
     d->line->setText(KGlobal::locale()->formatDate(date, KLocale::ShortDate));
-    d->selectMonth->setText(calendar->monthName(date, false));
+    d->selectMonth->setText(calendar->monthName(date, KCalendarSystem::LongName));
     fillWeeksCombo(date);
 
     // calculate the item num in the week combo box; normalize selected day so as if 1.1. is the first day of the week
     QDate firstDay;
     calendar->setYMD(firstDay, calendar->year(date), 1, 1);
     d->selectWeek->setCurrentIndex((calendar->dayOfYear(date) + calendar->dayOfWeek(firstDay) - 2) / 7/*calendar->daysInWeek()*/);
-    d->selectYear->setText(calendar->yearString(date, false));
+    d->selectYear->setText(calendar->yearString(date, KCalendarSystem::LongFormat));
 
     emit(dateChanged(date));
 }
@@ -315,6 +316,21 @@ KDatePicker::setDate(const QDate& date)
         kDebug(298) << "KDatePicker::setDate: refusing to set invalid date." << endl;
         return false;
     }
+}
+
+const KCalendarSystem *KDatePicker::calendar() const
+{
+    return  d->table->calendar();
+}
+
+bool KDatePicker::setCalendar( KCalendarSystem *calendar )
+{
+    return  d->table->setCalendar( calendar );
+}
+
+bool KDatePicker::setCalendar( const QString &calendarType )
+{
+    return  d->table->setCalendar( calendarType );
 }
 
 void
@@ -519,7 +535,7 @@ KDatePicker::setFontSize(int s)
   for (int i = 1; ; ++i)
     {
       QString str = KGlobal::locale()->calendar()->monthName(i,
-         KGlobal::locale()->calendar()->year(d->table->date()), false);
+         KGlobal::locale()->calendar()->year(d->table->date()), KCalendarSystem::LongName);
       if (str.isNull()) break;
       r=metrics.boundingRect(str);
       d->maxMonthRect.setWidth(qMax(r.width(), d->maxMonthRect.width()));

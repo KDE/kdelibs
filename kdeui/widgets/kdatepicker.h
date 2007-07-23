@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
     Copyright (C) 1997 Tim D. Gilman (tdgilman@best.org)
               (C) 1998-2001 Mirko Boehm (mirko@kde.org)
+              (C) 2007 John Layt <john@layt.net>
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -27,6 +28,7 @@
 
 class QLineEdit;
 class KDateTable;
+class KCalendarSystem;
 
 /**
  * @short A date selection widget.
@@ -51,6 +53,7 @@ class KDEUI_EXPORT KDatePicker: public QFrame
 {
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate USER true )
+//FIXME    Q_PROPERTY( KCalendarSystem calendar READ calendar WRITE setCalendar USER true )
   Q_PROPERTY( bool closeButton READ hasCloseButton WRITE setCloseButton )
   Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
 
@@ -90,6 +93,31 @@ public:
    * @returns the selected date.
    */
   const QDate &date() const;
+
+    /**
+     * Returns the currently selected calendar system.
+     * 
+     * @return a KCalendarSystem object
+     */
+    const KCalendarSystem *calendar() const;
+
+    /**
+     * Changes the calendar system to use.  Can use its own local locale if set.
+     * 
+     * @param calendar the calendar system object to use, defaults to global
+     * 
+     * @return @c true if the calendar system was successfully set, @c false otherwise
+     */
+    bool setCalendar( KCalendarSystem *calendar = 0 );
+
+    /**
+     * Changes the calendar system to use.  Will always use global locale.
+     * 
+     * @param calendarType the calendar system type to use
+     * 
+     * @return @c true if the calendar system was successfully set, @c false otherwise
+     */
+    bool setCalendar( const QString &calendarType );
 
   /**
    * Enables or disables the widget.

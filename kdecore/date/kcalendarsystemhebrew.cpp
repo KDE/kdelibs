@@ -1,5 +1,6 @@
 /*
    Copyright (c) 2003 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2007 John Layt <john@layt.net>
        Calendar conversion routines based on Hdate v6, by Amos
        Shapir 1978 (rev. 1985, 1992)
 
@@ -261,15 +262,224 @@ static bool is_leap_year(int year)
   return ((((7 * year) + 1) % 19) < 7);
 }
 
+class KCalendarSystemHebrewPrivate
+{
+public:
+    int characterOfYear( int year ) const;
+    int julianDayOfTishri1( int year ) const;
+    int yearOfJulianDay( int jd ) const;
+    int daysPreceedingMonth( int character, int month ) const;
+
+    /**
+     * Gets the number of days in a month for a given date
+     *
+     * @param year given year
+     * @param mon month number
+     * @return number of days in month
+     */
+    int hndays(int year, int mon) const;
+};
+
+int KCalendarSystemHebrewPrivate::daysPreceedingMonth( int character, int month ) const
+{
+    // FIXME move to Private class header as static when figure out how to do it without compiler errors :-)
+    int daysPreceedingMonthTable[6][13] =
+        {
+            {0, 30, 59, 88, 117, 147, 176, 206, 235, 265, 294, 324, },
+            {0, 30, 59, 89, 118, 148, 177, 207, 236, 266, 295, 325, },
+            {0, 30, 60, 90, 119, 149, 178, 208, 237, 267, 296, 326, },
+            {0, 30, 59, 88, 117, 147, 177, 206, 236, 265, 295, 324, 354},
+            {0, 30, 59, 89, 118, 148, 178, 207, 237, 266, 296, 325, 355},
+            {0, 30, 60, 90, 119, 149, 179, 209, 238, 267, 297, 326, 356},
+        };
+
+    if ( character >= 1 && character <= 6  && month >= 1 & month <=13 ) {
+        return daysPreceedingMonthTable[character-1][month-1];
+    }
+    return -911;
+}
+
+int KCalendarSystemHebrewPrivate::characterOfYear( int year ) const
+{
+    int jdTishri1ThisYear = julianDayOfTishri1( year );
+    int jdTishri1NextYear = julianDayOfTishri1( year + 1 );
+    int K = jdTishri1NextYear - jdTishri1ThisYear - 352
+            - 27 * ( ( 7 * year + 13 ) % 19 ) / 12;
+    return K;
+}
+
+// Hatcher formula G
+int KCalendarSystemHebrewPrivate::julianDayOfTishri1( int year ) const
+{
+    // if calc of t overflows, have alternative formula for step
+    long t = 31524 + 765433 * ( ( 235 * year - 234 ) / 19 );
+    int d = t / 25920;
+    int t1 = t % 25920;
+    int w = 1 + ( d % 7 );
+    int E = ( ( 7 * year + 13 ) % 19 ) / 12;
+    int E1 = ( ( 7 * year + 6 ) % 19 ) / 12;
+    if (  t1 >= 19940 ||
+        ( t1 >= 9924 && w == 3 && E == 0 ) ||
+        ( t1 >= 16788 && w == 2 && E == 0 && E1 == 1 ) ) {
+        d = d + 1;
+    }
+    int jd = d + ( ( ( d + 5 ) % 7 ) % 2 ) + 347997;
+    return jd;
+}
+
+// Hatcher formula H
+int KCalendarSystemHebrewPrivate::yearOfJulianDay( int jd ) const
+{
+    long M = ( 25920 * ( jd - 347996 ) ) / 765433 + 1;
+    int year = 19 * ( M / 235 ) + ( 19 * ( M % 2356 ) - 2 ) / 235 + 1;
+    if ( julianDayOfTishri1( year ) > jd ) {
+        year = year - 1;
+    }
+    return year;
+}
+
 // Ok
 KCalendarSystemHebrew::KCalendarSystemHebrew(const KLocale * locale)
-  : KCalendarSystem(locale), d(0)
+  : KCalendarSystem(locale), d(new KCalendarSystemHebrewPrivate)
 {
 }
 
 // Ok
 KCalendarSystemHebrew::~KCalendarSystemHebrew()
 {
+}
+
+QString KCalendarSystemHebrew::calendarType() const
+{
+  return QLatin1String("hebrew");
+}
+
+QDate KCalendarSystemHebrew::epoch() const
+{
+    return QDate::fromJulianDay( 347998 );
+}
+
+QDate KCalendarSystemHebrew::earliestValidDate() const
+{
+    return KCalendarSystem::earliestValidDate();
+}
+
+QDate KCalendarSystemHebrew::latestValidDate() const
+{
+    // Set to last day of year 9999 until confirm date formats & widets support > 9999
+    // Last day of Hebrew year 9999 is 9999-12-29
+    // Which in Gregorian is 6239-09-25
+    // Which is jd xxxx FIXME Find out jd and use that instead
+    // Can't call setDate( 9999, 12, 29 ) as it creates circular reference!
+    return QDate( 6239, 9, 25 );
+}
+
+bool KCalendarSystemHebrew::isValid(int y, int month, int day) const
+{
+    // taken from setYMD below, adapted to use new methods
+    if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) ) {
+      return false;
+    }
+    if ( month < 1 || month > ( isLeapYear( y ) ? 13 : 12 ) ) {
+      return false;
+    }
+    if ( day < 1 || day > d->hndays( month, y ) ) {
+      return false;
+    }
+    return true;
+}
+
+bool KCalendarSystemHebrew::isValid(const QDate &date) const
+{
+    return KCalendarSystem::isValid(date);
+}
+
+bool KCalendarSystemHebrew::setDate(QDate &date, int year, int month, int day) const
+{
+    return KCalendarSystem::setDate(date, year, month, day);
+}
+
+bool KCalendarSystemHebrew::isLeapYear(int year) const
+{
+    // from is_leap_year above
+    return ( ( ( ( 7 * year ) + 1 ) % 19 ) < 7 );
+}
+
+bool KCalendarSystemHebrew::isLeapYear(const QDate &date) const
+{
+  return QDate::isLeapYear( year( date ) );
+}
+
+int KCalendarSystemHebrew::daysInWeek(const QDate &date) const
+{
+    return KCalendarSystem::daysInWeek(date);
+}
+
+int KCalendarSystemHebrew::weekStartDay() const
+{
+    return KCalendarSystem::weekStartDay();
+}
+
+QString KCalendarSystemHebrew::formatDate(const QDate &date, KLocale::DateFormat format) const
+{
+    return KCalendarSystem::formatDate( date, format );
+}
+
+QDate KCalendarSystemHebrew::readDate(const QString &str, bool* ok) const
+{
+    return KCalendarSystem::readDate( str, ok );
+}
+
+QDate KCalendarSystemHebrew::readDate( const QString &intstr, const QString &fmt, bool* ok) const
+{
+    return KCalendarSystem::readDate( intstr, fmt, ok );
+}
+
+QDate KCalendarSystemHebrew::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
+{
+    return KCalendarSystem::readDate( str, flags, ok );
+}
+
+bool KCalendarSystemHebrew::isProleptic() const
+{
+  return false;
+}
+
+bool KCalendarSystemHebrew::julianDayToDate(int jd, int &year, int &month, int &day) const
+{
+    if ( jd >= earliestValidDate().toJulianDay() && jd <= latestValidDate().toJulianDay() ) {
+        // Hatcher formula I.  Fix me!
+        year = d->yearOfJulianDay(jd);
+        int jdTishri1ThisYear = d->julianDayOfTishri1( year );
+        int dayInYear = jd - jdTishri1ThisYear + 1;
+        int K = d->characterOfYear( year );
+        int n = dayInYear / 30;
+        if ( dayInYear > d->daysPreceedingMonth( K, n + 1 ) ) {
+            month = n + 1;
+        } else {
+            if ( dayInYear > d->daysPreceedingMonth( K, n + 1 ) ) {
+                month = n;
+            } else {
+               month = n - 1;
+            }
+        }
+        day = dayInYear - d->daysPreceedingMonth( K, month );
+        return true;
+    }
+    return false;
+}
+
+bool KCalendarSystemHebrew::dateToJulianDay(int year, int month, int day, int &jd) const
+{
+    // From Hatcher formula J.  Fix me!
+    if ( isValid( year, month, day ) ) {
+        int jdTishri1ThisYear = d->julianDayOfTishri1( year );
+        jd = jdTishri1ThisYear
+             + d->daysPreceedingMonth( d->characterOfYear( year ), month )
+             + day - 1;
+        return true;
+    }
+    return false;
 }
 
 // Ok
@@ -298,13 +508,18 @@ int KCalendarSystemHebrew::monthsInYear( const QDate & date ) const
     return 12;
 }
 
+int KCalendarSystemHebrew::weeksInYear(const QDate &date) const
+{
+    return KCalendarSystem::weeksInYear(date);
+}
+
 // Ok
 int KCalendarSystemHebrew::weeksInYear(int year) const
 {
   QDate temp;
   setYMD(temp, year, 1, 1);  // don't pass an uninitialized QDate to
                              // monthsInYear in the next call
-  setYMD(temp, year, monthsInYear(temp), hndays(monthsInYear(temp), year) );
+  setYMD(temp, year, monthsInYear(temp), d->hndays(monthsInYear(temp), year) );
 
   int nWeekNumber = weekNumber(temp);
   if(nWeekNumber == 1)  // last week belongs to next year
@@ -364,112 +579,159 @@ int KCalendarSystemHebrew::weekNumber(const QDate& date, int * yearNum) const
   return week;
 }
 
-// Ok
-QString KCalendarSystemHebrew::monthName(const QDate& date,
-                                        bool shortName) const
+// Deprecated
+bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int day) const
 {
-  return monthName(month(date), year(date), shortName);
-}
-
-// Ok
-QString KCalendarSystemHebrew::monthNamePossessive(const QDate& date,
-                                                  bool shortName) const
-{
-  return monthNamePossessive(month(date), year(date), shortName);
-}
-
-// ### Fixme
-QString KCalendarSystemHebrew::monthName(int month, int year, bool /*shortName*/) const
-{
-  if ( month < 1 )
-    return QString();
-  if ( is_leap_year(year) )
-  {
-    if ( month > 13 )
-      return QString();
-  }
-  else if ( month > 12 )
-      return QString();
-
-  // We must map conversion algorithm month index to real index
-  if( month == 6 && is_leap_year(year) )
-    month = 13; /*Adar I*/
-  else if ( month == 7 && is_leap_year(year) )
-    month = 14; /*Adar II*/
-  else if ( month > 7 && is_leap_year(year) )
-    month--; //Because of Adar II
-
-  switch(month)
-  {
-  case 1:
-    return ki18n("Tishrey").toString(locale());
-  case 2:
-    return ki18n("Heshvan").toString(locale());
-  case 3:
-    return ki18n("Kislev").toString(locale());
-  case 4:
-    return ki18n("Tevet").toString(locale());
-  case 5:
-    return ki18n("Shvat").toString(locale());
-  case 6:
-    return ki18n("Adar").toString(locale());
-  case 7:
-    return ki18n("Nisan").toString(locale());
-  case 8:
-    return ki18n("Iyar").toString(locale());
-  case 9:
-    return ki18n("Sivan").toString(locale());
-  case 10:
-    return ki18n("Tamuz").toString(locale());
-  case 11:
-    return ki18n("Av").toString(locale());
-  case 12:
-    return ki18n("Elul").toString(locale());
-  case 13:
-    return ki18n("Adar I").toString(locale());
-  case 14:
-    return ki18n("Adar II").toString(locale());
-  default:
-    break;
-  }
-
-  return QString();
-}
-
-// ### Fixme
-QString KCalendarSystemHebrew::monthNamePossessive(int month, int year,
-                                                  bool shortName) const
-{
-  return "of " + monthName(month, year, shortName);
-}
-
-bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
-{
-  if( y < minValidYear() || y > maxValidYear() )
+  // range checks
+  // Removed deleted minValidYear and maxValidYear methods
+  // Still use minimum of 1753 for now due to QDate using Julian calendar before then
+  // Later change to following once new methods validated
+  // if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) )
+  if ( y < year( QDate(1753, 1, 1) ) || y > 9999 )
     return false;
   if( m < 1 || m > (is_leap_year(y) ? 13 : 12) )
     return false;
-  if( d < 1 || d > hndays(m,y) )
+  if( day < 1 || day > d->hndays(m,y) )
     return false;
 
-  class h_date * gd = hebrewToGregorian( y, m, d );
+  class h_date * gd = hebrewToGregorian( y, m, day );
 
   return date.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 }
 
-QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
+QString KCalendarSystemHebrew::monthName( const QDate& date, MonthNameFormat format ) const
 {
-  return KCalendarSystem::weekDayName(day, shortName);
+  return monthName( month(date), year(date), format );
 }
 
-// Ok
-QString KCalendarSystemHebrew::weekDayName(const QDate& date,
-                                          bool shortName) const
+// ### Fixme
+// JPL Fix what?
+// Ask translators for short fomats of month names!
+QString KCalendarSystemHebrew::monthName( int month, int year, MonthNameFormat format ) const
 {
-  return weekDayName(dayOfWeek(date), shortName);
+    if ( month < 1 ) {
+        return QString();
+    }
+
+    if ( is_leap_year( year ) && month > 13 ) {
+        return QString();
+    } else if ( month > 12 ) {
+            return QString(); 
+    }
+
+    // We must map conversion algorithm month index to real index
+    if( month == 6 && is_leap_year( year ) ) {
+        month = 13; /*Adar I*/
+    } else if ( month == 7 && is_leap_year( year ) ) {
+        month = 14; /*Adar II*/
+    } else if ( month > 7 && is_leap_year( year ) ) {
+        month--; //Because of Adar II
+    }
+
+    if ( format == ShortNamePossessive || format == LongNamePossessive ) {
+        switch( month ) {
+        case 1:
+            return ki18n("of Tishrey").toString(locale());
+        case 2:
+            return ki18n("of Heshvan").toString(locale());
+        case 3:
+            return ki18n("of Kislev").toString(locale());
+        case 4:
+            return ki18n("of Tevet").toString(locale());
+        case 5:
+            return ki18n("of Shvat").toString(locale());
+        case 6:
+            return ki18n("of Adar").toString(locale());
+        case 7:
+            return ki18n("of Nisan").toString(locale());
+        case 8:
+            return ki18n("of Iyar").toString(locale());
+        case 9:
+            return ki18n("of Sivan").toString(locale());
+        case 10:
+            return ki18n("of Tamuz").toString(locale());
+        case 11:
+            return ki18n("of Av").toString(locale());
+        case 12:
+            return ki18n("of Elul").toString(locale());
+        case 13:
+            return ki18n("of Adar I").toString(locale());
+        case 14:
+            return ki18n("of Adar II").toString(locale());
+        default:
+            return QString();
+        }
+    }
+
+    switch( month ) {
+    case 1:
+        return ki18n("Tishrey").toString(locale());
+    case 2:
+        return ki18n("Heshvan").toString(locale());
+    case 3:
+        return ki18n("Kislev").toString(locale());
+    case 4:
+        return ki18n("Tevet").toString(locale());
+    case 5:
+        return ki18n("Shvat").toString(locale());
+    case 6:
+        return ki18n("Adar").toString(locale());
+    case 7:
+        return ki18n("Nisan").toString(locale());
+    case 8:
+        return ki18n("Iyar").toString(locale());
+    case 9:
+        return ki18n("Sivan").toString(locale());
+    case 10:
+        return ki18n("Tamuz").toString(locale());
+    case 11:
+        return ki18n("Av").toString(locale());
+    case 12:
+        return ki18n("Elul").toString(locale());
+    case 13:
+        return ki18n("Adar I").toString(locale());
+    case 14:
+        return ki18n("Adar II").toString(locale());
+    default:
+        return QString();
+    }
 }
 
-// Ok
+QString KCalendarSystemHebrew::weekDayName( int weekDay, WeekDayNameFormat format ) const
+{
+    // Use Western day names for now as that's what the old version did,
+    // but wouldn't it be better to use the right Hebrew names like Shabbat?
+    // Could make it switchable by adding new enums to WeekDayFormat, e.g. ShortNameWestern?
+    if ( format == ShortDayName ) {
+        switch ( weekDay ) {
+        case 1:  return ki18nc("Monday", "Mon").toString( locale() );
+        case 2:  return ki18nc("Tuesday", "Tue").toString( locale() );
+        case 3:  return ki18nc("Wednesday", "Wed").toString( locale() );
+        case 4:  return ki18nc("Thursday", "Thu").toString( locale() );
+        case 5:  return ki18nc("Friday", "Fri").toString( locale() );
+        case 6:  return ki18nc("Saturday", "Sat").toString( locale() );
+        case 7:  return ki18nc("Sunday", "Sun").toString( locale() );
+        default: return QString();
+        }
+    }
+
+    switch ( weekDay ) {
+    case 1:  return ki18n("Monday").toString( locale() );
+    case 2:  return ki18n("Tuesday").toString( locale() );
+    case 3:  return ki18n("Wednesday").toString( locale() );
+    case 4:  return ki18n("Thursday").toString( locale() );
+    case 5:  return ki18n("Friday").toString( locale() );
+    case 6:  return ki18n("Saturday").toString( locale() );
+    case 7:  return ki18n("Sunday").toString( locale() );
+    default: return QString();
+    }
+}
+
+QString KCalendarSystemHebrew::weekDayName( const QDate& date, WeekDayNameFormat format ) const
+{
+    return weekDayName( dayOfWeek( date ), format );
+}
+
 int KCalendarSystemHebrew::dayOfWeek(const QDate& date) const
 {
   class h_date *sd = toHebrew(date);
@@ -490,10 +752,10 @@ int KCalendarSystemHebrew::dayOfYear(const QDate & date) const
 
 int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
 {
-  return hndays(month(date), year(date));
+  return d->hndays(month(date), year(date));
 }
 
-int KCalendarSystemHebrew::hndays(int mon, int year) const
+int KCalendarSystemHebrewPrivate::hndays(int mon, int year) const
 {
   if ( mon == 6 && is_leap_year(year) )
     mon = 13; /*Adar I*/
@@ -511,24 +773,6 @@ int KCalendarSystemHebrew::hndays(int mon, int year) const
     return 29;
   else
     return 30;
-}
-
-// Ok
-// Min valid year that may be converted to QDate
-int KCalendarSystemHebrew::minValidYear() const
-{
-  QDate date(1753, 1, 1);
-
-  return year(date);
-}
-
-// Ok
-// Max valid year that may be converted to QDate
-int KCalendarSystemHebrew::maxValidYear() const
-{
-  QDate date(8000, 1, 1);
-
-  return year(date);
 }
 
 // Ok
@@ -556,6 +800,16 @@ int KCalendarSystemHebrew::month(const QDate& date) const
   }
 
   return month;
+}
+
+QString KCalendarSystemHebrew::monthString( const QDate &pDate, StringFormat format ) const
+{
+    return KCalendarSystem::monthString( pDate, format );
+}
+
+int KCalendarSystemHebrew::monthStringToInteger(const QString & sNum, int & iLength) const
+{
+  return KCalendarSystem::monthStringToInteger(sNum, iLength);
 }
 
 // Ok
@@ -615,12 +869,6 @@ QDate KCalendarSystemHebrew::addYears( const QDate & date, int nyears ) const
 }
 
 // Ok
-QString KCalendarSystemHebrew::calendarName() const
-{
-  return QLatin1String("hebrew");
-}
-
-// Ok
 bool KCalendarSystemHebrew::isLunar() const
 {
   return false;
@@ -638,30 +886,34 @@ bool KCalendarSystemHebrew::isSolar() const
   return false;
 }
 
-QString KCalendarSystemHebrew::dayString(const QDate & pDate, bool bShort) const
+QString KCalendarSystemHebrew::dayString( const QDate &pDate, StringFormat format ) const
 {
-  QString sResult;
+    QString sResult;
 
-  // Only use hebrew numbers if the hebrew setting is selected
-  if (locale()->language() == QLatin1String("he"))
-    sResult = num2heb(day(pDate), false);
-  else
-    sResult = KCalendarSystem::dayString(pDate, bShort);
+    // Only use hebrew numbers if the hebrew setting is selected
+    if ( locale()->language() == QLatin1String("he") ) {
+        sResult = num2heb( day( pDate ), false );
+    } else {
+        sResult = KCalendarSystem::dayString( pDate, format );
+    }
 
-  return sResult;
+    return sResult;
 }
 
-QString KCalendarSystemHebrew::yearString(const QDate & pDate, bool bShort) const
+QString KCalendarSystemHebrew::yearString( const QDate &pDate, StringFormat format ) const
 {
-  QString sResult;
+    QString sResult;
 
-  // Only use hebrew numbers if the hebrew setting is selected
-  if (locale()->language() == QLatin1String("he"))
-    sResult = num2heb(year(pDate), !bShort);
-  else
-    sResult = KCalendarSystem::yearString(pDate, bShort);
+    // Only use hebrew numbers if the hebrew setting is selected
+    if ( locale()->language() == QLatin1String("he") ) {
+        if ( format == ShortFormat ) {
+            sResult = num2heb( year( pDate ), false );
+        }
+    } else {
+        sResult = KCalendarSystem::yearString( pDate, format );
+    }
 
-  return sResult;
+    return sResult;
 }
 
 static int heb2num(const QString& str, int & iLength) {

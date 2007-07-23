@@ -2,6 +2,7 @@
     This file is part of the KDE libraries
     Copyright (C) 1997 Tim D. Gilman (tdgilman@best.org)
               (C) 1998-2001 Mirko Boehm (mirko@kde.org)
+              (C) 2007 John Layt <john@layt.net>
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -68,6 +69,7 @@ public:
    {
       popupMenuEnabled=false;
       useCustomColors=false;
+        m_calendar = 0;
    }
 
    ~KDateTablePrivate()
@@ -118,6 +120,8 @@ public:
      BackgroundMode bgMode;
    };
    QHash <QString,DatePaintingMode*> customPaintingModes;
+
+    KCalendarSystem *m_calendar;
 
 };
 
@@ -316,7 +320,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       int daynum = ( col+firstWeekDay < 8 ) ? col+firstWeekDay :
                                               col+firstWeekDay-7;
       if ( daynum == calendar->weekDayOfPray() ||
-         ( daynum == 6 && calendar->calendarName() == "gregorian" ) )
+         ( daynum == 6 && calendar->calendarType() == "gregorian" ) )
           normalday=false;
 
       QBrush brushInvertTitle(palette().base());
@@ -336,7 +340,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           painter->setPen(textColor);
         }
       painter->drawText(QRectF(0, 0, w, h), Qt::AlignCenter,
-                        calendar->weekDayName(daynum, true), &rect);
+                        calendar->weekDayName(daynum, KCalendarSystem::ShortDayName), &rect);
       painter->setPen(palette().color(QPalette::Text));
       painter->drawLine(QPointF(0, h), QPointF(w, h));
       // ----- draw the weekday:
@@ -347,7 +351,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 
       QDate pCellDate = dateFromPos( pos );
       // First day of month
-      text = calendar->dayString(pCellDate, true);
+      text = calendar->dayString(pCellDate, KCalendarSystem::ShortFormat);
       if( calendar->month(pCellDate) != calendar->month(d->mDate) )
         { // we are either
           // ° painting a day of the previous month or
@@ -511,7 +515,7 @@ KDateTable::setFontSize(int size)
   for(count=0; count<7; ++count)
     {
       rect=metrics.boundingRect(KGlobal::locale()->calendar()
-                                ->weekDayName(count+1, true));
+                                ->weekDayName(count+1, KCalendarSystem::ShortDayName));
       d->maxCell.setWidth(qMax(d->maxCell.width(), rect.width()));
       d->maxCell.setHeight(qMax(d->maxCell.height(), rect.height()));
     }
@@ -623,6 +627,27 @@ const QDate&
 KDateTable::date() const
 {
   return d->mDate;
+}
+
+const KCalendarSystem *KDateTable::calendar() const
+{
+    if ( d->m_calendar ) {
+        return d->m_calendar;
+    }
+
+    return  KGlobal::locale()->calendar();
+}
+
+bool KDateTable::setCalendar( KCalendarSystem *calendar )
+{
+    d->m_calendar = calendar;
+    return true;
+}
+
+bool KDateTable::setCalendar( const QString &calendarType )
+{
+    d->m_calendar = KCalendarSystem::create( calendarType );
+    return d->m_calendar;
 }
 
 // what are those repaintContents() good for? (pfeiffer)

@@ -3312,38 +3312,50 @@ void KDateTimeTest::strings_format()
     KDateTime dt(QDate(1999,2,3), QTime(6,5,0), KDateTime::LocalZone);
     QString s = dt.toString(all);
     QCOMPARE(s, QString::fromLatin1("1999.99.02.2.%1.%2.03.3.%3.%4-06.6.06.6.05.00?000?am.AM.-08.-0800.PST.America/Los_Angeles.Wednesday.Wed.February.Feb/.-08:00.%.")
-                                   .arg(calendar->monthName(2,1999,false)).arg(calendar->monthName(2,1999,true))
-                                   .arg(calendar->weekDayName(3,false)).arg(calendar->weekDayName(3,true)));
+                                   .arg(calendar->monthName(2,1999,KCalendarSystem::LongName))
+                                   .arg(calendar->monthName(2,1999,KCalendarSystem::ShortName))
+                                   .arg(calendar->weekDayName(3,KCalendarSystem::LongDayName))
+                                   .arg(calendar->weekDayName(3,KCalendarSystem::ShortDayName)));
 
     KDateTime dtzone(QDate(1970,4,30), QTime(12,45,16,25), london);
     s = dtzone.toString(all);
     QCOMPARE(s, QString::fromLatin1("1970.70.04.4.%1.%2.30.30.%3.%4-12.12.12.12.45.16?025?pm.PM.+01.+0100.BST.Europe/London.Thursday.Thu.April.Apr/:16.+01:00.%.")
-                                   .arg(calendar->monthName(4,2000,false)).arg(calendar->monthName(4,2000,true))
-                                   .arg(calendar->weekDayName(4,false)).arg(calendar->weekDayName(4,true)));
+                                   .arg(calendar->monthName(4,2000,KCalendarSystem::LongName))
+                                   .arg(calendar->monthName(4,2000,KCalendarSystem::ShortName))
+                                   .arg(calendar->weekDayName(4,KCalendarSystem::LongDayName))
+                                   .arg(calendar->weekDayName(4,KCalendarSystem::ShortDayName)));
 
     KDateTime dtclock(QDate(2005,9,5), QTime(0,0,06,1), KDateTime::ClockTime);
     s = dtclock.toString(all);
     QCOMPARE(s, QString::fromLatin1("2005.05.09.9.%1.%2.05.5.%3.%4-00.0.12.12.00.06?001?am.AM.....Monday.Mon.September.Sep/:06..%.")
-                                   .arg(calendar->monthName(9,2000,false)).arg(calendar->monthName(9,2000,true))
-                                   .arg(calendar->weekDayName(1,false)).arg(calendar->weekDayName(1,true)));
+                                   .arg(calendar->monthName(9,2000,KCalendarSystem::LongName))
+                                   .arg(calendar->monthName(9,2000,KCalendarSystem::ShortName))
+                                   .arg(calendar->weekDayName(1,KCalendarSystem::LongDayName))
+                                   .arg(calendar->weekDayName(1,KCalendarSystem::ShortDayName)));
 
     KDateTime dtutc(QDate(2000,12,31), QTime(13,45,16,100), KDateTime::UTC);
     s = dtutc.toString(all);
     QCOMPARE(s, QString::fromLatin1("2000.00.12.12.%1.%2.31.31.%3.%4-13.13.01.1.45.16?100?pm.PM.+00.+0000.UTC.UTC.Sunday.Sun.December.Dec/:16.+00:00.%.")
-                                   .arg(calendar->monthName(12,2000,false)).arg(calendar->monthName(12,2000,true))
-                                   .arg(calendar->weekDayName(7,false)).arg(calendar->weekDayName(7,true)));
+                                   .arg(calendar->monthName(12,2000,KCalendarSystem::LongName))
+                                   .arg(calendar->monthName(12,2000,KCalendarSystem::ShortName))
+                                   .arg(calendar->weekDayName(7,KCalendarSystem::LongDayName))
+                                   .arg(calendar->weekDayName(7,KCalendarSystem::ShortDayName)));
 
     // fromString() without KTimeZones parameter
     dt = KDateTime::fromString(QLatin1String("2005/9/05/20:2,03"), QLatin1String("%Y/%:m/%e/%S:%k,%M"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(2,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::ClockTime);
 
-    dt = KDateTime::fromString(QString::fromLatin1("%1pm05ab%2t/052/20:2,03+10").arg(calendar->weekDayName(1,false)).arg(calendar->monthName(9,1999,false)),
+    dt = KDateTime::fromString(QString::fromLatin1("%1pm05ab%2t/052/20:2,03+10")
+                                   .arg(calendar->weekDayName(1,KCalendarSystem::LongDayName))
+                                   .arg(calendar->monthName(9,1999,KCalendarSystem::LongName)),
                                QLatin1String("%a%p%yab%Bt/%e2/%S:%I,%M %z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::OffsetFromUTC);
     QCOMPARE(dt.utcOffset(), 10*3600);
-    dt = KDateTime::fromString(QString::fromLatin1("%1pm05ab%2t/052/20:2,03+10").arg(calendar->weekDayName(1,true)).arg(calendar->monthName(9,1999,true)),
+    dt = KDateTime::fromString(QString::fromLatin1("%1pm05ab%2t/052/20:2,03+10")
+                                   .arg(calendar->weekDayName(1,KCalendarSystem::ShortDayName))
+                                   .arg(calendar->monthName(9,1999,KCalendarSystem::ShortName)),
                                QLatin1String("%a%p%yab%Bt/%e2/%S:%I,%M %z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::OffsetFromUTC);

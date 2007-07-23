@@ -1,6 +1,7 @@
 /*
    Copyright (c) 2002-2003 Carlos Moro <cfmoro@correo.uniovi.es>
    Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2007 John Layt <john@layt.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -187,11 +188,157 @@ KCalendarSystemHijri::~KCalendarSystemHijri()
 {
 }
 
+QString KCalendarSystemHijri::calendarType() const
+{
+  return QLatin1String("hijri");
+}
+
+QDate KCalendarSystemHijri::epoch() const
+{
+    // 16 July 622 in the Julian calendar
+    return QDate::fromJulianDay( 1948440 );
+}
+
+QDate KCalendarSystemHijri::earliestValidDate() const
+{
+    return KCalendarSystem::earliestValidDate();
+}
+
+QDate KCalendarSystemHijri::latestValidDate() const
+{
+    // Set to last day of year 9999 until confirm date formats & widets support > 9999
+    // Last day of Hijri year 9999 is 9999-12-29
+    // Which in Gregorian is 10323-10-21
+    // Which is jd xxxx FIXME Find out jd and use that instead
+    // Can't call setDate( 9999, 12, 29 ) as it creates circular reference!
+    return QDate( 10323, 10, 21 );
+}
+
+bool KCalendarSystemHijri::isValid(int y, int month, int day) const
+{
+    // taken from setYMD below, adapted to use new methods
+    if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) ) {
+      return false;
+    }
+    if ( month < 1 || month > 12 ) {  // FIXME use monthsInYear
+      return false;
+    }
+    if ( day < 1 || day > lastDayOfIslamicMonth( month, y ) ) {
+      return false;
+    }
+    return true;
+}
+
+bool KCalendarSystemHijri::isValid(const QDate &date) const
+{
+    return KCalendarSystem::isValid(date);
+}
+
+bool KCalendarSystemHijri::setDate(QDate &date, int year, int month, int day) const
+{
+    return KCalendarSystem::setDate(date, year, month, day);
+}
+
+bool KCalendarSystemHijri::isLeapYear(int year) const
+{
+    // Taken from IslamicLeapYear above
+    if ( ( ( ( 11 * year ) + 14 ) % 30 ) < 11 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool KCalendarSystemHijri::isLeapYear(const QDate &date) const
+{
+  return QDate::isLeapYear( year( date ) );
+}
+
+int KCalendarSystemHijri::daysInWeek(const QDate &date) const
+{
+    return KCalendarSystem::daysInWeek(date);
+}
+
+int KCalendarSystemHijri::weekStartDay() const
+{
+    return KCalendarSystem::weekStartDay();
+}
+
+QString KCalendarSystemHijri::formatDate(const QDate &date, KLocale::DateFormat format) const
+{
+    return KCalendarSystem::formatDate( date, format );
+}
+
+QDate KCalendarSystemHijri::readDate(const QString &str, bool* ok) const
+{
+    return KCalendarSystem::readDate( str, ok );
+}
+
+QDate KCalendarSystemHijri::readDate( const QString &intstr, const QString &fmt, bool* ok) const
+{
+    return KCalendarSystem::readDate( intstr, fmt, ok );
+}
+
+QDate KCalendarSystemHijri::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
+{
+    return KCalendarSystem::readDate( str, flags, ok );
+}
+
+bool KCalendarSystemHijri::isProleptic() const
+{
+  return false;
+}
+
+bool KCalendarSystemHijri::julianDayToDate( int jd, int &year, int &month, int &day ) const
+{
+    // From IslamicDate above.  Check me!
+    if ( jd >= earliestValidDate().toJulianDay() && jd <= latestValidDate().toJulianDay() ) {
+        // Search forward year by year from approximate year
+        year = ( jd - epoch().toJulianDay() ) / 355;
+        while ( jd >= IslamicDate(1,1,year+1) ) {
+            year++;
+        }
+        // Search forward month by month from Muharram
+        month = 1;
+        while ( jd > IslamicDate( month, lastDayOfIslamicMonth( month, year ), year ) ) {
+            month++;
+        }
+        day = jd - IslamicDate( month, 1, year ) + 1;
+        return true;
+    }
+    return false;
+}
+
+bool KCalendarSystemHijri::dateToJulianDay( int year, int month, int day, int &jd ) const
+{
+    // From IslamicDate above.  Check me!
+    if ( isValid( year, month, day ) ) {
+        jd =  ( day                           // days so far this month
+                + 29 * ( month - 1 )          // days so far...
+                + month / 2                   //            ...this year
+                + 354 * ( year - 1 )          // non-leap days in prior years
+                + ( 3 + ( 11 * year ) ) / 30  // leap days in prior years
+                + epoch().toJulianDay() );                  // days before start of calendar
+        return true;
+    }
+    return false;
+}
+
 int KCalendarSystemHijri::year(const QDate& date) const
 {
   int y;
   gregorianToHijri(date, &y, 0, 0);
   return y;
+}
+
+QString KCalendarSystemHijri::yearString( const QDate & pDate, StringFormat format ) const
+{
+  return KCalendarSystem::yearString( pDate, format );
+}
+
+int KCalendarSystemHijri::yearStringToInteger(const QString & sNum, int & iLength) const
+{
+  return KCalendarSystem::yearStringToInteger(sNum, iLength);
 }
 
 int KCalendarSystemHijri::month(const QDate& date) const
@@ -201,6 +348,16 @@ int KCalendarSystemHijri::month(const QDate& date) const
   return m;
 }
 
+QString KCalendarSystemHijri::monthString(const QDate &pDate, StringFormat format ) const
+{
+  return KCalendarSystem::monthString( pDate, format );
+}
+
+int KCalendarSystemHijri::monthStringToInteger(const QString & sNum, int & iLength) const
+{
+  return KCalendarSystem::monthStringToInteger(sNum, iLength);
+}
+
 int KCalendarSystemHijri::day(const QDate& date) const
 {
   int d;
@@ -208,11 +365,26 @@ int KCalendarSystemHijri::day(const QDate& date) const
   return d;
 }
 
+QString KCalendarSystemHijri::dayString( const QDate & pDate, StringFormat format ) const
+{
+  return KCalendarSystem::dayString( pDate, format );
+}
+
+int KCalendarSystemHijri::dayStringToInteger(const QString & sNum, int & iLength) const
+{
+  return KCalendarSystem::dayStringToInteger(sNum, iLength);
+}
+
 int KCalendarSystemHijri::monthsInYear( const QDate & date ) const
 {
   Q_UNUSED( date )
 
   return 12;
+}
+
+int KCalendarSystemHijri::weeksInYear(const QDate &date) const
+{
+    return KCalendarSystem::weeksInYear(date);
 }
 
 int KCalendarSystemHijri::weeksInYear(int year) const
@@ -274,152 +446,147 @@ int KCalendarSystemHijri::weekNumber(const QDate& date, int * yearNum) const
   return week;
 }
 
-QString KCalendarSystemHijri::monthName(const QDate& date,
-                                        bool shortName) const
+QString KCalendarSystemHijri::monthName(const QDate& date, MonthNameFormat format ) const
 {
-  return monthName(month(date), year(date), shortName);
+  return monthName( month( date ), year( date ), format );
 }
 
-QString KCalendarSystemHijri::monthNamePossessive(const QDate& date,
-                                                  bool shortName) const
+QString KCalendarSystemHijri::monthName( int month, int year, MonthNameFormat format ) const
 {
-  return monthNamePossessive(month(date), year(date), shortName);
-}
+    Q_UNUSED(year);
 
-QString KCalendarSystemHijri::monthName(int month, int year, bool shortName)
-  const {
-
-  Q_UNUSED(year);
-
-  if (shortName)
-    switch ( month )
-      {
-      case 1:
-        return ki18n("Muharram").toString(locale());
-      case 2:
-        return ki18n("Safar").toString(locale());
-      case 3:
-        return ki18n("R. Awal").toString(locale());
-      case 4:
-        return ki18n("R. Thaani").toString(locale());
-      case 5:
-        return ki18n("J. Awal").toString(locale());
-      case 6:
-        return ki18n("J. Thaani").toString(locale());
-      case 7:
-        return ki18n("Rajab").toString(locale());
-      case 8:
-        return ki18n("Sha`ban").toString(locale());
-      case 9:
-        return ki18n("Ramadan").toString(locale());
-      case 10:
-        return ki18n("Shawwal").toString(locale());
-      case 11:
-        return ki18n("Qi`dah").toString(locale());
-      case 12:
-        return ki18n("Hijjah").toString(locale());
+    if ( format == ShortNamePossessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18n("of Muharram").toString(locale());
+        case 2:
+            return ki18n("of Safar").toString(locale());
+        case 3:
+            return ki18n("of R. Awal").toString(locale());
+        case 4:
+            return ki18n("of R. Thaani").toString(locale());
+        case 5:
+            return ki18n("of J. Awal").toString(locale());
+        case 6:
+            return ki18n("of J. Thaani").toString(locale());
+        case 7:
+            return ki18n("of Rajab").toString(locale());
+        case 8:
+            return ki18n("of Sha`ban").toString(locale());
+        case 9:
+            return ki18n("of Ramadan").toString(locale());
+        case 10:
+            return ki18n("of Shawwal").toString(locale());
+        case 11:
+            return ki18n("of Qi`dah").toString(locale());
+        case 12:
+            return ki18n("of Hijjah").toString(locale());
+        default:
+            return QString();
+        }
     }
-  else
-    switch ( month )
-      {
-      case 1:
+
+    if ( format == LongNamePossessive ) {
+        switch ( month ) {
+        case 1:
+            return ki18n("of Muharram").toString(locale());
+        case 2:
+            return ki18n("of Safar").toString(locale());
+        case 3:
+            return ki18n("of Rabi` al-Awal").toString(locale());
+        case 4:
+            return ki18n("of Rabi` al-Thaani").toString(locale());
+        case 5:
+            return ki18n("of Jumaada al-Awal").toString(locale());
+        case 6:
+            return ki18n("of Jumaada al-Thaani").toString(locale());
+        case 7:
+            return ki18n("of Rajab").toString(locale());
+        case 8:
+            return ki18n("of Sha`ban").toString(locale());
+        case 9:
+            return ki18n("of Ramadan").toString(locale());
+        case 10:
+            return ki18n("of Shawwal").toString(locale());
+        case 11:
+            return ki18n("of Thu al-Qi`dah").toString(locale());
+        case 12:
+            return ki18n("of Thu al-Hijjah").toString(locale());
+        default:
+            return QString();
+        }
+    }
+
+    if ( format == ShortFormat ) {
+        switch ( month ) {
+        case 1:
+            return ki18n("Muharram").toString(locale());
+        case 2:
+             return ki18n("Safar").toString(locale());
+        case 3:
+            return ki18n("R. Awal").toString(locale());
+        case 4:
+            return ki18n("R. Thaani").toString(locale());
+        case 5:
+            return ki18n("J. Awal").toString(locale());
+        case 6:
+            return ki18n("J. Thaani").toString(locale());
+        case 7:
+            return ki18n("Rajab").toString(locale());
+        case 8:
+            return ki18n("Sha`ban").toString(locale());
+        case 9:
+            return ki18n("Ramadan").toString(locale());
+        case 10:
+            return ki18n("Shawwal").toString(locale());
+        case 11:
+            return ki18n("Qi`dah").toString(locale());
+        case 12:
+            return ki18n("Hijjah").toString(locale());
+        default:
+            return QString();
+        }
+    }
+
+    switch ( month ) {
+    case 1:
         return ki18n("Muharram").toString(locale());
-      case 2:
+    case 2:
         return ki18n("Safar").toString(locale());
-      case 3:
+    case 3:
         return ki18n("Rabi` al-Awal").toString(locale());
-      case 4:
+    case 4:
         return ki18n("Rabi` al-Thaani").toString(locale());
-      case 5:
+    case 5:
         return ki18n("Jumaada al-Awal").toString(locale());
-      case 6:
+    case 6:
         return ki18n("Jumaada al-Thaani").toString(locale());
-      case 7:
+    case 7:
         return ki18n("Rajab").toString(locale());
-      case 8:
+    case 8:
         return ki18n("Sha`ban").toString(locale());
-      case 9:
+    case 9:
         return ki18n("Ramadan").toString(locale());
-      case 10:
+    case 10:
         return ki18n("Shawwal").toString(locale());
-      case 11:
+    case 11:
         return ki18n("Thu al-Qi`dah").toString(locale());
-      case 12:
+    case 12:
         return ki18n("Thu al-Hijjah").toString(locale());
-      }
-
-  return QString();
-}
-
-QString KCalendarSystemHijri::monthNamePossessive(int month, int year,
-                                                  bool shortName) const
-{
-  Q_UNUSED(year);
-
-  if (shortName)
-    switch ( month )
-      {
-      case 1:
-        return ki18n("of Muharram").toString(locale());
-      case 2:
-        return ki18n("of Safar").toString(locale());
-      case 3:
-        return ki18n("of R. Awal").toString(locale());
-      case 4:
-        return ki18n("of R. Thaani").toString(locale());
-      case 5:
-        return ki18n("of J. Awal").toString(locale());
-      case 6:
-        return ki18n("of J. Thaani").toString(locale());
-      case 7:
-        return ki18n("of Rajab").toString(locale());
-      case 8:
-        return ki18n("of Sha`ban").toString(locale());
-      case 9:
-        return ki18n("of Ramadan").toString(locale());
-      case 10:
-        return ki18n("of Shawwal").toString(locale());
-      case 11:
-        return ki18n("of Qi`dah").toString(locale());
-      case 12:
-        return ki18n("of Hijjah").toString(locale());
+    default:
+        return QString();
     }
-  else
-    switch ( month )
-      {
-      case 1:
-        return ki18n("of Muharram").toString(locale());
-      case 2:
-        return ki18n("of Safar").toString(locale());
-      case 3:
-        return ki18n("of Rabi` al-Awal").toString(locale());
-      case 4:
-        return ki18n("of Rabi` al-Thaani").toString(locale());
-      case 5:
-        return ki18n("of Jumaada al-Awal").toString(locale());
-      case 6:
-        return ki18n("of Jumaada al-Thaani").toString(locale());
-      case 7:
-        return ki18n("of Rajab").toString(locale());
-      case 8:
-        return ki18n("of Sha`ban").toString(locale());
-      case 9:
-        return ki18n("of Ramadan").toString(locale());
-      case 10:
-        return ki18n("of Shawwal").toString(locale());
-      case 11:
-        return ki18n("of Thu al-Qi`dah").toString(locale());
-      case 12:
-        return ki18n("of Thu al-Hijjah").toString(locale());
-      }
-
-  return QString();
 }
 
+// Deprecated
 bool KCalendarSystemHijri::setYMD(QDate & date, int y, int m, int d) const
 {
   // range checks
-  if ( y < minValidYear() || y > maxValidYear() )
+  // Removed deleted minValidYear and maxValidYear methods
+  // Still use minimum of 1753 gregorain for now due to QDate using Julian calendar before then
+  // Later change to following once new methods validated
+  // if ( y < year( earliestValidDate() ) || y > year( latestValidDate() ) )
+  if ( y < year( QDate(1753, 1, 1) ) || y > 9999 )
     return false;
 
   if ( m < 1 || m > 12 )
@@ -436,52 +603,53 @@ bool KCalendarSystemHijri::setYMD(QDate & date, int y, int m, int d) const
     gregorian.getDay());
 }
 
-QString KCalendarSystemHijri::weekDayName(int day, bool shortName) const
+QString KCalendarSystemHijri::weekDayName( int weekDay, WeekDayNameFormat format ) const
 {
-  if ( shortName )
-    switch (day)
-      {
-      case 1:
-        return ki18n("Ith").toString(locale());
-      case 2:
-        return ki18n("Thl").toString(locale());
-      case 3:
-        return ki18n("Arb").toString(locale());
-      case 4:
-        return ki18n("Kha").toString(locale());
-      case 5:
-        return ki18n("Jum").toString(locale());
-      case 6:
-        return ki18n("Sab").toString(locale());
-      case 7:
-        return ki18n("Ahd").toString(locale());
-      }
-  else
-    switch ( day )
-      {
-      case 1:
-        return ki18n("Yaum al-Ithnain").toString(locale());
-      case 2:
-        return ki18n("Yau al-Thulatha").toString(locale());
-      case 3:
-        return ki18n("Yaum al-Arbi'a").toString(locale());
-      case 4:
-        return ki18n("Yaum al-Khamees").toString(locale());
-      case 5:
-        return ki18n("Yaum al-Jumma").toString(locale());
-      case 6:
-        return ki18n("Yaum al-Sabt").toString(locale());
-      case 7:
-        return ki18n("Yaum al-Ahad").toString(locale());
-      }
+    if ( format == ShortDayName ) {
+        switch ( weekDay ) {
+        case 1:
+            return ki18n("Ith").toString( locale() );
+        case 2:
+            return ki18n("Thl").toString( locale() );
+        case 3:
+            return ki18n("Arb").toString( locale() );
+        case 4:
+            return ki18n("Kha").toString( locale() );
+        case 5:
+            return ki18n("Jum").toString( locale() );
+        case 6:
+            return ki18n("Sab").toString( locale() );
+        case 7:
+            return ki18n("Ahd").toString( locale() );
+        default:
+            return QString();
+        }
+    }
 
-  return QString();
+    // Default to LongDayName format
+    switch ( weekDay ) {
+    case 1:
+        return ki18n("Yaum al-Ithnain").toString( locale() );
+    case 2:
+        return ki18n("Yau al-Thulatha").toString( locale() );
+    case 3:
+        return ki18n("Yaum al-Arbi'a").toString( locale() );
+    case 4:
+        return ki18n("Yaum al-Khamees").toString( locale() );
+    case 5:
+        return ki18n("Yaum al-Jumma").toString( locale() );
+    case 6:
+        return ki18n("Yaum al-Sabt").toString( locale() );
+    case 7:
+        return ki18n("Yaum al-Ahad").toString( locale() );
+    default:
+        return QString();
+    }
 }
 
-QString KCalendarSystemHijri::weekDayName(const QDate& date,
-                                          bool shortName) const
+QString KCalendarSystemHijri::weekDayName( const QDate &date, WeekDayNameFormat format ) const
 {
-  return weekDayName(dayOfWeek(date), shortName);
+    return weekDayName( dayOfWeek( date ), format );
 }
 
 int KCalendarSystemHijri::dayOfWeek(const QDate& date) const
@@ -505,22 +673,6 @@ int KCalendarSystemHijri::daysInMonth(const QDate& date) const
   gregorianToHijri(date, &y, &m, 0);
 
   return lastDayOfIslamicMonth(m, y);
-}
-
-// Min valid year that may be converted to QDate
-int KCalendarSystemHijri::minValidYear() const
-{
-  QDate date(1753, 1, 1);
-
-  return year(date);
-}
-
-// Max valid year that may be converted to QDate
-int KCalendarSystemHijri::maxValidYear() const
-{
-  QDate date(8000, 1, 1);
-
-  return year(date);
 }
 
 int KCalendarSystemHijri::daysInYear(const QDate & date) const
@@ -573,11 +725,6 @@ QDate KCalendarSystemHijri::addYears( const QDate & date, int nyears ) const
   setYMD( result, y, month(date), day(date) );
 
   return result;
-}
-
-QString KCalendarSystemHijri::calendarName() const
-{
-  return QLatin1String("hijri");
 }
 
 bool KCalendarSystemHijri::isLunar() const

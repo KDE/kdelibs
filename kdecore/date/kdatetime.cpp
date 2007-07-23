@@ -1409,10 +1409,10 @@ QString KDateTime::toString(const QString &format) const
                     num = d->date().month();
                     break;
                 case 'B':     // month name, translated
-                    result += calendar.monthName(d->date().month(), 2000, false);
+                    result += calendar.monthName(d->date().month(), 2000, KCalendarSystem::LongName);
                     break;
                 case 'b':     // month name, translated, short
-                    result += calendar.monthName(d->date().month(), 2000, true);
+                    result += calendar.monthName(d->date().month(), 2000, KCalendarSystem::ShortName);
                     break;
                 case 'd':     // day of month, 01 - 31
                     numLength = 2;
@@ -1421,10 +1421,10 @@ QString KDateTime::toString(const QString &format) const
                     num = d->date().day();
                     break;
                 case 'A':     // week day name, translated
-                    result += calendar.weekDayName(d->date().dayOfWeek(), false);
+                    result += calendar.weekDayName(d->date().dayOfWeek(), KCalendarSystem::LongDayName);
                     break;
                 case 'a':     // week day name, translated, short
-                    result += calendar.weekDayName(d->date().dayOfWeek(), true);
+                    result += calendar.weekDayName(d->date().dayOfWeek(), KCalendarSystem::ShortDayName);
                     break;
                 case 'H':     // hour, 00 - 23
                     numLength = 2;
@@ -2658,7 +2658,7 @@ int matchDay(const QString &string, int &offset, KCalendarSystem *calendar)
         // Check for localised day name first
         for (dayOfWeek = 1;  dayOfWeek <= 7;  ++dayOfWeek)
         {
-            QString name = calendar->weekDayName(dayOfWeek, false);
+            QString name = calendar->weekDayName(dayOfWeek, KCalendarSystem::LongDayName);
             if (part.startsWith(name, Qt::CaseInsensitive))
             {
                 offset += name.length();
@@ -2667,7 +2667,7 @@ int matchDay(const QString &string, int &offset, KCalendarSystem *calendar)
         }
         for (dayOfWeek = 1;  dayOfWeek <= 7;  ++dayOfWeek)
         {
-            QString name = calendar->weekDayName(dayOfWeek, true);
+            QString name = calendar->weekDayName(dayOfWeek, KCalendarSystem::ShortDayName);
             if (part.startsWith(name, Qt::CaseInsensitive))
             {
                 offset += name.length();
@@ -2699,7 +2699,7 @@ int matchMonth(const QString &string, int &offset, KCalendarSystem *calendar)
         // Check for localised month name first
         for (month = 1;  month <= 12;  ++month)
         {
-            QString name = calendar->monthName(month, 2000, false);
+            QString name = calendar->monthName(month, 2000, KCalendarSystem::LongName);
             if (part.startsWith(name, Qt::CaseInsensitive))
             {
                 offset += name.length();
@@ -2708,7 +2708,7 @@ int matchMonth(const QString &string, int &offset, KCalendarSystem *calendar)
         }
         for (month = 1;  month <= 12;  ++month)
         {
-            QString name = calendar->monthName(month, 2000, true);
+            QString name = calendar->monthName(month, 2000, KCalendarSystem::ShortName);
             if (part.startsWith(name, Qt::CaseInsensitive))
             {
                 offset += name.length();

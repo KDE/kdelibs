@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2001 Waldo Bastian (bastian@kde.org)
+    Copyright (c) 2007 John Layt <john@layt.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,6 +24,8 @@
 
 #include <QtGui/QWidget>
 
+class KCalendarSystem;
+
 class QDate;
 
 
@@ -37,6 +40,7 @@ class KDEUI_EXPORT KDateWidget : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QDate date READ date WRITE setDate USER true )
+//FIXME    Q_PROPERTY( KCalendarSystem calendar READ calendar WRITE setCalendar USER true )
 
 public:
   /**
@@ -59,11 +63,37 @@ public:
    */
   const QDate& date() const;
 
-  /**
-   * Changes the selected date to @p date.
-   */
-  void setDate(const QDate &date);
+    /**
+     * Changes the selected date to @p date.
+     * 
+     * @return @c true if the date was successfully set, @c false otherwise
+     */
+    bool setDate(const QDate &date);
 
+    /**
+     * Returns the currently selected calendar system.
+     * 
+     * @return a KCalendarSystem object
+     */
+    const KCalendarSystem *calendar() const;
+
+    /**
+     * Changes the calendar system to use.  Can use its own local locale if set.
+     * 
+     * @param calendar the calendar system object to use, defaults to global
+     * 
+     * @return @c true if the calendar system was successfully set, @c false otherwise
+     */
+    bool setCalendar( KCalendarSystem *calendar = 0 );
+
+    /**
+     * Changes the calendar system to use.  Will always use global locale.
+     * 
+     * @param calendarType the calendar system type to use
+     * 
+     * @return @c true if the calendar system was successfully set, @c false otherwise
+     */
+    bool setCalendar( const QString &calendarType );
 
 Q_SIGNALS:
   /**
