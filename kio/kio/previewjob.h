@@ -108,10 +108,9 @@ namespace KIO {
         virtual void slotResult( KJob *job );
 
     private:
-        Q_PRIVATE_SLOT(d, void startPreview())
-        Q_PRIVATE_SLOT(d, void slotThumbData(KIO::Job *, const QByteArray &))
-        friend class PreviewJobPrivate;
-        PreviewJobPrivate* const d;
+        Q_PRIVATE_SLOT(d_func(), void startPreview())
+        Q_PRIVATE_SLOT(d_func(), void slotThumbData(KIO::Job *, const QByteArray &))
+        Q_DECLARE_PRIVATE(PreviewJob)
     };
 
     /**

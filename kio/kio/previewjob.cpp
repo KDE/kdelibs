@@ -52,6 +52,7 @@
 #include <kconfiggroup.h>
 
 #include "jobuidelegate.h"
+#include "job_p.h"
 
 namespace KIO { struct PreviewItem; }
 using namespace KIO;
@@ -62,7 +63,7 @@ struct KIO::PreviewItem
     KService::Ptr plugin;
 };
 
-class KIO::PreviewJobPrivate
+class KIO::PreviewJobPrivate: public KIO::JobPrivate
 {
 public:
     enum { STATE_STATORIG, // if the thumbnail exists
@@ -123,14 +124,16 @@ public:
 
     void startPreview();
     void slotThumbData(KIO::Job *, const QByteArray &);
+
+    Q_DECLARE_PUBLIC(PreviewJob)
 };
 
 PreviewJob::PreviewJob( const QList<KFileItem> &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
-    : KIO::Job(),d(new PreviewJobPrivate)
+    : KIO::Job(*new PreviewJobPrivate)
 {
-    d->q = this;
+    Q_D(PreviewJob);
     d->tOrig = 0;
     d->shmid = -1;
     d->shmaddr = 0;
@@ -155,16 +158,17 @@ PreviewJob::PreviewJob( const QList<KFileItem> &items, int width, int height,
 PreviewJob::~PreviewJob()
 {
 #ifdef Q_OS_UNIX
+    Q_D(PreviewJob);
     if (d->shmaddr) {
         shmdt((char*)d->shmaddr);
         shmctl(d->shmid, IPC_RMID, 0);
     }
 #endif
-    delete d;
 }
 
 void PreviewJobPrivate::startPreview()
 {
+    Q_Q(PreviewJob);
     // Load the list of plugins to determine which mimetypes are supported
     const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     QMap<QString, KService::Ptr> mimeMap;
@@ -269,6 +273,7 @@ void PreviewJobPrivate::startPreview()
 
 void PreviewJob::removeItem( const KUrl& url )
 {
+    Q_D(PreviewJob);
     for (QLinkedList<PreviewItem>::Iterator it = d->items.begin(); it != d->items.end(); ++it)
         if ((*it).item.url() == url)
         {
@@ -287,11 +292,12 @@ void PreviewJob::removeItem( const KUrl& url )
 
 void PreviewJob::setIgnoreMaximumSize(bool ignoreSize)
 {
-    d->ignoreMaximumSize = ignoreSize;
+    d_func()->ignoreMaximumSize = ignoreSize;
 }
 
 void PreviewJobPrivate::determineNextFile()
 {
+    Q_Q(PreviewJob);
     if (!currentItem.item.isNull())
     {
         if (!succeeded)
@@ -318,6 +324,8 @@ void PreviewJobPrivate::determineNextFile()
 
 void PreviewJob::slotResult( KJob *job )
 {
+    Q_D(PreviewJob);
+
     removeSubjob(job);
     Q_ASSERT ( !hasSubjobs() ); // We should have only one job at a time ...
     switch ( d->state )
@@ -407,6 +415,7 @@ bool PreviewJobPrivate::statResultThumbnail()
 
 void PreviewJobPrivate::getOrCreateThumbnail()
 {
+    Q_Q(PreviewJob);
     // We still need to load the orig file ! (This is getting tedious) :)
     const KFileItem& item = currentItem.item;
     const QString localPath = item.localPath();
@@ -430,6 +439,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
 
 void PreviewJobPrivate::createThumbnail( const QString &pixPath )
 {
+    Q_Q(PreviewJob);
     state = PreviewJobPrivate::STATE_CREATETHUMB;
     KUrl thumbURL;
     thumbURL.setProtocol("thumbnail");
@@ -515,6 +525,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
 
 void PreviewJobPrivate::emitPreview(const QImage &thumb)
 {
+    Q_Q(PreviewJob);
     QPixmap pix;
     if (thumb.width() > width || thumb.height() > height)
         pix = QPixmap::fromImage( thumb.scaled(thumb.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation) );

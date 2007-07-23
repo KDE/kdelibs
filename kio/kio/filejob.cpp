@@ -35,7 +35,7 @@ using namespace KIO;
 #define KIO_FILESIZE_T(x) qulonglong(x)
 
 FileJob::FileJob( const KUrl& url, const QByteArray &packedArgs  )
-        : SimpleJob(url, CMD_OPEN, packedArgs), m_open(false), m_size(0), d(0)
+        : SimpleJob(url, CMD_OPEN, packedArgs), m_open(false), m_size(0)
 {
 }
 

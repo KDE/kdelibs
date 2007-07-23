@@ -22,10 +22,11 @@
 #include <QtCore/QTimer>
 
 #include "jobuidelegate.h"
+#include "job_p.h"
 
 namespace KIO
 {
-    class DirectorySizeJobPrivate
+    class DirectorySizeJobPrivate: public KIO::JobPrivate
     {
     public:
         DirectorySizeJobPrivate()
@@ -48,6 +49,8 @@ namespace KIO
         KIO::filesize_t m_totalSubdirs;
         QList<KFileItem> m_lstItems;
         int m_currentItem;
+
+        Q_DECLARE_PUBLIC(DirectorySizeJob)
     };
 
 } // namespace KIO
@@ -56,13 +59,13 @@ namespace KIO
 using namespace KIO;
 
 DirectorySizeJob::DirectorySizeJob( const KUrl & directory )
-    : KIO::Job(), d( new DirectorySizeJobPrivate )
+    : KIO::Job(*new DirectorySizeJobPrivate )
 {
     startNextJob( directory );
 }
 
 DirectorySizeJob::DirectorySizeJob( const QList<KFileItem> & lstItems )
-    : KIO::Job(), d( new DirectorySizeJobPrivate(lstItems) )
+    : KIO::Job(*new DirectorySizeJobPrivate(lstItems) )
 {
     QTimer::singleShot( 0, this, SLOT(processNextItem()) );
 }
@@ -70,26 +73,26 @@ DirectorySizeJob::DirectorySizeJob( const QList<KFileItem> & lstItems )
 
 DirectorySizeJob::~DirectorySizeJob()
 {
-    delete d;
 }
 
 KIO::filesize_t DirectorySizeJob::totalSize() const
 {
-    return d->m_totalSize;
+    return d_func()->m_totalSize;
 }
 
 KIO::filesize_t DirectorySizeJob::totalFiles() const
 {
-    return d->m_totalFiles;
+    return d_func()->m_totalFiles;
 }
 
 KIO::filesize_t DirectorySizeJob::totalSubdirs() const
 {
-    return d->m_totalSubdirs;
+    return d_func()->m_totalSubdirs;
 }
 
 void DirectorySizeJob::processNextItem()
 {
+    Q_D(DirectorySizeJob);
     while (d->m_currentItem < d->m_lstItems.count())
     {
         const KFileItem item = d->m_lstItems[d->m_currentItem++];
@@ -126,6 +129,7 @@ void DirectorySizeJob::startNextJob( const KUrl & url )
 
 void DirectorySizeJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
+    Q_D(DirectorySizeJob);
     KIO::UDSEntryList::ConstIterator it = list.begin();
     const KIO::UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
@@ -150,6 +154,7 @@ void DirectorySizeJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 
 void DirectorySizeJob::slotResult( KJob * job )
 {
+    Q_D(DirectorySizeJob);
     kDebug(7007) << " DirectorySizeJob::slotResult()" << endl;
     if (d->m_currentItem < d->m_lstItems.count())
     {

@@ -48,6 +48,8 @@
 #include <sys/stat.h> // mode_t
 #include <QPointer>
 
+#include "job_p.h"
+
 using namespace KIO;
 
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
@@ -89,13 +91,12 @@ enum CopyJobState {
 };
 
 /** @internal */
-class KIO::CopyJobPrivate
+class KIO::CopyJobPrivate: public KIO::JobPrivate
 {
 public:
-    CopyJobPrivate(CopyJob *qq, const KUrl::List& src, const KUrl& dest,
+    CopyJobPrivate(const KUrl::List& src, const KUrl& dest,
                    CopyJob::CopyMode mode, bool asMethod)
-        : q(qq)
-        , m_globalDest(dest)
+        : m_globalDest(dest)
         , m_globalDestinationState(DEST_NOT_STATED)
         , m_defaultPermissions(false)
         , m_bURLDirty(false)
@@ -120,7 +121,6 @@ public:
         , m_reportTimer(0)
     {
     }
-    CopyJob *q;
 
     // This is the dest URL that was initially given to CopyJob
     // It is copied into m_dest, which can be changed for a given src URL
@@ -207,32 +207,33 @@ public:
     void slotTotalSize( KJob*, qulonglong size );
 
     void slotReport();
+
+    Q_DECLARE_PUBLIC(CopyJob)
 };
 
 CopyJob::CopyJob(const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod)
-  : Job()
-  , d(new CopyJobPrivate(this, src,dest,mode,asMethod))
+  : Job(*new CopyJobPrivate(src,dest,mode,asMethod))
 {
     QTimer::singleShot(0, this, SLOT(slotStart()));
 }
 
 CopyJob::~CopyJob()
 {
-    delete d;
 }
 
 KUrl::List CopyJob::srcUrls() const
 {
-    return d->m_srcList;
+    return d_func()->m_srcList;
 }
 
 KUrl CopyJob::destUrl() const
 {
-    return d->m_dest;
+    return d_func()->m_dest;
 }
 
 void CopyJobPrivate::slotStart()
 {
+    Q_Q(CopyJob);
     /**
        We call the functions directly instead of using signals.
        Calling a function via a signal takes approx. 65 times the time
@@ -254,6 +255,7 @@ KIO_EXPORT bool kio_resolve_local_urls = true;
 
 void CopyJobPrivate::slotResultStating( KJob *job )
 {
+    Q_Q(CopyJob);
     //kDebug(7007) << "CopyJobPrivate::slotResultStating" << endl;
     // Was there an error while stating the src ?
     if (job->error() && destinationState != DEST_NOT_STATED )
@@ -405,12 +407,14 @@ void CopyJobPrivate::slotResultStating( KJob *job )
 
 bool CopyJob::doSuspend()
 {
+    Q_D(CopyJob);
     d->slotReport();
     return Job::doSuspend();
 }
 
 void CopyJobPrivate::slotReport()
 {
+    Q_Q(CopyJob);
     if ( q->isSuspended() )
         return;
     // If showProgressInfo was set, progressId() is > 0.
@@ -468,6 +472,7 @@ void CopyJobPrivate::slotReport()
 
 void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
+    //Q_Q(CopyJob);
     UDSEntryList::ConstIterator it = list.begin();
     UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
@@ -586,6 +591,7 @@ void CopyJobPrivate::statNextSrc()
 
 void CopyJobPrivate::statCurrentSrc()
 {
+    Q_Q(CopyJob);
     if ( m_currentStatSrc != m_srcList.end() )
     {
         m_currentSrcURL = (*m_currentStatSrc);
@@ -694,6 +700,7 @@ void CopyJobPrivate::statCurrentSrc()
 
 void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
 {
+    Q_Q(CopyJob);
     KUrl dest = m_dest;
     // Append filename or dirname to destination URL, if allowed
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
@@ -723,6 +730,7 @@ void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
 
 void CopyJobPrivate::startListing( const KUrl & src )
 {
+    Q_Q(CopyJob);
     state = STATE_LISTING;
     m_bURLDirty = true;
     ListJob * newjob = listRecursive(src);
@@ -764,6 +772,7 @@ bool CopyJobPrivate::shouldSkip( const QString& path ) const
 
 void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
 {
+    Q_Q(CopyJob);
     // The dir we are trying to create:
     QList<CopyInfo>::Iterator it = dirs.begin();
     // Was there an error creating a dir ?
@@ -831,6 +840,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
 
 void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
 {
+    Q_Q(CopyJob);
     // We come here after a conflict has been detected and we've stated the existing dir
 
     // The dir we were trying to create:
@@ -958,6 +968,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
 
 void CopyJobPrivate::createNextDir()
 {
+    Q_Q(CopyJob);
     KUrl udir;
     if ( !dirs.isEmpty() )
     {
@@ -999,6 +1010,7 @@ void CopyJobPrivate::createNextDir()
 
 void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
 {
+    Q_Q(CopyJob);
     // The file we were trying to copy:
     QList<CopyInfo>::Iterator it = files.begin();
     if ( job->error() )
@@ -1092,6 +1104,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
 
 void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
 {
+    Q_Q(CopyJob);
     // We come here after a conflict has been detected and we've stated the existing file
     // The file we were trying to create:
     QList<CopyInfo>::Iterator it = files.begin();
@@ -1216,6 +1229,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
 
 void CopyJobPrivate::copyNextFile()
 {
+    Q_Q(CopyJob);
     bool bCopyFile = false;
     //kDebug(7007) << "CopyJob::copyNextFile()" << endl;
     // Take the first file in the list
@@ -1387,6 +1401,7 @@ void CopyJobPrivate::copyNextFile()
 
 void CopyJobPrivate::deleteNextDir()
 {
+    Q_Q(CopyJob);
     if ( m_mode == CopyJob::Move && !dirsToRemove.isEmpty() ) // some dirs to delete ?
     {
         state = STATE_DELETING_DIRS;
@@ -1409,6 +1424,7 @@ void CopyJobPrivate::deleteNextDir()
 
 void CopyJobPrivate::setNextDirAttribute()
 {
+    Q_Q(CopyJob);
     while (m_directoriesCopiedIterator != m_directoriesCopied.end() &&
            (*m_directoriesCopiedIterator).mtime == -1) {
         ++m_directoriesCopiedIterator;
@@ -1472,6 +1488,7 @@ void CopyJobPrivate::setNextDirAttribute()
 
 void CopyJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
 {
+  Q_Q(CopyJob);
   //kDebug(7007) << "CopyJobPrivate::slotProcessedSize " << data_size << endl;
   m_fileProcessedSize = data_size;
   q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
@@ -1488,6 +1505,7 @@ void CopyJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
 
 void CopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
 {
+  Q_Q(CopyJob);
   //kDebug(7007) << "slotTotalSize: " << size << endl;
   // Special case for copying a single file
   // This is because some protocols don't implement stat properly
@@ -1503,6 +1521,7 @@ void CopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
 
 void CopyJobPrivate::slotResultDeletingDirs( KJob * job )
 {
+    Q_Q(CopyJob);
     if (job->error())
     {
         // Couldn't remove directory. Well, perhaps it's not empty
@@ -1516,6 +1535,7 @@ void CopyJobPrivate::slotResultDeletingDirs( KJob * job )
 
 void CopyJobPrivate::slotResultSettingDirAttributes( KJob * job )
 {
+    Q_Q(CopyJob);
     if (job->error())
     {
         // Couldn't set directory attributes. Ignore the error, it can happen
@@ -1530,6 +1550,7 @@ void CopyJobPrivate::slotResultSettingDirAttributes( KJob * job )
 // We were trying to do a direct renaming, before even stat'ing
 void CopyJobPrivate::slotResultRenaming( KJob* job )
 {
+    Q_Q(CopyJob);
     int err = job->error();
     const QString errText = job->errorText();
     q->removeSubjob( job, true ); // merge metadata
@@ -1719,6 +1740,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
 
 void CopyJob::slotResult( KJob *job )
 {
+    Q_D(CopyJob);
     //kDebug(7007) << "CopyJobPrivate::slotResult() d->state=" << (int) d->state << endl;
     // In each case, what we have to do is :
     // 1 - check for errors and treat them
@@ -1773,7 +1795,7 @@ void CopyJob::slotResult( KJob *job )
 
 void KIO::CopyJob::setDefaultPermissions( bool b )
 {
-    d->m_defaultPermissions = b;
+    d_func()->m_defaultPermissions = b;
 }
 
 CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, bool showProgressInfo )

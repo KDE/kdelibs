@@ -38,6 +38,7 @@
 #include "jobclasses.h"
 #include "global.h"
 #include "job.h"
+#include "job_p.h"
 
 #include "jobuidelegate.h"
 
@@ -46,16 +47,18 @@
 using namespace KIO;
 
 /** @internal */
-class DavJob::DavJobPrivate
+class KIO::DavJobPrivate: public KIO::TransferJobPrivate
 {
 public:
-  QByteArray savedStaticData;
-	QByteArray str_response;
-	QDomDocument m_response;
+    QByteArray savedStaticData;
+    QByteArray str_response;
+    QDomDocument m_response;
+
+    Q_DECLARE_PUBLIC(DavJob)
 };
 
 DavJob::DavJob(const KUrl& url, int method, const QString& request)
-  : TransferJob(url, KIO::CMD_SPECIAL, QByteArray(), QByteArray()),d(new DavJobPrivate)
+  : TransferJob(*new DavJobPrivate, url, KIO::CMD_SPECIAL, QByteArray(), QByteArray())
 {
   // We couldn't set the args when calling the parent constructor,
   // so do it now.
@@ -65,17 +68,18 @@ DavJob::DavJob(const KUrl& url, int method, const QString& request)
   if ( ! request.isEmpty() && ! request.isNull() ) {
     staticData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" + request.toUtf8();
     staticData.truncate( staticData.size() - 1 );
-    d->savedStaticData = staticData;
+    d_func()->savedStaticData = staticData;
   }
 }
 
 QDomDocument& DavJob::response()
 {
-    return d->m_response;
+    return d_func()->m_response;
 }
 
 void DavJob::slotData( const QByteArray& data )
 {
+  Q_D(DavJob);
   if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error()) {
     unsigned int oldSize = d->str_response.size();
     d->str_response.resize( oldSize + data.size() );
@@ -85,6 +89,7 @@ void DavJob::slotData( const QByteArray& data )
 
 void DavJob::slotFinished()
 {
+  Q_D(DavJob);
   // kDebug(7113) << "DavJob::slotFinished()" << endl;
   // kDebug(7113) << d->str_response << endl;
 	if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
@@ -109,9 +114,6 @@ void DavJob::slotFinished()
     QDomText textnode = d->m_response.createTextNode( d->str_response );
 		el.appendChild( textnode );
 		root.appendChild( el );
-		delete d; // Should be in virtual destructor
-	} else {
-		delete d; // Should be in virtual destructor
 	}
   // kDebug(7113) << d->m_response.toString() << endl;
 	TransferJob::slotFinished();

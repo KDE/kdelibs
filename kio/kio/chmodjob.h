@@ -53,11 +53,9 @@ namespace KIO {
         virtual void slotResult( KJob *job );
 
     private:
-        Q_PRIVATE_SLOT(d, void _k_slotEntries( KIO::Job * , const KIO::UDSEntryList & ))
-        Q_PRIVATE_SLOT(d, void _k_processList())
-
-        friend class ChmodJobPrivate;
-        ChmodJobPrivate * const d;
+        Q_PRIVATE_SLOT(d_func(), void _k_slotEntries( KIO::Job * , const KIO::UDSEntryList & ))
+        Q_PRIVATE_SLOT(d_func(), void _k_processList())
+        Q_DECLARE_PRIVATE(ChmodJob)
     };
 
 

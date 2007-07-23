@@ -42,6 +42,8 @@
 #include <QtCore/QFile>
 #include <QPointer>
 
+#include "job_p.h"
+
 namespace KIO
 {
     enum DeleteJobState {
@@ -51,7 +53,7 @@ namespace KIO
         STATE_DELETING_DIRS
     };
 
-    class DeleteJobPrivate
+    class DeleteJobPrivate: public KIO::JobPrivate
     {
     public:
         DeleteJobPrivate(const KUrl::List& src)
@@ -82,6 +84,8 @@ namespace KIO
         KUrl::List::Iterator m_currentStat;
 	QStringList m_parentDirs;
         QTimer *m_reportTimer;
+
+        Q_DECLARE_PUBLIC(DeleteJob)
     };
 
 } // namespace KIO
@@ -89,24 +93,23 @@ namespace KIO
 using namespace KIO;
 
 DeleteJob::DeleteJob(const KUrl::List& src)
-: Job(), d( new DeleteJobPrivate(src) )
+: Job(* new DeleteJobPrivate(src) )
 {
-    d->m_reportTimer = new QTimer(this);
-    connect(d->m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
+    d_func()->m_reportTimer = new QTimer(this);
+    connect(d_func()->m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
     //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
-    d->m_reportTimer->start( 200 );
+    d_func()->m_reportTimer->start( 200 );
 
     QTimer::singleShot(0, this, SLOT(slotStart()));
 }
 
 DeleteJob::~DeleteJob()
 {
-    delete d;
 }
 
 KUrl::List DeleteJob::urls() const
 {
-    return d->m_srcList;
+    return d_func()->m_srcList;
 }
 
 void DeleteJob::slotStart()
@@ -119,6 +122,7 @@ void DeleteJob::slotStart()
 //aleXXX
 void DeleteJob::slotReport()
 {
+   Q_D(DeleteJob);
    emit deleting( this, d->m_currentURL );
    emitDeleting(d->m_currentURL);
 
@@ -143,6 +147,7 @@ void DeleteJob::slotReport()
 
 void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
+    Q_D(DeleteJob);
     UDSEntryList::ConstIterator it = list.begin();
     const UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it)
@@ -178,6 +183,7 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
 void DeleteJob::statNextSrc()
 {
+    Q_D(DeleteJob);
     //kDebug(7007) << "statNextSrc" << endl;
     if ( d->m_currentStat != d->m_srcList.end() )
     {
@@ -215,6 +221,7 @@ void DeleteJob::statNextSrc()
 
 void DeleteJob::deleteNextFile()
 {
+    Q_D(DeleteJob);
     //kDebug(7007) << "deleteNextFile" << endl;
     if ( !d->files.isEmpty() || !d->symlinks.isEmpty() )
     {
@@ -261,6 +268,7 @@ void DeleteJob::deleteNextFile()
 
 void DeleteJob::deleteNextDir()
 {
+    Q_D(DeleteJob);
     if ( !d->dirs.isEmpty() ) // some dirs to delete ?
     {
         do {
@@ -309,6 +317,7 @@ void DeleteJob::deleteNextDir()
 
 void DeleteJob::slotProcessedSize( KJob*, qulonglong data_size )
 {
+   Q_D(DeleteJob);
    // Note: this is the same implementation as CopyJob::slotProcessedSize but
    // it's different from FileCopyJob::slotProcessedSize - which is why this
    // is not in Job.
@@ -329,6 +338,7 @@ void DeleteJob::slotProcessedSize( KJob*, qulonglong data_size )
 
 void DeleteJob::slotResult( KJob *job )
 {
+    Q_D(DeleteJob);
     switch ( d->state )
     {
     case STATE_STATING:

@@ -222,14 +222,13 @@ namespace KIO {
         virtual void slotResult( KJob *job );
 
     private:
-        Q_PRIVATE_SLOT(d, void slotStart())
-        Q_PRIVATE_SLOT(d, void slotEntries( KIO::Job*, const KIO::UDSEntryList& list ))
-        Q_PRIVATE_SLOT(d, void slotProcessedSize( KJob*, qulonglong data_size ))
-        Q_PRIVATE_SLOT(d, void slotTotalSize( KJob*, qulonglong size ))
-        Q_PRIVATE_SLOT(d, void slotReport())
+        Q_PRIVATE_SLOT(d_func(), void slotStart())
+        Q_PRIVATE_SLOT(d_func(), void slotEntries( KIO::Job*, const KIO::UDSEntryList& list ))
+        Q_PRIVATE_SLOT(d_func(), void slotProcessedSize( KJob*, qulonglong data_size ))
+        Q_PRIVATE_SLOT(d_func(), void slotTotalSize( KJob*, qulonglong size ))
+        Q_PRIVATE_SLOT(d_func(), void slotReport())
 
-        friend class CopyJobPrivate;
-        CopyJobPrivate* const d;
+        Q_DECLARE_PRIVATE(CopyJob)
     };
 
     /**

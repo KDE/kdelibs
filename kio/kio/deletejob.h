@@ -113,7 +113,7 @@ namespace KIO {
         void deleteNextDir();
 
     private:
-        DeleteJobPrivate * const d;
+        Q_DECLARE_PRIVATE(DeleteJob)
     };
 
     /**

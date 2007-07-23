@@ -40,6 +40,8 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "job_p.h"
+
 namespace KIO {
 
     struct ChmodInfo
@@ -53,13 +55,12 @@ namespace KIO {
         STATE_CHMODING
     };
 
-    class ChmodJobPrivate
+    class ChmodJobPrivate: public KIO::JobPrivate
     {
     public:
-        ChmodJobPrivate(ChmodJob *qq, const KFileItemList& lstItems, int permissions, int mask,
+        ChmodJobPrivate(const KFileItemList& lstItems, int permissions, int mask,
                         int newOwner, int newGroup, bool recursive)
-            : q(qq)
-            , state( STATE_LISTING )
+            : state( STATE_LISTING )
             , m_permissions( permissions )
             , m_mask( mask )
             , m_newOwner( newOwner )
@@ -68,7 +69,6 @@ namespace KIO {
             , m_lstItems( lstItems )
         {
         }
-        ChmodJob *q;
 
         ChmodJobState state;
         int m_permissions;
@@ -82,6 +82,8 @@ namespace KIO {
         void chmodNextFile();
         void _k_slotEntries( KIO::Job * , const KIO::UDSEntryList & );
         void _k_processList();
+
+        Q_DECLARE_PUBLIC(ChmodJob)
     };
 
 } // namespace KIO
@@ -91,20 +93,19 @@ using namespace KIO;
 ChmodJob::ChmodJob( const KFileItemList& lstItems, int permissions, int mask,
                     int newOwner, int newGroup,
                     bool recursive)
-    : KIO::Job()
-    , d( new ChmodJobPrivate(this, lstItems,permissions,mask,
-                             newOwner,newGroup,recursive) )
+    : KIO::Job(*new ChmodJobPrivate(lstItems,permissions,mask,
+                                    newOwner,newGroup,recursive) )
 {
     QMetaObject::invokeMethod( this, "_k_processList", Qt::QueuedConnection );
 }
 
 ChmodJob::~ChmodJob()
 {
-    delete d;
 }
 
 void ChmodJobPrivate::_k_processList()
 {
+    Q_Q(ChmodJob);
     while ( !m_lstItems.isEmpty() )
     {
         KFileItem * item = m_lstItems.first();
@@ -192,6 +193,7 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
 
 void ChmodJobPrivate::chmodNextFile()
 {
+    Q_Q(ChmodJob);
     if ( !m_infos.isEmpty() )
     {
         ChmodInfo info = m_infos.takeFirst();
@@ -231,6 +233,7 @@ void ChmodJobPrivate::chmodNextFile()
 
 void ChmodJob::slotResult( KJob * job )
 {
+    Q_D(ChmodJob);
     if ( job->error() )
     {
         setError( job->error() );

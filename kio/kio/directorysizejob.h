@@ -76,7 +76,7 @@ private Q_SLOTS:
     void processNextItem();
 
 private:
-    DirectorySizeJobPrivate * const d;
+    Q_DECLARE_PRIVATE(DirectorySizeJob)
 };
 
 /**

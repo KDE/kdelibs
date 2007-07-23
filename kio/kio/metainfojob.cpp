@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
  */
 
+#include "metainfojob.h"
+
 #include <kfileitem.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
@@ -26,24 +28,26 @@
 #include <QtCore/QTimer>
 
 #include "jobuidelegate.h"
-
-#include "metainfojob.moc"
+#include "job_p.h"
 
 using namespace KIO;
 
-struct KIO::MetaInfoJobPrivate
+class KIO::MetaInfoJobPrivate: public KIO::JobPrivate
 {
+public:
     QList<KFileItem>       items;       // all the items we got
     int                    currentItem;
     bool                   succeeded;   // if the current item is ok
-};
 
+    Q_DECLARE_PUBLIC(MetaInfoJob)
+};
 
 MetaInfoJob::MetaInfoJob(const QList<KFileItem>& items, KFileMetaInfo::WhatFlags w,
      int iocost, int cpucost,
      const QStringList& requiredfields, const QStringList& requestedfields)
-    : KIO::Job(),d(new MetaInfoJobPrivate)
+    : KIO::Job(*new MetaInfoJobPrivate)
 {
+    Q_D(MetaInfoJob);
     d->succeeded    = false;
     d->items        = items;
     d->currentItem  = 0;
@@ -64,7 +68,6 @@ MetaInfoJob::MetaInfoJob(const QList<KFileItem>& items, KFileMetaInfo::WhatFlags
 
 MetaInfoJob::~MetaInfoJob()
 {
-    delete d;
 }
 
 void MetaInfoJob::start()
@@ -74,6 +77,7 @@ void MetaInfoJob::start()
 
 void MetaInfoJob::removeItem(const KFileItem& item)
 {
+    Q_D(MetaInfoJob);
     if (d->items.at( d->currentItem ) == item)
     {
         KJob* job = subjobs().first();
@@ -87,6 +91,7 @@ void MetaInfoJob::removeItem(const KFileItem& item)
 
 void MetaInfoJob::determineNextFile()
 {
+    Q_D(MetaInfoJob);
     if (d->currentItem >= d->items.count() - 1)
     {
         kDebug(7007) << "finished MetaInfoJob\n";
@@ -120,6 +125,7 @@ void MetaInfoJob::slotResult( KJob *job )
 
 void MetaInfoJob::getMetaInfo()
 {
+    Q_D(MetaInfoJob);
     KFileItem item = d->items.at( d->currentItem );
     Q_ASSERT(!item.isNull());
 
@@ -139,6 +145,7 @@ void MetaInfoJob::getMetaInfo()
 
 void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
 {
+    Q_D(MetaInfoJob);
     KFileMetaInfo info;
     QDataStream s(data);
 
@@ -167,3 +174,4 @@ KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KUrl::List &items)
     return job;
 }
 
+#include "metainfojob.moc"

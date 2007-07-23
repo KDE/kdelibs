@@ -156,7 +156,7 @@ protected:
     KIO::filesize_t m_size;
 
 private:
-    FileJobPrivate * const d;
+    Q_DECLARE_PRIVATE(FileJob)
 };
 
 } // namespace

@@ -36,7 +36,8 @@ namespace KIO {
 
     class JobUiDelegate;
     class Slave;
-    
+
+    class JobPrivate;
     /**
      * The base class for all jobs.
      * For all jobs created in an application, the code looks like
@@ -62,6 +63,7 @@ namespace KIO {
 
     protected:
         Job();
+        Job(JobPrivate &dd);
 
     public:
         virtual ~Job();
@@ -297,11 +299,10 @@ public:
         MetaData m_outgoingMetaData;
 
     private:
-        class JobPrivate;
-        JobPrivate *const d;
+        Q_DECLARE_PRIVATE(Job)
     };
 
-
+    class SimpleJobPrivate;
     /**
      * A simple job (one url and one command).
      * This is the base class for all jobs that are scheduled.
@@ -461,11 +462,13 @@ public:
 	 * used instead of m_url if not empty
 	 */
 	void storeSSLSessionFromJob(const KUrl &m_redirectionURL);
+
+        SimpleJob(SimpleJobPrivate &dd, const KUrl& url, int command, const QByteArray &packedArgs);
     private:
-	class SimpleJobPrivate;
-        SimpleJobPrivate * const d;
+        Q_DECLARE_PRIVATE(SimpleJob)
     };
 
+    class StatJobPrivate;
     /**
      * A KIO job that retrieves information about a file or directory.
      * @see KIO::stat()
@@ -551,10 +554,10 @@ public:
         bool m_bSource;
         short int m_details;
     private:
-        class StatJobPrivate;
-        StatJobPrivate * const d;
+        Q_DECLARE_PRIVATE(StatJob)
     };
 
+    class MkdirJobPrivate;
     /**
      * A KIO job that creates a directory
      * @see KIO::mkdir()
@@ -609,10 +612,10 @@ public:
         KUrl m_redirectionURL;
 
     private:
-        class MkdirJobPrivate;
-        MkdirJobPrivate * const d;
+        Q_DECLARE_PRIVATE(MkdirJob)
     };
 
+    class DirectCopyJobPrivate;
     /**
      * @internal
      * Used for direct copy from or to the local filesystem (i.e. SlaveBase::copy())
@@ -647,11 +650,11 @@ public:
     private Q_SLOTS:
         void slotCanResume( KIO::filesize_t offset );
     private:
-        class DirectCopyJobPrivate;
-        DirectCopyJobPrivate * const d;
+        Q_DECLARE_PRIVATE(DirectCopyJob)
     };
 
 
+    class TransferJobPrivate;
     /**
      * The transfer job pumps data into and/or out of a Slave.
      * Data is sent to the slave on request of the slave ( dataReq).
@@ -840,11 +843,15 @@ public:
         KUrl::List m_redirectionList;
         QString m_mimetype;
         TransferJob *m_subJob;
+
+        TransferJob(TransferJobPrivate &dd, const KUrl& url, int command,
+                    const QByteArray &packedArgs,
+                    const QByteArray &_staticData);
     private:
-	class TransferJobPrivate;
-	TransferJobPrivate * const d;
+        Q_DECLARE_PRIVATE(TransferJob)
     };
 
+    class StoredTransferJobPrivate;
     /**
      * StoredTransferJob is a TransferJob (for downloading or uploading data) that
      * also stores a QByteArray with the data, making it simpler to use than the
@@ -898,10 +905,10 @@ public:
         void slotStoredData( KIO::Job *job, const QByteArray &data );
         void slotStoredDataReq( KIO::Job *job, QByteArray &data );
     private:
-        class StoredTransferJobPrivate;
-        StoredTransferJobPrivate * const d;
+        Q_DECLARE_PRIVATE(StoredTransferJob)
     };
 
+    class MultiGetJobPrivate;
     /**
      * The MultiGetJob is a TransferJob that allows you to get
      * several files from a single server. Don't create directly,
@@ -983,10 +990,10 @@ public:
         void flushQueue(QLinkedList<GetRequest> &queue);
 
     private:
-	class MultiGetJobPrivate;
-	MultiGetJobPrivate * const d;
+        Q_DECLARE_PRIVATE(MultiGetJob)
     };
 
+    class MimetypeJobPrivate;
     /**
      * A MimetypeJob is a TransferJob that  allows you to get
      * the mime type of an URL. Don't create directly,
@@ -1019,10 +1026,10 @@ public:
     protected Q_SLOTS:
         virtual void slotFinished( );
     private:
-	class MimetypeJobPrivate;
-	MimetypeJobPrivate * const d;
+        Q_DECLARE_PRIVATE(MimetypeJob)
     };
 
+    class FileCopyJobPrivate;
     /**
      * The FileCopyJob copies data from one place to another.
      * @see KIO::file_copy()
@@ -1153,10 +1160,10 @@ public:
         TransferJob *m_getJob;
         TransferJob *m_putJob;
     private:
-	class FileCopyJobPrivate;
-	FileCopyJobPrivate* const d;
+        Q_DECLARE_PRIVATE(FileCopyJob)
     };
 
+    class ListJobPrivate;
     /**
      * A ListJob is allows you to get the get the content of a directory.
      * Don't create the job directly, but use KIO::listRecursive() or
@@ -1242,8 +1249,7 @@ public:
         void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
 
     private:
-	class ListJobPrivate;
-	ListJobPrivate * const d;
+        Q_DECLARE_PRIVATE(ListJob)
     };
 }
 

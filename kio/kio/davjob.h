@@ -39,7 +39,8 @@
 namespace KIO {
 
     class Slave;
-    
+
+    class DavJobPrivate;
     /**
      * The transfer job pumps data into and/or out of a Slave.
      * Data is sent to the slave on request of the slave ( dataReq).
@@ -49,9 +50,9 @@ namespace KIO {
      * @see KIO::davPropPatch()
      * @see KIO::davSearch()
      */
-    class KIO_EXPORT DavJob : public TransferJob {
-    Q_OBJECT
-
+    class KIO_EXPORT DavJob : public TransferJob
+    {
+        Q_OBJECT
     public:
         /**
 	 * Use KIO::davPropFind(), KIO::davPropPatch() and
@@ -73,9 +74,8 @@ namespace KIO {
         bool m_suspended;
         TransferJob *m_subJob;
     private:
-	class DavJobPrivate;
-	DavJobPrivate* const d;
-   };
+        Q_DECLARE_PRIVATE(DavJob)
+    };
 
    /**
     * Creates a new DavJob that issues a PROPFIND command. PROPFIND retrieves

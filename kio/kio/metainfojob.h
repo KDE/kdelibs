@@ -26,6 +26,7 @@
 #include <kfileitem.h>
 
 namespace KIO {
+    class MetaInfoJobPrivate;
     /**
      * MetaInfoJob is a KIO Job to retrieve meta information from files.
      *
@@ -101,7 +102,7 @@ namespace KIO {
 //        void saveMetaInfo(const QByteArray info);
 
     private:
-        struct MetaInfoJobPrivate* const d;
+        Q_DECLARE_PRIVATE(MetaInfoJob)
     };
 
     /**
