@@ -28,6 +28,7 @@
 
 class KJobUiDelegate;
 
+class KJobPrivate;
 /**
  * The base class for all jobs.
  * For all jobs created in an application, the code looks like
@@ -479,12 +480,13 @@ protected:
      */
     void emitSpeed(unsigned long speed);
 
-private:
-    Q_PRIVATE_SLOT(d, void _k_speedTimeout())
+protected:
+    KJobPrivate *const d_ptr;
+    KJob(KJobPrivate &dd, QObject *parent);
 
-    class Private;
-    Private *const d;
-    friend class Private;
+private:
+    Q_PRIVATE_SLOT(d_func(), void _k_speedTimeout())
+    Q_DECLARE_PRIVATE(KJob)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KJob::Capabilities )

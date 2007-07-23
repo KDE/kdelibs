@@ -25,6 +25,7 @@
 
 #include <QtCore/QList>
 
+class KCompositeJobPrivate;
 /**
  * The base class for all jobs able to be composed of one
  * or more subjobs.
@@ -104,9 +105,10 @@ protected Q_SLOTS:
      */
     virtual void slotInfoMessage( KJob *job, const QString &plain, const QString &rich );
 
+protected:
+    KCompositeJob(KCompositeJobPrivate &dd, QObject *parent);
 private:
-    class Private;
-    Private *const d;
+    Q_DECLARE_PRIVATE(KCompositeJob)
 };
 
 #endif

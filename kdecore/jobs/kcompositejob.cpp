@@ -18,27 +18,25 @@
 */
 
 #include "kcompositejob.h"
-
-class KCompositeJob::Private
-{
-public:
-    Private() {}
-
-    QList<KJob*> subjobs;
-};
+#include "kcompositejob_p.h"
 
 KCompositeJob::KCompositeJob( QObject *parent )
-    : KJob( parent ), d( new Private() )
+    : KJob( *new KCompositeJobPrivate, parent )
+{
+}
+
+KCompositeJob::KCompositeJob( KCompositeJobPrivate &dd, QObject *parent )
+    : KJob( dd, parent)
 {
 }
 
 KCompositeJob::~KCompositeJob()
 {
-    delete d;
 }
 
 bool KCompositeJob::addSubjob( KJob *job )
 {
+    Q_D(KCompositeJob);
     if ( job == 0 || d->subjobs.contains( job ) )
     {
         return false;
@@ -58,6 +56,7 @@ bool KCompositeJob::addSubjob( KJob *job )
 
 bool KCompositeJob::removeSubjob( KJob *job )
 {
+    Q_D(KCompositeJob);
     if ( job == 0 )
     {
         return false;
@@ -70,16 +69,17 @@ bool KCompositeJob::removeSubjob( KJob *job )
 
 bool KCompositeJob::hasSubjobs()
 {
-    return !d->subjobs.isEmpty();
+    return !d_func()->subjobs.isEmpty();
 }
 
 const QList<KJob*> &KCompositeJob::subjobs() const
 {
-    return d->subjobs;
+    return d_func()->subjobs;
 }
 
 void KCompositeJob::clearSubjobs()
 {
+    Q_D(KCompositeJob);
     d->subjobs.clear();
 }
 

@@ -20,6 +20,7 @@
 */
 
 #include "kjob.h"
+#include "kjob_p.h"
 
 #include "kjobuidelegate.h"
 
@@ -27,59 +28,37 @@
 #include <QEventLoop>
 #include <QMap>
 #include <QTimer>
-#include <QMetaType>
 
-class KJob::Private
-{
-public:
-    Private(KJob *job) : q(job), uiDelegate(0), error(KJob::NoError),
-                         progressUnit(KJob::Bytes), percentage(0),
-                         suspended(false), capabilities(KJob::NoCapabilities),
-                         speedTimer(0)
-    {
-        if (!_k_kjobUnitEnumRegistered) {
-            _k_kjobUnitEnumRegistered = qRegisterMetaType<KJob::Unit>("KJob::Unit");
-        }
-    }
-
-    KJob *const q;
-
-    KJobUiDelegate *uiDelegate;
-    int error;
-    QString errorText;
-    KJob::Unit progressUnit;
-    QMap<KJob::Unit, qulonglong> processedAmount;
-    QMap<KJob::Unit, qulonglong> totalAmount;
-    unsigned long percentage;
-    bool suspended;
-    KJob::Capabilities capabilities;
-    QTimer *speedTimer;
-
-    void _k_speedTimeout();
-
-    static bool _k_kjobUnitEnumRegistered;
-};
-
-bool KJob::Private::_k_kjobUnitEnumRegistered = false;
+bool KJobPrivate::_k_kjobUnitEnumRegistered = false;
 
 KJob::KJob(QObject *parent)
-    : QObject(parent), d(new Private(this))
+    : QObject(parent), d_ptr(new KJobPrivate)
 {
+    d_ptr->q_ptr = this;
+    // Don't exit while this job is running
+    KGlobal::ref();
+}
+
+KJob::KJob(KJobPrivate &dd, QObject *parent)
+    : QObject(parent), d_ptr(&dd)
+{
+    d_ptr->q_ptr = this;
     // Don't exit while this job is running
     KGlobal::ref();
 }
 
 KJob::~KJob()
 {
-    delete d->speedTimer;
-    delete d->uiDelegate;
-    delete d;
+    delete d_ptr->speedTimer;
+    delete d_ptr->uiDelegate;
+    delete d_ptr;
 
     KGlobal::deref();
 }
 
 void KJob::setUiDelegate( KJobUiDelegate *delegate )
 {
+    Q_D(KJob);
     if ( delegate == 0 || delegate->setJob( this ) )
     {
         delete d->uiDelegate;
@@ -94,17 +73,17 @@ void KJob::setUiDelegate( KJobUiDelegate *delegate )
 
 KJobUiDelegate *KJob::uiDelegate() const
 {
-    return d->uiDelegate;
+    return d_func()->uiDelegate;
 }
 
 KJob::Capabilities KJob::capabilities() const
 {
-    return d->capabilities;
+    return d_func()->capabilities;
 }
 
 bool KJob::isSuspended() const
 {
-    return d->suspended;
+    return d_func()->suspended;
 }
 
 bool KJob::kill( KillVerbosity verbosity )
@@ -135,6 +114,7 @@ bool KJob::kill( KillVerbosity verbosity )
 
 bool KJob::suspend()
 {
+    Q_D(KJob);
     if ( !d->suspended )
     {
         if ( doSuspend() )
@@ -151,6 +131,7 @@ bool KJob::suspend()
 
 bool KJob::resume()
 {
+    Q_D(KJob);
     if ( d->suspended )
     {
         if ( doResume() )
@@ -182,11 +163,13 @@ bool KJob::doResume()
 
 void KJob::setCapabilities( KJob::Capabilities capabilities )
 {
+    Q_D(KJob);
     d->capabilities = capabilities;
 }
 
 bool KJob::exec()
 {
+    Q_D(KJob);
     QEventLoop loop( this );
 
     connect( this, SIGNAL( result( KJob* ) ),
@@ -199,46 +182,49 @@ bool KJob::exec()
 
 int KJob::error() const
 {
-    return d->error;
+    return d_func()->error;
 }
 
 QString KJob::errorText() const
 {
-    return d->errorText;
+    return d_func()->errorText;
 }
 
 QString KJob::errorString() const
 {
-    return d->errorText;
+    return d_func()->errorText;
 }
 
 qulonglong KJob::processedAmount(Unit unit) const
 {
-    return d->processedAmount[unit];
+    return d_func()->processedAmount[unit];
 }
 
 qulonglong KJob::totalAmount(Unit unit) const
 {
-    return d->totalAmount[unit];
+    return d_func()->totalAmount[unit];
 }
 
 unsigned long KJob::percent() const
 {
-    return d->percentage;
+    return d_func()->percentage;
 }
 
 void KJob::setError( int errorCode )
 {
+    Q_D(KJob);
     d->error = errorCode;
 }
 
 void KJob::setErrorText( const QString &errorText )
 {
+    Q_D(KJob);
     d->errorText = errorText;
 }
 
 void KJob::setProcessedAmount(Unit unit, qulonglong amount)
 {
+    Q_D(KJob);
     bool should_emit = (d->processedAmount[unit] != amount);
 
     d->processedAmount[unit] = amount;
@@ -255,6 +241,7 @@ void KJob::setProcessedAmount(Unit unit, qulonglong amount)
 
 void KJob::setTotalAmount(Unit unit, qulonglong amount)
 {
+    Q_D(KJob);
     bool should_emit = (d->totalAmount[unit] != amount);
 
     d->totalAmount[unit] = amount;
@@ -271,6 +258,7 @@ void KJob::setTotalAmount(Unit unit, qulonglong amount)
 
 void KJob::setPercent( unsigned long percentage )
 {
+    Q_D(KJob);
     if ( d->percentage!=percentage )
     {
         d->percentage = percentage;
@@ -290,6 +278,7 @@ void KJob::emitResult()
 
 void KJob::emitPercent( qulonglong processedAmount, qulonglong totalAmount )
 {
+    Q_D(KJob);
     // calculate percents
     unsigned long ipercentage = d->percentage;
 
@@ -310,6 +299,7 @@ void KJob::emitPercent( qulonglong processedAmount, qulonglong totalAmount )
 
 void KJob::emitSpeed(unsigned long value)
 {
+    Q_D(KJob);
     if (!d->speedTimer) {
         d->speedTimer = new QTimer(this);
         connect(d->speedTimer, SIGNAL(timeout()), SLOT(_k_speedTimeout()));
@@ -319,8 +309,9 @@ void KJob::emitSpeed(unsigned long value)
     d->speedTimer->start(5000);   // 5 seconds interval should be enough
 }
 
-void KJob::Private::_k_speedTimeout()
+void KJobPrivate::_k_speedTimeout()
 {
+    Q_Q(KJob);
     // send 0 and stop the timer
     // timer will be restarted only when we receive another speed event
     emit q->speed(q, 0);
