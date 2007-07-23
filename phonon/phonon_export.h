@@ -27,11 +27,7 @@
 #  ifdef MAKE_PHONON_LIB /* We are building this library */
 #   define PHONON_EXPORT Q_DECL_EXPORT
 #  else /* We are using this library */
-#    ifdef Q_CC_MINGW
-#      define PHONON_EXPORT 
-#    else
-#      define PHONON_EXPORT Q_DECL_IMPORT
-#    endif
+#   define PHONON_EXPORT Q_DECL_IMPORT
 #  endif
 # else /* UNIX */
 #  define PHONON_EXPORT Q_DECL_EXPORT
