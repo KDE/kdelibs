@@ -632,6 +632,26 @@ bool KHTMLPart::openUrl( const KUrl &url )
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
 
+  if (isFrameSet && urlcmp( url.url(), this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ) 
+                 && args.softReload)
+  {
+    QList<khtml::ChildFrame*>::Iterator it = d->m_frames.begin();
+    const QList<khtml::ChildFrame*>::Iterator end = d->m_frames.end();
+    for (; it != end; ++it) {
+      KHTMLPart* const part = qobject_cast<KHTMLPart *>( (*it)->m_part );
+      if (part)
+      {
+        // We are reloading frames to make them jump into offsets.
+        KParts::URLArgs partargs( part->d->m_extension->urlArgs() );
+        partargs.reload = true;
+        part->d->m_extension->setUrlArgs(partargs);
+
+        part->openUrl( part->url() );
+      }
+    }/*next it*/
+    return true;
+  }
+
   if ( url.hasRef() && !isFrameSet )
   {
     bool noReloadForced = !args.reload && !args.redirectedRequest() && !args.doPost();
@@ -2594,8 +2614,8 @@ void KHTMLPartPrivate::setFlagRecursively(
     QList<khtml::ChildFrame*>::Iterator it = m_frames.begin();
     const QList<khtml::ChildFrame*>::Iterator itEnd = m_frames.end();
     for (; it != itEnd; ++it) {
-      KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
-      if (part->inherits("KHTMLPart"))
+      KHTMLPart* const part = qobject_cast<KHTMLPart *>( (*it)->m_part );
+      if (part)
         part->d->setFlagRecursively(flag, value);
     }/*next it*/
   }
