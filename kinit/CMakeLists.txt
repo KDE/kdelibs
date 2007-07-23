@@ -130,7 +130,7 @@ install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### install files ###############
 
-install( FILES org.kde.KLauncher.xml DESTINATION ${DBUS_INTERFACES_DIR} )
+install( FILES org.kde.KLauncher.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
 
 
 

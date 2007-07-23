@@ -257,37 +257,6 @@ include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 add_subdirectory( kmultipart )
 add_subdirectory( java )
 
-set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
-
-macro(CREATE_LUT _in_FILE _out_FILE)
-
-   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
-      COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
-      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
-   )
-   if(KDE4_ENABLE_FINAL)
-     macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/khtml_final_cpp.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
-   else(KDE4_ENABLE_FINAL)
-     macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
-   endif(KDE4_ENABLE_FINAL)
-endmacro(CREATE_LUT)
-
-create_lut(ecma/kjs_dom.cpp kjs_dom.lut.h)
-create_lut(ecma/kjs_html.cpp kjs_html.lut.h)
-create_lut(ecma/kjs_window.cpp kjs_window.lut.h)
-create_lut(ecma/kjs_css.cpp kjs_css.lut.h)
-create_lut(ecma/kjs_events.cpp kjs_events.lut.h)
-create_lut(ecma/kjs_navigator.cpp kjs_navigator.lut.h)
-create_lut(ecma/kjs_mozilla.cpp kjs_mozilla.lut.h)
-create_lut(ecma/kjs_range.cpp kjs_range.lut.h)
-create_lut(ecma/kjs_traversal.cpp kjs_traversal.lut.h)
-create_lut(ecma/kjs_views.cpp kjs_views.lut.h)
-create_lut(ecma/xmlhttprequest.cpp xmlhttprequest.lut.h)
-create_lut(ecma/xmlserializer.cpp xmlserializer.lut.h)
-create_lut(ecma/domparser.cpp domparser.lut.h)
-create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
-create_lut(ecma/kjs_audio.cpp kjs_audio.lut.h)
-
 
 ########### libkhtml ###############
 
@@ -326,6 +295,40 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kdeprint kde3support kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
+
+
+set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
+macro(CREATE_LUT _in_FILE _out_FILE)
+
+   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
+   )
+   if(KDE4_ENABLE_FINAL)
+     macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/khtml_final_cpp.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
+   else(KDE4_ENABLE_FINAL)
+     macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
+   endif(KDE4_ENABLE_FINAL)
+endmacro(CREATE_LUT)
+
+
+create_lut(ecma/kjs_dom.cpp kjs_dom.lut.h)
+create_lut(ecma/kjs_html.cpp kjs_html.lut.h)
+create_lut(ecma/kjs_window.cpp kjs_window.lut.h)
+create_lut(ecma/kjs_css.cpp kjs_css.lut.h)
+create_lut(ecma/kjs_events.cpp kjs_events.lut.h)
+create_lut(ecma/kjs_navigator.cpp kjs_navigator.lut.h)
+create_lut(ecma/kjs_mozilla.cpp kjs_mozilla.lut.h)
+create_lut(ecma/kjs_range.cpp kjs_range.lut.h)
+create_lut(ecma/kjs_traversal.cpp kjs_traversal.lut.h)
+create_lut(ecma/kjs_views.cpp kjs_views.lut.h)
+create_lut(ecma/xmlhttprequest.cpp xmlhttprequest.lut.h)
+create_lut(ecma/xmlserializer.cpp xmlserializer.lut.h)
+create_lut(ecma/domparser.cpp domparser.lut.h)
+create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
+create_lut(ecma/kjs_audio.cpp kjs_audio.lut.h)
+
+
 install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )
 
 
@@ -420,6 +423,6 @@ install( FILES khtml.rc khtml_browser.rc khtml_popupmenu.rc  DESTINATION  ${DATA
 install( FILES khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES dom/dom_exception.h   dom/html_base.h       dom/html_inline.h    dom/css_rule.h        dom/dom_html.h        dom/html_block.h      dom/html_list.h    dom/css_stylesheet.h  dom/dom_misc.h        dom/html_document.h   dom/html_misc.h    dom/css_value.h       dom/dom_node.h        dom/html_element.h    dom/html_object.h     dom/dom_core.h        dom/dom_string.h      dom/html_form.h       dom/html_table.h   dom/dom_doc.h         dom/dom_text.h        dom/html_head.h    dom/dom_element.h     dom/dom_xml.h         dom/html_image.h   dom/dom2_range.h      dom/dom2_traversal.h  dom/dom2_events.h     dom/dom2_views.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/dom )
 
-install( FILES org.kde.KHTMLPart.xml DESTINATION ${DBUS_INTERFACES_DIR} )
+install( FILES org.kde.KHTMLPart.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
 
 

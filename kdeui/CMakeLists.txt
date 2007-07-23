@@ -258,7 +258,7 @@ set(kwallet_adaptor ${CMAKE_SOURCE_DIR}/kio/misc/kwalletd/kwalletdadaptor.h)
 set(kwallet_xml ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KWallet.xml)
 
 qt4_generate_dbus_interface( ${kwallet_adaptor} org.kde.KWallet.xml )
-install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_DIR})
+install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 
@@ -489,4 +489,4 @@ install( FILES
   jobs/org.kde.UiServer.xml
   jobs/org.kde.UiServerCallbacks.xml
   shortcuts/org.kde.KdedGlobalAccel.xml
-  DESTINATION ${DBUS_INTERFACES_DIR})
+  DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
