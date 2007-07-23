@@ -573,6 +573,12 @@ QString KFileItem::user() const
     QString userName = d->m_entry.stringValue( KIO::UDS_USER );
     if ( userName.isEmpty() && d->m_bIsLocalUrl )
     {
+#ifdef Q_WS_WIN
+        QFileInfo a(QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )));
+        userName = a.owner(); 
+        qDebug() << __FUNCTION__ << userName; 
+        d->m_entry.insert( KIO::UDS_USER, userName );
+#else        
         KDE_struct_stat buff;
         if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
@@ -582,6 +588,7 @@ QString KFileItem::user() const
                 d->m_entry.insert( KIO::UDS_USER, userName );
             }
         }
+#endif
     }
     return userName;
 }
@@ -591,10 +598,14 @@ QString KFileItem::group() const
     QString groupName = d->m_entry.stringValue( KIO::UDS_GROUP );
     if (groupName.isEmpty() && d->m_bIsLocalUrl )
     {
+#ifdef Q_WS_WIN
+        QFileInfo a(QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )));
+        groupName = a.group(); 
+        d->m_entry.insert( KIO::UDS_GROUP, groupName );
+#else        
         KDE_struct_stat buff;
         if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
-#ifdef Q_OS_UNIX
             struct group *ge = getgrgid( buff.st_gid );
             if ( ge != 0 ) {
                 groupName = QString::fromLocal8Bit(ge->gr_name);
@@ -602,10 +613,10 @@ QString KFileItem::group() const
                     groupName.sprintf("%d",ge->gr_gid);
             }
             else
-#endif
                 groupName.sprintf("%d",buff.st_gid);
             d->m_entry.insert( KIO::UDS_GROUP, groupName );
         }
+#endif
     }
     return groupName;
 }
