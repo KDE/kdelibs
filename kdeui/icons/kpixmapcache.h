@@ -95,24 +95,24 @@ public:
     bool useQPixmapCache() const;
 
     /**
-     * @return approximate size of the cache, in bytes.
+     * @return approximate size of the cache, in kilobytes.
      **/
     int size() const;
     /**
-     * @return maximum size of the cache (in bytes).
+     * @return maximum size of the cache (in kilobytes).
      * Default setting is 3 megabytes.
      **/
     int cacheLimit() const;
     /**
-     * Sets the maximum size of the cache (in bytes). If cache gets bigger the
-     * limit then some entries are removed (according to
+     * Sets the maximum size of the cache (in kilobytes). If cache gets bigger
+     * the limit then some entries are removed (according to
      *  @ref removeEntryStrategy() ).
      * Setting cache limit to 0 disables automatic cache size limiting.
      *
      * Note that the cleanup might not be done immediately, so the cache might
      *  temporarily (for a few seconds) grow bigger than the limit.
      **/
-    void setCacheLimit(int bytes);
+    void setCacheLimit(int kbytes);
     /**
      * Describes which entries will be removed first during cache cleanup.
      **/

@@ -249,7 +249,7 @@ KPixmapCache::KPixmapCache(const QString& name)
 {
     d->mName = name;
     d->mUseQPixmapCache = true;
-    d->mCacheLimit = 3 * 1024 * 1024;
+    d->mCacheLimit = 3 * 1024;
     d->mRemoveStrategy = RemoveLeastRecentlyUsed;
 
     // We cannot call init() here because the subclasses haven't been
@@ -347,7 +347,7 @@ void KPixmapCache::setTimestamp(unsigned int ts)
 int KPixmapCache::size() const
 {
     ensureInited();
-    return QFileInfo(d->mDataFile).size();
+    return QFileInfo(d->mDataFile).size() / 1024;
 }
 
 void KPixmapCache::setUseQPixmapCache(bool use)
@@ -365,9 +365,9 @@ int KPixmapCache::cacheLimit() const
     return d->mCacheLimit;
 }
 
-void KPixmapCache::setCacheLimit(int bytes)
+void KPixmapCache::setCacheLimit(int kbytes)
 {
-    d->mCacheLimit = bytes;
+    d->mCacheLimit = kbytes;
     // TODO: cleanup if size() > cacheLimit()
 }
 

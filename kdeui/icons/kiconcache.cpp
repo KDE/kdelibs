@@ -51,7 +51,7 @@ KIconCache::KIconCache()
     : KPixmapCache(KDE_ICONCACHE_NAME), d(new Private)
 {
     // Set limit to 10 MB
-    setCacheLimit(10 * 1024 * 1024);
+    setCacheLimit(10 * 1024);
 }
 
 KIconCache::~KIconCache()
