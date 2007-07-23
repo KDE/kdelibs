@@ -49,7 +49,7 @@ public:
      */
     enum StringFormat {
       ShortFormat,      /**< Short string format, e.g. 2000 = "00" or 6 = "6" */
-      LongFormat,       /**< Long string format, e.g. 2000 = "2000" or 6 = "06" */
+      LongFormat        /**< Long string format, e.g. 2000 = "2000" or 6 = "06" */
     };
 
     /**
@@ -59,7 +59,7 @@ public:
       ShortName,                /**< Short name format, e.g. "Dec" */
       LongName,                 /**< Long name format, e.g. "December" */
       ShortNamePossessive,      /**< Short name possessive format, e.g. "of Dec" */
-      LongNamePossessive,       /**< Long name possessive format, e.g. "of December" */
+      LongNamePossessive        /**< Long name possessive format, e.g. "of December" */
     };
 
     /**
@@ -67,7 +67,7 @@ public:
      */
     enum WeekDayNameFormat {
       ShortDayName,                /**< Short name format, e.g. "Fri" */
-      LongDayName,                 /**< Long name format, e.g. "Friday" */
+      LongDayName                  /**< Long name format, e.g. "Friday" */
     };
 
   /**
