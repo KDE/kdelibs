@@ -115,7 +115,8 @@ static RenderObject* getParentOfFirstLineBox(RenderObject* curr, RenderObject* m
             break;
 
         if (currChild->style()->htmlHacks() && currChild->element() &&
-            (currChild->element()->id() == ID_UL || currChild->element()->id() == ID_OL))
+            (currChild->element()->id() == ID_UL || currChild->element()->id() == ID_OL ||
+             currChild->element()->id() == ID_DIR || currChild->element()->id() == ID_MENU))
             break;
 
         RenderObject* lineBox = getParentOfFirstLineBox(currChild, marker);

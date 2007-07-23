@@ -552,14 +552,12 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
                (!strict && check_flow(childID, true));
     case ID_OL:
     case ID_UL:
-        // OL: LI +
-        return (childID == ID_LI || childID == ID_TEXT) || 
-               (!strict && check_flow(childID, true));
     case ID_DIR:
     case ID_MENU:
-        // (DIR|MENU): LI + - _3
-        if(childID == ID_LI) return true;
-        return false;
+        // OL: LI +
+        // For DIR and MENU, the DTD says - %block, but it contradicts spec language.. 
+        return (childID == ID_LI || childID == ID_TEXT) || 
+               (!strict && check_flow(childID, true));
     case ID_FORM:
         // FORM: %flow * - FORM
         return check_flow(childID, strict);
@@ -674,35 +672,6 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
         //forbiddenTags[ID_SUP]++;
         forbiddenTags[ID_BASEFONT]++;
         break;
-    case ID_DIR:
-    case ID_MENU:
-        forbiddenTags[ID_P]++;
-        forbiddenTags[ID_H1]++;
-        forbiddenTags[ID_H2]++;
-        forbiddenTags[ID_H3]++;
-        forbiddenTags[ID_H4]++;
-        forbiddenTags[ID_H5]++;
-        forbiddenTags[ID_H6]++;
-        forbiddenTags[ID_UL]++;
-        forbiddenTags[ID_OL]++;
-        forbiddenTags[ID_DIR]++;
-        forbiddenTags[ID_MENU]++;
-        forbiddenTags[ID_PRE]++;
-        forbiddenTags[ID_PLAINTEXT]++;
-        forbiddenTags[ID_XMP]++;
-        forbiddenTags[ID_DL]++;
-        forbiddenTags[ID_DIV]++;
-        forbiddenTags[ID_CENTER]++;
-        forbiddenTags[ID_NOSCRIPT]++;
-        forbiddenTags[ID_NOFRAMES]++;
-        forbiddenTags[ID_BLOCKQUOTE]++;
-        forbiddenTags[ID_FORM]++;
-        forbiddenTags[ID_ISINDEX]++;
-        forbiddenTags[ID_HR]++;
-        forbiddenTags[ID_TABLE]++;
-        forbiddenTags[ID_FIELDSET]++;
-        forbiddenTags[ID_ADDRESS]++;
-        break;
     case ID_LABEL:
         forbiddenTags[ID_LABEL]++;
         break;
@@ -745,35 +714,6 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
         //forbiddenTags[ID_SUB]--;
         //forbiddenTags[ID_SUP]--;
         forbiddenTags[ID_BASEFONT]--;
-        break;
-    case ID_DIR:
-    case ID_MENU:
-        forbiddenTags[ID_P]--;
-        forbiddenTags[ID_H1]--;
-        forbiddenTags[ID_H2]--;
-        forbiddenTags[ID_H3]--;
-        forbiddenTags[ID_H4]--;
-        forbiddenTags[ID_H5]--;
-        forbiddenTags[ID_H6]--;
-        forbiddenTags[ID_UL]--;
-        forbiddenTags[ID_OL]--;
-        forbiddenTags[ID_DIR]--;
-        forbiddenTags[ID_MENU]--;
-        forbiddenTags[ID_PRE]--;
-        forbiddenTags[ID_PLAINTEXT]--;
-        forbiddenTags[ID_XMP]--;
-        forbiddenTags[ID_DL]--;
-        forbiddenTags[ID_DIV]--;
-        forbiddenTags[ID_CENTER]--;
-        forbiddenTags[ID_NOSCRIPT]--;
-        forbiddenTags[ID_NOFRAMES]--;
-        forbiddenTags[ID_BLOCKQUOTE]--;
-        forbiddenTags[ID_FORM]--;
-        forbiddenTags[ID_ISINDEX]--;
-        forbiddenTags[ID_HR]--;
-        forbiddenTags[ID_TABLE]--;
-        forbiddenTags[ID_FIELDSET]--;
-        forbiddenTags[ID_ADDRESS]--;
         break;
     case ID_LABEL:
         forbiddenTags[ID_LABEL]--;

@@ -258,15 +258,29 @@ li {
         -khtml-flow-mode: -khtml-around-floats;
 }
 
-
-ul ul, ol ul {
-	list-style-type: circle;
+ul   ul ul,   ul   ol ul,     ul   menu ul,   ul   dir ul, 
+ol   ul ul,   ol   ol ul,     ol   menu ul,   ol   dir ul,
+menu ul ul,   menu ol ul,     menu menu ul,   menu dir ul,
+dir  ul ul,   dir  ol ul,     dir  menu ul,   dir  dir ul,
+ul   ul menu, ul   ol menu,   ul   menu menu, ul   dir menu, 
+ol   ul menu, ol   ol menu,   ol   menu menu, ol   dir menu,
+menu ul menu, menu ol menu,   menu menu menu, menu dir menu,
+dir  ul menu, dir  ol menu,   dir  menu menu, dir  dir menu,
+ul   ul dir,  ul   ol dir,    ul   menu dir,  ul   dir dir, 
+ol   ul dir,  ol   ol dir,    ol   menu dir,  ol   dir dir,
+menu ul dir,  menu ol dir,    menu menu dir,  menu dir dir,
+dir  ul dir,  dir  ol dir,    dir  menu dir,  dir  dir dir
+{
+  list-style-type: square;
 }
 
-ol ol ul, ol ul ul, ul ol ul, ul ul ul {
-	list-style-type: square;
+ul   ul, ul   ol, ul   menu, ul   dir,
+ol   ul, ol   ol, ol   menu, ol   dir,
+menu ul, menu ol, menu menu, menu dir,
+dir  ul, dir  ol, dir  menu, dir  dir
+{
+  list-style-type: circle;
 }
-
 
 dd {
 	display: block;
@@ -289,10 +303,11 @@ dl[compact] > dt {
 	display: compact;
 }
 
-ol ul,
-ul ol,
-ul ul,
-ol ol {
+ol   ul, ol   menu, ol   dir, ol   ol,
+ul   ul, ul   menu, ul   dir, ul   ol,
+menu ul, menu menu, menu dir, menu ol,
+dir  ul, dir  menu, dir  dir, dir  ol
+{
 	margin-top: auto;
 	margin-bottom: auto;
 }
