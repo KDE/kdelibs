@@ -115,7 +115,6 @@ static bool operator!=( const KDE_struct_stat& st_buf1,
 
 static bool testLinkCountSupport(const QByteArray &fileName)
 {
-#ifndef Q_OS_WIN
    KDE_struct_stat st_buf;
    int result = -1;
    // Check if hardlinks raise the link count at all?
@@ -124,9 +123,6 @@ static bool testLinkCountSupport(const QByteArray &fileName)
      ::unlink( fileName+".test" );
    }
    return (result < 0 || ((result == 0) && (st_buf.st_nlink == 2)));
-#else
-   return false;
-#endif
 }
 
 static KLockFile::LockResult lockFile(const QString &lockFile, KDE_struct_stat &st_buf,
@@ -204,11 +200,9 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
    QByteArray tmpFile = QFile::encodeName(ktmpFile->fileName());
    delete ktmpFile;
 
-#ifdef Q_OS_UNIX
    // link to lock file
    if (::link(lckFile, tmpFile) != 0)
       return KLockFile::LockFail; // Try again later
-#endif
 
    // check if link count increased with exactly one
    // and if the lock file still matches
@@ -354,11 +348,7 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
      if (n < 2000)
         n = n * 2;
 
-#ifdef Q_OS_UNIX
      select(0, 0, 0, 0, &tv);
-#else
-     //TODO for win32
-#endif
   }
   if (result == LockOK)
      d->isLocked = true;
