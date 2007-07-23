@@ -24,10 +24,11 @@
 
 #include "kjob_p.h"
 
-class KCompositeJobPrivate: public KJobPrivate
+class KDECORE_EXPORT KCompositeJobPrivate: public KJobPrivate
 {
 public:
-    KCompositeJobPrivate() { }
+    KCompositeJobPrivate();
+    ~KCompositeJobPrivate();
 
     QList<KJob*> subjobs;
 

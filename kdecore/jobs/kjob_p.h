@@ -29,19 +29,11 @@
 class KJobUiDelegate;
 class QTimer;
 
-class KJobPrivate
+class KDECORE_EXPORT KJobPrivate
 {
 public:
-    KJobPrivate()
-        : q_ptr(0), uiDelegate(0), error(KJob::NoError),
-          progressUnit(KJob::Bytes), percentage(0),
-          suspended(false), capabilities(KJob::NoCapabilities),
-          speedTimer(0)
-    {
-        if (!_k_kjobUnitEnumRegistered) {
-            _k_kjobUnitEnumRegistered = qRegisterMetaType<KJob::Unit>("KJob::Unit");
-        }
-    }
+    KJobPrivate();
+    ~KJobPrivate();
 
     KJob *q_ptr;
 

@@ -20,6 +20,14 @@
 #include "kcompositejob.h"
 #include "kcompositejob_p.h"
 
+KCompositeJobPrivate::KCompositeJobPrivate()
+{
+}
+
+KCompositeJobPrivate::~KCompositeJobPrivate()
+{
+}
+
 KCompositeJob::KCompositeJob( QObject *parent )
     : KJob( *new KCompositeJobPrivate, parent )
 {
