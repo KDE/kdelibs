@@ -267,7 +267,7 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
   {
     QWidget *w = static_cast<QWidget*>(it);
 
-    if ( !w->isVisibleTo( widget ) || w->isTopLevel() )
+    if ( !w->isVisibleTo( widget ) || ( w->isTopLevel() && dynamic_cast<QPopupMenu*>(w) == NULL ) )
         continue;
 
     if ( KAcceleratorManagerPrivate::ignored_widgets.find( w ) != KAcceleratorManagerPrivate::ignored_widgets.end() )
