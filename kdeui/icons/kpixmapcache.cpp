@@ -296,12 +296,12 @@ void KPixmapCache::ensureInited() const
     }
 }
 
-bool KPixmapCache::loadCustomIndexHeader(QDataStream& stream)
+bool KPixmapCache::loadCustomIndexHeader(QDataStream&)
 {
     return true;
 }
 
-void KPixmapCache::writeCustomIndexHeader(QDataStream& stream)
+void KPixmapCache::writeCustomIndexHeader(QDataStream&)
 {
 }
 
@@ -522,7 +522,7 @@ bool KPixmapCache::loadData(int offset, QPixmap& pix)
     return true;
 }
 
-bool KPixmapCache::loadCustomData(QDataStream& stream)
+bool KPixmapCache::loadCustomData(QDataStream&)
 {
     return true;
 }
@@ -586,7 +586,7 @@ int KPixmapCache::writeData(const QString& key, const QPixmap& pix)
     return offset;
 }
 
-bool KPixmapCache::writeCustomData(QDataStream& stream)
+bool KPixmapCache::writeCustomData(QDataStream&)
 {
     return true;
 }
