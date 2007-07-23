@@ -30,6 +30,7 @@
 class QPixmap;
 
 namespace KIO {
+    class PreviewJobPrivate;
     /*!
      * This class catches a preview (thumbnail) for files.
      * @short KIO Job to get a thumbnail picture
@@ -103,24 +104,14 @@ namespace KIO {
          */
         void failed( const KFileItem& item );
 
-    protected:
-        void getOrCreateThumbnail();
-        bool statResultThumbnail();
-        void createThumbnail( const QString& );
-
     protected Q_SLOTS:
         virtual void slotResult( KJob *job );
 
-    private Q_SLOTS:
-        void startPreview();
-        void slotThumbData(KIO::Job *, const QByteArray &);
-
     private:
-        void determineNextFile();
-        void emitPreview(const QImage &thumb);
-
-    private:
-        struct PreviewJobPrivate* const d;
+        Q_PRIVATE_SLOT(d, void startPreview())
+        Q_PRIVATE_SLOT(d, void slotThumbData(KIO::Job *, const QByteArray &))
+        friend class PreviewJobPrivate;
+        PreviewJobPrivate* const d;
     };
 
     /**
