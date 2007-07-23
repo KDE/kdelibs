@@ -46,6 +46,7 @@ template <class T>
 class QList;
 class QModelIndex;
 class QUrl;
+class QHostAddress;
 
 class kdbgstream;
 class kndbgstream;
@@ -361,6 +362,13 @@ class KDECORE_EXPORT kdbgstream {
      * @return this stream
      */
     kdbgstream& operator << ( const QVariant& variant );
+
+    /**
+     * Prints the given value.
+     * @param address the address to print
+     * @return this stream
+     */
+    kdbgstream& operator << ( const QHostAddress& address );
 
     /**
      * Prints the given value

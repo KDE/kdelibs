@@ -51,6 +51,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QObject>
 #include <QtCore/QCharRef>
+#include <QtNetwork/QHostAddress>
 #include <qpoint.h>
 #include <qrect.h>
 #include <qstringlist.h>
@@ -580,6 +581,10 @@ kdbgstream& kdbgstream::operator<<( const QRectF& r ) {
 kdbgstream& kdbgstream::operator<<( const QStringList& l ) {
     if ( !d->print ) return *this;
     return *this << static_cast<QList<QString> >(l);
+}
+kdbgstream& kdbgstream::operator<<( const QHostAddress& address ) {
+    if ( !d->print ) return *this;
+    return *this << address.toString();
 }
 kdbgstream& kdbgstream::operator<<( const QVariant& v) {
     if ( !d->print )
