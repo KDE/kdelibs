@@ -31,23 +31,41 @@
  *
  ***********************************************************************/
 
+class KAutoMountPrivate
+{
+public:
+    KAutoMountPrivate(KAutoMount *qq, const QString &device, const QString &desktopFile,
+                      bool showFileManagerWindow)
+        : q(qq), m_strDevice(device), m_desktopFile(desktopFile),
+          m_bShowFilemanagerWindow(showFileManagerWindow)
+        { }
+
+    KAutoMount *q;
+    QString m_strDevice;
+    QString m_desktopFile;
+    bool m_bShowFilemanagerWindow;
+
+    void slotResult( KJob * );
+};
+
 KAutoMount::KAutoMount( bool _readonly, const QByteArray& _format, const QString& _device,
                         const QString&  _mountpoint, const QString & _desktopFile,
                         bool _show_filemanager_window )
-  : m_strDevice( _device ),
-    m_desktopFile( _desktopFile ), d(0)
+    : d(new KAutoMountPrivate(this, _device, _desktopFile, _show_filemanager_window))
 {
-  //kDebug(7015) << "KAutoMount device=" << _device << " mountpoint=" << _mountpoint << endl;
-  m_bShowFilemanagerWindow = _show_filemanager_window;
-
-  KIO::Job* job = KIO::mount( _readonly, _format, _device, _mountpoint );
-  connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
+    KIO::Job* job = KIO::mount( _readonly, _format, _device, _mountpoint );
+    connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
 }
 
-void KAutoMount::slotResult( KJob * job )
+KAutoMount::~KAutoMount()
+{
+    delete d;
+}
+
+void KAutoMountPrivate::slotResult( KJob * job )
 {
     if ( job->error() ) {
-        emit error();
+        emit q->error();
         job->uiDelegate()->showErrorMessage();
     } else {
         KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( m_strDevice );
@@ -71,58 +89,57 @@ void KAutoMount::slotResult( KJob * job )
         org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
         //KDirWatch::self()->setFileDirty( m_desktopFile );
 
-        emit finished();
+        emit q->finished();
     }
-    deleteLater();
+    q->deleteLater();
 }
 
-KAutoMount::~KAutoMount()
-{
-}
-
-class KAutoUnmount::KAutoUnmountPrivate
+class KAutoUnmountPrivate
 {
 public:
-    KAutoUnmountPrivate( const QString & _mountpoint, const QString & _desktopFile )
-        : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint )
+    KAutoUnmountPrivate( KAutoUnmount *qq, const QString & _mountpoint, const QString & _desktopFile )
+        : q(qq), m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint )
     {}
+    KAutoUnmount *q;
     QString m_desktopFile;
     QString m_mountpoint;
+
+    void slotResult( KJob * job );
 };
 
 KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile )
-    : d( new KAutoUnmountPrivate(_desktopFile, _mountpoint) )
+    : d( new KAutoUnmountPrivate(this, _desktopFile, _mountpoint) )
 {
     KIO::Job * job = KIO::unmount( d->m_mountpoint );
     connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
 }
 
-void KAutoUnmount::slotResult( KJob * job )
+void KAutoUnmountPrivate::slotResult( KJob * job )
 {
     if ( job->error() ) {
-        emit error();
+        emit q->error();
         job->uiDelegate()->showErrorMessage();
     }
     else
     {
         // Update the desktop file which is used for mount/unmount (icon change)
-        kDebug(7015) << "unmount finished : updating " << d->m_desktopFile << endl;
+        kDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
         KUrl dfURL;
-        dfURL.setPath( d->m_desktopFile );
+        dfURL.setPath( m_desktopFile );
         org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
-        //KDirWatch::self()->setFileDirty( d->m_desktopFile );
+        //KDirWatch::self()->setFileDirty( m_desktopFile );
 
         // Notify about the new stuff in that dir, in case of opened windows showing it
         // You may think we removed files, but this may have also readded some
         // (if the mountpoint wasn't empty). The only possible behavior on FilesAdded
         // is to relist the directory anyway.
-        KUrl mp( d->m_mountpoint );
+        KUrl mp( m_mountpoint );
         org::kde::KDirNotify::emitFilesAdded( mp.url() );
 
-        emit finished();
+        emit q->finished();
     }
 
-    deleteLater();
+    q->deleteLater();
 }
 
 KAutoUnmount::~KAutoUnmount()

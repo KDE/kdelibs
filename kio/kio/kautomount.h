@@ -28,9 +28,10 @@
 
 class KJob;
 namespace KIO {
-class Job;
+    class Job;
 }
 
+class KAutoMountPrivate;
 /**
  * This class implements synchronous mounting of devices,
  * as well as showing a file-manager window after mounting a device, optionally.
@@ -63,19 +64,15 @@ Q_SIGNALS:
     /** Emitted in case the directory could not been mounted */
     void error();
 
-protected Q_SLOTS:
-    void slotResult( KJob * );
-
-protected:
-    QString m_strDevice;
-    bool m_bShowFilemanagerWindow;
-    QString m_desktopFile;
 private:
     /** KAutoMount deletes itself. Don't delete it manually. */
     ~KAutoMount();
-    class KAutoMountPrivate* const d;
+    Q_PRIVATE_SLOT(d, void slotResult( KJob * ))
+    friend class KAutoMountPrivate;
+    KAutoMountPrivate* const d;
 };
 
+class KAutoUnmountPrivate;
 /**
  * This class implements synchronous unmounting of devices,
  * It is a wrapper around the asychronous KIO::special() call for unmount,
@@ -101,12 +98,11 @@ Q_SIGNALS:
     /** Emitted in case the directory could not been unmounted */
     void error();
 
-protected Q_SLOTS:
-    void slotResult( KJob * );
 private:
     /** KAutoUnmount deletes itself. Don't delete it manually. */
     ~KAutoUnmount();
-    class KAutoUnmountPrivate;
+    Q_PRIVATE_SLOT(d, void slotResult( KJob * ))
+    friend class KAutoUnmountPrivate;
     KAutoUnmountPrivate* const d;
 };
 
