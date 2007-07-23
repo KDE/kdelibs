@@ -12,7 +12,7 @@ kde4_add_ui_files(knotifytest_SRCS knotifytestview.ui)
 
 kde4_add_test_executable(knotifytest ${knotifytest_SRCS})
 
-target_link_libraries(knotifytest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} knotifyconfig )
+target_link_libraries(knotifytest  ${KDE4_KIO_LIBS} knotifyconfig )
 
 #the binary file doesn't need to be installed
 #install(TARGETS knotifytest DESTINATION ${BIN_INSTALL_DIR} )
