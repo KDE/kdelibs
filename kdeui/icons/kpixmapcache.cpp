@@ -438,8 +438,11 @@ void KPixmapCache::discard()
     init();
 }
 
-void KPixmapCache::removeEntries(int newsize, RemoveStrategy strategy)
+void KPixmapCache::removeEntries(int newsize)
 {
+    if (!newsize) {
+        newsize = cacheLimit();
+    }
     //TODO!!!
 }
 

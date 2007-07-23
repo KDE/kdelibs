@@ -150,15 +150,16 @@ public:
     void discard();
 
     /**
-     * Removes some of the entries in the cache.
-     * @param newsize wanted size of te cache, in bytes.
-     * @param strategy which entries to remove.
+     * Removes some of the entries in the cache according to current
+     *  @ref removeEntryStrategy().
+     * @param newsize wanted size of the cache, in bytes. If 0 is given then
+     *  current @ref cacheLimit() is used.
      *
      * Warning: this works by copying some entries to a new cache and then
      *  replacing the old cache with the new one. Thus it might be slow and
      *  will temporarily use extra disk space.
      **/
-    void removeEntries(int newsize, RemoveStrategy strategy = RemoveLeastRecentlyUsed);
+    void removeEntries(int newsize = 0);
 
 protected:
     void init();
