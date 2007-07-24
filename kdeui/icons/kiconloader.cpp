@@ -146,7 +146,69 @@ struct KIconLoaderPrivate
     KIconCache* mIconCache;
     bool mIconThemeInited;
     QString appname;
+
+    void drawOverlays(const KIconLoader *loader, QPixmap& pix, const QStringList& overlays);
+//    void drawOverlays(QPainter* painter, int iconSize, int state, QPoint translate = QPoint(0, 0));
 };
+
+void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, QPixmap& pix, const QStringList& overlays) //QPainter* painter, int iconSize, int state)
+{
+    if (overlays.isEmpty()) {
+        return;
+    }
+
+    int iconSize = pix.size().width();
+    int overlaySize = 22;
+    if (iconSize >= 256) {
+        overlaySize = 64;
+    } else if (iconSize >= 128) {
+        overlaySize = 32;
+    } else if (iconSize <= 22) {
+        overlaySize = 8;
+    } else if (iconSize < 32) {
+        overlaySize = 12;
+    }
+
+    QPainter painter(&pix);
+
+    int count = 0;
+    foreach (const QString& overlay, overlays) {
+        //TODO: should we pass in the kstate? it results in a slower
+        //      path, and perhaps emblems should remain in the default state
+        //      anyways?
+        QPixmap pixmap = iconLoader->loadIcon("emblem-" + overlay,
+                                              K3Icon::Desktop,
+                                              overlaySize, 0, QStringList(), 0, true);
+
+        if (pixmap.isNull()) {
+            continue;
+        }
+
+        QPoint startPoint;
+        switch (count) {
+        case 0:
+            // bottom left corner
+            startPoint = QPoint(2, iconSize - overlaySize - 2);
+        case 1:
+            // bottom right corner
+            startPoint = QPoint(iconSize - overlaySize - 2,
+                                iconSize - overlaySize - 2);
+        case 2:
+            // top right corner
+            startPoint = QPoint(2, iconSize - overlaySize - 2);
+        case 3:
+            // top left corner
+            startPoint = QPoint(2, 2);
+        }
+
+        painter.drawPixmap(startPoint, pixmap);
+
+        ++count;
+        if (count > 3) {
+            break;
+        }
+    }
+}
 
 #define KICONLOADER_CHECKS
 #ifdef KICONLOADER_CHECKS
@@ -613,19 +675,20 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 }
 
 QPixmap KIconLoader::loadMimeTypeIcon( const QString& iconName, K3Icon::Group group, int size,
-                                       int state, QString *path_store ) const
+                                       int state, const QStringList& overlays, QString *path_store ) const
 {
     if ( !d->extraDesktopIconsLoaded )
     {
-        QPixmap pixmap = loadIcon( iconName, group, size, state, path_store, true );
+        QPixmap pixmap = loadIcon( iconName, group, size, state, overlays, path_store, true );
         if (!pixmap.isNull() ) return pixmap;
         const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
     }
-    return loadIcon( iconName, group, size, state, path_store, false );
+    return loadIcon( iconName, group, size, state, overlays, path_store, false );
 }
 
 QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int size,
-                              int state, QString *path_store, bool canReturnNull) const
+                              int state, const QStringList& overlays,
+                              QString *path_store, bool canReturnNull) const
 {
     QString name = _name;
     QString path;
@@ -692,8 +755,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
         group = K3Icon::Desktop;
     }
 
-    int overlay = (state & K3Icon::OverlayMask);
-    state &= ~K3Icon::OverlayMask;
     if ((state < 0) || (state >= K3Icon::LastState))
     {
         kDebug(264) << "Illegal icon state: " << state << endl;
@@ -727,9 +788,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
     key += name; key += '_';
     key += QString::number(size); key += '_';
 
-    QString overlayStr = QString::number( overlay );
-
-    QString noEffectKey = key + '_' + overlayStr;
+    QString overlayKey = overlays.join("_"); // krazy:exclude=doublequote_chars
+    QString noEffectKey = key + overlayKey;
 
     if (group >= 0)
     {
@@ -738,8 +798,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
             key += QLatin1String(":dblsize");
     } else
         key += QLatin1String("noeffect");
-    key += '_';
-    key += overlayStr;
+    key.append(overlayKey);
 
     // Is the icon in the cache?
     if (d->mIconCache->find(key, pix, path_store)) {
@@ -772,8 +831,9 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
             if (!icon.isValid())
             {
                 // Try "User" icon too. Some apps expect this.
-                if (!name.isEmpty())
-                    pix = loadIcon(name, K3Icon::User, size, state, path_store, true);
+                if (!name.isEmpty()) {
+                    pix = loadIcon(name, K3Icon::User, size, state, overlays, path_store, true);
+                }
                 if (!pix.isNull() || canReturnNull)
                     return pix;
 
@@ -848,36 +908,6 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
         iconThreshold = d->lastIconThreshold;
     }
 
-    // Blend in all overlays
-    if (overlay)
-    {
-        QImage *ovl;
-        const_cast<KIconLoader*>(this)->initIconThemes();
-        KIconTheme *theme = d->mpThemeRoot->theme;
-        if ((overlay & K3Icon::LockOverlay) &&
-                ((ovl = loadOverlay(theme->lockOverlay(), size)) != 0L))
-            KIconEffect::overlay(*img, *ovl);
-        if ((overlay & K3Icon::LinkOverlay) &&
-                ((ovl = loadOverlay(theme->linkOverlay(), size)) != 0L))
-            KIconEffect::overlay(*img, *ovl);
-        if ((overlay & K3Icon::ZipOverlay) &&
-                ((ovl = loadOverlay(theme->zipOverlay(), size)) != 0L))
-            KIconEffect::overlay(*img, *ovl);
-        if ((overlay & K3Icon::ShareOverlay) &&
-            ((ovl = loadOverlay(theme->shareOverlay(), size)) != 0L))
-        KIconEffect::overlay(*img, *ovl);
-        if (overlay & K3Icon::HiddenOverlay)
-        {
-            *img = img->convertToFormat(QImage::Format_ARGB32);
-            for (int y = 0; y < img->height(); y++)
-            {
-                QRgb* line = reinterpret_cast<QRgb *>(img->scanLine(y));
-                for (int x = 0; x < img->width();  x++)
-                    line[x] = (line[x] & 0x00ffffff) | (qMin(0x80, qAlpha(line[x])) << 24);
-            }
-        }
-    }
-
     // Scale the icon and apply effects if necessary
     if (iconType == K3Icon::Scalable && size != img->width())
     {
@@ -922,36 +952,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
     pix = QPixmap::fromImage(*img);
 
+    d->drawOverlays(this, pix, overlays);
+
     delete img;
 
     d->mIconCache->insert(key, pix, path);
     return pix;
 }
-
-QImage *KIconLoader::loadOverlay(const QString &name, int size) const
-{
-    QString key = name + '_' + QString::number(size);
-    QImage *image = 0L;
-    if(d->imgDict.contains(key)) image = d->imgDict.value(key);
-    if (image != 0L)
-        return image;
-
-    K3Icon icon = findMatchingIcon(name, size);
-    if (!icon.isValid())
-    {
-        kDebug(264) << "Overlay " << name << "not found." << endl;
-        return 0L;
-    }
-    image = new QImage(icon.path);
-    // In some cases (since size in findMatchingIcon() is more a hint than a
-    // constraint) image->size can be != size. If so perform rescaling.
-    if ( size != image->width() )
-        *image = image->scaled( size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
-    d->imgDict.insert(key, image);
-    return image;
-}
-
-
 
 QMovie *KIconLoader::loadMovie(const QString& name, K3Icon::Group group, int size, QObject *parent) const
 {
@@ -1216,35 +1223,35 @@ QIcon KIconLoader::loadIconSet( const QString& name, K3Icon::Group g, int s,
                                 bool canReturnNull )
 {
     QIcon iconset;
-    QPixmap tmp = loadIcon(name, g, s, K3Icon::ActiveState, NULL, canReturnNull);
+    QPixmap tmp = loadIcon(name, g, s, K3Icon::ActiveState, QStringList(), NULL, canReturnNull);
     iconset.addPixmap( tmp, QIcon::Active, QIcon::On );
     // we don't use QIconSet's resizing anyway
-    tmp = loadIcon(name, g, s, K3Icon::DisabledState, NULL, canReturnNull);
+    tmp = loadIcon(name, g, s, K3Icon::DisabledState, QStringList(), NULL, canReturnNull);
     iconset.addPixmap( tmp, QIcon::Disabled, QIcon::On );
-    tmp = loadIcon(name, g, s, K3Icon::DefaultState, NULL, canReturnNull);
+    tmp = loadIcon(name, g, s, K3Icon::DefaultState, QStringList(), NULL, canReturnNull);
     iconset.addPixmap( tmp, QIcon::Normal, QIcon::On );
     return iconset;
 }
 
 // Easy access functions
 
-QPixmap DesktopIcon(const QString& name, int force_size, int state)
+QPixmap DesktopIcon(const QString& name, int force_size, int state, const QStringList &overlays)
 {
     KIconLoader *loader = KIconLoader::global();
-    return loader->loadIcon(name, K3Icon::Desktop, force_size, state);
+    return loader->loadIcon(name, K3Icon::Desktop, force_size, state, overlays);
 }
 
 // deprecated
 QIcon DesktopIconSet(const QString& name, int force_size)
 {
     KIconLoader *loader = KIconLoader::global();
-    return loader->loadIconSet( name, K3Icon::Desktop, force_size );
+    return loader->loadIconSet(name, K3Icon::Desktop, force_size);
 }
 
-QPixmap BarIcon(const QString& name, int force_size, int state)
+QPixmap BarIcon(const QString& name, int force_size, int state, const QStringList &overlays)
 {
     KIconLoader *loader = KIconLoader::global();
-    return loader->loadIcon(name, K3Icon::Toolbar, force_size, state);
+    return loader->loadIcon(name, K3Icon::Toolbar, force_size, state, overlays);
 }
 
 // deprecated
@@ -1254,10 +1261,10 @@ QIcon BarIconSet(const QString& name, int force_size)
     return loader->loadIconSet( name, K3Icon::Toolbar, force_size );
 }
 
-QPixmap SmallIcon(const QString& name, int force_size, int state)
+QPixmap SmallIcon(const QString& name, int force_size, int state, const QStringList &overlays)
 {
     KIconLoader *loader = KIconLoader::global();
-    return loader->loadIcon(name, K3Icon::Small, force_size, state);
+    return loader->loadIcon(name, K3Icon::Small, force_size, state, overlays);
 }
 
 // deprecated
@@ -1267,10 +1274,10 @@ QIcon SmallIconSet(const QString& name, int force_size)
     return loader->loadIconSet( name, K3Icon::Small, force_size );
 }
 
-QPixmap MainBarIcon(const QString& name, int force_size, int state)
+QPixmap MainBarIcon(const QString& name, int force_size, int state, const QStringList &overlays)
 {
     KIconLoader *loader = KIconLoader::global();
-    return loader->loadIcon(name, K3Icon::MainToolbar, force_size, state);
+    return loader->loadIcon(name, K3Icon::MainToolbar, force_size, state, overlays);
 }
 
 // deprecated
@@ -1280,10 +1287,10 @@ QIcon MainBarIconSet(const QString& name, int force_size)
     return loader->loadIconSet( name, K3Icon::MainToolbar, force_size );
 }
 
-QPixmap UserIcon(const QString& name, int state)
+QPixmap UserIcon(const QString& name, int state, const QStringList &overlays)
 {
     KIconLoader *loader = KIconLoader::global();
-    return loader->loadIcon(name, K3Icon::User, 0, state);
+    return loader->loadIcon(name, K3Icon::User, 0, state, overlays);
 }
 
 // deprecated

@@ -183,7 +183,7 @@ QString KUriFilterData::iconName()
                 if (service && service->icon() != QLatin1String( "unknown" ))
                     d->strIconName = service->icon();
                 // Try to find an icon with the same name as the binary (useful for non-kde apps)
-                else if ( !KIconLoader::global()->loadIcon( exeName, K3Icon::NoGroup, 16, K3Icon::DefaultState, 0, true ).isNull() )
+                else if ( !KIconLoader::global()->loadIcon( exeName, K3Icon::NoGroup, 16, K3Icon::DefaultState, QStringList(), 0, true ).isNull() )
                     d->strIconName = exeName;
                 else
                     // not found, use default

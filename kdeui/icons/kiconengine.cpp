@@ -25,16 +25,16 @@
 
 #include <kiconloader.h>
 
-class KIconEnginePrivate
+class KIconEngine::Private
 {
 public:
     QString iconName;
-    int overlays;
+    QStringList overlays;
     KIconLoader* iconLoader;
 };
 
-KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader, int overlays)
-    : d(new KIconEnginePrivate)
+KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader, const QStringList &overlays)
+    : d(new Private)
 {
     d->iconName = iconName;
     d->iconLoader = iconLoader;
@@ -79,7 +79,7 @@ void KIconEngine::paint( QPainter * painter, const QRect & rect, QIcon::Mode mod
 {
     Q_UNUSED(state)
 
-    const int kstate = qIconModeToKIconState(mode) | d->overlays;
+    const int kstate = qIconModeToKIconState(mode);
     K3Icon::Group group = K3Icon::Desktop;
 
     if (QWidget* targetWidget = dynamic_cast<QWidget*>(painter->device())) {
@@ -89,8 +89,8 @@ void KIconEngine::paint( QPainter * painter, const QRect & rect, QIcon::Mode mod
             group = K3Icon::Toolbar;
     }
 
-    QPixmap pix = iconLoader()->loadIcon(d->iconName, group, qMin(rect.width(), rect.height()), kstate);
-
+    const int iconSize = qMin(rect.width(), rect.height());
+    QPixmap pix = iconLoader()->loadIcon(d->iconName, group, iconSize, kstate, d->overlays);
     painter->drawPixmap(rect, pix);
 }
 
@@ -113,10 +113,11 @@ QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State 
 
     QPainter painter(&pix);
 
-    const int kstate = qIconModeToKIconState(mode) | d->overlays;
+    const int kstate = qIconModeToKIconState(mode);
+    const int iconSize = qMin(size.width(), size.height());
 
     painter.drawPixmap(QPoint(), iconLoader()->loadIcon(d->iconName, K3Icon::Desktop,
-                                                        qMin(size.width(), size.height()), kstate));
+                                                        iconSize, kstate, d->overlays));
 
     return pix;
 }

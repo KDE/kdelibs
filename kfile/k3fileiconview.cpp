@@ -576,7 +576,7 @@ void K3FileIconView::gotPreview( const KFileItem& item, const QPixmap& pix )
 {
     K3FileIconViewItem *it = viewItem( &item );
     if ( it ) {
-        if( item.overlays() & K3Icon::HiddenOverlay ) {
+        if (item.overlays().contains("hidden")) {
             QPixmap p( pix );
 
             KIconEffect::semiTransparent( p );

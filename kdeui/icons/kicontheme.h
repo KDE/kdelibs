@@ -143,20 +143,6 @@ public:
     };
 
     /**
-     * This defines an overlay, a semi-transparent image that is
-     * projected onto the icon. They are used to show that the file
-     * represented by the icon is, for example, locked, zipped or hidden.
-     */
-    enum Overlays {
-      LockOverlay=0x100, ///< a file is locked
-      ZipOverlay=0x200,  ///< a file is zipped
-      LinkOverlay=0x400, ///< a file is a link
-      HiddenOverlay=0x800, ///< a file is hidden
-      ShareOverlay=0x1000, ///< a file is shared
-      OverlayMask = ~0xff
-    };
-
-    /**
      * The size in pixels of the icon.
      */
     int size;
@@ -238,30 +224,6 @@ public:
      * @return the name of the screenshot, QString() if there is none
      */
     QString screenshot() const;
-
-    /**
-     * Returns the name of this theme's link overlay.
-     * @return the name of the link overlay
-     */
-    QString linkOverlay() const;
-
-    /**
-     * Returns the name of this theme's zip overlay.
-     * @return the name of the zip overlay
-     */
-    QString zipOverlay() const;
-
-    /**
-     * Returns the name of this theme's lock overlay.
-     * @return the name of the lock overlay
-     */
-    QString lockOverlay() const;
-
-    /**
-     * Returns the name of this theme's share overlay.
-     * @return the name of the share overlay
-     */
-    QString shareOverlay () const;
 
     /**
      * Returns the toplevel theme directory.

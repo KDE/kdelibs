@@ -1298,7 +1298,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
           case LINK_NEWWINDOW:  cursorIcon = "window-new"; break;
           default:              cursorIcon = "error";      break;
 	}
-        QPixmap icon_pixmap = KHTMLFactory::iconLoader()->loadIcon( cursorIcon, K3Icon::Small, 0, K3Icon::DefaultState, 0, true );
+        QPixmap icon_pixmap = KHTMLFactory::iconLoader()->loadIcon( cursorIcon, K3Icon::Small, 0, K3Icon::DefaultState, QStringList(), 0, true );
 	if (d->cursor_icon_widget)
 	{
 	    const QPixmap *pm = d->cursor_icon_widget->backgroundPixmap();

@@ -575,9 +575,9 @@ QString KFileItem::user() const
     {
 #ifdef Q_WS_WIN
         QFileInfo a(QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )));
-        userName = a.owner(); 
+        userName = a.owner();
         d->m_entry.insert( KIO::UDS_USER, userName );
-#else        
+#else
         KDE_struct_stat buff;
         if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
@@ -599,9 +599,9 @@ QString KFileItem::group() const
     {
 #ifdef Q_WS_WIN
         QFileInfo a(QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )));
-        groupName = a.group(); 
+        groupName = a.group();
         d->m_entry.insert( KIO::UDS_GROUP, groupName );
-#else        
+#else
         KDE_struct_stat buff;
         if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
         {
@@ -728,18 +728,21 @@ QString KFileItem::iconName() const
     return mime->iconName(url);
 }
 
-int KFileItem::overlays() const
+QStringList KFileItem::overlays() const
 {
-    int _state = 0;
-    if ( d->m_bLink )
-        _state |= K3Icon::LinkOverlay;
+    QStringList names;
+    if ( d->m_bLink ) {
+        names.append("link");
+    }
 
     if ( !S_ISDIR( d->m_fileMode ) // Locked dirs have a special icon, use the overlay for files only
-         && !isReadable())
-        _state |= K3Icon::LockOverlay;
+         && !isReadable()) {
+        names.append("lock");
+    }
 
-    if ( isHidden() )
-        _state |= K3Icon::HiddenOverlay;
+    if ( isHidden() ) {
+        names.append("hidden");
+    }
 
     if( S_ISDIR( d->m_fileMode ) && d->m_bIsLocalUrl)
     {
@@ -747,13 +750,15 @@ int KFileItem::overlays() const
             KNFSShare::instance()->isDirectoryShared( d->m_url.path() ))
         {
             //kDebug()<<"KFileShare::isDirectoryShared : "<<d->m_url.path()<<endl;
-            _state |= K3Icon::ShareOverlay;
+            names.append("share");
         }
     }
 
-    if ( d->m_pMimeType && d->m_pMimeType->is("application/x-gzip") && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
-        _state |= K3Icon::ZipOverlay;
-    return _state;
+    if ( d->m_pMimeType && d->m_pMimeType->is("application/x-gzip") && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) ) {
+        names.append("zio");
+    }
+
+    return names;
 }
 
 QPixmap KFileItem::pixmap( int _size, int _state ) const
@@ -775,12 +780,10 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
             }
             if ( defaultFolderIcon )
                 return DesktopIcon( *defaultFolderIcon, _size, _state );
- 
+
         }
         return DesktopIcon( "unknown", _size, _state );
     }
-
-    _state |= overlays();
 
     KMimeType::Ptr mime;
     // Use guessed mimetype if the main one hasn't been determined for sure

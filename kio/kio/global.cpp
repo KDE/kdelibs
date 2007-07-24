@@ -1274,7 +1274,7 @@ QPixmap KIO::pixmapForUrl( const KUrl & _url, mode_t _mode, K3Icon::Group _group
                            int _force_size, int _state, QString * _path )
 {
     const QString iconName = KMimeType::iconNameForUrl( _url, _mode );
-    return KIconLoader::global()->loadMimeTypeIcon( iconName, _group, _force_size, _state, _path );
+    return KIconLoader::global()->loadMimeTypeIcon( iconName, _group, _force_size, _state, QStringList(), _path );
 }
 
 KUiServerJobTracker *KIO::getJobTracker()

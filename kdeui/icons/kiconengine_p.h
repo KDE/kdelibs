@@ -46,7 +46,7 @@ class KIconEngine : public QIconEngineV2
      *
      * @sa KIconLoader
      */
-    KIconEngine(const QString& iconName, KIconLoader* iconLoader, int overlays = 0);
+    KIconEngine(const QString& iconName, KIconLoader* iconLoader, const QStringList& overlays);
 
     /**
      * Destructor.
@@ -76,7 +76,8 @@ class KIconEngine : public QIconEngineV2
     virtual bool write(QDataStream &out) const;
 
   private:
-    class KIconEnginePrivate* const d;
+    class Private;
+    Private * const d;
 };
 
 #endif

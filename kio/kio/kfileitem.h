@@ -347,7 +347,7 @@ public:
      * a file can be modified.
      * @return the overlays of the pixmap
      */
-    int overlays() const;
+    QStringList overlays() const;
 
     /**
      * Returns the string to be displayed in the statusbar,

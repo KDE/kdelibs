@@ -78,13 +78,17 @@ void KMListViewItem::updatePrinter(KMPrinter *p)
 	if (p)
 	{
 		int	oldstate = m_state;
-		int	st(p->isValid() ? (int)K3Icon::DefaultState : (int)K3Icon::LockOverlay);
+		QStringList overlays;
+		if (!p->isValid()) {
+		    overlays.append("lock");
+		}
+
 		m_state = ((p->isHardDefault() ? 0x1 : 0x0) | (p->ownSoftDefault() ? 0x2 : 0x0) | (p->isValid() ? 0x4 : 0x0));
 		update = (oldstate != m_state);
 		QString	name = (p->isVirtual() ? p->instanceName() : p->name());
 		if (name != text(0))
 			setText(0, name);
-		setPixmap(0, SmallIcon(p->pixmap(), 0, st));
+		setPixmap(0, SmallIcon(p->pixmap(), 0, K3Icon::DefaultState, overlays));
 		m_isclass = p->isClass();
 	}
 	setDiscarded(false);

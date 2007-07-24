@@ -139,6 +139,9 @@ public:
      * @param state The icon state: @p DefaultState, @p ActiveState or
      * @p DisabledState. Depending on the user's preferences, the iconloader
      * may apply a visual effect to hint about its state.
+     * @param overlays a list of emblem icons to overlay, by name. the emblem
+     *                 prefix is applied automatically to each name, e.g.
+     *                 "zip" becomes "emblem-zip"
      * @param path_store If not null, the path of the icon is stored here.
      * @param canReturnNull Can return a null pixmap? If false, the
      * "unknown" pixmap is returned when no appropriate icon has been found.
@@ -146,7 +149,8 @@ public:
      *         @p canReturnNull.
      */
     QPixmap loadIcon(const QString& name, K3Icon::Group group, int size=0,
-                     int state=K3Icon::DefaultState, QString *path_store=0L,
+                     int state=K3Icon::DefaultState, const QStringList &overlays = QStringList(),
+                     QString *path_store=0L,
                      bool canReturnNull=false) const;
 
     /**
@@ -162,11 +166,15 @@ public:
      * @p DisabledState. Depending on the user's preferences, the iconloader
      * may apply a visual effect to hint about its state.
      * @param path_store If not null, the path of the icon is stored here.
+     * @param overlays a list of emblem icons to overlay, by name. the emblem
+     *                 prefix is applied automatically to each name, e.g.
+     *                 "zip" becomes "emblem-zip"
      * @return the QPixmap. Can not be null, the
      * "unknown" pixmap is returned when no appropriate icon has been found.
      */
     QPixmap loadMimeTypeIcon( const QString& iconName, K3Icon::Group group, int size=0,
-                              int state=K3Icon::DefaultState, QString *path_store=0 ) const;
+                              int state=K3Icon::DefaultState, const QStringList &overlays = QStringList(),
+                              QString *path_store=0 ) const;
 
     /**
      * Creates an icon set, that will do on-demand loading of the icon.
@@ -361,12 +369,6 @@ public:
 
     /**
      * @internal
-     * Loads and caches an overlay.
-     */
-    QImage *loadOverlay(const QString& name, int size) const;
-
-    /**
-     * @internal
      * Adds themes installed in the application's directory.
      **/
     void addAppThemes(const QString& appname);
@@ -399,7 +401,7 @@ public:
  * Load a desktop icon.
  */
 KDEUI_EXPORT QPixmap DesktopIcon(const QString& name, int size=0,
-                    int state=K3Icon::DefaultState);
+                    int state=K3Icon::DefaultState, const QStringList& overlays = QStringList());
 
 /**
  * \relates KIconLoader
@@ -412,7 +414,8 @@ KDEUI_EXPORT_DEPRECATED QIcon DesktopIconSet(const QString& name, int size=0);
  * \relates KIconLoader
  * Load a toolbar icon.
  */
-KDEUI_EXPORT QPixmap BarIcon(const QString& name, int size=0, int state=K3Icon::DefaultState);
+KDEUI_EXPORT QPixmap BarIcon(const QString& name, int size=0, int state=K3Icon::DefaultState,
+                             const QStringList& overlays = QStringList());
 
 /**
  * \relates KIconLoader
@@ -426,7 +429,7 @@ KDEUI_EXPORT_DEPRECATED QIcon BarIconSet(const QString& name, int size=0);
  * Load a small icon.
  */
 KDEUI_EXPORT QPixmap SmallIcon(const QString& name, int size=0,
-                  int state=K3Icon::DefaultState);
+                  int state=K3Icon::DefaultState, const QStringList &overlays = QStringList());
 
 /**
  * \relates KIconLoader
@@ -440,7 +443,7 @@ KDEUI_EXPORT_DEPRECATED QIcon SmallIconSet(const QString& name, int size=0);
  * Load a main toolbar icon.
  */
 KDEUI_EXPORT QPixmap MainBarIcon(const QString& name, int size=0,
-                    int state=K3Icon::DefaultState);
+                    int state=K3Icon::DefaultState, const QStringList &overlays = QStringList());
 
 /**
  * \relates KIconLoader
@@ -453,7 +456,7 @@ KDEUI_EXPORT_DEPRECATED QIcon MainBarIconSet(const QString& name, int size=0);
  * \relates KIconLoader
  * Load a user icon. User icons are searched in $appdir/pics.
  */
-KDEUI_EXPORT QPixmap UserIcon(const QString& name, int state=K3Icon::DefaultState);
+KDEUI_EXPORT QPixmap UserIcon(const QString& name, int state=K3Icon::DefaultState, const QStringList &overlays = QStringList());
 
 /**
  * \relates KIconLoader

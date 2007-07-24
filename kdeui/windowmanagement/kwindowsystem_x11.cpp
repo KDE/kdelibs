@@ -650,7 +650,7 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
 	        QString className = hint.res_class;
 
                 QPixmap pm = KIconLoader::global()->loadIcon( className.toLower(), K3Icon::Small, iconWidth,
-                                                           K3Icon::DefaultState, 0, true );
+                                                           K3Icon::DefaultState, QStringList(), 0, true );
 	        if( scale && !pm.isNull() )
 		    result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	        else
@@ -667,7 +667,7 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
 	// as a last resort:
 	if ( result.isNull() ) {
             QPixmap pm = KIconLoader::global()->loadIcon( "xapp", K3Icon::Small, iconWidth,
-                                                          K3Icon::DefaultState, 0, true );
+                                                          K3Icon::DefaultState, QStringList(), 0, true );
 	    if( scale && !pm.isNull() )
 		result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	    else

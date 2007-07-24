@@ -46,8 +46,12 @@ public:
      * \param iconName The name of the kde icon to load
      * \param iconLoader The icon loader to use in loading this icon, or
      *                   null to use the default global icon loader.
+     * @param overlays A list of overlays to apply to this icon. They are
+     *                 loaded from the emblems icons and up to four (one per
+     *                 corner) is currently supported
      */
-    explicit KIcon(const QString& iconName, KIconLoader* iconLoader = 0L, int overlays = 0);
+    explicit KIcon(const QString& iconName, KIconLoader* iconLoader = 0L,
+                   const QStringList& overlays = QStringList());
 
     /**
      * Copy constructor which takes any QIcon.
@@ -61,11 +65,6 @@ public:
      * Constructor for a null icon.
      */
     KIcon();
-
-    /**
-     * Add one or more overlays to the icon. See K3Icon::Overlays.
-     */
-    void setOverlays(int overlays);
 };
 
 #endif

@@ -122,7 +122,7 @@ void KRatingWidget::setPixmapSize( int size )
 {
     if ( !d->pixmapForced ) {
         // try to load the new size
-        QPixmap pix = KIconLoader::global()->loadIcon( "rating", K3Icon::NoGroup, size, K3Icon::DefaultState, 0L, true );
+        QPixmap pix = KIconLoader::global()->loadIcon( "rating", K3Icon::NoGroup, size, K3Icon::DefaultState, QStringList(), 0L, true );
         if ( !pix.isNull() ) {
             d->setUsedPixmap( pix );
             update();

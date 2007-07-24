@@ -397,9 +397,8 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                     return node->preview();
                 }
                 Q_ASSERT(item);
-                const int overlays = item->overlays();
-                //kDebug() << item->url() << " overlays=" << overlays << endl;
-                return KIcon(item->iconName(), 0, overlays);
+                //kDebug() << item->url() << " overlays=" << item->overlays() << endl;
+                return KIcon(item->iconName(), 0, item->overlays());
             }
             break;
         case FileItemRole:

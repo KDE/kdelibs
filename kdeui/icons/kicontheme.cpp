@@ -195,10 +195,6 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d->hidden = cfg.readEntry("Hidden", false);
     d->example = cfg.readPathEntry("Example");
     d->screenshot = cfg.readPathEntry("ScreenShot");
-    d->linkOverlay = cfg.readEntry("LinkOverlay", "link");
-    d->lockOverlay = cfg.readEntry("LockOverlay", "system-lock-screen");
-    d->zipOverlay = cfg.readEntry("ZipOverlay", "zip");
-    d->shareOverlay = cfg.readEntry("ShareOverlay","share");
 
     QStringList dirs = cfg.readPathListEntry("Directories");
     for (it=dirs.begin(); it!=dirs.end(); ++it)
@@ -283,34 +279,13 @@ QString KIconTheme::description() const
 }
 
 QString KIconTheme::example() const
-{ 
+{
     return d->example;
 }
 
 QString KIconTheme::screenshot() const
-{ 
+{
     return d->screenshot;
-}
-
-QString KIconTheme::linkOverlay() const
-{ 
-    return d->linkOverlay;
-}
-
-QString KIconTheme::lockOverlay() const
-{ 
-    
-    return d->lockOverlay;
-}
-
-QString KIconTheme::zipOverlay() const
-{ 
-    return d->zipOverlay;
-}
-
-QString KIconTheme::shareOverlay() const
-{ 
-    return d->shareOverlay;
 }
 
 QString KIconTheme::dir() const
@@ -583,7 +558,7 @@ void KIconTheme::reconfigure()
 {
     _theme->clear();
     _theme_list->clear();
-    
+
 }
 
 // static

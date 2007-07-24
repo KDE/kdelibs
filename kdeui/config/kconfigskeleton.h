@@ -985,14 +985,14 @@ public:
    * @param configname name of config file. If no name is given, the default
    * config file as returned by KGlobal::config() is used.
    */
-  explicit KConfigSkeleton(const QString & configname = QString());
+  explicit KConfigSkeleton(const QString & configname = QString(), QObject* parent = 0);
 
   /**
    * Constructor.
    *
    * @param config configuration object to use.
    */
-  explicit KConfigSkeleton(KSharedConfig::Ptr config);
+  explicit KConfigSkeleton(KSharedConfig::Ptr config, QObject* parent = 0);
 
   /**
    * Destructor
