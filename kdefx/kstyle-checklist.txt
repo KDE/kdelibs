@@ -3,7 +3,8 @@ drawComplexControl:
     Needs to honor stepEnabled
     
   CC_ComboBox:
-    Interaction with some of the style option flags (frameless, non-editable, etc.) seems missing
+    Interaction with some of the style option flags (frameless, non-editable, etc.) seems missing.
+    Frameless implemented via subControlRect, but probably best to honor in draw as well.
     Need to check frame w/designer, at least. Not clear how editable interacts with the SC flags --- 
     might still pass SC_All?
 
@@ -41,4 +42,29 @@ drawComplexControl:
     some sort of bevel/bevelless mode in ButtonKOpt? Definitely a lot of overlap..
     Side note: only passes in QStyleOptionComplex
   
-  
+sizeFromContents:
+    CT_CheckBox: OK
+    CT_ComboBox:
+      Missing! Should compute space much like subControlRect computations do
+
+    CT_Q3DockWindow: Missing, along with other Q3DockWindow primitives. Need to test in 
+      designer to see if it's drawn OK. 
+
+    CT_HeaderSection: Hardcodes icon size instead of using PM_SmallIconSize.
+      Probably should not apply the icon - text margin when there is no icon..
+
+    CT_LineEdit: should probably add it, especially if Oxygen needs it; 
+      unfortunately the QLineEdit internals seem to do some pretty weird stuff, 
+      hardcoding some margins and anything. But, well, a uniform margin model 
+      for this would be nice..
+      see also SE_LineEditContents..
+
+    CT_Menu: OK
+    
+    CT_Q3Header:
+      Missing. Probably share code with CT_HeaderSection, or OK as-is?
+
+    CT_MenuBar, CT_MenuItem: CT_MenuBarItem: OK
+
+    
+      
