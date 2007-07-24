@@ -574,7 +574,7 @@ QString KFileItem::user() const
     if ( userName.isEmpty() && d->m_bIsLocalUrl )
     {
 #ifdef Q_WS_WIN
-        QFileInfo a(QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )));
+        QFileInfo a(d->m_url.path( KUrl::RemoveTrailingSlash ));
         userName = a.owner();
         d->m_entry.insert( KIO::UDS_USER, userName );
 #else
@@ -598,7 +598,7 @@ QString KFileItem::group() const
     if (groupName.isEmpty() && d->m_bIsLocalUrl )
     {
 #ifdef Q_WS_WIN
-        QFileInfo a(QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )));
+        QFileInfo a(d->m_url.path( KUrl::RemoveTrailingSlash ));
         groupName = a.group();
         d->m_entry.insert( KIO::UDS_GROUP, groupName );
 #else
