@@ -4,6 +4,7 @@
 
 #include <kio/global.h>
 #include <kurl.h>
+#include <kio/udsentry.h>
 
 class KJob;
 namespace KIO {

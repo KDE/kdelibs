@@ -372,36 +372,36 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
     KIO::UDSEntry::ConstIterator it = entry.begin();
     for( ; it != entry.end(); it++ ) {
         switch ( it.key() ) {
-            case KIO::UDS_FILE_TYPE:
+            case KIO::UDSEntry::UDS_FILE_TYPE:
                 kDebug() << "File Type : " << (mode_t)(it.value().toNumber()) << endl;
                 if ( S_ISDIR( (mode_t)(it.value().toNumber()) ) )
                 {
                     kDebug() << "is a dir" << endl;
                 }
                 break;
-            case KIO::UDS_ACCESS:
+            case KIO::UDSEntry::UDS_ACCESS:
                 kDebug() << "Access permissions : " << (mode_t)(it.value().toNumber()) << endl;
                 break;
-            case KIO::UDS_USER:
+            case KIO::UDSEntry::UDS_USER:
                 kDebug() << "User : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
-            case KIO::UDS_GROUP:
+            case KIO::UDSEntry::UDS_GROUP:
                 kDebug() << "Group : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
-            case KIO::UDS_NAME:
+            case KIO::UDSEntry::UDS_NAME:
                 kDebug() << "Name : " << (it.value().toString().toAscii().constData() ) << endl;
                 //m_strText = decodeFileName( it.value().toString() );
                 break;
-            case KIO::UDS_URL:
+            case KIO::UDSEntry::UDS_URL:
                 kDebug() << "URL : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
-            case KIO::UDS_MIME_TYPE:
+            case KIO::UDSEntry::UDS_MIME_TYPE:
                 kDebug() << "MimeType : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
-            case KIO::UDS_LINK_DEST:
+            case KIO::UDSEntry::UDS_LINK_DEST:
                 kDebug() << "LinkDest : " << (it.value().toString().toAscii().constData() ) << endl;
                 break;
-            case KIO::UDS_SIZE:
+            case KIO::UDSEntry::UDS_SIZE:
                 kDebug() << "Size: " << KIO::convertSize(it.value().toNumber()) << endl;
                 break;
         }

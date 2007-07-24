@@ -46,7 +46,7 @@ void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
     UDSEntryList::ConstIterator it = list.begin();
     const UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it)
-        kDebug() << (*it).stringValue( UDS_NAME ) << endl;
+        kDebug() << (*it).stringValue( UDSEntry::UDS_NAME ) << endl;
 }
 
 
