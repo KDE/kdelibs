@@ -25,7 +25,7 @@
 #define QT_NO_CAST_TO_ASCII
 #endif
 
-#include "kdebugcore.h"
+#include "kdebug.h"
 
 #ifdef Q_WS_WIN
 #include <fcntl.h>
@@ -51,12 +51,6 @@
 #include <QtCore/QHash>
 #include <QtCore/QObject>
 #include <QtCore/QCharRef>
-#include <QtNetwork/QHostAddress>
-#include <qpoint.h>
-#include <qrect.h>
-#include <qstringlist.h>
-#include <qsize.h>
-#include <QModelIndex>
 
 #include <stdlib.h>	// abort
 #include <unistd.h>	// getpid
@@ -473,6 +467,59 @@ kdbgstream& kdbgstream::operator<<(const QString& string)
     return *this;
 }
 
+kdbgstream& kdbgstream::operator<<( QWidget* object )
+{
+    return kdbgstream::operator<<( (const QObject*) object );
+}
+
+kdbgstream& kdbgstream::operator<<( const QWidget* object )
+{
+    return kdbgstream::operator<<( (const QObject*) object );
+}
+
+kdbgstream& kdbgstream::operator<<( QObject* object )
+{
+    return kdbgstream::operator<<( static_cast<const QObject*>( object ) );
+}
+
+kdbgstream& kdbgstream::operator<<( const QObject* object )
+{
+    if ( !d->print ) {
+        return *this;
+    }
+
+    if ( object == 0 ) {
+        d->output += QLatin1String("[Null pointer]");
+    } else {
+      d->output += QString::fromAscii("[%1 pointer(0x%2)")
+                         .arg( QString::fromUtf8( object->metaObject()->className() ) )
+                         .arg( QString::number( ulong( object ), 16 )
+                                 .rightJustified( 8, QLatin1Char( '0' ) ) );
+
+      bool isWidget = object->isWidgetType();
+      if ( object->objectName().isEmpty() ) {
+          d->output += QString::fromAscii( " to unnamed %1" )
+                                    .arg( isWidget ? QLatin1String( "widget" )
+                                                   : QLatin1String( "object" ) );
+      } else {
+          d->output += QString::fromAscii(" to %1 %2")
+                                         .arg( isWidget ? QLatin1String( "widget" )
+                                                        : QLatin1String( "object" ) )
+                                         .arg( object->objectName() );
+      }
+
+      if ( isWidget ) {
+          QRect r = object->property( "geometry" ).toRect();
+          d->output += QString::fromAscii(", geometry = %1x%2+%3+%4")
+                       .arg(r.width()).arg(r.height())
+                       .arg(r.x()).arg(r.y());
+      }
+      d->output += QLatin1String( "]" );
+  }
+
+  return *this;
+}
+
 /*
  * When printing a string:
  *  - if no newline can possibly be in the string, use d->output directly
@@ -522,99 +569,6 @@ kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
     } else {
         d->output += QLatin1String( data ); // using ascii as advertised
     }
-    return *this;
-}
-
-kdbgstream& kdbgstream::operator<<( const QDateTime& time) {
-    if ( d->print )
-        d->output += time.toString();
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QDate& date) {
-    if ( d->print )
-        d->output += date.toString();
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QTime& time ) {
-    if ( d->print )
-        d->output += time.toString();
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QPoint& p ) {
-    if ( d->print )
-        d->output += QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QPointF& p ) {
-    if ( d->print )
-        d->output += QString::fromAscii("(%1, %2)").arg(p.x()).arg(p.y());
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QSize& s ) {
-    if ( d->print )
-        d->output += QString::fromAscii("[%1x%2]").arg(s.width())
-	                 .arg(s.height());
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QSizeF& s ) {
-    if ( d->print )
-        d->output += QString::fromAscii("[%1x%2]").arg(s.width())
-                         .arg(s.height());
-    return *this;
-}
-template <class Rect>
-static QString s_rectString(const Rect& r)
-{
-    QString str = QString::fromAscii("[%1,%2 - %3x%4]");
-    return str.arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height());
-}
-kdbgstream& kdbgstream::operator<<( const QRect& r ) {
-    if( d->print )
-        d->output += s_rectString( r );
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QRectF& r ) {
-    if( d->print )
-        d->output += s_rectString( r );
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QStringList& l ) {
-    if ( !d->print ) return *this;
-    return *this << static_cast<QList<QString> >(l);
-}
-kdbgstream& kdbgstream::operator<<( const QHostAddress& address ) {
-    if ( !d->print ) return *this;
-    return *this << address.toString();
-}
-kdbgstream& kdbgstream::operator<<( const QVariant& v) {
-    if ( !d->print )
-        return *this;
-
-    d->output += QLatin1String("[variant: ") +
-                 QLatin1String( v.typeName() );
-
-    // For now we just attempt a conversion to string.
-    // Feel free to switch(v.type()) and improve the output.
-    if ( v.canConvert(QVariant::String) )
-        *this << QLatin1String(" toString=") + v.toString();
-    d->output += QLatin1Char(']');
-    return *this;
-}
-
-kdbgstream& kdbgstream::operator << ( const QModelIndex &index ) {
-#if defined(QT_NO_DEBUG_STREAM)
-    return *this;
-#else
-    QString out;
-    QDebug qdbg(&out);
-    qdbg << index;
-    return *this << out;
-#endif
-}
-
-kdbgstream& kdbgstream::operator<<( const QUrl& u ) {
-    if ( d->print )
-        d->output += u.toString(QUrl::RemovePassword);
     return *this;
 }
 

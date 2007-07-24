@@ -139,7 +139,6 @@ set(kdeui_LIB_SRCS
  util/kcompletionbase.cpp
  util/kcrash.cpp
  util/kcursor.cpp
- util/kdebug.cpp
  util/kguiitem.cpp
  util/kkeyserver.cpp
  util/kmanagerselection.cpp
@@ -381,7 +380,6 @@ install( FILES
  util/kcompletion.h
  util/kcrash.h
  util/kcursor.h
- util/kdebug.h
  util/kguiitem.h
  util/kkeyserver.h
  util/kkeyserver_x11.h

@@ -128,7 +128,7 @@ set(kdecore_LIB_SRCS
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp
    io/kautosavefile.cpp
-   io/kdebugcore.cpp
+   io/kdebug.cpp
    io/kdebugdbusiface.cpp
    io/kmessage.cpp
    io/kprocess.cpp
@@ -299,7 +299,7 @@ install( FILES
    date/ktimezone.h
    date/ktzfiletimezone.h
    io/kautosavefile.h
-   io/kdebugcore.h
+   io/kdebug.h
    io/kmessage.h
    io/kprocess.h
    io/klockfile.h
