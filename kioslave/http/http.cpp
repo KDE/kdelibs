@@ -2428,9 +2428,10 @@ bool HTTPProtocol::httpOpen()
       header += "\r\n";
     }
 
-    if (m_request.method == HTTP_POST)
+    QString contentType = metaData("content-type");
+    if (m_request.method == HTTP_POST && !contentType.isEmpty() )
     {
-      header += metaData("content-type");
+      header += contentType;
       header += "\r\n";
     }
 
