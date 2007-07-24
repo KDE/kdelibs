@@ -98,6 +98,10 @@ class KFileItemDelegate::Private
         QRect labelRectangle(const QStyleOptionViewItem &option, const QPixmap &icon, const QString &string) const;
         void layoutTextItems(const QStyleOptionViewItem &option, const QModelIndex &index, const QPixmap &icon,
                              QTextLayout *labelLayout, QTextLayout *infoLayout, QRect *textBoundingRect) const;
+        void drawBackground(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index,
+                            const QRect &textBoundingRect) const;
+        void drawTextItems(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index,
+                           const QTextLayout &labelLayout, const QTextLayout &infoLayout) const;
 
     public:
         KFileItemDelegate::AdditionalInformation additionalInformation;
@@ -668,6 +672,63 @@ void KFileItemDelegate::Private::layoutTextItems(const QStyleOptionViewItem &opt
 }
 
 
+void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QStyleOptionViewItem &option,
+                                               const QModelIndex &index, const QTextLayout &labelLayout,
+                                               const QTextLayout &infoLayout) const
+{
+    QPen pen(foregroundBrush(option, index), 0);
+    painter->setPen(pen);
+    labelLayout.draw(painter, QPoint());
+
+    if (!infoLayout.text().isEmpty())
+    {
+        QColor color;
+        if (option.state & QStyle::State_Selected)
+        {
+            color = option.palette.color(QPalette::HighlightedText);
+            color.setAlphaF(.5);
+        } else
+            color = option.palette.color(QPalette::Highlight);
+
+        painter->setPen(color);
+        infoLayout.draw(painter, QPoint());
+    }
+}
+
+
+void KFileItemDelegate::Private::drawBackground(QPainter *painter, const QStyleOptionViewItem &option,
+                                                const QModelIndex &index, const QRect &textBoundingRect) const
+{
+    const QBrush brush = backgroundBrush(option, index);
+
+    if (brush.style() != Qt::NoBrush)
+    {
+        QPainterPath path;
+        QRect        rect;
+        qreal        radius;
+
+        if (!option.showDecorationSelected)
+        {
+            rect = addMargin(textBoundingRect, Private::TextMargin);
+            radius = 5;
+        }
+        else
+        {
+            rect = option.rect;
+            radius = 10;
+        }
+
+        // Always draw rounded selection rectangles in list views
+        if (isListView(option))
+            path = roundedRectangle(rect, radius);
+        else
+            path.addRect(rect);
+
+        painter->fillPath(path, brush);
+    }
+}
+
+
 
 
 // ---------------------------------------------------------------------------
@@ -929,26 +990,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Draw the background
     // ========================================================================
-    const QBrush brush = d->backgroundBrush(option, index);
-
-    if (brush.style() != Qt::NoBrush)
-    {
-        QPainterPath path;
-        QRect r;
-
-        if (!option.showDecorationSelected)
-            r = d->addMargin(textBoundingRect, Private::TextMargin);
-        else
-            r = option.rect;
-
-        // Always draw rounded selection rectangles in list views
-        if (d->isListView(option))
-            path = d->roundedRectangle(r, 5);
-        else
-            path.addRect(r);
-
-        painter->fillPath(path, brush);
-    }
+    d->drawBackground(painter, option, index, textBoundingRect);
 
 
     // Draw the decoration
@@ -962,22 +1004,8 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Draw the label
     // ========================================================================
-    painter->setPen(QPen(d->foregroundBrush(option, index), 0));
-    labelLayout.draw(painter, QPoint());
+    d->drawTextItems(painter, option, index, labelLayout, infoLayout);
 
-    if (!infoLayout.text().isEmpty())
-    {
-        QColor color;
-        if (option.state & QStyle::State_Selected)
-        {
-            color = option.palette.color(QPalette::HighlightedText);
-            color.setAlphaF(.5);
-        } else
-            color = option.palette.color(QPalette::Highlight);
-
-        painter->setPen(color);
-        infoLayout.draw(painter, QPoint());
-    }
 
     painter->restore();
 }
