@@ -42,6 +42,8 @@ namespace Sonnet
      * dlg->show();
      * \endcode
      *
+     * You can change buffer inside a slot connected to done() signal
+     * and spellcheck will continue with new data automatically.
      */
     class KDEUI_EXPORT Dialog : public KDialog
     {

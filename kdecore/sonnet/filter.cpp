@@ -102,7 +102,7 @@ Word Filter::nextWord() const
 {
     QChar currentChar = skipToLetter( m_currentPosition );
 
-    if ( m_currentPosition >= m_buffer.length() ) {
+    if ( m_currentPosition >= m_buffer.length() || currentChar.isNull() ) {
         return Filter::end();
     }
 
@@ -127,7 +127,7 @@ Word Filter::nextWord() const
         //Test if currentPosition exists, otherwise go out
         if( m_currentPosition >= m_buffer.length())
             return Filter::end();
-        currentChar = m_buffer[ m_currentPosition ];
+        currentChar = m_buffer.at( m_currentPosition );
     }
     if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) )
         return nextWord();
@@ -136,7 +136,7 @@ Word Filter::nextWord() const
 
 Word Filter::previousWord() const
 {
-    while ( !m_buffer[ m_currentPosition ].isLetter() &&
+    while ( !m_buffer.at( m_currentPosition ).isLetter() &&
             m_currentPosition != 0) {
         --m_currentPosition;
     }
@@ -147,8 +147,8 @@ Word Filter::previousWord() const
 
     QString foundWord;
     int start = m_currentPosition;
-    while ( m_buffer[ start ].isLetter() ) {
-        foundWord.prepend( m_buffer[ m_currentPosition ] );
+    while ( m_buffer.at( start ).isLetter() ) {
+        foundWord.prepend( m_buffer.at( m_currentPosition ) );
         --start;
     }
 
@@ -163,8 +163,8 @@ Word Filter::wordAtPosition( unsigned int pos ) const
     int currentPosition = pos - 1;
     QString foundWord;
     while ( currentPosition >= 0 &&
-            m_buffer[ currentPosition ].isLetter() ) {
-        foundWord.prepend( m_buffer[ currentPosition ] );
+            m_buffer.at( currentPosition ).isLetter() ) {
+        foundWord.prepend( m_buffer.at( currentPosition ) );
         --currentPosition;
     }
 
@@ -172,9 +172,9 @@ Word Filter::wordAtPosition( unsigned int pos ) const
     // currentPosition == -1 means we reached the beginning
     int start = (currentPosition < 0) ? 0 : ++currentPosition;
     currentPosition = pos ;
-    if ( m_buffer[ currentPosition ].isLetter() ) {
-        while ( m_buffer[ currentPosition ].isLetter() ) {
-            foundWord.append( m_buffer[ currentPosition ] );
+    if ( m_buffer.at( currentPosition ).isLetter() ) {
+        while ( m_buffer.at( currentPosition ).isLetter() ) {
+            foundWord.append( m_buffer.at( currentPosition ) );
             ++currentPosition;
         }
     }
@@ -189,7 +189,7 @@ void Filter::setCurrentPosition( int i )
 
     //go back to the last word so that next word returns something
     //useful
-    while ( m_buffer[m_currentPosition].isLetter() && m_currentPosition > 0 )
+    while ( m_buffer.at( m_currentPosition ).isLetter() && m_currentPosition > 0 )
         --m_currentPosition;
 }
 
@@ -241,21 +241,23 @@ QString Filter::context() const
 
 bool Filter::trySkipLinks() const
 {
-    QChar currentChar = m_buffer[ m_currentPosition ];
+    QChar currentChar = m_buffer.at( m_currentPosition );
 
     int length = m_buffer.length();
     //URL - if so skip
-    if ( currentChar == ':' &&
-         ( m_buffer[ ++m_currentPosition] == '/' || ( m_currentPosition + 1 ) >= length ) ) {
+    if ( currentChar == ':'
+         && (m_currentPosition+1 < length)
+         && (m_buffer.at( ++m_currentPosition ) == '/' || ( m_currentPosition + 1 ) >= length ) ) {
         //in both cases url is considered finished at the first whitespace occurrence
-        while ( !m_buffer[ m_currentPosition++ ].isSpace() && m_currentPosition < length )
+        //TODO hey, "http://en.wikipedia.org/wiki/Main Page" --Nick Shaforostoff
+        while ( !m_buffer.at( m_currentPosition++ ).isSpace() && m_currentPosition < length )
             ;
         return true;
     }
 
     //Email - if so skip
-    if ( currentChar == '@' ) {
-        while ( !m_buffer[ ++m_currentPosition ].isSpace() && m_currentPosition < length )
+    if ( currentChar == '@') {
+        while ( ++m_currentPosition < length && !m_buffer.at( m_currentPosition ).isSpace() )
             ;
         return true;
     }
@@ -273,12 +275,13 @@ bool Filter::ignore( const QString& word ) const
 
 QChar Filter::skipToLetter( int &fromPosition ) const
 {
-	if( m_buffer.isEmpty())
-		return QChar();
-    QChar currentChar = m_buffer[ fromPosition ];
+    //if( m_buffer.isEmpty())
+    if (fromPosition>=m_buffer.size())
+        return QChar();
+    QChar currentChar = m_buffer.at( fromPosition );
     while ( !currentChar.isLetter() &&
             (int)++fromPosition < m_buffer.length() ) {
-        currentChar = m_buffer[ fromPosition ];
+        currentChar = m_buffer.at( fromPosition );
     }
     return currentChar;
 }

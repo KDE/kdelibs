@@ -54,6 +54,7 @@ public:
 
     Word   currentWord;
     QMap<QString, QString> replaceAllMap;
+    bool restart;//used when text is distributed across several qtextedits, eg in KAider
 };
 
 Dialog::Dialog( BackgroundChecker *checker,
@@ -127,6 +128,7 @@ void Dialog::initGui()
     d->ui.m_language->insertItems(0, speller.availableLanguageNames());
     d->ui.m_language->setCurrentIndex(speller.availableLanguages().indexOf(
                                           speller.language()));
+    d->restart=false;
 }
 
 void Dialog::activeAutoCorrect( bool _active )
@@ -173,6 +175,8 @@ QString Dialog::buffer() const
 void Dialog::setBuffer( const QString& buf )
 {
     d->originalBuffer = buf;
+    //it is possible to change buffer inside slot connected to done() signal
+    d->restart=true;
 }
 
 
@@ -181,7 +185,11 @@ void Dialog::updateDialog( const QString& word )
     d->ui.m_unknownWord->setText( word );
     d->ui.m_contextLabel->setText( d->checker->currentContext() );
     QStringList suggs = d->checker->suggest( word );
-    d->ui.m_replacement->setText( suggs.first() );
+
+    if (suggs.isEmpty())
+        d->ui.m_replacement->clear();
+    else
+        d->ui.m_replacement->setText( suggs.first() );
     fillSuggestions( suggs );
 }
 
@@ -226,7 +234,7 @@ void Dialog::slotSkipAll()
 {
     //### do we want that or should we have a d->ignoreAll list?
     Speller speller = d->checker->speller();
-    speller.addToPersonal(d->ui.m_replacement->text());
+    speller.addToPersonal(d->currentWord.word);
     d->checker->setSpeller(speller);
     d->checker->continueChecking();
 }
@@ -241,8 +249,8 @@ void Dialog::slotChangeLanguage( const QString& lang )
 {
     Speller speller = d->checker->speller();
     d->checker->changeLanguage(
-        speller.availableLanguages()[
-            speller.availableLanguageNames().indexOf(lang)]);
+        speller.availableLanguages().at(
+            speller.availableLanguageNames().indexOf(lang)));
     slotSuggest();
 }
 
@@ -277,10 +285,13 @@ void Dialog::slotDone()
     kDebug()<<"Dialog done!"<<endl;
     QString buffer(d->originalBuffer);
     emit done(d->checker->text());
-    if (buffer==d->originalBuffer)
-        accept();
-    else
+    if (d->restart)
+    {
         d->checker->setText(d->originalBuffer);
+        d->restart=false;
+    }
+    else
+        accept();
 }
 
 }
