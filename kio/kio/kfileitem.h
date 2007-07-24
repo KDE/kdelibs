@@ -47,6 +47,20 @@ public:
     enum { Unknown = (mode_t) - 1 };
 
     /**
+     * The timestamps associated with a file.
+     * - ModificationTime: the time the file's contents were last modified
+     * - AccessTime: the time the file was last accessed (last read or written to)
+     * - CreationTime: the time the file was created
+     */
+    enum FileTimes {
+        // warning: don't change without looking at the Private class
+        ModificationTime = 0,
+        AccessTime = 1,
+        CreationTime = 2
+        //ChangeTime
+    };
+
+    /**
      * Null KFileItem. Doesn't represent any file, only exists for convenience.
      */
     KFileItem();
@@ -249,20 +263,22 @@ public:
 
     /**
      * Requests the modification, access or creation time, depending on @p which.
-     * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
+     * @param which the timestamp
      * @return the time asked for, (time_t)0 if not available
      * @see timeString()
      */
-    time_t time( unsigned int which ) const;
+    time_t time( FileTimes which ) const;
+    KDE_DEPRECATED time_t time( unsigned int which ) const;
 
     /**
      * Requests the modification, access or creation time as a string, depending
      * on @p which.
-     * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
+     * @param which the timestamp
      * @returns a formatted string of the requested time.
      * @see time
      */
-    QString timeString( unsigned int which = KIO::UDSEntry::UDS_MODIFICATION_TIME ) const;
+    QString timeString( FileTimes which = ModificationTime ) const;
+    KDE_DEPRECATED QString timeString( unsigned int which) const;
 
     /**
      * Returns true if the file is a local file.

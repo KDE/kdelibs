@@ -94,7 +94,7 @@ public:
     void init();
 
     KIO::filesize_t size() const;
-    time_t time( unsigned int which ) const;
+    time_t time( KFileItem::FileTimes which ) const;
     bool cmp( const KFileItemPrivate & item ) const;
 
     /**
@@ -172,7 +172,7 @@ public:
     QMap<const void*, void*> m_extra; // DEPRECATED
     mutable KFileMetaInfo m_metaInfo;
 
-    enum { Modification = 0, Access = 1, Creation = 2, NumFlags = 3 };
+    enum { NumFlags = KFileItem::CreationTime + 1 };
     mutable time_t m_time[3]; // TODO remove, UDSEntry is fast now
 };
 
@@ -211,8 +211,8 @@ void KFileItemPrivate::init()
                         mode = (S_IFMT-1) | S_IRWXU | S_IRWXG | S_IRWXO;
                 }
                 // While we're at it, store the times
-                m_time[ Modification ] = buf.st_mtime;
-                m_time[ Access ] = buf.st_atime;
+                m_time[ KFileItem::ModificationTime ] = buf.st_mtime;
+                m_time[ KFileItem::AccessTime ] = buf.st_atime;
                 if ( m_fileMode == KFileItem::Unknown )
                     m_fileMode = mode & S_IFMT; // extract file type
                 if ( m_permissions == KFileItem::Unknown )
@@ -302,27 +302,24 @@ KIO::filesize_t KFileItemPrivate::size() const
     return 0;
 }
 
-time_t KFileItemPrivate::time( unsigned int which ) const
+time_t KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
 {
-    unsigned int mappedWhich = 0;
-
-    switch( which ) {
-    case KIO::UDSEntry::UDS_MODIFICATION_TIME:
-        mappedWhich = KFileItemPrivate::Modification;
-        break;
-    case KIO::UDSEntry::UDS_ACCESS_TIME:
-        mappedWhich = KFileItemPrivate::Access;
-        break;
-    case KIO::UDSEntry::UDS_CREATION_TIME:
-        mappedWhich = KFileItemPrivate::Creation;
-        break;
-    }
-
     if ( m_time[mappedWhich] != (time_t) -1 )
         return m_time[mappedWhich];
 
     // Extract it from the KIO::UDSEntry
-    long long fieldVal = m_entry.numberValue( which, -1 );
+    long long fieldVal = -1;
+    switch ( mappedWhich ) {
+    case KFileItem::ModificationTime:
+        fieldVal = m_entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
+        break;
+    case KFileItem::AccessTime:
+        fieldVal = m_entry.numberValue( KIO::UDSEntry::UDS_ACCESS_TIME, -1 );
+        break;
+    case KFileItem::CreationTime:
+        fieldVal = m_entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
+        break;
+    }
     if ( fieldVal != -1 ) {
         m_time[mappedWhich] = static_cast<time_t>( fieldVal );
         return m_time[mappedWhich];
@@ -334,10 +331,9 @@ time_t KFileItemPrivate::time( unsigned int which ) const
         KDE_struct_stat buf;
         if ( KDE_stat( QFile::encodeName(m_url.path(KUrl::RemoveTrailingSlash)), &buf ) == 0 )
         {
-            m_time[mappedWhich] = (which == KIO::UDSEntry::UDS_MODIFICATION_TIME) ?
-                                     buf.st_mtime :
-                                     (which == KIO::UDSEntry::UDS_ACCESS_TIME) ? buf.st_atime :
-                                     static_cast<time_t>(0); // We can't determine creation time for local files
+            m_time[KFileItem::ModificationTime] = buf.st_mtime;
+            m_time[KFileItem::AccessTime] = buf.st_atime;
+            m_time[KFileItem::CreationTime] = 0;
             return m_time[mappedWhich];
         }
     }
@@ -355,7 +351,7 @@ bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
              && m_bLink == item.m_bLink
              && m_hidden == item.m_hidden
              && size() == item.size()
-             && time(KIO::UDSEntry::UDS_MODIFICATION_TIME) == item.time(KIO::UDSEntry::UDS_MODIFICATION_TIME)
+             && time(KFileItem::ModificationTime) == item.time(KFileItem::ModificationTime)
              && m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME )
         );
 
@@ -563,9 +559,22 @@ KACL KFileItem::defaultACL() const
         return KACL();
 }
 
-time_t KFileItem::time( unsigned int which ) const
+time_t KFileItem::time( FileTimes which ) const
 {
     return d->time(which);
+}
+
+time_t KFileItem::time( unsigned int which ) const
+{
+    switch (which) {
+    case KIO::UDSEntry::UDS_ACCESS_TIME:
+        return d->time(AccessTime);
+    case KIO::UDSEntry::UDS_CREATION_TIME:
+        return d->time(CreationTime);
+    case KIO::UDSEntry::UDS_MODIFICATION_TIME:
+    default:
+        return d->time(ModificationTime);
+    }
 }
 
 QString KFileItem::user() const
@@ -964,7 +973,7 @@ QString KFileItem::getToolTipText(int maxcount) const
                end;
 
     tip += start + i18n("Modified:") + mid +
-           timeString( KIO::UDSEntry::UDS_MODIFICATION_TIME) + end
+           timeString( KFileItem::ModificationTime ) + end
 #ifndef Q_WS_WIN //TODO: show win32-specific permissions
            +start + i18n("Owner:") + mid + user() + " - " + group() + end +
            start + i18n("Permissions:") + mid +
@@ -1088,11 +1097,24 @@ QString KFileItem::permissionsString() const
 }
 
 // check if we need to cache this
-QString KFileItem::timeString( unsigned int which ) const
+QString KFileItem::timeString( FileTimes which ) const
 {
     QDateTime t;
     t.setTime_t( time(which) );
     return KGlobal::locale()->formatDateTime( t );
+}
+
+QString KFileItem::timeString( unsigned int which ) const
+{
+    switch (which) {
+    case KIO::UDSEntry::UDS_ACCESS_TIME:
+        return timeString(AccessTime);
+    case KIO::UDSEntry::UDS_CREATION_TIME:
+        return timeString(CreationTime);
+    case KIO::UDSEntry::UDS_MODIFICATION_TIME:
+    default:
+        return timeString(ModificationTime);
+    }
 }
 
 void KFileItem::setMetaInfo( const KFileMetaInfo & info )
