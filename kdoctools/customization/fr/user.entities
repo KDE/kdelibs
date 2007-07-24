@@ -164,6 +164,9 @@
 <!ENTITY traducteurBrunoPinaud        '<othercredit role="translator"><firstname>Bruno</firstname><surname>Pinaud</surname><affiliation><address><email>bpinaud@ifrance.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurBrunoPinaud        '<othercredit role="reviewer"><firstname>Bruno</firstname><surname>Pinaud</surname><affiliation><address><email>bpinaud@ifrance.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurGillesPoulain        '<othercredit role="translator"><firstname>Gilles</firstname><surname>Poulain</surname><affiliation><address><email>poulain.gilles@gmail.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurGillesPoulain        '<othercredit role="reviewer"><firstname>Gilles</firstname><surname>Poulain</surname><affiliation><address><email>poulain.gilles@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurRomainQuidet      '<othercredit role="translator"><firstname>Romain</firstname><surname>Quidet</surname><affiliation><address><email>rquidet@yahoo.com</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurRomainQuidet       '<othercredit role="relecteur"><firstname>Romain</firstname><surname>Quidet</surname><affiliation><address><email>rquidet@yahoo.com</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -263,6 +266,7 @@
 <!ENTITY PatricePawlak 'Patrice Pawlak <email>patrice.pawlak@free.fr</email>'>
 <!ENTITY RomainPelisse 'Romain Pelisse <email>belaran@gmail.com</email>'>
 <!ENTITY BrunoPinaud       'Bruno Pinaud <email>bpinaud@ifrance.com</email>'>
+<!ENTITY GillesPoulain       'Gilles Poulain <email>poulain.gilles@gmail.com</email>'>
 <!ENTITY RomainQuidet      'Romain Quidet <email>rquidet@yahoo.com</email>'>
 <!ENTITY LaurentRathle     'Laurent Rathle <email>lrathle@kde-france.org</email>'>
 <!ENTITY DamienRaudeMorvan 'Damien  Raude-Morvan <email>drazzib@drazzib.com</email>'>
