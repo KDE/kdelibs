@@ -233,13 +233,13 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &opti
             return item.user() + ':' + item.group();
 
         case KFileItemDelegate::CreationTime:
-            return item.timeString(KIO::UDSEntry::UDS_CREATION_TIME);
+            return item.timeString(KFileItem::CreationTime);
 
         case KFileItemDelegate::ModificationTime:
-            return item.timeString(KIO::UDSEntry::UDS_MODIFICATION_TIME);
+            return item.timeString(KFileItem::ModificationTime);
 
         case KFileItemDelegate::AccessTime:
-            return item.timeString(KIO::UDSEntry::UDS_ACCESS_TIME);
+            return item.timeString(KFileItem::AccessTime);
 
         case KFileItemDelegate::MimeType:
             return item.isMimeTypeKnown() ? item.mimetype() : i18n("Unknown");

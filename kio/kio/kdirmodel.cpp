@@ -377,7 +377,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 return KGlobal::locale()->formatNumber(item->size(), 0);
             case ModifiedTime: {
                 KDateTime dt;
-                dt.setTime_t(item->time(KIO::UDSEntry::UDS_MODIFICATION_TIME));
+                dt.setTime_t(item->time(KFileItem::ModificationTime));
                 return KGlobal::locale()->formatDateTime(dt);
             }
             case Permissions:
