@@ -135,8 +135,8 @@ void DirectorySizeJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
     for (; it != end; ++it) {
 
         const KIO::UDSEntry& entry = *it;
-        const KIO::filesize_t size = entry.numberValue( KIO::UDS_SIZE, -1 );
-        const QString name = entry.stringValue( KIO::UDS_NAME );
+        const KIO::filesize_t size = entry.numberValue( KIO::UDSEntry::UDS_SIZE, -1 );
+        const QString name = entry.stringValue( KIO::UDSEntry::UDS_NAME );
         if ( name == "." )
             d->m_totalSize += size;
         else if ( name != ".." )

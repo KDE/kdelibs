@@ -153,13 +153,13 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
     for (; it != end; ++it)
     {
         const UDSEntry& entry = *it;
-        const QString displayName = entry.stringValue( KIO::UDS_NAME );
+        const QString displayName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
 
         assert(!displayName.isEmpty());
         if (displayName != ".." && displayName != ".")
         {
             KUrl url;
-            const QString urlStr = entry.stringValue( KIO::UDS_URL );
+            const QString urlStr = entry.stringValue( KIO::UDSEntry::UDS_URL );
             if ( !urlStr.isEmpty() )
                 url = urlStr;
             else {
@@ -167,7 +167,7 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 url.addPath( displayName );
             }
 
-            d->m_totalSize += (KIO::filesize_t)entry.numberValue( KIO::UDS_SIZE, 0 );
+            d->m_totalSize += (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
 
             //kDebug(7007) << "DeleteJob::slotEntries " << displayName << " (" << url << ")" << endl;
             if ( entry.isLink() )

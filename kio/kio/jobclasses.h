@@ -28,6 +28,7 @@
 
 #include <kurl.h>
 #include <kio/global.h>
+#include <kio/udsentry.h>
 
 #include <kcompositejob.h>
 

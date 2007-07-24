@@ -1943,7 +1943,7 @@ and you must include &lt;kio/deletejob.h&gt; if you use KIO::del.</li>
 
 <h4>KIO::UDSEntry</h4>
 <ul>
-<li>UDSEntry is now a hash instead of a list. Use the methods stringValue()
+<li>UDSEntry is now a hash instead of a list. (NOT ANYMORE!!! NOT EVEN A HASH) Use the methods stringValue()
 and numberValue() to retrieve fields directly, no loop is needed anymore.
 See the UDSEntry documentation for code examples.</li>
 <li>Also note that UDSEntryListConstIterator is now UDSEntryList::ConstIterator;
@@ -1953,7 +1953,7 @@ a listDir result.</li>
  <pre>atom.m_uds = KIO::UDS_SIZE;
       atom.m_long = buff.st_size;
       entry.append( atom );</pre>
-  with the line <pre>entry.insert( KIO::UDS_SIZE, buff.st_size );</pre></li>
+  with the line <pre>entry.insert( KIO::UDSEntry::UDS_SIZE, buff.st_size );</pre></li>
 </ul>
 
 

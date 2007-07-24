@@ -2174,13 +2174,15 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
             const UDSEntry& entry = *it;
 
             KUrl itemURL;
-            const UDSEntry::ConstIterator end2 = entry.end();
-            UDSEntry::ConstIterator it2 = entry.find( KIO::UDS_URL );
-            if ( it2 != end2 )
-                itemURL = it2.value().toString();
+            // const UDSEntry::ConstIterator end2 = entry.end();
+            // UDSEntry::ConstIterator it2 = entry.find( KIO::UDSEntry::UDS_URL );
+            // if ( it2 != end2 )
+            if (entry.contains(KIO::UDSEntry::UDS_URL))
+                // itemURL = it2.value().toString();
+                itemURL = entry.stringValue(KIO::UDSEntry::UDS_URL);
             else { // no URL, use the name
                 itemURL = url();
-                itemURL.addPath( entry.stringValue( KIO::UDS_NAME ) );
+                itemURL.addPath( entry.stringValue( KIO::UDSEntry::UDS_NAME ) );
             }
 
             if (entry.isDir() && !entry.isLink()) {
@@ -2218,14 +2220,14 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
 
             // Modify the name in the UDSEntry
             UDSEntry newone = *it;
-            const QString filename = newone.stringValue( KIO::UDS_NAME );
+            const QString filename = newone.stringValue( KIO::UDSEntry::UDS_NAME );
             // Avoid returning entries like subdir/. and subdir/.., but include . and .. for
             // the toplevel dir, and skip hidden files/dirs if that was requested
             if (  (d->prefix.isNull() || (filename != ".." && filename != ".") )
                   && (d->includeHidden || (filename[0] != '.') )  )
             {
                 // ## Didn't find a way to use the iterator instead of re-doing a key lookup
-                newone.insert( KIO::UDS_NAME, d->prefix + filename );
+                newone.insert( KIO::UDSEntry::UDS_NAME, d->prefix + filename );
                 newlist.append(newone);
             }
         }

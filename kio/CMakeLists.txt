@@ -115,6 +115,7 @@ set(kiocore_STAT_SRCS
   kio/slaveconfig.cpp
   kio/slaveinterface.cpp
   kio/tcpslavebase.cpp
+  kio/udsentry.cpp
 )
 
 if(UNIX)
@@ -300,6 +301,7 @@ install(  FILES
   kio/renamedialogplugin.h
   kio/skipdialog.h
   kio/safesite.h
+  kio/udsentry.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
 
 if( NOT WIN32 )

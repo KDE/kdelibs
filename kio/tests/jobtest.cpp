@@ -593,8 +593,8 @@ void JobTest::directorySizeError()
 void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
 {
     for( KIO::UDSEntryList::ConstIterator it = lst.begin(); it != lst.end(); ++it ) {
-        QString displayName = (*it).stringValue( KIO::UDS_NAME );
-        //KUrl url = (*it).stringValue( KIO::UDS_URL );
+        QString displayName = (*it).stringValue( KIO::UDSEntry::UDS_NAME );
+        //KUrl url = (*it).stringValue( KIO::UDSEntry::UDS_URL );
         m_names.append( displayName );
     }
 }
@@ -612,28 +612,28 @@ typedef QList<OldUDSAtom> OldUDSEntry; // well it was a QValueList :)
 static void fillOldUDSEntry( OldUDSEntry& entry, time_t now_time_t, const QString& nameStr )
 {
     OldUDSAtom atom;
-    atom.m_uds = KIO::UDS_NAME;
+    atom.m_uds = KIO::UDSEntry::UDS_NAME;
     atom.m_str = nameStr;
     entry.append( atom );
-    atom.m_uds = KIO::UDS_SIZE;
+    atom.m_uds = KIO::UDSEntry::UDS_SIZE;
     atom.m_long = 123456ULL;
     entry.append( atom );
-    atom.m_uds = KIO::UDS_MODIFICATION_TIME;
+    atom.m_uds = KIO::UDSEntry::UDS_MODIFICATION_TIME;
     atom.m_long = now_time_t;
     entry.append( atom );
-    atom.m_uds = KIO::UDS_ACCESS_TIME;
+    atom.m_uds = KIO::UDSEntry::UDS_ACCESS_TIME;
     atom.m_long = now_time_t;
     entry.append( atom );
-    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_uds = KIO::UDSEntry::UDS_FILE_TYPE;
     atom.m_long = S_IFREG;
     entry.append( atom );
-    atom.m_uds = KIO::UDS_ACCESS;
+    atom.m_uds = KIO::UDSEntry::UDS_ACCESS;
     atom.m_long = 0644;
     entry.append( atom );
-    atom.m_uds = KIO::UDS_USER;
+    atom.m_uds = KIO::UDSEntry::UDS_USER;
     atom.m_str = nameStr;
     entry.append( atom );
-    atom.m_uds = KIO::UDS_GROUP;
+    atom.m_uds = KIO::UDSEntry::UDS_GROUP;
     atom.m_str = nameStr;
     entry.append( atom );
 }
@@ -644,15 +644,15 @@ typedef QHash<uint, QVariant> UDSEntryHV;
 static void fillUDSEntryHV( UDSEntryHV& entry, const QDateTime& now, const QString& nameStr )
 {
     entry.reserve( 8 );
-    entry.insert( KIO::UDS_NAME, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_NAME, nameStr );
     // we might need a method to make sure people use unsigned long long
-    entry.insert( KIO::UDS_SIZE, 123456ULL );
-    entry.insert( KIO::UDS_MODIFICATION_TIME, now );
-    entry.insert( KIO::UDS_ACCESS_TIME, now );
-    entry.insert( KIO::UDS_FILE_TYPE, S_IFREG );
-    entry.insert( KIO::UDS_ACCESS, 0644 );
-    entry.insert( KIO::UDS_USER, nameStr );
-    entry.insert( KIO::UDS_GROUP, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_SIZE, 123456ULL );
+    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, now );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, now );
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0644 );
+    entry.insert( KIO::UDSEntry::UDS_USER, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_GROUP, nameStr );
 }
 
 // Which one is used depends on UDS_STRING vs UDS_LONG
@@ -672,14 +672,14 @@ typedef QHash<uint, UDSAtom4> UDSEntryHS; // hash+struct
 static void fillQHashStructEntry( UDSEntryHS& entry, time_t now_time_t, const QString& nameStr )
 {
     entry.reserve( 8 );
-    entry.insert( KIO::UDS_NAME, nameStr );
-    entry.insert( KIO::UDS_SIZE, 123456ULL );
-    entry.insert( KIO::UDS_MODIFICATION_TIME, now_time_t );
-    entry.insert( KIO::UDS_ACCESS_TIME, now_time_t );
-    entry.insert( KIO::UDS_FILE_TYPE, S_IFREG );
-    entry.insert( KIO::UDS_ACCESS, 0644 );
-    entry.insert( KIO::UDS_USER, nameStr );
-    entry.insert( KIO::UDS_GROUP, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_NAME, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_SIZE, 123456ULL );
+    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, now_time_t );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, now_time_t );
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0644 );
+    entry.insert( KIO::UDSEntry::UDS_USER, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_GROUP, nameStr );
 }
 
 // Let's see if QMap makes any difference
@@ -687,14 +687,14 @@ typedef QMap<uint, UDSAtom4> UDSEntryMS; // map+struct
 
 static void fillQMapStructEntry( UDSEntryMS& entry, time_t now_time_t, const QString& nameStr )
 {
-    entry.insert( KIO::UDS_NAME, nameStr );
-    entry.insert( KIO::UDS_SIZE, 123456ULL );
-    entry.insert( KIO::UDS_MODIFICATION_TIME, now_time_t );
-    entry.insert( KIO::UDS_ACCESS_TIME, now_time_t );
-    entry.insert( KIO::UDS_FILE_TYPE, S_IFREG );
-    entry.insert( KIO::UDS_ACCESS, 0644 );
-    entry.insert( KIO::UDS_USER, nameStr );
-    entry.insert( KIO::UDS_GROUP, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_NAME, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_SIZE, 123456ULL );
+    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, now_time_t );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, now_time_t );
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0644 );
+    entry.insert( KIO::UDSEntry::UDS_USER, nameStr );
+    entry.insert( KIO::UDSEntry::UDS_GROUP, nameStr );
 }
 
 
@@ -743,17 +743,18 @@ void JobTest::newApiPerformance()
         KIO::filesize_t size;
         KUrl url;
 
+		
         for (int i = 0; i < lookupIterations; ++i) {
             OldUDSEntry::ConstIterator it2 = entry.begin();
             for( ; it2 != entry.end(); it2++ ) {
                 switch ((*it2).m_uds) {
-                case KIO::UDS_NAME:
+                case KIO::UDSEntry::UDS_NAME:
                     displayName = (*it2).m_str;
                     break;
-                case KIO::UDS_URL:
+                case KIO::UDSEntry::UDS_URL:
                     url = (*it2).m_str;
                     break;
-                case KIO::UDS_SIZE:
+                case KIO::UDSEntry::UDS_SIZE:
                     size = (*it2).m_long;
                     break;
                 }
@@ -794,9 +795,9 @@ void JobTest::newApiPerformance()
 
         // Normally the code would look like this, but let's change it to time it like the old api
         /*
-        QString displayName = entry.value( KIO::UDS_NAME ).toString();
-        KUrl url = entry.value( KIO::UDS_URL ).toString();
-        KIO::filesize_t size = entry.value( KIO::UDS_SIZE ).toULongLong();
+        QString displayName = entry.value( KIO::UDSEntry::UDS_NAME ).toString();
+        KUrl url = entry.value( KIO::UDSEntry::UDS_URL ).toString();
+        KIO::filesize_t size = entry.value( KIO::UDSEntry::UDS_SIZE ).toULongLong();
         */
 
         QString displayName;
@@ -806,15 +807,15 @@ void JobTest::newApiPerformance()
         for (int i = 0; i < lookupIterations; ++i) {
 
             // For a field that we assume to always be there
-            displayName = entry.value( KIO::UDS_NAME ).toString();
+            displayName = entry.value( KIO::UDSEntry::UDS_NAME ).toString();
 
             // For a field that might not be there
-            UDSEntryHV::const_iterator it = entry.find( KIO::UDS_URL );
+            UDSEntryHV::const_iterator it = entry.find( KIO::UDSEntry::UDS_URL );
             const UDSEntryHV::const_iterator end = entry.end();
             if ( it != end )
                  url = it.value().toString();
 
-            it = entry.find( KIO::UDS_SIZE );
+            it = entry.find( KIO::UDSEntry::UDS_SIZE );
             if ( it != end )
                 size = it.value().toULongLong();
         }
@@ -854,15 +855,15 @@ void JobTest::newApiPerformance()
         for (int i = 0; i < lookupIterations; ++i) {
 
             // For a field that we assume to always be there
-            displayName = entry.value( KIO::UDS_NAME ).m_str;
+            displayName = entry.value( KIO::UDSEntry::UDS_NAME ).m_str;
 
             // For a field that might not be there
-            UDSEntryHS::const_iterator it = entry.find( KIO::UDS_URL );
+            UDSEntryHS::const_iterator it = entry.find( KIO::UDSEntry::UDS_URL );
             const UDSEntryHS::const_iterator end = entry.end();
             if ( it != end )
                  url = it.value().m_str;
 
-            it = entry.find( KIO::UDS_SIZE );
+            it = entry.find( KIO::UDSEntry::UDS_SIZE );
             if ( it != end )
                 size = it.value().m_long;
         }
@@ -901,15 +902,15 @@ void JobTest::newApiPerformance()
         for (int i = 0; i < lookupIterations; ++i) {
 
             // For a field that we assume to always be there
-            displayName = entry.value( KIO::UDS_NAME ).m_str;
+            displayName = entry.value( KIO::UDSEntry::UDS_NAME ).m_str;
 
             // For a field that might not be there
-            UDSEntryMS::const_iterator it = entry.find( KIO::UDS_URL );
+            UDSEntryMS::const_iterator it = entry.find( KIO::UDSEntry::UDS_URL );
             const UDSEntryMS::const_iterator end = entry.end();
             if ( it != end )
                  url = it.value().m_str;
 
-            it = entry.find( KIO::UDS_SIZE );
+            it = entry.find( KIO::UDSEntry::UDS_SIZE );
             if ( it != end )
                 size = it.value().m_long;
         }

@@ -70,7 +70,7 @@ public:
           m_delayedMimeTypes( delayedMimeTypes ),
           m_hidden( Auto )
     {
-        if (!entry.isEmpty()) {
+        if (!entry.count()==0) {
             readUDSEntry( urlIsDirectory );
         } else {
             m_strName = url.fileName();
@@ -257,26 +257,26 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
 {
     // extract fields from the KIO::UDS Entry
 
-    m_fileMode = m_entry.numberValue( KIO::UDS_FILE_TYPE );
-    m_permissions = m_entry.numberValue( KIO::UDS_ACCESS );
-    m_strName = m_entry.stringValue( KIO::UDS_NAME );
+    m_fileMode = m_entry.numberValue( KIO::UDSEntry::UDS_FILE_TYPE );
+    m_permissions = m_entry.numberValue( KIO::UDSEntry::UDS_ACCESS );
+    m_strName = m_entry.stringValue( KIO::UDSEntry::UDS_NAME );
     m_strText = KIO::decodeFileName( m_strName );
-    const QString urlStr = m_entry.stringValue( KIO::UDS_URL );
+    const QString urlStr = m_entry.stringValue( KIO::UDSEntry::UDS_URL );
     const bool UDS_URL_seen = !urlStr.isEmpty();
     if ( UDS_URL_seen ) {
         m_url = KUrl( urlStr );
         if ( m_url.isLocalFile() )
             m_bIsLocalUrl = true;
     }
-    const QString mimeTypeStr = m_entry.stringValue( KIO::UDS_MIME_TYPE );
+    const QString mimeTypeStr = m_entry.stringValue( KIO::UDSEntry::UDS_MIME_TYPE );
     m_bMimeTypeKnown = !mimeTypeStr.isEmpty();
     if ( m_bMimeTypeKnown )
         m_pMimeType = KMimeType::mimeType( mimeTypeStr );
 
-    m_guessedMimeType = m_entry.stringValue( KIO::UDS_GUESSED_MIME_TYPE );
-    m_bLink = !m_entry.stringValue( KIO::UDS_LINK_DEST ).isEmpty(); // we don't store the link dest
+    m_guessedMimeType = m_entry.stringValue( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE );
+    m_bLink = !m_entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST ).isEmpty(); // we don't store the link dest
 
-    const int hiddenVal = m_entry.numberValue( KIO::UDS_HIDDEN, -1 );
+    const int hiddenVal = m_entry.numberValue( KIO::UDSEntry::UDS_HIDDEN, -1 );
     m_hidden = hiddenVal == 1 ? Hidden : ( hiddenVal == 0 ? Shown : Auto );
 
     // avoid creating these QStrings again and again
@@ -288,7 +288,7 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
 KIO::filesize_t KFileItemPrivate::size() const
 {
     // Extract it from the KIO::UDSEntry
-    long long fieldVal = m_entry.numberValue( KIO::UDS_SIZE, -1 );
+    long long fieldVal = m_entry.numberValue( KIO::UDSEntry::UDS_SIZE, -1 );
     if ( fieldVal != -1 ) {
         return fieldVal;
     }
@@ -307,13 +307,13 @@ time_t KFileItemPrivate::time( unsigned int which ) const
     unsigned int mappedWhich = 0;
 
     switch( which ) {
-    case KIO::UDS_MODIFICATION_TIME:
+    case KIO::UDSEntry::UDS_MODIFICATION_TIME:
         mappedWhich = KFileItemPrivate::Modification;
         break;
-    case KIO::UDS_ACCESS_TIME:
+    case KIO::UDSEntry::UDS_ACCESS_TIME:
         mappedWhich = KFileItemPrivate::Access;
         break;
-    case KIO::UDS_CREATION_TIME:
+    case KIO::UDSEntry::UDS_CREATION_TIME:
         mappedWhich = KFileItemPrivate::Creation;
         break;
     }
@@ -334,9 +334,9 @@ time_t KFileItemPrivate::time( unsigned int which ) const
         KDE_struct_stat buf;
         if ( KDE_stat( QFile::encodeName(m_url.path(KUrl::RemoveTrailingSlash)), &buf ) == 0 )
         {
-            m_time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
+            m_time[mappedWhich] = (which == KIO::UDSEntry::UDS_MODIFICATION_TIME) ?
                                      buf.st_mtime :
-                                     (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
+                                     (which == KIO::UDSEntry::UDS_ACCESS_TIME) ? buf.st_atime :
                                      static_cast<time_t>(0); // We can't determine creation time for local files
             return m_time[mappedWhich];
         }
@@ -350,13 +350,13 @@ bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
              && m_bIsLocalUrl == item.m_bIsLocalUrl
              && m_fileMode == item.m_fileMode
              && m_permissions == item.m_permissions
-             && m_entry.stringValue( KIO::UDS_USER ) == item.m_entry.stringValue( KIO::UDS_USER )
-             && m_entry.stringValue( KIO::UDS_GROUP ) == item.m_entry.stringValue( KIO::UDS_GROUP )
+             && m_entry.stringValue( KIO::UDSEntry::UDS_USER ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_USER )
+             && m_entry.stringValue( KIO::UDSEntry::UDS_GROUP ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_GROUP )
              && m_bLink == item.m_bLink
              && m_hidden == item.m_hidden
              && size() == item.size()
-             && time(KIO::UDS_MODIFICATION_TIME) == item.time(KIO::UDS_MODIFICATION_TIME)
-             && m_entry.stringValue( KIO::UDS_ICON_NAME ) == item.m_entry.stringValue( KIO::UDS_ICON_NAME )
+             && time(KIO::UDSEntry::UDS_MODIFICATION_TIME) == item.time(KIO::UDSEntry::UDS_MODIFICATION_TIME)
+             && m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME )
         );
 
     // Don't compare the mimetypes here. They might not be known, and we don't want to
@@ -415,7 +415,7 @@ QString KFileItemPrivate::parsePermissions(mode_t perm) const
     buffer[8] = ((( perm & S_IWOTH ) == S_IWOTH ) ? 'w' : '-' );
     buffer[9] = oxbit;
     // if (hasExtendedACL())
-    if (m_entry.find( KIO::UDS_EXTENDED_ACL ) != m_entry.end()) {
+    if (m_entry.contains(KIO::UDSEntry::UDS_EXTENDED_ACL)) {
         buffer[10] = '+';
         buffer[11] = 0;
     } else {
@@ -502,7 +502,7 @@ void KFileItem::setName( const QString& name )
 QString KFileItem::linkDest() const
 {
     // Extract it from the KIO::UDSEntry
-    const QString linkStr = d->m_entry.stringValue( KIO::UDS_LINK_DEST );
+    const QString linkStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
     if ( !linkStr.isEmpty() )
         return linkStr;
 
@@ -527,7 +527,7 @@ QString KFileItem::localPath() const
   }
 
   // Extract the local path from the KIO::UDSEntry
-  return d->m_entry.stringValue( KIO::UDS_LOCAL_PATH );
+  return d->m_entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
 }
 
 KIO::filesize_t KFileItem::size() const
@@ -538,14 +538,14 @@ KIO::filesize_t KFileItem::size() const
 bool KFileItem::hasExtendedACL() const
 {
     // Check if the field exists; its value doesn't matter
-    return d->m_entry.find( KIO::UDS_EXTENDED_ACL ) != d->m_entry.end();
+    return d->m_entry.contains(KIO::UDSEntry::UDS_EXTENDED_ACL);
 }
 
 KACL KFileItem::ACL() const
 {
     if ( hasExtendedACL() ) {
         // Extract it from the KIO::UDSEntry
-        const QString fieldVal = d->m_entry.stringValue( KIO::UDS_ACL_STRING );
+        const QString fieldVal = d->m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING );
         if ( !fieldVal.isEmpty() )
             return KACL( fieldVal );
     }
@@ -556,7 +556,7 @@ KACL KFileItem::ACL() const
 KACL KFileItem::defaultACL() const
 {
     // Extract it from the KIO::UDSEntry
-    const QString fieldVal = d->m_entry.stringValue( KIO::UDS_DEFAULT_ACL_STRING );
+    const QString fieldVal = d->m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING );
     if ( !fieldVal.isEmpty() )
         return KACL(fieldVal);
     else
@@ -570,7 +570,7 @@ time_t KFileItem::time( unsigned int which ) const
 
 QString KFileItem::user() const
 {
-    QString userName = d->m_entry.stringValue( KIO::UDS_USER );
+    QString userName = d->m_entry.stringValue( KIO::UDSEntry::UDS_USER );
     if ( userName.isEmpty() && d->m_bIsLocalUrl )
     {
 #ifdef Q_WS_WIN
@@ -584,7 +584,7 @@ QString KFileItem::user() const
             struct passwd *pwuser = getpwuid( buff.st_uid );
             if ( pwuser != 0 ) {
                 userName = QString::fromLocal8Bit(pwuser->pw_name);
-                d->m_entry.insert( KIO::UDS_USER, userName );
+                d->m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
             }
         }
 #endif
@@ -594,7 +594,7 @@ QString KFileItem::user() const
 
 QString KFileItem::group() const
 {
-    QString groupName = d->m_entry.stringValue( KIO::UDS_GROUP );
+    QString groupName = d->m_entry.stringValue( KIO::UDSEntry::UDS_GROUP );
     if (groupName.isEmpty() && d->m_bIsLocalUrl )
     {
 #ifdef Q_WS_WIN
@@ -613,7 +613,7 @@ QString KFileItem::group() const
             }
             else
                 groupName.sprintf("%d",buff.st_gid);
-            d->m_entry.insert( KIO::UDS_GROUP, groupName );
+            d->m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
         }
 #endif
     }
@@ -710,7 +710,7 @@ static QString iconFromDesktopFile(const QString& path)
 
 QString KFileItem::iconName() const
 {
-    const QString iconName = d->m_entry.stringValue( KIO::UDS_ICON_NAME );
+    const QString iconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
     if (!iconName.isEmpty())
         return iconName;
 
@@ -758,7 +758,7 @@ int KFileItem::overlays() const
 
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
-    const QString iconName = d->m_entry.stringValue( KIO::UDS_ICON_NAME );
+    const QString iconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
     if ( !iconName.isEmpty() )
         return DesktopIcon(iconName, _size, _state);
 
@@ -961,7 +961,7 @@ QString KFileItem::getToolTipText(int maxcount) const
                end;
 
     tip += start + i18n("Modified:") + mid +
-           timeString( KIO::UDS_MODIFICATION_TIME) + end
+           timeString( KIO::UDSEntry::UDS_MODIFICATION_TIME) + end
 #ifndef Q_WS_WIN //TODO: show win32-specific permissions
            +start + i18n("Owner:") + mid + user() + " - " + group() + end +
            start + i18n("Permissions:") + mid +

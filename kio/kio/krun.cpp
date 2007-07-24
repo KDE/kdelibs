@@ -1032,16 +1032,16 @@ void KRun::slotStatResult( KJob * job )
         kFatal() << "job is a " << typeid(*job).name() << " should be a StatJob" << endl;
 
     const KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
-    const mode_t mode = entry.numberValue( KIO::UDS_FILE_TYPE );
+    const mode_t mode = entry.numberValue( KIO::UDSEntry::UDS_FILE_TYPE );
     if ( S_ISDIR( mode ) )
         m_bIsDirectory = true; // it's a dir
     else
         m_bScanFile = true; // it's a file
 
-    d->m_localPath = entry.stringValue( KIO::UDS_LOCAL_PATH );
+    d->m_localPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
 
     // mimetype already known? (e.g. print:/manager)
-    const QString knownMimeType = entry.stringValue( KIO::UDS_MIME_TYPE ) ;
+    const QString knownMimeType = entry.stringValue( KIO::UDSEntry::UDS_MIME_TYPE ) ;
 
     if ( !knownMimeType.isEmpty() )
     {

@@ -26,6 +26,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <kio/global.h>
+#include <kio/udsentry.h>
 #include <kurl.h>
 
 class QStringList;

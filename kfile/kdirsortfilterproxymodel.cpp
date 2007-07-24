@@ -231,8 +231,8 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
 
     case KDirModel::ModifiedTime: {
         KDateTime leftTime, rightTime;
-        leftTime.setTime_t(leftFileItem->time(KIO::UDS_MODIFICATION_TIME));
-        rightTime.setTime_t(rightFileItem->time(KIO::UDS_MODIFICATION_TIME));
+        leftTime.setTime_t(leftFileItem->time(KIO::UDSEntry::UDS_MODIFICATION_TIME));
+        rightTime.setTime_t(rightFileItem->time(KIO::UDSEntry::UDS_MODIFICATION_TIME));
 
         if (leftTime == rightTime) {
             return sortCaseSensitivity() ?

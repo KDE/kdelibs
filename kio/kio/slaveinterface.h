@@ -26,6 +26,7 @@
 #include <QtCore/QObject>
 
 #include <kio/global.h>
+#include <kio/udsentry.h>
 #include <kio/authinfo.h>
 
 class KUrl;
@@ -175,7 +176,8 @@ protected:
 
 }
 
-KIO_EXPORT QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e );
-KIO_EXPORT QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e );
+// moved to udesentry.cpp!!!
+// KIO_EXPORT QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e );
+// KIO_EXPORT QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e );
 
 #endif

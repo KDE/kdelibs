@@ -292,7 +292,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
 
     // Keep copy of the stat result
     const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
-    const QString sLocalPath = entry.stringValue( KIO::UDS_LOCAL_PATH );
+    const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDSEntry::UDS_LOCAL_PATH );
     const bool isDir = entry.isDir();
 
     if ( destinationState == DEST_NOT_STATED )
@@ -325,7 +325,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     }
 
     // Is it a file or a dir ?
-    const QString sName = entry.stringValue( KIO::UDS_NAME );
+    const QString sName = entry.stringValue( KIO::UDSEntry::UDSEntry::UDS_NAME );
 
     // We were stating the current source URL
     m_currentDest = m_dest; // used by slotEntries
@@ -478,22 +478,22 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
     for (; it != end; ++it) {
         const UDSEntry& entry = *it;
         struct CopyInfo info;
-        info.permissions = entry.numberValue( KIO::UDS_ACCESS, -1 );
-        info.mtime = (time_t) entry.numberValue( KIO::UDS_MODIFICATION_TIME, -1 );
-        info.ctime = (time_t) entry.numberValue( KIO::UDS_CREATION_TIME, -1 );
-        info.size = (KIO::filesize_t) entry.numberValue( KIO::UDS_SIZE, -1 );
+        info.permissions = entry.numberValue( KIO::UDSEntry::UDS_ACCESS, -1 );
+        info.mtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
+        info.ctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
+        info.size = (KIO::filesize_t) entry.numberValue( KIO::UDSEntry::UDS_SIZE, -1 );
         if ( info.size != (KIO::filesize_t) -1 )
             m_totalSize += info.size;
 
         // recursive listing, displayName can be a/b/c/d
-        const QString displayName = entry.stringValue( KIO::UDS_NAME );
-        const QString urlStr = entry.stringValue( KIO::UDS_URL );
+        const QString displayName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
+        const QString urlStr = entry.stringValue( KIO::UDSEntry::UDS_URL );
         KUrl url;
         if ( !urlStr.isEmpty() )
             url = urlStr;
-        QString localPath = entry.stringValue( KIO::UDS_LOCAL_PATH );
+        QString localPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
         const bool isDir = entry.isDir();
-        info.linkDest = entry.stringValue( KIO::UDS_LINK_DEST );
+        info.linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
 
         if (displayName != ".." && displayName != ".")
         {
@@ -849,11 +849,11 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
     const UDSEntry entry = ((KIO::StatJob*)job)->statResult();
 
     // Its modification time:
-    const time_t destmtime = (time_t) entry.numberValue( KIO::UDS_MODIFICATION_TIME, -1 );
-    const time_t destctime = (time_t) entry.numberValue( KIO::UDS_CREATION_TIME, -1 );
+    const time_t destmtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
+    const time_t destctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
 
-    const KIO::filesize_t destsize = entry.numberValue( KIO::UDS_SIZE );
-    const QString linkDest = entry.stringValue( KIO::UDS_LINK_DEST );
+    const KIO::filesize_t destsize = entry.numberValue( KIO::UDSEntry::UDS_SIZE );
+    const QString linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
 
     q->removeSubjob( job );
     assert ( !q->hasSubjobs() ); // We should have only one job at a time ...
@@ -1122,10 +1122,10 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         // Its modification time:
         const UDSEntry entry = ((KIO::StatJob*)job)->statResult();
 
-        const time_t destmtime = (time_t) entry.numberValue( KIO::UDS_MODIFICATION_TIME, -1 );
-        const time_t destctime = (time_t) entry.numberValue( KIO::UDS_CREATION_TIME, -1 );
-        const KIO::filesize_t destsize = entry.numberValue( KIO::UDS_SIZE );
-        const QString linkDest = entry.stringValue( KIO::UDS_LINK_DEST );
+        const time_t destmtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
+        const time_t destctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
+        const KIO::filesize_t destsize = entry.numberValue( KIO::UDSEntry::UDS_SIZE );
+        const QString linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
 
         // Offer overwrite only if the existing thing is a file
         // If src==dest, use "overwrite-itself"

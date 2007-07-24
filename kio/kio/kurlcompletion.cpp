@@ -1158,14 +1158,14 @@ void KUrlCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 	//
 	for (; it != end; ++it) {
 		const KIO::UDSEntry& entry = *it;
-		const QString url = entry.stringValue( KIO::UDS_URL );
+		const QString url = entry.stringValue( KIO::UDSEntry::UDS_URL );
 
 		QString entry_name;
 		if (!url.isEmpty()) {
 			// kDebug() << "KUrlCompletion::slotEntries url: " << url << endl;
 			entry_name = KUrl(url).fileName();
 		} else {
-			entry_name = entry.stringValue( KIO::UDS_NAME );
+			entry_name = entry.stringValue( KIO::UDSEntry::UDS_NAME );
 		}
 
 		// kDebug() << "KUrlCompletion::slotEntries name: " << name << endl;
@@ -1185,7 +1185,7 @@ void KUrlCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 			if ( isDir )
 				entry_name.append( QLatin1Char( '/' ) );
 
-			const bool isExe = entry.numberValue( KIO::UDS_ACCESS ) & MODE_EXE;
+			const bool isExe = entry.numberValue( KIO::UDSEntry::UDS_ACCESS ) & MODE_EXE;
 			if ( isExe || !d->list_urls_only_exe )
 				matchList.append( entry_name );
 		}

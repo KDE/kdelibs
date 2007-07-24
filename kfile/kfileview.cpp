@@ -232,8 +232,8 @@ sort_by_name:
                     break;
                 case QDir::Time:
                 {
-                    time_t t1 = fi1->time( KIO::UDS_MODIFICATION_TIME );
-                    time_t t2 = fi2->time( KIO::UDS_MODIFICATION_TIME );
+                    time_t t1 = fi1->time( KIO::UDSEntry::UDS_MODIFICATION_TIME );
+                    time_t t2 = fi2->time( KIO::UDSEntry::UDS_MODIFICATION_TIME );
                     if ( t1 != t2 ) {
                         bigger = (t1 > t2);
                         break;

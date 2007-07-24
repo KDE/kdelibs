@@ -270,7 +270,7 @@ void TestRegressionWindow::directoryListingResult(KIO::Job *, const KIO::UDSEntr
 	{
 		const KIO::UDSEntry &entry = *it;
 
-		QString name = entry.stringValue(KIO::UDS_NAME);
+		QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
 		if(entry.isDir()) // Create new map entry...
 		{
 			assert(m_directoryMap.constFind(name) == m_directoryMap.constEnd());

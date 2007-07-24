@@ -603,9 +603,9 @@ void HTTPProtocol::stat(const KUrl& url)
 
     // When downloading we assume it exists
     UDSEntry entry;
-    entry.insert( KIO::UDS_NAME, url.fileName() );
-    entry.insert( KIO::UDS_FILE_TYPE, S_IFREG ); // a file
-    entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IRGRP | S_IROTH ); // readable by everybody
+    entry.insert( KIO::UDSEntry::UDS_NAME, url.fileName() );
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG ); // a file
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, S_IRUSR | S_IRGRP | S_IROTH ); // readable by everybody
 
     statEntry( entry );
     finished();
@@ -733,10 +733,10 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
         if ( !stat && thisURL.path(KUrl::AddTrailingSlash).length() == url.path(KUrl::AddTrailingSlash).length() )
           continue;
 
-        entry.insert( KIO::UDS_NAME, thisURL.fileName() );
+        entry.insert( KIO::UDSEntry::UDS_NAME, thisURL.fileName() );
       } else {
         // This is a relative URL.
-        entry.insert( KIO::UDS_NAME, href.text() );
+        entry.insert( KIO::UDSEntry::UDS_NAME, href.text() );
       }
 
       QDomNodeList propstats = thisResponse.elementsByTagName( "propstat" );
@@ -840,7 +840,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
     {
       QDomDocument doc;
       doc.appendChild(prop);
-      entry.insert( KIO::UDS_XML_PROPERTIES, doc.toString() );
+      entry.insert( KIO::UDSEntry::UDS_XML_PROPERTIES, doc.toString() );
     }
 
     for ( QDomNode n = prop.firstChild(); !n.isNull(); n = n.nextSibling() )
@@ -858,12 +858,12 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       if ( property.tagName() == "creationdate" )
       {
         // Resource creation date. Should be is ISO 8601 format.
-        entry.insert( KIO::UDS_CREATION_TIME, parseDateTime( property.text(), property.attribute("dt") ) );
+        entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, parseDateTime( property.text(), property.attribute("dt") ) );
       }
       else if ( property.tagName() == "getcontentlength" )
       {
         // Content length (file size)
-        entry.insert( KIO::UDS_SIZE, property.text().toULong() );
+        entry.insert( KIO::UDSEntry::UDS_SIZE, property.text().toULong() );
       }
       else if ( property.tagName() == "displayname" )
       {
@@ -907,7 +907,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       else if ( property.tagName() == "getlastmodified" )
       {
         // Last modification date
-        entry.insert( KIO::UDS_MODIFICATION_TIME, parseDateTime( property.text(), property.attribute("dt") ) );
+        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, parseDateTime( property.text(), property.attribute("dt") ) );
       }
       else if ( property.tagName() == "getetag" )
       {
@@ -961,21 +961,21 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
   setMetaData( "davLockCount", QString("%1").arg(lockCount) );
   setMetaData( "davSupportedLockCount", QString("%1").arg(supportedLockCount) );
 
-  entry.insert( KIO::UDS_FILE_TYPE, isDirectory ? S_IFDIR : S_IFREG );
+  entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, isDirectory ? S_IFDIR : S_IFREG );
 
   if ( foundExecutable || isDirectory )
   {
     // File was executable, or is a directory.
-    entry.insert( KIO::UDS_ACCESS, 0700 );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0700 );
   }
   else
   {
-    entry.insert( KIO::UDS_ACCESS, 0600 );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0600 );
   }
 
   if ( !isDirectory && !mimeType.isEmpty() )
   {
-    entry.insert( KIO::UDS_MIME_TYPE, mimeType );
+    entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, mimeType );
   }
 }
 

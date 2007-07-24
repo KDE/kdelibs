@@ -230,7 +230,7 @@ KUrl NetAccess::mostLocalUrl(const KUrl & url, QWidget* window)
     return url;
   }
 
-  const QString path = entry.stringValue( KIO::UDS_LOCAL_PATH );
+  const QString path = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
   if ( !path.isEmpty() )
   {
     KUrl new_url;

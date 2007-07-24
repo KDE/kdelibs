@@ -21,6 +21,7 @@
 #define SLAVEBASE_H
 
 #include <kio/global.h>
+#include <kio/udsentry.h>
 #include <kio/authinfo.h>
 
 #include <QtCore/QByteArray>

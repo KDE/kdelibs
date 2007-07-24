@@ -41,50 +41,6 @@
 using namespace KIO;
 
 
-QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
-{
-    s << e.size();
-    KIO::UDSEntry::ConstIterator it = e.begin();
-    const KIO::UDSEntry::ConstIterator end = e.end();
-    for( ; it != end; ++it )
-    {
-        const quint32 uds = it.key();
-        s << uds;
-        if ( uds & KIO::UDS_STRING )
-            s << it.value().toString();
-        else if ( uds & KIO::UDS_NUMBER )
-            s << it.value().toNumber();
-        else
-            Q_ASSERT( 0 );
-    }
-    return s;
-}
-
-QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
-{
-    e.clear();
-    quint32 size;
-    s >> size;
-    for( quint32 i = 0; i < size; ++i )
-    {
-        quint32 uds;
-        s >> uds;
-        if (uds & KIO::UDS_STRING) {
-            QString str;
-            s >> str;
-            e.insert( uds, str );
-        } else if (uds & KIO::UDS_NUMBER) {
-            long long val;
-            s >> val;
-            e.insert( uds, val );
-        } else
-            Q_ASSERT( 0 );
-    }
-    return s;
-}
-
-//////////////
-
 SlaveInterface::SlaveInterface(SlaveInterfacePrivate &dd, QObject *parent)
     : QObject(parent), d_ptr(&dd)
 {

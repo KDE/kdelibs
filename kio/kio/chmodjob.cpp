@@ -151,11 +151,11 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
     KIO::UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
         const KIO::UDSEntry& entry = *it;
-        const bool isLink = !entry.stringValue( KIO::UDS_STRING ).isEmpty();
-        const QString relativePath = entry.stringValue( KIO::UDS_NAME );
+        const bool isLink = !entry.stringValue( KIO::UDSEntry::UDS_STRING ).isEmpty();
+        const QString relativePath = entry.stringValue( KIO::UDSEntry::UDS_NAME );
         if ( !isLink && relativePath != ".." )
         {
-            const mode_t permissions = entry.numberValue( KIO::UDS_ACCESS );
+            const mode_t permissions = entry.numberValue( KIO::UDSEntry::UDS_ACCESS );
 
             ChmodInfo info;
             info.url = m_lstItems.first()->url(); // base directory

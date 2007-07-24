@@ -904,7 +904,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
     const KIO::UDSEntryList::const_iterator end = entries.end();
     for ( ; it != end; ++it )
     {
-        const QString name = (*it).stringValue( KIO::UDS_NAME );
+        const QString name = (*it).stringValue( KIO::UDSEntry::UDS_NAME );
 
         Q_ASSERT( !name.isEmpty() );
         if ( name.isEmpty() )

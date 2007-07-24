@@ -1121,19 +1121,19 @@ void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntr
 {
   assert(entry.count() == 0); // by contract :-)
 
-  entry.insert( UDS_NAME, filename );
-  entry.insert( UDS_SIZE, ftpEnt.size );
-  entry.insert( UDS_MODIFICATION_TIME, ftpEnt.date );
-  entry.insert( UDS_ACCESS, ftpEnt.access );
-  entry.insert( UDS_USER, ftpEnt.owner );
+  entry.insert( KIO::UDSEntry::UDS_NAME, filename );
+  entry.insert( KIO::UDSEntry::UDS_SIZE, ftpEnt.size );
+  entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, ftpEnt.date );
+  entry.insert( KIO::UDSEntry::UDS_ACCESS, ftpEnt.access );
+  entry.insert( KIO::UDSEntry::UDS_USER, ftpEnt.owner );
   if ( !ftpEnt.group.isEmpty() )
   {
-    entry.insert( UDS_GROUP, ftpEnt.group );
+    entry.insert( KIO::UDSEntry::UDS_GROUP, ftpEnt.group );
   }
 
   if ( !ftpEnt.link.isEmpty() )
   {
-    entry.insert( UDS_LINK_DEST, ftpEnt.link );
+    entry.insert( KIO::UDSEntry::UDS_LINK_DEST, ftpEnt.link );
 
     KMimeType::Ptr mime = KMimeType::findByUrl( KUrl("ftp://host/" + filename ) );
     // Links on ftp sites are often links to dirs, and we have no way to check
@@ -1143,14 +1143,14 @@ void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntr
     if ( mime->name() == KMimeType::defaultMimeType() )
     {
       kDebug(7102) << "Setting guessed mime type to inode/directory for " << filename << endl;
-      entry.insert( UDS_GUESSED_MIME_TYPE, QString::fromLatin1( "inode/directory" ) );
+      entry.insert( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, QString::fromLatin1( "inode/directory" ) );
       isDir = true;
     }
   }
 
-  entry.insert( UDS_FILE_TYPE, isDir ? S_IFDIR : ftpEnt.type );
-  // entry.insert UDS_ACCESS_TIME,buff.st_atime);
-  // entry.insert UDS_CREATION_TIME,buff.st_ctime);
+  entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, isDir ? S_IFDIR : ftpEnt.type );
+  // entry.insert KIO::UDSEntry::UDS_ACCESS_TIME,buff.st_atime);
+  // entry.insert KIO::UDSEntry::UDS_CREATION_TIME,buff.st_ctime);
 }
 
 
@@ -1159,9 +1159,9 @@ void Ftp::ftpShortStatAnswer( const QString& filename, bool isDir )
     UDSEntry entry;
 
 
-    entry.insert( KIO::UDS_NAME, filename );
-    entry.insert( KIO::UDS_FILE_TYPE, isDir ? S_IFDIR : S_IFREG );
-    entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
+    entry.insert( KIO::UDSEntry::UDS_NAME, filename );
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, isDir ? S_IFDIR : S_IFREG );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
     // No details about size, ownership, group, etc.
 
     statEntry(entry);
@@ -1204,12 +1204,12 @@ void Ftp::stat( const KUrl &url)
   if( path.isEmpty() || path == "/" )
   {
     UDSEntry entry;
-    //entry.insert( KIO::UDS_NAME, UDSField( QString() ) );
-    entry.insert( KIO::UDS_NAME, QString::fromLatin1( "." ) );
-    entry.insert( KIO::UDS_FILE_TYPE, S_IFDIR );
-    entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
-    entry.insert( KIO::UDS_USER, QString::fromLatin1( "root" ) );
-    entry.insert( KIO::UDS_GROUP, QString::fromLatin1( "root" ) );
+    //entry.insert( KIO::UDSEntry::UDS_NAME, UDSField( QString() ) );
+    entry.insert( KIO::UDSEntry::UDS_NAME, QString::fromLatin1( "." ) );
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
+    entry.insert( KIO::UDSEntry::UDS_USER, QString::fromLatin1( "root" ) );
+    entry.insert( KIO::UDSEntry::UDS_GROUP, QString::fromLatin1( "root" ) );
     // no size
 
     statEntry( entry );
@@ -1257,9 +1257,9 @@ void Ftp::stat( const KUrl &url)
     // Don't list the parent dir. Too slow, might not show it, etc.
     // Just return that it's a dir.
     UDSEntry entry;
-    entry.insert( KIO::UDS_NAME, filename );
-    entry.insert( KIO::UDS_FILE_TYPE, S_IFDIR );
-    entry.insert( KIO::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
+    entry.insert( KIO::UDSEntry::UDS_NAME, filename );
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
     // No clue about size, ownership, group, etc.
 
     statEntry(entry);

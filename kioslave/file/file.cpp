@@ -1211,13 +1211,13 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
     Q_UNUSED(withACL);
 #endif
     assert(entry.count() == 0); // by contract :-)
-    entry.reserve( 8 ); // speed up QHash insertion
+    // entry.reserve( 8 ); // speed up QHash insertion
 
     // Note: details = 0 (only "file or directory or symlink or doesn't exist") isn't implemented
     // because there's no real performance penalty in kio_file for returning the complete
     // details. Please consider doing it in your kioslave if you're using this one as a model :)
 
-    entry.insert( KIO::UDS_NAME, filename );
+    entry.insert( KIO::UDSEntry::UDS_NAME, filename );
 
     mode_t type;
     mode_t access;
@@ -1233,7 +1233,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
                 buffer2[ n ] = 0;
             }
 
-            entry.insert( KIO::UDS_LINK_DEST, QFile::decodeName( buffer2 ) );
+            entry.insert( KIO::UDSEntry::UDS_LINK_DEST, QFile::decodeName( buffer2 ) );
 
             // A symlink -> follow it only if details>1
             if ( details > 1 && KDE_stat( path.data(), &buff ) == -1 ) {
@@ -1241,9 +1241,9 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
                 type = S_IFMT - 1;
                 access = S_IRWXU | S_IRWXG | S_IRWXO;
 
-                entry.insert( KIO::UDS_FILE_TYPE, type );
-                entry.insert( KIO::UDS_ACCESS, access );
-                entry.insert( KIO::UDS_SIZE, 0LL );
+                entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
+                entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
+                entry.insert( KIO::UDSEntry::UDS_SIZE, 0LL );
                 goto notype;
 
             }
@@ -1256,10 +1256,10 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
     type = buff.st_mode & S_IFMT; // extract file type
     access = buff.st_mode & 07777; // extract permissions
 
-    entry.insert( KIO::UDS_FILE_TYPE, type );
-    entry.insert( KIO::UDS_ACCESS, access );
+    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, type );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS, access );
 
-    entry.insert( KIO::UDS_SIZE, buff.st_size );
+    entry.insert( KIO::UDSEntry::UDS_SIZE, buff.st_size );
 
 #ifdef HAVE_POSIX_ACL
     /* Append an atom indicating whether the file has extended acl information
@@ -1269,10 +1269,10 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
 #endif
 
  notype:
-    entry.insert( KIO::UDS_MODIFICATION_TIME, buff.st_mtime );
-    entry.insert( KIO::UDS_USER, getUserName( buff.st_uid ) );
-    entry.insert( KIO::UDS_GROUP, getGroupName( buff.st_gid ) );
-    entry.insert( KIO::UDS_ACCESS_TIME, buff.st_atime );
+    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, buff.st_mtime );
+    entry.insert( KIO::UDSEntry::UDS_USER, getUserName( buff.st_uid ) );
+    entry.insert( KIO::UDSEntry::UDS_GROUP, getGroupName( buff.st_gid ) );
+    entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, buff.st_atime );
 
     // Note: buff.st_ctime isn't the creation time !
     // We made that mistake for KDE 2.0, but it's in fact the
@@ -1910,19 +1910,19 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
     }
     if ( acl || defaultAcl ) {
       kDebug(7101) << path.data() << " has extended ACL entries " << endl;
-      entry.insert( KIO::UDS_EXTENDED_ACL, 1 );
+      entry.insert( KIO::UDSEntry::UDS_EXTENDED_ACL, 1 );
     }
     if ( withACL ) {
         if ( acl ) {
             ssize_t size = acl_size( acl );
             const QString str = QString::fromLatin1( acl_to_text( acl, &size ) );
-            entry.insert( KIO::UDS_ACL_STRING, str );
+            entry.insert( KIO::UDSEntry::UDS_ACL_STRING, str );
             kDebug(7101) << path.data() << "ACL: " << str << endl;
         }
         if ( defaultAcl ) {
             ssize_t size = acl_size( defaultAcl );
             const QString str = QString::fromLatin1( acl_to_text( defaultAcl, &size ) );
-            entry.insert( KIO::UDS_DEFAULT_ACL_STRING, str );
+            entry.insert( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING, str );
             kDebug(7101) << path.data() << "DEFAULT ACL: " << str << endl;
         }
     }

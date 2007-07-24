@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 
 #include <kio/global.h>
+#include <kio/udsentry.h>
 #include <kurl.h>
 
 #include <kacl.h>
@@ -261,7 +262,7 @@ public:
      * @returns a formatted string of the requested time.
      * @see time
      */
-    QString timeString( unsigned int which = KIO::UDS_MODIFICATION_TIME ) const;
+    QString timeString( unsigned int which = KIO::UDSEntry::UDS_MODIFICATION_TIME ) const;
 
     /**
      * Returns true if the file is a local file.

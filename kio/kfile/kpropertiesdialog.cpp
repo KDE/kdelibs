@@ -1067,7 +1067,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if (!d->bMultiple) // Dates for multiple don't make much sense...
   {
     QDateTime dt;
-    time_t tim = item->time(KIO::UDS_CREATION_TIME);
+    time_t tim = item->time(KIO::UDSEntry::UDS_CREATION_TIME);
     if ( tim )
     {
       l = new QLabel(i18n("Created:"), d->m_frame );
@@ -1078,7 +1078,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget(l, curRow++, 2);
     }
 
-    tim = item->time(KIO::UDS_MODIFICATION_TIME);
+    tim = item->time(KIO::UDSEntry::UDS_MODIFICATION_TIME);
     if ( tim )
     {
       l = new QLabel(i18n("Modified:"), d->m_frame );
@@ -1089,7 +1089,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget(l, curRow++, 2);
     }
 
-    tim = item->time(KIO::UDS_ACCESS_TIME);
+    tim = item->time(KIO::UDSEntry::UDS_ACCESS_TIME);
     if ( tim )
     {
       l = new QLabel(i18n("Accessed:"), d->m_frame );
