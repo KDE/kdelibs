@@ -95,6 +95,8 @@ class KFileItemDelegate::Private
         QPixmap decoration(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QPoint iconPosition(const QStyleOptionViewItem &option, const QPixmap &pixmap) const;
         QRect labelRectangle(const QStyleOptionViewItem &option, const QPixmap &icon, const QString &string) const;
+        void layoutTextItems(const QStyleOptionViewItem &option, const QModelIndex &index, const QPixmap &icon,
+                             QTextLayout *labelLayout, QTextLayout *infoLayout, QRect *textBoundingRect) const;
 
     public:
         KFileItemDelegate::AdditionalInformation additionalInformation;
@@ -576,6 +578,59 @@ bool KFileItemDelegate::Private::isListView(const QStyleOptionViewItem &option) 
 }
 
 
+void KFileItemDelegate::Private::layoutTextItems(const QStyleOptionViewItem &option, const QModelIndex &index,
+                                                 const QPixmap &icon, QTextLayout *labelLayout,
+                                                 QTextLayout *infoLayout, QRect *textBoundingRect) const
+{
+    KFileItem item       = fileItem(index);
+    const QString label  = display(index);
+    const QString info   = information(option, index, item);
+    bool showInformation = false;
+
+    setLayoutOptions(*labelLayout, option, index, item);
+
+    QFontMetrics fm      = QFontMetrics(labelLayout->font());
+    const QRect textArea = labelRectangle(option, icon, label);
+    QRect textRect       = subtractMargin(textArea, Private::TextMargin);
+
+    // Sizes and constraints for the different text parts
+    QSize maxLabelSize = textRect.size();
+    QSize maxInfoSize  = textRect.size();
+    QSize labelSize;
+    QSize infoSize;
+
+    // If we have additional info text, and there's space for at least two lines of text,
+    // adjust the max label size to make room for at least one line of the info text
+    if (!info.isEmpty() && textRect.height() >= fm.lineSpacing() * 2)
+    {
+        infoLayout->setFont(labelLayout->font());
+        infoLayout->setTextOption(labelLayout->textOption());
+
+        maxLabelSize.rheight() -= fm.lineSpacing();
+        showInformation = true;
+    }
+
+    // Lay out the label text, and adjust the max info size based on the label size
+    labelSize = layoutText(*labelLayout, option, label, maxLabelSize);
+    maxInfoSize.rheight() -= labelSize.height();
+
+    // Lay out the info text
+    if (showInformation)
+        infoSize = layoutText(*infoLayout, option, info, maxInfoSize);
+    else
+        infoSize = QSize(0, 0);
+
+    // Compute the bounding rect of the text
+    const Qt::Alignment alignment = labelLayout->textOption().alignment();
+    const QSize size(qMax(labelSize.width(), infoSize.width()), labelSize.height() + infoSize.height());
+    *textBoundingRect = QStyle::alignedRect(option.direction, alignment, size, textRect);
+
+    // Compute the positions where we should draw the layouts
+    labelLayout->setPosition(QPointF(textRect.x(), textBoundingRect->y()));
+    infoLayout->setPosition(QPointF(textRect.x(), textBoundingRect->y() + labelSize.height()));
+}
+
+
 
 
 // ---------------------------------------------------------------------------
@@ -812,59 +867,16 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
 
-    const QString label  = d->display(index);
-    const QPixmap pixmap = d->decoration(option, index);
-    KFileItem item       = d->fileItem(index);
-    const QString info   = d->information(option, index, item);
-    bool showInformation = false;
+    d->setActiveMargins(d->verticalLayout(option) ? Qt::Vertical : Qt::Horizontal);
 
 
     // Compute the metrics, and lay out the text items
     // ========================================================================
+    const QPixmap icon = d->decoration(option, index);
     QTextLayout labelLayout, infoLayout;
-    d->setLayoutOptions(labelLayout, option, index, item);
+    QRect textBoundingRect;
 
-    d->setActiveMargins(d->verticalLayout(option) ? Qt::Vertical : Qt::Horizontal);
-
-    QFontMetrics fm      = QFontMetrics(labelLayout.font());
-    const QRect textArea = d->labelRectangle(option, pixmap, label);
-    QRect textRect       = d->subtractMargin(textArea, Private::TextMargin);
-
-    // Sizes and constraints for the different text parts
-    QSize maxLabelSize = textRect.size();
-    QSize maxInfoSize  = textRect.size();
-    QSize labelSize;
-    QSize infoSize;
-
-    // If we have additional info text, and there's space for at least two lines of text,
-    // adjust the max label size to make room for at least one line of the info text
-    if (!info.isEmpty() && textRect.height() >= fm.lineSpacing() * 2)
-    {
-        infoLayout.setFont(labelLayout.font());
-        infoLayout.setTextOption(labelLayout.textOption());
-
-        maxLabelSize.rheight() -= fm.lineSpacing();
-        showInformation = true;
-    }
-
-    // Lay out the label text, and adjust the max info size based on the label size
-    labelSize = d->layoutText(labelLayout, option, label, maxLabelSize);
-    maxInfoSize.rheight() -= labelSize.height();
-
-    // Lay out the info text
-    if (showInformation)
-        infoSize = d->layoutText(infoLayout, option, info, maxInfoSize);
-    else
-        infoSize = QSize(0, 0);
-
-    // Compute the bounding rect of the text
-    const Qt::Alignment alignment = labelLayout.textOption().alignment();
-    const QSize size(qMax(labelSize.width(), infoSize.width()), labelSize.height() + infoSize.height());
-    const QRect textBoundingRect = QStyle::alignedRect(option.direction, alignment, size, textRect);
-
-    // Compute the positions where we should draw the layouts
-    const QPoint labelPos(textRect.x(), textBoundingRect.y());
-    const QPoint infoPos(textRect.x(), textBoundingRect.y() + labelSize.height());
+    d->layoutTextItems(option, index, icon, &labelLayout, &infoLayout, &textBoundingRect);
 
 
 #ifdef DEBUG_RECTS
@@ -904,19 +916,19 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Draw the decoration
     // ========================================================================
-    if (!pixmap.isNull())
+    if (!icon.isNull())
     {
-        const QPoint pt = d->iconPosition(option, pixmap);
-        painter->drawPixmap(pt, pixmap);
+        const QPoint pt = d->iconPosition(option, icon);
+        painter->drawPixmap(pt, icon);
     }
 
 
     // Draw the label
     // ========================================================================
     painter->setPen(QPen(d->foregroundBrush(option, index), 0));
-    labelLayout.draw(painter, labelPos);
+    labelLayout.draw(painter, QPoint());
 
-    if (showInformation)
+    if (!infoLayout.text().isEmpty())
     {
         QColor color;
         if (option.state & QStyle::State_Selected)
@@ -927,7 +939,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
             color = option.palette.color(QPalette::Highlight);
 
         painter->setPen(color);
-        infoLayout.draw(painter, infoPos);
+        infoLayout.draw(painter, QPoint());
     }
 
     painter->restore();
