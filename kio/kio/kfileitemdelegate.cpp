@@ -76,6 +76,7 @@ class KFileItemDelegate::Private
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QColor &color) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QIcon &icon) const;
         inline QBrush brush(const QVariant &value) const;
+        QBrush composite(const QColor &over, const QBrush &brush) const;
         QBrush foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QBrush backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         inline bool alternateBackground(const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -501,6 +502,42 @@ QBrush KFileItemDelegate::Private::brush(const QVariant &value) const
 }
 
 
+// Composites over over brush, using the Porter/Duff over operator
+QBrush KFileItemDelegate::Private::composite(const QColor &over, const QBrush &brush) const
+{
+    switch (brush.style())
+    {
+        case Qt::SolidPattern:
+        {
+            QColor under = brush.color();
+
+            int red   = under.red()   + (over.red()   - under.red())   * over.alpha() / 255;
+            int green = under.green() + (over.green() - under.green()) * over.alpha() / 255;
+            int blue  = under.blue()  + (over.blue()  - under.blue())  * over.alpha() / 255;
+            int alpha = over.alpha()  + under.alpha() * (255 - over.alpha()) / 255;
+
+            return QColor(red, green, blue, alpha);
+        }
+
+        case Qt::TexturePattern:
+        {
+            QPixmap texture = brush.texture();
+
+            // CompositionMode_SourceOver is the default composition mode
+            QPainter painter(&texture);
+            painter.fillRect(texture.rect(), over);
+
+            return texture;
+        }
+
+        // TODO Handle gradients
+
+        default:
+            return over;
+    }
+}
+
+
 QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     const QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
@@ -524,36 +561,36 @@ QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &o
     const QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
             QPalette::Normal : QPalette::Disabled;
 
-    QBrush bg(Qt::NoBrush);
+    QBrush background(Qt::NoBrush);
 
     // Always use the highlight color for selected items
     if (option.state & QStyle::State_Selected)
-        bg = option.palette.brush(group, QPalette::Highlight);
+        background = option.palette.brush(group, QPalette::Highlight);
     else
     {
         // If the item isn't selected, check if model provides its own background
         // color/brush for this item
         const QVariant value = index.model()->data(index, Qt::BackgroundRole);
         if (value.isValid())
-            bg = brush(value);
+            background = brush(value);
     }
 
     // If we don't already have a background brush, check if the background color
     // should be alternated for this item.
-    if (bg.style() == Qt::NoBrush && alternateBackground(option, index))
-        bg = option.palette.brush(group, QPalette::AlternateBase);
+    if (background.style() == Qt::NoBrush && alternateBackground(option, index))
+        background = option.palette.brush(group, QPalette::AlternateBase);
 
-    // Lighten the background color on hover, if we have one, and use a lighter version
-    // of the highlight color otherwise.
+    // Composite the hover color over the background brush
     if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
     {
-        if (bg.style() == Qt::SolidPattern)
-            bg = QBrush(bg.color().light());
-        else
-            bg = option.palette.color(group, QPalette::Highlight).light();
+        // Use a lighter version of the highlight color with 1/3 opacity
+        QColor hover = option.palette.color(group, QPalette::Highlight).light();
+        hover.setAlpha(88);
+
+        background = composite(hover, background);
     }
 
-    return bg;
+    return background;
 }
 
 
