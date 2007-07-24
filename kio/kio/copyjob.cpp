@@ -292,7 +292,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
 
     // Keep copy of the stat result
     const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
-    const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDSEntry::UDS_LOCAL_PATH );
+    const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
     const bool isDir = entry.isDir();
 
     if ( destinationState == DEST_NOT_STATED )
@@ -325,7 +325,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     }
 
     // Is it a file or a dir ?
-    const QString sName = entry.stringValue( KIO::UDSEntry::UDSEntry::UDS_NAME );
+    const QString sName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
 
     // We were stating the current source URL
     m_currentDest = m_dest; // used by slotEntries
