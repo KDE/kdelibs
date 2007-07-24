@@ -436,6 +436,7 @@ Note that this can change slightly the look of the icon in some cases: for insta
 on a pushbutton, it meant the icon was loaded at toolbar size and then resized down.
 With KIcon(name), the small icon is picked up instead, which might look different, but this is the correct behavior.
 These deprecated methods were also altered to not take a KComponentData (KInstance* in KDE3), which was an optional parameter in KDE3.</li>
+<li>the State parameter was used to be both define the state of the icon one of a limited number of overlays. Overlays are now a separate parameter, a QStringList, containing the names of icons to overlay. The new overlays parameter now follows the state parameter.</li>
 </ul>
 
 <h4>KInstance</h4>
