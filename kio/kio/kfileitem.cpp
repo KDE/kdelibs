@@ -576,7 +576,7 @@ QString KFileItem::user() const
 #ifdef Q_WS_WIN
         QFileInfo a(d->m_url.path( KUrl::RemoveTrailingSlash ));
         userName = a.owner();
-        d->m_entry.insert( KIO::UDS_USER, userName );
+        d->m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
 #else
         KDE_struct_stat buff;
         if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
@@ -600,7 +600,7 @@ QString KFileItem::group() const
 #ifdef Q_WS_WIN
         QFileInfo a(d->m_url.path( KUrl::RemoveTrailingSlash ));
         groupName = a.group();
-        d->m_entry.insert( KIO::UDS_GROUP, groupName );
+        d->m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
 #else
         KDE_struct_stat buff;
         if ( KDE_lstat( QFile::encodeName(d->m_url.path( KUrl::RemoveTrailingSlash )), &buff ) == 0) // get uid/gid of the link, if it's a link
