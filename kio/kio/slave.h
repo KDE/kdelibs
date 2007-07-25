@@ -22,6 +22,12 @@
 #ifndef KIO_SLAVE_H
 #define KIO_SLAVE_H
 
+#if defined(MAKE_KIO_LIB) || defined(MAKE_KLAUNCHER)
+# define KIO_SLAVE_EXPORT  KIO_EXPORT
+#else
+# define KIO_SLAVE_EXPORT  KIO_EXPORT_DEPRECATED
+#endif
+
 #include <time.h>
 #include <unistd.h>
 
@@ -37,7 +43,7 @@ namespace KIO {
     // Attention developers: If you change the implementation of KIO::Slave,
     // do *not* use connection() or slaveconn but the respective KIO::Slave
     // accessor methods. Otherwise classes derived from Slave might break. (LS)
-    class KIO_EXPORT Slave : public KIO::SlaveInterface
+    class KIO_SLAVE_EXPORT Slave : public KIO::SlaveInterface
     {
 	Q_OBJECT
     public:
@@ -195,5 +201,7 @@ namespace KIO {
         Q_DECLARE_PRIVATE(Slave)
     };
 }
+
+#undef KIO_SLAVE_EXPORT
 
 #endif
