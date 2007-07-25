@@ -77,6 +77,9 @@
 /* Define to 1 if you have the Xcursor library */
 #cmakedefine HAVE_XCURSOR 1
 
+/* Define to 1 if you have the Xrender library */
+#cmakedefine HAVE_XRENDER 1
+
 #cmakedefine   HAVE_BACKTRACE 1
 #cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_GETMNTINFO 1
