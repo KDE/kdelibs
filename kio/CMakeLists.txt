@@ -244,6 +244,10 @@ if(ACL_FOUND)
    target_link_libraries(kio ${ACL_LIBS})
 endif(ACL_FOUND)
 
+if(X11_Xrender_FOUND)
+   target_link_libraries(kio ${X11_Xrender_LIB})
+endif(X11_Xrender_FOUND)
+
 set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 
 ########### install files ###############

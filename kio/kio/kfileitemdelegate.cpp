@@ -19,6 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <config.h>
+
 #include "kfileitemdelegate.h"
 #include "kfileitemdelegate.moc"
 
@@ -31,6 +33,8 @@
 #include <QPainterPath>
 #include <QTextLayout>
 #include <QListView>
+#include <QPaintEngine>
+#include <QX11Info>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -40,8 +44,12 @@
 #include <kdirmodel.h>
 #include <kfileitem.h>
 
+#include "delegateanimationhandler_p.h"
 
-//#define DEBUG_RECTS
+#if defined(Q_WS_X11) && defined(HAVE_XRENDER)
+#  include <X11/Xlib.h>
+#  include <X11/extensions/Xrender.h>
+#endif
 
 
 struct Margin
@@ -55,7 +63,7 @@ class KFileItemDelegate::Private
     public:
         enum MarginType { ItemMargin = 0, TextMargin, IconMargin, NMargins };
 
-        Private(KFileItemDelegate *parent) : q(parent) {}
+        Private(KFileItemDelegate *parent);
         ~Private() {}
 
         QSize decorationSizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -102,16 +110,27 @@ class KFileItemDelegate::Private
                             const QRect &textBoundingRect) const;
         void drawTextItems(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index,
                            const QTextLayout &labelLayout, const QTextLayout &infoLayout) const;
+        AnimationState *animationState(const QStyleOptionViewItem &option, const QModelIndex &index,
+                                       const QAbstractItemView *view) const;
+        QPixmap applyHoverEffect(const QPixmap &icon) const;
+        QPixmap transition(const QPixmap &from, const QPixmap &to, qreal amount) const;
 
     public:
         KFileItemDelegate::AdditionalInformation additionalInformation;
 
     private:
         KFileItemDelegate * const q;
+        DelegateAnimationHandler *animationHandler;
         Margin verticalMargin[NMargins];
         Margin horizontalMargin[NMargins];
         Margin *activeMargins;
 };
+
+
+KFileItemDelegate::Private::Private(KFileItemDelegate *parent)
+    : q(parent), animationHandler(new DelegateAnimationHandler(parent))
+{
+}
 
 
 void KFileItemDelegate::Private::setActiveMargins(Qt::Orientation layout)
@@ -619,6 +638,128 @@ bool KFileItemDelegate::Private::isListView(const QStyleOptionViewItem &option) 
 }
 
 
+QPixmap KFileItemDelegate::Private::applyHoverEffect(const QPixmap &icon) const
+{
+    KIconEffect *effect = KIconLoader::global()->iconEffect();
+
+    // Note that in KIconLoader terminology, active = hover.
+    // ### We're assuming that the icon group is desktop/filemanager, since this
+    //     is KFileItemDelegate.
+    if (effect->hasEffect(K3Icon::Desktop, K3Icon::ActiveState))
+        return effect->apply(icon, K3Icon::Desktop, K3Icon::ActiveState);
+
+    return icon;
+}
+
+
+AnimationState *KFileItemDelegate::Private::animationState(const QStyleOptionViewItem &option,
+                                                           const QModelIndex &index,
+                                                           const QAbstractItemView *view) const
+{
+    if (index.column() == KDirModel::Name)
+        return animationHandler->animationState(option, index, view);
+
+    return NULL;
+}
+
+
+QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixmap &to, qreal amount) const
+{
+    int value = int(0xff * amount);
+
+    if (value == 0)
+        return from;
+
+    if (value == 1)
+        return to;
+
+    QColor color;
+    color.setAlphaF(amount);
+
+    // If the native paint engine supports CompositionMode_Plus
+    if (from.paintEngine()->hasFeature(QPaintEngine::BlendModes))
+    {
+        QPixmap temp = from;
+
+        QPainter p;
+        p.begin(&temp);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        p.fillRect(temp.rect(), color);
+        p.setCompositionMode(QPainter::CompositionMode_Plus);
+        p.setOpacity(amount);
+        p.drawPixmap(0, 0, to);
+        p.end();
+
+        return temp;
+    }
+#if defined(Q_WS_X11) && defined(HAVE_XRENDER)
+    else if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff)) // We have Xrender support
+    {
+        // QX11PaintEngine doesn't implement CompositionMode_Plus in Qt 4.3,
+        // which we need to be able to do a transition from one pixmap to
+        // another.
+        //
+        // In order to avoid the overhead of converting the pixmaps to images
+        // and doing the operation entirely in software, this function has a
+        // specialized path for X11 that uses Xrender directly to do the
+        // transition. This operation can be fully accelerated in HW.
+        //
+        // This specialization can be removed when QX11PaintEngine supports
+        // CompositionMode_Plus.
+        QPixmap source(to), destination(from);
+
+        source.detach();
+        destination.detach();
+
+        Display *dpy = QX11Info::display();
+
+        XRenderPictFormat *format = XRenderFindStandardFormat(dpy, PictStandardA8);
+        XRenderPictureAttributes pa;
+        pa.repeat = 1; // RepeatNormal
+
+        // Create a 1x1 8 bit repeating alpha picture
+        Pixmap pixmap = XCreatePixmap(dpy, destination.handle(), 1, 1, 8);
+        Picture alpha = XRenderCreatePicture(dpy, pixmap, format, CPRepeat, &pa);
+        XFreePixmap(dpy, pixmap);
+
+        // Fill the alpha picture with the opacity value
+        XRenderColor xcolor;
+        xcolor.alpha = quint16(0xffff * amount);
+        XRenderFillRectangle(dpy, PictOpSrc, alpha, &xcolor, 0, 0, 1, 1);
+
+        // Reduce the alpha of the destination with 1 - opacity
+        XRenderComposite(dpy, PictOpOutReverse, alpha, None, destination.x11PictureHandle(),
+                         0, 0, 0, 0, 0, 0, destination.width(), destination.height());
+
+        // Add source * opacity to the destination
+        XRenderComposite(dpy, PictOpAdd, source.x11PictureHandle(), alpha,
+                         destination.x11PictureHandle(),
+                         0, 0, 0, 0, 0, 0, destination.width(), destination.height());
+
+        XRenderFreePicture(dpy, alpha);
+        return destination;
+    }
+#endif
+    else
+    {
+        // Fall back to using QRasterPaintEngine to do the transition.
+        QImage temp    = from.toImage();
+        QImage toImage = to.toImage();
+
+        QPainter p;
+        p.begin(&temp);
+        p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        p.fillRect(temp.rect(), color);
+        p.setCompositionMode(QPainter::CompositionMode_Plus);
+        p.setOpacity(amount);
+        p.drawImage(0, 0, toImage);
+        p.end();
+
+        return QPixmap::fromImage(temp);
+    }
+}
+
+
 void KFileItemDelegate::Private::layoutTextItems(const QStyleOptionViewItem &option, const QModelIndex &index,
                                                  const QPixmap &icon, QTextLayout *labelLayout,
                                                  QTextLayout *infoLayout, QRect *textBoundingRect) const
@@ -868,15 +1009,7 @@ QPixmap KFileItemDelegate::Private::decoration(const QStyleOptionViewItem &optio
 
         // Apply the configured hover effect
         if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
-        {
-            KIconEffect *effect = KIconLoader::global()->iconEffect();
-
-            // Note that in KIconLoader terminology, active = hover.
-            // ### We're assuming that the icon group is desktop/filemanager, since this
-            //     is KFileItemDelegate.
-            if (effect->hasEffect(K3Icon::Desktop, K3Icon::ActiveState))
-                pixmap = effect->apply(pixmap, K3Icon::Desktop, K3Icon::ActiveState);
-        }
+            pixmap = applyHoverEffect(pixmap);
     }
 
     return pixmap;
@@ -962,50 +1095,106 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     if (!index.isValid())
         return;
 
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing);
+    QStyleOptionViewItemV3 optv3(option);
+    const QAbstractItemView *view = qobject_cast<const QAbstractItemView*>(optv3.widget);
+
+
+    // Check if the item is being animated
+    // ========================================================================
+    AnimationState *state = d->animationState(option, index, view);
+    CachedRendering *cache = 0;
+    qreal progress = ((option.state & QStyle::State_MouseOver) &&
+                index.column() == KDirModel::Name) ? 1.0 : 0.0;
+
+    if (state)
+    {
+        cache    = state->cachedRendering();
+        progress = state->hoverProgress();
+
+        // Clear the mouse over bit temporarily
+        optv3.state &= ~QStyle::State_MouseOver;
+
+        // If we have a cached rendering, draw the item from the cache
+        if (cache)
+        {
+            if (cache->checkValidity(optv3.state))
+            {
+                const QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
+                painter->drawPixmap(option.rect.topLeft(), pixmap);
+                return;
+            }
+
+            // If it wasn't valid, delete it
+            state->setCachedRendering(0);
+            delete cache;
+            cache = 0;
+        }
+    }
 
     d->setActiveMargins(d->verticalLayout(option) ? Qt::Vertical : Qt::Horizontal);
 
 
     // Compute the metrics, and lay out the text items
     // ========================================================================
-    const QPixmap icon = d->decoration(option, index);
+    QPixmap icon         = d->decoration(optv3, index);
+    const QPoint iconPos = d->iconPosition(optv3, icon);
+
     QTextLayout labelLayout, infoLayout;
     QRect textBoundingRect;
 
     d->layoutTextItems(option, index, icon, &labelLayout, &infoLayout, &textBoundingRect);
 
 
-#ifdef DEBUG_RECTS
-    painter->drawRect(option.rect);
-
-    painter->setPen(Qt::blue);
-    painter->drawRect(textArea);
-
-    painter->setPen(Qt::red);
-    painter->drawRect(textBoundingRect);
-#endif
-
-
-    // Draw the background
+    // Create a new cached rendering of a hovered and an unhovered item.
+    // We don't create a new cache for a fully hovered item, since we don't
+    // know yet if a hover out animation will be run.
     // ========================================================================
-    d->drawBackground(painter, option, index, textBoundingRect);
-
-
-    // Draw the decoration
-    // ========================================================================
-    if (!icon.isNull())
+    if (state && progress < 1)
     {
-        const QPoint pt = d->iconPosition(option, icon);
-        painter->drawPixmap(pt, icon);
+        cache = new CachedRendering(optv3.state, option.rect.size());
+
+        QPainter p;
+        p.begin(&cache->regular);
+        p.translate(-option.rect.topLeft());
+        p.setRenderHint(QPainter::Antialiasing);
+        d->drawBackground(&p, optv3, index, textBoundingRect);
+        p.drawPixmap(iconPos, icon);
+        d->drawTextItems(&p, optv3, index, labelLayout, infoLayout);
+        p.end();
+
+        optv3.state |= QStyle::State_MouseOver;
+        icon = d->applyHoverEffect(icon);
+
+        p.begin(&cache->hover);
+        p.translate(-option.rect.topLeft());
+        p.setRenderHint(QPainter::Antialiasing);
+        d->drawBackground(&p, optv3, index, textBoundingRect);
+        p.drawPixmap(iconPos, icon);
+        d->drawTextItems(&p, optv3, index, labelLayout, infoLayout);
+        p.end();
+
+        state->setCachedRendering(cache);
+
+        const QPixmap pixmap = d->transition(cache->regular, cache->hover, progress);
+        painter->drawPixmap(option.rect.topLeft(), pixmap);
+        return;
     }
 
 
-    // Draw the label
+    // Render the item directly if we're not using a cached rendering
     // ========================================================================
-    d->drawTextItems(painter, option, index, labelLayout, infoLayout);
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing);
 
+    if (progress > 0 && !(optv3.state & QStyle::State_MouseOver))
+    {
+        optv3.state |= QStyle::State_MouseOver;
+        icon = d->applyHoverEffect(icon);
+    }
+
+    d->drawBackground(painter, optv3, index, textBoundingRect);
+    painter->drawPixmap(iconPos, icon);
+    d->drawTextItems(painter, optv3, index, labelLayout, infoLayout);
 
     painter->restore();
 }
