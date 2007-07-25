@@ -75,8 +75,9 @@ public:
     /** Returns the current URL. */
     const KUrl& url() const;
 
-    /** Returns the currently entered, but not accepted URL.
-     *  Attention: It is possible that the returned URL is not valid!
+    /**
+     * Returns the currently entered, but not accepted URL.
+     * Attention: It is possible that the returned URL is not valid!
      */
     KUrl uncommittedUrl() const;
 
@@ -271,6 +272,7 @@ protected:
 
 private:
     Q_PRIVATE_SLOT(d, void slotReturnPressed(const QString& text))
+    Q_PRIVATE_SLOT(d, void slotReturnPressed())
     Q_PRIVATE_SLOT(d, void slotRemoteHostActivated())
     Q_PRIVATE_SLOT(d, void slotProtocolChanged(const QString& protocol))
     Q_PRIVATE_SLOT(d, void switchView())

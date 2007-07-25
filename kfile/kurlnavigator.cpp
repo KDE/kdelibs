@@ -121,6 +121,7 @@ public:
     Private(KUrlNavigator* q, KFilePlacesModel* placesModel);
 
     void slotReturnPressed(const QString&);
+    void slotReturnPressed();
     void slotRemoteHostActivated();
     void slotProtocolChanged(const QString&);
     void openPathSelectorMenu();
@@ -239,7 +240,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     connect(m_pathBox, SIGNAL(returnPressed(QString)),
             q, SLOT(slotReturnPressed(QString)));
     connect(m_pathBox, SIGNAL(returnPressed()),
-            q, SIGNAL(returnPressed()));
+            q, SLOT(slotReturnPressed()));
     connect(m_pathBox, SIGNAL(urlActivated(KUrl)),
             q, SLOT(setUrl(KUrl)));
 
@@ -283,6 +284,14 @@ void KUrlNavigator::Private::slotReturnPressed(const QString& text)
     // The URL might have been adjusted by KUrlNavigator::setUrl(), hence
     // synchronize the result in the path box.
     m_pathBox->setUrl(q->url());
+
+    emit q->returnPressed();
+}
+
+void KUrlNavigator::Private::slotReturnPressed()
+{
+    const QString text = q->uncommittedUrl().prettyUrl();
+    slotReturnPressed(text);
 }
 
 void KUrlNavigator::Private::slotRemoteHostActivated()
