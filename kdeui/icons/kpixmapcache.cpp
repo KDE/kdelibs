@@ -36,68 +36,41 @@
 #include <klockfile.h>
 #include <ksvgrenderer.h>
 
-#include <sys/file.h>
-
 
 //#define DISABLE_PIXMAPCACHE
-
-#ifdef Q_OS_WIN
- #define USE_KLOCKFILE
-#endif
 
 #define KPIXMAPCACHE_VERSION 0x000104
 
 
-// There's also KLockFile class which works with NFS as well. But temporary
-//  dirs shouldn't be in NFS, so this simple class should do the job.
 class LockFile
 {
 public:
     LockFile(const QString& filename, bool exclusive = false)
-            : mFile(filename)
     {
         mValid = false;
-#ifndef USE_KLOCKFILE
-        if (!mFile.open(QIODevice::ReadOnly)) {
-            kError() << k_funcinfo << "Failed to open file '" << filename << "'" << endl;
-        } else if (::flock(mFile.handle(), exclusive ? LOCK_EX : LOCK_SH)) {
-            kError() << k_funcinfo << "Failed to acquire " <<
-                    (exclusive ? "exclusive" : "shared")  << " lock '" << filename << "'" << endl;
-        } else {
-            mValid = true;
-        }
-#else
         mLockFile = new KLockFile(filename);
         KLockFile::LockResult result = mLockFile->lock(KLockFile::NoBlockFlag);
+        // TODO: If locking blocks then sleep for a small amount of time (e.g.
+        //  20ms) and try again for a few times
         if (result != KLockFile::LockOK) {
             kError() << k_funcinfo << "Failed to lock file '" << filename << "', result = " << result << endl;
         } else {
             mValid = true;
         }
-#endif
     }
     ~LockFile()
     {
-#ifndef USE_KLOCKFILE
-        if (mValid) {
-            ::flock(mFile.handle(), LOCK_UN);
-        }
-#else
         if (mValid) {
             mLockFile->unlock();
         }
         delete mLockFile;
-#endif
     }
 
     bool isValid() const  { return mValid; }
 
 private:
-    QFile mFile;
     bool mValid;
-#ifdef USE_KLOCKFILE
     KLockFile* mLockFile;
-#endif
 };
 
 
@@ -172,8 +145,7 @@ int KPixmapCache::Private::findOffset(const QString& key)
 
 bool KPixmapCache::Private::checkLockFile()
 {
-#ifdef USE_KLOCKFILE
-    // For KLockFile we need to ensure the lock file _doesn't_ exist.
+    // For KLockFile we need to ensure the lock file doesn't exist.
     if (QFile::exists(mLockFileName)) {
         if (!QFile::remove(mLockFileName)) {
             kError() << k_funcinfo << "Couldn't remove lockfile '" << mLockFileName << "'" << endl;
@@ -181,18 +153,6 @@ bool KPixmapCache::Private::checkLockFile()
         }
     }
     return true;
-#else
-    // For flock() the lockfile should exist
-    if (!QFile::exists(mLockFileName)) {
-        QFile tmp(mLockFileName);
-        if (!tmp.open(QIODevice::WriteOnly)) {
-            kError() << k_funcinfo << "Couldn't create lockfile '" << mLockFileName << "'" << endl;
-            return false;
-        }
-    }
-    // TODO: check lockfile permissions?
-    return true;
-#endif
 }
 
 bool KPixmapCache::Private::checkFileVersion(const QString& filename)
