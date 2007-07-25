@@ -22,10 +22,6 @@
 #ifndef KIO_SLAVE_H
 #define KIO_SLAVE_H
 
-#if !defined(MAKE_KIO_LIB) && !defined(MAKE_KLAUNCHER) && defined(__GNUC__)
-# warning "This is no longer public API"
-#endif
-
 #include <time.h>
 #include <unistd.h>
 
