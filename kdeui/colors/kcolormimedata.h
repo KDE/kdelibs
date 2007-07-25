@@ -44,14 +44,14 @@ namespace KColorMimeData
 
     /**
      * Returns true if the MIME data @p mimeData contains a color object.
-     * First checks for application/x-color and if that failes for a text/plain entry, which
+     * First checks for application/x-color and if that fails, for a text/plain entry, which
      * represents a color in the format \#hexnumbers
      */
     KDEUI_EXPORT bool canDecode(const QMimeData *mimeData);
 
     /**
      * Decodes the MIME data @p mimeData and returns the resulting color.
-     * First tries application/x-color and if that fails a text/plain entry, which
+     * First tries application/x-color and if that fails, a text/plain entry, which
      * represents a color in the format \#hexnumbers. If this fails too,
      * an invalid QColor object is returned, use QColor::isValid() to test it.
      */
