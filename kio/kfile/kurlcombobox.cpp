@@ -150,6 +150,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
     setDefaults();
     qDeleteAll( itemList );
     itemList.clear();
+    d->urlAdded = false;
 
     if ( _urls.isEmpty() )
         return;
@@ -243,6 +244,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
 
     // first remove the old item
     if (d->urlAdded) {
+        Q_ASSERT(!itemList.isEmpty());
         itemList.removeLast();
         d->urlAdded = false;
     }
@@ -278,6 +280,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
     itemList.append( item );
 
     setCurrentIndex( id );
+    Q_ASSERT(!itemList.isEmpty());
     d->urlAdded = true;
     blockSignals( blocked );
 }
