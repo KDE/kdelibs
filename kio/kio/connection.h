@@ -22,10 +22,6 @@
 #ifndef KIO_CONNECTION_H
 #define KIO_CONNECTION_H
 
-#if !defined(MAKE_KIO_LIB) && !defined(MAKE_KLAUNCHER) && defined(__GNUC__)
-# warning "This is no longer public API"
-#endif
-
 #include "kio_export.h"
 
 #include <QtCore/QObject>
