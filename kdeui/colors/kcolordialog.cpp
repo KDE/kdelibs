@@ -342,12 +342,27 @@ void KColorCells::mouseMoveEvent( QMouseEvent *e )
 
 void KColorCells::dragEnterEvent( QDragEnterEvent *event)
 {
+     kDebug () << "KColorCells::dragEnterEvent() acceptDrags="
+               << d->acceptDrags
+               << " canDecode=" << KColorMimeData::canDecode(event->mimeData())
+               << endl;
+     event->setAccepted( d->acceptDrags && KColorMimeData::canDecode( event->mimeData()));
+}
+
+// Reimplemented to override QTableWidget's override.  Else dropping doesn't work.
+void KColorCells::dragMoveEvent (QDragMoveEvent *event)
+{
+     kDebug () << "KColorCells::dragMoveEvent() acceptDrags="
+               << d->acceptDrags
+               << " canDecode=" << KColorMimeData::canDecode(event->mimeData())
+               << endl;
      event->setAccepted( d->acceptDrags && KColorMimeData::canDecode( event->mimeData()));
 }
 
 void KColorCells::dropEvent( QDropEvent *event)
 {
      QColor c=KColorMimeData::fromMimeData(event->mimeData());
+     kDebug () << "KColorCells::dropEvent() color.isValid=" << c.isValid() << endl;
      if( c.isValid()) {
           int cell = positionToCell(event->pos(), true);
 	  setColor(cell,c);

@@ -130,7 +130,8 @@ protected:
   virtual void mouseReleaseEvent( QMouseEvent * );
   virtual void mousePressEvent( QMouseEvent * );
   virtual void mouseMoveEvent( QMouseEvent * );
-  virtual void dragEnterEvent( QDragEnterEvent *);
+  virtual void dragEnterEvent( QDragEnterEvent * );
+  virtual void dragMoveEvent( QDragMoveEvent * );
   virtual void dropEvent( QDropEvent *);
   virtual void mouseDoubleClickEvent( QMouseEvent * );
 
