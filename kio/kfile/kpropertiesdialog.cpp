@@ -1066,36 +1066,32 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if (!d->bMultiple) // Dates for multiple don't make much sense...
   {
-    QDateTime dt;
-    time_t tim = item->time(KFileItem::CreationTime);
-    if ( tim )
+    KDateTime dt = item->time(KFileItem::CreationTime);
+    if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Created:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
 
-      dt.setTime_t( tim );
       l = new QLabel(KGlobal::locale()->formatDateTime(dt), d->m_frame );
       grid->addWidget(l, curRow++, 2);
     }
 
-    tim = item->time(KFileItem::ModificationTime);
-    if ( tim )
+    dt = item->time(KFileItem::ModificationTime);
+    if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Modified:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
 
-      dt.setTime_t( tim );
       l = new QLabel(KGlobal::locale()->formatDateTime(dt), d->m_frame );
       grid->addWidget(l, curRow++, 2);
     }
 
-    tim = item->time(KFileItem::AccessTime);
-    if ( tim )
+    dt = item->time(KFileItem::AccessTime);
+    if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Accessed:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
 
-      dt.setTime_t( tim );
       l = new QLabel(KGlobal::locale()->formatDateTime(dt), d->m_frame );
       grid->addWidget(l, curRow++, 2);
     }

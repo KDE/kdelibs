@@ -326,7 +326,7 @@ void K3FileDetailView::setSortingKey( K3FileListViewItem *item,
     QDir::SortFlags spec = KFileView::sorting();
 
     if ( spec & QDir::Time )
-        item->setKey( sortingKey( i->time( KFileItem::ModificationTime ),
+        item->setKey( sortingKey( i->time( KFileItem::ModificationTime ).toTime_t(),
                                   i->isDir(), spec ));
     else if ( spec & QDir::Size )
         item->setKey( sortingKey( i->size(), i->isDir(), spec ));
@@ -402,7 +402,7 @@ void K3FileDetailView::slotSortingChanged( int col )
         QString key;
         if ( sortSpec & QDir::Time ) {
             // warning, time_t is often signed -> cast it
-            key = sortingKey( (unsigned long)item->time( KFileItem::ModificationTime ), item->isDir(), sortSpec );
+            key = sortingKey( (unsigned long)item->time( KFileItem::ModificationTime ).toTime_t(), item->isDir(), sortSpec );
         }
         else if ( sortSpec & QDir::Size ) {
             key = sortingKey( item->size(), item->isDir(), sortSpec );

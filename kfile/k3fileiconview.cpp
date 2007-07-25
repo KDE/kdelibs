@@ -649,7 +649,7 @@ void K3FileIconView::setSorting( QDir::SortFlags spec )
         QString key;
         if ( spec & QDir::Time ) {
             // warning, time_t is often signed -> cast it
-            key = sortingKey( (unsigned long)item->time( KFileItem::ModificationTime ), item->isDir(), spec );
+            key = sortingKey( item->time( KFileItem::ModificationTime ).toTime_t(), item->isDir(), spec );
         }
         else if ( spec & QDir::Size ) {
             key = sortingKey( item->size(), item->isDir(), spec );
@@ -717,7 +717,7 @@ void K3FileIconView::initItem( K3FileIconViewItem *item, const KFileItem *i,
 
     if ( spec & QDir::Time )
         // warning, time_t is often signed -> cast it
-        item->setKey( sortingKey( (unsigned long) i->time( KFileItem::ModificationTime ),
+        item->setKey( sortingKey( i->time( KFileItem::ModificationTime ).toTime_t(),
                                   i->isDir(), spec ));
     else if ( spec & QDir::Size )
         item->setKey( sortingKey( i->size(), i->isDir(), spec ));

@@ -29,6 +29,7 @@
 #include <kacl.h>
 #include <kmimetype.h>
 #include <kfilemetainfo.h>
+#include <kdatetime.h>
 #include <QtCore/QList>
 
 class KFileItemPrivate;
@@ -267,7 +268,7 @@ public:
      * @return the time asked for, (time_t)0 if not available
      * @see timeString()
      */
-    time_t time( FileTimes which ) const;
+    KDateTime time( FileTimes which ) const;
     KDE_DEPRECATED time_t time( unsigned int which ) const;
 
     /**
