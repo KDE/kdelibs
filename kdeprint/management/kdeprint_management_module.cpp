@@ -32,18 +32,18 @@
 
 extern "C"
 {
-	KDEPRINT_MANAGEMENT_MODULE_EXPORT int add_printer_wizard(QWidget *parent)
+	KDE_EXPORT int add_printer_wizard(QWidget *parent)
 	{
                 return kdeprint_management_add_printer_wizard( parent );
 	}
 
-	KDEPRINT_MANAGEMENT_MODULE_EXPORT bool config_dialog(QWidget *parent)
+	KDE_EXPORT bool config_dialog(QWidget *parent)
 	{
 		KMConfigDialog	dlg(parent);
 		return dlg.exec();
 	}
 
-	KDEPRINT_MANAGEMENT_MODULE_EXPORT QString select_command( QWidget* parent )
+	KDE_EXPORT QString select_command( QWidget* parent )
 	{
 		KDialog dlg( parent );
     dlg.setModal( true );
