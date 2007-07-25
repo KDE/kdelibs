@@ -316,6 +316,7 @@ install( FILES
   KPassivePopupMessageHandler
   KPasswordDialog
   KPasteTextAction
+  KPixmapCache
   KPixmapEffect
   KPixmapProvider
   KPixmapRegionSelectorDialog
