@@ -470,9 +470,10 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
         return false;
     }
 
-    //kDebug() << "KPC::find(" << key << ")" << endl;
+    //kDebug() << "KPC::find(" << key << "), use QPC = " << d->mUseQPixmapCache << endl;
     // First try the QPixmapCache
     if (d->mUseQPixmapCache && QPixmapCache::find(key, pix)) {
+        //kDebug() << k_funcinfo << "Found from QPC" << endl;
         return true;
     }
 
@@ -489,7 +490,12 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
     }
 
     // Load the data
-    return loadData(offset, pix);
+    bool ret = loadData(offset, pix);
+    if (ret && d->mUseQPixmapCache) {
+        // This pixmap wasn't in QPC, put it there
+        QPixmapCache::insert(key, pix);
+    }
+    return ret;
 }
 
 bool KPixmapCache::loadData(int offset, QPixmap& pix)
