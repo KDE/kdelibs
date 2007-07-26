@@ -293,7 +293,7 @@ int KCalendarSystemHebrewPrivate::daysPreceedingMonth( int character, int month 
             {0, 30, 60, 90, 119, 149, 179, 209, 238, 267, 297, 326, 356},
         };
 
-    if ( character >= 1 && character <= 6  && month >= 1 & month <=13 ) {
+    if ( character >= 1 && character <= 6  && month >= 1 && month <=13 ) {
         return daysPreceedingMonthTable[character-1][month-1];
     }
     return -911;
