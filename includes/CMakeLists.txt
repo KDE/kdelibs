@@ -370,6 +370,7 @@ install( FILES
   KSessionManager
   KSharedConfig
   KSharedPtr
+  KShell
   KShellCompletion
   KShortcut
   KShortcutsDialog
