@@ -116,13 +116,16 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     painter.setBrush(bgColor);
     painter.drawRect(0, 0, buttonWidth, buttonHeight);
 
+    int textLeft = 0;
     int textWidth = buttonWidth;
     painter.setPen(fgColor);
+
+    const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
 
     if (!isDisplayHintEnabled(ActivatedHint)) {
         // draw arrow
         const int arrowSize = arrowWidth();
-        const int arrowX = (buttonWidth - arrowSize) - BorderWidth;
+        const int arrowX = leftToRight ? (buttonWidth - arrowSize) - BorderWidth : BorderWidth;
         const int arrowY = (buttonHeight - arrowSize) / 2;
 
         QStyleOption option;
@@ -131,19 +134,28 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         option.palette.setColor(QPalette::Text, fgColor);
         option.palette.setColor(QPalette::WindowText, fgColor);
         option.palette.setColor(QPalette::ButtonText, fgColor);
-        // TODO: respect R2L setting for the arrows
-        style()->drawPrimitive(QStyle::PE_IndicatorArrowRight, &option, &painter, this );
 
-        textWidth = arrowX - BorderWidth;
+        if (leftToRight) {
+            style()->drawPrimitive(QStyle::PE_IndicatorArrowRight, &option, &painter, this);
+        } else {
+            style()->drawPrimitive(QStyle::PE_IndicatorArrowLeft, &option, &painter, this);
+            textLeft += arrowSize + 2 * BorderWidth;
+        }
+        textWidth -= arrowSize + 2 * BorderWidth;
     }
 
     const bool clipped = isTextClipped();
     const int align = clipped ? Qt::AlignVCenter : Qt::AlignCenter;
-    const QRect textRect(0, 0, textWidth, buttonHeight);
+    const QRect textRect(textLeft, 0, textWidth, buttonHeight);
     if (clipped) {
         QLinearGradient gradient(textRect.topLeft(), textRect.topRight());
-        gradient.setColorAt(0.8, fgColor);
-        gradient.setColorAt(1.0, bgColor);
+        if (leftToRight) {
+            gradient.setColorAt(0.8, fgColor);
+            gradient.setColorAt(1.0, bgColor);
+        } else {
+            gradient.setColorAt(0.0, bgColor);
+            gradient.setColorAt(0.2, fgColor);
+        }
 
         QPen pen;
         pen.setBrush(QBrush(gradient));
