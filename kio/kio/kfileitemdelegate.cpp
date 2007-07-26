@@ -34,7 +34,6 @@
 #include <QTextLayout>
 #include <QListView>
 #include <QPaintEngine>
-#include <QX11Info>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -49,6 +48,7 @@
 #if defined(Q_WS_X11) && defined(HAVE_XRENDER)
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
+#  include <QX11Info>
 #endif
 
 
