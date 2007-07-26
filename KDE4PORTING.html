@@ -419,6 +419,8 @@ hasMainComponent()</li>
 <ul>
 <li>KGlobalSettings is now a QObject so can emit signals like kdisplayPaletteChanged() instead of KApplication</li>
 <li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO::trash instead</li>
+<li>Accessing system colors via KGlobalSettings is deprecated; use an appropriately constructed KColorScheme instead.
+See the <a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kdeui/html/classKGlobalSettings.html">KGlobalSettings documentation</a> or kglobalsettings.h for specific replacement suggestions.</li>
 </ul>
 
 <h4>KIcon</h4>
