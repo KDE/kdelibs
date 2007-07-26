@@ -121,7 +121,7 @@ void KFontRequester::setTitle( const QString &title )
 
 void KFontRequester::buttonClicked()
 {
-    KFontChooser::DisplayFlags flags = KFontChooser::DisplayFrame;
+    KFontChooser::DisplayFlags flags = KFontChooser::NoDisplayFlags;
     if ( d->m_onlyFixed ) {
         flags |= KFontChooser::FixedFontsOnly;
     }
