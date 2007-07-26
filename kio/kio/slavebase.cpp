@@ -747,11 +747,11 @@ void SlaveBase::get(KUrl const & )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_GET)); }
 void SlaveBase::open(KUrl const &, QIODevice::OpenMode)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_OPEN)); }
-void SlaveBase::read(KIO::fileoffset_t)
+void SlaveBase::read(KIO::filesize_t)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_READ)); }
 void SlaveBase::write(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_WRITE)); }
-void SlaveBase::seek(KIO::fileoffset_t)
+void SlaveBase::seek(KIO::filesize_t)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SEEK)); }
 void SlaveBase::close()
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CLOSE)); }

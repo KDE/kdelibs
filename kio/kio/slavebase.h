@@ -382,9 +382,9 @@ public:
      */
     virtual void open( const KUrl &url, QIODevice::OpenMode mode );
 
-    virtual void read( KIO::fileoffset_t size );
+    virtual void read( KIO::filesize_t size );
     virtual void write( const QByteArray &data );
-    virtual void seek( KIO::fileoffset_t offset );
+    virtual void seek( KIO::filesize_t offset );
     virtual void close();
 
     /**
