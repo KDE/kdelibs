@@ -235,11 +235,8 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
         connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
 
     if (d->associatedWidgets.count()) {
-        action->setShortcutContext(Qt::WidgetShortcut);
-
         foreach (QWidget* w, d->associatedWidgets)
             w->addAction(action);
-
     }
 
     emit inserted( action );

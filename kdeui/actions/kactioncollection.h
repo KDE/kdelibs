@@ -84,8 +84,6 @@ public:
    * Set an associated widget (clears any others).  Associated widgets automatically have all actions
    * in the action collection added to themselves.
    *
-   * Shortcut context will automatically be set to Qt::WidgetShortcut.
-   *
    * \sa addAssociatedWidget(), removeAssociatedWidget(), clearAssociatedWidgets() and associatedWidgets().
    */
   void setAssociatedWidget(QWidget* widget);
@@ -94,8 +92,6 @@ public:
    * Add an associated widget.  Associated widgets automatically have all actions
    * in the action collection added to themselves.
    *
-   * Shortcut context will automatically be set to Qt::WidgetShortcut.
-   *
    * \sa setAssociatedWidget(), removeAssociatedWidget(), clearAssociatedWidgets() and associatedWidgets().
    */
   void addAssociatedWidget(QWidget* widget);
@@ -103,8 +99,6 @@ public:
   /**
    * Remove an associated widget.  Removes all actions in this collection from
    * the removed associated widget.
-   *
-   * Shortcut context will not be reverted from Qt::WidgetShortcut.
    *
    * \sa addAssociatedWidget(), setAssociatedWidget(), clearAssociatedWidgets(), and associatedWidgets().
    */
