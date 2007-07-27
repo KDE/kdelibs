@@ -98,7 +98,7 @@ public:
 	QToolButton *clearButton;
 
 	QKeySequence keySequence;
-    QKeySequence oldKeySequence;
+	QKeySequence oldKeySequence;
 	QTimer modifierlessTimeout;
 	bool allowModifierless;
 	uint nKey;
@@ -220,12 +220,11 @@ void KKeySequenceWidgetPrivate::startRecording()
 
 void KKeySequenceWidgetPrivate::doneRecording()
 {
-	//### other things that need to be done
 	modifierlessTimeout.stop();
 	isRecording = false;
+	keyButton->releaseKeyboard();
 	keyButton->setDown(false);
 	updateShortcutDisplay();
-	keyButton->releaseKeyboard();
 	if (keySequence != oldKeySequence)
 		emit q->keySequenceChanged(keySequence);
 }
@@ -333,16 +332,11 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 {
 	QPushButton::keyPressEvent(e);
 
-	//if key is a letter, it must be stored as lowercase
-	//TODO: umlauts are *very* broken, change that!
-	int keyQt = QChar( e->key() & 0xff ).isLetter() ?
-		(QChar( e->key() & 0xff ).toUpper().toLatin1() | (e->key() & 0xffff00) )
-		: e->key();
-
+	int keyQt = e->key();
 
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
 	//TODO: don't have the return key appear as first key of the sequence when it was pressed to start editing!
-	//hmmm.... return, space, and escape all don't work as intended.
+	//Return, space, and escape all don't quite work as intended.
 	if (!d->isRecording) {
 		if (keyQt == Qt::Key_Return) {
 			d->startRecording();
@@ -367,8 +361,10 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 			d->updateShortcutDisplay();
 		break;
 	default:
-		//TODO:Shift is NOT a modifier like Ctrl/Alt/WinKey!
-		if (!d->modifierKeys) {
+		//Shift is not a modifier in the sense of Ctrl/Alt/WinKey
+		//We use a bad hack to find out if a key is a plain letter or symbol key
+		if (!(d->modifierKeys & ~Qt::SHIFT)
+		    && QKeySequence(keyQt).toString().length() == 1) {
 			if (!d->allowModifierless)
 				return;
 			else
@@ -387,7 +383,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 			if (d->nKey >= 4) {
 				d->doneRecording();
 				return;
-            }
+			}
 			d->updateShortcutDisplay();
 		}
 	}

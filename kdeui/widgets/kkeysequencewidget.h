@@ -30,18 +30,11 @@ class KKeySequenceWidgetPrivate;
 
 
 /**
- * @short A push button that looks like a keyboard key.
+ * @short A widget to input a QKeySequence.
  *
- * You must call setKeySequence(const QKeySequence &seq) to set the widget's 
- * currently displayed key.
- * You can call captureKeySequence() to get a new shortcut from the user or
- * let the user press the button and it will grab it automatically.
- * If captureKeySequence() succeeds, then the 
- * keySequenceChanged(const QKeySequence &seq) signal will be
- * emitted with the value of the new shortcut.  The widget containing
- * a KKeySequenceWidget widget must connect to this signal and check if the shortcut
- * is valid.  If it is, you will need to call setKeySequence() with the new
- * value in order make it the key currently displayed.
+ * This widget lets the user choose a QKeySequence, which is usually used as a shortcut key,
+ * by pressing the keys just like to trigger a shortcut. Calling captureKeySequence(), or
+ * the user clicking into the widget, start recording.
  *
  * @author Mark Donohoe <donohoe@kde.org>
  * @internal
@@ -55,36 +48,66 @@ public:
 	* Constructor.
 	*/
 	explicit KKeySequenceWidget(QWidget *parent = 0);
+
 	/**
 	* Destructs the widget.
 	*/
 	virtual ~KKeySequenceWidget();
 
+	/**
+	 * Set whether to accept plain letter or symbol keys without modifiers like Ctrl, Alt, Meta.
+	 * "Special" keys like F1, Insert, PageDown will always work.
+	 */
 	void setModifierlessAllowed(bool allow);
+
+	/**
+	 * Return if the widget accepts plain letter or symbol keys without modifiers like Ctrl, Alt, Meta.
+	 * "Special" keys like F1, Insert and so on will always work.
+	 */
 	bool isModifierlessAllowed();
-	
+
+	/**
+	 * Set whether a small button to set an empty key sequence should be displayed next to the
+	 * main input widget. The default is to show the clear button.
+	 */
 	void setClearButtonShown(bool show);
 
+	/**
+	 * Return the currently selected key sequence.
+	 */
 	QKeySequence keySequence() const;
 
 Q_SIGNALS:
+	/**
+	 * This signal is emitted when the current key sequence has changed, be it by user
+	 * input or programmatically.
+	 */
 	void keySequenceChanged(const QKeySequence &seq);
 
 public Q_SLOTS:
 	/**
-	 * Call this method to capture a shortcut from the keyboard.
-	 * If it succeeds, keySequenceChanged() will be emitted.
+	 * Capture a shortcut from the keyboard. This call will only return once a key sequence
+	 * has been captured or input was aborted.
+	 * If a key sequence was input, keySequenceChanged() will be emitted.
+	 *
+	 * @see setModifierlessAllowed()
 	 */
 	void captureKeySequence();
-    void setKeySequence(const QKeySequence &seq);
-    void clearKeySequence();
+	
+	/**
+	 * Set the key sequence.
+	 */
+	void setKeySequence(const QKeySequence &seq);
+	
+	/**
+	 * Clear the key sequence.
+	 */
+	void clearKeySequence();
 
 private:
 	Q_PRIVATE_SLOT(d, void doneRecording())
 
 private:
-	//TODO: can these be moved in the private class? //remark: yes, use emit q->blah!
-	void startRecording();
 	friend class KKeySequenceWidgetPrivate;
 	KKeySequenceWidgetPrivate *const d;
 
