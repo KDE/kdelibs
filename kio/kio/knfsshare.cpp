@@ -64,7 +64,7 @@ bool KNFSShare::KNFSSharePrivate::findExportsFile()
   if ( QFile::exists("/etc/exports") )
     exportsFile = "/etc/exports";
   else {
-    kDebug(7000) << "KNFSShare: Could not found exports file!" << endl;
+    kDebug(7000) << "KNFSShare: Could not find exports file!" << endl;
     return false;
   }
 
