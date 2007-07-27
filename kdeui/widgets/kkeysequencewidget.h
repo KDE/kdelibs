@@ -32,12 +32,15 @@ class KKeySequenceWidgetPrivate;
 /**
  * @short A push button that looks like a keyboard key.
  *
- * You must call setShortcut() to set the widget's currently displayed key.
- * You can call captureShortcut() to get a new shortcut from the user.
- * If captureShortcut() succeeds, then the capturedShortcut() signal will be
+ * You must call setKeySequence(const QKeySequence &seq) to set the widget's 
+ * currently displayed key.
+ * You can call captureKeySequence() to get a new shortcut from the user or
+ * let the user press the button and it will grab it automatically.
+ * If captureKeySequence() succeeds, then the 
+ * keySequenceChanged(const QKeySequence &seq) signal will be
  * emitted with the value of the new shortcut.  The widget containing
  * a KKeySequenceWidget widget must connect to this signal and check if the shortcut
- * is valid.  If it is, you will need to call setShortcut() with the new
+ * is valid.  If it is, you will need to call setKeySequence() with the new
  * value in order make it the key currently displayed.
  *
  * @author Mark Donohoe <donohoe@kde.org>
