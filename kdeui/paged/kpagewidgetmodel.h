@@ -139,9 +139,15 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
      */
     bool isChecked() const;
 
+    /**
+     * Returns whether the page widget item is enabled.
+     */
     bool isEnabled() const;
 
     public Q_SLOTS:
+        /**
+         * Sets whether the page widget item is enabled.
+         */
         void setEnabled(bool);
 
         /**
@@ -256,7 +262,7 @@ class KDEUI_EXPORT KPageWidgetModel : public KPageModel
     void removePage( KPageWidgetItem *item );
 
     /**
-     * These methods are reimplemented from QAsbtractItemModel.
+     * These methods are reimplemented from QAbstractItemModel.
      */
     virtual int columnCount( const QModelIndex &parent = QModelIndex() ) const;
     virtual QVariant data( const QModelIndex &index, int role = Qt::DisplayRole ) const;
