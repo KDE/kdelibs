@@ -69,8 +69,8 @@ class QSystemTrayIcon;
  *    (void) new QLabel( vb, "<b>Isn't this great?</b>" );
  *
  *    KHBox *box = new KHBox( vb );
- *    (void) new QPushButton( box, "Yes" );
- *    (void) new QPushButton( box, "No" );
+ *    (void) new QPushButton( "Yes", box );
+ *    (void) new QPushButton( "No", box );
  *
  *    pop->setView( vb );
  *    pop->show();
