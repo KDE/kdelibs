@@ -400,6 +400,12 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 return KIcon(item->iconName(), 0, item->overlays());
             }
             break;
+        case Qt::TextAlignmentRole:
+            if (index.column() == Size) {
+                // use a right alignment for L2R and R2L languages
+                return Qt::AlignRight;
+            }
+            break;
         case FileItemRole:
             return QVariant::fromValue(*item);
         case ChildCountRole:
