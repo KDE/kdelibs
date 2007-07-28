@@ -32,11 +32,11 @@ class KCalendarSystemPrivate;
 class QDate;
 
 /**
- * CalendarSystem abstract class, default derived kde gregorian class and
- * factory class. Provides support for different calendar types for kde
+ * CalendarSystem abstract class, default derived KDE Gregorian class and
+ * factory class. Provides support for different calendar types for the KDE
  * calendar widget and related stuff.
  *
- * Derived classes must be created through KCalendarFactory class
+ * Derived classes must be created through KCalendarFactory class.
  *
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
  */
@@ -75,24 +75,23 @@ public:
    *
    * @param calType string identification of the specific calendar type
    * to be constructed
-   * @param locale Locale used for translations. Use the global locale when
-   * 0 is specified.
+   * @param locale locale to use for translations. The global locale is used if null.
    * @return a KCalendarSystem object
    */
   static KCalendarSystem *create ( const QString & calType = QLatin1String( "gregorian" ),
                                    const KLocale * locale = 0 );
 
   /**
-   * Gets list of names of supported calendar systems
+   * Gets a list of names of supported calendar systems.
    *
-   * @return A QStringList object
+   * @return list of names
    */
   static QStringList calendarSystems();
 
     /**
      * Returns a typographically correct and translated label to display for
-     * the calendar system type.  Use with method calendarSystems to neatly
-     * format labels to display on combo widget of available calendar systems
+     * the calendar system type.  Use with calendarSystems() to neatly
+     * format labels to display on combo widget of available calendar systems.
      *
      * @param calendarType the specific calendar type to return the label for
      *
@@ -101,9 +100,9 @@ public:
     static QString calendarLabel( const QString &calendarType );
 
   /**
-   * Constructor of abstract calendar class. This will be called by the derived classes.
+   * Constructor of abstract calendar class. This will be called by derived classes.
    *
-   * @param locale It will use this locale for translations, 0 means global.
+   * @param locale locale to use for translations. The global locale is used if null.
    */
   explicit KCalendarSystem(const KLocale * locale = 0);
 
@@ -113,10 +112,7 @@ public:
   virtual ~KCalendarSystem();
 
     /**
-     * Returns the calendar system type
-     *
-     * This is the same as the deprecated calendarName, but now matches
-     * KLocale terminology of type in place of name.
+     * Returns the calendar system type.
      *
      * @return type of calendar system
      */
@@ -125,9 +121,9 @@ public:
     /**
      * Returns a QDate holding the epoch of the calendar system.  Usually YMD
      * of 1/1/1, access the returned QDates method toJulianDay() if you
-     * require the actual Julian Day number.  Note: a particular Calendar
-     * System implementation may not include the epoch in its supported range,
-     * or the Calendar System may be Proleptic in which case it supports dates
+     * require the actual Julian day number.  Note: a particular calendar
+     * system implementation may not include the epoch in its supported range,
+     * or the calendar system may be proleptic in which case it supports dates
      * before the epoch.
      *
      * @see KCalendarSystem::earliestValidDate
@@ -142,7 +138,7 @@ public:
     /**
      * Returns the earliest date valid in this calendar system implementation.
      *
-     * If calendar system proleptic then may be before epoch.
+     * If the calendar system is proleptic then this may be before epoch.
      *
      * @see KCalendarSystem::epoch
      * @see KCalendarSystem::latestValidDate
@@ -162,7 +158,7 @@ public:
     virtual QDate latestValidDate() const;
 
     /**
-     * Returns if a given date is valid in this calendar system
+     * Returns whether a given date is valid in this calendar system.
      *
      * @param year the year portion of the date to check
      * @param month the month portion of the date to check
@@ -172,7 +168,7 @@ public:
     virtual bool isValid(int year, int month, int day) const = 0;
 
     /**
-     * Returns if a given date is valid in this calendar system
+     * Returns whether a given date is valid in this calendar system.
      *
      * @param date the date to check
      * @return @c true if the date is valid, @c false otherwise
@@ -185,16 +181,16 @@ public:
      * are treated literally, i.e. no Y2K translation is applied to years
      * entered in the range 00 to 99.  Replaces setYMD.
      *
-     * @param date Date to change
-     * @param year Year
-     * @param month Month number
-     * @param day Day of month
+     * @param date date to change
+     * @param year year
+     * @param month month number
+     * @param day day of month
      * @return @c true if the date is valid, @c false otherwise
      */
     virtual bool setDate(QDate &date, int year, int month, int day) const;
 
   /**
-   * Gets specific calendar type year for a given gregorian date
+   * Gets specific calendar type year for a given Gregorian date.
    *
    * @param date gregorian date
    * @return year
@@ -204,11 +200,11 @@ public:
     /**
      * Converts a date into a year literal
      *
-     * @param pDate The date to convert
-     * @param format The format to return, either short or long
-     * @return The year literal of the date
+     * @param date date to convert
+     * @param format format to return, either short or long
+     * @return year literal of the date
      */
-    virtual QString yearString( const QDate & pDate, StringFormat format = LongFormat ) const;
+    virtual QString yearString( const QDate &date, StringFormat format = LongFormat ) const;
 
   /**
    * Converts a year literal of a part of a string into a integer starting at the beginning of the string
@@ -275,7 +271,7 @@ public:
    * Gets specific calendar type number of day of week number for a given
    * date
    *
-   * @param date gregorian date
+   * @param date Gregorian date
    * @return day of week
    */
   virtual int dayOfWeek (const QDate & date) const;
@@ -283,7 +279,7 @@ public:
   /**
    * Gets specific calendar type day number of year for a given date
    *
-   * @param date gregorian date equivalent to the specific one
+   * @param date Gregorian date equivalent to the specific one
    * @return day number
    */
   virtual int dayOfYear (const QDate & date) const;
@@ -311,7 +307,7 @@ public:
   virtual bool setYMD(QDate & date, int y, int m, int d) const;
 
   /**
-   * Returns a QDate object containing a date nyears later.
+   * Returns a QDate containing a date @p nyears years later.
    *
    * @param date The old date
    * @param nyears The number of years to add
@@ -320,25 +316,25 @@ public:
   virtual QDate addYears(const QDate & date, int nyears) const;
 
   /**
-   * Returns a QDate object containing a date nmonths later.
+   * Returns a QDate containing a date @p nmonths months later.
    *
    * @param date The old date
-   * @param nmonths The number of months to add
+   * @param nmonths number of months to add
    * @return The new date
    */
   virtual QDate addMonths(const QDate & date, int nmonths) const;
 
   /**
-   * Returns a QDate object containing a date ndays later.
+   * Returns a QDate containing a date @p ndays days later.
    *
    * @param date The old date
-   * @param ndays The number of days to add
+   * @param ndays number of days to add
    * @return The new date
    */
   virtual QDate addDays(const QDate & date, int ndays) const;
 
     /**
-     * Returns if a given year is a leap year
+     * Returns whether a given year is a leap year.
      *
      * @param year the year to check
      * @return @c true if the year is a leap year, @c false otherwise
@@ -346,7 +342,7 @@ public:
     virtual bool isLeapYear(int year) const = 0;
 
     /**
-     * Returns if a given date falls in a leap year
+     * Returns whether a given date falls in a leap year.
      *
      * @param date the date to check
      * @return @c true if the date falls in a leap year, @c false otherwise
@@ -356,8 +352,8 @@ public:
   /**
    * Gets specific calendar type number of month for a given year
    *
-   * @param date The date whose year to use
-   * @return The number of months in that year
+   * @param date the date to obtain year from
+   * @return number of months in that year
    */
   virtual int monthsInYear (const QDate & date) const;
 
@@ -365,20 +361,20 @@ public:
    * Gets the number of days in date whose years specified.
    *
    * @param date Gregorian date equivalent to the specific one
-   * @return The number of days in year
+   * @return number of days in year
    */
   virtual int daysInYear (const QDate & date) const;
 
   /**
    * Gets specific calendar type number of days in month for a given date
    *
-   * @param date gregorian date
+   * @param date Gregorian date
    * @return number of days for month in date
    */
   virtual int daysInMonth (const QDate & date) const;
 
     /**
-     * Returns the number of ISO weeks in a specified year
+     * Returns the number of ISO weeks in a specified year.
      *
      * @param date the date to obtain year from
      * @return number of weeks in year
@@ -386,7 +382,7 @@ public:
     virtual int weeksInYear(const QDate &date) const;
 
   /**
-   * Gets the number of weeks in a specified year
+   * Gets the number of weeks in a specified year.
    *
    * @param year the year
    * @return number of weeks in year
@@ -394,7 +390,7 @@ public:
   virtual int weeksInYear(int year) const;
 
     /**
-     * Returns the number of days in a specified week
+     * Returns the number of days in a specified week.
      *
      * @param date the date to obtain week from
      * @return number of days in week
@@ -404,14 +400,14 @@ public:
     /**
      * Use this to determine which day is the first day of the week.
      *
-     * Uses the calendar systems internal locale as set when instantiated,
-     * which ensures the correct calendar system and locale settings are
-     * respected, which would not occur in some cases if using the global
-     * locale.  Defaults to global locale.
+     * Uses the calendar system's internal locale set when the instance was
+     * created, which ensures that the correct calendar system and locale
+     * settings are respected, which would not occur in some cases if using
+     * the global locale.  Defaults to global locale.
      *
      * @see KLocale::weekStartDay
      *
-     * @return an integer (Monday=1..Sunday=7)
+     * @return an integer (Monday = 1, ..., Sunday = 7)
      */
     virtual int weekStartDay() const;
 
@@ -419,7 +415,7 @@ public:
    * Gets specific calendar type week number for a given date
    *
    * @param date gregorian date
-   * @param yearNum The year the date belongs to
+   * @param yearNum the year the date belongs to
    * @return week number
    */
   virtual int weekNumber(const QDate& date, int * yearNum = 0) const;
@@ -428,66 +424,66 @@ public:
      * Gets specific calendar type month name for a given month number
      * If an invalid month is specified, QString() is returned.
      *
-     * @param month The month number
-     * @param year The year the month belongs to
-     * @param format Specifies if the short month name or long month name should be used
-     * @return The name of the month
+     * @param month the month number
+     * @param year the year the month belongs to
+     * @param format specifies whether the short month name or long month name should be used
+     * @return name of the month
      */
     virtual QString monthName( int month, int year, MonthNameFormat format = LongName ) const = 0;
 
     /**
      * Gets specific calendar type month name for a given date
      *
-     * @param date Date to obtain month from
-     * @param format Specifies if the short month name or long month name should be used
-     * @return The name of the month
+     * @param date date to obtain month from
+     * @param format specifies whether the short month name or long month name should be used
+     * @return name of the month
      */
     virtual QString monthName( const QDate & date, MonthNameFormat format = LongName ) const;
 
     /**
-     * Gets specific calendar type week day name
+     * Gets specific calendar type week day name.
      * If an invalid week day is specified, QString() is returned.
      *
-     * @param weekDay number of day in week (1 -> Monday)
-     * @param format Specifies if the short month name or long month name should be used
+     * @param weekDay number of day in week (Monday = 1, ..., Sunday = 7)
+     * @param format specifies whether the short month name or long month name should be used
      * @return day name
      */
     virtual QString weekDayName( int weekDay, WeekDayNameFormat format = LongDayName ) const = 0;
 
     /**
-     * Gets specific calendar type week day name
+     * Gets specific calendar type week day name.
      *
      * @param date the date
-     * @param format Specifies if the short month name or long month name should be used
+     * @param format specifies whether the short month name or long month name should be used
      * @return day name
      */
     virtual QString weekDayName( const QDate & date, WeekDayNameFormat format = LongDayName ) const;
 
   /**
-   * Gets the day of the week traditionaly associated with pray
+   * Gets the day of the week traditionally associated with prayer.
    *
-   * @return day number
+   * @return day number (Monday = 1, ..., Sunday = 7)
    */
-  virtual int weekDayOfPray () const = 0;
+  virtual int weekDayOfPray() const = 0;
 
   /**
-   * Gets if the calendar is lunar based
+   * Returns whether the calendar is lunar based.
    *
-   * @return if the calendar is lunar based
+   * @return @c true if the calendar is lunar based, @c false if not
    */
   virtual bool isLunar() const = 0;
 
   /**
-   * Gets if the calendar is lunisolar based
+   * Returns whether the calendar is lunisolar based.
    *
-   * @return if the calendar is lunisolar based
+   * @return @c true if the calendar is lunisolar based, @c false if not
    */
   virtual bool isLunisolar() const = 0;
 
   /**
-   * Gets if the calendar is solar based
+   * Returns whether the calendar is solar based.
    *
-   * @return if the calendar is solar based
+   * @return @c true if the calendar is solar based, @c false if not
    */
   virtual bool isSolar() const = 0;
 
@@ -495,14 +491,14 @@ public:
      * Returns a string formatted to the current locale's conventions
      * regarding dates.
      *
-     * Uses the calendar systems internal locale as set when instantiated,
-     * which ensures the correct calendar system and locale settings are
-     * respected, which would not occur in some cases if using the global
-     * locale.  Defaults to global locale.
+     * Uses the calendar system's internal locale set when the instance was
+     * created, which ensures that the correct calendar system and locale
+     * settings are respected, which would not occur in some cases if using
+     * the global locale.  Defaults to global locale.
      *
      * @see KLocale::formatDate
      *
-     * @param date the date to be formatted.
+     * @param date the date to be formatted
      * @param format category of date format to use
      *
      * @return The date as a string
@@ -511,59 +507,57 @@ public:
 
     /**
      * Converts a localized date string to a QDate.
-     * The bool pointed by ok will be invalid if the date entered was not valid.
+     * The bool pointed by @p ok will be @c false if the date entered was invalid.
      *
-     * Uses the calendar systems internal locale as set when instantiated,
-     * which ensures the correct calendar system and locale settings are
-     * respected, which would not occur in some cases if using the global
-     * locale.  Defaults to global locale.
+     * Uses the calendar system's internal locale set when the instance was
+     * created, which ensures that the correct calendar system and locale
+     * settings are respected, which would not occur in some cases if using
+     * the global locale.  Defaults to global locale.
      *
      * @see KLocale::readDate
      *
-     * @param str the string we want to convert.
-     * @param ok the boolean that is set to false if it's not a valid date.
-     *           If @p ok is 0, it will be ignored
+     * @param str the string to convert
+     * @param ok if non-null, will be set to @c true if the date is valid, @c false if invalid
      *
-     * @return The string converted to a QDate
+     * @return the string converted to a QDate
      */
     virtual QDate readDate(const QString &str, bool* ok = 0) const;
 
     /**
-     * Converts a localized date string to a QDate, using the specified format.
+     * Converts a localized date string to a QDate, using the specified @p format.
      * You will usually not want to use this method.
      *
      * @see KLocale::readDate
      */
-    virtual QDate readDate( const QString &intstr, const QString &fmt, bool* ok = 0) const;
+    virtual QDate readDate( const QString &intstr, const QString &format, bool* ok = 0) const;
 
     /**
      * Converts a localized date string to a QDate.
      * This method is stricter than readDate(str,&ok): it will either accept
      * a date in full format or a date in short format, depending on @p flags.
      *
-     * Uses the calendar systems internal locale as set when instantiated,
-     * which ensures the correct calendar system and locale settings are
-     * respected, which would not occur in some cases if using the global
-     * locale.  Default case uses global locale.
+     * Uses the calendar system's internal locale set when the instance was
+     * created, which ensures that the correct calendar system and locale
+     * settings are respected, which would not occur in some cases if using
+     * the global locale.  Defaults to global locale.
      *
      * @see KLocale::readDate
      *
-     * @param str the string we want to convert.
-     * @param flags whether the date string is to be in full format or in short format.
-     * @param ok the boolean that is set to false if it's not a valid date.
-     *           If @p ok is 0, it will be ignored
+     * @param str the string to convert
+     * @param flags whether the date string is to be in full format or in short format
+     * @param ok if non-null, will be set to @c true if the date is valid, @c false if invalid
      *
-     * @return The string converted to a QDate
+     * @return the string converted to a QDate
      */
     virtual QDate readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0) const;
 
     /**
-     * Returns if the calendar system is proleptic, i.e. dates before the epoch
-     * are supported.
+     * Returns whether the calendar system is proleptic, i.e. whether dates
+     * before the epoch are supported.
      *
      * @see KCalendarSystem::epoch
      *
-     * @return if the calendar system is proleptic
+     * @return @c true if the calendar system is proleptic, @c false if not
      */
     virtual bool isProleptic() const = 0;
 
@@ -579,10 +573,10 @@ protected:
      *
      * @see KCalendarSystem::dateToJulianDay
      *
-     * @param jd julian day number to convert to date
-     * @param year Year number returned in this variable
-     * @param month Month number returned in this variable
-     * @param day Day of month returned in this variable
+     * @param jd Julian day number to convert to date
+     * @param year year number returned in this variable
+     * @param month month number returned in this variable
+     * @param day day of month returned in this variable
      * @return @c true if the date is valid, @c false otherwise
      */
     virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const = 0;
@@ -597,25 +591,25 @@ protected:
      *
      * @see KCalendarSystem::julianDayToDate
      *
-     * @param year Year number returned in this variable
-     * @param month Month number returned in this variable
-     * @param day Day of month returned in this variable
-     * @param jd julian day number returned in this variable
+     * @param year year number
+     * @param month month number
+     * @param day day of month
+     * @param jd Julian day number returned in this variable
      * @return @c true if the date is valid, @c false otherwise
      */
     virtual bool dateToJulianDay(int year, int month, int day, int &jd) const = 0;
 
     /**
-     * Returns the locale to use for translations and formats for this 
+     * Returns the locale used for translations and formats for this 
      * calendar system instance.  This allows a calendar system instance to be
-     * independant of the global translations and formats if required.  All 
-     * implementations must refer to this locale.  Defaults to global.
+     * independent of the global translations and formats if required.  All 
+     * implementations must refer to this locale.
      *
-     * Only for internal calendar system use, if public access is required then
+     * Only for internal calendar system use; if public access is required then
      * provide public methods only for those methods actually required.  Any
      * app that creates an instance with its own locale overriding global will
      * have the original handle to the locale and can manipulate it that way if
-     * required, e.g to change default date format.  Only expose those methods
+     * required, e.g. to change default date format.  Only expose those methods
      * that library widgets require access to internally.
      *
      * @see KCalendarSystem::formatDate
