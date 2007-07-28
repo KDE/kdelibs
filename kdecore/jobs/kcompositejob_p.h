@@ -24,6 +24,9 @@
 
 #include "kjob_p.h"
 
+// This is a private class, but it's exported for
+// KIO::Job's usage. Other Job classes in kdelibs may
+// use it too.
 class KDECORE_EXPORT KCompositeJobPrivate: public KJobPrivate
 {
 public:
