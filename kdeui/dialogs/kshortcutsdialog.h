@@ -67,7 +67,7 @@ public:
 
 	/**
 	 * Add all actions of the collection to the ones displayed and configured
-     * by the dialog.
+	 * by the dialog.
 	 * Call insert with each of your to-be-configured collections in turn.
 	 *
 	 * @param title the title associated with the collection (if null, the

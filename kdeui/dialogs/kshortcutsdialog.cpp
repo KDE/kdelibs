@@ -182,6 +182,15 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
 }
 
 
+QSize KShortcutsEditorDelegate::sizeHint(const QStyleOptionViewItem &option,
+                                         const QModelIndex &index) const
+{
+	QSize ret(KExtendableItemDelegate::sizeHint(option, index));
+	ret.rheight() += 4;
+	return ret;
+}
+
+
 //#include "kshapegestureselector.h"
 //slot
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
@@ -385,6 +394,16 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 		if (!hier[l]->childCount())
 			delete hier[l];
 	}
+
+	QTimer::singleShot(0, this, SLOT(resizeColumns()));
+}
+
+
+//slot
+void KShortcutsEditor::resizeColumns()
+{
+	for (int i = 0; i < d->ui.list->columnCount(); i++)
+		d->ui.list->resizeColumnToContents(i);
 }
 
 
@@ -416,7 +435,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	ui.setupUi(q);
 	ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
 	ui.list->header()->setStretchLastSection(false);
-	ui.list->header()->hideSection(GlobalAlternate);  //undesirable for user friendlyness...
+	ui.list->header()->hideSection(GlobalAlternate);  //undesirable for user friendliness...
 	if (!(actionTypes & KShortcutsEditor::GlobalAction)) {
 		ui.list->header()->hideSection(GlobalPrimary);
 	} else if (!(actionTypes & ~KShortcutsEditor::GlobalAction)) {
@@ -701,18 +720,9 @@ void KShortcutsEditor::allDefault()
 }
 
 
-//slot
-void KShortcutsEditor::resizeColumns()
-{
-	for (int i = 0; i < d->ui.list->columnCount(); i++)
-		d->ui.list->resizeColumnToContents(i);
-}
-
-
 void KShortcutsEditor::showEvent( QShowEvent * event )
 {
-	QWidget::showEvent(event);
-	QTimer::singleShot(0, this, SLOT(resizeColumns()));
+	//only kept around for BC - remove on a BIC Monday!
 }
 
 
@@ -739,10 +749,6 @@ KShortcutsEditorItem::~KShortcutsEditorItem()
 
 QVariant KShortcutsEditorItem::data(int column, int role) const
 {
-	if (role == Qt::SizeHintRole) {
-		return QSize(0, 20);
-	}
-
 	switch (role) {
 	case Qt::DisplayRole:
 		switch(column) {

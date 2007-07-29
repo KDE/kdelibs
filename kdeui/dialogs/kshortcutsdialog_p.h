@@ -36,7 +36,8 @@ class KShortcutsEditorDelegate : public KExtendableItemDelegate
 	Q_OBJECT
 public:
 	KShortcutsEditorDelegate(QAbstractItemView *parent);
-	//virtual QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+	//reimplemented to have some extra height
+	virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 Q_SIGNALS:
 	void shortcutChanged(QVariant, const QModelIndex &);
 private:

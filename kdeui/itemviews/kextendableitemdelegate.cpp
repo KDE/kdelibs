@@ -121,18 +121,26 @@ bool KExtendableItemDelegate::isExtended(const QModelIndex &index) const {
 
 QSize KExtendableItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+	QSize ret;
+
 	if (d->hasExtenders)
-		return maybeExtendedSize(option, index);
+		ret = maybeExtendedSize(option, index);
 	else
-		return QItemDelegate::sizeHint(option, index);
+		ret = QItemDelegate::sizeHint(option, index);
+
+	bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
+	if (showExtensionIndicator)
+		ret.rwidth() += d->extendIcon.width();
+
+	return ret;
 }
 
 
 void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    int indicatorX = 0;
-    int indicatorY = 0;
-	
+	int indicatorX = 0;
+	int indicatorY = 0;
+
 	QStyleOptionViewItem modOption(option);
 	bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
 	
@@ -242,7 +250,6 @@ QSize KExtendableItemDelegate::maybeExtendedSize(const QStyleOptionViewItem &opt
 	//add extender height to maximum height of any column in our row
 	int itemHeight = size.height();
 	
-	const QAbstractItemModel *model = index.model();
 	int row = index.row();
 	int thisColumn = index.column();
 	QModelIndex parentIndex(index.parent());
@@ -251,8 +258,8 @@ QSize KExtendableItemDelegate::maybeExtendedSize(const QStyleOptionViewItem &opt
 	for (int column=0;; column++) {
 		if (column == thisColumn)
 			continue;
-		
-		QModelIndex neighborIndex(model->index(row, column, parentIndex));
+
+		QModelIndex neighborIndex(index.sibling(row, column));
 		if (!neighborIndex.isValid())
 			break;
 		itemHeight = qMax(itemHeight, QItemDelegate::sizeHint(option, neighborIndex).height());
