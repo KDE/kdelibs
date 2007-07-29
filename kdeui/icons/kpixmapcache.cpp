@@ -39,7 +39,7 @@
 
 //#define DISABLE_PIXMAPCACHE
 
-#define KPIXMAPCACHE_VERSION 0x000104
+#define KPIXMAPCACHE_VERSION 0x000200
 
 
 class LockFile
@@ -80,6 +80,7 @@ public:
     Private(KPixmapCache* q);
 
     int findOffset(const QString& key);
+    int binarySearchKey(QDataStream& stream, const QString& key, int start);
 
     bool checkLockFile();
     bool checkFileVersion(const QString& filename);
@@ -91,7 +92,7 @@ public:
     static const char* kpc_magic;
     static const int kpc_magic_len;
     static const int kpc_header_len;
-    int mIndexRootOffset;  // offset of the first entry in index file
+    quint32 mIndexRootOffset;  // offset of the first entry in index file
 
     bool mInited;  // Whether init() has been called (it's called on-demand)
     bool mEnabled;   // whether it's possible to use the cache
@@ -120,6 +121,28 @@ KPixmapCache::Private::Private(KPixmapCache* _q)
     q = _q;
 }
 
+int KPixmapCache::Private::binarySearchKey(QDataStream& stream, const QString& key, int start)
+{
+    stream.device()->seek(start);
+
+    QString fkey;
+    qint32 foffset;
+    qint32 leftchild, rightchild;
+    stream >> fkey >> foffset >> leftchild >> rightchild;
+
+    if (key < fkey) {
+        if (leftchild) {
+            return binarySearchKey(stream, key, leftchild);
+        }
+    } else if (key == fkey) {
+        return start;
+    } else if (rightchild) {
+        return binarySearchKey(stream, key, rightchild);
+    }
+
+    return start;
+}
+
 int KPixmapCache::Private::findOffset(const QString& key)
 {
     // Open file and datastream on it
@@ -130,8 +153,14 @@ int KPixmapCache::Private::findOffset(const QString& key)
     file.seek(mIndexRootOffset);
     QDataStream stream(&file);
 
-    // Look through all the entries
-    while (!stream.atEnd()) {
+    // If we're already at the end of the stream then the root node doesn't
+    //  exist yet and there are no entries. Otherwise, do a binary search
+    //  starting from the root node.
+    if (!stream.atEnd()) {
+        int nodeoffset = binarySearchKey(stream, key, mIndexRootOffset);
+
+        // Load the found entry and check if it's the one we're looking for.
+        file.seek(nodeoffset);
         QString fkey;
         qint32 foffset;
         stream >> fkey >> foffset;
@@ -212,8 +241,8 @@ bool KPixmapCache::Private::loadIndexHeader()
         return false;
     }
 
-    // Set default root node pos. Custom implementations can override this later
-    mIndexRootOffset = file.pos();
+    // Load root node pos.
+    stream >> mIndexRootOffset;
 
     return true;
 }
@@ -387,7 +416,8 @@ bool KPixmapCache::recreateCacheFiles()
     setValid(true);
     writeCustomIndexHeader(istream);
 
-    d->mIndexRootOffset = indexfile.pos();
+    d->mIndexRootOffset = indexfile.pos() + sizeof(quint32);
+    istream << d->mIndexRootOffset;
     return true;
 }
 
@@ -578,13 +608,37 @@ void KPixmapCache::writeIndex(const QString& key, int dataoffset)
 {
     // Open file and datastream on it
     QFile file(d->mIndexFile);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+    if (!file.open(QIODevice::ReadWrite)) {
         return;
     }
     QDataStream stream(&file);
 
+    // New entry will be written to the end of the file
+    qint32 offset = file.size();
+    file.seek(offset);
     // Write the data
     stream << key << (qint32)dataoffset;
+    // Write (empty) children offsets
+    stream << (qint32)0 << (qint32)0;
+
+    // Find parent index node for this node.
+    int parentoffset = d->binarySearchKey(stream, key, d->mIndexRootOffset);
+    // If we created the root node then the two offsets are equal and we're
+    //  done. Otherwise set parent's child offset to correct value.
+    if (parentoffset != offset) {
+        file.seek(parentoffset);
+        QString fkey;
+        qint32 foffset, tmp;
+        stream >> fkey >> foffset;
+        if (key < fkey) {
+            // New entry will be parent's left child
+            stream << offset;
+        } else {
+            // New entry will be parent's right child
+            stream >> tmp;
+            stream << offset;
+        }
+    }
 }
 
 QPixmap KPixmapCache::loadFromFile(const QString& filename)
