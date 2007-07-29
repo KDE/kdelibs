@@ -33,7 +33,7 @@ body {
   background: white none;
   color: black;
   font-family: sans-serif;
-  padding: 0;
+  padding: 0 15px 0 0;
   margin: 0; 
 }
 
@@ -52,7 +52,7 @@ body {
 }
 
 .sect1, .chapter, .synopsis, .appendix, .preface, .article, .refsect1, .index, .glossary, .section {
-  padding: 1em;
+  padding-left: 1em;
 }
 
 .toc .chapter {
