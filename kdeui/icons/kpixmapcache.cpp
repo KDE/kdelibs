@@ -86,6 +86,8 @@ public:
     bool checkFileVersion(const QString& filename);
     bool loadIndexHeader();
 
+    QString indexKey(const QString& key);
+
 
     KPixmapCache* q;
 
@@ -245,6 +247,12 @@ bool KPixmapCache::Private::loadIndexHeader()
     stream >> mIndexRootOffset;
 
     return true;
+}
+
+QString KPixmapCache::Private::indexKey(const QString& key)
+{
+    QByteArray latin1 = key.toLatin1();
+    return QString("%1%2").arg((ushort)qChecksum(latin1.data(), latin1.size()), 4, 16, QLatin1Char('0')).arg(key);
 }
 
 
@@ -473,7 +481,8 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
     }
 
     // Try to find the offset
-    int offset = d->findOffset(key);
+    QString indexkey = d->indexKey(key);
+    int offset = d->findOffset(indexkey);
     //kDebug() << "KPC: " << "found offset " << offset << endl;
     if (offset == -1) {
         return false;
@@ -559,7 +568,8 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     }
 
     // Make sure this key isn't already in the cache
-    int offset = d->findOffset(key);
+    QString indexkey = d->indexKey(key);
+    int offset = d->findOffset(indexkey);
     if (offset >= 0) {
         // This pixmap is already in cache
         kDebug() << "KPC::insert() " << "pixmap already present in cache" << endl;
@@ -573,7 +583,7 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
         return;
     }
 
-    writeIndex(key, offset);
+    writeIndex(indexkey, offset);
 }
 
 int KPixmapCache::writeData(const QString& key, const QPixmap& pix)
