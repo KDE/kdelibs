@@ -25,6 +25,10 @@
 #include <QtCore/QChar>
 #include <QtCore/QStringList>
 
+namespace KShell {
+QString homeDir( const QString &user );
+};
+
 static int fromHex( QChar cUnicode )
 {
     char c = cUnicode.toAscii ();
@@ -94,7 +98,7 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                 if ((flags & AbortOnMeta) && isMeta( c ))
                     goto metaerr;
             }
-            QString ccret = KUser( args.mid(opos, pos-opos) ).homeDir();
+            QString ccret = homeDir( args.mid(opos, pos-opos) );
             if (ccret.isEmpty()) {
                 pos = opos;
                 c = QLatin1Char('~');

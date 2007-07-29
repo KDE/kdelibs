@@ -24,12 +24,16 @@
 
 #include <QtCore/QDir>
 
-static QString homeDir( const QString &user )
+namespace KShell {
+
+QString homeDir( const QString &user )
 {
     if (user.isEmpty())
         return QDir::homePath();
     return KUser(user).homeDir();
 }
+
+};
 
 QString KShell::joinArgs( const QStringList &args )
 {
