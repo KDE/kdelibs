@@ -77,7 +77,7 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
     return res;
 }
 
-KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob * job,
+KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob *,
                                               bool multi,
                                               const QString & error_text)
 {

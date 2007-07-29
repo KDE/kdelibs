@@ -28,14 +28,53 @@
 #include <QTimer>
 #include <kdebug.h>
 
+#include "job_p.h"
+
+class KIO::FileJobPrivate: public KIO::SimpleJobPrivate
+{
+public:
+    FileJobPrivate(const KUrl& url, const QByteArray &packedArgs)
+        : SimpleJobPrivate(url, CMD_OPEN, packedArgs), m_open(false), m_size(0)
+        {}
+
+    bool m_open;
+    QString m_mimetype;
+    KIO::filesize_t m_size;
+
+    void slotRedirection( const KUrl &url );
+    void slotData( const QByteArray &data );
+    void slotMimetype( const QString &mimetype );
+    void slotOpen( );
+    void slotWritten( KIO::filesize_t );
+    void slotFinished( );
+    void slotPosition( KIO::filesize_t );
+    void slotTotalSize( KIO::filesize_t );
+
+    /**
+     * @internal
+     * Called by the scheduler when a @p slave gets to
+     * work on this job.
+     * @param slave the slave that starts working on this job
+     */
+    virtual void start(Slave *slave);
+
+    Q_DECLARE_PUBLIC(FileJob)
+
+    static inline FileJob *newJob(const KUrl &url, const QByteArray &packedArgs)
+    {
+        FileJob *job = new FileJob(*new FileJobPrivate(url, packedArgs));
+        job->setUiDelegate(new JobUiDelegate);
+        return job;
+    }
+};
 
 using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 #define KIO_FILESIZE_T(x) qulonglong(x)
 
-FileJob::FileJob( const KUrl& url, const QByteArray &packedArgs  )
-        : SimpleJob(url, CMD_OPEN, packedArgs), m_open(false), m_size(0)
+FileJob::FileJob(FileJobPrivate &dd)
+    : SimpleJob(dd)
 {
 }
 
@@ -45,118 +84,138 @@ FileJob::~FileJob()
 
 void FileJob::read(KIO::filesize_t size)
 {
-    if (!m_open) return;
+    Q_D(FileJob);
+    if (!d->m_open) return;
 
     KIO_ARGS << size;
-    m_slave->send( CMD_READ, packedArgs );
+    d->m_slave->send( CMD_READ, packedArgs );
 }
 
 
 void FileJob::write(const QByteArray &_data)
 {
-    if (!m_open) return;
+    Q_D(FileJob);
+    if (!d->m_open) return;
 
-    m_slave->send( CMD_WRITE, _data );
+    d->m_slave->send( CMD_WRITE, _data );
 }
 
 void FileJob::seek(KIO::filesize_t offset)
 {
-    if (!m_open) return;
+    Q_D(FileJob);
+    if (!d->m_open) return;
 
     KIO_ARGS << KIO_FILESIZE_T(offset);
-    m_slave->send( CMD_SEEK, packedArgs) ;
+    d->m_slave->send( CMD_SEEK, packedArgs) ;
 }
 
 void FileJob::close()
 {
-    if (!m_open) return;
+    Q_D(FileJob);
+    if (!d->m_open) return;
 
-    m_slave->send( CMD_CLOSE );
+    d->m_slave->send( CMD_CLOSE );
     // ###  close?
 }
 
 KIO::filesize_t FileJob::size()
 {
-    if (!m_open) return 0;
+    Q_D(FileJob);
+    if (!d->m_open) return 0;
 
-    return m_size;
+    return d->m_size;
 }
 
 // Slave sends data
-void FileJob::slotData( const QByteArray &_data)
+void FileJobPrivate::slotData( const QByteArray &_data)
 {
-    emit data( this, _data);
+    Q_Q(FileJob);
+    emit q_func()->data(q, _data);
 }
 
-void FileJob::slotRedirection( const KUrl &url)
+void FileJobPrivate::slotRedirection( const KUrl &url)
 {
-    kDebug(7007) << "FileJob::slotRedirection(" << url << ")" << endl;
-    emit redirection(this, url);
+    Q_Q(FileJob);
+    kDebug(7007) << "FileJobPrivate::slotRedirection(" << url << ")" << endl;
+    emit q->redirection(q, url);
 }
 
-void FileJob::slotMimetype( const QString& type )
+void FileJobPrivate::slotMimetype( const QString& type )
 {
+    Q_Q(FileJob);
     m_mimetype = type;
-    emit mimetype( this, m_mimetype);
+    emit q->mimetype(q, m_mimetype);
 }
 
-void FileJob::slotPosition( KIO::filesize_t pos )
+void FileJobPrivate::slotPosition( KIO::filesize_t pos )
 {
-    emit position( this, pos);
+    Q_Q(FileJob);
+    emit q->position(q, pos);
 }
 
-void FileJob::slotTotalSize( KIO::filesize_t t_size )
+void FileJobPrivate::slotTotalSize( KIO::filesize_t t_size )
 {
     m_size = t_size;
-//     emit totalSize( this, m_size);
+//    Q_Q(FileJob);
+//    emit q->totalSize(q, m_size);
 }
 
-void FileJob::slotOpen( )
+void FileJobPrivate::slotOpen( )
 {
+    Q_Q(FileJob);
     m_open = true;
-    emit open( this );
+    emit q->open( q );
 }
 
-void FileJob::slotWritten( KIO::filesize_t t_written )
+void FileJobPrivate::slotWritten( KIO::filesize_t t_written )
 {
-    emit written( this, t_written);
+    Q_Q(FileJob);
+    emit q->written(q, t_written);
 }
 
-void FileJob::slotFinished()
+void FileJobPrivate::slotFinished()
 {
-    kDebug(7007) << "FileJob::slotFinished(" << this << ", " << m_url << ")" << endl;
-    emit close( this );
+    Q_Q(FileJob);
+    kDebug(7007) << "FileJobPrivate::slotFinished(" << this << ", " << m_url << ")" << endl;
+    emit q->close( q );
     // Return slave to the scheduler
     slaveDone();
 //     Scheduler::doJob(this);
-    emitResult();
+    q->emitResult();
 }
 
-void FileJob::start(Slave *slave)
+void FileJobPrivate::start(Slave *slave)
 {
-    connect( slave, SIGNAL( data( const QByteArray & ) ),
-             SLOT( slotData( const QByteArray & ) ) );
+    Q_Q(FileJob);
+    q->connect( slave, SIGNAL( data( const QByteArray & ) ),
+                SLOT( slotData( const QByteArray & ) ) );
 
-    connect( slave, SIGNAL( redirection(const KUrl &) ),
-             SLOT( slotRedirection(const KUrl &) ) );
+    q->connect( slave, SIGNAL( redirection(const KUrl &) ),
+                SLOT( slotRedirection(const KUrl &) ) );
 
-    connect( slave, SIGNAL(mimeType( const QString& ) ),
-             SLOT( slotMimetype( const QString& ) ) );
+    q->connect( slave, SIGNAL(mimeType( const QString& ) ),
+                SLOT( slotMimetype( const QString& ) ) );
 
-    connect( slave, SIGNAL(open() ),
-             SLOT( slotOpen() ) );
+    q->connect( slave, SIGNAL(open() ),
+                SLOT( slotOpen() ) );
 
-    connect( slave, SIGNAL(position(KIO::filesize_t) ),
-             SLOT( slotPosition(KIO::filesize_t) ) );
+    q->connect( slave, SIGNAL(position(KIO::filesize_t) ),
+                SLOT( slotPosition(KIO::filesize_t) ) );
 
-    connect( slave, SIGNAL(written(KIO::filesize_t) ),
-             SLOT( slotWritten(KIO::filesize_t) ) );
+    q->connect( slave, SIGNAL(written(KIO::filesize_t) ),
+                SLOT( slotWritten(KIO::filesize_t) ) );
 
-    connect( slave, SIGNAL(totalSize(KIO::filesize_t) ),
-             SLOT( slotTotalSize(KIO::filesize_t) ) );
+    q->connect( slave, SIGNAL(totalSize(KIO::filesize_t) ),
+                SLOT( slotTotalSize(KIO::filesize_t) ) );
 
-    SimpleJob::start(slave);
+    SimpleJobPrivate::start(slave);
+}
 
+FileJob *KIO::open(const KUrl &url, QIODevice::OpenMode mode)
+{
+    // Send decoded path and encoded query
+    KIO_ARGS << url << mode;
+    return FileJobPrivate::newJob(url, packedArgs);
 }
 
 #include "filejob.moc"

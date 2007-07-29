@@ -36,7 +36,6 @@
 namespace KIO {
 
     class JobUiDelegate;
-    class Slave;
 
     class JobPrivate;
     /**
@@ -57,7 +56,6 @@ namespace KIO {
      *      job->ui()->showErrorDialog();
      * \endcode
      * @see KIO::Scheduler
-     * @see KIO::Slave
      */
     class KIO_EXPORT Job : public KCompositeJob {
         Q_OBJECT
@@ -79,6 +77,7 @@ namespace KIO {
          */
         JobUiDelegate *ui() const;
 
+    protected:
         /**
          * Abort this job.
          * This kills all subjobs and deletes the job.
@@ -98,7 +97,7 @@ namespace KIO {
          */
         virtual bool doResume();
 
-public:
+    public:
         /**
          * Converts an error code and a non-i18n error message into an
          * error message in the current language. The low level (non-i18n)
@@ -226,14 +225,7 @@ public:
          */
         QString queryMetaData(const QString &key);
 
-        void emitMoving(const KUrl &src, const KUrl &dest);
-        void emitCopying(const KUrl &src, const KUrl &dest);
-        void emitCreatingDir(const KUrl &dir);
-        void emitDeleting(const KUrl &url);
-        void emitStating(const KUrl &url);
-        void emitTransferring(const KUrl &url);
-        void emitMounting(const QString &dev, const QString &point);
-        void emitUnmounting(const QString &point);
+    protected:
 
     Q_SIGNALS:
         /**
@@ -252,15 +244,6 @@ public:
 	 * @param job the job that emitted this signal
          */
         void connected( KIO::Job *job );
-
-    protected Q_SLOTS:
-        /**
-         * Forward signal from subjob.
-	 * @param job the subjob
-	 * @param speed the speed in bytes/s
-	 * @see speed()
-         */
-        void slotSpeed( KJob *job, unsigned long speed );
 
     protected:
         /**
@@ -285,21 +268,14 @@ public:
          */
         bool removeSubjob( KJob *job, bool mergeMetaData = false );
 
-        /**
-         * @internal
-         * Some extra storage space for jobs that don't have their own
-         * private d pointer.
-         */
-        enum { EF_TransferJobAsync    = (1 << 0),
-               EF_TransferJobNeedData = (1 << 1),
-               EF_TransferJobDataSent = (1 << 2),
-               EF_ListJobUnrestricted = (1 << 3) };
-        int &extraFlags();
-
-        MetaData m_incomingMetaData;
-        MetaData m_outgoingMetaData;
-
     private:
+        /**
+         * Forward signal from subjob.
+	 * @param job the subjob
+	 * @param speed the speed in bytes/s
+	 * @see speed()
+         */
+        Q_PRIVATE_SLOT(d_func(), void slotSpeed( KJob *job, unsigned long speed ))
         Q_DECLARE_PRIVATE(Job)
     };
 
@@ -314,19 +290,9 @@ public:
     Q_OBJECT
 
     public:
-        /**
-	 * Creates a new simple job. You don't need to use this constructor,
-	 * unless you create a new job that inherits from SimpleJob.
-	 * @param url the url of the job
-	 * @param command the command of the job
-	 * @param packedArgs the arguments
-	 */
-        SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs);
-
         ~SimpleJob();
 
-        virtual void start();
-
+    protected:
         /**
          * Suspend this job
          * @see resume
@@ -340,16 +306,17 @@ public:
         virtual bool doResume();
 
         /**
-	 * Returns the SimpleJob's URL
-	 * @return the url
-	 */
-        const KUrl& url() const;
-
-        /**
          * Abort job.
          * This kills all subjobs and deletes the job.
          */
         virtual bool doKill();
+
+    public:
+        /**
+	 * Returns the SimpleJob's URL
+	 * @return the url
+	 */
+        const KUrl& url() const;
 
         /**
          * Abort job.
@@ -362,37 +329,13 @@ public:
          */
         static void removeOnHold();
 
-        /**
-         * @internal
-         * Called by the scheduler when a slave gets to
-         * work on this job.
-         **/
-        virtual void start( Slave *slave );
-
-        /**
-         * @internal
-         * Called to detach a slave from a job.
-         **/
-        void slaveDone();
-
-        /**
-         * @internal
-         * Slave in use by this job.
-         */
-        Slave *slave() const;
-
-        /**
-         * @internal
-         */
-        int command() const;
-
     public Q_SLOTS:
         /**
-         * Forward signal from the slave
-         * Can also be called by the parent job, when it knows the size.
-	 * @param data_size the total size
+         * @internal
+         * Called on a slave's error.
+         * Made public for the scheduler.
          */
-        void slotTotalSize( KIO::filesize_t data_size );
+        void slotError( int , const QString & );
 
     protected Q_SLOTS:
         /**
@@ -415,45 +358,12 @@ public:
         virtual void slotInfoMessage( const QString &s );
 
         /**
-         * Called on a slave's connected signal.
-	 * @see connected()
-         */
-        void slotConnected();
-
-        /**
-         * Forward signal from the slave.
-	 * @param data_size the processed size in bytes
-	 * @see processedSize()
-         */
-        void slotProcessedSize( KIO::filesize_t data_size );
-        /**
-         * Forward signal from the slave.
-	 * @param speed the speed in bytes/s
-	 * @see speed()
-         */
-        void slotSpeed( unsigned long speed );
-
-        /**
          * MetaData from the slave is received.
 	 * @param _metaData the meta data
 	 * @see metaData()
          */
         virtual void slotMetaData( const KIO::MetaData &_metaData);
 
-    public Q_SLOTS:
-        /**
-         * @internal
-         * Called on a slave's error.
-         * Made public for the scheduler.
-         */
-        virtual void slotError( int , const QString & );
-
-    protected:
-        Slave * m_slave;
-        QByteArray m_packedArgs;
-        KUrl m_url;
-        KUrl m_subUrl;
-        int m_command;
     protected:
 	/*
 	 * Allow jobs that inherit SimpleJob and are aware
@@ -464,8 +374,17 @@ public:
 	 */
 	void storeSSLSessionFromJob(const KUrl &m_redirectionURL);
 
-        SimpleJob(SimpleJobPrivate &dd, const KUrl& url, int command, const QByteArray &packedArgs);
+        /**
+	 * Creates a new simple job. You don't need to use this constructor,
+	 * unless you create a new job that inherits from SimpleJob.
+	 */
+        SimpleJob(SimpleJobPrivate &dd);
     private:
+        Q_PRIVATE_SLOT(d_func(), void slotConnected())
+        Q_PRIVATE_SLOT(d_func(), void slotProcessedSize( KIO::filesize_t data_size ))
+        Q_PRIVATE_SLOT(d_func(), void slotSpeed( unsigned long speed ))
+        Q_PRIVATE_SLOT(d_func(), void slotTotalSize( KIO::filesize_t data_size ))
+
         Q_DECLARE_PRIVATE(SimpleJob)
     };
 
@@ -479,13 +398,10 @@ public:
     Q_OBJECT
 
     public:
-        /**
-	 * Do not use this constructor to create a StatJob, use KIO::stat() instead.
-	 * @param url the url of the file or directory to check
-	 * @param command the command to issue
-	 * @param packedArgs the arguments
-	 */
-        StatJob(const KUrl& url, int command, const QByteArray &packedArgs);
+        enum StatSide {
+            SourceSide,
+            DestinationSide
+        };
 
         ~StatJob();
 
@@ -494,9 +410,18 @@ public:
          * or to check if we can write to it. First case is "source", second is "dest".
          * It is necessary to know what the StatJob is for, to tune the kioslave's behavior
          * (e.g. with FTP).
+	 * @param side SourceSide or DestinationSide
+         */
+        void setSide(StatSide side);
+
+        /**
+	 * A stat() can have two meanings. Either we want to read from this URL,
+         * or to check if we can write to it. First case is "source", second is "dest".
+         * It is necessary to know what the StatJob is for, to tune the kioslave's behavior
+         * (e.g. with FTP).
 	 * @param source true for "source" mode, false for "dest" mode
          */
-        void setSide( bool source );
+        KDE_DEPRECATED void setSide( bool source );
 
         /**
          * Selects the level of @p details we want.
@@ -516,14 +441,6 @@ public:
          */
         const UDSEntry & statResult() const;
 
-        /**
-	 * @internal
-         * Called by the scheduler when a @p slave gets to
-         * work on this job.
-	 * @param slave the slave that starts working on this job
-         */
-        virtual void start( Slave *slave );
-
     Q_SIGNALS:
         /**
          * Signals a redirection.
@@ -544,117 +461,18 @@ public:
         void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
 
     protected Q_SLOTS:
-        void slotStatEntry( const KIO::UDSEntry & entry );
-        void slotRedirection( const KUrl &url);
         virtual void slotFinished();
         virtual void slotMetaData( const KIO::MetaData &_metaData);
-
     protected:
-        UDSEntry m_statResult;
-        KUrl m_redirectionURL;
-        bool m_bSource;
-        short int m_details;
+        StatJob(StatJobPrivate &dd);
+
     private:
+        Q_PRIVATE_SLOT(d_func(), void slotStatEntry( const KIO::UDSEntry & entry ))
+        Q_PRIVATE_SLOT(d_func(), void slotRedirection( const KUrl &url))
         Q_DECLARE_PRIVATE(StatJob)
     };
 
-    class MkdirJobPrivate;
-    /**
-     * A KIO job that creates a directory
-     * @see KIO::mkdir()
-     */
-    class KIO_EXPORT MkdirJob : public SimpleJob {
-
-    Q_OBJECT
-
-    public:
-        /**
-	 * Do not use this constructor to create a MkdirJob, use KIO::mkdir() instead.
-	 * @param url the url of the file or directory to check
-	 * @param command the command to issue
-	 * @param packedArgs the arguments
-	 */
-        MkdirJob(const KUrl& url, int command, const QByteArray &packedArgs);
-
-        ~MkdirJob();
-
-        /**
-	 * @internal
-         * Called by the scheduler when a @p slave gets to
-         * work on this job.
-	 * @param slave the slave that starts working on this job
-         */
-        virtual void start( Slave *slave );
-
-    Q_SIGNALS:
-        /**
-         * Signals a redirection.
-         * Use to update the URL shown to the user.
-         * The redirection itself is handled internally.
-	 * @param job the job that is redirected
-	 * @param url the new url
-         */
-        void redirection( KIO::Job *job, const KUrl &url );
-
-        /**
-         * Signals a permanent redirection.
-         * The redirection itself is handled internally.
-	 * @param job the job that is redirected
-	 * @param fromUrl the original URL
-	 * @param toUrl the new URL
-         */
-        void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
-
-    protected Q_SLOTS:
-        void slotRedirection( const KUrl &url);
-        virtual void slotFinished();
-
-    protected:
-        KUrl m_redirectionURL;
-
-    private:
-        Q_DECLARE_PRIVATE(MkdirJob)
-    };
-
-    class DirectCopyJobPrivate;
-    /**
-     * @internal
-     * Used for direct copy from or to the local filesystem (i.e. SlaveBase::copy())
-     */
-    class KIO_EXPORT DirectCopyJob : public SimpleJob {
-    Q_OBJECT
-
-    public:
-        /**
-         * Do not create a DirectCopyJob. Use KIO::copy() or KIO::file_copy() instead.
-         */
-        DirectCopyJob(const KUrl& url, int command, const QByteArray &packedArgs);
-
-        ~DirectCopyJob();
-
-        /**
-	 * @internal
-         * Called by the scheduler when a @p slave gets to
-         * work on this job.
-	 * @param slave the slave that starts working on this job
-         */
-        virtual void start(Slave *slave);
-
-    Q_SIGNALS:
-        /**
-         * @internal
-         * Emitted if the job found an existing partial file
-         * and supports resuming. Used by FileCopyJob.
-         */
-        void canResume( KIO::Job *job, KIO::filesize_t offset );
-
-    private Q_SLOTS:
-        void slotCanResume( KIO::filesize_t offset );
-    private:
-        Q_DECLARE_PRIVATE(DirectCopyJob)
-    };
-
-
+    class FileCopyJobPrivate;
     class TransferJobPrivate;
     /**
      * The transfer job pumps data into and/or out of a Slave.
@@ -666,18 +484,6 @@ public:
     Q_OBJECT
 
     public:
-       /**
-	* Do not create a TransferJob. Use KIO::get() or KIO::put()
-	* instead.
-	* @param url the url to get or put
-	* @param command the command to issue
-	* @param packedArgs the arguments
-	* @param _staticData additional data to transmit (e.g. in a HTTP Post)
-	*/
-        TransferJob(const KUrl& url, int command,
-                    const QByteArray &packedArgs,
-                    const QByteArray &_staticData);
-
         ~TransferJob();
 
         /**
@@ -685,35 +491,6 @@ public:
          * Note that some kioslaves might ignore this.
          */
         void setModificationTime( const QDateTime& mtime );
-
-        /**
-	 * @internal
-         * Called by the scheduler when a @p slave gets to
-         * work on this job.
-	 * @param slave the slave that starts working on this job
-         */
-        virtual void start(Slave *slave);
-
-        /**
-         * Called when m_subJob finishes.
-	 * @param job the job that finished
-         */
-        virtual void slotResult( KJob *job );
-
-        /**
-         * Flow control. Suspend data processing from the slave.
-         */
-        void internalSuspend();
-
-        /**
-         * Flow control. Resume data processing from the slave.
-         */
-        void internalResume();
-
-        /**
-         * Reimplemented for internal reasons
-         */
-        virtual void resume();
 
         /**
 	 * Checks whether we got an error page. This currently only happens
@@ -752,14 +529,26 @@ public:
          *  sent (true), or whether the job reports the amount of data that
          * has been received (false)
          */
-        bool reportDataSent();
+        bool reportDataSent() const;
 
         /**
          * Call this in the slot connected to result,
          * and only after making sure no error happened.
 	 * @return the mimetype of the URL
          */
-         QString mimetype() const;
+        QString mimetype() const;
+
+    protected:
+        /**
+         * Called when m_subJob finishes.
+	 * @param job the job that finished
+         */
+        virtual void slotResult( KJob *job );
+
+        /**
+         * Reimplemented for internal reasons
+         */
+        virtual bool doResume();
 
     Q_SIGNALS:
         /**
@@ -827,29 +616,21 @@ public:
         virtual void slotData( const QByteArray &data);
         virtual void slotDataReq();
         virtual void slotMimetype( const QString &mimetype );
-        virtual void slotNeedSubUrlData();
-        virtual void slotSubUrlData(KIO::Job*, const QByteArray &);
         virtual void slotMetaData( const KIO::MetaData &_metaData);
-        void slotErrorPage();
-        void slotCanResume( KIO::filesize_t offset );
-        void slotPostRedirection();
 
     protected:
-        bool m_internalSuspended;
-        bool m_errorPage;
-        bool m_unused1;
-        bool m_unused2;
-        QByteArray staticData;
-        KUrl m_redirectionURL;
-        KUrl::List m_redirectionList;
-        QString m_mimetype;
-        TransferJob *m_subJob;
-
-        TransferJob(TransferJobPrivate &dd, const KUrl& url, int command,
-                    const QByteArray &packedArgs,
-                    const QByteArray &_staticData);
+        TransferJob(TransferJobPrivate &dd);
     private:
+        Q_PRIVATE_SLOT(d_func(), void slotErrorPage())
+        Q_PRIVATE_SLOT(d_func(), void slotCanResume( KIO::filesize_t offset ))
+        Q_PRIVATE_SLOT(d_func(), void slotPostRedirection())
+        Q_PRIVATE_SLOT(d_func(), void slotNeedSubUrlData())
+        Q_PRIVATE_SLOT(d_func(), void slotSubUrlData(KIO::Job*, const QByteArray &))
         Q_DECLARE_PRIVATE(TransferJob)
+
+        // A FileCopyJob may control one or more TransferJobs
+        friend class FileCopyJob;
+        friend class FileCopyJobPrivate;
     };
 
     class StoredTransferJobPrivate;
@@ -875,18 +656,6 @@ public:
         Q_OBJECT
 
     public:
-       /**
-	* Do not create a StoredTransferJob. Use storedGet() or storedPut()
-	* instead.
-	* @param url the url to get or put
-	* @param command the command to issue
-	* @param packedArgs the arguments
-	* @param _staticData additional data to transmit (e.g. in a HTTP Post)
-	*/
-        StoredTransferJob(const KUrl& url, int command,
-                          const QByteArray &packedArgs,
-                          const QByteArray &_staticData);
-
         ~StoredTransferJob();
 
         /**
@@ -902,10 +671,12 @@ public:
          */
         QByteArray data() const;
 
-    private Q_SLOTS:
-        void slotStoredData( KIO::Job *job, const QByteArray &data );
-        void slotStoredDataReq( KIO::Job *job, QByteArray &data );
+    protected:
+        StoredTransferJob(StoredTransferJobPrivate &dd);
     private:
+        Q_PRIVATE_SLOT(d_func(), void slotStoredData( KIO::Job *job, const QByteArray &data ))
+        Q_PRIVATE_SLOT(d_func(), void slotStoredDataReq( KIO::Job *job, QByteArray &data ))
+
         Q_DECLARE_PRIVATE(StoredTransferJob)
     };
 
@@ -920,23 +691,7 @@ public:
     Q_OBJECT
 
     public:
-        /**
-	 * Do not create a MultiGetJob directly, use KIO::multi_get()
-	 * instead.
-	 *
-	 * @param url the first url to get
-	 */
-        MultiGetJob(const KUrl& url);
-
         virtual ~MultiGetJob();
-
-        /**
-	 * @internal
-         * Called by the scheduler when a @p slave gets to
-         * work on this job.
-	 * @param slave the slave that starts working on this job
-         */
-         virtual void start(Slave *slave);
 
 	/**
 	 * Get an additional file.
@@ -977,19 +732,9 @@ public:
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
         virtual void slotMimetype( const QString &mimetype );
-    private:
-        struct GetRequest {
-           GetRequest(long _id, const KUrl &_url, const MetaData &_metaData)
-             : id(_id), url(_url), metaData(_metaData) { }
-           long id;
-           KUrl url;
-           MetaData metaData;
-           bool operator==( const GetRequest& req ) const;
-        };
-        typedef QLinkedList<MultiGetJob::GetRequest> RequestQueue;
-        bool findCurrentEntry();
-        void flushQueue(QLinkedList<GetRequest> &queue);
 
+    protected:
+        MultiGetJob(MultiGetJobPrivate &dd);
     private:
         Q_DECLARE_PRIVATE(MultiGetJob)
     };
@@ -1005,32 +750,16 @@ public:
     Q_OBJECT
 
     public:
-       /**
-	* Do not create a MimetypeJob directly. Use KIO::mimetype()
-	* instead.
-	* @param url the url to get
-	* @param command the command to issue
-	* @param packedArgs the arguments
-	*/
-        MimetypeJob(const KUrl& url, int command, const QByteArray &packedArgs);
-
         ~MimetypeJob();
-
-        /**
-	 * @internal
-         * Called by the scheduler when a slave gets to
-         * work on this job.
-	 * @param slave the slave that works on the job
-         */
-        virtual void start( Slave *slave );
 
     protected Q_SLOTS:
         virtual void slotFinished( );
+    protected:
+        MimetypeJob(MimetypeJobPrivate &dd);
     private:
         Q_DECLARE_PRIVATE(MimetypeJob)
     };
 
-    class FileCopyJobPrivate;
     /**
      * The FileCopyJob copies data from one place to another.
      * @see KIO::file_copy()
@@ -1040,19 +769,6 @@ public:
     Q_OBJECT
 
     public:
-	/**
-	* Do not create a FileCopyJob directly. Use KIO::file_move()
-	* or KIO::file_copy() instead.
-	* @param src the source URL
-	* @param dest the destination URL
-	* @param permissions the permissions of the resulting resource
-	* @param move true to move, false to copy
-	* @param overwrite true to allow overwriting, false otherwise
-	* @param resume true to resume an operation, false otherwise
-	 */
-        FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
-                     bool move, bool overwrite, bool resume);
-
         ~FileCopyJob();
         /**
          * If you know the size of the source file, call this method
@@ -1082,6 +798,9 @@ public:
 	 */
         KUrl destUrl() const;
 
+        bool doSuspend();
+        bool doResume();
+
     Q_SIGNALS:
         /**
          * Mimetype determined during a file copy.
@@ -1095,12 +814,6 @@ public:
          */
         void mimetype( KIO::Job *job, const QString &type );
 
-    public Q_SLOTS:
-        void slotStart();
-        void slotData( KIO::Job *, const QByteArray &data);
-        void slotDataReq( KIO::Job *, QByteArray &data);
-        void slotMimetype( KIO::Job*, const QString& type );
-
     protected Q_SLOTS:
         /**
          * Called whenever a subjob finishes.
@@ -1108,59 +821,19 @@ public:
          */
         virtual void slotResult( KJob *job );
 
-        /**
-         * Forward signal from subjob
-	 * @param job the job that emitted this signal
-	 * @param size the processed size in bytes
-         */
-        void slotProcessedSize( KJob *job, qulonglong size );
-        /**
-         * Forward signal from subjob
-	 * @param job the job that emitted this signal
-	 * @param size the total size
-         */
-        void slotTotalSize( KJob *job, qulonglong size );
-        /**
-         * Forward signal from subjob
-	 * @param job the job that emitted this signal
-	 * @param pct the percentage
-         */
-        void slotPercent( KJob *job, unsigned long pct );
-        /**
-         * Forward signal from subjob
-	 * @param job the job that emitted this signal
-	 * @param offset the offset to resume from
-         */
-        void slotCanResume( KIO::Job *job, KIO::filesize_t offset );
-
     protected:
-        void startCopyJob();
-        void startCopyJob(const KUrl &slave_url);
-        void startRenameJob(const KUrl &slave_url);
-        void startDataPump();
-        void connectSubjob( SimpleJob * job );
-        bool doSuspend();
-        bool doResume();
-
+        FileCopyJob(FileCopyJobPrivate &dd);
 
     private:
-        void startBestCopyMethod();
+        Q_PRIVATE_SLOT(d_func(), void slotStart())
+        Q_PRIVATE_SLOT(d_func(), void slotData( KIO::Job *, const QByteArray &data))
+        Q_PRIVATE_SLOT(d_func(), void slotDataReq( KIO::Job *, QByteArray &data))
+        Q_PRIVATE_SLOT(d_func(), void slotMimetype( KIO::Job*, const QString& type ))
+        Q_PRIVATE_SLOT(d_func(), void slotProcessedSize( KJob *job, qulonglong size ))
+        Q_PRIVATE_SLOT(d_func(), void slotTotalSize( KJob *job, qulonglong size ))
+        Q_PRIVATE_SLOT(d_func(), void slotPercent( KJob *job, unsigned long pct ))
+        Q_PRIVATE_SLOT(d_func(), void slotCanResume( KIO::Job *job, KIO::filesize_t offset ))
 
-    protected:
-        KUrl m_src;
-        KUrl m_dest;
-        int m_permissions;
-        bool m_move:1;
-        bool m_overwrite:1;
-        bool m_resume:1;
-        bool m_canResume:1;
-        bool m_resumeAnswerSent:1;
-        QByteArray m_buffer;
-        SimpleJob *m_moveJob;
-        SimpleJob *m_copyJob;
-        TransferJob *m_getJob;
-        TransferJob *m_putJob;
-    private:
         Q_DECLARE_PRIVATE(FileCopyJob)
     };
 
@@ -1176,28 +849,7 @@ public:
     Q_OBJECT
 
     public:
-       /**
-	* Do not create a ListJob directly. Use KIO::listDir() or
-	* KIO::listRecursive() instead.
-	* @param url the url of the directory
-	* @param recursive true to get the data recursively from child directories,
-	*        false to get only the content of the specified dir
-	* @param prefix the prefix of the files, or QString() for no prefix
-	* @param includeHidden true to include hidden files (those starting with '.')
-	*/
-        explicit ListJob(const KUrl& url,
-                bool recursive = false, const QString &prefix = QString(),
-                bool includeHidden = true);
-
         ~ListJob();
-
-        /**
-	 * @internal
-         * Called by the scheduler when a @p slave gets to
-         * work on this job.
-	 * @param slave the slave that starts working on this job
-         */
-        virtual void start( Slave *slave );
 
         /**
          * Returns the ListJob's redirection URL. This will be invalid if there
@@ -1245,12 +897,39 @@ public:
         virtual void slotFinished( );
         virtual void slotMetaData( const KIO::MetaData &_metaData);
         virtual void slotResult( KJob *job );
-        void slotListEntries( const KIO::UDSEntryList& list );
-        void slotRedirection( const KUrl &url );
-        void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
+
+    protected:
+        ListJob(ListJobPrivate &dd);
 
     private:
+        Q_PRIVATE_SLOT(d_func(), void slotListEntries( const KIO::UDSEntryList& list ))
+        Q_PRIVATE_SLOT(d_func(), void slotRedirection( const KUrl &url ))
+        Q_PRIVATE_SLOT(d_func(), void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list ))
         Q_DECLARE_PRIVATE(ListJob)
+    };
+
+    class SpecialJobPrivate;
+    /**
+     * A class that is about a special command sent to an ioslave, along
+     * with some user-defined attributes.
+     */
+    class KIO_EXPORT SpecialJob : public TransferJob
+    {
+        Q_OBJECT
+    protected:
+        /**
+         * Creates a KIO::SpecialJob.
+         *
+         * @param url the URL to be passed to the ioslave
+         * @param data the data to be sent to the SlaveBase::special() function.
+         */
+        explicit SpecialJob(const KUrl &url, const QByteArray &data = QByteArray());
+
+    public:
+        ~SpecialJob();
+
+    private:
+        Q_DECLARE_PRIVATE(SpecialJob)
     };
 }
 

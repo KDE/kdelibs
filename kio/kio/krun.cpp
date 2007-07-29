@@ -910,7 +910,7 @@ void KRun::init()
   kDebug(7010) << "Testing directory (stating)" << endl;
 
   // It may be a directory or a file, let's stat
-  KIO::StatJob *job = KIO::stat( m_strURL, true, 0 /* no details */, m_bProgressInfo );
+  KIO::StatJob *job = KIO::stat( m_strURL, KIO::StatJob::SourceSide, 0 /* no details */, m_bProgressInfo );
   job->ui()->setWindow (d->m_window);
   connect( job, SIGNAL( result( KJob * ) ),
            this, SLOT( slotStatResult( KJob * ) ) );

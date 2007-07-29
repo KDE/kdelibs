@@ -40,17 +40,13 @@ namespace KIO {
     {
         Q_OBJECT
     public:
-	/**
-	 * Create new ChmodJobs using the KIO::chmod() function.
-	 */
-        ChmodJob( const KFileItemList & lstItems,  int permissions, int mask,
-                  int newOwner, int newGroup,
-                  bool recursive);
-
         virtual ~ChmodJob();
 
     protected Q_SLOTS:
         virtual void slotResult( KJob *job );
+
+    protected:
+        ChmodJob(ChmodJobPrivate &dd);
 
     private:
         Q_PRIVATE_SLOT(d_func(), void _k_slotEntries( KIO::Job * , const KIO::UDSEntryList & ))

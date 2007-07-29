@@ -27,6 +27,7 @@
 #include <kglobal.h>
 #include <QEventLoop>
 #include <QMap>
+#include <QMetaType>
 #include <QTimer>
 
 bool KJobPrivate::_k_kjobUnitEnumRegistered = false;

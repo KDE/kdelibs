@@ -209,10 +209,20 @@ public:
     void slotReport();
 
     Q_DECLARE_PUBLIC(CopyJob)
+
+    static inline CopyJob *newJob(const KUrl::List& src, const KUrl& dest,
+                                  CopyJob::CopyMode mode, bool asMethod, bool showProgressInfo)
+    {
+        CopyJob *job = new CopyJob(*new CopyJobPrivate(src,dest,mode,asMethod));
+        job->setUiDelegate(new JobUiDelegate);
+        if (showProgressInfo)
+            KIO::getJobTracker()->registerJob(job);
+        return job;
+    }
 };
 
-CopyJob::CopyJob(const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod)
-  : Job(*new CopyJobPrivate(src,dest,mode,asMethod))
+CopyJob::CopyJob(CopyJobPrivate &dd)
+    : Job(dd)
 {
     QTimer::singleShot(0, this, SLOT(slotStart()));
 }
@@ -245,7 +255,7 @@ void CopyJobPrivate::slotStart()
     m_reportTimer->start(REPORT_TIMEOUT);
 
     // Stat the dest
-    KIO::Job * job = KIO::stat( m_dest, false, 2, false );
+    KIO::Job * job = KIO::stat( m_dest, StatJob::DestinationSide, 2, false );
     //kDebug(7007) << "CopyJob:stating the dest " << d->m_dest << endl;
     q->addSubjob(job);
 }
@@ -427,17 +437,17 @@ void CopyJobPrivate::slotReport()
                 m_bURLDirty = false;
                 if (m_mode==CopyJob::Move)
                 {
-                    q->emitMoving(m_currentSrcURL, m_currentDestURL);
+                    emitMoving(q, m_currentSrcURL, m_currentDestURL);
                     emit q->moving( q, m_currentSrcURL, m_currentDestURL);
                 }
                 else if (m_mode==CopyJob::Link)
                 {
-                    q->emitCopying( m_currentSrcURL, m_currentDestURL ); // we don't have a delegate->linking
+                    emitCopying( q, m_currentSrcURL, m_currentDestURL ); // we don't have a delegate->linking
                     emit q->linking( q, m_currentSrcURL.path(), m_currentDestURL );
                 }
                 else
                 {
-                    q->emitCopying( m_currentSrcURL, m_currentDestURL );
+                    emitCopying( q, m_currentSrcURL, m_currentDestURL );
                     emit q->copying( q, m_currentSrcURL, m_currentDestURL );
                 }
             }
@@ -449,7 +459,7 @@ void CopyJobPrivate::slotReport()
             {
                 m_bURLDirty = false;
                 emit q->creatingDir( q, m_currentDestURL );
-                q->emitCreatingDir( m_currentDestURL );
+                emitCreatingDir( q, m_currentDestURL );
             }
             break;
 
@@ -458,7 +468,7 @@ void CopyJobPrivate::slotReport()
             if (m_bURLDirty)
             {
                 m_bURLDirty = false;
-                q->emitCopying( m_currentSrcURL, m_currentDestURL );
+                emitCopying( q, m_currentSrcURL, m_currentDestURL );
             }
             q->setTotalAmount(KJob::Bytes, m_totalSize);
             q->setTotalAmount(KJob::Files, files.count());
@@ -671,7 +681,7 @@ void CopyJobPrivate::statCurrentSrc()
         }
 
         // Stat the next src url
-        Job * job = KIO::stat( m_currentSrcURL, true, 2, false );
+        Job * job = KIO::stat( m_currentSrcURL, StatJob::SourceSide, 2, false );
         //kDebug(7007) << "KIO::stat on " << m_currentSrcURL << endl;
         state = STATE_STATING;
         q->addSubjob(job);
@@ -720,7 +730,7 @@ void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
     emit q->aboutToCreate( q, files );
 
     KIO_ARGS << m_currentSrcURL << dest << (qint8) false /*no overwrite*/;
-    SimpleJob * newJob = new SimpleJob(slave_url, CMD_RENAME, packedArgs);
+    SimpleJob * newJob = SimpleJobPrivate::newJob(slave_url, CMD_RENAME, packedArgs);
     newJob->setUiDelegate(new JobUiDelegate());
     Scheduler::scheduleJob(newJob);
     q->addSubjob( newJob );
@@ -807,7 +817,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
 
                     // We need to stat the existing dir, to get its last-modification time
                     KUrl existingDest( (*it).uDest );
-                    SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
+                    SimpleJob * newJob = KIO::stat( existingDest, StatJob::DestinationSide, 2, false );
                     Scheduler::scheduleJob(newJob);
                     kDebug(7007) << "KIO::stat for resolving conflict on " << existingDest << endl;
                     state = STATE_CONFLICT_CREATING_DIRS;
@@ -1039,7 +1049,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                 assert ( !q->hasSubjobs() );
                 // We need to stat the existing file, to get its last-modification time
                 KUrl existingFile( (*it).uDest );
-                SimpleJob * newJob = KIO::stat( existingFile, false, 2, false );
+                SimpleJob * newJob = KIO::stat( existingFile, StatJob::DestinationSide, 2, false );
                 Scheduler::scheduleJob(newJob);
                 kDebug(7007) << "KIO::stat for resolving conflict on " << existingFile << endl;
                 state = STATE_CONFLICT_COPYING_FILES;
@@ -1686,7 +1696,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     // Set m_dest to the chosen destination
                     // This is only for this src url; the next one will revert to m_globalDest
                     m_dest.setPath( newPath );
-                    KIO::Job* job = KIO::stat( m_dest, false, 2, false );
+                    KIO::Job* job = KIO::stat( m_dest, StatJob::DestinationSide, 2, false );
                     state = STATE_STATING;
                     destinationState = DEST_NOT_STATED;
                     q->addSubjob(job);
@@ -1725,7 +1735,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
         }
         kDebug(7007) << "Couldn't rename " << m_currentSrcURL << " to " << dest << ", reverting to normal way, starting with stat" << endl;
         //kDebug(7007) << "KIO::stat on " << m_currentSrcURL << endl;
-        KIO::Job* job = KIO::stat( m_currentSrcURL, true, 2, false );
+        KIO::Job* job = KIO::stat( m_currentSrcURL, StatJob::SourceSide, 2, false );
         state = STATE_STATING;
         q->addSubjob(job);
         m_bOnlyRenames = false;
@@ -1803,12 +1813,7 @@ CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, bool showProgressInfo )
     //kDebug(7007) << "KIO::copy src=" << src << " dest=" << dest << endl;
     KUrl::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob(srcList, dest, CopyJob::Copy, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Copy, false, showProgressInfo);
 }
 
 CopyJob *KIO::copyAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
@@ -1816,23 +1821,13 @@ CopyJob *KIO::copyAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
     //kDebug(7007) << "KIO::copyAs src=" << src << " dest=" << dest << endl;
     KUrl::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob(srcList, dest, CopyJob::Copy, true);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Copy, true, showProgressInfo);
 }
 
 CopyJob *KIO::copy( const KUrl::List& src, const KUrl& dest, bool showProgressInfo )
 {
     //kDebug(7007) << src << " " << dest << endl;
-    CopyJob *job = new CopyJob(src, dest, CopyJob::Copy, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(src, dest, CopyJob::Copy, false, showProgressInfo);
 }
 
 CopyJob *KIO::move(const KUrl& src, const KUrl& dest, bool showProgressInfo )
@@ -1840,12 +1835,7 @@ CopyJob *KIO::move(const KUrl& src, const KUrl& dest, bool showProgressInfo )
     //kDebug(7007) << src << " " << dest << endl;
     KUrl::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob(srcList, dest, CopyJob::Move, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, showProgressInfo);
 }
 
 CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
@@ -1853,79 +1843,44 @@ CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
     //kDebug(7007) << src << " " << dest << endl;
     KUrl::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob(srcList, dest, CopyJob::Move, true);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, showProgressInfo);
 }
 
 CopyJob *KIO::move( const KUrl::List& src, const KUrl& dest, bool showProgressInfo )
 {
     //kDebug(7007) << src << " " << dest << endl;
-    CopyJob *job = new CopyJob(src, dest, CopyJob::Move, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, showProgressInfo);
 }
 
 CopyJob *KIO::link(const KUrl& src, const KUrl& destDir, bool showProgressInfo )
 {
     KUrl::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob(srcList, destDir, CopyJob::Link, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, destDir, CopyJob::Link, false, showProgressInfo);
 }
 
 CopyJob *KIO::link(const KUrl::List& srcList, const KUrl& destDir, bool showProgressInfo )
 {
-    CopyJob *job = new CopyJob(srcList, destDir, CopyJob::Link, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, destDir, CopyJob::Link, false, showProgressInfo);
 }
 
 CopyJob *KIO::linkAs(const KUrl& src, const KUrl& destDir, bool showProgressInfo )
 {
     KUrl::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob(srcList, destDir, CopyJob::Link, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, destDir, CopyJob::Link, false, showProgressInfo);
 }
 
 CopyJob *KIO::trash(const KUrl& src, bool showProgressInfo )
 {
     KUrl::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob(srcList, KUrl( "trash:/" ), CopyJob::Move, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, KUrl( "trash:/" ), CopyJob::Move, false, showProgressInfo);
 }
 
 CopyJob *KIO::trash(const KUrl::List& srcList, bool showProgressInfo )
 {
-    CopyJob *job = new CopyJob(srcList, KUrl( "trash:/" ), CopyJob::Move, false);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo) {
-        KIO::getJobTracker()->registerJob(job);
-    }
-    return job;
+    return CopyJobPrivate::newJob(srcList, KUrl( "trash:/" ), CopyJob::Move, false, showProgressInfo);
 }
 
 #include "copyjob.moc"

@@ -35,17 +35,6 @@ class KIO_EXPORT DirectorySizeJob : public KIO::Job
     Q_OBJECT
 
 public:
-    /**
-     * Do not create a DirectorySizeJob directly. Use KIO::directorySize() instead.
-     * instead.
-     */
-    DirectorySizeJob( const KUrl & directory );
-    /**
-     * Do not create a DirectorySizeJob directly. Use KIO::directorySize() instead.
-     * instead.
-     */
-    DirectorySizeJob( const QList<KFileItem> & lstItems );
-
     ~DirectorySizeJob();
 
 public:
@@ -67,15 +56,15 @@ public:
      */
     KIO::filesize_t totalSubdirs() const;
 
-private:
-    void startNextJob( const KUrl & url );
-
-private Q_SLOTS:
+protected Q_SLOTS:
     virtual void slotResult( KJob *job );
-    void slotEntries( KIO::Job * , const KIO::UDSEntryList &);
-    void processNextItem();
+
+protected:
+    DirectorySizeJob(DirectorySizeJobPrivate &dd);
 
 private:
+    Q_PRIVATE_SLOT(d_func(), void slotEntries( KIO::Job * , const KIO::UDSEntryList &))
+    Q_PRIVATE_SLOT(d_func(), void processNextItem())
     Q_DECLARE_PRIVATE(DirectorySizeJob)
 };
 

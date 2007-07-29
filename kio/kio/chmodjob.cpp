@@ -84,17 +84,25 @@ namespace KIO {
         void _k_processList();
 
         Q_DECLARE_PUBLIC(ChmodJob)
+
+        static inline ChmodJob *newJob(const KFileItemList& lstItems, int permissions, int mask,
+                                       int newOwner, int newGroup, bool recursive, bool showProgressInfo)
+        {
+            ChmodJob *job = new ChmodJob(*new ChmodJobPrivate(lstItems,permissions,mask,
+                                                              newOwner,newGroup,recursive));
+            job->setUiDelegate(new JobUiDelegate());
+            if (showProgressInfo)
+                KIO::getJobTracker()->registerJob(job);
+            return job;
+        }
     };
 
 } // namespace KIO
 
 using namespace KIO;
 
-ChmodJob::ChmodJob( const KFileItemList& lstItems, int permissions, int mask,
-                    int newOwner, int newGroup,
-                    bool recursive)
-    : KIO::Job(*new ChmodJobPrivate(lstItems,permissions,mask,
-                                    newOwner,newGroup,recursive) )
+ChmodJob::ChmodJob(ChmodJobPrivate &dd)
+    : KIO::Job(dd)
 {
     QMetaObject::invokeMethod( this, "_k_processList", Qt::QueuedConnection );
 }
@@ -283,11 +291,8 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
         else
             newGroupID = g->gr_gid;
     }
-    ChmodJob *job = new ChmodJob(lstItems, permissions, mask, newOwnerID, newGroupID, recursive);
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo)
-        KIO::getJobTracker()->registerJob(job);
-    return job;
+    return ChmodJobPrivate::newJob(lstItems, permissions, mask, newOwnerID,
+                                   newGroupID, recursive, showProgressInfo);
 }
 
 #include "chmodjob.moc"

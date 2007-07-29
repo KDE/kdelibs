@@ -50,7 +50,29 @@ namespace KIO
         QList<KFileItem> m_lstItems;
         int m_currentItem;
 
+        void startNextJob( const KUrl & url );
+        void slotEntries( KIO::Job * , const KIO::UDSEntryList &);
+        void processNextItem();
+
         Q_DECLARE_PUBLIC(DirectorySizeJob)
+
+        static inline DirectorySizeJob *newJob( const KUrl & directory )
+        {
+            DirectorySizeJobPrivate *d = new DirectorySizeJobPrivate;
+            DirectorySizeJob *job = new DirectorySizeJob(*d);
+            job->setUiDelegate(new JobUiDelegate);
+            d->startNextJob(directory);
+            return job;
+        }
+
+        static inline DirectorySizeJob *newJob( const QList<KFileItem> & lstItems )
+        {
+            DirectorySizeJobPrivate *d = new DirectorySizeJobPrivate(lstItems);
+            DirectorySizeJob *job = new DirectorySizeJob(*d);
+            job->setUiDelegate(new JobUiDelegate);
+            QTimer::singleShot( 0, job, SLOT(processNextItem()) );
+            return job;
+        }
     };
 
 } // namespace KIO
@@ -58,18 +80,10 @@ namespace KIO
 
 using namespace KIO;
 
-DirectorySizeJob::DirectorySizeJob( const KUrl & directory )
-    : KIO::Job(*new DirectorySizeJobPrivate )
+DirectorySizeJob::DirectorySizeJob(DirectorySizeJobPrivate &dd)
+    : KIO::Job(dd)
 {
-    startNextJob( directory );
 }
-
-DirectorySizeJob::DirectorySizeJob( const QList<KFileItem> & lstItems )
-    : KIO::Job(*new DirectorySizeJobPrivate(lstItems) )
-{
-    QTimer::singleShot( 0, this, SLOT(processNextItem()) );
-}
-
 
 DirectorySizeJob::~DirectorySizeJob()
 {
@@ -90,12 +104,12 @@ KIO::filesize_t DirectorySizeJob::totalSubdirs() const
     return d_func()->m_totalSubdirs;
 }
 
-void DirectorySizeJob::processNextItem()
+void DirectorySizeJobPrivate::processNextItem()
 {
-    Q_D(DirectorySizeJob);
-    while (d->m_currentItem < d->m_lstItems.count())
+    Q_Q(DirectorySizeJob);
+    while (m_currentItem < m_lstItems.count())
     {
-        const KFileItem item = d->m_lstItems[d->m_currentItem++];
+        const KFileItem item = m_lstItems[m_currentItem++];
 	if ( !item.isLink() )
 	{
             if ( item.isDir() )
@@ -107,29 +121,27 @@ void DirectorySizeJob::processNextItem()
             }
             else
             {
-                d->m_totalSize += item.size();
-                kDebug(7007) << "DirectorySizeJob::processNextItem file -> " << d->m_totalSize << endl;
+                m_totalSize += item.size();
+                kDebug(7007) << "DirectorySizeJob::processNextItem file -> " << m_totalSize << endl;
             }
 	}
     }
     kDebug(7007) << "DirectorySizeJob::processNextItem finished" << endl;
-    emitResult();
+    q->emitResult();
 }
 
-void DirectorySizeJob::startNextJob( const KUrl & url )
+void DirectorySizeJobPrivate::startNextJob( const KUrl & url )
 {
+    Q_Q(DirectorySizeJob);
     kDebug(7007) << "DirectorySizeJob::startNextJob " << url << endl;
     KIO::ListJob * listJob = KIO::listRecursive( url, false /* no GUI */ );
-    connect( listJob, SIGNAL(entries( KIO::Job *,
-                                      const KIO::UDSEntryList& )),
-             SLOT( slotEntries( KIO::Job*,
-                                const KIO::UDSEntryList& )));
-    addSubjob( listJob );
+    q->connect( listJob, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList& )),
+                SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
+    q->addSubjob( listJob );
 }
 
-void DirectorySizeJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
+void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
-    Q_D(DirectorySizeJob);
     KIO::UDSEntryList::ConstIterator it = list.begin();
     const KIO::UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it) {
@@ -138,15 +150,15 @@ void DirectorySizeJob::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
         const KIO::filesize_t size = entry.numberValue( KIO::UDSEntry::UDS_SIZE, -1 );
         const QString name = entry.stringValue( KIO::UDSEntry::UDS_NAME );
         if ( name == "." )
-            d->m_totalSize += size;
+            m_totalSize += size;
         else if ( name != ".." )
         {
             if (!entry.isLink())
-              d->m_totalSize += size;
+              m_totalSize += size;
             if (!entry.isDir())
-              d->m_totalFiles++;
+              m_totalFiles++;
             else
-              d->m_totalSubdirs++;
+              m_totalSubdirs++;
             //kDebug(7007) << name << ":" << size << endl;
         }
     }
@@ -159,7 +171,7 @@ void DirectorySizeJob::slotResult( KJob * job )
     if (d->m_currentItem < d->m_lstItems.count())
     {
         removeSubjob(job);
-        processNextItem();
+        d->processNextItem();
     }
     else
     {
@@ -174,17 +186,13 @@ void DirectorySizeJob::slotResult( KJob * job )
 //static
 DirectorySizeJob * KIO::directorySize( const KUrl & directory )
 {
-    DirectorySizeJob *job = new DirectorySizeJob(directory); // useless - but consistent with other jobs
-    job->setUiDelegate(new JobUiDelegate());
-    return job;
+    return DirectorySizeJobPrivate::newJob(directory); // useless - but consistent with other jobs
 }
 
 //static
 DirectorySizeJob * KIO::directorySize( const QList<KFileItem> & lstItems )
 {
-    DirectorySizeJob *job = new DirectorySizeJob(lstItems);
-    job->setUiDelegate(new JobUiDelegate());
-    return job;
+    return DirectorySizeJobPrivate::newJob(lstItems);
 }
 
 #include "directorysizejob.moc"

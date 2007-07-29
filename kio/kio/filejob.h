@@ -39,10 +39,6 @@ class KIO_EXPORT FileJob : public SimpleJob
 Q_OBJECT
 
 public:
-    /**
-     * @internal
-     */
-    FileJob(const KUrl& url, const QByteArray &packedArgs);
     ~FileJob();
 
     /**
@@ -81,14 +77,6 @@ public:
      * @return the file size
      */
     KIO::filesize_t size();
-
-    /**
-     * @internal
-     * Called by the scheduler when a @p slave gets to
-     * work on this job.
-     * @param slave the slave that starts working on this job
-     */
-    virtual void start(Slave *slave);
 
 Q_SIGNALS:
     /**
@@ -140,22 +128,19 @@ Q_SIGNALS:
      */
     void position( KIO::Job *job, KIO::filesize_t offset);
 
-private Q_SLOTS:
-    virtual void slotRedirection( const KUrl &url);
-    virtual void slotData( const QByteArray &data);
-    virtual void slotMimetype( const QString &mimetype );
-    virtual void slotOpen( );
-    virtual void slotWritten( KIO::filesize_t );
-    virtual void slotFinished( );
-    virtual void slotPosition( KIO::filesize_t );
-    virtual void slotTotalSize( KIO::filesize_t );
-
 protected:
-    bool m_open;
-    QString m_mimetype;
-    KIO::filesize_t m_size;
+    FileJob(FileJobPrivate &dd);
 
 private:
+    Q_PRIVATE_SLOT(d_func(), void slotRedirection( const KUrl &url))
+    Q_PRIVATE_SLOT(d_func(), void slotData( const QByteArray &data))
+    Q_PRIVATE_SLOT(d_func(), void slotMimetype( const QString &mimetype ))
+    Q_PRIVATE_SLOT(d_func(), void slotOpen( ))
+    Q_PRIVATE_SLOT(d_func(), void slotWritten( KIO::filesize_t ))
+    Q_PRIVATE_SLOT(d_func(), void slotFinished( ))
+    Q_PRIVATE_SLOT(d_func(), void slotPosition( KIO::filesize_t ))
+    Q_PRIVATE_SLOT(d_func(), void slotTotalSize( KIO::filesize_t ))
+
     Q_DECLARE_PRIVATE(FileJob)
 };
 

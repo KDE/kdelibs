@@ -42,9 +42,8 @@ public:
     Q_DECLARE_PUBLIC(MetaInfoJob)
 };
 
-MetaInfoJob::MetaInfoJob(const QList<KFileItem>& items, KFileMetaInfo::WhatFlags w,
-     int iocost, int cpucost,
-     const QStringList& requiredfields, const QStringList& requestedfields)
+MetaInfoJob::MetaInfoJob(const QList<KFileItem>& items, KFileMetaInfo::WhatFlags,
+     int, int, const QStringList&, const QStringList&)
     : KIO::Job(*new MetaInfoJobPrivate)
 {
     Q_D(MetaInfoJob);

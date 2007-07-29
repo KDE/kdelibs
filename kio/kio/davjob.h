@@ -55,12 +55,6 @@ namespace KIO {
         Q_OBJECT
     public:
         /**
-	 * Use KIO::davPropFind(), KIO::davPropPatch() and
-	 * KIO::davSearch() to create a new DavJob.
-	 */
-        DavJob(const KUrl& url, int method,
-                    const QString& request);
-        /**
 	 * Returns the response as a QDomDocument.
 	 * @return the response document
 	 */
@@ -71,8 +65,7 @@ namespace KIO {
         virtual void slotData( const QByteArray &data);
 
     protected:
-        bool m_suspended;
-        TransferJob *m_subJob;
+        DavJob(DavJobPrivate &dd, int, const QString &);
     private:
         Q_DECLARE_PRIVATE(DavJob)
     };

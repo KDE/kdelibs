@@ -25,34 +25,261 @@
 
 #include "job.h"
 #include "kcompositejob_p.h"
+#include "jobuidelegate.h"
+#include "kuiserverjobtracker.h"
 
-/** @internal */
-class KIO::JobPrivate: public KCompositeJobPrivate
-{
-public:
-    JobPrivate() : m_parentJob( 0L ), m_extraFlags(0)
-                   {}
+namespace KIO {
+    class Slave;
 
-    // Maybe we could use the QObject parent/child mechanism instead
-    // (requires a new ctor, and moving the ctor code to some init()).
-    Job* m_parentJob;
-    int m_extraFlags;
+    class JobPrivate: public KCompositeJobPrivate
+    {
+    public:
+        JobPrivate()
+            : m_parentJob( 0L ), m_extraFlags(0)
+            {}
 
-    Q_DECLARE_PUBLIC(Job)
-};
+        /**
+         * Some extra storage space for jobs that don't have their own
+         * private d pointer.
+         */
+        enum { EF_TransferJobAsync    = (1 << 0),
+               EF_TransferJobNeedData = (1 << 1),
+               EF_TransferJobDataSent = (1 << 2),
+               EF_ListJobUnrestricted = (1 << 3) };
 
-class KIO::SimpleJobPrivate: public KIO::JobPrivate
-{
-public:
-    void simpleJobInit();
+        // Maybe we could use the QObject parent/child mechanism instead
+        // (requires a new ctor, and moving the ctor code to some init()).
+        Job* m_parentJob;
+        int m_extraFlags;
+        MetaData m_incomingMetaData;
+        MetaData m_outgoingMetaData;
 
-    Q_DECLARE_PUBLIC(SimpleJob)
-};
+        inline KIO::JobUiDelegate *ui() const
+            { return static_cast<KIO::JobUiDelegate *>(uiDelegate); }
 
-class KIO::TransferJobPrivate: public KIO::SimpleJobPrivate
-{
-public:
-    Q_DECLARE_PUBLIC(TransferJob)
-};
+        void slotSpeed( KJob *job, unsigned long speed );
+
+        static void emitMoving(KIO::Job*, const KUrl &src, const KUrl &dest);
+        static void emitCopying(KIO::Job*, const KUrl &src, const KUrl &dest);
+        static void emitCreatingDir(KIO::Job*, const KUrl &dir);
+        static void emitDeleting(KIO::Job*, const KUrl &url);
+        static void emitStating(KIO::Job*, const KUrl &url);
+        static void emitTransferring(KIO::Job*, const KUrl &url);
+        static void emitMounting(KIO::Job*, const QString &dev, const QString &point);
+        static void emitUnmounting(KIO::Job*, const QString &point);
+
+        Q_DECLARE_PUBLIC(Job)
+    };
+
+    class SimpleJobPrivate: public JobPrivate
+    {
+    public:
+        /**
+         * Creates a new simple job.
+         * @param url the url of the job
+         * @param command the command of the job
+         * @param packedArgs the arguments
+         */
+        SimpleJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs)
+            : m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command)
+        {
+            if (m_url.hasSubUrl())
+            {
+                KUrl::List list = KUrl::split(m_url);
+                list.removeLast();
+                m_subUrl = KUrl::join(list);
+                //kDebug(7007) << "New URL = "  << m_url.url() << endl;
+                //kDebug(7007) << "Sub URL = "  << m_subUrl.url() << endl;
+            }
+        }
+
+        Slave * m_slave;
+        QByteArray m_packedArgs;
+        KUrl m_url;
+        KUrl m_subUrl;
+        int m_command;
+
+        void simpleJobInit();
+
+        /**
+         * Called on a slave's connected signal.
+         * @see connected()
+         */
+        void slotConnected();
+        /**
+         * Forward signal from the slave.
+         * @param data_size the processed size in bytes
+         * @see processedSize()
+         */
+        void slotProcessedSize( KIO::filesize_t data_size );
+        /**
+         * Forward signal from the slave.
+         * @param speed the speed in bytes/s
+         * @see speed()
+         */
+        void slotSpeed( unsigned long speed );
+        /**
+         * Forward signal from the slave
+         * Can also be called by the parent job, when it knows the size.
+         * @param data_size the total size
+         */
+        void slotTotalSize( KIO::filesize_t data_size );
+
+        /**
+         * @internal
+         * Called by the scheduler when a slave gets to
+         * work on this job.
+         **/
+        virtual void start( KIO::Slave *slave );
+
+        /**
+         * @internal
+         * Called to detach a slave from a job.
+         **/
+        void slaveDone();
+
+        Q_DECLARE_PUBLIC(SimpleJob)
+
+        static inline SimpleJobPrivate *get(KIO::SimpleJob *job)
+            { return job->d_func(); }
+        static inline SimpleJob *newJobNoUi(const KUrl& url, int command, const QByteArray &packedArgs)
+        {
+            SimpleJob *job = new SimpleJob(*new SimpleJobPrivate(url, command, packedArgs));
+            return job;
+        }
+        static inline SimpleJob *newJob(const KUrl& url, int command, const QByteArray &packedArgs,
+                                        bool showProgressInfo = false)
+        {
+            SimpleJob *job = new SimpleJob(*new SimpleJobPrivate(url, command, packedArgs));
+            job->setUiDelegate(new JobUiDelegate);
+            if (showProgressInfo)
+                KIO::getJobTracker()->registerJob(job);
+            return job;
+        }
+    };
+
+    class MkdirJobPrivate;
+    /**
+     * A KIO job that creates a directory
+     * @see KIO::mkdir()
+     */
+    class KIO_EXPORT MkdirJob : public SimpleJob {
+
+    Q_OBJECT
+
+    public:
+        ~MkdirJob();
+
+    Q_SIGNALS:
+        /**
+         * Signals a redirection.
+         * Use to update the URL shown to the user.
+         * The redirection itself is handled internally.
+	 * @param job the job that is redirected
+	 * @param url the new url
+         */
+        void redirection( KIO::Job *job, const KUrl &url );
+
+        /**
+         * Signals a permanent redirection.
+         * The redirection itself is handled internally.
+	 * @param job the job that is redirected
+	 * @param fromUrl the original URL
+	 * @param toUrl the new URL
+         */
+        void permanentRedirection( KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl );
+
+    protected Q_SLOTS:
+        virtual void slotFinished();
+
+    public:
+        MkdirJob(MkdirJobPrivate &dd);
+
+    private:
+        Q_PRIVATE_SLOT(d_func(), void slotRedirection( const KUrl &url))
+        Q_DECLARE_PRIVATE(MkdirJob)
+    };
+
+    class TransferJobPrivate: public SimpleJobPrivate
+    {
+    public:
+        inline TransferJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs,
+                                  const QByteArray &_staticData)
+            : SimpleJobPrivate(url, command, packedArgs),
+              m_internalSuspended(false), m_errorPage(false), staticData(_staticData), m_subJob(0)
+            { }
+
+        bool m_internalSuspended;
+        bool m_errorPage;
+        QByteArray staticData;
+        KUrl m_redirectionURL;
+        KUrl::List m_redirectionList;
+        QString m_mimetype;
+        TransferJob *m_subJob;
+
+        /**
+         * Flow control. Suspend data processing from the slave.
+         */
+        void internalSuspend();
+        /**
+         * Flow control. Resume data processing from the slave.
+         */
+        void internalResume();
+        /**
+         * @internal
+         * Called by the scheduler when a slave gets to
+         * work on this job.
+         * @param slave the slave that works on the job
+         */
+        virtual void start( KIO::Slave *slave );
+
+        void slotErrorPage();
+        void slotCanResume( KIO::filesize_t offset );
+        void slotPostRedirection();
+        void slotNeedSubUrlData();
+        void slotSubUrlData(KIO::Job*, const QByteArray &);
+
+        Q_DECLARE_PUBLIC(TransferJob)
+        static inline TransferJob *newJob(const KUrl& url, int command,
+                                          const QByteArray &packedArgs,
+                                          const QByteArray &_staticData,
+                                          bool showProgressInfo)
+        {
+            TransferJob *job = new TransferJob(*new TransferJobPrivate(url, command, packedArgs, _staticData));
+            job->setUiDelegate(new JobUiDelegate);
+            if (showProgressInfo)
+                KIO::getJobTracker()->registerJob(job);
+            return job;
+        }
+    };
+
+    class DirectCopyJobPrivate;
+    /**
+     * @internal
+     * Used for direct copy from or to the local filesystem (i.e. SlaveBase::copy())
+     */
+    class DirectCopyJob : public SimpleJob
+    {
+        Q_OBJECT
+
+    public:
+        DirectCopyJob(const KUrl &url, const QByteArray &packedArgs);
+        ~DirectCopyJob();
+
+    public Q_SLOTS:
+        void slotCanResume( KIO::filesize_t offset );
+
+    Q_SIGNALS:
+        /**
+         * @internal
+         * Emitted if the job found an existing partial file
+         * and supports resuming. Used by FileCopyJob.
+         */
+        void canResume( KIO::Job *job, KIO::filesize_t offset );
+
+    private:
+        Q_DECLARE_PRIVATE(DirectCopyJob)
+    };
+}
 
 #endif

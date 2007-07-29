@@ -24,7 +24,6 @@
 
 #include "kjob.h"
 #include <QMap>
-#include <QMetaType>
 
 class KJobUiDelegate;
 class QTimer;
@@ -36,7 +35,7 @@ class KDECORE_EXPORT KJobPrivate
 {
 public:
     KJobPrivate();
-    ~KJobPrivate();
+    virtual ~KJobPrivate();
 
     KJob *q_ptr;
 

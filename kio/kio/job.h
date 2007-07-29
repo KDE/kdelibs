@@ -173,6 +173,35 @@ namespace KIO {
      * This version of the call includes two additional booleans, @p sideIsSource and @p details.
      *
      * @param url the URL of the file
+     * @param side is SourceSide when stating a source file (we will do a get on it if
+     * the stat works) and DestinationSide when stating a destination file (target of a copy).
+     * The reason for this parameter is that in some cases the kioslave might not
+     * be able to determine a file's existence (e.g. HTTP doesn't allow it, FTP
+     * has issues with case-sensitivity on some systems).
+     * When the slave can't reliably determine the existence of a file, it will:
+     * @li be optimistic if SourceSide, i.e. it will assume the file exists,
+     * and if it doesn't this will appear when actually trying to download it
+     * @li be pessimistic if DestinationSide, i.e. it will assume the file
+     * doesn't exist, to prevent showing "about to overwrite" errors to the user.
+     * If you simply want to check for existence without downloading/uploading afterwards,
+     * then you should use DestinationSide.
+     *
+     * @param details selects the level of details we want.
+     * By default this is 2 (all details wanted, including modification time, size, etc.),
+     * setDetails(1) is used when deleting: we don't need all the information if it takes
+     * too much time, no need to follow symlinks etc.
+     * setDetails(0) is used for very simple probing: we'll only get the answer
+     * "it's a file or a directory, or it doesn't exist". This is used by KRun.
+     * @param showProgressInfo true to show progress information
+     * @return the job handling the operation.
+     */
+    KIO_EXPORT StatJob * stat( const KUrl& url, KIO::StatJob::StatSide side,
+                               short int details, bool showProgressInfo = true );
+    /**
+     * Find all details for one file or directory.
+     * This version of the call includes two additional booleans, @p sideIsSource and @p details.
+     *
+     * @param url the URL of the file
      * @param sideIsSource is true when stating a source file (we will do a get on it if
      * the stat works) and false when stating a destination file (target of a copy).
      * The reason for this parameter is that in some cases the kioslave might not
@@ -195,7 +224,8 @@ namespace KIO {
      * @param showProgressInfo true to show progress information
      * @return the job handling the operation.
      */
-    KIO_EXPORT StatJob * stat( const KUrl& url, bool sideIsSource, short int details, bool showProgressInfo = true );
+    KIO_EXPORT_DEPRECATED StatJob * stat( const KUrl& url, bool sideIsSource,
+                                          short int details, bool showProgressInfo = true );
 
     /**
      * Get (a.k.a. read).

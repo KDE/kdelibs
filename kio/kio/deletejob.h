@@ -44,14 +44,6 @@ namespace KIO {
     Q_OBJECT
 
     public:
-	/**
-	 * Do not create a DeleteJob directly. Use KIO::del()
-	 * instead.
-	 *
-	 * @param src the list of URLs to delete
-	 * @see KIO::del()
-	 */
-        DeleteJob(const KUrl::List& src);
         virtual ~DeleteJob();
 
 	/**
@@ -97,22 +89,14 @@ namespace KIO {
         void deleting( KIO::Job *job, const KUrl& file );
 
     protected Q_SLOTS:
-        void slotStart();
-        void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
         virtual void slotResult( KJob *job );
 
-        /**
-         * Forward signal from subjob
-         */
-        void slotProcessedSize( KJob*, qulonglong data_size );
-        void slotReport();
+    protected:
+        DeleteJob(DeleteJobPrivate &dd);
 
     private:
-        void statNextSrc();
-        void deleteNextFile();
-        void deleteNextDir();
-
-    private:
+        Q_PRIVATE_SLOT(d_func(), void slotStart())
+        Q_PRIVATE_SLOT(d_func(), void slotEntries( KIO::Job*, const KIO::UDSEntryList& list ))
         Q_DECLARE_PRIVATE(DeleteJob)
     };
 

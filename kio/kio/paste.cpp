@@ -51,7 +51,7 @@ static KUrl getNewFileName( const KUrl &u, const QString& text )
   KUrl myurl(u);
   myurl.addPath( file );
 
-  if (KIO::NetAccess::exists(myurl, false, 0))
+  if (KIO::NetAccess::exists(myurl, KIO::NetAccess::DestinationSide, 0))
   {
       kDebug(7007) << "Paste will overwrite file.  Prompting..." << endl;
       KIO::RenameDialog_Result res = KIO::R_OVERWRITE;

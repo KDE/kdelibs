@@ -205,13 +205,22 @@ bool NetAccess::exists( const KUrl & url, bool source, QWidget* window )
   if ( url.isLocalFile() )
     return QFile::exists( url.path() );
   NetAccess kioNet;
-  return kioNet.statInternal( url, 0 /*no details*/, source, window );
+  return kioNet.statInternal( url, 0 /*no details*/,
+                              source ? SourceSide : DestinationSide, window );
+}
+
+bool NetAccess::exists( const KUrl & url, StatSide side, QWidget* window )
+{
+  if ( url.isLocalFile() )
+    return QFile::exists( url.path() );
+  NetAccess kioNet;
+  return kioNet.statInternal( url, 0 /*no details*/, side, window );
 }
 
 bool NetAccess::stat( const KUrl & url, KIO::UDSEntry & entry, QWidget* window )
 {
   NetAccess kioNet;
-  bool ret = kioNet.statInternal( url, 2 /*all details*/, true /*source*/, window );
+  bool ret = kioNet.statInternal( url, 2 /*all details*/, SourceSide, window );
   if (ret)
     entry = kioNet.d->m_entry;
   return ret;
@@ -326,14 +335,14 @@ bool NetAccess::dircopyInternal(const KUrl::List& src, const KUrl& target,
   return d->bJobOK;
 }
 
-bool NetAccess::statInternal( const KUrl & url, int details, bool source,
+bool NetAccess::statInternal( const KUrl & url, int details, StatSide side,
                               QWidget* window )
 {
   d->bJobOK = true; // success unless further error occurs
   KIO::StatJob * job = KIO::stat( url, !url.isLocalFile() );
   job->ui()->setWindow (window);
   job->setDetails( details );
-  job->setSide( source );
+  job->setSide( side == SourceSide ? StatJob::SourceSide : StatJob::DestinationSide );
   connect( job, SIGNAL( result (KJob *) ),
            this, SLOT( slotResult (KJob *) ) );
   enter_loop();

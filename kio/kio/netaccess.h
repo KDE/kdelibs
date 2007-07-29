@@ -65,6 +65,11 @@ class KIO_EXPORT NetAccess : public QObject
   Q_OBJECT
 
 public:
+    enum StatSide {
+        SourceSide,
+        DestinationSide
+    };
+
     /**
      * Downloads a file from an arbitrary URL (@p src) to a
      * temporary file on the local filesystem (@p target).
@@ -245,7 +250,24 @@ public:
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
      */
-    static bool exists(const KUrl& url, bool source, QWidget* window);
+    static KDE_DEPRECATED bool exists(const KUrl& url, bool source, QWidget* window);
+
+    /**
+     * Tests whether a URL exists.
+     *
+     * @param url the URL we are testing
+     * @param source if true, we want to read from that URL.
+     *               If false, we want to write to it.
+     * IMPORTANT: see documentation for KIO::stat for more details about this.
+     * @param window main window associated with this job. This is used to
+     *               automatically cache and discard authentication information
+     *               as needed. If NULL, authentication information will be
+     *               cached only for a short duration after which the user will
+     *               again be prompted for passwords as needed.
+     * @return true if the URL exists and we can do the operation specified by
+     *              @p source, false otherwise
+     */
+    static bool exists(const KUrl& url, StatSide, QWidget* window);
 
     /**
      * Tests whether a URL exists and return information on it.
@@ -425,7 +447,7 @@ private:
                           bool overwrite, bool resume, QWidget* window, bool move);
     bool dircopyInternal(const KUrl::List& src, const KUrl& target,
                          QWidget* window, bool move);
-    bool statInternal(const KUrl & url, int details, bool source, QWidget* window = 0);
+    bool statInternal(const KUrl & url, int details, StatSide side, QWidget* window = 0);
 
     bool delInternal(const KUrl & url, QWidget* window = 0);
     bool mkdirInternal(const KUrl & url, int permissions, QWidget* window = 0);

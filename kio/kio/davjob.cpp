@@ -50,25 +50,41 @@ using namespace KIO;
 class KIO::DavJobPrivate: public KIO::TransferJobPrivate
 {
 public:
+    DavJobPrivate(const KUrl& url)
+        : TransferJobPrivate(url, KIO::CMD_SPECIAL, QByteArray(), QByteArray())
+        {}
     QByteArray savedStaticData;
     QByteArray str_response;
     QDomDocument m_response;
+    //TransferJob *m_subJob;
+    //bool m_suspended;
 
     Q_DECLARE_PUBLIC(DavJob)
+
+    static inline DavJob *newJob(const KUrl &url, int method, const QString &request,
+                                 bool showProgressInfo)
+    {
+        DavJob *job = new DavJob(*new DavJobPrivate(url), method, request);
+        job->setUiDelegate(new JobUiDelegate);
+        if (showProgressInfo)
+            KIO::getJobTracker()->registerJob(job);
+        return job;
+    }
 };
 
-DavJob::DavJob(const KUrl& url, int method, const QString& request)
-  : TransferJob(*new DavJobPrivate, url, KIO::CMD_SPECIAL, QByteArray(), QByteArray())
+DavJob::DavJob(DavJobPrivate &dd, int method, const QString &request)
+    : TransferJob(dd)
 {
   // We couldn't set the args when calling the parent constructor,
   // so do it now.
-  QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
-  stream << (int) 7 << url << method;
+  Q_D(DavJob);
+  QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
+  stream << (int) 7 << d->m_url << method;
   // Same for static data
-  if ( ! request.isEmpty() && ! request.isNull() ) {
-    staticData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" + request.toUtf8();
-    staticData.truncate( staticData.size() - 1 );
-    d_func()->savedStaticData = staticData;
+  if ( ! request.isEmpty() ) {
+    d->staticData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" + request.toUtf8();
+    d->staticData.truncate( d->staticData.size() - 1 );
+    d->savedStaticData = d->staticData;
   }
 }
 
@@ -80,7 +96,7 @@ QDomDocument& DavJob::response()
 void DavJob::slotData( const QByteArray& data )
 {
   Q_D(DavJob);
-  if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error()) {
+  if(d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error()) {
     unsigned int oldSize = d->str_response.size();
     d->str_response.resize( oldSize + data.size() );
     memcpy( d->str_response.data() + oldSize, data.data(), data.size() );
@@ -92,8 +108,9 @@ void DavJob::slotFinished()
   Q_D(DavJob);
   // kDebug(7113) << "DavJob::slotFinished()" << endl;
   // kDebug(7113) << d->str_response << endl;
-	if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
-		QDataStream istream( m_packedArgs );
+	if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() &&
+            (d->m_command == CMD_SPECIAL)) {
+		QDataStream istream( d->m_packedArgs );
 		int s_cmd, s_method;
 		KUrl s_url;
 		istream >> s_cmd;
@@ -101,9 +118,9 @@ void DavJob::slotFinished()
 		istream >> s_method;
 		// PROPFIND
 		if ( (s_cmd == 7) && (s_method == (int)KIO::DAV_PROPFIND) ) {
-			m_packedArgs.truncate(0);
-			QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
-			stream << (int)7 << m_redirectionURL << (int)KIO::DAV_PROPFIND;
+			d->m_packedArgs.truncate(0);
+			QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
+			stream << (int)7 << d->m_redirectionURL << (int)KIO::DAV_PROPFIND;
 		}
   } else if ( ! d->m_response.setContent( d->str_response, true ) ) {
 		// An error occurred parsing the XML response
@@ -117,29 +134,23 @@ void DavJob::slotFinished()
 	}
   // kDebug(7113) << d->m_response.toString() << endl;
 	TransferJob::slotFinished();
-	if( d ) staticData = d->savedStaticData; // Need to send DAV request to this host too
+	if( d ) d->staticData = d->savedStaticData; // Need to send DAV request to this host too
 }
 
 /* Convenience methods */
 
 DavJob* KIO::davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo )
 {
-  DavJob *job = new DavJob(url, (int) KIO::DAV_PROPFIND, properties.toString());
-  job->addMetaData( "davDepth", depth );
-  job->setUiDelegate(new JobUiDelegate());
-  if (showProgressInfo)
-      KIO::getJobTracker()->registerJob(job);
-  return job;
+    DavJob *job = DavJobPrivate::newJob(url, (int) KIO::DAV_PROPFIND, properties.toString(), showProgressInfo);
+    job->addMetaData( "davDepth", depth );
+    return job;
 }
 
 
 DavJob* KIO::davPropPatch( const KUrl& url, const QDomDocument& properties, bool showProgressInfo )
 {
-    DavJob *job = new DavJob(url, (int) KIO::DAV_PROPPATCH, properties.toString());
-    job->setUiDelegate(new JobUiDelegate());
-    if (showProgressInfo)
-        KIO::getJobTracker()->registerJob(job);
-    return job;
+    return DavJobPrivate::newJob(url, (int) KIO::DAV_PROPPATCH, properties.toString(),
+                                 showProgressInfo);
 }
 
 DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo )
@@ -151,11 +162,7 @@ DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qN
   searchelement.appendChild( text );
   searchrequest.appendChild( searchelement );
   doc.appendChild( searchrequest );
-  DavJob *job = new DavJob(url, KIO::DAV_SEARCH, doc.toString());
-  job->setUiDelegate(new JobUiDelegate());
-  if (showProgressInfo)
-      KIO::getJobTracker()->registerJob(job);
-  return job;
+  return DavJobPrivate::newJob(url, KIO::DAV_SEARCH, doc.toString(), showProgressInfo);
 }
 
 #include "davjob.moc"

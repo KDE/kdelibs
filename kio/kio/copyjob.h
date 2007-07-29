@@ -72,24 +72,6 @@ namespace KIO {
 	 */
         enum CopyMode{ Copy, Move, Link };
 
-	/**
-	 * Do not create a CopyJob directly. Use KIO::copy(),
-	 * KIO::move(), KIO::link() and friends instead.
-	 *
-	 * @param src the list of source URLs
-	 * @param dest the destination URL
-	 * @param mode specifies whether the job should copy, move or link
-	 * @param asMethod if true, behaves like KIO::copyAs(),
-	 * KIO::moveAs() or KIO::linkAs()
-	 * @see KIO::copy()
-	 * @see KIO::copyAs()
-	 * @see KIO::move()
-	 * @see KIO::moveAs()
-	 * @see KIO::link()
-	 * @see KIO::linkAs()
-	 */
-        CopyJob(const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod);
-
         virtual ~CopyJob();
 
 	/**
@@ -220,6 +202,9 @@ namespace KIO {
         void copyingLinkDone( KIO::Job *job, const KUrl &from, const QString& target, const KUrl& to );
     protected Q_SLOTS:
         virtual void slotResult( KJob *job );
+
+    protected:
+        CopyJob(CopyJobPrivate &dd);
 
     private:
         Q_PRIVATE_SLOT(d_func(), void slotStart())

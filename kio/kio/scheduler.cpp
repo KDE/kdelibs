@@ -24,6 +24,7 @@
 #include "authinfo.h"
 #include "slave.h"
 #include "connection.h"
+#include "job_p.h"
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -41,6 +42,21 @@
 #define MAX_SLAVE_IDLE (3*60)
 
 using namespace KIO;
+
+static inline Slave *jobSlave(SimpleJob *job)
+{
+    return SimpleJobPrivate::get(job)->m_slave;
+}
+
+static inline int jobCommand(SimpleJob *job)
+{
+    return SimpleJobPrivate::get(job)->m_command;
+}
+
+static inline void startJob(SimpleJob *job, Slave *slave)
+{
+    SimpleJobPrivate::get(job)->start(slave);
+}
 
 typedef QList<Slave *> SlaveList;
 
@@ -348,7 +364,7 @@ void SchedulerPrivate::doJob(SimpleJob *job) {
     JobData jobData;
     jobData.protocol = KProtocolManager::slaveProtocol(job->url(), jobData.proxy);
 //    kDebug(7006) << "SchedulerPrivate::doJob protocol=" << jobData->protocol << endl;
-    if (job->command() == CMD_GET)
+    if (jobCommand(job) == CMD_GET)
     {
        jobData.checkOnHold = checkOnHold;
        checkOnHold = false;
@@ -376,7 +392,7 @@ void SchedulerPrivate::scheduleJob(SimpleJob *job) {
 
 void SchedulerPrivate::cancelJob(SimpleJob *job) {
 //    kDebug(7006) << "Scheduler: canceling job " << job << endl;
-    Slave *slave = job->slave();
+    Slave *slave = jobSlave(job);
     if ( !slave  )
     {
         // was not yet running (don't call this on a finished job!)
@@ -546,7 +562,7 @@ bool SchedulerPrivate::startJobScheduled(ProtocolInfo *protInfo)
 
     SchedulerPrivate::JobData jobData = extraJobData.value(job);
     setupSlave(slave, job->url(), jobData.protocol, jobData.proxy, newSlave);
-    job->start(slave);
+    startJob(job, slave);
 
     slaveTimer.start(0);
     return true;
@@ -580,7 +596,7 @@ bool SchedulerPrivate::startJobDirect()
 //       kDebug(7006) << "scheduler: job started " << job << endl;
 
     setupSlave(slave, job->url(), protocol, jobData.proxy, newSlave);
-    job->start(slave);
+    startJob(job, slave);
     return true;
 }
 
@@ -627,11 +643,11 @@ Slave *SchedulerPrivate::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exa
     if (slaveOnHold)
     {
        // Make sure that the job wants to do a GET or a POST, and with no offset
-       bool bCanReuse = (job->command() == CMD_GET);
+       bool bCanReuse = (jobCommand(job) == CMD_GET);
        KIO::TransferJob * tJob = qobject_cast<KIO::TransferJob *>(job);
        if ( tJob )
        {
-          bCanReuse = (job->command() == CMD_GET || job->command() == CMD_SPECIAL);
+          bCanReuse = (jobCommand(job) == CMD_GET || jobCommand(job) == CMD_SPECIAL);
           if ( bCanReuse )
           {
             KIO::MetaData outgoing = tJob->outgoingMetaData();
@@ -786,7 +802,7 @@ void SchedulerPrivate::scheduleCleanup()
 
 void SchedulerPrivate::putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
 {
-    Slave *slave = job->slave();
+    Slave *slave = jobSlave(job);
     slave->disconnect(job);
 
     if (slaveOnHold)
@@ -881,7 +897,7 @@ SchedulerPrivate::slotScheduleCoSlave()
            assert(slave->protocol() == url.protocol());
            assert(slave->host() == host);
            assert(slave->port() == port);
-           job->start(slave);
+           startJob(job, slave);
         } else {
             ++it;
         }
