@@ -1,2 +1,2 @@
 #! /usr/bin/env bash
-$XGETTEXT *.cpp -o $podir/kcmcrypto.pot
+$XGETTEXT *.cpp  *.h -o $podir/kcmcrypto.pot
