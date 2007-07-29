@@ -399,7 +399,7 @@ void KMenu::mousePressEvent(QMouseEvent* e)
     }
 
     if( e->button() == Qt::MidButton)
-      return
+      return;
 
     QMenu::mousePressEvent(e);
 }
