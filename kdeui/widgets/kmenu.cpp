@@ -398,6 +398,9 @@ void KMenu::mousePressEvent(QMouseEvent* e)
         d->ctxMenu->hide();
     }
 
+    if( e->button() == Qt::MidButton)
+      return
+
     QMenu::mousePressEvent(e);
 }
 
@@ -407,10 +410,13 @@ void KMenu::mouseReleaseEvent(QMouseEvent* e)
     d->keyboardModifiers = e->modifiers();
     d->mouseButtons = e->buttons();
 
-    if ( e->button() == Qt::MidButton && activeAction() ) {
-      QMetaObject::invokeMethod(activeAction(), "triggered", Qt::DirectConnection,
-             Q_ARG(Qt::MouseButtons, e->button()),
-             Q_ARG(Qt::KeyboardModifiers, QApplication::keyboardModifiers() ));
+    if ( e->button() == Qt::MidButton) {
+      if(activeAction() ) {
+        QMetaObject::invokeMethod(activeAction(), "triggered", Qt::DirectConnection,
+               Q_ARG(Qt::MouseButtons, e->button()),
+              Q_ARG(Qt::KeyboardModifiers, QApplication::keyboardModifiers() ));
+      }
+      return;
     }
 
     if ( !d->ctxMenu || !d->ctxMenu->isVisible() )
