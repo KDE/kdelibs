@@ -1967,7 +1967,7 @@ void FileCopyJob::slotData( KIO::Job * , const QByteArray &data)
    if (!m_putJob) return; // Don't crash
    m_getJob->internalSuspend();
    m_putJob->internalResume(); // Drink the beer
-   m_buffer = data;
+   m_buffer += data;
 
    // On the first set of data incoming, we tell the "put" slave about our
    // decision about resuming

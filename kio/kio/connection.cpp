@@ -83,9 +83,8 @@ void ConnectionPrivate::dequeue()
 void ConnectionPrivate::commandReceived(const Task &task)
 {
     //kDebug() << k_funcinfo << "Command " << task.cmd << " added to the queue" << endl;
-    incomingTasks += task;
-    if (!suspended)
-        emit q->readyRead();
+    incomingTasks.enqueue(task);
+    emit q->readyRead();
 }
 
 void ConnectionPrivate::disconnected()
