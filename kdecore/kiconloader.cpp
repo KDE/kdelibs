@@ -478,19 +478,16 @@ KIcon KIconLoader::findMatchingIcon(const QString& name, int size) const
 	for (int i = 0 ; i < count ; i++)
 	{
 	    icon = themeNode->theme->iconPath(name + *ext[i], size, KIcon::MatchExact);
-	    if (icon.isValid())
-		return icon;
+	    if (icon.isValid()) goto icon_found ;
 	}
 
 	for (int i = 0 ; i < count ; i++)
 	{
 	    icon = themeNode->theme->iconPath(name + *ext[i], size, KIcon::MatchBest);
-	    if (icon.isValid())
-		return icon;
+	    if (icon.isValid()) goto icon_found;	
 	}
-
     }
-
+    icon_found:
     return icon;
 }
 
@@ -933,21 +930,13 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 		themeNode = d->links.next() )
 	{
 	    icon = themeNode->theme->iconPath(file, size, KIcon::MatchExact);
-	    if (icon.isValid())
-		break;
-	}
+	    if (icon.isValid()) goto icon_found ;
 
-	if ( !icon.isValid() )
-	{
-	    for ( KIconThemeNode *themeNode = d->links.first() ; themeNode ;
-		    themeNode = d->links.next() )
-	    {
 		icon = themeNode->theme->iconPath(file, size, KIcon::MatchBest);
-		if (icon.isValid())
-		    break;
-	    }
+	    if (icon.isValid()) goto icon_found ;
 	}
 
+	icon_found:
 	file = icon.isValid() ? icon.path : QString::null;
     }
     return file;
