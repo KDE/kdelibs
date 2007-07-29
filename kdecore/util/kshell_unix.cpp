@@ -27,7 +27,7 @@
 
 namespace KShell {
 QString homeDir( const QString &user );
-};
+}
 
 static int fromHex( QChar cUnicode )
 {

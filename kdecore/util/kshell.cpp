@@ -33,7 +33,7 @@ QString homeDir( const QString &user )
     return KUser(user).homeDir();
 }
 
-};
+}
 
 QString KShell::joinArgs( const QStringList &args )
 {
