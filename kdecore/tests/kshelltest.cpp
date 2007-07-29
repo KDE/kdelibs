@@ -34,7 +34,7 @@ class KShellTest : public QObject
   private Q_SLOTS:
     void tildeExpand();
     void joinArgs();
-    void splitJoinDQ();
+    void splitJoin();
     void abortOnMeta();
 };
 
@@ -69,12 +69,12 @@ static QString sj(const QString& str, KShell::Options flags, KShell::Errors* ret
 }
 
 void
-KShellTest::splitJoinDQ()
+KShellTest::splitJoin()
 {
     KShell::Errors err = KShell::NoError;
 
-    QCOMPARE(sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo ",KShell::NoOptions, &err),
-             QString("~sulli text jojo crap '\\'\\''\x1b!' 'ha lo'"));
+    QCOMPARE(sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo \\a", KShell::NoOptions, &err),
+             QString("~sulli text jojo crap '\\'\\''\x1b!' 'ha lo' a"));
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj("\"~sulli\" 'text'", KShell::TildeExpand, &err),
@@ -91,6 +91,10 @@ KShellTest::splitJoinDQ()
 
     QCOMPARE(sj("~ 'text' ~", KShell::TildeExpand, &err),
              QDir::homePath() + " text " + QDir::homePath());
+    QVERIFY(err == KShell::NoError);
+
+    QCOMPARE(sj("\\~ blah", KShell::TildeExpand, &err),
+             QString("~ blah"));
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj("~sulli ~root", KShell::TildeExpand, &err),

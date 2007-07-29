@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE libraries
 
-    Copyright (c) 2003 Oswald Buddenhagen <ossi@kde.org>
+    Copyright (c) 2003,2007 Oswald Buddenhagen <ossi@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -231,9 +231,6 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                     if (pos >= args.length())
                         goto quoteerr;
                     c = args.unicode()[pos++];
-                    if (!c.isSpace() &&
-                        !((flags & AbortOnMeta) ? isMeta( c ) : isQuoteMeta( c )))
-                        cret += QLatin1Char('\\');
                 } else if ((flags & AbortOnMeta) && isMeta( c ))
                     goto metaerr;
                 cret += c;
