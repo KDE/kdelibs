@@ -720,12 +720,6 @@ void KShortcutsEditor::allDefault()
 }
 
 
-void KShortcutsEditor::showEvent( QShowEvent * event )
-{
-	//only kept around for BC - remove on a BIC Monday!
-}
-
-
 //---------------------------------------------------
 KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action)
 	: QTreeWidgetItem(parent)

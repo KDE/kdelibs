@@ -120,11 +120,11 @@ public:
 	 */
 	//void commitChanges(); //we do it the other way around
 
-    /**
+	/**
 	 * This function reverts any shortcut changes to the original
 	 * action set(s). Not implemented yet.
 	 */
-    void undoChanges();
+	void undoChanges();
 
 	/**
 	 * This saves the actions to disk.
@@ -176,9 +176,6 @@ public Q_SLOTS:
 	 * Set all shortcuts to their default values (bindings).
 	 **/
 	void allDefault();
-
-protected:
-	virtual void showEvent(QShowEvent* event);
 
 private:
 	Q_PRIVATE_SLOT(d, void capturedShortcut(QVariant, const QModelIndex &))
