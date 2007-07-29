@@ -166,8 +166,9 @@ int KPixmapCache::Private::findOffset(const QString& key)
         QString fkey;
         qint32 foffset;
         stream >> fkey >> foffset;
-        if(fkey == key)
+        if (fkey == key) {
             return foffset;
+        }
     }
 
     // Nothing was found
