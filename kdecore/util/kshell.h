@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE libraries
 
-    Copyright (c) 2003 Oswald Buddenhagen <ossi@kde.org>
+    Copyright (c) 2003,2007 Oswald Buddenhagen <ossi@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -56,7 +56,7 @@ namespace KShell {
          */
         AbortOnMeta = 2
     };
-	Q_DECLARE_FLAGS(Options, Option)
+    Q_DECLARE_FLAGS(Options, Option)
 
     /**
      * Status codes from splitArgs()
@@ -115,7 +115,8 @@ namespace KShell {
 
     /**
      * Performs tilde expansion on @p path. Interprets "~/path" and
-     * "~user/path".
+     * "~user/path". If the path starts with "\~" (i.e., an escaped tilde),
+     * the backslash is removed and the path is returned as is.
      *
      * @param path the path to tilde-expand
      * @return the expanded path

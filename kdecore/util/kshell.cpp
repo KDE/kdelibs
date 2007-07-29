@@ -1,7 +1,7 @@
 /*
     This file is part of the KDE libraries
 
-    Copyright (c) 2003 Oswald Buddenhagen <ossi@kde.org>
+    Copyright (c) 2003,2007 Oswald Buddenhagen <ossi@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -56,6 +56,8 @@ QString KShell::tildeExpand( const QString &fname )
         if (!ret.isNull())
             ret += fname.mid(pos);
         return ret;
+    } else if (fname.length() > 1 && fname[0] == QLatin1Char('\\') && fname[1] == QLatin1Char('~')) {
+        return fname.mid(1);
     }
     return fname;
 }

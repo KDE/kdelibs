@@ -47,6 +47,7 @@ KShellTest::tildeExpand()
     QCOMPARE(KShell::tildeExpand("~root/sulli"),
              KUser("root").homeDir()+"/sulli");
     QCOMPARE(KShell::tildeExpand("~sulli"), KUser("sulli").homeDir());
+    QCOMPARE(KShell::tildeExpand("\\~sulli"), QLatin1String("~sulli"));
 }
 
 void
