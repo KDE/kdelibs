@@ -132,6 +132,7 @@ void KTimeZonesTest::refcount()
     KTimeZone tz = timezones.zone("Zone1");
     QVERIFY(tz.isValid());
     QCOMPARE(tz.name(), QString("Zone1"));
+    QCOMPARE(tz.type(), QByteArray("KTimeZone"));
 }
 
 ///////////////////
@@ -157,6 +158,7 @@ void KTimeZonesTest::local()
     KTimeZone local = KSystemTimeZones::local();
     QVERIFY(local.isValid());
     QCOMPARE(local.name(), QString::fromLatin1("Europe/Paris"));
+    QCOMPARE(local.type(), QByteArray("KSystemTimeZone"));
 }
 
 void KTimeZonesTest::zone()
@@ -381,6 +383,7 @@ void KTimeZonesTest::tzfileToZoneTime()
     KTzfileTimeZoneSource tzsource(KSystemTimeZones::zoneinfoDir());
     KTimeZone london = KTzfileTimeZone(&tzsource, "Europe/London");
     QVERIFY( london.isValid() );
+    QCOMPARE(london.type(), QByteArray("KTzfileTimeZone"));
     QDateTime prepre(QDate(2005,10,29), QTime(23,59,59), Qt::UTC);  // before time shift (local time not repeated)
     QDateTime pre(QDate(2005,10,30), QTime(0,0,0), Qt::UTC);  // before time shift (local time repeated afterwards)
     QDateTime before(QDate(2005,10,30), QTime(0,59,59), Qt::UTC);  // before time shift (local time repeated afterwards)

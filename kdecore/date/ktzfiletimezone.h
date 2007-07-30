@@ -101,6 +101,13 @@ public:
     virtual KTimeZoneBackend *clone() const;
 
     /**
+     * Returns the class name of the data represented by this instance.
+     *
+     * @return "KTzfileTimeZone"
+     */
+    virtual QByteArray type() const;
+
+    /**
      * Implements KTzfileTimeZone::hasTransitions().
      *
      * Returns whether daylight saving transitions are available for the time zone.

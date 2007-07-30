@@ -422,6 +422,11 @@ KTimeZoneBackend &KTimeZoneBackend::operator=(const KTimeZoneBackend &other)
     return *this;
 }
 
+QByteArray KTimeZoneBackend::type() const
+{
+    return "KTimeZone";
+}
+
 KTimeZoneBackend *KTimeZoneBackend::clone() const
 {
     return new KTimeZoneBackend(*this);
@@ -550,6 +555,11 @@ KTimeZone &KTimeZone::operator=(const KTimeZone &tz)
 bool KTimeZone::operator==(const KTimeZone &rhs) const
 {
     return d->d == rhs.d->d;
+}
+
+QByteArray KTimeZone::type() const
+{
+    return d->type();
 }
 
 bool KTimeZone::isValid() const

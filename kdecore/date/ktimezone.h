@@ -626,6 +626,15 @@ public:
     bool operator!=(const KTimeZone &rhs) const  { return !operator==(rhs); }
 
     /**
+     * Returns the class name of the data represented by this instance.
+     * If a derived class object has been assigned to this instance, this
+     * method will return the name of that class.
+     *
+     * @return "KTimeZone" or the class name of a derived class
+     */
+    QByteArray type() const;
+
+    /**
      * Checks whether the instance is valid.
      *
      * @return true if valid, false if invalid
@@ -1121,6 +1130,15 @@ public:
      * @return new copy
      */
     virtual KTimeZoneBackend *clone() const;
+
+    /**
+     * Returns the class name of the data represented by this instance.
+     *
+     * @note Every inherited class must reimplement type().
+     *
+     * @return "KTimeZone" for this base class.
+     */
+    virtual QByteArray type() const;
 
     /**
      * Implements KTimeZone::offsetAtZoneTime().

@@ -245,6 +245,13 @@ public:
     virtual KTimeZoneBackend *clone() const;
 
     /**
+     * Returns the class name of the data represented by this instance.
+     *
+     * @return "KSystemTimeZone"
+     */
+    virtual QByteArray type() const;
+
+    /**
      * Implements KSystemTimeZone::offsetAtZoneTime().
      *
      * Returns the offset of this time zone to UTC at the given local date/time.

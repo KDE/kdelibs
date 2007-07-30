@@ -372,6 +372,11 @@ KTimeZoneBackend *KSystemTimeZoneBackend::clone() const
     return new KSystemTimeZoneBackend(*this);
 }
 
+QByteArray KSystemTimeZoneBackend::type() const
+{
+    return "KSystemTimeZone";
+}
+
 int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDateTime &zoneDateTime, int *secondOffset) const
 {
     if (!caller->isValid()  ||  !zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)

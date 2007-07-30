@@ -53,6 +53,11 @@ KTimeZoneBackend *KTzfileTimeZoneBackend::clone() const
     return new KTzfileTimeZoneBackend(*this);
 }
 
+QByteArray KTzfileTimeZoneBackend::type() const
+{
+    return "KTzfileTimeZone";
+}
+
 bool KTzfileTimeZoneBackend::hasTransitions(const KTimeZone *caller) const
 {
     Q_UNUSED(caller)
