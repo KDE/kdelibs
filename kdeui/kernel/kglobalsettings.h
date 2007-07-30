@@ -434,6 +434,12 @@ public:
     static QFont largeFont(const QString &text = QString());
 
     /**
+     * Returns the smallest readable font. This can be used in dockers,
+     * rulers and other places where space is at a premium.
+     */
+    static QFont smallestReadableFont();
+
+    /**
      * Returns if the user specified multihead. In case the display
      * has multiple screens, the return value of this function specifies
      * if the user wants KDE to run on all of them or just on the primary
@@ -681,23 +687,6 @@ private:
      * drop cached values for mouse settings (called by KApplication)
      */
     static void rereadMouseSettings();
-
-
-    static QString* s_desktopPath;
-    static QString* s_autostartPath;
-    static QString* s_documentPath;
-    static QFont *_generalFont;
-    static QFont *_fixedFont;
-    static QFont *_toolBarFont;
-    static QFont *_menuFont;
-    static QFont *_windowTitleFont;
-    static QFont *_taskbarFont;
-    static QFont *_largeFont;
-    static QColor * _inactiveBackground;
-    static QColor * _inactiveForeground;
-    static QColor * _activeBackground;
-    static QColor * _buttonBackground;
-    static KMouseSettings *s_mouseSettings;
 
     friend class KApplication;
 };

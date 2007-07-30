@@ -66,22 +66,23 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <stdlib.h>
 #include <kconfiggroup.h>
 
-QString* KGlobalSettings::s_desktopPath = 0;
-QString* KGlobalSettings::s_autostartPath = 0;
-QString* KGlobalSettings::s_documentPath = 0;
-QFont *KGlobalSettings::_generalFont = 0;
-QFont *KGlobalSettings::_fixedFont = 0;
-QFont *KGlobalSettings::_toolBarFont = 0;
-QFont *KGlobalSettings::_menuFont = 0;
-QFont *KGlobalSettings::_windowTitleFont = 0;
-QFont *KGlobalSettings::_taskbarFont = 0;
-QFont *KGlobalSettings::_largeFont = 0;
-QColor *KGlobalSettings::_inactiveBackground = 0;
-QColor *KGlobalSettings::_inactiveForeground = 0;
-QColor *KGlobalSettings::_activeBackground = 0;
-QColor *KGlobalSettings::_buttonBackground = 0;
+static QString* s_desktopPath = 0;
+static QString* s_autostartPath = 0;
+static QString* s_documentPath = 0;
+static QFont *_generalFont = 0;
+static QFont *_fixedFont = 0;
+static QFont *_toolBarFont = 0;
+static QFont *_menuFont = 0;
+static QFont *_windowTitleFont = 0;
+static QFont *_taskbarFont = 0;
+static QFont *_largeFont = 0;
+static QFont *_smallestReadableFont = 0;
+static QColor *_inactiveBackground = 0;
+static QColor *_inactiveForeground = 0;
+static QColor *_activeBackground = 0;
+//static QColor *_buttonBackground = 0;
 
-KGlobalSettings::KMouseSettings *KGlobalSettings::s_mouseSettings = 0;
+static KGlobalSettings::KMouseSettings *s_mouseSettings = 0;
 
 KGlobalSettings* KGlobalSettings::self()
 {
@@ -514,6 +515,22 @@ QFont KGlobalSettings::largeFont(const QString &text)
     return *_largeFont;
 }
 
+QFont KGlobalSettings::smallestReadableFont()
+{
+    if(_smallestReadableFont)
+        return *_smallestReadableFont;
+
+    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
+    _smallestReadableFont = new QFont("Sans Serif", 8);
+    _smallestReadableFont->setPointSize(8);
+    _smallestReadableFont->setStyleHint(QFont::SansSerif);
+
+    KConfigGroup g( KGlobal::config(), "General" );
+    *_smallestReadableFont = g.readEntry("smallestReadableFont", *_smallestReadableFont);
+
+    return *_smallestReadableFont;
+}
+
 void KGlobalSettings::initPaths()
 {
     //this code is duplicated in kde_config.cpp.in
@@ -573,6 +590,8 @@ void KGlobalSettings::rereadFontSettings()
     _windowTitleFont = 0L;
     delete _taskbarFont;
     _taskbarFont = 0L;
+    delete _smallestReadableFont;
+    _smallestReadableFont = 0L;
 }
 
 void KGlobalSettings::rereadPathSettings()
@@ -935,6 +954,7 @@ void KGlobalSettings::kdisplaySetFont()
         QApplication::setFont(KGlobalSettings::menuFont(), "QMenuBar");
         QApplication::setFont(KGlobalSettings::menuFont(), "QPopupMenu");
         QApplication::setFont(KGlobalSettings::menuFont(), "KPopupTitle");
+        QApplication::setFont(smallestReadableFont(), "QDockWidget");
 
 #if 0
         // "patch" standard QStyleSheet to follow our fonts
