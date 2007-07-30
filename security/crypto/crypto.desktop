@@ -16,6 +16,7 @@ Name[el]=Κρυπτογράφηση
 Name[es]=Criptografía
 Name[fa]=رمز
 Name[ja]=暗号
+Name[pa]=ਕਰਿਪਟੂ
 Name[pt]=Cifra
 Name[sv]=Krypto
 Comment=Configure SSL, manage certificates, and other cryptography settings
