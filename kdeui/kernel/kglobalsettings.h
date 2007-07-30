@@ -495,7 +495,7 @@ public:
      * @return the geometry to use for the desktop.  Note that it might not
      *         start at (0,0).
      */
-    static QRect desktopGeometry(QWidget* w);
+    static QRect desktopGeometry(const QWidget* w);
 
     /**
      * This function determines if the user wishes to see icons on the

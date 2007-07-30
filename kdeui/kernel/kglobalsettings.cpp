@@ -716,7 +716,7 @@ QRect KGlobalSettings::desktopGeometry(const QPoint& point)
     }
 }
 
-QRect KGlobalSettings::desktopGeometry(QWidget* w)
+QRect KGlobalSettings::desktopGeometry(const QWidget* w)
 {
     QDesktopWidget *dw = QApplication::desktop();
 
