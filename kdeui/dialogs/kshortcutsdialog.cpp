@@ -549,6 +549,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 	}
 
 	item->setKeySequence(column, capture);
+    q->keyChange();
 	//force view update
 	item->setText(column, capture.toString());
 	//update global configuration to reflect our changes
@@ -634,6 +635,7 @@ bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned
 		return false;
 
 	item->setKeySequence(column - LocalPrimary, QKeySequence());
+    q->keyChange();
 	return true;
 }
 
