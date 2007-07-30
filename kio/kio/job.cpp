@@ -2685,6 +2685,10 @@ MultiGetJob *KIO::multi_get(long id, const KUrl &url, const MetaData &metaData)
     return job;
 }
 
+class KIO::SpecialJobPrivate: public TransferJobPrivate
+{
+};
+
 SpecialJob::SpecialJob(const KUrl &url, const QByteArray &packedArgs)
     : TransferJob(*new TransferJobPrivate(url, CMD_SPECIAL, packedArgs, QByteArray()))
 {
@@ -2692,6 +2696,17 @@ SpecialJob::SpecialJob(const KUrl &url, const QByteArray &packedArgs)
 
 SpecialJob::~SpecialJob()
 {
+}
+
+void SpecialJob::setArguments(const QByteArray &data)
+{
+    Q_D(SpecialJob);
+    d->m_packedArgs = data;
+}
+
+QByteArray SpecialJob::arguments() const
+{
+    return d_func()->m_packedArgs;
 }
 
 // Never defined, never used - what's this code about?

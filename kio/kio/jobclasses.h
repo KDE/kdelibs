@@ -910,8 +910,15 @@ namespace KIO {
 
     class SpecialJobPrivate;
     /**
-     * A class that is about a special command sent to an ioslave, along
-     * with some user-defined attributes.
+     * A class that sends a special command to an ioslave.
+     * This allows you to send a binary blob to an ioslave and handle
+     * its responses. The ioslave will receive the binary data as an
+     * argument to the "special" function (inherited from SlaveBase::special()).
+     *
+     * Use this only on ioslaves that belong to your application. Sending
+     * special commands to other ioslaves may cause unexpected behaviour.
+     *
+     * @see KIO::special
      */
     class KIO_EXPORT SpecialJob : public TransferJob
     {
@@ -924,6 +931,18 @@ namespace KIO {
          * @param data the data to be sent to the SlaveBase::special() function.
          */
         explicit SpecialJob(const KUrl &url, const QByteArray &data = QByteArray());
+
+        /**
+         * Sets the QByteArray that is passed to SlaveBase::special() on
+         * the ioslave.
+         */
+        void setArguments(const QByteArray &data);
+
+        /**
+         * Returns the QByteArray data that will be sent (or has been sent) to the
+         * ioslave.
+         */
+        QByteArray arguments() const;
 
     public:
         ~SpecialJob();
