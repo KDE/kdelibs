@@ -115,7 +115,8 @@ public:
 
   void resetList (KDirWatch*,bool);
   void useFreq(Entry* e, int newFreq);
-  void addEntry(KDirWatch*,const QString&, Entry*, bool);
+  void addEntry(KDirWatch* instance,const QString& _path, Entry* sub_entry,
+        bool isDir, KDirWatch::WatchModes watchModes = KDirWatch::WatchDirOnly);
   void removeEntry(KDirWatch*,const QString&, Entry*);
   bool stopEntryScan(KDirWatch*, Entry*);
   bool restartEntryScan(KDirWatch*, Entry*, bool );

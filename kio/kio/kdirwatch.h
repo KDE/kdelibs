@@ -67,6 +67,17 @@ class KIO_EXPORT KDirWatch : public QObject
   Q_OBJECT
 
   public:
+
+   /**
+   * Available watch modes for directory monitoring
+   **/
+    enum WatchMode {
+      WatchDirOnly = 0,  ///< Watch just the specified directory
+      WatchFiles = 0x01, ///< Watch also all files contained by the directory
+      WatchSubDirs = 0x02 ///< Watch also all the subdirs contained by the directory
+    };
+    Q_DECLARE_FLAGS(WatchModes, WatchMode)
+   
    /**
     * Constructor.
     *
@@ -86,19 +97,21 @@ class KIO_EXPORT KDirWatch : public QObject
    /**
     * Adds a directory to be watched.
     *
-    * The directory does not have to exist. When @p watchFiles is
-    * false (the default), the signals dirty(), created(), deleted()
+    * The directory does not have to exist. When @p watchModes is set to
+    * WatchDirOnly (the default), the signals dirty(), created(), deleted()
     * can be emitted, all for the watched directory.
-    * When @p watchFiles is true, all files in the watched directory
-    * are watched for changes, too. Thus, the signals dirty(),
+    * When @p watchModes is set to WatchFiles, all files in the watched
+    * directory are watched for changes, too. Thus, the signals dirty(),
     * created(), deleted() can be emitted.
+    * When @p watchModes is set to WatchSubDirs, all subdirs are watched using
+    * the same flags specified in @p watchModes .
     *
     * @param path the path to watch
-    * @param watchFiles if true, the KDirWatch will also watch files - NOT IMPLEMENTED YET
-    * @param recursive if true, all sub directories are also watched - NOT IMPLEMENTED YET
+    * @param watchModes watch modes - NOT IMPLEMENTED YET
+    *
+    * @sa  KDirWatch::WatchMode
     */
-   void addDir(const QString& path,
-	       bool watchFiles = false, bool recursive = false);
+   void addDir(const QString& path, WatchModes watchModes = WatchDirOnly);
 
    /**
     * Adds a file to be watched.
@@ -282,6 +295,8 @@ class KIO_EXPORT KDirWatch : public QObject
 
    KDirWatchPrivate *const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KDirWatch::WatchModes)
 
 #endif
 

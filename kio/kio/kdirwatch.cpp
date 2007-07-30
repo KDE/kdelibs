@@ -505,7 +505,7 @@ bool KDirWatchPrivate::useStat(Entry* e)
  * this entry needs another entry to watch himself (when notExistent).
  */
 void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
-				Entry* sub_entry, bool isDir)
+                    Entry* sub_entry, bool isDir, KDirWatch::WatchModes actions)
 {
   QString path = _path;
   if (path.startsWith("/dev/") || (path == "/dev"))
@@ -1270,13 +1270,12 @@ KDirWatch::~KDirWatch()
 
 
 // TODO: add watchFiles/recursive support
-void KDirWatch::addDir( const QString& _path,
-			bool watchFiles, bool recursive)
+void KDirWatch::addDir( const QString& _path, WatchModes watchModes)
 {
-  if (watchFiles || recursive) {
-    kDebug(7001) << "addDir - recursive/watchFiles not supported yet in KDE 3.x" << endl;
+  if (watchModes != WatchDirOnly) {
+    kDebug(7001) << "addDir - recursive/watch files modes not supported yet in KDE 3.x" << endl;
   }
-  if (d) d->addEntry(this, _path, 0, true);
+  if (d) d->addEntry(this, _path, 0, true, watchModes);
 }
 
 void KDirWatch::addFile( const QString& _path )
