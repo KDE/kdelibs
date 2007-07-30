@@ -419,7 +419,7 @@ void SimpleJobPrivate::start(Slave *slave)
     q->connect( slave, SIGNAL( finished() ),
                 SLOT( slotFinished() ) );
 
-    if (m_extraFlags & EF_TransferJobDataSent == 0)
+    if ((m_extraFlags & EF_TransferJobDataSent) == 0)
     {
         q->connect( slave, SIGNAL( totalSize( KIO::filesize_t ) ),
                     SLOT( slotTotalSize( KIO::filesize_t ) ) );
@@ -435,7 +435,7 @@ void SimpleJobPrivate::start(Slave *slave)
 
     if (ui() && ui()->window())
     {
-        m_outgoingMetaData.insert("window-id", QString::number(ui()->window()->winId()));
+        m_outgoingMetaData.insert("window-id", QString::number((long)ui()->window()->winId()));
     }
 
     if (ui() && ui()->userTimestamp())
