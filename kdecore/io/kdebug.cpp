@@ -24,6 +24,9 @@
 #ifndef QT_NO_CAST_TO_ASCII
 #define QT_NO_CAST_TO_ASCII
 #endif
+#ifndef KDE3_SUPPORT
+#define KDE3_SUPPORT
+#endif
 
 #include "kdebug.h"
 
@@ -72,20 +75,120 @@
 
 KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface = false;
 
-enum DebugLevels {
-    KDEBUG_INFO=    0,
-    KDEBUG_WARN=    1,
-    KDEBUG_ERROR=   2,
-    KDEBUG_FATAL=   3
+class KNoDebugStream: public QIODevice
+{
+    // Q_OBJECT
+public:
+    KNoDebugStream() { open(WriteOnly); }
+    bool isSequential() { return true; }
+    qint64 readData(char *, qint64) { return 0; /* eof */ }
+    qint64 readLineData(char *, qint64) { return 0; /* eof */ }
+    qint64 writeData(const char *, qint64 len) { return len; }
 };
 
-struct kDebugPrivate
+class KSyslogDebugStream: public KNoDebugStream
 {
-    kDebugPrivate()
-        : oldarea(0),
-        config(0),
-        kDebugDBusIface(0)
+    // Q_OBJECT
+public:
+    qint64 writeData(const char *data, qint64 len)
+        {
+            if (len) {
+                int nPriority = *data++;
+                // not using fromRawData because we need a terminating NUL
+                QByteArray buf(data, len);
+
+                syslog(nPriority, "%s", buf.constData());
+            }
+            return len;
+        }
+};
+
+class KFileDebugStream: public KNoDebugStream
+{
+    // Q_OBJECT
+public:
+    qint64 writeData(const char *data, qint64 len)
+        {
+            if (len) {
+                QByteArray buf = QByteArray::fromRawData(data, len);
+                int pos = buf.indexOf('\0');
+                Q_ASSERT(pos != -1);
+
+                QFile aOutputFile(QFile::decodeName(data));
+                aOutputFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered);
+                aOutputFile.write(data + pos + 1, len - pos - 1);
+                aOutputFile.putChar('\n');
+                aOutputFile.close();
+            }
+            return len;
+        }
+};
+
+class KMessageBoxDebugStream: public KNoDebugStream
+{
+    // Q_OBJECT
+public:
+    qint64 writeData(const char *data, qint64 len)
+        {
+            if (len) {
+                // Since we are in kdecore here, we cannot use KMsgBox
+                QString caption = QString::fromAscii(data, len);
+                int pos = caption.indexOf(QLatin1Char('\0'));
+                Q_ASSERT(pos != -1);
+
+                QString msg = caption.mid(pos + 1);
+                caption.truncate(pos);
+                KMessage::message(KMessage::Information, msg, caption);
+            }
+            return len;
+        }
+};
+
+class KLineEndStrippingDebugStream: public KNoDebugStream
+{
+    // Q_OBJECT
+public:
+    qint64 writeData(const char *data, qint64 len)
+        {
+            QByteArray buf = QByteArray::fromRawData(data, len);
+            qt_message_output(QtDebugMsg, buf.trimmed().constData());
+            return len;
+        }
+};
+
+struct KDebugPrivate
+{
+    enum OutputMode {
+        FileOutput = 0,
+        MessageBoxOutput = 1,
+        QtOutput = 2,
+        SyslogOutput = 3,
+        NoOutput = 4,
+        Unknown = 5
+    };
+
+    struct Area {
+        inline Area() { clear(); }
+        void clear(OutputMode set = Unknown)
+        {
+            for (int i = 0; i < 4; ++i) {
+                logFileName[i].clear();
+                mode[i] = set;
+            }
+        }
+
+        QString name;
+        QString logFileName[4];
+        OutputMode mode[4];
+    };
+    typedef QHash<unsigned int, Area> Cache;
+
+    KDebugPrivate()
+        : config(0), kDebugDBusIface(0)
     {
+        Q_ASSERT(int(QtDebugMsg) == 0);
+        Q_ASSERT(int(QtFatalMsg) == 3);
+
         // Create the dbus interface if it has not been created yet
         // But only register to DBus if we are in a process with a dbus event loop,
         // otherwise introspection will just hang.
@@ -103,43 +206,39 @@ struct kDebugPrivate
         }
     }
 
-    ~kDebugPrivate()
+    ~KDebugPrivate()
     {
         delete config;
         delete kDebugDBusIface;
     }
 
-    QString getDescrFromNum(unsigned int num)
+    void loadAreaNames()
     {
-        if (!cache.isEmpty()) { // areas already loaded
-            return cache.value(num);
-        }
+        cache.clear();
 
         QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
         if (filename.isEmpty()) {
-            return QString();
+            return;
         }
         QFile file(filename);
         if (!file.open(QIODevice::ReadOnly)) {
             qWarning("Couldn't open %s", filename.toLocal8Bit().constData());
             file.close();
-            return QString();
+            return;
         }
 
         uint lineNumber=0;
-        QByteArray line(1024, 0);
-        int len;
 
-        while ((len = file.readLine(line.data(),line.size()-1)) > 0) {
-            int i=0;
+        while (!file.atEnd()) {
+            QByteArray line = file.readLine().trimmed();
             ++lineNumber;
+            if (line.isEmpty())
+                continue;
 
-            while (line[i] && line[i] <= ' ')
-                i++;
-
+            int i=0;
             unsigned char ch=line[i];
 
-            if (!ch || ch =='#' || ch =='\n')
+            if (ch =='#')
                 continue; // We have an eof, a comment or an empty line
 
             if (ch < '0' && ch > '9') {
@@ -150,429 +249,220 @@ struct kDebugPrivate
             const int numStart=i;
             do {
                 ch=line[++i];
-            } while (ch >= '0' && ch <= '9');
+            } while (ch >= '0' && ch <= '9' && i < line.length());
 
-            unsigned int number = line.mid(numStart, i).toUInt(); // ###
+            unsigned int number = line.left(i).toUInt();
 
-            while (line[i] && line[i] <= ' ')
+            while (i < line.length() && line[i] <= ' ')
                 i++;
 
-            cache.insert(number, QString::fromUtf8(line.mid(i, len-i-1)));
+            Area areaData;
+            areaData.name = QString::fromUtf8(line.mid(i));
+            cache.insert(number, areaData);
         }
         file.close();
 
-        return cache.value(num);
-    }
-
-    QString aAreaName;
-    unsigned int oldarea;
-    KConfig *config;
-    KDebugDBusIface *kDebugDBusIface;
-    QHash<unsigned int, QString> cache;
-    QMutex mutex;
-};
-
-K_GLOBAL_STATIC(kDebugPrivate, kDebug_data)
-
-// ######## KDE4: kDebug is not threadsafe!  Races and crashes apps that call
-//                it from both threads.  Let's rework this altogether, and
-//                maybe make it faster too.
-static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char *data)
-{
-    /* Determine output */
-
-    QString key;
-    QString aCaption;
-    int nPriority = 0;
-    switch (nLevel) {
-    case KDEBUG_INFO:
-        key = QLatin1String( "InfoOutput" );
-        aCaption = QLatin1String( "Info" );
-        nPriority = LOG_INFO;
-        break;
-    case KDEBUG_WARN:
-        key = QLatin1String( "WarnOutput" );
-        aCaption = QLatin1String( "Warning" );
-        nPriority = LOG_WARNING;
-        break;
-    case KDEBUG_FATAL:
-        key = QLatin1String( "FatalOutput" );
-        aCaption = QLatin1String( "Fatal Error" );
-        nPriority = LOG_CRIT;
-        break;
-    case KDEBUG_ERROR:
-    default:
-        /* Programmer error, use "Error" as default */
-        key = QLatin1String( "ErrorOutput" );
-        aCaption = QLatin1String( "Error" );
-        nPriority = LOG_ERR;
-        break;
-    }
-    short nOutput = 2;
-
-    if (!kDebug_data.isDestroyed()) {
-        kDebug_data->mutex.lock();
-        if (!kDebug_data->config && KGlobal::hasMainComponent()) {
-            kDebug_data->config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
-
+        Area &areaData = cache[0];
+        areaData.clear(QtOutput);
+        if (KGlobal::hasMainComponent())
             //AB: this is necessary here, otherwise all output with area 0 won't be
             //prefixed with anything, unless something with area != 0 is called before
-            kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
+            areaData.name = KGlobal::mainComponent().componentName();
+    }
+
+    inline int level(QtMsgType type)
+    { return int(type) - int(QtDebugMsg); }
+
+    OutputMode areaOutputMode(QtMsgType type, unsigned int area)
+    {
+        if (!config)
+            return QtOutput;
+
+        QString key;
+        switch (type) {
+        case QtDebugMsg:
+            key = QLatin1String( "InfoOutput" );
+            break;
+        case QtWarningMsg:
+            key = QLatin1String( "WarnOutput" );
+            break;
+        case QtFatalMsg:
+            key = QLatin1String( "FatalOutput" );
+            break;
+        case QtCriticalMsg:
+        default:
+            /* Programmer error, use "Error" as default */
+            key = QLatin1String( "ErrorOutput" );
+            break;
         }
 
-        if (kDebug_data->config && kDebug_data->oldarea != nArea) {
-            kDebug_data->oldarea = nArea;
-            if (KGlobal::hasMainComponent()) {
-                if (nArea > 0) {
-                    kDebug_data->aAreaName = kDebug_data->getDescrFromNum(nArea);
-                }
-                if ((nArea == 0) || kDebug_data->aAreaName.isEmpty()) {
-                    kDebug_data->aAreaName = KGlobal::mainComponent().componentName();
-                }
-            }
+        KConfigGroup cg(config, QString::number(area));
+        int mode = cg.readEntry(key, 2);
+        return OutputMode(mode);
+    }
+
+    QString logFileName(QtMsgType type, unsigned int area)
+    {
+        if (!config)
+            return QString();
+
+        const char* aKey;
+        switch (type)
+        {
+        case QtDebugMsg:
+            aKey = "InfoFilename";
+            break;
+        case QtWarningMsg:
+            aKey = "WarnFilename";
+            break;
+        case QtFatalMsg:
+            aKey = "FatalFilename";
+            break;
+        case QtCriticalMsg:
+        default:
+            aKey = "ErrorFilename";
+            break;
         }
-        KConfigGroup cg(kDebug_data->config, QString::number(kDebug_data->oldarea));
-        nOutput = kDebug_data->config ? cg.readEntry(key, 2) : 2;
-        if (nOutput == 4 && nLevel != KDEBUG_FATAL) {
-            kDebug_data->mutex.unlock();
-            return;
+
+        KConfigGroup cg(config, QString::number(area));
+        return cg.readPathEntry(aKey, QLatin1String("kdebug.dbg"));
+    }
+
+    Cache::Iterator areaData(QtMsgType type, unsigned int num)
+    {
+        if (!config && KGlobal::hasMainComponent())
+            config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
+
+        if (cache.isEmpty())
+            loadAreaNames();
+
+        if (!cache.contains(num))
+            // unknown area
+            return cache.find(0);
+
+        int l = level(type);
+        Cache::Iterator it = cache.find(num);
+        if (it->mode[l] == Unknown)
+            it->mode[l] = areaOutputMode(type, num);
+        if (it->mode[l] == FileOutput && it->logFileName[l].isEmpty())
+            it->logFileName[l] = logFileName(type, num);
+
+        return it;
+    }
+
+    QDebug setupFileWriter(const QString &fileName, const QString &areaName)
+    {
+        QDebug result(&filewriter);
+        QString header = fileName;
+        header += QLatin1Char('\0');
+        header += areaName;
+        header += QLatin1Char(':');
+
+        result << qPrintable(header);
+        return result.space();
+    }
+
+    QDebug setupMessageBoxWriter(QtMsgType type, const QString &areaName)
+    {
+        QDebug result(&messageboxwriter);
+        QByteArray header;
+
+        switch (type) {
+        case QtDebugMsg:
+            header = "Info (";
+            break;
+        case QtWarningMsg:
+            header = "Warning (";
+            break;
+        case QtFatalMsg:
+            header = "Fatal Error (";
+            break;
+        case QtCriticalMsg:
+        default:
+            header = "Error (";
+            break;
+        }
+
+        header += areaName.toAscii();
+        header += ')';
+        header += '\0';
+        header += areaName.toAscii();
+        result << header.constData();
+        return result.space();
+    }
+
+    QDebug setupSyslogWriter(QtMsgType type, const QString &areaName)
+    {
+        QDebug result(&syslogwriter);
+        int level = 0;
+
+        switch (type) {
+        case QtDebugMsg:
+            level = LOG_INFO;
+            break;
+        case QtWarningMsg:
+            level = LOG_WARNING;
+            break;
+        case QtFatalMsg:
+            level = LOG_CRIT;
+            break;
+        case QtCriticalMsg:
+        default:
+            level = LOG_ERR;
+            break;
+        }
+        result.nospace() << char(level) << areaName.toAscii() << ":";
+        return result.space();
+    }
+
+    QDebug setupQtWriter(QtMsgType type, const QString &areaName)
+    {
+        QDebug result(&lineendstrippingwriter);
+        if (type != QtDebugMsg)
+            result = QDebug(type);
+        result.nospace() << qPrintable(areaName) << ":";
+        return result.space();
+    }
+
+    QDebug stream(QtMsgType type, unsigned int area)
+    {
+        Cache::Iterator it = areaData(type, area);
+        OutputMode mode = it->mode[level(type)];
+        QString file = it->logFileName[level(type)];
+        QString areaName = it->name;
+
+        if (areaName.isEmpty())
+            areaName = cache.value(0).name;
+
+        switch (mode) {
+        case FileOutput:
+            return setupFileWriter(file, areaName);
+        case MessageBoxOutput:
+            return setupMessageBoxWriter(type, areaName);
+        case SyslogOutput:
+            return setupSyslogWriter(type, areaName);
+        case NoOutput:
+            return QDebug(&devnull);
+        default:                // QtOutput
+            return setupQtWriter(type, areaName);
         }
     }
 
-    const int BUFSIZE = 4096;
-    char buf[BUFSIZE];
-#ifdef Q_WS_WIN
-    strlcpy(buf,aCaption.toAscii().data(),BUFSIZE);
-    strlcat(buf," ",BUFSIZE);
-#else
-    strlcpy(buf,"",BUFSIZE);
-#endif
-    if (!kDebug_data.isDestroyed() && !kDebug_data->aAreaName.isEmpty()) {
-        strlcat(buf, kDebug_data->aAreaName.toUtf8().data(), BUFSIZE);
-        strlcat(buf, ": ", BUFSIZE);
-        strlcat(buf, data, BUFSIZE);
-    } else {
-        strlcat(buf, data, BUFSIZE);
-    }
+    QMutex mutex;
+    KConfig *config;
+    KDebugDBusIface *kDebugDBusIface;
+    Cache cache;
 
-
-#ifdef Q_WS_WIN
-    OutputDebugStringA(buf);
-#else
-  // Output
-  switch( nOutput )
-  {
-  case 0: // File
-  {
-      const char* aKey;
-      switch( nLevel )
-      {
-      case KDEBUG_INFO:
-          aKey = "InfoFilename";
-          break;
-      case KDEBUG_WARN:
-          aKey = "WarnFilename";
-          break;
-      case KDEBUG_FATAL:
-          aKey = "FatalFilename";
-          break;
-      case KDEBUG_ERROR:
-      default:
-          aKey = "ErrorFilename";
-          break;
-      }
-      // if nOutput != 2 then kDebug_data is still valid
-      KConfigGroup cg(kDebug_data->config, QString::number(kDebug_data->oldarea));
-      QFile aOutputFile( cg.readPathEntry(aKey, QLatin1String( "kdebug.dbg" ) ) );
-      aOutputFile.open( QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered );
-      aOutputFile.write( buf, strlen( buf ) );
-      aOutputFile.close();
-      break;
-  }
-  case 1: // Message Box
-  {
-      // Since we are in kdecore here, we cannot use KMsgBox
-      // if nOutput != 2 then kDebug_data is still valid
-      if ( !kDebug_data->aAreaName.isEmpty() )
-          aCaption += QString::fromAscii("(%1)").arg( kDebug_data->aAreaName );
-      KMessage::message( KMessage::Information , QString::fromUtf8( data ) , aCaption );
-      break;
-  }
-  case 2: // Shell
-  {
-      write( 2, buf, strlen( buf ) );  //fputs( buf, stderr );
-      break;
-  }
-  case 3: // syslog
-  {
-#ifdef Q_WS_WIN
-      // save events in event logging system
-      // http://msdn2.microsoft.com/en-us/library/aa363680.aspx
-#else
-      syslog( nPriority, "%s", buf);
-#endif
-      break;
-  }
-  }
-#endif
-
-  // check if we should abort
-  if ((nLevel == KDEBUG_FATAL) && (kDebug_data.isDestroyed()
-              || !kDebug_data->config)) {
-	KConfigGroup cg(kDebug_data->config, QString::number(kDebug_data->oldarea));
-        if ( cg.readEntry("AbortFatal", true) )
-            abort();
-  }
-  if (!kDebug_data.isDestroyed()) {
-      kDebug_data->mutex.unlock();
-  }
-}
-
-kdbgstream &perror( kdbgstream &s)
-{
-    return s << QString::fromLocal8Bit(strerror(errno));
-}
-kdbgstream kDebug(int area)
-{
-    return kdbgstream(area, KDEBUG_INFO);
-}
-kdbgstream kDebug(bool cond, int area)
-{
-    if (cond)
-        return kDebug(area);
-    return kdbgstream(0, 0, false);
-}
-
-kdbgstream kError(int area)
-{
-    return kdbgstream("ERROR: ", area, KDEBUG_ERROR);
-}
-kdbgstream kError(bool cond, int area)
-{
-    if (cond)
-        return kError(area);
-    return kdbgstream(0,0,false);
-}
-
-kdbgstream kWarning(int area)
-{
-    return kdbgstream("WARNING: ", area, KDEBUG_WARN);
-}
-kdbgstream kWarning(bool cond, int area)
-{
-     if (cond)
-         return kWarning(area);
-     return kdbgstream(0,0,false);
-}
-
-kdbgstream kFatal(int area)
-{
-    return kdbgstream("FATAL: ", area, KDEBUG_FATAL);
-}
-kdbgstream kFatal(bool cond, int area)
-{
-    if (cond)
-        return kFatal(area);
-    return kdbgstream(0,0,false);
-}
-
-class kdbgstream::Private
-{
-public:
-    QString output;
-    unsigned int area, level;
-    bool print;
-    Private(const Private& p)
-        : output(p.output), area(p.area), level(p.level), print(p.print) { ; }
-    Private(const QString& str, uint a, uint lvl, bool p)
-        : output(str), area(a), level(lvl), print(p)  { ; }
-    Private(unsigned int a, unsigned int l, bool p)
-        : area(a), level(l), print(p)  { ; }
+    KNoDebugStream devnull;
+    KSyslogDebugStream syslogwriter;
+    KFileDebugStream filewriter;
+    KMessageBoxDebugStream messageboxwriter;
+    KLineEndStrippingDebugStream lineendstrippingwriter;
 };
 
-kdbgstream::kdbgstream(unsigned int _area, unsigned int _level, bool _print)
-    : d(new Private(_area, _level, _print))
-{
-}
+K_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
 
-kdbgstream::kdbgstream(const char * initialString, unsigned int _a,
-                       unsigned int _lvl, bool _p)
-    : d(new Private(QLatin1String(initialString), _a, _lvl, _p))
-{
-}
-
-kdbgstream::kdbgstream(const kdbgstream &str)
-    : d(new Private(*(str.d)))
-{
-    str.d->output.truncate(0);
-}
-
-void kdbgstream::flush() {
-    if (d->output.isEmpty() || !d->print)
-	return;
-    kDebugBackend( d->level, d->area, d->output.toLocal8Bit().constData() );
-    d->output.clear();
-}
-
-kdbgstream &kdbgstream::form(const char *format, ...)
-{
-    if (!d->print)
-        return *this;
-
-    char buf[4096];
-    va_list arguments;
-    va_start( arguments, format );
-    qvsnprintf( buf, sizeof(buf), format, arguments );
-    va_end(arguments);
-    *this << buf;
-
-    return *this;
-}
-
-kdbgstream::~kdbgstream()
-{
-    if (!d->output.isEmpty()) {
-	fprintf(stderr, "ASSERT: debug output not ended with \\n\n");
-        fprintf(stderr, "%s", qPrintable( kBacktrace() ) );
-	*this << "\n";
-    }
-    delete d;
-}
-
-kdbgstream& kdbgstream::operator << (QChar ch)
-{
-    if (!d->print)
-        return *this;
-
-    if (!ch.isPrint())
-        d->output += QLatin1String("\\x")
-	          + QString::number(ch.unicode(), 16).rightJustified(2, QLatin1Char('0') );
-    else {
-        d->output += ch;
-        if ( ch == QLatin1Char( '\n' ) )
-            flush();
-    }
-
-    return *this;
-}
-
-kdbgstream& kdbgstream::operator<<(const QString& string)
-{
-    if ( !d->print )
-        return *this;
-
-    d->output += string;
-    if ( d->output.length() && d->output.at(d->output.length() -1 ) == QLatin1Char('\n') )
-        flush();
-    return *this;
-}
-
-kdbgstream& kdbgstream::operator<<( QWidget* object )
-{
-    return kdbgstream::operator<<( (const QObject*) object );
-}
-
-kdbgstream& kdbgstream::operator<<( const QWidget* object )
-{
-    return kdbgstream::operator<<( (const QObject*) object );
-}
-
-kdbgstream& kdbgstream::operator<<( QObject* object )
-{
-    return kdbgstream::operator<<( static_cast<const QObject*>( object ) );
-}
-
-kdbgstream& kdbgstream::operator<<( const QObject* object )
-{
-    if ( !d->print ) {
-        return *this;
-    }
-
-    if ( object == 0 ) {
-        d->output += QLatin1String("[Null pointer]");
-    } else {
-      d->output += QString::fromAscii("[%1 pointer(0x%2)")
-                         .arg( QString::fromUtf8( object->metaObject()->className() ) )
-                         .arg( QString::number( ulong( object ), 16 )
-                                 .rightJustified( 8, QLatin1Char( '0' ) ) );
-
-      bool isWidget = object->isWidgetType();
-      if ( object->objectName().isEmpty() ) {
-          d->output += QString::fromAscii( " to unnamed %1" )
-                                    .arg( isWidget ? QLatin1String( "widget" )
-                                                   : QLatin1String( "object" ) );
-      } else {
-          d->output += QString::fromAscii(" to %1 %2")
-                                         .arg( isWidget ? QLatin1String( "widget" )
-                                                        : QLatin1String( "object" ) )
-                                         .arg( object->objectName() );
-      }
-
-      if ( isWidget ) {
-          QRect r = object->property( "geometry" ).toRect();
-          d->output += QString::fromAscii(", geometry = %1x%2+%3+%4")
-                       .arg(r.width()).arg(r.height())
-                       .arg(r.x()).arg(r.y());
-      }
-      d->output += QLatin1String( "]" );
-  }
-
-  return *this;
-}
-
-/*
- * When printing a string:
- *  - if no newline can possibly be in the string, use d->output directly
- *  - otherwise you have two choices:
- *      a) use d->output and do the flush if needed
- *      b) or use the QString operator which calls the char* operator
- */
-kdbgstream& kdbgstream::operator<<( const KDateTime& time) {
-    if ( d->print ) {
-        if ( time.isDateOnly() )
-            d->output += time.toString(KDateTime::QtTextDate);
-        else
-            d->output += time.toString(KDateTime::ISODate);
-    }
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( KDBGFUNC f ) {
-    if ( d->print )
-        return (*f)(*this);
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const KUrl& u ) {
-    if ( d->print )
-        d->output += u.prettyUrl();
-    return *this;
-}
-kdbgstream& kdbgstream::operator<<( const QByteArray& data) {
-    if (!d->print) return *this;
-    bool isBinary = false;
-    for ( int i = 0; i < data.size() && !isBinary ; ++i ) {
-        const char ch = data[i];
-        if ( ( ch < 32 && ch != '\n' && ch != '\r' )
-                || (unsigned char)ch > 127 )
-            isBinary = true;
-    }
-    if ( isBinary ) {
-        d->output += QLatin1Char('[');
-        int sz = qMin( data.size(), 64 );
-        for ( int i = 0; i < sz ; ++i ) {
-            d->output += QString::number( (unsigned char) data[i], 16 ).rightJustified(2, QLatin1Char('0'));
-            if ( i < sz )
-                d->output += QLatin1Char(' ');
-        }
-        if ( sz < data.size() )
-            d->output += QLatin1String("...");
-        d->output += QLatin1Char(']');
-    } else {
-        d->output += QLatin1String( data ); // using ascii as advertised
-    }
-    return *this;
-}
-
-QString kBacktrace(int levels)
+QString kRealBacktrace(int levels)
 {
     QString s;
 #ifdef HAVE_BACKTRACE
@@ -597,15 +487,77 @@ QString kBacktrace(int levels)
     return s;
 }
 
+QDebug kDebugDevNull()
+{
+    return QDebug(&kDebug_data->devnull);
+}
+
+QDebug kDebugStream(QtMsgType level, int area, const char *file, int line, const char *funcinfo)
+{
+    Q_UNUSED(file); Q_UNUSED(line); Q_UNUSED(funcinfo);
+
+    if (kDebug_data.isDestroyed()) {
+        // we don't know what to return now...
+        qCritical() << "kDebugStream called after destruction; backtrace:"
+                    << qPrintable(kRealBacktrace(-1));
+        return QDebug(level);
+    }
+
+    QMutexLocker locker(&kDebug_data->mutex);
+    return kDebug_data->stream(level, area);
+}
+
+QDebug perror(QDebug s, KDebugTag)
+{
+    return s << QString::fromLocal8Bit(strerror(errno));
+}
+
+QDebug operator<<(QDebug s, const QObject *object)
+{
+    if ( object == 0 ) {
+        s << "[Null pointer]";
+    } else {
+        bool isWidget = object->isWidgetType();
+        s.nospace() << "[" << object->metaObject()->className()
+                    << " pointer(" << static_cast<const void *>(object)
+                    << " to "
+                    << (isWidget ? "widget " : "object ")
+                    << object->objectName();
+
+        if ( isWidget ) {
+            QRect r = object->property("geometry").toRect();
+            s.nospace() << ", geometry " << r.width() << "x" << r.height()
+                        << "+" << r.x() << "+" << r.y();
+        }
+        s.nospace() << "]";
+    }
+    return s.space();
+}
+
+QDebug operator<<(QDebug s, const KDateTime &time)
+{
+    if ( time.isDateOnly() )
+        s.nospace() << "KDateTime(" << qPrintable(time.toString(KDateTime::QtTextDate)) << ")";
+    else
+        s.nospace() << "KDateTime(" << qPrintable(time.toString(KDateTime::ISODate)) << ")";
+    return s.space();
+}
+
+QDebug operator<<(QDebug s, const KUrl &url)
+{
+    s.nospace() << "KUrl(" << url.prettyUrl() << ")";
+    return s.space();
+}
+
 void kClearDebugConfig()
 {
     if (!kDebug_data) return;
+    QMutexLocker locker(&kDebug_data->mutex);
     delete kDebug_data->config;
     kDebug_data->config = 0;
 
+    KDebugPrivate::Cache::Iterator it = kDebug_data->cache.begin(),
+                                  end = kDebug_data->cache.end();
+    for ( ; it != end; ++it)
+        it->clear();
 }
-
-// Needed for --enable-final
-#ifdef NDEBUG
-#define kDebug kndDebug
-#endif
