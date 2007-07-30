@@ -34,7 +34,7 @@
 #ifdef CACHE_DEBUG
 #define CDEBUG kDebug(6060)
 #else
-#define CDEBUG kndDebug()
+#define CDEBUG kDebugDevNull()
 #endif
 
 #undef LOADER_DEBUG

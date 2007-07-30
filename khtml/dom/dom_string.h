@@ -117,15 +117,9 @@ protected:
     DOMStringImpl *impl;
 };
 
-#ifndef NDEBUG
-inline kdbgstream &operator<<(kdbgstream &stream, const DOMString &string) { 
+inline QDebug operator<<(QDebug stream, const DOMString &string) {
 	return (stream << string.string());
 }
-#else
-inline kndbgstream &operator<<(kndbgstream &stream, const DOMString &) {
-	return stream;
-}
-#endif
 
 KHTML_EXPORT bool operator==( const DOMString &a, const DOMString &b );
 KHTML_EXPORT bool operator==( const DOMString &a, const QString &b );
