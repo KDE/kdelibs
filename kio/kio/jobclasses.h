@@ -916,7 +916,7 @@ namespace KIO {
     class KIO_EXPORT SpecialJob : public TransferJob
     {
         Q_OBJECT
-    protected:
+    public:
         /**
          * Creates a KIO::SpecialJob.
          *
