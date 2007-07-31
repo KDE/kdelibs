@@ -2687,6 +2687,11 @@ MultiGetJob *KIO::multi_get(long id, const KUrl &url, const MetaData &metaData)
 
 class KIO::SpecialJobPrivate: public TransferJobPrivate
 {
+    SpecialJobPrivate(const KUrl& url, int command,
+                             const QByteArray &packedArgs,
+                             const QByteArray &_staticData)
+        : TransferJobPrivate(url, command, packedArgs, _staticData)
+    {}
 };
 
 SpecialJob::SpecialJob(const KUrl &url, const QByteArray &packedArgs)
