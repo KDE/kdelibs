@@ -216,6 +216,13 @@ struct KDebugPrivate
     {
         cache.clear();
 
+        Area &areaData = cache[0];
+        areaData.clear(QtOutput);
+
+        //AB: this is necessary here, otherwise all output with area 0 won't be
+        //prefixed with anything, unless something with area != 0 is called before
+        areaData.name = KGlobal::mainComponent().componentName();
+
         QString filename(KStandardDirs::locate("config", QLatin1String("kdebug.areas")));
         if (filename.isEmpty()) {
             return;
@@ -261,13 +268,6 @@ struct KDebugPrivate
             cache.insert(number, areaData);
         }
         file.close();
-
-        Area &areaData = cache[0];
-        areaData.clear(QtOutput);
-
-        //AB: this is necessary here, otherwise all output with area 0 won't be
-        //prefixed with anything, unless something with area != 0 is called before
-        areaData.name = KGlobal::mainComponent().componentName();
     }
 
     inline int level(QtMsgType type)
