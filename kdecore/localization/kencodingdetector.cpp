@@ -1109,25 +1109,25 @@ KEncodingDetector::AutoDetectScript KEncodingDetector::scriptForName(const QStri
 {
     if (lang.isEmpty())
         return KEncodingDetector::None;
-    else if (lang==i18n("Unicode"))
+    else if (lang==i18nc("@item Text character set", "Unicode"))
         return KEncodingDetector::Unicode;
-    else if (lang==i18n("Cyrillic"))
+    else if (lang==i18nc("@item Text character set", "Cyrillic"))
         return KEncodingDetector::Cyrillic;
-    else if (lang==i18n("Western European"))
+    else if (lang==i18nc("@item Text character set", "Western European"))
         return KEncodingDetector::WesternEuropean;
-    else if (lang==i18n("Central European"))
+    else if (lang==i18nc("@item Text character set", "Central European"))
         return KEncodingDetector::CentralEuropean;
-    else if (lang==i18n("Greek"))
+    else if (lang==i18nc("@item Text character set", "Greek"))
         return KEncodingDetector::Greek;
-    else if (lang==i18n("Hebrew"))
+    else if (lang==i18nc("@item Text character set", "Hebrew"))
         return KEncodingDetector::Hebrew;
-    else if (lang==i18n("Turkish"))
+    else if (lang==i18nc("@item Text character set", "Turkish"))
         return KEncodingDetector::Turkish;
-    else if (lang==i18n("Japanese"))
+    else if (lang==i18nc("@item Text character set", "Japanese"))
         return KEncodingDetector::Japanese;
-    else if (lang==i18n("Baltic"))
+    else if (lang==i18nc("@item Text character set", "Baltic"))
         return KEncodingDetector::Baltic;
-    else if (lang==i18n("Arabic"))
+    else if (lang==i18nc("@item Text character set", "Arabic"))
         return KEncodingDetector::Arabic;
 
     return KEncodingDetector::None;
@@ -1172,46 +1172,46 @@ QString KEncodingDetector::nameForScript(KEncodingDetector::AutoDetectScript scr
     switch (script)
     {
         case KEncodingDetector::Arabic:
-            return i18n("Arabic");
+            return i18nc("@item Text character set", "Arabic");
             break;
         case KEncodingDetector::Baltic:
-            return i18n("Baltic");
+            return i18nc("@item Text character set", "Baltic");
             break;
         case KEncodingDetector::CentralEuropean:
-            return i18n("Central European");
+            return i18nc("@item Text character set", "Central European");
             break;
         case KEncodingDetector::Cyrillic:
-            return i18n("Cyrillic");
+            return i18nc("@item Text character set", "Cyrillic");
             break;
         case KEncodingDetector::Greek:
-            return i18n("Greek");
+            return i18nc("@item Text character set", "Greek");
             break;
         case KEncodingDetector::Hebrew:
-            return i18n("Hebrew");
+            return i18nc("@item Text character set", "Hebrew");
             break;
         case KEncodingDetector::Japanese:
-            return i18n("Japanese");
+            return i18nc("@item Text character set", "Japanese");
             break;
         case KEncodingDetector::Turkish:
-            return i18n("Turkish");
+            return i18nc("@item Text character set", "Turkish");
             break;
         case KEncodingDetector::WesternEuropean:
-            return i18n("Western European");
+            return i18nc("@item Text character set", "Western European");
             break;
         case KEncodingDetector::ChineseTraditional:
-            return i18n("Chinese Traditional");
+            return i18nc("@item Text character set", "Chinese Traditional");
             break;
         case KEncodingDetector::ChineseSimplified:
-            return i18n("Chinese Simplified");
+            return i18nc("@item Text character set", "Chinese Simplified");
             break;
         case KEncodingDetector::Korean:
-            return i18n("Korean");
+            return i18nc("@item Text character set", "Korean");
             break;
         case KEncodingDetector::Thai:
-            return i18n("Thai");
+            return i18nc("@item Text character set", "Thai");
             break;
         case KEncodingDetector::Unicode:
-            return i18n("Unicode");
+            return i18nc("@item Text character set", "Unicode");
             break;
         //case KEncodingDetector::SemiautomaticDetection:
         default:

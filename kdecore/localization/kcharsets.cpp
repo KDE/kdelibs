@@ -152,66 +152,66 @@ i18n:Cyrillic              // ### TODO "PT 154" seems to have been removed from 
  */
 static const char language_for_encoding_string[] =
     "ISO 8859-1\0"
-    I18N_NOOP("Western European")"\0"
+    I18N_NOOP2("@item Text character set", "Western European")"\0"
     "ISO 8859-15\0"
     "ISO 8859-14\0"
     "cp 1252\0"
     "IBM850\0"
     "ISO 8859-2\0"
-    I18N_NOOP("Central European")"\0"
+    I18N_NOOP2("@item Text character set", "Central European")"\0"
     "ISO 8859-3\0"
     "ISO 8859-4\0"
-    I18N_NOOP("Baltic")"\0"
+    I18N_NOOP2("@item Text character set", "Baltic")"\0"
     "ISO 8859-13\0"
     "ISO 8859-16\0"
-    I18N_NOOP("South-Eastern Europe")"\0"
+    I18N_NOOP2("@item Text character set", "South-Eastern Europe")"\0"
     "cp 1250\0"
     "cp 1254\0"
-    I18N_NOOP("Turkish")"\0"
+    I18N_NOOP2("@item Text character set", "Turkish")"\0"
     "cp 1257\0"
     "KOI8-R\0"
-    I18N_NOOP("Cyrillic")"\0"
+    I18N_NOOP2("@item Text character set", "Cyrillic")"\0"
     "ISO 8859-5\0"
     "cp 1251\0"
     "KOI8-U\0"
     "IBM866\0"
     "Big5\0"
-    I18N_NOOP("Chinese Traditional")"\0"
+    I18N_NOOP2("@item Text character set", "Chinese Traditional")"\0"
     "Big5-HKSCS\0"
     "GB18030\0"
-    I18N_NOOP("Chinese Simplified")"\0"
+    I18N_NOOP2("@item Text character set", "Chinese Simplified")"\0"
     "GBK\0"
     "GB2312\0"
     "EUC-KR\0"
-    I18N_NOOP("Korean")"\0"
+    I18N_NOOP2("@item Text character set", "Korean")"\0"
     "sjis\0"
-    I18N_NOOP("Japanese")"\0"
+    I18N_NOOP2("@item Text character set", "Japanese")"\0"
     "jis7\0"
     "EUC-JP\0"
     "ISO 8859-7\0"
-    I18N_NOOP("Greek")"\0"
+    I18N_NOOP2("@item Text character set", "Greek")"\0"
     "cp 1253\0"
     "ISO 8859-6\0"
-    I18N_NOOP("Arabic")"\0"
+    I18N_NOOP2("@item Text character set", "Arabic")"\0"
     "cp 1256\0"
     "ISO 8859-8\0"
-    I18N_NOOP("Hebrew")"\0"
+    I18N_NOOP2("@item Text character set", "Hebrew")"\0"
     "ISO 8859-8-I\0"
     "cp 1255\0"
     "ISO 8859-9\0"
     "TIS620\0"
-    I18N_NOOP("Thai")"\0"
+    I18N_NOOP2("@item Text character set", "Thai")"\0"
     "ISO 8859-11\0"
     "UTF-8\0"
-    I18N_NOOP("Unicode")"\0"
+    I18N_NOOP2("@item Text character set", "Unicode")"\0"
     "UTF-16\0"
     "utf7\0"
     "ucs2\0"
     "ISO 10646-UCS-2\0"
     "winsami2\0"
-    I18N_NOOP("Northern Saami")"\0"
+    I18N_NOOP2("@item Text character set", "Northern Saami")"\0"
     "windows-1258\0"
-    I18N_NOOP("Other")"\0"
+    I18N_NOOP2("@item Text character set", "Other")"\0"
     "IBM874\0"
     "TSCII\0"
     "\0";
@@ -646,9 +646,9 @@ QString KCharsets::languageForEncoding( const QString &encoding ) const
                                                language_for_encoding_indices,
                                                encoding.toUtf8().constData() );
     if ( lang )
-        return i18n( lang );
+        return i18nc( "@item Text character set", lang );
     else
-        return i18n( "Other encoding" );
+        return i18nc( "@item Text character set", "Other" );
 }
 
 QString KCharsets::descriptionForEncoding( const QString& encoding ) const
@@ -657,9 +657,10 @@ QString KCharsets::descriptionForEncoding( const QString& encoding ) const
                                                language_for_encoding_indices,
                                                encoding.toUtf8() );
     if ( lang )
-        return i18nc( "Descriptive Encoding Name", "%1 ( %2 )", lang, encoding );
+        return i18nc( "@item %1 character set, %2 encoding", "%1 ( %2 )",
+                      i18nc( "@item Text character set", lang ), encoding );
     else
-        return i18n( "Other encoding (%1)", encoding );
+        return i18nc( "@item", "Other encoding (%1)", encoding );
 }
 
 QString KCharsets::encodingForName( const QString &descriptiveName ) const
@@ -684,8 +685,9 @@ QStringList KCharsets::descriptiveEncodingNames() const
     QStringList encodings;
     for ( const int *p = language_for_encoding_indices; *p != -1; p += 2) {
         const QString name = QString::fromUtf8( language_for_encoding_string + p[0] );
-        const QString description = i18n( language_for_encoding_string + p[1] );
-        encodings.append( i18nc("Descriptive Encoding Name", "%1 ( %2 )", description, name ) );
+        const QString description = i18nc( "@item Text character set", language_for_encoding_string + p[1] );
+        encodings.append( i18nc( "@item Text encoding: %1 character set, %2 encoding", "%1 ( %2 )",
+                                 description, name ) );
     }
     encodings.sort();
     return encodings;
@@ -698,7 +700,7 @@ QList<QStringList> KCharsets::encodingsByScript() const
     int i;
     for ( const int *p = language_for_encoding_indices; *p != -1; p += 2) {
         const QString name = QString::fromUtf8( language_for_encoding_string + p[0] );
-        const QString description = i18n( language_for_encoding_string + p[1] );
+        const QString description = i18nc("@item Text character set", language_for_encoding_string + p[1] );
 
         for (i=0; i<d->encodingsByScript.size(); ++i) {
             if (d->encodingsByScript.at(i).at(0) == description) {

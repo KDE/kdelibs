@@ -106,18 +106,18 @@ K3SpellConfig::K3SpellConfig( QWidget *parent,
 
   QGridLayout *glay = new QGridLayout( this );
   glay->setSpacing( KDialog::spacingHint() );
-  cb0 = new QCheckBox( i18n("Do SpellChecking"), this );
+  cb0 = new QCheckBox( i18nc("@option:check", "Do SpellChecking"), this );
   cb0->setObjectName( "DoSpellChecking" );
   connect( cb0, SIGNAL(toggled(bool)), SLOT(sDoSpell()) );
-  cb1 = new QCheckBox( i18n("Create &root/affix combinations"
-                            " not in dictionary"), this );
+  cb1 = new QCheckBox( i18nc("@option:check",
+                             "Create &root/affix combinations not in dictionary"), this );
   cb1->setObjectName( "NoRootAffix" );
   connect( cb1, SIGNAL(toggled(bool)), SLOT(sNoAff(bool)) );
   glay->addWidget( cb0, 0, 0, 1, 3 );
   glay->addWidget( cb1, 1, 0, 1, 3 );
 
-  cb2 = new QCheckBox( i18n("Consider run-together &words"
-			    " as spelling errors"), this );
+  cb2 = new QCheckBox( i18nc("@option:check",
+                             "Consider run-together &words as spelling errors"), this );
   cb2->setObjectName( "RunTogether" );
   connect( cb2, SIGNAL(toggled(bool)), SLOT(sRunTogether(bool)) );
   glay->addWidget( cb2, 2, 0, 1, 3 );
@@ -129,7 +129,7 @@ K3SpellConfig::K3SpellConfig( QWidget *parent,
 	   this, SLOT (sSetDictionary(int)) );
   glay->addWidget( dictcombo, 3, 1, 1, 2 );
 
-  dictlist = new QLabel( i18n("&Dictionary:"), this );
+  dictlist = new QLabel( i18nc("@label:listbox", "&Dictionary:"), this );
   dictlist->setBuddy( dictcombo );
   glay->addWidget( dictlist, 3 ,0 );
 
@@ -156,22 +156,22 @@ K3SpellConfig::K3SpellConfig( QWidget *parent,
 	   SLOT(sChangeEncoding(int)) );
   glay->addWidget( encodingcombo, 4, 1, 1, 2 );
 
-  QLabel *tmpQLabel = new QLabel( i18n("&Encoding:"), this);
+  QLabel *tmpQLabel = new QLabel( i18nc("@label:listbox", "&Encoding:"), this);
   tmpQLabel->setBuddy( encodingcombo );
   glay->addWidget( tmpQLabel, 4, 0 );
 
 
   clientcombo = new QComboBox( this );
   clientcombo->setObjectName( "Client" );
-  clientcombo->addItem( i18n("International Ispell") );
-  clientcombo->addItem( i18n("Aspell") );
-  clientcombo->addItem( i18n("Hspell") );
-  clientcombo->addItem( i18n("Zemberek") );
+  clientcombo->addItem( i18nc("@item:inlistbox Spell checker", "International <application>Ispell</application>") );
+  clientcombo->addItem( i18nc("@item:inlistbox Spell checker", "<application>Aspell</application>") );
+  clientcombo->addItem( i18nc("@item:inlistbox Spell checker", "<application>Hspell</application>") );
+  clientcombo->addItem( i18nc("@item:inlistbox Spell checker", "<application>Zemberek</application>") );
   connect( clientcombo, SIGNAL (activated(int)), this,
 	   SLOT (sChangeClient(int)) );
   glay->addWidget( clientcombo, 5, 1, 1, 2 );
 
-  tmpQLabel = new QLabel( i18n("&Client:"), this );
+  tmpQLabel = new QLabel( i18nc("@label:listbox", "&Client:"), this );
   tmpQLabel->setBuddy( clientcombo );
   glay->addWidget( tmpQLabel, 5, 0 );
 
@@ -252,12 +252,12 @@ K3SpellConfig::sChangeClient( int i )
     {
       langfnames.clear();
       dictcombo->clear();
-      dictcombo->addItem( i18n("Hebrew") );
+      dictcombo->addItem( i18nc("@item Spelling dictionary", "Hebrew") );
       sChangeEncoding( KS_E_CP1255 );
     } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
       langfnames.clear();
       dictcombo->clear();
-      dictcombo->addItem( i18n("Turkish") );
+      dictcombo->addItem( i18nc("@item Spelling dictionary", "Turkish") );
       sChangeEncoding( KS_E_UTF8 );
     }
     else
@@ -310,71 +310,71 @@ K3SpellConfig::interpret( const QString &fname, QString &lname,
   //These are mostly the ispell-langpack defaults
   else if ( dname=="english" || dname=="american" ||
             dname=="british" || dname=="canadian" ) {
-    lname="en"; hname=i18n("English");
+    lname="en"; hname=i18nc("@item Spelling dictionary", "English");
   }
   else if ( dname == "espa~nol" || dname == "espanol" ) {
-    lname="es"; hname=i18n("Spanish");
+    lname="es"; hname=i18nc("@item Spelling dictionary", "Spanish");
   }
   else if (dname=="dansk") {
-    lname="da"; hname=i18n("Danish");
+    lname="da"; hname=i18nc("@item Spelling dictionary", "Danish");
   }
   else if (dname=="deutsch") {
-    lname="de"; hname=i18n("German");
+    lname="de"; hname=i18nc("@item Spelling dictionary", "German");
   }
   else if (dname=="german") {
-    lname="de"; hname=i18n("German (new spelling)");
+    lname="de"; hname=i18nc("@item Spelling dictionary", "German (new spelling)");
   }
   else if (dname=="portuguesb" || dname=="br") {
-    lname="br"; hname=i18n("Brazilian Portuguese");
+    lname="br"; hname=i18nc("@item Spelling dictionary", "Brazilian Portuguese");
   }
   else if (dname=="portugues") {
-    lname="pt"; hname=i18n("Portuguese");
+    lname="pt"; hname=i18nc("@item Spelling dictionary", "Portuguese");
   }
   else if (dname=="esperanto") {
-    lname="eo"; hname=i18n("Esperanto");
+    lname="eo"; hname=i18nc("@item Spelling dictionary", "Esperanto");
   }
   else if (dname=="norsk") {
-    lname="no"; hname=i18n("Norwegian");
+    lname="no"; hname=i18nc("@item Spelling dictionary", "Norwegian");
   }
   else if (dname=="polish") {
-    lname="pl"; hname=i18n("Polish"); sChangeEncoding(KS_E_LATIN2);
+    lname="pl"; hname=i18nc("@item Spelling dictionary", "Polish"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (dname=="russian") {
-    lname="ru"; hname=i18n("Russian");
+    lname="ru"; hname=i18nc("@item Spelling dictionary", "Russian");
   }
   else if (dname=="slovensko") {
-    lname="si"; hname=i18n("Slovenian"); sChangeEncoding(KS_E_LATIN2);
+    lname="si"; hname=i18nc("@item Spelling dictionary", "Slovenian"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (dname=="slovak"){
-    lname="sk"; hname=i18n("Slovak"); sChangeEncoding(KS_E_LATIN2);
+    lname="sk"; hname=i18nc("@item Spelling dictionary", "Slovak"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (dname=="czech") {
-    lname="cs"; hname=i18n("Czech"); sChangeEncoding(KS_E_LATIN2);
+    lname="cs"; hname=i18nc("@item Spelling dictionary", "Czech"); sChangeEncoding(KS_E_LATIN2);
   }
   else if (dname=="svenska") {
-    lname="sv"; hname=i18n("Swedish");
+    lname="sv"; hname=i18nc("@item Spelling dictionary", "Swedish");
   }
   else if (dname=="swiss") {
-    lname="de"; hname=i18n("Swiss German");
+    lname="de"; hname=i18nc("@item Spelling dictionary", "Swiss German");
   }
   else if (dname=="ukrainian") {
-    lname="uk"; hname=i18n("Ukrainian");
+    lname="uk"; hname=i18nc("@item Spelling dictionary", "Ukrainian");
   }
   else if (dname=="lietuviu" || dname=="lithuanian") {
-     lname="lt"; hname=i18n("Lithuanian");
+     lname="lt"; hname=i18nc("@item Spelling dictionary", "Lithuanian");
   }
   else if (dname=="francais" || dname=="french") {
-    lname="fr"; hname=i18n("French");
+    lname="fr"; hname=i18nc("@item Spelling dictionary", "French");
   }
   else if (dname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
-    lname="be"; hname=i18n("Belarusian");
+    lname="be"; hname=i18nc("@item Spelling dictionary", "Belarusian");
   }
   else if( dname == "magyar" ) {
-    lname="hu"; hname=i18n("Hungarian");
+    lname="hu"; hname=i18nc("@item Spelling dictionary", "Hungarian");
     sChangeEncoding(KS_E_LATIN2);
   }
   else {
-    lname=""; hname=i18nc("Unknown ispell dictionary", "Unknown");
+    lname=""; hname=i18nc("@item Spelling dictionary", "Unknown");
   }
   if (!extension.isEmpty())
   {
@@ -412,12 +412,12 @@ K3SpellConfig::fillInDialog ()
     langfnames.clear();
     dictcombo->clear();
     langfnames.append(""); // Default
-    dictcombo->addItem( i18n("Hebrew") );
+    dictcombo->addItem( i18nc("@item Spelling dictionary", "Hebrew") );
   } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
     langfnames.clear();
     dictcombo->clear();
     langfnames.append("");
-    dictcombo->addItem( i18n("Turkish") );
+    dictcombo->addItem( i18nc("@item Spelling dictionary", "Turkish") );
   }
   else
     getAvailDictsAspell();
@@ -457,7 +457,8 @@ void K3SpellConfig::getAvailDictsIspell () {
   langfnames.clear();
   dictcombo->clear();
   langfnames.append(""); // Default
-  dictcombo->addItem( i18n("ISpell Default") );
+  dictcombo->addItem( i18nc("@item Spelling dictionary",
+                            "<application>ISpell</application> Default") );
 
   // dictionary path
   QFileInfo dir ("/usr/lib/ispell");
@@ -502,8 +503,8 @@ void K3SpellConfig::getAvailDictsIspell () {
       langfnames.removeFirst();
       langfnames.prepend ( fname );
 
-      hname=i18nc("default spelling dictionary"
-                 ,"Default - %1 [%2]", hname, fname);
+      hname=i18nc("@item Spelling dictionary: %1 dictionary name, %2 file name",
+                  "Default - %1 [%2]", hname, fname);
 
       dictcombo->setItemText (0,hname);
     }
@@ -523,7 +524,8 @@ void K3SpellConfig::getAvailDictsAspell () {
   dictcombo->clear();
 
   langfnames.append(""); // Default
-  dictcombo->addItem (i18n("ASpell Default"));
+  dictcombo->addItem (i18nc("@item Spelling dictionary",
+                            "<application>ASpell</application> Default"));
 
   // dictionary path
   // FIXME: use "aspell dump config" to find out the dict-dir
@@ -585,8 +587,8 @@ void K3SpellConfig::getAvailDictsAspell () {
         langfnames.erase ( langfnames.begin() );
         langfnames.prepend ( fname );
 
-        hname=i18nc("default spelling dictionary"
-                   ,"Default - %1", hname);
+        hname=i18nc("@item Spelling dictionary: %1 dictionary name",
+                    "Default - %1", hname);
 
         dictcombo->setItemText (0,hname);
       }
@@ -607,7 +609,8 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
     if ( iclient == KS_CLIENT_ISPELL ) {
       box->clear();
       langfnames.append(""); // Default
-      box->addItem( i18n("ISpell Default") );
+      box->addItem( i18nc("@item Spelling dictionary",
+                          "<application>ISpell</application> Default") );
 
       // dictionary path
       QFileInfo dir ("/usr/lib/ispell");
@@ -652,8 +655,8 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
           langfnames.erase ( langfnames.begin() );
           langfnames.prepend ( fname );
 
-          hname=i18nc("default spelling dictionary"
-                     ,"Default - %1 [%2]", hname, fname);
+          hname=i18nc("@item Spelling dictionary: %1 dictionary name, %2 file name",
+                      "Default - %1 [%2]", hname, fname);
 
           box->setItemText (0,hname);
         }
@@ -667,19 +670,20 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       }
     } else if ( iclient == KS_CLIENT_HSPELL ) {
       box->clear();
-      box->addItem( i18n("Hebrew") );
+      box->addItem( i18nc("@item Spelling dictionary", "Hebrew") );
       langfnames.append(""); // Default
       sChangeEncoding( KS_E_CP1255 );
     } else if ( iclient == KS_CLIENT_ZEMBEREK ) {
       box->clear();
-      box->addItem( i18n("Turkish") );
+      box->addItem( i18nc("@item Spelling dictionary", "Turkish") );
       langfnames.append("");
       sChangeEncoding( KS_E_UTF8 );
     }
     else {
       box->clear();
       langfnames.append(""); // Default
-      box->addItem (i18n("ASpell Default"));
+      box->addItem (i18nc("@item Spelling dictionary",
+                          "<application>ASpell</application> Default"));
 
       // dictionary path
       // FIXME: use "aspell dump config" to find out the dict-dir
@@ -741,8 +745,8 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
             langfnames.erase ( langfnames.begin() );
             langfnames.prepend ( fname );
 
-            hname=i18nc("default spelling dictionary"
-                       ,"Default - %1", hname);
+            hname=i18nc("@item Spelling dictionary: %1 dictionary name",
+                        "Default - %1", hname);
 
             box->setItemText (0,hname);
           }

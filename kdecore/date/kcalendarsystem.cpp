@@ -67,18 +67,18 @@ QStringList KCalendarSystem::calendarSystems()
 QString KCalendarSystem::calendarLabel( const QString &calendarType )
 {
     if ( calendarType == "gregorian" )
-      return ki18n("Gregorian").toString(KGlobal::locale());
+      return ki18nc("@item Calendar system", "Gregorian").toString(KGlobal::locale());
 
     if ( calendarType == "hebrew" )
-      return ki18n("Hebrew").toString(KGlobal::locale());
+      return ki18nc("@item Calendar system", "Hebrew").toString(KGlobal::locale());
 
     if ( calendarType == "hijri" )
-      return ki18n("Hijri").toString(KGlobal::locale());
+      return ki18nc("@item Calendar system", "Hijri").toString(KGlobal::locale());
 
     if ( calendarType == "jalali" )
-      return ki18n("Jalali").toString(KGlobal::locale());
+      return ki18nc("@item Calendar system", "Jalali").toString(KGlobal::locale());
 
-    return ki18n("Invalid Calendar Type").toString(KGlobal::locale());
+    return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(KGlobal::locale());
 }
 
 
