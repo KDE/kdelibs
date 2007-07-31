@@ -464,20 +464,20 @@
 24002	     Quanta (debugger)
 
 # kafka
-25000        Kafka (kafkapp)
-25001        Kafka (kafkaeditpart)
-25002        Kafka (kafkapluginloader)
-25003        Kafka (kafkaplugins)
-25004        Kafka (kafkaobjectmgr)
-25005        Kafka (kafkadom)
+#25000        Kafka (kafkapp)
+#25001        Kafka (kafkaeditpart)
+#25002        Kafka (kafkapluginloader)
+#25003        Kafka (kafkaplugins)
+#25004        Kafka (kafkaobjectmgr)
+#25005        Kafka (kafkadom)
 
 # KSVG
-26000   KSVG
-26001   KSVG - Parser
-26002   KSVG - Rendering
-26003   KSVG - KPart
-26004   KSVG - Ecma
-26005   KSVG - Canvas
+#26000   KSVG
+#26001   KSVG - Parser
+#26002   KSVG - Rendering
+#26003   KSVG - KPart
+#26004   KSVG - Ecma
+#26005   KSVG - Canvas
 
 26500  KDOM XInclude
 26550  KDOM XPointer
@@ -588,7 +588,7 @@
 67200   kmid
 
 # kdebindings
-70001	dcoppython
+#70001	dcoppython
 80001	kjsembed
 
 # kdeaddons
