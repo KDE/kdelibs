@@ -763,7 +763,7 @@ int Ftp::ftpOpenPASVDataConnection()
   m_data = KSocketFactory::synchronousConnectToHost("ftp-data", addr.toString(), port,
                                                     connectTimeout() * 1000);
 
-  return m_data->isOpen() ? 0 : ERR_INTERNAL;
+  return m_data->state() == QAbstractSocket::ConnectedState ? 0 : ERR_INTERNAL;
 }
 
 /*
@@ -1472,6 +1472,9 @@ bool Ftp::ftpReadDir(FtpEntry& de)
   // get a line from the data connecetion ...
   while( true )
   {
+    while (m_data->state() == QAbstractSocket::ConnectedState &&
+           !m_data->canReadLine())
+      m_data->waitForReadyRead();
     QByteArray data = m_data->readLine();
     if (data.size() == 0)
       break;
