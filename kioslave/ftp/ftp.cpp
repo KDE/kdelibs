@@ -225,8 +225,7 @@ const char* Ftp::ftpResponse(int iOffset)
     // be stored. Some servers (OpenBSD) send a single "nnn-" followed by
     // optional lines that start with a space and a final "nnn text" line.
     do {
-      while (!m_control->canReadLine() && m_control->isOpen())
-        m_control->waitForReadyRead();
+      while (!m_control->canReadLine() && m_control->waitForReadyRead()) {}
       m_lastControlLine = m_control->readLine();
       pTxt = m_lastControlLine.data();
       int nBytes = m_lastControlLine.size();
@@ -366,7 +365,7 @@ bool Ftp::ftpOpenControlConnection( const QString &host, int port )
   if (port == 0)
     port = 21;                  // default FTP port
   m_control = KSocketFactory::synchronousConnectToHost("ftp", host, port, connectTimeout() * 1000);
-  int iErrorCode = m_control->isOpen() ? 0 : ERR_COULD_NOT_CONNECT;
+  int iErrorCode = m_control->state() == QAbstractSocket::ConnectedState ? 0 : ERR_COULD_NOT_CONNECT;
 
   // on connect success try to read the server message...
   if(iErrorCode == 0)
@@ -634,8 +633,7 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
   QByteArray buf = cmd;
   buf += "\r\n";      // Yes, must use CR/LF - see http://cr.yp.to/ftp/request.html
   int num = m_control->write(buf);
-  while (m_control->bytesToWrite() && m_control->waitForBytesWritten())
-    ;
+  while (m_control->bytesToWrite() && m_control->waitForBytesWritten()) {}
 
   // If we were able to successfully send the command, then we will
   // attempt to read the response. Otherwise, take action to re-attempt
@@ -1472,9 +1470,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
   // get a line from the data connecetion ...
   while( true )
   {
-    while (m_data->state() == QAbstractSocket::ConnectedState &&
-           !m_data->canReadLine())
-      m_data->waitForReadyRead();
+    while (!m_data->canReadLine() && m_data->waitForReadyRead()) {}
     QByteArray data = m_data->readLine();
     if (data.size() == 0)
       break;
@@ -2022,8 +2018,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
     if (result > 0)
     {
       m_data->write( buffer );
-      while (m_data->bytesToWrite() && m_data->waitForBytesWritten())
-        ;
+      while (m_data->bytesToWrite() && m_data->waitForBytesWritten()) {}
       processed_size += result;
       processedSize (processed_size);
     }
