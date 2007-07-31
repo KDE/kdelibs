@@ -12,6 +12,7 @@ Comment[es]=Servicio de texto a voz con una interfaz D-Bus
 Comment[fa]=خدمت متن به گفتار با یک واسط D-Bus
 Comment[ga]=Seirbhís Téacs-go-Caint le comhéadan D-Bus
 Comment[ja]=D-Bus インターフェースを持つテキスト読み上げサービス
+Comment[kn]=D-Bus ಅಂತರಮುಖದೊಂದಿಗೆ (interface) ಪಠ್ಯ ವಾಚನ (text-to-speech) ಸೇವೆ
 Comment[nl]=Tekst-tot-spraak-dienst met een DCOP interface
 Comment[pa]=ਇੱਕ D-Bus ਇੰਟਰਫੇਸ ਨਾਲ ਪਾਠ-ਤੋਂ-ਬੋਲੀ ਸੇਵਾ
 Comment[pt]=Serviço de Texto-para-Fala com interface D-Bus
