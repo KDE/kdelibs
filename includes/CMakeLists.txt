@@ -7,7 +7,6 @@ install( FILES
   DrListOption
   DrMain
   DrStringOption
-  FileProtocol
   I18nTypeCheck
   K3BookmarkDrag
   K3ButtonBox
@@ -231,7 +230,6 @@ install( FILES
   KIEBookmarkImporter
   KIEBookmarkImporterImpl
   KIMProxy
-  KIOBufferBase
   KIcon
   KIconButton
   KIconCanvas
