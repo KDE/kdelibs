@@ -264,10 +264,10 @@ struct KDebugPrivate
 
         Area &areaData = cache[0];
         areaData.clear(QtOutput);
-        if (KGlobal::hasMainComponent())
-            //AB: this is necessary here, otherwise all output with area 0 won't be
-            //prefixed with anything, unless something with area != 0 is called before
-            areaData.name = KGlobal::mainComponent().componentName();
+
+        //AB: this is necessary here, otherwise all output with area 0 won't be
+        //prefixed with anything, unless something with area != 0 is called before
+        areaData.name = KGlobal::mainComponent().componentName();
     }
 
     inline int level(QtMsgType type)
@@ -330,11 +330,16 @@ struct KDebugPrivate
 
     Cache::Iterator areaData(QtMsgType type, unsigned int num)
     {
-        if (!config && KGlobal::hasMainComponent())
-            config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
+        if (!config) {
+            if (!KGlobal::hasMainComponent()) {
+                // we don't have a config and we can't create one...
+                Area &area = cache[0]; // create a dummy entry
+                return cache.find(0);
+            }
 
-        if (cache.isEmpty())
+            config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
             loadAreaNames();
+        }
 
         if (!cache.contains(num))
             // unknown area
@@ -355,8 +360,10 @@ struct KDebugPrivate
         QDebug result(&filewriter);
         QString header = fileName;
         header += QLatin1Char('\0');
-        header += areaName;
-        header += QLatin1Char(':');
+        if (!areaName.isEmpty()) {
+            header += areaName;
+            header += QLatin1Char(':');
+        }
 
         result << qPrintable(header);
         return result.space();
@@ -411,7 +418,9 @@ struct KDebugPrivate
             level = LOG_ERR;
             break;
         }
-        result.nospace() << char(level) << areaName.toAscii() << ":";
+        result.nospace() << char(level);
+        if (!areaName.isEmpty())
+            result << areaName.toAscii() << ":";
         return result.space();
     }
 
@@ -420,6 +429,8 @@ struct KDebugPrivate
         QDebug result(&lineendstrippingwriter);
         if (type != QtDebugMsg)
             result = QDebug(type);
+        if (areaName.isEmpty())
+            return result;
         result.nospace() << qPrintable(areaName) << ":";
         return result.space();
     }
