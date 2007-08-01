@@ -39,15 +39,14 @@ void KGlobalShortcutTest::initTestCase()
 {
     m_actionA = new KAction("Action A", this);
     m_actionB = new KAction("Action B", this);
+    //purge previous config file entries of the actions by setting them to "empty and default empty"
+    //(this is the only safe situation to remove entries in normal operation)
     m_actionA->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
                                  KAction::NoAutoloading);
     m_actionB->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
                                  KAction::NoAutoloading);
     QVERIFY(m_actionA->globalShortcut().isEmpty());
     QVERIFY(m_actionB->globalShortcut().isEmpty());
-    //FIXME: for consistency, KdedGlobalAccel should treat entries scheduled for deletion in the config
-    //file as if they were already deleted in memory, too.
-    QTest::qWait(1000);
 }
 
 
@@ -94,7 +93,7 @@ void KGlobalShortcutTest::testStealShortcut()
     QVERIFY(!m_actionB->globalShortcut().primary().isEmpty());
     KGlobalAccel::stealShortcutSystemwide(Qt::META + Qt::ALT + Qt::Key_F30);
     //let DBus do its thing in case it happens asynchronously
-    QTest::qWait(400);
+    QTest::qWait(200);
     QVERIFY(m_actionB->globalShortcut().primary().isEmpty());
 }
 
@@ -119,12 +118,11 @@ void KGlobalShortcutTest::testSaveRestore()
 
 void KGlobalShortcutTest::cleanupTestCase()
 {
+    //purge config file entries, see initTestCase()
     m_actionA->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
                                  KAction::NoAutoloading);
     m_actionB->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
                                  KAction::NoAutoloading);
-    //FIXME: see initTestCase()
-    QTest::qWait(1000);
 }
 
 #include "kglobalshortcuttest.moc"

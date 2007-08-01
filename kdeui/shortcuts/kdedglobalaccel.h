@@ -74,8 +74,7 @@ private Q_SLOTS:
 
 private:
     void loadSettings();
-    void delayedWriteSettings();
-    inline void writeSettingsAction(actionData *ad);
+    void scheduleWriteSettings();
     QList<int> keysFromString(const QString &str);
     QString stringFromKeys(const QList<int> &keys);
 

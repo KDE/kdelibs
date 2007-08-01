@@ -73,7 +73,7 @@ public:
     actionData *findAction(int) const;
     actionData *findAction(const QStringList &actionId) const;
     actionData *addAction(const QStringList &actionId);
-    void deleteAction(const QStringList actionId);
+    actionData *takeAction(const QStringList &actionId);
     QList<actionData *> componentActions(const QString &mainComponentName);
 
     //helpers
@@ -84,6 +84,7 @@ public:
 
     QHash<int, actionData *> keyToAction;
     QHash<QString, QHash<QString, actionData *> *> mainComponentHashes;
+    QList<actionData *> deletionQueue;
 
     KConfigGroup configGroup;
     QTimer writeoutTimer;
@@ -132,17 +133,19 @@ actionData *KdedGlobalAccelPrivate::addAction(const QStringList &actionId)
 }
 
 
-void KdedGlobalAccelPrivate::deleteAction(const QStringList actionId)
+actionData *KdedGlobalAccelPrivate::takeAction(const QStringList &actionId)
 {
     QHash<QString, actionData *> *componentHash = mainComponentHashes.value(actionId.at(ComponentField));
     if (!componentHash)
-        return;
-    delete componentHash->take(actionId.at(ActionField));
+        return 0;
+    actionData *ret = componentHash->take(actionId.at(ActionField));
     if (componentHash->isEmpty())
         delete mainComponentHashes.take(actionId.at(ComponentField));
+    return ret;
 }
 
 
+//return if a list of keys is *logically* empty
 //static
 bool KdedGlobalAccelPrivate::isEmpty(QList<int> keys)
 {
@@ -301,17 +304,18 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     foreach (int key, added)
         d->impl->grabKey(key, true);
 
-    //Something that's "missing" here is deletion of actionDatas that convey no useful
-    //information anymore - they are still needed to be able to delete their entries
-    //from the config file when writing out.
+    scheduleWriteSettings();
 
+    if (isDefaultEmpty && d->isEmpty(ad->keys)) {
+        d->takeAction(actionId);
+        if (didCreate)
+            delete ad;
+        else
+            d->deletionQueue.append(ad);
 
-    //if we only had conflicting keys and this actionData was newly created...
-    //this probably does not cover all cases where we can safely delete ad
-    if (didCreate && isDefaultEmpty && ad->keys.isEmpty())
-        d->deleteAction(actionId);
+        return QList<int>();
+    }
 
-    delayedWriteSettings();
     return ad->keys;
 }
 
@@ -348,7 +352,7 @@ void KdedGlobalAccel::setInactive(const QStringList &actionId)
 }
 
 
-void KdedGlobalAccel::delayedWriteSettings()
+void KdedGlobalAccel::scheduleWriteSettings()
 {
     if (!d->writeoutTimer.isActive())
         d->writeoutTimer.start(500);
@@ -358,27 +362,26 @@ void KdedGlobalAccel::delayedWriteSettings()
 //slot
 void KdedGlobalAccel::writeSettings()
 {
+    //entries scheduled for deletion are in deletionQueue
+    foreach (const actionData *const ad, d->deletionQueue) {
+        QString confKey = ad->actionId.join("\01");
+        d->configGroup.deleteEntry(confKey);
+        delete ad;
+    }
+    d->deletionQueue.clear();
+
     typedef QHash<QString, actionData*> adHash; //avoid comma in macro arguments
-    foreach (const adHash *mc, d->mainComponentHashes)
-        foreach (actionData *ad, *mc)
-            writeSettingsAction(ad);
+    foreach (const adHash *const mc, d->mainComponentHashes) {
+        foreach (const actionData *const ad, *mc) {
+            QString confKey = ad->actionId.join("\01");
+            if (!d->isEmpty(ad->keys))
+                d->configGroup.writeEntry(confKey, stringFromKeys(ad->keys));
+            else
+                d->configGroup.writeEntry(confKey, "none");
+        }
+    }
 
     d->configGroup.sync();
-}
-
-
-inline void KdedGlobalAccel::writeSettingsAction(actionData *ad)
-{
-    QString confKey = ad->actionId.join("\01");
-    if (!d->isEmpty(ad->keys)) {
-        d->configGroup.writeEntry(confKey, stringFromKeys(ad->keys));
-    } else {
-        if (ad->isDefaultEmpty) {
-            d->configGroup.deleteEntry(confKey);
-            d->deleteAction(ad->actionId);
-        } else
-            d->configGroup.writeEntry(confKey, "none");
-    }
 }
 
 
