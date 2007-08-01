@@ -773,11 +773,6 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 		return m_action->whatsThis();
 	case Qt::ToolTipRole:
 		return m_action->toolTip();
-	case Qt::BackgroundRole:
-		//looks not that great, really
-		if (isModified(column))
-			return QColor(Qt::blue);
-		break;
 	case Qt::FontRole:
 		if (!isModified(column)) {
 			break;
