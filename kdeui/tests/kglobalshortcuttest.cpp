@@ -37,8 +37,6 @@ QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
 
 void KGlobalShortcutTest::initTestCase()
 {
-    KConfigGroup cg(KGlobal::config(), "Global Shortcuts");
-    cg.deleteGroup();
     m_actionA = new KAction("Action A", this);
     m_actionB = new KAction("Action B", this);
     m_actionA->setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,

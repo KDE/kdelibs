@@ -30,8 +30,6 @@ class KAction;
 class KGlobalShortcutTest : public QObject
 {
     Q_OBJECT
-Q_SIGNALS:
-    void writeSettingsNow();
 private Q_SLOTS:
     void initTestCase();
     void testSetShortcut();
