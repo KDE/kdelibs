@@ -156,7 +156,7 @@
    <l:gentext key="ListofTables" text="List of Tables"/>
    <l:gentext key="ListofUnknown" text="List of Unknown"/>
    <l:gentext key="listofunknown" text="List of Unknown"/>
-   <l:gentext key="nav-home" text="Home"/>
+   <l:gentext key="nav-home" text="Contents"/>
    <l:gentext key="nav-next" text="Next"/>
    <l:gentext key="nav-next-sibling" text="Fast Forward"/>
    <l:gentext key="nav-prev" text="Prev"/>
