@@ -247,6 +247,7 @@ install( FILES
   KIntValidator
   KJob
   KJobUiDelegate
+  KKeySequenceWidget
   KLanguageButton
   KLed
   KLibFactory
