@@ -523,6 +523,7 @@ QDebug perror(QDebug s, KDebugTag)
     return s << QString::fromLocal8Bit(strerror(errno));
 }
 
+#ifndef Q_OS_WIN
 QDebug operator<<(QDebug s, const QObject *object)
 {
     if ( object == 0 ) {
@@ -544,6 +545,7 @@ QDebug operator<<(QDebug s, const QObject *object)
     }
     return s.space();
 }
+#endif // Q_OS_WIN
 
 QDebug operator<<(QDebug s, const KDateTime &time)
 {
