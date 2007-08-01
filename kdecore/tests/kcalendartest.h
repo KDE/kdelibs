@@ -22,11 +22,15 @@ protected:
     void testMonthName( const KCalendarSystem *calendar, int month, int year, QDate date,
                         QString shortName, QString longName,
                         QString shortNamePossessive, QString longNamePossessive );
+    void testJalaliCompare();
+    void testCompare( const KCalendarSystem *calendar, int year, int month, int day );
 
 private Q_SLOTS:
     void testTypes();
     void testGregorian();
     void testHijri();
+    void testGregorianBasic();
+    void testGregorianYmd();
     void testHijriBasic();
     void testHijriYmd();
     void testJalaliBasic();
