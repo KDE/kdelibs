@@ -523,30 +523,6 @@ QDebug perror(QDebug s, KDebugTag)
     return s << QString::fromLocal8Bit(strerror(errno));
 }
 
-#ifndef Q_OS_WIN
-QDebug operator<<(QDebug s, const QObject *object)
-{
-    if ( object == 0 ) {
-        s << "[Null pointer]";
-    } else {
-        bool isWidget = object->isWidgetType();
-        s.nospace() << "[" << object->metaObject()->className()
-                    << " pointer(" << static_cast<const void *>(object)
-                    << " to "
-                    << (isWidget ? "widget " : "object ")
-                    << object->objectName();
-
-        if ( isWidget ) {
-            QRect r = object->property("geometry").toRect();
-            s.nospace() << ", geometry " << r.width() << "x" << r.height()
-                        << "+" << r.x() << "+" << r.y();
-        }
-        s.nospace() << "]";
-    }
-    return s.space();
-}
-#endif // Q_OS_WIN
-
 QDebug operator<<(QDebug s, const KDateTime &time)
 {
     if ( time.isDateOnly() )
