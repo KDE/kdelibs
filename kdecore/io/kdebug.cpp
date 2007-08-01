@@ -257,7 +257,6 @@ struct KDebugPrivate
                 continue;
             }
 
-            const int numStart=i;
             do {
                 ch=line[++i];
             } while (ch >= '0' && ch <= '9' && i < line.length());
@@ -338,6 +337,7 @@ struct KDebugPrivate
             if (!KGlobal::hasMainComponent()) {
                 // we don't have a config and we can't create one...
                 Area &area = cache[0]; // create a dummy entry
+                Q_UNUSED(area);
                 return cache.find(0);
             }
 
