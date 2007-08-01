@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+//#define KDE_EXTENDED_DEBUG_OUTPUT
+
 #ifndef QT_NO_CAST_FROM_ASCII
 #define QT_NO_CAST_FROM_ASCII
 #endif
@@ -44,6 +46,7 @@
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "kdatetime.h"
+#include "kcmdlineargs.h"
 
 #include <kmessage.h>
 #include <klocale.h>
@@ -53,7 +56,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QHash>
 #include <QtCore/QObject>
-#include <QtCore/QCharRef>
+#include <QtCore/QChar>
+#include <QtCore/QCoreApplication>
 
 #include <stdlib.h>	// abort
 #include <unistd.h>	// getpid
@@ -473,6 +477,64 @@ struct KDebugPrivate
 
 K_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
 
+static QDebug debugHeader(QDebug s, const char *file, int line, const char *funcinfo)
+{
+#ifdef KDE_EXTENDED_DEBUG_OUTPUT
+    s.nospace() << "[";
+    bool needSpace = true;
+
+    static QBasicAtomicPointer<char> programHeader = Q_ATOMIC_INIT(0);
+    if (!programHeader) {
+        QString str;
+        if (KGlobal::hasMainComponent())
+            str = KGlobal::mainComponent().componentName();
+        if (str.isEmpty()) {
+            QStringList arguments = QCoreApplication::arguments();
+            if (!arguments.isEmpty())
+                str = arguments.first();
+            if (str.isEmpty())
+                str = KCmdLineArgs::appName();
+            int pos = str.indexOf(QLatin1Char('/'));
+            if (pos != -1)
+                str = str.mid(pos);
+        }
+
+        if (!str.isEmpty()) {
+            str += QLatin1String(" (");
+            str += QString::number(getpid());
+            str += QLatin1String(")");
+
+            char *dup = strdup(str.toLocal8Bit());
+            if (!programHeader.testAndSet(0, dup))
+                free(dup);
+        }
+    }
+
+    if (programHeader) {
+        s << static_cast<char *>(programHeader);
+        needSpace = true;
+    }
+
+    if (funcinfo) {
+        if (needSpace) s << " ";
+        s << "in \"" << funcinfo << "\"";
+        needSpace = true;
+    }
+
+    if (file && line != -1) {
+        if (needSpace) s << " ";
+        s << "at " << file << ":" << line;
+    }
+
+    s << "]";
+    s.space();
+#else
+    Q_UNUSED(file); Q_UNUSED(line); Q_UNUSED(funcinfo);
+#endif
+
+    return s;
+}
+
 QString kRealBacktrace(int levels)
 {
     QString s;
@@ -505,8 +567,6 @@ QDebug kDebugDevNull()
 
 QDebug kDebugStream(QtMsgType level, int area, const char *file, int line, const char *funcinfo)
 {
-    Q_UNUSED(file); Q_UNUSED(line); Q_UNUSED(funcinfo);
-
     if (kDebug_data.isDestroyed()) {
         // we don't know what to return now...
         qCritical() << "kDebugStream called after destruction; backtrace:"
@@ -515,7 +575,7 @@ QDebug kDebugStream(QtMsgType level, int area, const char *file, int line, const
     }
 
     QMutexLocker locker(&kDebug_data->mutex);
-    return kDebug_data->stream(level, area);
+    return debugHeader(kDebug_data->stream(level, area), file, line, funcinfo);
 }
 
 QDebug perror(QDebug s, KDebugTag)
