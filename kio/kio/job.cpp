@@ -1659,7 +1659,7 @@ class KIO::FileCopyJobPrivate: public KIO::JobPrivate
 public:
     FileCopyJobPrivate(const KUrl& src, const KUrl& dest, int permissions,
                        bool move, bool overwrite, bool resume)
-        : m_sourceSize(-1), m_src(src), m_dest(dest), m_moveJob(0), m_copyJob(0), m_delJob(0),
+        : m_sourceSize(filesize_t(-1)), m_src(src), m_dest(dest), m_moveJob(0), m_copyJob(0), m_delJob(0),
           m_getJob(0), m_putJob(0), m_permissions(permissions),
           m_move(move), m_overwrite(overwrite), m_resume(resume)
         {
