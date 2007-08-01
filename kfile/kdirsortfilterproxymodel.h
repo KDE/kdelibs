@@ -23,7 +23,7 @@
 #ifndef KDIRSORTFILTERPROXYMODEL_H
 #define KDIRSORTFILTERPROXYMODEL_H
 
-#include <QSortFilterProxyModel>
+#include <QtGui/QSortFilterProxyModel>
 #include <kfile_export.h>
 //#include <kio/kio_export.h>
 
