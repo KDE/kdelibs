@@ -61,10 +61,7 @@ install(FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/core
 )
 
-install(FILES
-  dxs/dxsengine.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/dxs
-)
+#install(FILES dxs/dxsengine.h DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/dxs)
 
 install(FILES
   ui/knewstuffaction.h
