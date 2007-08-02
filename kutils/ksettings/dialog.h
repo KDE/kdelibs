@@ -24,6 +24,7 @@
 #include "../kcmultidialog.h"
 
 #include <kservice.h>
+#include <kplugininfo.h>
 
 template<class T> class QList;
 class KPluginInfo;
