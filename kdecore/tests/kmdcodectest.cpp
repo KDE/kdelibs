@@ -110,7 +110,9 @@ void testCodec (const char* msg, Codec type, bool isFile)
         // Read contents of file...
         count = 0;
 
-        while ((count= readContent(f, MAX_READ_BUF_SIZE, data)) > 0);
+        while ((count= readContent(f, MAX_READ_BUF_SIZE, data)) > 0) {
+            ;
+        }
 
         // Error! Exit!
         if ( count == -1 )
