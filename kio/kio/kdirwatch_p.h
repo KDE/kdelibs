@@ -6,6 +6,7 @@
  * This file is part of the KDE libraries
  * Copyright (C) 1998 Sven Radej <sven@lisa.exp.univie.ac.at>
  * Copyright (C) 2006 Dirk Mueller <mueller@kde.org>
+ * Copyright (C) 2007 Flavio Castelli <flavio.castelli@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -71,6 +72,7 @@ public:
     bool watchingStopped;
     // events blocked when stopped
     int pending;
+    KDirWatch::WatchModes m_watchModes;
   };
 
   class Entry
@@ -91,7 +93,7 @@ public:
 
     int msecLeft, freq;
 
-    void addClient(KDirWatch*);
+    void addClient(KDirWatch*, KDirWatch::WatchModes);
     void removeClient(KDirWatch*);
     int clients();
     bool isValid() { return m_clients.count() || m_entries.count(); }

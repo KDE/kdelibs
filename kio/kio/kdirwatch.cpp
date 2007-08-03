@@ -2,6 +2,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1998 Sven Radej <sven@lisa.exp.univie.ac.at>
    Copyright (C) 2006 Dirk Mueller <mueller@kde.org>
+   Copyright (C) 2007 Flavio Castelli <flavio.castelli@gmail.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +21,10 @@
 
 
 // CHANGES:
+// Aug 3,  2007 - Handled KDirWatch::WatchModes flags when using inotify, now
+// recursive and file monitoring modes are implemented (Flavio Castelli)
+// Jul 30, 2007 - Substituted addEntry boolean params with KDirWatch::WatchModes
+// flag (Flavio Castelli)
 // Oct 4,  2005 - Inotify support (Dirk Mueller)
 // Februar 2002 - Add file watching and remote mount check for STAT
 // Mar 30, 2001 - Native support for Linux dir change notification.
@@ -267,6 +272,34 @@ void KDirWatchPrivate::inotifyEventReceived()
                 useStat(sub_entry);
               sub_entry->dirty = true;
             }
+            else if ((e->isDir) && (!e->m_clients.empty())) {
+              Client* client = 0;
+
+              KDE_struct_stat stat_buf;
+              QByteArray tpath = QFile::encodeName(e->path+'/'+path);
+              KDE_stat(tpath, &stat_buf);
+              bool isDir = S_ISDIR(stat_buf.st_mode);
+
+              KDirWatch::WatchModes flag;
+              flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
+
+              int counter = 0;
+              Q_FOREACH(client, e->m_clients) {
+                  if (client->m_watchModes & flag) {
+                      addEntry (client->instance, tpath, 0, isDir,
+                                client->m_watchModes);
+                      counter++;
+                    }
+              }
+
+              if (counter != 0)
+                emitEvent (e, Created, e->path+'/'+path);
+              
+              QString msg = QString::number(counter);
+              msg += " instances are monitoring the new ";
+              msg += (isDir ? "dir " : "file ") + tpath;
+              kDebug(7001) << msg;
+            }
           }
 
           if (!rescan_timer.isActive())
@@ -300,11 +333,16 @@ void KDirWatchPrivate::Entry::propagate_dirty()
 /* A KDirWatch instance is interested in getting events for
  * this file/Dir entry.
  */
-void KDirWatchPrivate::Entry::addClient(KDirWatch* instance)
+void KDirWatchPrivate::Entry::addClient(KDirWatch* instance,
+                                        KDirWatch::WatchModes watchModes)
 {
+  if (instance == 0)
+    return;
+  
   foreach(Client* client, m_clients) {
     if (client->instance == instance) {
       client->count++;
+      client->m_watchModes = watchModes;
       return;
     }
   }
@@ -314,6 +352,7 @@ void KDirWatchPrivate::Entry::addClient(KDirWatch* instance)
   client->count = 1;
   client->watchingStopped = instance->isStopped();
   client->pending = NoChange;
+  client->m_watchModes = watchModes;
 
   m_clients.append(client);
 }
@@ -540,7 +579,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 #endif
     }
     else {
-       (*it).addClient(instance);
+       (*it).addClient(instance, watchModes);
        kDebug(7001) << "Added already watched Entry " << path
 		     << " (now " <<  (*it).clients() << " clients)"
 		     << QString(" [%1]").arg(instance->objectName());
@@ -567,6 +606,13 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     else if (!e->isDir && isDir)
       qWarning("KDirWatch: %s is a file. Use addFile!", qPrintable(path));
 
+    if (!e->isDir && ( watchModes != KDirWatch::WatchDirOnly)) {
+      QString msg = "KDirWatch: %s is a file. You can't use recursive or ";
+      msg += "watchFiles options";
+      qWarning(msg.toAscii(), qPrintable(path));
+      watchModes = KDirWatch::WatchDirOnly;
+    }
+
     e->m_ctime = stat_buf.st_ctime;
     e->m_status = Normal;
     e->m_nlink = stat_buf.st_nlink;
@@ -582,7 +628,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   if (sub_entry)
      e->m_entries.append(sub_entry);
   else
-    e->addClient(instance);
+    e->addClient(instance, watchModes);
 
   kDebug(7001) << "Added " << (e->isDir ? "Dir ":"File ") << path
      << (e->m_status == NonExistent ? " NotExisting" : "")
@@ -596,12 +642,41 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   if ( isNoisyFile( tpath ) )
     return;
 
-#if defined(HAVE_FAM)
-  if (useFAM(e)) return;
-#endif
+  if (exists && e->isDir && (watchModes != KDirWatch::WatchDirOnly)) {
+    QFlags<QDir::Filter> filters = QDir::NoDotAndDotDot;
 
+    if ((watchModes & KDirWatch::WatchSubDirs) &&
+        (watchModes & KDirWatch::WatchFiles)) {
+      filters |= (QDir::Dirs|QDir::Files);
+    } else if (watchModes & KDirWatch::WatchSubDirs) {
+      filters |= QDir::Dirs;
+    } else if (watchModes & KDirWatch::WatchFiles) {
+      filters |= QDir::Files;
+    }
+ 
+    QDir basedir (e->path);
+    QFileInfoList contents = basedir.entryInfoList(filters);
+    for (QFileInfoList::iterator iter = contents.begin();
+         iter != contents.end(); iter++)
+    {
+      QFileInfo fileInfo = *iter;
+      bool isDir = fileInfo.isDir();
+      addEntry (instance, fileInfo.absoluteFilePath(), 0, isDir,
+                isDir ? watchModes : KDirWatch::WatchDirOnly);
+    }
+  }
+  
+  // Now I've put inotify check before famd one, otherwise famd will be used
+  // also when inotify is available. Since inotify works
+  // better than famd, it is preferred to the last one
+  // TODO: make monitoring system selection configurable at run-time
+  
 #if defined(HAVE_SYS_INOTIFY_H)
   if (useINotify(e)) return;
+#endif
+  
+#if defined(HAVE_FAM)
+  if (useFAM(e)) return;
 #endif
 
   useStat(e);
@@ -1278,9 +1353,11 @@ KDirWatch::~KDirWatch()
 // TODO: add watchFiles/recursive support
 void KDirWatch::addDir( const QString& _path, WatchModes watchModes)
 {
+#ifndef HAVE_SYS_INOTIFY_H
   if (watchModes != WatchDirOnly) {
-    kDebug(7001) << "addDir - recursive/watch files modes not supported yet in KDE 3.x" << endl;
+    kDebug(7001) << "addDir - actually recursive/watch files modes are supported only with inotify" << endl;
   }
+#endif
   if (d) d->addEntry(this, _path, 0, true, watchModes);
 }
 
