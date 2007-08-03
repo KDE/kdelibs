@@ -40,6 +40,12 @@
 #include <QtCore/QCoreApplication>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
+#ifdef Q_WS_X11
+#include <QtGui/QX11Info>
+#include <netwm_def.h>
+#include <X11/X.h>
+#include <fixx11h.h>
+#endif
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -225,6 +231,18 @@ void KGlobalAccel::invokeAction(const QStringList &actionId)
     KAction *action = d->nameToAction.value(actionId.at(1));
     if (!action)
         return;
+
+#ifdef Q_WS_X11
+    // Update this application's X timestamp if needed.
+    // TODO The 100%-correct solution should probably be handling this action
+    // in the proper place in relation to the X events queue in order to avoid
+    // the possibility of wrong ordering of user events.
+    Time timestamp = actionId.at( 2 ).toULong();
+    if( NET::timestampCompare( timestamp, QX11Info::appTime()) > 0 )
+        QX11Info::setAppTime( timestamp );
+    if( NET::timestampCompare( timestamp, QX11Info::appUserTime()) > 0 )
+        QX11Info::setAppUserTime( timestamp );
+#endif
 
     action->trigger();
 }

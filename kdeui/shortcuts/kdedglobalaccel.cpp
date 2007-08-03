@@ -37,6 +37,10 @@
 #include <QtCore/QHash>
 #include <QtCore/QTimer>
 
+#ifdef Q_WS_X11
+#include <QtGui/QX11Info>
+#endif
+
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <ksharedconfig.h>
@@ -459,7 +463,12 @@ bool KdedGlobalAccel::keyPressed(int keyQt)
     if (!ad || !ad->isPresent)
         return false;
 
-    emit invokeAction(ad->actionId);
+    QStringList data = ad->actionId;
+#ifdef Q_WS_X11
+    // pass X11 timestamp
+    data.append( QString::number( QX11Info::appTime()));
+#endif
+    emit invokeAction(data);
     return true;
 }
 
