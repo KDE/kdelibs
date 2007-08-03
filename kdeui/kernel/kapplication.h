@@ -443,11 +443,6 @@ public:
    */
   static bool loadedByKdeinit;
 
-  /**
-   * @internal
-   */
-  static void startKdeinit();
-
 Q_SIGNALS:
   /**
       Session management asks you to save the state of your application.
