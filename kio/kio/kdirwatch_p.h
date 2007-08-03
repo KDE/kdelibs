@@ -139,7 +139,7 @@ public:
 public Q_SLOTS:
   void slotRescan();
   void famEventReceived(); // for FAM
-  void slotActivated();
+  void inotifyEventReceived(); // for inotify
   void slotRemoveDelayed();
 
 public:
