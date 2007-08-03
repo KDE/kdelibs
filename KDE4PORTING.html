@@ -53,7 +53,9 @@ pre {
 <h1>Porting Applications to KDE 4.0</h1>
 
 <h2>Note</h2>
-<p>All modules should build from /trunk/KDE/kdelibs; there is no snapshot branch any longer. Major changes happen on Mondays (in any timezone) so expect rapid changes during that time. Things should be generally stable otherwise, but this <b>is</b> the development area, so there are no guarantees. </p>
+<p>All modules should build from /trunk/KDE/kdelibs; there is no snapshot branch any longer. Major changes happen on Mondays (in any timezone) so expect rapid changes during that time. Things should be generally stable otherwise, but this <b>is</b> the development area, so there are no guarantees.</p>
+
+<p>Deprecated classed that have been renamed to e.g. K3Foo are in kde3support.</p>
 
 <p>This document contains the changes you have to apply to programs written for
 KDE 3.x when you want to port them to KDE 4.0.<br>
@@ -115,36 +117,40 @@ instead.</li>
 <h3><a name="kdefx">Changes in kdefx</a></h3>
 
 <h4>KPixmap</h4>
-<ul>
-<li>Removed. Use QPixmap instead.</li>
-</ul>
+<p>Removed. Use QPixmap instead.</p>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
 <h3><a name="kdecore">Changes in kdecore</a></h3>
 
-
-<h4>Header file names</h4>
 <ul>
 <li>kuniqueapp.h =&gt; kuniqueapplication.h</li>
 <li>klargefile.h =&gt; kde_file.h</li>
 <li>kcatalogue.h =&gt; kcatalog.h</li>
 <li>kaccelmanager.h =&gt; kacceleratormanager.h</li>
 <li>kprocctrl.h =&gt; k3protocolcontroller.h</li>
+<li>KInstance was renamed to KComponentData</li>
+<li>KGlobalAccel moved to kdeui</li>
+<li>KGlobalSettings moved to kdeui</li>
+<li>KIconLoaded moved to kdeui</li>
+<li>KSessionManaged renamed to KSessionManager and moved to kdeui</li>
+<li>KShortcut moved to kdeui</li>
 </ul>
 
 <h4>KAboutData</h4>
 <ul>
 <li>KAboutData::setTranslator needs different parameters now.
 (Please see the corresponding Doxygen comment for the current state.)</li>
+<li>new catalogName parameter to constructor can be null or empty, then appName is used as catalog name</li>
+<li>all setter methods return object reference, so they can be chained to avoid repeating object name (eg. for addAuthor(), addCredits(), etc.)</li>
 </ul>
-<p>See also <a href="#i18n">the I18N section below</a>.</p>
+<p>I18N_NOOPs in general replaced with KLocalizedString, produced by ki18n()/ki18nc() calls,
+or just KLocalizedString() if wanted empty.
+See also <a href="#i18n">the I18N section below</a>.</p>
 
 <h4>KAccel</h4>
-<ul>
-<li>Removed. Replaced by the new KAction/QAction framework.</li>
-<li>See KActionCollection::setAssociatedWidget() if you need the old KAccel widget-binding behavior.</li>
-</ul>
+<p>Removed. Replaced by the new KAction/QAction framework.
+See KActionCollection::setAssociatedWidget() if you need the old KAccel widget-binding behavior.</p>
 
 <h4>KAccelAction</h4>
 <ul>
@@ -157,9 +163,7 @@ instead.</li>
 </ul>
 
 <h4>KAccelBase</h4>
-<ul>
-<li>Removed. Replaced by the new KAction/QAction framework.</li>
-</ul>
+<p>Removed. Replaced by the new KAction/QAction framework.</p>
 
 <h4>KApplication</h4>
 <ul>
@@ -218,7 +222,7 @@ ode that uses the Q3Data* classes working.For new code, use User in the meta obj
       }
     </pre>
 </li>
-<li>caption() has moved to KInstance </li>
+<li>caption() has moved to KComponentData </li>
 <li>makeStdCaption(const QString&amp;, bool, bool) has moved to KDialog and changed signature to makeStdCaption(const QString&amp;, CaptionFlags) </li>
 <li>addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. with enums SettingsCategory have moved to KGlobalSettings::self() which is now a QObject</li>
 </ul>
@@ -227,9 +231,7 @@ ode that uses the Q3Data* classes working.For new code, use User in the meta obj
 <p>Removed, use now Phonon::AudioPlayer</p>
 
 <h4>KCatalogue</h4>
-<ul>
-<li>Has been renamed to KCatalog. Method name parts with "catalogue" have been also renamed to contain "catalog".
-</ul>
+<p>Renamed to KCatalog. Method name parts with "catalogue" have been renamed to use "catalog" instead.</p>
 
 <h4>KCharsets</h4>
 <ul>
@@ -250,22 +252,15 @@ does not support this encoding.</li>
 <li>Header renamed to kcodecs.h</li>
 </ul>
 
-<h4>KCompletion</h4>
-<ul>
-<li>enableSounds() was removed, use setSoundsEnabled()</li>
-<li>disableSounds() was removed, use setSoundsEnabled()</li>
-<li>isSoundsEnabled() -&gt; soundsEnabled()</li>
-</ul>
-
 <h4>KConfigBackend</h4>
 <ul>
 <li>Removed filename(), use fileName()</li>
 </ul>
 
 <h4>KSimpleConfig</h4>
+<p>This class was removed. It was a very thin wrapper around KConfig and should
+be replaced.</p>
 <ul>
-<li>This class was removed. It was a very thin wrapper around KConfig and should
-be replaced.</li>
 <li>If you use an absolute path, just change KSimpleConfig with KConfig - there was
 no difference between uses of them for KDE3 either.</li>
 <li>If you want just the local file to open replace KSimpleConfig("file") with
@@ -360,11 +355,14 @@ cg.readXXX("entry name");
 <h4>KCmdLineOptions</h4>
 Now a proper class, instead of statically initialized struct. Use add() method for adding options (option syntax same as before); add() returns object reference, so calls can be chained to avoid repeating variable name all the way.
 
-<h4>KAboutData</h4>
-I18N_NOOPs in general replaced with KLocalizedString, produced by ki18n()/ki18nc() calls, or just KLocalizedString() if wanted empty.
+<h4><a name="KComponentData">KComponentData</a> (was KInstance)</h4>
 <ul>
-<li>new catalogName parameter to constructor can be null or empty, then appName is used as catalog name</li>
-<li>all setter methods return object reference, so they can be chained to avoid repeating object name (eg. for addAuthor(), addCredits(), etc.)</li>
+<li>value based class using shared data: In KDE4 don't work with pointers to KComponentData anymore.
+Internally it is reference counted and the data deleted when the last reference goes out of scope.</li>
+<li>config() returns a KSharedConfigPtr</li>
+<li>sharedConfig() was removed in favour of config()</li>
+<li>iconLoader() was moved to KApplication</li>
+<li>newIconLoader() was moved to KApplication</li>
 </ul>
 
 <h4>KDesktopFile</h4>
@@ -385,9 +383,7 @@ the KDesktopFile was used, otherwise use group("another_group").</li>
 </ul>
 
 <h4>KExtendedSocket</h4>
-<ul>
-<li>This class has been removed. See below on KNetwork::K*Socket.</li>
-</ul>
+<p>This class has been removed. See below on KNetwork::K*Socket.</p>
 
 <h4>KFilterDev</h4>
 <ul>
@@ -408,58 +404,19 @@ hasMainComponent()</li>
 <li>sharedConfig() has been removed in favour of config()</li>
 </ul>
 
-<h4>KGlobalAccel</h4>
-<ul>
-<li>bool useFourModifierKeys() has been removed (we always use four modifier keys now).</li>
-<li>Now a singleton</li>
-<li>You shouldn't need to access this class much... just use setGlobalShortcut() in KAction.</li>
-</ul>
-
-<h4>KGlobalSettings</h4>
-<ul>
-<li>KGlobalSettings is now a QObject so can emit signals like kdisplayPaletteChanged() instead of KApplication</li>
-<li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO::trash instead</li>
-<li>Accessing system colors via KGlobalSettings is deprecated; use an appropriately constructed KColorScheme instead.
-See the <a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kdeui/html/classKGlobalSettings.html">KGlobalSettings documentation</a> or kglobalsettings.h for specific replacement suggestions.</li>
-</ul>
-
 <h4>KIcon</h4>
-<ul>
-<li>Renamed and deprecated to K3Icon</li>
-<li>Replacement is KIcon - now in kdeui</li>
-<li>Note: at the moment you have to keep using K3Icon as a namespace for states, groups, and contexts though.</li>
-</ul>
-
-<h4>KIconLoader</h4>
-<ul>
-<li>Moved to libkdeui and is now a QObject</li>
-<li>Deprecated loadIconSet(), DesktopIconSet(), BarIconSet(), SmallIconSet(), UserIconSet(): use KIcon(name) or KIcon(name,instance-&gt;iconLoader()) instead.<br/>
-Note that this can change slightly the look of the icon in some cases: for instance if code was calling setIcon(BarIconSet())
-on a pushbutton, it meant the icon was loaded at toolbar size and then resized down.
-With KIcon(name), the small icon is picked up instead, which might look different, but this is the correct behavior.
-These deprecated methods were also altered to not take a KComponentData (KInstance* in KDE3), which was an optional parameter in KDE3.</li>
-<li>the State parameter was used to be both define the state of the icon one of a limited number of overlays. Overlays are now a separate parameter, a QStringList, containing the names of icons to overlay. The new overlays parameter now follows the state parameter.</li>
-</ul>
+<p>Deprecated and renamed to K3Icon; replacement is KIcon in kdeui.</p>
+<p><b>Note:</b> at the moment you have to keep using K3Icon as a namespace for states, groups, and contexts though.</p>
 
 <h4>KInstance</h4>
-<ul>
-<li>renamed to KComponentData</li>
-<li>value based class using shared data: In KDE4 don't work with pointers to KComponentData anymore.
-Internally it is reference counted and the data deleted when the last reference goes out of scope.</li>
-<li>config() returns a KSharedConfigPtr</li>
-<li>sharedConfig() was removed in favour of config()</li>
-<li>iconLoader() was moved to KApplication</li>
-<li>newIconLoader() was moved to KApplication</li>
-</ul>
+<p>Renamed to <a href="#kcomponentdata">KComponentData</a></p>
 
 <h4>KIPC</h4>
-<ul>
-<li>Removed. Use KGlobalSettings::self()-&gt;emitChange() instead of KIPC::sendMessageAll().</li>
-</ul>
+<p>Removed. Use KGlobalSettings::self()-&gt;emitChange() instead of KIPC::sendMessageAll().</p>
 
 <h4>KKey</h4>
+<p>Removed. Use plain ints as the Qt key code instead.</p>
 <ul>
-<li>Removed. Use plain ints as the Qt key code instead.</li>
 <li>When replacing KKey(QKeyEvent*), you need to OR the event-&gt;key() and event-&gt;modifiers() to get the replacement.</li>
 <li>The QtWIN enum has been removed.  Use Qt::META or Qt::MetaModifier instead.</li>
 <li>modFlagLabel() was removed, use either KKeyServer::modToStringUser(), or QKeySequence(Qt::yourmodifier).toString()</li>
@@ -467,17 +424,11 @@ Internally it is reference counted and the data deleted when the last reference 
 
 
 <h4>KKeyNative</h4>
-<ul>
-<li>Removed. Use plain ints as the Qt key code instead.</li>
-</ul>
+<p>Removed. Use plain ints as the Qt key code instead.</p>
 
 <h4>KKeySequence</h4>
-<ul>
-<li>Removed, use QKeySequence instead.</li>
-<li>Note that QKeySequence expects multiple shortcuts to be separated by ", " (i.e. a comma then a space) in converting from text.</li>
-</ul>
-
-<h4>KLibFactory</h4>
+<p>Removed. Use QKeySequence instead.
+Note that QKeySequence expects multiple shortcuts to be separated by ", " (i.e. a comma then a space) in converting from text.</p>
 
 <h4>KLibLoader</h4>
 <ul>
@@ -514,38 +465,22 @@ Internally it is reference counted and the data deleted when the last reference 
 <li>KMacroExpander now takes a QHash and not a QMap</li>
 </ul>
 
-<h4>KMD5</h4>
-
 <h4>KMimeSourceFactory</h4>
-<ul>
-  <li>KMimeSourceFactory was automatically instanciated by KApplication which allowed the use of "icon:name" in Qt richtext.
-      Q3MimeSourceFactory being in Qt3Support, and this feature being very rarely used, K3MimeSourceFactory isn't instanciated
-      automatically anymore, you need to call K3MimeSourceFactory::install() in your main if you still depend on this feature.</li>
-  <li>
-</ul>
+<p>KMimeSourceFactory was automatically instanciated by KApplication which allowed the use of "icon:name" in Qt richtext.
+Q3MimeSourceFactory being in Qt3Support, and this feature being very rarely used, K3MimeSourceFactory isn't instanciated
+automatically anymore, you need to call K3MimeSourceFactory::install() in your main if you still depend on this feature.</p>
 
 <h4>KNetwork::KIpAddress</h4>
-<ul>
-<li>This class is gone. Use QHostAddress instead.</li>
-</ul>
+<p>Removed. Use QHostAddress instead.</p>
 
 <h4>KNetwork::KResolver</h4>
-<ul>
-<li>This class is gone. If you need to resolve a hostname, use
-  QHostInfo from QtNetwork.</li>
-</ul>
+<p>Removed. If you need to resolve a hostname, use QHostInfo from QtNetwork.</p>
 
 <h4>KNetwork::KSocketAddress and KNetwork::KInetSocketAddress</h4>
-<ul>
-<li>These classes are gone. Use QHostAddress and an integer (a quint16_t)
-  to store the port number.</li>
-</ul>
+<p>Removed. Use QHostAddress and an integer (a quint16_t) to store the port number.</p>
 
 <h4>KNetwork::KUnixSocketAddress</h4>
-<ul>
-<li>This class is gone. Simply use a QString to represent the path or
-  identifier. See the documentation on KLocalSocket.</li>
-</ul>
+<p>Removed. Simply use a QString to represent the path or identifier. See the documentation on KLocalSocket.</p>
 
 <h4>KNetwork::K*Socket</h4>
 <ul>
@@ -614,30 +549,23 @@ Internally it is reference counted and the data deleted when the last reference 
 </ul>
 
 <h4>KNotifyClient</h4>
-<ul><li>Replaced by KNotification.  The API is quite similar, but the config file need to be updated. See KNotification documentation</li></ul>
-
-<h4>KPalette</h4>
-<ul>
-<li>color(int), colorName(int) and colorName(const QColor&amp;) have been made const.</li>
-</ul>
-
-<h4>KPixmapSplitter</h4>
+<p>Replaced by KNotification. The API is quite similar, but the config file need to be updated. See KNotification documentation</p>
 
 <h4>KProcess</h4>
+<p>Deprecated and renamed to K3Process, header is k3process.h. Use QProcess instead.</p>
 <ul>
-<li>renamed to K3Process, header is now k3process.h; use QProcess instead</li>
 <li>setExecutable() was removed in favor of using operator &lt;&lt; </li>
 <li>getPid() was removed for just pid()</li>
 </ul>
 
 <h4>KProcCtrl</h4>
-Deprecated and renamed to K3ProcessController, header is k3processcontroller.h
+<p>Deprecated and renamed to K3ProcessController, header is k3processcontroller.h.</p>
 
 <h4>KProcIO</h4>
-Deprecated and renamed to K3ProcIO, header is k3procio.h
+<p>Deprecated and renamed to K3ProcIO, header is k3procio.h.</p>
 
 <h4>KRegExp</h4>
-This class has been removed.  Use QRegExp instead
+<p>Removed. Use QRegExp instead.</p>
 
 <h4>KRFCDate</h4>
 This class has been deprecated by KDateTime. It has been renamed K3RFCDate and moved to the libkde3support. The following method changes make porting easy:
@@ -661,30 +589,11 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 <li>You must call KSaveFile::open() to create the file.</li>
 </ul>
 
-<h4>KShortcut</h4>
-<ul>
-<li>Now reentrant</li>
-<li>Only uses QKeySequences now</li>
-<li>Removed list semantics; remove() still has somewhat list-like behavior.</li>
-<li>Introduced "primary" and "alternate" shortcuts to replace the arbitrary list of shortcuts</li>
-<li>Removed casting operators</li>
-<li>Removed operator&lt; and operator&gt;</li>
-<li>Added a qHash(const KShortcut &amp;) function so you can use QHash with KShortcut instead of QMap</li>
-<li>remove() -&gt; removeAll()</li>
-<li>toList() -&gt; Not needed anymore since KShortcut inherits QList&lt;QKeySequence&gt;</li>
-<li>toStringInternal() -&gt; You shouldn't be using this! But use toString() instead</li>
-</ul>
-
 <h4>KShortcutDialog</h4>
-<ul>
-<li>Removed, see KKeySequenceWidget/KShortcutWidget.</li>
-</ul>
+<p>Removed, see KKeySequenceWidget/KShortcutWidget.</p>
 
 <h4>KShortcutList and derivatives</h4>
-<ul>
-<li>Removed - no longer needed</li>
-<li>Saving and loading of shortcuts now performed in KActionCollection, KGlobalAccel, and KStandardShortcut.</li>
-</ul>
+<p>Removed - no longer needed. Saving and loading of shortcuts is now performed in KActionCollection, KGlobalAccel, and KStandardShortcut.</p>
 
 <h4>KSortableValueList</h4>
 <ul>
@@ -692,12 +601,7 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 </ul>
 
 <h4>KStdAccel</h4>
-<ul>
-<li>Renamed to KStandardShortcut</li>
-<li>Removed deprecated methods</li>
-<li>Removed WhatThis, use WhatsThis</li>
-<li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
-</ul>
+<p>Renamed to <a href="#KStandardShortcut">KStandardShortcut</a></p>
 
 <h4>KStandardDirs</h4>
 <ul>
@@ -712,6 +616,13 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 </li>
 </ul>
 
+<h4><a name="KStandardShortcut">KStandardShortcut</a> (was KStdAccel)</h4>
+<ul>
+<li>Removed deprecated methods</li>
+<li>Removed WhatThis, use WhatsThis</li>
+<li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
+</ul>
+
 <h4>KStringHandler</h4>
 <ul>
 <li>static QString ljust( const QString &amp;text , int width ) -&gt; QString::leftJustified</li>
@@ -724,8 +635,6 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 <li>::rPixelSqueeze( text, fm, width ) -&gt; fm.elidedText( text, Qt::ElideRight, width )</li>
 </ul>
 
-<h4>KStyle</h4>
-
 <h4>KTempDir</h4>
 <ul>
 <li>existing() was removed, use exists() instead</li>
@@ -735,14 +644,12 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 </ul>
 
 <h4>KTempFile</h4>
-<ul>
-<li>Renamed to K3TempFile. Use KTemporaryFile instead.</li>
-<li>When porting old KTempFile calls to KTemporaryFile, you need to remember that KTempFile by default will not automatically remove the fileonce the object is destroyed, but KTemporaryFile will! You also need to call open() in order to actually create the file.</li>
-</ul>
+<p>Deprecated and renamed to K3TempFile. Use KTemporaryFile instead.</p>
+<p>When porting old KTempFile calls to KTemporaryFile, you need to remember that KTempFile by default will not automatically remove the fileonce the object is destroyed, but KTemporaryFile will! You also need to call open() in order to actually create the file.</p>
 
 <h4>KURL</h4>
 <ul>
-<li>Has been renamed to KUrl, but a typedef is available for source compatibility</li>
+<li>Renamed to KUrl, but a typedef is available for source compatibility</li>
 <li>KUrl inherits QUrl now, but the API offered by KUrl is mostly unchanged</li>
 <li>filename() has been removed, use fileName() instead</li>
 <li>isMalformed -&gt; !isValid()</li>
@@ -767,24 +674,22 @@ This requires libQtGui, which is why it can't be in KUrl anymore.</li>
 </ul>
 
 <h4>KURLDrag</h4>
-<ul>
-<li>This class has been moved to kde3support. Use KUrl::populateMimeData() and
+<p>This class has been moved to kde3support. Use KUrl::populateMimeData() and
 KUrl::List::populateMimeData() in the drag/copy side,
 and the static methods KUrl::List::canDecode() and KUrl::List::fromMimeData()
-in the drop/paste side.<br>
-Example: Replace <pre>  KURL::List uriList;
+in the drop/paste side.</p>
+<ul>
+<li>Example: Replace <pre>  KURL::List uriList;
   if ( KURLDrag::canDecode(e) &amp;&amp; KURLDrag::decode( e, uriList ) ) {</pre>
 by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
   if ( !uriList.isEmpty() ) {</pre></li>
 </ul>
 
 <h4>KVMAllocator</h4>
-<ul>
-<li>Removed, as it was unused.</li>
-</ul>
+<p>Removed, as it was unused.</p>
 
 <h4>KWin</h4>
-This class has been merged with KWinModule into class KWindowSystem.
+This class has been merged with KWinModule into class KWindowSystem (in kdeui).
 <ul>
 <li>appStarted() removed, use KStartupInfo::appStarted() instead</li>
 <li>info(WId win) removed, use windowInfo() instead</li>
@@ -792,8 +697,8 @@ This class has been merged with KWinModule into class KWindowSystem.
 </ul>
 
 <h4>KWinModule</h4>
-This class has been merged with KWinModule into class KWindowSystem. Don't create instances,
-use static functions and KWindowSystem::self() for connecting to signals.
+This class has been merged with KWinModule into class KWindowSystem (in kdeui).
+Don't create instances, use static functions and KWindowSystem::self() for connecting to signals.
 <ul>
 <li>Functions related to systemtray have been removed. They worked only with the obsolete
 KDE systray mechanism.</li>
@@ -837,21 +742,21 @@ This class has been renamed KWindowInfo and moved to its own header: KWindowInfo
 <li>kfontcombo.h went away, use QFontComboBox</li>
 <li>libkwalletclient (which used to provide the KWallet class) has been merged with kdeui</li>
 <li>system color scheme accessors in kglobalsettings.h are deprecated, use kcolorscheme.h</li>
-<li>KPalette was renamed to KColorCollection and has been cleaned up</li>
+<li>KPalette was renamed to KColorCollection</li>
 <li>KPaletteTable was renamed to KColorTable</li>
 </ul>
 
 <h4>KAboutContainer</h4>
+<p>Deprecated and renamed to K3AboutContainer. Use KAboutApplicationDialog or KAboutKdeDialog directly.</p>
 <ul>
-<li>This class has been renamed to K3AboutContainer and moved to kde3support. Use KAboutApplicationDialog or KAboutKdeDialog directly.</li>
 <li>KAboutContainer constructor int args have been replaced by Qt::Alignment</li>
 <li>addTitle int args replaced by Qt::Alignment</li>
 <li>addImage int args replaced by Qt::Alignment</li>
 </ul>
 
 <h4>KAboutContributor</h4>
+<p>Deprecated and renamed to K3AboutContributor. Use KAboutApplicationDialog or KAboutKdeDialog directly.</p>
 <ul>
-<li>This class has been renamed to K3AboutContributor and moved to kde3support.  Use KAboutApplicationDialog or KAboutKdeDialog directly.</li>
 <li>void setURL( const QString&amp; ) -&gt; void setUrl( const QString&amp; )</li>
 <li>QString getName( void ) const -&gt; QString name() const</li>
 <li>QString getEmail( void ) const -&gt; QString email() const</li>
@@ -861,8 +766,8 @@ This class has been renamed KWindowInfo and moved to its own header: KWindowInfo
 </ul>
 
 <h4>KAboutDialog</h4>
+<p>Deprecated and renamed to K3AboutDialog. Use KAboutApplicationDialog or KAboutKdeDialog directly.</p>
 <ul>
-<li>This class has been renamed to K3AboutDialog and moved to kde3support. Use KAboutApplicationDialog or KAboutKdeDialog directly.</li>
 <li>changed enum names<br>
 <pre>
   AbtPlain         -&gt; Plain
@@ -894,15 +799,15 @@ This class has been renamed KWindowInfo and moved to its own header: KWindowInfo
 </ul>
 
 <h4>KAboutWidget</h4>
+<p>Deprecated and renamed to K3AboutWidget. Use KAboutApplicationDialog or KAboutKdeDialog directly.</p>
 <ul>
-<li>This class has been renamed to K3AboutWidget and moved to kde3support. Use KAboutApplicationDialog or KAboutKdeDialog directly.</li>
 <li>signal void openURL() -&gt; void openUrl()</li>
 <li>void openURLSlot() -&gt; void openUrlSlot()</li>
 </ul>
 
 <h4><a name="KAction">KAction</a></h4>
 <p>Making KAction a subclass of QAction (actually QWidgetAction) brings KDE more into line with the Qt way of creating user interfaces, improves accessibility, and removes code duplication.</p>
-<p>QAction in Qt4 is a true 1st class citizen - all QWidgets now have a list of associated actions, and QToolBar, QMenu etc. all use this list directly to show the graphical items (widgets, entries in the menu, etc).  This has replaced all usage of integers as "id"s.  There is also a new QEvent (QActionEvent), and the corresponding virtual protected function in QWidget, actionEvent().</p>
+<p>QAction in Qt4 is a true first-class citizen - all QWidgets now have a list of associated actions, and QToolBar, QMenu etc. all use this list directly to show the graphical items (widgets, entries in the menu, etc).  This has replaced all usage of integers as "id"s.  There is also a new QEvent (QActionEvent), and the corresponding virtual protected function in QWidget, actionEvent().</p>
 <ul>
 <li>KAction is now a subclass of QWidgetAction.</li>
 <li>Don't use setIconSet() anymore, use setIcon(KIcon(iconName)) instead</li>
@@ -988,37 +893,32 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 </ul>
 
 <h4>KActionSeparator</h4>
-<ul>
-<li>Used to be renamed to KSeparatorAction</li>
-<li>Note that you need to create multiple separator actions if you want to insert multiple separators into a widget, unlike with KDE3.</li>
-<li>KSeparatorAction/KActionSeparator is dead now. Just create a QAction object and call setSeparator(true); on it</li>
+<p>Used to be renamed to KSeparatorAction. KSeparatorAction/KActionSeparator is dead now. Just create a QAction object and call setSeparator(true); on it.</p>
+<p><b>Note:</b> you need to create multiple separator actions if you want to insert multiple separators into a widget, unlike with KDE3.</p>
 </ul>
 
 <h4>KActiveLabel</h4>
+<p>Deprecated and renamed to K3ActiveLabel. Use QLabel instead.</p>
 <ul>
-<li>Use QLabel instead. This class was moved to kde3support as K3ActiveLabel.
-<ul>
-<li>QLabel::setOpenExternalLinks(true) for labels with hyperlinks.</li>
-<li>QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard) for labels whose text should be selectable by user.</li>
-</ul>
-</li>
+<li>Use QLabel::setOpenExternalLinks(true) for labels with hyperlinks.</li>
+<li>Use QLabel::setTextInteractionFlags(Qt::TextSelectableByMouse|Qt::TextSelectableByKeyboard) for labels whose text should be selectable by user.</li>
 <li>Inherits from KTextBrowser instead of Q3TextBrowser</li>
 <li>You don't need anymore to disconnect the linkClicked signal to handle manually link,  use KTextBrowser::setNotifyClick(true)</li>
 <li>linkClicked -&gt; KTextBrowser::urlClick</li>
 </ul>
 
-<h4>KAnimWidget</h4>
+<h4><a name="KAnimatedButton">KAnimatedButton</a> (was KAnimWidget)</h4>
 <ul>
-<li>Renamed to KAnimatedButton</li>
 <li>Now a subclass of QToolButton, acts in a much more standard fashion</li>
-<li>size(), setSize() replaced by iconSize() + setIconSize()</li>
-<li>Call updateIcons() whenever you change the iconSize() (the setter is non virtual :(</li>
+<li>size(), setSize() replaced by iconSize(), setIconSize()</li>
+<li>Call updateIcons() whenever you change the iconSize() (the setter is non-virtual :( )</li>
 </ul>
 
+<h4>KAnimWidget</h4>
+<p>Renamed to <a href="#KAnimatedButton">KAnimatedButton</a></p>
+
 <h4>KAuthIcon</h4>
-<ul>
-<li>Removed since not used</li>
-</ul>
+<p>Removed since it was not used.</p>
 
 <h4>KBugReport</h4>
 <ul>
@@ -1026,12 +926,10 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 </ul>
 
 <h4>KButtonBox</h4>
-<p>This class has been renamed to K3ButtonBox and moved to kde3support. Use KDialogButtonBox instead. Add the role parameter to the addButton function. Or check if it can't be achieved using KDialog.</p>
+<p>Deprecated and renamed to K3ButtonBox. Use KDialogButtonBox instead. Add the role parameter to the addButton function. Or check if it can't be achieved using KDialog.</p>
 
 <h4>KCharSelectTable</h4>
-<ul>
-<li>Removed from public API. Use KCharSelect.</li>
-</ul>
+<p>Removed from public API. Use KCharSelect.</p>
 
 <h4>KCharSelect</h4>
 <ul>
@@ -1055,24 +953,22 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 was selected and the color itself as arguments</li>
 </ul>
 
-<h4>KColorCollection</h4>
+<h4><a name="KColorCollection">KColorCollection</a> (was KPalette)</h4>
 <ul>
 <li>nrColors() was renamed to count()</li>
 <li>colorName() was renamed to name()</li>
 <li>getPaletteList() was renamed to installedCollections()</li>
+<li>color(int), name(int) and name(const QColor&amp;) have been made const</li>
 </ul>
 
 <h4>KColorDrag</h4>
-<ul>
-<li>has been renamed to K3ColorDrag and moved as kde3support</li>
-<li>use QMimeData  directly instead or KColorMimeData, which closest resembles KColorDrag</li>
-</ul>
+<p>Deprecated and renamed to K3ColorDrag. Use QMimeData directly instead or KColorMimeData, which most closely resembles KColorDrag</p>
 
 <h4>KColorScheme</h4>
 New class that provides access to system-wide, user configurable color roles.
 Like QPalette, the return type is now QBrush instead of QColor. As of 4.0 the brushes are solid colors, but this may change in the future.
 
-<h4>KColorScheme</h4>
+<h4><a name="KColorTable">KColorTable</a> (was KPaletteTable)</h4>
 <ul>
 <li>palette() was renamed to name()</li>
 <li>slot setPalette() was renamed to slot setColors()</li>
@@ -1089,10 +985,17 @@ Like QPalette, the return type is now QBrush instead of QColor. As of 4.0 the br
 </ul>
 
 <h4>KCommand</h4>
-KCommand has been renamed to K3Command and moved to kde3support. The header file was named k3command.h.
+<p>Deprecated and renamed to K3Command, header is k3command.h.</p>
 
 <h4>KCommandHistory</h4>
-KCommandHistory has been renamed to K3CommandHistory and moved to kde3support. The header file was named k3command.h.
+<p>Deprecated and renamed to K3CommandHistory, header is k3command.h.</p>
+
+<h4>KCompletion</h4>
+<ul>
+<li>enableSounds() was removed, use setSoundsEnabled()</li>
+<li>disableSounds() was removed, use setSoundsEnabled()</li>
+<li>isSoundsEnabled() -&gt; soundsEnabled()</li>
+</ul>
 
 <h4>KConfigDialog</h4>
 <ul>
@@ -1176,8 +1079,8 @@ should be rewritten as
 </ul>
 
 <h4>KDialogBase</h4>
+<p>Deprecated. Use KDialog or KPageDialog instead.</p>
 <ul>
-<li>Deprecated. Use KDialog or KPageDialog instead.</li>
 <li>If the KDialogBase is Swallow or Plain mode you should replace it with KDialog, for
 all other modes use KPageDialog
 <pre>
@@ -1230,15 +1133,10 @@ replace with
 </ul>
 
 <h4>KDockWindow</h4>
-<ul>
-<li>This class is obsolete, it is provided for compatibility only.
-Use KSystemTrayIcon instead.</li>
-</ul>
+<p>This class is obsolete and is provided for compatibility only. Use KSystemTrayIcon instead.</p>
 
 <h4>KDualColorButton</h4>
-<ul>
-<li>Removed since not used</li>
-</ul>
+<p>Removed since it was not used.</p>
 
 <h4>KEdit</h4>
 <ul>
@@ -1266,17 +1164,15 @@ if needed (see the KURLDrag section)</li>
 
 <h4>KFind</h4>
 <ul>
-<li>The options argument in the constructor is now an enumerated flag of type KFind::Options</li>
-<li>resetCounts() was renamed to resetMatchCount()</li>
-<li>The Options flags from KReplace were added to the Options enumeration of KFind</li>
+<li>The constructors have been simplified to take an optional parent. Other parameters must be set by using the API directly, e.g. setHasSelection and setSearch.</li>
+<li>The options argument in the constructor is now an enumerated flag of type KFind::Options.</li>
+<li>resetCounts() was renamed to resetMatchCount().</li>
+<li>The Options flags from KReplace were added to the Options enumeration of KFind.</li>
 </ul>
-
-<h4>KFind</h4>
-The constructors have been simplified to take an optional parent. Other parameters must be set by using the API directly, e.g. setHasSelection and setSearch
 
 <h4>KFontChooser</h4>
 <ul>
-<li>Was in kfontdialog.h, but was moved to it's own header. so now either do #include &lt;KFontChooser&gt; or #include &lt;kfontchooser.h&gt;</li>
+<li>Was in kfontdialog.h, but was moved to it's own header, so now either do #include &lt;KFontChooser&gt; or #include &lt;kfontchooser.h&gt;</li>
 <li>The KFontChooser constructors now take a set of flags to determine how it is displayed, which replaces the numerous bools used previously. The following mappings from the bools in KDE3 and the enum in KDE4 are as follows:
 <ul>
 <li>3rd parameter onlyFixed -&gt; FixedFontsOnly</li>
@@ -1298,27 +1194,59 @@ The constructors have been simplified to take an optional parent. Other paramete
 <li>The second argument for getFontDiff() is now a reference to a KFontChooser::FontDiffFlags instead of an int.</li>
 </ul>
 
+<h4>KGlobalAccel</h4>
+<ul>
+<li>Moved from kdecore.</li>
+<li>bool useFourModifierKeys() has been removed (we always use four modifier keys now).</li>
+<li>Now a singleton</li>
+<li>You shouldn't need to access this class much... just use setGlobalShortcut() in KAction.</li>
+</ul>
+
+<h4>KGlobalSettings</h4>
+<ul>
+<li>Moved from kdecore.</li>
+<li>KGlobalSettings is now a QObject so can emit signals like kdisplayPaletteChanged() instead of KApplication</li>
+<li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO::trash instead</li>
+<li>Accessing system colors via KGlobalSettings is deprecated; use an appropriately constructed KColorScheme instead.
+See the <a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kdeui/html/classKGlobalSettings.html">KGlobalSettings documentation</a> or kglobalsettings.h for specific replacement suggestions.</li>
+</ul>
 
 <h4>KGradientSelector</h4>
 <ul>
 <li>Reversed the value range, if orientation is horizontal. Now minimum is on the left and maximum on the right side.</li>
 </ul>
 
-<h4>KGUIItem</h4>
+<h4>KGuiItem</h4>
 <ul>
 <li>Don't use setIconSet anymore, use setIcon instead, there is no compatibility class or function</li>
 </ul>
 
 <h4>KHistoryCombo</h4>
+<p>Renamed to KHistoryComboBox.</p>
 <ul>
-<li>Moved from kcombobox.h to khistorycombobox.h</li>
-<li>Changed name from KHistoryCombo to KHistoryComboBox</li>
+<li>Was in kcombobox.h, but was moved to it's own header, so now do #include &lt;khistorycombobox.h&gt;</li>
+</ul>
+
+<h4>KHSSelector</h4>
+<ul>
+<li>Renamed to KHueSaturationSelector, moved to kxyselector.h</li>
 </ul>
 
 <h4>KIcon</h4>
 <ul>
 <li>New class (old one renamed to K3Icon)</li>
 <li>Thin wrapper around QIcon which creates a KIconEngine corresponding to the kde named icon</li>
+</ul>
+
+<h4>KIconLoader</h4>
+<ul>
+<li>Moved from kdecore and is now a QObject.</li>
+<li>Deprecated loadIconSet(), DesktopIconSet(), BarIconSet(), SmallIconSet(), UserIconSet(): use KIcon(name) or KIcon(name,instance-&gt;iconLoader()) instead.<br/>
+Note that this can change slightly the look of the icon in some cases: for instance if code was calling setIcon(BarIconSet())
+on a pushbutton, it meant the icon was loaded at toolbar size and then resized down.
+With KIcon(name), the small icon is picked up instead, which might look different, but this is the correct behavior.
+These deprecated methods were also altered to not take a KComponentData (KInstance* in KDE3), which was an optional parameter in KDE3.</li>
+<li>the State parameter was used to be both define the state of the icon one of a limited number of overlays. Overlays are now a separate parameter, a QStringList, containing the names of icons to overlay. The new overlays parameter now follows the state parameter.</li>
 </ul>
 
 <h4>KInputDialog</h4>
@@ -1334,35 +1262,16 @@ The constructors have been simplified to take an optional parent. Other paramete
 </ul>
 
 <h4>KJanusWidget</h4>
-<ul>
-<li>Deprecated. Use KPageWidget instead</li>
-</ul>
+<p>Deprecated. Use KPageWidget instead.</p>
 
 <h4>KKeyButton</h4>
-<ul>
-<li>Gone, two replacements: KKeySequenceWidget and KShortcutWidget. Use KShortcutWidget only if you really want two possible shortcuts.</li>
-<li>Both don't pop up a modal dialog.</li>
-</ul>
+<p>Removed. Use either KKeySequenceWidget or KShortcutWidget. Use KShortcutWidget only if you really want two possible shortcuts. Both don't pop up a modal dialog.</p>
 
 <h4>KKeyChooser</h4>
-<ul>
-<li>Renamed to KShortcutsEditor.</li>
-<li>Added new constructor parameter: ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
-<li>Removed all functions dealing with old classes KShortcutList, KGlobalAccel (kde3 version)</li>
-<li>Global shortcut conflict checking functions moved to KGlobalAccel.</li>
-<li>Standard shortcuts checking functions were removed.</li>
-<li>See also: KKeyDialog.</li>
-</ul>
+<p>Renamed to <a href="#KShortcutsEditor">KShortcutsEditor</a>.</p>
 
 <h4>KKeyDialog</h4>
-<ul>
-<li>Renamed to KShortcutsDialog</li>
-<li>Changed from edit/commit semantics to edit in-place/revert semantics. The old way didn't work in corner cases, the new way is quite a bit less complicated internally, and such cases only appear if a user opens multiple KKeyDialogs at the same time, which nobody does intentionally.</li>
-<li>Rewritten. It was hard to read, which stood in the way of future changes/improvements.</li>
-<li>Uses a new GUI layout.</li>
-<li>removed KDE2 deprecated functions</li>
-<li>Added new constructor parameter: KKeyChooser::ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
-</ul>
+<p>Renamed to <a href="#KShortcutsDialog">KShortcutsDialog</a>.</p>
 
 <h4>KLed</h4>
 <ul>
@@ -1381,23 +1290,16 @@ The constructors have been simplified to take an optional parent. Other paramete
 </ul>
 
 <h4>KLineEditDlg</h4>
-<ul>
-<li>Was deprecated, has been removed. Use KInputDialog instead.</li>
-</ul>
+<p>Was deprecated, has been removed. Use KInputDialog instead.</p>
 
 <h4>KListAction</h4>
-<ul>
-<li>Deleted - as per comments, did not add anything to KSelectAction</li>
-</ul>
+<p>Removed; as per comments, did not add anything to KSelectAction.</p>
 
 <h4>KListBox</h4>
-<ul>
-<li>Removed and replaced with KListWidget (based on the QListWidget class)</li>
-<li>K3ListBox has been added to kde3support to help with porting</li>
-</ul>
+<p>Deprecated and renamed to K3ListBox. Use KListWidget (based on the QListWidget class).</p>
 
 <h4>KMacroCommand</h4>
-KMacroCommand has been renamed to K3MacroCommand and moved to kde3support. The header file was renamed k3command.h.
+<p>Deprecated and renamed to to K3MacroCommand, header is k3command.h.</p>
 
 <h4>KMainWindow</h4>
 <ul>
@@ -1419,6 +1321,13 @@ KMacroCommand has been renamed to K3MacroCommand and moved to kde3support. The h
 <li>actions() now returns a DCOPCString</li>
 </ul>
 
+<h4><a name="KMenu">KMenu</a> (was KPopupMenu)</h4>
+<ul>
+<li>indexes replaced by QAction*</li>
+<li>title, titlePixmap, and changeTitle removed - use QAction::text(), QAction::icon(), QAction::setText() and QAction::setIcon</li>
+<li>contextMenuFocusItem changed to contextMenuFocusAction in line with the change from indexes to actions</li>
+</ul>
+
 <h4>KMessageBox</h4>
 <ul>
 <li>Where applicable, the static functions now take an additional argument to specify the cancel button. Since a default argument is provided, this will affect your code only, if you specified dontAskAgainName and/or options. In those cases, adding an additional parameter KStandardGuiItem::cancel() leads to the old behavior. The following functions are affected (omitting function arguments in the list): questionYesNoCancel(), questionYesNoCancelWId(), warningContinueCancel(), warningContinueCancelWId(),
@@ -1426,7 +1335,17 @@ warningContinueCancelList(), warningContinueCancelListWId(), warningYesNoCancel(
 </ul>
 
 <h4>KNamedCommand</h4>
-KNamedCommand has been renamed to K3NamedCommand and moved to kde3support. The header file was renamed k3command.h.
+<p>Deprecated and renamed to K3NamedCommand, header is k3command.h.</p>
+
+<h4>KPalette</h4>
+<ul>
+<li>Renamed to <a href="KColorCollection">KColorCollection</a></li>
+</ul>
+
+<h4>KPaletteTable</h4>
+<ul>
+<li>Renamed to <a href="KColorTable">KColorTable</a></li>
+</ul>
 
 <h4>KPassivePopup</h4>
 <ul>
@@ -1434,20 +1353,16 @@ KNamedCommand has been renamed to K3NamedCommand and moved to kde3support. The h
 </ul>
 
 <h4>KPasswordEdit</h4>
-<ul>
-<li>deprecated. Use now KLineEdit, with KLineEdit::setPasswordMode(true)</li>
-<li>K3PasswordEdit is in kde3support for helping porting</li>
-</ul>
+<p>Deprecated and renamed to K3PasswordEdit. Use KLineEdit, with KLineEdit::setPasswordMode(true).</p>
 
 <h4>KPasswordDialog</h4>
+<p>Deprecated and renamed to K3PasswordDialog.</p>
 <ul>
-<li>K3PasswordDialog is in kde3support for helping porting</li>
 <li>asking for a new password -&gt;  KNewPasswordDialog</li>
 <li>password() return QString</li>
 <li>getPassword() gone, use the following code instead</li>
 <!-- <li>kpassdlg.h was renamed kpassworddialog.h.</li>
 <li>checkPassword take now a QString as argument</li> -->
-</ul>
 <pre>
 KPasswordDialog dlg(parent);
 dlg.setPrompt( prompt );
@@ -1456,41 +1371,28 @@ if( dlg.exec() != QDialog::Accepted )
     return;
 use( dlg.password() );
 </pre>
-
+</ul>
 
 <h4>KPixmapIO</h4>
-<ul>
-<li>The class is dumped, use QPixmap.toImage() and QPixmap::fromImage()</li>
-</ul>
+<p>Removed. Use QPixmap.toImage() and QPixmap::fromImage().</p>
 
 <h4>KPixmapRegionSelecorDialog</h4>
 <ul>
-    <li>getSelectedRegion was changed to selectedRegion</li>
-    <li>getSelectedImage was changed to selectedImage</li>
+<li>getSelectedRegion was changed to selectedRegion</li>
+<li>getSelectedImage was changed to selectedImage</li>
 </ul>
 
 <h4>KPopupMenu</h4>
-<ul>
-<li>Renamed to KMenu to reflect change in Qt4</li>
-<li>indexes replaced by QAction*</li>
-<li>title, titlePixmap, and changeTitle removed - use QAction::text(), QAction::icon(), QAction::setText() and QAction::setIcon</li>
-<li>contextMenuFocusItem changed to contextMenuFocusAction in line with the change from indexes to actions</li>
-</ul>
+<p>Renamed to <a href="#KMenu">KMenu</a>.</p>
 
 <h4>KPopupTitle</h4>
-<ul>
-<li>Removed - QMenu doesn't accept widgets, and QAction allows specification of font, icon etc... and gradients / background pixmaps weren't even working in
-KDE3. You can use KMenu::addTitle() instead, which creates QAction.</li>
-</ul>
+<p>Removed; QMenu doesn't accept widgets, and QAction allows specification of font, icon etc... and gradients / background pixmaps weren't even working in KDE3. You can use KMenu::addTitle() instead, which creates QAction.</p>
 
 <h4>KProgress</h4>
-<ul>
-<li>Removed. Use QProgressBar instead.
+<p>Removed. Use QProgressBar instead.</p>
 <ul>
 <li>advance(int offset) -&gt; setValue(value()+offset)</li>
 <li>QProgressBar has changed a lot in Qt4 ( setTotalSteps(totalSteps) -&gt; setRange(0, totalSteps), setProgress -&gt; setValue, percentageChanged -&gt; valueChanged ). For more details see QProgressBar class reference.</li>
-</ul>
-</li>
 </ul>
 
 <h4>KProgressDialog</h4>
@@ -1506,9 +1408,7 @@ KDE3. You can use KMenu::addTitle() instead, which creates QAction.</li>
 </ul>
 
 <h4>KRadioAction</h4>
-<ul>
-<li>Deleted - use KAction (or KToggleAction if you need different text/icons for the selected state) instead, in combination with an exclusive QActionGroup</li>
-</ul>
+<p>Removed. Use KAction (or KToggleAction if you need different text/icons for the selected state) instead, in combination with an exclusive QActionGroup</p>
 
 <h4>KRecentFilesAction</h4>
 <ul>
@@ -1518,9 +1418,7 @@ KDE3. You can use KMenu::addTitle() instead, which creates QAction.</li>
 </ul>
 
 <h4>KRootPixmap</h4>
-<ul>
-<li>Removed since not used</li>
-</ul>
+<p>Removed since it was not used.</p>
 
 <h4>KSelectAction</h4>
 <ul>
@@ -1529,24 +1427,48 @@ KDE3. You can use KMenu::addTitle() instead, which creates QAction.</li>
 <li>{set|}removeAmpersandsInCombo() removed - was deprecated</li>
 </ul>
 
-<h4>KHSSelector</h4>
-<ul>
-<li>Renamed to KHueSaturationSelector, moved to kxyselector.h</li>
-</ul>
-
 <h4>KSeparator</h4>
 <ul>
 <li>KSeparator now uses Qt::Vertical and Qt::Horizontal rather then QFrame's HFrame and VFrame.</li>
 </ul>
 
-<h4>KSessionManaged</h4>
-<ul>
-<li>Renamed to KSessionManager and moved to it's own header: ksessionmanager.h or KSessionManager</li>
-</ul>
+<h4>KSessionManager</h4>
+<p>Moved from kdecore, renamed from KSessionManaged, and moved to it's own header: ksessionmanager.h or KSessionManager</p>
 
 <h4>KSharedPixmap</h4>
+<p>Removed since is was not used.</p>
+
+<h4>KShortcut</h4>
 <ul>
-<li>Removed since not used</li>
+<li>Moved from kdecore.</li>
+<li>Now reentrant</li>
+<li>Only uses QKeySequences now</li>
+<li>Removed list semantics; remove() still has somewhat list-like behavior.</li>
+<li>Introduced "primary" and "alternate" shortcuts to replace the arbitrary list of shortcuts</li>
+<li>Removed casting operators</li>
+<li>Removed operator&lt; and operator&gt;</li>
+<li>Added a qHash(const KShortcut &amp;) function so you can use QHash with KShortcut instead of QMap</li>
+<li>remove() -&gt; removeAll()</li>
+<li>toList() -&gt; Not needed anymore since KShortcut inherits QList&lt;QKeySequence&gt;</li>
+<li>toStringInternal() -&gt; You shouldn't be using this! But use toString() instead</li>
+</ul>
+
+<h4><a name="KShortcutsEditor">KShortcutsEditor</a> (was KKeyChooser)</h4>
+<ul>
+<li>Added new constructor parameter: ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
+<li>Removed all functions dealing with old classes KShortcutList, KGlobalAccel (kde3 version)</li>
+<li>Global shortcut conflict checking functions moved to KGlobalAccel.</li>
+<li>Standard shortcuts checking functions were removed.</li>
+</ul>
+<p>See also <a href="#KShortcutsDialog">KShortcutsDialog</a>.</p>
+
+<h4><a name="KShortcutsDialog">KShortcutsDialog</a> (was KKeyDialog)</h4>
+<ul>
+<li>Changed from edit/commit semantics to edit in-place/revert semantics. The old way didn't work in corner cases, the new way is quite a bit less complicated internally, and such cases only appear if a user opens multiple KKeyDialogs at the same time, which nobody does intentionally.</li>
+<li>Rewritten. It was hard to read, which stood in the way of future changes/improvements.</li>
+<li>Uses a new GUI layout.</li>
+<li>removed KDE2 deprecated functions</li>
+<li>Added new constructor parameter: KKeyChooser::ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
 </ul>
 
 <h4>KStatusBar</h4>
@@ -1558,14 +1480,14 @@ KDE3. You can use KMenu::addTitle() instead, which creates QAction.</li>
 </ul>
 
 <h4>KStdAction</h4>
+<p>Renamed to KStandardAction, header is kstandardaction.h.</p>
 <ul>
-<li>KStdAction was renamed to KStandardAction and the header moved from kstdaction.h to kstandardaction.h</li>
 <li>showToolbar() methods have been removed, see KMainWindow::setStandardToolBarMenuEnabled()</li>
 </ul>
 
 <h4>KStdGuiItem</h4>
+<p>Renamed to KStandardGuiItem, header is kstandardguiitem.h.</p>
 <ul>
-<li>KStdGuiItem was renamed to KStandardGuiItem and the header moved from kstdguiitem.h to kstandardguiitem.h</li>
 <li>The StdItem enum was renamed to StandardItem</li>
 </ul>
 
@@ -1575,8 +1497,8 @@ KDE3. You can use KMenu::addTitle() instead, which creates QAction.</li>
 </ul>
 
 <h4>KSystemTray</h4>
+<p>Renamed to KSystemTrayIcon for consistency with its actual purpose and naming in Qt (QSystemTrayIcon).</p>
 <ul>
-<li>Renamed to KSystemTrayIcon for consistency with its actual purpose and naming in Qt (QSystemTrayIcon)</li>
 <li>Is now a subclass of QSystemTrayIcon and not QLabel. Therefore it is not a widget anymore. Otherwise, it behaves the same as in KDE3 when it comes to managing a parent window's visibility and providing an action collection to display in the context menu.</li>
 </ul>
 
@@ -1587,9 +1509,7 @@ KDE3. You can use KMenu::addTitle() instead, which creates QAction.</li>
 </ul>
 
 <h4>KTabCtl</h4>
-<ul>
-<li>Removed, use QTabWidget</li>
-</ul>
+<p>Removed. Use QTabWidget.</p>
 
 <h4>KTextBrowser</h4>
 <ul>
@@ -1602,14 +1522,10 @@ KDE3. You can use KMenu::addTitle() instead, which creates QAction.</li>
 </ul>
 
 <h4>KTimeWidget</h4>
-<ul>
-<li>Removed, use QTimeEdit</li>
-</ul>
+<p>Removed. Use QTimeEdit.</p>
 
 <h4>KTimezoneWidget</h4>
-<ul>
-<li>Renamed to KTimeZoneWidget</li>
-</ul>
+<p>Renamed to KTimeZoneWidget.</p>
 
 <h4>KToggleAction</h4>
 <ul>
@@ -1658,9 +1574,7 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 </ul>
 
 <h4>KToolBarButton</h4>
-<ul>
-<li>Deleted - all done by QToolButton now</li>
-</ul>
+<p>Removed. Done by QToolButton now.</p>
 
 <h4>KToolBarLabelAction</h4>
 <ul>
@@ -1697,17 +1611,13 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 </ul>
 
 <h4>KToolBarRadioGroup</h4>
-<ul>
-<li>Deleted - all done by QToolButton now</li>
-</ul>
+<p>Removed. Done by QToolButton now.</p>
 
 <h4>KToolBarSeparator</h4>
-<ul>
-<li>Deleted - use QAction::setSeparator()</li>
-</ul>
+<p>Removed. Use QAction::setSeparator().</p>
 
 <h4>KUndoRedoAction</h4>
-KUndoRedoAction has been renamed to K3UndoRedoAction and moved to kde3support. The header file was named k3command.h.
+<p>Deprecated and renamed to K3UndoRedoAction, header is k3command.h.</p>
 
 <h4>KURLLabel</h4>
 <ul>
@@ -1725,25 +1635,16 @@ KUndoRedoAction has been renamed to K3UndoRedoAction and moved to kde3support. T
 </ul>
 
 <h4>KValueSelector</h4>
-<ul>
-<li>Renamed to KColorValueSelector, moved to kcolorvalueselector.h</li>
-</ul>
+<p>Renamed to KColorValueSelector, moved to kcolorvalueselector.h</p>
 
 <h4>KWidgetAction</h4>
-<ul>
-<li>Removed, instead use a KAction or QWidgetAction and utilise its widget-setting capabilities.</li>
-</ul>
+<p>Removed. Use KAction or QWidgetAction and utilise its widget-setting capabilities.</p>
 
 <h4>KWindowListMenu</h4>
-<ul>
-<li>Moved to libkworkspace in kdebase</li>
-</ul>
+<p>Moved to libkworkspace in kdebase</p>
 
 <h4>KWizard</h4>
-<ul>
-<li>Moved to kde3support and renamed to K3Wizard.</li>
-<li>Use KAssistantDialog instead (having similar API).</li>
-</ul>
+<p>Deprecated and renamed to K3Wizard. Use KAssistantDialog.</p>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
