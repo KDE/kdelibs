@@ -93,6 +93,21 @@ class KTranslit
      */
     virtual ~KTranslit ();
 
+    protected:
+
+    /**
+     * Resolve optional inserts of the form ~@/foo/bar/ in the string,
+     * by picking the ones with given index.
+     * Any single character can be used consistently instead of the slash to
+     * separate inserts (like in sed).
+     *
+     * @param str string to resolve inserts in
+     * @param nins number of optional inserts
+     * @param ind index of insert to choose (zero-based)
+     * @return resolved string
+     */
+    QString resolveInserts (const QString &str, int nins, int ind) const;
+
     private:
 
     KTranslitPrivate *d;

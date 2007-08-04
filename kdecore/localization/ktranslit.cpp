@@ -112,6 +112,61 @@ QString KTranslit::transliterate (const QString &str,
     return str;
 }
 
+QString KTranslit::resolveInserts (const QString &str_, int nins, int ind) const
+{
+    static QString head("~@");
+    static int hlen = head.length();
+
+    QString str = str_;
+    QString rstr;
+    while (1) {
+        int p = str.indexOf(head);
+        if (p < 0) {
+            break;
+        }
+
+        // Append segment before optional insert to resulting text.
+        rstr.append(str.left(p));
+
+        // Must have at least 2 characters after the head.
+        if (str.length() < hlen + 2) {
+            kDebug(173) << QString("Malformed optional inserts list in {%1}, "
+                                   "starting here: {%2}").arg(str_, str);
+            return str_;
+        }
+
+        // Read the separating character and trim original string.
+        QChar sep = str[p + hlen];
+        str.remove(0, p + hlen + 1);
+
+        // Parse requested number of inserts,
+        // choose the one with matching index for resulting text.
+        for (int i = 0; i < nins; ++i) {
+            // Ending separator for this insert.
+            int p = str.indexOf(sep);
+
+            // Must have exactly the requested number of inserts.
+            if (p < 0) {
+                kDebug(173) << QString("Not enough inserts listed in {%1}, "
+                                       "starting here: {%2}").arg(str_, str);
+                return str_;
+            }
+
+            // If index is matching requested, append to resulting text.
+            if (i == ind) {
+                rstr.append(str.left(p));
+            }
+
+            // Trim original string.
+            str.remove(0, p + 1);
+        }
+    }
+    // Append the final segment to resulting text.
+    rstr.append(str);
+
+    return rstr;
+}
+
 // -----------------------------------------------------------------------------
 // Serbian.
 
@@ -198,10 +253,11 @@ KTranslitSerbian::~KTranslitSerbian ()
     delete d;
 }
 
-QString KTranslitSerbian::transliterate (const QString &str,
+QString KTranslitSerbian::transliterate (const QString &str_,
                                          const QString &script) const
 {
     if (d->latinNames.contains(script)) {
+        QString str = resolveInserts(str_, 2, 1);
         // NOTE: This loop has been somewhat optimized for speed.
         int slen = str.length();
         QString nstr;
@@ -226,6 +282,7 @@ QString KTranslitSerbian::transliterate (const QString &str,
         return nstr;
     }
     else {
+        QString str = resolveInserts(str_, 2, 0);
         return str;
     }
 }
