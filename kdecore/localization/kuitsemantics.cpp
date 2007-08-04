@@ -738,13 +738,11 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     if (s->knownNumfmts.contains(fmtnameInt)) {
         m_numfmtInt = s->knownNumfmts[fmtnameInt];
     }
-    #ifndef NDEBUG
     else {
-        kWarning() << QString("Format of integer numbers '%1', selected in "
-                              "kdelibs.po, is not valid; using POSIX format.")
-                             .arg(fmtnameInt) << endl;
+        kDebug(173) << QString("Format of integer numbers '%1', selected in "
+                               "kdelibs.po, is not valid; using POSIX format.")
+                              .arg(fmtnameInt);
     }
-    #endif
 
     m_numfmtReal = Kuit::Numfmt::Posix;
     // i18n: Decide how real-valued amounts will be formatted in your
@@ -753,13 +751,11 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     if (s->knownNumfmts.contains(fmtnameReal)) {
         m_numfmtReal = s->knownNumfmts[fmtnameReal];
     }
-    #ifndef NDEBUG
     else {
-        kWarning() << QString("Format of real numbers '%1', selected in "
-                              "kdelibs.po, is not valid; using POSIX format.")
-                             .arg(fmtnameReal) << endl;
+        kDebug(173) << QString("Format of real numbers '%1', selected in "
+                               "kdelibs.po, is not valid; using POSIX format.")
+                              .arg(fmtnameReal);
     }
-    #endif
 
     // i18n: Decide which string is used to delimit keys in a keyboard
     // shortcut, e.g. + in Ctrl+Alt+Tab.
@@ -886,13 +882,11 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     }
     else { // unknown role
         rol = Kuit::Rol::None;
-        #ifndef NDEBUG
         if (!rolname.isEmpty()) {
             kDebug(173) << QString("Unknown semantic role '@%1' in "
                                    "context marker for message {%2}.")
-                                  .arg(rolname, shorten(text)) << endl;
+                                  .arg(rolname, shorten(text));
         }
-        #endif
     }
 
     // Set subcue from name.
@@ -902,13 +896,11 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     }
     else { // unknown or not given subcue
         cue = Kuit::Cue::None;
-        #ifndef NDEBUG
         if (!cuename.isEmpty()) {
             kDebug(173) << QString("Unknown interface subcue ':%1' in "
                                    "context marker for message {%2}.")
-                                  .arg(cuename, shorten(text)) << endl;
+                                  .arg(cuename, shorten(text));
         }
-        #endif
     }
 
     // Set format from name, or by derivation from contex/subcue.
@@ -932,13 +924,11 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
             fmt = Kuit::Fmt::Plain;
         }
 
-        #ifndef NDEBUG
         if (!fmtname.isEmpty()) {
             kDebug(173) << QString("Unknown visual format '/%1' in "
                                    "context marker for message {%2}.")
-                                  .arg(fmtname, shorten(text)) << endl;
+                                  .arg(fmtname, shorten(text));
         }
-        #endif
     }
 
     return fmt;
@@ -1078,10 +1068,8 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     }
 
     if (xml.hasError()) {
-        #ifndef NDEBUG
         kDebug(173) << QString("Markup error in message {%1}: %2")
-                              .arg(shorten(text), xml.errorString()) << endl;
-        #endif
+                              .arg(shorten(text), xml.errorString());
         return QString();
     }
 
@@ -1122,12 +1110,10 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
         }
         else {
             oel.handling = OpenEl::Dropout;
-            #ifndef NDEBUG
             kDebug(173) << QString("Tag '%1' cannot be subtag of '%2' "
                                    "in message {%3}.")
                                   .arg(s->tagNames[oel.tag], s->tagNames[etag],
-                                       shorten(text)) << endl;
-            #endif
+                                       shorten(text));
         }
 
         // Resolve attributes and compute attribute set key.
@@ -1139,22 +1125,18 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
                     attset << att;
                     oel.avals[att] = attvals[i];
                 }
-                #ifndef NDEBUG
                 else {
                     kDebug(173) << QString("Attribute '%1' cannot be used in "
                                            "tag '%2' in message {%3}.")
                                           .arg(attnams[i], oel.name,
-                                               shorten(text)) << endl;
+                                               shorten(text));
                 }
-                #endif
             }
-            #ifndef NDEBUG
             else {
                 kDebug(173) << QString("Unknown semantic tag attribute '%1' "
                                        "in message {%2}.")
-                                      .arg(attnams[i], shorten(text)) << endl;
+                                      .arg(attnams[i], shorten(text));
             }
-            #endif
         }
         oel.akey = attSetKey(attset);
     }
@@ -1163,13 +1145,11 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
     }
     else { // other element, leave it in verbatim
         oel.handling = OpenEl::Ignored;
-        #ifndef NDEBUG
         if (!s->qtHtmlTagNames.contains(oel.name)) {
             kDebug(173) << QString("Tag '%1' is neither semantic nor HTML in "
                                    "message {%3}.")
-                                  .arg(oel.name, shorten(text)) << endl;
+                                  .arg(oel.name, shorten(text));
         }
-        #endif
     }
 
     return oel;

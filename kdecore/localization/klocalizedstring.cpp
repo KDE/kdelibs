@@ -205,20 +205,18 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     // Assure the message has been supplied.
     if (msg.isEmpty())
     {
+        kDebug(173) << QString("Trying to convert empty KLocalizedString to QString.");
         #ifndef NDEBUG
-        kDebug(173) << QString("Trying to convert empty KLocalizedString to QString.") << endl;
         return QString("(I18N_EMPTY_MESSAGE)");
         #else
         return QString();
         #endif
     }
 
-    #ifndef NDEBUG
     // Check whether plural argument has been supplied, if message has plural.
     if (!plural.isEmpty() && !numberSet)
         kDebug(173) << QString("Plural argument to message {%1} not supplied before conversion.")
-                              .arg(shortenMessage(QString::fromUtf8(msg))) << endl;
-    #endif
+                              .arg(shortenMessage(QString::fromUtf8(msg)));
 
     // Get raw translation.
     QString lang, rawtrans, lscr;
@@ -259,11 +257,9 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         {
             if (KGlobal::hasMainComponent())
                 loadTranscript();
-            #ifndef NDEBUG
             else
                 kDebug(173) << QString("Scripted message {%1} before transcript engine can be loaded.")
-                                    .arg(shortenMessage(trans)) << endl;
-            #endif
+                                      .arg(shortenMessage(trans));
         }
     }
     else if (cdpos < 0)
@@ -275,10 +271,8 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     {
         // The msgstr starts with the script fence, no ordinary translation.
         // This is not allowed, consider message not translated.
-        #ifndef NDEBUG
         kDebug(173) << QString("Scripted message {%1} without ordinary translation, discarded.")
-                               .arg(shortenMessage(trans)) << endl;
-        #endif
+                               .arg(shortenMessage(trans)) ;
         trans = selectForEnglish();
     }
 
@@ -433,13 +427,13 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
             {
                 gaps = true;
                 kDebug(173) << QString("Placeholder %%1 skipped in message {%2}.")
-                                      .arg(QString::number(i + 1), shortenMessage(trans)) << endl;
+                                      .arg(QString::number(i + 1), shortenMessage(trans));
             }
         // If no gaps, check for mismatch between number of unique placeholders and
         // actually supplied arguments.
         if (!gaps && ords.size() != args.size())
             kDebug(173) << QString("%1 instead of %2 arguments to message {%3} supplied before conversion.")
-                                  .arg(args.size()).arg(ords.size()).arg(shortenMessage(trans)) << endl;
+                                  .arg(args.size()).arg(ords.size()).arg(shortenMessage(trans));
 
         // Some spoofs.
         if (gaps)
@@ -562,10 +556,8 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
             ++tpos;
         }
         if (tpos == slen) {
-            #ifndef NDEBUG
             kDebug(173) << QString("Unclosed interpolation {%1} in message {%2}.")
-                                  .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
-            #endif
+                                  .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
             return -1;
         }
         if (strans.mid(tpos, ielen) == s->endInterp) {
@@ -592,10 +584,8 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
                     ++tpos;
                 }
                 if (tpos == slen) {
-                    #ifndef NDEBUG
                     kDebug(173) << QString("Unclosed quote in interpolation {%1} in message {%2}.")
-                                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
-                    #endif
+                                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
                     return -1;
                 }
 
@@ -632,10 +622,8 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
                     ++tpos;
                 }
                 if (tpos == slen) {
-                    #ifndef NDEBUG
                     kDebug(173) << QString("Non-terminated interpolation {%1} in message {%2}.")
-                                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans)) << endl;
-                    #endif
+                                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
                     return -1;
                 }
 
@@ -669,12 +657,10 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans, int po
     }
     if (!scriptError.isEmpty()) { // problem with evaluation
         fallback = true; // also signal fallback
-        #ifndef NDEBUG
         if (!scriptError.isEmpty()) {
             kDebug(173) << QString("Interpolation {%1} in {%2} failed: %3")
-                                  .arg(strans.mid(pos, tpos - pos), shortenMessage(strans), scriptError) << endl;
+                                  .arg(strans.mid(pos, tpos - pos), shortenMessage(strans), scriptError);
         }
-        #endif
     }
 
     return tpos;
@@ -707,10 +693,8 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
     // If the evaluation went wrong.
     if (!scriptError.isEmpty())
     {
-        #ifndef NDEBUG
         kDebug(173) << QString("Post call {%1} for message {%2} failed: %3")
-                              .arg(pcall, shortenMessage(msgid), scriptError) << endl;
-        #endif
+                              .arg(pcall, shortenMessage(msgid), scriptError);
         return QString();
     }
 
@@ -871,19 +855,15 @@ void KLocalizedStringPrivate::loadTranscript ()
 
     KLibrary *lib = KLibLoader::self()->library(QLatin1String("ktranscript"));
     if (!lib) {
-        #ifndef NDEBUG
         kDebug(173) << QString("Cannot load transcript plugin: %1")
-                              .arg(KLibLoader::self()->lastErrorMessage()) << endl;
-        #endif
+                              .arg(KLibLoader::self()->lastErrorMessage());
         return;
     }
 
     InitFunc initf = (InitFunc) lib->resolveFunction("load_transcript");
     if (!initf) {
         lib->unload();
-        #ifndef NDEBUG
-        kDebug(173) << QString("Cannot find function load_transcript in transcript plugin.") << endl;
-        #endif
+        kDebug(173) << QString("Cannot find function load_transcript in transcript plugin.");
         return;
     }
 
