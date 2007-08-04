@@ -57,6 +57,8 @@ namespace KGlobal
   * KLocale supports translating, as well as specifying the format
   * for numbers, currency, time, and date.
   *
+  * Use KGlobal::locale() to get pointer to the global KLocale object
+  *
   * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>,
   * Hans Petter Bieker <bieker@kde.org>, Lukas Tinkl <lukas.tinkl@suse.cz>
   * @short class for supporting locale settings and national language
