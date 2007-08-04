@@ -129,7 +129,7 @@ QString KTranslit::resolveInserts (const QString &str_, int nins, int ind) const
         rstr.append(str.left(p));
 
         // Must have at least 2 characters after the head.
-        if (str.length() < hlen + 2) {
+        if (str.length() < p + hlen + 2) {
             kDebug(173) << QString("Malformed optional inserts list in {%1}, "
                                    "starting here: {%2}").arg(str_, str);
             return str_;
