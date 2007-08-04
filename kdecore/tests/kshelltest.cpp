@@ -41,13 +41,12 @@ class KShellTest : public QObject
 void
 KShellTest::tildeExpand()
 {
+    QString me(KUser().loginName());
     QCOMPARE(KShell::tildeExpand("~"), QDir::homePath());
-    QCOMPARE(KShell::tildeExpand("~/sulli"), QDir::homePath()+"/sulli");
-    QCOMPARE(KShell::tildeExpand("~root"), KUser("root").homeDir());
-    QCOMPARE(KShell::tildeExpand("~root/sulli"),
-             KUser("root").homeDir()+"/sulli");
-    QCOMPARE(KShell::tildeExpand("~sulli"), KUser("sulli").homeDir());
-    QCOMPARE(KShell::tildeExpand("\\~sulli"), QLatin1String("~sulli"));
+    QCOMPARE(KShell::tildeExpand("~/dir"), QDir::homePath()+"/dir");
+    QCOMPARE(KShell::tildeExpand("~" + me), QDir::homePath());
+    QCOMPARE(KShell::tildeExpand("~" + me + "/dir"), QDir::homePath()+"/dir");
+    QCOMPARE(KShell::tildeExpand("\\~" + me), "~" + me);
 }
 
 void
@@ -74,20 +73,20 @@ KShellTest::splitJoin()
 {
     KShell::Errors err = KShell::NoError;
 
-    QCOMPARE(sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo \\a", KShell::NoOptions, &err),
-             QString("~sulli text jojo crap '\\'\\''\x1b!' 'ha lo' a"));
+    QCOMPARE(sj("\"~qU4rK\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo \\a", KShell::NoOptions, &err),
+             QString("~qU4rK text jojo crap '\\'\\''\x1b!' 'ha lo' a"));
     QVERIFY(err == KShell::NoError);
 
-    QCOMPARE(sj("\"~sulli\" 'text'", KShell::TildeExpand, &err),
-             QString("~sulli text"));
+    QCOMPARE(sj("\"~qU4rK\" 'text'", KShell::TildeExpand, &err),
+             QString("~qU4rK text"));
     QVERIFY(err == KShell::NoError);
 
-    QCOMPARE(sj("~\"sulli\" 'text'", KShell::TildeExpand, &err),
-             QString("~sulli text"));
+    QCOMPARE(sj("~\"qU4rK\" 'text'", KShell::TildeExpand, &err),
+             QString("~qU4rK text"));
     QVERIFY(err == KShell::NoError);
 
-    QCOMPARE(sj("~/\"sulli\" 'text'", KShell::TildeExpand, &err),
-             QDir::homePath() + "/sulli text");
+    QCOMPARE(sj("~/\"dir\" 'text'", KShell::TildeExpand, &err),
+             QDir::homePath() + "/dir text");
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj("~ 'text' ~", KShell::TildeExpand, &err),
@@ -98,8 +97,8 @@ KShellTest::splitJoin()
              QString("~ blah"));
     QVERIFY(err == KShell::NoError);
 
-    QCOMPARE(sj("~sulli ~root", KShell::TildeExpand, &err),
-             QString("~sulli ") + KUser("root").homeDir());
+    QCOMPARE(sj("~qU4rK ~" + KUser().loginName(), KShell::TildeExpand, &err),
+             QString("~qU4rK ") + QDir::homePath());
     QVERIFY(err == KShell::NoError);
 }
 
