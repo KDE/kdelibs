@@ -569,8 +569,11 @@ QDebug kDebugStream(QtMsgType level, int area, const char *file, int line, const
 {
     if (kDebug_data.isDestroyed()) {
         // we don't know what to return now...
-        qCritical() << "kDebugStream called after destruction; backtrace:"
-                    << qPrintable(kRealBacktrace(-1));
+        qCritical().nospace() << "kDebugStream called after destruction (from "
+                              << (funcinfo ? funcinfo : "")
+                              << (file ? " file " : " unknown file")
+                              << (file ? file :"")
+                              << " line " << line << ")";
         return QDebug(level);
     }
 
