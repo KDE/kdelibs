@@ -76,6 +76,15 @@ void KShortcutWidget::setClearButtonsShown(bool show)
 }
 
 
+KShortcut KShortcutWidget::shortcut() const
+{
+    KShortcut ret;
+    ret.setPrimary(d->ui.priEditor->keySequence());
+    ret.setAlternate(d->ui.altEditor->keySequence());
+    return ret;
+}
+
+
 //slot
 void KShortcutWidget::setShortcut(const KShortcut &newSc)
 {
