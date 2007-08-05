@@ -38,28 +38,28 @@ static QByteArray cups_authstring = "";
 
 void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString())
 {
-	kDebug(500) << "==========" << endl;
+	kDebug(500) << "==========";
 	if (s.isEmpty())
-		kDebug(500) << (answer ? "Answer" : "Request") << endl;
+		kDebug(500) << (answer ? "Answer" : "Request");
 	else
-		kDebug(500) << s << endl;
-	kDebug(500) << "==========" << endl;
+		kDebug(500) << s;
+	kDebug(500) << "==========";
 	if (!req)
 	{
-		kDebug(500) << "Null request" << endl;
+		kDebug(500) << "Null request";
 		return;
 	}
-	kDebug(500) << "State = 0x" << QString::number(req->state, 16) << endl;
-	kDebug(500) << "ID = 0x" << QString::number(req->request.status.request_id, 16) << endl;
+	kDebug(500) << "State = 0x" << QString::number(req->state, 16);
+	kDebug(500) << "ID = 0x" << QString::number(req->request.status.request_id, 16);
 	if (answer)
 	{
-		kDebug(500) << "Status = 0x" << QString::number(req->request.status.status_code, 16) << endl;
-		kDebug(500) << "Status message = " << ippErrorString(req->request.status.status_code) << endl;
+		kDebug(500) << "Status = 0x" << QString::number(req->request.status.status_code, 16);
+		kDebug(500) << "Status message = " << ippErrorString(req->request.status.status_code);
 	}
 	else
-		kDebug(500) << "Operation = 0x" << QString::number(req->request.op.operation_id, 16) << endl;
-	kDebug(500) << "Version = " << (int)(req->request.status.version[0]) << "." << (int)(req->request.status.version[1]) << endl;
-	kDebug(500) << endl;
+		kDebug(500) << "Operation = 0x" << QString::number(req->request.op.operation_id, 16);
+	kDebug(500) << "Version = " << (int)(req->request.status.version[0]) << "." << (int)(req->request.status.version[1]);
+	kDebug(500);
 
 	ipp_attribute_t *attr = req->attrs;
 	while (attr)
@@ -94,7 +94,7 @@ void dumpRequest(ipp_t *req, bool answer = false, const QString& s = QString())
 			if (i != (attr->num_values-1))
 				s += ", ";
 		}
-		kDebug(500) << s << endl;
+		kDebug(500) << s;
 		attr = attr->next;
 	}
 }
@@ -152,7 +152,7 @@ void IppRequest::init()
 		request_ = 0;
 	}
 	request_ = ippNew();
-	//kDebug(500) << "kdeprint: IPP request, lang=" << KGlobal::locale()->language() << endl;
+	//kDebug(500) << "kdeprint: IPP request, lang=" << KGlobal::locale()->language();
         QByteArray langstr = qPrintable(KGlobal::locale()->language());
 	cups_lang_t*	lang = cupsLangGet(langstr.data());
 	// default charset to UTF-8 (ugly hack)

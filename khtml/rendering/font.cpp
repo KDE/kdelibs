@@ -447,7 +447,7 @@ void Font::update(int logicalDpiY) const
         const QList<int> pointSizes = scalCache->object(ScalKey(f))->sizes;
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
-        // kDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
+        // kDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size;
 
 
         float diff = 1; // ### 100% deviation
@@ -459,7 +459,7 @@ void Font::update(int logicalDpiY) const
         for( ; it != itEnd; ++it )
         {
             float newDiff = ((*it)*(lDpiY/72.) - float(size))/float(size);
-            //kDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
+            //kDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff;
             if(newDiff < 0) newDiff = -newDiff;
             if(newDiff < diff)
             {
@@ -467,7 +467,7 @@ void Font::update(int logicalDpiY) const
                 bestSize = *it;
             }
         }
-        //kDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
+        //kDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff;
         if ( bestSize != 0 && diff < 0.2 ) // 20% deviation, otherwise we use a scaled font...
             size = (int)((bestSize*lDpiY) / 72);
     }

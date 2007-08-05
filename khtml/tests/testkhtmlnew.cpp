@@ -212,7 +212,7 @@ void TestKHTML::openUrl(const KUrl &url)
 
 void TestKHTML::openUrl(const QString &url)
 {
-    kDebug() << "url: " << url << endl;
+    kDebug() << "url: " << url;
     KUrl parsedUrl(url);
     m_part->openUrl(parsedUrl);
 }
@@ -242,7 +242,7 @@ void TestKHTML::toggleNavigable(bool s)
 
 void TestKHTML::toggleEditable(bool s)
 {
-    kDebug() << "editable: " << s << endl;
+    kDebug() << "editable: " << s;
     m_part->setEditable(s);
 }
 

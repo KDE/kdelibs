@@ -107,7 +107,7 @@ void AudioOutput::processBuffer(const QVector<float> &buffer)
         if (size > 0)
         {
             towrite += written;
-            kWarning() << "only " << written << " bytes written to /dev/dsp" << endl;
+            kWarning() << "only " << written << " bytes written to /dev/dsp";
         }
     }
 

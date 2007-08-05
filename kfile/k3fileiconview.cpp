@@ -477,7 +477,7 @@ void K3FileIconView::slotSelectionChanged()
 
 void K3FileIconView::slotSmallColumns()
 {
-    //kDebug(250) << "slotSmallColumns " << kBacktrace() << endl;
+    //kDebug(250) << "slotSmallColumns " << kBacktrace();
 
     // setItemTextPos(), setArrangement(), setWordWrapIconText() and
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
@@ -502,7 +502,7 @@ void K3FileIconView::slotSmallColumns()
 
 void K3FileIconView::slotLargeRows()
 {
-    // kDebug(250) << "slotLargeRows " << kBacktrace() << endl;
+    // kDebug(250) << "slotLargeRows " << kBacktrace();
     // setItemTextPos(), setArrangement(), setWordWrapIconText() and
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
     d->noArrangement = true; // stop arrangeItemsInGrid()!

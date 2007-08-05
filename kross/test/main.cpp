@@ -175,6 +175,6 @@ int main(int argc, char **argv)
     delete testobj2;
     delete app;
 
-    kDebug() << "DONE!!!" << endl;
+    kDebug() << "DONE!!!";
     return result;
 }

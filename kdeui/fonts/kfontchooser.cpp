@@ -685,7 +685,7 @@ void KFontChooser::Private::_k_style_chosen_slot(const QString& style)
     }
     //TODO - KDE4 : sizeListBox->scrollTo(sizeListBox->currentItem());
 
-    //kDebug() << "Showing: " << d->familyListBox->currentText() << ", " << d->currentStyles[currentStyle] << ", " << selectedSize-diff << endl;
+    //kDebug() << "Showing: " << d->familyListBox->currentText() << ", " << d->currentStyles[currentStyle] << ", " << selectedSize-diff;
     selFont = dbase.font(familyListBox->currentItem()->text(),
                          currentStyles[currentStyle],
                          selectedSize-diff);
@@ -704,7 +704,7 @@ void KFontChooser::Private::_k_displaySample( const QFont& font )
     xlfdEdit->setCursorPosition(0);
 
     //QFontInfo a = QFontInfo(font);
-    //kDebug() << "font: " << a.family () << ", " << a.pointSize () << endl;
+    //kDebug() << "font: " << a.family () << ", " << a.pointSize ();
     //kDebug() << "      (" << font.toString() << ")\n";
 }
 

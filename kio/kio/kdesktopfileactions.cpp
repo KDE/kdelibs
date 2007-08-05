@@ -51,7 +51,7 @@ bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
         return false;
     }
 
-    //kDebug(7009) << "TYPE = " << type.data() << endl;
+    //kDebug(7009) << "TYPE = " << type.data();
 
     if ( type == "FSDevice" )
         return runFSDevice( u, cfg );
@@ -239,7 +239,7 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
     QStringList::ConstIterator end = keys.end();
     for ( ; it != end; ++it )
     {
-        //kDebug(7009) << "CURRENT KEY = " << (*it) << endl;
+        //kDebug(7009) << "CURRENT KEY = " << (*it);
 
         QString group = *it;
 
@@ -290,7 +290,7 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
 
 void KDesktopFileActions::executeService( const KUrl::List& urls, const KDesktopFileActions::Service& _service )
 {
-    //kDebug(7009) << "EXECUTING Service " << _service.m_strName << endl;
+    //kDebug(7009) << "EXECUTING Service " << _service.m_strName;
 
     if ( _service.m_type == ST_USER_DEFINED ) {
         kDebug() << "KDesktopFileActions::executeService " << _service.m_strName
@@ -302,7 +302,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KDesktop
     } else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT ) {
         Q_ASSERT( urls.count() == 1 );
         QString path = urls.first().path();
-        //kDebug(7009) << "MOUNT&UNMOUNT" << endl;
+        //kDebug(7009) << "MOUNT&UNMOUNT";
 
         KDesktopFile cfg( path );
         const KConfigGroup group = cfg.desktopGroup();
@@ -317,7 +317,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KDesktop
         if ( _service.m_type == ST_MOUNT ) {
             // Already mounted? Strange, but who knows ...
             if ( mp ) {
-                kDebug(7009) << "ALREADY Mounted" << endl;
+                kDebug(7009) << "ALREADY Mounted";
                 return;
             }
 

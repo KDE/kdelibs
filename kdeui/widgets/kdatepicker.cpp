@@ -267,7 +267,7 @@ void KDatePicker::resizeEvent( QResizeEvent* e )
 
 void KDatePicker::dateChangedSlot( const QDate &date )
 {
-    kDebug( 298 ) << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
+    kDebug( 298 ) << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ").";
 
     const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
@@ -286,7 +286,7 @@ void KDatePicker::dateChangedSlot( const QDate &date )
 
 void KDatePicker::tableClickedSlot()
 {
-    kDebug( 298 ) << "KDatePicker::tableClickedSlot: table clicked." << endl;
+    kDebug( 298 ) << "KDatePicker::tableClickedSlot: table clicked.";
     emit( dateSelected( d->table->date() ) );
     emit( tableClicked() );
 }
@@ -302,7 +302,7 @@ bool KDatePicker::setDate( const QDate &date )
         d->table->setDate( date );  // this also emits dateChanged() which then calls our dateChangedSlot()
         return true;
     } else {
-        kDebug( 298 ) << "KDatePicker::setDate: refusing to set invalid date." << endl;
+        kDebug( 298 ) << "KDatePicker::setDate: refusing to set invalid date.";
         return false;
     }
 }
@@ -472,12 +472,12 @@ void KDatePicker::lineEnterPressed()
     QDate temp;
     // -----
     if( d->val->date( d->line->text(), temp ) == QValidator::Acceptable ) {
-        kDebug( 298 ) << "KDatePicker::lineEnterPressed: valid date entered." << endl;
+        kDebug( 298 ) << "KDatePicker::lineEnterPressed: valid date entered.";
         emit( dateEntered( temp ) );
         setDate( temp );
     } else {
         KNotification::beep();
-        kDebug( 298 ) << "KDatePicker::lineEnterPressed: invalid date entered." << endl;
+        kDebug( 298 ) << "KDatePicker::lineEnterPressed: invalid date entered.";
     }
 }
 

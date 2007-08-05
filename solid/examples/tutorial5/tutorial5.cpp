@@ -46,7 +46,7 @@ int main(int args, char **argv)
     //check to see if no network devices were found
     if(netlist.empty())
     {
-        kDebug() << "No network devices found!" << endl;
+        kDebug() << "No network devices found!";
         return 0;
     }
     
@@ -55,11 +55,11 @@ int main(int args, char **argv)
     //keep the program from crashing in the event that there's a bug in solid
     if(!netdev)
     {
-        kDebug() << "Device could not be converted.  There is a bug." << endl;
+        kDebug() << "Device could not be converted.  There is a bug.";
         return 0;
     }
     
-    kDebug() << "The iface of " << device.udi() << " is " << netdev->ifaceName() << endl;
+    kDebug() << "The iface of " << device.udi() << " is " << netdev->ifaceName();
     
     return 0;
 }

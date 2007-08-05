@@ -15,12 +15,12 @@ KNewStuff2Standard::KNewStuff2Standard()
 
 void KNewStuff2Standard::run(bool upload, bool modal, QString file)
 {
-    kDebug() << "-- test kns2 engine" << endl;
+    kDebug() << "-- test kns2 engine";
 
     m_engine = new KNS::Engine();
     bool success = m_engine->init("knewstuff2_test.knsrc");
 
-    kDebug() << "-- engine test result: " << success << endl;
+    kDebug() << "-- engine test result: " << success;
 
 	if(!success)
 		return;
@@ -29,13 +29,13 @@ void KNewStuff2Standard::run(bool upload, bool modal, QString file)
 	{
 		if(modal)
 		{
-			kDebug() << "-- start upload (modal)" << endl;
+			kDebug() << "-- start upload (modal)";
 			m_engine->uploadDialogModal(file);
-			kDebug() << "-- upload (modal) finished" << endl;
+			kDebug() << "-- upload (modal) finished";
 		}
 		else
 		{
-			kDebug() << "-- start upload (non-modal); will not block" << endl;
+			kDebug() << "-- start upload (non-modal); will not block";
 			m_engine->uploadDialog(file);
 		}
 	}
@@ -43,13 +43,13 @@ void KNewStuff2Standard::run(bool upload, bool modal, QString file)
 	{
 		if(modal)
 		{
-			kDebug() << "-- start download (modal)" << endl;
+			kDebug() << "-- start download (modal)";
 			m_engine->downloadDialogModal();
-			kDebug() << "-- download (modal) finished" << endl;
+			kDebug() << "-- download (modal) finished";
 		}
 		else
 		{
-			kDebug() << "-- start download (non-modal); will not block" << endl;
+			kDebug() << "-- start download (non-modal); will not block";
 			m_engine->downloadDialog();
 		}
 	}
@@ -67,8 +67,8 @@ int main(int argc, char **argv)
     KApplication app;
 
     // Take source directory into account
-    kDebug() << "-- adding source directory " << KNSSRCDIR << endl;
-    kDebug() << "-- adding build directory " << KNSBUILDDIR << endl;
+    kDebug() << "-- adding source directory " << KNSSRCDIR;
+    kDebug() << "-- adding build directory " << KNSBUILDDIR;
     KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
     KGlobal::dirs()->addResourceDir("config", KNSBUILDDIR);
 

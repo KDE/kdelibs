@@ -57,7 +57,7 @@ void KTraderParse_setParseTree( void *_ptr1 )
 
 void KTraderParse_error( const char* err )
 {
-  kWarning(7014) << "Parsing '" << sCode << "' gave " << err << endl;
+  kWarning(7014) << "Parsing '" << sCode << "' gave " << err;
 }
 
 void* KTraderParse_newOR( void *_ptr1, void *_ptr2 )

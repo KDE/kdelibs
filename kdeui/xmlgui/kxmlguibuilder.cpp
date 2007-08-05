@@ -290,7 +290,7 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
       delete static_cast<KStatusBar *>(container);
   }
   else
-     kWarning() << "Unhandled container to remove : " << container->metaObject()->className() << endl;
+     kWarning() << "Unhandled container to remove : " << container->metaObject()->className();
 }
 
 QStringList KXMLGUIBuilder::customTags() const
@@ -425,7 +425,7 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
     KToolBar *toolbar = 0;
     QListIterator<KToolBar> it( ( (KMainWindow*)d->m_widget )->toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
-        kDebug() << "KXMLGUIBuilder::finalizeGUI toolbar=" << (void*)toolbar << endl;
+        kDebug() << "KXMLGUIBuilder::finalizeGUI toolbar=" << (void*)toolbar;
         ++it;
         toolbar->positionYourself();
     }

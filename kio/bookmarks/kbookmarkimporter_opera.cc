@@ -136,7 +136,7 @@ OperaExporter::OperaExporter() : m_out(&m_string, QIODevice::WriteOnly) {
 }
 
 void OperaExporter::visit( const KBookmark &bk ) {
-    // kDebug() << "visit(" << bk.text() << ")" << endl;
+    // kDebug() << "visit(" << bk.text() << ")";
     m_out << "#URL" << endl;
     m_out << "\tNAME=" << bk.fullText() << endl;
     m_out << "\tURL=" << bk.url().url().toUtf8() << endl;
@@ -144,14 +144,14 @@ void OperaExporter::visit( const KBookmark &bk ) {
 }
 
 void OperaExporter::visitEnter( const KBookmarkGroup &grp ) {
-    // kDebug() << "visitEnter(" << grp.text() << ")" << endl;
+    // kDebug() << "visitEnter(" << grp.text() << ")";
     m_out << "#FOLDER" << endl;
     m_out << "\tNAME="<< grp.fullText() << endl;
     m_out << endl;
 }
 
 void OperaExporter::visitLeave( const KBookmarkGroup & ) {
-    // kDebug() << "visitLeave()" << endl;
+    // kDebug() << "visitLeave()";
     m_out << "-" << endl;
     m_out << endl;
 }

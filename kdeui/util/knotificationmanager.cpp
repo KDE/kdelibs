@@ -67,7 +67,7 @@ KNotificationManager::~KNotificationManager()
 
 void KNotificationManager::notificationActivated( int id, int action )
 {
-    kDebug(299) << k_funcinfo << id << " " << action << endl;
+    kDebug(299) << k_funcinfo << id << " " << action;
     if(d->notifications.contains(id))
     {
         KNotification *n = d->notifications[id];
@@ -78,7 +78,7 @@ void KNotificationManager::notificationActivated( int id, int action )
 
 void KNotificationManager::notificationClosed( int id )
 {
-    kDebug( 299 ) << k_funcinfo << id  << endl;
+    kDebug( 299 ) << k_funcinfo << id;
     if(d->notifications.contains(id))
     {
         KNotification *n = d->notifications[id];
@@ -93,7 +93,7 @@ void KNotificationManager::close( int id )
     QDBusReply<void> reply = d->knotify->call("closeNotification", id);
     if (!reply.isValid())
     {
-        kWarning(299) << "error while contacting knotify server" << endl;
+        kWarning(299) << "error while contacting knotify server";
     }
 }
 
@@ -126,7 +126,7 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
                          contextList, n->text(), pixmapData, actions, qlonglong(winId));
     if (!reply.isValid())
     {
-        kWarning(299) << "error while contacting knotify server" << endl;
+        kWarning(299) << "error while contacting knotify server";
     }
     else
     {
@@ -160,7 +160,7 @@ void KNotificationManager::reemit(KNotification * n, int id)
 	typedef QPair<QString,QString> Context;
 	foreach (const Context& ctx, n->contexts())
 	{
-//		kDebug(299) << k_funcinfo << "add context " << ctx.first << "-" << ctx.second  << endl;
+//		kDebug(299) << k_funcinfo << "add context " << ctx.first << "-" << ctx.second;
 		QVariantList vl;
 		vl << ctx.first << ctx.second;
 		contextList << vl;

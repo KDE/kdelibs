@@ -227,7 +227,7 @@ QString KCompletion::makeCompletion( const QString& string )
     if ( d->myCompletionMode == KGlobalSettings::CompletionNone )
         return QString();
 
-    //kDebug(0) << "KCompletion: completing: " << string << endl;
+    //kDebug(0) << "KCompletion: completing: " << string;
 
     d->matches.clear();
     d->myRotationIndex = 0;
@@ -273,7 +273,7 @@ QString KCompletion::makeCompletion( const QString& string )
     postProcessMatch( &completion );
 
     if ( !string.isEmpty() ) { // only emit match when string is not empty
-        //kDebug(0) << "KCompletion: Match: " << completion << endl;
+        //kDebug(0) << "KCompletion: Match: " << completion;
         emit match( completion );
     }
 
@@ -550,7 +550,7 @@ void KCompletion::findAllCompletions(const QString& string,
                                      KCompletionMatchesWrapper *matches,
                                      bool& hasMultipleMatches) const
 {
-    //kDebug(0) << "*** finding all completions for " << string << endl;
+    //kDebug(0) << "*** finding all completions for " << string;
 
     if ( string.isEmpty() )
         return;
@@ -609,7 +609,7 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
     if ( !node || !matches )
         return;
 
-    // kDebug() << "Beginning: " << beginning << endl;
+    // kDebug() << "Beginning: " << beginning;
     const KCompTreeChildren *list = node->children();
     QString string;
     QString w;

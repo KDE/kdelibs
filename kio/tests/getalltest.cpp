@@ -12,35 +12,35 @@ int main(int argc, char *argv[])
     KApplication k( false /*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
 //for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
-   kDebug() << "All services" << endl;
+   kDebug() << "All services";
    KService::List services = KService::allServices();
-   kDebug() << "got " << services.count() << " services" << endl;
+   kDebug() << "got " << services.count() << " services";
    KService::List::const_iterator s = services.begin();
    for ( ; s != services.end() ; ++s )
    {
-     kDebug() << (*s)->name() << " " << (*s)->desktopEntryPath() << endl;
+     kDebug() << (*s)->name() << " " << (*s)->desktopEntryPath();
    }
 //}
 
-   kDebug() << "All mimeTypes" << endl;
+   kDebug() << "All mimeTypes";
    KMimeType::List mimeTypes = KMimeType::allMimeTypes();
-   kDebug() << "got " << mimeTypes.count() << " mimeTypes" << endl;
+   kDebug() << "got " << mimeTypes.count() << " mimeTypes";
    KMimeType::List::const_iterator m = mimeTypes.begin();
    for ( ; m != mimeTypes.end() ; ++m )
    {
-     kDebug() << (*m)->name() << endl;
+     kDebug() << (*m)->name();
    }
 
-   kDebug() << "All service types" << endl;
+   kDebug() << "All service types";
    KServiceType::List list = KServiceType::allServiceTypes();
-   kDebug() << "got " << list.count() << " service types" << endl;
+   kDebug() << "got " << list.count() << " service types";
    KServiceType::List::const_iterator st = list.begin();
    for ( ; st != list.end() ; ++st )
    {
-     kDebug() << (*st)->name() << endl;
+     kDebug() << (*st)->name();
    }
 
-   kDebug() << "done" << endl;
+   kDebug() << "done";
 
    return 0;
 }

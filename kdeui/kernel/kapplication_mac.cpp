@@ -47,16 +47,16 @@ void KApplication_early_init_mac()
     for (int i = 0; i < path.size(); ++i) {
         // QString testSession = QString(newPath.at(i)).append("/start-session-bus.sh");
         QString testSession = QString(path.at(i)).append("/start-session-bus.sh");
-        kDebug() << "trying " << testSession << endl;
+        kDebug() << "trying " << testSession;
         if (QFile(testSession).exists()) {
-            kDebug() << "found " << testSession << endl;
+            kDebug() << "found " << testSession;
             dbusSession = testSession;
             break;
         }
     }
 
     if (!dbusSession.isEmpty()) {
-        kDebug() << "running " << dbusSession << " --kde-mac" << endl;
+        kDebug() << "running " << dbusSession << " --kde-mac";
         QString key, value, line;
         QStringList keyvals;
         QProcess qp;
@@ -64,19 +64,19 @@ void KApplication_early_init_mac()
         qp.setTextModeEnabled(true);
         qp.start(dbusSession, QStringList() << "--kde-mac");
         if (!qp.waitForStarted(3000)) {
-            kDebug() << dbusSession << " never started" << endl;
+            kDebug() << dbusSession << " never started";
         } else {
             while (qp.waitForReadyRead(-1)) {
                 while (qp.canReadLine()) {
                     line = qp.readLine().trimmed();
-                    kDebug() << "line = " << line << endl;
+                    kDebug() << "line = " << line;
                     keyvals = line.split('=');
                     key = keyvals.takeFirst();
                     value = keyvals.join("=");
-                    kDebug() << "key = " << key << ", value = " << value << endl;
+                    kDebug() << "key = " << key << ", value = " << value;
                     if (!key.isEmpty() && !value.isEmpty()) {
                         ::setenv(key.toLocal8Bit(), value.toLocal8Bit(), 1);
-                        kDebug() << "setenv(" << key << "," << value << ",1)" << endl;
+                        kDebug() << "setenv(" << key << "," << value << ",1)";
                     }
                 }
             }

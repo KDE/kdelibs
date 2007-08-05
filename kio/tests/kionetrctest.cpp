@@ -7,7 +7,7 @@
 
 void output( const KUrl& u )
 {
-    kDebug() << "Looking up auto login for: " << u.url() << endl;
+    kDebug() << "Looking up auto login for: " << u.url();
     KIO::NetRC::AutoLogin l;
     bool result = KIO::NetRC::self()->lookup( u, l, true );
     if ( !result )
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
             u = args->arg(i);
             if ( !u.isValid() )
             {
-              kDebug() << u.url() << " is invalid! Ignoring..." << endl;
+              kDebug() << u.url() << " is invalid! Ignoring...";
               continue;
             }
             output( u );

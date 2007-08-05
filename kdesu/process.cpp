@@ -371,7 +371,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 
 int PtyProcess::WaitSlave()
 {
-    kDebug(900) << k_lineinfo << "Child pid " << m_Pid << endl;
+    kDebug(900) << k_lineinfo << "Child pid " << m_Pid;
 
     struct termios tio;
     while (1)

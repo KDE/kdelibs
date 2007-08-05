@@ -97,7 +97,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	else {
 		exestr = KStandardDirs::findExe(exestr);
 		m_proc << exestr << dirname << filename;
-		kDebug() << "executing : " << exestr << " " << dirname << " " << filename << endl;
+		kDebug() << "executing : " << exestr << " " << dirname << " " << filename;
 		if (exestr.isEmpty())
 			msg = i18n("The executable %1 could not be found in your "
 			           "PATH. Check that this program exists and is "

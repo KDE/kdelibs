@@ -268,9 +268,9 @@ void KWalletD::setupDialog( QWidget* dialog, WId wId, const QString& appid, bool
 	else {
 #endif
 		if( appid.isEmpty())
-			kWarning() << "Using kwallet without parent window!" << endl;
+			kWarning() << "Using kwallet without parent window!";
 		else
-			kWarning() << "Application '" << appid << "' using kwallet without parent window!" << endl;
+			kWarning() << "Application '" << appid << "' using kwallet without parent window!";
 		// allow dialog activation even if it interrupts, better than trying hacks
 		// with keeping the dialog on top or on all desktops
 		kapp->updateUserTimestamp();
@@ -369,7 +369,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 	int rc = walletInfo.first;
 	if (rc == -1) {
 		if (_wallets.count() > 20) {
-			kDebug() << "Too many wallets open." << endl;
+			kDebug() << "Too many wallets open.";
 			return -1;
 		}
 

@@ -60,7 +60,7 @@ KJavaProcess::~KJavaProcess()
 {
     if ( state() != NotRunning )
     {
-        kDebug(6100) << "stopping java process" << endl;
+        kDebug(6100) << "stopping java process";
         stopJava();
     }
     delete d;
@@ -153,7 +153,7 @@ void KJavaProcess::storeSize( QByteArray* buff )
 {
     const int size = buff->size() - 8;  //subtract out the length of the size_str
     const QString size_str = QString("%1").arg( size, 8 );
-    kDebug(6100) << "KJavaProcess::storeSize, size = " << size_str << endl;
+    kDebug(6100) << "KJavaProcess::storeSize, size = " << size_str;
 
     const char* size_ptr = size_str.toLatin1().constData();
     for( int i = 0; i < 8; ++i )
@@ -166,7 +166,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
     {
         QByteArray buff = addArgs( cmd_code, args );
         storeSize( &buff );
-        kDebug(6100) << "<KJavaProcess::send " << (int)cmd_code << endl;
+        kDebug(6100) << "<KJavaProcess::send " << (int)cmd_code;
         write( buff );
     }
 }
@@ -176,7 +176,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args,
 {
     if( isRunning() )
     {
-        kDebug(6100) << "KJavaProcess::send, qbytearray is size = " << data.size() << endl;
+        kDebug(6100) << "KJavaProcess::send, qbytearray is size = " << data.size();
 
         QByteArray buff = addArgs( cmd_code, args );
         buff += data;
@@ -217,7 +217,7 @@ bool KJavaProcess::invokeJVM()
         KShell::Errors err;
         args += KShell::splitArgs( d->extraArgs, KShell::AbortOnMeta, &err );
         if( err != KShell::NoError )
-            kWarning(6100) << "Extra args for JVM cannot be parsed, arguments = " << d->extraArgs << endl;
+            kWarning(6100) << "Extra args for JVM cannot be parsed, arguments = " << d->extraArgs;
 
     }
 
@@ -226,7 +226,7 @@ bool KJavaProcess::invokeJVM()
     if ( !d->classArgs.isNull() )
         args << d->classArgs;
 
-    kDebug(6100) << "Invoking JVM now...with arguments = " << KShell::joinArgs(args) << endl;
+    kDebug(6100) << "Invoking JVM now...with arguments = " << KShell::joinArgs(args);
 
     setProgram( d->jvmPath, args );
     start();
@@ -283,7 +283,7 @@ void KJavaProcess::slotExited()
     if ( exitStatus() == NormalExit ) {
      status = exitCode();
     }
-    kDebug(6100) << "jvm exited with status " << status << endl; 
+    kDebug(6100) << "jvm exited with status " << status; 
     emit exited(status);
 }
 

@@ -508,7 +508,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
             if ((e >= eof) || (*e != ']'))
             {
-                kWarning() << d->warningProlog(rFile, line) << "Invalid group header." << endl;
+                kWarning() << d->warningProlog(rFile, line) << "Invalid group header.";
                 continue;
             }
             // group found; get the group name by taking everything in

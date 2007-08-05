@@ -854,7 +854,7 @@ bool ElementImpl::childTypeAllowed( unsigned short type )
 void ElementImpl::scrollIntoView(bool /*alignToTop*/)
 {
     // ###
-    kWarning() << "non-standard scrollIntoView() not implemented" << endl;
+    kWarning() << "non-standard scrollIntoView() not implemented";
 }
 
 void ElementImpl::createDecl( )
@@ -1028,7 +1028,7 @@ bool ElementImpl::contentEditable() const {
     DOM::CSSPrimitiveValueImpl *val = static_cast<DOM::CSSPrimitiveValueImpl *>
     		(const_cast<ElementImpl *>(this)->styleRules()
 		->getPropertyCSSValue(CSS_PROP__KONQ_USER_INPUT));
-//    kDebug() << "val" << val << endl;
+//    kDebug() << "val" << val;
     return val ? val->getIdent() == CSS_VAL_ENABLED : false;
 #endif
     return NodeImpl::contentEditable();
@@ -1048,7 +1048,7 @@ void ElementImpl::setContentEditable(bool enabled) {
         // FIXME: reset caret if it is in this node or a child
     }/*end if*/
     // FIXME: use addCSSProperty when I get permission to move it here
-//    kDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value << endl;
+//    kDebug(6000) << "CSS_PROP__KHTML_USER_INPUT: "<< value;
     styleRules()->setProperty(CSS_PROP__KHTML_USER_INPUT, value, false, true);
     setChanged();
 

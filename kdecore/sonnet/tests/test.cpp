@@ -33,8 +33,8 @@ int main( int argc, char** argv )
 
     Speller dict("en_US");
 
-    kDebug()<< "Clients are "   << dict.availableBackends()   << endl;
-    kDebug()<< "Languages are " << dict.availableLanguages() << endl;
+    kDebug()<< "Clients are "   << dict.availableBackends();
+    kDebug()<< "Languages are " << dict.availableLanguages();
 
     QStringList words;
 
@@ -84,13 +84,13 @@ int main( int argc, char** argv )
     for (QStringList::Iterator itr = words.begin();
          itr != words.end(); ++itr) {
         if (!dict.isCorrect(*itr)) {
-            //kDebug()<<"Word " << *itr <<" is misspelled"<<endl;
+            //kDebug()<<"Word " << *itr <<" is misspelled";
             QStringList sug = dict.suggest(*itr);
-            //kDebug()<<"Suggestions : "<<sug<<endl;
+            //kDebug()<<"Suggestions : "<<sug;
         }
     }
     //mtime.stop();
-    kDebug()<<"Elapsed time is "<<mtime.elapsed()<<endl;
+    kDebug()<<"Elapsed time is "<<mtime.elapsed();
 
     return 0;
 }

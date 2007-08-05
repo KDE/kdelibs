@@ -134,7 +134,7 @@ void KBuildSycoca::processGnomeVfs()
    QString file = KStandardDirs::locate("app-reg", "gnome-vfs.applications");
    if (file.isEmpty())
    {
-//      kDebug(7021) << "gnome-vfs.applications not found." << endl;
+//      kDebug(7021) << "gnome-vfs.applications not found.";
       return;
    }
 
@@ -169,7 +169,7 @@ void KBuildSycoca::processGnomeVfs()
           {
              serviceTypes += mimetypes.split( ',', QString::SkipEmptyParts );
 //             kDebug(7021) << "Adding gnome mimetypes for '" << app << "'.\n";
-//             kDebug(7021) << "ServiceTypes=" << s->serviceTypes().join(":") << endl;
+//             kDebug(7021) << "ServiceTypes=" << s->serviceTypes().join(":");
           }
       }
    }
@@ -213,12 +213,12 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
       else if (oldTimestamp)
       {
          g_changed = true;
-         kDebug(7021) << "modified: " << file << endl;
+         kDebug(7021) << "modified: " << file;
       }
       else
       {
          g_changed = true;
-         kDebug(7021) << "new: " << file << endl;
+         kDebug(7021) << "new: " << file;
       }
    }
    g_ctimeInfo->addCTime(file, timeStamp );
@@ -488,7 +488,7 @@ bool KBuildSycoca::recreate()
   m_str = new QDataStream ( &database );
   m_str->setVersion(QDataStream::Qt_3_1);
 
-  kDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")" << endl;
+  kDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")";
 
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
@@ -523,7 +523,7 @@ bool KBuildSycoca::recreate()
     database.abort();
     if (bMenuTest)
        return true;
-    kDebug(7021) << "Database is up to date" << endl;
+    kDebug(7021) << "Database is up to date";
   }
 
   if (!bGlobalDatabase)
@@ -618,7 +618,7 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
    {
       QFileInfo inf( dirname );
       if( inf.lastModified() > stamp ) {
-         kDebug( 7021 ) << "timestamp changed:" << dirname << endl;
+         kDebug( 7021 ) << "timestamp changed:" << dirname;
          return false;
       }
    }
@@ -632,7 +632,7 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
          continue;
       if( fi.lastModified() > stamp )
       {
-         kDebug( 7201 ) << "timestamp changed:" << fi.filePath() << endl;
+         kDebug( 7201 ) << "timestamp changed:" << fi.filePath();
          return false;
       }
       if( fi.isDir() && !checkDirTimestamps( fi.filePath(), stamp, false ))
@@ -647,7 +647,7 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
 // means that there's no need to rebuild ksycoca
 bool KBuildSycoca::checkTimestamps( quint32 timestamp, const QStringList &dirs )
 {
-   kDebug( 7021 ) << "checking file timestamps" << endl;
+   kDebug( 7021 ) << "checking file timestamps";
    QDateTime stamp;
    stamp.setTime_t( timestamp );
    for( QStringList::ConstIterator it = dirs.begin();
@@ -657,7 +657,7 @@ bool KBuildSycoca::checkTimestamps( quint32 timestamp, const QStringList &dirs )
       if( !checkDirTimestamps( *it, stamp, true ))
             return false;
    }
-   kDebug( 7021 ) << "timestamps check ok" << endl;
+   kDebug( 7021 ) << "timestamps check ok";
    return true;
 }
 
@@ -860,7 +860,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       g_ctimeDict = 0;
       if (incremental)
       {
-         kDebug() << "Reusing existing ksycoca" << endl;
+         kDebug() << "Reusing existing ksycoca";
          KSycoca *oldSycoca = KSycoca::self();
          KSycocaFactoryList *factories = new KSycocaFactoryList;
          g_allEntries = new KSycocaEntryListList;

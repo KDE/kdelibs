@@ -25,12 +25,12 @@
 KSettingsWidgetAdaptor::KSettingsWidgetAdaptor(QObject *parent)
     : QDBusAbstractAdaptor(parent)
 {
-	kDebug() << k_funcinfo << endl;
+	kDebug() << k_funcinfo;
 	setAutoRelaySignals(true);
 }
 KSettingsWidgetAdaptor::~KSettingsWidgetAdaptor()
 {
-	kDebug() << k_funcinfo << endl;
+	kDebug() << k_funcinfo;
 }
 
 QString KSettingsWidgetAdaptor::applicationName()

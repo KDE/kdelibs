@@ -163,7 +163,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         if(!plugin_offers.isEmpty() ){
             RenameDialogPlugin::FileItem src( _src, d->mimeSrc, sizeSrc, ctimeSrc, mtimeSrc );
             RenameDialogPlugin::FileItem dst( _dest,d->mimeDest, sizeDest, ctimeDest, mtimeDest );
-            kDebug(7024) << "Offers" << endl;
+            kDebug(7024) << "Offers";
             KService::List::ConstIterator it = plugin_offers.begin();
             const KService::List::ConstIterator end = plugin_offers.end();
             for( ; it != end; ++it ){
@@ -176,7 +176,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
                     d->plugin = true;
                     plugin->handle( _mode, src, dst );
                     pLayout->addWidget(plugin );
-                    kDebug(7024) << "RenameDialogPlugin" << endl;
+                    kDebug(7024) << "RenameDialogPlugin";
                     break;
                 } else {
                     delete plugin;
@@ -505,8 +505,8 @@ void RenameDialog::pluginHandling()
   d->mimeSrc = mime( d->src );
   d->mimeDest = mime(d->dest );
 
-  kDebug(7024) << "Source Mimetype: "<< d->mimeSrc << endl;
-  kDebug(7024) << "Dest Mimetype: "<< d->mimeDest << endl;
+  kDebug(7024) << "Source Mimetype: "<< d->mimeSrc;
+  kDebug(7024) << "Dest Mimetype: "<< d->mimeDest;
 }
 
 

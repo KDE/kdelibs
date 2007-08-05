@@ -225,7 +225,7 @@ inline static QByteArray fixUpfromUnicode(const QTextCodec* codec, const QString
 QByteArray HTMLFormElementImpl::formData(bool& ok)
 {
 #ifdef FORMS_DEBUG
-    kDebug( 6030 ) << "form: formData()" << endl;
+    kDebug( 6030 ) << "form: formData()";
 #endif
 
     QByteArray form_data;
@@ -280,7 +280,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
         {
-            //kDebug(6030) << "adding name '" << current->name().string() << "'" << endl;
+            //kDebug(6030) << "adding name '" << current->name().string() << "'";
             khtml::encodingList::ConstIterator it = lst.begin();
             const khtml::encodingList::ConstIterator itEnd = lst.end();
             for( it = lst.begin(); it != itEnd; ++it )
@@ -582,7 +582,7 @@ void HTMLFormElementImpl::submit(  )
     m_insubmit = true;
 
 #ifdef FORMS_DEBUG
-    kDebug( 6030 ) << "submitting!" << endl;
+    kDebug( 6030 ) << "submitting!";
 #endif
 
     bool ok;
@@ -691,7 +691,7 @@ void HTMLFormElementImpl::reset(  )
     m_inreset = true;
 
 #ifdef FORMS_DEBUG
-    kDebug( 6030 ) << "reset pressed!" << endl;
+    kDebug( 6030 ) << "reset pressed!";
 #endif
 
     // ### DOM2 labels this event as not cancelable, however
@@ -921,8 +921,8 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
         p = p->parentNode();
     }
 #ifdef FORMS_DEBUG
-    kDebug( 6030 ) << "couldn't find form!" << endl;
-    kDebug( 6030 ) << kBacktrace() << endl;
+    kDebug( 6030 ) << "couldn't find form!";
+    kDebug( 6030 ) << kBacktrace();
 #endif
     return 0;
 }
@@ -2613,13 +2613,13 @@ long HTMLOptionElementImpl::index() const
             ++optionIndex;
         }
     }
-    kWarning() << "HTMLOptionElementImpl::index(): option not found!" << endl;
+    kWarning() << "HTMLOptionElementImpl::index(): option not found!";
     return 0;
 }
 
 void HTMLOptionElementImpl::setIndex( long  )
 {
-    kWarning() << "Unimplemented HTMLOptionElementImpl::setIndex(long) called" << endl;
+    kWarning() << "Unimplemented HTMLOptionElementImpl::setIndex(long) called";
     // ###
 }
 

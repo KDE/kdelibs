@@ -297,7 +297,7 @@ void KFileView::setCurrentItem(const QString &filename )
         }
     }
 
-    kDebug(kfile_area) << "setCurrentItem: no match found: " << filename << endl;
+    kDebug(kfile_area) << "setCurrentItem: no match found: " << filename;
 }
 
 // KDE4 TODO: remove pointer, return by value

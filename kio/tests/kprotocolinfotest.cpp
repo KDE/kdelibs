@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     KProtocolInfo::ExtraFieldList extraFields = KProtocolInfo::extraFields(url);
     KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
     for ( ; extraFieldsIt != extraFields.end() ; ++extraFieldsIt )
-        kDebug() << (*extraFieldsIt).name << " " << (*extraFieldsIt).type << endl;
+        kDebug() << (*extraFieldsIt).name << " " << (*extraFieldsIt).type;
 
     assert( KProtocolInfo::showFilePreview( "file" ) == true );
     assert( KProtocolInfo::showFilePreview( "audiocd" ) == false );
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     assert( protocol == "http" );
 
     QStringList capabilities = KProtocolInfo::capabilities( "imap" );
-    kDebug() << "kio_imap capabilities: " << capabilities << endl;
+    kDebug() << "kio_imap capabilities: " << capabilities;
     //assert(capabilities.contains("ACL"));
 
     return 0;

@@ -54,7 +54,7 @@ static KAbstractFileModule* fileModule()
         // TODO fix memleak -- qApp post routine for deleting the module ?
         s_module = KLibLoader::createInstance<KAbstractFileModule>( "libkfilemodule", 0, QStringList(), &error );
         if ( error ) {
-            kWarning() << "KFileDialog wasn't able to find libkfilemodule (error " << error << ") " << KLibLoader::self()->lastErrorMessage() << endl;
+            kWarning() << "KFileDialog wasn't able to find libkfilemodule (error " << error << ") " << KLibLoader::self()->lastErrorMessage();
         }
     }
     return s_module;
@@ -95,7 +95,7 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
     //       KAbstractFileWidget interface?
     //
     //       Else, all of these connects (including "accepted") are not typesafe.
-    kDebug (kfile_area) << "KFileDialog connecting signals" << endl;
+    kDebug (kfile_area) << "KFileDialog connecting signals";
     connect(fileQWidget, SIGNAL(fileSelected(const QString&)),
                          SIGNAL(fileSelected(const QString&)));
     connect(fileQWidget, SIGNAL(fileHighlighted(const QString&)),
@@ -356,7 +356,7 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
     KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir ) {
         if (!dir.isLocalFile())
-            kWarning() << "KFileDialog::getSaveFileName called with non-local start dir " << dir << endl;
+            kWarning() << "KFileDialog::getSaveFileName called with non-local start dir " << dir;
         dlg.setSelection( dir.path() ); // may also be a filename
     }
 
@@ -389,7 +389,7 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
 
     if ( !specialDir ) {
         if (!dir.isLocalFile())
-            kWarning() << "KFileDialog::getSaveFileNameWId called with non-local start dir " << dir << endl;
+            kWarning() << "KFileDialog::getSaveFileNameWId called with non-local start dir " << dir;
         dlg.setSelection( dir.path() ); // may also be a filename
     }
 

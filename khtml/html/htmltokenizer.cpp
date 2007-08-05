@@ -714,7 +714,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
         }
         case SearchSemicolon:
 #ifdef TOKEN_DEBUG
-            kDebug( 6036 ) << "ENTITY " << EntityChar.unicode() << endl;
+            kDebug( 6036 ) << "ENTITY " << EntityChar.unicode();
 #endif
             fixUpChar(EntityChar);
 
@@ -730,7 +730,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
                 src.push( EntityChar );
             } else {
 #ifdef TOKEN_DEBUG
-                kDebug( 6036 ) << "unknown entity!" << endl;
+                kDebug( 6036 ) << "unknown entity!";
 #endif
                 checkBuffer(10);
                 // ignore the sequence, add it to the buffer as plaintext
@@ -780,7 +780,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     if (searchCount == 4)
                     {
 #ifdef TOKEN_DEBUG
-                        kDebug( 6036 ) << "Found comment" << endl;
+                        kDebug( 6036 ) << "Found comment";
 #endif
                         // Found '<!--' sequence
                         ++src;
@@ -845,7 +845,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 if (!tagID) {
 #ifdef TOKEN_DEBUG
                     QByteArray tmp(ptr, len+1);
-                    kDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"" << endl;
+                    kDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"";
 #endif
                     dest = buffer;
                 }
@@ -853,7 +853,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 {
 #ifdef TOKEN_DEBUG
                     QByteArray tmp(ptr, len+1);
-                    kDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data() << endl;
+                    kDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data();
 #endif
                     currToken.tid = beginTag ? tagID : tagID + ID_CLOSE_TAG;
                     dest = buffer;
@@ -923,9 +923,9 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         *dest++ = a;
 #ifdef TOKEN_DEBUG
                         if (!a || (cBufferPos && *cBuffer == '!'))
-                            kDebug( 6036 ) << "Unknown attribute: *" << QByteArray(cBuffer, cBufferPos+1).data() << "*" << endl;
+                            kDebug( 6036 ) << "Unknown attribute: *" << QByteArray(cBuffer, cBufferPos+1).data() << "*";
                         else
-                            kDebug( 6036 ) << "Known attribute: " << QByteArray(cBuffer, cBufferPos+1).data() << endl;
+                            kDebug( 6036 ) << "Known attribute: " << QByteArray(cBuffer, cBufferPos+1).data();
 #endif
 
                         tag = SearchEqual;
@@ -957,7 +957,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 if(curchar > ' ') {
                     if(curchar == '=') {
 #ifdef TOKEN_DEBUG
-                        kDebug(6036) << "found equal" << endl;
+                        kDebug(6036) << "found equal";
 #endif
                         tag = SearchValue;
                         ++src;
@@ -1100,7 +1100,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
             uint tagID = currToken.tid;
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 0
-            kDebug( 6036 ) << "appending Tag: " << tagID << endl;
+            kDebug( 6036 ) << "appending Tag: " << tagID;
 #endif
             // If the tag requires an end tag it cannot be flat,
             // unless we are using the HTML parser to parse XHTML
@@ -1310,7 +1310,7 @@ void HTMLTokenizer::addPending()
 void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
 {
 #ifdef TOKEN_DEBUG
-    kDebug( 6036 ) << this << " Tokenizer::write(\"" << str.toString() << "\"," << appendData << ")" << endl;
+    kDebug( 6036 ) << this << " Tokenizer::write(\"" << str.toString() << "\"," << appendData << ")";
 #endif
 
     if ( !buffer )
@@ -1669,14 +1669,14 @@ void HTMLTokenizer::processToken()
     if(currToken.text)
         text = QString::fromRawData(currToken.text->s, currToken.text->l);
 
-    kDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.tid << endl;
+    kDebug( 6036 ) << "Token --> " << name << "   id = " << currToken.tid;
     if (currToken.flat)
-        kDebug( 6036 ) << "Token is FLAT!" << endl;
+        kDebug( 6036 ) << "Token is FLAT!";
     if(!text.isNull())
-        kDebug( 6036 ) << "text: \"" << text << "\"" << endl;
+        kDebug( 6036 ) << "text: \"" << text << "\"";
     unsigned long l = currToken.attrs ? currToken.attrs->length() : 0;
     if(l) {
-        kDebug( 6036 ) << "Attributes: " << l << endl;
+        kDebug( 6036 ) << "Attributes: " << l;
         for (unsigned long i = 0; i < l; ++i) {
             NodeImpl::Id tid = currToken.attrs->idAt(i);
             DOMString value = currToken.attrs->valueAt(i);
@@ -1684,7 +1684,7 @@ void HTMLTokenizer::processToken()
                             << "=\"" << value.string() << "\"" << endl;
         }
     }
-    kDebug( 6036 ) << endl;
+    kDebug( 6036 );
 #endif
 
     // In some cases, parseToken() can cause javascript code to be executed
@@ -1736,12 +1736,12 @@ void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
     bool done = false;
     while (!done && cachedScript.head()->isLoaded()) {
 
-        kDebug( 6036 ) << "Finished loading an external script" << endl;
+        kDebug( 6036 ) << "Finished loading an external script";
 
         CachedScript* cs = cachedScript.dequeue();
         DOMString scriptSource = cs->script();
 #ifdef TOKEN_DEBUG
-        kDebug( 6036 ) << "External script is:" << endl << scriptSource.string() << endl;
+        kDebug( 6036 ) << "External script is:" << endl << scriptSource.string();
 #endif
         setSrc(TokenizerString());
 

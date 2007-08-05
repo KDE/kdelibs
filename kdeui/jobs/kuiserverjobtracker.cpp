@@ -158,7 +158,7 @@ KSharedUiServerProxy::KSharedUiServerProxy()
 {
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kuiserver"))
     {
-        //kDebug(KDEBUG_OBSERVER) << "Starting kuiserver" << endl;
+        //kDebug(KDEBUG_OBSERVER) << "Starting kuiserver";
         QString error;
         int ret = KToolInvocation::startServiceByDesktopPath("kuiserver.desktop",
                                                              QStringList(), &error);
@@ -166,13 +166,13 @@ KSharedUiServerProxy::KSharedUiServerProxy()
         {
             kError() << "Couldn't start kuiserver from kuiserver.desktop: " << error << endl;
         } //else
-          //  kDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret << endl;
+          //  kDebug(KDEBUG_OBSERVER) << "startServiceByDesktopPath returned " << ret;
     }
 
     //if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kuiserver"))
-    //    kDebug(KDEBUG_OBSERVER) << "The application kuiserver is STILL NOT REGISTERED" << endl;
+    //    kDebug(KDEBUG_OBSERVER) << "The application kuiserver is STILL NOT REGISTERED";
     //else
-    //    kDebug(KDEBUG_OBSERVER) << "kuiserver registered" << endl;
+    //    kDebug(KDEBUG_OBSERVER) << "kuiserver registered";
 
     new UiServerCallbacksAdaptor(this);
     QDBusConnection::sessionBus().registerObject(QLatin1String("/UiServerCallbacks"), this);
@@ -226,7 +226,7 @@ void KSharedUiServerProxy::slotActionPerformed(int actionId, int jobId)
             job->kill();
             break;
         default:
-            kWarning() << "Unknown actionId (" << actionId << ") for jobId " << jobId << endl;
+            kWarning() << "Unknown actionId (" << actionId << ") for jobId " << jobId;
             break;
         }
     }

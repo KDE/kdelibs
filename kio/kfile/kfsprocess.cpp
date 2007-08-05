@@ -263,13 +263,13 @@ KfsProcess &KfsProcess::operator<<(const QString& arg)
 bool KfsProcess::start()
 {
   if (runs) {
-    kDebug(175) << "Attempted to start an already running process" << endl;
+    kDebug(175) << "Attempted to start an already running process";
     return false;
   }
 
   uint n = arguments.count();
   if (n == 0) {
-    kDebug(175) << "Attempted to start a process without arguments" << endl;
+    kDebug(175) << "Attempted to start a process without arguments";
     return false;
   }
   char **arglist = static_cast<char **>(malloc( (n + 1) * sizeof(char *)));

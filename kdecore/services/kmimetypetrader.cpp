@@ -85,7 +85,7 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
     // Services associated directly with this mimetype (the normal case)
     KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType, KMimeType::ResolveAliases );
     if ( !mime ) {
-        kWarning(7014) << "KMimeTypeTrader: mimeType " << mimeType << " not found" << endl;
+        kWarning(7014) << "KMimeTypeTrader: mimeType " << mimeType << " not found";
         return lst; // empty
     }
     if ( mime->serviceOffersOffset() > -1 ) {
@@ -94,7 +94,7 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
 
     //debug
 #if 0
-    kDebug() << "mimeTypeSycocaOffers for " << mimeType << ":" << endl;
+    kDebug() << "mimeTypeSycocaOffers for " << mimeType << ":";
     foreach( const KServiceOffer& offer, lst )
         kDebug() << " " << offer.service()->name()
                  << " preference: " << offer.mimeTypeInheritanceLevel() << ";" << offer.preference()
@@ -116,7 +116,7 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
                 addUnique(lst, KServiceFactory::self()->offers( mimeAll->offset(), mimeAll->serviceOffersOffset() ), true);
         }
         else
-            kWarning(7014) << "KMimeTypeTrader : mimetype all/all not found" << endl;
+            kWarning(7014) << "KMimeTypeTrader : mimetype all/all not found";
 
         // Support for services associated with "allfiles"
         if ( mimeType != "inode/directory" && mimeType != "inode/directory-locked" )
@@ -127,7 +127,7 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
                     addUnique(lst, KServiceFactory::self()->offers( mimeAllFiles->offset(), mimeAllFiles->serviceOffersOffset() ), true);
             }
             else
-                kWarning(7014) << "KMimeTypeTrader : mimetype all/allfiles not found" << endl;
+                kWarning(7014) << "KMimeTypeTrader : mimetype all/allfiles not found";
         }
     }
 #endif
@@ -143,7 +143,7 @@ namespace KServiceTypeProfile {
 KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
                                                    const QString& genericServiceType ) const
 {
-    kDebug(7014) << "KMimeTypeTrader::weightedOffers( " << mimeType << ", " << genericServiceType << " )" << endl;
+    kDebug(7014) << "KMimeTypeTrader::weightedOffers( " << mimeType << ", " << genericServiceType << " )";
 
     Q_ASSERT( !genericServiceType.isEmpty() );
     // First, get all offers known to ksycoca.
@@ -184,6 +184,6 @@ KService::Ptr KMimeTypeTrader::preferredService( const QString & mimeType, const
     if( itOff != offers.end() && (*itOff).allowAsDefault() )
         return (*itOff).service();
 
-    //kDebug(7014) << "No offers, or none allowed as default" << endl;
+    //kDebug(7014) << "No offers, or none allowed as default";
     return KService::Ptr();
 }

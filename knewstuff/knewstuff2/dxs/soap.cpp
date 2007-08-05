@@ -49,7 +49,7 @@ void Soap::call(const QDomElement& element, const QString &endpoint)
 {
 	if(m_inprogress)
 	{
-		kWarning() << "Discarding SOAP/CTS call!" << endl;
+		kWarning() << "Discarding SOAP/CTS call!";
 		return;
 	}
 
@@ -85,11 +85,11 @@ void Soap::call_tree(const QDomElement& element, const QString &endpoint)
 	}
 	s += ")\n";
 
-	kDebug() << "<CanonicalTree>" << s << endl;
+	kDebug() << "<CanonicalTree>" << s;
 
 	QByteArray data = s.toUtf8();
 
-	kDebug() << "Call(socket)!" << endl;
+	kDebug() << "Call(socket)!";
 
 	KUrl url(endpoint);
 	QString hostname = url.host();
@@ -126,14 +126,14 @@ void Soap::call_soap(QDomElement element, const QString &endpoint)
 	QString s = doc.toString();
 	QByteArray data = s.toUtf8();
 
-	kDebug() << "HTTP-POST " << url.prettyUrl() << endl;
-	kDebug() << "HTTP-POST " << s << endl;
+	kDebug() << "HTTP-POST " << url.prettyUrl();
+	kDebug() << "HTTP-POST " << s;
 
 	KIO::TransferJob *job;
 	job = KIO::http_post(url, data, false);
 	job->addMetaData("content-type", "Content-Type: text/xml");
 
-	kDebug() << "Call!" << endl;
+	kDebug() << "Call!";
 
 	connect(job,
 		SIGNAL(data(KIO::Job*, const QByteArray&)),
@@ -149,8 +149,8 @@ void Soap::slotData(KIO::Job *job, const QByteArray& data)
 {
 	Q_UNUSED(job);
 
-	kDebug() << "Length(before): " << m_buffer.size() << endl;
-	kDebug() << "Append-Length: " << data.size() << endl;
+	kDebug() << "Length(before): " << m_buffer.size();
+	kDebug() << "Append-Length: " << data.size();
 
 	int bufferlen = m_buffer.size();
 	m_buffer.resize(bufferlen + data.size());
@@ -159,29 +159,29 @@ void Soap::slotData(KIO::Job *job, const QByteArray& data)
 	// FIXME: No memcpy() in Qt??? Really, no qMemCopy()? :-)
 	memcpy(m_buffer.data() + bufferlen, data.data(), data.size());
 
-	kDebug() << "Length(after): " << m_buffer.size() << endl;
+	kDebug() << "Length(after): " << m_buffer.size();
 }
 
 void Soap::slotResult(KJob *job)
 {
-	kDebug() << "Result!" << endl;
+	kDebug() << "Result!";
 
 	if((job) && (job->error()))
 	{
 		//job->showErrorDialog(this);
-		kDebug() << "SOAP ERROR!" << endl;
+		kDebug() << "SOAP ERROR!";
 		emit signalError();
 		return;
 	}
 
-	kDebug() << "CSTRING: '" << m_buffer << "'" << endl;
+	kDebug() << "CSTRING: '" << m_buffer << "'";
 
 	int bufferlen = m_buffer.size();
 	m_buffer.resize(bufferlen + 1);
 	m_buffer.data()[bufferlen] = 0;
 	m_data = QString::fromUtf8(m_buffer);
 
-	kDebug() << "STRING: '" << m_data << "'" << endl;
+	kDebug() << "STRING: '" << m_data << "'";
 
 	if(m_model == soap)
 	{
@@ -192,7 +192,7 @@ void Soap::slotResult(KJob *job)
 		QDomNode bodynode = envelope.firstChild();
 		QDomNode contentnode = bodynode.firstChild();
 
-		kDebug() << "(signal) Result!" << endl;
+		kDebug() << "(signal) Result!";
 
 		m_inprogress = false;
 		emit signalResult(contentnode);
@@ -203,15 +203,15 @@ void Soap::slotResult(KJob *job)
 
 		// FIXME: dummy data
 		//m_data = QString("GHNSRemovalResponse(ok(true)\nauthorative(true))");
-		kDebug() << m_data << endl;
+		kDebug() << m_data;
 
 		m_data = m_data.simplified();
 		doc = buildtree(doc, doc.documentElement(), m_data);
 
 		QDomElement root = doc.documentElement();
 
-		kDebug() << "(signal) Result!" << endl;
-		kDebug() << doc.toString() << endl;
+		kDebug() << "(signal) Result!";
+		kDebug() << doc.toString();
 
 		m_inprogress = false;
 		emit signalResult(root);
@@ -248,7 +248,7 @@ QString Soap::xpath(const QDomNode& node, const QString &expr)
 //		//QString provider = m_soap->xpath(node, "/SOAP-ENC:Array/provider");
 //		expr = expr.section("/", 2);
 //		// FIXME: Array handling for Canonical Tree Structures?
-//		kDebug() << "EXPR " << expr << endl;
+//		kDebug() << "EXPR " << expr;
 //	}
 
 	QDomNode n = node;
@@ -273,7 +273,7 @@ void Soap::slotSocketError(QAbstractSocket::SocketError error)
 {
 	Q_UNUSED(error);
 
-	kDebug() << "socket: error" << endl;
+	kDebug() << "socket: error";
 
 	delete m_socket;
 	m_socket = NULL;
@@ -283,13 +283,13 @@ void Soap::slotSocketError(QAbstractSocket::SocketError error)
 
 void Soap::slotSocket()
 {
-	kDebug() << "socket: data" << endl;
+	kDebug() << "socket: data";
 
 	QByteArray a;
 	a.resize(m_socket->bytesAvailable());
 	m_socket->read(a.data(), m_socket->bytesAvailable());
 
-	kDebug() << "DATA" << a << endl;
+	kDebug() << "DATA" << a;
 
 	slotData(NULL, a);
 
@@ -340,12 +340,12 @@ QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, const QString& d
 			if((stack == 0) && (end == -1))
 			{
 				end = i;
-				//kDebug() << "START-END: " << start << "," << end << endl;
+				//kDebug() << "START-END: " << start << "," << end;
 				QString expression = data.mid(offset, start - offset);
 				QString sub = data.mid(start + 1, end - start - 1);
 				expression = expression.trimmed();
-				//kDebug() << "EXPR-MAIN " << expression << endl;
-				//kDebug() << "EXPR-SUB " << sub << endl;
+				//kDebug() << "EXPR-MAIN " << expression;
+				//kDebug() << "EXPR-SUB " << sub;
 
 				QDomElement elem;
 				if(cur.isNull())

@@ -1047,7 +1047,7 @@ KConfigSkeleton::KConfigSkeleton(const QString &configname, QObject* parent)
   : QObject(parent),
     d( new Private )
 {
-  kDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
+  kDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")";
 
   if ( !configname.isEmpty() )
   {
@@ -1063,7 +1063,7 @@ KConfigSkeleton::KConfigSkeleton(KSharedConfig::Ptr pConfig, QObject* parent)
   : QObject(parent),
     d( new Private )
 {
-  kDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")" << endl;
+  kDebug(177) << "Creating KConfigSkeleton (" << (void *)this << ")";
   d->mConfig = pConfig;
 }
 
@@ -1129,7 +1129,7 @@ void KConfigSkeleton::setDefaults()
 
 void KConfigSkeleton::readConfig()
 {
-  kDebug(177) << "KConfigSkeleton::readConfig()" << endl;
+  kDebug(177) << "KConfigSkeleton::readConfig()";
   d->mConfig->reparseConfiguration();
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = d->mItems.begin(); it != d->mItems.end(); ++it )
@@ -1141,7 +1141,7 @@ void KConfigSkeleton::readConfig()
 
 void KConfigSkeleton::writeConfig()
 {
-  kDebug(177) << "KConfigSkeleton::writeConfig()" << endl;
+  kDebug(177) << "KConfigSkeleton::writeConfig()";
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = d->mItems.begin(); it != d->mItems.end(); ++it )
   {

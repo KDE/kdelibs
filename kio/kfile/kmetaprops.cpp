@@ -55,7 +55,7 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
 {
 
     KFileItem * fileitem = properties->item();
-    kDebug(250) << "KFileMetaPropsPlugin constructor" << endl;
+    kDebug(250) << "KFileMetaPropsPlugin constructor";
 
     d->m_info  = fileitem->metaInfo();
     if (!d->m_info.isValid())
@@ -81,7 +81,7 @@ void KFileMetaPropsPlugin::createLayout()
 {
     QFileInfo file_info(properties->item()->url().path());
 
-    kDebug(250) << "KFileMetaPropsPlugin::createLayout" << endl;
+    kDebug(250) << "KFileMetaPropsPlugin::createLayout";
 
     // is there any valid and non-empty info at all?
     if ( !d->m_info.isValid() )
@@ -105,7 +105,7 @@ void KFileMetaPropsPlugin::createLayout()
     toplayout->setSpacing(KDialog::spacingHint());
 
     foreach (const KFileMetaInfoGroup& group, groupList) {
-        //kDebug(7033) << *git << endl;
+        //kDebug(7033) << *git;
 
         KFileMetaInfoItemList itemList = group.items();
         if (itemList.isEmpty())
@@ -182,10 +182,10 @@ void KFileMetaPropsPlugin::createLayout()
                 if ( l.find(*it)==l.end() )
                 {
                     d->m_add->setEnabled(true);
-                    kDebug(250) << "**first addable key is " << (*it).toLatin1().constData() << "**" <<endl;
+                    kDebug(250) << "**first addable key is " << (*it).toLatin1().constData() << "**";
                     break;
                 }
-                kDebug(250) << "**already existing key is " << (*it).toLatin1().constData() << "**" <<endl;
+                kDebug(250) << "**already existing key is " << (*it).toLatin1().constData() << "**";
         }
     } */
 }
@@ -207,7 +207,7 @@ KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
 
 bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
 
     // TODO: Add support for more than one item
 
@@ -219,13 +219,13 @@ bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
         return false;
 
     bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
-    kDebug() << k_funcinfo << "metaDataEnabled=" << metaDataEnabled << endl;
+    kDebug() << k_funcinfo << "metaDataEnabled=" << metaDataEnabled;
     return metaDataEnabled;
 }
 
 void KFileMetaPropsPlugin::applyChanges()
 {
-    kDebug(250) << "applying changes" << endl;
+    kDebug(250) << "applying changes";
     // insert the fields that changed into the info object
 
     foreach(KFileMetaInfoWidget* w, d->m_editWidgets)

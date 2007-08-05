@@ -353,12 +353,12 @@ void KActionCollection::setConfigGlobal( bool global )
 
 void KActionCollection::readSettings( KConfigGroup* config )
 {
-  kDebug(125) << k_funcinfo << " ( \"" << configGroup() << "\", " << config << " ) start" << endl;
+  kDebug(125) << k_funcinfo << " ( \"" << configGroup() << "\", " << config << " ) start";
   KConfigGroup cg( KGlobal::config(), configGroup() );
   if( !config )
       config = &cg;
 
-  kDebug(125) << "\treadSettings( \"" << configGroup() << "\", " << config << " )" << endl;
+  kDebug(125) << "\treadSettings( \"" << configGroup() << "\", " << config << " )";
   if( !config->exists())
     return;
 
@@ -381,19 +381,19 @@ void KActionCollection::readSettings( KConfigGroup* config )
           else // default shortcut
               kaction->setShortcut( kaction->shortcut(KAction::DefaultShortcut) );
 
-          kDebug(125) << "\t" << actionName << " = '" << entry << "'" << endl;
+          kDebug(125) << "\t" << actionName << " = '" << entry << "'";
       }
   }
 
-  kDebug(125) << k_funcinfo << " done" << endl;
+  kDebug(125) << k_funcinfo << " done";
 }
 
 void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAction* oneAction ) const
 {
-  kDebug(125) << k_funcinfo << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal() << " )" << endl;
+  kDebug(125) << k_funcinfo << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal() << " )";
 
   if (parentGUIClient() && !parentGUIClient()->xmlFile().isEmpty()) {
-    kDebug(129) << "KActionCollection::save(): xmlFile = " << parentGUIClient()->xmlFile() << endl;
+    kDebug(129) << "KActionCollection::save(): xmlFile = " << parentGUIClient()->xmlFile();
 
     QString attrShortcut  = QLatin1String("shortcut");
 
@@ -417,7 +417,7 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
       QString actionName = it.key();
 
       bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
-      //kDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
+      //kDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal();
 
       // now see if this element already exists
       // and create it if necessary (unless bSameAsDefault)
@@ -427,7 +427,7 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
 
       if( bSameAsDefault ) {
         act_elem.removeAttribute( attrShortcut );
-        //kDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
+        //kDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count();
         if( act_elem.attributes().count() == 1 )
           elem.removeChild( act_elem );
       } else {
@@ -470,13 +470,13 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
               QString s = kaction->shortcut().toString();
               if( s.isEmpty() )
                   s = "none";
-              kDebug(125) << "\twriting " << actionName << " = " << s << endl;
+              kDebug(125) << "\twriting " << actionName << " = " << s;
               config->writeEntry( actionName, s, flags );
           }
           // Otherwise, this key is the same as default
           //  but exists in config file.  Remove it.
           else if( bConfigHasAction ) {
-              kDebug(125) << "\tremoving " << actionName << " because == default" << endl;
+              kDebug(125) << "\tremoving " << actionName << " because == default";
               config->deleteEntry( actionName, flags );
           }
       }

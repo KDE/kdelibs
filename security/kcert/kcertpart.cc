@@ -589,7 +589,7 @@ bool KCertPart::openFile() {
 							new KX509Item(_parentCA, xc);
 						else new KX509Item(_sideList, xc);
 					} else if (x5i->crl) {	 // a crl
-						kDebug() << "Found a CRL..." << endl;
+						kDebug() << "Found a CRL...";
 					}
 				}
 

@@ -32,8 +32,8 @@ int main( int argc, char** argv ) {
                                 KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns,
                                 (QWidget*)0 );
     if ( dlg.exec() == KDialog::Accepted ) {
-        kDebug() << dlg.chooser()->patterns() << endl;
-        kDebug() << dlg.chooser()->mimeTypes().join(";") << endl;
+        kDebug() << dlg.chooser()->patterns();
+        kDebug() << dlg.chooser()->mimeTypes().join(";");
     }
 
     return 0; // app.exec();

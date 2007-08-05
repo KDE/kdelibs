@@ -127,7 +127,7 @@ bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
     case QEvent::Paint:
         return false;
     default:
-        // kDebug(125) << "KCheckAccelerators::eventFilter " << e->type() << " " << autoCheck << endl;
+        // kDebug(125) << "KCheckAccelerators::eventFilter " << e->type() << " " << autoCheck;
         break;
     }
     return false;

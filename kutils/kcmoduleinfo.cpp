@@ -61,7 +61,7 @@ KCModuleInfo::Private::Private( KService::Ptr s )
 {
   if ( !service )
   {
-    kDebug(712) << "Could not find the service." << endl;
+    kDebug(712) << "Could not find the service.";
     return;
   }
 

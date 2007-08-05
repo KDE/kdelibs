@@ -262,7 +262,7 @@ void CSSStyleSheetImpl::determineNamespace(quint32& id, const DOM::DOMString& pr
 bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
 {
 #ifdef CSS_STYLESHEET_DEBUG
-    kDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string() << endl;
+    kDebug( 6080 ) << "parsing sheet, len=" << string.length() << ", sheet is " << string.string();
 #endif
 
     strictParsing = strict;
@@ -280,12 +280,12 @@ bool CSSStyleSheetImpl::isLoading() const
         {
             CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
 #ifdef CSS_STYLESHEET_DEBUG
-            kDebug( 6080 ) << "found import" << endl;
+            kDebug( 6080 ) << "found import";
 #endif
             if(import->isLoading())
             {
 #ifdef CSS_STYLESHEET_DEBUG
-                kDebug( 6080 ) << "--> not loaded" << endl;
+                kDebug( 6080 ) << "--> not loaded";
 #endif
                 return true;
             }

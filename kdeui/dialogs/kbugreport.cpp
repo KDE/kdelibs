@@ -340,7 +340,7 @@ void KBugReportPrivate::appChanged(int i)
     int index = appName.indexOf( '/' );
     if ( index > 0 )
         appName = appName.left( index );
-    kDebug() << "appName " << appName << endl;
+    kDebug() << "appName " << appName;
 
     if (appname == appName && m_aboutData)
         m_strVersion = m_aboutData->version();
@@ -363,7 +363,7 @@ void KBugReportPrivate::slotConfigureEmail()
   m_process->start( QString::fromLatin1("kcmshell"), QStringList() << QString::fromLatin1("kcm_useraccount") );
   if ( !m_process->waitForStarted() )
   {
-    kDebug() << "Couldn't start kcmshell.." << endl;
+    kDebug() << "Couldn't start kcmshell..";
     delete m_process;
     m_process = 0;
     return;
@@ -476,7 +476,7 @@ void KBugReport::closeEvent( QCloseEvent * e)
 
 QString KBugReport::text() const
 {
-    kDebug() << d->severityButtons[d->currentSeverity()]->objectName() << endl;
+    kDebug() << d->severityButtons[d->currentSeverity()]->objectName();
     // Prepend the pseudo-headers to the contents of the mail
   QString severity = d->severityButtons[d->currentSeverity()]->objectName();
   QString appname = d->appcombo->currentText();
@@ -538,7 +538,7 @@ bool KBugReport::sendBugReport()
   proc.write( text().toAscii() );
 
   proc.waitForFinished();
-  kDebug() << "kbugreport: sendbugmail exit, status " << proc.exitStatus() << " code " << proc.exitCode() << endl;
+  kDebug() << "kbugreport: sendbugmail exit, status " << proc.exitStatus() << " code " << proc.exitCode();
 
   QByteArray line;
   if (proc.exitStatus() == QProcess::NormalExit && proc.exitCode() == 1) { // XXX too restrictive?

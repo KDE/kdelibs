@@ -51,27 +51,27 @@ CodecActionTest::CodecActionTest(QWidget *parent)
 
 void CodecActionTest::triggered(QAction* action)
 {
-  kDebug() << k_funcinfo << action << endl;
+  kDebug() << k_funcinfo << action;
 }
 
 void CodecActionTest::triggered(int index)
 {
-  kDebug() << k_funcinfo << index << endl;
+  kDebug() << k_funcinfo << index;
 }
 
 void CodecActionTest::triggered(const QString& text)
 {
-  kDebug() << k_funcinfo << '"' << text << '"' << endl;
+  kDebug() << k_funcinfo << '"' << text << '"';
 }
 
 void CodecActionTest::triggered(QTextCodec *codec)
 {
-  kDebug() << k_funcinfo << codec->name() << ':' << codec->mibEnum() << endl;
+  kDebug() << k_funcinfo << codec->name() << ':' << codec->mibEnum();
 }
 
 void CodecActionTest::slotActionTriggered(bool state)
 {
-    kDebug() << k_funcinfo << sender() << " state " << state << endl;
+    kDebug() << k_funcinfo << sender() << " state " << state;
 }
 
 #include "kcodecactiontest.moc"

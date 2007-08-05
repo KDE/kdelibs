@@ -40,7 +40,7 @@ void registerComponent(const KComponentData &componentData, QObject *recv, const
     // keep the KComponentData around and call
     // componentData.config()->reparseConfiguration when the app should reparse
     QString componentName = componentData.componentName();
-    kDebug(701) << k_funcinfo << componentName << endl;
+    kDebug(701) << k_funcinfo << componentName;
     d->m_componentName[recv] = componentName;
     if (!d->m_componentInfo.contains(componentName)) {
         d->m_componentInfo[componentName].componentData = componentData;
@@ -53,7 +53,7 @@ void registerComponent(const KComponentData &componentData, QObject *recv, const
 
 KSharedConfig::Ptr configForComponentName(const QString &componentName)
 {
-    kDebug(701) << k_funcinfo << endl;
+    kDebug(701) << k_funcinfo;
     if (d->m_componentInfo.contains(componentName)) {
         KComponentData componentData = d->m_componentInfo[componentName].componentData;
         if (componentData.isValid()) {
@@ -68,7 +68,7 @@ KSharedConfig::Ptr configForComponentName(const QString &componentName)
 
 QList<QString> componentNames()
 {
-    kDebug(701) << k_funcinfo << endl;
+    kDebug(701) << k_funcinfo;
     QList<QString> names;
     for (QMap<QString, ComponentInfo>::ConstIterator it = d->m_componentInfo.begin(); it != d->m_componentInfo.end(); ++it) {
         if ((*it).count > 0) {
@@ -80,7 +80,7 @@ QList<QString> componentNames()
 
 void reparseConfiguration(const QString & componentName)
 {
-    kDebug(701) << k_funcinfo << componentName << endl;
+    kDebug(701) << k_funcinfo << componentName;
     // check if the componentName is valid:
     if (! d->m_componentInfo.contains(componentName)) {
         return;
@@ -104,7 +104,7 @@ void syncConfiguration()
 
 void DispatcherPrivate::unregisterComponent(QObject *obj)
 {
-    kDebug(701) << k_funcinfo << endl;
+    kDebug(701) << k_funcinfo;
     QString name = m_componentName[obj];
     m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
     --(m_componentInfo[name].count);

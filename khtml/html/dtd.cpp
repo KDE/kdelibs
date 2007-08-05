@@ -432,7 +432,7 @@ static bool check_flow(ushort childID, bool strict)
 
 bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
 {
-    //kDebug( 6030 ) << "checkChild: " << tagID << "/" << childID << endl;
+    //kDebug( 6030 ) << "checkChild: " << tagID << "/" << childID;
 
     if (tagID >= 1000 || childID >= 1000)
         return true; // one or both of the elements in an XML element; just allow for now
@@ -642,7 +642,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
             return false;
         }
     default:
-        kDebug( 6030 ) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!" << endl;
+        kDebug( 6030 ) << "unhandled tag in dtd.cpp:checkChild(): tagID=" << tagID << "!";
         return false;
     }
 }

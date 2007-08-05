@@ -101,7 +101,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
         return 0;
     QDomDocument doc;
     if (!doc.setContent(&qfile)) {
-        kWarning() << "Parse error in " << fullPath << endl;
+        kWarning() << "Parse error in " << fullPath;
         return 0;
     }
     const QDomElement mimeTypeElement = doc.documentElement();
@@ -127,7 +127,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
         }
     }
     if (comment.isEmpty()) {
-        kWarning() << "Missing <comment> field in " << fullPath << endl;
+        kWarning() << "Missing <comment> field in " << fullPath;
     }
     foreach(const QString& lang, KGlobal::locale()->languageList()) {
         const QString comm = commentsByLanguage.value(lang);
@@ -137,7 +137,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
         }
     }
 
-    //kDebug() << "Creating mimetype " << name << " from file " << file << endl;
+    //kDebug() << "Creating mimetype " << name << " from file " << file;
 
     KMimeType* e;
     if ( name == "inode/directory" )
@@ -153,7 +153,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
 
     if ( !(e->isValid()) )
     {
-        kWarning(7012) << "Invalid MimeType : " << file << endl;
+        kWarning(7012) << "Invalid MimeType : " << file;
         delete e;
         return 0;
     }
@@ -177,7 +177,7 @@ void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
 void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 {
     QFile qfile( fileName );
-    kDebug() << k_funcinfo << "Now parsing " << fileName << endl;
+    kDebug() << k_funcinfo << "Now parsing " << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
         QTextStream stream(&qfile);
         stream.setCodec("UTF-8");
@@ -191,7 +191,7 @@ void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
             const QString derivedTypeName = line.left(pos);
             KMimeType::Ptr derivedType = findMimeTypeByName(derivedTypeName);
             if (!derivedType)
-                kWarning(7012) << fileName << " refers to unknown mimetype " << derivedTypeName << endl;
+                kWarning(7012) << fileName << " refers to unknown mimetype " << derivedTypeName;
             else {
                 const QString parentTypeName = line.mid(pos+1);
                 Q_ASSERT(!parentTypeName.isEmpty());
@@ -204,7 +204,7 @@ void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
 {
     QFile qfile( fileName );
-    kDebug() << k_funcinfo << "Now parsing " << fileName << endl;
+    kDebug() << k_funcinfo << "Now parsing " << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
         QTextStream stream(&qfile);
         stream.setCodec("UTF-8");
@@ -241,13 +241,13 @@ void KBuildMimeTypeFactory::parseSubclasses()
 
 
     const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "subclasses");
-    //kDebug() << k_funcinfo << subclassFiles << endl;
+    //kDebug() << k_funcinfo << subclassFiles;
     Q_FOREACH(const QString& file, subclassFiles) {
         parseSubclassFile(file);
     }
 
     const QStringList aliasFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "aliases");
-    //kDebug() << k_funcinfo << aliasFiles << endl;
+    //kDebug() << k_funcinfo << aliasFiles;
     Q_FOREACH(const QString& file, aliasFiles) {
         parseAliasFile(file);
     }
@@ -337,7 +337,7 @@ KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
      // in the database file. This is useful for doing a binary search in kmimetypefactory.cpp
      // TODO: we could use a hash-table instead, for more performance and no extension-length limit.
      QString paddedPattern = (*it).leftJustified(6).right(4); // remove leading "*."
-     //kDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()) << endl;
+     //kDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name());
      str << paddedPattern;
      str << dict[(*it)]->offset();
      entrySize = str.device()->pos() - start;
@@ -357,7 +357,7 @@ KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
 
    for ( QStringList::ConstIterator it = otherPatterns.begin(); it != otherPatterns.end() ; ++it )
    {
-     //kDebug(7021) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()) << endl;
+     //kDebug(7021) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name());
      str << (*it);
      str << dict[(*it)]->offset();
    }

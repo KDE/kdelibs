@@ -701,7 +701,7 @@ void KToolBar::saveSettings( KConfigGroup &_cg )
     // one toolbar, if we only saved the changed indexes, the toolbars wouldn't
     // reappear at the same position the next time.
     // The whole set of indexes has to be saved.
-    //kDebug(220) << name() << "                writing index " << index << endl;
+    //kDebug(220) << name() << "                writing index " << index;
 
     // don't save if there's only one toolbar
 

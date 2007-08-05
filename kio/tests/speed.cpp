@@ -46,12 +46,12 @@ void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
     UDSEntryList::ConstIterator it = list.begin();
     const UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it)
-        kDebug() << (*it).stringValue( UDSEntry::UDS_NAME ) << endl;
+        kDebug() << (*it).stringValue( UDSEntry::UDS_NAME );
 }
 
 
 void SpeedTest::finished(KJob*) {
-    kDebug() << "job finished" << endl;
+    kDebug() << "job finished";
     qApp->quit();
 }
 
@@ -85,13 +85,13 @@ int main(int argc, char **argv) {
     if (!mp) {
         kDebug() << "no mount point for device " << url << " found\n";
     } else
-        kDebug() << mp->mountPoint() << " is the mount point for device " << url << endl;
+        kDebug() << mp->mountPoint() << " is the mount point for device " << url;
 
     mp = mountPoints.findByPath(url.path());
     if (!mp) {
         kDebug() << "no mount point for path " << url << " found\n";
     } else {
-        kDebug() << mp->mountPoint() << " is the mount point for path " << url << endl;
+        kDebug() << mp->mountPoint() << " is the mount point for path " << url;
         kDebug() << url << " is probably " << (mp->probablySlow() ? "slow" : "normal") << " mounted\n";
     }
 
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
     if (!mp) {
         kDebug() << "no mount point for path " << url << " found\n";
     } else
-        kDebug() << mp->mountPoint() << " is the mount point for path " << url << endl;
+        kDebug() << mp->mountPoint() << " is the mount point for path " << url;
 }
 
 #include "speed.moc"

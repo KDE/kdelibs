@@ -97,17 +97,17 @@ int Nepomuk::ResourceManager::init()
             d->registry = new Middleware::Registry( this );
 
         //   if( serviceRegistry()->status() != VALID ) {
-        //     kDebug(300004) << "(ResourceManager) failed to initialize registry." << endl;
+        //     kDebug(300004) << "(ResourceManager) failed to initialize registry.";
         //     return -1;
         //  }
 
         if( !serviceRegistry()->discoverRDFRepository() ) {
-            kDebug(300004) << "(ResourceManager) No NEPOMUK RDFRepository service found." << endl;
+            kDebug(300004) << "(ResourceManager) No NEPOMUK RDFRepository service found.";
             return -1;
         }
 
         //   if( !serviceRegistry()->discoverResourceIdService() ) {
-        //     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found." << endl;
+        //     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found.";
         //     return -1;
         //   }
 
@@ -137,7 +137,7 @@ Nepomuk::Resource Nepomuk::ResourceManager::createResourceFromUri( const QString
 
 void Nepomuk::ResourceManager::notifyError( const QString& uri, int errorCode )
 {
-    kDebug(300004) << "(Nepomuk::ResourceManager) error: " << uri << " " << errorCode << endl;
+    kDebug(300004) << "(Nepomuk::ResourceManager) error: " << uri << " " << errorCode;
     emit error( uri, errorCode );
 }
 
@@ -154,7 +154,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
             l.append( Resource( *rdIt ) );
         }
 
-        kDebug(300004) << k_funcinfo << " added local resources: " << l.count() << endl;
+        kDebug(300004) << k_funcinfo << " added local resources: " << l.count();
 
         // check remote data
         RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
@@ -169,7 +169,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
                 l.append( res );
         }
 
-        kDebug(300004) << k_funcinfo << " added remote resources: " << l.count() << endl;
+        kDebug(300004) << k_funcinfo << " added remote resources: " << l.count();
     }
 
     return l;
@@ -181,7 +181,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
     QList<Resource> l;
 
     if( v.isList() ) {
-        kDebug(300004) << "(ResourceManager::allResourcesWithProperty) list values not supported." << endl;
+        kDebug(300004) << "(ResourceManager::allResourcesWithProperty) list values not supported.";
     }
     else {
         // check local data

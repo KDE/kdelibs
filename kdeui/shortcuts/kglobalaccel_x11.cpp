@@ -84,7 +84,7 @@ KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel *owner)
 bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 {
 	if( !keyQt ) {
-		kWarning(125) << k_funcinfo << "Tried to grab key with null code." << endl;
+		kWarning(125) << k_funcinfo << "Tried to grab key with null code.";
 		return false;
 	}
 
@@ -135,7 +135,7 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 	}
 
 #ifndef NDEBUG
-	kDebug(125) << sDebug << endl;
+	kDebug(125) << sDebug;
 #endif
 
 	bool failed = false;
@@ -171,7 +171,7 @@ bool KGlobalAccelImpl::x11Event( XEvent* event )
 
 void KGlobalAccelImpl::x11MappingNotify()
 {
-	kDebug(125) << "KGlobalAccelImpl::x11MappingNotify()" << endl;
+	kDebug(125) << "KGlobalAccelImpl::x11MappingNotify()";
 	// Maybe the X modifier map has been changed.
 	uint oldKeyModMaskXAccel = g_keyModMaskXAccel;
 	uint oldKeyModMaskXOnOrOff = g_keyModMaskXOnOrOff;
@@ -224,7 +224,7 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 	
 	int keyQt = keyCodeQt | keyModQt;
 	
-	kDebug(125) << k_funcinfo << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]" << endl;
+	kDebug(125) << k_funcinfo << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]";
 
 
 	// Keyboard needs to be ungrabed after XGrabKey() activates the grab, but only in such case.

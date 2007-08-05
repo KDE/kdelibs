@@ -59,17 +59,17 @@ SelectActionTest::SelectActionTest(QWidget *parent)
 
 void SelectActionTest::triggered(QAction* action)
 {
-  kDebug() << k_funcinfo << action << endl;
+  kDebug() << k_funcinfo << action;
 }
 
 void SelectActionTest::triggered(int index)
 {
-  kDebug() << k_funcinfo << index << endl;
+  kDebug() << k_funcinfo << index;
 }
 
 void SelectActionTest::triggered(const QString& text)
 {
-  kDebug() << k_funcinfo << '"' << text << '"' << endl;
+  kDebug() << k_funcinfo << '"' << text << '"';
 }
 
 void SelectActionTest::addAction()
@@ -91,7 +91,7 @@ void SelectActionTest::removeAction()
 
 void SelectActionTest::slotActionTriggered(bool state)
 {
-    kDebug() << k_funcinfo << sender() << " state " << state << endl;
+    kDebug() << k_funcinfo << sender() << " state " << state;
 }
 
 #include "kselectactiontest.moc"

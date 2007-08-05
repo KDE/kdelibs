@@ -281,7 +281,7 @@ void TestWindow::slotCompletionsMenu(QAction* action)
 
 TestWindow::~TestWindow ()
 {
-    kDebug() << "kwindowtest finished" << endl;
+    kDebug() << "kwindowtest finished";
 }
 
 void TestWindow::beFixed()

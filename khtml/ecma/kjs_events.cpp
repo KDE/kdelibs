@@ -263,7 +263,7 @@ DOMEvent::~DOMEvent()
 bool DOMEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug() << "KJS::DOMEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug() << "KJS::DOMEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
   return getStaticValueSlot<DOMEvent, DOMObject>(exec,&DOMEventTable,this,propertyName,slot);
@@ -293,7 +293,7 @@ ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
   case CancelBubble: // MSIE extension
     return Boolean(event.propagationStopped());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token;
     return 0;
   }
 }
@@ -511,7 +511,7 @@ ValueImp *DOMUIEvent::getValueProperty(ExecState *exec, int token) const
     // NS-compatibility
     return Number(event.which());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMUIEvent::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in DOMUIEvent::getValueProperty : " << token;
     return Undefined();
   }
 }
@@ -575,7 +575,7 @@ DOMMouseEvent::~DOMMouseEvent()
 bool DOMMouseEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMMouseEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMMouseEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
   return getStaticValueSlot<DOMMouseEvent, DOMUIEvent>(exec,&DOMMouseEventTable,this,propertyName,slot);
@@ -609,7 +609,7 @@ ValueImp *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
     if ( rend ) {
       int xPos, yPos;
       if ( rend->absolutePosition( xPos, yPos ) ) {
-        //kDebug() << "DOMMouseEvent::getValueProperty rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos << endl;
+        //kDebug() << "DOMMouseEvent::getValueProperty rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos;
         x -= xPos;
         y -= yPos;
       }
@@ -655,7 +655,7 @@ ValueImp *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
   case RelatedTarget:
     return getDOMNode(exec,event.relatedTarget());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMMouseEvent::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in DOMMouseEvent::getValueProperty : " << token;
     return 0;
   }
 }
@@ -710,7 +710,7 @@ DOMKeyEventBase::~DOMKeyEventBase()
 bool DOMKeyEventBase::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMKeyEventBase::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMKeyEventBase::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMKeyEventBase, DOMUIEvent>(exec,&DOMKeyEventBaseTable,this,propertyName,slot);
 }
@@ -734,7 +734,7 @@ ValueImp* DOMKeyEventBase::getValueProperty(ExecState *, int token) const
   case MetaKey:
     return Boolean(tevent->metaKey());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMKeyEventBase::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in DOMKeyEventBase::getValueProperty : " << token;
     return KJS::Undefined();
   }
 }
@@ -765,7 +765,7 @@ DOMTextEvent::~DOMTextEvent()
 bool DOMTextEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMTextEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMTextEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMTextEvent, DOMKeyEventBase>(exec,&DOMTextEventTable,this,propertyName,slot);
 }
@@ -778,7 +778,7 @@ ValueImp *DOMTextEvent::getValueProperty(ExecState *, int token) const
   case Data:
     return String(tevent.data());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token;
     return KJS::Undefined();
   }
 }
@@ -826,7 +826,7 @@ DOMKeyboardEvent::~DOMKeyboardEvent()
 bool DOMKeyboardEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMKeyboardEvent, DOMKeyEventBase>(exec,&DOMKeyboardEventTable,this,propertyName,slot);
 }
@@ -840,7 +840,7 @@ ValueImp* DOMKeyboardEvent::getValueProperty(ExecState *, int token) const
   case KeyLocation:
     return Number(tevent->keyLocation());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMKeyboardEvent::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in DOMKeyboardEvent::getValueProperty : " << token;
     return KJS::Undefined();
   }
 }
@@ -883,7 +883,7 @@ KeyboardEventConstructor::KeyboardEventConstructor(ExecState* exec)
 bool KeyboardEventConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<KeyboardEventConstructor, DOMObject>(exec,&KeyboardEventConstructorTable,this,propertyName,slot);
 }
@@ -978,7 +978,7 @@ ValueImp *DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
   case AttrChange:
     return Number((unsigned int)event.attrChange());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMMutationEvent::getValueProperty : " << token << endl;
+    kDebug(6070) << "WARNING: Unhandled token in DOMMutationEvent::getValueProperty : " << token;
     return 0;
   }
 }

@@ -348,7 +348,7 @@ bool Nepomuk::ResourceData::determineUri()
             // The kickoffUriOrId is actually a URI
             //
             m_uri = kickoffUriOrId();
-            kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri() << endl;
+            kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " exists as a URI " << uri();
             updateType();
         }
         else {
@@ -411,12 +411,12 @@ bool Nepomuk::ResourceData::determineUri()
                     if ( m_uri.isEmpty() ) {
                         m_kickoffIdentifier = kickoffUriOrId();
                         m_uri = ResourceManager::instance()->generateUniqueUri();
-                        kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already used as identifier with incompatible type. Generated new URI " << uri() << endl;
+                        kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already used as identifier with incompatible type. Generated new URI " << uri();
                     }
                 }
                 else {
                     m_uri = sl.first().subject().toString();
-                    kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri() << endl;
+                    kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri();
                     updateType();
                 }
             }
@@ -426,7 +426,7 @@ bool Nepomuk::ResourceData::determineUri()
                 //
                 m_kickoffIdentifier = kickoffUriOrId();
                 m_uri = ResourceManager::instance()->generateUniqueUri();
-                kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << uri() << endl;
+                kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " seems fresh. Generated new URI " << uri();
             }
         }
 
@@ -492,7 +492,7 @@ bool Nepomuk::ResourceData::operator==( const ResourceData& other ) const
 
     if( that->m_uri != other.m_uri ||
         that->m_type != other.m_type ) {
-        kDebug(300004) << k_funcinfo << "different uri or type" << endl;
+        kDebug(300004) << k_funcinfo << "different uri or type";
         return false;
     }
 
@@ -542,7 +542,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::data( const QString& uriOrId, cons
     // The uriOrId has no local representation yet -> create one
     //
     if( !resFound ) {
-        kDebug(300004) << "No existing ResourceData instance found for uriOrId " << uriOrId << endl;
+        kDebug(300004) << "No existing ResourceData instance found for uriOrId " << uriOrId;
         //
         // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
         //

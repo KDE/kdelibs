@@ -47,7 +47,7 @@ public:
 
             ++it;
         }
-        kDebug() << "Danger: Unable to find originating event object in object list. This shouldn't happen!" << endl;
+        kDebug() << "Danger: Unable to find originating event object in object list. This shouldn't happen!";
         return -1;
     }
 
@@ -90,7 +90,7 @@ KStatusBar::~KStatusBar ()
 void KStatusBar::insertItem( const QString& text, int id, int stretch)
 {
     if ( d->items[id] ) {
-        kDebug() << "KStatusBar::insertItem: item id " << id << " already exists." << endl;
+        kDebug() << "KStatusBar::insertItem: item id " << id << " already exists.";
     }
 
     KSqueezedTextLabel *l = new KSqueezedTextLabel( text, this );
@@ -112,7 +112,7 @@ void KStatusBar::insertFixedItem( const QString& text, int id )
 void KStatusBar::insertPermanentItem( const QString& text, int id, int stretch)
 {
     if (d->items[id]) {
-        kDebug() << "KStatusBar::insertPermanentItem: item id " << id << " already exists." << endl;
+        kDebug() << "KStatusBar::insertPermanentItem: item id " << id << " already exists.";
     }
 
     QLabel *l = new QLabel( text, this );
@@ -138,7 +138,7 @@ void KStatusBar::removeItem (int id)
         d->items.remove( id );
         delete label;
     } else {
-        kDebug() << "KStatusBar::removeItem: bad item id: " << id << endl;
+        kDebug() << "KStatusBar::removeItem: bad item id: " << id;
     }
 }
 
@@ -169,7 +169,7 @@ void KStatusBar::changeItem( const QString& text, int id )
             reformat();
         }
     } else {
-        kDebug() << "KStatusBar::changeItem: bad item id: " << id << endl;
+        kDebug() << "KStatusBar::changeItem: bad item id: " << id;
     }
 }
 
@@ -179,7 +179,7 @@ void KStatusBar::setItemAlignment (int id, Qt::Alignment alignment)
     if ( label ) {
         label->setAlignment( alignment );
     } else {
-        kDebug() << "KStatusBar::setItemAlignment: bad item id: " << id << endl;
+        kDebug() << "KStatusBar::setItemAlignment: bad item id: " << id;
     }
 }
 
@@ -193,7 +193,7 @@ void KStatusBar::setItemFixed(int id, int w)
 
         label->setFixedWidth(w);
     } else {
-        kDebug() << "KStatusBar::setItemFixed: bad item id: " << id << endl;
+        kDebug() << "KStatusBar::setItemFixed: bad item id: " << id;
     }
 }
 

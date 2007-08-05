@@ -40,7 +40,7 @@ void KDebugDBusIface::notifyKDebugConfigChanged()
 
 void KDebugDBusIface::printBacktrace()
 {
-    kDebug() << kBacktrace() << endl;
+    kDebug() << kBacktrace();
 }
 
 #include "kdebugdbusiface_p.moc"

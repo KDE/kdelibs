@@ -104,7 +104,7 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
 
     // TODO add date and time
 
-    //kDebug() << descr << endl;
+    //kDebug() << descr;
     ret.append( descr );
 
     if (entry->isDirectory())
@@ -282,7 +282,7 @@ void KArchiveTest::testUncompress()
     QVERIFY( filterDev );
     QByteArray buffer;
     buffer.resize(8*1024);
-    kDebug() << "buffer.size()=" << buffer.size() << endl;
+    kDebug() << "buffer.size()=" << buffer.size();
     QVERIFY( filterDev->open( QIODevice::ReadOnly ) );
 
     qint64 totalSize = 0;
@@ -291,11 +291,11 @@ void KArchiveTest::testUncompress()
         len = filterDev->read(buffer.data(), buffer.size());
         QVERIFY( len >= 0 );
         totalSize += len;
-        // kDebug() << "read len=" << len << " totalSize=" << totalSize << endl;
+        // kDebug() << "read len=" << len << " totalSize=" << totalSize;
     }
     filterDev->close();
     delete filterDev;
-    // kDebug() << "totalSize=" << totalSize << endl;
+    // kDebug() << "totalSize=" << totalSize;
     QVERIFY( totalSize > 26000 ); // 27648 here when using gunzip
 }
 

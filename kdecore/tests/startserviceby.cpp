@@ -34,7 +34,7 @@ main(int argc, char *argv[])
    QString dbusService;
    int pid;
    KToolInvocation::startServiceByDesktopPath( "kio_uiserver.desktop", QString(), &error, &dbusService, &pid );
-   kDebug() << "Started. error=" << error << " dbusService=" << dbusService << " pid=" << pid << endl;
+   kDebug() << "Started. error=" << error << " dbusService=" << dbusService << " pid=" << pid;
 
    return 0;
 }

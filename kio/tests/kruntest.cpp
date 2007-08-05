@@ -36,8 +36,8 @@ testKRun * myArray[MAXKRUNS];
 
 void testKRun::foundMimeType( const QString& _type )
 {
-  kDebug() << "testKRun::foundMimeType " << _type << endl;
-  kDebug() << "testKRun::foundMimeType URL=" << m_strURL.url() << endl;
+  kDebug() << "testKRun::foundMimeType " << _type;
+  kDebug() << "testKRun::foundMimeType URL=" << m_strURL.url();
   m_bFinished = true;
   m_timer.setSingleShot( true );
   m_timer.start( 0 );
@@ -66,7 +66,7 @@ void Receiver::slotStop()
 {
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
-    kDebug() << " deleting krun " << i << endl;
+    kDebug() << " deleting krun " << i;
     delete myArray[i];
   }
   start->setEnabled(true);
@@ -77,7 +77,7 @@ void Receiver::slotStart()
 {
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
-    kDebug() << "creating testKRun " << i << endl;
+    kDebug() << "creating testKRun " << i;
     myArray[i] = new testKRun( KUrl("file:/tmp"), window(),0, true, false /* no autodelete */ );
   }
   start->setEnabled(false);

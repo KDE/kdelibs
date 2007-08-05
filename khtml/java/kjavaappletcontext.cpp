@@ -135,27 +135,27 @@ void KJavaAppletContext::processCmd( QString cmd, QStringList args )
 
 void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 {
-    kDebug(6100) << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
-    kDebug(6100) << "arg count = " << arg.count() << endl;
+    kDebug(6100) << "KJavaAppletContext::received, cmd = >>" << cmd << "<<";
+    kDebug(6100) << "arg count = " << arg.count();
 
     if ( cmd == QLatin1String("showstatus")
 	 && !arg.empty() )
     {
         QString tmp = arg.first();
         tmp.replace(QRegExp("[\n\r]"), "");
-        kDebug(6100) << "status message = " << tmp << endl;
+        kDebug(6100) << "status message = " << tmp;
         emit showStatus( tmp );
     }
     else if ( cmd == QLatin1String( "showurlinframe" )
               && arg.count() > 1 )
     {
-        kDebug(6100) << "url = " << arg[0] << ", frame = " << arg[1] << endl;
+        kDebug(6100) << "url = " << arg[0] << ", frame = " << arg[1];
         emit showDocument( arg[0], arg[1] );
     }
     else if ( cmd == QLatin1String( "showdocument" )
               && !arg.empty() )
     {
-        kDebug(6100) << "url = " << arg.first() << endl;
+        kDebug(6100) << "url = " << arg.first();
         emit showDocument( arg.first(), "_top" );
     }
     else if ( cmd == QLatin1String( "resizeapplet" )
@@ -181,7 +181,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         }
     }
     else if (cmd.startsWith(QLatin1String("audioclip_"))) {
-        kDebug(DEBUGAREA) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0] << endl;
+        kDebug(DEBUGAREA) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0];
     }
     else if ( cmd == QLatin1String( "JS_Event" )
               && arg.count() > 2 )
@@ -212,13 +212,13 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
                 {
                     applet->stateChange(newState);
                     if (newState == KJavaApplet::INITIALIZED) {
-                        kDebug(DEBUGAREA) << "emit appletLoaded" << endl;
+                        kDebug(DEBUGAREA) << "emit appletLoaded";
                         emit appletLoaded();
                     }
                 } else
                     kError(DEBUGAREA) << "AppletStateNotification: status is not numerical" << endl;
             } else
-                kWarning(DEBUGAREA) << "AppletStateNotification:  No such Applet with ID=" << arg[0] << endl;
+                kWarning(DEBUGAREA) << "AppletStateNotification:  No such Applet with ID=" << arg[0];
         } else
             kError(DEBUGAREA) << "AppletStateNotification: Applet ID is not numerical" << endl;
     }

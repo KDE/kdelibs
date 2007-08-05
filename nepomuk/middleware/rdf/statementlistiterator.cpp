@@ -97,7 +97,7 @@ Nepomuk::RDF::StatementListIterator::next() const
         ++d->statementIt;
     }
     else {
-        kDebug(300001) << "(StatementListIterator) Called StatementListIterator::next() when there was no next entry." << endl;
+        kDebug(300001) << "(StatementListIterator) Called StatementListIterator::next() when there was no next entry.";
         d->currentStatement = Soprano::Statement();
     }
 

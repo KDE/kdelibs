@@ -169,7 +169,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
      return true;
 
-  kWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
+  kWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction.";
   return false;
 }
 

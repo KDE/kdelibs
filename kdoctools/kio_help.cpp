@@ -66,7 +66,7 @@ QString HelpProtocol::langLookup(const QString &fname)
     // try to locate the file
     for (QStringList::Iterator it = search.begin(); it != search.end(); ++it)
     {
-        kDebug( 7119 ) << "Looking for help in: " << *it << endl;
+        kDebug( 7119 ) << "Looking for help in: " << *it;
 
         QFileInfo info(*it);
         if (info.exists() && info.isFile() && info.isReadable())
@@ -75,7 +75,7 @@ QString HelpProtocol::langLookup(const QString &fname)
         if ( ( *it ).endsWith( ".html" ) )
         {
             QString file = (*it).left((*it).lastIndexOf('/')) + "/index.docbook";
-            kDebug( 7119 ) << "Looking for help in: " << file << endl;
+            kDebug( 7119 ) << "Looking for help in: " << file;
             info.setFile(file);
             if (info.exists() && info.isFile() && info.isReadable())
                 return *it;
@@ -106,7 +106,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             red.setPath( path + "/index.html" );
             red.setQuery( query );
             redirection(red);
-            kDebug( 7119 ) << "redirect to " << red.url() << endl;
+            kDebug( 7119 ) << "redirect to " << red.url();
             redirect = true;
 	}
         else
@@ -116,7 +116,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             return QString();
 	}
     } else
-        kDebug( 7119 ) << "result " << result << endl;
+        kDebug( 7119 ) << "result " << result;
 
     return result;
 }
@@ -178,7 +178,7 @@ void HelpProtocol::get( const KUrl& url )
     if (url.hasHTMLRef())
         target.setHTMLRef(url.htmlRef());
 
-    kDebug( 7119 ) << "target " << target.url() << endl;
+    kDebug( 7119 ) << "target " << target.url();
 
     QString file = target.path();
 
@@ -211,7 +211,7 @@ void HelpProtocol::get( const KUrl& url )
         QString xsl = "customization/kde-nochunk.xsl";
         mParsed = transform(file, KStandardDirs::locate("dtd", xsl));
 
-        kDebug( 7119 ) << "parsed " << mParsed.length() << endl;
+        kDebug( 7119 ) << "parsed " << mParsed.length();
 
         if (mParsed.isEmpty()) {
             unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ,  file ) );
@@ -227,11 +227,11 @@ void HelpProtocol::get( const KUrl& url )
         }
     } else {
 
-        kDebug( 7119 ) << "look for cache for " << file << endl;
+        kDebug( 7119 ) << "look for cache for " << file;
 
         mParsed = lookForCache( file );
 
-        kDebug( 7119 ) << "cached parsed " << mParsed.length() << endl;
+        kDebug( 7119 ) << "cached parsed " << mParsed.length();
 
         if ( mParsed.isEmpty() ) {
             mParsed = transform(file, KStandardDirs::locate("dtd", "customization/kde-chunk.xsl"));
@@ -244,7 +244,7 @@ void HelpProtocol::get( const KUrl& url )
             }
         } else infoMessage( i18n( "Using cached version" ) );
 
-        kDebug( 7119 ) << "parsed " << mParsed.length() << endl;
+        kDebug( 7119 ) << "parsed " << mParsed.length();
 
         if (mParsed.isEmpty()) {
             unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ,  file ) );
@@ -267,7 +267,7 @@ void HelpProtocol::get( const KUrl& url )
             if (anchor.isEmpty() && url.hasHTMLRef())
 	        anchor = url.htmlRef();
 
-            kDebug( 7119 ) << "anchor: " << anchor << endl;
+            kDebug( 7119 ) << "anchor: " << anchor;
 
             if ( !anchor.isEmpty() )
             {
@@ -288,7 +288,7 @@ void HelpProtocol::get( const KUrl& url )
                         filename = filename.left( filename.indexOf( '\"' ) );
                         QString path = target.path();
                         path = path.left( path.lastIndexOf( '/' ) + 1) + filename;
-                        kDebug( 7119 ) << "anchor found in " << path <<endl;
+                        kDebug( 7119 ) << "anchor found in " << path;
                         target.setPath( path );
                         break;
                     }
@@ -338,7 +338,7 @@ void HelpProtocol::mimetype( const KUrl &)
 
 void HelpProtocol::get_file( const KUrl& url )
 {
-    kDebug( 7119 ) << "get_file " << url.url() << endl;
+    kDebug( 7119 ) << "get_file " << url.url();
 
     QByteArray _path( QFile::encodeName(url.path()));
     struct stat buff;

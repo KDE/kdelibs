@@ -49,7 +49,7 @@ void KApplication_UnitTest::testKLibLoaderUnload()
     int error = 0;
     QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, QStringList(), &error );
     if ( error )
-        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
+        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
     QVERIFY( obj != 0 );
 
     // Now delete the object

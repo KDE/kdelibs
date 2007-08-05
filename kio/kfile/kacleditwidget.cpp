@@ -571,7 +571,7 @@ void EditACLEntryDialog::slotOk()
 {
     KACLListView::EntryType type = static_cast<KACLListView::EntryType>( m_buttonIds[m_buttonGroup->checkedButton()] );
 
-    kWarning() << "Type 2: " << type << endl;
+    kWarning() << "Type 2: " << type;
 
     QString qualifier;
     if ( type == KACLListView::NamedUser )

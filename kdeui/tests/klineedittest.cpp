@@ -88,17 +88,17 @@ void KLineEditTest::show()
 
 void KLineEditTest::slotReturnPressed()
 {
-    kDebug() << "Return pressed" << endl;
+    kDebug() << "Return pressed";
 }
 
 void KLineEditTest::slotReturnPressed( const QString& text )
 {
-    kDebug() << "Return pressed: " << text << endl;
+    kDebug() << "Return pressed: " << text;
 }
 
 void KLineEditTest::resultOutput( const QString& text )
 {
-    kDebug() << "KlineEditTest Debug: " << text << endl;
+    kDebug() << "KlineEditTest Debug: " << text;
 }
 
 void KLineEditTest::slotReadOnly( bool ro )

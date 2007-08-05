@@ -453,7 +453,7 @@ if (c) {
 #if 0
 	kDebug(7029) << "---------------- Certificate ------------------"
 		      << endl;
-	kDebug(7029) << getSubject() << endl;
+	kDebug(7029) << getSubject();
 #endif
 
 	for (int j = 0; j < d->kossl->X509_PURPOSE_get_count(); j++) {
@@ -462,7 +462,7 @@ if (c) {
 		for (int ca = 0; ca < 2; ca++) {
 			int idret = d->kossl->X509_check_purpose(c, id, ca);
 			if (idret == 1 || idret == 2) {   // have it
-//				kDebug() << "PURPOSE: " << id << (ca?" CA":"") << endl;
+//				kDebug() << "PURPOSE: " << id << (ca?" CA":"");
 				if (!ca)
 					d->_extensions.flags |= (1L <<(id-1));
 				else d->_extensions.flags |= (1L <<(16+id-1));
@@ -481,56 +481,56 @@ if (c) {
 		      << "\nnscert: " << QString::number(c->ex_nscert, 2)
 		      << endl;
 	if (c->ex_flags & EXFLAG_KUSAGE)
-		kDebug(7029) << "     --- Key Usage extensions found" << endl;
-        else kDebug(7029) << "     --- Key Usage extensions NOT found" << endl;
+		kDebug(7029) << "     --- Key Usage extensions found";
+        else kDebug(7029) << "     --- Key Usage extensions NOT found";
 
 	if (c->ex_flags & EXFLAG_XKUSAGE)
-		kDebug(7029) << "     --- Extended key usage extensions found" << endl;
-        else kDebug(7029) << "     --- Extended key usage extensions NOT found" << endl;
+		kDebug(7029) << "     --- Extended key usage extensions found";
+        else kDebug(7029) << "     --- Extended key usage extensions NOT found";
 
 	if (c->ex_flags & EXFLAG_NSCERT)
-		kDebug(7029) << "     --- NS extensions found" << endl;
-        else kDebug(7029) << "     --- NS extensions NOT found" << endl;
+		kDebug(7029) << "     --- NS extensions found";
+        else kDebug(7029) << "     --- NS extensions NOT found";
 
         if (d->_extensions.certTypeSSLCA())
-                kDebug(7029) << "NOTE: this is an SSL CA file." << endl;
-        else kDebug(7029) << "NOTE: this is NOT an SSL CA file." << endl;
+                kDebug(7029) << "NOTE: this is an SSL CA file.";
+        else kDebug(7029) << "NOTE: this is NOT an SSL CA file.";
 
         if (d->_extensions.certTypeEmailCA())
-                kDebug(7029) << "NOTE: this is an EMAIL CA file." << endl;
-        else kDebug(7029) << "NOTE: this is NOT an EMAIL CA file." << endl;
+                kDebug(7029) << "NOTE: this is an EMAIL CA file.";
+        else kDebug(7029) << "NOTE: this is NOT an EMAIL CA file.";
 
         if (d->_extensions.certTypeCodeCA())
-                kDebug(7029) << "NOTE: this is a CODE CA file." << endl;
-        else kDebug(7029) << "NOTE: this is NOT a CODE CA file." << endl;
+                kDebug(7029) << "NOTE: this is a CODE CA file.";
+        else kDebug(7029) << "NOTE: this is NOT a CODE CA file.";
 
         if (d->_extensions.certTypeSSLClient())
-                kDebug(7029) << "NOTE: this is an SSL client." << endl;
-        else kDebug(7029) << "NOTE: this is NOT an SSL client." << endl;
+                kDebug(7029) << "NOTE: this is an SSL client.";
+        else kDebug(7029) << "NOTE: this is NOT an SSL client.";
 
         if (d->_extensions.certTypeSSLServer())
-                kDebug(7029) << "NOTE: this is an SSL server." << endl;
-        else kDebug(7029) << "NOTE: this is NOT an SSL server." << endl;
+                kDebug(7029) << "NOTE: this is an SSL server.";
+        else kDebug(7029) << "NOTE: this is NOT an SSL server.";
 
         if (d->_extensions.certTypeNSSSLServer())
-                kDebug(7029) << "NOTE: this is a NETSCAPE SSL server." << endl;
-        else kDebug(7029) << "NOTE: this is NOT a NETSCAPE SSL server." << endl;
+                kDebug(7029) << "NOTE: this is a NETSCAPE SSL server.";
+        else kDebug(7029) << "NOTE: this is NOT a NETSCAPE SSL server.";
 
         if (d->_extensions.certTypeSMIME())
-                kDebug(7029) << "NOTE: this is an SMIME certificate." << endl;
-        else kDebug(7029) << "NOTE: this is NOT an SMIME certificate." << endl;
+                kDebug(7029) << "NOTE: this is an SMIME certificate.";
+        else kDebug(7029) << "NOTE: this is NOT an SMIME certificate.";
 
         if (d->_extensions.certTypeSMIMEEncrypt())
-                kDebug(7029) << "NOTE: this is an SMIME encrypt cert." << endl;
-        else kDebug(7029) << "NOTE: this is NOT an SMIME encrypt cert." << endl;
+                kDebug(7029) << "NOTE: this is an SMIME encrypt cert.";
+        else kDebug(7029) << "NOTE: this is NOT an SMIME encrypt cert.";
 
         if (d->_extensions.certTypeSMIMESign())
-                kDebug(7029) << "NOTE: this is an SMIME sign cert." << endl;
-        else kDebug(7029) << "NOTE: this is NOT an SMIME sign cert." << endl;
+                kDebug(7029) << "NOTE: this is an SMIME sign cert.";
+        else kDebug(7029) << "NOTE: this is NOT an SMIME sign cert.";
 
         if (d->_extensions.certTypeCRLSign())
-                kDebug(7029) << "NOTE: this is a CRL signer." << endl;
-        else kDebug(7029) << "NOTE: this is NOT a CRL signer." << endl;
+                kDebug(7029) << "NOTE: this is a CRL signer.";
+        else kDebug(7029) << "NOTE: this is NOT a CRL signer.";
 
 	kDebug(7029) << "-----------------------------------------------"
 		      << endl;
@@ -680,7 +680,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		// this is a bad error - could mean no free memory.
 		// This may be the wrong thing to do here
 		if (!certStoreCTX) {
-			kDebug(7029) << "KSSL couldn't create an X509 store context." << endl;
+			kDebug(7029) << "KSSL couldn't create an X509 store context.";
 			d->kossl->X509_STORE_free(certStore);
 			continue;
 		}
@@ -690,7 +690,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 			d->kossl->X509_STORE_CTX_set_chain(certStoreCTX, (STACK_OF(X509)*)d->_chain.rawChain());
 		}
 
-		//kDebug(7029) << "KSSL setting CRL.............." << endl;
+		//kDebug(7029) << "KSSL setting CRL..............";
 		// int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x);
 
 		d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, purposeToOpenSSL(purpose));

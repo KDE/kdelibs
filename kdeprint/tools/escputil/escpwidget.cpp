@@ -208,7 +208,7 @@ void EscpWidget::startCommand(const QString& arg)
 	m_errorbuffer = m_outbuffer = QByteArray();
 	m_hasoutput = ( arg == "-i" || arg == "-d" );
 //	foreach ( QByteArray arg, m_proc.args() )
-//		kDebug() << "ARG: " << arg << endl;
+//		kDebug() << "ARG: " << arg;
 
 	m_proc.setOutputChannelMode(KProcess::SeparateChannels);
 	m_proc.start();

@@ -21,10 +21,10 @@ KApplication *a;
 
 #include <kdebug.h>
 void TopLevel::slotPrint( int n ) {
-  kDebug() << "slotPrint( " << n << " )" << endl;
+  kDebug() << "slotPrint( " << n << " )";
 }
 void TopLevel::slotPrint( double n ) {
-  kDebug() << "slotPrint( " << n << " )" << endl;
+  kDebug() << "slotPrint( " << n << " )";
 }
 
 #define conn(x,y) connect( x, SIGNAL(valueChanged(y)), SLOT(slotPrint(y)))

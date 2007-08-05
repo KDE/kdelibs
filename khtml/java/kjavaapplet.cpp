@@ -147,7 +147,7 @@ QString& KJavaApplet::archives()
 
 void KJavaApplet::resizeAppletWidget( int width, int height )
 {
-    kDebug(6100) << "KJavaApplet, id = " << id << ", ::resizeAppletWidget to " << width << ", " << height << endl;
+    kDebug(6100) << "KJavaApplet, id = " << id << ", ::resizeAppletWidget to " << width << ", " << height;
 
     QStringList sl;
     sl.push_back( QString::number( 0 ) ); // applet itself has id 0

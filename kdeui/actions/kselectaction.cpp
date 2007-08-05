@@ -163,7 +163,7 @@ QString KSelectAction::currentText( ) const
 
 bool KSelectAction::setCurrentAction(QAction* action)
 {
-  //kDebug (129) << "KSelectAction::setCurrentAction(" << action << ")" << endl;
+  //kDebug (129) << "KSelectAction::setCurrentAction(" << action << ")";
   if (action) {
     if (actions().contains(action)) {
       if (action->isVisible() && action->isEnabled() && action->isCheckable()) {
@@ -172,9 +172,9 @@ bool KSelectAction::setCurrentAction(QAction* action)
             setChecked(true);
         return true;
       } else
-        kWarning (129) << k_funcinfo << "Action don't have the correct properties to be current:" << action->text() << endl;
+        kWarning (129) << k_funcinfo << "Action don't have the correct properties to be current:" << action->text();
     } else
-      kWarning (129) << k_funcinfo << "Action don't belong to group:" << action->text() << endl;
+      kWarning (129) << k_funcinfo << "Action don't belong to group:" << action->text();
     return false;
   }
 
@@ -186,7 +186,7 @@ bool KSelectAction::setCurrentAction(QAction* action)
 
 bool KSelectAction::setCurrentItem( int index )
 {
-  //kDebug (129) << "KSelectAction::setCurrentIndex(" << index << ")" << endl;
+  //kDebug (129) << "KSelectAction::setCurrentIndex(" << index << ")";
   return setCurrentAction(action(index));
 }
 
@@ -225,7 +225,7 @@ QAction * KSelectAction::action( const QString & text, Qt::CaseSensitivity cs ) 
 
 bool KSelectAction::setCurrentAction( const QString & text, Qt::CaseSensitivity cs)
 {
-  //kDebug (129) << "KSelectAction::setCurrentAction(" << text << ",cs=" << cs << ")" << endl;
+  //kDebug (129) << "KSelectAction::setCurrentAction(" << text << ",cs=" << cs << ")";
   return setCurrentAction(action(text, cs));
 }
 
@@ -258,7 +258,7 @@ void KSelectAction::setMaxComboViewCount( int n )
 
 void KSelectAction::addAction(QAction* action)
 {
-  //kDebug (129) << "KSelectAction::addAction(" << action << ")" << endl;
+  //kDebug (129) << "KSelectAction::addAction(" << action << ")";
 
   action->setActionGroup(selectableActionGroup());
 
@@ -297,9 +297,9 @@ KAction* KSelectAction::addAction(const KIcon& icon, const QString& text)
 
 QAction* KSelectAction::removeAction(QAction* action)
 {
-  //kDebug (129) << "KSelectAction::removeAction(" << action << ")" << endl;
+  //kDebug (129) << "KSelectAction::removeAction(" << action << ")";
   //int index = selectableActionGroup()->actions().indexOf(action);
-  //kDebug (129) << "\tindex=" << index << endl;
+  //kDebug (129) << "\tindex=" << index;
 
   action->setActionGroup(0L);
 
@@ -345,7 +345,7 @@ void KSelectAction::changeItem( int index, const QString& text )
 {
   if ( index < 0 || index >= actions().count() )
   {
-    kWarning() << "KSelectAction::changeItem Index out of scope" << endl;
+    kWarning() << "KSelectAction::changeItem Index out of scope";
     return;
   }
 
@@ -354,7 +354,7 @@ void KSelectAction::changeItem( int index, const QString& text )
 
 void KSelectAction::setItems( const QStringList &lst )
 {
-  //kDebug (129) << "KSelectAction::setItems(" << lst << ")" << endl;
+  //kDebug (129) << "KSelectAction::setItems(" << lst << ")";
 
   clear();
 
@@ -379,7 +379,7 @@ int KSelectAction::comboWidth() const
 
 void KSelectAction::clear()
 {
-  //kDebug (129) << "KSelectAction::clear()" << endl;
+  //kDebug (129) << "KSelectAction::clear()";
 
   // we need to delete the actions later since we may get a call to clear()
   // from a method called due to a triggered(...) signal
@@ -455,14 +455,14 @@ void KSelectAction::comboBoxDeleted(QObject* object)
 
 void KSelectAction::comboBoxCurrentIndexChanged(int index)
 {
-  //kDebug (129) << "KSelectAction::comboBoxCurrentIndexChanged(" << index << ")" << endl;
+  //kDebug (129) << "KSelectAction::comboBoxCurrentIndexChanged(" << index << ")";
 
   KComboBox *triggeringCombo = qobject_cast <KComboBox *> (sender ());
 
   QAction *a = action(index);
-  //kDebug (129) << "\ta=" << a << endl;
+  //kDebug (129) << "\ta=" << a;
   if (a) {
-    //kDebug (129) << "\t\tsetting as current action" << endl;
+    //kDebug (129) << "\t\tsetting as current action";
     a->trigger();
 
   } else if (isEditable () &&
@@ -471,7 +471,7 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
 
     // User must have added a new item by typing and pressing enter.
     const QString newItemText = triggeringCombo->currentText ();
-    //kDebug (129) << "\t\tuser typed new item '" << newItemText << "'" << endl;
+    //kDebug (129) << "\t\tuser typed new item '" << newItemText << "'";
 
     // Only 1 combobox contains this and it's not a proper action.
     bool blocked = triggeringCombo->blockSignals (true);
@@ -577,24 +577,24 @@ static QString DropAmpersands (const QString &text)
 static int TrueCurrentItem (KSelectAction *sa)
 {
   QAction *curAction = sa->currentAction ();
-  //kDebug (129) << "\tTrueCurrentItem(" << sa << ") curAction=" << curAction << endl;
+  //kDebug (129) << "\tTrueCurrentItem(" << sa << ") curAction=" << curAction;
 
   foreach (QAction *action, sa->actions ())
   {
     if (action->isChecked ())
     {
-       //kDebug (129) << "\t\taction " << action << " (text=" << action->text () << ") isChecked" << endl;
+       //kDebug (129) << "\t\taction " << action << " (text=" << action->text () << ") isChecked";
 
        // 2 actions checked case?
        if (action != curAction)
        {
-         //kDebug (129) << "\t\t\tmust be newly selected one" << endl;
+         //kDebug (129) << "\t\t\tmust be newly selected one";
          return sa->actions ().indexOf (action);
        }
     }
   }
 
-  //kDebug (129) << "\t\tcurrent action still selected? " << (curAction && curAction->isChecked ()) << endl;
+  //kDebug (129) << "\t\tcurrent action still selected? " << (curAction && curAction->isChecked ());
   // 1 or 0 actions checked case (in that order)?
   return (curAction && curAction->isChecked ()) ? sa->actions ().indexOf (curAction) : -1;
 }
@@ -628,7 +628,7 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
         e->reason () != Qt::PopupFocusReason/*menu*/ &&
         e->reason () != Qt::OtherFocusReason/*inconsistently reproduceable actions...*/) {
 
-      //kDebug (129) << "\tkilling text" << endl;
+      //kDebug (129) << "\tkilling text";
       comboBox->setEditText (comboBox->itemText (comboBox->currentIndex ()));
     }
 

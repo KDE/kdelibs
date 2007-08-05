@@ -376,7 +376,7 @@ bool KService::hasMimeType( const KServiceType* ptr ) const
         it->toInt(&isNumber);
         if (isNumber)
             continue;
-        //kDebug(7012) << "    has " << (*it) << endl;
+        //kDebug(7012) << "    has " << (*it);
         if ( *it == ptr->name() )
             return true;
         // also the case of parent servicetypes
@@ -499,7 +499,7 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
     QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( _name );
     if ( (it == d->m_mapProps.end()) || (!it->isValid()))
     {
-        //kDebug(7012) << "Property not found " << _name << endl;
+        //kDebug(7012) << "Property not found " << _name;
         return QVariant(); // No property set.
     }
 

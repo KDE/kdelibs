@@ -75,7 +75,7 @@ Nepomuk::Middleware::Result Nepomuk::Middleware::DBus::ServiceBackend::methodCal
             return Result::createErrorResult( -1, dbusReply.errorName(), dbusReply.arguments().first().toString() );
         }
         else {
-            kDebug(300001) << "(DBus::ServiceBackend) got error reply: " << dbusReply.errorName() << endl;
+            kDebug(300001) << "(DBus::ServiceBackend) got error reply: " << dbusReply.errorName();
             return Result::createErrorResult( -1, dbusReply.errorName() );
         }
     }
@@ -125,7 +125,7 @@ Nepomuk::Middleware::Result Nepomuk::Middleware::DBus::ServiceBackend::methodCal
             // Check for lists of lists of maps of ...
             //
             else {
-                kDebug(300001) << "(DBus::ServiceBackend) signature: " << dbusReply.signature() << endl;
+                kDebug(300001) << "(DBus::ServiceBackend) signature: " << dbusReply.signature();
                 //                               3. check for lists of lists of maps and so on
                 //                               4. fail all other types
                 return Result::createErrorResult( -1, "org.semanticdesktop.nepomuk.error.UnknownType",

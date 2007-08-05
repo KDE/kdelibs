@@ -668,7 +668,7 @@ void KFileWidget::slotOk()
     // d->url is a correct URL now
 
     if ( (mode() & KFile::Directory) == KFile::Directory ) {
-        kDebug(kfile_area) << "Directory" << endl;
+        kDebug(kfile_area) << "Directory";
         bool done = true;
         if ( d->url.isLocalFile() ) {
             if ( d->locationEdit->currentText().trimmed().isEmpty() ) {
@@ -783,7 +783,7 @@ void KFileWidget::slotOk()
 // don't call accept)
 void KFileWidget::slotStatResult(KJob* job)
 {
-    kDebug(kfile_area) << "slotStatResult" << endl;
+    kDebug(kfile_area) << "slotStatResult";
     KIO::StatJob *sJob = static_cast<KIO::StatJob *>( job );
 
     if ( !d->statJobs.removeAll( sJob ) ) {
@@ -825,7 +825,7 @@ void KFileWidget::slotStatResult(KJob* job)
         return; // ### error message?
     }
 
-    kDebug(kfile_area) << "filename " << sJob->url().url() << endl;
+    kDebug(kfile_area) << "filename " << sJob->url().url();
 
     if ( count == 0 )
         emit accepted();
@@ -1128,7 +1128,7 @@ void KFileWidget::enterUrl( const QString& url )
 
 void KFileWidget::setSelection(const QString& url)
 {
-    kDebug(kfile_area) << "setSelection " << url << endl;
+    kDebug(kfile_area) << "setSelection " << url;
 
     if (url.isEmpty()) {
         d->selection.clear();
@@ -1137,7 +1137,7 @@ void KFileWidget::setSelection(const QString& url)
 
     KUrl u = getCompleteUrl(url);
     if (!u.isValid()) { // if it still is
-        kWarning() << url << " is not a correct argument for setSelection!" << endl;
+        kWarning() << url << " is not a correct argument for setSelection!";
         return;
     }
 
@@ -1150,7 +1150,7 @@ void KFileWidget::setSelection(const QString& url)
      */
     KFileItem i(KFileItem::Unknown, KFileItem::Unknown, u, true );
     //    KFileItem i(u.path());
-    kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() ) << endl;
+    kDebug(kfile_area) << "KFileItem " << u.path() << " " << i.isDir() << " " << u.isLocalFile() << " " << QFile::exists( u.path() );
     if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
         // local (we cannot stat non-local urls) and if it exists!
@@ -1170,7 +1170,7 @@ void KFileWidget::setSelection(const QString& url)
             // filename must be decoded, or "name with space" would become
             // "name%20with%20space", so we use KUrl::fileName()
             filename = u.fileName();
-            kDebug(kfile_area) << "filename " << filename << endl;
+            kDebug(kfile_area) << "filename " << filename;
             d->selection = filename;
             d->setLocationText( filename );
 
@@ -1529,14 +1529,14 @@ void KFileWidget::slotAutoSelectExtClicked()
 static QString getExtensionFromPatternList(const QStringList &patternList)
 {
     QString ret;
-    kDebug (kfile_area) << "\tgetExtension " << patternList << endl;
+    kDebug (kfile_area) << "\tgetExtension " << patternList;
 
     QStringList::ConstIterator patternListEnd = patternList.end();
     for (QStringList::ConstIterator it = patternList.begin();
          it != patternListEnd;
          ++it)
     {
-        kDebug (kfile_area) << "\t\ttry: \'" << (*it) << "\'" << endl;
+        kDebug (kfile_area) << "\t\ttry: \'" << (*it) << "\'";
 
         // is this pattern like "*.BMP" rather than useless things like:
         //
@@ -1584,7 +1584,7 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
     // COPYING.txt ...)
     //
 
-    kDebug (kfile_area) << "Figure out an extension: " << endl;
+    kDebug (kfile_area) << "Figure out an extension: ";
     QString lastExtension = extension;
     extension.clear();
 
@@ -1715,7 +1715,7 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
         return;
 
     KUrl url = q->getCompleteUrl(urlStr);
-    kDebug (kfile_area) << "updateLocationEditExtension (" << url << ")" << endl;
+    kDebug (kfile_area) << "updateLocationEditExtension (" << url << ")";
 
     const int fileNameOffset = urlStr.lastIndexOf ('/') + 1;
     QString fileName = urlStr.mid (fileNameOffset);
@@ -1731,11 +1731,11 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
         KIO::UDSEntry t;
         if (KIO::NetAccess::stat (url, t, q->topLevelWidget()))
         {
-            kDebug (kfile_area) << "\tfile exists" << endl;
+            kDebug (kfile_area) << "\tfile exists";
 
             if (t.isDir())
             {
-                kDebug (kfile_area) << "\tisDir - won't alter extension" << endl;
+                kDebug (kfile_area) << "\tisDir - won't alter extension";
                 return;
             }
 
@@ -1792,7 +1792,7 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
     if (fileName.isEmpty())
         return;
 
-    kDebug (kfile_area) << "appendExtension(" << url << ")" << endl;
+    kDebug (kfile_area) << "appendExtension(" << url << ")";
 
     const int len = fileName.length();
     const int dot = fileName.lastIndexOf ('.');
@@ -1808,7 +1808,7 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
     KIO::UDSEntry t;
     if (KIO::NetAccess::stat (url, t, q->topLevelWidget()))
     {
-        kDebug (kfile_area) << "\tfile exists - won't append extension" << endl;
+        kDebug (kfile_area) << "\tfile exists - won't append extension";
         return;
     }
 
@@ -1825,15 +1825,15 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
         // and the trailing dot will be removed (or just stop being lazy and
         // turn off this feature so that you can type "README.")
         //
-        kDebug (kfile_area) << "\tstrip trailing dot" << endl;
+        kDebug (kfile_area) << "\tstrip trailing dot";
         url.setFileName (fileName.left (len - 1));
     }
     // evilmatically append extension :) if the user hasn't specified one
     else if (unspecifiedExtension)
     {
-        kDebug (kfile_area) << "\tappending extension \'" << extension << "\'..." << endl;
+        kDebug (kfile_area) << "\tappending extension \'" << extension << "\'...";
         url.setFileName (fileName + extension);
-        kDebug (kfile_area) << "\tsaving as \'" << url << "\'" << endl;
+        kDebug (kfile_area) << "\tsaving as \'" << url << "\'";
     }
 }
 

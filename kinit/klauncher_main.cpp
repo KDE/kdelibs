@@ -73,14 +73,14 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    {
       QString service(QLatin1String("org.kde.klauncher")); // same as ktoolinvocation.cpp
       if (!QDBusConnection::sessionBus().isConnected()) {
-         kWarning() << "No DBUS session-bus found. Check if you have started the DBUS server." << endl;
+         kWarning() << "No DBUS session-bus found. Check if you have started the DBUS server.";
          return 1;
       }
       QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
           QDBusConnection::sessionBus().interface()->registerService(service);
       if (!reply.isValid())
       {
-         kWarning() << "DBUS communication problem!" << endl;
+         kWarning() << "DBUS communication problem!";
          return 1;
       }
       if (reply == QDBusConnectionInterface::ServiceRegistered)
@@ -88,12 +88,12 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
 
       if (--maxTry == 0)
       {
-         kWarning() << "Another instance of klauncher is already running!" << endl;
+         kWarning() << "Another instance of klauncher is already running!";
          return 1;
       }
 
       // Wait a bit...
-      kWarning() << "Waiting for already running klauncher to exit." << endl;
+      kWarning() << "Waiting for already running klauncher to exit.";
       sleep(1);
 
       // Try again...

@@ -101,7 +101,7 @@ KSSLSettings::KSSLSettings(bool readConfig)
         m_cfg = new KConfig("cryptodefaults", KConfig::NoGlobals);
 
 	if (!KGlobal::dirs()->addResourceType("kssl", "data", "kssl")) {
-		//kDebug(7029) << "Error adding (kssl, share/apps/kssl)" << endl;
+		//kDebug(7029) << "Error adding (kssl, share/apps/kssl)";
 	}
 
 	if (readConfig) load();
@@ -174,7 +174,7 @@ QString KSSLSettings::getCipherList() {
 		cipherList.removeLast();
 	} // while
 
-	kDebug(7029) << "Cipher list is: " << clist << endl;
+	kDebug(7029) << "Cipher list is: " << clist;
 
 #endif
 	return clist;

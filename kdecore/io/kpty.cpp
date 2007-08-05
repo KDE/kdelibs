@@ -215,7 +215,7 @@ bool KPty::open()
   {
     d->masterFd = -1;
     d->slaveFd = -1;
-    kWarning(175) << "Can't open a pseudo teletype" << endl;
+    kWarning(175) << "Can't open a pseudo teletype";
     return false;
   }
   goto gotptyandmode;
@@ -280,7 +280,7 @@ bool KPty::open()
     }
   }
 
-  kWarning(175) << "Can't open a pseudo teletype" << endl;
+  kWarning(175) << "Can't open a pseudo teletype";
   return false;
 
  gotpty:
@@ -309,7 +309,7 @@ bool KPty::open()
   d->slaveFd = ::open(d->ttyName.data(), O_RDWR | O_NOCTTY);
   if (d->slaveFd < 0)
   {
-    kWarning(175) << "Can't open slave pseudo teletype" << endl;
+    kWarning(175) << "Can't open slave pseudo teletype";
     ::close(d->masterFd);
     d->masterFd = -1;
     return false;

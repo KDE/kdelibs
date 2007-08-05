@@ -72,7 +72,7 @@ DockMainWindow3::~DockMainWindow3()
 
 void DockMainWindow3::createGUI( Part * part )
 {
-  kDebug(1000) << QString("DockMainWindow3::createGUI for %1").arg(part?part->name():"0L") << endl;
+  kDebug(1000) << QString("DockMainWindow3::createGUI for %1").arg(part?part->name():"0L");
 
   KXMLGUIFactory *factory = guiFactory();
 
@@ -82,7 +82,7 @@ void DockMainWindow3::createGUI( Part * part )
 
   if ( d->m_activePart )
   {
-    kDebug(1000) << QString("deactivating GUI for %1").arg(d->m_activePart->name()) << endl;
+    kDebug(1000) << QString("deactivating GUI for %1").arg(d->m_activePart->name());
 
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );

@@ -44,7 +44,7 @@ static void createTestFile( const QString& path )
 {
     QFile f( path );
     if ( !f.open( QIODevice::WriteOnly ) )
-        kFatal() << "Can't create " << path << endl;
+        kFatal() << "Can't create " << path;
     f.write( QByteArray( "Hello world" ) );
     f.close();
     setTimeStamp( path, s_referenceTimeStamp );
@@ -57,7 +57,7 @@ static void createTestSymlink( const QString& path )
     if ( KDE_lstat( QFile::encodeName( path ), &buf ) != 0 ) {
         bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
         if ( !ok )
-            kFatal() << "couldn't create symlink: " << strerror( errno ) << endl;
+            kFatal() << "couldn't create symlink: " << strerror( errno );
         QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
         QVERIFY( S_ISLNK( buf.st_mode ) );
     } else {
@@ -73,7 +73,7 @@ static void createTestDirectory( const QString& path, CreateTestDirectoryOptions
     QDir dir;
     bool ok = dir.mkdir( path );
     if ( !ok && !dir.exists() )
-        kFatal() << "couldn't create " << path << endl;
+        kFatal() << "couldn't create " << path;
     createTestFile( path + "/testfile" );
 #ifndef Q_WS_WIN
     if ( (opt & NoSymlink) == 0 ) {

@@ -112,13 +112,13 @@ int rc = 0;
 	if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
 		rc = d->kossl->RAND_egd(m_cfg->getEGDPath().toLatin1().constData());
 		if (rc < 0)
-			kDebug(7029) << "KSSL: Error seeding PRNG with the EGD." << endl;
+			kDebug(7029) << "KSSL: Error seeding PRNG with the EGD.";
 		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc
 				   << " bytes from the EGD." << endl;
 	} else if (m_cfg->useEFile() && !m_cfg->getEGDPath().isEmpty()) {
 		rc = d->kossl->RAND_load_file(m_cfg->getEGDPath().toLatin1().constData(), -1);
 		if (rc < 0)
-			kDebug(7029) << "KSSL: Error seeding PRNG with the entropy file." << endl;
+			kDebug(7029) << "KSSL: Error seeding PRNG with the entropy file.";
 		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc
 				   << " bytes from the entropy file." << endl;
 	}
@@ -129,7 +129,7 @@ return rc;
 
 bool KSSL::TLSInit() {
 #ifdef KSSL_HAVE_SSL
-// kDebug(7029) << "KSSL TLS initialize" << endl;
+// kDebug(7029) << "KSSL TLS initialize";
 	if (m_bInit)
 		return false;
 
@@ -149,7 +149,7 @@ bool KSSL::TLSInit() {
 
 	// set cipher list
 	QString clist = m_cfg->getCipherList();
-	//kDebug(7029) << "Cipher list: " << clist << endl;
+	//kDebug(7029) << "Cipher list: " << clist;
 	if (!clist.isEmpty())
 		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.toAscii().constData()));
 
@@ -163,7 +163,7 @@ return false;
 
 bool KSSL::initialize() {
 #ifdef KSSL_HAVE_SSL
-	kDebug(7029) << "KSSL initialize" << endl;
+	kDebug(7029) << "KSSL initialize";
 	if (m_bInit)
 		return false;
 
@@ -183,7 +183,7 @@ bool KSSL::initialize() {
 
 	// set cipher list
 	QString clist = m_cfg->getCipherList();
-	kDebug(7029) << "Cipher list: " << clist << endl;
+	kDebug(7029) << "Cipher list: " << clist;
 	if (!clist.isEmpty())
 		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.toAscii().constData()));
 
@@ -218,7 +218,7 @@ bool KSSL::setSession(const KSSLSession *session) {
 
 void KSSL::close() {
 #ifdef KSSL_HAVE_SSL
-//kDebug(7029) << "KSSL close" << endl;
+//kDebug(7029) << "KSSL close";
 	if (!m_bInit)
 		return;
 
@@ -266,7 +266,7 @@ int KSSL::accept(QIODevice* dev) {
 
 int KSSL::accept(int sock) {
 #ifdef KSSL_HAVE_SSL
-// kDebug(7029) << "KSSL accept" << endl;
+// kDebug(7029) << "KSSL accept";
 int rc;
 	if (!m_bInit)
 		return -1;
@@ -277,14 +277,14 @@ int rc;
 	if (d->session) {
 		if (static_cast<SSL_SESSION*>(d->session->_session)->sess_cert == 0)
 		{
-			kDebug(7029) << "Can't reuse session, no certificate." << endl;
+			kDebug(7029) << "Can't reuse session, no certificate.";
 			delete d->session;
 			d->session = 0;
 		} else if (1 == d->kossl->SSL_set_session(d->m_ssl,
 			static_cast<SSL_SESSION*>(d->session->_session))) {
-			kDebug(7029) << "Session ID is being reused." << endl;
+			kDebug(7029) << "Session ID is being reused.";
 		} else {
-			kDebug(7029) << "Error attempting to reuse session." << endl;
+			kDebug(7029) << "Error attempting to reuse session.";
 			delete d->session;
 			d->session = 0;
 		}
@@ -304,9 +304,9 @@ int rc;
 	if (rc == 1) {
 		setConnectionInfo();
 		setPeerInfo();
-		kDebug(7029) << "KSSL connected OK" << endl;
+		kDebug(7029) << "KSSL connected OK";
 	} else {
-		kDebug(7029) << "KSSL accept failed - rc = " << rc << endl;
+		kDebug(7029) << "KSSL accept failed - rc = " << rc;
 		kDebug(7029) << "                      ERROR = "
 			      << d->kossl->SSL_get_error(d->m_ssl, rc) << endl;
 		d->kossl->SSL_shutdown(d->m_ssl);
@@ -317,7 +317,7 @@ int rc;
 
 	if (!d->kossl->SSL_session_reused(d->m_ssl)) {
 		if (d->session) {
-			kDebug(7029) << "Session reuse failed.  New session used instead." << endl;
+			kDebug(7029) << "Session reuse failed.  New session used instead.";
 			delete d->session;
 			d->session = 0L;
 		}
@@ -353,7 +353,7 @@ int KSSL::connect(QIODevice* dev) {
 
 int KSSL::connect(int sock) {
 #ifdef KSSL_HAVE_SSL
-// kDebug(7029) << "KSSL connect" << endl;
+// kDebug(7029) << "KSSL connect";
 int rc;
 	if (!m_bInit)
 		return -1;
@@ -364,14 +364,14 @@ int rc;
 	if (d->session) {
 		if (static_cast<SSL_SESSION*>(d->session->_session)->sess_cert == 0)
 		{
-			kDebug(7029) << "Can't reuse session, no certificate." << endl;
+			kDebug(7029) << "Can't reuse session, no certificate.";
 			delete d->session;
 			d->session = 0;
 		} else if (1 == d->kossl->SSL_set_session(d->m_ssl,
 			static_cast<SSL_SESSION*>(d->session->_session))) {
-			kDebug(7029) << "Session ID is being reused." << endl;
+			kDebug(7029) << "Session ID is being reused.";
 		} else {
-			kDebug(7029) << "Error attempting to reuse session." << endl;
+			kDebug(7029) << "Error attempting to reuse session.";
 			delete d->session;
 			d->session = 0;
 		}
@@ -392,7 +392,7 @@ connect_again:
 	if (rc == 1) {
 		setConnectionInfo();
 		setPeerInfo();
-		kDebug(7029) << "KSSL connected OK" << endl;
+		kDebug(7029) << "KSSL connected OK";
 	} else {
 		int err = d->kossl->SSL_get_error(d->m_ssl, rc);
 		if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
@@ -413,7 +413,7 @@ connect_again:
 
 	if (!d->kossl->SSL_session_reused(d->m_ssl)) {
 		if (d->session) {
-			kDebug(7029) << "Session reuse failed.  New session used instead." << endl;
+			kDebug(7029) << "Session reuse failed.  New session used instead.";
 			delete d->session;
 			d->session = 0L;
 		}
@@ -471,7 +471,7 @@ read_again:
 		int err = d->kossl->SSL_get_error(d->m_ssl, rc);
 
 		if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
-			kDebug(7029) << "SSL read() returning 0: " << err << endl;
+			kDebug(7029) << "SSL read() returning 0: " << err;
 			if (maxIters-- > 0) {
 				::usleep(20000); // 20ms sleep
 				goto read_again;
@@ -479,7 +479,7 @@ read_again:
 			return 0;
 		}
 
-		kDebug(7029) << "SSL READ ERROR: " << err << endl;
+		kDebug(7029) << "SSL READ ERROR: " << err;
 		if (err != SSL_ERROR_NONE &&
 		    err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL) {
 			rc = -1;      // OpenSSL returns 0 on error too
@@ -510,7 +510,7 @@ write_again:
 			goto write_again;
 		}
 
-		kDebug(7029) << "SSL WRITE ERROR: " << err << endl;
+		kDebug(7029) << "SSL WRITE ERROR: " << err;
 		if (err != SSL_ERROR_NONE &&
 		    err != SSL_ERROR_ZERO_RETURN && err != SSL_ERROR_SYSCALL)
 			rc = -1;
@@ -564,7 +564,7 @@ char buf[1024];
 	buf[0] = 0;  // for safety.
 	sc = d->kossl->SSL_get_current_cipher(d->m_ssl);
 	if (!sc) {
-		kDebug(7029) << "KSSL get current cipher failed - we're probably gonna crash!" << endl;
+		kDebug(7029) << "KSSL get current cipher failed - we're probably gonna crash!";
 		return;
 	}
 
@@ -623,13 +623,13 @@ EVP_PKEY *k = pkcs->getPrivateKey();
 
 	rc = d->kossl->SSL_CTX_use_certificate(d->m_ctx, x);
 	if (rc <= 0) {
-		kDebug(7029) << "KSSL - SSL_CTX_use_certificate failed.  rc = " << rc << endl;
+		kDebug(7029) << "KSSL - SSL_CTX_use_certificate failed.  rc = " << rc;
 		return false;
 	}
 
 	rc = d->kossl->SSL_CTX_use_PrivateKey(d->m_ctx, k);
 	if (rc <= 0) {
-		kDebug(7029) << "KSSL - SSL_CTX_use_PrivateKey failed.  rc = " << rc << endl;
+		kDebug(7029) << "KSSL - SSL_CTX_use_PrivateKey failed.  rc = " << rc;
 		return false;
 	}
 

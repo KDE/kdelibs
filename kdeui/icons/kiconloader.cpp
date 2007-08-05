@@ -337,7 +337,7 @@ bool KIconLoader::initIconThemes()
         // If d->mpThemeRoot isn't 0 then initing has succeeded
         return (d->mpThemeRoot != 0);
     }
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     d->mIconThemeInited = true;
 
     // Add the default theme and its base themes to the theme tree
@@ -346,7 +346,7 @@ bool KIconLoader::initIconThemes()
     {
         delete def;
         // warn, as this is actually a small penalty hit
-        kDebug(264) << "Couldn't find current icon theme, falling back to default." << endl;
+        kDebug(264) << "Couldn't find current icon theme, falling back to default.";
         def = new KIconTheme(KIconTheme::defaultThemeName(), d->appname);
         if (!def->isValid())
         {
@@ -381,7 +381,7 @@ bool KIconLoader::initIconThemes()
 #ifndef NDEBUG
     QString dbgString = "Theme tree: ";
     d->mpThemeRoot->printTree(dbgString);
-    kDebug(264) << dbgString << endl;
+    kDebug(264) << dbgString;
 #endif
 
     return true;
@@ -643,7 +643,7 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 
     if (group_or_size >= K3Icon::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group_or_size << endl;
+        kDebug(264) << "Illegal icon group: " << group_or_size;
         return path;
     }
 
@@ -713,7 +713,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
         key += QString::number(size); key += '_';
         key += name;
         if (d->mIconCache->find(key, pix, path_store)) {
-            //kDebug() << "KIL: " << "found the icon from KIC" << endl;
+            //kDebug() << "KIL: " << "found the icon from KIC";
             return pix;
         } else if (!const_cast<KIconLoader*>(this)->initIconThemes()) {
             return pix;  // null pixmap
@@ -729,7 +729,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
             path = iconPath(str_unknown, K3Icon::Small, true);
             if (path.isEmpty())
             {
-                kDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
+                kDebug(264) << "Warning: Cannot find \"unknown\" icon.";
                 return pix;
             }
         }
@@ -751,19 +751,19 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
     if ((group < -1) || (group >= K3Icon::LastGroup))
     {
-        kDebug(264) << "Illegal icon group: " << group << endl;
+        kDebug(264) << "Illegal icon group: " << group;
         group = K3Icon::Desktop;
     }
 
     if ((state < 0) || (state >= K3Icon::LastState))
     {
-        kDebug(264) << "Illegal icon state: " << state << endl;
+        kDebug(264) << "Illegal icon state: " << state;
         state = K3Icon::DefaultState;
     }
 
     if (size == 0 && group < 0)
     {
-        kDebug(264) << "Neither size nor group specified!" << endl;
+        kDebug(264) << "Neither size nor group specified!";
         group = K3Icon::Desktop;
     }
 
@@ -802,7 +802,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
     // Is the icon in the cache?
     if (d->mIconCache->find(key, pix, path_store)) {
-        //kDebug() << "KIL: " << "found icon from KIC" << endl;
+        //kDebug() << "KIL: " << "found icon from KIC";
         return pix;
     } else if (!const_cast<KIconLoader*>(this)->initIconThemes()) {
         return pix; // null pixmap
@@ -986,12 +986,12 @@ QString KIconLoader::moviePath(const QString& name, K3Icon::Group group, int siz
 
     if ( (group < -1 || group >= K3Icon::LastGroup) && group != K3Icon::User )
     {
-        kDebug(264) << "Illegal icon group: " << group << endl;
+        kDebug(264) << "Illegal icon group: " << group;
         group = K3Icon::Desktop;
     }
     if (size == 0 && group < 0)
     {
-        kDebug(264) << "Neither size nor group specified!" << endl;
+        kDebug(264) << "Neither size nor group specified!";
         group = K3Icon::Desktop;
     }
 
@@ -1040,12 +1040,12 @@ QStringList KIconLoader::loadAnimated(const QString& name, K3Icon::Group group, 
 
     if ((group < -1) || (group >= K3Icon::LastGroup))
     {
-        kDebug(264) << "Illegal icon group: " << group << endl;
+        kDebug(264) << "Illegal icon group: " << group;
         group = K3Icon::Desktop;
     }
     if ((size == 0) && (group < 0))
     {
-        kDebug(264) << "Neither size nor group specified!" << endl;
+        kDebug(264) << "Neither size nor group specified!";
         group = K3Icon::Desktop;
     }
 
@@ -1095,7 +1095,7 @@ int KIconLoader::currentSize(K3Icon::Group group) const
 
     if (group < 0 || group >= K3Icon::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group << endl;
+        kDebug(264) << "Illegal icon group: " << group;
         return -1;
     }
     return d->mpGroups[group].size;
@@ -1120,7 +1120,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
     QStringList result;
     if (group_or_size >= K3Icon::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group_or_size << endl;
+        kDebug(264) << "Illegal icon group: " << group_or_size;
         return result;
     }
     int size;
@@ -1159,7 +1159,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, K3Icon::Context context) 
     QStringList result;
     if (group_or_size >= K3Icon::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group_or_size << endl;
+        kDebug(264) << "Illegal icon group: " << group_or_size;
         return result;
     }
     int size;
@@ -1212,7 +1212,7 @@ bool KIconLoader::alphaBlending(K3Icon::Group group) const
 
     if (group < 0 || group >= K3Icon::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group << endl;
+        kDebug(264) << "Illegal icon group: " << group;
         return false;
     }
     return d->mpGroups[group].alphaBlending;
@@ -1315,7 +1315,7 @@ QPixmap KIconLoader::unknown()
     QString path = global()->iconPath("unknown", K3Icon::Small, true);
     if (path.isEmpty())
     {
-        kDebug(264) << "Warning: Cannot find \"unknown\" icon." << endl;
+        kDebug(264) << "Warning: Cannot find \"unknown\" icon.";
         pix = QPixmap(32,32);
     } else
     {

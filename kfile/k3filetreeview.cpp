@@ -181,7 +181,7 @@ void K3FileTreeView::contentsDropEvent( QDropEvent *e )
     m_autoOpenTimer->stop();
     m_dropItem = 0;
 
-    kDebug(250) << "contentsDropEvent !" << endl;
+    kDebug(250) << "contentsDropEvent !";
     if( ! acceptDrag( e ) ) {
        e->ignore();
        return;
@@ -226,11 +226,11 @@ bool K3FileTreeView::acceptDrag(QDropEvent* e ) const
 {
 
    bool ancestOK= acceptDrops();
-   // kDebug(250) << "Do accept drops: " << ancestOK << endl;
+   // kDebug(250) << "Do accept drops: " << ancestOK;
    ancestOK = ancestOK && itemsMovable();
-   // kDebug(250) << "acceptDrag: " << ancestOK << endl;
-   // kDebug(250) << "canDecode: " << KUrl::List::canDecode(e->mimeData()) << endl;
-   // kDebug(250) << "action: " << e->action() << endl;
+   // kDebug(250) << "acceptDrag: " << ancestOK;
+   // kDebug(250) << "canDecode: " << KUrl::List::canDecode(e->mimeData());
+   // kDebug(250) << "action: " << e->action();
 
    /*  K3ListView::acceptDrag(e);  */
    /* this is what K3ListView does:
@@ -278,7 +278,7 @@ Q3DragObject * K3FileTreeView::dragObject()
 void K3FileTreeView::slotCollapsed( Q3ListViewItem *item )
 {
    K3FileTreeViewItem *kftvi = static_cast<K3FileTreeViewItem*>(item);
-   kDebug(250) << "hit slotCollapsed" << endl;
+   kDebug(250) << "hit slotCollapsed";
    if( kftvi && kftvi->isDir())
    {
       item->setPixmap( 0, itemIcon(kftvi));
@@ -287,7 +287,7 @@ void K3FileTreeView::slotCollapsed( Q3ListViewItem *item )
 
 void K3FileTreeView::slotExpanded( Q3ListViewItem *item )
 {
-   kDebug(250) << "slotExpanded here !" << endl;
+   kDebug(250) << "slotExpanded here !";
 
    if( ! item ) return;
 
@@ -298,13 +298,13 @@ void K3FileTreeView::slotExpanded( Q3ListViewItem *item )
    if( it->isDir() && branch && item->childCount() == 0 )
    {
       /* check here if the branch really needs to be populated again */
-      kDebug(250 ) << "starting to open " << it->url().prettyUrl() << endl;
+      kDebug(250 ) << "starting to open " << it->url().prettyUrl();
       startAnimation( it );
       bool branchAnswer = branch->populate( it->url(), it );
-      kDebug(250) << "Branches answer: " << branchAnswer << endl;
+      kDebug(250) << "Branches answer: " << branchAnswer;
       if( ! branchAnswer )
       {
-	 kDebug(250) << "ERR: Could not populate!" << endl;
+	 kDebug(250) << "ERR: Could not populate!";
 	 stopAnimation( it );
       }
    }
@@ -312,7 +312,7 @@ void K3FileTreeView::slotExpanded( Q3ListViewItem *item )
    /* set a pixmap 'open folder' */
    if( it->isDir() && isOpen( item ) )
    {
-      kDebug(250)<< "Setting open Pixmap" << endl;
+      kDebug(250)<< "Setting open Pixmap";
       item->setPixmap( 0, itemIcon( it )); // 0, m_openFolderPixmap );
    }
 }
@@ -365,7 +365,7 @@ KFileTreeBranch* K3FileTreeView::addBranch( const KUrl &path, const QString& nam
 KFileTreeBranch* K3FileTreeView::addBranch( const KUrl &path, const QString& name,
                               const QPixmap& pix, bool showHidden )
 {
-   kDebug(250) << "adding another root " << path.prettyUrl() << endl;
+   kDebug(250) << "adding another root " << path.prettyUrl();
 
    /* Open a new branch */
    KFileTreeBranch *newBranch = new KFileTreeBranch( this, path, name, pix,
@@ -395,10 +395,10 @@ KFileTreeBranch *K3FileTreeView::branch( const QString& searchName )
    while ( (branch = it.current()) != 0 ) {
       ++it;
       QString bname = branch->name();
-      kDebug(250) << "This is the branches name: " << bname << endl;
+      kDebug(250) << "This is the branches name: " << bname;
       if( bname == searchName )
       {
-	 kDebug(250) << "Found branch " << bname << " and return ptr" << endl;
+	 kDebug(250) << "Found branch " << bname << " and return ptr";
 	 return( branch );
       }
    }
@@ -443,7 +443,7 @@ void K3FileTreeView::slotPopulateFinished( K3FileTreeViewItem *it )
 void K3FileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const K3FileTreeViewItemList& itemList )
 {
    if( ! branch ) return;
-   kDebug(250) << "hitting slotNewTreeViewItems" << endl;
+   kDebug(250) << "hitting slotNewTreeViewItems";
 
    /* Sometimes it happens that new items should become selected, i.e. if the user
     * creates a new dir, he probably wants it to be selected. This can not be done
@@ -474,7 +474,7 @@ void K3FileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const K3File
 QPixmap K3FileTreeView::itemIcon( K3FileTreeViewItem *item, int gap ) const
 {
    QPixmap pix;
-   kDebug(250) << "Setting icon for column " << gap << endl;
+   kDebug(250) << "Setting icon for column " << gap;
 
    if( item )
    {
@@ -523,7 +523,7 @@ void K3FileTreeView::slotAnimation()
 
       uint & iconNumber = it.value().iconNumber;
       QString icon = QString::fromLatin1( it.value().iconBaseName ).append( QString::number( iconNumber ) );
-      // kDebug(250) << "Loading icon " << icon << endl;
+      // kDebug(250) << "Loading icon " << icon;
       item->setPixmap( 0, DesktopIcon( icon,K3Icon::SizeSmall,K3Icon::ActiveState )); // KFileTreeViewFactory::instance() ) );
 
       iconNumber++;
@@ -540,7 +540,7 @@ void K3FileTreeView::startAnimation( K3FileTreeViewItem * item, const char * ico
    /* TODO: allow specific icons */
    if( ! item )
    {
-      kDebug(250) << " startAnimation Got called without valid item !" << endl;
+      kDebug(250) << " startAnimation Got called without valid item !";
       return;
    }
 
@@ -556,14 +556,14 @@ void K3FileTreeView::stopAnimation( K3FileTreeViewItem * item )
 {
    if( ! item ) return;
 
-   kDebug(250) << "Stoping Animation !" << endl;
+   kDebug(250) << "Stoping Animation !";
 
    MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.find(item);
    if ( it != m_mapCurrentOpeningFolders.end() )
    {
       if( item->isDir() && isOpen( item) )
       {
-	 kDebug(250) << "Setting folder open pixmap !" << endl;
+	 kDebug(250) << "Setting folder open pixmap !";
 	 item->setPixmap( 0, itemIcon( item ));
       }
       else
@@ -575,9 +575,9 @@ void K3FileTreeView::stopAnimation( K3FileTreeViewItem * item )
    else
    {
       if( item )
-	 kDebug(250)<< "StopAnimation - could not find item " << item->url().prettyUrl()<< endl;
+	 kDebug(250)<< "StopAnimation - could not find item " << item->url().prettyUrl();
       else
-	 kDebug(250)<< "StopAnimation - item is zero !" << endl;
+	 kDebug(250)<< "StopAnimation - item is zero !";
    }
    if (m_mapCurrentOpeningFolders.isEmpty())
       m_animationTimer->stop();
@@ -613,7 +613,7 @@ void K3FileTreeView::slotOnItem( Q3ListViewItem *item )
 void K3FileTreeView::slotItemRenamed(Q3ListViewItem* item, const QString &name, int col)
 {
    (void) item;
-   kDebug(250) << "Do not bother: " << name << col << endl;
+   kDebug(250) << "Do not bother: " << name << col;
 }
 
 K3FileTreeViewItem *K3FileTreeView::findItem( const QString& branchName, const QString& relUrl )
@@ -638,7 +638,7 @@ K3FileTreeViewItem *K3FileTreeView::findItem( KFileTreeBranch* brnch, const QStr
 
          url.addPath( partUrl );
 
-         kDebug(250) << "assembled complete dir string " << url.prettyUrl() << endl;
+         kDebug(250) << "assembled complete dir string " << url.prettyUrl();
 
          KFileItem *fi = brnch->findByUrl( url );
          if( fi )
@@ -646,7 +646,7 @@ K3FileTreeViewItem *K3FileTreeView::findItem( KFileTreeBranch* brnch, const QStr
             ret =
                 const_cast<K3FileTreeViewItem *>(
                 static_cast<const K3FileTreeViewItem*>(fi->extraData(brnch)));
-            kDebug(250) << "Found item !" <<ret << endl;
+            kDebug(250) << "Found item !" <<ret;
          }
       }
       else

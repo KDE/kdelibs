@@ -194,7 +194,7 @@ void KFileShare::readShareList()
             if ( line[length-1] != '/' )
                 line += '/';
             s_shareList->append(line);
-            kDebug(7000) << "Shared dir:" << line << endl;
+            kDebug(7000) << "Shared dir:" << line;
         }
     }
 }
@@ -225,7 +225,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
           KFileShare::shareMode() == Advanced)
        return false;
 
-    kDebug(7000) << "KFileShare::setShared " << path << "," << shared << endl;
+    kDebug(7000) << "KFileShare::setShared " << path << "," << shared;
     QString exe = ::findExe( "fileshareset" );
     if (exe.isEmpty())
         return false;
@@ -236,7 +236,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
     else
         args << "--remove";
     int ec = QProcess::execute( exe, args ); // should be ok, the perl script terminates fast
-    kDebug(7000) << "KFileSharePropsPlugin::setShared exitCode=" << ec << endl;
+    kDebug(7000) << "KFileSharePropsPlugin::setShared exitCode=" << ec;
     bool ok = !ec;
     switch (ec) {
         case 1:

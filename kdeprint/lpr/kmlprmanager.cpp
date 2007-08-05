@@ -133,7 +133,7 @@ void KMLprManager::insertHandler(LprHandler *handler)
 {
     m_handlers.insert(handler->name(), handler);
     m_handlerlist.append(handler);
-    kDebug() << "Handler: " << handler->name() << endl;
+    kDebug() << "Handler: " << handler->name();
 }
 
 void KMLprManager::initHandlers()
@@ -154,12 +154,12 @@ void KMLprManager::initHandlers()
 		KLibrary	*library = KLibLoader::self()->library(*it);
 		if (library)
 		{
-			kDebug() << "loading external handler from " << *it << endl;
+			kDebug() << "loading external handler from " << *it;
 			LprHandler*(*func)(KMManager*) = (LprHandler*(*)(KMManager*))(library->resolveFunction("create_handler"));
 			if (func)
 				insertHandler(func(this));
 			else
-				kDebug() << "couldn't find the symbol 'create_handler'" << endl;
+				kDebug() << "couldn't find the symbol 'create_handler'";
 		}
 	}
 

@@ -65,7 +65,7 @@ bool KdeprintChecker::check(const QStringList& uris)
 	for (QStringList::ConstIterator it=uris.begin(); it!=uris.end() && state; ++it)
 	{
 		state = (state && checkUrl(KUrl(*it)));
-		// kDebug( 500 ) << "auto-detection uri=" << *it << ", state=" << state << endl;
+		// kDebug( 500 ) << "auto-detection uri=" << *it << ", state=" << state;
 	}
 	return state;
 }
@@ -99,7 +99,7 @@ bool KdeprintChecker::checkConfig(const KUrl& url)
 		const char* const *p = config_stddirs;
 		while (*p)
 		{
-			// kDebug( 500 ) << "checkConfig() with " << QLatin1String( *p ) + f << endl;
+			// kDebug( 500 ) << "checkConfig() with " << QLatin1String( *p ) + f;
 			if ( QFile::exists( QLatin1String( *p ) + f ) )
 			{
 				state = true;

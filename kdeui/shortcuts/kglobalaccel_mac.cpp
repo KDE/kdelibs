@@ -39,14 +39,14 @@ OSStatus hotKeyEventHandler(EventHandlerCallRef inHandlerCallRef, EventRef inEve
     if (eventKind == kEventRawKeyDown) {
         UInt32 keycode;
         if (GetEventParameter(inEvent, kEventParamKeyCode, typeUInt32, NULL, sizeof(keycode), NULL, &keycode) != noErr) {
-            kWarning(125) << "Error retrieving keycode parameter from event" << endl;
+            kWarning(125) << "Error retrieving keycode parameter from event";
         }
-        kDebug() << " key down, keycode = " << keycode << endl;
+        kDebug() << " key down, keycode = " << keycode;
     } else if (eventKind == kEventHotKeyPressed) {
         KGlobalAccelImpl* impl = static_cast<KGlobalAccelImpl *>(inUserData);
         EventHotKeyID hotkey;
         if (GetEventParameter(inEvent, kEventParamDirectObject, typeEventHotKeyID, NULL, sizeof(hotkey), NULL, &hotkey) != noErr) {
-            kWarning(125) << "Error retrieving hotkey parameter from event" << endl;
+            kWarning(125) << "Error retrieving hotkey parameter from event";
             return eventNotHandledErr;
         }
         // Typecasts necesary to prevent a warning from gcc
@@ -75,7 +75,7 @@ KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
         CFNotificationCenterAddObserver(CFNotificationCenterGetDistributedCenter(), this, layoutChanged, str, NULL, CFNotificationSuspensionBehaviorHold);
         CFRelease(str);
     } else {
-        kWarning(125) << "Couldn't create CFString to register for keyboard notifications" << endl;
+        kWarning(125) << "Couldn't create CFString to register for keyboard notifications";
     }
 }
 
@@ -89,15 +89,15 @@ KGlobalAccelImpl::~KGlobalAccelImpl()
 bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 {
     if (grab) {
-        kDebug(125) << "Grabbing key " << keyQt << endl;
+        kDebug(125) << "Grabbing key " << keyQt;
         QList<uint> keyCodes;
         uint mod;
         KKeyServer::keyQtToCodeMac( keyQt, keyCodes );
         KKeyServer::keyQtToModMac( keyQt, mod );
         
-        kDebug(125) << "keyQt: " << keyQt << " mod: " << mod << endl;
+        kDebug(125) << "keyQt: " << keyQt << " mod: " << mod;
         foreach (uint keyCode, keyCodes) {
-            kDebug(125) << "  keyCode: " << keyCode << endl;
+            kDebug(125) << "  keyCode: " << keyCode;
         }
         
         EventHotKeyID ehkid;
@@ -107,17 +107,17 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
         foreach (uint keyCode, keyCodes) {
             EventHotKeyRef ref;
             if (RegisterEventHotKey(keyCode, mod, ehkid, m_eventTarget, 0, &ref) != noErr) {
-                kWarning(125) << "RegisterEventHotKey failed!" << endl;
+                kWarning(125) << "RegisterEventHotKey failed!";
             }
             hotkeys.append(ref);
         }
         refs->insert(keyQt, hotkeys);
     } else {
-        kDebug(125) << "Ungrabbing key " << keyQt << endl;
-        if (refs->count(keyQt) == 0) kWarning(125) << "Trying to ungrab a key thas is not grabbed" << endl;
+        kDebug(125) << "Ungrabbing key " << keyQt;
+        if (refs->count(keyQt) == 0) kWarning(125) << "Trying to ungrab a key thas is not grabbed";
         foreach (EventHotKeyRef ref, refs->value(keyQt)) {
             if (UnregisterEventHotKey(ref) != noErr) {
-                kWarning(125) << "UnregisterEventHotKey should not fail!" << endl;
+                kWarning(125) << "UnregisterEventHotKey should not fail!";
             }
         }
         refs->remove(keyQt);
@@ -129,10 +129,10 @@ void KGlobalAccelImpl::setEnabled(bool enable)
 {
     if (enable) {
         if (InstallEventHandler(m_eventTarget, m_eventHandler, 1, m_eventType, this, &m_curHandler) != noErr)
-            kWarning(125) << "InstallEventHandler failed!" << endl;
+            kWarning(125) << "InstallEventHandler failed!";
     } else {
         if (RemoveEventHandler(m_curHandler) != noErr)
-            kWarning(125) << "RemoveEventHandler failed!" << endl;
+            kWarning(125) << "RemoveEventHandler failed!";
     }
 }
 

@@ -72,7 +72,7 @@ Loader::Loader()
 
 Loader::~Loader()
 {
-    kDebug()<<"Removing loader : "<< this << endl;
+    kDebug()<<"Removing loader : "<< this;
     d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;

@@ -372,10 +372,10 @@ KXmlCommandAdvancedDlg::~KXmlCommandAdvancedDlg()
 {
 	if (m_opts.count() > 0)
 	{
-		kDebug() << "KXmlCommandAdvancedDlg: " << m_opts.count() << " items remaining" << endl;
+		kDebug() << "KXmlCommandAdvancedDlg: " << m_opts.count() << " items remaining";
 		for (QMap<QString,DrBase*>::ConstIterator it=m_opts.begin(); it!=m_opts.end(); ++it)
 		{
-			//kDebug() << "Item: name=" << (*it)->name() << endl;
+			//kDebug() << "Item: name=" << (*it)->name();
 			delete (*it);
 		}
 	}
@@ -845,7 +845,7 @@ bool KXmlCommandAdvancedDlg::editCommand(KXmlCommand *xmlcmd, QWidget *parent)
 		DrMain	*driver = (xmldlg->m_opts.contains("__root__") ? static_cast<DrMain*>(xmldlg->m_opts["__root__"]) : 0);
 		if (!driver && xmldlg->m_opts.count() > 0)
 		{
-			kDebug() << "KXmlCommandAdvancedDlg: driver structure not found, creating one" << endl;
+			kDebug() << "KXmlCommandAdvancedDlg: driver structure not found, creating one";
 			driver = new DrMain;
 			driver->setName(xmlcmd->name());
 		}

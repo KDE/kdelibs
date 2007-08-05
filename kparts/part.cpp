@@ -191,7 +191,7 @@ Part::~Part()
 {
     Q_D(Part);
 
-    kDebug(1000) << "Part::~Part " << this << endl;
+    kDebug(1000) << "Part::~Part " << this;
 
     if ( d->m_widget )
     {
@@ -205,7 +205,7 @@ Part::~Part()
 
     if ( d->m_widget && d->m_autoDeleteWidget )
     {
-        kDebug(1000) << "deleting widget " << d->m_widget << " " << d->m_widget->objectName() << endl;
+        kDebug(1000) << "deleting widget " << d->m_widget << " " << d->m_widget->objectName();
         delete static_cast<QWidget*>(d->m_widget);
     }
 
@@ -351,7 +351,7 @@ void Part::slotWidgetDestroyed()
 
     d->m_widget = 0;
     if (d->m_autoDeletePart) {
-        kDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << objectName() << endl;
+        kDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << objectName();
         delete this; // ouch, this should probably be deleteLater()
     }
 }
@@ -564,7 +564,7 @@ void ReadOnlyPart::abortLoad()
 
     if ( d->m_job )
     {
-        //kDebug(1000) << "Aborting job " << d->m_job << endl;
+        //kDebug(1000) << "Aborting job " << d->m_job;
         d->m_job->kill();
         d->m_job = 0;
     }
@@ -591,7 +591,7 @@ void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )
 {
     Q_Q(ReadOnlyPart);
 
-    kDebug(1000) << "ReadOnlyPart::slotJobFinished" << endl;
+    kDebug(1000) << "ReadOnlyPart::slotJobFinished";
     assert( job == m_job );
     m_job = 0;
     if (job->error())
@@ -613,7 +613,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
     {
         if (!d->m_url.isEmpty())
         {
-            kDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << d->m_url.prettyUrl() << endl;
+            kDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << d->m_url.prettyUrl();
             emit setWindowCaption( d->m_url.prettyUrl() );
         } else emit setWindowCaption( "" );
     }
@@ -672,7 +672,7 @@ void ReadWritePart::setModified( bool modified )
 {
     Q_D(ReadWritePart);
 
-    kDebug(1000) << "ReadWritePart::setModified( " << (modified ? "true" : "false") << ")" << endl;
+    kDebug(1000) << "ReadWritePart::setModified( " << (modified ? "true" : "false") << ")";
     if ( !d->m_bReadWrite && modified )
     {
         kError(1000) << "Can't set a read-only document to 'modified' !" << endl;

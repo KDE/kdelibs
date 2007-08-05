@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     path = args->getOption("kdelibspath");
     if (path.isEmpty())
     {
-      kWarning() << "you need to specify a path to your kdelibs source dir, see \"--help\"" << endl;
+      kWarning() << "you need to specify a path to your kdelibs source dir, see \"--help\"";
       return -1;
     }
 #else

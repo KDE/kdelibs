@@ -107,7 +107,7 @@ public:
 
 static KLibFactory* componentFactory()
 {
-	kDebug(500) << "kdeprint: querying trader for 'application/postscript' service" << endl;
+	kDebug(500) << "kdeprint: querying trader for 'application/postscript' service";
 	KLibFactory	*factory(0);
 	KService::List offers = KMimeTypeTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"));
 	for (KService::List::ConstIterator it = offers.begin(); it != offers.end(); ++it)
@@ -148,7 +148,7 @@ KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
 {
   setCaption( i18n("Print Preview") );
 
-	kDebug(500) << "kdeprint: creating preview dialog" << endl;
+	kDebug(500) << "kdeprint: creating preview dialog";
 	d->previewonly_ = previewOnly;
 
 	// create main view and actions
@@ -261,7 +261,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	KMimeType::Ptr mime = KMimeType::findByPath( file );
 	bool isPS = ( mime->name() == "application/postscript" );
 	if ( !isPS )
-		kDebug( 500 ) << "Previewing a non PostScript file, built-in preview disabled" << endl;
+		kDebug( 500 ) << "Previewing a non PostScript file, built-in preview disabled";
 
 	KConfig *cf = KMFactory::self()->printConfig();
 	KConfigGroup conf = cf->group("General");

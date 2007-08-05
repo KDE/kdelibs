@@ -113,7 +113,7 @@ Nepomuk::Middleware::DBus::RegistryInterface::discoverAllServices()
 {
     QDBusReply<QList<ServiceDesc> > reply = call( QLatin1String("discoverAllServices") );
     if( !reply.isValid() )
-        kDebug(300001) << "(Nepomuk::Middleware::DBus::RegistryInterface::discoverAllServices)" << reply.error().message() << endl;
+        kDebug(300001) << "(Nepomuk::Middleware::DBus::RegistryInterface::discoverAllServices)" << reply.error().message();
     return reply.value();
 }
 

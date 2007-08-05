@@ -88,8 +88,8 @@ namespace KIO {
                 KUrl::List list = KUrl::split(m_url);
                 list.removeLast();
                 m_subUrl = KUrl::join(list);
-                //kDebug(7007) << "New URL = "  << m_url.url() << endl;
-                //kDebug(7007) << "Sub URL = "  << m_subUrl.url() << endl;
+                //kDebug(7007) << "New URL = "  << m_url.url();
+                //kDebug(7007) << "Sub URL = "  << m_subUrl.url();
             }
         }
 

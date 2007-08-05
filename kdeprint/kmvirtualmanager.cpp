@@ -238,7 +238,7 @@ void KMVirtualManager::virtualList(QList<KMPrinter*>& list, const QString& prnam
 
 	// then look for instances
 	list.clear();
-	kDebug(500) << "KMVirtualManager::virtualList() prname=" << prname << endl;
+	kDebug(500) << "KMVirtualManager::virtualList() prname=" << prname;
 	QListIterator<KMPrinter*>	it(m_manager->m_printers);
 	while (it.hasNext()) {
     KMPrinter *printer(it.next());

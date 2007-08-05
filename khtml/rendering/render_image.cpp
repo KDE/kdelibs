@@ -258,7 +258,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 
     }
 
-    //kDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
+    //kDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft();
     if ( !i || berrorPic)
     {
         if(cWidth > 2 && cHeight > 2)
@@ -323,7 +323,7 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
 
     }
     if (m_selectionState != SelectionNone) {
-//    kDebug(6040) << "_tx " << _tx << " _ty " << _ty << " _x " << _x << " _y " << _y << endl;
+//    kDebug(6040) << "_tx " << _tx << " _ty " << _ty << " _x " << _x << " _y " << _y;
         // Draw in any case if inside selection. For selection borders, the
 	// offset will decide whether to draw selection or not
 	bool draw = true;

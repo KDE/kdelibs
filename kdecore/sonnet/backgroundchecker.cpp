@@ -75,7 +75,7 @@ void BackgroundChecker::start()
 {
     d->currentText = fetchMoreText();
     // ## what if d->currentText.isEmpty()?
-    //kDebug()<<"Sonnet BackgroundChecker: starting with : \"" << d->currentText << "\""<<endl;
+    //kDebug()<<"Sonnet BackgroundChecker: starting with : \"" << d->currentText << "\"";
     d->engine->setText(d->currentText);
     d->engine->start();
 }

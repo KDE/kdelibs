@@ -217,7 +217,7 @@ void KPlotObject::addPoint( double x, double y, const QString &label, double bar
 
 void KPlotObject::removePoint( int index ) {
     if ( ( index < 0 ) || ( index >= d->pList.count() ) ) {
-        kWarning() << "KPlotObject::removePoint(): index " << index << " out of range!" << endl;
+        kWarning() << "KPlotObject::removePoint(): index " << index << " out of range!";
         return;
     }
 

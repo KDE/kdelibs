@@ -121,7 +121,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 #ifdef DEBUG_LAYOUT
     kDebug( 6040 ) << renderName() << "(RenderFlow)::addChild( " << newChild->renderName() <<
                        ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
-    kDebug( 6040 ) << "current height = " << m_height << endl;
+    kDebug( 6040 ) << "current height = " << m_height;
 #endif
 
     if (continuation())

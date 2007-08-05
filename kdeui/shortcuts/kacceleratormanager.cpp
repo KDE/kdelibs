@@ -167,7 +167,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
     if (!widget)
     {
-        kDebug(131) << "null pointer given to manage" << endl;
+        kDebug(131) << "null pointer given to manage";
         return;
     }
 
@@ -587,7 +587,7 @@ void KAccelString::calculateWeights(int initialWeight)
     // try to preserve the wanted accelarators
     if ((int)pos == accel()) {
         weight += KAccelManagerAlgorithm::WANTED_ACCEL_EXTRA_WEIGHT;
-        // kDebug(131) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText) << endl;
+        // kDebug(131) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText);
         if (KAcceleratorManagerPrivate::standardName(m_origText))  {
             weight += KAccelManagerAlgorithm::STANDARD_ACCEL;
         }
@@ -658,7 +658,7 @@ void KAccelString::dump()
   QString s;
   for (int i=0; i<m_weight.count(); ++i)
     s += QString("%1(%2) ").arg(pure()[i]).arg(m_weight[i]);
-  kDebug() << "s " << s << endl;
+  kDebug() << "s " << s;
 }
 
 
@@ -871,7 +871,7 @@ void QWidgetStackAccelManager::currentChanged(int child)
 {
     if (child < 0 || child >= static_cast<QStackedWidget*>(parent())->count())
     {
-        kDebug(131) << k_funcinfo << "invalid index provided" << endl;
+        kDebug(131) << k_funcinfo << "invalid index provided";
         return;
     }
 

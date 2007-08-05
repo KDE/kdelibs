@@ -69,7 +69,7 @@ SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
     d->m_superUserCommand = group.readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
 
     if ( d->m_superUserCommand != "sudo" && d->m_superUserCommand != "su" ) {
-      kWarning() << "unknown super user command" << endl;
+      kWarning() << "unknown super user command";
       d->m_superUserCommand = "su";
     }
 }
@@ -150,15 +150,15 @@ int SuProcess::exec(const char *password, int check)
             return check ? SuNotFound : -1;
     }
 
-    // kDebug(900) << k_lineinfo << "Call StubProcess::exec()" << endl;
+    // kDebug(900) << k_lineinfo << "Call StubProcess::exec()";
     if (StubProcess::exec(command, args) < 0)
     {
         return check ? SuNotFound : -1;
     }
-    // kDebug(900) << k_lineinfo << "Done StubProcess::exec()" << endl;
+    // kDebug(900) << k_lineinfo << "Done StubProcess::exec()";
 
     SuErrors ret = (SuErrors) ConverseSU(password);
-    // kDebug(900) << k_lineinfo << "Conversation returned " << ret << endl;
+    // kDebug(900) << k_lineinfo << "Conversation returned " << ret;
 
     if (ret == error)
     {
@@ -175,7 +175,7 @@ int SuProcess::exec(const char *password, int check)
  	        return ret;
  	    }
  	    if (kill(m_Pid, SIGKILL) < 0) {
- 	        kDebug() << k_funcinfo << "kill < 0" << endl;
+ 	        kDebug() << k_funcinfo << "kill < 0";
  		//FIXME SIGKILL doesn't work for sudo,
  		//why is this different from su?
  		ret=error;
@@ -236,7 +236,7 @@ int SuProcess::ConverseSU(const char *password)
     enum { WaitForPrompt, CheckStar, HandleStub } state = WaitForPrompt;
     int colon;
     unsigned i, j;
-    // kDebug(900) << k_lineinfo << "ConverseSU starting." << endl;
+    // kDebug(900) << k_lineinfo << "ConverseSU starting.";
 
     QByteArray line;
     while (true)
@@ -244,7 +244,7 @@ int SuProcess::ConverseSU(const char *password)
         line = readLine();
         if (line.isNull())
             return ( state == HandleStub ? notauthorized : error);
-        kDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
+        kDebug(900) << k_lineinfo << "Read line <" << line << ">";
 
         switch (state)
         {
@@ -269,7 +269,7 @@ int SuProcess::ConverseSU(const char *password)
                         break;
 
                     line = more;
-                    kDebug(900) << k_lineinfo << "Read line <" << more << ">" << endl;
+                    kDebug(900) << k_lineinfo << "Read line <" << more << ">";
                 }
 
                 // Match "Password: " with the regex ^[^:]+:[\w]*$.

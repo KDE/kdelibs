@@ -138,7 +138,7 @@ int main(int argc, char **argv)
     else if (argv1 == QLatin1String("icon")) {
         KIconDialog dlg;
         QString icon = dlg.getIcon();
-        kDebug() << icon << endl;
+        kDebug() << icon;
     }
 
 //     else if ( argv1 == QLatin1String("dirselect") ) {

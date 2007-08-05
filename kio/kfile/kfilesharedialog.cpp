@@ -76,7 +76,7 @@ bool KFileSharePropsPlugin::supports( const KFileItemList& items )
     // Do not show dialog if in advanced mode,
     // because the advanced dialog is shown already.
     if (KFileShare::shareMode() == KFileShare::Advanced) {
-        kDebug() << "KFileSharePropsPlugin::supports: false because sharemode is advanced" << endl;
+        kDebug() << "KFileSharePropsPlugin::supports: false because sharemode is advanced";
         return false;
     }
 
@@ -199,7 +199,7 @@ void KFileSharePropsPlugin::init()
         break;
     }
     case KFileShare::NotInitialized:
-        kWarning() << "KFileShare Authorization still NotInitialized after calling authorization() - impossible" << endl;
+        kWarning() << "KFileShare Authorization still NotInitialized after calling authorization() - impossible";
         break;
     }
     d->m_widget->show(); // In case the dialog was shown already.
@@ -233,7 +233,7 @@ void KFileSharePropsPlugin::slotConfigureFileSharingDone()
 
 void KFileSharePropsPlugin::applyChanges()
 {
-    kDebug() << "KFileSharePropsPlugin::applyChanges" << endl;
+    kDebug() << "KFileSharePropsPlugin::applyChanges";
     if ( d->m_rbShare && d->m_rbUnShare )
     {
         bool share = d->m_rbShare->isChecked();
@@ -277,7 +277,7 @@ void KFileSharePropsPlugin::applyChanges()
 
 bool KFileSharePropsPlugin::setShared( const QString& path, bool shared )
 {
-    kDebug() << "KFileSharePropsPlugin::setShared " << path << "," << shared << endl;
+    kDebug() << "KFileSharePropsPlugin::setShared " << path << "," << shared;
     return KFileShare::setShared( path, shared );
 }
 

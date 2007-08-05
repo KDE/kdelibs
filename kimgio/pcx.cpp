@@ -242,7 +242,7 @@ static void readImage8( QImage &img, QDataStream &s, const PCXHEADER &header )
 
   quint8 flag;
   s >> flag;
-  kDebug( 399 ) << "Palette Flag: " << flag << endl;
+  kDebug( 399 ) << "Palette Flag: " << flag;
 
   if ( flag == 12 && ( header.Version == 5 || header.Version == 2 ) )
   {
@@ -462,16 +462,16 @@ bool PCXHandler::read(QImage *outImage)
   int w = header.width();
   int h = header.height();
 
-  kDebug( 399 ) << "Manufacturer: " << header.Manufacturer << endl;
-  kDebug( 399 ) << "Version: " << header.Version << endl;
-  kDebug( 399 ) << "Encoding: " << header.Encoding << endl;
-  kDebug( 399 ) << "Bpp: " << header.Bpp << endl;
-  kDebug( 399 ) << "Width: " << w << endl;
-  kDebug( 399 ) << "Height: " << h << endl;
+  kDebug( 399 ) << "Manufacturer: " << header.Manufacturer;
+  kDebug( 399 ) << "Version: " << header.Version;
+  kDebug( 399 ) << "Encoding: " << header.Encoding;
+  kDebug( 399 ) << "Bpp: " << header.Bpp;
+  kDebug( 399 ) << "Width: " << w;
+  kDebug( 399 ) << "Height: " << h;
   kDebug( 399 ) << "Window: " << header.XMin << "," << header.XMax << ","
                  << header.YMin << "," << header.YMax << endl;
-  kDebug( 399 ) << "BytesPerLine: " << header.BytesPerLine << endl;
-  kDebug( 399 ) << "NPlanes: " << header.NPlanes << endl;
+  kDebug( 399 ) << "BytesPerLine: " << header.BytesPerLine;
+  kDebug( 399 ) << "NPlanes: " << header.NPlanes;
 
   QImage img;
 
@@ -492,9 +492,9 @@ bool PCXHandler::read(QImage *outImage)
     readImage24( img, s, header );
   }
 
-  kDebug( 399 ) << "Image Bytes: " << img.numBytes() << endl;
-  kDebug( 399 ) << "Image Bytes Per Line: " << img.bytesPerLine() << endl;
-  kDebug( 399 ) << "Image Depth: " << img.depth() << endl;
+  kDebug( 399 ) << "Image Bytes: " << img.numBytes();
+  kDebug( 399 ) << "Image Bytes Per Line: " << img.bytesPerLine();
+  kDebug( 399 ) << "Image Depth: " << img.depth();
 
   if ( !img.isNull() )
   {
@@ -517,11 +517,11 @@ bool PCXHandler::write(const QImage &image)
   int w = img.width();
   int h = img.height();
 
-  kDebug( 399 ) << "Width: " << w << endl;
-  kDebug( 399 ) << "Height: " << h << endl;
-  kDebug( 399 ) << "Depth: " << img.depth() << endl;
-  kDebug( 399 ) << "BytesPerLine: " << img.bytesPerLine() << endl;
-  kDebug( 399 ) << "Num Colors: " << img.numColors() << endl;
+  kDebug( 399 ) << "Width: " << w;
+  kDebug( 399 ) << "Height: " << h;
+  kDebug( 399 ) << "Depth: " << img.depth();
+  kDebug( 399 ) << "BytesPerLine: " << img.bytesPerLine();
+  kDebug( 399 ) << "Num Colors: " << img.numColors();
 
   PCXHEADER header;
 

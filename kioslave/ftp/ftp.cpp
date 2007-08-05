@@ -143,7 +143,7 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   KComponentData componentData( "kio_ftp", "kdelibs4" );
   ( void ) KGlobal::locale();
 
-  kDebug(7102) << "Starting " << getpid() << endl;
+  kDebug(7102) << "Starting " << getpid();
 
   if (argc != 4)
   {
@@ -154,7 +154,7 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   Ftp slave(argv[2], argv[3]);
   slave.dispatchLoop();
 
-  kDebug(7102) << "Done" << endl;
+  kDebug(7102) << "Done";
   return 0;
 }
 
@@ -171,13 +171,13 @@ Ftp::Ftp( const QByteArray &pool, const QByteArray &app )
 
   // init other members
   m_port = 0;
-  kDebug(7102) << "Ftp::Ftp()" << endl;
+  kDebug(7102) << "Ftp::Ftp()";
 }
 
 
 Ftp::~Ftp()
 {
-  kDebug(7102) << "Ftp::~Ftp()" << endl;
+  kDebug(7102) << "Ftp::~Ftp()";
   closeConnection();
 }
 
@@ -246,9 +246,9 @@ const char* Ftp::ftpResponse(int iOffset)
         iMore = 0;
 
       if(iMore != 0)
-         kDebug(7102) << "    > " << pTxt << endl;
+         kDebug(7102) << "    > " << pTxt;
     } while(iMore != 0);
-    kDebug(7102) << "resp> " << pTxt << endl;
+    kDebug(7102) << "resp> " << pTxt;
 
     m_iRespType = (m_iRespCode > 0) ? m_iRespCode / 100 : 0;
   }
@@ -263,18 +263,18 @@ const char* Ftp::ftpResponse(int iOffset)
 void Ftp::closeConnection()
 {
   if(m_control != NULL || m_data != NULL)
-    kDebug(7102) << "Ftp::closeConnection m_bLoggedOn=" << m_bLoggedOn << " m_bBusy=" << m_bBusy << endl;
+    kDebug(7102) << "Ftp::closeConnection m_bLoggedOn=" << m_bLoggedOn << " m_bBusy=" << m_bBusy;
 
   if(m_bBusy)              // ftpCloseCommand not called
   {
-    kWarning(7102) << "Ftp::closeConnection Abandoned data stream" << endl;
+    kWarning(7102) << "Ftp::closeConnection Abandoned data stream";
     ftpCloseDataConnection();
   }
 
   if(m_bLoggedOn)           // send quit
   {
     if( !ftpSendCmd( "quit", 0 ) || (m_iRespType != 2) )
-      kWarning(7102) << "Ftp::closeConnection QUIT returned error: " << m_iRespCode << endl;
+      kWarning(7102) << "Ftp::closeConnection QUIT returned error: " << m_iRespCode;
   }
 
   // close the data and control connections ...
@@ -285,7 +285,7 @@ void Ftp::closeConnection()
 void Ftp::setHost( const QString& _host, quint16 _port, const QString& _user,
                    const QString& _pass )
 {
-  kDebug(7102) << "Ftp::setHost (" << getpid() << "): " << _host << " port=" << _port << endl;
+  kDebug(7102) << "Ftp::setHost (" << getpid() << "): " << _host << " port=" << _port;
 
   m_proxyURL = metaData("UseProxy");
   m_bUseProxy = (m_proxyURL.isValid() && m_proxyURL.protocol() == "ftp");
@@ -445,7 +445,7 @@ bool Ftp::ftpLogin()
     if ( failedAuth > 0 || (!user.isEmpty() && pass.isEmpty()) )
     {
       QString errorMsg;
-      kDebug(7102) << "Prompting user for login info..." << endl;
+      kDebug(7102) << "Prompting user for login info...";
 
       // Ask user if we should retry after when login fails!
       if( failedAuth > 0 )
@@ -491,7 +491,7 @@ bool Ftp::ftpLogin()
       }
     }
 
-    kDebug(7102) << "Sending Login name: " << tempbuf << endl;
+    kDebug(7102) << "Sending Login name: " << tempbuf;
 
     bool loggedIn = ( ftpSendCmd(tempbuf) && (m_iRespCode == 230) );
     bool needPass = (m_iRespCode == 331);
@@ -499,7 +499,7 @@ bool Ftp::ftpLogin()
     // get back a "230" or "331".
     if ( !loggedIn && !needPass )
     {
-      kDebug(7102) << "Login failed: " << ftpResponse(0) << endl;
+      kDebug(7102) << "Login failed: " << ftpResponse(0);
       ++failedAuth;
       continue;  // Well we failed, prompt the user please!!
     }
@@ -508,7 +508,7 @@ bool Ftp::ftpLogin()
     {
       tempbuf = "pass ";
       tempbuf += pass.toLatin1();
-      kDebug(7102) << "Sending Login password: " << "[protected]" << endl;
+      kDebug(7102) << "Sending Login password: " << "[protected]";
       loggedIn = ( ftpSendCmd(tempbuf) && (m_iRespCode == 230) );
     }
 
@@ -523,7 +523,7 @@ bool Ftp::ftpLogin()
   } while( ++failedAuth );
 
 
-  kDebug(7102) << "Login OK" << endl;
+  kDebug(7102) << "Login OK";
   infoMessage( i18n("Login OK") );
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
@@ -543,16 +543,16 @@ bool Ftp::ftpLogin()
     }
   }
   else
-    kWarning(7102) << "syst failed" << endl;
+    kWarning(7102) << "syst failed";
 
   if ( config()->readEntry ("EnableAutoLoginMacro", false) )
     ftpAutoLoginMacro ();
 
   // Get the current working directory
-  kDebug(7102) << "Searching for pwd" << endl;
+  kDebug(7102) << "Searching for pwd";
   if( !ftpSendCmd("pwd") || (m_iRespType != 2) )
   {
-    kDebug(7102) << "Couldn't issue pwd command" << endl;
+    kDebug(7102) << "Couldn't issue pwd command";
     error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.", m_host) ); // or anything better ?
     return false;
   }
@@ -564,7 +564,7 @@ bool Ftp::ftpLogin()
   {
     m_initialPath = sTmp.mid(iBeg+1, iEnd-iBeg-1);
     if(m_initialPath[0] != '/') m_initialPath.prepend('/');
-    kDebug(7102) << "Initial path set to: " << m_initialPath << endl;
+    kDebug(7102) << "Initial path set to: " << m_initialPath;
     m_currentPath = m_initialPath;
   }
   return true;
@@ -625,9 +625,9 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
   // Don't print out the password...
   bool isPassCmd = (cmd.left(4).toLower() == "pass");
   if ( !isPassCmd )
-    kDebug(7102) << "send> " << cmd.data() << endl;
+    kDebug(7102) << "send> " << cmd.data();
   else
-    kDebug(7102) << "send> pass [protected]" << endl;
+    kDebug(7102) << "send> pass [protected]";
 
   // Send the message...
   QByteArray buf = cmd;
@@ -681,14 +681,14 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
         {
           if (m_control != NULL)  // if openConnection succeeded ...
           {
-            kDebug(7102) << "Login failure, aborting" << endl;
+            kDebug(7102) << "Login failure, aborting";
             error (ERR_COULD_NOT_LOGIN, m_host);
             closeConnection ();
           }
           return false;
         }
 
-        kDebug(7102) << "Logged back in, re-issuing command" << endl;
+        kDebug(7102) << "Logged back in, re-issuing command";
 
         // If we were able to login, resend the command...
         if (maxretries)
@@ -727,11 +727,11 @@ int Ftp::ftpOpenPASVDataConnection()
   /* Let's PASsiVe*/
   if( !ftpSendCmd("PASV") || (m_iRespType != 2) )
   {
-    kDebug(7102) << "PASV attempt failed" << endl;
+    kDebug(7102) << "PASV attempt failed";
     // unknown command?
     if( m_iRespType == 5 )
     {
-        kDebug(7102) << "disabling use of PASV" << endl;
+        kDebug(7102) << "disabling use of PASV";
         m_extControl |= pasvUnknown;
     }
     return ERR_INTERNAL;
@@ -757,7 +757,7 @@ int Ftp::ftpOpenPASVDataConnection()
 
   // now connect the data socket ...
   quint16 port = i[4] << 8 | i[5];
-  kDebug(7102) << "Connecting to " << addr.toString() << " port " << port << endl;
+  kDebug(7102) << "Connecting to " << addr.toString() << " port " << port;
   m_data = KSocketFactory::synchronousConnectToHost("ftp-data", addr.toString(), port,
                                                     connectTimeout() * 1000);
 
@@ -784,7 +784,7 @@ int Ftp::ftpOpenEPSVDataConnection()
     // unknown command?
     if( m_iRespType == 5 )
     {
-       kDebug(7102) << "disabling use of EPSV" << endl;
+       kDebug(7102) << "disabling use of EPSV";
        m_extControl |= epsvUnknown;
     }
     return ERR_INTERNAL;
@@ -980,12 +980,12 @@ bool Ftp::ftpCloseCommand()
   if(!m_bBusy)
     return true;
 
-  kDebug(7102) << "ftpCloseCommand: reading command result" << endl;
+  kDebug(7102) << "ftpCloseCommand: reading command result";
   m_bBusy = false;
 
   if(!ftpResponse(-1) || (m_iRespType != 2) )
   {
-    kDebug(7102) << "ftpCloseCommand: no transfer complete message" << endl;
+    kDebug(7102) << "ftpCloseCommand: no transfer complete message";
     return false;
   }
   return true;
@@ -1140,7 +1140,7 @@ void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntr
     // --> we do better than Netscape :-)
     if ( mime->name() == KMimeType::defaultMimeType() )
     {
-      kDebug(7102) << "Setting guessed mime type to inode/directory for " << filename << endl;
+      kDebug(7102) << "Setting guessed mime type to inode/directory for " << filename;
       entry.insert( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, QString::fromLatin1( "inode/directory" ) );
       isDir = true;
     }
@@ -1172,10 +1172,10 @@ void Ftp::ftpStatAnswerNotFound( const QString & path, const QString & filename 
     // When e.g. uploading a file, we still need stat() to return "not found"
     // when the file doesn't exist.
     QString statSide = metaData("statSide");
-    kDebug(7102) << "Ftp::stat statSide=" << statSide << endl;
+    kDebug(7102) << "Ftp::stat statSide=" << statSide;
     if ( statSide == "source" )
     {
-        kDebug(7102) << "Not found, but assuming found, because some servers don't allow listing" << endl;
+        kDebug(7102) << "Not found, but assuming found, because some servers don't allow listing";
         // MS Server is incapable of handling "list <blah>" in a case insensitive way
         // But "retr <blah>" works. So lie in stat(), to get going...
         //
@@ -1191,12 +1191,12 @@ void Ftp::ftpStatAnswerNotFound( const QString & path, const QString & filename 
 
 void Ftp::stat( const KUrl &url)
 {
-  kDebug(7102) << "Ftp::stat : path='" << url.path() << "'" << endl;
+  kDebug(7102) << "Ftp::stat : path='" << url.path() << "'";
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
   QString path = QDir::cleanPath( url.path() );
-  kDebug(7102) << "Ftp::stat : cleaned path='" << path << "'" << endl;
+  kDebug(7102) << "Ftp::stat : cleaned path='" << path << "'";
 
   // We can't stat root, but we know it's a dir.
   if( path.isEmpty() || path == "/" )
@@ -1230,7 +1230,7 @@ void Ftp::stat( const KUrl &url)
   // if we're only interested in "file or directory", we should stop here
   QString sDetails = metaData("details");
   int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
-  kDebug(7102) << "Ftp::stat details=" << details << endl;
+  kDebug(7102) << "Ftp::stat details=" << details;
   if ( details == 0 )
   {
      if ( !isDir && !ftpSize( path, 'I' ) ) // ok, not a dir -> is it a file ?
@@ -1286,7 +1286,7 @@ void Ftp::stat( const KUrl &url)
     kError(7102) << "COULD NOT LIST" << endl;
     return;
   }
-  kDebug(7102) << "Starting of list was ok" << endl;
+  kDebug(7102) << "Starting of list was ok";
 
   Q_ASSERT( !search.isEmpty() && search != "/" );
 
@@ -1312,11 +1312,11 @@ void Ftp::stat( const KUrl &url)
             // Damn, the dir we're trying to list is in fact a symlink
             // Follow it and try again
             if ( ftpEnt.link.isEmpty() )
-                kWarning(7102) << "Got " << listarg << " as answer, but empty link!" << endl;
+                kWarning(7102) << "Got " << listarg << " as answer, but empty link!";
             else
             {
                 linkURL = url;
-                kDebug(7102) << "ftpEnt.link=" << ftpEnt.link << endl;
+                kDebug(7102) << "ftpEnt.link=" << ftpEnt.link;
                 if ( ftpEnt.link[0] == '/' )
                     linkURL.setPath( ftpEnt.link ); // Absolute link
                 else
@@ -1325,7 +1325,7 @@ void Ftp::stat( const KUrl &url)
                     linkURL.setPath( listarg ); // this is what we were listing (the link)
                     linkURL.setPath( linkURL.directory() ); // go up one dir
                     linkURL.addPath( ftpEnt.link ); // replace link by its destination
-                    kDebug(7102) << "linkURL now " << linkURL.prettyUrl() << endl;
+                    kDebug(7102) << "linkURL now " << linkURL.prettyUrl();
                 }
                 // Re-add the filename we're looking for
                 linkURL.addPath( filename );
@@ -1335,7 +1335,7 @@ void Ftp::stat( const KUrl &url)
 #endif
     }
 
-    // kDebug(7102) << ftpEnt.name << endl;
+    // kDebug(7102) << ftpEnt.name;
   }
 
   ftpCloseCommand();        // closes the data connection only
@@ -1357,14 +1357,14 @@ void Ftp::stat( const KUrl &url)
       return;
   }
 
-  kDebug(7102) << "stat : finished successfully" << endl;
+  kDebug(7102) << "stat : finished successfully";
   finished();
 }
 
 
 void Ftp::listDir( const KUrl &url )
 {
-  kDebug(7102) << "Ftp::listDir " << url.prettyUrl() << endl;
+  kDebug(7102) << "Ftp::listDir " << url.prettyUrl();
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
@@ -1384,13 +1384,13 @@ void Ftp::listDir( const KUrl &url )
     if ( m_initialPath.isEmpty() )
         m_initialPath = "/";
     realURL.setPath( m_initialPath );
-    kDebug(7102) << "REDIRECTION to " << realURL.prettyUrl() << endl;
+    kDebug(7102) << "REDIRECTION to " << realURL.prettyUrl();
     redirection( realURL );
     finished();
     return;
   }
 
-  kDebug(7102) << "hunting for path '" << path << "'" << endl;
+  kDebug(7102) << "hunting for path '" << path << "'";
 
   if (!ftpOpenDir( path ) )
   {
@@ -1409,14 +1409,14 @@ void Ftp::listDir( const KUrl &url )
   FtpEntry  ftpEnt;
   while( ftpReadDir(ftpEnt) )
   {
-    //kDebug(7102) << ftpEnt.name << endl;
+    //kDebug(7102) << ftpEnt.name;
     //Q_ASSERT( !ftpEnt.name.isEmpty() );
     if ( !ftpEnt.name.isEmpty() )
     {
       //if ( S_ISDIR( (mode_t)ftpEnt.type ) )
-      //   kDebug(7102) << "is a dir" << endl;
+      //   kDebug(7102) << "is a dir";
       //if ( !ftpEnt.link.isEmpty() )
-      //   kDebug(7102) << "is a link to " << ftpEnt.link << endl;
+      //   kDebug(7102) << "is a link to " << ftpEnt.link;
       entry.clear();
       ftpCreateUDSEntry( ftpEnt.name, ftpEnt, entry, false );
       listEntry( entry, false );
@@ -1429,7 +1429,7 @@ void Ftp::listDir( const KUrl &url )
 
 void Ftp::slave_status()
 {
-  kDebug(7102) << "Got slave_status host = " << (!m_host.toAscii().isEmpty() ? m_host.toAscii() : "[None]") << " [" << (m_bLoggedOn ? "Connected" : "Not connected") << "]" << endl;
+  kDebug(7102) << "Got slave_status host = " << (!m_host.toAscii().isEmpty() ? m_host.toAscii() : "[None]") << " [" << (m_bLoggedOn ? "Connected" : "Not connected") << "]";
   slaveStatus( m_host, m_bLoggedOn );
 }
 
@@ -1455,11 +1455,11 @@ bool Ftp::ftpOpenDir( const QString & path )
   {
     if ( !ftpOpenCommand( "list", QString(), 'I', ERR_CANNOT_ENTER_DIRECTORY ) )
     {
-      kWarning(7102) << "Can't open for listing" << endl;
+      kWarning(7102) << "Can't open for listing";
       return false;
     }
   }
-  kDebug(7102) << "Starting of list was ok" << endl;
+  kDebug(7102) << "Starting of list was ok";
   return true;
 }
 
@@ -1476,7 +1476,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       break;
 
     const char* buffer = data.data();
-    kDebug(7102) << "dir > " << buffer << endl;
+    kDebug(7102) << "dir > " << buffer;
 
     //Normally the listing looks like
     // -rw-r--r--   1 dfaure   dfaure        102 Nov  9 12:30 log
@@ -1491,7 +1491,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
     if( (p_group = strtok(NULL," ")) == 0) continue;
     if( (p_size  = strtok(NULL," ")) == 0) continue;
 
-    //kDebug(7102) << "p_access=" << p_access << " p_junk=" << p_junk << " p_owner=" << p_owner << " p_group=" << p_group << " p_size=" << p_size << endl;
+    //kDebug(7102) << "p_access=" << p_access << " p_junk=" << p_junk << " p_owner=" << p_owner << " p_group=" << p_group << " p_size=" << p_size;
 
     de.access = 0;
     if ( strlen( p_access ) == 1 && p_junk[0] == '[' ) { // Netware
@@ -1505,7 +1505,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
     // So we just ignore the number in front of the ",". Ok, its a hack :-)
     if ( strchr( p_size, ',' ) != 0L )
     {
-      //kDebug(7102) << "Size contains a ',' -> reading size again (/dev hack)" << endl;
+      //kDebug(7102) << "Size contains a ',' -> reading size again (/dev hack)";
       if ((p_size = strtok(NULL," ")) == 0)
         continue;
     }
@@ -1519,12 +1519,12 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       p_date_1 = p_size;
       p_size = p_group;
       p_group = 0;
-      //kDebug(7102) << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1 << endl;
+      //kDebug(7102) << "Size didn't have a digit -> size=" << p_size << " date_1=" << p_date_1;
     }
     else
     {
       p_date_1 = strtok(NULL," ");
-      //kDebug(7102) << "Size has a digit -> ok. p_date_1=" << p_date_1 << endl;
+      //kDebug(7102) << "Size has a digit -> ok. p_date_1=" << p_date_1;
     }
 
     if ( p_date_1 != 0 &&
@@ -1615,7 +1615,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       time_t currentTime = time( 0L );
       struct tm * tmptr = gmtime( &currentTime );
       int currentMonth = tmptr->tm_mon;
-      //kDebug(7102) << "Current time :" << asctime( tmptr ) << endl;
+      //kDebug(7102) << "Current time :" << asctime( tmptr );
       // Reset time fields
       tmptr->tm_sec = 0;
       tmptr->tm_min = 0;
@@ -1625,13 +1625,13 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       // Get month from first field
       // NOTE : no, we don't want to use KLocale here
       // It seems all FTP servers use the English way
-      //kDebug(7102) << "Looking for month " << p_date_1 << endl;
+      //kDebug(7102) << "Looking for month " << p_date_1;
       static const char * s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
       for ( int c = 0 ; c < 12 ; c ++ )
         if ( !strcmp( p_date_1, s_months[c]) )
         {
-          //kDebug(7102) << "Found month " << c << " for " << p_date_1 << endl;
+          //kDebug(7102) << "Found month " << c << " for " << p_date_1;
           tmptr->tm_mon = c;
           break;
         }
@@ -1659,10 +1659,10 @@ bool Ftp::ftpReadDir(FtpEntry& de)
           tmptr->tm_hour = atoi( p_date_3 );
         }
         else
-          kWarning(7102) << "Can't parse third field " << p_date_3 << endl;
+          kWarning(7102) << "Can't parse third field " << p_date_3;
       }
 
-      //kDebug(7102) << asctime( tmptr ) << endl;
+      //kDebug(7102) << asctime( tmptr );
       de.date = mktime( tmptr );
       return true;
     }
@@ -1676,7 +1676,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 //===============================================================================
 void Ftp::get( const KUrl & url )
 {
-  kDebug(7102) << "Ftp::get " << url.url() << endl;
+  kDebug(7102) << "Ftp::get " << url.url();
   int iError = 0;
   ftpGet(iError, -1, url, 0);               // iError gets status
   if(iError)                                // can have only server side errs
@@ -1699,7 +1699,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
        ftpFolder(url.path(), false) )
   {
     // Ok it's a dir in fact
-    kDebug(7102) << "ftpGet: it is a directory in fact" << endl;
+    kDebug(7102) << "ftpGet: it is a directory in fact";
     iError = ERR_IS_DIRECTORY;
     return statusServerError;
   }
@@ -1708,12 +1708,12 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
   if ( !resumeOffset.isEmpty() )
   {
     llOffset = resumeOffset.toLongLong();
-    kDebug(7102) << "ftpGet: got offset from metadata : " << llOffset << endl;
+    kDebug(7102) << "ftpGet: got offset from metadata : " << llOffset;
   }
 
   if( !ftpOpenCommand("retr", url.path(), '?', ERR_CANNOT_OPEN_FOR_READING, llOffset) )
   {
-    kWarning(7102) << "ftpGet: Can't open for reading" << endl;
+    kWarning(7102) << "ftpGet: Can't open for reading";
     return statusServerError;
   }
 
@@ -1729,7 +1729,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
   if ( m_size != UnknownSize )
     bytesLeft = m_size - llOffset;
 
-  kDebug(7102) << "ftpGet: starting with offset=" << llOffset << endl;
+  kDebug(7102) << "ftpGet: starting with offset=" << llOffset;
   KIO::fileoffset_t processed_size = llOffset;
 
   QByteArray array;
@@ -1783,7 +1783,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
       array = QByteArray::fromRawData(buffer, n);
       KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), array);
       array.clear();
-      kDebug(7102) << "ftpGet: Emitting mimetype " << mime->name() << endl;
+      kDebug(7102) << "ftpGet: Emitting mimetype " << mime->name();
       mimeType( mime->name() );
       if( m_size != UnknownSize )	// Emit total size AFTER mimetype
         totalSize( m_size );
@@ -1801,12 +1801,12 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     processedSize( processed_size );
   }
 
-  kDebug(7102) << "ftpGet: done" << endl;
+  kDebug(7102) << "ftpGet: done";
   if(iCopyFile == -1)          // must signal EOF to data pump ...
     data(array);               // array is empty and must be empty!
 
   processedSize( m_size == UnknownSize ? processed_size : m_size );
-  kDebug(7102) << "ftpGet: emitting finished()" << endl;
+  kDebug(7102) << "ftpGet: emitting finished()";
   finished();
   return statusSuccess;
 }
@@ -1818,7 +1818,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
           return;
 
     if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, 0 ) ) {
-      kWarning(7102) << "Can't open for reading" << endl;
+      kWarning(7102) << "Can't open for reading";
       return;
     }
     char buffer[ 2048 ];
@@ -1830,12 +1830,12 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     data( array );
     array.resetRawData(buffer, n);
 
-    kDebug(7102) << "aborting" << endl;
+    kDebug(7102) << "aborting";
     ftpAbortTransfer();
 
-    kDebug(7102) << "finished" << endl;
+    kDebug(7102) << "finished";
     finished();
-    kDebug(7102) << "after finished" << endl;
+    kDebug(7102) << "after finished";
   }
 
   void Ftp::ftpAbortTransfer()
@@ -1856,7 +1856,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
        ; // error...
 
      // Send ABOR
-     kDebug(7102) << "send ABOR" << endl;
+     kDebug(7102) << "send ABOR";
      QCString buf = "ABOR\r\n";
      if ( KSocks::self()->write( sControl, buf.data(), buf.length() ) <= 0 )  {
        error( ERR_COULD_NOT_WRITE, QString() );
@@ -1864,14 +1864,14 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
      }
 
      //
-     kDebug(7102) << "read resp" << endl;
+     kDebug(7102) << "read resp";
      if ( readresp() != '2' )
      {
        error( ERR_COULD_NOT_READ, QString() );
        return;
      }
 
-    kDebug(7102) << "close sockets" << endl;
+    kDebug(7102) << "close sockets";
     closeSockets();
   }
 #endif
@@ -1882,7 +1882,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
 //===============================================================================
 void Ftp::put(const KUrl& url, int permissions, bool overwrite, bool resume)
 {
-  kDebug(7102) << "Ftp::put " << url.url() << endl;
+  kDebug(7102) << "Ftp::put " << url.url();
   int iError = 0;                           // iError gets status
   ftpPut(iError, -1, url, permissions, overwrite, resume);
   if(iError)                                // can have only server side errs
@@ -1965,7 +1965,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
 
   // if we are using marking of partial downloads -> add .part extension
   if ( bMarkPartial ) {
-    kDebug(7102) << "Adding .part extension to " << dest_orig << endl;
+    kDebug(7102) << "Adding .part extension to " << dest_orig;
     dest = dest_part;
   } else
     dest = dest_orig;
@@ -1989,7 +1989,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   if (! ftpOpenCommand( "stor", dest, '?', ERR_COULD_NOT_WRITE, offset ) )
      return statusServerError;
 
-  kDebug(7102) << "ftpPut: starting with offset=" << offset << endl;
+  kDebug(7102) << "ftpPut: starting with offset=" << offset;
   KIO::fileoffset_t processed_size = offset;
 
   QByteArray buffer;
@@ -2028,7 +2028,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   if (result != 0) // error
   {
     ftpCloseCommand();               // don't care about errors
-    kDebug(7102) << "Error during 'put'. Aborting." << endl;
+    kDebug(7102) << "Error during 'put'. Aborting.";
     if (bMarkPartial)
     {
       // Remove if smaller than minimum size
@@ -2052,7 +2052,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   // after full download rename the file back to original name
   if ( bMarkPartial )
   {
-    kDebug(7102) << "renaming dest (" << dest << ") back to dest_orig (" << dest_orig << ")" << endl;
+    kDebug(7102) << "renaming dest (" << dest << ") back to dest_orig (" << dest_orig << ")";
     if ( !ftpRename( dest, dest_orig, true ) )
     {
       iError = ERR_CANNOT_RENAME_PARTIAL;
@@ -2064,7 +2064,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   if ( permissions != -1 )
   {
     if ( m_user == FTP_LOGIN )
-      kDebug(7102) << "Trying to chmod over anonymous FTP ???" << endl;
+      kDebug(7102) << "Trying to chmod over anonymous FTP ???";
     // chmod the file we just put
     if ( ! ftpChmod( dest_orig, permissions ) )
     {
@@ -2116,7 +2116,7 @@ bool Ftp::ftpDataMode(char cMode)
   else if(cMode == 'a') cMode = 'A';
   else if(cMode != 'A') cMode = 'I';
 
-  kDebug(7102) << "ftpDataMode: want '" << cMode << "' has '" << m_cDataMode << "'" << endl;
+  kDebug(7102) << "ftpDataMode: want '" << cMode << "' has '" << m_cDataMode << "'";
   if(m_cDataMode == cMode)
     return true;
 
@@ -2135,7 +2135,7 @@ bool Ftp::ftpFolder(const QString& path, bool bReportError)
   int iLen = newPath.length();
   if(iLen > 1 && newPath[iLen-1] == '/') newPath.truncate(iLen-1);
 
-  //kDebug(7102) << "ftpFolder: want '" << newPath << "' has '" << m_currentPath << "'" << endl;
+  //kDebug(7102) << "ftpFolder: want '" << newPath << "' has '" << m_currentPath << "'";
   if(m_currentPath == newPath)
     return true;
 
@@ -2171,14 +2171,14 @@ void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, bool overwri
   if(bSrcLocal && !bDestLocal)                    // File -> Ftp
   {
     sCopyFile = src.toLocalFile();
-    kDebug(7102) << "Ftp::copy local file '" << sCopyFile << "' -> ftp '" << dest.path() << "'" << endl;
+    kDebug(7102) << "Ftp::copy local file '" << sCopyFile << "' -> ftp '" << dest.path() << "'";
     cs = ftpCopyPut(iError, iCopyFile, sCopyFile, dest, permissions, overwrite);
     if( cs == statusServerError) sCopyFile = dest.url();
   }
   else if(!bSrcLocal && bDestLocal)               // Ftp -> File
   {
     sCopyFile = dest.toLocalFile();
-    kDebug(7102) << "Ftp::copy ftp '" << src.path() << "' -> local file '" << sCopyFile << "'" << endl;
+    kDebug(7102) << "Ftp::copy ftp '" << src.path() << "' -> local file '" << sCopyFile << "'";
     cs = ftpCopyGet(iError, iCopyFile, sCopyFile, src, permissions, overwrite);
     if( cs == statusServerError ) sCopyFile = src.url();
   }
@@ -2300,14 +2300,14 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
       iError = ERR_CANNOT_RESUME;
       return statusClientError;                            // client side error
     }
-    kDebug(7102) << "copy: resuming at " << hCopyOffset << endl;
+    kDebug(7102) << "copy: resuming at " << hCopyOffset;
   }
   else
     iCopyFile = KDE_open(sPart.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
 
   if(iCopyFile == -1)
   {
-    kDebug(7102) << "copy: ### COULD NOT WRITE " << sCopyFile << endl;
+    kDebug(7102) << "copy: ### COULD NOT WRITE " << sCopyFile;
     iError = (errno == EACCES) ? ERR_WRITE_ACCESS_DENIED
                                : ERR_CANNOT_OPEN_FOR_WRITING;
     return statusClientError;
@@ -2328,7 +2328,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     { // rename ".part" on success
       if ( ::rename( sPart.data(), sDest.data() ) )
       {
-        kDebug(7102) << "copy: cannot rename " << sPart << " to " << sDest << endl;
+        kDebug(7102) << "copy: cannot rename " << sPart << " to " << sDest;
         iError = ERR_CANNOT_RENAME_PARTIAL;
         iRes = statusClientError;
       }

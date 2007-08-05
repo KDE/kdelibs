@@ -38,30 +38,30 @@ int main(int argc, char **argv)
     // Test with one URL
     KOpenWithDialog* dlg = new KOpenWithDialog(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
-        kDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
+        kDebug() << "Dialog ended successfully\ntext: " << dlg->text();
     }
     else
-        kDebug() << "Dialog was canceled." << endl;
+        kDebug() << "Dialog was canceled.";
     delete dlg;
 
     // Test with two URLs
     list += KUrl("http://www.kde.org/index.html");
     dlg = new KOpenWithDialog(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
-        kDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
+        kDebug() << "Dialog ended successfully\ntext: " << dlg->text();
     }
     else
-        kDebug() << "Dialog was canceled." << endl;
+        kDebug() << "Dialog was canceled.";
     delete dlg;
 
     // Test with a mimetype
     QString mimetype = "text/plain";
     dlg = new KOpenWithDialog( mimetype, "kedit", 0);
     if(dlg->exec()) {
-        kDebug() << "Dialog ended successfully\ntext: " << dlg->text() << endl;
+        kDebug() << "Dialog ended successfully\ntext: " << dlg->text();
     }
     else
-        kDebug() << "Dialog was canceled." << endl;
+        kDebug() << "Dialog was canceled.";
     delete dlg;
 
     return 0;

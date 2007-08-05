@@ -81,7 +81,7 @@ int main (int argc, char **argv)
       dirmodel->dirLister()->openUrl( QDir::homePath() );
 
   for(int i = 0; i < args->count(); i++) {
-      kDebug() << "Adding: " << args->url(i) << endl;
+      kDebug() << "Adding: " << args->url(i);
       dirmodel->dirLister()->openUrl( args->url(i), true /*keep*/ );
   }
 

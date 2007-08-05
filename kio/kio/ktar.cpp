@@ -74,7 +74,7 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
             d->mimetype = KMimeType::findByFileContent( fileName() )->name();
         else
             d->mimetype = KMimeType::findByPath( fileName(), 0, true )->name();
-        kDebug(7041) << "KTar::KTar mimetype = " << d->mimetype << endl;
+        kDebug(7041) << "KTar::KTar mimetype = " << d->mimetype;
 
         if ( d->mimetype == "application/x-compressed-tar"
              || d->mimetype == "application/x-tgz" // old deprecated name
@@ -135,7 +135,7 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
         d->tmpFile->setPrefix("ktar-");
         d->tmpFile->setSuffix(".tar");
         d->tmpFile->open();
-        kDebug( 7041 ) << "KTar::createDevice creating TempFile: " << d->tmpFile->fileName() << endl;
+        kDebug( 7041 ) << "KTar::createDevice creating TempFile: " << d->tmpFile->fileName();
 
         setDevice( d->tmpFile );
         return true;
@@ -201,7 +201,7 @@ qint64 KTar::readRawHeader( char *buffer ) {
 
 bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   qint64 n = 0;
-  //kDebug() << k_funcinfo << "reading longlink from pos " << device()->pos()  << endl;
+  //kDebug() << k_funcinfo << "reading longlink from pos " << device()->pos();
   QIODevice *dev = device();
   // read size of longlink from size field in header
   // size is in bytes including the trailing null (which we ignore)
@@ -267,7 +267,7 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
     if ( ! tmpFile )
         return true;
 
-    kDebug( 7041 ) << "KTar::openArchive: filling tmpFile of mimetype '" << mimetype << "'" << endl;
+    kDebug( 7041 ) << "KTar::openArchive: filling tmpFile of mimetype '" << mimetype << "'";
 
     bool forced = false;
     if( "application/x-gzip" == mimetype
@@ -309,9 +309,9 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
         Q_ASSERT(file->openMode() & QIODevice::ReadOnly);
     }
     else
-        kDebug( 7041 ) << "KTar::openArchive: no filterdevice found!" << endl;
+        kDebug( 7041 ) << "KTar::openArchive: no filterdevice found!";
 
-    //kDebug( 7041 ) << "KTar::openArchive: filling tmpFile finished." << endl;
+    //kDebug( 7041 ) << "KTar::openArchive: filling tmpFile finished.";
     return true;
 }
 
@@ -389,7 +389,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 isdir = false;
                 isDumpDir = true;
             }
-            //kDebug(7041) << "typeflag=" << typeflag << " islink=" << ( typeflag == '1' || typeflag == '2' ) << endl;
+            //kDebug(7041) << "typeflag=" << typeflag << " islink=" << ( typeflag == '1' || typeflag == '2' );
 
             if (isdir)
                 access |= S_IFDIR; // f*cking broken tar files
@@ -397,7 +397,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             KArchiveEntry* e;
             if ( isdir )
             {
-                //kDebug(7041) << "KTar::openArchive directory " << nm << endl;
+                //kDebug(7041) << "KTar::openArchive directory " << nm;
                 e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
             }
             else
@@ -405,12 +405,12 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 // read size
                 QByteArray sizeBuffer( buffer + 0x7c, 12 );
                 qint64 size = sizeBuffer.trimmed().toLongLong( 0, 8 /*octal*/ );
-                //kDebug(7041) << "sizeBuffer='" << sizeBuffer << "' -> size=" << size << endl;
+                //kDebug(7041) << "sizeBuffer='" << sizeBuffer << "' -> size=" << size;
 
                 // for isDumpDir we will skip the additional info about that dirs contents
                 if ( isDumpDir )
                 {
-                    //kDebug(7041) << "KTar::openArchive " << nm << " isDumpDir" << endl;
+                    //kDebug(7041) << "KTar::openArchive " << nm << " isDumpDir";
                     e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
                 }
                 else
@@ -419,11 +419,11 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                     // Let's hack around hard links. Our classes don't support that, so make them symlinks
                     if ( typeflag == '1' )
                     {
-                        kDebug(7041) << "HARD LINK, setting size to 0 instead of " << size << endl;
+                        kDebug(7041) << "HARD LINK, setting size to 0 instead of " << size;
                         size = 0; // no contents
                     }
 
-                    //kDebug(7041) << "KTar::openArchive file " << nm << " size=" << size << endl;
+                    //kDebug(7041) << "KTar::openArchive file " << nm << " size=" << size;
                     e = new KArchiveFile( this, nm, access, time, user, group, symlink,
                                           dev->pos(), size );
                 }
@@ -431,9 +431,9 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 // Skip contents + align bytes
                 int rest = size % 0x200;
                 int skip = size + (rest ? 0x200 - rest : 0);
-                //kDebug(7041) << "KTar::openArchive, pos()=" << dev->pos() << " rest=" << rest << " skipping " << skip << endl;
+                //kDebug(7041) << "KTar::openArchive, pos()=" << dev->pos() << " rest=" << rest << " skipping " << skip;
                 if (! dev->seek( dev->pos() + skip ) )
-                    kWarning(7041) << "KTar::openArchive skipping " << skip << " failed" << endl;
+                    kWarning(7041) << "KTar::openArchive skipping " << skip << " failed";
             }
 
             if ( pos == -1 )
@@ -475,8 +475,8 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
     if ( ! tmpFile )
         return true;
 
-    kDebug(7041) << "Write temporary file to compressed file" << endl;
-    kDebug(7041) << fileName << " " << mimetype << endl;
+    kDebug(7041) << "Write temporary file to compressed file";
+    kDebug(7041) << fileName << " " << mimetype;
 
     bool forced = false;
     if( "application/x-gzip" == mimetype
@@ -511,7 +511,7 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
         delete dev;
     }
 
-    kDebug(7041) << "Write temporary file to compressed file done." << endl;
+    kDebug(7041) << "Write temporary file to compressed file done.";
     return true;
 }
 

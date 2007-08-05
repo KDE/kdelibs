@@ -89,7 +89,7 @@ bool KSambaShare::KSambaSharePrivate::findSmbConf()
   if ( QFile::exists("/usr/local/lib/smb.conf") )
     smbConf = "/usr/local/lib/smb.conf";
   else {
-    kDebug(7000) << "KSambaShare: Could not found smb.conf!" << endl;
+    kDebug(7000) << "KSambaShare: Could not found smb.conf!";
     return false;
   }
 
@@ -105,7 +105,7 @@ bool KSambaShare::KSambaSharePrivate::readSmbConf()
 {
   QFile f(smbConf);
 
-  kDebug(7000) << "KSambaShare::readSmbConf " << smbConf << endl;
+  kDebug(7000) << "KSambaShare::readSmbConf " << smbConf;
 
   if (!f.open(QIODevice::ReadOnly)) {
     kError() << "KSambaShare: Could not open " << smbConf << endl;
@@ -168,7 +168,7 @@ bool KSambaShare::KSambaSharePrivate::readSmbConf()
              value += '/';
 
         sharedPaths.insert(value);
-        kDebug(7000) << "KSambaShare: Found path: " << value << endl;
+        kDebug(7000) << "KSambaShare: Found path: " << value;
       }
     }
   }

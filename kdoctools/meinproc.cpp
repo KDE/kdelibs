@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
             if ( !noout )
                 return 1;
         } else {
-            kWarning() << "couldn't find xmllint" << endl;
+            kWarning() << "couldn't find xmllint";
         }
     }
 
@@ -241,10 +241,10 @@ int main(int argc, char **argv) {
 
                 xmlFreeDoc(res);
             } else {
-                kDebug() << "couldn't parse document " << args->arg( 0 ) << endl;
+                kDebug() << "couldn't parse document " << args->arg( 0 );
             }
         } else {
-            kDebug() << "couldn't parse style sheet " << tss << endl;
+            kDebug() << "couldn't parse style sheet " << tss;
         }
 
     } else {

@@ -73,7 +73,7 @@ private:
 KJavaDownloader::KJavaDownloader( int ID, const QString& url )
 	:d(new KJavaDownloaderPrivate)
 {
-    kDebug(6100) << "KJavaDownloader(" << ID << ") = " << url << endl;
+    kDebug(6100) << "KJavaDownloader(" << ID << ") = " << url;
 
 
     d->loaderID = ID;
@@ -98,7 +98,7 @@ KJavaDownloader::~KJavaDownloader()
 
 void KJavaDownloader::slotData( KIO::Job*, const QByteArray& qb )
 {
-    //kDebug(6100) << "slotData(" << d->loaderID << ")" << endl;
+    //kDebug(6100) << "slotData(" << d->loaderID << ")";
 
     KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
     if (d->isfirstdata) {
@@ -118,29 +118,29 @@ void KJavaDownloader::slotData( KIO::Job*, const QByteArray& qb )
 
 void KJavaDownloader::slotConnected(KIO::Job*)
 {
-    kDebug(6100) << "slave connected" << endl;
+    kDebug(6100) << "slave connected";
     d->responseCode = d->job->error();
 }
 
 void KJavaDownloader::slotMimetype(KIO::Job*, const QString & type) {
-    kDebug(6100) << "slave mimetype " << type << endl;
+    kDebug(6100) << "slave mimetype " << type;
 }
 
 void KJavaDownloader::slotResult( KJob* )
 {
-    kDebug(6100) << "slotResult(" << d->loaderID << ")" << endl;
+    kDebug(6100) << "slotResult(" << d->loaderID << ")";
 
     KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
     if( d->job->error())
     {
-        kDebug(6100) << "slave had an error = " << d->job->errorString() << endl;
+        kDebug(6100) << "slave had an error = " << d->job->errorString();
         int code = d->job->error();
         if (!code)
             code = 404;
         QString codestr = QString::number(code);
         d->file.resize(codestr.length());
         memcpy( d->file.data(), codestr.toAscii().constData(), codestr.length() );
-        kDebug(6100) << "slave had an error = " << code << endl;
+        kDebug(6100) << "slave had an error = " << code;
 
         server->sendURLData( d->loaderID, ERRORCODE, d->file );
         d->file.resize( 0 );
@@ -159,7 +159,7 @@ void KJavaDownloader::jobCommand( int cmd )
     if (!d->job) return;
     switch (cmd) {
         case KJAS_STOP: {
-            kDebug(6100) << "jobCommand(" << d->loaderID << ") stop" << endl;
+            kDebug(6100) << "jobCommand(" << d->loaderID << ") stop";
             d->job->kill();
             d->job = 0L; // KIO::Job::kill deletes itself
             KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
@@ -168,11 +168,11 @@ void KJavaDownloader::jobCommand( int cmd )
             break;
         }
         case KJAS_HOLD:
-            kDebug(6100) << "jobCommand(" << d->loaderID << ") hold" << endl;
+            kDebug(6100) << "jobCommand(" << d->loaderID << ") hold";
             d->job->suspend();
             break;
         case KJAS_RESUME:
-            kDebug(6100) << "jobCommand(" << d->loaderID << ") resume" << endl;
+            kDebug(6100) << "jobCommand(" << d->loaderID << ") resume";
             d->job->resume();
             break;
     }
@@ -199,7 +199,7 @@ public:
 KJavaUploader::KJavaUploader( int ID, const QString& url )
 	:d(new KJavaUploaderPrivate)
 {
-    kDebug(6100) << "KJavaUploader(" << ID << ") = " << url << endl;
+    kDebug(6100) << "KJavaUploader(" << ID << ") = " << url;
 
 
     d->loaderID = ID;
@@ -210,7 +210,7 @@ KJavaUploader::KJavaUploader( int ID, const QString& url )
 
 void KJavaUploader::start()
 {
-    kDebug(6100) << "KJavaUploader::start(" << d->loaderID << ")" << endl;
+    kDebug(6100) << "KJavaUploader::start(" << d->loaderID << ")";
     KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
     // create a suspended job
     d->job = KIO::put( *d->url, -1, false, false, false );
@@ -231,7 +231,7 @@ KJavaUploader::~KJavaUploader()
 void KJavaUploader::slotDataRequest( KIO::Job*, QByteArray& qb )
 {
     // send our data and suspend
-    kDebug(6100) << "slotDataRequest(" << d->loaderID << ") finished:" << d->finished << endl;
+    kDebug(6100) << "slotDataRequest(" << d->loaderID << ") finished:" << d->finished;
     qb.resize( d->file.size() );
     KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
     if (d->file.size() == 0) {
@@ -250,7 +250,7 @@ void KJavaUploader::slotDataRequest( KIO::Job*, QByteArray& qb )
 
 void KJavaUploader::data( const QByteArray& qb )
 {
-    kDebug(6100) << "KJavaUploader::data(" << d->loaderID << ")" << endl;
+    kDebug(6100) << "KJavaUploader::data(" << d->loaderID << ")";
     d->file.resize( qb.size() );
     memcpy( d->file.data(), qb.data(), qb.size() );
     d->job->resume();
@@ -258,7 +258,7 @@ void KJavaUploader::data( const QByteArray& qb )
 
 void KJavaUploader::slotResult( KJob* )
 {
-    kDebug(6100) << "slotResult(" << d->loaderID << ") job:" << d->job << endl;
+    kDebug(6100) << "slotResult(" << d->loaderID << ") job:" << d->job;
 
     if (!d->job)
         return;
@@ -269,7 +269,7 @@ void KJavaUploader::slotResult( KJob* )
         QString codestr = QString::number(code);
         d->file.resize(codestr.length());
         memcpy( d->file.data(), codestr.toAscii().constData(), codestr.length() );
-        kDebug(6100) << "slave had an error " << code <<  ": " << d->job->errorString() << endl;
+        kDebug(6100) << "slave had an error " << code <<  ": " << d->job->errorString();
 
         server->sendURLData( d->loaderID, ERRORCODE, d->file );
         d->file.resize( 0 );
@@ -286,7 +286,7 @@ void KJavaUploader::jobCommand( int cmd )
     if (!d->job) return;
     switch (cmd) {
         case KJAS_STOP: {
-            kDebug(6100) << "jobCommand(" << d->loaderID << ") stop" << endl;
+            kDebug(6100) << "jobCommand(" << d->loaderID << ") stop";
 	    d->finished = true;
             if (d->job->isSuspended())
                 d->job->resume();

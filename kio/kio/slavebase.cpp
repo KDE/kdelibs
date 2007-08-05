@@ -144,7 +144,7 @@ static void genericsig_handler(int sigNumber)
    signal(sigNumber,SIG_IGN);
    //WABA: Don't do anything that requires malloc, we can deadlock on it since
    //a SIGTERM signal can come in while we are in malloc/free.
-   //kDebug()<<"kioslave : exiting due to signal "<<sigNumber<<endl;
+   //kDebug()<<"kioslave : exiting due to signal "<<sigNumber;
    //set the flag which will be checked in dispatchLoop() and which *should* be checked
    //in lengthy operations in the various slaves
    if (globalSlave!=0)
@@ -285,7 +285,7 @@ void SlaveBase::dispatchLoop()
 
         //I think we get here when we were killed in dispatch() and not in select()
         if (wasKilled()) {
-            kDebug(7019)<<" dispatchLoop() slave was killed, returning"<<endl;
+            kDebug(7019)<<" dispatchLoop() slave was killed, returning";
             return;
         }
     }
@@ -513,7 +513,7 @@ void SlaveBase::position( KIO::filesize_t _pos )
 
 void SlaveBase::processedPercent( float /* percent */ )
 {
-  kDebug(7019) << "SlaveBase::processedPercent: STUB" << endl;
+  kDebug(7019) << "SlaveBase::processedPercent: STUB";
 }
 
 
@@ -548,14 +548,14 @@ static bool isSubCommand(int cmd)
 
 void SlaveBase::mimeType( const QString &_type)
 {
-  // kDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType '" << _type << "'" << endl;
+  // kDebug(7019) << "(" << getpid() << ") SlaveBase::mimeType '" << _type << "'";
   int cmd;
   do
   {
     // Send the meta-data each time we send the mime-type.
     if (!mOutgoingMetaData.isEmpty())
     {
-      // kDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data" << endl;
+      // kDebug(7019) << "(" << getpid() << ") mimeType: emitting meta data";
       KIO_DATA << mOutgoingMetaData;
       send( INF_META_DATA, data );
     }
@@ -569,11 +569,11 @@ void SlaveBase::mimeType( const QString &_type)
            ret = m_pConnection->read( &cmd, data );
        }
        if (ret == -1) {
-           kDebug(7019) << "SlaveBase: mimetype: read error" << endl;
+           kDebug(7019) << "SlaveBase: mimetype: read error";
            exit();
            return;
        }
-       // kDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd << endl;
+       // kDebug(7019) << "(" << getpid() << ") Slavebase: mimetype got " << cmd;
        if ( cmd == CMD_HOST) // Ignore.
           continue;
        if ( isSubCommand(cmd) )
@@ -794,7 +794,7 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
     const long windowId = metaData("window-id").toLong();
     const unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
-    kDebug(7019) << "SlaveBase::openPasswordDialog window-id=" << windowId << endl;
+    kDebug(7019) << "SlaveBase::openPasswordDialog window-id=" << windowId;
 
     QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
 
@@ -815,8 +815,8 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
 
     if (!callOK)
     {
-       kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!" << endl;
-       kDebug(7019) << reply.arguments().at(0).toString() << endl;
+       kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!";
+       kDebug(7019) << reply.arguments().at(0).toString();
        return false;
     }
 
@@ -829,8 +829,8 @@ bool SlaveBase::openPasswordDialog( AuthInfo& info, const QString &errorMsg )
 
     info = authResult;
 
-    kDebug(7019) << "SlaveBase::openPasswordDialog: username=" << info.username << endl;
-    kDebug(7019) << "SlaveBase::openPasswordDialog: password=[hidden]" << endl;
+    kDebug(7019) << "SlaveBase::openPasswordDialog: username=" << info.username;
+    kDebug(7019) << "SlaveBase::openPasswordDialog: password=[hidden]";
 
     return true;
 }
@@ -844,7 +844,7 @@ int SlaveBase::messageBox( MessageBoxType type, const QString &text, const QStri
 int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QString &caption,
                            const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
-    kDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
+    kDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo;
     KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
     send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
@@ -852,7 +852,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
         QDataStream stream( data );
         int answer;
         stream >> answer;
-        kDebug(7019) << "got messagebox answer" << answer << endl;
+        kDebug(7019) << "got messagebox answer" << answer;
         return answer;
     } else
         return 0; // communication failure
@@ -860,7 +860,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
 
 bool SlaveBase::canResume( KIO::filesize_t offset )
 {
-    kDebug(7019) << "SlaveBase::canResume offset=" << KIO::number(offset) << endl;
+    kDebug(7019) << "SlaveBase::canResume offset=" << KIO::number(offset);
     d->needSendCanResume = false;
     KIO_DATA << KIO_FILESIZE_T(offset);
     send( MSG_RESUME, data );
@@ -869,7 +869,7 @@ bool SlaveBase::canResume( KIO::filesize_t offset )
         int cmd;
         if ( waitForAnswer( CMD_RESUMEANSWER, CMD_NONE, data, &cmd ) != -1 )
         {
-            kDebug(7019) << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER) << endl;
+            kDebug(7019) << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER);
             return cmd == CMD_RESUMEANSWER;
         } else
             return false;
@@ -889,7 +889,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
             result = m_pConnection->read( &cmd, data );
         }
         if (result == -1) {
-            kDebug(7019) << "SlaveBase::waitForAnswer has read error." << endl;
+            kDebug(7019) << "SlaveBase::waitForAnswer has read error.";
             return -1;
         }
 
@@ -904,7 +904,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
         }
         else
         {
-            kWarning() << "Got cmd " << cmd << " while waiting for an answer!" << endl;
+            kWarning() << "Got cmd " << cmd << " while waiting for an answer!";
         }
     }
 }
@@ -913,7 +913,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
 int SlaveBase::readData( QByteArray &buffer)
 {
    int result = waitForAnswer( MSG_DATA, 0, buffer );
-   //kDebug(7019) << "readData: length = " << result << " " << endl;
+   //kDebug(7019) << "readData: length = " << result << " ";
    return result;
 }
 
@@ -1086,7 +1086,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         special( data );
         break;
     case CMD_META_DATA:
-        //kDebug(7019) << "(" << getpid() << ") Incoming meta-data..." << endl;
+        //kDebug(7019) << "(" << getpid() << ") Incoming meta-data...";
         stream >> mIncomingMetaData;
         break;
     case CMD_SUBURL:
@@ -1112,7 +1112,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     long windowId = metaData("window-id").toLong();
     unsigned long userTimestamp = metaData("user-timestamp").toULong();
 
-    kDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url() << endl;
+    kDebug(7019) << "SlaveBase::checkCachedAuthInfo window = " << windowId << " url = " << info.url.url();
 
     QDBusInterface kps( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" );
 
@@ -1125,8 +1125,8 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
 
     if ( !reply.isValid() )
     {
-       kWarning(7019) << "Can't communicate with kded_kpasswdserver (for checkAuthInfo)!" << endl;
-       kDebug(7019) << reply.error().message() << endl;
+       kWarning(7019) << "Can't communicate with kded_kpasswdserver (for checkAuthInfo)!";
+       kDebug(7019) << reply.error().message();
        return false;
     }
 

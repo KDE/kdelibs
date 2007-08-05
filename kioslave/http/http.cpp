@@ -217,7 +217,7 @@ HTTPProtocol::~HTTPProtocol()
 
 void HTTPProtocol::reparseConfiguration()
 {
-    kDebug(7113) << "(" << m_pid << ") HTTPProtocol::reparseConfiguration" << endl;
+    kDebug(7113) << "(" << m_pid << ") HTTPProtocol::reparseConfiguration";
 
     m_strProxyRealm.clear();
     m_strProxyAuthorization.clear();
@@ -290,7 +290,7 @@ void HTTPProtocol::resetSessionSettings()
   m_maxCacheAge = config()->readEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.window = config()->readEntry("window-id");
 
-  kDebug(7113) << "(" << m_pid << ") Window Id = " << m_request.window << endl;
+  kDebug(7113) << "(" << m_pid << ") Window Id = " << m_request.window;
   kDebug(7113) << "(" << m_pid << ") ssl_was_in_use = "
                 << metaData ("ssl_was_in_use") << endl;
 
@@ -444,7 +444,7 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
 
 bool HTTPProtocol::checkRequestUrl( const KUrl& u )
 {
-  kDebug (7113) << "(" << m_pid << ") HTTPProtocol::checkRequestUrl:  " << u.url() << endl;
+  kDebug (7113) << "(" << m_pid << ") HTTPProtocol::checkRequestUrl:  " << u.url();
 
   m_request.url = u;
 
@@ -479,7 +479,7 @@ bool HTTPProtocol::checkRequestUrl( const KUrl& u )
 
 void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 {
-  kDebug (7113) << "(" << m_pid << ") HTTPProtocol::retrieveContent " << endl;
+  kDebug (7113) << "(" << m_pid << ") HTTPProtocol::retrieveContent ";
   if ( !retrieveHeader( false ) )
   {
     if ( m_bError )
@@ -507,7 +507,7 @@ void HTTPProtocol::retrieveContent( bool dataInternal /* = false */ )
 
 bool HTTPProtocol::retrieveHeader( bool close_connection )
 {
-  kDebug (7113) << "(" << m_pid << ") HTTPProtocol::retrieveHeader " << endl;
+  kDebug (7113) << "(" << m_pid << ") HTTPProtocol::retrieveHeader ";
   while ( 1 )
   {
     if (!httpOpen())
@@ -521,7 +521,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
 
       if (m_bIsTunneled)
       {
-        kDebug(7113) << "(" << m_pid << ") Re-establishing SSL tunnel..." << endl;
+        kDebug(7113) << "(" << m_pid << ") Re-establishing SSL tunnel...";
         httpCloseConnection();
       }
     }
@@ -539,7 +539,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
         // If there is no error, disable tunneling
         if ( m_responseCode < 400 )
         {
-          kDebug(7113) << "(" << m_pid << ") Unset tunneling flag!" << endl;
+          kDebug(7113) << "(" << m_pid << ") Unset tunneling flag!";
           setEnableSSLTunnel( false );
           m_bIsTunneled = true;
           // Reset the CONNECT response code...
@@ -550,12 +550,12 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
         {
           if ( !m_request.bErrorPage )
           {
-            kDebug(7113) << "(" << m_pid << ") Sending an error message!" << endl;
+            kDebug(7113) << "(" << m_pid << ") Sending an error message!";
             error( ERR_UNKNOWN_PROXY_HOST, m_proxyURL.host() );
             return false;
           }
 
-          kDebug(7113) << "(" << m_pid << ") Sending an error page!" << endl;
+          kDebug(7113) << "(" << m_pid << ") Sending an error page!";
         }
       }
 
@@ -817,7 +817,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
     if ( status.isNull() )
     {
       // error, no status code in this propstat
-      kDebug(7113) << "Error, no status code in this propstat" << endl;
+      kDebug(7113) << "Error, no status code in this propstat";
       return;
     }
 
@@ -825,14 +825,14 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
     if ( code != 200 )
     {
-      kDebug(7113) << "Warning: status code " << code << " (this may mean that some properties are unavailable" << endl;
+      kDebug(7113) << "Warning: status code " << code << " (this may mean that some properties are unavailable";
       continue;
     }
 
     QDomElement prop = propstat.namedItem( "prop" ).toElement();
     if ( prop.isNull() )
     {
-      kDebug(7113) << "Error: no prop segment in this propstat." << endl;
+      kDebug(7113) << "Error: no prop segment in this propstat.";
       return;
     }
 
@@ -953,7 +953,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       }
       else
       {
-        kDebug(7113) << "Found unknown webdav property: " << property.tagName() << endl;
+        kDebug(7113) << "Found unknown webdav property: " << property.tagName();
       }
     }
   }
@@ -1100,12 +1100,12 @@ bool HTTPProtocol::davHostOk()
   // cached?
   if ( m_davHostOk )
   {
-    kDebug(7113) << "(" << m_pid << ") " << k_funcinfo << " true" << endl;
+    kDebug(7113) << "(" << m_pid << ") " << k_funcinfo << " true";
     return true;
   }
   else if ( m_davHostUnsupported )
   {
-    kDebug(7113) << "(" << m_pid << ") " << k_funcinfo << " false" << endl;
+    kDebug(7113) << "(" << m_pid << ") " << k_funcinfo << " false";
     davError( -2 );
     return false;
   }
@@ -1132,7 +1132,7 @@ bool HTTPProtocol::davHostOk()
       if (ok && verNo > 0 && verNo < 3)
       {
         m_davHostOk = true;
-        kDebug(7113) << "Server supports DAV version " << verNo << "." << endl;
+        kDebug(7113) << "Server supports DAV version " << verNo << ".";
       }
     }
 
@@ -1250,11 +1250,11 @@ void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
 
   retrieveHeader( false );
 
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::put error = " << m_bError << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::put error = " << m_bError;
   if (m_bError)
     return;
 
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::put responseCode = " << m_responseCode << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::put responseCode = " << m_responseCode;
 
   httpClose(false); // Always close connection.
 
@@ -1732,10 +1732,10 @@ bool HTTPProtocol::isOffline(const KUrl &url)
   if ( reply.isValid() )
   {
      int result = reply;
-     kDebug(7113) << "(" << m_pid << ") networkstatus status = " << result << endl;
+     kDebug(7113) << "(" << m_pid << ") networkstatus status = " << result;
      return (result != NetWorkStatusUnknown) && (result != NetWorkStatusOnline);
   }
-  kDebug(7113) << "(" << m_pid << ") networkstatus <unreachable>" << endl;
+  kDebug(7113) << "(" << m_pid << ") networkstatus <unreachable>";
   return false; // On error, assume we are online
 }
 
@@ -1745,7 +1745,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
   quint32 n;
   stream >> n;
 
-  kDebug(7113) << "(" << m_pid << ") HTTPProtcool::multiGet n = " << n << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtcool::multiGet n = " << n;
 
   HTTPRequest saveRequest;
   if (m_bBusy)
@@ -1760,7 +1760,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
      if ( !checkRequestUrl( url ) )
         continue;
 
-     kDebug(7113) << "(" << m_pid << ") HTTPProtocol::multi_get " << url.url() << endl;
+     kDebug(7113) << "(" << m_pid << ") HTTPProtocol::multi_get " << url.url();
 
      m_request.method = HTTP_GET;
      m_request.path = url.path();
@@ -1934,7 +1934,7 @@ void HTTPProtocol::httpCheckConnection()
      bool closeDown = false;
      if ( !isConnectionValid())
      {
-        kDebug(7113) << "(" << m_pid << ") Connection lost!" << endl;
+        kDebug(7113) << "(" << m_pid << ") Connection lost!";
         closeDown = true;
      }
      else if ( m_request.method != HTTP_GET )
@@ -1974,7 +1974,7 @@ bool HTTPProtocol::httpOpenConnection()
   int errCode;
   QString errMsg;
 
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpenConnection" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpenConnection";
 
   setBlockConnection( true );
 
@@ -2085,7 +2085,7 @@ bool HTTPProtocol::httpOpenConnection()
  */
 bool HTTPProtocol::httpOpen()
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen";
 
   // Cannot have an https request without the m_bIsSSL being set!  This can
   // only happen if TCPSlaveBase::InitializeSSL() function failed in which it
@@ -2218,7 +2218,7 @@ bool HTTPProtocol::httpOpen()
         davHeader = "Depth: ";
         if ( hasMetaData( "davDepth" ) )
         {
-          kDebug(7113) << "Reading DAV depth from metadata: " << metaData( "davDepth" ) << endl;
+          kDebug(7113) << "Reading DAV depth from metadata: " << metaData( "davDepth" );
           davHeader += metaData( "davDepth" );
         }
         else
@@ -2354,7 +2354,7 @@ bool HTTPProtocol::httpOpen()
     if ( m_request.offset > 0 )
     {
       header += QString("Range: bytes=%1-\r\n").arg(KIO::number(m_request.offset));
-      kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset) << endl;
+      kDebug(7103) << "kio_http : Range = " << KIO::number(m_request.offset);
     }
 
     if ( m_request.cache == CC_Reload )
@@ -2440,7 +2440,7 @@ bool HTTPProtocol::httpOpen()
     // no caching for Negotiate auth.
     if ( !m_request.bNoAuth && m_responseCode != 401 && m_responseCode != 407 && Authentication != AUTH_Negotiate )
     {
-      kDebug(7113) << "(" << m_pid << ") Calling checkCachedAuthentication " << endl;
+      kDebug(7113) << "(" << m_pid << ") Calling checkCachedAuthentication ";
       AuthInfo info;
       info.url = m_request.url;
       info.verifyPath = true;
@@ -2458,7 +2458,7 @@ bool HTTPProtocol::httpOpen()
     }
     else
     {
-      kDebug(7113) << "(" << m_pid << ") Not calling checkCachedAuthentication " << endl;
+      kDebug(7113) << "(" << m_pid << ") Not calling checkCachedAuthentication ";
     }
 
     switch ( Authentication )
@@ -2485,13 +2485,13 @@ bool HTTPProtocol::httpOpen()
     /********* Only for debugging purpose *********/
     if ( Authentication != AUTH_None )
     {
-      kDebug(7113) << "(" << m_pid << ") Using Authentication: " << endl;
-      kDebug(7113) << "(" << m_pid << ")   HOST= " << m_state.hostname << endl;
-      kDebug(7113) << "(" << m_pid << ")   PORT= " << m_state.port << endl;
-      kDebug(7113) << "(" << m_pid << ")   USER= " << m_state.user << endl;
-      kDebug(7113) << "(" << m_pid << ")   PASSWORD= [protected]" << endl;
-      kDebug(7113) << "(" << m_pid << ")   REALM= " << m_strRealm << endl;
-      kDebug(7113) << "(" << m_pid << ")   EXTRA= " << m_strAuthorization << endl;
+      kDebug(7113) << "(" << m_pid << ") Using Authentication: ";
+      kDebug(7113) << "(" << m_pid << ")   HOST= " << m_state.hostname;
+      kDebug(7113) << "(" << m_pid << ")   PORT= " << m_state.port;
+      kDebug(7113) << "(" << m_pid << ")   USER= " << m_state.user;
+      kDebug(7113) << "(" << m_pid << ")   PASSWORD= [protected]";
+      kDebug(7113) << "(" << m_pid << ")   REALM= " << m_strRealm;
+      kDebug(7113) << "(" << m_pid << ")   EXTRA= " << m_strAuthorization;
     }
 
     // Do we need to authorize to the proxy server ?
@@ -2522,13 +2522,13 @@ bool HTTPProtocol::httpOpen()
     }
   }
 
-  kDebug(7103) << "(" << m_pid << ") ============ Sending Header:" << endl;
+  kDebug(7103) << "(" << m_pid << ") ============ Sending Header:";
 
   QStringList headerOutput = header.split("\r\n", QString::SkipEmptyParts);
   QStringList::Iterator it = headerOutput.begin();
 
   for (; it != headerOutput.end(); ++it)
-    kDebug(7103) << "(" << m_pid << ") " << (*it) << endl;
+    kDebug(7103) << "(" << m_pid << ") " << (*it);
 
   if ( !moreData && !davData)
     header += "\r\n";  /* end header */
@@ -2540,7 +2540,7 @@ bool HTTPProtocol::httpOpen()
   {
     if (!httpOpenConnection())
     {
-       kDebug(7113) << "Couldn't connect, oopsie!" << endl;
+       kDebug(7113) << "Couldn't connect, oopsie!";
        return false;
     }
   }
@@ -2569,7 +2569,7 @@ bool HTTPProtocol::httpOpen()
     }
   }
   else
-      kDebug(7113) << "sent it!" << endl;
+      kDebug(7113) << "sent it!";
 
   bool res = true;
 
@@ -2601,7 +2601,7 @@ void HTTPProtocol::forwardHttpResponseHeader()
 bool HTTPProtocol::readHeader()
 {
 try_again:
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader";
 
   // Check
   if (m_request.bCachedRead)
@@ -2683,7 +2683,7 @@ try_again:
 
   if ( !isConnectionValid() )
   {
-     kDebug(7113) << "HTTPProtocol::readHeader: No connection." << endl;
+     kDebug(7113) << "HTTPProtocol::readHeader: No connection.";
      return false; // Restablish connection and try again
   }
 
@@ -2720,12 +2720,12 @@ try_again:
       return true;
     }
 
-    kDebug(7113) << "HTTPProtocol::readHeader: Connection broken !" << endl;
+    kDebug(7113) << "HTTPProtocol::readHeader: Connection broken !";
     error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
   }
 
-  kDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
+  kDebug(7103) << "(" << m_pid << ") ============ Received Response:";
 
   bool noHeader = true;
   HTTP_REV httpRev = HTTP_None;
@@ -2742,7 +2742,7 @@ try_again:
     // if there was only a newline then continue
     if (!len)
     {
-      kDebug(7103) << "(" << m_pid << ") --empty--" << endl;
+      kDebug(7103) << "(" << m_pid << ") --empty--";
       continue;
     }
 
@@ -2754,7 +2754,7 @@ try_again:
     // top of the reponse...
     noHeader = false;
 
-    kDebug(7103) << "(" << m_pid << ") \"" << buffer << "\"" << endl;
+    kDebug(7103) << "(" << m_pid << ") \"" << buffer << "\"";
 
     // Save broken servers from damnation!!
     char* buf = buffer;
@@ -2766,7 +2766,7 @@ try_again:
     {
       // We get XML / HTTP without a proper header
       // put string back
-      kDebug(7103) << "kio_http: No valid HTTP header found! Document starts with XML/HTML tag" << endl;
+      kDebug(7103) << "kio_http: No valid HTTP header found! Document starts with XML/HTML tag";
 
       // Document starts with a tag, assume html instead of text/plain
       m_strMimeType = "text/html";
@@ -3024,7 +3024,7 @@ try_again:
 
       // Assign the mime-type.
       m_strMimeType = QString::fromLatin1(start, pos-start).trimmed().toLower();
-      kDebug(7113) << "(" << m_pid << ") Content-type: " << m_strMimeType << endl;
+      kDebug(7113) << "(" << m_pid << ") Content-type: " << m_strMimeType;
 
       // If we still have text, then it means we have a mime-type with a
       // parameter (eg: charset=iso-8851) ; so let's get that...
@@ -3716,7 +3716,7 @@ try_again:
   if (locationStr.isEmpty() && (!m_strMimeType.isEmpty() ||
       m_request.method == HTTP_HEAD))
   {
-    kDebug(7113) << "(" << m_pid << ") Emitting mimetype " << m_strMimeType << endl;
+    kDebug(7113) << "(" << m_pid << ") Emitting mimetype " << m_strMimeType;
     mimeType( m_strMimeType );
   }
 
@@ -3744,11 +3744,11 @@ try_again:
   }
 
   if (m_request.bCachedWrite && !m_strMimeType.isEmpty())
-    kDebug(7113) << "(" << m_pid << ") Cache, adding \"" << m_request.url.url() << "\"" << endl;
+    kDebug(7113) << "(" << m_pid << ") Cache, adding \"" << m_request.url.url() << "\"";
   else if (m_request.bCachedWrite && m_strMimeType.isEmpty())
-    kDebug(7113) << "(" << m_pid << ") Cache, pending \"" << m_request.url.url() << "\"" << endl;
+    kDebug(7113) << "(" << m_pid << ") Cache, pending \"" << m_request.url.url() << "\"";
   else
-    kDebug(7113) << "(" << m_pid << ") Cache, not adding \"" << m_request.url.url() << "\"" << endl;
+    kDebug(7113) << "(" << m_pid << ") Cache, not adding \"" << m_request.url.url() << "\"";
   return true;
 }
 
@@ -3792,14 +3792,14 @@ bool HTTPProtocol::sendBody()
   // connection was lost for some reason.
   if ( !m_bufPOST.isNull() )
   {
-    kDebug(7113) << "(" << m_pid << ") POST'ing saved data..." << endl;
+    kDebug(7113) << "(" << m_pid << ") POST'ing saved data...";
 
     result = 0;
     length = m_bufPOST.size();
   }
   else
   {
-    kDebug(7113) << "(" << m_pid << ") POST'ing live data..." << endl;
+    kDebug(7113) << "(" << m_pid << ") POST'ing live data...";
 
     QByteArray buffer;
     int old_size;
@@ -3829,7 +3829,7 @@ bool HTTPProtocol::sendBody()
   infoMessage( i18n( "Sending data to %1" ,  m_request.hostname ) );
 
   QString size = QString ("Content-Length: %1\r\n\r\n").arg(length);
-  kDebug( 7113 ) << "(" << m_pid << ")" << size << endl;
+  kDebug( 7113 ) << "(" << m_pid << ")" << size;
 
   // Send the content length...
   bool sendOk = (write(size.toLatin1(), size.length()) == (ssize_t) size.length());
@@ -3842,7 +3842,7 @@ bool HTTPProtocol::sendBody()
   }
 
   // Send the data...
-  // kDebug( 7113 ) << "(" << m_pid << ") POST DATA: " << QCString(m_bufPOST) << endl;
+  // kDebug( 7113 ) << "(" << m_pid << ") POST DATA: " << QCString(m_bufPOST);
   sendOk = (write(m_bufPOST.data(), m_bufPOST.size()) == (ssize_t) m_bufPOST.size());
   if (!sendOk)
   {
@@ -3857,7 +3857,7 @@ bool HTTPProtocol::sendBody()
 
 void HTTPProtocol::httpClose( bool keepAlive )
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose";
 
   if (m_request.fcache)
   {
@@ -3882,7 +3882,7 @@ void HTTPProtocol::httpClose( bool keepAlive )
     else if (m_keepAliveTimeout > 2*DEFAULT_KEEP_ALIVE_TIMEOUT)
        m_keepAliveTimeout = 2*DEFAULT_KEEP_ALIVE_TIMEOUT;
 
-    kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive (" << m_keepAliveTimeout << ")" << endl;
+    kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive (" << m_keepAliveTimeout << ")";
     QByteArray data;
     QDataStream stream( &data, QIODevice::WriteOnly );
     stream << int(99); // special: Close connection
@@ -3895,13 +3895,13 @@ void HTTPProtocol::httpClose( bool keepAlive )
 
 void HTTPProtocol::closeConnection()
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::closeConnection" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::closeConnection";
   httpCloseConnection ();
 }
 
 void HTTPProtocol::httpCloseConnection ()
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCloseConnection" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCloseConnection";
   m_bIsTunneled = false;
   m_bKeepAlive = false;
   closeDescriptor();
@@ -3910,7 +3910,7 @@ void HTTPProtocol::httpCloseConnection ()
 
 void HTTPProtocol::slave_status()
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::slave_status" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::slave_status";
 
   if ( !isConnectionValid() )
      httpCloseConnection();
@@ -3940,7 +3940,7 @@ void HTTPProtocol::mimetype( const KUrl& url )
 
 void HTTPProtocol::special( const QByteArray &data )
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::special" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::special";
 
   int tmp;
   QDataStream stream(data);
@@ -4011,7 +4011,7 @@ int HTTPProtocol::readChunked()
 
      if (!gets(m_bufReceive.data(), m_bufReceive.size()))
      {
-       kDebug(7113) << "(" << m_pid << ") gets() failure on Chunk header" << endl;
+       kDebug(7113) << "(" << m_pid << ") gets() failure on Chunk header";
        return -1;
      }
      // We could have got the CRLF of the previous chunk.
@@ -4020,25 +4020,25 @@ int HTTPProtocol::readChunked()
      {
         if (!gets(m_bufReceive.data(), m_bufReceive.size()))
         {
-           kDebug(7113) << "(" << m_pid << ") gets() failure on Chunk header" << endl;
+           kDebug(7113) << "(" << m_pid << ") gets() failure on Chunk header";
            return -1;
         }
      }
      if (m_bEOF)
      {
-        kDebug(7113) << "(" << m_pid << ") EOF on Chunk header" << endl;
+        kDebug(7113) << "(" << m_pid << ") EOF on Chunk header";
         return -1;
      }
 
      long long trunkSize = STRTOLL(m_bufReceive.data(), 0, 16);
      if (trunkSize < 0)
      {
-        kDebug(7113) << "(" << m_pid << ") Negative chunk size" << endl;
+        kDebug(7113) << "(" << m_pid << ") Negative chunk size";
         return -1;
      }
      m_iBytesLeft = trunkSize;
 
-     // kDebug(7113) << "(" << m_pid << ") Chunk size = " << m_iBytesLeft << " bytes" << endl;
+     // kDebug(7113) << "(" << m_pid << ") Chunk size = " << m_iBytesLeft << " bytes";
 
      if (m_iBytesLeft == 0)
      {
@@ -4048,10 +4048,10 @@ int HTTPProtocol::readChunked()
          // Skip trailer of last chunk.
          if (!gets(m_bufReceive.data(), m_bufReceive.size()))
          {
-           kDebug(7113) << "(" << m_pid << ") gets() failure on Chunk trailer" << endl;
+           kDebug(7113) << "(" << m_pid << ") gets() failure on Chunk trailer";
            return -1;
          }
-         // kDebug(7113) << "(" << m_pid << ") Chunk trailer = \"" << m_bufReceive.data() << "\"" << endl;
+         // kDebug(7113) << "(" << m_pid << ") Chunk trailer = \"" << m_bufReceive.data() << "\"";
        }
        while (strlen(m_bufReceive.data()) != 0);
 
@@ -4134,7 +4134,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
       if ( m_strMimeType.isEmpty() && !m_bRedirect &&
            !( m_responseCode >= 300 && m_responseCode <=399) )
       {
-        kDebug(7113) << "(" << m_pid << ") Determining mime-type from content..." << endl;
+        kDebug(7113) << "(" << m_pid << ") Determining mime-type from content...";
         int old_size = m_mimeTypeBuffer.size();
         m_mimeTypeBuffer.resize( old_size + d.size() );
         memcpy( m_mimeTypeBuffer.data() + old_size, d.data(), d.size() );
@@ -4246,7 +4246,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   if (m_request.bCachedRead)
   {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: read data from cache!" << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: read data from cache!";
     m_request.bCachedWrite = false;
 
     char buffer[ MAX_IPC_SIZE ];
@@ -4288,7 +4288,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if (m_bChunked)
     m_iBytesLeft = NO_SIZE;
 
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retrieve data. "<<KIO::number(m_iBytesLeft)<<" left." << endl;
+  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retrieve data. "<<KIO::number(m_iBytesLeft)<<" left.";
 
   // Main incoming loop...  Gather everything while we can...
   m_cpMimeBuffer = false;
@@ -4402,7 +4402,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
     if (m_iBytesLeft == 0)
     {
-      kDebug(7113) << "("<<m_pid<<") EOD received! Left = "<< KIO::number(m_iBytesLeft) << endl;
+      kDebug(7113) << "("<<m_pid<<") EOD received! Left = "<< KIO::number(m_iBytesLeft);
       break;
     }
   }
@@ -4413,7 +4413,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     QString calculatedMD5 = md5Filter->md5();
 
     if ( m_sContentMD5 == calculatedMD5 )
-      kDebug(7113) << "(" << m_pid << ") MD5 checksum MATCHED!!" << endl;
+      kDebug(7113) << "(" << m_pid << ") MD5 checksum MATCHED!!";
     else
       kDebug(7113) << "(" << m_pid << ") MD5 checksum MISMATCH! Expected: "
                     << calculatedMD5 << ", Got: " << m_sContentMD5 << endl;
@@ -4473,7 +4473,7 @@ QString HTTPProtocol::findCookies( const QString &url)
 
   if ( !reply.isValid() )
   {
-     kWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!" << endl;
+     kWarning(7113) << "(" << m_pid << ") Can't communicate with kded_kcookiejar!";
      return QString();
   }
   return reply;
@@ -4752,12 +4752,12 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
    QString filename = m_request.cef + ".new";  // Create a new cache entryexpireDate
 
-//   kDebug( 7103 ) <<  "creating new cache entry: " << filename << endl;
+//   kDebug( 7103 ) <<  "creating new cache entry: " << filename;
 
    m_request.fcache = gzopen( QFile::encodeName(filename), "w");
    if (!m_request.fcache)
    {
-      kWarning(7113) << "(" << m_pid << ")createCacheEntry: opening " << filename << " failed." << endl;
+      kWarning(7113) << "(" << m_pid << ")createCacheEntry: opening " << filename << " failed.";
       return; // Error.
    }
 
@@ -4803,7 +4803,7 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
 {
    if (gzwrite(m_request.fcache, buffer, nbytes) == 0)
    {
-      kWarning(7113) << "(" << m_pid << ") writeCacheEntry: writing " << nbytes << " bytes failed." << endl;
+      kWarning(7113) << "(" << m_pid << ") writeCacheEntry: writing " << nbytes << " bytes failed.";
       gzclose(m_request.fcache);
       m_request.fcache = 0;
       QString filename = m_request.cef + ".new";
@@ -4932,10 +4932,10 @@ void HTTPProtocol::configAuth( char *p, bool b )
     kWarning(7113) << "(" << m_pid << ") Unsupported or invalid authorization "
                     << "type requested" << endl;
     if (b)
-      kWarning(7113) << "(" << m_pid << ") Proxy URL: " << m_proxyURL << endl;
+      kWarning(7113) << "(" << m_pid << ") Proxy URL: " << m_proxyURL;
     else
-      kWarning(7113) << "(" << m_pid << ") URL: " << m_request.url << endl;
-    kWarning(7113) << "(" << m_pid << ") Request Authorization: " << p << endl;
+      kWarning(7113) << "(" << m_pid << ") URL: " << m_request.url;
+    kWarning(7113) << "(" << m_pid << ") Request Authorization: " << p;
   }
 
   /*
@@ -4956,22 +4956,22 @@ void HTTPProtocol::configAuth( char *p, bool b )
       // scheme is received. This check accomplishes just that...
       if ( m_iProxyAuthCount == 0)
         ProxyAuthentication = f;
-      kDebug(7113) << "(" << m_pid << ") Rejected proxy auth method: " << f << endl;
+      kDebug(7113) << "(" << m_pid << ") Rejected proxy auth method: " << f;
       return;
     }
     m_iProxyAuthCount++;
-    kDebug(7113) << "(" << m_pid << ") Accepted proxy auth method: " << f << endl;
+    kDebug(7113) << "(" << m_pid << ") Accepted proxy auth method: " << f;
   }
   else
   {
     if ((f == AUTH_None) ||
         ((m_iWWWAuthCount > 0) && (f < Authentication)))
     {
-      kDebug(7113) << "(" << m_pid << ") Rejected auth method: " << f << endl;
+      kDebug(7113) << "(" << m_pid << ") Rejected auth method: " << f;
       return;
     }
     m_iWWWAuthCount++;
-    kDebug(7113) << "(" << m_pid << ") Accepted auth method: " << f << endl;
+    kDebug(7113) << "(" << m_pid << ") Accepted auth method: " << f;
   }
 
 
@@ -5144,7 +5144,7 @@ bool HTTPProtocol::getAuthorization()
     if ( Authentication == AUTH_NTLM || ProxyAuthentication == AUTH_NTLM )
     {
       QString auth = ( m_responseCode == 401 ) ? m_strAuthorization : m_strProxyAuthorization;
-      kDebug(7113) << "auth: " << auth << endl;
+      kDebug(7113) << "auth: " << auth;
       if ( auth.length() > 4 )
       {
         prompt = false;
@@ -5266,7 +5266,7 @@ bool HTTPProtocol::getAuthorization()
       }
       else if ( m_request.disablePassDlg == false )
       {
-        kDebug( 7113 ) << "(" << m_pid << ") Prompting the user for authorization..." << endl;
+        kDebug( 7113 ) << "(" << m_pid << ") Prompting the user for authorization...";
         promptInfo( info );
         result = openPasswordDialog( info, errorMsg );
       }
@@ -5376,13 +5376,13 @@ QString HTTPProtocol::createNegotiateAuth()
   // see whether we can use the SPNEGO mechanism
   major_status = gss_indicate_mechs(&minor_status, &mech_set);
   if (GSS_ERROR(major_status)) {
-    kDebug(7113) << "(" << m_pid << ") gss_indicate_mechs failed: " << gssError(major_status, minor_status) << endl;
+    kDebug(7113) << "(" << m_pid << ") gss_indicate_mechs failed: " << gssError(major_status, minor_status);
   } else {
     for (i=0; i<mech_set->count && !found; i++) {
       tmp_oid = &mech_set->elements[i];
       if (tmp_oid->length == spnego_oid_desc.length &&
         !memcmp(tmp_oid->elements, spnego_oid_desc.elements, tmp_oid->length)) {
-        kDebug(7113) << "(" << m_pid << ") createNegotiateAuth: found SPNEGO mech" << endl;
+        kDebug(7113) << "(" << m_pid << ") createNegotiateAuth: found SPNEGO mech";
         found = 1;
         mech_oid = &spnego_oid_desc;
         break;
@@ -5405,7 +5405,7 @@ QString HTTPProtocol::createNegotiateAuth()
   input_token.length = 0;
 
   if (GSS_ERROR(major_status)) {
-    kDebug(7113) << "(" << m_pid << ") gss_import_name failed: " << gssError(major_status, minor_status) << endl;
+    kDebug(7113) << "(" << m_pid << ") gss_import_name failed: " << gssError(major_status, minor_status);
     // reset the auth string so that subsequent methods aren't confused
     m_strAuthorization.clear();
     return QString();
@@ -5420,7 +5420,7 @@ QString HTTPProtocol::createNegotiateAuth()
 
 
   if (GSS_ERROR(major_status) || (output_token.length == 0)) {
-    kDebug(7113) << "(" << m_pid << ") gss_init_sec_context failed: " << gssError(major_status, minor_status) << endl;
+    kDebug(7113) << "(" << m_pid << ") gss_init_sec_context failed: " << gssError(major_status, minor_status);
     gss_release_name(&minor_status, &server);
     if (ctx != GSS_C_NO_CONTEXT) {
       gss_delete_sec_context(&minor_status, &ctx, GSS_C_NO_BUFFER);
@@ -5488,7 +5488,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     user = user.section( '\\', 1 );
   }
 
-  kDebug(7113) << "(" << m_pid << ") NTLM length: " << len << endl;
+  kDebug(7113) << "(" << m_pid << ") NTLM length: " << len;
   if ( user.isEmpty() || passwd.isEmpty() || len < 4 )
     return QString();
 
@@ -5573,7 +5573,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QByteArray& Response
   }
   HA1 = md.hexDigest();
 
-  kDebug(7113) << "(" << m_pid << ") calculateResponse(): A1 => " << HA1 << endl;
+  kDebug(7113) << "(" << m_pid << ") calculateResponse(): A1 => " << HA1;
 
   // Calcualte H(A2)
   authStr = info.method;
@@ -5839,12 +5839,12 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
       return QString();
   }
 
-  kDebug(7113) << "(" << m_pid << ") RESULT OF PARSING:" << endl;
-  kDebug(7113) << "(" << m_pid << ")   algorithm: " << info.algorithm << endl;
-  kDebug(7113) << "(" << m_pid << ")   realm:     " << info.realm << endl;
-  kDebug(7113) << "(" << m_pid << ")   nonce:     " << info.nonce << endl;
-  kDebug(7113) << "(" << m_pid << ")   opaque:    " << opaque << endl;
-  kDebug(7113) << "(" << m_pid << ")   qop:       " << info.qop << endl;
+  kDebug(7113) << "(" << m_pid << ") RESULT OF PARSING:";
+  kDebug(7113) << "(" << m_pid << ")   algorithm: " << info.algorithm;
+  kDebug(7113) << "(" << m_pid << ")   realm:     " << info.realm;
+  kDebug(7113) << "(" << m_pid << ")   nonce:     " << info.nonce;
+  kDebug(7113) << "(" << m_pid << ")   opaque:    " << opaque;
+  kDebug(7113) << "(" << m_pid << ")   qop:       " << info.qop;
 
   // Calculate the response...
   calculateResponse( info, Response );
@@ -5942,13 +5942,13 @@ QString HTTPProtocol::proxyAuthenticationHeader()
   /********* Only for debugging purpose... *********/
   if ( ProxyAuthentication != AUTH_None )
   {
-    kDebug(7113) << "(" << m_pid << ") Using Proxy Authentication: " << endl;
-    kDebug(7113) << "(" << m_pid << ")   HOST= " << m_proxyURL.host() << endl;
-    kDebug(7113) << "(" << m_pid << ")   PORT= " << m_proxyURL.port() << endl;
-    kDebug(7113) << "(" << m_pid << ")   USER= " << m_proxyURL.user() << endl;
-    kDebug(7113) << "(" << m_pid << ")   PASSWORD= [protected]" << endl;
-    kDebug(7113) << "(" << m_pid << ")   REALM= " << m_strProxyRealm << endl;
-    kDebug(7113) << "(" << m_pid << ")   EXTRA= " << m_strProxyAuthorization << endl;
+    kDebug(7113) << "(" << m_pid << ") Using Proxy Authentication: ";
+    kDebug(7113) << "(" << m_pid << ")   HOST= " << m_proxyURL.host();
+    kDebug(7113) << "(" << m_pid << ")   PORT= " << m_proxyURL.port();
+    kDebug(7113) << "(" << m_pid << ")   USER= " << m_proxyURL.user();
+    kDebug(7113) << "(" << m_pid << ")   PASSWORD= [protected]";
+    kDebug(7113) << "(" << m_pid << ")   REALM= " << m_strProxyRealm;
+    kDebug(7113) << "(" << m_pid << ")   EXTRA= " << m_strProxyAuthorization;
   }
 
   switch ( ProxyAuthentication )

@@ -362,7 +362,7 @@ bool initializeMods()
 
 	g_bInitializedMods = true;
 
-	kDebug(125) << "KKeyServer::initializeMods(): Win Mod = 0x" << QString::number(g_rgX11ModInfo[3].modX, 16) << endl;
+	kDebug(125) << "KKeyServer::initializeMods(): Win Mod = 0x" << QString::number(g_rgX11ModInfo[3].modX, 16);
 	return true;
 }
 
@@ -468,7 +468,7 @@ bool keyQtToSymX( int keyQt, int* keySym )
 	*keySym = 0;
 	if( symQt != Qt::Key_Shift && symQt != Qt::Key_Control && symQt != Qt::Key_Alt &&
 	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
-		kDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key." << endl;
+		kDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key.";
 	return false;
 }
 

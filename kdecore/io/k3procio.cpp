@@ -234,7 +234,7 @@ int K3ProcIO::readln (QString &line, bool autoAck, bool *partial)
 
   len = d->recvbuffer.indexOf('\n', d->rbi) - d->rbi;
 
-  //kDebug(174) << "KPIO::readln" << endl;
+  //kDebug(174) << "KPIO::readln";
 
   //in case there's no '\n' at the end of the buffer
   if ( ( len < 0 ) &&

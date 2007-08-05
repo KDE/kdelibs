@@ -130,7 +130,7 @@ ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisO
     if (id == HTMLDocument::WriteLn)
       str += "\n";
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "document.write: " << str.qstring() << endl;
+    kDebug(6070) << "document.write: " << str.qstring();
 #endif
     doc.write(str.qstring());
     return Undefined();
@@ -222,7 +222,7 @@ static bool isLateProperty(unsigned token)
 bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLDocument::getOwnPropertySlot " << propertyName.qstring() << endl;
+  kDebug(6070) << "KJS::HTMLDocument::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
   DOM::DocumentImpl* docImpl = impl();
@@ -423,7 +423,7 @@ ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
 void KJS::HTMLDocument::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLDocument::out " << propertyName.qstring() << endl;
+  kDebug(6070) << "KJS::HTMLDocument::out " << propertyName.qstring();
 #endif
   KHTMLView *view = impl()->view();
   Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
@@ -494,7 +494,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, ValueImp *v
     body.setAttribute(ID_DIR, value->toString(exec).domString());
     break;
   default:
-    kDebug(6070) << "WARNING: HTMLDocument::putValueProperty unhandled token " << token << endl;
+    kDebug(6070) << "WARNING: HTMLDocument::putValueProperty unhandled token " << token;
   }
 }
 
@@ -1227,7 +1227,7 @@ bool KJS::HTMLElement::getOwnPropertySlot(ExecState *exec, const Identifier &pro
 {
   DOM::HTMLElementImpl& element = *impl();
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLElement::getOwnPropertySlot " << propertyName.qstring() << " thisTag=" << element.tagName().string() << endl;
+  kDebug(6070) << "KJS::HTMLElement::getOwnPropertySlot " << propertyName.qstring() << " thisTag=" << element.tagName().string();
 #endif
   // First look at dynamic properties
   switch (element.id()) {
@@ -1797,7 +1797,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case AnchorHost:            return String(KUrl(href).host());
     case AnchorHostname: {
       KUrl url(href);
-      kDebug(6070) << "anchor::hostname uses:" <<url.url()<<endl;
+      kDebug(6070) << "anchor::hostname uses:" <<url.url();
       if (url.port()<=0)
         return String(url.host());
       else
@@ -2062,7 +2062,7 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
   DOMExceptionTranslator exception(exec);
 
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLElementFunction::callAsFunction " << endl;
+  kDebug(6070) << "KJS::HTMLElementFunction::callAsFunction ";
 #endif
   DOM::HTMLElementImpl& element = *static_cast<KJS::HTMLElement *>(thisObj)->impl();
 
@@ -2585,7 +2585,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
     element.setInnerText(str, exception);
     return;
   default:
-    kDebug(6070) << "WARNING: KJS::HTMLElement::putValueProperty unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string() << endl;
+    kDebug(6070) << "WARNING: KJS::HTMLElement::putValueProperty unhandled token " << token << " thisTag=" << element.tagName().string() << " str=" << str.string();
   }
 }
 
@@ -2959,12 +2959,12 @@ ValueImp *HTMLCollection::nameGetter(ExecState *exec, JSObject*, const Identifie
 bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLCollection::getOwnPropertySlot " << propertyName.toAscii().constData() << endl;
+  kDebug(6070) << "KJS::HTMLCollection::getOwnPropertySlot " << propertyName.toAscii().constData();
 #endif
   if (propertyName == exec->propertyNames().length)
   {
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "  collection length is " << m_impl->length() << endl;
+    kDebug(6070) << "  collection length is " << m_impl->length();
 #endif
     slot.setCustom(this, lengthGetter);
     return true;
@@ -2994,7 +2994,7 @@ ValueImp* KJS::HTMLCollection::callAsFunction(ExecState *exec, ObjectImp *, cons
   // Do not use thisObj here. It can be the HTMLDocument, in the document.forms(i) case.
   /*if( thisObj.imp() != this )
   {
-    kDebug(6070) << "WARNING: thisObj.imp() != this in HTMLCollection::tryCall" << endl;
+    kDebug(6070) << "WARNING: thisObj.imp() != this in HTMLCollection::tryCall";
     KJS::printInfo(exec,"KJS::HTMLCollection::tryCall thisObj",thisObj,-1);
     KJS::printInfo(exec,"KJS::HTMLCollection::tryCall this",Value(this),-1);
   }*/
@@ -3037,7 +3037,7 @@ ValueImp* KJS::HTMLCollection::callAsFunction(ExecState *exec, ObjectImp *, cons
 ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.toAscii().constData() << endl;
+  kDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.toAscii().constData();
 #endif
 
   DOM::DOMString pstr = propertyName.domString();
@@ -3047,7 +3047,7 @@ ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &
   if (!matches.isEmpty()) {
     if (matches.size() == 1) {
 #ifdef KJS_VERBOSE
-      kDebug(6070) << "returning single node" << endl;
+      kDebug(6070) << "returning single node";
 #endif
       return getDOMNode(exec,matches[0]);
     }
@@ -3057,13 +3057,13 @@ ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &
       foreach (DOM::NodeImpl* node, matches)
         nodes.append(node);
 #ifdef KJS_VERBOSE
-      kDebug(6070) << "returning list of " << matches.count() << " nodes" << endl;
+      kDebug(6070) << "returning list of " << matches.count() << " nodes";
 #endif
       return new DOMNamedNodesCollection(exec, nodes);
     }
   }
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "not found" << endl;
+  kDebug(6070) << "not found";
 #endif
   return Undefined();
 }
@@ -3085,7 +3085,7 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
     }
 
     // support for item('<name>') (IE only)
-    kWarning() << "non-standard HTMLCollection.item('" << s.ascii() << "') called, use namedItem instead" << endl;
+    kWarning() << "non-standard HTMLCollection.item('" << s.ascii() << "') called, use namedItem instead";
     return getDOMNode(exec,coll.namedItem(s.domString()));
   }
   case KJS::HTMLCollection::Tags:
@@ -3098,14 +3098,14 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
       DOM::DocumentImpl* doc = static_cast<DOM::DocumentImpl*>(coll.base());
       list = doc->getElementsByTagName(tagName);
 #ifdef KJS_VERBOSE
-      kDebug(6070) << "KJS::HTMLCollectionProtoFunc::callAsFunction document.tags(" << tagName.string() << ") -> " << list->length() << " items in node list" << endl;
+      kDebug(6070) << "KJS::HTMLCollectionProtoFunc::callAsFunction document.tags(" << tagName.string() << ") -> " << list->length() << " items in node list";
 #endif
     } else
     {
       DOM::ElementImpl* e = static_cast<DOM::ElementImpl*>(coll.base());
       list = e->getElementsByTagName(tagName);
 #ifdef KJS_VERBOSE
-      kDebug(6070) << "KJS::HTMLCollectionProtoFunc::tryCall element.tags(" << tagName.string() << ") -> " << list->length() << " items in node list" << endl;
+      kDebug(6070) << "KJS::HTMLCollectionProtoFunc::tryCall element.tags(" << tagName.string() << ") -> " << list->length() << " items in node list";
 #endif
     }
     return getDOMNodeList(exec, list);
@@ -3170,7 +3170,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
 {
   DOMExceptionTranslator exception(exec);
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLSelectCollection::put " << propertyName.qstring() << endl;
+  kDebug(6070) << "KJS::HTMLSelectCollection::put " << propertyName.qstring();
 #endif
   if ( propertyName == "selectedIndex" ) {
     element->setSelectedIndex( value->toInteger( exec ) );

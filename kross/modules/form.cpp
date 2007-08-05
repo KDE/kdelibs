@@ -255,7 +255,7 @@ QString FormDialog::result()
 {
     int i = metaObject()->indexOfEnumerator("ButtonCode");
     if( i < 0 ) {
-        kWarning() << "Kross::FormDialog::setButtons No such enumerator \"ButtonCode\"" << endl;
+        kWarning() << "Kross::FormDialog::setButtons No such enumerator \"ButtonCode\"";
         return QString();
     }
     QMetaEnum e = metaObject()->enumerator(i);
@@ -271,7 +271,7 @@ void FormDialog::slotButtonClicked(int button)
 void FormDialog::slotCurrentPageChanged(KPageWidgetItem* current)
 {
     Q_UNUSED(current);
-    //kDebug() << "FormDialog::slotCurrentPageChanged current=" << current->name() << endl;
+    //kDebug() << "FormDialog::slotCurrentPageChanged current=" << current->name();
     //foreach(QWidget* widget, current->widget()->findChildren< QWidget* >("")) widget->setFocus();
 }
 
@@ -446,11 +446,11 @@ QWidget* FormModule::createWidgetFromUIFile(QWidget* parent, const QString& file
 {
     QFile file(filename);
     if( ! file.exists() ) {
-        kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: There exists no such file \"%1\"").arg(filename) << endl;
+        kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: There exists no such file \"%1\"").arg(filename);
         return false;
     }
     if( ! file.open(QFile::ReadOnly) ) {
-        kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: Failed to open the file \"%1\"").arg(filename) << endl;
+        kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: Failed to open the file \"%1\"").arg(filename);
         return false;
     }
     const QString xml = file.readAll();
@@ -471,12 +471,12 @@ QObject* FormModule::loadPart(QWidget* parent, const QString& name, const QUrl& 
     //name e.g. "libkghostview"
     KLibFactory* factory = KLibLoader::self()->factory( name.toLatin1() );
     if( ! factory ) {
-        kWarning() << QString("Kross::FormModule::loadPart: No such library \"%1\"").arg(name) << endl;
+        kWarning() << QString("Kross::FormModule::loadPart: No such library \"%1\"").arg(name);
         return 0;
     }
     KParts::ReadOnlyPart* part = factory->create< KParts::ReadOnlyPart >( parent );
     if( ! part ) {
-        kWarning() << QString("Kross::FormModule::loadPart: Library \"%1\" is not a KPart").arg(name) << endl;
+        kWarning() << QString("Kross::FormModule::loadPart: Library \"%1\" is not a KPart").arg(name);
         return 0;
     }
     if( url.isValid() )

@@ -190,7 +190,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
         qint32 time;            // time (as returned by time(2)) at which the rules for computing local time change
         quint8 localTimeIndex;  // index into the LocalTimeType array
     };
-//kDebug()<<"Reading zone "<<zone.name() <<endl;
+//kDebug()<<"Reading zone "<<zone.name();
     TransitionTime *transitionTimes = new TransitionTime[nTransitionTimes];
     for (i = 0;  i < nTransitionTimes;  ++i)
     {
@@ -199,7 +199,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     for (i = 0;  i < nTransitionTimes;  ++i)
     {
         str >> transitionTimes[i].localTimeIndex;
-//kDebug() << "Transition time "<<i<<": "<<transitionTimes[i].time<<"   lt index="<<(int)transitionTimes[i].localTimeIndex<<endl;
+//kDebug() << "Transition time "<<i<<": "<<transitionTimes[i].time<<"   lt index="<<(int)transitionTimes[i].localTimeIndex;
     }
 
     // Read the local time types
@@ -222,7 +222,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
         str >> is;
         ltt->isdst = (is != 0);
         str >> ltt->abbrIndex;
-        // kDebug() << "local type: " << ltt->gmtoff << ", " << is << ", " << ltt->abbrIndex << endl;
+        // kDebug() << "local type: " << ltt->gmtoff << ", " << is << ", " << ltt->abbrIndex;
         ltt->isstd = false;   // default if no data
         ltt->isutc = false;   // default if no data
     }
@@ -272,7 +272,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     for (i = 0;  i < nLeapSecondAdjusts;  ++i)
     {
         str >> t >> s;
-        // kDebug() << "leap entry: " << t << ", " << s << endl;
+        // kDebug() << "leap entry: " << t << ", " << s;
         // Don't use QDateTime::setTime_t() because it takes an unsigned argument
         leapChanges += KTimeZone::LeapSeconds(fromTime_t(t), static_cast<int>(s));
     }
@@ -285,7 +285,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     {
         str >> is;
         localTimeTypes[i].isstd = (is != 0);
-        // kDebug() << "standard: " << is << endl;
+        // kDebug() << "standard: " << is;
     }
 
     // Read the UTC/local time indicators.
@@ -295,7 +295,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     {
         str >> is;
         localTimeTypes[i].isutc = (is != 0);
-        // kDebug() << "UTC: " << is << endl;
+        // kDebug() << "UTC: " << is;
     }
 
 
@@ -377,7 +377,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
                 stdoffset = offset;   // keep note of latest standard time offset
         }
 
-//kDebug() << "Transition time "<<i<<": "<<tt->time<<endl;
+//kDebug() << "Transition time "<<i<<": "<<tt->time;
         KTimeZone::Phase phase = phases[lttLookup[tt->localTimeIndex]];
         transitions += KTimeZone::Transition(fromTime_t(tt->time), phase);
     }

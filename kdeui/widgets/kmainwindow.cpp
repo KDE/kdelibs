@@ -558,7 +558,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 {
     K_D(KMainWindow);
-    kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.group() << endl;
+    kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.group();
 
     // Called by session management - or if we want to save the window size anyway
     if ( d->autoSaveWindowSize )
@@ -634,7 +634,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 {
     K_D(KMainWindow);
-    kDebug(200) << "KMainWindow::applyMainWindowSettings " << cg.group() << endl;
+    kDebug(200) << "KMainWindow::applyMainWindowSettings " << cg.group();
 
     restoreWindowSize(cg);
 
@@ -798,7 +798,7 @@ void KMainWindow::ignoreInitialGeometry()
 void KMainWindow::setSettingsDirty()
 {
     K_D(KMainWindow);
-    //kDebug(200) << "KMainWindow::setSettingsDirty" << endl;
+    //kDebug(200) << "KMainWindow::setSettingsDirty";
     d->settingsDirty = true;
     if ( d->autoSaveSettings )
     {
@@ -857,7 +857,7 @@ void KMainWindow::saveAutoSaveSettings()
 {
     K_D(KMainWindow);
     Q_ASSERT( d->autoSaveSettings );
-    //kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
+    //kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings";
     KConfigGroup cg(KGlobal::config(), d->autoSaveGroup);
     saveMainWindowSettings(cg);
     KGlobal::config()->sync();

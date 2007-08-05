@@ -42,7 +42,7 @@ int main(int args, char **argv)
     //get a list of all devices that are AudioInterface
     foreach (Solid::Device device, Solid::Device::listFromType(Solid::DeviceInterface::AudioInterface, QString()))
     {
-        kDebug() << device.udi().toLatin1().constData() << endl;
+        kDebug() << device.udi().toLatin1().constData();
     }
     return 0;
 }

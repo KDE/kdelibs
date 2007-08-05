@@ -136,7 +136,7 @@ NetRC* NetRC::self()
 bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
                     const QString &_type, LookUpMode mode )
 {
-  // kDebug() << "AutoLogin lookup for: " << url.host() << endl;
+  // kDebug() << "AutoLogin lookup for: " << url.host();
   if ( !url.isValid() )
     return false;
 
@@ -322,24 +322,24 @@ bool NetRC::parse( int fd )
         l.machine = QLatin1String("preset");
       }
     }
-    // kDebug() << "Machine: " << l.machine << endl;
+    // kDebug() << "Machine: " << l.machine;
 
     l.login = extract( buf, "login", pos );
-    // kDebug() << "Login: " << l.login << endl;
+    // kDebug() << "Login: " << l.login;
 
     l.password = extract( buf, "password", pos );
     if ( l.password.isEmpty() )
       l.password = extract( buf, "account", pos );
-    // kDebug() << "Password: " << l.password << endl;
+    // kDebug() << "Password: " << l.password;
 
     type = l.type = extract( buf, "type", pos );
     if ( l.type.isEmpty() && !l.machine.isEmpty() )
       type = l.type = QLatin1String("ftp");
-    // kDebug() << "Type: " << l.type << endl;
+    // kDebug() << "Type: " << l.type;
 
     macro = extract( buf, "macdef", pos );
     isMacro = !macro.isEmpty();
-    // kDebug() << "Macro: " << macro << endl;
+    // kDebug() << "Macro: " << macro;
 
     d->loginMap[l.type].append(l);
     index = d->loginMap[l.type].count()-1;

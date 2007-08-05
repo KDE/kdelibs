@@ -170,7 +170,7 @@ KNS::Entry::List Engine::download()
 
 KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 {
-	kDebug(550) << "Engine: downloadDialogModal" << endl;
+	kDebug(550) << "Engine: downloadDialogModal";
 
 	d->m_command = EnginePrivate::command_download;
 	d->m_modal = true;
@@ -182,7 +182,7 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget*)
 
 void Engine::downloadDialog()
 {
-	kDebug(550) << "Engine: downloadDialog" << endl;
+	kDebug(550) << "Engine: downloadDialog";
 
 	if(d->m_command != EnginePrivate::command_none)
 	{
@@ -233,7 +233,7 @@ KNS::Entry *Engine::upload(const QString& file)
 
 KNS::Entry *Engine::uploadDialogModal(const QString& file)
 {
-    kDebug(550) << "Engine: uploadDialogModal" << endl;
+    kDebug(550) << "Engine: uploadDialogModal";
 
     d->m_command = EnginePrivate::command_upload;
     d->m_modal = true;
@@ -246,7 +246,7 @@ KNS::Entry *Engine::uploadDialogModal(const QString& file)
 
 void Engine::uploadDialog(const QString& file)
 {
-    kDebug(550) << "Engine: uploadDialog" << endl;
+    kDebug(550) << "Engine: uploadDialog";
 
     if(d->m_command != EnginePrivate::command_none)
     {
@@ -262,7 +262,7 @@ void Engine::uploadDialog(const QString& file)
 
 void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
 {
-    kDebug(550) << "Engine: slotProviderLoaded" << endl;
+    kDebug(550) << "Engine: slotProviderLoaded";
 
     if(m_command == command_download)
     {
@@ -285,26 +285,26 @@ void EnginePrivate::slotProviderLoaded(KNS::Provider *provider)
 
 void EnginePrivate::slotProvidersFailed()
 {
-    kDebug(550) << "Engine: slotProvidersFailed" << endl;
+    kDebug(550) << "Engine: slotProvidersFailed";
 
     m_command = command_none;
 }
 
 void EnginePrivate::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
 {
-    kDebug(550) << "Engine: slotEntryLoaded" << endl;
+    kDebug(550) << "Engine: slotEntryLoaded";
 
     m_downloaddialog->addEntry(entry, feed, provider);
 }
 
 void EnginePrivate::slotEntriesFailed()
 {
-    kDebug(550) << "Engine: slotEntriesFailed" << endl;
+    kDebug(550) << "Engine: slotEntriesFailed";
 }
 
 void EnginePrivate::slotEntryUploaded()
 {
-    kDebug(550) << "Engine: slotEntryUploaded" << endl;
+    kDebug(550) << "Engine: slotEntryUploaded";
 
     m_command = command_none;
 
@@ -315,14 +315,14 @@ void EnginePrivate::slotEntryUploaded()
 
 void EnginePrivate::slotEntryFailed()
 {
-    kDebug(550) << "Engine: slotEntryFailed" << endl;
+    kDebug(550) << "Engine: slotEntryFailed";
 
     m_command = command_none;
 }
 
 void EnginePrivate::slotProvidersFinished()
 {
-	kDebug(550) << "Engine: slotProvidersFinished" << endl;
+	kDebug(550) << "Engine: slotProvidersFinished";
 
 	int ret;
 
@@ -369,7 +369,7 @@ void EnginePrivate::slotProvidersFinished()
 	QByteArray ar;
 	QTextStream txt(&ar);
 	txt << xml;
-	kDebug(550) << "Upload: " << QString(ar) << endl;
+	kDebug(550) << "Upload: " << QString(ar);
 
 	connect(this,
 		SIGNAL(signalEntryUploaded()),
@@ -383,7 +383,7 @@ void EnginePrivate::slotProvidersFinished()
 
 void EnginePrivate::slotEntriesFeedFinished(const KNS::Feed *feed)
 {
-    kDebug(550) << "Engine: slotEntriesFeedFinished" << endl;
+    kDebug(550) << "Engine: slotEntriesFeedFinished";
 
     Q_UNUSED(feed);
     //m_downloaddialog->refresh();
@@ -391,7 +391,7 @@ void EnginePrivate::slotEntriesFeedFinished(const KNS::Feed *feed)
 
 void EnginePrivate::slotEntriesFinished()
 {
-    kDebug(550) << "Engine: slotEntriesFinished" << endl;
+    kDebug(550) << "Engine: slotEntriesFinished";
 
     m_downloaddialog->refresh();
 }

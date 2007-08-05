@@ -138,7 +138,7 @@ static KStandardShortcutInfo *guardedStandardShortcutInfo(StandardShortcut id)
 {
 	if (id >= static_cast<int>(sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo)) ||
              id < 0) {
-		kWarning(125) << "KStandardShortcut: id not found!" << endl;
+		kWarning(125) << "KStandardShortcut: id not found!";
 		return &g_infoStandardShortcut[AccelNone];
 	} else
 		return &g_infoStandardShortcut[id];

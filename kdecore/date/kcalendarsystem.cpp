@@ -52,7 +52,7 @@ KCalendarSystem *KCalendarSystem::create( const QString &calType, const KLocale 
         return new KCalendarSystemJalali( locale );
     }
 
-    //kDebug(5400) << "Calendar " << calType << " not found, defaulting to gregorian" << endl;
+    //kDebug(5400) << "Calendar " << calType << " not found, defaulting to gregorian";
 
     // ### HPB: Should it really be a default here?
     return new KCalendarSystemGregorian( locale );

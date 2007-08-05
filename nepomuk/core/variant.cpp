@@ -575,7 +575,7 @@ void Nepomuk::Variant::append( const Variant& v )
         operator=( toResourceList() += v.toResourceList() );
     }
     else
-        kDebug(300004) << "(Variant::append) unknown type: " << v.simpleType() << endl;
+        kDebug(300004) << "(Variant::append) unknown type: " << v.simpleType();
 }
 
 
@@ -762,7 +762,7 @@ double Nepomuk::Variant::toDouble() const
 
 QString Nepomuk::Variant::toString() const
 {
-    kDebug(300004) << "(Variant::toString() converting... " << QMetaType::typeName(type()) << endl;
+    kDebug(300004) << "(Variant::toString() converting... " << QMetaType::typeName(type());
     if( isList() )
         return toStringList().join( "," );
 
@@ -914,7 +914,7 @@ template<typename T> QStringList convertToStringList( const QList<T>& l )
 
 QStringList Nepomuk::Variant::toStringList() const
 {
-    //  kDebug(300004) << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType()) << endl;
+    //  kDebug(300004) << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType());
     if( !d->value.isValid() )
         return QStringList();
 

@@ -181,7 +181,7 @@ void KPassivePopup::setView( QWidget *child )
 void KPassivePopup::setView( const QString &caption, const QString &text,
                              const QPixmap &icon )
 {
-    // kDebug() << "KPassivePopup::setView " << caption << ", " << text << endl;
+    // kDebug() << "KPassivePopup::setView " << caption << ", " << text;
     setView( standardView( caption, text, icon, this ) );
 }
 

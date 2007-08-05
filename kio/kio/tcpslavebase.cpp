@@ -523,10 +523,10 @@ int TCPSlaveBase::startTLS()
 
     if ( !d->realHost.isEmpty() )
     {
-      kDebug(7029) << "Setting real hostname: " << d->realHost << endl;
+      kDebug(7029) << "Setting real hostname: " << d->realHost;
       d->kssl->setPeerHost(d->realHost);
     } else {
-      kDebug(7029) << "Setting real hostname: " << d->host << endl;
+      kDebug(7029) << "Setting real hostname: " << d->host;
       d->kssl->setPeerHost(d->host);
     }
 
@@ -754,7 +754,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
          delete pkcs;  // we don't need this anymore
          pkcs = 0L;
       } else {
-         kDebug(7029) << "Client SSL certificate is being used." << endl;
+         kDebug(7029) << "Client SSL certificate is being used.";
          setMetaData("ssl_using_client_cert", "TRUE");
          if (save) {
                 KSSLCertificateHome::setDefaultCertificate(certname, ourHost,
@@ -869,7 +869,7 @@ int TCPSlaveBase::verifyCertificate()
       setMetaData("ssl_action", "accept");
    }
 
-   kDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request") << endl;
+   kDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request");
    if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
       // Since we're the parent, we need to teach the child.
       setMetaData("ssl_parent_ip", d->ip);
@@ -1266,7 +1266,7 @@ void TCPSlaveBase::setRealHost( const QString& realHost )
 
 bool TCPSlaveBase::doSSLHandShake( bool sendError )
 {
-    kDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << endl;
+    kDebug(7029) << "TCPSlaveBase::doSSLHandShake: ";
     QString msgHost = d->host;
 
     d->kssl->reInitialize();
@@ -1285,7 +1285,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
       msgHost = d->realHost;
     }
 
-    kDebug(7029) << "Setting real hostname: " << msgHost << endl;
+    kDebug(7029) << "Setting real hostname: " << msgHost;
     d->kssl->setPeerHost(msgHost);
 
     d->status = d->kssl->connect(d->socket);

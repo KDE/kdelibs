@@ -45,7 +45,7 @@ void TestDialog::check( const QString& buffer )
 
 void TestDialog::doneChecking( const QString& buf )
 {
-    kDebug()<<"Done with :"<<buf<<endl;
+    kDebug()<<"Done with :"<<buf;
     qApp->quit();
 }
 

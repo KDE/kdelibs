@@ -98,13 +98,13 @@ void KTextEdit::Private::slotSpellCheckDone( const QString &s )
 
 void KTextEdit::Private::spellCheckerMisspelling( const QString &text, int pos )
 {
-    //kDebug()<<"TextEdit::Private::spellCheckerMisspelling :"<<text<<" pos :"<<pos<<endl;
+    //kDebug()<<"TextEdit::Private::spellCheckerMisspelling :"<<text<<" pos :"<<pos;
     parent->highlightWord( text.length(), pos );
 }
 
 void KTextEdit::Private::spellCheckerCorrected( const QString& oldWord, int pos,const QString& newWord)
 {
-  //kDebug()<<" oldWord :"<<oldWord<<" newWord :"<<newWord<<" pos : "<<pos<<endl;
+  //kDebug()<<" oldWord :"<<oldWord<<" newWord :"<<newWord<<" pos : "<<pos;
   if (oldWord != newWord ) {
     QTextCursor cursor(parent->document());
     cursor.setPosition(pos);

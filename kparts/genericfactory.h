@@ -20,7 +20,7 @@ namespace KParts
         GenericFactoryBase()
         {
             if ( s_self )
-                kWarning() << "KParts::GenericFactory instantiated more than once!" << endl;
+                kWarning() << "KParts::GenericFactory instantiated more than once!";
             s_self = this;
         }
         virtual ~GenericFactoryBase()

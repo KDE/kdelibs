@@ -125,7 +125,7 @@ void KFontAction::setFont( const QString &family )
     if (setCurrentAction(lowerName, Qt::CaseInsensitive))
       return;
 
-    kDebug(129) << "Font not found " << family.toLower() << endl;
+    kDebug(129) << "Font not found " << family.toLower();
 }
 
 /* vim: et sw=2 ts=2

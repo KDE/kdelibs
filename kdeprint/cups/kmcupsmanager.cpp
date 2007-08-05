@@ -586,7 +586,7 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 
 void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 {
-	kDebug( 500 ) << "Saving PPD file with template=" << driver->get( "template" ) << endl;
+	kDebug( 500 ) << "Saving PPD file with template=" << driver->get( "template" );
 	QIODevice *in = KFilterDev::deviceForFile( driver->get( "template" ) );
 	QFile	out(filename);
 	if (in && in->open(QIODevice::ReadOnly) && out.open(QIODevice::WriteOnly))
@@ -876,14 +876,14 @@ QString KMCupsManager::testPage()
 
 void KMCupsManager::checkUpdatePossibleInternal()
 {
-	kDebug(500) << "Checking for update possible" << endl;
+	kDebug(500) << "Checking for update possible";
 	trials = 5;
 	QMetaObject::invokeMethod( this, "slotAsyncConnect", Qt::QueuedConnection );
 }
 
 void KMCupsManager::slotConnectionSuccess()
 {
-	kDebug(500) << "Connection success, trying to send a request..." << endl;
+	kDebug(500) << "Connection success, trying to send a request...";
 
 	IppRequest req;
 	req.setOperation( CUPS_GET_PRINTERS );
@@ -892,7 +892,7 @@ void KMCupsManager::slotConnectionSuccess()
 		setUpdatePossible( true );
 	else
 	{
-		kDebug(500) << "Unable to get printer list" << endl;
+		kDebug(500) << "Unable to get printer list";
 		if ( trials > 0 )
 		{
 			trials--;
@@ -909,7 +909,7 @@ void KMCupsManager::slotConnectionSuccess()
 
 void KMCupsManager::slotAsyncConnect()
 {
-	kDebug(500) << "Starting async connect " << CupsInfos::self()->hostaddr() << endl;
+	kDebug(500) << "Starting async connect " << CupsInfos::self()->hostaddr();
 	if (CupsInfos::self()->host().startsWith('/'))
 	{
 		KLocalSocket *ls = new KLocalSocket;
@@ -929,7 +929,7 @@ void KMCupsManager::slotAsyncConnect()
 
 void KMCupsManager::slotConnectionFailed( QAbstractSocket::SocketError errcode )
 {
-	kDebug(500) << "Connection failed trials=" << trials << endl;
+	kDebug(500) << "Connection failed trials=" << trials;
 	if ( trials > 0 )
 	{
 		trials--;

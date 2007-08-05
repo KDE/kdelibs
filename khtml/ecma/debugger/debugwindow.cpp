@@ -117,7 +117,7 @@ DebugWindow::DebugWindow(QWidget *parent)
 {
     setObjectName(QLatin1String("DebugWindow"));
     setCaption(i18n("JavaScript Debugger"));
-    kDebug() << "creating DebugWindow" << endl;
+    kDebug() << "creating DebugWindow";
 
     m_editor = KTextEditor::EditorChooser::editor();
     if ( !m_editor )
@@ -361,7 +361,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineno, JSObject 
     Q_UNUSED(lineno);
     Q_UNUSED(exceptionObj);
 
-    kDebug() << "exception" << endl;
+    kDebug() << "exception";
 
     return (m_mode != Stop);
 }
@@ -386,11 +386,11 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
     DebugDocument *document = m_sourceIdLookup[sourceId];
     if (document)
     {
-//         kDebug() << "found document for sourceId" << endl;
+//         kDebug() << "found document for sourceId";
 //         QVector<int> bpoints = document->breakpoints();
 //         foreach (int bpoint, bpoints)
 //         {
-//             kDebug() << " > " << bpoint << endl;
+//             kDebug() << " > " << bpoint;
 //         }
 
 /*
@@ -398,10 +398,10 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
         for (int i = 0; i < numLines; i++)
         {
             int lineNumber = firstLine + i;
-            kDebug() << "breakpoint at line " << lineNumber << "?" << endl;
+            kDebug() << "breakpoint at line " << lineNumber << "?";
             if (document->hasBreakpoint(lineNumber))
             {
-                kDebug() << "Hey! we actually found a breakpoint!" << endl;
+                kDebug() << "Hey! we actually found a breakpoint!";
                 // Lets try a dump of the scope chain now..
                 m_localVariables->display(exec->dynamicInterpreter());
             }
@@ -409,21 +409,21 @@ bool DebugWindow::atStatement(ExecState *exec, int sourceId, int firstLine, int 
 */
         if (document->hasBreakpoint(firstLine))
         {
-//             kDebug() << "Hey! we actually found a breakpoint!" << endl;
+//             kDebug() << "Hey! we actually found a breakpoint!";
             // Lets try a dump of the scope chain now..
             // m_localVariables->display(exec);
             enterDebugSession(exec, document);
         }
     }
 
-//     kDebug() << "*********************************************************************************************" << endl;
+//     kDebug() << "*********************************************************************************************";
 
     return (m_mode != Stop);
 }
 
 bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject *function, const List &args)
 {
-    kDebug() << "***************************** callEvent **************************************************" << endl;
+    kDebug() << "***************************** callEvent **************************************************";
     kDebug() << "  sourceId: " << sourceId << endl
              << "lineNumber: " << lineno << endl;
 
@@ -436,7 +436,7 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
             if (func)
             {
                 QString functionName = func->functionName().qstring();
-                kDebug() << "  function: " << functionName << endl;
+                kDebug() << "  function: " << functionName;
                 func = 0;
 
                 document->addCall(functionName, lineno);
@@ -448,19 +448,19 @@ bool DebugWindow::callEvent(ExecState *exec, int sourceId, int lineno, JSObject 
             ++item)
         {
             KJS::JSValue *value = (*item);
-            kDebug() << "arg: " << value->toString(exec).qstring() << endl;
+            kDebug() << "arg: " << value->toString(exec).qstring();
         }
     }
 
 
-    kDebug() << "****************************************************************************************" << endl;
+    kDebug() << "****************************************************************************************";
 
     return (m_mode != Stop);
 }
 
 bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObject *function)
 {
-    kDebug() << "***************************** returnEvent **************************************************" << endl;
+    kDebug() << "***************************** returnEvent **************************************************";
     kDebug() << "  sourceId: " << sourceId << endl
              << "lineNumber: " << lineno << endl;
 
@@ -473,7 +473,7 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
             if (func)
             {
                 QString functionName = func->functionName().qstring();
-                kDebug() << "  function: " << functionName << endl;
+                kDebug() << "  function: " << functionName;
                 func = 0;
 
                 document->removeCall(functionName, lineno);
@@ -481,7 +481,7 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
         }
     }
 
-    kDebug() << "****************************************************************************************" << endl;
+    kDebug() << "****************************************************************************************";
 
     return (m_mode != Stop);
 }
@@ -524,7 +524,7 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
     QList<SourceFragment> fragments = document->fragments();
     foreach (SourceFragment fragment, fragments)
     {
-        kDebug() << "fragment: " << fragment.source << endl;
+        kDebug() << "fragment: " << fragment.source;
 
         int line = fragment.baseLine;
         int col = 1;
@@ -583,10 +583,10 @@ void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mar
              << "document: " << document->documentName() << endl
              << "line: " << lineNumber << " type: " << mark.type << endl;
 
-    kDebug() << "breakpoints at lines:" << endl;
+    kDebug() << "breakpoints at lines:";
     QVector<int> bpoints = debugDocument->breakpoints();
     foreach (int bpoint, bpoints)
-        kDebug() << " > " << bpoint << endl;
+        kDebug() << " > " << bpoint;
 }
 
 void DebugWindow::closeTab()

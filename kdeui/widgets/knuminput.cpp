@@ -204,7 +204,7 @@ void KNumInput::layout(bool deep)
         p = p->d->m_next;
     }
 
-//    kDebug() << "w1 " << w1 << " w2 " << w2 << endl;
+//    kDebug() << "w1 " << w1 << " w2 " << w2;
 }
 
 QSizePolicy KNumInput::sizePolicy() const

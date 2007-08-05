@@ -750,7 +750,7 @@ RenderObject* RenderFieldset::findLegend()
 
 void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
-    //kDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
+    //kDebug( 6040 ) << renderName() << "::paintDecorations()";
 
     RenderObject* legend = findLegend();
     if (!legend)
@@ -1448,7 +1448,7 @@ void TextAreaWidget::contextMenuEvent(QContextMenuEvent * e)
 void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, int matchingLength)
 {
     Q_UNUSED(text)
-    //kDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength << endl;
+    //kDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength;
     QTextCursor tc = textCursor();
     tc.setPosition(matchingIndex);
     tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchingLength);
@@ -1459,7 +1459,7 @@ void TextAreaWidget::slotFindHighlight(const QString& text, int matchingIndex, i
 
 void TextAreaWidget::slotReplaceText(const QString &text, int replacementIndex, int /*replacedLength*/, int matchedLength) {
     Q_UNUSED(text)
-    //kDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength << endl;
+    //kDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength;
     QTextCursor tc = textCursor();
     tc.setPosition(replacementIndex);
     tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchedLength);

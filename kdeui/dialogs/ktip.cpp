@@ -79,13 +79,13 @@ void KTipDatabase::Private::addTips( const QString &tipFile )
   QString fileName = KStandardDirs::locate( "data", tipFile );
 
   if ( fileName.isEmpty() ) {
-    kDebug() << "KTipDatabase::addTips: can't find '" << tipFile << "' in standard dirs" << endl;
+    kDebug() << "KTipDatabase::addTips: can't find '" << tipFile << "' in standard dirs";
     return;
   }
 
   QFile file( fileName );
   if ( !file.open( QIODevice::ReadOnly ) ) {
-    kDebug() << "KTipDatabase::addTips: can't open '" << fileName << "' for reading" << endl;
+    kDebug() << "KTipDatabase::addTips: can't open '" << fileName << "' for reading";
     return;
   }
 
@@ -110,7 +110,7 @@ void KTipDatabase::Private::addTips( const QString &tipFile )
       tip = tip.mid( 1 );
 
     if ( tip.isEmpty() ) {
-      kDebug() << "Empty tip found! Skipping! " << pos << endl;
+      kDebug() << "Empty tip found! Skipping! " << pos;
       continue;
     }
 

@@ -102,21 +102,21 @@ void KDiskFreeSpace::dfDone()
     s = t.readLine();
     s = s.simplified();
     if ( !s.isEmpty() ) {
-      //kDebug(kfile_area) << "GOT: [" << s << "]" << endl;
+      //kDebug(kfile_area) << "GOT: [" << s << "]";
 
       if (s.indexOf(BLANK)<0) {      // devicename was too long, rest in next line
           if ( !t.atEnd() ) {       // just appends the next line
             s=s.append(t.readLine());
             s=s.simplified();
-            //kDebug(kfile_area) << "SPECIAL GOT: [" << s << "]" << endl;
+            //kDebug(kfile_area) << "SPECIAL GOT: [" << s << "]";
           }//if silly linefeed
       }
 
-      //kDebug(kfile_area) << "[" << s << "]" << endl;
+      //kDebug(kfile_area) << "[" << s << "]";
 
       //QString deviceName = s.left(s.find(BLANK));
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kDebug(kfile_area) << "    DeviceName:    [" << deviceName << "]" << endl;
+      //kDebug(kfile_area) << "    DeviceName:    [" << deviceName << "]";
 
       if (!NO_FS_TYPE)
           s=s.remove(0,s.indexOf(BLANK)+1 ); // eat fs type
@@ -124,26 +124,26 @@ void KDiskFreeSpace::dfDone()
       QString u=s.left(s.indexOf(BLANK));
       quint64 kBSize = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kDebug(kfile_area) << "    Size:       [" << kBSize << "]" << endl;
+      //kDebug(kfile_area) << "    Size:       [" << kBSize << "]";
 
       u=s.left(s.indexOf(BLANK));
       quint64 kBUsed = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kDebug(kfile_area) << "    Used:       [" << kBUsed << "]" << endl;
+      //kDebug(kfile_area) << "    Used:       [" << kBUsed << "]";
 
       u=s.left(s.indexOf(BLANK));
       quint64 kBAvail = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
-      //kDebug(kfile_area) << "    Avail:       [" << kBAvail << "]" << endl;
+      //kDebug(kfile_area) << "    Avail:       [" << kBAvail << "]";
 
 
       s=s.remove(0,s.indexOf(BLANK)+1 );  // delete the capacity 94%
       QString mountPoint = s.trimmed();
-      //kDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]" << endl;
+      //kDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]";
 
       if ( mountPoint == d->m_mountPoint )
       {
-        //kDebug(kfile_area) << "Found mount point. Emitting" << endl;
+        //kDebug(kfile_area) << "Found mount point. Emitting";
         emit foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
       }
     }//if not header

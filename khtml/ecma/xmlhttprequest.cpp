@@ -193,7 +193,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
      return Null();
    }
   default:
-    kWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token << endl;
+    kWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token;
     return 0;
   }
 }
@@ -217,7 +217,7 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *valu
     if (onLoadListener) onLoadListener->ref();
     break;
   default:
-    kWarning() << "XMLHttpRequest::putValue unhandled token " << token << endl;
+    kWarning() << "XMLHttpRequest::putValue unhandled token " << token;
   }
 }
 
@@ -452,7 +452,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
   documentURL.setPass(QString());
   documentURL.setUser(QString());
   job->addMetaData("referrer", documentURL.url());
-  // kDebug() << "Adding referrer: " << documentURL << endl;
+  // kDebug() << "Adding referrer: " << documentURL;
 
   if (!async) {
     QByteArray data;

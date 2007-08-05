@@ -73,7 +73,7 @@ void RenderReplaced::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown());
 
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
+    kDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown();
 #endif
 
     m_width = calcReplacedWidth();
@@ -630,7 +630,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 
     bool filtered = false;
 
-    //kDebug() << "RenderWidget::eventFilter type=" << e->type() << endl;
+    //kDebug() << "RenderWidget::eventFilter type=" << e->type();
     switch(e->type()) {
     case QEvent::FocusOut:
         // First, forward it to the widget, so that Qt gets a precise
@@ -652,7 +652,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         directToWidget = false;
         filtered       = true; //We already delivered it!
 
-        //kDebug(6000) << "RenderWidget::eventFilter captures FocusIn" << endl;
+        //kDebug(6000) << "RenderWidget::eventFilter captures FocusIn";
         element()->getDocument()->setFocusNode(element());
 //         if ( isEditable() ) {
 //             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );

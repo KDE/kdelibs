@@ -90,18 +90,18 @@ void JobTest::initTestCase()
     if ( !QFile::exists( homeTmpDir() ) ) {
         bool ok = dir.mkdir( homeTmpDir() );
         if ( !ok )
-            kFatal() << "Couldn't create " << homeTmpDir() << endl;
+            kFatal() << "Couldn't create " << homeTmpDir();
     }
     if ( !QFile::exists( otherTmpDir() ) ) {
         bool ok = dir.mkdir( otherTmpDir() );
         if ( !ok )
-            kFatal() << "Couldn't create " << otherTmpDir() << endl;
+            kFatal() << "Couldn't create " << otherTmpDir();
     }
     if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
         if ( !QFile::exists( realSystemPath() ) ) {
             bool ok = dir.mkdir( realSystemPath() );
             if ( !ok )
-                kFatal() << "Couldn't create " << realSystemPath() << endl;
+                kFatal() << "Couldn't create " << realSystemPath();
         }
     }
 }
@@ -125,7 +125,7 @@ void JobTest::enterLoop()
 
 void JobTest::get()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
     KUrl u( filePath );
@@ -265,7 +265,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
 
     if ( flags & AlreadyExists ) {
         dest += '/' + u.fileName();
-        //kDebug() << "Expecting dest=" << dest << endl;
+        //kDebug() << "Expecting dest=" << dest;
     }
 
     // CopyJob::setNextDirAttribute isn't implemented for Windows currently.
@@ -281,7 +281,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
 
 void JobTest::copyFileToSamePartition()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = homeTmpDir() + "fileFromHome_copied";
     createTestFile( filePath );
@@ -290,7 +290,7 @@ void JobTest::copyFileToSamePartition()
 
 void JobTest::copyDirectoryToSamePartition()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_copied";
     createTestDirectory( src );
@@ -299,7 +299,7 @@ void JobTest::copyDirectoryToSamePartition()
 
 void JobTest::copyDirectoryToExistingDirectory()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     // just the same as copyDirectoryToSamePartition, but it means that
     // this time dest exists.
     const QString src = homeTmpDir() + "dirFromHome";
@@ -310,7 +310,7 @@ void JobTest::copyDirectoryToExistingDirectory()
 
 void JobTest::copyFileToOtherPartition()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = otherTmpDir() + "fileFromHome_copied";
     createTestFile( filePath );
@@ -319,7 +319,7 @@ void JobTest::copyFileToOtherPartition()
 
 void JobTest::copyDirectoryToOtherPartition()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = otherTmpDir() + "dirFromHome_copied";
     // src is already created by copyDirectoryToSamePartition()
@@ -365,7 +365,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     KIO::Job* job = KIO::move( u, d );
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     if ( !ok )
-        kWarning() << KIO::NetAccess::lastError() << endl;
+        kWarning() << KIO::NetAccess::lastError();
     QVERIFY( ok );
     QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
     QVERIFY( !QFile::exists( src ) ); // not there anymore
@@ -380,7 +380,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
 
 void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 {
-    kDebug() << k_funcinfo << src << " " << dest << endl;
+    kDebug() << k_funcinfo << src << " " << dest;
     QVERIFY( QFile::exists( src ) );
     QVERIFY( QFileInfo( src ).isDir() );
     QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
@@ -406,7 +406,7 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 
 void JobTest::moveFileToSamePartition()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = homeTmpDir() + "fileFromHome_moved";
     createTestFile( filePath );
@@ -415,7 +415,7 @@ void JobTest::moveFileToSamePartition()
 
 void JobTest::moveDirectoryToSamePartition()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_moved";
     createTestDirectory( src );
@@ -424,7 +424,7 @@ void JobTest::moveDirectoryToSamePartition()
 
 void JobTest::moveFileToOtherPartition()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = otherTmpDir() + "fileFromHome_moved";
     createTestFile( filePath );
@@ -434,7 +434,7 @@ void JobTest::moveFileToOtherPartition()
 void JobTest::moveSymlinkToOtherPartition()
 {
 #ifndef Q_WS_WIN
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     const QString filePath = homeTmpDir() + "testlink";
     const QString dest = otherTmpDir() + "testlink_moved";
     createTestSymlink( filePath );
@@ -444,7 +444,7 @@ void JobTest::moveSymlinkToOtherPartition()
 
 void JobTest::moveDirectoryToOtherPartition()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
 #ifndef Q_WS_WIN
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = otherTmpDir() + "dirFromHome_moved";
@@ -455,9 +455,9 @@ void JobTest::moveDirectoryToOtherPartition()
 
 void JobTest::moveFileNoPermissions()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
 #ifdef Q_WS_WIN
-    kDebug() << "port to win32" << endl;
+    kDebug() << "port to win32";
 #else
     const QString src = "/etc/passwd";
     const QString dest = homeTmpDir() + "passwd";
@@ -486,9 +486,9 @@ void JobTest::moveFileNoPermissions()
 
 void JobTest::moveDirectoryNoPermissions()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
 #ifdef Q_WS_WIN
-    kDebug() << "port to win32" << endl;
+    kDebug() << "port to win32";
 #else
 
     // All of /etc is a bit much, so try to find something smaller:
@@ -566,9 +566,9 @@ void JobTest::directorySize()
     job->setUiDelegate( 0 );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
-    kDebug() << "totalSize: " << job->totalSize() << endl;
-    kDebug() << "totalFiles: " << job->totalFiles() << endl;
-    kDebug() << "totalSubdirs: " << job->totalSubdirs() << endl;
+    kDebug() << "totalSize: " << job->totalSize();
+    kDebug() << "totalFiles: " << job->totalFiles();
+    kDebug() << "totalSubdirs: " << job->totalSubdirs();
 #ifdef Q_WS_WIN
     QCOMPARE(job->totalFiles(), 5ULL); // see expected result in listRecursive() above
     QCOMPARE(job->totalSubdirs(), 3ULL); // see expected result in listRecursive() above
@@ -940,7 +940,7 @@ void JobTest::calculateRemainingSeconds()
 void JobTest::copyFileToSystem()
 {
     if ( !KProtocolInfo::isKnownProtocol( "system" ) ) {
-        kDebug() << k_funcinfo << "no kio_system, skipping test" << endl;
+        kDebug() << k_funcinfo << "no kio_system, skipping test";
         return;
     }
 
@@ -957,7 +957,7 @@ void JobTest::copyFileToSystem()
 
 void JobTest::copyFileToSystem( bool resolve_local_urls )
 {
-    kDebug() << k_funcinfo << resolve_local_urls << endl;
+    kDebug() << k_funcinfo << resolve_local_urls;
     extern KIO_EXPORT bool kio_resolve_local_urls;
     kio_resolve_local_urls = resolve_local_urls;
 
@@ -968,7 +968,7 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
     KUrl d = systemTmpDir();
     d.addPath( "fileFromHome_copied" );
 
-    kDebug() << "copying " << u << " to " << d << endl;
+    kDebug() << "copying " << u << " to " << d;
 
     // copy the file with file_copy
     m_mimetype.clear();

@@ -1020,7 +1020,7 @@ QString KApplication::tempSaveName( const QString& pFilename )
 
   if( QDir::isRelativePath(pFilename) )
     {
-      kWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
+      kWarning(101) << "Relative filename passed to KApplication::tempSaveName";
       aFilename = QFileInfo( QDir( QLatin1String(".") ), pFilename ).absoluteFilePath();
     }
   else
@@ -1052,7 +1052,7 @@ QString KApplication::checkRecoverFile( const QString& pFilename,
 
   if( QDir::isRelativePath(pFilename) )
     {
-      kWarning(101) << "Relative filename passed to KApplication::tempSaveName" << endl;
+      kWarning(101) << "Relative filename passed to KApplication::tempSaveName";
       aFilename = QFileInfo( QDir( QLatin1String(".") ), pFilename ).absoluteFilePath();
     }
   else
@@ -1187,7 +1187,7 @@ void KApplication::setSynchronizeClipboard(bool synchronize)
 
 void KApplication::slot_KLibLoader_hook_clearClipboard()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     if( clipboard()->ownsSelection()) {
 	clipboard()->setText(
             clipboard()->text( QClipboard::Selection ), QClipboard::Selection );

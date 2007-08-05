@@ -499,7 +499,7 @@ bool CupsdConf::parseOption(const QString& line)
 		keyword = l.toLower();
 	}
 
-	//kDebug() << "cupsd.conf keyword=" << keyword << endl;
+	//kDebug() << "cupsd.conf keyword=" << keyword;
 	if (keyword == "accesslog") accesslog_ = value;
 	else if (keyword == "autopurgejobs") autopurgejobs_ = (value.toLower() == "yes");
 	else if (keyword == "browseaddress") browseaddresses_.append("Send "+value);

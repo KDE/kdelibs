@@ -85,7 +85,7 @@ static KCModule* load(const KCModuleInfo &mod, const QByteArray &libprefix,
             }
         }
     // else do a fallback
-    kWarning(1208) << "Unable to load module using ComponentFactory. (symbol: init_" << mod.handle() << ") Falling back to old loader for compatibility." << endl;
+    kWarning(1208) << "Unable to load module using ComponentFactory. (symbol: init_" << mod.handle() << ") Falling back to old loader for compatibility.";
 
     // get the create_ function
     QByteArray factorymethod( "create_" );

@@ -188,7 +188,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
             m_totalSize += (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
 
-            //kDebug(7007) << "DeleteJob::slotEntries " << displayName << " (" << url << ")" << endl;
+            //kDebug(7007) << "DeleteJob::slotEntries " << displayName << " (" << url << ")";
             if ( entry.isLink() )
                 symlinks.append( url );
             else if ( entry.isDir() )
@@ -203,7 +203,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 void DeleteJobPrivate::statNextSrc()
 {
     Q_Q(DeleteJob);
-    //kDebug(7007) << "statNextSrc" << endl;
+    //kDebug(7007) << "statNextSrc";
     if ( m_currentStat != m_srcList.end() )
     {
         m_currentURL = (*m_currentStat);
@@ -221,7 +221,7 @@ void DeleteJobPrivate::statNextSrc()
         state = STATE_STATING;
         KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 1, false );
         Scheduler::scheduleJob(job);
-        //kDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL << endl;
+        //kDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL;
         q->addSubjob(job);
     } else
     {
@@ -241,7 +241,7 @@ void DeleteJobPrivate::statNextSrc()
 void DeleteJobPrivate::deleteNextFile()
 {
     Q_Q(DeleteJob);
-    //kDebug(7007) << "deleteNextFile" << endl;
+    //kDebug(7007) << "deleteNextFile";
     if ( !files.isEmpty() || !symlinks.isEmpty() )
     {
         SimpleJob *job;
@@ -326,7 +326,7 @@ void DeleteJobPrivate::deleteNextDir()
     // Finished - tell the world
     if ( !m_srcList.isEmpty() )
     {
-        //kDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList() << endl;
+        //kDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList();
         org::kde::KDirNotify::emitFilesRemoved( m_srcList.toStringList() );
     }
     if (m_reportTimer!=0)
@@ -345,7 +345,7 @@ void DeleteJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
    m_fileProcessedSize = data_size;
    q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 
-   //kDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize) << endl;
+   //kDebug(7007) << "DeleteJob::slotProcessedSize " << (unsigned int) (m_processedSize + m_fileProcessedSize);
 
    q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 
@@ -387,7 +387,7 @@ void DeleteJob::slotResult( KJob *job )
               d->m_parentDirs.append( url.path(KUrl::RemoveTrailingSlash) );
 
             if ( !KProtocolManager::canDeleteRecursive( url ) ) {
-                //kDebug(7007) << " Target is a directory " << endl;
+                //kDebug(7007) << " Target is a directory ";
                 // List it
                 d->state = STATE_LISTING;
                 ListJob *newjob = listRecursive( url, false );
@@ -406,10 +406,10 @@ void DeleteJob::slotResult( KJob *job )
         else
         {
             if ( isLink ) {
-                //kDebug(7007) << " Target is a symlink" << endl;
+                //kDebug(7007) << " Target is a symlink";
                 d->symlinks.append( url );
             } else {
-                //kDebug(7007) << " Target is a file" << endl;
+                //kDebug(7007) << " Target is a file";
                 d->files.append( url );
             }
             if ( url.isLocalFile() && !d->m_parentDirs.contains( url.directory(KUrl::ObeyTrailingSlash) ) )

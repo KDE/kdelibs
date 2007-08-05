@@ -182,7 +182,7 @@ void KLanguageButton::loadAllLanguages()
 
 void KLanguageButton::slotTriggered( QAction *a )
 {
-  //kDebug() << "slotTriggered" << index << endl;
+  //kDebug() << "slotTriggered" << index;
   if (!a)
     return;
 
@@ -194,7 +194,7 @@ void KLanguageButton::slotTriggered( QAction *a )
 
 void KLanguageButton::slotHovered( QAction *a )
 {
-  //kDebug() << "slotHovered" << index << endl;
+  //kDebug() << "slotHovered" << index;
 
   emit highlighted(a->data().toString());
 }

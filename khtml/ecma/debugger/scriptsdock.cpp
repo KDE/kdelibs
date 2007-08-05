@@ -116,11 +116,11 @@ void ScriptsDock::updateModel()
 
         QString name = document->name();
 
-        kDebug() << "domain: " << domain << ", name: " << name << endl;
+        kDebug() << "domain: " << domain << ", name: " << name;
         QStandardItem *parent = parents[domain];
         if (!parent)
         {
-            kDebug() << "Couldn't find the domain, adding it" << endl; 
+            kDebug() << "Couldn't find the domain, adding it"; 
             parent = new QStandardItem(domain);
             parent->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             parents[domain] = parent;

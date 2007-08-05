@@ -67,13 +67,13 @@ main(int argc, char *argv[])
 
    // Check how KCmdLineArgs::url() works
    KUrl u = KCmdLineArgs::makeURL("/tmp");
-   kDebug() << u << endl;
+   kDebug() << u;
    assert(u.path() == "/tmp");
    u = KCmdLineArgs::makeURL("foo");
-   kDebug() << u << "  expected: " << KUrl(QDir::currentPath()+"/foo") << endl;
+   kDebug() << u << "  expected: " << KUrl(QDir::currentPath()+"/foo");
    assert(u.path() == QDir::currentPath()+"/foo");
    u = KCmdLineArgs::makeURL("http://www.kde.org");
-   kDebug() << u << endl;
+   kDebug() << u;
    assert(u.url() == "http://www.kde.org");
 
    QFile file("a:b");

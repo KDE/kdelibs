@@ -642,7 +642,7 @@ KMimeType::Ptr KFileItem::determineMimeType() const
 
         d->m_pMimeType = KMimeType::findByUrl( url, d->m_fileMode, isLocalUrl );
         Q_ASSERT(d->m_pMimeType);
-        //kDebug() << "finding mimetype for " << url.url() << " : " << d->m_pMimeType->name() << endl;
+        //kDebug() << "finding mimetype for " << url.url() << " : " << d->m_pMimeType->name();
         d->m_bMimeTypeKnown = true;
     }
 
@@ -673,7 +673,7 @@ QString KFileItem::mimeComment() const
     }
 
     QString comment = mType->comment( url );
-    //kDebug() << "finding comment for " << url.url() << " : " << d->m_pMimeType->name() << endl;
+    //kDebug() << "finding comment for " << url.url() << " : " << d->m_pMimeType->name();
     if (!comment.isEmpty())
         return comment;
     else
@@ -731,7 +731,7 @@ QString KFileItem::iconName() const
             return icon;
     }
 
-    //kDebug() << "finding icon for " << url.url() << " : " << mimeTypePtr()->name() << endl;
+    //kDebug() << "finding icon for " << url.url() << " : " << mimeTypePtr()->name();
     return mime->iconName(url);
 }
 
@@ -756,7 +756,7 @@ QStringList KFileItem::overlays() const
         if (KSambaShare::instance()->isDirectoryShared( d->m_url.path() ) ||
             KNFSShare::instance()->isDirectoryShared( d->m_url.path() ))
         {
-            //kDebug()<<"KFileShare::isDirectoryShared : "<<d->m_url.path()<<endl;
+            //kDebug()<<"KFileShare::isDirectoryShared : "<<d->m_url.path();
             names.append("share");
         }
     }
@@ -783,7 +783,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
                 if ( mimeType )
                     defaultFolderIcon = &KGlobal::staticQString( mimeType->iconName() );
                else
-                    kWarning(7000) << "No mimetype for inode/directory could be found. Check your installation." << endl;
+                    kWarning(7000) << "No mimetype for inode/directory could be found. Check your installation.";
             }
             if ( defaultFolderIcon )
                 return DesktopIcon( *defaultFolderIcon, _size, _state );
@@ -805,7 +805,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     {
         KUrl sf;
         sf.setPath( d->m_url.path().left( d->m_url.path().length() - 3 ) );
-        //kDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
+        //kDebug() << "KFileItem::pixmap subFileName=" << subFileName;
         mime = KMimeType::findByUrl( sf, 0, d->m_bIsLocalUrl );
     }
 
@@ -813,9 +813,9 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     KUrl url = mostLocalUrl(isLocalUrl);
 
     QPixmap p = KIconLoader::global()->loadMimeTypeIcon( mime->iconName( url ), K3Icon::Desktop, _size, _state );
-    //kDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
+    //kDebug() << "finding pixmap for " << url.url() << " : " << mime->name();
     if (p.isNull())
-        kWarning() << "Pixmap not found for mimetype " << d->m_pMimeType->name() << endl;
+        kWarning() << "Pixmap not found for mimetype " << d->m_pMimeType->name();
 
     return p;
 }
@@ -877,7 +877,7 @@ bool KFileItem::isDir() const
 {
     if ( d->m_fileMode == KFileItem::Unknown )
     {
-        kDebug() << " KFileItem::isDir can't say -> false " << endl;
+        kDebug() << " KFileItem::isDir can't say -> false ";
         return false; // can't say for sure, so no
     }
     return (S_ISDIR(d->m_fileMode));
@@ -1013,7 +1013,7 @@ QString KFileItem::getToolTipText(int maxcount) const
     tip += "</table>";
 
     //kDebug() << "making this the tool tip rich text:\n";
-    //kDebug() << tip << endl;
+    //kDebug() << tip;
 
     return tip;
 }
@@ -1242,7 +1242,7 @@ KMimeType::Ptr KFileItem::mimeTypePtr() const
         // Technically we could refine all files, given the >80 magic rules...
         // But do we really need to?
         const bool canDoBetter = d->m_delayedMimeTypes && accuracy < 80;
-        //kDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
+        //kDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name();
         // if we didn't use fast mode, or if we got a result, then this is the mimetype
         // otherwise, determineMimeType will be able to do better.
         d->m_bMimeTypeKnown = !canDoBetter;

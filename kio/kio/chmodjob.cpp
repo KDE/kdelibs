@@ -132,11 +132,11 @@ void ChmodJobPrivate::_k_processList()
                           << "\n new permissions = " << QString::number(info.permissions,8)
                           << endl;*/
             m_infos.prepend( info );
-            //kDebug(7007) << "processList : Adding info for " << info.url.prettyUrl() << endl;
+            //kDebug(7007) << "processList : Adding info for " << info.url.prettyUrl();
             // Directory and recursive -> list
             if ( item->isDir() && m_recursive )
             {
-                //kDebug(7007) << "ChmodJob::processList dir -> listing" << endl;
+                //kDebug(7007) << "ChmodJob::processList dir -> listing";
                 KIO::ListJob * listJob = KIO::listRecursive( item->url(), false /* no GUI */ );
                 q->connect( listJob, SIGNAL(entries( KIO::Job *,
                                                      const KIO::UDSEntryList& )),
@@ -147,7 +147,7 @@ void ChmodJobPrivate::_k_processList()
         }
         m_lstItems.removeFirst();
     }
-    kDebug(7007) << "ChmodJob::processList -> going to STATE_CHMODING" << endl;
+    kDebug(7007) << "ChmodJob::processList -> going to STATE_CHMODING";
     // We have finished, move on
     state = STATE_CHMODING;
     chmodNextFile();
@@ -249,18 +249,18 @@ void ChmodJob::slotResult( KJob * job )
         emitResult();
         return;
     }
-    //kDebug(7007) << " ChmodJob::slotResult( KJob * job ) d->m_lstItems:" << d->m_lstItems.count() << endl;
+    //kDebug(7007) << " ChmodJob::slotResult( KJob * job ) d->m_lstItems:" << d->m_lstItems.count();
     switch ( d->state )
     {
         case STATE_LISTING:
             removeSubjob(job);
             d->m_lstItems.removeFirst();
-            kDebug(7007) << "ChmodJob::slotResult -> processList" << endl;
+            kDebug(7007) << "ChmodJob::slotResult -> processList";
             d->_k_processList();
             return;
         case STATE_CHMODING:
             removeSubjob(job);
-            kDebug(7007) << "ChmodJob::slotResult -> chmodNextFile" << endl;
+            kDebug(7007) << "ChmodJob::slotResult -> chmodNextFile";
             d->chmodNextFile();
             return;
         default:

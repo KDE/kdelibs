@@ -104,14 +104,14 @@ ExecStateModel::ExecStateModel(KJS::ExecState *exec, QObject *parent)
 {
     if (!m_exec)
     {
-        kDebug() << "exec is null!" << endl;
+        kDebug() << "exec is null!";
         return;
     }
 
     KJS::Context* context = m_exec->context();
     if (!context)
     {
-        kDebug() << "nothing running!" << endl;
+        kDebug() << "nothing running!";
         return;
     }
 

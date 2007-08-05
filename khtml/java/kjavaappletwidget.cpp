@@ -108,7 +108,7 @@ void KJavaAppletWidget::setWindow( WId w )
 
 QSize KJavaAppletWidget::sizeHint() const
 {
-    kDebug(6100) << "KJavaAppletWidget::sizeHint()" << endl;
+    kDebug(6100) << "KJavaAppletWidget::sizeHint()";
     QSize rval = QX11EmbedContainer::sizeHint();
 
     if( rval.width() == 0 || rval.height() == 0 )
@@ -119,7 +119,7 @@ QSize KJavaAppletWidget::sizeHint() const
         }
     }
 
-    kDebug(6100) << "returning: (" << rval.width() << ", " << rval.height() << ")" << endl;
+    kDebug(6100) << "returning: (" << rval.width() << ", " << rval.height() << ")";
 
     return rval;
 }

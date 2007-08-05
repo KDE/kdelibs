@@ -251,7 +251,7 @@ static inline RenderObject *Bidinext(RenderObject *par, RenderObject *current, B
 
     while(current != 0)
     {
-        //kDebug( 6040 ) << "current = " << current << endl;
+        //kDebug( 6040 ) << "current = " << current;
         if (!current->isFloating() && !current->isReplaced() && !current->isPositioned()) {
             next = current->firstChild();
             if ( next && adjustEmbedding ) {
@@ -531,7 +531,7 @@ static void appendRun( BidiState &bidi )
 {
     if ( emptyRun ) return;
 #if BIDI_DEBUG > 1
-    kDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
+    kDebug(6041) << "appendRun: dir="<<(int)dir;
 #endif
 
     bool b = adjustEmbedding;
@@ -831,8 +831,8 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
     int xpage = crossesPageBreak(lineBox->topOverflow(), lineBox->bottomOverflow());
     if (xpage) {
 #ifdef PAGE_DEBUG
-        kDebug(6040) << renderName() << " Line crosses to page " << xpage << endl;
-        kDebug(6040) << renderName() << " at pos " << lineBox->yPos() << " height " << lineBox->height() << endl;
+        kDebug(6040) << renderName() << " Line crosses to page " << xpage;
+        kDebug(6040) << renderName() << " at pos " << lineBox->yPos() << " height " << lineBox->height();
 #endif
 
         doPageBreak = true;
@@ -844,7 +844,7 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
             }
 #ifdef PAGE_DEBUG
             else
-                kDebug(6040) << "Ignoring page-break-inside: avoid" << endl;
+                kDebug(6040) << "Ignoring page-break-inside: avoid";
 #endif
         }
         // check orphans
@@ -861,7 +861,7 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
         } else
         if (orphans < style()->orphans() ) {
 #ifdef PAGE_DEBUG
-            kDebug(6040) << "Orphans: " << orphans << endl;
+            kDebug(6040) << "Orphans: " << orphans;
 #endif
             // Orphans is a level 2 page-break rule and can be broken only
             // if the break is physically required.
@@ -872,7 +872,7 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
             }
 #ifdef PAGE_DEBUG
             else
-                kDebug(6040) << "Ignoring violated orphans" << endl;
+                kDebug(6040) << "Ignoring violated orphans";
 #endif
         }
         if (doPageBreak) {
@@ -883,13 +883,13 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
             lineBox->verticallyAlignBoxes(m_height);
             if (lineBox->yPos() < pTop) {
                 // ### serious crap. render_line is sometimes placing lines too high
-                kDebug(6040) << "page top overflow by repositioned line" << endl;
+                kDebug(6040) << "page top overflow by repositioned line";
                 int heightIncrease = pTop - lineBox->yPos();
                 m_height = pTop + heightIncrease;
                 lineBox->verticallyAlignBoxes(m_height);
             }
 #ifdef PAGE_DEBUG
-            kDebug(6040) << "Cleared line " << lineBox->yPos() - oldYPos << "px" << endl;
+            kDebug(6040) << "Cleared line " << lineBox->yPos() - oldYPos << "px";
 #endif
             setContainsPageBreak(true);
         }
@@ -908,7 +908,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
     }
 
 #if BIDI_DEBUG > 1
-    kDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
+    kDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos;
 #endif
 
     sFirstBidiRun = 0;
@@ -929,7 +929,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
 
         QChar::Direction dirCurrent;
         if (atEnd) {
-            //kDebug(6041) << "atEnd" << endl;
+            //kDebug(6041) << "atEnd";
             BidiContext *c = bidi.context;
             if ( bidi.current.atEnd())
                 while ( c->parent )
@@ -942,7 +942,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
 #ifndef QT_NO_UNICODETABLES
 
 #if BIDI_DEBUG > 1
-        kDebug(6041) << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir << " level =" << (int)context->level << endl;
+        kDebug(6041) << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir << " level =" << (int)context->level;
 #endif
 
         switch(dirCurrent) {
@@ -1320,9 +1320,9 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
     }
 
 #if BIDI_DEBUG > 0
-    kDebug(6041) << "visual order is:" << endl;
+    kDebug(6041) << "visual order is:";
     for (BidiRun* curr = sFirstRun; curr; curr = curr->nextRun)
-        kDebug(6041) << "    " << curr << endl;
+        kDebug(6041) << "    " << curr;
 #endif
 }
 
@@ -1375,10 +1375,10 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLin
 #ifdef DEBUG_LAYOUT
     QTime qt;
     qt.start();
-    kDebug( 6040 ) << renderName() << " layoutInlineChildren( " << this <<" )" << endl;
+    kDebug( 6040 ) << renderName() << " layoutInlineChildren( " << this <<" )";
 #endif
 #if BIDI_DEBUG > 1 || defined( DEBUG_LINEBREAKS )
-    kDebug(6041) << " ------- bidi start " << this << " -------" << endl;
+    kDebug(6041) << " ------- bidi start " << this << " -------";
 #endif
 
     m_height = borderTop() + paddingTop();
@@ -1410,7 +1410,7 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLin
                 if (o->isBox())
                     static_cast<RenderBox*>(o)->RenderBox::deleteInlineBoxes();
 
-                //kDebug(6041) << "layouting replaced or floating child" << endl;
+                //kDebug(6041) << "layouting replaced or floating child";
                 if (relayoutChildren || o->style()->width().isPercent() || o->style()->height().isPercent())
                     o->setChildNeedsLayout(true, false);
                 if (o->isPositioned())
@@ -1580,7 +1580,7 @@ redo_linebreak:
         }
         // Widows rule broken and more orphans left to use
         if (widows < style()->widows() && orphans > 0) {
-            kDebug( 6040 ) << "Widows: " << widows << endl;
+            kDebug( 6040 ) << "Widows: " << widows;
             // Check if we have enough orphans after respecting widows count
             int newOrphans = orphans - (style()->widows() - widows);
             if (newOrphans < style()->orphans()) {
@@ -1620,10 +1620,10 @@ redo_linebreak:
         checkLinesForTextOverflow();
 
 #if BIDI_DEBUG > 1
-    kDebug(6041) << " ------- bidi end " << this << " -------" << endl;
+    kDebug(6041) << " ------- bidi end " << this << " -------";
 #endif
-    //kDebug() << "RenderBlock::layoutInlineChildren time used " << qt.elapsed() << endl;
-    //kDebug(6040) << "height = " << m_height <<endl;
+    //kDebug() << "RenderBlock::layoutInlineChildren time used " << qt.elapsed();
+    //kDebug(6040) << "height = " << m_height;
 }
 
 static void setStaticPosition( RenderBlock* p, RenderObject *o, bool *needToSetStaticX = 0, bool *needToSetStaticY = 0 )
@@ -1657,8 +1657,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     int w = 0;
     int tmpW = 0;
 #ifdef DEBUG_LINEBREAKS
-    kDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width << endl;
-    kDebug(6041) << "sol: " << start.obj << " " << start.pos << endl;
+    kDebug(6041) << "findNextLineBreak: line at " << m_height << " line width " << width;
+    kDebug(6041) << "sol: " << start.obj << " " << start.pos;
 #endif
 
     BidiIterator posStart = start;
@@ -1740,7 +1740,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
-        kDebug(6041) << "new object "<< o <<" width = " << w <<" tmpw = " << tmpW << endl;
+        kDebug(6041) << "new object "<< o <<" width = " << w <<" tmpw = " << tmpW;
 #endif
         if(o->isBR()) {
             if( w + tmpW <= width ) {
@@ -1937,7 +1937,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         !t->containsOnlyWhitespace(pos+1, strlen-(pos+1)));
 #endif
 #ifdef DEBUG_LINEBREAKS
-                    kDebug(6041) << "found space at " << pos << " in string '" << QString( str, strlen ).toLatin1().constData() << "' adding " << tmpW << " new width = " << w << endl;
+                    kDebug(6041) << "found space at " << pos << " in string '" << QString( str, strlen ).toLatin1().constData() << "' adding " << tmpW << " new width = " << w;
 #endif
                     if ( autoWrap && w + tmpW > width && w == 0 ) {
                         int fb = nearestFloatBottom(m_height);
@@ -1955,7 +1955,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                             m_height = fb;
                             width = newLineWidth;
 #ifdef DEBUG_LINEBREAKS
-                            kDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
+                            kDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width;
 #endif
                         }
                     }
@@ -1973,7 +1973,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         lBreak.pos = pos;
 
 #ifdef DEBUG_LINEBREAKS
-                        kDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+                        kDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w;
 #endif
                         return lBreak;
                     }
@@ -2064,8 +2064,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         }
 
         if (checkForBreak && (w + tmpW > width)) {
-            //kDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
-            //kDebug() << "start=" << start.obj << " current=" << o << endl;
+            //kDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width;
+            //kDebug() << "start=" << start.obj << " current=" << o;
             // if we have floats, try to get below them.
             if (currentCharacterIsSpace && !ignoringSpaces && !o->style()->preserveWS())
                 trailingSpaceObject = 0;
@@ -2084,7 +2084,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                 m_height = fb;
                 width = newLineWidth;
 #ifdef DEBUG_LINEBREAKS
-                kDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
+                kDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width;
 #endif
             }
 
@@ -2115,7 +2115,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     }
 
 #ifdef DEBUG_LINEBREAKS
-    kDebug( 6041 ) << "end of par, width = " << width << " linewidth = " << w + tmpW << endl;
+    kDebug( 6041 ) << "end of par, width = " << width << " linewidth = " << w + tmpW;
 #endif
     if( w + tmpW <= width || (last && !last->style()->autoWrap())) {
         lBreak.obj = 0;
@@ -2158,7 +2158,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         lBreak.increment(bidi);
 
 #ifdef DEBUG_LINEBREAKS
-    kDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+    kDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w;
 #endif
 
     // Sanity check our midpoints.

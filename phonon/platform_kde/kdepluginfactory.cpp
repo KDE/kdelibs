@@ -151,7 +151,7 @@ QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
         return false;
     }
 
-    kDebug() << "using backend: " << newService->name() << endl;
+    kDebug() << "using backend: " << newService->name();
     return backend;
 }
 

@@ -601,7 +601,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
         config = KSharedConfig::openConfig(componentName);
 
     KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
-    kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
+    kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup;
 
     d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, *cfgGroup);
 }
@@ -624,7 +624,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
         return;
 
     KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
-    kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
+    kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup;
 
     d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, *cfgGroup, pluginLoadMethod, Private::PluginModel::ManuallyAdded);
 }

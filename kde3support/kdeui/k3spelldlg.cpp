@@ -52,8 +52,8 @@ K3SpellDlg::K3SpellDlg( QWidget * parent, bool _progressbar, bool _modal )
   setButtonText( Cancel, i18n("&Finished") );
 
   KConfigGroup cg( KGlobal::config(),"K3Spell" );
-  kDebug() << (cg.readEntry("K3Spell_DoSpellChecking")) << endl;
-  kDebug() << "dospellchecking is " << cg.readEntry("K3Spell_DoSpellChecking", false)  << endl;
+  kDebug() << (cg.readEntry("K3Spell_DoSpellChecking"));
+  kDebug() << "dospellchecking is " << cg.readEntry("K3Spell_DoSpellChecking", false);
   if ( (cg.readEntry("K3Spell_DoSpellChecking", false) == true) )  //dospellcheck ?
   {
     Q_UNUSED( _progressbar );
@@ -128,7 +128,7 @@ K3SpellDlg::init( const QString & _word, QStringList * _sugg )
                                              d->ui.m_suggestions->lastItem() );
     item->setText( 0, *it );
   }
-  kDebug(750) << "K3SpellDlg::init [" << word << "]" << endl;
+  kDebug(750) << "K3SpellDlg::init [" << word << "]";
 
   emit ready( true );
 
@@ -163,7 +163,7 @@ K3SpellDlg::init( const QString& _word, QStringList* _sugg,
       item->setText( 0, *it );
   }
 
-  kDebug(750) << "K3SpellDlg::init [" << word << "]" << endl;
+  kDebug(750) << "K3SpellDlg::init [" << word << "]";
 
   emit ready( true );
 

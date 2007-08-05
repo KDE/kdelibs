@@ -52,7 +52,7 @@ org::kde::KLauncher *KToolInvocation::klauncher()
 {
     if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( "org.kde.klauncher" ) )
     {
-        kDebug() << "klauncher not running... launching kdeinit" << endl;
+        kDebug() << "klauncher not running... launching kdeinit";
         KToolInvocation::startKdeinit();
     }
     return ::klauncherIface();

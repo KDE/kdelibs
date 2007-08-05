@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
         line = input.readLine();
         text += line + "\r\n";
     }
-    kDebug() << text << endl;
+    kDebug() << text;
 
     KEMailSettings emailConfig;
     emailConfig.setProfile(emailConfig.defaultProfileName());
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
 	    buffer[sizeof(buffer)-1] = '\0';
         fromaddr += buffer;
     }
-    kDebug() << "fromaddr \"" << fromaddr << "\"" << endl;
+    kDebug() << "fromaddr \"" << fromaddr << "\"";
 
     QString  server = emailConfig.getSetting(KEMailSettings::OutServer);
     if (server.isEmpty())
@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
     sm->sendMessage();
 
     int r = a.exec();
-    kDebug() << "execing " << r << endl;
+    kDebug() << "execing " << r;
     delete sm;
     return r;
 }

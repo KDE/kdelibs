@@ -33,7 +33,7 @@
 #define KPLUGININFO_ISVALID_ASSERTION \
     do { \
         if (!d) { \
-            kFatal(703) << "Accessed invalid KPluginInfo object" << endl; \
+            kFatal(703) << "Accessed invalid KPluginInfo object"; \
         } \
     } while (false)
 //#else
@@ -231,21 +231,21 @@ bool KPluginInfo::isHidden() const
 void KPluginInfo::setPluginEnabled( bool enabled )
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo;
     d->pluginenabled = enabled;
 }
 
 bool KPluginInfo::isPluginEnabled() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo;
     return d->pluginenabled;
 }
 
 bool KPluginInfo::isPluginEnabledByDefault() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo;
     return d->enabledbydefault;
 }
 
@@ -367,12 +367,12 @@ QVariant KPluginInfo::property( const QString & key ) const
 void KPluginInfo::save(KConfigGroup config)
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo;
     if (config.isValid()) {
         config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
     } else {
         if (!d->config.isValid()) {
-            kWarning( 703 ) << "no KConfigGroup, cannot save" << endl;
+            kWarning( 703 ) << "no KConfigGroup, cannot save";
             return;
         }
         d->config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
@@ -382,12 +382,12 @@ void KPluginInfo::save(KConfigGroup config)
 void KPluginInfo::load(const KConfigGroup &config)
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo;
     if (config.isValid()) {
         setPluginEnabled(config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
     } else {
         if (!d->config.isValid()) {
-            kWarning( 703 ) << "no KConfigGroup, cannot load" << endl;
+            kWarning( 703 ) << "no KConfigGroup, cannot load";
             return;
         }
         setPluginEnabled(d->config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
@@ -396,7 +396,7 @@ void KPluginInfo::load(const KConfigGroup &config)
 
 void KPluginInfo::defaults()
 {
-    kDebug( 703 ) << k_funcinfo << endl;
+    kDebug( 703 ) << k_funcinfo;
     setPluginEnabled( isPluginEnabledByDefault() );
 }
 

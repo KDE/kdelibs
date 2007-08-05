@@ -105,7 +105,7 @@ int KDEsuClient::connect()
 
     if (::connect(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
     {
-        kWarning(900) << k_lineinfo << "connect():" << perror << endl;
+        kWarning(900) << k_lineinfo << "connect():" << perror;
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
@@ -119,7 +119,7 @@ int KDEsuClient::connect()
     {
        if (euid != getuid())
        {
-            kWarning(900) << "socket not owned by me! socket uid = " << euid << endl;
+            kWarning(900) << "socket not owned by me! socket uid = " << euid;
             close(d->sockfd); d->sockfd = -1;
             return -1;
        }
@@ -135,19 +135,19 @@ int KDEsuClient::connect()
     KDE_struct_stat s;
     if (KDE_lstat(d->sock, &s)!=0)
     {
-        kWarning(900) << "stat failed (" << d->sock << ")" << endl;
+        kWarning(900) << "stat failed (" << d->sock << ")";
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
     if (s.st_uid != getuid())
     {
-        kWarning(900) << "socket not owned by me! socket uid = " << s.st_uid << endl;
+        kWarning(900) << "socket not owned by me! socket uid = " << s.st_uid;
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
     if (!S_ISSOCK(s.st_mode))
     {
-        kWarning(900) << "socket is not a socket (" << d->sock << ")" << endl;
+        kWarning(900) << "socket is not a socket (" << d->sock << ")";
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
@@ -161,7 +161,7 @@ int KDEsuClient::connect()
     {
         if (cred.uid != getuid())
         {
-            kWarning(900) << "socket not owned by me! socket uid = " << cred.uid << endl;
+            kWarning(900) << "socket not owned by me! socket uid = " << cred.uid;
             close(d->sockfd); d->sockfd = -1;
             return -1;
         }
@@ -309,7 +309,7 @@ QList<QByteArray> KDEsuClient::getKeys(const QByteArray &group)
     QList<QByteArray> list;
     if( !reply.isEmpty() )
     {
-        // kDebug(900) << "Found a matching entry: " << reply << endl;
+        // kDebug(900) << "Found a matching entry: " << reply;
         while (1)
         {
             pos = reply.indexOf( '\007', index );

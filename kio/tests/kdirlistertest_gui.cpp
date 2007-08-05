@@ -148,9 +148,9 @@ void KDirListerTest::completed()
     {
         KFileItem* item = lister->findByUrl( KUrl( QDir::tempPath() ) );
         if ( item )
-            kDebug() << "Found " << QDir::tempPath() << ": " << item << endl;
+            kDebug() << "Found " << QDir::tempPath() << ": " << item;
         else
-            kWarning() << QDir::tempPath() << " not found! Bug in findByURL?" << endl;
+            kWarning() << QDir::tempPath() << " not found! Bug in findByURL?";
     }
 }
 

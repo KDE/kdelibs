@@ -106,8 +106,8 @@ void DavJob::slotData( const QByteArray& data )
 void DavJob::slotFinished()
 {
   Q_D(DavJob);
-  // kDebug(7113) << "DavJob::slotFinished()" << endl;
-  // kDebug(7113) << d->str_response << endl;
+  // kDebug(7113) << "DavJob::slotFinished()";
+  // kDebug(7113) << d->str_response;
 	if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() &&
             (d->m_command == CMD_SPECIAL)) {
 		QDataStream istream( d->m_packedArgs );
@@ -132,7 +132,7 @@ void DavJob::slotFinished()
 		el.appendChild( textnode );
 		root.appendChild( el );
 	}
-  // kDebug(7113) << d->m_response.toString() << endl;
+  // kDebug(7113) << d->m_response.toString();
 	TransferJob::slotFinished();
 	if( d ) d->staticData = d->savedStaticData; // Need to send DAV request to this host too
 }

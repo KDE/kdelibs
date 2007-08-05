@@ -415,7 +415,7 @@ bool KCalendarSystemJalali::dateToJulianDay( int year, int month, int day, int &
 
 int KCalendarSystemJalali::year( const QDate &date ) const
 {
-    kDebug( 5400 ) << "Jalali year..." <<  endl;
+    kDebug( 5400 ) << "Jalali year...";
     int y;
 
     gregorianToJalali( date, &y, 0, 0 );
@@ -436,7 +436,7 @@ int KCalendarSystemJalali::yearStringToInteger( const QString &sNum, int &iLengt
 int KCalendarSystemJalali::month ( const QDate& date ) const
 
 {
-    kDebug( 5400 ) << "Jalali month..." <<  endl;
+    kDebug( 5400 ) << "Jalali month...";
     int m;
 
     gregorianToJalali( date, 0 , &m, 0 );
@@ -456,7 +456,7 @@ int KCalendarSystemJalali::monthStringToInteger( const QString &sNum, int &iLeng
 
 int KCalendarSystemJalali::day( const QDate &date ) const
 {
-    kDebug( 5400 ) << "Jalali day..." <<  endl;
+    kDebug( 5400 ) << "Jalali day...";
     int d;
 
     gregorianToJalali( date, 0, 0, &d );

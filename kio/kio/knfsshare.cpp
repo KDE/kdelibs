@@ -64,7 +64,7 @@ bool KNFSShare::KNFSSharePrivate::findExportsFile()
   if ( QFile::exists("/etc/exports") )
     exportsFile = "/etc/exports";
   else {
-    kDebug(7000) << "KNFSShare: Could not find exports file!" << endl;
+    kDebug(7000) << "KNFSShare: Could not find exports file!";
     return false;
   }
 
@@ -80,7 +80,7 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
 {
   QFile f(exportsFile);
 
-  kDebug(7000) << "KNFSShare::readExportsFile " << exportsFile << endl;
+  kDebug(7000) << "KNFSShare::readExportsFile " << exportsFile;
 
   if (!f.open(QIODevice::ReadOnly)) {
     kError() << "KNFSShare: Could not open " << exportsFile << endl;
@@ -143,7 +143,7 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
 
     }
 
-    kDebug(7000) << "KNFSShare: Found path: " << path << endl;
+    kDebug(7000) << "KNFSShare: Found path: " << path;
 
     // normalize path
     if ( !path.endsWith(QLatin1String("/")) )

@@ -43,10 +43,10 @@ static bool check(const QString& txt, QString a, QString b)
     if (b.isEmpty())
         b.clear();
     if (a == b) {
-        kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+        kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok";
     }
     else {
-        kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+        kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !";
         exit(1);
     }
     return true;
@@ -56,10 +56,10 @@ template<typename T>
 static bool check(const QString& txt, T a, T b)
 {
     if (a == b) {
-        kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+        kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok";
     }
     else {
-        kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+        kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !";
         exit(1);
     }
     return true;
@@ -76,9 +76,9 @@ int main(int argc, char *argv[])
     test.setup();
     test.runAll();
     test.cleanup();
-    kDebug() << "All tests OK." << endl;
+    kDebug() << "All tests OK.";
 #else
-    kDebug() << "All tests skipped - no ACL support" << endl;
+    kDebug() << "All tests skipped - no ACL support";
 #endif
     return 0; // success. The exit(1) in check() is what happens in case of failure.
 }

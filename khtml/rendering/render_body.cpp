@@ -57,7 +57,7 @@ void RenderBody::setStyle(RenderStyle* style)
 
 void RenderBody::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
-    //kDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
+    //kDebug( 6040 ) << renderName() << "::paintDecorations()";
     QColor bgColor;
     const BackgroundLayer *bgLayer = 0;
 

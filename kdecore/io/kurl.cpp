@@ -316,13 +316,13 @@ KUrl::KUrl( const QString &str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-   kDebug(126) << "KUrl::KUrl " << str.toAscii().data() << endl;
+   kDebug(126) << "KUrl::KUrl " << str.toAscii().data();
     if ( str.startsWith("file:///") ) {
-      kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) << endl;
+      kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(8).toLatin1() );
       setPath( QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) );
    	}
     else if ( str.length() > 9 && str.startsWith("file://") && str[7].isLetter() && str[8] == QLatin1Char(':') ) {
-      kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(7).toLatin1() ) << endl;
+      kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(7).toLatin1() );
       setPath( QUrl::fromPercentEncoding( str.mid(7).toLatin1() ) );
     }
     else if ( str.length() > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
@@ -343,7 +343,7 @@ KUrl::KUrl( const char * str )
 {
   if ( str && str[0] ) {
 #ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::KUrl " << " " << str << endl;
+    kDebug(126) << "KUrl::KUrl " << " " << str;
 
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
     	setPath( QString::fromUtf8( str+1 ) );
@@ -363,7 +363,7 @@ KUrl::KUrl( const QByteArray& str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::KUrl " << " " << str.data() << endl;
+    kDebug(126) << "KUrl::KUrl " << " " << str.data();
     if ( str[0] == '/' && (str[1] >= 'A' && str[1] <= 'Z' || str[1] >= 'a' && str[1] <= 'z') && str[2] == ':' )
     	  setPath( QString::fromUtf8( str.mid(2) ) );
     else if ( (str[0] >= 'A' && str[0] <= 'Z' || str[0] >= 'a' && str[0] <= 'z')  &&  str[1] == ':' )
@@ -381,7 +381,7 @@ KUrl::KUrl( const KUrl& _u )
     : QUrl( _u ), d(0)
 {
 #ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile() << endl;
+    kDebug(126) << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 }
 
@@ -389,7 +389,7 @@ KUrl::KUrl( const QUrl &u )
     : QUrl( u ), d(0)
 {
 #ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile() << endl;
+    kDebug(126) << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
 #endif
 }
 
@@ -397,7 +397,7 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
    : QUrl(), d(0)
 {
 #ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile() << endl;
+    kDebug(126) << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 #if 0
   if (_u.hasSubUrl()) // Operate on the last suburl, not the first
@@ -472,16 +472,16 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
 #endif
     }
     setPath( strPath );
-    //kDebug(126) << "url()=" << url() << " rUrl=" << rUrl << endl;
+    //kDebug(126) << "url()=" << url() << " rUrl=" << rUrl;
     KUrl tmp( url() + rUrl);
-    //kDebug(126) << "assigning tmp=" << tmp.url() << endl;
+    //kDebug(126) << "assigning tmp=" << tmp.url();
     *this = tmp;
     cleanPath(KeepDirSeparators);
   }
   else
   {
     KUrl tmp( rUrl );
-    //kDebug(126) << "not relative; assigning tmp=" << tmp.url() << endl;
+    //kDebug(126) << "not relative; assigning tmp=" << tmp.url();
     *this = tmp;
     // Preserve userinfo if applicable.
     if (!_u.userInfo().isEmpty() && userInfo().isEmpty()
@@ -1186,7 +1186,7 @@ void KUrl::addPath( const QString& _txt )
   }
 
   setPath( strPath + _txt.mid( i ) );
-  //kDebug(126)<<"addPath: resultpath="<<path()<<endl;
+  //kDebug(126)<<"addPath: resultpath="<<path();
 }
 
 QString KUrl::directory( const DirectoryOptions& options ) const
@@ -1563,7 +1563,7 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 void KUrl::setPath( const QString& _path )
 {
 #ifdef Q_WS_WIN
-    kDebug(126) << "KUrl::setPath " << " " << _path.toAscii().data() << endl;
+    kDebug(126) << "KUrl::setPath " << " " << _path.toAscii().data();
 #endif
     if ( scheme().isEmpty() )
         setScheme( "file" );

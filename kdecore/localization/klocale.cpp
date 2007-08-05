@@ -354,7 +354,7 @@ void KLocalePrivate::initFormat(KLocale *parent)
     }
     Q_ASSERT(config);
 
-  kDebug(173) << "KLocale::initFormat" << endl;
+  kDebug(173) << "KLocale::initFormat";
 
   // make sure the config files are read using the correct locale
   // ### Why not add a KConfigBase::setLocale( const KLocale * )?
@@ -381,7 +381,7 @@ void KLocalePrivate::initFormat(KLocale *parent)
   readConfigEntry("DecimalSymbol", ".", decimalSymbol);
   readConfigEntry("ThousandsSeparator", ",", thousandsSeparator);
   thousandsSeparator.replace( QString::fromLatin1("$0"), QString() );
-  //kDebug(173) << "thousandsSeparator=" << thousandsSeparator << endl;
+  //kDebug(173) << "thousandsSeparator=" << thousandsSeparator;
 
   readConfigEntry("PositiveSign", "", positiveSign);
   readConfigEntry("NegativeSign", "-", negativeSign);
@@ -626,7 +626,7 @@ void KLocalePrivate::updateCatalogs( )
       if ( ! KCatalog::catalogLocaleDir( name, lang ).isEmpty() )
       {
         catalogs.append( KCatalog( name, lang ) );
-        //kDebug(173) << "Catalog: " << name << ":" << lang << endl;
+        //kDebug(173) << "Catalog: " << name << ":" << lang;
       }
 
   // notify KLocalizedString of catalog update.
@@ -1114,7 +1114,7 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
   const bool neg = (tmpString[0] == '-');
   if (neg || tmpString[0] == '+') tmpString.remove(0, 1);
 
-  //kDebug(173)<<"tmpString:"<<tmpString<<endl;
+  //kDebug(173)<<"tmpString:"<<tmpString;
 
   // Split off exponential part (including 'e'-symbol)
   const int expPos = tmpString.indexOf('e'); // -1 if not found
@@ -1126,8 +1126,8 @@ QString KLocale::formatNumber(const QString &numStr, bool round,
       expString.clear();
   }
 
-  //kDebug(173)<<"mantString:"<<mantString<<endl;
-  //kDebug(173)<<"expString:"<<expString<<endl;
+  //kDebug(173)<<"mantString:"<<mantString;
+  //kDebug(173)<<"expString:"<<expString;
   if (mantString.isEmpty() || !mantString[0].isDigit()) // invalid number
     mantString = "0";
 
@@ -1509,7 +1509,7 @@ QDate KLocale::readDate(const QString &intstr, ReadDateFlags flags, bool* ok) co
 
 QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) const
 {
-  //kDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt << endl;
+  //kDebug(173) << "KLocale::readDate intstr=" << intstr << " fmt=" << fmt;
   QString str = intstr.simplified().toLower();
   int day = -1, month = -1;
   // allow the year to be omitted if not in the format
@@ -1636,7 +1636,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
       error = true;
     }
 
-    //kDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year << endl;
+    //kDebug(173) << "KLocale::readDate day=" << day << " month=" << month << " year=" << year;
     if ( year != -1 && month != -1 && day != -1 && !error)
     {
       if (ok) *ok = true;
@@ -1978,7 +1978,7 @@ QString KLocale::langLookup(const QString &fname, const char *rtype)
   QStringList::Iterator it;
   for (it = search.begin(); it != search.end(); ++it)
     {
-      kDebug(173) << "Looking for help in: " << *it << endl;
+      kDebug(173) << "Looking for help in: " << *it;
 
       QFileInfo info(*it);
       if (info.exists() && info.isFile() && info.isReadable())
@@ -2002,7 +2002,7 @@ void KLocalePrivate::initEncoding(KConfigBase *)
 
   if ( ! codecForEncoding )
     {
-      kWarning(173) << " Defaulting to ISO 8859-1 encoding." << endl;
+      kWarning(173) << " Defaulting to ISO 8859-1 encoding.";
       setEncoding(mibDefault);
     }
 

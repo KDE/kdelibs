@@ -23,7 +23,7 @@ PluginSpellCheck::~PluginSpellCheck()
 
 void PluginSpellCheck::slotSpellCheck()
 {
-    kDebug() << "Plugin parent : " << parent()->objectName() << " (" << parent()->metaObject()->className() << ")" << endl;
+    kDebug() << "Plugin parent : " << parent()->objectName() << " (" << parent()->metaObject()->className() << ")";
     // The parent is assumed to be a NotepadPart
     if ( !parent()->inherits("NotepadPart") )
        KMessageBox::error(0,"You just called the spell-check action on a wrong part (not NotepadPart)");

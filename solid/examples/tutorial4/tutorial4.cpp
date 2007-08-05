@@ -41,11 +41,11 @@ int main(int args, char **argv)
     //test to see if networking is enabled on the system
     if(Solid::Networking::status() == Solid::Networking::Connected)
     {
-        kDebug() << "Networking is enabled.  Feel free to go online!" << endl;
+        kDebug() << "Networking is enabled.  Feel free to go online!";
     }
     else
     {
-        kDebug() << "Network not available." << endl;
+        kDebug() << "Network not available.";
     }
     return 0;
 }

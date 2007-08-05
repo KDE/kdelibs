@@ -160,7 +160,7 @@ void KDirListerTest::testNewItems()
 
     QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
 
-    kDebug() << "Creating new file" << endl;
+    kDebug() << "Creating new file";
     QFile file(path+"toplevelfile_new");
     QVERIFY(file.open(QIODevice::WriteOnly));
     file.write("foo");
@@ -172,7 +172,7 @@ void KDirListerTest::testNewItems()
         QVERIFY(++numTries < 10);
         QTest::qWait(200);
     }
-    //kDebug() << "numTries=" << numTries << endl;
+    //kDebug() << "numTries=" << numTries;
     QCOMPARE(m_items.count(), 5);
 
     QCOMPARE(spyStarted.count(), 1); // Updates call started
@@ -236,7 +236,7 @@ void KDirListerTest::testDeleteItem()
     QSignalSpy spyDeleteItem(&m_dirLister, SIGNAL(deleteItem(KFileItem*)));
     connect(&m_dirLister, SIGNAL(deleteItem(KFileItem*)), this, SLOT(exitLoop()));
 
-    //kDebug() << "Removing " << path+"toplevelfile_1" << endl;
+    //kDebug() << "Removing " << path+"toplevelfile_1";
     QFile::remove(path+"toplevelfile_1");
     // the remove() doesn't always trigger kdirwatch in stat mode, if this all happens in the same second
     KDirWatch::self()->setDirty(path);

@@ -52,7 +52,7 @@ void KNSBookmarkImporterImpl::parse()
         while(f.readLine(s.data(), g_lineLimit)>=0) {
             if ( s[s.length()-1] != '\n' ) // Gosh, this line is longer than g_lineLimit. Skipping.
             {
-               kWarning() << "Netscape bookmarks contain a line longer than " << g_lineLimit << ". Skipping." << endl;
+               kWarning() << "Netscape bookmarks contain a line longer than " << g_lineLimit << ". Skipping.";
                continue;
             }
             QByteArray t = s.trimmed();

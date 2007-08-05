@@ -250,8 +250,8 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
 
     buildLists();
 
-    //kDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count() << endl;
-    //kDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
+    //kDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count();
+    //kDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements";
 
     KUrl u = url;
 
@@ -267,7 +267,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     u.setPath( QString() );
     encodedurl.host = u.url();
 
-    //kDebug() << "CSSStyleSelector::CSSStyleSelector encoded url " << encodedurl.path << endl;
+    //kDebug() << "CSSStyleSelector::CSSStyleSelector encoded url " << encodedurl.path;
 }
 
 CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
@@ -364,7 +364,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s, DocumentImpl *do
 	s_defaultQuirksStyle->append( s_quirksSheet, "screen" );
     }
 
-    //kDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl;
+    //kDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements";
 }
 
 void CSSStyleSelector::clear()
@@ -436,7 +436,7 @@ void CSSStyleSelector::computeFontSizesFor(int logicalDpiY, int zoomFactor, QVec
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
         factor = scale*factors[i];
         fontSizes[i] = int(qMax( mediumFontSize*factor +.5f, minFontSize));
-        //kDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(qMax( mediumFontSize*factor +.5f, minFontSize)) << endl;
+        //kDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(qMax( mediumFontSize*factor +.5f, minFontSize));
     }
 }
 
@@ -567,8 +567,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 		    fontDirty = false;
 		}
 		DOM::CSSProperty *prop = propsToApply[i]->prop;
-//		if (prop->m_id == CSS_PROP__KONQ_USER_INPUT) kDebug(6080) << "El: "<<e->nodeName().string() << " user-input: "<<((CSSPrimitiveValueImpl *)prop->value())->getIdent() << endl;
-//		if (prop->m_id == CSS_PROP_TEXT_TRANSFORM) kDebug(6080) << "El: "<<e->nodeName().string() << endl;
+//		if (prop->m_id == CSS_PROP__KONQ_USER_INPUT) kDebug(6080) << "El: "<<e->nodeName().string() << " user-input: "<<((CSSPrimitiveValueImpl *)prop->value())->getIdent();
+//		if (prop->m_id == CSS_PROP_TEXT_TRANSFORM) kDebug(6080) << "El: "<<e->nodeName().string();
                 applyRule( prop->m_id, prop->value() );
 	    }
 	    if ( fontDirty ) {
@@ -862,7 +862,7 @@ static void cleanpath(QString &path)
     }
     while ( (pos = path.indexOf( "/./" )) != -1)
         path.remove( pos, 2 );
-    //kDebug() << "checkPseudoState " << path << endl;
+    //kDebug() << "checkPseudoState " << path;
 }
 
 static PseudoState checkPseudoState( const CSSStyleSelector::Encodedurl& encodedurl, DOM::ElementImpl *e )
@@ -1179,28 +1179,28 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         }
         case CSSSelector::Contain:
         {
-            //kDebug( 6080 ) << "checking for contains match" << endl;
+            //kDebug( 6080 ) << "checking for contains match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
             return val_str.contains(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
         }
         case CSSSelector::Begin:
         {
-            //kDebug( 6080 ) << "checking for beginswith match" << endl;
+            //kDebug( 6080 ) << "checking for beginswith match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
             return val_str.startsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
         }
         case CSSSelector::End:
         {
-            //kDebug( 6080 ) << "checking for endswith match" << endl;
+            //kDebug( 6080 ) << "checking for endswith match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
             return val_str.endsWith(sel_str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
         }
         case CSSSelector::Hyphen:
         {
-            //kDebug( 6080 ) << "checking for hyphen match" << endl;
+            //kDebug( 6080 ) << "checking for hyphen match";
             QString val_str = QString::fromRawData(value->unicode(), value->length());
             QString sel_str = QString::fromRawData(sel->value.unicode(), sel->value.length());
             const QString& str = val_str;
@@ -1263,7 +1263,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                 // Handle unfinished parsing and dynamic DOM changes
                 addDependency(BackwardsStructuralDependency, static_cast<ElementImpl*>(e->parentNode()));
                 if (!e->parentNode()->closed()) {
-//                     kDebug(6080) << e->nodeName().string() << "::last-child: Parent unclosed" << endl;
+//                     kDebug(6080) << e->nodeName().string() << "::last-child: Parent unclosed";
                     return false;
                 }
                 DOM::NodeImpl* n = e->nextSibling();
@@ -1304,7 +1304,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                     if (n->isElementNode()) count++;
                     n = n->previousSibling();
                 }
-//                 kDebug(6080) << "NthChild " << count << "=" << sel->string_arg << endl;
+//                 kDebug(6080) << "NthChild " << count << "=" << sel->string_arg;
                 if (matchNth(count,sel->string_arg.string()))
                     return true;
             }
@@ -1322,7 +1322,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                     if (n->isElementNode()) count++;
                     n = n->nextSibling();
                 }
-//                kDebug(6080) << "NthLastChild " << count << "=" << sel->string_arg << endl;
+//                kDebug(6080) << "NthLastChild " << count << "=" << sel->string_arg;
                 if (matchNth(count,sel->string_arg.string()))
                     return true;
             }
@@ -1395,7 +1395,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                     if (n->isElementNode() && static_cast<ElementImpl*>(n)->tagName() == type) count++;
                     n = n->previousSibling();
                 }
-//                kDebug(6080) << "NthOfType " << count << "=" << sel->string_arg << endl;
+//                kDebug(6080) << "NthOfType " << count << "=" << sel->string_arg;
                 if (matchNth(count,sel->string_arg.string()))
                     return true;
             }
@@ -1414,7 +1414,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                     if (n->isElementNode() && static_cast<ElementImpl*>(n)->tagName() == type) count++;
                     n = n->nextSibling();
                 }
-//                kDebug(6080) << "NthLastOfType " << count << "=" << sel->string_arg << endl;
+//                kDebug(6080) << "NthLastOfType " << count << "=" << sel->string_arg;
                 if (matchNth(count,sel->string_arg.string()))
                     return true;
             }
@@ -1506,7 +1506,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
 
             langAttr = langAttr.toLower();
             langSel = langSel.toLower();
-//             kDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
+//             kDebug(6080) << ":lang " << langAttr << "=" << langSel << "?";
             return (langAttr == langSel || langAttr.startsWith(langSel+'-'));
         }
         case CSSSelector::PseudoNot: {
@@ -1550,7 +1550,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                 elem = static_cast<HTMLElementImpl*>(e);
                 DOMString s = elem->innerText();
                 QString selStr = sel->string_arg.string();
-//                kDebug(6080) << ":contains(\"" << selStr << "\")" << " on \"" << s << "\"" << endl;
+//                kDebug(6080) << ":contains(\"" << selStr << "\")" << " on \"" << s << "\"";
                 return s.string().contains(selStr);
             }
             break;
@@ -1777,7 +1777,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
             {
                 CSSOrderedRule *rule = new CSSOrderedRule(r, s->at(j), count());
 		Q3PtrList<CSSOrderedRule>::append(rule);
-                //kDebug( 6080 ) << "appending StyleRule!" << endl;
+                //kDebug( 6080 ) << "appending StyleRule!";
             }
         }
         else if(item->isImportRule())
@@ -1809,7 +1809,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                 // a recursive call to append() here
                 for( unsigned j = 0; j < rules->length(); j++ )
                 {
-                    //kDebug( 6080 ) << "*** Rule #" << j << endl;
+                    //kDebug( 6080 ) << "*** Rule #" << j;
 
                     CSSRuleImpl *childItem = rules->item( j );
                     if( childItem->isStyleRule() )
@@ -1967,7 +1967,7 @@ static inline int nextFontSize(const QVector<int>& a, int v, bool smaller)
 
 void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 {
-//     kDebug( 6080 ) << "applying property " << getPropertyName(id) << endl;
+//     kDebug( 6080 ) << "applying property " << getPropertyName(id);
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);
@@ -2617,7 +2617,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		return;
 	    }
 	}
-        //kDebug( 6080 ) << "applying color " << col.isValid() << endl;
+        //kDebug( 6080 ) << "applying color " << col.isValid();
         switch(id)
         {
         case CSS_PROP_BACKGROUND_COLOR:
@@ -2683,7 +2683,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(listStyleImage, ListStyleImage)
         if (!primitiveValue) return;
 	style->setListStyleImage(static_cast<CSSImageValueImpl *>(primitiveValue)->image());
-        //kDebug( 6080 ) << "setting image in list to " << image->image() << endl;
+        //kDebug( 6080 ) << "setting image in list to " << image->image();
         break;
     }
 
@@ -2815,7 +2815,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if(id != CSS_PROP_MAX_WIDTH && primitiveValue &&
            primitiveValue->getIdent() == CSS_VAL_AUTO)
         {
-            //kDebug( 6080 ) << "found value=auto" << endl;
+            //kDebug( 6080 ) << "found value=auto";
             apply = true;
         }
     case CSS_PROP_PADDING_TOP:
@@ -3087,7 +3087,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         // do not however maximize zero as that is commonly used for fancy layouting purposes
         if (size && size < minFontSize) size = minFontSize;
 
-        //kDebug( 6080 ) << "computed raw font size: " << size << endl;
+        //kDebug( 6080 ) << "computed raw font size: " << size;
 
 	fontDef.size = size;
         fontDirty |= style->setFontDef( fontDef );
@@ -3258,7 +3258,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 if (attrID)
                     style->addContent(element->getAttribute(attrID).implementation());
                 else
-                    kDebug(6080) << "Attribute \"" << val->getStringValue() << "\" not found" << endl;
+                    kDebug(6080) << "Attribute \"" << val->getStringValue() << "\" not found";
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_URI)
             {
@@ -3290,7 +3290,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 }
                 style->addContent(quote);
             } else
-                kDebug(6080) << "Unrecognized CSS content" << endl;
+                kDebug(6080) << "Unrecognized CSS content";
 
         }
         break;
@@ -3437,7 +3437,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         {
             if(!parentNode) return;
             style->setUserInput(parentStyle->userInput());
-//	    kDebug() << "UI erm" << endl;
+//	    kDebug() << "UI erm";
             return;
         }
         if(!primitiveValue) return;
@@ -3446,7 +3446,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    style->setUserInput(UI_NONE);
 	else
 	    style->setUserInput(EUserInput(id - CSS_VAL_ENABLED));
-//	kDebug(6080) << "userInput: " << style->userEdit() << endl;
+//	kDebug(6080) << "userInput: " << style->userEdit();
 	return;
     }
 

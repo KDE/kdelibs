@@ -73,7 +73,7 @@ using namespace khtml;
 HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
   : DocumentImpl(_implementation, v)
 {
-//    kDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
+//    kDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this;
     htmlElement = 0;
 
     m_doAutoFill = false;
@@ -121,7 +121,7 @@ DOMString HTMLDocumentImpl::cookie() const
 
     if ( !reply.isValid() )
     {
-       kWarning(6010) << "Can't communicate with cookiejar!" << endl;
+       kWarning(6010) << "Can't communicate with cookiejar!";
        return DOMString();
     }
 
@@ -228,7 +228,7 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
     QString url = _url.string();
     QString s;
     int pos = url.indexOf('#');
-    //kDebug(0) << "map pos of #:" << pos << endl;
+    //kDebug(0) << "map pos of #:" << pos;
     s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
 
     QMap<QString,HTMLMapElementImpl*>::const_iterator it = mapMap.find(s);
@@ -263,7 +263,7 @@ void HTMLDocumentImpl::close()
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
-        //kDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0) << endl;
+        //kDebug() << "dispatching LOAD_EVENT on document " << getDocument() << " " << (view()?view()->part()->name():0);
 
         //Make sure to flush any pending image events now, as we want them out before the document's load event
         dispatchImageLoadEventsNow();
@@ -423,7 +423,7 @@ static bool parseDocTypeDeclaration(const QString& buffer,
 
 void HTMLDocumentImpl::determineParseMode( const QString &str )
 {
-    //kDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
+    //kDebug() << "DocumentImpl::determineParseMode str=" << str;
     int oldPMode = pMode;
 
     // This code more or less mimics Mozilla's implementation (specifically the
@@ -512,14 +512,14 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
 
     m_styleSelector->strictParsing = !inCompatMode();
 
-    // kDebug() << "DocumentImpl::determineParseMode: publicId =" << publicID << " systemId = " << systemID << endl;
-    // kDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
+    // kDebug() << "DocumentImpl::determineParseMode: publicId =" << publicID << " systemId = " << systemID;
+    // kDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode;
     if( pMode == Strict )
-        kDebug(6030) << " using strict parseMode" << endl;
+        kDebug(6030) << " using strict parseMode";
     else if (pMode == Compat )
-        kDebug(6030) << " using compatibility parseMode" << endl;
+        kDebug(6030) << " using compatibility parseMode";
     else
-        kDebug(6030) << " using transitional parseMode" << endl;
+        kDebug(6030) << " using transitional parseMode";
 
     // not sure this is needed
     if ( pMode != oldPMode && styleSelector() )

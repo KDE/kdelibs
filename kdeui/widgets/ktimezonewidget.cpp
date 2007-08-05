@@ -120,7 +120,7 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
   }
 
   if ( !found )
-    kDebug() << "No such zone: " << zone << endl;
+    kDebug() << "No such zone: " << zone;
 }
 
 #include "ktimezonewidget.moc"

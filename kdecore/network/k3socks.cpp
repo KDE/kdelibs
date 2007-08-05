@@ -295,7 +295,7 @@ KSocks::KSocks(const KConfigGroup *config)
       QString thisone = *it;
       if (thisone[thisone.length()-1] != '/') thisone += '/';
       d->_libPaths << thisone;
-      kDebug(171) << "KSocks added a new library path: " << thisone << endl;
+      kDebug(171) << "KSocks added a new library path: " << thisone;
    }
 
    // Load the proper libsocks and KSocksTable
@@ -333,14 +333,14 @@ KSocks::KSocks(const KConfigGroup *config)
       if (d->_socksLib) {
          if ((_meth == 1 || _meth == 2) &&
             d-> _socksLib->resolveFunction("S5LogShowThreadIDS") != 0L) {  // NEC SOCKS
-            kDebug(171) << "Found NEC SOCKS" << endl;
+            kDebug(171) << "Found NEC SOCKS";
             d->_st = new KNECSocksTable;
             d->_useSocks = true;
             d->_hasSocks = true;
             break;
          } else if ((_meth == 1 || _meth == 3) &&
                     d->_socksLib->resolveFunction("sockaddr2ruleaddress") != 0L) { //Dante
-            kDebug(171) << "Found Dante SOCKS" << endl;
+            kDebug(171) << "Found Dante SOCKS";
             d->_st = new KDanteSocksTable;
             d->_useSocks = true;
             d->_hasSocks = true;
@@ -417,7 +417,7 @@ KSocks::KSocks(const KConfigGroup *config)
                     d->_socksLib->resolveFunction(it.value().toLatin1());
           break;
          default:
-          kDebug(171) << "KSocks got a symbol it doesn't know about!" << endl;
+          kDebug(171) << "KSocks got a symbol it doesn't know about!";
           break;
          }
       }
@@ -427,7 +427,7 @@ KSocks::KSocks(const KConfigGroup *config)
          int rc = (*F_SOCKSinit)((char *)"KDE");
          if (rc != 0)
             stopSocks();
-         else kDebug(171) << "SOCKS has been activated!" << endl;
+         else kDebug(171) << "SOCKS has been activated!";
       } else {
          stopSocks();
       }

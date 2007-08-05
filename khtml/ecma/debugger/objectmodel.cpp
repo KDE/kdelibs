@@ -194,7 +194,7 @@ void ObjectModel::update(KJS::ExecState *exec)
     KJS::Context* context = exec->context();
     if (!context)
     {
-        kDebug() << "nothing running!" << endl;
+        kDebug() << "nothing running!";
         return;
     }
 
@@ -269,7 +269,7 @@ void ObjectModel::setupModelData(KJS::ExecState *exec, KJS::JSObject *scope, Obj
             data << "[object data]";
             // then scroll through the object and add children
 /*
-            kDebug() << "Object!" << endl << endl << endl << endl << endl << endl;
+            kDebug() << "Object!" << endl << endl << endl << endl << endl;
             KJS::JSObject *tmpObject = value->toObject(exec);
             if(tmpObject->implementsConstruct())
             {

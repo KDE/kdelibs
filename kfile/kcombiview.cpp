@@ -100,7 +100,7 @@ void KCombiView::insertItem( KFileItem *item )
 void KCombiView::setSorting( QDir::SortFlags sort )
 {
     if ( !right ) {
-        kFatal() << "You need to call setRight( someview ) before!" << endl;
+        kFatal() << "You need to call setRight( someview ) before!";
         return;
     }
 
@@ -187,7 +187,7 @@ void KCombiView::setSelectionMode( KFile::SelectionMode sm )
     // Single-Mode, right?
     // left->setSelectionMode( sm );
     if ( !right ) {
-        kFatal() << "You need to call setRight( someview ) before!" << endl;
+        kFatal() << "You need to call setRight( someview ) before!";
         return;
     }
 

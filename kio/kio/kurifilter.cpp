@@ -337,11 +337,11 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
     if( filters.isEmpty() )
         use_plugins = d->lstPlugins;  // Use everything that is loaded...
     else {
-        //kDebug() << "Named plugins requested..."  << endl;
+        //kDebug() << "Named plugins requested...";
         for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst ) {
             KUriFilterPlugin* plugin = findPluginByName( d->lstPlugins, *lst );
             if (plugin) {
-                //kDebug() << "Will use filter plugin named: " << plugin->name() << endl;
+                //kDebug() << "Will use filter plugin named: " << plugin->name();
                 use_plugins.append(plugin);
             }
         }
@@ -352,7 +352,7 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
     bool filtered = false;
     for ( KUriFilterPluginList::const_iterator it = use_plugins.begin(), end = use_plugins.end();
           it != end; ++it ) {
-        //kDebug() << "Using a filter plugin named: " << (*it)->name() << endl;
+        //kDebug() << "Using a filter plugin named: " << (*it)->name();
         if( (*it)->filterUri( data ))
             filtered = true;
     }

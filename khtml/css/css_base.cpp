@@ -127,7 +127,7 @@ void CSSSelector::print(void)
 		    << "]" << endl;
     if ( tagHistory )
         tagHistory->print();
-    kDebug( 6080 ) << "    specificity = " << specificity() << endl;
+    kDebug( 6080 ) << "    specificity = " << specificity();
 }
 
 unsigned int CSSSelector::specificity() const
@@ -382,7 +382,7 @@ DOMString CSSSelector::selectorText() const
                 str += "*=";
                 break;
             default:
-                kWarning(6080) << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match << endl;
+                kWarning(6080) << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match;
             }
             if (cs->match != CSSSelector::Set) {
                 str += "\"";

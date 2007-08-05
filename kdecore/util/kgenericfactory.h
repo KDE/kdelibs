@@ -66,7 +66,7 @@ protected:
             return new KComponentData(m_aboutData);
         }
         if (m_componentName.isNull()) {
-            kWarning() << "KGenericFactory: componentData requested but no component name or about data passed to the constructor!" << endl;
+            kWarning() << "KGenericFactory: componentData requested but no component name or about data passed to the constructor!";
             return 0;
         }
         return new KComponentData(m_componentName, m_catalogName);

@@ -40,32 +40,32 @@ int main (int argc, char **argv)
 
   if (args->count() >0) {
     for(int i = 0; i < args->count(); i++) {
-      kDebug() << "Watching: " << args->arg(i) << endl;
+      kDebug() << "Watching: " << args->arg(i);
       dirwatch2->addDir( args->arg(i));
     }
   }
 
   QString home = QString(getenv ("HOME")) + '/';
   QString desk = home + "Desktop/";
-  kDebug() << "Watching: " << home << endl;
+  kDebug() << "Watching: " << home;
   dirwatch1->addDir(home);
-  kDebug() << "Watching file: " << home << "foo " << endl;
+  kDebug() << "Watching file: " << home << "foo ";
   dirwatch1->addFile(home+"foo");
-  kDebug() << "Watching: " << desk << endl;
+  kDebug() << "Watching: " << desk;
   dirwatch1->addDir(desk);
   QString test = home + "test/";
-  kDebug() << "Watching: (but skipped) " << test << endl;
+  kDebug() << "Watching: (but skipped) " << test;
   dirwatch1->addDir(test);
 
   dirwatch1->startScan();
   dirwatch2->startScan();
 
   if(!dirwatch1->stopDirScan(home))
-      kDebug() << "stopDirscan: " << home << " error!" << endl;
+      kDebug() << "stopDirscan: " << home << " error!";
   if(!dirwatch1->restartDirScan(home))
-      kDebug() << "restartDirScan: " << home << "error!" << endl;
+      kDebug() << "restartDirScan: " << home << "error!";
   if (!dirwatch1->stopDirScan(test))
-     kDebug() << "stopDirScan: error" << endl;
+     kDebug() << "stopDirScan: error";
 
   KDirWatch::statistics();
 

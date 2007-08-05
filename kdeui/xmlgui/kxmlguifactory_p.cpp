@@ -36,7 +36,7 @@ void ActionList::plug( QWidget *container, int index ) const
     QAction* before = 0L; // Insert after end of widget's current actions (default).
 
     if ((index < 0) || (index > container->actions().count()))
-        kWarning() << k_funcinfo << "Index " << index << " is not within range (0 - " << container->actions().count() << endl;
+        kWarning() << k_funcinfo << "Index " << index << " is not within range (0 - " << container->actions().count();
     else if (index != container->actions().count())
         before = container->actions().at(index); // Insert before indexed action.
 
@@ -619,7 +619,7 @@ bool BuildHelper::processActionElement( const QDomElement &e, int idx )
     // look up the action and plug it in
     QAction *action = m_state.guiClient->action( e );
 
-    //kDebug() << "BuildHelper::processActionElement " << e.attribute( "name" ) << " -> " << action << " (in " << m_state.guiClient->actionCollection() << ")" << endl;
+    //kDebug() << "BuildHelper::processActionElement " << e.attribute( "name" ) << " -> " << action << " (in " << m_state.guiClient->actionCollection() << ")";
     if ( !action )
         return false;
 

@@ -58,7 +58,7 @@ K3SpellConfig::K3SpellConfig (const K3SpellConfig &_ksc)
   , clientcombo(0)
   , d(new K3SpellConfigPrivate)
 {
-  kDebug(750) << "Entering K3SpellConfig::K3SpellConfig(K3SpellConfig&)" << endl;
+  kDebug(750) << "Entering K3SpellConfig::K3SpellConfig(K3SpellConfig&)";
   setDoSpellChecking( _ksc.doSpellChecking() );
   setReplaceAllList( _ksc.replaceAllList() );
   setNoRootAffix( _ksc.noRootAffix() );
@@ -200,7 +200,7 @@ K3SpellConfig::dictFromList() const
 bool
 K3SpellConfig::readGlobalSettings()
 {
-  kDebug(750) << "Entering K3SpellConfig::readGlobalSettings (see k3sconfig.cpp)" << endl;
+  kDebug(750) << "Entering K3SpellConfig::readGlobalSettings (see k3sconfig.cpp)";
   KConfigGroup cg( kc,"K3Spell" );
 
   setDoSpellChecking ( cg.readEntry("K3Spell_DoSpellChecking", false ) );
@@ -234,7 +234,7 @@ K3SpellConfig::writeGlobalSettings ()
 void
 K3SpellConfig::sChangeEncoding( int i )
 {
-  kDebug(750) << "K3SpellConfig::sChangeEncoding(" << i << ")" << endl;
+  kDebug(750) << "K3SpellConfig::sChangeEncoding(" << i << ")";
   setEncoding( i );
   emit configChanged();
 }
@@ -272,7 +272,7 @@ K3SpellConfig::interpret( const QString &fname, QString &lname,
 
 {
 
-  kDebug(750) << "K3SpellConfig::interpret [" << fname << "]" << endl;
+  kDebug(750) << "K3SpellConfig::interpret [" << fname << "]";
 
   QString dname( fname );
 
@@ -396,7 +396,7 @@ K3SpellConfig::fillInDialog ()
   if ( nodialog )
     return;
 
-  kDebug(750) << "K3SpellConfig::fillinDialog" << endl;
+  kDebug(750) << "K3SpellConfig::fillinDialog";
 
   cb0->setChecked( doSpellChecking() );
   cb1->setChecked( noRootAffix() );
@@ -481,7 +481,7 @@ void K3SpellConfig::getAvailDictsIspell () {
   const QDir thedir (dir.filePath(),"*.hash");
   const QStringList entryList = thedir.entryList();
 
-  kDebug(750) << "K3SpellConfig" << thedir.path() << "\n" << endl;
+  kDebug(750) << "K3SpellConfig" << thedir.path() << "\n";
   kDebug(750) << "entryList().count()="
 	       << entryList.count() << endl;
 
@@ -546,7 +546,7 @@ void K3SpellConfig::getAvailDictsAspell () {
   const QDir thedir (dir.filePath(),"*");
   const QStringList entryList = thedir.entryList();
 
-  kDebug(750) << "K3SpellConfig" << thedir.path() << "\n" << endl;
+  kDebug(750) << "K3SpellConfig" << thedir.path() << "\n";
   kDebug(750) << "entryList().count()="
 	       << entryList.count() << endl;
 
@@ -633,7 +633,7 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       const QDir thedir (dir.filePath(),"*.hash");
       const QStringList entryList = thedir.entryList();
 
-      kDebug(750) << "K3SpellConfig" << thedir.path() << "\n" << endl;
+      kDebug(750) << "K3SpellConfig" << thedir.path() << "\n";
       kDebug(750) << "entryList().count()="
                    << entryList.count() << endl;
 
@@ -704,7 +704,7 @@ K3SpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
       const QDir thedir (dir.filePath(),"*");
       const QStringList entryList = thedir.entryList();
 
-      kDebug(750) << "K3SpellConfig" << thedir.path() << "\n" << endl;
+      kDebug(750) << "K3SpellConfig" << thedir.path() << "\n";
       kDebug(750) << "entryList().count()="
                    << entryList.count() << endl;
 

@@ -316,7 +316,7 @@ KLauncher::slotKDEInitData(int)
                             sizeof( request_header));
    if (result == -1)
    {
-      kDebug() << "Exiting on read_socket errno: " << errno << endl;
+      kDebug() << "Exiting on read_socket errno: " << errno;
       ::signal( SIGHUP, SIG_IGN);
       ::signal( SIGTERM, SIG_IGN);
       destruct(255); // Exit!
@@ -961,7 +961,7 @@ KLauncher::requestSlave(const QString &protocol,
     pid_t pid = request->pid;
 
     TRACE();
-    kDebug(7016) << "Slave launched, pid = " << pid << endl;
+    kDebug(7016) << "Slave launched, pid = " << pid;
 
     // We don't care about this request any longer....
     requestDone(request);

@@ -35,10 +35,10 @@ static bool check(QString txt, QString a, QString b) // from kurltest
   if (b.isEmpty())
      b = QString();
   if (a == b) {
-    kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+    kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok";
   }
   else {
-    kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+    kDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !";
     exit(1);
   }
   return true;
@@ -91,13 +91,13 @@ void KFindTest::findNext(const QString &pattern)
 	KFind::Result result = KFind::NoMatch;
 	do
 	{
-		//kDebug() << "m_line: " << m_line << endl;
+		//kDebug() << "m_line: " << m_line;
 
 		result = m_find->find();
 
 		if(result == KFind::NoMatch && m_line < m_text.count())
 		{
-			//kDebug() << "incrementing m_line..." << endl;
+			//kDebug() << "incrementing m_line...";
 			if(m_find->options() & KFind::FindIncremental)
 				m_find->setData(m_line, m_text[m_line]);
 			else
@@ -106,7 +106,7 @@ void KFindTest::findNext(const QString &pattern)
 			m_line++;
 		}
 	} while(result == KFind::NoMatch && m_line < m_text.count());
-	//kDebug() << "find next completed" << m_line << endl;
+	//kDebug() << "find next completed" << m_line;
 }
 
 void KFindTest::slotHighlight(const QString &text, int index, int matchedLength)
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 
 	KFindTest *test = new KFindTest(text.split('\n'));
 
-	kDebug() << "Plain static search..." << endl;
+	kDebug() << "Plain static search...";
 
 	// first we do a simple text searching the text and doing a few find nexts
 	test->find("This", 0);
@@ -194,9 +194,9 @@ int main(int argc, char **argv)
 
 	check("result", test->hits().join(""), output1);
 	test->clearHits();
-	kDebug() << "PASSED" << endl;
+	kDebug() << "PASSED";
 
-	kDebug() << "FindIncremental with static contents..." << endl;
+	kDebug() << "FindIncremental with static contents...";
 
 	// now we'll do some searches using FindIncremental
 	test->find("", KFind::FindIncremental);
@@ -216,9 +216,9 @@ int main(int argc, char **argv)
 
 	check("result", test->hits().join(""), output2);
 	test->clearHits();
-	kDebug() << "PASSED" << endl;
+	kDebug() << "PASSED";
 
-	kDebug() << "FindIncremental with dynamic contents..." << endl;
+	kDebug() << "FindIncremental with dynamic contents...";
 
 	// now do that again but with pages that change between searches
 	test->find("", KFind::FindIncremental);
@@ -243,7 +243,7 @@ int main(int argc, char **argv)
 
 	check("result", test->hits().join(""), output3);
 	test->clearHits();
-	kDebug() << "PASSED" << endl;
+	kDebug() << "PASSED";
 
 	//return app.exec();
 	delete test;

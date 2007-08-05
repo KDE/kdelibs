@@ -186,7 +186,7 @@ KTimeZone KSystemTimeZones::zone(const QString& name)
 
 void KSystemTimeZones::configChanged()
 {
-    kDebug(161) << "KSystemTimeZones::configChanged()" << endl;
+    kDebug(161) << "KSystemTimeZones::configChanged()";
     KSystemTimeZonesPrivate::readConfig(false);
 }
 
@@ -212,7 +212,7 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
         QDBusInterface *ktimezoned = new QDBusInterface("org.kde.kded", "/modules/ktimezoned", KTIMEZONED_DBUS_IFACE);
         if (!ktimezoned->isValid())
         {
-kDebug(161)<<"instance(): load KDED module"<<endl;
+kDebug(161)<<"instance(): load KDED module";
             // Need to load the KDED time zones module
             delete ktimezoned;
             ktimezoned = 0;
@@ -223,12 +223,12 @@ kDebug(161)<<"instance(): load KDED module"<<endl;
             else if (!reply)
                 kError(161) << "KSystemTimeZones: could not load ktimezoned kded module" << endl;
             ktimezoned = new QDBusInterface("org.kde.kded", "/modules/ktimezoned", KTIMEZONED_DBUS_IFACE);
-kDebug(161)<<"instance(): ... loaded"<<endl;
+kDebug(161)<<"instance(): ... loaded";
         }
         QDBusReply<void> reply = ktimezoned->call("initialize", false);
         if (!reply.isValid())
             kError(161) << "KSystemTimeZones: ktimezoned initialize() D-Bus call failed: " << reply.error().message() << endl;
-kDebug(161)<<"instance(): ... initialised"<<endl;
+kDebug(161)<<"instance(): ... initialised";
         delete ktimezoned;
 
         // Read the time zone config written by ktimezoned
@@ -280,7 +280,7 @@ void KSystemTimeZonesPrivate::cleanup()
  */
 void KSystemTimeZonesPrivate::readZoneTab()
 {
-    kDebug(161) << "readZoneTab(" << m_zonetab<< ")" <<endl;
+    kDebug(161) << "readZoneTab(" << m_zonetab<< ")";
     QFile f;
     f.setFileName(m_zonetab);
     if (!f.open(QIODevice::ReadOnly))

@@ -114,7 +114,7 @@ void DirectorySizeJobPrivate::processNextItem()
 	{
             if ( item.isDir() )
             {
-                kDebug(7007) << "DirectorySizeJob::processNextItem dir -> listing" << endl;
+                kDebug(7007) << "DirectorySizeJob::processNextItem dir -> listing";
                 KUrl url = item.url();
                 startNextJob( url );
                 return; // we'll come back later, when this one's finished
@@ -122,18 +122,18 @@ void DirectorySizeJobPrivate::processNextItem()
             else
             {
                 m_totalSize += item.size();
-                kDebug(7007) << "DirectorySizeJob::processNextItem file -> " << m_totalSize << endl;
+                kDebug(7007) << "DirectorySizeJob::processNextItem file -> " << m_totalSize;
             }
 	}
     }
-    kDebug(7007) << "DirectorySizeJob::processNextItem finished" << endl;
+    kDebug(7007) << "DirectorySizeJob::processNextItem finished";
     q->emitResult();
 }
 
 void DirectorySizeJobPrivate::startNextJob( const KUrl & url )
 {
     Q_Q(DirectorySizeJob);
-    kDebug(7007) << "DirectorySizeJob::startNextJob " << url << endl;
+    kDebug(7007) << "DirectorySizeJob::startNextJob " << url;
     KIO::ListJob * listJob = KIO::listRecursive( url, false /* no GUI */ );
     q->connect( listJob, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList& )),
                 SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
@@ -159,7 +159,7 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
               m_totalFiles++;
             else
               m_totalSubdirs++;
-            //kDebug(7007) << name << ":" << size << endl;
+            //kDebug(7007) << name << ":" << size;
         }
     }
 }
@@ -167,7 +167,7 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
 void DirectorySizeJob::slotResult( KJob * job )
 {
     Q_D(DirectorySizeJob);
-    kDebug(7007) << " DirectorySizeJob::slotResult()" << endl;
+    kDebug(7007) << " DirectorySizeJob::slotResult()";
     if (d->m_currentItem < d->m_lstItems.count())
     {
         removeSubjob(job);

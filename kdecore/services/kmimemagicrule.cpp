@@ -135,13 +135,13 @@ bool KMimeMagicMatch::match(QIODevice* device, const QByteArray& beginning) cons
             // Pad with zeros.
             memset(readData.data() + nread, 0, dataNeeded - nread);
         }
-        //kDebug() << "readData (from device) at pos " << m_rangeStart << ":" << readData << endl;
+        //kDebug() << "readData (from device) at pos " << m_rangeStart << ":" << readData;
     } else {
         readData = QByteArray::fromRawData(beginning.constData() + m_rangeStart,
                                            dataNeeded);
         // Warning, readData isn't null-terminated so this kDebug
         // gives valgrind warnings (when printing as char* data).
-        //kDebug() << "readData (from beginning) at pos " << m_rangeStart << ":" << readData << endl;
+        //kDebug() << "readData (from beginning) at pos " << m_rangeStart << ":" << readData;
     }
 
     // All we need to do now, is to look for m_data in readData (whose size is dataNeeded).
@@ -149,7 +149,7 @@ bool KMimeMagicMatch::match(QIODevice* device, const QByteArray& beginning) cons
 
     bool found = false;
     if (m_mask.isEmpty()) {
-        //kDebug() << "m_data=" << m_data << endl;
+        //kDebug() << "m_data=" << m_data;
         found = ::indexOf(readData, m_data) != -1;
     } else {
         const char* mask = m_mask.constData();

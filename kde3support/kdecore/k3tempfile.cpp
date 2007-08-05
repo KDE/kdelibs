@@ -127,7 +127,7 @@ K3TempFile::create(const QString &filePrefix, const QString &fileExtension,
    {
        // Recreate it for the warning, mkstemps emptied it
        nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
-       kWarning() << "K3TempFile: Error trying to create " << nme << ": " << strerror(errno) << endl;
+       kWarning() << "K3TempFile: Error trying to create " << nme << ": " << strerror(errno);
        mError = errno;
        mTmpName.clear();
        return false;
@@ -187,7 +187,7 @@ K3TempFile::fstream()
    // Create a stream
    mStream = KDE_fdopen(mFd, "r+");
    if (!mStream) {
-     kWarning() << "K3TempFile: Error trying to open " << mTmpName << ": " << strerror(errno) << endl;
+     kWarning() << "K3TempFile: Error trying to open " << mTmpName << ": " << strerror(errno);
      mError = errno;
    }
    return mStream;
@@ -253,7 +253,7 @@ K3TempFile::sync()
 
       if (result)
       {
-         kWarning() << "K3TempFile: Error trying to flush " << mTmpName << ": " << strerror(errno) << endl;
+         kWarning() << "K3TempFile: Error trying to flush " << mTmpName << ": " << strerror(errno);
          mError = errno;
       }
    }
@@ -263,7 +263,7 @@ K3TempFile::sync()
       result = FDATASYNC(mFd);
       if (result)
       {
-         kWarning() << "K3TempFile: Error trying to sync " << mTmpName << ": " << strerror(errno) << endl;
+         kWarning() << "K3TempFile: Error trying to sync " << mTmpName << ": " << strerror(errno);
          mError = errno;
       }
    }
@@ -291,7 +291,7 @@ K3TempFile::close()
       mStream = 0;
       mFd = -1;
       if (result != 0) {
-         kWarning() << "K3TempFile: Error trying to close " << mTmpName << ": " << strerror(errno) << endl;
+         kWarning() << "K3TempFile: Error trying to close " << mTmpName << ": " << strerror(errno);
          mError = errno;
       }
    }
@@ -302,7 +302,7 @@ K3TempFile::close()
       result = ::close(mFd);
       mFd = -1;
       if (result != 0) {
-         kWarning() << "K3TempFile: Error trying to close " << mTmpName << ": " << strerror(errno) << endl;
+         kWarning() << "K3TempFile: Error trying to close " << mTmpName << ": " << strerror(errno);
          mError = errno;
       }
    }

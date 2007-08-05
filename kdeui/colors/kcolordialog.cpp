@@ -362,7 +362,7 @@ void KColorCells::dragMoveEvent (QDragMoveEvent *event)
 void KColorCells::dropEvent( QDropEvent *event)
 {
      QColor c=KColorMimeData::fromMimeData(event->mimeData());
-     kDebug () << "KColorCells::dropEvent() color.isValid=" << c.isValid() << endl;
+     kDebug () << "KColorCells::dropEvent() color.isValid=" << c.isValid();
      if( c.isValid()) {
           int cell = positionToCell(event->pos(), true);
 	  setColor(cell,c);
@@ -1149,7 +1149,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   button->setIcon( KIcon("color-picker"));
   int commonHeight = addButton->sizeHint().height();
   button->setMinimumHeight( commonHeight );
-  kDebug() << commonHeight << endl;
+  kDebug() << commonHeight;
   button->setIconSize(QSize(commonHeight, commonHeight));
   l_hbox->addWidget(button, 0, Qt::AlignHCenter );
   connect( button, SIGNAL( clicked()), SLOT( slotColorPicker()));

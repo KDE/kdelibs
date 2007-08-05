@@ -191,7 +191,7 @@ KDateTable::KDateTable( const QDate& date_, QWidget* parent )
     setPalette( palette );
 
     if( !date_.isValid() ) {
-        kDebug() << "KDateTable ctor: WARNING: Given date is invalid, using current date." << endl;
+        kDebug() << "KDateTable ctor: WARNING: Given date is invalid, using current date.";
         // this initializes firstday, numdays, numDaysPrevMonth
         setDate( QDate::currentDate() );
     } else {
@@ -586,7 +586,7 @@ bool KDateTable::setDate( const QDate& date_ )
     QDate temp;
     // -----
     if( !date_.isValid() ) {
-        kDebug() << "KDateTable::setDate: refusing to set invalid date." << endl;
+        kDebug() << "KDateTable::setDate: refusing to set invalid date.";
         return false;
     }
     if( d->mDate != date_ ) {
@@ -599,7 +599,7 @@ bool KDateTable::setDate( const QDate& date_ )
 
     calendar->setYMD( temp, calendar->year( d->mDate ), calendar->month( d->mDate ), 1 );
     //temp.setYMD(d->mDate.year(), d->mDate.month(), 1);
-    //kDebug() << "firstDayInWeek: " << temp.toString() << endl;
+    //kDebug() << "firstDayInWeek: " << temp.toString();
     d->firstday = temp.dayOfWeek();
     d->numdays = calendar->daysInMonth( d->mDate );
 
@@ -656,7 +656,7 @@ QSize KDateTable::sizeHint() const
         return QSize( qRound( d->maxCell.width() * 7 ),
                       ( qRound( d->maxCell.height() + 2 ) * 7 ) );
     } else {
-        kDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
+        kDebug() << "KDateTable::sizeHint: obscure failure - ";
         return QSize( -1, -1 );
     }
 }

@@ -74,7 +74,7 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
     {
         // not a warning, since this is called often with other mimetypes (see #88574)...
         // maybe we can avoid that though?
-        kDebug(7005) << "KFilterBase::findFilterByFileName : no filter found for " << fileName << endl;
+        kDebug(7005) << "KFilterBase::findFilterByFileName : no filter found for " << fileName;
     }
 
     return 0;
@@ -97,7 +97,7 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     {
         // not a warning, since this is called often with other mimetypes (see #88574)...
         // maybe we can avoid that though?
-        kDebug(7005) << "KFilterBase::findFilterByMimeType : no filter found for " << mimeType << endl;
+        kDebug(7005) << "KFilterBase::findFilterByMimeType : no filter found for " << mimeType;
     }
 
     return 0;

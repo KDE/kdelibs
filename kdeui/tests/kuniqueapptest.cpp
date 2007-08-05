@@ -37,7 +37,7 @@ int
 TestApp::newInstance( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    kDebug() << "NewInstance" << endl;
+    kDebug() << "NewInstance";
     for ( int i = 0; i < args->count(); i++ )
     {
         kDebug() << "argument " << i << " : " << args->arg(i);

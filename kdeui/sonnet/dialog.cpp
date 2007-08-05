@@ -195,7 +195,7 @@ void Dialog::updateDialog( const QString& word )
 
 void Dialog::show()
 {
-    kDebug()<<"Showing dialog"<<endl;
+    kDebug()<<"Showing dialog";
     if (d->originalBuffer.isEmpty())
         d->checker->start();
     else
@@ -269,7 +269,7 @@ void Dialog::fillSuggestions( const QStringList& suggs )
 
 void Dialog::slotMisspelling(const QString& word, int start)
 {
-    kDebug()<<"Dialog misspelling!!"<<endl;
+    kDebug()<<"Dialog misspelling!!";
     d->currentWord = Word( word, start );
     if ( d->replaceAllMap.contains( word ) ) {
         d->ui.m_replacement->setText( d->replaceAllMap[ word ] );
@@ -282,7 +282,7 @@ void Dialog::slotMisspelling(const QString& word, int start)
 
 void Dialog::slotDone()
 {
-    kDebug()<<"Dialog done!"<<endl;
+    kDebug()<<"Dialog done!";
     QString buffer(d->originalBuffer);
     emit done(d->checker->text());
     if (d->restart)

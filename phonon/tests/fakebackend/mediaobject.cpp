@@ -49,18 +49,18 @@ MediaObject::MediaObject(QObject *parent)
     , m_frequency(440.0f)
     , m_prefinishMarkReachedNotEmitted(true)
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     connect(m_tickTimer, SIGNAL(timeout()), SLOT(emitTick()));
 }
 
 MediaObject::~MediaObject()
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
 }
 
 bool MediaObject::addVideoPath(QObject *videoPath)
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     Q_ASSERT(videoPath);
     VideoPath *vp = qobject_cast<VideoPath *>(videoPath);
     Q_ASSERT(vp);
@@ -71,7 +71,7 @@ bool MediaObject::addVideoPath(QObject *videoPath)
 
 bool MediaObject::addAudioPath(QObject *audioPath)
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     Q_ASSERT(audioPath);
     AudioPath *ap = qobject_cast<AudioPath *>(audioPath);
     Q_ASSERT(ap);
@@ -100,25 +100,25 @@ void MediaObject::removeAudioPath(QObject *audioPath)
 
 State MediaObject::state() const
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     return m_state;
 }
 
 bool MediaObject::hasVideo() const
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     return false;
 }
 
 bool MediaObject::isSeekable() const
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     return true;
 }
 
 qint64 MediaObject::currentTime() const
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     switch(state())
     {
     case Phonon::PausedState:
@@ -137,13 +137,13 @@ qint64 MediaObject::currentTime() const
 
 qint32 MediaObject::tickInterval() const
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     return m_tickInterval;
 }
 
 void MediaObject::setTickInterval(qint32 newTickInterval)
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     m_tickInterval = newTickInterval;
     if (m_tickInterval <= 0)
         m_tickTimer->setInterval(50);
@@ -207,7 +207,7 @@ void MediaObject::setCurrentSubtitleStream(const QString &streamName, const QObj
 
 void MediaObject::play()
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     if (m_state == Phonon::LoadingState) {
         setState(Phonon::BufferingState);
     } else {
@@ -250,7 +250,7 @@ void MediaObject::setState(State newstate)
         m_startTime = QTime();
         break;
     }
-    //kDebug(604) << "emit stateChanged(" << newstate << ", " << oldstate << ")" << endl;
+    //kDebug(604) << "emit stateChanged(" << newstate << ", " << oldstate << ")";
     emit stateChanged(newstate, oldstate);
 }
 
@@ -301,13 +301,13 @@ void MediaObject::fillFrameData(Phonon::Experimental::VideoFrame *frame)
 
 qint64 MediaObject::totalTime() const
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     return 1000 *60 *3; // 3 minutes
 }
 
 qint32 MediaObject::prefinishMark() const
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     return m_prefinishMark;
 }
 
@@ -333,7 +333,7 @@ void MediaObject::setNextSource(const MediaSource &source)
 
 void MediaObject::setSource(const MediaSource &source)
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     m_prefinishMarkReachedNotEmitted = true;
     m_source = source;
     setState(Phonon::LoadingState);
@@ -374,7 +374,7 @@ void MediaObject::loadingComplete()
 
 void MediaObject::setPrefinishMark(qint32 newPrefinishMark)
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     m_prefinishMark = newPrefinishMark;
     if (currentTime() < totalTime() - m_prefinishMark) // not about to finish
         m_prefinishMarkReachedNotEmitted = true;
@@ -382,7 +382,7 @@ void MediaObject::setPrefinishMark(qint32 newPrefinishMark)
 
 void MediaObject::pause()
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     switch (state()) {
     case PlayingState:
     case BufferingState:
@@ -399,7 +399,7 @@ void MediaObject::pause()
 
 void MediaObject::stop()
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     if (state() == Phonon::PlayingState || state() == Phonon::BufferingState || state() == Phonon::PausedState) {
         m_tickTimer->stop();
         setState(Phonon::StoppedState);
@@ -411,7 +411,7 @@ void MediaObject::stop()
 
 void MediaObject::seek(qint64 time)
 {
-    //kDebug(604) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo;
     if (isSeekable())
     {
         switch(state())
@@ -437,7 +437,7 @@ void MediaObject::seek(qint64 time)
 
 void MediaObject::emitTick()
 {
-    //kDebug(604) << "emit tick(" << currentTime() << ")" << endl;
+    //kDebug(604) << "emit tick(" << currentTime() << ")";
     int tickInterval = 50;
     if (m_tickInterval > 0)
     {

@@ -54,7 +54,7 @@ void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 
 void TestSpell::slotActivate()
 {
-    kDebug()<<"Activate or not highlight :"<<endl;
+    kDebug()<<"Activate or not highlight :";
     hl->setActive(!hl->isActive());
 }
 

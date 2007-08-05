@@ -41,7 +41,7 @@ void KLibLoaderTest::testNonWorking()
     QCOMPARE( obj, (QObject*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoLibrary );
     QString errorString = KLibLoader::errorString( error );
-    kDebug() << errorString << endl;
+    kDebug() << errorString;
     QVERIFY( !errorString.isEmpty() );
 }
 
@@ -66,7 +66,7 @@ void KLibLoaderTest::testWorking()
     int error = 0;
     QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, QStringList(), &error );
     if ( error )
-        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
+        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
     QVERIFY( obj != 0 );
     // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
     //delete obj;
@@ -77,7 +77,7 @@ void KLibLoaderTest::testWorking4()
     int error = 0;
     QObject* obj = KLibLoader::createInstance<QObject>( "libklibloadertestmodule4", 0, QStringList(), &error );
     if ( error )
-        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage() << endl;
+        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
     QVERIFY( obj != 0 );
     // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
     //delete obj;
@@ -91,7 +91,7 @@ void KLibLoaderTest::testWrongClass()
     QCOMPARE( obj, (KLibLoaderTest*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoComponent );
     QString errorString = KLibLoader::errorString( error );
-    kDebug() << errorString << endl;
+    kDebug() << errorString;
     QVERIFY( !errorString.isEmpty() );
     // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
     //delete obj;

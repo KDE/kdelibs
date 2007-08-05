@@ -185,7 +185,7 @@ void KActionSelector::setButtonIcon( const QString &icon, MoveButton button )
     d->btnDown->setIcon( KIcon( icon ) );
     break;
     default:
-    kDebug(13001)<<"KActionSelector::setButtonIcon: DAINBREAD!"<<endl;
+    kDebug(13001)<<"KActionSelector::setButtonIcon: DAINBREAD!";
   }
 }
 
@@ -206,7 +206,7 @@ void KActionSelector::setButtonIconSet( const QIcon &iconset, MoveButton button 
     d->btnDown->setIcon( iconset );
     break;
     default:
-    kDebug(13001)<<"KActionSelector::setButtonIconSet: DAINBREAD!"<<endl;
+    kDebug(13001)<<"KActionSelector::setButtonIconSet: DAINBREAD!";
   }
 }
 
@@ -231,7 +231,7 @@ void KActionSelector::setButtonTooltip( const QString &tip, MoveButton button )
 	d->btnDown->setToolTip( tip );
     break;
     default:
-    kDebug(13001)<<"KActionSelector::setButtonToolTip: DAINBREAD!"<<endl;
+    kDebug(13001)<<"KActionSelector::setButtonToolTip: DAINBREAD!";
   }
 }
 
@@ -252,7 +252,7 @@ void KActionSelector::setButtonWhatsThis( const QString &text, MoveButton button
     d->btnDown->setWhatsThis(text );
     break;
     default:
-    kDebug(13001)<<"KActionSelector::setButtonWhatsThis: DAINBREAD!"<<endl;
+    kDebug(13001)<<"KActionSelector::setButtonWhatsThis: DAINBREAD!";
   }
 }
 

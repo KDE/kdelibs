@@ -264,13 +264,13 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
 
   if(entry.name().isEmpty())
   {
-  	kWarning(550) << "EntryHandler: no name given" << endl;
+  	kWarning(550) << "EntryHandler: no name given";
   	return entry;
   }
 
   if(entry.payload().isEmpty())
   {
-  	kWarning(550) << "EntryHandler: no payload URL given" << endl;
+  	kWarning(550) << "EntryHandler: no payload URL given";
   	return entry;
   }
 

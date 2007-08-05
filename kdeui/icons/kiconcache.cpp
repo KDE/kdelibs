@@ -85,21 +85,21 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
     stream >> themesMTime;
 
     if (stream.status() != QDataStream::Ok) {
-        kWarning() << k_funcinfo << "Failed to read index file's header" << endl;
+        kWarning() << k_funcinfo << "Failed to read index file's header";
         recreateCacheFiles();
         return false;
     }
 
     // Make sure at least one theme was read
     if (!themeNames.count()) {
-        kDebug() << k_funcinfo << "Empty themes list" << endl;
+        kDebug() << k_funcinfo << "Empty themes list";
         return false;
     }
 
     // Make sure the theme dirs haven't changed
     if (existingIconThemeDirs(themeNames) != themeDirs ||
             mostRecentMTime(themeDirs) != themesMTime) {
-        kDebug() << k_funcinfo << "Theme directory has been modified" << endl;
+        kDebug() << k_funcinfo << "Theme directory has been modified";
         return false;
     }
 
@@ -203,7 +203,7 @@ bool KIconCache::find(const QString& key, QPixmap& pix, QString* path)
     d->mLoadPath = path;
     // We can use QPixmapCache only if we don't need the path
     setUseQPixmapCache(!path);
-    //kDebug() << k_funcinfo << "use QPC = " << useQPixmapCache() << endl;
+    //kDebug() << k_funcinfo << "use QPC = " << useQPixmapCache();
     bool ret = find(key, pix);
     d->mLoadPath = 0;
     return ret;

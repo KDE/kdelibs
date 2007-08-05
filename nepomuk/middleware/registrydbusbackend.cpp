@@ -81,7 +81,7 @@ int Nepomuk::Middleware::DBus::RegistryBackend::registerService( Nepomuk::Middle
     //
     DBus::ServicePublisherInterfaceFactory* factory = DBus::servicePublisherInterfaceFactory( service->type() );
     if( !factory ) {
-        kDebug(300001) << "(Nepomuk::Middleware::Registry) No service type found for " << service->type() << endl;
+        kDebug(300001) << "(Nepomuk::Middleware::Registry) No service type found for " << service->type();
         // FIXME: proper return values
         return -1;
     }
@@ -95,7 +95,7 @@ int Nepomuk::Middleware::DBus::RegistryBackend::registerService( Nepomuk::Middle
     // register the Nepomuk Service as a DBus service under the name as defined by the standard
     //
     if( !QDBusConnection::sessionBus().registerService( DBus::dbusServiceFromUrl(service->url()) ) ) {
-        kDebug(300001) << "(Nepomuk::Middleware::Registry) failed to register service name " << DBus::dbusServiceFromUrl(service->url()) << endl;
+        kDebug(300001) << "(Nepomuk::Middleware::Registry) failed to register service name " << DBus::dbusServiceFromUrl(service->url());
         // FIXME: proper return values
         return -1;
     }
@@ -107,7 +107,7 @@ int Nepomuk::Middleware::DBus::RegistryBackend::registerService( Nepomuk::Middle
         // cleanup
         QDBusConnection::sessionBus().unregisterService( DBus::dbusServiceFromUrl(service->url()) );
 
-        kDebug(300001) << "(Nepomuk::Middleware::Registry) failed to register object " << DBus::dbusObjectFromType(service->type()) << endl;
+        kDebug(300001) << "(Nepomuk::Middleware::Registry) failed to register object " << DBus::dbusObjectFromType(service->type());
         // FIXME: proper return values
         return -1;
     }
@@ -116,7 +116,7 @@ int Nepomuk::Middleware::DBus::RegistryBackend::registerService( Nepomuk::Middle
 //     QDBusConnection::sessionBus().unregisterObject( DBus::dbusObjectFromType(service->type()) );
 //     QDBusConnection::sessionBus().unregisterService( DBus::dbusServiceFromUrl(service->url()) );
 
-//     kDebug(300001) << "(Nepomuk::Middleware::Registry) failed to register object " << "/org/semanticdesktop/nepomuk/Service" << endl;
+//     kDebug(300001) << "(Nepomuk::Middleware::Registry) failed to register object " << "/org/semanticdesktop/nepomuk/Service";
 //     // FIXME: proper return values
 //     return -1;
 //   }
@@ -130,7 +130,7 @@ int Nepomuk::Middleware::DBus::RegistryBackend::registerService( Nepomuk::Middle
         QDBusConnection::sessionBus().unregisterObject( DBus::dbusObjectFromType(service->type()) );
         QDBusConnection::sessionBus().unregisterService( DBus::dbusServiceFromUrl(service->url()) );
 
-        kDebug(300001) << "(Nepomuk::Middleware::Registry) failed to register service with registry " << endl;
+        kDebug(300001) << "(Nepomuk::Middleware::Registry) failed to register service with registry ";
         // FIXME: proper return values
         return -1;
     }

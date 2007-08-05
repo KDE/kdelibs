@@ -689,7 +689,7 @@ QDateTime KDateTimePrivate::toUtc(const KTimeZone &local) const
     ut.date = QDate();    // (invalid)
     utcCached = true;
     converted.tz = KTimeZone();
-//    kDebug() << "toUtc(): invalid" << endl;
+//    kDebug() << "toUtc(): invalid";
     return mDt;
 }
 
@@ -703,7 +703,7 @@ QDateTime KDateTimePrivate::toZone(const KTimeZone &zone, const KTimeZone &local
     {
         // Converted value is already cached
 #ifndef NDEBUG
-//        kDebug() << "KDateTimePrivate::toZone(" << zone->name() << "): " << mDt << " cached" << endl;
+//        kDebug() << "KDateTimePrivate::toZone(" << zone->name() << "): " << mDt << " cached";
         ++KDateTime_zoneCacheHit;
 #endif
         return QDateTime(converted.date, converted.time, Qt::LocalTime);

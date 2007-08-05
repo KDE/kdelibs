@@ -843,7 +843,7 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
         break;
 
     default:
-        kWarning(101) << "Unknown type of change in KGlobalSettings::slotNotifyChange: " << changeType << endl;
+        kWarning(101) << "Unknown type of change in KGlobalSettings::slotNotifyChange: " << changeType;
     }
 }
 

@@ -206,11 +206,11 @@ QDomDocument KBookmarkManager::internalDocument() const
 void KBookmarkManager::parse() const
 {
     d->m_docIsLoaded = true;
-    //kDebug(7043) << "KBookmarkManager::parse " << d->m_bookmarksFile << endl;
+    //kDebug(7043) << "KBookmarkManager::parse " << d->m_bookmarksFile;
     QFile file( d->m_bookmarksFile );
     if ( !file.open( QIODevice::ReadOnly ) )
     {
-        kWarning() << "Can't open " << d->m_bookmarksFile << endl;
+        kWarning() << "Can't open " << d->m_bookmarksFile;
         return;
     }
     d->m_doc = QDomDocument("xbel");
@@ -218,13 +218,13 @@ void KBookmarkManager::parse() const
 
     QDomElement docElem = d->m_doc.documentElement();
     if ( docElem.isNull() )
-        kWarning() << "KBookmarkManager::parse : can't parse " << d->m_bookmarksFile << endl;
+        kWarning() << "KBookmarkManager::parse : can't parse " << d->m_bookmarksFile;
     else
     {
         QString mainTag = docElem.tagName();
         if ( mainTag == "BOOKMARKS" )
         {
-            kWarning() << "Old style bookmarks found. Calling convertToXBEL." << endl;
+            kWarning() << "Old style bookmarks found. Calling convertToXBEL.";
             docElem.setTagName("xbel");
             if ( docElem.hasAttribute( "HIDE_NSBK" ) ) // non standard either, but we need it
             {
@@ -236,7 +236,7 @@ void KBookmarkManager::parse() const
             save();
         }
         else if ( mainTag != "xbel" )
-            kWarning() << "KBookmarkManager::parse : unknown main tag " << mainTag << endl;
+            kWarning() << "KBookmarkManager::parse : unknown main tag " << mainTag;
 
         QDomNode n = d->m_doc.documentElement().previousSibling();
         if ( n.isProcessingInstruction() )
@@ -302,7 +302,7 @@ void KBookmarkManager::convertToXBEL( QDomElement & group )
                     titleElem.appendChild( e.ownerDocument().createTextNode( text ) );
                 }
                 else
-                    kWarning(7043) << "Unknown tag " << e.tagName() << endl;
+                    kWarning(7043) << "Unknown tag " << e.tagName();
         n = n.nextSibling();
     }
 }
@@ -323,7 +323,7 @@ bool KBookmarkManager::save( bool toolbarCache ) const
 
 bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) const
 {
-    kDebug(7043) << "KBookmarkManager::save " << filename << endl;
+    kDebug(7043) << "KBookmarkManager::save " << filename;
 
     // Save the bookmark toolbar folder for quick loading
     // but only when it will actually make things quicker
@@ -386,11 +386,11 @@ KBookmarkGroup KBookmarkManager::root() const
 
 KBookmarkGroup KBookmarkManager::toolbar()
 {
-    kDebug(7043) << "KBookmarkManager::toolbar begin" << endl;
+    kDebug(7043) << "KBookmarkManager::toolbar begin";
     // Only try to read from a toolbar cache if the full document isn't loaded
     if(!d->m_docIsLoaded)
     {
-        kDebug(7043) << "KBookmarkManager::toolbar trying cache" << endl;
+        kDebug(7043) << "KBookmarkManager::toolbar trying cache";
         const QString cacheFilename = d->m_bookmarksFile + QLatin1String(".tbcache");
         QFileInfo bmInfo(d->m_bookmarksFile);
         QFileInfo cacheInfo(cacheFilename);
@@ -398,19 +398,19 @@ KBookmarkGroup KBookmarkManager::toolbar()
             QFile::exists(cacheFilename) &&
             bmInfo.lastModified() < cacheInfo.lastModified())
         {
-            kDebug(7043) << "KBookmarkManager::toolbar reading file" << endl;
+            kDebug(7043) << "KBookmarkManager::toolbar reading file";
             QFile file( cacheFilename );
 
             if ( file.open( QIODevice::ReadOnly ) )
             {
                 d->m_toolbarDoc = QDomDocument("cache");
                 d->m_toolbarDoc.setContent( &file );
-                kDebug(7043) << "KBookmarkManager::toolbar opened" << endl;
+                kDebug(7043) << "KBookmarkManager::toolbar opened";
             }
         }
         if (!d->m_toolbarDoc.isNull())
         {
-            kDebug(7043) << "KBookmarkManager::toolbar returning element" << endl;
+            kDebug(7043) << "KBookmarkManager::toolbar returning element";
             QDomElement elem = d->m_toolbarDoc.firstChild().toElement();
             return KBookmarkGroup(elem);
         }
@@ -427,11 +427,11 @@ KBookmarkGroup KBookmarkManager::toolbar()
 
 KBookmark KBookmarkManager::findByAddress( const QString & address, bool tolerant )
 {
-    //kDebug(7043) << "KBookmarkManager::findByAddress " << address << endl;
+    //kDebug(7043) << "KBookmarkManager::findByAddress " << address;
     KBookmark result = root();
     // The address is something like /5/10/2+
     const QStringList addresses = address.split(QRegExp("[/+]"),QString::SkipEmptyParts);
-    // kWarning() << addresses.join(",") << endl;
+    // kWarning() << addresses.join(",");
     for ( QStringList::const_iterator it = addresses.begin() ; it != addresses.end() ; )
     {
        bool append = ((*it) == "+");
@@ -442,23 +442,23 @@ KBookmark KBookmarkManager::findByAddress( const QString & address, bool toleran
        for ( uint i = 0 ; ( (i<number) || append ) && !bk.isNull() ; ++i ) {
            lbk = bk;
            bk = group.next(bk);
-         //kWarning() << i << endl;
+         //kWarning() << i;
        }
        it++;
        int shouldBeGroup = !bk.isGroup() && (it != addresses.end());
        if ( tolerant && ( bk.isNull() || shouldBeGroup ) ) {
           if (!lbk.isNull()) result = lbk;
-          //kWarning() << "break" << endl;
+          //kWarning() << "break";
           break;
        }
-       //kWarning() << "found section" << endl;
+       //kWarning() << "found section";
        result = bk;
     }
     if (result.isNull()) {
-       kWarning() << "KBookmarkManager::findByAddress: couldn't find item " << address << endl;
+       kWarning() << "KBookmarkManager::findByAddress: couldn't find item " << address;
        Q_ASSERT(!tolerant);
     }
-    //kWarning() << "found " << result.address() << endl;
+    //kWarning() << "found " << result.address();
     return result;
  }
 
@@ -540,7 +540,7 @@ void KBookmarkManager::emitChanged( const KBookmarkGroup & group )
     save();
 
     // Tell the other processes too
-    // kDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address() << endl;
+    // kDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address();
 
     emit bookmarksChanged(group.address());
 
@@ -558,7 +558,7 @@ void KBookmarkManager::notifyCompleteChange( const QString &caller ) // DBUS cal
     if (!d->m_update)
         return;
 
-    kDebug(7043) << "KBookmarkManager::notifyCompleteChange" << endl;
+    kDebug(7043) << "KBookmarkManager::notifyCompleteChange";
     // The bk editor tells us we should reload everything
     // Reparse
     parse();
@@ -569,14 +569,14 @@ void KBookmarkManager::notifyCompleteChange( const QString &caller ) // DBUS cal
 
 void KBookmarkManager::notifyConfigChanged() // DBUS call
 {
-    kDebug() << "reloaded bookmark config!" << endl;
+    kDebug() << "reloaded bookmark config!";
     KBookmarkSettings::self()->readSettings();
     parse(); // reload, and thusly recreate the menus
 }
 
 void KBookmarkManager::notifyChanged( const QString &groupAddress, const QDBusMessage &msg ) // DBUS call
 {
-    kDebug() << "KBookmarkManager::notifyChanged ( "<<groupAddress<<")"<<endl;
+    kDebug() << "KBookmarkManager::notifyChanged ( "<<groupAddress<<")";
     if (!d->m_update)
         return;
 
@@ -585,7 +585,7 @@ void KBookmarkManager::notifyChanged( const QString &groupAddress, const QDBusMe
     if (msg.service() != QDBusConnection::sessionBus().baseService())
        parse();
 
-    //kDebug(7043) << "KBookmarkManager::notifyChanged " << groupAddress << endl;
+    //kDebug(7043) << "KBookmarkManager::notifyChanged " << groupAddress;
     //KBookmarkGroup group = findByAddress( groupAddress ).toGroup();
     //Q_ASSERT(!group.isNull());
     emit changed( groupAddress, QString() );

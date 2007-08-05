@@ -187,7 +187,7 @@ void KConfigTest::testRevertAllEntries()
 
 void KConfigTest::testSimple()
 {
-//  kDebug() << k_funcinfo << endl;
+//  kDebug() << k_funcinfo;
 
   KConfig sc2( "kconfigtest" );
 

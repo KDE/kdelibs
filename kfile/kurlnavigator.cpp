@@ -386,8 +386,8 @@ void KUrlNavigator::Private::openPathSelectorMenu()
 #if 0
 void KUrlNavigator::slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
 {
-// kDebug() << "received redirection to " << newUrl << endl;
-    kDebug() << "received redirection from " << oldUrl << " to " << newUrl << endl;
+// kDebug() << "received redirection to " << newUrl;
+    kDebug() << "received redirection from " << oldUrl << " to " << newUrl;
     /*    UrlStack::iterator it = m_urls.find(oldUrl);
         if (it != m_urls.end())
         {
@@ -827,7 +827,7 @@ void KUrlNavigator::setUrl(const KUrl& url)
     // we might think of a more generic approach to check the protocol + MIME type for
     // this use case.
 
-    //kDebug() << "setUrl(" << url << ")" << endl;
+    //kDebug() << "setUrl(" << url << ")";
     if (urlStr.length() > 0 && urlStr.at(0) == '~') {
         // replace '~' by the home directory
         urlStr.remove(0, 1);
@@ -843,14 +843,14 @@ void KUrlNavigator::setUrl(const KUrl& url)
         HistoryElem& prevHistoryElem = d->m_history[d->m_historyIndex - 1];
         if (transformedUrl == prevHistoryElem.url()) {
             goForward();
-//             kDebug() << "goin' forward in history" << endl;
+//             kDebug() << "goin' forward in history";
             return;
         }
     }
 
     if (this->url() != transformedUrl) {
         // don't insert duplicate history elements
-//         kDebug() << "current url == transformedUrl" << endl;
+//         kDebug() << "current url == transformedUrl";
         d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl));
 
         emit urlChanged(transformedUrl);

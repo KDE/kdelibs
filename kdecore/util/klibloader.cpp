@@ -102,7 +102,7 @@ KLibFactory::KLibFactory( QObject* _parent )
 
 KLibFactory::~KLibFactory()
 {
-//    kDebug(150) << "Deleting KLibFactory " << this << endl;
+//    kDebug(150) << "Deleting KLibFactory " << this;
 }
 
 QObject* KLibFactory::create( QObject* _parent, const char* classname, const QStringList &args )
@@ -145,7 +145,7 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, QLibrary * 
 
 KLibrary::~KLibrary()
 {
-//    kDebug(150) << "Deleting KLibrary " << this << "  " << d->libname << endl;
+//    kDebug(150) << "Deleting KLibrary " << this << "  " << d->libname;
     if ( d->timer && d->timer->isActive() )
 	d->timer->stop();
 
@@ -155,7 +155,7 @@ KLibrary::~KLibrary()
 	    while (!d->objs.isEmpty())
 		{
 		    QObject *obj = d->objs.takeFirst();
-		    kDebug(150) << "Factory still has object " << obj << " " << obj->objectName() << " Library = " << d->libname << endl;
+		    kDebug(150) << "Factory still has object " << obj << " " << obj->objectName() << " Library = " << d->libname;
 		    disconnect( obj, SIGNAL( destroyed() ),
 				this, SLOT( slotObjectDestroyed() ) );
 		    delete obj;
@@ -193,7 +193,7 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     if ( !sym )
     {
         kLibLoaderPrivate->errorMessage = i18n( "The library %1 does not offer an %2 function.", libname, QLatin1String("init_") + libname );
-        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
+        kDebug(150) << kLibLoaderPrivate->errorMessage;
         return 0;
     }
 
@@ -207,7 +207,7 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     if( !factory )
     {
         kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer a KDE compatible factory." , libname);
-        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
+        kDebug(150) << kLibLoaderPrivate->errorMessage;
         return 0;
     }
     factories.insert( symname, factory );
@@ -225,7 +225,7 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     if ( !sym )
     {
         kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer an qt_plugin_instance function.", libname);
-        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
+        kDebug(150) << kLibLoaderPrivate->errorMessage;
         return 0;
     }
 
@@ -240,7 +240,7 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     if( !factory )
     {
         kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer a KDE 4 compatible factory." , libname);
-        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
+        kDebug(150) << kLibLoaderPrivate->errorMessage;
         return 0;
     }
     factories.insert( symname, factory );
@@ -270,7 +270,7 @@ void *KLibrary::resolveSymbol( const char* symname ) const
     if ( !d->handle->isLoaded() || !sym )
     {
         kLibLoaderPrivate->errorMessage = QLatin1String("KLibrary: ") + d->handle->errorString();
-        //kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
+        //kDebug(150) << kLibLoaderPrivate->errorMessage;
         return 0;
     }
 
@@ -291,7 +291,7 @@ KLibrary::void_function_ptr KLibrary::resolveFunction( const char* symname ) con
     if ( !d->handle->isLoaded() || !sym )
     {
         kLibLoaderPrivate->errorMessage = QLatin1String("KLibrary: ") + d->handle->errorString();
-        //kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
+        //kDebug(150) << kLibLoaderPrivate->errorMessage;
         return 0;
     }
 
@@ -371,7 +371,7 @@ KLibWrapPrivate::KLibWrapPrivate(KLibrary *l, QLibrary* h)
 {
     unload_mode = KLibLoader_cpp::UNKNOWN;
     if (handle->resolve("__kde_do_not_unload") != 0) {
-//        kDebug(150) << "Will not unload " << name << endl;
+//        kDebug(150) << "Will not unload " << name;
         unload_mode = KLibLoader_cpp::DONT_UNLOAD;
     } else if (handle->resolve("__kde_do_unload") != 0) {
         unload_mode = KLibLoader_cpp::UNLOAD;
@@ -423,7 +423,7 @@ static inline QString findLibraryInternal(const QString &name, const KComponentD
         libfile = cData.dirs()->findResource("lib", libname);
 #ifndef NDEBUG
         if ( !libfile.isEmpty() && libname.startsWith( "lib" ) ) // don't warn for kdeinit modules
-          kDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;
+          kDebug(150) << "library " << libname << " not found under 'module' but under 'lib'";
 #endif
       }
     } else {
@@ -498,7 +498,7 @@ KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
       if ( libfile.isEmpty() )
       {
 #ifndef NDEBUG
-        kDebug(150) << "library=" << _name << ": No file named " << _name << " found in paths." << endl;
+        kDebug(150) << "library=" << _name << ": No file named " << _name << " found in paths.";
 #endif
         d->errorMessage = i18n("Library files for \"%1\" not found in paths.", _name );
         return 0;
@@ -542,7 +542,7 @@ void KLibLoader::unloadLibrary( const QString &libname )
   if (--wrap->ref_count)
     return;
 
-//  kDebug(150) << "closing library " << libname << endl;
+//  kDebug(150) << "closing library " << libname;
 
   d->m_libs.remove( libname );
 
@@ -617,11 +617,11 @@ void KLibLoaderPrivate::close_pending(KLibWrapPrivate *wrap)
     if (!pending_close.contains( wrap )) {
       if (!deleted_one)
         /* Only diagnose, if we really haven't deleted anything. */
-//      kDebug(150) << "try to dlclose " << wrap->name << ": not yet" << endl;
+//      kDebug(150) << "try to dlclose " << wrap->name << ": not yet";
       break;
     }
 
-//  kDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
+//  kDebug(150) << "try to dlclose " << wrap->name << ": yes, done.";
 
     if ( !deleted_one ) {
       /* Only do the hack once in this loop.

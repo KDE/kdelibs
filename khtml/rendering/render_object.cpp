@@ -625,8 +625,8 @@ RenderBlock *RenderObject::containingBlock() const
     if(!o || !o->isRenderBlock()) {
         if(!isCanvas()) {
 #ifndef NDEBUG
-            kDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
-            kDebug( 6040 ) << kBacktrace() << endl;
+            kDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!";
+            kDebug( 6040 ) << kBacktrace();
             const RenderObject* p = this;
             while (p->parent()) p = p->parent();
             p->printTree();
@@ -1201,7 +1201,7 @@ void RenderObject::printTree(int indent) const
     QString ind;
     ind.fill(' ', indent);
 
-    kDebug() << ind << information() << endl;
+    kDebug() << ind << information();
 
     RenderObject *child = firstChild();
     while( child != 0 )
@@ -1399,7 +1399,7 @@ bool RenderObject::attemptDirectLayerTranslation()
         // we'll need a layout.
         setWidth(oldWidth);
         setHeight(oldHeight);
-        // kDebug() << "Layer translation failed for " << information() << endl;
+        // kDebug() << "Layer translation failed for " << information();
         return false;
     }
     layer()->updateLayerPosition();
@@ -1709,7 +1709,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
                 return r->checkSelectionPoint( _x, _y, _tx, _ty, node, offset, state );
         }
     }
-    //kDebug(6030) << "nodeAtPoint Failed. Fallback - hmm, SelectionPointAfter" << endl;
+    //kDebug(6030) << "nodeAtPoint Failed. Fallback - hmm, SelectionPointAfter";
     node = 0;
     offset = 0;
     return SelectionPointAfter;
@@ -1723,15 +1723,15 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
         if (child->isText() && !static_cast<RenderText *>(child)->inlineTextBoxCount())
             continue;
 
-//        kDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QString::fromRawData(static_cast<RenderText *>(child)->text(), qMin(static_cast<RenderText *>(child)->length(), 10u)) + "\"" : QString()) << endl;
-//        kDebug(6040) << "---------- checkSelectionPoint recursive -----------" << endl;
+//        kDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QString::fromRawData(static_cast<RenderText *>(child)->text(), qMin(static_cast<RenderText *>(child)->length(), 10u)) + "\"" : QString());
+//        kDebug(6040) << "---------- checkSelectionPoint recursive -----------";
         khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off, state);
-//        kDebug(6040) << "-------- end checkSelectionPoint recursive ---------" << endl;
-//        kDebug(6030) << this << " child->findSelectionNode returned result=" << pos << " nod=" << nod << " off=" << off << endl;
+//        kDebug(6040) << "-------- end checkSelectionPoint recursive ---------";
+//        kDebug(6030) << this << " child->findSelectionNode returned result=" << pos << " nod=" << nod << " off=" << off;
         switch(pos) {
         case SelectionPointBeforeInLine:
         case SelectionPointInside:
-            //kDebug(6030) << "RenderObject::checkSelectionPoint " << this << " returning SelectionPointInside offset=" << offset << endl;
+            //kDebug(6030) << "RenderObject::checkSelectionPoint " << this << " returning SelectionPointInside offset=" << offset;
             node = nod;
             offset = off;
             return SelectionPointInside;
@@ -1746,7 +1746,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
             } else {
                 node = nod;
                 offset = off;
-                //kDebug(6030) << "RenderObject::checkSelectionPoint " << this << " before us -> returning SelectionPointBefore " << node << "/" << offset << endl;
+                //kDebug(6030) << "RenderObject::checkSelectionPoint " << this << " before us -> returning SelectionPointBefore " << node << "/" << offset;
                 return SelectionPointBefore;
             }
             break;
@@ -1755,7 +1755,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
             // fall through
         case SelectionPointAfterInLine:
             if (pos == SelectionPointAfterInLine) state.m_afterInLine = true;
-            //kDebug(6030) << "RenderObject::checkSelectionPoint: selection after: " << nod << " offset: " << off << " afterInLine: " << state.m_afterInLine << endl;
+            //kDebug(6030) << "RenderObject::checkSelectionPoint: selection after: " << nod << " offset: " << off << " afterInLine: " << state.m_afterInLine;
             state.m_lastNode = nod;
             state.m_lastOffset = off;
             // No "return" here, obviously. We must keep looking into the children.
@@ -1769,7 +1769,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
         node = state.m_lastNode;
         offset = state.m_lastOffset;
     }
-    //kDebug(6030) << "fallback - SelectionPointAfter  node=" << node << " offset=" << offset << endl;
+    //kDebug(6030) << "fallback - SelectionPointAfter  node=" << node << " offset=" << offset;
     return SelectionPointAfter;
 }
 
@@ -1951,7 +1951,7 @@ void RenderObject::recalcMinMaxWidths()
     KHTMLAssert( m_recalcMinMax );
 
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << renderName() << " recalcMinMaxWidths() this=" << this <<endl;
+    kDebug( 6040 ) << renderName() << " recalcMinMaxWidths() this=" << this;
 #endif
 
     RenderObject *child = firstChild();
@@ -2098,7 +2098,7 @@ bool RenderObject::hasCounter(const QString& counter) const
 
 CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool counters)
 {
-//     kDebug( 6040 ) << renderName() << " getCounter(" << counter << ")" << endl;
+//     kDebug( 6040 ) << renderName() << " getCounter(" << counter << ")";
 
     if (!style()) return 0;
 
@@ -2114,13 +2114,13 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
         if (style()->hasCounterIncrement(counter)) {
             val += style()->counterIncrement(counter);
         }
-//         kDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
+//         kDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val;
     }
     else
     if (style()->hasCounterIncrement(counter)) {
         i = new CounterNode(this);
         val = style()->counterIncrement(counter);
-//         kDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val << endl;
+//         kDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val;
     }
     else if (counter == "list-item") {
         if (isListItem()) {
@@ -2129,13 +2129,13 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
                 if ( !v.isEmpty() ) {
                     i = new CounterReset(this);
                     val = v.toInt();
-//                     kDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
+//                     kDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val;
                 }
             }
             if (!i) {
                 i = new CounterNode(this);
                 val = 1;
-//                 kDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val << endl;
+//                 kDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val;
             }
         }
         else
@@ -2146,7 +2146,7 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
                 val = v.toInt()-1;
             else
                 val = 0;
-//             kDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
+//             kDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val;
         }
         else
         if (element() &&
@@ -2156,7 +2156,7 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
         {
             i = new CounterReset(this);
             val = 0;
-//             kDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
+//             kDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val;
         }
     }
     else if (counter == "-khtml-quotes" && isQuote()) {
@@ -2167,7 +2167,7 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
     if (!i) {
         i = new CounterNode(this);
         val = 0;
-//         kDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val << endl;
+//         kDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val;
     }
     i->setValue(val);
     if (view) i->setIsVisual();
@@ -2287,9 +2287,9 @@ void RenderObject::updateWidgetMasks() {
                                   curr->height()-pby-curr->borderBottom()-curr->paddingBottom()));
 #ifdef MASK_DEBUG
                 QVector<QRect> ar = r.rects();
-                kDebug(6040) << "|| Setting widget mask for " << curr->information() << endl;
+                kDebug(6040) << "|| Setting widget mask for " << curr->information();
                 for (int i = 0; i < ar.size() ; ++i) {
-                    kDebug(6040) << "		" <<  ar[i] << endl;
+                    kDebug(6040) << "		" <<  ar[i];
                 }
 #endif
                 r.translate(-x,-y);

@@ -189,7 +189,7 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 
 
 #define CALCDIFF(m_tabs,diff,i) if (m_lines>(int)lines) {\
-					/*kDebug()<<"i="<<i<<" tabCount="<<tabCount<<" space="<<space<<endl;*/ \
+					/*kDebug()<<"i="<<i<<" tabCount="<<tabCount<<" space="<<space;*/ \
 					uint ulen=0;\
 					diff=0; \
 					for (uint i2=i;i2<tabCount;i2++) {\
@@ -205,9 +205,9 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 
 
 void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
-/*	kDebug()<<"KMultiTabBarInternal::resizeEvent"<<endl;
-	kDebug()<<"KMultiTabBarInternal::resizeEvent - box geometry"<<box->geometry()<<endl;
-	kDebug()<<"KMultiTabBarInternal::resizeEvent - geometry"<<geometry()<<endl;*/
+/*	kDebug()<<"KMultiTabBarInternal::resizeEvent";
+	kDebug()<<"KMultiTabBarInternal::resizeEvent - box geometry"<<box->geometry();
+	kDebug()<<"KMultiTabBarInternal::resizeEvent - geometry"<<geometry();*/
 	if (ev) QScrollArea::resizeEvent(ev);
 
 	if ( (m_style==KMultiTabBar::KDEV3) ||
@@ -248,20 +248,20 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 			CALCDIFF(m_tabs,diff,0)
 			tmp=-diff;
 
-			//kDebug()<<"m_lines recalculated="<<m_lines<<endl;
+			//kDebug()<<"m_lines recalculated="<<m_lines;
 		        for (uint i=0;i<tabCount;i++) {
 				KMultiTabBarTab *tab=m_tabs.at(i);
 				cnt++;
 				tmp+=tab->neededSize()+diff;
 				if (tmp>space) {
-					//kDebug()<<"about to start new line"<<endl;
+					//kDebug()<<"about to start new line";
 					if (cnt>1) {
 						CALCDIFF(m_tabs,diff,i)
 						i--;
 					}
 					else {
-						//kDebug()<<"placing line on old line"<<endl;
-						kDebug()<<"diff="<<diff<<endl;
+						//kDebug()<<"placing line on old line";
+						kDebug()<<"diff="<<diff;
 						tab->removeEventFilter(this);
 						tab->move(qRound(tmp-tab->neededSize()),lines*24);
 //						tab->setFixedWidth(tab->neededSize()+diff);
@@ -273,11 +273,11 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 					tmp=-diff;
 					cnt=0;
 					lines++;
-					//kDebug()<<"starting new line:"<<lines<<endl;
+					//kDebug()<<"starting new line:"<<lines;
 
 				} else 	{
-					//kDebug()<<"Placing line on line:"<<lines<<" pos: (x/y)=("<<tmp-m_tabs.at(i)->neededSize()<<"/"<<lines*24<<")"<<endl;
-					//kDebug()<<"diff="<<diff<<endl;
+					//kDebug()<<"Placing line on line:"<<lines<<" pos: (x/y)=("<<tmp-m_tabs.at(i)->neededSize()<<"/"<<lines*24<<")";
+					//kDebug()<<"diff="<<diff;
 					tab->removeEventFilter(this);
 					tab->move(qRound(tmp-tab->neededSize()),lines*24);
 					tab->setFixedWidth(qRound(tmp+diff)-tab->x());;
@@ -325,7 +325,7 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 		}
 
 
-		//kDebug()<<"needed lines:"<<m_lines<<endl;
+		//kDebug()<<"needed lines:"<<m_lines;
 	} else {
 		int size=0; /*move the calculation into another function and call it only on add tab and tab click events*/
 		for (int i=0;i<(int)m_tabs.count();i++)
@@ -586,7 +586,7 @@ void KMultiTabBarTab::updateState()
 		if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
 			QPushButton::setText(text());
 		} else {
-			kDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString***************"<<endl;
+			kDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString***************";
 			QPushButton::setText(QString());
 		}
 
@@ -791,7 +791,7 @@ void KMultiTabBarTab::drawButtonClassic(QPainter *paint)
 				painter.drawText(0,+width()/2+fontMetrics().height()/2,text());
 
 				paint->rotate(90);
-				kDebug()<<"tpixmap.width:"<<tpixmap.width()<<endl;
+				kDebug()<<"tpixmap.width:"<<tpixmap.width();
 				paint->drawPixmap(25,-tpixmap.height()+1,tpixmap);
 			}
 
@@ -845,7 +845,7 @@ void KMultiTabBarTab::drawButtonClassic(QPainter *paint)
                                 painter.drawText(tpixmap.width()-fontMetrics().width(text()),+width()/2+fontMetrics().height()/2,text());
 
                                 paint->rotate(-90);
-                                kDebug()<<"tpixmap.width:"<<tpixmap.width()<<endl;
+                                kDebug()<<"tpixmap.width:"<<tpixmap.width();
 
 				paint->drawPixmap(-24-tpixmap.width(),2,tpixmap);
 

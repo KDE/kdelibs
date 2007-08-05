@@ -44,7 +44,7 @@ static void compareBookmarks( const KBookmark& initialBookmark, const KBookmark&
 
 void KBookmarkTest::testMimeDataOneBookmark()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     QMimeData* mimeData = new QMimeData;
 
     KBookmark bookmark = KBookmark::standaloneBookmark( "KDE", KUrl( "http://www.kde.org" ), "icon" );
@@ -64,7 +64,7 @@ void KBookmarkTest::testMimeDataOneBookmark()
 
 void KBookmarkTest::testMimeDataBookmarkList()
 {
-    kDebug() << k_funcinfo << endl;
+    kDebug() << k_funcinfo;
     QMimeData* mimeData = new QMimeData;
 
     KBookmark bookmark1 = KBookmark::standaloneBookmark( "KDE", KUrl( "http://www.kde.org" ), "icon" );

@@ -398,7 +398,7 @@ void K3DockWidgetHeader::setDragPanel( K3DockWidgetHeaderDrag* nd )
   if (dontShowDummy) d->dummy->hide(); else d->dummy->show();
   layout->addWidget( closeButton );
   layout->activate();
-  kDebug(282)<<"KdockWidgetHeader::setDragPanel:minimum height="<<layout->minimumSize().height()<<endl;
+  kDebug(282)<<"KdockWidgetHeader::setDragPanel:minimum height="<<layout->minimumSize().height();
   //FIXME somebody left this here, but we don't know what the hell it's for.
   drag->setFixedHeight( closeButton->height()); // /*layout->minimumS*/sizeHint().height() );
 }
@@ -456,7 +456,7 @@ bool K3DockWidgetHeader::dragEnabled() const
 
 void K3DockWidgetHeader::showUndockButton(bool show)
 {
-  kDebug(282)<<"K3DockWidgetHeader::showUndockButton("<<show<<")"<<endl;
+  kDebug(282)<<"K3DockWidgetHeader::showUndockButton("<<show<<")";
   if( d->showToDesktopButton == show )
     return;
 
@@ -650,7 +650,7 @@ void K3DockWidget::mousePressEvent(QMouseEvent* mme)
 #ifdef BORDERLESS_WINDOWS
 	if (!parent())
 	{
-		kDebug(282)<<"K3DockWidget::mousePressEvent"<<endl;
+		kDebug(282)<<"K3DockWidget::mousePressEvent";
 
 		bool bbottom;
 		bool bleft;
@@ -664,7 +664,7 @@ void K3DockWidget::mousePressEvent(QMouseEvent* mme)
 		btop=mp.y()<=styleheight;
 		bleft=mp.x()<=styleheight;
 		bright=mp.x()>=width()-styleheight;
-		kDebug(282)<<"mousemovevent"<<endl;
+		kDebug(282)<<"mousemovevent";
  		d->resizing=true;
 		if (bright)
 		{
@@ -752,7 +752,7 @@ void  K3DockWidget::mouseMoveEvent(QMouseEvent* mme)
 	btop=mp.y()<=styleheight;
 	bleft=mp.x()<=styleheight;
 	bright=mp.x()>=width()-styleheight;
-	kDebug(282)<<"mousemovevent"<<endl;
+	kDebug(282)<<"mousemovevent";
 	if (bright)
 	{
 		if (btop) setCursor(QCursor(Qt::SizeBDiagCursor));
@@ -813,7 +813,7 @@ void K3DockWidget::setHeader( K3DockWidgetAbstractHeader* h )
     header = h;
     layout->addWidget( header );
   }
-//  kDebug(282)<<windowTitle()<<": K3DockWidget::setHeader"<<endl;
+//  kDebug(282)<<windowTitle()<<": K3DockWidget::setHeader";
   setEnableDocking(eDocking);
 }
 
@@ -1024,21 +1024,21 @@ K3DockWidget* K3DockWidget::manualDock( K3DockWidget* target, DockPosition dockP
   if (this == target)
     return 0L;  // docking to itself not possible
 
-//  kDebug(282)<<"manualDock called "<<endl;
+//  kDebug(282)<<"manualDock called ";
   bool success = true; // tested flag
 
   // Check to make sure that we can dock in to the position wee
   // were told to dock in to
   if ( !(eDocking & (int)dockPos) ){
     success = false;
-//  kDebug(282)<<"K3DockWidget::manualDock(): success = false (1)"<<endl;
+//  kDebug(282)<<"K3DockWidget::manualDock(): success = false (1)";
   }
 
   // fix for apps which use a value > 100%. The splitter position must be between 0..100
   // The old behavior on high resolution was 0..10000. So likely the value is >100.
   if (spliPos > 100) {
       spliPos = spliPos / 100;
-      kDebug(282) << "K3DockWidget::manualDock(): fix splitter position: " << spliPos << endl;
+      kDebug(282) << "K3DockWidget::manualDock(): fix splitter position: " << spliPos;
   }
 
   K3DockWidget *tmpTarget = 0;
@@ -1067,7 +1067,7 @@ K3DockWidget* K3DockWidget::manualDock( K3DockWidget* target, DockPosition dockP
   // check if the target allows us to oock into the requested position
   if ( target && !(target->sDocking & (int)dockPos) ){
     success = false;
-//  kDebug(282)<<"K3DockWidget::manualDock(): success = false (2)"<<endl;
+//  kDebug(282)<<"K3DockWidget::manualDock(): success = false (2)";
   }
 
   /* if we have a parent, and it's not a K3DockSplitter, and we don't have a parent
@@ -1075,8 +1075,8 @@ K3DockWidget* K3DockWidget::manualDock( K3DockWidget* target, DockPosition dockP
    * parent dock container...we can't do much yet */
   if ( parent() && !parent()->inherits("K3DockSplitter") && !parentDockTabGroup() &&
   	!(dynamic_cast<K3DockContainer*>(parent())) && !parentDockContainer()){
-//  kDebug(282)<<"K3DockWidget::manualDock(): success = false (3)"<<endl;
-//  kDebug(282)<<parent()->name()<<endl;
+//  kDebug(282)<<"K3DockWidget::manualDock(): success = false (3)";
+//  kDebug(282)<<parent()->name();
     success = false;
   }
 
@@ -1113,7 +1113,7 @@ K3DockWidget* K3DockWidget::manualDock( K3DockWidget* target, DockPosition dockP
     return this;
   }
 
-//  kDebug(282)<<"Looking for  K3DockTabGroup"<<endl;
+//  kDebug(282)<<"Looking for  K3DockTabGroup";
   K3DockTabGroup* parentTab = target->parentDockTabGroup();
   if ( parentTab ){
     // add to existing TabGroup
@@ -1134,7 +1134,7 @@ K3DockWidget* K3DockWidget::manualDock( K3DockWidget* target, DockPosition dockP
   }
   else
   {
-//  	kDebug(282)<<"Looking for  K3DockContainer"<<endl;
+//  	kDebug(282)<<"Looking for  K3DockContainer";
   	QWidget *contWid=target->parentDockContainer();
 	  if (!contWid) contWid=target->widget;
 	  if (contWid)
@@ -1148,7 +1148,7 @@ K3DockWidget* K3DockWidget::manualDock( K3DockWidget* target, DockPosition dockP
 					dc->removeWidget(this);
 				}
 			}
-//			kDebug(282)<<"K3DockContainerFound"<<endl;
+//			kDebug(282)<<"K3DockContainerFound";
 			applyToWidget( contWid );
 			cont->insertWidget( this, icon() ? *icon() : QPixmap(),
 						tabPageLabel(), tabIndex );
@@ -1366,7 +1366,7 @@ K3DockWidget::DockPosition K3DockWidget::currentDockPosition() const
 
 void K3DockWidget::undock()
 {
-//  kDebug(282)<<"K3DockWidget::undock()"<<endl;
+//  kDebug(282)<<"K3DockWidget::undock()";
 
   manager->d->dragRect = QRect ();
   manager->drawDragRectangle ();
@@ -1456,7 +1456,7 @@ void K3DockWidget::undock()
   bool undockedFromContainer=false;
   if (d->container)
   {
-//	  kDebug(282)<<"undocked from dockcontainer"<<endl;
+//	  kDebug(282)<<"undocked from dockcontainer";
 	  undockedFromContainer=true;
 	  K3DockContainer* dc = dynamic_cast<K3DockContainer*>(d->container.operator->());
 	  if (dc) {
@@ -2152,10 +2152,10 @@ void K3DockManager::drop()
     int splitPos = currentDragWidget->d->splitPosInPercent;
     K3DockWidget::DockPosition previousPosition = currentDragWidget->prevSideDockPosBeforeDrag;
 
-//    kDebug() << splitPos << endl;
-//    kDebug() << "curPos: " << curPos << endl;
-//    kDebug() << "formerDockPos: " << currentDragWidget->formerDockPos<< endl;
-//    kDebug() << "prevSideDockPosBeforeDrag: " << currentDragWidget->prevSideDockPosBeforeDrag<< endl;
+//    kDebug() << splitPos;
+//    kDebug() << "curPos: " << curPos;
+//    kDebug() << "formerDockPos: " << currentDragWidget->formerDockPos;
+//    kDebug() << "prevSideDockPosBeforeDrag: " << currentDragWidget->prevSideDockPosBeforeDrag;
 
     // Now we *need* to "invert" the procentual value, if the dockwidget moves from top/left
     // to bottom/right or vice versa. This keeps the dockwidget's size on its new position.
@@ -2483,12 +2483,12 @@ void K3DockManager::readConfig(QDomElement &base)
 	if (childEl.tagName() == "dockContainer") {
 
 		K3DockWidget *cont=getDockWidgetFromName(stringEntry(childEl, "name"));
-		kDebug(282)<<"dockContainer: "<<stringEntry(childEl,"name")<<endl;
+		kDebug(282)<<"dockContainer: "<<stringEntry(childEl,"name");
 		if (!(cont->d->isContainer)) {
-			kDebug(282)<<"restoration of dockContainer is only supported for already existing dock containers"<<endl;
+			kDebug(282)<<"restoration of dockContainer is only supported for already existing dock containers";
 		} else {
 			K3DockContainer *dc=dynamic_cast<K3DockContainer*>(cont->getWidget());
-			if (!dc) kDebug(282)<<"Error while trying to handle dockcontainer configuration restoration"<<endl;
+			if (!dc) kDebug(282)<<"Error while trying to handle dockcontainer configuration restoration";
 				else {
 					dc->load(childEl);
 					removeFromAutoCreateList(cont);
@@ -2665,7 +2665,7 @@ void K3DockManager::writeConfig( KConfig* c, const QString &_group )
       cg.writeEntry( "Main:view", obj->objectName() );
   }
 
-//  kDebug(282)<<QString("list size: %1").arg(nList.count())<<endl;
+//  kDebug(282)<<QString("list size: %1").arg(nList.count());
   for (QObjectList::iterator it = d->containerDocks.begin() ;it != d->containerDocks.end(); ++it)
   {
         K3DockContainer* dc = dynamic_cast<K3DockContainer*>(((K3DockWidget*)(*it))->widget);
@@ -2673,7 +2673,7 @@ void K3DockManager::writeConfig( KConfig* c, const QString &_group )
 		dc->prepareSave(nList);
 	}
   }
-//  kDebug(282)<<QString("new list size: %1").arg(nList.count())<<endl;
+//  kDebug(282)<<QString("new list size: %1").arg(nList.count());
 
   QStringList::Iterator nListIt=nList.begin();
   while ( nListIt!=nList.end() ){
@@ -2975,7 +2975,7 @@ void K3DockManager::dumpDockWidgets() {
   K3DockWidget * obj;
   while ( (obj=(K3DockWidget*)(*it)) ) {
     ++it;
-    kDebug(282)<<"K3DockManager::dumpDockWidgets:"<<obj->name()<<endl;
+    kDebug(282)<<"K3DockManager::dumpDockWidgets:"<<obj->name();
   }
 
 }
@@ -2991,7 +2991,7 @@ K3DockWidget* K3DockManager::getDockWidgetFromName( const QString& dockName )
 
   K3DockWidget* autoCreate = 0L;
   if ( autoCreateDock ){
-    kDebug(282)<<"Autocreating dock: "<<dockName<<endl;
+    kDebug(282)<<"Autocreating dock: "<<dockName;
     autoCreate = new K3DockWidget( this, dockName.toLatin1().constData(), QPixmap("") );
     autoCreateDock->append( autoCreate );
   }
@@ -3232,7 +3232,7 @@ void K3DockArea::resizeEvent(QResizeEvent *rsize)
   QWidget::resizeEvent(rsize);
   if (!children().isEmpty()){
 #ifndef NO_KDE2
-//    kDebug(282)<<"K3DockArea::resize"<<endl;
+//    kDebug(282)<<"K3DockArea::resize";
 #endif
     QList<QWidget *> list = findChildren<QWidget*>();
 
@@ -3307,7 +3307,7 @@ void K3DockContainer::activateOverlapMode(int nonOverlapSize) {
 	m_nonOverlapSize=nonOverlapSize;
 	m_overlapMode=true;
 	if (parentDockWidget() && parentDockWidget()->parent()) {
-		kDebug(282)<<"K3DockContainer::activateOverlapMode: recalculating sizes"<<endl;
+		kDebug(282)<<"K3DockContainer::activateOverlapMode: recalculating sizes";
 		K3DockSplitter *sp= qobject_cast<K3DockSplitter*>(parentDockWidget()->parent());
 		if (sp)
 			sp->resizeEvent(0);
@@ -3318,7 +3318,7 @@ void K3DockContainer::deactivateOverlapMode() {
 	if (!m_overlapMode) return;
 	m_overlapMode=false;
 	if (parentDockWidget() && parentDockWidget()->parent()) {
-		kDebug(282)<<"K3DockContainer::deactivateOverlapMode: recalculating sizes"<<endl;
+		kDebug(282)<<"K3DockContainer::deactivateOverlapMode: recalculating sizes";
 		K3DockSplitter *sp= qobject_cast<K3DockSplitter*>(parentDockWidget()->parent());
 		if (sp)
 			sp->resizeEvent(0);
@@ -3423,14 +3423,14 @@ QWidget *K3DockTabGroup::transientTo() {
 			if (!tT) tT=tmp;
 			else {
 				if (tT!=tmp) {
-					kDebug(282)<<"K3DockTabGroup::transientTo: widget mismatch"<<endl;
+					kDebug(282)<<"K3DockTabGroup::transientTo: widget mismatch";
 					return 0;
 				}
 			}
 		}
 	}
 
-	kDebug(282)<<"K3DockTabGroup::transientTo: "<<(tT?"YES":"NO")<<endl;
+	kDebug(282)<<"K3DockTabGroup::transientTo: "<<(tT?"YES":"NO");
 
 	return tT;
 }

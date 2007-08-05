@@ -735,7 +735,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 
     assert(0); //If there is no item with such an ID, we should never get here
 
-    //kDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string() << endl;
+    //kDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string();
 
     return 0;
 }
@@ -1033,7 +1033,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
         break;
 // text
     case ID_TEXT:
-        kDebug( 6020 ) << "Use document->createTextNode()" << endl;
+        kDebug( 6020 ) << "Use document->createTextNode()";
         break;
 
     default:
@@ -1142,7 +1142,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
             fontDef.size = m_styleSelector->fontSizes()[3];
         }
 
-        //kDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
+        //kDebug() << "DocumentImpl::attach: setting to charset " << settings->charset();
         _style->setFontDef(fontDef);
 	_style->htmlFont().update( 0 );
         if ( inCompatMode() )
@@ -1162,7 +1162,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
     for (n = _first; n; n = n->nextSibling())
         if ( change>= Inherit || n->hasChangedChild() || n->changed() )
             n->recalcStyle( change );
-    //kDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
+    //kDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed();
 
     if (changed() && m_view)
 	m_view->layout();
@@ -1181,7 +1181,7 @@ void DocumentImpl::updateRendering()
 
 //     QTime time;
 //     time.start();
-//     kDebug() << "UPDATERENDERING: "<<endl;
+//     kDebug() << "UPDATERENDERING: ";
 
     StyleChange change = NoChange;
 #if 0
@@ -1192,7 +1192,7 @@ void DocumentImpl::updateRendering()
 #endif
     recalcStyle( change );
 
-//    kDebug() << "UPDATERENDERING time used="<<time.elapsed()<<endl;
+//    kDebug() << "UPDATERENDERING time used="<<time.elapsed();
 }
 
 void DocumentImpl::updateDocumentsRendering()
@@ -1421,7 +1421,7 @@ void DocumentImpl::determineParseMode( const QString &/*str*/ )
     // For XML documents, use strict parse mode
     pMode = Strict;
     hMode = XHtml;
-    kDebug(6020) << " using strict parseMode" << endl;
+    kDebug(6020) << " using strict parseMode";
 }
 
 NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
@@ -2036,7 +2036,7 @@ void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
 
 void DocumentImpl::updateStyleSelector(bool shallow)
 {
-//    kDebug() << "PENDING " << m_pendingStylesheets << endl;
+//    kDebug() << "PENDING " << m_pendingStylesheets;
 
     // Don't bother updating, since we haven't loaded all our style info yet.
     if (m_pendingStylesheets > 0)

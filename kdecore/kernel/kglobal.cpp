@@ -241,13 +241,13 @@ static int s_refCount = 1;
 void KGlobal::ref()
 {
     ++s_refCount;
-    //kDebug() << "KGlobal::ref() : refCount = " << s_refCount << endl;
+    //kDebug() << "KGlobal::ref() : refCount = " << s_refCount;
 }
 
 void KGlobal::deref()
 {
     --s_refCount;
-    //kDebug() << "KGlobal::deref() : refCount = " << s_refCount << endl;
+    //kDebug() << "KGlobal::deref() : refCount = " << s_refCount;
     if (s_refCount <= 0) {
         QCoreApplication::instance()->quit();
     }

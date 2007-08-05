@@ -125,7 +125,7 @@ DrMain* PPDLoader::readFromFile( const QString& filename )
 		if ( result )
 		{
 			if ( m_groups.size() > 1 )
-				kWarning( 500 ) << "PPD syntax error, GROUP specification not correctly closed" << endl;
+				kWarning( 500 ) << "PPD syntax error, GROUP specification not correctly closed";
 			if ( driver->has( "foodata" ) )
 			{
 				Foomatic2Loader loader;
@@ -134,7 +134,7 @@ DrMain* PPDLoader::readFromFile( const QString& filename )
 					driver = loader.modifyDriver( driver );
 				}
 				else
-					kWarning( 500 ) << "PPD syntax error, Foomatic data read failed" << endl;
+					kWarning( 500 ) << "PPD syntax error, Foomatic data read failed";
 			}
 			processPageSizes( driver );
 			if ( !m_fonts.isEmpty() )
@@ -142,12 +142,12 @@ DrMain* PPDLoader::readFromFile( const QString& filename )
 			return driver;
 		}
 		else
-			kWarning( 500 ) << "PPD syntax error, PPD parse failed" << endl;
+			kWarning( 500 ) << "PPD syntax error, PPD parse failed";
 		delete driver;
 		m_ps.clear();
 	}
 	else
-		kWarning( 500 ) << "PPD read error, unable to open device for file " << filename << endl;
+		kWarning( 500 ) << "PPD read error, unable to open device for file " << filename;
 	return 0;
 }
 

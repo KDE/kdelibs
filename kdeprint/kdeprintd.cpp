@@ -291,10 +291,10 @@ void KDEPrintd::processRequest()
 				authString = result.username + ':' + result.password + ':' + QString::number( seqNbr );
 		}
 		else
-			kWarning( 500 ) << "D-BUS returned invalid reply" << endl;
+			kWarning( 500 ) << "D-BUS returned invalid reply";
 	}
 	else
-		kWarning( 500 ) << "Cannot communicate with kded_kpasswdserver" << endl;
+		kWarning( 500 ) << "Cannot communicate with kded_kpasswdserver";
 
         QDBusConnection::sessionBus().send(req->reply.createReply(authString));
 
@@ -319,7 +319,7 @@ void KDEPrintd::initPassword( const QString& user, const QString& passwd, const 
 		QDBusInterface( "org.kde.kded", "/modules/kpasswdserver", "org.kde.KPasswdServer" ).
 		call("addAuthInfo", params, qlonglong(0));
 	if ( reply.type() != QDBusMessage::ReplyMessage )
-		kWarning( 500 ) << "Unable to initialize password, cannot communicate with kded_kpasswdserver" << endl;
+		kWarning( 500 ) << "Unable to initialize password, cannot communicate with kded_kpasswdserver";
 }
 
 #include "kdeprintd.moc"

@@ -162,17 +162,17 @@ Document::Document(bool create)
     }
     else
 	impl = 0;
-//    kDebug(6090) << "Document::Document(bool)" << endl;
+//    kDebug(6090) << "Document::Document(bool)";
 }
 
 Document::Document(const Document &other) : Node(other)
 {
-//    kDebug(6090) << "Document::Document(Document &)" << endl;
+//    kDebug(6090) << "Document::Document(Document &)";
 }
 
 Document::Document(DocumentImpl *i) : Node(i)
 {
-//    kDebug(6090) << "Document::Document(DocumentImpl)" << endl;
+//    kDebug(6090) << "Document::Document(DocumentImpl)";
 }
 
 Document &Document::operator = (const Node &other)
@@ -197,7 +197,7 @@ Document &Document::operator = (const Document &other)
 
 Document::~Document()
 {
-//    kDebug(6090) << "Document::~Document\n" << endl;
+//    kDebug(6090) << "Document::~Document\n";
 }
 
 DocumentType Document::doctype() const

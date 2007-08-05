@@ -126,7 +126,7 @@ bool Highlighter::spellCheckerFound() const
 
 void Highlighter::slotRehighlight()
 {
-    kDebug(0) << "Highlighter::slotRehighlight()" << endl;
+    kDebug(0) << "Highlighter::slotRehighlight()";
     if (d->completeRehighlightRequired) {
         rehighlight();
 
@@ -205,7 +205,7 @@ void Highlighter::slotAutoDetection()
 	d->completeRehighlightRequired = true;
 	d->rehighlightRequest->setInterval(100);
         d->rehighlightRequest->setSingleShot(true);
-        kDebug()<<" Highlighter::slotAutoDetection :"<<d->active<<endl;
+        kDebug()<<" Highlighter::slotAutoDetection :"<<d->active;
     }
 
 }

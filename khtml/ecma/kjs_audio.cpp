@@ -119,7 +119,7 @@ ValueImp *Audio::getValueProperty(ExecState * /*exec*/, int token) const
             return Null();
         }
       default:
-        kWarning() << "Audio::getValueProperty unhandled token " << token << endl;
+        kWarning() << "Audio::getValueProperty unhandled token " << token;
         break;
     }
     return 0;
@@ -148,7 +148,7 @@ void Audio::putValueProperty(ExecState *exec, int token, ValueImp *value, int /*
             m_onLoadListener->ref();
         break;
       default:
-        kWarning() << "Audio::putValue unhandled token " << token << endl;
+        kWarning() << "Audio::putValue unhandled token " << token;
     }
 }
 

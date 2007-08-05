@@ -12,15 +12,15 @@ int main(int argc, char** argv)
     widget.setGeometry(45, 54, 120, 80);
     widget.show();
 
-    kDebug() << &widget << endl;
+    kDebug() << &widget;
 
     QRect r(9,12,58,234);
     QRegion reg(r);
     reg += QRect(1,60,200,59);
-    kDebug() << reg << endl;
+    kDebug() << reg;
 
     QVariant v = QPen( Qt::red );
-    kDebug() << "Variant: " << v << endl;
+    kDebug() << "Variant: " << v;
 
     return 0;
 }

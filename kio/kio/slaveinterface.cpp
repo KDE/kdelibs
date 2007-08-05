@@ -137,7 +137,7 @@ void SlaveInterface::calcSpeed()
 bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
     Q_D(SlaveInterface);
-    //kDebug(7007) << "dispatch " << _cmd << endl;
+    //kDebug(7007) << "dispatch " << _cmd;
 
     QDataStream stream( rawdata );
 
@@ -158,7 +158,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     }
     case MSG_FINISHED:
-	//kDebug(7007) << "Finished [this = " << this << "]" << endl;
+	//kDebug(7007) << "Finished [this = " << this << "]";
         d->offset = 0;
         d->speed_timer.stop();
 	emit finished();
@@ -197,7 +197,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     case MSG_ERROR:
 	stream >> i >> str1;
-	kDebug(7007) << "error " << i << " " << str1 << endl;
+	kDebug(7007) << "error " << i << " " << str1;
 	emit error( i, str1 );
 	break;
     case MSG_SLAVE_STATUS:
@@ -278,7 +278,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	emit warning( str1 );
 	break;
     case INF_MESSAGEBOX: {
-	kDebug(7007) << "needs a msg box" << endl;
+	kDebug(7007) << "needs a msg box";
 	QString text, caption, buttonYes, buttonNo, dontAskAgainName;
         int type;
 	stream >> type >> text >> caption >> buttonYes >> buttonNo;
@@ -322,7 +322,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     }
     default:
-        kWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave" << endl;
+        kWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave";
         return false;
     }
     return true;
@@ -343,7 +343,7 @@ KIO::filesize_t SlaveInterface::offset() const
 void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 {
     Q_D(SlaveInterface);
-    kDebug(7007) << "requestNetwork " << host << slaveid << endl;
+    kDebug(7007) << "requestNetwork " << host << slaveid;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
     stream << true;
@@ -352,13 +352,13 @@ void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 
 void SlaveInterface::dropNetwork(const QString &host, const QString &slaveid)
 {
-    kDebug(7007) << "dropNetwork " << host << slaveid << endl;
+    kDebug(7007) << "dropNetwork " << host << slaveid;
 }
 
 void SlaveInterface::sendResumeAnswer( bool resume )
 {
     Q_D(SlaveInterface);
-    kDebug(7007) << "SlaveInterface::sendResumeAnswer ok for resuming :" << resume << endl;
+    kDebug(7007) << "SlaveInterface::sendResumeAnswer ok for resuming :" << resume;
     d->connection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
@@ -372,7 +372,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &c
                                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
     Q_D(SlaveInterface);
-    kDebug(7007) << "messageBox " << type << " " << text << " - " << caption << " " << dontAskAgainName << endl;
+    kDebug(7007) << "messageBox " << type << " " << text << " - " << caption << " " << dontAskAgainName;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
 
@@ -382,7 +382,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &c
     if ( me && d->connection ) // Don't do anything if deleted meanwhile
     {
         d->connection->resume();
-        kDebug(7007) << this << " SlaveInterface result=" << result << endl;
+        kDebug(7007) << this << " SlaveInterface result=" << result;
         stream << result;
         d->connection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
     }
@@ -392,7 +392,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                                       const QString &caption, const QString &buttonYes,
                                       const QString &buttonNo, const QString &dontAskAgainName)
 {
-    kDebug() << "Observer::messageBox " << type << " " << text << " - " << caption << endl;
+    kDebug() << "Observer::messageBox " << type << " " << text << " - " << caption;
     int result = -1;
     KConfig *config = new KConfig("kioslaverc");
     KMessageBox::setDontShowAskAgainConfig(config);
@@ -447,10 +447,10 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                            meta["ssl_cipher_used_bits"].toInt(),
                            meta["ssl_cipher_bits"].toInt(),
                            KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
-               kDebug(7024) << "Showing SSL Info dialog" << endl;
+               kDebug(7024) << "Showing SSL Info dialog";
                kid->exec();
                delete x;
-               kDebug(7024) << "SSL Info dialog closed" << endl;
+               kDebug(7024) << "SSL Info dialog closed";
             } else {
                KMessageBox::information(0L, // parent ?
                                          i18n("The peer SSL certificate appears to be corrupt."), i18n("SSL"));
@@ -460,7 +460,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
             break;
         }
         default:
-            kWarning() << "Observer::messageBox: unknown type " << type << endl;
+            kWarning() << "Observer::messageBox: unknown type " << type;
             result = 0;
             break;
     }

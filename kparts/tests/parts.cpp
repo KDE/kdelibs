@@ -41,7 +41,7 @@ Part1::~Part1()
 
 bool Part1::openFile()
 {
-    kDebug() << "Part1: opening " << QFile::encodeName(localFilePath()) << endl;
+    kDebug() << "Part1: opening " << QFile::encodeName(localFilePath());
     // Hehe this is from a tutorial I did some time ago :)
     QFile f(localFilePath());
     QString s;

@@ -505,7 +505,7 @@ void KUrlTest::testPathAndQuery()
 
 void KUrlTest::testSetFileName() // and addPath
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   KUrl u2( "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README" );
   //qDebug( "* URL is %s", qPrintable( u2.url() ) );
 
@@ -610,7 +610,7 @@ void KUrlTest::testDirectory()
 
 void KUrlTest::testPrettyURL()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   KUrl notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   QCOMPARE( notPretty.prettyUrl(), QString("http://ferret.lmh.ox.ac.uk/~kdecvs/") );
   KUrl notPretty2("file:/home/test/directory%20with%20spaces");
@@ -634,7 +634,7 @@ void KUrlTest::testPrettyURL()
 
 void KUrlTest::testIsRelative()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   QVERIFY( !KUrl::isRelativeUrl("man:mmap") );
   QVERIFY( !KUrl::isRelativeUrl("javascript:doSomething()") );
   QVERIFY( !KUrl::isRelativeUrl("file:///blah") );
@@ -733,7 +733,7 @@ void KUrlTest::testAdjustPath()
 
 void KUrlTest::testIPV6()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   // IPV6
   KUrl waba1( "http://[::FFFF:129.144.52.38]:81/index.html" );
   QCOMPARE( waba1.host(), QString("::ffff:129.144.52.38") );
@@ -781,7 +781,7 @@ void KUrlTest::testIPV6()
 
 void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) constructor
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   KUrl com1(KUrl("http://server.com/dir/"), ".");
   QCOMPARE( com1.url(), QString("http://server.com/dir/") );
 
@@ -961,7 +961,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
 
 void KUrlTest::testSubURL()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   QString u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
   KUrl url1(u1);
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/%23myref") ); // KDE3 would say # 3 times
@@ -973,7 +973,7 @@ void KUrlTest::testSubURL()
 
   const KUrl::List splitted = KUrl::split( url1 );
   QCOMPARE( splitted.count(), 3 );
-  kDebug() << splitted.toStringList() << endl;
+  kDebug() << splitted.toStringList();
   QCOMPARE( splitted[0].url(), QString("file:///home/dfaure/my%20tar%20file.tgz#myref") );
   QCOMPARE( splitted[1].url(), QString("gzip:/#myref") );
   QCOMPARE( splitted[2].url(), QString("tar:/#myref") );
@@ -1057,7 +1057,7 @@ void KUrlTest::testSetUser()
 
 void KUrlTest::testComparisons()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   /// Comparisons
   QString ucmp1 = "ftp://ftp.de.kde.org/dir";
   QString ucmp2 = "ftp://ftp.de.kde.org/dir/";
@@ -1104,7 +1104,7 @@ void KUrlTest::testComparisons()
 
 void KUrlTest::testStreaming()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   // Streaming operators
   KUrl origURL( "http://www.website.com/directory/?#ref" );
   KUrl empty( "" );
@@ -1139,7 +1139,7 @@ void KUrlTest::testStreaming()
 
 void KUrlTest::testBrokenStuff()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   // Broken stuff
   KUrl waba1( "file:a" );
   QCOMPARE( waba1.path(), QString("a") );
@@ -1285,7 +1285,7 @@ void KUrlTest::testBrokenStuff()
 
 void KUrlTest::testMailto()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   KUrl umail1 ( "mailto:faure@kde.org" );
   QCOMPARE( umail1.protocol(), QString("mailto") );
   QCOMPARE( umail1.path(), QString("faure@kde.org") );
@@ -1311,7 +1311,7 @@ void KUrlTest::testMailto()
 
 void KUrlTest::testSmb()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   KUrl smb("smb://domain;username:password@server/share");
   QVERIFY( smb.isValid() );
   QCOMPARE( smb.user(), QString("domain;username") );
@@ -1328,7 +1328,7 @@ void KUrlTest::testSmb()
 
 void KUrlTest::testOtherProtocols()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   KUrl about("about:konqueror");
   QCOMPARE(about.path(),QString("konqueror") );
 
@@ -1348,7 +1348,7 @@ void KUrlTest::testOtherProtocols()
 
 void KUrlTest::testUtf8()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   QTextCodec* codec = QTextCodec::codecForName( "ISO-8859-1" );
   QVERIFY( codec != 0 );
   QTextCodec::setCodecForLocale( codec );
@@ -1383,7 +1383,7 @@ void KUrlTest::testUtf8()
 
 void KUrlTest::testOtherEncodings()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "koi8-r" ) );
   KUrl baseURL( "file:/home/coolo" );
   KUrl russian = KUrl::fromPath( baseURL.directory(KUrl::AppendTrailingSlash) + QString::fromUtf8( "фгн7" ) );
@@ -1403,7 +1403,7 @@ void KUrlTest::testOtherEncodings()
 
 void KUrlTest::testPathOrURL()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   // passing path or url to the constructor: both work
   KUrl uloc( "/home/dfaure/konqtests/Mat%C3%A9riel" );
   QCOMPARE( uloc.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
@@ -1444,7 +1444,7 @@ void KUrlTest::testPathOrURL()
 
 void KUrlTest::testAssignment()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   // passing path or url to the constructor: both work
   KUrl uloc;
   uloc = "/home/dfaure/konqtests/Mat%C3%A9riel";
@@ -1486,7 +1486,7 @@ void KUrlTest::testAssignment()
 
 void KUrlTest::testQueryItem()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   KUrl theKow( "http://www.google.de/search?q=frerich&hlx=xx&hl=de&empty=&lr=lang+de&test=%2B%20%3A%25" );
   QCOMPARE( theKow.queryItem("q"), QString("frerich") );
   QCOMPARE( theKow.queryItem("hl"), QString("de") );
@@ -1517,7 +1517,7 @@ void KUrlTest::testQueryItem()
 
 void KUrlTest::testEncodeString()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   // Needed for #49616
   QCOMPARE( KUrl::toPercentEncoding( "C++" ), QByteArray("C%2B%2B") );
   QCOMPARE( KUrl::fromPercentEncoding( "C%2B%2B" ), QString("C++") );
@@ -1529,7 +1529,7 @@ void KUrlTest::testEncodeString()
 
 void KUrlTest::testIdn()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
 
   //qDebug( "trying QUrl with fromPercentEncoding" );
   QUrl qurltest( QUrl::fromPercentEncoding( "http://\303\244.de" ) ); // a+trema in utf8
@@ -1560,7 +1560,7 @@ void KUrlTest::testIdn()
 
 void KUrlTest::testUriMode()
 {
-  kDebug() << k_funcinfo << endl;
+  kDebug() << k_funcinfo;
   KUrl url1;
 #if 0 // ###### TODO KUri
   url1 = "http://www.foobar.com/";

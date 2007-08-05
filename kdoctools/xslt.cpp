@@ -141,11 +141,11 @@ QString splitOut(const QString &parsed, int index)
         int endindex = parsed.indexOf("</FILENAME>", index);
         int startindex = parsed.indexOf("<FILENAME ", index) + 1;
 
-//        kDebug() << "FILENAME " << startindex << " " << endindex << " " << inside << " " << parsed.mid(startindex + 18, 15)<< " " << parsed.length() << endl;
+//        kDebug() << "FILENAME " << startindex << " " << endindex << " " << inside << " " << parsed.mid(startindex + 18, 15)<< " " << parsed.length();
 
         if (startindex > 0) {
             if (startindex < endindex) {
-                //              kDebug() << "finding another" << endl;
+                //              kDebug() << "finding another";
                 index = startindex + 8;
                 inside++;
             } else {
@@ -221,13 +221,13 @@ bool saveToCache( const QString &contents, const QString &filename )
 static bool readCache( const QString &filename,
                        const QString &cache, QString &output)
 {
-    kDebug( 7119 ) << "verifyCache " << filename << " " << cache << endl;
+    kDebug( 7119 ) << "verifyCache " << filename << " " << cache;
     if ( !compareTimeStamps( filename, cache ) )
         return false;
     if ( !compareTimeStamps( KStandardDirs::locate( "dtd", "customization/kde-chunk.xsl"), cache ) )
         return false;
 
-    kDebug( 7119 ) << "create filter" << endl;
+    kDebug( 7119 ) << "create filter";
     QIODevice *fd = ::getBZip2device(cache);
     if ( !fd )
         return false;
@@ -239,7 +239,7 @@ static bool readCache( const QString &filename,
        return false;
     }
 
-    kDebug( 7119 ) << "reading" << endl;
+    kDebug( 7119 ) << "reading";
 
     char buffer[32000];
     int n;
@@ -250,7 +250,7 @@ static bool readCache( const QString &filename,
         buffer[n] = 0;
         text += buffer;
     }
-    kDebug( 7119 ) << "read " << text.length() << endl;
+    kDebug( 7119 ) << "read " << text.length();
     fd->close();
 
     output = QString::fromUtf8( text );
@@ -259,14 +259,14 @@ static bool readCache( const QString &filename,
     if (n == -1)
         return false;
 
-    kDebug( 7119 ) << "finished " << endl;
+    kDebug( 7119 ) << "finished ";
 
     return true;
 }
 
 QString lookForCache( const QString &filename )
 {
-    kDebug() << "lookForCache " << filename << endl;
+    kDebug() << "lookForCache " << filename;
     assert( filename.endsWith( ".docbook" ) );
     assert( filename.at( 0 ) == '/' );
 

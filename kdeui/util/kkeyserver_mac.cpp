@@ -70,19 +70,19 @@ namespace KKeyServer {
     void updateScancodes() {
         KeyboardLayoutRef layout;
         if (KLGetCurrentKeyboardLayout(&layout) != noErr) {
-            kWarning() << "Error retrieving current layout" << endl;
+            kWarning() << "Error retrieving current layout";
         }
         if (layout != lastLayout) {
 #ifndef NDEBUG
             void *name;
             KLGetKeyboardLayoutProperty(layout, kKLName, const_cast<const void**>(&name));
-            kDebug() << "Layout changed to: " << CFStringGetCStringPtr((CFStringRef) name, 0) << endl;
+            kDebug() << "Layout changed to: " << CFStringGetCStringPtr((CFStringRef) name, 0);
 #endif
             lastLayout = layout;
             scancodes.clear();
             void *kchr;
             if (KLGetKeyboardLayoutProperty(layout, kKLKCHRData, const_cast<const void**>(&kchr)) != noErr) {
-                kWarning() << "Couldn't load active keyboard layout" << endl;
+                kWarning() << "Couldn't load active keyboard layout";
             } else {
                 for (int i = 0; i < 128; i++) {
                     UInt32 tmpState = 0;

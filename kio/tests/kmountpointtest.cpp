@@ -76,13 +76,13 @@ void KMountPointTest::testCurrentMountPoints()
         bool sameDevice = rootStatBuff.st_dev == homeStatBuff.st_dev;
         const KMountPoint::Ptr homeMountPoint = mountPoints.findByPath("/home");
         QVERIFY(homeMountPoint);
-        //kDebug() << "Checking the home mount point, sameDevice=" << sameDevice << endl;
+        //kDebug() << "Checking the home mount point, sameDevice=" << sameDevice;
         if (sameDevice)
             QCOMPARE(homeMountPoint->mountPoint(), QString("/"));
         else
             QCOMPARE(homeMountPoint->mountPoint(), QString("/home"));
     } else {
-        kDebug() << "/home doesn't seem to exist, skipping test" << endl;
+        kDebug() << "/home doesn't seem to exist, skipping test";
     }
 #endif
 }

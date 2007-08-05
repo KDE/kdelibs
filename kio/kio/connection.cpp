@@ -82,7 +82,7 @@ void ConnectionPrivate::dequeue()
 
 void ConnectionPrivate::commandReceived(const Task &task)
 {
-    //kDebug() << k_funcinfo << "Command " << task.cmd << " added to the queue" << endl;
+    //kDebug() << k_funcinfo << "Command " << task.cmd << " added to the queue";
     incomingTasks.enqueue(task);
     emit q->readyRead();
 }
@@ -123,10 +123,10 @@ void SocketConnectionBackend::setSuspended(bool enable)
     Q_ASSERT(!localServer);     // !tcpServer as well
 
     if (enable) {
-        //kDebug() << this << " suspending" << endl;
+        //kDebug() << this << " suspending";
         socket->setReadBufferSize(1);
     } else {
-        //kDebug() << this << " resuming" << endl;
+        //kDebug() << this << " resuming";
         socket->setReadBufferSize(0);
         if (socket->bytesAvailable() >= HeaderSize) {
             // there are bytes available
@@ -164,7 +164,7 @@ bool SocketConnectionBackend::connectToRemote(const KUrl &url)
 
         if (!socket->waitForConnected(1000)) {
             state = Idle;
-            kDebug() << k_funcinfo << "could not connect to " << url << endl;
+            kDebug() << k_funcinfo << "could not connect to " << url;
             return false;
         }
     }
@@ -277,7 +277,7 @@ AbstractConnectionBackend *SocketConnectionBackend::nextPendingConnection()
     Q_ASSERT(localServer || tcpServer);
     Q_ASSERT(!socket);
 
-    //kDebug() << k_funcinfo << "Got a new connection" << endl;
+    //kDebug() << k_funcinfo << "Got a new connection";
 
     QTcpSocket *newSocket;
     if (mode == LocalSocketMode)
@@ -303,7 +303,7 @@ void SocketConnectionBackend::socketReadyRead()
         // might happen if the invokeMethods were delivered after we disconnected
         return;
 
-    //kDebug() << k_funcinfo << "Got " << socket->bytesAvailable() << " bytes" << endl;
+    //kDebug() << k_funcinfo << "Got " << socket->bytesAvailable() << " bytes";
     if (len == -1) {
         // We have to read the header
         static char buffer[HeaderSize];
@@ -330,7 +330,7 @@ void SocketConnectionBackend::socketReadyRead()
 
     QPointer<SocketConnectionBackend> that = this;
 
-    //kDebug() << k_funcinfo << "Want to read " << len << " bytes" << endl;
+    //kDebug() << k_funcinfo << "Want to read " << len << " bytes";
     if (socket->bytesAvailable() >= len) {
         Task task;
         task.cmd = cmd;
@@ -363,7 +363,7 @@ Connection::~Connection()
 
 void Connection::suspend()
 {
-    //kDebug() << this << "Suspended" << endl;
+    //kDebug() << this << "Suspended";
     d->suspended = true;
     if (d->backend)
         d->backend->setSuspended(true);
@@ -374,7 +374,7 @@ void Connection::resume()
     // send any outgoing or incoming commands that may be in queue
     QMetaObject::invokeMethod(this, "dequeue", Qt::QueuedConnection);
 
-    //kDebug() << this << "Resumed" << endl;
+    //kDebug() << this << "Resumed";
     d->suspended = false;
     if (d->backend)
         d->backend->setSuspended(false);
@@ -408,7 +408,7 @@ bool Connection::suspended() const
 
 void Connection::connectToRemote(const QString &address)
 {
-    //kDebug(7017) << k_funcinfo << "Connection requested to " << address << endl;
+    //kDebug(7017) << k_funcinfo << "Connection requested to " << address;
     KUrl url = address;
     QString scheme = url.protocol();
 
@@ -464,7 +464,7 @@ bool Connection::sendnow(int _cmd, const QByteArray &data)
     if (!isConnected())
 	return false;
 
-    //kDebug() << this << "Sending command " << _cmd << " of size " << data.size() << endl;
+    //kDebug() << this << "Sending command " << _cmd << " of size " << data.size();
     Task task;
     task.cmd = _cmd;
     task.data = data;
@@ -524,7 +524,7 @@ void ConnectionServer::listenForRemote()
     }
 
     connect(d->backend, SIGNAL(newConnection()), SIGNAL(newConnection()));
-    kDebug(7017) << k_funcinfo << "Listening on " << d->backend->address << endl;
+    kDebug(7017) << k_funcinfo << "Listening on " << d->backend->address;
 }
 
 QString ConnectionServer::address() const

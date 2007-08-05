@@ -74,7 +74,7 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
     if ( offers.isEmpty() ) {
         if ( error )
             *error = i18n("No service implementing %1",  serviceType );
-        kWarning() << "KDBusServiceStarter: No service implementing " << serviceType << endl;
+        kWarning() << "KDBusServiceStarter: No service implementing " << serviceType;
         return -1;
     }
     KService::Ptr ptr = offers.first();
@@ -85,11 +85,11 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
         QString error;
         if ( startServiceFor( serviceType, constraint, &error, &dbusService, flags ) != 0 )
         {
-            kDebug() << "KDBusServiceStarter: Couldn't start service: " << error << endl;
+            kDebug() << "KDBusServiceStarter: Couldn't start service: " << error;
             return -2;
         }
     }
-    kDebug() << "KDBusServiceStarter: DBus service is available now, as " << dbusService << endl;
+    kDebug() << "KDBusServiceStarter: DBus service is available now, as " << dbusService;
     if ( pDBusService )
         *pDBusService = dbusService;
     return 0;
@@ -103,6 +103,6 @@ int KDBusServiceStarter::startServiceFor( const QString& serviceType,
     if ( offers.isEmpty() )
         return -1;
     KService::Ptr ptr = offers.first();
-    kDebug() << "KDBusServiceStarter: starting " << ptr->desktopEntryPath() << endl;
+    kDebug() << "KDBusServiceStarter: starting " << ptr->desktopEntryPath();
     return KToolInvocation::startServiceByDesktopPath( ptr->desktopEntryPath(), QStringList(), error, dbusService );
 }

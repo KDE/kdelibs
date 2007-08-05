@@ -170,7 +170,7 @@ void DebugDocument::removeCall(const QString &function, int lineNumber)
     entry.lineNumber = lineNumber;
 
     int idx = d->callStack.indexOf(entry);
-    kDebug() << "DebugDocument::removeCall(..) idx = " << idx << endl;
+    kDebug() << "DebugDocument::removeCall(..) idx = " << idx;
     if (idx != -1)
         d->callStack.remove(idx);
 }

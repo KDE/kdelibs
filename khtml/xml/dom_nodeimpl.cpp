@@ -308,11 +308,11 @@ void NodeImpl::getCaret(int offset, bool override, int &_x, int &_y, int &width,
 	long r_ofs;
 	bool outside, outsideEnd;
 #if 0
-kDebug(6200) << "getCaret: node " << this << " " << nodeName().string() << " offset: " << offset << endl;
+kDebug(6200) << "getCaret: node " << this << " " << nodeName().string() << " offset: " << offset;
 #endif
         mapDOMPosToRenderPos(this, offset, r, r_ofs, outside, outsideEnd);
 #if 0
-kDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString()) << " r_ofs: " << r_ofs << " outside " << outside << " outsideEnd " << outsideEnd << endl;
+kDebug(6200) << "getCaret: r " << r << " " << (r?r->renderName():QString()) << " r_ofs: " << r_ofs << " outside " << outside << " outsideEnd " << outsideEnd;
 #endif
 	if (r) {
             r->caretPos(r_ofs, override*RenderObject::CFOverride
@@ -649,7 +649,7 @@ void NodeImpl::dispatchSubtreeModifiedEvent()
 bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
 {
     int exceptioncode = 0;
-    //kDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
+    //kDebug(6010) << "DOM::NodeImpl: dispatching keyboard event";
     EventImpl* keyEventImpl;
     if (keypress)
         keyEventImpl = new TextEventImpl(key, getDocument()->defaultView());
@@ -1110,7 +1110,7 @@ DocumentImpl* NodeImpl::ownerDocument() const
 
 NodeBaseImpl::~NodeBaseImpl()
 {
-    //kDebug( 6020 ) << "NodeBaseImpl destructor" << endl;
+    //kDebug( 6020 ) << "NodeBaseImpl destructor";
     // we have to tell all children, that the parent has died...
     NodeImpl *n;
     NodeImpl *next;
@@ -1457,7 +1457,7 @@ bool NodeBaseImpl::checkSameDocument( NodeImpl *newChild, int &exceptioncode )
     DocumentImpl *ownerDocThis = getDocument();
     DocumentImpl *ownerDocNew = newChild->getDocument();
     if(ownerDocThis != ownerDocNew) {
-        kDebug(6010)<< "not same document, newChild = " << newChild << "document = " << getDocument() << endl;
+        kDebug(6010)<< "not same document, newChild = " << newChild << "document = " << getDocument();
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return true;
     }
@@ -1481,7 +1481,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     // short check for consistency with DTD
     if(getDocument()->isHTMLDocument() && !childAllowed(newChild))
     {
-        //kDebug( 6020 ) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id() << endl;
+        //kDebug( 6020 ) << "AddChild failed! id=" << id() << ", child->id=" << newChild->id();
         return 0;
     }
 

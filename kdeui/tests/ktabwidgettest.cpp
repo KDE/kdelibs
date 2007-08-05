@@ -350,7 +350,7 @@ void Test::mouseMiddleClick(QWidget *w)
 
 void Test::movedTab(int from, int to)
 {
-  kDebug() << "Moved tab from index " << from << " to " << to << endl;
+  kDebug() << "Moved tab from index " << from << " to " << to;
 }
 
 void Test::toggleLabels(bool state)

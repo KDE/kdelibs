@@ -239,7 +239,7 @@ KServiceType::Ptr KServiceType::parentType()
 
     d->parentType = KServiceTypeFactory::self()->findServiceTypeByName( parentSt );
     if (!d->parentType)
-        kWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'" << endl;
+        kWarning(7009) << "'" << desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< parentSt << "'";
     return d->parentType;
 }
 

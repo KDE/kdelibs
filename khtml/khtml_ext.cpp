@@ -95,13 +95,13 @@ int KHTMLPartBrowserExtension::yOffset()
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 {
-  //kDebug( 6050 ) << "saveState!" << endl;
+  //kDebug( 6050 ) << "saveState!";
   m_part->saveState( stream );
 }
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  //kDebug( 6050 ) << "restoreState!" << endl;
+  //kDebug( 6050 ) << "restoreState!";
   m_part->restoreState( stream );
 }
 
@@ -215,7 +215,7 @@ void KHTMLPartBrowserExtension::copy()
         return;
     }
 
-    kDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()" << endl;
+    kDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()";
     if ( !m_editableFormWidget )
     {
         // get selected text and paste to the clipboard
@@ -791,7 +791,7 @@ void KHTMLPopupGUIClient::slotCopyImage()
   safeURL.populateMimeData( mimeData );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
 #else
-  kDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible." << endl;
+  kDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible.";
 #endif
 }
 
@@ -931,7 +931,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
             if (!downloadManger.isEmpty())
             {
                 // then find the download manager location
-                kDebug(1000) << "Using: "<<downloadManger <<" as Download Manager" <<endl;
+                kDebug(1000) << "Using: "<<downloadManger <<" as Download Manager";
                 QString cmd = KStandardDirs::findExe(downloadManger);
                 if (cmd.isEmpty())
                 {
@@ -948,7 +948,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
                     cleanDest.setPass( QString() ); // don't put password into commandline
                     cmd += ' ' + KShell::quoteArg(url.url()) + ' ' +
                            KShell::quoteArg(cleanDest.url());
-                    kDebug(1000) << "Calling command  "<<cmd<<endl;
+                    kDebug(1000) << "Calling command  "<<cmd;
                     KRun::runCommand(cmd, parent->topLevelWidget());
                 }
             }

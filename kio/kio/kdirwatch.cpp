@@ -1137,7 +1137,7 @@ void KDirWatchPrivate::famEventReceived()
 
   while(use_fam && FAMPending(&fc)) {
     if (FAMNextEvent(&fc, &fe) == -1) {
-      kWarning(7001) << "FAM connection problem, switching to polling." << endl;
+      kWarning(7001) << "FAM connection problem, switching to polling.";
       use_fam = false;
       delete sn; sn = 0;
 
@@ -1199,7 +1199,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
   if (!e) {
     // this happens e.g. for FAMAcknowledge after deleting a dir...
-    //    kDebug(7001) << "No entry for FAM event ?!" << endl;
+    //    kDebug(7001) << "No entry for FAM event ?!";
     return;
   }
 
@@ -1261,7 +1261,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 #else
 void KDirWatchPrivate::famEventReceived()
 {
-    kWarning (7001) << "Fam event received but FAM isn't supported" << endl;
+    kWarning (7001) << "Fam event received but FAM isn't supported";
 }
 #endif
 
@@ -1355,7 +1355,7 @@ void KDirWatch::addDir( const QString& _path, WatchModes watchModes)
 {
 #ifndef HAVE_SYS_INOTIFY_H
   if (watchModes != WatchDirOnly) {
-    kDebug(7001) << "addDir - actually recursive/watch files modes are supported only with inotify" << endl;
+    kDebug(7001) << "addDir - actually recursive/watch files modes are supported only with inotify";
   }
 #endif
   if (d) d->addEntry(this, _path, 0, true, watchModes);

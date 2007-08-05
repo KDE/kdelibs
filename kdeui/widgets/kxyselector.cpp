@@ -84,11 +84,11 @@ int KXYSelector::yValue() const
 void KXYSelector::setRange( int _minX, int _minY, int _maxX, int _maxY )
 {
   if (_maxX == _minX) {
-     kWarning() << "KXYSelector::setRange invalid range: " << _maxX << " == " << _minX << " (for X) " << endl;
+     kWarning() << "KXYSelector::setRange invalid range: " << _maxX << " == " << _minX << " (for X) ";
      return;
   }
   if (_maxY == _minY) {
-     kWarning() << "KXYSelector::setRange invalid range: " << _maxY << " == " << _minY << " (for Y) " << endl;
+     kWarning() << "KXYSelector::setRange invalid range: " << _maxY << " == " << _minY << " (for Y) ";
      return;
   }
 

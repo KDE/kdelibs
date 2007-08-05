@@ -103,7 +103,7 @@ void KDXSView::slotRun()
 
 void KDXSView::slotProvidersLoaded(KNS::Provider::List providers)
 {
-	kDebug() << "(providers loaded)" << endl;
+	kDebug() << "(providers loaded)";
 
 	if(m_type->currentIndex() != access_webservice)
 	{

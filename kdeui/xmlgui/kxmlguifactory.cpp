@@ -211,7 +211,7 @@ KXMLGUIFactory::~KXMLGUIFactory()
 
 void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 {
-    kDebug(1002) << "KXMLGUIFactory::addClient( " << client << " )" << endl; // ellis
+    kDebug(1002) << "KXMLGUIFactory::addClient( " << client << " )"; // ellis
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
 
     if ( client->factory() ) {
@@ -231,7 +231,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     if ( !d->m_clients.contains( client ) )
         d->m_clients.append( client );
     else
-        kDebug(1002) << "XMLGUI client already added " << client << endl;
+        kDebug(1002) << "XMLGUI client already added " << client;
 
     // Tell the client that plugging in is process and
     //  let it know what builder widget its mainwindow shortcuts
@@ -306,15 +306,15 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
           unaddedActions += action->objectName() + ' ';
 
     if (!unaddedActions.isEmpty())
-      kWarning() << k_funcinfo << "The following actions are not plugged into the gui (shortcuts will not work): " << unaddedActions << endl;
+      kWarning() << k_funcinfo << "The following actions are not plugged into the gui (shortcuts will not work): " << unaddedActions;
 */
 
-//    kDebug() << "addClient took " << dt.elapsed() << endl;
+//    kDebug() << "addClient took " << dt.elapsed();
 }
 
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 {
-    kDebug(1002) << "KXMLGUIFactory::removeClient( " << client << " )" << endl; // ellis
+    kDebug(1002) << "KXMLGUIFactory::removeClient( " << client << " )"; // ellis
 
     // don't try to remove the client's GUI if we didn't build it
     if ( !client || client->factory() != this )
@@ -329,7 +329,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     foreach (KXMLGUIClient *child, childClients)
         removeClient(child);
 
-    kDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
+    kDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive";
 
     d->pushState();
 

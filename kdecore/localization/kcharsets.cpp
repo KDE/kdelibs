@@ -554,10 +554,10 @@ QChar KCharsets::fromEntity(const QString &str)
 
     if(!e)
     {
-        //kDebug( 0 ) << "unknown entity " << str <<", len = " << str.length() << endl;
+        //kDebug( 0 ) << "unknown entity " << str <<", len = " << str.length();
         return QChar::Null;
     }
-    //kDebug() << "got entity " << str << " = " << e->code << endl;
+    //kDebug() << "got entity " << str << " = " << e->code;
 
     return QChar(e->code);
 }
@@ -833,7 +833,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     cname = cname.toUpper();
 
     const QString basicName = QLatin1String(cname);
-    kDebug() << k_funcinfo << endl << " Trying to find " << cname << " in " << dir << endl;
+    kDebug() << k_funcinfo << endl << " Trying to find " << cname << " in " << dir;
 
     QString charMapFileName;
     bool gzipped = false;
@@ -878,12 +878,12 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     if (gzipped && !charMapFileName.isEmpty()) {
         KFilterDev gzip(dir + '/' + charMapFileName);
         if (gzip.open(QIODevice::ReadOnly)) {
-            kDebug() << "Loading gzipped charset..." << endl;
+            kDebug() << "Loading gzipped charset...";
             codec = QTextCodec::loadCharmap(&gzip);
             gzip.close();
         }
         else
-            kWarning() << "Could not open gzipped charset!" << endl;
+            kWarning() << "Could not open gzipped charset!";
     }
     else if (!charMapFileName.isEmpty()) {
         codec = QTextCodec::loadCharmapFile(dir + '/' + charMapFileName);

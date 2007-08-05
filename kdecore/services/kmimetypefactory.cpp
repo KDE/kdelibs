@@ -334,13 +334,13 @@ static bool mimeMagicRuleCompare(const KMimeMagicRule& lhs, const KMimeMagicRule
 void KMimeTypeFactory::parseMagic()
 {
     const QStringList magicFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "magic");
-    //kDebug() << k_funcinfo << magicFiles << endl;
+    //kDebug() << k_funcinfo << magicFiles;
     QListIterator<QString> magicIter( magicFiles );
     magicIter.toBack();
     while (magicIter.hasPrevious()) { // global first, then local. Turns out it doesn't matter though.
         const QString fileName = magicIter.previous();
         QFile magicFile(fileName);
-        kDebug() << k_funcinfo << "Now parsing " << fileName << endl;
+        kDebug() << k_funcinfo << "Now parsing " << fileName;
         if (magicFile.open(QIODevice::ReadOnly))
             m_magicRules += parseMagicFile(&magicFile, fileName);
     }
@@ -373,7 +373,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
     QList<KMimeMagicRule> rules;
     QByteArray header = file->read(12);
     if (header != "MIME-Magic\0\n") {
-        kWarning(7009) << "Invalid magic file " << fileName << " starts with " << header << endl;
+        kWarning(7009) << "Invalid magic file " << fileName << " starts with " << header;
         return rules;
     }
     QList<KMimeMagicMatch> matches; // toplevel matches (indent==0)
@@ -416,7 +416,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
                 indent = ch - '0';
                 ch = readNumber(indent, file);
                 if (ch != '>') {
-                    kWarning(7009) << "Invalid magic file " << fileName << " '>' not found, got " << ch << " at pos " << file->pos() << endl;
+                    kWarning(7009) << "Invalid magic file " << fileName << " '>' not found, got " << ch << " at pos " << file->pos();
                     break;
                 }
             }
@@ -425,7 +425,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
             match.m_rangeStart = 0;
             ch = readNumber(match.m_rangeStart, file);
             if (ch != '=') {
-                kWarning(7009) << "Invalid magic file " << fileName << " '=' not found" << endl;
+                kWarning(7009) << "Invalid magic file " << fileName << " '=' not found";
                 break;
             }
 
@@ -462,7 +462,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
                 case '~': {
                     wordSize = 0;
                     ch = readNumber(wordSize, file);
-                    //kDebug() << "wordSize=" << wordSize << endl;
+                    //kDebug() << "wordSize=" << wordSize;
                     break;
                 }
                 case '+':
@@ -481,7 +481,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
                         file->getChar(&ch);
                     }
                     invalidLine = true;
-                    kDebug(7009) << "invalid line - garbage found - ch=" << ch << endl;
+                    kDebug(7009) << "invalid line - garbage found - ch=" << ch;
                     break;
                 }
                 if (ch == '\n' || invalidLine)
@@ -491,7 +491,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
                 // Finish match, doing byte-swapping on little endian hosts
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
                 if (wordSize > 1) {
-                    //kDebug() << "data before swapping: " << match.m_data << endl;;
+                    //kDebug() << "data before swapping: " << match.m_data;;
                     if ((wordSize != 2 && wordSize != 4) || (valueLength % wordSize != 0))
                         continue; // invalid word size
                     char* data = match.m_data.data();
@@ -508,7 +508,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
                                 MAKE_LITTLE_ENDIAN32( *((quint32 *) mask + i) );
                         }
                     }
-                    //kDebug() << "data after swapping: " << match.m_data << endl;
+                    //kDebug() << "data after swapping: " << match.m_data;
                 }
 #endif
                 // Append match at the right place depending on indent:

@@ -86,7 +86,7 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 
 	// Check for invalid characters
 	if (QRegExp("[^a-zA-Z0-9\\.\\*\\-]").indexIn(cn) >= 0) {
-		kDebug(7029) << "CN contains invalid characters!  Failing." << endl;
+		kDebug(7029) << "CN contains invalid characters!  Failing.";
 		return false;
 	}
 

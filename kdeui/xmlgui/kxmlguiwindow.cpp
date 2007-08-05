@@ -317,7 +317,7 @@ void KXmlGuiWindow::createStandardStatusBarAction(){
 
 void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
 {
-    //kDebug(200) << "KXmlGuiWindow::finalizeGUI force=" << force << endl;
+    //kDebug(200) << "KXmlGuiWindow::finalizeGUI force=" << force;
     // The whole reason for this is that moveToolBar relies on the indexes
     // of the other toolbars, so in theory it should be called only once per
     // toolbar, but in increasing order of indexes.

@@ -131,7 +131,7 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
 {
     KUrl url(_url);
     url.adjustPath(KUrl::RemoveTrailingSlash);
-    //kDebug() << k_funcinfo << url << endl;
+    //kDebug() << k_funcinfo << url;
     if (url == m_dirLister->url())
         return qMakePair(0, static_cast<KDirModelNode *>(m_rootNode));
 
@@ -152,11 +152,11 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
         for ( ; it != end ; ++it, ++row ) {
             const KUrl u = (*it)->item()->url();
             if ( u == url ) {
-                //kDebug() << "Found! " << u << endl;
+                //kDebug() << "Found! " << u;
                 return qMakePair(row, *it);
             }
             if ( urlStr.startsWith(u.url()+'/') ) {
-                //kDebug() << "going into " << node->item()->url() << endl;
+                //kDebug() << "going into " << node->item()->url();
                 Q_ASSERT( isDir(*it) );
                 dirNode = static_cast<KDirModelDirNode *>( *it );
                 foundChild = true;
@@ -164,11 +164,11 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
             }
         }
         if (!foundChild) {
-            //kDebug() << "child equal or starting with " << url << " not found" << endl;
+            //kDebug() << "child equal or starting with " << url << " not found";
             return qMakePair(0, static_cast<KDirModelNode*>(0));
         }
         nodeUrl = dirNode->item()->url();
-        //kDebug() << " " << nodeUrl << endl;
+        //kDebug() << " " << nodeUrl;
     }
     return qMakePair(0, static_cast<KDirModelNode*>(0));
 }
@@ -267,7 +267,7 @@ void KDirModel::slotNewItems( const KFileItemList& items )
     KUrl dir( items.first()->url().upUrl() );
     dir.adjustPath(KUrl::RemoveTrailingSlash);
 
-    //kDebug() << k_funcinfo << "dir=" << dir << endl;
+    //kDebug() << k_funcinfo << "dir=" << dir;
 
     const QPair<int, KDirModelNode*> result = d->nodeForUrl(dir); // O(n*m)
     Q_ASSERT(result.second);
@@ -297,7 +297,7 @@ void KDirModel::slotNewItems( const KFileItemList& items )
 
 void KDirModel::slotDeleteItem( KFileItem *item )
 {
-    kDebug() << k_funcinfo << item << endl;
+    kDebug() << k_funcinfo << item;
     //KUrl dir( item->url().upUrl() );
     //dir.adjustPath(KUrl::RemoveTrailingSlash);
 
@@ -333,7 +333,7 @@ void KDirModel::slotRefreshItems( const KFileItemList& items )
         }
     }
 #ifndef NDEBUG // debugIndex only defined in debug mode
-    kDebug() << "slotRefreshItems: dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight) << endl;
+    kDebug() << "slotRefreshItems: dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
 #endif
     bottomRight = bottomRight.sibling(bottomRight.row(), ColumnCount-1);
     emit dataChanged(topLeft, bottomRight);
@@ -392,11 +392,11 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
         case Qt::DecorationRole:
             if (index.column() == Name) {
                 if (!node->preview().isNull()) {
-                    //kDebug() << item->url() << " preview found" << endl;
+                    //kDebug() << item->url() << " preview found";
                     return node->preview();
                 }
                 Q_ASSERT(item);
-                //kDebug() << item->url() << " overlays=" << item->overlays() << endl;
+                //kDebug() << item->url() << " overlays=" << item->overlays();
                 return KIcon(item->iconName(), 0, item->overlays());
             }
             break;
@@ -419,7 +419,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                     if (!path.isEmpty()) {
                         QDir dir(path);
                         count = dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
-                        kDebug() << k_funcinfo << "child count for " << path << ":" << count << endl;
+                        kDebug() << k_funcinfo << "child count for " << path << ":" << count;
                         dirNode->setChildCount(count);
                     }
                 }
@@ -447,7 +447,7 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             Q_ASSERT(index.isValid());
             // Set new pixmap - e.g. preview
             KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
-            //kDebug() << "setting icon for " << node->item()->url() << endl;
+            //kDebug() << "setting icon for " << node->item()->url();
             Q_ASSERT(node);
             if (value.type() == QVariant::Icon) {
                 const QIcon icon(qvariant_cast<QIcon>(value));
@@ -471,7 +471,7 @@ int KDirModel::rowCount( const QModelIndex & parent ) const
     KDirModelDirNode* parentNode = static_cast<KDirModelDirNode *>(d->nodeForIndex(parent));
     Q_ASSERT(parentNode);
     const int count = parentNode->m_childNodes.count();
-    //kDebug() << "rowCount for " << parentUrl << ": " << count << endl;;
+    //kDebug() << "rowCount for " << parentUrl << ": " << count;;
     return count;
 }
 
@@ -535,7 +535,7 @@ QModelIndex KDirModel::indexForUrl(const KUrl& url) const
 {
     const QPair<int, KDirModelNode*> result = d->nodeForUrl(url); // O(n*m) (m is the depth from the root)
     if (!result.second) {
-        kWarning() << "KDirModel::indexForUrl: " << url << " not found" << endl;
+        kWarning() << "KDirModel::indexForUrl: " << url << " not found";
         return QModelIndex();
     }
     return d->indexForNode(result.second, result.first); // O(1)
@@ -643,7 +643,7 @@ void KDirModel::fetchMore( const QModelIndex & parent )
         return;
 
     //const KUrl url = urlForIndex(parent);
-    //kDebug() << k_funcinfo << url << endl;
+    //kDebug() << k_funcinfo << url;
 
     KDirModelNode* parentNode = static_cast<KDirModelNode*>(parent.internalPointer());
 

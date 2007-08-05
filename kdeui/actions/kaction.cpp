@@ -252,7 +252,7 @@ void KAction::setShapeGesture( const KShapeGesture& gest,  ShortcutTypes type )
 
   if ( type & ActiveShortcut ) {
     if ( KGestureMap::self()->findAction( gest ) ) {
-      kDebug(283) << k_funcinfo << "New mouse gesture already in use, won't change gesture." << endl;
+      kDebug(283) << k_funcinfo << "New mouse gesture already in use, won't change gesture.";
       return;
     }
     KGestureMap::self()->removeGesture( d->shapeGesture, this );
@@ -270,7 +270,7 @@ void KAction::setRockerGesture( const KRockerGesture& gest,  ShortcutTypes type 
 
   if ( type & ActiveShortcut ) {
     if ( KGestureMap::self()->findAction( gest ) ) {
-      kDebug(283) << k_funcinfo << "New mouse gesture already in use, won't change gesture." << endl;
+      kDebug(283) << k_funcinfo << "New mouse gesture already in use, won't change gesture.";
       return;
     }
     KGestureMap::self()->removeGesture( d->rockerGesture, this );

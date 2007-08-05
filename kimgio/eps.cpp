@@ -35,7 +35,7 @@ static bool seekToCodeStart( QIODevice * io, quint32 & ps_offset, quint32 & ps_s
 
     if ( buf[0]=='%' && buf[1]=='!' ) // Check %! magic
     {
-        kDebug(399) << "kimgio EPS: normal EPS file" << endl;
+        kDebug(399) << "kimgio EPS: normal EPS file";
     }
     else if ( buf[0]==char(0xc5) && buf[1]==char(0xd0) ) // Check start of MS-DOS EPS magic
     {   // May be a MS-DOS EPS file
@@ -66,7 +66,7 @@ static bool seekToCodeStart( QIODevice * io, quint32 & ps_offset, quint32 & ps_s
                 + ((unsigned char) buf[1] << 8)
                 + ((unsigned char) buf[2] << 16)
                 + ((unsigned char) buf[3] << 24);
-            kDebug(399) << "kimgio EPS: Offset: " << ps_offset <<" Size: " << ps_size << endl;
+            kDebug(399) << "kimgio EPS: Offset: " << ps_offset <<" Size: " << ps_size;
             if ( !io->seek(ps_offset) ) // Get offset of PostScript code in the MS-DOS EPS file.
             {
                 kError(399) << "kimgio EPS: cannot seek in MS-DOS EPS file" << endl;
@@ -79,7 +79,7 @@ static bool seekToCodeStart( QIODevice * io, quint32 & ps_offset, quint32 & ps_s
             }
             if ( buf[0]=='%' && buf[1]=='!' ) // Check %! magic
             {
-                kDebug(399) << "kimgio EPS: MS-DOS EPS file" << endl;
+                kDebug(399) << "kimgio EPS: MS-DOS EPS file";
             }
             else
             {
@@ -116,7 +116,7 @@ static bool bbox ( QIODevice *io, int *x1, int *y1, int *x2, int *y2)
                         float _x1, _y1, _x2, _y2;
                         if ( sscanf (buf, "%*s %f %f %f %f",
                                 &_x1, &_y1, &_x2, &_y2) == 4) {
-                                kDebug(399) << "kimgio EPS BBOX: " << _x1 << " " << _y1 << " " << _x2 << " " << _y2 << endl;
+                                kDebug(399) << "kimgio EPS BBOX: " << _x1 << " " << _y1 << " " << _x2 << " " << _y2;
                                 *x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
                                 ret = true;
                                 break;
@@ -138,7 +138,7 @@ bool EPSHandler::canRead() const
 
 bool EPSHandler::read(QImage *image)
 {
-    kDebug(399) << "kimgio EPS: starting..." << endl;
+    kDebug(399) << "kimgio EPS: starting...";
 
     FILE * ghostfd;
     int x1, y1, x2, y2;
@@ -172,7 +172,7 @@ bool EPSHandler::read(QImage *image)
 
     x2 -= x1;
     y2 -= y1;
-    //kDebug(399) << "origin point: " << x1 << "," << y1 << "  size:" << x2 << "," << y2 << endl;
+    //kDebug(399) << "origin point: " << x1 << "," << y1 << "  size:" << x2 << "," << y2;
     double xScale = 1.0;
     double yScale = 1.0;
     int wantedWidth = x2;
@@ -225,8 +225,8 @@ bool EPSHandler::read(QImage *image)
 
     // load image
     if( image->load (tmpFile.fileName()) ) {
-        kDebug(399) << "kimgio EPS: success!" << endl;
-        //kDebug(399) << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds" << endl;
+        kDebug(399) << "kimgio EPS: success!";
+        //kDebug(399) << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds";
         return true;
     }
 

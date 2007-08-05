@@ -86,7 +86,7 @@ KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char
         return serv;
     } else {
         if (!serv->isDeleted())
-            kWarning(7012) << "Invalid Service : " << file << endl;
+            kWarning(7012) << "Invalid Service : " << file;
         delete serv;
         return 0;
     }
@@ -135,7 +135,7 @@ void KBuildServiceFactory::populateServiceTypes()
     for( ; itserv != endserv ; ++itserv ) {
         const KService::Ptr service = KService::Ptr::staticCast(*itserv);
         const QStringList serviceTypeList = service->serviceTypes();
-        //kDebug(7021) << "service " << service->desktopEntryPath() << " has serviceTypes " << serviceTypeList << endl;
+        //kDebug(7021) << "service " << service->desktopEntryPath() << " has serviceTypes " << serviceTypeList;
         QMap<KServiceType::Ptr,int> serviceTypes; // with preference number
         QListIterator<QString> it( serviceTypeList );
         //bool hasAllAll = false;
@@ -163,7 +163,7 @@ void KBuildServiceFactory::populateServiceTypes()
 #endif
 
             if (!serviceType) {
-                kWarning() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< str << "'" << endl;
+                kWarning() << "'"<< service->desktopEntryPath() << "' specifies undefined mimetype/servicetype '"<< str << "'";
                 continue;
             }
 
@@ -191,7 +191,7 @@ void KBuildServiceFactory::populateServiceTypes()
             if (parentType)
                 serviceTypes.insert(parentType, initialPreference);
 
-            //kDebug(7021) << "Adding service " << service->desktopEntryPath() << " to " << serviceType->name() << endl;
+            //kDebug(7021) << "Adding service " << service->desktopEntryPath() << " to " << serviceType->name();
             addServiceOffer( serviceTypeName, KServiceOffer( service, initialPreference, 0, service->allowAsDefault() ) );
         }
     }
@@ -220,7 +220,7 @@ void KBuildServiceFactory::populateServiceTypes()
                 }
                 parent = parentMimeType->parentMimeType();
             } else {
-                kWarning(7012) << "parent mimetype not found:" << parent << endl;
+                kWarning(7012) << "parent mimetype not found:" << parent;
                 break;
             }
         }
@@ -272,7 +272,7 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
 
         for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
             it2 != offers.end(); ++it2) {
-            //kDebug(7021) << "servicetype offers list: " << entry->name() << " -> " << (*it2).service()->desktopEntryPath() << endl;
+            //kDebug(7021) << "servicetype offers list: " << entry->name() << " -> " << (*it2).service()->desktopEntryPath();
 
             str << (qint32) entry->offset();
             str << (qint32) (*it2).service()->offset();
@@ -294,7 +294,7 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
 
         for(QList<KServiceOffer>::const_iterator it2 = offers.begin();
             it2 != offers.end(); ++it2) {
-            //kDebug(7021) << "mimetype offers list: " << entry->name() << " -> " << (*it2).service()->desktopEntryPath() << endl;
+            //kDebug(7021) << "mimetype offers list: " << entry->name() << " -> " << (*it2).service()->desktopEntryPath();
 
             str << (qint32) entry->offset();
             str << (qint32) (*it2).service()->offset();
@@ -338,7 +338,7 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 
 void KBuildServiceFactory::addServiceOffer( const QString& serviceType, const KServiceOffer& offer )
 {
-    //kDebug(7021) << "Adding " << offer.service->desktopEntryPath() << " to " << serviceType << endl;
+    //kDebug(7021) << "Adding " << offer.service->desktopEntryPath() << " to " << serviceType;
     ServiceTypeOffersData& data = m_serviceTypeData[serviceType]; // find or create
     QList<KServiceOffer>& offers = data.offers;
     QSet<KService::Ptr>& offerSet = data.offerSet;
@@ -346,7 +346,7 @@ void KBuildServiceFactory::addServiceOffer( const QString& serviceType, const KS
         offers.append( offer );
         offerSet.insert( offer.service() );
     } else {
-        // kDebug(7021) << service.offers() << " " << service->desktopEntryPath() << " already in " << serviceType << endl;
+        // kDebug(7021) << service.offers() << " " << service->desktopEntryPath() << " already in " << serviceType;
         // TODO we probably want to set the initialPreference to qMax(existing offer, new offer)?
         // This case would happen if a service is associated with a mimetype (with low pref) and its parent mimetype (with higher pref).
     }

@@ -1755,7 +1755,7 @@ int main( int argc, char **argv )
     cpp << "{" << endl;
     if ( cfgFileNameArg ) {
       cpp << "  if (!s_global" << className << "->q)" << endl;
-      cpp << "     kFatal() << \"you need to call " << className << "::instance before using\" << endl;" << endl;
+      cpp << "     kFatal() << \"you need to call " << className << "::instance before using\";" << endl;
     } else {
       cpp << "  if (!s_global" << className << "->q) {" << endl;
       cpp << "    new " << className << ';' << endl;
@@ -1769,7 +1769,7 @@ int main( int argc, char **argv )
       cpp << "void " << className << "::instance(const QString& cfgfilename)" << endl;
       cpp << "{" << endl;
       cpp << "  if (s_global" << className << "->q) {" << endl;
-      cpp << "     kDebug() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
+      cpp << "     kDebug() << \"" << className << "::instance called after the first use - ignoring\";" << endl;
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
       cpp << "  new " << className << "(cfgfilename);" << endl;

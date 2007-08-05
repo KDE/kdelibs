@@ -523,7 +523,7 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
     
     if ( w != xWidth  || h != xHeight )
     {
-        // kDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h << endl;
+        // kDebug() << "pre-tiling " << s.width() << "," << s.height() << " to " << w << "," << h;
         QPixmap* oldbg = bg;
         bg = new QPixmap(w, h);
         if (src->hasAlpha() || src->hasAlphaChannel()) {
@@ -619,7 +619,7 @@ QSize CachedImage::pixmap_size() const
 void CachedImage::imageHasGeometry(khtmlImLoad::Image* /*img*/, int width, int height)
 {
 #ifdef LOADER_DEBUG
-    kDebug(6060) << this << " got geometry "<< width << "x" << height << endl;
+    kDebug(6060) << this << " got geometry "<< width << "x" << height;
 #endif
     do_notify(QRect(0, 0, width, height));
 }
@@ -655,7 +655,7 @@ void CachedImage::imageError(khtmlImLoad::Image* /*img*/)
 void CachedImage::imageDone(khtmlImLoad::Image* /*img*/)
 {
 #ifdef LOADER_DEBUG
-    kDebug(6060)<<"Image is done:" << this << endl;
+    kDebug(6060)<<"Image is done:" << this;
 #endif
     m_status = Persistent;
     doNotifyFinished();
@@ -839,7 +839,7 @@ void CachedImage::clear()
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
 #ifdef LOADER_DEBUG
-    kDebug( 6060 ) << this << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << " pos:" << _buffer.pos() << endl;
+    kDebug( 6060 ) << this << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << " pos:" << _buffer.pos();
 #endif
     i->processData((uchar*)_buffer.data().data(), _buffer.pos());
 
@@ -888,7 +888,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         if(typeChecked && !formatType)
         {
 #ifdef CACHE_DEBUG
-            kDebug(6060) << "CachedImage::data(): reloading as pixmap:" << endl;
+            kDebug(6060) << "CachedImage::data(): reloading as pixmap:";
 #endif
             p = new QPixmap;
             {
@@ -902,7 +902,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
             // set size of image.
 #ifdef CACHE_DEBUG
-            kDebug(6060) << "CachedImage::data(): image is null: " << p->isNull() << endl;
+            kDebug(6060) << "CachedImage::data(): image is null: " << p->isNull();
 #endif
             if(p->isNull())
             {
@@ -1223,7 +1223,7 @@ void Loader::servePendingRequests()
         Request *req = m_requestsPending.takeFirst();
 
 #ifdef LOADER_DEBUG
-  kDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
+  kDebug( 6060 ) << "starting Loader url=" << req->object->url().string();
 #endif
 
         KUrl u(req->object->url().string());
@@ -1267,7 +1267,7 @@ void Loader::slotFinished( KJob* job )
   if (j->error() || j->isErrorPage())
   {
 #ifdef LOADER_DEBUG
-      kDebug(6060) << "Loader::slotFinished, with error. job->error()= " << j->error() << " job->isErrorPage()=" << j->isErrorPage() << endl;
+      kDebug(6060) << "Loader::slotFinished, with error. job->error()= " << j->error() << " job->isErrorPage()=" << j->isErrorPage();
 #endif
       r->object->error( job->error(), job->errorText().toAscii().constData() );
       emit requestFailed( r->m_docLoader, r->object );
@@ -1280,7 +1280,7 @@ void Loader::slotFinished( KJob* job )
       emit requestDone( r->m_docLoader, r->object );
       time_t expireDate = j->queryMetaData("expire-date").toLong();
 #ifdef LOADER_DEBUG
-      kDebug(6060) << "Loader::slotFinished, url = " << j->url().url() << endl;
+      kDebug(6060) << "Loader::slotFinished, url = " << j->url().url();
 #endif
       r->object->setExpireDate( expireDate );
 
@@ -1312,7 +1312,7 @@ void Loader::slotFinished( KJob* job )
   r->object->finish();
 
 #ifdef LOADER_DEBUG
-  kDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object << ": " << r->object->url().string() << endl;
+  kDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object << ": " << r->object->url().string();
 #endif
 
   delete r;
@@ -1327,7 +1327,7 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
 {
     Request *r = m_requestsLoading[job];
     if(!r) {
-        kDebug( 6060 ) << "got data for unknown request!" << endl;
+        kDebug( 6060 ) << "got data for unknown request!";
         return;
     }
 
@@ -1370,14 +1370,14 @@ void Loader::cancelRequests( DocLoader* dl )
         }
     }
 
-    //kDebug( 6060 ) << "got " << m_requestsLoading.count() << "loading requests" << endl;
+    //kDebug( 6060 ) << "got " << m_requestsLoading.count() << "loading requests";
 
     Q3PtrDictIterator<Request> lIt( m_requestsLoading );
     while ( lIt.current() )
     {
         if ( lIt.current()->m_docLoader == dl )
         {
-            //kDebug( 6060 ) << "canceling loading request for " << lIt.current()->object->url().string() << endl;
+            //kDebug( 6060 ) << "canceling loading request for " << lIt.current()->object->url().string();
             KIO::Job *job = static_cast<KIO::Job *>( lIt.currentKey() );
             Cache::removeCacheEntry( lIt.current()->object );
             m_requestsLoading.remove( lIt.currentKey() );
@@ -1449,7 +1449,7 @@ void Cache::clear()
 {
     if ( !cache ) return;
 #ifdef CACHE_DEBUG
-    kDebug( 6060 ) << "Cache: CLEAR!" << endl;
+    kDebug( 6060 ) << "Cache: CLEAR!";
     statistics();
 #endif
     cache->setAutoDelete( true );
@@ -1458,26 +1458,26 @@ void Cache::clear()
     bool crash = false;
     for (Q3DictIterator<CachedObject> it(*cache); it.current(); ++it) {
         if (!it.current()->canDelete()) {
-            kDebug( 6060 ) << " Object in cache still linked to" << endl;
-            kDebug( 6060 ) << " -> URL: " << it.current()->url() << endl;
-            kDebug( 6060 ) << " -> #clients: " << it.current()->count() << endl;
+            kDebug( 6060 ) << " Object in cache still linked to";
+            kDebug( 6060 ) << " -> URL: " << it.current()->url();
+            kDebug( 6060 ) << " -> #clients: " << it.current()->count();
             crash = true;
 //         assert(it.current()->canDelete());
         }
     }
     foreach (CachedObject* co, *freeList) {
         if (!co->canDelete()) {
-            kDebug( 6060 ) << " Object in freelist still linked to" << endl;
-            kDebug( 6060 ) << " -> URL: " << co->url() << endl;
-            kDebug( 6060 ) << " -> #clients: " << co->count() << endl;
+            kDebug( 6060 ) << " Object in freelist still linked to";
+            kDebug( 6060 ) << " -> URL: " << co->url();
+            kDebug( 6060 ) << " -> #clients: " << co->count();
             crash = true;
             /*
             QPtrDictIterator<CachedObjectClient> it(freeList->current()->m_clients);
             for(;it.current(); ++it) {
                 if (dynamic_cast<RenderObject*>(it.current())) {
-                    kDebug( 6060 ) << " --> RenderObject" << endl;
+                    kDebug( 6060 ) << " --> RenderObject";
                 } else
-                    kDebug( 6060 ) << " --> Something else" << endl;
+                    kDebug( 6060 ) << " --> Something else";
             }*/
         }
 //         assert(freeList->current()->canDelete());
@@ -1516,7 +1516,7 @@ CachedObjectType* Cache::requestObject( DocLoader* dl, const KUrl& kurl, const c
     if(!o)
     {
 #ifdef CACHE_DEBUG
-        kDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
+        kDebug( 6060 ) << "Cache: new: " << kurl.url();
 #endif
         CachedObjectType* cot = new CachedObjectType(dl, url, cachePolicy, accept);
         cache->insert( url, cot );
@@ -1526,7 +1526,7 @@ CachedObjectType* Cache::requestObject( DocLoader* dl, const KUrl& kurl, const c
     }
 #ifdef CACHE_DEBUG
     else {
-    kDebug( 6060 ) << "Cache: using pending/cached: " << kurl.url() << endl;
+    kDebug( 6060 ) << "Cache: using pending/cached: " << kurl.url();
     }
 #endif
 
@@ -1629,16 +1629,16 @@ void Cache::statistics()
     }
     size /= 1024;
 
-    kDebug( 6060 ) << "------------------------- image cache statistics -------------------" << endl;
-    kDebug( 6060 ) << "Number of items in cache: " << cache->count() << endl;
-    kDebug( 6060 ) << "Number of cached images: " << images << endl;
-    kDebug( 6060 ) << "Number of cached movies: " << movie << endl;
-    kDebug( 6060 ) << "Number of cached scripts: " << scripts << endl;
-    kDebug( 6060 ) << "Number of cached stylesheets: " << stylesheets << endl;
-    kDebug( 6060 ) << "Number of cached sounds: " << sound << endl;
-    kDebug( 6060 ) << "pixmaps:   allocated space approx. " << size << " kB" << endl;
-    kDebug( 6060 ) << "movies :   allocated space approx. " << msize/1024 << " kB" << endl;
-    kDebug( 6060 ) << "--------------------------------------------------------------------" << endl;
+    kDebug( 6060 ) << "------------------------- image cache statistics -------------------";
+    kDebug( 6060 ) << "Number of items in cache: " << cache->count();
+    kDebug( 6060 ) << "Number of cached images: " << images;
+    kDebug( 6060 ) << "Number of cached movies: " << movie;
+    kDebug( 6060 ) << "Number of cached scripts: " << scripts;
+    kDebug( 6060 ) << "Number of cached stylesheets: " << stylesheets;
+    kDebug( 6060 ) << "Number of cached sounds: " << sound;
+    kDebug( 6060 ) << "pixmaps:   allocated space approx. " << size << " kB";
+    kDebug( 6060 ) << "movies :   allocated space approx. " << msize/1024 << " kB";
+    kDebug( 6060 ) << "--------------------------------------------------------------------";
 }
 
 void Cache::removeCacheEntry( CachedObject *object )

@@ -366,7 +366,7 @@ void K3ListViewLineEdit::terminate(bool commit)
 {
     if ( item )
     {
-        //kDebug() << "K3ListViewLineEdit::terminate " << commit << endl;
+        //kDebug() << "K3ListViewLineEdit::terminate " << commit;
         if (commit)
             item->setText(col, text());
         int c=col;
@@ -648,7 +648,7 @@ void K3ListView::slotAutoSelect()
     }
   }
   else
-    kDebug() << "K3ListView::slotAutoSelect: That's not supposed to happen!!!!" << endl;
+    kDebug() << "K3ListView::slotAutoSelect: That's not supposed to happen!!!!";
 }
 
 void K3ListView::slotHeaderChanged()
@@ -694,7 +694,7 @@ void K3ListView::emitExecute( Q3ListViewItem *item, const QPoint &pos, int c )
 
 void K3ListView::focusInEvent( QFocusEvent *fe )
 {
- //   kDebug()<<"K3ListView::focusInEvent()"<<endl;
+ //   kDebug()<<"K3ListView::focusInEvent()";
   Q3ListView::focusInEvent( fe );
   if ((d->selectedBySimpleMove)
       && (d->selectionMode == FileManager)
@@ -1834,7 +1834,7 @@ void K3ListView::setSelectionModeExt (SelectionModeExt mode)
         break;
 
     default:
-        kWarning () << "Warning: illegal selection mode " << int(mode) << " set!" << endl;
+        kWarning () << "Warning: illegal selection mode " << int(mode) << " set!";
         break;
     }
 }

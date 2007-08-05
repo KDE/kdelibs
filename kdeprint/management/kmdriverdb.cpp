@@ -152,7 +152,7 @@ void KMDriverDB::insertEntry(KMDBEntry *entry)
 	// first check entry
 	if (!entry->validate())
 	{
-		kDebug() << "Incorrect entry, skipping...(" << entry->file << ")" << endl;
+		kDebug() << "Incorrect entry, skipping...(" << entry->file << ")";
 		delete entry;
 		return;
 	}

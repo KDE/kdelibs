@@ -106,7 +106,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
             "}")
         .arg(bgColor.name())
         .arg(KStandardDirs::locate("data", "kcm_phonon/listview-background.png"));
-    kDebug() << stylesheet << endl;
+    kDebug() << stylesheet;
     deviceList->setStyleSheet(stylesheet);
     deviceList->setAlternatingRowColors(false);
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
@@ -348,9 +348,9 @@ void OutputDeviceChoice::on_removeButton_clicked()
 
 void OutputDeviceChoice::updateButtonsEnabled()
 {
-    //kDebug() << k_funcinfo << endl;
+    //kDebug() << k_funcinfo;
     if (deviceList->model()) {
-        //kDebug() << "model available" << endl;
+        //kDebug() << "model available";
         QModelIndex idx = deviceList->currentIndex();
         preferButton->setEnabled(idx.isValid() && idx.row() > 0);
         deferButton->setEnabled(idx.isValid() && idx.row() < deviceList->model()->rowCount() - 1);

@@ -256,7 +256,7 @@ void MD5_verify( const char *input, const char *digest, bool isFile )
     if (!f.open (QIODevice::ReadOnly))
     {
       f.close ();
-      kFatal() << "Cannot open file for reading!"  << endl;
+      kFatal() << "Cannot open file for reading!";
     }
 
     result = context.verify (digest);

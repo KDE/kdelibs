@@ -255,7 +255,7 @@ bool KSaveFile::simpleBackupFile( const QString& qFilename,
         backupFileName = backupDir + '/' + fileInfo.fileName() + backupExtension;
     }
 
-//    kDebug(180) << "KSaveFile copying " << qFilename << " to " << backupFileName << endl;
+//    kDebug(180) << "KSaveFile copying " << qFilename << " to " << backupFileName;
     return QFile::copy(qFilename, backupFileName);
 }
 
@@ -375,13 +375,13 @@ bool KSaveFile::numberedBackupFile( const QString& qFilename,
     QString to=sTemplate.arg( maxBackupFound+1 );
     for ( int i=maxBackupFound; i>0; i-- ) {
         QString from = sTemplate.arg( i );
-//        kDebug(180) << "KSaveFile renaming " << from << " to " << to << endl;
+//        kDebug(180) << "KSaveFile renaming " << from << " to " << to;
         QFile::rename( from, to );
         to = from;
     }
 
     // Finally create most recent backup by copying the file to backup number 1.
-//    kDebug(180) << "KSaveFile copying " << qFilename << " to " << sTemplate.arg(1) << endl;
+//    kDebug(180) << "KSaveFile copying " << qFilename << " to " << sTemplate.arg(1);
     return QFile::copy(qFilename, sTemplate.arg(1));
 }
 

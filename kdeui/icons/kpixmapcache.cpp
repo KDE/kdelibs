@@ -207,7 +207,7 @@ bool KPixmapCache::Private::checkFileVersion(const QString& filename)
         if (qstrncmp(buf, kpc_magic, kpc_magic_len) == 0 && version == KPIXMAPCACHE_VERSION) {
             return true;
         } else {
-            kWarning() << k_funcinfo << "File '" << filename << "' is outdated, will recreate..." << endl;
+            kWarning() << k_funcinfo << "File '" << filename << "' is outdated, will recreate...";
         }
     }
 
@@ -234,7 +234,7 @@ bool KPixmapCache::Private::loadIndexHeader()
     }
 
     if (stream.status() != QDataStream::Ok) {
-        kWarning() << k_funcinfo << "Failed to read index file's header" << endl;
+        kWarning() << k_funcinfo << "Failed to read index file's header";
         q->recreateCacheFiles();
         return false;
     }
@@ -296,7 +296,7 @@ void KPixmapCache::init()
     d->mEnabled &= d->checkFileVersion(d->mDataFile);
     d->mEnabled &= d->checkFileVersion(d->mIndexFile);
     if (!d->mEnabled) {
-        kDebug() << k_funcinfo << "Pixmap cache '" + d->mName + "' is disabled" << endl;
+        kDebug() << k_funcinfo << "Pixmap cache '" + d->mName + "' is disabled";
     } else {
         // Cache is enabled, but check if it's ready for use
         setValid(d->loadIndexHeader());
@@ -469,10 +469,10 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
         return false;
     }
 
-    //kDebug() << "KPC::find(" << key << "), use QPC = " << d->mUseQPixmapCache << endl;
+    //kDebug() << "KPC::find(" << key << "), use QPC = " << d->mUseQPixmapCache;
     // First try the QPixmapCache
     if (d->mUseQPixmapCache && QPixmapCache::find(key, pix)) {
-        //kDebug() << k_funcinfo << "Found from QPC" << endl;
+        //kDebug() << k_funcinfo << "Found from QPC";
         return true;
     }
 
@@ -484,7 +484,7 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
     // Try to find the offset
     QString indexkey = d->indexKey(key);
     int offset = d->findOffset(indexkey);
-    //kDebug() << "KPC: " << "found offset " << offset << endl;
+    //kDebug() << "KPC: " << "found offset " << offset;
     if (offset == -1) {
         return false;
     }
@@ -505,7 +505,7 @@ bool KPixmapCache::loadData(int offset, QPixmap& pix)
     if (!file.open(QIODevice::ReadOnly)) {
         return -1;
     }
-    //kDebug() << "KPC: " << k_funcinfo << "Seeking to pos " << offset << "/" << file.size() << endl;
+    //kDebug() << "KPC: " << k_funcinfo << "Seeking to pos " << offset << "/" << file.size();
     if (!file.seek(offset)) {
         kError() << k_funcinfo << "Couldn't seek to pos " << offset << endl;
         return false;
@@ -541,7 +541,7 @@ bool KPixmapCache::loadData(int offset, QPixmap& pix)
         return false;
     }
 
-    //kDebug() << "KPC: " << k_funcinfo << "pixmap successfully loaded" << endl;
+    //kDebug() << "KPC: " << k_funcinfo << "pixmap successfully loaded";
     return true;
 }
 
@@ -557,7 +557,7 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
         return;
     }
 
-    //kDebug() << "KPC::insert(" << key << ", " << pix.width() << "x" << pix.height() << ")" << endl;
+    //kDebug() << "KPC::insert(" << key << ", " << pix.width() << "x" << pix.height() << ")";
     // Insert to QPixmapCache as well
     if (d->mUseQPixmapCache) {
         QPixmapCache::insert(key, pix);
@@ -573,13 +573,13 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     int offset = d->findOffset(indexkey);
     if (offset >= 0) {
         // This pixmap is already in cache
-        kDebug() << "KPC::insert() " << "pixmap already present in cache" << endl;
+        kDebug() << "KPC::insert() " << "pixmap already present in cache";
         return;
     }
 
     // Insert to cache
     offset = writeData(key, pix);
-    //kDebug() << "KPC::insert(): " << "data is at offset " << offset << endl;
+    //kDebug() << "KPC::insert(): " << "data is at offset " << offset;
     if (offset == -1) {
         return;
     }

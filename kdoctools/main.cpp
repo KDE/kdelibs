@@ -33,7 +33,7 @@ extern "C"
         fillInstance(componentData);
         (void)componentData.config(); // we need this one to make sure system globals are read
 
-        kDebug(7101) << "Starting " << getpid() << endl;
+        kDebug(7101) << "Starting " << getpid();
 
         if (argc != 4)
         {
@@ -48,7 +48,7 @@ extern "C"
         HelpProtocol slave(false, argv[2], argv[3]);
         slave.dispatchLoop();
 
-        kDebug(7101) << "Done" << endl;
+        kDebug(7101) << "Done";
         return 0;
     }
 }

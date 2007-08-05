@@ -164,7 +164,7 @@ X509 *x = NULL;
   int rc = kossl->PKCS12_parse(_pkcs, pass.toLatin1(), &_pkey, &x, &_caStack);
 
   if (rc == 1) {
-     // kDebug(7029) << "PKCS12_parse success" << endl;
+     // kDebug(7029) << "PKCS12_parse success";
      if (x) {
         _cert = new KSSLCertificate;
         _cert->setCert(x);

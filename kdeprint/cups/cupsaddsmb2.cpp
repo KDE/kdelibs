@@ -160,7 +160,7 @@ void CupsAddSmb::slotReceived()
 	bool	partial(false);
 	static bool incomplete(false);
 
-	kDebug(500) << "slotReceived()" << endl;
+	kDebug(500) << "slotReceived()";
 	while (1)
 	{
 		// read a line
@@ -184,11 +184,11 @@ void CupsAddSmb::slotReceived()
 
 		if (line.isEmpty())
 		{
-			kDebug(500) << "NOTHING TO READ" << endl;
+			kDebug(500) << "NOTHING TO READ";
 			return;
 		}
 
-		kDebug(500) << "ANSWER = " << line << " (END = " << line.length() << ")" << endl;
+		kDebug(500) << "ANSWER = " << line << " (END = " << line.length() << ")";
 		if (!partial)
 		{
 			if (incomplete && m_buffer.count() > 0)
@@ -196,22 +196,22 @@ void CupsAddSmb::slotReceived()
 			else
 				m_buffer << line;
 			incomplete = false;
-			kDebug(500) << "COMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
+			kDebug(500) << "COMPLETE LINE READ (" << m_buffer.count() << ")";
 		}
 		else
 		{
 			if (line.startsWith("smb:") || line.startsWith("rpcclient $"))
 			{
-				kDebug(500) << "END OF ACTION" << endl;
+				kDebug(500) << "END OF ACTION";
 				checkActionStatus();
 				if (m_status)
 					nextAction();
 				else
 				{
 					// quit program
-					kDebug(500) << "EXITING PROGRAM..." << endl;
+					kDebug(500) << "EXITING PROGRAM...";
 					m_proc.write("quit\n", 5);
-					kDebug(500) << "SENT" << endl;
+					kDebug(500) << "SENT";
 				}
 				return;
 			}
@@ -222,7 +222,7 @@ void CupsAddSmb::slotReceived()
 				else
 					m_buffer << line;
 				incomplete = true;
-				kDebug(500) << "INCOMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
+				kDebug(500) << "INCOMPLETE LINE READ (" << m_buffer.count() << ")";
 			}
 		}
 	}
@@ -250,7 +250,7 @@ void CupsAddSmb::checkActionStatus()
 			m_status = (m_buffer.count() == 1 || !m_buffer[1].startsWith("result"));
 			break;
 	}
-	kDebug(500) << "ACTION STATUS = " << m_status << endl;
+	kDebug(500) << "ACTION STATUS = " << m_status;
 }
 
 void CupsAddSmb::nextAction()
@@ -267,7 +267,7 @@ void CupsAddSmb::doNextAction()
 	{
 		QByteArray	s = m_actions[m_actionindex++].toLatin1();
 		m_bar->setValue(m_bar->value()+1);
-		kDebug(500) << "NEXT ACTION = " << s << endl;
+		kDebug(500) << "NEXT ACTION = " << s;
 		if (s == "quit")
 		{
 			// do nothing
@@ -310,12 +310,12 @@ void CupsAddSmb::doNextAction()
 		}
 		else
 		{
-			kDebug(500) << "ACTION = unknown action" << endl;
+			kDebug(500) << "ACTION = unknown action";
 			m_proc.kill();
 			return;
 		}
 		// send action
-		kDebug(500) << "ACTION = " << s << endl;
+		kDebug(500) << "ACTION = " << s;
 		s.append("\n");
 		m_proc.write(s);
 	}
@@ -323,7 +323,7 @@ void CupsAddSmb::doNextAction()
 
 void CupsAddSmb::slotProcessExited(int, KProcess::ExitStatus exitStatus)
 {
-	kDebug(500) << "PROCESS EXITED (" << m_state << ")" << endl;
+	kDebug(500) << "PROCESS EXITED (" << m_state << ")";
 	if (exitStatus == KProcess::NormalExit && m_state != Start && m_status)
 	{
 		// last process went OK. If it was smbclient, then switch to rpcclient
@@ -483,7 +483,7 @@ bool CupsAddSmb::startProcess()
 	m_state = Start;
 	m_actionindex = 0;
 	m_buffer.clear();
-	kDebug(500) << "PROCESS STARTED = " << m_procname << endl;
+	kDebug(500) << "PROCESS STARTED = " << m_procname;
 	m_proc.start();
 	return m_proc.waitForStarted(5000); // don't wait more than 5 seconds
 }

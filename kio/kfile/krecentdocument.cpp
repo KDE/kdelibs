@@ -87,7 +87,7 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     QString openStr = url.url();
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
-    kDebug(250) << "KRecentDocument::add for " << openStr << endl;
+    kDebug(250) << "KRecentDocument::add for " << openStr;
     KConfigGroup config = KGlobal::config()->group(QByteArray("RecentDocuments"));
     bool useRecent = config.readEntry(QLatin1String("UseRecent"), true);
     int maxEntries = config.readEntry(QLatin1String("MaxEntries"), 10);

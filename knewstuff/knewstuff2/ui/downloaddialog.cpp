@@ -293,7 +293,7 @@ void EntryView::setTheAaronnesqueStyle()
 
 void EntryView::urlSelected( const QString &link)
 {
-    kDebug() << "Clicked on URL " << link << endl;
+    kDebug() << "Clicked on URL " << link;
 
     KUrl url( link );
     QString urlProtocol = url.protocol();
@@ -313,7 +313,7 @@ void EntryView::urlSelected( const QString &link)
         unsigned long itemPointer = urlPath.toULong( &ok );
         if ( !ok )
         {
-            kWarning() << "ItemsView: error converting item pointer." << endl;
+            kWarning() << "ItemsView: error converting item pointer.";
             return;
         }
 
@@ -321,7 +321,7 @@ void EntryView::urlSelected( const QString &link)
         Entry *entry = (Entry*)itemPointer;
         if ( entry != m_entry )
         {
-            kWarning() << "ItemsView: error retrieving item pointer." << endl;
+            kWarning() << "ItemsView: error retrieving item pointer.";
             return;
         }
 
@@ -437,7 +437,7 @@ void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::MessageT
 
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
-        kDebug() << "starting the message timer for " << timeOutMs << endl;
+        kDebug() << "starting the message timer for " << timeOutMs;
         messageTimer->start( timeOutMs );
     }
 }
@@ -501,7 +501,7 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
     for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it)
     {
         KNS::Category *category = (*it);
-        kDebug() << "Category: " << category->name().representation() << endl;
+        kDebug() << "Category: " << category->name().representation();
         QPixmap icon = DesktopIcon(category->icon().url(), 16);
         // FIXME: use icon from remote URLs (see non-DXS providers as well)
         typeCombo->addItem(icon, category->name().representation());
@@ -536,7 +536,7 @@ void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *pr
 	// FIXME: what if entry belongs to more than one provider at once?
 	providers[entry] = provider;
 
-	kDebug() << "downloaddialog: addEntry to list of size " << entries.size() << endl;
+	kDebug() << "downloaddialog: addEntry to list of size " << entries.size();
 }
 
 void DownloadDialog::refresh()
@@ -550,7 +550,7 @@ void DownloadDialog::refresh()
 		const Feed *feed = entries.keys().at(i);
 		if(!feed)
 		{
-			kDebug() << "INVALID FEED?!" << endl;
+			kDebug() << "INVALID FEED?!";
 			continue;
 		}
 		//QPixmap icon = DesktopIcon(QString(), 16);
@@ -583,7 +583,7 @@ XXX inform the user
 /*void DownloadDialog::slotItemMessage( KJob * job, const QString & message )
 {
     AvailableItem * item = d->transferJobs[ job ].item;
-    kDebug() << "Name: " << item->name().representation() << " msg: '" << message << "'." << endl;
+    kDebug() << "Name: " << item->name().representation() << " msg: '" << message << "'.";
     d->itemsView->updateItem( item );
 }
 

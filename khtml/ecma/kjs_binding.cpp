@@ -63,7 +63,7 @@ ScriptInterpreter::ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* fram
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_frame << endl;
+  kDebug(6070) << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_frame;
 #endif
   if ( !interpreterList )
     interpreterList = new InterpreterList;
@@ -73,7 +73,7 @@ ScriptInterpreter::ScriptInterpreter( ObjectImp *global, khtml::ChildFrame* fram
 ScriptInterpreter::~ScriptInterpreter()
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_frame << endl;
+  kDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_frame;
 #endif
   assert( interpreterList && interpreterList->contains( this ) );
   interpreterList->removeAll( this );
@@ -95,7 +95,7 @@ void ScriptInterpreter::mark(bool isMain)
 {
   Interpreter::mark(isMain);
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.size() << " DOM objects" << endl;
+  kDebug(6070) << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.size() << " DOM objects";
 #endif
   HashMap<void*, DOMObject*>::iterator it = m_domObjects.begin();
   while (it != m_domObjects.end()) {
@@ -125,7 +125,7 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
       // other accepted events
       id == DOM::EventImpl::SELECT_EVENT || id == DOM::EventImpl::CHANGE_EVENT ||
       id == DOM::EventImpl::SUBMIT_EVENT );
-    kDebug(6070) << "Window.open, smart policy: id=" << id << " eventOk=" << eventOk << endl;
+    kDebug(6070) << "Window.open, smart policy: id=" << id << " eventOk=" << eventOk;
     if (eventOk)
       return true;
   } else // no event
@@ -134,10 +134,10 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
     {
       // This is the <a href="javascript:window.open('...')> case -> we let it through
       return true;
-      kDebug(6070) << "Window.open, smart policy, no event, inline code -> ok" << endl;
+      kDebug(6070) << "Window.open, smart policy, no event, inline code -> ok";
     }
     else // This is the <script>window.open(...)</script> case or a timer callback -> block it
-      kDebug(6070) << "Window.open, smart policy, no event, <script> tag -> refused" << endl;
+      kDebug(6070) << "Window.open, smart policy, no event, <script> tag -> refused";
   }
   return false;
 }
@@ -167,7 +167,7 @@ void ScriptInterpreter::stopCPUGuard()
 
 bool ScriptInterpreter::shouldInterruptScript() const
 {
-    kDebug(6070) << "alarmhandler" << endl;
+    kDebug(6070) << "alarmhandler";
   return KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), i18n("JavaScript"), KGuiItem(i18n("&Abort")), KStandardGuiItem::cont(), "kjscupguard_alarmhandler") == KMessageBox::Yes;
 }
 

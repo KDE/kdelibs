@@ -373,7 +373,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 
 	foreach (QAction *action, collection->actions()) {
 		QString name = action->text().remove('&');
-		kDebug(125) << "Key: " << name << endl;
+		kDebug(125) << "Key: " << name;
 
 		if (name.startsWith(QLatin1String("Program:")))
 			l = Program;
@@ -1040,7 +1040,7 @@ bool KShortcutsDialog::configure(bool saveSettings)
 int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor::LetterShortcuts allowLetterShortcuts,
                           QWidget *parent, bool saveSettings)
 {
-	kDebug(125) << "KShortcutsDialog::configureKeys( KActionCollection*, " << saveSettings << " )" << endl;
+	kDebug(125) << "KShortcutsDialog::configureKeys( KActionCollection*, " << saveSettings << " )";
 	KShortcutsDialog dlg(KShortcutsEditor::AllActions, allowLetterShortcuts, parent);
 	dlg.d->m_keyChooser->addCollection(collection);
 	return dlg.configure(saveSettings);

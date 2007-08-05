@@ -88,7 +88,7 @@ void MessageWindow::setText( const QString& txt )
 void MessageWindow::add( QWidget *parent, const QString& txt, int delay )
 {
 	if ( !parent )
-		kWarning( 500 ) << "Cannot add a message window to a null parent" << endl;
+		kWarning( 500 ) << "Cannot add a message window to a null parent";
 	else
 	{
 		if ( m_windows.contains( parent ) )
@@ -119,7 +119,7 @@ void MessageWindow::change( QWidget *parent, const QString& txt )
 			w->setText( txt );
 		}
 		else
-			kWarning( 500 ) << "MessageWindow::change, no message window found" << endl;
+			kWarning( 500 ) << "MessageWindow::change, no message window found";
 	}
 }
 

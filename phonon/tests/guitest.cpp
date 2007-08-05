@@ -710,12 +710,12 @@ void ProducerWidget::updateMetaData()
 
 void ProducerWidget::slotFinished()
 {
-    kDebug() << "finished signal from MediaObject with URL " << m_media->currentSource().url() << endl;
+    kDebug() << "finished signal from MediaObject with URL " << m_media->currentSource().url();
 }
 
 void ProducerWidget::slotPrefinishMarkReached(qint32 remaining)
 {
-    kDebug() << "prefinishMarkReached(" << remaining << ") signal from MediaObject with URL " << m_media->currentSource().url() << endl;
+    kDebug() << "prefinishMarkReached(" << remaining << ") signal from MediaObject with URL " << m_media->currentSource().url();
 }
 
 ConnectionWidget::ConnectionWidget(QWidget *parent)
@@ -859,13 +859,13 @@ void MainWidget::madeConnection1(const QPoint &a, const QPoint &b)
     if (left.isNull() || right.isNull())
         return;
 
-    kDebug() << k_funcinfo << left << right << endl;
+    kDebug() << k_funcinfo << left << right;
 
     ProducerWidget *producer = 0;
     foreach (ProducerWidget *x, m_producers)
     {
         QRect rect = x->geometry();
-        kDebug() << rect << endl;
+        kDebug() << rect;
         left.setX(rect.center().x());
         if (rect.contains(left))
             producer = x;
@@ -877,7 +877,7 @@ void MainWidget::madeConnection1(const QPoint &a, const QPoint &b)
     foreach (PathWidget *x, m_paths)
     {
         QRect rect = x->geometry();
-        kDebug() << rect << endl;
+        kDebug() << rect;
         right.setX(rect.center().x());
         if (rect.contains(right))
             path = x;
@@ -904,13 +904,13 @@ void MainWidget::madeConnection2(const QPoint &a, const QPoint &b)
     if (left.isNull() || right.isNull())
         return;
 
-    kDebug() << k_funcinfo << left << right << endl;
+    kDebug() << k_funcinfo << left << right;
 
     PathWidget *path = 0;
     foreach (PathWidget *x, m_paths)
     {
         QRect rect = x->geometry();
-        kDebug() << rect << endl;
+        kDebug() << rect;
         left.setX(rect.center().x());
         if (rect.contains(left))
             path = x;
@@ -922,7 +922,7 @@ void MainWidget::madeConnection2(const QPoint &a, const QPoint &b)
     foreach (OutputWidget *x, m_outputs)
     {
         QRect rect = x->geometry();
-        kDebug() << rect << endl;
+        kDebug() << rect;
         right.setX(rect.center().x());
         if (rect.contains(right))
             output = x;

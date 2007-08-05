@@ -194,7 +194,7 @@ K3Spell::startIspell()
   if ((trystart == 0) && (ksconfig->client() == KS_CLIENT_ASPELL))
      d->aspellV6 = determineASpellV6();
 
-  kDebug(750) << "Try #" << trystart << endl;
+  kDebug(750) << "Try #" << trystart;
 
   if ( trystart > 0 ) {
     proc->reset();
@@ -204,19 +204,19 @@ K3Spell::startIspell()
   {
   case KS_CLIENT_ISPELL:
     *proc << "ispell";
-    kDebug(750) << "Using ispell" << endl;
+    kDebug(750) << "Using ispell";
     break;
   case KS_CLIENT_ASPELL:
     *proc << "aspell";
-    kDebug(750) << "Using aspell" << endl;
+    kDebug(750) << "Using aspell";
     break;
   case KS_CLIENT_HSPELL:
     *proc << "hspell";
-    kDebug(750) << "Using hspell" << endl;
+    kDebug(750) << "Using hspell";
     break;
   case KS_CLIENT_ZEMBEREK:
     *proc << "zpspell";
-    kDebug(750) << "Using zemberek(zpspell)" << endl;
+    kDebug(750) << "Using zemberek(zpspell)";
     break;
   }
 
@@ -265,7 +265,7 @@ K3Spell::startIspell()
     {
       if (! ksconfig->dictionary().isEmpty())
       {
-        kDebug(750) << "using dictionary [" << ksconfig->dictionary() << "]" << endl;
+        kDebug(750) << "using dictionary [" << ksconfig->dictionary() << "]";
         *proc << "-d";
         *proc << ksconfig->dictionary();
       }
@@ -357,7 +357,7 @@ void
 K3Spell::ispellErrors(  )
 {
   // buffer[buflen-1] = '\0';
-  //  kDebug(750) << "ispellErrors [" << buffer << "]\n" << endl;
+  //  kDebug(750) << "ispellErrors [" << buffer << "]\n";
 }
 
 void K3Spell::K3Spell2( )
@@ -365,7 +365,7 @@ void K3Spell::K3Spell2( )
 {
   QString line;
 
-  kDebug(750) << "K3Spell::K3Spell2" << endl;
+  kDebug(750) << "K3Spell::K3Spell2";
 
   trystart = maxtrystart;  //We've officially started ispell and don't want
                            //to try again if it dies.
@@ -388,7 +388,7 @@ void K3Spell::K3Spell2( )
   //We want to recognize KDE in any text!
   if ( !ignore("kde") )
   {
-     kDebug(750) << "@KDE was false" << endl;
+     kDebug(750) << "@KDE was false";
      QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
   }
@@ -396,7 +396,7 @@ void K3Spell::K3Spell2( )
   //We want to recognize linux in any text!
   if ( !ignore("linux") )
   {
-     kDebug(750) << "@Linux was false" << endl;
+     kDebug(750) << "@Linux was false";
      QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
   }
@@ -810,7 +810,7 @@ int K3Spell::parseOneResponse( const QString &buffer, QString &word, QStringList
   }
 
   if ( buffer.isEmpty() ) {
-      kDebug(750) << "Got an empty response: ignoring"<<endl;
+      kDebug(750) << "Got an empty response: ignoring";
       return GOOD;
   }
 
@@ -857,7 +857,7 @@ void K3Spell::checkList2 ()
   // send next word
   if (wlIt != wordlist->end())
   {
-    kDebug(750) << "KS::cklist2 " << lastpos << ": " << *wlIt << endl;
+    kDebug(750) << "KS::cklist2 " << lastpos << ": " << *wlIt;
 
     d->endOfResponse = false;
     bool put;
@@ -884,12 +884,12 @@ void K3Spell::checkList2 ()
 void K3Spell::checkList3a ()
   // invoked by KProcess, when data from ispell are read
 {
-  //kDebug(750) << "start of checkList3a" << endl;
+  //kDebug(750) << "start of checkList3a";
 
   // don't read more data, when dialog is waiting
   // for user interaction
   if ( dlgon ) {
-    //kDebug(750) << "dlgon: don't read more data" << endl;
+    //kDebug(750) << "dlgon: don't read more data";
     return;
   }
 
@@ -904,12 +904,12 @@ void K3Spell::checkList3a ()
     QByteArray data;
     tempe = proc->readLine( data.data(), data.count() ); //get ispell's response
 
-    //kDebug(750) << "checkList3a: read bytes [" << tempe << "]" << endl;
+    //kDebug(750) << "checkList3a: read bytes [" << tempe << "]";
     line = d->convertQByteArray( data );
 
     if ( tempe == 0 ) {
       d->endOfResponse = true;
-      //kDebug(750) << "checkList3a: end of resp" << endl;
+      //kDebug(750) << "checkList3a: end of resp";
     } else if ( tempe>0 ) {
       if ( (e=parseOneResponse( line, word, sugg ) ) == MISTAKE ||
            e==REPLACE )
@@ -945,12 +945,12 @@ void K3Spell::checkList3a ()
     // stop when empty line or no more data
   } while (tempe > 0);
 
-  //kDebug(750) << "checkList3a: exit loop with [" << tempe << "]" << endl;
+  //kDebug(750) << "checkList3a: exit loop with [" << tempe << "]";
 
   // if we got an empty line, t.e. end of ispell/aspell response
   // and the dialog isn't waiting for user interaction, send next word
   if (d->endOfResponse && !dlgon) {
-    //kDebug(750) << "checkList3a: send next word" << endl;
+    //kDebug(750) << "checkList3a: send next word";
     checkList2();
   }
 }
@@ -983,7 +983,7 @@ void K3Spell::checkList4 ()
   {
   case KS_REPLACE:
   case KS_REPLACEALL:
-    kDebug(750) << "KS: cklist4: lastpos: " << lastpos << endl;
+    kDebug(750) << "KS: cklist4: lastpos: " << lastpos;
     old = *(--wlIt);
     ++wlIt;
     // replace word
@@ -1014,7 +1014,7 @@ void K3Spell::checkList4 ()
 
   // read more if there is more, otherwise send next word
   if (!d->endOfResponse) {
-    //kDebug(750) << "checkList4: read more from response" << endl;
+    //kDebug(750) << "checkList4: read more from response";
     checkList3a();
   }
 }
@@ -1028,7 +1028,7 @@ bool K3Spell::check( const QString &_buffer, bool _usedialog )
   //set the dialog signal handler
   dialog3slot = SLOT(check3());
 
-  kDebug(750) << "KS: check" << endl;
+  kDebug(750) << "KS: check";
   origbuffer = _buffer;
   if ( ( totalpos = origbuffer.length() ) == 0 )
   {
@@ -1104,7 +1104,7 @@ void K3Spell::check2()
     QByteArray data;
     tempe = proc->readLine( data.data(), data.count() ); //get ispell's response
     line = d->convertQByteArray( data );
-    //kDebug(750) << "K3Spell::check2 (" << tempe << "b)" << endl;
+    //kDebug(750) << "K3Spell::check2 (" << tempe << "b)";
 
     if ( tempe>0 )
     {
@@ -1117,14 +1117,14 @@ void K3Spell::check2()
         if ((ksconfig->encoding() == KS_E_UTF8) && !d->aspellV6) {
           // kDebug(750) << "line: " << origbuffer.mid(lastlastline,
           // lastline-lastlastline) << endl;
-          // kDebug(750) << "posinline uncorr: " << posinline << endl;
+          // kDebug(750) << "posinline uncorr: " << posinline;
 
           // convert line to UTF-8, cut at pos, convert back to UCS-2
           // and get string length
           posinline = (QString::fromUtf8(
                          origbuffer.mid(lastlastline,lastline-lastlastline).toUtf8(),
                          posinline)).length();
-          // kDebug(750) << "posinline corr: " << posinline << endl;
+          // kDebug(750) << "posinline corr: " << posinline;
         }
 
         lastpos = posinline+lastlastline+offset;
@@ -1141,7 +1141,7 @@ void K3Spell::check2()
         else  //MISTAKE
         {
           cwword = word;
-          //kDebug(750) << "(Before dialog) word=[" << word << "] cwword =[" << cwword << "]\n" << endl;
+          //kDebug(750) << "(Before dialog) word=[" << word << "] cwword =[" << cwword << "]\n";
           if ( usedialog ) {
             // show the word in the dialog
             dialog( word, sugg, SLOT(check3()) );
@@ -1181,7 +1181,7 @@ void K3Spell::check2()
     int i;
     QString qs;
 
-    //kDebug(750) << "[EOL](" << tempe << ")[" << temp << "]" << endl;
+    //kDebug(750) << "[EOL](" << tempe << ")[" << temp << "]";
 
     lastpos = (lastlastline=lastline) + offset; //do we really want this?
     i = origbuffer.indexOf('\n', lastline) + 1;
@@ -1195,7 +1195,7 @@ void K3Spell::check2()
     //This is the end of it all
   {
     ksdlg->hide();
-    //      kDebug(750) << "check2() done" << endl;
+    //      kDebug(750) << "check2() done";
     newbuffer.truncate( newbuffer.length()-2 );
     emitProgress();
     emit done( newbuffer );
@@ -1207,7 +1207,7 @@ void K3Spell::check3 ()
   // evaluates the return value of the dialog
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
-  kDebug(750) << "check3 [" << cwword << "] [" << replacement() << "] " << dlgresult << endl;
+  kDebug(750) << "check3 [" << cwword << "] [" << replacement() << "] " << dlgresult;
 
   //others should have been processed by dialog() already
   switch (dlgresult)
@@ -1220,7 +1220,7 @@ void K3Spell::check3 ()
     emit corrected (dlgorigword, replacement(), lastpos);
     break;
   case KS_CANCEL:
-    //      kDebug(750) << "canceled\n" << endl;
+    //      kDebug(750) << "canceled\n";
     ksdlg->hide();
     emit done( origbuffer );
     return;
@@ -1247,7 +1247,7 @@ K3Spell::slotStopCancel (int result)
   if (dialogwillprocess)
     return;
 
-  kDebug(750) << "K3Spell::slotStopCancel [" << result << "]" << endl;
+  kDebug(750) << "K3Spell::slotStopCancel [" << result << "]";
 
   if (result==KS_STOP || result==KS_CANCEL)
     if (!dialog3slot.isEmpty())
@@ -1267,7 +1267,7 @@ void K3Spell::dialog( const QString & word, QStringList & sugg, const char *_slo
   dialogwillprocess = true;
   connect( ksdlg, SIGNAL(command(int)), this, SLOT(dialog2(int)) );
   QString tmpBuf = newbuffer;
-  kDebug(750)<<" position = "<<lastpos<<endl;
+  kDebug(750)<<" position = "<<lastpos;
 
   // extract a context string, replace all characters which might confuse
   // the RichText display and highlight the possibly wrong word
@@ -1379,7 +1379,7 @@ void K3Spell::setAutoDelete(bool _autoDelete)
 
 void K3Spell::ispellExit()
 {
-  kDebug() << "K3Spell::ispellExit() " << m_status << endl;
+  kDebug() << "K3Spell::ispellExit() " << m_status;
 
   if ( (m_status == Starting) && (trystart < maxtrystart) )
   {
@@ -1397,7 +1397,7 @@ void K3Spell::ispellExit()
   else // Error, Finished, Crashed
      return; // Dead already
 
-  kDebug(750) << "Death" << endl;
+  kDebug(750) << "Death";
   QTimer::singleShot( 0, this, SLOT(emitDeath()) );
 }
 
@@ -1483,8 +1483,8 @@ void K3Spell::slotSpellCheckerCorrected( const QString & oldText, const QString 
 
 void K3Spell::slotModalReady()
 {
-  //kDebug() << qApp->loopLevel() << endl;
-  //kDebug(750) << "MODAL READY------------------" << endl;
+  //kDebug() << qApp->loopLevel();
+  //kDebug(750) << "MODAL READY------------------";
 
   Q_ASSERT( m_status == Running );
   connect( this, SIGNAL( done( const QString & ) ),
@@ -1498,11 +1498,11 @@ void K3Spell::slotModalReady()
 
 void K3Spell::slotModalDone( const QString &/*_buffer*/ )
 {
-  //kDebug(750) << "MODAL DONE " << _buffer << endl;
+  //kDebug(750) << "MODAL DONE " << _buffer;
   //modaltext = _buffer;
   cleanUp();
 
-  //kDebug() << "ABOUT TO EXIT LOOP" << endl;
+  //kDebug() << "ABOUT TO EXIT LOOP";
   //qApp->exit_loop();
 
   //modalWidgetHack->close(true);
@@ -1596,7 +1596,7 @@ void K3Spell::initialize( QWidget *_parent, const QString &_caption,
      break;
   }
 
-  kDebug(750) << __FILE__ << ":" << __LINE__ << " Codec = " << (d->m_codec ? d->m_codec->name() : "<default>") << endl;
+  kDebug(750) << __FILE__ << ":" << __LINE__ << " Codec = " << (d->m_codec ? d->m_codec->name() : "<default>");
 
   // copy ignore list from ksconfig
   ignorelist += ksconfig->ignoreList();

@@ -348,7 +348,7 @@ void KMFactory::registerObject(KPReloadObject *obj, bool priority)
 			m_objects.prepend(obj);
 		else
 			m_objects.append(obj);
-		kDebug(500) << "kdeprint: registering " << (void*)obj << ", number of objects = " << m_objects.count() << endl;
+		kDebug(500) << "kdeprint: registering " << (void*)obj << ", number of objects = " << m_objects.count();
 	}
 }
 
@@ -356,7 +356,7 @@ void KMFactory::unregisterObject(KPReloadObject *obj)
 {
 	// remove object from list (not deleted as autoDelete is false)
 	m_objects.removeAll(obj);
-	kDebug(500) << "kdeprint: unregistering " << (void*)obj << ", number of objects = " << m_objects.count() << endl;
+	kDebug(500) << "kdeprint: unregistering " << (void*)obj << ", number of objects = " << m_objects.count();
 }
 
 QString KMFactory::autoDetect()
@@ -392,7 +392,7 @@ void KMFactory::slot_pluginChanged(int pid)
 
 void KMFactory::slot_configChanged()
 {
-	kDebug(500) << "KMFactory (" << getpid() << ") receiving DCOP signal configChanged()" << endl;
+	kDebug(500) << "KMFactory (" << getpid() << ") receiving DCOP signal configChanged()";
 	// unload/reload config object (make it non dirty to
 	// avoid saving it and overwriting the newly saved options
 	// in the other application)
@@ -414,7 +414,7 @@ void KMFactory::saveConfig()
 {
 	KConfigGroup conf(printConfig(),"");
 	conf.sync();
-	kDebug(500) << "KMFactory (" << getpid() << ") emitting DCOP signal configChanged()" << endl;
+	kDebug(500) << "KMFactory (" << getpid() << ") emitting DCOP signal configChanged()";
 	emit configChanged();
 	// normally, the self application should also receive the signal,
 	// anyway the config object has been updated "locally", so ne real

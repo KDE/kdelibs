@@ -189,7 +189,7 @@ void NetworkScanner::slotNext()
 
 	d->timer->stop();
 	d->socket = KSocketFactory::connectToHost( "ipp", d->prefixaddress + '.' + QString::number( d->currentaddress ), d->port );
-	kDebug() << "Address: " << d->socket->peerAddress().toString() << endl;
+	kDebug() << "Address: " << d->socket->peerAddress().toString();
 	d->timer->setSingleShot(true);
 	d->timer->start( d->timeout );
 
@@ -201,7 +201,7 @@ void NetworkScanner::slotNext()
 
 void NetworkScanner::next()
 {
-	//kDebug() << "Next" << endl;
+	//kDebug() << "Next";
 	d->currentaddress++;
 	if ( d->currentaddress >= 256 )
 		finish();
@@ -214,7 +214,7 @@ void NetworkScanner::next()
 
 void NetworkScanner::slotTimeout()
 {
-	kDebug() << "Timeout" << endl;
+	kDebug() << "Timeout";
 	if ( !d->scanning )
 		return;
 
@@ -226,9 +226,9 @@ void NetworkScanner::slotTimeout()
 void NetworkScanner::slotConnectionSuccess()
 {
 	QHostAddress peer = d->socket->peerAddress();
-	kDebug() << "Success" << endl;
-	kDebug() << "Connection success: " << peer.toString() << endl;
-	//kDebug() << "Socket: " << d->socket->socket() << endl;
+	kDebug() << "Success";
+	kDebug() << "Connection success: " << peer.toString();
+	//kDebug() << "Socket: " << d->socket->socket();
 
 	SocketInfo *info = new SocketInfo;
 	info->IP = peer.toString();
@@ -245,7 +245,7 @@ void NetworkScanner::slotConnectionSuccess()
 
 void NetworkScanner::slotConnectionFailed()
 {
-	kDebug() << "Failure" << endl;
+	kDebug() << "Failure";
 	next();
 }
 

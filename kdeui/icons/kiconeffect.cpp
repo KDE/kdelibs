@@ -778,7 +778,7 @@ KIconEffect::visualActivate(QWidget * widget, const QRect &rect)
 
     unsigned int actDelay = (1000 * (100 - actSpeed)) / actCount;
 
-    //kDebug() << "actCount=" << actCount << " actDelay=" << actDelay << endl;
+    //kDebug() << "actCount=" << actCount << " actDelay=" << actDelay;
 
     QPoint c = rect.center();
 

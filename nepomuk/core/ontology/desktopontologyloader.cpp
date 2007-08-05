@@ -65,7 +65,7 @@ public:
                 onto.fileName = path;
                 onto.serialization = Soprano::mimeTypeToSerialization( ontoDesktopFile.desktopGroup().readEntry( "MimeType", "application/rdf+xml" ) );
 
-                kDebug() << "(Nepomuk::DesktopOntologyLoader) found ontology " << QUrl(uri) << endl;
+                kDebug() << "(Nepomuk::DesktopOntologyLoader) found ontology " << QUrl(uri);
                 ontoCache.insert( QUrl( uri ), onto );
             }
         }
@@ -105,7 +105,7 @@ QList<Soprano::Statement> Nepomuk::DesktopOntologyLoader::loadOntology( const QU
         return loader.loadOntology( url );
     }
     else {
-        kDebug() << "(Nepomuk::DesktopOntologyLoader) could not find ontology " << url << endl;
+        kDebug() << "(Nepomuk::DesktopOntologyLoader) could not find ontology " << url;
         return QList<Soprano::Statement>();
     }
 }

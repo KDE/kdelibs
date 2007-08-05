@@ -263,7 +263,7 @@ KActionCollection * KFilePreview::actionCollection() const
     if ( left )
         return left->actionCollection();
     else {
-        kWarning() << "KFilePreview::actionCollection(): called before setFileView()." << endl; //ellis
+        kWarning() << "KFilePreview::actionCollection(): called before setFileView()."; //ellis
         return KFileView::actionCollection();
     }
 }

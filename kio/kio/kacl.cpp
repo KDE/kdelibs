@@ -166,7 +166,7 @@ static void permissionsToEntry( acl_entry_t entry, unsigned short v )
 static void printACL( acl_t acl, const QString &comment )
 {
     ssize_t size = acl_size( acl );
-    kDebug() << comment << acl_to_text( acl, &size ) << endl;
+    kDebug() << comment << acl_to_text( acl, &size );
 }
 #endif
 #endif

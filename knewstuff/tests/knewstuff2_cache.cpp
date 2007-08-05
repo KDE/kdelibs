@@ -20,13 +20,13 @@ KNewStuff2Cache::KNewStuff2Cache()
 
 void KNewStuff2Cache::run()
 {
-	kDebug() << "-- start the engine" << endl;
+	kDebug() << "-- start the engine";
 
 	m_engine = new KNS::CoreEngine();
 	m_engine->setCachePolicy(KNS::CoreEngine::CacheOnly);
 	bool ret = m_engine->init("knewstuff2_test.knsrc");
 
-	kDebug() << "-- engine initialisation result: " << ret << endl;
+	kDebug() << "-- engine initialisation result: " << ret;
 
 	if(ret)
 	{
@@ -44,8 +44,8 @@ void KNewStuff2Cache::run()
 	}
 	else
 	{
-		kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first." << endl;
-		kWarning() << "Although this is not required anymore, so something went really wrong." << endl;
+		kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first.";
+		kWarning() << "Although this is not required anymore, so something went really wrong.";
 		quitTest();
 	}
 }
@@ -55,25 +55,25 @@ void KNewStuff2Cache::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, 
 	Q_UNUSED(feed);
 	Q_UNUSED(provider);
 
-	kDebug() << "SLOT: slotEntryLoaded" << endl;
-	kDebug() << "-- entry: " << entry->name().representation() << endl;
+	kDebug() << "SLOT: slotEntryLoaded";
+	kDebug() << "-- entry: " << entry->name().representation();
 }
 
 void KNewStuff2Cache::slotEntriesFailed()
 {
-	kDebug() << "SLOT: slotEntriesFailed" << endl;
+	kDebug() << "SLOT: slotEntriesFailed";
 	quitTest();
 }
 
 void KNewStuff2Cache::slotEntriesFinished()
 {
-	kDebug() << "SLOT: slotEntriesFinished" << endl;
+	kDebug() << "SLOT: slotEntriesFinished";
 	quitTest();
 }
 
 void KNewStuff2Cache::quitTest()
 {
-	kDebug() << "-- quitting now..." << endl;
+	kDebug() << "-- quitting now...";
 	if(1 == 0)
 	{
 		// this would be the soft way out...
@@ -93,8 +93,8 @@ int main(int argc, char **argv)
 	KApplication app(false);
 
 	// Take source directory into account
-	kDebug() << "-- adding source directory " << KNSSRCDIR << endl;
-	kDebug() << "-- adding build directory " << KNSBUILDDIR << endl;
+	kDebug() << "-- adding source directory " << KNSSRCDIR;
+	kDebug() << "-- adding build directory " << KNSBUILDDIR;
 	KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
 	KGlobal::dirs()->addResourceDir("config", KNSBUILDDIR);
 

@@ -224,7 +224,7 @@ void Kded::initModules()
 
 void Kded::loadSecondPhase()
 {
-     kDebug(7020) << "Loading second phase autoload" << endl;
+     kDebug(7020) << "Loading second phase autoload";
      KSharedConfig::Ptr config = KGlobal::config();
      KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
      for(KService::List::ConstIterator it = kdedModules.begin(); it != kdedModules.end(); ++it)
@@ -549,7 +549,7 @@ void Kded::readDirectory( const QString& _path )
 
   if ( !d.exists() )                            // exists&isdir?
   {
-    kDebug(7020) << QString("Does not exist! (%1)").arg(_path) << endl;
+    kDebug(7020) << QString("Does not exist! (%1)").arg(_path);
     return;                             // return false
   }
 

@@ -277,7 +277,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
     if(!tFirstBody() && !foot && !head)
         setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
 
-    //kDebug(6030) << k_funcinfo << index << endl;
+    //kDebug(6030) << k_funcinfo << index;
 
     long sectionIndex;
     HTMLTableSectionElementImpl* section;
@@ -371,7 +371,7 @@ void HTMLTableElementImpl::handleChildRemove( NodeImpl *child )
 NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 {
 #ifdef DEBUG_LAYOUT
-    kDebug( 6030 ) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
+    kDebug( 6030 ) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )";
 #endif
 
     NodeImpl *retval = HTMLElementImpl::addChild( child );
@@ -686,7 +686,7 @@ HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index, int& except
     HTMLTableRowElementImpl *r = 0L;
     HTMLCollectionImpl rows(const_cast<HTMLTableSectionElementImpl*>(this), HTMLCollectionImpl::TSECTION_ROWS);
     int numRows = rows.length();
-    //kDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows << endl;
+    //kDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows;
     if ( index < -1 || index > numRows ) {
         exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
     }

@@ -515,7 +515,7 @@ K3AboutContainer *K3AboutContainerBase::addContainerPage(const QString &title,
 {
   if (!mPageTab)
   {
-    kDebug(291) << "addPage: " << "Invalid layout" << endl;
+    kDebug(291) << "addPage: " << "Invalid layout";
     return 0;
   }
 
@@ -534,7 +534,7 @@ K3AboutContainer *K3AboutContainerBase::addScrolledContainerPage(
 {
   if (!mPageTab)
   {
-    kDebug(291) << "addPage: " << "Invalid layout" << endl;
+    kDebug(291) << "addPage: " << "Invalid layout";
     return 0;
   }
 
@@ -559,7 +559,7 @@ QFrame *K3AboutContainerBase::addEmptyPage(const QString &title)
 {
   if (!mPageTab)
   {
-    kDebug(291) << "addPage: " << "Invalid layout" << endl;
+    kDebug(291) << "addPage: " << "Invalid layout";
     return 0;
   }
 
@@ -588,7 +588,7 @@ void K3AboutContainerBase::setTitle(const QString &title)
 {
   if (!mTitleLabel)
   {
-    kDebug(291) << "setTitle: " << "Invalid layout" << endl;
+    kDebug(291) << "setTitle: " << "Invalid layout";
     return;
   }
   mTitleLabel->setText(title);
@@ -599,7 +599,7 @@ void K3AboutContainerBase::setImage(const QString &fileName)
 {
   if (!mImageLabel)
   {
-    kDebug(291) << "setImage: " << "Invalid layout" << endl;
+    kDebug(291) << "setImage: " << "Invalid layout";
     return;
   }
   if (fileName.isNull())
@@ -629,7 +629,7 @@ void K3AboutContainerBase::setProgramLogo(const QPixmap &pixmap)
 {
   if (!mIconLabel)
   {
-    kDebug(291) << "setProgramLogo: " << "Invalid layout" << endl;
+    kDebug(291) << "setProgramLogo: " << "Invalid layout";
     return;
   }
   if (!pixmap.isNull())
@@ -674,7 +674,7 @@ void K3AboutContainerBase::setProduct(const QString &appName,
 {
   if (!mIconLabel)
   {
-    kDebug(291) << "setProduct: " << "Invalid layout" << endl;
+    kDebug(291) << "setProduct: " << "Invalid layout";
     return;
   }
 

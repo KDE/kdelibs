@@ -169,7 +169,7 @@ void K3ListBox::slotAutoSelect()
     }
   }
   else
-    kDebug() << "That's not supposed to happen!!!!" << endl;
+    kDebug() << "That's not supposed to happen!!!!";
 }
 
 void K3ListBox::emitExecute( Q3ListBoxItem *item, const QPoint &pos )

@@ -57,7 +57,7 @@ RenderApplet::RenderApplet(HTMLElementImpl *applet, const QMap<QString, QString>
     }
 
     if ( context ) {
-        //kDebug(6100) << "RenderApplet::RenderApplet, setting QWidget" << endl;
+        //kDebug(6100) << "RenderApplet::RenderApplet, setting QWidget";
         setQWidget( new KJavaAppletWidget(context, _view->widget()) );
         processArguments(args);
     }
@@ -89,7 +89,7 @@ int RenderApplet::intrinsicHeight() const
 
 void RenderApplet::layout()
 {
-    //kDebug(6100) << "RenderApplet::layout" << endl;
+    //kDebug(6100) << "RenderApplet::layout";
 
     KHTMLAssert( needsLayout() );
     KHTMLAssert( minMaxKnown() );
@@ -110,7 +110,7 @@ void RenderApplet::layout()
             }
             child = child->nextSibling();
         }
-        //kDebug(6100) << "setting applet widget to size: " << m_width << ", " << m_height << endl;
+        //kDebug(6100) << "setting applet widget to size: " << m_width << ", " << m_height;
         m_widget->resize(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                          m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
         tmp->showApplet();

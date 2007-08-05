@@ -40,7 +40,7 @@ int main(int args, char **argv)
     
     foreach (Solid::Device device, Solid::Device::allDevices())
     {
-        kDebug() << device.udi().toLatin1().constData() << endl;
+        kDebug() << device.udi().toLatin1().constData();
     }
     return 0;
 }

@@ -197,7 +197,7 @@ void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
 
 int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool removeflag)
 {
-	kDebug(500) << "kdeprint: print command: " << cmd << endl;
+	kDebug(500) << "kdeprint: print command: " << cmd;
 
 	QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
 	QDBusReply<QString> reply = kdeprintd.call( "print", cmd, files, removeflag );
@@ -206,7 +206,7 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 
 void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 {
-	kDebug(500) << "kdeprint: status message: " << msg << endl;
+	kDebug(500) << "kdeprint: status message: " << msg;
 	KConfig *cf = KMFactory::self()->printConfig();
 	
 	KConfigGroup conf = cf->group("General");
@@ -237,7 +237,7 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 			printfiles.append(*it);
 		}
 		else
-			kDebug(500) << "File not found: " << (*it) << endl;
+			kDebug(500) << "File not found: " << (*it);
 
 	if (printfiles.count() > 0)
 	{
@@ -347,7 +347,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 			return -1;
 		}
 	}
-	kDebug(500) << "kdeprint: filter command: " << filtercmd << endl;
+	kDebug(500) << "kdeprint: filter command: " << filtercmd;
 
 	QString	rin("%in"), rout("%out"), rpsl("%psl"), rpsu("%psu");
 	QString	ps = pageSizeToPageName( printer->option( "kde-printsize" ).isEmpty() ? printer->pageSize() : ( KPrinter::PageSize )printer->option( "kde-printsize" ).toInt() );

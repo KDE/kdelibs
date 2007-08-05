@@ -16,7 +16,7 @@
 
 void Client::slotSec()
 {
-    kDebug() << "Client::slotSec()" << endl;
+    kDebug() << "Client::slotSec()";
 }
 
 int main( int argc, char **argv )

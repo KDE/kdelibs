@@ -380,7 +380,7 @@ void KMenuBar::resize( int w, int h )
     checkSize( w, h );
     if( size() != QSize( w, h ))
         QMenuBar::resize( w, h );
-//    kDebug() << "RS:" << w << ":" << h << ":" << width() << ":" << height() << ":" << minimumWidth() << ":" << minimumHeight() << endl;
+//    kDebug() << "RS:" << w << ":" << h << ":" << width() << ":" << height() << ":" << minimumWidth() << ":" << minimumHeight();
 }
 
 void KMenuBar::resize( const QSize& s )
@@ -435,7 +435,7 @@ bool KMenuBar::x11Event( XEvent* ev )
         // in checkResizingToParent() seem to be the only way to make
         // KMenuBar keep the size it wants
 	d->min_size = QSize( ev->xclient.data.l[ 1 ], ev->xclient.data.l[ 2 ] );
-//        kDebug() << "MINSIZE:" << d->min_size << endl;
+//        kDebug() << "MINSIZE:" << d->min_size;
         updateMenuBarSize();
 	return true;
     }

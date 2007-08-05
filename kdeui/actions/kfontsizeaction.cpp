@@ -91,7 +91,7 @@ void KFontSizeAction::setFontSize( int size )
     }
 
     if ( size < 1 ) {
-        kWarning() << "KFontSizeAction: Size " << size << " is out of range" << endl;
+        kWarning() << "KFontSizeAction: Size " << size << " is out of range";
         return;
     }
 

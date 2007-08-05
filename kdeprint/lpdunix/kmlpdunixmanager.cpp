@@ -154,7 +154,7 @@ QString getPrintcapFileName()
 	QFile	f("/etc/lpd.conf");
 	if (f.exists() && f.open(QIODevice::ReadOnly))
 	{
-		kDebug() << "/etc/lpd.conf found: probably LPRng system" << endl;
+		kDebug() << "/etc/lpd.conf found: probably LPRng system";
 		QTextStream	t(&f);
 		QString		line;
 		while (!t.atEnd())
@@ -162,21 +162,21 @@ QString getPrintcapFileName()
 			line = t.readLine().trimmed();
 			if (line.startsWith("printcap_path="))
 			{
-				kDebug() << "printcap_path entry found: " << line << endl;
+				kDebug() << "printcap_path entry found: " << line;
 				QString	pcentry = line.mid(14).trimmed();
-				kDebug() << "printcap_path value: " << pcentry << endl;
+				kDebug() << "printcap_path value: " << pcentry;
 				if (pcentry[0] == '|')
 				{ // printcap through pipe
 					printcap = KStandardDirs::locateLocal("tmp","printcap");
 					QString	cmd = QString::fromLatin1("echo \"all\" | %1 > %2").arg(pcentry.mid(1)).arg(printcap);
-					kDebug() << "printcap obtained through pipe" << endl << "executing: " << cmd << endl;
+					kDebug() << "printcap obtained through pipe" << endl << "executing: " << cmd;
 					::system(cmd.toLocal8Bit());
 				}
 				break;
 			}
 		}
 	}
-	kDebug() << "printcap file returned: " << printcap << endl;
+	kDebug() << "printcap file returned: " << printcap;
 	return printcap;
 }
 
@@ -235,7 +235,7 @@ QString getEtcPrintersConfName()
 		// standard file not found, try NIS
 		printersconf = KStandardDirs::locateLocal("tmp","printers.conf");
 		QString	cmd = QString::fromLatin1("ypcat printers.conf.byname > %1").arg(printersconf);
-		kDebug() << "printers.conf obtained from NIS server: " << cmd << endl;
+		kDebug() << "printers.conf obtained from NIS server: " << cmd;
 		::system(QFile::encodeName(cmd));
 	}
 	return printersconf;

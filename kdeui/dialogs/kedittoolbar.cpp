@@ -59,7 +59,7 @@ static void dump_xml(const QDomDocument& doc)
     QString str;
     QTextStream ts(&str, QIODevice::WriteOnly);
     ts << doc;
-    kDebug() << str << endl;
+    kDebug() << str;
 }
 
 typedef QList<QDomElement> ToolBarList;
@@ -229,7 +229,7 @@ public:
   {
     QString raw_xml;
     QString xml_file = xmlFile(_xml_file);
-    //kDebug() << "loadXMLFile xml_file=" << xml_file << endl;
+    //kDebug() << "loadXMLFile xml_file=" << xml_file;
 
     if ( !QDir::isRelativePath(xml_file) )
       raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
@@ -319,14 +319,14 @@ public:
     XmlDataList::Iterator xit = m_xmlFiles.begin();
     for ( ; xit != m_xmlFiles.end(); ++xit )
     {
-        kDebug(240) << "XmlData type " << s_XmlTypeToString[(*xit).m_type] << " xmlFile: " << (*xit).m_xmlFile << endl;
+        kDebug(240) << "XmlData type " << s_XmlTypeToString[(*xit).m_type] << " xmlFile: " << (*xit).m_xmlFile;
         foreach (const QDomElement& element,  (*xit).m_barList) {
-            kDebug(240) << "    ToolBar: " << toolbarName( *xit, element ) << endl;
+            kDebug(240) << "    ToolBar: " << toolbarName( *xit, element );
         }
         if ( (*xit).m_actionCollection )
-            kDebug(240) << "    " << (*xit).m_actionCollection->actions().count() << " actions in the collection." << endl;
+            kDebug(240) << "    " << (*xit).m_actionCollection->actions().count() << " actions in the collection.";
         else
-            kDebug(240) << "    no action collection." << endl;
+            kDebug(240) << "    no action collection.";
     }
   }
 #endif
@@ -494,7 +494,7 @@ void KEditToolBar::slotDefault()
 
             if ( QFile::exists( file ) )
                 if ( !QFile::remove( file ) )
-                    kWarning() << "Could not delete " << file << endl;
+                    kWarning() << "Could not delete " << file;
         }
 
         d->m_widget = new KEditToolBarWidget( this );
@@ -510,7 +510,7 @@ void KEditToolBar::slotDefault()
 
         if ( QFile::exists( xml_file ) )
             if ( !QFile::remove( xml_file ) )
-                kWarning() << "Could not delete " << xml_file << endl;
+                kWarning() << "Could not delete " << xml_file;
 
         d->m_widget = new KEditToolBarWidget( d->m_collection, this );
         setResourceFile( d->m_file, d->m_global );
@@ -692,7 +692,7 @@ void KEditToolBarWidgetPrivate::initKPart( KXMLGUIFactory* factory,
 
 bool KEditToolBarWidget::save()
 {
-  //kDebug(240) << "KEditToolBarWidget::save" << endl;
+  //kDebug(240) << "KEditToolBarWidget::save";
   XmlDataList::Iterator it = d->m_xmlFiles.begin();
   for ( ; it != d->m_xmlFiles.end(); ++it)
   {
@@ -706,7 +706,7 @@ bool KEditToolBarWidget::save()
 
     dump_xml((*it).m_document);
 
-    kDebug(240) << "Saving " << (*it).m_xmlFile << endl;
+    kDebug(240) << "Saving " << (*it).m_xmlFile;
     // if we got this far, we might as well just save it
     KXMLGUIFactory::saveConfigFile((*it).m_document, (*it).m_xmlFile);
   }
@@ -725,7 +725,7 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
     return;
 
   QList<KXMLGUIClient*> clients = factory()->clients();
-  //kDebug(240) << "factory: " << clients.count() << " clients" << endl;
+  //kDebug(240) << "factory: " << clients.count() << " clients";
 
   if (!clients.count())
     return;
@@ -735,17 +735,17 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
   clientIterator.toBack();
   while ( clientIterator.hasPrevious() )
   {
-    //kDebug(240) << "factory->removeClient " << client << endl;
+    //kDebug(240) << "factory->removeClient " << client;
     factory()->removeClient( clientIterator.previous() );
   }
 
   KXMLGUIClient *firstClient = clients.first();
 
   // now, rebuild the gui from the first to the last
-  //kDebug(240) << "rebuilding the gui" << endl;
+  //kDebug(240) << "rebuilding the gui";
   foreach (KXMLGUIClient* client, clients)
   {
-    //kDebug(240) << "updating client " << client << " " << client->componentData().componentName() << "  xmlFile=" << client->xmlFile() << endl;
+    //kDebug(240) << "updating client " << client << " " << client->componentData().componentName() << "  xmlFile=" << client->xmlFile();
     QString file( client->xmlFile() ); // before setting ui_standards!
     if ( !file.isEmpty() )
     {
@@ -1387,7 +1387,7 @@ void KEditToolBarWidgetPrivate::slotProcessExited()
 
   icon = QString::fromLocal8Bit( m_kdialogProcess->readLine() );
   icon = icon.left( icon.indexOf( '\n' ) );
-  kDebug(240) << "icon=" << icon << endl;
+  kDebug(240) << "icon=" << icon;
   if ( m_kdialogProcess->exitStatus() != QProcess::NormalExit ||
        icon.isEmpty() ) {
     delete m_kdialogProcess;
@@ -1396,7 +1396,7 @@ void KEditToolBarWidgetPrivate::slotProcessExited()
   }
 
   ToolBarItem *item = m_activeList->currentItem();
-  kDebug() << item << endl;
+  kDebug() << item;
   if(item){
     item->setIcon(0, KIcon(icon));
 

@@ -93,18 +93,18 @@ KJSProxyImpl::KJSProxyImpl(khtml::ChildFrame *frame)
 KJSProxyImpl::~KJSProxyImpl()
 {
   if ( m_script ) {
-    //kDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp() << endl;
+    //kDebug() << "KJSProxyImpl::~KJSProxyImpl clearing global object " << m_script->globalObject().imp();
     // This allows to delete the global-object properties, like all the protos
     m_script->globalObject()->clearProperties();
-    //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting" << endl;
+    //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting";
 
     JSLock::lock();
     while (Interpreter::collect())
 	    ;
     JSLock::unlock();
-    //kDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script << endl;
+    //kDebug() << "KJSProxyImpl::~KJSProxyImpl deleting interpreter " << m_script;
     delete m_script;
-    //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again" << endl;
+    //kDebug() << "KJSProxyImpl::~KJSProxyImpl garbage collecting again";
     // Garbage collect - as many times as necessary
     // (we could delete an object which was holding another object, so
     // the deref() will happen too late for deleting the impl of the 2nd object).
@@ -135,7 +135,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   // expected value in all cases.
   // See smart window.open policy for where this is used.
   bool inlineCode = filename.isNull();
-  //kDebug(6070) << "KJSProxyImpl::evaluate inlineCode=" << inlineCode << endl;
+  //kDebug(6070) << "KJSProxyImpl::evaluate inlineCode=" << inlineCode;
 
 #ifdef KJS_DEBUGGER
     if (inlineCode)
@@ -180,7 +180,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
     if ( comp.complType() == Throw )
     {
         UString msg = comp.value()->toString(m_script->globalExec());
-        kDebug(6070) << "WARNING: Script threw exception: " << msg.qstring() << endl;
+        kDebug(6070) << "WARNING: Script threw exception: " << msg.qstring();
     }
     return QVariant();
   }
@@ -232,7 +232,7 @@ void KJSProxyImpl::clear() {
     }
 
     // Really delete everything that can be, so that the DOM nodes get deref'ed
-    //kDebug() << k_funcinfo << "all done -> collecting" << endl;
+    //kDebug() << k_funcinfo << "all done -> collecting";
     JSLock::lock();
     while (Interpreter::collect())
 	    ;
@@ -354,7 +354,7 @@ void KJSProxyImpl::applyUserAgent()
   {
     m_script->setCompatMode(Interpreter::IECompat);
 #ifdef KJS_VERBOSE
-    kDebug() << "Setting IE compat mode" << endl;
+    kDebug() << "Setting IE compat mode";
 #endif
   }
   else
@@ -365,7 +365,7 @@ void KJSProxyImpl::applyUserAgent()
     {
       m_script->setCompatMode(Interpreter::NetscapeCompat);
 #ifdef KJS_VERBOSE
-      kDebug() << "Setting NS compat mode" << endl;
+      kDebug() << "Setting NS compat mode";
 #endif
     }
 }

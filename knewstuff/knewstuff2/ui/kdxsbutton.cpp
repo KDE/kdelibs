@@ -266,7 +266,7 @@ void KDXSButton::slotCategories(QList<KNS::Category*> categories)
 	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
 		KNS::Category *category = (*it);
-		kDebug() << "Category: " << category->name().representation() << endl;
+		kDebug() << "Category: " << category->name().representation();
 	}
 }
 
@@ -275,7 +275,7 @@ void KDXSButton::slotEntries(QList<KNS::Entry*> entries)
 	for(QList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		KNS::Entry *entry = (*it);
-		kDebug() << "Entry: " << entry->name().representation() << endl;
+		kDebug() << "Entry: " << entry->name().representation();
 	}
 }
 
@@ -285,7 +285,7 @@ void KDXSButton::slotComments(QStringList comments)
 
 	for(QStringList::Iterator it = comments.begin(); it != comments.end(); it++)
 	{
-		kDebug() << "Comment: " << (*it) << endl;
+		kDebug() << "Comment: " << (*it);
 		commentsdlg.addComment("foo", (*it));
 	}
 
@@ -298,7 +298,7 @@ void KDXSButton::slotChanges(QStringList changes)
 
 	for(QStringList::Iterator it = changes.begin(); it != changes.end(); it++)
 	{
-		kDebug() << "Changelog: " << (*it) << endl;
+		kDebug() << "Changelog: " << (*it);
 		changesdlg.addChangelog("v???", (*it));
 	}
 
@@ -312,7 +312,7 @@ void KDXSButton::slotHistory(QStringList entries)
 	int i = 0;
 	for(QStringList::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
-		kDebug() << (*it) << endl;
+		kDebug() << (*it);
 
 		// FIXME KDE4PORT
 		//m_history->insertItem(SmallIcon("history"),
@@ -530,13 +530,13 @@ void KDXSButton::slotTriggered(QAction *action)
 
 void KDXSButton::slotVersionsHighlighted(int id)
 {
-	kDebug() << "highlighted!" << endl;
+	kDebug() << "highlighted!";
 
 	if(id == historyinactive)
 	{
 		//m_history->setItemEnabled(historyinactive, true);
 		m_history->setCursor(QCursor(Qt::WaitCursor));
-		kDebug() << "hourglass!" << endl;
+		kDebug() << "hourglass!";
 
 		m_dxs->call_history(0);
 		// .....
@@ -573,14 +573,14 @@ bool KDXSButton::authenticate()
 
 void KDXSButton::slotPayloadLoaded(KUrl url)
 {
-	kDebug() << "PAYLOAD: success; try to install" << endl;
+	kDebug() << "PAYLOAD: success; try to install";
 
 	m_engine->install(url.path());
 }
 
 void KDXSButton::slotPayloadFailed()
 {
-	kDebug() << "PAYLOAD: failed" << endl;
+	kDebug() << "PAYLOAD: failed";
 }
 
 #include "kdxsbutton.moc"

@@ -123,7 +123,7 @@ void K3IconView::slotSettingsChanged(int category)
     if ( category != KGlobalSettings::SETTINGS_MOUSE )
       return;
     m_bUseSingle = KGlobalSettings::singleClick();
-    //kDebug() << "K3IconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
+    //kDebug() << "K3IconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle;
 
     disconnect( this, SIGNAL( mouseButtonClicked( int, Q3IconViewItem *,
 						  const QPoint & ) ),
@@ -230,14 +230,14 @@ void K3IconView::slotAutoSelect()
       setSelected( m_pCurrentItem, true );
   }
   else
-    kDebug() << "K3IconView: That's not supposed to happen!!!!" << endl;
+    kDebug() << "K3IconView: That's not supposed to happen!!!!";
 }
 
 void K3IconView::emitExecute( Q3IconViewItem *item, const QPoint &pos )
 {
   if ( d->mode != Execute )
   {
-    // kDebug() << "K3IconView::emitExecute : not in execute mode !" << endl;
+    // kDebug() << "K3IconView::emitExecute : not in execute mode !";
     return;
   }
 
@@ -320,7 +320,7 @@ void K3IconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 
 void K3IconView::slotMouseButtonClicked( int btn, Q3IconViewItem *item, const QPoint &pos )
 {
-  //kDebug() << " K3IconView::slotMouseButtonClicked() item=" << item << endl;
+  //kDebug() << " K3IconView::slotMouseButtonClicked() item=" << item;
   if( d->doubleClickIgnoreTimer.isActive() )
     return; // Ignore double click
 
@@ -475,11 +475,11 @@ void K3IconViewItem::calcRect( const QString& text_ )
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !qobject_cast<K3IconView*>(iconView()) )
     {
-        kWarning() << "K3IconViewItem used in a " << iconView()->metaObject()->className() << " !!" << endl;
+        kWarning() << "K3IconViewItem used in a " << iconView()->metaObject()->className() << " !!";
         return;
     }
 #endif
-    //kDebug() << "K3IconViewItem::calcRect - " << text() << endl;
+    //kDebug() << "K3IconViewItem::calcRect - " << text();
     K3IconView *view = static_cast<K3IconView *>(iconView());
     QRect itemIconRect = pixmapRect();
     QRect itemTextRect = textRect();
@@ -633,7 +633,7 @@ void K3IconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 #ifndef NDEBUG // be faster for the end-user, such a bug will have been fixed before hand :)
     if ( !qobject_cast<K3IconView*>(view) )
     {
-        kWarning() << "K3IconViewItem used in a " << view->metaObject()->className() << " !!" << endl;
+        kWarning() << "K3IconViewItem used in a " << view->metaObject()->className() << " !!";
         return;
     }
 #endif

@@ -152,7 +152,7 @@ void BackgroundTest::slotDone()
 
 void BackgroundTest::slotMisspelling( const QString& word, int start )
 {
-    kDebug()<<"Misspelling \""<< word << "\" at " << start << endl;
+    kDebug()<<"Misspelling \""<< word << "\" at " << start;
     m_checker->continueChecking();
 }
 
