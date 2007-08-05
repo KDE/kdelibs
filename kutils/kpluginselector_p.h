@@ -294,6 +294,7 @@ private:
     int leftMargin;
     int rightMargin;
     int separatorPixels;
+    int focusedElement; // whether is focused the check or the link
     KIconLoader *iconLoader;
     QPoint relativeMousePosition;
     QList<KCModuleProxy*> *currentModuleProxyList;

@@ -409,7 +409,7 @@ Qt::ItemFlags KPluginSelector::Private::PluginModel::flags(const QModelIndex &in
     QModelIndex modelIndex = this->index(index.row(), index.column());
 
     if (modelIndex.internalPointer()) // Is a plugin item
-        return Qt::ItemIsUserCheckable | Qt::ItemIsEnabled; // We don't want items to be selectable
+        return Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     else // Is a category
         return Qt::ItemIsEnabled;
 }
@@ -571,6 +571,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->listView->setItemDelegate(d->pluginDelegate);
 
     d->listView->viewport()->installEventFilter(d->pluginDelegate);
+    d->listView->installEventFilter(d->pluginDelegate);
 
     d->dependenciesWidget = new Private::DependenciesWidget;
 
@@ -709,7 +710,7 @@ void KPluginSelector::updatePluginsState()
 
 
 KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Private *parent)
-    : QItemDelegate(0), currentModuleProxyList(0), configDialog(0), parent(parent)
+    : QItemDelegate(0), focusedElement(0), currentModuleProxyList(0), configDialog(0), parent(parent)
 {
     iconLoader = new KIconLoader();
 }
@@ -731,12 +732,10 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     QColor unselectedTextColor = optionCopy.palette.text().color();
     QPen currentPen = painter->pen();
-    QPen linkPen = QPen(currentPen);
+    QPen linkPen = QPen(option.palette.color(QPalette::Link));
 
     QString details = i18n("More Options");
     QString about = i18n("About");
-
-    linkPen.setColor(option.palette.color(QPalette::Link));
 
     QPixmap iconPixmap = icon(index, iconWidth, iconHeight);
 
@@ -755,10 +754,17 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     {
         const KPluginInfo info(*static_cast<KPluginInfo*>(index.internalPointer()));
 
-        if (model->alternateColor(info))
-            painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::AlternateBase));
+        if (option.state & QStyle::State_Selected)
+        {
+            painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Highlight));
+        }
         else
-            painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Base));
+        {
+            if (model->alternateColor(info))
+                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::AlternateBase));
+            else
+                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Base));
+        }
 
         QString display;
         QString secondaryDisplay = fontMetrics.elidedText(comment(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width());
@@ -771,7 +777,8 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         {
             display = painter->fontMetrics().elidedText(name(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width() - clickableLabelRect(optionCopy, details).width());
 
-            if (clickableLabelRect(optionCopy, details).contains(relativeMousePosition))
+            if (clickableLabelRect(optionCopy, details).contains(relativeMousePosition) ||
+                ((focusedElement == 1) && (option.state & QStyle::State_Selected)))
             {
                 configureFont.setUnderline(true);
                 painter->setFont(configureFont);
@@ -787,7 +794,8 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         {
             display = painter->fontMetrics().elidedText(name(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width() - clickableLabelRect(optionCopy, about).width());
 
-            if (clickableLabelRect(optionCopy, about).contains(relativeMousePosition))
+            if (clickableLabelRect(optionCopy, about).contains(relativeMousePosition) ||
+                ((focusedElement == 1) && (option.state & QStyle::State_Selected)))
             {
                 configureFont.setUnderline(true);
                 painter->setFont(configureFont);
@@ -800,7 +808,15 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
             painter->drawText(clickableLabelRect(optionCopy, about), Qt::AlignLeft, about);
         }
 
-        painter->setPen(prevPen);
+        if (option.state & QStyle::State_Selected)
+        {
+            painter->setPen(optionCopy.palette.color(QPalette::HighlightedText));
+        }
+        else
+        {
+            painter->setPen(prevPen);
+        }
+
         painter->setFont(title);
 
         painter->drawText(leftMargin + separatorPixels * 2 + iconPixmap.width() + theCheckRect.width(), separatorPixels + optionCopy.rect.top(), painter->fontMetrics().width(display), painter->fontMetrics().height(), Qt::AlignLeft, display);
@@ -813,7 +829,8 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
         QStyleOptionViewItem optionCheck(optionCopy);
 
-        if (checkRect(index, optionCopy).contains(relativeMousePosition))
+        if (checkRect(index, optionCopy).contains(relativeMousePosition) ||
+            ((focusedElement == 0) && (option.state & QStyle::State_Selected)))
         {
             optionCheck.state |= QStyle::State_MouseOver;
         }
@@ -924,10 +941,16 @@ void KPluginSelector::Private::PluginDelegate::setSeparatorPixels(int separatorP
 bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEvent *event)
 {
     if ((event->type() == QEvent::MouseButtonPress) ||
-        (event->type() == QEvent::KeyRelease))
+        (event->type() == QEvent::KeyPress))
     {
-        const QKeyEvent *keyEvent = dynamic_cast<const QKeyEvent*>(event);
-        if (keyEvent && (keyEvent->key() != Qt::Key_Space))
+        event->accept();
+
+        QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
+
+        if (keyEvent && (keyEvent->key() != Qt::Key_Space) &&
+                        (keyEvent->key() != Qt::Key_Up) &&
+                        (keyEvent->key() != Qt::Key_Down) &&
+                        (keyEvent->key() != Qt::Key_Tab))
         {
             return false;
         }
@@ -942,19 +965,59 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
             eventReceived = KeyboardEvent;
         }
 
-        const QWidget *viewport = qobject_cast<const QWidget*>(watched);
+        QWidget *viewport = qobject_cast<QWidget*>(watched);
         if (viewport)
         {
             QModelIndex currentIndex;
 
             QListViewSpecialized *listView = dynamic_cast<QListViewSpecialized*>(viewport->parent());
+            if (!listView) // the keyboard event comes directly from the view, not the viewport
+                listView = dynamic_cast<QListViewSpecialized*>(viewport);
+
             if ((eventReceived == MouseEvent) && listView)
             {
                 currentIndex = listView->indexAt(viewport->mapFromGlobal(QCursor::pos()));
+
+                focusedElement = 0;
             }
             else if ((eventReceived == KeyboardEvent) && listView)
             {
                 currentIndex = listView->currentIndex();
+            }
+
+            if (keyEvent && keyEvent->key() == Qt::Key_Up)
+            {
+                if (currentIndex.row() && listView->model()->index(currentIndex.row() - 1, 0).internalPointer())
+                    listView->setCurrentIndex(listView->model()->index(currentIndex.row() - 1, 0));
+                else if (currentIndex.row() > 2)
+                    listView->setCurrentIndex(listView->model()->index(currentIndex.row() - 2, 0));
+                else
+                    listView->setCurrentIndex(QModelIndex());
+
+                focusedElement = 0;
+
+                return true;
+            }
+            else if (keyEvent && keyEvent->key() == Qt::Key_Down)
+            {
+                if ((currentIndex.row() < listView->model()->rowCount()) && listView->model()->index(currentIndex.row() + 1, 0).internalPointer())
+                    listView->setCurrentIndex(listView->model()->index(currentIndex.row() + 1, 0));
+                else if (currentIndex.row() + 1 < listView->model()->rowCount())
+                    listView->setCurrentIndex(listView->model()->index(currentIndex.row() + 2, 0));
+                else
+                    listView->setCurrentIndex(QModelIndex());
+
+                focusedElement = 0;
+
+                return true;
+            }
+            else if (keyEvent && keyEvent->key() == Qt::Key_Tab)
+            {
+                focusedElement = (focusedElement + 1) % 2;
+
+                listView->update(listView->currentIndex());
+
+                return true;
             }
 
             if (listView && currentIndex.isValid())
@@ -1046,190 +1109,187 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
     PluginModel *model = static_cast<PluginModel*>(listView->model());
 
-    switch (eventReceived)
+    if (!index.internalPointer())
     {
-        case MouseEvent:
-            if (!index.internalPointer())
-            {
-                return;
-            }
-            // We don't want to break
-        case KeyboardEvent:
+        return;
+    }
+
+    const KPluginInfo pluginInfo(*static_cast<KPluginInfo*>(index.internalPointer()));
+
+    if ((checkRect(index, option).contains(cursorPos) && (eventReceived == MouseEvent)) ||
+        ((focusedElement == 0) && (eventReceived == KeyboardEvent)))
+    {
+        listView->model()->setData(index, !listView->model()->data(index, Checked).toBool(), Checked);
+
+        parent->dependenciesWidget->userOverrideDependency(pluginInfo.name());
+
+        if (listView->model()->data(index, Checked).toBool()) // Item was checked
+            checkDependencies(model, pluginInfo, DependenciesINeed);
+        else
+            checkDependencies(model, pluginInfo, DependenciesNeedMe);
+    }
+
+    if ((clickableLabelRect(option, caption).contains(cursorPos) && (eventReceived == MouseEvent)) ||
+        ((focusedElement == 1) && (eventReceived == KeyboardEvent)))
+    {
+        listView->setCurrentIndex(index);
+
+        if (!configDialogs.contains(index.row()))
         {
-            const KPluginInfo pluginInfo(*static_cast<KPluginInfo*>(index.internalPointer()));
+            QList<KService::Ptr> services = model->services(index);
 
-            if (checkRect(index, option).contains(cursorPos))
+            configDialog = new KDialog(parent->parent);
+            configDialog->setWindowTitle(pluginInfo.name());
+            KTabWidget *newTabWidget = new KTabWidget(configDialog);
+            bool configurable = false;
+
+            tabWidgets.insert(index.row(), newTabWidget);
+
+            foreach(KService::Ptr servicePtr, services)
             {
-                listView->model()->setData(index, !listView->model()->data(index, Checked).toBool(), Checked);
+                if(!servicePtr->noDisplay())
+                {
+                    KCModuleInfo moduleinfo(servicePtr);
+                    model->setParentComponents(index, moduleinfo.service()->property("X-KDE-ParentComponents").toStringList());
+                    KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleinfo, newTabWidget);
+                    if (currentModuleProxy->realModule())
+                    {
+                        newTabWidget->addTab(currentModuleProxy, servicePtr->name());
+                        configurable = true;
+                    }
 
-                parent->dependenciesWidget->userOverrideDependency(pluginInfo.name());
-
-                if (listView->model()->data(index, Checked).toBool()) // Item was checked
-                    checkDependencies(model, pluginInfo, DependenciesINeed);
-                else
-                    checkDependencies(model, pluginInfo, DependenciesNeedMe);
+                    if (!modulesDialogs.contains(index.row()))
+                        modulesDialogs.insert(index.row(), QList<KCModuleProxy*>() << currentModuleProxy);
+                    else
+                    {
+                        modulesDialogs[index.row()].append(currentModuleProxy);
+                    }
+                }
             }
 
-            if (clickableLabelRect(option, caption).contains(cursorPos))
+            if (!configurable)
+                configDialog->setButtons(KDialog::Close);
+            else
+                configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
+
+            QWidget *aboutWidget = new QWidget(newTabWidget);
+            QVBoxLayout *layout = new QVBoxLayout;
+            layout->setSpacing(0);
+            aboutWidget->setLayout(layout);
+
+            if (!pluginInfo.comment().isEmpty())
             {
-                if (!configDialogs.contains(index.row()))
+                QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo.comment()), newTabWidget);
+                layout->addWidget(description);
+                layout->addSpacing(20);
+            }
+
+            if (!pluginInfo.author().isEmpty())
+            {
+                QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo.author()), newTabWidget);
+                layout->addWidget(author);
+                layout->addSpacing(20);
+            }
+
+            if (!pluginInfo.email().isEmpty())
+            {
+                QLabel *authorEmail = new QLabel(i18n("E-Mail:"), newTabWidget);
+                KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo.email(), '\t' + pluginInfo.email());
+
+                sendEmail->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+                sendEmail->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+                sendEmail->setGlowEnabled(false);
+                sendEmail->setUnderline(false);
+                sendEmail->setFloatEnabled(true);
+                sendEmail->setUseCursor(false);
+                sendEmail->setHighlightedColor(option.palette.color(QPalette::Link));
+                sendEmail->setSelectedColor(option.palette.color(QPalette::Link));
+
+                QObject::connect(sendEmail, SIGNAL(leftClickedUrl(QString)), this, SLOT(processUrl(QString)));
+
+                layout->addWidget(authorEmail);
+                layout->addWidget(sendEmail);
+                layout->addSpacing(20);
+            }
+
+            if (!pluginInfo.website().isEmpty())
+            {
+                QLabel *website = new QLabel(i18n("Website:"), newTabWidget);
+                KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo.website(), '\t' + pluginInfo.website());
+
+                visitWebsite->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+                visitWebsite->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+                visitWebsite->setGlowEnabled(false);
+                visitWebsite->setUnderline(false);
+                visitWebsite->setFloatEnabled(true);
+                visitWebsite->setUseCursor(false);
+                visitWebsite->setHighlightedColor(option.palette.color(QPalette::Link));
+                visitWebsite->setSelectedColor(option.palette.color(QPalette::Link));
+
+                QObject::connect(visitWebsite, SIGNAL(leftClickedUrl(QString)), this, SLOT(processUrl(QString)));
+
+                layout->addWidget(website);
+                layout->addWidget(visitWebsite);
+                layout->addSpacing(20);
+            }
+
+            if (!pluginInfo.version().isEmpty())
+            {
+                QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo.version()), newTabWidget);
+
+                layout->addWidget(version);
+                layout->addSpacing(20);
+            }
+
+            if (!pluginInfo.license().isEmpty())
+            {
+                QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo.license()), newTabWidget);
+
+                layout->addWidget(license);
+                layout->addSpacing(20);
+            }
+
+            layout->insertStretch(-1);
+
+            newTabWidget->addTab(aboutWidget, i18n("About"));
+            configDialog->setMainWidget(newTabWidget);
+
+            configDialogs.insert(index.row(), configDialog);
+        }
+        else
+        {
+            configDialog = configDialogs[index.row()];
+        }
+
+        currentModuleProxyList = modulesDialogs.contains(index.row()) ? &modulesDialogs[index.row()] : 0;
+
+        QObject::connect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
+
+        if (configDialog->exec() == QDialog::Accepted)
+        {
+            foreach (KCModuleProxy *moduleProxy, modulesDialogs[index.row()])
+            {
+                moduleProxy->save();
+                foreach (const QString &parentComponent, model->parentComponents(index))
                 {
-                    QList<KService::Ptr> services = model->services(index);
-
-                    configDialog = new KDialog(parent->parent);
-                    configDialog->setWindowTitle(pluginInfo.name());
-                    KTabWidget *newTabWidget = new KTabWidget(configDialog);
-                    bool configurable = false;
-
-                    tabWidgets.insert(index.row(), newTabWidget);
-
-                    foreach(KService::Ptr servicePtr, services)
-                    {
-                        if(!servicePtr->noDisplay())
-                        {
-                            KCModuleInfo moduleinfo(servicePtr);
-                            model->setParentComponents(index, moduleinfo.service()->property("X-KDE-ParentComponents").toStringList());
-                            KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleinfo, newTabWidget);
-                            if (currentModuleProxy->realModule())
-                            {
-                                newTabWidget->addTab(currentModuleProxy, servicePtr->name());
-                                configurable = true;
-                            }
-
-                            if (!modulesDialogs.contains(index.row()))
-                                modulesDialogs.insert(index.row(), QList<KCModuleProxy*>() << currentModuleProxy);
-                            else
-                            {
-                                modulesDialogs[index.row()].append(currentModuleProxy);
-                            }
-                        }
-                    }
-
-                    if (!configurable)
-                        configDialog->setButtons(KDialog::Close);
-                    else
-                        configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
-
-                    QWidget *aboutWidget = new QWidget(newTabWidget);
-                    QVBoxLayout *layout = new QVBoxLayout;
-                    layout->setSpacing(0);
-                    aboutWidget->setLayout(layout);
-
-                    if (!pluginInfo.comment().isEmpty())
-                    {
-                        QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo.comment()), newTabWidget);
-                        layout->addWidget(description);
-                        layout->addSpacing(20);
-                    }
-
-                    if (!pluginInfo.author().isEmpty())
-                    {
-                        QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo.author()), newTabWidget);
-                        layout->addWidget(author);
-                        layout->addSpacing(20);
-                    }
-
-                    if (!pluginInfo.email().isEmpty())
-                    {
-                        QLabel *authorEmail = new QLabel(i18n("E-Mail:"), newTabWidget);
-                        KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo.email(), '\t' + pluginInfo.email());
-
-                        sendEmail->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-                        sendEmail->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-                        sendEmail->setGlowEnabled(false);
-                        sendEmail->setUnderline(false);
-                        sendEmail->setFloatEnabled(true);
-                        sendEmail->setUseCursor(false);
-                        sendEmail->setHighlightedColor(option.palette.color(QPalette::Link));
-                        sendEmail->setSelectedColor(option.palette.color(QPalette::Link));
-
-                        QObject::connect(sendEmail, SIGNAL(leftClickedUrl(QString)), this, SLOT(processUrl(QString)));
-
-                        layout->addWidget(authorEmail);
-                        layout->addWidget(sendEmail);
-                        layout->addSpacing(20);
-                    }
-
-                    if (!pluginInfo.website().isEmpty())
-                    {
-                        QLabel *website = new QLabel(i18n("Website:"), newTabWidget);
-                        KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo.website(), '\t' + pluginInfo.website());
-
-                        visitWebsite->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-                        visitWebsite->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-                        visitWebsite->setGlowEnabled(false);
-                        visitWebsite->setUnderline(false);
-                        visitWebsite->setFloatEnabled(true);
-                        visitWebsite->setUseCursor(false);
-                        visitWebsite->setHighlightedColor(option.palette.color(QPalette::Link));
-                        visitWebsite->setSelectedColor(option.palette.color(QPalette::Link));
-
-                        QObject::connect(visitWebsite, SIGNAL(leftClickedUrl(QString)), this, SLOT(processUrl(QString)));
-
-                        layout->addWidget(website);
-                        layout->addWidget(visitWebsite);
-                        layout->addSpacing(20);
-                    }
-
-                    if (!pluginInfo.version().isEmpty())
-                    {
-                        QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo.version()), newTabWidget);
-
-                        layout->addWidget(version);
-                        layout->addSpacing(20);
-                    }
-
-                    if (!pluginInfo.license().isEmpty())
-                    {
-                        QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo.license()), newTabWidget);
-
-                        layout->addWidget(license);
-                        layout->addSpacing(20);
-                    }
-
-                    layout->insertStretch(-1);
-
-                    newTabWidget->addTab(aboutWidget, i18n("About"));
-                    configDialog->setMainWidget(newTabWidget);
-
-                    configDialogs.insert(index.row(), configDialog);
+                    emit configCommitted(parentComponent.toLatin1());
                 }
-                else
-                {
-                    configDialog = configDialogs[index.row()];
-                }
-
-                currentModuleProxyList = modulesDialogs.contains(index.row()) ? &modulesDialogs[index.row()] : 0;
-
-                QObject::connect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
-
-                if (configDialog->exec() == QDialog::Accepted)
-                {
-                    foreach (KCModuleProxy *moduleProxy, modulesDialogs[index.row()])
-                    {
-                        moduleProxy->save();
-                        foreach (const QString &parentComponent, model->parentComponents(index))
-                        {
-                            emit configCommitted(parentComponent.toLatin1());
-                        }
-                    }
-                }
-                else
-                {
-                    foreach (KCModuleProxy *moduleProxy, modulesDialogs[index.row()])
-                    {
-                        moduleProxy->load();
-                    }
-                }
-
-                // Since the dialog is cached and the last tab selected will be kept selected, when closing the
-                // dialog we set the selected tab to the first one again
-                if (tabWidgets.contains(index.row()))
-                    tabWidgets[index.row()]->setCurrentIndex(0);
-
-                QObject::disconnect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
             }
         }
+        else
+        {
+            foreach (KCModuleProxy *moduleProxy, modulesDialogs[index.row()])
+            {
+                moduleProxy->load();
+            }
+        }
+
+        // Since the dialog is cached and the last tab selected will be kept selected, when closing the
+        // dialog we set the selected tab to the first one again
+        if (tabWidgets.contains(index.row()))
+            tabWidgets[index.row()]->setCurrentIndex(0);
+
+        QObject::disconnect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
     }
 }
 
