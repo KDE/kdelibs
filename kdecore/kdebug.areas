@@ -321,7 +321,7 @@
 8051        cervisia (cvsservice)
 
 # kdevelop
-9000        kdevelop (core)
+9000        kdevelop
 9001        kdevelop (grep view)
 #9002        kdevelop (doc tree view)
 #9003        kdevelop (class view)
@@ -334,14 +334,14 @@
 9010        kdevelop (appwizard)
 #9011        kdevelop (python scripting)
 9012        kdevelop (debugger)
-9013        kdevelop (java support)
+#9013        kdevelop (java support)
 #9014        kdevelop (python support)
 #9015        kdevelop (script project)
 #9016        kdevelop (perl support)
 9017        kdevelop (file view)
 #9018        kdevelop (php support)
 #9019        kdevelop (fortran support)
-9020        kdevelop (autotools project)
+#9020        kdevelop (autotools project)
 #9021        kdevelop (pgi options)
 #9022        kdevelop (ctags)
 #9023        kdevelop (regexptest)
@@ -358,9 +358,20 @@
 #9034        kdevelop (filecreate part)
 9035        kdevelop (konsole part)
 #9036        kdevelop (subversion part)
-9037        kdevelop (sublime)
-9038        kdevelop (make builder)
-9039        kdevelop (qtdesigner)
+9037        kdevelop (make builder)
+9038        kdevelop (qtdesigner)
+
+#kdevplatform
+9500        kdevplatform
+9501        kdevplatform (shell)
+9502        kdevplatform (interfaces)
+9503        kdevplatform (project)
+9504        kdevplatform (sublime)
+9505        kdevplatform (language)
+9506        kdevplatform (editor)
+9507        kdevplatform (outputview)
+9508        kdevplatform (util)
+9509        kdevplatform (vcs)
 
 # toys and games
 10000        amor
