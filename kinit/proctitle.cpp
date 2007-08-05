@@ -36,6 +36,13 @@
 
 #ifdef HAVE_SETPROCTITLE
 #  define PF_ARGV_TYPE PF_ARGV_NONE
+#  ifdef HAVE_SYS_TYPES_H
+#    include <sys/types.h>
+#  endif /* HAVE_SYS_TYPES_H */
+#  ifdef HAVE_UNISTD_H
+#    include <unistd.h>
+#  endif /* HAVE_UNISTD_H */
+
 #else /* HAVE_SETPROCTITLE */
 #  ifdef __GNU_HURD__
 #    define PF_ARGV_TYPE PF_ARGV_NEW
