@@ -252,8 +252,9 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         // Scripted translation.
         strans = rawtrans.mid(cdpos + s->theFence.length());
 
-        // Try to initialize Transcript if not initialized.
-        if (!s->loadTranscriptCalled && locale && locale->useTranscript())
+        // Try to initialize Transcript if not initialized, and script not empty.
+        if (   !s->loadTranscriptCalled && !strans.isEmpty()
+            && locale && locale->useTranscript())
         {
             if (KGlobal::hasMainComponent())
                 loadTranscript();
