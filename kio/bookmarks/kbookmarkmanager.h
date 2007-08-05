@@ -253,6 +253,11 @@ Q_SIGNALS:
      */
     void changed( const QString & groupAddress, const QString & caller );
 
+    /**
+     * Signals that the config changed
+     */
+    void configChanged();
+
 protected:
     // consts added to avoid a copy-and-paste of internalDocument
     void parse() const;

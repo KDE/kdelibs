@@ -572,6 +572,7 @@ void KBookmarkManager::notifyConfigChanged() // DBUS call
     kDebug() << "reloaded bookmark config!";
     KBookmarkSettings::self()->readSettings();
     parse(); // reload, and thusly recreate the menus
+    emit configChanged();
 }
 
 void KBookmarkManager::notifyChanged( const QString &groupAddress, const QDBusMessage &msg ) // DBUS call
