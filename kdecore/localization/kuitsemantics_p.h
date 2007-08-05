@@ -66,6 +66,9 @@ class KuitSemantics
 
     private:
 
+    KuitSemantics (const KuitSemantics &t);
+    KuitSemantics &operator= (const KuitSemantics &t);
+
     KuitSemanticsPrivate *d;
 };
 

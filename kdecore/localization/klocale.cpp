@@ -499,9 +499,11 @@ bool KLocalePrivate::setLanguage(const QStringList & languages)
          && isApplicationTranslatedInto( language ) )
       list.append( language );
 
-  if ( list.isEmpty() ) {
-	// user picked no language, so we assume he/she speaks English.
-	list.append( KLocale::defaultLanguage() );
+  if ( !list.contains( KLocale::defaultLanguage() ) ) {
+    // English should always be added as final possibility; this is important
+    // for proper initialization of message text post-processors which are
+    // needed for English too, like semantic to visual formatting, etc.
+    list.append( KLocale::defaultLanguage() );
   }
   language = list.first(); // keep this for shortcut evaluations
 

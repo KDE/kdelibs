@@ -110,6 +110,9 @@ class KTranslit
 
     private:
 
+    KTranslit (const KTranslit &t);
+    KTranslit &operator= (const KTranslit &t);
+
     KTranslitPrivate *d;
 };
 
@@ -141,6 +144,9 @@ class KTranslitSerbian : public KTranslit
     ~KTranslitSerbian ();
 
     private:
+
+    KTranslitSerbian (const KTranslitSerbian &t);
+    KTranslitSerbian &operator= (const KTranslitSerbian &t);
 
     KTranslitSerbianPrivate *d;
 };
