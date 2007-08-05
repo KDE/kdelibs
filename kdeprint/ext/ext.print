@@ -2,6 +2,7 @@
 PrintSystem=ext
 Comment=Print Through an External Program (generic)
 Comment[af]=Druk Deur 'n Eksterne Program (generies)
+Comment[ar]=اطبع من خلال برنامج خارجي (شائع)
 Comment[be]=Друкаваць праз вонкавую праграму (прадвызначана)
 Comment[ca]=Impressió mitjançant un programa extern (genèric)
 Comment[cs]=Tisk pomocí externího programu (obecné)

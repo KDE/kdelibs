@@ -2,6 +2,7 @@
 PrintSystem=lpr
 Comment=LPR/LPRng Print System
 Comment[af]= lpr /Lprng Druk Stelsel
+Comment[ar]=نظام طباعة LPR/LPRng
 Comment[be]=Сістэма друку LPR/LPRng
 Comment[br]=Reizhiad moulañ LPR/LPRng
 Comment[ca]=Sistema d'impressió LPR/LPRng

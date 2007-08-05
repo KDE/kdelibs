@@ -2,6 +2,7 @@
 PrintSystem=rlpr
 Comment=RLPR Environment (Remote LPD servers)
 Comment[af]=Rlpr Omgewing (Afgeleë Lpd bedieners)
+Comment[ar]=بيئة RLPR (خادمات LPD عن بعد)
 Comment[be]=Асяроддзе RLPR (аддаленыя серверы LPD)
 Comment[ca]=Entorn RLPR (servidors LPD remots)
 Comment[cs]=Prostředí RLPR (Vzdálené LPD servery)

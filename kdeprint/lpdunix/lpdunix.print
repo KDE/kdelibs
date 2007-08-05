@@ -2,6 +2,7 @@
 PrintSystem=lpdunix
 Comment=Generic UNIX LPD Print System (default)
 Comment[af]=Generies Unix Lpd Druk Stelsel (verstek)
+Comment[ar]=نظام طباعة LPD العام ليونيكس (افتراضي)
 Comment[be]=Звычайная сістэма друку UNIX LPD (прадвызначана)
 Comment[ca]=Sistema d'impressió genèric LPD de Unix (predeterminat)
 Comment[cs]=Obecný UNIXový tiskový systém LPD (implicitní)

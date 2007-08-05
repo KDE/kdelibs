@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KDEDModule
 Comment=KDED Module
+Comment[ar]=وحدة KDED
 Comment[be]=Модуль KDED
 Comment[br]=Mollad KDED
 Comment[ca]=Mòdul per a KDED
