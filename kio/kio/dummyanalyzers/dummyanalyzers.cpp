@@ -80,6 +80,7 @@ public:
     DummySaxAnalyzer() {}
     const char* name() const { return "DummySaxAnalyzer"; }
     void startAnalysis(AnalysisResult*) {}
+    void endAnalysis(bool /*complete*/) {}
     bool isReadyWithStream() { return true; }
 };
 class STRIGI_PLUGIN_API DummySaxAnalyzerFactory : public StreamSaxAnalyzerFactory {
@@ -96,6 +97,7 @@ public:
     DummyLineAnalyzer() {}
     const char* name() const { return "DummyLineAnalyzer"; }
     void startAnalysis(AnalysisResult*) {}
+    void endAnalysis(bool /*complete*/) {}
     void handleLine(const char*, uint32_t) {}
     bool isReadyWithStream() { return true; }
 };
@@ -113,6 +115,7 @@ public:
     DummyEventAnalyzer() {}
     const char* name() const { return "DummyEventAnalyzer"; }
     void startAnalysis(AnalysisResult*) {}
+    void endAnalysis(bool /*complete*/) {}
     void handleData(const char*, uint32_t) {}
     bool isReadyWithStream() { return true; }
 };
