@@ -3790,7 +3790,7 @@ bool HTTPProtocol::sendBody()
   // m_bufPOST will NOT be empty iff authentication was required before posting
   // the data OR a re-connect is requested from ::readHeader because the
   // connection was lost for some reason.
-  if ( !m_bufPOST.isNull() )
+  if ( !m_bufPOST.isEmpty() )
   {
     kDebug(7113) << "(" << m_pid << ") POST'ing saved data...";
 
