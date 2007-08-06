@@ -492,7 +492,7 @@ bool Scriptface::getOwnPropertySlot (ExecState *exec, const Identifier& property
     return getStaticValueSlot<Scriptface, JSObject>(exec, &ScriptfaceTable, this, propertyName, slot);
 }
 
-JSValue *Scriptface::getValueProperty (ExecState */*exec*/, int token) const
+JSValue *Scriptface::getValueProperty (ExecState * /*exec*/, int token) const
 {
     switch (token) {
         default:
@@ -506,7 +506,7 @@ void Scriptface::put (ExecState *exec, const Identifier &propertyName, JSValue *
     lookupPut<Scriptface, JSObject>(exec, propertyName, value, attr, &ScriptfaceTable, this);
 }
 
-void Scriptface::putValueProperty (ExecState */*exec*/, int token, JSValue */*value*/, int /*attr*/)
+void Scriptface::putValueProperty (ExecState * /*exec*/, int token, JSValue * /*value*/, int /*attr*/)
 {
     switch(token) {
         default:
