@@ -21,6 +21,8 @@
 
 
 // CHANGES:
+// Aug 6,  2007 - KDirWatch::WatchModes support complete, flags work fine also
+// when using FAMD (Flavio Castelli)
 // Aug 3,  2007 - Handled KDirWatch::WatchModes flags when using inotify, now
 // recursive and file monitoring modes are implemented (Flavio Castelli)
 // Jul 30, 2007 - Substituted addEntry boolean params with KDirWatch::WatchModes
@@ -296,7 +298,7 @@ void KDirWatchPrivate::inotifyEventReceived()
                 emitEvent (e, Created, e->path+'/'+path);
               
               QString msg = QString::number(counter);
-              msg += " instances are monitoring the new ";
+              msg += " instance/s monitoring the new ";
               msg += (isDir ? "dir " : "file ") + tpath;
               kDebug(7001) << msg;
             }
@@ -626,14 +628,14 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 
   e->path = path;
   if (sub_entry)
-     e->m_entries.append(sub_entry);
+    e->m_entries.append(sub_entry);
   else
     e->addClient(instance, watchModes);
 
   kDebug(7001) << "Added " << (e->isDir ? "Dir ":"File ") << path
-     << (e->m_status == NonExistent ? " NotExisting" : "")
-     << (sub_entry ? QString(" for %1").arg(sub_entry->path) : QString(""))
-     << (instance ? QString(" [%1]").arg(instance->objectName()) : QString(""));
+    << (e->m_status == NonExistent ? " NotExisting" : "")
+    << (sub_entry ? QString(" for %1").arg(sub_entry->path) : QString(""))
+    << (instance ? QString(" [%1]").arg(instance->objectName()) : QString(""));
 
   // now setup the notification method
   e->m_mode = UnknownMode;
@@ -1235,25 +1237,53 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
       case FAMCreated: {
           // check for creation of a directory we have to watch
-          foreach(Entry *sub_entry, e->m_entries) {
-            if (sub_entry->path == e->path + '/' + (const char *)fe->filename
-                && sub_entry->isDir) {
-              QString path = e->path;
-              removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
-              sub_entry->m_status = Normal;
-              if (!useFAM(sub_entry)) {
+        QByteArray tpath = QFile::encodeName( e->path + '/' +
+            (const char *)fe->filename);
+        
+        Entry* sub_entry = 0;
+        foreach(sub_entry, e->m_entries)
+          if (sub_entry->path == tpath) break;
+
+        if (sub_entry && sub_entry->isDir) {
+          QString path = e->path;
+          removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
+          sub_entry->m_status = Normal;
+          if (!useFAM(sub_entry)) {
 #ifdef HAVE_SYS_INOTIFY_H
-                if (!useINotify(sub_entry ))
+            if (!useINotify(sub_entry ))
 #endif
-                  useStat(sub_entry);
-              }
-              break;
+              useStat(sub_entry);
+          }
+        }
+        else if ((sub_entry == 0) && (!e->m_clients.empty())) {
+          Client* client = 0;
+
+          KDE_struct_stat stat_buf;
+          KDE_stat(tpath, &stat_buf);
+          bool isDir = S_ISDIR(stat_buf.st_mode);
+
+          KDirWatch::WatchModes flag;
+          flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
+
+          int counter = 0;
+          Q_FOREACH(client, e->m_clients) {
+            if (client->m_watchModes & flag) {
+              addEntry (client->instance, tpath, 0, isDir,
+                        client->m_watchModes);
+              counter++;
             }
           }
-          break;
 
+          if (counter != 0)
+            emitEvent (e, Created, tpath);
+
+          QString msg = QString::number(counter);
+          msg += " instance/s monitoring the new ";
+          msg += (isDir ? "dir " : "file ") + tpath;
+          kDebug(7001) << msg;
         }
-
+      }
+        break;
       default:
         break;
     }
@@ -1349,15 +1379,8 @@ KDirWatch::~KDirWatch()
   }
 }
 
-
-// TODO: add watchFiles/recursive support
 void KDirWatch::addDir( const QString& _path, WatchModes watchModes)
 {
-#ifndef HAVE_SYS_INOTIFY_H
-  if (watchModes != WatchDirOnly) {
-    kDebug(7001) << "addDir - actually recursive/watch files modes are supported only with inotify";
-  }
-#endif
   if (d) d->addEntry(this, _path, 0, true, watchModes);
 }
 
