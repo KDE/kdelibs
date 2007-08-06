@@ -222,20 +222,7 @@ void KBookmarkManager::parse() const
     else
     {
         QString mainTag = docElem.tagName();
-        if ( mainTag == "BOOKMARKS" )
-        {
-            kWarning() << "Old style bookmarks found. Calling convertToXBEL.";
-            docElem.setTagName("xbel");
-            if ( docElem.hasAttribute( "HIDE_NSBK" ) ) // non standard either, but we need it
-            {
-                docElem.setAttribute( "hide_nsbk", docElem.attribute( "HIDE_NSBK" ) == "1" ? "yes" : "no" );
-                docElem.removeAttribute( "HIDE_NSBK" );
-            }
-
-            convertToXBEL( docElem );
-            save();
-        }
-        else if ( mainTag != "xbel" )
+        if ( mainTag != "xbel" )
             kWarning() << "KBookmarkManager::parse : unknown main tag " << mainTag;
 
         QDomNode n = d->m_doc.documentElement().previousSibling();
@@ -254,66 +241,6 @@ void KBookmarkManager::parse() const
     if ( !s_bk_map )
         s_bk_map = new KBookmarkMap( const_cast<KBookmarkManager*>( this ) );
     s_bk_map->update();
-}
-
-void KBookmarkManager::convertToXBEL( QDomElement & group )
-{
-    QDomNode n = group.firstChild();
-    while( !n.isNull() )
-    {
-        QDomElement e = n.toElement();
-        if ( !e.isNull() )
-            if ( e.tagName() == "TEXT" )
-            {
-                e.setTagName("title");
-            }
-            else if ( e.tagName() == "SEPARATOR" )
-            {
-                e.setTagName("separator"); // so close...
-            }
-            else if ( e.tagName() == "GROUP" )
-            {
-                e.setTagName("folder");
-                convertAttribute(e, "ICON","icon"); // non standard, but we need it
-                if ( e.hasAttribute( "TOOLBAR" ) ) // non standard either, but we need it
-                {
-                    e.setAttribute( "toolbar", e.attribute( "TOOLBAR" ) == "1" ? "yes" : "no" );
-                    e.removeAttribute( "TOOLBAR" );
-                }
-
-                convertAttribute(e, "NETSCAPEINFO","netscapeinfo"); // idem
-                bool open = (e.attribute("OPEN") == "1");
-                e.removeAttribute("OPEN");
-                e.setAttribute("folded", open ? "no" : "yes");
-                convertToXBEL( e );
-            }
-            else
-                if ( e.tagName() == "BOOKMARK" )
-                {
-                    e.setTagName("bookmark"); // so much difference :-)
-                    convertAttribute(e, "ICON","icon"); // non standard, but we need it
-                    convertAttribute(e, "NETSCAPEINFO","netscapeinfo"); // idem
-                    convertAttribute(e, "URL","href");
-                    QString text = e.text();
-                    while ( !e.firstChild().isNull() ) // clean up the old contained text
-                        e.removeChild(e.firstChild());
-                    QDomElement titleElem = e.ownerDocument().createElement("title");
-                    e.appendChild( titleElem ); // should be the only child anyway
-                    titleElem.appendChild( e.ownerDocument().createTextNode( text ) );
-                }
-                else
-                    kWarning(7043) << "Unknown tag " << e.tagName();
-        n = n.nextSibling();
-    }
-}
-
-void KBookmarkManager::convertAttribute( QDomElement elem, const QString & oldName, const QString & newName )
-{
-    if ( elem.hasAttribute( oldName ) )
-    {
-        elem.setAttribute( newName, elem.attribute( oldName ) );
-        elem.removeAttribute( oldName );
-    }
 }
 
 bool KBookmarkManager::save( bool toolbarCache ) const
@@ -425,7 +352,7 @@ KBookmarkGroup KBookmarkManager::toolbar()
         return KBookmarkGroup(root().findToolbar());
 }
 
-KBookmark KBookmarkManager::findByAddress( const QString & address, bool tolerant )
+KBookmark KBookmarkManager::findByAddress( const QString & address )
 {
     //kDebug(7043) << "KBookmarkManager::findByAddress " << address;
     KBookmark result = root();
@@ -445,18 +372,11 @@ KBookmark KBookmarkManager::findByAddress( const QString & address, bool toleran
          //kWarning() << i;
        }
        it++;
-       int shouldBeGroup = !bk.isGroup() && (it != addresses.end());
-       if ( tolerant && ( bk.isNull() || shouldBeGroup ) ) {
-          if (!lbk.isNull()) result = lbk;
-          //kWarning() << "break";
-          break;
-       }
        //kWarning() << "found section";
        result = bk;
     }
     if (result.isNull()) {
        kWarning() << "KBookmarkManager::findByAddress: couldn't find item " << address;
-       Q_ASSERT(!tolerant);
     }
     //kWarning() << "found " << result.address();
     return result;
@@ -532,6 +452,11 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
         parentBookmark.addBookmark( this, uniqueTitle, KUrl( url ));
 
     return parentBookmark;
+}
+
+void KBookmarkManager::emitChanged()
+{
+    emitChanged(root());
 }
 
 

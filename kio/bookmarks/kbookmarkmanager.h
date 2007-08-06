@@ -92,16 +92,6 @@ public:
     void setUpdate( bool update );
 
     /**
-     * Save the bookmarks to an XML file on disk.
-     * You should use emitChanged() instead of this function, it saves
-     * and notifies everyone that the file has changed.
-     * @param toolbarCache iff true save a cache of the toolbar folder, too
-     * @return true if saving was successful
-     */
-    bool save( bool toolbarCache = true ) const;
-    //TODO protected
-
-    /**
      * Save the bookmarks to the given XML file on disk.
      * @param filename full path to the desired bookmarks file location
      * @param toolbarCache iff true save a cache of the toolbar folder, too
@@ -157,14 +147,31 @@ public:
      * @param tolerate when true tries to find the most tolerable bookmark position
      * @see KBookmark::address
      */
-    KBookmark findByAddress( const QString & address, bool tolerate = false );
-    //TODO tolerate needed?
+    KBookmark findByAddress( const QString & address);
+
+
+    /**
+     * Saves the bookmark file and notifies everyone.
+     * 
+     **/
+    void emitChanged();
 
     /**
      * Saves the bookmark file and notifies everyone.
      * @param group the parent of all changed bookmarks
      */
     void emitChanged( const KBookmarkGroup & group );
+
+    /**
+     * Save the bookmarks to an XML file on disk.
+     * You should use emitChanged() instead of this function, it saves
+     * and notifies everyone that the file has changed.
+     * Only use this if you don't want the emitChanged signal.
+     * @param toolbarCache iff true save a cache of the toolbar folder, too
+     * @return true if saving was successful
+     */
+    bool save( bool toolbarCache = true ) const;
+
 
     void emitConfigChanged();
 
@@ -226,6 +233,9 @@ public Q_SLOTS:
 
     /**
      * Reparse the whole bookmarks file and notify about the change
+     * Doesn't send signal over DBUS to the other Bookmark Managers
+     * You probably want to use emitChanged()
+     *
      */
     void notifyCompleteChange( const QString &caller );
 
@@ -234,22 +244,34 @@ public Q_SLOTS:
      * @see KBookmark::address()
      * Called by the process that saved the file after
      * a small change (new bookmark or new folder).
+     * Does not send signal over DBUS to the other Bookmark Managers
+     * You probably want to call emitChanged()
      */
     void notifyChanged( const QString &groupAddress, const QDBusMessage &msg );
 
     void notifyConfigChanged();
 
 Q_SIGNALS:
+    /**
+     * Signal send over DBUS
+     */
     void bookmarkCompleteChange( QString caller );
 
+    /**
+     * Signals send over DBUS
+     */
     void bookmarksChanged( QString groupAddress );
 
+    /**
+     * Signals send over DBUS
+     */
     void bookmarkConfigChanged();
 
     /**
      * Signals that the group (or any of its children) with the address
      * @p groupAddress (e.g. "/4/5")
      * has been modified by the caller @p caller.
+     * connect to this
      */
     void changed( const QString & groupAddress, const QString & caller );
 
@@ -261,9 +283,6 @@ Q_SIGNALS:
 protected:
     // consts added to avoid a copy-and-paste of internalDocument
     void parse() const;
-    void importDesktopFiles();
-    static void convertToXBEL( QDomElement & group ); //TODO used to convert pre KDE 2.1 bookmarks, remove?
-    static void convertAttribute( QDomElement elem, const QString & oldName, const QString & newName );
 
 private:
     /**
