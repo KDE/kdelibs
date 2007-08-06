@@ -107,7 +107,7 @@ class KIO_EXPORT KDirWatch : public QObject
     * the same flags specified in @p watchModes .
     *
     * @param path the path to watch
-    * @param watchModes watch modes - NOT IMPLEMENTED YET
+    * @param watchModes watch modes
     *
     * @sa  KDirWatch::WatchMode
     */
