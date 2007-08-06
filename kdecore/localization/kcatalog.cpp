@@ -59,8 +59,7 @@ KCatalog::KCatalog(const QString & name, const QString & language )
   : d( new KCatalogPrivate )
 {
   // Set locales only once.
-  if (! KCatalogPrivate::localeSet)
-  {
+  if (! KCatalogPrivate::localeSet) {
     setlocale(LC_ALL, "");
     KCatalogPrivate::localeSet = 1;
   }
@@ -87,9 +86,7 @@ KCatalog::KCatalog(const KCatalog & rhs)
 
 KCatalog & KCatalog::operator=(const KCatalog & rhs)
 {
-  d->name      = rhs.d->name;
-  d->language  = rhs.d->language;
-  d->localeDir = rhs.d->localeDir;
+  *d = *rhs.d;
 
   // Update bindings.
   // (Sometimes Gettext picks up wrong locale directory if bindings are not
@@ -129,8 +126,8 @@ QString KCatalog::localeDir() const
 
 void KCatalogPrivate::changeBindings () const
 {
-  if (language != currentLanguage)
-  {
+  if (language != currentLanguage) {
+
     currentLanguage = language;
 
     // Point Gettext to new language.
@@ -173,4 +170,34 @@ QString KCatalog::translate(const char * msgctxt, const char * msgid,
 {
   d->changeBindings();
   return QString::fromUtf8(dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n));
+}
+
+QString KCatalog::translateStrict(const char * msgid) const
+{
+  d->changeBindings();
+  const char *msgstr = dgettext(d->name, msgid);
+  return msgstr != msgid ? QString::fromUtf8(msgstr) : QString();
+}
+
+QString KCatalog::translateStrict(const char * msgctxt, const char * msgid) const
+{
+  d->changeBindings();
+  const char *msgstr = dpgettext_expr(d->name, msgctxt, msgid);
+  return msgstr != msgid ? QString::fromUtf8(msgstr) : QString();
+}
+
+QString KCatalog::translateStrict(const char * msgid, const char * msgid_plural,
+                                  unsigned long n) const
+{
+  d->changeBindings();
+  const char *msgstr = dngettext(d->name, msgid, msgid_plural, n);
+  return msgstr != msgid && msgstr != msgid_plural ? QString::fromUtf8(msgstr) : QString();
+}
+
+QString KCatalog::translateStrict(const char * msgctxt, const char * msgid,
+                                  const char * msgid_plural, unsigned long n) const
+{
+  d->changeBindings();
+  const char *msgstr = dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n);
+  return msgstr != msgid && msgstr != msgid_plural ? QString::fromUtf8(msgstr) : QString();
 }

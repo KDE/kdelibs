@@ -144,6 +144,64 @@ public:
   QString translate( const char * msgctxt, const char * msgid,
                      const char * msgid_plural, unsigned long n ) const;
 
+  /**
+   * Retrieves a translation of the specified message id,
+   * returning empty if the translation was not found.
+   *
+   * Do not pass 0 or "" strings as message id.
+   *
+   * @param msgid The message id
+   *
+   * @return The translated message, or QString() if not found
+   */
+  QString translateStrict( const char * msgid ) const;
+
+  /**
+   * Retrieves a translation of the specified message id with given context,
+   * returning empty if the translation was not found.
+   *
+   * Do not pass 0 or "" strings as message id or context.
+   *
+   * @param msgctxt The context
+   * @param msgid The message id
+   *
+   * @return The translated message, or QString() if not found
+   */
+  QString translateStrict( const char * msgctxt, const char * msgid ) const;
+
+  /**
+   * Retrieves a proper plural form of translation for the specified English
+   * singular and plural message ids,
+   * returning empty if the translation was not found.
+   *
+   * Do not pass 0 or "" strings as message ids.
+   *
+   * @param msgid The singular message id
+   * @param msgid_plural The plural message id
+   * @param n The number to which the plural form applies
+   *
+   * @return The translated message, or QString() if not found
+   */
+  QString translateStrict( const char * msgid, const char * msgid_plural,
+                           unsigned long n ) const;
+
+  /**
+   * Retrieves a proper plural form of translation for the specified English
+   * singular and plural message ids, with given context,
+   * returning empty if the translation was not found.
+   *
+   * Do not pass 0 or "" strings as message ids or context.
+   *
+   * @param msgctxt The context
+   * @param msgid The singular message id
+   * @param msgid_plural The plural message id
+   * @param n The number to which the plural form applies
+   *
+   * @return The translated message, or QString() if not found
+   */
+  QString translateStrict( const char * msgctxt, const char * msgid,
+                           const char * msgid_plural, unsigned long n ) const;
+
 private:
   KCatalogPrivate* const d;
 };

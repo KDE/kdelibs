@@ -714,15 +714,15 @@ void KLocalePrivate::translate_priv(const char *msgctxt,
 
     QString text;
     if ( msgctxt != NULL && msgid_plural != NULL )
-        text = (*it).translate( msgctxt, msgid, msgid_plural, n );
+        text = (*it).translateStrict( msgctxt, msgid, msgid_plural, n );
     else if ( msgid_plural != NULL )
-        text = (*it).translate( msgid, msgid_plural, n );
+        text = (*it).translateStrict( msgid, msgid_plural, n );
     else if ( msgctxt != NULL )
-        text = (*it).translate( msgctxt, msgid );
+        text = (*it).translateStrict( msgctxt, msgid );
     else
-        text = (*it).translate( msgid );
+        text = (*it).translateStrict( msgid );
 
-    if ( text != fallback ) {
+    if ( !text.isEmpty() ) {
       // we found it
       if ( language )
         *language = (*it).language();
