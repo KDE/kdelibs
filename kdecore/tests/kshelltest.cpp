@@ -58,9 +58,19 @@ KShellTest::joinArgs()
     QCOMPARE(KShell::joinArgs(list), QString("this is a test"));
     list.clear();
 
+#ifdef Q_OS_WIN
+    list << "this" << "is" << "with" << "a space";
+    QCOMPARE(KShell::joinArgs(list), QString("this is with \"a space\""));
+    list.clear();
+
+    list << "fds\\\"" << "\"asdf\"" << "with\\" << "\\\\" << "\"a space\\\"" << "as df\\";
+    QCOMPARE(KShell::joinArgs(list), QString("fds\\\\\\\" \\\"asdf\\\" with\\ \\\\ \"\\\"a space\\\\\\\"\" \"as df\"\\"));
+    list.clear();
+#else
     list << "this" << "is" << "with" << "a space";
     QCOMPARE(KShell::joinArgs(list), QString("this is with 'a space'"));
     list.clear();
+#endif
 }
 
 static QString sj(const QString& str, KShell::Options flags, KShell::Errors* ret)
@@ -73,6 +83,40 @@ KShellTest::splitJoin()
 {
     KShell::Errors err = KShell::NoError;
 
+#ifdef Q_OS_WIN
+    QCOMPARE(sj("\"~sulli\" 'text' 'jo'\"jo\" $'crap'", KShell::NoOptions, &err),
+             QString("\"~sulli\" \"'text'\" \"'jo'jo\" \"$'crap'\""));
+    QVERIFY(err == KShell::NoError);
+
+    QCOMPARE(sj(" ha\\ lo ", KShell::NoOptions, &err),
+             QString("ha\\ lo"));
+    QVERIFY(err == KShell::NoError);
+
+    QCOMPARE(sj("say \" error", KShell::NoOptions, &err),
+             QString());
+    QVERIFY(err == KShell::BadQuoting);
+
+    QCOMPARE(sj("no \" error\"", KShell::NoOptions, &err),
+             QString("no \" error\""));
+    QVERIFY(err == KShell::NoError);
+
+    QCOMPARE(sj("say \" still error", KShell::NoOptions, &err),
+             QString());
+    QVERIFY(err == KShell::BadQuoting);
+
+    QCOMPARE(sj("say `echo no error(", KShell::NoOptions, &err),
+             QString("say \"`echo\" no \"error(\""));
+    QVERIFY(err == KShell::NoError);
+
+    QCOMPARE(sj("BLA;asdf sdfess d", KShell::NoOptions, &err), 
+             QString("\"BLA;asdf\" sdfess d"));
+    QVERIFY(err == KShell::NoError);
+
+    QCOMPARE(sj("B\"L\"A&sdf FOO~bar sdf wer ", KShell::NoOptions, &err),
+             QString("\"BLA&sdf\" \"FOO~bar\" sdf wer"));
+    QVERIFY(err == KShell::NoError);
+
+#else
     QCOMPARE(sj("\"~qU4rK\" 'text' 'jo'\"jo\" $'crap' $'\\\\\\'\\e\\x21' ha\\ lo \\a", KShell::NoOptions, &err),
              QString("~qU4rK text jojo crap '\\'\\''\x1b!' 'ha lo' a"));
     QVERIFY(err == KShell::NoError);
@@ -100,6 +144,7 @@ KShellTest::splitJoin()
     QCOMPARE(sj("~qU4rK ~" + KUser().loginName(), KShell::TildeExpand, &err),
              QString("~qU4rK ") + QDir::homePath());
     QVERIFY(err == KShell::NoError);
+#endif
 }
 
 void
@@ -107,6 +152,19 @@ KShellTest::abortOnMeta()
 {
     KShell::Errors err1 = KShell::NoError, err2 = KShell::NoError;
 
+#ifdef Q_OS_WIN
+    QVERIFY(KShell::splitArgs("BLA & asdf sdfess d", KShell::AbortOnMeta, &err1).isEmpty());
+    QVERIFY(err1 == KShell::FoundMeta);
+
+    QCOMPARE(sj("\"BLA|asdf\" sdfess d", KShell::AbortOnMeta, &err1),
+             QString("\"BLA|asdf\" sdfess d"));
+    QVERIFY(err1 == KShell::NoError);
+
+    QCOMPARE(sj("B\"L\"A\"|\"sdf \"FOO | bar\" sdf wer", KShell::AbortOnMeta, &err1),
+             QString("\"BLA|sdf\" \"FOO | bar\" sdf wer"));
+    QVERIFY(err1 == KShell::NoError);
+
+#else
     QCOMPARE(sj("say \" error", KShell::NoOptions, &err1),
              QString());
     QVERIFY(err1 != KShell::NoError);
@@ -126,6 +184,7 @@ KShellTest::abortOnMeta()
     QVERIFY(sj("B\"L\"A=say FOO=bar echo meta", KShell::NoOptions, &err1) ==
             sj("B\"L\"A=say FOO=bar echo meta", KShell::AbortOnMeta, &err2));
     QVERIFY(err1 == err2);
+#endif
 }
 
 QTEST_KDEMAIN_CORE(KShellTest)
