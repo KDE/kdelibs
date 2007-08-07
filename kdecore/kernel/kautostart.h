@@ -39,7 +39,7 @@ class QStringList;
  *
  * @code
  * KAutostart autostart; // without an entryName arg, gets name from KAboutData
- * autostart.setAutoStart(true); // will now start up when the user logs in
+ * autostart.setAutostarts(true); // will now start up when the user logs in
  *
  * // set the value in our configuration settings to reflect whether or not
  * // we will actually start up on log in
