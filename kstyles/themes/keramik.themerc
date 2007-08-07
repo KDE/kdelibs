@@ -1,5 +1,6 @@
 [Misc]
 Name=Keramik
+Name[ar]=كيراميك
 Name[be]=Кераміка
 Name[cs]=Keramika
 Name[csb]=Keramikòwi
@@ -27,6 +28,7 @@ Name[x-test]=xxKeramikxx
 ConfigPage=kstyle_keramik_config
 Comment=A style using alphablending
 Comment[af]='n standaard styl wat alfa vermenging gebruik
+Comment[ar]=أسلوب يستعمل المزج الشفاف
 Comment[ca]=Un estil que usa barreja alfa
 Comment[cs]=Styl používající alfa kanál
 Comment[csb]=Sztél brëkùjący półprzezérnotã

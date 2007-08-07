@@ -1,5 +1,6 @@
 [aa]
 Name=Afar
+Name[ar]=عفرية
 Name[be]=Афарская
 Name[ca]=Àfar
 Name[csb]=Afarsczi
@@ -39,7 +40,7 @@ Name[zh_HK]=阿發爾
 Name[zh_TW]=阿發爾
 [ab]
 Name=Abkhazian
-Name[ar]=أبخازي
+Name[ar]=أبخازية
 Name[be]=Абхазская
 Name[br]=Abkhazieg
 Name[ca]=Àzeri
@@ -98,7 +99,7 @@ Name[zh_HK]=阿布哈西亞語
 Name[zh_TW]=阿布哈西亞語
 [ae]
 Name=Avestan
-Name[ar]=أيراني أفستاني
+Name[ar]=أفستانية
 Name[be]=Авестанская
 Name[cs]=Avestánský
 Name[csb]=Awestańsczi (irańsczi)
@@ -149,7 +150,7 @@ Name[zh_HK]=阿維斯陀語
 Name[zh_TW]=阿維斯陀語
 [af]
 Name=Afrikaans
-Name[ar]=الأفريكانس
+Name[ar]=أفريكانس
 Name[be]=Афрыканская
 Name[cs]=Afrikánský
 Name[csb]=Afrikanersczi
@@ -198,7 +199,7 @@ Name[zh_HK]=南非荷蘭語
 Name[zh_TW]=南非荷蘭語
 [am]
 Name=Amharic
-Name[ar]=أمهري
+Name[ar]=أمهرية
 Name[be]=Амхарская
 Name[br]=Amhareg
 Name[ca]=Amhàric
@@ -257,7 +258,7 @@ Name[zh_TW]=衣索比亞官方語
 [ar]
 Name=Arabic
 Name[af]=Arabies
-Name[ar]=العربية
+Name[ar]=عربية
 Name[be]=Арабская
 Name[br]=Arabeg
 Name[ca]=Àrab
@@ -322,7 +323,7 @@ Name[zh_HK]=阿拉伯語
 Name[zh_TW]=阿拉伯語
 [as]
 Name=Assamese
-Name[ar]=هندي أساميزي 
+Name[ar]=أسامية
 Name[be]=Асамская
 Name[ca]=Assamès
 Name[cs]=Asamský
@@ -377,6 +378,7 @@ Name[zh_HK]=阿薩姆語
 Name[zh_TW]=阿薩姆語
 [ay]
 Name=Aymara
+Name[ar]=أيمرا
 Name[be]=Аймарская
 Name[cy]=Aimareg
 Name[de]=Aimara
@@ -418,7 +420,7 @@ Name[zh_HK]=愛瑪拉語
 Name[zh_TW]=愛瑪拉語
 [az]
 Name=Azerbaijani
-Name[ar]=الأذربيجانية
+Name[ar]=أذربيجانية
 Name[be]=Азербайджанская
 Name[br]=Azerbaidjanek
 Name[ca]=Àzeri
@@ -483,7 +485,7 @@ Name[zh_HK]=亞塞拜彊語
 Name[zh_TW]=亞塞拜然語
 [ba]
 Name=Bashkir
-Name[ar]=بشكير
+Name[ar]=بشكيرية
 Name[be]=Башкірская
 Name[ca]=Baixkir
 Name[cs]=Baškirský
@@ -534,7 +536,7 @@ Name[zh_HK]=Bashkir語
 Name[zh_TW]=Bashkir語
 [be]
 Name=Belarusian
-Name[ar]=بلاروسي
+Name[ar]=بلاروسية
 Name[be]=Беларуская
 Name[br]=Belarusieg
 Name[ca]=Bielorús
@@ -600,7 +602,7 @@ Name[zh_TW]=白俄羅斯語
 [bg]
 Name=Bulgarian
 Name[af]=Bulgaars
-Name[ar]=البلغارية
+Name[ar]=بلغارية
 Name[be]=Балгарская
 Name[br]=Bulgareg
 Name[ca]=Búlgar
@@ -665,7 +667,7 @@ Name[zh_HK]=保加利亞語
 Name[zh_TW]=保加利亞語
 [bh]
 Name=Bihari
-Name[ar]=بهاري
+Name[ar]=بهارية
 Name[be]=Біхарская
 Name[cy]=Bihareg
 Name[de]=Biharisch
@@ -734,7 +736,7 @@ Name[zh_HK]=Bislama語
 Name[zh_TW]=Bislama語
 [bn]
 Name=Bengali
-Name[ar]=بنغالي
+Name[ar]=بنغالية
 Name[be]=Бенгальская
 Name[br]=Bangali
 Name[ca]=Bengalí
@@ -783,7 +785,7 @@ Name[zh_HK]=孟加拉語
 Name[zh_TW]=孟加拉語
 [bo]
 Name=Tibetan
-Name[ar]=تبتي
+Name[ar]=تبتية
 Name[be]=Тыбецкая
 Name[br]=Yezh an Tibet
 Name[ca]=Tibetà
@@ -847,7 +849,7 @@ Name[zh_HK]=藏語
 Name[zh_TW]=藏語
 [br]
 Name=Breton
-Name[ar]=البريتون
+Name[ar]=بريتونية
 Name[be]=Брэтонская
 Name[br]=Brezhoneg
 Name[ca]=Bretó
@@ -910,7 +912,7 @@ Name[zh_TW]=不列塔尼語
 [bs]
 Name=Bosnian
 Name[af]=Bosnies
-Name[ar]=البوسنية
+Name[ar]=بوسنية
 Name[be]=Баснійская
 Name[br]=Bosnieg
 Name[ca]=Bosnià
@@ -976,7 +978,7 @@ Name[zh_TW]=波士尼亞語
 [ca]
 Name=Catalan
 Name[af]=Katelaans
-Name[ar]=الكاتالونية
+Name[ar]=كتلونية
 Name[be]=Каталонская
 Name[br]=Katalaneg
 Name[ca]=Català
@@ -1038,7 +1040,7 @@ Name[zh_HK]=嘉泰羅尼亞語
 Name[zh_TW]=嘉泰羅尼亞語
 [ce]
 Name=Chechen
-Name[ar]=شيشاني
+Name[ar]=شيشانية
 Name[be]=Чачэнская
 Name[br]=Tchetcheneg
 Name[ca]=Txetxè
@@ -1195,7 +1197,7 @@ Name[zh_TW]=科西嘉語
 [cs]
 Name=Czech
 Name[af]=Tsjeggië
-Name[ar]=التشيكية
+Name[ar]=تشيكية
 Name[be]=Чэшская
 Name[br]=Tchekeg
 Name[ca]=Txec
@@ -1373,7 +1375,7 @@ Name[zh_TW]=楚瓦士語
 [cy]
 Name=Welsh
 Name[af]=Wallies
-Name[ar]=الويلزية
+Name[ar]=غالية
 Name[be]=Уэльская
 Name[br]=Kembraeg
 Name[ca]=Gal·lès
@@ -1437,7 +1439,7 @@ Name[zh_TW]=威爾斯語
 [da]
 Name=Danish
 Name[af]=Deens
-Name[ar]=الدنماركية
+Name[ar]=دنماركية
 Name[be]=Дацкая
 Name[br]=Daneg
 Name[ca]=Danès
@@ -1502,7 +1504,7 @@ Name[zh_TW]=丹麥語
 [de]
 Name=German
 Name[af]=Duits
-Name[ar]=الألمانية
+Name[ar]=ألمانية
 Name[be]=Нямецкая
 Name[br]=Alamaneg
 Name[ca]=Alemany
@@ -1568,7 +1570,7 @@ Name[zh_HK]=德語
 Name[zh_TW]=德語
 [dz]
 Name=Dzongkha
-Name[ar]=الجونغا
+Name[ar]=جونغا
 Name[be]=Цонга
 Name[cy]=Dzongkhaeg
 Name[fa]=زونگخا
@@ -1601,7 +1603,7 @@ Name[zh_TW]=Dzongkha語
 [el]
 Name=Greek
 Name[af]=Grieks
-Name[ar]=اليونانية
+Name[ar]=يونانية
 Name[be]=Грэцкая
 Name[br]=Gresianeg
 Name[ca]=Grec
@@ -1667,7 +1669,7 @@ Name[zh_TW]=希臘語
 [en]
 Name=English
 Name[af]=Engels
-Name[ar]=الإنجليزية
+Name[ar]=إنجليزية
 Name[be]=Англійская
 Name[br]=Saozneg
 Name[ca]=Anglès
@@ -1734,6 +1736,7 @@ Name[zh_TW]=英語
 [en_GB]
 Name=British English
 Name[af]=Britse Engels
+Name[ar]=إنجليزية بريطانية
 Name[be]=Англійская брытанская
 Name[br]=Saozneg eus Bro Saoz
 Name[ca]=Anglès britànic
@@ -1795,6 +1798,7 @@ Name[zh_TW]=（英式）英語
 [en_US]
 Name=American English
 Name[af]=Amerikaanse Engels
+Name[ar]=إنجليزية أمريكية
 Name[be]=Англійская амерыканская
 Name[br]=Saozneg eus SUA
 Name[ca]=Anglès americà
@@ -1854,7 +1858,7 @@ Name[zh_HK]=美式英語
 Name[zh_TW]=美語
 [eo]
 Name=Esperanto
-Name[ar]=الإسبرانتو
+Name[ar]=إسبرانتو
 Name[be]=Эсперанта
 Name[br]=Esperanteg
 Name[eu]=Esperantoa
@@ -1886,7 +1890,7 @@ Name[zh_TW]=世界語
 [es]
 Name=Spanish
 Name[af]=Spaans
-Name[ar]=الإسبانية
+Name[ar]=إسبانية
 Name[be]=Іспанская
 Name[br]=Spagnoleg
 Name[ca]=Espanyol
@@ -1953,7 +1957,7 @@ Name[zh_TW]=西班牙語
 [et]
 Name=Estonian
 Name[af]=Estonianse
-Name[ar]=الإستونية
+Name[ar]=إستونية
 Name[be]=Эстонская
 Name[br]=Estoneg
 Name[ca]=Estonià
@@ -2018,7 +2022,7 @@ Name[zh_HK]=愛沙尼亞語
 Name[zh_TW]=愛沙尼亞語
 [eu]
 Name=Basque
-Name[ar]=الباسك
+Name[ar]=باسكية
 Name[be]=Басцкая
 Name[br]=Euskareg
 Name[ca]=Basc
@@ -2082,7 +2086,7 @@ Name[zh_TW]=巴斯克語
 [fa]
 Name=Farsi (Persian)
 Name[af]=Farsi (Persies)
-Name[ar]=فارسي
+Name[ar]=فارسية
 Name[be]=Персідская
 Name[br]=Farsieg (Persieg)
 Name[ca]=Farsí (Persa)
@@ -2148,7 +2152,7 @@ Name[zh_TW]=波斯語
 [fi]
 Name=Finnish
 Name[af]=Feense
-Name[ar]=الفنلندية
+Name[ar]=فنلندية
 Name[be]=Фінская
 Name[br]=Finneg
 Name[ca]=Finès
@@ -2212,7 +2216,7 @@ Name[zh_HK]=芬蘭語
 Name[zh_TW]=芬蘭語
 [fj]
 Name=Fijian
-Name[ar]=فيجي
+Name[ar]=فيجية
 Name[be]=Фіджыйская
 Name[br]=Fidjeg
 Name[ca]=Fijià
@@ -2273,7 +2277,7 @@ Name[zh_HK]=斐濟語
 Name[zh_TW]=斐濟語
 [fo]
 Name=Faroese
-Name[ar]=فروي
+Name[ar]=فروية
 Name[be]=Фароская
 Name[br]=Faroeseg
 Name[ca]=Feroès
@@ -2333,7 +2337,7 @@ Name[zh_TW]=法羅語
 [fr]
 Name=French
 Name[af]=Franse
-Name[ar]=الفرنسية
+Name[ar]=فرنسية
 Name[be]=Французская
 Name[br]=Galleg
 Name[ca]=Francès
@@ -2399,7 +2403,7 @@ Name[zh_HK]=法語
 Name[zh_TW]=法語
 [fy]
 Name=Frisian
-Name[ar]=الفريزية
+Name[ar]=فريسية
 Name[be]=Фрысійская
 Name[br]=Frisianeg
 Name[ca]=Frisó
@@ -2463,6 +2467,7 @@ Name[zh_TW]=弗利然語
 [ga]
 Name=Irish Gaelic
 Name[af]=Ierse Gaelic
+Name[ar]=غايلية إرلاندية
 Name[be]=Ірландская гальская
 Name[br]=Iwerzhoneg eus Bro Iwerzhon
 Name[ca]=Irlandès gaèlic
@@ -2516,7 +2521,7 @@ Name[zh_CN]=爱尔兰盖尔语
 Name[zh_TW]=（愛爾蘭）蓋爾語
 [gd]
 Name=Gaelic
-Name[ar]=غالي
+Name[ar]=غايلية
 Name[be]=Гальская
 Name[br]=Iwerzhoneg
 Name[ca]=Gaèlic
@@ -2574,7 +2579,7 @@ Name[zh_HK]=蓋爾語
 Name[zh_TW]=蓋爾語
 [gl]
 Name=Galician
-Name[ar]=غالي
+Name[ar]=جلقية
 Name[be]=Галіцыйская
 Name[br]=Galiseg
 Name[ca]=Gallec
@@ -2674,7 +2679,7 @@ Name[zh_HK]=瓜拉尼語
 Name[zh_TW]=瓜拉尼語
 [gu]
 Name=Gujarati
-Name[ar]=جوجوراتي
+Name[ar]=غوجاراتي
 Name[be]=Гуяраці
 Name[br]=Gujaratieg
 Name[eo]= Guĝarata
@@ -2757,7 +2762,7 @@ Name[zh_HK]=曼島語
 Name[zh_TW]=曼島語
 [ha]
 Name=Hausa
-Name[ar]=الهاوسا
+Name[ar]=هوس
 Name[be]=Хаўса
 Name[br]=Haousa
 Name[ca]=Haussa
@@ -2795,7 +2800,7 @@ Name[zh_TW]=豪薩語
 [he]
 Name=Hebrew
 Name[af]=Hibreüs
-Name[ar]=العبرية
+Name[ar]=عبرية
 Name[be]=Габрэйская
 Name[br]=Hebreeg
 Name[ca]=Hebreu
@@ -2860,7 +2865,7 @@ Name[zh_HK]=希伯來語
 Name[zh_TW]=希伯來語
 [hi]
 Name=Hindi
-Name[ar]=هندي
+Name[ar]=هندية
 Name[be]=Хіндзі
 Name[cs]=Hindský
 Name[cy]=Hindw^
@@ -2898,7 +2903,7 @@ Name[zh_HK]=北印度語
 Name[zh_TW]=北印度語
 [ho]
 Name=Hiri Motu
-Name[ar]=الهيري-موتو
+Name[ar]=هيري موتو
 Name[be]=Хірымоту
 Name[eo]=Hiri-Motuo
 Name[fa]=هیری موتو
@@ -2937,7 +2942,7 @@ Name[zh_TW]=Hiri Motu語
 [hr]
 Name=Croatian
 Name[af]=Kroatiese
-Name[ar]=الكرواتية
+Name[ar]=كرواتية
 Name[be]=Харвацкая
 Name[br]=Kroateg
 Name[ca]=Croata
@@ -3003,6 +3008,7 @@ Name[zh_TW]=克羅埃西亞語
 [hsb]
 Name=Upper Sorbian
 Name[af]=Hoog Serbiese
+Name[ar]=صوربية مرتفعة
 Name[be]=Верхнялужыцкая
 Name[br]=Sorab uhel
 Name[ca]=Alt sòrab
@@ -3059,6 +3065,7 @@ Name[zh_TW]=塞爾維亞語
 [hu]
 Name=Hungarian
 Name[af]=Hongaars
+Name[ar]=مجرية
 Name[be]=Венгерская
 Name[br]=Hungareg
 Name[ca]=Hongarès
@@ -3124,6 +3131,7 @@ Name[zh_TW]=匈牙利語
 [hy]
 Name=Armenian
 Name[af]=Armeens
+Name[ar]=أرمنية
 Name[be]=Армянская
 Name[br]=Armenieg
 Name[ca]=Armeni
@@ -3188,7 +3196,7 @@ Name[zh_HK]=亞美尼亞語
 Name[zh_TW]=亞美尼亞語
 [hz]
 Name=Herero
-Name[ar]=الهيريرو
+Name[ar]=هيريرو
 Name[be]=Хэрэра
 Name[cy]=Hausa
 Name[eo]=Herera
@@ -3223,7 +3231,7 @@ Name[zh_HK]=Herero語
 Name[zh_TW]=Herero語
 [ia]
 Name=Interlingua
-Name[ar]=الإنترلينغوا
+Name[ar]=إنترلينغوا
 Name[be]=Інтэрлінгуа
 Name[eo]=Interlingvao
 Name[fa]=میان زبانی
@@ -3257,7 +3265,7 @@ Name[zh_TW]=科技共通語
 [id]
 Name=Indonesian
 Name[af]=Indonesië
-Name[ar]=الإندونيسية
+Name[ar]=إندونيسية
 Name[be]=Інданэзійская
 Name[br]=Indoneseg
 Name[ca]=Indonesi
@@ -3322,7 +3330,7 @@ Name[zh_HK]=印尼語
 Name[zh_TW]=印尼語
 [ie]
 Name=Interlingue
-Name[ar]=الإنترلينغوي
+Name[ar]=إنترلينغوي
 Name[be]=Інтэрлінг
 Name[br]=Interlingeg
 Name[eo]=Interlingveo
@@ -3358,7 +3366,7 @@ Name[zh_HK]=Interlingue語
 Name[zh_TW]=Interlingue語
 [ik]
 Name=Inupiaq
-Name[ar]=الإنوبياك
+Name[ar]=إنوبياك
 Name[be]=Інупіцкая
 Name[br]=Inupiak
 Name[eo]=Inuita
@@ -3395,7 +3403,7 @@ Name[zh_HK]=Inupiaq語
 Name[zh_TW]=Inupiaq語
 [io]
 Name=Ido
-Name[ar]=الإيدو
+Name[ar]=إيدو
 Name[be]=Ідо
 Name[fa]=ایدو
 Name[he]=אדו
@@ -3425,7 +3433,7 @@ Name[zh_TW]=伊多語
 [is]
 Name=Icelandic
 Name[af]=Yslandies
-Name[ar]=الآيسلندية
+Name[ar]=آيسلندية
 Name[be]=Ісландская
 Name[br]=Islandeg
 Name[ca]=Islandès
@@ -3490,7 +3498,7 @@ Name[zh_TW]=冰島語
 [it]
 Name=Italian
 Name[af]=Italiaans
-Name[ar]=الإيطالية
+Name[ar]=إيطالية
 Name[be]=Італьянская
 Name[br]=Italianeg
 Name[ca]=Italià
@@ -3556,7 +3564,7 @@ Name[zh_HK]=意大利語
 Name[zh_TW]=義大利語
 [iu]
 Name=Inuktitut
-Name[ar]=الإنكتيتوت
+Name[ar]=إنكتيتوت
 Name[be]=Інуктытут
 Name[fa]=اینوکتیتوت
 Name[ga]=Ionúitis
@@ -3587,7 +3595,7 @@ Name[zh_TW]=Inuktitut語
 [ja]
 Name=Japanese
 Name[af]=Japanees
-Name[ar]=اليابانية
+Name[ar]=يابانية
 Name[be]=Японская
 Name[br]=Japaneg
 Name[ca]=Japonès
@@ -3654,7 +3662,7 @@ Name[zh_TW]=日語
 [jv]
 Name=Javanese
 Name[af]=Javanees
-Name[ar]=جاويه
+Name[ar]=جاوية
 Name[be]=Яванская
 Name[br]=Javaneg
 Name[ca]=Javanès
@@ -3717,7 +3725,7 @@ Name[zh_TW]=爪哇語
 [ka]
 Name=Georgian
 Name[af]=Georgiën
-Name[ar]=جورجي
+Name[ar]=جورجية
 Name[be]=Грузінская
 Name[br]=Jeorjieg
 Name[ca]=Georgià
@@ -3782,7 +3790,7 @@ Name[zh_HK]=喬治亞語
 Name[zh_TW]=喬治亞語
 [ki]
 Name=Kikuyu
-Name[ar]=الكيكويو
+Name[ar]=كيكويو
 Name[be]=Кікую
 Name[et]=Kikuju
 Name[fa]=کیکویا
@@ -3816,7 +3824,7 @@ Name[zh_HK]=吉庫猶語
 Name[zh_TW]=吉庫猶語
 [kk]
 Name=Kazakh
-Name[ar]=كزخي
+Name[ar]=قزقية
 Name[be]=Казахская
 Name[br]=Kazakstaneg
 Name[cs]=Kazašský
@@ -3871,7 +3879,7 @@ Name[zh_HK]=哈薩克語
 Name[zh_TW]=哈薩克語
 [kl]
 Name=Kalaallisut
-Name[ar]=الكالاليسوت
+Name[ar]=كلاليسوت
 Name[be]=Калаалісут
 Name[fa]=کالالیسوت
 Name[fi]=Grönlanti
@@ -3908,7 +3916,7 @@ Name[zh_HK]=Kalaallisut語
 Name[zh_TW]=Kalaallisut語
 [km]
 Name=Khmer
-Name[ar]=خميري
+Name[ar]=خميرية
 Name[be]=Хмерская
 Name[br]=Kmereg
 Name[cs]=Kmérský
@@ -3953,7 +3961,7 @@ Name[zh_TW]=高棉語
 [kn]
 Name=Kannada
 Name[af]=Kanadees
-Name[ar]=الكانادا
+Name[ar]=كنادا
 Name[be]=Канадская
 Name[br]=Kanada
 Name[fa]=کانادایی
@@ -3987,7 +3995,7 @@ Name[zh_TW]=坎那達語
 [ko]
 Name=Korean
 Name[af]=Koriaanse
-Name[ar]=الكورية
+Name[ar]=كورية
 Name[be]=Карэйская
 Name[br]=Koreeg
 Name[ca]=Coreà
@@ -4053,7 +4061,7 @@ Name[zh_HK]=韓國語
 Name[zh_TW]=韓國語
 [ks]
 Name=Kashmiri
-Name[ar]=كشميري
+Name[ar]=كشميرية
 Name[be]=Кашмірская
 Name[ca]=Caixmiri
 Name[cs]=Kašmírský
@@ -4104,7 +4112,7 @@ Name[zh_HK]=喀什米爾語
 Name[zh_TW]=喀什米爾語
 [ku]
 Name=Kurdish
-Name[ar]=الكردية
+Name[ar]=كردية
 Name[be]=Курдская
 Name[br]=Kurdeg
 Name[ca]=Kurd
@@ -4168,7 +4176,7 @@ Name[zh_HK]=庫德語
 Name[zh_TW]=庫德語
 [kv]
 Name=Komi
-Name[ar]=الكومي
+Name[ar]=كومي
 Name[be]=Комі
 Name[csb]=z Komi
 Name[eo]=Komia
@@ -4203,7 +4211,7 @@ Name[zh_HK]=Komi語
 Name[zh_TW]=Komi語
 [kw]
 Name=Cornish
-Name[ar]=كورنش
+Name[ar]=كورنية
 Name[be]=Корнская
 Name[br]=Korneveg
 Name[cs]=Kornišský
@@ -4260,7 +4268,7 @@ Name[zh_HK]=康瓦耳語
 Name[zh_TW]=康瓦耳語
 [ky]
 Name=Kirghiz
-Name[ar]=قرغيز
+Name[ar]=قرغيزية
 Name[be]=Кіргізская
 Name[br]=Kirgistaneg
 Name[ca]=Kirguís
@@ -4322,7 +4330,7 @@ Name[zh_TW]=吉爾吉斯語
 [la]
 Name=Latin
 Name[af]=Latyn
-Name[ar]=لاتيني
+Name[ar]=لاتينية
 Name[be]=Лацінская
 Name[ca]=Llatí
 Name[cs]=Latina
@@ -4376,7 +4384,7 @@ Name[zh_HK]=拉丁語
 Name[zh_TW]=拉丁語
 [lb]
 Name=Luxembourgish
-Name[ar]=لوكسمبورغي
+Name[ar]=لوكسمبورغية
 Name[be]=Люксембургская
 Name[br]=Luksembourgeg
 Name[ca]=Luxemburguès
@@ -4437,7 +4445,7 @@ Name[zh_HK]=盧森堡語
 Name[zh_TW]=盧森堡語
 [li]
 Name=Limburgan
-Name[ar]=الليمبورغية
+Name[ar]=لمبرغية
 Name[be]=Лімбургская
 Name[br]=Limburgeg
 Name[ca]=Limburgà
@@ -4494,7 +4502,7 @@ Name[zh_HK]=Limburgan語
 Name[zh_TW]=Limburgan語
 [ln]
 Name=Lingala
-Name[ar]=اللينغالا
+Name[ar]=لينغالا
 Name[be]=Лінгальская
 Name[br]=Lingaleg
 Name[fa]=لینگالا
@@ -4525,6 +4533,7 @@ Name[zh_HK]=Lingala語
 Name[zh_TW]=Lingala語
 [lo]
 Name=Lao
+Name[ar]=لاوية
 Name[be]=Лаоская
 Name[ca]=Laosià
 Name[cs]=Laoský
@@ -4567,7 +4576,7 @@ Name[zh_TW]=寮國語
 [lt]
 Name=Lithuanian
 Name[af]=Lithuaniese
-Name[ar]=الليتوانية
+Name[ar]=ليتوانية
 Name[be]=Літоўская
 Name[br]=Lituaneg
 Name[ca]=Lituà
@@ -4632,7 +4641,7 @@ Name[zh_HK]=立陶宛語
 Name[zh_TW]=立陶宛語
 [lv]
 Name=Latvian
-Name[ar]=اللاتفية
+Name[ar]=لاتفية
 Name[be]=Латвійская
 Name[br]=Latvieg
 Name[ca]=Letó
@@ -4698,6 +4707,7 @@ Name[zh_HK]=拉脫維亞語
 Name[zh_TW]=拉脫維亞語
 [mg]
 Name=Malagasy
+Name[ar]=ملغاسي
 Name[be]=Малагасійская
 Name[br]=Malagacheg
 Name[ca]=Malgaix
@@ -4754,7 +4764,7 @@ Name[zh_HK]=馬拉加西語
 Name[zh_TW]=馬拉加西語
 [mh]
 Name=Marshallese
-Name[ar]=المارشالية
+Name[ar]=مارشالية
 Name[be]=Маршальская
 Name[br]=Yezh an enez Marshall
 Name[cs]=Marshallský
@@ -4814,7 +4824,7 @@ Name[zh_HK]=馬紹爾語
 Name[zh_TW]=馬紹爾語
 [mi]
 Name=Maori
-Name[ar]=الموري
+Name[ar]=ماوري
 Name[be]=Маорская
 Name[br]=Maorieg
 Name[cs]=Maorský
@@ -4860,7 +4870,7 @@ Name[zh_HK]=毛利語
 Name[zh_TW]=毛利語
 [mk]
 Name=Macedonian
-Name[ar]=المقدونية
+Name[ar]=مقدونية
 Name[be]=Македонская
 Name[br]=Makedoneg
 Name[ca]=Macedònic
@@ -4925,7 +4935,7 @@ Name[zh_HK]=馬其頓語
 Name[zh_TW]=馬其頓語
 [ml]
 Name=Malayalam
-Name[ar]=المالايالام
+Name[ar]=مالايالام
 Name[be]=Малаяламская
 Name[ca]=Malaialam
 Name[csb]=Drawidańsczi (hindusczi)
@@ -5035,7 +5045,7 @@ Name[zh_HK]=蒙古語
 Name[zh_TW]=蒙古語
 [mo]
 Name=Moldavian
-Name[ar]=مولدوفية
+Name[ar]=مولدافية
 Name[be]=Малдаўская
 Name[br]=Moldaveg
 Name[ca]=Moldau
@@ -5100,7 +5110,7 @@ Name[zh_HK]=摩爾達維亞語
 Name[zh_TW]=摩爾達維亞語
 [mr]
 Name=Marathi
-Name[ar]=الماراثي
+Name[ar]=ماراثية
 Name[be]=Мараўская
 Name[br]=Marateg
 Name[csb]=Marathi (hindusczi)
@@ -5142,7 +5152,7 @@ Name[zh_HK]=馬拉地語
 Name[zh_TW]=馬拉地語
 [ms]
 Name=Malay
-Name[ar]=مالاوية
+Name[ar]=مالوية
 Name[be]=Малайская
 Name[br]=Maya
 Name[ca]=Malai
@@ -5200,7 +5210,7 @@ Name[zh_TW]=馬來語
 [mt]
 Name=Maltese
 Name[af]=Maltees
-Name[ar]=المالطية
+Name[ar]=مالطية
 Name[be]=Мальтыйская
 Name[br]=Malteg
 Name[ca]=Maltès
@@ -5264,7 +5274,7 @@ Name[zh_TW]=馬爾他語
 [my]
 Name=Burmese
 Name[af]=Burmees
-Name[ar]=بورمي
+Name[ar]=بورمية
 Name[be]=Бурмеская
 Name[br]=Birmaneg
 Name[ca]=Birmà
@@ -5326,7 +5336,7 @@ Name[zh_HK]=緬甸語
 Name[zh_TW]=緬甸語
 [na]
 Name=Nauru
-Name[ar]=الناورو
+Name[ar]=ناورو
 Name[be]=Наурскі
 Name[br]=Naurueg
 Name[ca]=Nauruà
@@ -5367,6 +5377,7 @@ Name[zh_HK]=諾魯語
 Name[zh_TW]=諾魯語
 [nb]
 Name=Norwegian Bokmål
+Name[ar]=نرويجية بوكمال
 Name[be]=Нарвежская (бокмаль)
 Name[br]=Norvegeg Bokmål
 Name[ca]=Noruec Bokmål
@@ -5430,7 +5441,7 @@ Name[zh_TW]=挪威 Bokmål
 [nd]
 Name=Ndebele, North
 Name[af]=Ndebele, Noord
-Name[ar]=النديبيلي الشمالية
+Name[ar]=نديبيلية شمالية
 Name[be]=Ндэбель (поўнач)
 Name[br]=Ndebele, Norzh
 Name[ca]=Ndebele, Nord
@@ -5493,6 +5504,7 @@ Name[zh_TW]=Ndebele語，北部
 [nds]
 Name=Low Saxon
 Name[af]=Lae Saxon
+Name[ar]=ساكسونية منخفضة
 Name[be]=Ніжнесаксонская
 Name[br]=Saozeg izel
 Name[ca]=Baix saxó
@@ -5549,7 +5561,7 @@ Name[zh_CN]=下撒克逊语
 Name[zh_TW]=薩克遜語
 [ne]
 Name=Nepali
-Name[ar]=نيبالي
+Name[ar]=نيبالية
 Name[be]=Непальская
 Name[br]=Nepaleg
 Name[ca]=Nepalès
@@ -5604,7 +5616,7 @@ Name[zh_HK]=尼泊爾語
 Name[zh_TW]=尼泊爾語
 [ng]
 Name=Ndonga
-Name[ar]=الندونغا
+Name[ar]=ندونغا
 Name[be]=Ндонга
 Name[de]=Oshivambo
 Name[fa]=اندونگا
@@ -5635,7 +5647,7 @@ Name[zh_TW]=Ndonga語
 [nl]
 Name=Dutch
 Name[af]=Hollands
-Name[ar]=الهولندية
+Name[ar]=هولندية
 Name[be]=Галандская
 Name[br]=Nederlandeg
 Name[ca]=Neerlandès
@@ -5702,7 +5714,7 @@ Name[zh_TW]=荷蘭語
 [nn]
 Name=Norwegian Nynorsk
 Name[af]=Noörweese Nynorsk
-Name[ar]=نينورسك النرويجية
+Name[ar]=نرويجية نينورسك
 Name[be]=Нарвежская (нюнорск)
 Name[br]=Norvegeg Nynorsk
 Name[ca]=Noruec Nynorsk
@@ -5767,7 +5779,7 @@ Name[zh_TW]=挪威 Nynorsk 語
 [nr]
 Name=Ndebele, South
 Name[af]=Ndebele, Suid
-Name[ar]=النديبيلي الجنوبية
+Name[ar]=نديبيلي جنوبية
 Name[be]=Ндэбель (поўдзень)
 Name[br]=Ndebele, Su
 Name[ca]=Ndebele, Sud
@@ -5830,7 +5842,7 @@ Name[zh_TW]=Ndebele語，南部
 [nso]
 Name=Northern Sotho
 Name[af]=Noord Sotho
-Name[ar]=السوتو الشمالية
+Name[ar]=سوتو شمالية
 Name[be]=Паўночнае Сота
 Name[br]=Soto, Norzh
 Name[ca]=Sotho del nord
@@ -5890,7 +5902,7 @@ Name[x-test]=xxNorthern Sothoxx
 Name[zh_CN]=北索托语
 [nv]
 Name=Navajo
-Name[ar]=النافاجو
+Name[ar]=ناباهو
 Name[be]=Наваё
 Name[el]=Νάβαχο
 Name[eo]=Navaha
@@ -5929,7 +5941,7 @@ Name[zh_HK]=納瓦伙語
 Name[zh_TW]=納瓦伙語
 [ny]
 Name=Chichewa
-Name[ar]=التشيشيوا
+Name[ar]=تشيشيوا
 Name[be]=Чычэва
 Name[de]=Nyanja
 Name[eo]=Ĉiĉeva
@@ -5969,7 +5981,7 @@ Name[zh_TW]=Chichewa語
 [oc]
 Name=Occitan
 Name[af]=Okkitaan
-Name[ar]=الأوكسيتانية
+Name[ar]=أكستانية
 Name[be]=Акітанская
 Name[br]=Oksitaneg
 Name[ca]=Occità
@@ -6025,6 +6037,7 @@ Name[zh_HK]=Occitan語
 Name[zh_TW]=Occitan語
 [om]
 Name=Oromo
+Name[ar]=أورومو
 Name[be]=Арома
 Name[eo]=Oroma
 Name[fa]=اورومو
@@ -6057,6 +6070,7 @@ Name[zh_HK]=Oromo語
 Name[zh_TW]=Oromo語
 [or]
 Name=Oriya
+Name[ar]=أوريا
 Name[be]=Орыя
 Name[eo]=Orijo
 Name[et]=Orija
@@ -6094,7 +6108,7 @@ Name[zh_HK]=Oriya語
 Name[zh_TW]=Oriya語
 [os]
 Name=Ossetian
-Name[ar]=الأوسيتية
+Name[ar]=أوسيتية
 Name[be]=Асетынская
 Name[br]=Ossetieg
 Name[ca]=Oseti
@@ -6154,7 +6168,7 @@ Name[zh_HK]=Ossetian語
 Name[zh_TW]=Ossetian語
 [pa]
 Name=Punjabi/Panjabi
-Name[ar]=بنجابي
+Name[ar]=بنجابية
 Name[be]=Панджабі
 Name[ca]=Panjabi
 Name[de]=Pandschabi
@@ -6174,7 +6188,7 @@ Name[x-test]=xxPunjabi/Panjabixx
 Name[zh_CN]=旁遮普语
 [pi]
 Name=Pali
-Name[ar]=البالي
+Name[ar]=بالية
 Name[be]=Палі
 Name[br]=Palieg
 Name[eo]=Palio
@@ -6209,7 +6223,7 @@ Name[zh_TW]=巴利語
 [pl]
 Name=Polish
 Name[af]=Poolse
-Name[ar]=البولندية
+Name[ar]=بولندية
 Name[be]=Польская
 Name[br]=Poloneg
 Name[ca]=Polonès
@@ -6321,7 +6335,7 @@ Name[zh_TW]=普什圖語
 [pt]
 Name=Portuguese
 Name[af]=Portugese
-Name[ar]=البرتغالية
+Name[ar]=برتغالية
 Name[be]=Партугальская
 Name[br]=Portugaleg
 Name[ca]=Portuguès
@@ -6386,7 +6400,7 @@ Name[zh_HK]=葡萄牙語
 Name[zh_TW]=葡萄牙語
 [pt_BR]
 Name=Brazilian Portuguese
-Name[ar]=البرتغالية البرازيلية
+Name[ar]=برتغالية البرازيل
 Name[be]=Партугальская бразільская
 Name[br]=Portugaleg Brazil
 Name[ca]=Portuguès Brasiler
@@ -6451,7 +6465,7 @@ Name[zh_HK]=巴西葡萄牙語
 Name[zh_TW]=巴西葡萄牙語
 [qu]
 Name=Quechua
-Name[ar]=الكويتشيوا
+Name[ar]=كويتشيوا
 Name[be]=Кэчуа
 Name[br]=Kechuaeg
 Name[ca]=Quítxua
@@ -6492,6 +6506,7 @@ Name[zh_HK]=蓋楚瓦語
 Name[zh_TW]=蓋楚瓦語
 [rn]
 Name=Rundi
+Name[ar]=روندية
 Name[be]=Рундзі
 Name[cy]=Rwndi
 Name[eo]=Ruanda
@@ -6526,7 +6541,7 @@ Name[zh_TW]=Rundi語
 [ro]
 Name=Romanian
 Name[af]=Romeens
-Name[ar]=الرومانية
+Name[ar]=رومانية
 Name[be]=Румынская
 Name[br]=Roumaneg
 Name[ca]=Romanès
@@ -6591,6 +6606,7 @@ Name[zh_HK]=羅馬尼亞語
 Name[zh_TW]=羅馬尼亞語
 [rom]
 Name=Romany
+Name[ar]=رومانيا
 Name[be]=Раманская
 Name[br]=Jipsianek
 Name[ca]=Caló
@@ -6644,7 +6660,7 @@ Name[zh_TW]=吉普賽語
 [ru]
 Name=Russian
 Name[af]=Russies
-Name[ar]=الروسية
+Name[ar]=روسية
 Name[be]=Расійская
 Name[br]=Rusianeg
 Name[ca]=Rus
@@ -6710,7 +6726,7 @@ Name[zh_HK]=俄語
 Name[zh_TW]=俄語
 [rw]
 Name=Kinyarwanda
-Name[ar]=الكينارواندا
+Name[ar]=كينيارواندا
 Name[be]=Кіньярванда
 Name[et]=Ruanda
 Name[eu]=Kinyaruanda
@@ -6750,7 +6766,7 @@ Name[zh_HK]=Kinyarwanda語
 Name[zh_TW]=Kinyarwanda語
 [sa]
 Name=Sanskrit
-Name[ar]=سنسيكريتي
+Name[ar]=سنسكريتية
 Name[be]=Санскрыт
 Name[ca]=Sànscrit
 Name[cy]=Sansgrit
@@ -6797,7 +6813,7 @@ Name[zh_HK]=梵語
 Name[zh_TW]=梵語
 [sc]
 Name=Sardinian
-Name[ar]=الساردينية
+Name[ar]=ساردينية
 Name[be]=Сардынская
 Name[br]=Sardinieg
 Name[ca]=Sard
@@ -6860,7 +6876,7 @@ Name[zh_HK]=薩丁尼亞語
 Name[zh_TW]=薩丁尼亞語
 [sd]
 Name=Sindhi
-Name[ar]=سندي
+Name[ar]=سندية
 Name[be]=Сіндхі
 Name[br]=Sindhieg
 Name[eo]=Sinda
@@ -6899,6 +6915,7 @@ Name[zh_TW]=Sindhi語
 [se]
 Name=Northern Sami
 Name[af]=Noordelike Sami
+Name[ar]=صامية شمالية
 Name[be]=Самі (поўнач)
 Name[br]=Sami, Norzh
 Name[ca]=Sami del nord
@@ -6962,7 +6979,7 @@ Name[zh_HK]=北薩米語
 Name[zh_TW]=北薩米語
 [sg]
 Name=Sango
-Name[ar]=السانغو
+Name[ar]=سانغو
 Name[be]=Санга
 Name[eo]=Sangoa
 Name[fa]=سانگو
@@ -6994,7 +7011,7 @@ Name[zh_HK]=Sango語
 Name[zh_TW]=Sango語
 [si]
 Name=Sinhalese
-Name[ar]=السينهالية
+Name[ar]=سينهالية
 Name[be]=Сінгальская
 Name[br]=Singaleg
 Name[ca]=Singalès
@@ -7055,6 +7072,7 @@ Name[zh_TW]=錫蘭語
 [sk]
 Name=Slovak
 Name[af]=Slovakies
+Name[ar]=سلوفاكية
 Name[be]=Славацкая
 Name[br]=Sloveg
 Name[ca]=Eslovac
@@ -7120,7 +7138,7 @@ Name[zh_TW]=斯洛伐克語
 [sl]
 Name=Slovenian
 Name[af]=Sloveniese
-Name[ar]=السلوفينية
+Name[ar]=سلوفينية
 Name[be]=Славенская
 Name[br]=Slovenieg
 Name[ca]=Eslovè
@@ -7185,7 +7203,7 @@ Name[zh_HK]=斯洛維尼亞語
 Name[zh_TW]=斯洛維尼亞語
 [sm]
 Name=Samoan
-Name[ar]=الساموية
+Name[ar]=ساموية
 Name[be]=Самоа
 Name[ca]=Samoà
 Name[cs]=Samojský
@@ -7245,7 +7263,7 @@ Name[zh_HK]=薩摩牙語
 Name[zh_TW]=薩摩牙語
 [sn]
 Name=Shona
-Name[ar]=الشونا
+Name[ar]=شونا
 Name[be]=Шона
 Name[eo]=Ŝona
 Name[fa]=شوها
@@ -7282,7 +7300,7 @@ Name[zh_HK]=Shona語
 Name[zh_TW]=Shona語
 [so]
 Name=Somali
-Name[ar]=صومالي
+Name[ar]=صومالية
 Name[be]=Самалійская
 Name[br]=Somalieg
 Name[ca]=Somalí
@@ -7336,7 +7354,7 @@ Name[zh_TW]=索馬利語
 [sq]
 Name=Albanian
 Name[af]=Albanees
-Name[ar]=ألباني
+Name[ar]=ألبانية
 Name[be]=Албанская
 Name[br]=Albanieg
 Name[ca]=Albanès
@@ -7401,7 +7419,7 @@ Name[zh_TW]=阿爾巴尼亞語
 [sr]
 Name=Serbian
 Name[af]=Serbiese
-Name[ar]=الصربية
+Name[ar]=صربية
 Name[be]=Сербская
 Name[br]=Serbeg
 Name[ca]=Serbi
@@ -7466,6 +7484,7 @@ Name[zh_HK]=塞爾維亞語
 Name[zh_TW]=塞爾維亞語
 [sr@latin]
 Name=Serbian Latin
+Name[ar]=صربية لاتينية
 Name[be]=Сербская (лацініца)
 Name[br]=Serbeg latin
 Name[ca]=Serbi llatí
@@ -7524,7 +7543,7 @@ Name[zh_CN]=塞尔维亚拉丁语
 Name[zh_TW]=賽爾維亞拉丁語
 [ss]
 Name=Swati
-Name[ar]=السواتي
+Name[ar]=سواتي
 Name[be]=Сваці
 Name[et]=Svaasi
 Name[fa]=سواتی
@@ -7564,6 +7583,7 @@ Name[zh_TW]=Swati語
 [st]
 Name=Sotho, Southern
 Name[af]=Sotho, Suid
+Name[ar]=سوتو شمالية
 Name[be]=Сота (поўдзень)
 Name[br]=Soto, Su
 Name[ca]=Sotho del sud
@@ -7625,6 +7645,7 @@ Name[zh_HK]=梭托語，南部
 Name[zh_TW]=梭托語，南部
 [su]
 Name=Sundanese
+Name[ar]=سندانية
 Name[be]=Сунданская
 Name[br]=Soudaneg
 Name[ca]=Sondanès
@@ -7685,7 +7706,7 @@ Name[zh_TW]=Sundanese語
 [sv]
 Name=Swedish
 Name[af]=Sweeds
-Name[ar]=السويدية
+Name[ar]=سويدية
 Name[be]=Шведская
 Name[br]=Svedeg
 Name[ca]=Suec
@@ -7749,7 +7770,7 @@ Name[zh_HK]=瑞典語
 Name[zh_TW]=瑞典語
 [sw]
 Name=Swahili
-Name[ar]=سواحلي
+Name[ar]=سواحلية
 Name[be]=Суахілі
 Name[ca]=Suahili
 Name[cs]=Svahilský
@@ -7795,7 +7816,7 @@ Name[zh_TW]=斯華西里語
 [ta]
 Name=Tamil
 Name[af]=Tamilies
-Name[ar]=التاميلية
+Name[ar]=تاميلية
 Name[be]=Тамільская
 Name[br]=Tamouleg
 Name[ca]=Tàmil
@@ -7846,7 +7867,7 @@ Name[zh_HK]=坦米爾語
 Name[zh_TW]=坦米爾語
 [te]
 Name=Telugu
-Name[ar]=التيلوغو
+Name[ar]=تلوغو
 Name[be]=Тэлугу
 Name[br]=Telegu
 Name[eo]=Telugua
@@ -7883,7 +7904,7 @@ Name[zh_TW]=特拉古語
 [tg]
 Name=Tajik
 Name[af]=Tajikees
-Name[ar]=طاجيكي
+Name[ar]=طاجيكية
 Name[be]=Таджыцкая
 Name[br]=Tajiek
 Name[ca]=Tadjik
@@ -7944,7 +7965,7 @@ Name[zh_TW]=塔吉克語
 [th]
 Name=Thai
 Name[af]=Thaïs
-Name[ar]=التايلاندية
+Name[ar]=تيلندية
 Name[be]=Тайская
 Name[br]=Tailh
 Name[ca]=Tai
@@ -8000,7 +8021,7 @@ Name[zh_HK]=泰國語
 Name[zh_TW]=泰國語
 [ti]
 Name=Tigrinya
-Name[ar]=التيغرينيا
+Name[ar]=تيغرينيا
 Name[be]=Тыгрынья
 Name[de]=Tigrinja
 Name[eo]=Tigraja
@@ -8044,7 +8065,7 @@ Name[zh_HK]=提格利尼亞語
 Name[zh_TW]=提格利尼亞語
 [tk]
 Name=Turkmen
-Name[ar]=تركماني
+Name[ar]=تركمانية
 Name[be]=Туркменская
 Name[ca]=Turcman
 Name[cs]=Turkmenský
@@ -8104,7 +8125,7 @@ Name[zh_HK]=土庫曼語
 Name[zh_TW]=土庫曼語
 [tn]
 Name=Tswana
-Name[ar]=التسوانا
+Name[ar]=تسوانا
 Name[be]=Цвана
 Name[eo]=Cvana
 Name[et]=Tsvana
@@ -8143,7 +8164,7 @@ Name[zh_HK]=班圖語
 Name[zh_TW]=班圖語
 [to]
 Name=Tonga
-Name[ar]=تونجي
+Name[ar]=تونغا
 Name[be]=Тонга
 Name[br]=Inizi Tonga
 Name[ca]=Tongà
@@ -8182,7 +8203,7 @@ Name[zh_TW]=東加語
 [tr]
 Name=Turkish
 Name[af]=Turks
-Name[ar]=التركية
+Name[ar]=تركية
 Name[be]=Турэцкая
 Name[br]=Turkeg
 Name[ca]=Turc
@@ -8247,7 +8268,7 @@ Name[zh_HK]=土耳其語
 Name[zh_TW]=土耳其語
 [ts]
 Name=Tsonga
-Name[ar]=التسونغا
+Name[ar]=تسونغا
 Name[be]=Цонга
 Name[eo]=Conga
 Name[eu]=Tsongera
@@ -8281,7 +8302,7 @@ Name[zh_HK]=Tsonga語
 Name[zh_TW]=Tsonga語
 [tt]
 Name=Tatar
-Name[ar]=تاتري
+Name[ar]=تاترية
 Name[be]=Татарская
 Name[br]=Tatareg
 Name[ca]=Tàtar
@@ -8334,7 +8355,7 @@ Name[zh_HK]=韃靼語
 Name[zh_TW]=韃靼語
 [tw]
 Name=Twi
-Name[ar]=التوي
+Name[ar]=توي
 Name[be]=Тві
 Name[et]=Tvii
 Name[fa]=توی
@@ -8365,7 +8386,7 @@ Name[zh_HK]=契維語
 Name[zh_TW]=契維語
 [ty]
 Name=Tahitian
-Name[ar]=التاهيتية
+Name[ar]=تاهيتية
 Name[be]=Таіцкая
 Name[br]=Tahitieg
 Name[ca]=Tahitià
@@ -8427,7 +8448,7 @@ Name[zh_HK]=大溪地語
 Name[zh_TW]=大溪地語
 [ug]
 Name=Uighur
-Name[ar]=الأويغورية
+Name[ar]=أيغورية
 Name[be]=Уігур
 Name[ca]=Uigur
 Name[csb]=Ujgùrsczi
@@ -8476,7 +8497,7 @@ Name[zh_TW]=維吾爾語
 [uk]
 Name=Ukrainian
 Name[af]=Ukraïnies
-Name[ar]=الأوكرانية
+Name[ar]=أكرانية
 Name[be]=Украінская
 Name[br]=Ukrainiek
 Name[ca]=Ucraïnès
@@ -8542,6 +8563,7 @@ Name[zh_HK]=烏克蘭語
 Name[zh_TW]=烏克蘭語
 [ur]
 Name=Urdu
+Name[ar]=أردو
 Name[be]=Урду
 Name[ca]=Urdú
 Name[cy]=Wrdw
@@ -8575,7 +8597,7 @@ Name[zh_HK]=烏都語
 Name[zh_TW]=烏都語
 [uz]
 Name=Uzbek
-Name[ar]=أوزباكي
+Name[ar]=أوزباكية
 Name[be]=Узбецкая
 Name[br]=Ouzbeg
 Name[cs]=Uzbecký
@@ -8635,7 +8657,7 @@ Name[zh_HK]=烏茲別克語
 Name[zh_TW]=烏茲別克語
 [ven]
 Name=Venda
-Name[ar]=فيندا
+Name[ar]=فندا
 Name[be]=Венда
 Name[de]=Tshivenda
 Name[fa]=وندا
@@ -8663,7 +8685,7 @@ Name[zh_CN]=文达语
 [vi]
 Name=Vietnamese
 Name[af]=Viëtnamees
-Name[ar]=الفييتنامية
+Name[ar]=فيتنامية
 Name[be]=В'етнамская
 Name[br]=Viet-Nameg
 Name[ca]=Vietnamita
@@ -8728,7 +8750,7 @@ Name[zh_HK]=越南語
 Name[zh_TW]=越南語
 [vo]
 Name=Volapük
-Name[ar]=الفولابوك
+Name[ar]=فولابوك
 Name[be]=Валапук
 Name[br]=Volapuk
 Name[cy]=Volapuk
@@ -8762,7 +8784,7 @@ Name[x-test]=xxVolapükxx
 Name[zh_CN]=沃拉普克语
 [wa]
 Name=Walloon
-Name[ar]=الوالون
+Name[ar]=والونية
 Name[be]=Валонская
 Name[br]=Walloneg
 Name[ca]=Való
@@ -8823,7 +8845,7 @@ Name[zh_HK]=華隆語
 Name[zh_TW]=華隆語
 [wo]
 Name=Wolof
-Name[ar]=الوولوف
+Name[ar]=وولوف
 Name[be]=Волаф
 Name[cy]=Woloff
 Name[eo]=Volofa
@@ -8861,7 +8883,7 @@ Name[zh_HK]=Wolof語
 Name[zh_TW]=Wolof語
 [xh]
 Name=Xhosa
-Name[ar]=الهاوسا
+Name[ar]=بهوسا
 Name[be]=Кшоса
 Name[ca]=Xosa
 Name[de]=isiXhosa
@@ -8898,7 +8920,7 @@ Name[zh_HK]=科薩語
 Name[zh_TW]=科薩語
 [yi]
 Name=Yiddish
-Name[ar]=اليديش
+Name[ar]=يديش
 Name[be]=Ідыш
 Name[ca]=Jiddisch
 Name[cs]=Jidiš
@@ -8952,7 +8974,7 @@ Name[zh_HK]=意第緒語
 Name[zh_TW]=意第緒語
 [yo]
 Name=Yoruba
-Name[ar]=اليوروبا
+Name[ar]=يوروبا
 Name[be]=Яруба
 Name[ca]=Ioruba
 Name[eo]=Joruba
@@ -8995,6 +9017,7 @@ Name[zh_HK]=優魯巴語
 Name[zh_TW]=優魯巴語
 [za]
 Name=Zhuang
+Name[ar]=جوانغ
 Name[be]=Цванг
 Name[et]=Zhuangi
 Name[fa]=هونگ
@@ -9026,7 +9049,7 @@ Name[zh_TW]=Zhuang語
 [zh]
 Name=Chinese
 Name[af]=Sjinese
-Name[ar]=الصينية
+Name[ar]=صينية
 Name[be]=Кітайская
 Name[br]=Sinaeg
 Name[ca]=Xinès
@@ -9093,6 +9116,7 @@ Name[zh_TW]=中文
 [zh_CN]
 Name=Chinese Simplified
 Name[af]=Sjinese vereenvoudig
+Name[ar]=صينية مبسطة
 Name[be]=Кітайская спрошчаная
 Name[br]=Sineg eeun
 Name[ca]=Xinès simplificat
@@ -9153,6 +9177,7 @@ Name[zh_HK]=簡體中文
 Name[zh_TW]=簡體中文
 [zh_HK]
 Name=Chinese (Hong Kong)
+Name[ar]=صينية (هونغ كونغ)
 Name[be]=Кітайская (Гонг-Конг)
 Name[br]=Sinaeg (Hong Kong)
 Name[ca]=Xinès (Hong Kong)
@@ -9211,6 +9236,7 @@ Name[zh_TW]=正體中文（香港）
 [zh_TW]
 Name=Chinese Traditional
 Name[af]=Sjinese tradisioneel
+Name[ar]=صينية تقليدية
 Name[be]=Кітайская традыцыйная
 Name[br]=Sinaeg da gustum
 Name[ca]=Xinès tradicional
@@ -9272,7 +9298,7 @@ Name[zh_TW]=正體中文
 [zu]
 Name=Zulu
 Name[af]=Zoeloe
-Name[ar]=الزولو
+Name[ar]=زولو
 Name[be]=Зулуская
 Name[br]=Zouloued
 Name[csb]=Zulusczi

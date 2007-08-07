@@ -1,5 +1,6 @@
 [Misc]
 Name=MS Windows 9x
+Name[ar]=ويندوز س9
 Name[eo]=Vindozo 9x
 Name[gl]=MS Windows 8x
 Name[ko]=MS 윈도우즈 9x
@@ -11,6 +12,7 @@ Name[x-test]=xxMS Windows 9xxx
 Name[zh_TW]=MSWindows 9x
 Comment=Built-in unthemed Windows 9x style
 Comment[af]=Ingeboude ongetemade Vensters 9x styl
+Comment[ar]=أسلوب مضمن مشابه لويندوز
 Comment[be]=Убудаваны стыль Windows 9x
 Comment[br]=Giz Windows enframmet anwisket
 Comment[ca]=Estil encastat del Windows 9x sense temes

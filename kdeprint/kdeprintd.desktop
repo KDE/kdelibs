@@ -10,6 +10,7 @@ X-KDE-Kded-load-on-demand=true
 
 Name=KDE Print Daemon
 Name[af]=Kde Druk Bediener
+Name[ar]=رقيب طباعة كيدي
 Name[be]=Дэман друку KDE
 Name[br]=Diaoul moulañ KDE
 Name[ca]=Dimoni d'impressió del KDE
@@ -72,6 +73,7 @@ Name[zh_HK]=KDE 列印伺服程式
 Name[zh_TW]=KDE 列印伺服程式
 Comment=Print daemon for KDE
 Comment[af]=Druk Bediener vir KDE
+Comment[ar]=رقيب طباعة كيدي
 Comment[be]=Дэман друку для KDE
 Comment[br]=Diaoul moulañ evit KDE
 Comment[ca]=Dimoni d'impressió per al KDE

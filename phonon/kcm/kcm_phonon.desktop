@@ -12,9 +12,11 @@ X-KDE-ParentApp=kcontrol
 X-KDE-System-Settings-Parent-Category=computer-administration
 
 Name=Phonon
+Name[ar]=فونون
 Name[pa]=ਫੋਨੋਨ
 Name[x-test]=xxPhononxx
 Comment=Sound System Configuration
+Comment[ar]=ضبط نظام الصوت
 Comment[ca]=Configuració del sistema de so
 Comment[csb]=Systemòwé òdkôzanié w KDE
 Comment[de]=Sound-System-Einrichtung

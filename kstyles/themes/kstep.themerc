@@ -1,6 +1,7 @@
 [Misc]
 Name=KDE Step
 Name[af]=Kde Step
+Name[ar]=كيدي ستب
 Name[de]=KDE-Step
 Name[eo]=KDE-Step
 Name[fa]=گام KDE
@@ -18,6 +19,7 @@ Name[x-test]=xxKDE Stepxx
 Name[xh]=Inyathelo le KDE
 Comment=Unthemed Next-like style
 Comment[af]=Ongetemade Next-tipe styl
+Comment[ar]=أسلوب مشابه لنكس ستب
 Comment[be]=Стыль Next
 Comment[br]=Giz doare NeXT anwisket
 Comment[ca]=Estil del tipus Next sense temes

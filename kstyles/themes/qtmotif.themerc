@@ -1,6 +1,7 @@
 [Misc]
 Name=Motif
 Name[af]=Motief
+Name[ar]=موتف
 Name[fa]=موتیف
 Name[ko]=모티프
 Name[ne]=मोटिफ
@@ -10,6 +11,7 @@ Name[te]=మోటిఫ్
 Name[x-test]=xxMotifxx
 Comment=Built-in unthemed Motif style
 Comment[af]=Ingeboude ongetemade motief styl
+Comment[ar]=أسلوب مضمن مشابه لموتف
 Comment[be]=Убудаваны стыль Motif
 Comment[br]=Giz Motif enframmet anwisket
 Comment[ca]=Estil encastat del Motif sense temes

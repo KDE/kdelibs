@@ -1,9 +1,11 @@
 [Misc]
 Name=CDE
+Name[ar]=بيئة س
 Name[te]=సిడిఈ
 Name[x-test]=xxCDExx
 Comment=Built-in unthemed CDE style
 Comment[af]=Ingeboude ongetemade Cde styl
+Comment[ar]=أسلوب مضمن مشابه لبيئة س لسولارس
 Comment[be]=Убудаваны стыль CDE
 Comment[br]=Giz CDE enframmet anwisket
 Comment[ca]=Estil incorporat CDE sense temes

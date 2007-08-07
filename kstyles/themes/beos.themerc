@@ -1,10 +1,12 @@
 [Misc]
 Name=BeOS
 Name[af]=Beos
+Name[ar]=بيوس
 Name[te]=బిఈఓఎస్
 Name[x-test]=xxBeOSxx
 Comment=Unthemed BeOS-like style
 Comment[af]=Onbenoemde BeOS-tipe styl
+Comment[ar]=أسلوب مشابه لبيوس
 Comment[be]=Стыль BeOS
 Comment[br]=Giz evel BeOS anwisket
 Comment[ca]=Estil del tipus BeOS sense temes

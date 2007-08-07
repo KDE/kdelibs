@@ -1,6 +1,7 @@
 [Misc]
 Name=Plastik
 Name[af]=Plastiek
+Name[ar]=لدائن
 Name[be]=Пластыка
 Name[fa]=پلاستیک
 Name[he]=פלסטיק
@@ -25,6 +26,7 @@ Name[x-test]=xxPlastikxx
 ConfigPage=kstyle_plastik_config
 Comment=A simple and clean style
 Comment[af]=´n eenvoudige en skoon styl
+Comment[ar]=نمط بسيط ونظيف
 Comment[be]=Просты і прыгожы стыль
 Comment[br]=Un arloadig panell eeun
 Comment[ca]=Un estil simple i net

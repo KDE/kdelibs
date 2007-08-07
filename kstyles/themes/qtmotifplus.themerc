@@ -1,6 +1,7 @@
 [Misc]
 Name=Motif Plus
 Name[af]=Motief Plus
+Name[ar]=موتف زائد
 Name[br]=Motif Mui
 Name[cy]=Motif Plws
 Name[fa]=موتیف ممتاز
@@ -16,6 +17,7 @@ Name[te]=మోటిఫ్ ప్లస్
 Name[x-test]=xxMotif Plusxx
 Comment=Built-in enhanced Motif style
 Comment[af]=Ingeboude verbeterde Motief styl
+Comment[ar]=أسلوب مضمن محسّن مشابه لموتف
 Comment[be]=Убудаваны палепшаны стыль Motif
 Comment[br]=Giz Motif enframmet gwellaet
 Comment[ca]=Estil encastat del Motif millorat
