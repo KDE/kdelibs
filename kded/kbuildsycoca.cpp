@@ -213,12 +213,12 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
       else if (oldTimestamp)
       {
          g_changed = true;
-         kDebug(7021) << "modified: " << file;
+         kDebug(7021) << "modified:" << file;
       }
       else
       {
          g_changed = true;
-         kDebug(7021) << "new: " << file;
+         kDebug(7021) << "new:" << file;
       }
    }
    g_ctimeInfo->addCTime(file, timeStamp );
@@ -488,7 +488,7 @@ bool KBuildSycoca::recreate()
   m_str = new QDataStream ( &database );
   m_str->setVersion(QDataStream::Qt_3_1);
 
-  kDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")";
+  kDebug(7021).nospace() << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")";
 
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers

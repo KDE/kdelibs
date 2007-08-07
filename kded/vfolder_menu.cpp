@@ -43,7 +43,7 @@ static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElem
    QMap<QString,QDomElement>::iterator it = dupeList.find(s);
    if (it != dupeList.end())
    {
-      kDebug(7021) << e.tagName() << " and " << s << " requires combining!";
+      kDebug(7021) << e.tagName() << "and" << s << "requires combining!";
 
       docElem.removeChild(*it);
       dupeList.erase(it);
@@ -504,7 +504,7 @@ VFolderMenu::loadDoc()
 void
 VFolderMenu::mergeFile(QDomElement &parent, const QDomNode &mergeHere)
 {
-kDebug(7021) << "VFolderMenu::mergeFile: " << m_docInfo.path;
+kDebug(7021) << "VFolderMenu::mergeFile:" << m_docInfo.path;
    QDomDocument doc = loadDoc();
 
    QDomElement docElem = doc.documentElement();
@@ -711,7 +711,7 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
    {
       m_docInfo.baseDir.clear();
       m_docInfo.baseName.clear();
-      kDebug(7021) << "Menu " << fileName << " not found.";
+      kDebug(7021) << "Menu" << fileName << "not found.";
       return;
    }
    int i;
@@ -967,7 +967,7 @@ VFolderMenu::processCondition(QDomElement &domElem, QHash<QString,KService::Ptr>
    else if (domElem.tagName() == "Filename")
    {
       QString filename = domElem.text();
-kDebug(7021) << "Adding file " << filename;
+kDebug(7021) << "Adding file" << filename;
       KService::Ptr s = findApplication(filename);
       if (s)
          items.insert(filename, s);
@@ -977,7 +977,7 @@ kDebug(7021) << "Adding file " << filename;
 void
 VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 {
-   kDebug(7021) << "Looking up applications under " << dir;
+   kDebug(7021) << "Looking up applications under" << dir;
 
    // We look for a set of files.
    DIR *dp = opendir( QFile::encodeName(dir));
@@ -1094,7 +1094,7 @@ kDebug(7021) << "processKDELegacyDirs()";
 void
 VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix)
 {
-kDebug(7021) << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
+kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
 
    QHash<QString,KService::Ptr> items;
    // We look for a set of files.
@@ -1257,7 +1257,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
       }
       if (directoryFile.isEmpty())
       {
-         kDebug(7021) << "Menu " << name << " does not specify a directory file.";
+         kDebug(7021) << "Menu" << name << "does not specify a directory file.";
       }
 
       // Override previous directoryFile iff available
@@ -1333,7 +1333,7 @@ kDebug(7021) << "Processing KDE Legacy dirs for <KDE>";
             {
                if (!kdeLegacyDirsDone)
                {
-kDebug(7021) << "Processing KDE Legacy dirs for " << dir;
+kDebug(7021) << "Processing KDE Legacy dirs for" << dir;
                   SubMenu *oldMenu = m_currentMenu;
                   m_currentMenu = new SubMenu;
 
@@ -1471,7 +1471,7 @@ kDebug(7021) << "Processing KDE Legacy dirs for " << dir;
                   dest = e2.text();
                n2 = n2.nextSibling();
             }
-            kDebug(7021) << "Moving " << orig << " to " << dest;
+            kDebug(7021) << "Moving" << orig << "to" << dest;
             if (!orig.isEmpty() && !dest.isEmpty())
             {
               SubMenu *menu = takeSubMenu(m_currentMenu, orig);
