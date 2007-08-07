@@ -345,11 +345,11 @@ cg.readXXX("entry name");
 
 <h4>KCmdLineArgs</h4>
 <ul>
-<li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const QByteArray &appname, const QByteArray &catalog, const KLocalizedString &programName, const QByteArray &version, const KLocalizedString &description = KLocalizedString(), StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE)));
+<li>   static void init(int _argc, char **_argv, const char *_appname, const char *_description, const char *_version, bool noKApp = false) KDE_DEPRECATED; -&gt; static void init(int _argc, char **_argv, const QByteArray &amp;appname, const QByteArray &amp;catalog, const KLocalizedString &amp;programName, const QByteArray &amp;version, const KLocalizedString &amp;description = KLocalizedString(), StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE)));
 <li> noKApp parameter is gone, instead:   Q_FLAGS(StdCmdLineArgs)</li>
 <li> new catalog parameter can be null or empty, then appname is used as catalog name</li>
 <li> KLocalizedString objects produced by ki18n()/ki18nc() calls (instead of previous I18N_NOOPs), or just KLocalizedString() if needed empty</li>
-<li> static void usage(const QString &error) -&gt; static void usageError(const QString &error)</li>
+<li> static void usage(const QString &amp;error) -&gt; static void usageError(const QString &amp;error)</li>
 </ul>
 
 <h4>KCmdLineOptions</h4>
@@ -497,7 +497,7 @@ automatically anymore, you need to call K3MimeSourceFactory::install() in your m
   int port;
 
   KBufferedSocket *socket = new KBufferedSocket(parent);
-  if (!socket->connect(host, QString::number(port))) {
+  if (!socket-&gt;connect(host, QString::number(port))) {
       // error happened
       // deal with it
   }
