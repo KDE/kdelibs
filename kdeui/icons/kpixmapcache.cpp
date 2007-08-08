@@ -29,6 +29,7 @@
 #include <QtGui/QPixmapCache>
 #include <QtCore/QtGlobal>
 #include <QtGui/QPainter>
+#include <QtCore/QQueue>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -93,6 +94,8 @@ public:
     bool checkFileVersion(const QString& filename);
     bool loadIndexHeader();
 
+    bool removeEntries(int newsize);
+
     QString indexKey(const QString& key);
 
 
@@ -117,6 +120,23 @@ public:
     bool mUseQPixmapCache;
     int mCacheLimit;
     RemoveStrategy mRemoveStrategy;
+
+
+    // Used by removeEntries()
+    class KPixmapCacheEntry
+    {
+    public:
+        KPixmapCacheEntry(int indexoffset_, const QString& key_, int dataoffset_)
+        {
+            indexoffset = indexoffset_;
+            key = key_;
+            dataoffset = dataoffset_;
+        }
+
+        int indexoffset;
+        QString key;
+        int dataoffset;
+    };
 };
 
 // Magic in the cache files
@@ -293,6 +313,135 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
             stream << offset;
         }
     }
+}
+
+bool KPixmapCache::Private::removeEntries(int newsize)
+{
+    LockFile lock(mLockFileName, true);
+    if (!lock.isValid()) {
+        kDebug() << k_funcinfo << "Couldn't lock cache " << mName << endl;
+        return false;
+    }
+
+    // Open old (current) files
+    QFile indexfile(mIndexFile);
+    if (!indexfile.open(QIODevice::ReadOnly)) {
+        kDebug() << k_funcinfo << "Couldn't open old index file" << endl;
+        return false;
+    }
+    QDataStream istream(&indexfile);
+    QFile datafile(mDataFile);
+    if (!datafile.open(QIODevice::ReadOnly)) {
+        kDebug() << k_funcinfo << "Couldn't open old data file" << endl;
+        return false;
+    }
+    if (datafile.size() <= newsize*1024) {
+        kDebug() << k_funcinfo << "Cache size is already within limit (" << datafile.size() << " <= " << newsize*1024 << ")" << endl;
+        return true;
+    }
+    QDataStream dstream(&datafile);
+    // Open new files
+    QFile newindexfile(mIndexFile + ".new");
+    if (!newindexfile.open(QIODevice::ReadWrite)) {
+        kDebug() << k_funcinfo << "Couldn't open new index file" << endl;
+        return false;
+    }
+    QDataStream newistream(&newindexfile);
+    QFile newdatafile(mDataFile + ".new");
+    if (!newdatafile.open(QIODevice::WriteOnly)) {
+        kDebug() << k_funcinfo << "Couldn't open new inddataex file" << endl;
+        return false;
+    }
+    QDataStream newdstream(&newdatafile);
+
+    // Copy index file header
+    char* header = new char[mHeaderSize];
+    if (istream.readRawData(header, mHeaderSize) != (int)mHeaderSize) {
+        kDebug() << k_funcinfo << "Couldn't read index header" << endl;
+        return false;
+    }
+    newistream.writeRawData(header, mHeaderSize);
+    // Write root index node offset
+    newistream << (quint32)(mHeaderSize + sizeof(quint32));
+    // Copy data file header
+    // mHeaderSize is always bigger than kpc_header_len, so we needn't create
+    //  new buffer
+    if (dstream.readRawData(header, kpc_header_len) != kpc_header_len) {
+        kDebug() << k_funcinfo << "Couldn't read data header" << endl;
+        return false;
+    }
+    newdstream.writeRawData(header, kpc_header_len);
+
+
+    // Load all entries
+    QList<KPixmapCacheEntry> mEntries;
+    // Do BFS to find all entries
+    QQueue<int> open;
+    open.enqueue(mIndexRootOffset);
+    while (!open.isEmpty()) {
+        int indexoffset = open.dequeue();
+        indexfile.seek(indexoffset);
+        QString fkey;
+        qint32 foffset;
+        qint32 leftchild, rightchild;
+        istream >> fkey >> foffset >> leftchild >> rightchild;
+        mEntries.append(KPixmapCacheEntry(indexoffset, fkey, foffset));
+        if (leftchild) {
+            open.enqueue(leftchild);
+        }
+        if (rightchild) {
+            open.enqueue(rightchild);
+        }
+    }
+
+
+    // Write some entries to the new files
+    int entrieswritten = 0;
+    for (entrieswritten = 0; entrieswritten < mEntries.count(); entrieswritten++) {
+        const KPixmapCacheEntry& entry = mEntries[entrieswritten];
+        // Load data
+        datafile.seek(entry.dataoffset);
+        int entrysize = -datafile.pos();
+        // We have some duplication here but this way we avoid uncompressing
+        //  the data and constructing QPixmap which we don't really need.
+        QString fkey;
+        dstream >> fkey;
+        qint32 format, w, h, bpl;
+        dstream >> format >> w >> h >> bpl;
+        QByteArray imgdatacompressed;
+        dstream >> imgdatacompressed;
+        // Load custom data as well. This will be stored by the subclass itself.
+        if (!q->loadCustomData(dstream)) {
+            return false;
+        }
+        // Find out size of this entry
+        entrysize += datafile.pos();
+
+        // Make sure we'll stay within size limit
+        if (newdatafile.size() + entrysize > newsize*1024) {
+            break;
+        }
+
+        // Now write the same data to the new file
+        int newdataoffset = newdatafile.pos();
+        newdstream << fkey;
+        newdstream << format << w << h << bpl;
+        newdstream << imgdatacompressed;
+        q->writeCustomData(newdstream);
+
+        // Finally, add the index entry
+        writeIndexEntry(newistream, entry.key, newdataoffset);
+    }
+
+    // Remove old files and rename the new ones
+    indexfile.remove();
+    datafile.remove();
+    newindexfile.rename(mIndexFile);
+    newdatafile.rename(mDataFile);
+
+    kDebug() << k_funcinfo << "Wrote back" << entrieswritten << "of" << mEntries.count() << "entries" << endl;
+
+    return true;
 }
 
 
