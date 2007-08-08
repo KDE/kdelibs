@@ -40,7 +40,7 @@
 
 //#define DISABLE_PIXMAPCACHE
 
-#define KPIXMAPCACHE_VERSION 0x000201
+#define KPIXMAPCACHE_VERSION 0x000202
 
 
 class LockFile
@@ -157,8 +157,9 @@ int KPixmapCache::Private::binarySearchKey(QDataStream& stream, const QString& k
 
     QString fkey;
     qint32 foffset;
+    quint32 timesused, lastused;
     qint32 leftchild, rightchild;
-    stream >> fkey >> foffset >> leftchild >> rightchild;
+    stream >> fkey >> foffset >> timesused >> lastused >> leftchild >> rightchild;
 
     if (key < fkey) {
         if (leftchild) {
@@ -177,7 +178,7 @@ int KPixmapCache::Private::findOffset(const QString& key)
 {
     // Open file and datastream on it
     QFile file(mIndexFile);
-    if (!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadWrite)) {
         return -1;
     }
     file.seek(mIndexRootOffset);
@@ -192,9 +193,17 @@ int KPixmapCache::Private::findOffset(const QString& key)
         // Load the found entry and check if it's the one we're looking for.
         file.seek(nodeoffset);
         QString fkey;
-        qint32 foffset;
-        stream >> fkey >> foffset;
+        stream >> fkey;
         if (fkey == key) {
+            // Read offset and statistics
+            qint32 foffset;
+            quint32 timesused, lastused;
+            stream >> foffset >> timesused;
+            // Update statistics
+            timesused++;
+            lastused = QDateTime::currentDateTime().toTime_t();
+            stream.device()->seek(stream.device()->pos() - sizeof(quint32));
+            stream << timesused << lastused;
             return foffset;
         }
     }
@@ -292,6 +301,8 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
     stream.device()->seek(offset);
     // Write the data
     stream << key << (qint32)dataoffset;
+    // Statistics (# of uses and last used timestamp)
+    stream << (quint32)1 << (quint32)QDateTime::currentDateTime().toTime_t();
     // Write (empty) children offsets
     stream << (qint32)0 << (qint32)0;
 
@@ -303,7 +314,8 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
         stream.device()->seek(parentoffset);
         QString fkey;
         qint32 foffset, tmp;
-        stream >> fkey >> foffset;
+        quint32 timesused, lastused;
+        stream >> fkey >> foffset >> timesused >> lastused;
         if (key < fkey) {
             // New entry will be parent's left child
             stream << offset;
@@ -383,8 +395,9 @@ bool KPixmapCache::Private::removeEntries(int newsize)
         indexfile.seek(indexoffset);
         QString fkey;
         qint32 foffset;
+        quint32 timesused, lastused;
         qint32 leftchild, rightchild;
-        istream >> fkey >> foffset >> leftchild >> rightchild;
+        istream >> fkey >> foffset >> timesused >> lastused >> leftchild >> rightchild;
         mEntries.append(KPixmapCacheEntry(indexoffset, fkey, foffset));
         if (leftchild) {
             open.enqueue(leftchild);
