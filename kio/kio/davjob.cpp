@@ -134,7 +134,7 @@ void DavJob::slotFinished()
 	}
   // kDebug(7113) << d->m_response.toString();
 	TransferJob::slotFinished();
-	if( d ) d->staticData = d->savedStaticData; // Need to send DAV request to this host too
+	d->staticData = d->savedStaticData; // Need to send DAV request to this host too
 }
 
 /* Convenience methods */
