@@ -42,6 +42,10 @@ drawComplexControl:
     some sort of bevel/bevelless mode in ButtonKOpt? Definitely a lot of overlap..
     Side note: only passes in QStyleOptionComplex
   
+drawControl
+  CE_PushButton
+    QStyleOptionButton::Flat not taken into account (thus the frame is always drawn).
+
 sizeFromContents:
     CT_CheckBox: OK
     CT_ComboBox:
