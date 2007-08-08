@@ -37,6 +37,8 @@
 #include <klockfile.h>
 #include <ksvgrenderer.h>
 
+#include <time.h>
+
 
 //#define DISABLE_PIXMAPCACHE
 
@@ -201,7 +203,7 @@ int KPixmapCache::Private::findOffset(const QString& key)
             stream >> foffset >> timesused;
             // Update statistics
             timesused++;
-            lastused = QDateTime::currentDateTime().toTime_t();
+            lastused = ::time(0);
             stream.device()->seek(stream.device()->pos() - sizeof(quint32));
             stream << timesused << lastused;
             return foffset;
@@ -263,7 +265,7 @@ bool KPixmapCache::Private::loadIndexHeader()
     QDataStream stream(&file);
     if (file.atEnd()) {
         // Write default timestamp
-        mTimestamp = QDateTime::currentDateTime().toTime_t();
+        mTimestamp = ::time(0);
         stream << (quint32)mTimestamp;
     } else {
         // Load timestamp
@@ -302,7 +304,7 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
     // Write the data
     stream << key << (qint32)dataoffset;
     // Statistics (# of uses and last used timestamp)
-    stream << (quint32)1 << (quint32)QDateTime::currentDateTime().toTime_t();
+    stream << (quint32)1 << (quint32)::time(0);
     // Write (empty) children offsets
     stream << (qint32)0 << (qint32)0;
 
@@ -610,7 +612,7 @@ bool KPixmapCache::recreateCacheFiles()
     istream.writeRawData(d->kpc_magic, d->kpc_magic_len);
     istream << (quint32)KPIXMAPCACHE_VERSION;
     // Write default timestamp
-    d->mTimestamp = QDateTime::currentDateTime().toTime_t();
+    d->mTimestamp = ::time(0);
     istream << (quint32)d->mTimestamp;
 
     // Create data file
