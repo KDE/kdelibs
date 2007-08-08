@@ -128,17 +128,38 @@ public:
     class KPixmapCacheEntry
     {
     public:
-        KPixmapCacheEntry(int indexoffset_, const QString& key_, int dataoffset_)
+        KPixmapCacheEntry(int indexoffset_, const QString& key_, int dataoffset_,
+                          int pos_, quint32 timesused_, quint32 lastused_)
         {
             indexoffset = indexoffset_;
             key = key_;
             dataoffset = dataoffset_;
+            pos = pos_;
+            timesused = timesused_;
+            lastused = lastused_;
         }
 
         int indexoffset;
         QString key;
         int dataoffset;
+
+        int pos;
+        quint32 timesused;
+        quint32 lastused;
     };
+
+    static bool compareEntriesByAge(const KPixmapCacheEntry& a, const KPixmapCacheEntry& b)
+    {
+        return a.pos > b.pos;
+    }
+    static bool compareEntriesByTimesUsed(const KPixmapCacheEntry& a, const KPixmapCacheEntry& b)
+    {
+        return a.timesused > b.timesused;
+    }
+    static bool compareEntriesByLastUsed(const KPixmapCacheEntry& a, const KPixmapCacheEntry& b)
+    {
+        return a.lastused > b.lastused;
+    }
 };
 
 // Magic in the cache files
@@ -388,7 +409,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
 
 
     // Load all entries
-    QList<KPixmapCacheEntry> mEntries;
+    QList<KPixmapCacheEntry> entries;
     // Do BFS to find all entries
     QQueue<int> open;
     open.enqueue(mIndexRootOffset);
@@ -400,7 +421,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
         quint32 timesused, lastused;
         qint32 leftchild, rightchild;
         istream >> fkey >> foffset >> timesused >> lastused >> leftchild >> rightchild;
-        mEntries.append(KPixmapCacheEntry(indexoffset, fkey, foffset));
+        entries.append(KPixmapCacheEntry(indexoffset, fkey, foffset, entries.count(), timesused, lastused));
         if (leftchild) {
             open.enqueue(leftchild);
         }
@@ -410,10 +431,21 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     }
 
 
+    // Sort the entries according to RemoveStrategy. This moves the best
+    //  entries to the beginning of the list
+    if (q->removeEntryStrategy() == RemoveOldest) {
+        qSort(entries.begin(), entries.end(), compareEntriesByAge);
+    } else if (q->removeEntryStrategy() == RemoveOldest) {
+        qSort(entries.begin(), entries.end(), compareEntriesByTimesUsed);
+    } else {
+        qSort(entries.begin(), entries.end(), compareEntriesByLastUsed);
+    }
+
+
     // Write some entries to the new files
     int entrieswritten = 0;
-    for (entrieswritten = 0; entrieswritten < mEntries.count(); entrieswritten++) {
-        const KPixmapCacheEntry& entry = mEntries[entrieswritten];
+    for (entrieswritten = 0; entrieswritten < entries.count(); entrieswritten++) {
+        const KPixmapCacheEntry& entry = entries[entrieswritten];
         // Load data
         datafile.seek(entry.dataoffset);
         int entrysize = -datafile.pos();
@@ -454,7 +486,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     newindexfile.rename(mIndexFile);
     newdatafile.rename(mDataFile);
 
-    kDebug() << k_funcinfo << "Wrote back" << entrieswritten << "of" << mEntries.count() << "entries" << endl;
+    kDebug() << k_funcinfo << "Wrote back" << entrieswritten << "of" << entries.count() << "entries" << endl;
 
     return true;
 }
@@ -663,7 +695,8 @@ void KPixmapCache::removeEntries(int newsize)
     if (!newsize) {
         newsize = cacheLimit();
     }
-    //TODO!!!
+
+    d->removeEntries(newsize);
 }
 
 bool KPixmapCache::find(const QString& key, QPixmap& pix)
@@ -789,6 +822,12 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     }
 
     writeIndex(indexkey, offset);
+
+    // Make sure the cache size stays within limits
+    if (size() > cacheLimit()) {
+        lock.unlock();
+        d->removeEntries(int(cacheLimit() * 0.75));
+    }
 }
 
 int KPixmapCache::writeData(const QString& key, const QPixmap& pix)
