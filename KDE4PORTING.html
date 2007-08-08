@@ -66,6 +66,7 @@ KDE 3.x when you want to port them to KDE 4.0.<br>
 <li><a href="#gettingstarted">Getting Started</a></li>
 <li><a href="#globalchanges">Global Changes</a></li>
 <li><a href="#kab">Changes in kab</a></li>
+<li><a href="#kdefx">Changes in kdefx (NOTE: SLATED FOR REMOVAL)</a></li>
 <li><a href="#kdecore">Changes in kdecore</a></li>
 <li><a href="#kdeui">Changes in kdeui</a></li>
 <li><a href="#kio">Changes in kio</a></li>
@@ -115,6 +116,41 @@ instead.</li>
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
 <h3><a name="kdefx">Changes in kdefx</a></h3>
+
+<p>NOTE: kdefx is still being discussed. The following text represents "the
+current plan" to the best of my knowledge, and is being provided to inform the
+developement community. Future-tense text is not set in stone. -- mwoehlke</p>
+
+<p>kdefx is slated for removal if possible. If the list of replacements doesn't
+help, and you are not the only user of a particular function, please raise the
+issue on <a href="mailto:kde-core-devel@kde.org">k-c-d</a>. Include what
+function you are using and who else is using it. If you are the only user,
+you should copy the required code to your application.</p>
+
+<ul>
+<li>KStyle will be moved (probably to kdeui).</li>
+<li>KCPUInfo functionality will be merged into Solid/HAL.</li>
+<li>Qt has gradients now, please use them if you can.</li>
+<li>kColorBitmaps will likely end up somewhere in kdeui. The rest of kdrawutils.h is gone.
+<ul>
+<li>If you already ported your code to KDE4, your code now has a copy of whatever kdrawutil code you were using.</li>
+<li>If you haven't ported your code yet, you get to find a copy of what you need in svn's revision history (or in branches/3.5).</li>
+</ul>
+<li>KPixmapSplitter is going to be removed. Use instead this code, courtesy of Matt Newell:
+<pre>
+QRect getFlowedRect(int index, const QSize &amp;itemSize,
+                    int layoutWidth, int h_spacing, int v_spacing)
+{
+    // NOTE: if using h_spacing, depending on your use you might want to replace
+    // layoutWidth with (layoutWidth + h_spacing)
+    int itemsPerRow = layoutWidth / (itemSize.width() + h_spacing);
+    return QRect( QPoint( (index % itemsPerRow) * (itemSize.width() + h_spacing),
+                          (index / itemsPerRow) * (itemSize.height() + v_spacing) ),
+                  itemSize );
+}
+</pre>
+</li>
+</ul>
 
 <h4>KPixmap</h4>
 <p>Removed. Use QPixmap instead.</p>
