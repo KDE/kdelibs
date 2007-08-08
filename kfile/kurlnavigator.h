@@ -217,9 +217,7 @@ public Q_SLOTS:
      */
     void savePosition(int x, int y);
 
-    /**
-     * Gives the keyboard input focus.
-     */
+    /* @see QWidget::setFocus() */
     void setFocus();
 
 Q_SIGNALS:
@@ -255,19 +253,21 @@ Q_SIGNALS:
     void returnPressed();
 
 protected:
-    /**
+    /*
      * If the Escape key is pressed, the navigation bar should switch
      * to the breadcrumb view.
+     * @see QWidget::keyReleaseEvent()
      */
     virtual void keyReleaseEvent(QKeyEvent* event);
 
-    /**
+    /*
      * Paste the clipboard content as URL, if the middle mouse
      * button has been clicked.
+     * @see QWidget::mouseReleaseEvent()
      */
     virtual void mouseReleaseEvent(QMouseEvent* event);
 
-    /** @see QWidget::resizeEvent() */
+    /* @see QWidget::resizeEvent() */
     virtual void resizeEvent(QResizeEvent* event);
 
 private:
@@ -279,7 +279,6 @@ private:
     Q_PRIVATE_SLOT(d, void dropUrls(const KUrl::List& list, const KUrl& destination))
     Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())
-    //Q_PRIVATE_SLOT(d, void slotRedirection(const KUrl&, const KUrl&))
 
 private:
     class Private;
