@@ -115,6 +115,45 @@ inline int HistoryElem::contentsY() const
     return m_contentsY;
 }
 
+/**
+ * @brief Line editor for the host part of the URL.
+ *
+ * Extends the class KLineEdit to return a preferred
+ * width in HostLineEdit::sizeHint() which assures that
+ * the host part is always fully visible.
+ */
+class HostLineEdit : public KLineEdit
+{
+public:
+    HostLineEdit(const QString& text, QWidget* parent = 0);
+    virtual ~HostLineEdit();
+    virtual QSize sizeHint() const;
+};
+
+HostLineEdit::HostLineEdit(const QString& text, QWidget* parent) :
+    KLineEdit(text, parent)
+{
+}
+
+HostLineEdit::~HostLineEdit()
+{
+}
+
+QSize HostLineEdit::sizeHint() const
+{
+    QSize size = KLineEdit::sizeHint();
+
+    const QFontMetrics fm(font());
+    const int width = fm.width(text()) + 32;
+    if (width > size.width()) {
+        size.setWidth(width);
+    }
+
+    return size;
+}
+
+////
+
 class KUrlNavigator::Private
 {
 public:
@@ -187,13 +226,20 @@ public:
     KFilePlacesSelector* m_placesSelector;
     KUrlComboBox* m_pathBox;
     KProtocolCombo* m_protocols;
-    KLineEdit* m_host;
+    HostLineEdit* m_host;
     KUrlDropDownButton* m_dropDownButton;
     QLinkedList<KUrlNavigatorButton*> m_navButtons;
     KUrlButton* m_toggleEditableMode;
     QString m_homeUrl;
     QStringList m_customProtocols;
     KUrlNavigator* q;
+
+private:
+    /**
+     * Creates an instance of the class HostLineEdit and
+     * assigns it to m_host.
+     */
+    void createHostLineEdit(const QString& text);
 };
 
 
@@ -325,7 +371,6 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
 {
     KUrl url;
     url.setScheme(protocol);
-    //url.setPath(KProtocolInfo::protocolClass(protocol) == ":local" ? "/" : "");
     url.setPath("/");
     QLinkedList<KUrlNavigatorButton*>::const_iterator it = m_navButtons.begin();
     const QLinkedList<KUrlNavigatorButton*>::const_iterator itEnd = m_navButtons.end();
@@ -339,15 +384,8 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
     if (KProtocolInfo::protocolClass(protocol) == ":local") {
         q->setUrl(url);
     } else {
-        if (!m_host) {
-            m_host = new KLineEdit(q);
-            m_host->setClearButtonShown(true);
-            appendWidget(m_host, 1);
-
-            connect(m_host, SIGNAL(editingFinished()),
-                    q, SLOT(slotRemoteHostActivated()));
-            connect(m_host, SIGNAL(returnPressed()),
-                    q, SIGNAL(returnPressed()));
+        if (m_host == 0) {
+            createHostLineEdit("");
         } else {
             m_host->setText("");
         }
@@ -382,21 +420,6 @@ void KUrlNavigator::Private::openPathSelectorMenu()
 
     popup->deleteLater();
 }
-
-#if 0
-void KUrlNavigator::slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
-{
-// kDebug() << "received redirection to " << newUrl;
-    kDebug() << "received redirection from " << oldUrl << " to " << newUrl;
-    /*    UrlStack::iterator it = m_urls.find(oldUrl);
-        if (it != m_urls.end())
-        {
-            m_urls.erase(++it, m_urls.end());
-        }
-
-        m_urls.append(newUrl);*/
-}
-#endif
 
 void KUrlNavigator::Private::switchView()
 {
@@ -490,16 +513,8 @@ void KUrlNavigator::Private::updateContent()
                     hostText = hostText + ':' + QString::number(currentUrl.port());
                 }
 
-                if (!m_host) {
-                    // ######### TODO: this code is duplicated from slotProtocolChanged!
-                    m_host = new KLineEdit(hostText, q);
-                    m_host->setClearButtonShown(true);
-                    appendWidget(m_host, 1);
-
-                    connect(m_host, SIGNAL(editingFinished()),
-                            q, SLOT(slotRemoteHostActivated()));
-                    connect(m_host, SIGNAL(returnPressed()),
-                            q, SIGNAL(returnPressed()));
+                if (m_host == 0) {
+                    createHostLineEdit(hostText);
                 } else {
                     m_host->setText(hostText);
                 }
@@ -651,15 +666,11 @@ void KUrlNavigator::Private::updateButtonVisibility()
 
 void KUrlNavigator::Private::deleteButtons()
 {
-    QLinkedList<KUrlNavigatorButton*>::iterator itBegin = m_navButtons.begin();
-    QLinkedList<KUrlNavigatorButton*>::iterator itEnd = m_navButtons.end();
-    QLinkedList<KUrlNavigatorButton*>::iterator it = itBegin;
-    while (it != itEnd) {
-        (*it)->close();
-        (*it)->deleteLater();
-        ++it;
+    foreach (KUrlNavigatorButton* button, m_navButtons) {
+        button->close();
+        button->deleteLater();
     }
-    m_navButtons.erase(itBegin, itEnd);
+    m_navButtons.clear();
 }
 
 QString KUrlNavigator::Private::retrievePlacePath(const QString& path) const
@@ -672,6 +683,21 @@ QString KUrlNavigator::Private::retrievePlacePath(const QString& path) const
         idx = path.indexOf("/", (idx < 0) ? 0 : idx + 2);
     }
     return (idx < 0) ? path : path.left(idx);
+}
+
+void KUrlNavigator::Private::createHostLineEdit(const QString& text)
+{
+    Q_ASSERT(m_host == 0);
+
+    m_host = new HostLineEdit(text, q);
+    m_host->setClearButtonShown(true);
+    m_host->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    appendWidget(m_host);
+
+    connect(m_host, SIGNAL(editingFinished()),
+            q, SLOT(slotRemoteHostActivated()));
+    connect(m_host, SIGNAL(returnPressed()),
+            q, SIGNAL(returnPressed()));
 }
 
 ////
@@ -843,14 +869,12 @@ void KUrlNavigator::setUrl(const KUrl& url)
         HistoryElem& prevHistoryElem = d->m_history[d->m_historyIndex - 1];
         if (transformedUrl == prevHistoryElem.url()) {
             goForward();
-//             kDebug() << "goin' forward in history";
             return;
         }
     }
 
     if (this->url() != transformedUrl) {
         // don't insert duplicate history elements
-//         kDebug() << "current url == transformedUrl";
         d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl));
 
         emit urlChanged(transformedUrl);
@@ -945,12 +969,10 @@ void KUrlNavigator::setFocus()
 {
     if (isUrlEditable()) {
         d->m_pathBox->setFocus();
+    } else if (d->m_host) {
+        d->m_host->setFocus();
     } else {
-        if (d->m_host) {
-            d->m_host->setFocus();
-        } else {
-            QWidget::setFocus();
-        }
+        QWidget::setFocus();
     }
 }
 
