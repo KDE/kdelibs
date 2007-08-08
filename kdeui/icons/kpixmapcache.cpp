@@ -81,6 +81,7 @@ public:
 
     int findOffset(const QString& key);
     int binarySearchKey(QDataStream& stream, const QString& key, int start);
+    void writeIndexEntry(QDataStream& stream, const QString& key, int dataoffset);
 
     bool checkLockFile();
     bool checkFileVersion(const QString& filename);
@@ -254,6 +255,36 @@ QString KPixmapCache::Private::indexKey(const QString& key)
 {
     QByteArray latin1 = key.toLatin1();
     return QString("%1%2").arg((ushort)qChecksum(latin1.data(), latin1.size()), 4, 16, QLatin1Char('0')).arg(key);
+}
+
+void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& key, int dataoffset)
+{
+    // New entry will be written to the end of the file
+    qint32 offset = stream.device()->size();
+    stream.device()->seek(offset);
+    // Write the data
+    stream << key << (qint32)dataoffset;
+    // Write (empty) children offsets
+    stream << (qint32)0 << (qint32)0;
+
+    // Find parent index node for this node.
+    int parentoffset = binarySearchKey(stream, key, mIndexRootOffset);
+    // If we created the root node then the two offsets are equal and we're
+    //  done. Otherwise set parent's child offset to correct value.
+    if (parentoffset != offset) {
+        stream.device()->seek(parentoffset);
+        QString fkey;
+        qint32 foffset, tmp;
+        stream >> fkey >> foffset;
+        if (key < fkey) {
+            // New entry will be parent's left child
+            stream << offset;
+        } else {
+            // New entry will be parent's right child
+            stream >> tmp;
+            stream << offset;
+        }
+    }
 }
 
 
@@ -624,32 +655,7 @@ void KPixmapCache::writeIndex(const QString& key, int dataoffset)
     }
     QDataStream stream(&file);
 
-    // New entry will be written to the end of the file
-    qint32 offset = file.size();
-    file.seek(offset);
-    // Write the data
-    stream << key << (qint32)dataoffset;
-    // Write (empty) children offsets
-    stream << (qint32)0 << (qint32)0;
-
-    // Find parent index node for this node.
-    int parentoffset = d->binarySearchKey(stream, key, d->mIndexRootOffset);
-    // If we created the root node then the two offsets are equal and we're
-    //  done. Otherwise set parent's child offset to correct value.
-    if (parentoffset != offset) {
-        file.seek(parentoffset);
-        QString fkey;
-        qint32 foffset, tmp;
-        stream >> fkey >> foffset;
-        if (key < fkey) {
-            // New entry will be parent's left child
-            stream << offset;
-        } else {
-            // New entry will be parent's right child
-            stream >> tmp;
-            stream << offset;
-        }
-    }
+    d->writeIndexEntry(stream, key, dataoffset);
 }
 
 QPixmap KPixmapCache::loadFromFile(const QString& filename)
