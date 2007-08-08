@@ -412,8 +412,8 @@ private:
 
   void init(bool GUIenabled=true);
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
-  void preqapplicationhack();
-  void preread_app_startup_id();
+  static void preqapplicationhack();
+  static void preread_app_startup_id();
   void read_app_startup_id();
   friend class KAction;
 
