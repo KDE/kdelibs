@@ -50,7 +50,7 @@ AutomaticAction::AutomaticAction(const KIcon &icon, const QString &text, const Q
     setText(text);
     setIcon(icon);
     setShortcut(cut);
-    connect(this, SIGNAL(activated()), this, slot);
+    connect(this, SIGNAL(triggered()), this, slot);
 }
 
 QStringList stdNames()
