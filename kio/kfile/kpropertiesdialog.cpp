@@ -345,6 +345,9 @@ void KPropertiesDialog::KPropertiesDialogPrivate::init()
     connect(q, SIGNAL(cancelClicked()), q, SLOT(slotCancel()));
 
     insertPages();
+
+    KConfigGroup group(KGlobal::config(), "KPropertiesDialog");
+    q->restoreDialogSize(group);
 }
 
 void KPropertiesDialog::showFileSharingPage()
@@ -375,7 +378,10 @@ KPropertiesDialog::~KPropertiesDialog()
 {
     qDeleteAll(d->m_items);
     qDeleteAll(d->m_pageList);
-  delete d;
+    delete d;
+
+    KConfigGroup group(KGlobal::config(), "KPropertiesDialog");
+    saveDialogSize(group, KConfigFlags::Persistent);
 }
 
 void KPropertiesDialog::insertPlugin (KPropertiesDialogPlugin* plugin)
