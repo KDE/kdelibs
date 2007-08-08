@@ -60,10 +60,16 @@ public:
     }
     ~LockFile()
     {
+        unlock();
+        delete mLockFile;
+    }
+
+    void unlock()
+    {
         if (mValid) {
             mLockFile->unlock();
+            mValid = false;
         }
-        delete mLockFile;
     }
 
     bool isValid() const  { return mValid; }
