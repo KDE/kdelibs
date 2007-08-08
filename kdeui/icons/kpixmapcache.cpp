@@ -101,6 +101,7 @@ public:
     static const char* kpc_magic;
     static const int kpc_magic_len;
     static const int kpc_header_len;
+    quint32 mHeaderSize;  // full size of the index header, including custom (subclass') header data
     quint32 mIndexRootOffset;  // offset of the first entry in index file
 
     bool mInited;  // Whether init() has been called (it's called on-demand)
@@ -250,6 +251,7 @@ bool KPixmapCache::Private::loadIndexHeader()
     if (!q->loadCustomIndexHeader(stream)) {
         return false;
     }
+    mHeaderSize = stream.device()->pos();
 
     // Load root node pos.
     stream >> mIndexRootOffset;
@@ -461,8 +463,9 @@ bool KPixmapCache::recreateCacheFiles()
 
     setValid(true);
     writeCustomIndexHeader(istream);
+    d->mHeaderSize = indexfile.pos();
 
-    d->mIndexRootOffset = indexfile.pos() + sizeof(quint32);
+    d->mIndexRootOffset = d->mHeaderSize + sizeof(quint32);
     istream << d->mIndexRootOffset;
     return true;
 }
