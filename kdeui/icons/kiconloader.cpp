@@ -277,6 +277,7 @@ void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
 
 void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 {
+    kDebug() << k_funcinfo << "" << endl;
     setObjectName(_appname);
     d = new KIconLoaderPrivate;
     d->extraDesktopIconsLoaded=false;
@@ -293,15 +294,19 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
         d->appname = KGlobal::mainComponent().componentName();
 
     // Initialize icon cache
+    kDebug() << k_funcinfo << "Constructing IC" << endl;
     d->mIconCache = new KIconCache;
     if (!d->mIconCache->isValid()) {
+        kDebug() << k_funcinfo << "IC is not valid" << endl;
         initIconThemes();
         QList<KIconTheme*> allThemes;
         foreach (KIconThemeNode* node, d->links) {
             allThemes.append(node->theme);
         }
+        kDebug() << k_funcinfo << "Setting IC's themeinfo" << endl;
         d->mIconCache->setThemeInfo(allThemes);
     }
+    kDebug() << k_funcinfo << "IC ready" << endl;
 
     // These have to match the order in kicontheme.h
     static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", "Dialog", 0L };
@@ -329,6 +334,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 #ifdef NO_LAZYLOAD_ICONTHEME
     initIconThemes();
 #endif
+    kDebug() << k_funcinfo << "done" << endl;
 }
 
 bool KIconLoader::initIconThemes()
@@ -357,15 +363,19 @@ bool KIconLoader::initIconThemes()
             return false;
         }
     }
+    kDebug() << k_funcinfo << "IT constructed" << endl;
     d->mpThemeRoot = new KIconThemeNode(def);
     d->links.append(d->mpThemeRoot);
     d->mThemesInTree += KIconTheme::current();
+    kDebug() << k_funcinfo << "ITN constructed & added" << endl;
     addBaseThemes(d->mpThemeRoot, d->appname);
+    kDebug() << k_funcinfo << "base themes added" << endl;
 
     // Insert application specific themes at the top.
     d->mpDirs->addResourceType("appicon", "data", d->appname + "/pics/");
     // ################## KDE4: consider removing the toolbar directory
     d->mpDirs->addResourceType("appicon", "data", d->appname + "/toolbar/");
+    kDebug() << k_funcinfo << "app resources added" << endl;
 
     // Add legacy icon dirs.
     QStringList dirs;
@@ -383,6 +393,7 @@ bool KIconLoader::initIconThemes()
     d->mpThemeRoot->printTree(dbgString);
     kDebug(264) << dbgString;
 #endif
+    kDebug() << k_funcinfo << "all done" << endl;
 
     return true;
 }
