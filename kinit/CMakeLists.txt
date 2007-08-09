@@ -35,11 +35,21 @@ target_link_libraries(kdeinit4 ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} )
 
 install(TARGETS kdeinit4 DESTINATION ${BIN_INSTALL_DIR} )
 
-########### kdeinit4_wrapper ###############
-
+########### kwrapper4 ###############
 if (WIN32)
-MESSAGE("-- warning: fix targets in kinit")
+  set(kwrapper_SRCS kwrapper_win.cpp  )
 else (WIN32)
+  set(kwrapper_SRCS kwrapper.c  )
+endif (WIN32)
+
+kde4_add_executable(kwrapper4 NOGUI ${kwrapper_SRCS})
+
+target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS} )
+
+install(TARGETS kwrapper4 DESTINATION ${BIN_INSTALL_DIR} )
+
+if (NOT WIN32)
+########### kdeinit4_wrapper ###############
 
 kde4_add_executable(kdeinit4_wrapper NOGUI wrapper.c)
 
@@ -67,14 +77,6 @@ target_link_libraries(kdeinit4_shutdown  ${KDE4_KDECORE_LIBS} )
 
 install(TARGETS kdeinit4_shutdown DESTINATION ${BIN_INSTALL_DIR} )
 
-########### kwrapper4 ###############
-
-kde4_add_executable(kwrapper4 NOGUI kwrapper.c)
-
-target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS} )
-
-install(TARGETS kwrapper4 DESTINATION ${BIN_INSTALL_DIR} )
-
 ########### lnusertemp ###############
 
 set(lnusertemp_SRCS lnusertemp.c )
@@ -84,7 +86,7 @@ kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
 target_link_libraries(lnusertemp  ${KDE4_KDECORE_LIBS} )
 
 install(TARGETS lnusertemp DESTINATION ${LIBEXEC_INSTALL_DIR} )
-endif (WIN32)
+endif (NOT WIN32)
 
 
 ########### kioslave ###############
