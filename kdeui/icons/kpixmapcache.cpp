@@ -435,7 +435,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     //  entries to the beginning of the list
     if (q->removeEntryStrategy() == RemoveOldest) {
         qSort(entries.begin(), entries.end(), compareEntriesByAge);
-    } else if (q->removeEntryStrategy() == RemoveOldest) {
+    } else if (q->removeEntryStrategy() == RemoveSeldomUsed) {
         qSort(entries.begin(), entries.end(), compareEntriesByTimesUsed);
     } else {
         qSort(entries.begin(), entries.end(), compareEntriesByLastUsed);
