@@ -65,6 +65,9 @@ public:
   enum entryMode { UnknownMode = 0, StatMode, DNotifyMode, INotifyMode, FAMMode };
   enum { NoChange=0, Changed=1, Created=2, Deleted=4 };
 
+
+  enum WatchMethod { Stat, Fam, INotify };
+
   struct Client {
     KDirWatch* instance;
     int count;
@@ -148,6 +151,7 @@ public:
   QTimer timer;
   EntryMap m_mapEntries;
 
+  WatchMethod m_preferredMethod;
   int freq;
   int statEntries;
   int m_nfsPollInterval, m_PollInterval;

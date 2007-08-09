@@ -122,6 +122,19 @@ KDirWatchPrivate::KDirWatchPrivate()
   m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
   m_PollInterval = config.readEntry("PollInterval", 500);
 
+  QString method = config.readEntry("PreferredMethod", "Fam"); 
+  if (method == "Fam")
+  {
+    m_preferredMethod = Fam;
+  }else if (method == "Stat")
+  {
+    m_preferredMethod = Stat;
+  }else
+  {
+    m_preferredMethod = INotify;
+  }
+
+
   QString available("Stat");
 
   // used for FAM
@@ -671,17 +684,37 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   // Now I've put inotify check before famd one, otherwise famd will be used
   // also when inotify is available. Since inotify works
   // better than famd, it is preferred to the last one
-  // TODO: make monitoring system selection configurable at run-time
-  
+ 
+  //First try to use the preferred method, if that fails use the usual order:
+  //inotify,fam,stat
+  bool entryAdded = false;
+  if (m_preferredMethod == Fam)
+  {
+#if defined(HVE_FAM)
+    entryAdded = useFAM(e);
+#endif
+  }else if (m_preferredMethod == INotify)
+  {
 #if defined(HAVE_SYS_INOTIFY_H)
-  if (useINotify(e)) return;
+    entryAdded = useINotify(e);
+#endif
+  }else if (m_preferredMethod == Stat)
+  {
+    entryAdded = useStat(e);
+  }
+
+  if (!entryAdded)
+  {
+#if defined(HAVE_SYS_INOTIFY_H)
+    if (useINotify(e)) return;
 #endif
   
 #if defined(HAVE_FAM)
-  if (useFAM(e)) return;
+    if (useFAM(e)) return;
 #endif
-
-  useStat(e);
+  
+    useStat(e);
+  }
 }
 
 
