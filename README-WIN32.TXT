@@ -7,6 +7,12 @@ BUGS:
 
 
 TODO:
+- add description and version number to shared libraries. 
+
+- add application icons to executables
+
+- kinit/klauncher: refactor unix klauncher.cpp and merge back klauncher_win.cpp
+
 - kio/kio/kfileitem.cpp: win32 implementation of user/group/permissions handling required.
 qt's QFileInfo class has methods for platform independent user/group/permission retrieving 
 but they are not implemented complete in the win32 port.
