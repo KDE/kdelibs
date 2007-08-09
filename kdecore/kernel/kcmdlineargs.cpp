@@ -304,9 +304,13 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     kde_options.add("icon <icon>",         ki18n("Use 'icon' as the application icon"));
     kde_options.add("config <filename>",   ki18n("Use alternative configuration file"));
     kde_options.add("nocrashhandler",      ki18n("Disable crash handler, to get core dumps"));
+#ifdef Q_WS_X11
     kde_options.add("waitforwm",           ki18n("Waits for a WM_NET compatible windowmanager"));
+#endif
     kde_options.add("style <style>",       ki18n("sets the application GUI style"));
+#ifdef Q_WS_X11
     kde_options.add("geometry <geometry>", ki18n("sets the client geometry of the main widget - see man X for the argument format"));
+#endif
     kde_options.add("smkey <sessionKey>"); // this option is obsolete and exists only to allow smooth upgrades from sessions
 }
 
