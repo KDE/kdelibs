@@ -764,14 +764,24 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
   printDebug();
 #endif
 
-  // Somehow this should only be called if src is a dir. But how could we know if it is?
-  // (Note that looking into itemsInUse isn't good enough. One could rename a subdir in a view.)
-  renameDir( src, dst );
-
-  // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   KUrl oldurl( src );
   oldurl.adjustPath( KUrl::RemoveTrailingSlash );
   KFileItem *fileitem = findByUrl( 0, oldurl );
+
+  // If the item had a UDS_URL as well as UDS_NAME set, the user probably wants
+  // to be updating the name only (since they can't see the URL).
+  // Check to see if a URL exists, and if so, if only the file part has changed,
+  // only update the name and not the underlying URL.
+  bool nameOnly = fileitem && !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
+  nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
+                dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
+
+  // Somehow this should only be called if src is a dir. But how could we know if it is?
+  // (Note that looking into itemsInUse isn't good enough. One could rename a subdir in a view.)
+  if( !nameOnly )
+        renameDir( src, dst );
+
+  // Now update the KFileItem representing that file or dir (not exclusive with the above!)
   if ( fileitem )
   {
     if ( !fileitem->isLocalFile() && !fileitem->localPath().isEmpty() ) // it uses UDS_LOCAL_PATH? ouch, needs an update then
@@ -779,7 +789,10 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
     else
     {
         aboutToRefreshItem( fileitem );
-        fileitem->setUrl( dst );
+        if( nameOnly )
+            fileitem->setName( dst.fileName() );
+        else
+            fileitem->setUrl( dst );
         fileitem->refreshMimeType();
         emitRefreshItem( fileitem );
     }
