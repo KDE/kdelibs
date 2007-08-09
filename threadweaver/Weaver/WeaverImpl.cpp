@@ -237,11 +237,11 @@ bool WeaverImpl::dequeue ( Job* job )
     {
         QMutexLocker l (m_mutex);
 
-        job->aboutToBeDequeued( this );
-
         int i = m_assignments.indexOf ( job );
         if ( i != -1 )
         {
+            job->aboutToBeDequeued( this );
+
             m_assignments.removeAt( i );
             result = true;
             debug( 3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n",

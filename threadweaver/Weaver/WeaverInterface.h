@@ -100,7 +100,7 @@ namespace ThreadWeaver {
         */
         virtual void enqueue ( Job* ) = 0;
         /** Remove a job from the queue.
-            If the job was queued but not started so far, it is simple
+            If the job was queued but not started so far, it is simply
             removed from the queue. For now, it is unsupported to
             dequeue a job once its execution has started.
 	    For that case, you will have to provide a method to interrupt your
