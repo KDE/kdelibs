@@ -423,7 +423,7 @@ the KDesktopFile was used, otherwise use group("another_group").</li>
 
 <h4>KFilterDev</h4>
 <ul>
-<li>device() &gt; createDevice() to indicate that you must delete the device afterwards.</li>
+<li>device() -&gt; createDevice() to indicate that you must delete the device afterwards.</li>
 </ul>
 
 <h4>KGlobal</h4>
@@ -1968,8 +1968,8 @@ a listDir result.</li>
 <ul>
 <li>KMimeType::pixmap() has been deprecated (for core/gui separation), use icon() or icon(url)
 and KIconLoader::loadMimeTypeIcon with that icon name.</li>
-<li>KMimeType::pixmapForURL &gt; KIO::pixmapForURL</li>
-<li>KMimeType::comment(KUrl,bool) &gt; KIO::comment(KUrl)</li>
+<li>KMimeType::pixmapForURL -&gt; KIO::pixmapForURL</li>
+<li>KMimeType::comment(KUrl,bool) -&gt; KIO::comment(KUrl)</li>
 <li>KMimeType::diagnoseFileName has been replaced with KMimeType::extractKnownExtension which returns the extension only, not the pattern</li>
 <li>KMimeType::mimeType(someName) now behaves like KServiceType::serviceType(someName), i.e. it returns 0 if that name doesn't exist,
 instead of returning the application/octet-stream mimetype. Test for null!</li>
@@ -2089,7 +2089,7 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 
 <h4>PasswordDialog</h4>
 <ul>
-  <li>void setEnableUserField( bool enable, bool=false ) removed use :setUsernameReadOnly( !enable )</li>
+  <li>void setEnableUserField( bool enable, bool=false ) removed use setUsernameReadOnly( !enable )</li>
 </ul>
 
 
