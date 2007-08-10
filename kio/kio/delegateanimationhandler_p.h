@@ -31,6 +31,8 @@
 
 class QAbstractItemView;
 
+namespace KIO
+{
 
 struct CachedRendering
 {
@@ -96,5 +98,7 @@ private:
     QTime fadeInAddTime;
     int timerId;
 };
+
+}
 
 #endif

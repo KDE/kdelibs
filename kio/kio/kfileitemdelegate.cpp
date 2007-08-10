@@ -110,8 +110,8 @@ class KFileItemDelegate::Private
                             const QRect &textBoundingRect) const;
         void drawTextItems(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index,
                            const QTextLayout &labelLayout, const QTextLayout &infoLayout) const;
-        AnimationState *animationState(const QStyleOptionViewItem &option, const QModelIndex &index,
-                                       const QAbstractItemView *view) const;
+        KIO::AnimationState *animationState(const QStyleOptionViewItem &option, const QModelIndex &index,
+                                            const QAbstractItemView *view) const;
         QPixmap applyHoverEffect(const QPixmap &icon) const;
         QPixmap transition(const QPixmap &from, const QPixmap &to, qreal amount) const;
 
@@ -120,7 +120,7 @@ class KFileItemDelegate::Private
 
     private:
         KFileItemDelegate * const q;
-        DelegateAnimationHandler *animationHandler;
+        KIO::DelegateAnimationHandler *animationHandler;
         Margin verticalMargin[NMargins];
         Margin horizontalMargin[NMargins];
         Margin *activeMargins;
@@ -128,7 +128,7 @@ class KFileItemDelegate::Private
 
 
 KFileItemDelegate::Private::Private(KFileItemDelegate *parent)
-    : q(parent), animationHandler(new DelegateAnimationHandler(parent))
+    : q(parent), animationHandler(new KIO::DelegateAnimationHandler(parent))
 {
 }
 
@@ -652,9 +652,9 @@ QPixmap KFileItemDelegate::Private::applyHoverEffect(const QPixmap &icon) const
 }
 
 
-AnimationState *KFileItemDelegate::Private::animationState(const QStyleOptionViewItem &option,
-                                                           const QModelIndex &index,
-                                                           const QAbstractItemView *view) const
+KIO::AnimationState *KFileItemDelegate::Private::animationState(const QStyleOptionViewItem &option,
+                                                                const QModelIndex &index,
+                                                                const QAbstractItemView *view) const
 {
     if (index.column() == KDirModel::Name)
         return animationHandler->animationState(option, index, view);
@@ -1101,8 +1101,8 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     // Check if the item is being animated
     // ========================================================================
-    AnimationState *state = d->animationState(option, index, view);
-    CachedRendering *cache = 0;
+    KIO::AnimationState *state = d->animationState(option, index, view);
+    KIO::CachedRendering *cache = 0;
     qreal progress = ((option.state & QStyle::State_MouseOver) &&
                 index.column() == KDirModel::Name) ? 1.0 : 0.0;
 
@@ -1151,7 +1151,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     // ========================================================================
     if (state && progress < 1)
     {
-        cache = new CachedRendering(optv3.state, option.rect.size());
+        cache = new KIO::CachedRendering(optv3.state, option.rect.size());
 
         QPainter p;
         p.begin(&cache->regular);

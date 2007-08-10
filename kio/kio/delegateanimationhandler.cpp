@@ -31,6 +31,8 @@
 #include "delegateanimationhandler_p.h"
 #include "delegateanimationhandler_p.moc"
 
+namespace KIO
+{
 
 // Needed because state() is a protected method
 class ProtectedAccessor : public QAbstractItemView
@@ -296,5 +298,7 @@ void DelegateAnimationHandler::timerEvent(QTimerEvent *)
         killTimer(timerId);
         timerId = 0;
     }
+}
+
 }
 
