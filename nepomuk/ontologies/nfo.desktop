@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Version=0.4
 Name=Nepomuk File Ontology
+Name[ar]=عريف نيبوموك للملفات
 Name[ca]=Ontologia de fitxers del Nepomuk
 Name[csb]=Ontologijo lopka Nepomuk
 Name[de]=Nepomuk Datei-Ontologie
@@ -16,6 +17,7 @@ Name[pt_BR]=Ontologia de Arquivo Nepomuk
 Name[sv]=Nepomuks filontologi
 Name[zh_CN]=Nepomuk 文件实体
 Comment=The Nepomuk File Ontology defines basic file types
+Comment[ar]=يحدد عريف نيبوموك للملفات أنواع الملفات الأساسية
 Comment[ca]=L'ontologia de fitxers del Nepomuk defineix els tipus bàsics dels fitxers
 Comment[csb]=Òntologijô lopka Nepomuk definiuje pòdspòdlowé ôrtë lopka
 Comment[de]=Die Nepomuk Datei-Ontologie legt grundlegende Dateitypen fest.

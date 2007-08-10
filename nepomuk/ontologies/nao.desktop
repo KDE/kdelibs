@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=Nepomuk Annotation Ontology
+Name[ar]=التحشية العريفية لنيبوموك
 Name[ca]=Ontologia de notes del Nepomuk
 Name[csb]=Ontologijo dopòwiescë Napomuk
 Name[de]=Nepomuk Vermerk-Ontologie
@@ -16,6 +17,7 @@ Name[pt_BR]=Ontologia de Anotação Nepomuk
 Name[sv]=Nepomuks beteckningsontologi
 Name[zh_CN]=Nepomuk 注释实体
 Comment=The Nepomuk Annotation Ontology defines the basic annotation properties like tagging or rating.
+Comment[ar]=تحدد التحشية العريفية لنيبوموك خواص التحشية الأساسية مثل التوسيم والتقييم
 Comment[ca]=L'ontologia de notes del Nepomuk defineix les propietats bàsiques de les notes com l'etiquetatge o la puntuació.
 Comment[csb]=Òntologija dopòwiescë Nepomuk definëjë pòdspòdla swòjiznów jak tagòwanié czë taksowanié.
 Comment[de]=Die Nepomuk Vermerk-Ontologie legt die grundlegenden Vermerk-Eigenschaften wie Marker oder Wertung fest.

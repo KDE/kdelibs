@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=PhononBackend
 Name=KDE Multimedia Backend
+Name[ar]=خلفية وسائطية كيدي
 Name[ca]=Dorsal multimèdia del KDE
 Name[csb]=Spòdlé KDE multimedów
 Name[de]=KDE Multimedia-Backend

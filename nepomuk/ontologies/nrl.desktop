@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=Nepomuk Representation Language
+Name[ar]=لغة تمثيل نيبوموك
 Name[ca]=Llenguatge de representació Nepomuk (NRL)
 Name[csb]=Reprezentowóny jãzëk Napomuk
 Name[el]=Γλώσσα αναπαράστασης Nepomuk
@@ -16,6 +17,7 @@ Name[sv]=Nepomuks beskrivningsspråk
 Name[zh_CN]=Nepomuk 呈现语言
 Name[zh_TW]=Nepomuk 表示語言
 Comment=NRL is a Representational Language that addresses certain limitations on the part of RDF/S. It is itself designed on top of RDF. In particular it includes support for Named Graphs for modularization of data. Although being a widely-popular notion, named graphs have not been supported by any Representational Language so far. It is also based on a view concept for the tailoring of ontologies. This view concept turned out to be of additional value, as it also provides a mechanism to impose different semantics on the same syntactical structure.
+Comment[ar]=لغة تمثيل نيبوموك هي لغة تمثيلية تردّ على بعض النواقص والحدود في RDF/S. صممت هذه اللغة على أساس RDF. بالأخص، تتضمن دعم "المبيانات المسماة" لتنظيم البيانات في وحدات. رغم أن هذا المفهوم شائع جدا، لا توجد أية لغة تدعم هذه الخاصية إلى حد الآن. هي مؤسسة على مقاربة عرضية لتصميم النظائم. ظهر فيما بعد أن لهذه المقاربة قيمة مضافة، بتوفيرها آلية لفرض معنويات مختلفة على نفس الهيكل الصياغي.
 Comment[ca]=NRL (Llenguatge de representació Nepomuk ) és un llenguatge de representació que soluciona algunes limitacions per part del RDF/S. S'ha dissenyat per sobre del RDF. En detall, inclou el funcionament dels gràfics amb nom per a la modularització de les dades. Encara que és una noció bastant popular, els gràfics amb nom encara no estan implementats en cap llenguatge de representació. També està basat en el concepte de vista per ajustar les ontologies. Aquest concepte de vista ha adquirit un valor addicional, atès que també proporciona un mecanisme per imposar diferències semàntiques en la mateixa estructura sintàctica.
 Comment[csb]=NRL je reprezentacëjowim jãzëkã, co adresëje jaczé ògreńczenié na dzél RDF/S. Sóm je zrobiony na wierzkù RDF-a/ Òsoblëwie zamëkô w se wspiarcé dlô nazwónëch dijagramów dlô mòdularizacëji pòdôwków. Równak bãdąc barô widzałą nacją, nazwóné dijagramë nie bëłë do terô wspieróné bez niżódën reprezentacëjowi jãzëk.
 Comment[de]= 
