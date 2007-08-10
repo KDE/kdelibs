@@ -81,6 +81,7 @@ bool VideoDataOutput::isRunning() const
 VideoFrame VideoDataOutput::frameForTime(qint64 timestamp)
 {
     //return d->m_backendObject->frameForTime(timestamp);
+    return VideoFrame();
 }
 
 void VideoDataOutput::setRunning(bool running)
