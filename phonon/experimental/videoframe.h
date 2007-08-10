@@ -41,7 +41,7 @@ namespace Experimental
         enum Format {
             Format_YUV422,
             Format_YUV420,
-            Format_RGBA8,
+            Format_RGBA8
             //Format_RGBA8_Premultiplied,
             //Format_RGBA16F,
             //Format_RGBA32F,
