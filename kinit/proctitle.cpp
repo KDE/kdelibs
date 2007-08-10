@@ -111,11 +111,21 @@ void proctitle_init(int argc, char *argv[], char *envp[]) {
         }
     }
 
+
+    /*
+     * On linux, we don't want to reuse the memory allocated for
+     * the environment, as there are tools that try to read our environment
+     * variables while we're running (ConsoleKit does that).
+     * There is no way to move or resize it, so just not touchint it
+     * seems to be the only option
+     */
+#ifndef __linux__
     for (i = 0; envp[i] != NULL; i++) {
         if ((LastArgv + 1) == envp[i]) {
             LastArgv = envp[i] + strlen(envp[i]);
         }
     }
+#endif
 
 # ifdef HAVE___PROGNAME
     /* Set the __progname variable so glibc and company

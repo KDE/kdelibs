@@ -1658,7 +1658,8 @@ int main(int argc, char **argv, char **envp)
       d.initpipe[1] = -1;
       // wait till init is complete
       char c;
-      while( read(d.initpipe[0], &c, 1) < 0);
+      while( read(d.initpipe[0], &c, 1) < 0)
+          ;
       // then exit;
       close(d.initpipe[0]);
       d.initpipe[0] = -1;
@@ -1677,7 +1678,6 @@ int main(int argc, char **argv, char **envp)
 
    /** Prepare to change process name **/
    proctitle_init(argc, argv, envp);
-   proctitle_set("kdeinit4 Starting up...");
    kdeinit_library_path();
    // Don't make our instance the global instance
    // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
