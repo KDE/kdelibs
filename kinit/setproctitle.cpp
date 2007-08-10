@@ -173,6 +173,15 @@ kdeinit_initsetproctitle(int argc, char **argv, char **envp)
 		else
 			continue;
 	}
+
+        /*
+         * On linux, we don't want to reuse the memory allocated for
+         * the environment, as there are tools that try to read our environment
+         * variables while we're running (ConsoleKit does that). 
+         * There is no way to move or resize it, so just not touchint it
+         * seems to be the only option
+         */
+#ifndef __linux__
 	for (i=0; envp[i] != NULL; i++)
 	{
 		if (LastArgv + 1 == envp[i])
@@ -180,6 +189,7 @@ kdeinit_initsetproctitle(int argc, char **argv, char **envp)
 		else
 			continue;
 	}
+#endif
 }
 
 #if SPT_TYPE != SPT_BUILTIN

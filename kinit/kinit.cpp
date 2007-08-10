@@ -1755,7 +1755,6 @@ int main(int argc, char **argv, char **envp)
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
-   kdeinit_setproctitle("kdeinit Starting up...");
    kdeinit_library_path();
    // Don't make our instance the global instance
    // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
