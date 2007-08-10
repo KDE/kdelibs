@@ -125,7 +125,7 @@ namespace Phonon
 
     private:
         QList<MediaNodeDestructionHandler *> handlers;
-        Q_DISABLE_COPY(MediaNodePrivate);
+        Q_DISABLE_COPY(MediaNodePrivate)
     };
 
 } // namespace Phonon
