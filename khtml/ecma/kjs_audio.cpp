@@ -24,7 +24,7 @@
 #include "khtmlview.h"
 
 #include <phonon/mediaobject.h>
-#include <phonon/audiopath.h>
+#include <phonon/path.h>
 #include <phonon/audiooutput.h>
 
 #include "kjs_audio.lut.h"
@@ -242,13 +242,6 @@ AudioQObject::AudioQObject(Audio* jObj)
 
 AudioQObject::~AudioQObject()
 {
-    delete m_media;
-    if (!--s_refs) {
-        delete s_audioPath;
-        s_audioPath = 0;
-        delete s_audioOutput;
-        s_audioOutput = 0;
-    }
 }
 
 void AudioQObject::refLoader()
@@ -256,27 +249,14 @@ void AudioQObject::refLoader()
     m_jObj->refLoader(); 
 }
 
-AudioPath* AudioQObject::s_audioPath = 0;
-AudioOutput* AudioQObject::s_audioOutput = 0;
-int AudioQObject::s_refs = 0;
-
 void AudioQObject::setupPlayer()
 {
     m_media = new MediaObject( this );
-    if (!s_audioPath || !s_audioOutput) {
-        if (!s_audioPath)
-            s_audioPath = new AudioPath();
-        if (!s_audioOutput)
-            s_audioOutput = new AudioOutput( MusicCategory );
-        s_audioPath->addOutput( AudioQObject::s_audioOutput );
-    }
+    AudioOutput *audioOutput = new AudioOutput(Phonon::MusicCategory, m_media);
 
-    s_refs++;
     m_media->setCurrentSource(this);
 
-    // TODO addAudioPath may fail, it returns false in that case. You can still
-    // try to create another pair of path/output objects and connect to those
-    m_media->addAudioPath( AudioQObject::s_audioPath );
+    Phonon::createPath(m_media, audioOutput);
 
     setStreamSeekable( true );
     setStreamSize( m_sound.size()-1 ); // why -1?

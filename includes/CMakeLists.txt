@@ -900,12 +900,8 @@ install( FILES
   Phonon/AudioDeviceEnumerator
   Phonon/AudioOutput
   Phonon/AudioOutputInterface
-  Phonon/AudioPath
-  Phonon/AudioPlayer
   Phonon/BackendCapabilities
   Phonon/BackendInterface
-  Phonon/BrightnessControl
-  Phonon/DeinterlaceFilter
   Phonon/Effect
   Phonon/EffectParameter
   Phonon/EffectWidget
@@ -916,12 +912,14 @@ install( FILES
   Phonon/MediaSource
   Phonon/ObjectDescription
   Phonon/ObjectDescriptionModel
+  Phonon/Path
   Phonon/SeekSlider
   Phonon/StreamInterface
-  Phonon/VideoPath
   Phonon/VideoPlayer
   Phonon/VideoWidget
+  Phonon/VideoWidgetInterface
   Phonon/VolumeFaderEffect
+  Phonon/VolumeFaderInterface
   Phonon/VolumeSlider
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon)
 

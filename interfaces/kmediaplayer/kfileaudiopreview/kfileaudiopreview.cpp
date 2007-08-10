@@ -34,9 +34,8 @@
 #include <config-kfile.h>
 
 #include <phonon/mediaobject.h>
-#include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>
-#include <phonon/videopath.h>
+#include <phonon/path.h>
 #include <phonon/backendcapabilities.h>
 #include <phonon/videowidget.h>
 #include "mediacontrols.h"
@@ -65,17 +64,13 @@ class KFileAudioPreview::Private
 public:
     Private()
         : player( 0 )
-        , audioPath( 0 )
         , audioOutput( 0 )
-        , videoPath( 0 )
         , videoWidget( 0 )
     {
     }
 
     MediaObject* player;
-    AudioPath* audioPath;
     AudioOutput* audioOutput;
-    VideoPath* videoPath;
     VideoWidget* videoWidget;
     MediaControls* controls;
 };
@@ -96,15 +91,11 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent )
     setSupportedMimeTypes(BackendCapabilities::availableMimeTypes());
 
     d->audioOutput = new AudioOutput( Phonon::VideoCategory, this );
-    d->audioPath = new AudioPath( this );
-    d->audioPath->addOutput( d->audioOutput );
 
     KHBox *frame = new KHBox( box );
     frame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
     frame->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
     d->videoWidget = new VideoWidget( frame );
-    d->videoPath = new VideoPath( this );
-    d->videoPath->addOutput( d->videoWidget );
 
     d->controls = new MediaControls( box );
     d->controls->setEnabled( false );
@@ -143,6 +134,8 @@ void KFileAudioPreview::showPreview( const KUrl &url )
         d->player = 0;
         return;
     }
+    Phonon::createPath(d->player, d->audioOutput);
+    Phonon::createPath(d->player, d->videoWidget);
 
     d->controls->setMediaObject(d->player);
     if( d->player->state() == Phonon::StoppedState )
