@@ -72,7 +72,7 @@ namespace Experimental
 
         Phonon::Experimental::VideoFrame frameForTime(qint64 timestamp);
 
-    public slots:
+    public Q_SLOTS:
         void setRunning(bool running);
         void start();
         void stop();
