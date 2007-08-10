@@ -152,8 +152,8 @@ public:
         install["templates"] = TEMPLATES_INSTALL_DIR;
         install["wallpaper"] = WALLPAPER_INSTALL_DIR;
         install["xdgconf-menu"] = SYSCONF_INSTALL_DIR "/xdg/menus";
-        install["xdgdata-apps"] = XDG_APPS_DIR;
-        install["xdgdata-dirs"] = XDG_DIRECTORY_DIR;
+        install["xdgdata-apps"] = XDG_APPS_INSTALL_DIR;
+        install["xdgdata-dirs"] = XDG_DIRECTORY_INSTALL_DIR;
         install["include"] = INCLUDE_INSTALL_DIR;
 #endif
     }
