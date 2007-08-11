@@ -39,7 +39,7 @@ void KMimeFileParser::parseGlobs()
     while (globIter.hasPrevious()) { // global first, then local. Turns out it doesn't matter though.
         const QString fileName = globIter.previous();
         QFile globFile(fileName);
-        kDebug() << k_funcinfo << "Now parsing " << fileName;
+        kDebug() << k_funcinfo << "Now parsing" << fileName;
         parseGlobFile(&globFile, fileName);
     }
 }
@@ -63,7 +63,7 @@ void KMimeFileParser::parseGlobFile(QIODevice* file, const QString& fileName)
         const QString mimeTypeName = line.left(pos);
         KMimeType::Ptr mimeType = m_mimeTypeFactory->findMimeTypeByName(mimeTypeName);
         if (!mimeType)
-            kWarning(7012) << fileName << " refers to unknown mimetype " << mimeTypeName;
+            kWarning(7012) << fileName << "refers to unknown mimetype" << mimeTypeName;
         else {
             const QString pattern = line.mid(pos+1);
             Q_ASSERT(!pattern.isEmpty());
