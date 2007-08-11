@@ -160,7 +160,8 @@ public:
      * Return the "address" of this bookmark in the whole tree.
      * This is used when telling other processes about a change
      * in a given bookmark. The encoding of the address is "/4/2", for
-     * instance, to design the 2nd child inside the 4th child of the root bk.
+     * instance, to designate the 2nd child inside the 4th child of the 
+     * root bookmark.
      */
     QString address() const;
 
@@ -256,7 +257,6 @@ protected:
 
 private:
     bool hasMetaData() const;
-    static QString left(const QString & str, uint len);
 };
 
 #ifdef MAKE_KIO_LIB
