@@ -53,12 +53,12 @@ int main(int argc, char **argv)
         qDebug() << "kwrapper: no application given"; 
         return 1;
     }
-    QString path = QString(getenv("PATH")).toLower().replace("\\","/");
+    QString path = QString::fromLocal8Bit(qgetenv("PATH")).toLower().replace('\\','/');
     // add path from environment
-    QStringList envPath = path.split(";");
+    QStringList envPath = path.split(';');
     
     // add current install path 
-    path = QCoreApplication::applicationDirPath().toLower().replace("\\","/");
+    path = QCoreApplication::applicationDirPath().toLower().replace('\\','/');
     if (!envPath.contains(path))
         envPath << path;
 
@@ -72,11 +72,11 @@ int main(int argc, char **argv)
         envPath << path;
 
     // add bin and lib pathes from KDEDIRS 
-    path = QString(getenv("KDEDIRS")).toLower().replace("\\","/");
+    path = QString::fromLocal8Bit(qgetenv("KDEDIRS")).toLower().replace('\\','/');
     QStringList kdedirs;
 
     if (path.size() > 0)
-        QStringList kdedirs = path.split(";"); 
+        QStringList kdedirs = path.split(';'); 
 
     bool changedKDEDIRS = 0;
     // setup kdedirs if not present
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
             f.open(QIODevice::ReadOnly);
             QByteArray data = f.readAll();
             f.close();
-            kdedirs = QString(data).split(";");
+            kdedirs = QString(data).split(';');
             qDebug() << "kwrapper: load kdedirs.cache from " << rootPath <<  kdedirs; 
         }            
         else
@@ -113,16 +113,22 @@ int main(int argc, char **argv)
     }
 
     // find executable
-    char appName[MAX_PATH+1];
-    *appName = 0;    
+    WCHAR _appName[MAX_PATH+1];
+    QString exeToStart = QCoreApplication::arguments().at(1);
     
     foreach(QString a, envPath)
     {
-        if (SearchPath(a.toAscii().data(),argv[1],".exe",MAX_PATH+1,appName,NULL))
+        if (SearchPathW((LPCWSTR)a.utf16(),
+                        (LPCWSTR)exeToStart.utf16(),
+                        L".exe",
+                        MAX_PATH+1,
+                        (LPWSTR)_appName,
+                        NULL))
             break;
     }
+    QString appName = QString::fromUtf16((unsigned short*)_appName);
 
-    if (!*appName)
+    if (appName.isEmpty())
     {
         qWarning() << "kwrapper: application not found"; 
         return 3; 
@@ -130,9 +136,9 @@ int main(int argc, char **argv)
 
     // setup client process envirionment 
     QStringList env = QProcess::systemEnvironment();
-    env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), "PATH=" + envPath.join(";"));
+    env.replaceInStrings(QRegExp("^PATH=(.*)", Qt::CaseInsensitive), QLatin1String("PATH=") + envPath.join(";"));
     if (changedKDEDIRS)
-        env << "KDEDIRS=" + kdedirs.join(";");
+        env << QLatin1String("KDEDIRS=") + kdedirs.join(";");
 
     QProcess *process = new QProcess;
     process->setEnvironment(env);
