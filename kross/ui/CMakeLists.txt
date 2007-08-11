@@ -10,7 +10,7 @@ include_directories(
 set(krossui_LIB_SRCS
    model.cpp
    view.cpp
-   guiclient.cpp
+#   guiclient.cpp
    )
 
 kde4_add_library(krossui SHARED ${krossui_LIB_SRCS})
