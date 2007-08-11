@@ -20,7 +20,6 @@
 
 #include "view.h"
 #include "model.h"
-#include "guiclient.h"
 
 #include <kross/core/manager.h>
 #include <kross/core/action.h>
