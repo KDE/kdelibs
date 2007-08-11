@@ -226,7 +226,7 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     if ( !sym )
     {
         kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer a qt_plugin_instance function.", libname);
-        kDebug(150) << "The library" << libname << "does not offern a qt_plugin_instance function.";
+        kDebug(150) << "The library" << libname << "does not offer a qt_plugin_instance function.";
         return 0;
     }
 
