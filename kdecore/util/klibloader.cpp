@@ -70,7 +70,7 @@ public:
         for (QHash<QString, KLibWrapPrivate*>::Iterator it = m_libs.begin(); it != m_libs.end(); ++it)
         {
             Q_ASSERT((*it) != 0);
-            kDebug(150) << "The KLibLoader contains the library " << (*it)->name
+            kDebug(150).nospace() << "The KLibLoader contains the library " << (*it)->name
                 << " (" << (*it)->lib << ")" << endl;
             pending_close.append(*it);
         }
@@ -155,7 +155,7 @@ KLibrary::~KLibrary()
 	    while (!d->objs.isEmpty())
 		{
 		    QObject *obj = d->objs.takeFirst();
-		    kDebug(150) << "Factory still has object " << obj << " " << obj->objectName() << " Library = " << d->libname;
+		    kDebug(150) << "Factory still has object" << obj << obj->objectName() << "Library = " << d->libname;
 		    disconnect( obj, SIGNAL( destroyed() ),
 				this, SLOT( slotObjectDestroyed() ) );
 		    delete obj;
@@ -193,7 +193,8 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     if ( !sym )
     {
         kLibLoaderPrivate->errorMessage = i18n( "The library %1 does not offer an %2 function.", libname, QLatin1String("init_") + libname );
-        kDebug(150) << kLibLoaderPrivate->errorMessage;
+        kDebug(150) << "The library" << libname << "does not offer an"
+                    << QLatin1String("init_") + libname << "function.";
         return 0;
     }
 
@@ -207,7 +208,7 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     if( !factory )
     {
         kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer a KDE compatible factory." , libname);
-        kDebug(150) << kLibLoaderPrivate->errorMessage;
+        kDebug(150) << "The library" << libname << "does not offer a KDE compatible factory.";
         return 0;
     }
     factories.insert( symname, factory );
@@ -224,8 +225,8 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     KLibrary::void_function_ptr sym = q->resolveFunction( symname );
     if ( !sym )
     {
-        kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer an qt_plugin_instance function.", libname);
-        kDebug(150) << kLibLoaderPrivate->errorMessage;
+        kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer a qt_plugin_instance function.", libname);
+        kDebug(150) << "The library" << libname << "does not offern a qt_plugin_instance function.";
         return 0;
     }
 
@@ -240,7 +241,7 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     if( !factory )
     {
         kLibLoaderPrivate->errorMessage = i18n("The library %1 does not offer a KDE 4 compatible factory." , libname);
-        kDebug(150) << kLibLoaderPrivate->errorMessage;
+        kDebug(150) << "The library" << libname << "does not offer a KDE 4 compatible factory.";
         return 0;
     }
     factories.insert( symname, factory );
@@ -423,7 +424,7 @@ static inline QString findLibraryInternal(const QString &name, const KComponentD
         libfile = cData.dirs()->findResource("lib", libname);
 #ifndef NDEBUG
         if ( !libfile.isEmpty() && libname.startsWith( "lib" ) ) // don't warn for kdeinit modules
-          kDebug(150) << "library " << libname << " not found under 'module' but under 'lib'";
+          kDebug(150) << "library" << libname << "not found under 'module' but under 'lib'";
 #endif
       }
     } else {
@@ -498,7 +499,7 @@ KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
       if ( libfile.isEmpty() )
       {
 #ifndef NDEBUG
-        kDebug(150) << "library=" << _name << ": No file named " << _name << " found in paths.";
+        kDebug(150).nospace() << "library=" << _name << ": No file named " << _name << " found in paths.";
 #endif
         d->errorMessage = i18n("Library files for \"%1\" not found in paths.", _name );
         return 0;

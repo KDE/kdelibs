@@ -289,7 +289,7 @@ KLauncher::slotKDEInitData(int)
                             sizeof( request_header));
    if (result == -1)
    {
-      kDebug() << "Exiting on read_socket errno: " << errno;
+      kDebug() << "Exiting on read_socket errno:" << errno;
       ::signal( SIGHUP, SIG_IGN);
       ::signal( SIGTERM, SIG_IGN);
       destruct(255); // Exit!
@@ -310,8 +310,8 @@ KLauncher::slotKDEInitData(int)
      long *request_data;
      request_data = (long *) requestData.data();
      lastRequest->pid = (pid_t) (*request_data);
-     kDebug(7016) << lastRequest->name << " (pid " << lastRequest->pid <<
-        ") up and running." << endl;
+     kDebug(7016).nospace() << lastRequest->name << " (pid " << lastRequest->pid <<
+        ") up and running.";
      switch(lastRequest->dbus_startup_type)
      {
        case KService::DBUS_None:
@@ -335,8 +335,7 @@ KLauncher::slotKDEInitData(int)
      return;
    }
 
-   kWarning(7016) << "Unexpected command from KDEInit (" << (unsigned int) request_header.cmd
-                 << ")" << endl;
+   kWarning(7016)<< "Unexpected command" << (unsigned int) request_header.cmd << "from KDEInit";
 }
 
 void
