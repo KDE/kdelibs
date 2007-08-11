@@ -20,6 +20,7 @@ Name[he]=הצפנה
 Name[ja]=暗号
 Name[pa]=ਕਰਿਪਟੂ
 Name[pt]=Cifra
+Name[sl]=Šifriranje
 Name[sv]=Krypto
 Comment=Configure SSL, manage certificates, and other cryptography settings
 Comment[ar]=اضبط SSL، أدر الشهادات وإعدادات تعمية أخرى
@@ -36,6 +37,7 @@ Comment[nds]=SSL inrichten, Zertifikaten plegen un anner Verslötel-Instellen
 Comment[nl]=Stel SSL in, beheer certificaten en configureer andere cryptografische instellingen
 Comment[pt]=Configurar o SSL, gerir os certificados e outras opções de criptografia
 Comment[pt_BR]=Configura SSL, gerencia certificados e outras configurações de criptografia
+Comment[sl]=Nastavljanje SSL, upravljanje s potrdili in ostale nastavitve šifriranja
 Comment[sv]=Anpassa SSL, hantera certifikat och andra kryptografiska inställningar
 Comment[zh_TW]=設定 SSL、管理憑證與其他加密設定
 
@@ -52,6 +54,7 @@ Keywords[nds]=Crypto,Krypto,Kryptografie,Verslöteln,SSL,https,Zertifikaten,Vers
 Keywords[nl]=Crypto,Krypto,Cryptografie,encryptie,SSL,https,certificaten,ciphers,TLS,secure,security,veiligheid,beveiliging,versleuteling,
 Keywords[pt]=Cifra,Criptografia,encriptação,SSL,HTTPS,certificados,cifras,TLS,seguro,segurança
 Keywords[pt_BR]=Crypto,Krypto,Criptografia,encriptação,SSL,https,certificados,cifras,TLS,seguro,segurança
+Keywords[sl]=Šifriranje,šifre,šifra,SSL,HTTPS,potrdila,TLS,varnost
 Keywords[sv]=Krypto,Kryptografi,kryptering,SSL,https,certifikat,chiffer,TLS,säker,säkerhet
 
 Categories=Qt;KDE;X-KDE-settings-security;
