@@ -55,8 +55,8 @@ static KMimeType::Ptr s_pDefaultMimeType;
 
 static void errorMissingMimeTypes( const QStringList& _types )
 {
-    KMessage::message( KMessage::Error, i18np( "Could not find mime type:\n%2",
-                "Could not fine mime types:\n%2", _types.count(), _types.join("\n") ) );
+    KMessage::message( KMessage::Error, i18np( "Could not find mime type <resource>%2</resource>",
+                "Could not find mime types:\n<resource>%2</resource>", _types.count(), _types.join("</resource>\n<resource>") ) );
 }
 
 static QString iconForMime( const QString& mime )
