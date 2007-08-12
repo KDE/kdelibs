@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 1992-2007 Trolltech ASA. All rights reserved.
+    Copyright (C) 2007 Trolltech ASA. <thierry.bastian@trolltech.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
