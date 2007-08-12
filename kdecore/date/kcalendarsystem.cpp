@@ -201,7 +201,11 @@ QDate KCalendarSystem::latestValidDate() const
 
 bool KCalendarSystem::isValid( const QDate &date ) const
 {
-    return isValid( year( date ), month( date ), day( date ) );
+    if ( date.isNull() ) {
+        return false;
+    } else {
+        return isValid( year( date ), month( date ), day( date ) );
+    }
 }
 
 bool KCalendarSystem::setDate( QDate &date, int year, int month, int day ) const

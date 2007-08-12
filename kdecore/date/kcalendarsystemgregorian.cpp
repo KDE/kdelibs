@@ -69,7 +69,11 @@ bool KCalendarSystemGregorian::isValid( int year, int month, int day ) const
 
 bool KCalendarSystemGregorian::isValid( const QDate &date ) const
 {
-    return date.isValid();
+    if ( date.isValid() && date >= earliestValidDate() && date <= latestValidDate() ) {
+        return true;
+    }
+
+    return false;
 }
 
 bool KCalendarSystemGregorian::setDate( QDate &date, int year, int month, int day ) const
@@ -321,13 +325,7 @@ QString KCalendarSystemGregorian::monthName( const QDate &date, MonthNameFormat 
 // Deprecated
 bool KCalendarSystemGregorian::setYMD( QDate &date, int y, int m, int d ) const
 {
-    // We don't want Qt to add 1900 to them
-    if ( y >= 0 && y <= 99 ) {
-        return false;
-    }
-
-    // QDate supports gregorian internally
-    return date.setYMD( y, m, d );
+    return date.setDate( y, m, d );
 }
 
 QDate KCalendarSystemGregorian::addYears( const QDate &date, int nyears ) const
