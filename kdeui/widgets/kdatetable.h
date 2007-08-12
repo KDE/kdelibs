@@ -158,10 +158,12 @@ public:
      * sizeHint() simply returns a multiple of maxCell.
      */
     virtual QSize sizeHint() const;
+
     /**
      * Set the font size of the date table.
      */
     void setFontSize( int size );
+
     /**
      * Select and display this date.
      */
@@ -216,7 +218,8 @@ public:
      * Makes a given date be painted with a given foregroundColor, and background
      * (a rectangle, or a circle/ellipse) in a given color.
      */
-    void setCustomDatePainting( const QDate &date, const QColor &fgColor, BackgroundMode bgMode = NoBgMode, const QColor &bgColor = QColor() );
+    void setCustomDatePainting( const QDate &date, const QColor &fgColor, 
+                                BackgroundMode bgMode = NoBgMode, const QColor &bgColor = QColor() );
 
     /**
      * Unsets the custom painting of a date so that the date is painted as usual.
@@ -225,7 +228,8 @@ public:
 
 protected:
     /**
-     * calculate the position of the cell in the matrix for the given date. The result is the 0-based index.
+     * calculate the position of the cell in the matrix for the given date.
+     * The result is the 0-based index.
      */
     virtual int posFromDate( const QDate &date );
 

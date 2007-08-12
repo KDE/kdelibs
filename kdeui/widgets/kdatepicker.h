@@ -204,9 +204,9 @@ Q_SIGNALS:
     void tableClicked();
 
 private:
-    void init( const QDate &dt );
-    void fillWeeksCombo( const QDate &date );
+    void init( const QDate &date );
     class KDatePickerPrivate;
+    friend class KDatePickerPrivate;
     KDatePickerPrivate *const d;
 };
 

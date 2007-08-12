@@ -1,7 +1,8 @@
 /*  -*- C++ -*-
     This file is part of the KDE libraries
     Copyright (C) 1997 Tim D. Gilman (tdgilman@best.org)
-    (C) 1998-2001 Mirko Boehm (mirko@kde.org)
+              (C) 1998-2001 Mirko Boehm (mirko@kde.org)
+              (C) 1998-2001 Mirko Boehm (john@layt.net)
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -18,22 +19,28 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDATETABLE_P_H
-#define KDATETABLE_P_H
+#ifndef KDATEPICKER_P_H
+#define KDATEPICKER_P_H
 
+#include <kcalendarsystem.h>
+
+#include <QtCore/QDate>
 #include <QtGui/QLineEdit>
+#include <QtGui/QValidator>
 
 /** Year selection widget.
 * @internal
-* @author Tim Gilman, Mirko Boehm
+* @author Tim Gilman, Mirko Boehm, John Layt
 */
-class KDateInternalYearSelector : public QLineEdit
+
+class KDatePickerPrivateYearSelector : public QLineEdit
 {
     Q_OBJECT
 
-protected:
-    QIntValidator *val;
-    int result;
+public:
+    KDatePickerPrivateYearSelector( const KCalendarSystem *calendar, const QDate &currentDate, QWidget *parent = 0 );
+    int year();
+    bool setYear( int year );
 
 public Q_SLOTS:
     void yearEnteredSlot();
@@ -41,13 +48,16 @@ public Q_SLOTS:
 Q_SIGNALS:
     void closeMe( int );
 
-public:
-    KDateInternalYearSelector( QWidget *parent = 0 );
-    int getYear();
-    void setYear( int year );
+protected:
+    QIntValidator *val;
+    int result;
 
 private:
-    Q_DISABLE_COPY( KDateInternalYearSelector )
+    const KCalendarSystem *calendar;
+    QDate oldDate;
+
+    Q_DISABLE_COPY( KDatePickerPrivateYearSelector )
 };
 
-#endif // KDATETABLE_P_H
+
+#endif // KDATEPICKER_P_H

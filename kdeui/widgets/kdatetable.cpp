@@ -19,22 +19,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-/////////////////// KDateTable widget class //////////////////////
-//
-// Copyright (C) 1997 Tim D. Gilman
-//           (C) 1998-2001 Mirko Boehm
-// Written using Qt (http://www.troll.no) for the
-// KDE project (http://www.kde.org)
-//
-// This is a support class for the KDatePicker class.  It just
-// draws the calender table without titles, but could theoretically
-// be used as a standalone.
-//
-// When a date is selected by the user, it emits a signal:
-//      dateSelected(QDate)
-
 #include "kdatetable.h"
-#include "kdatetable_p.h"
 
 #include <kconfig.h>
 #include <kglobal.h>
@@ -96,24 +81,29 @@ public:
     QDate mDate;
 
     /**
-     * The day of the first day in the month [1..7].
+     * The weekday number of the first day in the month [1..daysInWeek()].
      */
-    int firstday;
+    int weekDayFirstOfMonth;
 
     /**
      * The number of days in the current month.
      */
-    int numdays;
-
-    /**
-     * The number of days in the previous month.
-     */
-    int numDaysPrevMonth;
+    int numDaysThisMonth;
 
     /**
      * Save the size of the largest used cell content.
      */
     QRectF maxCell;
+
+    /**
+     * How many week rows we are to draw.
+     */
+    int numWeekRows;
+
+    /**
+     * How many day columns we are to draw, i.e. days in a week.
+     */
+    int numDayColumns;
 
     bool popupMenuEnabled;
     bool useCustomColors;
@@ -155,18 +145,18 @@ public:
 };
 
 
-KDateValidator::KDateValidator( QWidget* parent ) : QValidator( parent )
+KDateValidator::KDateValidator( QWidget *parent ) : QValidator( parent )
 {
 }
 
-QValidator::State KDateValidator::validate( QString& text, int& ) const
+QValidator::State KDateValidator::validate( QString &text, int &unused ) const
 {
     QDate temp;
     // ----- everything is tested in date():
     return date( text, temp );
 }
 
-QValidator::State KDateValidator::date( const QString& text, QDate& d ) const
+QValidator::State KDateValidator::date( const QString &text, QDate &d ) const
 {
     QDate tmp = KGlobal::locale()->readDate( text );
     if ( !tmp.isNull() ) {
@@ -184,19 +174,17 @@ void KDateValidator::fixup( QString& ) const
 KDateTable::KDateTable( const QDate& date_, QWidget* parent )
            : QWidget( parent ), d( new KDateTablePrivate( this ) )
 {
+    d->numWeekRows = 7;
+    d->numDayColumns = calendar()->daysInWeek( date_ );
     setFontSize( 10 );
     setFocusPolicy( Qt::StrongFocus );
     QPalette palette;
     palette.setColor( backgroundRole(), KGlobalSettings::baseColor() );
     setPalette( palette );
 
-    if( !date_.isValid() ) {
-        kDebug() << "KDateTable ctor: WARNING: Given date is invalid, using current date.";
-        // this initializes firstday, numdays, numDaysPrevMonth
+    if( !setDate( date_ ) ) {
+        // this initializes weekDayFirstOfMonth, numDaysThisMonth
         setDate( QDate::currentDate() );
-    } else {
-        // this initializes firstday, numdays, numDaysPrevMonth
-        setDate( date_ );
     }
     initAccels();
 }
@@ -204,12 +192,16 @@ KDateTable::KDateTable( const QDate& date_, QWidget* parent )
 KDateTable::KDateTable( QWidget *parent )
            : QWidget( parent ), d( new KDateTablePrivate( this ) )
 {
+    // JPL should we just call KDateTable( QDate::currentDate(), parent ) here to save duplication?
+    // Or if that is a problem with base class instantiation move all to a private init()
+    d->numWeekRows = 7;
+    d->numDayColumns = calendar()->daysInWeek( QDate::currentDate() );
     setFontSize( 10 );
     setFocusPolicy( Qt::StrongFocus );
     QPalette palette;
     palette.setColor( backgroundRole(), KGlobalSettings::baseColor() );
     setPalette( palette );
-    // this initializes firstday, numdays, numDaysPrevMonth
+    // this initializes weekDayFirstOfMonth, numDaysThisMonth
     setDate( QDate::currentDate() );
     initAccels();
 }
@@ -251,51 +243,55 @@ void KDateTable::initAccels()
     localCollection->readSettings();
 }
 
-int KDateTable::posFromDate( const QDate &dt )
+int KDateTable::posFromDate( const QDate &date_ )
 {
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-    const int firstWeekDay = KGlobal::locale()->weekStartDay();
-    int pos = calendar->day( dt );
-    int offset = ( d->firstday - firstWeekDay + 7 ) % 7;
+    int initialPosition = calendar()->day( date_ );
+    int offset = ( d->weekDayFirstOfMonth - calendar()->weekStartDay() + d->numDayColumns ) % d->numDayColumns;
+
     // make sure at least one day of the previous month is visible.
-    // adjust this <1 if more days should be forced visible:
+    // adjust this < 1 if more days should be forced visible:
     if ( offset < 1 ) {
-        offset += 7;
+        offset += d->numDayColumns;
     }
-    return pos + offset;
+
+    return initialPosition + offset;
 }
 
-QDate KDateTable::dateFromPos( int pos )
+QDate KDateTable::dateFromPos( int position )
 {
-    QDate pCellDate;
+    QDate cellDate;
 
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-    calendar->setYMD( pCellDate, calendar->year( d->mDate ), calendar->month( d->mDate ), 1 );
+    int offset = ( d->weekDayFirstOfMonth - calendar()->weekStartDay() + d->numDayColumns ) % d->numDayColumns;
 
-    int firstWeekDay = KGlobal::locale()->weekStartDay();
-    int offset = ( d->firstday - firstWeekDay + 7 ) % 7;
     // make sure at least one day of the previous month is visible.
-    // adjust this <1 if more days should be forced visible:
+    // adjust this < 1 if more days should be forced visible:
     if ( offset < 1 ) {
-        offset += 7;
+        offset += d->numDayColumns;
     }
-    pCellDate = calendar->addDays( pCellDate, pos - offset );
 
-    return pCellDate;
+    if ( calendar()->setYMD( cellDate, calendar()->year( d->mDate ), calendar()->month( d->mDate ), 1 ) ) {
+        cellDate = calendar()->addDays( cellDate, position - offset );
+    } else {
+        //If first of month is not valid, then that must be before earliestValid Date, so safe to assume next month ok
+        if ( calendar()->setYMD( cellDate, calendar()->year( d->mDate ), calendar()->month( d->mDate ) + 1, 1 ) ) {
+            cellDate = calendar()->addDays( cellDate, position - offset - calendar()->daysInMonth( d->mDate ) );
+        }
+    }
+    return cellDate;
 }
 
 void KDateTable::paintEvent( QPaintEvent *e )
 {
     QPainter p( this );
     const QRect &rectToUpdate = e->rect();
-    double cellWidth = width() / 7.0;
-    double cellHeight = height() / 7.0;
+    double cellWidth = width() / ( double ) d->numDayColumns;
+    double cellHeight = height() / ( double ) d->numWeekRows;
     int leftCol = ( int )floor( rectToUpdate.left() / cellWidth );
     int topRow = ( int )floor( rectToUpdate.top() / cellHeight );
     int rightCol = ( int )ceil( rectToUpdate.right() / cellWidth );
     int bottomRow = ( int )ceil( rectToUpdate.bottom() / cellHeight );
-    bottomRow = qMin( bottomRow, 6 );
-    rightCol = qMin( rightCol, 6 );
+    bottomRow = qMin( bottomRow, d->numWeekRows - 1 );
+    rightCol = qMin( rightCol, d->numDayColumns - 1 );
     p.translate( leftCol * cellWidth, topRow * cellHeight );
     for ( int i = leftCol; i <= rightCol; ++i ) {
         for ( int j = topRow; j <= bottomRow; ++j ) {
@@ -309,33 +305,33 @@ void KDateTable::paintEvent( QPaintEvent *e )
 
 void KDateTable::paintCell( QPainter *painter, int row, int col )
 {
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-
     QRectF rect;
     QString text;
     QPen pen;
-    double w = width() / 7.0;
-    double h = height() / 7.0;
+    double w = width() / ( double ) d->numDayColumns;
+    double h = height() / ( double ) d->numWeekRows;
     w -= 1;
     h -= 1;
     QFont font = KGlobalSettings::generalFont();
-    // -----
 
     if( row == 0 ) { // we are drawing the headline
         font.setBold( true );
         painter->setFont( font );
         bool normalday = true;
-        int firstWeekDay = KGlobal::locale()->weekStartDay();
-        int daynum = ( col + firstWeekDay < 8 ) ? col + firstWeekDay :
-                     col + firstWeekDay - 7;
-        if ( daynum == calendar->weekDayOfPray() ||
-                ( daynum == 6 && calendar->calendarType() == "gregorian" ) ) {
+        int daynum = ( col + calendar()->weekStartDay() <= d->numDayColumns ) ?
+                           col + calendar()->weekStartDay() :
+                           col + calendar()->weekStartDay() - d->numDayColumns;
+        //JPL talk to KDEPIM guys about common way to define/set days off in all calendar systems
+        if ( daynum == calendar()->weekDayOfPray() ||
+           ( daynum == 6 && calendar()->calendarType() == "gregorian" ) ) {
             normalday = false;
         }
 
         QBrush brushInvertTitle( palette().base() );
-        QColor titleColor( isEnabled() ? ( KGlobalSettings::activeTitleColor() ) : ( KGlobalSettings::inactiveTitleColor() ) );
-        QColor textColor( isEnabled() ? ( KGlobalSettings::activeTextColor() ) : ( KGlobalSettings::inactiveTextColor() ) );
+        QColor titleColor( isEnabled() ? ( KGlobalSettings::activeTitleColor() )
+                                       : ( KGlobalSettings::inactiveTitleColor() ) );
+        QColor textColor( isEnabled() ? ( KGlobalSettings::activeTextColor() )
+                                      : ( KGlobalSettings::inactiveTextColor() ) );
 
         if ( !normalday ) {
             painter->setPen( textColor );
@@ -349,27 +345,37 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
             painter->setPen( textColor );
         }
         painter->drawText( QRectF( 0, 0, w, h ), Qt::AlignCenter,
-                           calendar->weekDayName( daynum, KCalendarSystem::ShortDayName ), &rect );
+                           calendar()->weekDayName( daynum, KCalendarSystem::ShortDayName ), &rect );
         painter->setPen( palette().color( QPalette::Text ) );
         painter->drawLine( QPointF( 0, h ), QPointF( w, h ) );
         // ----- draw the weekday:
     } else {
         bool paintRect = true;
         painter->setFont( font );
-        int pos = 7 * ( row - 1 ) + col;
+        int pos = d->numDayColumns * ( row - 1 ) + col;
 
-        QDate pCellDate = dateFromPos( pos );
-        // First day of month
-        text = calendar->dayString( pCellDate, KCalendarSystem::ShortFormat );
-        if( calendar->month( pCellDate ) != calendar->month( d->mDate ) ) { // we are either
+        QDate cellDate = dateFromPos( pos );
+
+        // Draw the day number in the cell, if the date is not valid then we don't want to show it
+        if ( calendar()->isValid( cellDate ) ) {
+            text = calendar()->dayString( cellDate, KCalendarSystem::ShortFormat );
+        } else {
+            text = "";
+        }
+
+        if( ! calendar()->isValid( cellDate ) ||
+            calendar()->month( cellDate ) != calendar()->month( d->mDate ) ) {
+            // we are either
             // ° painting a day of the previous month or
-            // ° painting a day of the following month
-            // TODO: don't hardcode gray here! Use a color with less contrast to the background than normal text.
+            // ° painting a day of the following month or
+            // ° painting an invalid day
+            // TODO: Use a color with less contrast to the background than normal text.
+            // JPL talk to accessability guys about this
             painter->setPen( palette().color( QPalette::Mid ) );
-//          painter->setPen(gray);
-        } else { // paint a day of the current month
+        } else {
+            // paint a day of the current month
             if ( d->useCustomColors ) {
-                KDateTablePrivate::DatePaintingMode * mode = d->customPaintingModes[pCellDate.toString()];
+                KDateTablePrivate::DatePaintingMode * mode = d->customPaintingModes[cellDate.toString()];
                 if ( mode ) {
                     if ( mode->bgMode != NoBgMode ) {
                         QBrush oldbrush = painter->brush();
@@ -378,26 +384,30 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
                         case( CircleMode ) : painter->drawEllipse( QRectF( 0, 0, w, h ) );break;
                         case( RectangleMode ) : painter->drawRect( QRectF( 0, 0, w, h ) );break;
                         case( NoBgMode ) : // Should never be here, but just to get one
-                                        // less warning when compiling
-                                    default: break;
+                                           // less warning when compiling
+                        default: break;
                         }
                         painter->setBrush( oldbrush );
                         paintRect = false;
                     }
                     painter->setPen( mode->fgColor );
-                } else
+                } else {
                     painter->setPen( palette().color( QPalette::Text ) );
-            } else //if ( firstWeekDay < 4 ) // <- this doesn' make sense at all!
+                }
+            } else {
                 painter->setPen( palette().color( QPalette::Text ) );
+            }
         }
 
         pen = painter->pen();
-        int firstWeekDay = KGlobal::locale()->weekStartDay();
-        int offset = d->firstday - firstWeekDay;
+
+        int offset = d->weekDayFirstOfMonth - calendar()->weekStartDay();
         if( offset < 1 ) {
-            offset += 7;
+            offset += d->numDayColumns;
         }
-        int day = calendar->day( d->mDate );
+
+        int day = calendar()->day( d->mDate );
+
         if( ( offset + day ) == ( pos + 1 ) ) {
             // draw the currently selected date
             if ( isEnabled() ) {
@@ -411,11 +421,9 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
         } else {
             painter->setBrush( palette().color( QPalette::Background ) );
             painter->setPen( palette().color( QPalette::Background ) );
-//          painter->setBrush(palette().base());
-//          painter->setPen(palette().base());
         }
 
-        if ( pCellDate == QDate::currentDate() ) {
+        if ( cellDate == QDate::currentDate() ) {
             painter->setPen( palette().color( QPalette::Text ) );
         }
 
@@ -423,65 +431,80 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
         painter->setPen( pen );
         painter->drawText( QRectF( 0, 0, w, h ), Qt::AlignCenter, text, &rect );
     }
+
     if( rect.width() > d->maxCell.width() ) d->maxCell.setWidth( rect.width() );
     if( rect.height() > d->maxCell.height() ) d->maxCell.setHeight( rect.height() );
 }
 
 void KDateTable::KDateTablePrivate::nextMonth()
 {
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-    q->setDate( calendar->addMonths( mDate, 1 ) );
+    // setDate does validity checking for us
+    q->setDate( q->calendar()->addMonths( mDate, 1 ) );
 }
 
 void KDateTable::KDateTablePrivate::previousMonth()
 {
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-    q->setDate( calendar->addMonths( mDate, -1 ) );
+    // setDate does validity checking for us
+    q->setDate( q->calendar()->addMonths( mDate, -1 ) );
 }
 
 void KDateTable::KDateTablePrivate::beginningOfMonth()
 {
-    q->setDate( mDate.addDays( 1 - mDate.day() ) );
+    // setDate does validity checking for us
+    q->setDate( q->calendar()->addDays( mDate, 1 - q->calendar()->day( mDate ) ) );
 }
 
 void KDateTable::KDateTablePrivate::endOfMonth()
 {
-    q->setDate( mDate.addDays( mDate.daysInMonth() - mDate.day() ) );
+    // setDate does validity checking for us
+    q->setDate( q->calendar()->addDays( mDate,
+                q->calendar()->daysInMonth( mDate ) - q->calendar()->day( mDate ) ) );
 }
 
+// JPL Do these make the assumption that first day of week is weekday 1? As it may not be.
 void KDateTable::KDateTablePrivate::beginningOfWeek()
 {
-    q->setDate( mDate.addDays( 1 - mDate.dayOfWeek() ) );
+    // setDate does validity checking for us
+    q->setDate( q->calendar()->addDays( mDate, 1 - q->calendar()->dayOfWeek( mDate ) ) );
 }
 
+// JPL Do these make the assumption that first day of week is weekday 1? As it may not be.
 void KDateTable::KDateTablePrivate::endOfWeek()
 {
-    q->setDate( mDate.addDays( 7 - mDate.dayOfWeek() ) );
+    // setDate does validity checking for us
+    q->setDate( q->calendar()->addDays( mDate, 
+                q->calendar()->daysInWeek( mDate ) - q->calendar()->dayOfWeek( mDate ) ) );
 }
 
-void
-KDateTable::keyPressEvent( QKeyEvent *e )
+void KDateTable::keyPressEvent( QKeyEvent *e )
 {
     switch( e->key() ) {
     case Qt::Key_Up:
-        setDate( d->mDate.addDays( -7 ) );
+        // setDate does validity checking for us
+        setDate( calendar()->addDays( d->mDate, - d->numDayColumns ) );
         break;
     case Qt::Key_Down:
-        setDate( d->mDate.addDays( 7 ) );
+        // setDate does validity checking for us
+        setDate( calendar()->addDays( d->mDate, d->numDayColumns ) );
         break;
     case Qt::Key_Left:
-        setDate( d->mDate.addDays( -1 ) );
+        // setDate does validity checking for us
+        setDate( calendar()->addDays( d->mDate, -1 ) );
         break;
     case Qt::Key_Right:
-        setDate( d->mDate.addDays( 1 ) );
+        // setDate does validity checking for us
+        setDate( calendar()->addDays( d->mDate, 1 ) );
         break;
     case Qt::Key_Minus:
-        setDate( d->mDate.addDays( -1 ) );
+        // setDate does validity checking for us
+        setDate( calendar()->addDays( d->mDate, -1 ) );
         break;
     case Qt::Key_Plus:
-        setDate( d->mDate.addDays( 1 ) );
+        // setDate does validity checking for us
+        setDate( calendar()->addDays( d->mDate, 1 ) );
         break;
     case Qt::Key_N:
+        // setDate does validity checking for us
         setDate( QDate::currentDate() );
         break;
     case Qt::Key_Return:
@@ -511,9 +534,8 @@ void KDateTable::setFontSize( int size )
     // ----- find largest day name:
     d->maxCell.setWidth( 0 );
     d->maxCell.setHeight( 0 );
-    for( count = 0; count < 7; ++count ) {
-        rect = metrics.boundingRect( KGlobal::locale()->calendar()
-                                     ->weekDayName( count + 1, KCalendarSystem::ShortDayName ) );
+    for( count = 0; count < calendar()->daysInWeek( d->mDate ); ++count ) {
+        rect = metrics.boundingRect( calendar()->weekDayName( count + 1, KCalendarSystem::ShortDayName ) );
         d->maxCell.setWidth( qMax( d->maxCell.width(), rect.width() ) );
         d->maxCell.setHeight( qMax( d->maxCell.height(), rect.height() ) );
     }
@@ -525,28 +547,27 @@ void KDateTable::setFontSize( int size )
 
 void KDateTable::wheelEvent ( QWheelEvent * e )
 {
-    setDate( d->mDate.addMonths( -( int )( e->delta() / 120 ) ) );
+    setDate( calendar()->addMonths( d->mDate, -( int )( e->delta() / 120 ) ) );
     e->accept();
 }
 
 void KDateTable::mousePressEvent( QMouseEvent *e )
 {
-
     if( e->type() != QEvent::MouseButtonPress ) { // the KDatePicker only reacts on mouse press events:
         return;
     }
+
     if( !isEnabled() ) {
         KNotification::beep();
         return;
     }
 
-    // -----
     int row, col, pos, temp;
-    QPoint mouseCoord;
-    // -----
-    mouseCoord = e->pos();
-    row = mouseCoord.y() / ( height() / 7 );
-    col = mouseCoord.x() / ( width() / 7 );
+
+    QPoint mouseCoord = e->pos();
+    row = mouseCoord.y() / ( height() / d->numWeekRows );
+    col = mouseCoord.x() / ( width() / d->numDayColumns );
+
     if( row < 1 || col < 0 ) { // the user clicked on the frame of the table
         return;
     }
@@ -556,12 +577,14 @@ void KDateTable::mousePressEvent( QMouseEvent *e )
 
     // old selected date:
     temp = posFromDate( d->mDate );
+
     // new position and date
-    pos = ( 7 * ( row - 1 ) ) + col;
+    pos = ( d->numDayColumns * ( row - 1 ) ) + col;
     QDate clickedDate = dateFromPos( pos );
 
     // set the new date. If it is in the previous or next month, the month will
     // automatically be changed, no need to do that manually...
+    // validity checking done inside setDate
     setDate( clickedDate );
 
     // This could be optimized to only call update over the regions
@@ -574,7 +597,7 @@ void KDateTable::mousePressEvent( QMouseEvent *e )
 
     if (  e->button() == Qt::RightButton && d->popupMenuEnabled ) {
         KMenu * menu = new KMenu();
-        menu->addTitle( KGlobal::locale()->formatDate( clickedDate ) );
+        menu->addTitle( calendar()->formatDate( clickedDate ) );
         emit aboutToShowContextMenu( menu, clickedDate );
         menu->popup( e->globalPos() );
     }
@@ -582,32 +605,39 @@ void KDateTable::mousePressEvent( QMouseEvent *e )
 
 bool KDateTable::setDate( const QDate& date_ )
 {
-    bool changed = false;
-    QDate temp;
-    // -----
-    if( !date_.isValid() ) {
-        kDebug() << "KDateTable::setDate: refusing to set invalid date.";
+    if( date_.isNull() || ! calendar()->isValid( date_ ) ) {
         return false;
     }
+
+    bool changed = false;
+
     if( d->mDate != date_ ) {
         emit( dateChanged( d->mDate, date_ ) );
         d->mDate = date_;
         emit( dateChanged( d->mDate ) );
         changed = true;
     }
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-    calendar->setYMD( temp, calendar->year( d->mDate ), calendar->month( d->mDate ), 1 );
-    //temp.setYMD(d->mDate.year(), d->mDate.month(), 1);
-    //kDebug() << "firstDayInWeek: " << temp.toString();
-    d->firstday = temp.dayOfWeek();
-    d->numdays = calendar->daysInMonth( d->mDate );
+    // set weekday number of first day of this month, but this may not be a valid date so fake
+    // it if needed e.g. in QDate Mon 1 Jan -4713 is not valid when it should be, so fake as day 1
+    QDate firstDayOfMonth;
+    if ( calendar()->setYMD( firstDayOfMonth, 
+                             calendar()->year( d->mDate ), calendar()->month( d->mDate ), 1 ) ) {
+        d->weekDayFirstOfMonth = calendar()->dayOfWeek( firstDayOfMonth );
+    } else {
+        d->weekDayFirstOfMonth = calendar()->dayOfWeek( d->mDate ) -
+                                 ( ( calendar()->day( d->mDate ) - 1 ) % d->numDayColumns );
+        if ( d->weekDayFirstOfMonth <= 0 ) {
+            d->weekDayFirstOfMonth = d->weekDayFirstOfMonth + d->numDayColumns;
+        }
+    }
 
-    temp = calendar->addMonths( temp, -1 );
-    d->numDaysPrevMonth = calendar->daysInMonth( temp );
+    d->numDaysThisMonth = calendar()->daysInMonth( d->mDate );
+
     if( changed ) {
         update();
     }
+
     return true;
 }
 
@@ -625,38 +655,63 @@ const KCalendarSystem *KDateTable::calendar() const
     return  KGlobal::locale()->calendar();
 }
 
-bool KDateTable::setCalendar( KCalendarSystem *calendar )
+bool KDateTable::setCalendar( KCalendarSystem *calendar_ )
 {
-    d->m_calendar = calendar;
+    // Delete the old calendar first, provided it's not the global (better to be safe...)
+    if ( d->m_calendar && d->m_calendar != KGlobal::locale()->calendar() ) {
+        delete d->m_calendar;
+    }
+
+    d->m_calendar = 0;
+
+    // Don't actually set calendar if it's the global, setting to 0 will cause global to be returned
+    if ( calendar_ != KGlobal::locale()->calendar() ) {
+        d->m_calendar = calendar_;
+
+        // Need to redraw to display correct calendar
+        d->numDayColumns = calendar()->daysInWeek( d->mDate );
+        setDate( d->mDate );
+        // JPL not 100% sure we need to emit
+        emit( dateChanged( d->mDate, d->mDate ) );
+        emit( dateChanged( d->mDate ) );
+        update();
+    }
+
     return true;
 }
 
 bool KDateTable::setCalendar( const QString &calendarType )
 {
-    d->m_calendar = KCalendarSystem::create( calendarType );
-    return d->m_calendar;
+    // If type passed in is the same as the global, then use the global instead
+    if ( calendarType != KGlobal::locale()->calendarType() ) {
+        return( setCalendar( KCalendarSystem::create( calendarType ) ) );
+    } else {
+        // Delete the old calendar first, provided it's not the global (better to be safe...)
+        if ( d->m_calendar && d->m_calendar != KGlobal::locale()->calendar() ) {
+            delete d->m_calendar;
+        }
+        d->m_calendar = 0;
+        return true;
+    }
 }
 
-// what are those repaintContents() good for? (pfeiffer)
 void KDateTable::focusInEvent( QFocusEvent *e )
 {
-//    repaintContents(false);
     QWidget::focusInEvent( e );
 }
 
 void KDateTable::focusOutEvent( QFocusEvent *e )
 {
-//    repaintContents(false);
     QWidget::focusOutEvent( e );
 }
 
 QSize KDateTable::sizeHint() const
 {
     if( d->maxCell.height() > 0 && d->maxCell.width() > 0 ) {
-        return QSize( qRound( d->maxCell.width() * 7 ),
-                      ( qRound( d->maxCell.height() + 2 ) * 7 ) );
+        return QSize( qRound( d->maxCell.width() * d->numDayColumns ),
+                      ( qRound( d->maxCell.height() + 2 ) * d->numWeekRows ) );
     } else {
-        kDebug() << "KDateTable::sizeHint: obscure failure - ";
+        kDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
         return QSize( -1, -1 );
     }
 }
@@ -683,65 +738,18 @@ void KDateTable::setCustomDatePainting( const QDate &date, const QColor &fgColor
     mode->fgColor = fgColor;
     mode->bgColor = bgColor;
 
-    d->customPaintingModes.insert( date.toString(), mode );
+    d->customPaintingModes.insert( calendar()->formatDate( date ), mode );
     d->useCustomColors = true;
     update();
 }
 
 void KDateTable::unsetCustomDatePainting( const QDate &date )
 {
-    d->customPaintingModes.remove( date.toString() );
+    d->customPaintingModes.remove( calendar()->formatDate( date ) );
 }
 
 
-
-KDateInternalYearSelector::KDateInternalYearSelector( QWidget* parent )
-                          : QLineEdit( parent ), val( new QIntValidator( this ) ), result( 0 )
-{
-    QFont font;
-    // -----
-    font = KGlobalSettings::generalFont();
-    setFont( font );
-    setFrame( false );
-    // we have to respect the limits of QDate here, I fear:
-    val->setRange( 0, 8000 );
-    setValidator( val );
-    connect( this, SIGNAL( returnPressed() ), SLOT( yearEnteredSlot() ) );
-}
-
-void KDateInternalYearSelector::yearEnteredSlot()
-{
-    bool ok;
-    int year;
-    QDate date;
-    // ----- check if this is a valid year:
-    year = text().toInt( &ok );
-    if( !ok ) {
-        KNotification::beep();
-        return;
-    }
-    //date.setYMD(year, 1, 1);
-    KGlobal::locale()->calendar()->setYMD( date, year, 1, 1 );
-    if( !date.isValid() ) {
-        KNotification::beep();
-        return;
-    }
-    result = year;
-    emit( closeMe( 1 ) );
-}
-
-int KDateInternalYearSelector::getYear()
-{
-    return result;
-}
-
-void KDateInternalYearSelector::setYear( int year )
-{
-    QString temp;
-    // -----
-    temp.setNum( year );
-    setText( temp );
-}
+// JPL Shouldn't this be in own file as is used in a couple of places?  Or moved to private in KDE5?
 
 KPopupFrame::KPopupFrame( QWidget* parent )
             : QFrame( parent, Qt::Popup ), d( new KPopupFramePrivate( this ) )
@@ -833,4 +841,3 @@ int KPopupFrame::exec( int x, int y )
 }
 
 #include "kdatetable.moc"
-#include "kdatetable_p.moc"

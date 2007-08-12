@@ -20,8 +20,8 @@
 */
 
 #include "kdatepicker.h"
+#include "kdatepicker_p.h"
 #include "kdatetable.h"
-#include "kdatetable_p.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QComboBox>
@@ -45,18 +45,77 @@
 #include <knotification.h>
 
 #include "kdatepicker.moc"
+#include "kdatepicker_p.moc"
 
 // Week numbers are defined by ISO 8601
 // See http://www.merlyn.demon.co.uk/weekinfo.htm for details
 
+
+KDatePickerPrivateYearSelector::KDatePickerPrivateYearSelector(
+                                const KCalendarSystem *cal, const QDate &currentDate, QWidget* parent )
+                              : QLineEdit( parent ), val( new QIntValidator( this ) ), result( 0 )
+{
+    calendar = cal;
+    oldDate = currentDate;
+
+    QFont font;
+    font = KGlobalSettings::generalFont();
+    setFont( font );
+
+    setFrame( false );
+
+    val->setRange( calendar->year( calendar->earliestValidDate() ),
+                   calendar->year( calendar->latestValidDate() ) );
+    setValidator( val );
+
+    connect( this, SIGNAL( returnPressed() ), SLOT( yearEnteredSlot() ) );
+}
+
+void KDatePickerPrivateYearSelector::yearEnteredSlot()
+{
+    bool ok;
+    int newYear;
+    QDate newDate;
+
+    // check if entered value is a number
+    newYear = text().toInt( &ok );
+    if( !ok ) {
+        KNotification::beep();
+        return;
+    }
+
+    // check if new year will lead to a valid date
+    if ( calendar->setYMD( newDate, newYear, calendar->month( oldDate ), calendar->day( oldDate ) ) ) {
+        result = newYear;
+        emit( closeMe( 1 ) );
+    } else {
+        KNotification::beep();
+    }
+
+}
+
+int KDatePickerPrivateYearSelector::year()
+{
+    return result;
+}
+
+bool KDatePickerPrivateYearSelector::setYear( int year )
+{
+    QString temp;
+    temp.setNum( year );
+    setText( temp );
+}
+
 class KDatePicker::KDatePickerPrivate
 {
 public:
-    KDatePickerPrivate() : closeButton( 0L ), selectWeek( 0L ), todayButton( 0 ), navigationLayout( 0 )
+    KDatePickerPrivate( KDatePicker *q ) :
+             q( q ), closeButton( 0L ), selectWeek( 0L ), todayButton( 0 ), navigationLayout( 0 )
     {
     }
 
-    void fillWeeksCombo( const QDate &date );
+    void fillWeeksCombo();
+    QDate validDateInYearMonth( int year, int month );
 
     QToolButton *closeButton;
     QComboBox *selectWeek;
@@ -81,6 +140,8 @@ public:
     KDateValidator *val;
     /// the date table
     KDateTable *table;
+    /// the date table
+    KDatePicker *q;
     /// the widest month string in pixels:
     QSize maxMonthRect;
 
@@ -88,52 +149,80 @@ public:
     int fontsize;
 };
 
-void KDatePicker::fillWeeksCombo( const QDate &date )
+void KDatePicker::KDatePickerPrivate::fillWeeksCombo()
 {
     // every year can have a different number of weeks
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-
     // it could be that we had 53,1..52 and now 1..53 which is the same number but different
     // so always fill with new values
-
-    d->selectWeek->clear();
-
     // We show all week numbers for all weeks between first day of year to last day of year
     // This of course can be a list like 53,1,2..52
 
+    int thisYear = q->calendar()->year( q->date() );
+
+    // Note we need this roundabout way to calculate lastDayOfYear instead of simply taking
+    // 1st day of next year - 1 day, as next year may not be a valid date
+    // JPL still leaves open what to do if we start or end part way through year.
+    QDate lastDayOfYear;
+    q->calendar()->setYMD( lastDayOfYear, thisYear, q->calendar()->monthsInYear( q->date() ), 1 );
+    q->calendar()->setYMD( lastDayOfYear, thisYear, q->calendar()->monthsInYear( q->date() ),
+                           q->calendar()->daysInMonth( lastDayOfYear ) );
+
+    // JPL this won't always be a valid date!
     QDate day;
-    int year = calendar->year( date );
-    calendar->setYMD( day, year, 1, 1 );
-    int lastMonth = calendar->monthsInYear( day );
-    QDate lastDay, firstDayOfLastMonth;
-    calendar->setYMD( firstDayOfLastMonth, year, lastMonth, 1 );
-    calendar->setYMD( lastDay, year, lastMonth, calendar->daysInMonth( firstDayOfLastMonth ) );
+    q->calendar()->setYMD( day, thisYear, 1, 1 );
 
-    for ( ; day <= lastDay ; day = calendar->addDays( day, 7 /*calendar->daysOfWeek()*/ ) ) {
-        QString week = i18n( "Week %1", calendar->weekNumber( day, &year ) );
-        if ( year != calendar->year( day ) ) week += '*';  // show that this is a week from a different year
-        d->selectWeek->addItem( week );
+    selectWeek->clear();
 
-        // make sure that the week of the lastDay is always inserted: in Chinese calendar
+    for ( ; day <= lastDayOfYear ; day = q->calendar()->addDays( day, q->calendar()->daysInWeek( day ) ) ) {
+        QString week = i18n( "Week %1", q->calendar()->weekNumber( day, &thisYear ) );
+
+        // show that this is a week from a different year
+        if ( q->calendar()->year( day ) != thisYear ) {
+            week += "*";
+        }
+
+        selectWeek->addItem( week );
+
+        // make sure that the week of the lastDayOfYear is always inserted: in Chinese calendar
         // system, this is not always the case
-        if( day < lastDay && day.daysTo( lastDay ) < 7 && calendar->weekNumber( day ) != calendar->weekNumber( lastDay ) ) {
-            day = lastDay.addDays( -7 );
+        if ( day < lastDayOfYear &&
+             day.daysTo( lastDayOfYear ) < q->calendar()->daysInWeek( day ) &&
+             q->calendar()->weekNumber( lastDayOfYear ) != q->calendar()->weekNumber( day ) ) {
+            day = q->calendar()->addDays( lastDayOfYear, - q->calendar()->daysInWeek( q->date() ) );
         }
     }
 }
 
-KDatePicker::KDatePicker( QWidget* parent ) : QFrame( parent ), d( new KDatePickerPrivate() )
+QDate KDatePicker::KDatePickerPrivate::validDateInYearMonth( int year, int month )
+{
+    QDate newDate;
+
+    // Try to create a valid date in this year and month
+    // First try the first of the month, then try last of month
+    if ( q->calendar()->isValid( year, month, 1 ) ) {
+        q->calendar()->setYMD( newDate, year, month, 1 );
+    } else if ( q->calendar()->isValid( year, month + 1, 1 ) ) {
+        q->calendar()->setYMD( newDate, year, month, 1 );
+        q->calendar()->addDays( newDate, -1 );
+    } else {
+        newDate = QDate::fromJulianDay( 0 );
+    }
+
+    return newDate;
+}
+
+KDatePicker::KDatePicker( QWidget* parent ) : QFrame( parent ), d( new KDatePickerPrivate( this ) )
 {
     init( QDate::currentDate() );
 }
 
-KDatePicker::KDatePicker( const QDate& dt, QWidget* parent )
-            : QFrame( parent ), d( new KDatePickerPrivate() )
+KDatePicker::KDatePicker( const QDate& date_, QWidget* parent )
+            : QFrame( parent ), d( new KDatePickerPrivate( this ) )
 {
-    init( dt );
+    init( date_ );
 }
 
-void KDatePicker::init( const QDate &dt )
+void KDatePicker::init( const QDate &date_ )
 {
 
     QBoxLayout * topLayout = new QVBoxLayout( this );
@@ -234,8 +323,8 @@ void KDatePicker::init( const QDate &dt )
     bottomLayout->addWidget( d->line );
     bottomLayout->addWidget( d->selectWeek );
 
-    d->table->setDate( dt );
-    dateChangedSlot( dt );  // needed because table emits changed only when newDate != oldDate
+    d->table->setDate( date_ );
+    dateChangedSlot( date_ );  // needed because table emits changed only when newDate != oldDate
 }
 
 KDatePicker::~KDatePicker()
@@ -249,9 +338,9 @@ bool KDatePicker::eventFilter( QObject *o, QEvent *e )
         QKeyEvent * k = ( QKeyEvent * )e;
 
         if ( ( k->key() == Qt::Key_PageUp ) ||
-                ( k->key() == Qt::Key_PageDown )  ||
-                ( k->key() == Qt::Key_Up )    ||
-                ( k->key() == Qt::Key_Down ) ) {
+             ( k->key() == Qt::Key_PageDown ) ||
+             ( k->key() == Qt::Key_Up ) ||
+             ( k->key() == Qt::Key_Down ) ) {
             QApplication::sendEvent( d->table, e );
             d->table->setFocus();
             return true; // eat event
@@ -265,29 +354,26 @@ void KDatePicker::resizeEvent( QResizeEvent* e )
     QWidget::resizeEvent( e );
 }
 
-void KDatePicker::dateChangedSlot( const QDate &date )
+void KDatePicker::dateChangedSlot( const QDate &date_ )
 {
-    kDebug( 298 ) << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ").";
-
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-
-    d->line->setText( KGlobal::locale()->formatDate( date, KLocale::ShortDate ) );
-    d->selectMonth->setText( calendar->monthName( date, KCalendarSystem::LongName ) );
-    fillWeeksCombo( date );
+    d->line->setText( calendar()->formatDate( date_, KLocale::ShortDate ) );
+    d->selectMonth->setText( calendar()->monthName( date_, KCalendarSystem::LongName ) );
+    d->fillWeeksCombo();
 
     // calculate the item num in the week combo box; normalize selected day so as if 1.1. is the first day of the week
     QDate firstDay;
-    calendar->setYMD( firstDay, calendar->year( date ), 1, 1 );
-    d->selectWeek->setCurrentIndex( ( calendar->dayOfYear( date ) + calendar->dayOfWeek( firstDay ) - 2 ) / 7/*calendar->daysInWeek()*/ );
-    d->selectYear->setText( calendar->yearString( date, KCalendarSystem::LongFormat ) );
+    // JPL may not always be valid!
+    calendar()->setYMD( firstDay, calendar()->year( date_ ), 1, 1 );
+    d->selectWeek->setCurrentIndex( ( calendar()->dayOfYear( date_ ) + calendar()->dayOfWeek( firstDay ) - 2 ) /
+                                    calendar()->daysInWeek( date_ ) );
+    d->selectYear->setText( calendar()->yearString( date_, KCalendarSystem::LongFormat ) );
 
-    emit( dateChanged( date ) );
+    emit( dateChanged( date_ ) );
 }
 
 void KDatePicker::tableClickedSlot()
 {
-    kDebug( 298 ) << "KDatePicker::tableClickedSlot: table clicked.";
-    emit( dateSelected( d->table->date() ) );
+    emit( dateSelected( date() ) );
     emit( tableClicked() );
 }
 
@@ -296,15 +382,11 @@ const QDate & KDatePicker::date() const
     return d->table->date();
 }
 
-bool KDatePicker::setDate( const QDate &date )
+bool KDatePicker::setDate( const QDate &date_ )
 {
-    if( date.isValid() ) {
-        d->table->setDate( date );  // this also emits dateChanged() which then calls our dateChangedSlot()
-        return true;
-    } else {
-        kDebug( 298 ) << "KDatePicker::setDate: refusing to set invalid date.";
-        return false;
-    }
+    // the table setDate does validity checking for us
+    // this also emits dateChanged() which then calls our dateChangedSlot()
+    return d->table->setDate( date_ );
 }
 
 const KCalendarSystem *KDatePicker::calendar() const
@@ -324,123 +406,131 @@ bool KDatePicker::setCalendar( const QString &calendarType )
 
 void KDatePicker::monthForwardClicked()
 {
-    QDate temp;
-
-    temp = KGlobal::locale()->calendar()->addMonths( d->table->date(), 1 );
-
-    setDate( temp );
+    if ( ! setDate( calendar()->addMonths( date(), 1 ) ) ) {
+        KNotification::beep();
+    }
 }
 
 void KDatePicker::monthBackwardClicked()
 {
-    QDate temp;
-
-    temp = KGlobal::locale()->calendar()->addMonths( d->table->date(), -1 );
-
-    setDate( temp );
+    if ( ! setDate( calendar()->addMonths( date(), -1 ) ) ) {
+        KNotification::beep();
+    }
 }
 
 void KDatePicker::yearForwardClicked()
 {
-    QDate temp;
-
-    temp = KGlobal::locale()->calendar()->addYears( d->table->date(), 1 );
-
-    setDate( temp );
+    if ( ! setDate( calendar()->addYears( d->table->date(), 1 ) ) ) {
+        KNotification::beep();
+    }
 }
 
 void KDatePicker::yearBackwardClicked()
 {
-    QDate temp;
-
-    temp = KGlobal::locale()->calendar()->addYears( d->table->date(), -1 );
-
-    setDate( temp );
+    if ( ! setDate( calendar()->addYears( d->table->date(), -1 ) ) ) {
+        KNotification::beep();
+    }
 }
 
 void KDatePicker::weekSelected( int week )
 {
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+    QDate newDate;
 
-    QDate date = d->table->date();
-    int year = calendar->year( date );
+    // First obtain a date that has weekday number of 1, either in this week or next week, whichevers valid
+    newDate = calendar()->addDays( date(), 1 - calendar()->dayOfWeek( date() ) );
+    if ( ! calendar()->isValid( newDate ) ) {
+        newDate = calendar()->addDays( date(),
+                  1 - calendar()->dayOfWeek( date() ) + calendar()->daysInWeek( date() ) );
+    }
 
-    calendar->setYMD( date, year, 1, 1 );  // first day of selected year
+    // If we have a valid date, then add/subtract the number of days difference between the week numbers
+    if ( calendar()->isValid( newDate ) ) {
+        newDate = calendar()->addDays( newDate,
+                 ( week - calendar()->weekNumber( newDate ) ) * calendar()->daysInWeek( date() ) );
+    }
 
-    // calculate the first day in the selected week (day 1 is first day of week)
-    date = calendar->addDays( date, week * 7/*calendar->daysOfWeek()*/ -calendar->dayOfWeek( date ) + 1 );
-
-    setDate( date );
+    if ( ! setDate( newDate ) ) {
+        KNotification::beep();
+    }
 }
 
 void KDatePicker::selectMonthClicked()
 {
-    // every year can have different month names (in some calendar systems)
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-    QDate date = d->table->date();
-    const int months = calendar->monthsInYear( date );
-
     QMenu popup( d->selectMonth );
 
-    for ( int i = 1; i <= months; i++ ) {
-        popup.addAction( calendar->monthName( i, calendar->year( date ) ) )->setData( i );
+    // Populate the pick list with all the month names, this may change by year
+    // JPL do we need to do somethng here for months that fall outside valid range?
+    for ( int m = 1; m <= calendar()->monthsInYear( date() ); m++ ) {
+        popup.addAction( calendar()->monthName( m, calendar()->year( date() ) ) )->setData( m );
     }
 
-    //QMenuItem *item = popup.findItem (calendar->month(date) - 1);
-    QAction *item = popup.actions()[calendar->month( date )-1];
+    QAction *item = popup.actions()[ calendar()->month( date() ) - 1 ];
     // if this happens the above should already given an assertion
     if ( item ) {
         popup.setActiveAction( item );
     }
 
-    // canceled
+    // cancelled
     if ( ( item = popup.exec( d->selectMonth->mapToGlobal( QPoint( 0, 0 ) ), item ) ) == 0 ) {
         return;
     }
 
-    int day = calendar->day( date );
-    // ----- construct a valid date in this month:
-    calendar->setYMD( date, calendar->year( date ), item->data().toInt(), 1 );
-    date = date.addDays( qMin( day, calendar->daysInMonth( date ) ) - 1 );
-    // ----- set this month
-    setDate( date );
+    // We need to create a valid date in the month selected so we can find out how many days are
+    // in the month.
+    QDate newDate = d->validDateInYearMonth( calendar()->year( date() ), item->data().toInt() );
+
+    // If we have succeeded in creating a date in the new month, then try to create the new date,
+    // checking we don't set a day after the last day of the month
+    if ( calendar()->isValid( newDate ) ) {
+        calendar()->setYMD( newDate,
+                            calendar()->year( date() ),
+                            item->data().toInt(),
+                            qMin( calendar()->day( date() ), calendar()->daysInMonth( newDate ) ) );
+    }
+
+    // Set the date, if it's invalid in any way then alert user and don't update
+    if ( ! setDate( newDate ) ) {
+        KNotification::beep();
+    }
 }
 
 void KDatePicker::selectYearClicked()
 {
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+    QDate newDate;
 
-    if ( !d->selectYear->isChecked () ) {
+    if ( !d->selectYear->isChecked() ) {
         return;
     }
 
-    int year;
-    KPopupFrame* popup = new KPopupFrame( this );
-    KDateInternalYearSelector* picker = new KDateInternalYearSelector( popup );
-    // -----
+    KPopupFrame *popup = new KPopupFrame( this );
+    KDatePickerPrivateYearSelector *picker = new KDatePickerPrivateYearSelector( calendar(), date(), popup );
     picker->resize( picker->sizeHint() );
-    picker->setYear( d->table->date().year() );
+    picker->setYear( calendar()->year( date() ) );
     picker->selectAll();
     popup->setMainWidget( picker );
     connect( picker, SIGNAL( closeMe( int ) ), popup, SLOT( close( int ) ) );
     picker->setFocus();
+
     if( popup->exec( d->selectYear->mapToGlobal( QPoint( 0, d->selectMonth->height() ) ) ) ) {
-        QDate date;
-        int day;
-        // -----
-        year = picker->getYear();
-        date = d->table->date();
-        day = calendar->day( date );
-        // ----- construct a valid date in this month:
-        //date.setYMD(year, date.month(), 1);
-        //date.setYMD(year, date.month(), qMin(day, date.daysInMonth()));
-        calendar->setYMD( date, year, calendar->month( date ),
-                          qMin( day, calendar->daysInMonth( date ) ) );
-        // ----- set this month
-        setDate( date );
-    } else {
+        // We need to create a valid date in the year/month selected so we can find out how many
+        // days are in the month.
+        newDate = d->validDateInYearMonth( picker->year(), calendar()->month( date() ) );
+
+        // If we have succeeded in creating a date in the new month, then try to create the new
+        // date, checking we don't set a day after the last day of the month
+        if ( calendar()->isValid( newDate ) ) {
+            calendar()->setYMD( newDate,
+                                picker->year(),
+                                calendar()->month( date() ),
+                                qMin( calendar()->day( date() ), calendar()->daysInMonth( newDate ) ) );
+        }
+    }
+
+    // Set the date, if it's invalid in any way then alert user and don't update
+    if ( ! setDate( newDate ) ) {
         KNotification::beep();
     }
+
     d->selectYear->setChecked( false );
     delete popup;
 }
@@ -453,10 +543,11 @@ void KDatePicker::setEnabled( bool enable )
     QWidget * widgets[] = {
                               d->yearForward, d->yearBackward, d->monthForward, d->monthBackward,
                               d->selectMonth, d->selectYear,
-                              d->line, d->table, d->selectWeek, d->todayButton };
+                              d->line, d->table, d->selectWeek, d->todayButton
+                          };
     const int Size = sizeof( widgets ) / sizeof( widgets[0] );
     int count;
-    // -----
+
     for( count = 0; count < Size; ++count ) {
         widgets[count]->setEnabled( enable );
     }
@@ -469,15 +560,13 @@ KDateTable *KDatePicker::dateTable() const
 
 void KDatePicker::lineEnterPressed()
 {
-    QDate temp;
-    // -----
-    if( d->val->date( d->line->text(), temp ) == QValidator::Acceptable ) {
-        kDebug( 298 ) << "KDatePicker::lineEnterPressed: valid date entered.";
-        emit( dateEntered( temp ) );
-        setDate( temp );
+    QDate newDate = calendar()->readDate( d->line->text() );
+
+    if ( calendar()->isValid( newDate ) ) {
+        emit( dateEntered( newDate ) );
+        setDate( newDate );
     } else {
         KNotification::beep();
-        kDebug( 298 ) << "KDatePicker::lineEnterPressed: invalid date entered.";
     }
 }
 
@@ -494,12 +583,8 @@ QSize KDatePicker::sizeHint() const
 void KDatePicker::setFontSize( int s )
 {
     QWidget * buttons[] = {
-                              // yearBackward,
-                              // monthBackward,
                               d->selectMonth,
                               d->selectYear,
-                              // monthForward,
-                              // yearForward
                           };
     const int NoOfButtons = sizeof( buttons ) / sizeof( buttons[0] );
     int count;
@@ -515,9 +600,10 @@ void KDatePicker::setFontSize( int s )
     QFontMetrics metrics( d->selectMonth->fontMetrics() );
 
     for ( int i = 1; ; ++i ) {
-        QString str = KGlobal::locale()->calendar()->monthName( i,
-                      KGlobal::locale()->calendar()->year( d->table->date() ), KCalendarSystem::LongName );
-        if ( str.isNull() ) break;
+        QString str = calendar()->monthName( i, calendar()->year( date() ), KCalendarSystem::LongName );
+        if ( str.isNull() ) {
+            break;
+        }
         r = metrics.boundingRect( str );
         d->maxMonthRect.setWidth( qMax( r.width(), d->maxMonthRect.width() ) );
         d->maxMonthRect.setHeight( qMax( r.height(),  d->maxMonthRect.height() ) );
@@ -534,9 +620,8 @@ void KDatePicker::setFontSize( int s )
     opt.subControls       = QStyle::SC_All;
     opt.activeSubControls = 0; //### FIXME: !!
 
-    QSize metricBound = style()->sizeFromContents( QStyle::CT_ToolButton,
-                        &opt,
-                        d->maxMonthRect, d->selectMonth );
+    QSize metricBound = style()->sizeFromContents( QStyle::CT_ToolButton, &opt,
+                                                   d->maxMonthRect, d->selectMonth );
     d->selectMonth->setMinimumSize( metricBound );
 
     d->table->setFontSize( s );
@@ -548,8 +633,7 @@ int KDatePicker::fontSize() const
 }
 
 
-void
-KDatePicker::setCloseButton( bool enable )
+void KDatePicker::setCloseButton( bool enable )
 {
     if ( enable == ( d->closeButton != 0L ) ) {
         return;
@@ -576,4 +660,3 @@ bool KDatePicker::hasCloseButton() const
 {
     return ( d->closeButton );
 }
-
