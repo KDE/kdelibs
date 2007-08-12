@@ -6,7 +6,7 @@ ServiceTypes=KCModule
 Exec=kcmshell crypto
 DocPath=kcontrol/crypto/index.html
 
-X-KDE-Library=crypto
+X-KDE-Library=kcm_crypto
 X-KDE-ParentApp=kcontrol
 
 Name=Crypto

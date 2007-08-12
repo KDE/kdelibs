@@ -71,8 +71,6 @@ KCModuleInfo::Private::Private( KService::Ptr s )
   icon = service->icon();
   fileName = service->desktopEntryPath();
   lib = service->library();
-  if( !lib.startsWith( QLatin1String( "kcm_" ) ) )
-    lib = QLatin1String( "kcm_" ) + lib;
   keywords = service->keywords();
 }
 
@@ -134,7 +132,7 @@ void KCModuleInfo::Private::loadAll()
 
   // factory handle
   tmp = service->property("X-KDE-FactoryName", QVariant::String);
-  handle = tmp.isValid() ? tmp.toString() : lib.right( lib.length() - 4 ); // lib without kcm_ prefix
+  handle = tmp.isValid() ? tmp.toString() : lib;
 
 }
 
