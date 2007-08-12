@@ -107,7 +107,7 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent)
       progress(0),d(new KDirOperatorPrivate)
 {
     myPreview = 0L;
-    myMode = KFile::ModeMax; //try to make KFileDialog::getOpenURL (without s) to work again
+    myMode = KFile::File;
     m_viewKind = KFile::Simple;
     mySorting = QDir::Name | QDir::DirsFirst;
 
