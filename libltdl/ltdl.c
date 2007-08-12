@@ -2198,28 +2198,32 @@ lt_dlopen (filename)
     /* read the .la file */
     while (!feof(file))
       {
+        line[line_len-2] = '\0';
 	if (!fgets (line, line_len, file))
 	  {
 	    break;
 	  }
 
+        /* Handle the case where we occasionally need to read a line
+           that is longer than the initial buffer size.  */
+        while (line[line_len-2] && (!feof (file)))
+          {
+            line = LT_DLREALLOC (char, line, line_len *2);
+            if (!line || !fgets (&line[line_len -1], (int) line_len +1, file))
+              {
+                error = 1;
+                break;
+              }
+            line_len *= 2;
+          }
 
-	/* Handle the case where we occasionally need to read a line 
-	   that is longer than the initial buffer size.  */
-	while (line[strlen(line) -1] != '\n')
-	  {
-	    line = LT_DLREALLOC (char, line, line_len *2);
-	    if (!fgets (&line[line_len -1], line_len +1, file))
-	      {
-		break;
-	      }
-	    line_len *= 2;
-	  }
-
+        if (error)
+            break;
 	if (line[0] == '\n' || line[0] == '#')
 	  {
 	    continue;
 	  }
+
 
 #undef  STR_DLNAME
 #define STR_DLNAME	"dlname="
