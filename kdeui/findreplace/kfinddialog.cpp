@@ -380,11 +380,20 @@ void KFindDialog::setSupportsWholeWordsFind( bool supports )
 
 void KFindDialog::setSupportsRegularExpressionFind( bool supports )
 {
-    // ########## This should hide the checkbox instead
     if (supports) d->enabled |= KFind::RegularExpression;
     else d->enabled &= ~KFind::RegularExpression;
     d->regExp->setEnabled( supports );
     d->regExp->setChecked( supports && (options() & KFind::RegularExpression) );
+    if( !supports)
+    {
+       d->regExpItem->hide();
+       d->regExp->hide();
+    }
+    else
+    {
+       d->regExpItem->show();
+       d->regExp->show();
+    }
 }
 
 void KFindDialog::setOptions(long options)
