@@ -170,7 +170,7 @@ KMenu* KHelpMenu::menu()
     {
       if (need_separator)
         d->mMenu->addSeparator();
-      d->mSwitchApplicationLanguageAction = d->mMenu->addAction( i18n( "Switch application &language..." ), this, SLOT(switchApplicationLanguage()) );
+      d->mSwitchApplicationLanguageAction = d->mMenu->addAction( i18n( "Switch Application &Language..." ), this, SLOT(switchApplicationLanguage()) );
       need_separator = true;
     }
 
