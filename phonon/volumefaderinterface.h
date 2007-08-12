@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PHONON_VOLUMEFADEREFFECTINTERFACE_H
-#define PHONON_VOLUMEFADEREFFECTINTERFACE_H
+#ifndef PHONON_VOLUMEFADERINTERFACE_H
+#define PHONON_VOLUMEFADERINTERFACE_H
 
 #include "volumefadereffect.h"
 #include <QtCore/QObject>
@@ -45,4 +45,4 @@ class VolumeFaderInterface
 
 Q_DECLARE_INTERFACE(Phonon::VolumeFaderInterface, "VolumeFaderInterface3.phonon.kde.org")
 
-#endif // PHONON_VOLUMEFADEREFFECTINTERFACE_H
+#endif // PHONON_VOLUMEFADERINTERFACE_H

@@ -16,7 +16,6 @@
     Boston, MA 02110-1301, USA.
 
 */
-#include "phonondefs_p.h"
 #include "mediaobject.h"
 #include "mediaobject_p.h"
 
@@ -36,7 +35,6 @@
 
 #include "phononnamespace_p.h"
 #include "platform_p.h"
-#include "phonondefs_p.h"
 
 #define PHONON_CLASSNAME MediaObject
 #define PHONON_INTERFACENAME MediaObjectInterface

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PHONON_PLUGINFACTORY_H
-#define PHONON_PLUGINFACTORY_H
+#ifndef PHONON_PLATFORMPLUGIN_H
+#define PHONON_PLATFORMPLUGIN_H
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
@@ -92,4 +92,4 @@ class PlatformPlugin
 
 Q_DECLARE_INTERFACE(Phonon::PlatformPlugin, "PlatformPlugin1.phonon.kde.org")
 
-#endif // PHONON_PLUGINFACTORY_H
+#endif // PHONON_PLATFORMPLUGIN_H
