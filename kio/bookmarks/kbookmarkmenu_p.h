@@ -47,6 +47,27 @@ class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 
+class KImportedBookmarkMenu : public KBookmarkMenu
+{
+    friend class KBookmarkMenuImporter;
+  Q_OBJECT
+public:
+  //TODO simplfy
+  KImportedBookmarkMenu( KBookmarkManager* mgr,
+                 KBookmarkOwner * owner, KMenu * parentMenu,
+                 const QString & type, const QString & location );
+  KImportedBookmarkMenu( KBookmarkManager* mgr,
+                 KBookmarkOwner * owner, KMenu * parentMenu);
+  ~KImportedBookmarkMenu();
+  virtual void clear();
+  virtual void refill();
+protected Q_SLOTS:
+  void slotNSLoad();
+private:
+   QString m_type;
+   QString m_location;
+};
+
 class KBookmarkEditFields {
 public:
   typedef enum { FolderFieldsSet, BookmarkFieldsSet } FieldsSet;

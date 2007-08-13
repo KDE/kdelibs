@@ -121,55 +121,6 @@ QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
 
 ////////////////////////////////////////////////////////////////
 
-
-void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
-{
-    KNSBookmarkImporterImpl importer;
-    importer.setFilename(m_fileName);
-    importer.setUtf8(utf8);
-    importer.setupSignalForwards(&importer, this);
-    importer.parse();
-}
-
-QString KNSBookmarkImporter::netscapeBookmarksFile( bool forSaving )
-{
-    static KNSBookmarkImporterImpl *p = 0;
-    if (!p)
-    {
-        p = new KNSBookmarkImporterImpl;
-        p->setUtf8(false);
-    }
-    return p->findDefaultLocation(forSaving);
-}
-
-QString KNSBookmarkImporter::mozillaBookmarksFile( bool forSaving )
-{
-    static KNSBookmarkImporterImpl *p = 0;
-    if (!p)
-    {
-        p = new KNSBookmarkImporterImpl;
-        p->setUtf8(true);
-    }
-    return p->findDefaultLocation(forSaving);
-}
-
-
-////////////////////////////////////////////////////////////////
-//                   compat only
-////////////////////////////////////////////////////////////////
-
-void KNSBookmarkExporter::write(bool utf8) {
-   KNSBookmarkExporterImpl exporter(m_pManager, m_fileName);
-   exporter.setUtf8(utf8);
-   exporter.write(m_pManager->root());
-}
-
-void KNSBookmarkExporter::writeFolder(QTextStream &/*stream*/, const KBookmarkGroup &/*gp*/) {
-   // TODO - requires a d pointer workaround hack?
-}
-
-////////////////////////////////////////////////////////////////
-
 void KNSBookmarkExporterImpl::setUtf8(bool utf8) {
    m_utf8 = utf8;
 }

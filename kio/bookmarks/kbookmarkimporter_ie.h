@@ -30,35 +30,6 @@
 
 /**
  * A class for importing IE bookmarks
- * @deprecated
- */
-class KIO_EXPORT_DEPRECATED KIEBookmarkImporter : public QObject
-{
-    Q_OBJECT
-public:
-    KIEBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
-    ~KIEBookmarkImporter() {}
-
-    void parseIEBookmarks();
-
-    // Usual place for IE bookmarks
-    static QString IEBookmarksDir();
-
-Q_SIGNALS:
-    void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
-    void newFolder( const QString & text, bool open, const QString & additionalInfo );
-    void newSeparator();
-    void endFolder();
-
-protected:
-    void parseIEBookmarks_dir( const QString &dirname, const QString &name = QString() );
-    void parseIEBookmarks_url_file( const QString &filename, const QString &name );
-
-    QString m_fileName;
-};
-
-/**
- * A class for importing IE bookmarks
  */
 class KIO_EXPORT KIEBookmarkImporterImpl : public KBookmarkImporterBase
 {
