@@ -195,29 +195,29 @@ QString KCalendarSystemGregorian::monthName( int month, int year, MonthNameForma
     if ( format == ShortNamePossessive ) {
         switch ( month ) {
         case 1:
-            return ki18nc( "of January", "of Jan" ).toString( locale() );
+            return ki18nc( "of January",   "of Jan" ).toString( locale() );
         case 2:
-            return ki18nc( "of February", "of Feb" ).toString( locale() );
+            return ki18nc( "of February",  "of Feb" ).toString( locale() );
         case 3:
-            return ki18nc( "of March", "of Mar" ).toString( locale() );
+            return ki18nc( "of March",     "of Mar" ).toString( locale() );
         case 4:
-            return ki18nc( "of April", "of Apr" ).toString( locale() );
+            return ki18nc( "of April",     "of Apr" ).toString( locale() );
         case 5:
             return ki18nc( "of May short", "of May" ).toString( locale() );
         case 6:
-            return ki18nc( "of June", "of Jun" ).toString( locale() );
+            return ki18nc( "of June",      "of Jun" ).toString( locale() );
         case 7:
-            return ki18nc( "of July", "of Jul" ).toString( locale() );
+            return ki18nc( "of July",      "of Jul" ).toString( locale() );
         case 8:
-            return ki18nc( "of August", "of Aug" ).toString( locale() );
+            return ki18nc( "of August",    "of Aug" ).toString( locale() );
         case 9:
             return ki18nc( "of September", "of Sep" ).toString( locale() );
         case 10:
-            return ki18nc( "of October", "of Oct" ).toString( locale() );
+            return ki18nc( "of October",   "of Oct" ).toString( locale() );
         case 11:
-            return ki18nc( "of November", "of Nov" ).toString( locale() );
+            return ki18nc( "of November",  "of Nov" ).toString( locale() );
         case 12:
-            return ki18nc( "of December", "of Dec" ).toString( locale() );
+            return ki18nc( "of December",  "of Dec" ).toString( locale() );
         default:
             return QString();
         }
@@ -292,7 +292,7 @@ QString KCalendarSystemGregorian::monthName( int month, int year, MonthNameForma
     case 2:
         return ki18n( "February" ).toString( locale() );
     case 3:
-        return ki18n( "March" ).toString( locale() );
+        return ki18nc( "March long", "March" ).toString( locale() );
     case 4:
         return ki18n( "April" ).toString( locale() );
     case 5:
@@ -302,7 +302,7 @@ QString KCalendarSystemGregorian::monthName( int month, int year, MonthNameForma
     case 7:
         return ki18n( "July" ).toString( locale() );
     case 8:
-        return ki18n( "August" ).toString( locale() );
+        return ki18nc( "August long", "August" ).toString( locale() );
     case 9:
         return ki18n( "September" ).toString( locale() );
     case 10:
@@ -347,13 +347,13 @@ QString KCalendarSystemGregorian::weekDayName( int weekDay, WeekDayNameFormat fo
 {
     if ( format == ShortDayName ) {
         switch ( weekDay ) {
-        case 1:  return ki18nc( "Monday", "Mon" ).toString( locale() );
-        case 2:  return ki18nc( "Tuesday", "Tue" ).toString( locale() );
+        case 1:  return ki18nc( "Monday",    "Mon" ).toString( locale() );
+        case 2:  return ki18nc( "Tuesday",   "Tue" ).toString( locale() );
         case 3:  return ki18nc( "Wednesday", "Wed" ).toString( locale() );
-        case 4:  return ki18nc( "Thursday", "Thu" ).toString( locale() );
-        case 5:  return ki18nc( "Friday", "Fri" ).toString( locale() );
-        case 6:  return ki18nc( "Saturday", "Sat" ).toString( locale() );
-        case 7:  return ki18nc( "Sunday", "Sun" ).toString( locale() );
+        case 4:  return ki18nc( "Thursday",  "Thu" ).toString( locale() );
+        case 5:  return ki18nc( "Friday",    "Fri" ).toString( locale() );
+        case 6:  return ki18nc( "Saturday",  "Sat" ).toString( locale() );
+        case 7:  return ki18nc( "Sunday",    "Sun" ).toString( locale() );
         default: return QString();
         }
     }

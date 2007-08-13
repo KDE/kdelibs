@@ -638,29 +638,29 @@ QString KCalendarSystemJalali::monthName( int month, int year, MonthNameFormat f
     if ( format == ShortNamePossessive ) {
         switch ( month ) {
         case 1:
-            return ki18n( "of Far" ).toString( locale() );
+            return ki18nc( "of Farvardin short",   "of Far" ).toString( locale() );
         case 2:
-            return ki18n( "of Ord" ).toString( locale() );
+            return ki18nc( "of Ordibehesht short", "of Ord" ).toString( locale() );
         case 3:
-            return ki18n( "of Kho" ).toString( locale() );
+            return ki18nc( "of Khordad short",     "of Kho" ).toString( locale() );
         case 4:
-            return ki18n( "of Tir" ).toString( locale() );
+            return ki18nc( "of Tir short",         "of Tir" ).toString( locale() );
         case 5:
-            return ki18n( "of Mor" ).toString( locale() );
+            return ki18nc( "of Mordad short",      "of Mor" ).toString( locale() );
         case 6:
-            return ki18n( "of Sha" ).toString( locale() );
+            return ki18nc( "of Shahrivar short",   "of Sha" ).toString( locale() );
         case 7:
-            return ki18n( "of Meh" ).toString( locale() );
+            return ki18nc( "of Mehr short",        "of Meh" ).toString( locale() );
         case 8:
-            return ki18n( "of Aba" ).toString( locale() );
+            return ki18nc( "of Aban short",        "of Aba" ).toString( locale() );
         case 9:
-            return ki18n( "of Aza" ).toString( locale() );
+            return ki18nc( "of Azar short",        "of Aza" ).toString( locale() );
         case 10:
-            return ki18n( "of Dei" ).toString( locale() );
+            return ki18nc( "of Dei short",         "of Dei" ).toString( locale() );
         case 11:
-            return ki18n( "of Bah" ).toString( locale() );
+            return ki18nc( "of Bahman short",      "of Bah" ).toString( locale() );
         case 12:
-            return ki18n( "of Esf" ).toString( locale() );
+            return ki18nc( "of Esfand short",      "of Esf" ).toString( locale() );
         default:
             return QString();
         }
@@ -669,29 +669,29 @@ QString KCalendarSystemJalali::monthName( int month, int year, MonthNameFormat f
     if ( format == ShortName ) {
         switch ( month ) {
         case 1:
-            return ki18n( "Far" ).toString( locale() );
+            return ki18nc( "Farvardin short",   "Far" ).toString( locale() );
         case 2:
-            return ki18n( "Ord" ).toString( locale() );
+            return ki18nc( "Ordibehesht short", "Ord" ).toString( locale() );
         case 3:
-            return ki18n( "Kho" ).toString( locale() );
+            return ki18nc( "Khordad short",     "Kho" ).toString( locale() );
         case 4:
-            return ki18n( "Tir" ).toString( locale() );
+            return ki18nc( "Tir short",         "Tir" ).toString( locale() );
         case 5:
-            return ki18n( "Mor" ).toString( locale() );
+            return ki18nc( "Mordad short",      "Mor" ).toString( locale() );
         case 6:
-            return ki18n( "Sha" ).toString( locale() );
+            return ki18nc( "Shahrivar short",   "Sha" ).toString( locale() );
         case 7:
-            return ki18n( "Meh" ).toString( locale() );
+            return ki18nc( "Mehr short",        "Meh" ).toString( locale() );
         case 8:
-            return ki18n( "Aba" ).toString( locale() );
+            return ki18nc( "Aban short",        "Aba" ).toString( locale() );
         case 9:
-            return ki18n( "Aza" ).toString( locale() );
+            return ki18nc( "Azar short",        "Aza" ).toString( locale() );
         case 10:
-            return ki18n( "Dei" ).toString( locale() );
+            return ki18nc( "Dei short",         "Dei" ).toString( locale() );
         case 11:
-            return ki18n( "Bah" ).toString( locale() );
+            return ki18nc( "Bahman short",      "Bah" ).toString( locale() );
         case 12:
-            return ki18n( "Esf" ).toString( locale() );
+            return ki18nc( "Esfand",            "Esf" ).toString( locale() );
         default:
             return QString();
         }
@@ -706,7 +706,7 @@ QString KCalendarSystemJalali::monthName( int month, int year, MonthNameFormat f
         case 3:
             return ki18n( "of Khordad" ).toString( locale() );
         case 4:
-            return ki18n( "of Tir" ).toString( locale() );
+            return ki18nc( "of Tir long", "of Tir" ).toString( locale() );
         case 5:
             return ki18n( "of Mordad" ).toString( locale() );
         case 6:
@@ -718,7 +718,7 @@ QString KCalendarSystemJalali::monthName( int month, int year, MonthNameFormat f
         case 9:
             return ki18n( "of Azar" ).toString( locale() );
         case 10:
-            return ki18n( "of Dei" ).toString( locale() );
+            return ki18nc( "of Dei long", "of Dei" ).toString( locale() );
         case 11:
             return ki18n( "of Bahman" ).toString( locale() );
         case 12:
@@ -737,7 +737,7 @@ QString KCalendarSystemJalali::monthName( int month, int year, MonthNameFormat f
     case 3:
         return ki18n( "Khordad" ).toString( locale() );
     case 4:
-        return ki18n( "Tir" ).toString( locale() );
+        return ki18nc( "Tir long", "Tir" ).toString( locale() );
     case 5:
         return ki18n( "Mordad" ).toString( locale() );
     case 6:
@@ -749,7 +749,7 @@ QString KCalendarSystemJalali::monthName( int month, int year, MonthNameFormat f
     case 9:
         return ki18n( "Azar" ).toString( locale() );
     case 10:
-        return ki18n( "Dei" ).toString( locale() );
+        return ki18nc( "Dei long", "Dei" ).toString( locale() );
     case 11:
         return ki18n( "Bahman" ).toString( locale() );
     case 12:
@@ -769,19 +769,19 @@ QString KCalendarSystemJalali::weekDayName( int day, WeekDayNameFormat format ) 
     if ( format == ShortDayName ) {
         switch ( day ) {
         case 1:
-            return ki18n( "2sh" ).toString( locale() );
+            return ki18nc( "Do shanbe short",     "2sh" ).toString( locale() );
         case 2:
-            return ki18n( "3sh" ).toString( locale() );
+            return ki18nc( "Se shanbe short",     "3sh" ).toString( locale() );
         case 3:
-            return ki18n( "4sh" ).toString( locale() );
+            return ki18nc( "Chahar shanbe short", "4sh" ).toString( locale() );
         case 4:
-            return ki18n( "5sh" ).toString( locale() );
+            return ki18nc( "Panj shanbe short",   "5sh" ).toString( locale() );
         case 5:
-            return ki18n( "Jom" ).toString( locale() );
+            return ki18nc( "Jumee short",         "Jom" ).toString( locale() );
         case 6:
-            return ki18n( "shn" ).toString( locale() );
+            return ki18nc( "Shanbe short",        "shn" ).toString( locale() );
         case 7:
-            return ki18n( "1sh" ).toString( locale() );
+            return ki18nc( "Yek-shanbe short",    "1sh" ).toString( locale() );
         default:
             return QString();
         }
