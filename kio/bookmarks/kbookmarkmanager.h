@@ -27,7 +27,6 @@
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
 #include "kbookmark.h"
-#include "kbookmarknotifier.h"
 
 class KBookmarkGroup;
 class QDBusMessage;
@@ -134,7 +133,7 @@ public:
     /**
      * This returns the root of the toolbar menu.
      * In the XML, this is the group with the attribute toolbar=yes
-     *
+     * 
      * @return the toolbar group
      */
     KBookmarkGroup toolbar();
