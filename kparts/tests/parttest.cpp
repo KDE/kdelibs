@@ -24,13 +24,23 @@
 
 QTEST_KDEMAIN( PartTest, GUI )
 
-class TestPart : public KParts::Part
+class TestPart : public KParts::ReadOnlyPart
 {
 public:
     TestPart(QObject* parent, QWidget* parentWidget)
-        : KParts::Part(parent) {
+        : KParts::ReadOnlyPart(parent),
+          m_openFileCalled(false) {
         setWidget(new QWidget(parentWidget));
     }
+
+    bool openFileCalled() const { return m_openFileCalled; }
+protected:
+    /*reimp*/ bool openFile() {
+        m_openFileCalled = true;
+        return true;
+    }
+private:
+    bool m_openFileCalled;
 };
 
 void PartTest::testAutoDeletePart()
@@ -71,6 +81,39 @@ void PartTest::testNoAutoDeleteWidget()
     delete part;
     QCOMPARE(static_cast<QWidget*>(widgetPointer), widget);
     delete widget;
+}
+
+// There is no operator== in OpenUrlArguments because it's only useful in unit tests
+static bool compareArgs(const KParts::OpenUrlArguments& arg1,
+                        const KParts::OpenUrlArguments& arg2)
+{
+    return arg1.mimeType() == arg2.mimeType() &&
+        arg1.xOffset() == arg2.xOffset() &&
+        arg1.yOffset() == arg2.yOffset() &&
+        arg1.reload() == arg2.reload();
+}
+
+void PartTest::testOpenUrlArguments()
+{
+    TestPart* part = new TestPart(0, 0);
+    QVERIFY(part->closeUrl()); // nothing to do, no error
+    QVERIFY(part->arguments().mimeType().isEmpty());
+    KParts::OpenUrlArguments args;
+    args.setMimeType("application/xml");
+    args.setXOffset(50);
+    args.setYOffset(10);
+    args.setReload(true);
+    part->setArguments(args);
+    QVERIFY(compareArgs(args, part->arguments()));
+    part->openUrl(KUrl(KDESRCDIR "/parttest.cpp"));
+    QVERIFY(part->openFileCalled());
+    QVERIFY(compareArgs(args, part->arguments()));
+
+    // Explicit call to closeUrl: arguments are cleared
+    part->closeUrl();
+    QVERIFY(part->arguments().mimeType().isEmpty());
+
+    delete part;
 }
 
 #include "parttest.moc"

@@ -30,6 +30,8 @@ private Q_SLOTS:
     void testAutoDeleteWidget();
     void testNoAutoDeletePart();
     void testNoAutoDeleteWidget();
+
+    void testOpenUrlArguments();
 };
 
 #endif /* PARTTEST_H */

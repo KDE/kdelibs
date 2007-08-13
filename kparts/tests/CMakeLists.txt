@@ -78,6 +78,7 @@ MACRO(KPARTS_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_test_executable(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY})
+               set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
        ENDFOREACH(_testname)
 ENDMACRO(KPARTS_EXECUTABLE_TESTS)
 
