@@ -42,14 +42,6 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileWidget *widget )
         file = KStandardDirs::locateLocal( "data", "kfile/bookmarks.xml" );
 
     KBookmarkManager *manager = KBookmarkManager::managerForFile( file, "kfile" );
-
-    // import old bookmarks
-    if ( !KStandardDirs::exists( file ) ) {
-        QString oldFile = KStandardDirs::locate( "data", "kfile/bookmarks.html" );
-        if ( !oldFile.isEmpty() )
-            importOldBookmarks( oldFile, manager );
-    }
-
     manager->setUpdate( true );
 
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu,
@@ -69,17 +61,6 @@ void KFileBookmarkHandler::openBookmark( const KBookmark & bm, Qt::MouseButtons,
 QString KFileBookmarkHandler::currentUrl() const
 {
     return m_widget->baseUrl().url();
-}
-
-void KFileBookmarkHandler::importOldBookmarks( const QString& path,
-                                               KBookmarkManager *manager )
-{
-    KBookmarkDomBuilder *builder = new KBookmarkDomBuilder( manager->root(), manager );
-    KNSBookmarkImporter importer( path );
-    builder->connectImporter( &importer );
-    importer.parseNSBookmarks();
-    delete builder;
-    manager->save();
 }
 
 #include "kfilebookmarkhandler.moc"
