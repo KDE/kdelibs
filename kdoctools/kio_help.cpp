@@ -214,7 +214,7 @@ void HelpProtocol::get( const KUrl& url )
         kDebug( 7119 ) << "parsed " << mParsed.length();
 
         if (mParsed.isEmpty()) {
-            unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ,  file ) );
+            unicodeError( i18n( "The requested help file could not be parsed:<br />%1" ,  file ) );
         } else {
             int pos1 = mParsed.indexOf( "charset=" );
             if ( pos1 > 0 ) {
@@ -247,7 +247,7 @@ void HelpProtocol::get( const KUrl& url )
         kDebug( 7119 ) << "parsed " << mParsed.length();
 
         if (mParsed.isEmpty()) {
-            unicodeError( i18n( "The requested help file could not be parsed:<br>%1" ,  file ) );
+            unicodeError( i18n( "The requested help file could not be parsed:<br />%1" ,  file ) );
         } else {
             QString query = url.query(), anchor;
 
