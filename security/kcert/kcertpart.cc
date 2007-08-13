@@ -469,7 +469,7 @@ bool KCertPart::openFile() {
 		return false;
 	}
 
-	QString whatType = d->browserExtension->urlArgs().serviceType;
+	QString whatType = arguments().mimeType();
 //whatType = KMimeType::findByURL(m_url,0,true)->name();
 	if (whatType.isEmpty())
 		whatType = KMimeType::findByPath(localFilePath(), 0, true)->name();

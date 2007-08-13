@@ -616,7 +616,8 @@ bool KHTMLPart::openUrl( const KUrl &url )
     }
   }
 
-  KParts::URLArgs args( d->m_extension->urlArgs() );
+  KParts::BrowserArguments browserArgs( d->m_extension->browserArguments() );
+  KParts::OpenUrlArguments args( arguments() );
 
   // in case
   // a) we have no frameset (don't test m_frames.count(), iframes get in there)
@@ -632,8 +633,8 @@ bool KHTMLPart::openUrl( const KUrl &url )
       isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
   }
 
-  if (isFrameSet && urlcmp( url.url(), this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ) 
-                 && args.softReload)
+  if (isFrameSet && urlcmp( url.url(), this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment )
+                 && browserArgs.softReload)
   {
     QList<khtml::ChildFrame*>::Iterator it = d->m_frames.begin();
     const QList<khtml::ChildFrame*>::Iterator end = d->m_frames.end();
@@ -642,9 +643,9 @@ bool KHTMLPart::openUrl( const KUrl &url )
       if (part)
       {
         // We are reloading frames to make them jump into offsets.
-        KParts::URLArgs partargs( part->d->m_extension->urlArgs() );
-        partargs.reload = true;
-        part->d->m_extension->setUrlArgs(partargs);
+        KParts::OpenUrlArguments partargs( part->arguments() );
+        partargs.setReload( true );
+        part->setArguments( partargs );
 
         part->openUrl( part->url() );
       }
@@ -654,12 +655,12 @@ bool KHTMLPart::openUrl( const KUrl &url )
 
   if ( url.hasRef() && !isFrameSet )
   {
-    bool noReloadForced = !args.reload && !args.redirectedRequest() && !args.doPost();
+    bool noReloadForced = !args.reload() && !browserArgs.redirectedRequest() && !browserArgs.doPost();
     if (noReloadForced && urlcmp( url.url(), this->url().url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ))
     {
-        kDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url.url();
+        kDebug( 6050 ) << "KHTMLPart::openURL, jumping to anchor. m_url = " << url;
         setUrl(url);
-        emit started( 0L );
+        emit started( 0 );
 
         if ( !gotoAnchor( url.encodedHtmlRef()) )
           gotoAnchor( url.htmlRef() );
@@ -676,10 +677,10 @@ bool KHTMLPart::openUrl( const KUrl &url )
 
   // Save offset of viewport when page is reloaded to be compliant
   // to every other capable browser out there.
-  if (args.reload) {
-    args.xOffset = d->m_view->contentsX();
-    args.yOffset = d->m_view->contentsY();
-    d->m_extension->setUrlArgs(args);
+  if (args.reload()) {
+    args.setXOffset( d->m_view->contentsX() );
+    args.setYOffset( d->m_view->contentsY() );
+    setArguments(args);
   }
 
   if (!d->m_restored)
@@ -700,28 +701,29 @@ bool KHTMLPart::openUrl( const KUrl &url )
   // copy to m_workingURL after fixing m_url above
   d->m_workingURL = this->url();
 
-  args.metaData().insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
-  args.metaData().insert("ssl_parent_ip", d->m_ssl_parent_ip);
-  args.metaData().insert("ssl_parent_cert", d->m_ssl_parent_cert);
-  args.metaData().insert("PropagateHttpHeader", "true");
-  args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
-  args.metaData().insert("ssl_activate_warnings", "TRUE" );
-  args.metaData().insert("cross-domain", toplevelURL().url());
+  QMap<QString,QString>& metaData = args.metaData();
+  metaData.insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
+  metaData.insert("ssl_parent_ip", d->m_ssl_parent_ip);
+  metaData.insert("ssl_parent_cert", d->m_ssl_parent_cert);
+  metaData.insert("PropagateHttpHeader", "true");
+  metaData.insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
+  metaData.insert("ssl_activate_warnings", "TRUE" );
+  metaData.insert("cross-domain", toplevelURL().url());
 
   if (d->m_restored)
   {
-     args.metaData().insert("referrer", d->m_pageReferrer);
+     metaData.insert("referrer", d->m_pageReferrer);
      d->m_cachePolicy = KIO::CC_Cache;
   }
-  else if (args.reload)
+  else if (args.reload())
      d->m_cachePolicy = KIO::CC_Reload;
   else
      d->m_cachePolicy = KProtocolManager::cacheControl();
 
-  if ( args.doPost() && (this->url().protocol().startsWith("http")) )
+  if ( browserArgs.doPost() && (this->url().protocol().startsWith("http")) )
   {
-      d->m_job = KIO::http_post( this->url(), args.postData, false );
-      d->m_job->addMetaData("content-type", args.contentType() );
+      d->m_job = KIO::http_post( this->url(), browserArgs.postData, false );
+      d->m_job->addMetaData("content-type", browserArgs.contentType() );
   }
   else
   {
@@ -731,7 +733,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
 
   if (widget())
      d->m_job->ui()->setWindow(widget()->topLevelWidget());
-  d->m_job->addMetaData(args.metaData());
+  d->m_job->addMetaData(metaData);
 
   connect( d->m_job, SIGNAL( result( KJob* ) ),
            SLOT( slotFinished( KJob* ) ) );
@@ -769,7 +771,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
 
   // If this was an explicit reload and the user style sheet should be used,
   // do a stat to see whether the stylesheet was changed in the meanwhile.
-  if ( args.reload && !settings()->userStyleSheet().isEmpty() ) {
+  if ( args.reload() && !settings()->userStyleSheet().isEmpty() ) {
     KUrl url( settings()->userStyleSheet() );
     KIO::StatJob *job = KIO::stat( url, false /* don't show progress */ );
     connect( job, SIGNAL( result( KJob * ) ),
@@ -1562,7 +1564,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     // crashes if a window (such as kjsdebugger) goes back into the event loop,
     // more data arrives, and begin() gets called again (re-entered).
     d->m_job->suspend();
-    begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+    begin( d->m_workingURL, arguments().xOffset(), arguments().yOffset() );
     d->m_job->resume();
 
     if (d->m_cachePolicy == KIO::CC_Refresh)
@@ -1656,7 +1658,7 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
      long saveCacheId = d->m_cacheId;
      QString savePageReferrer = d->m_pageReferrer;
      QString saveEncoding     = d->m_encoding;
-     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+     begin( d->m_workingURL, arguments().xOffset(), arguments().yOffset() );
      d->m_encoding     = saveEncoding;
      d->m_pageReferrer = savePageReferrer;
      d->m_cacheId = saveCacheId;
@@ -1807,8 +1809,7 @@ void KHTMLPart::slotFinished( KJob * job )
     // a directory...
     if (job->error() == KIO::ERR_IS_DIRECTORY)
     {
-      KParts::URLArgs args;
-      emit d->m_extension->openUrlRequest( d->m_workingURL, args );
+      emit d->m_extension->openUrlRequest( d->m_workingURL );
     }
     else
     {
@@ -1883,10 +1884,10 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   // ###
   //stopParser();
 
-  KParts::URLArgs args( d->m_extension->urlArgs() );
-  args.xOffset = xOffset;
-  args.yOffset = yOffset;
-  d->m_extension->setUrlArgs( args );
+  KParts::OpenUrlArguments args = arguments();
+  args.setXOffset(xOffset);
+  args.setYOffset(yOffset);
+  setArguments(args);
 
   d->m_pageReferrer.clear();
 
@@ -1895,8 +1896,8 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 
   setUrl(url);
 
-  bool servedAsXHTML = args.serviceType == "application/xhtml+xml";
-  KMimeType::Ptr mime = KMimeType::mimeType( args.serviceType );
+  bool servedAsXHTML = args.mimeType() == "application/xhtml+xml";
+  KMimeType::Ptr mime = KMimeType::mimeType( args.mimeType() );
   bool servedAsXML = mime && mime->is( "text/xml" );
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
   if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
@@ -1926,7 +1927,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   if ( !userStyleSheet.isEmpty() )
     setUserStyleSheet( KUrl( userStyleSheet ) );
 
-  d->m_doc->setRestoreState(args.docState);
+  d->m_doc->setRestoreState(d->m_extension->browserArguments().docState);
   d->m_doc->open();
   connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
@@ -2407,7 +2408,7 @@ void KHTMLPart::slotRedirect()
     emit completed();
     return;
   }
-  KParts::URLArgs args;
+  KParts::OpenUrlArguments args;
   KUrl cUrl( url() );
   KUrl url( u );
 
@@ -2435,14 +2436,14 @@ void KHTMLPart::slotRedirect()
   if (parentPart())
       args.metaData().insert("cross-domain", toplevelURL().url());
 
-  args.setLockHistory( d->m_redirectLockHistory );
+  KParts::BrowserArguments browserArgs;
+  browserArgs.setLockHistory( d->m_redirectLockHistory );
   // _self: make sure we don't use any <base target=>'s
 
-  d->m_urlSelectedOpenedURL = true; // In case overridden, default to success
-  urlSelected( u, 0, 0, "_self", args );
-
-  if ( !d->m_urlSelectedOpenedURL ) // urlSelected didn't open a url, so emit completed ourselves
+  if ( !urlSelected( u, 0, 0, "_self", args, browserArgs ) ) {
+    // urlSelected didn't open a url, so emit completed ourselves
     emit completed();
+  }
 }
 
 void KHTMLPart::slotRedirection(KIO::Job*, const KUrl& url)
@@ -3877,17 +3878,10 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 // This executes in the active part on a click or other url selection action in
 // that active part.
 //
-void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
+bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target, const KParts::OpenUrlArguments& _args, const KParts::BrowserArguments& _browserArgs )
 {
-  // The member var is so that slotRedirection still calls the virtual urlSelected
-  // but is able to know if is opened a url. KDE4: just make urlSelected return a bool
-  // and move the urlSelectedIntern code back here.
-  d->m_urlSelectedOpenedURL = urlSelectedIntern( url, button, state, _target, args );
-}
-
-// Return value: true if an url was opened, false if not (e.g. error, or jumping to anchor)
-bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
-{
+  KParts::OpenUrlArguments args = _args;
+  KParts::BrowserArguments browserArgs = _browserArgs;
   bool hasTarget = false;
 
   QString target = _target;
@@ -3915,15 +3909,15 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
 
   if ( state & Qt::ControlModifier )
   {
-    args.setNewTab(true);
-    emit d->m_extension->createNewWindow( cURL, args );
+    browserArgs.setNewTab(true);
+    emit d->m_extension->createNewWindow( cURL, args, browserArgs );
     return true;
   }
 
   if ( button == Qt::LeftButton && ( state & Qt::ShiftModifier ) )
   {
     KIO::MetaData metaData;
-    metaData["referrer"] = d->m_referrer;
+    metaData.insert( "referrer", d->m_referrer );
     KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), cURL, metaData );
     return false;
   }
@@ -3933,7 +3927,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
 			 i18n( "Follow" )))
     return false;
 
-  args.frameName = target;
+  browserArgs.frameName = target;
 
   args.metaData().insert("main_frame_request",
                          parentPart() == 0 ? "TRUE":"FALSE");
@@ -3946,11 +3940,11 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
   if ( hasTarget && target != "_self" && target != "_top" && target != "_blank" && target != "_parent" )
   {
     // unknown frame names should open in a new window.
-    khtml::ChildFrame *frame = recursiveFrameRequest( this, cURL, args, false );
+    khtml::ChildFrame *frame = recursiveFrameRequest( this, cURL, args, browserArgs, false );
     if ( frame )
     {
       args.metaData()["referrer"] = d->m_referrer;
-      requestObject( frame, cURL, args );
+      requestObject( frame, cURL, args, browserArgs );
       return true;
     }
   }
@@ -3960,7 +3954,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
 
   if ( button == Qt::NoButton && (state & Qt::ShiftModifier) && (state & Qt::ControlModifier) )
   {
-    emit d->m_extension->createNewWindow( cURL, args );
+    emit d->m_extension->createNewWindow( cURL, args, browserArgs );
     return true;
   }
 
@@ -3968,8 +3962,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
   {
     KParts::WindowArgs winArgs;
     winArgs.lowerWindow = true;
-    KParts::ReadOnlyPart *newPart = 0;
-    emit d->m_extension->createNewWindow( cURL, args, winArgs, newPart );
+    emit d->m_extension->createNewWindow( cURL, args, browserArgs, winArgs );
     return true;
   }
 
@@ -3995,7 +3988,7 @@ bool KHTMLPart::urlSelectedIntern( const QString &url, int button, int state, co
     closeUrl();
 
   view()->viewport()->unsetCursor();
-  emit d->m_extension->openUrlRequest( cURL, args );
+  emit d->m_extension->openUrlRequest( cURL, args, browserArgs );
   return true;
 }
 
@@ -4354,8 +4347,8 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
   (*it)->m_type = khtml::ChildFrame::Object;
   (*it)->m_params = params;
 
-  KParts::URLArgs args;
-  args.serviceType = serviceType;
+  KParts::OpenUrlArguments args;
+  args.setMimeType(serviceType);
   if (!requestObject( *it, completeURL( url ), args ) && !(*it)->m_run) {
       (*it)->m_bCompleted = true;
       return false;
@@ -4363,7 +4356,8 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
   return true;
 }
 
-bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const KParts::URLArgs &_args )
+bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const KParts::OpenUrlArguments &_args,
+                               const KParts::BrowserArguments& browserArgs )
 {
   if (!checkLinkSecurity(url))
   {
@@ -4382,16 +4376,17 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
 
   //kDebug(6005) << "KHTMLPart::requestObject child=" << child << " child->m_part=" << child->m_part;
 
-  KParts::URLArgs args( _args );
+  KParts::OpenUrlArguments args( _args );
 
   if ( child->m_run )
     child->m_run->abort();
 
-  if ( child->m_part && !args.reload && urlcmp( child->m_part->url().url(), url.url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ) )
-    args.serviceType = child->m_serviceType;
+  if ( child->m_part && !args.reload() && urlcmp( child->m_part->url().url(), url.url(), KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment ) )
+    args.setMimeType(child->m_serviceType);
 
+  child->m_browserArgs = browserArgs;
   child->m_args = args;
-  child->m_args.reload = (d->m_cachePolicy == KIO::CC_Reload);
+  child->m_args.setReload(d->m_cachePolicy == KIO::CC_Reload);
   child->m_serviceName.clear();
   if (!d->m_referrer.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
     child->m_args.metaData()["referrer"] = d->m_referrer;
@@ -4407,16 +4402,16 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   child->m_args.metaData().insert("cross-domain", toplevelURL().url());
 
   // We want a KHTMLPart if the HTML says <frame src=""> or <frame src="about:blank">
-  if ((url.isEmpty() || url.url() == "about:blank") && args.serviceType.isEmpty())
-    args.serviceType = QLatin1String( "text/html" );
+  if ((url.isEmpty() || url.url() == "about:blank") && args.mimeType().isEmpty())
+    args.setMimeType(QLatin1String("text/html"));
 
-  if ( args.serviceType.isEmpty() ) {
+  if ( args.mimeType().isEmpty() ) {
     kDebug(6050) << "Running new KHTMLRun for " << this << " and child=" << child;
-    child->m_run = new KHTMLRun( this, child, url, child->m_args, true );
+    child->m_run = new KHTMLRun( this, child, url, child->m_args, child->m_browserArgs, true );
     d->m_bComplete = false; // ensures we stop it in checkCompleted...
     return false;
   } else {
-    return processObjectRequest( child, url, args.serviceType );
+    return processObjectRequest( child, url, args.mimeType() );
   }
 }
 
@@ -4440,7 +4435,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
   if (child->m_bNotify)
   {
       child->m_bNotify = false;
-      if ( !child->m_args.lockHistory() )
+      if ( !child->m_browserArgs.lockHistory() )
           emit d->m_extension->openUrlNotify();
   }
 
@@ -4547,26 +4542,24 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
       connect( child->m_extension, SIGNAL( openUrlNotify() ),
                d->m_extension, SIGNAL( openUrlNotify() ) );
 
-      connect( child->m_extension, SIGNAL( openUrlRequestDelayed( const KUrl &, const KParts::URLArgs & ) ),
-               this, SLOT( slotChildURLRequest( const KUrl &, const KParts::URLArgs & ) ) );
+      connect( child->m_extension, SIGNAL( openUrlRequestDelayed( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & ) ),
+               this, SLOT( slotChildURLRequest( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & ) ) );
 
-      connect( child->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ),
-               d->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ) );
-      connect( child->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs &, const KParts::WindowArgs &, KParts::ReadOnlyPart *& ) ),
-               d->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & , const KParts::WindowArgs &, KParts::ReadOnlyPart *&) ) );
+      connect( child->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, const KParts::WindowArgs &, KParts::ReadOnlyPart ** ) ),
+               d->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & , const KParts::WindowArgs &, KParts::ReadOnlyPart **) ) );
 
       connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
                d->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ),
                d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
-      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags ) ),
-               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags ) ) );
+      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags ) ),
+               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ),
                d->m_extension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ),
                d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ) );
-      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ),
-               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ) );
+      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t ) ),
+               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t ) ) );
 
       connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
                d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
@@ -4596,19 +4589,23 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     return true;
   }
 
-  child->m_args.reload = (d->m_cachePolicy == KIO::CC_Reload);
+  child->m_args.setReload(d->m_cachePolicy == KIO::CC_Reload);
 
   // make sure the part has a way to find out about the mimetype.
   // we actually set it in child->m_args in requestObject already,
   // but it's useless if we had to use a KHTMLRun instance, as the
   // point the run object is to find out exactly the mimetype.
-  child->m_args.serviceType = mimetype;
+  child->m_args.setMimeType(mimetype);
 
   // if not a frame set child as completed
   child->m_bCompleted = child->m_type == khtml::ChildFrame::Object;
 
-  if ( child->m_extension )
-    child->m_extension->setUrlArgs( child->m_args );
+  if ( child->m_part ) {
+    child->m_part->setArguments( child->m_args );
+  }
+  if ( child->m_extension ) {
+    child->m_extension->setBrowserArguments( child->m_browserArgs );
+  }
 
   if(url.protocol() == "javascript" || url.url() == "about:blank") {
       if (!child->m_part->inherits("KHTMLPart"))
@@ -4826,7 +4823,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 			 i18n( "Submit" )))
     return;
 
-  KParts::URLArgs args;
+  KParts::OpenUrlArguments args;
 
   if (!d->m_referrer.isEmpty())
      args.metaData()["referrer"] = d->m_referrer;
@@ -4841,7 +4838,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 //WABA: When we post a form we should treat it as the main url
 //the request should never be considered cross-domain
 //args.metaData().insert("cross-domain", toplevelURL().url());
-  args.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
+  KParts::BrowserArguments browserArgs;
+  browserArgs.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
 
   // Handle mailto: forms
   if (u.protocol() == "mailto") {
@@ -4900,17 +4898,17 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   if ( strcmp( action, "get" ) == 0 ) {
     if (u.protocol() != "mailto")
        u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
-    args.setDoPost( false );
+    browserArgs.setDoPost( false );
   }
   else {
-    args.postData = formData;
-    args.setDoPost( true );
+    browserArgs.postData = formData;
+    browserArgs.setDoPost( true );
 
     // construct some user headers if necessary
     if (contentType.isNull() || contentType == "application/x-www-form-urlencoded")
-      args.setContentType( "Content-Type: application/x-www-form-urlencoded" );
+      browserArgs.setContentType( "Content-Type: application/x-www-form-urlencoded" );
     else // contentType must be "multipart/form-data"
-      args.setContentType( "Content-Type: " + contentType + "; boundary=" + boundary );
+      browserArgs.setContentType( "Content-Type: " + contentType + "; boundary=" + boundary );
   }
 
   if ( d->m_doc->parsing() || d->m_runningScripts > 0 ) {
@@ -4929,7 +4927,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
   else
   {
-    emit d->m_extension->openUrlRequest( u, args );
+    emit d->m_extension->openUrlRequest( u, args, browserArgs );
   }
 }
 
@@ -4937,7 +4935,8 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 {
   KUrl popupURL;
   KUrl linkKUrl;
-  KParts::URLArgs args;
+  KParts::OpenUrlArguments args;
+  KParts::BrowserArguments browserArgs;
   QString referrer;
   KParts::BrowserExtension::PopupFlags itemflags=KParts::BrowserExtension::ShowBookmark | KParts::BrowserExtension::ShowReload;
 
@@ -4964,13 +4963,13 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
            (d->m_strSelectedURLTarget.toLower() != "_self") &&
 	   (d->m_strSelectedURLTarget.toLower() != "_parent")) {
       if (d->m_strSelectedURLTarget.toLower() == "_blank")
-        args.setForcesNewWindow(true);
+        browserArgs.setForcesNewWindow(true);
       else {
 	KHTMLPart *p = this;
 	while (p->parentPart())
 	  p = p->parentPart();
 	if (!p->frameExists(d->m_strSelectedURLTarget))
-          args.setForcesNewWindow(true);
+          browserArgs.setForcesNewWindow(true);
       }
     }
   }
@@ -5012,9 +5011,9 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     }
   }
 
-  args.serviceType = mimetype;
+  args.setMimeType(mimetype);
 
-  emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL, args, itemflags, S_IFREG /*always a file*/);
+  emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL, args, browserArgs, itemflags, S_IFREG /*always a file*/);
 
   if ( !guard.isNull() ) {
      delete client;
@@ -5069,7 +5068,8 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
     kDebug(6050) << this << " slotChildCompleted child=" << child << " m_frame=" << child->m_frame;
     child->m_bCompleted = true;
     child->m_bPendingRedirection = pendingAction;
-    child->m_args = KParts::URLArgs();
+    child->m_args = KParts::OpenUrlArguments();
+    child->m_browserArgs = KParts::BrowserArguments();
   }
   checkCompleted();
 }
@@ -5094,7 +5094,7 @@ void KHTMLPart::slotChildDocCreated()
   disconnect( htmlFrame, SIGNAL( docCreated() ), this, SLOT( slotChildDocCreated() ) );
 }
 
-void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &args )
+void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
 {
   khtml::ChildFrame *child = frame( sender()->parent() );
   KHTMLPart *callingHtmlPart = const_cast<KHTMLPart *>(dynamic_cast<const KHTMLPart *>(sender()->parent()));
@@ -5107,33 +5107,32 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &arg
       return;
   }
 
-  QString frameName = args.frameName.toLower();
+  QString frameName = browserArgs.frameName.toLower();
   if ( !frameName.isEmpty() ) {
     if ( frameName == QLatin1String( "_top" ) )
     {
-      emit d->m_extension->openUrlRequest( url, args );
+      emit d->m_extension->openUrlRequest( url, args, browserArgs );
       return;
     }
     else if ( frameName == QLatin1String( "_blank" ) )
     {
-      emit d->m_extension->createNewWindow( url, args );
+      emit d->m_extension->createNewWindow( url, args, browserArgs );
       return;
     }
     else if ( frameName == QLatin1String( "_parent" ) )
     {
-      KParts::URLArgs newArgs( args );
-      newArgs.frameName.clear();
-
-      emit d->m_extension->openUrlRequest( url, newArgs );
+      KParts::BrowserArguments newBrowserArgs( browserArgs );
+      newBrowserArgs.frameName.clear();
+      emit d->m_extension->openUrlRequest( url, args, newBrowserArgs );
       return;
     }
     else if ( frameName != QLatin1String( "_self" ) )
     {
-      khtml::ChildFrame *_frame = recursiveFrameRequest( callingHtmlPart, url, args );
+      khtml::ChildFrame *_frame = recursiveFrameRequest( callingHtmlPart, url, args, browserArgs );
 
       if ( !_frame )
       {
-        emit d->m_extension->openUrlRequest( url, args );
+        emit d->m_extension->openUrlRequest( url, args, browserArgs );
         return;
       }
 
@@ -5147,9 +5146,9 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::URLArgs &arg
       requestObject( child, url, args );
   }  else if ( frameName== "_self" ) // this is for embedded objects (via <object>) which want to replace the current document
   {
-      KParts::URLArgs newArgs( args );
-      newArgs.frameName.clear();
-      emit d->m_extension->openUrlRequest( url, newArgs );
+      KParts::BrowserArguments newBrowserArgs( browserArgs );
+      newBrowserArgs.frameName.clear();
+      emit d->m_extension->openUrlRequest( url, args, newBrowserArgs );
   }
 }
 
@@ -5326,13 +5325,14 @@ KHTMLPart *KHTMLPart::parentPart()
 }
 
 khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KUrl &url,
-                                                     const KParts::URLArgs &args, bool callParent )
+                                                     const KParts::OpenUrlArguments &args,
+                                                     const KParts::BrowserArguments &browserArgs, bool callParent )
 {
 #ifdef DEBUG_FINDFRAME
   kDebug( 6050 ) << "KHTMLPart::recursiveFrameRequest this = " << this << ", frame = " << args.frameName << ", url = " << url;
 #endif
   khtml::ChildFrame *childFrame;
-  KHTMLPart *childPart = findFrameParent(callingHtmlPart, args.frameName, &childFrame);
+  KHTMLPart *childPart = findFrameParent(callingHtmlPart, browserArgs.frameName, &childFrame);
   if (childPart)
   {
      if (childPart == this)
@@ -5344,7 +5344,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart,
 
   if ( parentPart() && callParent )
   {
-     khtml::ChildFrame *res = parentPart()->recursiveFrameRequest( callingHtmlPart, url, args, callParent );
+     khtml::ChildFrame *res = parentPart()->recursiveFrameRequest( callingHtmlPart, url, args, browserArgs, callParent );
 
      if ( res )
        parentPart()->requestObject( res, url, args );
@@ -5476,7 +5476,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   int zoomFactor;
   stream >> zoomFactor;
   setZoomFactor(zoomFactor);
-  
+
   int fontScaleFactor;
   stream >> fontScaleFactor;
   setFontScaleFactor(fontScaleFactor);
@@ -5556,13 +5556,16 @@ void KHTMLPart::restoreState( QDataStream &stream )
       }
     }
 
-    KParts::URLArgs args( d->m_extension->urlArgs() );
-    args.xOffset = xOffset;
-    args.yOffset = yOffset;
-    args.docState = docState;
-    d->m_extension->setUrlArgs( args );
+    KParts::OpenUrlArguments args( arguments() );
+    args.setXOffset(xOffset);
+    args.setYOffset(yOffset);
+    setArguments(args);
 
-    d->m_view->resizeContents( wContents,  hContents);
+    KParts::BrowserArguments browserArgs( d->m_extension->browserArguments() );
+    browserArgs.docState = docState;
+    d->m_extension->setBrowserArguments(browserArgs);
+
+    d->m_view->resizeContents( wContents, hContents );
     d->m_view->setContentsPos( xOffset, yOffset );
 
     setUrl(u);
@@ -5614,12 +5617,15 @@ void KHTMLPart::restoreState( QDataStream &stream )
       }
     }
 
-    KParts::URLArgs args( d->m_extension->urlArgs() );
-    args.xOffset = xOffset;
-    args.yOffset = yOffset;
-    args.docState = docState;
+    KParts::OpenUrlArguments args( arguments() );
+    args.setXOffset(xOffset);
+    args.setYOffset(yOffset);
+    setArguments(args);
 
-    d->m_extension->setUrlArgs( args );
+    KParts::BrowserArguments browserArgs( d->m_extension->browserArguments() );
+    browserArgs.docState = docState;
+    d->m_extension->setBrowserArguments(browserArgs);
+
     if (!KHTMLPageCache::self()->isComplete(d->m_cacheId))
     {
        d->m_restored = true;
@@ -5947,19 +5953,19 @@ QList<KParts::ReadOnlyPart*> KHTMLPart::frames() const
   return res;
 }
 
-bool KHTMLPart::openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs )
+bool KHTMLPart::openUrlInFrame( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs)
 {
-    kDebug( 6050 ) << this << "KHTMLPart::openURLInFrame " << url;
-  FrameIt it = d->m_frames.find( urlArgs.frameName );
+  kDebug( 6050 ) << this << "KHTMLPart::openUrlInFrame" << url;
+  FrameIt it = d->m_frames.find( browserArgs.frameName );
 
   if ( it == d->m_frames.end() )
     return false;
 
   // Inform someone that we are about to show something else.
-  if ( !urlArgs.lockHistory() )
+  if ( !browserArgs.lockHistory() )
       emit d->m_extension->openUrlNotify();
 
-  requestObject( *it, url, urlArgs );
+  requestObject( *it, url, args, browserArgs );
 
   return true;
 }
@@ -7061,9 +7067,9 @@ void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
 
 void KHTMLPart::restoreScrollPosition()
 {
-  KParts::URLArgs args = d->m_extension->urlArgs();
+  const KParts::OpenUrlArguments args( arguments() );
 
-  if ( url().hasRef() && !d->m_restoreScrollPosition && !args.reload) {
+  if ( url().hasRef() && !d->m_restoreScrollPosition && !args.reload()) {
     if ( !d->m_doc || !d->m_doc->parsing() )
       disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
     if ( !gotoAnchor(url().encodedHtmlRef()) )
@@ -7075,9 +7081,9 @@ void KHTMLPart::restoreScrollPosition()
   // offsets. If the document has been fully loaded, force the new coordinates,
   // even if the canvas is too short (can happen when user resizes the window
   // during loading).
-  if (d->m_view->contentsHeight() - d->m_view->visibleHeight() >= args.yOffset
+  if (d->m_view->contentsHeight() - d->m_view->visibleHeight() >= args.yOffset()
       || d->m_bComplete) {
-    d->m_view->setContentsPos(args.xOffset, args.yOffset);
+    d->m_view->setContentsPos(args.xOffset(), args.yOffset());
     disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   }
 }

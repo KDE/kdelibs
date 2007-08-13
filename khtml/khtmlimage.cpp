@@ -95,12 +95,11 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     // forward opening requests to parent frame (if existing)
     KHTMLPart *p = qobject_cast<KHTMLPart*>(parent);
     KParts::BrowserExtension *be = p ? p->browserExtension() : m_ext;
-    connect(m_khtml->browserExtension(), SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::URLArgs &)),
-    		be, SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::URLArgs &)));
+    connect(m_khtml->browserExtension(), SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)),
+    		be, SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)));
 
-    connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &,
-             const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t) ), m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &,
-             const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t) ) );
+    connect( m_khtml->browserExtension(), SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t) ),
+             m_ext, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t) ) );
 
     connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
              m_ext, SIGNAL( enableAction( const char *, bool ) ) );
@@ -133,14 +132,14 @@ bool KHTMLImage::openUrl( const KUrl &url )
 
     emit started( 0 );
 
-    KParts::URLArgs args = m_ext->urlArgs();
-    m_mimeType = args.serviceType;
+    KParts::OpenUrlArguments args = arguments();
+    m_mimeType = args.mimeType();
 
     emit setWindowCaption( url.prettyUrl() );
 
     // Need to keep a copy of the offsets since they are cleared when emitting completed
-    m_xOffset = args.xOffset;
-    m_yOffset = args.yOffset;
+    m_xOffset = args.xOffset();
+    m_yOffset = args.yOffset();
 
     m_khtml->begin( this->url() );
     m_khtml->setAutoloadImages( true );
@@ -148,7 +147,7 @@ bool KHTMLImage::openUrl( const KUrl &url )
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
     if (!impl) return false;
 
-    if ( m_ext->urlArgs().reload )
+    if ( arguments().reload() )
         impl->docLoader()->setCachePolicy( KIO::CC_Reload );
 
     khtml::DocLoader *dl = impl->docLoader();

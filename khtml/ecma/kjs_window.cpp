@@ -1459,7 +1459,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   } else if (!part && !m_frame->m_part.isNull()) {
     KParts::BrowserExtension *b = KParts::BrowserExtension::childObject(m_frame->m_part);
     if (b)
-      b->emit openUrlRequest(m_frame->m_frame->element()->getDocument()->completeURL(url));
+      emit b->openUrlRequest(m_frame->m_frame->element()->getDocument()->completeURL(url));
     kDebug() << "goURL for ROPart";
   }
 }
@@ -1672,38 +1672,39 @@ ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStr
       }
     }
 
-    KParts::URLArgs uargs;
-    uargs.frameName = frameName;
+    KParts::OpenUrlArguments args;
+    KParts::BrowserArguments browserArgs;
+    browserArgs.frameName = frameName;
 
-    if ( uargs.frameName.toLower() == "_top" )
+    if ( browserArgs.frameName.toLower() == "_top" )
     {
       while ( p->parentPart() )
         p = p->parentPart();
       Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
-    if ( uargs.frameName.toLower() == "_parent" )
+    if ( browserArgs.frameName.toLower() == "_parent" )
     {
       if ( p->parentPart() )
         p = p->parentPart();
       Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
-    if ( uargs.frameName.toLower() == "_self")
+    if ( browserArgs.frameName.toLower() == "_self")
     {
       Window::retrieveWindow(p)->goURL(exec, url.url(), false /*don't lock history*/);
       return Window::retrieve(p);
     }
-    if ( uargs.frameName.toLower() == "replace" )
+    if ( browserArgs.frameName.toLower() == "replace" )
     {
       Window::retrieveWindow(p)->goURL(exec, url.url(), true /*lock history*/);
       return Window::retrieve(p);
     }
-    uargs.serviceType = "text/html";
+    args.setMimeType("text/html");
 
     // request window (new or existing if framename is set)
-    KParts::ReadOnlyPart *newPart = 0L;
-    emit p->browserExtension()->createNewWindow(KUrl(), uargs,winargs,newPart);
+    KParts::ReadOnlyPart *newPart = 0;
+    emit p->browserExtension()->createNewWindow(KUrl(), args, browserArgs, winargs, &newPart);
     if (newPart && qobject_cast<KHTMLPart*>(newPart)) {
       KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
       //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
@@ -1719,11 +1720,11 @@ ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStr
           khtmlpart->docImpl()->setBaseURL( p->docImpl()->baseURL() );
         }
       }
-      uargs.serviceType.clear();
-      if (uargs.frameName.toLower() == "_blank")
-        uargs.frameName.clear();
+      args.setMimeType(QString());
+      if (browserArgs.frameName.toLower() == "_blank")
+        browserArgs.frameName.clear();
       if (!url.isEmpty())
-        emit khtmlpart->browserExtension()->openUrlRequest(url,uargs);
+        emit khtmlpart->browserExtension()->openUrlRequest(url, args, browserArgs);
       return Window::retrieve(khtmlpart); // global object
     } else
       return Undefined();

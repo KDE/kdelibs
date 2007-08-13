@@ -108,8 +108,6 @@ KMultiPart::KMultiPart( QWidget *parentWidget,
 
     m_extension = new KParts::BrowserExtension( this );
 
-    // We probably need to use m_extension to get the urlArgs in openUrl...
-
     m_part = 0L;
     m_isHTMLPart = false;
     m_job = 0L;
@@ -159,13 +157,12 @@ bool KMultiPart::openUrl( const KUrl &url )
     m_lineParser->reset();
     startHeader();
 
-    KParts::URLArgs args = m_extension->urlArgs();
-    //m_mimeType = args.serviceType;
+    //m_mimeType = arguments().mimeType();
 
     // Hmm, args.reload is set to true when reloading, but this doesn't seem to be enough...
     // I get "HOLD: Reusing held slave for <url>", and the old data
 
-    m_job = KIO::get( url, args.reload, false );
+    m_job = KIO::get( url, arguments().reload(), false );
 
     emit started( 0 /*m_job*/ ); // don't pass the job, it would interfere with our own infoMessage
 
@@ -341,27 +338,25 @@ void KMultiPart::setPart( const QString& mimeType )
         connect( childExtension, SIGNAL( openURLNotify() ),
                  m_extension, SIGNAL( openURLNotify() ) );
 
-        connect( childExtension, SIGNAL( openUrlRequestDelayed( const KUrl &, const KParts::URLArgs & ) ),
-                 m_extension, SIGNAL( openUrlRequest( const KUrl &, const KParts::URLArgs & ) ) );
+        connect( childExtension, SIGNAL( openUrlRequestDelayed( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments& ) ),
+                 m_extension, SIGNAL( openUrlRequest( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & ) ) );
 
-        connect( childExtension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ),
-                 m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & ) ) );
-        connect( childExtension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs &, const KParts::WindowArgs &, KParts::ReadOnlyPart *& ) ),
-                 m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::URLArgs & , const KParts::WindowArgs &, KParts::ReadOnlyPart *&) ) );
+        connect( childExtension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments&, const KParts::WindowArgs &, KParts::ReadOnlyPart** ) ),
+                 m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments& , const KParts::WindowArgs &, KParts::ReadOnlyPart**) ) );
 
         // Keep in sync with khtml_part.cpp
         connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
                  m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
         connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ),
                  m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
-        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags ) ),
-                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags ) ) );
+        connect( childExtension, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags) ),
+                 m_extension, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags) ) );
         connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ),
                  m_extension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ) );
         connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ),
                  m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ) );
-        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ),
-                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ) );
+        connect( childExtension, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t) ),
+                 m_extension, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t) ) );
 
 
         if ( m_isHTMLPart )
@@ -426,10 +421,11 @@ void KMultiPart::startOfData()
         setPart( m_mimeType );
     }
     Q_ASSERT( m_part );
-    // Pass URLArgs (e.g. reload)
+    // Pass args (e.g. reload)
+    m_part->setArguments( arguments() );
     KParts::BrowserExtension* childExtension = KParts::BrowserExtension::childObject( m_part );
     if ( childExtension )
-        childExtension->setUrlArgs( m_extension->urlArgs() );
+        childExtension->setBrowserArguments( m_extension->browserArguments() );
 
     m_nextMimeType.clear();
     if ( m_tempFile ) {
@@ -548,8 +544,8 @@ void KMultiPart::slotJobFinished( KJob *job )
     {
         /*if ( m_khtml->view()->contentsY() == 0 )
         {
-            KParts::URLArgs args = m_ext->urlArgs();
-            m_khtml->view()->setContentsPos( args.xOffset, args.yOffset );
+            const KParts::OpenUrlArguments args = arguments();
+            m_khtml->view()->setContentsPos( args.xOffset(), args.yOffset() );
         }*/
 
         emit completed();

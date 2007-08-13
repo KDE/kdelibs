@@ -63,8 +63,8 @@ TestKHTML::TestKHTML()
     m_indicator->setMovie(m_movie);
 
     m_part = new KHTMLPart( this, this, KHTMLPart::BrowserViewGUI );
-    connect( m_part->browserExtension(), SIGNAL(openUrlRequest( const KUrl &, const KParts::URLArgs & )),
-             this, SLOT(openUrl( const KUrl&, const KParts::URLArgs & )));
+    connect( m_part->browserExtension(), SIGNAL(openUrlRequest(const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)),
+             this, SLOT(openUrl( const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & )));
 
     m_combo = new KComboBox;
     m_combo->setEditable(true);
@@ -199,9 +199,10 @@ KHTMLPart *TestKHTML::doc() const
     return 0;
 }
 
-void TestKHTML::openUrl( const KUrl &url, const KParts::URLArgs &args )
+void TestKHTML::openUrl( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
 {
-    m_part->browserExtension()->setUrlArgs( args );
+    m_part->setArguments(args);
+    m_part->browserExtension()->setBrowserArguments(browserArgs);
     m_part->openUrl( url );
 }
 
@@ -230,8 +231,9 @@ void TestKHTML::openUrl()
 
 void TestKHTML::reload()
 {
-    KParts::URLArgs args; args.reload = true;
-    m_part->browserExtension()->setUrlArgs( args );
+    KParts::OpenUrlArguments args;
+    args.setReload( true );
+    m_part->setArguments( args );
     m_part->openUrl( m_part->url() );
 }
 
@@ -266,9 +268,9 @@ int main(int argc, char *argv[])
     TestKHTML *test = new TestKHTML;
     if (args->url(0).url().right(4).toLower() == ".xml")
     {
-        KParts::URLArgs ags(test->doc()->browserExtension()->urlArgs());
-        ags.serviceType = "text/xml";
-        test->doc()->browserExtension()->setUrlArgs(ags);
+        KParts::OpenUrlArguments args(test->doc()->arguments());
+        args.setMimeType("text/xml");
+        test->doc()->setArguments(args);
     }
 
     test->openUrl(args->url(0));

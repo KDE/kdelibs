@@ -42,10 +42,12 @@ class OpenURLEvent::OpenURLEventPrivate
 public:
   OpenURLEventPrivate( ReadOnlyPart *part,
                        const KUrl &url,
-                       const URLArgs &args )
+                       const OpenUrlArguments &args,
+                       const BrowserArguments &browserArgs )
     : m_part( part )
     , m_url( url )
-    , m_args( args )
+    , m_args(args)
+    , m_browserArgs(browserArgs)
   {
   }
   ~OpenURLEventPrivate()
@@ -54,16 +56,18 @@ public:
   static const char *s_strOpenURLEvent;
   ReadOnlyPart *m_part;
   KUrl m_url;
-  URLArgs m_args;
+  OpenUrlArguments m_args;
+  BrowserArguments m_browserArgs;
 };
 
 const char *OpenURLEvent::OpenURLEventPrivate::s_strOpenURLEvent =
                         "KParts/BrowserExtension/OpenURLevent";
 
 OpenURLEvent::OpenURLEvent( ReadOnlyPart *part, const KUrl &url,
-                            const URLArgs &args )
+                            const OpenUrlArguments &args,
+                            const BrowserArguments &browserArgs )
     : Event( OpenURLEventPrivate::s_strOpenURLEvent )
-    , d( new OpenURLEventPrivate(part, url, args) )
+    , d( new OpenURLEventPrivate(part, url, args, browserArgs) )
 {
 }
 
@@ -82,9 +86,14 @@ KUrl OpenURLEvent::url() const
     return d->m_url;
 }
 
-URLArgs OpenURLEvent::args() const
+OpenUrlArguments OpenURLEvent::arguments() const
 {
     return d->m_args;
+}
+
+BrowserArguments OpenURLEvent::browserArguments() const
+{
+    return d->m_browserArgs;
 }
 
 bool OpenURLEvent::test( const QEvent *event )
@@ -95,9 +104,9 @@ bool OpenURLEvent::test( const QEvent *event )
 namespace KParts
 {
 
-struct URLArgsPrivate
+struct BrowserArgumentsPrivate
 {
-    URLArgsPrivate() {
+    BrowserArgumentsPrivate() {
       doPost = false;
       redirectedRequest = false;
       lockHistory = false;
@@ -105,7 +114,6 @@ struct URLArgsPrivate
       forcesNewWindow = false;
     }
     QString contentType; // for POST
-    QMap<QString, QString> metaData;
     bool doPost;
     bool redirectedRequest;
     bool lockHistory;
@@ -115,135 +123,111 @@ struct URLArgsPrivate
 
 }
 
-URLArgs::URLArgs()
+BrowserArguments::BrowserArguments()
 {
-  reload = false;
   softReload = false;
-  xOffset = 0;
-  yOffset = 0;
   trustedSource = false;
   d = 0; // Let's build it on demand for now
 }
 
-
-URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serviceType )
-{
-  reload = _reload;
-  xOffset = _xOffset;
-  yOffset = _yOffset;
-  serviceType = _serviceType;
-  d = 0; // Let's build it on demand for now
-}
-
-URLArgs::URLArgs( const URLArgs &args )
+BrowserArguments::BrowserArguments( const BrowserArguments &args )
 {
   d = 0;
   (*this) = args;
 }
 
-URLArgs &URLArgs::operator=(const URLArgs &args)
+BrowserArguments &BrowserArguments::operator=(const BrowserArguments &args)
 {
   if (this == &args) return *this;
 
   delete d; d= 0;
 
-  reload = args.reload;
   softReload = args.softReload;
-  xOffset = args.xOffset;
-  yOffset = args.yOffset;
-  serviceType = args.serviceType;
   postData = args.postData;
   frameName = args.frameName;
   docState = args.docState;
   trustedSource = args.trustedSource;
 
   if ( args.d )
-     d = new URLArgsPrivate( * args.d );
+      d = new BrowserArgumentsPrivate( * args.d );
 
   return *this;
 }
 
-URLArgs::~URLArgs()
+BrowserArguments::~BrowserArguments()
 {
   delete d;
   d = 0;
 }
 
-void URLArgs::setContentType( const QString & contentType )
+void BrowserArguments::setContentType( const QString & contentType )
 {
   if (!d)
-    d = new URLArgsPrivate;
+    d = new BrowserArgumentsPrivate;
   d->contentType = contentType;
 }
 
-void URLArgs::setRedirectedRequest( bool redirected )
+void BrowserArguments::setRedirectedRequest( bool redirected )
 {
   if (!d)
-     d = new URLArgsPrivate;
+     d = new BrowserArgumentsPrivate;
   d->redirectedRequest = redirected;
 }
 
-bool URLArgs::redirectedRequest () const
+bool BrowserArguments::redirectedRequest () const
 {
   return d ? d->redirectedRequest : false;
 }
 
-QString URLArgs::contentType() const
+QString BrowserArguments::contentType() const
 {
   return d ? d->contentType : QString();
 }
 
-QMap<QString, QString> &URLArgs::metaData()
-{
-  if (!d)
-     d = new URLArgsPrivate;
-  return d->metaData;
-}
-
-void URLArgs::setDoPost( bool enable )
+void BrowserArguments::setDoPost( bool enable )
 {
     if ( !d )
-        d = new URLArgsPrivate;
+        d = new BrowserArgumentsPrivate;
     d->doPost = enable;
 }
 
-bool URLArgs::doPost() const
+bool BrowserArguments::doPost() const
 {
     return d ? d->doPost : false;
 }
 
-void URLArgs::setLockHistory( bool lock )
+void BrowserArguments::setLockHistory( bool lock )
 {
   if (!d)
-     d = new URLArgsPrivate;
+     d = new BrowserArgumentsPrivate;
   d->lockHistory = lock;
 }
 
-bool URLArgs::lockHistory() const
+bool BrowserArguments::lockHistory() const
 {
     return d ? d->lockHistory : false;
 }
 
-void URLArgs::setNewTab( bool newTab )
+void BrowserArguments::setNewTab( bool newTab )
 {
   if (!d)
-     d = new URLArgsPrivate;
+     d = new BrowserArgumentsPrivate;
   d->newTab = newTab;
 }
 
-bool URLArgs::newTab() const
+bool BrowserArguments::newTab() const
 {
     return d ? d->newTab : false;
 }
 
-void URLArgs::setForcesNewWindow( bool forcesNewWindow )
+void BrowserArguments::setForcesNewWindow( bool forcesNewWindow )
 {
   if (!d)
-     d = new URLArgsPrivate;
+     d = new BrowserArgumentsPrivate;
   d->forcesNewWindow = forcesNewWindow;
 }
 
-bool URLArgs::forcesNewWindow() const
+bool BrowserArguments::forcesNewWindow() const
 {
     return d ? d->forcesNewWindow : false;
 }
@@ -369,7 +353,8 @@ public:
 
   struct DelayedRequest {
     KUrl m_delayedURL;
-    KParts::URLArgs m_delayedArgs;
+    KParts::OpenUrlArguments m_delayedArgs;
+    KParts::BrowserArguments m_delayedBrowserArgs;
   };
 
   QList<DelayedRequest> m_requests;
@@ -381,7 +366,8 @@ public:
   static void createActionSlotMap();
 
   KParts::ReadOnlyPart *m_part;
-  URLArgs m_args;
+    OpenUrlArguments m_args;
+    BrowserArguments m_browserArgs;
 };
 
 K_GLOBAL_STATIC(BrowserExtension::ActionSlotMap, s_actionSlotMap)
@@ -450,8 +436,8 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 
   connect( d->m_part, SIGNAL( completed() ),
            this, SLOT( slotCompleted() ) );
-  connect( this, SIGNAL( openUrlRequest( const KUrl &, const KParts::URLArgs & ) ),
-           this, SLOT( slotOpenUrlRequest( const KUrl &, const KParts::URLArgs & ) ) );
+  connect( this, SIGNAL( openUrlRequest( const KUrl &, const KParts::BrowserArguments & ) ),
+           this, SLOT( slotOpenUrlRequest( const KUrl &, const KParts::BrowserArguments & ) ) );
   connect( this, SIGNAL( enableAction( const char *, bool ) ),
            this, SLOT( slotEnableAction( const char *, bool ) ) );
   connect( this, SIGNAL( setActionText( const char *, const QString& ) ),
@@ -464,14 +450,14 @@ BrowserExtension::~BrowserExtension()
   delete d;
 }
 
-void BrowserExtension::setUrlArgs( const URLArgs &args )
+void BrowserExtension::setBrowserArguments( const BrowserArguments &args )
 {
-  d->m_args = args;
+  d->m_browserArgs = args;
 }
 
-URLArgs BrowserExtension::urlArgs() const
+BrowserArguments BrowserExtension::browserArguments() const
 {
-  return d->m_args;
+  return d->m_browserArgs;
 }
 
 int BrowserExtension::xOffset()
@@ -486,6 +472,7 @@ int BrowserExtension::yOffset()
 
 void BrowserExtension::saveState( QDataStream &stream )
 {
+    // TODO add d->m_part->mimeType()
   stream << d->m_part->url() << (qint32)xOffset() << (qint32)yOffset();
 }
 
@@ -495,13 +482,12 @@ void BrowserExtension::restoreState( QDataStream &stream )
   qint32 xOfs, yOfs;
   stream >> u >> xOfs >> yOfs;
 
-  URLArgs args( urlArgs() );
-  args.xOffset = xOfs;
-  args.yOffset = yOfs;
-
-  setUrlArgs( args );
-
-  d->m_part->openUrl( u );
+    OpenUrlArguments args;
+    args.setXOffset(xOfs);
+    args.setYOffset(yOfs);
+    // TODO add args.setMimeType
+    d->m_part->setArguments(args);
+    d->m_part->openUrl(u);
 }
 
 bool BrowserExtension::isURLDropHandlingEnabled() const
@@ -517,7 +503,7 @@ void BrowserExtension::setURLDropHandlingEnabled( bool enable )
 void BrowserExtension::slotCompleted()
 {
   //empty the argument stuff, to avoid bogus/invalid values when opening a new url
-  setUrlArgs( URLArgs() );
+    setBrowserArguments( BrowserArguments() );
 }
 
 void BrowserExtension::pasteRequest()
@@ -541,7 +527,7 @@ void BrowserExtension::pasteRequest()
 	    case KUriFilterData::LOCAL_FILE:
 	    case KUriFilterData::LOCAL_DIR:
 	    case KUriFilterData::NET_PROTOCOL:
-	        slotOpenUrlRequest( filterData.uri(), KParts::URLArgs() );
+	        slotOpenUrlRequest( filterData.uri() );
 		break;
 	    case KUriFilterData::ERROR:
 		KMessageBox::sorry( d->m_part->widget(), filterData.errorMsg() );
@@ -558,16 +544,17 @@ void BrowserExtension::pasteRequest()
 		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ,  Qt::escape(url) ),
 		    i18n( "Internet Search" ), KGuiItem( i18n( "&Search" ), "edit-find"),
 		    KStandardGuiItem::cancel(), "MiddleClickSearch" ) == KMessageBox::Yes)
-          slotOpenUrlRequest( filterData.uri(), KParts::URLArgs() );
+          slotOpenUrlRequest( filterData.uri() );
     }
 }
 
-void BrowserExtension::slotOpenUrlRequest( const KUrl &url, const KParts::URLArgs &args )
+void BrowserExtension::slotOpenUrlRequest( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
 {
     //kDebug() << this << " BrowserExtension::slotOpenURLRequest(): url=" << url.url();
     BrowserExtensionPrivate::DelayedRequest req;
     req.m_delayedURL = url;
     req.m_delayedArgs = args;
+    req.m_delayedBrowserArgs = browserArgs;
     d->m_requests.append( req );
     QTimer::singleShot( 0, this, SLOT( slotEmitOpenUrlRequestDelayed() ) );
 }
@@ -577,7 +564,7 @@ void BrowserExtension::slotEmitOpenUrlRequestDelayed()
     if (d->m_requests.isEmpty()) return;
     BrowserExtensionPrivate::DelayedRequest req = d->m_requests.front();
     d->m_requests.pop_front();
-    emit openUrlRequestDelayed( req.m_delayedURL, req.m_delayedArgs );
+    emit openUrlRequestDelayed( req.m_delayedURL, req.m_delayedArgs, req.m_delayedBrowserArgs );
     // tricky: do not do anything here! (no access to member variables, etc.)
 }
 
@@ -688,7 +675,9 @@ const QList<KParts::ReadOnlyPart*> BrowserHostExtension::frames() const
   return QList<KParts::ReadOnlyPart*>();
 }
 
-bool BrowserHostExtension::openUrlInFrame( const KUrl &, const KParts::URLArgs & )
+bool BrowserHostExtension::openUrlInFrame( const KUrl &,
+                                           const KParts::OpenUrlArguments&,
+                                           const KParts::BrowserArguments & )
 {
   return false;
 }

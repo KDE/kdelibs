@@ -22,8 +22,10 @@
 
 #include <Qt/qdom.h>
 #include <QtCore/QPointer>
-#include <kurl.h>
 #include <QtCore/QEvent>
+#include <QtCore/QSharedDataPointer>
+
+#include <kurl.h>
 #include <kxmlguiclient.h>
 
 #include <kparts/kparts_export.h>
@@ -371,6 +373,71 @@ private:
 class ReadWritePart;
 class ReadOnlyPartPrivate;
 class BrowserExtension;
+class OpenUrlArgumentsPrivate;
+
+/**
+ * OpenUrlArguments is the set of arguments that specify
+ * how a URL should be opened by KParts::ReadOnlyPart::openUrl().
+ *
+ * For instance reload() indicates that the url should be loaded
+ * from the network even if it matches the current url of the part.
+ *
+ * All setter methods in this class are for the class that calls openUrl
+ * (usually the hosting application), all the getter methods are for the part.
+ */
+class KPARTS_EXPORT OpenUrlArguments
+{
+public:
+    OpenUrlArguments();
+    OpenUrlArguments(const OpenUrlArguments &other);
+    OpenUrlArguments &operator=( const OpenUrlArguments &other);
+    ~OpenUrlArguments();
+
+    /**
+     * @return true to indicate that the part should reload the URL,
+     * i.e. the cache shouldn't be used (forced reload).
+     */
+    bool reload() const;
+    /**
+     * Indicates that the url should be loaded
+     * from the network even if it matches the current url of the part.
+     */
+    void setReload(bool b);
+
+    /**
+     * xOffset is the horizontal scrolling of the part's widget
+     * (in case it's a scrollview). This is saved into the history
+     * and restored when going back in the history.
+     */
+    int xOffset() const;
+    void setXOffset(int x);
+
+    /**
+     * yOffset is the horizontal scrolling of the part's widget
+     * (in case it's a scrollview). This is saved into the history
+     * and restored when going back in the history.
+     */
+    int yOffset() const;
+    void setYOffset(int y);
+
+    /**
+     * The mimetype to use when opening the url, when known by the calling application.
+     */
+    QString mimeType() const;
+    void setMimeType(const QString& mime);
+
+    /**
+     * Meta-data to associate with the KIO operation that will be used to open the URL.
+     * This method can be used to add or retrieve metadata.
+     * @see KIO::TransferJob etc.
+     */
+    QMap<QString, QString> &metaData();
+    const QMap<QString, QString> &metaData() const;
+
+private:
+    QSharedDataPointer<OpenUrlArgumentsPrivate> d;
+};
+
 
 /**
  * Base class for any "viewer" part.
@@ -465,6 +532,20 @@ public:
      * or 0 if there isn't any.
      */
     BrowserExtension* browserExtension() const;
+
+    /**
+     * Sets the arguments to use for the next openUrl call.
+     */
+    void setArguments(const OpenUrlArguments& arguments);
+    // TODO to avoid problems with the case where the loading fails, this could also be a openUrl() argument (heavy porting!).
+    // However we need to have setArguments in any case for updated made by the part, see e.g. KHTMLPart::openUrl.
+    // Well, maybe we should have setArguments (affects next openurl call) and updateArguments?
+
+
+    /**
+     * @return the arguments that were used to open this URL.
+     */
+    OpenUrlArguments arguments() const;
 
 public:
     /**
@@ -603,6 +684,7 @@ protected:
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _k_slotJobFinished( KJob * job ))
+    Q_PRIVATE_SLOT(d_func(), void _k_slotGotMimeType(KIO::Job *job, const QString &mime))
 
     Q_DISABLE_COPY(ReadOnlyPart)
 };

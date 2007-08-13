@@ -768,8 +768,8 @@ int main(int argc, char *argv[])
                                                         args->isSet("genoutput"),
                                                         !args->isSet( "html" ),
                                                         !args->isSet( "js" ));
-    QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(const KUrl &, const KParts::URLArgs &)),
-		     regressionTest, SLOT(slotOpenURL(const KUrl&, const KParts::URLArgs &)));
+    QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments&)),
+		     regressionTest, SLOT(slotOpenURL(const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments&)));
     QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget( int, int )),
 		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
 
@@ -1435,11 +1435,11 @@ void RegressionTest::testStaticFile(const QString & filename)
     qApp->mainWidget()->resize( 800, 598 ); // restore size
 
     // Set arguments
-    KParts::URLArgs args;
-    if (filename.endsWith(".html") || filename.endsWith(".htm")) args.serviceType = "text/html";
-    else if (filename.endsWith(".xhtml")) args.serviceType = "application/xhtml+xml";
-    else if (filename.endsWith(".xml")) args.serviceType = "text/xml";
-    m_part->browserExtension()->setUrlArgs(args);
+    KParts::OpenUrlArguments args;
+    if (filename.endsWith(".html") || filename.endsWith(".htm")) args.setMimeType("text/html")
+    else if (filename.endsWith(".xhtml")) args.setMimeType("application/xhtml+xml")
+    else if (filename.endsWith(".xml")) args.setMimeType("text/xml")
+    m_part->setArguments(args);
     // load page
     KUrl url;
     url.setProtocol("file");
@@ -1791,9 +1791,10 @@ void RegressionTest::createMissingDirs(const QString & filename)
     }
 }
 
-void RegressionTest::slotOpenURL(const KUrl &url, const KParts::URLArgs &args)
+void RegressionTest::slotOpenURL(const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments& browserArgs)
 {
-    m_part->browserExtension()->setUrlArgs( args );
+    m_part->setArguments(args);
+    m_part->browserExtension()->setBrowserArguments(browserArgs);
 
     PartMonitor pm(m_part);
     m_part->openUrl(url);

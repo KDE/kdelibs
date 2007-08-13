@@ -58,13 +58,13 @@ int main(int argc, char *argv[])
     KHTMLPart *doc = new KHTMLPart( toplevel, toplevel, KHTMLPart::BrowserViewGUI );
 
     Dummy *dummy = new Dummy( doc );
-    QObject::connect( doc->browserExtension(), SIGNAL( openUrlRequest( const KUrl &, const KParts::URLArgs & ) ),
-		      dummy, SLOT( slotOpenURL( const KUrl&, const KParts::URLArgs & ) ) );
+    QObject::connect( doc->browserExtension(), SIGNAL( openUrlRequest(const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &) ),
+		      dummy, SLOT( slotOpenURL( const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments& ) ) );
 
     if (args->url(0).url().right(4).toLower() == ".xml") {
-        KParts::URLArgs ags(doc->browserExtension()->urlArgs());
-        ags.serviceType = "text/xml";
-        doc->browserExtension()->setUrlArgs(ags);
+        KParts::OpenUrlArguments args(doc->arguments());
+        args.setMimeType("text/xml");
+        doc->setArguments(args);
     }
 
     doc->openUrl( args->url(0) );

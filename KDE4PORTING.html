@@ -2102,8 +2102,30 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 
 <h3><a name="kparts">Changes in kparts</a></h3>
 
+<h4>BrowserExtension</h4>
+<ul>
+<li>The following signals have changed:</li>
+  <ul>
+      <li>openUrlRequest(const KUrl &amp;, const KParts::URLArgs&amp;) -&gt; openUrlRequestDelayed(const KUrl &amp;, const KParts::OpenUrlArguments&amp;, const KParts::BrowserArguments&amp;)</li>
+      <li>openUrlRequestDelayed(const KUrl &amp;, const KParts::URLArgs&amp;) -&gt; openUrlRequestDelayed(const KUrl &amp;, const KParts::OpenUrlArguments&amp;, const KParts::BrowserArguments&amp;)</li>
+      <li>The two createNewWindow signals have been merged into a single one: createNewWindow(url, args, browserArgs [, windowArgs, &amp;part] )</li>
+      <li>The two popupMenu signals which had URLArgs, now have OpenUrlArguments and BrowserArguments separated as well</li>
+  </ul>
+<li>Because of the URLArgs split, make sure to replace BrowserExtension::setUrlArgs with BrowserExtension::setBrowserArguments + part-&gt;setArguments</li>
+</ul>
+
+<h4>BrowserHostExtension</h4>
+<ul>
+<li>The following virtal methods have changed:</li>
+  <ul>
+      <li>openURLInFrame(const KUrl &amp;, const KParts::URLArgs&amp;) -&gt; openUrlInFrame(const KUrl &amp;, const KParts::OpenUrlArguments&amp;, const KParts::BrowserArguments&amp;)</li>
+  </ul>
+</ul>
+
 <h4>BrowserRun</h4>
 <ul>
+    <li>The constructor now takes args and browserArgs, see KParts::Part</li>
+    <li>All the protected members have been turned into methods</li>
     <li>BrowserRun::isExecutable obsoleted by KRun::isExecutable</li>
     <li>suggestedFilename -&gt; suggestedFileName</li>
 </ul>
@@ -2115,6 +2137,23 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <li>createInstanceFromService is now KService::createInstance&lt;T&gt;</li>
 <li>createInstanceFromQuery is now KServiceTypeTrader::createInstanceFromQuery&lt;T&gt;</li>
 <li>All the error codes like KParts::ComponentFactory::ErrNoServiceFound have moved to KLibLoader</li>
+</ul>
+
+<h4>KParts::URLArgs</h4>
+<ul>
+<li>URLArgs has been splitted into OpenUrlArguments and BrowserArguments.</li>
+  <ul>
+      <li>URLArgs.reload -&gt; OpenUrlArguments.reload()/setReload()</li>
+      <li>URLArgs.xOffset -&gt; OpenUrlArguments.xOffset()/setXOffset()</li>
+      <li>URLArgs.yOffset -&gt; OpenUrlArguments.yOffset()/setYOffset()</li>
+      <li>URLArgs.serviceType -&gt; OpenUrlArguments.mimeType()/setMimeType()</li>
+      <li>URLArgs.metaData() -&gt; OpenUrlArguments.metaData()</li>
+      <li>For anything else (docState, frameName, postData, setDoPost, setContentType etc.): URLArgs -&gt; BrowserArguments</li>
+  </ul>
+<li>The BrowserArguments are still set and retrieved from the BrowserExtension, however the OpenUrlArguments are simply stored in KParts::ReadOnlyPart. So for instance:</li>
+  <ul>
+      <li>m_extension->urlArgs().xOffset -&gt; arguments().xOffset()</li>
+  </ul>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

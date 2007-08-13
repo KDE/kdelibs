@@ -102,7 +102,8 @@ namespace khtml
     KLibrary *m_kjs_lib;
     bool m_bCompleted;
     QString m_name;
-    KParts::URLArgs m_args;
+    KParts::OpenUrlArguments m_args;
+    KParts::BrowserArguments m_browserArgs;
     QPointer<KHTMLRun> m_run;
     KUrl m_workingURL;
     Type m_type;

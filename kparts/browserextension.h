@@ -42,28 +42,30 @@ namespace KParts {
 
 class BrowserInterface;
 
-struct URLArgsPrivate;
+struct BrowserArgumentsPrivate;
 
 /**
- * URLArgs is a set of arguments bundled into a structure,
- * to allow specifying how a URL should be opened by openUrl().
- * In other words, this is like arguments to openUrl(), but without
- * have to change the signature of openUrl() (since openUrl is a
- * generic KParts method).
+ * BrowserArguments is a set of web-browsing-specific arguments,
+ * which allow specifying how a URL should be opened by openUrl()
+ * (as a complement to KParts::OpenUrlArguments which are the non-web-specific arguments)
+ *
+ * The arguments remain stored in the browser extension after that,
+ * and can be used for instance to jump to the xOffset/yOffset position
+ * once the url has finished loading.
+ *
  * The parts (with a browser extension) who care about urlargs will
  * use those arguments, others will ignore them.
  *
  * This can also be used the other way round, when a part asks
  * for a URL to be opened (with openUrlRequest or createNewWindow).
  */
-struct KPARTS_EXPORT URLArgs
+struct KPARTS_EXPORT BrowserArguments
 {
-  URLArgs();
-  URLArgs( const URLArgs &args );
-  URLArgs &operator=( const URLArgs &args);
+  BrowserArguments();
+  BrowserArguments( const BrowserArguments &args );
+  BrowserArguments &operator=( const BrowserArguments &args);
 
-  URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString() );
-  virtual ~URLArgs();
+  virtual ~BrowserArguments();
 
   // KDE4: a struct has the problem that the stuff added after BC-freeze uses methods
   // so it looks inconsistent with the member vars. -> better use methods for everything,
@@ -77,30 +79,12 @@ struct KPARTS_EXPORT URLArgs
   QStringList docState;
 
   /**
-   * @p reload is set when the cache shouldn't be used (forced reload).
-   */
-  bool reload;
-  /**
    * @p softReload is set when user just hits reload button. It's used
    * currently for two different frameset reload strategies. In case of
    * soft reload individual frames are reloaded instead of reloading whole
    * frameset.
    */
   bool softReload;
-  /**
-   * @p xOffset is the horizontal scrolling of the part's widget
-   * (in case it's a scrollview). This is saved into the history
-   * and restored when going back in the history.
-   */
-  int xOffset;
-  /**
-   * @p yOffset vertical scrolling position, xOffset.
-   */
-  int yOffset;
-  /**
-   * The servicetype (usually mimetype) to use when opening the next URL.
-   */
-  QString serviceType;
 
   /**
    * KHTML-specific field, contents of the HTTP POST data.
@@ -142,12 +126,6 @@ struct KPARTS_EXPORT URLArgs
   bool newTab() const;
 
   /**
-   * Meta-data to associate with the next KIO operation
-   * @see KIO::TransferJob etc.
-   */
-  QMap<QString, QString> &metaData();
-
-  /**
    * The frame in which to open the URL. KHTML/Konqueror-specific.
    */
   QString frameName;
@@ -184,7 +162,7 @@ struct KPARTS_EXPORT URLArgs
   bool forcesNewWindow() const;
 
 private:
-  URLArgsPrivate *d;
+  BrowserArgumentsPrivate *d;
 };
 
 struct WindowArgsPrivate;
@@ -235,12 +213,15 @@ private:
 class KPARTS_EXPORT OpenURLEvent : public Event
 {
 public:
-  OpenURLEvent( ReadOnlyPart *part, const KUrl &url, const URLArgs &args = URLArgs() );
+  OpenURLEvent( ReadOnlyPart *part, const KUrl &url,
+                const OpenUrlArguments& args = OpenUrlArguments(),
+                const BrowserArguments& browserArgs = BrowserArguments() );
   virtual ~OpenURLEvent();
 
   ReadOnlyPart *part() const;
   KUrl url() const;
-  URLArgs args() const;
+  OpenUrlArguments arguments() const;
+  BrowserArguments browserArguments() const;
 
   static bool test( const QEvent *event );
 
@@ -253,10 +234,10 @@ private:
   * The Browser Extension is an extension (yes, no kidding) to
   * KParts::ReadOnlyPart, which allows a better integration of parts
   * with browsers (in particular Konqueror).
-  * Remember that ReadOnlyPart only has openUrl(KUrl), with no other settings.
+  * Remember that ReadOnlyPart only has openUrl(KUrl) and a few arguments() but not much more.
   * For full-fledged browsing, we need much more than that, including
-  * many arguments about how to open this URL (see URLArgs), allowing
-  * parts to save and restore their data into the back/forward history,
+  * enabling/disabling of standard actions (print, copy, paste...),
+  * allowing parts to save and restore their data into the back/forward history,
   * allowing parts to control the location bar URL, to requests URLs
   * to be opened by the hosting browser, etc.
   *
@@ -331,8 +312,8 @@ public:
    * Set of flags passed via the popupMenu signal, to ask for some items in the popup menu.
    */
   enum PopupFlag {
-      DefaultPopupItems=0x0000, /**< default value, no additional menu item */ 
-      ShowNavigationItems=0x0001, /**< show "back" and "forward" (usually done when clicking the background of the view, but not an item) */ 
+      DefaultPopupItems=0x0000, /**< default value, no additional menu item */
+      ShowNavigationItems=0x0001, /**< show "back" and "forward" (usually done when clicking the background of the view, but not an item) */
       ShowUp=0x0002, /**<  show "up" (same thing, but not over e.g. HTTP). Requires ShowNavigationItems. */
       ShowReload=0x0004, /**< show "reload" (usually done when clicking the background of the view, but not an item) */
       ShowBookmark=0x0008, /**< show "add to bookmarks" (usually not done on the local filesystem) */
@@ -350,16 +331,16 @@ public:
   /**
    * Set the parameters to use for opening the next URL.
    * This is called by the "hosting" application, to pass parameters to the part.
-   * @see URLArgs
+   * @see BrowserArguments
    */
-  virtual void setUrlArgs( const URLArgs &args );
+  virtual void setBrowserArguments( const BrowserArguments &args );
 
   /**
    * Retrieve the set of parameters to use for opening the URL
-   * (this must be called from openURL() in the part).
-   * @see URLArgs
+   * (this must be called from openUrl() in the part).
+   * @see BrowserArguments
    */
-  URLArgs urlArgs() const;
+  BrowserArguments browserArguments() const;
 
   /**
    * Returns the current x offset.
@@ -503,7 +484,9 @@ public:  // yes, those signals are public; don't tell moc :)
    * appropriate fields in the @p args structure.
    * Hosts should not connect to this signal but to openUrlRequestDelayed().
    */
-  void openUrlRequest( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  void openUrlRequest( const KUrl &url,
+                       const KParts::OpenUrlArguments& arguments = KParts::OpenUrlArguments(),
+                       const KParts::BrowserArguments &browserArguments = KParts::BrowserArguments() );
 
   /**
    * This signal is emitted when openUrlRequest() is called, after a 0-seconds timer.
@@ -511,7 +494,9 @@ public:  // yes, those signals are public; don't tell moc :)
    * being destroyed. Parts should never use this signal, hosts should only connect
    * to this signal.
    */
-  void openUrlRequestDelayed( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  void openUrlRequestDelayed( const KUrl &url,
+                              const KParts::OpenUrlArguments& arguments,
+                              const KParts::BrowserArguments &browserArguments );
 
   /**
    * Tells the hosting browser that the part opened a new URL (which can be
@@ -541,23 +526,24 @@ public:  // yes, those signals are public; don't tell moc :)
   void setIconUrl( const KUrl &url );
 
   /**
-   * Asks the hosting browser to open a new window for the given @p url.
-   *
-   * The @p args argument is optional additional information for the
-   * browser,
-   * @see KParts::URLArgs
-   */
-  void createNewWindow( const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
-
-  /**
    * Asks the hosting browser to open a new window for the given @p url
    * and return a reference to the content part.
-   * The request for a reference to the part is only fulfilled/processed
-   * if the serviceType is set in the @p args . (otherwise the request cannot be
-   * processed synchronously.
+   *
+   * @p arguments is optional additional information about how to open the url,
+   * @see KParts::OpenUrlArguments
+   *
+   * @p browserArguments is optional additional information for web browsers,
+   * @see KParts::BrowserArguments
+   *
+   * The request for a pointer to the part is only fulfilled/processed
+   * if the mimeType is set in the @p browserArguments.
+   * (otherwise the request cannot be processed synchronously).
    */
-  void createNewWindow( const KUrl &url, const KParts::URLArgs &args,
-                        const KParts::WindowArgs &windowArgs, KParts::ReadOnlyPart *&part );
+    void createNewWindow( const KUrl &url,
+                          const KParts::OpenUrlArguments& arguments = KParts::OpenUrlArguments(),
+                          const KParts::BrowserArguments &browserArguments = KParts::BrowserArguments(),
+                          const KParts::WindowArgs &windowArgs = KParts::WindowArgs(),
+                          KParts::ReadOnlyPart** part = 0 ); // TODO consider moving to BrowserHostExtension?
 
   /**
    * Since the part emits the jobid in the started() signal,
@@ -587,10 +573,10 @@ public:  // yes, those signals are public; don't tell moc :)
    *
    * The GUI described by @p client is being merged with the popupmenu of the host
    */
-  void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items );
-
   void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items,
-                  const KParts::URLArgs &args, KParts::BrowserExtension::PopupFlags i );
+                  const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
+                  const KParts::BrowserArguments &browserArgs = KParts::BrowserArguments(),
+                  KParts::BrowserExtension::PopupFlags flags = KParts::BrowserExtension::DefaultPopupItems );
 
   /**
    * Emit this to make the browser show a standard popup menu
@@ -627,7 +613,10 @@ public:  // yes, those signals are public; don't tell moc :)
    */
   void popupMenu( KXMLGUIClient *client,
                   const QPoint &global, const KUrl &url,
-                  const KParts::URLArgs &args, KParts::BrowserExtension::PopupFlags i, mode_t mode = (mode_t)-1 );
+                  const KParts::OpenUrlArguments &args,
+                  const KParts::BrowserArguments &browserArgs,
+                  KParts::BrowserExtension::PopupFlags flags,
+                  mode_t mode = (mode_t)-1 );
 
   /**
    * Inform the hosting application about the current selection.
@@ -687,7 +676,10 @@ public:  // yes, those signals are public; don't tell moc :)
 
 private Q_SLOTS:
   void slotCompleted();
-  void slotOpenUrlRequest( const KUrl &url, const KParts::URLArgs &args );
+  void slotOpenUrlRequest( const KUrl &url,
+                           const KParts::OpenUrlArguments& arguments = KParts::OpenUrlArguments(),
+                           const KParts::BrowserArguments &browserArguments = KParts::BrowserArguments() );
+
   void slotEmitOpenUrlRequestDelayed();
   void slotEnableAction( const char *, bool );
   void slotSetActionText( const char*, const QString& );
@@ -735,9 +727,11 @@ public:
 
   /**
    * Opens the given url in a hosted child frame. The frame name is specified in the
-   * frameName variable in the urlArgs argument structure (see KParts::URLArgs ) .
+   * frameName variable in the @p browserArguments parameter (see KParts::BrowserArguments ) .
    */
-  virtual bool openUrlInFrame( const KUrl &url, const KParts::URLArgs &urlArgs );
+  virtual bool openUrlInFrame( const KUrl &url,
+                               const KParts::OpenUrlArguments& arguments,
+                               const KParts::BrowserArguments &browserArguments );
 
   /**
    * Queries @p obj for a child object which inherits from this

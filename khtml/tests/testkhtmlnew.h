@@ -14,7 +14,8 @@ class QMovie;
 
 namespace KParts
 {
-    class URLArgs;
+class BrowserArguments;
+class OpenUrlArguments;
 }
 
 /**
@@ -30,7 +31,7 @@ public:
     KHTMLPart *doc() const;
 
 public Q_SLOTS:
-    void openUrl(const KUrl &url, const KParts::URLArgs &args);
+    void openUrl(const KUrl &url, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &args);
     void openUrl(const KUrl &url);
     void openUrl(const QString &url);
     void openUrl();

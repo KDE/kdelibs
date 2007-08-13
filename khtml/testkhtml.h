@@ -14,15 +14,17 @@ public:
   Dummy( KHTMLPart *part ) : QObject( part ) { m_part = part; }
 
 private Q_SLOTS:
-  void slotOpenURL( const KUrl &url, const KParts::URLArgs &args )
+  void slotOpenURL( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments& browserArgs )
   {
-    m_part->browserExtension()->setUrlArgs( args );
+      m_part->setArguments( args );
+      m_part->browserExtension()->setBrowserArguments( browserArgs );
     m_part->openUrl( url );
   }
   void reload()
   {
-      KParts::URLArgs args; args.reload = true;
-      m_part->browserExtension()->setUrlArgs( args );
+      KParts::OpenUrlArguments args;
+      args.setReload( true );
+      m_part->setArguments( args );
       m_part->openUrl( m_part->url() );
   }
   

@@ -40,7 +40,9 @@ class KHTMLRun : public KParts::BrowserRun
   Q_OBJECT
 public:
   KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
-            const KParts::URLArgs &args, bool hideErrorDialog );
+            const KParts::OpenUrlArguments& args,
+            const KParts::BrowserArguments &browserArgs,
+            bool hideErrorDialog );
 
   virtual void foundMimeType( const QString &mimetype );
 

@@ -161,7 +161,7 @@ void RenderFrameSet::layout( )
                     totalFixed += gridLayout[i];
                     countFixed++;
                 }
-                
+
                 // Count the total percentage of all of the percentage columns/rows -> totalPercent
                 // Count the number of columns/rows which are percentages -> countPercent
                 if (grid[i].isPercent()) {
@@ -175,11 +175,11 @@ void RenderFrameSet::layout( )
                 if (grid[i].isRelative()) {
                     totalRelative += qMax(grid[i].value(), 1);
                     countRelative++;
-                }            
+                }
             }
 
             // Fixed columns/rows are our first priority. If there is not enough space to fit all fixed
-            // columns/rows we need to proportionally adjust their size. 
+            // columns/rows we need to proportionally adjust their size.
             if (totalFixed > remainingLen[k]) {
                 int remainingFixed = remainingLen[k];
 
@@ -193,13 +193,13 @@ void RenderFrameSet::layout( )
                 remainingLen[k] -= totalFixed;
             }
 
-            // Percentage columns/rows are our second priority. Divide the remaining space proportionally 
-            // over all percentage columns/rows. IMPORTANT: the size of each column/row is not relative 
+            // Percentage columns/rows are our second priority. Divide the remaining space proportionally
+            // over all percentage columns/rows. IMPORTANT: the size of each column/row is not relative
             // to 100%, but to the total percentage. For example, if there are three columns, each of 75%,
             // and the available space is 300px, each column will become 100px in width.
             if (totalPercent > remainingLen[k]) {
                 int remainingPercent = remainingLen[k];
- 
+
                 for (int i = 0; i < gridLen; ++i) {
                     if (grid[i].isPercent()) {
                         gridLayout[i] = (gridLayout[i] * remainingPercent) / totalPercent;
@@ -224,7 +224,7 @@ void RenderFrameSet::layout( )
                     }
                 }
 
-                // If we could not evently distribute the available space of all of the relative  
+                // If we could not evently distribute the available space of all of the relative
                 // columns/rows, the remainder will be added to the last column/row.
                 // For example: if we have a space of 100px and three columns (*,*,*), the remainder will
                 // be 1px and will be added to the last column: 33px, 33px, 34px.
@@ -238,9 +238,9 @@ void RenderFrameSet::layout( )
             // columns/rows
             if (remainingLen[k]) {
                 // Our first priority is to spread if over the percentage columns. The remaining
-                // space is spread evenly, for example: if we have a space of 100px, the columns 
-                // definition of 25%,25% used to result in two columns of 25px. After this the 
-                // columns will each be 50px in width. 
+                // space is spread evenly, for example: if we have a space of 100px, the columns
+                // definition of 25%,25% used to result in two columns of 25px. After this the
+                // columns will each be 50px in width.
                 if (countPercent && totalPercent) {
                     int remainingPercent = remainingLen[k];
                     int changePercent = 0;
@@ -264,14 +264,14 @@ void RenderFrameSet::layout( )
                             changeFixed = (remainingFixed * gridLayout[i]) / totalFixed;
                             gridLayout[i] += changeFixed;
                             remainingLen[k] -= changeFixed;
-                        } 
+                        }
                     }
                 }
             }
-            
+
             // If we still have some left over space we probably ended up with a remainder of
-            // a division. We can not spread it evenly anymore. If we have any percentage 
-            // columns/rows simply spread the remainder equally over all available percentage columns, 
+            // a division. We can not spread it evenly anymore. If we have any percentage
+            // columns/rows simply spread the remainder equally over all available percentage columns,
             // regardless of their size.
             if (remainingLen[k] && countPercent) {
                 int remainingPercent = remainingLen[k];
@@ -284,14 +284,14 @@ void RenderFrameSet::layout( )
                         remainingLen[k] -= changePercent;
                     }
                 }
-            } 
-            
+            }
+
             // If we don't have any percentage columns/rows we only have fixed columns. Spread
             // the remainder equally over all fixed columns/rows.
             else if (remainingLen[k] && countFixed) {
                 int remainingFixed = remainingLen[k];
                 int changeFixed = 0;
-                
+
                 for (int i = 0; i < gridLen; ++i) {
                     if (grid[i].isFixed()) {
                         changeFixed = remainingFixed / countFixed;
@@ -876,8 +876,8 @@ bool RenderPartObject::partLoadingErrorNotify( khtml::ChildFrame *childFrame, co
         if( embed && !o->classId.isEmpty() &&
             !( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ).isEmpty() )
         {
-            KParts::URLArgs args;
-            args.serviceType = "application/x-activex-handler";
+            KParts::OpenUrlArguments args;
+            args.setMimeType("application/x-activex-handler");
             kDebug(6031) << "set to activex";
             if (part->requestObject( childFrame, url, args ))
                 return true; // success

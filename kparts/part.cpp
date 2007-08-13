@@ -382,6 +382,7 @@ public:
     }
 
     void _k_slotJobFinished( KJob * job );
+    void _k_slotGotMimeType(KIO::Job *job, const QString &mime);
 
     KIO::FileCopyJob * m_job;
     KIO::FileCopyJob * m_uploadJob;
@@ -406,6 +407,8 @@ public:
      * Local file - the only one the part implementation should deal with.
      */
     QString m_file;
+
+    OpenUrlArguments m_arguments;
 };
 
 class ReadWritePartPrivate: public ReadOnlyPartPrivate
@@ -525,6 +528,16 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
     {
         emit started( 0 );
         d->m_file = d->m_url.path();
+        // set the mimetype only if it was not already set (for example, by the host application)
+        if (d->m_arguments.mimeType().isEmpty())
+        {
+            // get the mimetype of the file
+            // using findByUrl() to avoid another string -> url conversion
+            KMimeType::Ptr mime = KMimeType::findByUrl(d->m_url, 0, true /* local file*/);
+            if (mime) {
+                d->m_arguments.setMimeType(mime->name());
+            }
+        }
         bool ret = openFile();
         if (ret) {
             emit setWindowCaption( d->m_url.prettyUrl() );
@@ -554,6 +567,8 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
         d->m_job->ui()->setWindow( widget() ? widget()->topLevelWidget() : 0 );
         emit started( d->m_job );
         connect( d->m_job, SIGNAL( result( KJob * ) ), this, SLOT( _k_slotJobFinished ( KJob * ) ) );
+        connect(d->m_job, SIGNAL(mimetype(KIO::Job *, const QString &)),
+                this, SLOT(_k_slotGotMimeType(KIO::Job *, const QString&)));
         return true;
     }
 }
@@ -575,6 +590,8 @@ bool ReadOnlyPart::closeUrl()
     Q_D(ReadOnlyPart);
 
     abortLoad(); //just in case
+
+    d->m_arguments.setMimeType(QString());
 
     if ( d->m_bTemp )
     {
@@ -602,6 +619,16 @@ void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )
             emit q->setWindowCaption( m_url.prettyUrl() );
             emit q->completed();
         } else emit q->canceled(QString());
+    }
+}
+
+void ReadOnlyPartPrivate::_k_slotGotMimeType(KIO::Job *job, const QString &mime)
+{
+    kDebug(1000) << "ReadOnlyPart::slotJobFinished:" << mime;
+    Q_ASSERT(job == m_job);
+    // set the mimetype only if it was not already set (for example, by the host application)
+    if (m_arguments.mimeType().isEmpty()) {
+        m_arguments.setMimeType(mime);
     }
 }
 
@@ -642,6 +669,18 @@ bool ReadOnlyPart::closeStream()
 BrowserExtension* ReadOnlyPart::browserExtension() const
 {
     return findChild<KParts::BrowserExtension *>();
+}
+
+void KParts::ReadOnlyPart::setArguments(const OpenUrlArguments& arguments)
+{
+    Q_D(ReadOnlyPart);
+    d->m_arguments = arguments;
+}
+
+OpenUrlArguments KParts::ReadOnlyPart::arguments() const
+{
+    Q_D(const ReadOnlyPart);
+    return d->m_arguments;
 }
 
 //////////////////////////////////////////////////
@@ -922,6 +961,95 @@ bool ReadWritePart::waitSaveComplete()
     d->m_waitForSave = false;
 
     return d->m_saveOk;
+}
+
+////
+
+class KParts::OpenUrlArgumentsPrivate : public QSharedData
+{
+public:
+    OpenUrlArgumentsPrivate()
+        : reload(false),
+          xOffset(0),
+          yOffset(0),
+          mimeType(),
+          metaData()
+    {}
+    bool reload;
+    int xOffset;
+    int yOffset;
+    QString mimeType;
+    QMap<QString, QString> metaData;
+};
+
+KParts::OpenUrlArguments::OpenUrlArguments()
+    : d(new OpenUrlArgumentsPrivate)
+{
+}
+
+KParts::OpenUrlArguments::OpenUrlArguments(const OpenUrlArguments &other)
+    : d(other.d)
+{
+}
+
+KParts::OpenUrlArguments::OpenUrlArguments & KParts::OpenUrlArguments::operator=( const OpenUrlArguments &other)
+{
+    d = other.d;
+    return *this;
+}
+
+KParts::OpenUrlArguments::~OpenUrlArguments()
+{
+}
+
+bool KParts::OpenUrlArguments::reload() const
+{
+    return d->reload;
+}
+
+void KParts::OpenUrlArguments::setReload(bool b)
+{
+    d->reload = b;
+}
+
+int KParts::OpenUrlArguments::xOffset() const
+{
+    return d->xOffset;
+}
+
+void KParts::OpenUrlArguments::setXOffset(int x)
+{
+    d->xOffset = x;
+}
+
+int KParts::OpenUrlArguments::yOffset() const
+{
+    return d->yOffset;
+}
+
+void KParts::OpenUrlArguments::setYOffset(int y)
+{
+    d->yOffset = y;
+}
+
+QString KParts::OpenUrlArguments::mimeType() const
+{
+    return d->mimeType;
+}
+
+void KParts::OpenUrlArguments::setMimeType(const QString& mime)
+{
+    d->mimeType = mime;
+}
+
+QMap<QString, QString> & KParts::OpenUrlArguments::metaData()
+{
+    return d->metaData;
+}
+
+const QMap<QString, QString> & KParts::OpenUrlArguments::metaData() const
+{
+    return d->metaData;
 }
 
 #include "part.moc"

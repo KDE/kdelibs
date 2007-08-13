@@ -42,22 +42,27 @@ namespace KParts {
     public:
         /**
          * @param url the URL we're probing
-         * @param args URL args - includes data for a HTTP POST, etc.
-         * @param part the part going to open this URL - can be 0L if not created yet
+         * @param args URL args - includes reload, metaData, etc.
+         * @param browserArgs browser-related args - includes data for a HTTP POST, etc.
+         * @param part the part going to open this URL - can be 0 if not created yet
          * @param window the mainwindow - passed to KIO::Job::setWindow()
          * @param removeReferrer if true, the "referrer" metadata from @p args isn't passed on
          * @param trustedSource if false, a warning will be shown before launching an executable.
           Always pass false for @p trustedSource, except for local directory views.
          * @param hideErrorDialog if true, no dialog will be shown in case of errors.
          */
-        BrowserRun( const KUrl& url, const KParts::URLArgs& args,
-                    KParts::ReadOnlyPart *part, QWidget *window,
+        BrowserRun( const KUrl& url,
+                    const KParts::OpenUrlArguments& args,
+                    const KParts::BrowserArguments& browserArgs,
+                    KParts::ReadOnlyPart *part,
+                    QWidget *window,
                     bool removeReferrer, bool trustedSource, bool hideErrorDialog = false );
 
         virtual ~BrowserRun();
 
-        //KParts::URLArgs urlArgs() const;
-        //KParts::ReadOnlyPart* part() const;
+        KParts::OpenUrlArguments& arguments();
+        KParts::BrowserArguments& browserArguments();
+        KParts::ReadOnlyPart* part() const;
         KUrl url() const;
 
         bool hideErrorDialog() const;
@@ -130,13 +135,6 @@ namespace KParts {
         void slotCopyToTempFileResult(KJob *job);
         virtual void slotStatResult( KJob *job );
 
-    protected:
-        KParts::URLArgs m_args;
-        KParts::ReadOnlyPart *m_part; // QGuardedPtr?
-        QPointer<QWidget> m_window;
-        QString m_sMimeType;
-        bool m_bRemoveReferrer;
-        bool m_bTrustedSource;
     private:
         void redirectToError( int error, const QString& errorText );
         class BrowserRunPrivate;

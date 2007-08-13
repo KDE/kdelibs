@@ -52,7 +52,7 @@ public:
     void urlChanged (const QString & url);
     void setLoadingProgress (int percentage);
 
-    void setURLArgs (const KParts::URLArgs & args);
+    void setBrowserArguments(const KParts::BrowserArguments & args);
     void saveState (QDataStream & stream);
     void restoreState (QDataStream & stream);
 public Q_SLOTS:

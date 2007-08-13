@@ -478,7 +478,7 @@ void KJavaAppletViewerBrowserExtension::setLoadingProgress (int percentage) {
     emit loadingProgress (percentage);
 }
 
-void KJavaAppletViewerBrowserExtension::setURLArgs (const KParts::URLArgs & /*args*/) {
+void KJavaAppletViewerBrowserExtension::setBrowserArguments (const KParts::BrowserArguments & /*args*/) {
 }
 
 void KJavaAppletViewerBrowserExtension::saveState (QDataStream & stream) {
@@ -521,9 +521,9 @@ void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
 void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
                                                       const QString & frame) {
     const KUrl url (doc);
-    KParts::URLArgs args;
-    args.frameName = frame;
-    emit openUrlRequest (url, args);
+    KParts::BrowserArguments browserArgs;
+    browserArgs.frameName = frame;
+    emit openUrlRequest(url, KParts::OpenUrlArguments(), browserArgs);
 }
 
 //-----------------------------------------------------------------------------

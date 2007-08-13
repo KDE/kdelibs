@@ -1143,8 +1143,10 @@ protected:
    */
   virtual bool openFile();
 
-  virtual void urlSelected( const QString &url, int button, int state,
-                            const QString &_target, KParts::URLArgs args = KParts::URLArgs());
+  virtual bool urlSelected( const QString &url, int button, int state,
+                            const QString &_target,
+                            const KParts::OpenUrlArguments& args = KParts::OpenUrlArguments(),
+                            const KParts::BrowserArguments& browserArgs = KParts::BrowserArguments() );
 
   /**
    * This method is called when a new embedded object (include html frames) is to be created.
@@ -1414,7 +1416,7 @@ private Q_SLOTS:
   /**
    * @internal
    */
-  void slotChildURLRequest( const KUrl &url, const KParts::URLArgs &args );
+  void slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &args );
   /**
    * @internal
    */
@@ -1547,9 +1549,7 @@ private:
   void emitSelectionChanged();
   // Returns whether callingHtmlPart may access this part
   bool checkFrameAccess(KHTMLPart *callingHtmlPart);
-  bool openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs );
-  bool urlSelectedIntern( const QString &url, int button, int state,
-                          const QString &_target, KParts::URLArgs args = KParts::URLArgs());
+  bool openUrlInFrame(const KUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments);
   void startAutoScroll();
   void stopAutoScroll();
   void overURL( const QString &url, const QString &target, bool shiftPressed = false );
@@ -1606,7 +1606,9 @@ private:
   bool requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType,
                       const QStringList &args = QStringList() );
 
-  bool requestObject( khtml::ChildFrame *child, const KUrl &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  bool requestObject( khtml::ChildFrame *child, const KUrl &url,
+                      const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
+                      const KParts::BrowserArguments& browserArgs = KParts::BrowserArguments() );
 
   DOM::EventListener *createHTMLEventListener( QString code, QString name, DOM::NodeImpl *node );
 
@@ -1614,7 +1616,9 @@ private:
   DOM::DocumentImpl *xmlDocImpl() const;
   khtml::ChildFrame *frame( const QObject *obj );
 
-  khtml::ChildFrame *recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KUrl &url, const KParts::URLArgs &args, bool callParent = true );
+  khtml::ChildFrame *recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KUrl &url,
+                                            const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs,
+                                            bool callParent = true );
 
   bool checkLinkSecurity( const KUrl &linkURL,const KLocalizedString &message = KLocalizedString(), const QString &button = QString() );
   QVariant executeScript( const QString& filename, int baseLine, const DOM::Node &n, const QString& script );

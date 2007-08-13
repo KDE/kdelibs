@@ -29,8 +29,10 @@
 #include <QtGui/QImage>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
-                    const KParts::URLArgs &args, bool hideErrorDialog )
-    : KParts::BrowserRun( url, args, part, part->widget() ? part->widget()->topLevelWidget() : 0,
+                    const KParts::OpenUrlArguments& args,
+                    const KParts::BrowserArguments &browserArgs,
+                    bool hideErrorDialog )
+    : KParts::BrowserRun( url, args, browserArgs, part, part->widget() ? part->widget()->topLevelWidget() : 0,
                           false, false, hideErrorDialog ),
   m_child( child )
 {
@@ -42,13 +44,13 @@ KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
 }
 
 //KHTMLPart *KHTMLRun::htmlPart() const
-//{ return static_cast<KHTMLPart *>(m_part); }
+//{ return static_cast<KHTMLPart *>(part()); }
 
 void KHTMLRun::foundMimeType( const QString &_type )
 {
     Q_ASSERT(!m_bFinished);
     QString mimeType = _type; // this ref comes from the job, we lose it when using KIO again
-    if ( static_cast<KHTMLPart *>(m_part)->processObjectRequest( m_child, m_strURL, mimeType ) )
+    if ( static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, m_strURL, mimeType ) )
         m_bFinished = true;
     else {
         if ( m_bFinished ) // abort was called (this happens with the activex fallback for instance)
@@ -60,7 +62,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
         m_bFinished = ( res == KParts::BrowserRun::Handled );
         if ( m_bFinished ) { // saved or canceled -> flag completed
             m_child->m_bCompleted = true;
-            static_cast<KHTMLPart *>(m_part)->checkCompleted();
+            static_cast<KHTMLPart *>(part())->checkCompleted();
         }
     }
 
@@ -76,12 +78,12 @@ void KHTMLRun::foundMimeType( const QString &_type )
 
     // "open" is finished -> flag completed
     m_child->m_bCompleted = true;
-    static_cast<KHTMLPart *>(m_part)->checkCompleted();
+    static_cast<KHTMLPart *>(part())->checkCompleted();
 }
 
 void KHTMLRun::save( const KUrl & url, const QString & suggestedFilename )
 {
-    KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As" ), url, m_args.metaData(), QString(), 0, suggestedFilename );
+    KHTMLPopupGUIClient::saveURL( part()->widget(), i18n( "Save As" ), url, arguments().metaData(), QString(), 0, suggestedFilename );
 }
 
 #include "khtml_run.moc"

@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
  *
  * Copyright (C) 2000-2003 Simon Hausmann <hausmann@kde.org>
@@ -276,18 +275,18 @@ void KHTMLPartBrowserExtension::searchProvider()
         data.setData(cg.readEntry("Query").replace("\\{@}", encodedSearchTerm));
     }
 
-    KParts::URLArgs args;
-    args.frameName = "_blank";
+    KParts::BrowserArguments browserArgs;
+    browserArgs.frameName = "_blank";
 
-    emit m_part->browserExtension()->openUrlRequest( data.uri(), args );
+    emit m_part->browserExtension()->openUrlRequest( data.uri(), KParts::OpenUrlArguments(), browserArgs );
 }
 
 void KHTMLPartBrowserExtension::openSelection()
 {
-    KParts::URLArgs args;
-    args.frameName = "_blank";
+    KParts::BrowserArguments browserArgs;
+    browserArgs.frameName = "_blank";
 
-    emit m_part->browserExtension()->openUrlRequest( m_part->selectedText(), args );
+    emit m_part->browserExtension()->openUrlRequest( m_part->selectedText(), KParts::OpenUrlArguments(), browserArgs );
 }
 
 void KHTMLPartBrowserExtension::paste()
@@ -819,18 +818,18 @@ void KHTMLPopupGUIClient::slotViewImage()
 
 void KHTMLPopupGUIClient::slotReloadFrame()
 {
-  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
-  args.reload = true;
+  KParts::OpenUrlArguments args = d->m_khtml->arguments();
+  args.setReload( true );
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   // reload document
   d->m_khtml->closeUrl();
-  d->m_khtml->browserExtension()->setUrlArgs( args );
+  d->m_khtml->setArguments( args );
   d->m_khtml->openUrl( d->m_khtml->url() );
 }
 
 void KHTMLPopupGUIClient::slotFrameInWindow()
 {
-  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
+  KParts::OpenUrlArguments args = d->m_khtml->arguments();
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   args.metaData()["forcenewwindow"] = "true";
   emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args );
@@ -838,18 +837,20 @@ void KHTMLPopupGUIClient::slotFrameInWindow()
 
 void KHTMLPopupGUIClient::slotFrameInTop()
 {
-  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
+  KParts::OpenUrlArguments args = d->m_khtml->arguments();
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
-  args.frameName = "_top";
-  emit d->m_khtml->browserExtension()->openUrlRequest( d->m_khtml->url(), args );
+  KParts::BrowserArguments browserArgs( d->m_khtml->browserExtension()->browserArguments() );
+  browserArgs.frameName = "_top";
+  emit d->m_khtml->browserExtension()->openUrlRequest( d->m_khtml->url(), args, browserArgs );
 }
 
 void KHTMLPopupGUIClient::slotFrameInTab()
 {
-  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
+  KParts::OpenUrlArguments args = d->m_khtml->arguments();
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
-  args.setNewTab(true);
-  emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args );
+  KParts::BrowserArguments browserArgs( d->m_khtml->browserExtension()->browserArguments() );
+  browserArgs.setNewTab(true);
+  emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args, browserArgs );
 }
 
 void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
@@ -986,9 +987,9 @@ const QList<KParts::ReadOnlyPart*> KHTMLPartBrowserHostExtension::frames() const
   return m_part->frames();
 }
 
-bool KHTMLPartBrowserHostExtension::openURLInFrame( const KUrl &url, const KParts::URLArgs &urlArgs )
+bool KHTMLPartBrowserHostExtension::openUrlInFrame(const KUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments)
 {
-  return m_part->openURLInFrame( url, urlArgs );
+  return m_part->openUrlInFrame( url, arguments, browserArguments );
 }
 
 KParts::BrowserHostExtension* KHTMLPartBrowserHostExtension::findFrameParent( KParts::ReadOnlyPart
