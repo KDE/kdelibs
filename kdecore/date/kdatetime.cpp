@@ -2355,8 +2355,8 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                         return QDateTime();
                     year += (year <= 50) ? 2000 : 1999;
                     break;
-                case 'm':     // month, 1 - 12
-                    if (!getNumber(str, s, 1, 2, 1, 12, month))
+                case 'm':     // month, 2 digits, 01 - 12
+                    if (!getNumber(str, s, 2, 2, 1, 12, month))
                         return QDateTime();
                     break;
                 case 'B':
@@ -2368,7 +2368,10 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     month = m;
                     break;
                 }
-                case 'd':
+                case 'd':     // day of month, 2 digits, 01 - 31
+                    if (!getNumber(str, s, 2, 2, 1, 31, day))
+                        return QDateTime();
+                    break;
                 case 'e':     // day of month, 1 - 31
                     if (!getNumber(str, s, 1, 2, 1, 31, day))
                         return QDateTime();
@@ -2382,21 +2385,31 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     dayOfWeek = dow;
                     break;
                 }
-                case 'H':
+                case 'H':     // hour, 2 digits, 00 - 23
+                    if (!getNumber(str, s, 2, 2, 0, 23, hour))
+                        return QDateTime();
+                    break;
                 case 'k':     // hour, 0 - 23
                     if (!getNumber(str, s, 1, 2, 0, 23, hour))
                         return QDateTime();
                     break;
-                case 'I':
+                case 'I':     // hour, 2 digits, 01 - 12
+                    if (!getNumber(str, s, 2, 2, 1, 12, hour))
+                        return QDateTime();
+                    break;
                 case 'l':     // hour, 1 - 12
                     if (!getNumber(str, s, 1, 2, 1, 12, hour))
                         return QDateTime();
                     break;
-                case 'M':     // minutes, 0 - 59
-                    if (!getNumber(str, s, 1, 2, 0, 59, minute))
+                case 'M':     // minutes, 2 digits, 00 - 59
+                    if (!getNumber(str, s, 2, 2, 0, 59, minute))
                         return QDateTime();
                     break;
-                case 'S':     // seconds, 0 - 59
+                case 'S':     // seconds, 2 digits, 00 - 59
+                    if (!getNumber(str, s, 2, 2, 0, 59, second))
+                        return QDateTime();
+                    break;
+                case 's':     // seconds, 0 - 59
                     if (!getNumber(str, s, 1, 2, 0, 59, second))
                         return QDateTime();
                     break;
@@ -2467,6 +2480,10 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     ampm = ap;
                     break;
                 }
+                case 'M':     // minutes, 0 - 59
+                    if (!getNumber(str, s, 1, 2, 0, 59, minute))
+                        return QDateTime();
+                    break;
                 case 'S':     // seconds with ':' prefix, defaults to zero
                     if (str[s] != QLatin1Char(':'))
                     {

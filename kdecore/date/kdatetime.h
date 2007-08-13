@@ -1277,11 +1277,11 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * toString(). However, some codes which are distinct in toString() have
      * the same function as each other here.
      *
-     * All numeric values permit, but do not require, leading zeroes. The
-     * maximum number of digits consumed by a numeric code is the minimum needed
-     * to cover the possible range of the number (e.g. for minutes, the range is
-     * 0 - 59, so the maximum number of digits consumed is 2). All non-numeric
-     * values are case insensitive.
+     * Numeric values without a stated number of digits permit, but do not
+     * require, leading zeroes. The maximum number of digits consumed by a
+     * numeric code is the minimum needed to cover the possible range of the
+     * number (e.g. for minutes, the range is 0 - 59, so the maximum number of
+     * digits consumed is 2). All non-numeric values are case insensitive.
      *
      * \b Date
      *
@@ -1289,15 +1289,15 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *        while years 51 - 99 return 1951 - 1999.
      * - %Y   full year number (4 digits with optional sign)
      * - %:Y  full year number (>= 4 digits with optional sign)
-     * - %:m
-     * - %m   month number (1 - 12)
+     * - %:m  month number (1 - 12)
+     * - %m   month number, 2 digits (01 - 12)
      * - %b
      * - %B   month name in the current locale or, if no match, in English,
      *        abbreviated or in full
      * - %:b
      * - %:B  month name in English, abbreviated or in full
-     * - %e
-     * - %d   day of the month (1 - 31)
+     * - %e   day of the month (1 - 31)
+     * - %d   day of the month, 2 digits (01 - 31)
      * - %a
      * - %A   weekday name in the current locale or, if no match, in English,
      *        abbreviated or in full
@@ -1306,12 +1306,14 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *
      * \b Time
      *
-     * - %H
+     * - %H   hour in the 24 hour clock, 2 digits (00 - 23)
      * - %k   hour in the 24 hour clock (0 - 23)
-     * - %I
+     * - %I   hour in the 12 hour clock, 2 digits (01 - 12)
      * - %l   hour in the 12 hour clock (1 - 12)
-     * - %M   minute (0 - 59)
-     * - %S   seconds (0 - 59)
+     * - %M   minute, 2 digits (00 - 59)
+     * - %:M  minute (0 - 59)
+     * - %S   seconds, 2 digits (00 - 59)
+     * - %s   seconds (0 - 59)
      * - %:S  optional seconds value (0 - 59) preceded with ':'. If no colon is
      *        found in @p string, no input is consumed and the seconds value is
      *        set to zero.

@@ -3343,62 +3343,62 @@ void KDateTimeTest::strings_format()
                                    .arg(calendar->weekDayName(7,KCalendarSystem::ShortDayName)));
 
     // fromString() without KTimeZones parameter
-    dt = KDateTime::fromString(QLatin1String("2005/9/05/20:2,03"), QLatin1String("%Y/%:m/%e/%S:%k,%M"));
+    dt = KDateTime::fromString(QLatin1String("2005/9/05/20:2,03"), QLatin1String("%Y/%:m/%d/%S:%k,%M"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(2,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::ClockTime);
 
     dt = KDateTime::fromString(QString::fromLatin1("%1pm05ab%2t/052/20:2,03+10")
                                    .arg(calendar->weekDayName(1,KCalendarSystem::LongDayName))
                                    .arg(calendar->monthName(9,1999,KCalendarSystem::LongName)),
-                               QLatin1String("%a%p%yab%Bt/%e2/%S:%I,%M %z"));
+                               QLatin1String("%a%p%yab%Bt/%e2/%S:%l,%M %z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::OffsetFromUTC);
     QCOMPARE(dt.utcOffset(), 10*3600);
     dt = KDateTime::fromString(QString::fromLatin1("%1pm05ab%2t/052/20:2,03+10")
                                    .arg(calendar->weekDayName(1,KCalendarSystem::ShortDayName))
                                    .arg(calendar->monthName(9,1999,KCalendarSystem::ShortName)),
-                               QLatin1String("%a%p%yab%Bt/%e2/%S:%I,%M %z"));
+                               QLatin1String("%a%p%yab%Bt/%d2/%s:%l,%:M %z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::OffsetFromUTC);
     QCOMPARE(dt.utcOffset(), 10*3600);
-    dt = KDateTime::fromString(QString::fromLatin1("monpm05absEpt/052/20:2,03+10"), QLatin1String("%a%p%yab%Bt/%e2/%S:%I,%M %z"));
+    dt = KDateTime::fromString(QString::fromLatin1("monpm05absEpt/052/20:2,03+10"), QLatin1String("%a%p%yab%Bt/%d2/%S:%l,%M %z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::OffsetFromUTC);
     QCOMPARE(dt.utcOffset(), 10*3600);
-    dt = KDateTime::fromString(QString::fromLatin1("monDAYpm05absEptemBert/052/20:2,03+10"), QLatin1String("%a%p%yab%Bt/%e2/%S:%I,%M %z"));
+    dt = KDateTime::fromString(QString::fromLatin1("monDAYpm05absEptemBert/052/20:2,03+10"), QLatin1String("%a%p%yab%Bt/%e2/%S:%l,%M %z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::OffsetFromUTC);
     QCOMPARE(dt.utcOffset(), 10*3600);
-    dt = KDateTime::fromString(QString::fromLatin1("monDAYpm05abmzatemer/052/20:2,03+10"), QLatin1String("%a%p%yab%B/%e2/%S:%I,%M %z"));
+    dt = KDateTime::fromString(QString::fromLatin1("monDAYpm05abmzatemer/052/20:2,03+10"), QLatin1String("%a%p%yab%B/%e2/%S:%l,%M %z"));
     QVERIFY(!dt.isValid());    // invalid month name
-    dt = KDateTime::fromString(QString::fromLatin1("monDApm05absep/052/20:2,03+10"), QLatin1String("%a%p%yab%B/%e2/%S:%I,%M %z"));
+    dt = KDateTime::fromString(QString::fromLatin1("monDApm05absep/052/20:2,03+10"), QLatin1String("%a%p%yab%B/%e2/%S:%l,%M %z"));
     QVERIFY(!dt.isValid());    // invalid day name
-    dt = KDateTime::fromString(QLatin1String("mONdAYPM2005absEpt/052/20:02,03+1000"), QLatin1String("%:A%:p%Yab%Bt/%e2/%S:%I,%M %:u"));
+    dt = KDateTime::fromString(QLatin1String("mONdAYPM2005absEpt/052/20:02,03+1000"), QLatin1String("%:A%:p%Yab%Bt/%d2/%S:%I,%M %:u"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,3,20), Qt::LocalTime));
     QCOMPARE(dt.utcOffset(), 10*3600);
     QCOMPARE(dt.timeType(), KDateTime::OffsetFromUTC);
-    dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005abSept/052/20:02,03+100"), QLatin1String("%:A%:p%Yab%Bt/%e2/%S:%I,%M %:u"));
+    dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005abSept/052/20:02,03+100"), QLatin1String("%:A%:p%Yab%Bt/%e2/%S:%l,%M %:u"));
     QVERIFY(!dtclock.isValid());    // wrong number of digits in UTC offset
-    dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005abSept/052/20:02,03+1"), QLatin1String("%:A%:p%Yab%Bt/%e2/%S:%I,%M %z"));
+    dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005abSept/052/20:02,03+1"), QLatin1String("%:A%:p%Yab%Bt/%d2/%S:%I,%M %z"));
     QVERIFY(!dtclock.isValid());    // wrong number of digits in UTC offset
-    dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005absEpt/052/20:13,03+1000"), QLatin1String("%:A%:p%Yab%Bt/%e2/%S:%I,%M %:u"));
+    dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005absEpt/052/20:13,03+1000"), QLatin1String("%:A%:p%Yab%Bt/%d2/%S:%I,%M %:u"));
     QVERIFY(!dtclock.isValid());    // hours out of range for am/pm
-    dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005absEpt/052/20:00,03+1000"), QLatin1String("%:A%:p%Yab%Bt/%e2/%S:%I,%M %:u"));
+    dtclock = KDateTime::fromString(QLatin1String("mONdAYPM2005absEpt/052/20:00,03+1000"), QLatin1String("%:A%:p%Yab%Bt/%d2/%S:%I,%M %:u"));
     QVERIFY(!dtclock.isValid());    // hours out of range for am/pm
 
     // fromString() with KTimeZones parameter
     dt = KDateTime::fromString(QLatin1String("mon 2005/9/05/20:2,03"), QLatin1String("%:a %Y/%:m/%e/%S:%k,%M"), &zones);
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(2,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::ClockTime);
-    dt = KDateTime::fromString(QLatin1String("tue 2005/9/05/20:2,03"), QLatin1String("%:a %Y/%:m/%e/%S:%k,%M"), &zones);
+    dt = KDateTime::fromString(QLatin1String("tue 2005/9/05/20:2,03"), QLatin1String("%:a %Y/%:m/%d/%S:%k,%M"), &zones);
     QVERIFY(!dt.isValid());    // wrong day-of-week
 
-    dt = KDateTime::fromString(QLatin1String("pm2005absEpt/05monday/20:2,03+03:00"), QLatin1String("%p%Yab%Bt/%e%:A/%S:%I,%M %:z"), &zones);
+    dt = KDateTime::fromString(QLatin1String("pm2005absEpt/05monday/20:2,03+03:00"), QLatin1String("%p%Yab%Bt/%e%:A/%S:%l,%M %:z"), &zones);
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,3,20), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::TimeZone);
     QCOMPARE(dt.utcOffset(), 3*3600);
     QCOMPARE(dt.timeZone(), cairo);
-    dt = KDateTime::fromString(QLatin1String("pm2005absEpt/05sunday/20:2,03+03:00"), QLatin1String("%p%Yab%Bt/%e%A/%S:%I,%M %:z"), &zones);
+    dt = KDateTime::fromString(QLatin1String("pm2005absEpt/05sunday/20:2,03+03:00"), QLatin1String("%p%Yab%Bt/%d%A/%S:%l,%M %:z"), &zones);
     QVERIFY(!dt.isValid());    // wrong day-of-week
 
     dt = KDateTime::fromString(QLatin1String("200509051430:01.3+0100"), QLatin1String("%Y%m%d%H%M%:S%:s%z"), &zones, true);
@@ -3432,7 +3432,7 @@ void KDateTimeTest::strings_format()
     QCOMPARE(dt.utcOffset(), 3600);
     QCOMPARE(dt.timeZone(), london);
 
-    dt = KDateTime::fromString(QLatin1String("2005absEpt/042sun/20.0123456:12Am,3Africa/Cairo%"), QLatin1String("%Yab%bt/%e2%a/%S%:s:%l%P,%M %:Z%%"), &zones);
+    dt = KDateTime::fromString(QLatin1String("2005absEpt/042sun/20.0123456:12Am,3Africa/Cairo%"), QLatin1String("%Yab%bt/%e2%a/%S%:s:%I%P,%:M %:Z%%"), &zones);
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,4), QTime(0,3,20,12), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::TimeZone);
     QCOMPARE(dt.timeZone(), cairo);
