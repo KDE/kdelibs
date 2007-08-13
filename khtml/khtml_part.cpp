@@ -3961,7 +3961,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( state & Qt::ShiftModifier)
   {
     KParts::WindowArgs winArgs;
-    winArgs.lowerWindow = true;
+    winArgs.setLowerWindow(true);
     emit d->m_extension->createNewWindow( cURL, args, browserArgs, winArgs );
     return true;
   }

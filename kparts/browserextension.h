@@ -26,6 +26,8 @@
 #include <kparts/part.h>
 #include <kparts/event.h>
 
+#include <QtCore/QSharedDataPointer>
+
 template <class T1, class T2> struct QPair;
 template<typename T> class Q3PtrList;
 template <class Key, class T> class QMap;
@@ -165,15 +167,16 @@ private:
   BrowserArgumentsPrivate *d;
 };
 
-struct WindowArgsPrivate;
+class WindowArgsPrivate;
 
 /**
  * The WindowArgs are used to specify arguments to the "create new window"
  * call (see the createNewWindow variant that uses WindowArgs).
  * The primary reason for this is the javascript window.open function.
  */
-struct KPARTS_EXPORT WindowArgs
+class KPARTS_EXPORT WindowArgs
 {
+public:
     WindowArgs();
     ~WindowArgs();
     WindowArgs( const WindowArgs &args );
@@ -184,23 +187,41 @@ struct KPARTS_EXPORT WindowArgs
                 bool _menuBarVisible, bool _toolBarsVisible,
                 bool _statusBarVisible, bool _resizable );
 
-    // Position
-    int x;
-    int y;
-    // Size
-    int width;
-    int height;
-    bool fullscreen; //defaults to false
-    bool menuBarVisible; //defaults to true
-    bool toolBarsVisible; //defaults to true
-    bool statusBarVisible; //defaults to true
-    bool resizable; //defaults to true
+    void setX(int x);
+    int x() const;
 
-    bool lowerWindow; //defaults to false
-    bool scrollBarsVisible; //defaults to true
+    void setY(int y);
+    int y() const;
+
+    void setWidth(int w);
+    int width() const;
+
+    void setHeight(int h);
+    int height() const;
+
+    void setFullScreen(bool fs);
+    bool isFullScreen() const;
+
+    void setMenuBarVisible(bool visible);
+    bool isMenuBarVisible() const;
+
+    void setToolBarsVisible(bool visible);
+    bool toolBarsVisible() const;
+
+    void setStatusBarVisible(bool visible);
+    bool isStatusBarVisible() const;
+
+    void setResizable(bool resizable);
+    bool isResizable() const;
+
+    void setLowerWindow(bool lower);
+    bool lowerWindow() const;
+
+    void setScrollBarsVisible(bool visible);
+    bool scrollBarsVisible() const;
 
 private:
-    WindowArgsPrivate *d; // don't use before KDE4, many KDE-3.x didn't have an explicit destructor
+    QSharedDataPointer<WindowArgsPrivate> d;
 };
 
 /**

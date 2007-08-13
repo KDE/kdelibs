@@ -1610,10 +1610,10 @@ ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStr
     // scan feature argument
     if (!features.isEmpty()) {
       // specifying window params means false defaults
-      winargs.menuBarVisible = false;
-      winargs.toolBarsVisible = false;
-      winargs.statusBarVisible = false;
-      winargs.scrollBarsVisible = false;
+      winargs.setMenuBarVisible(false);
+      winargs.setToolBarsVisible(false);
+      winargs.setStatusBarVisible(false);
+      winargs.setScrollBarsVisible(false);
       QStringList flist = features.split(',');
       QStringList::ConstIterator it = flist.begin();
       while (it != flist.end()) {
@@ -1626,25 +1626,25 @@ ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStr
           QRect screen = KGlobalSettings::desktopGeometry(widget->topLevelWidget());
 
           if (key == "left" || key == "screenx") {
-            winargs.x = (int)val.toFloat() + screen.x();
-            if (winargs.x < screen.x() || winargs.x > screen.right())
-              winargs.x = screen.x(); // only safe choice until size is determined
+            winargs.setX((int)val.toFloat() + screen.x());
+            if (winargs.x() < screen.x() || winargs.x() > screen.right())
+              winargs.setX(screen.x()); // only safe choice until size is determined
           } else if (key == "top" || key == "screeny") {
-            winargs.y = (int)val.toFloat() + screen.y();
-            if (winargs.y < screen.y() || winargs.y > screen.bottom())
-              winargs.y = screen.y(); // only safe choice until size is determined
+            winargs.setY((int)val.toFloat() + screen.y());
+            if (winargs.y() < screen.y() || winargs.y() > screen.bottom())
+              winargs.setY(screen.y()); // only safe choice until size is determined
           } else if (key == "height") {
-            winargs.height = (int)val.toFloat() + 2*qApp->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
-            if (winargs.height > screen.height())  // should actually check workspace
-              winargs.height = screen.height();
-            if (winargs.height < 100)
-              winargs.height = 100;
+            winargs.setHeight((int)val.toFloat() + 2*qApp->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2);
+            if (winargs.height() > screen.height())  // should actually check workspace
+              winargs.setHeight(screen.height());
+            if (winargs.height() < 100)
+              winargs.setHeight(100);
           } else if (key == "width") {
-            winargs.width = (int)val.toFloat() + 2*qApp->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
-            if (winargs.width > screen.width())    // should actually check workspace
-              winargs.width = screen.width();
-            if (winargs.width < 100)
-              winargs.width = 100;
+            winargs.setWidth((int)val.toFloat() + 2*qApp->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2);
+            if (winargs.width() > screen.width())    // should actually check workspace
+              winargs.setWidth(screen.width());
+            if (winargs.width() < 100)
+              winargs.setWidth(100);
           } else {
             goto boolargs;
           }
@@ -1656,19 +1656,19 @@ ValueImp *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStr
         }
       boolargs:
         if (key == "menubar")
-          winargs.menuBarVisible = (val == "1" || val == "yes");
+          winargs.setMenuBarVisible(val == "1" || val == "yes");
         else if (key == "toolbar")
-          winargs.toolBarsVisible = (val == "1" || val == "yes");
+          winargs.setToolBarsVisible(val == "1" || val == "yes");
         else if (key == "location")  // ### missing in WindowArgs
-          winargs.toolBarsVisible = (val == "1" || val == "yes");
+          winargs.setToolBarsVisible(val == "1" || val == "yes");
         else if (key == "status" || key == "statusbar")
-          winargs.statusBarVisible = (val == "1" || val == "yes");
+          winargs.setStatusBarVisible(val == "1" || val == "yes");
         else if (key == "scrollbars")
-          winargs.scrollBarsVisible = (val == "1" || val == "yes");
+          winargs.setScrollBarsVisible(val == "1" || val == "yes");
         else if (key == "resizable")
-          winargs.resizable = (val == "1" || val == "yes");
+          winargs.setResizable(val == "1" || val == "yes");
         else if (key == "fullscreen")
-          winargs.fullscreen = (val == "1" || val == "yes");
+          winargs.setFullScreen(val == "1" || val == "yes");
       }
     }
 
