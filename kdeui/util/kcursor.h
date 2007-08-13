@@ -27,7 +27,9 @@ class QEvent;
 class QWidget;
 
 /**
- * @short A set of convenience methods for auto-hiding cursors on widgets.
+ * The KCursor class extends QCursor with the ability to create an arbitrary
+ * named cursor from the cursor theme, and provides a set of static
+ * convenience methods for auto-hiding cursors on widgets.
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
