@@ -195,7 +195,8 @@ public:
     void clearProgram();
 
     /**
-     * Set a command to execute through a shell.
+     * Set a command to execute through a shell (a POSIX sh on *NIX
+     * and cmd.exe on Windows).
      *
      * Using this for anything but user-supplied commands is usually a bad
      * idea, as the command's syntax depends on the platform.
@@ -208,14 +209,8 @@ public:
      *   The caller must make sure that all filenames etc. are properly
      *   quoted when passed as argument. Failure to do so often results in
      *   serious security holes. See KShell::quoteArg().
-     * @param shell the path to the shell that will execute the process, or
-     *   empty to use the system's default shell (on *NIX a POSIX shell if
-     *   available, otherwise any bourne shell, on Windows whatever %COMSPEC%
-     *   points to).
-     *   Use qgetenv("SHELL") to use the user's default shell on *NIX, but
-     *   note that doing so is usually a bad idea for compatibility reasons.
      */
-    void setShellCommand(const QString &cmd, const QString &shell = QString());
+    void setShellCommand(const QString &cmd);
 
     /**
      * Obtain the currently set program and arguments.

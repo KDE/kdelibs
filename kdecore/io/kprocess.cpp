@@ -243,35 +243,34 @@ void KProcess::clearProgram()
     d->args.clear();
 }
 
-void KProcess::setShellCommand(const QString &cmd, const QString &shell)
+void KProcess::setShellCommand(const QString &cmd)
 {
     Q_D(KProcess);
 
-    if (!shell.isEmpty()) {
-        d->prog = shell;
-    } else {
 #ifdef Q_OS_UNIX
-        d->prog = QString::fromLatin1(
+    d->prog = QString::fromLatin1(
 // #ifdef NON_FREE // ... as they ship non-POSIX /bin/sh
 # if !defined(__linux__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__DragonFly__) && !defined(__GNU__)
-            !access("/usr/xpg4/bin/sh", X_OK) ? // Solaris POSIX ...
-                "/usr/xpg4/bin/sh" :
-            !access("/bin/ksh", X_OK) ? // ... which links here anyway
-                "/bin/ksh" :
-            !access("/usr/ucb/sh", X_OK) ? // dunno, maybe superfluous?
-                "/usr/ucb/sh" :
+        !access("/usr/xpg4/bin/sh", X_OK) ? // Solaris POSIX ...
+            "/usr/xpg4/bin/sh" :
+        !access("/bin/ksh", X_OK) ? // ... which links here anyway
+            "/bin/ksh" :
+        !access("/usr/ucb/sh", X_OK) ? // dunno, maybe superfluous?
+            "/usr/ucb/sh" :
 # endif
-                "/bin/sh"
-        );
+            "/bin/sh"
+    );
+
 #else // Q_OS_UNIX
-        d->prog = QString::fromLocal8Bit(qgetenv("ComSpec"));
+
+    d->prog = QString::fromLocal8Bit(qgetenv("ComSpec"));
 /*
     really needed?
     if(GetFileAttributesW(cmd.utf16()) == INVALID_FILE_ATTRIBUTES)
         return; // mhhh
 */
 #endif // Q_OS_UNIX
-    }
+
 #ifdef Q_OS_UNIX
     d->args = QStringList() << "-c" << cmd;
 #else
