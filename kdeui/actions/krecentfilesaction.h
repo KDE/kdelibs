@@ -30,6 +30,7 @@
 #include <kselectaction.h>
 
 class KConfigGroup;
+class KRecentFilesActionPrivate;
 class KUrl;
 
 /**
@@ -46,6 +47,7 @@ class KDEUI_EXPORT KRecentFilesAction : public KSelectAction
 {
   Q_OBJECT
   Q_PROPERTY( int maxItems READ maxItems WRITE setMaxItems )
+  Q_DECLARE_PRIVATE(KRecentFilesAction)
 
 public:
     /**
@@ -164,8 +166,6 @@ private Q_SLOTS:
 
 private:
   void init();
-
-  class KRecentFilesActionPrivate* const d;
 };
 
 #endif

@@ -26,6 +26,7 @@
 */
 
 #include "krecentfilesaction.h"
+#include "krecentfilesaction_p.h"
 
 #include <QtCore/QFile>
 #include <QtCore/QPointer>
@@ -40,32 +41,15 @@
 
 #include "kmenu.h"
 
-class KRecentFilesActionPrivate
-{
-public:
-  KRecentFilesActionPrivate()
-  {
-    m_maxItems = 10;
-    m_noEntriesAction=0;
-  }
-
-  int m_maxItems;
-  QMap<QAction*, QString> m_shortNames;
-  QMap<QAction*, KUrl> m_urls;
-  QPointer<QAction> m_noEntriesAction;
-};
-
 
 KRecentFilesAction::KRecentFilesAction(QObject *parent)
-  : KSelectAction(parent)
-  , d(new KRecentFilesActionPrivate)
+  : KSelectAction(*new KRecentFilesActionPrivate, parent)
 {
   init();
 }
 
 KRecentFilesAction::KRecentFilesAction(const QString &text, QObject *parent)
-  : KSelectAction(parent)
-  , d(new KRecentFilesActionPrivate)
+  : KSelectAction(*new KRecentFilesActionPrivate, parent)
 {
   init();
 
@@ -74,8 +58,7 @@ KRecentFilesAction::KRecentFilesAction(const QString &text, QObject *parent)
 }
 
 KRecentFilesAction::KRecentFilesAction(const KIcon &icon, const QString &text, QObject *parent)
-  : KSelectAction(parent)
-  , d(new KRecentFilesActionPrivate)
+  : KSelectAction(*new KRecentFilesActionPrivate, parent)
 {
   init();
 
@@ -86,6 +69,7 @@ KRecentFilesAction::KRecentFilesAction(const KIcon &icon, const QString &text, Q
 
 void KRecentFilesAction::init()
 {
+  Q_D(KRecentFilesAction);
   delete menu();
   setMenu(new KMenu());
   setToolBarMode(MenuMode);
@@ -97,22 +81,23 @@ void KRecentFilesAction::init()
 
 KRecentFilesAction::~KRecentFilesAction()
 {
-  delete menu();
-  delete d;
 }
 
 void KRecentFilesAction::urlSelected( QAction* action )
 {
+  Q_D(KRecentFilesAction);
   emit urlSelected(d->m_urls[action]);
 }
 
 int KRecentFilesAction::maxItems() const
 {
+    Q_D(const KRecentFilesAction);
     return d->m_maxItems;
 }
 
 void KRecentFilesAction::setMaxItems( int maxItems )
 {
+    Q_D(KRecentFilesAction);
     // set new maxItems
     d->m_maxItems = maxItems;
 
@@ -123,6 +108,7 @@ void KRecentFilesAction::setMaxItems( int maxItems )
 
 void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
 {
+    Q_D(KRecentFilesAction);
     /**
      * Create a deep copy here, because if _url is the parameter from
      * urlSelected() signal, we will delete it in the removeAction() call below.
@@ -155,13 +141,24 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
     // add file to list
     const QString title = tmpName + " [" + file + ']';
     QAction* action = new QAction(title, selectableActionGroup());
-    // TODO: This action should be prepended like in KDE 3 - Clarence.
     addAction(action, url, tmpName);
 }
 
 void KRecentFilesAction::addAction(QAction* action, const KUrl& url, const QString& name)
 {
-  KSelectAction::addAction( action );
+  Q_D(KRecentFilesAction);
+  //kDebug (129) << "KRecentFilesAction::addAction(" << action << ")";
+
+  action->setActionGroup(selectableActionGroup());
+
+  // Keep in sync with createToolBarWidget()
+  foreach (QToolButton* button, d->m_buttons)
+    button->insertAction(button->actions().value(0), action);
+
+  foreach (KComboBox* comboBox, d->m_comboBoxes)
+    comboBox->insertAction(comboBox->actions().value(0), action);
+
+  menu()->insertAction(menu()->actions().value(0), action);
 
   d->m_shortNames.insert( action, name );
   d->m_urls.insert( action, url );
@@ -169,6 +166,7 @@ void KRecentFilesAction::addAction(QAction* action, const KUrl& url, const QStri
 
 QAction* KRecentFilesAction::removeAction(QAction* action)
 {
+  Q_D(KRecentFilesAction);
   KSelectAction::removeAction( action );
 
   d->m_shortNames.remove( action );
@@ -179,6 +177,7 @@ QAction* KRecentFilesAction::removeAction(QAction* action)
 
 void KRecentFilesAction::removeUrl( const KUrl& url )
 {
+  Q_D(KRecentFilesAction);
   for (QMap<QAction*, KUrl>::ConstIterator it = d->m_urls.constBegin(); it != d->m_urls.constEnd(); ++it)
     if (it.value() == url) {
       delete removeAction(it.key());
@@ -188,6 +187,7 @@ void KRecentFilesAction::removeUrl( const KUrl& url )
 
 void KRecentFilesAction::clear()
 {
+    Q_D(KRecentFilesAction);
     KSelectAction::clear();
     d->m_shortNames.clear();
     d->m_urls.clear();
@@ -199,6 +199,7 @@ void KRecentFilesAction::clear()
 
 void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
 {
+    Q_D(KRecentFilesAction);
     clear();
 
     QString     key;
@@ -247,6 +248,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
 
 void KRecentFilesAction::saveEntries( const KConfigGroup &_cg )
 {
+    Q_D(KRecentFilesAction);
     QString     key;
     QString     value;
     QStringList lst = items();

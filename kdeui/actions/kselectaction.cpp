@@ -30,6 +30,7 @@
 */
 
 #include "kselectaction.h"
+#include "kselectaction_p.h"
 
 #include <QActionEvent>
 #include <QEvent>
@@ -41,91 +42,46 @@
 #include "kcombobox.h"
 #include "kmenu.h"
 
-// BEGIN KSelectAction
-class KSelectAction::KSelectActionPrivate
-{
-public:
-  KSelectActionPrivate()
-  {
-    q = 0;
-    m_edit = false;
-    m_menuAccelsEnabled = true;
-    m_comboWidth = -1;
-    m_maxComboViewCount = -1;
-
-    m_toolBarMode = KSelectAction::ComboBoxMode;
-    m_toolButtonPopupMode = QToolButton::InstantPopup; //InstantPopup by default because there is no default action
-
-    m_actionGroup = new QActionGroup(0L);
-  }
-
-  ~KSelectActionPrivate()
-  {
-    delete m_actionGroup;
-  }
-
-  void init(KSelectAction *q_ptr);
-
-  bool m_edit, m_menuAccelsEnabled;
-  int m_comboWidth;
-  int m_maxComboViewCount;
-
-  KSelectAction::ToolBarMode m_toolBarMode;
-  QToolButton::ToolButtonPopupMode m_toolButtonPopupMode;
-
-  QActionGroup* m_actionGroup;
-
-  QList<QToolButton*> m_buttons;
-  QList<KComboBox*> m_comboBoxes;
-
-  QString makeMenuText( const QString &_text )
-  {
-      if ( m_menuAccelsEnabled )
-        return _text;
-      QString text = _text;
-      int i = 0;
-      while ( i < text.length() ) {
-          if ( text[ i ] == '&' ) {
-              text.insert( i, '&' );
-              i += 2;
-          }
-          else
-              ++i;
-      }
-      return text;
-  }
-  KSelectAction *q;
-};
-
 KSelectAction::KSelectAction(QObject *parent)
   : KAction(parent)
-  , d(new KSelectActionPrivate())
+  , d_ptr(new KSelectActionPrivate())
 {
+  Q_D(KSelectAction);
   d->init(this);
 }
 
 KSelectAction::KSelectAction(const QString &text, QObject *parent)
   : KAction(parent)
-  , d(new KSelectActionPrivate())
+  , d_ptr(new KSelectActionPrivate())
 {
+  Q_D(KSelectAction);
   d->init(this);
   setText(text);
 }
 
 KSelectAction::KSelectAction(const KIcon & icon, const QString &text, QObject *parent)
   : KAction(icon, text, parent)
-  , d(new KSelectActionPrivate())
+  , d_ptr(new KSelectActionPrivate())
 {
+  Q_D(KSelectAction);
+  d->init(this);
+}
+
+KSelectAction::KSelectAction(KSelectActionPrivate &dd, QObject *parent)
+  : KAction(parent)
+  , d_ptr(&dd)
+{
+  Q_D(KSelectAction);
   d->init(this);
 }
 
 KSelectAction::~KSelectAction()
 {
-  delete d;
+  delete d_ptr;
   delete menu();
 }
 
-void KSelectAction::KSelectActionPrivate::init(KSelectAction *q_ptr)
+void KSelectActionPrivate::init(KSelectAction *q_ptr)
 {
   q = q_ptr;
   QObject::connect(q->selectableActionGroup(), SIGNAL(triggered(QAction*)), q, SLOT(actionTriggered(QAction*)));
@@ -135,6 +91,7 @@ void KSelectAction::KSelectActionPrivate::init(KSelectAction *q_ptr)
 
 QActionGroup * KSelectAction::selectableActionGroup( ) const
 {
+  Q_D(const KSelectAction);
   return d->m_actionGroup;
 }
 
@@ -231,6 +188,7 @@ bool KSelectAction::setCurrentAction( const QString & text, Qt::CaseSensitivity 
 
 void KSelectAction::setComboWidth( int width )
 {
+  Q_D(KSelectAction);
   if ( width < 0 )
     return;
 
@@ -244,6 +202,7 @@ void KSelectAction::setComboWidth( int width )
 
 void KSelectAction::setMaxComboViewCount( int n )
 {
+  Q_D(KSelectAction);
   d->m_maxComboViewCount = n;
 
   foreach (KComboBox* box, d->m_comboBoxes)
@@ -258,6 +217,7 @@ void KSelectAction::setMaxComboViewCount( int n )
 
 void KSelectAction::addAction(QAction* action)
 {
+  Q_D(KSelectAction);
   //kDebug (129) << "KSelectAction::addAction(" << action << ")";
 
   action->setActionGroup(selectableActionGroup());
@@ -274,6 +234,7 @@ void KSelectAction::addAction(QAction* action)
 
 KAction* KSelectAction::addAction(const QString &text)
 {
+  Q_D(KSelectAction);
   KAction* newAction = new KAction(parent());
   newAction->setText(text);
   newAction->setCheckable( true );
@@ -297,6 +258,7 @@ KAction* KSelectAction::addAction(const KIcon& icon, const QString& text)
 
 QAction* KSelectAction::removeAction(QAction* action)
 {
+  Q_D(KSelectAction);
   //kDebug (129) << "KSelectAction::removeAction(" << action << ")";
   //int index = selectableActionGroup()->actions().indexOf(action);
   //kDebug (129) << "\tindex=" << index;
@@ -333,6 +295,7 @@ void KSelectAction::actionTriggered(QAction* action)
 
 QStringList KSelectAction::items() const
 {
+  Q_D(const KSelectAction);
   QStringList ret;
 
   foreach (QAction* action, d->m_actionGroup->actions())
@@ -343,6 +306,7 @@ QStringList KSelectAction::items() const
 
 void KSelectAction::changeItem( int index, const QString& text )
 {
+  Q_D(KSelectAction);
   if ( index < 0 || index >= actions().count() )
   {
     kWarning() << "KSelectAction::changeItem Index out of scope";
@@ -354,6 +318,7 @@ void KSelectAction::changeItem( int index, const QString& text )
 
 void KSelectAction::setItems( const QStringList &lst )
 {
+  Q_D(KSelectAction);
   //kDebug (129) << "KSelectAction::setItems(" << lst << ")";
 
   clear();
@@ -374,11 +339,13 @@ void KSelectAction::setItems( const QStringList &lst )
 
 int KSelectAction::comboWidth() const
 {
+  Q_D(const KSelectAction);
   return d->m_comboWidth;
 }
 
 void KSelectAction::clear()
 {
+  Q_D(KSelectAction);
   //kDebug (129) << "KSelectAction::clear()";
 
   // we need to delete the actions later since we may get a call to clear()
@@ -398,12 +365,14 @@ void KSelectAction::clear()
 
 void KSelectAction::removeAllActions( )
 {
+  Q_D(KSelectAction);
   while (d->m_actionGroup->actions().count())
     removeAction(d->m_actionGroup->actions().first());
 }
 
 void KSelectAction::setEditable( bool edit )
 {
+  Q_D(KSelectAction);
   d->m_edit = edit;
 
   foreach (KComboBox* comboBox, d->m_comboBoxes)
@@ -414,6 +383,7 @@ void KSelectAction::setEditable( bool edit )
 
 bool KSelectAction::isEditable() const
 {
+  Q_D(const KSelectAction);
   return d->m_edit;
 }
 
@@ -426,26 +396,31 @@ void KSelectAction::slotToggled(bool checked)
 
 KSelectAction::ToolBarMode KSelectAction::toolBarMode() const
 {
+  Q_D(const KSelectAction);
   return d->m_toolBarMode;
 }
 
 void KSelectAction::setToolBarMode( ToolBarMode mode )
 {
+  Q_D(KSelectAction);
   d->m_toolBarMode = mode;
 }
 
 QToolButton::ToolButtonPopupMode KSelectAction::toolButtonPopupMode( ) const
 {
+  Q_D(const KSelectAction);
   return d->m_toolButtonPopupMode;
 }
 
 void KSelectAction::setToolButtonPopupMode( QToolButton::ToolButtonPopupMode mode )
 {
+  Q_D(KSelectAction);
   d->m_toolButtonPopupMode = mode;
 }
 
 void KSelectAction::comboBoxDeleted(QObject* object)
 {
+  Q_D(KSelectAction);
   foreach (KComboBox* comboBox, d->m_comboBoxes)
     if (object == comboBox) {
       d->m_comboBoxes.removeAll(static_cast<KComboBox*>(object));
@@ -491,16 +466,19 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
 // think it did anyway esp. in the presence KCheckAccelerator - Clarence.
 void KSelectAction::setMenuAccelsEnabled( bool b )
 {
+  Q_D(KSelectAction);
   d->m_menuAccelsEnabled = b;
 }
 
 bool KSelectAction::menuAccelsEnabled() const
 {
+  Q_D(const KSelectAction);
   return d->m_menuAccelsEnabled;
 }
 
 QWidget * KSelectAction::createWidget( QWidget * parent )
 {
+  Q_D(KSelectAction);
   QToolBar *toolBar = qobject_cast<QToolBar *>(parent);
   if (!toolBar)
     return 0;

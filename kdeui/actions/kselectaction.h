@@ -35,6 +35,8 @@
 
 #include <kaction.h>
 
+class KSelectActionPrivate;
+
 /**
  *  @short Action for selecting one of several items
  *
@@ -58,6 +60,7 @@ class KDEUI_EXPORT KSelectAction : public KAction
     Q_PROPERTY( QToolButton::ToolButtonPopupMode toolButtonPopupMode READ toolButtonPopupMode WRITE setToolButtonPopupMode )
     Q_PROPERTY( int currentItem READ currentItem WRITE setCurrentItem )
     Q_PROPERTY( QStringList items READ items WRITE setItems )
+    Q_DECLARE_PRIVATE(KSelectAction)
 
 
 public:
@@ -351,13 +354,20 @@ protected:
 
     virtual bool eventFilter (QObject *watched, QEvent *event);
 
+    /**
+     * @internal
+     * Creates a new KSelectAction object.
+     *
+     * @param dd the private d member
+     * @param parent The action's parent object.
+     */
+    KSelectAction(KSelectActionPrivate &dd, QObject *parent);
+
+    KSelectActionPrivate *d_ptr;
+
 private Q_SLOTS:
     void comboBoxDeleted(QObject* object);
     void comboBoxCurrentIndexChanged(int index);
-
-private:
-    class KSelectActionPrivate;
-    KSelectActionPrivate* const d;
 };
 
 #endif
