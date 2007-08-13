@@ -91,7 +91,7 @@ bool UDSEntry::isLink() const
     return !stringValue(UDS_LINK_DEST).isEmpty();
 }
 
-void UDSEntry::insert(uint field, QString value)
+void UDSEntry::insert(uint field, const QString& value)
 {
     UDSEntryPrivate::Field f;
     f.m_str = value;

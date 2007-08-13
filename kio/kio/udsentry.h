@@ -88,7 +88,7 @@ namespace KIO
          * @param field numeric field id
          * @param value
          */
-        void insert(uint field, QString value);
+        void insert(uint field, const QString& value);
 
         /**
          * insert field with string value
@@ -150,7 +150,7 @@ namespace KIO
             /// It overrides all other detection mechanisms
             UDS_ICON_NAME = 4 | UDS_STRING,
             /// Group ID of the file owner
-            UDS_GROUP =	5 | UDS_STRING,
+            UDS_GROUP = 5 | UDS_STRING,
             /// Filename - as displayed in directory listings etc.
             /// "." has the usual special meaning of "current directory"
             UDS_NAME = 6 | UDS_STRING,
