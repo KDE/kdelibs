@@ -17,11 +17,15 @@ include_directories(${KDE4_KDE3SUPPORT_INCLUDES})
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
 
 # we need a version of cups which has cupsDoAuthentication(), so we have to tell the FindCups module so, Alex
-set(CUPS_REQUIRE_IPP_DELETE_ATTRIBUTE TRUE)
-set(CUPS_REQUIRE_CUPS_DO_AUTHENTICATION TRUE)
-macro_optional_find_package(Cups)
+if (NOT WIN32)
+    set(CUPS_REQUIRE_IPP_DELETE_ATTRIBUTE TRUE)
+    set(CUPS_REQUIRE_CUPS_DO_AUTHENTICATION TRUE)
+    macro_optional_find_package(Cups)
 
-macro_log_feature(CUPS_FOUND "CUPS" "The CUPS (Common UNIX Printing System)" "http://www.cups.org" FALSE "" "Provide CUPS support in kdeprint.")
+    macro_log_feature(CUPS_FOUND "CUPS" "The CUPS (Common UNIX Printing System)" "http://www.cups.org" FALSE "" "Provide CUPS support in kdeprint.")
+else (NOT WIN32)
+    set(CUPS_FOUND FALSE)
+endif (NOT WIN32)
 
 add_subdirectory( management )
 add_subdirectory( lpdunix )
