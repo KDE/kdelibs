@@ -22,6 +22,7 @@
 #include <QtCore/QStringList>
 
 #include <kbookmarkimporter.h>
+#include <kbookmarkexporter.h>
 
 /**
  * A class for importing Opera bookmarks

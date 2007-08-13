@@ -26,6 +26,7 @@
 #include <kdemacros.h>
 
 #include <kbookmarkimporter.h>
+#include <kbookmarkexporter.h>
 
 /**
  * A class for importing IE bookmarks

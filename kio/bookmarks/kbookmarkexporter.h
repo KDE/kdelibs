@@ -41,7 +41,4 @@ private:
     class KBookmarkExporterBasePrivate *d;
 };
 
-// for SC
-#include "kbookmarkimporter_ns.h"
-
 #endif

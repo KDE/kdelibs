@@ -184,29 +184,16 @@ KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QStr
   info.show = false;
 
   if (!config.hasKey("DynamicMenus")) {
-    // upgrade path
-    if (id == "netscape") {
-      KBookmarkManager *manager = KBookmarkManager::userBookmarksManager();
-      info.show = manager->root().internalElement().attribute("hide_nsbk") != "yes";
-      info.location = KNSBookmarkImporter::netscapeBookmarksFile();
-      info.type = "netscape";
-      info.name = i18n("Netscape Bookmarks");
-    } // else, no show
-
-  } else {
-    // have new version config
-    if (bookmarkrc.hasGroup("DynamicMenu-" + id)) {
-      config.changeGroup("DynamicMenu-" + id);
-      info.show = config.readEntry("Show", false);
-      info.location = config.readPathEntry("Location");
-      info.type = config.readEntry("Type");
-      info.name = config.readEntry("Name");
-    } // else, no show
+      if (bookmarkrc.hasGroup("DynamicMenu-" + id)) {
+          config.changeGroup("DynamicMenu-" + id);
+          info.show = config.readEntry("Show", false);
+          info.location = config.readPathEntry("Location");
+          info.type = config.readEntry("Type");
+          info.name = config.readEntry("Name");
+      }
   }
-
   return info;
 }
-
 QStringList KonqBookmarkMenu::dynamicBookmarksList()
 {
   KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::NoGlobals)->group("Bookmarks");

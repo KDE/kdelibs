@@ -20,6 +20,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kbookmarkimporter_ns.h"
 #include "kbookmarkimporter.h"
 #include "kbookmarkexporter.h"
 #include "kbookmarkmanager.h"
@@ -31,6 +32,8 @@
 
 #include <qtextcodec.h>
 #include <qtextdocument.h> // Qt::escape
+
+
 
 void KNSBookmarkImporterImpl::parse()
 {

@@ -96,7 +96,5 @@ private:
     class KXBELBookmarkImporterImplPrivate *d;
 };
 
-// for SC - TODO REMOVE
-#include "kbookmarkimporter_ns.h"
 
 #endif
