@@ -111,7 +111,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
      *
      * This constructor doesn't start loading the url, setView will do it.
      */
-    KDirOperator(const KUrl& urlName = KUrl(),
+    explicit KDirOperator(const KUrl& urlName = KUrl(),
 		 QWidget *parent = 0);
     /**
      * Destroys the KDirOperator.
