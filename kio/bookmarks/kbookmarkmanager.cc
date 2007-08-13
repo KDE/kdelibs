@@ -449,7 +449,10 @@ KBookmarkGroup KBookmarkManager::addBookmarkDialog(
 
     QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url ); //TODO pickUnusedTitle is used only here. Why?
     if ( !uniqueTitle.isNull() )
-        parentBookmark.addBookmark( this, uniqueTitle, KUrl( url ));
+    {
+        parentBookmark.addBookmark( uniqueTitle, KUrl( url ));
+        emitChanged(parentBookmark);
+    }
 
     return parentBookmark;
 }

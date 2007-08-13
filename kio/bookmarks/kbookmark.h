@@ -315,11 +315,9 @@ public:
 
     /**
      * Create a new bookmark folder, as the last child of this group
-     * @param mgr the manager of the bookmark
      * @param text for the folder. If empty, the user will be queried for it.
-     * @param emitSignal if true emit KBookmarkNotifier signal
      */
-    KBookmarkGroup createNewFolder( KBookmarkManager* mgr, const QString & text = QString(), bool emitSignal = true );
+    KBookmarkGroup createNewFolder( const QString & text = QString() );
     /**
      * Create a new bookmark separator
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
@@ -329,23 +327,19 @@ public:
     /**
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
-     * @param mgr the manager of the bookmark
      * @param bm the bookmark to add
-     * @param emitSignal if true emit KBookmarkNotifier signal
      */
-    KBookmark addBookmark( KBookmarkManager* mgr, const KBookmark &bm, bool emitSignal = true );
+    KBookmark addBookmark( const KBookmark &bm );
 
     /**
      * Create a new bookmark, as the last child of this group
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
-     * @param mgr the manager of the bookmark
      * @param text for the bookmark
      * @param url the URL that the bookmark points to
      * @param icon the name of the icon to associate with the bookmark. A suitable default
      * will be determined from the URL if not specified.
-     * @param emitSignal if true emit KBookmarkNotifier signal
      */
-    KBookmark addBookmark( KBookmarkManager* mgr, const QString & text, const KUrl & url, const QString & icon = QString(), bool emitSignal = true );
+    KBookmark addBookmark( const QString & text, const KUrl & url, const QString & icon = QString() );
 
     /**
      * Moves @p item after @p after (which should be a child of ours).

@@ -327,14 +327,14 @@ void KBookmarkActionContextMenu::slotInsert()
   {
     KBookmarkGroup parentBookmark = bookmark.toGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    parentBookmark.addBookmark( m_pManager, title, KUrl(  url ) );
+    parentBookmark.addBookmark( title, KUrl(  url ) );
     m_pManager->emitChanged( parentBookmark );
   }
   else
   {
     KBookmarkGroup parentBookmark = bookmark.parentGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, title, KUrl( url ) );
+    KBookmark newBookmark = parentBookmark.addBookmark( title, KUrl( url ) );
     parentBookmark.moveItem( newBookmark, parentBookmark.previous(bookmark) );
     m_pManager->emitChanged( parentBookmark );
   }
@@ -547,13 +547,13 @@ void KBookmarkMenu::slotAddBookmarksList()
 
   KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
   Q_ASSERT(!parentBookmark.isNull());
-  KBookmarkGroup group = parentBookmark.createNewFolder( m_pManager );
+  KBookmarkGroup group = parentBookmark.createNewFolder();
   if ( group.isNull() )
     return; // user canceled i guess
 
   QList<QPair<QString, QString> >::const_iterator it;
   for ( it = list.begin(); it != list.end(); ++it )
-    group.addBookmark( m_pManager, (*it).first, KUrl((*it).second) );
+    group.addBookmark( (*it).first, KUrl((*it).second) );
 
   m_pManager->emitChanged( parentBookmark );
 }
@@ -575,7 +575,7 @@ void KBookmarkMenu::slotNewFolder()
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
   KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
   Q_ASSERT(!parentBookmark.isNull());
-  KBookmarkGroup group = parentBookmark.createNewFolder( m_pManager );
+  KBookmarkGroup group = parentBookmark.createNewFolder();
   if ( !group.isNull() )
   {
     KBookmarkGroup parentGroup = group.parentGroup();
@@ -805,7 +805,7 @@ void KBookmarkEditDialog::slotUser1()
   Q_ASSERT(!bm.isNull());
   Q_ASSERT(m_editType == InsertionMode);
 
-  KBookmarkGroup group = bm.createNewFolder( m_mgr );
+  KBookmarkGroup group = bm.createNewFolder();
   if ( !group.isNull() )
   {
      KBookmarkGroup parentGroup = group.parentGroup();

@@ -118,7 +118,7 @@ QDomElement KBookmarkGroup::nextKnownTag( const QDomElement &start, bool goNext 
     return QDomElement();
 }
 
-KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QString & text, bool emitSignal )
+KBookmarkGroup KBookmarkGroup::createNewFolder( const QString & text )
 {
     QString txt( text );
     if ( text.isEmpty() )
@@ -140,16 +140,8 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QSt
     element.appendChild( groupElem );
     QDomElement textElem = doc.createElement( "title" );
     groupElem.appendChild( textElem );
-    textElem.appendChild( doc.createTextNode( txt ) );
-
-    KBookmarkGroup grp(groupElem);
-
-    if (emitSignal)
-        KBookmarkNotifier::createdNewFolder(
-                                mgr->path(), grp.fullText(),
-                                grp.address() );
-
-    return grp;
+    textElem.appendChild( doc.createTextNode( txt ) );   
+    return KBookmarkGroup(groupElem);
 
 }
 
@@ -186,24 +178,13 @@ bool KBookmarkGroup::moveItem( const KBookmark & item, const KBookmark & after )
     return (!n.isNull());
 }
 
-KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const KBookmark &bm, bool emitSignal )
+KBookmark KBookmarkGroup::addBookmark( const KBookmark &bm )
 {
     element.appendChild( bm.internalElement() );
-
-    if (emitSignal) {
-        if ( bm.hasMetaData() ) {
-            emit mgr->notifyCompleteChange( "" );
-        } else {
-            emit KBookmarkNotifier::addedBookmark(
-                                     mgr->path(), bm.url().url(),
-                                     bm.fullText(), bm.address(), bm.icon() );
-        }
-    }
-
     return bm;
 }
 
-KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & text, const KUrl & url, const QString & icon, bool emitSignal )
+KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, const QString & icon )
 {
     //kDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address;
     QDomDocument doc = element.ownerDocument();
@@ -218,7 +199,7 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & te
     elem.appendChild( textElem );
     textElem.appendChild( doc.createTextNode( text ) );
 
-    return addBookmark( mgr, KBookmark( elem ), emitSignal );
+    return addBookmark( KBookmark( elem ) );
 }
 
 void KBookmarkGroup::deleteBookmark( const KBookmark &bk )
@@ -433,7 +414,7 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KUrl & url,
     QDomElement elem = doc.createElement("xbel");
     doc.appendChild( elem );
     KBookmarkGroup grp( elem );
-    grp.addBookmark( 0L, text, url, icon, false );
+    grp.addBookmark( text, url, icon );
     return grp.first();
 }
 

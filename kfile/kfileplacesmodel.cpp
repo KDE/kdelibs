@@ -77,15 +77,15 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     // Let's put some places in there if it's empty
     KBookmarkGroup root = d->bookmarkManager->root();
     if (root.first().isNull()) {
-        root.addBookmark(d->bookmarkManager, i18n("Home"), KUrl(KUser().homeDir()), "user-home");
-        root.addBookmark(d->bookmarkManager, i18n("Network"), KUrl("remote:/"), "network-local");
+        root.addBookmark( i18n("Home"), KUrl(KUser().homeDir()), "user-home");
+        root.addBookmark( i18n("Network"), KUrl("remote:/"), "network-local");
 #ifdef Q_OS_WIN
 	//c:\ as root for windows
-	root.addBookmark(d->bookmarkManager, i18n("Root"), KUrl("C:\\"), "folder-red");
+	root.addBookmark( i18n("Root"), KUrl("C:\\"), "folder-red");
 #else
-        root.addBookmark(d->bookmarkManager, i18n("Root"), KUrl("/"), "folder-red");
+        root.addBookmark( i18n("Root"), KUrl("/"), "folder-red");
 #endif
-        root.addBookmark(d->bookmarkManager, i18n("Trash"), KUrl("trash:/"), "user-trash");
+        root.addBookmark( i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
 
     d->deviceModel = new KDeviceListModel("[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
@@ -512,8 +512,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
                 continue;
             }
 
-            KBookmark bookmark = group.addBookmark(d->bookmarkManager,
-                                                   url.fileName(), url,
+            KBookmark bookmark = group.addBookmark(url.fileName(), url,
                                                    mimetype->iconName());
             group.moveItem(bookmark, afterBookmark);
             afterBookmark = bookmark;
@@ -533,7 +532,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
                                 const QString &iconName, const QString &appName)
 {
-    KBookmark bookmark = d->bookmarkManager->root().addBookmark(d->bookmarkManager, text, url, iconName);
+    KBookmark bookmark = d->bookmarkManager->root().addBookmark(text, url, iconName);
 
     if (!appName.isEmpty()) {
         bookmark.setMetaDataItem("OnlyInApp", appName);

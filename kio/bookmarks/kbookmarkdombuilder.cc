@@ -50,9 +50,9 @@ void KBookmarkDomBuilder::newBookmark(
    const QString &text, const QString &url, const QString &additionalInfo
 ) {
    KBookmark bk = m_stack.top().addBookmark(
-                                    m_manager, text,
+                                    text,
                                     KUrl( url ), // utf8
-                                    QString(), false);
+                                    QString());
    // store additional info
    bk.internalElement().setAttribute("netscapeinfo", additionalInfo);
 }
@@ -61,7 +61,7 @@ void KBookmarkDomBuilder::newFolder(
    const QString & text, bool open, const QString & additionalInfo
 ) {
    // we use a qvaluelist so that we keep pointers to valid objects in the stack
-   KBookmarkGroup gp = m_stack.top().createNewFolder(m_manager, text, false);
+   KBookmarkGroup gp = m_stack.top().createNewFolder(text);
    m_list.append(gp);
    m_stack.push(m_list.last());
    // store additional info
