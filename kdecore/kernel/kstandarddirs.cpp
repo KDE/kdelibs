@@ -1669,14 +1669,14 @@ void KStandardDirs::addKDEDefaults()
     // end XDG_DATA_XXX
 
 
-    addResourceType("lib", "lib" KDELIBSUFF "/");
+    addResourceType("lib", 0, "lib" KDELIBSUFF "/");
 
     uint index = 0;
     while (types_indices[index] != -1) {
         addResourceType(types_string + types_indices[index], 0, types_string + types_indices[index+1], true);
         index+=2;
     }
-    addResourceDir("exe", LIBEXEC_INSTALL_DIR, true );
+    addResourceType("exe", "lib", "kde4/libexec", true );
 
     addResourceDir("home", QDir::homePath(), false);
 }
