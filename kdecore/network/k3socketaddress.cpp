@@ -197,12 +197,12 @@ QString KIpAddress::toString() const
   switch (m_version)
     {
     case 4:
-      inet_ntop(AF_INET, m_data, buf, sizeof(buf) - 1);
+      inet_ntop(AF_INET, (void*)m_data, buf, sizeof(buf) - 1);
       return QLatin1String(buf);
 
     case 6:
 #ifdef AF_INET6
-      inet_ntop(AF_INET6, m_data, buf, sizeof(buf) - 1);
+      inet_ntop(AF_INET6, (void*)m_data, buf, sizeof(buf) - 1);
 #endif
       return QLatin1String(buf);
     }
