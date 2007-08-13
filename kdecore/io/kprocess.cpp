@@ -21,6 +21,8 @@
 
 #include "kprocess_p.h"
 
+#include <kstandarddirs.h>
+
 #ifdef Q_OS_WIN
 # include <windows.h>
 #else
@@ -247,6 +249,8 @@ void KProcess::setShellCommand(const QString &cmd)
 {
     Q_D(KProcess);
 
+    d->args.clear();
+
 #ifdef Q_OS_UNIX
     d->prog = QString::fromLatin1(
 // #ifdef NON_FREE // ... as they ship non-POSIX /bin/sh
@@ -261,24 +265,18 @@ void KProcess::setShellCommand(const QString &cmd)
             "/bin/sh"
     );
 
+    d->args << "-c" << cmd;
 #else // Q_OS_UNIX
+    //see also TrollTechTaskTracker entry 88373.
+    d->prog = KStandardDirs::findExe("kcmdwrapper");
 
-    d->prog = QString::fromLocal8Bit(qgetenv("ComSpec"));
-/*
-    really needed?
-    if(GetFileAttributesW(cmd.utf16()) == INVALID_FILE_ATTRIBUTES)
-        return; // mhhh
-*/
-#endif // Q_OS_UNIX
+    UINT size;
+    WCHAR sysdir[MAX_PATH + 1];
+    size = GetSystemDirectoryW(sysdir, MAX_PATH + 1);
+    QString cmdexe = QString::fromUtf16((const ushort *) sysdir, size);
+    cmdexe.append("\\cmd.exe");
 
-#ifdef Q_OS_UNIX
-    d->args = QStringList() << "-c" << cmd;
-#else
-    // XXX this has a good chance of being broken, definitely for command.com.
-    // split on whitespace and make a list of that, maybe? don't forget
-    // about consecutive spaces in this case.
-    // see also TrollTechTaskTracker entry 88373.
-    d->args = QStringList() << "/c" << cmd;
+    d->args << cmdexe << cmd;
 #endif
 }
 
