@@ -32,8 +32,7 @@ class KCalendarSystemHebrewPrivate;
  * @internal
  * This is the Hebrew calendar implementation.
  *
- * The Hebrew calendar is the traditional Islamic calendar used in the Midle
- * East.
+ * The Hebrew calendar is the traditional calendar used by the Jewish faith
  *
  * @see KLocale,KCalendarSystem,KCalendarSystemFactory
  *
@@ -54,63 +53,59 @@ public:
     virtual bool isValid( const QDate &date ) const;
 
     virtual bool setDate( QDate &date, int year, int month, int day ) const;
+    /** @deprecated */
+    virtual bool setYMD( QDate &date, int year, int month, int day ) const;
 
-    virtual bool isLeapYear( int year ) const;
-    virtual bool isLeapYear( const QDate &date ) const;
-
-    virtual int weeksInYear( const QDate &date ) const;
-    virtual int daysInWeek ( const QDate &date ) const;
-
-    virtual int weekStartDay() const;
-
-    virtual QString formatDate( const QDate &date, KLocale::DateFormat format = KLocale::LongDate ) const;
-    virtual QDate readDate( const QString &str, bool* ok = 0 ) const;
-    virtual QDate readDate( const QString &intstr, const QString &fmt, bool *ok = 0 ) const;
-    virtual QDate readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0 ) const;
-
-    virtual bool isProleptic() const;
-
-    virtual int year ( const QDate &date ) const;
-
-    virtual int month ( const QDate &date ) const;
-    virtual QString monthString( const QDate &pDate, StringFormat format = LongFormat ) const;
-    virtual int monthStringToInteger( const QString &sNum, int &iLength ) const;
-
-    virtual int day ( const QDate &date ) const;
-    virtual int dayOfWeek ( const QDate &date ) const;
-
-    virtual int dayOfYear ( const QDate &date ) const;
-
-    /**
-     * @deprecated
-     */
-    virtual bool setYMD( QDate &date, int y, int m, int d ) const;
+    virtual int year( const QDate &date ) const;
+    virtual int month( const QDate &date ) const;
+    virtual int day( const QDate &date ) const;
 
     virtual QDate addYears( const QDate &date, int nyears ) const;
     virtual QDate addMonths( const QDate &date, int nmonths ) const;
     virtual QDate addDays( const QDate &date, int ndays ) const;
 
     virtual int monthsInYear( const QDate &date ) const;
+    virtual int weeksInYear( const QDate &date ) const;
+    virtual int weeksInYear( int year ) const;
     virtual int daysInYear( const QDate &date ) const;
     virtual int daysInMonth( const QDate &date ) const;
-    virtual int weeksInYear( int year ) const;
+    virtual int daysInWeek( const QDate &date ) const;
+
+    virtual int dayOfYear( const QDate &date ) const;
+    virtual int dayOfWeek( const QDate &date ) const;
+
     virtual int weekNumber( const QDate &date, int *yearNum = 0 ) const;
+
+    virtual bool isLeapYear( int year ) const;
+    virtual bool isLeapYear( const QDate &date ) const;
 
     virtual QString monthName( int month, int year, MonthNameFormat format = LongName ) const;
     virtual QString monthName( const QDate &date, MonthNameFormat format = LongName ) const;
+
     virtual QString weekDayName( int weekDay, WeekDayNameFormat format = LongDayName ) const;
     virtual QString weekDayName( const QDate &date, WeekDayNameFormat format = LongDayName ) const;
 
-    virtual QString dayString( const QDate & pDate, StringFormat format = LongFormat ) const;
     virtual QString yearString( const QDate & pDate, StringFormat format = LongFormat ) const;
-    virtual int dayStringToInteger( const QString &sNum, int &iLength ) const;
-    virtual int yearStringToInteger( const QString &sNum, int &iLength ) const;
+    virtual QString monthString( const QDate &pDate, StringFormat format = LongFormat ) const;
+    virtual QString dayString( const QDate &pDate, StringFormat format = LongFormat ) const;
 
-    virtual int weekDayOfPray() const;
+    virtual int yearStringToInteger( const QString &sNum, int &iLength ) const;
+    virtual int monthStringToInteger( const QString &sNum, int &iLength ) const;
+    virtual int dayStringToInteger( const QString &sNum, int &iLength ) const;
+
+    virtual QString formatDate( const QDate &date, KLocale::DateFormat format = KLocale::LongDate ) const;
+
+    virtual QDate readDate( const QString &str, bool *ok = 0 ) const;
+    virtual QDate readDate( const QString &intstr, const QString &fmt, bool *ok = 0 ) const;
+    virtual QDate readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok = 0 ) const;
+
+    virtual int weekStartDay() const;
+    virtual int weekDayOfPray () const;
 
     virtual bool isLunar() const;
     virtual bool isLunisolar() const;
     virtual bool isSolar() const;
+    virtual bool isProleptic() const;
 
 protected:
     virtual bool julianDayToDate( int jd, int &year, int &month, int &day ) const;
@@ -120,4 +115,4 @@ private:
     KCalendarSystemHebrewPrivate * const d;
 };
 
-#endif
+#endif // KCALENDARSYSTEMHEBREW_H
