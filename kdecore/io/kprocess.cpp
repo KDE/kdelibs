@@ -358,7 +358,7 @@ int KProcess::pid() const
 #ifdef Q_OS_UNIX
     return (int) QProcess::pid();
 #else
-    return (int) QProcess::pid()->dwProcessId;
+    return QProcess::pid() ? QProcess::pid()->dwProcessId : 0;
 #endif
 }
 
