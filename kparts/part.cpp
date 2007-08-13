@@ -191,7 +191,7 @@ Part::~Part()
 {
     Q_D(Part);
 
-    kDebug(1000) << "Part::~Part " << this;
+    //kDebug(1000) << "Part::~Part " << this;
 
     if ( d->m_widget )
     {
