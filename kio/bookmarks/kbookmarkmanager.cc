@@ -546,7 +546,7 @@ void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 }
 
 ///////
-bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
+bool KBookmarkManager::updateAccessMetadata( const QString & url )
 {
     if (!s_bk_map) {
         s_bk_map = new KBookmarkMap(this);
@@ -561,13 +561,10 @@ bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
           it != list.end(); ++it )
         (*it).updateAccessMetadata();
 
-    if (emitSignal)
-        emit KBookmarkNotifier::updatedAccessMetadata( path(), url );
-
     return true;
 }
 
-void KBookmarkManager::updateFavicon( const QString &url, const QString &faviconurl, bool emitSignal )
+void KBookmarkManager::updateFavicon( const QString &url, const QString &faviconurl )
 {
     Q_UNUSED(faviconurl);
 
@@ -583,12 +580,6 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
         // TODO - update favicon data based on faviconurl
         //        but only when the previously used icon
         //        isn't a manually set one.
-    }
-
-    if (emitSignal)
-    {
-        // TODO
-        // emit notifier().updatedFavicon( path(), url, faviconurl );
     }
 }
 

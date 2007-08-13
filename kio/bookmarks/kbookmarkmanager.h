@@ -102,10 +102,9 @@ public:
     /**
      * Update access time stamps for a given url.
      * @param url the viewed url
-     * @param emitSignal iff true emit KBookmarkNotifier signal
      * @return true if any metadata was modified (bookmarks file is not saved automatically)
      */
-    bool updateAccessMetadata( const QString &url, bool emitSignal = true );
+    bool updateAccessMetadata( const QString &url );
 
     /*
      * NB. currently *unimplemented*
@@ -113,9 +112,8 @@ public:
      * Update favicon url for a given url.
      * @param url the viewed url
      * @param faviconurl the favicion url
-     * @emitSignal iff true emit KBookmarkNotifier signal
      */
-    void updateFavicon( const QString &url, const QString &faviconurl, bool emitSignal = true );
+    void updateFavicon( const QString &url, const QString &faviconurl );
 
     /**
      * This will return the path that this manager is using to read
