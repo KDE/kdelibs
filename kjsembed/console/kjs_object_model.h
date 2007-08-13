@@ -36,7 +36,7 @@ class KJSObjectModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    KJSObjectModel(KJS::Interpreter *js, QObject *parent = 0);
+    explicit KJSObjectModel(KJS::Interpreter *js, QObject *parent = 0);
     ~KJSObjectModel();
 
     QVariant data(const QModelIndex &index, int role) const;

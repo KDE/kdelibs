@@ -32,6 +32,5 @@ namespace KJSEmbed
                                            { return (*p_constructor.construct)(exec,args); } 
    };
 }
+
 #endif // BIND_QBrush_H
-
-
