@@ -20,7 +20,6 @@
 #ifndef KNOTIFYCONFIGELEMENTWIDGET_H
 #define KNOTIFYCONFIGELEMENTWIDGET_H
 
-
 #include <QtGui/QWidget>
 #include "ui_knotifyconfigactionswidgetbase.h"
 
@@ -45,4 +44,4 @@ class KNotifyConfigActionsWidget : public QWidget
 		Ui::KNotifyConfigActionsWidgetBase m_ui;
 };
 
-#endif
+#endif // KNOTIFYCONFIGELEMENTWIDGET_H

@@ -77,7 +77,7 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
  : QTreeWidget(parent)  , config(0l) , loconf(0l)
 {
   QStringList headerLabels;
-  headerLabels << i18n( "Title" ) << i18n( "Description" ) << i18n( "State" );
+  headerLabels << i18nc( "Title of the notified event", "Title" ) << i18nc( "Description of the notified event", "Description" ) << i18nc( "State of the notified event", "State" );
   setHeaderLabels( headerLabels );
 
   setItemDelegate(new KNotifyEventListDelegate);
