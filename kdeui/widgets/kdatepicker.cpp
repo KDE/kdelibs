@@ -101,9 +101,8 @@ int KDatePickerPrivateYearSelector::year()
 
 bool KDatePickerPrivateYearSelector::setYear( int year )
 {
-    QString temp;
-    temp.setNum( year );
-    setText( temp );
+    setText( QString::number( year ) );
+    return true;
 }
 
 class KDatePicker::KDatePickerPrivate
