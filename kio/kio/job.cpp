@@ -348,7 +348,6 @@ bool SimpleJob::doKill()
 bool SimpleJob::doSuspend()
 {
     Q_D(SimpleJob);
-    Q_ASSERT( d->m_slave );
     if ( d->m_slave )
         d->m_slave->suspend();
     return Job::doSuspend();
@@ -357,7 +356,6 @@ bool SimpleJob::doSuspend()
 bool SimpleJob::doResume()
 {
     Q_D(SimpleJob);
-    Q_ASSERT( d->m_slave );
     if ( d->m_slave )
         d->m_slave->resume();
     return Job::doResume();
