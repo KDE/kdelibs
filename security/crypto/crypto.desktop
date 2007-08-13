@@ -22,6 +22,7 @@ Name[pa]=ਕਰਿਪਟੂ
 Name[pt]=Cifra
 Name[sl]=Šifriranje
 Name[sv]=Krypto
+Name[th]=การเข้ารหัส
 Comment=Configure SSL, manage certificates, and other cryptography settings
 Comment[ar]=اضبط SSL، أدر الشهادات وإعدادات تعمية أخرى
 Comment[ca]=Configura l'SSL, gestiona certificats, i altres arranjaments de criptografia
@@ -39,6 +40,7 @@ Comment[pt]=Configurar o SSL, gerir os certificados e outras opções de criptog
 Comment[pt_BR]=Configura SSL, gerencia certificados e outras configurações de criptografia
 Comment[sl]=Nastavljanje SSL, upravljanje s potrdili in ostale nastavitve šifriranja
 Comment[sv]=Anpassa SSL, hantera certifikat och andra kryptografiska inställningar
+Comment[th]=ปรับแต่ง SSL, จัดการใบรับรอง, และการตั้งค่าเกี่ยวกับการเข้ารหัสอื่นๆ
 Comment[zh_TW]=設定 SSL、管理憑證與其他加密設定
 
 Keywords=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,security
@@ -56,5 +58,6 @@ Keywords[pt]=Cifra,Criptografia,encriptação,SSL,HTTPS,certificados,cifras,TLS,
 Keywords[pt_BR]=Crypto,Krypto,Criptografia,encriptação,SSL,https,certificados,cifras,TLS,seguro,segurança
 Keywords[sl]=Šifriranje,šifre,šifra,SSL,HTTPS,potrdila,TLS,varnost
 Keywords[sv]=Krypto,Kryptografi,kryptering,SSL,https,certifikat,chiffer,TLS,säker,säkerhet
+Keywords[th]=เข้า-ถอดรหัส,Krypto,เรื่องเกี่ยวกับการเข้า-ถอดรหัส,การเข้ารหัส,SSL,https,ใบรับรอง,ciphers,TLS,ปลอดภัย,ความปลอดภัย
 
 Categories=Qt;KDE;X-KDE-settings-security;
