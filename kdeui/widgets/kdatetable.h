@@ -113,6 +113,10 @@ public:
     virtual State validate( QString &text, int &e ) const;
     virtual void fixup ( QString &input ) const;
     State date( const QString &text, QDate &date ) const;
+private:
+    class KDateValidatorPrivate;
+    friend class KDateValidatorPrivate;
+    KDateValidatorPrivate * const d;
 };
 
 /**

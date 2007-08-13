@@ -145,12 +145,28 @@ public:
 };
 
 
-KDateValidator::KDateValidator( QWidget *parent ) : QValidator( parent )
+class KDateValidator::KDateValidatorPrivate
+{
+public:
+    KDateValidatorPrivate( KDateValidator *q ): q( q )
+    {
+    }
+
+    ~KDateValidatorPrivate()
+    {
+    }
+
+    KDateValidator *q;
+};
+
+KDateValidator::KDateValidator( QWidget *parent ) : QValidator( parent ), d( 0 )
 {
 }
 
 QValidator::State KDateValidator::validate( QString &text, int &unused ) const
 {
+    Q_UNUSED( unused );
+
     QDate temp;
     // ----- everything is tested in date():
     return date( text, temp );
@@ -789,6 +805,8 @@ void KPopupFrame::setMainWidget( QWidget *m )
 
 void KPopupFrame::resizeEvent( QResizeEvent *e )
 {
+    Q_UNUSED( e );
+
     if( d->main ) {
         d->main->setGeometry( frameWidth(), frameWidth(),
                               width() - 2 * frameWidth(), height() - 2 * frameWidth() );

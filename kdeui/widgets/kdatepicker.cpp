@@ -24,7 +24,6 @@
 #include "kdatetable.h"
 
 #include <QtGui/QApplication>
-#include <QtGui/QComboBox>
 #include <QtGui/QFont>
 #include <QtGui/QLayout>
 #include <QKeyEvent>
@@ -35,6 +34,7 @@
 #include <QtGui/QDoubleValidator>
 
 #include <kcalendarsystem.h>
+#include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kglobal.h>
@@ -49,7 +49,6 @@
 
 // Week numbers are defined by ISO 8601
 // See http://www.merlyn.demon.co.uk/weekinfo.htm for details
-
 
 KDatePickerPrivateYearSelector::KDatePickerPrivateYearSelector(
                                 const KCalendarSystem *cal, const QDate &currentDate, QWidget* parent )
@@ -117,7 +116,7 @@ public:
     QDate validDateInYearMonth( int year, int month );
 
     QToolButton *closeButton;
-    QComboBox *selectWeek;
+    KComboBox *selectWeek;
     QToolButton *todayButton;
     QBoxLayout *navigationLayout;
 
@@ -177,7 +176,7 @@ void KDatePicker::KDatePickerPrivate::fillWeeksCombo()
 
         // show that this is a week from a different year
         if ( q->calendar()->year( day ) != thisYear ) {
-            week += "*";
+            week += '*';
         }
 
         selectWeek->addItem( week );
@@ -268,7 +267,7 @@ void KDatePicker::init( const QDate &date_ )
 
     d->fontsize++; // Make a little bigger
 
-    d->selectWeek = new QComboBox( this );  // read only week selection
+    d->selectWeek = new KComboBox( this );  // read only week selection
     d->todayButton = new QToolButton( this );
     d->todayButton->setIcon( KIcon( "calendar-today" ) );
 
@@ -643,7 +642,7 @@ void KDatePicker::setCloseButton( bool enable )
         d->closeButton->setAutoRaise( true );
         d->navigationLayout->addSpacing( KDialog::spacingHint() );
         d->navigationLayout->addWidget( d->closeButton );
-        d->closeButton->setToolTip( i18n( "Close" ) );
+        d->closeButton->setToolTip( i18nc( "@action:button", "Close" ) );
         d->closeButton->setIcon( SmallIcon( "list-remove" ) );
         connect( d->closeButton, SIGNAL( clicked() ),
                  topLevelWidget(), SLOT( close() ) );

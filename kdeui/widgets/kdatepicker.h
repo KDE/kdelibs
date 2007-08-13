@@ -97,7 +97,7 @@ public:
     /**
      * Returns the currently selected calendar system.
      * 
-     * @return a KCalendarSystem object
+     * @returns a KCalendarSystem object
      */
     const KCalendarSystem *calendar() const;
 
