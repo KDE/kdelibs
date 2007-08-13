@@ -204,19 +204,19 @@ private:
 };
 
 /**
- * The KParts::OpenURLEvent event informs that a given part has opened a given URL.
+ * The KParts::OpenUrlEvent event informs that a given part has opened a given URL.
  * Applications can use this event to send this information to interested plugins.
  *
  * The event should be sent before opening the URL in the part, so that the plugins
  * can use part()->url() to get the old URL.
  */
-class KPARTS_EXPORT OpenURLEvent : public Event
+class KPARTS_EXPORT OpenUrlEvent : public Event
 {
 public:
-  OpenURLEvent( ReadOnlyPart *part, const KUrl &url,
+  OpenUrlEvent( ReadOnlyPart *part, const KUrl &url,
                 const OpenUrlArguments& args = OpenUrlArguments(),
                 const BrowserArguments& browserArgs = BrowserArguments() );
-  virtual ~OpenURLEvent();
+  virtual ~OpenUrlEvent();
 
   ReadOnlyPart *part() const;
   KUrl url() const;
@@ -226,8 +226,8 @@ public:
   static bool test( const QEvent *event );
 
 private:
-  class OpenURLEventPrivate;
-  OpenURLEventPrivate * const d;
+  class OpenUrlEventPrivate;
+  OpenUrlEventPrivate * const d;
 };
 
  /**

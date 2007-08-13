@@ -37,10 +37,10 @@
 using namespace KParts;
 
 
-class OpenURLEvent::OpenURLEventPrivate
+class OpenUrlEvent::OpenUrlEventPrivate
 {
 public:
-  OpenURLEventPrivate( ReadOnlyPart *part,
+  OpenUrlEventPrivate( ReadOnlyPart *part,
                        const KUrl &url,
                        const OpenUrlArguments &args,
                        const BrowserArguments &browserArgs )
@@ -50,55 +50,55 @@ public:
     , m_browserArgs(browserArgs)
   {
   }
-  ~OpenURLEventPrivate()
+  ~OpenUrlEventPrivate()
   {
   }
-  static const char *s_strOpenURLEvent;
+  static const char *s_strOpenUrlEvent;
   ReadOnlyPart *m_part;
   KUrl m_url;
   OpenUrlArguments m_args;
   BrowserArguments m_browserArgs;
 };
 
-const char *OpenURLEvent::OpenURLEventPrivate::s_strOpenURLEvent =
+const char *OpenUrlEvent::OpenUrlEventPrivate::s_strOpenUrlEvent =
                         "KParts/BrowserExtension/OpenURLevent";
 
-OpenURLEvent::OpenURLEvent( ReadOnlyPart *part, const KUrl &url,
+OpenUrlEvent::OpenUrlEvent( ReadOnlyPart *part, const KUrl &url,
                             const OpenUrlArguments &args,
                             const BrowserArguments &browserArgs )
-    : Event( OpenURLEventPrivate::s_strOpenURLEvent )
-    , d( new OpenURLEventPrivate(part, url, args, browserArgs) )
+    : Event( OpenUrlEventPrivate::s_strOpenUrlEvent )
+    , d( new OpenUrlEventPrivate(part, url, args, browserArgs) )
 {
 }
 
-OpenURLEvent::~OpenURLEvent()
+OpenUrlEvent::~OpenUrlEvent()
 {
     delete d;
 }
 
-ReadOnlyPart *OpenURLEvent::part() const
+ReadOnlyPart *OpenUrlEvent::part() const
 {
     return d->m_part;
 }
 
-KUrl OpenURLEvent::url() const
+KUrl OpenUrlEvent::url() const
 {
     return d->m_url;
 }
 
-OpenUrlArguments OpenURLEvent::arguments() const
+OpenUrlArguments OpenUrlEvent::arguments() const
 {
     return d->m_args;
 }
 
-BrowserArguments OpenURLEvent::browserArguments() const
+BrowserArguments OpenUrlEvent::browserArguments() const
 {
     return d->m_browserArgs;
 }
 
-bool OpenURLEvent::test( const QEvent *event )
+bool OpenUrlEvent::test( const QEvent *event )
 {
-    return Event::test( event, OpenURLEventPrivate::s_strOpenURLEvent );
+    return Event::test( event, OpenUrlEventPrivate::s_strOpenUrlEvent );
 }
 
 namespace KParts
