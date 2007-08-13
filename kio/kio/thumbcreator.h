@@ -45,18 +45,30 @@ class QImage;
  * };
  * \endcode
  *
- * Compile your ThumbCreator as a module. The contents of Makefile.am
- * need to look like this:
+ * Compile your ThumbCreator as a module. The contents of CMakeLists.txt
+ * should look something like this, with "filetype" replaced by the type of
+ * file this plugin creates thumbnails for:
  * \code
- * INCLUDES = $(all_includes)
- * kde_module_LTLIBRARIES = yourthumbcreator.la
- * yourthumbcreator_la_SOURCES = yourthumbcreator.cpp
- * yourthumbcreator_la_LIBADD = $(LIB_KIO)
- * yourthumbcreator_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
- * kde_services_DATA = yourthumbcreator.desktop
+ * project(filetypethumbcreator)
+ *
+ * find_package(KDE4 REQUIRED)
+ * include (KDE4Defaults)
+ * include(MacroOptionalAddSubdirectory)
+ *
+ * set(filetypethumbnail_SRCS filetypethumbnail.cpp)
+ *
+ *
+ * kde4_add_ui_files(filetypethumbnail_SRCS config.ui )
+ *
+ * kde4_add_plugin(filetypethumbnail ${filetypethumbnail_SRCS})
+ * target_link_libraries(filetypethumbnail ${KDE4_KIO_LIBS})
+ *
+ * install(TARGETS filetypethumbnail DESTINATION ${PLUGIN_INSTALL_DIR})
+ * install(FILES filetypethumbcreator.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+ *
  * \endcode
  *
- * @li Create a file yourthumbcreator.desktop with the following contents:
+ * @li Create a file filetypethumbcreator.desktop with the following contents:
  * \code
  * [Desktop Entry]
  * Encoding=UTF-8
