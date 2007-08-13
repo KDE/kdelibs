@@ -83,7 +83,9 @@ void KDateWidget::init( const QDate &date )
     QHBoxLayout *layout = new QHBoxLayout( this );
     layout->setMargin( 0 );
     layout->setSpacing( KDialog::spacingHint() );
-    d->m_day = new KDateWidgetSpinBox( 1, 1, this );
+	// set the maximum day value in the day field, so that the day can
+	// be editted when the KDateWidget is constructed with an empty date
+    d->m_day = new KDateWidgetSpinBox( 1, 31, this );
     d->m_month = new QComboBox( this );
 
     for ( int i = 1; ; ++i ) {
