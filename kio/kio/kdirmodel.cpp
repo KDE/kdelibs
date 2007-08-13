@@ -69,7 +69,7 @@ public:
         : KDirModelNode( parent, item),
           m_childNodes(),
           m_childCount(KDirModel::ChildCountUnknown),
-	  m_populated(false)
+          m_populated(false)
     {}
     ~KDirModelDirNode() {
         qDeleteAll(m_childNodes);
@@ -507,12 +507,13 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 }
 
 // Public API; not much point in calling it internally
-KFileItem* KDirModel::itemForIndex( const QModelIndex& index ) const
+KFileItem KDirModel::itemForIndex( const QModelIndex& index ) const
 {
     if (!index.isValid()) {
-        return d->m_dirLister->rootItem();
+        return * d->m_dirLister->rootItem();
     } else {
-        return static_cast<KDirModelNode*>(index.internalPointer())->item();
+        KFileItem* item = static_cast<KDirModelNode*>(index.internalPointer())->item();
+        return item ? *item : KFileItem();
     }
 }
 
@@ -597,8 +598,8 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
 
     // Allow dropping onto this item?
     if (d->m_dropsAllowed != NoDrops) {
-        KFileItem* item = itemForIndex(index);
-        if (!item || item->isDir()) {
+        KFileItem item = itemForIndex(index);
+        if (item.isDir()) {
             if (d->m_dropsAllowed & DropOnDirectory) {
                 f |= Qt::ItemIsDropEnabled;
             }
@@ -606,12 +607,12 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
             if (d->m_dropsAllowed & DropOnAnyFile)
                 f |= Qt::ItemIsDropEnabled;
             else if (d->m_dropsAllowed & DropOnLocalExecutable) {
-                if (item->isLocalFile()) {
+                if (item.isLocalFile()) {
                     // Desktop file?
-                    if (item->mimeTypePtr()->is("application/x-desktop"))
+                    if (item.mimeTypePtr()->is("application/x-desktop"))
                         f |= Qt::ItemIsDropEnabled;
                     // Executable, shell script ... ?
-                    else if ( QFileInfo( item->localPath() ).isExecutable() )
+                    else if ( QFileInfo( item.localPath() ).isExecutable() )
                         f |= Qt::ItemIsDropEnabled;
                 }
             }
@@ -626,7 +627,7 @@ bool KDirModel::canFetchMore( const QModelIndex & parent ) const
     if (!parent.isValid())
         return false;
 
-    // We could have a bool KDirModelNode::m_populated,
+    // We now have a bool KDirModelNode::m_populated,
     // to avoid calling fetchMore more than once on empty dirs.
     // But this wastes memory, and how often does someone open and re-open an empty dir in a treeview?
     // Maybe we can ask KDirLister "have you listed <url> already"? (to discuss with M. Brade)

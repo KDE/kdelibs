@@ -74,12 +74,12 @@ void KDirModelTest::fillModel( bool reload )
     // The trouble is that the order of listing is undefined, one can get 1/2/3/subdir or subdir/3/2/1 for instance.
     for (int row = 0; row < 4; ++row) {
         QModelIndex idx = m_dirModel.index(row, 0, QModelIndex());
-        KFileItem* item = m_dirModel.itemForIndex(idx);
-        if (item->isDir())
+        KFileItem item = m_dirModel.itemForIndex(idx);
+        if (item.isDir())
             m_dirIndex = idx;
-        else if (item->url().fileName() == "toplevelfile_1")
+        else if (item.url().fileName() == "toplevelfile_1")
             m_fileIndex = idx;
-        else if (item->url().fileName() == "toplevelfile_2")
+        else if (item.url().fileName() == "toplevelfile_2")
             m_secondFileIndex = idx;
     }
     QVERIFY(m_dirIndex.isValid());
@@ -96,9 +96,9 @@ void KDirModelTest::fillModel( bool reload )
     m_fileInDirIndex = QModelIndex();
     for (int row = 0; row < 3; ++row) {
         QModelIndex idx = m_dirModel.index(row, 0, m_dirIndex);
-        if (m_dirModel.itemForIndex(idx)->isDir())
+        if (m_dirModel.itemForIndex(idx).isDir())
             subdirIndex = idx;
-        else if (m_dirModel.itemForIndex(idx)->name() == "testfile")
+        else if (m_dirModel.itemForIndex(idx).name() == "testfile")
             m_fileInDirIndex = idx;
     }
 
@@ -183,55 +183,55 @@ void KDirModelTest::testNames()
 void KDirModelTest::testItemForIndex()
 {
     // root item
-    KFileItem* rootItem = m_dirModel.itemForIndex(QModelIndex());
-    QVERIFY(rootItem != 0);
-    QCOMPARE(rootItem->name(), QString("."));
+    KFileItem rootItem = m_dirModel.itemForIndex(QModelIndex());
+    QVERIFY(!rootItem.isNull());
+    QCOMPARE(rootItem.name(), QString("."));
 
-    KFileItem* fileItem = m_dirModel.itemForIndex(m_fileIndex);
-    QVERIFY(fileItem != 0);
-    QCOMPARE(fileItem->name(), QString("toplevelfile_1"));
-    QVERIFY(!fileItem->isDir());
-    QCOMPARE(fileItem->url().path(), m_tempDir.name() + "toplevelfile_1");
+    KFileItem fileItem = m_dirModel.itemForIndex(m_fileIndex);
+    QVERIFY(!fileItem.isNull());
+    QCOMPARE(fileItem.name(), QString("toplevelfile_1"));
+    QVERIFY(!fileItem.isDir());
+    QCOMPARE(fileItem.url().path(), m_tempDir.name() + "toplevelfile_1");
 
-    KFileItem* dirItem = m_dirModel.itemForIndex(m_dirIndex);
-    QVERIFY(dirItem != 0);
-    QCOMPARE(dirItem->name(), QString("subdir"));
-    QVERIFY(dirItem->isDir());
-    QCOMPARE(dirItem->url().path(), m_tempDir.name() + "subdir");
+    KFileItem dirItem = m_dirModel.itemForIndex(m_dirIndex);
+    QVERIFY(!dirItem.isNull());
+    QCOMPARE(dirItem.name(), QString("subdir"));
+    QVERIFY(dirItem.isDir());
+    QCOMPARE(dirItem.url().path(), m_tempDir.name() + "subdir");
 
-    KFileItem* fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
-    QVERIFY(fileInDirItem != 0);
-    QCOMPARE(fileInDirItem->name(), QString("testfile"));
-    QVERIFY(!fileInDirItem->isDir());
-    QCOMPARE(fileInDirItem->url().path(), m_tempDir.name() + "subdir/testfile");
+    KFileItem fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
+    QVERIFY(!fileInDirItem.isNull());
+    QCOMPARE(fileInDirItem.name(), QString("testfile"));
+    QVERIFY(!fileInDirItem.isDir());
+    QCOMPARE(fileInDirItem.url().path(), m_tempDir.name() + "subdir/testfile");
 
-    KFileItem* fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
-    QVERIFY(fileInSubdirItem != 0);
-    QCOMPARE(fileInSubdirItem->name(), QString("testfile"));
-    QVERIFY(!fileInSubdirItem->isDir());
-    QCOMPARE(fileInSubdirItem->url().path(), m_tempDir.name() + "subdir/subsubdir/testfile");
+    KFileItem fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
+    QVERIFY(!fileInSubdirItem.isNull());
+    QCOMPARE(fileInSubdirItem.name(), QString("testfile"));
+    QVERIFY(!fileInSubdirItem.isDir());
+    QCOMPARE(fileInSubdirItem.url().path(), m_tempDir.name() + "subdir/subsubdir/testfile");
 }
 
 void KDirModelTest::testIndexForItem()
 {
-    KFileItem* rootItem = m_dirModel.itemForIndex(QModelIndex());
-    QModelIndex rootIndex = m_dirModel.indexForItem(*rootItem);
+    KFileItem rootItem = m_dirModel.itemForIndex(QModelIndex());
+    QModelIndex rootIndex = m_dirModel.indexForItem(rootItem);
     QVERIFY(!rootIndex.isValid());
 
-    KFileItem* fileItem = m_dirModel.itemForIndex(m_fileIndex);
-    QModelIndex fileIndex = m_dirModel.indexForItem(*fileItem);
+    KFileItem fileItem = m_dirModel.itemForIndex(m_fileIndex);
+    QModelIndex fileIndex = m_dirModel.indexForItem(fileItem);
     QCOMPARE(fileIndex, m_fileIndex);
 
-    KFileItem* dirItem = m_dirModel.itemForIndex(m_dirIndex);
-    QModelIndex dirIndex = m_dirModel.indexForItem(*dirItem);
+    KFileItem dirItem = m_dirModel.itemForIndex(m_dirIndex);
+    QModelIndex dirIndex = m_dirModel.indexForItem(dirItem);
     QCOMPARE(dirIndex, m_dirIndex);
 
-    KFileItem* fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
-    QModelIndex fileInDirIndex = m_dirModel.indexForItem(*fileInDirItem);
+    KFileItem fileInDirItem = m_dirModel.itemForIndex(m_fileInDirIndex);
+    QModelIndex fileInDirIndex = m_dirModel.indexForItem(fileInDirItem);
     QCOMPARE(fileInDirIndex, m_fileInDirIndex);
 
-    KFileItem* fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
-    QModelIndex fileInSubdirIndex = m_dirModel.indexForItem(*fileInSubdirItem);
+    KFileItem fileInSubdirItem = m_dirModel.itemForIndex(m_fileInSubdirIndex);
+    QModelIndex fileInSubdirIndex = m_dirModel.indexForItem(fileInSubdirItem);
     QCOMPARE(fileInSubdirIndex, m_fileInSubdirIndex);
 }
 
@@ -243,8 +243,8 @@ void KDirModelTest::testData()
     QCOMPARE(size1, 11);
 
     KFileItem item = m_dirModel.data(m_fileIndex, KDirModel::FileItemRole).value<KFileItem>();
-    KFileItem* fileItem = m_dirModel.itemForIndex(m_fileIndex);
-    QCOMPARE(item, *fileItem);
+    KFileItem fileItem = m_dirModel.itemForIndex(m_fileIndex);
+    QCOMPARE(item, fileItem);
 
     QCOMPARE(m_dirModel.data(m_fileIndex, KDirModel::ChildCountRole).toInt(), (int)KDirModel::ChildCountUnknown);
 

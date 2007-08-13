@@ -117,11 +117,11 @@ void KMimeTypeResolver::slotProcessMimeIcons()
         index = d->m_pendingIndexes.takeFirst();
         nextDelay = d->m_delayForNonVisibleIcons;
     }
-    KFileItem* item = d->m_dirModel->itemForIndex(index);
-    if (item) { // check that item still exists
-        if (!item->isMimeTypeKnown()) { // check if someone did it meanwhile
-            //kDebug() << k_funcinfo << "Determining mimetype for " << item->url();
-            item->determineMimeType();
+    KFileItem item = d->m_dirModel->itemForIndex(index);
+    if (!item.isNull()) { // check that item still exists
+        if (!item.isMimeTypeKnown()) { // check if someone did it meanwhile
+            //kDebug() << k_funcinfo << "Determining mimetype for " << item.url();
+            item.determineMimeType();
             d->m_dirModel->itemChanged(index);
         }
     }
@@ -133,8 +133,8 @@ void KMimeTypeResolver::slotRowsInserted(const QModelIndex& parent, int first, i
     KDirModel* model = d->m_dirModel;
     for (int row = first; row <= last; ++row) {
         QModelIndex idx = model->index(row, 0, parent);
-        KFileItem* item = model->itemForIndex(idx);
-        if (!item->isMimeTypeKnown())
+        KFileItem item = model->itemForIndex(idx);
+        if (!item.isMimeTypeKnown())
             d->m_pendingIndexes.append(idx);
         // TODO else if (item->isDir() && !item->isLocalFile() /*nor pseudo local...*/ &&
         // TODO   model->data(idx, ChildCountRole).toInt() == KDirModel::ChildCountUnknown)

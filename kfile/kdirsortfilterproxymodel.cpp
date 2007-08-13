@@ -164,21 +164,21 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
 {
     KDirModel* dirModel = static_cast<KDirModel*>(sourceModel());
 
-    const KFileItem* leftFileItem  = dirModel->itemForIndex(left);
-    const KFileItem* rightFileItem = dirModel->itemForIndex(right);
+    const KFileItem leftFileItem  = dirModel->itemForIndex(left);
+    const KFileItem rightFileItem = dirModel->itemForIndex(right);
 
     // On our priority, folders go above regular files.
-    if (leftFileItem->isDir() && !rightFileItem->isDir()) {
+    if (leftFileItem.isDir() && !rightFileItem.isDir()) {
         return true;
-    } else if (!leftFileItem->isDir() && rightFileItem->isDir()) {
+    } else if (!leftFileItem.isDir() && rightFileItem.isDir()) {
         return false;
     }
 
     // Hidden elements go before visible ones, if they both are
     // folders or files.
-    if (leftFileItem->isHidden() && !rightFileItem->isHidden()) {
+    if (leftFileItem.isHidden() && !rightFileItem.isHidden()) {
         return true;
-    } else if (!leftFileItem->isHidden() && rightFileItem->isHidden()) {
+    } else if (!leftFileItem.isHidden() && rightFileItem.isHidden()) {
         return false;
     }
 
@@ -198,7 +198,7 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
     case KDirModel::Size: {
         // If we have two folders, what we have to measure is the number of
         // items that contains each other
-        if (leftFileItem->isDir() && rightFileItem->isDir()) {
+        if (leftFileItem.isDir() && rightFileItem.isDir()) {
             QVariant leftValue = dirModel->data(left, KDirModel::ChildCountRole);
             int leftCount = leftValue.type() == QVariant::Int ? leftValue.toInt() : KDirModel::ChildCountUnknown;
 
@@ -209,8 +209,8 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
             // their names. So we have always everything ordered. We also check
             // if we are taking in count their cases.
             if (leftCount == rightCount) {
-                return sortCaseSensitivity() ? (naturalCompare(leftFileItem->name(), rightFileItem->name()) < 0) :
-                        (naturalCompare(leftFileItem->name().toLower(), rightFileItem->name().toLower()) < 0);
+                return sortCaseSensitivity() ? (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                        (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
             }
 
             // If they had different number of items, we sort them depending
@@ -220,68 +220,68 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
 
         // If what we are measuring is two files and they have the same size,
         // sort them by their file names.
-        if (leftFileItem->size() == rightFileItem->size()) {
-            return sortCaseSensitivity() ? (naturalCompare(leftFileItem->name(), rightFileItem->name()) < 0) :
-                    (naturalCompare(leftFileItem->name().toLower(), rightFileItem->name().toLower()) < 0);
+        if (leftFileItem.size() == rightFileItem.size()) {
+            return sortCaseSensitivity() ? (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                    (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
         }
 
         // If their sizes are different, sort them by their sizes, as expected.
-        return leftFileItem->size() < rightFileItem->size();
+        return leftFileItem.size() < rightFileItem.size();
     }
 
     case KDirModel::ModifiedTime: {
-        KDateTime leftTime = leftFileItem->time(KFileItem::ModificationTime);
-        KDateTime rightTime = rightFileItem->time(KFileItem::ModificationTime);
+        KDateTime leftTime = leftFileItem.time(KFileItem::ModificationTime);
+        KDateTime rightTime = rightFileItem.time(KFileItem::ModificationTime);
 
         if (leftTime == rightTime) {
             return sortCaseSensitivity() ?
-                   (naturalCompare(leftFileItem->name(), rightFileItem->name()) < 0) :
-                   (naturalCompare(leftFileItem->name().toLower(), rightFileItem->name().toLower()) < 0);
+                   (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                   (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
         }
 
         return leftTime > rightTime;
     }
 
     case KDirModel::Permissions: {
-        if (leftFileItem->permissionsString() == rightFileItem->permissionsString()) {
+        if (leftFileItem.permissionsString() == rightFileItem.permissionsString()) {
             return sortCaseSensitivity() ?
-                   (naturalCompare(leftFileItem->name(), rightFileItem->name()) < 0) :
-                   (naturalCompare(leftFileItem->name().toLower(), rightFileItem->name().toLower()) < 0);
+                   (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                   (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
         }
 
-        return naturalCompare(leftFileItem->permissionsString(),
-                              rightFileItem->permissionsString()) < 0;
+        return naturalCompare(leftFileItem.permissionsString(),
+                              rightFileItem.permissionsString()) < 0;
     }
 
     case KDirModel::Owner: {
-        if (leftFileItem->user() == rightFileItem->user()) {
+        if (leftFileItem.user() == rightFileItem.user()) {
             return sortCaseSensitivity() ?
-                   (naturalCompare(leftFileItem->name(), rightFileItem->name()) < 0) :
-                   (naturalCompare(leftFileItem->name().toLower(), rightFileItem->name().toLower()) < 0);
+                   (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                   (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
         }
 
-        return naturalCompare(leftFileItem->user(), rightFileItem->user()) < 0;
+        return naturalCompare(leftFileItem.user(), rightFileItem.user()) < 0;
     }
 
     case KDirModel::Group: {
-        if (leftFileItem->group() == rightFileItem->group()) {
-            return sortCaseSensitivity() ? (naturalCompare(leftFileItem->name(), rightFileItem->name()) < 0) :
-                    (naturalCompare(leftFileItem->name().toLower(), rightFileItem->name().toLower()) < 0);
+        if (leftFileItem.group() == rightFileItem.group()) {
+            return sortCaseSensitivity() ? (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                    (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
         }
 
-        return naturalCompare(leftFileItem->group(),
-                              rightFileItem->group()) < 0;
+        return naturalCompare(leftFileItem.group(),
+                              rightFileItem.group()) < 0;
     }
 
     case KDirModel::Type: {
-        if (leftFileItem->mimetype() == rightFileItem->mimetype()) {
+        if (leftFileItem.mimetype() == rightFileItem.mimetype()) {
             return sortCaseSensitivity() ?
-                   (naturalCompare(leftFileItem->name(), rightFileItem->name()) < 0) :
-                   (naturalCompare(leftFileItem->name().toLower(), rightFileItem->name().toLower()) < 0);
+                   (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
+                   (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
         }
 
-        return naturalCompare(leftFileItem->mimeComment(),
-                              rightFileItem->mimeComment()) < 0;
+        return naturalCompare(leftFileItem.mimeComment(),
+                              rightFileItem.mimeComment()) < 0;
     }
 
     }
