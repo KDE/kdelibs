@@ -36,14 +36,32 @@ class KDEUI_EXPORT KCursor : public QCursor
 public:
     /**
      * Attempts to load the requested @p name cursor from the current theme.
-     * If it fails, it falls back to the Qt::CursorShape provided as the
-     * second parameter. This allows one to access cursors that may be in a
-     * theme but not in the Qt::CursorShape enum.
+     * 
+     * This allows one to access cursors that may be in a theme but not in
+     * the Qt::CursorShape enum.
+     *
+     * If the specified cursor doesn't exist in the theme, or if KDE was
+     * built without Xcursor support, the cursor will be loaded from the X11
+     * cursor font instead. If the cursor doesn't exist in the cursor font,
+     * it falls back to the Qt::CursorShape provided as the second parameter.
+     *
+     * On platforms other than X11, the fallback shape is always used.
      *
      * @param name the name of the cursor to try and load
      * @param fallback the cursor to load if @p name cursor can not be loaded
      */
-    KCursor( const QString & name, Qt::CursorShape fallback );
+    KCursor( const QString & name, Qt::CursorShape fallback = Qt::ArrowCursor );
+
+    /**
+     * Creates a copy of @p cursor.
+     */
+    KCursor( const QCursor & cursor );
+
+    /**
+     * Assigns @p cursor to this cursor, and returns a reference to this
+     * cursor.
+     */
+    KCursor & operator = ( const KCursor & cursor );
 
     /**
      * Sets auto-hiding the cursor for widget @p w. Enabling it will result in
@@ -119,7 +137,6 @@ public:
 private:
     class Private;
     Private* const d;
-    Q_DISABLE_COPY( KCursor )
 };
 
 
