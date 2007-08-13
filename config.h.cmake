@@ -77,6 +77,9 @@
 /* Define to 1 if you have the Xcursor library */
 #cmakedefine HAVE_XCURSOR 1
 
+/* Define to 1 if you have the Xfixes library */
+#cmakedefine HAVE_XFIXES 1
+
 /* Define to 1 if you have the Xrender library */
 #cmakedefine HAVE_XRENDER 1
 

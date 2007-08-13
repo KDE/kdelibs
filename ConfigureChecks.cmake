@@ -83,6 +83,7 @@ check_include_files(arpa/nameser8_compat.h HAVE_ARPA_NAMESER8_COMPAT_H) # kio
 
 macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)                                                   # kdecore
 macro_bool_to_01(X11_Xcursor_FOUND HAVE_XCURSOR)                                               # kdeui
+macro_bool_to_01(X11_Xfixes_FOUND HAVE_XFIXES)                                                 # kdeui
 macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)                                               # kio
 
 
