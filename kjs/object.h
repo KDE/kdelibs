@@ -107,7 +107,7 @@ namespace KJS {
      *
      * @param proto The prototype
      */
-    JSObject(JSValue* proto, bool destructorIsThreadSafe = true);
+    explicit JSObject(JSValue* proto, bool destructorIsThreadSafe = true);
 
     /**
      * Creates a new JSObject with a prototype of jsNull()

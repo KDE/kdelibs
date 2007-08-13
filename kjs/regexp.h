@@ -44,7 +44,7 @@ namespace KJS {
   public:
     enum { None = 0, Global = 1, IgnoreCase = 2, Multiline = 4 };
 
-    RegExp(const UString &pattern, char flags = None);
+    explicit RegExp(const UString &pattern, char flags = None);
     ~RegExp();
 
     char flags() const { return _flags; }

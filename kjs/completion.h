@@ -48,7 +48,7 @@ namespace KJS {
    */
   class KJS_EXPORT Completion {
   public:
-    Completion(ComplType c = Normal, JSValue *v = NULL, const Node* t = 0)
+    explicit Completion(ComplType c = Normal, JSValue *v = NULL, const Node* t = 0)
         : comp(c), val(v), tar(t) { }
 
     /**
