@@ -447,13 +447,15 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
            this, SLOT( slotRedirect() ) );
 
-  KHTMLPartIface* iface = new KHTMLPartIface(this);
-  (void)new KHTMLPartAdaptor(iface);
-  for (int i = 1; ; ++i)
-    if (QDBusConnection::sessionBus().registerObject(QString("/KHTML/%1/widget").arg(i), this))
-      break;
-    else if (i == 0xffff)
-      kFatal() << "Something is very wrong in KHTMLPart!";
+  if (QDBusConnection::sessionBus().isConnected()) {
+    KHTMLPartIface* iface = new KHTMLPartIface(this);
+    (void)new KHTMLPartAdaptor(iface);
+    for (int i = 1; ; ++i)
+      if (QDBusConnection::sessionBus().registerObject(QString("/KHTML/%1/widget").arg(i), this))
+        break;
+      else if (i == 0xffff)
+        kFatal() << "Something is very wrong in KHTMLPart!";
+  }
 
   // TODO KDE4 - load plugins now (see also the constructors)
   //if ( prof == BrowserViewGUI && !parentPart() )
