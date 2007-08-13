@@ -256,8 +256,7 @@ public:
      * Tests whether a URL exists.
      *
      * @param url the URL we are testing
-     * @param source if true, we want to read from that URL.
-     *               If false, we want to write to it.
+     * @param statSide determines if we want to read or write.
      * IMPORTANT: see documentation for KIO::stat for more details about this.
      * @param window main window associated with this job. This is used to
      *               automatically cache and discard authentication information
@@ -267,7 +266,7 @@ public:
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
      */
-    static bool exists(const KUrl& url, StatSide, QWidget* window);
+    static bool exists(const KUrl& url, StatSide statSide, QWidget* window);
 
     /**
      * Tests whether a URL exists and return information on it.
