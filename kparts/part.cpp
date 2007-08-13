@@ -521,8 +521,10 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
 
     if ( !url.isValid() )
         return false;
+    OpenUrlArguments args = d->m_arguments;
     if ( !closeUrl() )
         return false;
+    d->m_arguments = args;
     d->m_url = url;
     if ( d->m_url.isLocalFile() )
     {
@@ -591,7 +593,7 @@ bool ReadOnlyPart::closeUrl()
 
     abortLoad(); //just in case
 
-    d->m_arguments.setMimeType(QString());
+    d->m_arguments = KParts::OpenUrlArguments();
 
     if ( d->m_bTemp )
     {
@@ -650,8 +652,10 @@ bool ReadOnlyPart::openStream( const QString& mimeType, const KUrl& url )
 {
     Q_D(ReadOnlyPart);
 
+    OpenUrlArguments args = d->m_arguments;
     if ( !closeUrl() )
         return false;
+    d->m_arguments = args;
     d->m_url = url;
     return doOpenStream( mimeType );
 }
