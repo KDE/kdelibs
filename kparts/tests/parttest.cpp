@@ -113,6 +113,11 @@ void PartTest::testOpenUrlArguments()
     part->closeUrl();
     QVERIFY(part->arguments().mimeType().isEmpty());
 
+    // Calling openUrl with local file: mimetype is determined
+    part->openUrl(KUrl(KDESRCDIR "/parttest.cpp"));
+    QCOMPARE(part->arguments().mimeType(), QString("text/x-c++src"));
+    // (for a remote url it would be determined during downloading)
+
     delete part;
 }
 
