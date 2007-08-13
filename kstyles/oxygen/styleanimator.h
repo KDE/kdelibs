@@ -28,7 +28,7 @@
 
 class HoverFadeInfo {
 public:
-   HoverFadeInfo(int s = 0, bool fI = true) {step = s; fadeIn = fI; }
+   explicit HoverFadeInfo(int s = 0, bool fI = true) {step = s; fadeIn = fI; }
    int step;
    bool fadeIn;
 };
@@ -60,7 +60,7 @@ public:
          , CrossFade
 #endif
    };
-   TabAnimInfo(QObject *parent = 0, int currentTab = -1) :
+   explicit TabAnimInfo(QObject *parent = 0, int currentTab = -1) :
       QObject(parent), lastTab(currentTab), animStep(0){}
    void updatePixmaps(TabTransition transition);
 protected:
@@ -74,7 +74,7 @@ public:
 class StyleAnimator : public QObject {
    Q_OBJECT
 public:
-   StyleAnimator(QObject *parent, TabAnimInfo::TabTransition tabTransition =
+   explicit StyleAnimator(QObject *parent, TabAnimInfo::TabTransition tabTransition =
                  TabAnimInfo::CrossFade);
    ~StyleAnimator();
    void fadeIn(QWidget *widget);
