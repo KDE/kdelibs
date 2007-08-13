@@ -328,9 +328,9 @@ QString fullPath(const QModelIndex& index)
     if( ! index.isValid() ) return QString();
     ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
     QString n = item->name();
-    if( item->type == ActionCollectionModelItem::CollectionType ) n += "/";
+    if( item->type == ActionCollectionModelItem::CollectionType ) n += '/';
     QString p = fullPath( item->parent ); //recursive
-    return p.isNull() ? n : ( p.endsWith("/") ? p + n : p + "/" + n );
+    return p.isNull() ? n : ( p.endsWith('/') ? p + n : p + '/' + n );
 }
 
 QMimeData* ActionCollectionModel::mimeData(const QModelIndexList& indexes) const
