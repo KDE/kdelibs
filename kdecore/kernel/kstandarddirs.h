@@ -497,17 +497,6 @@ public:
                            SearchOptions options = NoSearchOptions );
 
     /**
-     * This function adds the defaults that are used by the current
-     * KDE version.
-     *
-     * It's a series of addResourceTypes()
-     * and addPrefix() calls.
-     * You normally wouldn't call this function because it's called
-     * for you from KGlobal.
-     */
-    void addKDEDefaults();
-
-    /**
      * Reads customized entries out of the given config object and add
      * them via addResourceDirs().
      *
@@ -780,6 +769,7 @@ private:
     void addPrefix( const QString& dir, bool priority );
     void addXdgConfigPrefix( const QString& dir, bool priority );
     void addXdgDataPrefix( const QString& dir, bool priority );
+    void addKDEDefaults();
 
     void addResourcesFrom_krcdirs();
 };
