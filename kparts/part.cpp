@@ -992,7 +992,7 @@ KParts::OpenUrlArguments::OpenUrlArguments(const OpenUrlArguments &other)
 {
 }
 
-KParts::OpenUrlArguments::OpenUrlArguments & KParts::OpenUrlArguments::operator=( const OpenUrlArguments &other)
+KParts::OpenUrlArguments & KParts::OpenUrlArguments::operator=( const OpenUrlArguments &other)
 {
     d = other.d;
     return *this;
