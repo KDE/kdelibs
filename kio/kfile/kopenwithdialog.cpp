@@ -483,7 +483,9 @@ KOpenWithDialog::KOpenWithDialog( const KUrl::List& _urls, const QString&_text,
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
-  QString caption = KStringHandler::csqueeze( _urls.first().prettyUrl() );
+  QString caption;
+  if (_urls.count()>0 && !_urls.first().isEmpty())
+     caption = KStringHandler::csqueeze( _urls.first().prettyUrl() );
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
   setCaption(caption);
