@@ -165,12 +165,6 @@ public:
   }
   ~KImportedBookmarkActionMenu()
   {}
-  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
-  {
-    Q_UNUSED(pos)
-    Q_UNUSED(m_pManager)
-    Q_UNUSED(m_pOwner)
-  }
 };
 
 class KImportedBookmarkAction : public KAction, public KBookmarkActionInterface
@@ -179,7 +173,6 @@ class KImportedBookmarkAction : public KAction, public KBookmarkActionInterface
 public:
   KImportedBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent );
   ~KImportedBookmarkAction();
-  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
 
 public Q_SLOTS:
   void slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km);

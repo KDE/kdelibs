@@ -356,15 +356,16 @@ public:
    */
   virtual QList<QPair<QString, QString> > currentBookmarkList() const { return QList<QPair<QString, QString> >(); }
 
-  /**
-   * Returns true if the bookmark menu/toolbar should show an "Add Bookmark" Entry
-   */
-  virtual bool addBookmarkEntry() const { return true; }
+  enum BookmarkOption { ShowAddBookmark, ShowEditBookmark };
 
-  /**
-   * Returns true if the bookmark menu/toolbar should show an "Edit Bookmarks" Entry
+
+  /** Returns true if \p action should be shown in the menu
+   *  The default is to show both a add and editBookmark Entry
+   *  //TODO ContextMenuAction? to disable the contextMenu?
+   *         Delete and Propeties to disable those in the
+   *         context menu?
    */
-  virtual bool editBookmarkEntry() const { return true; }
+  virtual bool enableOption(BookmarkOption option) const;
 
   /**
    * Called if a bookmark is selected. You need to override this.

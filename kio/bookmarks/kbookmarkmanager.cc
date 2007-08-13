@@ -616,4 +616,15 @@ KBookmarkSettings *KBookmarkSettings::self()
    return s_self;
 }
 
+/////////// KBookmarkOwner
+
+bool KBookmarkOwner::enableOption(BookmarkOption action) const 
+{
+    if(action == ShowAddBookmark)
+        return true;
+    if(action == ShowEditBookmark)
+        return true;
+    return false;
+}
+
 #include "kbookmarkmanager.moc"

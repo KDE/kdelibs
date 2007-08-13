@@ -33,6 +33,7 @@
 #include <kactionmenu.h>
 #include <kicon.h>
 #include <krun.h>
+#include <kmenu.h>
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
@@ -79,7 +80,6 @@ namespace KIO { class Job; }
  */
 class KIO_EXPORT KBookmarkMenu : public QObject
 {
-    //friend class KBookmarkBar;
   Q_OBJECT
 public:
   /**
@@ -96,6 +96,12 @@ public:
    */
   KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner, KMenu * parentMenu, KActionCollection *collec);
 
+  /**
+   * Creates a bookmark submenu
+   */
+  KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner,
+                 KMenu * parentMenu, const QString & parentAddress);
+
   ~KBookmarkMenu();
 
   /**
@@ -105,26 +111,22 @@ public:
   void ensureUpToDate();
 
 public Q_SLOTS:
-    // public for KonqBookmarkBar. TODO rename to bookmarksChanged
-  void slotBookmarksChanged( const QString & );
+    // public for KonqBookmarkBar
+  void slotBookmarksChanged( const QString & ); 
 
 protected Q_SLOTS:
   void slotAboutToShow();
-  void contextMenu( const QPoint & );
-
   void slotAddBookmarksList();
   void slotAddBookmark();
   void slotNewFolder();
 
+
 protected:
-  /**
-   * Creates a bookmark submenu
-   */
-  KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner,
-                 KMenu * parentMenu, const QString & parentAddress);
   virtual void clear();
   virtual void refill();
   virtual QAction* actionForBookmark(const KBookmark &bm);
+  virtual KMenu * contextMenu(const KBookmark & bm);
+
   void addActions();
   void fillBookmarks();
   void addAddBookmark();
@@ -132,16 +134,22 @@ protected:
   void addEditBookmarks();
   void addNewFolder();
 
-  bool m_bIsRoot:1;
-  bool m_bDirty:1;
+  bool isRoot() const;
+  bool isDirty() const;
 
-  KBookmarkManager * m_pManager;
-  KBookmarkOwner *m_pOwner;
+  /**
+   * Parent bookmark for this menu.
+   */
+  QString parentAddress() const;
+
+  KBookmarkManager * manager() const;
+  KBookmarkOwner * owner() const;
   /**
    * The menu in which we insert our actions
    * Supplied in the constructor.
    */
-  KMenu * m_parentMenu;
+  KMenu * parentMenu() const;
+
   /**
    * List of our sub menus
    */
@@ -151,71 +159,95 @@ protected:
    * List of our actions.
    */
   QList<QAction *> m_actions;
-  /**
-   * Parent bookmark for this menu.
-   */
-  QString m_parentAddress;
+
+
+private Q_SLOTS:
+  void slotCustomContextMenu( const QPoint & );
+
 private:
   KBookmarkMenuPrivate* d;
+
+  bool m_bIsRoot;
+  bool m_bDirty;
+  KBookmarkManager * m_pManager;
+  KBookmarkOwner * m_pOwner;
+
+  KMenu * m_parentMenu;
+
+private:
+  QString m_parentAddress;
 };
 
-class KIO_EXPORT KBookmarkActionContextMenu : public QObject
+class KIO_EXPORT KBookmarkContextMenu : public KMenu
 {
-  Q_OBJECT
+    Q_OBJECT
+    
 public:
-  void contextMenu(const QPoint &pos, const QString &highlightedAddress, KBookmarkManager *pManager, KBookmarkOwner *pOwner);
-  ~KBookmarkActionContextMenu();
-  KBookmark atAddress(const QString & address);
-  static KBookmarkActionContextMenu & self();
+    KBookmarkContextMenu(const KBookmark & bm, KBookmarkManager * manager, KBookmarkOwner *owner, QWidget * parent = 0);
+    virtual ~KBookmarkContextMenu();
+    virtual void addActions();
+
 public Q_SLOTS:
-  void slotEditAt();
-  void slotProperties();
-  void slotInsert();
-  void slotRemove();
-  void slotCopyLocation();
+    void slotEditAt();
+    void slotProperties();
+    void slotInsert();
+    void slotRemove();
+    void slotCopyLocation();
 
 protected:
-  void addBookmark();
-  void addFolderActions();
-  void addProperties();
-  void addBookmarkActions();
+    void addBookmark();
+    void addFolderActions();
+    void addProperties();
+    void addBookmarkActions();
 
-  QString m_parentAddress;
-  QString m_highlightedAddress;
-  KBookmarkManager *m_pManager;
-  KBookmarkOwner *m_pOwner;
-  QWidget *m_parentMenu;
-  QMenu * m_contextMenu;
+    KBookmarkManager * manager() const;
+    KBookmarkOwner * owner() const;
+    KBookmark bookmark() const;
+
+private Q_SLOTS:
+    void slotAboutToShow();
+
+private:
+    KBookmark bm;
+    KBookmarkManager * m_pManager;
+    KBookmarkOwner * m_pOwner;
 };
-
 
 class KIO_EXPORT KBookmarkActionInterface
 {
 public:
   KBookmarkActionInterface(const KBookmark &bk);
   virtual ~KBookmarkActionInterface();
-  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner) = 0;
-protected:
   const KBookmark bookmark() const;
 private:
   KBookmark bm;
 };
+
+/***
+ * A wrapper around KActionMenu to provide a nice constructor for bookmark groups.
+ *
+ */
 
 class KIO_EXPORT KBookmarkActionMenu : public KActionMenu, public KBookmarkActionInterface
 {
 public:
   KBookmarkActionMenu(const KBookmark &bm, QObject *parent);
   KBookmarkActionMenu(const KBookmark &bm, const QString & text, QObject *parent);
-  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
   virtual ~KBookmarkActionMenu();
 };
+
+/***
+ * This class is a KAction for bookmarks.
+ * It provides a nice constructor.
+ * And on triggered uses the owner to open the bookmark.
+ *
+ */
 
 class KIO_EXPORT KBookmarkAction : public KAction, public KBookmarkActionInterface
 {
   Q_OBJECT
 public:
   KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent);
-  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
   virtual ~KBookmarkAction();
 
 public Q_SLOTS:

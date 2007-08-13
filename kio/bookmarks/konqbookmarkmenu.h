@@ -31,31 +31,11 @@ public:
   virtual void openFolderinTabs(const KBookmark &bm) = 0;
 };
 
-class KIO_EXPORT KonqBookmarkActionMenu : public KBookmarkActionMenu
-{
-  Q_OBJECT
-public:
-  KonqBookmarkActionMenu(const KBookmark &bm, QObject *parent);
-  KonqBookmarkActionMenu(const KBookmark &bm, const QString & text, QObject *parent);
-  virtual ~KonqBookmarkActionMenu();
-  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
-};
-
-// only exported for KonqBookmarkBar in konqueror
-class KIO_EXPORT KonqBookmarkAction : public KBookmarkAction
-{
-  Q_OBJECT
-public:
-  KonqBookmarkAction(const KBookmark &bm, KonqBookmarkOwner * owner, QObject *parent);
-  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
-  virtual ~KonqBookmarkAction();
-};
-
 class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
 {
     //friend class KBookmarkBar;
   Q_OBJECT
-    public:
+public:
   /**
    * Fills a bookmark menu with konquerors bookmarks
    * (one instance of KonqBookmarkMenu is created for the toplevel menu,
@@ -68,7 +48,7 @@ class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
    * @param parentMenu menu to be filled
    * @param collec parent collection for the KActions.
    */
-  KonqBookmarkMenu( KBookmarkManager* mgr, KonqBookmarkOwner * owner, KonqBookmarkActionMenu * parentMenu, KActionCollection *collec)
+  KonqBookmarkMenu( KBookmarkManager* mgr, KonqBookmarkOwner * owner, KBookmarkActionMenu * parentMenu, KActionCollection *collec)
     : KBookmarkMenu( mgr, owner, parentMenu->menu(), collec)
   {
   }
@@ -79,7 +59,7 @@ class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
    * Creates a bookmark submenu.
    * Only used internally and for bookmark toolbar.
    */
-  KonqBookmarkMenu( KBookmarkManager* mgr, KonqBookmarkOwner * owner, KonqBookmarkActionMenu * parentMenu, QString parentAddress)
+  KonqBookmarkMenu( KBookmarkManager* mgr, KonqBookmarkOwner * owner, KBookmarkActionMenu * parentMenu, QString parentAddress)
     : KBookmarkMenu( mgr, owner, parentMenu->menu(), parentAddress)
   {
   }
@@ -119,27 +99,28 @@ class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
 protected:
   virtual void refill();
   virtual QAction* actionForBookmark(const KBookmark &bm);
+  virtual KMenu * contextMenu(const KBookmark & bm);
   void fillDynamicBookmarks();
 private:
   KonqBookmarkOwner * owner()
-    { return static_cast<KonqBookmarkOwner *>(m_pOwner);}
+    { return static_cast<KonqBookmarkOwner *>(KBookmarkMenu::owner());}
 };
 
-class KonqBookmarkContextMenu : private KBookmarkActionContextMenu
+class KIO_EXPORT KonqBookmarkContextMenu : public KBookmarkContextMenu
 {
   Q_OBJECT
 public:
-  ~KonqBookmarkContextMenu();
-  static KonqBookmarkContextMenu & self();
-  void contextMenu(const QPoint &pos, const QString &highlightedAddress, KBookmarkManager *pManager, KBookmarkOwner *pOwner);
+  KonqBookmarkContextMenu(const KBookmark & bm, KBookmarkManager * mgr, KonqBookmarkOwner * owner );
+  virtual ~KonqBookmarkContextMenu();
+  virtual void addActions();
+
 public Q_SLOTS:
   void openInNewTab();
   void openInNewWindow();
   void openFolderinTabs();
 private:
   KonqBookmarkOwner * owner()
-    { return static_cast<KonqBookmarkOwner *>(m_pOwner);}
-  KonqBookmarkContextMenu();
+    { return static_cast<KonqBookmarkOwner *>(KBookmarkContextMenu::owner());}
 };
 #endif
 
