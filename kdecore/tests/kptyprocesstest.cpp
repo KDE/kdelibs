@@ -27,7 +27,7 @@
 void KPtyProcessTest::test_pty_basic()
 {
     KPtyProcess p;
-    p.setShellCommand("read -s VAL; echo \"1: $VAL\"; echo \"2: $VAL\" >&2");
+    p.setProgram("/bin/bash", QStringList() << "-c" << "read -s VAL; echo \"1: $VAL\"; echo \"2: $VAL\" >&2");
     p.setPtyChannels(KPtyProcess::AllChannels);
     p.pty()->setEcho(false);
     p.start();
