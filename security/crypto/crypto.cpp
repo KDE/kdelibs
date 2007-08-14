@@ -124,7 +124,7 @@ QString CipherItem::configName() const
 
 
 
-OtherCertItem::OtherCertItem( Q3ListView *view, const QString& sub, const QString& md5, bool perm, int policy, const QDateTime &exp, KCryptoConfig *module )
+OtherCertItem::OtherCertItem( Q3ListView *view, const QString& sub, const QString& md5, bool perm, int policy, QDateTime exp, KCryptoConfig *module )
     : Q3ListViewItem( view, QString() ), _sub(sub), _md5(md5), _exp(exp), _perm(perm), _policy(policy)
 
 {
