@@ -41,8 +41,27 @@
 class KIconCache::Private
 {
 public:
+    Private(KIconCache* _q)
+    {
+        q = _q;
+    }
+    bool themeDirsChanged()
+    {
+        if (q->existingIconThemeDirs(mThemeNames) != mThemeDirs ||
+            q->mostRecentMTime(mThemeDirs) != mThemesMTime) {
+            kDebug() << k_funcinfo << "Theme directory has been modified";
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    KIconCache* q;
+
     qint32 mDefaultIconSize[6];
-    QList<KIconTheme*> mThemes;
+    QStringList mThemeNames;
+    QSet<QString> mThemeDirs;
+    quint32 mThemesMTime;
 
     QString* mLoadPath;
     QString mSavePath;
@@ -50,7 +69,7 @@ public:
 
 
 KIconCache::KIconCache()
-    : KPixmapCache(KDE_ICONCACHE_NAME), d(new Private)
+    : KPixmapCache(KDE_ICONCACHE_NAME), d(new Private(this))
 {
     // Set limit to 10 MB
     setCacheLimit(10 * 1024);
@@ -86,13 +105,10 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
     }
 
 
-    QStringList themeNames;
-    stream >> themeNames;
-    QSet<QString> themeDirs;
-    stream >> themeDirs;
+    stream >> d->mThemeNames;
+    stream >> d->mThemeDirs;
     // TODO: use KPixmapCache's timestamp instead
-    quint32 themesMTime;
-    stream >> themesMTime;
+    stream >> d->mThemesMTime;
 
     if (stream.status() != QDataStream::Ok) {
         kWarning() << k_funcinfo << "Failed to read index file's header";
@@ -101,15 +117,13 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
     }
 
     // Make sure at least one theme was read
-    if (!themeNames.count()) {
+    if (!d->mThemeNames.count()) {
         kDebug() << k_funcinfo << "Empty themes list";
         return false;
     }
 
     // Make sure the theme dirs haven't changed
-    if (existingIconThemeDirs(themeNames) != themeDirs ||
-            mostRecentMTime(themeDirs) != themesMTime) {
-        kDebug() << k_funcinfo << "Theme directory has been modified";
+    if (d->themeDirsChanged()) {
         return false;
     }
 
@@ -126,20 +140,14 @@ void KIconCache::writeCustomIndexHeader(QDataStream& stream)
         stream << d->mDefaultIconSize[i];
     }
 
-    //Save internal names of all themes
-    QStringList themeNames;
-    foreach (KIconTheme* theme, d->mThemes) {
-        themeNames.append(theme->internalName());
-    }
-    stream << themeNames;
-    // Save all existing dirs and the most recent mtime of them
-    QSet<QString> themeDirs = existingIconThemeDirs(themeNames);
-    stream << themeDirs;
-    stream << (quint32)mostRecentMTime(themeDirs);
+    // Save iconthemes info
+    stream << d->mThemeNames;
+    stream << d->mThemeDirs;
+    stream << d->mThemesMTime;
 
     // Cache is valid if header was successfully written and we actually have
     //  the icontheme name(s)
-    if (stream.status() == QDataStream::Ok && themeNames.count()) {
+    if (stream.status() == QDataStream::Ok && d->mThemeNames.count()) {
         setValid(true);
     }
 }
@@ -205,8 +213,15 @@ void KIconCache::setThemeInfo(const QList<KIconTheme*>& themes)
     }
     setValid(false);
 
-    // Try to recreate the cache
-    d->mThemes = themes;
+    // Save internal names and dirs of all themes
+    d->mThemeNames.clear();
+    foreach (KIconTheme* theme, themes) {
+        d->mThemeNames.append(theme->internalName());
+    }
+    d->mThemeDirs = existingIconThemeDirs(d->mThemeNames);
+    d->mThemesMTime = mostRecentMTime(d->mThemeDirs);
+
+    // Recreate the cache
     recreateCacheFiles();
 }
 
