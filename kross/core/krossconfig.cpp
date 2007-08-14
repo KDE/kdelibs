@@ -21,16 +21,18 @@
 
 #ifdef KROSS_DEBUG_ENABLED
 
-#include <kdebug.h>
+#include <QtDebug>
 
 void Kross::krossdebug(const QString &s)
 {
-    kDebug(410) << "Kross: " << s;
+    //kDebug(410) << s;
+    qDebug() << "Kross:" << s;
 }
 
 void Kross::krosswarning(const QString &s)
 {
-    kWarning(410) << "Kross: " << s;
+    //kWarning(410) << s;
+    qWarning() << "Kross:" << s;
 }
 
 #endif
