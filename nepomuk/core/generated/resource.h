@@ -121,7 +121,7 @@ namespace Nepomuk {
          * the file is saved as a \a hasIdentifier relation which means that it can be used to easily find
          * the related resource.
          */
-        Resource( const QString& uriOrIdentifier, const QString& type = QString() );
+        explicit Resource( const QString& uriOrIdentifier, const QString& type = QString() );
 
         /**
          * Constructor used internally.

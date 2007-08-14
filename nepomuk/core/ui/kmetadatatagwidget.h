@@ -44,7 +44,7 @@ namespace Nepomuk {
          * Creates a new TagWidget for resource. The assigned tags are loaded
          * instantly.
          */
-        TagWidget( const Resource& resource, QWidget* parent = 0 );
+        explicit TagWidget( const Resource& resource, QWidget* parent = 0 );
         TagWidget( QWidget* parent = 0 );
         ~TagWidget();
 

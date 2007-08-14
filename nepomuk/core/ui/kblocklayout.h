@@ -34,7 +34,7 @@
 class KBlockLayout : public QLayout
 {
  public:
-    KBlockLayout( QWidget *parent, int margin = 0, int spacing = -1 );
+    explicit KBlockLayout( QWidget *parent, int margin = 0, int spacing = -1 );
     KBlockLayout( int spacing = -1 );
     ~KBlockLayout();
 
