@@ -28,8 +28,10 @@
 #include <stdio.h>
 #include <wtf/MathExtras.h>
 
-#if HAVE(FUNC_ISINF) && HAVE(IEEEFP_H)
+#if HAVE(IEEEFP_H)
+#if HAVE(FUNC_ISINF) || HAVE(FUNC_FINITE)
 #include <ieeefp.h>
+#endif
 #endif
 
 #if HAVE(FLOAT_H)
