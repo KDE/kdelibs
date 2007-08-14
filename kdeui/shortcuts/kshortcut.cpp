@@ -94,10 +94,9 @@ KShortcut::KShortcut(const QString &s)
     if (s == QLatin1String("none"))
         return;
 
-    QStringList sCuts = s.split(';');
+    QStringList sCuts = s.split("; ");
     if (sCuts.count() > 2)
-        kWarning() << "KShortcut: asked to store more than two key sequences but can only hold two."
-        <<endl;
+        kWarning() << "KShortcut: asked to store more than two key sequences but can only hold two.";
 
     //TODO: what is the "(default)" thingie used for?
     for( int i=0; i < sCuts.count(); i++)
@@ -200,9 +199,9 @@ QString KShortcut::toString() const
     QString ret;
     foreach(QKeySequence seq, toList()) {
         ret.append(seq.toString());
-        ret.append(';');
+        ret.append("; ");
     }
-    ret.truncate(ret.length() - 1);
+    ret.chop(2);
     return ret;
 }
 

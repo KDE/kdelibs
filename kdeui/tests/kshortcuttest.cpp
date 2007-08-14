@@ -19,6 +19,10 @@ void tst_KShortcut::isEmpty()
 
     cut = KShortcut(Qt::Key_A);
     QVERIFY(!cut.isEmpty());
+
+    cut = KShortcut(";, Alt+;; ;, Alt+A, ;");
+    QVERIFY(cut.primary() == QKeySequence::fromString(";, Alt+;"));
+    QVERIFY(cut.alternate() == QKeySequence::fromString(";, Alt+A, ;"));
 }
 
 QTEST_KDEMAIN(tst_KShortcut, NoGUI)
