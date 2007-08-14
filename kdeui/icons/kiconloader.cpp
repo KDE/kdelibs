@@ -350,9 +350,7 @@ bool KIconLoader::initIconThemes()
         def = new KIconTheme(KIconTheme::defaultThemeName(), d->appname);
         if (!def->isValid())
         {
-            kError(264) << "Error: standard icon theme"
-                         << " \"" << KIconTheme::defaultThemeName() << "\" "
-                         << " not found!" << endl;
+            kError(264) << "Error: standard icon theme" << KIconTheme::defaultThemeName() << "not found!" << endl;
             delete def;
             return false;
         }
