@@ -45,7 +45,6 @@
 #include <QtGui/QImage>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QtGui/QLineEdit>
 #include <QtGui/QPainter>
 #include <QtGui/QPushButton>
 #include <QtGui/QScrollBar>
@@ -58,6 +57,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
+#include <klineedit.h>
 #include <klistwidget.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -901,7 +901,7 @@ public:
     bool bEditHtml;
     bool bColorPicking;
     QLabel *colorName;
-    QLineEdit *htmlName;
+    KLineEdit *htmlName;
     KColorSpinBox *hedit;
     KColorSpinBox *sedit;
     KColorSpinBox *vedit;
@@ -1178,7 +1178,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   label->setText(i18n("HTML:"));
   l_grid->addWidget(label, 1, 1, Qt::AlignLeft);
 
-  d->htmlName = new QLineEdit( page );
+  d->htmlName = new KLineEdit( page );
   d->htmlName->setMaxLength( 13 ); // Qt's QColor allows 12 hexa-digits
   d->htmlName->setText("#FFFFFF"); // But HTML uses only 6, so do not worry about the size
   w = d->htmlName->fontMetrics().width(QLatin1String("#DDDDDDD"));

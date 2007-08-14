@@ -28,7 +28,6 @@
 #include <QtGui/QActionEvent>
 #include <QtGui/QFont>
 #include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
 #include <QtGui/QPainter>
 #include <QtGui/QPen>
 #include <QtGui/QDoubleSpinBox>
@@ -66,7 +65,6 @@ class KCharSelect::KCharSelectPrivate
 {
 public:
     KLineEdit* searchLine;
-    QLineEdit *unicodeLine;
     QFontComboBox *fontCombo;
     QSpinBox *fontSizeSpinBox;
     QComboBox *sectionCombo;
