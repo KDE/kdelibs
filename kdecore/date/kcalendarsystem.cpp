@@ -19,40 +19,34 @@
     Boston, MA 02110-1301, USA.
 */
 
-// Gregorian calendar system implementation factory for creation of kde calendar systems.
-// Also default gregorian and factory classes
-
 #include "kcalendarsystem.h"
 
 #include "kglobal.h"
 
 #include <QtCore/QDateTime>
 
-
 #include "kcalendarsystemgregorian.h"
-#include "kcalendarsystemhijri.h"
 #include "kcalendarsystemhebrew.h"
+#include "kcalendarsystemhijri.h"
 #include "kcalendarsystemjalali.h"
 
-KCalendarSystem *KCalendarSystem::create( const QString &calType, const KLocale * locale )
+KCalendarSystem *KCalendarSystem::create( const QString &calendarType, const KLocale *locale )
 {
-    if ( calType == "hebrew" ) {
+    if ( calendarType == "hebrew" ) {
         return new KCalendarSystemHebrew( locale );
     }
 
-    if ( calType == "hijri" ) {
+    if ( calendarType == "hijri" ) {
         return new KCalendarSystemHijri( locale );
     }
 
-    if ( calType == "gregorian" ) {
+    if ( calendarType == "gregorian" ) {
         return new KCalendarSystemGregorian( locale );
     }
 
-    if ( calType == "jalali" ) {
+    if ( calendarType == "jalali" ) {
         return new KCalendarSystemJalali( locale );
     }
-
-    //kDebug(5400) << "Calendar " << calType << " not found, defaulting to gregorian";
 
     // ### HPB: Should it really be a default here?
     return new KCalendarSystemGregorian( locale );
@@ -92,67 +86,6 @@ QString KCalendarSystem::calendarLabel( const QString &calendarType )
 }
 
 
-class KCalendarSystemPrivate
-{
-public:
-    const KLocale * locale;
-};
-
-KCalendarSystem::KCalendarSystem( const KLocale * locale ) : d( new KCalendarSystemPrivate )
-{
-    d->locale = locale;
-}
-
-KCalendarSystem::~KCalendarSystem()
-{
-    delete d;
-}
-
-const KLocale * KCalendarSystem::locale() const
-{
-    if ( d->locale ) {
-        return d->locale;
-    }
-
-    return KGlobal::locale();
-}
-
-QString KCalendarSystem::dayString( const QDate &pDate, StringFormat format ) const
-{
-    QString sResult;
-
-    sResult.setNum( day( pDate ) );
-    if ( format == LongFormat && sResult.length() == 1 ) {
-        sResult.prepend( QLatin1Char( '0' ) );
-    }
-
-    return sResult;
-}
-
-QString KCalendarSystem::monthString( const QDate &pDate, StringFormat format ) const
-{
-    QString sResult;
-
-    sResult.setNum( month( pDate ) );
-    if ( format == LongFormat && sResult.length() == 1 ) {
-        sResult.prepend( QLatin1Char( '0' ) );
-    }
-
-    return sResult;
-}
-
-QString KCalendarSystem::yearString( const QDate &pDate, StringFormat format ) const
-{
-    QString sResult;
-
-    sResult.setNum( year( pDate ) );
-    if ( format == ShortFormat && sResult.length() == 4 ) {
-        sResult = sResult.right( 2 );
-    }
-
-    return sResult;
-}
-
 static int stringToInteger( const QString &sNum, int &iLength )
 {
     int iPos = 0;
@@ -167,24 +100,25 @@ static int stringToInteger( const QString &sNum, int &iLength )
     return result;
 }
 
-
-int KCalendarSystem::dayStringToInteger( const QString &sNum, int &iLength ) const
+class KCalendarSystemPrivate
 {
-    return stringToInteger( sNum, iLength );
+public:
+    const KLocale *locale;
+};
+
+KCalendarSystem::KCalendarSystem( const KLocale *locale ) : d( new KCalendarSystemPrivate )
+{
+    d->locale = locale;
 }
 
-int KCalendarSystem::monthStringToInteger( const QString &sNum, int &iLength ) const
+KCalendarSystem::~KCalendarSystem()
 {
-    return stringToInteger( sNum, iLength );
-}
-
-int KCalendarSystem::yearStringToInteger( const QString &sNum, int &iLength ) const
-{
-    return stringToInteger( sNum, iLength );
+    delete d;
 }
 
 QDate KCalendarSystem::epoch() const
 {
+    // Earliest valid QDate
     return QDate::fromJulianDay( 1 );
 }
 
@@ -221,9 +155,9 @@ bool KCalendarSystem::setDate( QDate &date, int year, int month, int day ) const
 }
 
 // Deprecated
-bool KCalendarSystem::setYMD( QDate &date, int y, int m, int d ) const
+bool KCalendarSystem::setYMD( QDate &date, int year, int month, int day ) const
 {
-    return setDate( date, y, m, d );
+    return setDate( date, year, month, day );
 }
 
 int KCalendarSystem::year( const QDate &date ) const
@@ -253,76 +187,7 @@ int KCalendarSystem::day( const QDate &date ) const
     return day;
 }
 
-int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
-{
-    // Copied straight from Hebrew/Jalali/Hirji version
-    QDate firstDayWeek1, lastDayOfYear;
-    int y = year( date );
-    int week;
-    int weekDay1, dayOfWeek1InYear;
-
-    // let's guess 1st day of 1st week
-    setYMD( firstDayWeek1, y, 1, 1 );
-    weekDay1 = dayOfWeek( firstDayWeek1 );
-
-    // iso 8601: week 1  is the first containing thursday and week starts on
-    // monday
-    if ( weekDay1 > 4 /*Thursday*/ ) {
-        firstDayWeek1 = addDays( firstDayWeek1 , 7 - weekDay1 + 1 ); // next monday
-    }
-
-    dayOfWeek1InYear = dayOfYear( firstDayWeek1 );
-
-    // our date in prev year's week
-    if ( dayOfYear( date ) < dayOfWeek1InYear ) { 
-        if ( yearNum ) {
-            *yearNum = y - 1;
-        }
-        return weeksInYear( y - 1 );
-    }
-
-    // let's check if its last week belongs to next year
-    setYMD( lastDayOfYear, y + 1, 1, 1 );
-    lastDayOfYear = addDays( lastDayOfYear, -1 );
-    // if our date is in last week && 1st week in next year has thursday
-    if ( ( dayOfYear( date ) >= daysInYear( date ) - dayOfWeek( lastDayOfYear ) + 1 )
-         && dayOfWeek( lastDayOfYear ) < 4 ) {
-        if ( yearNum ) {
-            * yearNum = y + 1;
-        }
-        week = 1;
-    } else {
-        // To calculate properly the number of weeks from day a to x let's make a day 1 of week
-        if( weekDay1 < 5 ) {
-            firstDayWeek1 = addDays( firstDayWeek1, -( weekDay1 - 1 ) );
-        }
-
-        week = firstDayWeek1.daysTo( date ) / 7 + 1;
-    }
-
-    return week;
-}
-
-int KCalendarSystem::dayOfYear( const QDate &date ) const
-{
-    //Take the jd of the given date, and subtract the jd of the first day of that year
-    int firstDayOfYear;
-
-    dateToJulianDay( year( date ), 1, 1, firstDayOfYear );
-
-    return ( date.toJulianDay() - firstDayOfYear + 1 );
-}
-
-int KCalendarSystem::dayOfWeek( const QDate &date ) const
-{
-    // Makes assumption that Julian Day 0 was day 1 of week
-    // This is true for Julian/Gregorian calendar with jd 0 being Monday
-    // We add 1 for ISO compliant numbering for 7 day week
-    // Assumes we've never skipped weekdays
-    return ( ( date.toJulianDay() % daysInWeek( date ) ) + 1 );
-}
-
-QDate KCalendarSystem::addYears( const QDate &date, int nyears ) const
+QDate KCalendarSystem::addYears( const QDate &date, int numYears ) const
 {
     int originalYear, originalMonth, originalDay;
     int newYear, newMonth, newDay;
@@ -330,7 +195,7 @@ QDate KCalendarSystem::addYears( const QDate &date, int nyears ) const
 
     julianDayToDate( date.toJulianDay(), originalYear, originalMonth, originalDay );
 
-    newYear = originalYear + nyears;
+    newYear = originalYear + numYears;
     newMonth = originalMonth;
 
     //Adjust day number if new month has fewer days than old month
@@ -347,7 +212,7 @@ QDate KCalendarSystem::addYears( const QDate &date, int nyears ) const
     return QDate::fromJulianDay( 0 );
 }
 
-QDate KCalendarSystem::addMonths( const QDate &date, int nmonths ) const
+QDate KCalendarSystem::addMonths( const QDate &date, int numMonths ) const
 {
     int originalYear, originalMonth, originalDay;
     int newYear, newMonth, newDay;
@@ -358,8 +223,8 @@ QDate KCalendarSystem::addMonths( const QDate &date, int nmonths ) const
 
     monthsInOriginalYear = monthsInYear( date );
 
-    newYear = originalYear + ( ( originalMonth + nmonths ) / monthsInOriginalYear );
-    newMonth = ( originalMonth + nmonths ) % monthsInOriginalYear;
+    newYear = originalYear + ( ( originalMonth + numMonths ) / monthsInOriginalYear );
+    newMonth = ( originalMonth + numMonths ) % monthsInOriginalYear;
 
     if ( newMonth == 0 ) {
         newYear = newYear - 1;
@@ -384,12 +249,12 @@ QDate KCalendarSystem::addMonths( const QDate &date, int nmonths ) const
     return QDate::fromJulianDay( 0 );
 }
 
-QDate KCalendarSystem::addDays( const QDate &date, int ndays ) const
+QDate KCalendarSystem::addDays( const QDate &date, int numDays ) const
 {
     // QDate only holds a uint, don't overflow!
-    if ( date.toJulianDay() + ndays > 0 ) {
+    if ( date.toJulianDay() + numDays > 0 ) {
         // QDate adds straight to jd
-        QDate temp = date.addDays( ndays );
+        QDate temp = date.addDays( numDays );
         if ( isValid( temp ) ) {
             return temp;
         }
@@ -397,11 +262,6 @@ QDate KCalendarSystem::addDays( const QDate &date, int ndays ) const
 
     //Is QDate's way of saying is invalid
     return QDate::fromJulianDay( 0 );
-}
-
-bool KCalendarSystem::isLeapYear( const QDate &date ) const
-{
-    return isLeapYear( year( date ) );
 }
 
 int KCalendarSystem::monthsInYear( const QDate &date ) const
@@ -476,9 +336,79 @@ int KCalendarSystem::daysInWeek( const QDate &date ) const
     return 7;
 }
 
-int KCalendarSystem::weekStartDay() const
+int KCalendarSystem::dayOfYear( const QDate &date ) const
 {
-    return locale()->weekStartDay();
+    //Take the jd of the given date, and subtract the jd of the first day of that year
+    int firstDayOfYear;
+
+    dateToJulianDay( year( date ), 1, 1, firstDayOfYear );
+
+    return ( date.toJulianDay() - firstDayOfYear + 1 );
+}
+
+int KCalendarSystem::dayOfWeek( const QDate &date ) const
+{
+    // Makes assumption that Julian Day 0 was day 1 of week
+    // This is true for Julian/Gregorian calendar with jd 0 being Monday
+    // We add 1 for ISO compliant numbering for 7 day week
+    // Assumes we've never skipped weekdays
+    return ( ( date.toJulianDay() % daysInWeek( date ) ) + 1 );
+}
+
+int KCalendarSystem::weekNumber( const QDate &date, int *yearNum ) const
+{
+    // Copied straight from Hebrew/Jalali/Hirji version
+    QDate firstDayWeek1, lastDayOfYear;
+    int y = year( date );
+    int week;
+    int weekDay1, dayOfWeek1InYear;
+
+    // let's guess 1st day of 1st week
+    // JPL can't count on this, fix!
+    setDate( firstDayWeek1, y, 1, 1 );
+    weekDay1 = dayOfWeek( firstDayWeek1 );
+
+    // iso 8601: week 1  is the first containing thursday and week starts on
+    // monday
+    if ( weekDay1 > 4 /*Thursday*/ ) {
+        firstDayWeek1 = addDays( firstDayWeek1 , 7 - weekDay1 + 1 ); // next monday
+    }
+
+    dayOfWeek1InYear = dayOfYear( firstDayWeek1 );
+
+    // our date in prev year's week
+    if ( dayOfYear( date ) < dayOfWeek1InYear ) { 
+        if ( yearNum ) {
+            *yearNum = y - 1;
+        }
+        return weeksInYear( y - 1 );
+    }
+
+    // let's check if its last week belongs to next year
+    setYMD( lastDayOfYear, y + 1, 1, 1 );
+    lastDayOfYear = addDays( lastDayOfYear, -1 );
+    // if our date is in last week && 1st week in next year has thursday
+    if ( ( dayOfYear( date ) >= daysInYear( date ) - dayOfWeek( lastDayOfYear ) + 1 )
+         && dayOfWeek( lastDayOfYear ) < 4 ) {
+        if ( yearNum ) {
+            * yearNum = y + 1;
+        }
+        week = 1;
+    } else {
+        // To calculate properly the number of weeks from day a to x let's make a day 1 of week
+        if( weekDay1 < 5 ) {
+            firstDayWeek1 = addDays( firstDayWeek1, -( weekDay1 - 1 ) );
+        }
+
+        week = firstDayWeek1.daysTo( date ) / 7 + 1;
+    }
+
+    return week;
+}
+
+bool KCalendarSystem::isLeapYear( const QDate &date ) const
+{
+    return isLeapYear( year( date ) );
 }
 
 QString KCalendarSystem::monthName( const QDate &date, MonthNameFormat format ) const
@@ -489,6 +419,57 @@ QString KCalendarSystem::monthName( const QDate &date, MonthNameFormat format ) 
 QString KCalendarSystem::weekDayName( const QDate &date, WeekDayNameFormat format ) const
 {
     return weekDayName( dayOfWeek( date ), format );
+}
+
+QString KCalendarSystem::yearString( const QDate &date, StringFormat format ) const
+{
+    QString result;
+
+    result.setNum( year( date ) );
+    if ( format == ShortFormat && result.length() == 4 ) {
+        result = result.right( 2 );
+    }
+
+    return result;
+}
+
+QString KCalendarSystem::monthString( const QDate &date, StringFormat format ) const
+{
+    QString result;
+
+    result.setNum( month( date ) );
+    if ( format == LongFormat && result.length() == 1 ) {
+        result.prepend( QLatin1Char( '0' ) );
+    }
+
+    return result;
+}
+
+QString KCalendarSystem::dayString( const QDate &date, StringFormat format ) const
+{
+    QString result;
+
+    result.setNum( day( date ) );
+    if ( format == LongFormat && result.length() == 1 ) {
+        result.prepend( QLatin1Char( '0' ) );
+    }
+
+    return result;
+}
+
+int KCalendarSystem::yearStringToInteger( const QString &yearString, int &iLength ) const
+{
+    return stringToInteger( yearString, iLength );
+}
+
+int KCalendarSystem::monthStringToInteger( const QString &monthString, int &iLength ) const
+{
+    return stringToInteger( monthString, iLength );
+}
+
+int KCalendarSystem::dayStringToInteger( const QString &dayString, int &iLength ) const
+{
+    return stringToInteger( dayString, iLength );
 }
 
 QString KCalendarSystem::formatDate( const QDate &date, KLocale::DateFormat format ) const
@@ -509,6 +490,11 @@ QDate KCalendarSystem::readDate( const QString &intstr, const QString &fmt, bool
 QDate KCalendarSystem::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
 {
     return locale()->readDate( str, flags, ok );
+}
+
+int KCalendarSystem::weekStartDay() const
+{
+    return locale()->weekStartDay();
 }
 
 bool KCalendarSystem::julianDayToDate( int jd, int &year, int &month, int &day ) const
@@ -534,4 +520,13 @@ bool KCalendarSystem::dateToJulianDay( int year, int month, int day, int &jd ) c
     }
 
     return false;
+}
+
+const KLocale * KCalendarSystem::locale() const
+{
+    if ( d->locale ) {
+        return d->locale;
+    }
+
+    return KGlobal::locale();
 }

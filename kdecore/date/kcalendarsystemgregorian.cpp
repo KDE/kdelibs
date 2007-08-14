@@ -20,7 +20,6 @@
 */
 
 // Derived gregorian kde calendar class
-// Just a schema.
 
 #include "kcalendarsystemgregorian.h"
 
@@ -81,80 +80,10 @@ bool KCalendarSystemGregorian::setDate( QDate &date, int year, int month, int da
     return date.setDate( year, month, day );
 }
 
-QString KCalendarSystemGregorian::yearString( const QDate &pDate, StringFormat format ) const
+// Deprecated
+bool KCalendarSystemGregorian::setYMD( QDate &date, int y, int m, int d ) const
 {
-    return KCalendarSystem::yearString( pDate, format );
-}
-
-QString KCalendarSystemGregorian::monthString( const QDate &pDate, StringFormat format ) const
-{
-    return KCalendarSystem::monthString( pDate, format );
-}
-
-int KCalendarSystemGregorian::monthStringToInteger( const QString &sNum, int &iLength ) const
-{
-    return KCalendarSystem::monthStringToInteger( sNum, iLength );
-}
-
-QString KCalendarSystemGregorian::dayString( const QDate &pDate, StringFormat format ) const
-{
-    return KCalendarSystem::dayString( pDate, format );
-}
-
-int KCalendarSystemGregorian::dayStringToInteger( const QString &sNum, int &iLength ) const
-{
-    return KCalendarSystem::dayStringToInteger( sNum, iLength );
-}
-
-bool KCalendarSystemGregorian::isLeapYear( int year ) const
-{
-    return QDate::isLeapYear( year );
-}
-
-bool KCalendarSystemGregorian::isLeapYear( const QDate &date ) const
-{
-    return QDate::isLeapYear( date.year() );
-}
-
-QString KCalendarSystemGregorian::formatDate( const QDate &date, KLocale::DateFormat format ) const
-{
-    return KCalendarSystem::formatDate( date, format );
-}
-
-QDate KCalendarSystemGregorian::readDate( const QString &str, bool *ok ) const
-{
-    return KCalendarSystem::readDate( str, ok );
-}
-
-QDate KCalendarSystemGregorian::readDate( const QString &intstr, const QString &fmt, bool *ok ) const
-{
-    return KCalendarSystem::readDate( intstr, fmt, ok );
-}
-
-QDate KCalendarSystemGregorian::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
-{
-    return KCalendarSystem::readDate( str, flags, ok );
-}
-
-int KCalendarSystemGregorian::daysInWeek( const QDate &date ) const
-{
-    Q_UNUSED( date );
-    return 7;
-}
-
-int KCalendarSystemGregorian::weekStartDay() const
-{
-    return KCalendarSystem::weekStartDay();
-}
-
-bool KCalendarSystemGregorian::isProleptic() const
-{
-    return true;
-}
-
-int KCalendarSystemGregorian::weeksInYear( const QDate &date ) const
-{
-    return KCalendarSystem::weeksInYear( date );
+    return date.setDate( y, m, d );
 }
 
 int KCalendarSystemGregorian::year( const QDate &date ) const
@@ -162,11 +91,41 @@ int KCalendarSystemGregorian::year( const QDate &date ) const
     return date.year();
 }
 
+int KCalendarSystemGregorian::month( const QDate &date ) const
+{
+    return date.month();
+}
+
+int KCalendarSystemGregorian::day( const QDate &date ) const
+{
+    return date.day();
+}
+
+QDate KCalendarSystemGregorian::addYears( const QDate &date, int nyears ) const
+{
+    return date.addYears( nyears );
+}
+
+QDate KCalendarSystemGregorian::addMonths( const QDate &date, int nmonths ) const
+{
+    return date.addMonths( nmonths );
+}
+
+QDate KCalendarSystemGregorian::addDays( const QDate &date, int ndays ) const
+{
+    return date.addDays( ndays );
+}
+
 int KCalendarSystemGregorian::monthsInYear( const QDate &date ) const
 {
     Q_UNUSED( date )
 
     return 12;
+}
+
+int KCalendarSystemGregorian::weeksInYear( const QDate &date ) const
+{
+    return KCalendarSystem::weeksInYear( date );
 }
 
 int KCalendarSystemGregorian::weeksInYear( int year ) const
@@ -183,9 +142,45 @@ int KCalendarSystemGregorian::weeksInYear( int year ) const
     return temp.weekNumber();
 }
 
+int KCalendarSystemGregorian::daysInYear( const QDate &date ) const
+{
+    return date.daysInYear();
+}
+
+int KCalendarSystemGregorian::daysInMonth( const QDate &date ) const
+{
+    return date.daysInMonth();
+}
+
+int KCalendarSystemGregorian::daysInWeek( const QDate &date ) const
+{
+    Q_UNUSED( date );
+    return 7;
+}
+
+int KCalendarSystemGregorian::dayOfYear( const QDate &date ) const
+{
+    return date.dayOfYear();
+}
+
+int KCalendarSystemGregorian::dayOfWeek( const QDate &date ) const
+{
+    return date.dayOfWeek();
+}
+
 int KCalendarSystemGregorian::weekNumber( const QDate &date, int * yearNum ) const
 {
     return date.weekNumber( yearNum );
+}
+
+bool KCalendarSystemGregorian::isLeapYear( int year ) const
+{
+    return QDate::isLeapYear( year );
+}
+
+bool KCalendarSystemGregorian::isLeapYear( const QDate &date ) const
+{
+    return QDate::isLeapYear( date.year() );
 }
 
 QString KCalendarSystemGregorian::monthName( int month, int year, MonthNameFormat format ) const
@@ -322,27 +317,6 @@ QString KCalendarSystemGregorian::monthName( const QDate &date, MonthNameFormat 
 }
 
 
-// Deprecated
-bool KCalendarSystemGregorian::setYMD( QDate &date, int y, int m, int d ) const
-{
-    return date.setDate( y, m, d );
-}
-
-QDate KCalendarSystemGregorian::addYears( const QDate &date, int nyears ) const
-{
-    return date.addYears( nyears );
-}
-
-QDate KCalendarSystemGregorian::addMonths( const QDate &date, int nmonths ) const
-{
-    return date.addMonths( nmonths );
-}
-
-QDate KCalendarSystemGregorian::addDays( const QDate &date, int ndays ) const
-{
-    return date.addDays( ndays );
-}
-
 QString KCalendarSystemGregorian::weekDayName( int weekDay, WeekDayNameFormat format ) const
 {
     if ( format == ShortDayName ) {
@@ -375,34 +349,59 @@ QString KCalendarSystemGregorian::weekDayName( const QDate &date, WeekDayNameFor
     return weekDayName( dayOfWeek( date ), format );
 }
 
-int KCalendarSystemGregorian::dayOfWeek( const QDate &date ) const
+QString KCalendarSystemGregorian::yearString( const QDate &pDate, StringFormat format ) const
 {
-    return date.dayOfWeek();
+    return KCalendarSystem::yearString( pDate, format );
 }
 
-int KCalendarSystemGregorian::dayOfYear( const QDate &date ) const
+QString KCalendarSystemGregorian::monthString( const QDate &pDate, StringFormat format ) const
 {
-    return date.dayOfYear();
+    return KCalendarSystem::monthString( pDate, format );
 }
 
-int KCalendarSystemGregorian::daysInMonth( const QDate &date ) const
+QString KCalendarSystemGregorian::dayString( const QDate &pDate, StringFormat format ) const
 {
-    return date.daysInMonth();
+    return KCalendarSystem::dayString( pDate, format );
 }
 
-int KCalendarSystemGregorian::day( const QDate &date ) const
+int KCalendarSystemGregorian::yearStringToInteger( const QString &sNum, int &iLength ) const
 {
-    return date.day();
+    return KCalendarSystem::yearStringToInteger( sNum, iLength );
 }
 
-int KCalendarSystemGregorian::month( const QDate &date ) const
+int KCalendarSystemGregorian::monthStringToInteger( const QString &sNum, int &iLength ) const
 {
-    return date.month();
+    return KCalendarSystem::monthStringToInteger( sNum, iLength );
 }
 
-int KCalendarSystemGregorian::daysInYear( const QDate &date ) const
+int KCalendarSystemGregorian::dayStringToInteger( const QString &sNum, int &iLength ) const
 {
-    return date.daysInYear();
+    return KCalendarSystem::dayStringToInteger( sNum, iLength );
+}
+
+QString KCalendarSystemGregorian::formatDate( const QDate &date, KLocale::DateFormat format ) const
+{
+    return KCalendarSystem::formatDate( date, format );
+}
+
+QDate KCalendarSystemGregorian::readDate( const QString &str, bool *ok ) const
+{
+    return KCalendarSystem::readDate( str, ok );
+}
+
+QDate KCalendarSystemGregorian::readDate( const QString &intstr, const QString &fmt, bool *ok ) const
+{
+    return KCalendarSystem::readDate( intstr, fmt, ok );
+}
+
+QDate KCalendarSystemGregorian::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
+{
+    return KCalendarSystem::readDate( str, flags, ok );
+}
+
+int KCalendarSystemGregorian::weekStartDay() const
+{
+    return KCalendarSystem::weekStartDay();
 }
 
 int KCalendarSystemGregorian::weekDayOfPray() const
@@ -425,20 +424,9 @@ bool KCalendarSystemGregorian::isSolar() const
     return true;
 }
 
-int KCalendarSystemGregorian::yearStringToInteger( const QString &sNum, int &iLength ) const
+bool KCalendarSystemGregorian::isProleptic() const
 {
-    int iYear;
-    iYear = KCalendarSystem::yearStringToInteger( sNum, iLength );
-
-    // Qt treats a year in the range 0-100 as 1900-1999.
-    // It is nicer for the user if we treat 0-68 as 2000-2068
-    if ( iYear < 69 ) {
-        iYear += 2000;
-    } else if ( iYear < 100 ) {
-        iYear += 1900;
-    }
-
-    return iYear;
+    return false;
 }
 
 bool KCalendarSystemGregorian::julianDayToDate( int jd, int &year, int &month, int &day ) const
