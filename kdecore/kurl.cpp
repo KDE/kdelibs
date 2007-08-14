@@ -183,7 +183,7 @@ static QString lazy_encode( const QString& segment, bool encodeAt=true )
         (character == '?') || // Start of query delimiter
         ((character == '@') && encodeAt) || // Username delimiter
         (character == '#') || // Start of reference delimiter
-        ((character == 32) && (i+1 == old_length))) // A trailing space
+        ((character == 32) && (i+1 == old_length || segment[i+1] == ' '))) // A trailing space
     {
       new_segment[ new_length++ ] = '%';
 
@@ -1540,7 +1540,7 @@ QString KURL::prettyURL( int _trailing ) const
     u += "//";
     if ( hasUser() )
     {
-      u += lazy_encode(m_strUser);
+      u += encode(m_strUser, 0, 0);
       // Don't show password!
       u += "@";
     }
