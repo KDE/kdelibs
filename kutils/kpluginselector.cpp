@@ -64,11 +64,20 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     pluginModel = new PluginModel(this);
     pluginDelegate = new PluginDelegate(this);
 
-    pluginDelegate->setIconSize(48, 48);
     pluginDelegate->setMinimumItemWidth(200);
     pluginDelegate->setLeftMargin(20);
     pluginDelegate->setRightMargin(20);
-    pluginDelegate->setSeparatorPixels(10);
+    pluginDelegate->setSeparatorPixels(5);
+
+    QFont title(parent->font());
+    title.setPointSize(title.pointSize() + 2);
+    title.setWeight(QFont::Bold);
+
+    QFontMetrics titleMetrics(title);
+    QFontMetrics currentMetrics(parent->font());
+
+    pluginDelegate->setIconSize((pluginDelegate->getSeparatorPixels() * 2) + titleMetrics.height() + currentMetrics.height(),
+                                (pluginDelegate->getSeparatorPixels() * 2) + titleMetrics.height() + currentMetrics.height());
 
     QObject::connect(pluginModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(emitChanged()));
     QObject::connect(pluginDelegate, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
@@ -856,38 +865,29 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
         opt.fontMetrics = painter->fontMetrics();
 
-        /*if (const KStyle *style = dynamic_cast<const KStyle*>(QApplication::style()))
-        {
-            opt.rect.setHeight(sizeHint(optionCopy, index).height() - separatorPixels);
+        QRect auxRect(optionCopy.rect.left() + leftMargin,
+                      optionCopy.rect.bottom() - 2,
+                      optionCopy.rect.width() - leftMargin - rightMargin,
+                      2);
 
-            style->drawControl(KStyle::CE_Category, &opt, painter, 0);
-        }
-        else
-        {*/
-            QRect auxRect(optionCopy.rect.left() + leftMargin,
-                          optionCopy.rect.bottom() - 2,
-                          optionCopy.rect.width() - leftMargin - rightMargin,
-                          2);
+        QPainterPath path;
+        path.addRect(auxRect);
 
-            QPainterPath path;
-            path.addRect(auxRect);
+        QLinearGradient gradient(optionCopy.rect.topLeft(),
+                                 optionCopy.rect.bottomRight());
+        gradient.setColorAt(0, Qt::black);
+        gradient.setColorAt(1, Qt::white);
 
-            QLinearGradient gradient(optionCopy.rect.topLeft(),
-                                                        optionCopy.rect.bottomRight());
-            gradient.setColorAt(0, Qt::black);
-            gradient.setColorAt(1, Qt::white);
+        painter->setBrush(gradient);
+        painter->fillPath(path, gradient);
 
-            painter->setBrush(gradient);
-            painter->fillPath(path, gradient);
+        QRect auxRect2(optionCopy.rect.left() + leftMargin,
+                       option.rect.top(),
+                       optionCopy.rect.width() - leftMargin - rightMargin,
+                       option.rect.height());
 
-            QRect auxRect2(optionCopy.rect.left() + leftMargin,
-                           option.rect.top(),
-                           optionCopy.rect.width() - leftMargin - rightMargin,
-                           option.rect.height());
-
-            painter->drawText(auxRect2, Qt::AlignVCenter | Qt::AlignLeft,
-                              display);
-        //}
+        painter->drawText(auxRect2, Qt::AlignVCenter | Qt::AlignLeft,
+                          display);
     }
 
     painter->restore();
@@ -897,19 +897,17 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
 {
     Q_UNUSED(option);
 
+    QFont title(option.font);
+    title.setPointSize(title.pointSize() + 2);
+    title.setWeight(QFont::Bold);
+
+    QFontMetrics titleMetrics(title);
+    QFontMetrics currentMetrics(option.font);
+
     if (index.internalPointer())
-        return QSize(68, 68);
+        return QSize(46, qMax((separatorPixels * 2) + iconHeight, (separatorPixels * 4) + titleMetrics.height() + currentMetrics.height()));
 
-    /*if (const KStyle *style = dynamic_cast<const KStyle*>(QApplication::style()))
-    {
-        QSize retSize = style->sizeFromContents(KStyle::CT_Category, &option, QSize(1, option.fontMetrics.height()), 0);
-
-        retSize.setHeight(retSize.height() + separatorPixels);
-
-        return retSize;
-    }*/
-
-    return QSize(34, 34);
+    return QSize(34, (separatorPixels * 2) + titleMetrics.height() + 2);
 }
 
 void KPluginSelector::Private::PluginDelegate::setIconSize(int width, int height)
@@ -931,6 +929,11 @@ void KPluginSelector::Private::PluginDelegate::setLeftMargin(int leftMargin)
 void KPluginSelector::Private::PluginDelegate::setRightMargin(int rightMargin)
 {
     this->rightMargin = rightMargin;
+}
+
+int KPluginSelector::Private::PluginDelegate::getSeparatorPixels() const
+{
+    return separatorPixels;
 }
 
 void KPluginSelector::Private::PluginDelegate::setSeparatorPixels(int separatorPixels)

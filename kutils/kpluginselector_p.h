@@ -246,6 +246,8 @@ public:
 
     void setRightMargin(int rightMargin);
 
+    int getSeparatorPixels() const;
+
     void setSeparatorPixels(int separatorPixels);
 
 Q_SIGNALS:
