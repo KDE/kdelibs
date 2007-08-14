@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
  */
 
+#include "styleanimator.h"
+
 #include <QEvent>
 #include <QPainter>
 #include <QBitmap>
@@ -26,7 +28,6 @@
 #include <QAbstractScrollArea>
 #include <QScrollBar>
 
-#include "styleanimator.h"
 #ifndef QT_NO_XRENDER
 #include "oxrender.h"
 #endif

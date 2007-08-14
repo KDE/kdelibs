@@ -16,13 +16,13 @@
    Boston, MA 02110-1301, USA.
  */
 
+#include "gradients.h"
+
 #include <QCache>
 #include <QPainter>
 #include <QLinearGradient>
 #include <QRadialGradient>
 #include <cmath>
-
-#include "gradients.h"
 
 static QPixmap nullPix;
 static Gradients::BgMode _mode;

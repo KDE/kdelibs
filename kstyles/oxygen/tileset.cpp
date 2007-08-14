@@ -16,12 +16,12 @@
    Boston, MA 02110-1301, USA.
  */
 
+#include "tileset.h"
 #include <QPainter>
 #include <cmath>
 #ifndef QT_NO_XRENDER
 #include "oxrender.h"
 #endif
-#include "tileset.h"
 
 #ifndef MIN
 #define MIN(x,y) ((x) < (y) ? (x) : (y))

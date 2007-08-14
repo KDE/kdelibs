@@ -23,4 +23,4 @@
 #define COLOR(_TYPE_) option->palette.color(QPalette::_TYPE_)
 #define CONF_COLOR(_TYPE_) option->palette.color(config._TYPE_)
 
-#endif //OXYGEN_DEFS_H
+#endif // OXYGEN_DEFS_H

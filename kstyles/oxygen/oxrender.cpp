@@ -18,13 +18,14 @@
 
 #ifndef QT_NO_XRENDER
 
+#include "oxrender.h"
+
 #include <QX11Info>
 #include <QPainter>
 #include <QRegion>
 #include <QWidget>
 #include <QtCore/QVarLengthArray>
 #include <cmath>
-#include "oxrender.h"
 
 // #ifndef QT_NO_XRENDER
 
