@@ -33,6 +33,7 @@ Comment[nl]=De Dublin Core Types namespace levert URI-adressen voor de items van
 Comment[pt]=O espaço de nomes dos Tipos do Dublin Core oferece URIs para os itens do Vocabulário de Tipos do DCMI.
 Comment[pt_BR]=O espaço de nomes Dublin Core Types fornece URIs para os itens do Vocabulário de Tipos DCMI
 Comment[sv]=Dublin-kärntypernas namnrymd tillhandahåller adresser för posterna i DCMI- typordförrådet.
+Comment[th]=รูปแบบชื่อชนิดหลักของ Dublin ที่ให้ URI สำหรับรายการของคำศัพท์แบบ DCMI
 Comment[zh_CN]=都柏林核心类型命名空间为 DCMI 类型词汇的条目提供了 URI
 Comment[zh_TW]=Dublin 核心型態命名空間提供了 DCMI 型態字彙的項目的 URI
 URL=http://purl.org/dc/dcmitype/
