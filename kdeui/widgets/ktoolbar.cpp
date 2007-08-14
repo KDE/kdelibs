@@ -103,6 +103,7 @@ class KToolBar::Private
 
     static Qt::ToolButtonStyle toolButtonStyleFromString( const QString& style );
     static QString toolButtonStyleToString( Qt::ToolButtonStyle );
+    static Qt::ToolBarArea positionFromString(const QString& position);
 
 
     KToolBar *parent;
@@ -424,6 +425,19 @@ QString KToolBar::Private::toolButtonStyleToString( Qt::ToolButtonStyle style )
     case Qt::ToolButtonTextUnderIcon:
       return "TextUnderIcon";
   }
+}
+
+Qt::ToolBarArea KToolBar::Private::positionFromString(const QString& position)
+{
+    Qt::ToolBarArea newposition = Qt::TopToolBarArea;
+    if (position == QLatin1String("left")) {
+        newposition = Qt::LeftToolBarArea;
+    } else if (position == QLatin1String("bottom")) {
+        newposition = Qt::BottomToolBarArea;
+    } else if (position == QLatin1String("right")) {
+        newposition = Qt::RightToolBarArea;
+    }
+    return newposition;
 }
 
 void KToolBar::Private::slotReadConfig()
@@ -856,6 +870,15 @@ void KToolBar::loadState( const QDomElement &element )
       hidden = attrHidden  == "true";
   }
 
+  Qt::ToolBarArea pos = Qt::NoToolBarArea;
+  {
+    QString attrPosition = element.attribute("position").toLower();
+    if (!attrPosition.isEmpty())
+      pos = KToolBar::Private::positionFromString(attrPosition);
+  }
+  if (pos != Qt::NoToolBarArea)
+    mainWindow()->addToolBar(pos, this);
+
   if ( hidden )
     hide();
   else
@@ -879,6 +902,7 @@ void KToolBar::saveState( QDomElement &current ) const
   Qt::ToolButtonStyle ToolButtonStyle;
   int index = -1;
   d->getAttributes( position, ToolButtonStyle, index );
+  position = position.toLower();
 
   current.setAttribute( "noMerge", "1" );
   current.setAttribute( "position", position );
