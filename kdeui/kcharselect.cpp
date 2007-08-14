@@ -29,7 +29,6 @@
 #include <qhbox.h>
 #include <qkeycode.h>
 #include <qlabel.h>
-#include <qlineedit.h>
 #include <qpainter.h>
 #include <qpen.h>
 #include <qregexp.h>
@@ -40,6 +39,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
+#include <klineedit.h>
 #include <klocale.h>
 
 class KCharSelect::KCharSelectPrivate
@@ -409,7 +409,7 @@ KCharSelect::KCharSelect( QWidget *parent, const char *name, const QString &_fon
     const QRegExp rx( "[a-fA-F0-9]{1,4}" );
     QValidator* const validator = new QRegExpValidator( rx, this );
 
-    d->unicodeLine = new QLineEdit( bar );
+    d->unicodeLine = new KLineEdit( bar );
     d->unicodeLine->setValidator(validator);
     lUnicode->setBuddy(d->unicodeLine);
     d->unicodeLine->resize( d->unicodeLine->sizeHint() );
