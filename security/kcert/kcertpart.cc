@@ -210,7 +210,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	QGridLayout *tabGrid = new QGridLayout(tab);
 	tabGrid->setMargin(KDialog::marginHint());
 	tabGrid->setSpacing(KDialog::spacingHint());
-	tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
+	tabGrid->addWidget(new QLabel(i18nc("State of the certification", "State:"), tab), 0, 0);
 	_p12_certState = new QLabel("", tab);
 	tabGrid->addWidget(_p12_certState, 0, 1, 1, 4);
 
@@ -225,7 +225,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	tabGrid->addWidget(new QLabel(i18n("Serial number:"), tab), 3, 0);
 	_p12_serialNum = new QLabel("", tab);
 	tabGrid->addWidget(_p12_serialNum, 3, 1);
-	_tabs->addTab(tab, i18n("State"));
+	_tabs->addTab(tab, i18nc("State of the certification", "State"));
 
 
 //
@@ -301,7 +301,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	tabGrid = new QGridLayout(tab);
 	tabGrid->setMargin(KDialog::marginHint());
 	tabGrid->setSpacing(KDialog::spacingHint());
-	tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
+	tabGrid->addWidget(new QLabel(i18nc("State of the certification", "State:"), tab), 0, 0);
 	_ca_certState = new QLabel("", tab);
 	tabGrid->addWidget(_ca_certState, 0, 1, 1, 4);
 
@@ -316,7 +316,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	tabGrid->addWidget(new QLabel(i18n("Serial number:"), tab), 3, 0);
 	_ca_serialNum = new QLabel("", tab);
 	tabGrid->addWidget(_ca_serialNum, 3, 1);
-	_tabs->addTab(tab, i18n("State"));
+	_tabs->addTab(tab, i18nc("State of the certification", "State"));
 
 
 //

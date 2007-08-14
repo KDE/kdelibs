@@ -124,7 +124,7 @@ QString CipherItem::configName() const
 
 
 
-OtherCertItem::OtherCertItem( Q3ListView *view, const QString& sub, const QString& md5, bool perm, int policy, QDateTime exp, KCryptoConfig *module )
+OtherCertItem::OtherCertItem( Q3ListView *view, const QString& sub, const QString& md5, bool perm, int policy, const QDateTime &exp, KCryptoConfig *module )
     : Q3ListViewItem( view, QString() ), _sub(sub), _md5(md5), _exp(exp), _perm(perm), _policy(policy)
 
 {
@@ -297,7 +297,7 @@ QString whatstr;
   QComboBox *cwcb = new QComboBox(cwbg);
     laygroup2->addWidget( cwcb );
   grid->addWidget(cwbg, 3, 0, 1, 2 );
-  QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following modes: <ul>");
+  QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following modes: </qt><ul>");
 
   cwcb->addItem(QString());
   cwcb->addItem(i18n("Strong Ciphers Only"));
@@ -2293,7 +2293,7 @@ bool noneDef, noneHost;
   defCertBox->clear();
   hostCertBox->clear();
   QStringList defCertStrList; // = KSSLCertificateHome::getCertificateList();
-  defCertStrList.append(i18n("None"));
+  defCertStrList.append(i18nc("No Certificates on List", "None"));
   for (YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->firstChild());
                                                                              x;
                            x = static_cast<YourCertItem *>(x->nextSibling())) {
