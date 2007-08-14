@@ -35,6 +35,8 @@
 
 
 #define KDE_ICONCACHE_NAME "kde-icon-cache"
+#define KDE_ICONCACHE_VERSION 0x000100
+
 
 class KIconCache::Private
 {
@@ -67,6 +69,14 @@ void KIconCache::deleteCache()
 bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
 {
     if (stream.atEnd()) {
+        return false;
+    }
+
+    // Load version
+    quint32 version;
+    stream >> version;
+    if (version != KDE_ICONCACHE_VERSION) {
+        kDebug() << k_funcinfo << "Obsolete iconcache version, will recreate" << endl;
         return false;
     }
 
@@ -109,6 +119,8 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
 void KIconCache::writeCustomIndexHeader(QDataStream& stream)
 {
     setValid(false);
+
+    stream << (quint32)KDE_ICONCACHE_VERSION;
 
     for (int i = 0; i < 6; i++) {
         stream << d->mDefaultIconSize[i];
