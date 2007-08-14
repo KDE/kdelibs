@@ -36,8 +36,10 @@
 #include <kdebug.h>
 #include <klockfile.h>
 #include <ksvgrenderer.h>
+#include <kdefakes.h>
 
 #include <time.h>
+#include <unistd.h>
 
 
 //#define DISABLE_PIXMAPCACHE
@@ -52,13 +54,19 @@ public:
     {
         mValid = false;
         mLockFile = new KLockFile(filename);
-        KLockFile::LockResult result = mLockFile->lock(KLockFile::NoBlockFlag);
-        // TODO: If locking blocks then sleep for a small amount of time (e.g.
-        //  20ms) and try again for a few times
-        if (result != KLockFile::LockOK) {
-            kError() << k_funcinfo << "Failed to lock file '" << filename << "', result = " << result << endl;
-        } else {
-            mValid = true;
+        // Try to lock the file up to 5 times, waiting 5 ms between retries
+        KLockFile::LockResult result;
+        for (int i = 0; i < 5; i++) {
+            result = mLockFile->lock(KLockFile::NoBlockFlag);
+            if (result == KLockFile::LockOK) {
+                mValid = true;
+                break;
+            }
+            usleep(5*1000);
+        }
+        // Output error msg if locking failed
+        if (!mValid) {
+            kError() << k_funcinfo << "Failed to lock file '" << filename << "', last result = " << result << endl;
         }
     }
     ~LockFile()
