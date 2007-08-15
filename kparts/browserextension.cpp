@@ -543,8 +543,8 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 
   connect( d->m_part, SIGNAL( completed() ),
            this, SLOT( slotCompleted() ) );
-  connect( this, SIGNAL( openUrlRequest( const KUrl &, const KParts::BrowserArguments & ) ),
-           this, SLOT( slotOpenUrlRequest( const KUrl &, const KParts::BrowserArguments & ) ) );
+  connect( this, SIGNAL( openUrlRequest( const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments & ) ),
+           this, SLOT( slotOpenUrlRequest( const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments & ) ) );
   connect( this, SIGNAL( enableAction( const char *, bool ) ),
            this, SLOT( slotEnableAction( const char *, bool ) ) );
   connect( this, SIGNAL( setActionText( const char *, const QString& ) ),
