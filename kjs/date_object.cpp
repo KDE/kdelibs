@@ -75,7 +75,11 @@ inline int gmtoffset(const tm& t)
     // FIXME: Use undocumented _dstbias?
     return -(_timezone / 60 - (t.tm_isdst > 0 ? 60 : 0 )) * 60;
 #else
+#ifdef HAVE_TM_GMTOFF
     return t.tm_gmtoff;
+#else
+    return 0;
+#endif
 #endif
 }
 
@@ -210,7 +214,9 @@ static UString formatTime(const tm &t, bool utc)
     if (utc) {
         // FIXME: why not on windows?
 #if !PLATFORM(WIN_OS)
+#ifdef HAVE_TM_GMTOFF
         ASSERT(t.tm_gmtoff == 0);
+#endif
 #endif
         len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
     } else {
@@ -899,7 +905,11 @@ static double makeTime(tm *t, double ms, bool utc)
 #else
         tm t3;
         localtime_r(&zero, &t3);
+#ifdef HAVE_TM_GMTOFF
         utcOffset = t3.tm_gmtoff;
+#else
+        utcOffset = 0;
+#endif
         t->tm_isdst = t3.tm_isdst;
 #endif
     } else {
