@@ -17,6 +17,8 @@ if (HSPELL_FOUND)
 endif (HSPELL_FOUND)
 
 macro_optional_find_package(ENCHANT)
+macro_log_feature(ENCHANT_FOUND "Enchant" "Enchant Package" "http://www.abisource.com/projects/enchant/" FALSE "" "Generic spelling library.")
+
 if (ENCHANT_FOUND)
    add_subdirectory( enchant )
 endif (ENCHANT_FOUND)
