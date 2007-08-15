@@ -67,7 +67,7 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     pluginDelegate->setMinimumItemWidth(200);
     pluginDelegate->setLeftMargin(20);
     pluginDelegate->setRightMargin(20);
-    pluginDelegate->setSeparatorPixels(5);
+    pluginDelegate->setSeparatorPixels(8);
 
     QFont title(parent->font());
     title.setPointSize(title.pointSize() + 2);
@@ -76,8 +76,8 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     QFontMetrics titleMetrics(title);
     QFontMetrics currentMetrics(parent->font());
 
-    pluginDelegate->setIconSize((pluginDelegate->getSeparatorPixels() * 2) + titleMetrics.height() + currentMetrics.height(),
-                                (pluginDelegate->getSeparatorPixels() * 2) + titleMetrics.height() + currentMetrics.height());
+    pluginDelegate->setIconSize(pluginDelegate->getSeparatorPixels() + titleMetrics.height() + currentMetrics.height(),
+                                pluginDelegate->getSeparatorPixels() + titleMetrics.height() + currentMetrics.height());
 
     QObject::connect(pluginModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(emitChanged()));
     QObject::connect(pluginDelegate, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
@@ -905,7 +905,7 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
     QFontMetrics currentMetrics(option.font);
 
     if (index.internalPointer())
-        return QSize(46, qMax((separatorPixels * 2) + iconHeight, (separatorPixels * 4) + titleMetrics.height() + currentMetrics.height()));
+        return QSize(46, qMax((separatorPixels * 2) + iconHeight, (separatorPixels * 3) + titleMetrics.height() + currentMetrics.height()));
 
     return QSize(34, (separatorPixels * 2) + titleMetrics.height() + 2);
 }
