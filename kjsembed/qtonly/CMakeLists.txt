@@ -87,7 +87,7 @@ include (MacroLibrary)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF
 macro_optional_find_package(BZip2)
 macro_optional_find_package(OpenSSL)
-macro_optional_find_package(Gettext)
+macro_optional_find_package(Libintl)
 
 
 add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})

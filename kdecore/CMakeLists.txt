@@ -34,10 +34,10 @@ if(BZIP2_FOUND)
 endif(BZIP2_FOUND)
 
 # compile Gettext support if available
-if(GETTEXT_FOUND)
-  include_directories(${GETTEXT_INCLUDE_DIR})
-  set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${GETTEXT_LIBRARIES})
-endif(GETTEXT_FOUND)
+if(LIBINTL_FOUND)
+  include_directories(${LIBINTL_INCLUDE_DIR})
+  set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${LIBINTL_LIBRARIES})
+endif(LIBINTL_FOUND)
 
 if (HAVE_RESOLV_LIBRARY)
   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} resolv)

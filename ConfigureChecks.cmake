@@ -31,7 +31,7 @@ macro_bool_to_01(CUPS_FOUND HAVE_CUPS)                  # kdeprint
 
 macro_bool_to_01(CARBON_FOUND HAVE_CARBON)              # kdecore
 
-macro_bool_to_01(GETTEXT_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
+macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)              # kdecore, khtml, kjs
 
 # FIXME: Make this changeable!
 # khtml svg support
