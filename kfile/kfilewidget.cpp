@@ -1610,21 +1610,24 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
             {
                 KMimeType::Ptr mime = KMimeType::mimeType (filter);
 
-                // first try X-KDE-NativeExtension
-                QString nativeExtension = mime->property ("X-KDE-NativeExtension").toString();
-                if (!nativeExtension.isEmpty() && nativeExtension.at (0) == '.')
+                if (mime)
                 {
-                    extension = nativeExtension.toLower();
-                    kDebug (kfile_area) << "\tsetMimeFilter-style: native ext=\'"
-                                         << extension << "\'" << endl;
-                }
+                    // first try X-KDE-NativeExtension
+                    QString nativeExtension = mime->property ("X-KDE-NativeExtension").toString();
+                    if (!nativeExtension.isEmpty() && nativeExtension.at (0) == '.')
+                    {
+                        extension = nativeExtension.toLower();
+                        kDebug (kfile_area) << "\tsetMimeFilter-style: native ext=\'"
+                                            << extension << "\'" << endl;
+                    }
 
-                // no X-KDE-NativeExtension
-                if (extension.isEmpty())
-                {
-                    extension = getExtensionFromPatternList (mime->patterns()).toLower();
-                    kDebug (kfile_area) << "\tsetMimeFilter-style: pattern ext=\'"
-                                         << extension << "\'" << endl;
+                    // no X-KDE-NativeExtension
+                    if (extension.isEmpty())
+                    {
+                        extension = getExtensionFromPatternList (mime->patterns()).toLower();
+                        kDebug (kfile_area) << "\tsetMimeFilter-style: pattern ext=\'"
+                                            << extension << "\'" << endl;
+                    }
                 }
             }
         }
