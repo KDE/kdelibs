@@ -39,7 +39,6 @@
 #include <kvbox.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kpixmapeffect.h>
 #include <kglobalsettings.h>
 
 #include <kconfig.h>
