@@ -46,6 +46,10 @@
 
 #define KPIXMAPCACHE_VERSION 0x000203
 
+#ifdef Q_WS_WIN
+// win32 api has a function named LockFile
+#define LockFile _LockFile
+#endif
 
 class LockFile
 {
