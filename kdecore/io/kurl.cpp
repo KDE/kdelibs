@@ -897,7 +897,8 @@ static QString toPrettyPercentEncoding(const QString &input)
   for (int i = 0; i < input.length(); ++i) {
     QChar c = input.at(i);
     register short u = c.unicode();
-    if (u < 0x20 || u == '?' || u == '#' || u == '%') {
+    if (u < 0x20 || u == '?' || u == '#' || u == '%'
+        || (u == ' ' && (i+1 == input.length() || input.at(i+1) == ' '))) {
       static const char hexdigits[] = "0123456789ABCDEF";
       result += QLatin1Char('%');
       result += QLatin1Char(hexdigits[(u & 0xf0) >> 4]);
@@ -927,7 +928,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 
   QString tmp = userName();
   if (!tmp.isEmpty()) {
-    result += tmp;
+    result += QUrl::toPercentEncoding(tmp);
     result += QLatin1Char('@');
   }
 
