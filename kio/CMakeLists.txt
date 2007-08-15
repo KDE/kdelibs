@@ -234,6 +234,7 @@ else (UNIX)
    #target_link_libraries(kio ltdlc)
 endif (UNIX)
 
+macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "" FALSE "" "Provide file alteration notification facilities.")
 if(FAM_FOUND)
    include_directories(${FAM_INCLUDE_DIRECTORY})
    target_link_libraries(kio ${FAM_LIBRARIES})

@@ -36,6 +36,7 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN32_INCLUDES} )
 
+macro_log_feature(PCRE_FOUND "PCRE" "Perl Compatible Regular Expression" "www.pcre.org" FALSE "" "Provide better regular expression support in KJS.")
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND)
    include_directories(${PCRE_INCLUDE_DIR})
