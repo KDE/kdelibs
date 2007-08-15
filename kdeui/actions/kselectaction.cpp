@@ -263,7 +263,8 @@ QAction* KSelectAction::removeAction(QAction* action)
   //int index = selectableActionGroup()->actions().indexOf(action);
   //kDebug (129) << "\tindex=" << index;
 
-  action->setActionGroup(0L);
+  // Removes the action from the group and sets its parent to null.
+  d->m_actionGroup->removeAction(action);
 
   foreach (QToolButton* button, d->m_buttons)
     button->removeAction(action);
@@ -350,16 +351,17 @@ void KSelectAction::clear()
 
   // we need to delete the actions later since we may get a call to clear()
   // from a method called due to a triggered(...) signal
-  foreach (QAction* action, d->m_actionGroup->actions())
+  const QList<QAction*> actions = d->m_actionGroup->actions();
+  for (int i = 0; i < actions.count(); ++i)
   {
     // deleteLater() only removes us from the actions() list (among
     // other things) on the next entry into the event loop.  Until then,
     // e.g. action() and setCurrentItem() will be working on items
     // that are supposed to have been deleted.  So detach the action to
     // prevent this from happening.
-    removeAction (action);
+    removeAction(actions[i]);
 
-    action->deleteLater();
+    actions[i]->deleteLater();
   }
 }
 
@@ -528,6 +530,16 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
   }
 
   return 0L;
+}
+
+void KSelectAction::deleteWidget(QWidget *widget)
+{
+    Q_D(KSelectAction);
+    if (QToolButton *toolButton = qobject_cast<QToolButton *>(widget))
+        d->m_buttons.removeAll(toolButton);
+    else if (KComboBox *comboBox = qobject_cast<KComboBox *>(widget))
+        d->m_comboBoxes.removeAll(comboBox);
+    KAction::deleteWidget(widget);
 }
 
 // QAction::setText("Hi") and then KPopupAccelManager exec'ing, causes

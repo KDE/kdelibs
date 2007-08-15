@@ -350,7 +350,15 @@ protected Q_SLOTS:
     void slotToggled(bool);
 
 protected:
+    /**
+     * Reimplemented from @see QWidgetAction.
+     */
     virtual QWidget *createWidget(QWidget *parent);
+
+    /**
+     * Reimplemented from @see QWidgetAction.
+     */
+    virtual void deleteWidget(QWidget *widget);
 
     virtual bool eventFilter (QObject *watched, QEvent *event);
 

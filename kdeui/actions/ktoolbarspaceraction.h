@@ -79,6 +79,11 @@ class KDEUI_EXPORT KToolBarSpacerAction : public KAction
      */
     virtual QWidget* createWidget( QWidget* parent );
 
+    /**
+     * Reimplemented from @see QWidgetAction.
+     */
+    virtual void deleteWidget(QWidget *widget);
+
 
   private:
     class Private;

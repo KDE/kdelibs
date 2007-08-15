@@ -108,4 +108,10 @@ QWidget * KToolBarSpacerAction::createWidget( QWidget * _parent )
   return spacer;
 }
 
+void KToolBarSpacerAction::deleteWidget(QWidget *widget)
+{
+    d->spacers.removeAll(widget);
+    KAction::deleteWidget(widget);
+}
+
 #include "ktoolbarspaceraction.moc"
