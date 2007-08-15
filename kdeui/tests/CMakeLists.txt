@@ -100,6 +100,7 @@ KDEUI_EXECUTABLE_TESTS(
   kjobtrackerstest
   kdebugtest_gui
   ktitlewidgettest
+  kiconeffecttest
 )
 
 if (Q_WS_X11)
