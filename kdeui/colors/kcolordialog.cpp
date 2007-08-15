@@ -1347,6 +1347,7 @@ void KColorDialog::KColorDialogPrivate::slotDefaultColorClicked()
     {
         showColor( selColor, QString() );
     }
+    emit q->colorSelected( selColor );
 }
 
 void
