@@ -42,6 +42,25 @@
 #include "kcombobox.h"
 #include "kmenu.h"
 
+// QAction::setText("Hi") and then KPopupAccelManager exec'ing, causes
+// QAction::text() to return "&Hi" :(  Comboboxes don't have accels and
+// display ampersands literally.
+static QString DropAmpersands(const QString &text)
+{
+    QString result;
+    for (int i = 0; i < text.count(); ++i) {
+        if (text.at(i) == '&') {
+            if (i + 1 < text.count() && text.at(i + 1) == '&')
+                result.append(text.at(i++)); // "&&" -> '&'
+            // else eat the ampersand
+        }
+        else
+            result.append(text.at(i));
+    }
+    return result;
+}
+
+
 KSelectAction::KSelectAction(QObject *parent)
   : KAction(parent)
   , d_ptr(new KSelectActionPrivate())
@@ -113,7 +132,7 @@ int KSelectAction::currentItem() const
 QString KSelectAction::currentText( ) const
 {
   if (QAction* a = currentAction())
-    return a->text();
+    return ::DropAmpersands(a->text());
 
   return QString();
 }
@@ -164,7 +183,7 @@ QAction * KSelectAction::action( const QString & text, Qt::CaseSensitivity cs ) 
     compare = text.toLower();
 
   foreach (QAction* action, selectableActionGroup()->actions()) {
-    const QString text = action->text().remove('&'); // remove accellerator auto added by kdelibs
+    const QString text = ::DropAmpersands(action->text());
     if (cs == Qt::CaseSensitive) {
       if (text == compare) {
         return action;
@@ -281,8 +300,8 @@ void KSelectAction::actionTriggered(QAction* action)
 {
   // cache values so we don't need access to members in the action
   // after we've done an emit()
-  QString text = action->text();
-  int index = selectableActionGroup()->actions().indexOf(action);
+  const QString text = ::DropAmpersands(action->text());
+  const int index = selectableActionGroup()->actions().indexOf(action);
   //kDebug (129) << "KSelectAction::actionTriggered(" << action << ") text=" << text
   //          << " index=" << index  << " emitting triggered()" << endl;
 
@@ -300,7 +319,7 @@ QStringList KSelectAction::items() const
   QStringList ret;
 
   foreach (QAction* action, d->m_actionGroup->actions())
-    ret << action->text();
+    ret << ::DropAmpersands(action->text());
 
   return ret;
 }
@@ -540,16 +559,6 @@ void KSelectAction::deleteWidget(QWidget *widget)
     else if (KComboBox *comboBox = qobject_cast<KComboBox *>(widget))
         d->m_comboBoxes.removeAll(comboBox);
     KAction::deleteWidget(widget);
-}
-
-// QAction::setText("Hi") and then KPopupAccelManager exec'ing, causes
-// QAction::text() to return "&Hi" :(  Comboboxes don't have accels and
-// display ampersands literally.
-static QString DropAmpersands (const QString &text)
-{
-  QString ret = text;
-  ret.remove ('&');
-  return ret;
 }
 
 // KSelectAction::eventFilter() is called before action->setChecked()
