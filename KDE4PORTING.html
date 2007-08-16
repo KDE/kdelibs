@@ -1334,6 +1334,17 @@ These deprecated methods were also altered to not take a KComponentData (KInstan
 <h4>KListBox</h4>
 <p>Deprecated and renamed to K3ListBox. Use KListWidget (based on the QListWidget class).</p>
 
+<h4>KListView</h4>
+<p>Deprecated and renamed to K3ListView.<br>
+There is no direct KDE replacement for this class yet.<br>
+Either use KListWidget for list-based widgets or QTreeWidget for tree-based
+widgets. Note that only QTreeWidget supports headers.</p>
+
+<h4>KListViewSearchLine</h4>
+<p>Deprecated and renamed to K3ListViewSearchLine.<br>
+You should port from K3ListView to QTreeWidget and then use
+KTreeWidgetSearchLine instead.</p>
+
 <h4>KMacroCommand</h4>
 <p>Deprecated and renamed to to K3MacroCommand, header is k3command.h.</p>
 
