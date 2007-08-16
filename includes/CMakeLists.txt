@@ -77,7 +77,6 @@ install( FILES
   KBindingPropsPlugin
   KBookmark
   KBookmarkAction
-  KBookmarkActionContextMenu
   KBookmarkActionInterface
   KBookmarkActionMenu
   KBookmarkDomBuilder
