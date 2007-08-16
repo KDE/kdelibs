@@ -44,7 +44,7 @@
 
 //#define DISABLE_PIXMAPCACHE
 
-#define KPIXMAPCACHE_VERSION 0x000203
+#define KPIXMAPCACHE_VERSION 0x000204
 
 class KPCLockFile
 {
@@ -95,6 +95,9 @@ class KPixmapCache::Private
 public:
     Private(KPixmapCache* q);
 
+    QIODevice* indexDevice();
+    QIODevice* dataDevice();
+
     int findOffset(const QString& key);
     int binarySearchKey(QDataStream& stream, const QString& key, int start);
     void writeIndexEntry(QDataStream& stream, const QString& key, int dataoffset);
@@ -126,6 +129,7 @@ public:
     QString mLockFileName;
 
     quint32 mTimestamp;
+    quint32 mCacheId;  // Unique id, will change when cache is recreated
     bool mUseQPixmapCache;
     int mCacheLimit;
     RemoveStrategy mRemoveStrategy;
@@ -181,6 +185,55 @@ KPixmapCache::Private::Private(KPixmapCache* _q)
     q = _q;
 }
 
+QIODevice* KPixmapCache::Private::indexDevice()
+{
+    QFile* file = new QFile(mIndexFile);
+    if (!file->exists() || file->size() < kpc_header_len) {
+        q->recreateCacheFiles();
+    }
+    if (!file->open(QIODevice::ReadWrite)) {
+        kDebug() << k_funcinfo << "Couldn't open index file" << mIndexFile << endl;
+        delete file;
+        return 0;
+    }
+    // Make sure the file is up-to-date
+    QDataStream stream(file);
+    file->seek(kpc_header_len + sizeof(quint32));
+    quint32 cacheid;
+    stream >> cacheid;
+    if (cacheid != mCacheId) {
+        kDebug() << k_funcinfo << "Cache has changed, reloading" << endl;
+        delete file;
+
+        q->init();
+        if (!q->isValid()) {
+            return 0;
+        } else {
+            return indexDevice();
+        }
+    }
+
+    return file;
+}
+
+QIODevice* KPixmapCache::Private::dataDevice()
+{
+    QFile* file = new QFile(mDataFile);
+    if (!file->exists() || file->size() < kpc_header_len) {
+        q->recreateCacheFiles();
+        // Index file has also been recreated so we cannot continue with
+        //  modifying the data file because it would make things inconsistent.
+        delete file;
+        return 0;
+    }
+    if (!file->open(QIODevice::ReadWrite)) {
+        kDebug() << k_funcinfo << "Couldn't open data file" << mDataFile << endl;
+        delete file;
+        return 0;
+    }
+    return file;
+}
+
 int KPixmapCache::Private::binarySearchKey(QDataStream& stream, const QString& key, int start)
 {
     stream.device()->seek(start);
@@ -206,13 +259,13 @@ int KPixmapCache::Private::binarySearchKey(QDataStream& stream, const QString& k
 
 int KPixmapCache::Private::findOffset(const QString& key)
 {
-    // Open file and datastream on it
-    QFile file(mIndexFile);
-    if (!file.open(QIODevice::ReadWrite)) {
+    // Open device and datastream on it
+    QIODevice* device = indexDevice();
+    if (!device) {
         return -1;
     }
-    file.seek(mIndexRootOffset);
-    QDataStream stream(&file);
+    device->seek(mIndexRootOffset);
+    QDataStream stream(device);
 
     // If we're already at the end of the stream then the root node doesn't
     //  exist yet and there are no entries. Otherwise, do a binary search
@@ -221,7 +274,7 @@ int KPixmapCache::Private::findOffset(const QString& key)
         int nodeoffset = binarySearchKey(stream, key, mIndexRootOffset);
 
         // Load the found entry and check if it's the one we're looking for.
-        file.seek(nodeoffset);
+        device->seek(nodeoffset);
         QString fkey;
         stream >> fkey;
         if (fkey == key) {
@@ -234,11 +287,13 @@ int KPixmapCache::Private::findOffset(const QString& key)
             lastused = ::time(0);
             stream.device()->seek(stream.device()->pos() - sizeof(quint32));
             stream << timesused << lastused;
+            delete device;
             return foffset;
         }
     }
 
     // Nothing was found
+    delete device;
     return -1;
 }
 
@@ -291,14 +346,10 @@ bool KPixmapCache::Private::loadIndexHeader()
     file.seek(kpc_header_len);
 
     QDataStream stream(&file);
-    if (file.atEnd()) {
-        // Write default timestamp
-        mTimestamp = ::time(0);
-        stream << (quint32)mTimestamp;
-    } else {
-        // Load timestamp
-        stream >> mTimestamp;
-    }
+    // Load timestamp
+    stream >> mTimestamp;
+    // Load cache id
+    stream >> mCacheId;
 
     if (stream.status() != QDataStream::Ok) {
         kWarning() << k_funcinfo << "Failed to read index file's header";
@@ -592,13 +643,20 @@ void KPixmapCache::setTimestamp(unsigned int ts)
     d->mTimestamp = ts;
 
     // Write to file
-    QFile file(d->mIndexFile);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+    KPCLockFile lock(d->mLockFileName);
+    if (!lock.isValid()) {
+        // FIXME: now what?
         return;
     }
-    file.seek(d->kpc_header_len);
-    QDataStream stream(&file);
+    QIODevice* device = d->indexDevice();
+    if (!device) {
+        return;
+    }
+    device->seek(d->kpc_header_len);
+    QDataStream stream(device);
     stream << d->mTimestamp;
+
+    delete device;
 }
 
 int KPixmapCache::size() const
@@ -652,7 +710,10 @@ bool KPixmapCache::recreateCacheFiles()
     istream << (quint32)KPIXMAPCACHE_VERSION;
     // Write default timestamp
     d->mTimestamp = ::time(0);
-    istream << (quint32)d->mTimestamp;
+    istream << d->mTimestamp;
+    // Write cache id
+    d->mCacheId = ::time(0);
+    istream << d->mCacheId;
 
     // Create data file
     QFile datafile(d->mDataFile);
@@ -744,17 +805,18 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
 
 bool KPixmapCache::loadData(int offset, QPixmap& pix)
 {
-    // Open file and datastream on it
-    QFile file(d->mDataFile);
-    if (!file.open(QIODevice::ReadOnly)) {
+    // Open device and datastream on it
+    QIODevice* device = d->dataDevice();
+    if (!device) {
         return -1;
     }
     //kDebug() << "KPC: " << k_funcinfo << "Seeking to pos " << offset << "/" << file.size();
-    if (!file.seek(offset)) {
+    if (!device->seek(offset)) {
         kError() << k_funcinfo << "Couldn't seek to pos " << offset << endl;
+        delete device;
         return false;
     }
-    QDataStream stream(&file);
+    QDataStream stream(device);
 
     // Load
     QString fkey;
@@ -776,12 +838,14 @@ bool KPixmapCache::loadData(int offset, QPixmap& pix)
     pix = QPixmap::fromImage(img);
 
     if (!loadCustomData(stream)) {
+        delete device;
         return false;
     }
 
+    delete device;
     if (stream.status() != QDataStream::Ok) {
         kError() << "KPC: " << k_funcinfo << "stream is bad :-(  status=" <<
-                stream.status() << ", pos=" << file.pos() << endl;
+                stream.status() << endl;
         return false;
     }
 
@@ -839,13 +903,14 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
 
 int KPixmapCache::writeData(const QString& key, const QPixmap& pix)
 {
-    // Open file and datastream on it
-    QFile file(d->mDataFile);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+    // Open device and datastream on it
+    QIODevice* device = d->dataDevice();
+    if (!device) {
         return -1;
     }
-    int offset = file.pos();
-    QDataStream stream(&file);
+    int offset = device->size();
+    device->seek(offset);
+    QDataStream stream(device);
 
     // Write the data
     stream << key;
@@ -857,6 +922,7 @@ int KPixmapCache::writeData(const QString& key, const QPixmap& pix)
 
     writeCustomData(stream);
 
+    delete device;
     return offset;
 }
 
@@ -867,14 +933,15 @@ bool KPixmapCache::writeCustomData(QDataStream&)
 
 void KPixmapCache::writeIndex(const QString& key, int dataoffset)
 {
-    // Open file and datastream on it
-    QFile file(d->mIndexFile);
-    if (!file.open(QIODevice::ReadWrite)) {
+    // Open device and datastream on it
+    QIODevice* device = d->indexDevice();
+    if (!device) {
         return;
     }
-    QDataStream stream(&file);
+    QDataStream stream(device);
 
     d->writeIndexEntry(stream, key, dataoffset);
+    delete device;
 }
 
 QPixmap KPixmapCache::loadFromFile(const QString& filename)
