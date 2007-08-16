@@ -194,6 +194,8 @@ namespace KStringHandler
 
       @param str the input string
       @return the (hopefully correctly guessed) QString representation of @p str
+      @see KEncodingDetector
+
      */
     KDECORE_EXPORT QString from8Bit( const char *str );
 }

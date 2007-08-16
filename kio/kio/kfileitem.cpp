@@ -283,6 +283,7 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
         m_url.addPath( m_strName );
 }
 
+inline //because it is used only in one place
 KIO::filesize_t KFileItemPrivate::size() const
 {
     // Extract it from the KIO::UDSEntry
@@ -338,6 +339,7 @@ KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
     return KDateTime();
 }
 
+inline //because it is used only in one place
 bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
 {
     return ( m_strName == item.m_strName
@@ -357,6 +359,7 @@ bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
     // do the slow operation of determining them here.
 }
 
+inline //because it is used only in one place
 QString KFileItemPrivate::parsePermissions(mode_t perm) const
 {
     static char buffer[ 12 ];
@@ -1120,15 +1123,13 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 
 KFileMetaInfo KFileItem::metaInfo(bool autoget, int) const
 {
-    bool isLocalUrl;
-    KUrl url = mostLocalUrl(isLocalUrl);
-
-    if ( autoget && !d->m_metaInfo.isValid() &&
-         KGlobalSettings::showFilePreview(url) )
+    if (autoget && !d->m_metaInfo.isValid())
     {
-        d->m_metaInfo = KFileMetaInfo( url);//, mimetype() );
+        bool isLocalUrl;
+        KUrl url(mostLocalUrl(isLocalUrl));
+        if (KGlobalSettings::showFilePreview(url))
+            d->m_metaInfo = KFileMetaInfo(url);//, mimetype() );
     }
-
     return d->m_metaInfo;
 }
 

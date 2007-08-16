@@ -119,10 +119,6 @@ public:
     quint32 mHeaderSize;  // full size of the index header, including custom (subclass') header data
     quint32 mIndexRootOffset;  // offset of the first entry in index file
 
-    bool mInited;  // Whether init() has been called (it's called on-demand)
-    bool mEnabled;   // whether it's possible to use the cache
-    bool mValid;  // whether cache has been inited and is ready to be used
-
     QString mName;
     QString mIndexFile;
     QString mDataFile;
@@ -130,9 +126,13 @@ public:
 
     quint32 mTimestamp;
     quint32 mCacheId;  // Unique id, will change when cache is recreated
-    bool mUseQPixmapCache;
     int mCacheLimit;
-    RemoveStrategy mRemoveStrategy;
+    RemoveStrategy mRemoveStrategy:4;
+    bool mUseQPixmapCache:4;
+
+    bool mInited:8;  // Whether init() has been called (it's called on-demand)
+    bool mEnabled:8;   // whether it's possible to use the cache
+    bool mValid:8;  // whether cache has been inited and is ready to be used
 
 
     // Used by removeEntries()

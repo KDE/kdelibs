@@ -74,16 +74,18 @@ public:
   // toplevel URL
   KUrl url;
 
-  bool complete;
+  bool complete:1;
 
-  bool autoUpdate;
-  bool isShowingDotFiles;
-  bool dirOnlyMode;
+  bool autoUpdate:1;
+  bool isShowingDotFiles:1;
+  bool dirOnlyMode:1;
 
-  bool autoErrorHandling;
+  bool delayedMimeTypes:1;
+
+  bool refreshItemWasFiltered:1;
+
+  bool autoErrorHandling:2;
   QWidget *errorParent;
-
-  bool delayedMimeTypes;
 
   struct JobData {
     long unsigned int percent, speed;
@@ -97,8 +99,6 @@ public:
 
   KFileItemList *lstNewItems, *lstRefreshItems;
   KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
-
-  bool refreshItemWasFiltered;
 
   int changes;
 
