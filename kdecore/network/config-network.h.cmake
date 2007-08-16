@@ -24,6 +24,7 @@
 #cmakedefine   HAVE_INET_PTON 1
 #cmakedefine   HAVE_POLL 1
 #cmakedefine   HAVE_RES_INIT 1
+#cmakedefine   HAVE_GAI_STRERROR_PROTO 1
 
 /* header files */
 #cmakedefine HAVE_NET_IF_H 1

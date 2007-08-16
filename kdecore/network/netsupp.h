@@ -299,8 +299,10 @@ namespace KDE
 			 int flags);
 }
 
+# ifndef HAVE_GAI_STRERROR_PROTO
 /** \internal */
 extern KDECORE_EXPORT char *gai_strerror(int errorcode);
+# endif
   
 # define getaddrinfo	KDE::getaddrinfo
 # define freeaddrinfo	KDE::freeaddrinfo

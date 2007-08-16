@@ -53,6 +53,10 @@ check_symbol_exists(res_init        "sys/types.h;netinet/in.h;arpa/nameser.h;res
 
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 
+# check if gai_strerror exists even if EAI_ADDRFAMILY is not defined
+set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
+check_prototype_exists(gai_strerror netdb.h HAVE_GAI_STRERROR_PROTO)
+
 # check for existing datatypes
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
 check_type_size("struct addrinfo" HAVE_STRUCT_ADDRINFO)

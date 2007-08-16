@@ -883,6 +883,7 @@ void freeaddrinfo(struct addrinfo *p)
   dofreeaddrinfo(p);
 }
 
+#ifndef HAVE_GAI_STRERROR_PROTO
 char *gai_strerror(int errorcode)
 {
   static const char messages[] =
@@ -916,6 +917,7 @@ char *gai_strerror(int errorcode)
   strcpy(buffer, i18n(messages + messages_indices[errorcode]).toLocal8Bit());
   return buffer;
 }
+#endif
 
 static void findport(unsigned short port, char *serv, size_t servlen, int flags)
 {
