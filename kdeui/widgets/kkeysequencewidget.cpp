@@ -333,6 +333,8 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 	QPushButton::keyPressEvent(e);
 
 	int keyQt = e->key();
+	if ( keyQt == Qt::Key_AltGr )
+		return;
 
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
 	//TODO: don't have the return key appear as first key of the sequence when it was pressed to start editing!
