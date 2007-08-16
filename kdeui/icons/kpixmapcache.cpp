@@ -46,15 +46,10 @@
 
 #define KPIXMAPCACHE_VERSION 0x000203
 
-#ifdef Q_WS_WIN
-// win32 api has a function named LockFile
-#define LockFile _LockFile
-#endif
-
-class LockFile
+class KPCLockFile
 {
 public:
-    LockFile(const QString& filename, bool exclusive = false)
+    KPCLockFile(const QString& filename, bool exclusive = false)
     {
         mValid = false;
         mLockFile = new KLockFile(filename);
@@ -73,7 +68,7 @@ public:
             kError() << k_funcinfo << "Failed to lock file '" << filename << "', last result = " << result << endl;
         }
     }
-    ~LockFile()
+    ~KPCLockFile()
     {
         unlock();
         delete mLockFile;
@@ -364,7 +359,7 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
 
 bool KPixmapCache::Private::removeEntries(int newsize)
 {
-    LockFile lock(mLockFileName, true);
+    KPCLockFile lock(mLockFileName, true);
     if (!lock.isValid()) {
         kDebug() << k_funcinfo << "Couldn't lock cache " << mName << endl;
         return false;
@@ -725,7 +720,7 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
         return true;
     }
 
-    LockFile lock(d->mLockFileName);
+    KPCLockFile lock(d->mLockFileName);
     if (!lock.isValid()) {
         return false;
     }
@@ -812,7 +807,7 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
         QPixmapCache::insert(key, pix);
     }
 
-    LockFile lock(d->mLockFileName, true);
+    KPCLockFile lock(d->mLockFileName, true);
     if (!lock.isValid()) {
         return;
     }
