@@ -32,6 +32,7 @@
 #include <kdebug.h>
 
 #include <sys/file.h>
+#include <time.h>
 
 
 #define KDE_ICONCACHE_NAME "kde-icon-cache"
@@ -55,6 +56,31 @@ public:
             return false;
         }
     }
+    void checkForThemeUpdates()
+    {
+        // Don't check more often than every 5 secs
+        quint32 now = ::time(0);
+        if (now < mUpdatesCheckedTime + 5) {
+            return;
+        }
+
+        mUpdatesCheckedTime = now;
+        // Perhaps another process has already checked for updates in last 5 secs
+        QFileInfo fi(mUpdatesFile);
+        if (fi.exists() && fi.lastModified().toTime_t() + 5 > now) {
+            return;
+        }
+        // Check for theme updates
+        if (themeDirsChanged()) {
+            // Update themes info and discard the cache
+            mThemeDirs = q->existingIconThemeDirs(mThemeNames);
+            mThemesMTime = q->mostRecentMTime(mThemeDirs);
+            q->discard();
+        }
+        // Update timestamp file
+        QFile f(mUpdatesFile);
+        f.open(QIODevice::WriteOnly);
+    }
 
     KIconCache* q;
 
@@ -62,6 +88,8 @@ public:
     QStringList mThemeNames;
     QSet<QString> mThemeDirs;
     quint32 mThemesMTime;
+    QString mUpdatesFile;
+    quint32 mUpdatesCheckedTime;
 
     QString* mLoadPath;
     QString mSavePath;
@@ -71,6 +99,7 @@ public:
 KIconCache::KIconCache()
     : KPixmapCache(KDE_ICONCACHE_NAME), d(new Private(this))
 {
+    d->mUpdatesFile  = KGlobal::dirs()->locateLocal("cache", "kpc/"KDE_ICONCACHE_NAME".updated");
     // Set limit to 10 MB
     setCacheLimit(10 * 1024);
 }
@@ -126,6 +155,7 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
     if (d->themeDirsChanged()) {
         return false;
     }
+    d->mUpdatesCheckedTime= ::time(0);
 
     return true;
 }
@@ -220,6 +250,7 @@ void KIconCache::setThemeInfo(const QList<KIconTheme*>& themes)
     }
     d->mThemeDirs = existingIconThemeDirs(d->mThemeNames);
     d->mThemesMTime = mostRecentMTime(d->mThemeDirs);
+    d->mUpdatesCheckedTime= ::time(0);
 
     // Recreate the cache
     recreateCacheFiles();
@@ -227,6 +258,8 @@ void KIconCache::setThemeInfo(const QList<KIconTheme*>& themes)
 
 bool KIconCache::find(const QString& key, QPixmap& pix, QString* path)
 {
+    d->checkForThemeUpdates();
+
     d->mLoadPath = path;
     // We can use QPixmapCache only if we don't need the path
     setUseQPixmapCache(!path);
