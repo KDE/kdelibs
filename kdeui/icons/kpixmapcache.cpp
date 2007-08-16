@@ -46,6 +46,8 @@
 
 #define KPIXMAPCACHE_VERSION 0x000204
 
+namespace {
+
 class KPCLockFile
 {
 public:
@@ -88,6 +90,8 @@ private:
     bool mValid;
     KLockFile* mLockFile;
 };
+
+} // namespace
 
 
 class KPixmapCache::Private
