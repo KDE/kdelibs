@@ -99,7 +99,6 @@ void KUrlRequesterDialogPrivate::initDialog(const QString &text,const QString &u
 	urlRequester_->setMode( mode );
     */
     QObject::connect(q, SIGNAL(user1Clicked()), q, SLOT(_k_slotClear()));
-    q->resize(q->minimumSize());
 }
 
 void KUrlRequesterDialogPrivate::_k_slotTextChanged(const QString & text)
