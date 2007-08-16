@@ -20,7 +20,7 @@ private Q_SLOTS:
     void slotColorizeValue(int);
 private:
     QImage img;
-    QLabel *lbl[5];
+    QLabel *lbl[6];
     QColor colorizedColor;
     float colorizedValue;
 };

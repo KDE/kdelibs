@@ -85,6 +85,14 @@ KIconEffectTestWidget::KIconEffectTestWidget(QWidget *parent)
     connect(btn, SIGNAL(changed(const QColor &)), this, SLOT(slotColorizeColor(const QColor &)));
     layout->addWidget(btn, 18, 1);
 
+    tmp = img;
+    KIconEffect::semiTransparent(tmp);
+    lbl[5] = new QLabel(frame);
+    lbl[5]->setPixmap(QPixmap::fromImage(tmp));
+    layout->addWidget(lbl[5], 20, 0, 3, 1);
+    layout->addWidget(new QLabel("Semitransparent", frame), 20, 1);
+
+    layout->setRowStretch(21, 1);
     frame->resize(frame->sizeHint());
 
 }
