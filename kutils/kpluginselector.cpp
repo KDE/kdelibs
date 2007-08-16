@@ -18,10 +18,12 @@
   * Boston, MA 02110-1301, USA.
   */
 
+// FIXME: There exists code duplication. I have planned to fix it, but the
+//        important thing is that it is working perfectly :)
+
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
-#include <QtGui/QApplication>
 #include <QtGui/QPainter>
 #include <QtGui/QFrame>
 #include <QtGui/QStackedWidget>
@@ -38,6 +40,7 @@
 #include "kcmoduleinfo.h"
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
+#include <kapplication.h>
 #include <klocalizedstring.h>
 #include <ktabwidget.h>
 #include <kcomponentdata.h>
@@ -54,7 +57,10 @@
 #include <kurl.h>
 #include <krun.h>
 #include <kmessagebox.h>
+#include <kglobalsettings.h>
 
+static QString details = I18N_NOOP("More Options");
+static QString about = I18N_NOOP("About");
 
 KPluginSelector::Private::Private(KPluginSelector *parent)
     : QObject(parent)
@@ -76,8 +82,17 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     QFontMetrics titleMetrics(title);
     QFontMetrics currentMetrics(parent->font());
 
-    pluginDelegate->setIconSize(pluginDelegate->getSeparatorPixels() + titleMetrics.height() + currentMetrics.height(),
-                                pluginDelegate->getSeparatorPixels() + titleMetrics.height() + currentMetrics.height());
+    QStyleOptionButton opt;
+    opt.fontMetrics = currentMetrics;
+    opt.text = "foo"; // height() will be checked, and that does not depend on the string
+    if (KGlobalSettings::showIconsOnPushButtons())
+    {
+        opt.iconSize = QSize(KIconLoader::global()->currentSize(K3Icon::Small), KIconLoader::global()->currentSize(K3Icon::Small));
+    }
+    opt.rect = pluginDelegate->clickableLabelRect(opt);
+
+    pluginDelegate->setIconSize(pluginDelegate->getSeparatorPixels() + qMax(titleMetrics.height(), opt.rect.height()) + currentMetrics.height(),
+                                pluginDelegate->getSeparatorPixels() + qMax(titleMetrics.height(), opt.rect.height()) + currentMetrics.height());
 
     QObject::connect(pluginModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(emitChanged()));
     QObject::connect(pluginDelegate, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
@@ -247,6 +262,7 @@ KPluginSelector::Private::QListViewSpecialized::QListViewSpecialized(QWidget *pa
     : QListView(parent)
 {
     setMouseTracking(true);
+    setSpacing(0);
 }
 
 KPluginSelector::Private::QListViewSpecialized::~QListViewSpecialized()
@@ -324,13 +340,20 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
         }
     }
 
-    if (pluginCount.contains(categoryName))
+    if (addedPlugins)
     {
-        pluginCount[categoryName] += addedPlugins;
+        if (pluginCount.contains(categoryName))
+        {
+            pluginCount[categoryName] += addedPlugins;
+        }
+        else
+        {
+            pluginCount.insert(categoryName, addedPlugins);
+        }
     }
-    else
+    else if (!pluginInfoByCategory[categoryName].count())
     {
-        pluginCount.insert(categoryName, addedPlugins);
+        pluginInfoByCategory.remove(categoryName);
     }
 }
 
@@ -691,7 +714,11 @@ void KPluginSelector::defaults()
         {
             KPluginInfo currentPlugin(*static_cast<KPluginInfo*>(currentIndex.internalPointer()));
             currentPlugin.defaults();
-            d->pluginModel->setData(currentIndex, currentPlugin.isPluginEnabled(), Private::PluginDelegate::Checked);
+            // Avoid emit the changed signal when possible. Probably all items are in their default value and nothing changed
+            if (d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool() != currentPlugin.isPluginEnabled())
+            {
+                d->pluginModel->setData(currentIndex, currentPlugin.isPluginEnabled(), Private::PluginDelegate::Checked);
+            }
         }
     }
 }
@@ -719,7 +746,12 @@ void KPluginSelector::updatePluginsState()
 
 
 KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Private *parent)
-    : QItemDelegate(0), focusedElement(0), currentModuleProxyList(0), configDialog(0), parent(parent)
+    : QItemDelegate(0)
+    , focusedElement(0)
+    , sunkenButton(false)
+    , currentModuleProxyList(0)
+    , configDialog(0)
+    , parent(parent)
 {
     iconLoader = new KIconLoader();
 }
@@ -733,6 +765,8 @@ KPluginSelector::Private::PluginDelegate::~PluginDelegate()
 
 void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    painter->save();
+
     QStyleOptionViewItem optionCopy(option);
     const PluginModel *model = static_cast<const PluginModel*>(index.model());
 
@@ -743,9 +777,6 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     QPen currentPen = painter->pen();
     QPen linkPen = QPen(option.palette.color(QPalette::Link));
 
-    QString details = i18n("More Options");
-    QString about = i18n("About");
-
     QPixmap iconPixmap = icon(index, iconWidth, iconHeight);
 
     QFont title(painter->font());
@@ -754,10 +785,6 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     title.setPointSize(title.pointSize() + 2);
     title.setWeight(QFont::Bold);
-
-    painter->save();
-
-    painter->setRenderHint(QPainter::Antialiasing, true);
 
     if (index.internalPointer())
     {
@@ -779,72 +806,121 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         QString secondaryDisplay = fontMetrics.elidedText(comment(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width());
 
         QPen prevPen(painter->pen());
-        painter->setPen(linkPen);
 
-        painter->setFont(title);
         if (model->services(index).size()) // has configuration dialog
         {
-            display = painter->fontMetrics().elidedText(name(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width() - clickableLabelRect(optionCopy, details).width());
+            QStyleOptionButton opt;
 
-            if (clickableLabelRect(optionCopy, details).contains(relativeMousePosition) ||
-                ((focusedElement == 1) && (option.state & QStyle::State_Selected)))
+            opt.state |= QStyle::State_Enabled;
+            if (KGlobalSettings::showIconsOnPushButtons())
             {
-                configureFont.setUnderline(true);
-                painter->setFont(configureFont);
+                opt.icon = iconLoader->loadIcon("configure", K3Icon::Small);
+                opt.iconSize = QSize(iconLoader->currentSize(K3Icon::Small), iconLoader->currentSize(K3Icon::Small));
             }
-            else
+            opt.text = details;
+            opt.fontMetrics = option.fontMetrics;
+            opt.direction = option.direction;
+            opt.rect = option.rect;
+            opt.rect = clickableLabelRect(opt);
+
+            if (opt.rect.contains(relativeMousePosition))
             {
-                painter->setFont(previousFont);
+                opt.state |= QStyle::State_MouseOver;
+
+                if (sunkenButton)
+                {
+                    opt.state |= QStyle::State_Sunken | QStyle::State_HasFocus;
+                }
+            }
+            else if ((focusedElement == 1) && (option.state & QStyle::State_Selected) &&
+                     (option.state & QStyle::State_HasFocus))
+            {
+                opt.state |= QStyle::State_HasFocus;
             }
 
-            painter->drawText(clickableLabelRect(optionCopy, details), Qt::AlignLeft, details);
+            KApplication::style()->drawControl(QStyle::CE_PushButton, &opt, painter);
+
+            QStyleOptionViewItem otherOption(optionCopy);
+            otherOption.font = title;
+            otherOption.fontMetrics = QFontMetrics(title);
+            display = otherOption.fontMetrics.elidedText(name(index), Qt::ElideRight, otherOption.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 3 - theCheckRect.width() - opt.rect.width());
         }
         else
         {
-            display = painter->fontMetrics().elidedText(name(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width() - clickableLabelRect(optionCopy, about).width());
+            QStyleOptionButton opt;
 
-            if (clickableLabelRect(optionCopy, about).contains(relativeMousePosition) ||
-                ((focusedElement == 1) && (option.state & QStyle::State_Selected)))
+            opt.state |= QStyle::State_Enabled;
+            if (KGlobalSettings::showIconsOnPushButtons())
             {
-                configureFont.setUnderline(true);
-                painter->setFont(configureFont);
+                opt.icon = iconLoader->loadIcon("dialog-information", K3Icon::Small);
+                opt.iconSize = QSize(iconLoader->currentSize(K3Icon::Small), iconLoader->currentSize(K3Icon::Small));
             }
-            else
+            opt.text = about;
+            opt.fontMetrics = option.fontMetrics;
+            opt.direction = option.direction;
+            opt.rect = option.rect;
+            opt.rect = clickableLabelRect(opt);
+
+            if (opt.rect.contains(relativeMousePosition))
             {
-                painter->setFont(previousFont);
+                opt.state |= QStyle::State_MouseOver;
+
+                if (sunkenButton)
+                {
+                    opt.state |= QStyle::State_Sunken | QStyle::State_HasFocus;
+                }
+            }
+            else if ((focusedElement == 1) && (option.state & QStyle::State_Selected) &&
+                     (option.state & QStyle::State_HasFocus))
+            {
+                opt.state |= QStyle::State_HasFocus;
             }
 
-            painter->drawText(clickableLabelRect(optionCopy, about), Qt::AlignLeft, about);
+            KApplication::style()->drawControl(QStyle::CE_PushButton, &opt, painter);
+
+            QStyleOptionViewItem otherOption(optionCopy);
+            otherOption.font = title;
+            otherOption.fontMetrics = QFontMetrics(title);
+            display = otherOption.fontMetrics.elidedText(name(index), Qt::ElideRight, otherOption.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 3 - theCheckRect.width() - opt.rect.width());
         }
 
         if (option.state & QStyle::State_Selected)
         {
             painter->setPen(optionCopy.palette.color(QPalette::HighlightedText));
         }
-        else
-        {
-            painter->setPen(prevPen);
-        }
 
         painter->setFont(title);
-
-        painter->drawText(leftMargin + separatorPixels * 2 + iconPixmap.width() + theCheckRect.width(), separatorPixels + optionCopy.rect.top(), painter->fontMetrics().width(display), painter->fontMetrics().height(), Qt::AlignLeft, display);
+        painter->drawText(option.direction == Qt::LeftToRight ? leftMargin + separatorPixels * 2 + iconPixmap.width() + theCheckRect.width()
+                                                              : option.rect.right() - rightMargin - separatorPixels * 2 - iconPixmap.width() - theCheckRect.width() - painter->fontMetrics().width(display), separatorPixels + optionCopy.rect.top(), painter->fontMetrics().width(display), painter->fontMetrics().height(), Qt::AlignLeft, display);
 
         painter->setFont(previousFont);
 
-        painter->drawText(leftMargin + separatorPixels * 2 + iconPixmap.width() + theCheckRect.width(), optionCopy.rect.height() - separatorPixels - fontMetrics.height() + optionCopy.rect.top(), fontMetrics.width(secondaryDisplay), fontMetrics.height(), Qt::AlignLeft, secondaryDisplay);
+        painter->drawText(option.direction == Qt::LeftToRight ? leftMargin + separatorPixels * 2 + iconPixmap.width() + theCheckRect.width()
+                                                              : option.rect.right() - rightMargin - separatorPixels * 2 - iconPixmap.width() - theCheckRect.width() - painter->fontMetrics().width(secondaryDisplay), optionCopy.rect.height() - separatorPixels - fontMetrics.height() + optionCopy.rect.top(), fontMetrics.width(secondaryDisplay), fontMetrics.height(), Qt::AlignLeft, secondaryDisplay);
 
-        painter->drawPixmap(leftMargin + separatorPixels + theCheckRect.width(), calculateVerticalCenter(optionCopy.rect, iconPixmap.height()) + optionCopy.rect.top(), iconPixmap);
+        painter->drawPixmap(option.direction == Qt::LeftToRight ? leftMargin + separatorPixels + theCheckRect.width()
+                                                                : option.rect.right() - rightMargin - separatorPixels - theCheckRect.width() - iconPixmap.width(), calculateVerticalCenter(optionCopy.rect, iconPixmap.height()) + optionCopy.rect.top(), iconPixmap);
 
-        QStyleOptionViewItem optionCheck(optionCopy);
+        QStyleOptionButton optionCheck;
 
-        if (checkRect(index, optionCopy).contains(relativeMousePosition) ||
-            ((focusedElement == 0) && (option.state & QStyle::State_Selected)))
+        optionCheck.direction = option.direction;
+        optionCheck.rect = checkRect(index, optionCopy);
+        optionCheck.state |= QStyle::State_Enabled;
+
+        if (checkRect(index, optionCopy).contains(relativeMousePosition))
         {
             optionCheck.state |= QStyle::State_MouseOver;
         }
+        else if ((focusedElement == 0) && (option.state & QStyle::State_Selected) &&
+                 (option.state & QStyle::State_HasFocus))
+        {
+            optionCheck.state |= QStyle::State_HasFocus;
+        }
 
-        drawCheck(painter, optionCheck, checkRect(index, optionCheck), (Qt::CheckState) index.model()->data(index, Checked).toInt());
+        optionCheck.state |= (((Qt::CheckState) index.model()->data(index, Checked).toInt()) == Qt::Checked) ?
+                             QStyle::State_On : QStyle::State_Off;
+
+        KApplication::style()->drawControl(QStyle::CE_CheckBox, &optionCheck, painter);
     }
     else // we are drawing a category
     {
@@ -875,8 +951,11 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
         QLinearGradient gradient(optionCopy.rect.topLeft(),
                                  optionCopy.rect.bottomRight());
-        gradient.setColorAt(0, Qt::black);
-        gradient.setColorAt(1, Qt::white);
+
+        gradient.setColorAt(0, option.direction == Qt::LeftToRight ? optionCopy.palette.text().color()
+                                                                   : Qt::transparent);
+        gradient.setColorAt(1, option.direction == Qt::LeftToRight ? Qt::transparent
+                                                                   : optionCopy.palette.text().color());
 
         painter->setBrush(gradient);
         painter->fillPath(path, gradient);
@@ -905,9 +984,21 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
     QFontMetrics currentMetrics(option.font);
 
     if (index.internalPointer())
-        return QSize(46, qMax((separatorPixels * 2) + iconHeight, (separatorPixels * 3) + titleMetrics.height() + currentMetrics.height()));
+    {
+        QStyleOptionButton opt;
+        opt.text = "foo"; // height() will be checked, and that does not depend on the string
+        opt.fontMetrics = option.fontMetrics;
+        if (KGlobalSettings::showIconsOnPushButtons())
+        {
+            opt.iconSize = QSize(iconLoader->currentSize(K3Icon::Small), iconLoader->currentSize(K3Icon::Small));
+        }
+        opt.rect = option.rect;
+        opt.rect = clickableLabelRect(opt);
 
-    return QSize(34, (separatorPixels * 2) + titleMetrics.height() + 2);
+        return QSize(minimumItemWidth, qMax((separatorPixels * 2) + iconHeight, (separatorPixels * 3) + qMax(titleMetrics.height(), opt.rect.height()) + currentMetrics.height()));
+    }
+
+    return QSize(minimumItemWidth, separatorPixels + titleMetrics.height() + 2);
 }
 
 void KPluginSelector::Private::PluginDelegate::setIconSize(int width, int height)
@@ -941,27 +1032,94 @@ void KPluginSelector::Private::PluginDelegate::setSeparatorPixels(int separatorP
     this->separatorPixels = separatorPixels;
 }
 
+QRect KPluginSelector::Private::PluginDelegate::clickableLabelRect(const QStyleOptionButton &option) const
+{
+    QRect retRect;
+
+    const QString &caption = option.text;
+    const QFontMetrics &fontMetrics = option.fontMetrics;
+
+    retRect.setHeight(KApplication::style()->sizeFromContents(QStyle::CT_PushButton, &option, QSize(fontMetrics.width(caption) + option.iconSize.width(), qMax(fontMetrics.height(), option.iconSize.height()))).height());
+    retRect.setWidth(KApplication::style()->sizeFromContents(QStyle::CT_PushButton, &option, QSize(fontMetrics.width(caption) + option.iconSize.width(), qMax(fontMetrics.height(), option.iconSize.height()))).width());
+    if (option.direction == Qt::LeftToRight)
+    {
+        retRect.setLeft(option.rect.right() - rightMargin - retRect.width());
+    }
+    else
+    {
+        retRect.setLeft(leftMargin);
+    }
+    retRect.setTop(option.rect.top() + separatorPixels);
+    retRect.setHeight(KApplication::style()->sizeFromContents(QStyle::CT_PushButton, &option, QSize(fontMetrics.width(caption) + option.iconSize.width(), qMax(fontMetrics.height(), option.iconSize.height()))).height());
+    retRect.setWidth(KApplication::style()->sizeFromContents(QStyle::CT_PushButton, &option, QSize(fontMetrics.width(caption) + option.iconSize.width(), qMax(fontMetrics.height(), option.iconSize.height()))).width());
+
+    return retRect;
+}
+
 bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEvent *event)
 {
-    if ((event->type() == QEvent::MouseButtonPress) ||
-        (event->type() == QEvent::KeyPress))
+    if ((event->type() == QEvent::KeyRelease))
     {
-        event->accept();
+        QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
 
+        if (keyEvent && keyEvent->key() == Qt::Key_Space)
+        {
+            sunkenButton = false;
+
+            QWidget *viewport = qobject_cast<QWidget*>(watched);
+
+            if (viewport)
+            {
+                QModelIndex currentIndex;
+
+                QListViewSpecialized *listView = dynamic_cast<QListViewSpecialized*>(viewport->parent());
+                if (!listView) // the keyboard event comes directly from the view, not the viewport
+                    listView = dynamic_cast<QListViewSpecialized*>(viewport);
+
+                currentIndex = listView->currentIndex();
+
+                if (listView && currentIndex.isValid())
+                {
+                    QStyleOptionViewItem optionViewItem(listView->viewOptions());
+                    optionViewItem.rect = listView->visualRect(currentIndex);
+
+                    if (currentIndex.internalPointer()) {
+                        const KPluginInfo pluginInfo(*static_cast<const KPluginInfo*>(currentIndex.internalPointer()));
+                        if (pluginInfo.kcmServices().size())
+                            updateCheckState(currentIndex, optionViewItem,
+                                            viewport->mapFromGlobal(QCursor::pos()), listView, KeyboardEvent, details);
+                        else
+                            updateCheckState(currentIndex, optionViewItem,
+                                            viewport->mapFromGlobal(QCursor::pos()), listView, KeyboardEvent, about);
+
+                        return false;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+    else if (event->type() == QEvent::KeyPress ||
+             event->type() == QEvent::MouseButtonRelease)
+    {
         QKeyEvent *keyEvent = dynamic_cast<QKeyEvent*>(event);
 
         if (keyEvent && (keyEvent->key() != Qt::Key_Space) &&
+                        (keyEvent->key() != Qt::Key_Tab) &&
                         (keyEvent->key() != Qt::Key_Up) &&
-                        (keyEvent->key() != Qt::Key_Down) &&
-                        (keyEvent->key() != Qt::Key_Tab))
+                        (keyEvent->key() != Qt::Key_Down))
         {
             return false;
         }
 
         EventReceived eventReceived;
-        if (event->type() == QEvent::MouseButtonPress)
+        if (event->type() == QEvent::MouseButtonRelease)
         {
             eventReceived = MouseEvent;
+            sunkenButton = false;
         }
         else
         {
@@ -969,6 +1127,7 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
         }
 
         QWidget *viewport = qobject_cast<QWidget*>(watched);
+
         if (viewport)
         {
             QModelIndex currentIndex;
@@ -1014,9 +1173,49 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
 
                 return true;
             }
-            else if (keyEvent && keyEvent->key() == Qt::Key_Tab)
+            else if (keyEvent && keyEvent->key() == Qt::Key_Space)
             {
-                focusedElement = (focusedElement + 1) % 2;
+                sunkenButton = true;
+                listView->update(listView->currentIndex());
+
+                return true;
+            }
+            else if (keyEvent && keyEvent->key()  == Qt::Key_Tab)
+            {
+                if (keyEvent->modifiers() == Qt::ShiftModifier) // FIXME: why is it not captured ?
+                {
+                    focusedElement = qAbs(focusedElement - 1);
+
+                    if (focusedElement)
+                    {
+                        if (currentIndex.row() && listView->model()->index(currentIndex.row() - 1, 0).internalPointer())
+                            listView->setCurrentIndex(listView->model()->index(currentIndex.row() - 1, 0));
+                        else if (currentIndex.row() > 2)
+                            listView->setCurrentIndex(listView->model()->index(currentIndex.row() - 2, 0));
+                        else
+                        {
+                            listView->setCurrentIndex(QModelIndex());
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    focusedElement = (focusedElement + 1) % 2;
+
+                    if (!focusedElement)
+                    {
+                        if ((currentIndex.row() < listView->model()->rowCount()) && listView->model()->index(currentIndex.row() + 1, 0).internalPointer())
+                            listView->setCurrentIndex(listView->model()->index(currentIndex.row() + 1, 0));
+                        else if (currentIndex.row() + 1 < listView->model()->rowCount())
+                            listView->setCurrentIndex(listView->model()->index(currentIndex.row() + 2, 0));
+                        else
+                        {
+                            listView->setCurrentIndex(QModelIndex());
+                            return false;
+                        }
+                    }
+                }
 
                 listView->update(listView->currentIndex());
 
@@ -1032,15 +1231,67 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
                     const KPluginInfo pluginInfo(*static_cast<const KPluginInfo*>(currentIndex.internalPointer()));
                     if (pluginInfo.kcmServices().size())
                         updateCheckState(currentIndex, optionViewItem,
-                                         viewport->mapFromGlobal(QCursor::pos()), listView, eventReceived, i18n("More Options"));
+                                         viewport->mapFromGlobal(QCursor::pos()), listView, eventReceived, details);
                     else
                         updateCheckState(currentIndex, optionViewItem,
-                                         viewport->mapFromGlobal(QCursor::pos()), listView, eventReceived, i18n("About"));
+                                         viewport->mapFromGlobal(QCursor::pos()), listView, eventReceived, about);
                 }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+    else if (event->type() == QEvent::MouseButtonPress)
+    {
+        sunkenButton = true;
+
+        if (QWidget *viewport = qobject_cast<QWidget*>(watched))
+        {
+            QListViewSpecialized *listView = dynamic_cast<QListViewSpecialized*>(viewport->parent());
+            if (!listView) // the keyboard event comes directly from the view, not the viewport
+                listView = dynamic_cast<QListViewSpecialized*>(viewport);
+
+            if (!listView)
+                return false;
+
+            listView->update(listView->currentIndex());
+
+            QModelIndex currentIndex = listView->indexAt(viewport->mapFromGlobal(QCursor::pos()));
+
+            if (!currentIndex.isValid() || !currentIndex.internalPointer())
+            {
+                return false;
+            }
+
+            QStyleOptionButton opt;
+            opt.text = (dynamic_cast<const PluginModel *>(currentIndex.model()))->services(currentIndex).count() ? details
+                                                                                                                 : about;
+            opt.fontMetrics = listView->viewOptions().fontMetrics;
+            opt.direction = listView->layoutDirection();
+            if (KGlobalSettings::showIconsOnPushButtons())
+            {
+                opt.iconSize = QSize(KIconLoader::global()->currentSize(K3Icon::Small), KIconLoader::global()->currentSize(K3Icon::Small));
+            }
+            opt.rect = listView->visualRect(currentIndex);
+            opt.rect = clickableLabelRect(opt);
+
+            QStyleOptionViewItem otherOpt;
+            otherOpt.fontMetrics = listView->viewOptions().fontMetrics;
+            otherOpt.direction = listView->layoutDirection();
+            otherOpt.rect = listView->visualRect(currentIndex);
+
+            if (opt.rect.contains(viewport->mapFromGlobal(QCursor::pos())) ||
+                checkRect(currentIndex, otherOpt).contains(viewport->mapFromGlobal(QCursor::pos())))
+            {
+                listView->update(currentIndex);
+
+                return true;
             }
         }
 
-        return QItemDelegate::eventFilter(watched, event);
+        return false;
     }
     else if (event->type() == QEvent::MouseMove)
     {
@@ -1048,6 +1299,47 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
         {
             relativeMousePosition = viewport->mapFromGlobal(QCursor::pos());
             viewport->update();
+
+            QListViewSpecialized *listView = dynamic_cast<QListViewSpecialized*>(viewport->parent());
+            if (!listView) // the keyboard event comes directly from the view, not the viewport
+                listView = dynamic_cast<QListViewSpecialized*>(viewport);
+
+            if (!listView)
+                return false;
+
+            QModelIndex currentIndex = listView->indexAt(viewport->mapFromGlobal(QCursor::pos()));
+
+            if (!currentIndex.isValid() || !currentIndex.internalPointer())
+            {
+                return false;
+            }
+
+            QStyleOptionButton opt;
+            opt.text = (dynamic_cast<const PluginModel *>(currentIndex.model()))->services(currentIndex).count() ? details
+                                                                                                                 : about;
+            opt.fontMetrics = listView->viewOptions().fontMetrics;
+            opt.direction = listView->layoutDirection();
+            if (KGlobalSettings::showIconsOnPushButtons())
+            {
+                opt.iconSize = QSize(KIconLoader::global()->currentSize(K3Icon::Small), KIconLoader::global()->currentSize(K3Icon::Small));
+            }
+            opt.rect = listView->visualRect(currentIndex);
+            opt.rect = clickableLabelRect(opt);
+
+            QStyleOptionViewItem otherOpt;
+            otherOpt.fontMetrics = listView->viewOptions().fontMetrics;
+            otherOpt.direction = listView->layoutDirection();
+            otherOpt.rect = listView->visualRect(currentIndex);
+
+            if (opt.rect.contains(viewport->mapFromGlobal(QCursor::pos())) ||
+                checkRect(currentIndex, otherOpt).contains(viewport->mapFromGlobal(QCursor::pos())))
+            {
+                listView->update(currentIndex);
+
+                return true;
+            }
+
+            return false;
         }
     }
     else if (event->type() == QEvent::Leave)
@@ -1057,7 +1349,13 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
         {
             relativeMousePosition = QPoint(0, 0);
             viewport->update();
+
+            return true;
         }
+    }
+    else if (event->type() == QEvent::MouseButtonDblClick)
+    {
+        return true;
     }
 
     return false;
@@ -1084,23 +1382,17 @@ void KPluginSelector::Private::PluginDelegate::processUrl(const QString &url) co
 QRect KPluginSelector::Private::PluginDelegate::checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const
 {
     QSize canvasSize = sizeHint(option, index);
-    QRect checkDimensions = QApplication::style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &option);
+    QRect checkDimensions = KApplication::style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &option);
 
     QRect retRect;
-    retRect.setTopLeft(QPoint(option.rect.left() + leftMargin,
+    retRect.setTopLeft(QPoint(option.direction == Qt::LeftToRight ? option.rect.left() + leftMargin
+                                                                  : option.rect.right() - rightMargin - checkDimensions.width(),
                        ((canvasSize.height() / 2) - (checkDimensions.height() / 2)) + option.rect.top()));
-    retRect.setBottomRight(QPoint(option.rect.left() + leftMargin + checkDimensions.width(),
+    retRect.setBottomRight(QPoint(option.direction == Qt::LeftToRight ? option.rect.left() + leftMargin + checkDimensions.width()
+                                                                      : option.rect.right() - rightMargin,
                            ((canvasSize.height() / 2) - (checkDimensions.height() / 2)) + option.rect.top() + checkDimensions.height()));
 
     return retRect;
-}
-
-QRect KPluginSelector::Private::PluginDelegate::clickableLabelRect(const QStyleOptionViewItem &option, const QString &caption) const
-{
-    QRect delegateRect = option.rect;
-    QFontMetrics fontMetrics(option.font);
-
-    return QRect(delegateRect.right() - rightMargin - fontMetrics.width(caption), separatorPixels + delegateRect.top(), fontMetrics.width(caption), fontMetrics.height());
 }
 
 void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelIndex &index, const QStyleOptionViewItem &option,
@@ -1132,11 +1424,20 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
             checkDependencies(model, pluginInfo, DependenciesNeedMe);
     }
 
-    if ((clickableLabelRect(option, caption).contains(cursorPos) && (eventReceived == MouseEvent)) ||
+    QStyleOptionButton opt;
+    opt.text = caption;
+    if (KGlobalSettings::showIconsOnPushButtons())
+    {
+        opt.iconSize = QSize(iconLoader->currentSize(K3Icon::Small), iconLoader->currentSize(K3Icon::Small));
+    }
+    opt.fontMetrics = option.fontMetrics;
+    opt.direction = option.direction;
+    opt.rect = option.rect;
+    opt.rect = clickableLabelRect(opt);
+
+    if ((opt.rect.contains(cursorPos) && (eventReceived == MouseEvent)) ||
         ((focusedElement == 1) && (eventReceived == KeyboardEvent)))
     {
-        listView->setCurrentIndex(index);
-
         if (!configDialogs.contains(index.row()))
         {
             QList<KService::Ptr> services = model->services(index);

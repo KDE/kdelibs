@@ -250,6 +250,8 @@ public:
 
     void setSeparatorPixels(int separatorPixels);
 
+    QRect clickableLabelRect(const QStyleOptionButton &option) const;
+
 Q_SIGNALS:
     void configCommitted(const QByteArray &componentName);
 
@@ -268,7 +270,6 @@ private:
     };
 
     QRect checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const;
-    QRect clickableLabelRect(const QStyleOptionViewItem &option, const QString &caption) const;
 
     void updateCheckState(const QModelIndex &index, const QStyleOptionViewItem &option,
                           const QPoint &cursorPos, QListView *listView, EventReceived eventReceived,
@@ -297,6 +298,7 @@ private:
     int rightMargin;
     int separatorPixels;
     int focusedElement; // whether is focused the check or the link
+    bool sunkenButton;
     KIconLoader *iconLoader;
     QPoint relativeMousePosition;
     QList<KCModuleProxy*> *currentModuleProxyList;
