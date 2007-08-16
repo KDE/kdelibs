@@ -66,7 +66,7 @@ check_include_files(sys/ucred.h   HAVE_SYS_UCRED_H)                    # kio
 check_include_files(sys/types.h   HAVE_SYS_TYPES_H)                    # various
 check_include_files(sys/select.h  HAVE_SYS_SELECT_H)                   # various
 check_include_files(sys/param.h   HAVE_SYS_PARAM_H)                    # various
-check_include_files(sys/mnttab.h  HAVE_SYS_MNTTAB_H)                   # kio, kdecore
+check_include_files("stdio.h;sys/mnttab.h"  HAVE_SYS_MNTTAB_H)         # kio, kdecore
 check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)                   # kio, kdecore
 check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
 check_include_files(unistd.h      HAVE_UNISTD_H)                       # various
