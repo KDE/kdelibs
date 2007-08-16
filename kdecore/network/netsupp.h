@@ -275,6 +275,14 @@ struct addrinfo
 #  undef getaddrinfo
 # endif
 
+# ifdef freeaddrinfo
+#  undef freeaddrinfo
+# endif
+
+# ifdef getnameinfo
+#  undef getnameinfo
+# endif
+
 namespace KDE
 {
   /** \internal */
