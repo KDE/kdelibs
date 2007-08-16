@@ -50,6 +50,7 @@ PublicService::PublicService(const QString& name, const QString& type, unsigned 
 
 PublicService::~PublicService()
 {
+    stop();
 }
 
 void PublicServicePrivate::tryApply()
