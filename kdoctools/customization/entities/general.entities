@@ -175,7 +175,7 @@
 <!ENTITY kbackgammon 	"<application>KBackgammon</application>">
 <!ENTITY kbattleship 	"<application>KBattleship</application>">
 <!ENTITY kbiff	"<application>KBiff</application>">
-<!ENTITY kblackbox	"<application>KBlackbox</application>">
+<!ENTITY kblackbox	"<application>KBlackBox</application>">
 <!ENTITY kbounce	"<application>KBounce</application>">
 <!ENTITY kbruch	"<application>KBruch</application>">
 <!ENTITY kbugbuster	"<application>kbugbuster</application>">
