@@ -2,6 +2,7 @@
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+ * Copyright (C) 2007 Daniel M. Duley <daniel.duley@verizon.net>
  * with minor additions and based on ideas from
  * Torsten Rahn <torsten@kde.org>
  *

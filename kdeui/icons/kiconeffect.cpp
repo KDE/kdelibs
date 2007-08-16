@@ -2,6 +2,7 @@
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
+ * (C) 2007 Daniel M. Duley <daniel.duley@verizon.net>
  * with minor additions and based on ideas from
  * Torsten Rahn <torsten@kde.org>
  *
@@ -26,6 +27,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#include <QtCore/QSysInfo>
 #include <QtGui/QApplication>
 #include <QtGui/QPaintEngine>
 #include <QtGui/QDesktopWidget>
@@ -43,6 +45,7 @@
 #include <kglobal.h>
 #include <ksharedconfig.h>
 #include <kglobalsettings.h>
+#include <kcolorscheme.h>
 #include <kicontheme.h>
 #include <kconfiggroup.h>
 
@@ -194,12 +197,15 @@ QImage KIconEffect::apply(const QImage &image, int group, int state) const
 	    d->color[group][state], d->color2[group][state], d->trans[group][state]);
 }
 
-QImage KIconEffect::apply(const QImage &image, int effect, float value, const QColor &col, bool trans) const
+QImage KIconEffect::apply(const QImage &image, int effect, float value,
+                          const QColor &col, bool trans) const
 {
-    return apply (image, effect, value, col, KGlobalSettings::baseColor(), trans);
+    return apply(image, effect, value, col,
+                 KColorScheme(KColorScheme::View).background().color(), trans);
 }
 
-QImage KIconEffect::apply(const QImage &img, int effect, float value, const QColor &col, const QColor &col2, bool trans) const
+QImage KIconEffect::apply(const QImage &img, int effect, float value,
+                          const QColor &col, const QColor &col2, bool trans) const
 {
     QImage image = img;
     if (effect >= LastEffect )
@@ -255,7 +261,8 @@ QPixmap KIconEffect::apply(const QPixmap &pixmap, int group, int state) const
 QPixmap KIconEffect::apply(const QPixmap &pixmap, int effect, float value,
 	const QColor &col, bool trans) const
 {
-    return apply (pixmap, effect, value, col, KGlobalSettings::baseColor(), trans);
+    return apply(pixmap, effect, value, col,
+                 KColorScheme(KColorScheme::View).background().color(), trans);
 }
 
 QPixmap KIconEffect::apply(const QPixmap &pixmap, int effect, float value,
@@ -296,8 +303,10 @@ struct KIEImgEdit
     KIEImgEdit(QImage& _img):img(_img)
     {
 	if (img.depth() > 8)
-	{
-	    data   = (unsigned int*)img.bits();
+        {
+            if(img.format() == QImage::Format_ARGB32_Premultiplied)
+                img = img.convertToFormat(QImage::Format_ARGB32);
+            data   = (unsigned int*)img.bits();
 	    pixels = img.width()*img.height();
 	}
 	else
@@ -320,227 +329,252 @@ struct KIEImgEdit
 
 void KIconEffect::toGray(QImage &img, float value)
 {
+    if(value == 0.0)
+        return;
+
     KIEImgEdit ii(img);
-    unsigned int* data = ii.data;
+    QRgb *data = ii.data;
+    QRgb *end = data + ii.pixels;
 
-
-    int rval, gval, bval, val, alpha;
-    for (unsigned int i=0; i<ii.pixels; i++)
-    {
-	val = qGray(data[i]);
-	alpha = qAlpha(data[i]);
-	if (value < 1.0)
-	{
-	    rval = static_cast<int>(value*val+(1.0-value)*qRed(data[i]));
-	    gval = static_cast<int>(value*val+(1.0-value)*qGreen(data[i]));
-	    bval = static_cast<int>(value*val+(1.0-value)*qBlue(data[i]));
-	    data[i] = qRgba(rval, gval, bval, alpha);
-	} else
-	    data[i] = qRgba(val, val, val, alpha);
+    unsigned char gray;
+    if(value == 1.0){
+        while(data != end){
+            gray = qGray(*data);
+            *data = qRgba(gray, gray, gray, qAlpha(*data));
+            ++data;
+        }
     }
-
+    else{
+        unsigned char val = (unsigned char)(255.0*value);
+        while(data != end){
+            gray = qGray(*data);
+            *data = qRgba((val*gray+(0xFF-val)*qRed(*data)) >> 8,
+                          (val*gray+(0xFF-val)*qGreen(*data)) >> 8,
+                          (val*gray+(0xFF-val)*qBlue(*data)) >> 8,
+                          qAlpha(*data));
+            ++data;
+        }
+    }
 }
 
 void KIconEffect::colorize(QImage &img, const QColor &col, float value)
 {
+    if(value == 0.0)
+        return;
+
     KIEImgEdit ii(img);
-    unsigned int* data = ii.data;
+    QRgb *data = ii.data;
+    QRgb *end = data + ii.pixels;
 
-    int rval, gval, bval, val, alpha;
     float rcol = col.red(), gcol = col.green(), bcol = col.blue();
-    for (unsigned int i=0; i<ii.pixels; i++)
-    {
-        val = qGray(data[i]);
-        if (val < 128)
-        {
-             rval = static_cast<int>(rcol/128*val);
-             gval = static_cast<int>(gcol/128*val);
-             bval = static_cast<int>(bcol/128*val);
+    unsigned char red, green, blue, gray;
+    unsigned char val = (unsigned char)(255.0*value);
+    while(data != end){
+        gray = qGray(*data);
+        if(gray < 128){
+            red = static_cast<unsigned char>(rcol/128*gray);
+            green = static_cast<unsigned char>(gcol/128*gray);
+            blue = static_cast<unsigned char>(bcol/128*gray);
         }
-        else if (val > 128)
-        {
-             rval = static_cast<int>((val-128)*(2-rcol/128)+rcol-1);
-             gval = static_cast<int>((val-128)*(2-gcol/128)+gcol-1);
-             bval = static_cast<int>((val-128)*(2-bcol/128)+bcol-1);
+        else if(gray > 128){
+            red = static_cast<unsigned char>((gray-128)*(2-rcol/128)+rcol-1);
+            green = static_cast<unsigned char>((gray-128)*(2-gcol/128)+gcol-1);
+            blue = static_cast<unsigned char>((gray-128)*(2-bcol/128)+bcol-1);
         }
-	else // val == 128
-	{
-             rval = static_cast<int>(rcol);
-             gval = static_cast<int>(gcol);
-             bval = static_cast<int>(bcol);
-	}
-	if (value < 1.0)
-	{
-	    rval = static_cast<int>(value*rval+(1.0 - value)*qRed(data[i]));
-	    gval = static_cast<int>(value*gval+(1.0 - value)*qGreen(data[i]));
-	    bval = static_cast<int>(value*bval+(1.0 - value)*qBlue(data[i]));
-	}
+        else{
+            red = static_cast<unsigned char>(rcol);
+            green = static_cast<unsigned char>(gcol);
+            blue = static_cast<unsigned char>(bcol);
+        }
 
-	alpha = qAlpha(data[i]);
-	data[i] = qRgba(rval, gval, bval, alpha);
+        *data = qRgba((val*red+(0xFF-val)*qRed(*data)) >> 8,
+                      (val*green+(0xFF-val)*qGreen(*data)) >> 8,
+                      (val*blue+(0xFF-val)*qBlue(*data)) >> 8,
+                      qAlpha(*data));
+        ++data;
     }
 }
 
-void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &white, float value) {
+void KIconEffect::toMonochrome(QImage &img, const QColor &black,
+                               const QColor &white, float value)
+{
+    if(value == 0.0)
+        return;
+
     KIEImgEdit ii(img);
-    unsigned int* data = ii.data;
-    int         pixels = ii.pixels;
+    QRgb *data = ii.data;
+    QRgb *end = data + ii.pixels;
 
-   int rval, gval, bval, alpha, i;
-   int rw = white.red(), gw = white.green(), bw = white.blue();
-   int rb = black.red(), gb = black.green(), bb = black.blue();
+    // Step 1: determine the average brightness
+    double values = 0.0, sum = 0.0;
+    bool grayscale = true;
+    while(data != end){
+        sum += qGray(*data)*qAlpha(*data) + 255*(255-qAlpha(*data));
+        values += 255;
+        if((qRed(*data) != qGreen(*data) ) || (qGreen(*data) != qBlue(*data)))
+            grayscale = false;
+        ++data;
+    }
+    double medium = sum/values;
 
-   double values = 0, sum = 0;
-   bool grayscale = true;
-   // Step 1: determine the average brightness
-   for (i=0; i<pixels; i++) {
-       sum += qGray(data[i])*qAlpha(data[i]) + 255*(255-qAlpha(data[i]));
-       values += 255;
-       if ((qRed(data[i]) != qGreen(data[i]) ) || (qGreen(data[i]) != qBlue(data[i]) ))
-           grayscale = false;
-   }
-   double medium = sum/values;
+    // Step 2: Modify the image
+    unsigned char val = (unsigned char)(255.0*value);
+    int rw = white.red(), gw = white.green(), bw = white.blue();
+    int rb = black.red(), gb = black.green(), bb = black.blue();
+    data = ii.data;
 
-   // Step 2: Modify the image
-   if (grayscale) {
-       for (i=0; i<pixels; i++) {
-           int v = qRed(data[i]);
-           rval = static_cast<int>( ((255-v)*rb + v*rw)*value/255 + (1.0-value)*qRed(data[i]));
-           gval = static_cast<int>( ((255-v)*gb + v*gw)*value/255 + (1.0-value)*qGreen(data[i]));
-           bval = static_cast<int>( ((255-v)*bb + v*bw)*value/255 + (1.0-value)*qBlue(data[i]));
-
-           alpha = qAlpha(data[i]);
-           data[i] = qRgba(rval, gval, bval, alpha);
-       }
-   }
-   else {
-      for (i=0; i<pixels; i++) {
-         if (qGray(data[i]) <= medium) {
-            rval = static_cast<int>(value*rb+(1.0-value)*qRed(data[i]));
-            gval = static_cast<int>(value*gb+(1.0-value)*qGreen(data[i]));
-            bval = static_cast<int>(value*bb+(1.0-value)*qBlue(data[i]));
-         }
-         else {
-            rval = static_cast<int>(value*rw+(1.0-value)*qRed(data[i]));
-            gval = static_cast<int>(value*gw+(1.0-value)*qGreen(data[i]));
-            bval = static_cast<int>(value*bw+(1.0-value)*qBlue(data[i]));
-         }
-
-         alpha = qAlpha(data[i]);
-         data[i] = qRgba(rval, gval, bval, alpha);
-      }
-   }
+    if(grayscale){
+        while(data != end){
+            if(qRed(*data) <= medium)
+                *data = qRgba((val*rb+(0xFF-val)*qRed(*data)) >> 8,
+                              (val*gb+(0xFF-val)*qGreen(*data)) >> 8,
+                              (val*bb+(0xFF-val)*qBlue(*data)) >> 8,
+                              qAlpha(*data));
+            else
+                *data = qRgba((val*rw+(0xFF-val)*qRed(*data)) >> 8,
+                              (val*gw+(0xFF-val)*qGreen(*data)) >> 8,
+                              (val*bw+(0xFF-val)*qBlue(*data)) >> 8,
+                              qAlpha(*data));
+            ++data;
+        }
+    }
+    else{
+        while(data != end){
+            if(qGray(*data) <= medium) 
+                *data = qRgba((val*rb+(0xFF-val)*qRed(*data)) >> 8,
+                              (val*gb+(0xFF-val)*qGreen(*data)) >> 8,
+                              (val*bb+(0xFF-val)*qBlue(*data)) >> 8,
+                              qAlpha(*data));
+            else
+                *data = qRgba((val*rw+(0xFF-val)*qRed(*data)) >> 8,
+                              (val*gw+(0xFF-val)*qGreen(*data)) >> 8,
+                              (val*bw+(0xFF-val)*qBlue(*data)) >> 8,
+                              qAlpha(*data));
+            ++data;
+        }
+    }
 }
 
 void KIconEffect::deSaturate(QImage &img, float value)
 {
+    if(value == 0.0)
+        return;
+
     KIEImgEdit ii(img);
-    unsigned int* data = ii.data;
-    int         pixels = ii.pixels;
+    QRgb *data = ii.data;
+    QRgb *end = data + ii.pixels;
 
     QColor color;
-    int h, s, v, i;
-    for (i=0; i<pixels; i++)
-    {
-        color.setRgb(data[i]);
+    int h, s, v;
+    while(data != end){
+        color.setRgb(*data);
         color.getHsv(&h, &s, &v);
         color.setHsv(h, (int) (s * (1.0 - value) + 0.5), v);
-	data[i] = qRgba(color.red(), color.green(), color.blue(),
-		qAlpha(data[i]));
+	*data = qRgba(color.red(), color.green(), color.blue(),
+                      qAlpha(*data));
+        ++data;
     }
 }
 
 void KIconEffect::toGamma(QImage &img, float value)
 {
     KIEImgEdit ii(img);
-    unsigned int* data = ii.data;
-    int         pixels = ii.pixels;
+    QRgb *data = ii.data;
+    QRgb *end = data + ii.pixels;
 
-
-    QColor color;
-    int i, rval, gval, bval;
-    float gamma;
-    gamma = 1/(2*value+0.5);
-
-    for (i=0; i<pixels; i++)
-    {
-        color.setRgb(data[i]);
-        color.getRgb(&rval, &gval, &bval);
-        rval = static_cast<int>(pow(static_cast<float>(rval)/255 , gamma)*255);
-        gval = static_cast<int>(pow(static_cast<float>(gval)/255 , gamma)*255);
-        bval = static_cast<int>(pow(static_cast<float>(bval)/255 , gamma)*255);
-	data[i] = qRgba(rval, gval, bval, qAlpha(data[i]));
+    float gamma = 1/(2*value+0.5);
+    while(data != end){
+        *data = qRgba(static_cast<unsigned char>
+                      (pow(static_cast<float>(qRed(*data))/255 , gamma)*255),
+                      static_cast<unsigned char>
+                      (pow(static_cast<float>(qGreen(*data))/255 , gamma)*255),
+                      static_cast<unsigned char>
+                      (pow(static_cast<float>(qBlue(*data))/255 , gamma)*255),
+                      qAlpha(*data));
+        ++data;
     }
 }
 
 void KIconEffect::semiTransparent(QImage &img)
 {
     int x, y;
-    if (img.depth() == 32)
-    {
-	int width  = img.width();
+    if(img.depth() == 32){
+        if(img.format() == QImage::Format_ARGB32_Premultiplied)
+            img = img.convertToFormat(QImage::Format_ARGB32);
+        int width  = img.width();
 	int height = img.height();
 
-	if (QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing))
-	  for (y=0; y<height; y++)
-	  {
-#if Q_BYTE_ORDER == Q_BIG_ENDIAN
-	    uchar *line = (uchar*) img.scanLine(y);
-#else
-	    uchar *line = (uchar*) img.scanLine(y) + 3;
-#endif
-	    for (x=0; x<width; x++)
-	    {
-		*line >>= 1;
-		line += 4;
-	    }
-	  }
-	else
-	  for (y=0; y<height; y++)
-	  {
-	    QRgb* line = (QRgb*)img.scanLine(y);
-	    for (x=(y%2); x<width; x+=2)
-		line[x] &= 0x00ffffff;
-	  }
-
-    } else
-    {
-	// Insert transparent pixel into the clut.
-	int transColor = -1;
+        if(QApplication::desktop()->paintEngine()->hasFeature(QPaintEngine::Antialiasing)){
+            unsigned char *line;
+            for(y=0; y<height; y++){
+                if(QSysInfo::ByteOrder == QSysInfo::BigEndian)
+                    line = img.scanLine(y);
+                else
+                    line = img.scanLine(y) + 3;
+                for(x=0; x<width; x++){
+                    *line >>= 1;
+                    line += 4;
+                }
+            }
+        }
+        else{
+            for(y=0; y<height; y++){
+                QRgb* line = (QRgb*)img.scanLine(y);
+                for(x=(y%2); x<width; x+=2)
+                    line[x] &= 0x00ffffff;
+            }
+        }
+    }
+    else{
+        // Insert transparent pixel into the clut.
+        int transColor = -1;
 
         // search for a color that is already transparent
-        for (x=0; x<img.numColors(); x++)
-        {
+        for(x=0; x<img.numColors(); x++){
             // try to find already transparent pixel
-            if (qAlpha(img.color(x)) < 127)
-            {
+            if(qAlpha(img.color(x)) < 127){
                 transColor = x;
                 break;
             }
         }
-
 
         // FIXME: image must have transparency
         if(transColor < 0 || transColor >= img.numColors())
             return;
 
 	img.setColor(transColor, 0);
-        if(img.depth() == 8)
-        {
-            for (y=0; y<img.height(); y++)
-            {
-                unsigned char *line = img.scanLine(y);
-                for (x=(y%2); x<img.width(); x+=2)
+        unsigned char *line;
+        if(img.depth() == 8){
+            for(y=0; y<img.height(); y++){
+                line = img.scanLine(y);
+                for(x=(y%2); x<img.width(); x+=2)
                     line[x] = transColor;
             }
 	}
-        else
-        {
-            // SLOOW, but simple, as we would have to
-            // deal with endianess etc on our own here
-            for (y=0; y<img.height(); y++)
-                for (x=(y%2); x<img.width(); x+=2)
-                    img.setPixel(x, y, transColor);
+        else{
+            bool setOn = (transColor != 0);
+            if(img.format() == QImage::Format_MonoLSB){
+                for(y=0; y<img.height(); y++){
+                    line = img.scanLine(y);
+                    for(x=(y%2); x<img.width(); x+=2){
+                        if(!setOn)
+                            *(line + (x >> 3)) &= ~(1 << (x & 7));
+                        else
+                            *(line + (x >> 3)) |= (1 << (x & 7));
+                    }
+                }
+            }
+            else{
+                for(y=0; y<img.height(); y++){
+                    line = img.scanLine(y);
+                    for(x=(y%2); x<img.width(); x+=2){
+                        if(!setOn)
+                            *(line + (x >> 3)) &= ~(1 << (7-(x & 7)));
+                        else
+                            *(line + (x >> 3)) |= (1 << (7-(x & 7)));
+                    }
+                }
+            }
         }
     }
 }
@@ -637,11 +671,16 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	kDebug(265) << "Image size src != overlay\n";
 	return;
     }
+    if (src.format() == QImage::Format_ARGB32_Premultiplied)
+        src.convertToFormat(QImage::Format_ARGB32);
+
     if (overlay.format() == QImage::Format_RGB32)
     {
 	kDebug(265) << "Overlay doesn't have alpha buffer!\n";
 	return;
     }
+    else if (overlay.format() == QImage::Format_ARGB32_Premultiplied)
+        overlay.convertToFormat(QImage::Format_ARGB32);
 
     int i, j;
 
