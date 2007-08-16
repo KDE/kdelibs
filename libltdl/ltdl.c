@@ -2209,6 +2209,7 @@ lt_dlopen (filename)
         while (line[line_len-2] && (!feof (file)))
           {
             line = LT_DLREALLOC (char, line, line_len *2);
+            line[line_len*2-2] = '\0';
             if (!line || !fgets (&line[line_len -1], (int) line_len +1, file))
               {
                 error = 1;
