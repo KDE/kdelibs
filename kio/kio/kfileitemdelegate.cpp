@@ -261,10 +261,10 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &opti
             return item.timeString(KFileItem::AccessTime);
 
         case KFileItemDelegate::MimeType:
-            return item.isMimeTypeKnown() ? item.mimetype() : i18n("Unknown");
+            return item.isMimeTypeKnown() ? item.mimetype() : i18nc("@info mimetype","Unknown");
 
         case KFileItemDelegate::FriendlyMimeType:
-            return item.isMimeTypeKnown() ? item.mimeComment() : i18n("Unknown");
+            return item.isMimeTypeKnown() ? item.mimeComment() : i18nc("@info mimetype","Unknown");
 
         default:
             return QString();

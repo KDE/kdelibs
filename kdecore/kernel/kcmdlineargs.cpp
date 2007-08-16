@@ -817,7 +817,7 @@ KCmdLineArgsStatic::findOption(const QString &optv, const QString &_opt,
          if (i >= s->argc)
          {
             KCmdLineArgs::enable_i18n();
-            KCmdLineArgs::usageError( i18n("'%1' missing.",  opt_name));
+            KCmdLineArgs::usageError( i18nc("@info %1 is cmdoption name","'%1' missing.",  opt_name));
          }
          argument = s->decodeInput(s->argv[i]);
       }

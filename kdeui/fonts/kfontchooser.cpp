@@ -105,9 +105,9 @@ public:
     KFontChooser *q;
 
     QPalette m_palette;
-    bool signalsAllowed;
+    bool signalsAllowed:1;
 
-    bool usingFixed;
+    bool usingFixed:1;
 
     KIntNumInput *sizeOfFont;
 
@@ -143,9 +143,7 @@ KFontChooser::KFontChooser( QWidget *parent,
       d( new KFontChooser::Private( this ) )
 {
     d->usingFixed = flags & FixedFontsOnly;
-    QString mainWhatsThisText =
-        i18n( "Here you can choose the font to be used." );
-    setWhatsThis(mainWhatsThisText );
+    setWhatsThis(i18nc("@info:whatsthis", "Here you can choose the font to be used." ));
 
     QVBoxLayout *topLayout = new QVBoxLayout( this );
     topLayout->setMargin( 0 );
@@ -180,20 +178,16 @@ KFontChooser::KFontChooser( QWidget *parent,
     QHBoxLayout *familyLayout = new QHBoxLayout();
     familyLayout->addSpacing( checkBoxGap );
     if ( flags & ShowDifferences ) {
-        d->familyCheckbox = new QCheckBox(i18n("Font"), page);
+        d->familyCheckbox = new QCheckBox(i18nc("@option:check","Font"), page);
         connect(d->familyCheckbox, SIGNAL(toggled(bool)),
                 this, SLOT(_k_toggled_checkbox()));
         familyLayout->addWidget(d->familyCheckbox, 0, Qt::AlignLeft);
-        QString familyCBToolTipText =
-            i18n("Change font family?");
-        QString familyCBWhatsThisText =
-            i18n("Enable this checkbox to change the font family settings.");
-        d->familyCheckbox->setWhatsThis(familyCBWhatsThisText );
-        d->familyCheckbox->setToolTip( familyCBToolTipText );
+        d->familyCheckbox->setWhatsThis(i18nc("@info:whatsthis","Enable this checkbox to change the font family settings."));
+        d->familyCheckbox->setToolTip(i18nc("@info:tooltip","Change font family?") );
         d->familyLabel = 0;
     } else {
         d->familyCheckbox = 0;
-        d->familyLabel = new QLabel( i18n("Font:"), page );
+        d->familyLabel = new QLabel( i18nc("@label","Font:"), page );
         d->familyLabel->setObjectName( "familyLabel" );
         familyLayout->addWidget(d->familyLabel, 1, Qt::AlignLeft);
     }
@@ -201,20 +195,16 @@ KFontChooser::KFontChooser( QWidget *parent,
 
     QHBoxLayout *styleLayout = new QHBoxLayout();
     if ( flags & ShowDifferences ) {
-        d->styleCheckbox = new QCheckBox(i18n("Font style"), page);
+        d->styleCheckbox = new QCheckBox(i18nc("@option:check","Font style"), page);
         connect(d->styleCheckbox, SIGNAL(toggled(bool)),
                 this, SLOT(_k_toggled_checkbox()));
         styleLayout->addWidget(d->styleCheckbox, 0, Qt::AlignLeft);
-        QString styleCBToolTipText =
-            i18n("Change font style?");
-        QString styleCBWhatsThisText =
-            i18n("Enable this checkbox to change the font style settings.");
-        d->styleCheckbox->setWhatsThis(styleCBWhatsThisText );
-        d->styleCheckbox->setToolTip( styleCBToolTipText );
+        d->styleCheckbox->setWhatsThis(i18nc("@info:whatsthis","Enable this checkbox to change the font style settings."));
+        d->styleCheckbox->setToolTip(i18nc("@info:tooltip","Change font style?"));
         d->styleLabel = 0;
     } else {
         d->styleCheckbox = 0;
-        d->styleLabel = new QLabel( i18n("Font style:"), page );
+        d->styleLabel = new QLabel(i18n("Font style:"), page );
         d->styleLabel->setObjectName( "styleLabel" );
         styleLayout->addWidget(d->styleLabel, 1, Qt::AlignLeft);
     }
@@ -223,20 +213,16 @@ KFontChooser::KFontChooser( QWidget *parent,
 
     QHBoxLayout *sizeLayout = new QHBoxLayout();
     if ( flags & ShowDifferences ) {
-        d->sizeCheckbox = new QCheckBox(i18n("Size"),page);
+        d->sizeCheckbox = new QCheckBox(i18nc("@option:check","Size"),page);
         connect(d->sizeCheckbox, SIGNAL(toggled(bool)),
                 this, SLOT(_k_toggled_checkbox()));
         sizeLayout->addWidget(d->sizeCheckbox, 0, Qt::AlignLeft);
-        QString sizeCBToolTipText =
-            i18n("Change font size?");
-        QString sizeCBWhatsThisText =
-            i18n("Enable this checkbox to change the font size settings.");
-        d->sizeCheckbox->setWhatsThis(sizeCBWhatsThisText );
-        d->sizeCheckbox->setToolTip( sizeCBToolTipText );
+        d->sizeCheckbox->setWhatsThis(i18nc("@info:whatsthis","Enable this checkbox to change the font size settings."));
+        d->sizeCheckbox->setToolTip(i18nc("@info:tooltip","Change font size?"));
         d->sizeLabel = 0;
     } else {
         d->sizeCheckbox = 0;
-        d->sizeLabel = new QLabel( i18n("Size:"), page );
+        d->sizeLabel = new QLabel(i18n("Size:"), page );
         d->sizeLabel->setObjectName( "sizeLabel" );
         sizeLayout->addWidget(d->sizeLabel, 1, Qt::AlignLeft);
     }
@@ -253,8 +239,8 @@ KFontChooser::KFontChooser( QWidget *parent,
     d->familyListBox->setObjectName("familyListBox");
     d->familyListBox->setEnabled( flags ^ ShowDifferences );
     gridLayout->addWidget( d->familyListBox, row, 0 );
-    QString fontFamilyWhatsThisText =
-        i18n("Here you can choose the font family to be used." );
+    QString fontFamilyWhatsThisText (
+        i18nc("@info:whatsthis","Here you can choose the font family to be used." ));
     d->familyListBox->setWhatsThis(fontFamilyWhatsThisText );
 
     if ( flags & ShowDifferences ) {
@@ -281,18 +267,16 @@ KFontChooser::KFontChooser( QWidget *parent,
     d->styleListBox->setObjectName("styleListBox");
     d->styleListBox->setEnabled( flags ^ ShowDifferences );
     gridLayout->addWidget(d->styleListBox, row, 1);
-    QString fontStyleWhatsThisText =
-        i18n("Here you can choose the font style to be used." );
-    d->styleListBox->setWhatsThis(fontStyleWhatsThisText );
+    d->styleListBox->setWhatsThis(i18nc("@info:whatsthis","Here you can choose the font style to be used." ));
     if ( flags & ShowDifferences ) {
         ((QWidget *)d->styleCheckbox)->setWhatsThis(fontFamilyWhatsThisText );
     } else {
         ((QWidget *)d->styleLabel)->setWhatsThis( fontFamilyWhatsThisText );
     }
-    d->styleListBox->addItem(i18n("Regular"));
-    d->styleListBox->addItem(i18n("Italic"));
-    d->styleListBox->addItem(i18n("Bold"));
-    d->styleListBox->addItem(i18n("Bold Italic"));
+    d->styleListBox->addItem(i18nc("@item font","Regular"));
+    d->styleListBox->addItem(i18nc("@item font","Italic"));
+    d->styleListBox->addItem(i18nc("@item font","Bold"));
+    d->styleListBox->addItem(i18nc("@item font","Bold Italic"));
     d->styleListBox->setMinimumWidth( minimumListWidth( d->styleListBox ) );
     d->styleListBox->setMinimumHeight(
         minimumListHeight( d->styleListBox, visibleListSize  ) );
@@ -310,7 +294,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     d->sizeOfFont->setEnabled( flags ^ ShowDifferences );
     if( sizeIsRelativeState ) {
         QString sizeIsRelativeCBText =
-            i18n("Relative");
+            i18nc("@item font size","Relative");
         QString sizeIsRelativeCBToolTipText =
             i18n("Font size<br><i>fixed</i> or <i>relative</i><br>to environment");
         QString sizeIsRelativeCBWhatsThisText =
@@ -590,11 +574,11 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     for ( QStringList::Iterator it = styles.begin(); it != styles.end(); ++it ) {
         QString style = *it;
         int pos = style.indexOf("Plain");
-        if(pos >=0) style = style.replace(pos,5,i18n("Regular"));
+        if(pos >=0) style = style.replace(pos,5,i18nc("@item font","Regular"));
         pos = style.indexOf("Normal");
-        if(pos >=0) style = style.replace(pos,6,i18n("Regular"));
+        if(pos >=0) style = style.replace(pos,6,i18nc("@item font","Regular"));
         pos = style.indexOf("Oblique");
-        if(pos >=0) style = style.replace(pos,7,i18n("Italic"));
+        if(pos >=0) style = style.replace(pos,7,i18nc("@item font","Italic"));
 
         QList<QListWidgetItem*> styleList = styleListBox->findItems(style,Qt::MatchContains);
         if ( styleList.isEmpty() ) {
@@ -603,8 +587,8 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
         }
     }
     if ( styleListBox->count() == 0 ) {
-        styleListBox->addItem(i18n("Regular"));
-        currentStyles.insert(i18n("Regular"), "Normal");
+        styleListBox->addItem(i18nc("@item font","Regular"));
+        currentStyles.insert(i18nc("@item font","Regular"), "Normal");
     }
 
     QList<QListWidgetItem*> selectedStyleList = styleListBox->findItems(selectedStyle,Qt::MatchContains);

@@ -445,7 +445,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
     url = Qt::escape(reqUrl->prettyUrl());
     protocol = reqUrl->protocol();
   } else {
-    url = i18n( "(unknown)" );
+    url = i18nc("@info url", "(unknown)" );
   }
 
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
@@ -527,7 +527,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
   } else {
     // assume that the errorText has the location we are interested in
     url = host = domain = path = filename = dir = errorText;
-    protocol = i18n( "(unknown)" );
+    protocol = i18nc("@info protocol", "(unknown)" );
   }
 
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),

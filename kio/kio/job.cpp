@@ -142,52 +142,52 @@ bool Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
 
 void JobPrivate::emitMoving(KIO::Job * job, const KUrl &src, const KUrl &dest)
 {
-    emit job->description(job, i18n("Moving"),
+    emit job->description(job, i18nc("@title job","Moving"),
                           qMakePair(i18n("Source"), src.prettyUrl()),
                           qMakePair(i18n("Destination"), dest.prettyUrl()));
 }
 
 void JobPrivate::emitCopying(KIO::Job * job, const KUrl &src, const KUrl &dest)
 {
-    emit job->description(job, i18n("Copying"),
+    emit job->description(job, i18nc("@title job","Copying"),
                           qMakePair(i18n("Source"), src.prettyUrl()),
                           qMakePair(i18n("Destination"), dest.prettyUrl()));
 }
 
 void JobPrivate::emitCreatingDir(KIO::Job * job, const KUrl &dir)
 {
-    emit job->description(job, i18n("Creating directory"),
+    emit job->description(job, i18nc("@title job","Creating directory"),
                           qMakePair(i18n("Directory"), dir.prettyUrl()));
 }
 
 void JobPrivate::emitDeleting(KIO::Job *job, const KUrl &url)
 {
-    emit job->description(job, i18n("Deleting"),
+    emit job->description(job, i18nc("@title job","Deleting"),
                           qMakePair(i18n("File"), url.prettyUrl()));
 }
 
 void JobPrivate::emitStating(KIO::Job *job, const KUrl &url)
 {
-    emit job->description(job, i18n("Stating"),
+    emit job->description(job, i18nc("@title job","Stating"),
                           qMakePair(i18n("File"), url.prettyUrl()));
 }
 
 void JobPrivate::emitTransferring(KIO::Job *job, const KUrl &url)
 {
-    emit job->description(job, i18n("Transferring"),
+    emit job->description(job, i18nc("@title job","Transferring"),
                           qMakePair(i18n("Source"), url.prettyUrl()));
 }
 
 void JobPrivate::emitMounting(KIO::Job * job, const QString &dev, const QString &point)
 {
-    emit job->description(job, i18n("Mounting"),
+    emit job->description(job, i18nc("@title job","Mounting"),
                           qMakePair(i18n("Device"), dev),
                           qMakePair(i18n("Mountpoint"), point));
 }
 
 void JobPrivate::emitUnmounting(KIO::Job * job, const QString &point)
 {
-    emit job->description(job, i18n("Unmounting"),
+    emit job->description(job, i18nc("@title job","Unmounting"),
                           qMakePair(i18n("Mountpoint"), point));
 }
 

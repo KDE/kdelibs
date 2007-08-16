@@ -62,9 +62,9 @@ Dialog::Dialog( BackgroundChecker *checker,
     : KDialog( parent ),d(new Private)
 {
     setModal( true );
-    setCaption( i18n( "Check Spelling" ) );
+    setCaption( i18nc("@title:window", "Check Spelling" ) );
     setButtons( Help | Cancel | User1 );
-    setButtonGuiItem( User1, KGuiItem(i18n( "&Finished" )) );
+    setButtonGuiItem( User1, KGuiItem(i18nc("@action:button", "&Finished" )) );
     setDefaultButton( Cancel );
     showButtonSeparator( true );
 

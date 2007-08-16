@@ -89,7 +89,7 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
     }
     alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
     autoCheck = cg.readEntry( "AutoCheckAccelerators", true );
-    connect( &autoCheckTimer, SIGNAL( timeout()), SLOT( autoCheckSlot()));
+    connect( &autoCheckTimer, SIGNAL(timeout()), SLOT(autoCheckSlot()));
 }
 
 bool KCheckAccelerators::eventFilter( QObject * , QEvent * e)
@@ -154,7 +154,7 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
     drklash = new QDialog( actWin );
     drklash->setAttribute( Qt::WA_DeleteOnClose );
     drklash->setObjectName( "kapp_accel_check_dlg" );
-    drklash->setWindowTitle( i18n( "Dr. Klash' Accelerator Diagnosis" ));
+    drklash->setWindowTitle( i18nc("@title:window", "Dr. Klash' Accelerator Diagnosis" ));
     drklash->resize( 500, 460 );
     QVBoxLayout* layout = new QVBoxLayout( drklash );
     layout->setMargin( 11 );
@@ -163,14 +163,14 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
     layout->addWidget( drklash );
     QCheckBox* disableAutoCheck = NULL;
     if( automatic )  {
-        disableAutoCheck = new QCheckBox( i18n( "&Disable automatic checking" ), drklash );
+        disableAutoCheck = new QCheckBox( i18nc("@option:check","Disable automatic checking" ), drklash );
         connect(disableAutoCheck, SIGNAL(toggled(bool)), SLOT(slotDisableCheck(bool)));
         layout->addWidget( disableAutoCheck );
     }
-    QPushButton* btnClose = new QPushButton( i18n( "&Close" ), drklash );
+    QPushButton* btnClose = new QPushButton( i18nc("@action:button", "Close" ), drklash );
     btnClose->setDefault( true );
     layout->addWidget( btnClose );
-    connect( btnClose, SIGNAL( clicked() ), drklash, SLOT( close() ) );
+    connect( btnClose, SIGNAL(clicked()), drklash, SLOT(close()) );
     if (disableAutoCheck)
         disableAutoCheck->setFocus();
     else
