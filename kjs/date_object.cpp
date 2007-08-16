@@ -1361,7 +1361,7 @@ static double parseDate(const UString &date)
 
 double timeClip(double t)
 {
-    if (!isfinite(t))
+    if (isInf(t))
         return NaN;
     double at = fabs(t);
     if (at > 8.64E15)
