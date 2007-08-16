@@ -435,7 +435,7 @@ private:
     static KDE_DEPRECATED bool matchFilename( const QString& filename, const QString& pattern )
     {
         return matchFileName (filename, pattern);
-    };
+    }
 
 };
 #endif

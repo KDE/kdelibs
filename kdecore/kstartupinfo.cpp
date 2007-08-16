@@ -84,9 +84,9 @@ class KStartupInfo::Data
     : public KStartupInfoData
     {
     public:
-        Data() : KStartupInfoData(), age(0) {}; // just because it's in a QMap
+        Data() : KStartupInfoData(), age(0) {} // just because it's in a QMap
         Data( const QString& txt_P )
-            : KStartupInfoData( txt_P ), age( 0 ) {};
+            : KStartupInfoData( txt_P ), age( 0 ) {}
         unsigned int age;
     };
 
@@ -948,7 +948,7 @@ QCString KStartupInfo::createNewStartupId()
 
 struct KStartupInfoIdPrivate
     {
-    KStartupInfoIdPrivate() : id( "" ) {};
+    KStartupInfoIdPrivate() : id( "" ) {}
     QCString id; // id
     };
 
@@ -1105,7 +1105,7 @@ unsigned long KStartupInfoId::timestamp() const
 struct KStartupInfoDataPrivate
     {
     KStartupInfoDataPrivate() : desktop( 0 ), wmclass( "" ), hostname( "" ),
-	silent( KStartupInfoData::Unknown ), timestamp( -1U ), screen( -1 ) {};
+	silent( KStartupInfoData::Unknown ), timestamp( -1U ), screen( -1 ) {}
     QString bin;
     QString name;
     QString description;
