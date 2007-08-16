@@ -38,6 +38,7 @@
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QTextCodec>
 #include "kcmdlineargs.h"
 
 #ifndef NDEBUG
@@ -125,7 +126,8 @@ KLocale *KGlobal::locale()
         }
 
         // will set d->locale if it works - otherwise 0 is returned
-        KLocale::initInstance();
+        d->locale = new KLocale(d->mainComponent.catalogName());
+        QTextCodec::setCodecForLocale(d->locale->codecForEncoding());
         if (d->mainComponent.aboutData()) {
             d->mainComponent.aboutData()->translateInternalProgramName();
         }

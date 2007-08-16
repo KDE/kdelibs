@@ -1947,24 +1947,6 @@ QString KLocale::formatDateTime(const KDateTime &dateTime, DateFormat format,
     return dt;
 }
 
-void KLocale::initInstance()
-{
-    if (KGlobal::hasLocale()) {
-        return;
-    }
-
-    KComponentData app = KGlobal::mainComponent();
-    if (app.isValid()) {
-        KLocale *locale = new KLocale(app.catalogName());
-        KGlobal::setLocale(locale);
-
-        // only do this for the global instance
-        QTextCodec::setCodecForLocale(locale->codecForEncoding());
-    } else {
-        kDebug(173) << "no app name available using KLocale - nothing to do\n";
-    }
-}
-
 QString KLocale::langLookup(const QString &fname, const char *rtype)
 {
   QStringList search;

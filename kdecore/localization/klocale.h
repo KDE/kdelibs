@@ -40,11 +40,6 @@ class KCalendarSystem;
 class KLocale;
 class KLocalePrivate;
 
-namespace KGlobal
-{
-    KDECORE_EXPORT KLocale *locale();
-}
-
 /**
  * \file klocale.h
  */
@@ -65,7 +60,6 @@ namespace KGlobal
   */
 class KDECORE_EXPORT KLocale
 {
-  friend KLocale *KGlobal::locale(); // for initInstance()
 public:
   /**
    * Constructs a KLocale with the given catalog name.
@@ -1123,14 +1117,6 @@ public:
    * @internal Called from KConfigBackend to initialize language.
    */
   static QString _initLanguage(KConfigBase *config);
-
-
-protected:
-  /**
-   * @internal Creates a KLocale object for KGlobal and inits the locale
-   * pointer.
-   */
-  static void initInstance();
 
 private:
   KLocalePrivate * const d;
