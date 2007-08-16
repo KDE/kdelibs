@@ -39,7 +39,7 @@ using namespace std;
 int main(int args, char **argv)
 {
     KComponentData componentData("tutorial3");
-    
+
     //get a Processor
     QList<Solid::Device> list = Solid::Device::listFromType(Solid::DeviceInterface::Processor, QString());
 
@@ -50,7 +50,16 @@ int main(int args, char **argv)
 
     Solid::Processor *processor = device.as<Solid::Processor>();
     kDebug() << "This processors maximum speed is: " << processor->maxSpeed();
-    
+
+    Solid::Processor::Extensions extensions = processor->extensions();
+    kDebug() << "Intel MMX supported:" << (bool)(extensions & Solid::Processor::IntelMMX);
+    kDebug() << "Intel SSE supported:" << (bool)(extensions & Solid::Processor::IntelSSE);
+    kDebug() << "Intel SSE2 supported:" << (bool)(extensions & Solid::Processor::IntelSSE2);
+    kDebug() << "Intel SSE3 supported:" << (bool)(extensions & Solid::Processor::IntelSSE3);
+    kDebug() << "Intel SSE4 supported:" << (bool)(extensions & Solid::Processor::IntelSSE4);
+    kDebug() << "AMD 3DNOW supported:" << (bool)(extensions & Solid::Processor::AMD3DNOW);
+    kDebug() << "PPC AltiVec supported:" << (bool)(extensions & Solid::Processor::AltiVec);
+
     return 0;
 }
 
