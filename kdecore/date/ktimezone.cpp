@@ -21,9 +21,16 @@
 // This file requires HAVE_STRUCT_TM_TM_ZONE to be defined if struct tm member tm_zone is available.
 // This file requires HAVE_TM_GMTOFF to be defined if struct tm member tm_gmtoff is available.
 
-#include "ktimezone.h"
+#include "config.h"
 
-#include <config.h>
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+#ifdef HAVE_TIME_H
+#include <time.h>
+#endif
+
+#include "ktimezone.h"
 
 #include <climits>
 #include <cstdlib>

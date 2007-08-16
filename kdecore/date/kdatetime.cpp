@@ -18,6 +18,15 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "config.h"
+
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+#ifdef HAVE_TIME_H
+#include <time.h>
+#endif
+
 #include "kdatetime.h"
 
 #include <stdlib.h>
