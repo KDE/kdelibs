@@ -506,8 +506,11 @@ void KUrlNavigator::Private::updateContent()
             QString protocol = currentUrl.scheme();
             if (m_protocols == 0) {
                 deleteButtons();
+
                 m_protocols = new KProtocolCombo(protocol, q);
-                appendWidget(m_protocols);
+                const int index = m_layout->indexOf(m_dropDownButton);
+                m_layout->insertWidget(index, m_protocols);
+
                 if (!m_customProtocols.isEmpty()) {
                     m_protocols->setCustomProtocols(m_customProtocols);
                 }
@@ -659,6 +662,10 @@ void KUrlNavigator::Private::updateButtonVisibility()
         availableWidth -= m_protocols->width();
     }
 
+    if ((m_host != 0) && m_host->isVisible()) {
+        availableWidth -= m_host->width();
+    }
+
     QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.end();
     const QLinkedList<KUrlNavigatorButton*>::const_iterator itBegin = m_navButtons.begin();
     while (it != itBegin) {
@@ -719,7 +726,9 @@ void KUrlNavigator::Private::createHostLineEdit(const QString& text)
 
     m_host = new HostLineEdit(text, q);
     m_host->setClearButtonShown(true);
-    appendWidget(m_host);
+
+    const int index = m_layout->indexOf(m_dropDownButton);
+    m_layout->insertWidget(index, m_host);
 
     connect(m_host, SIGNAL(editingFinished()),
             q, SLOT(slotRemoteHostActivated()));
