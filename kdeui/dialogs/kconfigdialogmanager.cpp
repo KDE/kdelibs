@@ -199,6 +199,9 @@ void KConfigDialogManager::setupWidget(QWidget *widget, KConfigSkeletonItem *ite
       widget->setWhatsThis(whatsThis );
     }
   }
+  
+  if(!item->isEqual( property(widget) ))
+    setProperty( widget, item->property() );
 }
 
 bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChanges)

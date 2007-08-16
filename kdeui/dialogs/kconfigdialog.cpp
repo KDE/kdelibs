@@ -100,6 +100,13 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
   KPageWidgetItem* item = addPageInternal(page, itemName, pixmapName, header);
   if(manage)
     d->manager->addWidget(page);
+  
+  if (d->shown && manage)
+  {
+    // update the default button if the dialog is shown
+    bool is_default = isButtonEnabled(Default) && d->manager->isDefault();
+    enableButton(Default,!is_default);
+  }
   return item;
 }
 
@@ -112,6 +119,13 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
   KPageWidgetItem* item = addPageInternal(page, itemName, pixmapName, header);
   d->managerForPage[page] = new KConfigDialogManager(page, config);
   setupManagerConnections(d->managerForPage[page]);
+  
+  if (d->shown)
+  {
+    // update the default button if the dialog is shown
+    bool is_default = isButtonEnabled(Default) && d->managerForPage[page]->isDefault();
+    enableButton(Default,!is_default);
+  }
   return item;
 }
 
@@ -120,12 +134,6 @@ KPageWidgetItem* KConfigDialog::addPageInternal(QWidget *page,
                                         const QString &pixmapName,
                                         const QString &header)
 {
-  if(d->shown)
-  {
-    kDebug(240) << "KConfigDialog::addPage: can not add a page after the dialog has been shown.";
-    return 0;
-  }
-
   KVBox *frame = new KVBox();
   frame->setSpacing( 0 );
   frame->setMargin( 0 );
@@ -136,7 +144,6 @@ KPageWidgetItem* KConfigDialog::addPageInternal(QWidget *page,
   item->setIcon( KIcon( pixmapName ) );
 
   KPageDialog::addPage( item );
-
   return item;
 }
 

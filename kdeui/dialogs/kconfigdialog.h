@@ -112,8 +112,6 @@ public:
    * Adds page to the dialog and to KConfigDialogManager.  When an
    * application is done adding pages show() should be called to
    * display the dialog.
-   * Note that after you call show() you can not add any more pages
-   * to the dialog.
    * @param page - Pointer to the page that is to be added to the dialog.
    * This object is reparented.
    * @param itemName - Name of the page.
@@ -134,8 +132,6 @@ public:
    * one configuration file and thus have/need more than one KConfigSkeleton.
    * When an application is done adding pages show() should be called to
    * display the dialog.
-   * Note that after you call show() you can not add any more pages
-   * to the dialog.
    * @param page - Pointer to the page that is to be added to the dialog.
    * This object is reparented.
    * @param config - Config object containing corresponding settings.
