@@ -21,6 +21,7 @@
 #define SOLID_IFACES_PROCESSOR_H
 
 #include <solid/ifaces/deviceinterface.h>
+#include <solid/processor.h>
 
 namespace Solid
 {
@@ -60,6 +61,14 @@ namespace Ifaces
          * @return true if the processor can change CPU frequency, false otherwise
          */
         virtual bool canChangeFrequency() const = 0;
+
+        /**
+         * Queries the instructions set extensions of the CPU.
+         *
+         * @return the extensions supported by the CPU
+         */
+        virtual Solid::Processor::Extensions extensions() const = 0;
+
     };
 }
 }

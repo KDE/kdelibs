@@ -19,6 +19,8 @@
 
 #include "fakeprocessor.h"
 
+#include <QtCore/QStringList>
+
 FakeProcessor::FakeProcessor(FakeDevice *device)
  : FakeDeviceInterface(device)
 {
@@ -41,6 +43,42 @@ int FakeProcessor::maxSpeed() const
 bool FakeProcessor::canChangeFrequency() const
 {
     return fakeDevice()->property("canChangeFrequency").toBool();
+}
+
+Solid::Processor::Extensions FakeProcessor::extensions() const
+{
+    Solid::Processor::Extensions result;
+
+    QString str = fakeDevice()->property("extensions").toString();
+
+    QStringList extension_list = str.split(",");
+
+    foreach (const QString &extension_str, extension_list) {
+        if (extension_str == "mmx") {
+            result |= Solid::Processor::IntelMMX;
+        }
+        else if (extension_str == "sse") {
+            result |= Solid::Processor::IntelSSE;
+        }
+        else if (extension_str == "sse2") {
+            result |= Solid::Processor::IntelSSE2;
+        }
+        else if (extension_str == "sse3") {
+            result |= Solid::Processor::IntelSSE3;
+        }
+        else if (extension_str == "sse4") {
+            result |= Solid::Processor::IntelSSE4;
+        }
+        else if (extension_str == "3dnow") {
+            result |= Solid::Processor::AMD3DNOW;
+        }
+        else if (extension_str == "altivec") {
+            result |= Solid::Processor::AltiVec;
+        }
+     }
+
+    return result;
+
 }
 
 #include "backends/fakehw/fakeprocessor.moc"

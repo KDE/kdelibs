@@ -35,9 +35,12 @@ namespace Solid
     class SOLID_EXPORT Processor : public DeviceInterface
     {
         Q_OBJECT
+        Q_ENUMS(Extension)
+        Q_FLAGS(Extensions)
         Q_PROPERTY(int number READ number)
         Q_PROPERTY(qulonglong maxSpeed READ maxSpeed)
         Q_PROPERTY(bool canChangeFrequency READ canChangeFrequency)
+        Q_PROPERTY(Extensions extensions READ extensions)
         Q_DECLARE_PRIVATE(Processor)
         friend class Device;
 
@@ -54,10 +57,30 @@ namespace Solid
 
     public:
         /**
+         * This enum contains the list of architecture extensions you
+         * can query.
+         */
+        enum Extension {
+            NoExtensions = 0x0,
+            IntelMMX = 0x1,
+            IntelSSE = 0x2,
+            IntelSSE2 = 0x4,
+            IntelSSE3 = 0x8,
+            IntelSSE4 = 0x10,
+            AMD3DNOW = 0x20,
+            AltiVec = 0x40
+        };
+
+        /*
+         * The flags for the Extension enum.
+         */
+        Q_DECLARE_FLAGS(Extensions, Extension)
+
+
+        /**
          * Destroys a Processor object.
          */
         virtual ~Processor();
-
 
         /**
          * Get the Solid::DeviceInterface::Type of the Processor device interface.
@@ -90,7 +113,16 @@ namespace Solid
          * @return true if the processor can change CPU frequency, false otherwise
          */
         bool canChangeFrequency() const;
+
+        /**
+         * Queries the instructions set extensions of the CPU.
+         *
+         * @return the extensions supported by the CPU
+         */
+        Extensions extensions() const;
     };
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::Processor::Extensions);
 
 #endif
