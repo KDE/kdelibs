@@ -123,6 +123,6 @@ namespace Solid
     };
 }
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::Processor::Extensions);
+Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::Processor::Extensions)
 
 #endif
