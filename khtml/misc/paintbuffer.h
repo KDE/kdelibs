@@ -37,6 +37,8 @@ namespace khtml {
 
 class PaintBuffer: public QObject
 {
+    Q_OBJECT
+
 public:
     static const int maxPixelBuffering;
     static const int leaseTime;

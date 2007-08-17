@@ -95,7 +95,7 @@ void KNotifyTestWindow::slotConfigureC( )
 {
 	KDialog dialog(this);
 	KNotifyConfigWidget *w=new KNotifyConfigWidget(&dialog);
-	w->setApplication(QString::null , "group", view.c_group->currentText());	//krazy:exclude=nullstrassign for old broken gcc
+	w->setApplication(QString() , "group", view.c_group->currentText());
 	dialog.setMainWidget(w);
 	if(dialog.exec())
 	{
@@ -103,9 +103,4 @@ void KNotifyTestWindow::slotConfigureC( )
 	}
 }
 
-
-
-
 #include "knotifytestwindow.moc"
-
-

@@ -143,7 +143,7 @@ DOMString AttrImpl::name() const
         n = n.lower();
 
     if (m_prefix && m_prefix->l)
-        return DOMString(m_prefix) + ":" + n;
+        return DOMString(m_prefix) + ':' + n;
 
     return n;
 }
@@ -939,7 +939,7 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
     if (attrMap) {
 	unsigned long numAttrs = attrMap->length();
 	for (unsigned long i = 0; i < numAttrs; i++) {
-	    result += " ";
+	    result += ' ';
 
 	    AttributeImpl *attribute = attrMap->attrAt(i);
 	    AttrImpl *attr = attribute->attr();
@@ -979,7 +979,7 @@ DOMString ElementImpl::selectionToString(NodeImpl *selectionStart, NodeImpl *sel
     DOMString result = openTagStartToString();
 
     if (hasChildNodes()) {
-	result += ">";
+	result += '>';
 
 	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
 	    result += child->selectionToString(selectionStart, selectionEnd, startOffset, endOffset, found); // this might set found to true
@@ -990,7 +990,7 @@ DOMString ElementImpl::selectionToString(NodeImpl *selectionStart, NodeImpl *sel
 
 	result += "</";
 	result += tagName();
-	result += ">";
+	result += '>';
     } else {
 	result += " />";
     }
@@ -1003,7 +1003,7 @@ DOMString ElementImpl::toString() const
     QString result = openTagStartToString().string(); //Accumulate in QString, since DOMString can't append well.
 
     if (hasChildNodes()) {
-	result += ">";
+	result += '>';
 
 	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
 	    DOMString kid = child->toString();
@@ -1012,7 +1012,7 @@ DOMString ElementImpl::toString() const
 
 	result += "</";
 	result += tagName().string();
-	result += ">";
+	result += '>';
     } else if (result.length() == 1) {
 	// ensure we do not get results like < /> can happen when serialize document
         result = "";
@@ -1092,7 +1092,7 @@ DOMString XMLElementImpl::tagName() const
         tn = tn.upper();
 
     if (m_prefix)
-        return DOMString(m_prefix) + ":" + tn;
+        return DOMString(m_prefix) + ':' + tn;
 
     return tn;
 }

@@ -146,7 +146,7 @@ DOMString HTMLElementImpl::tagName() const
         tn = tn.upper();
 
     if (m_prefix)
-        return DOMString(m_prefix) + ":" + tn;
+        return DOMString(m_prefix) + ':' + tn;
 
     return tn;
 }
@@ -651,12 +651,12 @@ DOMString HTMLElementImpl::toString() const
 {
     if (!hasChildNodes()) {
 	DOMString result = openTagStartToString();
-	result += ">";
+	result += '>';
 
 	if (endTag[id()] == REQUIRED) {
 	    result += "</";
 	    result += tagName();
-	    result += ">";
+	    result += '>';
 	}
 
 	return result;
