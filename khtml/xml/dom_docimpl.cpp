@@ -2842,7 +2842,7 @@ DOMString DocumentTypeImpl::toString() const
 	result += "]";	// can not be ']'
     }
 
-    result += '>';
+    result += ">";	// can not be ">"
 
     return result;
 }
