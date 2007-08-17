@@ -189,10 +189,10 @@ void KHueSaturationSelector::drawPalette( QPixmap *pixmap )
                 col.setHsv( _h, 255 * h / ( xSize - 1 ), 255 * s / ( ( ySize == 1 ) ? 1 : ySize - 1 ) );
                 break;
             case ChooserSaturation:
-                col.setHsv( 255 * h / ( xSize - 1 ), _s, 255 * s / ( ( ySize == 1 ) ? 1 : ySize - 1 ) );
+                col.setHsv( 359 * h / ( xSize - 1 ), _s, 255 * s / ( ( ySize == 1 ) ? 1 : ySize - 1 ) );
                 break;
             case ChooserValue:
-                col.setHsv( 255 * h / ( xSize - 1 ), 255 * s / ( ( ySize == 1 ) ? 1 : ySize - 1 ), _v );
+                col.setHsv( 359 * h / ( xSize - 1 ), 255 * s / ( ( ySize == 1 ) ? 1 : ySize - 1 ), _v );
                 break;
             case ChooserRed:
                 col.setRgb( _r, 255 * h / ( xSize - 1 ), 255 * s / ( ( ySize == 1 ) ? 1 : ySize - 1 ) );
