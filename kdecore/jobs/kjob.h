@@ -270,11 +270,16 @@ public:
 
 Q_SIGNALS:
 #ifndef Q_MOC_RUN
-private: // don't tell moc, but those signals are in fact private
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+private: // don't tell moc or doxygen, but those signals are in fact private
+#endif
 #endif
     /**
      * Emitted when the job is finished, in any case. It is used to notify
      * observers that the job is terminated and that progress can be hidden.
+     *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob, use emitResult() instead.
      *
      * @param job the job that emitted this signal
      * @internal
@@ -284,12 +289,18 @@ private: // don't tell moc, but those signals are in fact private
     /**
      * Emitted when the job is suspended.
      *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob.
+     *
      * @param job the job that emitted this signal
      */
     void suspended(KJob *job);
 
     /**
      * Emitted when the job is resumed.
+     *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob.
      *
      * @param job the job that emitted this signal
      */
@@ -298,6 +309,9 @@ private: // don't tell moc, but those signals are in fact private
     /**
      * Emitted when the job is finished, in any case (completed, canceled,
      * failed...). Use error to know the result.
+     *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob, use emitResult() instead.
      *
      * @param job the job that emitted this signal
      */
@@ -343,12 +357,17 @@ Q_SIGNALS:
 
 Q_SIGNALS:
 #ifndef Q_MOC_RUN
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 private: // don't tell moc, but those signals are in fact private
+#endif
 #endif
     /**
      * Emitted when we know the amount the job will have to process. The unit of this
      * amount is sent too. It can be emitted several times if the job manages several
      * different units.
+     *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob, use setTotalAmount() instead.
      *
      * @param job the job that emitted this signal
      * @param unit the unit of the total amount
@@ -361,6 +380,9 @@ private: // don't tell moc, but those signals are in fact private
      * The unit of this amount is sent too. It can be emitted several times if the job
      * manages several different units.
      *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob, use setProcessedAmount() instead.
+     *
      * @param job the job that emitted this signal
      * @param unit the unit of the processed amount
      * @param amount the processed amount
@@ -371,6 +393,9 @@ private: // don't tell moc, but those signals are in fact private
      * Emitted when we know the size of this job (data size in bytes for transfers,
      * number of entries for listings, etc).
      *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob, use setTotalAmount() instead.
+     *
      * @param job the job that emitted this signal
      * @param size the total size
      */
@@ -379,6 +404,9 @@ private: // don't tell moc, but those signals are in fact private
     /**
      * Regularly emitted to show the progress of this job
      * (current data size in bytes for transfers, entries listed, etc.).
+     *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob, use setProcessedAmount() instead.
      *
      * @param job the job that emitted this signal
      * @param size the processed size
@@ -390,6 +418,11 @@ private: // don't tell moc, but those signals are in fact private
      * This is valid for any kind of job, and allows using a
      * a progress bar very easily. (see KProgressBar).
      * Note that this signal is not emitted for finished jobs.
+     *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob, use emitPercent(), setPercent() setTotalAmount() or
+     * setProcessedAmount() instead.
+     *
      * @param job the job that emitted this signal
      * @param percent the percentage
      */
@@ -397,6 +430,10 @@ private: // don't tell moc, but those signals are in fact private
 
     /**
      * Emitted to display information about the speed of this job.
+     *
+     * This is a private signal, it can't be emitted directly by subclasses of
+     * KJob, use emitSpeed() instead.
+     *
      * @param job the job that emitted this signal
      * @param speed the speed in bytes/s
      */

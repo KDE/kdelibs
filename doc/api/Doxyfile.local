@@ -3,9 +3,10 @@ WARN_IF_UNDOCUMENTED = YES
 
 ## Predefined macros, to remove all the _EXPORT things
 ## from function definitions.
-PREDEFINED = KDECORE_EXPORT="" \
-	KDEUI_EXPORT="" \
-	KDEFX_EXPORT="" \
+PREDEFINED = DOXYGEN_SHOULD_SKIP_THIS \
+        KDECORE_EXPORT="" \
+        KDEUI_EXPORT="" \
+        KDEFX_EXPORT="" \
         KHEXEDIT_EXPORT="" \
         KTEXTEDITOR_EXPORT="" \
         KSPEECH_EXPORT="" \
