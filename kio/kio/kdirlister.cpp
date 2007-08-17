@@ -2066,16 +2066,27 @@ void KDirLister::addNewItem( KFileItem *item )
   if ( matchesMimeFilter( item ) )
   {
     if ( !d->lstNewItems )
+    {
+      Q_ASSERT( !d->lstNewItemsV2 );
       d->lstNewItems = new KFileItemList;
+      d->lstNewItemsV2 = new QList<KFileItem>;
+    }
 
+    Q_ASSERT( item );
     d->lstNewItems->append( item );            // items not filtered
+    d->lstNewItemsV2->append( *item );
   }
   else
   {
-    if ( !d->lstMimeFilteredItems )
+    if ( !d->lstMimeFilteredItems ) {
+      Q_ASSERT( !d->lstMimeFilteredItemsV2 );
       d->lstMimeFilteredItems = new KFileItemList;
+      d->lstMimeFilteredItemsV2 = new QList<KFileItem>;
+    }
 
+    Q_ASSERT( item );
     d->lstMimeFilteredItems->append( item );   // only filtered by mime
+    d->lstMimeFilteredItemsV2->append( *item );
   }
 }
 
@@ -2110,27 +2121,42 @@ void KDirLister::addRefreshItem( KFileItem *item )
   {
     if ( d->refreshItemWasFiltered )
     {
-      if ( !d->lstNewItems )
+      if ( !d->lstNewItems ) {
+        Q_ASSERT( !d->lstNewItemsV2 );
         d->lstNewItems = new KFileItemList;
+        d->lstNewItemsV2 = new QList<KFileItem>;
+      }
 
+      Q_ASSERT( item );
       d->lstNewItems->append( item );
+      d->lstNewItemsV2->append( *item );
     }
     else
     {
-      if ( !d->lstRefreshItems )
+      if ( !d->lstRefreshItems ) {
+        Q_ASSERT( !d->lstRefreshItemsV2 );
         d->lstRefreshItems = new KFileItemList;
+        d->lstRefreshItemsV2 = new QList<KFileItem>;
+      }
 
+      Q_ASSERT( item );
       d->lstRefreshItems->append( item );
+      d->lstRefreshItemsV2->append( *item );
     }
   }
   else if ( !d->refreshItemWasFiltered )
   {
-    if ( !d->lstRemoveItems )
+    if ( !d->lstRemoveItems ) {
+      Q_ASSERT( !d->lstRemoveItemsV2 );
       d->lstRemoveItems = new KFileItemList;
+      d->lstRemoveItemsV2 = new QList<KFileItem>;
+    }
 
     // notify the user that the mimetype of a file changed that doesn't match
     // a filter or does match an exclude filter
+    Q_ASSERT( item );
     d->lstRemoveItems->append( item );
+    d->lstRefreshItemsV2->append( *item );
   }
 }
 
@@ -2139,40 +2165,66 @@ void KDirLister::emitItems()
   KFileItemList *tmpNew = d->lstNewItems;
   d->lstNewItems = 0;
 
+  QList<KFileItem> *tmpNewV2 = d->lstNewItemsV2;
+  d->lstNewItemsV2 = 0;
+
   KFileItemList *tmpMime = d->lstMimeFilteredItems;
   d->lstMimeFilteredItems = 0;
+
+  QList<KFileItem> *tmpMimeV2 = d->lstMimeFilteredItemsV2;
+  d->lstMimeFilteredItemsV2 = 0;
 
   KFileItemList *tmpRefresh = d->lstRefreshItems;
   d->lstRefreshItems = 0;
 
+  QList<KFileItem> *tmpRefreshV2 = d->lstRefreshItemsV2;
+  d->lstRefreshItemsV2 = 0;
+
   KFileItemList *tmpRemove = d->lstRemoveItems;
   d->lstRemoveItems = 0;
 
+  QList<KFileItem> *tmpRemoveV2 = d->lstRemoveItemsV2;
+  d->lstRemoveItemsV2 = 0;
+
   if ( tmpNew )
   {
+    Q_ASSERT( tmpNewV2 );
     emit newItems( *tmpNew );
+    emit newItems( *tmpNewV2 );
     delete tmpNew;
+    delete tmpNewV2;
   }
 
   if ( tmpMime )
   {
+    Q_ASSERT( tmpMimeV2 );
     emit itemsFilteredByMime( *tmpMime );
+    emit itemsFilteredByMime( *tmpMimeV2 );
     delete tmpMime;
+    delete tmpMimeV2;
   }
 
   if ( tmpRefresh )
   {
+    Q_ASSERT( tmpRefreshV2 );
     emit refreshItems( *tmpRefresh );
+    emit refreshItems( *tmpRefreshV2 );
     delete tmpRefresh;
+    delete tmpRefreshV2;
   }
 
   if ( tmpRemove )
   {
+    Q_ASSERT( tmpRemoveV2 );
     KFileItemList::const_iterator kit = tmpRemove->begin();
     const KFileItemList::const_iterator kend = tmpRemove->end();
     for ( ; kit != kend; ++kit )
+    {
       emit deleteItem( *kit );
+      emit deleteItem( **kit );
+    }
     delete tmpRemove;
+    delete tmpRemoveV2;
   }
 }
 

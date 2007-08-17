@@ -483,18 +483,42 @@ Q_SIGNALS:
 
   /**
    * Signal new items.
+   * For KDE 4 applications it is recommended using
+   * KDirLister::newItems(const QList<KFileItem>& items) instead,
+   * as the interfaces have been adjusted using KFileItem per value
+   * instead of per pointer.
    * @param items a list of new items
    */
   void newItems( const KFileItemList& items );
 
   /**
+   * Signal new items.
+   * @param items a list of new items
+   */
+  void newItems( const QList<KFileItem>& items );
+
+  /**
    * Send a list of items filtered-out by mime-type.
+   * For KDE 4 applications it is recommended using
+   * KDirLister::itemsFilteredByMime(const QList<KFileItem>& items) instead,
+   * as the interfaces have been adjusted using KFileItem per value
+   * instead of per pointer.
    * @param items the list of filtered items
    */
   void itemsFilteredByMime( const KFileItemList& items );
 
   /**
+   * Send a list of items filtered-out by mime-type.
+   * @param items the list of filtered items
+   */
+  void itemsFilteredByMime( const QList<KFileItem>& items );
+
+  /**
    * Signal an item to remove.
+   * For KDE 4 applications it is recommended using
+   * KDirLister::deleteItem(KFileItem _fileItem) instead,
+   * as the interfaces have been adjusted using KFileItem per value
+   * instead of per pointer.
    *
    * ATTENTION: if @p _fileItem == rootItem() the directory this lister
    *            is holding was deleted and you HAVE to release especially the
@@ -505,11 +529,33 @@ Q_SIGNALS:
   void deleteItem( KFileItem *_fileItem );
 
   /**
+   * Signal an item to remove.
+   *
+   * ATTENTION: if @p _fileItem == rootItem() the directory this lister
+   *            is holding was deleted and you HAVE to release especially the
+   *            rootItem() of this lister, otherwise your app will CRASH!!
+   *            The clear() signals have been emitted already.
+   * @param _fileItem the fileItem to delete
+   */
+  void deleteItem( KFileItem _fileItem );
+
+  /**
+   * Signal an item to refresh (its mimetype/icon/name has changed).
+   * Note: KFileItem::refresh has already been called on those items.
+   * For KDE 4 applications it is recommended using
+   * KDirLister::refreshItems(const QList<KFileItem>& items) instead,
+   * as the interfaces have been adjusted using KFileItem per value
+   * instead of per pointer.
+   * @param items the items to refresh
+   */
+  void refreshItems( const KFileItemList& items );
+
+  /**
    * Signal an item to refresh (its mimetype/icon/name has changed).
    * Note: KFileItem::refresh has already been called on those items.
    * @param items the items to refresh
    */
-  void refreshItems( const KFileItemList& items );
+  void refreshItems( const QList<KFileItem>& items );
 
   /**
    * Emitted to display information about running jobs.

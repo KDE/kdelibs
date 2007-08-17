@@ -54,10 +54,17 @@ public:
     delayedMimeTypes = false;
 
     rootFileItem = 0;
+
     lstNewItems = 0;
     lstRefreshItems = 0;
     lstMimeFilteredItems = 0;
     lstRemoveItems = 0;
+
+    lstNewItemsV2 = 0;
+    lstRefreshItemsV2 = 0;
+    lstMimeFilteredItemsV2 = 0;
+    lstRemoveItemsV2 = 0;
+
     refreshItemWasFiltered = false;
 
     changes = NONE;
@@ -99,6 +106,12 @@ public:
 
   KFileItemList *lstNewItems, *lstRefreshItems;
   KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
+
+  // In KDE 4 the interfaces have been adjusted using KFileItem
+  // per value instead of per pointer. For backward compatibility
+  // the KFileItemList signals are still supported.
+  QList<KFileItem> *lstNewItemsV2, *lstRefreshItemsV2;
+  QList<KFileItem> *lstMimeFilteredItemsV2, *lstRemoveItemsV2;
 
   int changes;
 
