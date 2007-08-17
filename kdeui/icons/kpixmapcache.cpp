@@ -51,7 +51,7 @@ namespace {
 class KPCLockFile
 {
 public:
-    KPCLockFile(const QString& filename, bool exclusive = false)
+    KPCLockFile(const QString& filename)
     {
         mValid = false;
         mLockFile = new KLockFile(filename);
@@ -414,7 +414,7 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
 
 bool KPixmapCache::Private::removeEntries(int newsize)
 {
-    KPCLockFile lock(mLockFileName, true);
+    KPCLockFile lock(mLockFileName);
     if (!lock.isValid()) {
         kDebug() << k_funcinfo << "Couldn't lock cache " << mName << endl;
         return false;
@@ -875,7 +875,7 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
         QPixmapCache::insert(key, pix);
     }
 
-    KPCLockFile lock(d->mLockFileName, true);
+    KPCLockFile lock(d->mLockFileName);
     if (!lock.isValid()) {
         return;
     }
