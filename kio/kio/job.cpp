@@ -44,7 +44,6 @@ extern "C" {
 
 #include <kapplication.h>
 #include <kauthorized.h>
-#include <kfileitem.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kconfig.h>
@@ -498,16 +497,8 @@ void SimpleJob::slotFinished( )
                 KUrl src, dst;
                 QDataStream str( d->m_packedArgs );
                 str >> src >> dst;
-                KFileItem fileitem( KFileItem::Unknown, KFileItem::Unknown, src, true );
-                if( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
-                {
-                    // If a separate URL exists, don't do a rename, refresh the directory instead to let the slave
-                    // populate the correct values.
-                    if( fileitem.entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty() )
-                        org::kde::KDirNotify::emitFileRenamed( src.url(), dst.url() );
-                    else
-                        org::kde::KDirNotify::emitFilesAdded( src.directory() );
-                }
+                if ( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
+                    org::kde::KDirNotify::emitFileRenamed( src.url(), dst.url() );
             }
         }
         emitResult();
