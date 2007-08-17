@@ -2839,7 +2839,7 @@ DOMString DocumentTypeImpl::toString() const
     if (!m_subset.isEmpty()) {
 	result += " [";
 	result += m_subset;
-	result += ']';
+	result += "]";	// can not be ']'
     }
 
     result += '>';
