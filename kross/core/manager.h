@@ -96,7 +96,7 @@ namespace Kross {
              * \param file The filename we should try to determinate the
              * interpretername for.
              * \return The name of the \a Interpreter which will be used
-             * to execute the file or QString::null if we failed to determinate
+             * to execute the file or QString() if we failed to determinate
              * a matching interpreter for the file.
              */
             const QString interpreternameForFile(const QString& file);
