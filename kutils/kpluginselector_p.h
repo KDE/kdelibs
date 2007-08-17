@@ -250,7 +250,8 @@ public:
 
     void setSeparatorPixels(int separatorPixels);
 
-    QRect clickableLabelRect(const QStyleOptionButton &option) const;
+    QRect aboutButtonRect(const QStyleOptionButton &option) const;
+    QRect settingsButtonRect(const QStyleOptionButton &option) const;
 
 Q_SIGNALS:
     void configCommitted(const QByteArray &componentName);
@@ -269,11 +270,17 @@ private:
         KeyboardEvent
     };
 
+    enum FocusedElement
+    {
+        CheckBoxFocused = 0,
+        SettingsButtonFocused,
+        AboutButtonFocused
+    };
+
     QRect checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const;
 
     void updateCheckState(const QModelIndex &index, const QStyleOptionViewItem &option,
-                          const QPoint &cursorPos, QListView *listView, EventReceived eventReceived,
-                          const QString &caption);
+                          const QPoint &cursorPos, QListView *listView, EventReceived eventReceived);
 
     void checkDependencies(PluginModel *model,
                            const KPluginInfo &info,
@@ -297,13 +304,14 @@ private:
     int leftMargin;
     int rightMargin;
     int separatorPixels;
-    int focusedElement; // whether is focused the check or the link
+    FocusedElement focusedElement; // whether is focused the check or the link
     bool sunkenButton;
     KIconLoader *iconLoader;
     QPoint relativeMousePosition;
     QList<KCModuleProxy*> *currentModuleProxyList;
     QHash<int /* row */, KTabWidget*> tabWidgets;
     QHash<int /* row */, KDialog*> configDialogs;
+    QHash<int /* row */, KDialog*> aboutDialogs;
     QHash<int /* row */, QList<KCModuleProxy*> > modulesDialogs;
     KDialog *configDialog; // For enabling/disabling default button
     KPluginSelector::Private *parent;
