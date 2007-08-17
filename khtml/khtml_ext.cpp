@@ -269,7 +269,7 @@ void KHTMLPartBrowserExtension::searchProvider()
 
     if( !KUriFilter::self()->filterUri(data, list) )
     {
-        KDesktopFile file("searchproviders/google.desktop", "services");
+        KDesktopFile file("services", "searchproviders/google.desktop");
         QString encodedSearchTerm = QUrl::toPercentEncoding(m_part->selectedText());
         KConfigGroup cg(file.desktopGroup());
         data.setData(cg.readEntry("Query").replace("\\{@}", encodedSearchTerm));
