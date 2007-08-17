@@ -96,7 +96,7 @@ QString KFileFilterCombo::currentFilter() const
 {
     QString f = currentText();
     if (f == itemText(currentIndex())) { // user didn't edit the text
-	f = m_filters.at(currentIndex());
+	f = m_filters.value(currentIndex());
         if ( d->isMimeFilter || (currentIndex() == 0 && d->hasAllSupportedFiles) ) {
             return f; // we have a mimetype as filter
         }
