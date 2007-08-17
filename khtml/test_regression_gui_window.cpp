@@ -174,7 +174,7 @@ void TestRegressionWindow::initTestsDirectory()
 		const char *subdirs[] = { "tests", "baseline", "output", "resources" };
 		for(int i = 0; i <= 3; i++)
 		{
-			QFileInfo sourceDir(m_testsUrl.path() + '/' + subdirs[i]);
+			QFileInfo sourceDir(m_testsUrl.path() + "/" + subdirs[i]);
 			if(!sourceDir.exists() || !sourceDir.isDir())
 			{
 				KMessageBox::error(0, i18n("Please choose a valid 'khtmltests/regression/' directory."));
@@ -242,7 +242,7 @@ void TestRegressionWindow::setKHTMLDirectory()
 		const char *subdirs[] = { "css", "dom", "xml", "html" }; // That's enough ;-)
 		for(int i = 0; i <= 3; i++)
 		{
-			QFileInfo sourceDir(m_khtmlUrl.path() + '/' + subdirs[i]);
+			QFileInfo sourceDir(m_khtmlUrl.path() + "/" + subdirs[i]);
 			if(!sourceDir.exists() || !sourceDir.isDir())
 			{
 				KMessageBox::error(0, i18n("Please choose a valid 'khtml/' build directory."));
@@ -373,7 +373,7 @@ void TestRegressionWindow::directoryListingFinished(KJob *)
 		for(; it2 != end2; ++it2)
 		{
 			QString test = (*it2);
-			QString cacheName = directory + '/' + test;
+			QString cacheName = directory + "/" + test;
 
 			QTreeWidgetItem *testItem = new QTreeWidgetItem(parent, QStringList(KUrl(test).path()));
 
@@ -399,8 +399,8 @@ void TestRegressionWindow::directoryListingFinished(KJob *)
 				}
 				else
 				{
-					dom[i] = (QFileInfo(baseLinePath + '-' + QString::number(i) + "-dom").exists());
-					render[i] = (QFileInfo(baseLinePath + '-' + QString::number(i) + "-render").exists());
+					dom[i] = (QFileInfo(baseLinePath + "-" + QString::number(i) + "-dom").exists());
+					render[i] = (QFileInfo(baseLinePath + "-" + QString::number(i) + "-render").exists());
 				}
 			}
 
@@ -959,7 +959,7 @@ QString TestRegressionWindow::pathFromItem(const QTreeWidgetItem *item) const
 	while(parent != 0)
 	{
 		if(parent->parent() != 0)
-			path.prepend(parent->text(0) + '/');
+			path.prepend(parent->text(0) + "/");
 
 		parent = parent->parent();
 	}
@@ -974,11 +974,11 @@ QString TestRegressionWindow::extractTestNameFromData(QString &data, TestResult 
 		// Name extraction regexps...
 		QString bracesSelector("[0-9a-zA-Z-_<>\\* +-,.:!?$'\"=/\\[\\]\\(\\)]*");
 
-		QRegExp expPass("PASS: (" + bracesSelector + ')');
-		QRegExp expPassUnexpected("PASS \\(unexpected!\\): (" + bracesSelector + ')');
+		QRegExp expPass("PASS: (" + bracesSelector + ")");
+		QRegExp expPassUnexpected("PASS \\(unexpected!\\): (" + bracesSelector + ")");
 
-		QRegExp expFail("FAIL: (" + bracesSelector + ')');
-		QRegExp expFailKnown("FAIL \\(known\\): (" + bracesSelector + ')');
+		QRegExp expFail("FAIL: (" + bracesSelector + ")");
+		QRegExp expFailKnown("FAIL \\(known\\): (" + bracesSelector + ")");
 
 		// Extract name of test... (while using regexps as rare as possible!)
 		int pos = -1;
@@ -1023,7 +1023,7 @@ QString TestRegressionWindow::extractTestNameFromData(QString &data, TestResult 
 
 			assert(m_directoryMap.constFind(cachedDirectory) != m_directoryMap.constEnd());
 
-			QString cacheName = cachedDirectory + '/' + cachedFilename;
+			QString cacheName = cachedDirectory + "/" + cachedFilename;
 			if(m_itemMap.constFind(cacheName) != m_itemMap.constEnd())
 			{
 				// Highlight test...
@@ -1148,7 +1148,7 @@ void TestRegressionWindow::updateLogOutput(const QString &data)
 		if(!fileExists)
 			file.write(QString::fromLatin1("<html>\n<body>\n").toAscii());
 
-		file.write((data + '\n').toAscii());
+		file.write((data + "\n").toAscii());
 		file.close();
 
 		// Reset save log url, if we reached the end...

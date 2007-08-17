@@ -143,7 +143,7 @@ DOMString AttrImpl::name() const
         n = n.lower();
 
     if (m_prefix && m_prefix->l)
-        return DOMString(m_prefix) + ":" + n;  // can not be ':'
+        return DOMString(m_prefix) + ":" + n;
 
     return n;
 }
@@ -939,7 +939,7 @@ DOMString ElementImpl::openTagStartToString(bool expandurls) const
     if (attrMap) {
 	unsigned long numAttrs = attrMap->length();
 	for (unsigned long i = 0; i < numAttrs; i++) {
-	    result += ' ';
+	    result += " ";
 
 	    AttributeImpl *attribute = attrMap->attrAt(i);
 	    AttrImpl *attr = attribute->attr();

@@ -52,7 +52,7 @@ namespace KJS {
 
 UString DOMObject::toString(ExecState *) const
 {
-  return "[object " + className() + ']';
+  return "[object " + className() + "]";
 }
 
 typedef QList<ScriptInterpreter*> InterpreterList;
