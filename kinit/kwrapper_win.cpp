@@ -30,6 +30,15 @@
 [1] recent kde cmake buildsystem on win32 installs shared libraries 
     into lib instead of bin. This requires to have the lib directory 
     in the PATH environment variable too (required for all pathes in KDEDIRS)
+
+ TODO: There is an initial concept of setting KDEDIRS environment variable from 
+       a cache file located on a well known relative from the request application 
+       The recent implementation expects a file name 'kdedirs.cache' two level 
+       above this executable which will be <ProgramFiles> in case kwrapper4 lives 
+       in <Programfiles>/kde4/bin. 
+       This works not in any case especially when running application inside the 
+       build directory. 
+       
 */
 
 #include <stdio.h>
@@ -45,38 +54,73 @@
 #include <QCoreApplication>
 #include <QList>
 
+bool verbose = 0;
+
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc,argv);
-    if (argc != 2) 
+
+    QStringList envPath; /// pathes for using in environment of started process
+    QStringList searchPath; /// pathes for using to find executable
+    QString exeToStart;
+    QString myAppName = "kwrapper4:"; 
+    
+    if (QCoreApplication::arguments().size() == 3 
+        && QCoreApplication::arguments().at(1) == "--verbose") 
     {
-        qDebug() << "kwrapper: no application given"; 
+        verbose = 1;
+        exeToStart = QCoreApplication::arguments().at(2);
+    }
+    else if (QCoreApplication::arguments().size() == 2)
+        exeToStart = QCoreApplication::arguments().at(1);
+    else
+    {
+        qDebug() << myAppName << "no application given";
         return 1;
     }
+
     QString path = QString::fromLocal8Bit(qgetenv("PATH")).toLower().replace('\\','/');
-    // add path from environment
-    QStringList envPath = path.split(';');
+
+    /** add pathes from PATH environment
+        - all to client path environment 
+        - pathes not ending with lib to application search path
+    */
+    foreach(QString a, path.split(';'))
+    {
+        if (!envPath.contains(a))
+            envPath << a;
+        if (!a.endsWith("/lib") && !a.endsWith("/lib/") && !searchPath.contains(a))
+            searchPath << a;
+    }
     
     // add current install path 
     path = QCoreApplication::applicationDirPath().toLower().replace('\\','/');
     if (!envPath.contains(path))
         envPath << path;
 
+    // detect directory where kdedirs.cache lives
+    // this is not complete, KDEDIRS path should be used as base too 
     QFileInfo fi(path + "/../..");
     QString rootPath = fi.canonicalPath();
-    qDebug() << rootPath;
-    
-    // add current lib path 
+
+    if (verbose)
+        qDebug() << "try to find kdedirs.cache in" << rootPath;
+
+    // add current lib path to client path enviroment 
     path = path.replace("bin","lib");
     if (!envPath.contains(path))
         envPath << path;
 
-    // add bin and lib pathes from KDEDIRS 
+    /**
+      add bin and lib pathes from KDEDIRS 
+        - bin/lib to client path environment 
+        - bin to application search path
+    */
     path = QString::fromLocal8Bit(qgetenv("KDEDIRS")).toLower().replace('\\','/');
     QStringList kdedirs;
 
     if (path.size() > 0)
-        QStringList kdedirs = path.split(';'); 
+        kdedirs = path.split(';'); 
 
     bool changedKDEDIRS = 0;
     // setup kdedirs if not present
@@ -89,7 +133,8 @@ int main(int argc, char **argv)
             QByteArray data = f.readAll();
             f.close();
             kdedirs = QString(data).split(';');
-            qDebug() << "kwrapper: load kdedirs.cache from " << rootPath <<  kdedirs; 
+            if (verbose)
+                qDebug() << "load kdedirs.cache from " << rootPath <<  "values=" << kdedirs; 
         }            
         else
         {
@@ -103,6 +148,8 @@ int main(int argc, char **argv)
         }            
         changedKDEDIRS = 1;
     }
+    if (verbose)
+        qDebug() << "found KDEDIRS\n\t" << kdedirs.join("\n\t");
     
     foreach(QString a, kdedirs)
     {
@@ -110,29 +157,38 @@ int main(int argc, char **argv)
             envPath << a + "/bin";                
         if (!envPath.contains(a+"/lib"))
             envPath << a + "/lib";                
+        if (!searchPath.contains(a+"/bin"))
+            searchPath << a + "/bin";                
     }
 
     // find executable
     WCHAR _appName[MAX_PATH+1];
-    QString exeToStart = QCoreApplication::arguments().at(1);
     
-    foreach(QString a, envPath)
+    if (verbose)
+        qDebug() << "search " << exeToStart << "in";
+    
+    bool found = false;        
+    foreach(QString a, searchPath)
     {
-        if (SearchPathW((LPCWSTR)a.utf16(),
-                        (LPCWSTR)exeToStart.utf16(),
-                        L".exe",
-                        MAX_PATH+1,
-                        (LPWSTR)_appName,
-                        NULL))
+        if (verbose)
+            qDebug() << "\t" << a;
+        if (SearchPathW((LPCWSTR)a.utf16(),(LPCWSTR)exeToStart.utf16(),
+                        L".exe",MAX_PATH+1,(LPWSTR)_appName,NULL))
+        {                        
+            found = true;                        
             break;
+        }            
     }
     QString appName = QString::fromUtf16((unsigned short*)_appName);
 
-    if (appName.isEmpty())
+    if (!found)
     {
-        qWarning() << "kwrapper: application not found"; 
+        qWarning() << myAppName << "application not found"; 
         return 3; 
     }
+
+    if (verbose)
+        qDebug() << "run" << exeToStart << "with PATH environment\n\t" << envPath.join("\n\t");
 
     // setup client process envirionment 
     QStringList env = QProcess::systemEnvironment();
@@ -145,7 +201,7 @@ int main(int argc, char **argv)
     process->start(appName); 
     if (process->state() == QProcess::NotRunning)
     {
-        qDebug() << "kwrapper: process not running"; 
+        qWarning() << myAppName << "process not running"; 
         return 4;
     }
     process->waitForStarted();
