@@ -335,7 +335,7 @@ void KDirModel::slotRefreshItems( const KFileItemList& items )
 #ifndef NDEBUG // debugIndex only defined in debug mode
     kDebug() << "slotRefreshItems: dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
 #endif
-    bottomRight = bottomRight.sibling(bottomRight.row(), ColumnCount-1);
+    bottomRight = bottomRight.sibling(bottomRight.row(), columnCount(QModelIndex())-1);
     emit dataChanged(topLeft, bottomRight);
 }
 
