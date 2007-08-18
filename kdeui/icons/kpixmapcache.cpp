@@ -30,6 +30,10 @@
 #include <QtCore/QtGlobal>
 #include <QtGui/QPainter>
 #include <QtCore/QQueue>
+#include <QtCore/QThread>
+#include <QtCore/QTimer>
+#include <QtCore/QMutex>
+#include <QtCore/QMutexLocker>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -111,6 +115,7 @@ public:
     bool loadIndexHeader();
 
     bool removeEntries(int newsize);
+    bool scheduleRemoveEntries(int newsize);
 
     QString indexKey(const QString& key);
 
@@ -127,6 +132,7 @@ public:
     QString mIndexFile;
     QString mDataFile;
     QString mLockFileName;
+    QMutex mMutex;
 
     quint32 mTimestamp;
     quint32 mCacheId;  // Unique id, will change when cache is recreated
@@ -175,6 +181,43 @@ public:
     {
         return a.lastused > b.lastused;
     }
+
+    class RemovalThread : public QThread
+    {
+    public:
+        RemovalThread(KPixmapCache::Private* _d) : QThread()
+        {
+            d = _d;
+            mRemovalScheduled = false;
+        }
+        ~RemovalThread()
+        {
+        }
+
+        void scheduleRemoval(int newsize)
+        {
+            mNewSize = newsize;
+            if (!mRemovalScheduled) {
+                QTimer::singleShot(5000, this, SLOT(start()));
+                mRemovalScheduled = true;
+            }
+        }
+
+    protected:
+        virtual void run()
+        {
+            mRemovalScheduled = false;
+            kDebug() << k_funcinfo << "starting" << endl;
+            d->removeEntries(mNewSize);
+            kDebug() << k_funcinfo << "done" << endl;
+        }
+
+    private:
+        bool mRemovalScheduled;
+        int mNewSize;
+        KPixmapCache::Private* d;
+    };
+    RemovalThread* mRemovalThread;
 };
 
 // Magic in the cache files
@@ -187,6 +230,7 @@ const int KPixmapCache::Private::kpc_header_len = KPixmapCache::Private::kpc_mag
 KPixmapCache::Private::Private(KPixmapCache* _q)
 {
     q = _q;
+    mRemovalThread = 0;
 }
 
 QIODevice* KPixmapCache::Private::indexDevice()
@@ -412,6 +456,15 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
     }
 }
 
+bool KPixmapCache::Private::scheduleRemoveEntries(int newsize)
+{
+    if (!mRemovalThread) {
+        mRemovalThread = new RemovalThread(this);
+    }
+    mRemovalThread->scheduleRemoval(newsize);
+    return true;
+}
+
 bool KPixmapCache::Private::removeEntries(int newsize)
 {
     KPCLockFile lock(mLockFileName);
@@ -419,6 +472,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
         kDebug() << k_funcinfo << "Couldn't lock cache " << mName << endl;
         return false;
     }
+    QMutexLocker mutexlocker(&mMutex);
 
     // Open old (current) files
     QFile indexfile(mIndexFile);
@@ -571,6 +625,7 @@ KPixmapCache::KPixmapCache(const QString& name)
 
 KPixmapCache::~KPixmapCache()
 {
+    delete d->mRemovalThread;
     delete d;
 }
 
@@ -901,7 +956,7 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     // Make sure the cache size stays within limits
     if (size() > cacheLimit()) {
         lock.unlock();
-        d->removeEntries(int(cacheLimit() * 0.75));
+        d->scheduleRemoveEntries(int(cacheLimit() * 0.75));
     }
 }
 
