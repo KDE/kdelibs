@@ -23,7 +23,7 @@
 
 #include <QtCore/QPair>
 
-class KGuiItem;
+#include <kguiitem.h>
 
 class QString;
 
