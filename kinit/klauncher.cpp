@@ -298,14 +298,19 @@ KLauncher::slotKDEInitData(int)
    result = read_socket(kdeinitSocket, (char *) requestData.data(),
                         request_header.arg_length);
 
-   if (request_header.cmd == LAUNCHER_DIED)
+   processRequestReturn(request_header.cmd,requestData);
+}
+   
+void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
+{   
+   if (status == LAUNCHER_DIED)
    {
      long *request_data;
      request_data = (long *) requestData.data();
      processDied(request_data[0], request_data[1]);
      return;
    }
-   if (lastRequest && (request_header.cmd == LAUNCHER_OK))
+   if (lastRequest && (status == LAUNCHER_OK))
    {
      long *request_data;
      request_data = (long *) requestData.data();
@@ -326,9 +331,10 @@ KLauncher::slotKDEInitData(int)
      lastRequest = 0;
      return;
    }
-   if (lastRequest && (request_header.cmd == LAUNCHER_ERROR))
+   if (lastRequest && (status == LAUNCHER_ERROR))
    {
      lastRequest->status = KLaunchRequest::Error;
+     kDebug(7016) << lastRequest->name << " failed." << endl;
      if (!requestData.isEmpty())
         lastRequest->errorMsg = QString::fromUtf8((char *) requestData.data());
      lastRequest = 0;

@@ -201,6 +201,7 @@ protected:
 #ifdef Q_WS_X11
    Display *mCached_dpy;
 #endif
+   void processRequestReturn(int status, const QByteArray &requestData);
 
 protected Q_SLOTS:
     void slotGotOutput();
