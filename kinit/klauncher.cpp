@@ -299,9 +299,10 @@ KLauncher::slotKDEInitData(int)
                         request_header.arg_length);
 
    processRequestReturn(request_header.cmd,requestData);
+       
 }
    
-void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
+bool KLauncher::processRequestReturn(int status, const QByteArray &requestData)
 {   
    if (status == LAUNCHER_DIED)
    {
@@ -341,7 +342,7 @@ void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
      return;
    }
 
-   kWarning(7016)<< "Unexpected command" << (unsigned int) status << "from KDEInit";
+   kWarning(7016)<< "Unexpected request return" << (unsigned int) status;
 }
 
 void
