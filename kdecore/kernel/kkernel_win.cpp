@@ -1,4 +1,4 @@
-/* This file is part of the KDE libraries
+This file is part of the KDE libraries
    Copyright (C) 2007 Christian Ehrlicher <ch.ehrlicher@gmx.de>
 
    This library is free software; you can redistribute it and/or
@@ -163,19 +163,19 @@ static void kMessageOutput(QtMsgType type, const char *msg)
     char *buf = new char[BUFSIZE];
     switch (type) {
         case QtDebugMsg:
-            strlcpy(buf,"Qt Debug:",BUFSIZE);
+            strlcpy(buf,"Debug:",BUFSIZE);
             strlcat(buf,msg,BUFSIZE);
             break;
         case QtWarningMsg:
-            strlcpy(buf,"Qt Warning:",BUFSIZE);
+            strlcpy(buf,"Warning:",BUFSIZE);
             strlcat(buf,msg,BUFSIZE);
             break;
         case QtCriticalMsg:
-            strlcpy(buf,"Qt Critial:",BUFSIZE);
+            strlcpy(buf,"Critial:",BUFSIZE);
             strlcat(buf,msg,BUFSIZE);
             break;
         case QtFatalMsg:
-            strlcpy(buf,"Qt Fatal:",BUFSIZE);
+            strlcpy(buf,"Fatal:",BUFSIZE);
             strlcat(buf,msg,BUFSIZE);
             //abort();
             break;
@@ -186,16 +186,16 @@ static void kMessageOutput(QtMsgType type, const char *msg)
 #else
     switch (type) {
     case QtDebugMsg:
-        fprintf(stderr, "[%4d] Qt Debug: %s\n", getpid(), msg);
+        fprintf(stderr, "Debug: %s\n", msg);
         break;
     case QtWarningMsg:
-        fprintf(stderr, "[%4d] Qt Warning: %s\n", getpid(), msg);
+        fprintf(stderr, "Warning: %s\n", msg);
         break;
     case QtCriticalMsg:
-        fprintf(stderr, "[%4d] Qt Critical: %s\n", getpid(), msg);
+        fprintf(stderr, "Critical: %s\n", msg);
         break;
     case QtFatalMsg:
-        fprintf(stderr, "[%4d] Qt Fatal: %s\n", getpid(), msg);
+        fprintf(stderr, "Fatal: %s\n", msg);
         //abort();
     }
 #endif
