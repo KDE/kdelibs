@@ -20,7 +20,6 @@
 #ifndef LPRSETTINGS_H
 #define LPRSETTINGS_H
 
-#if defined( _KDEPRINT_COMPILE )
 #include <QtCore/QObject>
 #include <kdeprint/kpreloadobject.h>
 
@@ -61,5 +60,4 @@ private:
 	QString m_defaultremotehost;
 };
 
-#endif
 #endif
