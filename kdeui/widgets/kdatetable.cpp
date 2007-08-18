@@ -302,10 +302,10 @@ void KDateTable::paintEvent( QPaintEvent *e )
     const QRect &rectToUpdate = e->rect();
     double cellWidth = width() / ( double ) d->numDayColumns;
     double cellHeight = height() / ( double ) d->numWeekRows;
-    int leftCol = ( int )floor( rectToUpdate.left() / cellWidth );
-    int topRow = ( int )floor( rectToUpdate.top() / cellHeight );
-    int rightCol = ( int )ceil( rectToUpdate.right() / cellWidth );
-    int bottomRow = ( int )ceil( rectToUpdate.bottom() / cellHeight );
+    int leftCol = ( int )std::floor( rectToUpdate.left() / cellWidth );
+    int topRow = ( int )std::floor( rectToUpdate.top() / cellHeight );
+    int rightCol = ( int )std::ceil( rectToUpdate.right() / cellWidth );
+    int bottomRow = ( int )std::ceil( rectToUpdate.bottom() / cellHeight );
     bottomRow = qMin( bottomRow, d->numWeekRows - 1 );
     rightCol = qMin( rightCol, d->numDayColumns - 1 );
     p.translate( leftCol * cellWidth, topRow * cellHeight );
