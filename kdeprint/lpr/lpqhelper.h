@@ -27,8 +27,6 @@ class KMJob;
 
 class LpqHelper : public QObject
 {
-	Q_OBJECT
-
 public:
 	LpqHelper(QObject *parent = 0);
 	~LpqHelper();

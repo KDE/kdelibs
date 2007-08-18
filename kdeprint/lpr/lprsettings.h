@@ -33,8 +33,6 @@
  */
 class LprSettings : public QObject, public KPReloadObject
 {
-	Q_OBJECT
-
 public:
 	explicit LprSettings(QObject *parent = 0, const char *name = 0);
 	~LprSettings();

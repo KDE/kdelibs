@@ -30,8 +30,6 @@ class DrMain;
 
 class KMSpecialManager : public QObject
 {
-	Q_OBJECT
-
 public:
 	explicit KMSpecialManager(KMManager *parent);
 
