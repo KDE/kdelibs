@@ -164,7 +164,7 @@ namespace KJS {
     Q_OBJECT
     friend class SourceDisplay;
   public:
-    explicit KJSDebugWin(QWidget *parent=0, const char *name=0);
+    KJSDebugWin(QWidget *parent=0, const char *name=0);
     virtual ~KJSDebugWin();
 
     static KJSDebugWin *createInstance();

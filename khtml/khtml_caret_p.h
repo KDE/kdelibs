@@ -759,7 +759,7 @@ public:
   /** initializes a new iterator from the given line iterator,
    * beginning with the given caret box iterator, if specified
    */
-  explicit EditableCaretBoxIterator(LineIterator &lit, bool fromEnd = false,
+  EditableCaretBoxIterator(LineIterator &lit, bool fromEnd = false,
   		CaretBoxIterator *it = 0)
   		: CaretBoxIterator(it ? *it : (fromEnd ? (*lit)->end() : (*lit)->preBegin())),
                 m_part(lit.lines->m_part), adjacent(false),
