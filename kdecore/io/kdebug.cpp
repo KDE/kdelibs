@@ -486,7 +486,7 @@ struct KDebugPrivate
 
 K_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
 
-static QDebug debugHeader(QDebug s, const char *file, int line, const char *funcinfo)
+static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
 {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
     s.nospace() << "[";
@@ -525,20 +525,20 @@ static QDebug debugHeader(QDebug s, const char *file, int line, const char *func
     }
 
     if (funcinfo) {
-        if (needSpace) s << " ";
-        s << "in \"" << funcinfo << "\"";
-        needSpace = true;
-    }
+        QByteArray info = funcinfo;
+        int pos = info.indexOf('(');
+        if (pos != -1)
+            info.truncate(pos);
+        pos = info.lastIndexOf(' ');
 
-    if (file && line != -1) {
         if (needSpace) s << " ";
-        s << "at " << file << ":" << line;
+        s << "in " << info.constData() + pos + 1;
     }
 
     s << "]";
     s.space();
 #else
-    Q_UNUSED(file); Q_UNUSED(line); Q_UNUSED(funcinfo);
+    Q_UNUSED(funcinfo);
 #endif
 
     return s;
