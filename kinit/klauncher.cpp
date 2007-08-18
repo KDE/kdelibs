@@ -341,7 +341,7 @@ void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
      return;
    }
 
-   kWarning(7016)<< "Unexpected command" << (unsigned int) request_header.cmd << "from KDEInit";
+   kWarning(7016)<< "Unexpected command" << (unsigned int) status << "from KDEInit";
 }
 
 void
