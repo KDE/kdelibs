@@ -345,7 +345,8 @@ class KuitSemanticsPrivate
                                                  const QString &text);
 
     // Apply appropriate top tag is to the text.
-    static QString equipTopTag (const QString &text, Kuit::TagVar &toptag);
+    static QString equipTopTag (const QString &text, Kuit::TagVar &toptag,
+                                Kuit::FmtVar &fmt);
 
     // Formats the semantic into visual text.
     QString semanticToVisualText (const QString &text,
@@ -806,9 +807,9 @@ QString KuitSemanticsPrivate::format (const QString &text,
     }
 
     // Decide on the top tag, either TopLong or TopShort,
-    // and wrap the text with it.
+    // and wrap the text with it. Possibly also override format.
     Kuit::TagVar toptag;
-    QString wtext = equipTopTag(text, toptag);
+    QString wtext = equipTopTag(text, toptag, fmt);
 
     // Format the text.
     QString ftext = semanticToVisualText(wtext, fmt);
@@ -935,7 +936,8 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
 }
 
 QString KuitSemanticsPrivate::equipTopTag (const QString &text,
-                                           Kuit::TagVar &toptag)
+                                           Kuit::TagVar &toptag,
+                                           Kuit::FmtVar &fmt)
 {
     KuitSemanticsStaticData *s = staticData;
 
@@ -967,6 +969,9 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text,
         }
         else { // unknown tag
             toptag = Kuit::Tag::TopShort;
+            if (tagname == "qt") { // override format the text opens with <qt>
+                fmt = Kuit::Fmt::Rich;
+            }
         }
     }
     else { // doesn't open with a tag
