@@ -32,8 +32,6 @@
 #include <QtGui/QImage>
 #include <QtGui/QColor>
 #include <QtGui/QApplication>
-#include <kpixmapeffect.h>
-
 
 class KLed::Private
 {
