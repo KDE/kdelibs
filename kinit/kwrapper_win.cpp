@@ -64,20 +64,25 @@ int main(int argc, char **argv)
     QStringList searchPath; /// pathes for using to find executable
     QString exeToStart;
     QString myAppName = "kwrapper4:"; 
-    
-    if (QCoreApplication::arguments().size() == 3 
-        && QCoreApplication::arguments().at(1) == "--verbose") 
-    {
-        verbose = 1;
-        exeToStart = QCoreApplication::arguments().at(2);
-    }
-    else if (QCoreApplication::arguments().size() == 2)
-        exeToStart = QCoreApplication::arguments().at(1);
-    else
+    QStringList exeParams;
+    int firstParam = 1;
+
+    if (QCoreApplication::arguments().size() == 1)
     {
         qDebug() << myAppName << "no application given";
         return 1;
     }
+    
+    if (QCoreApplication::arguments().at(1) == "--verbose") 
+    {
+        verbose = 1;
+        firstParam = 2;
+    }        
+
+    exeToStart = QCoreApplication::arguments().at(firstParam);
+
+    for(int i=firstParam+1; i < QCoreApplication::arguments().size(); i++)
+        exeParams << QCoreApplication::arguments().at(i);
 
     QString path = QString::fromLocal8Bit(qgetenv("PATH")).toLower().replace('\\','/');
 
@@ -188,7 +193,7 @@ int main(int argc, char **argv)
     }
 
     if (verbose)
-        qDebug() << "run" << exeToStart << "with PATH environment\n\t" << envPath.join("\n\t");
+        qDebug() << "run" << exeToStart << "with params" << exeParams << "and PATH environment\n\t" << envPath.join("\n\t");
 
     // setup client process envirionment 
     QStringList env = QProcess::systemEnvironment();
@@ -198,7 +203,7 @@ int main(int argc, char **argv)
 
     QProcess *process = new QProcess;
     process->setEnvironment(env);
-    process->start(appName); 
+    process->start(appName,exeParams); 
     if (process->state() == QProcess::NotRunning)
     {
         qWarning() << myAppName << "process not running"; 
