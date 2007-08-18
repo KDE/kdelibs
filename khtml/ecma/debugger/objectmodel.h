@@ -33,7 +33,7 @@ class ObjectNode
 {
 public:
     ObjectNode(ObjectNode *parent = 0);
-    explicit ObjectNode(const QList<QVariant> &data, ObjectNode *parent = 0);
+    ObjectNode(const QList<QVariant> &data, ObjectNode *parent = 0);
     ~ObjectNode();
 
     void appendChild(ObjectNode *child);

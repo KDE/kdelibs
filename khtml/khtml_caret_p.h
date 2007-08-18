@@ -825,7 +825,7 @@ public:
    * @param fromEnd @p true, traverse towards the beginning in search of an
    *	editable line
    */
-  explicit EditableLineIterator(const LineIterator &it, bool fromEnd = false)
+  EditableLineIterator(const LineIterator &it, bool fromEnd = false)
   		: LineIterator(it)
   {
     if (!cbl) return;
@@ -887,7 +887,7 @@ public:
    * @param row pointer to row to start with, 0 starts at the first/last
    *	row.
    */
-  explicit TableRowIterator(RenderTable *table, bool fromEnd = false,
+  TableRowIterator(RenderTable *table, bool fromEnd = false,
   		RenderTableSection::RowStruct *row = 0);
 
   /** Constructs a new iterator.

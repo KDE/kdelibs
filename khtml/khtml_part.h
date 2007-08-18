@@ -248,10 +248,10 @@ public:
    * @p parentWidget is used as parent for both objects, the part and
    * the view.
    */
-  explicit KHTMLPart( QWidget *parentWidget = 0,
+  KHTMLPart( QWidget *parentWidget = 0,
              QObject *parent = 0, GUIProfile prof = DefaultGUI );
 
-  explicit KHTMLPart( KHTMLView *view, QObject *parent = 0, GUIProfile prof = DefaultGUI );
+  KHTMLPart( KHTMLView *view, QObject *parent = 0, GUIProfile prof = DefaultGUI );
 
   /**
    * Destructor.

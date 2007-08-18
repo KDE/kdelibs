@@ -54,7 +54,7 @@ class ExecStateModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit ExecStateModel(KJS::ExecState *exec, QObject *parent = 0);
+    ExecStateModel(KJS::ExecState *exec, QObject *parent = 0);
     ~ExecStateModel();
 
     QVariant data(const QModelIndex &index, int role) const;
