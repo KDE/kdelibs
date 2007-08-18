@@ -446,7 +446,7 @@ void KDirSelectDialog::slotMkdir()
     for ( ; it != dirs.end(); ++it )
     {
         folderurl.addPath( *it );
-        exists = KIO::NetAccess::exists( folderurl, false, 0 );
+        exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, 0 );
         writeOk = !exists && KIO::NetAccess::mkdir( folderurl, topLevelWidget() );
     }
 
