@@ -154,10 +154,9 @@ void KPixmapRegionSelectorWidget::Private::updatePixmap()
    if (m_linedPixmap.isNull())
    {
      m_linedPixmap = m_originalPixmap;
-
-     QImage image=m_linedPixmap.toImage();
-     image=KImageEffect::fade(image, (float)0.4, QColor(0,0,0));
-     m_linedPixmap=QPixmap::fromImage(image);
+     QPainter p(&m_linedPixmap);
+     p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+     p.fillRect(m_linedPixmap.rect(), QColor(0, 0, 0, 100));
    }
 
    QPixmap pixmap = m_linedPixmap;
@@ -221,11 +220,23 @@ void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction
    int w=d->m_originalPixmap.width();
    int h=d->m_originalPixmap.height();
    QImage img=d->m_unzoomedPixmap.toImage();
-   img= KImageEffect::rotate(img, direction);
+   if(direction == KImageEffect::Rotate90)
+       img = img.transformed(QTransform().rotate(90.0));
+   else if(direction == KImageEffect::Rotate180)
+       img = img.transformed(QTransform().rotate(180.0));
+   else
+       img = img.transformed(QTransform().rotate(270.0));
+
    d->m_unzoomedPixmap=QPixmap::fromImage(img);
 
    img=d->m_originalPixmap.toImage();
-   img= KImageEffect::rotate(img, direction);
+   if(direction == KImageEffect::Rotate90)
+       img = img.transformed(QTransform().rotate(90.0));
+   else if(direction == KImageEffect::Rotate180)
+       img = img.transformed(QTransform().rotate(180.0));
+   else
+       img = img.transformed(QTransform().rotate(270.0));
+
    d->m_originalPixmap=QPixmap::fromImage(img);
 
    d->m_linedPixmap=QPixmap();
