@@ -302,7 +302,7 @@ KLauncher::slotKDEInitData(int)
        
 }
    
-bool KLauncher::processRequestReturn(int status, const QByteArray &requestData)
+void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
 {   
    if (status == LAUNCHER_DIED)
    {
