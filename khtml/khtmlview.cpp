@@ -1166,8 +1166,8 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         (deltaX > 0) ? d->m_mouseScroll_byX = 1 : d->m_mouseScroll_byX = -1;
         (deltaY > 0) ? d->m_mouseScroll_byY = 1 : d->m_mouseScroll_byY = -1;
 
-        double adX = QABS(deltaX)/30.0;
-        double adY = QABS(deltaY)/30.0;
+        double adX = qAbs(deltaX)/30.0;
+        double adY = qAbs(deltaY)/30.0;
 
         d->m_mouseScroll_byX = qMax(qMin(d->m_mouseScroll_byX * int(adX*adX), SHRT_MAX), SHRT_MIN);
         d->m_mouseScroll_byY = qMax(qMin(d->m_mouseScroll_byY * int(adY*adY), SHRT_MAX), SHRT_MIN);

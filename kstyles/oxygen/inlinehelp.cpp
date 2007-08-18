@@ -28,6 +28,7 @@
 (x)
 #endif
 
+// is this really necessary? qAbs should be already available. --amth
 #ifndef QABS
 #define QABS(x) (x) > 0 ? (x) : (-(x))
 #endif
@@ -185,7 +186,7 @@ static bool thereIsContrastBetween(const QColor &a, const QColor &b)
    
    int diff = (299*(ar-br) + 587*(ag-bg) + 114*(ab-bb));
    
-   if (QABS(diff) < 91001)
+   if (QABS(diff) < 91001)	// this should be using qAbs instead? --amth
       return false;
    
    diff = qMax(ar,br) + qMax(ag,bg) + qMax(ab,bb)

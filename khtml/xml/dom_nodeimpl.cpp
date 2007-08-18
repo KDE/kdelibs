@@ -1757,7 +1757,7 @@ NodeImpl *NodeListImpl::item( unsigned long index ) const
     bool usedCache = false;
     if (m_cache->current.node) {
         //Compute distance from the requested index to the cache node
-        unsigned long cacheDist = QABS(long(index) - long(m_cache->position));
+        unsigned long cacheDist = qAbs(long(index) - long(m_cache->position));
 
         if (cacheDist < (unsigned long)index) { //Closer to the cached position
             usedCache = true;
