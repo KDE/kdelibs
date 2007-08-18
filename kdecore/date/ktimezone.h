@@ -29,14 +29,15 @@
 
 #include <kdecore_export.h>
 
+#include <sys/time.h>
+#include <ctime>
+
 #include <QtCore/QDateTime>
 #include <QtCore/QMap>
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QByteArray>
 #include <QtCore/QSharedDataPointer>
-
-#include <ctime>
 
 class KTimeZone;
 class KTimeZoneBackend;
