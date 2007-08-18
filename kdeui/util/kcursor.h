@@ -52,7 +52,7 @@ public:
      * @param name the name of the cursor to try and load
      * @param fallback the cursor to load if @p name cursor can not be loaded
      */
-    KCursor( const QString & name, Qt::CursorShape fallback = Qt::ArrowCursor );
+    explicit KCursor( const QString & name, Qt::CursorShape fallback = Qt::ArrowCursor );
 
     /**
      * Creates a copy of @p cursor.

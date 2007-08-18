@@ -128,7 +128,7 @@ ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisO
     for (int i = 0; i < args.size(); i++)
       str += args[i]->toString(exec);
     if (id == HTMLDocument::WriteLn)
-      str += "\n";
+      str += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
 #ifdef KJS_VERBOSE
     kDebug(6070) << "document.write: " << str.qstring();
 #endif
@@ -1801,11 +1801,11 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
       if (url.port()<=0)
         return String(url.host());
       else
-        return String(url.host() + ":" + QString::number(url.port()));
+        return String(url.host() + ":" + QString::number(url.port()));	//krazy:exclude=doublequote_chars DOM demands chars
     }
     case AnchorPathName:        return String(KUrl(href).path());
     case AnchorPort:            return String(QString::number(KUrl(href).port()));
-    case AnchorProtocol:        return String(KUrl(href).protocol()+":");
+    case AnchorProtocol:        return String(KUrl(href).protocol()+":");	//krazy:exclude=doublequote_chars DOM demands chars
     case AnchorSearch:          { KUrl u(href);
                                   QString q = u.query();
                                   if (q.length() == 1)
@@ -1857,13 +1857,13 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         if (url.port()<=0)
           return String(url.host());
         else
-          return String(url.host() + ":" + QString::number(url.port()));
+          return String(url.host() + ":" + QString::number(url.port()));	//krazy:exclude=doublequote_chars DOM demands chars
       }
       case AreaPathName:        {
         return String(url.path());
       }
       case AreaPort:            return String(QString::number(url.port()));
-      case AreaProtocol:        return String(url.isEmpty() ? "" : url.protocol()+":");
+      case AreaProtocol:        return String(url.isEmpty() ? "" : url.protocol()+":");	//krazy:exclude=doublequote_chars DOM demands chars
       case AreaSearch:          return String(url.query());
     }
   }
@@ -1999,7 +1999,7 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
   else if (impl()->id() == ID_IMG) {
     DOMString alt = impl()->getAttribute(ATTR_ALT);
     if (!alt.isEmpty())
-      return UString(alt) + " " + DOMElement::toString(exec);
+      return UString(alt) + " " + DOMElement::toString(exec);	//krazy:exclude=doublequote_chars DOM demands chars
   }
   return DOMElement::toString(exec);
 }

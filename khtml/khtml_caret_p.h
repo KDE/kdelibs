@@ -759,7 +759,7 @@ public:
   /** initializes a new iterator from the given line iterator,
    * beginning with the given caret box iterator, if specified
    */
-  EditableCaretBoxIterator(LineIterator &lit, bool fromEnd = false,
+  explicit EditableCaretBoxIterator(LineIterator &lit, bool fromEnd = false,
   		CaretBoxIterator *it = 0)
   		: CaretBoxIterator(it ? *it : (fromEnd ? (*lit)->end() : (*lit)->preBegin())),
                 m_part(lit.lines->m_part), adjacent(false),
@@ -825,7 +825,7 @@ public:
    * @param fromEnd @p true, traverse towards the beginning in search of an
    *	editable line
    */
-  EditableLineIterator(const LineIterator &it, bool fromEnd = false)
+  explicit EditableLineIterator(const LineIterator &it, bool fromEnd = false)
   		: LineIterator(it)
   {
     if (!cbl) return;
@@ -887,7 +887,7 @@ public:
    * @param row pointer to row to start with, 0 starts at the first/last
    *	row.
    */
-  TableRowIterator(RenderTable *table, bool fromEnd = false,
+  explicit TableRowIterator(RenderTable *table, bool fromEnd = false,
   		RenderTableSection::RowStruct *row = 0);
 
   /** Constructs a new iterator.

@@ -122,7 +122,7 @@ class HTMLTokenizer : public Tokenizer, public CachedObjectClient
 {
     friend class KHTMLParser;
 public:
-    HTMLTokenizer(DOM::DocumentImpl *, KHTMLView * = 0);
+    explicit HTMLTokenizer(DOM::DocumentImpl *, KHTMLView * = 0);
     HTMLTokenizer(DOM::DocumentImpl *, DOM::DocumentFragmentImpl *frag);
     virtual ~HTMLTokenizer();
 

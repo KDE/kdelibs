@@ -28,6 +28,8 @@ class KMJobManager;
 
 class KMThreadJob : public QObject
 {
+	Q_OBJECT
+
 public:
 	KMThreadJob(QObject *parent = 0);
 	~KMThreadJob();

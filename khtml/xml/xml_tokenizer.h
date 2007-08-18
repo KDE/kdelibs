@@ -162,7 +162,7 @@ private:
 class XMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
 public:
-    XMLTokenizer(DOM::DocumentImpl *, KHTMLView * = 0);
+    explicit XMLTokenizer(DOM::DocumentImpl *, KHTMLView * = 0);
     virtual ~XMLTokenizer();
     virtual void begin();
     virtual void write( const TokenizerString &str, bool );

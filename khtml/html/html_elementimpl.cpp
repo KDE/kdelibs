@@ -146,7 +146,7 @@ DOMString HTMLElementImpl::tagName() const
         tn = tn.upper();
 
     if (m_prefix)
-        return DOMString(m_prefix) + ":" + tn;
+        return DOMString(m_prefix) + ":" + tn;	//krazy:exclude=doublequote_chars DOM demands chars
 
     return tn;
 }
@@ -651,12 +651,12 @@ DOMString HTMLElementImpl::toString() const
 {
     if (!hasChildNodes()) {
 	DOMString result = openTagStartToString();
-	result += ">";
+	result += ">";	//krazy:exclude=doublequote_chars DOM demands chars
 
 	if (endTag[id()] == REQUIRED) {
 	    result += "</";
 	    result += tagName();
-	    result += ">";
+	    result += ">";	//krazy:exclude=doublequote_chars DOM demands chars
 	}
 
 	return result;

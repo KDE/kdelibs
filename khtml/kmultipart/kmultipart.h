@@ -99,7 +99,7 @@ class KMultiPartBrowserExtension : public KParts::BrowserExtension
 {
     //Q_OBJECT
 public:
-    KMultiPartBrowserExtension( KMultiPart *parent, const char *name = 0 );
+    explicit KMultiPartBrowserExtension( KMultiPart *parent, const char *name = 0 );
 
     virtual int xOffset();
     virtual int yOffset();

@@ -485,7 +485,7 @@ public:
    * @param fromEnd @p true, begin with last section, @p false, begin with
    *	first section.
    */
-  TableSectionIterator(RenderTable *table, bool fromEnd = false);
+  explicit TableSectionIterator(RenderTable *table, bool fromEnd = false);
 
   /**
    * Initializes a new iterator

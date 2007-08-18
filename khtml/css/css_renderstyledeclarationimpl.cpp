@@ -346,11 +346,11 @@ DOM::DOMString RenderStyleDeclarationImpl::cssText() const
 
     for (unsigned i = 0; i < numComputedProperties; i++) {
         if (i != 0)
-            result += " ";
+            result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
         result += getPropertyName(computedProperties[i]);
         result += ": ";
         result += getPropertyValue(computedProperties[i]);
-        result += ";";
+        result += ";";	//krazy:exclude=doublequote_chars DOM demands chars
     }
 
     return result;
@@ -412,13 +412,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         DOMString string;
         Length length(style->backgroundXPosition());
         if (length.isPercent())
-            string = QString::number(length.value()) + "%";
+            string = QString::number(length.value()) + "%";	//krazy:exclude=doublequote_chars DOM demands chars
         else
             string = QString::number(length.minWidth(renderer->contentWidth()));
-        string += " ";
+        string += " ";	//krazy:exclude=doublequote_chars DOM demands chars
         length = style->backgroundYPosition();
         if (length.isPercent())
-            string += QString::number(length.value()) + "%";
+            string += QString::number(length.value()) + "%";	//krazy:exclude=doublequote_chars DOM demands chars
         else
             string += QString::number(length.minWidth(renderer->contentWidth()));
         return new CSSPrimitiveValueImpl(string, CSSPrimitiveValue::CSS_STRING);
@@ -893,17 +893,17 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             string += "underline";
         if (style->textDecoration() & khtml::OVERLINE) {
             if (string.length() > 0)
-                string += " ";
+                string += " ";	//krazy:exclude=doublequote_chars DOM demands chars
             string += "overline";
         }
         if (style->textDecoration() & khtml::LINE_THROUGH) {
             if (string.length() > 0)
-                string += " ";
+                string += " ";	//krazy:exclude=doublequote_chars DOM demands chars
             string += "line-through";
         }
         if (style->textDecoration() & khtml::BLINK) {
             if (string.length() > 0)
-                string += " ";
+                string += " ";	//krazy:exclude=doublequote_chars DOM demands chars
             string += "blink";
         }
         if (string.length() == 0)

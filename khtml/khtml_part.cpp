@@ -169,7 +169,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
 
     for ( ; i != argsEnd; ++i) {
         if (i != argsBegin)
-            script += ",";
+            script += ",";	//krazy:exclude=doublequote_chars DOM demands chars
         if ((*i).first == KParts::LiveConnectExtension::TypeString) {
             script += "\"";
             script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
@@ -177,7 +177,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
         } else
             script += (*i).second;
     }
-    script += ")";
+    script += ")";	//krazy:exclude=doublequote_chars DOM demands chars
     kDebug(6050) << "khtml::ChildFrame::liveConnectEvent " << script;
 
     KHTMLPart * part = qobject_cast<KHTMLPart*>(m_part->parent());
@@ -3482,7 +3482,7 @@ QString KHTMLPart::selectedText() const
 	    text += static_cast<HTMLSelectElementImpl*>(n.handle())->value().string();
 	    break;
           case ID_BR:
-            text += "\n";
+            text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
             hasNewLine = true;
             break;
           case ID_IMG:
@@ -3502,7 +3502,7 @@ QString KHTMLPart::selectedText() const
           case ID_BLOCKQUOTE:
           case ID_DIV:
             if (!hasNewLine)
-               text += "\n";
+               text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
             hasNewLine = true;
             break;
           case ID_P:
@@ -3514,8 +3514,7 @@ QString KHTMLPart::selectedText() const
           case ID_H5:
           case ID_H6:
             if (!hasNewLine)
-               text += "\n";
-//            text += "\n";
+               text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
             hasNewLine = true;
             break;
         }
@@ -3544,7 +3543,7 @@ QString KHTMLPart::selectedText() const
           case ID_DIV:
 	    seenTDTag = false;
             if (!hasNewLine)
-               text += "\n";
+               text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
             hasNewLine = true;
             break;
           case ID_P:
@@ -3556,7 +3555,7 @@ QString KHTMLPart::selectedText() const
           case ID_H5:
           case ID_H6:
             if (!hasNewLine)
-               text += "\n";
+               text += "\n";	//krazy:exclude=doublequote_chars DOM demands chars
 //            text += "\n";
             hasNewLine = true;
             break;
@@ -5817,7 +5816,7 @@ void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
   if (tobe.isEmpty()) {
     tobe = d->m_statusBarText[BarDefaultText];
     if (!tobe.isEmpty() && d->m_jobspeed)
-      tobe += " ";
+      tobe += " ";	//krazy:exclude=doublequote_chars DOM demands chars
     if (d->m_jobspeed)
       tobe += i18n( "(%1/s)" ,  KIO::convertSize( d->m_jobspeed ) );
   }

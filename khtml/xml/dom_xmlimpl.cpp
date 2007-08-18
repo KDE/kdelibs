@@ -129,7 +129,7 @@ DOMString EntityImpl::toString() const
     DOMString result = "<!ENTITY' ";
 
     if (m_name && m_name->l != 0) {
-	result += " ";
+	result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
 	result += m_name;
     }
 
@@ -150,7 +150,7 @@ DOMString EntityImpl::toString() const
 	result += m_notationName;
     }
 
-    result += ">";
+    result += ">";	//krazy:exclude=doublequote_chars DOM demands chars
 
     return result;
 }
@@ -216,7 +216,7 @@ DOMString EntityReferenceImpl::toString() const
 {
     DOMString result = "&";
     result += m_entityName;
-    result += ";";
+    result += ";";	//krazy:exclude=doublequote_chars DOM demands chars
 
     return result;
 }
@@ -459,9 +459,9 @@ DOMString ProcessingInstructionImpl::toString() const
 {
     DOMString result = "<?";
     result += m_target;
-    result += " ";
+    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
     result += m_data;
-    result += ">";
+    result += ">";	//krazy:exclude=doublequote_chars DOM demands chars
     return result;
 }
 

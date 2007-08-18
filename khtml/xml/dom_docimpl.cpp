@@ -1886,7 +1886,7 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
         if (!readonly && id && _prefix && _prefix->l) {
             // we were called in registration mode... check if the alias exists
             const QString px = QString::fromRawData( _prefix->s, _prefix->l );
-            QString qn("aliases: " + (cs ? px : px.toUpper()) + ":" + name);
+            QString qn("aliases: " + (cs ? px : px.toUpper()) + ":" + name);	//krazy:exclude=doublequote_chars DOM demands chars
             if (!map->ids.find( qn )) {
                 map->ids.insert( qn, (void*)id );
             }
@@ -2839,10 +2839,10 @@ DOMString DocumentTypeImpl::toString() const
     if (!m_subset.isEmpty()) {
 	result += " [";
 	result += m_subset;
-	result += "]";
+	result += "]";	//krazy:exclude=doublequote_chars DOM demands chars
     }
 
-    result += ">";
+    result += ">";	//krazy:exclude=doublequote_chars DOM demands chars
 
     return result;
 }

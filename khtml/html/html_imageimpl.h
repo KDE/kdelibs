@@ -41,7 +41,7 @@ class HTMLImageElementImpl
 {
     friend class HTMLFormElementImpl;
 public:
-    HTMLImageElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLImageElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
     ~HTMLImageElementImpl();
 
     virtual Id id() const;

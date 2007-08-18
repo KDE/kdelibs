@@ -104,7 +104,7 @@ public:
        * it will be checked if you press the Add-button. It is not
        * possible to enter items twice into the listbox.
        */
-      KEditListBox(QWidget *parent = 0, const char *name = 0,
+      explicit KEditListBox(QWidget *parent = 0, const char *name = 0,
 		   bool checkAtEntering=false, Buttons buttons = All );
       /**
        * Create an editable listbox.
@@ -112,7 +112,7 @@ public:
        * The same as the other constructor, additionally it takes
        * @p title, which will be the title of the frame around the listbox.
        */
-      KEditListBox(const QString& title, QWidget *parent = 0,
+      explicit KEditListBox(const QString& title, QWidget *parent = 0,
 		   const char *name = 0, bool checkAtEntering=false,
 		   Buttons buttons = All );
 

@@ -268,7 +268,7 @@ DOMString CSSStyleDeclarationImpl::get4Values( const int* properties ) const
             return DOMString();
         }
         if ( i > 0 )
-            res += " ";
+            res += " ";	//krazy:exclude=doublequote_chars DOM demands chars
         res += value->cssText();
     }
     return res;
@@ -281,7 +281,7 @@ DOMString CSSStyleDeclarationImpl::getShortHandValue( const int* properties, int
         CSSValueImpl* value = getPropertyCSSValue( properties[i] );
         if ( value ) { // TODO provide default value if !value
             if ( !res.isNull() )
-                res += " ";
+                res += " ";	//krazy:exclude=doublequote_chars DOM demands chars
             res += value->cssText();
         }
     }
@@ -728,7 +728,7 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    text = DOMString(QString::number( (int)m_value.num ));
 	    break;
 	case CSSPrimitiveValue::CSS_PERCENTAGE:
-	    text = DOMString(QString::number( m_value.num ) + "%");
+	    text = DOMString(QString::number( m_value.num ) + "%");	//krazy:exclude=doublequote_chars DOM demands chars
 	    break;
 	case CSSPrimitiveValue::CSS_EMS:
 	    text = DOMString(QString::number( m_value.num ) + "em");
@@ -767,7 +767,7 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    text = DOMString(QString::number( m_value.num ) + "ms");
 	    break;
 	case CSSPrimitiveValue::CSS_S:
-	    text = DOMString(QString::number( m_value.num ) + "s");
+	    text = DOMString(QString::number( m_value.num ) + "s");	//krazy:exclude=doublequote_chars DOM demands chars
 	    break;
 	case CSSPrimitiveValue::CSS_HZ:
 	    text = DOMString(QString::number( m_value.num ) + "hz");
@@ -784,7 +784,7 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	case CSSPrimitiveValue::CSS_URI:
             text  = "url(";
 	    text += DOMString( m_value.string );
-            text += ")";
+            text += ")";	//krazy:exclude=doublequote_chars DOM demands chars
 	    break;
 	case CSSPrimitiveValue::CSS_IDENT:
 	    text = getValueName(m_value.ident);
@@ -795,17 +795,17 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	case CSSPrimitiveValue::CSS_COUNTER:
             text = "counter(";
             text += m_value.counter->m_identifier;
-            text += ")";
+            text += ")";	//krazy:exclude=doublequote_chars DOM demands chars
             // ### add list-style and separator
 	    break;
 	case CSSPrimitiveValue::CSS_RECT:
         {
             RectImpl* rectVal = getRectValue();
             text = "rect(";
-            text += rectVal->top()->cssText() + " ";
-            text += rectVal->right()->cssText() + " ";
-            text += rectVal->bottom()->cssText() + " ";
-            text += rectVal->left()->cssText() + ")";
+            text += rectVal->top()->cssText() + " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += rectVal->right()->cssText() + " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += rectVal->bottom()->cssText() + " ";	//krazy:exclude=doublequote_chars DOM demands chars
+            text += rectVal->left()->cssText() + ")";	//krazy:exclude=doublequote_chars DOM demands chars
             break;
         }
 	case CSSPrimitiveValue::CSS_RGBCOLOR:
@@ -813,17 +813,17 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 		if (m_value.rgbcolor == khtml::transparentColor)
 		    text = "transparent";
 		else
-		    text = "rgba(" + QString::number(qRed  (m_value.rgbcolor)) + "," 
-				   + QString::number(qBlue (m_value.rgbcolor)) + "," 
-				   + QString::number(qGreen(m_value.rgbcolor)) + "," 
-				   + QString::number(qAlpha(m_value.rgbcolor)/255.0) + ")";
+		    text = "rgba(" + QString::number(qRed  (m_value.rgbcolor)) + ","	//krazy:exclude=doublequote_chars DOM demands chars
+				   + QString::number(qBlue (m_value.rgbcolor)) + ","	//krazy:exclude=doublequote_chars DOM demands chars
+				   + QString::number(qGreen(m_value.rgbcolor)) + ","	//krazy:exclude=doublequote_chars DOM demands chars
+				   + QString::number(qAlpha(m_value.rgbcolor)/255.0) + ")";	//krazy:exclude=doublequote_chars DOM demands chars
 	    } else {
 		text = QColor(m_value.rgbcolor).name();
 	    }
 	    break;
         case CSSPrimitiveValue::CSS_PAIR:
             text = m_value.pair->first()->cssText();
-            text += " ";
+            text += " ";	//krazy:exclude=doublequote_chars DOM demands chars
             text += m_value.pair->second()->cssText();
             break;
 	default:
@@ -998,32 +998,32 @@ DOMString FontValueImpl::cssText() const
     }
     if (variant) {
 	if (result.length() > 0) {
-	    result += " ";
+	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
 	}
 	result += variant->cssText();
     }
     if (weight) {
 	if (result.length() > 0) {
-	    result += " ";
+	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
 	}
 	result += weight->cssText();
     }
     if (size) {
 	if (result.length() > 0) {
-	    result += " ";
+	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
 	}
 	result += size->cssText();
     }
     if (lineHeight) {
 	if (!size) {
-	    result += " ";
+	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
 	}
-	result += "/";
+	result += "/";	//krazy:exclude=doublequote_chars DOM demands chars
 	result += lineHeight->cssText();
     }
     if (family) {
 	if (result.length() > 0) {
-	    result += " ";
+	    result += " ";	//krazy:exclude=doublequote_chars DOM demands chars
 	}
 	result += family->cssText();
     }
@@ -1091,19 +1091,19 @@ DOMString ShadowValueImpl::cssText() const
     }
     if (x) {
         if (text.length() > 0) {
-            text += " ";
+            text += " ";	//krazy:exclude=doublequote_chars DOM demands chars
         }
         text += x->cssText();
     }
     if (y) {
         if (text.length() > 0) {
-            text += " ";
+            text += " ";	//krazy:exclude=doublequote_chars DOM demands chars
         }
         text += y->cssText();
     }
     if (blur) {
         if (text.length() > 0) {
-            text += " ";
+            text += " ";	//krazy:exclude=doublequote_chars DOM demands chars
         }
         text += blur->cssText();
     }

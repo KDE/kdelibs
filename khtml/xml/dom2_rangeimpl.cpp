@@ -936,7 +936,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	       text += static_cast<ElementImpl *>(n)->openTagStartToString(true /*safely expand img urls*/); // adds "<tagname key=value"
 	       if(n->hasChildNodes()) {
 	            depth_difference++;
-   	            text += ">";
+   	            text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
                 } else {
           	    text += "/>";
 	        }
@@ -995,7 +995,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		if(lowest_depth_difference > depth_difference) lowest_depth_difference=depth_difference;
 	        if(num_tables==0 && ( elementId == ID_TD || elementId == ID_TR || elementId == ID_TH || elementId == ID_TBODY || elementId == ID_TFOOT || elementId == ID_THEAD)) num_tables--;
 	        if(elementId == ID_OL || elementId == ID_UL) in_li=false;
- 	        text += ">";
+ 	        text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
 	    }
             next = n->nextSibling();
         }
@@ -1039,7 +1039,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		 in_li = true;
 		 break;
 	  }
-          text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text; // prepends "<tagname key=value>"
+          text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text; // prepends "<tagname key=value>"	//krazy:exclude=doublequote_chars DOM demands chars
       }
       startdepth--;
     }
@@ -1057,7 +1057,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	  }
 	  text += "</";
 	  text += static_cast<ElementImpl *>(n)->tagName();
- 	  text += ">";
+ 	  text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
       }
       depth_difference--;
     }
@@ -1088,20 +1088,20 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		case ID_THEAD:
 		    if(num_tables>0) {
 		        if(elementId == ID_TABLE) num_tables--;
-			text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+			text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;	//krazy:exclude=doublequote_chars DOM demands chars
 			text += "</";
 			text += static_cast<ElementImpl *>(n)->tagName();
-			text += ">";
+			text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
 
 		    }
 		    break;
 
                 case ID_LI:
 		    if(!in_li) break;
-                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;	//krazy:exclude=doublequote_chars DOM demands chars
 		    text += "</";
 		    text += static_cast<ElementImpl *>(n)->tagName();
-		    text += ">";
+		    text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
                     break;
 		    
 		case ID_UL:
@@ -1124,10 +1124,10 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		case ID_H5:
 		    //should small, etc be here?   so hard to decide.  this is such a hack :(
 		    //There's probably tons of others you'd want here.
-                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;	//krazy:exclude=doublequote_chars DOM demands chars
 		    text += "</";
 		    text += static_cast<ElementImpl *>(n)->tagName();
-		    text += ">";
+		    text += ">";	//krazy:exclude=doublequote_chars DOM demands chars
                     break;
 	      }	    
 	  }

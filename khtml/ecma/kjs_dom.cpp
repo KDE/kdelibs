@@ -546,7 +546,7 @@ UString DOMNode::toString(ExecState *) const
   } else
     s = className(); // fallback
 
-  return "[object " + s + "]";
+  return "[object " + s + "]";	//krazy:exclude=doublequote_chars DOM demands chars
 }
 
 void DOMNode::setListener(ExecState *exec, int eventId, ValueImp* func) const

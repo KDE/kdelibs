@@ -138,7 +138,7 @@ class HTMLGenericFormElementImpl : public HTMLElementImpl
     friend class khtml::RenderFormElement;
 
 public:
-    HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLGenericFormElementImpl();
 
     HTMLFormElementImpl *form() const { return m_form; }
@@ -190,7 +190,7 @@ protected:
 class HTMLButtonElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
 
     virtual ~HTMLButtonElementImpl();
 
@@ -228,7 +228,7 @@ protected:
 class HTMLFieldSetElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLFieldSetElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLFieldSetElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
 
     virtual ~HTMLFieldSetElementImpl();
 
@@ -262,7 +262,7 @@ public:
         BUTTON
     };
 
-    HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLInputElementImpl();
 
     virtual Id id() const;
@@ -367,7 +367,7 @@ public:
 class HTMLLegendElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLLegendElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLLegendElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
     virtual ~HTMLLegendElementImpl();
 
     virtual Id id() const;
@@ -383,7 +383,7 @@ class HTMLSelectElementImpl : public HTMLGenericFormElementImpl
     friend class khtml::RenderSelect;
 
 public:
-    HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
     ~HTMLSelectElementImpl();
 
     virtual Id id() const;
@@ -462,7 +462,7 @@ protected:
 class HTMLKeygenElementImpl : public HTMLSelectElementImpl
 {
 public:
-    HTMLKeygenElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLKeygenElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
 
     virtual Id id() const;
 
@@ -484,8 +484,8 @@ public:
 class HTMLOptGroupElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLOptGroupElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0)
-        : HTMLGenericFormElementImpl(doc, f) {}
+    explicit HTMLOptGroupElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0)
+		: HTMLGenericFormElementImpl(doc, f) {}
 
     virtual Id id() const;
 };
@@ -499,7 +499,7 @@ class HTMLOptionElementImpl : public HTMLGenericFormElementImpl
     friend class DOM::HTMLSelectElementImpl;
 
 public:
-    HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
 
     virtual Id id() const;
 
@@ -536,7 +536,7 @@ public:
         ta_Physical
     };
 
-    HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
     ~HTMLTextAreaElementImpl();
 
     virtual Id id() const;
@@ -594,7 +594,7 @@ protected:
 class HTMLIsIndexElementImpl : public HTMLInputElementImpl
 {
 public:
-    HTMLIsIndexElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
+    explicit HTMLIsIndexElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f = 0);
     ~HTMLIsIndexElementImpl();
 
     virtual Id id() const;
