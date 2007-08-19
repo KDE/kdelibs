@@ -26,6 +26,8 @@
 
 class GsChecker : public QObject
 {
+	Q_OBJECT
+
 public:
 	explicit GsChecker(QObject *parent = 0, const char *name = 0);
 	bool checkGsDriver(const QString& name);
