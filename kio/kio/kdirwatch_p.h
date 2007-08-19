@@ -49,6 +49,7 @@
 
 #endif
 
+#include <sys/time.h>
 #include <ctime>
 
 #define invalid_ctime ((time_t)-1)

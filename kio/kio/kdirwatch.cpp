@@ -39,16 +39,14 @@
 // deep copies for list of dirs. (sven)
 // Mar 28. 1998 - Created.  (sven)
 
+#include "kdirwatch.h"
+#include "kdirwatch_p.h"
+
 #include <config-kdirwatch.h>
 #include <config.h>
 
 #include <sys/stat.h>
-#include <sys/time.h>
 #include <assert.h>
-
-#include "kdirwatch.h"
-#include "kdirwatch_p.h"
-
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QSocketNotifier>
