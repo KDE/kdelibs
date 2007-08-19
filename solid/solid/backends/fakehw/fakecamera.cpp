@@ -19,6 +19,8 @@
 
 #include "fakecamera.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeCamera::FakeCamera(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

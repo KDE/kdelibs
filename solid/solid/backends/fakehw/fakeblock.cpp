@@ -19,6 +19,8 @@
 
 #include "fakeblock.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeBlock::FakeBlock(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

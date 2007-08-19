@@ -26,7 +26,9 @@
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
 
-class HalManagerPrivate
+using namespace Solid::Backends::Hal;
+
+class Solid::Backends::Hal::HalManagerPrivate
 {
 public:
     HalManagerPrivate() : manager("org.freedesktop.Hal",

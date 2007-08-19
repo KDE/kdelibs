@@ -19,6 +19,8 @@
 
 #include "fakenetworkinterface.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeNetworkInterface::FakeNetworkInterface(FakeDevice *device)
  : FakeDeviceInterface(device)
 {

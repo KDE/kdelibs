@@ -23,6 +23,12 @@
 #include <solid/ifaces/networkinterface.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class HalDevice;
 
 class NetworkInterface : public DeviceInterface, virtual public Solid::Ifaces::NetworkInterface
@@ -39,5 +45,9 @@ public:
     virtual QString hwAddress() const;
     virtual qulonglong macAddress() const;
 };
+}
+}
+}
+
 
 #endif

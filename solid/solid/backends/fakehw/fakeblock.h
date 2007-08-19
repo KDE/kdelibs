@@ -23,6 +23,12 @@
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/block.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeBlock : public FakeDeviceInterface, virtual public Solid::Ifaces::Block
 {
     Q_OBJECT
@@ -37,6 +43,9 @@ public Q_SLOTS:
     virtual int deviceMinor() const;
     virtual QString device() const;
 };
+}
+}
+}
 
 #endif
 

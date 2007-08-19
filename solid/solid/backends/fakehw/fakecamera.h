@@ -23,6 +23,12 @@
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/camera.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeCamera : public FakeDeviceInterface, virtual public Solid::Ifaces::Camera
 {
     Q_OBJECT
@@ -36,5 +42,8 @@ public Q_SLOTS:
     virtual QStringList supportedProtocols() const;
     virtual QStringList supportedDrivers(QString protocol) const;
 };
+}
+}
+}
 
 #endif

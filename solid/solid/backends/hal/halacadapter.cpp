@@ -19,6 +19,8 @@
 
 #include "halacadapter.h"
 
+using namespace Solid::Backends::Hal;
+
 AcAdapter::AcAdapter(HalDevice *device)
     : DeviceInterface(device)
 {

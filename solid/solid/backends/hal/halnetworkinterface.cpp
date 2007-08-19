@@ -23,6 +23,8 @@
 
 #include <QtCore/QStringList>
 
+using namespace Solid::Backends::Hal;
+
 NetworkInterface::NetworkInterface(HalDevice *device)
     : DeviceInterface(device)
 {

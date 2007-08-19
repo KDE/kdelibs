@@ -23,6 +23,12 @@
 #include <solid/ifaces/battery.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class Battery : public DeviceInterface, virtual public Solid::Ifaces::Battery
 {
     Q_OBJECT
@@ -48,5 +54,9 @@ Q_SIGNALS:
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);
 };
+}
+}
+}
+
 
 #endif

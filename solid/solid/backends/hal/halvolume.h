@@ -23,6 +23,12 @@
 #include <solid/ifaces/storagevolume.h>
 #include "halblock.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class Volume : public Block, virtual public Solid::Ifaces::StorageVolume
 {
     Q_OBJECT
@@ -39,5 +45,9 @@ public:
     virtual QString uuid() const;
     virtual qulonglong size() const;
 };
+}
+}
+}
+
 
 #endif

@@ -22,6 +22,12 @@
 
 #include <solid/ifaces/device.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class HalManager;
 class HalDevicePrivate;
 
@@ -67,5 +73,8 @@ private Q_SLOTS:
 private:
     HalDevicePrivate *d;
 };
+}
+}
+}
 
 #endif

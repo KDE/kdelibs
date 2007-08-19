@@ -23,6 +23,12 @@
 #include <solid/ifaces/audiointerface.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class HalDevice;
 
 class AudioInterface : public DeviceInterface, virtual public Solid::Ifaces::AudioInterface
@@ -45,5 +51,9 @@ private:
     mutable Solid::AudioInterface::SoundcardType m_soundcardType;
     mutable bool m_soundcardTypeValid;
 };
+}
+}
+}
+
 
 #endif

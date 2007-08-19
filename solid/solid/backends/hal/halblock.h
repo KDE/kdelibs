@@ -23,6 +23,12 @@
 #include <solid/ifaces/block.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class Block : public DeviceInterface, virtual public Solid::Ifaces::Block
 {
     Q_OBJECT
@@ -36,5 +42,9 @@ public:
     virtual int deviceMinor() const;
     virtual QString device() const;
 };
+}
+}
+}
+
 
 #endif

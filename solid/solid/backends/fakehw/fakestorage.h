@@ -23,6 +23,12 @@
 #include "fakeblock.h"
 #include <solid/ifaces/storagedrive.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeStorage : public FakeBlock, virtual public Solid::Ifaces::StorageDrive
 {
     Q_OBJECT
@@ -39,5 +45,9 @@ public Q_SLOTS:
     virtual bool isRemovable() const;
     virtual bool isHotpluggable() const;
 };
+}
+}
+}
+
 
 #endif

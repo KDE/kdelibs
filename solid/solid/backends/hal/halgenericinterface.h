@@ -24,6 +24,12 @@
 #include <solid/genericinterface.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class HalDevice;
 
 class GenericInterface : public DeviceInterface, virtual public Solid::Ifaces::GenericInterface
@@ -43,5 +49,9 @@ Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);
     void conditionRaised(const QString &condition, const QString &reason);
 };
+}
+}
+}
+
 
 #endif

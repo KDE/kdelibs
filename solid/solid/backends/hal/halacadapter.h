@@ -23,6 +23,12 @@
 #include <solid/ifaces/acadapter.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class AcAdapter : public DeviceInterface, virtual public Solid::Ifaces::AcAdapter
 {
     Q_OBJECT
@@ -40,5 +46,9 @@ Q_SIGNALS:
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);
 };
+}
+}
+}
+
 
 #endif

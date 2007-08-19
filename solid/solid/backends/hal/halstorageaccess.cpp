@@ -25,6 +25,8 @@
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
 
+using namespace Solid::Backends::Hal;
+
 StorageAccess::StorageAccess(HalDevice *device)
     : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false),
       m_passphraseRequested(false)

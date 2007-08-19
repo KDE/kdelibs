@@ -19,6 +19,8 @@
 
 #include "halopticaldisc.h"
 
+using namespace Solid::Backends::Hal;
+
 OpticalDisc::OpticalDisc(HalDevice *device)
     : Volume(device)
 {

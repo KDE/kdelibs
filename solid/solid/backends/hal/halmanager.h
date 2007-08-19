@@ -26,6 +26,12 @@
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class HalManagerPrivate;
 
 class HalManager : public Solid::Ifaces::DeviceManager
@@ -55,5 +61,9 @@ private:
 
     HalManagerPrivate *d;
 };
+}
+}
+}
+
 
 #endif

@@ -19,6 +19,8 @@
 
 #include "fakeacadapter.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeAcAdapter::FakeAcAdapter(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

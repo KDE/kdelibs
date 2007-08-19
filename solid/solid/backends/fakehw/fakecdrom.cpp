@@ -21,6 +21,8 @@
 
 #include <QtCore/QStringList>
 
+using namespace Solid::Backends::Fake;
+
 FakeCdrom::FakeCdrom(FakeDevice *device)
     : FakeStorage(device)
 {

@@ -23,6 +23,12 @@
 #include <solid/ifaces/acadapter.h>
 #include "fakedeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeAcAdapter : public FakeDeviceInterface, virtual public Solid::Ifaces::AcAdapter
 {
     Q_OBJECT
@@ -41,5 +47,8 @@ public Q_SLOTS:
 Q_SIGNALS:
     void plugStateChanged(bool newState);
 };
+}
+}
+}
 
 #endif

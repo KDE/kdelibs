@@ -21,6 +21,8 @@
 
 #include <QtCore/QStringList>
 
+using namespace Solid::Backends::Fake;
+
 FakeProcessor::FakeProcessor(FakeDevice *device)
  : FakeDeviceInterface(device)
 {

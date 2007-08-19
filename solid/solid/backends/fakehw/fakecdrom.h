@@ -23,6 +23,12 @@
 #include <solid/ifaces/opticaldrive.h>
 #include "fakestorage.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeCdrom : public FakeStorage, virtual public Solid::Ifaces::OpticalDrive
 {
     Q_OBJECT
@@ -43,5 +49,8 @@ Q_SIGNALS:
     void ejectPressed();
     void ejectDone(Solid::ErrorType error, QVariant errorData);
 };
+}
+}
+}
 
 #endif

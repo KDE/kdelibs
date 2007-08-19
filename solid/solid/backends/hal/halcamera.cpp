@@ -19,6 +19,8 @@
 
 #include "halcamera.h"
 
+using namespace Solid::Backends::Hal;
+
 Camera::Camera(HalDevice *device)
     : DeviceInterface(device)
 {

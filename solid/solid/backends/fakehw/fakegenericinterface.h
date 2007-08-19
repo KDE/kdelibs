@@ -22,6 +22,12 @@
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/genericinterface.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeGenericInterface : public FakeDeviceInterface, public Solid::Ifaces::GenericInterface
 {
     Q_OBJECT
@@ -39,5 +45,8 @@ Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);
     void conditionRaised(const QString &condition, const QString &reason);
 };
+}
+}
+}
 
 #endif

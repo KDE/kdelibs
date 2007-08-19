@@ -26,6 +26,12 @@
 
 #include <QtCore/QStringList>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class HalDevice;
 
 class PortableMediaPlayer : public DeviceInterface, virtual public Solid::Ifaces::PortableMediaPlayer
@@ -40,5 +46,9 @@ public:
     virtual QStringList supportedProtocols() const;
     virtual QStringList supportedDrivers(QString protocol = QString()) const;
 };
+}
+}
+}
+
 
 #endif

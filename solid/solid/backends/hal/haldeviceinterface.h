@@ -26,6 +26,12 @@
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class DeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
 {
     Q_OBJECT
@@ -134,5 +140,9 @@ public:
             return Solid::DeviceInterface::Unknown;
     }
 };
+}
+}
+}
+
 
 #endif

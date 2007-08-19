@@ -23,6 +23,12 @@
 #include <solid/ifaces/button.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class HalDevice;
 
 class Button : public DeviceInterface, virtual public Solid::Ifaces::Button
@@ -44,5 +50,9 @@ Q_SIGNALS:
 private Q_SLOTS:
     void slotConditionRaised(const QString &condition, const QString &reason);
 };
+}
+}
+}
+
 
 #endif

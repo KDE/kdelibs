@@ -45,7 +45,9 @@
 #include "halaudiointerface.h"
 #include "haldvbinterface.h"
 
-class HalDevicePrivate
+using namespace Solid::Backends::Hal;
+
+class Solid::Backends::Hal::HalDevicePrivate
 {
 public:
     HalDevicePrivate(const QString &udi)

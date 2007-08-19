@@ -23,6 +23,12 @@
 #include <solid/ifaces/camera.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class Camera : public DeviceInterface, virtual public Solid::Ifaces::Camera
 {
     Q_OBJECT
@@ -35,5 +41,9 @@ public:
     virtual QStringList supportedProtocols() const;
     virtual QStringList supportedDrivers(QString protocol = QString()) const;
 };
+}
+}
+}
+
 
 #endif

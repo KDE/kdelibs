@@ -26,6 +26,12 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class Cdrom : public Storage, virtual public Solid::Ifaces::OpticalDrive
 {
     Q_OBJECT
@@ -53,5 +59,9 @@ private Q_SLOTS:
 private:
     bool m_ejectInProgress;
 };
+}
+}
+}
+
 
 #endif

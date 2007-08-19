@@ -23,6 +23,12 @@
 #include <solid/ifaces/processor.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class HalDevice;
 
 class Processor : public DeviceInterface, virtual public Solid::Ifaces::Processor
@@ -39,5 +45,9 @@ public:
     virtual bool canChangeFrequency() const;
     virtual Solid::Processor::Extensions extensions() const;
 };
+}
+}
+}
+
 
 #endif

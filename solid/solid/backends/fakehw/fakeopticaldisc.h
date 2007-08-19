@@ -23,6 +23,12 @@
 #include "fakevolume.h"
 #include <solid/ifaces/opticaldisc.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeOpticalDisc : public FakeVolume, virtual public Solid::Ifaces::OpticalDisc
 {
     Q_OBJECT
@@ -40,5 +46,8 @@ public Q_SLOTS:
     virtual bool isRewritable() const;
     virtual qulonglong capacity() const;
 };
+}
+}
+}
 
 #endif

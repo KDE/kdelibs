@@ -19,6 +19,8 @@
 
 #include "fakedvbinterface.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeDvbInterface::FakeDvbInterface(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

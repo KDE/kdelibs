@@ -21,6 +21,8 @@
 
 #include "haldevice.h"
 
+using namespace Solid::Backends::Hal;
+
 DvbInterface::DvbInterface(HalDevice *device)
     : DeviceInterface(device)
 {

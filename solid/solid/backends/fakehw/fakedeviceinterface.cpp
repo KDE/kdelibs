@@ -18,6 +18,8 @@
 */
 #include "fakedeviceinterface.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeDeviceInterface::FakeDeviceInterface(FakeDevice *device)
     : QObject(device), m_device(device)
 {

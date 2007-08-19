@@ -22,6 +22,8 @@
 #include <QtCore/QStringList>
 
 
+using namespace Solid::Backends::Fake;
+
 FakeAudioInterface::FakeAudioInterface(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

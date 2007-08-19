@@ -20,6 +20,8 @@
 
 #include "halportablemediaplayer.h"
 
+using namespace Solid::Backends::Hal;
+
 PortableMediaPlayer::PortableMediaPlayer(HalDevice *device)
     : DeviceInterface(device)
 {

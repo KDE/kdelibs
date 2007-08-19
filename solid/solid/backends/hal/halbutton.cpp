@@ -19,6 +19,8 @@
 
 #include "halbutton.h"
 
+using namespace Solid::Backends::Hal;
+
 Button::Button(HalDevice *device)
     : DeviceInterface(device)
 {

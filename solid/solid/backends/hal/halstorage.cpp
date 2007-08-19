@@ -19,6 +19,8 @@
 
 #include "halstorage.h"
 
+using namespace Solid::Backends::Hal;
+
 Storage::Storage(HalDevice *device)
     : Block(device)
 {

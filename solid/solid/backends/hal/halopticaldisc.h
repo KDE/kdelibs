@@ -23,6 +23,12 @@
 #include <solid/ifaces/opticaldisc.h>
 #include "halvolume.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class OpticalDisc : public Volume, virtual public Solid::Ifaces::OpticalDisc
 {
     Q_OBJECT
@@ -39,5 +45,9 @@ public:
     virtual bool isRewritable() const;
     virtual qulonglong capacity() const;
 };
+}
+}
+}
+
 
 #endif

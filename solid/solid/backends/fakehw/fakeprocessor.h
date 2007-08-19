@@ -22,6 +22,12 @@
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/processor.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeProcessor : public FakeDeviceInterface, public Solid::Ifaces::Processor
 {
     Q_OBJECT
@@ -37,5 +43,8 @@ public Q_SLOTS:
     virtual bool canChangeFrequency() const;
     virtual Solid::Processor::Extensions extensions() const;
 };
+}
+}
+}
 
 #endif

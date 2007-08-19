@@ -21,10 +21,17 @@
 
 #include <solid/ifaces/devicemanager.h>
 
-class FakeDevice;
 class QDomElement;
 
 using namespace Solid::Ifaces;
+
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
+class FakeDevice;
 
 /**
  * @brief a Fake manager that read a device list from a XML file.
@@ -72,4 +79,8 @@ private:
     class Private;
     Private *d;
 };
+}
+}
+}
+
 #endif

@@ -19,6 +19,8 @@
 
 #include "fakegenericinterface.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeGenericInterface::FakeGenericInterface(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

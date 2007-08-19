@@ -23,6 +23,12 @@
 #include <solid/ifaces/audiointerface.h>
 #include "fakedeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeAudioInterface : public FakeDeviceInterface, virtual public Solid::Ifaces::AudioInterface
 {
     Q_OBJECT
@@ -40,5 +46,9 @@ public Q_SLOTS:
     virtual Solid::AudioInterface::AudioInterfaceTypes deviceType() const;
     virtual Solid::AudioInterface::SoundcardType soundcardType() const;
 };
+}
+}
+}
+
 
 #endif

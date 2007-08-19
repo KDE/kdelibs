@@ -26,6 +26,12 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class StorageAccess : public DeviceInterface, virtual public Solid::Ifaces::StorageAccess
 {
     Q_OBJECT
@@ -67,5 +73,9 @@ private:
     bool m_passphraseRequested;
     QString m_lastReturnObject;
 };
+}
+}
+}
+
 
 #endif

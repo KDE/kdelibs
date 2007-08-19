@@ -40,6 +40,8 @@
 
 #include <solid/genericinterface.h>
 
+using namespace Solid::Backends::Fake;
+
 class FakeDevice::Private
 {
 public:

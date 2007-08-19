@@ -24,6 +24,12 @@
 
 #include "fakedevice.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeDeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
 {
     Q_OBJECT
@@ -45,5 +51,8 @@ protected:
 private:
     FakeDevice *m_device;
 };
+}
+}
+}
 
 #endif

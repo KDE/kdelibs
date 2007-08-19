@@ -22,6 +22,8 @@
 
 #include <QtCore/QStringList>
 
+using namespace Solid::Backends::Fake;
+
 FakePortableMediaPlayer::FakePortableMediaPlayer(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

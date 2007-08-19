@@ -24,6 +24,8 @@
 #include <QtDBus/QDBusReply>
 #include <QtDBus/QDBusError>
 
+using namespace Solid::Backends::Hal;
+
 Cdrom::Cdrom(HalDevice *device)
     : Storage(device), m_ejectInProgress(false)
 {

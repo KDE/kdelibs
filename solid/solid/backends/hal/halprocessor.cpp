@@ -26,6 +26,8 @@
 #include <csetjmp>
 #include <config-processor.h>
 
+using namespace Solid::Backends::Hal;
+
 Processor::Processor(HalDevice *device)
     : DeviceInterface(device)
 {

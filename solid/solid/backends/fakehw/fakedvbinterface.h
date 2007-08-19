@@ -23,6 +23,12 @@
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/dvbinterface.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeDvbInterface : public FakeDeviceInterface, virtual public Solid::Ifaces::DvbInterface
 {
     Q_OBJECT
@@ -38,6 +44,9 @@ public Q_SLOTS:
     virtual Solid::DvbInterface::DeviceType deviceType() const;
     virtual int deviceIndex() const;
 };
+}
+}
+}
 
 #endif
 

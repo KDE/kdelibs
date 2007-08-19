@@ -19,6 +19,8 @@
 
 #include "haldeviceinterface.h"
 
+using namespace Solid::Backends::Hal;
+
 DeviceInterface::DeviceInterface(HalDevice *device)
     : QObject(device), m_device(device)
 {

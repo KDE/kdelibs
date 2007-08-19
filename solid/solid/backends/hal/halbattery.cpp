@@ -19,6 +19,8 @@
 
 #include "halbattery.h"
 
+using namespace Solid::Backends::Hal;
+
 Battery::Battery(HalDevice *device)
     : DeviceInterface(device)
 {

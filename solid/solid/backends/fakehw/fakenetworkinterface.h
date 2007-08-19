@@ -22,6 +22,12 @@
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/networkinterface.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeNetworkInterface : public FakeDeviceInterface, public Solid::Ifaces::NetworkInterface
 {
     Q_OBJECT
@@ -37,5 +43,8 @@ public Q_SLOTS:
     virtual QString hwAddress() const;
     virtual qulonglong macAddress() const;
 };
+}
+}
+}
 
 #endif

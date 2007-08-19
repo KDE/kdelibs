@@ -31,6 +31,8 @@
 #include <QtDBus/QDBusConnection>
 
 
+using namespace Solid::Backends::Fake;
+
 class FakeManager::Private
 {
 public:

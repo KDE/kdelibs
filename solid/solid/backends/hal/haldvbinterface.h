@@ -23,6 +23,12 @@
 #include <solid/ifaces/dvbinterface.h>
 #include "haldeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class DvbInterface : public DeviceInterface, virtual public Solid::Ifaces::DvbInterface
 {
     Q_OBJECT
@@ -40,5 +46,9 @@ public:
 private:
     bool parseTypeIndex(Solid::DvbInterface::DeviceType *type, int *index) const;
 };
+}
+}
+}
+
 
 #endif

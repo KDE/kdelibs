@@ -19,6 +19,8 @@
 
 #include "fakebutton.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeButton::FakeButton(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

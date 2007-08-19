@@ -19,6 +19,8 @@
 
 #include "halvolume.h"
 
+using namespace Solid::Backends::Hal;
+
 Volume::Volume(HalDevice *device)
     : Block(device)
 {

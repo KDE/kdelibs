@@ -21,6 +21,8 @@
 
 #include <QtCore/QStringList>
 
+using namespace Solid::Backends::Fake;
+
 FakeOpticalDisc::FakeOpticalDisc(FakeDevice *device)
     : FakeVolume(device)
 {

@@ -21,6 +21,8 @@
 
 #include <QtDBus/QDBusConnection>
 
+using namespace Solid::Backends::Fake;
+
 FakeVolume::FakeVolume(FakeDevice *device)
     : FakeBlock(device)
 {

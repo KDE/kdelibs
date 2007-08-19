@@ -23,6 +23,12 @@
 #include <solid/ifaces/storagedrive.h>
 #include "halblock.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Hal
+{
 class Storage : public Block, virtual public Solid::Ifaces::StorageDrive
 {
     Q_OBJECT
@@ -38,5 +44,9 @@ public:
     virtual bool isRemovable() const;
     virtual bool isHotpluggable() const;
 };
+}
+}
+}
+
 
 #endif

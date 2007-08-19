@@ -23,7 +23,12 @@
 
 #include <QtCore/QMap>
 
-
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeDevice : public Solid::Ifaces::Device
 {
     Q_OBJECT
@@ -66,5 +71,9 @@ private:
     class Private;
     Private *d;
 };
+}
+}
+}
+
 
 #endif

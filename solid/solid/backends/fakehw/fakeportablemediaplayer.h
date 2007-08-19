@@ -24,6 +24,12 @@
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/portablemediaplayer.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakePortableMediaPlayer : public FakeDeviceInterface, virtual public Solid::Ifaces::PortableMediaPlayer
 {
     Q_OBJECT
@@ -37,5 +43,8 @@ public Q_SLOTS:
     virtual QStringList supportedProtocols() const;
     virtual QStringList supportedDrivers(QString protocol) const;
 };
+}
+}
+}
 
 #endif

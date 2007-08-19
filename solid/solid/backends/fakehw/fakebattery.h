@@ -23,6 +23,12 @@
 #include <solid/ifaces/battery.h>
 #include "fakedeviceinterface.h"
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeBattery : public FakeDeviceInterface, virtual public Solid::Ifaces::Battery
 {
     Q_OBJECT
@@ -49,5 +55,8 @@ Q_SIGNALS:
     void chargeStateChanged(int newState);
     void plugStateChanged(bool newState);
 };
+}
+}
+}
 
 #endif

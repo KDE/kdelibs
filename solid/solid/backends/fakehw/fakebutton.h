@@ -23,6 +23,12 @@
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/button.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeButton : public FakeDeviceInterface, virtual public Solid::Ifaces::Button
 {
     Q_OBJECT
@@ -42,5 +48,8 @@ public Q_SLOTS:
 Q_SIGNALS:
     void pressed(Solid::Button::ButtonType type);
 };
+}
+}
+}
 
 #endif

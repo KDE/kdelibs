@@ -23,6 +23,12 @@
 #include "fakeblock.h"
 #include <solid/ifaces/storagevolume.h>
 
+namespace Solid
+{
+namespace Backends
+{
+namespace Fake
+{
 class FakeVolume : public FakeBlock, virtual public Solid::Ifaces::StorageVolume
 {
     Q_OBJECT
@@ -40,5 +46,8 @@ public Q_SLOTS:
     virtual QString uuid() const;
     virtual qulonglong size() const;
 };
+}
+}
+}
 
 #endif

@@ -19,6 +19,8 @@
 
 #include "fakebattery.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeBattery::FakeBattery(FakeDevice *device)
     : FakeDeviceInterface(device)
 {

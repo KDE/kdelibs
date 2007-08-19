@@ -19,6 +19,8 @@
 
 #include "fakestorage.h"
 
+using namespace Solid::Backends::Fake;
+
 FakeStorage::FakeStorage(FakeDevice *device)
     : FakeBlock(device)
 {

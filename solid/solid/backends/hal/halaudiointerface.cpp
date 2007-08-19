@@ -21,6 +21,8 @@
 
 #include "haldevice.h"
 
+using namespace Solid::Backends::Hal;
+
 AudioInterface::AudioInterface(HalDevice *device)
     : DeviceInterface(device),
     m_soundcardType(Solid::AudioInterface::InternalSoundcard),

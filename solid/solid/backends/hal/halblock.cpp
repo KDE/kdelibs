@@ -21,6 +21,8 @@
 
 #include "haldevice.h"
 
+using namespace Solid::Backends::Hal;
+
 Block::Block(HalDevice *device)
     : DeviceInterface(device)
 {
