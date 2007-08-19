@@ -67,6 +67,14 @@
 #define WTF_PLATFORM_UNIX 1
 #endif
 
+/* PLATFORM(SOLARIS_OS)
+/* Operating system level dependencies for Sun (Open)Solaris 10. */
+/* The detection is a little dodgy -- it's not impossible to use */
+/* Sun Studio (the compiler) on non-Solaris platforms. */
+#if defined(__SUNPRO_CC)
+#define WTF_PLATFORM_SOLARIS_OS 1
+#endif
+
 /* Operating environments */
 
 /* I made the BUILDING_KDE__ macro up for the KDE build system to define */
@@ -142,6 +150,11 @@
 /* COMPILER(GCC) */
 #if defined(__GNUC__)
 #define WTF_COMPILER_GCC 1
+#endif
+
+/* COMPILER(SUNPRO) */
+#if defined(__SUNPRO_CC)
+#define WTF_COMPILER_SUNPRO 1
 #endif
 
 /* COMPILER(BORLAND) */
