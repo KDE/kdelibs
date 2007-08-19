@@ -115,6 +115,11 @@ public:
         {
             func2();
             func3();
+            kDebug();
+        }
+    ~TestClass4()
+        {
+            kDebug();
         }
 };
 
