@@ -121,6 +121,7 @@ protected:
 private:
     char* mMemory;
     quint32* mSize;
+    quint32 mInitialSize;
     qint64 mAvailable;
     quint32 mPos;
 
@@ -132,6 +133,7 @@ KPCMemoryDevice::KPCMemoryDevice(char* start, quint32* size, quint32 available) 
 {
     mMemory = start;
     mSize = size;
+    mInitialSize = *size;
     mAvailable = available;
     mPos = 0;
 
@@ -140,10 +142,12 @@ KPCMemoryDevice::KPCMemoryDevice(char* start, quint32* size, quint32 available) 
 
 KPCMemoryDevice::~KPCMemoryDevice()
 {
-    // Update file size
-    seek(mSizeEntryOffset);
-    QDataStream stream(this);
-    stream << *mSize;
+    if (*mSize != mInitialSize) {
+        // Update file size
+        seek(mSizeEntryOffset);
+        QDataStream stream(this);
+        stream << *mSize;
+    }
 }
 
 bool KPCMemoryDevice::seek(qint64 pos)
