@@ -54,6 +54,7 @@
 #include <kstyle.h>
 #include <kdialog.h>
 #include <kurllabel.h>
+#include <klineedit.h>
 #include <kurl.h>
 #include <krun.h>
 #include <kmessagebox.h>
@@ -66,6 +67,7 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     : QObject(parent)
     , parent(parent)
     , listView(0)
+    , showIcons(false)
 {
     pluginModel = new PluginModel(this);
     pluginDelegate = new PluginDelegate(this);
@@ -102,6 +104,18 @@ KPluginSelector::Private::~Private()
 {
     delete pluginModel;
     delete pluginDelegate;
+}
+
+void KPluginSelector::Private::checkIfShowIcons(const QList<KPluginInfo> &pluginInfoList)
+{
+    foreach (KPluginInfo pluginInfo, pluginInfoList)
+    {
+        if (!KIconLoader::global()->iconPath(pluginInfo.icon(), K3Icon::NoGroup, true).isNull())
+        {
+            showIcons = true;
+            return;
+        }
+    }
 }
 
 void KPluginSelector::Private::emitChanged()
@@ -584,7 +598,6 @@ bool KPluginSelector::Private::PluginModel::alternateColor(const KPluginInfo &pl
 
 // =============================================================
 
-
 KPluginSelector::KPluginSelector(QWidget *parent)
     : QWidget(parent)
     , d(new Private(this))
@@ -636,6 +649,8 @@ void KPluginSelector::addPlugins(const QString &componentName,
     KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup;
 
+    d->checkIfShowIcons(pluginInfoList);
+
     d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, *cfgGroup);
 }
 
@@ -658,6 +673,8 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
 
     KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup;
+
+    d->checkIfShowIcons(pluginInfoList);
 
     d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, *cfgGroup, pluginLoadMethod, Private::PluginModel::ManuallyAdded);
 }
@@ -778,7 +795,12 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     QPen currentPen = painter->pen();
     QPen linkPen = QPen(option.palette.color(QPalette::Link));
 
-    QPixmap iconPixmap = icon(index, iconWidth, iconHeight);
+    QPixmap iconPixmap;
+
+    if (parent->showIcons)
+    {
+        iconPixmap = icon(index, iconWidth, iconHeight);
+    }
 
     QFont title(painter->font());
     QFont previousFont(painter->font());
@@ -1143,7 +1165,8 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
         if (keyEvent && (keyEvent->key() != Qt::Key_Space) &&
                         (keyEvent->key() != Qt::Key_Tab) &&
                         (keyEvent->key() != Qt::Key_Up) &&
-                        (keyEvent->key() != Qt::Key_Down))
+                        (keyEvent->key() != Qt::Key_Down) &&
+                        (keyEvent->key() != Qt::Key_Backtab))
         {
             return false;
         }
@@ -1213,46 +1236,55 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
 
                 return true;
             }
-            else if (keyEvent && keyEvent->key()  == Qt::Key_Tab)
+            else if (keyEvent && (keyEvent->key() == Qt::Key_Tab))
             {
-                if (keyEvent->modifiers() == Qt::ShiftModifier) // FIXME: why is it not captured ?
+                if ((focusedElement == CheckBoxFocused) &&
+                    (!(dynamic_cast<PluginModel*>(listView->model())->services(currentIndex).count())))
                 {
-                    focusedElement = (FocusedElement) qAbs(focusedElement - 1);
+                    focusedElement = (FocusedElement) ((focusedElement + 1) % 3);
+                }
 
-                    if (focusedElement)
+                focusedElement = (FocusedElement) ((focusedElement + 1) % 3);
+
+                if (!focusedElement)
+                {
+                    if ((currentIndex.row() < listView->model()->rowCount()) && listView->model()->index(currentIndex.row() + 1, 0).internalPointer())
+                        listView->setCurrentIndex(listView->model()->index(currentIndex.row() + 1, 0));
+                    else if (currentIndex.row() + 1 < listView->model()->rowCount())
+                        listView->setCurrentIndex(listView->model()->index(currentIndex.row() + 2, 0));
+                    else
                     {
-                        if (currentIndex.row() && listView->model()->index(currentIndex.row() - 1, 0).internalPointer())
-                            listView->setCurrentIndex(listView->model()->index(currentIndex.row() - 1, 0));
-                        else if (currentIndex.row() > 2)
-                            listView->setCurrentIndex(listView->model()->index(currentIndex.row() - 2, 0));
-                        else
-                        {
-                            listView->setCurrentIndex(QModelIndex());
-                            return false;
-                        }
+                        listView->setCurrentIndex(QModelIndex());
+                        return false;
                     }
                 }
-                else
+
+                listView->update(listView->currentIndex());
+
+                return true;
+            }
+            else if (keyEvent && (keyEvent->key() == Qt::Key_Backtab))
+            {
+                if ((focusedElement == AboutButtonFocused) &&
+                    (!(dynamic_cast<PluginModel*>(listView->model())->services(currentIndex).count())))
                 {
-                    if ((focusedElement == CheckBoxFocused) &&
-                        (!(dynamic_cast<PluginModel*>(listView->model())->services(currentIndex).count())))
-                    {
-                        focusedElement = (FocusedElement) ((focusedElement + 1) % 3);
-                    }
+                    focusedElement = (FocusedElement) (focusedElement - 1);
+                }
 
-                    focusedElement = (FocusedElement) ((focusedElement + 1) % 3);
+                focusedElement = (FocusedElement) (focusedElement - 1);
 
-                    if (!focusedElement)
+                if (focusedElement == -1)
+                {
+                    focusedElement = AboutButtonFocused;
+
+                    if (currentIndex.row() && listView->model()->index(currentIndex.row() - 1, 0).internalPointer())
+                        listView->setCurrentIndex(listView->model()->index(currentIndex.row() - 1, 0));
+                    else if (currentIndex.row() > 2)
+                        listView->setCurrentIndex(listView->model()->index(currentIndex.row() - 2, 0));
+                    else
                     {
-                        if ((currentIndex.row() < listView->model()->rowCount()) && listView->model()->index(currentIndex.row() + 1, 0).internalPointer())
-                            listView->setCurrentIndex(listView->model()->index(currentIndex.row() + 1, 0));
-                        else if (currentIndex.row() + 1 < listView->model()->rowCount())
-                            listView->setCurrentIndex(listView->model()->index(currentIndex.row() + 2, 0));
-                        else
-                        {
-                            listView->setCurrentIndex(QModelIndex());
-                            return false;
-                        }
+                        listView->setCurrentIndex(QModelIndex());
+                        return false;
                     }
                 }
 

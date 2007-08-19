@@ -58,6 +58,8 @@ public:
     Private(KPluginSelector *parent);
     ~Private();
 
+    void checkIfShowIcons(const QList<KPluginInfo> &pluginInfoList);
+
 Q_SIGNALS:
     void changed(bool hasChanged);
     void configCommitted(const QByteArray &componentName);
@@ -75,6 +77,7 @@ public:
     PluginDelegate *pluginDelegate;
     QListViewSpecialized *listView;
     DependenciesWidget *dependenciesWidget;
+    bool showIcons;
 };
 
 
