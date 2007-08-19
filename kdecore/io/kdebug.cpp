@@ -498,7 +498,9 @@ static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
         if (KGlobal::hasMainComponent())
             str = KGlobal::mainComponent().componentName();
         if (str.isEmpty()) {
-            QStringList arguments = QCoreApplication::arguments();
+            QStringList arguments;
+            if (QCoreApplication::instance())
+                arguments = QCoreApplication::arguments();
             if (!arguments.isEmpty())
                 str = arguments.first();
             if (str.isEmpty())
