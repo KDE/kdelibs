@@ -358,10 +358,6 @@ bool KPixmapCache::Private::mmapFiles()
         return false;
     }
 
-    // This updates the file sizes stored in the files
-    delete indexDevice();
-    delete dataDevice();
-
     return true;
 #else
     return false;
@@ -404,6 +400,12 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
 #ifdef HAVE_MADVISE
     madvise(info->memory, info->size, MADV_WILLNEED);
 #endif
+
+    // Update file size in the header
+    KPCMemoryDevice dev(info->memory, &info->size, info->available);
+    QDataStream stream(&dev);
+    dev.seek(kpc_header_len);
+    stream << info->size;
 
     return true;
 #else
