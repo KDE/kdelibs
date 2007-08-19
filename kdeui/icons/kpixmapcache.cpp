@@ -832,6 +832,12 @@ bool KPixmapCache::Private::removeEntries(int newsize)
         writeIndexEntry(newistream, entry.key, newdataoffset);
     }
 
+    // Set file size to 0 for mmap stuff
+    newindexfile.seek(kpc_header_len);
+    newistream << (quint32)0;
+    newdatafile.seek(kpc_header_len);
+    newdstream << (quint32)0;
+
     // Remove old files and rename the new ones
     indexfile.remove();
     datafile.remove();
