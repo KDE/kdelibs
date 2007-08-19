@@ -85,6 +85,14 @@ QByteArray StubProcess::commaSeparatedList(const QList<QByteArray> &lst)
     return str;
 }
 
+/* 
+ * Map pid_t to a signed integer type that makes sense for QByteArray;
+ * only the most common sizes 16 bit and 32 bit are special-cased.
+ */
+template<int T> struct PIDType { typedef pid_t PID_t; } ;
+template<> struct PIDType<2> { typedef qint16 PID_t; } ;
+template<> struct PIDType<4> { typedef qint32 PID_t; } ;
+
 /*
  * Conversation with kdesu_stub. This is how we pass the authentication
  * tokens (X11) and other stuff to kdesu_stub.
@@ -151,7 +159,10 @@ int StubProcess::ConverseStub(int check)
 		tmp = "0";
 	    writeLine(tmp);
 	} else if (line == "app_start_pid") { // obsolete
-	    tmp.setNum(getpid());
+	    // Force the pid_t returned from getpid() into
+	    // something QByteArray understands; avoids ambiguity
+	    // between short and unsigned short in particular.
+	    tmp.setNum((PIDType<sizeof(pid_t)>::PID_t)(getpid()));
 	    writeLine(tmp);
 	} else if (line == "environment") { // additional env vars
 	    QList<QByteArray> env = environment();
