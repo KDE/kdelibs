@@ -60,11 +60,11 @@ KDirListerCache::KDirListerCache()
   connect( &pendingUpdateTimer, SIGNAL(timeout()), this, SLOT(processPendingUpdates()) );
   pendingUpdateTimer.setSingleShot( true );
 
-  connect( kdirwatch, SIGNAL( dirty( const QString& ) ),
+  connect( KDirWatch::self(), SIGNAL( dirty( const QString& ) ),
            this, SLOT( slotFileDirty( const QString& ) ) );
-  connect( kdirwatch, SIGNAL( created( const QString& ) ),
+  connect( KDirWatch::self(), SIGNAL( created( const QString& ) ),
            this, SLOT( slotFileCreated( const QString& ) ) );
-  connect( kdirwatch, SIGNAL( deleted( const QString& ) ),
+  connect( KDirWatch::self(), SIGNAL( deleted( const QString& ) ),
            this, SLOT( slotFileDeleted( const QString& ) ) );
 
   kdirnotify = new org::kde::KDirNotify(QString(), QString(), QDBusConnection::sessionBus(), this);
@@ -89,7 +89,7 @@ KDirListerCache::~KDirListerCache()
     directoryData.clear();
 
     if ( KDirWatch::exists() )
-        kdirwatch->disconnect( this );
+        KDirWatch::self()->disconnect( this );
 }
 
 // setting _reload to true will emit the old files and

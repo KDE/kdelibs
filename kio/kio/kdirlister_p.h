@@ -259,7 +259,7 @@ private:
       if ( autoUpdates )
       {
         if ( KDirWatch::exists() && url.isLocalFile() )
-          kdirwatch->removeDir( url.path() );
+            KDirWatch::self()->removeDir( url.path() );
         sendSignal( false, url );
       }
       delete rootItem;
@@ -281,11 +281,11 @@ private:
       if ( autoUpdates )
       {
         if ( url.isLocalFile() )
-          kdirwatch->removeDir( url.path() );
+            KDirWatch::self()->removeDir( url.path() );
         sendSignal( false, url );
 
         if ( newUrl.isLocalFile() )
-          kdirwatch->addDir( newUrl.path() );
+          KDirWatch::self()->addDir( newUrl.path() );
         sendSignal( true, newUrl );
       }
 
@@ -300,7 +300,7 @@ private:
       if ( autoUpdates++ == 0 )
       {
         if ( url.isLocalFile() )
-          kdirwatch->addDir( url.path() );
+          KDirWatch::self()->addDir( url.path() );
         sendSignal( true, url );
       }
     }
@@ -310,7 +310,7 @@ private:
       if ( --autoUpdates == 0 )
       {
         if ( url.isLocalFile() )
-          kdirwatch->removeDir( url.path() );
+          KDirWatch::self()->removeDir( url.path() );
         sendSignal( false, url );
       }
 

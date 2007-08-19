@@ -25,8 +25,6 @@
 
 #include <kio/kio_export.h>
 
-#define kdirwatch KDirWatch::self()
-
 class KDirWatchPrivate;
 
  /**
