@@ -112,8 +112,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert("QTextEdit", SIGNAL(textChanged()));
     s_changedMap->insert("QTextBrowser", SIGNAL(sourceChanged(const QString &)));
     s_changedMap->insert("QMultiLineEdit", SIGNAL(textChanged()));
-    s_changedMap->insert("QListBox", SIGNAL(selectionChanged()));
-    s_changedMap->insert("QTabWidget", SIGNAL(currentChanged(QWidget *)));
+    s_changedMap->insert("QTabWidget", SIGNAL(currentChanged(int)));
 
     // KDE
     s_changedMap->insert( "KComboBox", SIGNAL(activated (int)));
@@ -128,7 +127,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert( "KDateWidget", SIGNAL(changed (QDate)));
     s_changedMap->insert( "KDateTimeWidget", SIGNAL(valueChanged (const QDateTime &)));
     s_changedMap->insert( "KEditListBox", SIGNAL(changed()));
-    s_changedMap->insert( "KListWidget", SIGNAL(selectionChanged()));
+    s_changedMap->insert( "KListWidget", SIGNAL(itemSelectionChanged()));
     s_changedMap->insert( "KLineEdit", SIGNAL(textChanged(const QString &)));
     s_changedMap->insert( "KPasswordEdit", SIGNAL(textChanged(const QString &)));
     s_changedMap->insert( "KRestrictedLine", SIGNAL(textChanged(const QString &)));
