@@ -710,7 +710,7 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
     // zero out the rest (except for what gets filled anyways)
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
-    QByteArray permstr = QByteArray::number( perm, 8 );
+    QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
     fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
 
@@ -763,7 +763,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
     // zero out the rest (except for what gets filled anyways)
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
-    QByteArray permstr = QByteArray::number( perm, 8 );
+    QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
     fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
 
@@ -820,7 +820,7 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
     // zero out the rest
     memset(buffer+0x9d+100, 0, 0x200 - 100 - 0x9d);
 
-    QByteArray permstr = QByteArray::number( perm, 8 );
+    QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
     fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
 
