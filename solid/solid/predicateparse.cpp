@@ -24,15 +24,9 @@ extern "C"
 void PredicateParse_mainParse(const char *_code);
 }
 
-#include "config.h"
-
 #include "predicate.h"
 
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-
-#include <cstdlib>
 
 #include <QtCore/QStringList>
 
