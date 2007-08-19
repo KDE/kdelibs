@@ -42,13 +42,21 @@
 #include <ksvgrenderer.h>
 #include <kdefakes.h>
 
+#include <config.h>
+
 #include <time.h>
 #include <unistd.h>
+#ifdef HAVE_SYS_MMAN_H
+#include <sys/mman.h>
+#endif
 
 
 //#define DISABLE_PIXMAPCACHE
+#ifdef HAVE_MMAP
+// #define USE_MMAP
+#endif
 
-#define KPIXMAPCACHE_VERSION 0x000204
+#define KPIXMAPCACHE_VERSION 0x000205
 
 namespace {
 
@@ -95,6 +103,82 @@ private:
     KLockFile* mLockFile;
 };
 
+class KPCMemoryDevice : public QIODevice
+{
+public:
+    KPCMemoryDevice(char* start, quint32* size, quint32 available);
+    virtual ~KPCMemoryDevice();
+
+    qint64 size() const  { return *mSize; }
+    bool seek(qint64 pos);
+
+    static void setSizeEntryOffset(int o)  { mSizeEntryOffset = o; }
+
+protected:
+    virtual qint64 readData(char* data, qint64 maxSize);
+    virtual qint64 writeData(const char* data, qint64 maxSize);
+
+private:
+    char* mMemory;
+    quint32* mSize;
+    qint64 mAvailable;
+    quint32 mPos;
+
+    static int mSizeEntryOffset;  // Offset of file size entry
+};
+int KPCMemoryDevice::mSizeEntryOffset = 0;
+
+KPCMemoryDevice::KPCMemoryDevice(char* start, quint32* size, quint32 available) : QIODevice()
+{
+    mMemory = start;
+    mSize = size;
+    mAvailable = available;
+    mPos = 0;
+
+    open(QIODevice::ReadWrite);
+}
+
+KPCMemoryDevice::~KPCMemoryDevice()
+{
+    // Update file size
+    seek(mSizeEntryOffset);
+    QDataStream stream(this);
+    stream << *mSize;
+}
+
+bool KPCMemoryDevice::seek(qint64 pos)
+{
+    if (pos < 0 || pos > *mSize) {
+        return false;
+    }
+    mPos = pos;
+    return QIODevice::seek(pos);
+}
+
+qint64 KPCMemoryDevice::readData(char* data, qint64 len)
+{
+    len = qMin(len, qint64(*mSize) - mPos);
+    if (len <= 0) {
+        return 0;
+    }
+    memcpy(data, mMemory + mPos, len);
+    mPos += len;
+    return len;
+}
+
+qint64 KPCMemoryDevice::writeData(const char* data, qint64 len)
+{
+    if (mPos + len > mAvailable) {
+        kError() << k_funcinfo << "Overflow of" << mPos+len - mAvailable << endl;
+        return -1;
+    }
+    memcpy(mMemory + mPos, (uchar*)data, len);
+    mPos += len;
+    *mSize = qMax(*mSize, mPos);
+    return len;
+}
+
+
 } // namespace
 
 
@@ -106,6 +190,9 @@ public:
     QIODevice* indexDevice();
     QIODevice* dataDevice();
 
+    bool mmapFiles();
+    void unmmapFiles();
+
     int findOffset(const QString& key);
     int binarySearchKey(QDataStream& stream, const QString& key, int start);
     void writeIndexEntry(QDataStream& stream, const QString& key, int dataoffset);
@@ -113,6 +200,7 @@ public:
     bool checkLockFile();
     bool checkFileVersion(const QString& filename);
     bool loadIndexHeader();
+    bool loadDataHeader();
 
     bool removeEntries(int newsize);
     bool scheduleRemoveEntries(int newsize);
@@ -143,6 +231,19 @@ public:
     bool mInited:8;  // Whether init() has been called (it's called on-demand)
     bool mEnabled:8;   // whether it's possible to use the cache
     bool mValid:8;  // whether cache has been inited and is ready to be used
+
+    struct MmapInfo
+    {
+        MmapInfo()  { file = 0; memory = 0; }
+        QFile* file;
+        char* memory;
+        quint32 size;  // Number of currently used bytes
+        quint32 available;  // Number of available bytes (including those reserved for mmap)
+    };
+    MmapInfo mIndexMmapInfo;
+    MmapInfo mDataMmapInfo;
+    bool mmapFile(const QString& filename, MmapInfo* info, int newsize);
+    void unmmapFile(MmapInfo* info);
 
 
     // Used by removeEntries()
@@ -231,27 +332,133 @@ KPixmapCache::Private::Private(KPixmapCache* _q)
 {
     q = _q;
     mRemovalThread = 0;
+
+    KPCMemoryDevice::setSizeEntryOffset(kpc_header_len);  // ugly
+}
+
+bool KPixmapCache::Private::mmapFiles()
+{
+#ifdef USE_MMAP
+    unmmapFiles();  // Noop if nothing has been mmapped
+    if (!q->isValid()) {
+        return false;
+    }
+
+    if (!mmapFile(mIndexFile, &mIndexMmapInfo, (int)(q->cacheLimit() * 0.4 + 100) * 1024)) {
+        q->setValid(false);
+        return false;
+    }
+    if (!mmapFile(mDataFile, &mDataMmapInfo, (int)(q->cacheLimit() * 1.2 + 100) * 1024)) {
+        unmmapFile(&mIndexMmapInfo);
+        q->setValid(false);
+        return false;
+    }
+
+    // This updates the file sizes stored in the files
+    delete indexDevice();
+    delete dataDevice();
+
+    return true;
+#else
+    return false;
+#endif
+}
+
+void KPixmapCache::Private::unmmapFiles()
+{
+    unmmapFile(&mIndexMmapInfo);
+    unmmapFile(&mDataMmapInfo);
+}
+
+bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, int newsize)
+{
+#ifdef HAVE_MMAP
+    info->file = new QFile(filename);
+    if (!info->file->open(QIODevice::ReadWrite)) {
+        kDebug() << k_funcinfo << "Couldn't open" << filename << endl;
+        delete info->file;
+        return false;
+    }
+
+    if (!info->size) {
+        info->size = info->file->size();
+    }
+    info->available = newsize;
+    if (!info->file->resize(info->available)) {
+        kError() << k_funcinfo << "Couldn't resize" << filename << "to" << newsize << endl;
+        delete info->file;
+        return false;
+    }
+
+    void* indexMem = mmap(0, info->available, PROT_READ | PROT_WRITE, MAP_SHARED, info->file->handle(), 0);
+    if (indexMem == MAP_FAILED) {
+        kError() << k_funcinfo << "mmap failed for" << filename << endl;
+        delete info->file;
+        return false;
+    }
+    info->memory = reinterpret_cast<char*>(indexMem);
+#ifdef HAVE_MADVISE
+    madvise(info->memory, info->size, MADV_WILLNEED);
+#endif
+
+    return true;
+#else
+    return false;
+#endif
+}
+
+void KPixmapCache::Private::unmmapFile(MmapInfo* info)
+{
+#ifdef HAVE_MMAP
+    if (info->file) {
+        munmap(info->memory, info->available);
+        delete info->file;
+        info->file = 0;
+    }
+#endif
 }
 
 QIODevice* KPixmapCache::Private::indexDevice()
 {
-    QFile* file = new QFile(mIndexFile);
-    if (!file->exists() || file->size() < kpc_header_len) {
-        q->recreateCacheFiles();
+    QIODevice* device = 0;
+#ifdef USE_MMAP
+    if (mIndexMmapInfo.file) {
+        // Make sure the file still exists
+        QFileInfo fi(mIndexFile);
+        if (!fi.exists() || fi.size() != mIndexMmapInfo.available) {
+            q->recreateCacheFiles();  // Also tries to re-init mmap
+            if (!q->isValid()) {
+                return 0;
+            } else {
+                return indexDevice();
+            }
+        }
+
+        // Create the device
+        device = new KPCMemoryDevice(mIndexMmapInfo.memory, &mIndexMmapInfo.size, mIndexMmapInfo.available);
     }
-    if (!file->open(QIODevice::ReadWrite)) {
-        kDebug() << k_funcinfo << "Couldn't open index file" << mIndexFile << endl;
-        delete file;
-        return 0;
+#endif
+    if (!device) {
+        QFile* file = new QFile(mIndexFile);
+        if (!file->exists() || file->size() < kpc_header_len) {
+            q->recreateCacheFiles();
+        }
+        if (!file->open(QIODevice::ReadWrite)) {
+            kDebug() << k_funcinfo << "Couldn't open index file" << mIndexFile << endl;
+            delete file;
+            return 0;
+        }
+        device = file;
     }
-    // Make sure the file is up-to-date
-    QDataStream stream(file);
-    file->seek(kpc_header_len + sizeof(quint32));
+    // Make sure the device is up-to-date
+    QDataStream stream(device);
+    device->seek(kpc_header_len + sizeof(quint32));
     quint32 cacheid;
     stream >> cacheid;
     if (cacheid != mCacheId) {
+        kDebug() << k_funcinfo << cacheid << "!=" << mCacheId << endl;
         kDebug() << k_funcinfo << "Cache has changed, reloading" << endl;
-        delete file;
+        delete device;
 
         q->init();
         if (!q->isValid()) {
@@ -261,11 +468,18 @@ QIODevice* KPixmapCache::Private::indexDevice()
         }
     }
 
-    return file;
+    return device;
 }
 
 QIODevice* KPixmapCache::Private::dataDevice()
 {
+#ifdef USE_MMAP
+    if (mDataMmapInfo.file) {
+        // TODO: make sure the mmapped memory is up-to-date
+        KPCMemoryDevice* device = new KPCMemoryDevice(mDataMmapInfo.memory, &mDataMmapInfo.size, mDataMmapInfo.available);
+        return device;
+    }
+#endif
     QFile* file = new QFile(mDataFile);
     if (!file->exists() || file->size() < kpc_header_len) {
         q->recreateCacheFiles();
@@ -384,6 +598,21 @@ bool KPixmapCache::Private::checkFileVersion(const QString& filename)
     return q->recreateCacheFiles();
 }
 
+bool KPixmapCache::Private::loadDataHeader()
+{
+    // Open file and datastream on it
+    QFile file(mDataFile);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return false;
+    }
+    file.seek(kpc_header_len);
+
+    QDataStream stream(&file);
+    stream >> mDataMmapInfo.size;
+
+    return true;
+}
+
 bool KPixmapCache::Private::loadIndexHeader()
 {
     // Open file and datastream on it
@@ -394,10 +623,12 @@ bool KPixmapCache::Private::loadIndexHeader()
     file.seek(kpc_header_len);
 
     QDataStream stream(&file);
-    // Load timestamp
-    stream >> mTimestamp;
+    // Load file size
+    stream >> mIndexMmapInfo.size;
     // Load cache id
     stream >> mCacheId;
+    // Load timestamp
+    stream >> mTimestamp;
 
     if (stream.status() != QDataStream::Ok) {
         kWarning() << k_funcinfo << "Failed to read index file's header";
@@ -515,13 +746,14 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     // Write root index node offset
     newistream << (quint32)(mHeaderSize + sizeof(quint32));
     // Copy data file header
-    // mHeaderSize is always bigger than kpc_header_len, so we needn't create
+    int dataheaderlen = kpc_header_len + sizeof(quint32);
+    // mHeaderSize is always bigger than dataheaderlen, so we needn't create
     //  new buffer
-    if (dstream.readRawData(header, kpc_header_len) != kpc_header_len) {
+    if (dstream.readRawData(header, dataheaderlen) != dataheaderlen) {
         kDebug() << k_funcinfo << "Couldn't read data header" << endl;
         return false;
     }
-    newdstream.writeRawData(header, kpc_header_len);
+    newdstream.writeRawData(header, dataheaderlen);
 
 
     // Load all entries
@@ -654,7 +886,10 @@ void KPixmapCache::init()
         kDebug() << k_funcinfo << "Pixmap cache '" + d->mName + "' is disabled";
     } else {
         // Cache is enabled, but check if it's ready for use
+        d->loadDataHeader();
         setValid(d->loadIndexHeader());
+        // Init mmap stuff if mmap is used
+        d->mmapFiles();
     }
 #endif
 }
@@ -714,7 +949,7 @@ void KPixmapCache::setTimestamp(unsigned int ts)
     if (!device) {
         return;
     }
-    device->seek(d->kpc_header_len);
+    device->seek(d->kpc_header_len + 2*sizeof(quint32));
     QDataStream stream(device);
     stream << d->mTimestamp;
 
@@ -724,6 +959,11 @@ void KPixmapCache::setTimestamp(unsigned int ts)
 int KPixmapCache::size() const
 {
     ensureInited();
+#ifdef HAVE_MMAP
+    if (d->mDataMmapInfo.file) {
+        return d->mDataMmapInfo.size / 1024;
+    }
+#endif
     return QFileInfo(d->mDataFile).size() / 1024;
 }
 
@@ -770,12 +1010,15 @@ bool KPixmapCache::recreateCacheFiles()
     QDataStream istream(&indexfile);
     istream.writeRawData(d->kpc_magic, d->kpc_magic_len);
     istream << (quint32)KPIXMAPCACHE_VERSION;
-    // Write default timestamp
-    d->mTimestamp = ::time(0);
-    istream << d->mTimestamp;
+    // Write invalid file size, valid one will be written later by mmap code
+    d->mIndexMmapInfo.size = 0;
+    istream << d->mIndexMmapInfo.size;
     // Write cache id
     d->mCacheId = ::time(0);
     istream << d->mCacheId;
+    // Write default timestamp
+    d->mTimestamp = ::time(0);
+    istream << d->mTimestamp;
 
     // Create data file
     QFile datafile(d->mDataFile);
@@ -786,6 +1029,8 @@ bool KPixmapCache::recreateCacheFiles()
     QDataStream dstream(&datafile);
     dstream.writeRawData(d->kpc_magic, d->kpc_magic_len);
     dstream << (quint32)KPIXMAPCACHE_VERSION;
+    d->mDataMmapInfo.size = 0;
+    dstream << d->mDataMmapInfo.size;
 
     setValid(true);
     writeCustomIndexHeader(istream);
@@ -793,6 +1038,11 @@ bool KPixmapCache::recreateCacheFiles()
 
     d->mIndexRootOffset = d->mHeaderSize + sizeof(quint32);
     istream << d->mIndexRootOffset;
+
+    // Close the files and mmap them (if mmapping is used)
+    indexfile.close();
+    datafile.close();
+    d->mmapFiles();
     return true;
 }
 
