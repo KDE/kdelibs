@@ -490,7 +490,6 @@ static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
 {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
     s.nospace() << "[";
-    bool needSpace = true;
 
     static QBasicAtomicPointer<char> programHeader = Q_ATOMIC_INIT(0);
     if (!programHeader) {
@@ -523,7 +522,8 @@ static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
 
     if (programHeader) {
         s << static_cast<char *>(programHeader);
-        needSpace = true;
+    } else {
+        s << "<unknown program name>";
     }
 
     if (funcinfo) {
@@ -547,10 +547,9 @@ static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
             // we matched a space inside this function's template definition
             pos = info.lastIndexOf(' ', startoftemplate);
 
-        if (needSpace) s << " ";
-        s << "in " << info.constData() + pos + 1;
+        s << " in " << info.constData() + pos + 1;
 #else
-        s << "in " << funcinfo;
+        s << " in " << funcinfo;
 #endif
     }
 
