@@ -379,8 +379,10 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 			l = Program;
 		else if (name.startsWith(QLatin1String("Group:")))
 			l = Group;
-		else if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
-			new KShortcutsEditorItem((hier[l]), kact);
+		else if (qobject_cast<QAction *>(action)) {
+			// TODO  non-KAction QActions are not listed 
+			if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable())
+				new KShortcutsEditorItem((hier[l]), kact);
 			continue;
 		}
 		
