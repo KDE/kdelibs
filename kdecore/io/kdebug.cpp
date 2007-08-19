@@ -538,14 +538,13 @@ static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
 
         info.truncate(pos);
         pos = info.lastIndexOf(' ');
-        Q_ASSERT_X(pos != -1, "kDebug",
-                   "Bug in kDebug(): I don't know how to parse this function name");
-
-        int startoftemplate = info.lastIndexOf('<');
-        if (startoftemplate != -1 && pos > startoftemplate &&
-            pos < info.lastIndexOf(">::"))
-            // we matched a space inside this function's template definition
-            pos = info.lastIndexOf(' ', startoftemplate);
+        if (pos != -1) {
+            int startoftemplate = info.lastIndexOf('<');
+            if (startoftemplate != -1 && pos > startoftemplate &&
+                pos < info.lastIndexOf(">::"))
+                // we matched a space inside this function's template definition
+                pos = info.lastIndexOf(' ', startoftemplate);
+        }
 
         s << " in " << info.constData() + pos + 1;
 #else
