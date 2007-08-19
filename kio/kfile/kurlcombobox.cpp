@@ -228,6 +228,8 @@ void KUrlComboBox::setUrl( const KUrl& url )
     QMap<int,const KUrlComboItem*>::ConstIterator mit = itemMapper.begin();
     QString urlToInsert = url.url(KUrl::RemoveTrailingSlash);
     while ( mit != itemMapper.end() ) {
+      Q_ASSERT( mit.value() );
+
       if ( urlToInsert == mit.value()->url.url(KUrl::RemoveTrailingSlash) ) {
             setCurrentIndex( mit.key() );
 
@@ -276,6 +278,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
         KComboBox::insertItem( id,opendirIcon, text);
     else
         KComboBox::insertItem( id,item->icon, text);
+    
     itemMapper.insert( id, item );
     itemList.append( item );
 
@@ -288,7 +291,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
 
 void KUrlComboBox::slotActivated( int index )
 {
-    const KUrlComboItem *item = itemMapper[ index ];
+    const KUrlComboItem *item = itemMapper.value(index);
 
     if ( item ) {
         setUrl( item->url );
@@ -299,6 +302,8 @@ void KUrlComboBox::slotActivated( int index )
 
 void KUrlComboBox::insertUrlItem( const KUrlComboItem *item )
 {
+    Q_ASSERT( item );
+
 // kDebug(250) << "insertURLItem " << item->text;
     int id = count();
     KComboBox::insertItem(id, item->icon, item->text);
