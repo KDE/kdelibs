@@ -139,6 +139,7 @@ static volatile bool slaveWriteError = false;
 static const char *s_protocol;
 
 #ifdef Q_OS_UNIX
+extern "C" {
 static void genericsig_handler(int sigNumber)
 {
    signal(sigNumber,SIG_IGN);
@@ -151,6 +152,7 @@ static void genericsig_handler(int sigNumber)
       globalSlave->setKillFlag();
    signal(SIGALRM,SIG_DFL);
    alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
+}
 }
 #endif
 
@@ -436,11 +438,19 @@ void SlaveBase::needSubUrlData()
     send( MSG_NEED_SUBURL_DATA );
 }
 
+/*
+ * Map pid_t to a signed integer type that makes sense for QByteArray;
+ * only the most common sizes 16 bit and 32 bit are special-cased.
+ */
+template<int T> struct PIDType { typedef pid_t PID_t; } ;
+template<> struct PIDType<2> { typedef qint16 PID_t; } ;
+template<> struct PIDType<4> { typedef qint32 PID_t; } ;
+
 void SlaveBase::slaveStatus( const QString &host, bool connected )
 {
     pid_t pid = getpid();
     qint8 b = connected ? 1 : 0;
-    KIO_DATA << pid << mProtocol << host << b;
+    KIO_DATA << (PIDType<sizeof(pid_t)>::PID_t)pid << mProtocol << host << b;
     if (d->onHold)
        stream << d->onHoldUrl;
     send( MSG_SLAVE_STATUS, data );
