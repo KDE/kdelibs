@@ -276,7 +276,7 @@ public:
      * \param type type of shortcut to be set: active shortcut,
      *  default shortcut, or both (default argument value).
      */
-    void setShortcut(const KShortcut& shortcut, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
+    void setShortcut(const KShortcut& shortcut, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
 
     /**
      * \overload void setShortcut(const KShortcut& shortcut)
@@ -290,7 +290,7 @@ public:
      * \param type type of shortcut to be set: active shortcut,
      *  default shortcut, or both (default argument value).
      */
-    void setShortcut(const QKeySequence& shortcut, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
+    void setShortcut(const QKeySequence& shortcut, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
 
     /**
      * Returns true if this action's shortcut is configurable.
@@ -338,7 +338,7 @@ public:
      * \sa globalShortcut()
      */
     void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type =
-                           static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut),
+                           ShortcutTypes(ActiveShortcut | DefaultShortcut),
                            GlobalShortcutLoading loading = Autoloading);
     //^ TODO: document autoloading
 
@@ -360,8 +360,8 @@ public:
     KShapeGesture shapeGesture(ShortcutTypes type = ActiveShortcut) const;
     KRockerGesture rockerGesture(ShortcutTypes type = ActiveShortcut) const;
 
-    void setShapeGesture(const KShapeGesture& gest, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
-    void setRockerGesture(const KRockerGesture& gest, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
+    void setShapeGesture(const KShapeGesture& gest, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
+    void setRockerGesture(const KRockerGesture& gest, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
 
 Q_SIGNALS:
 #ifdef KDE3_SUPPORT
