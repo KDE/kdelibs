@@ -525,14 +525,31 @@ static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
     }
 
     if (funcinfo) {
+#ifdef Q_CC_GNU
+        // strip the function info down to the base function name
+        // note that this throws away the template definitions,
+        // the parameter types (overloads) and any const/volatile qualifiers
         QByteArray info = funcinfo;
         int pos = info.indexOf('(');
-        if (pos != -1)
-            info.truncate(pos);
+        Q_ASSERT_X(pos != -1, "kDebug",
+                   "Bug in kDebug(): I don't know how to parse this function name");
+
+        info.truncate(pos);
         pos = info.lastIndexOf(' ');
+        Q_ASSERT_X(pos != -1, "kDebug",
+                   "Bug in kDebug(): I don't know how to parse this function name");
+
+        int startoftemplate = info.lastIndexOf('<');
+        if (startoftemplate != -1 && pos > startoftemplate &&
+            pos < info.lastIndexOf(">::"))
+            // we matched a space inside this function's template definition
+            pos = info.lastIndexOf(' ', startoftemplate);
 
         if (needSpace) s << " ";
         s << "in " << info.constData() + pos + 1;
+#else
+        s << "in " << funcinfo;
+#endif
     }
 
     s << "]";
