@@ -625,7 +625,10 @@ KPixmapCache::KPixmapCache(const QString& name)
 
 KPixmapCache::~KPixmapCache()
 {
-    delete d->mRemovalThread;
+    if (d->mRemovalThread) {
+        d->mRemovalThread->wait();
+        delete d->mRemovalThread;
+    }
     delete d;
 }
 
