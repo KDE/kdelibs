@@ -185,8 +185,8 @@ void KLineEdit::setClearButtonShown(bool show)
         d->clearButton->setCursor( Qt::ArrowCursor );
         d->clearButton->setToolTip( i18n( "Clear text" ) );
 
-        updateClearButton();
         updateClearButtonIcon(text());
+        updateClearButton();
         d->clearButton->show();
         connect(this, SIGNAL(textChanged(QString)), this, SLOT(updateClearButtonIcon(QString)));
     } else {
