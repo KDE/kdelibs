@@ -97,6 +97,9 @@ bool AnimationState::update()
 
 qreal AnimationState::hoverProgress() const
 {
+#ifndef M_PI_2
+#define M_PI_2 1.57079632679489661923
+#endif
     return qRound(255.0 * std::sin(progress * M_PI_2)) / 255.0;
 }
 
