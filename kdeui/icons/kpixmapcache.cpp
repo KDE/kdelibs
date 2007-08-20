@@ -196,6 +196,7 @@ public:
 
     bool mmapFiles();
     void unmmapFiles();
+    void invalidateMmapFiles();
 
     int findOffset(const QString& key);
     int binarySearchKey(QDataStream& stream, const QString& key, int start);
@@ -370,6 +371,20 @@ void KPixmapCache::Private::unmmapFiles()
     unmmapFile(&mDataMmapInfo);
 }
 
+void KPixmapCache::Private::invalidateMmapFiles()
+{
+#ifdef HAVE_MMAP
+    // Set cache id to 0, this will force a reload the next time the files are used
+    if (mIndexMmapInfo.file) {
+        KPCMemoryDevice dev(mIndexMmapInfo.memory, &mIndexMmapInfo.size, mIndexMmapInfo.available);
+        QDataStream stream(&dev);
+        kDebug() << k_funcinfo << "Invalidatig cache" << endl;
+        dev.seek(kpc_header_len + sizeof(quint32));
+        stream << (quint32)0;
+    }
+#endif
+}
+
 bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, int newsize)
 {
 #ifdef HAVE_MMAP
@@ -432,6 +447,7 @@ QIODevice* KPixmapCache::Private::indexDevice()
         // Make sure the file still exists
         QFileInfo fi(mIndexFile);
         if (!fi.exists() || fi.size() != mIndexMmapInfo.available) {
+            kDebug() << k_funcinfo << "File size has changed, re-initing" << endl;
             q->recreateCacheFiles();  // Also tries to re-init mmap
             if (!q->isValid()) {
                 return 0;
@@ -462,7 +478,6 @@ QIODevice* KPixmapCache::Private::indexDevice()
     quint32 cacheid;
     stream >> cacheid;
     if (cacheid != mCacheId) {
-        kDebug() << k_funcinfo << cacheid << "!=" << mCacheId << endl;
         kDebug() << k_funcinfo << "Cache has changed, reloading" << endl;
         delete device;
 
@@ -845,6 +860,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     datafile.remove();
     newindexfile.rename(mIndexFile);
     newdatafile.rename(mDataFile);
+    invalidateMmapFiles();
 
     kDebug() << k_funcinfo << "Wrote back" << entrieswritten << "of" << entries.count() << "entries" << endl;
 
@@ -1012,6 +1028,8 @@ void KPixmapCache::setRemoveEntryStrategy(KPixmapCache::RemoveStrategy strategy)
 
 bool KPixmapCache::recreateCacheFiles()
 {
+    d->invalidateMmapFiles();
+
     d->mEnabled = false;
     // Create index file
     QFile indexfile(d->mIndexFile);
@@ -1077,6 +1095,7 @@ void KPixmapCache::discard()
     if (d->mUseQPixmapCache) {
         QPixmapCache::clear();
     }
+    d->invalidateMmapFiles();
 
     d->mInited = false;
     init();
