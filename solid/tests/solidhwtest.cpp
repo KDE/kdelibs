@@ -45,7 +45,7 @@ void SolidHwTest::initTestCase()
     setenv("SOLID_FAKEHW", FAKE_COMPUTER_XML, 1);
     Solid::ManagerBasePrivate *manager
         = dynamic_cast<Solid::ManagerBasePrivate*>(Solid::DeviceNotifier::instance());
-    fakeManager = qobject_cast<FakeManager*>(manager->managerBackend());
+    fakeManager = qobject_cast<Solid::Backends::Fake::FakeManager*>(manager->managerBackend());
 }
 
 void SolidHwTest::testAllDevices()
@@ -96,7 +96,7 @@ void SolidHwTest::testDeviceBasicFeatures()
     QCOMPARE(valid_dev.as<Solid::GenericInterface>()->property("name"), QVariant("Solid IDE DVD Writer"));
     QVERIFY(!valid_dev.as<Solid::GenericInterface>()->property("foo.bar").isValid());
 
-    FakeDevice *fake_device = fakeManager->findDevice("/org/kde/solid/fakehw/storage_model_solid_writer");
+    Solid::Backends::Fake::FakeDevice *fake_device = fakeManager->findDevice("/org/kde/solid/fakehw/storage_model_solid_writer");
     QMap<QString, QVariant> expected_properties = fake_device->allProperties();
 
     QCOMPARE(valid_dev.as<Solid::GenericInterface>()->allProperties(), expected_properties);
@@ -160,7 +160,7 @@ void SolidHwTest::testManagerSignals()
 void SolidHwTest::testDeviceSignals()
 {
     // A button is a nice device for testing state changes, isn't it?
-    FakeDevice *fake = fakeManager->findDevice("/org/kde/solid/fakehw/acpi_LID0");
+    Solid::Backends::Fake::FakeDevice *fake = fakeManager->findDevice("/org/kde/solid/fakehw/acpi_LID0");
     Solid::Device device("/org/kde/solid/fakehw/acpi_LID0");
 
     // We'll spy our button

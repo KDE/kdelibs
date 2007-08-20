@@ -23,7 +23,13 @@
 #include <QtCore/QObject>
 #include <QtCore/QMap>
 
-class FakeManager;
+namespace Solid {
+    namespace Backends {
+        namespace Fake {
+            class FakeManager;
+        }
+    }
+}
 
 class SolidHwTest : public QObject
 {
@@ -43,7 +49,7 @@ private slots:
 
     void slotPropertyChanged(const QMap<QString,int> &changes);
 private:
-    FakeManager *fakeManager;
+    Solid::Backends::Fake::FakeManager *fakeManager;
     QList< QMap<QString,int> > m_changesList;
 };
 
