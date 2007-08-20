@@ -28,6 +28,7 @@
 #include <khtml_settings.h>
 #include <xml/dom2_eventsimpl.h>
 #include <xml/dom_docimpl.h>
+#include <dom/html_document.h>
 #include <misc/htmltags.h>
 #include <html/html_documentimpl.h>
 #include <rendering/render_frames.h>
@@ -1920,9 +1921,9 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
        char *binData = s.ascii();
        in = QByteArray( binData, s.size() );
        if (id == Window::AToB)
-           KCodecs::base64Decode( in, out );
+           out = QByteArray::fromBase64(in);
        else
-           KCodecs::base64Encode( in, out );
+           out = in.toBase64();
        UChar *d = new UChar[out.size()];
        for (int i = 0; i < out.size(); i++)
            d[i].uc = (uchar) out[i];

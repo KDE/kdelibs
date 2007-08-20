@@ -26,7 +26,7 @@
 #ifndef __khtml_part_h__
 #define __khtml_part_h__
 
-#include "dom/html_document.h"
+#include "dom/dom_doc.h"
 #include "dom/dom2_range.h"
 
 #include <kparts/part.h>

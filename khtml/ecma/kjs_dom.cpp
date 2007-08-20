@@ -46,6 +46,7 @@
 #include "kjs_window.h"
 #include <kjs/PropertyNameArray.h>
 #include <dom/dom_exception.h>
+#include <dom/html_document.h>
 #include <khtmlpart_p.h>
 
 using namespace KJS;

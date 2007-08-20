@@ -27,6 +27,8 @@
 #include <phonon/path.h>
 #include <phonon/audiooutput.h>
 
+#include <dom/html_document.h>
+
 #include "kjs_audio.lut.h"
 
 namespace KJS {

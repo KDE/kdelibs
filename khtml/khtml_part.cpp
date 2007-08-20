@@ -37,6 +37,7 @@
 #include "dom/dom_string.h"
 #include "dom/dom_element.h"
 #include "dom/dom_exception.h"
+#include "dom/html_document.h"
 #include "html/html_documentimpl.h"
 #include "html/html_baseimpl.h"
 #include "html/html_objectimpl.h"
