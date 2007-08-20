@@ -549,7 +549,11 @@ static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
                 pos = info.lastIndexOf(' ', startoftemplate);
         }
 
-        s << " in " << info.constData() + pos + 1;
+        if (pos + 1 == info.length())
+            // something went wrong, so gracefully bail out
+            s << " in " << funcinfo;
+        else
+            s << " in " << info.constData() + pos + 1;
 #else
         s << " in " << funcinfo;
 #endif
