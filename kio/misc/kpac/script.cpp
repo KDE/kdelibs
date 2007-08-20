@@ -227,8 +227,18 @@ namespace
             if ( args.size() != 1 ) return Undefined();
             UString host = args[ 0 ]->toString( exec );
             if ( host.isNull() ) return Number( 0 );
+#ifdef __SUNPRO_CC
+            /* 
+             * Under Solaris, the default STL is the old broken interface 
+             * to ::count which takes an extra Size& parameter.
+             */
+            int c = 0;
+            std::count( host.data(), host.data() + host.size(), '.', c );
+            return Number(c);
+#else
             return Number( std::count(
                 host.data(), host.data() + host.size(), '.' ) );
+#endif
         }
     };
 
