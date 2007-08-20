@@ -55,7 +55,7 @@ public:
  * @param mtime   The modified time as of stat(2)
  */
 RenameDialogPlugin::FileItem::FileItem( const KUrl& url, const QString& mimeType,
-                                     const KIO::filesize_t size, time_t ctime,
+                                     KIO::filesize_t size, time_t ctime,
                                      time_t mtime )
     : d( new FileItemPrivate(url, mimeType, size, ctime, mtime) )
 {}
