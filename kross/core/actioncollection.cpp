@@ -99,7 +99,7 @@ bool ActionCollection::hasCollection(const QString& name) const
 
 ActionCollection* ActionCollection::collection(const QString& name) const
 {
-    return d->collections.contains(name) ? d->collections[name] : 0;
+    return d->collections.contains(name) ? d->collections[name] : QPointer<ActionCollection>(0);
 }
 
 QStringList ActionCollection::collections() const
@@ -208,7 +208,7 @@ bool ActionCollection::readXml(const QDomElement& element, const QDir& directory
             const QString description = elem.attribute("comment");
             const QString iconname = elem.attribute("icon");
             bool enabled = QVariant(elem.attribute("enabled","true")).toBool();
-            ActionCollection* c = d->collections.contains(name) ? d->collections[name] : 0;
+            ActionCollection* c = d->collections.contains(name) ? d->collections[name] : QPointer<ActionCollection>(0);
             if( ! c )
                 c = new ActionCollection(name, this);
             c->setText( text.isEmpty() ? name : text );
