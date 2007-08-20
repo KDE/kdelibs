@@ -53,7 +53,7 @@
 
 //#define DISABLE_PIXMAPCACHE
 #ifdef HAVE_MMAP
-// #define USE_MMAP
+#define USE_MMAP
 #endif
 
 #define KPIXMAPCACHE_VERSION 0x000205
