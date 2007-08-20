@@ -76,11 +76,7 @@ KXErrorHandler::KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Displa
 KXErrorHandler::~KXErrorHandler()
     {
     XSetErrorHandler( old_handler );
-#ifdef __GNUC__
-    Q_ASSERT_X( this == handlers[ pos-1 ], __FUNCTION__, "out of order" );
-#else
-    Q_ASSERT_X( this == handlers[ pos-1 ], __FILE__, "out of order" );
-#endif
+    Q_ASSERT_X( this == handlers[ pos-1 ], "KXErrorHandler", "out of order" );
     --pos;
     delete d;
     }
