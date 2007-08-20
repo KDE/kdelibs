@@ -191,11 +191,17 @@ class KPixmapCache::Private
 public:
     Private(KPixmapCache* q);
 
+    // Return device used to read from index or data file. The device is either
+    //  QFile or KPCMemoryDevice (if mmap is used)
     QIODevice* indexDevice();
     QIODevice* dataDevice();
 
+    // Unmmaps any currently mmapped files and then tries to (re)mmap the cache
+    //  files. If mmapping is disabled then it does nothing
     bool mmapFiles();
     void unmmapFiles();
+    // Marks the shared mmapped files as invalid so that all processes will
+    //  reload the files
     void invalidateMmapFiles();
 
     int findOffset(const QString& key);
@@ -210,6 +216,8 @@ public:
     bool removeEntries(int newsize);
     bool scheduleRemoveEntries(int newsize);
 
+    // Prepends key's hash to the key. This makes comparisions and key
+    //  lookups faster as the beginnings of the keys are more random
     QString indexKey(const QString& key);
 
 
@@ -237,16 +245,18 @@ public:
     bool mEnabled:8;   // whether it's possible to use the cache
     bool mValid:8;  // whether cache has been inited and is ready to be used
 
+    // Holds info about mmapped file
     struct MmapInfo
     {
         MmapInfo()  { file = 0; memory = 0; }
-        QFile* file;
+        QFile* file;  // If this is not null, then the file is mmapped
         char* memory;
         quint32 size;  // Number of currently used bytes
         quint32 available;  // Number of available bytes (including those reserved for mmap)
     };
     MmapInfo mIndexMmapInfo;
     MmapInfo mDataMmapInfo;
+    // Mmaps given file, growing it to newsize bytes.
     bool mmapFile(const QString& filename, MmapInfo* info, int newsize);
     void unmmapFile(MmapInfo* info);
 
@@ -275,6 +285,7 @@ public:
         quint32 lastused;
     };
 
+    // Various comparision functions for different removal strategies
     static bool compareEntriesByAge(const KPixmapCacheEntry& a, const KPixmapCacheEntry& b)
     {
         return a.pos > b.pos;
@@ -288,6 +299,8 @@ public:
         return a.lastused > b.lastused;
     }
 
+    // Helper class to run the possibly expensive removeEntries() operation in
+    //  the background thread
     class RemovalThread : public QThread
     {
     public:
