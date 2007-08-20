@@ -306,7 +306,7 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 void KIMProxy::contactPresenceChanged( const QString& uid, const QString& appId, int presence )
 {
 	// update the presence map
-	//kDebug( 790 ) << k_funcinfo << "uid: " << uid << " appId: " << appId << " presence " << presence;
+	//kDebug( 790 ) << "uid: " << uid << " appId: " << appId << " presence " << presence;
 	ContactPresenceListCurrent current;
 	current = d->presence_map[ uid ];
   //kDebug( 790 ) << "current best presence from : " << current.best().appId << " is: " << current.best().presence;
@@ -359,12 +359,12 @@ QPixmap KIMProxy::presenceIcon( const QString& uid )
 	}
 	if ( ap.appId.isEmpty() )
 	{
-		//kDebug( 790 ) << k_funcinfo << "returning a null QPixmap because we were asked for an icon for a uid we know nothing about";
+		//kDebug( 790 ) << "returning a null QPixmap because we were asked for an icon for a uid we know nothing about";
 		return QPixmap();
 	}
 	else
 	{
-		//kDebug( 790 ) << k_funcinfo << "returning this: " << d->presence_icons[ ap.presence ];
+		//kDebug( 790 ) << "returning this: " << d->presence_icons[ ap.presence ];
 		return SmallIcon( d->presence_icons[ ap.presence ]);
 	}
 }
@@ -432,7 +432,7 @@ QString KIMProxy::displayName( const QString& uid )
 		if ( OrgKdeKIMInterface* s = stubForUid( uid ) )
 			name = s->displayName( uid );
 	}
-	//kDebug( 790 ) << k_funcinfo << name;
+	//kDebug( 790 ) << name;
     return name;
 }
 
@@ -551,7 +551,7 @@ bool KIMProxy::startPreferredApp()
 	preferences.clear();
 	int result = KDBusServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString("Application"), &error, &dbusService );
 
-	kDebug( 790 ) << k_funcinfo << "error was: " << error << ", dbusService: " << dbusService;
+	kDebug( 790 ) << "error was: " << error << ", dbusService: " << dbusService;
 
 	return ( result == 0 );
 }
@@ -578,7 +578,7 @@ void KIMProxy::pollAll( const QString &uid )
 
 void KIMProxy::pollApp( const QString & appId )
 {
-	//kDebug( 790 ) << k_funcinfo;
+	//kDebug( 790 ) ;
 	OrgKdeKIMInterface * appStub = m_im_client_stubs.value( appId );
 	QStringList contacts = m_im_client_stubs.value( appId )->allContacts();
 	QStringList::iterator it = contacts.begin();
@@ -640,7 +640,7 @@ QString KIMProxy::preferredApp()
 	KConfig cfg( IM_CLIENT_PREFERENCES_FILE, KConfig::OnlyLocal );
 	KConfigGroup cg(&cfg, IM_CLIENT_PREFERENCES_SECTION );
 	QString preferredApp = cg.readEntry( IM_CLIENT_PREFERENCES_ENTRY );
-	//kDebug( 790 ) << k_funcinfo << "found preferred app: " << preferredApp;
+	//kDebug( 790 ) << "found preferred app: " << preferredApp;
 	return preferredApp;
 }
 

@@ -366,7 +366,7 @@ void OutputDeviceChoice::on_removeButton_clicked()
 
 void OutputDeviceChoice::updateButtonsEnabled()
 {
-    //kDebug() << k_funcinfo;
+    //kDebug() ;
     if (deviceList->model()) {
         //kDebug() << "model available";
         QModelIndex idx = deviceList->currentIndex();

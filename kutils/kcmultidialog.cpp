@@ -42,7 +42,7 @@
 
 void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *item )
 {
-  kDebug(710) << k_funcinfo;
+  kDebug(710) ;
 
   if ( !item )
     return;
@@ -81,7 +81,7 @@ void KCMultiDialogPrivate::_k_clientChanged()
 
 void KCMultiDialogPrivate::_k_dialogClosed()
 {
-  kDebug(710) << k_funcinfo;
+  kDebug(710) ;
 
   /**
    * If we don't delete them, the DBUS registration stays, and trying to load the KCMs
@@ -271,7 +271,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 
     KCModuleProxy *kcm = new KCModuleProxy(moduleInfo, 0, args);
 
-    kDebug(710) << k_funcinfo << moduleInfo.moduleName();
+    kDebug(710) << moduleInfo.moduleName();
     KPageWidgetItem *item = new KPageWidgetItem(kcm, moduleInfo.moduleName());
   item->setHeader( moduleInfo.comment() );
   item->setIcon( KIcon( moduleInfo.icon() ) );
@@ -335,7 +335,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 void KCMultiDialog::clear()
 {
     Q_D(KCMultiDialog);
-  kDebug( 710 ) << k_funcinfo;
+  kDebug( 710 ) ;
 
   for ( int i = 0; i < d->modules.count(); ++i ) {
     removePage( d->modules[ i ].item );

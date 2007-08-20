@@ -291,10 +291,10 @@ void Loader::loadPlugin(const KSharedPtr<KService> &service)
                 d->languageClients[*itr].prepend(client);
         }
 
-        kDebug() << k_funcinfo << "Successfully loaded plugin '"
+        kDebug() << "Successfully loaded plugin '"
                  << service->desktopEntryPath() << "'" << endl;
     } else {
-        kDebug() << k_funcinfo << "Loading plugin '"
+        kDebug() << "Loading plugin '"
                  << service->desktopEntryPath()
                  << "' failed, KLibLoader reported error: '" << endl
                  << KLibLoader::errorString(error) << "'" << endl;

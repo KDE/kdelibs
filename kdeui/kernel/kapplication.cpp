@@ -1187,7 +1187,7 @@ void KApplication::setSynchronizeClipboard(bool synchronize)
 
 void KApplication::slot_KLibLoader_hook_clearClipboard()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     if( clipboard()->ownsSelection()) {
 	clipboard()->setText(
             clipboard()->text( QClipboard::Selection ), QClipboard::Selection );

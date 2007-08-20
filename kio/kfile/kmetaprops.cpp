@@ -207,7 +207,7 @@ KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
 
 bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
 
     // TODO: Add support for more than one item
 
@@ -219,7 +219,7 @@ bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
         return false;
 
     bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
-    kDebug() << k_funcinfo << "metaDataEnabled=" << metaDataEnabled;
+    kDebug() << "metaDataEnabled=" << metaDataEnabled;
     return metaDataEnabled;
 }
 

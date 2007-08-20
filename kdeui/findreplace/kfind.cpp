@@ -93,7 +93,7 @@ void KFind::init( const QString& pattern )
 KFind::~KFind()
 {
     delete d;
-    kDebug() << k_funcinfo;
+    kDebug() ;
 }
 
 bool KFind::needData() const
@@ -275,7 +275,7 @@ KFind::Result KFind::find()
     }
 
 #ifdef DEBUG_FIND
-    kDebug() << k_funcinfo << "d->index=" << d->index;
+    kDebug() << "d->index=" << d->index;
 #endif
     do
     {
@@ -342,7 +342,7 @@ KFind::Result KFind::find()
                         findNextDialog(true)->show();
 
 #ifdef DEBUG_FIND
-                    kDebug() << k_funcinfo << "Match. Next d->index=" << d->index;
+                    kDebug() << "Match. Next d->index=" << d->index;
 #endif
                     d->lastResult = Match;
                     return Match;
@@ -372,7 +372,7 @@ KFind::Result KFind::find()
     while (d->index != INDEX_NOMATCH);
 
 #ifdef DEBUG_FIND
-    kDebug() << k_funcinfo << "NoMatch. d->index=" << d->index;
+    kDebug() << "NoMatch. d->index=" << d->index;
 #endif
     d->lastResult = NoMatch;
     return NoMatch;
@@ -570,12 +570,12 @@ void KFind::slotFindNext()
 void KFind::slotDialogClosed()
 {
 #ifdef DEBUG_FIND
-    kDebug() << k_funcinfo << " Begin";
+    kDebug() << " Begin";
 #endif
     emit dialogClosed();
     d->dialogClosed = true;
 #ifdef DEBUG_FIND
-    kDebug() << k_funcinfo << " End";
+    kDebug() << " End";
 #endif
 
 }

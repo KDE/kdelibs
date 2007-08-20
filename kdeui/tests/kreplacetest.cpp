@@ -99,7 +99,7 @@ void KReplaceTest::slotReplace(const QString &text, int replacementIndex, int re
 
 void KReplaceTest::slotReplaceNext()
 {
-    //kDebug() << k_funcinfo;
+    //kDebug() ;
     KFind::Result res = KFind::NoMatch;
     int backwards = m_replace->options() & KFind::FindBackwards;
     while ( res == KFind::NoMatch ) {

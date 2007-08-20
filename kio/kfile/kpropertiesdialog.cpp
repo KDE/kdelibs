@@ -3394,7 +3394,7 @@ void KDesktopPropsPlugin::applyChanges()
        mimeTypes.append(preference);
   }
 
-  kDebug() << k_funcinfo << mimeTypes;
+  kDebug() << mimeTypes;
   config.writeEntry( "MimeType", mimeTypes, ';' );
 
   if ( !d->w->nameEdit->isHidden() ) {

@@ -3892,7 +3892,7 @@ void KHTMLView::ensureNodeHasFocus(NodeImpl *node)
 
   // Set focus node on the document
 #if DEBUG_CARETMODE > 1
-  kDebug(6200) << k_funcinfo << "firstAncestor " << firstAncestor << ": "
+  kDebug(6200) << "firstAncestor " << firstAncestor << ": "
   	<< (firstAncestor ? firstAncestor->nodeName().string() : QString()) << endl;
 #endif
   doc->setFocusNode(firstAncestor);

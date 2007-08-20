@@ -1826,7 +1826,7 @@ void KHTMLPart::slotFinished( KJob * job )
   }
   KIO::TransferJob *tjob = ::qobject_cast<KIO::TransferJob*>(job);
   if (tjob && tjob->isErrorPage()) {
-    khtml::RenderPart *renderPart = d->m_frame ? d->m_frame->m_frame : QPointer<khtml::RenderPart>(0);
+    khtml::RenderPart *renderPart = d->m_frame ? d->m_frame->m_frame : 0L;
     if (renderPart) {
       HTMLObjectElementImpl* elt = static_cast<HTMLObjectElementImpl *>(renderPart->element());
       if (!elt)
@@ -2682,7 +2682,7 @@ void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelecti
 {
 #ifndef KHTML_NO_CARET
 #if 0
-  kDebug(6200) << k_funcinfo << "node: " << node.handle() << " nodeName: "
+  kDebug(6200) << "node: " << node.handle() << " nodeName: "
   	<< node.nodeName().string() << " offset: " << offset
 	<< " extendSelection " << extendSelection << endl;
 #endif
@@ -2753,18 +2753,18 @@ bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
 
     if ( !firstNode )
     {
-      //kDebug(6050) << k_funcinfo << "no first node (body or doc) -> return false";
+      //kDebug(6050) << "no first node (body or doc) -> return false";
       return false;
     }
     if ( firstNode->id() == ID_FRAMESET )
     {
-      //kDebug(6050) << k_funcinfo << "FRAMESET -> return false";
+      //kDebug(6050) << "FRAMESET -> return false";
       return false;
     }
 
     if ( selection && hasSelection() )
     {
-      //kDebug(6050) << k_funcinfo << "using selection";
+      //kDebug(6050) << "using selection";
       if ( !fromCursor )
       {
         d->m_findNode = reverse ? d->m_selectionEnd.handle() : d->m_selectionStart.handle();
@@ -2778,7 +2778,7 @@ bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
     }
     else // whole document
     {
-      //kDebug(6050) << k_funcinfo << "whole doc";
+      //kDebug(6050) << "whole doc";
       if ( !fromCursor )
       {
         d->m_findNode = firstNode;
@@ -3131,16 +3131,16 @@ bool KHTMLPart::findTextNext( bool reverse )
   khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
   khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
   khtml::RenderTextArea *tmpTextArea=0L;
-  //kDebug(6050) << k_funcinfo << "obj=" << obj << " end=" << end;
+  //kDebug(6050) << "obj=" << obj << " end=" << end;
   while( res == KFind::NoMatch )
   {
     if ( d->m_find->needData() )
     {
       if ( !obj ) {
-        //kDebug(6050) << k_funcinfo << "obj=0 -> done";
+        //kDebug(6050) << "obj=0 -> done";
         break; // we're done
       }
-      //kDebug(6050) << k_funcinfo << " gathering data";
+      //kDebug(6050) << " gathering data";
       // First make up the QString for the current 'line' (i.e. up to \n)
       // We also want to remember the DOMNode for every portion of the string.
       // We store this in an index->node list.
@@ -6183,7 +6183,7 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
                                                            event->absX()-innerNode.handle()->renderer()->xPos(),
                                                            event->absY()-innerNode.handle()->renderer()->yPos(), node, offset, state);
 
-      //kDebug() << k_funcinfo << "checkSelectionPoint returned node=" << node << " offset=" << offset;
+      //kDebug() << "checkSelectionPoint returned node=" << node << " offset=" << offset;
 
       if ( node && node->renderer() )
       {

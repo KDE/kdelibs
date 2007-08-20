@@ -67,7 +67,7 @@ KNotificationManager::~KNotificationManager()
 
 void KNotificationManager::notificationActivated( int id, int action )
 {
-    kDebug(299) << k_funcinfo << id << " " << action;
+    kDebug(299) << id << " " << action;
     if(d->notifications.contains(id))
     {
         KNotification *n = d->notifications[id];
@@ -78,7 +78,7 @@ void KNotificationManager::notificationActivated( int id, int action )
 
 void KNotificationManager::notificationClosed( int id )
 {
-    kDebug( 299 ) << k_funcinfo << id;
+    kDebug( 299 ) << id;
     if(d->notifications.contains(id))
     {
         KNotification *n = d->notifications[id];
@@ -160,7 +160,7 @@ void KNotificationManager::reemit(KNotification * n, int id)
 	typedef QPair<QString,QString> Context;
 	foreach (const Context& ctx, n->contexts())
 	{
-//		kDebug(299) << k_funcinfo << "add context " << ctx.first << "-" << ctx.second;
+//		kDebug(299) << "add context " << ctx.first << "-" << ctx.second;
 		QVariantList vl;
 		vl << ctx.first << ctx.second;
 		contextList << vl;

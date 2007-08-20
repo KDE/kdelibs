@@ -125,7 +125,7 @@ void JobTest::enterLoop()
 
 void JobTest::get()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
     KUrl u( filePath );
@@ -281,7 +281,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
 
 void JobTest::copyFileToSamePartition()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = homeTmpDir() + "fileFromHome_copied";
     createTestFile( filePath );
@@ -290,7 +290,7 @@ void JobTest::copyFileToSamePartition()
 
 void JobTest::copyDirectoryToSamePartition()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_copied";
     createTestDirectory( src );
@@ -299,7 +299,7 @@ void JobTest::copyDirectoryToSamePartition()
 
 void JobTest::copyDirectoryToExistingDirectory()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     // just the same as copyDirectoryToSamePartition, but it means that
     // this time dest exists.
     const QString src = homeTmpDir() + "dirFromHome";
@@ -310,7 +310,7 @@ void JobTest::copyDirectoryToExistingDirectory()
 
 void JobTest::copyFileToOtherPartition()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = otherTmpDir() + "fileFromHome_copied";
     createTestFile( filePath );
@@ -319,7 +319,7 @@ void JobTest::copyFileToOtherPartition()
 
 void JobTest::copyDirectoryToOtherPartition()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = otherTmpDir() + "dirFromHome_copied";
     // src is already created by copyDirectoryToSamePartition()
@@ -380,7 +380,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
 
 void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 {
-    kDebug() << k_funcinfo << src << " " << dest;
+    kDebug() << src << " " << dest;
     QVERIFY( QFile::exists( src ) );
     QVERIFY( QFileInfo( src ).isDir() );
     QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
@@ -406,7 +406,7 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 
 void JobTest::moveFileToSamePartition()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = homeTmpDir() + "fileFromHome_moved";
     createTestFile( filePath );
@@ -415,7 +415,7 @@ void JobTest::moveFileToSamePartition()
 
 void JobTest::moveDirectoryToSamePartition()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_moved";
     createTestDirectory( src );
@@ -424,7 +424,7 @@ void JobTest::moveDirectoryToSamePartition()
 
 void JobTest::moveFileToOtherPartition()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = otherTmpDir() + "fileFromHome_moved";
     createTestFile( filePath );
@@ -434,7 +434,7 @@ void JobTest::moveFileToOtherPartition()
 void JobTest::moveSymlinkToOtherPartition()
 {
 #ifndef Q_WS_WIN
-    kDebug() << k_funcinfo;
+    kDebug() ;
     const QString filePath = homeTmpDir() + "testlink";
     const QString dest = otherTmpDir() + "testlink_moved";
     createTestSymlink( filePath );
@@ -444,7 +444,7 @@ void JobTest::moveSymlinkToOtherPartition()
 
 void JobTest::moveDirectoryToOtherPartition()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
 #ifndef Q_WS_WIN
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = otherTmpDir() + "dirFromHome_moved";
@@ -455,7 +455,7 @@ void JobTest::moveDirectoryToOtherPartition()
 
 void JobTest::moveFileNoPermissions()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
 #ifdef Q_WS_WIN
     kDebug() << "port to win32";
 #else
@@ -486,7 +486,7 @@ void JobTest::moveFileNoPermissions()
 
 void JobTest::moveDirectoryNoPermissions()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
 #ifdef Q_WS_WIN
     kDebug() << "port to win32";
 #else
@@ -940,7 +940,7 @@ void JobTest::calculateRemainingSeconds()
 void JobTest::copyFileToSystem()
 {
     if ( !KProtocolInfo::isKnownProtocol( "system" ) ) {
-        kDebug() << k_funcinfo << "no kio_system, skipping test";
+        kDebug() << "no kio_system, skipping test";
         return;
     }
 
@@ -957,7 +957,7 @@ void JobTest::copyFileToSystem()
 
 void JobTest::copyFileToSystem( bool resolve_local_urls )
 {
-    kDebug() << k_funcinfo << resolve_local_urls;
+    kDebug() << resolve_local_urls;
     extern KIO_EXPORT bool kio_resolve_local_urls;
     kio_resolve_local_urls = resolve_local_urls;
 

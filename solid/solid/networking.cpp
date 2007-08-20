@@ -69,7 +69,7 @@ Solid::Networking::Notifier *Solid::Networking::notifier()
 
 void Solid::NetworkingPrivate::serviceStatusChanged( uint status )
 {
-//    kDebug( 921 ) << k_funcinfo;
+//    kDebug( 921 ) ;
     netStatus = ( Solid::Networking::Status )status;
     switch ( netStatus ) {
       case Solid::Networking::Unknown:
@@ -93,7 +93,7 @@ void Solid::NetworkingPrivate::serviceStatusChanged( uint status )
         }
         break;
 //      default:
-//        kDebug( 921 ) << k_funcinfo <<  "Unrecognised status code!";
+//        kDebug( 921 ) <<  "Unrecognised status code!";
     }
     emit globalNetworkManager->statusChanged( netStatus );
 }

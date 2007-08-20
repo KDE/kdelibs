@@ -67,7 +67,7 @@ static void callClient( const QString& opt ) {
     }
 #endif
     proc << opt;
-//     kDebug() << k_funcinfo << proc.args();
+//     kDebug() << proc.args();
     int ok = proc.execute();
     QVERIFY(ok == 0);
 

@@ -177,7 +177,7 @@ void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
 void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 {
     QFile qfile( fileName );
-    kDebug() << k_funcinfo << "Now parsing" << fileName;
+    kDebug() << "Now parsing" << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
         QTextStream stream(&qfile);
         stream.setCodec("UTF-8");
@@ -204,7 +204,7 @@ void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
 {
     QFile qfile( fileName );
-    kDebug() << k_funcinfo << "Now parsing" << fileName;
+    kDebug() << "Now parsing" << fileName;
     if (qfile.open(QIODevice::ReadOnly)) {
         QTextStream stream(&qfile);
         stream.setCodec("UTF-8");
@@ -241,13 +241,13 @@ void KBuildMimeTypeFactory::parseSubclasses()
 
 
     const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "subclasses");
-    //kDebug() << k_funcinfo << subclassFiles;
+    //kDebug() << subclassFiles;
     Q_FOREACH(const QString& file, subclassFiles) {
         parseSubclassFile(file);
     }
 
     const QStringList aliasFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "aliases");
-    //kDebug() << k_funcinfo << aliasFiles;
+    //kDebug() << aliasFiles;
     Q_FOREACH(const QString& file, aliasFiles) {
         parseAliasFile(file);
     }

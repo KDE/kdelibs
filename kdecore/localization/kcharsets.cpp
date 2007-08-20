@@ -833,7 +833,7 @@ QTextCodec *KCharsets::codecForNameOrNull( const QByteArray& n ) const
     cname = cname.toUpper();
 
     const QString basicName = QLatin1String(cname);
-    kDebug() << k_funcinfo << endl << " Trying to find " << cname << " in " << dir;
+    kDebug() << endl << " Trying to find " << cname << " in " << dir;
 
     QString charMapFileName;
     bool gzipped = false;

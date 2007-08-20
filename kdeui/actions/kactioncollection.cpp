@@ -353,7 +353,7 @@ void KActionCollection::setConfigGlobal( bool global )
 
 void KActionCollection::readSettings( KConfigGroup* config )
 {
-  kDebug(125) << k_funcinfo << " ( \"" << configGroup() << "\", " << config << " ) start";
+  kDebug(125) << " ( \"" << configGroup() << "\", " << config << " ) start";
   KConfigGroup cg( KGlobal::config(), configGroup() );
   if( !config )
       config = &cg;
@@ -385,12 +385,12 @@ void KActionCollection::readSettings( KConfigGroup* config )
       }
   }
 
-  kDebug(125) << k_funcinfo << " done";
+  kDebug(125) << " done";
 }
 
 void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAction* oneAction ) const
 {
-  kDebug(125) << k_funcinfo << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal() << " )";
+  kDebug(125) << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal() << " )";
 
   if (parentGUIClient() && !parentGUIClient()->xmlFile().isEmpty()) {
     kDebug(129) << "KActionCollection::save(): xmlFile = " << parentGUIClient()->xmlFile();

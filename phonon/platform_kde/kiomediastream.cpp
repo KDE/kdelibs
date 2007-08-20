@@ -96,7 +96,7 @@ void KioMediaStream::needData()
 void KioMediaStream::enoughData()
 {
     Q_D(KioMediaStream);
-    kDebug(600) << k_funcinfo;
+    kDebug(600) ;
     // Don't suspend when using a FileJob. The FileJob is controlled by calls to
     // FileJob::read()
     if (d->kiojob && !qobject_cast<KIO::FileJob *>(d->kiojob) && !d->kiojob->isSuspended()) {
@@ -109,7 +109,7 @@ void KioMediaStream::enoughData()
 void KioMediaStream::seekStream(qint64 position)
 {
     Q_D(KioMediaStream);
-    kDebug(600) << k_funcinfo << position << " = " << qulonglong(position);
+    kDebug(600) << position << " = " << qulonglong(position);
     d->seeking = true;
     if (d->open) {
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(d->kiojob);
@@ -125,21 +125,21 @@ void KioMediaStreamPrivate::_k_bytestreamData(KIO::Job *, const QByteArray &data
     if (seeking) {
         // seek doesn't block, so don't send data to the backend until it signals us
         // that the seek is done
-        kDebug(600) << k_funcinfo << "seeking: do nothing";
+        kDebug(600) << "seeking: do nothing";
         return;
     }
 
     if (data.isEmpty()) {
         reading = false;
         if (!endOfDataSent) {
-            kDebug(600) << k_funcinfo << "empty data: stopping the stream";
+            kDebug(600) << "empty data: stopping the stream";
             endOfDataSent = true;
             q->endOfData();
         }
         return;
     }
 
-    //kDebug(600) << k_funcinfo << "calling writeData on the Backend ByteStream " << data.size();
+    //kDebug(600) << "calling writeData on the Backend ByteStream " << data.size();
     q->writeData(data);
     if (reading) {
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
@@ -180,7 +180,7 @@ void KioMediaStreamPrivate::_k_bytestreamResult(KJob *job)
 void KioMediaStreamPrivate::_k_bytestreamTotalSize(KJob *, qulonglong size)
 {
     Q_Q(KioMediaStream);
-    kDebug(600) << k_funcinfo << size;
+    kDebug(600) << size;
     q->setStreamSize(size);
 }
 
@@ -199,7 +199,7 @@ void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
     open = true;
     endOfDataSent = false;
     KIO::FileJob *filejob = static_cast<KIO::FileJob *>(kiojob);
-    kDebug(600) << k_funcinfo << filejob->size();
+    kDebug(600) << filejob->size();
     q->setStreamSize(filejob->size());
 
     if (seeking) {
@@ -211,7 +211,7 @@ void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
 
 void KioMediaStreamPrivate::_k_bytestreamSeekDone(KIO::Job *, KIO::filesize_t offset)
 {
-    kDebug(600) << k_funcinfo << offset;
+    kDebug(600) << offset;
     seeking = false;
     endOfDataSent = false;
     if (reading) {

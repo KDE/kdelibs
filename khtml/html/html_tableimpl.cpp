@@ -277,7 +277,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
     if(!tFirstBody() && !foot && !head)
         setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
 
-    //kDebug(6030) << k_funcinfo << index;
+    //kDebug(6030) << index;
 
     long sectionIndex;
     HTMLTableSectionElementImpl* section;
@@ -686,7 +686,7 @@ HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index, int& except
     HTMLTableRowElementImpl *r = 0L;
     HTMLCollectionImpl rows(const_cast<HTMLTableSectionElementImpl*>(this), HTMLCollectionImpl::TSECTION_ROWS);
     int numRows = rows.length();
-    //kDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows;
+    //kDebug(6030) << "index=" << index << " numRows=" << numRows;
     if ( index < -1 || index > numRows ) {
         exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
     }

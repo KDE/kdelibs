@@ -99,7 +99,7 @@ void KRemoteEncoding::setEncoding(const char *name)
 
   Q_ASSERT(codec);
 
-  kDebug() << k_funcinfo << "setting encoding " << codec->name()
+  kDebug() << "setting encoding " << codec->name()
 	    << " for name=" << name << endl;
 }
 

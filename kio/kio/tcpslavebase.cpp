@@ -505,7 +505,7 @@ quint16 TCPSlaveBase::port() const
 bool TCPSlaveBase::atEnd() const
 {
     // this doesn't work!!
-    kError(7029) << k_funcinfo << " called! It doesn't work.  Fix caller"
+    kError(7029) << " called! It doesn't work.  Fix caller"
 		  << endl << kBacktrace();
     return d->socket->atEnd();
 }

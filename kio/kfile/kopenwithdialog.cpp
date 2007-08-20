@@ -777,7 +777,7 @@ void KOpenWithDialogPrivate::_k_slotOK()
             {
                 ok = true;
                 m_pService = serv;
-                kDebug(250) << k_funcinfo << "OK, found identical service: " << serv->desktopEntryPath();
+                kDebug(250) << "OK, found identical service: " << serv->desktopEntryPath();
             }
         }
         if (!ok) // service was found, but it was different -> keep looking

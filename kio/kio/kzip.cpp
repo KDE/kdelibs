@@ -758,7 +758,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
                 n = dev->read( buffer, 1 );
                 if (n < 1)
                 {
-                    kWarning(7040) << "Invalid ZIP file. Unexpected end of file. " << k_funcinfo;
+                    kWarning(7040) << "Invalid ZIP file. Unexpected end of file. " ;
                     return false;
                 }
 
@@ -768,7 +768,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
                 n = dev->read( buffer, 3 );
                 if (n < 3)
                 {
-                    kWarning(7040) << "Invalid ZIP file. Unexpected end of file. " << k_funcinfo;
+                    kWarning(7040) << "Invalid ZIP file. Unexpected end of file. " ;
                     return false;
                 }
 

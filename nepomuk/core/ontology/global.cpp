@@ -193,7 +193,7 @@ QUrl Nepomuk::extractNamespace( const QUrl& url )
         pos = s.lastIndexOf( '/' );
     }
     if ( pos == -1 ) {
-        kError() << k_funcinfo << " Failed to extract namespace from " << url << endl;
+        kError() << " Failed to extract namespace from " << url << endl;
         return QUrl();
     }
     return QUrl::fromEncoded( s.left( pos+1 ) );

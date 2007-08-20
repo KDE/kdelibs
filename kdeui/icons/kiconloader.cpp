@@ -337,7 +337,7 @@ bool KIconLoader::initIconThemes()
         // If d->mpThemeRoot isn't 0 then initing has succeeded
         return (d->mpThemeRoot != 0);
     }
-    kDebug() << k_funcinfo;
+    kDebug() ;
     d->mIconThemeInited = true;
 
     // Add the default theme and its base themes to the theme tree

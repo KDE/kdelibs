@@ -1100,12 +1100,12 @@ bool HTTPProtocol::davHostOk()
   // cached?
   if ( m_davHostOk )
   {
-    kDebug(7113) << "(" << m_pid << ") " << k_funcinfo << " true";
+    kDebug(7113) << "(" << m_pid << ") " << " true";
     return true;
   }
   else if ( m_davHostUnsupported )
   {
-    kDebug(7113) << "(" << m_pid << ") " << k_funcinfo << " false";
+    kDebug(7113) << "(" << m_pid << ") " << " false";
     davError( -2 );
     return false;
   }

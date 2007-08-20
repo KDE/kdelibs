@@ -647,7 +647,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
         config = KSharedConfig::openConfig(componentName);
 
     KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
-    kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup;
+    kDebug( 702 ) << "cfgGroup = " << cfgGroup;
 
     d->checkIfShowIcons(pluginInfoList);
 
@@ -672,7 +672,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
         return;
 
     KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
-    kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup;
+    kDebug( 702 ) << "cfgGroup = " << cfgGroup;
 
     d->checkIfShowIcons(pluginInfoList);
 

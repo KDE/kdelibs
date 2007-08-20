@@ -234,7 +234,7 @@ KRunMX1::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
       break;
    case 'm':
 //       ret << "-miniicon" << service.icon().replace( '%', "%%" );
-      kWarning() << k_funcinfo << "-miniicon isn't supported anymore (service "
+      kWarning() << "-miniicon isn't supported anymore (service "
                   << service.name() << ')' << endl;
       break;
    case 'u':

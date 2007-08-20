@@ -47,7 +47,7 @@ private:
 
 void KUrlCompletionTest::setup( bool setDirAsURL )
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     m_completion = new KUrlCompletion;
     m_tempDir = new KTempDir;
     m_dir = m_tempDir->name();
@@ -89,7 +89,7 @@ void KUrlCompletionTest::waitForCompletion()
 
 void KUrlCompletionTest::testLocalRelativePath()
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     // Completion from relative path, with two matches
     m_completion->makeCompletion( "f" );
     waitForCompletion();
@@ -101,7 +101,7 @@ void KUrlCompletionTest::testLocalRelativePath()
     assert( comp1 == "file1" );
 
     // Completion from relative path
-    kDebug() << endl << k_funcinfo << "now completing on 'file#'";
+    kDebug() << endl << "now completing on 'file#'";
     m_completion->makeCompletion( "file#" );
     waitForCompletion();
     QStringList compall = m_completion->allMatches();
@@ -115,7 +115,7 @@ void KUrlCompletionTest::testLocalRelativePath()
 void KUrlCompletionTest::testLocalAbsolutePath()
 {
     // Completion from absolute path
-    kDebug() << k_funcinfo << m_dir+"file#";
+    kDebug() << m_dir+"file#";
     m_completion->makeCompletion( m_dir + "file#" );
     waitForCompletion();
     QStringList compall = m_completion->allMatches();
@@ -130,7 +130,7 @@ void KUrlCompletionTest::testLocalAbsolutePath()
 void KUrlCompletionTest::testLocalURL()
 {
     // Completion from URL
-    kDebug() << k_funcinfo;
+    kDebug() ;
     KUrl url( m_dirURL.path() + "file" );
     m_completion->makeCompletion( url.prettyUrl() );
     waitForCompletion();
@@ -146,7 +146,7 @@ void KUrlCompletionTest::testLocalURL()
 
     // Completion from URL with no match
     url = KUrl( m_dirURL.path() + "foobar" );
-    kDebug() << k_funcinfo << "makeCompletion(" << url << ")";
+    kDebug() << "makeCompletion(" << url << ")";
     QString comp2 = m_completion->makeCompletion( url.prettyUrl() );
     assert( comp2.isEmpty() );
     waitForCompletion();
@@ -155,7 +155,7 @@ void KUrlCompletionTest::testLocalURL()
     // Completion from URL with a ref -> no match
     url = KUrl( m_dirURL.path() + 'f' );
     url.setRef( "ref" );
-    kDebug() << k_funcinfo << "makeCompletion(" << url << ")";
+    kDebug() << "makeCompletion(" << url << ")";
     m_completion->makeCompletion( url.prettyUrl() );
     waitForCompletion();
     assert( m_completion->allMatches().isEmpty() );

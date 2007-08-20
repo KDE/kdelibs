@@ -40,15 +40,15 @@ int main(int argc, char **argv)
     QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
 
     if (args->isSet("p")) {
-        kDebug() << k_funcinfo << "emitChange(PaletteChanged)";
+        kDebug() << "emitChange(PaletteChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::PaletteChanged);
 	return 0;
     } else if (args->isSet("f")) {
-        kDebug() << k_funcinfo << "emitChange(FontChanged)";
+        kDebug() << "emitChange(FontChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::FontChanged);
         return 0;
     } else if (args->isSet("ps")) {
-        kDebug() << k_funcinfo << "emitChange(SettingsChanged)";
+        kDebug() << "emitChange(SettingsChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::SettingsChanged, KGlobalSettings::SETTINGS_PATHS);
         return 0;
     }

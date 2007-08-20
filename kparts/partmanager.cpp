@@ -333,7 +333,7 @@ void PartManager::addPart( Part *part, bool setActive )
     // don't add parts more than once :)
     if ( d->m_parts.contains( part ) ) {
 #ifdef DEBUG_PARTMANAGER
-        kWarning(1000) << k_funcinfo << part << " already added" << kBacktrace(5);
+        kWarning(1000) << part << " already added" << kBacktrace(5);
 #endif
         return;
     }

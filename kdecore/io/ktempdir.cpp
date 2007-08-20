@@ -203,7 +203,7 @@ static bool rmtree(const QByteArray& name)
 
 bool KTempDir::removeDir( const QString& path )
 {
-    kDebug(180) << k_funcinfo << " " << path;
+    kDebug(180) << " " << path;
     if ( !QFile::exists( path ) )
         return true; // The goal is that there is no directory
 

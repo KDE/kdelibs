@@ -232,7 +232,7 @@ void KJSProxyImpl::clear() {
     }
 
     // Really delete everything that can be, so that the DOM nodes get deref'ed
-    //kDebug() << k_funcinfo << "all done -> collecting";
+    //kDebug() << "all done -> collecting";
     JSLock::lock();
     while (Interpreter::collect())
 	    ;

@@ -520,7 +520,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
     } else {
         // Oops, shouldn't happen thanks to mimeTypes()
-        kWarning() << k_funcinfo << ": received wrong mimedata, " << data->formats();
+        kWarning() << ": received wrong mimedata, " << data->formats();
         return false;
     }
 

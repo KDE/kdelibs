@@ -465,7 +465,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
 
   } else {
     r = 0;
-    kWarning() << k_funcinfo << "Mapping from nodes of type " << node->nodeType()
+    kWarning() << "Mapping from nodes of type " << node->nodeType()
         << " not supported!" << endl;
   }
 }
@@ -521,7 +521,7 @@ inside:
 
   } else {
     offset = 0;
-    kWarning() << k_funcinfo << "Mapping to nodes of type " << node->nodeType()
+    kWarning() << "Mapping to nodes of type " << node->nodeType()
         << " not supported!" << endl;
   }
 }
@@ -1506,7 +1506,7 @@ void LineIterator::advance(bool toBegin)
 void EditableCaretBoxIterator::advance(bool toBegin)
 {
 #if DEBUG_CARETMODE > 3
-      kDebug(6200) << "---------------" << k_funcinfo << "toBegin " << toBegin;
+      kDebug(6200) << "---------------" << "toBegin " << toBegin;
 #endif
   const CaretBoxIterator preBegin = cbl->preBegin();
   const CaretBoxIterator end = cbl->end();
@@ -1636,7 +1636,7 @@ if (box->isInline()) {
 //  kDebug(6200) << "still valid? " << (*this != preBegin && *this != end);
 #endif
 #if DEBUG_CARETMODE > 3
-      kDebug(6200) << "---------------" << k_funcinfo << "end ";
+      kDebug(6200) << "---------------" << "end ";
 #endif
 }
 

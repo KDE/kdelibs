@@ -673,7 +673,7 @@ void KDirListerCache::slotFilesAdded( const QString &dir ) // from KDirNotify si
 
 void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KDirNotify signals
 {
-  kDebug(7004);
+  kDebug(7004) ;
   QStringList::const_iterator it = fileList.begin();
   for ( ; it != fileList.end() ; ++it )
   {
@@ -1719,7 +1719,7 @@ bool KDirLister::openUrl( const KUrl& _url, bool _keep, bool _reload )
 
 void KDirLister::stop()
 {
-    kDebug(7003);
+    kDebug(7003) ;
     KDirListerCache::self()->stop( this );
 }
 

@@ -53,13 +53,13 @@ public:
     inline void ref()
     {
         ++refCount;
-        //qDebug() << k_funcinfo << refCount - 1 << "->" << refCount << kBacktrace() << endl;
+        //qDebug() << refCount - 1 << "->" << refCount << kBacktrace() << endl;
     }
 
     inline void deref()
     {
         --refCount;
-        //qDebug() << k_funcinfo << refCount + 1 << "->" << refCount << kBacktrace() << endl;
+        //qDebug() << refCount + 1 << "->" << refCount << kBacktrace() << endl;
         if (refCount == 0) {
             delete this;
         } else {

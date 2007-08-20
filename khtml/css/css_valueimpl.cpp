@@ -255,7 +255,7 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
         return getShortHandValue( properties, 3 );
     }
     }
-    //kDebug() << k_funcinfo << "property not found:" << propertyID;
+    //kDebug() << "property not found:" << propertyID;
     return DOMString();
 }
 

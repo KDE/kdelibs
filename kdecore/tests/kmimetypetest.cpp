@@ -523,7 +523,7 @@ void KMimeTypeTest::testExtractKnownExtension()
 
 void KMimeTypeTest::testParseMagicFile_data()
 {
-    //kDebug() << k_funcinfo;
+    //kDebug() ;
     // This magic data is fake; just a way to test various features.
     static const char s_magicData[] = "MIME-Magic\0\n"
                                       "[50:application/x-desktop]\n"
@@ -614,7 +614,7 @@ void KMimeTypeTest::testParseMagicFile_data()
 void KMimeTypeTest::testParseMagicFile()
 {
     QFETCH(QString, testData);
-    //kDebug() << k_funcinfo << QTest::currentDataTag();
+    //kDebug() << QTest::currentDataTag();
     QFETCH(QString, expected);
     QBuffer testBuffer;
     testBuffer.setData(testData.toLatin1());

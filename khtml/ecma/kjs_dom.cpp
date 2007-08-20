@@ -1814,7 +1814,7 @@ ValueImp *DOMNamedNodesCollection::lengthGetter(ExecState *, JSObject*, const Id
 
 bool DOMNamedNodesCollection::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  kDebug(6070) << k_funcinfo << propertyName.ascii();
+  kDebug(6070) << propertyName.ascii();
 
   if (propertyName == exec->propertyNames().length) {
     slot.setCustom(this, lengthGetter);

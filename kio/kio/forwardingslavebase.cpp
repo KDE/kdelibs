@@ -361,7 +361,7 @@ void ForwardingSlaveBasePrivate::connectJob(KIO::Job *job)
     // Forward metadata (e.g. modification time for put())
     job->setMetaData( q->allMetaData() );
 #if 0 // debug code
-    kDebug() << k_funcinfo << "transferring metadata:";
+    kDebug() << "transferring metadata:";
     const MetaData md = allMetaData();
     for ( MetaData::const_iterator it = md.begin(); it != md.end(); ++it )
         kDebug() << it.key() << " = " << it.data();

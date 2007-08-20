@@ -86,7 +86,7 @@ TestClient::~TestClient()
 
 void TestClient::networkStatusChanged( Solid::Networking::Status status )
 {
-    kDebug() << k_funcinfo;
+    kDebug() ;
     kDebug() << "Networking is now: " << toString( status ) << " (" << status << ")";
     ui.netStatusLabel->setText( toString( status ) );
     QPalette palette;
@@ -112,7 +112,7 @@ void TestClient::doDisconnect()
 
 void TestClient::connectButtonClicked()
 {
-  kDebug() << k_funcinfo;
+  kDebug() ;
   if ( m_status == AppDisconnected ) {
     switch ( Solid::Networking::status() )
     {
@@ -132,14 +132,14 @@ void TestClient::connectButtonClicked()
 
 void TestClient::appWaiting()
 {
-  kDebug() << k_funcinfo;
+  kDebug() ;
   //m_status = AppWaitingForConnect;
   ui.appStatusLabel->setText( "Waiting" );
 }
 
 void TestClient::appIsConnected()
 {
-  kDebug() << k_funcinfo;
+  kDebug() ;
   ui.connectButton->setEnabled( true );
   ui.connectButton->setText( "Disconnect" );
   ui.appStatusLabel->setText( "Connected" );
@@ -148,21 +148,21 @@ void TestClient::appIsConnected()
 
 void TestClient::appEstablishing()
 {
-  kDebug() << k_funcinfo;
+  kDebug() ;
   ui.netStatusLabel->setText( "Establishing" );
   ui.connectButton->setEnabled( false );
 }
 
 void TestClient::appDisestablishing( )
 {
-  kDebug() << k_funcinfo;
+  kDebug() ;
   ui.connectButton->setEnabled( false );
   ui.appStatusLabel->setText( "Disconnected" );
 }
 
 void TestClient::appDisconnected( )
 {
-  kDebug() << k_funcinfo;
+  kDebug() ;
   ui.connectButton->setEnabled( true );
   ui.connectButton->setText( "Start Connect" );
   ui.appStatusLabel->setText( "Disconnected" );

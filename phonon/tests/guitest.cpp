@@ -868,7 +868,7 @@ void MainWidget::madeConnection1(const QPoint &a, const QPoint &b)
     if (left.isNull() || right.isNull())
         return;
 
-    kDebug() << k_funcinfo << left << right;
+    kDebug() << left << right;
 
     ProducerWidget *producer = 0;
     foreach (ProducerWidget *x, m_producers)
@@ -913,7 +913,7 @@ void MainWidget::madeConnection2(const QPoint &a, const QPoint &b)
     if (left.isNull() || right.isNull())
         return;
 
-    kDebug() << k_funcinfo << left << right;
+    kDebug() << left << right;
 
     PathWidget *path = 0;
     foreach (PathWidget *x, m_paths)

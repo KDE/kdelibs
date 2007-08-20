@@ -37,7 +37,7 @@ KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel* owner)
 bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 {
 	if( !keyQt ) {
-		kWarning(125) << k_funcinfo << "Tried to grab key with null code.";
+		kWarning(125) << "Tried to grab key with null code.";
 		return false;
 	}
 

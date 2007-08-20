@@ -84,7 +84,7 @@ KGlobalAccelImpl::KGlobalAccelImpl(KdedGlobalAccel *owner)
 bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 {
 	if( !keyQt ) {
-		kWarning(125) << k_funcinfo << "Tried to grab key with null code.";
+		kWarning(125) << "Tried to grab key with null code.";
 		return false;
 	}
 
@@ -224,7 +224,7 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 	
 	int keyQt = keyCodeQt | keyModQt;
 	
-	kDebug(125) << k_funcinfo << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]";
+	kDebug(125) << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]";
 
 
 	// Keyboard needs to be ungrabed after XGrabKey() activates the grab, but only in such case.

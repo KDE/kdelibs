@@ -1243,13 +1243,13 @@ void Window::scheduleClose()
 void Window::closeNow()
 {
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
-    kDebug(6070) << k_funcinfo << "part is deleted already";
+    kDebug(6070) << "part is deleted already";
   } else {
     KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
     if (!part) {
       kDebug(6070) << "closeNow on non KHTML part";
     } else {
-      //kDebug(6070) << k_funcinfo << " -> closing window";
+      //kDebug(6070) << " -> closing window";
       // We want to make sure that window.open won't find this part by name.
       part->setObjectName( QString() );
       part->deleteLater();
@@ -2173,7 +2173,7 @@ WindowQObject::WindowQObject(Window *w)
 {
   //kDebug(6070) << "WindowQObject::WindowQObject " << this;
   if ( !parent->m_frame )
-      kDebug(6070) << "WARNING: null part in " << k_funcinfo;
+      kDebug(6070) << "WARNING: null part in " ;
   else
       connect( parent->m_frame, SIGNAL( destroyed() ),
                this, SLOT( parentDestroyed() ) );

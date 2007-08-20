@@ -188,7 +188,7 @@ void KCModuleProxy::showEvent( QShowEvent * ev )
 {
     Q_D(KCModuleProxy);
 
-	kDebug(711) << k_funcinfo;
+	kDebug(711) ;
 	( void )realModule();
 
 	/* We have no kcm, if we're in root mode */

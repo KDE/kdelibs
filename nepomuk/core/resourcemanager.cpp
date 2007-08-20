@@ -154,7 +154,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
             l.append( Resource( *rdIt ) );
         }
 
-        kDebug(300004) << k_funcinfo << " added local resources: " << l.count();
+        kDebug(300004) << " added local resources: " << l.count();
 
         // check remote data
         RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
@@ -169,7 +169,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
                 l.append( res );
         }
 
-        kDebug(300004) << k_funcinfo << " added remote resources: " << l.count();
+        kDebug(300004) << " added remote resources: " << l.count();
     }
 
     return l;

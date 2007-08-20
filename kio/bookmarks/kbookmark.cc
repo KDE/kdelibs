@@ -700,7 +700,7 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
         KUrl::List::ConstIterator uEnd = urls.end();
         for ( ; uit != uEnd ; ++uit )
         {
-            //kDebug(7043) << k_funcinfo << "url=" << (*uit);
+            //kDebug(7043) << "url=" << (*uit);
             bookmarks.append( KBookmark::standaloneBookmark(
                                   (*uit).prettyUrl(), (*uit) ));
         }

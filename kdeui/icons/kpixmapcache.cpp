@@ -79,7 +79,7 @@ public:
         }
         // Output error msg if locking failed
         if (!mValid) {
-            kError() << k_funcinfo << "Failed to lock file '" << filename << "', last result = " << result << endl;
+            kError() << "Failed to lock file '" << filename << "', last result = " << result << endl;
         }
     }
     ~KPCLockFile()
@@ -173,7 +173,7 @@ qint64 KPCMemoryDevice::readData(char* data, qint64 len)
 qint64 KPCMemoryDevice::writeData(const char* data, qint64 len)
 {
     if (mPos + len > mAvailable) {
-        kError() << k_funcinfo << "Overflow of" << mPos+len - mAvailable << endl;
+        kError() << "Overflow of" << mPos+len - mAvailable << endl;
         return -1;
     }
     memcpy(mMemory + mPos, (uchar*)data, len);
@@ -326,9 +326,9 @@ public:
         virtual void run()
         {
             mRemovalScheduled = false;
-            kDebug() << k_funcinfo << "starting" << endl;
+            kDebug() << "starting" << endl;
             d->removeEntries(mNewSize);
-            kDebug() << k_funcinfo << "done" << endl;
+            kDebug() << "done" << endl;
         }
 
     private:
@@ -391,7 +391,7 @@ void KPixmapCache::Private::invalidateMmapFiles()
     if (mIndexMmapInfo.file) {
         KPCMemoryDevice dev(mIndexMmapInfo.memory, &mIndexMmapInfo.size, mIndexMmapInfo.available);
         QDataStream stream(&dev);
-        kDebug() << k_funcinfo << "Invalidatig cache" << endl;
+        kDebug() << "Invalidatig cache" << endl;
         dev.seek(kpc_header_len + sizeof(quint32));
         stream << (quint32)0;
     }
@@ -403,7 +403,7 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
 #ifdef HAVE_MMAP
     info->file = new QFile(filename);
     if (!info->file->open(QIODevice::ReadWrite)) {
-        kDebug() << k_funcinfo << "Couldn't open" << filename << endl;
+        kDebug() << "Couldn't open" << filename << endl;
         delete info->file;
         return false;
     }
@@ -413,14 +413,14 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
     }
     info->available = newsize;
     if (!info->file->resize(info->available)) {
-        kError() << k_funcinfo << "Couldn't resize" << filename << "to" << newsize << endl;
+        kError() << "Couldn't resize" << filename << "to" << newsize << endl;
         delete info->file;
         return false;
     }
 
     void* indexMem = mmap(0, info->available, PROT_READ | PROT_WRITE, MAP_SHARED, info->file->handle(), 0);
     if (indexMem == MAP_FAILED) {
-        kError() << k_funcinfo << "mmap failed for" << filename << endl;
+        kError() << "mmap failed for" << filename << endl;
         delete info->file;
         return false;
     }
@@ -460,7 +460,7 @@ QIODevice* KPixmapCache::Private::indexDevice()
         // Make sure the file still exists
         QFileInfo fi(mIndexFile);
         if (!fi.exists() || fi.size() != mIndexMmapInfo.available) {
-            kDebug() << k_funcinfo << "File size has changed, re-initing" << endl;
+            kDebug() << "File size has changed, re-initing" << endl;
             q->recreateCacheFiles();  // Also tries to re-init mmap
             if (!q->isValid()) {
                 return 0;
@@ -479,7 +479,7 @@ QIODevice* KPixmapCache::Private::indexDevice()
             q->recreateCacheFiles();
         }
         if (!file->open(QIODevice::ReadWrite)) {
-            kDebug() << k_funcinfo << "Couldn't open index file" << mIndexFile << endl;
+            kDebug() << "Couldn't open index file" << mIndexFile << endl;
             delete file;
             return 0;
         }
@@ -491,7 +491,7 @@ QIODevice* KPixmapCache::Private::indexDevice()
     quint32 cacheid;
     stream >> cacheid;
     if (cacheid != mCacheId) {
-        kDebug() << k_funcinfo << "Cache has changed, reloading" << endl;
+        kDebug() << "Cache has changed, reloading" << endl;
         delete device;
 
         q->init();
@@ -523,7 +523,7 @@ QIODevice* KPixmapCache::Private::dataDevice()
         return 0;
     }
     if (!file->open(QIODevice::ReadWrite)) {
-        kDebug() << k_funcinfo << "Couldn't open data file" << mDataFile << endl;
+        kDebug() << "Couldn't open data file" << mDataFile << endl;
         delete file;
         return 0;
     }
@@ -598,7 +598,7 @@ bool KPixmapCache::Private::checkLockFile()
     // For KLockFile we need to ensure the lock file doesn't exist.
     if (QFile::exists(mLockFileName)) {
         if (!QFile::remove(mLockFileName)) {
-            kError() << k_funcinfo << "Couldn't remove lockfile '" << mLockFileName << "'" << endl;
+            kError() << "Couldn't remove lockfile '" << mLockFileName << "'" << endl;
             return false;
         }
     }
@@ -615,7 +615,7 @@ bool KPixmapCache::Private::checkFileVersion(const QString& filename)
         // File already exists, make sure it can be opened
         QFile f(filename);
         if (!f.open(QIODevice::ReadOnly)) {
-            kError() << k_funcinfo << "Couldn't open file '" << filename << "'" << endl;
+            kError() << "Couldn't open file '" << filename << "'" << endl;
             return false;
         }
 
@@ -630,15 +630,15 @@ bool KPixmapCache::Private::checkFileVersion(const QString& filename)
             if (version == KPIXMAPCACHE_VERSION) {
                 return true;
             } else if (version < KPIXMAPCACHE_VERSION) {
-                kWarning() << k_funcinfo << "File '" << filename << "' is outdated, will recreate...";
+                kWarning() << "File '" << filename << "' is outdated, will recreate...";
             } else {
                 // Don't recreate the cache if it has newer version to avoid
                 //  problems when upgrading kdelibs.
-                kWarning() << k_funcinfo << "File '" << filename << "' has newer version, disabling cache";
+                kWarning() << "File '" << filename << "' has newer version, disabling cache";
                 return false;
             }
         } else {
-            kWarning() << k_funcinfo << "File '" << filename << "' is not KPixmapCache file, will recreate...";
+            kWarning() << "File '" << filename << "' is not KPixmapCache file, will recreate...";
         }
     }
 
@@ -678,7 +678,7 @@ bool KPixmapCache::Private::loadIndexHeader()
     stream >> mTimestamp;
 
     if (stream.status() != QDataStream::Ok) {
-        kWarning() << k_funcinfo << "Failed to read index file's header";
+        kWarning() << "Failed to read index file's header";
         q->recreateCacheFiles();
         return false;
     }
@@ -747,7 +747,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
 {
     KPCLockFile lock(mLockFileName);
     if (!lock.isValid()) {
-        kDebug() << k_funcinfo << "Couldn't lock cache " << mName << endl;
+        kDebug() << "Couldn't lock cache " << mName << endl;
         return false;
     }
     QMutexLocker mutexlocker(&mMutex);
@@ -755,30 +755,30 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     // Open old (current) files
     QFile indexfile(mIndexFile);
     if (!indexfile.open(QIODevice::ReadOnly)) {
-        kDebug() << k_funcinfo << "Couldn't open old index file" << endl;
+        kDebug() << "Couldn't open old index file" << endl;
         return false;
     }
     QDataStream istream(&indexfile);
     QFile datafile(mDataFile);
     if (!datafile.open(QIODevice::ReadOnly)) {
-        kDebug() << k_funcinfo << "Couldn't open old data file" << endl;
+        kDebug() << "Couldn't open old data file" << endl;
         return false;
     }
     if (datafile.size() <= newsize*1024) {
-        kDebug() << k_funcinfo << "Cache size is already within limit (" << datafile.size() << " <= " << newsize*1024 << ")" << endl;
+        kDebug() << "Cache size is already within limit (" << datafile.size() << " <= " << newsize*1024 << ")" << endl;
         return true;
     }
     QDataStream dstream(&datafile);
     // Open new files
     QFile newindexfile(mIndexFile + ".new");
     if (!newindexfile.open(QIODevice::ReadWrite)) {
-        kDebug() << k_funcinfo << "Couldn't open new index file" << endl;
+        kDebug() << "Couldn't open new index file" << endl;
         return false;
     }
     QDataStream newistream(&newindexfile);
     QFile newdatafile(mDataFile + ".new");
     if (!newdatafile.open(QIODevice::WriteOnly)) {
-        kDebug() << k_funcinfo << "Couldn't open new inddataex file" << endl;
+        kDebug() << "Couldn't open new inddataex file" << endl;
         return false;
     }
     QDataStream newdstream(&newdatafile);
@@ -786,7 +786,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     // Copy index file header
     char* header = new char[mHeaderSize];
     if (istream.readRawData(header, mHeaderSize) != (int)mHeaderSize) {
-        kDebug() << k_funcinfo << "Couldn't read index header" << endl;
+        kDebug() << "Couldn't read index header" << endl;
         return false;
     }
     newistream.writeRawData(header, mHeaderSize);
@@ -797,7 +797,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     // mHeaderSize is always bigger than dataheaderlen, so we needn't create
     //  new buffer
     if (dstream.readRawData(header, dataheaderlen) != dataheaderlen) {
-        kDebug() << k_funcinfo << "Couldn't read data header" << endl;
+        kDebug() << "Couldn't read data header" << endl;
         return false;
     }
     newdstream.writeRawData(header, dataheaderlen);
@@ -888,7 +888,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     newdatafile.rename(mDataFile);
     invalidateMmapFiles();
 
-    kDebug() << k_funcinfo << "Wrote back" << entrieswritten << "of" << entries.count() << "entries" << endl;
+    kDebug() << "Wrote back" << entrieswritten << "of" << entries.count() << "entries" << endl;
 
     return true;
 }
@@ -937,7 +937,7 @@ void KPixmapCache::init()
     d->mEnabled &= d->checkFileVersion(d->mDataFile);
     d->mEnabled &= d->checkFileVersion(d->mIndexFile);
     if (!d->mEnabled) {
-        kDebug() << k_funcinfo << "Pixmap cache '" + d->mName + "' is disabled";
+        kDebug() << "Pixmap cache '" + d->mName + "' is disabled";
     } else {
         // Cache is enabled, but check if it's ready for use
         d->loadDataHeader();
@@ -1064,7 +1064,7 @@ bool KPixmapCache::recreateCacheFiles()
     // Create index file
     QFile indexfile(d->mIndexFile);
     if (!indexfile.open(QIODevice::WriteOnly)) {
-        kError() << k_funcinfo << "Couldn't create index file '" << d->mIndexFile << "'" << endl;
+        kError() << "Couldn't create index file '" << d->mIndexFile << "'" << endl;
         return false;
     }
     QDataStream istream(&indexfile);
@@ -1083,7 +1083,7 @@ bool KPixmapCache::recreateCacheFiles()
     // Create data file
     QFile datafile(d->mDataFile);
     if (!datafile.open(QIODevice::WriteOnly)) {
-        kError() << k_funcinfo << "Couldn't create data file '" << d->mDataFile << "'" << endl;
+        kError() << "Couldn't create data file '" << d->mDataFile << "'" << endl;
         return false;
     }
     QDataStream dstream(&datafile);
@@ -1151,7 +1151,7 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
     //kDebug() << "KPC::find(" << key << "), use QPC = " << d->mUseQPixmapCache;
     // First try the QPixmapCache
     if (d->mUseQPixmapCache && QPixmapCache::find(key, pix)) {
-        //kDebug() << k_funcinfo << "Found from QPC";
+        //kDebug() << "Found from QPC";
         return true;
     }
 
@@ -1184,9 +1184,9 @@ bool KPixmapCache::loadData(int offset, QPixmap& pix)
     if (!device) {
         return -1;
     }
-    //kDebug() << "KPC: " << k_funcinfo << "Seeking to pos " << offset << "/" << file.size();
+    //kDebug() << "KPC: " << "Seeking to pos " << offset << "/" << file.size();
     if (!device->seek(offset)) {
-        kError() << k_funcinfo << "Couldn't seek to pos " << offset << endl;
+        kError() << "Couldn't seek to pos " << offset << endl;
         delete device;
         return false;
     }
@@ -1218,12 +1218,12 @@ bool KPixmapCache::loadData(int offset, QPixmap& pix)
 
     delete device;
     if (stream.status() != QDataStream::Ok) {
-        kError() << "KPC: " << k_funcinfo << "stream is bad :-(  status=" <<
+        kError() << "KPC: " << "stream is bad :-(  status=" <<
                 stream.status() << endl;
         return false;
     }
 
-    //kDebug() << "KPC: " << k_funcinfo << "pixmap successfully loaded";
+    //kDebug() << "KPC: " << "pixmap successfully loaded";
     return true;
 }
 

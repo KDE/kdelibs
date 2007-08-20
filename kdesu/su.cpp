@@ -175,7 +175,7 @@ int SuProcess::exec(const char *password, int check)
  	        return ret;
  	    }
  	    if (kill(m_Pid, SIGKILL) < 0) {
- 	        kDebug() << k_funcinfo << "kill < 0";
+ 	        kDebug() << "kill < 0";
  		//FIXME SIGKILL doesn't work for sudo,
  		//why is this different from su?
  		ret=error;

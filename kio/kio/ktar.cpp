@@ -201,7 +201,7 @@ qint64 KTar::readRawHeader( char *buffer ) {
 
 bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   qint64 n = 0;
-  //kDebug() << k_funcinfo << "reading longlink from pos " << device()->pos();
+  //kDebug() << "reading longlink from pos " << device()->pos();
   QIODevice *dev = device();
   // read size of longlink from size field in header
   // size is in bytes including the trailing null (which we ignore)

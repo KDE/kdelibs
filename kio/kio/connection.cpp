@@ -82,7 +82,7 @@ void ConnectionPrivate::dequeue()
 
 void ConnectionPrivate::commandReceived(const Task &task)
 {
-    //kDebug() << k_funcinfo << "Command " << task.cmd << " added to the queue";
+    //kDebug() << "Command " << task.cmd << " added to the queue";
     incomingTasks.enqueue(task);
     emit q->readyRead();
 }
@@ -164,7 +164,7 @@ bool SocketConnectionBackend::connectToRemote(const KUrl &url)
 
         if (!socket->waitForConnected(1000)) {
             state = Idle;
-            kDebug() << k_funcinfo << "could not connect to " << url;
+            kDebug() << "could not connect to " << url;
             return false;
         }
     }
@@ -277,7 +277,7 @@ AbstractConnectionBackend *SocketConnectionBackend::nextPendingConnection()
     Q_ASSERT(localServer || tcpServer);
     Q_ASSERT(!socket);
 
-    //kDebug() << k_funcinfo << "Got a new connection";
+    //kDebug() << "Got a new connection";
 
     QTcpSocket *newSocket;
     if (mode == LocalSocketMode)
@@ -303,7 +303,7 @@ void SocketConnectionBackend::socketReadyRead()
         // might happen if the invokeMethods were delivered after we disconnected
         return;
 
-    //kDebug() << k_funcinfo << "Got " << socket->bytesAvailable() << " bytes";
+    //kDebug() << "Got " << socket->bytesAvailable() << " bytes";
     if (len == -1) {
         // We have to read the header
         static char buffer[HeaderSize];
@@ -330,7 +330,7 @@ void SocketConnectionBackend::socketReadyRead()
 
     QPointer<SocketConnectionBackend> that = this;
 
-    //kDebug() << k_funcinfo << "Want to read " << len << " bytes";
+    //kDebug() << "Want to read " << len << " bytes";
     if (socket->bytesAvailable() >= len) {
         Task task;
         task.cmd = cmd;
@@ -408,7 +408,7 @@ bool Connection::suspended() const
 
 void Connection::connectToRemote(const QString &address)
 {
-    //kDebug(7017) << k_funcinfo << "Connection requested to " << address;
+    //kDebug(7017) << "Connection requested to " << address;
     KUrl url = address;
     QString scheme = url.protocol();
 
@@ -417,7 +417,7 @@ void Connection::connectToRemote(const QString &address)
     } else if (scheme == QLatin1String("tcp")) {
         d->backend = new SocketConnectionBackend(SocketConnectionBackend::TcpSocketMode, this);
     } else {
-        kWarning(7017) << k_funcinfo << "Unknown requested KIO::Connection protocol='" << scheme
+        kWarning(7017) << "Unknown requested KIO::Connection protocol='" << scheme
                        << "' (" << address << ")" << endl;
         Q_ASSERT(0);
         return;
@@ -425,7 +425,7 @@ void Connection::connectToRemote(const QString &address)
 
     // connection succeeded
     if (!d->backend->connectToRemote(url)) {
-        //kWarning(7017) << k_funcinfo << "could not connect to " << url << "using scheme" << scheme ;
+        //kWarning(7017) << "could not connect to " << url << "using scheme" << scheme ;
         delete d->backend;
         d->backend = 0;
         return;
@@ -524,7 +524,7 @@ void ConnectionServer::listenForRemote()
     }
 
     connect(d->backend, SIGNAL(newConnection()), SIGNAL(newConnection()));
-    kDebug(7017) << k_funcinfo << "Listening on " << d->backend->address;
+    kDebug(7017) << "Listening on " << d->backend->address;
 }
 
 QString ConnectionServer::address() const

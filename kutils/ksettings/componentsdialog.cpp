@@ -133,7 +133,7 @@ void ComponentsDialog::show()
 
 void ComponentsDialog::executed( QTreeWidgetItem * item, int )
 {
-    kDebug( 704 ) << k_funcinfo;
+    kDebug( 704 ) ;
     if( item == 0 )
         return;
 

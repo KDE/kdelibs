@@ -334,13 +334,13 @@ static bool mimeMagicRuleCompare(const KMimeMagicRule& lhs, const KMimeMagicRule
 void KMimeTypeFactory::parseMagic()
 {
     const QStringList magicFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "magic");
-    //kDebug() << k_funcinfo << magicFiles;
+    //kDebug() << magicFiles;
     QListIterator<QString> magicIter( magicFiles );
     magicIter.toBack();
     while (magicIter.hasPrevious()) { // global first, then local. Turns out it doesn't matter though.
         const QString fileName = magicIter.previous();
         QFile magicFile(fileName);
-        kDebug() << k_funcinfo << "Now parsing " << fileName;
+        kDebug() << "Now parsing " << fileName;
         if (magicFile.open(QIODevice::ReadOnly))
             m_magicRules += parseMagicFile(&magicFile, fileName);
     }

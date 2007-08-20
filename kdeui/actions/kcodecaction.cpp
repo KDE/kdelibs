@@ -154,7 +154,7 @@ int KCodecAction::mibForName(const QString &codecName, bool *ok) const
     if (success)
         return mib;
 
-    kWarning() << k_funcinfo << "Invalid codec name: "  << codecName;
+    kWarning() << "Invalid codec name: "  << codecName;
     return MIB_DEFAULT;
 }
 
@@ -224,7 +224,7 @@ bool KCodecAction::setCurrentCodec( QTextCodec *codec )
 //         return setCurrentCodec(QLatin1String(codec->name()));
 //     else
 //     {
-//         kWarning() << k_funcinfo << "Codec is not selectable.";
+//         kWarning() << "Codec is not selectable.";
 //         return false;
 //     }
     if (!codec)

@@ -294,7 +294,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
         KLibrary *lib = loader->library(libname);
         if (!lib)
         {
-            kWarning() << k_funcinfo << "Could not load library. [ "
+            kWarning() << "Could not load library. [ "
                        << loader->lastErrorMessage() << " ]" << endl;
             libname.prepend("lib");
             lib = loader->library(libname);
@@ -323,7 +323,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
         }
         else
         {
-            kWarning() << k_funcinfo << "Could not load library. [ "
+            kWarning() << "Could not load library. [ "
                        << loader->lastErrorMessage() << " ]" << endl;
         }
         kDebug(7020) << "Could not load module '" << obj << "'\n";

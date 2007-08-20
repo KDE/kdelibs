@@ -871,7 +871,7 @@ void QWidgetStackAccelManager::currentChanged(int child)
 {
     if (child < 0 || child >= static_cast<QStackedWidget*>(parent())->count())
     {
-        kDebug(131) << k_funcinfo << "invalid index provided";
+        kDebug(131) << "invalid index provided";
         return;
     }
 

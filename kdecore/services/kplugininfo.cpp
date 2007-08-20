@@ -231,21 +231,21 @@ bool KPluginInfo::isHidden() const
 void KPluginInfo::setPluginEnabled( bool enabled )
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo;
+    kDebug( 703 ) ;
     d->pluginenabled = enabled;
 }
 
 bool KPluginInfo::isPluginEnabled() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo;
+    kDebug( 703 ) ;
     return d->pluginenabled;
 }
 
 bool KPluginInfo::isPluginEnabledByDefault() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo;
+    kDebug( 703 ) ;
     return d->enabledbydefault;
 }
 
@@ -367,7 +367,7 @@ QVariant KPluginInfo::property( const QString & key ) const
 void KPluginInfo::save(KConfigGroup config)
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo;
+    kDebug( 703 ) ;
     if (config.isValid()) {
         config.writeEntry(d->pluginName + "Enabled", isPluginEnabled());
     } else {
@@ -382,7 +382,7 @@ void KPluginInfo::save(KConfigGroup config)
 void KPluginInfo::load(const KConfigGroup &config)
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    kDebug( 703 ) << k_funcinfo;
+    kDebug( 703 ) ;
     if (config.isValid()) {
         setPluginEnabled(config.readEntry(d->pluginName + "Enabled", isPluginEnabledByDefault()));
     } else {
@@ -396,7 +396,7 @@ void KPluginInfo::load(const KConfigGroup &config)
 
 void KPluginInfo::defaults()
 {
-    kDebug( 703 ) << k_funcinfo;
+    kDebug( 703 ) ;
     setPluginEnabled( isPluginEnabledByDefault() );
 }
 

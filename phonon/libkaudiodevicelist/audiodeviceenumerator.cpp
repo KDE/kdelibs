@@ -218,7 +218,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
 {
 #ifdef HAVE_LIBASOUND2
-    kDebug(600) << k_funcinfo << file;
+    kDebug(600) << file;
     QFileInfo changedFile(file);
     QFileInfo asoundrc(QDir::homePath() + QLatin1String("/.asoundrc"));
     if (changedFile != asoundrc) {
@@ -281,7 +281,7 @@ void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
 
 void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
 {
-    kDebug(600) << k_funcinfo << udi;
+    kDebug(600) << udi;
     Solid::Device _device(udi);
     Solid::AudioInterface *audiohw = _device.as<Solid::AudioInterface>();
     if (audiohw && (audiohw->deviceType()  & (Solid::AudioInterface::AudioInput |
@@ -319,7 +319,7 @@ void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
 
 void AudioDeviceEnumeratorPrivate::_k_deviceRemoved(const QString &udi)
 {
-    kDebug(600) << k_funcinfo << udi;
+    kDebug(600) << udi;
     AudioDevice dev;
     foreach (const AudioDevice &listedDev, capturedevicelist) {
         if (listedDev.udi() == udi && listedDev.isAvailable()) {

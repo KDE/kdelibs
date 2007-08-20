@@ -306,7 +306,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
           unaddedActions += action->objectName() + ' ';
 
     if (!unaddedActions.isEmpty())
-      kWarning() << k_funcinfo << "The following actions are not plugged into the gui (shortcuts will not work): " << unaddedActions;
+      kWarning() << "The following actions are not plugged into the gui (shortcuts will not work): " << unaddedActions;
 */
 
 //    kDebug() << "addClient took " << dt.elapsed();
