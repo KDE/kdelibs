@@ -46,7 +46,8 @@ public:
     typedef fptr (TestClass1::* uglypmf)();
     fptr func_fptr() { kDebug(); return 0; }
     pmf func_pmf() { kDebug(); return 0; }
-    uglypmf func_uglypmf() { kDebug(); return 0; }
+    uglypmf func_uglypmf(uglypmf = 0) { kDebug(); return 0; }
+    QMap<QString, uglypmf> func_uglypmf2() { kDebug(); return QMap<QString, uglypmf>(); }
 
 public:
     TestClass1()
@@ -76,6 +77,7 @@ public:
             func_fptr();
             func_pmf();
             func_uglypmf();
+            func_uglypmf2();
         }
 };
 
