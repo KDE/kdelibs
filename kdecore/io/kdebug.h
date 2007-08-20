@@ -47,13 +47,6 @@
 # endif
 #endif
 
-
-/**
- * An indicator of where you are in a source file, to be used in
- * warnings (perhaps debug messages too).
- */
-#define k_funcinfo "[" << Q_FUNC_INFO << "] "
-
 /**
  * An indicator of where you are in a source file, to be used in
  * warnings (perhaps debug messages too). Gives an accurate
