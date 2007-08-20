@@ -607,6 +607,10 @@ bool KPixmapCache::Private::checkLockFile()
 
 bool KPixmapCache::Private::checkFileVersion(const QString& filename)
 {
+    if (!mEnabled) {
+        return false;
+    }
+
     if (QFile::exists(filename)) {
         // File already exists, make sure it can be opened
         QFile f(filename);
@@ -622,10 +626,19 @@ bool KPixmapCache::Private::checkFileVersion(const QString& filename)
         quint32 version;
         stream.readRawData(buf, kpc_magic_len);
         stream >> version;
-        if (qstrncmp(buf, kpc_magic, kpc_magic_len) == 0 && version == KPIXMAPCACHE_VERSION) {
-            return true;
+        if (qstrncmp(buf, kpc_magic, kpc_magic_len) == 0) {
+            if (version == KPIXMAPCACHE_VERSION) {
+                return true;
+            } else if (version < KPIXMAPCACHE_VERSION) {
+                kWarning() << k_funcinfo << "File '" << filename << "' is outdated, will recreate...";
+            } else {
+                // Don't recreate the cache if it has newer version to avoid
+                //  problems when upgrading kdelibs.
+                kWarning() << k_funcinfo << "File '" << filename << "' has newer version, disabling cache";
+                return false;
+            }
         } else {
-            kWarning() << k_funcinfo << "File '" << filename << "' is outdated, will recreate...";
+            kWarning() << k_funcinfo << "File '" << filename << "' is not KPixmapCache file, will recreate...";
         }
     }
 
@@ -960,7 +973,7 @@ bool KPixmapCache::isEnabled() const
 bool KPixmapCache::isValid() const
 {
     ensureInited();
-    return d->mValid;
+    return d->mEnabled && d->mValid;
 }
 
 void KPixmapCache::setValid(bool valid)
@@ -1041,6 +1054,10 @@ void KPixmapCache::setRemoveEntryStrategy(KPixmapCache::RemoveStrategy strategy)
 
 bool KPixmapCache::recreateCacheFiles()
 {
+    if (!isEnabled()) {
+        return false;
+    }
+
     d->invalidateMmapFiles();
 
     d->mEnabled = false;
@@ -1085,6 +1102,7 @@ bool KPixmapCache::recreateCacheFiles()
     // Close the files and mmap them (if mmapping is used)
     indexfile.close();
     datafile.close();
+    d->mEnabled = true;
     d->mmapFiles();
     return true;
 }
