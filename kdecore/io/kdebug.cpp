@@ -368,15 +368,11 @@ struct KDebugPrivate
         return it;
     }
 
-    QDebug setupFileWriter(const QString &fileName, const QString &areaName)
+    QDebug setupFileWriter(const QString &fileName)
     {
         QDebug result(&filewriter);
         result.nospace() << qPrintable(fileName) << '\0';
-
-        if (!areaName.isEmpty()) {
-            result << qPrintable(areaName) << ':';
-        }
-        return result.space();
+        return result;
     }
 
     QDebug setupMessageBoxWriter(QtMsgType type, const QString &areaName)
@@ -402,11 +398,11 @@ struct KDebugPrivate
 
         header += areaName.toAscii();
         header += ')';
-        result.nospace() << header.constData() << '\0' << qPrintable(areaName);
-        return result.space();
+        result.nospace() << header.constData() << '\0';
+        return result;
     }
 
-    QDebug setupSyslogWriter(QtMsgType type, const QString &areaName)
+    QDebug setupSyslogWriter(QtMsgType type)
     {
         QDebug result(&syslogwriter);
         int level = 0;
@@ -427,23 +423,70 @@ struct KDebugPrivate
             break;
         }
         result.nospace() << char(level);
-        if (!areaName.isEmpty())
-            result << areaName.toAscii() << ":";
-        return result.space();
+        return result;
     }
 
-    QDebug setupQtWriter(QtMsgType type, const QString &areaName)
+    QDebug setupQtWriter(QtMsgType type)
     {
-        QDebug result(&lineendstrippingwriter);
         if (type != QtDebugMsg)
-            result = QDebug(type);
-        if (areaName.isEmpty())
-            return result;
-        result.nospace() << qPrintable(areaName) << ":";
-        return result.space();
+            return QDebug(type);
+        return QDebug(&lineendstrippingwriter);
     }
 
-    QDebug stream(QtMsgType type, unsigned int area)
+    QDebug printHeader(QDebug s, const QString &areaName, const char *, int, const char *funcinfo)
+    {
+#ifdef KDE_EXTENDED_DEBUG_OUTPUT
+        QString programName = cache.value(0).name;
+        if (programName.isEmpty())
+            programName = QLatin1String("<unknown program name>");
+        s.nospace() << qPrintable(programName) << "(" << unsigned(getpid()) << ")";
+        if (areaName != programName)
+            s << "/" << qPrintable(areaName);
+
+        if (funcinfo) {
+# ifdef Q_CC_GNU
+            // strip the function info down to the base function name
+            // note that this throws away the template definitions,
+            // the parameter types (overloads) and any const/volatile qualifiers
+            QByteArray info = funcinfo;
+            int pos = info.indexOf('(');
+            Q_ASSERT_X(pos != -1, "kDebug",
+                       "Bug in kDebug(): I don't know how to parse this function name");
+            while (info.at(pos - 1) == ' ')
+                // that '(' we matched was actually the opening of a function-pointer
+                pos = info.indexOf('(', pos + 1);
+
+            info.truncate(pos);
+            pos = info.lastIndexOf(' ');
+            if (pos != -1) {
+                int startoftemplate = info.lastIndexOf('<');
+                if (startoftemplate != -1 && pos > startoftemplate &&
+                    pos < info.lastIndexOf(">::"))
+                    // we matched a space inside this function's template definition
+                    pos = info.lastIndexOf(' ', startoftemplate);
+            }
+
+            if (pos + 1 == info.length())
+                // something went wrong, so gracefully bail out
+                s << " " << funcinfo;
+            else
+                s << " " << info.constData() + pos + 1;
+# else
+            s << " " << funcinfo;
+# endif
+        }
+
+        s << ":";
+#else
+        Q_UNUSED(funcinfo);
+        if (!areaName.isEmpty())
+            s << qPrintable(areaName) << ':';
+#endif
+        return s.space();
+    }
+
+    QDebug stream(QtMsgType type, unsigned int area, const char *debugFile, int line,
+                  const char *funcinfo)
     {
         Cache::Iterator it = areaData(type, area);
         OutputMode mode = it->mode[level(type)];
@@ -453,18 +496,26 @@ struct KDebugPrivate
         if (areaName.isEmpty())
             areaName = cache.value(0).name;
 
+        QDebug s(&devnull);
         switch (mode) {
         case FileOutput:
-            return setupFileWriter(file, areaName);
+            s = setupFileWriter(file);
+            break;
         case MessageBoxOutput:
-            return setupMessageBoxWriter(type, areaName);
+            s = setupMessageBoxWriter(type, areaName);
+            break;
         case SyslogOutput:
-            return setupSyslogWriter(type, areaName);
+            s = setupSyslogWriter(type);
+            break;
         case NoOutput:
-            return QDebug(&devnull);
+            s = QDebug(&devnull);
+            break;
         default:                // QtOutput
-            return setupQtWriter(type, areaName);
+            s = setupQtWriter(type);
+            break;
         }
+
+        return printHeader(s, areaName, debugFile, line, funcinfo);
     }
 
     QMutex mutex;
@@ -480,88 +531,6 @@ struct KDebugPrivate
 };
 
 K_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
-
-static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
-{
-#ifdef KDE_EXTENDED_DEBUG_OUTPUT
-    s.nospace() << "[";
-
-    static QBasicAtomicPointer<char> programHeader = Q_ATOMIC_INIT(0);
-    if (!programHeader) {
-        QString str;
-        if (KGlobal::hasMainComponent())
-            str = KGlobal::mainComponent().componentName();
-        if (str.isEmpty()) {
-            QStringList arguments;
-            if (QCoreApplication::instance())
-                arguments = QCoreApplication::arguments();
-            if (!arguments.isEmpty())
-                str = arguments.first();
-            if (str.isEmpty())
-                str = KCmdLineArgs::appName();
-            int pos = str.indexOf(QLatin1Char('/'));
-            if (pos != -1)
-                str = str.mid(pos);
-        }
-
-        if (!str.isEmpty()) {
-            str += QLatin1String(" (");
-            str += QString::number(getpid());
-            str += QLatin1String(")");
-
-            char *dup = strdup(str.toLocal8Bit());
-            if (!programHeader.testAndSet(0, dup))
-                free(dup);
-        }
-    }
-
-    if (programHeader) {
-        s << static_cast<char *>(programHeader);
-    } else {
-        s << "<unknown program name>";
-    }
-
-    if (funcinfo) {
-#ifdef Q_CC_GNU
-        // strip the function info down to the base function name
-        // note that this throws away the template definitions,
-        // the parameter types (overloads) and any const/volatile qualifiers
-        QByteArray info = funcinfo;
-        int pos = info.indexOf('(');
-        Q_ASSERT_X(pos != -1, "kDebug",
-                   "Bug in kDebug(): I don't know how to parse this function name");
-        while (info.at(pos - 1) == ' ')
-            // that '(' we matched was actually the opening of a function-pointer
-            pos = info.indexOf('(', pos + 1);
-
-        info.truncate(pos);
-        pos = info.lastIndexOf(' ');
-        if (pos != -1) {
-            int startoftemplate = info.lastIndexOf('<');
-            if (startoftemplate != -1 && pos > startoftemplate &&
-                pos < info.lastIndexOf(">::"))
-                // we matched a space inside this function's template definition
-                pos = info.lastIndexOf(' ', startoftemplate);
-        }
-
-        if (pos + 1 == info.length())
-            // something went wrong, so gracefully bail out
-            s << " in " << funcinfo;
-        else
-            s << " in " << info.constData() + pos + 1;
-#else
-        s << " in " << funcinfo;
-#endif
-    }
-
-    s << "]";
-    s.space();
-#else
-    Q_UNUSED(funcinfo);
-#endif
-
-    return s;
-}
 
 QString kRealBacktrace(int levels)
 {
@@ -606,7 +575,7 @@ QDebug kDebugStream(QtMsgType level, int area, const char *file, int line, const
     }
 
     QMutexLocker locker(&kDebug_data->mutex);
-    return debugHeader(kDebug_data->stream(level, area), file, line, funcinfo);
+    return kDebug_data->stream(level, area, file, line, funcinfo);
 }
 
 QDebug perror(QDebug s, KDebugTag)
