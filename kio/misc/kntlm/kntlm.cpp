@@ -27,9 +27,9 @@
 
 #include <QtCore/QDate>
 #include <QtCore/qendian.h>
+#include <QtCore/QCryptographicHash>
 
 #include <krandom.h>
-#include <kcodecs.h>
 #include <kdebug.h>
 
 #include "des.h"
@@ -240,13 +240,10 @@ QByteArray KNTLM::getNTLMResponse( const QString &password, const unsigned char 
 
 QByteArray KNTLM::ntlmHash( const QString &password )
 {
-  KMD4::Digest digest;
   QByteArray unicode;
   unicode = QString2UnicodeLE( password );
 
-  KMD4 md4( unicode );
-  md4.rawDigest( digest );
-  return QByteArray( (const char*) digest, sizeof( digest ) );
+  return QCryptographicHash::hash(unicode, QCryptographicHash::Md4);
 }
 
 QByteArray KNTLM::getNTLMv2Response( const QString &target, const QString &user,
@@ -311,7 +308,6 @@ QByteArray KNTLM::createBlob( const QByteArray &targetinfo )
 QByteArray KNTLM::hmacMD5( const QByteArray &data, const QByteArray &key )
 {
   quint8 ipad[64], opad[64];
-  KMD5::Digest digest;
   QByteArray ret;
   
   memset( ipad, 0x36, sizeof(ipad) );
@@ -324,16 +320,17 @@ QByteArray KNTLM::hmacMD5( const QByteArray &data, const QByteArray &key )
   QByteArray content( data.size()+64, 0 );
   memcpy( content.data(), ipad, 64 );
   memcpy( content.data() + 64, data.data(), data.size() );
-  KMD5 md5( content );
-  md5.rawDigest( digest );
-  content.resize( sizeof(digest) + 64 );
-  memcpy( content.data(), opad, 64 );
-  memcpy( content.data() + 64, digest, sizeof(digest) );
-  md5.reset();
-  md5.update( content );
-  md5.rawDigest( digest );
 
-  return QByteArray( (const char*) digest, sizeof( digest ) );
+  QCryptographicHash md5(QCryptographicHash::Md5);
+  md5.addData(content);
+  content.resize(64);
+  memcpy( content.data(), opad, 64 );
+  content += md5.result();
+
+  md5.reset();
+  md5.addData(content);
+
+  return md5.result();;
 }
 
 /*
