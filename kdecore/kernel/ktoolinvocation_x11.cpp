@@ -251,15 +251,12 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
         {
             // put the whole address lists into RFC2047 encoded blobs; technically
             // this isn't correct, but KMail understands it nonetheless
-            to = QString( "=?utf8?b?%1?=" )
-                 .arg( (const char*)KCodecs::base64Encode( _to.toUtf8(), false ) );
+            to = QString( "=?utf8?b?%1?=" ).arg( _to.toUtf8().toBase64().constData() );
         }
         if ( !_cc.isEmpty() )
-            cc = QString( "=?utf8?b?%1?=" )
-                 .arg( (const char*)KCodecs::base64Encode( _cc.toUtf8(), false ) );
+            cc = QString( "=?utf8?b?%1?=" ).arg( _cc.toUtf8().toBase64().constData() );
         if ( !_bcc.isEmpty() )
-            bcc = QString( "=?utf8?b?%1?=" )
-                  .arg( (const char*)KCodecs::base64Encode( _bcc.toUtf8(), false ) );
+            bcc = QString( "=?utf8?b?%1?=" ).arg( _bcc.toUtf8().toBase64().constData() );
     } else {
         to = _to;
         cc = _cc;
