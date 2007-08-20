@@ -141,7 +141,13 @@ bool LDIFConverter::addresseeToLDIF( const Addressee &addr, QString &str )
   ldif_out( t, "o", addr.organization() );
   ldif_out( t, "organization", addr.organization() );
   ldif_out( t, "organizationname", addr.organization() );
-  ldif_out( t, "department", addr.custom("KADDRESSBOOK", "X-Department") );
+
+  // Compatibility with older kabc versions.
+  if ( addr.department().isEmpty() )
+    ldif_out( t, "department", addr.department() );
+  else
+    ldif_out( t, "department", addr.custom("KADDRESSBOOK", "X-Department") );
+
   ldif_out( t, "workurl", addr.url().prettyURL() );
   ldif_out( t, "homeurl", addr.url().prettyURL() );
   ldif_out( t, "description", addr.note() );
@@ -447,7 +453,7 @@ addComment:
   }
 
   if ( fieldname == QString::fromLatin1( "department" ) ) {
-    a.insertCustom( "KADDRESSBOOK", "X-Department", value );
+    a.setDepartment( value );
     return true;
   }
 

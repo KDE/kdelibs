@@ -63,6 +63,7 @@ ALE,geographic position,,Geo,geo,,.asString()
 ALFE,title,person,QString,title,Organization
 ALFE,role,person in organization,QString,role,Organization
 ALFE,organization,,QString,organization,Organization
+ALFE,department,,QString,department,Organization
 
 ALFE,note,,QString,note
 
