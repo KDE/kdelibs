@@ -67,7 +67,7 @@
 #define WTF_PLATFORM_UNIX 1
 #endif
 
-/* PLATFORM(SOLARIS_OS)
+/* PLATFORM(SOLARIS_OS) */
 /* Operating system level dependencies for Sun (Open)Solaris 10. */
 /* The detection is a little dodgy -- it's not impossible to use */
 /* Sun Studio (the compiler) on non-Solaris platforms. */
