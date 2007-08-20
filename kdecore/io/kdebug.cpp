@@ -125,9 +125,6 @@ public:
             if (len) {
                 QByteArray buf = QByteArray::fromRawData(data, len);
                 int pos = buf.indexOf('\0');
-                if (pos == -1) {
-                    qWarning("nul not found in %s", buf.data());
-                }
                 Q_ASSERT(pos != -1);
 
                 QFile aOutputFile(QFile::decodeName(data));
