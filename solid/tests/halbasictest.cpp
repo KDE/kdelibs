@@ -33,7 +33,7 @@ QTEST_MAIN(HalBasicTest)
 
 void HalBasicTest::testBasic()
 {
-    HalManager *manager = new HalManager(0);
+    Solid::Backends::Hal::HalManager *manager = new Solid::Backends::Hal::HalManager(0);
 
     QVERIFY(manager->deviceExists("/org/freedesktop/Hal/devices/computer"));
     QVERIFY(!manager->allDevices().isEmpty());
@@ -42,7 +42,7 @@ void HalBasicTest::testBasic()
 
     QString proc_udi = manager->devicesFromQuery(QString(), Solid::DeviceInterface::Processor).at(0);
 
-    HalDevice *processor = qobject_cast<HalDevice *>(manager->createDevice(proc_udi));
+    Solid::Backends::Hal::HalDevice *processor = qobject_cast<Solid::Backends::Hal::HalDevice *>(manager->createDevice(proc_udi));
 
     QCOMPARE(processor->udi(), proc_udi);
     QCOMPARE(processor->parentUdi(), QString("/org/freedesktop/Hal/devices/computer"));
@@ -83,8 +83,8 @@ void HalBasicTest::testDeviceCreation()
 
 void HalBasicTest::testSignalHandling()
 {
-    HalManager *manager = new HalManager(0);
-    m_device = qobject_cast<HalDevice *>(manager->createDevice("/org/freedesktop/Hal/devices/computer"));
+    Solid::Backends::Hal::HalManager *manager = new Solid::Backends::Hal::HalManager(0);
+    m_device = qobject_cast<Solid::Backends::Hal::HalDevice *>(manager->createDevice("/org/freedesktop/Hal/devices/computer"));
 
 #if 0
     connect(m_device, SIGNAL(propertyChanged(const QMap<QString,int> &)),

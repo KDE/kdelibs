@@ -37,7 +37,7 @@ private slots:
     void slotPropertyChanged(const QMap<QString,int> &changes);
 
 private:
-    HalDevice *m_device;
+    Solid::Backends::Hal::HalDevice *m_device;
     bool m_signalProcessed;
 };
 

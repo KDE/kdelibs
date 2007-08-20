@@ -35,13 +35,13 @@ QTEST_MAIN(FakeHardwareTest)
 
 void FakeHardwareTest::testFakeBackend()
 {
-    FakeManager *fakeManager = new FakeManager(0, TEST_DATA);
+    Solid::Backends::Fake::FakeManager *fakeManager = new Solid::Backends::Fake::FakeManager(0, TEST_DATA);
 
     QVERIFY(!fakeManager->allDevices().isEmpty());
     QVERIFY(fakeManager->createDevice("/org/kde/solid/fakehw/computer")!=0);
     QVERIFY(fakeManager->createDevice("/com/helloworld/troll/compiutor")==0);
 
-    FakeDevice *device = static_cast<FakeDevice *>(fakeManager->createDevice("/org/kde/solid/fakehw/acpi_CPU0"));
+    Solid::Backends::Fake::FakeDevice *device = static_cast<Solid::Backends::Fake::FakeDevice *>(fakeManager->createDevice("/org/kde/solid/fakehw/acpi_CPU0"));
 
     QCOMPARE(device->udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
     QCOMPARE(device->parentUdi(), QString("/org/kde/solid/fakehw/computer"));
