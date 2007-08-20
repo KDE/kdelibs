@@ -130,9 +130,6 @@ informations
 - Implement a "default" ctor for the widgets i.e. explicit Foo(QWidget* parent = 0).
   (André Wöbbeking)
 
-- Get rid of libkdesu dependency in libkio, get rid of KIO::SessionData::AuthData*
-  (Waldo)
-
 - Make functions in KHelpMenu virtual so they can be overridden (ex: to provide
   an alternative help->contents action)
   (George Staikos)
