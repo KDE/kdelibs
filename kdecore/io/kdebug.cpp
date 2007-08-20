@@ -535,6 +535,9 @@ static QDebug debugHeader(QDebug s, const char *, int, const char *funcinfo)
         int pos = info.indexOf('(');
         Q_ASSERT_X(pos != -1, "kDebug",
                    "Bug in kDebug(): I don't know how to parse this function name");
+        while (info.at(pos + 1) == '*')
+            // that '(' we matched was actually the opening of a function-pointer
+            pos = info.indexOf('(', pos + 1);
 
         info.truncate(pos);
         pos = info.lastIndexOf(' ');

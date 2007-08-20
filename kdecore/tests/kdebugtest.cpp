@@ -41,6 +41,8 @@ public:
     template<Something val>
     long func_template2() { kDebug(); return long(val); }
 
+    void (* const func_fptr())() { kDebug(); return 0; }
+
 public:
     TestClass1()
         {
@@ -66,6 +68,7 @@ public:
             func_ienummap();
             func_template1<TestClass1>();
             func_template2<foo>();
+            func_fptr();
         }
 };
 
