@@ -698,7 +698,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
 
 		// FIXME: hack because we saved with wrong name!
 		feedname = "???";
-		QString idbase64 = QString(KCodecs::base64Encode(pid(provider).toUtf8()) + '-' + feedname);
+		QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
 		QString cachefile = cachedir + '/' + idbase64 + ".xml";
 
 		kDebug(550) << "  + Load from file '" + cachefile + "'.";
@@ -1073,7 +1073,7 @@ void CoreEngine::cacheFeed(const Provider *provider, QString feedname, const Fee
 
 	kDebug(550) << " + Save to directory '" + cachedir + "'.";
 
-	QString idbase64 = QString(KCodecs::base64Encode(pid(provider).toUtf8()) + '-' + feedname);
+	QString idbase64 = QString(pid(provider).toUtf8().toBase64() + '-' + feedname);
 	QString cachefile = idbase64 + ".xml";
 
 	kDebug(550) << " + Save to file '" + cachefile + "'.";
@@ -1082,7 +1082,7 @@ void CoreEngine::cacheFeed(const Provider *provider, QString feedname, const Fee
 	QDomElement root = doc.createElement("ghnsfeeds");
 	for(int i = 0; i < entries.count(); i++)
 	{
-		QString idbase64 = QString(KCodecs::base64Encode(id(entries.at(i)).toUtf8()));
+		QString idbase64 = id(entries.at(i)).toUtf8().toBase64();
 		QDomElement entryel = doc.createElement("entry-id");
 		root.appendChild(entryel);
 		QDomText entrytext = doc.createTextNode(idbase64);
@@ -1114,7 +1114,7 @@ void CoreEngine::cacheEntry(Entry *entry)
 	//QString cachefile = KRandom::randomString(10) + ".meta";
 	//FIXME: this must be deterministic, but it could also be an OOB random string
 	//which gets stored into <ghnscache> just like preview...
-	QString idbase64 = QString(KCodecs::base64Encode(id(entry).toUtf8()));
+	QString idbase64 = QString(id(entry).toUtf8().toBase64());
 	QString cachefile = idbase64 + ".meta";
 
 	kDebug(550) << " + Save to file '" + cachefile + "'.";
