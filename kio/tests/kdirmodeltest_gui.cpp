@@ -30,7 +30,32 @@
 #include <kmimetyperesolver.h>
 #include <kfileitemdelegate.h>
 
-//#include "kdirmodeltest_gui.h"
+// Test controller for making the view open up while expandToUrl lists subdirs
+class TreeController : public QObject
+{
+    Q_OBJECT
+public:
+    explicit TreeController(QTreeView* view, KDirModel* model)
+        : QObject(view), m_treeView(view), m_model(model)
+    {
+      connect(model, SIGNAL(expand(QModelIndex)),
+              this, SLOT(slotExpand(QModelIndex)));
+    }
+private Q_SLOTS:
+    void slotExpand(const QModelIndex& index)
+    {
+        KFileItem item = m_model->itemForIndex(index);
+        kDebug() << "slotListingCompleted" << item.url();
+        m_treeView->setExpanded(index, true);
+
+        // The scrollTo call doesn't seem to work.
+        // We probably need to delay this until everything's listed and layouted...
+        m_treeView->scrollTo(index);
+    }
+private:
+    QTreeView* m_treeView;
+    KDirModel* m_model;
+};
 
 int main (int argc, char **argv)
 {
@@ -77,8 +102,13 @@ int main (int argc, char **argv)
   iconView->setItemDelegate( new KFileItemDelegate(iconView) );
 #endif
 
-  if (args->count() == 0)
-      dirmodel->dirLister()->openUrl( QDir::homePath() );
+  if (args->count() == 0) {
+      dirmodel->dirLister()->openUrl(KUrl("/"));
+
+      const KUrl url("/usr/share/applications/kde");
+      dirmodel->expandToUrl(url);
+      new TreeController(treeView, dirmodel);
+  }
 
   for(int i = 0; i < args->count(); i++) {
       kDebug() << "Adding: " << args->url(i);
@@ -87,3 +117,5 @@ int main (int argc, char **argv)
 
   return a.exec();
 }
+
+#include "kdirmodeltest_gui.moc"

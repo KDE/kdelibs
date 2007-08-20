@@ -78,7 +78,22 @@ public:
     /**
      * Return the index for a given url. This can be slow.
      */
-    QModelIndex indexForUrl( const KUrl& ) const;
+    QModelIndex indexForUrl(const KUrl& url) const;
+
+    /**
+     * @short Lists subdirectories using fetchMore() as needed until the given @p url exists in the model.
+     *
+     * When the model is used by a treeview, call KDirLister::openUrl with the base url of the tree,
+     * then the treeview will take care of calling fetchMore() when the user opens directories.
+     * However if you want the tree to show a given URL (i.e. open the tree recursively until that URL),
+     * call expandToUrl().
+     * Note that this is asynchronous; the necessary listing of subdirectories will take time so
+     * the model will not immediately have this url available.
+     * The model emits the signal expand() when an index has become available; this can be connected
+     * to the treeview in order to let it open that index.
+     * @param url the url of a subdirectory of the directory model
+     */
+    void expandToUrl(const KUrl& url);
 
     /**
      * Notify the model that the item at this index has changed.
@@ -156,6 +171,13 @@ public:
     virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
     /// Reimplemented from QAbstractItemModel. Not implemented. @see KDirSortFilterProxyModel
     virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder );
+
+Q_SIGNALS:
+    /**
+     * Emitted for each subdirectory that is a parent of a url passed to expandToUrl
+     * This allows to asynchronously open a tree view down to a given directory.
+     */
+    void expand(const QModelIndex& index);
 
 private Q_SLOTS:
     void slotNewItems( const KFileItemList& );
