@@ -1,5 +1,5 @@
 # for <kio/global.h>
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
+include_directories( ${KDE4_KIO_INCLUDES} )
 
 MACRO(KIO_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
