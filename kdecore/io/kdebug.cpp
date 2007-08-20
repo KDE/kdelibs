@@ -371,14 +371,11 @@ struct KDebugPrivate
     QDebug setupFileWriter(const QString &fileName, const QString &areaName)
     {
         QDebug result(&filewriter);
-        QString header = fileName;
-        header += QLatin1Char('\0');
-        if (!areaName.isEmpty()) {
-            header += areaName;
-            header += QLatin1Char(':');
-        }
+        result.nospace() << qPrintable(fileName) << '\0';
 
-        result << qPrintable(header);
+        if (!areaName.isEmpty()) {
+            result << qPrintable(areaName) << ':';
+        }
         return result.space();
     }
 
@@ -405,9 +402,7 @@ struct KDebugPrivate
 
         header += areaName.toAscii();
         header += ')';
-        header += '\0';
-        header += areaName.toAscii();
-        result << header.constData();
+        result.nospace() << header.constData() << '\0' << qPrintable(areaName);
         return result.space();
     }
 
