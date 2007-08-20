@@ -109,6 +109,7 @@ if(OPENEXR_FOUND)
 install(TARGETS kimg_exr  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 install( FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 endif(OPENEXR_FOUND)
+macro_log_feature(OPENEXR_FOUND "OpenEXR" "OpenEXR Package" "http://www.openexr.com/" FALSE "" "High dynamic range image manipulation library.")
 
 
 if(TIFF_FOUND)
