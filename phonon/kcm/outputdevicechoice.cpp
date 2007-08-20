@@ -33,7 +33,11 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
+#ifndef METATYPE_QLIST_INT_DEFINED
+#define METATYPE_QLIST_INT_DEFINED
+// Want this exactly once, see phonondefs_p.h kcm/outputdevicechoice.cpp
 Q_DECLARE_METATYPE(QList<int>)
+#endif
 
 class QSettingsGroup
 {
