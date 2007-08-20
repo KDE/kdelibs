@@ -42,12 +42,12 @@ static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
 
 double VolumeFaderEffect::volumeDecibel() const
 {
-    return -log(volume()) / log10over20;
+    return -std::log(volume()) / log10over20;
 }
 
 void VolumeFaderEffect::setVolumeDecibel(double newVolumeDecibel)
 {
-    setVolume(exp(-newVolumeDecibel * log10over20));
+    setVolume(std::exp(-newVolumeDecibel * log10over20));
 }
 
 

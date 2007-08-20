@@ -84,7 +84,7 @@ void AudioOutput::setVolume(qreal volume)
         // sound pressure is proportional to voltage:
         // p² \prop P \prop V²
         // => if a factor for loudness of x is requested
-        INTERFACE_CALL(setVolume(pow(volume, 1.4925373)));
+        INTERFACE_CALL(setVolume(std::pow(volume, 1.4925373)));
     } else {
         emit volumeChanged(volume);
     }
@@ -97,7 +97,7 @@ qreal AudioOutput::volume() const
     if (d->muted || !d->m_backendObject) {
         return d->volume;
     }
-    return pow(INTERFACE_CALL(volume()), 0.67);
+    return std::pow(INTERFACE_CALL(volume()), 0.67);
 }
 
 #ifndef PHONON_LOG10OVER20
@@ -109,14 +109,14 @@ qreal AudioOutput::volumeDecibel() const
 {
     K_D(const AudioOutput);
     if (d->muted || !d->m_backendObject) {
-        return -log(d->volume) / log10over20;
+        return -std::log(d->volume) / log10over20;
     }
-    return -0.67 * log(INTERFACE_CALL(volume())) / log10over20;
+    return -0.67 * std::log(INTERFACE_CALL(volume())) / log10over20;
 }
 
 void AudioOutput::setVolumeDecibel(qreal newVolumeDecibel)
 {
-    setVolume(exp(-newVolumeDecibel * log10over20));
+    setVolume(std::exp(-newVolumeDecibel * log10over20));
 }
 
 bool AudioOutput::isMuted() const
@@ -136,7 +136,7 @@ void AudioOutput::setMuted(bool mute)
             }
         } else {
             if (k_ptr->backendObject()) {
-                INTERFACE_CALL(setVolume(pow(d->volume, 1.4925373)));
+                INTERFACE_CALL(setVolume(std::pow(d->volume, 1.4925373)));
             }
             d->muted = mute;
         }
@@ -220,7 +220,7 @@ void AudioOutputPrivate::_k_volumeChanged(qreal newVolume)
 {
     if (!muted) {
         Q_Q(AudioOutput);
-        emit q->volumeChanged(pow(newVolume, 0.67));
+        emit q->volumeChanged(std::pow(newVolume, 0.67));
     }
 }
 
