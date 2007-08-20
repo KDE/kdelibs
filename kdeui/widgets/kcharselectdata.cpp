@@ -145,10 +145,11 @@ QList<QChar> KCharSelectData::blockContents(int block)
     quint16 unicodeBegin = * (quint16*) (data + offsetBegin + block*4);
     quint16 unicodeEnd = * (quint16*) (data + offsetBegin + block*4 + 2);
 
-    while(unicodeBegin <= unicodeEnd) {
+    while(unicodeBegin < unicodeEnd) {
         res.append(unicodeBegin);
         unicodeBegin++;
     }
+    res.append(unicodeBegin); // Be carefull when unicodeEnd==0xffff
 
     return res;
 }

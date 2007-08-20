@@ -575,13 +575,15 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
         pos += rx.matchedLength();
     }
 
-    foreach(QString c, chars) {
+    QSet<QString> chars2 = QSet<QString>::fromList(chars);
+    foreach(QString c, chars2) {
         int unicode = c.toInt(0, 16);
         QString link = "<a href=\"" + c + "\">";
         if (QChar(unicode).isPrint()) {
-            link += "&#" + QString::number(unicode) + "; U+" + c + ' ';
+            link += "&#" + QString::number(unicode) + ";&nbsp;";
         }
-        link += KCharSelectData::name(QChar(unicode)) + "</a>";
+        link += "U+" + c + ' ';
+        link += Qt::escape(KCharSelectData::name(QChar(unicode))) + "</a>";
         s.replace(c, link);
     }
     return s;
