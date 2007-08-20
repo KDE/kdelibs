@@ -22,7 +22,7 @@ void KNewStuff2Cache::run()
 {
 	kDebug() << "-- start the engine";
 
-	m_engine = new KNS::CoreEngine();
+	m_engine = new KNS::CoreEngine(0);
 	m_engine->setCachePolicy(KNS::CoreEngine::CacheOnly);
 	bool ret = m_engine->init("knewstuff2_test.knsrc");
 
