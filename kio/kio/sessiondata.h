@@ -49,7 +49,7 @@ public:
 private:
     class AuthDataList;
     friend class AuthDataList;
-    AuthDataList* authData;
+//    AuthDataList* authData;
 
 private:
     class SessionDataPrivate;

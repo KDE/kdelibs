@@ -228,12 +228,6 @@ kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS})
 
-if (UNIX)
-   target_link_libraries(kio kdesu)
-else (UNIX)
-   #target_link_libraries(kio ltdlc)
-endif (UNIX)
-
 macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "" FALSE "" "Provide file alteration notification facilities.")
 if(FAM_FOUND)
    include_directories(${FAM_INCLUDE_DIRECTORY})

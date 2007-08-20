@@ -66,6 +66,7 @@ public:
   bool persist;
 };
 
+#if 0
 /************************* SessionData::AuthDataList ****************************/
 class SessionData::AuthDataList : public QList<SessionData::AuthData*>
 {
@@ -201,6 +202,7 @@ void SessionData::AuthDataList::purgeCachedData()
         unregisterAuthData( (*it) );
   }
 }
+#endif
 
 /********************************* SessionData ****************************/
 
@@ -221,14 +223,12 @@ public:
 SessionData::SessionData()
 	:d(new SessionDataPrivate)
 {
-  authData = 0;
+//  authData = 0;
 }
 
 SessionData::~SessionData()
 {
   delete d;
-  delete authData;
-  authData = 0L;
 }
 
 void SessionData::configDataFor( MetaData &configData, const QString &proto,
