@@ -1259,7 +1259,6 @@ KColorDialog::setDefaultColor( const QColor& col )
         // and the "default color" checkbox, under all items on the right side
         //
         d->cbDefaultColor = new QCheckBox( i18n( "Default color" ), mainWidget() );
-        d->cbDefaultColor->setChecked(true);
 
         d->l_right->addWidget( d->cbDefaultColor );
 
