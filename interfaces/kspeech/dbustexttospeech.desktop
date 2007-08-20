@@ -17,6 +17,7 @@ Comment[ja]=D-Bus インターフェースを持つテキスト読み上げサ�
 Comment[kn]=D-Bus ಅಂತರಮುಖದೊಂದಿಗೆ (interface) ಪಠ್ಯ ವಾಚನ (text-to-speech) ಸೇವೆ
 Comment[ko]=D-Bus 인터페이스를 사용하는 텍스트 음성 변환 서비스
 Comment[nds]=Vörleesdeenst mit en DBUS-Koppelsteed
+Comment[ne]=D-Bus इन्टरफेससँग पाठ-बाट-बोली सेवा
 Comment[nl]=Tekst-tot-spraak-dienst met een DCOP interface
 Comment[pa]=ਇੱਕ D-Bus ਇੰਟਰਫੇਸ ਨਾਲ ਪਾਠ-ਤੋਂ-ਬੋਲੀ ਸੇਵਾ
 Comment[pt]=Serviço de Texto-para-Fala com interface D-Bus
