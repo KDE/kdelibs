@@ -366,7 +366,7 @@ bool KPixmapCache::Private::mmapFiles()
         q->setValid(false);
         return false;
     }
-    if (!mmapFile(mDataFile, &mDataMmapInfo, (int)(q->cacheLimit() * 1.2 + 100) * 1024)) {
+    if (!mmapFile(mDataFile, &mDataMmapInfo, (int)(q->cacheLimit() * 1.5 + 500) * 1024)) {
         unmmapFile(&mIndexMmapInfo);
         q->setValid(false);
         return false;
@@ -1253,7 +1253,12 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     // Make sure the cache size stays within limits
     if (size() > cacheLimit()) {
         lock.unlock();
-        d->scheduleRemoveEntries(int(cacheLimit() * 0.75));
+        if (size() > (int)(cacheLimit() * 1.2)) {
+            // Can't wait any longer, do it immediately
+            d->removeEntries(int(cacheLimit() * 0.75));
+        } else {
+            d->scheduleRemoveEntries(int(cacheLimit() * 0.75));
+        }
     }
 }
 
