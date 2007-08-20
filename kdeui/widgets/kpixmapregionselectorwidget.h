@@ -21,7 +21,6 @@
 #define KPIXMAPREGIONSELECTORWIDGET_H
 
 #include <kdeui_export.h>
-#include <kimageeffect.h>
 
 #include <QtGui/QPixmap>
 #include <QtGui/QWidget>
@@ -44,6 +43,15 @@ class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget
 {
    Q_OBJECT
 public:
+    /**
+     * This enum provides a rotation direction.
+     * @see KPixmapRegionSelectorWidget::rotate()
+     */
+    enum RotateDirection{ Rotate90,  //!< Rotate 90 degrees to the right.
+                          Rotate180, //!< Rotate 180 degrees.
+                          Rotate270  //!< Rotate 90 degrees to the left.
+    };
+
    /**
     * Constructor for a KPixmapRegionSelectorWidget.
     */
@@ -120,7 +128,7 @@ public:
     * forced aspect ratio setting is respected, in other case, the selected region
     * is reset.
     */
-   void rotate(KImageEffect::RotateDirection direction);
+   void rotate(RotateDirection direction);
 
 public Q_SLOTS:
    /**

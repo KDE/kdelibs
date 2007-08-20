@@ -215,14 +215,14 @@ KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
     return popup;
 }
 
-void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction)
+void KPixmapRegionSelectorWidget::rotate(RotateDirection direction)
 {
    int w=d->m_originalPixmap.width();
    int h=d->m_originalPixmap.height();
    QImage img=d->m_unzoomedPixmap.toImage();
-   if(direction == KImageEffect::Rotate90)
+   if(direction == Rotate90)
        img = img.transformed(QTransform().rotate(90.0));
-   else if(direction == KImageEffect::Rotate180)
+   else if(direction == Rotate180)
        img = img.transformed(QTransform().rotate(180.0));
    else
        img = img.transformed(QTransform().rotate(270.0));
@@ -230,9 +230,9 @@ void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction
    d->m_unzoomedPixmap=QPixmap::fromImage(img);
 
    img=d->m_originalPixmap.toImage();
-   if(direction == KImageEffect::Rotate90)
+   if(direction == Rotate90)
        img = img.transformed(QTransform().rotate(90.0));
-   else if(direction == KImageEffect::Rotate180)
+   else if(direction == Rotate180)
        img = img.transformed(QTransform().rotate(180.0));
    else
        img = img.transformed(QTransform().rotate(270.0));
@@ -247,7 +247,7 @@ void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction
    {
       switch (direction)
       {
-         case ( KImageEffect::Rotate90 ):
+         case ( Rotate90 ):
             {
               int x=h-d->m_selectedRegion.y()-d->m_selectedRegion.height();
               int y=d->m_selectedRegion.x();
@@ -257,7 +257,7 @@ void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction
 //              updatePixmap();
 
             } break;
-         case ( KImageEffect::Rotate270 ):
+         case ( Rotate270 ):
             {
               int x=d->m_selectedRegion.y();
               int y=w-d->m_selectedRegion.x()-d->m_selectedRegion.width();
@@ -273,12 +273,12 @@ void KPixmapRegionSelectorWidget::rotate(KImageEffect::RotateDirection direction
 
 void KPixmapRegionSelectorWidget::rotateClockwise()
 {
-   rotate(KImageEffect::Rotate90);
+   rotate(Rotate90);
 }
 
 void KPixmapRegionSelectorWidget::rotateCounterclockwise()
 {
-   rotate(KImageEffect::Rotate270);
+   rotate(Rotate270);
 }
 
 bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
