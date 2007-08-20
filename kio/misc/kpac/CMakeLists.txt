@@ -34,8 +34,12 @@ kde4_add_executable(kpac_dhcp_helper NOGUI ${kpac_dhcp_helper_SRCS})
 target_link_libraries(kpac_dhcp_helper  ${KDE4_KDECORE_LIBS} )
 if (HAVE_NSL_LIBRARY)
   # Assume Solaris
-  target_link_libraries(kpac_dhcp_helper socket nsl)
+  target_link_libraries(kpac_dhcp_helper nsl)
 endif (HAVE_NSL_LIBRARY)
+
+if (HAVE_SOCKET_LIBRARY)
+  target_link_libraries(kpac_dhcp_helper socket)
+endif (HAVE_SOCKET_LIBRARY)
 
 install(TARGETS kpac_dhcp_helper DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
