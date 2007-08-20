@@ -214,9 +214,7 @@ static UString formatTime(const tm &t, bool utc)
     if (utc) {
         // FIXME: why not on windows?
 #if !PLATFORM(WIN_OS)
-#ifdef HAVE_TM_GMTOFF
-        ASSERT(t.tm_gmtoff == 0);
-#endif
+        ASSERT(gmtoffset(t) == 0);
 #endif
         len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
     } else {
