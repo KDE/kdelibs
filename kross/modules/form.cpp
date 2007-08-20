@@ -311,18 +311,6 @@ namespace Kross {
     class FormModule::Private
     {
         public:
-            Private() : m_loader(0) {}
-            ~Private() { delete m_loader; }
-
-            UiLoader* loader()
-            {
-                if( ! m_loader )
-                    m_loader = new UiLoader();
-                return m_loader;
-            }
-
-        private:
-            UiLoader* m_loader;
     };
 
 }
@@ -419,12 +407,15 @@ QObject* FormModule::createLayout(QWidget* parent, const QString& layout)
 
 QWidget* FormModule::createWidget(const QString& className)
 {
-    return d->loader()->createWidget(className);
+    UiLoader loader;
+    QWidget* widget = loader.createWidget(className);
+    return widget;
 }
 
 QWidget* FormModule::createWidget(QWidget* parent, const QString& className, const QString& name)
 {
-    QWidget* widget = d->loader()->createWidget(className, parent, name);
+    UiLoader loader;
+    QWidget* widget = loader.createWidget(className, parent, name);
     if( parent && parent->layout() )
         parent->layout()->addWidget(widget);
     return widget;
