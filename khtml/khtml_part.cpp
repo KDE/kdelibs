@@ -1826,7 +1826,7 @@ void KHTMLPart::slotFinished( KJob * job )
   }
   KIO::TransferJob *tjob = ::qobject_cast<KIO::TransferJob*>(job);
   if (tjob && tjob->isErrorPage()) {
-    khtml::RenderPart *renderPart = d->m_frame ? d->m_frame->m_frame : 0L;
+    khtml::RenderPart *renderPart = d->m_frame ? d->m_frame->m_frame : QPointer<khtml::RenderPart>(0);
     if (renderPart) {
       HTMLObjectElementImpl* elt = static_cast<HTMLObjectElementImpl *>(renderPart->element());
       if (!elt)
