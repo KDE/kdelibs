@@ -325,8 +325,14 @@ void Collector::markCurrentThreadConservatively()
         // also on NetBSD 3 and 4, raphael.langerhorst@kdemail.net
         pthread_attr_get_np(thread, &sattr);
 #else
+#if PLATFORM(SOLARIS_OS)
+	// Assume the default parameters were used.
+	// Solaris has no way to retrieve the values for a running thread.
+	pthread_attr_init(&sattr);
+#else
         // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
         pthread_getattr_np(thread, &sattr);
+#endif
 #endif
         // Should work but fails on Linux (?)
         //  pthread_attr_getstack(&sattr, &stackBase, &stackSize);
