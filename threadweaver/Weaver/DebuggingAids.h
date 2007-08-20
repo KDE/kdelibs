@@ -138,23 +138,13 @@ namespace ThreadWeaver {
 
 #define INVARIANT Q_ASSERT_X (invariant(), __FILE__, "class invariant failed" );
 
-#ifdef __GNUC__
 #define REQUIRE(x) \
 INVARIANT \
-Q_ASSERT_X (x, __FUNCTION__, "unfulfilled requirement " #x );
+Q_ASSERT_X (x, Q_FUNC_INFO, "unfulfilled requirement " #x );
 
 #define ENSURE(x) \
 INVARIANT \
-Q_ASSERT_X (x, __FUNCTION__, "broken guarantee " #x );
-#else
-#define REQUIRE(x) \
-INVARIANT \
-Q_ASSERT_X (x, __FILE__, "unfulfilled requirement " #x );
-
-#define ENSURE(x) \
-INVARIANT \
-Q_ASSERT_X (x, __FILE__, "broken guarantee " #x );
-#endif
+Q_ASSERT_X (x, Q_FUNC_INFO, "broken guarantee " #x );
 
 
 #ifdef QT_NO_DEBUG
