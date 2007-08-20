@@ -47,11 +47,20 @@
 # endif
 #endif
 
+
+/**
+ * An indicator of where you are in a source file, to be used in
+ * warnings (perhaps debug messages too).
+ * @deprecated kDebug takes care of printing the method name automatically now
+ */
+#define k_funcinfo ""
+
 /**
  * An indicator of where you are in a source file, to be used in
  * warnings (perhaps debug messages too). Gives an accurate
  * idea of where the message comes from. Not suitable for
  * user-visible messages.
+ * @deprecated kDebug takes care of printing the method name automatically now
  */
 #define k_lineinfo "[" << __FILE__ << ":" << __LINE__ << "] "
 
