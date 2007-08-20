@@ -70,6 +70,10 @@ IdleSlave::IdleSlave(QObject *parent)
    mOnHold = false;
 }
 
+template<int T> struct PIDType { typedef pid_t PID_t; } ;
+template<> struct PIDType<2> { typedef qint16 PID_t; } ;
+template<> struct PIDType<4> { typedef qint32 PID_t; } ;
+
 void
 IdleSlave::gotInput()
 {
@@ -93,11 +97,13 @@ IdleSlave::gotInput()
    else
    {
       QDataStream stream( data );
+      PIDType<sizeof(pid_t)>::PID_t stream_pid;
       pid_t pid;
       QByteArray protocol;
       QString host;
       qint8 b;
-      stream >> pid >> protocol >> host >> b;
+      stream >> stream_pid >> protocol >> host >> b;
+      pid = stream_pid;
 // Overload with (bool) onHold, (KUrl) url.
       if (!stream.atEnd())
       {
@@ -503,10 +509,11 @@ KLauncher::requestDone(KLaunchRequest *request)
       if ( requestResult.dbusName.isNull() ) // null strings can't be sent
           requestResult.dbusName = "";
       Q_ASSERT( !requestResult.error.isNull() );
+      PIDType<sizeof(pid_t)>::PID_t stream_pid = requestResult.pid;
       QDBusConnection::sessionBus().send(request->transaction.createReply(QVariantList() << requestResult.result
                                      << requestResult.dbusName
                                      << requestResult.error
-                                     << requestResult.pid));
+                                     << stream_pid));
    }
    requestList.removeAll( request );
    delete request;
