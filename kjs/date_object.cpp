@@ -78,7 +78,7 @@ inline int gmtoffset(const tm& t)
 #ifdef HAVE_TM_GMTOFF
     return t.tm_gmtoff;
 #else
-    return 0;
+    return - timezone;
 #endif
 #endif
 }
@@ -905,11 +905,7 @@ static double makeTime(tm *t, double ms, bool utc)
 #else
         tm t3;
         localtime_r(&zero, &t3);
-#ifdef HAVE_TM_GMTOFF
-        utcOffset = t3.tm_gmtoff;
-#else
-        utcOffset = 0;
-#endif
+        utcOffset = gmtoffset(t3);
         t->tm_isdst = t3.tm_isdst;
 #endif
     } else {
