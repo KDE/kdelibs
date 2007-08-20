@@ -268,7 +268,7 @@ void DataProtocol::get(const KUrl& url) {
   if (hdr.is_base64) {
     // base64 stuff is expected to contain the correct charset, so we just
     // decode it and pass it to the receiver
-    KCodecs::base64Decode(url_data.toLocal8Bit(),outData);
+    outData = QByteArray::fromBase64(url_data.toUtf8());
   } else {
     // FIXME: This is all flawed, must be reworked thoroughly
     // non encoded data must be converted to the given charset

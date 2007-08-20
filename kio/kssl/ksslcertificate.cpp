@@ -145,8 +145,7 @@ KSSLCertificate *KSSLCertificate::fromString(const QByteArray &cert) {
     if (cert.isEmpty())
         return NULL;
 
-    QByteArray qba;
-    KCodecs::base64Decode(cert, qba);
+    QByteArray qba = QByteArray::fromBase64(cert);
     unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
     X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
     if (!x5c) {
@@ -906,8 +905,9 @@ return newOne;
 }
 
 
-QString KSSLCertificate::toString() {
-return KCodecs::base64Encode(toDer());
+QString KSSLCertificate::toString() 
+{
+	return toDer().toBase64();
 }
 
 
@@ -1058,7 +1058,7 @@ return text;
 bool KSSLCertificate::setCert(const QString& cert) {
 #ifdef KSSL_HAVE_SSL
         QByteArray qba, qbb = cert.toLocal8Bit();
-	KCodecs::base64Decode(qbb, qba);
+        qba = QByteArray::fromBase64(qbb);
 	unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
 	X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
 	if (x5c) {

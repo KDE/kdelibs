@@ -66,8 +66,7 @@ KSSLPKCS7* KSSLPKCS7::fromString(const QString &base64) {
     ktf.open();
 
     if (base64.isEmpty()) return NULL;
-    QByteArray qba;
-    KCodecs::base64Decode(base64.toLatin1(), qba);
+    QByteArray qba = QByteArray::fromBase64(base64.toLatin1());
     ktf.write(qba);
     ktf.flush();
     KSSLPKCS7* rc = loadCertFile(ktf.fileName());
@@ -133,7 +132,7 @@ int len;
      char *buf = new char[len];
      p = (unsigned char *)buf;
      kossl->i2d_PKCS7(_pkcs, &p);
-     base64 = KCodecs::base64Encode(QByteArray::fromRawData(buf,len));
+     base64 = QByteArray::fromRawData(buf,len).toBase64();
      delete[] buf;
    }
 #endif
