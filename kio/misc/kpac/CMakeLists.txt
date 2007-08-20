@@ -3,8 +3,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/kded )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
-check_library_exists(nsl gethostbyname "" HAVE_NSL)
-
 ########### next target ###############
 
 set(kded_proxyscout_PART_SRCS
@@ -34,10 +32,10 @@ set(kpac_dhcp_helper_SRCS kpac_dhcp_helper.c )
 kde4_add_executable(kpac_dhcp_helper NOGUI ${kpac_dhcp_helper_SRCS})
 
 target_link_libraries(kpac_dhcp_helper  ${KDE4_KDECORE_LIBS} )
-if (HAVE_NSL)
+if (HAVE_NSL_LIBRARY)
   # Assume Solaris
   target_link_libraries(kpac_dhcp_helper socket nsl)
-endif (HAVE_NSL)
+endif (HAVE_NSL_LIBRARY)
 
 install(TARGETS kpac_dhcp_helper DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
