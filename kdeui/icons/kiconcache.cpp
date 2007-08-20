@@ -58,6 +58,9 @@ public:
     }
     void checkForThemeUpdates()
     {
+        if (!q->isEnabled()) {
+            return;
+        }
         // Don't check more often than every 5 secs
         quint32 now = ::time(0);
         if (now < mUpdatesCheckedTime + 5) {
