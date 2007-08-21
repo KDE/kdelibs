@@ -27,6 +27,7 @@
 #include <kstandardshortcut.h>
 #include <kicon.h>
 #include <kactioncollection.h>
+#include <klocale.h>
 
 KUndoStack::KUndoStack(QObject* parent)
 : QUndoStack(parent)
@@ -44,6 +45,7 @@ QAction* KUndoStack::createRedoAction(KActionCollection* actionCollection, const
     }
 
     action->setIcon(KIcon("edit-redo"));
+    action->setIconText(i18n("Redo"));
     action->setShortcuts(KStandardShortcut::redo());
 
     actionCollection->addAction(action->objectName(), action);
@@ -62,6 +64,7 @@ QAction* KUndoStack::createUndoAction(KActionCollection* actionCollection, const
     }
 
     action->setIcon(KIcon("edit-undo"));
+    action->setIconText(i18n("Undo"));
     action->setShortcuts(KStandardShortcut::undo());
 
     actionCollection->addAction(action->objectName(), action);
