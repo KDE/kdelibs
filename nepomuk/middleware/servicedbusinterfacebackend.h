@@ -23,7 +23,7 @@
 #ifndef _NEPOMUK_SERVICE_DBUS_INTERFACE_H_
 #define _NEPOMUK_SERVICE_DBUS_INTERFACE_H_
 
-#include <QtDBus>
+#include <QDBusInterface>
 
 namespace Nepomuk {
     namespace Middleware {

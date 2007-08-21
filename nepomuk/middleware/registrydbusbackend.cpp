@@ -31,6 +31,9 @@
 #include "services/rdfrepositorypublisherdbusinterface.h"
 #include "rdf/rdfdbus.h"
 
+#include <qobject.h>
+#include <QDBusMetaType>
+
 #include <kdebug.h>
 
 

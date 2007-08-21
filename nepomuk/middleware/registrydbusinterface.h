@@ -23,7 +23,7 @@
 #ifndef _NEPOMUK_REGISTRY_DBUS_INTERFACE_H_
 #define _NEPOMUK_REGISTRY_DBUS_INTERFACE_H_
 
-#include <QtDBus>
+#include <QDBusInterface>
 
 #include "servicedesc.h"
 

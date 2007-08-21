@@ -24,8 +24,9 @@
 #include "servicedbusinterfacebackend.h"
 #include "dbustools.h"
 
-#include <kdebug.h>
+#include <QDBusReply>
 
+#include <kdebug.h>
 
 Nepomuk::Middleware::DBus::RegistryInterface::RegistryInterface( QObject* parent )
     : QDBusInterface( QLatin1String("org.semanticdesktop.nepomuk.ServiceRegistry"),

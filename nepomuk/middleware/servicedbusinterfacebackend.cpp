@@ -29,7 +29,8 @@
 
 #include <soprano/statement.h>
 
-#include <QtDBus>
+#include <QDBusInterface>
+#include <QDBusMessage>
 
 #include <kdebug.h>
 
