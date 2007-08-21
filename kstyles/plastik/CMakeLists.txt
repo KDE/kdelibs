@@ -1,7 +1,7 @@
 
 project(kstyle-plastik)
 
-add_subdirectory( config ) 
+add_subdirectory( config )
 
 
 
@@ -12,7 +12,7 @@ set(plastik_PART_SRCS plastik.cpp misc.cpp )
 
 kde4_add_plugin(plastik ${plastik_PART_SRCS})
 
-target_link_libraries(plastik  ${KDE4_KDECORE_LIBS} kdefx )
+target_link_libraries(plastik  ${KDE4_KDEUI_LIBS} )
 
 install(TARGETS plastik  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/styles/ )
 

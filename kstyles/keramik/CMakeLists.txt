@@ -52,7 +52,7 @@ endif (WIN32)
 
 kde4_add_plugin(keramik ${keramik_PART_SRCS})
 
-target_link_libraries(keramik  ${KDE4_KDECORE_LIBS} kdefx )
+target_link_libraries(keramik  ${KDE4_KDEUI_LIBS} kdefx )
 
 install(TARGETS keramik  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/styles/ )
 
