@@ -754,7 +754,7 @@ void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 			err = i18n("Internal error (no error message).");
 		else
 			err = m_manager->errorMsg();
-		s += i18n("Error message received from manager:</p><p>%1</p>", err);
+		s += i18n("<p>Error message received from manager:</p><p>%1</p>", err);
 		// clean up error message
 		m_manager->setErrorMsg(QString());
 	}

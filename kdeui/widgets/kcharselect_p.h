@@ -173,7 +173,7 @@ public:
                 s = "&#" + QString::number(c.unicode()) + ';';
             else
                 s = i18n("Non-printable");
-            QString result = i18nc("Character", "<qt><font size=\"+4\" face=\"%1\">%2</font><br>%3<br>Unicode code point: %4<br>(In decimal: %5)</qt>" ,  m_font.family() ,  s , Qt::escape(KCharSelectData::name(c)), KCharSelectData::formatCode(c.unicode()) ,  c.unicode());
+            QString result = i18nc("Character", "<qt><font size=\"+4\" face=\"%1\">%2</font><br />%3<br />Unicode code point: %4<br />(In decimal: %5)</qt>" ,  m_font.family() ,  s , Qt::escape(KCharSelectData::name(c)), KCharSelectData::formatCode(c.unicode()) ,  c.unicode());
             return QVariant(result);
         } else if (role == Qt::TextAlignmentRole)
             return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);

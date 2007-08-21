@@ -113,7 +113,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 						"  <em>KDE special printers</em> (which save"
 						" jobs to disk [as PostScript- or PDF-files], or deliver jobs via"
 						" email (as a PDF"
-						" attachment). If you are missing a real printer, you need to..."
+						" attachment). If you are missing a real printer, you need to...</p>"
 						" <ul>"
 						" <li>...either create a local printer with the help of the <em>KDE Add"
 						" Printer Wizard</em>. The Wizard is available for the CUPS and RLPR printing"
@@ -134,7 +134,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 						" </qt>" );
 	QString whatsThisPrintJobProperties = i18n( " <qt><b>Print Job Properties:</b> "
 						" <p>This button opens a dialog where you can make decisions"
-						" regarding all supported print job options."
+						" regarding all supported print job options.</p>"
 						" </qt>" );
 	QString whatsThisPrinterFilter = i18n(  " <qt><b>Selective View on List of Printers:</b>"
 						" <p> This button reduces the list of visible printers"
@@ -164,17 +164,17 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 						" <b>Example:</b> <pre>a2ps -P &lt;printername&gt; --medium=A3</pre>."
 						" </qt>" );
 	QString whatsThisOptions = i18n( " <qt><b>Additional Print Job Options</b>"
-						" <p>This button shows or hides additional printing options.</qt>" );
+						" <p>This button shows or hides additional printing options.</p></qt>" );
 	QString whatsThisSystemOptions = i18n(  " <qt><b>System Options:</b>"
 						" <p>This button starts a new dialog where you can adjust various"
   						" settings of your printing system. Amongst them:"
 						" <ul><li> Should KDE"
 						" applications embed all fonts into the PostScript they"
- 						" generate for printing?"
+ 						" generate for printing?</li>"
 						" <li> Should KDE use an external PostScript viewer"
-						" like <em>gv</em> for print page previews?"
-						" <li> Should KDEPrint use a local or a remote CUPS server?,"
-						" </ul> and many more.... "
+						" like <em>gv</em> for print page previews?</li>"
+						" <li> Should KDEPrint use a local or a remote CUPS server?,</li>"
+						" </ul> and many more....</p> "
 					        " </qt>" );
 
 	QString whatsThisHelpButton = i18n(     " <qt><b>Help:</b> This button takes you to the complete <em>KDEPrint"
@@ -214,7 +214,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 						" (Button and Lineedit field are only available if you \"Print to File\")"
 					        " </qt>" );
 
-	QString whatsThisOutputFileButton = i18n(" <qt><b>Browse Directories button:<b> This button calls"
+	QString whatsThisOutputFileButton = i18n(" <qt><b>Browse Directories button:</b> This button calls"
 						" the \"File Open / Browse Directories\" dialog to let you"
 						" choose a directory and file name where your \"Print-to-File\""
 						" job should be saved."
@@ -222,13 +222,13 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 
 	QString whatsThisAddFileButton = i18n(  " <qt><b>Add File to Job</b>"
 						" <p>This button calls the \"File Open / Browse Directories\" dialog to allow you"
-						" to select a file for printing. Note, that"
+						" to select a file for printing. Note, that</p>"
 						" <ul><li>you can select ASCII or International Text, PDF,"
 						" PostScript, JPEG, TIFF, PNG, GIF and many other graphical"
-						" formats."
+						" formats.</li>"
 						" <li>you can select various files from different paths"
 						" and send them as one \"multi-file job\" to the printing"
-						" system."
+						" system.</li>"
 						" </ul>"
 					        " </qt>" );
 
@@ -242,7 +242,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 						" is only visible for printjobs created from inside KDE applications."
 						" If you start kprinter from the commandline, or if you use kprinter"
 						" as a print command for non-KDE applications (like Acrobat Reader,"
-                                                " Firefox or OpenOffice), print preview is not available here."
+                                                " Firefox or OpenOffice), print preview is not available here.</p>"
 					        " </qt>" );
 
 	QString whatsThisSetDefaultPrinter = i18n(" <qt><b>Set as Default Printer</b>"
@@ -251,7 +251,7 @@ KPrintDialog::KPrintDialog(QWidget *parent)
 						" <p><b>Note:</b> (Button is only visible if the checkbox for"
 						" <em>System Options</em>"
 						" --> <em>General</em> --> <em>Miscellaneous</em>: <em>\"Defaults"
-						" to the last printer used in the application\"</em> is disabled.)"
+						" to the last printer used in the application\"</em> is disabled.)</p>"
 					        " </qt>" );
 
 	d->m_printer = 0;

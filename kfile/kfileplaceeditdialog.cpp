@@ -88,7 +88,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     setDefaultButton(Ok);
     showButtonSeparator(true);
     KVBox *box = new KVBox( this );
-    QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b></br></qt>");
+    QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b><br /></qt>");
     QLabel *label = new QLabel( text, box );
     label->setWordWrap(true);
     box->setSpacing( spacingHint() );
@@ -96,7 +96,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     Q3Grid *grid = new Q3Grid( 2, box );
     grid->setSpacing( spacingHint() );
 
-    QString whatsThisText = i18n("<qt>This is the text that will appear in the Quick Access panel.<p>"
+    QString whatsThisText = i18n("<qt>This is the text that will appear in the Quick Access panel.<br /><br />"
                                  "The description should consist of one or two words "
                                  "that will help you remember what this entry refers to.</qt>");
     label = new QLabel( i18n("&Description:"), grid );
@@ -106,8 +106,8 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     label->setWhatsThis(whatsThisText );
     m_edit->setWhatsThis(whatsThisText );
 
-    whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<p>"
-                         "%1<br>http://www.kde.org<br>ftp://ftp.kde.org/pub/kde/stable<p>"
+    whatsThisText = i18n("<qt>This is the location associated with the entry. Any valid URL may be used. For example:<br /><br />"
+                         "%1<br />http://www.kde.org<br />ftp://ftp.kde.org/pub/kde/stable<br /><br />"
                          "By clicking on the button next to the text edit box you can browse to an "
                          "appropriate URL.</qt>", QDir::homePath());
     label = new QLabel( i18n("&URL:"), grid );
@@ -117,7 +117,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     label->setWhatsThis(whatsThisText );
     m_urlEdit->setWhatsThis(whatsThisText );
 
-    whatsThisText = i18n("<qt>This is the icon that will appear in the Quick Access panel.<p>"
+    whatsThisText = i18n("<qt>This is the icon that will appear in the Quick Access panel.<br /><br />"
                          "Click on the button to select a different icon.</qt>");
     label = new QLabel( i18n("Choose an &icon:"), grid );
     m_iconButton = new KIconButton( grid );
@@ -140,7 +140,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)",  appName ), box );
         m_appLocal->setChecked( appLocal );
         m_appLocal->setWhatsThis(i18n("<qt>Select this setting if you want this "
-                              "entry to show only when using the current application (%1).<p>"
+                              "entry to show only when using the current application (%1).<br /><br />"
                               "If this setting is not selected, the entry will be available in all "
                               "applications.</qt>",
                                appName));

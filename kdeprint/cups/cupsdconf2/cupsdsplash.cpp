@@ -54,7 +54,7 @@ CupsdSplash::CupsdSplash(QWidget *parent)
 	helptxt_->setText(i18n( "<p>This tool will help you to configure graphically the server of the CUPS printing system. "
 				"The available options are grouped into sets of related topics and can be accessed "
 				"quickly through the icon view located on the left. Each option has a default value that is "
-				"shown if it has not been previously set. This default value should be OK in most cases.</p><br>"
+				"shown if it has not been previously set. This default value should be OK in most cases.</p><br />"
 				"<p>You can access a short help message for each option using either the '?' button in the "
 				"the title bar, or the button at the bottom of this dialog.</p>"));
 

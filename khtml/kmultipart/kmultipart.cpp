@@ -576,7 +576,7 @@ KAboutData* KMultiPart::createAboutData()
                                             "0.1",
                                             ki18n( "Embeddable component for multipart/mixed" ),
                                             KAboutData::License_GPL,
-                                            ki18n("(c) 2001, David Faure <david@mandrakesoft.com>"));
+                                            ki18n("Copyright 2001, David Faure <email>david@mandrakesoft.com</email>"));
     return aboutData;
 }
 

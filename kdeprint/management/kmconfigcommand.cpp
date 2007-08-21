@@ -37,12 +37,12 @@ KMConfigCommand::KMConfigCommand(QWidget *parent)
 	QGroupBox	*gb = new QGroupBox(i18n("Edit/Create Commands"), this);
 	gb->setLayout( new QHBoxLayout );
 	QLabel	*lab = new QLabel(i18n(
-				"<p>Command objects perform a conversion from input to output.<br>"
-                "They are used as the basis to build both print filters "
+				"<p>Command objects perform a conversion from input to output.<br />"
+            			"They are used as the basis to build both print filters "
 				"and special printers. They are described by a command string, a "
 				"set of options, a set of requirements and associated mime types. "
 				"Here you can create new command objects and edit existing ones. All "
-				"changes will only be effective for you."), gb);
+				"changes will only be effective for you.</p>"), gb);
 	lab->setWordWrap(true);
 	KXmlCommandSelector	*sel = new KXmlCommandSelector(false, gb);
 

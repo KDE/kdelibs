@@ -386,9 +386,9 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 				}
 				KPasswordDialog *kpd = new KPasswordDialog();
 				if (appid.isEmpty()) {
-					kpd->setPrompt(i18n("<qt>KDE has requested to open the wallet '<b>%1</b>'. Please enter the password for this wallet below.", Qt::escape(wallet)));
+					kpd->setPrompt(i18n("<qt>KDE has requested to open the wallet '<b>%1</b>'. Please enter the password for this wallet below.</qt>", Qt::escape(wallet)));
 				} else {
-					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the wallet '<b>%2</b>'. Please enter the password for this wallet below.", Qt::escape(appid), Qt::escape(wallet)));
+					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the wallet '<b>%2</b>'. Please enter the password for this wallet below.</qt>", Qt::escape(appid), Qt::escape(wallet)));
 				}
 				brandNew = false;
 				// don't use KStdGuiItem::open() here which has trailing ellipsis!
@@ -400,7 +400,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 						password = kpd->password();
 						int rc = b->open(password.toUtf8());
 						if (!b->isOpen()) {
-							kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br>(Error code %2: %3)", Qt::escape(wallet), rc, KWallet::Backend::openRCToString(rc)));
+							kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br />(Error code %2: %3)</qt>", Qt::escape(wallet), rc, KWallet::Backend::openRCToString(rc)));
 						}
 					} else {
 						break;
@@ -419,13 +419,13 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 				if (appid.isEmpty()) {
 					kpd->setPrompt(i18n("KDE has requested to open the wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request."));
 				} else {
-					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request.", Qt::escape(appid)));
+					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion. Please enter a password to use with this wallet or click cancel to deny the application's request.</qt>", Qt::escape(appid)));
 				}
 			} else {
 				if (appid.length() == 0) {
-					kpd->setPrompt(i18n("<qt>KDE has requested to create a new wallet named '<b>%1</b>'. Please choose a password for this wallet, or cancel to deny the application's request.", Qt::escape(wallet)));
+					kpd->setPrompt(i18n("<qt>KDE has requested to create a new wallet named '<b>%1</b>'. Please choose a password for this wallet, or cancel to deny the application's request.</qt>", Qt::escape(wallet)));
 				} else {
-					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to create a new wallet named '<b>%2</b>'. Please choose a password for this wallet, or cancel to deny the application's request.", Qt::escape(appid), Qt::escape(wallet)));
+					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to create a new wallet named '<b>%2</b>'. Please choose a password for this wallet, or cancel to deny the application's request.</qt>", Qt::escape(appid), Qt::escape(wallet)));
 				}
 			}
 			brandNew = true;
@@ -437,7 +437,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 					password = kpd->password();
 					int rc = b->open(password.toUtf8());
 					if (!b->isOpen()) {
-						kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br>(Error code %2: %3)", Qt::escape(wallet), rc, KWallet::Backend::openRCToString(rc)));
+						kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br />(Error code %2: %3)", Qt::escape(wallet), rc, KWallet::Backend::openRCToString(rc)));
 					}
 				} else {
 					break;
@@ -508,9 +508,9 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 		if (!cfg.entryIsImmutable(wallet)) {
 		    KBetterThanKDialog *dialog = new KBetterThanKDialog;
 		    if (appid.isEmpty()) {
-			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.", Qt::escape(wallet)));
+			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.</qt>", Qt::escape(wallet)));
 		    } else {
-			dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.", Qt::escape(QString(appid)), Qt::escape(wallet)));
+			dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.</qt>", Qt::escape(QString(appid)), Qt::escape(wallet)));
 		    }
 		    setupDialog( dialog, w, appid, false );
 		    response = dialog->exec();
@@ -603,7 +603,7 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 	assert(w);
 
 	KNewPasswordDialog *kpd = new KNewPasswordDialog();
-	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.", Qt::escape(wallet)));
+	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.</qt>", Qt::escape(wallet)));
 	kpd->setCaption(i18n("KDE Wallet Service"));
 	kpd->setAllowEmptyPasswords(true);
 	setupDialog( kpd, wId, appid, false );

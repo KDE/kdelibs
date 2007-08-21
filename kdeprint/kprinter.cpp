@@ -804,7 +804,7 @@ bool KPrinter::autoConfigure(const QString& prname, QWidget *parent)
 
 void reportError(KPrinter *p)
 {
-	if (!KNotification::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1", p->errorMessage())))
+	if (!KNotification::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br />%1", p->errorMessage())))
 		kDebug(500) << "could not send notify event";
 }
 

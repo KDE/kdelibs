@@ -341,7 +341,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       actionCollection()->addAction( "incFontSizes", d->m_paIncZoomFactor );
       d->m_paIncZoomFactor->setShortcut(KShortcut("CTRL++;CTRL+="));
       connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncZoomFast() ));
-      d->m_paIncZoomFactor->setWhatsThis( i18n( "Enlarge Font<p>"
+      d->m_paIncZoomFactor->setWhatsThis( i18n( "Enlarge Font<br /><br />"
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
 
@@ -349,23 +349,23 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       actionCollection()->addAction( "decFontSizes", d->m_paDecZoomFactor );
       d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
       connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecZoomFast() ));
-      d->m_paDecZoomFactor->setWhatsThis( i18n( "Shrink Font<p>"
+      d->m_paDecZoomFactor->setWhatsThis( i18n( "Shrink Font<br /><br />"
                                                 "Make the font in this window smaller. "
                             "Click and hold down the mouse button for a menu with all available font sizes." ) );
   }
 
   d->m_paFind = actionCollection()->addAction( KStandardAction::Find, "find", this, SLOT( slotFind() ) );
-  d->m_paFind->setWhatsThis( i18n( "Find text<p>"
+  d->m_paFind->setWhatsThis( i18n( "Find text<br /><br />"
 				   "Shows a dialog that allows you to find text on the displayed page." ) );
 
   d->m_paFindNext = actionCollection()->addAction( KStandardAction::FindNext, "findNext", this, SLOT( slotFindNext() ) );
-  d->m_paFindNext->setWhatsThis( i18n( "Find next<p>"
+  d->m_paFindNext->setWhatsThis( i18n( "Find next<br /><br />"
 				       "Find the next occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
   d->m_paFindPrev = actionCollection()->addAction( KStandardAction::FindPrev, "findPrevious",
                                                    this, SLOT( slotFindPrev() ) );
-  d->m_paFindPrev->setWhatsThis( i18n( "Find previous<p>"
+  d->m_paFindPrev->setWhatsThis( i18n( "Find previous<br /><br />"
 				       "Find the previous occurrence of the text that you "
 				       "have found using the <b>Find Text</b> function" ) );
 
@@ -395,7 +395,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   actionCollection()->addAction( "printFrame", d->m_paPrintFrame );
   d->m_paPrintFrame->setIcon( KIcon( "print-frame" ) );
   connect( d->m_paPrintFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotPrintFrame() ) );
-  d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<p>"
+  d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<br /><br />"
 					 "Some pages have several frames. To print only a single frame, click "
 					 "on it and then use this function." ) );
 
@@ -3925,7 +3925,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   }
 
   if (!checkLinkSecurity(cURL,
-			 ki18n( "<qt>This untrusted page links to<BR><B>%1</B>.<BR>Do you want to follow the link?" ),
+			 ki18n( "<qt>This untrusted page links to<br /><b>%1</b>.<br />Do you want to follow the link?" ),
 			 i18n( "Follow" )))
     return false;
 
@@ -4821,7 +4821,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
 
   if (!checkLinkSecurity(u,
-			 ki18n( "<qt>The form will be submitted to <BR><B>%1</B><BR>on your local filesystem.<BR>Do you want to submit the form?" ),
+			 ki18n( "<qt>The form will be submitted to <br /><b>%1</b><br />on your local filesystem.<br />Do you want to submit the form?" ),
 			 i18n( "Submit" )))
     return;
 
@@ -6872,7 +6872,7 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
     else
     {
 	    KMessageBox::error( 0,
-				i18n( "<qt>Access by untrusted page to<BR><B>%1</B><BR> denied.", Qt::escape(linkURL.prettyUrl())),
+				i18n( "<qt>Access by untrusted page to<br /><b>%1</b><br /> denied.", Qt::escape(linkURL.prettyUrl())),
 				i18n( "Security Alert" ));
     }
 

@@ -395,7 +395,7 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 						else
 						{
 							KMessageBox::error(0,
-								i18n("<qt>Operation failed with message:<br>%1<br>Select another target format.</qt>", printer->errorMessage()));
+								i18n("<qt>Operation failed with message:<br />%1<br />Select another target format.</qt>", printer->errorMessage()));
 						}
 					}
 				}
@@ -490,7 +490,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 				if (flist.count() == 0)
 				{
 					KMessageBox::error(NULL,
-							i18n("<qt>No appropriate filter was found to convert the file format %1 into %2.<br>"
+							i18n("<qt>No appropriate filter was found to convert the file format %1 into %2.<br />"
 							     "<ul>"
 							     "<li>Go to <i>System Options -> Commands</i> to look through the list of "
 							     "possible filters. Each filter executes an external program.</li>"

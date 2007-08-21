@@ -111,7 +111,7 @@ int main(int argc, char **argv)
     if (verbose)
         qDebug() << "try to find kdedirs.cache in" << rootPath;
 
-    // add current lib path to client path enviroment 
+    // add current lib path to client path environment 
     path = path.replace("bin","lib");
     if (!envPath.contains(path))
         envPath << path;

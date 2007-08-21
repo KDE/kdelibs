@@ -42,16 +42,16 @@ KFileList::KFileList(QWidget *parent)
 						" select a file for printing. Note, that "
 						" <ul><li>you can select ASCII or International Text, PDF,"
 						" PostScript, JPEG, TIFF, PNG, GIF and many other graphic"
-						" formats."
+						" formats.</li>"
 						" <li>you can select various files from different paths"
 						" and send them as one \"multi-file job\" to the printing"
-						" system."
-						" </ul>"
+						" system.</li>"
+						" </ul></p>"
 					        " </qt>" );
 
 	QString whatsThisRemoveFileButton = i18n(" <qt> <b>Remove File button</b>"
                                                 " <p>This button removes the highlighted file from the"
-						" list of to-be-printed files."
+						" list of to-be-printed files.</p>"
 					        " </qt>" );
 
 	QString whatsThisMoveFileUpButton = i18n(" <qt> <b>Move File Up button</b>"

@@ -172,7 +172,7 @@ public:
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
 
-static const char autocompletionWhatsThisText[] = I18N_NOOP("<p>While typing in the text area, you may be presented "
+static const char autocompletionWhatsThisText[] = I18N_NOOP("<qt>While typing in the text area, you may be presented "
                                                   "with possible matches. "
                                                   "This feature can be controlled by clicking with the right mouse button "
                                                   "and selecting a preferred mode from the <b>Text Completion</b> menu.")  "</qt>";
@@ -287,7 +287,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     // add nav items to the toolbar
     d->toolbar->addAction( coll->action( "up" ) );
-    coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<p>"
+    coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
                                             "For instance, if the current location is file:/home/%1 clicking this "
                                             "button will take you to file:/home.</qt>",  KUser().loginName() ));
     d->toolbar->addAction( coll->action( "back" ) );
@@ -392,8 +392,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
                          "File names that do not match the filter will not be shown.<p>"
                          "You may select from one of the preset filters in the "
                          "drop down menu, or you may enter a custom filter "
-                         "directly into the text area.<p>"
-                         "Wildcards such as * and ? are allowed.</qt>");
+                         "directly into the text area.</p><p>"
+                         "Wildcards such as * and ? are allowed.</p></qt>");
     d->filterLabel = new QLabel(i18n("&Filter:"), this);
     d->filterLabel->setWhatsThis(whatsThisText);
     d->filterWidget = new KFileFilterCombo(this);
@@ -1662,19 +1662,19 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
         autoSelectExtCheckBox->setWhatsThis(            "<qt>" +
                 i18n (
                   "This option enables some convenient features for "
-                  "saving files with extensions:<br>"
+                  "saving files with extensions:<br />"
                   "<ol>"
                     "<li>Any extension specified in the <b>%1</b> text "
                     "area will be updated if you change the file type "
-                    "to save in.<br>"
-                    "<br></li>"
+                    "to save in.<br />"
+                    "<br /></li>"
                     "<li>If no extension is specified in the <b>%2</b> "
                     "text area when you click "
                     "<b>Save</b>, %3 will be added to the end of the "
                     "filename (if the filename does not already exist). "
                     "This extension is based on the file type that you "
-                    "have chosen to save in.<br>"
-                    "<br>"
+                    "have chosen to save in.<br />"
+                    "<br />"
                     "If you do not want KDE to supply an extension for the "
                     "filename, you can either turn this option off or you "
                     "can suppress it by adding a period (.) to the end of "
@@ -1934,7 +1934,7 @@ void KFileWidget::toggleBookmarks(bool show)
         d->bookmarkButton->setMenu(d->bookmarkHandler->menu());
         d->bookmarkButton->setWhatsThis(i18n("<qt>This button allows you to bookmark specific locations. "
                                 "Click on this button to open the bookmark menu where you may add, "
-                                "edit or select a bookmark.<p>"
+                                "edit or select a bookmark.<br /><br />"
                                 "These bookmarks are specific to the file dialog, but otherwise operate "
                                 "like bookmarks elsewhere in KDE.</qt>"));
         d->toolbar->addAction(d->bookmarkButton);

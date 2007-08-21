@@ -236,7 +236,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
             "the corresponding capture (\"parenthesized substring\") from the "
             "pattern.<p>To include (a literal <code><b>\\N</b></code> in your "
             "replacement, put an extra backslash in front of it, like "
-            "<code><b>\\\\N</b></code>.</qt>") );
+            "<code><b>\\\\N</b></code>.</p></qt>") );
     d->backRefItem->setWhatsThis(i18n(
             "Click for a menu of available captures.") );
     d->wholeWordsOnly->setWhatsThis(i18n(

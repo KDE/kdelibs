@@ -36,7 +36,7 @@ PluginComboBox::PluginComboBox(QWidget *parent)
 						" Operating System.) KDEPrint usually auto-detects the"
                                                 " correct print subsystem by itself upon first startup."
 						" Most Linux distributions have \"CUPS\", the <em>Common"
-						" UNIX Printing System</em>."
+						" UNIX Printing System</em>.</p>"
                                                 " </qt>" );
 
 	m_combo = new QComboBox(this);
@@ -95,7 +95,7 @@ void PluginComboBox::configChanged()
 						" currently connected to for printing and retrieving"
 						" printer info. To switch to a different CUPS server,"
 						" click \"System Options\", then select \"Cups server\""
-						" and fill in the required info."
+						" and fill in the required info.</p>"
                                                 " </qt>" );
 
 	m_plugininfo->setText(KMManager::self()->stateInformation());

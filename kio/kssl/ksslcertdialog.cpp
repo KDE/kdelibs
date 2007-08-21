@@ -141,7 +141,7 @@ QString KSSLCertDialog::getChoice() {
 
 void KSSLCertDialog::setHost(const QString& host) {
    _host = host;
-   d->p_message->setText(i18n("The server <b>%1</b> requests a certificate.<p>"
+   d->p_message->setText(i18n("The server <b>%1</b> requests a certificate.<br /><br />"
 			      "Select a certificate to use from the list below:",
 			      _host));
 }

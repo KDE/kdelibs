@@ -46,12 +46,11 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 						" <p><b>Note 2:</b> The filters you define here are applied to your jobfile "
 						" <em><b>before</b></em> it is handed downstream to your spooler and print "
 						" subsystem (e.g. CUPS, LPRng, LPD).</p>"
-						" </ul>"
 						" </qt>" );
 
 	QString whatsThisRemoveFilterButton = i18n(" <qt> <b>Remove Filter button</b>"
 						" <p>This button removes the highlighted filter from the"
-						" list of filters."
+						" list of filters.</p>"
 						" </qt>" );
 
 	QString whatsThisMoveFilterUpButton = i18n(" <qt> <b>Move Filter Up button</b>"
@@ -113,7 +112,7 @@ KPFilterPage::KPFilterPage(QWidget *parent)
 						" <li>a <em>Poster Printing filter</em></li> "
 						" <li>and some more...</li> "
 						" </ul> "
-						" To insert a filter into this list, simply click on the <em>funnel</em> icon (topmost on "
+						" <p>To insert a filter into this list, simply click on the <em>funnel</em> icon (topmost on "
 						" the right icon column group) and proceed. </p>"
 						" <p>Please click on the other elements of this dialog to learn more about the KDEPrint "
 						" pre-filters. "
