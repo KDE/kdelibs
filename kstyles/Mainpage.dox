@@ -1,9 +1,0 @@
-/** @mainpage KDE Widget Styles
-
-This directory contains several styles for %KDE widgets.
-
-*/
-
-// DOXYGEN_REFERENCES = kdecore kdefx
-// DOXYGEN_SET_PROJECT_NAME = KStyles
-// vim:ts=4:sw=4:expandtab:filetype=doxygen

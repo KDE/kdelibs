@@ -1,7 +1,0 @@
-Widget style which mimicks the 'flat' appearance favored by many
-web sites. If you set the scrollbar and (exclusive) indicator sizes
-to something small (say 8 pixels) then this makes a nice style for
-embedded apps.
-
-Maintainer: Rik Hemsley (rikkus) <rik@kde.org>
-

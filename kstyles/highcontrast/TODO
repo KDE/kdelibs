@@ -1,5 +1,0 @@
-- QLineEdit are much taller than the other widgets. Check why.
-- The QLineEdits background seem to bleed on the outside.
-- Use a thicker dotted line (or a solid line?) for the TreView 'branches'
-
-- ListViewExpanders should get their size from the item text height. (done)
