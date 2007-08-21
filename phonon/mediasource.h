@@ -170,7 +170,7 @@ class PHONON_EXPORT MediaSource
         MediaSource &operator=(const MediaSource &rhs);
 
         /**
-         * Returns true if this MediaSource is equal to \p rhs; otherwise returns false.
+         * Returns \p true if this MediaSource is equal to \p rhs; otherwise returns \p false.
          */
         bool operator==(const MediaSource &rhs) const;
 

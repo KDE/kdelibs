@@ -33,12 +33,62 @@ namespace Phonon
 class PathPrivate;
 class Effect;
 class MediaNode;
+
+/** \class Path path.h Phonon/Path
+ * \short Connection object providing convenient effect insertion
+ *
+ * \code
+MediaObject *media = new MediaObject;
+AudioOutput *output = new AudioOutput(Phonon::MusicCategory);
+Path path = Phonon::createPath(media, output);
+Q_ASSERT(path.isValid()); // for this simple case the path should always be valid - there are unit tests to ensure it
+
+// insert an effect
+QList<EffectDescription> effectList = BackendCapabilities::availableAudioEffects();
+if (!effectList.isEmpty()) {
+    Effect *effect = path.insertEffect(effectList.first());
+}
+ * \endcode
+ * \ingroup Playback
+ * \ingroup Recording
+ * \author Matthias Kretz <kretz@kde.org>
+ * \author Thierry Bastian <thierry.bastian@trolltech.com>
+ */
 class PHONON_EXPORT Path
 {
     public:
+        /**
+         * Destroys this reference to the Path. If the path was valid the connection is not broken
+         * as both the source and the sink MediaNodes still keep a reference to the Path.
+         *
+         * \see disconnect
+         */
         ~Path();
-        Path(); // invalid
+
+        /**
+         * Creates an invalid path.
+         *
+         * You can still make it a valid path by calling reconnect. To create a path you should use
+         * createPath, though.
+         *
+         * \see createPath
+         * \see isValid
+         */
+        Path();
+
+        /**
+         * Constructs a copy of the given path.
+         *
+         * This constructor is fast thanks to explicit sharing.
+         */
         Path(const Path &);
+
+        /**
+         * Returns whether the path object connects two MediaNodes or not.
+         *
+         * \return \p true when the path connects two MediaNodes
+         * \return \p false when the path is disconnected
+         */
         bool isValid() const;
         //MediaStreamTypes mediaStreamTypes() const;
 
@@ -118,17 +168,34 @@ class PHONON_EXPORT Path
         QList<Effect *> effects() const;
 
         /**
-         * if reconnect fails the old connection is kept
+         * Tries to change the MediaNodes the path is connected to.
+         *
+         * If reconnect fails the old connection is kept.
          */
         bool reconnect(MediaNode *source, MediaNode *sink);
+
         /**
-         * invalidates the Path (no connections to either source or sink are left
+         * Disconnects the path from the MediaNodes it was connected to. This invalidates the path
+         * (isValid returns \p false then).
          */
         bool disconnect();
 
-        Path &operator=(const Path &);
-        bool operator==(const Path &) const;
-        bool operator!=(const Path &) const;
+        /**
+         * Assigns \p p to this Path and returns a reference to this Path.
+         *
+         * This operation is fast thanks to explicit sharing.
+         */
+        Path &operator=(const Path &p);
+
+        /**
+         * Returns \p true if this Path is equal to \p p; otherwise returns \p false;
+         */
+        bool operator==(const Path &p) const;
+
+        /**
+         * Returns \p true if this Path is not equal to \p p; otherwise returns \p false;
+         */
+        bool operator!=(const Path &p) const;
 
     private:
         friend class PathPrivate;
