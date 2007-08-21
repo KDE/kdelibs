@@ -58,7 +58,7 @@ using namespace Phonon;
 
 void PathTest::initTestCase()
 {
-    QCoreApplication::setApplicationName("audiopathtest");
+    QCoreApplication::setApplicationName("pathtest");
     Phonon::loadFakeBackend();
 
     m_media = new MediaObject(this);
