@@ -127,7 +127,7 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
     quint32 version;
     stream >> version;
     if (version != KDE_ICONCACHE_VERSION) {
-        kDebug() << "Obsolete iconcache version, will recreate" << endl;
+        kDebug() << "Obsolete iconcache version, will recreate";
         return false;
     }
 
@@ -228,7 +228,7 @@ int KIconCache::defaultIconSize(K3Icon::Group group) const
 {
     if ((group < 0) || (group >= K3Icon::LastGroup))
     {
-        kDebug(264) << "Illegal icon group: " << group << "\n";
+        kDebug(264) << "Illegal icon group:" << group;
         return -1;
     }
     return d->mDefaultIconSize[group];
