@@ -447,6 +447,8 @@ void KSpellConfig::getAvailDictsIspell () {
     dir.setFile ("/usr/local/share/ispell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/share/ispell");
+  if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/pkg/lib");
   /* TODO get them all instead of just one of them.
    * If /usr/local/lib exists, it skips the rest
   if (!dir.exists() || !dir.isDir())
@@ -516,6 +518,8 @@ void KSpellConfig::getAvailDictsAspell () {
     dir.setFile ("/usr/share/aspell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/local/share/aspell");
+  if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/pkg/lib/aspell");
   if (!dir.exists() || !dir.isDir()) return;
 
   kdDebug(750) << "KSpellConfig::getAvailDictsAspell "
@@ -597,6 +601,8 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         dir.setFile ("/usr/local/share/ispell");
       if (!dir.exists() || !dir.isDir())
         dir.setFile ("/usr/share/ispell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/pkg/lib");
       /* TODO get them all instead of just one of them.
        * If /usr/local/lib exists, it skips the rest
        if (!dir.exists() || !dir.isDir())
@@ -672,6 +678,8 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
         dir.setFile ("/usr/share/aspell");
       if (!dir.exists() || !dir.isDir())
         dir.setFile ("/usr/local/share/aspell");
+      if (!dir.exists() || !dir.isDir())
+        dir.setFile ("/usr/pkg/lib/aspell");
       if (!dir.exists() || !dir.isDir()) return;
 
       kdDebug(750) << "KSpellConfig::getAvailDictsAspell "

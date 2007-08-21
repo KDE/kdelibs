@@ -57,6 +57,7 @@ static const char *ispell_dirs [] = {
 	"/usr/local/lib/ispell",
 	"/usr/local/share/ispell",
 	"/usr/share/ispell",
+	"/usr/pkg/lib",
 	0
 };
 static const IspellMap ispell_map [] = {
