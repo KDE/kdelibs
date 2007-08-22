@@ -106,6 +106,7 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
 
 KSpellDlg::~KSpellDlg()
 {
+  delete d->spellConfig;
   delete d;
 }
 
