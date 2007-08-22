@@ -63,6 +63,7 @@ class MediaPlayer : public QMainWindow
         void setUrl(const KUrl &url);
 
     private Q_SLOTS:
+        void stateChanged(Phonon::State newstate);
         void workaroundQtBug();
         void getNextUrl();
         void startupReady();
@@ -111,6 +112,7 @@ MediaPlayer::MediaPlayer()
 
     m_media = new MediaObject(this);
     connect(m_media, SIGNAL(finished()), SLOT(getNextUrl()));
+    connect(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), SLOT(stateChanged(Phonon::State)));
 
     createPath(m_media, m_vwidget);
     m_apath = createPath(m_media, m_aoutput);
@@ -156,6 +158,18 @@ MediaPlayer::MediaPlayer()
     this->resize(width(), height() + 240 - m_vwidget->height());
 
     QTimer::singleShot(0, this, SLOT(startupReady()));
+}
+
+void MediaPlayer::stateChanged(Phonon::State newstate)
+{
+    switch (newstate) {
+    case Phonon::ErrorState:
+    case Phonon::StoppedState:
+        getNextUrl();
+        break;
+    default:
+        break;
+    }
 }
 
 void MediaPlayer::workaroundQtBug()
