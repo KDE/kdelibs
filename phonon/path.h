@@ -41,8 +41,8 @@ class MediaNode;
 MediaObject *media = new MediaObject;
 AudioOutput *output = new AudioOutput(Phonon::MusicCategory);
 Path path = Phonon::createPath(media, output);
-Q_ASSERT(path.isValid()); // for this simple case the path should always be valid - there are unit tests to ensure it
-
+Q_ASSERT(path.isValid()); // for this simple case the path should always be
+                          //valid - there are unit tests to ensure it
 // insert an effect
 QList<EffectDescription> effectList = BackendCapabilities::availableAudioEffects();
 if (!effectList.isEmpty()) {
@@ -203,6 +203,7 @@ class PHONON_EXPORT Path
 };
 
 /**
+ * \relates Path
  * Creates a new Path connecting two MediaNodes.
  *
  * The implementation will automatically select the right format and media type. E.g. connecting a
