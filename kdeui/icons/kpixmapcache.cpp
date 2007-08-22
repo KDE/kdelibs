@@ -216,7 +216,7 @@ public:
     bool removeEntries(int newsize);
     bool scheduleRemoveEntries(int newsize);
 
-    // Prepends key's hash to the key. This makes comparisions and key
+    // Prepends key's hash to the key. This makes comparisons and key
     //  lookups faster as the beginnings of the keys are more random
     QString indexKey(const QString& key);
 
@@ -285,7 +285,7 @@ public:
         quint32 lastused;
     };
 
-    // Various comparision functions for different removal strategies
+    // Various comparison functions for different removal strategies
     static bool compareEntriesByAge(const KPixmapCacheEntry& a, const KPixmapCacheEntry& b)
     {
         return a.pos > b.pos;
