@@ -133,6 +133,7 @@ class KuitSemanticsStaticData
     QHash<Kuit::TagVar, int> leadingNewlines;
 
     QHash<QString, QString> xmlEntities;
+    QHash<QString, QString> xmlEntitiesInverse;
 
     KuitSemanticsStaticData ();
 
@@ -309,12 +310,17 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_NUMFMT(US, "us");
     SETUP_NUMFMT(Euro, "euro");
 
-    // Known XML entities.
+    // Known XML entities, direct/inverse mapping.
     xmlEntities["lt"] = '<';
     xmlEntities["gt"] = '>';
     xmlEntities["amp"] = '&';
     xmlEntities["apos"] = '\'';
     xmlEntities["quot"] = '"';
+    xmlEntitiesInverse[QString('<')] = "lt";
+    xmlEntitiesInverse[QString('>')] = "gt";
+    xmlEntitiesInverse[QString('&')] = "amp";
+    xmlEntitiesInverse[QString('\'')] = "apos";
+    xmlEntitiesInverse[QString('"')] = "quot";
 }
 
 K_GLOBAL_STATIC(KuitSemanticsStaticData, staticData)
@@ -992,6 +998,8 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text,
 QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
                                                     Kuit::FmtVar fmt_) const
 {
+    KuitSemanticsStaticData *s = staticData;
+
     // Replace &-shortcut marker with "&amp;", not to confuse the parser;
     // but do not touch & in "&[a-z]+;", which is an XML entity as it is.
     QString original = text_;
@@ -1068,7 +1076,18 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             }
         }
         else if (xml.isCharacters()) {
-            openEls.top().formattedText += xml.text().toString();
+            // Stream reader will automatically reslove entities, which is
+            // not desired in this case, as the final text may be rich.
+            // The text element will be broken at the resolved entity, so
+            // the first character may be one of those resolved.
+            // Convert it back into an entity.
+            QString text = xml.text().toString();
+            QString firstChar = text.left(1);
+            if (s->xmlEntitiesInverse.contains(firstChar)) {
+                QString entname = s->xmlEntitiesInverse[firstChar];
+                text = "&" + entname + ";" + text.mid(1);
+            }
+            openEls.top().formattedText += text;
         }
     }
 
