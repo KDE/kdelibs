@@ -297,17 +297,24 @@ QString whatstr;
   QComboBox *cwcb = new QComboBox(cwbg);
     laygroup2->addWidget( cwcb );
   grid->addWidget(cwbg, 3, 0, 1, 2 );
-  QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following modes: </qt><ul>");
 
   cwcb->addItem(QString());
   cwcb->addItem(i18n("Strong Ciphers Only"));
-  whatStr += i18n("<li><b>Strong Ciphers Only:</b> Select only the strong (&gt;= 128 bit) encryption ciphers.</li>");
   cwcb->addItem(i18n("Export Ciphers Only"));
-  whatStr += i18n("<li><b>Export Ciphers Only:</b> Select only the weak ciphers (&lt;= 56 bit).</li>");
   cwcb->addItem(i18n("Enable All"));
-  whatStr += i18n("<li><b>Enable All:</b> Select all SSL ciphers and methods.</li></ul>");
+  
+  whatstr = i18n("<qt>Use these preconfigurations to more easily configure "
+                 "the SSL encryption settings. You can choose among the "
+                 "following modes:<ul>"
+                 "<li><b>Strong Ciphers Only:</b> Select only the strong "
+                 "(&gt;= 128 bit) encryption ciphers.</li>"
+                 "<li><b>Export Ciphers Only:</b> Select only the weak "
+                 "ciphers (&lt;= 56 bit).</li>"
+                 "<li><b>Enable All:</b> Select all SSL ciphers and "
+                 "methods.</li>"
+                 "</ul></qt>");
 
-  cwcb->setWhatsThis( whatStr);
+  cwcb->setWhatsThis( whatstr);
 
   connect(cwcb, SIGNAL(activated(int)), SLOT(slotSelectCipher(int)));
 
