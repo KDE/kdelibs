@@ -97,7 +97,6 @@ install( FILES
   KCModuleLoader
   KCModuleProxy
   KCMultiDialog
-  KCPUInfo
   KCalendarSystem
   KCalendarSystemFactory
   KCatalog
