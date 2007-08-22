@@ -78,6 +78,10 @@ KioMediaStream::~KioMediaStream()
 void KioMediaStream::needData()
 {
     Q_D(KioMediaStream);
+    if (!d->kiojob) {
+        // no job => job is finished and endOfData was already sent
+        return;
+    }
     KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(d->kiojob);
     if (filejob) {
         // while d->seeking the backend won't get any data
@@ -109,6 +113,11 @@ void KioMediaStream::enoughData()
 void KioMediaStream::seekStream(qint64 position)
 {
     Q_D(KioMediaStream);
+    if (!d->kiojob) {
+        // no job => job is finished and endOfData was already sent
+        reset();
+    }
+    Q_ASSERT(d->kiojob);
     kDebug(600) << position << " = " << qulonglong(position);
     d->seeking = true;
     if (d->open) {
@@ -122,6 +131,7 @@ void KioMediaStream::seekStream(qint64 position)
 void KioMediaStreamPrivate::_k_bytestreamData(KIO::Job *, const QByteArray &data)
 {
     Q_Q(KioMediaStream);
+    Q_ASSERT(kiojob);
     if (seeking) {
         // seek doesn't block, so don't send data to the backend until it signals us
         // that the seek is done
@@ -151,6 +161,7 @@ void KioMediaStreamPrivate::_k_bytestreamData(KIO::Job *, const QByteArray &data
 void KioMediaStreamPrivate::_k_bytestreamResult(KJob *job)
 {
     Q_Q(KioMediaStream);
+    Q_ASSERT(kiojob == job);
     if (job->error()) {
         QString kioErrorString = job->errorString();
         kDebug(600) << "KIO Job error: " << kioErrorString;
@@ -172,6 +183,7 @@ void KioMediaStreamPrivate::_k_bytestreamResult(KJob *job)
         q->error(NormalError, kioErrorString);
     }
     kiojob = 0;
+    kDebug(600) << "KIO Job is done (will delete itself) and d->kiojob reset to 0";
     endOfDataSent = true;
     q->endOfData();
     reading = false;
@@ -184,18 +196,10 @@ void KioMediaStreamPrivate::_k_bytestreamTotalSize(KJob *, qulonglong size)
     q->setStreamSize(size);
 }
 
-void KioMediaStreamPrivate::_k_cleanupByteStream()
-{
-    if (kiojob) {
-        kiojob->kill();
-        kiojob = 0;
-        reading = false;
-    }
-}
-
 void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
 {
     Q_Q(KioMediaStream);
+    Q_ASSERT(kiojob);
     open = true;
     endOfDataSent = false;
     KIO::FileJob *filejob = static_cast<KIO::FileJob *>(kiojob);
@@ -211,6 +215,7 @@ void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
 
 void KioMediaStreamPrivate::_k_bytestreamSeekDone(KIO::Job *, KIO::filesize_t offset)
 {
+    Q_ASSERT(kiojob);
     kDebug(600) << offset;
     seeking = false;
     endOfDataSent = false;

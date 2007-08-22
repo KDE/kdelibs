@@ -56,7 +56,6 @@ class KioMediaStreamPrivate : public AbstractMediaStreamPrivate
         void _k_bytestreamData(KIO::Job *, const QByteArray &);
         void _k_bytestreamResult(KJob *);
         void _k_bytestreamTotalSize(KJob *, qulonglong);
-        void _k_cleanupByteStream();
         void _k_bytestreamSeekStream(qint64);
         void _k_bytestreamFileJobOpen(KIO::Job *);
         void _k_bytestreamSeekDone(KIO::Job *, KIO::filesize_t);

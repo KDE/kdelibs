@@ -47,7 +47,6 @@ class KioMediaStream : public AbstractMediaStream
         Q_PRIVATE_SLOT(d_func(), void _k_bytestreamData(KIO::Job *, const QByteArray &))
         Q_PRIVATE_SLOT(d_func(), void _k_bytestreamResult(KJob *))
         Q_PRIVATE_SLOT(d_func(), void _k_bytestreamTotalSize(KJob *, qulonglong))
-        Q_PRIVATE_SLOT(d_func(), void _k_cleanupByteStream())
         Q_PRIVATE_SLOT(d_func(), void _k_bytestreamFileJobOpen(KIO::Job *))
         Q_PRIVATE_SLOT(d_func(), void _k_bytestreamSeekDone(KIO::Job *, KIO::filesize_t))
 };
