@@ -17,49 +17,109 @@
 
 */
 
-#include "mediaplayer.h"
-#include <kcmdlineargs.h>
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <cstdlib>
+#include "mediacontrols.h"
+
+#include <QtCore/QTimer>
+#include <QtGui/QAction>
+#include <QtGui/QDockWidget>
+#include <QtGui/QMainWindow>
 #include <QtGui/QBoxLayout>
-#include <QtGui/QPushButton>
-#include "../backendcapabilities.h"
-#include <QtGui/QSlider>
 #include <QtGui/QCheckBox>
 #include <QtGui/QComboBox>
+#include <QtGui/QPushButton>
+#include <QtGui/QSlider>
+
+#include <phonon/audiooutput.h>
+#include <phonon/backendcapabilities.h>
+#include <phonon/effect.h>
+#include <phonon/effectwidget.h>
+#include <phonon/mediaobject.h>
+#include <phonon/path.h>
+#include <phonon/videowidget.h>
+
+#include <kaboutdata.h>
+#include <kdebug.h>
+#include <kfiledialog.h>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
 #include <kicon.h>
-#include <QtGui/QAction>
+#include <kurl.h>
 
-using namespace Phonon;
+#include <cstdlib>
 
-MediaPlayer::MediaPlayer(QWidget *parent)
-    : QWidget(parent)
-    , m_effectWidget(0)
+using Phonon::MediaObject;
+using Phonon::MediaSource;
+using Phonon::AudioOutput;
+using Phonon::VideoWidget;
+using Phonon::MediaControls;
+using Phonon::Effect;
+using Phonon::EffectWidget;
+
+class MediaPlayer : public QMainWindow
 {
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    Q_OBJECT
+    public:
+        MediaPlayer();
+        void setUrl(const KUrl &url);
+
+    private Q_SLOTS:
+        void workaroundQtBug();
+        void getNextUrl();
+        void startupReady();
+        void openEffectWidget();
+        void toggleScaleMode(bool);
+        void switchAspectRatio(int x);
+        void setBrightness(int b);
+
+    private:
+        QWidget *m_settingsWidget;
+        Phonon::MediaObject *m_media;
+        Phonon::Path m_apath;
+        Phonon::AudioOutput *m_aoutput;
+        Phonon::Path m_vpath;
+        Phonon::Effect *m_effect;
+        Phonon::VideoWidget *m_vwidget;
+        Phonon::MediaControls *m_controls;
+        Phonon::EffectWidget *m_effectWidget;
+        QAction *m_fullScreenAction;
+};
+
+MediaPlayer::MediaPlayer()
+    : QMainWindow(0), m_effectWidget(0)
+{
+    QDockWidget *dock = new QDockWidget(this);
+    dock->setAllowedAreas(Qt::BottomDockWidgetArea);
+
+    m_settingsWidget = new QWidget(dock);
+    dock->setWidget(m_settingsWidget);
+    addDockWidget(Qt::BottomDockWidgetArea, dock);
+
+    QVBoxLayout *layout = new QVBoxLayout(m_settingsWidget);
 
     m_vwidget = new VideoWidget(this);
-    layout->addWidget(m_vwidget);
-    //m_vwidget->hide();
+    setCentralWidget(m_vwidget);
 
-    QAction *fullScreenAction = new QAction(m_vwidget);
-    fullScreenAction->setShortcut(Qt::Key_F);
-    fullScreenAction->setCheckable(true);
-    fullScreenAction->setChecked(false);
-    m_vwidget->addAction(fullScreenAction);
-    connect(fullScreenAction, SIGNAL(toggled(bool)), m_vwidget, SLOT(setFullScreen(bool)));
+    m_fullScreenAction = new QAction(m_vwidget);
+    m_fullScreenAction->setShortcut(Qt::Key_F);
+    m_fullScreenAction->setCheckable(true);
+    m_fullScreenAction->setChecked(false);
+    this->addAction(m_fullScreenAction);
+    connect(m_fullScreenAction, SIGNAL(toggled(bool)), m_vwidget, SLOT(setFullScreen(bool)));
+    connect(m_fullScreenAction, SIGNAL(toggled(bool)), SLOT(workaroundQtBug()));
 
     m_aoutput = new AudioOutput(Phonon::VideoCategory, this);
 
     m_media = new MediaObject(this);
+    connect(m_media, SIGNAL(finished()), SLOT(getNextUrl()));
+
     createPath(m_media, m_vwidget);
     m_apath = createPath(m_media, m_aoutput);
 
-    m_controls = new MediaControls(this);
+    m_controls = new MediaControls(m_settingsWidget);
     layout->addWidget(m_controls);
     m_controls->setMediaObject(m_media);
     m_controls->setAudioOutput(m_aoutput);
+    m_controls->setMaximumHeight(28);
 
     /*
     QList<AudioEffectDescription> effectList = BackendCapabilities::availableAudioEffects();
@@ -67,25 +127,25 @@ MediaPlayer::MediaPlayer(QWidget *parent)
     {
         m_effect = new AudioEffect(BackendCapabilities::availableAudioEffects().first(), m_apath);
         m_apath->insertEffect(m_effect);
-        QPushButton *button = new QPushButton(this);
+        QPushButton *button = new QPushButton(m_settingsWidget);
         layout->addWidget(button);
         button->setText("configure effect");
         connect(button, SIGNAL(clicked()), SLOT(openEffectWidget()));
     }
     */
 
-    QSlider *slider = new QSlider(this);
+    QSlider *slider = new QSlider(m_settingsWidget);
     layout->addWidget(slider);
     slider->setOrientation(Qt::Horizontal);
     slider->setRange(-100, 100);
     slider->setValue(static_cast<int>(m_vwidget->brightness() * 100));
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(setBrightness(int)));
 
-    QCheckBox *scaleModeCheck = new QCheckBox(this);
+    QCheckBox *scaleModeCheck = new QCheckBox(m_settingsWidget);
     layout->addWidget(scaleModeCheck);
     connect(scaleModeCheck, SIGNAL(toggled(bool)), SLOT(toggleScaleMode(bool)));
 
-    QComboBox *aspectRatioCombo = new QComboBox(this);
+    QComboBox *aspectRatioCombo = new QComboBox(m_settingsWidget);
     layout->addWidget(aspectRatioCombo);
     connect(aspectRatioCombo, SIGNAL(currentIndexChanged(int)), SLOT(switchAspectRatio(int)));
     aspectRatioCombo->addItem("AspectRatioAuto");
@@ -94,6 +154,36 @@ MediaPlayer::MediaPlayer(QWidget *parent)
     aspectRatioCombo->addItem("AspectRatio16_9");
 
     this->resize(width(), height() + 240 - m_vwidget->height());
+
+    QTimer::singleShot(0, this, SLOT(startupReady()));
+}
+
+void MediaPlayer::workaroundQtBug()
+{
+    kDebug();
+    if (m_vwidget->actions().contains(m_fullScreenAction)) {
+        m_vwidget->removeAction(m_fullScreenAction);
+        this->addAction(m_fullScreenAction);
+    } else {
+        this->removeAction(m_fullScreenAction);
+        m_vwidget->addAction(m_fullScreenAction);
+    }
+}
+
+void MediaPlayer::getNextUrl()
+{
+    KUrl url = KFileDialog::getOpenUrl(m_media->currentSource().url());//startDir=KUrl(), filter=QString(), parent=0);
+    m_media->setCurrentSource(url);
+    m_media->play();
+}
+
+void MediaPlayer::startupReady()
+{
+    if (m_media->currentSource().type() == MediaSource::Invalid) {
+        KUrl url = KFileDialog::getOpenUrl();//startDir=KUrl(), filter=QString(), parent=0);
+        m_media->setCurrentSource(url);
+    }
+    m_media->play();
 }
 
 void MediaPlayer::setBrightness(int b)
@@ -135,21 +225,28 @@ int main(int argc, char ** argv)
             "0.1", ki18n("Media Player"),
             KAboutData::License_GPL);
     about.addAuthor(ki18n("Matthias Kretz"), KLocalizedString(), "kretz@kde.org");
+
     KCmdLineArgs::init(argc, argv, &about);
+    KCmdLineOptions options;
+    options.add("+[url]", ki18n("File to play"));
+    KCmdLineArgs::addCmdLineOptions( options );
+
     KApplication app;
     MediaPlayer foo;
     foo.setWindowIcon(KIcon("phonon"));
     foo.show();
-    KUrl url(getenv("PHONON_TESTURL"));
-    if (url.isValid())
-    {
-        foo.setUrl(url);
-        return app.exec();
+
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    if (args->count() == 1) {
+        KUrl url = args->url(0);
+        if (url.isValid()) {
+            foo.setUrl(url);
+        }
     }
-    return 1;
+    args->clear();
+    return app.exec();
 }
 
-// vim: sw=4 ts=4
 #include "mediaplayer.moc"
 #include "mediacontrols.cpp"
-#include "mediacontrols.moc"
+#include "moc_mediacontrols.cpp"

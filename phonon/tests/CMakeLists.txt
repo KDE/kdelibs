@@ -60,7 +60,7 @@ PHONON_UNIT_TESTS_FAKE(
 )
 target_link_libraries(backendcapabilitiestest ${KDE4_KDECORE_LIBS})
 target_link_libraries(audiodevicelisttest ${KDE4_KAUDIODEVICELIST_LIBS})
-target_link_libraries(mediaplayer ${KDE4_KDEUI_LIBS})
+target_link_libraries(mediaplayer ${KDE4_KIO_LIBS})
 #target_link_libraries(guitest ${KDE4_KIO_LIBS})
 target_link_libraries(backendcapabilitiestest_fake ${KDE4_KDECORE_LIBS})
 #methodtest does not link against libphonon
