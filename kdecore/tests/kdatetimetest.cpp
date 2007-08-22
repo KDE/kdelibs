@@ -3549,6 +3549,14 @@ void KDateTimeTest::cache()
     QCOMPARE(KDateTime_utcCacheHit, utcHit);
     QCOMPARE(KDateTime_zoneCacheHit, zoneHit);
 
+    // Check that cached time zone conversions are cleared correctly
+    KDateTime utc1(QDate(2005,7,6), QTime(3,40,0), KDateTime::UTC);
+    KDateTime la1 = utc1.toTimeSpec(losAngeles);
+    KDateTime utc2 = utc1.addDays(1);
+    KDateTime la2 = utc2.toTimeSpec(losAngeles);
+    QVERIFY(la1 != la2);
+    QCOMPARE(la1.secsTo(la2), 86400);
+
     // Restore the original local time zone
     if (!originalZone)
         ::unsetenv("TZ");

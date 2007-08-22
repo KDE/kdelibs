@@ -326,7 +326,7 @@ class KDateTimePrivate : public QSharedData
           m2ndOccurrence(false),
           mDateOnly(false)
     {
-        converted.tz = KTimeZone();   // flag time zone conversion as invalid
+        converted.tz = InvalidTZ;   // flag time zone conversion as invalid
     }
 
     KDateTimePrivate(const QDateTime &d, const KDateTime::Spec &s, bool donly = false)
@@ -350,11 +350,10 @@ class KDateTimePrivate : public QSharedData
                 utcCached = true;
                 // fall through to UTC
             case KDateTime::UTC:
-                converted.tz = KTimeZone();    // flag time zone conversion as invalid
-                break;
             default:
                 break;
         }
+        converted.tz = InvalidTZ;    // flag time zone conversion as invalid
     }
 
     KDateTimePrivate(const KDateTimePrivate &rhs)
@@ -379,25 +378,26 @@ class KDateTimePrivate : public QSharedData
     QDateTime utc() const                    { return QDateTime(ut.date, ut.time, Qt::UTC); }
     bool      dateOnly() const               { return mDateOnly; }
     bool      secondOccurrence() const       { return m2ndOccurrence; }
-    void      setDt(const QDateTime &dt)     { mDt = dt; utcCached = m2ndOccurrence = false; }
+    void      setDt(const QDateTime &dt)     { mDt = dt; utcCached = m2ndOccurrence = false; converted.tz = InvalidTZ; }
     void      setDtFromUtc(const QDateTime &utcdt);
-    void      setDate(const QDate &d)        { mDt.setDate(d); utcCached = m2ndOccurrence = false; }
-    void      setTime(const QTime &t)        { mDt.setTime(t); utcCached = mDateOnly = m2ndOccurrence = false; }
-    void      setDtTimeSpec(Qt::TimeSpec s)  { mDt.setTimeSpec(s); utcCached = m2ndOccurrence = false; }
+    void      setDate(const QDate &d)        { mDt.setDate(d); utcCached = m2ndOccurrence = false; converted.tz = InvalidTZ; }
+    void      setTime(const QTime &t)        { mDt.setTime(t); utcCached = mDateOnly = m2ndOccurrence = false; converted.tz = InvalidTZ; }
+    void      setDtTimeSpec(Qt::TimeSpec s)  { mDt.setTimeSpec(s); utcCached = m2ndOccurrence = false; converted.tz = InvalidTZ; }
     void      setSpec(const KDateTime::Spec&);
     void      setDateOnly(bool d);
     int       timeZoneOffset() const;
-    QDateTime toUtc(const KTimeZone &local = KTimeZone()) const;
-    QDateTime toZone(const KTimeZone &zone, const KTimeZone &local = KTimeZone()) const;
-    void      newToZone(KDateTimePrivate *newd, const KTimeZone &zone, const KTimeZone &local = KTimeZone()) const;
+    QDateTime toUtc(const KTimeZone &local = InvalidTZ) const;
+    QDateTime toZone(const KTimeZone &zone, const KTimeZone &local = InvalidTZ) const;
+    void      newToZone(KDateTimePrivate *newd, const KTimeZone &zone, const KTimeZone &local = InvalidTZ) const;
     bool      equalSpec(const KDateTimePrivate&) const;
+    void      clearCache()                   { utcCached = false; converted.tz = InvalidTZ; }
     void      setDt(const QDateTime &dt, const QDateTime &utcDt)
     {
         mDt = dt;
         ut.date = utcDt.date();
         ut.time = utcDt.time();
         utcCached = true;
-        converted.tz = KTimeZone();    // flag time zone conversion as invalid
+        converted.tz = InvalidTZ;    // flag time zone conversion as invalid
         m2ndOccurrence = false;
     }
     void      setUtc(const QDateTime &dt) const
@@ -405,7 +405,7 @@ class KDateTimePrivate : public QSharedData
         ut.date = dt.date();
         ut.time = dt.time();
         utcCached = true;
-        converted.tz = KTimeZone();    // flag time zone conversion as invalid
+        converted.tz = InvalidTZ;    // flag time zone conversion as invalid
     }
 
     /* Initialise the date/time for specType = UTC, from a time zone time,
@@ -432,6 +432,7 @@ class KDateTimePrivate : public QSharedData
 
 
     static QTime         sod;               // start of day (00:00:00)
+    static KTimeZone     InvalidTZ;         // invalid KTimeZone, to save constructing it each time we need it
 
     /* Because some applications create thousands of instances of KDateTime, this
      * data structure is designed to minimize memory usage. Ensure that all small
@@ -450,8 +451,7 @@ public:
         QTime             time;
     } ut;
 private:
-    mutable struct converted {         // Cached conversion to another time zone.
-                                       // Only valid if 'utcCached' is true, or if specType == UTC.
+    mutable struct converted {         // cached conversion to another time zone (if 'tz' is valid)
         QDate             date;
         QTime             time;
         KTimeZone         tz;
@@ -467,7 +467,8 @@ private:
 };
 
 
-QTime KDateTimePrivate::sod(0,0,0);
+QTime     KDateTimePrivate::sod(0,0,0);
+KTimeZone KDateTimePrivate::InvalidTZ;
 
 KDateTime::Spec KDateTimePrivate::spec() const
 {
@@ -520,12 +521,11 @@ void KDateTimePrivate::setSpec(const KDateTime::Spec &other)
                 utcCached = true;
                 // fall through to UTC
             case KDateTime::UTC:
-                converted.tz = KTimeZone();    // flag time zone conversion as invalid
-                break;
             default:
                 break;
         }
     }
+    converted.tz = InvalidTZ;    // flag time zone conversion as invalid
     setDtTimeSpec((specType == KDateTime::UTC) ? Qt::UTC : Qt::LocalTime);  // this clears cached UTC value
 }
 
@@ -547,6 +547,7 @@ void KDateTimePrivate::setDateOnly(bool dateOnly)
         {
             mDt.setTime(sod);
             utcCached = false;
+            converted.tz = InvalidTZ;    // flag time zone conversion as invalid
         }
         m2ndOccurrence = false;
     }
@@ -610,7 +611,7 @@ int KDateTimePrivate::timeZoneOffset() const
     {
         ut.date = QDate();
         utcCached = true;
-        converted.tz = KTimeZone();
+        converted.tz = InvalidTZ;    // flag time zone conversion as invalid
     }
     else
     {
@@ -697,7 +698,7 @@ QDateTime KDateTimePrivate::toUtc(const KTimeZone &local) const
     // Invalid - mark it cached to avoid having to process it again
     ut.date = QDate();    // (invalid)
     utcCached = true;
-    converted.tz = KTimeZone();
+    converted.tz = InvalidTZ;
 //    kDebug() << "toUtc(): invalid";
     return mDt;
 }
@@ -708,7 +709,7 @@ QDateTime KDateTimePrivate::toUtc(const KTimeZone &local) const
  */
 QDateTime KDateTimePrivate::toZone(const KTimeZone &zone, const KTimeZone &local) const
 {
-    if ((utcCached || specType == KDateTime::UTC)  &&  converted.tz == zone)
+    if (converted.tz == zone)
     {
         // Converted value is already cached
 #ifndef NDEBUG
@@ -754,11 +755,13 @@ void KDateTimePrivate::newToZone(KDateTimePrivate *newd, const KTimeZone &zone, 
             newd->converted.time    = mDt.time();
             newd->converted.tz      = specZone;
             newd->converted2ndOccur = m2ndOccurrence;
-            // Fall through to default
+            newd->ut                = ut;
+            return;
         default:
             newd->ut = ut;
             break;
     }
+    newd->converted.tz = InvalidTZ;    // flag time zone conversion as invalid
 }
 
 
@@ -842,7 +845,7 @@ KTimeZone KDateTime::timeZone() const
         case UTC:
             return KTimeZone::utc();
         default:
-            return KTimeZone();
+            return KDateTimePrivate::InvalidTZ;
     }
 }
 
@@ -1022,7 +1025,7 @@ void KDateTime::setTime(const QTime &time)
 
 void KDateTime::setDateTime(const QDateTime &dt)
 {
-    d->utcCached = false;
+    d->clearCache();
     d->setDateOnly(false);
     if (dt.timeSpec() == Qt::LocalTime)
     {
@@ -1045,7 +1048,7 @@ void KDateTime::setSecondOccurrence(bool second)
     if (d->specType == KDateTime::TimeZone  &&  second != d->m2ndOccurrence)
     {
         d->m2ndOccurrence = second;
-        d->utcCached = false;
+        d->clearCache();
         if (second)
         {
             // Check whether a second occurrence is actually possible, and
@@ -2189,7 +2192,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                 }
                 if (useUtcOffset)
                 {
-                    zone = KTimeZone();
+                    zone = KDateTimePrivate::InvalidTZ;
                     if (!utcOffset)
                         qdt.setTimeSpec(Qt::UTC);
                 }
