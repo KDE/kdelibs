@@ -273,6 +273,8 @@ PlatformPlugin *FactoryPrivate::platformPlugin()
                 if (m_platformPlugin) {
                     return m_platformPlugin;
                 }
+            } else {
+                pDebug() << Q_FUNC_INFO << dir.absolutePath() << "exists but the KDE platform plugin was not loadable:" << pluginLib.errorString();
             }
         }
         if (!m_platformPlugin) {
