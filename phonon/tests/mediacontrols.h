@@ -26,7 +26,7 @@
 
 namespace Phonon
 {
-class MediaProducer;
+class MediaObject;
 class AudioOutput;
 class MediaControlsPrivate;
 
