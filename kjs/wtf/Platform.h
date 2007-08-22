@@ -69,9 +69,9 @@
 
 /* PLATFORM(SOLARIS_OS) */
 /* Operating system level dependencies for Sun (Open)Solaris 10. */
-/* The detection is a little dodgy -- it's not impossible to use */
-/* Sun Studio (the compiler) on non-Solaris platforms. */
-#if defined(__SUNPRO_CC)
+/* Studio 12 on Solaris defines __SunOS; gcc defines __sun__; */
+/* Both compilers define __sun and sun. */
+#if defined(__sun) || defined(sun)
 #define WTF_PLATFORM_SOLARIS_OS 1
 #endif
 
@@ -133,6 +133,11 @@
 #if   defined(__x86_64__) \
    || defined(__ia64__)
 #define WTF_PLATFORM_X86_64 1
+#endif
+
+/* PLATFORM(SPARC) */
+#if defined(sparc)
+#define WTF_PLATFORM_SPARC 1
 #endif
 
 /* Compiler */
