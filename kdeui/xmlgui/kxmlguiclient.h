@@ -195,7 +195,7 @@ public:
    * menu file whose contents depend on the mimetype of the file that
    * is selected, then you can achieve this using ActionLists. It
    * works as follows:
-   * In your xxxui.rc file ( the one that you set in setXMLFile()
+   * In your xxxui.rc file ( the one that you set in setXMLFile() / pass to setupGUI()
    * ), you put an <p>\<ActionList name="xxx"\></p> tag.  E.g.
    * \verbatim
    * <kpartgui name="xxx_part" version="1">
