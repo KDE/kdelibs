@@ -248,7 +248,7 @@ bool KPty::open()
       d->masterFd = ::open(ptyName.data(), O_RDWR);
       if (d->masterFd >= 0)
       {
-#ifdef __sun
+#ifdef Q_OS_SOLARIS
         /* Need to check the process group of the pty.
          * If it exists, then the slave pty is in use,
          * and we need to get another one.
@@ -259,7 +259,7 @@ bool KPty::open()
           d->masterFd = -1;
           continue;
         }
-#endif /* sun */
+#endif /* Q_OS_SOLARIS */
         if (!access(d->ttyName.data(),R_OK|W_OK)) // checks availability based on permission bits
         {
           if (!geteuid())
