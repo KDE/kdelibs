@@ -81,7 +81,7 @@ class KStylePrivate;
 // TODO: implement standardIcon().. and what about standardPalette()?
 // TODO: maybe the arrow in CE_PushButtonLabel should be painted in CE_PushButtonBevel like QCommonStyle
 
-class KDEFX_EXPORT KStyle: public QCommonStyle
+class KDEUI_EXPORT KStyle: public QCommonStyle
 {
     Q_OBJECT
 
