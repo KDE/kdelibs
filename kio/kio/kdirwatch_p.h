@@ -159,8 +159,8 @@ public:
   int m_ref;
   bool useStat(Entry*);
 
-  bool delayRemove;
   QList<Entry *> removeList;
+  bool delayRemove;
 
   bool rescan_all;
   QTimer rescan_timer;

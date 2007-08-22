@@ -151,6 +151,7 @@ KFind::Result KReplace::replace()
             KFind::d->index = KFind::find(KFind::d->text, *KFind::d->regExp, KFind::d->index, KFind::d->options, &KFind::d->matchedLength);
         else
             KFind::d->index = KFind::find(KFind::d->text, KFind::d->pattern, KFind::d->index, KFind::d->options, &KFind::d->matchedLength);
+
 #ifdef DEBUG_REPLACE
         kDebug() << "KFind::find returned KFind::d->index=" << KFind::d->index;
 #endif
@@ -165,8 +166,8 @@ KFind::Result KReplace::replace()
                     kDebug() << "PromptOnReplace";
 #endif
                     // Display accurate initial string and replacement string, they can vary
-                    QString matchedText = KFind::d->text.mid( KFind::d->index, KFind::d->matchedLength );
-                    QString rep = matchedText;
+                    QString matchedText (KFind::d->text.mid( KFind::d->index, KFind::d->matchedLength ));
+                    QString rep (matchedText);
                     KReplace::replace(rep, d->m_replacement, 0, KFind::d->options, KFind::d->matchedLength);
                     dialog()->setLabel( matchedText, rep );
                     dialog()->show();
@@ -234,7 +235,7 @@ int KReplace::replace(QString &text, const QRegExp &pattern, const QString &repl
 
 int KReplace::replace(QString &text, const QString &replacement, int index, long options, int length)
 {
-    QString rep = replacement;
+    QString rep (replacement);
     // Backreferences: replace \0 with the right portion of 'text'
     if ( options & KReplaceDialog::BackReference )
         rep.replace( "\\0", text.mid( index, length ) );

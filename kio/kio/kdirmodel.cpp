@@ -280,7 +280,7 @@ void KDirModel::slotNewItems( const KFileItemList& items )
     KUrl dir( items.first()->url().upUrl() );
     dir.adjustPath(KUrl::RemoveTrailingSlash);
 
-    //kDebug() << "dir=" << dir;
+    kDebug() << "dir=" << dir;
 
     const QPair<int, KDirModelNode*> result = d->nodeForUrl(dir); // O(n*m)
     Q_ASSERT(result.second); // Are you calling KDirLister::openUrl(url,true,false)? Please use expandToUrl() instead.

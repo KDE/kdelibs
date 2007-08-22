@@ -34,7 +34,7 @@
 #include <QtCore/QHash>
 #include <QTextDocument>
 
-#define DEBUG_FIND
+//#define DEBUG_FIND
 
 #define INDEX_NOMATCH -1
 
@@ -130,7 +130,7 @@ void KFind::setData( int id, const QString& data, int startPos )
             d->data.append( Private::Data(id, data, true) );
         else
             d->data.replace( id, Private::Data(id, data, true) );
-        Q_ASSERT( d->data[id].text == data );
+        Q_ASSERT( d->data.at(id).text == data );
     }
 
     if ( !(d->options & KFind::FindIncremental) || needData() )
@@ -194,14 +194,14 @@ KFind::Result KFind::find()
                 match = d->incrementalPath.value( d->pattern );
             else if ( d->emptyMatch )
                 match = *d->emptyMatch;
-            QString previousPattern = d->matchedPattern;
+            QString previousPattern (d->matchedPattern);
             d->matchedPattern = d->pattern;
             if ( !match.isNull() )
             {
                 bool clean = true;
 
                 // find the first result backwards on the path that isn't dirty
-                while ( d->data[match.dataId].dirty == true &&
+                while ( d->data.at(match.dataId).dirty == true &&
                         !d->pattern.isEmpty() )
                 {
                     d->pattern.truncate( d->pattern.length() - 1 );
@@ -219,7 +219,7 @@ KFind::Result KFind::find()
                 }
 
                 // set the current text, index, etc. to the found match
-                d->text = d->data[match.dataId].text;
+                d->text = d->data.at(match.dataId).text;
                 d->index = match.index;
                 d->matchedLength = match.matchedLength;
                 d->currentId = match.dataId;
@@ -256,7 +256,7 @@ KFind::Result KFind::find()
                 if ( d->index == INDEX_NOMATCH )
                     return NoMatch;
 
-                QString temp = d->pattern;
+                QString temp (d->pattern);
                 d->pattern.truncate(d->matchedPattern.length() + 1);
                 d->matchedPattern = temp;
             }
@@ -295,7 +295,7 @@ KFind::Result KFind::find()
 
             if ( d->index == -1 && d->currentId < (int) d->data.count() - 1 )
             {
-                d->text = d->data[++d->currentId].text;
+                d->text = d->data.at(++d->currentId).text;
 
                 if ( d->options & KFind::FindBackwards )
                     d->index = d->text.length();
@@ -360,7 +360,7 @@ KFind::Result KFind::find()
         {
             if ( d->options & KFind::FindIncremental )
             {
-                QString temp = d->pattern;
+                QString temp (d->pattern);
                 temp.truncate(temp.length() - 1);
                 d->pattern = d->matchedPattern;
                 d->matchedPattern = temp;
@@ -389,7 +389,7 @@ void KFind::startNewIncrementalSearch()
     }
     else
     {
-        d->text = d->data[match->dataId].text;
+        d->text = d->data.at(match->dataId).text;
         d->index = match->index;
         d->currentId = match->dataId;
     }
@@ -552,11 +552,11 @@ bool KFind::isInWord(QChar ch)
 
 bool KFind::isWholeWords(const QString &text, int starts, int matchedLength)
 {
-    if ((starts == 0) || (!isInWord(text[starts - 1])))
+    if ((starts == 0) || (!isInWord(text.at(starts-1))))
     {
         int ends = starts + matchedLength;
 
-        if ((ends == (int)text.length()) || (!isInWord(text[ends])))
+        if ((ends == (int)text.length()) || (!isInWord(text.at(ends))))
             return true;
     }
     return false;
@@ -623,7 +623,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         i18n("Continue from the end?")
         : i18n("Continue from the beginning?");
 
-    int ret = KMessageBox::questionYesNo( dialogsParent(), QString("<qt>")+message+QString("</qt>"),
+    int ret = KMessageBox::questionYesNo( dialogsParent(), "<qt>"+message+"</qt>",
                                           QString(), KStandardGuiItem::cont(), KStandardGuiItem::stop() );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )

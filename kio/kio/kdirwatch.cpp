@@ -407,7 +407,7 @@ KDirWatchPrivate::Entry* KDirWatchPrivate::entry(const QString& _path)
     return 0;
   }
 
-  QString path = _path;
+  QString path (_path);
 
   if ( path.length() > 1 && path.endsWith( QLatin1Char( '/' ) ) )
     path.truncate( path.length() - 1 );
@@ -564,7 +564,7 @@ bool KDirWatchPrivate::useStat(Entry* e)
 void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
                 Entry* sub_entry, bool isDir, KDirWatch::WatchModes watchModes)
 {
-  QString path = _path;
+  QString path (_path);
   if (path.startsWith("/dev/") || (path == "/dev"))
     return; // Don't even go there.
 
@@ -605,7 +605,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   // we have a new path to watch
 
   KDE_struct_stat stat_buf;
-  QByteArray tpath = QFile::encodeName(path);
+  QByteArray tpath (QFile::encodeName(path));
   bool exists = (KDE_stat(tpath, &stat_buf) == 0);
 
   Entry newEntry;
@@ -622,8 +622,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
       qWarning("KDirWatch: %s is a file. Use addFile!", qPrintable(path));
 
     if (!e->isDir && ( watchModes != KDirWatch::WatchDirOnly)) {
-      QString msg = "KDirWatch: %s is a file. You can't use recursive or ";
-      msg += "watchFiles options";
+      QString msg ("KDirWatch: %s is a file. You can't use recursive or "
+                   "watchFiles options");
       qWarning(msg.toAscii(), qPrintable(path));
       watchModes = KDirWatch::WatchDirOnly;
     }
@@ -647,8 +647,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 
   kDebug(7001).nospace() << "Added " << (e->isDir ? "Dir " : "File ") << path
     << (e->m_status == NonExistent ? " NotExisting" : "")
-    << " for " << (sub_entry ? sub_entry->path : QString(""))
-    << " [" << (instance ? instance->objectName() : QString("")) << "]";
+    << " for " << (sub_entry ? sub_entry->path : "")
+    << " [" << (instance ? instance->objectName() : "") << "]";
 
   // now setup the notification method
   e->m_mode = UnknownMode;
@@ -787,8 +787,8 @@ void KDirWatchPrivate::removeEntry( KDirWatch* instance,
   }
 
   kDebug(7001).nospace() << "Removed " << (e->isDir ? "Dir ":"File ") << e->path
-     << " for " << (sub_entry ? sub_entry->path : QString(""))
-     << " [" << (instance ? instance->objectName() : QString("")) << "]";
+     << " for " << (sub_entry ? sub_entry->path : "")
+     << " [" << (instance ? instance->objectName() : "") << "]";
   m_mapEntries.remove( e->path ); // <e> not valid any more
 }
 
@@ -1014,7 +1014,7 @@ int KDirWatchPrivate::scanEntry(Entry* e)
  */
 void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
 {
-  QString path = e->path;
+  QString path (e->path);
   if (!fileName.isEmpty()) {
     if (!QDir::isRelativePath(fileName))
       path = fileName;
@@ -1270,15 +1270,15 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
       case FAMCreated: {
           // check for creation of a directory we have to watch
-        QByteArray tpath = QFile::encodeName( e->path + '/' +
-            (const char *)fe->filename);
-        
+        QByteArray tpath (QFile::encodeName( e->path + '/' +
+            (const char *)fe->filename));
+
         Entry* sub_entry = 0;
         foreach(sub_entry, e->m_entries)
           if (sub_entry->path == tpath) break;
 
         if (sub_entry && sub_entry->isDir) {
-          QString path = e->path;
+          QString path (e->path);
           removeEntry(0,e->path,sub_entry); // <e> can be invalid here!!
           sub_entry->m_status = Normal;
           if (!useFAM(sub_entry)) {
@@ -1310,7 +1310,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           if (counter != 0)
             emitEvent (e, Created, tpath);
 
-          QString msg = QString::number(counter);
+          QString msg (QString::number(counter));
           msg += " instance/s monitoring the new ";
           msg += (isDir ? "dir " : "file ") + tpath;
           kDebug(7001) << msg;
