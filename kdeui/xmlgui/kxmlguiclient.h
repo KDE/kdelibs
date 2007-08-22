@@ -274,6 +274,7 @@ protected:
    * Sets the name of the rc file containing the XML for the part.
    *
    * Call this in the Part-inherited class constructor.
+   * If you're writing usual application, use KXmlGuiWindow::setupGUI() with non-default arguments
    *
    * @param file Either an absolute path for the file, or simply the
    *             filename, which will then be assumed to be installed
