@@ -299,7 +299,7 @@ static QString makeQuestion( const KUrl& url, const QString& mimeType, const QSt
 
     // Test if the mimeType is not recognize as octet-stream.
     // If so then keep mime-type as comment
-    if (mime->name() != KMimeType::defaultMimeType()) {
+    if (mime && mime->name() != KMimeType::defaultMimeType()) {
         // The mime-type is known so display the comment instead of mime-type
         comment = mime->comment();
     }
