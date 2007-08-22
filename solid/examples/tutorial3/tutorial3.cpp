@@ -45,7 +45,7 @@ int main(int args, char **argv)
 
     //take the first processor
     Solid::Device device = list[0];
-    if(device.is<Solid::Processor>()) kDebug() << "We've got a processor!";
+    if(device.is<Solid::Processor>()) kDebug() << "We've got a processor!" << list.count() << "to be exact...";
     else kDebug() << "Device is not a processor.";
 
     Solid::Processor *processor = device.as<Solid::Processor>();
