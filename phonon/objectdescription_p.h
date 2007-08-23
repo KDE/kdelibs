@@ -44,7 +44,7 @@ namespace Phonon
             {
                 if (index == rhs.index && (name != rhs.name || description != rhs.description))
                     pError() << "Same index (" << index <<
-                        "), but different name/description. This is a bug in the Phonon backend." << endl;
+                        "), but different name/description. This is a bug in the Phonon backend.";
                 return index == rhs.index;// && name == rhs.name && description == rhs.description;
             }
 

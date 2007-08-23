@@ -122,7 +122,7 @@ FactoryPrivate::~FactoryPrivate()
         bp->deleteBackendObject();
     }
     if (objects.size() > 0) {
-        pError() << "The backend objects are not deleted as was requested." << endl;
+        pError() << "The backend objects are not deleted as was requested.";
         qDeleteAll(objects);
     }
     delete m_backendObject;
@@ -250,8 +250,7 @@ PlatformPlugin *FactoryPrivate::platformPlugin()
             return 0;
         }
         if (!QCoreApplication::instance() || QCoreApplication::applicationName().isEmpty()) {
-            pFatal() << "Phonon needs QCoreApplication::applicationName to be set";
-            ::abort();
+            pFatal("Phonon needs QCoreApplication::applicationName to be set");
         }
         const QString suffix("/phonon_platform");
         Q_ASSERT(QCoreApplication::instance());

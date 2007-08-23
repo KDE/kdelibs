@@ -37,12 +37,12 @@ namespace Phonon
 
 #if defined(QT_NO_DEBUG)
 #define pDebug if (false) qDebug
-#define pError() qDebug()
 #else
 #define pDebug if (!Phonon::GlobalData::instance()->showDebugOutput) {} else qDebug
-#define pError() if (!Phonon::GlobalData::instance()->showDebugOutput) {} else qDebug() << "ERROR:"
 #endif
-#define pFatal() qDebug() << "FATAL ERROR:"
+#define pWarning() qDebug() << "WARNING:"
+#define pError() qDebug() << "ERROR:"
+#define pFatal(message) qDebug() << "FATAL ERROR:" << message; ::abort()
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONONNAMESPACE_P_H

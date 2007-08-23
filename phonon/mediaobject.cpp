@@ -119,7 +119,7 @@ void MediaObject::setCurrentSubtitleStream(const SubtitleStreamDescription &stre
 void MediaObject::play()
 {
     K_D(MediaObject);
-    if (k_ptr->backendObject()) {
+    if (d->backendObject() && d->mediaSource.type() != MediaSource::Invalid) {
         INTERFACE_CALL(play());
     }
 }
@@ -127,7 +127,7 @@ void MediaObject::play()
 void MediaObject::pause()
 {
     K_D(MediaObject);
-    if (k_ptr->backendObject()) {
+    if (d->backendObject() && d->mediaSource.type() != MediaSource::Invalid) {
         INTERFACE_CALL(pause());
     }
 }
@@ -135,7 +135,7 @@ void MediaObject::pause()
 void MediaObject::stop()
 {
     K_D(MediaObject);
-    if (k_ptr->backendObject()) {
+    if (d->backendObject() && d->mediaSource.type() != MediaSource::Invalid) {
         INTERFACE_CALL(stop());
     }
 }
@@ -143,7 +143,7 @@ void MediaObject::stop()
 void MediaObject::seek(qint64 time)
 {
     K_D(MediaObject);
-    if (k_ptr->backendObject()) {
+    if (d->backendObject() && d->mediaSource.type() != MediaSource::Invalid) {
         INTERFACE_CALL(seek(time));
     }
 }
@@ -268,6 +268,9 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
         if (d->mediaSource.type() == MediaSource::Stream) {
             Q_ASSERT(d->mediaSource.stream());
             d->mediaSource.stream()->d_func()->setMediaObjectPrivate(d);
+        } else if (d->mediaSource.type() == MediaSource::Invalid) {
+            pWarning() << "requested invalid MediaSource for the current source of MediaObject";
+            return;
         }
         if (d->mediaSource.type() == MediaSource::Url && oldSourceType != MediaSource::Url) {
             disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
@@ -278,28 +281,6 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
         }
         INTERFACE_CALL(setSource(d->mediaSource));
     }
-
-//X         MediaObjectInterface *iface = qobject_cast<MediaObjectInterface *>(d->m_backendObject);
-//X         if (iface) {
-//X             iface->setUrl(url);
-//X             // if the state changes to ErrorState it will be handled in
-//X             // _k_stateChanged and a ByteStream will be used.
-//X             return;
-//X         }
-//X 
-//X         // we're using a ByteStream
-//X         // first try to do with a proper MediaObject. By deleting the ByteStream
-//X         // now we might end up with d->state == PlayingState because the stop
-//X         // call above is async and so we might be deleting a playing ByteStream.
-//X         // To fix this we change state to StoppedState manually.
-//X         d->deleteBackendObject();
-//X         if (d->state == PlayingState || d->state == PausedState || d->state == BufferingState) {
-//X             emit stateChanged(StoppedState, d->state);
-//X             d->state = StoppedState;
-//X         }
-//X         d->createBackendObject();
-//X         // createBackendObject will set up a ByteStream (in setupIface) if needed
-//X     }
 }
 
 QList<MediaSource> MediaObject::queue() const
@@ -401,7 +382,7 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
             break;
         default:
             pError() << "backend MediaObject reached ErrorState after " << oldstate
-                << ". It seems a KioMediaStream won't help here, trying anyway." << endl;
+                << ". It seems a KioMediaStream won't help here, trying anyway.";
             emit q->stateChanged(Phonon::LoadingState, oldstate);
             break;
         }

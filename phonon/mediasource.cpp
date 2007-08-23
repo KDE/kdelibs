@@ -41,14 +41,22 @@ MediaSource::MediaSource(const QString &filename)
         d->stream = new IODeviceStream(d->resourceFile, d->resourceFile);
     } else {
         const QFileInfo fileInfo(filename);
-        d->url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
+        if (fileInfo.exists()) {
+            d->url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
+        } else {
+            d->type = Invalid;
+        }
     }
 }
 
 MediaSource::MediaSource(const QUrl &url)
     : d(new MediaSourcePrivate(Url))
 {
-    d->url = url;
+    if (url.isValid()) {
+        d->url = url;
+    } else {
+        d->type = Invalid;
+    }
 }
 
 MediaSource::MediaSource(Phonon::DiscType dt, const QString &deviceName)
@@ -65,13 +73,21 @@ MediaSource::MediaSource(Phonon::DiscType dt, const QString &deviceName)
 MediaSource::MediaSource(AbstractMediaStream *stream)
     : d(new MediaSourcePrivate(Stream))
 {
-    d->stream = stream;
+    if (stream) {
+        d->stream = stream;
+    } else {
+        d->type = Invalid;
+    }
 }
 
 MediaSource::MediaSource(QIODevice *ioDevice)
     : d(new MediaSourcePrivate(Stream))
 {
-    d->stream = new IODeviceStream(ioDevice, ioDevice);
+    if (ioDevice) {
+        d->stream = new IODeviceStream(ioDevice, ioDevice);
+    } else {
+        d->type = Invalid;
+    }
 }
 
 /* post 4.0
