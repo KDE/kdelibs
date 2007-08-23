@@ -21,6 +21,7 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QAction>
+#include <QtGui/QLabel>
 #include <QtGui/QDockWidget>
 #include <QtGui/QMainWindow>
 #include <QtGui/QBoxLayout>
@@ -147,13 +148,22 @@ MediaPlayer::MediaPlayer()
     layout->addWidget(scaleModeCheck);
     connect(scaleModeCheck, SIGNAL(toggled(bool)), SLOT(toggleScaleMode(bool)));
 
-    QComboBox *aspectRatioCombo = new QComboBox(m_settingsWidget);
-    layout->addWidget(aspectRatioCombo);
+    QWidget *box = new QWidget(m_settingsWidget);
+    layout->addWidget(box);
+
+    QLabel *label = new QLabel("Aspect Ratio:", box);
+    label->setAlignment(Qt::AlignRight);
+    QComboBox *aspectRatioCombo = new QComboBox(box);
+    QHBoxLayout *hbox = new QHBoxLayout(box);
+    hbox->addWidget(label);
+    hbox->addWidget(aspectRatioCombo);
+    label->setBuddy(aspectRatioCombo);
+
     connect(aspectRatioCombo, SIGNAL(currentIndexChanged(int)), SLOT(switchAspectRatio(int)));
-    aspectRatioCombo->addItem("AspectRatioAuto");
-    aspectRatioCombo->addItem("AspectRatioWidget");
-    aspectRatioCombo->addItem("AspectRatio4_3");
-    aspectRatioCombo->addItem("AspectRatio16_9");
+    aspectRatioCombo->addItem("auto");
+    aspectRatioCombo->addItem("fit");
+    aspectRatioCombo->addItem("4:3");
+    aspectRatioCombo->addItem("16:9");
 
     this->resize(width(), height() + 240 - m_vwidget->height());
 
@@ -186,9 +196,15 @@ void MediaPlayer::workaroundQtBug()
 
 void MediaPlayer::getNextUrl()
 {
+    static bool fileDialogAlreadyOpen = false;
+    if (fileDialogAlreadyOpen) {
+        return;
+    }
+    fileDialogAlreadyOpen = true;
     KUrl url = KFileDialog::getOpenUrl(m_media->currentSource().url());//startDir=KUrl(), filter=QString(), parent=0);
     m_media->setCurrentSource(url);
     m_media->play();
+    fileDialogAlreadyOpen = false;
 }
 
 void MediaPlayer::startupReady()
