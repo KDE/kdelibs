@@ -91,6 +91,9 @@ class KUrl;
  * for the read-write mode. This differs from QLineEdit's implementation
  * and is done to give visual distinction between the three different modes:
  * disabled, read-only, and read-write.
+ * 
+ * KLineEdit has also a password mode which depends of globals KDE settings.  Use
+ * KLineEdit::setPasswordMode instead of QLineEdit::echoMode property to have a password field.
  *
  * \b Usage \n
  *
