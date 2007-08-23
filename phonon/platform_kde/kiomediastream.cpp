@@ -113,7 +113,7 @@ void KioMediaStream::enoughData()
 void KioMediaStream::seekStream(qint64 position)
 {
     Q_D(KioMediaStream);
-    if (!d->kiojob) {
+    if (!d->kiojob || d->endOfDataSent) {
         // no job => job is finished and endOfData was already sent
         reset();
     }
