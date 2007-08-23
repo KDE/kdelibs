@@ -914,6 +914,7 @@ KPixmapCache::KPixmapCache(const QString& name)
 
 KPixmapCache::~KPixmapCache()
 {
+    d->unmmapFiles();
     if (d->mRemovalThread) {
         d->mRemovalThread->wait();
         delete d->mRemovalThread;
