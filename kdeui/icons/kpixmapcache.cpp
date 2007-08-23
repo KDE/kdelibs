@@ -109,8 +109,8 @@ public:
     KPCMemoryDevice(char* start, quint32* size, quint32 available);
     virtual ~KPCMemoryDevice();
 
-    qint64 size() const  { return *mSize; }
-    bool seek(qint64 pos);
+    virtual qint64 size() const  { return *mSize; }
+    virtual bool seek(qint64 pos);
 
     static void setSizeEntryOffset(int o)  { mSizeEntryOffset = o; }
 
