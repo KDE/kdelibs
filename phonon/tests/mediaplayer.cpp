@@ -202,6 +202,10 @@ void MediaPlayer::getNextUrl()
     }
     fileDialogAlreadyOpen = true;
     KUrl url = KFileDialog::getOpenUrl(m_media->currentSource().url());//startDir=KUrl(), filter=QString(), parent=0);
+    if (!url.isValid()) {
+        QApplication::instance()->quit();
+        return;
+    }
     m_media->setCurrentSource(url);
     m_media->play();
     fileDialogAlreadyOpen = false;
@@ -211,6 +215,10 @@ void MediaPlayer::startupReady()
 {
     if (m_media->currentSource().type() == MediaSource::Invalid) {
         KUrl url = KFileDialog::getOpenUrl();//startDir=KUrl(), filter=QString(), parent=0);
+        if (!url.isValid()) {
+            QApplication::instance()->quit();
+            return;
+        }
         m_media->setCurrentSource(url);
     }
     m_media->play();
