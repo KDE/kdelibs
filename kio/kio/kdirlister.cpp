@@ -1821,6 +1821,7 @@ void KDirLister::emitChanges()
         if ( oldMime && !newMime )
         {
           emit deleteItem( *kit );
+          emit deleteItem( **kit );
           continue;
         }
       }
@@ -1831,7 +1832,10 @@ void KDirLister::emitChanges()
         if ( d->dirOnlyMode )
         {
           if ( !(*kit)->isDir() )
+          {
             emit deleteItem( *kit );
+            emit deleteItem( **kit );
+          }
         }
         else if ( !(*kit)->isDir() )
           addNewItem( *kit );
@@ -1847,7 +1851,10 @@ void KDirLister::emitChanges()
           if ( d->isShowingDotFiles )
             addNewItem( *kit );
           else
+          {
             emit deleteItem( *kit );
+            emit deleteItem( **kit );
+          }
 
           continue;
         }
@@ -1865,6 +1872,7 @@ void KDirLister::emitChanges()
         if ( oldName && !newName )
         {
           emit deleteItem( *kit );
+          emit deleteItem( **kit );
           continue;
         }
         else if ( !oldName && newName )
@@ -2233,7 +2241,10 @@ void KDirLister::emitDeleteItem( KFileItem *item )
   if ( ( d->dirOnlyMode && !item->isDir() ) || !matchesFilter( item ) )
     return; // No reason to continue... bailing out here prevents a mimetype scan.
   if ( matchesMimeFilter( item ) )
+  {
     emit deleteItem( item );
+    emit deleteItem( *item );
+  }
 }
 
 

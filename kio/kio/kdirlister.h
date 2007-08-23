@@ -257,6 +257,8 @@ public:
 
   /**
    * Returns the file item of the URL.
+   *
+   * Can return 0. TODO is it OK? maybe use KFileItem(void)?
    * @return the file item for url() itself (".")
    */
   KFileItem *rootItem() const;
@@ -487,6 +489,8 @@ Q_SIGNALS:
    * KDirLister::newItems(const QList<KFileItem>& items) instead,
    * as the interfaces have been adjusted using KFileItem per value
    * instead of per pointer.
+   *
+   * So use this signal only if you want to modify original KFileItems
    * @param items a list of new items
    */
   void newItems( const KFileItemList& items );
@@ -546,6 +550,8 @@ Q_SIGNALS:
    * KDirLister::refreshItems(const QList<KFileItem>& items) instead,
    * as the interfaces have been adjusted using KFileItem per value
    * instead of per pointer.
+   *
+   * So use this signal only if you want to modify original KFileItems
    * @param items the items to refresh
    */
   void refreshItems( const KFileItemList& items );
