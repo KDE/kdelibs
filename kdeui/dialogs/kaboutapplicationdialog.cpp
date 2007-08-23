@@ -148,17 +148,18 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
                 authorPageText = aboutData->customAuthorRichText();
         }
 
-        authorPageText += "<br />";
+        authorPageText += "<br /><br />";
 
         QList<KAboutPerson> lst = aboutData->authors();
         for (int i = 0; i < lst.size(); ++i) {
-            authorPageText += QString("<br />%1<br />").arg(lst.at(i).name());
+            authorPageText += QString("%1<p style=\"margin: 0px; margin-bottom: 10px; margin-left: 15px;\">").arg(lst.at(i).name());
             if (!lst.at(i).emailAddress().isEmpty())
-                authorPageText += QString("&nbsp;&nbsp;<a href=\"mailto:%1\">%1</a><br />").arg(lst.at(i).emailAddress());
+                authorPageText += QString("<a href=\"mailto:%1\">%1</a><br />").arg(lst.at(i).emailAddress());
             if (!lst.at(i).webAddress().isEmpty())
-                authorPageText += QString("&nbsp;&nbsp;<a href=\"%3\">%3</a><br />").arg(lst.at(i).webAddress());
+                authorPageText += QString("<a href=\"%3\">%3</a><br />").arg(lst.at(i).webAddress());
             if (!lst.at(i).task().isEmpty())
-                authorPageText += QString("&nbsp;&nbsp;%4<br />").arg(lst.at(i).task());
+                authorPageText += QString("%4").arg(lst.at(i).task());
+            authorPageText += "</p>";
         }
 
         KTextBrowser *authorTextBrowser = new KTextBrowser;
@@ -173,13 +174,14 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
         QList<KAboutPerson> lst = aboutData->credits();
         for (int i = 0; i < lst.size(); ++i) {
-            creditsPageText += QString("<br />%1<br />").arg(lst.at(i).name());
+            creditsPageText += QString("%1<p style=\"margin: 0px; margin-bottom: 10px; margin-left: 15px;\">").arg(lst.at(i).name());
             if (!lst.at(i).emailAddress().isEmpty())
-                creditsPageText += QString("&nbsp;&nbsp;<a href=\"mailto:%1\">%1</a><br />").arg(lst.at(i).emailAddress());
+                creditsPageText += QString("<a href=\"mailto:%1\">%1</a><br />").arg(lst.at(i).emailAddress());
             if (!lst.at(i).webAddress().isEmpty())
-                creditsPageText += QString("&nbsp;&nbsp;<a href=\"%3\">%3</a><br />").arg(lst.at(i).webAddress());
+                creditsPageText += QString("<a href=\"%3\">%3</a><br />").arg(lst.at(i).webAddress());
             if (!lst.at(i).task().isEmpty())
-                creditsPageText += QString("&nbsp;&nbsp;%4<br />").arg(lst.at(i).task());
+                creditsPageText += QString("%4").arg(lst.at(i).task());
+            creditsPageText += "</p>";
         }
 
         KTextBrowser *creditsTextBrowser = new KTextBrowser;
