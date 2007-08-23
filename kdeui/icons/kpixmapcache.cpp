@@ -787,6 +787,7 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     char* header = new char[mHeaderSize];
     if (istream.readRawData(header, mHeaderSize) != (int)mHeaderSize) {
         kDebug() << "Couldn't read index header";
+        delete [] header;
         return false;
     }
     newistream.writeRawData(header, mHeaderSize);
@@ -798,9 +799,11 @@ bool KPixmapCache::Private::removeEntries(int newsize)
     //  new buffer
     if (dstream.readRawData(header, dataheaderlen) != dataheaderlen) {
         kDebug() << "Couldn't read data header";
+        delete [] header;
         return false;
     }
     newdstream.writeRawData(header, dataheaderlen);
+    delete [] header;
 
 
     // Load all entries
