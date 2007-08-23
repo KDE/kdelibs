@@ -1542,6 +1542,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
             QList<KService::Ptr> services = model->services(index);
 
             configDialog = new KDialog(parent->parent);
+            configDialog->setLayoutDirection(listView->layoutDirection());
             configDialog->setWindowTitle(pluginInfo.name());
             KTabWidget *newTabWidget = new KTabWidget(configDialog);
 
@@ -1615,6 +1616,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
         if (!aboutDialogs.contains(index.row()))
         {
             aboutDialog = new KDialog(parent->parent);
+            aboutDialog->setLayoutDirection(listView->layoutDirection());
             aboutDialog->setWindowTitle(i18n("About %1 plugin", pluginInfo.name()));
             aboutDialog->setButtons(KDialog::Close);
 
