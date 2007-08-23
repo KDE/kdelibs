@@ -79,6 +79,7 @@ class KLocalizedStringPrivate;
  *  - @ref gen_usage
  *  - @ref spec_usage
  *  - @ref subs_notes
+ *  - @ref other_ref
  *
  * \section gen_usage General Usage
  *
@@ -196,7 +197,23 @@ class KLocalizedStringPrivate;
  * \li If none of the arguments supplied to a plural call is integer-valued,
  *     you will get an error mark in message at runtime (in debug mode).
  *
- * @see <a href="http://developer.kde.org/documentation/library/">[[Here goes the link to Programmer's i18n howto, sec. How to prepare the code]]</a>
+ * \section other_ref Further References
+ *
+ * <a href="http://techbase.kde.org/">KDE Techbase</a> contains a
+ * <a href="http://techbase.kde.org/Development/Tutorials/Localization/i18n">
+ * series of tutorials</a> on preparing the code for localization (and on
+ * internationalization process in general), where the intended patterns of
+ * usage of i18n API are covered in great detail.
+ *
+ * All i18n'd messages, whether sent to widgets expecting plain text or
+ * allowing Qt rich text (HTML), support the new KDE semantic markup for
+ * user interface text, KUIT in short. Semantic markup both increases the
+ * consistency of visual presentation for the end user, and provides extra
+ * information to translators, so that translations can be of higher quality.
+ * KUIT is documented in an
+ * <a href="http://techbase.kde.org/Development/Tutorials/Localization/i18n_Semantics">
+ * Techbase article</a> as well.
+ *
  * @see KLocale
  * @author Chusslove Illich \<caslav.ilic@gmx.net\>
  */
