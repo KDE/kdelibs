@@ -52,7 +52,7 @@
 
 
 //#define DISABLE_PIXMAPCACHE
-#ifdef HAVE_MMAP
+#if defined HAVE_MMAP && !defined Q_WS_WIN
 #define USE_MMAP
 #endif
 
@@ -386,7 +386,9 @@ void KPixmapCache::Private::unmmapFiles()
 
 void KPixmapCache::Private::invalidateMmapFiles()
 {
-#ifdef HAVE_MMAP
+    if (!q->isValid())
+        return;
+#ifdef USE_MMAP
     // Set cache id to 0, this will force a reload the next time the files are used
     if (mIndexMmapInfo.file) {
         KPCMemoryDevice dev(mIndexMmapInfo.memory, &mIndexMmapInfo.size, mIndexMmapInfo.available);
@@ -400,11 +402,12 @@ void KPixmapCache::Private::invalidateMmapFiles()
 
 bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, int newsize)
 {
-#ifdef HAVE_MMAP
+#ifdef USE_MMAP
     info->file = new QFile(filename);
     if (!info->file->open(QIODevice::ReadWrite)) {
         kDebug() << "Couldn't open" << filename;
         delete info->file;
+        info->file = 0;
         return false;
     }
 
@@ -415,6 +418,7 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
     if (!info->file->resize(info->available)) {
         kError() << "Couldn't resize" << filename << "to" << newsize;
         delete info->file;
+        info->file = 0;
         return false;
     }
 
@@ -422,6 +426,7 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
     if (indexMem == MAP_FAILED) {
         kError() << "mmap failed for" << filename;
         delete info->file;
+        info->file = 0;
         return false;
     }
     info->memory = reinterpret_cast<char*>(indexMem);
@@ -443,7 +448,7 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
 
 void KPixmapCache::Private::unmmapFile(MmapInfo* info)
 {
-#ifdef HAVE_MMAP
+#ifdef USE_MMAP
     if (info->file) {
         munmap(info->memory, info->available);
         delete info->file;
@@ -1017,7 +1022,7 @@ void KPixmapCache::setTimestamp(unsigned int ts)
 int KPixmapCache::size() const
 {
     ensureInited();
-#ifdef HAVE_MMAP
+#ifdef USE_MMAP
     if (d->mDataMmapInfo.file) {
         return d->mDataMmapInfo.size / 1024;
     }
