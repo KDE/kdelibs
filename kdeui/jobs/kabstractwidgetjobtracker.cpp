@@ -86,7 +86,7 @@ bool KAbstractWidgetJobTracker::autoDelete() const
     return d->autoDelete;
 }
 
-void KAbstractWidgetJobTracker::finished(KJob */*job*/)
+void KAbstractWidgetJobTracker::finished(KJob * /*job*/)
 {
     // clean or delete dialog
     if (d->autoDelete) {

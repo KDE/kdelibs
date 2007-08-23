@@ -120,13 +120,13 @@ bool KWidgetJobTracker::keepOpen() const
 }
 
 
-void KWidgetJobTracker::infoMessage(KJob */*job*/, const QString &plain, const QString &/*rich*/)
+void KWidgetJobTracker::infoMessage(KJob * /*job*/, const QString &plain, const QString &/*rich*/)
 {
     d->speedLabel->setText(plain);
     d->speedLabel->setAlignment(d->speedLabel->alignment() & ~Qt::TextWordWrap);
 }
 
-void KWidgetJobTracker::description(KJob */*job*/, const QString &title,
+void KWidgetJobTracker::description(KJob * /*job*/, const QString &title,
                                     const QPair<QString, QString> &field1,
                                     const QPair<QString, QString> &field2)
 {
@@ -148,7 +148,7 @@ void KWidgetJobTracker::description(KJob */*job*/, const QString &title,
     }
 }
 
-void KWidgetJobTracker::totalAmount(KJob */*job*/, KJob::Unit unit, qulonglong amount)
+void KWidgetJobTracker::totalAmount(KJob * /*job*/, KJob::Unit unit, qulonglong amount)
 {
     switch(unit)
     {
@@ -177,7 +177,7 @@ void KWidgetJobTracker::totalAmount(KJob */*job*/, KJob::Unit unit, qulonglong a
     }
 }
 
-void KWidgetJobTracker::processedAmount(KJob */*job*/, KJob::Unit unit, qulonglong amount)
+void KWidgetJobTracker::processedAmount(KJob * /*job*/, KJob::Unit unit, qulonglong amount)
 {
     QString tmp;
 
@@ -219,7 +219,7 @@ void KWidgetJobTracker::processedAmount(KJob */*job*/, KJob::Unit unit, qulonglo
     }
 }
 
-void KWidgetJobTracker::percent(KJob */*job*/, unsigned long percent)
+void KWidgetJobTracker::percent(KJob * /*job*/, unsigned long percent)
 {
     QString title = d->caption+" (";
 
@@ -237,7 +237,7 @@ void KWidgetJobTracker::percent(KJob */*job*/, unsigned long percent)
     d->widget->setWindowTitle(title);
 }
 
-void KWidgetJobTracker::speed(KJob */*job*/, unsigned long value)
+void KWidgetJobTracker::speed(KJob * /*job*/, unsigned long value)
 {
     if (value == 0) {
         d->speedLabel->setText(i18n("Stalled"));
@@ -274,13 +274,13 @@ void KWidgetJobTracker::slotClean()
     }
 }
 
-void KWidgetJobTracker::suspended(KJob */* job */)
+void KWidgetJobTracker::suspended(KJob * /* job */)
 {
     d->pauseButton->setText(i18n("Resume"));
     d->suspended = true;
 }
 
-void KWidgetJobTracker::resumed(KJob */* job */)
+void KWidgetJobTracker::resumed(KJob * /* job */)
 {
     d->pauseButton->setText(i18n("Pause"));
     d->suspended = false;
