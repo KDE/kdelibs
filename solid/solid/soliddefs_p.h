@@ -22,8 +22,6 @@
 
 #include <QtCore/QObject>
 
-
-
 #define return_SOLID_CALL(Type, Object, Default, Method) \
     Type t = qobject_cast<Type>(Object); \
     if (t!=0) \
@@ -43,6 +41,13 @@
     { \
          t->Method; \
     }
+
+//
+// WARNING!!
+// This code uses undocumented Qt API
+// Do not copy it to your application! Use only the functions that are here!
+// Otherwise, it could break when a new version of Qt ships.
+//
 
 /*
  * Lame copy of K_GLOBAL_STATIC below, but that's the price for
