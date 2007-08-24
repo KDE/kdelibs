@@ -902,7 +902,8 @@ if (opcode == DCOPCall)
                 else
                 { // DCOPReply or DCOPReplyFailed
                     if (!connreply->waitingOnReply.removeRef(iceConn))
-                       qWarning("DCOPServer::DCOPReply for client who wasn't waiting on one!");
+                       qWarning("DCOPServer::DCOPReply from %s to %s who wasn't waiting on one!",
+                               fromApp.data(), toApp.data());
                 }
 		IceGetHeader( connreply->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
