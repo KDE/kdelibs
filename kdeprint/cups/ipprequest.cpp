@@ -310,7 +310,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 	}
 
 #ifdef HAVE_CUPS_NO_PWD_CACHE
-	strncpy( HTTP->authstring, cups_authstring.data(), HTTP_MAX_VALUE );
+	strncpy( httpGetAuthString( HTTP ), cups_authstring.data(), HTTP_MAX_VALUE );
 #endif
 
 	if (dump_ > 0)
@@ -320,7 +320,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : res.latin1()), (filename.isEmpty() ? NULL : filename.latin1()));
 #ifdef HAVE_CUPS_NO_PWD_CACHE
-	cups_authstring = HTTP->authstring;
+	cups_authstring = httpGetAuthString( HTTP );
 #endif
 	httpClose(HTTP);
 

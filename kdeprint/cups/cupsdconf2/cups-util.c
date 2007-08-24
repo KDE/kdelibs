@@ -13,6 +13,9 @@ static char		authstring[HTTP_MAX_VALUE];
 static char		pwdstring[33];
 static int cups_local_auth(http_t *http);
 
+const char* cupsGetConf( void );
+int cupsPutConf( const char* );
+
 const char *				/* O - Filename for PPD file */
 cupsGetConf(void)
 {
@@ -29,6 +32,8 @@ cupsGetConf(void)
   char		prompt[1024];		/* Prompt string */
   int		digest_tries;		/* Number of tries with Digest */
   static char	filename[HTTP_MAX_URI];	/* Local filename */
+  char          fqdn[ HTTP_MAX_URI ];   /* Server name buffer */
+
 
  /*
   * Connect to the correct server as needed...
@@ -108,15 +113,15 @@ cupsGetConf(void)
       * See if we should retry the current digest password...
       */
 
-      if (strncmp(cups_server->fields[HTTP_FIELD_WWW_AUTHENTICATE], "Basic", 5) == 0 ||
+      if (strncmp( httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE ), "Basic", 5) == 0 ||
           digest_tries > 1 || !pwdstring[0])
       {
        /*
 	* Nope - get a password from the user...
 	*/
+	httpGetHostname( cups_server, fqdn, sizeof( fqdn ) );
 
-	snprintf(prompt, sizeof(prompt), "Password for %s on %s? ", cupsUser(),
-        	 cups_server->hostname);
+	snprintf(prompt, sizeof(prompt), "Password for %s on %s? ", cupsUser(), fqdn );
 
         if ((password = cupsGetPassword(prompt)) == NULL)
 	  break;
@@ -135,7 +140,7 @@ cupsGetConf(void)
       * Got a password; encode it for the server...
       */
 
-      if (strncmp(cups_server->fields[HTTP_FIELD_WWW_AUTHENTICATE], "Basic", 5) == 0)
+      if (strncmp( httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE ), "Basic", 5) == 0)
       {
        /*
 	* Basic authentication...
@@ -210,7 +215,7 @@ cupsGetConf(void)
   * OK, we need to copy the file...
   */
 
-  while ((bytes = httpRead(cups_server, buffer, sizeof(buffer))) > 0)
+  while ((bytes = httpRead2(cups_server, buffer, sizeof(buffer))) > 0)
   {
     write(fd, buffer, bytes);
   }
@@ -235,6 +240,7 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
   http_status_t	status;			/* HTTP status from server */
   char		prompt[1024];		/* Prompt string */
   int		digest_tries;		/* Number of tries with Digest */
+  char          fqdn[ HTTP_MAX_URI ];   /* Server name buffer */
 
   if (name == NULL)
     return 0;
@@ -305,11 +311,11 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
 	        break;
 	}
 	else
-	    httpWrite(cups_server, buffer, bytes);
+	    httpWrite2(cups_server, buffer, bytes);
 
     if (status == HTTP_CONTINUE)
     {
-        httpWrite(cups_server, buffer, 0);
+        httpWrite2(cups_server, buffer, 0);
 	while ((status = httpUpdate(cups_server)) == HTTP_CONTINUE);
     }
 
@@ -334,15 +340,16 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
       * See if we should retry the current digest password...
       */
 
-      if (strncmp(cups_server->fields[HTTP_FIELD_WWW_AUTHENTICATE], "Basic", 5) == 0 ||
+      if (strncmp( httpGetField ( cups_server, HTTP_FIELD_WWW_AUTHENTICATE ), "Basic", 5) == 0 ||
           digest_tries > 1 || !pwdstring[0])
       {
        /*
 	* Nope - get a password from the user...
 	*/
 
-	snprintf(prompt, sizeof(prompt), "Password for %s on %s? ", cupsUser(),
-        	 cups_server->hostname);
+
+	httpGetHostname( cups_server, fqdn, sizeof( fqdn ) );
+	snprintf(prompt, sizeof(prompt), "Password for %s on %s? ", cupsUser(), fqdn );
 
         if ((password = cupsGetPassword(prompt)) == NULL)
 	  break;
@@ -361,7 +368,7 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
       * Got a password; encode it for the server...
       */
 
-      if (strncmp(cups_server->fields[HTTP_FIELD_WWW_AUTHENTICATE], "Basic", 5) == 0)
+      if (strncmp(httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE ), "Basic", 5) == 0)
       {
        /*
 	* Basic authentication...
@@ -492,3 +499,4 @@ cups_local_auth(http_t *http)	/* I - Connection */
 
   return (1);
 }
+
