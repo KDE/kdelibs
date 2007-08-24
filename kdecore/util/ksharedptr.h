@@ -28,6 +28,7 @@
 #define KSHAREDPTR_H
 
 #include <QtCore/QExplicitlySharedDataPointer>
+#include <QtCore/QAtomicPointer>
 #include <kdemacros.h>
 
 typedef QSharedData KShared;
@@ -196,11 +197,10 @@ template <class T>
 Q_INLINE_TEMPLATE void KSharedPtr<T>::attach(T* p)
 {
     if (d != p) {
-        T *x = p;
-        if (x) x->ref.ref();
-        x = qAtomicSetPtr(&d, x);
-        if (x && !x->ref.deref())
-            delete x;
+        if (p) p->ref.ref();
+        if (d && !d->ref.deref())
+            delete d;
+        d = p;
     }
 }
 

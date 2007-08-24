@@ -87,19 +87,18 @@ KSharedConfigPtr::~KSharedConfigPtr()
 void KSharedConfigPtr::attach(KSharedConfig *p)
 {
     if (d != p) {
-        KSharedConfig *x = p;
-        if (x) {
-            x->ref.ref();
+        if (p) {
+            p->ref.ref();
         }
-        x = qAtomicSetPtr(&d, x);
-        if (x) {
-            if (!x->ref.deref()) {
-                delete x;
-            } else if (x->ref == 1 && d->componentData().isValid()) {
+        if (d) {
+            if (!d->ref.deref()) {
+                delete d;
+            } else if (d->ref == 1 && p->componentData().isValid()) {
                 // it might be KComponentData holding the last ref
-                const_cast<KComponentData&>(x->componentData())._checkConfig();
+                const_cast<KComponentData&>(p->componentData())._checkConfig();
             }
         }
+        d = p;
     }
 }
 
