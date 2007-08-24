@@ -56,7 +56,7 @@
 #include <netwm.h>
 #endif
 
-int KDialogPrivate::mMarginSize = 11;
+int KDialogPrivate::mMarginSize = 9;
 int KDialogPrivate::mSpacingSize = 6;
 
 void KDialogPrivate::setupLayout()
