@@ -1,4 +1,5 @@
 project(kio)
+macro_optional_find_package(FAM)
 
 add_definitions(-D_LARGEFILE64_SOURCE )
 
@@ -25,6 +26,8 @@ include_directories(
    ${ZLIB_INCLUDE_DIR}
    ${STRIGI_INCLUDE_DIR}
 )
+
+macro_bool_to_01(FAM_FOUND HAVE_FAM)
 
 check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
@@ -225,16 +228,17 @@ kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
 target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY} ${KDE4_SOLID_LIBS})
 
-if(NOT SYS_INOTIFY_H_FOUND)
-   #advise to install FAM
-   macro_optional_find_package(FAM)
-   macro_bool_to_01(FAM_FOUND HAVE_FAM)
-   macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "Provide file alteration notification facilities using a separate service.")
-   if(FAM_FOUND)
-      include_directories(${FAM_INCLUDE_DIRECTORY})
-      target_link_libraries(kio ${FAM_LIBRARIES})
-   endif(FAM_FOUND)
-endif(NOT SYS_INOTIFY_H_FOUND)
+
+set(SYS_INOTIFY_H_FOUND 0)
+if(SYS_INOTIFY_H_FOUND)
+   macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
+else(SYS_INOTIFY_H_FOUND)
+   macro_log_feature(FAM_FOUND "FAM" "File Alteration Monitor" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
+endif(SYS_INOTIFY_H_FOUND)
+if(FAM_FOUND)
+   include_directories(${FAM_INCLUDE_DIRECTORY})
+   target_link_libraries(kio ${FAM_LIBRARIES})
+endif(FAM_FOUND)
 
 if(ACL_FOUND)
    target_link_libraries(kio ${ACL_LIBS})
