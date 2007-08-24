@@ -189,7 +189,7 @@ void KAutostart::removeFromAllowedEnvironments(const QString& environment)
     }
 
     envs.removeAt(index);
-    d->df->writeEntry("OnlyShowIn", envs, ';');
+    d->df->desktopGroup().writeEntry("OnlyShowIn", envs, ';');
 }
 
 QStringList KAutostart::excludedEnvironments() const

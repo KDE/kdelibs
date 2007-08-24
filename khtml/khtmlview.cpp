@@ -3173,7 +3173,7 @@ void KHTMLView::clearCompletionHistory(const QString& name)
     {
         d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
     }
-    d->formCompletions->writeEntry(name, "");
+    d->formCompletions->group("").writeEntry(name, "");
     d->formCompletions->sync();
 }
 
@@ -3201,7 +3201,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
         items.prepend(value);
     while ((int)items.count() > m_part->settings()->maxFormCompletionItems())
         items.erase(items.isEmpty() ? items.end() : --items.end());
-    d->formCompletions->writeEntry(name, items);
+    d->formCompletions->group("").writeEntry(name, items);
 }
 
 void KHTMLView::addNonPasswordStorableSite(const QString& host)
