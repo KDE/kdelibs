@@ -10,6 +10,9 @@
 
 static ipp_status_t	last_error;
 
+const char* cupsGetConf( void );
+int cupsPutConf( const char* );
+
 const char *				/* O - Filename for PPD file */
 cupsGetConf(void)
 {
@@ -17,6 +20,7 @@ cupsGetConf(void)
   http_status_t	status;			/* HTTP status from server */
   http_t	*cups_server;
   static char	filename[HTTP_MAX_URI];	/* Local filename */
+  char          fqdn[ HTTP_MAX_URI ];   /* Server name buffer */
 
 
  /*
