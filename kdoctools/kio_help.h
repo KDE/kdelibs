@@ -31,7 +31,7 @@ public:
 
 private:
 
-    QString langLookup(QString fname);
+    QString langLookup(const QString& fname);
     void emitFile( const KURL &url );
     void get_file( const KURL& url );
     QString lookupFile(const QString &fname, const QString &query,

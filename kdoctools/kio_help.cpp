@@ -37,7 +37,7 @@
 
 using namespace KIO;
 
-QString HelpProtocol::langLookup(QString fname)
+QString HelpProtocol::langLookup(const QString& fname)
 {
     QStringList search;
 
@@ -60,7 +60,7 @@ QString HelpProtocol::langLookup(QString fname)
     {
         QStringList::ConstIterator lang;
         for (lang = langs.begin(); lang != langs.end(); ++lang)
-            search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang).arg(fname));
+            search.append(QString("%1%2/%3").arg(localDoc[id], *lang, fname));
     }
 
     // try to locate the file
