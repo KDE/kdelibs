@@ -116,20 +116,6 @@ static void sendNotification( QString message, //krazy:exclude=passbyvalue
     }
 }
 
-// also used by kpassworddialog.cpp
-QString qrichtextify( const QString& text )
-{
-    if ( text.isEmpty() || text[0] == '<' ) {
-        return text;
-    }
-
-    QStringList lines = text.split('\n',QString::SkipEmptyParts);
-    for (QStringList::Iterator it = lines.begin(); it != lines.end(); ++it) {
-        *it = Qt::convertFromPlainText( *it, Qt::WhiteSpaceNormal );
-    }
-
-    return lines.join(QString());
-}
 
 int KMessageBox::createKMessageBox(KDialog *dialog, QMessageBox::Icon icon,
                              const QString &text, const QStringList &strlist,
@@ -165,10 +151,8 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
 
     lay->addWidget( label1, 0, Qt::AlignCenter );
     lay->addSpacing(KDialog::spacingHint());
-    // Enforce <p>text</p> otherwise the word-wrap doesn't work well
-    QString qt_text = qrichtextify( text );
 
-    QLabel *label2 = new QLabel( qt_text, contents );
+    QLabel *label2 = new QLabel( text, contents );
     label2->setOpenExternalLinks(options & KMessageBox::AllowLink);
     label2->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     label2->setWordWrap(true);
@@ -178,7 +162,8 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     // Calculate a proper size for the text.
     {
         QTextDocument document;
-        document.setHtml( qt_text );
+       //Text with HTML tags will be displayed correctly.
+        document.setHtml( text );
         document.setDefaultFont( dialog->font() );
 
         QRect d = KGlobalSettings::desktopGeometry(dialog);
@@ -248,7 +233,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         QGroupBox *detailsGroup = new QGroupBox( i18n("Details"), dialog);
         QVBoxLayout *layout = new QVBoxLayout;
         if ( details.length() < 512 ) {
-            QLabel *label3 = new QLabel(qrichtextify(details));
+            QLabel *label3 = new QLabel( details );
             label3->setOpenExternalLinks(options & KMessageBox::AllowLink);
             label3->setTextInteractionFlags(Qt::TextInteractionFlags(label3->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags)));
             //label3->setMinimumSize(label3->sizeHint());

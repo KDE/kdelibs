@@ -60,9 +60,6 @@ public:
     unsigned int commentRow;
 };
 
-// defined in kmessagebox.cpp
-extern QString qrichtextify( const QString& text );
-
 KPasswordDialog::KPasswordDialog( QWidget* parent ,
                                   const KPasswordDialogFlags& flags,
                                   const KDialog::ButtonCodes otherButtons )
@@ -166,7 +163,8 @@ void KPasswordDialog::addCommentLine( const QString& label,
                                       const QString& comment )
 {
     QLabel* l = new QLabel(label, mainWidget());
-    QLabel* c = new QLabel(qrichtextify(comment), mainWidget());
+    QLabel* c = new QLabel(comment, mainWidget());
+    c->setWordWrap(true);
 
     d->ui.gridLayout->addWidget(l, d->commentRow, 0);
     d->ui.gridLayout->addWidget(c, d->commentRow, 1);
@@ -215,7 +213,8 @@ void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType 
 
 void KPasswordDialog::setPrompt(const QString& prompt)
 {
-    d->ui.prompt->setText( qrichtextify( prompt ) );
+    d->ui.prompt->setText( prompt );
+    d->ui.prompt->setWordWrap( true );
     mainWidget()->setMinimumHeight( mainWidget()->sizeHint().height() );
 }
 
