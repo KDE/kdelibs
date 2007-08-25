@@ -54,4 +54,20 @@ QStringList Camera::supportedDrivers(QString /*protocol*/) const
     return res;
 }
 
+QVariant Solid::Backends::Hal::Camera::driverHandle(const QString &driver) const
+{
+    if (driver=="gphoto"
+     && m_device->property("info.bus").toString()=="usb") {
+        QVariantList list;
+
+        list << "usb"
+             << m_device->property("usb.vendor_id")
+             << m_device->property("usb.product_id");
+
+        return list;
+    }
+
+    return QVariant();
+}
+
 #include "backends/hal/halcamera.moc"

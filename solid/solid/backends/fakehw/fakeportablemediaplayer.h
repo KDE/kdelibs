@@ -42,6 +42,7 @@ public:
 public Q_SLOTS:
     virtual QStringList supportedProtocols() const;
     virtual QStringList supportedDrivers(QString protocol) const;
+    virtual QVariant driverHandle(const QString &driver) const;
 };
 }
 }

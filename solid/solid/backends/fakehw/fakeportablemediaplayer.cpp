@@ -45,4 +45,9 @@ QStringList FakePortableMediaPlayer::supportedDrivers(QString protocol) const
     return fakeDevice()->property("supportedDrivers").toString().simplified().split(',');
 }
 
+QVariant Solid::Backends::Fake::FakePortableMediaPlayer::driverHandle(const QString &driver) const
+{
+    return QVariant();
+}
+
 #include "backends/fakehw/fakeportablemediaplayer.moc"

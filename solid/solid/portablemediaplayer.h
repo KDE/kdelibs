@@ -23,6 +23,7 @@
 #define SOLID_PORTABLEMEDIAPLAYER_H
 
 #include <QtCore/QStringList>
+#include <QtCore/QVariant>
 
 #include <solid/solid_export.h>
 
@@ -92,6 +93,16 @@ namespace Solid
          * @return a list of installed drivers meeting the criteria
          */
         QStringList supportedDrivers(QString protocol = QString()) const;
+
+        /**
+         * Retrieves a driver specific string allowing to access the device.
+         *
+         * For example for the "mtp" driver it will return the serial number
+         * of the device.
+         *
+         * @return the driver specific data
+         */
+        QVariant driverHandle(const QString &driver) const;
     };
 }
 

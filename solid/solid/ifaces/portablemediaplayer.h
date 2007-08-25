@@ -59,6 +59,16 @@ namespace Ifaces
          * @return a list of known device drivers that can handle this device
          */
         virtual QStringList supportedDrivers(QString protocol = QString()) const = 0;
+
+        /**
+         * Retrieves a driver specific string allowing to access the device.
+         *
+         * For example for the "mtp" driver it will return the serial number
+         * of the device.
+         *
+         * @return the driver specific data
+         */
+        virtual QVariant driverHandle(const QString &driver) const = 0;
     };
 }
 }

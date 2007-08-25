@@ -47,4 +47,10 @@ QStringList Solid::PortableMediaPlayer::supportedDrivers(QString protocol) const
     return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), supportedDrivers(protocol));
 }
 
+QVariant Solid::PortableMediaPlayer::driverHandle(const QString &driver) const
+{
+    Q_D(const PortableMediaPlayer);
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QVariant(), driverHandle(driver));
+}
+
 #include "portablemediaplayer.moc"

@@ -54,4 +54,14 @@ QStringList PortableMediaPlayer::supportedDrivers(QString protocol) const
     return returnedDrivers;
 }
 
+QVariant Solid::Backends::Hal::PortableMediaPlayer::driverHandle(const QString &driver) const
+{
+    if (driver=="mtp") {
+        return m_device->property("usb.serial");
+    }
+    // TODO: Fill in the blank for other drivers
+
+    return QVariant();
+}
+
 #include "backends/hal/halportablemediaplayer.moc"

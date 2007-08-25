@@ -45,5 +45,11 @@ QStringList Solid::Camera::supportedDrivers(QString protocol) const
     return_SOLID_CALL(Ifaces::Camera *, d->backendObject(), QStringList(), supportedDrivers(protocol));
 }
 
+QVariant Solid::Camera::driverHandle(const QString &driver) const
+{
+    Q_D(const Camera);
+    return_SOLID_CALL(Ifaces::Camera *, d->backendObject(), QVariant(), driverHandle(driver));
+}
+
 #include "camera.moc"
 
