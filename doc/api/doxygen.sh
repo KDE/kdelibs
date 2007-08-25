@@ -608,8 +608,10 @@ apidox_subdir()
 	echo "HTML_OUTPUT            = $subdir/html"
 	if test -d "$top_srcdir/doc/api"; then
 		echo "IMAGE_PATH             = $top_srcdir/doc/api $srcdir $srcdir/doc/pics"
+                echo "EXAMPLE_PATH           = $top_srcdir/doc/api/examples $srcdir/examples $srcdir/doc/examples"
 	else
 		echo "IMAGE_PATH	     = $srcdir $srcdir/doc/pics"
+		echo "EXAMPLE_PATH	     = $srcdir/examples $srcdir/doc/examples"
 	fi
 	} >> "$subdir/Doxyfile"
 
