@@ -243,6 +243,8 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         return ad->keys;
     }
 
+    //now we are actually changing the shortcut of the action
+
     QList<int> added = d->nonemptyOnly(keys);
     bool emptyShortcut = added.isEmpty();
 
@@ -305,8 +307,8 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     }
 
     if (ad->isPresent)
-    foreach (int key, added)
-        d->impl->grabKey(key, true);
+        foreach (int key, added)
+            d->impl->grabKey(key, true);
 
     scheduleWriteSettings();
 
