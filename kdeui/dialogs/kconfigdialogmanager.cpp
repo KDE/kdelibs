@@ -90,28 +90,26 @@ void KConfigDialogManager::initMaps()
   if( s_changedMap->isEmpty() )
   {
     // QT
-    s_changedMap->insert("QButton", SIGNAL(stateChanged(int)));
     s_changedMap->insert("QCheckBox", SIGNAL(stateChanged(int)));
-    s_changedMap->insert("QPushButton", SIGNAL(stateChanged(int)));
+    s_changedMap->insert("QPushButton", SIGNAL( clicked(bool) );
     s_changedMap->insert("QRadioButton", SIGNAL(toggled(bool)));
     // We can only store one thing, so you can't have
     // a ButtonGroup that is checkable.
-    s_changedMap->insert("QButtonGroup", SIGNAL(clicked(int)));
+    s_changedMap->insert("QButtonGroup", SIGNAL(buttonClicked(int)));
     s_changedMap->insert("QGroupBox", SIGNAL(toggled(bool)));
     s_changedMap->insert("QComboBox", SIGNAL(activated (int)));
     //qsqlproperty map doesn't store the text, but the value!
     //s_changedMap->insert("QComboBox", SIGNAL(textChanged(const QString &)));
-    s_changedMap->insert("QDateEdit", SIGNAL(valueChanged(const QDate &)));
-    s_changedMap->insert("QDateTimeEdit", SIGNAL(valueChanged(const QDateTime &)));
+    s_changedMap->insert("QDateEdit", SIGNAL(dateChanged(const QDate &)));
+    s_changedMap->insert("QTimeEdit", SIGNAL(timeChanged(const QTime &)));
+    s_changedMap->insert("QDateTimeEdit", SIGNAL(dateTimeChanged(const QDateTime &)));
     s_changedMap->insert("QDial", SIGNAL(valueChanged (int)));
     s_changedMap->insert("QDoubleSpinBox", SIGNAL(valueChanged(double)));
     s_changedMap->insert("QLineEdit", SIGNAL(textChanged(const QString &)));
     s_changedMap->insert("QSlider", SIGNAL(valueChanged(int)));
     s_changedMap->insert("QSpinBox", SIGNAL(valueChanged(int)));
-    s_changedMap->insert("QTimeEdit", SIGNAL(valueChanged(const QTime &)));
     s_changedMap->insert("QTextEdit", SIGNAL(textChanged()));
     s_changedMap->insert("QTextBrowser", SIGNAL(sourceChanged(const QString &)));
-    s_changedMap->insert("QMultiLineEdit", SIGNAL(textChanged()));
     s_changedMap->insert("QTabWidget", SIGNAL(currentChanged(int)));
 
     // KDE
