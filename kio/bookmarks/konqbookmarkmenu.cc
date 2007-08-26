@@ -36,8 +36,6 @@
 #include "kbookmarkimporter_ie.h"
 #include "kbookmarkmenu_p.h"
 
-#include "kbookmarkmenu_p.h"
-
 KonqBookmarkContextMenu::KonqBookmarkContextMenu(const KBookmark & bm, KBookmarkManager * mgr, KonqBookmarkOwner * owner)
     : KBookmarkContextMenu(bm, mgr, owner)
 {

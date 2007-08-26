@@ -437,7 +437,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 					password = kpd->password();
 					int rc = b->open(password.toUtf8());
 					if (!b->isOpen()) {
-						kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br />(Error code %2: %3)", Qt::escape(wallet), rc, KWallet::Backend::openRCToString(rc)));
+						kpd->setPrompt(i18n("<qt>Error opening the wallet '<b>%1</b>'. Please try again.<br />(Error code %2: %3)</qt>", Qt::escape(wallet), rc, KWallet::Backend::openRCToString(rc)));
 					}
 				} else {
 					break;

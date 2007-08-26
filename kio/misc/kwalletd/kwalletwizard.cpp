@@ -136,7 +136,7 @@ void KWalletWizard::passwordPageUpdate()
     if (field("useWallet").toBool()) {
         if (field("pass1").toString() == field("pass2").toString()) {
             if (field("pass1").toString().isEmpty()) {
-                m_pagePasswd->setMatchLabelText(i18n("<qt>Password is empty.  <b>(WARNING: Insecure)</qt>"));
+                m_pagePasswd->setMatchLabelText(i18n("<qt>Password is empty.  <b>(WARNING: Insecure)</b></qt>"));
             } else {
                 m_pagePasswd->setMatchLabelText(i18n("Passwords match."));
             }
