@@ -20,7 +20,7 @@
 #ifndef _KPART_H
 #define _KPART_H
 
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtCore/QPointer>
 #include <QtCore/QEvent>
 #include <QtCore/QSharedDataPointer>

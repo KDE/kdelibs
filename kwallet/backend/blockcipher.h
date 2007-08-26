@@ -17,10 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-
-#ifndef __bcipher__ko__h
-#define __bcipher__ko__h
-
+#ifndef BLOCKCIPHER_H
+#define BLOCKCIPHER_H
 
 /* @internal
  */
@@ -72,5 +70,4 @@ class BlockCipher {
 		int _keylen;   // in bits
 };
 
-
-#endif
+#endif // BLOCKCIPHER_H

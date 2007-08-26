@@ -19,8 +19,8 @@
   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
   Boston, MA 02110-1301, USA.
 */
-#ifndef MODLOADER_H
-#define MODLOADER_H
+#ifndef KCMODULELOADER_H
+#define KCMODULELOADER_H
 
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
@@ -116,5 +116,4 @@ namespace KCModuleLoader
 }
 
 // vim: ts=2 sw=2 et
-#endif // MODLOADER_H
-
+#endif // KCMODULELOADER_H

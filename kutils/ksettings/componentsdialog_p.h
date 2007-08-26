@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KSETTINGS_COMPONENTSDIALOG_H
-#define KSETTINGS_COMPONENTSDIALOG_H
+#ifndef COMPONENTSDIALOG_P_H
+#define COMPONENTSDIALOG_P_H
 
 #include <kutils_export.h>
 #include <kdialog.h>
@@ -86,4 +86,4 @@ class KUTILS_EXPORT ComponentsDialog : public KDialog
 
 }
 
-#endif // KSETTINGS_COMPONENTSDIALOG_H
+#endif // COMPONENTSDIALOG_P_H

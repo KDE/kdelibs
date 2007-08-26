@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KCMODULEPROXYADAPTOR_H
-#define KCMODULEPROXYADAPTOR_H
+#ifndef KSETTINGSWIDGETADAPTOR_H
+#define KSETTINGSWIDGETADAPTOR_H
 
 #include <QtCore/QObject>
 #include <QtDBus/QtDBus>
@@ -47,5 +47,5 @@ class KSettingsWidgetAdaptor: public QDBusAbstractAdaptor
 		QString applicationName();
 };
 
-#endif // KCMODULEPROXYADAPTOR_H
 // vim: sw=4 ts=4 tw=80
+#endif // KSETTINGSWIDGETADAPTOR_H

@@ -20,7 +20,7 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtCore/QObject>
 #include <kaction.h>
 #include <kxmlguiclient.h>

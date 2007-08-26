@@ -135,7 +135,7 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
   if ( !mod.service() )
     return reportError( report,
         i18n("The module %1 could not be found.",
-          mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br />The desktop file %1 could not be found.</qt>", mod.fileName()), parent );
+          mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br />The desktop file %1 could not be found.</p></qt>", mod.fileName()), parent );
   if( mod.service()->noDisplay() )
     return reportError( report, i18n( "The module %1 is disabled.", mod.moduleName() ),
         i18n( "<qt><p>Either the hardware/software the module configures is not available or the module has been disabled by the administrator.</p></qt>" ),
@@ -204,7 +204,7 @@ KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & te
     realDetails = i18n("<qt>The diagnostics is:<br />%1"
         "<p>Possible reasons:<ul><li>An error occurred during your last "
         "KDE upgrade leaving an orphaned control module</li><li>You have old third party "
-        "modules lying around.</li></ul><p>Check these points carefully and try to remove "
+        "modules lying around.</li></ul></p><p>Check these points carefully and try to remove "
         "the module mentioned in the error message. If this fails, consider contacting "
         "your distributor or packager.</p></qt>", KLibLoader::self()->lastErrorMessage());
   if( report & Dialog )
