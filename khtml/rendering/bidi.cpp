@@ -2048,7 +2048,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         }
                     }
 
-                    bool canPlaceOnLine = (w + tmpW <= width+1) || !autoWrap;
+                    bool canPlaceOnLine = (w + tmpW <= width) || !autoWrap;
                     if (canPlaceOnLine && checkForBreak) {
                         w += tmpW;
                         tmpW = 0;
