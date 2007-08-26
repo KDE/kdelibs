@@ -29,6 +29,7 @@
 #include "kfileplacesmodel.h"
 #include "kfilebookmarkhandler.h"
 #include "kurlcombobox.h"
+#include "kurlnavigator.h"
 #include <config-kfile.h>
 
 #include <kactioncollection.h>
@@ -55,6 +56,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
+#include <QtGui/QSplitter>
 #include <QtCore/QFSFileEngine>
 #include <kshell.h>
 #include <kmessagebox.h>
@@ -102,6 +104,11 @@ public:
      * handles setting the locationEdit.
      */
     void multiSelectionChanged();
+    /**
+     * Returns the URL which represents the directory of \a url. If
+     * \a url already is a directory, then just \a url is returned.
+     */
+    KUrl directoryUrl(const KUrl& url) const;
 
     // the last selected url
     KUrl url;
@@ -121,10 +128,10 @@ public:
 
     // @deprecated remove in KDE4 -- err, remove what?
     QLabel *filterLabel;
-    KUrlComboBox *pathCombo;
+    KUrlNavigator *urlNavigator;
     KPushButton *okButton, *cancelButton;
     KFilePlacesView *placesView;
-    QHBoxLayout *placesViewLayout;
+    QSplitter *placesViewSplitter;
     QWidget *customWidget;
 
     // Automatically Select Extension stuff
@@ -156,9 +163,6 @@ public:
     QString fileClass;
 
     KFileBookmarkHandler *bookmarkHandler;
-
-    // the QAction before of the path drop down so subclasses can place their custom widgets properly
-    QAction* m_pathComboIndex;
 
     KActionMenu* bookmarkButton;
     KConfigGroup *viewConfigGroup;
@@ -202,36 +206,34 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->setObjectName("KFileWidget::toolbar");
     d->toolbar->setMovable(false);
 
-    d->pathCombo = new KUrlComboBox( KUrlComboBox::Directories, true,
-                                     d->toolbar);
-    d->pathCombo->setToolTip( i18n("Current location") );
-    d->pathCombo->setWhatsThis("<qt>" + i18n("This is the currently listed location. "
-                                                 "The drop-down list also lists commonly used locations. "
-                                                 "This includes standard locations, such as your home folder, as well as "
-                                                 "locations that have been visited recently.") + i18n (autocompletionWhatsThisText));
+    KFilePlacesModel *model = new KFilePlacesModel(this);
+    d->urlNavigator = new KUrlNavigator(model, d->directoryUrl(startDir), d->toolbar);
+    d->urlNavigator->setPlacesSelectorVisible(false);
+
     KUrl u;
     QString text;
+    KUrlComboBox *pathCombo = d->urlNavigator->editor();
 #ifdef Q_WS_WIN
     foreach( const QFileInfo &drive,QFSFileEngine::drives() )
     {
         u.setPath( drive.filePath() );
         text = i18n("Drive: %1",  u.toLocalFile() );
-        d->pathCombo->addDefaultUrl( u,
-                                 KIO::pixmapForUrl( u, 0, K3Icon::Small ),
-                                 text );
+        pathCombo->addDefaultUrl( u,
+                                  KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+                                  text );
     }
 #else
     u.setPath( QDir::rootPath() );
     text = i18n("Root Folder: %1",  u.toLocalFile() );
-    d->pathCombo->addDefaultUrl( u,
-                                 KIO::pixmapForUrl( u, 0, K3Icon::Small ),
-                                 text );
+    pathCombo->addDefaultUrl( u,
+                              KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+                              text );
 #endif
 
     u.setPath( QDir::homePath() );
     text = i18n("Home Folder: %1",  u.path( KUrl::AddTrailingSlash ) );
-    d->pathCombo->addDefaultUrl( u, KIO::pixmapForUrl( u, 0, K3Icon::Small ),
-                                 text );
+    pathCombo->addDefaultUrl( u, KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+                              text );
 
     KUrl docPath;
     docPath.setPath( KGlobalSettings::documentPath() );
@@ -239,16 +241,16 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
           QDir(docPath.path(KUrl::AddTrailingSlash)).exists() )
     {
       text = i18n("Documents: %1",  docPath.path( KUrl::AddTrailingSlash ) );
-        d->pathCombo->addDefaultUrl( docPath,
-                                     KIO::pixmapForUrl( docPath, 0, K3Icon::Small ),
-                                     text );
+        pathCombo->addDefaultUrl( docPath,
+                                  KIO::pixmapForUrl( docPath, 0, K3Icon::Small ),
+                                  text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1",  u.path( KUrl::AddTrailingSlash ) );
-    d->pathCombo->addDefaultUrl( u,
-                                 KIO::pixmapForUrl( u, 0, K3Icon::Small ),
-                                 text );
+    pathCombo->addDefaultUrl( u,
+                              KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+                              text );
 
     d->url = getStartUrl( startDir, d->fileClass );
     d->selection = d->url.url();
@@ -344,10 +346,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
              d->ops, SLOT( updateSelectionDependentActions() ));
     d->toolbar->addAction( menu );
 
-    //Insert a separator.
-    //d->m_pathComboIndex = d->toolbar->addSeparator();
-
-    d->toolbar->addWidget(d->pathCombo);
+    d->toolbar->addWidget(d->urlNavigator);
 
     // FIXME KAction port - add capability
     //d->toolbar->setItemAutoSized (PATH_COMBO);
@@ -355,13 +354,11 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->setMovable(false);
 
     KUrlCompletion *pathCompletionObj = new KUrlCompletion( KUrlCompletion::DirCompletion );
-    d->pathCombo->setCompletionObject( pathCompletionObj );
-    d->pathCombo->setAutoDeleteCompletionObject( true );
+    pathCombo->setCompletionObject( pathCompletionObj );
+    pathCombo->setAutoDeleteCompletionObject( true );
 
-    connect( d->pathCombo, SIGNAL( urlActivated( const KUrl&  )),
+    connect( d->urlNavigator, SIGNAL( urlChanged( const KUrl&  )),
              this,  SLOT( enterUrl( const KUrl& ) ));
-    connect( d->pathCombo, SIGNAL( returnPressed( const QString&  )),
-             this,  SLOT( enterUrl( const QString& ) ));
 
     QString whatsThisText;
 
@@ -377,7 +374,9 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->locationEdit->setFocus();
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
     QString dir = d->url.url(KUrl::AddTrailingSlash);
-    pathCompletionObj->setDir( dir );
+
+    d->urlNavigator->setUrl( d->directoryUrl( dir ) );
+
     fileCompletionObj->setDir( dir );
     d->locationEdit->setCompletionObject( fileCompletionObj );
     d->locationEdit->setAutoDeleteCompletionObject( true );
@@ -948,6 +947,13 @@ void KFileWidgetPrivate::multiSelectionChanged()
     setLocationText( text.trimmed() );
 }
 
+KUrl KFileWidgetPrivate::directoryUrl(const KUrl& url) const
+{
+    KFileItem item(S_IFDIR, KFileItem::Unknown, url);
+    item.refresh();
+    return item.isDir() ? url : url.upUrl();
+}
+
 void KFileWidgetPrivate::setLocationText( const QString& text )
 {
     // setCurrentItem() will cause textChanged() being emitted,
@@ -994,7 +1000,6 @@ void KFileWidgetPrivate::initSpeedbar()
 {
     placesView = new KFilePlacesView( q );
     placesView->setModel(new KFilePlacesModel(placesView));
-    placesView->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
     placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     placesView->setObjectName( QLatin1String( "url bar" ) );
@@ -1007,7 +1012,7 @@ void KFileWidgetPrivate::initSpeedbar()
     // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
     placesView->setUrl( url );
 
-    placesViewLayout->insertWidget( 0, placesView );
+    placesViewSplitter->insertWidget( 0, placesView );
 }
 
 void KFileWidgetPrivate::initGUI()
@@ -1019,16 +1024,27 @@ void KFileWidgetPrivate::initGUI()
     boxLayout->setSpacing(0);
     boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
 
-    placesViewLayout = new QHBoxLayout();
-    placesViewLayout->addSpacing(KDialog::spacingHint());
-    boxLayout->addItem(placesViewLayout); // needed for the placesView that may appear
+    placesViewSplitter = new QSplitter(q);
+    placesViewSplitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    placesViewSplitter->setChildrenCollapsible(false);
+    boxLayout->addWidget(placesViewSplitter);
+
     vbox = new QVBoxLayout();
-    placesViewLayout->addItem(vbox);
+    vbox->setMargin(0);
+    QWidget *vboxWidget = new QWidget();
+    vboxWidget->setLayout(vbox);
+    placesViewSplitter->insertWidget(0, vboxWidget);
 
     vbox->addWidget(ops, 4);
     vbox->addSpacing(KDialog::spacingHint());
 
-    QGridLayout* lafBox = new QGridLayout();
+    QGridLayout *lafBox = new QGridLayout();
+
+    // The default minimum width of the location editor and the filter widget
+    // is so huge, that it is no possible for the user to adjust the width
+    // of the speedbar, hence it will be reduced.
+    locationEdit->setMinimumWidth(40);
+    filterWidget->setMinimumWidth(40);
 
     lafBox->setSpacing(KDialog::spacingHint());
     lafBox->addWidget(locationLabel, 0, 0, Qt::AlignVCenter);
@@ -1051,10 +1067,10 @@ void KFileWidgetPrivate::initGUI()
     q->setTabOrder(locationEdit, filterWidget);
     q->setTabOrder(filterWidget, okButton);
     q->setTabOrder(okButton, cancelButton);
-    q->setTabOrder(cancelButton, pathCombo);
-    q->setTabOrder(pathCombo, ops);
-    q->setTabOrder(cancelButton, pathCombo);
-    q->setTabOrder(pathCombo, ops);
+    q->setTabOrder(cancelButton, urlNavigator);
+    q->setTabOrder(urlNavigator, ops);
+    q->setTabOrder(cancelButton, urlNavigator);
+    q->setTabOrder(urlNavigator, ops);
 }
 
 void KFileWidget::slotFilterChanged()
@@ -1090,8 +1106,9 @@ void KFileWidget::urlEntered(const KUrl& url)
     QString filename = d->locationEdit->currentText();
     d->selection.clear();
 
-    if ( d->pathCombo->count() != 0 ) { // little hack
-        d->pathCombo->setUrl( url );
+    KUrlComboBox* pathCombo = d->urlNavigator->editor();
+    if ( pathCombo->count() != 0 ) { // little hack
+        pathCombo->setUrl( url );
     }
 
     bool blocked = d->locationEdit->blockSignals( true );
@@ -1101,8 +1118,9 @@ void KFileWidget::urlEntered(const KUrl& url)
 
     d->locationEdit->blockSignals( blocked );
 
+    d->urlNavigator->setUrl( d->directoryUrl( url ) );
+
     QString dir = url.url(KUrl::AddTrailingSlash);
-    static_cast<KUrlCompletion*>( d->pathCombo->completionObject() )->setDir( dir );
     static_cast<KUrlCompletion*>( d->locationEdit->completionObject() )->setDir( dir );
 
     if ( d->placesView )
@@ -1364,6 +1382,17 @@ void KFileWidget::showEvent(QShowEvent* event)
     }
     d->ops->clearHistory();
 
+    QList<int> sizes = d->placesViewSplitter->sizes();
+    if (sizes.count() == 2) {
+        // restore width of speedbar
+        KConfigGroup configGroup( KGlobal::config(), ConfigGroup );
+        const int speedbarWidth = configGroup.readEntry( SpeedbarWidth, 100 );
+        const int availableWidth = sizes[0] + sizes[1];
+        sizes[0] = speedbarWidth;
+        sizes[1] = availableWidth - speedbarWidth;
+        d->placesViewSplitter->setSizes( sizes );
+    }
+
     QWidget::showEvent(event);
 }
 
@@ -1390,7 +1419,7 @@ void KFileWidgetPrivate::readConfig( const KConfigGroup &configGroup)
 {
     ops->readConfig(configGroup);
 
-    KUrlComboBox *combo = pathCombo;
+    KUrlComboBox *combo = urlNavigator->editor();
     combo->setUrls( configGroup.readPathListEntry( RecentURLs ), KUrlComboBox::RemoveTop );
     combo->setMaxItems( configGroup.readEntry( RecentURLsNumber,
                                        DefaultRecentURLsNumber ) );
@@ -1411,7 +1440,7 @@ void KFileWidgetPrivate::readConfig( const KConfigGroup &configGroup)
         locationEdit->setCompletionMode( cm );
 
     // show or don't show the speedbar
-    q->toggleSpeedbar( configGroup.readEntry(ShowSpeedbar, true) );
+    q->toggleSpeedbar( configGroup.readEntry( ShowSpeedbar, true ) );
 
     // show or don't show the bookmarks
     q->toggleBookmarks( configGroup.readEntry(ShowBookmarks, false) );
@@ -1420,22 +1449,37 @@ void KFileWidgetPrivate::readConfig( const KConfigGroup &configGroup)
     autoSelectExtChecked = configGroup.readEntry (AutoSelectExtChecked, DefaultAutoSelectExtChecked);
     updateAutoSelectExtension();
 
+    // should the URL navigator use the breadcrumb navigation?
+    urlNavigator->setUrlEditable( !configGroup.readEntry(BreadcrumbNavigation, true) );
+
     int w1 = q->minimumSize().width();
     int w2 = toolbar->sizeHint().width() + 10;
     if (w1 < w2)
         q->setMinimumWidth(w2);
+
     //restoreDialogSize( d->fileWidget->viewConfigGroup() );
 }
 
 void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
 {
+    KUrlComboBox *pathCombo = urlNavigator->editor();
     configGroup.writePathEntry( RecentURLs, pathCombo->urls() );
     //saveDialogSize( configGroup, KConfigBase::Persistent | KConfigBase::Global );
     configGroup.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
     configGroup.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
+
+    const bool showSpeedbar = placesView && !placesView->isHidden();
+    configGroup.writeEntry( ShowSpeedbar, showSpeedbar );
+    if (showSpeedbar) {
+        QList<int> sizes = placesViewSplitter->sizes();
+        Q_ASSERT( sizes.count() > 0 );
+        configGroup.writeEntry( SpeedbarWidth, sizes[0] );
+    }
+
     configGroup.writeEntry( ShowSpeedbar, placesView && !placesView->isHidden() );
     configGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
     configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
+    configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
 
     ops->writeConfig(configGroup);
 }
@@ -1950,15 +1994,6 @@ void KFileWidget::toggleBookmarks(bool show)
     static_cast<KToggleAction *>(actionCollection()->action("toggleBookmarks"))->setChecked( show );
 }
 
-#if 0
-// to be re-added once an app needs it so that it can be tested
-// (it was added for kedit in kde3, but kedit doesn't exist anymore)
-QAction* KFileWidget::pathComboIndex()
-{
-    return d->m_pathComboIndex;
-}
-#endif
-
 // static
 KUrl KFileWidget::getStartUrl( const KUrl& startDir,
                                QString& recentDirClass )
@@ -2054,7 +2089,7 @@ void KFileWidget::setCustomWidget(QWidget* widget)
     // problem, but ideally the tab order with a custom widget should be
     // the same as the order without one.
     setTabOrder(d->cancelButton, d->customWidget);
-    setTabOrder(d->customWidget, d->pathCombo);
+    setTabOrder(d->customWidget, d->urlNavigator);
 }
 
 void KFileWidget::virtual_hook( int id, void* data )
