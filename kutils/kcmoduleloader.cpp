@@ -145,10 +145,10 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
   {
     KCModule *module = load(mod, "", report, parent, args );
     /*
-     * Only try to load libkcm_* if it exists, otherwise KLibLoader::lastErrorMessage would say
-     * "libkcm_foo not found" instead of the real problem with loading kcm_foo.
+     * Only try to load lib* if it exists, otherwise KLibLoader::lastErrorMessage would say
+     * "libfoo not found" instead of the real problem with loading foo.
      */
-    if (!KLibLoader::findLibrary( QLatin1String( "libkcm_" ) + mod.library() ).isEmpty() )
+    if (!KLibLoader::findLibrary( QLatin1String( "lib" ) + mod.library() ).isEmpty() )
       module = load(mod, "lib", report, parent, args );
     if (module)
       return module;
@@ -177,11 +177,10 @@ void KCModuleLoader::unloadModule(const KCModuleInfo &mod)
   KLibLoader *loader = KLibLoader::self();
 
   // try to unload the library
-  QString libname("libkcm_%1");
+  QString libname("lib%1");
   loader->unloadLibrary(libname.arg(mod.library()));
 
-  libname = "kcm_%1";
-  loader->unloadLibrary(libname.arg(mod.library()));
+  loader->unloadLibrary(mod.library());
 }
 
 void KCModuleLoader::showLastLoaderError(QWidget *parent)
