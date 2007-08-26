@@ -337,7 +337,7 @@ bool KIconLoader::initIconThemes()
         // If d->mpThemeRoot isn't 0 then initing has succeeded
         return (d->mpThemeRoot != 0);
     }
-    kDebug() ;
+    kDebug(264) ;
     d->mIconThemeInited = true;
 
     // Add the default theme and its base themes to the theme tree
@@ -711,7 +711,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
         key += QString::number(size); key += '_';
         key += name;
         if (d->mIconCache->find(key, pix, path_store)) {
-            //kDebug() << "KIL: " << "found the icon from KIC";
+            //kDebug(264) << "KIL: " << "found the icon from KIC";
             return pix;
         } else if (!const_cast<KIconLoader*>(this)->initIconThemes()) {
             return pix;  // null pixmap

@@ -50,7 +50,7 @@ public:
     {
         if (q->existingIconThemeDirs(mThemeNames) != mThemeDirs ||
             q->mostRecentMTime(mThemeDirs) != mThemesMTime) {
-            kDebug() << "Theme directory has been modified";
+            kDebug(264) << "Theme directory has been modified";
             return true;
         } else {
             return false;
@@ -127,7 +127,7 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
     quint32 version;
     stream >> version;
     if (version != KDE_ICONCACHE_VERSION) {
-        kDebug() << "Obsolete iconcache version, will recreate";
+        kDebug(264) << "Obsolete iconcache version, will recreate";
         return false;
     }
 
@@ -150,7 +150,7 @@ bool KIconCache::loadCustomIndexHeader(QDataStream& stream)
 
     // Make sure at least one theme was read
     if (!d->mThemeNames.count()) {
-        kDebug() << "Empty themes list";
+        kDebug(264) << "Empty themes list";
         return false;
     }
 
@@ -266,7 +266,7 @@ bool KIconCache::find(const QString& key, QPixmap& pix, QString* path)
     d->mLoadPath = path;
     // We can use QPixmapCache only if we don't need the path
     setUseQPixmapCache(!path);
-    //kDebug() << "use QPC = " << useQPixmapCache();
+    //kDebug(264) << "use QPC = " << useQPixmapCache();
     bool ret = find(key, pix);
     d->mLoadPath = 0;
     return ret;

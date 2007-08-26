@@ -295,7 +295,7 @@ KLauncher::slotKDEInitData(int)
                             sizeof( request_header));
    if (result == -1)
    {
-      kDebug() << "Exiting on read_socket errno:" << errno;
+      kDebug(7016) << "Exiting on read_socket errno:" << errno;
       ::signal( SIGHUP, SIG_IGN);
       ::signal( SIGTERM, SIG_IGN);
       destruct(255); // Exit!
