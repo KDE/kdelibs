@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKEACADAPTER_H
-#define FAKEACADAPTER_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEACADAPTER_H
+#define SOLID_BACKENDS_FAKEHW_FAKEACADAPTER_H
 
 #include <solid/ifaces/acadapter.h>
 #include "fakedeviceinterface.h"
@@ -51,4 +51,4 @@ Q_SIGNALS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEACADAPTER_H

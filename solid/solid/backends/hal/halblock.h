@@ -17,8 +17,8 @@
 
 */
 
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef SOLID_BACKENDS_HAL_BLOCK_H
+#define SOLID_BACKENDS_HAL_BLOCK_H
 
 #include <solid/ifaces/block.h>
 #include "haldeviceinterface.h"
@@ -46,5 +46,4 @@ public:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_BLOCK_H

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef HALDVBINTERFACE_H
-#define HALDVBINTERFACE_H
+#ifndef SOLID_BACKENDS_HAL_HALDVBINTERFACE_H
+#define SOLID_BACKENDS_HAL_HALDVBINTERFACE_H
 
 #include <solid/ifaces/dvbinterface.h>
 #include "haldeviceinterface.h"
@@ -50,4 +50,4 @@ private:
 }
 }
 
-#endif // HALDVBINTERFACE_H
+#endif // SOLID_BACKENDS_HAL_HALDVBINTERFACE_H

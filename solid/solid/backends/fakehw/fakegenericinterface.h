@@ -16,8 +16,9 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef FAKEGENERICINTERFACE_H
-#define FAKEGENERICINTERFACE_H
+
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEGENERICINTERFACE_H
+#define SOLID_BACKENDS_FAKEHW_FAKEGENERICINTERFACE_H
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/genericinterface.h>
@@ -49,4 +50,4 @@ Q_SIGNALS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEGENERICINTERFACE_H

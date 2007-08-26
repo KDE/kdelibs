@@ -17,8 +17,8 @@
 
 */
 
-#ifndef HALMANAGER_H
-#define HALMANAGER_H
+#ifndef SOLID_BACKENDS_HAL_HALMANAGER_H
+#define SOLID_BACKENDS_HAL_HALMANAGER_H
 
 #include <solid/ifaces/devicemanager.h>
 #include <solid/deviceinterface.h>
@@ -65,5 +65,4 @@ private:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_HALMANAGER_H

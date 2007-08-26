@@ -17,8 +17,8 @@
 
 */
 
-#ifndef STORAGEACCESS_H
-#define STORAGEACCESS_H
+#ifndef SOLID_BACKENDS_HAL_STORAGEACCESS_H
+#define SOLID_BACKENDS_HAL_STORAGEACCESS_H
 
 #include <solid/ifaces/storageaccess.h>
 #include "haldeviceinterface.h"
@@ -77,5 +77,4 @@ private:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_STORAGEACCESS_H

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef BATTERY_H
-#define BATTERY_H
+#ifndef SOLID_BACKENDS_HAL_BATTERY_H
+#define SOLID_BACKENDS_HAL_BATTERY_H
 
 #include <solid/ifaces/battery.h>
 #include "haldeviceinterface.h"
@@ -58,5 +58,4 @@ private Q_SLOTS:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_BATTERY_H

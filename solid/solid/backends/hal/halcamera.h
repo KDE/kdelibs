@@ -17,8 +17,8 @@
 
 */
 
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef SOLID_BACKENDS_HAL_CAMERA_H
+#define SOLID_BACKENDS_HAL_CAMERA_H
 
 #include <solid/ifaces/camera.h>
 #include "haldeviceinterface.h"
@@ -46,5 +46,4 @@ public:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_CAMERA_H

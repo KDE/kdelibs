@@ -17,8 +17,8 @@
 
 */
 
-#ifndef VOLUME_H
-#define VOLUME_H
+#ifndef SOLID_BACKENDS_HAL_VOLUME_H
+#define SOLID_BACKENDS_HAL_VOLUME_H
 
 #include <solid/ifaces/storagevolume.h>
 #include "halblock.h"
@@ -49,5 +49,4 @@ public:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_VOLUME_H

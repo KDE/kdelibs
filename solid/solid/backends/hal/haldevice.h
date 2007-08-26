@@ -17,8 +17,8 @@
 
 */
 
-#ifndef HALDEVICE_H
-#define HALDEVICE_H
+#ifndef SOLID_BACKENDS_HAL_HALDEVICE_H
+#define SOLID_BACKENDS_HAL_HALDEVICE_H
 
 #include <solid/ifaces/device.h>
 
@@ -77,4 +77,4 @@ private:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_HAL_HALDEVICE_H

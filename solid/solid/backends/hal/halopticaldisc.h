@@ -17,8 +17,8 @@
 
 */
 
-#ifndef OPTICALDISC_H
-#define OPTICALDISC_H
+#ifndef SOLID_BACKENDS_HAL_OPTICALDISC_H
+#define SOLID_BACKENDS_HAL_OPTICALDISC_H
 
 #include <solid/ifaces/opticaldisc.h>
 #include "halvolume.h"
@@ -49,5 +49,4 @@ public:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_OPTICALDISC_H

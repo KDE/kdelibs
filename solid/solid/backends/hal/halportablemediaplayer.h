@@ -18,8 +18,8 @@
 
 */
 
-#ifndef PORTABLEMEDIAPLAYER_H
-#define PORTABLEMEDIAPLAYER_H
+#ifndef SOLID_BACKENDS_HAL_PORTABLEMEDIAPLAYER_H
+#define SOLID_BACKENDS_HAL_PORTABLEMEDIAPLAYER_H
 
 #include <solid/ifaces/portablemediaplayer.h>
 #include "haldeviceinterface.h"
@@ -51,5 +51,4 @@ public:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_PORTABLEMEDIAPLAYER_H

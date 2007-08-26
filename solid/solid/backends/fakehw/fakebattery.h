@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKEBATTERY_H
-#define FAKEBATTERY_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEBATTERY_H
+#define SOLID_BACKENDS_FAKEHW_FAKEBATTERY_H
 
 #include <solid/ifaces/battery.h>
 #include "fakedeviceinterface.h"
@@ -59,4 +59,4 @@ Q_SIGNALS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEBATTERY_H

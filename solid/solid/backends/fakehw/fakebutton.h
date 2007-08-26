@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKEBUTTON_H
-#define FAKEBUTTON_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEBUTTON_H
+#define SOLID_BACKENDS_FAKEHW_FAKEBUTTON_H
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/button.h>
@@ -52,4 +52,4 @@ Q_SIGNALS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEBUTTON_H

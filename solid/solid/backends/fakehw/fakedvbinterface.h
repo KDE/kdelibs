@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKEDVBINTERFACE_H
-#define FAKEDVBINTERFACE_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEDVBINTERFACE_H
+#define SOLID_BACKENDS_FAKEHW_FAKEDVBINTERFACE_H
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/dvbinterface.h>
@@ -48,4 +48,4 @@ public Q_SLOTS:
 }
 }
 
-#endif // FAKEDVBINTERFACE_H
+#endif // SOLID_BACKENDS_FAKEHW_FAKEDVBINTERFACE_H

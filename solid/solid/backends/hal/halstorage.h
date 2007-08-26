@@ -17,8 +17,8 @@
 
 */
 
-#ifndef STORAGE_H
-#define STORAGE_H
+#ifndef SOLID_BACKENDS_HAL_STORAGE_H
+#define SOLID_BACKENDS_HAL_STORAGE_H
 
 #include <solid/ifaces/storagedrive.h>
 #include "halblock.h"
@@ -48,5 +48,4 @@ public:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_STORAGE_H

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PROCESSOR_H
-#define PROCESSOR_H
+#ifndef SOLID_BACKENDS_HAL_PROCESSOR_H
+#define SOLID_BACKENDS_HAL_PROCESSOR_H
 
 #include <solid/ifaces/processor.h>
 #include "haldeviceinterface.h"
@@ -49,5 +49,4 @@ public:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_PROCESSOR_H

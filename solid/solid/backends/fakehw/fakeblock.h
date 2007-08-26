@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKEBLOCK_H
-#define FAKEBLOCK_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEBLOCK_H
+#define SOLID_BACKENDS_FAKEHW_FAKEBLOCK_H
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/block.h>
@@ -47,5 +47,4 @@ public Q_SLOTS:
 }
 }
 
-#endif
-
+#endif // SOLID_BACKENDS_FAKEHW_FAKEBLOCK_H

@@ -16,8 +16,9 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef FAKEMANAGER_H
-#define FAKEMANAGER_H
+
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEMANAGER_H
+#define SOLID_BACKENDS_FAKEHW_FAKEMANAGER_H
 
 #include <solid/ifaces/devicemanager.h>
 
@@ -83,4 +84,4 @@ private:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEMANAGER_H

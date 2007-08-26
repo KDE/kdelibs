@@ -17,8 +17,8 @@
 
 */
 
-#ifndef HALAUDIOINTERFACE_H
-#define HALAUDIOINTERFACE_H
+#ifndef SOLID_BACKENDS_HAL_HALAUDIOINTERFACE_H
+#define SOLID_BACKENDS_HAL_HALAUDIOINTERFACE_H
 
 #include <solid/ifaces/audiointerface.h>
 #include "haldeviceinterface.h"
@@ -55,4 +55,4 @@ private:
 }
 }
 
-#endif // HALAUDIOINTERFACE_H
+#endif // SOLID_BACKENDS_HAL_HALAUDIOINTERFACE_H

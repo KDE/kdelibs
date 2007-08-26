@@ -17,8 +17,8 @@
 
 */
 
-#ifndef CDROM_H
-#define CDROM_H
+#ifndef SOLID_BACKENDS_HAL_CDROM_H
+#define SOLID_BACKENDS_HAL_CDROM_H
 
 #include <solid/ifaces/opticaldrive.h>
 #include "halstorage.h"
@@ -63,5 +63,4 @@ private:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_CDROM_H

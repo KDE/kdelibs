@@ -17,8 +17,8 @@
 
 */
 
-#ifndef ACADAPTER_H
-#define ACADAPTER_H
+#ifndef SOLID_BACKENDS_HAL_ACADAPTER_H
+#define SOLID_BACKENDS_HAL_ACADAPTER_H
 
 #include <solid/ifaces/acadapter.h>
 #include "haldeviceinterface.h"
@@ -50,5 +50,4 @@ private Q_SLOTS:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_ACADAPTER_H

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKEVOLUME_H
-#define FAKEVOLUME_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEVOLUME_H
+#define SOLID_BACKENDS_FAKEHW_FAKEVOLUME_H
 
 #include "fakeblock.h"
 #include <solid/ifaces/storagevolume.h>
@@ -50,4 +50,4 @@ public Q_SLOTS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEVOLUME_H

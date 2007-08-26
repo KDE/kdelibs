@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKEOPTICALDISC_H
-#define FAKEOPTICALDISC_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEOPTICALDISC_H
+#define SOLID_BACKENDS_FAKEHW_FAKEOPTICALDISC_H
 
 #include "fakevolume.h"
 #include <solid/ifaces/opticaldisc.h>
@@ -50,4 +50,4 @@ public Q_SLOTS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEOPTICALDISC_H

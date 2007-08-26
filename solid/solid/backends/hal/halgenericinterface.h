@@ -17,8 +17,8 @@
 
 */
 
-#ifndef GENERICINTERFACE_H
-#define GENERICINTERFACE_H
+#ifndef SOLID_BACKENDS_HAL_GENERICINTERFACE_H
+#define SOLID_BACKENDS_HAL_GENERICINTERFACE_H
 
 #include <solid/ifaces/genericinterface.h>
 #include <solid/genericinterface.h>
@@ -53,5 +53,4 @@ Q_SIGNALS:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_GENERICINTERFACE_H

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKECAMERA_H
-#define FAKECAMERA_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKECAMERA_H
+#define SOLID_BACKENDS_FAKEHW_FAKECAMERA_H
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/camera.h>
@@ -47,4 +47,4 @@ public Q_SLOTS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKECAMERA_H

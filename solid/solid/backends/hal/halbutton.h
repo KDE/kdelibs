@@ -17,8 +17,8 @@
 
 */
 
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef SOLID_BACKENDS_HAL_BUTTON_H
+#define SOLID_BACKENDS_HAL_BUTTON_H
 
 #include <solid/ifaces/button.h>
 #include "haldeviceinterface.h"
@@ -54,5 +54,4 @@ private Q_SLOTS:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_BUTTON_H

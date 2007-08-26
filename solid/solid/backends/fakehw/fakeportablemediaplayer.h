@@ -18,8 +18,8 @@
 
 */
 
-#ifndef FAKEPORTABLEMEDIAPLAYER_H
-#define FAKEPORTABLEMEDIAPLAYER_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEPORTABLEMEDIAPLAYER_H
+#define SOLID_BACKENDS_FAKEHW_FAKEPORTABLEMEDIAPLAYER_H
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/portablemediaplayer.h>
@@ -48,4 +48,4 @@ public Q_SLOTS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEPORTABLEMEDIAPLAYER_H

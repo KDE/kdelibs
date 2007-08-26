@@ -17,8 +17,8 @@
 
 */
 
-#ifndef DEVICEINTERFACE_H
-#define DEVICEINTERFACE_H
+#ifndef SOLID_BACKENDS_HAL_DEVICEINTERFACE_H
+#define SOLID_BACKENDS_HAL_DEVICEINTERFACE_H
 
 #include <solid/ifaces/deviceinterface.h>
 #include "haldevice.h"
@@ -144,5 +144,4 @@ public:
 }
 }
 
-
-#endif
+#endif // SOLID_BACKENDS_HAL_DEVICEINTERFACE_H

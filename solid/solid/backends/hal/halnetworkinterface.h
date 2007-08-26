@@ -17,8 +17,8 @@
 
 */
 
-#ifndef HALNETWORKINTERFACE_H
-#define HALNETWORKINTERFACE_H
+#ifndef SOLID_BACKENDS_HAL_HALNETWORKINTERFACE_H
+#define SOLID_BACKENDS_HAL_HALNETWORKINTERFACE_H
 
 #include <solid/ifaces/networkinterface.h>
 #include "haldeviceinterface.h"
@@ -49,4 +49,4 @@ public:
 }
 }
 
-#endif // HALNETWORKINTERFACE_H
+#endif // SOLID_BACKENDS_HAL_HALNETWORKINTERFACE_H

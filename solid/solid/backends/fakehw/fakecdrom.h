@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKECDROM_H
-#define FAKECDROM_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKECDROM_H
+#define SOLID_BACKENDS_FAKEHW_FAKECDROM_H
 
 #include <solid/ifaces/opticaldrive.h>
 #include "fakestorage.h"
@@ -53,4 +53,4 @@ Q_SIGNALS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKECDROM_H

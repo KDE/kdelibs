@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef FAKEDEVICEINTERFACE_H
-#define FAKEDEVICEINTERFACE_H
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEDEVICEINTERFACE_H
+#define SOLID_BACKENDS_FAKEHW_FAKEDEVICEINTERFACE_H
 
 #include <QtCore/QObject>
 #include <solid/ifaces/deviceinterface.h>
@@ -55,4 +55,4 @@ private:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEDEVICEINTERFACE_H

@@ -16,8 +16,9 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef FAKEPROCESSOR_H
-#define FAKEPROCESSOR_H
+
+#ifndef SOLID_BACKENDS_FAKEHW_FAKEPROCESSOR_H
+#define SOLID_BACKENDS_FAKEHW_FAKEPROCESSOR_H
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/processor.h>
@@ -47,4 +48,4 @@ public Q_SLOTS:
 }
 }
 
-#endif
+#endif // SOLID_BACKENDS_FAKEHW_FAKEPROCESSOR_H
