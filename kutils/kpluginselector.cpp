@@ -230,7 +230,7 @@ void KPluginSelector::Private::DependenciesWidget::showDependencyDetails()
         else
             message += i18n("\n    %1 plugin has been automatically unchecked becase its dependency on %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
     }
-    KMessageBox::information(0, message, i18n("Dependency Check"));
+    KMessageBox::information(this, message, i18n("Dependency Check"));
 
     addedByDependencies = 0;
     removedByDependencies = 0;
@@ -618,7 +618,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->listView->viewport()->installEventFilter(d->pluginDelegate);
     d->listView->installEventFilter(d->pluginDelegate);
 
-    d->dependenciesWidget = new Private::DependenciesWidget;
+    d->dependenciesWidget = new Private::DependenciesWidget(this);
 
     layout->addWidget(d->listView);
     layout->addWidget(d->dependenciesWidget);
