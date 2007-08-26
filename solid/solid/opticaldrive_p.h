@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_CDROM_P_H
-#define SOLID_CDROM_P_H
+#ifndef SOLID_OPTICALDRIVE_P_H
+#define SOLID_OPTICALDRIVE_P_H
 
 #include "storagedrive_p.h"
 
@@ -32,4 +32,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_OPTICALDRIVE_P_H

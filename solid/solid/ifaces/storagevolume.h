@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_IFACES_VOLUME_H
-#define SOLID_IFACES_VOLUME_H
+#ifndef SOLID_STORAGEVOLUME_H
+#define SOLID_STORAGEVOLUME_H
 
 #include <solid/ifaces/block.h>
 #include <solid/storagevolume.h>
@@ -99,4 +99,4 @@ namespace Ifaces
 
 Q_DECLARE_INTERFACE(Solid::Ifaces::StorageVolume, "org.kde.Solid.Ifaces.StorageVolume/0.1")
 
-#endif
+#endif // SOLID_STORAGEVOLUME_H

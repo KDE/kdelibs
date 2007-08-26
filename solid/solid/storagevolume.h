@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_VOLUME_H
-#define SOLID_VOLUME_H
+#ifndef SOLID_STORAGEVOLUME_H
+#define SOLID_STORAGEVOLUME_H
 
 #include <solid/solid_export.h>
 
@@ -151,4 +151,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_STORAGEVOLUME_H

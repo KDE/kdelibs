@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_CDROM_H
-#define SOLID_CDROM_H
+#ifndef SOLID_OPTICALDRIVE_H
+#define SOLID_OPTICALDRIVE_H
 
 #include <QtCore/QList>
 #include <QtCore/QVariant>
@@ -163,4 +163,4 @@ namespace Solid
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::OpticalDrive::MediumTypes)
 
-#endif
+#endif // SOLID_OPTICALDRIVE_H

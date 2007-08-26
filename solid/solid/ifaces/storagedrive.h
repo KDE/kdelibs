@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_IFACES_STORAGE_H
-#define SOLID_IFACES_STORAGE_H
+#ifndef SOLID_STORAGEDRIVE_H
+#define SOLID_STORAGEDRIVE_H
 
 #include <solid/ifaces/block.h>
 #include <solid/storagedrive.h>
@@ -83,4 +83,4 @@ namespace Ifaces
 
 Q_DECLARE_INTERFACE(Solid::Ifaces::StorageDrive, "org.kde.Solid.Ifaces.StorageDrive/0.1")
 
-#endif
+#endif // SOLID_STORAGEDRIVE_H

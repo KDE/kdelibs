@@ -16,8 +16,8 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef FAKENETWORKHW_H
-#define FAKENETWORKHW_H
+#ifndef FAKENETWORKINTERFACE_H
+#define FAKENETWORKINTERFACE_H
 
 #include "fakedeviceinterface.h"
 #include <solid/ifaces/networkinterface.h>
@@ -47,4 +47,4 @@ public Q_SLOTS:
 }
 }
 
-#endif
+#endif // FAKENETWORKINTERFACE_H

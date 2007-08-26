@@ -17,8 +17,8 @@
 
 */
 
-#ifndef DVBHW_H
-#define DVBHW_H
+#ifndef HALDVBINTERFACE_H
+#define HALDVBINTERFACE_H
 
 #include <solid/ifaces/dvbinterface.h>
 #include "haldeviceinterface.h"
@@ -50,5 +50,4 @@ private:
 }
 }
 
-
-#endif
+#endif // HALDVBINTERFACE_H

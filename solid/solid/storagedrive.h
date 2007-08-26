@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_STORAGE_H
-#define SOLID_STORAGE_H
+#ifndef SOLID_STORAGEDRIVE_H
+#define SOLID_STORAGEDRIVE_H
 
 #include <solid/solid_export.h>
 
@@ -145,4 +145,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_STORAGEDRIVE_H

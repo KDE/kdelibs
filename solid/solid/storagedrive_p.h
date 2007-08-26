@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_STORAGE_P_H
-#define SOLID_STORAGE_P_H
+#ifndef SOLID_STORAGEDRIVE_P_H
+#define SOLID_STORAGEDRIVE_P_H
 
 #include "deviceinterface_p.h"
 
@@ -32,5 +32,4 @@ namespace Solid
     };
 }
 
-#endif
-
+#endif // SOLID_STORAGEDRIVE_P_H

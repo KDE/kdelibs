@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_DVBHW_P_H
-#define SOLID_DVBHW_P_H
+#ifndef SOLID_DVBINTERFACE_P_H
+#define SOLID_DVBINTERFACE_P_H
 
 #include "deviceinterface_p.h"
 
@@ -32,4 +32,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_DVBINTERFACE_P_H

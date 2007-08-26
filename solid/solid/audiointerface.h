@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_AUDIOHW_H
-#define SOLID_AUDIOHW_H
+#ifndef SOLID_AUDIOINTERFACE_H
+#define SOLID_AUDIOINTERFACE_H
 
 #include <solid/solid_export.h>
 
@@ -207,4 +207,4 @@ namespace Solid
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::AudioInterface::AudioInterfaceTypes)
 
-#endif
+#endif // SOLID_AUDIOINTERFACE_H

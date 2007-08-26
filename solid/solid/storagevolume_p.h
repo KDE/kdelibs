@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_VOLUME_P_H
-#define SOLID_VOLUME_P_H
+#ifndef SOLID_STORAGEVOLUME_P_H
+#define SOLID_STORAGEVOLUME_P_H
 
 #include "deviceinterface_p.h"
 
@@ -32,4 +32,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_STORAGEVOLUME_P_H

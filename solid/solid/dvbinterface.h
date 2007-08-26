@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_DVBHW_H
-#define SOLID_DVBHW_H
+#ifndef SOLID_DVBINTERFACE_H
+#define SOLID_DVBINTERFACE_H
 
 #include <solid/solid_export.h>
 
@@ -135,4 +135,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_DVBINTERFACE_H

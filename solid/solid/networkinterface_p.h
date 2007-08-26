@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NETWORKHW_P_H
-#define SOLID_NETWORKHW_P_H
+#ifndef SOLID_NETWORKINTERFACE_P_H
+#define SOLID_NETWORKINTERFACE_P_H
 
 #include "deviceinterface_p.h"
 
@@ -32,4 +32,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_NETWORKINTERFACE_P_H

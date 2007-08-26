@@ -17,8 +17,8 @@
 
 */
 
-#ifndef FAKEAUDIOHW_H
-#define FAKEAUDIOHW_H
+#ifndef FAKEAUDIOINTERFACE_H
+#define FAKEAUDIOINTERFACE_H
 
 #include <solid/ifaces/audiointerface.h>
 #include "fakedeviceinterface.h"
@@ -50,5 +50,4 @@ public Q_SLOTS:
 }
 }
 
-
-#endif
+#endif // FAKEAUDIOINTERFACE_H

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef NETWORKHW_H
-#define NETWORKHW_H
+#ifndef HALNETWORKINTERFACE_H
+#define HALNETWORKINTERFACE_H
 
 #include <solid/ifaces/networkinterface.h>
 #include "haldeviceinterface.h"
@@ -49,5 +49,4 @@ public:
 }
 }
 
-
-#endif
+#endif // HALNETWORKINTERFACE_H

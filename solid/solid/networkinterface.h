@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NETWORKHW_H
-#define SOLID_NETWORKHW_H
+#ifndef SOLID_NETWORKINTERFACE_H
+#define SOLID_NETWORKINTERFACE_H
 
 #include <solid/solid_export.h>
 
@@ -102,4 +102,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_NETWORKINTERFACE_H

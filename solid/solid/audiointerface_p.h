@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_AUDIOHW_P_H
-#define SOLID_AUDIOHW_P_H
+#ifndef SOLID_AUDIOINTERFACE_P_H
+#define SOLID_AUDIOINTERFACE_P_H
 
 #include "deviceinterface_p.h"
 
@@ -34,4 +34,4 @@ namespace Solid
     };
 }
 
-#endif
+#endif // SOLID_AUDIOINTERFACE_P_H
