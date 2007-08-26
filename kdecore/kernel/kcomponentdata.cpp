@@ -78,7 +78,7 @@ KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog
     }
 }
 
-KComponentData::KComponentData(const KAboutData *aboutData)
+KComponentData::KComponentData(const KAboutData *aboutData, MainComponentRegistration registerAsMain)
     : d(new KComponentDataPrivate)
 {
     d->name = aboutData->appName();
@@ -88,7 +88,9 @@ KComponentData::KComponentData(const KAboutData *aboutData)
 
     Q_ASSERT(!d->name.isEmpty());
 
-    KGlobal::newComponentData(*this);
+    if (registerAsMain == RegisterAsMainComponent) {
+        KGlobal::newComponentData(*this);
+    }
 }
 
 void KComponentData::_checkConfig() // called by KSharedConfigPtr

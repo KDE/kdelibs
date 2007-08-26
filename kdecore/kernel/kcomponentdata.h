@@ -96,8 +96,13 @@ public:
      * @param componentName the name of the component.
      * @param catalogName the name of the translation catalog;
      *                    if left empty @p componentName is used
+     * @param registerAsMain whether to register the component as the main component
+     *                       of the application. This has no effect, if the application
+     *                       already has a main component.
+     *                       @see KGlobal::mainComponent
      */
-    explicit KComponentData(const QByteArray &componentName, const QByteArray &catalogName = QByteArray(), MainComponentRegistration = RegisterAsMainComponent);
+    explicit KComponentData(const QByteArray &componentName, const QByteArray &catalogName = QByteArray(),
+                MainComponentRegistration registerAsMain = RegisterAsMainComponent);
 
     /**
      * Constructor.
@@ -110,10 +115,14 @@ public:
      * KCmdLineArgs and KApplication (not destroyed until the app exits).
      *
      * @param aboutData data about this component
+     * @param registerAsMain whether to register the component as the main component
+     *                       of the application. This has no effect, if the application
+     *                       already has a main component.
+     *                       @see KGlobal::mainComponent
      *
      * @see KAboutData
      */
-    explicit KComponentData(const KAboutData *aboutData);
+    explicit KComponentData(const KAboutData *aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
 
     /**
      * Destructor.
