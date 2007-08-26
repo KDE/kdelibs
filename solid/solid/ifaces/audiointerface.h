@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_AUDIOINTERFACE_H
-#define SOLID_AUDIOINTERFACE_H
+#ifndef SOLID_IFACES_AUDIOINTERFACE_H
+#define SOLID_IFACES_AUDIOINTERFACE_H
 
 #include <solid/ifaces/deviceinterface.h>
 #include <solid/audiointerface.h>
@@ -88,4 +88,4 @@ namespace Ifaces
 
 Q_DECLARE_INTERFACE(Solid::Ifaces::AudioInterface, "org.kde.Solid.Ifaces.AudioInterface/0.1.1")
 
-#endif // SOLID_AUDIOINTERFACE_H
+#endif // SOLID_IFACES_AUDIOINTERFACE_H

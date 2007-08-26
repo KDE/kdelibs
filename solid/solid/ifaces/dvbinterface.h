@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_DVBINTERFACE_H
-#define SOLID_DVBINTERFACE_H
+#ifndef SOLID_IFACE_DVBINTERFACE_H
+#define SOLID_IFACE_DVBINTERFACE_H
 
 #include <solid/ifaces/deviceinterface.h>
 
@@ -85,4 +85,4 @@ namespace Ifaces
 
 Q_DECLARE_INTERFACE(Solid::Ifaces::DvbInterface, "org.kde.Solid.Ifaces.DvbInterface/0.1")
 
-#endif // SOLID_DVBINTERFACE_H
+#endif // SOLID_IFACE_DVBINTERFACE_H

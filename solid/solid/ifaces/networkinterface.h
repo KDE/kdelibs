@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_NETWORKINTERFACE_H
-#define SOLID_NETWORKINTERFACE_H
+#ifndef SOLID_IFACE_NETWORKINTERFACE_H
+#define SOLID_IFACE_NETWORKINTERFACE_H
 
 #include <solid/ifaces/deviceinterface.h>
 
@@ -74,4 +74,4 @@ namespace Ifaces
 
 Q_DECLARE_INTERFACE(Solid::Ifaces::NetworkInterface, "org.kde.Solid.Ifaces.NetworkInterface/0.1")
 
-#endif // SOLID_NETWORKINTERFACE_H
+#endif // SOLID_IFACE_NETWORKINTERFACE_H

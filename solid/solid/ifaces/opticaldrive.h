@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_OPTICALDRIVE_H
-#define SOLID_OPTICALDRIVE_H
+#ifndef SOLID_IFACE_OPTICALDRIVE_H
+#define SOLID_IFACE_OPTICALDRIVE_H
 
 #include <QtCore/QList>
 
@@ -96,4 +96,4 @@ namespace Ifaces
 
 Q_DECLARE_INTERFACE(Solid::Ifaces::OpticalDrive, "org.kde.Solid.Ifaces.OpticalDrive/0.1")
 
-#endif // SOLID_OPTICALDRIVE_H
+#endif // SOLID_IFACE_OPTICALDRIVE_H
