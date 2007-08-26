@@ -20,8 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KJSEMBED_GLOBAL_H
-#define KJSEMBED_GLOBAL_H
+#ifndef KJSEGLOBAL_H
+#define KJSEGLOBAL_H
 
 #include <kdemacros.h>
 
@@ -130,6 +130,6 @@ inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3,
 
 #endif // QT_ONLY
 
-#endif // KJSEMBED_GLOBAL_H
+#endif // KJSEGLOBAL_H
 
 //kate: indent-spaces on; indent-width 4; replace-tabs on; indent-mode cstyle;

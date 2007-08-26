@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef KJS_INTERPRETER_LOCK_H
-#define KJS_INTERPRETER_LOCK_H
+#ifndef JSLOCK_H
+#define JSLOCK_H
 
 #include "global.h"
 
@@ -82,4 +82,4 @@ namespace KJS {
 
 } // namespace
 
-#endif // KJS_INTERPRETER_LOCK_H
+#endif // JSLOCK_H

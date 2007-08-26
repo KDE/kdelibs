@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KNEWSTUFF2_UI_BUTTON_H
-#define KNEWSTUFF2_UI_BUTTON_H
+#ifndef KNEWSTUFFBUTTON_H
+#define KNEWSTUFFBUTTON_H
 
 #include <knewstuff2/knewstuff_export.h>
 
@@ -114,4 +114,4 @@ class Button : public KPushButton
 
 }
 
-#endif
+#endif // KNEWSTUFFBUTTON_H

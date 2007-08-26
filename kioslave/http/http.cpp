@@ -38,7 +38,7 @@
 #include <sys/time.h>
 #include <unistd.h> // must be explicitly included for MacOSX
 
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
 #include <QtCore/QDate>

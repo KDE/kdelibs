@@ -38,7 +38,7 @@
 #include <kzip.h>
 
 #include <QtCore/QDir>
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtCore/Q_PID>
 
 using namespace KNS;

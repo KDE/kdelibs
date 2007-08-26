@@ -22,7 +22,7 @@
 
 #include <knewstuff2/core/entry.h>
 
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 

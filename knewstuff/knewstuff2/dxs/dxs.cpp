@@ -28,7 +28,7 @@
 
 #include <kdebug.h>
 
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtCore/QMutableStringListIterator>
 
 using namespace KNS;

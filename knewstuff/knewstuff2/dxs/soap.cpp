@@ -20,7 +20,7 @@
 
 #include "soap.h"
 
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtNetwork/QTcpSocket>
 #include <QtCore/QRegExp>
 

@@ -33,7 +33,7 @@
 #include "kdxstranslation.h"
 
 #include <QtGui/QLayout>
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtGui/QToolButton>
 
 #include <ktoolinvocation.h>

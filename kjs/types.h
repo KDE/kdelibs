@@ -21,5 +21,10 @@
  *
  */
 
+#ifndef TYPES_H
+#define TYPES_H
+
 #include "completion.h"
 #include "list.h"
+
+#endif // TYPES_H

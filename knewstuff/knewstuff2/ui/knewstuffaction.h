@@ -17,8 +17,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KNEWSTUFF2_UI_ACTION_H
-#define KNEWSTUFF2_UI_ACTION_H
+#ifndef KNEWSTUFFACTION_H
+#define KNEWSTUFFACTION_H
 
 #include <knewstuff2/knewstuff_export.h>
 
@@ -40,4 +40,4 @@ KNEWSTUFF_EXPORT KAction* standardAction(const QString& what,
                         const char *name = 0);
 }
 
-#endif
+#endif // KNEWSTUFFACTION_H

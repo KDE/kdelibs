@@ -25,7 +25,7 @@
 
 #include <kurl.h>
 
-#include <Qt/qdom.h>
+#include <QtXml/qdom.h>
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QString>

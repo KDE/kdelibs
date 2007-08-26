@@ -1,5 +1,5 @@
-#ifndef BIND_QBrush_H
-#define BIND_QBrush_H
+#ifndef QBRUSH_BIND_H
+#define QBRUSH_BIND_H
 
 #include <variant_binding.h>
 #include <static_binding.h>
@@ -33,4 +33,4 @@ namespace KJSEmbed
    };
 }
 
-#endif // BIND_QBrush_H
+#endif // QBRUSH_BIND_H
