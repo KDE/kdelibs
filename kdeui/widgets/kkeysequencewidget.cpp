@@ -89,7 +89,7 @@ public:
 	void startRecording();
 
 //private slot
-	void doneRecording();
+	void doneRecording(bool validate = true);
 	
 //members
 	KKeySequenceWidget *const q;
@@ -104,6 +104,7 @@ public:
 	uint nKey;
 	uint modifierKeys;
 	bool isRecording;
+	bool denyValidation;
 };
 
 
@@ -183,11 +184,11 @@ QKeySequence KKeySequenceWidget::keySequence() const
 
 
 //slot
-void KKeySequenceWidget::setKeySequence(const QKeySequence &seq)
+void KKeySequenceWidget::setKeySequence(const QKeySequence &seq, Validation validate)
 {
 	d->oldKeySequence = d->keySequence;
 	d->keySequence = seq;
-	d->doneRecording();
+	d->doneRecording(validate == Validate);
 }
 
 
@@ -195,6 +196,13 @@ void KKeySequenceWidget::setKeySequence(const QKeySequence &seq)
 void KKeySequenceWidget::clearKeySequence()
 {
 	setKeySequence(QKeySequence());
+}
+
+
+//slot
+void KKeySequenceWidget::denyValidation()
+{
+	d->denyValidation = true;
 }
 
 
@@ -218,75 +226,25 @@ void KKeySequenceWidgetPrivate::startRecording()
 }
 
 
-void KKeySequenceWidgetPrivate::doneRecording()
+void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 {
 	modifierlessTimeout.stop();
 	isRecording = false;
 	keyButton->releaseKeyboard();
 	keyButton->setDown(false);
+	if (keySequence != oldKeySequence) {
+		if (validate) {
+			denyValidation = false;
+			emit q->validationHook(keySequence);
+			if (denyValidation)
+				keySequence = oldKeySequence;
+		}
+	}
 	updateShortcutDisplay();
 	if (keySequence != oldKeySequence)
 		emit q->keySequenceChanged(keySequence);
 }
 
-#if 0
-void KKeySequenceButton::paintEvent( QPaintEvent* )
-{
-  QPainter painter(this);
-  painter.setRenderHint( QPainter::Antialiasing );
-
-  QPolygon a( 4 );
-  a.setPoint( 0, 0, 0) ;
-  a.setPoint( 1, width(), 0 );
-  a.setPoint( 2, 0, height() );
-  a.setPoint( 3, 0, 0 );
-
-  QRegion r1( a );
-  painter.setClipRegion( r1 );
-  painter.setBrush( palette().color( QPalette::Background ).light() );
-  painter.drawRoundRect( 0, 0, width(), height(), 20, 20);
-
-  a.setPoint( 0, width(), height() );
-  a.setPoint( 1, width(), 0 );
-  a.setPoint( 2, 0, height() );
-  a.setPoint( 3, width(), height() );
-
-  QRegion r2( a );
-  painter.setClipRegion( r2 );
-  painter.setBrush( palette().color( QPalette::Background ).dark() );
-  painter.drawRoundRect( 0, 0, width(), height(), 20, 20 );
-
-  painter.setClipping( false );
-  if( width() > 12 && height() > 8 )
-    qDrawShadePanel( &painter, 6, 4, width() - 12, height() - 8,
-                     palette(), true, 1, 0L );
-  if (d->isRecording)
-  {
-    painter.setPen( palette().color( QPalette::Base ) );
-    painter.setBrush( palette().color( QPalette::Base ) );
-  }
-  else
-  {
-    painter.setPen( palette().color( QPalette::Background ) );
-    painter.setBrush( palette().color( QPalette::Background ) );
-  }
-  if( width() > 14 && height() > 10 )
-    painter.drawRect( 7, 5, width() - 14, height() - 10 );
-
-  painter.setPen( palette().color( QPalette::Text ) );
-
-  style()->drawItemText( &painter, rect(), Qt::AlignCenter | Qt::TextShowMnemonic,
-                         palette(), isEnabled(), text() );
-
-  painter.setBrush( Qt::NoBrush );
-  if( hasFocus() || d->isRecording )
-  {
-    if( width() > 16 && height() > 12 )
-      painter.drawRect( 8, 6, width() - 16, height() - 12 );
-  }
-
-}
-#endif
 
 void KKeySequenceWidgetPrivate::updateShortcutDisplay()
 {
@@ -364,7 +322,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		break;
 	default:
 		//Shift is not a modifier in the sense of Ctrl/Alt/WinKey
-		//We use a bad hack to find out if a key is a plain letter or symbol key
+		//Also, HACK to find out if a key is a plain letter or symbol key
 		if (!(d->modifierKeys & ~Qt::SHIFT)
 		    && QKeySequence(keyQt).toString().length() == 1) {
 			if (!d->allowModifierless)

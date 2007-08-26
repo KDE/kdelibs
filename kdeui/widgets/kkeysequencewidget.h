@@ -44,6 +44,15 @@ class KDEUI_EXPORT KKeySequenceWidget: public QWidget
 	Q_OBJECT
 
 public:
+	///An enum about validation when setting a key sequence.
+	///@see setKeySequence()
+	enum Validation {
+		///Validate key sequence
+		Validate = 0,
+		///Use key sequence without validation
+		NoValidate = 1
+	};
+
 	/**
 	* Constructor.
 	*/
@@ -57,6 +66,7 @@ public:
 	/**
 	 * Set whether to accept plain letter or symbol keys without modifiers like Ctrl, Alt, Meta.
 	 * "Special" keys like F1, Insert, PageDown will always work.
+	 * This only applies to user input, not to setShortcut().
 	 */
 	void setModifierlessAllowed(bool allow);
 
@@ -84,6 +94,14 @@ Q_SIGNALS:
 	 */
 	void keySequenceChanged(const QKeySequence &seq);
 
+	/**
+	 * This signal is emitted when the key sequence has changed as the result of user input or
+	 * calling setKeySequence(seq, Validate). Call denyValidation() in a slot called from this
+	 * signal to deny a change of key sequence.
+	 * Do not call setKeySequence() in a slot called from this signal. Do it later if you have to.
+	 */
+	void validationHook(const QKeySequence &newSeq);
+
 public Q_SLOTS:
 	/**
 	 * Capture a shortcut from the keyboard. This call will only return once a key sequence
@@ -96,13 +114,20 @@ public Q_SLOTS:
 	
 	/**
 	 * Set the key sequence.
+	 * If @p val == Validate (the default), and the call is actually changing the key
+	 * sequence, the signal validationHook() will be emitted.
 	 */
-	void setKeySequence(const QKeySequence &seq);
+	void setKeySequence(const QKeySequence &seq, Validation val = Validate);
 	
 	/**
 	 * Clear the key sequence.
 	 */
 	void clearKeySequence();
+
+	/**
+	 * @see validationHook().
+	 */
+	void denyValidation();
 
 private:
 	Q_PRIVATE_SLOT(d, void doneRecording())
