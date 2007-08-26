@@ -47,10 +47,6 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
 
   KToolBar *tb = toolBar();
 
-  QWidget *spacer = new QWidget(this); // add a spacer before the combo (a separator looks ugly)
-  spacer->setFixedWidth(KDialog::spacingHint());
-  tb->addWidget(spacer);
-
   d->encoding = new KComboBox(tb);
   tb->addWidget(d->encoding);
 
