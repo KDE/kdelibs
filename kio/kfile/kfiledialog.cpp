@@ -163,6 +163,11 @@ void KFileDialog::setPreviewWidget(const KPreviewWidgetBase *w)
     d->w->setPreviewWidget(w);
 }
 
+QSize KFileDialog::sizeHint() const
+{
+    return QSize(640, 400);
+}
+
 // This slot still exists mostly for compat purposes; for subclasses which reimplement slotOk
 void KFileDialog::slotOk()
 {

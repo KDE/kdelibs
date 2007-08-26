@@ -304,7 +304,10 @@ public:
      *
      * @param w The widget to be used for the preview.
      */
-   void setPreviewWidget(const KPreviewWidgetBase *w);
+    void setPreviewWidget(const KPreviewWidgetBase *w);
+
+    /** @see QWidget::sizeHint() */
+    virtual QSize sizeHint() const;
 
     /**
      * Creates a modal file dialog and return the selected
