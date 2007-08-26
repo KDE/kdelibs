@@ -19,8 +19,8 @@
   Boston, MA 02110-1301, USA.
 */
 
-#ifndef NEPOMUK_TAG_CLOUD_H
-#define NEPOMUK_TAG_CLOUD_H
+#ifndef KMETADATATAGCLOUD_H
+#define KMETADATATAGCLOUD_H
 
 #include <nepomuk/nepomuk_export.h>
 
@@ -89,4 +89,4 @@ namespace Nepomuk {
     };
 }
 
-#endif
+#endif // KMETADATATAGCLOUD_H

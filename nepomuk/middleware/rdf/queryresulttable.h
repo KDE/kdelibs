@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _NEPOMUK_BACKBONE_SERVICES_RDF_H_
-#define _NEPOMUK_BACKBONE_SERVICES_RDF_H_
+#ifndef QUERYRESULTTABLE_H
+#define QUERYRESULTTABLE_H
 
 #include <QtCore/QMetaType>
 #include <QtCore/QStringList>
@@ -52,4 +52,4 @@ namespace Nepomuk {
 
 Q_DECLARE_METATYPE(Nepomuk::RDF::QueryResultTable)
 
-#endif
+#endif // QUERYRESULTTABLE_H

@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _NEPOMUK_SERVICE_DBUS_INTERFACE_H_
-#define _NEPOMUK_SERVICE_DBUS_INTERFACE_H_
+#ifndef SERVICEDBUSINTERFACEBACKEND_H
+#define SERVICEDBUSINTERFACEBACKEND_H
 
 #include <QDBusInterface>
 
@@ -51,4 +51,4 @@ namespace Nepomuk {
     }
 }
 
-#endif
+#endif // SERVICEDBUSINTERFACEBACKEND_H

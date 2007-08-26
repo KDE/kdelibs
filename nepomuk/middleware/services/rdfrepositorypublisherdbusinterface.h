@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef _NEPMUK_BACKBONE_SERVICES_RDFREPOSITORY_DBUS_INTERFACE_H_
-#define _NEPMUK_BACKBONE_SERVICES_RDFREPOSITORY_DBUS_INTERFACE_H_
+#ifndef RDFREPOSITORYPUBLISHERDBUSINTERFACE_H
+#define RDFREPOSITORYPUBLISHERDBUSINTERFACE_H
 
 #include "servicepublisherdbusinterface.h"
 #include "queryresulttable.h"
@@ -134,4 +134,4 @@ namespace Nepomuk {
     }
 }
 
-#endif
+#endif // RDFREPOSITORYPUBLISHERDBUSINTERFACE_H
