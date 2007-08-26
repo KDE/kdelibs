@@ -98,13 +98,8 @@ KTitleWidget::KTitleWidget(QWidget *parent)
     d->imageLabel = new QLabel(titleFrame);
     d->imageLabel->setVisible(false);
 
-    if (layoutDirection() == Qt::LeftToRight) {
-        d->headerLayout->addWidget(d->textLabel, 0, 0);
-        d->headerLayout->addWidget(d->imageLabel, 0, 1, 1, 2);
-    } else {
-        d->headerLayout->addWidget(d->imageLabel, 0, 0);
-        d->headerLayout->addWidget(d->textLabel, 0, 1, 1, 2);
-    }
+    d->headerLayout->addWidget(d->textLabel, 0, 0);
+    d->headerLayout->addWidget(d->imageLabel, 0, 1, 1, 2);
 
     d->commentLabel = new QLabel(titleFrame);
     d->commentLabel->setVisible(false);
