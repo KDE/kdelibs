@@ -26,6 +26,7 @@
 
 #include <QtGui/QPainter>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QApplication>
 
 KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
     KUrlButton(parent)
@@ -60,14 +61,17 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
         const int y = (buttonHeight - m_pixmap.height()) / 2;
         painter.drawPixmap(QRect(x, y, m_pixmap.width(), m_pixmap.height()), m_pixmap);
     } else if (isDisplayHintEnabled(EnteredHint)) {
-        QColor fgColor = KGlobalSettings::buttonTextColor();
-        if (!urlNavigator()->isActive()) {
-            fgColor.setAlpha(fgColor.alpha() / 2);
+        QColor fgColor;
+        if (urlNavigator()->isActive()) {
+            fgColor = KGlobalSettings::buttonTextColor();
+        } else {
+            fgColor = QApplication::palette().color(QPalette::Disabled, QPalette::ButtonText);
         }
 
         painter.setPen(Qt::NoPen);
         painter.setBrush(fgColor);
-        painter.drawRect(0, 2, 2, buttonHeight - 6);
+        painter.drawRect((layoutDirection() == Qt::LeftToRight) ? 0
+                                                                : width() - 2, 2, 2, buttonHeight - 6);
     }
 }
 
