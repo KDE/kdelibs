@@ -32,12 +32,12 @@ KMWInfoPage::KMWInfoPage(QWidget *parent)
 	m_nextpage = KMWizard::Backend;
 
 	QLabel	*label = new QLabel(this);
-	label->setText(i18n("<p>Welcome,</p><br>"
+	label->setText(i18n("<p>Welcome,</p><br />"
 		"<p>This wizard will help to install a new printer on your computer. "
 		"It will guide you through the various steps of the process of installing "
 		"and configuring a printer for your printing system. At each step, you "
-		"can always go back using the <b>Back</b> button.</p><br>"
-		"<p>We hope you'll enjoy this tool!</p><br>"
+		"can always go back using the <b>Back</b> button.</p><br />"
+		"<p>We hope you'll enjoy this tool!</p><br />"
 		"<p align=right><a href=\"http://printing.kde.org\"><i>"
 		"The KDE printing team</i></a>.</p>"));
 	label->setTextInteractionFlags(Qt::LinksAccessibleByMouse);

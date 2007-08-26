@@ -104,7 +104,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     support->setOpenExternalLinks(true);
     support->setTextInteractionFlags(Qt::TextBrowserInteraction);
     support->setText(i18n(""
-        "KDE is available free of charge, but making it is not free.<br><br>"
+        "KDE is available free of charge, but making it is not free.<br /><br />"
         "Thus, the KDE team formed the KDE e.V., a non-profit organization"
         " legally founded in Tuebingen, Germany. The KDE e.V. represents"
         " the KDE project in legal and financial matters."

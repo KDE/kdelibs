@@ -153,7 +153,7 @@ KPPosterPage::KPPosterPage( QWidget *parent )
 			"   \"2,3,7,9,3\" "
 			" <br /> "
 			"   \"1-3,6,8-11\" "
-			" </qt>" );
+			" </pre></qt>" );
 
 	setTitle( i18n( "Poster" ) );
 

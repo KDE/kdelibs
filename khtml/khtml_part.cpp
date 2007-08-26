@@ -3925,7 +3925,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   }
 
   if (!checkLinkSecurity(cURL,
-			 ki18n( "<qt>This untrusted page links to<br /><b>%1</b>.<br />Do you want to follow the link?" ),
+			 ki18n( "<qt>This untrusted page links to<br /><b>%1</b>.<br />Do you want to follow the link?</qt>" ),
 			 i18n( "Follow" )))
     return false;
 
@@ -4821,7 +4821,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
 
   if (!checkLinkSecurity(u,
-			 ki18n( "<qt>The form will be submitted to <br /><b>%1</b><br />on your local filesystem.<br />Do you want to submit the form?" ),
+			 ki18n( "<qt>The form will be submitted to <br /><b>%1</b><br />on your local filesystem.<br />Do you want to submit the form?</qt>" ),
 			 i18n( "Submit" )))
     return;
 
@@ -6872,7 +6872,7 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
     else
     {
 	    KMessageBox::error( 0,
-				i18n( "<qt>Access by untrusted page to<br /><b>%1</b><br /> denied.", Qt::escape(linkURL.prettyUrl())),
+				i18n( "<qt>Access by untrusted page to<br /><b>%1</b><br /> denied.</qt>", Qt::escape(linkURL.prettyUrl())),
 				i18n( "Security Alert" ));
     }
 

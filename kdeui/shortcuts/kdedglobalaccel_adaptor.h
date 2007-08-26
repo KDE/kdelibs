@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDEGLOBALACCELADAPTOR_H
-#define KDEGLOBALACCELADAPTOR_H
+#ifndef KDEGLOBALACCEL_ADAPTOR_H
+#define KDEGLOBALACCEL_ADAPTOR_H
 
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
@@ -75,4 +75,4 @@ Q_SIGNALS:
     void yourShortcutGotChanged(const QStringList &action, const QList<int> &newShortcut);
 };
 
-#endif //KDEGLOBALACCELADAPTOR_H
+#endif //KDEGLOBALACCEL_ADAPTOR_H

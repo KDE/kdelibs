@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     ZeroMemory( &pi, sizeof(pi) );
 
 
-    if (CreateProcessW(Arglist[1], Command, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi) == 0) 
+    if (CreateProcessW(Arglist[1], Command, NULL, NULL, true, 0, NULL, NULL, &si, &pi) == 0) 
         ErrorExit(L"CreateProcessW");
 
     CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
