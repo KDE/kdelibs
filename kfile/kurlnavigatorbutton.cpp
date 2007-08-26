@@ -97,7 +97,10 @@ QSize KUrlNavigatorButton::sizeHint() const
 {
     // the minimum size is textWidth + arrowWidth() + 2 * BorderWidth; for the
     // preferred size we add the BorderWidth 2 times again for having an uncluttered look
-    const int width = fontMetrics().width(text()) + arrowWidth() + 4 * BorderWidth;
+    int width = fontMetrics().width(text()) + arrowWidth() + 4 * BorderWidth;
+    if (width < minimumWidth()) {
+        width = minimumWidth();
+    }
     return QSize(width, KUrlButton::sizeHint().height());
 }
 

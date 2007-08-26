@@ -651,13 +651,11 @@ void KUrlNavigator::Private::updateButtonVisibility()
 
     int hiddenButtonsCount = 0;
 
-    int availableWidth = q->width() - 20;
+    // subtract all widgets from the available width, that must be shown anyway
+    int availableWidth = q->width() - m_toggleEditableMode->minimumWidth();
 
-    if ((m_placesSelector != 0) && m_placesSelector->isVisible())
+    if ((m_placesSelector != 0) && m_placesSelector->isVisible()) {
         availableWidth -= m_placesSelector->width();
-
-    if (m_dropDownButton->isVisible()) {
-        availableWidth -= m_dropDownButton->width();
     }
 
     if ((m_protocols != 0) && m_protocols->isVisible()) {
@@ -668,6 +666,19 @@ void KUrlNavigator::Private::updateButtonVisibility()
         availableWidth -= m_host->width();
     }
 
+    // check whether buttons must be hidden at all...
+    int requiredButtonWidth = 0;
+    foreach (KUrlNavigatorButton* button, m_navButtons) {
+        requiredButtonWidth += button->minimumWidth();
+    }
+    if (requiredButtonWidth > availableWidth) {
+        // At least one button must be hidden. This implies that the
+        // drop-down button must get visible, which again decreases the
+        // available width.
+        availableWidth -= m_dropDownButton->width();
+    }
+
+    // hide buttons...
     QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.end();
     const QLinkedList<KUrlNavigatorButton*>::const_iterator itBegin = m_navButtons.begin();
     while (it != itBegin) {
