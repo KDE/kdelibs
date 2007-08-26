@@ -305,6 +305,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
             q, SLOT(setUrl(KUrl)));
 
     m_toggleEditableMode = new KUrlToggleButton(q);
+    m_toggleEditableMode->setMinimumWidth(20);
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
 
