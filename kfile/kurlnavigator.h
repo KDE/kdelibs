@@ -28,6 +28,7 @@
 #include <QtGui/QWidget>
 
 class KFilePlacesModel;
+class KUrlComboBox;
 class QMouseEvent;
 
 /**
@@ -166,6 +167,17 @@ public:
      */
     bool isActive() const;
 
+    /**
+     * Sets the places selector visible, if \a visible is true.
+     * The places selector allows to select the places provided
+     * by the places model passed in the constructor. Per default
+     * the places selector is visible.
+     */
+    void setPlacesSelectorVisible(bool visible);
+
+    /** Returns true, if the places selector is visible. */
+    bool isPlacesSelectorVisible() const;
+
     /** Returns the amount of items in the history. */
     int historySize() const;
 
@@ -180,6 +192,12 @@ public:
      * for the current URL.
      */
     QPoint savedPosition() const;
+
+    /**
+     * Returns the used editor when the navigator is in the edit mode
+     * (see KUrlNavigator::setUrlEditable()).
+     */
+    KUrlComboBox* editor() const;
 
     /**
      * If an application supports only some special protocols, they can be set

@@ -230,6 +230,7 @@ public:
 
     bool m_editable;
     bool m_active;
+    bool m_showPlacesSelector;
     int m_historyIndex;
 
     QHBoxLayout* m_layout;
@@ -258,6 +259,7 @@ private:
 KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel) :
     m_editable(false),
     m_active(true),
+    m_showPlacesSelector(placesModel != 0),
     m_historyIndex(0),
     m_layout(new QHBoxLayout),
     m_placesSelector(0),
@@ -277,7 +279,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     p.setColor(QPalette::Background, Qt::transparent);
     q->setPalette(p);
 
-    if (placesModel) {
+    if (placesModel != 0) {
         m_placesSelector = new KFilePlacesSelector(q, placesModel);
         connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
                 q, SLOT(setUrl(const KUrl&)));
@@ -877,6 +879,32 @@ void KUrlNavigator::setActive(bool active)
     }
 }
 
+bool KUrlNavigator::isActive() const
+{
+    return d->m_active;
+}
+
+void KUrlNavigator::setPlacesSelectorVisible(bool visible)
+{
+    if (visible == d->m_showPlacesSelector) {
+        return;
+    }
+
+    if (visible  && (d->m_placesSelector == 0)) {
+        // the places selector cannot get visible as no
+        // places model is available
+        return;
+    }
+
+    d->m_showPlacesSelector = visible;
+    d->m_placesSelector->setVisible(visible);
+}
+
+bool KUrlNavigator::isPlacesSelectorVisible() const
+{
+    return d->m_showPlacesSelector;
+}
+
 void KUrlNavigator::setUrl(const KUrl& url)
 {
     QString urlStr(url.pathOrUrl());
@@ -967,11 +995,6 @@ void KUrlNavigator::resizeEvent(QResizeEvent* event)
     QWidget::resizeEvent(event);
 }
 
-bool KUrlNavigator::isActive() const
-{
-    return d->m_active;
-}
-
 int KUrlNavigator::historySize() const
 {
     return d->m_history.count();
@@ -986,6 +1009,11 @@ QPoint KUrlNavigator::savedPosition() const
 {
     const HistoryElem& histElem = d->m_history[d->m_historyIndex];
     return QPoint(histElem.contentsX(), histElem.contentsY());
+}
+
+KUrlComboBox* KUrlNavigator::editor() const
+{
+    return d->m_pathBox;
 }
 
 void KUrlNavigator::setCustomProtocols(const QStringList &protocols)
