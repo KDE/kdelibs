@@ -1116,7 +1116,7 @@ QString KFileItem::timeString( unsigned int which ) const
     }
 }
 
-void KFileItem::setMetaInfo( const KFileMetaInfo & info )
+void KFileItem::setMetaInfo( const KFileMetaInfo & info ) const
 {
     d->m_metaInfo = info;
 }

@@ -63,6 +63,8 @@ public:
 
     /**
      * Null KFileItem. Doesn't represent any file, only exists for convenience.
+     *
+     * NOTE KDE 4.0 KFileItem* => KFileItem& conversion: '(KFileItem*)a==0'  maps to '(KFileItem)a==KFileItem()'
      */
     KFileItem();
 
@@ -503,9 +505,11 @@ public:
 
     /**
      * Sets the metainfo of this item to @p info.
+     *
+     * Made const to avoid deep copy.
      * @param info the new meta info
      */
-    void setMetaInfo( const KFileMetaInfo & info );
+    void setMetaInfo( const KFileMetaInfo & info ) const;
 
     /**
      * Returns the metainfo of this item.

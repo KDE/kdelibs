@@ -39,15 +39,16 @@ class KDirModelDirNode;
 class KDirModelNode
 {
 public:
-    KDirModelNode( KDirModelDirNode* parent, KFileItem* item ) :
+    KDirModelNode( KDirModelDirNode* parent, const KFileItem& item ) :
         m_item(item),
         m_parent(parent),
         m_preview()
     {
     }
     //KUrl url() const { return m_item->url(); }
-    // Careful, m_item can be 0 for the root item
-    KFileItem* item() const { return m_item; }
+
+    // m_item is KFileItem() for the root item
+    const KFileItem& item() const { return m_item; }
     KDirModelDirNode* parent() const { return m_parent; }
     // linear search
     int rowNumber() const;
@@ -56,7 +57,7 @@ public:
     void setPreview( const QIcon& icn ) { m_preview = icn; }
 
 private:
-    KFileItem* m_item;
+    KFileItem m_item;
     KDirModelDirNode* const m_parent;
     QIcon m_preview;
 };
@@ -65,7 +66,7 @@ private:
 class KDirModelDirNode : public KDirModelNode
 {
 public:
-    KDirModelDirNode( KDirModelDirNode* parent, KFileItem* item )
+    KDirModelDirNode( KDirModelDirNode* parent, const KFileItem& item)
         : KDirModelNode( parent, item),
           m_childNodes(),
           m_childCount(KDirModel::ChildCountUnknown),
@@ -83,8 +84,8 @@ public:
     void setPopulated( bool populated ) { m_populated = populated; }
 
 private:
-    int m_childCount;
-    bool m_populated;
+    int m_childCount:31;
+    bool m_populated:1;
 };
 
 int KDirModelNode::rowNumber() const
@@ -100,7 +101,7 @@ class KDirModelPrivate
 public:
     KDirModelPrivate( KDirModel* model )
         : q(model), m_dirLister(0),
-          m_rootNode(new KDirModelDirNode(0, 0)),
+          m_rootNode(new KDirModelDirNode(0, KFileItem())),
           m_dropsAllowed(KDirModel::NoDrops)
     {
     }
@@ -109,7 +110,7 @@ public:
     }
     void clear() {
         delete m_rootNode;
-        m_rootNode = new KDirModelDirNode(0, 0);
+        m_rootNode = new KDirModelDirNode(0, KFileItem());
     }
     // Find the row number and node for a given url.
     // This has to drill down from the root node.
@@ -120,7 +121,7 @@ public:
     KDirModelNode* nodeForIndex(const QModelIndex& index) const;
     QModelIndex indexForNode(KDirModelNode* node, int rowNumber = -1 /*unknown*/) const;
     bool isDir(KDirModelNode* node) const {
-        return (node == m_rootNode) || node->item()->isDir();
+        return (node == m_rootNode) || node->item().isDir();
     }
 
     KDirModel* q;
@@ -140,7 +141,9 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
 {
     KUrl url(_url);
     url.adjustPath(KUrl::RemoveTrailingSlash);
-    //kDebug() << url;
+
+    kDebug() << url;
+
     if (url == m_dirLister->url())
         return qMakePair(0, static_cast<KDirModelNode *>(m_rootNode));
 
@@ -159,13 +162,13 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
         const QList<KDirModelNode *>::const_iterator end = dirNode->m_childNodes.end();
         int row = 0;
         for ( ; it != end ; ++it, ++row ) {
-            const KUrl u = (*it)->item()->url();
+            const KUrl u = (*it)->item().url();
             if ( u == url ) {
                 //kDebug() << "Found! " << u;
                 return qMakePair(row, *it);
             }
             if ( urlStr.startsWith(u.url()+'/') ) {
-                //kDebug() << "going into " << node->item()->url();
+                //kDebug() << "going into " << node->item().url();
                 Q_ASSERT( isDir(*it) );
                 dirNode = static_cast<KDirModelDirNode *>( *it );
                 foundChild = true;
@@ -179,7 +182,7 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
             else
                 return qMakePair(0, static_cast<KDirModelNode*>(0));
         }
-        nodeUrl = dirNode->item()->url();
+        nodeUrl = dirNode->item().url();
         //kDebug() << " " << nodeUrl;
     }
     // NOTREACHED
@@ -228,7 +231,7 @@ static QString debugIndex(const QModelIndex& index)
         str = "[invalid index, i.e. root]";
     else {
         KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
-        str = "[index for " + node->item()->url().pathOrUrl();
+        str = "[index for " + node->item().url().pathOrUrl();
         if (index.column() > 0)
             str += ", column " + QString::number(index.column());
         str += ']';
@@ -257,12 +260,12 @@ void KDirModel::setDirLister(KDirLister* dirLister)
     }
     d->m_dirLister = dirLister;
     d->m_dirLister->setParent(this);
-    connect( d->m_dirLister, SIGNAL(newItems(KFileItemList)),
-             this, SLOT(slotNewItems(KFileItemList)) );
-    connect( d->m_dirLister, SIGNAL(deleteItem(KFileItem*)),
-             this, SLOT(slotDeleteItem(KFileItem*)) );
-    connect( d->m_dirLister, SIGNAL(refreshItems(KFileItemList)),
-             this, SLOT(slotRefreshItems(KFileItemList)) );
+    connect( d->m_dirLister, SIGNAL(newItems(QList<KFileItem>)),
+             this, SLOT(slotNewItems(QList<KFileItem>)) );
+    connect( d->m_dirLister, SIGNAL(deleteItem(KFileItem)),
+             this, SLOT(slotDeleteItem(KFileItem)) );
+    connect( d->m_dirLister, SIGNAL(refreshItems(QList<KFileItem>)),
+             this, SLOT(slotRefreshItems(QList<KFileItem>)) );
     connect( d->m_dirLister, SIGNAL(clear()),
              this, SLOT(slotClear()) );
 }
@@ -272,12 +275,12 @@ KDirLister* KDirModel::dirLister() const
     return d->m_dirLister;
 }
 
-void KDirModel::slotNewItems( const KFileItemList& items )
+void KDirModel::slotNewItems(const QList<KFileItem>& items)
 {
     // Find parent item - it's the same for all the items
     // TODO (if Michael Brade agrees): add parent url to the newItems signal
     // This way we can finally support properly trees where the urls are using different protocols.
-    KUrl dir( items.first()->url().upUrl() );
+    KUrl dir( items.first().url().upUrl() );
     dir.adjustPath(KUrl::RemoveTrailingSlash);
 
     kDebug() << "dir=" << dir;
@@ -298,17 +301,17 @@ void KDirModel::slotNewItems( const KFileItemList& items )
 
     const KUrl::List urlsBeingFetched = d->m_urlsBeingFetched.value(dirNode);
 
-    KFileItemList::const_iterator it = items.begin();
-    const KFileItemList::const_iterator end = items.end();
+    QList<KFileItem>::const_iterator it = items.begin();
+    const QList<KFileItem>::const_iterator end = items.end();
     for ( ; it != end ; ++it ) {
-        const bool isDir = (*it)->isDir();
+        const bool isDir = it->isDir();
         KDirModelNode* node = isDir
                               ? new KDirModelDirNode( dirNode, *it )
                               : new KDirModelNode( dirNode, *it );
         dirNode->m_childNodes.append(node);
 
         if (isDir && !urlsBeingFetched.isEmpty()) {
-            const KUrl dirUrl = (*it)->url();
+            const KUrl dirUrl = it->url();
             foreach(const KUrl& urlFetched, urlsBeingFetched) {
                 if (dirUrl.isParentOf(urlFetched)) {
                     //kDebug() << "Listing found" << dirUrl << "which is a parent of fetched url" << urlFetched;
@@ -329,12 +332,14 @@ void KDirModel::slotNewItems( const KFileItemList& items )
     endInsertRows();
 }
 
-void KDirModel::slotDeleteItem( KFileItem *item )
+void KDirModel::slotDeleteItem(const KFileItem& item)
 {
+    kWarning()<<"start delete"<<item.url().path();
     //KUrl dir( item->url().upUrl() );
     //dir.adjustPath(KUrl::RemoveTrailingSlash);
 
-    const QPair<int, KDirModelNode*> result = d->nodeForUrl(item->url()); // O(n*m)
+    Q_ASSERT(!item.isNull());
+    const QPair<int, KDirModelNode*> result = d->nodeForUrl(item.url()); // O(n*m)
     const int rowNumber = result.first;
     KDirModelNode* node = result.second;
     Q_ASSERT(node);
@@ -346,18 +351,19 @@ void KDirModel::slotDeleteItem( KFileItem *item )
     dirNode->m_childNodes.removeAt(rowNumber);
 
     QModelIndex parentIndex = d->indexForNode(dirNode); // O(n)
+    kWarning()<<"delete. isValid:"<<parentIndex.isValid();
     beginRemoveRows( parentIndex, rowNumber, rowNumber );
     endRemoveRows();
 }
 
-void KDirModel::slotRefreshItems( const KFileItemList& items )
+void KDirModel::slotRefreshItems(const QList<KFileItem>& items)
 {
     QModelIndex topLeft, bottomRight;
 
     // Solution 1: we could emit dataChanged for one row (if items.size()==1) or all rows
     // Solution 2: more fine-grained, actually figure out the beginning and end rows.
-    for ( KFileItemList::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
-        const QModelIndex index = indexForUrl( (*fit)->url() ); // O(n*m); maybe we could look up to the parent only once
+    for ( QList<KFileItem>::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
+        const QModelIndex index = indexForUrl( fit->url() ); // O(n*m); maybe we could look up to the parent only once
         if (!topLeft.isValid() || index.row() < topLeft.row()) {
             topLeft = index;
         }
@@ -397,29 +403,29 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
 {
     if (index.isValid()) {
         KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
-        KFileItem* item = node->item();
+        const KFileItem& item (node->item());
         switch (role) {
         case Qt::DisplayRole:
             switch (index.column()) {
             case Name:
-                return item->name();
+                return item.name();
             case Size:
                 //
                 //return KIO::convertSize(item->size());
                 // Default to "file size in bytes" like in kde3's filedialog
-                return KGlobal::locale()->formatNumber(item->size(), 0);
+                return KGlobal::locale()->formatNumber(item.size(), 0);
             case ModifiedTime: {
-                KDateTime dt = item->time(KFileItem::ModificationTime);
+                KDateTime dt = item.time(KFileItem::ModificationTime);
                 return KGlobal::locale()->formatDateTime(dt);
             }
             case Permissions:
-                return item->permissionsString();
+                return item.permissionsString();
             case Owner:
-                return item->user();
+                return item.user();
             case Group:
-                return item->group();
+                return item.group();
             case Type:
-                return item->mimeComment();
+                return item.mimeComment();
             }
             break;
         case Qt::DecorationRole:
@@ -428,9 +434,9 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                     //kDebug() << item->url() << " preview found";
                     return node->preview();
                 }
-                Q_ASSERT(item);
+                Q_ASSERT(!item.isNull());
                 //kDebug() << item->url() << " overlays=" << item->overlays();
-                return KIcon(item->iconName(), 0, item->overlays());
+                return KIcon(item.iconName(), 0, item.overlays());
             }
             break;
         case Qt::TextAlignmentRole:
@@ -440,15 +446,15 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
             }
             break;
         case FileItemRole:
-            return QVariant::fromValue(*item);
+            return QVariant::fromValue(item);
         case ChildCountRole:
-            if (!item->isDir())
+            if (!item.isDir())
                 return ChildCountUnknown;
             else {
                 KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(node);
                 int count = dirNode->childCount();
-                if (count == ChildCountUnknown && item->isReadable()) {
-                    const QString path = item->localPath();
+                if (count == ChildCountUnknown && item.isReadable()) {
+                    const QString path = item.localPath();
                     if (!path.isEmpty()) {
                         QDir dir(path);
                         count = dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
@@ -532,7 +538,7 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 {
     KUrl::List urls;
     foreach ( const QModelIndex &index, indexes ) {
-        urls << d->nodeForIndex( index )->item()->url();
+        urls << d->nodeForIndex( index )->item().url();
     }
     QMimeData *data = new QMimeData();
     urls.populateMimeData( data );
@@ -543,10 +549,10 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 KFileItem KDirModel::itemForIndex( const QModelIndex& index ) const
 {
     if (!index.isValid()) {
-        return * d->m_dirLister->rootItem();
+        KFileItem* item=d->m_dirLister->rootItem();
+        return item?(*item):KFileItem();
     } else {
-        KFileItem* item = static_cast<KDirModelNode*>(index.internalPointer())->item();
-        return item ? *item : KFileItem();
+        return static_cast<KDirModelNode*>(index.internalPointer())->item();
     }
 }
 
@@ -594,19 +600,19 @@ QVariant KDirModel::headerData( int section, Qt::Orientation orientation, int ro
     case Qt::DisplayRole:
         switch (section) {
         case Name:
-            return i18n("Name");
+            return i18nc("@title:column","Name");
         case Size:
-            return i18n("Size");
+            return i18nc("@title:column","Size");
         case ModifiedTime:
-            return i18n("Modified"); // was called "Date" in kde3's kfiledialog - which one is better?
+            return i18nc("@title:column","Modified"); // was called "Date" in kde3's kfiledialog - which one is better?
         case Permissions:
-            return i18n("Permissions");
+            return i18nc("@title:column","Permissions");
         case Owner:
-            return i18n("Owner");
+            return i18nc("@title:column","Owner");
         case Group:
-            return i18n("Group");
+            return i18nc("@title:column","Group");
         case Type:
-            return i18n("Type");
+            return i18nc("@title:column","Type");
         }
     }
     return QVariant();
@@ -617,9 +623,9 @@ bool KDirModel::hasChildren( const QModelIndex & parent ) const
     if (!parent.isValid())
         return true;
 
-    KFileItem* parentItem = static_cast<KDirModelNode*>(parent.internalPointer())->item();
-    Q_ASSERT(parentItem);
-    return parentItem->isDir();
+    const KFileItem& parentItem = static_cast<KDirModelNode*>(parent.internalPointer())->item();
+    Q_ASSERT(!parentItem.isNull());
+    return parentItem.isDir();
 }
 
 Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
@@ -666,8 +672,8 @@ bool KDirModel::canFetchMore( const QModelIndex & parent ) const
     // Maybe we can ask KDirLister "have you listed <url> already"? (to discuss with M. Brade)
 
     KDirModelNode* node = static_cast<KDirModelNode*>(parent.internalPointer());
-    KFileItem* item = node->item();
-    return item->isDir() && !static_cast<KDirModelDirNode *>(node)->isPopulated()
+    const KFileItem& item = node->item();
+    return item.isDir() && !static_cast<KDirModelDirNode *>(node)->isPopulated()
         && static_cast<KDirModelDirNode *>(node)->m_childNodes.isEmpty();
 }
 
@@ -678,16 +684,17 @@ void KDirModel::fetchMore( const QModelIndex & parent )
 
     KDirModelNode* parentNode = static_cast<KDirModelNode*>(parent.internalPointer());
 
-    KFileItem* parentItem = parentNode->item();
-    Q_ASSERT(parentItem->isDir());
+    KFileItem parentItem = parentNode->item();
+    Q_ASSERT(!parentItem.isNull());
+    Q_ASSERT(parentItem.isDir());
     KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(parentNode);
     if( dirNode->isPopulated() )
         return;
     dirNode->setPopulated( true );
 
-    const KUrl url = parentItem->url();
+    //const KUrl url = parentItem.url();
     //kDebug() << "listing" << url;
-    d->m_dirLister->openUrl(url, true, true);
+    d->m_dirLister->openUrl(parentItem.url(), true, true);
 }
 
 bool KDirModel::dropMimeData( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )
@@ -712,9 +719,9 @@ void KDirModel::expandToUrl(const KUrl& url)
     const QPair<int, KDirModelNode*> result = d->nodeForUrl(url, true /*return last parent*/); // O(n*m)
     if (!result.second) // doesn't seem related to our base url?
         return;
-    if (result.second->item() && result.second->item()->url() == url) {
+    if (!(result.second->item().isNull()) && result.second->item().url() == url) {
         // We have it already, nothing to do
-        kDebug(7004) << "have it already item=" << result.second->item() << endl;
+        kDebug(7004) << "have it already item=" <<url /*result.second->item()*/;
         return;
     }
     const QModelIndex parentIndex = d->indexForNode(result.second, result.first);

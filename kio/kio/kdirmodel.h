@@ -180,9 +180,9 @@ Q_SIGNALS:
     void expand(const QModelIndex& index);
 
 private Q_SLOTS:
-    void slotNewItems( const KFileItemList& );
-    void slotDeleteItem( KFileItem *item );
-    void slotRefreshItems( const KFileItemList& );
+    void slotNewItems(const QList<KFileItem>&);
+    void slotDeleteItem(const KFileItem&);
+    void slotRefreshItems(const QList<KFileItem>&);
     void slotClear();
 
 private:
