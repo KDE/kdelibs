@@ -394,7 +394,7 @@ class KuitSemanticsPrivate
 
     // Modifies text for some tags.
     QString modifyTagText (Kuit::TagVar tag, const QString &text,
-                           int numctx) const;
+                           int numctx, Kuit::FmtVar fmt) const;
 
     private:
 
@@ -407,8 +407,8 @@ class KuitSemanticsPrivate
     Kuit::NumfmtVar m_numfmtInt;
     Kuit::NumfmtVar m_numfmtReal;
 
-    QString m_comboKeyDelim;
-    QString m_guiPathDelim;
+    QHash<Kuit::FmtVar, QString> m_comboKeyDelim;
+    QHash<Kuit::FmtVar, QString> m_guiPathDelim;
 
     QHash<QString, QString> m_keyNames;
 };
@@ -765,12 +765,20 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     }
 
     // i18n: Decide which string is used to delimit keys in a keyboard
-    // shortcut, e.g. + in Ctrl+Alt+Tab.
-    m_comboKeyDelim = cat.translate("shortcut-key-delimiter", "+");
+    // shortcut (e.g. + in Ctrl+Alt+Tab) in plain text.
+    m_comboKeyDelim[Kuit::Fmt::Plain] = cat.translate("shortcut-key-delimiter/plain", "+");
+    m_comboKeyDelim[Kuit::Fmt::Term] = m_comboKeyDelim[Kuit::Fmt::Plain];
+    // i18n: Decide which string is used to delimit keys in a keyboard
+    // shortcut (e.g. + in Ctrl+Alt+Tab) in rich text.
+    m_comboKeyDelim[Kuit::Fmt::Rich] = cat.translate("shortcut-key-delimiter/rich", "+");
 
-    // i18n: Decide which string is used to delimit elements in a GUI path,
-    // e.g. -> in "Go to Settings->Advanced->Core tab."
-    m_guiPathDelim = cat.translate("gui-path-delimiter", "→");
+    // i18n: Decide which string is used to delimit elements in a GUI path
+    // (e.g. -> in "Go to Settings->Advanced->Core tab.") in plain text.
+    m_guiPathDelim[Kuit::Fmt::Plain] = cat.translate("gui-path-delimiter/plain", "→");
+    m_guiPathDelim[Kuit::Fmt::Term] = m_guiPathDelim[Kuit::Fmt::Plain];
+    // i18n: Decide which string is used to delimit elements in a GUI path
+    // (e.g. -> in "Go to Settings->Advanced->Core tab.") in rich text.
+    m_guiPathDelim[Kuit::Fmt::Rich] = cat.translate("gui-path-delimiter/rich", "→");
     // NOTE: The '→' glyph seems to be available in all widespread fonts.
 
     // Collect keyboard key names.
@@ -1211,7 +1219,7 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
         }
 
         // Some tags modify their text.
-        QString mtext = modifyTagText(oel.tag, oel.formattedText, numctx);
+        QString mtext = modifyTagText(oel.tag, oel.formattedText, numctx, fmt);
 
         using namespace Kuit;
 
@@ -1297,7 +1305,8 @@ void KuitSemanticsPrivate::countWrappingNewlines (const QString &text,
 
 QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
                                              const QString &text,
-                                             int numctx) const
+                                             int numctx,
+                                             Kuit::FmtVar fmt) const
 {
     // numctx < 1 means that the number is not in numeric-id context.
     if (tag == Kuit::Tag::NumIntg && numctx < 1) {
@@ -1330,11 +1339,11 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
     }
 
     if (tag == Kuit::Tag::Shortcut) {
-        return KuitFormats::toKeyCombo(text, m_comboKeyDelim, m_keyNames);
+        return KuitFormats::toKeyCombo(text, m_comboKeyDelim[fmt], m_keyNames);
     }
 
     if (tag == Kuit::Tag::Interface) {
-        return KuitFormats::toInterfacePath(text, m_guiPathDelim);
+        return KuitFormats::toInterfacePath(text, m_guiPathDelim[fmt]);
     }
 
     // Fell through, no modification.
