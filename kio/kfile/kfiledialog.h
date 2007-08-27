@@ -213,9 +213,9 @@ public:
      * Sets the filter to be used to @p filter.
      *
      * You can set more
-     * filters for the user to select separated by '\n'. Every
-     * filter entry is defined through namefilter|text to diplay.
-     * If no | is found in the expression, just the namefilter is
+     * filters for the user to select separated by @c '\\n'. Every
+     * filter entry is defined through @c namefilter|text to display.
+     * If no @c '|' is found in the expression, just the namefilter is
      * shown. Examples:
      *
      * \code
@@ -230,9 +230,9 @@ public:
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
      *
-     * If the filter contains an unescaped '/', a mimetype-filter is assumed.
+     * If the filter contains an unescaped @c '/', a mimetype-filter is assumed.
      * If you would like a '/' visible in your filter it can be escaped with
-     * a '\'. You can specify multiple mimetypes like this (separated with
+     * a @c '\'. You can specify multiple mimetypes like this (separated with
      * space):
      *
      * \code
