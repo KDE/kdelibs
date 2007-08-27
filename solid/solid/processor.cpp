@@ -52,10 +52,10 @@ bool Solid::Processor::canChangeFrequency() const
     return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), false, canChangeFrequency());
 }
 
-Solid::Processor::Extensions Solid::Processor::extensions() const
+Solid::Processor::InstructionSets Solid::Processor::instructionSets() const
 {
     Q_D(const Processor);
-    return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), Extensions(), extensions());
+    return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), InstructionSets(), instructionSets());
 }
 
 #include "processor.moc"

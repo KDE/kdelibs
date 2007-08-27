@@ -79,7 +79,7 @@
             <property key="number">0</property>
             <property key="maxSpeed">3200</property>
             <property key="canChangeFrequency">true</property>
-            <property key="extensions">mmx,sse</property>
+            <property key="instructionSets">mmx,sse</property>
         </device>
         <device udi="/org/kde/solid/fakehw/acpi_CPU1">
             <property key="name">Solid Processor #1</property>

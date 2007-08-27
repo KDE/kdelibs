@@ -47,32 +47,32 @@ bool FakeProcessor::canChangeFrequency() const
     return fakeDevice()->property("canChangeFrequency").toBool();
 }
 
-Solid::Processor::Extensions FakeProcessor::extensions() const
+Solid::Processor::InstructionSets FakeProcessor::instructionSets() const
 {
-    Solid::Processor::Extensions result;
+    Solid::Processor::InstructionSets result;
 
-    QString str = fakeDevice()->property("extensions").toString();
+    QString str = fakeDevice()->property("instructionSets").toString();
 
     QStringList extension_list = str.split(",");
 
     foreach (const QString &extension_str, extension_list) {
         if (extension_str == "mmx") {
-            result |= Solid::Processor::IntelMMX;
+            result |= Solid::Processor::IntelMmx;
         }
         else if (extension_str == "sse") {
-            result |= Solid::Processor::IntelSSE;
+            result |= Solid::Processor::IntelSse;
         }
         else if (extension_str == "sse2") {
-            result |= Solid::Processor::IntelSSE2;
+            result |= Solid::Processor::IntelSse2;
         }
         else if (extension_str == "sse3") {
-            result |= Solid::Processor::IntelSSE3;
+            result |= Solid::Processor::IntelSse3;
         }
         else if (extension_str == "sse4") {
-            result |= Solid::Processor::IntelSSE4;
+            result |= Solid::Processor::IntelSse4;
         }
         else if (extension_str == "3dnow") {
-            result |= Solid::Processor::AMD3DNOW;
+            result |= Solid::Processor::Amd3DNow;
         }
         else if (extension_str == "altivec") {
             result |= Solid::Processor::AltiVec;

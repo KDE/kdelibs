@@ -43,7 +43,7 @@ public:
     virtual int number() const;
     virtual int maxSpeed() const;
     virtual bool canChangeFrequency() const;
-    virtual Solid::Processor::Extensions extensions() const;
+    virtual Solid::Processor::InstructionSets instructionSets() const;
 };
 }
 }

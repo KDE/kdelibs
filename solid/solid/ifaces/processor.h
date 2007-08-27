@@ -67,7 +67,7 @@ namespace Ifaces
          *
          * @return the extensions supported by the CPU
          */
-        virtual Solid::Processor::Extensions extensions() const = 0;
+        virtual Solid::Processor::InstructionSets instructionSets() const = 0;
 
     };
 }

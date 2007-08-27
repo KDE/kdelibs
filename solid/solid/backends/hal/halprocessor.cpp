@@ -56,11 +56,11 @@ bool Processor::canChangeFrequency() const
     return false;
 }
 
-static Solid::Processor::Extensions cpuFeatures();
+static Solid::Processor::InstructionSets cpuFeatures();
 
-Solid::Processor::Extensions Processor::extensions() const
+Solid::Processor::InstructionSets Processor::instructionSets() const
 {
-    static Solid::Processor::Extensions cpuextensions = cpuFeatures();
+    static Solid::Processor::InstructionSets cpuextensions = cpuFeatures();
 
     return cpuextensions;
 }
@@ -98,7 +98,7 @@ static void sigill_handler( int sig )
 }
 #endif
 
-static Solid::Processor::Extensions cpuFeatures()
+static Solid::Processor::InstructionSets cpuFeatures()
 {
     volatile unsigned int features = 0;
 
@@ -190,16 +190,16 @@ static Solid::Processor::Extensions cpuFeatures()
     }
 #endif // __i386__
 #endif //HAVE_GNU_INLINE_ASM
-    Solid::Processor::Extensions featureflags;
+    Solid::Processor::InstructionSets featureflags;
 
     if (features & 0x80000000)
-        featureflags |= Solid::Processor::AMD3DNOW;
+        featureflags |= Solid::Processor::Amd3DNow;
     if (features & 0x00800000)
-        featureflags |= Solid::Processor::IntelMMX;
+        featureflags |= Solid::Processor::IntelMmx;
     if (features & 0x00200000)
-        featureflags |= Solid::Processor::IntelSSE;
+        featureflags |= Solid::Processor::IntelSse;
     if (features & 0x00400000)
-        featureflags |= Solid::Processor::IntelSSE2;
+        featureflags |= Solid::Processor::IntelSse2;
     if (features & 0x1)
         featureflags |= Solid::Processor::AltiVec;
 

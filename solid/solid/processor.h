@@ -35,12 +35,12 @@ namespace Solid
     class SOLID_EXPORT Processor : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS(Extension)
-        Q_FLAGS(Extensions)
+        Q_ENUMS(InstructionSet)
+        Q_FLAGS(InstructionSets)
         Q_PROPERTY(int number READ number)
         Q_PROPERTY(qulonglong maxSpeed READ maxSpeed)
         Q_PROPERTY(bool canChangeFrequency READ canChangeFrequency)
-        Q_PROPERTY(Extensions extensions READ extensions)
+        Q_PROPERTY(InstructionSets instructionSets READ instructionSets)
         Q_DECLARE_PRIVATE(Processor)
         friend class Device;
 
@@ -60,21 +60,21 @@ namespace Solid
          * This enum contains the list of architecture extensions you
          * can query.
          */
-        enum Extension {
+        enum InstructionSet {
             NoExtensions = 0x0,
-            IntelMMX = 0x1,
-            IntelSSE = 0x2,
-            IntelSSE2 = 0x4,
-            IntelSSE3 = 0x8,
-            IntelSSE4 = 0x10,
-            AMD3DNOW = 0x20,
+            IntelMmx = 0x1,
+            IntelSse = 0x2,
+            IntelSse2 = 0x4,
+            IntelSse3 = 0x8,
+            IntelSse4 = 0x10,
+            Amd3DNow = 0x20,
             AltiVec = 0x40
         };
 
         /*
          * The flags for the Extension enum.
          */
-        Q_DECLARE_FLAGS(Extensions, Extension)
+        Q_DECLARE_FLAGS(InstructionSets, InstructionSet)
 
 
         /**
@@ -119,10 +119,10 @@ namespace Solid
          *
          * @return the extensions supported by the CPU
          */
-        Extensions extensions() const;
+        InstructionSets instructionSets() const;
     };
 }
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::Processor::Extensions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::Processor::InstructionSets)
 
 #endif

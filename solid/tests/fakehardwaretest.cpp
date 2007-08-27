@@ -61,10 +61,10 @@ void FakeHardwareTest::testFakeBackend()
     QCOMPARE(processor->canChangeFrequency(), true);
     QCOMPARE((int)processor->maxSpeed(), 3200);
 
-    Solid::Processor::Extensions extensions;
-    extensions |= Solid::Processor::IntelMMX;
-    extensions |= Solid::Processor::IntelSSE;
-    QCOMPARE(processor->extensions(), extensions);
+    Solid::Processor::InstructionSets instructionsets;
+    instructionsets |= Solid::Processor::IntelMmx;
+    instructionsets |= Solid::Processor::IntelSse;
+    QCOMPARE(processor->instructionSets(), instructionsets);
 }
 
 #include "fakehardwaretest.moc"
