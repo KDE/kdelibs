@@ -152,25 +152,36 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <class T>
-    static T *createInstanceFromQuery( const QString &serviceType,
-                                       const QString &constraint = QString(),
-                                       QObject *parent = 0,
-                                       const QStringList &args = QStringList(),
-                                       int *error = 0 )
+    static T *createInstanceFromQuery(const QString &serviceType,
+            const QString &constraint = QString(), QObject *parent = 0,
+            const QVariantList &args = QVariantList(), QString *error = 0)
     {
-        const KService::List offers = KServiceTypeTrader::self()->query( serviceType, constraint );
-        if ( offers.isEmpty() )
-        {
-            if ( error )
-                *error = KLibLoader::ErrNoServiceFound;
+        const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
+        if (offers.isEmpty()) {
+            if (error) {
+                *error = KLibLoader::errorString(KLibLoader::ErrNoServiceFound);
+            }
             return 0;
         }
 
-        return KService::createInstance<T>( offers.begin(),
-                                            offers.end(),
-                                            parent, args, error );
+        return KService::createInstance<T>(offers.begin(), offers.end(), parent, args, error);
     }
 
+    template <class T>
+    KDE_DEPRECATED
+    static T *createInstanceFromQuery(const QString &serviceType, const QString &constraint,
+            QObject *parent, const QStringList &args, int *error = 0)
+    {
+        const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
+        if (offers.isEmpty()) {
+            if (error) {
+                *error = KLibLoader::ErrNoServiceFound;
+            }
+            return 0;
+        }
+
+        return KService::createInstance<T>(offers.begin(), offers.end(), parent, args, error);
+    }
 
 
     /**

@@ -270,7 +270,7 @@ void Loader::loadPlugins()
 
 void Loader::loadPlugin(const KSharedPtr<KService> &service)
 {
-    int error = 0;
+    QString error;
 
     Client *client = KService::createInstance<Client>(service,
                                                       this,
@@ -297,7 +297,7 @@ void Loader::loadPlugin(const KSharedPtr<KService> &service)
         kDebug() << "Loading plugin '"
                  << service->desktopEntryPath()
                  << "' failed, KLibLoader reported error: '" << endl
-                 << KLibLoader::errorString(error) << "'" << endl;
+                 << error << "'" << endl;
     }
 }
 

@@ -339,6 +339,13 @@ public:
     QString parentApp() const;
 
     /**
+     * The keyword to be used when constructing the plugin using KPluginFactory. The keyword is
+     * defined with X-KDE-PluginKeyword in the .desktop file and with K_REGISTER_PLUGIN_WITH_KEYWORD
+     * when implementing the plugin.
+     */
+    QString pluginKeyword() const;
+
+    /**
      * Returns the requested property. Some often used properties
      * have convenience access functions like exec(),
      * serviceTypes etc.
@@ -510,9 +517,29 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <class T>
+    static T *createInstance(const KService::Ptr &service, QObject *parent = 0,
+            const QVariantList &args = QVariantList(), QString *error = 0)
+    {
+        KPluginLoader pluginLoader(service->library());
+        KPluginFactory *factory = pluginLoader.factory();
+        if (factory) {
+            const QString keyword = service->pluginKeyword();
+            T *o = factory->create<T>(keyword, parent, args);
+            if (o) {
+                return o;
+            }
+        }
+        if (error) {
+            *error = pluginLoader.errorString();
+        }
+        return 0;
+    }
+
+    template <class T>
+    KDE_DEPRECATED
     static T *createInstance( const KService::Ptr &service,
-                              QObject *parent = 0,
-                              const QStringList &args = QStringList(),
+                              QObject *parent,
+                              const QStringList &args,
                               int *error = 0 )
     {
         const QString library = service->library();
@@ -539,9 +566,31 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <class T, class ServiceIterator>
+    static T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
+            const QVariantList &args = QVariantList(), QString *error = 0)
+    {
+        for (; begin != end; ++begin) {
+            KService::Ptr service = *begin;
+            if (error) {
+                *error = QString();
+            }
+
+            T *component = createInstance<T>(service, parent, args, error);
+            if (component) {
+                return component;
+            }
+        }
+        if (error) {
+            *error = KLibLoader::errorString(KLibLoader::ErrNoServiceFound);
+        }
+        return 0;
+    }
+
+    template <class T, class ServiceIterator>
+    KDE_DEPRECATED
     static T *createInstance( ServiceIterator begin, ServiceIterator end,
-                              QObject *parent = 0,
-                              const QStringList &args = QStringList(),
+                              QObject *parent,
+                              const QStringList &args,
                               int *error = 0 )
     {
         for (; begin != end; ++begin ) {
