@@ -80,8 +80,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     else if (aboutData->programLogo().canConvert<QImage>())
         titleWidget->setPixmap(QPixmap::fromImage(aboutData->programLogo().value<QImage>()), KTitleWidget::ImageLeft);
 
-    titleWidget->setText(i18n("<font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE %3</html>", aboutData->programName(),
-                         aboutData->version(), QString(KDE_VERSION_STRING)));
+    titleWidget->setText(i18n("<font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE %3</html>",
+                         aboutData->programName(), aboutData->version(), QString(KDE_VERSION_STRING)));
 
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setUsesScrollButtons(false);
@@ -199,7 +199,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         for(it = translatorList.begin(); it != translatorList.end(); ++it) {
             translatorPageText += QString("<br />%1<br />").arg((*it).name());
             if (!(*it).emailAddress().isEmpty())
-                translatorPageText += QString("&nbsp;&nbsp;<a href=\"mailto:%1\">%1</a><br />").arg((*it).emailAddress());
+                translatorPageText += QString("<p style=\"margin: 0px; margin-bottom: 10px; margin-left: 15px;\">"
+                                              "<a href=\"mailto:%1\">%1</a></p>").arg((*it).emailAddress());
         }
 
         translatorPageText += KAboutData::aboutTranslationTeam();
