@@ -67,6 +67,11 @@ namespace Solid
     };
 }
 
+#if QT_VERSION < 0x040400
+# define Q_BASIC_ATOMIC_INITIALIZER     Q_ATOMIC_INIT
+# define testAndSetOrdered              testAndSet
+#endif
+
 #ifdef Q_CC_MSVC
 # define SOLID_GLOBAL_STATIC_STRUCT_NAME(NAME) _solid_##NAME##__LINE__
 #else
@@ -76,7 +81,7 @@ namespace Solid
 #define SOLID_GLOBAL_STATIC(TYPE, NAME) SOLID_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
 
 #define SOLID_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                        \
-static QBasicAtomicPointer<TYPE > _solid_static_##NAME = Q_ATOMIC_INIT(0);     \
+static QBasicAtomicPointer<TYPE > _solid_static_##NAME = Q_BASIC_ATOMIC_INITIALIZER(0);\
 static bool _solid_static_##NAME##_destroyed;                                  \
 static struct SOLID_GLOBAL_STATIC_STRUCT_NAME(NAME)                            \
 {                                                                              \
@@ -96,7 +101,7 @@ static struct SOLID_GLOBAL_STATIC_STRUCT_NAME(NAME)                            \
                        "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
             }                                                                  \
             TYPE *x = new TYPE ARGS;                                           \
-            if (!_solid_static_##NAME.testAndSet(0, x)                         \
+            if (!_solid_static_##NAME.testAndSetOrdered(0, x)                  \
                 && _solid_static_##NAME != x ) {                               \
                 delete x;                                                      \
             } else {                                                           \
@@ -113,10 +118,9 @@ static struct SOLID_GLOBAL_STATIC_STRUCT_NAME(NAME)                            \
     {                                                                          \
         _solid_static_##NAME##_destroyed = true;                               \
         TYPE *x = _solid_static_##NAME;                                        \
-        _solid_static_##NAME.init(0);                                          \
+        _solid_static_##NAME = 0;                                              \
         delete x;                                                              \
     }                                                                          \
 } NAME;
-
 
 #endif

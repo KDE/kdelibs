@@ -28,6 +28,11 @@
 // Otherwise, it could break when a new version of Qt ships.
 //
 
+#if QT_VERSION < 0x040400
+# define Q_BASIC_ATOMIC_INITIALIZER     Q_ATOMIC_INIT
+# define testAndSetOrdered              testAndSet
+#endif
+
 namespace Phonon
 {
 
@@ -241,7 +246,7 @@ class CleanUpGlobalStatic
  * @ingroup KDEMacros
  */
 #define PHONON_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                            \
-static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);         \
+static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_BASIC_ATOMIC_INITIALIZER(0); \
 static bool _k_static_##NAME##_destroyed;                                      \
 static struct PHONON_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
 {                                                                              \
@@ -261,7 +266,7 @@ static struct PHONON_GLOBAL_STATIC_STRUCT_NAME(NAME)                            
                        "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
             }                                                                  \
             TYPE *x = new TYPE ARGS;                                           \
-            if (!_k_static_##NAME.testAndSet(0, x)                             \
+            if (!_k_static_##NAME.testAndSetOrdered(0, x)                      \
                 && _k_static_##NAME != x ) {                                   \
                 delete x;                                                      \
             } else {                                                           \
@@ -278,7 +283,7 @@ static struct PHONON_GLOBAL_STATIC_STRUCT_NAME(NAME)                            
     {                                                                          \
         _k_static_##NAME##_destroyed = true;                                   \
         TYPE *x = _k_static_##NAME;                                            \
-        _k_static_##NAME.init(0);                                              \
+        _k_static_##NAME = 0;                                                  \
         delete x;                                                              \
     }                                                                          \
 } NAME;
