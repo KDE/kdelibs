@@ -23,55 +23,55 @@
 #ifndef _KSTATIC_DELETER_H_
 #define _KSTATIC_DELETER_H_
 
-#include <kdecore_export.h>
+#include <kde3support_export.h>
 
-class KStaticDeleterBase;
+class K3StaticDeleterBase;
 
-namespace KStaticDeleterHelpers
+namespace K3StaticDeleterHelpers
 {
     /**
      * Registers a static deleter.
      * @param d the static deleter to register
-     * @see KStaticDeleterBase
-     * @see KStaticDeleter
+     * @see K3StaticDeleterBase
+     * @see K3StaticDeleter
      */
-    KDECORE_EXPORT void registerStaticDeleter(KStaticDeleterBase *d);
+    KDE3SUPPORT_EXPORT void registerStaticDeleter(K3StaticDeleterBase *d);
 
     /**
      * Unregisters a static deleter.
      * @param d the static deleter to unregister
-     * @see KStaticDeleterBase
-     * @see KStaticDeleter
+     * @see K3StaticDeleterBase
+     * @see K3StaticDeleter
      */
-    KDECORE_EXPORT void unregisterStaticDeleter(KStaticDeleterBase *d);
+    KDE3SUPPORT_EXPORT void unregisterStaticDeleter(K3StaticDeleterBase *d);
 
     /**
-     * Calls KStaticDeleterBase::destructObject() on all
+     * Calls K3StaticDeleterBase::destructObject() on all
      * registered static deleters and unregisters them all.
-     * @see KStaticDeleterBase
-     * @see KStaticDeleter
+     * @see K3StaticDeleterBase
+     * @see K3StaticDeleter
      */
-    KDECORE_EXPORT void deleteStaticDeleters();
-} // namespace KStaticDeleterHelpers
+    KDE3SUPPORT_EXPORT void deleteStaticDeleters();
+} // namespace K3StaticDeleterHelpers
 
 /**
- * @short Base class for KStaticDeleter
+ * @short Base class for K3StaticDeleter
  *
  * Don't use this class directly; this class is used as a base class for
- * the KStaticDeleter template to allow polymorphism.
+ * the K3StaticDeleter template to allow polymorphism.
  *
- * @see KStaticDeleter
- * @see KStaticDeleterHelpers::registerStaticDeleter()
- * @see KStaticDeleterHelpers::unregisterStaticDeleter()
- * @see KStaticDeleterHelpers::deleteStaticDeleters()
+ * @see K3StaticDeleter
+ * @see K3StaticDeleterHelpers::registerStaticDeleter()
+ * @see K3StaticDeleterHelpers::unregisterStaticDeleter()
+ * @see K3StaticDeleterHelpers::deleteStaticDeleters()
  */
-class KDECORE_EXPORT_DEPRECATED KStaticDeleterBase {
+class KDE3SUPPORT_EXPORT K3StaticDeleterBase {
 public:
-    virtual ~KStaticDeleterBase();
+    virtual ~K3StaticDeleterBase();
     /**
-     * Should destruct the resources managed by this KStaticDeleterBase.
+     * Should destruct the resources managed by this K3StaticDeleterBase.
      * Usually you also want to call it in your destructor.
-     * @see KStaticDeleterHelpers::deleteStaticDeleters()
+     * @see K3StaticDeleterHelpers::deleteStaticDeleters()
      */
     virtual void destructObject();
 };
@@ -82,24 +82,24 @@ public:
  * Little helper class to clean up static objects that are held as a pointer.
  *
  * Static deleters are used to manage static resources. They can register
- * themselves with KStaticDeleterHelpers. KStaticDeleterHelpers will call destructObject() when
- * KStaticDeleterHelpers::deleteStaticDeleters() is called or when the process
+ * themselves with K3StaticDeleterHelpers. K3StaticDeleterHelpers will call destructObject() when
+ * K3StaticDeleterHelpers::deleteStaticDeleters() is called or when the process
  * finishes.
  *
  * When the library is unloaded, or the app is terminated, all static deleters
  * will be destroyed, which in turn destroys those static objects properly.
- * There are some rules that you should accept in the KStaticDeleter managed
+ * There are some rules that you should accept in the K3StaticDeleter managed
  * class:
  * @li Don't rely on the global reference variable in the destructor of the
  * object, it will be '0' at destruction time.
- * @li Don't rely on other KStaticDeleter managed objects in the destructor
+ * @li Don't rely on other K3StaticDeleter managed objects in the destructor
  * of the object, because they may be destroyed before your destructor get called.
  * This one can be tricky, because you might not know that you are actually using a
- * KStaticDeleter managed class. So try to keep your destructor simple.
+ * K3StaticDeleter managed class. So try to keep your destructor simple.
  *
  * A typical use is
  * \code
- * static KStaticDeleter<MyClass> sd;
+ * static K3StaticDeleter<MyClass> sd;
  *
  * MyClass &MyClass::self() {
  *   if (!_self) { sd.setObject(_self, new MyClass()); }
@@ -107,22 +107,22 @@ public:
  * }
  * \endcode
  *
- * @warning Don't delete an object which is managed by %KStaticDeleter without
+ * @warning Don't delete an object which is managed by %K3StaticDeleter without
  * calling setObject() with a null pointer.
  *
- * @deprecated Use \ref K_GLOBAL_STATIC instead of %KStaticDeleter.
+ * @deprecated Use \ref K_GLOBAL_STATIC instead of %K3StaticDeleter.
  */
-template<class type> class KDE_DEPRECATED KStaticDeleter : public KStaticDeleterBase {
+template<class type> class KDE_DEPRECATED K3StaticDeleter : public K3StaticDeleterBase {
 public:
     /**
-     * Constructor. Initializes the KStaticDeleter. Note that the static
+     * Constructor. Initializes the K3StaticDeleter. Note that the static
      * deleter ist not registered by the constructor.
      */
-    KStaticDeleter() { deleteit = 0; globalReference = 0; array = false; }
+    K3StaticDeleter() { deleteit = 0; globalReference = 0; array = false; }
 
     /**
      * Sets the object to delete and registers that object to
-     * KStaticDeleterHelpers. If the given object is 0, the formerly registered
+     * K3StaticDeleterHelpers. If the given object is 0, the formerly registered
      * object is unregistered.
      * @param obj the object to delete
      * @param isArray tells the destructor to delete an array instead of an object
@@ -133,15 +133,15 @@ public:
         globalReference = 0;
         array = isArray;
         if (obj)
-            KStaticDeleterHelpers::registerStaticDeleter(this);
+            K3StaticDeleterHelpers::registerStaticDeleter(this);
         else
-            KStaticDeleterHelpers::unregisterStaticDeleter(this);
+            K3StaticDeleterHelpers::unregisterStaticDeleter(this);
         return obj;
     }
 
     /**
      * Sets the object to delete and registers the object to be
-     * deleted to KStaticDeleterHelpers. If the given object is 0, the previously
+     * deleted to K3StaticDeleterHelpers. If the given object is 0, the previously
      * registered object is unregistered.
      * @param globalRef the static pointer where this object is stored.
      * This pointer will be reset to 0 after deletion of the object.
@@ -154,16 +154,16 @@ public:
         deleteit = obj;
         array = isArray;
         if (obj)
-            KStaticDeleterHelpers::registerStaticDeleter(this);
+            K3StaticDeleterHelpers::registerStaticDeleter(this);
         else
-            KStaticDeleterHelpers::unregisterStaticDeleter(this);
+            K3StaticDeleterHelpers::unregisterStaticDeleter(this);
         globalRef = obj;
         return obj;
     }
 
     /**
      * Destructs the registered object. This has the same effect as deleting
-     * the KStaticDeleter.
+     * the K3StaticDeleter.
      */
     virtual void destructObject() {
         if (globalReference)
@@ -179,8 +179,8 @@ public:
      * Destructor. Unregisters the static deleter and destroys the registered
      * object by calling destructObject().
      */
-    virtual ~KStaticDeleter() {
-        KStaticDeleterHelpers::unregisterStaticDeleter(this);
+    virtual ~K3StaticDeleter() {
+        K3StaticDeleterHelpers::unregisterStaticDeleter(this);
         destructObject();
     }
 private:

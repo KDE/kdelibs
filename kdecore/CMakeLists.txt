@@ -218,7 +218,6 @@ set(kdecore_LIB_SRCS
    util/kshell.cpp
    util/krandom.cpp
    util/krandomsequence.cpp
-   util/kstaticdeleter.cpp
    util/kuser.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
@@ -382,7 +381,6 @@ install( FILES
    util/krandomsequence.h
    util/ksharedptr.h
    util/ksortablelist.h
-   util/kstaticdeleter.h
    util/ktypelist.h
    util/kuser.h
    util/qtest_kde.h

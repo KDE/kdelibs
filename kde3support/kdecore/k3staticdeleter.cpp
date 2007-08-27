@@ -20,52 +20,52 @@
  *
  */
 
-#include "kstaticdeleter.h"
-#include "kglobal.h"
+#include "k3staticdeleter.h"
+#include <kglobal.h>
 
 #include <QtCore/QList>
 #include <QtCore/QCoreApplication>
 
-typedef QList<KStaticDeleterBase *> KStaticDeleterList;
+typedef QList<K3StaticDeleterBase *> K3StaticDeleterList;
 
-struct KStaticDeleterPrivate
+struct K3StaticDeleterPrivate
 {
-    KStaticDeleterPrivate()
+    K3StaticDeleterPrivate()
     {
         qAddPostRoutine(deleteStaticDeleters);
     }
-    ~KStaticDeleterPrivate()
+    ~K3StaticDeleterPrivate()
     {
         qRemovePostRoutine(deleteStaticDeleters);
         deleteStaticDeleters();
     }
     static void deleteStaticDeleters();
 
-    KStaticDeleterList staticDeleters;
+    K3StaticDeleterList staticDeleters;
 };
 
-K_GLOBAL_STATIC(KStaticDeleterPrivate, staticDeleterPrivate)
+K_GLOBAL_STATIC(K3StaticDeleterPrivate, staticDeleterPrivate)
 
-void KStaticDeleterPrivate::deleteStaticDeleters()
+void K3StaticDeleterPrivate::deleteStaticDeleters()
 {
     if (staticDeleterPrivate.isDestroyed()) {
         return;
     }
-    KStaticDeleterPrivate *d = staticDeleterPrivate;
+    K3StaticDeleterPrivate *d = staticDeleterPrivate;
     while (!d->staticDeleters.isEmpty()) {
         d->staticDeleters.takeLast()->destructObject();
     }
 }
 
-void KStaticDeleterHelpers::registerStaticDeleter(KStaticDeleterBase *obj)
+void K3StaticDeleterHelpers::registerStaticDeleter(K3StaticDeleterBase *obj)
 {
-    KStaticDeleterPrivate *d = staticDeleterPrivate;
+    K3StaticDeleterPrivate *d = staticDeleterPrivate;
     if (d->staticDeleters.indexOf(obj) == -1) {
         d->staticDeleters.append(obj);
     }
 }
 
-void KStaticDeleterHelpers::unregisterStaticDeleter(KStaticDeleterBase *obj)
+void K3StaticDeleterHelpers::unregisterStaticDeleter(K3StaticDeleterBase *obj)
 {
     if (staticDeleterPrivate.isDestroyed()) {
         return;
@@ -73,19 +73,19 @@ void KStaticDeleterHelpers::unregisterStaticDeleter(KStaticDeleterBase *obj)
     staticDeleterPrivate->staticDeleters.removeAll(obj);
 }
 
-void KStaticDeleterHelpers::deleteStaticDeleters()
+void K3StaticDeleterHelpers::deleteStaticDeleters()
 {
     staticDeleterPrivate->deleteStaticDeleters();
 }
 
-// this helps gcc to emit the vtbl for KStaticDeleterBase
+// this helps gcc to emit the vtbl for K3StaticDeleterBase
 // only once, here in this file, not every time it's
 // used, says Seli and thiago.
-KStaticDeleterBase::~KStaticDeleterBase()
+K3StaticDeleterBase::~K3StaticDeleterBase()
 {
 }
 
-void KStaticDeleterBase::destructObject()
+void K3StaticDeleterBase::destructObject()
 {
 }
 

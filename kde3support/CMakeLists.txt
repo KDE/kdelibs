@@ -23,6 +23,7 @@ set(kde3support_LIB_SRCS
   kdecore/k3mimesourcefactory.cpp
   kdecore/k3multipledrag.cpp
   kdecore/k3rfcdate.cpp
+  kdecore/k3staticdeleter.cpp
   kdecore/k3tempfile.cpp
   kdecore/k3urldrag.cpp
   #kdeui/qxembed.cpp
@@ -74,6 +75,7 @@ install( FILES
   kdecore/k3mimesourcefactory.h
   kdecore/k3multipledrag.h
   kdecore/k3rfcdate.h
+  kdecore/k3staticdeleter.h
   kdecore/k3sqlpropertymap.h
   kdecore/k3tempfile.h
   kdecore/k3urldrag.h
