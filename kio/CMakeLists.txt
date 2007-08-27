@@ -89,8 +89,6 @@ set(kiocore_STAT_SRCS
   kio/krun.cpp
   kio/ksambashare.cpp
   kio/kscan.cpp
-  kio/kservicegroup.cpp
-  kio/kservicegroupfactory.cpp
   kio/kshellcompletion.cpp
   kio/kstatusbarofflineindicator.cpp
   kio/ktar.cpp
@@ -346,7 +344,6 @@ install( FILES
   kio/krun.h
   kio/ksambashare.h
   kio/kscan.h
-  kio/kservicegroup.h
   kio/kshellcompletion.h
   kio/kstatusbarofflineindicator.h
   kio/ktar.h

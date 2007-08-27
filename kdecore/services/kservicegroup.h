@@ -19,7 +19,7 @@
 #ifndef KSERVICEGROUP_H
 #define KSERVICEGROUP_H
 
-#include <kio/kio_export.h>
+#include <kdecore_export.h>
 #include "ksycocaentry.h"
 
 class KBuildServiceGroupFactory;
@@ -55,7 +55,7 @@ class KBuildServiceGroupFactory;
  * \endcode
  * @short Represents a group of services
  */
-class KIO_EXPORT KServiceGroup : public KSycocaEntry
+class KDECORE_EXPORT KServiceGroup : public KSycocaEntry
 {
   friend class KBuildServiceGroupFactory;
   K_SYCOCATYPE( KST_KServiceGroup, KSycocaEntry )
@@ -293,7 +293,7 @@ private:
   Private* const d;
 };
 
-class KIO_EXPORT KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
+class KDECORE_EXPORT KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
 {
   K_SYCOCATYPE( KST_KServiceSeparator, KSycocaEntry )
 

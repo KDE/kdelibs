@@ -154,6 +154,8 @@ set(kdecore_LIB_SRCS
    services/kmimetype.cpp
    services/kservice.cpp
    services/kservicefactory.cpp
+   services/kservicegroup.cpp
+   services/kservicegroupfactory.cpp
    services/kserviceoffer.cpp
    services/kservicetype.cpp
    services/kservicetypefactory.cpp
@@ -346,6 +348,7 @@ install( FILES
    services/kmimetype.h
    services/kmimetypetrader.h
    services/kservice.h
+   services/kservicegroup.h
    #services/kservicefactory.h: do not install, internal API
    services/kservicetype.h
    #services/kservicetypefactory.h: do not install, internal API
