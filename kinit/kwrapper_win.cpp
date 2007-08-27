@@ -131,17 +131,29 @@ int main(int argc, char **argv)
     // setup kdedirs if not present
     if (kdedirs.size() == 0) 
     {
-        QFile f(rootPath + "/kdedirs.cache");
-        if (f.exists()) 
+        QStringList kdedirsCacheList;
+#ifdef Q_CC_MSVC
+        kdedirsCacheList << rootPath + "/kdedirs.cache.msvc";
+#endif
+        kdedirsCacheList << rootPath + "/kdedirs.cache";
+
+        bool found = false;
+        foreach(QString kdedirsCachePath,kdedirsCacheList) 
         {
-            f.open(QIODevice::ReadOnly);
-            QByteArray data = f.readAll();
-            f.close();
-            kdedirs = QString(data).split(';');
-            if (verbose)
-                qDebug() << "load kdedirs.cache from " << rootPath <<  "values=" << kdedirs; 
-        }            
-        else
+            QFile f(kdedirsCachePath);
+            if (f.exists()) 
+            {
+                f.open(QIODevice::ReadOnly);
+                QByteArray data = f.readAll();
+                f.close();
+                kdedirs = QString(data).split(';');
+                if (verbose)
+                    qDebug() << "load kdedirs cache from " << kdedirsCachePath <<  "values=" << kdedirs; 
+                found = true;
+				break;
+            }            
+        }
+        if (!found)
         {
 /* 
             f.open(QIODevice::WriteOnly);
