@@ -37,6 +37,8 @@ install( FILES
   K3SpellConfig
   K3SpellDlg
   K3SpellingHighlighter
+  K3StaticDeleter
+  K3StaticDeleterBase
   K3SyntaxHighlighter
   K3TempFile
   K3TextEdit
@@ -385,8 +387,6 @@ install( FILES
   KStartupInfo
   KStartupInfoData
   KStartupInfoId
-  KStaticDeleter
-  KStaticDeleterBase
   KStatusBar
   KStringHandler
   KStringListValidator
