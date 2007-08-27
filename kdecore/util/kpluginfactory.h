@@ -223,7 +223,7 @@ public:
     T *create(QObject *parent = 0, const QVariantList &args = QVariantList());
 
     template<typename T>
-    T *create(const QString &keyword, QObject *parent, const QVariantList &args = QVariantList());
+    T *create(const QString &keyword, QObject *parent = 0, const QVariantList &args = QVariantList());
 
     template<typename T>
     KDE_DEPRECATED
@@ -248,17 +248,6 @@ protected:
 
     explicit KPluginFactory(KPluginFactoryPrivate &dd, QObject *parent = 0);
 
-    /*template<class impl, class ParentType>
-    static QObject *createInstance(QObject *parent, const QVariantList &args)
-    {
-        ParentType *p = 0;
-        if (parent) {
-            p = qobject_cast<ParentType *>(parent);
-            Q_ASSERT(p);
-        }
-        return new impl(p, args);
-    }*/
-
     /**
      * Registers a plugin with the factory. Call this function from the constructor of the
      * KPluginFactory subclass to make the create function able to instantiate the plugin when asked
@@ -268,25 +257,12 @@ protected:
      * \param keyword An optional keyword as unique identifier for the plugin. This allows you to
      * put more than one plugin with the same interface into the same library using the same
      * factory.
-     */
-    template<class T>
-    void registerPlugin(const QString &keyword = QString())
-    {
-        registerPlugin(keyword, &T::staticMetaObject, &KDEPrivate::ConcreteFactory2<T>::create);
-    }
-
-    /**
-     * Registers a plugin with the factory.
-     *
-     * \param T The name of the plugin class
      * \param instanceFunction A function pointer to a function that creates an instance of the
      * plugin.
-     * \param keyword An optional keyword as unique identifier for the plugin. This allows you to
-     * put more than one plugin with the same interface into the same library using the same
-     * factory.
      */
     template<class T>
-    void registerPlugin(CreateInstanceFunction instanceFunction, const QString &keyword = QString())
+    void registerPlugin(const QString &keyword = QString(), CreateInstanceFunction instanceFunction
+            = InheritanceChecker<T>::createInstanceFunction(reinterpret_cast<T *>(0)))
     {
         registerPlugin(keyword, &T::staticMetaObject, instanceFunction);
     }
@@ -311,9 +287,42 @@ protected:
 
     void setComponentData(const KComponentData &);
 
-    QObject *create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword);
+    /**
+     * This function is called when the factory asked to create an Object.
+     *
+     * You may reimplement it to provide a very flexible factory. This is especially useful to
+     * provide generic factories for plugins implemeted using a scripting language.
+     *
+     * \param iface The staticMetaObject::className() string identifying the plugin interface that
+     * was requested. E.g. for KCModule plugins this string will be "KCModule".
+     * \param parentWidget Only used if the requested plugin is a KPart.
+     * \param parent The parent object for the plugin object.
+     * \param args A plugin specific list of arbitrary arguments.
+     * \param keyword A string that uniquely identifies the plugin. If a KService is used this
+     * keyword is read from the X-KDE-PluginKeyword entry in the .desktop file.
+     */
+    virtual QObject *create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword);
 
 private:
+    template<class impl, class ParentType>
+    static QObject *createInstance(QWidget *parentWidget, QObject *parent, const QVariantList &args)
+    {
+        Q_UNUSED(parentWidget);
+        ParentType *p = 0;
+        if (parent) {
+            p = qobject_cast<ParentType *>(parent);
+            Q_ASSERT(p);
+        }
+        return new impl(p, args);
+    }
+
+    template<class impl>
+    struct InheritanceChecker
+    {
+        static CreateInstanceFunction createInstanceFunction(QWidget *) { return &createInstance<impl, QWidget>; }
+        static CreateInstanceFunction createInstanceFunction(...) { return &createInstance<impl, QObject>; }
+    };
+
     void registerPlugin(const QString &keyword, const QMetaObject *metaObject, CreateInstanceFunction instanceFunction);
 };
 
