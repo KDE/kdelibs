@@ -84,10 +84,10 @@ static void sighandler( int )
 #endif
 
 #ifdef __PPC__
-static sigjmp_buf KDE_NO_EXPORT jmpbuf;
-static sig_atomic_t KDE_NO_EXPORT canjump = 0;
+static sigjmp_buf jmpbuf;
+static sig_atomic_t canjump = 0;
 
-static void KDE_NO_EXPORT sigill_handler( int sig )
+static void sigill_handler( int sig )
 {
     if ( !canjump ) {
         signal( sig, SIG_DFL );
