@@ -325,7 +325,9 @@ install( FILES
   KPlotObject
   KPlotPoint
   KPlotWidget
+  KPluginFactory
   KPluginInfo
+  KPluginLoader
   KPluginSelector
   KPopupFrame
   KPreviewWidgetBase
