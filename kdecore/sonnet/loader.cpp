@@ -274,7 +274,7 @@ void Loader::loadPlugin(const KSharedPtr<KService> &service)
 
     Client *client = KService::createInstance<Client>(service,
                                                       this,
-                                                      QStringList(),
+                                                      QVariantList(),
                                                       &error);
 
     if (client) {
