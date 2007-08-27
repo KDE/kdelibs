@@ -23,6 +23,7 @@
 #define KDECORE_KPLUGINFACTORY_H
 
 #include "kdecore_export.h"
+#include "kgenericfactory.tcc"
 
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
