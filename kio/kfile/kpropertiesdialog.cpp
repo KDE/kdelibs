@@ -1375,7 +1375,7 @@ void KFilePropsPlugin::applyChanges()
         job = KIO::copy( oldurl, properties->kurl() );
 
       connect( job, SIGNAL( result( KJob * ) ),
-               SLOT( slotCopyFinished( KIO::Job * ) ) );
+               SLOT( slotCopyFinished( KJob * ) ) );
       connect( job, SIGNAL( renamed( KIO::Job *, const KUrl &, const KUrl & ) ),
                SLOT( slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & ) ) );
       // wait for job
@@ -1395,7 +1395,7 @@ void KFilePropsPlugin::applyChanges()
   slotCopyFinished( 0L );
 }
 
-void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
+void KFilePropsPlugin::slotCopyFinished( KJob * job )
 {
   kDebug(250) << "KFilePropsPlugin::slotCopyFinished";
   if (job)

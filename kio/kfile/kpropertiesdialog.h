@@ -444,7 +444,7 @@ public:
 
 protected Q_SLOTS:
   void slotEditFileType();
-  void slotCopyFinished( KIO::Job * );
+  void slotCopyFinished( KJob * );
   void slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & );
   void slotDirSizeUpdate();
   void slotDirSizeFinished( KJob * );
