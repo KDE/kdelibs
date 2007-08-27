@@ -25,7 +25,7 @@
 #include <QtCore/QString>
 #include <kprocess.h>
 
-class KLibFactory;
+class KPluginFactory;
 
 class KPrintPreview : public KDialog
 {
@@ -40,7 +40,7 @@ public:
 	static bool preview(const QString& file, bool previewOnly = false, WId parentId = 0);
 
 private:
-	void initView(KLibFactory*);
+	void initView(KPluginFactory*);
 
 private:
 	class KPrintPreviewPrivate;

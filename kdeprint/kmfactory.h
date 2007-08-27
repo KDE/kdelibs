@@ -37,7 +37,7 @@ class KMVirtualManager;
 class KXmlCommandManager;
 class KMSpecialManager;
 class KPrinterImpl;
-class KLibFactory;
+class KPluginFactory;
 class KConfig;
 class KPReloadObject;
 
@@ -116,7 +116,7 @@ private:
 	KMJobManager		*m_jobmanager;
 	KMUiManager		*m_uimanager;
 	KPrinterImpl		*m_implementation;
-	KLibFactory		*m_factory;
+	KPluginFactory		*m_factory;
 
 	KConfig			*m_printconfig;
 	Settings		*m_settings;
