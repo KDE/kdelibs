@@ -44,8 +44,9 @@ public Q_SLOTS:
     virtual QSize sizeHint() const;
 
 protected:
-    void contextMenuEvent(QContextMenuEvent *event);
-    void resizeEvent(QResizeEvent *event);
+    virtual void contextMenuEvent(QContextMenuEvent *event);
+    virtual void resizeEvent(QResizeEvent *event);
+    virtual void showEvent(QShowEvent *event);
 
 protected Q_SLOTS:
     void rowsInserted(const QModelIndex &parent, int start, int end);
@@ -60,6 +61,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_storageSetupDone(const QModelIndex &, bool))
     Q_PRIVATE_SLOT(d, void _k_adaptItemsUpdate(qreal))
     Q_PRIVATE_SLOT(d, void _k_itemAppearUpdate(qreal))
+    Q_PRIVATE_SLOT(d, void _k_enableSmoothItemResizing())
 
     class Private;
     Private * const d;

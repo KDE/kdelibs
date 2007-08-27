@@ -20,6 +20,7 @@
 #include "kfileplacesview.h"
 
 #include <QtCore/QTimeLine>
+#include <QtCore/QTimer>
 #include <QtGui/QMenu>
 #include <QtGui/QItemDelegate>
 #include <QtGui/QKeyEvent>
@@ -145,6 +146,7 @@ public:
     void _k_storageSetupDone(const QModelIndex &index, bool success);
     void _k_adaptItemsUpdate(qreal value);
     void _k_itemAppearUpdate(qreal value);
+    void _k_enableSmoothItemResizing();
 
     QTimeLine adaptItemsTimeline;
     int oldSize, endSize;
@@ -338,10 +340,12 @@ void KFilePlacesView::resizeEvent(QResizeEvent *event)
 {
     QListView::resizeEvent(event);
     d->adaptItemSize();
+}
 
-    // Enable the smooth item resizing after the first resize event to
-    // prevent a smooth resizing when the widget is shown the first time.
-    d->smoothItemResizing = true;
+void KFilePlacesView::showEvent(QShowEvent *event)
+{
+    QListView::showEvent(event);
+    QTimer::singleShot(100, this, SLOT(_k_enableSmoothItemResizing()));
 }
 
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
@@ -455,6 +459,7 @@ void KFilePlacesView::Private::adaptItemSize()
         }
     } else {
         delegate->setIconSize(size);
+        q->scheduleDelayedItemsLayout();
     }
 }
 
@@ -557,6 +562,11 @@ void KFilePlacesView::Private::_k_itemAppearUpdate(qreal value)
 
     delegate->setAppearingIconSize(size);
     q->scheduleDelayedItemsLayout();
+}
+
+void KFilePlacesView::Private::_k_enableSmoothItemResizing()
+{
+    smoothItemResizing = true;
 }
 
 void KFilePlacesView::dataChanged(const QModelIndex &/*topLeft*/, const QModelIndex &/*bottomRight*/)
