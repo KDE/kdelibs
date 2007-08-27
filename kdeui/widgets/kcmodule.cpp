@@ -129,11 +129,6 @@ KCModule::~KCModule()
     delete d;
 }
 
-void KCModule::init()
-{
-    // Do nothing by default :)
-}
-
 void KCModule::load()
 {
     KConfigDialogManager* manager;

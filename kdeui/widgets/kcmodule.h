@@ -121,9 +121,6 @@ public:
    *
    * @note do not emit changed signals here, since they are not yet connected
    *       to any slot.
-   *
-   * @note if you need to emit changed signals here (it only makes sense with the parameter state = true),
-   *       reimplement init() method instead and emit signals from there.
    */
   explicit KCModule(const KComponentData &componentData, QWidget *parent = 0, const QVariantList& args = QVariantList());
 
@@ -131,23 +128,6 @@ public:
    * Destroys the module.
    */
   ~KCModule();
-
-  /**
-   * Initializes the module.
-   *
-   * This method can emit changed() signals. If you emit those signals on the constructor
-   * they won't be got by any slot, since those signals are connected _after_ the
-   * configuration module is created.
-   *
-   * This method is called _after_ those signals are connected.
-   *
-   * So, this method exists mainly for avoiding:
-   *   QTimer::singleShot() calls on the constructor of the configuration module.
-   *
-   * @note this method is useful for example if a configuration module wants it to
-   *       be saved even if the user didn't touch anything on the configuration dialog.
-   */
-  virtual void init();
 
   /**
    * Return a quick-help text.

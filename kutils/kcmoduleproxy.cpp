@@ -111,8 +111,6 @@ void KCModuleProxyPrivate::loadModule()
 		QObject::connect( kcm, SIGNAL(quickHelpChanged()), parent, SIGNAL(quickHelpChanged()) );
 		parent->setWhatsThis( kcm->quickHelp() );
 
-		kcm->init();
-
 		topLayout->addWidget( kcm );
 		//QDBus::sessionBus().registerObject( dbusPath, parent, QDBusConnection::ExportSlots );
 		QDBusConnection::sessionBus().registerObject( dbusPath, new KSettingsWidgetAdaptor( parent ) );
