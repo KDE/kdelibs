@@ -31,11 +31,13 @@ namespace Phonon
 KioMediaStream::KioMediaStream(const QUrl &url, QObject *parent)
     : AbstractMediaStream(*new KioMediaStreamPrivate(url), parent)
 {
+    kDebug(600);
     reset();
 }
 
 void KioMediaStream::reset()
 {
+    kDebug(600);
     Q_D(KioMediaStream);
     if (d->kiojob) {
         d->kiojob->disconnect(this);
@@ -73,6 +75,16 @@ void KioMediaStream::reset()
 
 KioMediaStream::~KioMediaStream()
 {
+    kDebug(600);
+    Q_D(KioMediaStream);
+    if (d->kiojob) {
+        d->kiojob->disconnect(this);
+        KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(d->kiojob);
+        if (filejob) {
+            filejob->close();
+        }
+        d->kiojob->kill();
+    }
 }
 
 void KioMediaStream::needData()
@@ -100,7 +112,7 @@ void KioMediaStream::needData()
 void KioMediaStream::enoughData()
 {
     Q_D(KioMediaStream);
-    kDebug(600) ;
+    kDebug(600);
     // Don't suspend when using a FileJob. The FileJob is controlled by calls to
     // FileJob::read()
     if (d->kiojob && !qobject_cast<KIO::FileJob *>(d->kiojob) && !d->kiojob->isSuspended()) {
