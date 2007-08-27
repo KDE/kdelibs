@@ -964,21 +964,22 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
     QString text = text_;
     int p = opensWithTagRx.indexIn(text);
 
-    // First check for <qt> tag, which is to be ignored in the context
-    // of deciding upon the top tag, but does override the visual format.
+    // First check for <qt> or <html> tag, which are to be ignored in the
+    // context of deciding upon the top tag, but do override the visual format.
     if (p >= 0) {
         QString fullmatch = opensWithTagRx.capturedTexts().at(0);
         QString tagname = opensWithTagRx.capturedTexts().at(1).toLower();
-        if (tagname == "qt") {
+        if (tagname == "qt" || tagname == "html") {
             // Override format.
             fmt = Kuit::Fmt::Rich;
-            // Kill <qt> and see if there is another tag, for primary check.
+            // Kill the tag and see if there is another one following,
+            // for primary check below.
             text = text.mid(fullmatch.length());
             p = opensWithTagRx.indexIn(text);
         }
     }
 
-    // Check the first non-<qt> tag.
+    // Check the first non-<qt>/<html> tag.
     if (p >= 0) { // opens with a tag
         QString tagname = opensWithTagRx.capturedTexts().at(1).toLower();
         if (s->knownTags.contains(tagname)) { // a known tag
@@ -1008,7 +1009,7 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
     // Wrap text with top tag if not explicitly given.
     if (!explicitTopTag) {
         return   '<' + s->tagNames[toptag] + '>'
-               + text_ // original text, not the one possibly stripped of <qt>
+               + text_ // original text, not the one possibly stripped above
                + "</" + s->tagNames[toptag] + '>';
     }
     else {
@@ -1058,7 +1059,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
 
             // Collect data about this element.
             OpenEl oel = parseOpenEl(xml, etag, text);
-            if (oel.name == "qt") {
+            if (oel.name == "qt" || oel.name == "html") {
                 hadQtTag = true;
             }
 
@@ -1185,7 +1186,8 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
         }
         oel.akey = attSetKey(attset);
     }
-    else if (oel.name == "qt") { // <qt> tag, drop it (gets added in the end)
+    else if (oel.name == "qt" || oel.name == "html") {
+        // Drop qt/html tags (gets added in the end).
         oel.handling = OpenEl::Dropout;
     }
     else { // other element, leave it in verbatim
@@ -1360,7 +1362,7 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
 
     // Wrap with <qt> tag if rich text.
     if (fmt == Kuit::Fmt::Rich) {
-        QString rich = "<qt>" + text + "</qt>";
+        QString rich = "<html>" + text + "</html>";
         return rich;
     }
     // Replace XML entities if not rich text.
@@ -1382,12 +1384,12 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
         }
         plain.append(text);
 
-        // If there was a <qt> tag, it means the text was intended as rich
+        // If there was a qt/html tag, it means the text was intended as rich
         // but it was not equipped with KUIT. Since other HTML tags have
-        // remained preserved in that case, also put back the <qt> tag
+        // remained preserved in that case, also put back the <html> tag
         // which was removed while formatting.
         if (hadQtTag)
-            plain = "<qt>" + text + "</qt>";
+            plain = "<html>" + text + "</html>";
 
         return plain;
     }
