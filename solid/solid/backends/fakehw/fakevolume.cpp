@@ -85,4 +85,9 @@ qulonglong FakeVolume::size() const
     return fakeDevice()->property("size").toULongLong();
 }
 
+QString Solid::Backends::Fake::FakeVolume::encryptedContainerUdi() const
+{
+    return QString();
+}
+
 #include "backends/fakehw/fakevolume.moc"

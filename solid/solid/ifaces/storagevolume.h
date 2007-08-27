@@ -93,6 +93,14 @@ namespace Ifaces
          * @return the size of this volume
          */
         virtual qulonglong size() const = 0;
+
+        /**
+         * Retrieves the crypto container UDI of this volume.
+         *
+         * @return the encrypted volume UDI containing the current volume if appliable,
+         * an empty string otherwise
+         */
+        virtual QString encryptedContainerUdi() const = 0;
     };
 }
 }
