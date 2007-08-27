@@ -941,7 +941,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     return fmt;
 }
 
-QString KuitSemanticsPrivate::equipTopTag (const QString &text,
+QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
                                            Kuit::TagVar &toptag,
                                            Kuit::FmtVar &fmt)
 {
@@ -950,11 +950,27 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text,
     // Unless the text opens either with TopLong or TopShort tags,
     // make a guess: if it opens with one of Title, Subtitle, Para,
     // consider it TopLong, otherwise TopShort.
-    static QRegExp opensWithTagRx("^\\s*<\\s*(\\w+)");
+    static QRegExp opensWithTagRx("^\\s*<\\s*(\\w+)[^>]*>");
     bool explicitTopTag = false;
 
+    QString text = text_;
     int p = opensWithTagRx.indexIn(text);
 
+    // First check for <qt> tag, which is to be ignored in the context
+    // of deciding upon the top tag, but does override the visual format.
+    if (p >= 0) {
+        QString fullmatch = opensWithTagRx.capturedTexts().at(0);
+        QString tagname = opensWithTagRx.capturedTexts().at(1).toLower();
+        if (tagname == "qt") {
+            // Override format.
+            fmt = Kuit::Fmt::Rich;
+            // Kill <qt> and see if there is another tag, for primary check.
+            text = text.mid(fullmatch.length());
+            p = opensWithTagRx.indexIn(text);
+        }
+    }
+
+    // Check the first non-<qt> tag.
     if (p >= 0) { // opens with a tag
         QString tagname = opensWithTagRx.capturedTexts().at(1).toLower();
         if (s->knownTags.contains(tagname)) { // a known tag
@@ -973,11 +989,8 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text,
                 toptag = Kuit::Tag::TopShort;
             }
         }
-        else { // unknown tag
+        else { // not a KUIT tag
             toptag = Kuit::Tag::TopShort;
-            if (tagname == "qt") { // override format the text opens with <qt>
-                fmt = Kuit::Fmt::Rich;
-            }
         }
     }
     else { // doesn't open with a tag
@@ -987,7 +1000,7 @@ QString KuitSemanticsPrivate::equipTopTag (const QString &text,
     // Wrap text with top tag if not explicitly given.
     if (!explicitTopTag) {
         return   '<' + s->tagNames[toptag] + '>'
-               + text
+               + text_ // original text, not the one possibly stripped of <qt>
                + "</" + s->tagNames[toptag] + '>';
     }
     else {
