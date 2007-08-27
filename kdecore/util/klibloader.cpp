@@ -95,27 +95,6 @@ K_GLOBAL_STATIC(KLibLoaderPrivate, kLibLoaderPrivate)
 
 // -------------------------------------------------------------------------
 
-KLibFactory::KLibFactory( QObject* _parent )
-    : QObject( _parent ), d(0)
-{
-}
-
-KLibFactory::~KLibFactory()
-{
-//    kDebug(150) << "Deleting KLibFactory " << this;
-}
-
-QObject* KLibFactory::create( QObject* _parent, const char* classname, const QStringList &args )
-{
-    QObject* obj = createObject( _parent, classname, args );
-    if ( obj )
-	emit objectCreated( obj );
-    return obj;
-}
-
-
-// -----------------------------------------------
-
 class KLibraryPrivate
 {
 public:
@@ -123,13 +102,13 @@ public:
     KLibrary *q;
     QString libname;
     QString filename;
-    QHash<QByteArray, KLibFactory*> factories;
+    QHash<QByteArray, KPluginFactory*> factories;
     QLibrary* handle;
     QList<QObject*> objs;
     QTimer* timer;
 
-    KLibFactory *kde3Factory(const QByteArray &factoryname);
-    KLibFactory *kde4Factory();
+    KPluginFactory *kde3Factory(const QByteArray &factoryname);
+    KPluginFactory *kde4Factory();
 };
 
 KLibrary::KLibrary( const QString& libname, const QString& filename, QLibrary * handle )
@@ -177,7 +156,7 @@ QString KLibrary::fileName() const
     return d->filename;
 }
 
-KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
+KPluginFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
 {
     QByteArray symname = "init_";
     if(!factoryname.isEmpty()) {
@@ -198,12 +177,12 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
         return 0;
     }
 
-    typedef KLibFactory* (*t_func)();
+    typedef KPluginFactory* (*t_func)();
     // Cast the void* to non-pointer type first - it's not legal to
     // cast a pointer-to-object directly to a pointer-to-function.
     ptrdiff_t tmp = reinterpret_cast<ptrdiff_t>(sym);
     t_func func = reinterpret_cast<t_func>(tmp);
-    KLibFactory* factory = func();
+    KPluginFactory* factory = func();
 
     if( !factory )
     {
@@ -216,7 +195,7 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     return factory;
 }
 
-KLibFactory *KLibraryPrivate::kde4Factory()
+KPluginFactory *KLibraryPrivate::kde4Factory()
 {
     const QByteArray symname("qt_plugin_instance");
     if ( factories.contains( symname ) )
@@ -236,7 +215,7 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     ptrdiff_t tmp = reinterpret_cast<ptrdiff_t>(sym);
     t_func func = reinterpret_cast<t_func>(tmp);
     QObject* instance = func();
-    KLibFactory *factory = qobject_cast<KLibFactory *>(instance);
+    KPluginFactory *factory = qobject_cast<KPluginFactory *>(instance);
 
     if( !factory )
     {
@@ -250,9 +229,9 @@ KLibFactory *KLibraryPrivate::kde4Factory()
 
 }
 
-KLibFactory* KLibrary::factory(const char* factoryname)
+KPluginFactory* KLibrary::factory(const char* factoryname)
 {
-    KLibFactory *factory = d->kde4Factory();
+    KPluginFactory *factory = d->kde4Factory();
     if (!factory)
         factory = d->kde3Factory(factoryname);
 
@@ -552,7 +531,7 @@ void KLibLoader::unloadLibrary( const QString &libname )
   d->close_pending( wrap );
 }
 
-KLibFactory* KLibLoader::factory( const QString &_name, QLibrary::LoadHints hint )
+KPluginFactory* KLibLoader::factory( const QString &_name, QLibrary::LoadHints hint )
 {
     KLibrary* lib = library( _name, hint );
     if ( !lib )

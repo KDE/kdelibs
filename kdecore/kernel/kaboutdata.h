@@ -46,7 +46,7 @@ class KAboutData;
  *
  * @code
  * KAboutData about("khello", "khello", ki18n("KHello"), "0.1",
- *                   k18n("A KDE version of Hello, world!"),
+ *                   ki18n("A KDE version of Hello, world!"),
  *                   KAboutData::License_LGPL,
  *                   ki18n("Copyright (c) 2003 Developer"));
  *

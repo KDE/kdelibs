@@ -27,10 +27,10 @@
 #include <QtGui/QTabWidget>
 #include "backendselection.h"
 
-typedef KGenericFactory<PhononKcm, QWidget> PhononKcmFactory;
-K_EXPORT_COMPONENT_FACTORY(kcm_phonon, PhononKcmFactory("kcm_phonon"))
+K_PLUGIN_FACTORY(PhononKcmFactory, registerPlugin<PhononKcm>();)
+K_EXPORT_PLUGIN(PhononKcmFactory("kcm_phonon"))
 
-PhononKcm::PhononKcm(QWidget *parent, const QStringList &args)
+PhononKcm::PhononKcm(QWidget *parent, const QVariantList &args)
     : KCModule(PhononKcmFactory::componentData(), parent, args)
 {
     KAboutData *about = new KAboutData(

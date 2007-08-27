@@ -41,7 +41,7 @@ class PluginPagePrivate
         void _k_reparseConfiguration(const QByteArray &a);
 };
 
-PluginPage::PluginPage(const KComponentData &componentData, QWidget * parent, const QStringList & args )
+PluginPage::PluginPage(const KComponentData &componentData, QWidget *parent, const QVariantList &args)
     : KCModule(componentData, parent, args),
     d_ptr(new PluginPagePrivate)
 {

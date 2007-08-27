@@ -106,6 +106,57 @@ namespace KDEPrivate
         typedef T OriginalType;
     };
 
+    template <class Product, class ParentType = QObject>
+    class ConcreteFactory2
+    {
+    public:
+        typedef typename If<PartInheritanceTest<Product>::Result, KParts::Part,
+                typename If<QWidgetInheritanceTest<Product>::Result,
+                QWidget, QObject>::Result>::Result BaseType;
+
+        static inline QObject *create(QWidget *parentWidget, QObject *parent,
+                const QVariantList &args)
+        {
+            return create(parentWidget, parent, args, Type2Type<BaseType>());
+        }
+
+    private:
+        typedef typename If<QWidgetInheritanceTest<ParentType>::Result,
+                ParentType, QWidget>::Result WidgetParentType;
+
+        static inline QObject *create(QWidget *parentWidget, QObject *parent,
+                const QVariantList &args, Type2Type<KParts::Part>)
+        {
+            kDebug(150) << "create - 1" << endl;
+            return new Product(parentWidget, parent, args);
+        }
+
+        static inline QObject *create(QWidget* parentWidget, QObject *parent,
+                const QVariantList &args, Type2Type<QWidget>)
+        {
+            Q_UNUSED(parentWidget);
+            kDebug(150) << "create - 2" << endl;
+            WidgetParentType *p = qobject_cast<WidgetParentType *>(parent);
+            if (parent && !p) {
+                return 0;
+            }
+            return new Product(p, args);
+        }
+
+        static inline QObject *create(QWidget* parentWidget, QObject *parent,
+                const QVariantList &args, Type2Type<QObject>)
+        {
+            Q_UNUSED(parentWidget);
+            kDebug(150) << "create - 3" << endl;
+            ParentType *p = qobject_cast<ParentType *>(parent);
+            if (parent && !p) {
+                return 0;
+            }
+            return new Product(p, args);
+        }
+    };
+
+
     // this template is called from the MultiFactory one. It instantiates
     // the given class if the className matches. Instantiating is done by
     // calling the right constructor (a parentwidget/parent

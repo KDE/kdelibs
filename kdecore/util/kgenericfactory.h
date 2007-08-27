@@ -20,6 +20,8 @@
 #define kgenericfactory_h
 
 #include <klibloader.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <ktypelist.h>
 #include <kcomponentdata.h>
 #include <kgenericfactory.tcc>
@@ -29,95 +31,55 @@
 
 /* @internal */
 template <class T>
-class KGenericFactoryBase
+class KGenericFactoryBase : public KPluginFactory
 {
 public:
-    explicit KGenericFactoryBase( const char *componentName, const char *catalogName = 0L )
-        : m_componentName( componentName ), m_catalogName ( catalogName )
+    explicit KGenericFactoryBase(const char *componentName, const char *catalogName)
+        : KPluginFactory(componentName, catalogName)
     {
-        m_aboutData=0L;
         s_self = this;
-        m_catalogInitialized = false;
+        KComponentData *kcd = createComponentData();
+        if (kcd) {
+            setComponentData(*kcd);
+            delete kcd;
+        }
     }
+
     explicit KGenericFactoryBase( const KAboutData *data )
-        : m_aboutData(data)
+        : KPluginFactory(data)
     {
         s_self = this;
-        m_catalogInitialized = false;
+        KComponentData *kcd = createComponentData();
+        if (kcd) {
+            setComponentData(*kcd);
+            delete kcd;
+        }
     }
 
     virtual ~KGenericFactoryBase()
     {
-        if (s_componentData) {
-            if (KGlobal::hasLocale() && s_componentData->isValid())
-                KGlobal::locale()->removeCatalog(s_componentData->catalogName());
-            delete s_componentData;
-            s_componentData = 0;
-        }
         s_self = 0;
     }
 
-    static KComponentData componentData();
+    static KComponentData componentData()
+    {
+        Q_ASSERT(s_self);
+        return static_cast<KPluginFactory *>(s_self)->componentData();
+    }
 
 protected:
     virtual KComponentData *createComponentData()
     {
-        if (m_aboutData) {
-            return new KComponentData(m_aboutData);
-        }
-        if (m_componentName.isNull()) {
-            kWarning() << "KGenericFactory: componentData requested but no component name or about data passed to the constructor!";
-            return 0;
-        }
-        return new KComponentData(m_componentName, m_catalogName);
-    }
-
-    virtual void setupTranslations( void )
-    {
-        if (componentData().isValid()) {
-            KGlobal::locale()->insertCatalog(s_componentData->catalogName());
-        }
-    }
-
-    void initializeMessageCatalog()
-    {
-        if ( !m_catalogInitialized )
-        {
-            m_catalogInitialized = true;
-            setupTranslations();
-        }
+        return 0;
     }
 
 private:
-    QByteArray m_componentName;
-    QByteArray m_catalogName;
-    const KAboutData *m_aboutData;
-    bool m_catalogInitialized;
-
-    static KComponentData *s_componentData;
     static KGenericFactoryBase<T> *s_self;
 };
 
 /* @internal */
 template <class T>
-KComponentData *KGenericFactoryBase<T>::s_componentData = 0;
-
-/* @internal */
-template <class T>
 KGenericFactoryBase<T> *KGenericFactoryBase<T>::s_self = 0;
-
-/* @internal */
-template <class T>
-KComponentData KGenericFactoryBase<T>::componentData()
-{
-    if (!s_componentData && s_self ){
-        s_componentData = s_self->createComponentData();
-        if (!s_componentData) {
-            s_componentData = new KComponentData; //invalid
-        }
-    }
-    return *s_componentData;
-}
 
 /**
  * This template provides a generic implementation of a KLibFactory ,
@@ -178,23 +140,21 @@ KComponentData KGenericFactoryBase<T>::componentData()
  * \endcode
  */
 template <class Product, class ParentType = QObject>
-class KGenericFactory : public KLibFactory, public KGenericFactoryBase<Product>
+class KDE_DEPRECATED KGenericFactory : public KGenericFactoryBase<Product>
 {
 public:
     explicit KGenericFactory( const char *componentName = 0, const char *catalogName = 0 )
-        : KGenericFactoryBase<Product>( componentName, catalogName )
+        : KGenericFactoryBase<Product>(componentName, catalogName)
     {}
 
     explicit KGenericFactory( const KAboutData *data )
-        : KGenericFactoryBase<Product>( data )
+        : KGenericFactoryBase<Product>(data)
     {}
-
 
 protected:
     virtual QObject *createObject( QObject *parent,
                                    const char *className, const QStringList &args )
     {
-        KGenericFactoryBase<Product>::initializeMessageCatalog();
         return KDEPrivate::ConcreteFactory<Product, ParentType>
             ::create( 0, parent, className, args );
     }
@@ -269,16 +229,15 @@ protected:
  */
 template <class Product, class ProductListTail>
 class KGenericFactory< KTypeList<Product, ProductListTail>, QObject >
-    : public KLibFactory,
-      public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
+    : public KGenericFactoryBase<KTypeList<Product, ProductListTail> >
 {
 public:
     explicit KGenericFactory( const char *componentName  = 0, const char *catalogName  = 0 )
-        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( componentName, catalogName )
+        : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(componentName, catalogName)
     {}
 
     explicit KGenericFactory( const KAboutData *data )
-        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )
+        : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(data)
     {}
 
 
@@ -286,7 +245,6 @@ protected:
     virtual QObject *createObject( QObject *parent,
                                    const char *className, const QStringList &args )
     {
-        this->initializeMessageCatalog();
         return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail > >
             ::create( 0, parent, className, args );
     }
@@ -363,15 +321,14 @@ template <class Product, class ProductListTail,
           class ParentType, class ParentTypeListTail>
 class KGenericFactory< KTypeList<Product, ProductListTail>,
                        KTypeList<ParentType, ParentTypeListTail> >
-    : public KLibFactory,
-      public KGenericFactoryBase< KTypeList<Product, ProductListTail> >
+    : public KGenericFactoryBase<KTypeList<Product, ProductListTail> >
 {
 public:
     explicit KGenericFactory( const char *componentName  = 0, const char *catalogName  = 0 )
-        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( componentName, catalogName )
+        : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(componentName, catalogName)
     {}
     explicit KGenericFactory( const KAboutData *data )
-        : KGenericFactoryBase< KTypeList<Product, ProductListTail> >( data )
+        : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(data)
     {}
 
 
@@ -379,7 +336,6 @@ protected:
     virtual QObject *createObject( QObject *parent,
                                    const char *className, const QStringList &args )
     {
-        this->initializeMessageCatalogs();
         return KDEPrivate::MultiFactory< KTypeList< Product, ProductListTail >,
                                          KTypeList< ParentType, ParentTypeListTail > >
                                        ::create( 0, 0, parent,
@@ -387,10 +343,10 @@ protected:
     }
 };
 
-
 /*
  * vim: et sw=4
  */
 
 #endif
+
 

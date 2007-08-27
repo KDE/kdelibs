@@ -215,6 +215,8 @@ set(kdecore_LIB_SRCS
    util/klauncher_iface.cpp
    util/klibloader.cpp
    util/kmacroexpander.cpp
+   util/kpluginfactory.cpp
+   util/kpluginloader.cpp
    util/kshell.cpp
    util/krandom.cpp
    util/krandomsequence.cpp
@@ -376,6 +378,8 @@ install( FILES
    util/klauncher_iface.h
    util/klibloader.h
    util/kmacroexpander.h
+   util/kpluginfactory.h
+   util/kpluginloader.h
    util/kshell.h
    util/krandom.h
    util/krandomsequence.h

@@ -25,6 +25,7 @@
 
 #include <kdeui_export.h>
 
+#include <QtCore/QVariant>
 #include <QtGui/QWidget>
 
 class QStringList;
@@ -111,6 +112,8 @@ public:
 
 #ifdef KDE3_SUPPORT
   KDE_CONSTRUCTOR_DEPRECATED KCModule( QWidget *parent, const char *name, const QStringList& args = QStringList() );
+
+  KDE_CONSTRUCTOR_DEPRECATED KCModule(const KComponentData &componentData, QWidget *parent, const QStringList& args);
 #endif
 
   /**
@@ -122,7 +125,7 @@ public:
    * @note if you need to emit changed signals here (it only makes sense with the parameter state = true),
    *       reimplement init() method instead and emit signals from there.
    */
-  explicit KCModule(const KComponentData &componentData, QWidget *parent = 0, const QStringList& args = QStringList() );
+  explicit KCModule(const KComponentData &componentData, QWidget *parent = 0, const QVariantList& args = QVariantList());
 
   /**
    * Destroys the module.

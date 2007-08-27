@@ -74,6 +74,16 @@ KCModule::KCModule( QWidget *parent, const char *name, const QStringList& )
 }
 
 KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const QStringList &)
+    : QWidget(parent), d(new KCModulePrivate)
+{
+    Q_ASSERT(componentData.isValid());
+
+    KGlobal::locale()->insertCatalog(componentData.componentName());
+
+    d->_componentData = componentData;
+}
+
+KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const QVariantList &)
     : QWidget( parent ), d(new KCModulePrivate)
 {
     Q_ASSERT(componentData.isValid());

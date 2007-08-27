@@ -39,7 +39,7 @@
 
 // Export init_khtmlimagefactory. This way we don't have to export the whole class
 // just for khtmlimagepart. See khtmlimage_init.cpp
-K_EXPORT_COMPONENT_FACTORY( khtmlimagefactory, KHTMLImageFactory )
+K_EXPORT_PLUGIN(KHTMLImageFactory)
 
 KComponentData *KHTMLImageFactory::s_componentData = 0;
 

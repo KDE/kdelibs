@@ -78,7 +78,7 @@ class KUTILS_EXPORT PluginPage : public KCModule
          */
         explicit PluginPage( const KComponentData &componentData,
                              QWidget *parent = 0,
-                             const QStringList &args = QStringList() );
+                             const QVariantList &args = QVariantList() );
 
         ~PluginPage();
 
