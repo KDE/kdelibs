@@ -81,50 +81,71 @@ public:
     QColor decoration(KColorScheme::DecorationRole) const;
     qreal contrast() const;
 private:
-    KConfigGroup _config;
-    DefaultColors _defaults;
+    struct {
+        QColor fg[8], bg[8], deco[2];
+    } _colors;
     qreal _contrast;
 };
+
+#define DEFAULT(a) QColor( defaults.a[0], defaults.a[1], defaults.a[2] )
 
 KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
                                          QPalette::ColorGroup state,
                                          const char *group,
                                          DefaultColors defaults)
-    : _config( config, group ), _defaults( defaults )
 {
+    KConfigGroup cfg( config, group );
     _contrast = KGlobalSettings::contrastF( config );
 
-    // TODO do something with state, means we need to cache the config values
-    // up-front so we can fiddle with them
-}
+    // loaded-from-config colors
+    _colors.fg[0] = cfg.readEntry( "ForegroundNormal", DEFAULT(NormalText) );
+    _colors.fg[1] = cfg.readEntry( "ForegroundInactive", DEFAULT(InactiveText) );
+    _colors.fg[2] = cfg.readEntry( "ForegroundActive", QColor(255,0,0) );
+    _colors.fg[3] = cfg.readEntry( "ForegroundLink", QColor(0,0,255) );
+    _colors.fg[4] = cfg.readEntry( "ForegroundVisited", QColor(88,55,150) );
+    _colors.fg[5] = cfg.readEntry( "ForegroundNegative", QColor(107,0,0) );
+    _colors.fg[6] = cfg.readEntry( "ForegroundNeutral", QColor(0,90,95) );
+    _colors.fg[7] = cfg.readEntry( "ForegroundPositive", QColor(0,95,0) );
 
-#define DEFAULT(a) QColor( _defaults.a[0], _defaults.a[1], _defaults.a[2] )
+    _colors.bg[0] = cfg.readEntry( "BackgroundNormal", DEFAULT(NormalBackground) );
+    _colors.bg[1] = cfg.readEntry( "BackgroundAlternate", DEFAULT(AlternateBackground) );
+
+    _colors.deco[0] = cfg.readEntry( "DecorationHover", QColor(72,177,60) );
+    _colors.deco[1] = cfg.readEntry( "DecorationFocus", QColor(239,132,65) );
+
+    // apply state adjustments
+    if (state != QPalette::Active) {
+        // TODO - now tweak all the colors based on the state!
+    }
+
+    // calculated backgrounds
+    _colors.bg[2] = KColorUtils::tint( _colors.bg[0], _colors.fg[2] );
+    _colors.bg[3] = KColorUtils::tint( _colors.bg[0], _colors.fg[3] );
+    _colors.bg[4] = KColorUtils::tint( _colors.bg[0], _colors.fg[4] );
+    _colors.bg[5] = KColorUtils::tint( _colors.bg[0], _colors.fg[5] );
+    _colors.bg[6] = KColorUtils::tint( _colors.bg[0], _colors.fg[6] );
+    _colors.bg[7] = KColorUtils::tint( _colors.bg[0], _colors.fg[7] );
+}
 
 QColor KColorSchemePrivate::background(KColorScheme::BackgroundRole role) const
 {
     switch (role) {
         case KColorScheme::AlternateBackground:
-            return _config.readEntry( "BackgroundAlternate", DEFAULT(AlternateBackground) );
+            return _colors.bg[1];
         case KColorScheme::ActiveBackground:
-            return KColorUtils::tint( background(KColorScheme::NormalBackground),
-                                      foreground(KColorScheme::ActiveText) );
+            return _colors.bg[2];
         case KColorScheme::LinkBackground:
-            return KColorUtils::tint( background(KColorScheme::NormalBackground),
-                                      foreground(KColorScheme::LinkText) );
+            return _colors.bg[3];
         case KColorScheme::VisitedBackground:
-            return KColorUtils::tint( background(KColorScheme::NormalBackground),
-                                      foreground(KColorScheme::VisitedText) );
+            return _colors.bg[4];
         case KColorScheme::NegativeBackground:
-            return KColorUtils::tint( background(KColorScheme::NormalBackground),
-                                      foreground(KColorScheme::NegativeText) );
+            return _colors.bg[5];
         case KColorScheme::NeutralBackground:
-            return KColorUtils::tint( background(KColorScheme::NormalBackground),
-                                      foreground(KColorScheme::NeutralText) );
+            return _colors.bg[6];
         case KColorScheme::PositiveBackground:
-            return KColorUtils::tint( background(KColorScheme::NormalBackground),
-                                      foreground(KColorScheme::PositiveText) );
+            return _colors.bg[7];
         default:
-            return _config.readEntry( "BackgroundNormal", DEFAULT(NormalBackground) );
+            return _colors.bg[0];
     }
 }
 
@@ -132,21 +153,21 @@ QColor KColorSchemePrivate::foreground(KColorScheme::ForegroundRole role) const
 {
     switch (role) {
         case KColorScheme::InactiveText:
-            return _config.readEntry( "ForegroundInactive", DEFAULT(InactiveText) );
+            return _colors.fg[1];
         case KColorScheme::ActiveText:
-            return _config.readEntry( "ForegroundActive", QColor(255,0,0) );
+            return _colors.fg[2];
         case KColorScheme::LinkText:
-            return _config.readEntry( "ForegroundLink", QColor(0,0,255) );
+            return _colors.fg[3];
         case KColorScheme::VisitedText:
-            return _config.readEntry( "ForegroundVisited", QColor(88,55,150) );
+            return _colors.fg[4];
         case KColorScheme::NegativeText:
-            return _config.readEntry( "ForegroundNegative", QColor(107,0,0) );
+            return _colors.fg[5];
         case KColorScheme::NeutralText:
-            return _config.readEntry( "ForegroundNeutral", QColor(0,90,95) );
+            return _colors.fg[6];
         case KColorScheme::PositiveText:
-            return _config.readEntry( "ForegroundPositive", QColor(0,95,0) );
+            return _colors.fg[7];
         default:
-            return _config.readEntry( "ForegroundNormal", DEFAULT(NormalText) );
+            return _colors.fg[0];
     }
 }
 
@@ -154,9 +175,9 @@ QColor KColorSchemePrivate::decoration(KColorScheme::DecorationRole role) const
 {
     switch (role) {
         case KColorScheme::FocusColor:
-            return _config.readEntry( "DecorationFocus", QColor(239,132,65) );
+            return _colors.deco[1];
         default:
-            return _config.readEntry( "DecorationHover", QColor(72,177,60) );
+            return _colors.deco[0];
     }
 }
 
@@ -217,7 +238,11 @@ KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConf
             d = new KColorSchemePrivate(config, state, "Colors:Button", defaultButtonColors);
             break;
         case Selection:
-            d = new KColorSchemePrivate(config, state, "Colors:Selection", defaultSelectionColors);
+            // inactiver/disabled uses Window colors instead, ala gtk
+            if (state == QPalette::Active)
+                d = new KColorSchemePrivate(config, state, "Colors:Selection", defaultSelectionColors);
+            else
+                d = new KColorSchemePrivate(config, state, "Colors:Window", defaultSelectionColors);
             break;
         case Tooltip:
             d = new KColorSchemePrivate(config, state, "Colors:Tooltip", defaultTooltipColors);
