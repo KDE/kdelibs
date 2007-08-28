@@ -37,6 +37,10 @@ Nepomuk::Services::RDFRepository::RDFRepository( Nepomuk::Middleware::Service* s
 
 void Nepomuk::Services::RDFRepository::createRepository( const QString& repid )
 {
+    if ( !service() ) {
+        return;
+    }
+
     Middleware::Message m( service()->url(), "createRepository" );
     m.addArgument( repid );
 
@@ -46,6 +50,10 @@ void Nepomuk::Services::RDFRepository::createRepository( const QString& repid )
 
 QStringList Nepomuk::Services::RDFRepository::listRepositoryIds( )
 {
+    if ( !service() ) {
+        return QStringList();
+    }
+
     Middleware::Message m( service()->url(), "listRepositoryIds" );
 
     Middleware::Result reply = service()->methodCall( m );
@@ -61,6 +69,10 @@ QStringList Nepomuk::Services::RDFRepository::listRepositoryIds( )
 
 void Nepomuk::Services::RDFRepository::removeRepository( const QString& repid )
 {
+    if ( !service() ) {
+        return;
+    }
+
     Middleware::Message m( service()->url(), "removeRepository" );
     m.addArgument( repid );
 
@@ -70,6 +82,10 @@ void Nepomuk::Services::RDFRepository::removeRepository( const QString& repid )
 
 int Nepomuk::Services::RDFRepository::getRepositorySize( const QString& repid )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "getRepositorySize" );
     m.addArgument( repid );
 
@@ -86,6 +102,10 @@ int Nepomuk::Services::RDFRepository::getRepositorySize( const QString& repid )
 
 int Nepomuk::Services::RDFRepository::contains( const QString& repid, const Soprano::Statement& statement )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "contains" );
     m.addArgument( repid );
     QVariant v;
@@ -106,6 +126,10 @@ int Nepomuk::Services::RDFRepository::contains( const QString& repid, const Sopr
 void Nepomuk::Services::RDFRepository::addStatement( const QString& repid,
 						     const Soprano::Statement& statement )
 {
+    if ( !service() ) {
+        return;
+    }
+
     Middleware::Message m( service()->url(), "addStatement" );
     m.addArgument( repid );
     QVariant v;
@@ -119,6 +143,10 @@ void Nepomuk::Services::RDFRepository::addStatement( const QString& repid,
 void Nepomuk::Services::RDFRepository::addStatements( const QString& graphId,
 						      const QList<Soprano::Statement>& statements )
 {
+    if ( !service() ) {
+        return;
+    }
+
     Middleware::Message m( service()->url(), "addStatements" );
     m.addArgument( graphId );
     QVariant v;
@@ -132,6 +160,10 @@ void Nepomuk::Services::RDFRepository::addStatements( const QString& graphId,
 void Nepomuk::Services::RDFRepository::removeContext( const QString& graphId,
 						      const Soprano::Node& context )
 {
+    if ( !service() ) {
+        return;
+    }
+
     Middleware::Message m( service()->url(), "removeContext" );
     m.addArgument( graphId );
     QVariant v;
@@ -145,6 +177,10 @@ void Nepomuk::Services::RDFRepository::removeContext( const QString& graphId,
 int Nepomuk::Services::RDFRepository::removeStatement( const QString& graphId,
 						       const Soprano::Statement& statement )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "removeStatement" );
     m.addArgument( graphId );
     QVariant v;
@@ -165,6 +201,10 @@ int Nepomuk::Services::RDFRepository::removeStatement( const QString& graphId,
 int Nepomuk::Services::RDFRepository::removeStatements( const QString& graphId,
 							const QList<Soprano::Statement>& statements )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "removeStatements" );
     m.addArgument( graphId );
     QVariant v;
@@ -185,6 +225,10 @@ int Nepomuk::Services::RDFRepository::removeStatements( const QString& graphId,
 int Nepomuk::Services::RDFRepository::removeAllStatements( const QString& graphId,
 							   const Soprano::Statement& statement )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "removeAllStatements" );
     m.addArgument( graphId );
     QVariant v;
@@ -205,6 +249,10 @@ int Nepomuk::Services::RDFRepository::removeAllStatements( const QString& graphI
 QList<Soprano::Statement>
 Nepomuk::Services::RDFRepository::listStatements( const QString& repositoryId, const Soprano::Statement& statement )
 {
+    if ( !service() ) {
+        return QList<Soprano::Statement>();
+    }
+
     Middleware::Message m( service()->url(), "listStatements" );
     m.addArgument( repositoryId );
     QVariant v;
@@ -219,6 +267,10 @@ Nepomuk::Services::RDFRepository::listStatements( const QString& repositoryId, c
 
 QList<Soprano::Statement> Nepomuk::Services::RDFRepository::constructSparql( const QString& repositoryId, const QString& query )
 {
+    if ( !service() ) {
+        return QList<Soprano::Statement>();
+    }
+
     Middleware::Message m( service()->url(), "constructSparql" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -231,6 +283,10 @@ QList<Soprano::Statement> Nepomuk::Services::RDFRepository::constructSparql( con
 
 Nepomuk::RDF::QueryResultTable Nepomuk::Services::RDFRepository::selectSparql( const QString& repositoryId, const QString& query )
 {
+    if ( !service() ) {
+        return Nepomuk::RDF::QueryResultTable();
+    }
+
     Middleware::Message m( service()->url(), "selectSparql" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -243,6 +299,10 @@ Nepomuk::RDF::QueryResultTable Nepomuk::Services::RDFRepository::selectSparql( c
 
 QList<Soprano::Statement> Nepomuk::Services::RDFRepository::describeSparql( const QString& repositoryId, const QString& query )
 {
+    if ( !service() ) {
+        return QList<Soprano::Statement>();
+    }
+
     Middleware::Message m( service()->url(), "describeSparql" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -256,6 +316,10 @@ QList<Soprano::Statement> Nepomuk::Services::RDFRepository::describeSparql( cons
 QList<Soprano::Statement> Nepomuk::Services::RDFRepository::construct( const QString& repositoryId, const QString& query,
 									    const QString& querylanguage )
 {
+    if ( !service() ) {
+        return QList<Soprano::Statement>();
+    }
+
     Middleware::Message m( service()->url(), "construct" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -270,6 +334,10 @@ QList<Soprano::Statement> Nepomuk::Services::RDFRepository::construct( const QSt
 Nepomuk::RDF::QueryResultTable Nepomuk::Services::RDFRepository::select( const QString& repositoryId, const QString& query,
 									 const QString& querylanguage )
 {
+    if ( !service() ) {
+        return Nepomuk::RDF::QueryResultTable();
+    }
+
     Middleware::Message m( service()->url(), "select" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -284,6 +352,10 @@ Nepomuk::RDF::QueryResultTable Nepomuk::Services::RDFRepository::select( const Q
 int Nepomuk::Services::RDFRepository::queryListStatements( const QString& repositoryId, const Soprano::Statement& statement,
 							   int timeoutMSec )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "queryListStatements" );
     m.addArgument( repositoryId );
     QVariant v;
@@ -305,6 +377,10 @@ int Nepomuk::Services::RDFRepository::queryListStatements( const QString& reposi
 int Nepomuk::Services::RDFRepository::queryConstruct( const QString& repositoryId, const QString& query,
 						      const QString& querylanguage, int timeoutMSec )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "queryConstruct" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -325,6 +401,10 @@ int Nepomuk::Services::RDFRepository::queryConstruct( const QString& repositoryI
 int Nepomuk::Services::RDFRepository::querySelect( const QString& repositoryId, const QString& query,
 						   const QString& querylanguage, int timeoutMSec )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "querySelect" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -345,6 +425,10 @@ int Nepomuk::Services::RDFRepository::querySelect( const QString& repositoryId, 
 int Nepomuk::Services::RDFRepository::queryConstructSparql( const QString& repositoryId, const QString& query,
 							    int timeoutMSec )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "queryConstructSparql" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -364,6 +448,10 @@ int Nepomuk::Services::RDFRepository::queryConstructSparql( const QString& repos
 int Nepomuk::Services::RDFRepository::querySelectSparql( const QString& repositoryId, const QString& query,
 							 int timeoutMSec )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "querySelectSparql" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -382,6 +470,10 @@ int Nepomuk::Services::RDFRepository::querySelectSparql( const QString& reposito
 int Nepomuk::Services::RDFRepository::queryDescribeSparql( const QString& repositoryId, const QString& query,
 							   int timeoutMSec )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "queryDescribeSparql" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -400,6 +492,10 @@ int Nepomuk::Services::RDFRepository::queryDescribeSparql( const QString& reposi
 
 int Nepomuk::Services::RDFRepository::askSparql( const QString& repositoryId, const QString& query )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "askSparql" );
     m.addArgument( repositoryId );
     m.addArgument( query );
@@ -417,6 +513,10 @@ int Nepomuk::Services::RDFRepository::askSparql( const QString& repositoryId, co
 
 QList<Soprano::Statement> Nepomuk::Services::RDFRepository::fetchListStatementsResults( int queryId, int max )
 {
+    if ( !service() ) {
+        return QList<Soprano::Statement>();
+    }
+
     Middleware::Message m( service()->url(), "fetchListStatementsResults" );
     m.addArgument( queryId );
     m.addArgument( max );
@@ -429,6 +529,10 @@ QList<Soprano::Statement> Nepomuk::Services::RDFRepository::fetchListStatementsR
 
 QList<Soprano::Statement> Nepomuk::Services::RDFRepository::fetchConstructResults( int queryId, int max )
 {
+    if ( !service() ) {
+        return QList<Soprano::Statement>();
+    }
+
     Middleware::Message m( service()->url(), "fetchConstructResults" );
     m.addArgument( queryId );
     m.addArgument( max );
@@ -441,6 +545,10 @@ QList<Soprano::Statement> Nepomuk::Services::RDFRepository::fetchConstructResult
 
 QList<Soprano::Statement> Nepomuk::Services::RDFRepository::fetchDescribeResults( int queryId, int max )
 {
+    if ( !service() ) {
+        return QList<Soprano::Statement>();
+    }
+
     Middleware::Message m( service()->url(), "fetchDescribeResults" );
     m.addArgument( queryId );
     m.addArgument( max );
@@ -453,6 +561,10 @@ QList<Soprano::Statement> Nepomuk::Services::RDFRepository::fetchDescribeResults
 
 Nepomuk::RDF::QueryResultTable Nepomuk::Services::RDFRepository::fetchSelectResults( int queryId, int max )
 {
+    if ( !service() ) {
+        return Nepomuk::RDF::QueryResultTable();
+    }
+
     Middleware::Message m( service()->url(), "fetchSelectResults" );
     m.addArgument( queryId );
     m.addArgument( max );
@@ -465,6 +577,10 @@ Nepomuk::RDF::QueryResultTable Nepomuk::Services::RDFRepository::fetchSelectResu
 
 void Nepomuk::Services::RDFRepository::closeQuery( int listId )
 {
+    if ( !service() ) {
+        return;
+    }
+
     Middleware::Message m( service()->url(), "closeQuery" );
     m.addArgument( listId );
 
@@ -474,6 +590,10 @@ void Nepomuk::Services::RDFRepository::closeQuery( int listId )
 
 QStringList Nepomuk::Services::RDFRepository::supportedQueryLanguages()
 {
+    if ( !service() ) {
+        return QStringList();
+    }
+
     Middleware::Message m( service()->url(), "supportedQueryLanguages" );
     Middleware::Result reply = service()->methodCall( m );
     setLastResult( reply );
@@ -483,6 +603,10 @@ QStringList Nepomuk::Services::RDFRepository::supportedQueryLanguages()
 
 int Nepomuk::Services::RDFRepository::supportsQueryLanguage( const QString& lang )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "supportsQueryLanguage" );
     m.addArgument( lang );
 
@@ -497,6 +621,10 @@ int Nepomuk::Services::RDFRepository::supportsQueryLanguage( const QString& lang
 
 QStringList Nepomuk::Services::RDFRepository::supportedSerializations()
 {
+    if ( !service() ) {
+        return QStringList();
+    }
+
     Middleware::Message m( service()->url(), "supportedSerializations" );
     Middleware::Result reply = service()->methodCall( m );
     setLastResult( reply );
@@ -506,6 +634,10 @@ QStringList Nepomuk::Services::RDFRepository::supportedSerializations()
 
 int Nepomuk::Services::RDFRepository::supportsSerialization( const QString& serializationMimeType )
 {
+    if ( !service() ) {
+        return 0;
+    }
+
     Middleware::Message m( service()->url(), "supportsSerialization" );
     m.addArgument( serializationMimeType );
 
@@ -521,6 +653,10 @@ int Nepomuk::Services::RDFRepository::supportsSerialization( const QString& seri
 void Nepomuk::Services::RDFRepository::addGraph( const QString& repositoryId, const QString& graph,
 						 const QString& formatMimetype, const Soprano::Node& context )
 {
+    if ( !service() ) {
+        return;
+    }
+
     Middleware::Message m( service()->url(), "addGraph" );
     m.addArgument( repositoryId );
     m.addArgument( graph );
@@ -536,6 +672,10 @@ void Nepomuk::Services::RDFRepository::addGraph( const QString& repositoryId, co
 void Nepomuk::Services::RDFRepository::removeGraph( const QString& repositoryId, const QString& graph,
 						    const QString& formatMimetype, const Soprano::Node& context )
 {
+    if ( !service() ) {
+        return;
+    }
+
     Middleware::Message m( service()->url(), "removeGraph" );
     m.addArgument( repositoryId );
     m.addArgument( graph );
