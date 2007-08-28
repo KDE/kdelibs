@@ -94,7 +94,7 @@ enum myRoles {
 
 class KShortcutsEditorItem : public QTreeWidgetItem
 {
- public:
+public:
 	KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action);
 	virtual ~KShortcutsEditorItem();
 	void undoChanges();
@@ -168,10 +168,6 @@ public:
 };
 
 
-//
-//H4X
-//
-//TODO:make sure that the rest of the layout is top-aligned!
 KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
  : KExtendableItemDelegate(parent)
 {
@@ -191,7 +187,6 @@ QSize KShortcutsEditorDelegate::sizeHint(const QStyleOptionViewItem &option,
 }
 
 
-//#include "kshapegestureselector.h"
 //slot
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
@@ -301,8 +296,7 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 	layout->addWidget(m_customRadio, 1, 0);
 	layout->addWidget(m_customEditor, 1, 1);
 	layout->setColumnStretch(2, 1);
-	//layout->addItem(new QSpacerItem(0, 0), 0, 2);
-	
+
 	connect(m_defaultRadio, SIGNAL(toggled(bool)),
 	        this, SLOT(defaultChecked(bool)));
 	connect(m_customEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
@@ -419,7 +413,8 @@ void KShortcutsEditor::save()
 void KShortcutsEditor::undoChanges()
 {
 	//TODO: make this crash-proof. The tree widget does not seem to live long enough.
-	//Now I know what the list in the old implementation was for. Still, is there a better way?
+	//Hey, it seems to work with 4.3-ish Qt versions. Look here if you get crashes
+	//when closing the dialog, though.
 	for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
 		if ((*it)->childCount())
 			continue;
@@ -437,7 +432,9 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	ui.setupUi(q);
 	ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
 	ui.list->header()->setStretchLastSection(false);
-	ui.list->header()->hideSection(GlobalAlternate);  //undesirable for user friendliness...
+	ui.list->header()->hideSection(GlobalAlternate);  //not expected to be very useful
+	ui.list->header()->hideSection(ShapeGesture);  //mouse gestures didn't make it in time...
+	ui.list->header()->hideSection(RockerGesture);
 	if (!(actionTypes & KShortcutsEditor::GlobalAction)) {
 		ui.list->header()->hideSection(GlobalPrimary);
 	} else if (!(actionTypes & ~KShortcutsEditor::GlobalAction)) {
@@ -452,19 +449,16 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	//we have our own editing mechanism
 	ui.list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-	//TODO: need to create a signal that signals on every change, not just writeout!
-	//QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
-	//                 q, SLOT(globalSettingsChangedSystemwide(int)));
+	//TODO listen to changes to global shortcuts
 	QObject::connect(delegate, SIGNAL(shortcutChanged(QVariant, const QModelIndex &)),
 	                 q, SLOT(capturedShortcut(QVariant, const QModelIndex &)));
 }
 
 
-// Look, Trolltech! You made QTreeWidget::itemFromIndex protected but I'll do it anyway.
-// NOTE: there is no official guarantee that this pointer will stay valid during anything.
+//QTreeWidget::itemFromIndex is protected because... uhm... well, it just is.
 KShortcutsEditorItem *KShortcutsEditorPrivate::itemFromIndex(const QModelIndex &index)
 {
-	//don't tell anyone please!
+	//Code suggested on some Qt mailing list. Works on <= 64 bit systems :)
 	return reinterpret_cast<KShortcutsEditorItem *>(ui.list->model()->data(index, ItemPointerRole).toULongLong());
 }
 
@@ -488,7 +482,6 @@ QTreeWidgetItem *KShortcutsEditorPrivate::findOrMakeItem(QTreeWidgetItem *parent
 void KShortcutsEditorPrivate::capturedShortcut(const QVariant &newShortcut, const QModelIndex &index)
 {
 	//dispatch to the right handler
-	//TODO: make sure that letter shortcuts only go in if allowed. modify KKeySequenceWidget.
 	if (!index.isValid())
 		return;
 	int column = index.column();
@@ -551,14 +544,12 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 	}
 
 	item->setKeySequence(column, capture);
-    q->keyChange();
+	//This line was introduced by someone else and it seems to work. Consider
+	//having capturedShortcut return the new value instead when mouse gestures are back.
+	//--ahartmetz
+	q->keyChange();
 	//force view update
 	item->setText(column, capture.toString());
-	//update global configuration to reflect our changes
-	//TODO:: much better to do this in setKeySequence
-	if (column == GlobalPrimary || column == GlobalAlternate) {
-
-	}
 }
 
 
@@ -686,15 +677,17 @@ bool KShortcutsEditorPrivate::stealRockerGesture(KShortcutsEditorItem *item, con
 }
 
 
+//TODO have KGlobalAccel emit a signal on changes, connect it to this, do what needs to be done
 //slot
 void KShortcutsEditorPrivate::globalSettingsChangedSystemwide(int which)
 {
 	Q_UNUSED(which)
-	//TODO:redisplay or similar
+	//update display or similar
 }
 
 
-//TODO: undoChanges does not ask about conflicts, is that better?
+//We ask the user here if there are any conflicts, as opposed to undoChanges().
+//They don't do the same thing anyway, this just not to confuse any readers.
 //slot
 void KShortcutsEditor::allDefault()
 {
@@ -857,7 +850,6 @@ QKeySequence KShortcutsEditorItem::keySequence(uint column) const
 void KShortcutsEditorItem::setKeySequence(uint column, const QKeySequence &seq)
 {
 	KShortcut ks;
-	//TODO: register changes system-wide
 	if (column == GlobalPrimary || column == GlobalAlternate) {
 		ks = m_action->globalShortcut();
 		if (!m_oldGlobalShortcut)
@@ -875,7 +867,7 @@ void KShortcutsEditorItem::setKeySequence(uint column, const QKeySequence &seq)
 
 	//avoid also setting the default shortcut - what we are setting here is custom by definition
 	if (column == GlobalPrimary || column == GlobalAlternate)
-		m_action->setGlobalShortcut(ks, KAction::ActiveShortcut);
+		m_action->setGlobalShortcut(ks, KAction::ActiveShortcut, KAction::NoAutoloading);
 	else
 		m_action->setShortcut(ks, KAction::ActiveShortcut);
 
