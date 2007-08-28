@@ -820,7 +820,7 @@ void AddressBook::resourceLoadingFinished( Resource *res )
 
 void AddressBook::resourceSavingFinished( Resource *res )
 {
-  d->mPendingLoadResources.remove( res );
+  d->mPendingSaveResources.remove( res );
 
   emit savingFinished( res );
 }
