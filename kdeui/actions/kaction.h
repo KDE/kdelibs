@@ -36,6 +36,8 @@ class KIcon;
 class KShapeGesture;
 class KRockerGesture;
 
+//TODO Reduce the word count. This is not very focused and takes too long to read.
+//Keep in mind that QAction also has documentation that we don't need to repeat here.
 /**
  * @short Class to encapsulate user-driven action or event
  *
@@ -185,7 +187,6 @@ class KRockerGesture;
  * does that for you.
  *
  * @see KStdAction
- * \todo test changes!
  */
 class KDEUI_EXPORT KAction : public QWidgetAction
 {
@@ -213,13 +214,14 @@ public:
     /**
      * An enum about global shortcut setter semantics
      */
-    //This enum will be ORed with ShortcutType in calls to KGlobalAccel, so it may not contain
+    //This enum will be ORed with ShortcutType in calls to KGlobalAccel, so it must not contain
     //any value equal to a value in ShortcutType.
     enum GlobalShortcutLoading {
-      /// Look up the action name in global settings and set the shortcut as saved there
+      /// Look up the action in global settings (using its main component's name and text())
+      /// and set the shortcut as saved there.
       /// @see setGlobalShortcut()
       Autoloading = 0x0,
-      /// Prevent autoloading of saved global shortcut for action - see setGlobalShortcut()
+      /// Prevent autoloading of saved global shortcut for action
       NoAutoloading = 0x4
     };
     /**
@@ -274,7 +276,7 @@ public:
      *
      * \param shortcut shortcut(s) to use for this action in its specified shortcutContext()
      * \param type type of shortcut to be set: active shortcut,
-     *  default shortcut, or both (default argument value).
+     *  default shortcut, or both (the default).
      */
     void setShortcut(const KShortcut& shortcut, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
 
@@ -325,14 +327,22 @@ public:
      * Unlike regular shortcuts, the application's window does not need focus
      * for them to be activated.
      *
-     * \param shortcut shortcut(s) to grab as global accelerators.
+     * When an action, identified by main component name and text(), is assigned
+     * a global shortcut for the first time on a KDE installation the assignment will
+     * be saved and restored every time the action's globalShortcutAllowed flag
+     * becomes true. \e This \e includes \e calling \e setGlobalShortcut()!
+     * If you actually want to change the global shortcut you have to set
+     * @p loading to NoAutoloading. The new shortcut will be saved again.
+     * The only way to forget the action's global shortcut is to do
+     * \code
+     * setGlobalShortcut(KShortcut(), KAction::ActiveShortcut | KAction::DefaultShortcut,
+     *                   KAction::NoAutoloading)
+     * \endcode
+     * \param shortcut global shortcut(s) to assign
      * \param type the type of shortcut to be set, whether the active shortcut, the default shortcut,
-     *            or both (the default).
-     *
-     * \note For convenience, passing a shortcut also sets the default (as this is by far
-     *       the most common use case; mostly active shortcuts are loaded from configuration
-     *       files).  Pass \b false for \a isDefault to just set this
-     *       shortcut.
+     *             or both (the default).
+     * \param loading load the previous shortcut (Autoloading, the default) or really set a new
+     *                shortcut (NoAutoloading).
      *
      * \sa KGlobalAccel
      * \sa globalShortcut()
@@ -340,7 +350,6 @@ public:
     void setGlobalShortcut(const KShortcut& shortcut, ShortcutTypes type =
                            ShortcutTypes(ActiveShortcut | DefaultShortcut),
                            GlobalShortcutLoading loading = Autoloading);
-    //^ TODO: document autoloading
 
     /**
      * Returns true if this action is permitted to have a global shortcut.
