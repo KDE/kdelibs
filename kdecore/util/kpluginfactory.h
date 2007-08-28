@@ -342,7 +342,7 @@ T *KPluginFactory::create(QObject *parent, const QVariantList &args)
 template<typename T>
 T *KPluginFactory::create(const QString &keyword, QObject *parent, const QVariantList &args)
 {
-    QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, QString());
+    QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, keyword);
 
     T *t = qobject_cast<T *>(o);
     if (!t) {
