@@ -348,6 +348,12 @@ void KFilePlacesView::showEvent(QShowEvent *event)
     QTimer::singleShot(100, this, SLOT(_k_enableSmoothItemResizing()));
 }
 
+void KFilePlacesView::hideEvent(QHideEvent *event)
+{
+    QListView::hideEvent(event);
+    d->smoothItemResizing = false;
+}
+
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
 {
     QListView::rowsInserted(parent, start, end);
