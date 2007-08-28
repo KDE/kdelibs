@@ -23,7 +23,6 @@
 #define KDECORE_KPLUGINFACTORY_H
 
 #include "kdecore_export.h"
-#include "kgenericfactory.tcc"
 
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
@@ -303,7 +302,6 @@ protected:
      */
     virtual QObject *create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword);
 
-private:
     template<class impl, class ParentType>
     static QObject *createInstance(QWidget *parentWidget, QObject *parent, const QVariantList &args)
     {
@@ -323,6 +321,7 @@ private:
         static CreateInstanceFunction createInstanceFunction(...) { return &createInstance<impl, QObject>; }
     };
 
+private:
     void registerPlugin(const QString &keyword, const QMetaObject *metaObject, CreateInstanceFunction instanceFunction);
 };
 
@@ -331,15 +330,8 @@ KDE_DEPRECATED typedef KPluginFactory KLibFactory;
 template<typename T>
 T *KPluginFactory::create(QObject *parent, const QVariantList &args)
 {
-    QObject *o;
-    if (KDEPrivate::PartInheritanceTest<T>::Result) {
-        Q_ASSERT(!parent || parent->isWidgetType());
-        o = create(T::staticMetaObject.className(), reinterpret_cast<QWidget *>(parent), parent, args, QString());
-    } else {
-        o = create(T::staticMetaObject.className(), 0, parent, args, QString());
-    }
+    QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, QString());
 
-    T *t = qobject_cast<T *>(o);
     if (!t) {
         delete o;
     }
@@ -349,13 +341,7 @@ T *KPluginFactory::create(QObject *parent, const QVariantList &args)
 template<typename T>
 T *KPluginFactory::create(const QString &keyword, QObject *parent, const QVariantList &args)
 {
-    QObject *o;
-    if (KDEPrivate::PartInheritanceTest<T>::Result) {
-        Q_ASSERT(!parent || parent->isWidgetType());
-        o = create(T::staticMetaObject.className(), reinterpret_cast<QWidget *>(parent), parent, args, keyword);
-    } else {
-        o = create(T::staticMetaObject.className(), 0, parent, args, keyword);
-    }
+    QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, QString());
 
     T *t = qobject_cast<T *>(o);
     if (!t) {

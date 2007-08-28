@@ -73,9 +73,7 @@ void KPluginFactory::registerPlugin(const QString &keyword, const QMetaObject *m
 {
     Q_D(KPluginFactory);
 
-    if (!metaObject) {
-        kFatal(152) << "The plugin you are trying to register is missing the Q_OBJECT macro!";
-    }
+    Q_ASSERT(metaObject);
 
     // we allow different interfaces to be registered without keyword
     if (!keyword.isEmpty()) {
