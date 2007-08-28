@@ -32,11 +32,11 @@ struct KDEPluginVerificationData
 };
 
 #define K_PLUGIN_VERIFICATION_DATA \
-Q_EXTERN_C const KDEPluginVerificationData kde_plugin_verification_data = \
+Q_EXTERN_C KDE_EXPORT const KDEPluginVerificationData kde_plugin_verification_data = \
 { 1, KDE_VERSION, KDE_VERSION_STRING };
 
 #define K_EXPORT_PLUGIN_VERSION(version) \
-Q_EXTERN_C const quint32 kde_plugin_version = version;
+Q_EXTERN_C KDE_EXPORT const quint32 kde_plugin_version = version;
 
 #define K_EXPORT_PLUGIN(factory) \
 Q_EXPORT_PLUGIN(factory) \
