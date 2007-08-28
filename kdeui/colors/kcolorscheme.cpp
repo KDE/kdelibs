@@ -74,7 +74,7 @@ DefaultColors defaultTooltipColors = {
 class KColorSchemePrivate : public QSharedData
 {
 public:
-    explicit KColorSchemePrivate(const KSharedConfigPtr&, const char*, DefaultColors);
+    explicit KColorSchemePrivate(const KSharedConfigPtr&, QPalette::ColorGroup, const char*, DefaultColors);
 
     QColor background(KColorScheme::BackgroundRole) const;
     QColor foreground(KColorScheme::ForegroundRole) const;
@@ -86,10 +86,16 @@ private:
     qreal _contrast;
 };
 
-KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config, const char *group, DefaultColors defaults)
+KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
+                                         QPalette::ColorGroup state,
+                                         const char *group,
+                                         DefaultColors defaults)
     : _config( config, group ), _defaults( defaults )
 {
     _contrast = KGlobalSettings::contrastF( config );
+
+    // TODO do something with state, means we need to cache the config values
+    // up-front so we can fiddle with them
 }
 
 #define DEFAULT(a) QColor( _defaults.a[0], _defaults.a[1], _defaults.a[2] )
@@ -176,24 +182,48 @@ KColorScheme::~KColorScheme()
 
 KColorScheme::KColorScheme(ColorSet set, KSharedConfigPtr config)
 {
+    // bleh, copied code, a good reason for this ctor to go away
     if (!config) {
         config = KGlobal::config();
     }
     switch (set) {
         case Window:
-            d = new KColorSchemePrivate(config, "Colors:Window", defaultWindowColors);
+            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:Window", defaultWindowColors);
             break;
         case Button:
-            d = new KColorSchemePrivate(config, "Colors:Button", defaultButtonColors);
+            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:Button", defaultButtonColors);
             break;
         case Selection:
-            d = new KColorSchemePrivate(config, "Colors:Selection", defaultSelectionColors);
+            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:Selection", defaultSelectionColors);
             break;
         case Tooltip:
-            d = new KColorSchemePrivate(config, "Colors:Tooltip", defaultTooltipColors);
+            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:Tooltip", defaultTooltipColors);
             break;
         default:
-            d = new KColorSchemePrivate(config, "Colors:View", defaultViewColors);
+            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:View", defaultViewColors);
+    }
+}
+
+KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConfigPtr config)
+{
+    if (!config) {
+        config = KGlobal::config();
+    }
+    switch (set) {
+        case Window:
+            d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors);
+            break;
+        case Button:
+            d = new KColorSchemePrivate(config, state, "Colors:Button", defaultButtonColors);
+            break;
+        case Selection:
+            d = new KColorSchemePrivate(config, state, "Colors:Selection", defaultSelectionColors);
+            break;
+        case Tooltip:
+            d = new KColorSchemePrivate(config, state, "Colors:Tooltip", defaultTooltipColors);
+            break;
+        default:
+            d = new KColorSchemePrivate(config, state, "Colors:View", defaultViewColors);
     }
 }
 

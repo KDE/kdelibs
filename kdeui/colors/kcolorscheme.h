@@ -25,6 +25,8 @@
 
 #include <QtCore/QExplicitlySharedDataPointer>
 
+#include <QtGui/QPalette>
+
 class KConfigBase;
 class QColor;
 class QBrush;
@@ -257,8 +259,20 @@ public:
     /**
      * Construct a palette from given color set, using the colors from the
      * given KConfig (if null, the system colors are used).
+     *
+     * @deprecated Use the other constructor that takes a state.
+     * In KDE4 it will not be safe to assume that the palette for different
+     * states (Active, Inactive, Disabled as of Qt 4.3) are identical.
+     * Therefore users <i>really should</i> specify a state. This constructor
+     * will most likely be removed before 4.0 final.
      */
-    explicit KColorScheme(ColorSet = View, KSharedConfigPtr = KSharedConfigPtr());
+    explicit KDE_CONSTRUCTOR_DEPRECATED KColorScheme(ColorSet = View, KSharedConfigPtr = KSharedConfigPtr());
+
+    /**
+     * Construct a palette from given color set and state, using the colors
+     * from the given KConfig (if null, the system colors are used).
+     */
+    explicit KDE_CONSTRUCTOR_DEPRECATED KColorScheme(QPalette::ColorGroup, ColorSet = View, KSharedConfigPtr = KSharedConfigPtr());
 
     /**
      * Retrieve the requested background brush.
