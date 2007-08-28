@@ -13,7 +13,6 @@ set(kdefx_LIB_SRCS
 kpixmapsplitter.cpp
 kpixmapeffect.cpp
 kimageeffect.cpp
-kdrawutil.cpp
 kcpuinfo.cpp
 )
 
@@ -27,7 +26,7 @@ install(TARGETS kdefx  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install( FILES kdefx_export.h kpixmapsplitter.h  kpixmapeffect.h kimageeffect.h kdrawutil.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
+install( FILES kdefx_export.h kpixmapsplitter.h  kpixmapeffect.h kimageeffect.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 
 
 
