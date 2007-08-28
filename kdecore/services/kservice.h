@@ -525,6 +525,7 @@ public:
         if (factory) {
             const QString keyword = service->pluginKeyword();
             T *o = factory->create<T>(keyword, parent, args);
+            delete factory;
             if (o) {
                 return o;
             }
