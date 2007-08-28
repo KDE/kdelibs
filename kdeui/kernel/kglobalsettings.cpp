@@ -202,7 +202,7 @@ int KGlobalSettings::contextMenuKey ()
 
 QColor KGlobalSettings::toolBarHighlightColor()
 {
-    return KColorScheme(KColorScheme::Button).decoration(KColorScheme::HoverColor).color();
+    return KColorScheme(QPalette::Active, KColorScheme::Button).decoration(KColorScheme::HoverColor).color();
 }
 
 QColor KGlobalSettings::inactiveTitleColor()
@@ -268,37 +268,37 @@ qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
 
 QColor KGlobalSettings::buttonBackground()
 {
-    return KColorScheme(KColorScheme::Button).background().color();
+    return KColorScheme(QPalette::Active, KColorScheme::Button).background().color();
 }
 
 QColor KGlobalSettings::buttonTextColor()
 {
-    return KColorScheme(KColorScheme::Button).foreground().color();
+    return KColorScheme(QPalette::Active, KColorScheme::Button).foreground().color();
 }
 
 QColor KGlobalSettings::baseColor()
 {
-    return KColorScheme(KColorScheme::View).background().color();
+    return KColorScheme(QPalette::Active, KColorScheme::View).background().color();
 }
 
 QColor KGlobalSettings::textColor()
 {
-    return KColorScheme(KColorScheme::View).foreground().color();
+    return KColorScheme(QPalette::Active, KColorScheme::View).foreground().color();
 }
 
 QColor KGlobalSettings::highlightedTextColor()
 {
-    return KColorScheme(KColorScheme::Selection).foreground().color();
+    return KColorScheme(QPalette::Active, KColorScheme::Selection).foreground().color();
 }
 
 QColor KGlobalSettings::highlightColor()
 {
-    return KColorScheme(KColorScheme::Selection).background().color();
+    return KColorScheme(QPalette::Active, KColorScheme::Selection).background().color();
 }
 
 QColor KGlobalSettings::alternateBackgroundColor()
 {
-    return KColorScheme(KColorScheme::View).background(KColorScheme::AlternateBackground).color();
+    return KColorScheme(QPalette::Active, KColorScheme::View).background(KColorScheme::AlternateBackground).color();
 }
 
 QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
@@ -332,12 +332,12 @@ bool KGlobalSettings::allowDefaultBackgroundImages()
 
 QColor KGlobalSettings::linkColor()
 {
-    return KColorScheme(KColorScheme::View).foreground(KColorScheme::LinkText).color();
+    return KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color();
 }
 
 QColor KGlobalSettings::visitedLinkColor()
 {
-    return KColorScheme(KColorScheme::View).foreground(KColorScheme::VisitedText).color();
+    return KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::VisitedText).color();
 }
 
 QFont KGlobalSettings::generalFont()
@@ -880,53 +880,37 @@ void KGlobalSettings::applyGUIStyle()
 
 QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &config)
 {
-    KColorScheme schemeView(KColorScheme::View, config);
-    KColorScheme schemeWindow(KColorScheme::Window, config);
-    KColorScheme schemeButton(KColorScheme::Button, config);
-    KColorScheme schemeSelection(KColorScheme::Selection, config);
-
     QPalette palette;
 
-    // normal palette
-    palette.setBrush( QPalette::WindowText, schemeWindow.foreground() );
-    palette.setBrush( QPalette::Window, schemeWindow.background() );
-    palette.setBrush( QPalette::Base, schemeView.background() );
-    palette.setBrush( QPalette::Text, schemeView.foreground() );
-    palette.setBrush( QPalette::Button, schemeButton.background() );
-    palette.setBrush( QPalette::ButtonText, schemeButton.foreground() );
-    palette.setBrush( QPalette::Highlight, schemeSelection.background() );
-    palette.setBrush( QPalette::HighlightedText, schemeSelection.foreground() );
+    QPalette::ColorGroup states[3] = { QPalette::Active, QPalette::Inactive,
+                                       QPalette::Disabled };
 
-    palette.setColor( QPalette::Light, schemeWindow.shade( KColorScheme::LightShade ) );
-    palette.setColor( QPalette::Midlight, schemeWindow.shade( KColorScheme::MidlightShade ) );
-    palette.setColor( QPalette::Mid, schemeWindow.shade( KColorScheme::MidShade ) );
-    palette.setColor( QPalette::Dark, schemeWindow.shade( KColorScheme::DarkShade ) );
-    palette.setColor( QPalette::Shadow, schemeWindow.shade( KColorScheme::ShadowShade ) );
+    for ( int i = 0; i < 3 ; i++ ) {
+        QPalette::ColorGroup state = states[i];
+        KColorScheme schemeView(state, KColorScheme::View, config);
+        KColorScheme schemeWindow(state, KColorScheme::Window, config);
+        KColorScheme schemeButton(state, KColorScheme::Button, config);
+        KColorScheme schemeSelection(state, KColorScheme::Selection, config);
 
-    palette.setBrush( QPalette::AlternateBase, schemeView.background( KColorScheme::AlternateBackground) );
-    palette.setBrush( QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
-    palette.setBrush( QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
+        palette.setBrush( state, QPalette::WindowText, schemeWindow.foreground() );
+        palette.setBrush( state, QPalette::Window, schemeWindow.background() );
+        palette.setBrush( state, QPalette::Base, schemeView.background() );
+        palette.setBrush( state, QPalette::Text, schemeView.foreground() );
+        palette.setBrush( state, QPalette::Button, schemeButton.background() );
+        palette.setBrush( state, QPalette::ButtonText, schemeButton.foreground() );
+        palette.setBrush( state, QPalette::Highlight, schemeSelection.background() );
+        palette.setBrush( state, QPalette::HighlightedText, schemeSelection.foreground() );
 
-    // disabled palette
-    palette.setBrush( QPalette::Disabled, QPalette::WindowText, schemeWindow.foreground( KColorScheme::InactiveText ) );
-    palette.setBrush( QPalette::Disabled, QPalette::Window, schemeWindow.background() );
-    palette.setBrush( QPalette::Disabled, QPalette::Base, schemeView.background() );
-    palette.setBrush( QPalette::Disabled, QPalette::Text, schemeView.foreground( KColorScheme::InactiveText ) );
-    palette.setBrush( QPalette::Disabled, QPalette::Button, schemeButton.background() );
-    palette.setBrush( QPalette::Disabled, QPalette::ButtonText, schemeButton.foreground( KColorScheme::InactiveText ) );
-    // use Window role for disabled selection (like gtk)
-    palette.setBrush( QPalette::Disabled, QPalette::Highlight, schemeWindow.background() );
-    palette.setBrush( QPalette::Disabled, QPalette::HighlightedText, schemeWindow.foreground() );
+        palette.setColor( state, QPalette::Light, schemeWindow.shade( KColorScheme::LightShade ) );
+        palette.setColor( state, QPalette::Midlight, schemeWindow.shade( KColorScheme::MidlightShade ) );
+        palette.setColor( state, QPalette::Mid, schemeWindow.shade( KColorScheme::MidShade ) );
+        palette.setColor( state, QPalette::Dark, schemeWindow.shade( KColorScheme::DarkShade ) );
+        palette.setColor( state, QPalette::Shadow, schemeWindow.shade( KColorScheme::ShadowShade ) );
 
-    palette.setColor( QPalette::Disabled, QPalette::Light, schemeWindow.shade( KColorScheme::LightShade ) );
-    palette.setColor( QPalette::Disabled, QPalette::Midlight, schemeWindow.shade( KColorScheme::MidlightShade ) );
-    palette.setColor( QPalette::Disabled, QPalette::Mid, schemeWindow.shade( KColorScheme::MidShade ) );
-    palette.setColor( QPalette::Disabled, QPalette::Dark, schemeWindow.shade( KColorScheme::DarkShade ) );
-    palette.setColor( QPalette::Disabled, QPalette::Shadow, schemeWindow.shade( KColorScheme::ShadowShade ) );
-
-    palette.setBrush( QPalette::Disabled, QPalette::AlternateBase, schemeView.background( KColorScheme::AlternateBackground) );
-    palette.setBrush( QPalette::Disabled, QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
-    palette.setBrush( QPalette::Disabled, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
+        palette.setBrush( state, QPalette::AlternateBase, schemeView.background( KColorScheme::AlternateBackground) );
+        palette.setBrush( state, QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
+        palette.setBrush( state, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
+    }
 
     return palette;
 }
