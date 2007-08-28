@@ -136,9 +136,6 @@ KComponentData name::componentData() \
  * \param name The name of the KPluginFactory derived class. This is the name you'll need for
  * K_EXPORT_PLUGIN
  *
- * \param pluginRegistrations This is code inserted into the constructors the class. You'll want to
- * call registerPlugin from there.
- *
  * \see K_PLUGIN_FACTORY
  * \see K_PLUGIN_FACTORY_DEFINITION
  */
@@ -253,12 +250,31 @@ protected:
      * KPluginFactory subclass to make the create function able to instantiate the plugin when asked
      * for an interface the plugin implements.
      *
+     * You can register as many plugin classes as you want as long as either the plugin interface or
+     * the \p keyword makes it unique. E.g. it is possible to register a KCModule and a
+     * KParts::Part without having to specify keywords since their interfaces differ.
+     *
      * \param T The name of the plugin class
+     *
      * \param keyword An optional keyword as unique identifier for the plugin. This allows you to
      * put more than one plugin with the same interface into the same library using the same
-     * factory.
+     * factory. X-KDE-PluginKeyword is a convenient way to specify the keyword in a desktop file.
+     *
      * \param instanceFunction A function pointer to a function that creates an instance of the
-     * plugin.
+     * plugin. The default function that will be used depends on the type of interface. If the
+     * interface inherits from
+     * \li \c KParts::Part the function will call
+     * \code
+     * new T(QWidget *parentWidget, QObject *parent, const QVariantList &args)
+     * \endcode
+     * \li \c QWidget the function will call
+     * \code
+     * new T(QWidget *parent, const QVariantList &args)
+     * \endcode
+     * \li else the function will call
+     * \code
+     * new T(QObject *parent, const QVariantList &args)
+     * \endcode
      */
     template<class T>
     void registerPlugin(const QString &keyword = QString(), CreateInstanceFunction instanceFunction
