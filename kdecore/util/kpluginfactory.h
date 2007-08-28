@@ -30,6 +30,7 @@
 #include <kcomponentdata.h>
 
 class KPluginFactoryPrivate;
+namespace KParts { class Part; }
 
 #define K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
 class name : public baseFactory \
@@ -315,8 +316,15 @@ protected:
     }
 
     template<class impl>
+    static QObject *createPartInstance(QWidget *parentWidget, QObject *parent, const QVariantList &args)
+    {
+        return new impl(parentWidget, parent, args);
+    }
+
+    template<class impl>
     struct InheritanceChecker
     {
+        static CreateInstanceFunction createInstanceFunction(KParts::Part *) { return &createPartInstance<impl>; }
         static CreateInstanceFunction createInstanceFunction(QWidget *) { return &createInstance<impl, QWidget>; }
         static CreateInstanceFunction createInstanceFunction(...) { return &createInstance<impl, QObject>; }
     };
