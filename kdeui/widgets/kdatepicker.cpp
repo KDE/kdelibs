@@ -114,6 +114,9 @@ public:
     void fillWeeksCombo();
     QDate validDateInYearMonth( int year, int month );
 
+    /// the date table
+    KDatePicker *q;
+
     QToolButton *closeButton;
     KComboBox *selectWeek;
     QToolButton *todayButton;
@@ -137,8 +140,6 @@ public:
     KDateValidator *val;
     /// the date table
     KDateTable *table;
-    /// the date table
-    KDatePicker *q;
     /// the widest month string in pixels:
     QSize maxMonthRect;
 
