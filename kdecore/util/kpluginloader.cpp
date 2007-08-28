@@ -145,7 +145,7 @@ bool KPluginLoader::load()
     lib.load();
     Q_ASSERT(lib.isLoaded());
 
-    d->verificationData = (KDEPluginVerificationData *) lib.resolve("kde_plugin_verification_data");   
+    d->verificationData = (KDEPluginVerificationData *) lib.resolve("kde_plugin_verification_data");
     if (d->verificationData) {
         if ((d->verificationData->KDEVersion > KDE_VERSION) || (KDE_VERSION_MAJOR << 16 != (d->verificationData->KDEVersion & 0xFF0000))) {
             d->errorString = i18n("The plugin '%1' uses incompatible KDE library. (%2)", d->name, d->verificationData->KDEVersionString);
@@ -153,8 +153,7 @@ bool KPluginLoader::load()
             unload();
             return false;
         }
-    }
-    else {
+    } else {
         kDebug(150) << "The plugin" << d->name << "doesn't contain a kde_plugin_verification_data structure";
     }
 
