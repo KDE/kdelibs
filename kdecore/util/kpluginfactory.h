@@ -332,6 +332,7 @@ T *KPluginFactory::create(QObject *parent, const QVariantList &args)
 {
     QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, QString());
 
+    T *t = qobject_cast<T *>(o);
     if (!t) {
         delete o;
     }
