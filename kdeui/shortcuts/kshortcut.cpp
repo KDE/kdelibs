@@ -103,10 +103,16 @@ KShortcut::KShortcut(const QString &s)
         if( sCuts[i].startsWith( "default(" ) )
             sCuts[i] = sCuts[i].mid( 8, sCuts[i].length() - 9 );
 
-    if (sCuts.count() >= 1)
+    if (sCuts.count() >= 1) {
         d->primary = QKeySequence::fromString(sCuts.at(0));
-    if (sCuts.count() >= 2)
+	if (d->primary.isEmpty())
+	    kWarning() << "KShortcut: unusable primary shortcut sequence " << sCuts[0];
+    }
+    if (sCuts.count() >= 2) {
         d->alternate = QKeySequence::fromString(sCuts.at(1));
+	if (d->alternate.isEmpty())
+	    kWarning() << "KShortcut: unusable alternate shortcut sequence " << sCuts[0];
+    }
 }
 
 KShortcut::~KShortcut()
