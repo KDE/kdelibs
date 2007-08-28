@@ -183,4 +183,4 @@ quint32 KPluginLoader::pluginVersion() const
     return d->pluginVersion;
 }
 
-//#include "kpluginloader.moc"
+#include "kpluginloader.moc"

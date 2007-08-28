@@ -28,7 +28,9 @@ KPluginFactory::KPluginFactory(const char *componentName, const char *catalogNam
 {
     Q_D(KPluginFactory);
     d->q_ptr = this;
-    d->componentData = KComponentData(componentName, catalogName);
+
+    if (componentName)
+        d->componentData = KComponentData(componentName, catalogName);
 }
 
 KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
@@ -192,4 +194,4 @@ QVariantList KPluginFactory::stringListToVariantList(const QStringList &list)
     return variantlist;
 }
 
-//#include "kpluginfactory.moc"
+#include "kpluginfactory.moc"
