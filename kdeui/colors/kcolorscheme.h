@@ -272,7 +272,7 @@ public:
      * Construct a palette from given color set and state, using the colors
      * from the given KConfig (if null, the system colors are used).
      */
-    explicit KDE_CONSTRUCTOR_DEPRECATED KColorScheme(QPalette::ColorGroup, ColorSet = View, KSharedConfigPtr = KSharedConfigPtr());
+    explicit KColorScheme(QPalette::ColorGroup, ColorSet = View, KSharedConfigPtr = KSharedConfigPtr());
 
     /**
      * Retrieve the requested background brush.
