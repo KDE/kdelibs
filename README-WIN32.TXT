@@ -18,7 +18,8 @@ qt's QFileInfo class has methods for platform independent user/group/permission 
 but they are not implemented complete in the win32 port.
 There may be more places where such handling is required, I haven't checked yet
 
-
+- qt depends on dbus but FindQt4 does not check if the dbus library is available. 
+  This results to a broken build process when running qdbusxml2cpp.exe 
 
 
 
