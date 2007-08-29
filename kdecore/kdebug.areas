@@ -245,6 +245,7 @@
 7005        kio (Filter)
 7006        kio (Scheduler)
 7007        kio (KIOJob)
+7008        kio (KDirModel)
 7009        kio (KMimeType)
 7010        kio (KRun)
 7011        kdecore (KSycoca)

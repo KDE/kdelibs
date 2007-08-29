@@ -322,3 +322,15 @@ void KDirModelTest::testModifyFile()
     disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(quit()) );
 }
+
+void KDirModelTest::testExpandToUrl()
+{
+    const QString path = m_tempDir.name();
+    KDirModel dirModelForExpand;
+    KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
+    dirListerForExpand->openUrl(KUrl(path), false, false); // it gets them from the cache, so this is sync
+    QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
+    dirModelForExpand.expandToUrl(KUrl(path+"subdir/subsubdir"));
+    enterLoop();
+    QCOMPARE(spyExpand.count(), 1);
+}
