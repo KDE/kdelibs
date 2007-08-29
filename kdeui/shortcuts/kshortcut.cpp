@@ -137,6 +137,8 @@ bool KShortcut::isEmpty() const
 
 bool KShortcut::contains(const QKeySequence &needle) const
 {
+    if (needle.isEmpty())
+        return false;
     return d->primary == needle || d->alternate == needle;
 }
 
