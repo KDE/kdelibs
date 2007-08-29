@@ -189,6 +189,31 @@ KComponentData name::componentData() \
  * K_PLUGIN_FACTORY is code that is called from the constructors. There you can use registerPlugin
  * to register as many plugins for the factory as you want to.
  *
+ * If you want to write a custom KPluginFactory not using the standard macro(s) you can reimplement
+ * the create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword)
+ * function.
+ *
+ * Example:
+ * \code
+ * class SomeScriptLanguageFactory : public KPluginFactory
+ * {
+ *     Q_OBJECT
+ * public:
+ *     SomeScriptLanguageFactory()
+ *         : KPluginFactory("SomeScriptLanguageComponent")
+ *     {}
+ *
+ * protected:
+ *     virtual QObject *create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword)
+ *     {
+ *         const QString identifier = QLatin1String(iface) + QLatin1Char('_') + keyword;
+ *         // load scripting language module from the information in identifier
+ *         // and return it:
+ *         return object;
+ *     }
+ * };
+ * \endcode
+ *
  * If you want to load a library use KPluginLoader.
  * The application that wants to instantiate plugin classes later on can do the following:
  * \code
@@ -245,7 +270,7 @@ public:
      * information given to the constructor of KPluginFactory.
      *
      * \returns The KComponentData for the plugin
-     */    
+     */
     KComponentData componentData() const;
 
     /**
