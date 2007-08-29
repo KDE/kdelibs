@@ -209,16 +209,70 @@ class KDECORE_EXPORT KPluginFactory : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(KPluginFactory)
 public:
+    /**
+     * This constructor creates a factory for a plugin with the given \p componentName and
+     * \p catalogName. Those values are used to initialize a KComponentData object for the plugin.
+     * You can later access it with componentData(). If \p componentName is 0, an invalid KComponentData
+     * object will be created.
+     *
+     * \param componentName the component name of the plugin
+     * \param catalogName the translation catalog to use
+     * \param parent a parent object
+     */
     explicit KPluginFactory(const char *componentName = 0, const char *catalogName = 0, QObject *parent = 0);
+
+    /**
+     * This constructor creates a factory for a plugin with the given KAboutData object. This object is
+     * used to initialize a KComponentData object for the plugin. You can later access it with
+     * componentData().
+     * KPluginFactory takes ownership of the \p aboutData object, so don't delete it yourself!
+     *
+     * \param aboutData the KAboutData for the plugin
+     * \param parent a parent object
+     */
     explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
+
     explicit KDE_CONSTRUCTOR_DEPRECATED KPluginFactory(QObject *parent);
+
+    /**
+     * This destroys the PluginFactory. It will remove the translation catalog for the plugin,
+     * if it was initialized.
+     */
     virtual ~KPluginFactory();
 
+    /**
+     * You can use this method to get the component data of the plugin. It is filled with the
+     * information given to the constructor of KPluginFactory.
+     *
+     * \returns The KComponentData for the plugin
+     */    
     KComponentData componentData() const;
 
+    /**
+     * Use this methode to created an object. It will try to created an object which inherits
+     * \p T. If it has multiple choices, you will get a fatal error (kFatal()), so be creaful
+     * to request a unique interface or use keywords.
+     *
+     * \param T The interface for which an object should be created. The object will inherit \p T.
+     * \param parent The parent of the object. If \p parent is a widget type, it will also passed
+     *               to the parentWidget argument of the CreateInstanceFunction for the object.
+     * \param args Additional arguments which will be passed to the object.
+     * \returns A pointer to the created object is returned, or 0 if an error occured.
+     */
     template<typename T>
     T *create(QObject *parent = 0, const QVariantList &args = QVariantList());
 
+    /**
+     * Use this methode to created an object. It will try to created an object which inherits
+     * \p T and was registered with \p keyword.
+     *
+     * \param T The interface for which an object should be created. The object will inherit \p T.
+     * \param keyword The keyword of the object.
+     * \param parent The parent of the object. If \p parent is a widget type, it will also passed
+     *               to the parentWidget argument of the CreateInstanceFunction for the object.
+     * \param args Additional arguments which will be passed to the object.
+     * \returns A pointer to the created object is returned, or 0 if an error occured.
+     */
     template<typename T>
     T *create(const QString &keyword, QObject *parent = 0, const QVariantList &args = QVariantList());
 
