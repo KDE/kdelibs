@@ -97,6 +97,7 @@ namespace KIO {
     private:
         Q_PRIVATE_SLOT(d_func(), void slotStart())
         Q_PRIVATE_SLOT(d_func(), void slotEntries( KIO::Job*, const KIO::UDSEntryList& list ))
+        Q_PRIVATE_SLOT(d_func(), void slotReport())
         Q_DECLARE_PRIVATE(DeleteJob)
     };
 
