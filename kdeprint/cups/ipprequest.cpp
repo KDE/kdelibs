@@ -308,10 +308,10 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 	}
 
 #ifdef HAVE_CUPS_NO_PWD_CACHE
-#ifdef CUPS_VERSION < 1.0300
+#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR <= 2
     strncpy(  HTTP->authstring, cups_authstring.data(), HTTP_MAX_VALUE );
 #else
-	strncpy( httpGetAuthString( HTTP ), cups_authstring.data(), HTTP_MAX_VALUE );
+    httpSetAuthString( HTTP, NULL, cups_authstring.data() );
 #endif
 #endif
 
@@ -322,7 +322,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 
 	request_ = cupsDoFileRequest(HTTP, request_, (res.isEmpty() ? "/" : qPrintable(res)), (filename.isEmpty() ? NULL : qPrintable(filename)));
 #ifdef HAVE_CUPS_NO_PWD_CACHE
-#ifdef CUPS_VERSION < 1.0300
+#if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR <= 2
     cups_authstring = HTTP->authstring;
 #else
 	cups_authstring = httpGetAuthString( HTTP );
