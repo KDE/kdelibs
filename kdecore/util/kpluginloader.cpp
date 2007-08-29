@@ -23,6 +23,7 @@
 #include <klocale.h>
 #include "kpluginfactory.h"
 #include <kservice.h>
+#include "klibloader.h"
 
 #include <QtCore/QLibrary>
 #include <QtCore/QDir>
@@ -34,7 +35,7 @@ class KPluginLoaderPrivate
     Q_DECLARE_PUBLIC(KPluginLoader)
 protected:
     KPluginLoaderPrivate(const QString &libname)
-        : name(libname), pluginVersion(-1), verificationData(0)
+        : name(libname), pluginVersion(-1), verificationData(0), lib(0)
     {}
 
     KPluginLoader *q_ptr;
@@ -42,6 +43,8 @@ protected:
     quint32 pluginVersion;
     KDEPluginVerificationData *verificationData;
     QString errorString;
+
+    KLibrary *lib;
 };
 
 static inline QString makeLibName( const QString &libname )
@@ -88,6 +91,11 @@ static inline QString findLibraryInternal(const QString &name, const KComponentD
     return libfile;
 }
 
+bool KPluginLoader::isLoaded() const
+{
+    return QPluginLoader::isLoaded() || d_ptr->lib;
+}
+
 KPluginLoader::KPluginLoader(const QString &plugin, const KComponentData &componentdata, QObject *parent)
     : QPluginLoader(findLibraryInternal(plugin, componentdata), parent), d_ptr(new KPluginLoaderPrivate(plugin))
 {
@@ -117,15 +125,26 @@ KPluginLoader::~KPluginLoader()
 KPluginFactory *KPluginLoader::factory()
 {
     Q_D(KPluginLoader);
+
     if (!isLoaded())
         return 0;
+
+    KPluginFactory *factory;
+
+    if (d->lib) {
+        factory = d->lib->factory(d->name.toUtf8());
+        if (factory == 0) {
+            d->errorString = KLibLoader::self()->lastErrorMessage();
+        }
+        return factory;
+    }
 
     QObject *obj = instance();
 
     if (!obj)
         return 0;
 
-    KPluginFactory *factory = qobject_cast<KPluginFactory *>(obj);
+    factory = qobject_cast<KPluginFactory *>(obj);
 
     if (factory == 0) {
         delete obj;
@@ -138,8 +157,13 @@ KPluginFactory *KPluginLoader::factory()
 bool KPluginLoader::load()
 {
     Q_D(KPluginLoader);
-    if (!QPluginLoader::load())
+    if (!QPluginLoader::load()) {
+        d->lib = KLibLoader::self()->library(d->name);
+        if (d->lib)
+            return true;
+
         return false;
+    }
 
     QLibrary lib(fileName());
     lib.load();
@@ -181,6 +205,12 @@ quint32 KPluginLoader::pluginVersion() const
 {
     Q_D(const KPluginLoader);
     return d->pluginVersion;
+}
+
+QString KPluginLoader::pluginName() const
+{
+    Q_D(const KPluginLoader);
+    return d->name;
 }
 
 #include "kpluginloader.moc"
