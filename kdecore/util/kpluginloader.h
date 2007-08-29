@@ -88,14 +88,15 @@ class KPluginLoaderPrivate;
  * cached inside the library. If you call factory() or instance() multiple times, you will always get
  * the same object, even from different threads and different KPluginLoader instances.
  * You can delete this object easily, a new one will be created if factory() or instance() is called
- * afterwards.
+ * afterwards. factory() uses instance() internally.
  *
  * KPluginLoader inherits QPluginLoader::unload(). It safe to call this methode if you loaded a plugin
  * and decide not to use it for some reason. But as soon as you start to use the factory from the plugin,
  * you should stay away from it. It's nearly impossible to keep track of all objects created directly or
  * indirectly from the plugin and all other pointers into plugin code. Using unload() in this case is asking
  * for trouble. If you really need to unload your plugins, you have to take care to convert the clipboard
- * content to text, because the plugin could have registered a custom mime source.
+ * content to text, because the plugin could have registered a custom mime source. You also have to delete
+ * the factory of the plugin, otherwise you will create a leak.
  * The destructor of KPluginLoader doesn't call unload.
  *
  * \see KPluginFactory
@@ -156,6 +157,8 @@ public:
      * \returns The description of the last error.
      */
     QString errorString() const;
+
+    bool isLoaded() const;
 
 protected:
     /** 
