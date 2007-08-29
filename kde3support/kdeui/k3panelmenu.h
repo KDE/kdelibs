@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __KPANELMENU_H__
 
 
+#include <kde3support_export.h>
 #include <kmenu.h>
 #include <kgenericfactory.h>
 
@@ -48,7 +49,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @author The kicker maintainers, Michael Goffioul <kdeprint@swing.be>
  */
-class KDE_EXPORT K3PanelMenu : public KMenu
+class KDE3SUPPORT_EXPORT K3PanelMenu : public KMenu
 {
     Q_OBJECT
 

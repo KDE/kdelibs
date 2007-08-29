@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __kpanelapplet_h__
 #define __kpanelapplet_h__
 
+#include <kde3support_export.h>
 #include <QtGui/QFrame>
 
 #include <ksharedconfig.h>
@@ -94,7 +95,7 @@ class QMenu;
  *
  * @author Matthias Elter <elter@kde.org>
  **/
-class KDE_EXPORT K3PanelApplet : public QFrame
+class KDE3SUPPORT_EXPORT K3PanelApplet : public QFrame
 {
     Q_OBJECT
 
