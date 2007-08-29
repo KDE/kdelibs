@@ -51,7 +51,7 @@ bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
         return false;
     }
 
-    //kDebug(7009) << "TYPE = " << type.data();
+    //kDebug(7000) << "TYPE = " << type.data();
 
     if ( type == "FSDevice" )
         return runFSDevice( u, cfg );
@@ -212,9 +212,9 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
 
     if( cg.hasKey( "X-KDE-GetActionMenu" )) {
         QStringList dbuscall = cg.readEntry( "X-KDE-GetActionMenu" ).split( QLatin1Char( ' ' ) );
-        
+
         if ( dbuscall.count() >= 4 ) {
-        
+
         const QString& app       = dbuscall.at( 0 );
         const QString& object    = dbuscall.at( 1 );
         const QString& interface = dbuscall.at( 2 );
@@ -239,7 +239,7 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
     QStringList::ConstIterator end = keys.end();
     for ( ; it != end; ++it )
     {
-        //kDebug(7009) << "CURRENT KEY = " << (*it);
+        //kDebug(7000) << "CURRENT KEY = " << (*it);
 
         QString group = *it;
 
@@ -290,7 +290,7 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
 
 void KDesktopFileActions::executeService( const KUrl::List& urls, const KDesktopFileActions::Service& _service )
 {
-    //kDebug(7009) << "EXECUTING Service " << _service.m_strName;
+    //kDebug(7000) << "EXECUTING Service " << _service.m_strName;
 
     if ( _service.m_type == ST_USER_DEFINED ) {
         kDebug() << "KDesktopFileActions::executeService " << _service.m_strName
@@ -302,7 +302,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KDesktop
     } else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT ) {
         Q_ASSERT( urls.count() == 1 );
         QString path = urls.first().path();
-        //kDebug(7009) << "MOUNT&UNMOUNT";
+        //kDebug(7000) << "MOUNT&UNMOUNT";
 
         KDesktopFile cfg( path );
         const KConfigGroup group = cfg.desktopGroup();
@@ -317,7 +317,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KDesktop
         if ( _service.m_type == ST_MOUNT ) {
             // Already mounted? Strange, but who knows ...
             if ( mp ) {
-                kDebug(7009) << "ALREADY Mounted";
+                kDebug(7000) << "ALREADY Mounted";
                 return;
             }
 
