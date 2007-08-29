@@ -313,7 +313,7 @@ bool IppRequest::doFileRequest(const QString& res, const QString& filename)
 #if CUPS_VERSION_MAJOR == 1 && CUPS_VERSION_MINOR <= 2
    strncpy(  HTTP->authstring, cups_authstring.data(), HTTP_MAX_VALUE );
 #else
-	strncpy( httpGetAuthString( HTTP ), cups_authstring.data(), HTTP_MAX_VALUE );
+   httpSetAuthString( HTTP, NULL, cups_authstring.data() );
 #endif
 #endif
 
