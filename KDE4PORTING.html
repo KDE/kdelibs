@@ -469,9 +469,22 @@ Note that QKeySequence expects multiple shortcuts to be separated by ", " (i.e. 
 
 <h4>KLibLoader</h4>
 <ul>
+<li>use KPluginLoader or KService::createInstance instead whenever possible</li>
 <li>The resolve(const char* name) and symbol(const char* name) methods were merged and renamed to resolveSymbol</li>
 <li>bool hasSymbol was removed, use resolveFunction instead</li>
 <li>resolveFunction( const char* name ) was added which returns not a void* but a KLibrary::void_function_ptr which can be used as a void* would in boolean tests and for making subsequent function calls.</li>
+</ul>
+
+<h4>KLibFactory</h4>
+<ul>
+<li>renamed to KPluginFactory</li>
+<li>create methods take a QVariantList instead of QStringList</li>
+</ul>
+
+<h4>KGenericFactory</h4>
+<ul>
+<li>use K_PLUGIN_FACTORY macro instead: this will require to change your plugin constructor from QStringList to QVariantList</li>
+<li>instead of K_EXPORT_COMPONENT_FACTORY use K_EXPORT_PLUGIN (defined with KPluginLoader) which adds Qt and kdelibs version information that KPluginLoader uses to check the validity of the plugin.</li>
 </ul>
 
 <h4>KLocale</h4>
@@ -2144,7 +2157,7 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 
 <h4>ComponentFactory</h4>
 <ul>
-<li>createInstanceFromFactory is now KLibFactory::create&lt;T&gt;</li>
+<li>createInstanceFromFactory is now KPluginFactory::create&lt;T&gt;</li>
 <li>createInstanceFromLibrary is now KLibLoader::createInstance&lt;T&gt;</li>
 <li>createInstanceFromService is now KService::createInstance&lt;T&gt;</li>
 <li>createInstanceFromQuery is now KServiceTypeTrader::createInstanceFromQuery&lt;T&gt;</li>
