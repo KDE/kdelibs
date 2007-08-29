@@ -38,22 +38,14 @@ public:
         : KPluginFactory(componentName, catalogName)
     {
         s_self = this;
-        KComponentData *kcd = createComponentData();
-        if (kcd) {
-            setComponentData(*kcd);
-            delete kcd;
-        }
+        s_createComponentDataCalled = false;
     }
 
     explicit KGenericFactoryBase( const KAboutData *data )
         : KPluginFactory(data)
     {
         s_self = this;
-        KComponentData *kcd = createComponentData();
-        if (kcd) {
-            setComponentData(*kcd);
-            delete kcd;
-        }
+        s_createComponentDataCalled = false;
     }
 
     virtual ~KGenericFactoryBase()
@@ -64,22 +56,35 @@ public:
     static KComponentData componentData()
     {
         Q_ASSERT(s_self);
+        if (!s_createComponentDataCalled) {
+            s_createComponentDataCalled = true;
+
+            KComponentData *kcd = s_self->createComponentData();
+            Q_ASSERT(kcd);
+            s_self->setComponentData(*kcd);
+            delete kcd;
+        }
         return static_cast<KPluginFactory *>(s_self)->componentData();
     }
 
 protected:
     virtual KComponentData *createComponentData()
     {
-        return 0;
+        return new KComponentData(componentData());
     }
 
 private:
+    static bool s_createComponentDataCalled;
     static KGenericFactoryBase<T> *s_self;
 };
 
 /* @internal */
 template <class T>
 KGenericFactoryBase<T> *KGenericFactoryBase<T>::s_self = 0;
+
+/* @internal */
+template <class T>
+bool KGenericFactoryBase<T>::s_createComponentDataCalled = false;
 
 /**
  * This template provides a generic implementation of a KLibFactory ,
