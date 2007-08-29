@@ -1030,7 +1030,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     while (p >= 0) {
         text.append(original.mid(0, p + 1));
         original.remove(0, p + 1);
-        static QRegExp restRx("^[a-z]+;");
+        static QRegExp restRx("^(?:[a-z]+|#[0-9]+);");
         if (original.indexOf(restRx) != 0) { // not an entity
             text.append("amp;");
         }
