@@ -66,8 +66,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     d->aboutData = aboutData;
 
     if (!aboutData) {
-        QLabel *errorLabel = new QLabel(i18n("No information available.<br />"
-                                             "The supplied KAboutData object does not exist."), this);
+        QLabel *errorLabel = new QLabel(i18n("<qt>No information available.<br />"
+                                             "The supplied KAboutData object does not exist.</qt>"), this);
         setMainWidget(errorLabel);
         return;
     }
@@ -80,7 +80,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     else if (aboutData->programLogo().canConvert<QImage>())
         titleWidget->setPixmap(QPixmap::fromImage(aboutData->programLogo().value<QImage>()), KTitleWidget::ImageLeft);
 
-    titleWidget->setText(i18n("<font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE %3</html>",
+    titleWidget->setText(i18n("<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE %3</html>",
                          aboutData->programName(), aboutData->version(), QString(KDE_VERSION_STRING)));
 
     QTabWidget *tabWidget = new QTabWidget;
