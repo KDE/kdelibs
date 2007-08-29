@@ -142,7 +142,7 @@ QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url
     KUrl url(_url);
     url.adjustPath(KUrl::RemoveTrailingSlash);
 
-    kDebug() << url;
+    //kDebug() << url;
 
     if (url == m_dirLister->url())
         return qMakePair(0, static_cast<KDirModelNode *>(m_rootNode));
@@ -283,7 +283,7 @@ void KDirModel::slotNewItems(const QList<KFileItem>& items)
     KUrl dir( items.first().url().upUrl() );
     dir.adjustPath(KUrl::RemoveTrailingSlash);
 
-    kDebug() << "dir=" << dir;
+    //kDebug() << "dir=" << dir;
 
     const QPair<int, KDirModelNode*> result = d->nodeForUrl(dir); // O(n*m)
     Q_ASSERT(result.second); // Are you calling KDirLister::openUrl(url,true,false)? Please use expandToUrl() instead.
@@ -300,6 +300,7 @@ void KDirModel::slotNewItems(const QList<KFileItem>& items)
     beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
 
     const KUrl::List urlsBeingFetched = d->m_urlsBeingFetched.value(dirNode);
+    //kDebug() << "urlsBeingFetched for dir" << dirNode << dir << ":" << urlsBeingFetched;
 
     QList<KFileItem>::const_iterator it = items.begin();
     const QList<KFileItem>::const_iterator end = items.end();
@@ -721,14 +722,15 @@ void KDirModel::expandToUrl(const KUrl& url)
         return;
     if (!(result.second->item().isNull()) && result.second->item().url() == url) {
         // We have it already, nothing to do
-        kDebug(7004) << "have it already item=" <<url /*result.second->item()*/;
+        kDebug() << "have it already item=" <<url /*result.second->item()*/;
         return;
     }
+    //kDebug() << k_funcinfo << url << result.second << result.second->item().url() << endl;
+    d->m_urlsBeingFetched[result.second].append(url);
+
     const QModelIndex parentIndex = d->indexForNode(result.second, result.first);
     Q_ASSERT(parentIndex.isValid());
     fetchMore(parentIndex);
-
-    d->m_urlsBeingFetched[result.second].append(url);
 }
 
 #include "kdirmodel.moc"
