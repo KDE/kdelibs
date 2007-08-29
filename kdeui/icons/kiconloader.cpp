@@ -147,11 +147,10 @@ struct KIconLoaderPrivate
     bool mIconThemeInited;
     QString appname;
 
-    void drawOverlays(const KIconLoader *loader, QPixmap& pix, const QStringList& overlays);
-//    void drawOverlays(QPainter* painter, int iconSize, int state, QPoint translate = QPoint(0, 0));
+    void drawOverlays(const KIconLoader *loader, K3Icon::Group group, int state, QPixmap& pix, const QStringList& overlays);
 };
 
-void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, QPixmap& pix, const QStringList& overlays) //QPainter* painter, int iconSize, int state)
+void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, K3Icon::Group group, int state, QPixmap& pix, const QStringList& overlays)
 {
     if (overlays.isEmpty()) {
         return;
@@ -177,8 +176,7 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, QPixmap& pi
         //      path, and perhaps emblems should remain in the default state
         //      anyways?
         QPixmap pixmap = iconLoader->loadIcon("emblem-" + overlay,
-                                              K3Icon::Desktop,
-                                              overlaySize, 0, QStringList(), 0, true);
+                                              group, overlaySize, state, QStringList(), 0, true);
 
         if (pixmap.isNull()) {
             continue;
@@ -950,7 +948,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, K3Icon::Group group, int siz
 
     pix = QPixmap::fromImage(*img);
 
-    d->drawOverlays(this, pix, overlays);
+    d->drawOverlays(this, group, state, pix, overlays);
 
     delete img;
 
