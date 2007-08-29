@@ -192,7 +192,7 @@ KComponentData name::componentData() \
  * If you want to load a library use KPluginLoader.
  * The application that wants to instantiate plugin classes later on can do the following:
  * \code
- * KPluginFactory *factory = KPluginLoader("libname").factory();
+ * KPluginFactory *factory = KPluginLoader("libraryname").factory();
  * if (factory) {
  *     PluginInterface *p1 = factory->create<PluginInterface>(parent);
  *     OtherInterface *p2  = factory->create<OtherInterface>(parent);
