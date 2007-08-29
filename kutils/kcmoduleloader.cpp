@@ -22,7 +22,6 @@
 */
 
 #include "kcmoduleloader.h"
-#include "kcmoduleloader_p.h"
 
 #include <QtCore/QFile>
 #include <QtGui/QLabel>
@@ -36,7 +35,6 @@
 #include <klibloader.h>
 
 using namespace KCModuleLoader;
-using namespace KCModuleLoaderPrivate;
 
 /***************************************************************/
 /**
