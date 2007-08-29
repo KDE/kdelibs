@@ -22,19 +22,21 @@
 */
 
 #include "kcmoduleloader.h"
-#include "kcmodulefactory.h"
+#include "kcmoduleloader_p.h"
 
 #include <QtCore/QFile>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 
 #include <kapplication.h>
+#include <kpluginloader.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <klibloader.h>
 
 using namespace KCModuleLoader;
+using namespace KCModuleLoaderPrivate;
 
 /***************************************************************/
 /**
@@ -58,68 +60,7 @@ class KCMError : public KCModule
 };
 /***************************************************************/
 
-
-
-static KCModule* load(const KCModuleInfo &mod, const QByteArray &libprefix,
-    ErrorReporting report, QWidget * parent, const QStringList& args )
-{
-  // get the library loader instance
-  KLibLoader* loader = KLibLoader::self();
-  QString libname = libprefix + mod.library();
-
-  KLibrary* lib = loader->library( libname );
-  if (lib)
-  {
-    KLibFactory *factory = lib->factory( mod.handle().toLatin1() );
-        if (factory) {
-            KCModuleFactory *kcmFactory = qobject_cast<KCModuleFactory *>(factory);
-            if (kcmFactory) {
-                KCModule *module = kcmFactory->create(mod, parent, args);
-                if (module) {
-                    return module;
-                }
-            }
-            KCModule *module = factory->create<KCModule>( parent, args );
-            if (module) {
-                return module;
-            }
-        }
-    // else do a fallback
-    kWarning(1208) << "Unable to load module using ComponentFactory. (symbol: init_" << mod.handle() << ") Falling back to old loader for compatibility.";
-
-    // get the create_ function
-    QByteArray factorymethod( "create_" );
-    factorymethod += mod.handle().toLatin1();
-    KCModule* (*create)(QWidget *, const char*);
-    create = (KCModule* (*)(QWidget *, const char*))lib->resolveFunction( factorymethod );
-
-    if (create)
-    {
-      // create the module
-      return create( parent, mod.handle().toLatin1() );
-    }
-    else
-    {
-      QString libFileName = lib->fileName();
-      lib->unload();
-      return reportError( report, i18n("<qt>There was an error when loading the module '%1'.<br /><br />"
-          "The desktop file (%2) as well as the library (%3) was found but "
-          "yet the module could not be loaded properly. Most likely "
-          "the factory declaration was wrong, or the "
-          "create_* function was missing.</qt>",
-            mod.moduleName() ,
-            mod.fileName() ,
-            libFileName ),
-          QString(), parent );
-    }
-
-    lib->unload();
-  }
-  return reportError( report, i18n("The specified library %1 could not be found.",
-        mod.library() ), QString(), parent );
-}
-
-KCModule* KCModuleLoader::loadModule( const QString& module, ErrorReporting report, QWidget* parent, const QStringList& args )
+KCModule *KCModuleLoader::loadModule(const QString &module, ErrorReporting report, QWidget *parent, const QStringList &args)
 {
   return loadModule( KCModuleInfo( module ), report, parent, args );
 }
@@ -143,18 +84,43 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
 
   if (!mod.library().isEmpty())
   {
-    KCModule *module = load(mod, "", report, parent, args );
-    /*
-     * Only try to load lib* if it exists, otherwise KLibLoader::lastErrorMessage would say
-     * "libfoo not found" instead of the real problem with loading foo.
-     */
-    if (!KLibLoader::findLibrary( QLatin1String( "lib" ) + mod.library() ).isEmpty() )
-      module = load(mod, "lib", report, parent, args );
-    if (module)
-      return module;
-    return reportError( report,
-        i18n("The module %1 could not be loaded.",
-          mod.moduleName() ), QString(), parent );
+        QString error;
+        QVariantList args2;
+        foreach (const QString &arg, args) {
+            args2 << arg;
+        }
+        KCModule *module = KService::createInstance<KCModule>(mod.service(), parent, args2, &error);
+        if (module) {
+            return module;
+        }
+        // might be using K_EXPORT_COMPONENT_FACTORY
+        int error2 = 0;
+        module = KService::createInstance<KCModule>(mod.service(), parent, args, &error2);
+        if (module) {
+            kWarning(1208) << "This module still uses K_EXPORT_COMPONENT_FACTORY. Please port it to use KPluginFactory and K_EXPORT_PLUGIN.";
+            return module;
+        }
+        error += KLibLoader::errorString(error2);
+//#ifndef NDEBUG
+        {
+            // get the create_ function
+            KLibrary *lib = KLibLoader::self()->library(mod.library());
+            if (lib) {
+                KCModule *(*create)(QWidget *, const char *);
+                QByteArray factorymethod("create_");
+                factorymethod += mod.handle().toLatin1();
+                create = reinterpret_cast<KCModule *(*)(QWidget *, const char*)>(lib->resolveFunction(factorymethod));
+                if (create) {
+                    return create(parent, mod.handle().toLatin1());
+                    kFatal(1208) << "This module still uses a custom factory method (" << factorymethod << "). This is not supported anymore. Please fix the module.";
+                } else {
+                    kWarning(1208) << "This module has no valid entry symbol at all. The reason could be that it's still using K_EXPORT_COMPONENT_FACTORY with a custom X-KDE-FactoryName which is not supported anymore";
+                }
+                lib->unload();
+            }
+        }
+//#endif // NDEBUG
+        return reportError(report, error, QString(), parent);
   }
 
   /*
@@ -199,19 +165,21 @@ void KCModuleLoader::showLastLoaderError(QWidget *parent)
 KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & text,
         const QString &details, QWidget * parent )
 {
-  QString realDetails = details;
-  if( realDetails.isNull() )
-    realDetails = i18n("<qt>The diagnostics is:<br />%1"
-        "<p>Possible reasons:<ul><li>An error occurred during your last "
-        "KDE upgrade leaving an orphaned control module</li><li>You have old third party "
-        "modules lying around.</li></ul></p><p>Check these points carefully and try to remove "
-        "the module mentioned in the error message. If this fails, consider contacting "
-        "your distributor or packager.</p></qt>", KLibLoader::self()->lastErrorMessage());
-  if( report & Dialog )
-    KMessageBox::detailedError( parent, text, realDetails );
-  if( report & Inline )
-    return new KCMError( text, realDetails, parent );
-  return 0;
+    QString realDetails = details;
+    if (realDetails.isNull()) {
+        realDetails = i18n("<qt><p>Possible reasons:<ul><li>An error occurred during your last "
+                "KDE upgrade leaving an orphaned control module</li><li>You have old third party "
+                "modules lying around.</li></ul></p><p>Check these points carefully and try to remove "
+                "the module mentioned in the error message. If this fails, consider contacting "
+                "your distributor or packager.</p></qt>");
+    }
+    if (report & KCModuleLoader::Dialog) {
+        KMessageBox::detailedError(parent, text, realDetails);
+    }
+    if (report & KCModuleLoader::Inline) {
+        return new KCMError(text, realDetails, parent);
+    }
+    return 0;
 }
 
 // vim: ts=4
