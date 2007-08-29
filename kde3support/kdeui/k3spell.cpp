@@ -541,7 +541,8 @@ bool K3Spell::checkWord( const QString & buffer, bool _usedialog )
     ksdlg->hide();
 
   QByteArray data;
-  while (proc->readLine( data.data(), data.count() ) != -1 ); // eat spurious blanks
+  while (proc->readLine( data.data(), data.count() ) != -1 )
+      ; // eat spurious blanks
 
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
