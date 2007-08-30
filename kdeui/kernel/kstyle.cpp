@@ -2514,7 +2514,10 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     {
                         const QStyleOptionQ3ListViewItem& child = lvOpt->items.at(childPos);
                         if (!(child.features & QStyleOptionQ3ListViewItem::Visible))
+                        {
+                            childPos++;
                             continue;
+                        }
 
                         //Route through the Qt4 style-call.
                         opt.rect  = QRect(r.x() + adjustCoords.x(), y + adjustCoords.y(),
