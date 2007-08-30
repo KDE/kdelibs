@@ -93,9 +93,9 @@ void KSharedConfigPtr::attach(KSharedConfig *p)
         if (d) {
             if (!d->ref.deref()) {
                 delete d;
-            } else if (d->ref == 1 && p->componentData().isValid()) {
+            } else if (d->ref == 1 && d->componentData().isValid()) {
                 // it might be KComponentData holding the last ref
-                const_cast<KComponentData&>(p->componentData())._checkConfig();
+                const_cast<KComponentData&>(d->componentData())._checkConfig();
             }
         }
         d = p;
