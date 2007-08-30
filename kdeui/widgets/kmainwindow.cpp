@@ -809,7 +809,7 @@ void KMainWindow::setSettingsDirty()
            d->settingsTimer = new QTimer( this );
            connect( d->settingsTimer, SIGNAL( timeout() ), SLOT( saveAutoSaveSettings() ) );
         }
-        d->settingsTimer->setInterval(500);
+        d->settingsTimer->setInterval(5000);
         d->settingsTimer->setSingleShot(true);
         d->settingsTimer->start();
     }
