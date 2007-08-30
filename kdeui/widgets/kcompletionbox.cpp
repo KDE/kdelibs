@@ -66,7 +66,7 @@ KCompletionBox::KCompletionBox( QWidget *parent )
 
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    
+
     connect( this, SIGNAL( itemDoubleClicked( QListWidgetItem * )),
              SLOT( slotActivated( QListWidgetItem * )) );
 
@@ -583,6 +583,7 @@ void KCompletionBox::slotItemClicked( QListWidgetItem *item )
 
         hide();
         emit currentTextChanged( item->text() );
+        emit activated( item->text() );
     }
 }
 
