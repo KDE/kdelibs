@@ -36,6 +36,9 @@
 #include <fcntl.h>
 #include <windows.h>
 #include <wincon.h>
+#else
+#include <unistd.h>
+#include <stdio.h>
 #endif
 
 #ifdef NDEBUG
@@ -85,6 +88,8 @@
 
 #include "kdebugdbusiface_p.h"
 #include <QMutex>
+
+
 
 KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface = false;
 
@@ -433,7 +438,7 @@ struct KDebugPrivate
         return QDebug(&lineendstrippingwriter);
     }
 
-    QDebug printHeader(QDebug s, const QString &areaName, const char *, int, const char *funcinfo)
+    QDebug printHeader(QDebug s, const QString &areaName, const char *, int, const char *funcinfo, bool colored)
     {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
         QString programName = cache.value(0).name;
@@ -444,6 +449,8 @@ struct KDebugPrivate
             s << "/" << qPrintable(areaName);
 
         if (funcinfo) {
+            if(colored)
+                s << "\033[0;34m"; //blue
 # ifdef Q_CC_GNU
             // strip the function info down to the base function name
             // note that this throws away the template definitions,
@@ -474,6 +481,8 @@ struct KDebugPrivate
 # else
             s << " " << funcinfo;
 # endif
+           if(colored)
+               s  << "\033[0m";
         }
 
         s << ":";
@@ -496,6 +505,8 @@ struct KDebugPrivate
         if (areaName.isEmpty())
             areaName = cache.value(0).name;
 
+        bool colored=false;
+
         QDebug s(&devnull);
         switch (mode) {
         case FileOutput:
@@ -509,13 +520,26 @@ struct KDebugPrivate
             break;
         case NoOutput:
             s = QDebug(&devnull);
+            return s; //no need to take the time to "print header" if we don't want to output anyway
             break;
         default:                // QtOutput
             s = setupQtWriter(type);
+#ifndef Q_OS_WIN
+            //only color if the debug goes to a tty.
+            //the default QtMsgHandler (0) goes to stderr
+            //we use this hack to check if the default MsgHandler is used.
+            {
+                QtMsgHandler old =  qInstallMsgHandler ( 0L );
+                if(!old)
+                    colored=isatty(fileno(stderr));  
+                else
+                    qInstallMsgHandler ( old );
+            }
+#endif
             break;
         }
 
-        return printHeader(s, areaName, debugFile, line, funcinfo);
+        return printHeader(s, areaName, debugFile, line, funcinfo, colored);
     }
 
     QMutex mutex;
