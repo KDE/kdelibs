@@ -136,6 +136,11 @@ void KTempDir::setAutoRemove(bool autoRemove)
     d->autoRemove = autoRemove;
 }
 
+bool KTempDir::autoRemove() const
+{
+    return d->autoRemove;
+}
+
 void KTempDir::unlink()
 {
     if (!d->exists) return;

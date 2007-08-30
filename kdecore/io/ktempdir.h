@@ -83,6 +83,12 @@ public:
    void setAutoRemove(bool autoRemove);
 
    /**
+    * @return whether auto remove is active
+    * @see setAutoRemove
+    **/
+   bool autoRemove() const;
+
+   /**
     * Returns the status of the directory creation  based on errno.
     * (see errno.h)
     *
