@@ -2314,8 +2314,8 @@ void KSVGIconPainter::drawImage(double x, double y, QImage &image)
 	affine[1] = d->helper->m_worldMatrix->m12();
 	affine[2] = d->helper->m_worldMatrix->m21();
 	affine[3] = d->helper->m_worldMatrix->m22();
-	affine[4] = d->helper->m_worldMatrix->dx() + x;
-	affine[5] = d->helper->m_worldMatrix->dy() + y;
+	// use the world matrix to convert the coordinates
+	d->helper->m_worldMatrix->map(x, y, &affine[4], &affine[5]);
 
 	d->helper->art_rgba_rgba_affine(d->helper->m_buffer, 0, 0, d->helper->m_width, d->helper->m_height,
 									d->helper->m_rowstride, image.bits(), image.width(), image.height(),

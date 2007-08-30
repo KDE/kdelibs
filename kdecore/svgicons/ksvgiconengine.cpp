@@ -23,6 +23,7 @@
 #include <qcolor.h>
 #include <qimage.h>
 #include <qwmatrix.h>
+#include <qregexp.h>
 
 #include <kmdcodec.h>
 
@@ -420,27 +421,31 @@ public:
 
 			QString href = element.attribute("xlink:href");
 
+			QImage image;
 			if(href.startsWith("data:"))
 			{
 				// Get input
-				QCString input = href.mid(13).utf8();
+				QCString input = href.remove(QRegExp("^data:image/.*;base64,")).utf8();
 
 				// Decode into 'output'
 				QByteArray output;
 				KCodecs::base64Decode(input, output);
 
 				// Display
-				QImage image(output);
+				image.loadFromData(output);
+			}
+			else
+				image.load(href);
 
+			if (!image.isNull())
+			{
 				// Scale, if needed
 				if(image.width() != (int) w || image.height() != (int) h)
-				{
-					QImage show = image.smoothScale((int) w, (int) h, QImage::ScaleMin);
-					m_engine->painter()->drawImage(x, y, show);
-				}
+					image = image.smoothScale((int) w, (int) h, QImage::ScaleFree);
 
 				m_engine->painter()->drawImage(x, y, image);
 			}
+
 			return true;
 		}
 		return false;
