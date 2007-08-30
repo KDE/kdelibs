@@ -378,7 +378,7 @@ QStringList KCharSelectData::notes(const QChar& c)
     QStringList notes;
 
     for (int i = 0;  i < count;  i++) {
-        notes.append(QString::fromUtf8(data + offset));
+        notes.append(QString::fromLatin1(data + offset));
         offset += strlen(data + offset) + 1;
     }
 
