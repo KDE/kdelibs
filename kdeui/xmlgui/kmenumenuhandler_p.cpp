@@ -20,6 +20,8 @@
 #include "kmenumenuhandler_p.h"
 
 #include "kxmlguibuilder.h"
+#include "kxmlguiclient.h"
+#include "kxmlguifactory.h"
 #include "kmenu.h"
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -29,6 +31,8 @@
 
 
 #include <QWidget>
+#include <QDomDocument>
+#include <QDomNode>
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <ktoolbar.h>
@@ -97,23 +101,64 @@ void KMenuMenuHandler::slotSetShortcut()
 
 void KMenuMenuHandler::slotAddToToolBar(int tb)
 {
-  KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
-  if(!window)
-    return;
+    KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
+    if(!window)
+        return;
 
-  KMenu * menu=KMenu::contextMenuFocus();
-  if(!menu)
-    return;
-  KAction *action= qobject_cast<KAction*>(menu->contextMenuFocusAction());
-  if(!action)
-    return;
+    KMenu * menu=KMenu::contextMenuFocus();
+    if(!menu)
+        return;
+    QAction *action= qobject_cast<QAction*>(menu->contextMenuFocusAction());
+    if(!action)
+        return;
+    
+    QString actionName = action->property("_k_ActionName").toString();
+    KActionCollection *collection= qobject_cast<KActionCollection*>(qvariant_cast<QObject*>(action->property("_k_ActionCollection")));
+    if(!collection)
+    {
+         kWarning(296) << "Cannot find the action collection for action " << action->objectName();
+         return;
+    }
+    
+    KToolBar *toolbar=window->toolBars()[tb];
+    toolbar->addAction(action);
 
-
-  KToolBar *toolbar=window->toolBars()[tb];
-
-
-  toolbar->addAction(action);
-
+    const KXMLGUIClient* client = collection->parentGUIClient ();
+    QString xmlFile = client->localXMLFile();
+    QDomDocument document;
+    document.setContent( KXMLGUIFactory::readConfigFile( client->xmlFile(), client->componentData() ) );
+    QDomElement elem = document.documentElement().toElement();
+    
+    static const QString &tagToolBar = KGlobal::staticQString( "ToolBar" );
+    static const QString &attrNoEdit = KGlobal::staticQString( "noEdit" );
+    static const QString &attrName     = KGlobal::staticQString( "name" );
+    
+    QDomElement toolbarElem;
+    QDomNode n=elem.firstChild();
+    for( ; !n.isNull(); n = n.nextSibling() )
+    {
+        QDomElement elem = n.toElement();
+        if (!elem.isNull() && elem.tagName() == tagToolBar && elem.attribute( attrName ) == toolbar->objectName() )
+        {
+            if(elem.attribute( attrNoEdit ) == "true")
+            {
+                kWarning(296) << "The toolbar is not editable";
+                return;
+            }
+            toolbarElem = elem;
+            break;
+        }
+    }
+    if(toolbarElem.isNull())
+    {
+        toolbarElem=document.createElement( tagToolBar );
+        toolbarElem.setAttribute( attrName, toolbar->objectName() );
+        elem.appendChild( toolbarElem );
+    }
+    
+    KXMLGUIFactory::findActionByName(toolbarElem, actionName, true);
+    KXMLGUIFactory::saveConfigFile(document, xmlFile);
+    
 }
 
 

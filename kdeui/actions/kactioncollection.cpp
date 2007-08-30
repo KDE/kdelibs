@@ -200,6 +200,9 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
 
     if( index_name.isEmpty() )
         index_name = index_name.sprintf("unnamed-%p", (void*)action);
+    
+    action->setProperty("_k_ActionName" , index_name );
+    action->setProperty("_k_ActionCollection" , QVariant::fromValue<QObject*>(this) );
 
     // look if we already have THIS action under THIS name ;)
     QMap<QString, QAction*>::const_iterator it = d->actionByName.find(index_name);
