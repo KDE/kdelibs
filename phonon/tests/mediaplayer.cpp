@@ -74,6 +74,8 @@ class MediaPlayer : public QMainWindow
         void setBrightness(int b);
 
     private:
+        bool setNextSource();
+
         QWidget *m_settingsWidget;
         Phonon::MediaObject *m_media;
         Phonon::Path m_apath;
@@ -194,6 +196,46 @@ void MediaPlayer::workaroundQtBug()
     }
 }
 
+bool MediaPlayer::setNextSource()
+{
+    QWidget *extraWidget = new QWidget;
+    QHBoxLayout *layout = new QHBoxLayout(extraWidget);
+    layout->setMargin(0);
+    layout->addStretch();
+    QPushButton *dvdButton = new QPushButton(i18n("DVD"), extraWidget);
+    dvdButton->setCheckable(true);
+    dvdButton->setChecked(false);
+    layout->addWidget(dvdButton);
+    QPushButton *cdButton = new QPushButton(i18n("Audio CD"), extraWidget);
+    cdButton->setCheckable(true);
+    cdButton->setChecked(false);
+    layout->addWidget(cdButton);
+    KFileDialog dlg(KUrl(), QString(), 0, extraWidget);
+    connect(dvdButton, SIGNAL(toggled(bool)), &dlg, SLOT(accept()));
+    connect(cdButton, SIGNAL(toggled(bool)), &dlg, SLOT(accept()));
+    dlg.setOperationMode(KFileDialog::Opening);
+    dlg.setWindowTitle(i18n("Open"));
+    dlg.setMode(KFile::File);
+    dlg.exec();
+    KUrl url = dlg.selectedUrl();
+
+    if (dvdButton->isChecked()) {
+        if (url.isLocalFile()) {
+            m_media->setCurrentSource(MediaSource(Phonon::Dvd, url.path()));
+        } else {
+            m_media->setCurrentSource(Phonon::Dvd);
+        }
+    } else if (cdButton->isChecked()) {
+        m_media->setCurrentSource(Phonon::Cd);
+    } else if (url.isValid()) {
+        m_media->setCurrentSource(url);
+    } else {
+        QApplication::instance()->quit();
+        return false;
+    }
+    return true;
+}
+
 void MediaPlayer::getNextUrl()
 {
     static bool fileDialogAlreadyOpen = false;
@@ -201,12 +243,9 @@ void MediaPlayer::getNextUrl()
         return;
     }
     fileDialogAlreadyOpen = true;
-    KUrl url = KFileDialog::getOpenUrl(m_media->currentSource().url());//startDir=KUrl(), filter=QString(), parent=0);
-    if (!url.isValid()) {
-        QApplication::instance()->quit();
+    if (!setNextSource()) {
         return;
     }
-    m_media->setCurrentSource(url);
     m_media->play();
     fileDialogAlreadyOpen = false;
 }
@@ -214,12 +253,9 @@ void MediaPlayer::getNextUrl()
 void MediaPlayer::startupReady()
 {
     if (m_media->currentSource().type() == MediaSource::Invalid) {
-        KUrl url = KFileDialog::getOpenUrl();//startDir=KUrl(), filter=QString(), parent=0);
-        if (!url.isValid()) {
-            QApplication::instance()->quit();
+        if (!setNextSource()) {
             return;
         }
-        m_media->setCurrentSource(url);
     }
     m_media->play();
 }
