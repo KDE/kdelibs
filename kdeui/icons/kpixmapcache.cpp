@@ -56,7 +56,7 @@
 #define USE_MMAP
 #endif
 
-#define KPIXMAPCACHE_VERSION 0x000205
+#define KPIXMAPCACHE_VERSION 0x000206
 
 namespace {
 
@@ -110,6 +110,7 @@ public:
     virtual ~KPCMemoryDevice();
 
     virtual qint64 size() const  { return *mSize; }
+    void setSize(quint32 s)  { *mSize = s; }
     virtual bool seek(qint64 pos);
 
     static void setSizeEntryOffset(int o)  { mSizeEntryOffset = o; }
@@ -133,11 +134,30 @@ KPCMemoryDevice::KPCMemoryDevice(char* start, quint32* size, quint32 available) 
 {
     mMemory = start;
     mSize = size;
-    mInitialSize = *size;
     mAvailable = available;
     mPos = 0;
 
     open(QIODevice::ReadWrite);
+
+    // Load size
+#if 0
+    // Can anyone tell why this isn't working?
+    seek(mSizeEntryOffset);
+    QDataStream stream(this);
+    stream >> *mSize;
+#else
+    // Load up-to-date size from the memory
+    quint32 oldsize = *mSize;
+    char buf[4];
+    uchar* p = (uchar*)mSize;
+    memcpy(buf, mMemory + 21, 4);
+    *p++ = buf[3];
+    *p++ = buf[2];
+    *p++ = buf[1];
+    *p   = buf[0];
+#endif
+
+    mInitialSize = *mSize;
 }
 
 KPCMemoryDevice::~KPCMemoryDevice()
@@ -434,11 +454,15 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
     madvise(info->memory, info->size, MADV_WILLNEED);
 #endif
 
-    // Update file size in the header
+    // Update our stored file size
+    int size = info->size;
     KPCMemoryDevice dev(info->memory, &info->size, info->available);
-    QDataStream stream(&dev);
-    dev.seek(kpc_header_len);
-    stream << info->size;
+    if (!info->size) {
+        // Null size was read from the file. This means that we're the first to
+        //  mmap it and so we have to write the correct size to the file.
+        dev.setSize(size);
+        // New size will be written to file in KPCMemoryDevice dtor
+    }
 
     return true;
 #else
