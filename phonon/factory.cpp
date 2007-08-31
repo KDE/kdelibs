@@ -64,7 +64,11 @@ bool FactoryPrivate::createBackend()
         const QLatin1String pluginName("libphonon_qt7");
         const QLatin1String suffix("/phonon/");
 #elif defined(Q_WS_WIN)
-        const QLatin1String pluginName("libphonon_ds9");
+#if defined(QT_NO_DEBUG)
+        const QLatin1String pluginName("phonon_ds9");
+#else
+        const QLatin1String pluginName("phonon_ds9d");
+#endif
         const QLatin1String suffix("/phonon_backend/");
 #else
         const QLatin1String pluginName("xine");
@@ -252,7 +256,7 @@ PlatformPlugin *FactoryPrivate::platformPlugin()
         if (!QCoreApplication::instance() || QCoreApplication::applicationName().isEmpty()) {
             pFatal("Phonon needs QCoreApplication::applicationName to be set");
         }
-        const QString suffix("/phonon_platform");
+        const QString suffix(QLatin1String("/phonon_platform"));
         Q_ASSERT(QCoreApplication::instance());
         foreach (QString libPath, QCoreApplication::libraryPaths()) {
             libPath += suffix;

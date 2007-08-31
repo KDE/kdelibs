@@ -4,8 +4,11 @@
 
 TEMPLATE = lib
 CONFIG += dll warn_on
+QT_SOURCE_TREE=$$fromfile($$(QTDIR)/.qmake.cache,QT_SOURCE_TREE)
+include($$QT_SOURCE_TREE/src/qbase.pri)
 VERSION = 5.0.0
-TARGET = 
+
+DLLDESTDIR = $(QTDIR)/bin
 DEPENDPATH += .
 DEFINES += MAKE_PHONON_LIB
 

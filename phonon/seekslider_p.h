@@ -43,7 +43,7 @@ class SeekSliderPrivate
             slider(Qt::Horizontal, parent),
             iconLabel(parent),
             ticking(false),
-            icon(Platform::icon("player-time"))
+            icon(Platform::icon(QLatin1String("player-time")))
         {
             const int e = parent->style()->pixelMetric(QStyle::PM_ButtonIconSize);
             iconSize = QSize(e, e);

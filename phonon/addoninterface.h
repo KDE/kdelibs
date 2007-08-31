@@ -64,9 +64,9 @@ class AddonInterface
             setAutoplayTitles
         };
 
-        virtual bool hasInterface(Interface interface) const = 0;
+        virtual bool hasInterface(Interface iface) const = 0;
 
-        virtual QVariant interfaceCall(Interface interface, int command,
+        virtual QVariant interfaceCall(Interface iface, int command,
                 const QList<QVariant> &arguments = QList<QVariant>()) = 0;
 };
 
