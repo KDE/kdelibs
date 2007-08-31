@@ -97,8 +97,8 @@
 
 using namespace KNetwork;
 
-typedef KGenericFactory<KCryptoConfig, QWidget> KryptoFactory;
-K_EXPORT_COMPONENT_FACTORY( kcm_crypto, KryptoFactory("kcmcrypto") )
+K_PLUGIN_FACTORY(KryptoFactory, registerPlugin<KCryptoConfig>();)
+K_EXPORT_PLUGIN(KryptoFactory("kcmcrypto"))
 
 CipherItem::CipherItem( Q3ListView *view, const QString& cipher, int bits,
 			int maxBits, KCryptoConfig *module )
@@ -219,7 +219,7 @@ QString CAItem::configName() const
 
 
 
-KCryptoConfig::KCryptoConfig(QWidget *parent, const QStringList &)
+KCryptoConfig::KCryptoConfig(QWidget *parent, const QVariantList &)
   : KCModule(KryptoFactory::componentData(), parent)
 {
 QGridLayout *grid;

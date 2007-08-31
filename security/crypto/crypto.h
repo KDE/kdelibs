@@ -223,7 +223,7 @@ class KCryptoConfig : public KCModule
 {
   Q_OBJECT
 public:
-  explicit KCryptoConfig(QWidget *parent = 0L, const QStringList &list = QStringList());
+  explicit KCryptoConfig(QWidget *parent = 0L, const QVariantList &list = QVariantList());
   virtual ~KCryptoConfig();
 
   void load();
