@@ -343,6 +343,23 @@ void KBookmark::setIcon(const QString &icon)
     element.setAttribute("icon", icon);
 }
 
+bool KBookmark::showInToolbar() const
+{
+    if(element.hasAttribute("showintoolbar"))
+    {
+        bool show = element.attribute("showintoolbar") == "yes";
+        const_cast<QDomElement *>(&element)->removeAttribute("showintoolbar");
+        const_cast<KBookmark *>(this)->setShowInToolbar(show);
+    }
+    return  metaDataItem("showintoolbar") == "yes";
+}
+
+
+void KBookmark::setShowInToolbar(bool show)
+{
+    setMetaDataItem("showintoolbar", show ? "yes" : "no");
+}
+
 KBookmarkGroup KBookmark::parentGroup() const
 {
     return KBookmarkGroup( element.parentNode().toElement() );

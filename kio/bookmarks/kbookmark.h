@@ -145,6 +145,20 @@ public:
      */
     void setIcon(const QString &icon);
 
+
+    /**
+     * @return if the bookmark should be shown in the toolbar
+     * (used by the filtered toolbar)
+     *
+     */
+    bool showInToolbar() const;
+    
+    /**
+     * Set wheter this bookmark is show in a filterd toolbar
+     */
+    void setShowInToolbar(bool show);
+
+
     /**
      * @return the group containing this bookmark
      */
