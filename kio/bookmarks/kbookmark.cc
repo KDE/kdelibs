@@ -247,30 +247,6 @@ QList<KUrl> KBookmarkGroup::groupUrlList() const
     return urlList;
 }
 
-KBookmark KBookmarkGroup::closestBookmark( const KUrl& url ) const
-{
-    KBookmark bookmark = first();
-    KBookmark foundBookmark;
-    int maxLength = 0;
-
-    // Search the bookmark which is equal to the URL or at least is a parent URL.
-    // If there are more than one possible parent URL candidates, choose the bookmark
-    // which covers the bigger range of the URL.
-    while (!bookmark.isNull()) {
-        const KUrl bookmarkUrl = bookmark.url();
-        if (bookmarkUrl.isParentOf(url)) {
-            const int length = bookmarkUrl.prettyUrl().length();
-            if (length > maxLength) {
-                foundBookmark = bookmark;
-                maxLength = length;
-            }
-        }
-        bookmark = next(bookmark);
-    }
-
-    return foundBookmark;
-}
-
 //////
 
 KBookmark::KBookmark()
