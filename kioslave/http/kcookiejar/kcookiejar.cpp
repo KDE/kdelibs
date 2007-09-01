@@ -82,6 +82,7 @@
 
 #define MAX_COOKIES_PER_HOST 25
 #define READ_BUFFER_SIZE 8192
+#define IP_ADDRESS_EXPRESSION "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 
 // Note with respect to QString::fromLatin1( )
 // Cookies are stored as 8 bit data and passed to kio_http as
@@ -339,6 +340,8 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     bool secureRequest = (_url.find( L1("https://"), 0, false) == 0 ||
                           _url.find( L1("webdavs://"), 0, false) == 0);
 
+    kdDebug(7104) << "findCookies: URL= " << _url << ", secure = " << secureRequest << endl;
+
     extractDomains(fqdn, domains);
 
     KHttpCookieList allCookies;
@@ -403,7 +406,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
           {
              cookie->windowIds().append(windowId);
           }
-          
+
           if (it == domains.end()) // Only needed when processing pending cookies
              removeDuplicateFromList(&allCookies, cookie);
 
@@ -620,16 +623,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     // Return numeric IPv4 addresses as is...
     if ((_fqdn[0] >= '0') && (_fqdn[0] <= '9'))
     {
-       bool allNumeric = true;
-       for(int i = _fqdn.length(); i--;)
-       {
-          if (!strchr("0123456789:.", _fqdn[i].latin1()))
-          {
-             allNumeric = false;
-             break;
-          }
-       }
-       if (allNumeric)
+       if (_fqdn.find(QRegExp(IP_ADDRESS_EXPRESSION)) > -1)
        {
           _domains.append( _fqdn );
           return;
@@ -646,13 +640,13 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 
        if (partList.count() == 1)
          break; // We only have a TLD left.
-       
+
        if ((partList.count() == 2) && (m_twoLevelTLD[partList[1].lower()]))
        {
           // This domain uses two-level TLDs in the form xxxx.yy
           break;
        }
-       
+
        if ((partList.count() == 2) && (partList[1].length() == 2))
        {
           // If this is a TLD, we should stop. (e.g. co.uk)
