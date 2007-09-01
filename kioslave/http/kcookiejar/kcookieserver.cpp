@@ -84,7 +84,9 @@ KCookieServer::KCookieServer()
    mPendingCookies->setAutoDelete(true);
    mRequestList = new RequestList;
    mAdvicePending = false;
-   mTimer = 0;
+   mTimer = new QTimer();
+   mTimer->setSingleShot(true);
+   connect(mTimer, SIGNAL( timeout()), SLOT( slotSave()));
    mConfig = new KConfig("kcookiejarrc");
    mCookieJar->loadConfig( mConfig );
 
@@ -110,8 +112,7 @@ KCookieServer::KCookieServer()
 
 KCookieServer::~KCookieServer()
 {
-   if (mCookieJar->changed())
-      slotSave();
+   slotSave();
    delete mCookieJar;
    delete mTimer;
    delete mPendingCookies;
@@ -283,25 +284,24 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
     it = reqToRemove.constBegin();
     for( ; it != reqToRemove.constEnd(); ++it )
         mRequestList->removeAll( *it );
-    if (mCookieJar->changed() && !mTimer)
-        saveCookieJar();
+
+    saveCookieJar();
 }
 
 void KCookieServer::slotSave()
 {
-   delete mTimer;
-   mTimer = 0;
-   QString filename = KStandardDirs::locateLocal("data", "kcookiejar/cookies");
-   mCookieJar->saveCookies(filename);
+   if (mCookieJar->changed())
+   {
+      QString filename = KStandardDirs::locateLocal("data", "kcookiejar/cookies");
+      mCookieJar->saveCookies(filename);
+   }
 }
 
 void KCookieServer::saveCookieJar()
 {
-    if( mTimer )
+    if( mTimer->isActive() )
         return;
 
-    mTimer = new QTimer();
-    connect( mTimer, SIGNAL( timeout()), SLOT( slotSave()));
     mTimer->start( 1000*60*SAVE_DELAY );
 }
 
@@ -375,10 +375,7 @@ KCookieServer::findCookies(const QString &url, qlonglong windowId)
    }
 
    QString cookies = mCookieJar->findCookies(url, false, windowId);
-
-   if (mCookieJar->changed() && !mTimer)
-      saveCookieJar();
-
+   saveCookieJar();
    return cookies;
 }
 
@@ -473,8 +470,7 @@ KCookieServer::deleteCookie(const QString &domain, const QString &fqdn,
          if( cookieMatches(it.current(), domain, fqdn, path, name) )
          {
             mCookieJar->eatCookie( it.current() );
-            if (!mTimer)
-               saveCookieJar();
+            saveCookieJar();
             break;
          }
       }
@@ -486,8 +482,7 @@ void
 KCookieServer::deleteCookiesFromDomain(const QString &domain)
 {
    mCookieJar->eatCookiesForDomain(domain);
-   if (!mTimer)
-      saveCookieJar();
+   saveCookieJar();
 }
 
 
@@ -503,16 +498,14 @@ void
 KCookieServer::deleteSessionCookies( qlonglong windowId )
 {
   mCookieJar->eatSessionCookies( windowId );
-  if(!mTimer)
-    saveCookieJar();
+  saveCookieJar();
 }
 
 void
 KCookieServer::deleteSessionCookiesFor(const QString &fqdn, qlonglong windowId)
 {
   mCookieJar->eatSessionCookies( fqdn, windowId );
-  if(!mTimer)
-    saveCookieJar();
+  saveCookieJar();
 }
 
 // DBUS function
@@ -520,8 +513,7 @@ void
 KCookieServer::deleteAllCookies()
 {
    mCookieJar->eatAllCookies();
-   if (!mTimer)
-      saveCookieJar();
+   saveCookieJar();
 }
 
 // DBUS function
