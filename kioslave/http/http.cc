@@ -263,11 +263,11 @@ void HTTPProtocol::resetResponseSettings()
   m_bChunked = false;
   m_iSize = NO_SIZE;
 
-  m_responseHeader.clear();
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_sContentMD5 = QString::null;
   m_strMimeType = QString::null;
+  m_responseHeader = QString::null;
 
   setMetaData("request-id", m_request.id);
 }
@@ -2647,10 +2647,13 @@ void HTTPProtocol::forwardHttpResponseHeader()
   // Send the response header if it was requested
   if ( config()->readBoolEntry("PropagateHttpHeader", false) )
   {
-    setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
+    setMetaData("HTTP-Headers", m_responseHeader);
     sendMetaData();
+    //kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::forwardHttpResponseHeader =====" << endl;
+    //kdDebug(7113) << "(" << m_pid << m_responseHeader << endl;
   }
-  m_responseHeader.clear();
+
+  m_responseHeader = QString::null;
 }
 
 /**
@@ -2667,7 +2670,7 @@ try_again:
   // Check
   if (m_request.bCachedRead)
   {
-     m_responseHeader << "HTTP-CACHE";
+     m_responseHeader = QString::fromLatin1("HTTP-CACHE");
      // Read header from cache...
      char buffer[4097];
      if (!fgets(buffer, 4096, m_request.fcache) )
@@ -2840,7 +2843,7 @@ try_again:
 
     // Store the the headers so they can be passed to the
     // calling application later
-    m_responseHeader << QString::fromLatin1(buf);
+    m_responseHeader += QString::fromLatin1(buf);
 
     if ((strncasecmp(buf, "HTTP", 4) == 0) ||
         (strncasecmp(buf, "ICY ", 4) == 0)) // Shoutcast support
