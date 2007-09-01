@@ -79,6 +79,7 @@
 
 #define MAX_COOKIES_PER_HOST 25
 #define READ_BUFFER_SIZE 8192
+#define IP_ADDRESS_EXPRESSION "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 
 // Note with respect to QString::fromLatin1( )
 // Cookies are stored as 8 bit data and passed to kio_http as
@@ -614,16 +615,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     // Return numeric IPv4 addresses as is...
     if ((_fqdn[0] >= '0') && (_fqdn[0] <= '9'))
     {
-       bool allNumeric = true;
-       for(int i = _fqdn.length(); i--;)
-       {
-          if (!strchr("0123456789:.", _fqdn[i].toLatin1()))
-          {
-             allNumeric = false;
-             break;
-          }
-       }
-       if (allNumeric)
+       if (_fqdn.find(QRegExp(IP_ADDRESS_EXPRESSION)) > -1)
        {
           _domains.append( _fqdn );
           return;
