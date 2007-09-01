@@ -3,8 +3,6 @@ project(kimgio)
 
 macro_optional_find_package(Jasper)
 
-macro_optional_find_package(TIFF)
-
 macro_optional_find_package(OpenEXR)
 
 include_directories( ${KDE4_KIO_INCLUDES} )
@@ -112,18 +110,6 @@ endif(OPENEXR_FOUND)
 macro_log_feature(OPENEXR_FOUND "OpenEXR" "OpenEXR Package" "http://www.openexr.com/" FALSE "" "High dynamic range image manipulation library.")
 
 
-if(TIFF_FOUND)
-    include_directories( ${TIFF_INCLUDE_DIR} )
-    set(kimg_tiff_LIB_SRCS tiffr.cpp)
-    kde4_add_plugin(kimg_tiff ${kimg_tiff_LIB_SRCS})
-    target_link_libraries(kimg_tiff ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${TIFF_LIBRARY})
-
-    install(TARGETS kimg_tiff  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
-    install( FILES tiff.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
-endif(TIFF_FOUND)
-
-
-
 ########### install files ###############
 
 install( FILES
@@ -147,6 +133,7 @@ install( FILES
   mng.desktop
   psd.desktop
   hdr.desktop
+  tiff.desktop
   DESTINATION ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 install( FILES qimageio_plugin.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR}/ )
