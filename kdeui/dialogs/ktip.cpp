@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtGui/QLayout>
 
 #include <kaboutdata.h>
+#include <kcolorscheme.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -263,11 +264,13 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
     d->blendedColor = QColor( qRed( colPixel ), qGreen( colPixel ), qBlue( colPixel ) );
   }
 
-  d->baseColor = KGlobalSettings::alternateBackgroundColor();
+  KColorScheme colorScheme(QPalette::Active, KColorScheme::View);
+
+  d->baseColor = colorScheme.background(KColorScheme::AlternateBackground).color();
   d->baseColor.getHsv( &h, &s, &v );
   d->baseColor.setHsv( h, int(s * (10 / 6.0)), int(v * (93 / 99.0)) );
 
-  d->textColor = KGlobalSettings::textColor();
+  d->textColor = colorScheme.foreground().color();
 
   d->database = database;
 

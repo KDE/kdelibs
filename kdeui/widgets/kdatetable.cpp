@@ -22,6 +22,7 @@
 #include "kdatetable.h"
 
 #include <kconfig.h>
+#include <kcolorscheme.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
@@ -195,7 +196,7 @@ KDateTable::KDateTable( const QDate& date_, QWidget* parent )
     setFontSize( 10 );
     setFocusPolicy( Qt::StrongFocus );
     QPalette palette;
-    palette.setColor( backgroundRole(), KGlobalSettings::baseColor() );
+    palette.setColor( backgroundRole(), KColorScheme(QPalette::Active, KColorScheme::View).background().color() );
     setPalette( palette );
 
     if( !setDate( date_ ) ) {
@@ -215,7 +216,7 @@ KDateTable::KDateTable( QWidget *parent )
     setFontSize( 10 );
     setFocusPolicy( Qt::StrongFocus );
     QPalette palette;
-    palette.setColor( backgroundRole(), KGlobalSettings::baseColor() );
+    palette.setColor( backgroundRole(), KColorScheme(QPalette::Active, KColorScheme::View).background().color() );
     setPalette( palette );
     // this initializes weekDayFirstOfMonth, numDaysThisMonth
     setDate( QDate::currentDate() );

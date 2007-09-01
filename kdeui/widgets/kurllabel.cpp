@@ -22,7 +22,7 @@
 #include <QtGui/QMouseEvent>
 
 #include <kcursor.h>
-#include <kglobalsettings.h>
+#include <kcolorscheme.h>
 
 class KUrlLabel::Private
 {
@@ -31,7 +31,7 @@ class KUrlLabel::Private
       : parent( _parent ),
         url( _url ),
         tipText( url ),
-        linkColor( KGlobalSettings::linkColor() ),
+        linkColor( KColorScheme(QPalette::Active, KColorScheme::Window).foreground(KColorScheme::LinkText).color() ),
         highlightedLinkColor( Qt::red ),
         cursor( 0 ),
         textUnderlined( true ),
@@ -321,7 +321,7 @@ bool KUrlLabel::event( QEvent *event )
     palette.setColor( QPalette::Foreground, this->palette().color( QPalette::Active, QPalette::Foreground ) );
     setPalette( palette );
 
-    d->linkColor = KGlobalSettings::linkColor();
+    d->linkColor = KColorScheme(QPalette::Active, KColorScheme::Window).foreground(KColorScheme::LinkText).color();
     d->updateColor();
 
     return true;

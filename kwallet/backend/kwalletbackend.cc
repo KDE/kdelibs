@@ -59,7 +59,7 @@ class Backend::BackendPrivate
 };
 
 Backend::Backend(const QString& name, bool isPath) : d(0), _name(name), _ref(0) {
-	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
+	KGlobal::dirs()->addResourceType("kwallet", 0, "share/apps/kwallet");
 	if (isPath) {
 		_path = name;
 	} else {

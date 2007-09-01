@@ -578,7 +578,7 @@ QString KCalendarSystemHijri::monthName( int month, int year, MonthNameFormat fo
         }
     }
 
-    if ( format == ShortFormat ) {
+    if ( format == ShortName ) {
         switch ( month ) {
         case 1:
             return ki18n( "Muharram" ).toString( locale() );
@@ -609,6 +609,7 @@ QString KCalendarSystemHijri::monthName( int month, int year, MonthNameFormat fo
         }
     }
 
+    // LongName
     switch ( month ) {
     case 1:
         return ki18n( "Muharram" ).toString( locale() );

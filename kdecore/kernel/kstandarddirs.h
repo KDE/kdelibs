@@ -240,6 +240,8 @@ public:
      * @param priority if true, the directory is added before any other,
      * otherwise after
      * @return true if successful, false otherwise.
+     *
+     * @deprecated
      */
     KDE_DEPRECATED bool addResourceType( const char *type,
                                          const QString& relativename, bool priority = true );

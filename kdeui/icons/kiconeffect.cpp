@@ -201,7 +201,7 @@ QImage KIconEffect::apply(const QImage &image, int effect, float value,
                           const QColor &col, bool trans) const
 {
     return apply(image, effect, value, col,
-                 KColorScheme(KColorScheme::View).background().color(), trans);
+                 KColorScheme(QPalette::Active, KColorScheme::View).background().color(), trans);
 }
 
 QImage KIconEffect::apply(const QImage &img, int effect, float value,
@@ -262,7 +262,7 @@ QPixmap KIconEffect::apply(const QPixmap &pixmap, int effect, float value,
 	const QColor &col, bool trans) const
 {
     return apply(pixmap, effect, value, col,
-                 KColorScheme(KColorScheme::View).background().color(), trans);
+                 KColorScheme(QPalette::Active, KColorScheme::View).background().color(), trans);
 }
 
 QPixmap KIconEffect::apply(const QPixmap &pixmap, int effect, float value,

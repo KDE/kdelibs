@@ -1156,7 +1156,7 @@ void KConfigSkeleton::writeConfig()
   emit configChanged();
 }
 
-bool KConfigSkeleton::usrUseDefaults(bool b)
+bool KConfigSkeleton::usrUseDefaults(bool)
 {
   return false;
 }
