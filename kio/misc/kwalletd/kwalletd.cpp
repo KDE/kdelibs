@@ -93,7 +93,7 @@ KWalletD::KWalletD()
 	screensaver = new QDBusInterface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver");
 #endif
 	reconfigure();
-	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
+	KGlobal::dirs()->addResourceType("kwallet", 0, "share/apps/kwallet");
 		connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceUnregistered(QString)),
 				SLOT(slotServiceUnregistered(QString)));
 	_dw = new KDirWatch(this );
