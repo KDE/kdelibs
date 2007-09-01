@@ -179,7 +179,7 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 			m_current = item;
 			*m_proc << "nmblookup"+m_wins_server+"-M ";
                         *m_proc << KProcess::quote(item->text(0));
-                        *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
+                        *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -Iserv_name smbclient -N -L 'serv_name' -W ";
                         *m_proc << KProcess::quote(item->text(0));
 			*m_proc << " -A ";
                         *m_proc << KProcess::quote(m_passwdFile->name());
