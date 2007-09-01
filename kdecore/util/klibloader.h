@@ -125,7 +125,11 @@ private:
  * KLibLoader follows the singleton pattern. You can not create multiple
  * instances. Use self() to get a pointer to the loader.
  *
+ * Note that you probably want to use KPluginLoader or
+ * KService::createInstance instead.
+ *
  * @see KLibrary
+ * @see KPluginLoader
  * @author Torben Weis <weis@kde.org>
  */
 class KDECORE_EXPORT KLibLoader : public QObject //krazy:exclude=dpointer (private class is kept as a global static)
@@ -309,6 +313,10 @@ public:
         return createInstance<T>(QString(), libname, parent, args, error);
     }
 
+    /**
+     * @deprecated Use one of the other createInstance methods or
+     *             KPluginLoader or KService::createInstance instead
+     */
     template <typename T>
     KDE_DEPRECATED
     static T *createInstance( const QString &libname, QObject *parent,
