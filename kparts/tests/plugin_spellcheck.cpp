@@ -9,7 +9,7 @@
 #include <kdebug.h>
 
 PluginSpellCheck::PluginSpellCheck( QObject* parent,
-                                    const QStringList& )
+                                    const QVariantList& )
     : Plugin( parent )
 {
     KAction* act = new KAction( "&Select current line (plugin)", this );
@@ -35,7 +35,7 @@ void PluginSpellCheck::slotSpellCheck()
     }
 }
 
-K_EXPORT_COMPONENT_FACTORY( libspellcheckplugin,
-                            KGenericFactory<PluginSpellCheck> )
+K_PLUGIN_FACTORY(PluginSpellCheckFactory, registerPlugin<PluginSpellCheck>();)
+K_EXPORT_PLUGIN(PluginSpellCheckFactory("spellcheckplugin"))
 
 #include <plugin_spellcheck.moc>

@@ -17,9 +17,12 @@
 #include <kstatusbar.h>
 #include <kstandarddirs.h>
 
+K_PLUGIN_FACTORY(NotepadFactory, registerPlugin<NotepadPart>();)
+K_EXPORT_PLUGIN(NotepadFactory("notepadpart"))
+
 NotepadPart::NotepadPart( QWidget* parentWidget,
                           QObject* parent,
-                          const QStringList& )
+                          const QVariantList& )
  : KParts::ReadWritePart( parent )
 {
   setComponentData( NotepadFactory::componentData() );

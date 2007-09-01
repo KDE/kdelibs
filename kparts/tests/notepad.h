@@ -19,7 +19,7 @@ class NotepadPart : public KParts::ReadWritePart
 public:
   NotepadPart( QWidget* parentWidget,
                QObject* parent,
-               const QStringList& args = QStringList() );
+               const QVariantList& args = QVariantList() );
   virtual ~NotepadPart();
 
   virtual void setReadWrite( bool rw );
@@ -36,7 +36,5 @@ protected Q_SLOTS:
 protected:
   QTextEdit * m_edit;
 };
-
-typedef KParts::GenericFactory<NotepadPart> NotepadFactory;
 
 #endif

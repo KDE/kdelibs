@@ -46,7 +46,7 @@ target_link_libraries(ghostviewtest  ${KDE4_KPARTS_LIBS} )
 set(spellcheckplugin_PART_SRCS plugin_spellcheck.cpp )
 
 
-kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
+kde4_add_plugin(spellcheckplugin ${spellcheckplugin_PART_SRCS})
 
 target_link_libraries(spellcheckplugin  ${KDE4_KPARTS_LIBS} )
 
@@ -55,10 +55,10 @@ install(TARGETS spellcheckplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### next target ###############
 
-set(notepadpart_PART_SRCS notepadpart.cpp notepad.cpp)
+set(notepadpart_PART_SRCS notepad.cpp)
 
 
-kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
+kde4_add_plugin(notepadpart ${notepadpart_PART_SRCS})
 
 target_link_libraries(notepadpart  ${KDE4_KPARTS_LIBS} )
 set_target_properties(notepadpart PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
