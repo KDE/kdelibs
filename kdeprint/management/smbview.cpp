@@ -188,7 +188,7 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 			QString cmd;
 			cmd += "nmblookup"+m_wins_server+"-M ";
 			cmd += KShell::quoteArg(item->text(0));
-			cmd += " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
+			cmd += " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -Iserv_name smbclient -N -L 'serv_name' -W ";
 			cmd += KShell::quoteArg(item->text(0));
 			cmd += " -A ";
 			cmd += KShell::quoteArg(m_passwdFile->fileName());
