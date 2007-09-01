@@ -144,3 +144,8 @@ CHECK http://y.z.foobar.com/
 CHECK http://z.foobar.com/
 CHECK http://www.foobar.com/
 CHECK http://foobar.com/
+CLEAR COOKIES
+## Check domain restrictions #8
+CONFIG AcceptSessionCookies true
+COOKIE ACCEPT http://www.foobar.com Set-Cookie: from=foobar.com; domain=bar.com; Path="/"
+CHECK http://bar.com

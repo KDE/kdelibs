@@ -981,43 +981,26 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 //
 KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
 {
-    QStringList domains;
-
     if (m_rejectCrossDomainCookies && cookiePtr->isCrossDomain())
        return KCookieReject;
+
+    QStringList domains;
+
+    extractDomains(cookiePtr->host(), domains);
+
+    // If the cookie specifies a domain, check whether it is valid. Otherwise,
+    // accept the cookie anyways but removes the domain="" value to prevent
+    // cross-site cookie injection.
+    if (!cookiePtr->domain().isEmpty())
+    {
+      if (!domains.contains(cookiePtr->domain()) && 
+          !cookiePtr->domain().endsWith("."+cookiePtr->host()))
+          cookiePtr->fixDomain(QString::null);
+    }
 
     if (m_autoAcceptSessionCookies && (cookiePtr->expireDate() == 0 ||
         m_ignoreCookieExpirationDate))
        return KCookieAccept;
-
-    extractDomains(cookiePtr->host(), domains);
-
-    // If the cookie specifies a domain, check whether it is valid and
-    // correct otherwise.
-    if (!cookiePtr->domain().isEmpty())
-    {
-       bool valid = false;
-
-       // This checks whether the cookie is valid based on
-       // what ::extractDomains returns
-       if (!valid)
-       {
-          if (domains.contains(cookiePtr->domain()))
-             valid = true;
-       }
-
-       if (!valid)
-       {
-          // Maybe it points to a sub-domain
-          if (cookiePtr->domain().endsWith("."+cookiePtr->host()))
-             valid = true;
-       }
-
-       if (!valid)
-       {
-          cookiePtr->fixDomain(QString::null);
-       }
-    }
 
     KCookieAdvice advice = KCookieDunno;
     bool isFQDN = true; // First is FQDN
