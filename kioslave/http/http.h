@@ -497,7 +497,7 @@ protected:
 
 //--- Settings related to a single response only
   bool m_bRedirect; // Indicates current request is a redirection
-  QStringList m_responseHeader; // All headers
+  QString m_responseHeader; // All response headers
 
 
   // Language/Encoding related

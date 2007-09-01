@@ -2586,7 +2586,7 @@ void HTTPProtocol::forwardHttpResponseHeader()
   // Send the response header if it was requested
   if ( config()->readEntry("PropagateHttpHeader", false) )
   {
-    setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
+    setMetaData("HTTP-Headers", m_responseHeader);
     sendMetaData();
   }
   m_responseHeader.clear();
@@ -2606,7 +2606,7 @@ try_again:
   // Check
   if (m_request.bCachedRead)
   {
-     m_responseHeader << "HTTP-CACHE";
+     m_responseHeader = QString::fromLatin1("HTTP-CACHE");
      // Read header from cache...
      char buffer[4097];
      if (!gzgets(m_request.fcache, buffer, 4096) )
@@ -2777,7 +2777,7 @@ try_again:
 
     // Store the the headers so they can be passed to the
     // calling application later
-    m_responseHeader << QString::fromLatin1(buf);
+    m_responseHeader += QString::fromLatin1(buf);
 
     if ((strncasecmp(buf, "HTTP", 4) == 0) ||
         (strncasecmp(buf, "ICY ", 4) == 0)) // Shoutcast support
