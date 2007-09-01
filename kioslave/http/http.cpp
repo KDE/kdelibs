@@ -3544,15 +3544,12 @@ try_again:
        sendMetaData();
     }
 
-    kDebug(7113) << "(" << m_pid << ") request.url: " << m_request.url.url()
-                  << endl << "LocationStr: " << locationStr.data() << endl;
-
-    kDebug(7113) << "(" << m_pid << ") Requesting redirection to: " << u.url()
-                  << endl;
-
     // If we're redirected to a http:// url, remember that we're doing webdav...
     if (m_protocol == "webdav" || m_protocol == "webdavs")
       u.setProtocol(m_protocol);
+
+    kDebug(7113) << "(" << m_pid << ") Re-directing from '" << m_request.url.url()
+                 << "' to '" << u.url() << "'" << endl;
 
     redirection(u);
     m_request.bCachedWrite = false; // Turn off caching on re-direction (DA)
@@ -3675,17 +3672,6 @@ try_again:
         m_strMimeType = QString::fromLatin1("video/x-ms-wmv");
   }
 
-#if 0
-  // Even if we can't rely on content-length, it seems that we should
-  // never get more data than content-length. Maybe less, if the
-  // content-length refers to the unzipped data.
-  if (!m_qContentEncodings.isEmpty())
-  {
-     // If we still have content encoding we can't rely on the Content-Length.
-     m_iSize = NO_SIZE;
-  }
-#endif
-
   if( !disposition.isEmpty() )
   {
     kDebug(7113) << "(" << m_pid << ") Setting Content-Disposition metadata to: "
@@ -3725,27 +3711,22 @@ try_again:
   // Do we want to cache this request?
   if (m_request.bUseCache)
   {
-     ::unlink( QFile::encodeName(m_request.cef));
-     if ( m_request.bCachedWrite && !m_strMimeType.isEmpty() )
-     {
-        // Check...
-        createCacheEntry(m_strMimeType, expireDate); // Create a cache entry
-        if (!m_request.fcache)
-	    {
-		m_request.bCachedWrite = false; // Error creating cache entry.
-		kDebug(7113) << "(" << m_pid << ") Error creating cache entry for " << m_request.url.url()<<"!\n";
-	    }
-        m_request.expireDate = expireDate;
-        m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
-     }
+    ::unlink( QFile::encodeName(m_request.cef));
+    if ( m_request.bCachedWrite && !m_strMimeType.isEmpty() )
+    {
+      // Check...
+      kDebug(7113) << "(" << m_pid << ") Cache, adding \"" << m_request.url.url() << "\"";
+      createCacheEntry(m_strMimeType, expireDate); // Create a cache entry
+      if (!m_request.fcache)
+      {
+        m_request.bCachedWrite = false; // Error creating cache entry.
+        kDebug(7113) << "(" << m_pid << ") Error creating cache entry for " << m_request.url.url()<<"!\n";
+      }
+      m_request.expireDate = expireDate;
+      m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE) / 2;
+    }
   }
 
-  if (m_request.bCachedWrite && !m_strMimeType.isEmpty())
-    kDebug(7113) << "(" << m_pid << ") Cache, adding \"" << m_request.url.url() << "\"";
-  else if (m_request.bCachedWrite && m_strMimeType.isEmpty())
-    kDebug(7113) << "(" << m_pid << ") Cache, pending \"" << m_request.url.url() << "\"";
-  else
-    kDebug(7113) << "(" << m_pid << ") Cache, not adding \"" << m_request.url.url() << "\"";
   return true;
 }
 
