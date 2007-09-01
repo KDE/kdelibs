@@ -762,7 +762,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    // force generating of KLocale object. if not, the database will get
    // be translated
    KGlobal::locale();
-   KGlobal::dirs()->addResourceType("app-reg", "share/application-registry" );
+   KGlobal::dirs()->addResourceType("app-reg", 0, "share/application-registry" );
 
     if (!QDBusConnection::sessionBus().isConnected())
     {
