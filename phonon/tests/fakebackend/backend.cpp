@@ -35,9 +35,10 @@
 #include <QtCore/QtPlugin>
 Q_EXPORT_PLUGIN2(phonon_fake, Phonon::Fake::Backend);
 #else
-#include <kgenericfactory.h>
-typedef KGenericFactory<Phonon::Fake::Backend, Phonon::Fake::Backend> FakeBackendFactory;
-K_EXPORT_COMPONENT_FACTORY(phonon_fake, FakeBackendFactory("fakebackend"))
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
+K_PLUGIN_FACTORY(FakeBackendFactory, registerPlugin<Phonon::Fake::Backend>();)
+K_EXPORT_PLUGIN(FakeBackendFactory("fakebackend"))
 #endif
 
 namespace Phonon
@@ -45,7 +46,7 @@ namespace Phonon
 namespace Fake
 {
 
-Backend::Backend(QObject *parent, const QStringList &)
+Backend::Backend(QObject *parent, const QVariantList &)
     : QObject(parent)
 {
     setProperty("identifier",     QLatin1String("phonon_fake"));

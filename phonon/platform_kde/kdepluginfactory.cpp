@@ -110,21 +110,28 @@ QString KdePlatformPlugin::applicationName() const
 
 QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
 {
-    KLibFactory *factory = 0;
+    KPluginFactory *factory = 0;
+    QString errorReason;
 #ifdef PHONON_LOAD_BACKEND_GLOBAL
     // This code is in here temporarily until NMM gets fixed.
     // Currently the NMM backend will fail with undefined symbols if
     // the backend is not loaded with global symbol resolution
-    KLibrary *library = KLibLoader::self()->library(newService->library(), QLibrary::ExportExternalSymbolsHint);
-    if (library) {
-        factory = library->factory();
+    //KLibrary *library = KLibLoader::self()->factory(newService->library(), QLibrary::ExportExternalSymbolsHint);
+    //if (library) {
+    //    factory = library->factory();
+    //}
+    factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
+    if (!factory) {
+        errorReason = KLibLoader::self()->lastErrorMessage();
     }
-    //factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
 #else
-    factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()));
+    KPluginLoader loader(QFile::encodeName(newService->library()));
+    factory = loader.factory();
+    if (!factory) {
+        errorReason = loader.errorString();
+    }
 #endif
     if (!factory) {
-        QString errorReason = KLibLoader::self()->lastErrorMessage();
         kError(600) << "Can not create factory for " << newService->name() <<
             ":\n" << errorReason << endl;
 
@@ -137,7 +144,7 @@ QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
         return false;
     }
 
-    QObject *backend = factory->create();
+    QObject *backend = factory->create<QObject>();
     if (0 == backend) {
         QString errorReason = i18n("create method returned 0");
         kError(600) << "Can not create backend object from factory for " <<
