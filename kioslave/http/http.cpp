@@ -3341,6 +3341,9 @@ try_again:
 
   } while (!m_bEOF && (len || noHeader) && (headerSize < maxHeaderSize) && (gets(buffer, sizeof(buffer)-1)));
 
+  // Send the current response before processing starts or it
+  // might never get sent...
+  forwardHttpResponseHeader();
 
   // Now process the HTTP/1.1 upgrade
   QStringList::Iterator opt = upgradeOffers.begin();
@@ -3482,31 +3485,27 @@ try_again:
   // We need to try to login again if we failed earlier
   if ( m_bUnauthorized )
   {
-    if ( (m_responseCode == 401) ||
-         (m_bUseProxy && (m_responseCode == 407))
-       )
+    if ( (m_responseCode == 401) || (m_bUseProxy && (m_responseCode == 407)))
     {
-        if ( getAuthorization() )
-        {
-           // for NTLM Authentication we have to keep the connection open!
-           if ( Authentication == AUTH_NTLM && m_strAuthorization.length() > 4 )
-           {
-             m_bKeepAlive = true;
-             readBody( true );
-           }
-           else if (ProxyAuthentication == AUTH_NTLM && m_strProxyAuthorization.length() > 4)
-           {
+      if ( getAuthorization() )
+      {
+          // for NTLM Authentication we have to keep the connection open!
+          if ( Authentication == AUTH_NTLM && m_strAuthorization.length() > 4 )
+          {
+            m_bKeepAlive = true;
             readBody( true );
-           }
-           else
-             httpCloseConnection();
-           return false; // Try again.
-        }
+          }
+          else if (ProxyAuthentication == AUTH_NTLM && m_strProxyAuthorization.length() > 4)
+          {
+          readBody( true );
+          }
+          else
+            httpCloseConnection();
+          return false; // Try again.
+      }
 
-        if (m_bError)
-           return false; // Error out
-
-        // Show error page...
+      if (m_bError)
+          return false; // Error out
     }
     m_bUnauthorized = false;
   }
@@ -3719,8 +3718,6 @@ try_again:
     kDebug(7113) << "(" << m_pid << ") Emitting mimetype " << m_strMimeType;
     mimeType( m_strMimeType );
   }
-
-  forwardHttpResponseHeader();
 
   if (m_request.method == HTTP_HEAD)
      return true;
