@@ -2607,6 +2607,8 @@ try_again:
   if (m_request.bCachedRead)
   {
      m_responseHeader = QString::fromLatin1("HTTP-CACHE");
+     forwardHttpResponseHeader();
+
      // Read header from cache...
      char buffer[4097];
      if (!gzgets(m_request.fcache, buffer, 4096) )
@@ -2642,7 +2644,6 @@ try_again:
      tmp.setNum(m_request.creationDate);
      setMetaData("cache-creation-date", tmp);
      mimeType(m_strMimeType);
-     forwardHttpResponseHeader();
      return true;
   }
 
@@ -2852,7 +2853,6 @@ try_again:
       else if (m_responseCode == 416) // Range not supported
       {
         m_request.offset = 0;
-        httpCloseConnection();
         return false; // Try again.
       }
       // Upgrade Required
@@ -3033,23 +3033,20 @@ try_again:
         start = ++pos;
         while ( *pos && *pos != '=' )  pos++;
 
-	char *end = pos;
-	while ( *end && *end != ';' )  end++;
+        char *end = pos;
+        while ( *end && *end != ';' )  end++;
 
         if (*pos)
         {
           mediaAttribute = QString::fromLatin1(start, pos-start).trimmed().toLower();
           mediaValue = QString::fromLatin1(pos+1, end-pos-1).trimmed();
-	  pos = end;
-          if (mediaValue.length() &&
-              (mediaValue[0] == '"') &&
+          pos = end;
+          if (mediaValue.length() && (mediaValue[0] == '"') &&
               (mediaValue[mediaValue.length()-1] == '"'))
              mediaValue = mediaValue.mid(1, mediaValue.length()-2);
 
-          kDebug (7113) << "(" << m_pid << ") Media-Parameter Attribute: "
-                         << mediaAttribute << endl;
-          kDebug (7113) << "(" << m_pid << ") Media-Parameter Value: "
-                         << mediaValue << endl;
+          kDebug (7113) << "(" << m_pid << ") Encoding-type: " << mediaAttribute
+                        << "=" << mediaValue << endl;
 
           if ( mediaAttribute == "charset")
           {
@@ -4224,7 +4221,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   if (m_request.bCachedRead)
   {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: read data from cache!";
+    kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: read data from cache!";
     m_request.bCachedWrite = false;
 
     char buffer[ MAX_IPC_SIZE ];
@@ -4390,11 +4387,9 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   {
     QString calculatedMD5 = md5Filter->md5();
 
-    if ( m_sContentMD5 == calculatedMD5 )
-      kDebug(7113) << "(" << m_pid << ") MD5 checksum MATCHED!!";
-    else
-      kDebug(7113) << "(" << m_pid << ") MD5 checksum MISMATCH! Expected: "
-                    << calculatedMD5 << ", Got: " << m_sContentMD5 << endl;
+    if ( m_sContentMD5 != calculatedMD5 )
+      kWarning(7113) << "(" << m_pid << ") MD5 checksum MISMATCH! Expected: "
+                     << calculatedMD5 << ", Got: " << m_sContentMD5 << endl;
   }
 
   // Close cache entry
@@ -4402,9 +4397,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   {
      if (m_request.bCachedWrite && m_request.fcache)
         closeCacheEntry();
-     else if (m_request.bCachedWrite) kDebug(7113) << "(" << m_pid << ") no cache file!\n";
   }
-  else kDebug(7113) << "(" << m_pid << ") still "<< KIO::number(m_iBytesLeft) <<" bytes left! can't close cache entry!\n";
 
   if (!dataInternal)
     data( QByteArray() );
