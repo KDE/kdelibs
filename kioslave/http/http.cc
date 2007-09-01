@@ -3412,6 +3412,9 @@ try_again:
 
   } while (!m_bEOF && (len || noHeader) && (headerSize < maxHeaderSize) && (gets(buffer, sizeof(buffer)-1)));
 
+  // Send the current response before processing starts or it 
+  // might never get sent...
+  forwardHttpResponseHeader();
 
   // Now process the HTTP/1.1 upgrade
   QStringList::Iterator opt = upgradeOffers.begin();
@@ -4392,7 +4395,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   if (m_bChunked)
     m_iBytesLeft = NO_SIZE;
 
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retrieve data. "<<KIO::number(m_iBytesLeft)<<" left." << endl;
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retrieve data. "
+                << KIO::number(m_iBytesLeft) << " left." << endl;
 
   // Main incoming loop...  Gather everything while we can...
   m_cpMimeBuffer = false;
@@ -4530,12 +4534,28 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   {
      if (m_request.bCachedWrite && m_request.fcache)
         closeCacheEntry();
-     else if (m_request.bCachedWrite) kdDebug(7113) << "(" << m_pid << ") no cache file!\n";
+     else if (m_request.bCachedWrite) 
+        kdDebug(7113) << "(" << m_pid << ") no cache file!\n";
   }
-  else kdDebug(7113) << "(" << m_pid << ") still "<< KIO::number(m_iBytesLeft) <<" bytes left! can't close cache entry!\n";
+  else
+  {
+    kdDebug(7113) << "(" << m_pid << ") still "<< KIO::number(m_iBytesLeft)
+                  << " bytes left! can't close cache entry!\n";
+  }
+
+  if (sz <= 1)
+  {
+    /* kdDebug(7113) << "(" << m_pid << ") readBody: sz = " << KIO::number(sz) 
+                     << ", responseCode =" << m_responseCode << endl; */
+    if (m_responseCode >= 500 && m_responseCode <= 599)
+      error(ERR_INTERNAL_SERVER, m_state.hostname);
+    else if (m_responseCode >= 400 && m_responseCode <= 499)
+      error(ERR_DOES_NOT_EXIST, m_state.hostname);
+  }
 
   if (!dataInternal)
     data( QByteArray() );
+
   return true;
 }
 
