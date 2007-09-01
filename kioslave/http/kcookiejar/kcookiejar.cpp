@@ -615,7 +615,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     // Return numeric IPv4 addresses as is...
     if ((_fqdn[0] >= '0') && (_fqdn[0] <= '9'))
     {
-       if (_fqdn.find(QRegExp(IP_ADDRESS_EXPRESSION)) > -1)
+       if (_fqdn.indexOf(QRegExp(IP_ADDRESS_EXPRESSION)) > -1)
        {
           _domains.append( _fqdn );
           return;
