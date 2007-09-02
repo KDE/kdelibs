@@ -63,8 +63,7 @@ namespace KIO { class Job; }
  * everything.  These defaults reside in the classes
  * KBookmarkOwner (editing bookmarks) and KBookmarkManager
  * (almost everything else).  If you wish to change the defaults in
- * any way, you must reimplement and instantiate those classes
- * <em>before</em> this class is ever called.
+ * any way, you must reimplement either this class or KBookmarkOwner.
  *
  * Using this class is very simple:
  *
@@ -73,10 +72,6 @@ namespace KIO { class Job; }
  *    menu as a parameter
  * 3) Insert your (now full) popup menu wherever you wish
  *
- * Again, if you wish to modify any defaults, the procedure is:
- *
- * 1a) Reimplement your own KBookmarkOwner
- * 1b) Reimplement and instantiate your own KBookmarkManager
  */
 class KIO_EXPORT KBookmarkMenu : public QObject
 {
