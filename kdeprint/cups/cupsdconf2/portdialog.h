@@ -27,6 +27,9 @@ class QSpinBox;
 class QCheckBox;
 struct CupsdConf;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class PortDialog : public KDialog
 {
 public:

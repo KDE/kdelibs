@@ -6,6 +6,9 @@
 // and a text in the table above.
 //
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class DrawView : public QWidget
 {
     Q_OBJECT

@@ -24,6 +24,9 @@
 #include <QtCore/QStringList>
 #include <QtCore/QObject>
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class GsChecker : public QObject
 {
 	Q_OBJECT

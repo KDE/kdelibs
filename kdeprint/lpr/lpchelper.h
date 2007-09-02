@@ -27,6 +27,9 @@
 
 class KMJob;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class LpcHelper : public QObject
 {
 	Q_OBJECT

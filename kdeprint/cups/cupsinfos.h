@@ -23,6 +23,9 @@
 #include <QtCore/QString>
 #include "kpreloadobject.h"
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsInfos : public KPReloadObject
 {
 public:

@@ -25,6 +25,9 @@
 class KIntNumInput;
 class QCheckBox;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdJobsPage : public CupsdPage
 {
 	Q_OBJECT

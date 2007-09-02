@@ -26,6 +26,9 @@
 
 class KMPrinter;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class PrinterFilter : QObject
 {
 public:

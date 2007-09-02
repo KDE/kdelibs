@@ -31,6 +31,9 @@ class QPushButton;
 class QLabel;
 class KLineEdit;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsAddSmb : public KDialog
 {
 	Q_OBJECT

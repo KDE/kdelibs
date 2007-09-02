@@ -28,6 +28,9 @@
 class QComboBox;
 class QLabel;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class KDEPRINT_EXPORT PluginComboBox : public QWidget, public KPReloadObject
 {
 	Q_OBJECT

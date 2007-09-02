@@ -28,6 +28,9 @@ class KMLpdManager;
 class DrMain;
 class KMPrinter;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class PrintcapEntry
 {
 friend class KMLpdManager;
@@ -57,6 +60,9 @@ struct BitsPerPixel
 	QString	comment;
 };
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class PrinttoolEntry
 {
 friend class KMLpdManager;
@@ -71,6 +77,9 @@ private:
 
 //*****************************************************************************************************
 
+#ifdef __GNUC__
+#warning remove function from global namespace
+#endif
 QString getPrintcapLine(QTextStream& t, QString *lastcomment = NULL);
 
 #endif // LPDTOOLS_H

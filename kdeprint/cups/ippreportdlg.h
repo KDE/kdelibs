@@ -25,6 +25,9 @@
 class IppRequest;
 class KTextEdit;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class IppReportDlg : public KDialog
 {
 	Q_OBJECT

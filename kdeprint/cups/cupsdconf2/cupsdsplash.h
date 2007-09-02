@@ -22,6 +22,9 @@
 
 #include "cupsdpage.h"
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdSplash : public CupsdPage
 {
 public:

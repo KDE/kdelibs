@@ -25,6 +25,9 @@
 class QDirLineEdit;
 class QDirMultiLineEdit;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdDirPage : public CupsdPage
 {
 public:

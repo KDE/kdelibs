@@ -44,6 +44,9 @@ struct CupsLocation;
 struct CupsResource;
 enum ResourceType { RESOURCE_GLOBAL, RESOURCE_PRINTER, RESOURCE_CLASS, RESOURCE_ADMIN };
 
+#ifdef __GNUC__
+#warning rename struct or remove from global namespace
+#endif
 struct CupsdConf
 {
 // functions member
@@ -141,6 +144,9 @@ struct CupsdConf
 	QList< QPair<QString,QString> >	unknown_;
 };
 
+#ifdef __GNUC__
+#warning rename struct or remove from global namespace
+#endif
 struct CupsLocation
 {
 	CupsLocation();
@@ -160,6 +166,9 @@ struct CupsLocation
 	QStringList	addresses_;
 };
 
+#ifdef __GNUC__
+#warning rename struct or remove from global namespace
+#endif
 struct CupsResource
 {
 	CupsResource();

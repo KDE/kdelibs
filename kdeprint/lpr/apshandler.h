@@ -24,6 +24,9 @@
 
 #include <QtCore/QMap>
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class ApsHandler : public LprHandler
 {
 public:

@@ -25,17 +25,44 @@
 #include <kurl.h>
 #include <klocale.h>
 
+#ifdef __GNUC__
+#warning remove function from global namespace
+#endif
 KUrl smbToUrl(const QString& work, const QString& server, const QString& printer);
+
+#ifdef __GNUC__
+#warning remove function from global namespace
+#endif
 void urlToSmb(const KUrl& url, QString& work, QString& server, QString& printer);
+
 // those 2 are only workarounds when the login/password may contain
 // strange characters ('@', '/'). In this case, those chars are not encoded
 // as other SMB tools (smbspool) doesn't seem to support encoding. This
 // utilities allow to continue working KUrl class (and encoding) within
 // KDEPrint, but without encoding outside KDEPrint (shoudl fix bug #38733)
+#ifdef __GNUC__
+#warning remove function from global namespace
+#endif
 KUrl smbToUrl(const QString& s);
+
+#ifdef __GNUC__
+#warning remove function from global namespace
+#endif
 QString urlToSmb(const KUrl& url);
+
+#ifdef __GNUC__
+#warning remove function from global namespace
+#endif
 KDEPRINT_EXPORT QString buildSmbURI( const QString& work, const QString& server, const QString& printer, const QString& user, const QString& passwd );
+
+#ifdef __GNUC__
+#warning remove function from global namespace
+#endif
 KDEPRINT_EXPORT bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& printer, QString& user, QString& passwd );
+
+#ifdef __GNUC__
+#warning remove function from global namespace
+#endif
 KDEPRINT_EXPORT QString shadowPassword( const QString& uri );
 
 static const struct pagesizestruct

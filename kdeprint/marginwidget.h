@@ -29,6 +29,9 @@ class MarginPreview;
 class QCheckBox;
 class QComboBox;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class KDEPRINT_EXPORT MarginWidget : public QWidget
 {
 	Q_OBJECT

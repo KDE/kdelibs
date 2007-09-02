@@ -24,6 +24,9 @@
 
 struct CupsdConf;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdPage : public QWidget
 {
 	Q_OBJECT

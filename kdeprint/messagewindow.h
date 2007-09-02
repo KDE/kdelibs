@@ -27,6 +27,9 @@
 
 class QLabel;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class KDEPRINT_EXPORT MessageWindow : public QWidget
 {
 	Q_OBJECT

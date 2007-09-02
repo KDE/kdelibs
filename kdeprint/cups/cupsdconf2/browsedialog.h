@@ -26,6 +26,9 @@ class QLineEdit;
 class QComboBox;
 struct CupsdConf;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class BrowseDialog : public KDialog
 {
 	Q_OBJECT

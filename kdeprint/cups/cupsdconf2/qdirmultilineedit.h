@@ -25,6 +25,9 @@
 class QListWidget;
 class QPushButton;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class QDirMultiLineEdit : public QWidget
 {
 	Q_OBJECT

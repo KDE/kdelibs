@@ -25,6 +25,9 @@
 
 class KTemporaryFile;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class SmbView : public K3ListView
 {
 	Q_OBJECT

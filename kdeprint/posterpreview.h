@@ -25,6 +25,9 @@
 
 class KProcess;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class PosterPreview : public QFrame
 {
 	Q_OBJECT

@@ -27,6 +27,9 @@ class QCheckBox;
 class EditList;
 class QComboBox;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdBrowsingPage : public CupsdPage
 {
 	Q_OBJECT

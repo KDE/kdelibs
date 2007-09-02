@@ -20,6 +20,9 @@ class QAction;
 class QComboBox;
 class QMenu;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class HelpWindow : public KMainWindow
 {
     Q_OBJECT

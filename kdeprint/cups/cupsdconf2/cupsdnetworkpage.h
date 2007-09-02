@@ -28,6 +28,9 @@ class QComboBox;
 class EditList;
 class SizeWidget;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdNetworkPage : public CupsdPage
 {
 	Q_OBJECT

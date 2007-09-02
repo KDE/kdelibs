@@ -23,6 +23,9 @@
 #include <QtGui/QWidget>
 #include <QtGui/QImage>
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class ImagePreview : public QWidget
 {
 public:

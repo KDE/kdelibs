@@ -25,6 +25,9 @@
 class QSpinBox;
 class QComboBox;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class SizeWidget : public QWidget
 {
 public:

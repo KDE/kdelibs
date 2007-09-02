@@ -28,6 +28,9 @@ class EditList;
 struct CupsdConf;
 struct CupsLocation;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class LocationDialog : public KDialog
 {
 	Q_OBJECT

@@ -49,6 +49,9 @@ extern "C"
 	}
 }
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class StatusWindow : public QWidget
 {
 public:

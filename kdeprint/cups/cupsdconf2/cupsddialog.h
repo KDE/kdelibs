@@ -26,6 +26,9 @@
 class CupsdPage;
 struct CupsdConf;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdDialog : public KPageDialog
 {
 	Q_OBJECT

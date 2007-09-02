@@ -25,6 +25,9 @@
 
 class QFile;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class Comment
 {
 public:
@@ -38,6 +41,9 @@ private:
 	QString key_;
 };
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdComment
 {
 public:

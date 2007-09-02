@@ -37,6 +37,9 @@ class QLineEdit;
 class QComboBox;
 class KMWSocketUtil;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class SocketConfig : public KDialog
 {
 	friend class KMWSocketUtil;

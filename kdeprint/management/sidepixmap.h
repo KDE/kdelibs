@@ -25,6 +25,9 @@
 #include <QtGui/QFrame>
 #include <QtGui/QPixmap>
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class KDEPRINT_MANAGEMENT_EXPORT SidePixmap : public QFrame
 {
 public:

@@ -28,6 +28,9 @@ class QLabel;
 class KProcess;
 class QCheckBox;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class EscpWidget : public QWidget
 {
 	Q_OBJECT

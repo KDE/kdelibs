@@ -23,6 +23,9 @@
 #include <QtCore/QObject>
 #include <kdeprint/kpreloadobject.h>
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 /**
  * @internal
  * This class is internal to KDEPrint and is not intended to be

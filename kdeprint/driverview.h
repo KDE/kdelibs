@@ -31,6 +31,9 @@ class QTreeWidgetItem;
 class DrOptionView;
 class DrMain;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class KDEPRINT_EXPORT DriverView : public QWidget
 {
 	Q_OBJECT

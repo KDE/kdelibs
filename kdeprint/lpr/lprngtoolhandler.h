@@ -25,6 +25,9 @@
 #include <QtCore/QStringList>
 #include <QtCore/QPair>
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class LPRngToolHandler : public LprHandler
 {
 public:

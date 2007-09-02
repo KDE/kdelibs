@@ -26,6 +26,9 @@ class SizeWidget;
 class QLineEdit;
 class KIntNumInput;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdFilterPage : public CupsdPage
 {
 public:

@@ -31,6 +31,9 @@ class Q3ListView;
 class Q3ListViewItem;
 class QStackedWidget;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class EditEntryDialog : public KDialog
 {
 	Q_OBJECT

@@ -35,6 +35,9 @@ class QIODevice;
 class DrBase;
 class DrMain;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class KDEPRINT_EXPORT Foomatic2Loader
 {
 public:

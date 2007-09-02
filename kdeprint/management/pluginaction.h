@@ -23,6 +23,9 @@
 #include <kdeprint_export.h>
 #include <kaction.h>
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class KDEPRINT_MANAGEMENT_EXPORT PluginAction : public KAction
 {
 	Q_OBJECT

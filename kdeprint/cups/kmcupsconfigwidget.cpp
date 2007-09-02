@@ -33,6 +33,9 @@
 #include <kconfig.h>
 #include <kstringhandler.h>
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class PortValidator : public QIntValidator
 {
 public:

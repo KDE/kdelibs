@@ -28,6 +28,9 @@ class EditList;
 class QDirLineEdit;
 struct CupsLocation;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class CupsdSecurityPage : public CupsdPage
 {
 	Q_OBJECT
