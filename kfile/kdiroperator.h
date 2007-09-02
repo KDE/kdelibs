@@ -31,10 +31,14 @@
 #include <kfileitem.h>
 #include <kfile.h>
 
+class QAbstractItemView;
+class QModelIndex;
 class QProgressBar;
 
 class KAction;
 class KDirLister;
+class KDirModel;
+class KDirSortFilterProxyModel;
 class KToggleAction;
 class KActionMenu;
 namespace KIO {
@@ -209,13 +213,13 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @see KCombiView
      * @see view
      */
-    virtual void setView(KFileView *view);
+    virtual void setView(QAbstractItemView *view);
 
     /**
      * @returns the currently used view.
      * @see setView
      */
-    KFileView * view() const;
+    QAbstractItemView* view() const;
 
     /**
      * Returns the widget of the current view. 0L if there is no view/widget.
@@ -227,8 +231,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * Sets one of the predefined fileviews
      * @see KFile::FileView
      */
-	// ### KDE4: make virtual
-    void setView(KFile::FileView view);
+    virtual void setView(KFile::FileView view);
 
     /**
      * Sets the way to sort files and directories.
@@ -278,18 +281,18 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * The ownership of @p w is transferred to KDirOperator, so don't
      * delete it yourself!
      */
-	// ### KDE4: make virtual
-    void setPreviewWidget(const QWidget *w);
+    virtual void setPreviewWidget(const QWidget *w);
 
     /**
      * @returns a list of all currently selected items. If there is no view,
-     * then 0L is returned.
+     * or there are no selected items, an empty list is returned.
      */
-    const KFileItemList * selectedItems() const;
+    QList<KFileItem> selectedItems() const;
 
     /**
      * @returns true if @p item is currently selected, or false otherwise.
      */
+    // ### KDE5: change 'const KFileItem *item' to 'const KFileItem& item'
     bool isSelected( const KFileItem *item ) const;
 
     /**
@@ -448,8 +451,8 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * to the user.
      * @returns true if the directory could be created.
      */
-	// ### KDE4: make virtual and turn QString into KUrl
-    bool mkdir( const QString& directory, bool enterDirectory = true );
+	// ### KDE5: turn QString into KUrl
+    virtual bool mkdir( const QString& directory, bool enterDirectory = true );
 
     /**
      * Starts and returns a KIO::DeleteJob to delete the given @p items.
@@ -458,9 +461,8 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
      */
-	// ### KDE4: make virtual
-    KIO::DeleteJob * del( const KFileItemList& items,
-                          bool ask = true, bool showProgress = true );
+    virtual KIO::DeleteJob * del( const KFileItemList& items,
+                                  bool ask = true, bool showProgress = true );
 
     /**
      * Starts and returns a KIO::DeleteJob to delete the given @p items.
@@ -470,9 +472,8 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
      */
-	// ### KDE4: make virtual
-    KIO::DeleteJob * del( const KFileItemList& items, QWidget *parent,
-                          bool ask = true, bool showProgress = true );
+    virtual KIO::DeleteJob * del( const KFileItemList& items, QWidget *parent,
+                                  bool ask = true, bool showProgress = true );
 
     /**
      * Clears the forward and backward history.
@@ -488,8 +489,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
      *
      * Default is off.
      */
-	// ### KDE4: make virtual
-    void setEnableDirHighlighting( bool enable );
+    virtual void setEnableDirHighlighting( bool enable );
 
     /**
      * @returns whether the last directory will be made the current item
@@ -533,9 +533,8 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the CopyJob to show a progress dialog
      */
-     // ### KDE4: make virtual
-    KIO::CopyJob * trash( const KFileItemList& items, QWidget *parent,
-                       bool ask = true, bool showProgress = true );
+    virtual KIO::CopyJob * trash( const KFileItemList& items, QWidget *parent,
+                                  bool ask = true, bool showProgress = true );
 
 protected:
     /**
@@ -552,12 +551,12 @@ protected:
      * @see KFile::FileView
      * @see setView
      */
-     virtual KFileView* createView( QWidget* parent, KFile::FileView view );
-     /**
+    virtual QAbstractItemView* createView( QWidget* parent, KFile::FileView view );
+
+    /**
      * Sets a custom KDirLister to list directories.
      */
-	// ### KDE4: make virtual
-    void setDirLister( KDirLister *lister );
+    virtual void setDirLister( KDirLister *lister );
 
     virtual void resizeEvent( QResizeEvent * );
 
@@ -605,26 +604,22 @@ public Q_SLOTS:
     /**
      * Goes one step back in the history and opens that url.
      */
-	// ### KDE4: make virtual
-    void back();
+    virtual void back();
 
     /**
      * Goes one step forward in the history and opens that url.
      */
-	// ### KDE4: make virtual
-    void forward();
+    virtual void forward();
 
     /**
      * Enters the home directory.
      */
-	// ### KDE4: make virtual
-    void home();
+    virtual void home();
 
     /**
      * Goes one directory up from the current url.
      */
-	// ### KDE4: make virtual
-    void cdUp();
+    virtual void cdUp();
 
     /**
      * to update the view after changing the settings
@@ -634,20 +629,17 @@ public Q_SLOTS:
     /**
      * Re-reads the current url.
      */
-	// ### KDE4: make virtual
-    void rereadDir();
+    virtual void rereadDir();
 
     /**
      * Opens a dialog to create a new directory.
      */
-	// ### KDE4: make virtual
-    void mkdir();
+    virtual void mkdir();
 
     /**
      * Deletes the currently selected files/directories.
      */
-	// ### KDE4: make virtual
-    void deleteSelected();
+    virtual void deleteSelected();
 
     /**
      * Enables/disables actions that are selection dependent. Call this e.g.
@@ -713,13 +705,15 @@ protected Q_SLOTS:
     void selectFile(const KFileItem *item);
 
     /**
-     * Emits fileHighlighted( i )
+     * Emits fileHighlighted( item )
      */
-    void highlightFile(const KFileItem* i);
+    void highlightFile(const KFileItem* item);
 
     /**
      * Called upon right-click to activate the popupmenu.
      */
+    // ### KDE5: - it is not required anymore that this method is a slot
+    //           - use const KFileItem& instead of KFileItem*
     virtual void activatedMenu( const KFileItem *, const QPoint& pos );
 
     /**
@@ -769,7 +763,7 @@ Q_SIGNALS:
      * call to setView() or by the user selecting a different view thru
      * the GUI.
      */
-    void viewChanged( KFileView * newView );
+    void viewChanged( QAbstractItemView *newView );
 
     /**
      * Emitted when a file is highlighted or generally the selection changes in
@@ -787,25 +781,8 @@ Q_SIGNALS:
      * @param urls the urls that where dropped.
      */
     void dropped(const KFileItem *item, QDropEvent*event, const KUrl::List&urls);
+
 private:
-    /**
-     * Contains all URLs you can reach with the back button.
-     */
-    QStack<KUrl*> backStack;
-
-    /**
-     * Contains all URLs you can reach with the forward button.
-     */
-    QStack<KUrl*> forwardStack;
-
-    KDirLister *dir;
-    KUrl currUrl;
-
-    KCompletion myCompletion;
-    KCompletion myDirCompletion;
-    bool myCompleteListDirty;
-    QDir::SortFlags mySorting;
-
     /**
      * Checks whether we preview support is available for the current
      * mimetype/namefilter
@@ -818,50 +795,30 @@ private:
       */
     void checkPath(const QString& txt, bool takeFiles = false);
 
-    void connectView(KFileView *);
+    void connectView(QAbstractItemView *view);
 
     bool openUrl( const KUrl& url, bool keep = false, bool reload = false );
 
-    KFileView *m_fileView;
-    KFileItemList pendingMimeTypes;
-
-    // the enum KFile::FileView as an int
-    int m_viewKind;
-    int defaultView;
-
-    KFile::Modes myMode;
-    QProgressBar *progress;
-
-    const QWidget *myPreview;    // temporary pointer for the preview widget
-
+private:
     // actions for the popupmenus
+    KActionMenu *m_actionMenu;
+
     // ### clean up all those -- we have them all in the actionMenu!
-    KActionMenu *actionMenu;
+    KActionMenu *m_sortActionMenu;
+    QAction *m_byNameAction;
+    QAction *m_byDateAction;
+    QAction *m_bySizeAction;
+    KToggleAction *m_reverseAction;
+    KToggleAction *m_dirsFirstAction;
 
-    QAction 	*backAction;
-    QAction 	*forwardAction;
-    QAction 	*homeAction;
-    QAction 	*upAction;
-    QAction 	*reloadAction;
-    QAction *actionSeparator;
-    KAction 	*mkdirAction;
+    KActionMenu *m_viewActionMenu;
+    QAction *m_shortAction;
+    QAction *m_detailedAction;
+    KToggleAction *m_showHiddenAction;
+    KToggleAction *m_separateDirsAction;
 
-    KActionMenu *sortActionMenu;
-    QAction *byNameAction;
-    QAction *byDateAction;
-    QAction *bySizeAction;
-    KToggleAction *reverseAction;
-    KToggleAction *dirsFirstAction;
-    KToggleAction *caseInsensitiveAction;
-
-    KActionMenu *viewActionMenu;
-    QAction *shortAction;
-    QAction *detailedAction;
-    KToggleAction *showHiddenAction;
-    KToggleAction *separateDirsAction;
-
-    KActionCollection *myActionCollection;
-    KActionCollection *viewActionCollection;
+    KActionCollection *m_actionCollection;
+    KActionCollection *m_viewActionCollection;
 
 private Q_SLOTS:
     /**
@@ -899,6 +856,11 @@ private Q_SLOTS:
     void slotProperties();
 
     void insertViewDependentActions();
+
+    void slotPressed(const QModelIndex& index);
+    void slotClicked(const QModelIndex& index);
+    void slotDoubleClicked(const QModelIndex& index);
+    void openContextMenu(const QPoint& pos);
 
 private:
     static bool isReadable( const KUrl& url );

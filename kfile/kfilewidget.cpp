@@ -547,11 +547,11 @@ void KFileWidget::slotOk()
 
     // a list of all selected files/directories (if any)
     // can only be used if the user didn't type any filenames/urls himself
-    const KFileItemList *items = d->ops->selectedItems();
+    const QList<KFileItem> items = d->ops->selectedItems();
 
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
         if ( d->locationEdit->currentText().trimmed().isEmpty() ) {
-            if ( !items || items->isEmpty() )
+            if (items.isEmpty() )
             {
                 QString msg;
                 if ( d->operationMode == Saving )
@@ -567,12 +567,10 @@ void KFileWidget::slotOk()
             else {
 
                 bool multi = (mode() & KFile::Files) != 0;
-                KFileItemList::const_iterator kit = items->begin();
-                const KFileItemList::const_iterator kend = items->end();
                 QString endQuote = QLatin1String("\" ");
                 QString name, files;
-                for ( ; kit != kend; ++kit ) {
-                    name = (*kit)->name();
+                foreach (KFileItem fileItem, items) {
+                    name = fileItem.name();
                     if ( multi ) {
                         name.prepend( QLatin1Char( '"' ) );
                         name.append( endQuote );
@@ -589,8 +587,8 @@ void KFileWidget::slotOk()
     bool dirOnly = d->ops->dirOnlyMode();
 
     // we can use our kfileitems, no need to parse anything
-    if ( items && !d->locationEdit->lineEdit()->isModified() &&
-         !(items->isEmpty() && !dirOnly) ) {
+    if ( !d->locationEdit->lineEdit()->isModified() &&
+         !(items.isEmpty() && !dirOnly) ) {
 
         d->urlList.clear();
         d->filenames.clear();
@@ -600,12 +598,16 @@ void KFileWidget::slotOk()
         }
         else {
             if ( !(mode() & KFile::Files) ) {// single selection
-                d->url = items->first()->url();
+                d->url = items.first().url();
             }
 
             else { // multi (dirs and/or files)
                 d->url = d->ops->url();
-                d->urlList = items->urlList();
+                KUrl::List urlList;
+                foreach (KFileItem item, items) {
+                    urlList.append(item.url());
+                }
+                d->urlList = urlList;
             }
         }
 
@@ -929,19 +931,16 @@ void KFileWidgetPrivate::multiSelectionChanged()
         return;
 
     locationEdit->lineEdit()->setModified( false );
-    const KFileItemList *list = ops->selectedItems();
-    if ( !list ) {
+    const QList<KFileItem> list = ops->selectedItems();
+    if ( list.isEmpty() ) {
         locationEdit->clearEditText();
         return;
     }
 
     static const QString &begin = KGlobal::staticQString(" \"");
     QString text;
-    KFileItemList::const_iterator kit = list->begin();
-    const KFileItemList::const_iterator kend = list->end();
-    for ( ; kit != kend; ++kit )
-    {
-        text.append( begin ).append( (*kit)->name() ).append( QLatin1Char( '"' ) );
+    foreach (KFileItem fileItem, list) {
+        text.append( begin ).append( fileItem.name() ).append( QLatin1Char( '"' ) );
     }
 
     setLocationText( text.trimmed() );
