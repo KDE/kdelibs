@@ -152,6 +152,26 @@ namespace
     }
 } // namespace 
 
+namespace N
+{
+namespace
+{
+    class TestClass6
+    {
+    public:
+        TestClass6()
+        {
+            kDebug();
+        }
+    };
+    TestClass6 func6()
+    {
+        kDebug();
+        return TestClass6();
+    }
+} // namespace 
+} // namespace N
+
 void testKDebug()
 {
     QString test = "%20C this is a string";
@@ -223,6 +243,8 @@ void testKDebug()
         kDebug() << "Testing the function names. The following should display only the base name of the functions";
         TestClass4 c4;
         func5();
+        using namespace N;
+        func6();
     }
 }
 
