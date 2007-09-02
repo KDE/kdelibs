@@ -292,7 +292,7 @@ QFont KFileItemDelegate::Private::font(const QStyleOptionViewItem &option, const
         font = qvariant_cast<QFont>(value).resolve(option.font);
 
     // Use an italic font for symlinks
-    if (item.isLink())
+    if (!item.isNull() && item.isLink())
         font.setItalic(true);
 
     return font;
