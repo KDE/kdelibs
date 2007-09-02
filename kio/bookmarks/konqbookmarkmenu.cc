@@ -191,8 +191,6 @@ QStringList KonqBookmarkMenu::dynamicBookmarksList()
   QStringList mlist;
   if (config.hasKey("DynamicMenus"))
     mlist = config.readEntry("DynamicMenus", QStringList());
-  else
-    mlist << "netscape";
 
   return mlist;
 }
@@ -210,19 +208,7 @@ void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo 
   QStringList elist;
 
   config.changeGroup("Bookmarks");
-  if (!config.hasKey("DynamicMenus")) {
-    if (newMenu.type != "netscape") {
-      // update from old xbel method to new rc method
-      // though only if not writing the netscape setting
-      config.changeGroup("DynamicMenu-" "netscape");
-      DynMenuInfo xbelSetting;
-      xbelSetting = showDynamicBookmarks("netscape");
-      config.writeEntry("Show", xbelSetting.show);
-      config.writePathEntry("Location", xbelSetting.location);
-      config.writeEntry("Type", xbelSetting.type);
-      config.writeEntry("Name", xbelSetting.name);
-    }
-  } else {
+  if (config.hasKey("DynamicMenus")) {
     elist = config.readEntry("DynamicMenus", QStringList());
   }
 

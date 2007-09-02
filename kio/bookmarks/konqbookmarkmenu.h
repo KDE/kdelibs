@@ -64,11 +64,11 @@ public:
   {
   }
 
+protected:
   /**
    * Structure used for storing information about
    * the dynamic menu setting
    */
-  // TODO - transform into class
   struct DynMenuInfo {
     bool show;
     QString location;
