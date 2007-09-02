@@ -65,22 +65,52 @@
 class KJobListView : public QTreeWidget
 {
 public:
-	KJobListView( QWidget *parent = 0 );
+	KJobListView( KMJobViewer *parent );
 
 protected:
 	virtual void dragEnterEvent( QDragEnterEvent* );
+	virtual void dragMoveEvent( QDragMoveEvent* );
+	virtual bool dropMimeData ( QTreeWidgetItem * parent, int index, const QMimeData * data, Qt::DropAction action );
 };
 
-KJobListView::KJobListView( QWidget *parent)
+KJobListView::KJobListView(KMJobViewer *parent)
 	: QTreeWidget( parent )
 {
 	setAcceptDrops( true );
+	setItemsExpandable( false );
+	setRootIsDecorated( false );
 }
 
 void KJobListView::dragEnterEvent( QDragEnterEvent *event )
 {
 	if ( KUrl::List::canDecode( event->mimeData() ) )
+	{
 		event->acceptProposedAction();
+	}
+}
+
+void KJobListView::dragMoveEvent ( QDragMoveEvent * event ) 
+{
+	if ( KUrl::List::canDecode( event->mimeData() ) )
+	{
+		event->acceptProposedAction();
+	}
+}
+
+bool KJobListView::dropMimeData ( QTreeWidgetItem *, int, const QMimeData * data, Qt::DropAction )
+{
+	QStringList files;
+	QString target;
+	
+	KUrl::List uris = KUrl::List::fromMimeData( data );
+	for ( KUrl::List::ConstIterator it = uris.begin();
+		it != uris.end(); ++it)
+	{
+		if ( KIO::NetAccess::download( *it, target, 0 ) )
+			files << target;
+	}
+	if (!files.isEmpty()) static_cast<KMJobViewer*>(parentWidget())->tryToPrintFiles(files);
+	return true;
 }
 
 KMJobViewer::KMJobViewer(QWidget *parent)
@@ -240,16 +270,17 @@ void KMJobViewer::init()
 	if (!m_view)
 	{
 		m_view = new KJobListView(this);
-    QStringList headerLabels;
-    headerLabels << i18n("Job ID") << i18n("Owner") << i18n("Name")
-                 << i18nc("Status", "State") << i18n("Size (KB)") << i18n("Page(s)");
-    m_view->setHeaderLabels(headerLabels);
-		connect( m_view, SIGNAL( dropped( QDropEvent*, QTreeWidgetItem* ) ), SLOT( slotDropped( QDropEvent*, QTreeWidgetItem* ) ) );
+		QStringList headerLabels;
+		headerLabels << i18n("Job ID") << i18n("Owner") << i18n("Name")
+		             << i18nc("Status", "State") << i18n("Size (KB)") << i18n("Page(s)");
+		m_view->setHeaderLabels(headerLabels);
+		m_view->installEventFilter(this);
 		KMFactory::self()->uiManager()->setupJobViewer(m_view);
 		m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 		m_view->setLineWidth(1);
+		m_view->setContextMenuPolicy(Qt::CustomContextMenu);
 		connect(m_view,SIGNAL(itemSelectionChanged ()),SLOT(slotSelectionChanged()));
-		connect(m_view,SIGNAL(rightButtonPressed(QTreeWidgetItem*,const QPoint&,int)),SLOT(slotRightClicked(QTreeWidgetItem*,const QPoint&,int)));
+		connect(m_view,SIGNAL(customContextMenuRequested(const QPoint &)),SLOT(slotContextMenu(const QPoint&)));
 		setCentralWidget(m_view);
 	}
 
@@ -559,9 +590,9 @@ void KMJobViewer::slotMove(QAction *action)
 	}
 }
 
-void KMJobViewer::slotRightClicked(QTreeWidgetItem*,const QPoint& p,int)
+void KMJobViewer::slotContextMenu(const QPoint& p)
 {
-	if (m_pop) m_pop->popup(p);
+	if (m_pop) m_pop->popup(m_view->viewport()->mapToGlobal(p));
 }
 
 void KMJobViewer::loadPrinters()
@@ -646,7 +677,7 @@ void KMJobViewer::loadPluginActions()
 	foreach (KAction* action, acts)
 	{
 		// connect the action to this
-		connect(action, SIGNAL(triggered(QAction*)), SLOT(pluginActionActivated(QAction*)));
+		connect(action, SIGNAL(triggered()), SLOT(pluginActionActivated()));
 
 		// should add it to the toolbar and menubar
 // 		action->plug(toolBar(), toolbarindex++);
@@ -711,9 +742,10 @@ void KMJobViewer::closeEvent(QCloseEvent *e)
 		e->accept();
 }
 
-void KMJobViewer::pluginActionActivated(QAction *action)
+void KMJobViewer::pluginActionActivated()
 {
-  const int ID = action->data().toInt();
+	QAction *action = qobject_cast<QAction *>(sender());
+	const int ID = action->data().toInt();
 
 	KMTimer::self()->hold();
 
@@ -768,25 +800,11 @@ bool KMJobViewer::isSticky() const
 	return ( m_stickybox ? m_stickybox->isChecked() : false );
 }
 
-void KMJobViewer::slotDropped( QDropEvent *e, QTreeWidgetItem* )
+void KMJobViewer::tryToPrintFiles(const QStringList &files)
 {
-	QStringList files;
-	QString target;
-
-        KUrl::List uris = KUrl::List::fromMimeData( e->mimeData() );
-	for ( KUrl::List::ConstIterator it = uris.begin();
-	      it != uris.end(); ++it)
-	{
-		if ( KIO::NetAccess::download( *it, target, 0 ) )
-			files << target;
-	}
-
-	if ( files.count() > 0 )
-	{
-		KPrinter prt;
-		if ( prt.autoConfigure( m_prname, this ) )
-			prt.printFiles( files, false, false );
-	}
+	KPrinter prt;
+	if ( prt.autoConfigure( m_prname, this ) )
+		prt.printFiles( files, false, false );
 }
 
 #include "kmjobviewer.moc"

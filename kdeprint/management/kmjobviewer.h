@@ -58,6 +58,8 @@ public:
 	void refresh(bool reload = false);
 	QString printer() const;
 	bool isSticky() const;
+	
+	void tryToPrintFiles(const QStringList &files);
 
 Q_SIGNALS:
 	void jobsShown(KMJobViewer*, bool hasJobs);
@@ -66,7 +68,7 @@ Q_SIGNALS:
 	void viewerDestroyed(KMJobViewer*);
 
 public Q_SLOTS:
-	void pluginActionActivated(QAction*);
+	void pluginActionActivated();
 
 protected Q_SLOTS:
 	void slotSelectionChanged();
@@ -74,7 +76,7 @@ protected Q_SLOTS:
 	void slotResume();
 	void slotRemove();
 	void slotRestart();
-	void slotRightClicked(QTreeWidgetItem*,const QPoint&,int);
+	void slotContextMenu(const QPoint&);
 	void slotMove(QAction*);
 	void slotPrinterSelected(QAction*);
 	void slotShowCompleted(bool);
@@ -85,7 +87,6 @@ protected Q_SLOTS:
 	void slotUserOnly(bool);
 	void slotUserChanged();
 	void slotConfigure();
-	void slotDropped( QDropEvent*, QTreeWidgetItem* );
 
 protected:
 	void init();
