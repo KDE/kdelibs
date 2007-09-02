@@ -56,6 +56,9 @@ public:
     KActionMenu(const KIcon& icon, const QString& text, QObject *parent);
     virtual ~KActionMenu();
 
+    /**
+     * @deprecated
+     */
     KDE_DEPRECATED void remove( KAction* );
 
     void addAction(QAction* action);
