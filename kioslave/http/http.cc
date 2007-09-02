@@ -4125,11 +4125,16 @@ int HTTPProtocol::readChunked()
            return -1;
         }
      }
+
+     // m_bEOF is set to true when read called from gets returns 0. For chunked reading 0
+     // means end of chunked transfer and not error. See RFC 2615 section 3.6.1
+     #if 0
      if (m_bEOF)
      {
         kdDebug(7113) << "(" << m_pid << ") EOF on Chunk header" << endl;
         return -1;
      }
+     #endif
 
      long long trunkSize = STRTOLL(m_bufReceive.data(), 0, 16);
      if (trunkSize < 0)
@@ -4163,6 +4168,8 @@ int HTTPProtocol::readChunked()
   int bytesReceived = readLimited();
   if (!m_iBytesLeft)
      m_iBytesLeft = NO_SIZE; // Don't stop, continue with next chunk
+
+  // kdDebug(7113) << "(" << m_pid << ") readChunked: BytesReceived=" << bytesReceived << endl;
   return bytesReceived;
 }
 
