@@ -104,6 +104,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
        <property name="toolTip" >
         <string>Select the sound to play</string>
        </property>
@@ -145,6 +148,9 @@
        </property>
        <property name="toolTip" >
         <string>Select the sound to play</string>
+       </property>
+       <property name="enabled" >
+        <bool>false</bool>
        </property>
       </widget>
      </item>
