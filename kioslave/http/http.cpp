@@ -427,10 +427,10 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
       m_request.hostname = host;
       int pos = host.indexOf('%');
       if (pos == -1)
-	m_request.encoded_hostname = '[' + host + ']';
+        m_request.encoded_hostname = '[' + host + ']';
       else
-	// don't send the scope-id in IPv6 addresses to the server
-	m_request.encoded_hostname = '[' + host.left(pos) + ']';
+        // don't send the scope-id in IPv6 addresses to the server
+        m_request.encoded_hostname = '[' + host.left(pos) + ']';
     }
   m_request.port = (port <= 0) ? defaultPort() : port;
   m_request.user = user;
@@ -3999,11 +3999,16 @@ int HTTPProtocol::readChunked()
            return -1;
         }
      }
+
+     // m_bEOF is set to true when read called from gets returns 0. For chunked reading 0
+     // means end of chunked transfer and not error. See RFC 2615 section 3.6.1
+     #if 0
      if (m_bEOF)
      {
         kDebug(7113) << "(" << m_pid << ") EOF on Chunk header";
         return -1;
      }
+     #endif
 
      long long trunkSize = STRTOLL(m_bufReceive.data(), 0, 16);
      if (trunkSize < 0)
