@@ -1215,7 +1215,7 @@ bool KPixmapCache::loadData(int offset, QPixmap& pix)
     // Open device and datastream on it
     QIODevice* device = d->dataDevice();
     if (!device) {
-        return -1;
+        return false;
     }
     //kDebug(264) << "Seeking to pos" << offset << "/" << file.size();
     if (!device->seek(offset)) {
