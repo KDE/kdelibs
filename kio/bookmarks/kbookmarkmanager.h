@@ -277,11 +277,10 @@ Q_SIGNALS:
      */
     void configChanged();
 
-protected:
+private:
     // consts added to avoid a copy-and-paste of internalDocument
     void parse() const;
 
-private:
     /**
     * You need to pass a dbusObjectName as the second parameter
     * In kde 3 managerForFile had the parameters (const QString &, bool)
