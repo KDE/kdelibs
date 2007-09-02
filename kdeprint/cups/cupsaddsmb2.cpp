@@ -47,8 +47,8 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_actionindex = 0;
         m_proc.setOutputChannelMode(KProcess::MergedChannels);
 	connect(&m_proc, SIGNAL(readyReadStandardOutput()), SLOT(slotReceived()));
-	connect(&m_proc, SIGNAL(finished(int,KProcess::ExitStatus)),
-                SLOT(slotProcessExited(int,KProcess::ExitStatus)));
+	connect(&m_proc, SIGNAL(finished(int,QProcess::ExitStatus)),
+                SLOT(slotProcessExited(int,QProcess::ExitStatus)));
 
 	m_side = new SidePixmap(this);
 	m_doit = new QPushButton(i18n("&Export"), this);
@@ -150,7 +150,7 @@ void CupsAddSmb::slotActionClicked()
 {
 	if (m_state == None)
 		doExport();
-	else if (m_proc.state() != KProcess::NotRunning)
+	else if (m_proc.state() != QProcess::NotRunning)
 		m_proc.kill();
 }
 
@@ -263,7 +263,7 @@ void CupsAddSmb::doNextAction()
 {
 	m_buffer.clear();
 	m_state = None;
-	if (m_proc.state() == KProcess::Running)
+	if (m_proc.state() == QProcess::Running)
 	{
 		QByteArray	s = m_actions[m_actionindex++].toLatin1();
 		m_bar->setValue(m_bar->value()+1);
@@ -321,10 +321,10 @@ void CupsAddSmb::doNextAction()
 	}
 }
 
-void CupsAddSmb::slotProcessExited(int, KProcess::ExitStatus exitStatus)
+void CupsAddSmb::slotProcessExited(int, QProcess::ExitStatus exitStatus)
 {
 	kDebug(500) << "PROCESS EXITED (" << m_state << ")";
-	if (exitStatus == KProcess::NormalExit && m_state != Start && m_status)
+	if (exitStatus == QProcess::NormalExit && m_state != Start && m_status)
 	{
 		// last process went OK. If it was smbclient, then switch to rpcclient
 		if (m_procname == "smbclient")
@@ -349,7 +349,7 @@ void CupsAddSmb::slotProcessExited(int, KProcess::ExitStatus exitStatus)
 		}
 	}
 
-	if (exitStatus == KProcess::NormalExit)
+	if (exitStatus == QProcess::NormalExit)
 	{
 		showError(
 				i18n("Operation failed. Possible reasons are: permission denied "

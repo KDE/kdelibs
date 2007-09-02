@@ -41,7 +41,7 @@ public:
 
 protected Q_SLOTS:
 	void slotReceivedStdout();
-	void slotProcessExited(int exitCode, KProcess::ExitStatus exitStatus);
+	void slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus);
 	void slotCancelled();
 
 Q_SIGNALS:

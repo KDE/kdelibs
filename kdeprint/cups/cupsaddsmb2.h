@@ -45,7 +45,7 @@ public:
 protected Q_SLOTS:
 	void slotReceived();
 	void doNextAction();
-	void slotProcessExited(int exitCode, KProcess::ExitStatus exitStatus);
+	void slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus);
 	void slotActionClicked();
 
 protected:

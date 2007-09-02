@@ -51,8 +51,8 @@ protected:
 protected Q_SLOTS:
 	void slotReceivedStdout();
 	void slotProcessStarted();
-	void slotProcessError(KProcess::ProcessError);
-	void slotProcessExited(int exitCode, KProcess::ExitStatus);
+	void slotProcessError(QProcess::ProcessError);
+	void slotProcessExited(int exitCode, QProcess::ExitStatus);
 	void slotSelectionChanged(Q3ListViewItem*);
 
 private:

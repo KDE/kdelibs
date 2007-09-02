@@ -52,10 +52,10 @@ SmbView::SmbView(QWidget *parent)
 	m_proc.setOutputChannelMode(KProcess::OnlyStdoutChannel);
 	m_proc.setReadChannel(KProcess::StandardOutput);
 	m_passwdFile = 0;
-	connect(&m_proc,SIGNAL(finished(int,KProcess::ExitStatus)),SLOT(slotProcessExited(int,KProcess::ExitStatus)));
+	connect(&m_proc,SIGNAL(finished(int,QProcess::ExitStatus)),SLOT(slotProcessExited(int,QProcess::ExitStatus)));
 	connect(&m_proc,SIGNAL(readyReadStandardOutput()),SLOT(slotReceivedStdout()));
 	connect(&m_proc,SIGNAL(started()),SLOT(slotProcessStarted()));
-	connect(&m_proc,SIGNAL(error()),SLOT(slotProcessError(KProcess::ProcessError)));
+	connect(&m_proc,SIGNAL(error ( QProcess::ProcessError)),SLOT(slotProcessError(QProcess::ProcessError)));
 	connect(this,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotSelectionChanged(Q3ListViewItem*)));
 }
 
@@ -98,7 +98,7 @@ void SmbView::slotProcessStarted()
 	emit running(true);
 }
 
-void SmbView::slotProcessError(KProcess::ProcessError)
+void SmbView::slotProcessError(QProcess::ProcessError)
 {
 	endProcess();
 }
@@ -126,7 +126,7 @@ void SmbView::endProcess()
 	m_proc.clearProgram();
 }
 
-void SmbView::slotProcessExited(int, KProcess::ExitStatus)
+void SmbView::slotProcessExited(int, QProcess::ExitStatus)
 {
 	endProcess();
 }
@@ -303,7 +303,7 @@ void SmbView::slotSelectionChanged(Q3ListViewItem *item)
 
 void SmbView::abort()
 {
-	if (m_proc.state() != KProcess::NotRunning)
+	if (m_proc.state() != QProcess::NotRunning)
 		m_proc.kill();
 }
 #include "smbview.moc"

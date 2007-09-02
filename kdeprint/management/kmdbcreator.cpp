@@ -38,9 +38,9 @@ KMDBCreator::KMDBCreator(QObject *parent)
 	m_proc.setOutputChannelMode(KProcess::SeparateChannels);
 	m_proc.closeReadChannel(KProcess::StandardError); //ignore stderr for now
 
-	connect(&m_proc,SIGNAL(readyReadStdout()),SLOT(slotReceivedStdout()));
-	connect(&m_proc,SIGNAL(finished(int,KProcess::ExitStatus)),
-                SLOT(slotProcessExited(int,KProcess::ExitStatus)));
+	connect(&m_proc,SIGNAL(readyReadStandardOutput()),SLOT(slotReceivedStdout()));
+	connect(&m_proc,SIGNAL(finished(int,QProcess::ExitStatus)),
+                SLOT(slotProcessExited(int,QProcess::ExitStatus)));
 }
 
 KMDBCreator::~KMDBCreator()
@@ -164,7 +164,7 @@ void KMDBCreator::slotReceivedStdout()
 	}
 }
 
-void KMDBCreator::slotProcessExited(int, KProcess::ExitStatus exitStatus)
+void KMDBCreator::slotProcessExited(int, QProcess::ExitStatus exitStatus)
 {
 	// delete the progress dialog
 	if (m_dlg)
@@ -173,7 +173,7 @@ void KMDBCreator::slotProcessExited(int, KProcess::ExitStatus exitStatus)
 	}
 
 	// set exit status
-	m_status = (exitStatus == KProcess::NormalExit);
+	m_status = (exitStatus == QProcess::NormalExit);
 	if (!m_status)
 	{
 		KMFactory::self()->manager()->setErrorMsg(i18n("Error while creating driver database: abnormal child-process termination."));
@@ -187,7 +187,7 @@ void KMDBCreator::slotProcessExited(int, KProcess::ExitStatus exitStatus)
 
 void KMDBCreator::slotCancelled()
 {
-	if (m_proc.state() == KProcess::Running)
+	if (m_proc.state() == QProcess::Running)
 		m_proc.kill();
 	else
 		emit dbCreated();
