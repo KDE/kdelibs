@@ -464,6 +464,9 @@ struct KDebugPrivate
                 pos = info.indexOf('(', pos + 1);
 
             info.truncate(pos);
+            // gcc 4.1.2 don't put a space between the return type and
+            // the function name if the function is in an anonymous namespace
+            info.replace("<unnamed>::", " <unnamed>::");
             pos = info.lastIndexOf(' ');
             if (pos != -1) {
                 int startoftemplate = info.lastIndexOf('<');

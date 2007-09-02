@@ -135,6 +135,23 @@ public:
         }
 };
 
+namespace
+{
+    class TestClass5
+    {
+    public:
+        TestClass5()
+        {
+            kDebug();
+        }
+    };
+    TestClass5 func5()
+    {
+        kDebug();
+        return TestClass5();
+    }
+} // namespace 
+
 void testKDebug()
 {
     QString test = "%20C this is a string";
@@ -205,6 +222,7 @@ void testKDebug()
     if (dotest) {
         kDebug() << "Testing the function names. The following should display only the base name of the functions";
         TestClass4 c4;
+        func5();
     }
 }
 
