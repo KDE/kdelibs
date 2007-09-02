@@ -174,12 +174,9 @@ KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, c
 {
     //kDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address;
     QDomDocument doc = element.ownerDocument();
-    QDomElement elem = doc.createElement( "bookmark" );
+    QDomElement elem = doc.createElement( "bookmark" );    
     elem.setAttribute( "href", url.url() ); // gives us utf8
-    QString _icon = icon;
-    if ( _icon.isEmpty() )
-        _icon = KMimeType::iconNameForUrl( url );
-    elem.setAttribute( "icon", _icon );
+    elem.setAttribute( "icon", icon.isEmpty()? KMimeType::iconNameForUrl( url ) : icon  );
 
     QDomElement textElem = doc.createElement( "title" );
     elem.appendChild( textElem );
@@ -303,7 +300,7 @@ KUrl KBookmark::url() const
 
 void KBookmark::setUrl(const KUrl &url)
 {
-    element.setAttribute("href", url.prettyUrl());
+    element.setAttribute("href", url.url());
 }
 
 QString KBookmark::icon() const
@@ -553,47 +550,28 @@ KBookmarkGroupTraverser::~KBookmarkGroupTraverser()
 
 void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
 {
-    // non-recursive bookmark iterator
     QStack<KBookmarkGroup> stack;
     stack.push(root);
-    KBookmark bk = stack.top().first();
-    for (;;) {
-        if (bk.isNull())
-        {
-            if (stack.isEmpty())
+    KBookmark bk = root.first();
+    for(;;) {
+        if(bk.isNull()) {
+            if(stack.count() == 1) // only root is on the stack
                 return;
-            if (stack.count() > 1)
+            if(stack.count() > 0) {
                 visitLeave(stack.top());
-            bk = stack.pop();
-
-            if (stack.isEmpty())
-                return;
-
+                bk = stack.pop();
+            }
             bk = stack.top().next(bk);
-            if (bk.isNull())
-                continue;
-        }
-
-        if (bk.isGroup())
-        {
+        } else if(bk.isGroup()) {
             KBookmarkGroup gp = bk.toGroup();
             visitEnter(gp);
-            if (!gp.first().isNull())
-            {
-                stack.push(gp);
-                bk = gp.first();
-                continue;
-            }
-            // empty group
-            visitLeave(gp);
-        }
-        else
+            bk = gp.first();
+            stack.push(gp);
+        } else {
             visit(bk);
-
-        bk = stack.top().next(bk);
+            bk = stack.top().next(bk);
+        }
     }
-
-    // never reached
 }
 
 void KBookmarkGroupTraverser::visit(const KBookmark &)
