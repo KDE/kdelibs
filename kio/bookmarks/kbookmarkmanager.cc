@@ -168,7 +168,7 @@ void KBookmarkManager::init( const QString& dbusPath )
 {
     // A KBookmarkManager without a dbus name is a temporary one, like those used by importers;
     // no need to register them to dbus
-    if ( dbusPath != "/KBookmarkManager/" )
+    if ( dbusPath != "/KBookmarkManager/" && dbusPath != "/KBookmarkManager/generated")
     {
         new KBookmarkManagerAdaptor(this);
         QDBusConnection::sessionBus().registerObject( dbusPath, this );
