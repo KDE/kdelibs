@@ -378,9 +378,9 @@ QString KBookmark::address() const
     else
     {
         // Use keditbookmarks's DEBUG_ADDRESSES flag to debug this code :)
-        if (!hasParent())
+        if (!element.parentNode().isNull())
         {
-            Q_ASSERT(hasParent());
+            Q_ASSERT(false);
             return "ERROR"; // Avoid an infinite loop
         }
         KBookmarkGroup group = parentGroup();
@@ -478,15 +478,6 @@ static QDomNode findOrCreateMetadata( QDomNode& parent )
     }
     metadataElement.setAttribute( "owner", kdeOwner );
     return metadataElement;
-}
-
-bool KBookmark::hasMetaData() const
-{
-    // ### NOTE: this code creates <info> and <metadata>, despite its name and the const.
-    // It doesn't matter much in practice since it's only called for newly-created bookmarks,
-    // which will get metadata soon after anyway.
-    QDomNode n = cd_or_create( internalElement(), "info" );
-    return findOrCreateMetadata( n ).hasChildNodes();
 }
 
 void KBookmark::updateAccessMetadata()

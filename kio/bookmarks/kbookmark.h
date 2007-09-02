@@ -269,8 +269,6 @@ protected:
     // around internal QDomElements. Any additional information
     // has to be implemented as an attribute of the QDomElement.
 
-private:
-    bool hasMetaData() const;
 };
 
 #ifdef MAKE_KIO_LIB
