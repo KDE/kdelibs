@@ -305,21 +305,19 @@ void KBookmarkContextMenu::slotInsert()
   if (title.isEmpty())
     title = url;
 
-  // TODO use unique title
-
   if (bm.isGroup())
   {
     KBookmarkGroup parentBookmark = bm.toGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    parentBookmark.addBookmark( title, KUrl(  url ) );
+    parentBookmark.addBookmark( title, KUrl(url) );
     m_pManager->emitChanged( parentBookmark );
   }
   else
   {
     KBookmarkGroup parentBookmark = bm.parentGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    KBookmark newBookmark = parentBookmark.addBookmark( title, KUrl( url ) );
-    parentBookmark.moveItem( newBookmark, parentBookmark.previous(bm) );
+    KBookmark newBookmark = parentBookmark.addBookmark( title, KUrl(m_pOwner->currentUrl()) );
+    parentBookmark.moveBookmark( newBookmark, parentBookmark.previous(bm) );
     m_pManager->emitChanged( parentBookmark );
   }
 }
