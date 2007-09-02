@@ -889,7 +889,7 @@ void KBookmarkMenuImporter::endFolder()
 
 
 KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent )
-  : KAction( KStringHandler::csqueeze(bk.text()).replace('&', "&&"), parent),
+  : KAction( bk.text().replace('&', "&&"), parent),
     KBookmarkActionInterface(bk),
     m_pOwner(owner)
 {
@@ -912,7 +912,7 @@ void KBookmarkAction::slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km
 }
 
 KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, QObject *parent)
-  : KActionMenu(KIcon(bm.icon()), KStringHandler::csqueeze(bm.text()).replace('&', "&&"), parent),
+  : KActionMenu(KIcon(bm.icon()), bm.text().replace('&', "&&"), parent),
     KBookmarkActionInterface(bm)
 {
 }
