@@ -33,66 +33,14 @@
 class CJanusWidget::CPage
 {
 public:
-	QWidget		*m_widget;
-	QString		m_text;
-	QString		m_header;
-	QPixmap		m_pixmap;
-	CListBoxItem	*m_item;
+	QWidget			*m_widget;
+	QString			m_text;
+	QString			m_header;
+	QPixmap			m_pixmap;
+	QListWidgetItem	*m_item;
 };
 
 //***********************************************************************************
-
-class CJanusWidget::CListBoxItem : public QListWidgetItem
-{
-public:
-	CListBoxItem(QListWidget *lb, QListWidgetItem *after, const QPixmap& pix, const QString& text);
-	int height(const QListWidget*) const;
-	int width(const QListWidget*) const;
-
-private:
-	QPixmap	m_pix;
-};
-
-class CJanusWidget::CListBoxItemDelegate : public QItemDelegate
-{
-public:
-    CListBoxItemDelegate(QObject* parent) : QItemDelegate(parent){}
-    
-    virtual void paint(QPainter* painter,const QStyleOptionViewItem& option,const QModelIndex& index) const;
-};
-
-CJanusWidget::CListBoxItem::CListBoxItem(QListWidget *lb, QListWidgetItem *after, const QPixmap& pix, const QString& text)
-: QListWidgetItem(), m_pix(pix)
-{
-	lb->insertItem( lb->row(after) , this );
-    setText(text);
-}
-
-int CJanusWidget::CListBoxItem::height(const QListWidget *lb) const
-{
-	return (m_pix.height() + lb->fontMetrics().lineSpacing() + 12);
-}
-
-int CJanusWidget::CListBoxItem::width(const QListWidget *lb) const
-{
-	int	w = qMax(lb->fontMetrics().width(text()),m_pix.width());
-	return (w + 10);
-}
-
-void CJanusWidget::CListBoxItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, 
-        const QModelIndex& index) const
-{
-
-    const QString text = index.data(Qt::DisplayRole).value<QString>();
-
-    const QPixmap pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
-
-	int	w1 = (option.rect.width()-pixmap.width())/2;
-	painter->drawPixmap(w1,5,pixmap);
-	painter->drawText(0,7+pixmap.height(),option.rect.width(),painter->fontMetrics().lineSpacing(),Qt::AlignHCenter,text);
-
-}
-
 
 
 //***********************************************************************************
@@ -113,8 +61,6 @@ CJanusWidget::CListBox::CListBox(QWidget *parent)
 : KListWidget(parent)
 {
 	verticalScrollBar()->installEventFilter(this);
-
-    setItemDelegate( new CJanusWidget::CListBoxItemDelegate(this) );
 }
 
 CJanusWidget::CListBox::~CListBox()
@@ -162,20 +108,20 @@ CJanusWidget::CJanusWidget(QWidget *parent)
 	f = m_iconlist->font();
 	f.setBold(true);
 	m_iconlist->setFont(f);
-	connect(m_iconlist,SIGNAL(selectionChanged(QListWidgetItem*)),SLOT(slotSelected(QListWidgetItem*)));
+ 	connect(m_iconlist,SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),SLOT(slotSelected(QListWidgetItem*)));
 
 	m_empty = new QWidget( this );
-        m_empty->setObjectName( "Empty" );
+	m_empty->setObjectName( "Empty" );
 	m_stack->insertWidget(0,m_empty);
 
 	QHBoxLayout	*main_ = new QHBoxLayout(this);
-  main_->setMargin(0);
-  main_->setSpacing(10);
+	main_->setMargin(0);
+	main_->setSpacing(10);
 	QVBoxLayout	*sub_ = new QVBoxLayout();
 	main_->addWidget(m_iconlist,0);
 	main_->addLayout(sub_,1);
-  sub_->setMargin(0);
-  sub_->setSpacing(5);
+	sub_->setMargin(0);
+	sub_->setSpacing(5);
 	sub_->addWidget(m_header,0);
 	sub_->addWidget(sep,0);
 	sub_->addWidget(m_stack,1);
@@ -195,12 +141,15 @@ void CJanusWidget::addPage(QWidget *w, const QString& text, const QString& heade
 	page->m_text = text;
 	page->m_header = header;
 	page->m_pixmap = pix;
-	page->m_item = new CListBoxItem(m_iconlist,findPrevItem(page),pix,text);
+	page->m_item = new QListWidgetItem(pix, text, m_iconlist);
 	m_iconlist->computeWidth();
 	m_stack->insertWidget(m_pages.count(),w);
 
 	if (m_iconlist->count() == 1)
+	{
 		page->m_item->setSelected(true);
+		slotSelected(page->m_item);
+	}
 }
 
 void CJanusWidget::enablePage(QWidget *w)
@@ -208,7 +157,7 @@ void CJanusWidget::enablePage(QWidget *w)
 	CPage	*page = findPage(w);
 	if (page && !page->m_item)
 	{
-		page->m_item = new CListBoxItem(m_iconlist,findPrevItem(page),page->m_pixmap,page->m_text);
+		page->m_item = new QListWidgetItem(page->m_pixmap, page->m_text, m_iconlist);
 		m_iconlist->computeWidth();
 		if (m_iconlist->count() == 1)
 			page->m_item->setSelected(true);
