@@ -136,7 +136,12 @@ KBookmark KBookmarkGroup::createNewSeparator()
     return KBookmark(sepElem);
 }
 
-bool KBookmarkGroup::moveItem( const KBookmark & item, const KBookmark & after )
+bool KBookmarkGroup::moveItem( const KBookmark & bookmark, const KBookmark & after )
+{
+    moveBookmark(bookmark, after);
+}
+
+bool KBookmarkGroup::moveBookmark( const KBookmark & item, const KBookmark & after )
 {
     QDomNode n;
     if ( !after.isNull() )

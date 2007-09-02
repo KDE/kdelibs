@@ -354,11 +354,13 @@ public:
     KBookmark addBookmark( const QString & text, const KUrl & url, const QString & icon = QString() );
 
     /**
-     * Moves @p item after @p after (which should be a child of ours).
-     * If item is null, @p item is moved as the first child.
+     * Moves @p bookmark after @p after (which should be a child of ours).
+     * If after is null, @p bookmark is moved as the first child.
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      */
-    bool moveItem( const KBookmark & item, const KBookmark & after );
+    bool moveBookmark( const KBookmark & bookmark, const KBookmark & after);
+
+    KDE_DEPRECATED bool moveItem( const KBookmark & item, const KBookmark & after );
 
     /**
      * Delete a bookmark - it has to be one of our children !
