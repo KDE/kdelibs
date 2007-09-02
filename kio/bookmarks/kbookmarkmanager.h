@@ -255,12 +255,12 @@ Q_SIGNALS:
     void bookmarkCompleteChange( QString caller );
 
     /**
-     * Signals send over DBUS
+     * Signal send over DBUS
      */
     void bookmarksChanged( QString groupAddress );
 
     /**
-     * Signals send over DBUS
+     * Signal send over DBUS
      */
     void bookmarkConfigChanged();
 
