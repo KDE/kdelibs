@@ -581,7 +581,7 @@ void KImportedBookmarkMenu::slotNSLoad()
   parentMenu()->disconnect(SIGNAL(aboutToShow()));
 
   // not NSImporter, but kept old name for BC reasons
-  KBookmarkMenuImporter importer( manager(), this, m_actionCollection );
+  KBookmarkMenuImporter importer( manager(), this );
   importer.openBookmarks(m_location, m_type);
 }
 
@@ -856,8 +856,7 @@ void KBookmarkMenuImporter::connectToImporter(const QObject &importer)
 void KBookmarkMenuImporter::newBookmark( const QString & text, const QString & url, const QString & )
 {
   KBookmark bm = KBookmark::standaloneBookmark(text, url, QString("html"));
-  KAction * action = new KImportedBookmarkAction(bm, mstack.top()->owner(), this);
-  m_actionCollection->addAction(action->objectName(), action);
+  KAction * action = new KBookmarkAction(bm, mstack.top()->owner(), this);
   mstack.top()->parentMenu()->addAction(action);
   mstack.top()->m_actions.append( action );
 }
@@ -866,7 +865,6 @@ void KBookmarkMenuImporter::newFolder( const QString & text, bool, const QString
 {
   QString _text = KStringHandler::csqueeze(text).replace( '&', "&&" );
   KActionMenu * actionMenu = new KImportedBookmarkActionMenu( KIcon("folder"), _text, this );
-  m_actionCollection->addAction( actionMenu->objectName(), actionMenu );
   mstack.top()->parentMenu()->addAction(actionMenu);
   mstack.top()->m_actions.append( actionMenu );
   KImportedBookmarkMenu *subMenu = new KImportedBookmarkMenu( m_pManager, m_menu->owner(), actionMenu->menu());
@@ -927,30 +925,6 @@ KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, const QString & te
 
 KBookmarkActionMenu::~KBookmarkActionMenu()
 {
-}
-
-
-KImportedBookmarkAction::KImportedBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent )
-: KAction( KStringHandler::csqueeze(bk.text()).replace('&', "&&"), parent),
-  KBookmarkActionInterface(bk),
-  m_pOwner(owner)
-{
-  setIcon(KIcon(bookmark().icon()));
-  setToolTip( bookmark().url().pathOrUrl() );
-  connect(this, SIGNAL( triggered(Qt::MouseButtons, Qt::KeyboardModifiers) ),
-          SLOT( slotSelected(Qt::MouseButtons, Qt::KeyboardModifiers) ));
-}
-
-KImportedBookmarkAction::~KImportedBookmarkAction()
-{
-}
-
-void KImportedBookmarkAction::slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km)
-{
-  if( !m_pOwner )
-    new KRun( bookmark().url() ,(QWidget*)0);
-  else
-    m_pOwner->openBookmark( bookmark(), mb, km );
 }
 
 #include "kbookmarkmenu.moc"

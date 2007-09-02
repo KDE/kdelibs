@@ -136,8 +136,8 @@ class KBookmarkMenuImporter : public QObject
 {
   Q_OBJECT
 public:
-  KBookmarkMenuImporter( KBookmarkManager* mgr, KImportedBookmarkMenu * menu, KActionCollection * act ) :
-     m_menu(menu), m_actionCollection(act), m_pManager(mgr) {}
+  KBookmarkMenuImporter( KBookmarkManager* mgr, KImportedBookmarkMenu * menu ) :
+     m_menu(menu), m_pManager(mgr) {}
 
   void openBookmarks( const QString &location, const QString &type );
   void connectToImporter( const QObject &importer );
@@ -151,7 +151,6 @@ protected Q_SLOTS:
 protected:
   QStack<KImportedBookmarkMenu*> mstack;
   KImportedBookmarkMenu * m_menu;
-  KActionCollection * m_actionCollection;
   KBookmarkManager* m_pManager;
 };
 
@@ -165,19 +164,6 @@ public:
   }
   ~KImportedBookmarkActionMenu()
   {}
-};
-
-class KImportedBookmarkAction : public KAction, public KBookmarkActionInterface
-{
-  Q_OBJECT
-public:
-  KImportedBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent );
-  ~KImportedBookmarkAction();
-
-public Q_SLOTS:
-  void slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km);
-private:
-  KBookmarkOwner * m_pOwner;
 };
 
 #endif
