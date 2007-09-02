@@ -55,35 +55,19 @@ bool KBookmarkGroup::isOpen() const
     return element.attribute("folded") == "no"; // default is: folded
 }
 
-// Returns first element node equal to or after node n
-static QDomElement firstElement(QDomNode n)
-{
-    while(!n.isNull() && !n.isElement())
-        n = n.nextSibling();
-    return n.toElement();
-}
-
-// Returns first element node equal to or before node n
-static QDomElement lastElement(QDomNode n)
-{
-    while(!n.isNull() && !n.isElement())
-        n = n.previousSibling();
-    return n.toElement();
-}
-
 KBookmark KBookmarkGroup::first() const
 {
-    return KBookmark( nextKnownTag( firstElement(element.firstChild()), true ) );
+    return KBookmark( nextKnownTag( element.firstChildElement(), true ) );
 }
 
 KBookmark KBookmarkGroup::previous( const KBookmark & current ) const
 {
-    return KBookmark( nextKnownTag( lastElement(current.element.previousSibling()), false ) );
+    return KBookmark( nextKnownTag( current.element.previousSiblingElement(), false ) );
 }
 
 KBookmark KBookmarkGroup::next( const KBookmark & current ) const
 {
-    return KBookmark( nextKnownTag( firstElement(current.element.nextSibling()), true ) );
+    return KBookmark( nextKnownTag( current.element.nextSiblingElement(), true ) );
 }
 
 int KBookmarkGroup::indexOf(const KBookmark& child) const
@@ -96,24 +80,21 @@ int KBookmarkGroup::indexOf(const KBookmark& child) const
     return -1;
 }
 
-// KDE4: Change QDomElement to QDomNode so that we can get rid of
-// firstElement() and lastElement(). Well, no, use firstChildElement :)
 QDomElement KBookmarkGroup::nextKnownTag( const QDomElement &start, bool goNext ) const
 {
     static const QString & bookmark = KGlobal::staticQString("bookmark");
     static const QString & folder = KGlobal::staticQString("folder");
     static const QString & separator = KGlobal::staticQString("separator");
 
-    for( QDomNode n = start; !n.isNull(); )
+    for( QDomElement elem = start; !elem.isNull(); )
     {
-        QDomElement elem = n.toElement();
         QString tag = elem.tagName();
         if (tag == folder || tag == bookmark || tag == separator)
             return elem;
         if (goNext)
-            n = n.nextSibling();
+            elem = elem.nextSiblingElement();
         else
-            n = n.previousSibling();
+            elem = elem.previousSiblingElement();
     }
     return QDomElement();
 }
