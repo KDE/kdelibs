@@ -137,7 +137,11 @@ KBookmarkManager* KBookmarkManager::createTempManager()
 KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString & dbusObjectName )
  : d(new Private(false, dbusObjectName))
 {
-    init( "/KBookmarkManager/"+dbusObjectName );
+    if(dbusObjectName.isNull()) // get dbusObjectName from file
+        if ( QFile::exists(d->m_bookmarksFile) )
+            parse(); //sets d->m_dbusObjectnName            
+
+    init( "/KBookmarkManager/"+d->m_dbusObjectName );
 
     d->m_update = true;
 
@@ -147,6 +151,7 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString
     if ( !QFile::exists(d->m_bookmarksFile) )
     {
         QDomElement topLevel = d->m_doc.createElement("xbel");
+        topLevel.setAttribute("dbusName", dbusObjectName);
         d->m_doc.appendChild( topLevel );
         d->m_doc.insertBefore( d->m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
         d->m_docIsLoaded = true;
@@ -224,6 +229,16 @@ void KBookmarkManager::parse() const
         QString mainTag = docElem.tagName();
         if ( mainTag != "xbel" )
             kWarning() << "KBookmarkManager::parse : unknown main tag " << mainTag;
+
+        if(d->m_dbusObjectName.isNull())
+        {
+            d->m_dbusObjectName = docElem.attribute("dbusName");
+        } 
+        else if(docElem.attribute("dbusName") != d->m_dbusObjectName)
+        {
+            docElem.setAttribute("dbusName", d->m_dbusObjectName);
+            save();
+        }
 
         QDomNode n = d->m_doc.documentElement().previousSibling();
         if ( n.isProcessingInstruction() )
