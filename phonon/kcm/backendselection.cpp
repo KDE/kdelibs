@@ -176,6 +176,7 @@ void BackendSelection::up()
             QListWidgetItem *taken = m_select->takeItem(row - 1);
             m_select->insertItem(row, taken);
             emit changed();
+            selectionChanged();
         }
     }
 }
@@ -191,6 +192,7 @@ void BackendSelection::down()
             QListWidgetItem *taken = m_select->takeItem(row + 1);
             m_select->insertItem(row, taken);
             emit changed();
+            selectionChanged();
         }
     }
 }
