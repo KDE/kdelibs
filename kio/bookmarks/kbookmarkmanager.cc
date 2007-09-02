@@ -542,7 +542,12 @@ void KBookmarkManager::slotEditBookmarks()
 void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 {
     QStringList args;
-    //TODO shouldn't we pass --customcaption and --nobrowser too?
+    if ( !d->m_editorCaption.isEmpty() )
+       args << QLatin1String("--customcaption") << d->m_editorCaption;
+    if ( !d->m_browserEditor )
+       args << QLatin1String("--nobrowser");
+    if( !d->m_dbusObjectName.isEmpty() )
+      args << QLatin1String("--dbusObjectName") << d->m_dbusObjectName;
     args << QLatin1String("--address") << address
          << d->m_bookmarksFile;
     QProcess::startDetached("keditbookmarks", args);
