@@ -30,6 +30,7 @@
 #include <QtCore/QRegExp>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostInfo>
+#include <QSslError>
 
 #include <kpushbutton.h>
 #include <klocale.h>
@@ -195,8 +196,8 @@ void NetworkScanner::slotNext()
 
 	connect( d->socket, SIGNAL(connected()),
                  SLOT(slotConnectionSuccess()) );
-	connect( d->socket, SIGNAL(error()),
-                 SLOT(slotConnectionFailed()) );
+	connect( d->socket, SIGNAL(sslErrors ( const QList<QSslError> &)),
+                 SLOT(slotConnectionFailed(const QList<QSslError> &)) );
 }
 
 void NetworkScanner::next()
@@ -243,9 +244,13 @@ void NetworkScanner::slotConnectionSuccess()
 	next();
 }
 
-void NetworkScanner::slotConnectionFailed()
+void NetworkScanner::slotConnectionFailed(const QList<QSslError> &lst)
 {
-	kDebug() << "Failure";
+        QListIterator<QSslError> it( lst );
+        while ( it.hasNext() )
+        {
+	  kDebug() << "Failure : "<<it.next().errorString ();
+        }
 	next();
 }
 

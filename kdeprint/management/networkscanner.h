@@ -26,6 +26,7 @@
 #include <QtCore/QList>
 #include <QtGui/QWidget>
 #include <QtNetwork/QAbstractSocket>
+class QSslError;
 
 class KDEPRINT_MANAGEMENT_EXPORT NetworkScanner : public QWidget
 {
@@ -58,7 +59,7 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
 	void slotConnectionSuccess();
-	void slotConnectionFailed();
+	void slotConnectionFailed(const QList<QSslError>&);
 	void slotTimeout();
 	void slotScanClicked();
 	void slotSettingsClicked();
