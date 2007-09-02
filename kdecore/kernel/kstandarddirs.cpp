@@ -1117,8 +1117,17 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
         // make sure we find the path where it's installed
         QString installdir = installPath( type );
-        if (!installdir.isEmpty() && !candidates.contains(installdir))
-            candidates.append(installdir);
+        if (!installdir.isEmpty()) {
+            bool ok = true;
+            foreach (QString s, candidates) {
+                if (installdir.startsWith(s)) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok)
+                candidates.append(installdir);
+        }
 
         dirs = d->absolutes.value(type);
         if (!dirs.isEmpty())
