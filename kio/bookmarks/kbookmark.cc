@@ -24,7 +24,6 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kstringhandler.h>
-#include <kinputdialog.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <assert.h>
@@ -41,13 +40,6 @@ KBookmarkGroup::KBookmarkGroup()
 KBookmarkGroup::KBookmarkGroup( const QDomElement &elem )
  : KBookmark(elem)
 {
-}
-
-QString KBookmarkGroup::groupAddress() const
-{
-    if (m_address.isEmpty())
-        m_address = address();
-    return m_address;
 }
 
 bool KBookmarkGroup::isOpen() const

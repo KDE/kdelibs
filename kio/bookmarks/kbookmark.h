@@ -77,9 +77,24 @@ public:
         static KBookmark::List fromMimeData( const QMimeData *mimeData );
     };
 
-    KBookmark( );
-    KBookmark( const QDomElement &elem );
 
+    /**
+     * Constructs a null bookmark, i.e. a bookmark for which isNull() returns true
+     * If you want to create a new bookmark use eitehr KBookmarkGroup.addBookmark
+     * or if you want an interactive dialog use KBookmarkDialog.
+     */
+    KBookmark( );
+
+    /**
+     * Creates the KBookmark wrapper for @param elem
+     * Mostly for internal usage.
+     */
+
+    explicit KBookmark( const QDomElement &elem );
+
+    /**
+     * Creates a stand alone bookmark. This is fairly expensive since a new QDom Tree is build.
+     */
     static KBookmark standaloneBookmark( const QString & text, const KUrl & url, const QString & icon = QString() );
 
     /**
@@ -295,12 +310,6 @@ public:
     KBookmarkGroup( const QDomElement &elem );
 
     /**
-     * Much like KBookmark::address, but caches the
-     * address into m_address.
-     */
-    QString groupAddress() const;
-
-    /**
      * @return true if the bookmark folder is opened in the bookmark editor
      */
     bool isOpen() const;
@@ -387,7 +396,7 @@ protected:
     QDomElement nextKnownTag( const QDomElement &start, bool goNext ) const;
 
 private:
-    mutable QString m_address;
+
     // Note: you can't add other member variables here, except for caching info.
     // The KBookmarks are created on the fly, as wrappers
     // around internal QDomElements. Any additional information
