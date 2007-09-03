@@ -21,7 +21,7 @@
 
 #include "kurlnavigator.h"
 
-#include <kglobalsettings.h>
+#include <kcolorscheme.h>
 #include <kicon.h>
 #include <klocale.h>
 #include <kmenu.h>
@@ -129,8 +129,8 @@ QColor KUrlButton::foregroundColor() const
                                isDisplayHintEnabled(DraggedHint) ||
                                isDisplayHintEnabled(PopupActiveHint);
 
-    QColor foregroundColor = isHighlighted ? KGlobalSettings::highlightedTextColor() :
-                                             KGlobalSettings::buttonTextColor();
+    QColor foregroundColor = isHighlighted ? KColorScheme(QPalette::Active, KColorScheme::Selection).foreground().color() :
+                                             KColorScheme(QPalette::Active, KColorScheme::Button).foreground().color();
     const bool isActive = m_urlNavigator->isActive();
 
     int alpha = isActive ? 255 : 128;
@@ -148,7 +148,7 @@ QColor KUrlButton::backgroundColor() const
                                isDisplayHintEnabled(DraggedHint) ||
                                isDisplayHintEnabled(PopupActiveHint);
 
-    QColor backgroundColor = isHighlighted ? KGlobalSettings::highlightColor() :
+    QColor backgroundColor = isHighlighted ? KColorScheme(QPalette::Active, KColorScheme::Selection).background().color() :
                                              palette().brush(QPalette::Background).color();
     if (!urlNavigator()->isActive() && isHighlighted) {
         backgroundColor.setAlpha(128);
