@@ -37,7 +37,7 @@ AutoStart::AutoStart()
   : m_phase(-1), m_phasedone(false)
 {
   m_startList = new AutoStartList;
-  KGlobal::dirs()->addResourceType("autostart", "share/autostart");
+  KGlobal::dirs()->addResourceType("autostart", 0, "share/autostart");
 }
 
 AutoStart::~AutoStart()
