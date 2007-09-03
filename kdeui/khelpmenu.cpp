@@ -94,6 +94,7 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
     KStdAction::reportBug(this, SLOT(reportBug()), actions);
     KStdAction::aboutApp(this, SLOT(aboutApplication()), actions);
     KStdAction::aboutKDE(this, SLOT(aboutKDE()), actions);
+    KStdAction::switchApplicationLanguage(this, SLOT(switchApplicationLanguage()), actions);
   }
 }
 

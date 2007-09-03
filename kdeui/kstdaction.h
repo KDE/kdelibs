@@ -602,6 +602,13 @@ namespace KStdAction
 	*/
 	KDEUI_EXPORT KAction *aboutKDE(const QObject *recvr, const char *slot,
 				KActionCollection* parent, const char *name = 0 );
+
+	/**
+	* Display "Switch application language" dialog.
+	* @since 3.5.8
+	*/
+	KDEUI_EXPORT KAction *switchApplicationLanguage(const QObject *recvr, const char *slot,
+				KActionCollection* parent, const char *name = 0 );
 }
 
 #endif // KSTDACTION_H
