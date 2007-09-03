@@ -23,7 +23,7 @@
 #include <kio/kio_export.h>
 #include <kpagedialog.h>
 #include <kcomponentdata.h>
-#include <klibloader.h>
+#include <kpluginfactory.h>
 
 class QByteArray;
 class QImage;
@@ -172,7 +172,7 @@ private:
  * createDialog().
  * @short Factory for creating KScanDialogs
  */
-class KIO_EXPORT KScanDialogFactory : public KLibFactory
+class KIO_EXPORT KScanDialogFactory : public KPluginFactory
 {
 public:
     virtual ~KScanDialogFactory();
@@ -189,7 +189,9 @@ protected:
      * Creates a new KScanDialogFactory.
      * @param parent the QWidget's parent, or 0
      */
-    KScanDialogFactory( QObject *parent=0 );
+    KScanDialogFactory( const char *componentName = 0,
+                        const char *catalogName = 0,
+                        QObject *parent = 0 );
 
     virtual QObject* createObject( QObject* parent = 0,
                                    const char* classname = "QObject",
@@ -289,7 +291,7 @@ private:
  * createDialog().
  * @short Factory for creating KScanDialogs
  */
-class KIO_EXPORT KOCRDialogFactory : public KLibFactory
+class KIO_EXPORT KOCRDialogFactory : public KPluginFactory
 {
 public:
     virtual ~KOCRDialogFactory();
@@ -308,7 +310,10 @@ protected:
      * Creates a new KScanDialogFactory.
      * @param parent the QWidget's parent, or 0
      */
-    KOCRDialogFactory( QObject *parent=0 );
+
+    KOCRDialogFactory( const char *componentName = 0,
+                       const char *catalogName = 0,
+                       QObject *parent = 0 );
 
     virtual QObject* createObject( QObject* parent = 0,
                                    const char* classname = "QObject",

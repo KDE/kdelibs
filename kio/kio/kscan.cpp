@@ -127,8 +127,11 @@ public:
     KComponentData m_componentData;
 };
 
-KScanDialogFactory::KScanDialogFactory( QObject *parent )
-    : KLibFactory(parent), d( new KScanDialogFactoryPrivate )
+KScanDialogFactory::KScanDialogFactory( const char *componentName,
+                                        const char *catalogName,
+                                        QObject *parent )
+    : KPluginFactory(componentName, catalogName, parent),
+      d( new KScanDialogFactoryPrivate )
 {
 }
 
@@ -171,8 +174,11 @@ public:
     KComponentData m_componentData;
 };
 
-KOCRDialogFactory::KOCRDialogFactory( QObject *parent )
-    : KLibFactory(parent), d( new KOCRDialogFactoryPrivate )
+KOCRDialogFactory::KOCRDialogFactory( const char *componentName,
+                                      const char *catalogName,
+                                      QObject *parent )
+    : KPluginFactory(componentName, catalogName, parent),
+      d( new KOCRDialogFactoryPrivate )
 {
 }
 
