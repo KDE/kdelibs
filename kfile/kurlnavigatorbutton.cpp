@@ -36,11 +36,14 @@
 KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
     KUrlButton(parent),
     m_index(-1),
+    m_hoverArrow(false),
+    m_popupPosition(0, 0),
     m_popupDelay(0),
     m_listJob(0)
 {
     setAcceptDrops(true);
     setIndex(index);
+    setMouseTracking(true);
     connect(this, SIGNAL(clicked()), this, SLOT(updateNavigatorUrl()));
 
     m_popupDelay = new QTimer(this);
@@ -121,7 +124,6 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
 
     int textLeft = 0;
     int textWidth = buttonWidth;
-    painter.setPen(fgColor);
 
     const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
 
@@ -138,15 +140,32 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         option.palette.setColor(QPalette::WindowText, fgColor);
         option.palette.setColor(QPalette::ButtonText, fgColor);
 
+        if (m_hoverArrow) {
+            // highlight the background of the arrow to indicate that the directories
+            // popup can be opened by a mouse click
+            QColor hoverColor = fgColor;
+            hoverColor.setAlpha(96);
+            painter.setPen(Qt::NoPen);
+            painter.setBrush(hoverColor);
+
+            int hoverX = arrowX;
+            if (!leftToRight) {
+                hoverX -= BorderWidth;
+            }
+            painter.drawRect(QRect(hoverX, 0, arrowSize + BorderWidth, buttonHeight));
+        }
+
         if (leftToRight) {
             style()->drawPrimitive(QStyle::PE_IndicatorArrowRight, &option, &painter, this);
         } else {
             style()->drawPrimitive(QStyle::PE_IndicatorArrowLeft, &option, &painter, this);
             textLeft += arrowSize + 2 * BorderWidth;
         }
+
         textWidth -= arrowSize + 2 * BorderWidth;
     }
 
+    painter.setPen(fgColor);
     const bool clipped = isTextClipped();
     const int align = clipped ? Qt::AlignVCenter : Qt::AlignCenter;
     const QRect textRect(textLeft, 0, textWidth, buttonHeight);
@@ -163,10 +182,8 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         QPen pen;
         pen.setBrush(QBrush(gradient));
         painter.setPen(pen);
-        painter.drawText(textRect, align, text());
-    } else {
-        painter.drawText(textRect, align, text());
     }
+    painter.drawText(textRect, align, text());
 }
 
 void KUrlNavigatorButton::enterEvent(QEvent* event)
@@ -184,6 +201,11 @@ void KUrlNavigatorButton::leaveEvent(QEvent* event)
 {
     KUrlButton::leaveEvent(event);
     setToolTip(QString());
+
+    if (m_hoverArrow) {
+        m_hoverArrow = false;
+        update();
+    }
 }
 
 void KUrlNavigatorButton::dropEvent(QDropEvent* event)
@@ -226,6 +248,38 @@ void KUrlNavigatorButton::dragLeaveEvent(QDragLeaveEvent* event)
     update();
 }
 
+void KUrlNavigatorButton::mousePressEvent(QMouseEvent* event)
+{
+    if (isAboveArrow(event->x()) && (event->button() == Qt::LeftButton)) {
+        // the mouse is pressed above the arrow, hence show all directories
+        const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
+        const int popupX = leftToRight ? width() - arrowWidth() - BorderWidth : 0;
+        m_popupPosition = urlNavigator()->mapToGlobal(geometry().bottomLeft() + QPoint(popupX, 0));
+        startListJob();
+    } else {
+        // the mouse is pressed above the text area
+        KUrlButton::mousePressEvent(event);
+    }
+}
+
+void KUrlNavigatorButton::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (!isAboveArrow(event->x()) || (event->button() != Qt::LeftButton)) {
+        // the mouse is released above the text area
+        KUrlButton::mouseReleaseEvent(event);
+    }
+}
+
+void KUrlNavigatorButton::mouseMoveEvent(QMouseEvent* event)
+{
+    KUrlButton::mouseMoveEvent(event);
+
+    const bool hoverArrow = isAboveArrow(event->x());
+    if (hoverArrow != m_hoverArrow) {
+        m_hoverArrow = hoverArrow;
+        update();
+    }
+}
 
 void KUrlNavigatorButton::updateNavigatorUrl()
 {
@@ -244,6 +298,7 @@ void KUrlNavigatorButton::startPopupDelay()
         return;
     }
 
+    m_popupPosition = urlNavigator()->mapToGlobal(geometry().bottomLeft());
     m_popupDelay->start(300);
 }
 
@@ -322,7 +377,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
         ++i;
     }
 
-    const QAction* action = dirsMenu->exec(urlNavigator()->mapToGlobal(geometry().bottomLeft()));
+    const QAction* action = dirsMenu->exec(m_popupPosition);
     if (action != 0) {
         const int result = action->data().toInt();
         KUrl url = urlNavigator()->url(m_index);
@@ -339,11 +394,22 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
 
 int KUrlNavigatorButton::arrowWidth() const
 {
-    int width = height() / 2;
-    if (width < 4) {
-        width = 4;
+    // if there isn't arrow then return 0
+    int width = 0;
+    if (!isDisplayHintEnabled(ActivatedHint)) {
+        width = height() / 2;
+        if (width < 4) {
+            width = 4;
+        }
     }
+
     return width;
+}
+
+bool KUrlNavigatorButton::isAboveArrow(int x) const
+{
+    const bool leftToRight = (layoutDirection() == Qt::LeftToRight);
+    return leftToRight ? (x >= width() - arrowWidth()) : (x < arrowWidth());
 }
 
 bool KUrlNavigatorButton::isTextClipped() const

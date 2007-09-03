@@ -74,6 +74,9 @@ protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragLeaveEvent(QDragLeaveEvent* event);
+    virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseReleaseEvent(QMouseEvent* event);
+    virtual void mouseMoveEvent(QMouseEvent* event);
 
 private Q_SLOTS:
     void updateNavigatorUrl();
@@ -85,10 +88,13 @@ private Q_SLOTS:
 
 private:
     int arrowWidth() const;
+    bool isAboveArrow(int x) const;
     bool isTextClipped() const;
 
 private:
     int m_index;
+    bool m_hoverArrow;
+    QPoint m_popupPosition;
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     QStringList m_subdirs;
