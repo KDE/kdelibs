@@ -569,7 +569,7 @@ QString KCookieJar::stripDomain( KHttpCookiePtr cookiePtr)
     if (cookiePtr->domain().isEmpty())
        stripDomain( cookiePtr->host(), domain);
     else
-       domain = cookiePtr->domain();
+       stripDomain (cookiePtr->domain(), domain);
     return domain;
 }
 
