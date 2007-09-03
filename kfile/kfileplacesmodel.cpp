@@ -496,7 +496,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         KFilePlacesItem *item = d->items[itemRow];
         KBookmark bookmark = d->bookmarkManager->findByAddress(item->bookmarkAddress());
 
-        d->bookmarkManager->root().moveItem(bookmark, afterBookmark);
+        d->bookmarkManager->root().moveBookmark(bookmark, afterBookmark);
 
     } else if (data->hasFormat("text/uri-list")) {
         // The operation is an add
@@ -514,7 +514,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
             KBookmark bookmark = group.addBookmark(url.fileName(), url,
                                                    mimetype->iconName());
-            group.moveItem(bookmark, afterBookmark);
+            group.moveBookmark(bookmark, afterBookmark);
             afterBookmark = bookmark;
         }
 
