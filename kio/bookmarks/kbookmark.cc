@@ -361,7 +361,7 @@ QString KBookmark::address() const
     else
     {
         // Use keditbookmarks's DEBUG_ADDRESSES flag to debug this code :)
-        if (!element.parentNode().isNull())
+        if (element.parentNode().isNull())
         {
             Q_ASSERT(false);
             return "ERROR"; // Avoid an infinite loop
