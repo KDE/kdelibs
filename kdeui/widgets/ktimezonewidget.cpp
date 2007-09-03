@@ -25,6 +25,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <ksystemtimezone.h>
 #include <ktimezone.h>
 
 class KTimeZoneWidget::Private
@@ -44,10 +45,8 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
     d( 0 )
 {
   // If the user did not provide a timezone database, we'll use the system default.
-  bool userDb = (db != 0);
-
-  if ( !userDb )
-      db = new KTimeZones();
+  if ( !db )
+      db = KSystemTimeZones::timeZones();
 
   setHeaderLabels( QStringList() << i18n( "Area" ) << i18n( "Region" ) << i18n( "Comment" ) );
 
@@ -79,9 +78,6 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
     if ( QFile::exists( flag ) )
       listItem->setIcon( Private::RegionColumn, QPixmap( flag ) );
   }
-
-  if ( !userDb )
-    delete db;
 }
 
 KTimeZoneWidget::~KTimeZoneWidget()
