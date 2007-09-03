@@ -83,19 +83,19 @@ public:
      * Describes the type of the URI that was filtered.
      * Here is a brief description of the types:
      *
-     * @li NET_PROTOCOL - Any network protocol: http, ftp, nttp, pop3, etc...
-     * @li LOCAL_FILE   - A local file whose executable flag is not set
-     * @li LOCAL_DIR    - A local directory
-     * @li EXECUTABLE   - A local file whose executable flag is set
-     * @li HELP         - A man or info page
-     * @li SHELL        - A shell executable (ex: echo "Test..." >> ~/testfile)
-     * @li BLOCKED      - A URI that should be blocked/filtered (ex: ad filtering)
-     * @li ERROR        - An incorrect URI (ex: "~johndoe" when user johndoe
+     * @li NetProtocol  - Any network protocol: http, ftp, nttp, pop3, etc...
+     * @li LocalFile    - A local file whose executable flag is not set
+     * @li LocalDir     - A local directory
+     * @li Executable   - A local file whose executable flag is set
+     * @li Help         - A man or info page
+     * @li Shell        - A shell executable (ex: echo "Test..." >> ~/testfile)
+     * @li Blocked      - A URI that should be blocked/filtered (ex: ad filtering)
+     * @li Error        - An incorrect URI (ex: "~johndoe" when user johndoe
      *                    does not exist in that system )
-     * @li UNKNOWN      - A URI that is not identified. Default value when
+     * @li Unknown      - A URI that is not identified. Default value when
      *                    a KUriFilterData is first created.
      */
-    enum UriTypes { NET_PROTOCOL=0, LOCAL_FILE, LOCAL_DIR, EXECUTABLE, HELP, SHELL, BLOCKED, ERROR, UNKNOWN };
+    enum UriTypes { NetProtocol=0, LocalFile, LocalDir, Executable, Help, Shell, Blocked, Error, Unknown };
 
     /**
      * Default constructor.

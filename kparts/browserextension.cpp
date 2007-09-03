@@ -631,12 +631,12 @@ void BrowserExtension::pasteRequest()
     {
         switch ( filterData.uriType() )
 	{
-	    case KUriFilterData::LOCAL_FILE:
-	    case KUriFilterData::LOCAL_DIR:
-	    case KUriFilterData::NET_PROTOCOL:
+	    case KUriFilterData::LocalFile:
+	    case KUriFilterData::LocalDir:
+	    case KUriFilterData::NetProtocol:
 	        slotOpenUrlRequest( filterData.uri() );
 		break;
-	    case KUriFilterData::ERROR:
+	    case KUriFilterData::Error:
 		KMessageBox::sorry( d->m_part->widget(), filterData.errorMsg() );
 		break;
 	    default:

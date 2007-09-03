@@ -38,7 +38,7 @@ public:
         bCheckForExecutables(true),
         bChanged(true),
         pURI(url),
-        iType(KUriFilterData::UNKNOWN),
+        iType(KUriFilterData::Unknown),
         typedString(typedUrl)
     {
     }
@@ -49,7 +49,7 @@ public:
         strErrMsg.clear();
         strIconName.clear();
         pURI = url;
-        iType = KUriFilterData::UNKNOWN;
+        iType = KUriFilterData::Unknown;
         typedString = typedUrl;
     }
     KUriFilterDataPrivate( KUriFilterDataPrivate * data )
@@ -168,14 +168,14 @@ QString KUriFilterData::iconName()
     {
         switch ( d->iType )
         {
-            case KUriFilterData::LOCAL_FILE:
-            case KUriFilterData::LOCAL_DIR:
-            case KUriFilterData::NET_PROTOCOL:
+            case KUriFilterData::LocalFile:
+            case KUriFilterData::LocalDir:
+            case KUriFilterData::NetProtocol:
             {
                 d->strIconName = KMimeType::iconNameForUrl( d->pURI );
                 break;
             }
-            case KUriFilterData::EXECUTABLE:
+            case KUriFilterData::Executable:
             {
                 QString exeName = d->pURI.url();
                 exeName = exeName.mid( exeName.lastIndexOf( '/' ) + 1 ); // strip path if given
@@ -190,18 +190,18 @@ QString KUriFilterData::iconName()
                     d->strIconName = QLatin1String("exec");
                 break;
             }
-            case KUriFilterData::HELP:
+            case KUriFilterData::Help:
             {
                 d->strIconName = QLatin1String("khelpcenter");
                 break;
             }
-            case KUriFilterData::SHELL:
+            case KUriFilterData::Shell:
             {
                 d->strIconName = QLatin1String("konsole");
                 break;
             }
-            case KUriFilterData::ERROR:
-            case KUriFilterData::BLOCKED:
+            case KUriFilterData::Error:
+            case KUriFilterData::Blocked:
             {
                 d->strIconName = QLatin1String("error");
                 break;
