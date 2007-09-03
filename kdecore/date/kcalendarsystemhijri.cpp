@@ -304,7 +304,7 @@ bool KCalendarSystemHijri::isLeapYear( int year ) const
 
 bool KCalendarSystemHijri::isLeapYear( const QDate &date ) const
 {
-    return QDate::isLeapYear( year( date ) );
+    return KCalendarSystem::isLeapYear( year( date ) );
 }
 
 int KCalendarSystemHijri::daysInWeek( const QDate &date ) const

@@ -32,13 +32,9 @@ class KCalendarSystemPrivate;
 class QDate;
 
 /**
- * CalendarSystem abstract class, default derived KDE Gregorian class and
- * factory class. Provides support for different calendar types for the KDE
- * calendar widget and related stuff.
+ * KCalendarSystem abstract base class, provides support for local Calendar Systems in KDE
  *
- * Derived classes must be created through the create() statuc method
- *
- * @author Carlos Moro <cfmoro@correo.uniovi.es>
+ * Derived classes must be created through the create() static method
  */
 class KDECORE_EXPORT KCalendarSystem
 {
@@ -78,7 +74,7 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      * @return a KCalendarSystem object
      */
-    static KCalendarSystem *create ( const QString & calType = QLatin1String( "gregorian" ),
+    static KCalendarSystem *create( const QString & calType = QLatin1String( "gregorian" ),
                                      const KLocale * locale = 0 );
 
     /**
@@ -212,26 +208,26 @@ public:
     virtual bool setYMD( QDate &date, int y, int m, int d ) const;
 
     /**
-     * Gets specific calendar type year for a given Gregorian date.
+     * Returns the year portion of a given date in the current calendar system
      *
-     * @param date gregorian date
-     * @return year
+     * @param date date to return year for
+     * @return year, 0 if input date is invalid
      */
     virtual int year( const QDate &date ) const;
 
     /**
-     * Gets specific calendar type month for a given gregorian date
+     * Returns the month portion of a given date in the current calendar system
      *
-     * @param date gregorian date
-     * @return month number
+     * @param date date to return month for
+     * @return month of year, 0 if input date is invalid
      */
     virtual int month( const QDate &date ) const;
 
     /**
-     * Gets specific calendar type day number of month for a given date
+     * Returns the day portion of a given date in the current calendar system
      *
-     * @param date gregorian date equivalent to the specific one
-     * @return day of the month
+     * @param date date to return day for
+     * @return day of the month, 0 if input date is invalid
      */
     virtual int day( const QDate &date ) const;
 
@@ -240,7 +236,7 @@ public:
      *
      * @param date The old date
      * @param nyears The number of years to add
-     * @return The new date
+     * @return The new date, null date if any errors
      */
     virtual QDate addYears( const QDate &date, int nyears ) const;
 
@@ -249,7 +245,7 @@ public:
      *
      * @param date The old date
      * @param nmonths number of months to add
-     * @return The new date
+     * @return The new date, null date if any errors
      */
     virtual QDate addMonths( const QDate &date, int nmonths ) const;
 
@@ -258,86 +254,97 @@ public:
      *
      * @param date The old date
      * @param ndays number of days to add
-     * @return The new date
+     * @return The new date, null date if any errors
      */
     virtual QDate addDays( const QDate &date, int ndays ) const;
 
     /**
-     * Gets specific calendar type number of month for a given year
+     * Returns number of months in the given year
      *
      * @param date the date to obtain year from
-     * @return number of months in that year
+     * @return number of months in the year, -1 if input date invalid
      */
     virtual int monthsInYear( const QDate &date ) const;
 
     /**
-     * Returns the number of ISO weeks in a specified year.
+     * Returns the number of ISO weeks in the given year.
      *
      * @param date the date to obtain year from
-     * @return number of weeks in year
+     * @return number of weeks in the year, -1 if input date invalid
      */
     virtual int weeksInYear( const QDate &date ) const;
 
     /**
-     * Gets the number of weeks in a specified year.
+     * Returns the number of ISO weeks in the given year.
+     *
+     * ISO 8601 defines the first week of the year as the week containing the first Thursday.
+     * See http://en.wikipedia.org/wiki/ISO_8601 and http://en.wikipedia.org/wiki/ISO_week_date
      *
      * @param year the year
-     * @return number of weeks in year
+     * @return number of weeks in the year, -1 if input date invalid
      */
     virtual int weeksInYear( int year ) const;
 
     /**
-     * Gets the number of days in date whose years specified.
+     * Returns the number of days in the given year.
      *
-     * @param date Gregorian date equivalent to the specific one
-     * @return number of days in year
+     * @param date the date to obtain year from
+     * @return number of days in year, -1 if input date invalid
      */
     virtual int daysInYear( const QDate &date ) const;
 
     /**
-     * Gets specific calendar type number of days in month for a given date
+     * Returns the number of days in the given month.
      *
-     * @param date Gregorian date
-     * @return number of days for month in date
+     * @param date the date to obtain month from
+     * @return number of days in month, -1 if input date invalid
      */
     virtual int daysInMonth( const QDate &date ) const;
 
     /**
-     * Returns the number of days in a specified week.
+     * Returns the number of days in the given week.
      *
      * @param date the date to obtain week from
-     * @return number of days in week
+     * @return number of days in week, -1 if input date invalid
      */
     virtual int daysInWeek( const QDate &date ) const;
 
     /**
-     * Gets specific calendar type day number of year for a given date
+     * Returns the day number of year for the given date
      *
-     * @param date Gregorian date equivalent to the specific one
-     * @return day number
+     * @param date the date to obtain day from
+     * @return day of year number, -1 if input date not valid
      */
     virtual int dayOfYear( const QDate &date ) const;
 
     /**
-     * Gets specific calendar type number of day of week number for a given
-     * date
+     * Returns the weekday number for the given date
      *
-     * @param date Gregorian date
-     * @return day of week
+     * @param date the date to obtain day from
+     * @return day of week number, -1 if input date not valid
      */
     virtual int dayOfWeek( const QDate &date ) const;
 
     /**
-     * Gets specific calendar type week number for a given date
+     * Returns the ISO week number for the given date.
      *
-     * @param date gregorian date
-     * @param yearNum the year the date belongs to
-     * @return week number
+     * ISO 8601 defines the first week of the year as the week containing the first Thursday.
+     * See http://en.wikipedia.org/wiki/ISO_8601 and http://en.wikipedia.org/wiki/ISO_week_date
+     *
+     * If the date falls in the last week of the previous year or the first week of the following
+     * year, then the yearNum returned will be set to the appropriate year.
+     *
+     * @param date the date to obtain week from
+     * @param yearNum returns the year the date belongs to
+     * @return ISO week number, -1 if input date invalid
      */
     virtual int weekNumber( const QDate &date, int *yearNum = 0 ) const;
 
     /**
      * Returns whether a given year is a leap year.
+     *
+     * Input year must be checked for validity in current Calendar System prior to calling, no
+     * validity checking performed in this routine, behaviour is undefined in invalid case.
      *
      * @param year the year to check
      * @return @c true if the year is a leap year, @c false otherwise
@@ -346,6 +353,9 @@ public:
 
     /**
      * Returns whether a given date falls in a leap year.
+     *
+     * Input date must be checked for validity in current Calendar System prior to calling, no
+     * validity checking performed in this routine, behaviour is undefined in invalid case.
      *
      * @param date the date to check
      * @return @c true if the date falls in a leap year, @c false otherwise
@@ -359,7 +369,7 @@ public:
      * @param month the month number
      * @param year the year the month belongs to
      * @param format specifies whether the short month name or long month name should be used
-     * @return name of the month
+     * @return name of the month, empty string if any error
      */
     virtual QString monthName( int month, int year, MonthNameFormat format = LongName ) const = 0;
 
@@ -368,7 +378,7 @@ public:
      *
      * @param date date to obtain month from
      * @param format specifies whether the short month name or long month name should be used
-     * @return name of the month
+     * @return name of the month, empty string if any error
      */
     virtual QString monthName( const QDate &date, MonthNameFormat format = LongName ) const;
 
@@ -378,7 +388,7 @@ public:
      *
      * @param weekDay number of day in week (Monday = 1, ..., Sunday = 7)
      * @param format specifies whether the short month name or long month name should be used
-     * @return day name
+     * @return day name, empty string if any error
      */
     virtual QString weekDayName( int weekDay, WeekDayNameFormat format = LongDayName ) const = 0;
 
@@ -387,7 +397,7 @@ public:
      *
      * @param date the date
      * @param format specifies whether the short month name or long month name should be used
-     * @return day name
+     * @return day name, empty string if any error
      */
     virtual QString weekDayName( const QDate &date, WeekDayNameFormat format = LongDayName ) const;
 
@@ -396,7 +406,7 @@ public:
      *
      * @param date date to convert
      * @param format format to return, either short or long
-     * @return year literal of the date
+     * @return year literal of the date, empty string if any error
      */
     virtual QString yearString( const QDate &date, StringFormat format = LongFormat ) const;
 
@@ -405,7 +415,7 @@ public:
      *
      * @param pDate The date to convert
      * @param format The format to return, either short or long
-     * @return The month literal of the date
+     * @return The month literal of the date, empty string if any error
      */
     virtual QString monthString( const QDate &pDate, StringFormat format = LongFormat ) const;
 
@@ -414,7 +424,7 @@ public:
      *
      * @param pDate The date to convert
      * @param format The format to return, either short or long
-     * @return The day literal of the date
+     * @return The day literal of the date, empty string if any error
      */
     virtual QString dayString( const QDate &pDate, StringFormat format = LongFormat ) const;
 
@@ -563,13 +573,15 @@ public:
 
 protected:
 
+    friend class KCalendarSystemPrivate;
+
     /**
      * Internal method to convert a Julian Day number into the YMD values for
      * this calendar system.
      *
      * All calendar system implementations MUST implement julianDayToDate and
      * dateToJulianDay methods as all other methods can be expressed as
-     * functions of these.
+     * functions of these.  Does no internal validity checking.
      *
      * @see KCalendarSystem::dateToJulianDay
      *
@@ -587,7 +599,7 @@ protected:
      *
      * All calendar system implementations MUST implement julianDayToDate and
      * dateToJulianDay methods as all other methods can be expressed as
-     * functions of these.
+     * functions of these.  Does no internal validity checking.
      *
      * @see KCalendarSystem::julianDayToDate
      *
