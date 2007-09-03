@@ -40,11 +40,7 @@ class KUrlButton : public QPushButton
 public:
     explicit KUrlButton(KUrlNavigator* parent);
     virtual ~KUrlButton();
-
-    KUrlNavigator* urlNavigator() const
-    {
-        return m_urlNavigator;
-    }
+    inline KUrlNavigator* urlNavigator() const;
 
 protected:
     enum DisplayHint {
@@ -73,5 +69,10 @@ private:
     int m_displayHint;
     KUrlNavigator* m_urlNavigator;
 };
+
+KUrlNavigator* KUrlButton::urlNavigator() const
+{
+    return m_urlNavigator;
+}
 
 #endif
