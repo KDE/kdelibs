@@ -20,7 +20,7 @@
 #include "kurltogglebutton_p.h"
 #include "kurlnavigator.h"
 
-#include <kglobalsettings.h>
+#include <kcolorscheme.h>
 #include <kicon.h>
 #include <klocale.h>
 
@@ -63,7 +63,7 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
     } else if (isDisplayHintEnabled(EnteredHint)) {
         QColor fgColor;
         if (urlNavigator()->isActive()) {
-            fgColor = KGlobalSettings::buttonTextColor();
+            fgColor = KColorScheme(QPalette::Active, KColorScheme::Button).foreground().color();
         } else {
             fgColor = QApplication::palette().color(QPalette::Disabled, QPalette::ButtonText);
         }
