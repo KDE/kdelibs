@@ -577,4 +577,10 @@ KBookmarkDialog * KBookmarkOwner::bookmarkDialog(KBookmarkManager * mgr, QWidget
 {
     return new KBookmarkDialog(mgr, parent);
 }
+
+void KBookmarkOwner::openFolderinTabs(const KBookmarkGroup &bm)
+{
+
+}
+
 #include "kbookmarkmanager.moc"

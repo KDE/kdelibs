@@ -65,7 +65,7 @@ class KBookmarkDialog;
 class KIO_EXPORT KBookmarkManager : public QObject
 {
     Q_OBJECT
-protected:
+private:
     /**
      * Creates a bookmark manager with a path to the bookmarks.  By
      * default, it will use the KDE standard dirs to find and create the
@@ -375,6 +375,12 @@ public:
    */
   virtual void openBookmark(const KBookmark & bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km) = 0;
 
+  /**
+   * Called if the user wants to open every bookmark in this folder in a new tab.
+   * The default implementation does nothing.
+   * This is only called if supportsTabs() returns true
+  */
+  virtual void openFolderinTabs(const KBookmarkGroup &bm);
 
   virtual KBookmarkDialog * bookmarkDialog(KBookmarkManager * mgr, QWidget *parent);
 

@@ -90,6 +90,7 @@ void KBookmarkMenu::addActions()
     if ( m_parentMenu->actions().count() > 0 )
       m_parentMenu->addSeparator();
 
+    addOpenInTabs();
     addAddBookmark();
     addAddBookmarksList();
     addNewFolder();
@@ -142,17 +143,19 @@ void KBookmarkMenu::slotAboutToShow()
 void KBookmarkMenu::slotCustomContextMenu( const QPoint & pos)
 {
     QAction * action = m_parentMenu->actionAt(pos);
-    KBookmarkActionInterface* act = dynamic_cast<KBookmarkActionInterface *>(action);
-    if (!act)
+    KMenu * menu = contextMenu(action);
+    if(!menu)
         return;
-    KMenu * menu = contextMenu(act->bookmark());
     menu->setAttribute(Qt::WA_DeleteOnClose);
     menu->popup(m_parentMenu->mapToGlobal(pos));
 }
 
-KMenu * KBookmarkMenu::contextMenu( const KBookmark & bm )
+KMenu * KBookmarkMenu::contextMenu( QAction * action )
 { 
-  return new KBookmarkContextMenu(bm, m_pManager, m_pOwner);
+    KBookmarkActionInterface* act = dynamic_cast<KBookmarkActionInterface *>(action);
+    if (!act)
+        return 0;
+    return new KBookmarkContextMenu(act->bookmark(), m_pManager, m_pOwner);
 }
 
 bool KBookmarkMenu::isRoot() const 
@@ -221,9 +224,16 @@ void KBookmarkContextMenu::slotAboutToShow()
 void KBookmarkContextMenu::addActions()
 {
   if (bm.isGroup())
+  {
+    addOpenFolderInTabs();
+    addBookmark();
     addFolderActions();
+  }
   else
+  {
     addBookmarkActions();
+    addBookmark();
+  }
   addSeparator();
   addProperties();
 }
@@ -258,6 +268,12 @@ void KBookmarkContextMenu::addBookmarkActions()
   addAction( i18n( "Copy Link Address" ), this, SLOT(slotCopyLocation()) );
   addSeparator();
   addAction( SmallIcon("edit-delete"), i18n( "Delete Bookmark" ), this, SLOT(slotRemove()) );
+}
+
+void KBookmarkContextMenu::addOpenFolderInTabs()
+{
+   if(m_pOwner->supportsTabs())
+      addAction(SmallIcon("tab-new"), i18n( "Open Folder in Tabs" ), this, SLOT( slotOpenFolderInTabs() ) );
 }
 
 void KBookmarkContextMenu::slotEditAt()
@@ -343,6 +359,11 @@ void KBookmarkContextMenu::slotCopyLocation()
   }
 }
 
+void KBookmarkContextMenu::slotOpenFolderInTabs()
+{
+  owner()->openFolderinTabs(bookmark().toGroup());
+}
+
 KBookmarkManager * KBookmarkContextMenu::manager() const
 {
     return m_pManager;
@@ -402,6 +423,23 @@ void KBookmarkMenu::refill()
   fillBookmarks();
   if(!m_bIsRoot)
     addActions();
+}
+
+void KBookmarkMenu::addOpenInTabs()
+{
+    if( !m_pOwner || !m_pOwner->supportsTabs() || !KAuthorized::authorizeKAction("bookmarks") )
+        return;
+
+    QString title = i18n( "Open Folder in Tabs" );
+
+    KAction * paOpenFolderInTabs = new KAction( title, this );
+    m_actionCollection->addAction( m_bIsRoot ? "open_folder_in_tabs" : 0, paOpenFolderInTabs );
+    paOpenFolderInTabs->setIcon( KIcon("tab-new") );
+    paOpenFolderInTabs->setToolTip( i18n( "Open all bookmarks in this folder as a new tab." ) );
+    connect( paOpenFolderInTabs, SIGNAL( triggered( bool ) ), this, SLOT( slotOpenFolderInTabs() ) );
+
+    m_parentMenu->addAction(paOpenFolderInTabs);
+    m_actions.append( paOpenFolderInTabs );
 }
 
 void KBookmarkMenu::addAddBookmarksList()
@@ -540,6 +578,11 @@ void KBookmarkMenu::slotAddBookmark()
       parentBookmark.addBookmark(m_pOwner->currentTitle(), KUrl(m_pOwner->currentUrl()));
   }
       
+}
+
+void KBookmarkMenu::slotOpenFolderInTabs()
+{
+  m_pOwner->openFolderinTabs(m_pManager->findByAddress( m_parentAddress ).toGroup());
 }
 
 void KBookmarkMenu::slotNewFolder()

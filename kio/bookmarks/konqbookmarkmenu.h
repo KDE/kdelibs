@@ -28,7 +28,6 @@ public:
   virtual ~KonqBookmarkOwner();
   virtual void openInNewTab(const KBookmark &bm) = 0;
   virtual void openInNewWindow(const KBookmark &bm) = 0;
-  virtual void openFolderinTabs(const KBookmark &bm) = 0;
 };
 
 class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
@@ -96,10 +95,9 @@ protected:
    */
   static QStringList dynamicBookmarksList();
 
-protected:
   virtual void refill();
   virtual QAction* actionForBookmark(const KBookmark &bm);
-  virtual KMenu * contextMenu(const KBookmark & bm);
+  virtual KMenu * contextMenu(QAction * act);
   void fillDynamicBookmarks();
 private:
   KonqBookmarkOwner * owner()
@@ -117,7 +115,7 @@ public:
 public Q_SLOTS:
   void openInNewTab();
   void openInNewWindow();
-  void openFolderinTabs();
+  void toggleShowInToolbar();
 private:
   KonqBookmarkOwner * owner()
     { return static_cast<KonqBookmarkOwner *>(KBookmarkContextMenu::owner());}

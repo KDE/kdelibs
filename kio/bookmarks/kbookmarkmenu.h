@@ -114,13 +114,13 @@ protected Q_SLOTS:
   void slotAddBookmarksList();
   void slotAddBookmark();
   void slotNewFolder();
-
+  void slotOpenFolderInTabs();
 
 protected:
   virtual void clear();
   virtual void refill();
   virtual QAction* actionForBookmark(const KBookmark &bm);
-  virtual KMenu * contextMenu(const KBookmark & bm);
+  virtual KMenu * contextMenu(QAction * action );
 
   void addActions();
   void fillBookmarks();
@@ -128,6 +128,8 @@ protected:
   void addAddBookmarksList();
   void addEditBookmarks();
   void addNewFolder();
+  void addOpenInTabs();
+
 
   bool isRoot() const;
   bool isDirty() const;
@@ -188,12 +190,14 @@ public Q_SLOTS:
     void slotInsert();
     void slotRemove();
     void slotCopyLocation();
+    void slotOpenFolderInTabs();
 
 protected:
     void addBookmark();
     void addFolderActions();
     void addProperties();
     void addBookmarkActions();
+    void addOpenFolderInTabs();
 
     KBookmarkManager * manager() const;
     KBookmarkOwner * owner() const;
