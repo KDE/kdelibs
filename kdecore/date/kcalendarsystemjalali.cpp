@@ -34,6 +34,11 @@
 #include <stdio.h>
 
 
+//===========================================================================
+//  This section holds the old Jalali <=> jd <=> Gregorian conversion code
+//  Delete once conversion to new code complete and fully tested
+//===========================================================================
+
 static const int  gMonthDay[2][13] =
     {
         {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
@@ -227,6 +232,9 @@ static int hndays( int m, int y )
 }
 
 
+//===========================================================================
+
+
 KCalendarSystemJalali::KCalendarSystemJalali( const KLocale * locale )
                       : KCalendarSystem( locale ), d( 0 )
 {
@@ -243,6 +251,7 @@ QString KCalendarSystemJalali::calendarType() const
 
 QDate KCalendarSystemJalali::epoch() const
 {
+    // 19 March 622 in the Julian calendar
     return QDate::fromJulianDay( 1948321 );
 }
 
@@ -258,7 +267,7 @@ QDate KCalendarSystemJalali::latestValidDate() const
     // Last day of Jalali year 9999 is 9999-12-29
     // Which in Gregorian is 10621-03-17
     // Which is jd xxxx FIXME Find out jd and use that instead
-    // Can't call setDate( 9999, 12, 29 ) as it creates circular reference!
+    // Can't call setDate() as it creates circular reference!
     return QDate( 10621, 3, 17 );
 }
 
@@ -290,206 +299,6 @@ bool KCalendarSystemJalali::setDate( QDate &date, int year, int month, int day )
     return KCalendarSystem::setDate( date, year, month, day );
 }
 
-bool KCalendarSystemJalali::isLeapYear( int year ) const
-{
-    // from isJalaliLeap above
-    int     tmp;
-    tmp = year % 33;
-    if ( tmp == 1 || tmp == 5 || tmp == 9 || tmp == 13 || tmp == 17 || tmp == 22 || tmp == 26 || tmp == 30 ) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool KCalendarSystemJalali::isLeapYear( const QDate &date ) const
-{
-    return QDate::isLeapYear( year( date ) );
-}
-
-int KCalendarSystemJalali::daysInWeek( const QDate &date ) const
-{
-    return KCalendarSystem::daysInWeek( date );
-}
-
-int KCalendarSystemJalali::weekStartDay() const
-{
-    return KCalendarSystem::weekStartDay();
-}
-
-QString KCalendarSystemJalali::formatDate( const QDate &date, KLocale::DateFormat format ) const
-{
-    return KCalendarSystem::formatDate( date, format );
-}
-
-QDate KCalendarSystemJalali::readDate( const QString &str, bool *ok ) const
-{
-    return KCalendarSystem::readDate( str, ok );
-}
-
-QDate KCalendarSystemJalali::readDate( const QString &intstr, const QString &fmt, bool *ok ) const
-{
-    return KCalendarSystem::readDate( intstr, fmt, ok );
-}
-
-QDate KCalendarSystemJalali::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
-{
-    return KCalendarSystem::readDate( str, flags, ok );
-}
-
-bool KCalendarSystemJalali::isProleptic() const
-{
-    return false;
-}
-
-bool KCalendarSystemJalali::julianDayToDate( int jd, int &year, int &month, int &day ) const
-{
-    // from jdn_jalali above.  Fix me!
-    if ( jd >= earliestValidDate().toJulianDay() && jd <= latestValidDate().toJulianDay() ) {
-        int y, m, d;
-        int iYear, iMonth, iDay;
-        int depoch;
-        int cycle;
-        int cyear;
-        int ycycle;
-        int aux1, aux2;
-        int yday;
-        d = 1;
-        m = 1;
-        y = 475;
-        depoch = jd - jalali_jdn( y, m, d );
-        cycle = ( int ) ( depoch / 1029983 );
-        cyear = depoch % 1029983;
-        if ( cyear == 1029982 ) {
-            ycycle = 2820;
-        } else {
-            aux1 = cyear / 366;
-            aux2 = cyear % 366;
-            ycycle = ( ( ( 2134 * aux1 ) + ( 2816 * aux2 ) + 2815 ) / 1028522 ) + aux1 + 1;
-        }
-        iYear = ycycle + ( 2820 * cycle ) + 474;
-        if ( iYear <= 0 ) {
-            iYear = iYear - 1;
-        }
-        y = iYear;
-        yday = ( jd - jalali_jdn( y, m, d ) ) + 1;
-        if( yday <= 186 ) {
-            iMonth = Ceil( ( yday - 1 ) / 31 );
-        } else {
-            iMonth = Ceil( ( yday - 7 ) / 30 );
-        }
-        iMonth++;
-        m = iMonth;
-        iDay = ( jd - jalali_jdn( y, m, d ) ) + 1;
-        day = iDay;
-        month = iMonth;
-        year = iYear;
-        return true;
-    }
-    return false;
-}
-
-bool KCalendarSystemJalali::dateToJulianDay( int year, int month, int day, int &jd ) const
-{
-    // From jalali_jdn above.  Fix me!
-    if ( isValid( year, month, day ) ) {
-        int epbase;
-        long epyear;
-        long mdays;
-        epbase = year - 474;
-        epyear = 474 + ( epbase % 2820 );
-        if ( month <= 7 ) {
-            mdays = ( month - 1 ) * 31;
-        } else {
-            mdays = ( month - 1 ) * 30 + 6;
-        }
-        jd = day + mdays;
-        jd += ( ( ( epyear * 682 ) - 110 ) / 2816 ) ;
-        jd += ( epyear - 1 ) * 365;
-        jd += ( epbase / 2820 ) * 1029983 ;
-        jd += ( epoch().toJulianDay() - 1 );
-        return true;
-    }
-    return false;
-}
-
-int KCalendarSystemJalali::year( const QDate &date ) const
-{
-    kDebug( 5400 ) << "Jalali year...";
-    int y;
-
-    gregorianToJalali( date, &y, 0, 0 );
-
-    return y;
-}
-
-QString KCalendarSystemJalali::yearString( const QDate &pDate, StringFormat format ) const
-{
-    return KCalendarSystem::yearString( pDate, format );
-}
-
-int KCalendarSystemJalali::yearStringToInteger( const QString &sNum, int &iLength ) const
-{
-    return KCalendarSystem::yearStringToInteger( sNum, iLength );
-}
-
-int KCalendarSystemJalali::month ( const QDate& date ) const
-
-{
-    kDebug( 5400 ) << "Jalali month...";
-    int m;
-
-    gregorianToJalali( date, 0 , &m, 0 );
-
-    return m;
-}
-
-QString KCalendarSystemJalali::monthString( const QDate &pDate, StringFormat format ) const
-{
-    return KCalendarSystem::monthString( pDate, format );
-}
-
-int KCalendarSystemJalali::monthStringToInteger( const QString &sNum, int &iLength ) const
-{
-    return KCalendarSystem::monthStringToInteger( sNum, iLength );
-}
-
-int KCalendarSystemJalali::day( const QDate &date ) const
-{
-    kDebug( 5400 ) << "Jalali day...";
-    int d;
-
-    gregorianToJalali( date, 0, 0, &d );
-
-    return d;
-}
-
-QString KCalendarSystemJalali::dayString( const QDate &pDate, StringFormat format ) const
-{
-    return KCalendarSystem::dayString( pDate, format );
-}
-
-int KCalendarSystemJalali::dayStringToInteger( const QString & sNum, int & iLength ) const
-{
-    return KCalendarSystem::dayStringToInteger( sNum, iLength );
-}
-
-int KCalendarSystemJalali::dayOfWeek( const QDate &date ) const
-{
-    //same same I think?!
-    return date.dayOfWeek();
-
-}
-
-//NOT TESTED YET
-int KCalendarSystemJalali::dayOfYear( const QDate &date ) const
-{
-    QDate first;
-    setYMD( first, year( date ), 1, 1 );
-
-    return first.daysTo( date ) + 1;
-}
-
 //MAY BE BUGGY
 bool KCalendarSystemJalali::setYMD( QDate &date, int y, int m, int d ) const
 {
@@ -513,6 +322,37 @@ bool KCalendarSystemJalali::setYMD( QDate &date, int y, int m, int d ) const
     SDATE  *gd = jalaliToGregorian( y, m, d );
 
     return date.setYMD( gd->year, gd->mon, gd->day );
+}
+
+int KCalendarSystemJalali::year( const QDate &date ) const
+{
+    kDebug( 5400 ) << "Jalali year...";
+    int y;
+
+    gregorianToJalali( date, &y, 0, 0 );
+
+    return y;
+}
+
+int KCalendarSystemJalali::month ( const QDate& date ) const
+
+{
+    kDebug( 5400 ) << "Jalali month...";
+    int m;
+
+    gregorianToJalali( date, 0 , &m, 0 );
+
+    return m;
+}
+
+int KCalendarSystemJalali::day( const QDate &date ) const
+{
+    kDebug( 5400 ) << "Jalali day...";
+    int d;
+
+    gregorianToJalali( date, 0, 0, &d );
+
+    return d;
 }
 
 QDate KCalendarSystemJalali::addYears( const QDate &date, int nyears ) const
@@ -559,6 +399,19 @@ int KCalendarSystemJalali::monthsInYear( const QDate &date ) const
     return 12;
 }
 
+int KCalendarSystemJalali::weeksInYear( const QDate &date ) const
+{
+    return KCalendarSystem::weeksInYear( date );
+}
+
+int KCalendarSystemJalali::weeksInYear( int year ) const
+
+{
+    Q_UNUSED( year );
+// couldn't understand it!
+    return 52;
+}
+
 int KCalendarSystemJalali::daysInYear( const QDate &date ) const
 {
     Q_UNUSED( date );
@@ -577,17 +430,25 @@ int KCalendarSystemJalali::daysInMonth( const QDate &date ) const
     return hndays( sd->mon, sd->year );
 }
 
-int KCalendarSystemJalali::weeksInYear( const QDate &date ) const
+int KCalendarSystemJalali::daysInWeek( const QDate &date ) const
 {
-    return KCalendarSystem::weeksInYear( date );
+    return KCalendarSystem::daysInWeek( date );
 }
 
-int KCalendarSystemJalali::weeksInYear( int year ) const
-
+//NOT TESTED YET
+int KCalendarSystemJalali::dayOfYear( const QDate &date ) const
 {
-    Q_UNUSED( year );
-// couldn't understand it!
-    return 52;
+    QDate first;
+    setYMD( first, year( date ), 1, 1 );
+
+    return first.daysTo( date ) + 1;
+}
+
+int KCalendarSystemJalali::dayOfWeek( const QDate &date ) const
+{
+    //same same I think?!
+    return date.dayOfWeek();
+
 }
 
 int KCalendarSystemJalali::weekNumber( const QDate &date, int *yearNum ) const
@@ -629,6 +490,23 @@ int KCalendarSystemJalali::weekNumber( const QDate &date, int *yearNum ) const
     }
 
     return week;
+}
+
+bool KCalendarSystemJalali::isLeapYear( int year ) const
+{
+    // from isJalaliLeap above
+    int     tmp;
+    tmp = year % 33;
+    if ( tmp == 1 || tmp == 5 || tmp == 9 || tmp == 13 || tmp == 17 || tmp == 22 || tmp == 26 || tmp == 30 ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool KCalendarSystemJalali::isLeapYear( const QDate &date ) const
+{
+    return QDate::isLeapYear( year( date ) );
 }
 
 QString KCalendarSystemJalali::monthName( int month, int year, MonthNameFormat format )  const
@@ -813,6 +691,61 @@ QString KCalendarSystemJalali::weekDayName( const QDate &date, WeekDayNameFormat
     return weekDayName( dayOfWeek( date ), format );
 }
 
+QString KCalendarSystemJalali::yearString( const QDate &pDate, StringFormat format ) const
+{
+    return KCalendarSystem::yearString( pDate, format );
+}
+
+QString KCalendarSystemJalali::monthString( const QDate &pDate, StringFormat format ) const
+{
+    return KCalendarSystem::monthString( pDate, format );
+}
+
+QString KCalendarSystemJalali::dayString( const QDate &pDate, StringFormat format ) const
+{
+    return KCalendarSystem::dayString( pDate, format );
+}
+
+int KCalendarSystemJalali::yearStringToInteger( const QString &sNum, int &iLength ) const
+{
+    return KCalendarSystem::yearStringToInteger( sNum, iLength );
+}
+
+int KCalendarSystemJalali::monthStringToInteger( const QString &sNum, int &iLength ) const
+{
+    return KCalendarSystem::monthStringToInteger( sNum, iLength );
+}
+
+int KCalendarSystemJalali::dayStringToInteger( const QString & sNum, int & iLength ) const
+{
+    return KCalendarSystem::dayStringToInteger( sNum, iLength );
+}
+
+QString KCalendarSystemJalali::formatDate( const QDate &date, KLocale::DateFormat format ) const
+{
+    return KCalendarSystem::formatDate( date, format );
+}
+
+QDate KCalendarSystemJalali::readDate( const QString &str, bool *ok ) const
+{
+    return KCalendarSystem::readDate( str, ok );
+}
+
+QDate KCalendarSystemJalali::readDate( const QString &intstr, const QString &fmt, bool *ok ) const
+{
+    return KCalendarSystem::readDate( intstr, fmt, ok );
+}
+
+QDate KCalendarSystemJalali::readDate( const QString &str, KLocale::ReadDateFlags flags, bool *ok ) const
+{
+    return KCalendarSystem::readDate( str, flags, ok );
+}
+
+int KCalendarSystemJalali::weekStartDay() const
+{
+    return KCalendarSystem::weekStartDay();
+}
+
 int KCalendarSystemJalali::weekDayOfPray() const
 {
     return 5; // friday
@@ -831,4 +764,80 @@ bool KCalendarSystemJalali::isLunisolar() const
 bool KCalendarSystemJalali::isSolar() const
 {
     return true;
+}
+
+bool KCalendarSystemJalali::isProleptic() const
+{
+    return false;
+}
+
+bool KCalendarSystemJalali::julianDayToDate( int jd, int &year, int &month, int &day ) const
+{
+    // from jdn_jalali above.  Fix me!
+    if ( jd >= earliestValidDate().toJulianDay() && jd <= latestValidDate().toJulianDay() ) {
+        int y, m, d;
+        int iYear, iMonth, iDay;
+        int depoch;
+        int cycle;
+        int cyear;
+        int ycycle;
+        int aux1, aux2;
+        int yday;
+        d = 1;
+        m = 1;
+        y = 475;
+        depoch = jd - jalali_jdn( y, m, d );
+        cycle = ( int ) ( depoch / 1029983 );
+        cyear = depoch % 1029983;
+        if ( cyear == 1029982 ) {
+            ycycle = 2820;
+        } else {
+            aux1 = cyear / 366;
+            aux2 = cyear % 366;
+            ycycle = ( ( ( 2134 * aux1 ) + ( 2816 * aux2 ) + 2815 ) / 1028522 ) + aux1 + 1;
+        }
+        iYear = ycycle + ( 2820 * cycle ) + 474;
+        if ( iYear <= 0 ) {
+            iYear = iYear - 1;
+        }
+        y = iYear;
+        yday = ( jd - jalali_jdn( y, m, d ) ) + 1;
+        if( yday <= 186 ) {
+            iMonth = Ceil( ( yday - 1 ) / 31 );
+        } else {
+            iMonth = Ceil( ( yday - 7 ) / 30 );
+        }
+        iMonth++;
+        m = iMonth;
+        iDay = ( jd - jalali_jdn( y, m, d ) ) + 1;
+        day = iDay;
+        month = iMonth;
+        year = iYear;
+        return true;
+    }
+    return false;
+}
+
+bool KCalendarSystemJalali::dateToJulianDay( int year, int month, int day, int &jd ) const
+{
+    // From jalali_jdn above.  Fix me!
+    if ( isValid( year, month, day ) ) {
+        int epbase;
+        long epyear;
+        long mdays;
+        epbase = year - 474;
+        epyear = 474 + ( epbase % 2820 );
+        if ( month <= 7 ) {
+            mdays = ( month - 1 ) * 31;
+        } else {
+            mdays = ( month - 1 ) * 30 + 6;
+        }
+        jd = day + mdays;
+        jd += ( ( ( epyear * 682 ) - 110 ) / 2816 ) ;
+        jd += ( epyear - 1 ) * 365;
+        jd += ( epbase / 2820 ) * 1029983 ;
+        jd += ( epoch().toJulianDay() - 1 );
+        return true;
+    }
+    return false;
 }
