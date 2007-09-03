@@ -342,6 +342,7 @@ This uses QVariant in the background so only types that QVariant can convert to 
      <li>QColor var = readEntry(key, QColor(<b>Qt::black</b>)); // no conversion from Qt::GlobalColor to QVariant
      <li>long var = readEntry(key, <b>0</b>); // conversion from long to QVariant is ambiguous, so can't use <b>long(0)</b>.</li>
  </ul>
+If you need to access top-level config entries (those without any group), use KConfigGroup with the group name <i>&lt;default&gt;</i>.
 </li>
 <li>readEntry(const QString&amp;, const QString&amp;) no longer has a default argument, add QString() as
 second argument.

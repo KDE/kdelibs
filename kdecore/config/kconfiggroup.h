@@ -36,6 +36,10 @@ class KConfigGroupPrivate;
 
 /**
  * A class for one specific group in a KConfig object.
+ *
+ * If you want to access the top-level entries of a
+ * KConfig object, which are not associated with any
+ * group, use "<default>" as the group name.
  */
 class KDECORE_EXPORT KConfigGroup : public KConfigFlags
 {
