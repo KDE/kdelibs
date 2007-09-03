@@ -133,6 +133,7 @@ set(kbookmarks_STAT_SRCS
   bookmarks/kbookmarkimporter_ie.cc
   bookmarks/kbookmarkimporter_ns.cc
   bookmarks/kbookmarkdombuilder.cc
+  bookmarks/kbookmarkdialog.cc
 )
 
 set(kfile_STAT_SRCS
@@ -380,6 +381,7 @@ install( FILES
   bookmarks/kbookmarkimporter_ns.h
   bookmarks/kbookmarkdombuilder.h
   bookmarks/konqbookmarkmenu.h
+  bookmarks/kbookmarkdialog.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})

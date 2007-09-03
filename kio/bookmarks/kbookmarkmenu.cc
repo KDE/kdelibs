@@ -21,11 +21,11 @@
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
 
+#include "kbookmarkdialog.h"
+
 #include <kauthorized.h>
-#include <kconfig.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmenu.h>
@@ -36,11 +36,6 @@
 #include <kactioncollection.h>
 
 #include <qclipboard.h>
-#include <qfile.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
 #include <qmimedata.h>
 
 
@@ -275,20 +270,9 @@ void KBookmarkContextMenu::slotProperties()
 {
   //kDebug(7043) << "KBookmarkMenu::slotProperties" << m_highlightedAddress;
 
-  QString folder = bm.isGroup() ? QString() : bm.url().pathOrUrl();
-  KBookmarkEditDialog dlg( bm.fullText(), folder,
-                           m_pManager, KBookmarkEditDialog::ModifyMode, 0,
-                           0, i18n("Bookmark Properties") );
-  if ( dlg.exec() != KDialog::Accepted )
-    return;
-
-  bm.setFullText(dlg.finalTitle());
-  if ( !dlg.finalUrl().isNull() )
-  {    
-    bm.setUrl(dlg.finalUrl());
-  }
-
-  m_pManager->emitChanged( bm.parentGroup() );
+    KBookmarkDialog *  dlg = m_pOwner->bookmarkDialog(m_pManager, parentWidget());
+    dlg->editBookmark(bm);
+    delete dlg;
 }
 
 void KBookmarkContextMenu::slotInsert()
@@ -532,31 +516,30 @@ void KBookmarkMenu::slotAddBookmarksList()
   if( !m_pOwner || !m_pOwner->supportsTabs())
     return;
 
-  const QList<QPair<QString, QString> > & list = m_pOwner->currentBookmarkList();
-
   KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
-  Q_ASSERT(!parentBookmark.isNull());
-  KBookmarkGroup group = parentBookmark.createNewFolder();
-  if ( group.isNull() )
-    return; // user canceled i guess
 
-  QList<QPair<QString, QString> >::const_iterator it;
-  for ( it = list.begin(); it != list.end(); ++it )
-    group.addBookmark( (*it).first, KUrl((*it).second) );
-
-  m_pManager->emitChanged( parentBookmark );
+  KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, parentMenu());
+  dlg->addBookmarks(m_pOwner->currentBookmarkList(), "", parentBookmark);
+  delete dlg;
 }
 
 
 void KBookmarkMenu::slotAddBookmark()
 {
   if( !m_pOwner ) return;
-  KBookmarkGroup parentBookmark;
-  parentBookmark = m_pManager->addBookmarkDialog(m_pOwner->currentUrl(), m_pOwner->currentTitle(), m_parentAddress);
-  if (!parentBookmark.isNull())
+  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
+
+  if(KBookmarkSettings::self()->m_advancedaddbookmark)
   {
-    m_pManager->emitChanged( parentBookmark );
+      KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, parentMenu() );
+      dlg->addBookmark(m_pOwner->currentTitle(), KUrl(m_pOwner->currentUrl()), parentBookmark );
+      delete dlg;
   }
+  else
+  {
+      parentBookmark.addBookmark(m_pOwner->currentTitle(), KUrl(m_pOwner->currentUrl()));
+  }
+      
 }
 
 void KBookmarkMenu::slotNewFolder()
@@ -564,12 +547,9 @@ void KBookmarkMenu::slotNewFolder()
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
   KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
   Q_ASSERT(!parentBookmark.isNull());
-  KBookmarkGroup group = parentBookmark.createNewFolder();
-  if ( !group.isNull() )
-  {
-    KBookmarkGroup parentGroup = group.parentGroup();
-    m_pManager->emitChanged( parentGroup );
-  }
+  KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, parentMenu());
+  dlg->createNewFolder("", parentBookmark);
+  delete dlg;
 }
 
 void KImportedBookmarkMenu::slotNSLoad()
@@ -613,215 +593,6 @@ void KImportedBookmarkMenu::clear()
 
 }
 
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-
-KBookmarkEditFields::KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, FieldsSet fieldsSet)
-{
-  QLabel *tmpLabel;
-  bool isF = (fieldsSet != FolderFieldsSet);
-
-  QGridLayout *grid = new QGridLayout();
-  vbox->addLayout(grid);
-
-  m_title = new KLineEdit( main );
-  tmpLabel = new QLabel( main );
-  tmpLabel->setText( i18n( "Name:" ) );
-  tmpLabel->setBuddy( m_title );
-  grid->addWidget( m_title, 0, 1 );
-  grid->addWidget( tmpLabel, 0, 0 );
-  m_title->setFocus();
-  if (isF)
-  {
-    m_url = new KLineEdit( main );
-    tmpLabel = new QLabel( main );
-    tmpLabel->setText( i18n( "Location:" ) );
-    tmpLabel->setBuddy( m_url );
-    grid->addWidget( m_url, 1, 1 );
-    grid->addWidget( tmpLabel, 1, 0 );
-  }
-  else
-  {
-    m_url = 0;
-  }
-
-  main->setMinimumSize( 300, 0 );
-}
-
-void KBookmarkEditFields::setName(const QString &str)
-{
-  m_title->setText(str);
-}
-
-void KBookmarkEditFields::setLocation(const QString &str)
-{
-  m_url->setText(str);
-}
-
-
-/********************************************************************/
-
-KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidget * tree)
-    : QTreeWidgetItem(tree), m_address("") //TODO KBookmarkAddress::root()
-{
-    setText(0, i18n("Bookmarks"));
-    setIcon(0, SmallIcon("bookmark"));
-    tree->expandItem(this);
-    tree->setCurrentItem( this );
-    tree->setItemSelected( this, true );
-}
-
-KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidgetItem * parent, QTreeWidget * tree, const KBookmarkGroup &bk)
-    : QTreeWidgetItem(parent)
-{
-    setIcon(0, SmallIcon(bk.icon()));
-    setText(0, bk.fullText() );
-    tree->expandItem(this);
-    m_address = bk.address();
-    kDebug()<<"** setting address to "<<bk.address();
-}
-
-KBookmarkTreeItem::~KBookmarkTreeItem()
-{
-}
-
-QString KBookmarkTreeItem::address()
-{
-    return m_address;
-}
-
-KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr, BookmarkEditType editType, const QString& address,
-                                         QWidget * parent, const QString& caption )
-  : KDialog(parent),
-    m_folderTree(0), m_mgr(mgr), m_editType(editType)
-{
-  setCaption( caption );
-
-  if ( editType == InsertionMode ) {
-    setButtons( User1 | Ok | Cancel );
-    setButtonGuiItem( KDialog::Ok,  KGuiItem( i18n( "&Add" ), "bookmark-new") );
-  } else {
-    setButtons( Ok | Cancel );
-    setButtonGuiItem( KDialog::Ok, KGuiItem(i18n( "&Update" )) );
-  }
-
-  setDefaultButton( KDialog::Ok );
-  if (editType == InsertionMode) {
-    setButtonGuiItem( User1, KGuiItem( i18n( "&New Folder..." ), "folder-new") );
-  }
-
-  bool folder = url.isNull();
-
-  m_main = new QWidget( this );
-  setMainWidget( m_main );
-
-  QBoxLayout *vbox = new QVBoxLayout( m_main );
-  vbox->setMargin( 0 );
-  vbox->setSpacing( spacingHint() );
-  KBookmarkEditFields::FieldsSet fs =
-    folder ? KBookmarkEditFields::FolderFieldsSet
-           : KBookmarkEditFields::BookmarkFieldsSet;
-  m_fields = new KBookmarkEditFields(m_main, vbox, fs);
-  m_fields->setName(title);
-  if ( !folder )
-    m_fields->setLocation(url);
-
-  if ( editType == InsertionMode )
-  {
-    m_folderTree = new QTreeWidget(m_main);
-    m_folderTree->setColumnCount(1);
-    m_folderTree->header()->hide();
-    m_folderTree->setSortingEnabled(false);
-    m_folderTree->setSelectionMode( QTreeWidget::SingleSelection );
-    m_folderTree->setSelectionBehavior( QTreeWidget::SelectRows );
-    m_folderTree->setMinimumSize( 60, 100 );
-
-    vbox->addWidget(m_folderTree);
-
-    QTreeWidgetItem *root = new KBookmarkTreeItem(m_folderTree);
-
-    fillGroup( m_folderTree, root, mgr->root(), address );
-
-    connect( m_folderTree, SIGNAL( itemDoubleClicked(QTreeWidgetItem *, int) ),
-             this,         SLOT( slotDoubleClicked(QTreeWidgetItem *) ) );
-    connect( this, SIGNAL( user1Clicked() ), SLOT( slotUser1() ) );
-  }
-  connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
-  connect(this,SIGNAL(cancelClicked()),this,SLOT(slotCancel()));
-}
-
-void KBookmarkEditDialog::slotDoubleClicked( QTreeWidgetItem * item )
-{
-  Q_ASSERT( m_folderTree );
-  m_folderTree->setCurrentItem( item );
-  accept();
-}
-
-void KBookmarkEditDialog::slotOk()
-{
-  accept();
-}
-
-void KBookmarkEditDialog::slotCancel()
-{
-  reject();
-}
-
-QString KBookmarkEditDialog::finalAddress() const
-{
-  Q_ASSERT( m_folderTree );
-  return dynamic_cast<KBookmarkTreeItem *>(m_folderTree->selectedItems().first())->address();
-}
-
-QString KBookmarkEditDialog::finalUrl() const
-{
-  return m_fields->m_url ? m_fields->m_url->text() : QString();
-}
-
-QString KBookmarkEditDialog::finalTitle() const
-{
-  return m_fields->m_title ? m_fields->m_title->text() : QString();
-}
-
-void KBookmarkEditDialog::slotUser1()
-{
-  // kDebug(7043) << "KBookmarkEditDialog::slotUser1";
-  Q_ASSERT( m_folderTree );
-
-  QString address = finalAddress();
-  KBookmarkGroup bm = m_mgr->findByAddress( address ).toGroup();
-  Q_ASSERT(!bm.isNull());
-  Q_ASSERT(m_editType == InsertionMode);
-
-  KBookmarkGroup group = bm.createNewFolder();
-  if ( !group.isNull() )
-  {
-     KBookmarkGroup parentGroup = group.parentGroup();
-     m_mgr->emitChanged( parentGroup );
-     m_folderTree->clear();
-     QTreeWidgetItem *root = new KBookmarkTreeItem(m_folderTree);
-     fillGroup( m_folderTree, root, m_mgr->root(), address );
-   }
-}
-
-void KBookmarkEditDialog::fillGroup( QTreeWidget* view, QTreeWidgetItem * parentItem, const KBookmarkGroup &group, const QString& address)
-{
-  for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
-  {
-    if ( bk.isGroup() )
-    {
-      KBookmarkGroup childGrp = bk.toGroup();
-      QTreeWidgetItem* item = new KBookmarkTreeItem(parentItem, view, childGrp );
-      fillGroup( view, item, childGrp , address );
-      if (childGrp.address() == address)
-      {
-        view->setCurrentItem( item );
-        view->scrollToItem( item );
-      }
-    }
-  }
-}
 
 /********************************************************************/
 /********************************************************************/

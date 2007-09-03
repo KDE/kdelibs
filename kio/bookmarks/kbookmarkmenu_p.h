@@ -31,6 +31,7 @@
 #include <kactionmenu.h>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QTreeWidget>
+#include <QtGui/QLabel>
 
 #include "kbookmark.h"
 #include "kbookmarkimporter.h"
@@ -68,45 +69,6 @@ private:
    QString m_location;
 };
 
-class KBookmarkEditFields {
-public:
-  typedef enum { FolderFieldsSet, BookmarkFieldsSet } FieldsSet;
-  KLineEdit * m_url;
-  KLineEdit * m_title;
-  KBookmarkEditFields(QWidget *main, QBoxLayout *vbox, FieldsSet isFolder);
-  void setName(const QString &str);
-  void setLocation(const QString &str);
-};
-
-class KBookmarkEditDialog : public KDialog
-{
-  Q_OBJECT
-
-public:
-  typedef enum { ModifyMode, InsertionMode } BookmarkEditType;
-
-  KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, BookmarkEditType editType, const QString& address = QString(),
-                       QWidget * = 0, const QString& caption = i18n( "Add Bookmark" ) );
-
-  QString finalUrl() const;
-  QString finalTitle() const;
-  QString finalAddress() const;
-
-protected Q_SLOTS:
-  void slotOk();
-  void slotCancel();
-  void slotUser1();
-  void slotDoubleClicked(QTreeWidgetItem* item);
-
-private:
-  void fillGroup( QTreeWidget* listview, QTreeWidgetItem * parentItem, const KBookmarkGroup &group, const QString& address);
-  QWidget * m_main;
-  KBookmarkEditFields * m_fields;
-  QTreeWidget * m_folderTree;
-  QPushButton * m_button;
-  KBookmarkManager * m_mgr;
-  BookmarkEditType m_editType;
-};
 
 class KBookmarkTreeItem : public QTreeWidgetItem
 {

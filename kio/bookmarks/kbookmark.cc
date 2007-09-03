@@ -101,27 +101,13 @@ QDomElement KBookmarkGroup::nextKnownTag( const QDomElement &start, bool goNext 
 
 KBookmarkGroup KBookmarkGroup::createNewFolder( const QString & text )
 {
-    QString txt( text );
-    if ( text.isEmpty() )
-    {
-        bool ok;
-        QString caption = parentGroup().fullText().isEmpty() ?
-                      i18n( "Create New Bookmark Folder" ) :
-                      i18n( "Create New Bookmark Folder in %1" ,
-                        parentGroup().text() );
-        txt = KInputDialog::getText( caption, i18n( "New folder:" ),
-                      QString(), &ok );
-        if ( !ok )
-            return KBookmarkGroup();
-    }
-
     Q_ASSERT(!element.isNull());
     QDomDocument doc = element.ownerDocument();
     QDomElement groupElem = doc.createElement( "folder" );
     element.appendChild( groupElem );
     QDomElement textElem = doc.createElement( "title" );
     groupElem.appendChild( textElem );
-    textElem.appendChild( doc.createTextNode( txt ) );   
+    textElem.appendChild( doc.createTextNode( text ) );
     return KBookmarkGroup(groupElem);
 
 }

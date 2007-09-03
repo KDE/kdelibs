@@ -23,6 +23,7 @@
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkimporter.h"
+#include "kbookmarkdialog.h"
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
@@ -32,12 +33,12 @@
 #include <klocale.h>
 #include <QtGui/QApplication>
 #include <kconfiggroup.h>
-#include <qdatetime.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <QtDBus/QtDBus>
 #include <QtCore/QTextStream>
 #include "kbookmarkmanageradaptor_p.h"
+
 
 class KBookmarkManagerList : public QList<KBookmarkManager *>
 {
@@ -397,81 +398,6 @@ KBookmark KBookmarkManager::findByAddress( const QString & address )
     return result;
  }
 
-static QString pickUnusedTitle( const KBookmarkGroup &parentBookmark,
-                                const QString &title, const QString &url
-) {
-    // If this title is already used, we'll try to find something unused.
-    KBookmark ch = parentBookmark.first();
-    int count = 1;
-    QString uniqueTitle = title;
-    do
-    {
-        while ( !ch.isNull() )
-        {
-            if ( uniqueTitle == ch.text() )
-            {
-                // Title already used !
-                if ( url != ch.url().url() )
-                {
-                    uniqueTitle = title + QString(" (%1)").arg(++count);
-                    // New title -> restart search from the beginning
-                    ch = parentBookmark.first();
-                    break;
-                }
-                else
-                {
-                    // this exact URL already exists
-                    return QString();
-                }
-            }
-            ch = parentBookmark.next( ch );
-        }
-    } while ( !ch.isNull() );
-
-    return uniqueTitle;
-}
-
-KBookmarkGroup KBookmarkManager::addBookmarkDialog(
-                     const QString & _url, const QString & _title,
-                     const QString & _parentBookmarkAddress //TODO parametr to override m_advancedaddbookmark
-) {
-    QString url = _url;
-    QString title = _title;
-    QString parentBookmarkAddress = _parentBookmarkAddress;
-
-    if ( url.isEmpty() )
-    {
-        KMessageBox::error( 0L, i18n("Cannot add bookmark with empty URL."));
-        return KBookmarkGroup();
-    }
-
-    if ( title.isEmpty() )
-        title = url;
-
-    if ( KBookmarkSettings::self()->m_advancedaddbookmark)
-    {
-        KBookmarkEditDialog dlg( title, url, this, KBookmarkEditDialog::InsertionMode, parentBookmarkAddress );
-        if ( dlg.exec() != KDialog::Accepted )
-            return KBookmarkGroup();
-        title = dlg.finalTitle();
-        url = dlg.finalUrl();
-        parentBookmarkAddress = dlg.finalAddress();
-    }
-
-    KBookmarkGroup parentBookmark;
-    parentBookmark = findByAddress( parentBookmarkAddress ).toGroup();
-    Q_ASSERT( !parentBookmark.isNull() );
-
-    QString uniqueTitle = pickUnusedTitle( parentBookmark, title, url ); //TODO pickUnusedTitle is used only here. Why?
-    if ( !uniqueTitle.isNull() )
-    {
-        parentBookmark.addBookmark( uniqueTitle, KUrl( url ));
-        emitChanged(parentBookmark);
-    }
-
-    return parentBookmark;
-}
-
 void KBookmarkManager::emitChanged()
 {
     emitChanged(root());
@@ -647,4 +573,8 @@ bool KBookmarkOwner::enableOption(BookmarkOption action) const
     return false;
 }
 
+KBookmarkDialog * KBookmarkOwner::bookmarkDialog(KBookmarkManager * mgr, QWidget * parent)
+{
+    return new KBookmarkDialog(mgr, parent);
+}
 #include "kbookmarkmanager.moc"

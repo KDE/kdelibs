@@ -26,10 +26,19 @@
 #include <QtCore/QPair>
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
+
+#include <kurl.h>
 #include "kbookmark.h"
 
 class KBookmarkGroup;
 class QDBusMessage;
+
+class QTreeWidgetItem;
+class QLabel;
+class QTreeWidget;
+class KLineEdit;
+class KMenu;
+class KBookmarkDialog;
 
 /**
  * This class implements the reading/writing of bookmarks in XML.
@@ -219,14 +228,9 @@ public:
      */
     QDomDocument internalDocument() const;
 
-    KBookmarkGroup addBookmarkDialog( const QString & _url, const QString & _title,
-                                      const QString & _parentBookmarkAddress = QString() );
-    //TODO virtual, bool advanced
-
 public Q_SLOTS:
     void slotEditBookmarks();
     void slotEditBookmarksAtAddress( const QString& address );
-    //virtual?, default parameter?
 
     /**
      * Reparse the whole bookmarks file and notify about the change
@@ -370,6 +374,9 @@ public:
    * Called if a bookmark is selected. You need to override this.
    */
   virtual void openBookmark(const KBookmark & bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km) = 0;
+
+
+  virtual KBookmarkDialog * bookmarkDialog(KBookmarkManager * mgr, QWidget *parent);
 
 private:
   class KBookmarkOwnerPrivate;

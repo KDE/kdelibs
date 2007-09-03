@@ -327,9 +327,10 @@ public:
 
     /**
      * Create a new bookmark folder, as the last child of this group
-     * @param text for the folder. If empty, the user will be queried for it.
+     * @param text for the folder.
+     * If you want an dialog use KBookmarkDialog
      */
-    KBookmarkGroup createNewFolder( const QString & text = QString() );
+    KBookmarkGroup createNewFolder( const QString & text );
     /**
      * Create a new bookmark separator
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
