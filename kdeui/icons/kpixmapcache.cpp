@@ -147,14 +147,17 @@ KPCMemoryDevice::KPCMemoryDevice(char* start, quint32* size, quint32 available) 
     stream >> *mSize;
 #else
     // Load up-to-date size from the memory
-    quint32 oldsize = *mSize;
-    char buf[4];
-    uchar* p = (uchar*)mSize;
-    memcpy(buf, mMemory + 21, 4);
-    *p++ = buf[3];
-    *p++ = buf[2];
-    *p++ = buf[1];
-    *p   = buf[0];
+    if (QSysInfo::ByteOrder == QSysInfo::LittleEndian) {
+        char buf[4];
+        uchar* p = (uchar*)mSize;
+        memcpy(buf, mMemory + mSizeEntryOffset, 4);
+        *p++ = buf[3];
+        *p++ = buf[2];
+        *p++ = buf[1];
+        *p   = buf[0];
+    } else {
+        *mSize = *((quint32*)(mMemory + mSizeEntryOffset));
+    }
 #endif
 
     mInitialSize = *mSize;
