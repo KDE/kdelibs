@@ -1266,17 +1266,9 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
         return ftext;
     }
     else if (oel.handling == OpenEl::Ignored) {
-        if (oel.name == "br") {
-            // Close <br> in-place, or replace with \n if not rich text.
-            if (fmt == Kuit::Fmt::Rich) {
-                return '<' + oel.name + "/>";
-            }
-            else {
-                return QString('\n');
-            }
-            // TODO: It is probably better to avoid special handling of <br>,
-            // either by introducing a KUIT counterpart,
-            // or by declaring <br> itself as KUIT tag as well.
+        if (oel.name == "br" || oel.name == "hr") {
+            // Close these tags in-place (just for looks).
+            return '<' + oel.name + "/>";
         }
         else {
             return   '<' + oel.name + oel.astr + '>'
