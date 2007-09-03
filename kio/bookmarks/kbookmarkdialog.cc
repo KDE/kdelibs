@@ -186,7 +186,7 @@ void KBookmarkDialog::slotButtonClicked(int button)
             KBookmarkGroup parent = parentBookmark();
             if(m_title->text().isEmpty())
                 m_title->setText("New Bookmark");
-            m_bm = parent.addBookmark(m_title->text(), KUrl(m_title->text()));
+            m_bm = parent.addBookmark(m_title->text(), KUrl(m_url->text()));
             save(m_mode, m_bm);
             m_mgr->emitChanged(parent);
         } else if(m_mode == NewMultipleBookmarks) {
