@@ -92,8 +92,6 @@ void KListWidgetSearchLine::updateSearch( const QString &s )
 
     QListWidgetItem *currentItem = lw->currentItem();
 
-    QListWidgetItem *item = 0;
-
     // Remove Non-Matching items, add them them to hidden list
     int index = 0;
     while ( index < lw->count() ) {
@@ -110,12 +108,15 @@ void KListWidgetSearchLine::updateSearch( const QString &s )
     }
 
     // Add Matching items, remove from hidden list
-    QListWidgetItemList::iterator it = hi->begin();
-    while ( it != hi->end() ) {
-        item = *it;
-        ++it;
-        if ( itemMatches( item, search ) )
+    index = 0;
+    while ( index < hi->count() ) {
+        QListWidgetItem *item = hi->at(index); 
+        
+        if ( itemMatches( item, search ) ) {
             showItem( item );
+        } else {
+            index++;
+        }
     }
 
     lw->sortItems();
