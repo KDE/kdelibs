@@ -48,6 +48,7 @@
 
 #ifndef KONQ_EMBEDDED
 #include <kbookmarkmanager.h>
+#include <kbookmarkdialog.h>
 #endif
 #include <kglobalsettings.h>
 #include <assert.h>
@@ -2829,7 +2830,8 @@ ValueImp *ExternalFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, cons
           KGuiItem(i18n("Insert")), KGuiItem(i18n("Disallow"))) == KMessageBox::Yes)
     {
       KBookmarkManager *mgr = KBookmarkManager::userBookmarksManager();
-      mgr->addBookmarkDialog(url,title);
+      KBookmarkDialog dlg(mgr, 0);
+      dlg.addBookmark(title, url);
     }
 #else
     return Undefined();
