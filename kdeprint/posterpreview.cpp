@@ -23,7 +23,7 @@
 #include <kprocess.h>
 #include <kprinter.h>
 #include <klocale.h>
-#include <kglobalsettings.h>
+#include <kcolorscheme.h>
 
 #include <QtGui/QTextObjectInterface>
 #include <QtGui/QCursor>
@@ -155,11 +155,17 @@ void PosterPreview::paintEvent( QPaintEvent * )
 				for ( int j=0; j<m_cols; j++, x+=m_pw )
 				{
 					bool selected = ( m_selectedpages.contains( i*m_cols+j+1 ) );
-					painter.fillRect( x+1, y+1, m_pw-2, m_ph-2, ( selected ? KGlobalSettings::highlightColor() : Qt::white ) );
+                                        QBrush backBrush(Qt::white);
+                                        QBrush fillBrush(Qt::lightGray);
+                                        if ( selected ) {
+                                            backBrush = KColorScheme(QPalette::Active, KColorScheme::Selection).background();
+                                            fillBrush = QBrush(backBrush.color().darker(160));
+                                        }
+					painter.fillRect( x+1, y+1, m_pw-2, m_ph-2, backBrush );
 					painter.drawRect( x, y, m_pw, m_ph );
 					if ( pw > 0 && ph > 0 )
 						painter.fillRect( x+m_mw+px, y+m_mh+py, qMin( pw, m_pw-2*m_mw-px ), qMin( ph, m_ph-2*m_mh-py ),
-								( selected ? KGlobalSettings::highlightColor().dark( 160 ) : Qt::lightGray ) );
+								fillBrush );
 					painter.setPen( Qt::DotLine );
 					painter.drawRect( x+m_mw, y+m_mh, m_pw-2*m_mw, m_ph-2*m_mh );
 					painter.setPen( Qt::SolidLine );

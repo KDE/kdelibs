@@ -177,7 +177,7 @@ KXmlCommandManager* KMFactory::commandManager()
 void KMFactory::createManager()
 {
 	loadFactory();
-	if (m_factory) m_manager = (KMManager*)m_factory->create(this,"KMManager");
+	if (m_factory) m_manager = m_factory->create<KMManager>(this);
 	if (!m_manager) {
 		m_manager = new KMManager(this );
 	}
@@ -187,7 +187,7 @@ void KMFactory::createManager()
 void KMFactory::createJobManager()
 {
 	loadFactory();
-	if (m_factory) m_jobmanager = (KMJobManager*)m_factory->create(this,"KMJobManager");
+	if (m_factory) m_jobmanager = m_factory->create<KMJobManager>(this);
 	if (!m_jobmanager) {
 		m_jobmanager = new KMJobManager( this );
 	}
@@ -198,7 +198,7 @@ void KMFactory::createJobManager()
 void KMFactory::createUiManager()
 {
 	loadFactory();
-	if (m_factory) m_uimanager = (KMUiManager*)m_factory->create(this,"KMUiManager");
+	if (m_factory) m_uimanager = m_factory->create<KMUiManager>(this);
 	if (!m_uimanager) {
 		m_uimanager = new KMUiManager(this );
 	}
@@ -208,7 +208,7 @@ void KMFactory::createUiManager()
 void KMFactory::createPrinterImpl()
 {
 	loadFactory();
-	if (m_factory) m_implementation = (KPrinterImpl*)m_factory->create(this,"KPrinterImpl");
+	if (m_factory) m_implementation = m_factory->create<KPrinterImpl>(this);
 	if (!m_implementation) {
 		m_implementation = new KPrinterImpl( this );
 	}
