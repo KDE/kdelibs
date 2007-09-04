@@ -74,11 +74,12 @@ namespace KUnitTest
             {
                 // strip the .la extension
                 module.truncate(module.length()-3);
-                KLibFactory *factory = KLibLoader::self()->factory(module.toLocal8Bit());
+                KPluginLoader loader(module.toLocal8Bit());
+                KPluginFactory *factory = loader.factory();
                 if ( factory )
-                    factory->create();
+                    factory->create<QObject>();
                 else {
-                    kWarning() << "\tError loading " << module << " : " << KLibLoader::self()->lastErrorMessage();
+                    kWarning() << "\tError loading " << module << " : " << loader.errorString();
                     ::exit( 1 );
                 }
             }
