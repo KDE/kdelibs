@@ -238,10 +238,21 @@ KPluginFactory* KLibrary::factory(const char* factoryname)
     if (!factory)
         return 0;
 
+    connect(factory, SIGNAL(destroyed()), this, SLOT(slotFactoryDestroyed()));
+
     connect(factory, SIGNAL(objectCreated(QObject *)),
              this, SLOT(slotObjectCreated(QObject * )));
 
     return factory;
+}
+
+void KLibrary::slotFactoryDestroyed()
+{
+    QList<QByteArray> keys = d->factories.keys(static_cast<KLibFactory *>(sender()));
+
+    foreach(const QByteArray key, keys) {
+        d->factories.remove(key);
+    }
 }
 
 void *KLibrary::resolveSymbol( const char* symname ) const
@@ -514,6 +525,7 @@ QString KLibLoader::lastErrorMessage() const
 
 void KLibLoader::unloadLibrary( const QString &libname )
 {
+#if 0
   KLIBLOADER_PRIVATE;
   if (!d->m_libs.contains(libname))
     return;
@@ -529,6 +541,7 @@ void KLibLoader::unloadLibrary( const QString &libname )
   disconnect( wrap->lib, SIGNAL( destroyed() ),
               this, SLOT( slotLibraryDestroyed() ) );
   d->close_pending( wrap );
+#endif
 }
 
 KPluginFactory* KLibLoader::factory( const QString &_name, QLibrary::LoadHints hint )

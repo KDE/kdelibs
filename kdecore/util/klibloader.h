@@ -106,6 +106,7 @@ private Q_SLOTS:
     void slotObjectCreated( QObject *obj );
     void slotObjectDestroyed();
     void slotTimeout();
+    void slotFactoryDestroyed();
 
 private:
     /**
