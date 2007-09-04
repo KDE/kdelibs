@@ -1019,8 +1019,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     l = new QLabel( i18n("Location:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    l = new KSqueezedTextLabel( d->m_frame );
-    l->setText( directory );
+    l = new KSqueezedTextLabel( directory, d->m_frame );
     grid->addWidget(l, curRow++, 2);
   }
 
