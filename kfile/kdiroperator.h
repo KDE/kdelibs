@@ -106,11 +106,11 @@ public:
      */
     enum ActionType
     {
-        SortActions = 1,
-        ViewActions = 2,
-        NavActions = 4,
-        FileActions = 8,
-        AllActions = 15
+        SortActions =  1,
+        ViewActions =  2,
+        NavActions  =  4,
+        FileActions =  8,
+        AllActions  = 15
     };
 
     /**
@@ -737,6 +737,11 @@ protected Q_SLOTS:
     void sortByDate();
 
     /**
+     * Changes sorting to sort by date
+     */
+    void sortByType();
+
+    /**
      * Changes sorting to reverse sorting
      */
     void sortReversed();
@@ -804,26 +809,12 @@ private:
 
     bool openUrl(const KUrl &url, bool keep = false, bool reload = false);
 
-private:
-    // actions for the popupmenus
-    KActionMenu *m_actionMenu;
+    /**
+     * Returns the column used by KDirModel which must be
+     * sorted to comply with \a sortFlags.
+     */
+    int columnForSortFlags(QDir::SortFlags sortFlags) const;
 
-    // ### clean up all those -- we have them all in the actionMenu!
-    KActionMenu *m_sortActionMenu;
-    QAction *m_byNameAction;
-    QAction *m_byDateAction;
-    QAction *m_bySizeAction;
-    KToggleAction *m_reverseAction;
-    KToggleAction *m_dirsFirstAction;
-
-    KActionMenu *m_viewActionMenu;
-    QAction *m_shortAction;
-    QAction *m_detailedAction;
-    KToggleAction *m_showHiddenAction;
-    KToggleAction *m_separateDirsAction;
-
-    KActionCollection *m_actionCollection;
-    KActionCollection *m_viewActionCollection;
 
 private Q_SLOTS:
     /**
@@ -833,13 +824,13 @@ private Q_SLOTS:
     void slotSimpleView();
     void slotToggleHidden(bool);
 
-    void slotSeparateDirs();
     void slotDefaultPreview();
     void togglePreview(bool);
 
     void slotSortByName();
     void slotSortBySize();
     void slotSortByDate();
+    void slotSortByType();
     void slotSortReversed();
     void slotToggleDirsFirst();
     void slotToggleIgnoreCase();

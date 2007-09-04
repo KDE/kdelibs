@@ -338,8 +338,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     menu->addAction( showBookmarksAction );
     coll->action( "preview" )->setShortcut( QKeySequence(Qt::Key_F11) );
     menu->addAction( coll->action( "preview" ));
-    coll->action( "separate dirs" )->setShortcut( QKeySequence(Qt::Key_F12) );
-    menu->addAction( coll->action( "separate dirs" ));
 
     menu->setDelayed( false );
     connect( menu->menu(), SIGNAL( aboutToShow() ),
