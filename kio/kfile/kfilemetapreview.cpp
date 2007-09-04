@@ -11,7 +11,8 @@
 #include <QtGui/QLayout>
 
 #include <kio/previewjob.h>
-#include <klibloader.h>
+#include <kpluginloader.h>
+#include <kpluginfactory.h>
 #include <kimagefilepreview.h>
 #include <kmimetype.h>
 
@@ -188,13 +189,13 @@ void KFileMetaPreview::clearPreviewProviders()
 // static
 KPreviewWidgetBase * KFileMetaPreview::createAudioPreview( QWidget *parent )
 {
-    KLibFactory *factory = KLibLoader::self()->factory( "kfileaudiopreview" );
+    KPluginFactory *factory = KPluginLoader( "kfileaudiopreview" ).factory();
     if ( !factory )
     {
         s_tryAudioPreview = false;
         return 0L;
     }
-    KPreviewWidgetBase* w = dynamic_cast<KPreviewWidgetBase*>( factory->create( parent ) );
+    KPreviewWidgetBase* w = factory->create<KPreviewWidgetBase>( parent );
     if ( w )
         w->setObjectName( "kfileaudiopreview" );
     return w;

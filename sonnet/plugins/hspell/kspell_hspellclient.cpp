@@ -23,16 +23,17 @@
 
 #include "kspell_hspelldict.h"
 
-#include <kgenericfactory.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <kdebug.h>
 
-typedef KGenericFactory<HSpellClient> HSpellClientFactory;
-K_EXPORT_COMPONENT_FACTORY( kspell_hspell, HSpellClientFactory( "kspell_hspell" )  )
+K_PLUGIN_FACTORY( HSpellClientFactory, registerPlugin<HSpellClient>(); )
+K_EXPORT_PLUGIN( HSpellClientFactory( "kspell_hspell" ) )
 
 using namespace Sonnet;
 
 HSpellClient::HSpellClient(QObject *parent,
-                           const QStringList &/* args */)
+                           const QVariantList &/* args */)
     : Client(parent)
 {
 }

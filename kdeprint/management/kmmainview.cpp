@@ -48,7 +48,8 @@
 #include <ktoolbar.h>
 #include <kdebug.h>
 #include <kmenu.h>
-#include <klibloader.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <kdialog.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
@@ -924,12 +925,12 @@ void KMMainView::slotToolSelected(QAction *action)
 	libname.prepend("kdeprint_tool_");
 	if (m_current && !m_current->device().isEmpty() && !libname.isEmpty())
 	{
-		KLibFactory	*factory = KLibLoader::self()->factory(libname.toLocal8Bit());
+		KPluginFactory	*factory = KPluginLoader(libname.toLocal8Bit()).factory();
 		if (factory)
 		{
-			QStringList	args;
+			QVariantList	args;
 			args << m_current->device() << m_current->printerName();
-			KDialog *dlg = static_cast<KDialog*>(factory->create(this, 0, args));
+			KDialog *dlg = factory->create<KDialog>(this, args);
 			if (dlg)
 				dlg->exec();
 			delete dlg;

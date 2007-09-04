@@ -23,8 +23,8 @@
 #include "spellerplugin_p.h"
 #include "client_p.h"
 
-#include <QtCore/QObject>
 #include <QtCore/QSet>
+#include <QtCore/QVariantList>
 #include <enchant/enchant.h>
 
 namespace Sonnet {
@@ -36,7 +36,7 @@ class QSpellEnchantClient : public Sonnet::Client
 {
     Q_OBJECT
 public:
-    QSpellEnchantClient(QObject *parent, const QStringList & /* args */);
+    QSpellEnchantClient(QObject *parent, const QVariantList & /* args */);
     ~QSpellEnchantClient();
 
     virtual int reliability() const {

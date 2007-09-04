@@ -45,7 +45,8 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
-#include <klibloader.h>
+#include <kpluginloader.h>
+#include <kpluginfactory.h>
 #include <kparts/part.h>
 //#include <kio/netaccess.h>
 //#include <klocale.h>
@@ -460,7 +461,7 @@ QWidget* FormModule::createFileWidget(QWidget* parent, const QString& startDirOr
 QObject* FormModule::loadPart(QWidget* parent, const QString& name, const QUrl& url)
 {
     //name e.g. "libkghostview"
-    KLibFactory* factory = KLibLoader::self()->factory( name.toLatin1() );
+    KPluginFactory* factory = KPluginLoader( name.toLatin1() ).factory();
     if( ! factory ) {
         kWarning() << QString("Kross::FormModule::loadPart: No such library \"%1\"").arg(name);
         return 0;

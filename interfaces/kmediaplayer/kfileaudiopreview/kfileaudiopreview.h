@@ -35,7 +35,8 @@ class KFileAudioPreview : public KPreviewWidgetBase
     Q_OBJECT
 
 public:
-    KFileAudioPreview( QWidget *parent = 0 );
+    KFileAudioPreview( QWidget *parent = 0,
+                       const QVariantList &args = QVariantList() );
     ~KFileAudioPreview();
 
 public Q_SLOTS:

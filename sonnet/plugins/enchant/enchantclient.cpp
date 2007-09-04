@@ -20,11 +20,12 @@
 #include "enchantclient.h"
 #include "enchantdict.h"
 
-#include <kgenericfactory.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <QtCore/QDebug>
 
-typedef KGenericFactory<QSpellEnchantClient> EnchantClientFactory;
-K_EXPORT_COMPONENT_FACTORY(kspell_enchant, EnchantClientFactory("kspell_enchant"))
+K_PLUGIN_FACTORY(EnchantClientFactory, registerPlugin<QSpellEnchantClient>();)
+K_EXPORT_PLUGIN(EnchantClientFactory("kspell_enchant"))
 
 using namespace Sonnet;
 
@@ -44,7 +45,7 @@ static void enchantDictDescribeFn(const char * const lang_tag,
 
 }
 
-QSpellEnchantClient::QSpellEnchantClient(QObject *parent, const QStringList& /* args */)
+QSpellEnchantClient::QSpellEnchantClient(QObject *parent, const QVariantList& /* args */)
     : Client(parent)
 {
     m_broker = enchant_broker_init();

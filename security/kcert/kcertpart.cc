@@ -19,7 +19,8 @@
  */
 
 #include "kcertpart.h"
-#include <kparts/genericfactory.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <QtGui/QFrame>
@@ -46,7 +47,8 @@
 #include <kparts/browserinterface.h>
 #include <kmimetype.h>
 
-K_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
+K_PLUGIN_FACTORY( KCertPartFactory, registerPlugin<KCertPart>(); )
+K_EXPORT_PLUGIN( KCertPartFactory("KCertPart") )
 
 
 KX509Item::KX509Item(Q3ListViewItem *parent, KSSLCertificate *x) :
@@ -126,12 +128,11 @@ class KCertPartPrivate {
 
 KCertPart::KCertPart(QWidget *parentWidget,
 					 QObject *parent,
-					 const QStringList & /*args*/ )
+					 const QVariantList & /*args*/ )
     : KParts::ReadWritePart(parent),
     d(new KCertPartPrivate)
 {
-    KComponentData componentData("KCertPart");
-    setComponentData(componentData);
+    setComponentData(KCertPartFactory::componentData());
     QGridLayout *grid;
 
 

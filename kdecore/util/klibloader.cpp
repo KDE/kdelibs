@@ -248,7 +248,7 @@ KPluginFactory* KLibrary::factory(const char* factoryname)
 
 void KLibrary::slotFactoryDestroyed()
 {
-    QList<QByteArray> keys = d->factories.keys(static_cast<KLibFactory *>(sender()));
+    QList<QByteArray> keys = d->factories.keys(static_cast<KPluginFactory *>(sender()));
 
     foreach(const QByteArray key, keys) {
         d->factories.remove(key);

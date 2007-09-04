@@ -23,7 +23,7 @@
 #define KSPELL_HSPELLCLIENT_H
 
 #include "client_p.h"
-#include <QtCore/QObject>
+#include <QtCore/QVariantList>
 
 /* libhspell is a C library and it does not have #ifdef __cplusplus */
 extern "C" {
@@ -39,7 +39,7 @@ class HSpellClient : public Sonnet::Client
 {
     Q_OBJECT
 public:
-    HSpellClient(QObject *parent, const QStringList &/* args */);
+    HSpellClient(QObject *parent, const QVariantList &/* args */);
     ~HSpellClient();
 
     virtual int reliability() const {

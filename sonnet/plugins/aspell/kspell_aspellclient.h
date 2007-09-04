@@ -22,7 +22,7 @@
 #define KSPELL_ASPELLCLIENT_H
 
 #include "client_p.h"
-#include <QtCore/QObject>
+#include <QtCore/QVariantList>
 
 #include "aspell.h"
 
@@ -35,7 +35,7 @@ class ASpellClient : public Sonnet::Client
 {
     Q_OBJECT
 public:
-    ASpellClient(QObject *parent, const QStringList & /* args */);
+    ASpellClient(QObject *parent, const QVariantList & /* args */);
     ~ASpellClient();
 
     virtual int reliability() const {

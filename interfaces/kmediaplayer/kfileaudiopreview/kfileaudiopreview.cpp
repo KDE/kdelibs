@@ -26,10 +26,10 @@
 #include <khbox.h>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <klibloader.h>
 #include <klocale.h>
 #include <kmimetype.h>
-#include <kparts/componentfactory.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 
 #include <config-kfile.h>
 
@@ -41,17 +41,8 @@
 #include "mediacontrols.h"
 #include <kconfiggroup.h>
 
-class KFileAudioPreviewFactory : public KLibFactory
-{
-protected:
-    virtual QObject *createObject( QObject *parent,
-                                   const char * /*className*/, const QStringList & )
-    {
-        return new KFileAudioPreview( dynamic_cast<QWidget*>( parent ) );
-    }
-};
-
-K_EXPORT_COMPONENT_FACTORY( kfileaudiopreview, KFileAudioPreviewFactory )
+K_PLUGIN_FACTORY( KFileAudioPreviewFactory, registerPlugin<KFileAudioPreview>(); )
+K_EXPORT_PLUGIN( KFileAudioPreviewFactory )
 
 
 ///////////////////////////////////////////////////////////////////
@@ -76,7 +67,7 @@ public:
 };
 
 
-KFileAudioPreview::KFileAudioPreview( QWidget *parent )
+KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     : KPreviewWidgetBase( parent )
     , d( new Private )
 {

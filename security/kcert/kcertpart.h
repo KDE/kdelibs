@@ -24,6 +24,7 @@
 
 #include <kparts/part.h>
 #include <Qt3Support/Q3ListView>
+#include <QtCore/QVariantList>
 
 class KSSLCertBox;
 class QFrame;
@@ -66,7 +67,7 @@ Q_OBJECT
 public:
   explicit KCertPart(QWidget *parentWidget,
             QObject *parent = 0L,
-	    const QStringList &args = QStringList() );
+	    const QVariantList &args = QVariantList() );
   virtual ~KCertPart();
 
   virtual void setReadWrite(bool rw);

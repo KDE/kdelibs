@@ -26,7 +26,8 @@
 
 #include <kparts/part.h>
 #include <kaction.h>
-#include <klibloader.h>
+#include <kpluginloader.h>
+#include <kpluginfactory.h>
 #include <kmimetypetrader.h>
 #include <krun.h>
 #include <kapplication.h>
@@ -105,22 +106,22 @@ public:
 	bool			previewonly_;
 };
 
-static KLibFactory* componentFactory()
+static KPluginFactory* componentFactory()
 {
 	kDebug(500) << "kdeprint: querying trader for 'application/postscript' service";
-	KLibFactory	*factory(0);
+	KPluginFactory	*factory(0);
 	KService::List offers = KMimeTypeTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"));
 	for (KService::List::ConstIterator it = offers.begin(); it != offers.end(); ++it)
 	{
 		KService::Ptr	service = *it;
-		factory = KLibLoader::self()->factory(QFile::encodeName(service->library()));
+		factory = KPluginLoader(QFile::encodeName(service->library())).factory();
 		if (factory)
 			break;
 	}
 	if (!factory)
 	{
 		// nothing has been found, try to load directly the KGhostview part
-		factory = KLibLoader::self()->factory("libkghostviewpart");
+		factory = KPluginLoader("libkghostviewpart").factory();
 	}
 	return factory;
 }
@@ -184,12 +185,12 @@ KPrintPreview::~KPrintPreview()
 	delete d;
 }
 
-void KPrintPreview::initView(KLibFactory *factory)
+void KPrintPreview::initView(KPluginFactory *factory)
 {
 	// load the component
-	QStringList args;
+	QVariantList args;
 	args << "Print/Preview";
-	d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "KParts::ReadOnlyPart", args);
+	d->gvpart_ = factory->create<KParts::ReadOnlyPart>(d->mainwidget_, args);
 
 	// populate the toolbar
 	if (d->previewonly_)
@@ -265,7 +266,7 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 
 	KConfig *cf = KMFactory::self()->printConfig();
 	KConfigGroup conf = cf->group("General");
-	KLibFactory	*factory(0);
+	KPluginFactory	*factory(0);
 	bool	externalPreview = conf.readEntry("ExternalPreview", false);
 	QWidget	*parentW = QWidget::find(parentId);
 	QString	exe;

@@ -37,7 +37,8 @@
 #include <config-kfile.h>
 #include <krecentdocument.h>
 #include <kimagefilepreview.h>
-#include <klibloader.h>
+#include <kpluginloader.h>
+#include <kpluginfactory.h>
 #include "kabstractfilemodule.h"
 
 #ifdef Q_WS_X11
@@ -50,11 +51,16 @@ static KAbstractFileModule* s_module = 0;
 static KAbstractFileModule* fileModule()
 {
     if (!s_module) {
-        int error = 0;
         // TODO fix memleak -- qApp post routine for deleting the module ?
-        s_module = KLibLoader::createInstance<KAbstractFileModule>( "libkfilemodule", 0, QStringList(), &error );
-        if ( error ) {
-            kWarning() << "KFileDialog wasn't able to find libkfilemodule (error " << error << ") " << KLibLoader::self()->lastErrorMessage();
+        KPluginLoader loader("libkfilemodule");
+        KPluginFactory *factory = loader.factory();
+        if (!factory) {
+            kWarning() << "KFileDialog wasn't able to find libkfilemodule: " << loader.errorString();
+        } else {
+            s_module = factory->create<KAbstractFileModule>();
+            if (!s_module) {
+                kWarning() << "An error occurred while loading libkfilemodule";
+            }
         }
     }
     return s_module;

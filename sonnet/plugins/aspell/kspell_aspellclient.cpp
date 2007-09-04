@@ -22,15 +22,16 @@
 
 #include "kspell_aspelldict.h"
 
-#include <kgenericfactory.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <kdebug.h>
 
-typedef KGenericFactory<ASpellClient> ASpellClientFactory;
-K_EXPORT_COMPONENT_FACTORY( kspell_aspell, ASpellClientFactory( "kspell_aspell" )  )
+K_PLUGIN_FACTORY( ASpellClientFactory, registerPlugin<ASpellClient>(); )
+K_EXPORT_PLUGIN( ASpellClientFactory( "kspell_aspell" ) )
 
 using namespace Sonnet;
 
-ASpellClient::ASpellClient( QObject *parent, const QStringList& /* args */  )
+ASpellClient::ASpellClient( QObject *parent, const QVariantList& /* args */  )
     : Client( parent )
 {
     m_config = new_aspell_config();

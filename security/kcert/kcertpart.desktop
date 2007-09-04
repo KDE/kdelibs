@@ -76,5 +76,5 @@ Name[ta]=கேசான்றிதழ்பகுதி
 Name[te]=కెసెర్ట్ పార్ట్
 Name[x-test]=xxKCertPartxx
 ServiceTypes=KParts/ReadWritePart
-X-KDE-Library=libkcertpart
+X-KDE-Library=kcertpart
 InitialPreference=15
