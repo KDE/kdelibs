@@ -451,7 +451,7 @@ K3ListView::K3ListView( QWidget *parent )
 
   connect (this, SIGNAL (menuShortCutPressed (K3ListView*, Q3ListViewItem*)),
                    this, SLOT (emitContextMenu (K3ListView*, Q3ListViewItem*)));
-  d->alternateBackground = KGlobalSettings::alternateBackgroundColor();
+  d->alternateBackground = KColorScheme(QPalette::Active, KColorScheme::View).background(KColorScheme::AlternateBackground).color();
 }
 
 K3ListView::~K3ListView()
@@ -740,7 +740,7 @@ void K3ListView::leaveEvent( QEvent *e )
 bool K3ListView::event( QEvent *e )
 {
   if (e->type() == QEvent::ApplicationPaletteChange)
-    d->alternateBackground=KGlobalSettings::alternateBackgroundColor();
+    d->alternateBackground=KColorScheme(QPalette::Active, KColorScheme::View).background(KColorScheme::AlternateBackground).color();
 
   return Q3ListView::event(e);
 }
