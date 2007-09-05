@@ -21,7 +21,7 @@
 #include "kprinter.h"
 #include "kprinterimpl.h"
 #include "kprintdialog.h"
-#include "kprintpreview_p.h"
+#include "kprintpreview.h"
 #include "kmfactory.h"
 #include "kmuimanager.h"
 #include "kmmanager.h"

@@ -17,9 +17,9 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "droptionview_p.h"
+#include "droptionview.h"
 #include "driver.h"
-#include "driveritem_p.h"
+#include "driveritem.h"
 
 #include <math.h>
 #include <QtGui/QLineEdit>

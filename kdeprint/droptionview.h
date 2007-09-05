@@ -34,6 +34,9 @@ class QTreeWidgetItem;
 class DrBase;
 class DriverItem;
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class OptionBaseView : public QWidget
 {
 	Q_OBJECT
@@ -49,6 +52,9 @@ protected:
 	bool	blockSS;
 };
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class OptionNumericView : public OptionBaseView
 {
 	Q_OBJECT
@@ -68,6 +74,9 @@ private:
 	bool		m_integer;
 };
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class OptionStringView : public OptionBaseView
 {
 public:
@@ -79,6 +88,9 @@ private:
 	QLineEdit	*m_edit;
 };
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class OptionListView : public OptionBaseView
 {
 	Q_OBJECT
@@ -95,6 +107,9 @@ private:
 	QStringList	m_choices;
 };
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class OptionBooleanView : public OptionBaseView
 {
 	Q_OBJECT
@@ -113,6 +128,9 @@ private:
 	QStringList	m_choices;
 };
 
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
 class DrOptionView : public QWidget
 {
 	Q_OBJECT

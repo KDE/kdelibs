@@ -24,8 +24,8 @@
 #include "kmmanager.h"
 #include "kmuimanager.h"
 #include "kxmlcommand.h"
-#include "kmspecialmanager_p.h"
-#include "kmthreadjob_p.h"
+#include "kmspecialmanager.h"
+#include "kmthreadjob.h"
 #include "kmprinter.h"
 #include "driver.h"
 

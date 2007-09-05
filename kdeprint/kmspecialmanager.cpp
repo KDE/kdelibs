@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kmspecialmanager_p.h"
+#include "kmspecialmanager.h"
 #include "kmmanager.h"
 #include "kmprinter.h"
 #include "kdeprintcheck.h"

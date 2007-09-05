@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kpfilterpage_p.h"
+#include "kpfilterpage.h"
 #include "kmfactory.h"
 #include "kxmlcommand.h"
 

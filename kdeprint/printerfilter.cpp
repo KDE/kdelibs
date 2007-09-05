@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "printerfilter_p.h"
+#include "printerfilter.h"
 #include "kmprinter.h"
 #include "kmfactory.h"
 

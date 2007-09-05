@@ -19,7 +19,7 @@
 
 #include "kmjobmanager.h"
 #include "kmjob.h"
-#include "kmthreadjob_p.h"
+#include "kmthreadjob.h"
 #include "kmfactory.h"
 
 #include <kdebug.h>

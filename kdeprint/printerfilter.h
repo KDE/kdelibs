@@ -17,41 +17,36 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef MARGINVALUEWIDGET_H
-#define MARGINVALUEWIDGET_H
+#ifndef PRINTERFILTER_H
+#define PRINTERFILTER_H
 
-#include <knuminput.h>
+#include <QtCore/QObject>
+#include <QtCore/QRegExp>
+#include <QtCore/QStringList>
 
-class MarginValueWidget : public KDoubleNumInput
+class KMPrinter;
+
+#ifdef __GNUC__
+#warning rename class or remove from global namespace
+#endif
+class PrinterFilter : QObject
 {
-	Q_OBJECT
 public:
-	enum Mode { Pixels = 0, IN, CM, MM };
-	explicit MarginValueWidget(double value = 18.0, QWidget *parent = 0);
+	PrinterFilter(QObject *parent = 0);
+	~PrinterFilter();
 
-	float margin();
-	int resolution() const;
-	void setResolution(int dpi);
-
-public Q_SLOTS:
-	void setMode(int);
-	void setMargin(float);
-
-Q_SIGNALS:
-	void marginChanged(float);
-
-protected Q_SLOTS:
-	void slotValueChanged(double);
-
-protected:
-	float toPixel(double value, int mode);
-	double toValue(float pix, int mode);
+	bool filter(KMPrinter*);
+	void update();
+	void setEnabled(bool on);
+	bool isEnabled() const;
 
 private:
-	int		m_mode;
-	double	m_dpi;
-	bool	m_block;
-	float m_margin;
+	QRegExp		m_locationRe;
+	QStringList	m_printers;
+	bool		m_enabled;
 };
+
+inline bool PrinterFilter::isEnabled() const
+{ return m_enabled; }
 
 #endif

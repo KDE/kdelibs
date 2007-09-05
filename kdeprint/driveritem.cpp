@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "driveritem_p.h"
+#include "driveritem.h"
 #include "driver.h"
 
 #include <QtGui/QPainter>

@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "marginvaluewidget_p.h"
+#include "marginvaluewidget.h"
 
 #include <math.h>
 #include <kglobal.h>

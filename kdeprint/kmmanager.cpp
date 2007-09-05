@@ -22,8 +22,8 @@
 #include "kmdbentry.h"
 #include "kmfactory.h"
 #include "kmvirtualmanager.h"
-#include "kmspecialmanager_p.h"
-#include "printerfilter_p.h"
+#include "kmspecialmanager.h"
+#include "printerfilter.h"
 #include "kprinter.h"
 
 #include <QtGui/QActionGroup>

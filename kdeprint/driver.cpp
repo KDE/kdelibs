@@ -18,7 +18,7 @@
  **/
 
 #include "driver.h"
-#include "driveritem_p.h"
+#include "driveritem.h"
 
 #include <QtCore/QFile>
 #include <QtCore/QStringList>

@@ -18,8 +18,8 @@
  **/
 
 #include "driverview.h"
-#include "droptionview_p.h"
-#include "driveritem_p.h"
+#include "droptionview.h"
+#include "driveritem.h"
 #include "driver.h"
 
 #include <QtGui/QHeaderView>

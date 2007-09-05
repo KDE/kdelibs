@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kpposterpage_p.h"
-#include "posterpreview_p.h"
+#include "kpposterpage.h"
+#include "posterpreview.h"
 #include "kprinter.h"
 #include "kmfactory.h"
 #include "util.h"
