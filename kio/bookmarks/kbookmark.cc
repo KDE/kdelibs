@@ -116,7 +116,7 @@ KBookmark KBookmarkGroup::createNewSeparator()
 
 bool KBookmarkGroup::moveItem( const KBookmark & bookmark, const KBookmark & after )
 {
-    moveBookmark(bookmark, after);
+    return moveBookmark(bookmark, after);
 }
 
 bool KBookmarkGroup::moveBookmark( const KBookmark & item, const KBookmark & after )
