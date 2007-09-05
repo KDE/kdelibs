@@ -25,9 +25,11 @@
 KPrintProcess::KPrintProcess()
 : KProcess()
 {
-	// redirect everything to a single buffer
-	connect(this,SIGNAL(receivedStderr()),SLOT(slotReceivedStderr()));
-	connect( this, SIGNAL( processExited() ), SLOT( slotExited() ) );
+	setOutputChannelMode( MergedChannels );
+	connect(this, SIGNAL(readyReadStandardError()),
+		SLOT(slotReadStandardError()));
+	connect( this, SIGNAL( finished(int,QProcess::ExitStatus) ),
+		SLOT( slotExited(int,QProcess::ExitStatus) ) );
 	m_state = None;
 }
 
@@ -47,39 +49,41 @@ QString KPrintProcess::errorMessage() const
 
 bool KPrintProcess::print()
 {
+        kDebug(500) << "Printing with command" << program();
 	m_buffer.clear();
 	m_state = Printing;
-	setOutputChannelMode( MergedChannels );
 	start();
 	return waitForStarted();
 }
 
-void KPrintProcess::slotReceivedStderr()
+void KPrintProcess::slotReadStandardError()
 {
-	QByteArray	str = readAll().trimmed();
+	QByteArray	str = readAllStandardError().trimmed();
 	m_buffer.append(QString::fromLocal8Bit(str.append("\n")));
 }
 
-void KPrintProcess::slotExited()
+void KPrintProcess::slotExited(int exitCode, QProcess::ExitStatus exitStatus)
 {
 	switch ( m_state )
 	{
 		case Printing:
+                        kDebug(500) << "In Printing state; terminated with exit code" << exitCode;
 			if ( !m_output.isEmpty() )
 			{
+                                kDebug(500) << "Copying file" << m_output;
 				QStringList args = QStringList() << "copy" << m_tempoutput << m_output;
 				setProgram( "kfmclient", args );
 				m_state = Finishing;
 				m_buffer = i18n( "File transfer failed." );
-				setOutputChannelMode( MergedChannels );
 				start();
 				if ( waitForStarted() )
 					return;
 			}
 		case Finishing:
-			if ( exitStatus() != NormalExit )
+                        kDebug(500) << "In Finishing state; terminated with exit code" << exitCode;
+			if ( exitStatus != NormalExit )
 				emit printError( this, i18n( "Abnormal process termination (<b>%1</b>)." ,  m_command ) );
-			else if ( exitCode() != 0 )
+			else if ( exitCode != 0 )
 				emit printError( this, i18n( "<b>%1</b>: execution failed with message:<p>%2</p>" ,  m_command ,  m_buffer ) );
 			else
 				emit printTerminated( this );

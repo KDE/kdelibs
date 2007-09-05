@@ -50,8 +50,8 @@ Q_SIGNALS:
 	void printError( KPrintProcess*, const QString& );
 
 protected Q_SLOTS:
-	void slotReceivedStderr();
-	void slotExited();
+	void slotReadStandardError();
+	void slotExited(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
 	QString	m_buffer;

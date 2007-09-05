@@ -118,6 +118,7 @@ KDEPrintd::~KDEPrintd()
 
 QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 {
+        kDebug(500) << "Printing" << files << "with command" << cmd;
 	KPrintProcess *proc = new KPrintProcess;
 	QString	command(cmd);
 	QRegExp re( "\\$out\\{([^}]*)\\}" );
@@ -125,6 +126,7 @@ QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remf
 	connect(proc,SIGNAL(printTerminated(KPrintProcess*)),SLOT(slotPrintTerminated(KPrintProcess*)));
 	connect(proc,SIGNAL(printError(KPrintProcess*,const QString&)),SLOT(slotPrintError(KPrintProcess*,const QString&)));
 	proc->setCommand( command );
+
 	if ( re.indexIn( command ) != -1 )
 	{
 		KUrl url( re.cap( 1 ) );
@@ -137,19 +139,26 @@ QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remf
 		}
 		else
 			command.replace( re, KShell::quoteArg( re.cap( 1 ) ) );
+                kDebug(500) << "Modified command to " << command;
 	}
 
 	if ( checkFiles( command, files ) )
 	{
-		*proc << command;
+                kDebug(500) << "Files OK";
+		proc->setShellCommand(command);
 		if ( remflag )
 			proc->setTempFiles( files );
 		if ( proc->print() )
 		{
+                        kDebug(500) << "Really printing";
 			m_processpool.append( proc );
 			return QString::number( ( int )proc->pid() );
-		}
-	}
+		} else {
+                        kDebug(500) << "proc->print() failed" << proc->error() << proc->errorString();
+                }
+	} else {
+                kDebug(500) << "checkFiles failed";
+        }
 
 	delete proc;
 	return "-1";
