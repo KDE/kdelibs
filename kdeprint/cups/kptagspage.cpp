@@ -77,7 +77,7 @@ KPTagsPage::KPTagsPage(bool ro, QWidget *parent)
 	lst << i18n("Name")<<i18n("Value");
 	m_tags = new QTableWidget(10, 2, this);
 	m_tags->horizontalHeader()->setResizeMode( QHeaderView::Stretch );
-	m_tags->setVerticalHeaderLabels(lst);
+	m_tags->setHorizontalHeaderLabels(lst);
 
 #ifdef __GNUC__
 #warning "kde4: port m_tags->setReadOnly(ro);!!!!!\n";

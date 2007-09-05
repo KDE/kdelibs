@@ -98,6 +98,7 @@ KFileList::KFileList(QWidget *parent)
 	m_files = new QTreeWidget(this);
 	QStringList headerLabels;
 	headerLabels << i18n("Name") << i18n("Type") << i18n("Path");
+	m_files->setHeaderLabels(headerLabels);
 	m_files->setAcceptDrops(false);
 	m_files->setWhatsThis(whatsThisFileSelectionListview);
 	connect(m_files, SIGNAL(itemSelectionChanged()), SLOT(slotSelectionChanged()));
