@@ -27,6 +27,7 @@ else (NOT WIN32)
     set(CUPS_FOUND FALSE)
 endif (NOT WIN32)
 
+add_subdirectory( kdeprintd )
 add_subdirectory( management )
 add_subdirectory( lpdunix )
 add_subdirectory( lpr )
@@ -46,22 +47,8 @@ include_directories( ${ZLIB_INCLUDE_DIR} )
 
 ########### next target ###############
 
-set(kded_kdeprintd_PART_SRCS kdeprintd.cpp kprintprocess.cpp )
-
-
-kde4_add_plugin(kded_kdeprintd ${kded_kdeprintd_PART_SRCS})
-
-target_link_libraries(kded_kdeprintd  ${KDE4_KDECORE_LIBS} kio )
-
-install(TARGETS kded_kdeprintd  DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-
-########### next target ###############
-
 set(kdeprint_LIB_SRCS
    kmfactory.cpp
-#   kmfactoryiface.cpp
-#   kmfactoryadaptor.cpp
    kmjob.cpp
    kmjobmanager.cpp
    kmmanager.cpp
@@ -128,7 +115,6 @@ install(TARGETS kdeprint  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( FILES testprint.ps specials.desktop  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
 install( FILES kdeprintrc  DESTINATION  ${CONFIG_INSTALL_DIR} )
-install( FILES kdeprintd.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
 install( FILES kprintpreviewui.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES kdeprintrc.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 install( FILES kdeprint_export.h kprinter.h kprintaction.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
