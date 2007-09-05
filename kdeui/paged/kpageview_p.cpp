@@ -25,6 +25,7 @@
 #include <QHeaderView>
 #include <QPainter>
 #include <QVBoxLayout>
+#include <kiconloader.h>
 
 using namespace KDEPrivate;
 
@@ -334,7 +335,8 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
 
   const QString text = index.model()->data( index, Qt::DisplayRole ).toString();
   const QIcon icon = index.model()->data( index, Qt::DecorationRole ).value<QIcon>();
-  const QPixmap pixmap = icon.pixmap( 32, 32 );
+  int dim = KIconLoader::global()->currentSize( K3Icon::Dialog );
+  const QPixmap pixmap = icon.pixmap( dim, dim );
 
   QFontMetrics fm = painter->fontMetrics();
   int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).height();
@@ -375,7 +377,8 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
 
   const QString text = index.model()->data( index, Qt::DisplayRole ).toString();
   const QIcon icon = index.model()->data( index, Qt::DecorationRole ).value<QIcon>();
-  const QPixmap pixmap = icon.pixmap( 32, 32 );
+  int dim = KIconLoader::global()->currentSize( K3Icon::Dialog );
+  const QPixmap pixmap = icon.pixmap( dim, dim );
 
   QFontMetrics fm = option.fontMetrics;
   int ht = fm.boundingRect( 0, 0, 0, 0, Qt::AlignCenter, text ).height();
