@@ -32,24 +32,24 @@ class QColor;
  */
 namespace KPixmapEffect
 {
-    /** 
+    /**
      * Gradient types. This enum is used when either drawing
-     * a gradient explicitly or when blending a pixmap into 
+     * a gradient explicitly or when blending a pixmap into
      * a background.
      *
      * @see gradient()
      * @see unbalancedGradient()
      * @see blend()
      */
-    enum GradientType { 
+    enum GradientType {
 	VerticalGradient,     /**< Gradient changes along the Y axis. */
 	HorizontalGradient,   /**< Gradient changes along the X axis. */
 	DiagonalGradient,     /**< Gradient changes along both axes; which
 				   direction is meant exactly is unspecified. */
 	CrossDiagonalGradient,
-	PyramidGradient, 
+	PyramidGradient,
 	RectangleGradient,
-	PipeCrossGradient, 
+	PipeCrossGradient,
 	EllipticGradient
     };
     /**
@@ -82,7 +82,7 @@ namespace KPixmapEffect
      * colors. Pass 0 to prevent dithering.
      * @return Returns the generated pixmap, for convenience.
      */
-    KDEFX_EXPORT QPixmap& gradient(QPixmap& pixmap, const QColor &ca, const QColor &cb,
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& gradient(QPixmap& pixmap, const QColor &ca, const QColor &cb,
                             GradientType type, int ncols=3);
 
     /**
@@ -100,7 +100,7 @@ namespace KPixmapEffect
      * @param ncols The number of colors. See #gradient.
      * @return The generated pixmap, for convencience.
      */
-    KDEFX_EXPORT QPixmap& unbalancedGradient(QPixmap& pixmap, const QColor &ca,
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& unbalancedGradient(QPixmap& pixmap, const QColor &ca,
                    const QColor &cb, GradientType type, int xfactor = 100,
                    int yfactor = 100, int ncols=3);
 
@@ -115,7 +115,7 @@ namespace KPixmapEffect
      * @param size   The size the new pixmap should have.
      * @return The generated, tiled pixmap.
      */
-    KDEFX_EXPORT QPixmap createTiled(const QPixmap& pixmap, const QSize &size);
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap createTiled(const QPixmap& pixmap, const QSize &size);
 
     /**
      * Either brightens or dims a pixmap by a specified ratio.
@@ -124,7 +124,7 @@ namespace KPixmapEffect
      * @param ratio The ratio to use. Use negative value to dim.
      * @return Returns The pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& intensity(QPixmap& pixmap, float ratio);
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& intensity(QPixmap& pixmap, float ratio);
 
     /**
      * Modifies the intensity of a pixmap's RGB channel component.
@@ -134,7 +134,7 @@ namespace KPixmapEffect
      * @param channel Which channel(s) should be modified
      * @return Returns the pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& channelIntensity(QPixmap& pixmap, float ratio,
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& channelIntensity(QPixmap& pixmap, float ratio,
                                     RGBComponent channel);
 
     /**
@@ -154,7 +154,7 @@ namespace KPixmapEffect
      *                  used for 8 bpp pixmaps.
      * @return Returns the pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& blend(QPixmap& pixmap, float initial_intensity,
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& blend(QPixmap& pixmap, float initial_intensity,
                          const QColor &bgnd, GradientType eff,
                          bool anti_dir=false, int ncols=3);
 
@@ -168,7 +168,7 @@ namespace KPixmapEffect
      * Only used for 8 bpp pixmaps.
      * @return Returns The pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& hash(QPixmap& pixmap, Lighting lite=NorthLite,
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& hash(QPixmap& pixmap, Lighting lite=NorthLite,
                         unsigned int spacing=0, int ncols=3);
 
     /**
@@ -198,7 +198,7 @@ namespace KPixmapEffect
      * @param color The color to blend to.
      * @return Returns the pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& fade(QPixmap& pixmap, double val, const QColor &color);
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& fade(QPixmap& pixmap, double val, const QColor &color);
 
     /**
      * Converts a pixmap to grayscale.
@@ -208,7 +208,7 @@ namespace KPixmapEffect
      * quality algorithm. Appropriate for things such as toolbar icons.
      * @return Returns the pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& toGray(QPixmap& pixmap, bool fast=false);
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& toGray(QPixmap& pixmap, bool fast=false);
 
     /**
      * Desaturates a pixmap.
@@ -217,7 +217,7 @@ namespace KPixmapEffect
      * @param desat A value between 0 and 1 setting the degree of desaturation
      * @return Returns The pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& desaturate(QPixmap& pixmap, float desat = 0.3);
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& desaturate(QPixmap& pixmap, float desat = 0.3);
 
     /**
      * Modifies the contrast of a pixmap.
@@ -226,7 +226,7 @@ namespace KPixmapEffect
      * @param c A contrast value between -255 and 255.
      * @return Returns the pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& contrast(QPixmap& pixmap, int c);
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& contrast(QPixmap& pixmap, int c);
 
     /**
      * Dithers a pixmap using Floyd-Steinberg dithering for low-color
@@ -237,7 +237,7 @@ namespace KPixmapEffect
      * @param size The size of the palette.
      * @return Returns the pixmap(), provided for convenience.
      */
-    KDEFX_EXPORT QPixmap& dither(QPixmap &pixmap, const QColor *palette, int size);
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap& dither(QPixmap &pixmap, const QColor *palette, int size);
 
     /**
      * Calculate a 'selected' pixmap, for instance a selected icon
@@ -245,7 +245,7 @@ namespace KPixmapEffect
      * @param pixmap the pixmap to select
      * @param col the selected color, usually from QPalette::highlight().
      */
-    KDEFX_EXPORT QPixmap selectedPixmap( const QPixmap &pixmap, const QColor &col );
+    KDE_DEPRECATED KDEFX_EXPORT QPixmap selectedPixmap( const QPixmap &pixmap, const QColor &col );
 }
 
 

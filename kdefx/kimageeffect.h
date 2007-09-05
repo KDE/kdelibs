@@ -135,7 +135,7 @@ namespace KImageEffect
      * truecolor display. The gradient will be dithered to this number of
      * colors. Pass 0 to prevent dithering.
      */
-    KDEFX_EXPORT QImage gradient(const QSize &size, const QColor &ca,
+    KDE_DEPRECATED KDEFX_EXPORT QImage gradient(const QSize &size, const QColor &ca,
                            const QColor &cb, GradientType type, int ncols=3);
 
     /**
@@ -152,7 +152,7 @@ namespace KImageEffect
      * @param yfactor The y decay length.
      * @param ncols The number of colors. See KImageEffect:gradient.
      */
-    KDEFX_EXPORT QImage unbalancedGradient(const QSize &size, const QColor &ca,
+    KDE_DEPRECATED KDEFX_EXPORT QImage unbalancedGradient(const QSize &size, const QColor &ca,
 	    const QColor &cb, GradientType type, int xfactor = 100,
 	    int yfactor = 100, int ncols = 3);
 
@@ -172,7 +172,7 @@ namespace KImageEffect
      * @author Karol Szwed (gallium@kde.org)
      * @author Fredrik H&ouml;glund (fredrik@kde.org)
      */
-    KDEFX_EXPORT QImage& blend(const QColor& clr, QImage& dst, float opacity);
+    KDE_DEPRECATED KDEFX_EXPORT QImage& blend(const QColor& clr, QImage& dst, float opacity);
 
     /**
      * Blend the src image into the destination image, using an opacity
@@ -190,7 +190,7 @@ namespace KImageEffect
      * @author Karol Szwed (gallium@kde.org)
      * @author Fredrik H&ouml;glund (fredrik@kde.org)
      */
-    KDEFX_EXPORT QImage& blend(QImage& src, QImage& dst, float opacity);
+    KDE_DEPRECATED KDEFX_EXPORT QImage& blend(QImage& src, QImage& dst, float opacity);
 
     /**
      * Blend the provided image into a background of the indicated color.
@@ -206,7 +206,7 @@ namespace KImageEffect
      *                  with concentric blending effects)
      * @param image must be 32bpp
      */
-    KDEFX_EXPORT QImage& blend(QImage &image, float initial_intensity,
+    KDE_DEPRECATED KDEFX_EXPORT QImage& blend(QImage &image, float initial_intensity,
                       const QColor &bgnd, GradientType eff,
                       bool anti_dir=false);
 
@@ -220,7 +220,7 @@ namespace KImageEffect
      * @param xf x decay length for unbalanced gradient tpye
      * @param yf y decay length for unbalanced gradient tpye
      */
-    KDEFX_EXPORT QImage& blend(QImage &image1,QImage &image2,
+    KDE_DEPRECATED KDEFX_EXPORT QImage& blend(QImage &image1,QImage &image2,
 			 GradientType gt, int xf=100, int yf=100);
 
     /**
@@ -235,7 +235,7 @@ namespace KImageEffect
      *               in between, a corresponding blending is used.
      * @param channel The RBG channel to use for the blending decision.
      */
-    KDEFX_EXPORT QImage& blend(QImage &image1, QImage &image2,
+    KDE_DEPRECATED KDEFX_EXPORT QImage& blend(QImage &image1, QImage &image2,
 			 QImage &blendImage, RGBComponent channel);
 
     /**
@@ -245,7 +245,7 @@ namespace KImageEffect
      * @param output the target image
      * @author Rik Hemsley (rikkus) <rik@kde.org>
      */
-    KDEFX_EXPORT bool blend(const QImage & upper, const QImage & lower, QImage & output);
+    KDE_DEPRECATED KDEFX_EXPORT bool blend(const QImage & upper, const QImage & lower, QImage & output);
 // Not yet...    KDEFX_EXPORT bool blend(const QImage & image1, const QImage & image2, QImage & output, const QRect & destRect);
 
     /**
@@ -264,7 +264,7 @@ namespace KImageEffect
      * @param lower the "lower" image
      * @param output the target image
      */
-    KDEFX_EXPORT bool blend(int &x, int &y, const QImage & upper, const QImage & lower, QImage & output);
+    KDE_DEPRECATED  KDEFX_EXPORT bool blend(int &x, int &y, const QImage & upper, const QImage & lower, QImage & output);
 
     /**
      * Blend an image into another one, using alpha in the expected way and
@@ -276,7 +276,7 @@ namespace KImageEffect
      * @param upper the "upper" image
      * @param lower the "lower" image, which becomes the output image
      */
-    KDEFX_EXPORT bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
+    KDE_DEPRECATED KDEFX_EXPORT bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
 
     /**
      * Blend part of an image into part of another, using the alpha channel in
@@ -289,7 +289,7 @@ namespace KImageEffect
      * @param lowerRect Rectangle for the part of the lower image where the
      *                  blending will occur.
      */
-    KDEFX_EXPORT void blendOnLower(const QImage &upper, const QPoint &upperOffset,
+    KDE_DEPRECATED KDEFX_EXPORT void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect);
 
     /**
@@ -305,7 +305,7 @@ namespace KImageEffect
      * @param opacity Opacity (between 0.0 and 1.0) which determines how much
      *             the source image will be blended into the destination image.
      */
-    KDEFX_EXPORT void blendOnLower(const QImage &upper, const QPoint &upperOffset,
+    KDE_DEPRECATED KDEFX_EXPORT void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect, float opacity);
 
     /**
@@ -335,7 +335,7 @@ namespace KImageEffect
      *
      * @return the computed rectangle. Its size may exceed @e lowerSize.
      */
-    KDEFX_EXPORT QRect computeDestinationRect(const QSize &lowerSize,
+    KDE_DEPRECATED KDEFX_EXPORT QRect computeDestinationRect(const QSize &lowerSize,
                                       Disposition disposition, QImage &upper);
 
     /**
@@ -343,7 +343,7 @@ namespace KImageEffect
      * opacity. The alpha channel of the upper image is used in the expected
      * way. Beware the upper image may be modified.
      */
-    KDEFX_EXPORT void blendOnLower(QImage &upper, QImage &lower,
+    KDE_DEPRECATED KDEFX_EXPORT void blendOnLower(QImage &upper, QImage &lower,
                              Disposition disposition, float opacity);
 
     /**
@@ -355,7 +355,7 @@ namespace KImageEffect
      * @return The @p image, provided for convenience.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage& channelIntensity(QImage &image, float percent,
+    KDE_DEPRECATED KDEFX_EXPORT QImage& channelIntensity(QImage &image, float percent,
                                     RGBComponent channel);
 
     /**
@@ -368,7 +368,7 @@ namespace KImageEffect
      * @param color The background color.
      * @return Returns the image(), provided for convenience.
      */
-    KDEFX_EXPORT QImage& fade(QImage &image, float val, const QColor &color);
+    KDE_DEPRECATED KDEFX_EXPORT QImage& fade(QImage &image, float val, const QColor &color);
 
 
     /**
@@ -381,7 +381,7 @@ namespace KImageEffect
      * @param ncols The number of colors to dither the image to.
      * Pass 0 to prevent dithering.
      */
-    KDEFX_EXPORT QImage& flatten(QImage &image, const QColor &ca,
+    KDE_DEPRECATED KDEFX_EXPORT QImage& flatten(QImage &image, const QColor &ca,
            const QColor &cb, int ncols=0);
 
     /**
@@ -392,7 +392,7 @@ namespace KImageEffect
      * @param spacing How many unmodified pixels in between hashes.
      * @return Returns the image(), provided for convenience.
      */
-    KDEFX_EXPORT QImage& hash(QImage &image, Lighting lite=NorthLite,
+    KDE_DEPRECATED KDEFX_EXPORT QImage& hash(QImage &image, Lighting lite=NorthLite,
                         unsigned int spacing=0);
 
     /**
@@ -408,7 +408,7 @@ namespace KImageEffect
      * @author Daniel M. Duley (mosfet)
      * @author Benjamin Roe (ben@benroe.com)
      */
-    KDEFX_EXPORT QImage& intensity(QImage &image, float percent);
+    KDE_DEPRECATED KDEFX_EXPORT QImage& intensity(QImage &image, float percent);
 
     /**
      * Modulate the image with a color channel of another image.
@@ -421,7 +421,7 @@ namespace KImageEffect
      * @param channel The RBG channel of image2 to use for modulation.
      * @return Returns the image(), provided for convenience.
      */
-    KDEFX_EXPORT QImage& modulate(QImage &image, QImage &modImage, bool reverse,
+    KDE_DEPRECATED KDEFX_EXPORT QImage& modulate(QImage &image, QImage &modImage, bool reverse,
 		ModulationType type, int factor, RGBComponent channel);
 
     /**
@@ -433,7 +433,7 @@ namespace KImageEffect
      * @return Returns the image(), provided for convenience.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage& toGray(QImage &image, bool fast = false);
+    KDE_DEPRECATED KDEFX_EXPORT QImage& toGray(QImage &image, bool fast = false);
 
     /**
      * Desaturate an image evenly.
@@ -442,7 +442,7 @@ namespace KImageEffect
      * @param desat A value between 0 and 1 setting the degree of desaturation
      * @return Returns the image(), provided for convenience.
      */
-    KDEFX_EXPORT QImage& desaturate(QImage &image, float desat = 0.3);
+    KDE_DEPRECATED KDEFX_EXPORT QImage& desaturate(QImage &image, float desat = 0.3);
 
     /**
      * Fast, but low quality contrast of an image. Also see contrastHSV.
@@ -453,7 +453,7 @@ namespace KImageEffect
      * @author Daniel M. Duley (mosfet)
      * ### KDE 4: remove
      */
-    KDEFX_EXPORT QImage& contrast(QImage &image, int c);
+    KDE_DEPRECATED KDEFX_EXPORT QImage& contrast(QImage &image, int c);
 
     /**
      * Dither an image using Floyd-Steinberg dithering for low-color
@@ -464,7 +464,7 @@ namespace KImageEffect
      * @param size The size of the palette
      * @return Returns the image(), provided for convenience.
      */
-    KDEFX_EXPORT QImage& dither(QImage &image, const QColor *palette, int size);
+    KDE_DEPRECATED KDEFX_EXPORT QImage& dither(QImage &image, const QColor *palette, int size);
 
     /**
      * Calculate the image for a selected image, for instance a selected icon
@@ -472,7 +472,7 @@ namespace KImageEffect
      * @param img the QImage to select
      * @param col the selected color, usually from QPalette::highlight().
      */
-    KDEFX_EXPORT QImage& selectedImage( QImage &img, const QColor &col );
+    KDE_DEPRECATED KDEFX_EXPORT QImage& selectedImage( QImage &img, const QColor &col );
 
     /**
      * High quality, expensive HSV contrast. You can do a faster one by just
@@ -485,7 +485,7 @@ namespace KImageEffect
      * it is decreased, (dulled).
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT void contrastHSV(QImage &img, bool sharpen=true);
+    KDE_DEPRECATED KDEFX_EXPORT void contrastHSV(QImage &img, bool sharpen=true);
 
     /**
      * Normalises the pixel values to span the full range of color values.
@@ -493,7 +493,7 @@ namespace KImageEffect
      * @param img the image that is normalised
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT void normalize(QImage &img);
+    KDE_DEPRECATED KDEFX_EXPORT void normalize(QImage &img);
 
     /**
      * Performs histogram equalisation on the reference
@@ -501,7 +501,7 @@ namespace KImageEffect
      * @param img the image that is equalised
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT void equalize(QImage &img);
+    KDE_DEPRECATED KDEFX_EXPORT void equalize(QImage &img);
 
     /**
      * Thresholds the reference image. You can also threshold images by using
@@ -512,7 +512,7 @@ namespace KImageEffect
      * @param value The threshold value.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT void threshold(QImage &img, unsigned int value=128);
+    KDE_DEPRECATED KDEFX_EXPORT void threshold(QImage &img, unsigned int value=128);
 
     /**
      * Produces a 'solarization' effect seen when exposing a photographic
@@ -522,7 +522,7 @@ namespace KImageEffect
      * @param factor The extent of the solarization (0-99.9)
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT void solarize(QImage &img, double factor=50.0);
+    KDE_DEPRECATED KDEFX_EXPORT void solarize(QImage &img, double factor=50.0);
 
     /**
      * Embosses the source image. This involves highlighting the edges
@@ -537,12 +537,12 @@ namespace KImageEffect
      * @return The embossed image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage emboss(QImage &src, double radius, double sigma);
+    KDE_DEPRECATED KDEFX_EXPORT QImage emboss(QImage &src, double radius, double sigma);
 
     /**
      * Convenience method.
      */
-    KDEFX_EXPORT QImage emboss(QImage &src);
+    KDE_DEPRECATED KDEFX_EXPORT QImage emboss(QImage &src);
 
     /**
      * Minimizes speckle noise in the source image using the 8 hull
@@ -552,7 +552,7 @@ namespace KImageEffect
      * @return The despeckled image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage despeckle(QImage &src);
+    KDE_DEPRECATED KDEFX_EXPORT QImage despeckle(QImage &src);
 
     /**
      * Produces a neat little "charcoal" effect.
@@ -565,13 +565,13 @@ namespace KImageEffect
      * @return The charcoal image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage charcoal(QImage &src, double radius, double sigma);
+    KDE_DEPRECATED KDEFX_EXPORT QImage charcoal(QImage &src, double radius, double sigma);
 
     /**
      * This is provided for binary compatability only! Use the above method
      * with a radius and sigma instead!
      */
-     KDEFX_EXPORT QImage charcoal(QImage &src, double factor=50.0);
+    KDE_DEPRECATED KDEFX_EXPORT QImage charcoal(QImage &src, double factor=50.0);
 
     /**
      * Rotates the image by the specified amount
@@ -581,7 +581,7 @@ namespace KImageEffect
      * @return The rotated image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage rotate(QImage &src, RotateDirection r);
+    KDE_DEPRECATED KDEFX_EXPORT QImage rotate(QImage &src, RotateDirection r);
 
     /**
      * Scales an image using simple pixel sampling. This does not produce
@@ -594,7 +594,7 @@ namespace KImageEffect
      * @return The scaled image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage sample(QImage &src, int w, int h);
+    KDE_DEPRECATED KDEFX_EXPORT QImage sample(QImage &src, int w, int h);
 
     /**
      * Adds noise to an image.
@@ -604,7 +604,7 @@ namespace KImageEffect
      * @return The image with noise added. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage addNoise(QImage &src, NoiseType type = GaussianNoise);
+    KDE_DEPRECATED KDEFX_EXPORT QImage addNoise(QImage &src, NoiseType type = GaussianNoise);
 
     /**
      * Blurs an image by convolving pixel neighborhoods.
@@ -617,13 +617,13 @@ namespace KImageEffect
      * @return The blurred image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage blur(QImage &src, double radius, double sigma);
+    KDE_DEPRECATED KDEFX_EXPORT QImage blur(QImage &src, double radius, double sigma);
 
     /**
      * This is provided for binary compatability only! Use the above method
      * with a radius and sigma instead!
      */
-    KDEFX_EXPORT QImage blur(QImage &src, double factor=50.0);
+    KDE_DEPRECATED KDEFX_EXPORT QImage blur(QImage &src, double factor=50.0);
 
     /**
      * Detects edges in an image using pixel neighborhoods and an edge
@@ -635,7 +635,7 @@ namespace KImageEffect
      * @return The image with edges detected. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage edge(QImage &src, double radius);
+    KDE_DEPRECATED KDEFX_EXPORT QImage edge(QImage &src, double radius);
 
     /**
      * Implodes an image by a specified percent.
@@ -647,7 +647,7 @@ namespace KImageEffect
      * @return The imploded image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage implode(QImage &src, double factor=30.0,
+    KDE_DEPRECATED KDEFX_EXPORT QImage implode(QImage &src, double factor=30.0,
                    unsigned int background = 0xFFFFFFFF);
 
     /**
@@ -659,13 +659,13 @@ namespace KImageEffect
      * @return The new image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage oilPaintConvolve(QImage &src, double radius);
+    KDE_DEPRECATED KDEFX_EXPORT QImage oilPaintConvolve(QImage &src, double radius);
 
     /**
      * This is provided for binary compatability only! Use the above method
      * instead!
      */
-    KDEFX_EXPORT QImage oilPaint(QImage &src, int radius=3);
+    KDE_DEPRECATED KDEFX_EXPORT QImage oilPaint(QImage &src, int radius=3);
 
     /**
      * Sharpens the pixels in the image using pixel neighborhoods.
@@ -678,13 +678,13 @@ namespace KImageEffect
      * @return The sharpened image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage sharpen(QImage &src, double radius, double sigma);
+    KDE_DEPRECATED KDEFX_EXPORT QImage sharpen(QImage &src, double radius, double sigma);
 
     /**
      * This is provided for binary compatability only! Use the above method
      * instead!
      */
-    KDEFX_EXPORT QImage sharpen(QImage &src, double factor=30.0);
+    KDE_DEPRECATED KDEFX_EXPORT QImage sharpen(QImage &src, double factor=30.0);
 
     /**
      * Randomly displaces pixels.
@@ -694,7 +694,7 @@ namespace KImageEffect
      * @return The image with pixels displaced. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage spread(QImage &src, unsigned int amount=3);
+    KDE_DEPRECATED KDEFX_EXPORT QImage spread(QImage &src, unsigned int amount=3);
 
     /**
      * Shades the image using a distance light source.
@@ -706,7 +706,7 @@ namespace KImageEffect
      * @return The shaded image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage shade(QImage &src, bool color_shading=true, double azimuth=30.0,
+    KDE_DEPRECATED KDEFX_EXPORT QImage shade(QImage &src, bool color_shading=true, double azimuth=30.0,
                         double elevation=30.0);
     /**
      * Swirls the image by a specified amount
@@ -718,7 +718,7 @@ namespace KImageEffect
      * @return The swirled image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage swirl(QImage &src, double degrees=50.0, unsigned int background =
+    KDE_DEPRECATED KDEFX_EXPORT QImage swirl(QImage &src, double degrees=50.0, unsigned int background =
                          0xFFFFFFFF);
 
     /**
@@ -732,7 +732,7 @@ namespace KImageEffect
      * @return The new image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    KDEFX_EXPORT QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
+    KDE_DEPRECATED KDEFX_EXPORT QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
                         unsigned int background = 0xFFFFFFFF);
 
     /**
@@ -755,7 +755,7 @@ namespace KImageEffect
      * @return The destination image (dst) containing the result.
      * @author Zack Rusin <zack@kde.org>
      */
-    KDEFX_EXPORT QImage bumpmap(QImage &img, QImage &map, double azimuth, double elevation,
+    KDE_DEPRECATED KDEFX_EXPORT QImage bumpmap(QImage &img, QImage &map, double azimuth, double elevation,
                           int depth, int xofs, int yofs, int waterlevel,
                           int ambient, bool compensate, bool invert,
                           BumpmapType type, bool tiled);
