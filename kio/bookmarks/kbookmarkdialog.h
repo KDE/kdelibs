@@ -23,7 +23,6 @@
 #include "kbookmark.h"
 #include <kdialog.h>
 #include <kurl.h>
-#include <QString>
 
 class KBookmarkManager;
 class QWidget;
