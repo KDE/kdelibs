@@ -271,7 +271,7 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
                                        const QKeySequence &activeSeq)
  : QWidget(viewport),
    m_defaultKeySequence(defaultSeq),
-   m_ignoreKeySequenceChanged(false)
+   m_isUpdating(false)
 {
 	QGridLayout *layout = new QGridLayout(this);
 
@@ -298,33 +298,43 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 	layout->setColumnStretch(2, 1);
 
 	connect(m_defaultRadio, SIGNAL(toggled(bool)),
-	        this, SLOT(defaultChecked(bool)));
+	        this, SLOT(defaultToggled(bool)));
 	connect(m_customEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
 	        this, SLOT(setCustom(const QKeySequence &)));
 }
 
 
-void ShortcutEditWidget::defaultChecked(bool checked)
+//slot
+void ShortcutEditWidget::defaultToggled(bool checked)
 {
-	//avoid a spurious signal
-	m_ignoreKeySequenceChanged = true;
-	m_customEditor->clearKeySequence();
-	m_ignoreKeySequenceChanged = false;
-	m_defaultRadio->setChecked(checked);
+	if (m_isUpdating)
+		return;
 
-	if  (checked)
+	m_isUpdating = true;
+	m_customEditor->clearKeySequence();
+	if  (checked) {
 		emit keySequenceChanged(m_defaultKeySequence);
-	else
+	} else {
+		//custom was checked
 		emit keySequenceChanged(QKeySequence());
+	}
+	m_isUpdating = false;
 }
 
 
+//slot
 void ShortcutEditWidget::setCustom(const QKeySequence &seq)
 {
-	if (m_ignoreKeySequenceChanged)
+	if (m_isUpdating)
 		return;
-	m_customRadio->setChecked(true);
+
+	m_isUpdating = true;
+	if (seq != m_defaultKeySequence)
+		m_customRadio->setChecked(true);
+	else
+		m_defaultRadio->setChecked(true);
 	emit keySequenceChanged(seq);
+	m_isUpdating = false;
 }
 
 
