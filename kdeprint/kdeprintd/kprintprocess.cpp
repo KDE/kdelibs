@@ -44,12 +44,13 @@ KPrintProcess::~KPrintProcess()
 
 QString KPrintProcess::errorMessage() const
 {
-	return m_buffer;
+	return m_error;
 }
 
 bool KPrintProcess::print()
 {
 	m_buffer.clear();
+	m_error.clear();
 	m_state = Printing;
 	start();
 	return waitForStarted();
@@ -57,12 +58,15 @@ bool KPrintProcess::print()
 
 void KPrintProcess::slotReadStandardError()
 {
-	QByteArray	str = readAllStandardError().trimmed();
-	m_buffer.append(QString::fromLocal8Bit(str.append("\n")));
+	m_buffer += readAllStandardError();
 }
 
 void KPrintProcess::slotExited(int exitCode, QProcess::ExitStatus exitStatus)
 {
+	if ( !m_buffer.isEmpty() ) {
+		m_error = QString::fromLocal8Bit(m_buffer.trimmed());
+		m_error.append('\n');
+	}
 	switch ( m_state )
 	{
 		case Printing:
@@ -72,7 +76,7 @@ void KPrintProcess::slotExited(int exitCode, QProcess::ExitStatus exitStatus)
 				QStringList args = QStringList() << "copy" << m_tempoutput << m_output;
 				setProgram( "kfmclient", args );
 				m_state = Finishing;
-				m_buffer = i18n( "File transfer failed." );
+				m_error = i18n( "File transfer failed." );
 				start();
 				if ( waitForStarted() )
 					return;
@@ -81,7 +85,7 @@ void KPrintProcess::slotExited(int exitCode, QProcess::ExitStatus exitStatus)
 			if ( exitStatus != NormalExit )
 				emit printError( this, i18n( "Abnormal process termination (<b>%1</b>)." ,  m_command ) );
 			else if ( exitCode != 0 )
-				emit printError( this, i18n( "<b>%1</b>: execution failed with message:<p>%2</p>" ,  m_command ,  m_buffer ) );
+				emit printError( this, i18n( "<b>%1</b>: execution failed with message:<p>%2</p>" ,  m_command ,  m_error ) );
 			else
 				emit printTerminated( this );
 			break;

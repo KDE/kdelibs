@@ -54,7 +54,8 @@ protected Q_SLOTS:
 	void slotExited(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
-	QString	m_buffer;
+	QByteArray	m_buffer;
+	QString	m_error;
 	QStringList m_tempfiles;
 	QString m_output, m_tempoutput, m_command;
 	int m_state;
