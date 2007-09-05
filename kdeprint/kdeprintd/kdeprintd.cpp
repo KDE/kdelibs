@@ -118,7 +118,7 @@ KDEPrintd::~KDEPrintd()
 
 QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 {
-        kDebug(500) << "Printing" << files << "with command" << cmd;
+	kDebug(500) << "Printing" << files << "with command" << cmd;
 	KPrintProcess *proc = new KPrintProcess;
 	QString	command(cmd);
 	QRegExp re( "\\$out\\{([^}]*)\\}" );
@@ -139,26 +139,21 @@ QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remf
 		}
 		else
 			command.replace( re, KShell::quoteArg( re.cap( 1 ) ) );
-                kDebug(500) << "Modified command to " << command;
 	}
 
 	if ( checkFiles( command, files ) )
 	{
-                kDebug(500) << "Files OK";
 		proc->setShellCommand(command);
 		if ( remflag )
 			proc->setTempFiles( files );
 		if ( proc->print() )
 		{
-                        kDebug(500) << "Really printing";
 			m_processpool.append( proc );
 			return QString::number( ( int )proc->pid() );
 		} else {
-                        kDebug(500) << "proc->print() failed" << proc->error() << proc->errorString();
-                }
-	} else {
-                kDebug(500) << "checkFiles failed";
-        }
+			kDebug(500) << "Printing failed" << proc->error() << proc->errorString();
+		}
+	}
 
 	delete proc;
 	return "-1";

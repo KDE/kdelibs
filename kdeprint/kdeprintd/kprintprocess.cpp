@@ -49,7 +49,6 @@ QString KPrintProcess::errorMessage() const
 
 bool KPrintProcess::print()
 {
-        kDebug(500) << "Printing with command" << program();
 	m_buffer.clear();
 	m_state = Printing;
 	start();
@@ -67,7 +66,6 @@ void KPrintProcess::slotExited(int exitCode, QProcess::ExitStatus exitStatus)
 	switch ( m_state )
 	{
 		case Printing:
-                        kDebug(500) << "In Printing state; terminated with exit code" << exitCode;
 			if ( !m_output.isEmpty() )
 			{
                                 kDebug(500) << "Copying file" << m_output;
@@ -80,7 +78,6 @@ void KPrintProcess::slotExited(int exitCode, QProcess::ExitStatus exitStatus)
 					return;
 			}
 		case Finishing:
-                        kDebug(500) << "In Finishing state; terminated with exit code" << exitCode;
 			if ( exitStatus != NormalExit )
 				emit printError( this, i18n( "Abnormal process termination (<b>%1</b>)." ,  m_command ) );
 			else if ( exitCode != 0 )
