@@ -58,14 +58,14 @@ public:
 Q_SIGNALS:
 	void keySequenceChanged(const QKeySequence &);
 private Q_SLOTS:
-	void defaultChecked(bool);
+	void defaultToggled(bool);
 	void setCustom(const QKeySequence &);
 private:
 	QKeySequence m_defaultKeySequence;
 	QRadioButton *m_defaultRadio;
 	QRadioButton *m_customRadio;
 	KKeySequenceWidget *m_customEditor;
-	bool m_ignoreKeySequenceChanged;
+	bool m_isUpdating;
 };
 
 Q_DECLARE_METATYPE(KShapeGesture)
