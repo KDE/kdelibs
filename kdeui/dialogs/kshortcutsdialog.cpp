@@ -204,10 +204,10 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 	}
 
 	if (!isExtended(index)) {
-		//in this case, we only want maximum ONE extender open at any time.
+		//we only want maximum ONE extender open at any time.
 		if (m_editingIndex.isValid())
 			contractItem(m_editingIndex);
-		
+
 		m_editingIndex = index;
 		const QAbstractItemModel *model = index.model();
 		QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
@@ -306,15 +306,16 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 
 void ShortcutEditWidget::defaultChecked(bool checked)
 {
-	if (!checked)
-		return;
-
 	//avoid a spurious signal
 	m_ignoreKeySequenceChanged = true;
 	m_customEditor->clearKeySequence();
 	m_ignoreKeySequenceChanged = false;
-	m_defaultRadio->setChecked(true);
-	emit keySequenceChanged(m_defaultKeySequence);
+	m_defaultRadio->setChecked(checked);
+
+	if  (checked)
+		emit keySequenceChanged(m_defaultKeySequence);
+	else
+		emit keySequenceChanged(QKeySequence());
 }
 
 
@@ -486,7 +487,7 @@ void KShortcutsEditorPrivate::capturedShortcut(const QVariant &newShortcut, cons
 		return;
 	int column = index.column();
 	KShortcutsEditorItem *item = itemFromIndex(index);
-	
+
 	if (column >= LocalPrimary && column <= GlobalAlternate)
 		changeKeyShortcut(item, column, newShortcut.value<QKeySequence>());
 	else if (column == ShapeGesture)
@@ -544,9 +545,6 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 	}
 
 	item->setKeySequence(column, capture);
-	//This line was introduced by someone else and it seems to work. Consider
-	//having capturedShortcut return the new value instead when mouse gestures are back.
-	//--ahartmetz
 	q->keyChange();
 	//force view update
 	item->setText(column, capture.toString());
@@ -628,7 +626,7 @@ bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned
 		return false;
 
 	item->setKeySequence(column - LocalPrimary, QKeySequence());
-    q->keyChange();
+	q->keyChange();
 	return true;
 }
 
