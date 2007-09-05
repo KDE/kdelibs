@@ -141,8 +141,10 @@ KLibrary::~KLibrary()
 		}
 	}
 
-    qDeleteAll( d->factories );
-    d->factories.clear();
+    foreach (KLibFactory *factory, d->factories) {
+        disconnect(factory, 0, this, 0);
+        delete factory;
+    }
     delete d;
 }
 
@@ -316,7 +318,7 @@ void KLibrary::slotObjectCreated( QObject *obj )
 void KLibrary::slotObjectDestroyed()
 {
   d->objs.removeAll( sender() );
-
+#if 0
   if ( d->objs.count() == 0 )
   {
 //    kDebug(150) << "KLibrary: shutdown timer for " << name() << " started!"
@@ -341,6 +343,7 @@ void KLibrary::slotObjectDestroyed()
     //d->timer->start( 1000*60 );
     d->timer->start( 1000*10 );
   }
+#endif
 }
 
 void KLibrary::slotTimeout()
