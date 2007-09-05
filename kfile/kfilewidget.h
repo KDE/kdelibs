@@ -257,7 +257,8 @@ public:
      *
      * @param w The widget to be used for the preview.
      */
-   virtual void setPreviewWidget(const KPreviewWidgetBase *w);
+    // ### KDE5: remove 'const', as the widget must get layouted and will be deleted
+    virtual void setPreviewWidget(const KPreviewWidgetBase *w);
 
     /**
      * Sets the mode of the dialog.
