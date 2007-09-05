@@ -52,9 +52,6 @@ KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent)
 
 KPrinterPropertyDialog::~KPrinterPropertyDialog()
 {
-	qDeleteAll(m_pages);
-	m_pages.clear();
-
 	delete m_driver;
 }
 
