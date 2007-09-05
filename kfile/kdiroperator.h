@@ -233,10 +233,10 @@ public:
     QWidget* viewWidget() const;
 
     /**
-     * Sets one of the predefined fileviews
+     * Sets one of the predefined fileviews.
      * @see KFile::FileView
      */
-    virtual void setView(KFile::FileView view);
+    virtual void setView(KFile::FileView viewKind);
 
     /**
      * Sets the way to sort files and directories.
@@ -286,6 +286,8 @@ public:
      * The ownership of @p w is transferred to KDirOperator, so don't
      * delete it yourself!
      */
+    // ### KDE5: - remove the 'const', as the widget gets layouted and deleted...
+    //           - use KPreviewWidgetBase instead of QWidget
     virtual void setPreviewWidget(const QWidget *w);
 
     /**
@@ -707,11 +709,13 @@ protected Q_SLOTS:
     /**
      * Emits fileSelected( item )
      */
+    // ### KDE5: change to 'const KFileItem &item'
     void selectFile(const KFileItem *item);
 
     /**
      * Emits fileHighlighted( item )
      */
+    // ### KDE5: change to 'const KFileItem &item'
     void highlightFile(const KFileItem *item);
 
     /**
@@ -805,8 +809,6 @@ private:
       */
     void checkPath(const QString &txt, bool takeFiles = false);
 
-    void connectView(QAbstractItemView *view);
-
     bool openUrl(const KUrl &url, bool keep = false, bool reload = false);
 
     /**
@@ -824,8 +826,7 @@ private Q_SLOTS:
     void slotSimpleView();
     void slotToggleHidden(bool);
 
-    void slotDefaultPreview();
-    void togglePreview(bool);
+    void togglePreview(bool on);
 
     void slotSortByName();
     void slotSortBySize();
@@ -857,6 +858,26 @@ private Q_SLOTS:
     void slotClicked(const QModelIndex &index);
     void slotDoubleClicked(const QModelIndex &index);
     void openContextMenu(const QPoint &pos);
+
+    /**
+     * Triggers a delayed preview of the item \a index.
+     * @see KDirOperator::cancelPreview()
+     * @see KDirOperator::showPreview()
+     */
+    void triggerPreview(const QModelIndex& index);
+
+    /**
+     * Cancels a pending preview (see also KDirOperator::triggerPreview()).
+     */
+    void cancelPreview();
+
+    /**
+     * Tells the preview widget to show the preview for the last
+     * highlighted/selected URL.
+     */
+    void showPreview();
+
+    void slotSplitterMoved(int pos, int index);
 
 private:
     static bool isReadable(const KUrl &url);

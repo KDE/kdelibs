@@ -28,6 +28,7 @@
 #include "kfileview.h"
 #include "kfileitem.h"
 #include "kfilemetapreview.h"
+#include "kpreviewwidgetbase.h"
 
 #include <config-kfile.h>
 
@@ -47,6 +48,7 @@
 #include <QtGui/QTreeView>
 #include <QtGui/QPushButton>
 #include <QtGui/QProgressBar>
+#include <QtGui/QSplitter>
 
 #include <kaction.h>
 #include <kapplication.h>
@@ -159,6 +161,7 @@ DirOperatorDetailView::DirOperatorDetailView(QWidget *parent) :
     setRootIsDecorated(false);
     setSortingEnabled(true);
     setUniformRowHeights(true);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 DirOperatorDetailView::~DirOperatorDetailView()
@@ -204,6 +207,8 @@ public:
     bool completeListDirty;
     QDir::SortFlags sorting;
 
+    QSplitter *splitter;
+
     QAbstractItemView *itemView;
     KDirModel *dirModel;
     KDirSortFilterProxyModel *proxyModel;
@@ -217,7 +222,10 @@ public:
     KFile::Modes mode;
     QProgressBar *progressBar;
 
-    const QWidget *preview;    // temporary pointer for the preview widget
+    KPreviewWidgetBase *preview;
+    QTimer *previewTimer;
+    KUrl previewUrl;
+    int previewWidth;
 
     bool leftButtonPressed;
     bool dirHighlighting;
@@ -234,11 +242,15 @@ public:
 
 KDirOperator::KDirOperatorPrivate::KDirOperatorPrivate() :
     dirLister(0),
+    splitter(0),
     itemView(0),
     dirModel(0),
     proxyModel(0),
     progressBar(0),
     preview(0),
+    previewTimer(0),
+    previewUrl(),
+    previewWidth(0),
     leftButtonPressed(false),
     dirHighlighting(false),
     onlyDoubleClickSelectsFiles(false),
@@ -273,7 +285,17 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
     QWidget(parent),
     d(new KDirOperatorPrivate)
 {
-    d->preview = 0L;
+    d->splitter = new QSplitter(this);
+    d->splitter->setChildrenCollapsible(false);
+    connect(d->splitter, SIGNAL(splitterMoved(int, int)),
+            this, SLOT(slotSplitterMoved(int, int)));
+
+    d->preview = 0;
+    d->previewTimer = new QTimer(this);
+    d->previewTimer->setSingleShot(true);
+    connect(d->previewTimer, SIGNAL(timeout()),
+            this, SLOT(showPreview()));
+
     d->mode = KFile::File;
     d->viewKind = KFile::Simple;
     d->sorting = QDir::Name | QDir::DirsFirst;
@@ -480,18 +502,22 @@ void KDirOperator::updateSelectionDependentActions()
 
 void KDirOperator::setPreviewWidget(const QWidget *w)
 {
-    if (w == 0) {
-        d->viewKind = (d->viewKind & ~KFile::PreviewContents);
-    } else {
+    // see KDE5 comment in header for an explanation of the dirty casts:
+    KPreviewWidgetBase* previewWidget = qobject_cast<KPreviewWidgetBase*>(const_cast<QWidget*>(w));
+
+    const bool showPreview = (previewWidget != 0);
+    if (showPreview) {
         d->viewKind = (d->viewKind | KFile::PreviewContents);
+    } else {
+        d->viewKind = (d->viewKind & ~KFile::PreviewContents);
     }
 
     delete d->preview;
-    d->preview = w;
+    d->preview = previewWidget;
 
-    KToggleAction *preview = static_cast<KToggleAction*>(d->actionCollection->action("preview"));
-    preview->setEnabled(w != 0);
-    preview->setChecked(w != 0);
+    KToggleAction *previewAction = static_cast<KToggleAction*>(d->actionCollection->action("preview"));
+    previewAction->setEnabled(showPreview);
+    previewAction->setChecked(showPreview);
     setView(static_cast<KFile::FileView>(d->viewKind));
 }
 
@@ -569,17 +595,6 @@ void KDirOperator::slotToggleHidden(bool show)
     updateDir();
     //if ( d->fileView )
     //    d->fileView->listingCompleted();
-}
-
-void KDirOperator::slotDefaultPreview()
-{
-    d->viewKind = d->viewKind | KFile::PreviewContents;
-    if (!d->preview) {
-        d->preview = new KFileMetaPreview(this);
-        (static_cast<KToggleAction*>(d->actionCollection->action("preview")))->setChecked(true);
-    }
-
-    setView(static_cast<KFile::FileView>(d->viewKind));
 }
 
 void KDirOperator::slotSortByName()
@@ -1244,50 +1259,31 @@ void KDirOperator::setDropOptions(int options)
     //   d->fileView->setDropOptions(options);
 }
 
-void KDirOperator::setView(KFile::FileView view)
+void KDirOperator::setView(KFile::FileView viewKind)
 {
-    //bool separateDirs = KFile::isSeparateDirs(view);
-    bool preview = (KFile::isPreviewInfo(view) || KFile::isPreviewContents(view));
+    bool preview = (KFile::isPreviewInfo(viewKind) || KFile::isPreviewContents(viewKind));
 
-    if (view == KFile::Default) {
-        if (KFile::isDetailView((KFile::FileView) d->defaultView))
-            view = KFile::Detail;
-        else
-            view = KFile::Simple;
-
-        //separateDirs = KFile::isSeparateDirs(static_cast<KFile::FileView>(d->defaultView));
-        preview = (KFile::isPreviewInfo(static_cast<KFile::FileView>(d->defaultView)) ||
-                   KFile::isPreviewContents(static_cast<KFile::FileView>(d->defaultView)))
-                  && d->actionCollection->action("preview")->isEnabled();
-
-        if (preview) {   // instantiates KFileMetaPreview and calls setView()
-            d->viewKind = d->defaultView;
-            slotDefaultPreview();
-            return;
+    if (viewKind == KFile::Default) {
+        if (KFile::isDetailView((KFile::FileView)d->defaultView)) {
+            viewKind = KFile::Detail;
+        } else {
+            viewKind = KFile::Simple;
         }
-        //else if (!separateDirs) {
-        //    d->actionCollection->action("separate dirs")->setChecked(true);
-        //}
+
+        const KFile::FileView defaultViewKind = static_cast<KFile::FileView>(d->defaultView);
+        preview = (KFile::isPreviewInfo(defaultViewKind) || KFile::isPreviewContents(defaultViewKind))
+                  && d->actionCollection->action("preview")->isEnabled();
     }
 
-    // if we don't have any files, we can't separate dirs from files :)
-    if ((mode() & KFile::File) == 0 &&
-            (mode() & KFile::Files) == 0) {
-        //separateDirs = false;
-        d->actionCollection->action("separate dirs")->setEnabled(false);
-    }
+    d->viewKind = static_cast<int>(viewKind);
+    viewKind = static_cast<KFile::FileView>(d->viewKind);
 
-    d->viewKind = static_cast<int>(view); // | (separateDirs ? KFile::SeparateDirs : 0);
-    view = static_cast<KFile::FileView>(d->viewKind);
-
-    QAbstractItemView *newView = createView(this, view);
-    /*if ( preview ) {
-        // we keep the preview-_widget_ around, but not the KFilePreview.
-        // KFilePreview::setPreviewWidget handles the reparenting for us
-        static_cast<KFilePreview*>(new_view)->setPreviewWidget(d->preview, url());
-    }*/
-
+    QAbstractItemView *newView = createView(this, viewKind);
     setView(newView);
+
+    if (preview) {
+        togglePreview(true);
+    }
 }
 
 QAbstractItemView * KDirOperator::view() const
@@ -1300,9 +1296,30 @@ QWidget * KDirOperator::viewWidget() const
     return 0; // TODO: d->fileView ? d->fileView->widget() : 0L;
 }
 
-
-void KDirOperator::connectView(QAbstractItemView *view)
+KFile::Modes KDirOperator::mode() const
 {
+    return d->mode;
+}
+
+void KDirOperator::setMode(KFile::Modes mode)
+{
+    if (d->mode == mode)
+        return;
+
+    d->mode = mode;
+
+    d->dirLister->setDirOnlyMode(dirOnlyMode());
+
+    // reset the view with the different mode
+    setView(static_cast<KFile::FileView>(d->viewKind));
+}
+
+void KDirOperator::setView(QAbstractItemView *view)
+{
+    if (view == d->itemView) {
+        return;
+    }
+
     // TODO: do a real timer and restart it after that
     d->pendingMimeTypes.clear();
     bool listDir = true;
@@ -1366,7 +1383,7 @@ void KDirOperator::connectView(QAbstractItemView *view)
     d->itemView->setItemDelegate(delegate);
     d->itemView->viewport()->setAttribute(Qt::WA_Hover);
     d->itemView->setContextMenuPolicy(Qt::CustomContextMenu);
-
+    d->itemView->setMouseTracking(true);
     //d->fileView = view;
     //d->fileView->setDropOptions(d->dropOptions);
 
@@ -1378,6 +1395,10 @@ void KDirOperator::connectView(QAbstractItemView *view)
             this, SLOT(slotDoubleClicked(const QModelIndex&)));
     connect(d->itemView, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(openContextMenu(const QPoint&)));
+    connect(d->itemView, SIGNAL(entered(const QModelIndex&)),
+            this, SLOT(triggerPreview(const QModelIndex&)));
+    connect(d->itemView, SIGNAL(viewportEntered()),
+            this, SLOT(cancelPreview()));
 
 
     /*KFileViewSignaler *sig = view->signaler();
@@ -1399,10 +1420,10 @@ void KDirOperator::connectView(QAbstractItemView *view)
     //    slotSortReversed();
 
     updateViewActions();
-    d->itemView->resize(size());
+    d->splitter->addWidget(d->itemView);
+
+    d->splitter->resize(size());
     d->itemView->show();
-    //d->fileView->widget()->resize(size());
-    //d->fileView->widget()->show();
 
     if (listDir) {
         QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -1410,36 +1431,6 @@ void KDirOperator::connectView(QAbstractItemView *view)
     }
     //else
     //    view->listingCompleted();
-}
-
-KFile::Modes KDirOperator::mode() const
-{
-    return d->mode;
-}
-
-void KDirOperator::setMode(KFile::Modes mode)
-{
-    if (d->mode == mode)
-        return;
-
-    d->mode = mode;
-
-    d->dirLister->setDirOnlyMode(dirOnlyMode());
-
-    // reset the view with the different mode
-    setView(static_cast<KFile::FileView>(d->viewKind));
-}
-
-void KDirOperator::setView(QAbstractItemView *view)
-{
-    if (view == d->itemView) {
-        return;
-    }
-
-    //setFocusProxy(view->widget());
-    //view->setSorting( d->sorting );
-    //view->setOnlyDoubleClickSelectsFiles( d->onlyDoubleClickSelectsFiles );
-    connectView(view); // also deletes the old view
 
     emit viewChanged(view);
 }
@@ -1538,7 +1529,12 @@ void KDirOperator::selectFile(const KFileItem *item)
 
 void KDirOperator::highlightFile(const KFileItem *item)
 {
-    fileHighlighted(item);
+    Q_ASSERT(item != 0);
+    if (d->preview != 0) {
+        d->preview->showPreview(item->url());
+    }
+
+    emit fileHighlighted(item);
 }
 
 void KDirOperator::setCurrentItem(const QString& filename)
@@ -1814,20 +1810,25 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
     QDir::SortFlags sorting = QDir::Name;
 
     QString viewStyle = configGroup.readEntry("View Style", "Simple");
-    if (viewStyle == QLatin1String("Detail"))
+    if (viewStyle == QLatin1String("Detail")) {
         d->defaultView |= KFile::Detail;
-    else
+    } else {
         d->defaultView |= KFile::Simple;
-    if (configGroup.readEntry(QLatin1String("Separate Directories"),
-                              DefaultMixDirsAndFiles))
-        d->defaultView |= KFile::SeparateDirs;
-    if (configGroup.readEntry(QLatin1String("Show Preview"), false))
+    }
+
+    //if (configGroup.readEntry(QLatin1String("Separate Directories"),
+    //                          DefaultMixDirsAndFiles)) {
+    //    d->defaultView |= KFile::SeparateDirs;
+    //}
+    if (configGroup.readEntry(QLatin1String("Show Preview"), false)) {
         d->defaultView |= KFile::PreviewContents;
+    }
+    d->previewWidth = configGroup.readEntry(QLatin1String("Preview Width"), 100);
 
     if (configGroup.readEntry(QLatin1String("Sort directories first"),
-                              DefaultDirsFirst))
+                              DefaultDirsFirst)) {
         sorting |= QDir::DirsFirst;
-
+    }
 
     QString name = QLatin1String("Name");
     QString sortBy = configGroup.readEntry(QLatin1String("Sort by"), name);
@@ -1871,25 +1872,25 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
     configGroup.writeEntry(QLatin1String("Sort reversed"),
                            d->actionCollection->action("descending")->isChecked());
 
-    // don't save the separate dirs or preview when an application specific
-    // preview is in use.
+    // don't save the preview when an application specific preview is in use.
     bool appSpecificPreview = false;
     if (d->preview) {
-        QWidget *preview = const_cast<QWidget*>(d->preview);   // grmbl
-        KFileMetaPreview *tmp = dynamic_cast<KFileMetaPreview*>(preview);
-        appSpecificPreview = (tmp == 0L);
+        KFileMetaPreview *tmp = dynamic_cast<KFileMetaPreview*>(d->preview);
+        appSpecificPreview = (tmp == 0);
     }
 
     if (!appSpecificPreview) {
-        //QAction* separateDirs = d->actionCollection->action("separate dirs");
-        //if (separateDirs->isEnabled())
-        //    configGroup.writeEntry(QLatin1String("Separate Directories"),
-        //                           separateDirs->isChecked());
-
         KToggleAction *previewAction = static_cast<KToggleAction*>(d->actionCollection->action("preview"));
         if (previewAction->isEnabled()) {
             bool hasPreview = previewAction->isChecked();
             configGroup.writeEntry(QLatin1String("Show Preview"), hasPreview);
+
+            if (hasPreview) {
+                // remember the width of the preview widget
+                QList<int> sizes = d->splitter->sizes();
+                Q_ASSERT(sizes.count() == 2);
+                configGroup.writeEntry(QLatin1String("Preview Width"), sizes[1]);
+            }
         }
     }
 
@@ -1906,11 +1907,25 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
 
 }
 
-
 void KDirOperator::resizeEvent(QResizeEvent *)
 {
-    if (d->itemView) {
-        d->itemView->resize(size());
+    // resize the splitter and assure that the width of
+    // the preview widget is restored
+    QList<int> sizes = d->splitter->sizes();
+    const bool hasPreview = (sizes.count() == 2);
+    const bool restorePreviewWidth = hasPreview && (d->previewWidth != sizes[1]);
+
+    d->splitter->resize(size());
+
+    sizes = d->splitter->sizes();
+    if (restorePreviewWidth) {
+        const int availableWidth = sizes[0] + sizes[1];
+        sizes[0] = availableWidth - d->previewWidth;
+        sizes[1] = d->previewWidth;
+        d->splitter->setSizes(sizes);
+    }
+    if (hasPreview) {
+        d->previewWidth = sizes[1];
     }
 
     if (d->progressBar->parent() == this) {
@@ -2101,12 +2116,56 @@ void KDirOperator::openContextMenu(const QPoint& pos)
     activatedMenu(item.isNull() ? 0 : &item, QCursor::pos());
 }
 
+void KDirOperator::triggerPreview(const QModelIndex& index)
+{
+    if ((d->preview != 0) && index.isValid() && (index.column() == KDirModel::Name)) {
+        const QModelIndex dirIndex = d->proxyModel->mapToSource(index);
+        const KFileItem item = d->dirModel->itemForIndex(dirIndex);
+        if (!item.isDir()) {
+            d->previewUrl = item.url();
+            d->previewTimer->start(300);
+        }
+    }
+}
+
+void KDirOperator::cancelPreview()
+{
+    d->previewTimer->stop();
+}
+
+void KDirOperator::showPreview()
+{
+    if (d->preview != 0) {
+        d->preview->showPreview(d->previewUrl);
+    }
+}
+
+void KDirOperator::slotSplitterMoved(int pos, int index)
+{
+    Q_UNUSED(pos);
+    Q_UNUSED(index);
+    const QList<int> sizes = d->splitter->sizes();
+    if (sizes.count() == 2) {
+        // remember the width of the preview widget (see KDirOperator::resizeEvent())
+        d->previewWidth = sizes[1];
+    }
+}
+
 void KDirOperator::togglePreview(bool on)
 {
-    if (on)
-        slotDefaultPreview();
-    else
-        setView((KFile::FileView)(d->viewKind & ~(KFile::PreviewContents | KFile::PreviewInfo)));
+    if (on) {
+        d->viewKind = d->viewKind | KFile::PreviewContents;
+        if (d->preview == 0) {
+            d->preview = new KFileMetaPreview(this);
+            d->actionCollection->action("preview")->setChecked(true);
+            d->splitter->addWidget(d->preview);
+        }
+
+        d->preview->show();
+    } else {
+        d->preview->hide();
+        d->previewTimer->stop();
+    }
 }
 
 void KDirOperator::slotRefreshItems(const KFileItemList& items)
