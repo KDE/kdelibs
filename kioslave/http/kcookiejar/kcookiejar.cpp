@@ -369,19 +369,16 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
        if (cookieList->getAdvice() != KCookieDunno)
           advice = cookieList->getAdvice();
 
-       // Do not send cookies for this domain if policy is set to reject
-       // and we are not setup to automatically accept all cookies as
-       // session cookies...
-       if (advice == KCookieReject &&
-           !(m_ignoreCookieExpirationDate && m_autoAcceptSessionCookies))
-       {
-          if (it == domains.end())
-             break; // Finished.
-          continue;
-       }
-
        for ( cookie=cookieList->first(); cookie != 0; cookie=cookieList->next() )
        {
+          // If the we are setup to automatically accept all session cookies and to
+          // treat all cookies as session cookies or the current cookie is a session
+          // cookie, then send the cookie back regardless of either policy.
+          if (advice == KCookieReject &&
+              !(m_autoAcceptSessionCookies && 
+                (m_ignoreCookieExpirationDate || cookie->expireDate() == 0)))
+              continue;
+
           if (!cookie->match(fqdn, domains, path))
              continue;
 
