@@ -35,6 +35,7 @@
 #include <QtGui/QPainter>
 
 #include <kglobalsettings.h>
+#include <kcolorscheme.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
