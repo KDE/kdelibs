@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "posterpreview.h"
+#include "posterpreview_p.h"
 
 #include <kdebug.h>
 #include <kprocess.h>

@@ -34,7 +34,7 @@
 #include "kprinterpropertydialog.h"
 #include "plugincombobox.h"
 #include "kpcopiespage.h"
-#include "treecombobox.h"
+#include "treecombobox_p.h"
 #include "messagewindow.h"
 
 #include <QtGui/QGroupBox>

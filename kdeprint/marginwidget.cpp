@@ -18,8 +18,8 @@
  **/
 
 #include "marginwidget.h"
-#include "marginpreview.h"
-#include "marginvaluewidget.h"
+#include "marginpreview_p.h"
+#include "marginvaluewidget_p.h"
 #include "kprinter.h"
 
 #include <QtGui/QComboBox>

@@ -18,7 +18,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kprintpreview.h"
+#include "kprintpreview_p.h"
 #include "kmfactory.h"
 
 #include <QtCore/QFile>

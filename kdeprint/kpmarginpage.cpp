@@ -18,7 +18,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kpmarginpage.h"
+#include "kpmarginpage_p.h"
 #include "kprinter.h"
 #include "driver.h"
 #include "marginwidget.h"

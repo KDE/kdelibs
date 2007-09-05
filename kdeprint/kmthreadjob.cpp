@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kmthreadjob.h"
+#include "kmthreadjob_p.h"
 #include "kmjob.h"
 #include "kmjobmanager.h"
 

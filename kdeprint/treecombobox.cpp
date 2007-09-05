@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "treecombobox.h"
+#include "treecombobox_p.h"
 
 #include <QtGui/QHeaderView>
 #include <QtGui/QStandardItem>

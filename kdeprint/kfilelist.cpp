@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kfilelist.h"
+#include "kfilelist_p.h"
 
 #include <QtGui/QToolButton>
 #include <QtGui/QLabel>

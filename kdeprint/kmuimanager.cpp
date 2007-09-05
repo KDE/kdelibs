@@ -27,12 +27,12 @@
 #include "kmmanager.h"
 #include "kmprinter.h"
 #include "kpdriverpage.h"
-#include "kpmarginpage.h"
+#include "kpmarginpage_p.h"
 #include "kpqtpage.h"
-#include "kpfilterpage.h"
-#include "kpfileselectpage.h"
+#include "kpfilterpage_p.h"
+#include "kpfileselectpage_p.h"
 #include "kxmlcommand.h"
-#include "kpposterpage.h"
+#include "kpposterpage_p.h"
 
 #include <config.h>
 

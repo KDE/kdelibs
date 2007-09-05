@@ -25,9 +25,6 @@
 
 class DrBase;
 
-#ifdef __GNUC__
-#warning rename class or remove from global namespace
-#endif
 class DriverItem : public QTreeWidgetItem
 {
 public:

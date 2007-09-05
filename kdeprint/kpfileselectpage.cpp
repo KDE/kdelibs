@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kpfileselectpage.h"
-#include "kfilelist.h"
+#include "kpfileselectpage_p.h"
+#include "kfilelist_p.h"
 
 #include <QtGui/QLayout>
 #include <QtCore/QStringList>
