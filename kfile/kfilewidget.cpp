@@ -303,7 +303,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
     KToggleAction *showSidebarAction =
-        new KToggleAction(i18n("Show Quick Access Navigation Panel"), this);
+        new KToggleAction(i18n("Show Places Navigation Panel"), this);
     coll->addAction("toggleSpeedbar", showSidebarAction);
     showSidebarAction->setShortcut( QKeySequence(Qt::Key_F9) );
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
@@ -315,14 +315,14 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleBookmarks( bool )) );
 
-    KActionMenu *menu = new KActionMenu( KIcon("configure"), i18n("Configure"), this);
+    KActionMenu *menu = new KActionMenu( KIcon("configure"), i18n("Options"), this);
     coll->addAction("extra menu", menu);
-    menu->setWhatsThis(i18n("<qt>This is the configuration menu for the file dialog. "
+    menu->setWhatsThis(i18n("<qt>This is the preferences menu for the file dialog. "
                             "Various options can be accessed from this menu including: <ul>"
                             "<li>how files are sorted in the list</li>"
                             "<li>types of view, including icon and list</li>"
                             "<li>showing of hidden files</li>"
-                            "<li>the Quick Access navigation panel</li>"
+                            "<li>the Places navigation panel</li>"
                             "<li>file previews</li>"
                             "<li>separating folders from files</li></ul></qt>"));
     menu->addAction( coll->action( "sorting menu" ));

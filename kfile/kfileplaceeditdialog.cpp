@@ -82,24 +82,21 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
                                            QWidget *parent)
     : KDialog( parent )
 {
-    setCaption( i18n("Edit Quick Access Entry") );
+    setCaption( i18n("Edit Places Entry") );
     setButtons( Ok | Cancel );
     setModal(true);
     setDefaultButton(Ok);
     showButtonSeparator(true);
     KVBox *box = new KVBox( this );
-    QString text = i18n("<qt><b>Please provide a description, URL and icon for this Quick Access entry.</b><br /></qt>");
-    QLabel *label = new QLabel( text, box );
-    label->setWordWrap(true);
     box->setSpacing( spacingHint() );
 
     Q3Grid *grid = new Q3Grid( 2, box );
     grid->setSpacing( spacingHint() );
 
-    QString whatsThisText = i18n("<qt>This is the text that will appear in the Quick Access panel.<br /><br />"
+    QString whatsThisText = i18n("<qt>This is the text that will appear in the Places panel.<br /><br />"
                                  "The description should consist of one or two words "
                                  "that will help you remember what this entry refers to.</qt>");
-    label = new QLabel( i18n("&Description:"), grid );
+    QLabel *label = new QLabel( i18n("&Description:"), grid );
     m_edit = new KLineEdit( grid);
     m_edit->setText( description.isEmpty() ? url.fileName() : description );
     label->setBuddy( m_edit );
@@ -110,14 +107,14 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
                          "%1<br />http://www.kde.org<br />ftp://ftp.kde.org/pub/kde/stable<br /><br />"
                          "By clicking on the button next to the text edit box you can browse to an "
                          "appropriate URL.</qt>", QDir::homePath());
-    label = new QLabel( i18n("&URL:"), grid );
+    label = new QLabel( i18n("&Location:"), grid );
     m_urlEdit = new KUrlRequester( url.prettyUrl(), grid );
     m_urlEdit->setMode( KFile::Directory );
     label->setBuddy( m_urlEdit );
     label->setWhatsThis(whatsThisText );
     m_urlEdit->setWhatsThis(whatsThisText );
 
-    whatsThisText = i18n("<qt>This is the icon that will appear in the Quick Access panel.<br /><br />"
+    whatsThisText = i18n("<qt>This is the icon that will appear in the Places panel.<br /><br />"
                          "Click on the button to select a different icon.</qt>");
     label = new QLabel( i18n("Choose an &icon:"), grid );
     m_iconButton = new KIconButton( grid );
