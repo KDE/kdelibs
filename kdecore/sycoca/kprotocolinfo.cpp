@@ -99,7 +99,9 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   else
     m_outputType = KProtocolInfo::T_NONE;
 
-  d->docPath = config.readPathEntry( "DocPath" );
+  d->docPath = config.readPathEntry( "X-DocPath" );
+  if (d->docPath.isEmpty())
+    d->docPath = config.readPathEntry( "DocPath" );
   d->protClass = config.readEntry( "Class" ).toLower();
   if (d->protClass[0] != ':')
      d->protClass.prepend(QLatin1Char(':'));

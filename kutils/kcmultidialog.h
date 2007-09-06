@@ -160,7 +160,7 @@ class KUTILS_EXPORT KCMultiDialog : public KPageDialog
 
     /**
      * This slot is called when the user presses the "Help" Button.
-     * It reads the DocPath field of the currently selected KControl
+     * It reads the X-DocPath field of the currently selected KControl
      * module's .desktop file to find the path to the documentation,
      * which it then attempts to load.
      *

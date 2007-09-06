@@ -124,7 +124,9 @@ void KCModuleInfo::Private::loadAll()
     return;
 
   // get the documentation path
-  doc = service->property( "DocPath", QVariant::String ).toString();
+  doc = service->property( "X-DocPath", QVariant::String ).toString();
+  if (doc.isEmpty())
+    doc = service->property( "DocPath", QVariant::String ).toString();
 
   // read weight
   QVariant tmp = service->property( "X-KDE-Weight", QVariant::Int );

@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
    {
      debug("Found it !");
      debug(QString("Comment is %1").arg(se->comment()));
-     QVariant qv = se->property("DocPath");
+     QVariant qv = se->property("X-DocPath");
      debug(QString("Property type is %1").arg(qv.typeName()));
      debug(QString("Property value is %1").arg(qv.toString()));
    }
