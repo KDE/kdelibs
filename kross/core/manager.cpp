@@ -173,11 +173,11 @@ Manager::Manager()
                 falconptions // options
                 )
             );
-        } else {
-            #ifdef KROSS_INTERPRETER_DEBUG
-                krossdebug("Falcon interpreter for kross is unavailable");
-            #endif
-        }
+    } else {
+        #ifdef KROSS_INTERPRETER_DEBUG
+            krossdebug("Falcon interpreter for kross is unavailable");
+        #endif
+    }
 #endif
 
     // fill the list of supported interpreternames.
