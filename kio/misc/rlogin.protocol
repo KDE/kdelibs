@@ -9,5 +9,5 @@ reading=false
 writing=false
 makedir=false
 deleting=false
-DocPath=kioslave/rlogin.html
+X-DocPath=kioslave/rlogin.html
 Icon=konsole

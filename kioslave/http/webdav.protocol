@@ -14,5 +14,5 @@ defaultMimetype=application/octet-stream
 determineMimetypeFromExtension=false
 Icon=www
 maxInstances=3
-DocPath=kioslave/webdav.html
+X-DocPath=kioslave/webdav.html
 Class=:internet

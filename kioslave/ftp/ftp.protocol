@@ -14,5 +14,5 @@ moving=true
 ProxiedBy=http
 Icon=ftp
 maxInstances=2
-DocPath=kioslave/ftp.html
+X-DocPath=kioslave/ftp.html
 Class=:internet
