@@ -158,27 +158,27 @@ public:
             bool canceled = false;
             ::no_query_exit = true;
 
-            for (QList<KMainWindow*>::ConstIterator it = KMainWindow::memberList().constBegin(); it != KMainWindow::memberList().constEnd()  && !canceled;) {
-                KMainWindow *window = *it;
-                ++it; // Update now, the current window might get deleted
+            foreach (KMainWindow *window, KMainWindow::memberList()) {
                 if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
                     QCloseEvent e;
                     QApplication::sendEvent( window, &e );
                     canceled = !e.isAccepted();
-		    /* Don't even think_about deleting widgets with
-		     Qt::WDestructiveClose flag set at this point. We
-		     are faking a close event, but we are *not*_
-		     closing the window. The purpose of the faked
-		     close event is to prepare the application so it
-		     can safely be quit without the user losing data
-		     (possibly showing a message box "do you want to
-		     save this or that?"). It is possible that the
-		     session manager quits the application later
-		     (emitting QApplication::aboutToQuit() when this
-		     happens), but it is also possible that the user
-		     cancels the shutdown, so the application will
-		     continue to run.
-		     */
+                    if (canceled)
+                        break;
+                    /* Don't even think_about deleting widgets with
+                       Qt::WDestructiveClose flag set at this point. We
+                       are faking a close event, but we are *not*_
+                       closing the window. The purpose of the faked
+                       close event is to prepare the application so it
+                       can safely be quit without the user losing data
+                       (possibly showing a message box "do you want to
+                       save this or that?"). It is possible that the
+                       session manager quits the application later
+                       (emitting QApplication::aboutToQuit() when this
+                       happens), but it is also possible that the user
+                       cancels the shutdown, so the application will
+                       continue to run.
+                    */
                 }
             }
             ::no_query_exit = false;
@@ -186,8 +186,7 @@ public:
                return false;
 
             KMainWindow* last = 0;
-            for (QList<KMainWindow*>::ConstIterator it = KMainWindow::memberList().constBegin(); it != KMainWindow::memberList().constEnd(); ++it) {
-                KMainWindow *window = *it;
+            foreach (KMainWindow *window, KMainWindow::memberList()) {
                 if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
                     last = window;
                 }
@@ -204,7 +203,7 @@ public:
 };
 
 K_GLOBAL_STATIC(KMWSessionManager, ksm)
-static QList<KMainWindow*> sMemberList; // ##### isn't the static object a problem?
+K_GLOBAL_STATIC(QList<KMainWindow*>, sMemberList)
 static bool being_first = true;
 
 KMainWindow::KMainWindow( QWidget* parent, Qt::WFlags f )
@@ -235,7 +234,7 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     // force KMWSessionManager creation - someone a better idea?
     ksm->dummyInit();
 
-    sMemberList.append( q );
+    sMemberList->append( q );
 
     settingsDirty = false;
     autoSaveSettings = false;
@@ -369,7 +368,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
 KMainWindow::~KMainWindow()
 {
-    sMemberList.removeAll( this );
+    sMemberList->removeAll( this );
     delete k_ptr;
 }
 
@@ -989,7 +988,7 @@ QList<KToolBar*> KMainWindow::toolBars() const
     return ret;
 }
 
-QList<KMainWindow*> KMainWindow::memberList() { return sMemberList; }
+QList<KMainWindow*> KMainWindow::memberList() { return *sMemberList; }
 
 #include "kmainwindow.moc"
 
