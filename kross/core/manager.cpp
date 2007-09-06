@@ -161,6 +161,25 @@ Manager::Manager()
     }
 #endif
 
+#ifdef KROSS_FALCON_LIBRARY
+    QString falconlib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_FALCON_LIBRARY)) );
+    if(! falconlib.isEmpty()) {
+        InterpreterInfo::Option::Map falconptions;
+        d->interpreterinfos.insert("falcon",
+            new InterpreterInfo("falcon",
+                falconlib, // library
+                "*.fal", // file filter-wildcard
+                QStringList() << "application/x-falcon", // mimetypes
+                falconptions // options
+                )
+            );
+        } else {
+            #ifdef KROSS_INTERPRETER_DEBUG
+                krossdebug("Falcon interpreter for kross is unavailable");
+            #endif
+        }
+#endif
+
     // fill the list of supported interpreternames.
     QHash<QString, InterpreterInfo*>::Iterator it( d->interpreterinfos.begin() );
     for(; it != d->interpreterinfos.end(); ++it)
