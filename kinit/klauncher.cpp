@@ -31,6 +31,9 @@
 #include <sys/time.h>
 
 #include <QtCore/QFile>
+#ifdef Q_WS_WIN
+#include <QtCore/QProcess>
+#endif
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -189,10 +192,12 @@ KLauncher::KLauncher(int _kdeinitSocket)
 
    connect(&mTimer, SIGNAL(timeout()), SLOT(idleTimeout()));
 
+#ifndef Q_WS_WIN
    kdeinitNotifier = new QSocketNotifier(kdeinitSocket, QSocketNotifier::Read);
    connect(kdeinitNotifier, SIGNAL( activated( int )),
            this, SLOT( slotKDEInitData( int )));
    kdeinitNotifier->setEnabled( true );
+#endif
    lastRequest = 0;
    bProcessingQueue = false;
 
@@ -207,10 +212,14 @@ KLauncher::KLauncher(int _kdeinitSocket)
       mSlaveValgrindSkin = getenv("KDE_SLAVE_VALGRIND_SKIN");
       qWarning("Klauncher running slaves through valgrind for slaves of protocol '%s'", qPrintable(mSlaveValgrind));
    }
+#ifdef Q_WS_WIN
+   kDebug(7016) << "LAUNCHER_OK";
+#else
    klauncher_header request_header;
    request_header.cmd = LAUNCHER_OK;
    request_header.arg_length = 0;
    write(kdeinitSocket, &request_header, sizeof(request_header));
+#endif
 }
 
 KLauncher::~KLauncher()
@@ -236,6 +245,9 @@ KLauncher::destruct(int exit_code)
 
 void KLauncher::setLaunchEnv(const QString &name, const QString &value)
 {
+#ifdef Q_WS_WIN
+    
+#else
    klauncher_header request_header;
    QByteArray requestData;
    requestData.append(name.toLocal8Bit()).append('\0').append(value.toLocal8Bit()).append('\0');
@@ -243,8 +255,10 @@ void KLauncher::setLaunchEnv(const QString &name, const QString &value)
    request_header.arg_length = requestData.size();
    write(kdeinitSocket, &request_header, sizeof(request_header));
    write(kdeinitSocket, requestData.data(), request_header.arg_length);
+#endif
 }
 
+#ifndef Q_WS_WIN
 /*
  * Read 'len' bytes from 'sock' into buffer.
  * returns -1 on failure, 0 on no data.
@@ -307,6 +321,7 @@ KLauncher::slotKDEInitData(int)
    processRequestReturn(request_header.cmd,requestData);
        
 }
+#endif
    
 void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
 {   
@@ -529,6 +544,38 @@ static void appendLong(QByteArray &ba, long l)
 void
 KLauncher::requestStart(KLaunchRequest *request)
 {
+#ifdef Q_WS_WIN
+   requestList.append( request );
+   lastRequest = request;
+   
+   QProcess *process  = new QProcess;
+   process->setProcessChannelMode(QProcess::MergedChannels);
+   connect(process ,SIGNAL(readyReadStandardOutput()),this, SLOT(slotGotOutput()) );
+   processList << process;
+   
+// process.setEnvironment(envlist);
+   QStringList args;
+   foreach (QString arg, request->arg_list)
+      args << arg;
+
+   process->start(request->name,args);
+		
+   _PROCESS_INFORMATION* _pid = process->pid();
+    int pid = _pid ? _pid->dwProcessId : 0;
+
+   if (pid)
+   {
+      request->pid = pid;
+      QByteArray data((char *)&pid, sizeof(int));
+      processRequestReturn(LAUNCHER_OK,data);
+   }
+   else 
+   {
+      processRequestReturn(LAUNCHER_ERROR,"");
+   }
+   return;
+
+#else
    requestList.append( request );
    // Send request to kdeinit.
    klauncher_header request_header;
@@ -569,6 +616,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    }
    while (lastRequest != 0);
    dontBlockReading = true;
+#endif
 }
 
 void KLauncher::exec_blind(const QString &name, const QStringList &arg_list, const QStringList &envs, const QString &startup_id)
@@ -976,16 +1024,26 @@ KLauncher::requestSlave(const QString &protocol,
         return 0;
     }
 
+    QStringList arg_list;
+#ifdef Q_WS_WIN
+    arg_list << name;
+    arg_list << protocol;
+    arg_list << mConnectionServer.address();
+    arg_list << app_socket;
+    name = "kioslave";
+#else
     QString arg1 = protocol;
     QString arg2 = mConnectionServer.address();
     QString arg3 = app_socket;
-    QStringList arg_list;
     arg_list.append(arg1);
     arg_list.append(arg2);
     arg_list.append(arg3);
+#endif
 
-    //kDebug(7016) << "KLauncher: launching new slave " << name << " with protocol=" << protocol
-    //    << " args=" << arg_list << endl;
+    kDebug(7016) << "KLauncher: launching new slave " << name << " with protocol=" << protocol
+     << " args=" << arg_list << endl;
+
+#ifdef Q_OS_UNIX
     if (mSlaveDebug == arg1)
     {
        klauncher_header request_header;
@@ -1003,7 +1061,7 @@ KLauncher::requestSlave(const QString &protocol,
        } else
 	   arg_list.prepend(QLatin1String("--tool=memcheck"));
     }
-
+#endif
     KLaunchRequest *request = new KLaunchRequest;
     request->autoStart = false;
     request->name = name;
@@ -1112,6 +1170,12 @@ void KLauncher::reparseConfiguration()
 void
 KLauncher::slotGotOutput()
 {
+#ifdef Q_WS_WIN
+  foreach (QProcess *p, processList) {
+    QByteArray _stdout = p->readAllStandardOutput();
+    kDebug(7016) << _stdout.data();
+  }
+#endif
 }
 
 #include "klauncher.moc"

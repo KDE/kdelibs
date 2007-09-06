@@ -42,6 +42,10 @@
 
 #include "autostart.h"
 
+#ifdef Q_WS_WIN
+class QProcess;
+endif
+
 class IdleSlave : public QObject
 {
    Q_OBJECT
@@ -172,7 +176,9 @@ public: // remote methods, called by KLauncherAdaptor
 public Q_SLOTS:
    void slotAutoStart();
    void slotDequeue();
+#ifndef Q_WS_WIN
    void slotKDEInitData(int);
+#endif
    void slotNameOwnerChanged(const QString &name, const QString &oldOnwer, const QString &newOwner);
    void slotSlaveStatus(IdleSlave *);
    void acceptSlave();
@@ -187,7 +193,11 @@ protected:
    KLaunchRequest *lastRequest;
    QList<SlaveWaitRequest*> mSlaveWaitRequest;
    int kdeinitSocket;
+#ifdef Q_WS_WIN
+   QList<QProcess *>processList;
+#else
    QSocketNotifier *kdeinitNotifier;
+#endif
    KIO::ConnectionServer mConnectionServer;
    QList<IdleSlave*> mSlaveList;
    QTimer mTimer;
