@@ -1934,13 +1934,19 @@ bool KDirOperator::dirOnlyMode(uint mode)
 
 void KDirOperator::slotProperties()
 {
-    // TODO
-    /*if ( d->fileView ) {
-        const KFileItemList *list = d->fileView->selectedItems();
-        if ( !list->isEmpty() ) {
-            KPropertiesDialog::showDialog( *list, this );
-        }
-    }*/
+    if (d->itemView == 0) {
+        return;
+    }
+
+    const QList<KFileItem> list = selectedItems();
+    // TODO: KPropertiesDialog still uses pointer-based KFileItemList
+    KFileItemList itemPtrList;
+    foreach (KFileItem item, list) {
+        itemPtrList << &item;
+    }
+
+    KPropertiesDialog dialog(itemPtrList, this);
+    dialog.exec();
 }
 
 void KDirOperator::slotClearView()
