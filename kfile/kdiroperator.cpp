@@ -1939,14 +1939,16 @@ void KDirOperator::slotProperties()
     }
 
     const QList<KFileItem> list = selectedItems();
-    // TODO: KPropertiesDialog still uses pointer-based KFileItemList
-    KFileItemList itemPtrList;
-    foreach (KFileItem item, list) {
-        itemPtrList << &item;
-    }
+    if (!list.isEmpty()) {
+        // TODO: KPropertiesDialog still uses pointer-based KFileItemList
+        KFileItemList itemPtrList;
+        foreach (KFileItem item, list) {
+            itemPtrList << &item;
+        }
 
-    KPropertiesDialog dialog(itemPtrList, this);
-    dialog.exec();
+        KPropertiesDialog dialog(itemPtrList, this);
+        dialog.exec();
+    }
 }
 
 void KDirOperator::slotClearView()
