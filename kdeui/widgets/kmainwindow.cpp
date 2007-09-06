@@ -158,7 +158,7 @@ public:
             bool canceled = false;
             ::no_query_exit = true;
 
-            for (QList<KMainWindow*>::ConstIterator it = KMainWindow::memberList().constBegin(); it != KMainWindow::memberList().constEnd()  && !canceled; ++it) {
+            for (QList<KMainWindow*>::ConstIterator it = KMainWindow::memberList().constBegin(); it != KMainWindow::memberList().constEnd()  && !canceled;) {
                 KMainWindow *window = *it;
                 ++it; // Update now, the current window might get deleted
                 if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
@@ -186,7 +186,7 @@ public:
                return false;
 
             KMainWindow* last = 0;
-            for (QList<KMainWindow*>::ConstIterator it = KMainWindow::memberList().constBegin(); it != KMainWindow::memberList().constEnd()  && !canceled; ++it) {
+            for (QList<KMainWindow*>::ConstIterator it = KMainWindow::memberList().constBegin(); it != KMainWindow::memberList().constEnd(); ++it) {
                 KMainWindow *window = *it;
                 if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
                     last = window;
