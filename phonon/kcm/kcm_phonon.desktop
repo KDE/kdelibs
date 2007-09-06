@@ -4,7 +4,7 @@ Exec=kcmshell kcm_phonon
 Icon=preferences-desktop-sound
 Type=Service
 ServiceTypes=KCModule
-DocPath=kcontrol/phonon/index.html
+X-DocPath=kcontrol/phonon/index.html
 
 X-KDE-Library=kcm_phonon
 X-KDE-FactoryName=kcm_phonon
