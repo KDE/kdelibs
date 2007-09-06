@@ -13,6 +13,7 @@ X-KDE-System-Settings-Parent-Category=computer-administration
 
 Name=Phonon
 Name[ar]=فونون
+Name[kn]=ಫೋನಾನ್
 Name[ne]=फोनोन
 Name[pa]=ਫੋਨੋਨ
 Name[vi]=Phô-non
@@ -30,6 +31,7 @@ Comment[he]=הגדרות מערכת הצליל
 Comment[hu]=Hangrendszer-beállítás
 Comment[ja]=サウンドシステムの設定
 Comment[kk]=Дыбыстық жүйе баптауы
+Comment[kn]=ಧ್ವನಿ ವ್ಯವಸ್ಥೆಯ ಸಂರಚನೆ
 Comment[ko]=사운드 시스템 설정
 Comment[lv]=Skaņas sistēmas konfigurācija
 Comment[nds]=Klangsysteem instellen
