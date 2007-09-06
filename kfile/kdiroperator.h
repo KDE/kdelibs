@@ -545,20 +545,15 @@ public:
 
 protected:
     /**
-     * A view factory for creating predefined fileviews. Called internally by setView
-    * , but you can also call it directly. Reimplement this if you depend on self defined fileviews.
-    * @param parent is the QWidget to be set as parent
-    * @param view is the predefined view to be set, note: this can be several ones OR:ed together.
-    * @returns the created KFileView
-     * @see KFileView
-     * @see KCombiView
-     * @see KFileDetailView
-     * @see KFileIconView
-     * @see KFilePreview
+     * A view factory for creating predefined fileviews. Called internally by setView,
+     * but you can also call it directly. Reimplement this if you depend on self defined fileviews.
+     * @param parent   is the QWidget to be set as parent
+     * @param viewKind is the predefined view to be set, note: this can be several ones OR:ed together
+     * @returns the created KFileView
      * @see KFile::FileView
      * @see setView
      */
-    virtual QAbstractItemView* createView(QWidget *parent, KFile::FileView view);
+    virtual QAbstractItemView* createView(QWidget *parent, KFile::FileView viewKind);
 
     /**
      * Sets a custom KDirLister to list directories.
@@ -851,8 +846,6 @@ private Q_SLOTS:
     void slotRefreshItems(const KFileItemList& items);
 
     void slotProperties();
-
-    void insertViewDependentActions();
 
     void slotPressed(const QModelIndex &index);
     void slotClicked(const QModelIndex &index);

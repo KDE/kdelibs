@@ -379,70 +379,6 @@ void KDirOperator::resetCursor()
     d->progressBar->hide();
 }
 
-void KDirOperator::insertViewDependentActions()
-{
-    return; // TODO
-
-    // If we have a new view actionCollection(), insert its actions
-    // into m_viewActionMenu.
-    /*
-    if( !d->fileView )
-       return;
-
-    if ( (m_viewActionMenu->menu()->actions().count() == 0) ||    // Not yet initialized or...
-        (d->actionCollection != d->fileView->actionCollection()) ) // ...changed since.
-    {
-      if (d->actionCollection)
-      {
-         disconnect( d->actionCollection, SIGNAL( inserted( KAction * )),
-               this, SLOT( slotViewActionAdded( KAction * )));
-         disconnect( d->actionCollection, SIGNAL( removed( KAction * )),
-               this, SLOT( slotViewActionRemoved( KAction * )));
-      }
-
-      m_viewActionMenu->menu()->clear();
-    //      m_viewActionMenu->addAction( m_shortAction );
-    //      m_viewActionMenu->addAction( m_detailedAction );
-    //      m_viewActionMenu->addAction( actionSeparator );
-      m_viewActionMenu->addAction( d->actionCollection->action( "short view" ) );
-      m_viewActionMenu->addAction( d->actionCollection->action( "detailed view" ) );
-      m_viewActionMenu->addAction( actionSeparator );
-      m_viewActionMenu->addAction( m_showHiddenAction );
-    //      m_viewActionMenu->addAction( d->actionCollection->action( "single" ));
-      m_viewActionMenu->addAction( m_separateDirsAction );
-      // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
-      // when you add/remove actions here!
-
-      d->actionCollection = d->fileView->actionCollection();
-      if (!d->actionCollection)
-         return;
-
-      if ( !d->actionCollection->isEmpty() )
-      {
-         m_viewActionMenu->addAction( d->viewActionSeparator );
-
-         // first insert the normal actions, then the grouped ones
-         QList<QActionGroup*> groups = d->actionCollection->actionGroups();
-
-         foreach (QAction* action, d->actionCollection->actionsWithoutGroup())
-            m_viewActionMenu->addAction( action );
-
-         foreach (QActionGroup* group, groups)
-         {
-            m_viewActionMenu->addSeparator();
-
-            foreach (QAction* action, group->actions())
-               m_viewActionMenu->addAction( action );
-         }
-      }
-
-      connect( d->actionCollection, SIGNAL( inserted( KAction * )),
-               SLOT( slotViewActionAdded( KAction * )));
-      connect( d->actionCollection, SIGNAL( removed( KAction * )),
-               SLOT( slotViewActionRemoved( KAction * )));
-    }*/
-}
-
 void KDirOperator::activatedMenu(const KFileItem *, const QPoint& pos)
 {
     setupMenu();
@@ -1185,62 +1121,16 @@ bool KDirOperator::checkPreviewInternal() const
     return false;
 }
 
-QAbstractItemView* KDirOperator::createView(QWidget* parent, KFile::FileView view)
+QAbstractItemView* KDirOperator::createView(QWidget* parent, KFile::FileView viewKind)
 {
-    QAbstractItemView* newView = 0;
-    //bool separateDirs = KFile::isSeparateDirs(view);
-    bool preview = (KFile::isPreviewInfo(view) || KFile::isPreviewContents(view));
-
-    /*if ( separateDirs || preview ) {
-        KCombiView *combi = 0L;
-        if (separateDirs)
-        {
-            combi = new KCombiView( parent );
-            combi->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
-        }
-
-        QAbstractItemView* view = 0;
-        if ( KFile::isSimpleView( view ) )
-            view = createView( combi, KFile::Simple );
-        else
-            view = createView( combi, KFile::Detail );
-
-        //view->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
-
-        //if (combi)
-        //    combi->setRight( v );
-
-        if (preview)
-        {
-            KFilePreview* pView = new KFilePreview( combi ? combi : view, parent );
-            pView->setObjectName( QLatin1String( "preview" ) );
-            pView->setOnlyDoubleClickSelectsFiles(d->onlyDoubleClickSelectsFiles);
-            newView = pView;
-        }
-        else
-            newView = combi;
-    }*/
-    /*else if ( KFile::isDetailView( view ) && !preview ) {
-        K3FileDetailView *ndw = new K3FileDetailView( parent );
-        ndw->setObjectName( "detail view" );
-        newView = ndw;
-        newView->setViewName( i18n("Detailed View") );
-    }
-    else  if ( KFile::isSimpleView( view ) && !preview ) {
-        //K3FileIconView* iconView = new K3FileIconView(parent, "simple view");
-
-        newView = new QListView(parent);
-        //newView->setViewName( i18n("Short View") );
-    }*/
-
-    if (KFile::isDetailView(view)) {
-        newView = new DirOperatorDetailView(parent);
+    QAbstractItemView* itemView = 0;
+    if (KFile::isDetailView(viewKind)) {
+        itemView = new DirOperatorDetailView(parent);
     } else {
-        newView = new DirOperatorIconView(parent);
+        itemView = new DirOperatorIconView(parent);
     }
 
-    //newView->widget()->setAcceptDrops(acceptDrops());
-    return newView;
+    return itemView;
 }
 
 void KDirOperator::setAcceptDrops(bool b)
@@ -1539,6 +1429,7 @@ void KDirOperator::highlightFile(const KFileItem *item)
 
 void KDirOperator::setCurrentItem(const QString& filename)
 {
+    Q_UNUSED(filename);
     // TODO:
     /*if ( d->fileView ) {
         const KFileItem *item = 0;
@@ -1673,11 +1564,6 @@ void KDirOperator::setupActions()
     bySizeAction->setActionGroup(sortGroup);
     byTypeAction->setActionGroup(sortGroup);
 
-    // the view menu actions
-    KActionMenu* viewMenu = new KActionMenu(i18n("&View"), this);
-    d->actionCollection->addAction("view menu", viewMenu);
-    connect(viewMenu->menu(), SIGNAL(aboutToShow()), SLOT(insertViewDependentActions()));
-
     KToggleAction *shortAction = new KToggleAction(i18n("Short View"), this);
     d->actionCollection->addAction("short view",  shortAction);
     shortAction->setIcon(KIcon(QLatin1String("fileview-multicolumn")));
@@ -1696,24 +1582,24 @@ void KDirOperator::setupActions()
     d->actionCollection->addAction("show hidden", showHiddenAction);
     connect(showHiddenAction, SIGNAL(toggled(bool)), SLOT(slotToggleHidden(bool)));
 
-    //KToggleAction* separateDirsAction = new KToggleAction(i18n("Separate Folders"), this);
-    //d->actionCollection->addAction("separate dirs", separateDirsAction);
-    //connect(separateDirsAction, SIGNAL(triggered(bool)), this, SLOT(slotSeparateDirs()));
-
     KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"), this);
     d->actionCollection->addAction("preview", previewAction);
     previewAction->setIcon(KIcon("thumbnail-show"));
     connect(previewAction, SIGNAL(toggled(bool)),
             SLOT(togglePreview(bool)));
 
-    //QActionGroup* detailGroup = new QActionGroup(this);
-    //shortAction->setActionGroup(detailGroup);
-    //detailedAction->setActionGroup(detailGroup);
-
     action = new KAction(i18n("Properties"), this);
     d->actionCollection->addAction("properties", action);
     action->setShortcut(KShortcut(Qt::ALT + Qt::Key_Return));
     connect(action, SIGNAL(triggered(bool)), this, SLOT(slotProperties()));
+
+    // the view menu actions
+    KActionMenu* viewMenu = new KActionMenu(i18n("&View"), this);
+    d->actionCollection->addAction("view menu", viewMenu);
+    viewMenu->addAction(shortAction);
+    viewMenu->addAction(detailedAction);
+    // TODO: QAbstractItemView does not offer an action collection. Provide
+    // an interface to add a custom action collection.
 }
 
 void KDirOperator::setupMenu()
@@ -2066,6 +1952,8 @@ void KDirOperator::slotClearView()
 
 void KDirOperator::slotPressed(const QModelIndex& index)
 {
+    Q_UNUSED(index);
+
     // Remember whether the left mouse button has been pressed, to prevent
     // that a right-click on an item opens an item (see slotClicked(),
     // slotDoubleClicked() and openContextMenu()).
@@ -2170,6 +2058,7 @@ void KDirOperator::togglePreview(bool on)
 
 void KDirOperator::slotRefreshItems(const KFileItemList& items)
 {
+    Q_UNUSED(items);
     // TODO:
     /*if ( !d->fileView )
         return;
