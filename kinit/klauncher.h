@@ -44,7 +44,7 @@
 
 #ifdef Q_WS_WIN
 class QProcess;
-endif
+#endif
 
 class IdleSlave : public QObject
 {
