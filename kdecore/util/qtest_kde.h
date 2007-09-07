@@ -119,6 +119,7 @@ int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
+    unsetenv("KDE_COLOR_DEBUG"); \
     KAboutData aboutData( "qttest", 0, ki18n("qttest"), "version" );  \
     KComponentData cData(&aboutData); \
     QCoreApplication app( argc, argv ); \
