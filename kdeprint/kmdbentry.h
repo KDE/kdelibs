@@ -27,27 +27,27 @@
 
 class KDEPRINT_EXPORT KMDBEntry
 {
-	public:
-	// the file location of the driver
-	QString	file;
-	// normal information
-	QString	manufacturer;
-	QString	model;
-	QString	modelname;
-	// information used for auto-detection
-	QString	pnpmanufacturer;
-	QString	pnpmodel;
-	// short driver description (if any)
-	QString	description;
-	// tell whether this is the recommended driver
-	bool recommended;
-	QString	drivercomment;
+public:
+    // the file location of the driver
+    QString file;
+    // normal information
+    QString manufacturer;
+    QString model;
+    QString modelname;
+    // information used for auto-detection
+    QString pnpmanufacturer;
+    QString pnpmodel;
+    // short driver description (if any)
+    QString description;
+    // tell whether this is the recommended driver
+    bool recommended;
+    QString drivercomment;
 
-	KMDBEntry();
-	bool validate(bool checkIt = true);
+    KMDBEntry();
+    bool validate(bool checkIt = true);
 };
 
-typedef QList<KMDBEntry*>		KMDBEntryList;
-typedef QListIterator<KMDBEntry*>	KMDBEntryListIterator;
+typedef QList<KMDBEntry*>  KMDBEntryList;
+typedef QListIterator<KMDBEntry*> KMDBEntryListIterator;
 
 #endif

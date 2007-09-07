@@ -30,27 +30,27 @@ class DrMain;
 
 class KDEPRINT_EXPORT KPQtPage : public KPrintDialogPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KPQtPage(QWidget *parent = 0);
-	explicit KPQtPage(DrMain *driver, QWidget *parent = 0);
-	~KPQtPage();
+    explicit KPQtPage(QWidget *parent = 0);
+    explicit KPQtPage(DrMain *driver, QWidget *parent = 0);
+    ~KPQtPage();
 
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
 
 protected Q_SLOTS:
-	void slotOrientationChanged(int);
-	void slotColorModeChanged(int);
-	void slotNupChanged(int);
+    void slotOrientationChanged(int);
+    void slotColorModeChanged(int);
+    void slotNupChanged(int);
 
 protected:
-	void init();
+    void init();
 
 protected:
-	KButtonGroup	*m_orientbox, *m_colorbox, *m_nupbox;
-	QComboBox	*m_pagesize;
-	QLabel		*m_orientpix, *m_colorpix, *m_nuppix;
+    KButtonGroup *m_orientbox, *m_colorbox, *m_nupbox;
+    QComboBox *m_pagesize;
+    QLabel  *m_orientpix, *m_colorpix, *m_nuppix;
 };
 
 #endif

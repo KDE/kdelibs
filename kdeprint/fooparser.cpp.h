@@ -28,16 +28,16 @@
 /* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     VAR = 258,
-     STRING = 259,
-     NUMBER = 260,
-     UNDEF = 261,
-     POSTPIPE = 262,
-     QUOTED = 263
-   };
+/* Put the tokens into the symbol table, so that GDB and other debuggers
+   know about them.  */
+enum yytokentype {
+    VAR = 258,
+    STRING = 259,
+    NUMBER = 260,
+    UNDEF = 261,
+    POSTPIPE = 262,
+    QUOTED = 263
+};
 #endif
 #define VAR 258
 #define STRING 259

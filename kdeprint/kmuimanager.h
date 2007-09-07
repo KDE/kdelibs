@@ -35,60 +35,60 @@ class QTreeWidget;
 
 class KDEPRINT_EXPORT KMUiManager : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	enum PrintDialogFlagType
-	{
-		Properties     = 0x0001,
-		Default        = 0x0002,
-		Preview        = 0x0004,
-		OutputToFile   = 0x0008,
-		PrintCommand   = 0x0020,
-		Persistent     = 0x0040,
-		PrintDialogAll = 0x001F
-	};
-	enum CopyFlagType
-	{
-		Current       = 0x001,
-		Range         = 0x002,
-		Collate       = 0x004,
-		Order         = 0x008,
-		PageSet       = 0x010,
-		CopyAll       = 0x0FF,
-		PSSelect      = Range|Order|PageSet,
-		NoAutoCollate = 0x100
-	};
+    enum PrintDialogFlagType {
+        Properties     = 0x0001,
+        Default        = 0x0002,
+        Preview        = 0x0004,
+        OutputToFile   = 0x0008,
+        PrintCommand   = 0x0020,
+        Persistent     = 0x0040,
+        PrintDialogAll = 0x001F
+    };
+    enum CopyFlagType {
+        Current       = 0x001,
+        Range         = 0x002,
+        Collate       = 0x004,
+        Order         = 0x008,
+        PageSet       = 0x010,
+        CopyAll       = 0x0FF,
+        PSSelect      = Range | Order | PageSet,
+        NoAutoCollate = 0x100
+    };
 
-	KMUiManager(QObject *parent = 0);
-	virtual ~KMUiManager();
+    KMUiManager(QObject *parent = 0);
+    virtual ~KMUiManager();
 
-	// print management
-	virtual void setupPropertyPages(KMPropertyPage*);
-	virtual void setupWizard(KMWizard*);
-	virtual void setupConfigDialog(KMConfigDialog*);
+    // print management
+    virtual void setupPropertyPages(KMPropertyPage*);
+    virtual void setupWizard(KMWizard*);
+    virtual void setupConfigDialog(KMConfigDialog*);
 
-	// print dialog
-	void addPrintDialogPage(KPrintDialogPage *page)		{ m_printdialogpages.append(page); }
-	int copyFlags(KPrinter *pr = 0, bool usePlugin = true);
-	int dialogFlags();
-	void setupPrintDialog(KPrintDialog*);
-	virtual void setupPrintDialogPages(QList<KPrintDialogPage*>*);
+    // print dialog
+    void addPrintDialogPage(KPrintDialogPage *page)  {
+        m_printdialogpages.append(page);
+    }
+    int copyFlags(KPrinter *pr = 0, bool usePlugin = true);
+    int dialogFlags();
+    void setupPrintDialog(KPrintDialog*);
+    virtual void setupPrintDialogPages(QList<KPrintDialogPage*>*);
 
-	// printer property dialog
-	void setupPropertyDialog(KPrinterPropertyDialog*);
-	virtual void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
+    // printer property dialog
+    void setupPropertyDialog(KPrinterPropertyDialog*);
+    virtual void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
 
-	// page processing capabilities
-	int systemPageCap();
-	virtual int pluginPageCap();
-	int pageCap();
+    // page processing capabilities
+    int systemPageCap();
+    virtual int pluginPageCap();
+    int pageCap();
 
-	// job management
-	virtual void setupJobViewer(QTreeWidget*);
+    // job management
+    virtual void setupJobViewer(QTreeWidget*);
 
 protected:
-	int			m_printdialogflags;
-	QList<KPrintDialogPage*>	m_printdialogpages;
+    int   m_printdialogflags;
+    QList<KPrintDialogPage*> m_printdialogpages;
 };
 
 #endif

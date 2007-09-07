@@ -27,15 +27,15 @@ class DriverView;
 class KDEPRINT_EXPORT KPDriverPage : public KPrintDialogPage
 {
 public:
-	explicit KPDriverPage(KMPrinter *p, DrMain *d = 0, QWidget *parent = 0);
-	~KPDriverPage();
+    explicit KPDriverPage(KMPrinter *p, DrMain *d = 0, QWidget *parent = 0);
+    ~KPDriverPage();
 
-	bool isValid(QString &msg);
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+    bool isValid(QString &msg);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
 
 protected:
-	DriverView	*m_view;
+    DriverView *m_view;
 };
 
 #endif

@@ -36,29 +36,31 @@ class DrMain;
 #endif
 class KDEPRINT_EXPORT DriverView : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	DriverView(QWidget *parent = 0);
-	~DriverView();
+    DriverView(QWidget *parent = 0);
+    ~DriverView();
 
-	void setDriver(DrMain*);
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
-	void setAllowFixed(bool on);
-	bool hasConflict() const 	{ return (m_conflict != 0); }
+    void setDriver(DrMain*);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
+    void setAllowFixed(bool on);
+    bool hasConflict() const  {
+        return (m_conflict != 0);
+    }
 
 Q_SIGNALS:
-  void itemSelected( QTreeWidgetItem* );
+    void itemSelected(QTreeWidgetItem*);
 
 protected Q_SLOTS:
-	void slotChanged();
-	void slotItemSelectionChanged();
+    void slotChanged();
+    void slotItemSelectionChanged();
 
 private:
-	QTreeWidget	*m_view;
-	DrOptionView	*m_optview;
-	DrMain		*m_driver;
-	int 		m_conflict;
+    QTreeWidget *m_view;
+    DrOptionView *m_optview;
+    DrMain  *m_driver;
+    int   m_conflict;
 };
 
 #endif

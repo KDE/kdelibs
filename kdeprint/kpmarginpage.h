@@ -29,19 +29,19 @@ class KPrinter;
 class KPMarginPage : public KPrintDialogPage
 {
 public:
-	KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent = 0);
-	~KPMarginPage();
+    KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent = 0);
+    ~KPMarginPage();
 
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
 
 protected:
-	void initPageSize(const QString&, bool);
+    void initPageSize(const QString&, bool);
 
 private:
-	MarginWidget	*m_margin;
-	KPrinter	*m_printer;
-	bool m_usedriver;
+    MarginWidget *m_margin;
+    KPrinter *m_printer;
+    bool m_usedriver;
 };
 
 #endif

@@ -27,34 +27,34 @@
 #endif
 class MarginValueWidget : public KDoubleNumInput
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	enum Mode { Pixels = 0, IN, CM, MM };
-	explicit MarginValueWidget(double value = 18.0, QWidget *parent = 0);
+    enum Mode { Pixels = 0, IN, CM, MM };
+    explicit MarginValueWidget(double value = 18.0, QWidget *parent = 0);
 
-	float margin();
-	int resolution() const;
-	void setResolution(int dpi);
+    float margin();
+    int resolution() const;
+    void setResolution(int dpi);
 
 public Q_SLOTS:
-	void setMode(int);
-	void setMargin(float);
+    void setMode(int);
+    void setMargin(float);
 
 Q_SIGNALS:
-	void marginChanged(float);
+    void marginChanged(float);
 
 protected Q_SLOTS:
-	void slotValueChanged(double);
+    void slotValueChanged(double);
 
 protected:
-	float toPixel(double value, int mode);
-	double toValue(float pix, int mode);
+    float toPixel(double value, int mode);
+    double toValue(float pix, int mode);
 
 private:
-	int		m_mode;
-	double	m_dpi;
-	bool	m_block;
-	float m_margin;
+    int  m_mode;
+    double m_dpi;
+    bool m_block;
+    float m_margin;
 };
 
 #endif

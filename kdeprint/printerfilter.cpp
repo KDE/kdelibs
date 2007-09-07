@@ -26,10 +26,10 @@
 #include <kdebug.h>
 
 PrinterFilter::PrinterFilter(QObject *parent)
-: QObject(parent)
+        : QObject(parent)
 {
-	m_locationRe.setPatternSyntax(QRegExp::Wildcard);
-	update();
+    m_locationRe.setPatternSyntax(QRegExp::Wildcard);
+    update();
 }
 
 PrinterFilter::~PrinterFilter()
@@ -38,32 +38,31 @@ PrinterFilter::~PrinterFilter()
 
 void PrinterFilter::update()
 {
-	KConfig *cf=KMFactory::self()->printConfig();
-	KConfigGroup conf = cf->group("Filter");
-	m_locationRe.setPattern(conf.readEntry("LocationRe"));
-	m_printers = conf.readEntry("Printers", QStringList());
-	// filter enable state is saved on a per application basis,
-	// so this option is retrieve from the application config file
-	conf = KConfigGroup( KGlobal::config(), "KPrinter Settings");
-	m_enabled = conf.readEntry("FilterEnabled", false);
+    KConfig *cf = KMFactory::self()->printConfig();
+    KConfigGroup conf = cf->group("Filter");
+    m_locationRe.setPattern(conf.readEntry("LocationRe"));
+    m_printers = conf.readEntry("Printers", QStringList());
+    // filter enable state is saved on a per application basis,
+    // so this option is retrieve from the application config file
+    conf = KConfigGroup(KGlobal::config(), "KPrinter Settings");
+    m_enabled = conf.readEntry("FilterEnabled", false);
 }
 
 void PrinterFilter::setEnabled(bool on)
 {
-	m_enabled = on;
-	KConfigGroup cg( KGlobal::config(), "KPrinter Settings");
-	cg.writeEntry("FilterEnabled", m_enabled);
+    m_enabled = on;
+    KConfigGroup cg(KGlobal::config(), "KPrinter Settings");
+    cg.writeEntry("FilterEnabled", m_enabled);
 }
 
 bool PrinterFilter::filter(KMPrinter *prt)
 {
-	if (m_enabled)
-	{
-		if ((!m_locationRe.isEmpty() && m_locationRe.exactMatch(prt->location())) ||
-		    m_printers.contains(prt->printerName()))
-			return true;
-		else
-			return false;
-	}
-	return true;
+    if (m_enabled) {
+        if ((!m_locationRe.isEmpty() && m_locationRe.exactMatch(prt->location())) ||
+                m_printers.contains(prt->printerName()))
+            return true;
+        else
+            return false;
+    }
+    return true;
 }

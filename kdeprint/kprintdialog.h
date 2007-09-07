@@ -40,49 +40,49 @@ class KPrintDialogPage;
  */
 class KDEPRINT_EXPORT KPrintDialog : public KDialog, public KPReloadObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KPrintDialog(QWidget *parent = 0);
-	~KPrintDialog();
+    KPrintDialog(QWidget *parent = 0);
+    ~KPrintDialog();
 
-	void setFlags(int f);
-	void setDialogPages(QList<KPrintDialogPage*> *pages);
-	void enableDialogPage( int index, bool flag = true );
-	KPrinter* printer() const;
+    void setFlags(int f);
+    void setDialogPages(QList<KPrintDialogPage*> *pages);
+    void enableDialogPage(int index, bool flag = true);
+    KPrinter* printer() const;
 
-	static KPrintDialog* printerDialog(KPrinter*, QWidget*, const QString& caption = QString(), bool forceExpand = false);
+    static KPrintDialog* printerDialog(KPrinter*, QWidget*, const QString& caption = QString(), bool forceExpand = false);
 
 Q_SIGNALS:
-	void printRequested(KPrinter*);
+    void printRequested(KPrinter*);
 
 protected Q_SLOTS:
-	void slotPrinterSelected(int);
-	void slotProperties();
-	void slotSetDefault();
-	void slotOptions();
-	virtual void done(int);
-	void slotWizard();
-	void slotExtensionClicked();
-	void slotToggleFilter(bool);
-	void slotHelp();
-	void slotOutputFileSelected(const KUrl&);
-	void slotUpdatePossible( bool );
-	void slotOpenFileDialog();
+    void slotPrinterSelected(int);
+    void slotProperties();
+    void slotSetDefault();
+    void slotOptions();
+    virtual void done(int);
+    void slotWizard();
+    void slotExtensionClicked();
+    void slotToggleFilter(bool);
+    void slotHelp();
+    void slotOutputFileSelected(const KUrl&);
+    void slotUpdatePossible(bool);
+    void slotOpenFileDialog();
 
 protected:
-	bool checkOutputFile();
-	void enableSpecial(bool on);
-	void enableOutputFile(bool on);
-	void setOutputFileExtension(const QString&);
-	void reload();
-	void configChanged();
-	void expandDialog(bool on = true);
-	void initialize( KPrinter* );
-	void init();
+    bool checkOutputFile();
+    void enableSpecial(bool on);
+    void enableOutputFile(bool on);
+    void setOutputFileExtension(const QString&);
+    void reload();
+    void configChanged();
+    void expandDialog(bool on = true);
+    void initialize(KPrinter*);
+    void init();
 
 protected:
-	class KPrintDialogPrivate;
-	KPrintDialogPrivate* const d;
+    class KPrintDialogPrivate;
+    KPrintDialogPrivate* const d;
 };
 
 #endif

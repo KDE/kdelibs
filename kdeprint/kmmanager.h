@@ -47,140 +47,156 @@ class QActionGroup;
  */
 class KDEPRINT_EXPORT KMManager : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-friend class KMVirtualManager;
-friend class KMSpecialManager;
-friend class KMFactory;
+    friend class KMVirtualManager;
+    friend class KMSpecialManager;
+    friend class KMFactory;
 
 public:
-	enum PrinterOperations {
-		PrinterEnabling  = 0x01,
-		PrinterCreation  = 0x02,
-		PrinterDefault   = 0x04,
-		PrinterTesting   = 0x08,
-		PrinterConfigure = 0x10,
-		PrinterRemoval   = 0x20,
-		PrinterAll       = 0xFF
-	};
-	enum ServerOperations {
-		ServerRestarting = 0x1,
-		ServerConfigure  = 0x2,
-		ServerAll        = 0xF
-	};
+    enum PrinterOperations {
+        PrinterEnabling  = 0x01,
+        PrinterCreation  = 0x02,
+        PrinterDefault   = 0x04,
+        PrinterTesting   = 0x08,
+        PrinterConfigure = 0x10,
+        PrinterRemoval   = 0x20,
+        PrinterAll       = 0xFF
+    };
+    enum ServerOperations {
+        ServerRestarting = 0x1,
+        ServerConfigure  = 0x2,
+        ServerAll        = 0xF
+    };
 
-	KMManager(QObject *parent = 0);
-	virtual ~KMManager();
+    KMManager(QObject *parent = 0);
+    virtual ~KMManager();
 
     static KMManager* self();
 
-	// error management functions
-	QString errorMsg() const		{ return m_errormsg; }
-	void setErrorMsg(const QString& s)	{ m_errormsg = s; }
+    // error management functions
+    QString errorMsg() const  {
+        return m_errormsg;
+    }
+    void setErrorMsg(const QString& s) {
+        m_errormsg = s;
+    }
 
-	// support management ?
-	bool hasManagement() const 		{ return m_hasmanagement; }
+    // support management ?
+    bool hasManagement() const   {
+        return m_hasmanagement;
+    }
 
-	// printer management functions
-	virtual bool createPrinter(KMPrinter *p);
-	virtual bool removePrinter(KMPrinter *p);
-	virtual bool enablePrinter(KMPrinter *p, bool on);
-	virtual bool startPrinter(KMPrinter *p, bool on);
-	virtual bool completePrinter(KMPrinter *p);
-	virtual bool completePrinterShort(KMPrinter *p);
-	virtual bool setDefaultPrinter(KMPrinter *p);
-	virtual bool testPrinter(KMPrinter *p);
-	bool upPrinter(KMPrinter *p, bool state);
-	bool modifyPrinter(KMPrinter *oldp, KMPrinter *newp);
-	bool removePrinter(const QString& name);
-	bool enablePrinter(const QString& name, bool state);
-	bool startPrinter(const QString& name, bool state);
-	bool completePrinter(const QString& name);
-	bool setDefaultPrinter(const QString& name);
-	int printerOperationMask() const 	{ return m_printeroperationmask; }
-	int addPrinterWizard(QWidget *parent = 0);
+    // printer management functions
+    virtual bool createPrinter(KMPrinter *p);
+    virtual bool removePrinter(KMPrinter *p);
+    virtual bool enablePrinter(KMPrinter *p, bool on);
+    virtual bool startPrinter(KMPrinter *p, bool on);
+    virtual bool completePrinter(KMPrinter *p);
+    virtual bool completePrinterShort(KMPrinter *p);
+    virtual bool setDefaultPrinter(KMPrinter *p);
+    virtual bool testPrinter(KMPrinter *p);
+    bool upPrinter(KMPrinter *p, bool state);
+    bool modifyPrinter(KMPrinter *oldp, KMPrinter *newp);
+    bool removePrinter(const QString& name);
+    bool enablePrinter(const QString& name, bool state);
+    bool startPrinter(const QString& name, bool state);
+    bool completePrinter(const QString& name);
+    bool setDefaultPrinter(const QString& name);
+    int printerOperationMask() const  {
+        return m_printeroperationmask;
+    }
+    int addPrinterWizard(QWidget *parent = 0);
 
-	// special printer management functions
-	bool createSpecialPrinter(KMPrinter *p);
-	bool removeSpecialPrinter(KMPrinter *p);
+    // special printer management functions
+    bool createSpecialPrinter(KMPrinter *p);
+    bool removeSpecialPrinter(KMPrinter *p);
 
-	// printer listing functions
-	KMPrinter* findPrinter(const QString& name);
-	QList<KMPrinter*> printerList(bool reload = true);
-	QList<KMPrinter*> printerListComplete(bool reload = true);
-	KMPrinter* defaultPrinter();
-	void enableFilter(bool on);
-	bool isFilterEnabled() const;
+    // printer listing functions
+    KMPrinter* findPrinter(const QString& name);
+    QList<KMPrinter*> printerList(bool reload = true);
+    QList<KMPrinter*> printerListComplete(bool reload = true);
+    KMPrinter* defaultPrinter();
+    void enableFilter(bool on);
+    bool isFilterEnabled() const;
 
-	// driver DB functions
-	virtual QString driverDbCreationProgram();
-	virtual QString driverDirectory();
+    // driver DB functions
+    virtual QString driverDbCreationProgram();
+    virtual QString driverDirectory();
 
-	// driver functions
-	virtual DrMain* loadPrinterDriver(KMPrinter *p, bool config = false);
-	virtual DrMain* loadDbDriver(KMDBEntry *entry);
-	virtual DrMain* loadFileDriver(const QString& filename);
-	DrMain* loadDriver(KMPrinter *p, bool config = false);
-	virtual bool savePrinterDriver(KMPrinter *p, DrMain *d);
-	virtual bool validateDbDriver(KMDBEntry *entry);
+    // driver functions
+    virtual DrMain* loadPrinterDriver(KMPrinter *p, bool config = false);
+    virtual DrMain* loadDbDriver(KMDBEntry *entry);
+    virtual DrMain* loadFileDriver(const QString& filename);
+    DrMain* loadDriver(KMPrinter *p, bool config = false);
+    virtual bool savePrinterDriver(KMPrinter *p, DrMain *d);
+    virtual bool validateDbDriver(KMDBEntry *entry);
 
-	// configuration functions
-	bool invokeOptionsDialog(QWidget *parent = 0);
-	virtual QString stateInformation();
+    // configuration functions
+    bool invokeOptionsDialog(QWidget *parent = 0);
+    virtual QString stateInformation();
 
-	// server functions
-	int serverOperationMask() const 	{ return m_serveroperationmask; }
-	virtual bool restartServer();
-	virtual bool configureServer(QWidget *parent = 0);
-	virtual QStringList detectLocalPrinters();
+    // server functions
+    int serverOperationMask() const  {
+        return m_serveroperationmask;
+    }
+    virtual bool restartServer();
+    virtual bool configureServer(QWidget *parent = 0);
+    virtual QStringList detectLocalPrinters();
 
-	// additional actions (for print manager)
-	QActionGroup* pluginGroup() const;
-	virtual void createPluginActions(KActionCollection*);
-	virtual void validatePluginActions(KActionCollection*, KMPrinter*);
+    // additional actions (for print manager)
+    QActionGroup* pluginGroup() const;
+    virtual void createPluginActions(KActionCollection*);
+    virtual void validatePluginActions(KActionCollection*, KMPrinter*);
 
-	// utility function
-	void checkUpdatePossible();
+    // utility function
+    void checkUpdatePossible();
 
 Q_SIGNALS:
-	void updatePossible( bool );
+    void updatePossible(bool);
 
 protected:
-	// the real printer listing job is done here
-	virtual void listPrinters();
+    // the real printer listing job is done here
+    virtual void listPrinters();
 
-	// utility functions
-	void addPrinter(KMPrinter *p);	// in any case, the pointer given MUST not be used after
-					// calling this function. Useful when listing printers.
-	void setHardDefault(KMPrinter*);
-	void setSoftDefault(KMPrinter*);
-	KMPrinter* softDefault() const;
-	KMPrinter* hardDefault() const;
-	// this function uncompress the given file (or does nothing
-	// if the file is not compressed). Returns wether the file was
-	// compressed or not.
-	bool uncompressFile(const QString& srcname, QString& destname);
-	bool notImplemented();
-	void setHasManagement(bool on)		{ m_hasmanagement = on; }
-	void setPrinterOperationMask(int m)	{ m_printeroperationmask = m; }
-	void setServerOperationMask(int m)	{ m_serveroperationmask = m; }
-	virtual QString testPage();
-	QString getTestPage();
-	void discardAllPrinters(bool);
-	void setUpdatePossible( bool );
-	virtual void checkUpdatePossibleInternal();
+    // utility functions
+    void addPrinter(KMPrinter *p); // in any case, the pointer given MUST not be used after
+    // calling this function. Useful when listing printers.
+    void setHardDefault(KMPrinter*);
+    void setSoftDefault(KMPrinter*);
+    KMPrinter* softDefault() const;
+    KMPrinter* hardDefault() const;
+    // this function uncompress the given file (or does nothing
+    // if the file is not compressed). Returns wether the file was
+    // compressed or not.
+    bool uncompressFile(const QString& srcname, QString& destname);
+    bool notImplemented();
+    void setHasManagement(bool on)  {
+        m_hasmanagement = on;
+    }
+    void setPrinterOperationMask(int m) {
+        m_printeroperationmask = m;
+    }
+    void setServerOperationMask(int m) {
+        m_serveroperationmask = m;
+    }
+    virtual QString testPage();
+    QString getTestPage();
+    void discardAllPrinters(bool);
+    void setUpdatePossible(bool);
+    virtual void checkUpdatePossibleInternal();
 
 protected:
-	QString			m_errormsg;
-	KMPrinterList		m_printers, m_fprinters;	// filtered printers
-	bool 			m_hasmanagement;
-	int			m_printeroperationmask;
-	int 			m_serveroperationmask;
-	KMSpecialManager	*m_specialmgr;
-	KMVirtualManager	*m_virtualmgr;
-	PrinterFilter	*m_printerfilter;
-	bool m_updatepossible;
-	QActionGroup	*m_pluginGroup;
+    QString   m_errormsg;
+    KMPrinterList  m_printers, m_fprinters; // filtered printers
+    bool    m_hasmanagement;
+    int   m_printeroperationmask;
+    int    m_serveroperationmask;
+    KMSpecialManager *m_specialmgr;
+    KMVirtualManager *m_virtualmgr;
+    PrinterFilter *m_printerfilter;
+    bool m_updatepossible;
+    QActionGroup *m_pluginGroup;
 };
 
 #endif

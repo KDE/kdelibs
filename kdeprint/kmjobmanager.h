@@ -43,66 +43,73 @@ class KAction;
  */
 class KDEPRINT_EXPORT KMJobManager : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	enum JobType { ActiveJobs = 0, CompletedJobs = 1 };
-	struct JobFilter
-	{
-		JobFilter() { m_type[0] = m_type[1] = 0; m_isspecial = false; } //krazy:exclude=inline
-		int	m_type[2];
-		bool m_isspecial;
-	};
+    enum JobType { ActiveJobs = 0, CompletedJobs = 1 };
+    struct JobFilter {
+        JobFilter() {
+            m_type[0] = m_type[1] = 0; m_isspecial = false;
+        } //krazy:exclude=inline
+        int m_type[2];
+        bool m_isspecial;
+    };
 
-	KMJobManager(QObject *parent = 0);
-	virtual ~KMJobManager();
+    KMJobManager(QObject *parent = 0);
+    virtual ~KMJobManager();
 
-	static KMJobManager* self();
+    static KMJobManager* self();
 
-	void addPrinter(const QString& pr, JobType type = ActiveJobs, bool isSpecial = false);
-	void removePrinter(const QString& pr, JobType type = ActiveJobs);
-	void clearFilter();
-	QHash<QString, JobFilter*>* filter();
-	int limit();
-	void setLimit(int val);
+    void addPrinter(const QString& pr, JobType type = ActiveJobs, bool isSpecial = false);
+    void removePrinter(const QString& pr, JobType type = ActiveJobs);
+    void clearFilter();
+    QHash<QString, JobFilter*>* filter();
+    int limit();
+    void setLimit(int val);
 
-	//KMJob* findJob(int ID);
-	KMJob* findJob(const QString& uri);
-	//bool sendCommand(int ID, int action, const QString& arg = QString());
-	bool sendCommand(const QString& uri, int action, const QString& arg = QString());
-	bool sendCommand(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
-	const QList<KMJob*>& jobList(bool reload = true);
-	void addJob(KMJob*);
-	KMThreadJob* threadJob();
+    //KMJob* findJob(int ID);
+    KMJob* findJob(const QString& uri);
+    //bool sendCommand(int ID, int action, const QString& arg = QString());
+    bool sendCommand(const QString& uri, int action, const QString& arg = QString());
+    bool sendCommand(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
+    const QList<KMJob*>& jobList(bool reload = true);
+    void addJob(KMJob*);
+    KMThreadJob* threadJob();
 
-	virtual int actions();
-	virtual QList<KAction*> createPluginActions(KActionCollection*);
-	virtual void validatePluginActions(KActionCollection*, const QList<KMJob*>&);
-	virtual bool doPluginAction(int, const QList<KMJob*>&);
-
-protected:
-	void discardAllJobs();
-	void removeDiscardedJobs();
+    virtual int actions();
+    virtual QList<KAction*> createPluginActions(KActionCollection*);
+    virtual void validatePluginActions(KActionCollection*, const QList<KMJob*>&);
+    virtual bool doPluginAction(int, const QList<KMJob*>&);
 
 protected:
-	virtual bool listJobs(const QString& prname, JobType type, int limit = 0);
-	virtual bool sendCommandSystemJob(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
-	bool sendCommandThreadJob(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
+    void discardAllJobs();
+    void removeDiscardedJobs();
 
 protected:
-	QList<KMJob*>	m_jobs;
-	QHash<QString, JobFilter*>	m_filter;
-	KMThreadJob	*m_threadjob;
+    virtual bool listJobs(const QString& prname, JobType type, int limit = 0);
+    virtual bool sendCommandSystemJob(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
+    bool sendCommandThreadJob(const QList<KMJob*>& jobs, int action, const QString& arg = QString());
+
+protected:
+    QList<KMJob*> m_jobs;
+    QHash<QString, JobFilter*> m_filter;
+    KMThreadJob *m_threadjob;
 };
 
 inline QHash<QString, KMJobManager::JobFilter*>* KMJobManager::filter()
-{ return &m_filter; }
+{
+    return &m_filter;
+}
 
 inline void KMJobManager::clearFilter()
-{ m_filter.clear(); }
+{
+    m_filter.clear();
+}
 
 inline KMThreadJob* KMJobManager::threadJob()
-{ return m_threadjob; }
+{
+    return m_threadjob;
+}
 
 #endif
 #endif

@@ -22,11 +22,11 @@
 
 KPReloadObject::KPReloadObject(bool priority)
 {
-	KMFactory::self()->registerObject(this, priority);
+    KMFactory::self()->registerObject(this, priority);
 }
 
 KPReloadObject::~KPReloadObject()
 {
-	if ( KMFactory::exists() )
-		KMFactory::self()->unregisterObject(this);
+    if (KMFactory::exists())
+        KMFactory::self()->unregisterObject(this);
 }

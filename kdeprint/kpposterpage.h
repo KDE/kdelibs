@@ -32,29 +32,29 @@ class QLineEdit;
 
 class KPPosterPage : public KPrintDialogPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KPPosterPage( QWidget *parent = 0 );
-	~KPPosterPage();
+    KPPosterPage(QWidget *parent = 0);
+    ~KPPosterPage();
 
-	void setOptions( const QMap<QString,QString>& opts );
-	void getOptions( QMap<QString,QString>& opts, bool incldef = false );
-	bool isValid();
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
+    bool isValid();
 
 protected Q_SLOTS:
-	void slotPosterSizeChanged( int );
-	void slotMarginChanged( int );
-	void slotLockToggled( bool );
+    void slotPosterSizeChanged(int);
+    void slotMarginChanged(int);
+    void slotLockToggled(bool);
 
 private:
-	QComboBox *m_postersize;
-	QComboBox *m_printsize;
-	PosterPreview *m_preview;
-	QCheckBox *m_postercheck;
-	QLabel *m_mediasize;
-	KIntNumInput *m_cutmargin;
-	QPushButton *m_lockbtn;
-	QLineEdit *m_selection;
+    QComboBox *m_postersize;
+    QComboBox *m_printsize;
+    PosterPreview *m_preview;
+    QCheckBox *m_postercheck;
+    QLabel *m_mediasize;
+    KIntNumInput *m_cutmargin;
+    QPushButton *m_lockbtn;
+    QLineEdit *m_selection;
 };
 
 #endif /* KPPOSTERPAGE_H */

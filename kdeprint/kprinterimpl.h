@@ -31,38 +31,40 @@ class KPrinter;
 
 class KDEPRINT_EXPORT KPrinterImpl : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KPrinterImpl(QObject *parent = 0);
-	virtual ~KPrinterImpl();
+    KPrinterImpl(QObject *parent = 0);
+    virtual ~KPrinterImpl();
 
-	virtual bool setupCommand(QString& cmd, KPrinter*);
-	virtual void preparePrinting(KPrinter*);
-	virtual void broadcastOption(const QString& key, const QString& value);
+    virtual bool setupCommand(QString& cmd, KPrinter*);
+    virtual void preparePrinting(KPrinter*);
+    virtual void broadcastOption(const QString& key, const QString& value);
 
-	bool printFiles(KPrinter*, const QStringList&, bool removeflag = false);
-	// result:
-	//	-1	->	error
-	//	0	->	nothing happened
-	//	1	->	files filterd
-	int filterFiles(KPrinter*, QStringList&, bool removeflag = false);
-	int autoConvertFiles(KPrinter*, QStringList&, bool removeflag = false);
-	void saveOptions(const QMap<QString,QString>& opts);
-	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
-	QString tempFile();
-	QString quote(const QString&);
-	void statusMessage(const QString&, KPrinter* = 0);
-
-protected:
-	bool startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool removeflag = false);
-	int dcopPrint(const QString& cmd, const QStringList& files, bool removeflag = false);
-	bool setupSpecialCommand(QString&, KPrinter*, const QStringList&);
-	int doFilterFiles(KPrinter* pr, QStringList& files, const QStringList& flist, const QMap<QString,QString>& opts, bool removeflag = false);
-	void loadAppOptions();
-	void saveAppOptions();
+    bool printFiles(KPrinter*, const QStringList&, bool removeflag = false);
+    // result:
+    // -1 -> error
+    // 0 -> nothing happened
+    // 1 -> files filterd
+    int filterFiles(KPrinter*, QStringList&, bool removeflag = false);
+    int autoConvertFiles(KPrinter*, QStringList&, bool removeflag = false);
+    void saveOptions(const QMap<QString, QString>& opts);
+    const QMap<QString, QString>& loadOptions() const  {
+        return m_options;
+    }
+    QString tempFile();
+    QString quote(const QString&);
+    void statusMessage(const QString&, KPrinter* = 0);
 
 protected:
-	QMap<QString,QString>	m_options;	// use to save current options
+    bool startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool removeflag = false);
+    int dcopPrint(const QString& cmd, const QStringList& files, bool removeflag = false);
+    bool setupSpecialCommand(QString&, KPrinter*, const QStringList&);
+    int doFilterFiles(KPrinter* pr, QStringList& files, const QStringList& flist, const QMap<QString, QString>& opts, bool removeflag = false);
+    void loadAppOptions();
+    void saveAppOptions();
+
+protected:
+    QMap<QString, QString> m_options; // use to save current options
 };
 
 #endif

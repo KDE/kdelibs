@@ -25,30 +25,30 @@
 
 #ifndef KDEPRINT_EXPORT
 # if defined(MAKE_KDEPRINT_LIB)
-   /* We are building this library */
+/* We are building this library */
 #  define KDEPRINT_EXPORT KDE_EXPORT
 # else
-   /* We are using this library */
+/* We are using this library */
 #  define KDEPRINT_EXPORT KDE_IMPORT
 # endif
 #endif
 
 #ifndef KDEPRINT_MANAGEMENT_EXPORT
 # if defined(MAKE_KDEPRINT_MANAGEMENT_LIB)
-   /* We are building this library */
+/* We are building this library */
 #  define KDEPRINT_MANAGEMENT_EXPORT KDE_EXPORT
 # else
-   /* We are using this library */
+/* We are using this library */
 #  define KDEPRINT_MANAGEMENT_EXPORT KDE_IMPORT
 # endif
 #endif
 
 #ifndef KDEPRINT_MANAGEMENT_MODULE_EXPORT
 # if defined(MAKE_KDEPRINT_MANAGEMENT_LIB)
-   /* We are building this library */
+/* We are building this library */
 #  define KDEPRINT_MANAGEMENT_MODULE_EXPORT KDE_EXPORT
 # else
-   /* We are using this library */
+/* We are using this library */
 #  define KDEPRINT_MANAGEMENT_MODULE_EXPORT KDE_IMPORT
 # endif
 #endif

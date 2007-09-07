@@ -28,28 +28,28 @@ class KMJobManager;
 
 class KMThreadJob : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	KMThreadJob(QObject *parent = 0);
-	~KMThreadJob();
+    KMThreadJob(QObject *parent = 0);
+    ~KMThreadJob();
 
-	KMJob* findJob(int ID);
-	KMJob* findJob(const QString& uri);
-	bool removeJob(int ID);
-	void createJob(KMJob*);
-	void updateManager(KMJobManager*);
+    KMJob* findJob(int ID);
+    KMJob* findJob(const QString& uri);
+    bool removeJob(int ID);
+    void createJob(KMJob*);
+    void updateManager(KMJobManager*);
 
-	static void createJob(int ID, const QString& printer, const QString& name = QString(), const QString& owner = QString(), int size = 0);
+    static void createJob(int ID, const QString& printer, const QString& name = QString(), const QString& owner = QString(), int size = 0);
 
 protected:
-	QString jobFile();
-	bool loadJobs();
-	bool saveJobs();
-	bool checkJob(int ID);
+    QString jobFile();
+    bool loadJobs();
+    bool saveJobs();
+    bool checkJob(int ID);
 
 private:
-	QMultiHash<int,KMJob*>	m_jobs;
+    QMultiHash<int, KMJob*> m_jobs;
 };
 
 #endif

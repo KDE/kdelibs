@@ -26,54 +26,49 @@
 #include <kdebug.h>
 
 TreeComboBox::TreeComboBox(QWidget *parent)
-	: QComboBox(parent)
+        : QComboBox(parent)
 {
-	QTreeView   *view = new QTreeWidget();
-	view->header()->hide();
-	view->setRootIsDecorated(false);
-	setModel( view->model() );
-	setView(view);
+    QTreeView   *view = new QTreeWidget();
+    view->header()->hide();
+    view->setRootIsDecorated(false);
+    setModel(view->model());
+    setView(view);
 }
 
 void TreeComboBox::insertItem(const QIcon& icon, const QString& text, bool oneBlock)
 {
-	QStringList	path;
-	if (oneBlock)
-		path = QStringList(text);
-	else
-		path = text.split('/', QString::SkipEmptyParts);
-	int	depth = path.count()-1;
+    QStringList path;
+    if (oneBlock)
+        path = QStringList(text);
+    else
+        path = text.split('/', QString::SkipEmptyParts);
+    int depth = path.count() - 1;
 
-	if (depth == 0)
-	{
-		model()->insertRow(model()->rowCount());
-		QModelIndex	index = model()->index(model()->rowCount()-1, 0);
-		model()->setData(index, icon, Qt::DecorationRole);
-		model()->setData(index, text, Qt::DisplayRole);
-	}
-	else
-	{
-		// Find parent item
-		QString	parentStr = text.left(text.length()-path[depth].length()-1);
-		QModelIndexList	matches = model()->match(model()->index(0, 0), Qt::DisplayRole, parentStr, 1, Qt::MatchExactly);
+    if (depth == 0) {
+        model()->insertRow(model()->rowCount());
+        QModelIndex index = model()->index(model()->rowCount() - 1, 0);
+        model()->setData(index, icon, Qt::DecorationRole);
+        model()->setData(index, text, Qt::DisplayRole);
+    } else {
+        // Find parent item
+        QString parentStr = text.left(text.length() - path[depth].length() - 1);
+        QModelIndexList matches = model()->match(model()->index(0, 0), Qt::DisplayRole, parentStr, 1, Qt::MatchExactly);
 
-		QModelIndex	parentIndex;
-		if (matches.isEmpty())
-		{
-			// parent not found, add parent first into model
-			model()->insertRow(model()->rowCount());
-			parentIndex = model()->index(model()->rowCount()-1, 0);
-			model()->setData(parentIndex, parentStr, Qt::DisplayRole);
-			model()->insertColumn(0, parentIndex);
-			static_cast<QTreeView*>(view())->setExpanded(parentIndex, true);
-		}
-		else
-			parentIndex = matches.first();
+        QModelIndex parentIndex;
+        if (matches.isEmpty()) {
+            // parent not found, add parent first into model
+            model()->insertRow(model()->rowCount());
+            parentIndex = model()->index(model()->rowCount() - 1, 0);
+            model()->setData(parentIndex, parentStr, Qt::DisplayRole);
+            model()->insertColumn(0, parentIndex);
+            static_cast<QTreeView*>(view())->setExpanded(parentIndex, true);
+        } else
+            parentIndex = matches.first();
 
-                // TODO: QComboBox doesn't let us select these items.
-		model()->insertRow(model()->rowCount(parentIndex), parentIndex);
-		QModelIndex	index = model()->index(model()->rowCount(parentIndex)-1, 0, parentIndex);
-		model()->setData(index, icon, Qt::DecorationRole);
-		model()->setData(index, text, Qt::DisplayRole);
-	}
+        // TODO: QComboBox doesn't let us select these items.
+        model()->insertRow(model()->rowCount(parentIndex), parentIndex);
+        QModelIndex index = model()->index(model()->rowCount(parentIndex) - 1, 0, parentIndex);
+        model()->setData(index, icon, Qt::DecorationRole);
+        model()->setData(index, text, Qt::DisplayRole);
+    }
 }

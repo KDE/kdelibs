@@ -32,36 +32,36 @@ class QLabel;
 
 class KPFilterPage : public KPrintDialogPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KPFilterPage(QWidget *parent = 0);
-	~KPFilterPage();
+    KPFilterPage(QWidget *parent = 0);
+    ~KPFilterPage();
 
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
-	bool isValid(QString& msg);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
+    bool isValid(QString& msg);
 
 protected Q_SLOTS:
-	void slotAddClicked();
-	void slotRemoveClicked();
-	void slotUpClicked();
-	void slotDownClicked();
-	void slotConfigureClicked();
-	void slotItemSelected();
+    void slotAddClicked();
+    void slotRemoveClicked();
+    void slotUpClicked();
+    void slotDownClicked();
+    void slotConfigureClicked();
+    void slotItemSelected();
 
 protected:
-	KXmlCommand* currentFilter();
-	void checkFilterChain();
-	void updateInfo();
-	QStringList activeList();
+    KXmlCommand* currentFilter();
+    void checkFilterChain();
+    void updateInfo();
+    QStringList activeList();
     void updateButton();
 private:
-	QTreeWidget		*m_view;
-	QStringList		m_filters;	// <idname,description> pairs
-	QHash<QString, KXmlCommand*>	m_activefilters;
-	QToolButton		*m_add, *m_remove, *m_up, *m_down, *m_configure;
-	bool			m_valid;
-	QLabel			*m_info;
+    QTreeWidget  *m_view;
+    QStringList  m_filters; // <idname,description> pairs
+    QHash<QString, KXmlCommand*> m_activefilters;
+    QToolButton  *m_add, *m_remove, *m_up, *m_down, *m_configure;
+    bool   m_valid;
+    QLabel   *m_info;
 };
 
 #endif

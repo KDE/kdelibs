@@ -118,7 +118,7 @@ KDEPrintd::~KDEPrintd()
 
 QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remflag)
 {
-	kDebug(500) << "Printing" << files << "with command" << cmd;
+	kDebug(500) << "Printing" << files << "with command" << cmd << "(remove:" << remflag << ")";
 	KPrintProcess *proc = new KPrintProcess;
 	QString	command(cmd);
 	QRegExp re( "\\$out\\{([^}]*)\\}" );

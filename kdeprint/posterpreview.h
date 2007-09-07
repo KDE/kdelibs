@@ -30,49 +30,49 @@ class KProcess;
 #endif
 class PosterPreview : public QFrame
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	PosterPreview( QWidget *parent = 0 );
-	PosterPreview( const QString& postersize, const QString& mediasize, QWidget *parent = 0 );
-	~PosterPreview();
+    PosterPreview(QWidget *parent = 0);
+    PosterPreview(const QString& postersize, const QString& mediasize, QWidget *parent = 0);
+    ~PosterPreview();
 
 public Q_SLOTS:
-	void setPosterSize( int );
-	void setPosterSize( const QString& );
-	void setMediaSize( int );
-	void setMediaSize( const QString& );
-	void setCutMargin( int );
-	void updatePoster();
-	void setSelectedPages( const QString& );
+    void setPosterSize(int);
+    void setPosterSize(const QString&);
+    void setMediaSize(int);
+    void setMediaSize(const QString&);
+    void setCutMargin(int);
+    void updatePoster();
+    void setSelectedPages(const QString&);
 
 Q_SIGNALS:
-	void selectionChanged( const QString& );
+    void selectionChanged(const QString&);
 
 protected:
-	void parseBuffer();
-	void paintEvent( QPaintEvent * );
-	void init();
-	void setDirty();
-	void mouseMoveEvent( QMouseEvent* );
-	void mousePressEvent( QMouseEvent* );
-	void emitSelectedPages();
+    void parseBuffer();
+    void paintEvent(QPaintEvent *);
+    void init();
+    void setDirty();
+    void mouseMoveEvent(QMouseEvent*);
+    void mousePressEvent(QMouseEvent*);
+    void emitSelectedPages();
 
 protected Q_SLOTS:
-	void slotProcessStderr();
-	void slotProcessExited();
+    void slotProcessStderr();
+    void slotProcessExited();
 
 private:
-	int m_rows, m_cols;
-	int m_pw, m_ph; // page size
-	int m_mw, m_mh; // cur margins
-	QRect m_posterbb; // poster bounding box (without any margin)
-	KProcess *m_process;
-	QString m_buffer;
-	QString m_postersize, m_mediasize;
-	int m_cutmargin;
-	bool m_dirty;
-	QRect m_boundingrect;
-	QList<int> m_selectedpages;
+    int m_rows, m_cols;
+    int m_pw, m_ph; // page size
+    int m_mw, m_mh; // cur margins
+    QRect m_posterbb; // poster bounding box (without any margin)
+    KProcess *m_process;
+    QString m_buffer;
+    QString m_postersize, m_mediasize;
+    int m_cutmargin;
+    bool m_dirty;
+    QRect m_boundingrect;
+    QList<int> m_selectedpages;
 };
 
 #endif /* POSTERPREVIEW_H */

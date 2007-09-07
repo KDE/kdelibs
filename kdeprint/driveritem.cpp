@@ -25,74 +25,66 @@
 #include <kdebug.h>
 
 DriverItem::DriverItem(QTreeWidget *parent, DrBase *item)
-: QTreeWidgetItem(parent), m_item(item), m_conflict(false)
+        : QTreeWidgetItem(parent), m_item(item), m_conflict(false)
 {
-	setIcon(0,SmallIcon("document-print"));
-	updateText();
+    setIcon(0, SmallIcon("document-print"));
+    updateText();
 }
 
 DriverItem::DriverItem(QTreeWidgetItem *parent, QTreeWidgetItem *after, DrBase *item)
-: QTreeWidgetItem(parent, after), m_item(item), m_conflict(false)
+        : QTreeWidgetItem(parent, after), m_item(item), m_conflict(false)
 {
-	if (item) setIcon(0,SmallIcon((item->isOption() ? "document" : "folder")));
-	updateText();
+    if (item) setIcon(0, SmallIcon((item->isOption() ? "document" : "folder")));
+    updateText();
 }
 
 void DriverItem::updateText()
 {
-	if (m_item)
-	{
-		QString	s(m_item->get("text"));
-		if (m_item->isOption())
-			s.append(QString::fromLatin1(": <%1>").arg(m_item->prettyText()));
-		if (m_item->type() == DrBase::List)
-		{
-			// remove all children: something has changed (otherwise this
-			// function would not be called), so it make sense to remove
-			// those children in all cases.
-			while (child(0))
-				delete child(0);
-			DrBase	*ch = static_cast<DrListOption*>(m_item)->currentChoice();
-			if (ch && ch->type() == DrBase::ChoiceGroup)
-			{
-				// add new children
-				static_cast<DrChoiceGroup*>(ch)->createItem(this);
-			}
-		}
-		setText(0,s);
-	}
-	else
-		setText(0,"ERROR");
+    if (m_item) {
+        QString s(m_item->get("text"));
+        if (m_item->isOption())
+            s.append(QString::fromLatin1(": <%1>").arg(m_item->prettyText()));
+        if (m_item->type() == DrBase::List) {
+            // remove all children: something has changed (otherwise this
+            // function would not be called), so it make sense to remove
+            // those children in all cases.
+            while (child(0))
+                delete child(0);
+            DrBase *ch = static_cast<DrListOption*>(m_item)->currentChoice();
+            if (ch && ch->type() == DrBase::ChoiceGroup) {
+                // add new children
+                static_cast<DrChoiceGroup*>(ch)->createItem(this);
+            }
+        }
+        setText(0, s);
+    } else
+        setText(0, "ERROR");
 }
 
 bool DriverItem::updateConflict()
 {
-	m_conflict = false;
-	if (m_item)
-	{
-		if (!m_item->isOption())
-		{
-      for ( int i = 0; i < childCount(); ++i ) {
-			  DriverItem	*item = (DriverItem*)child(i);
-				if (item->updateConflict())
-					m_conflict = true;
-      }
-		}
-		else
-		{
-			m_conflict = (m_item->conflict());
-		}
-	}
-	return m_conflict;
+    m_conflict = false;
+    if (m_item) {
+        if (!m_item->isOption()) {
+            for (int i = 0; i < childCount(); ++i) {
+                DriverItem *item = (DriverItem*)child(i);
+                if (item->updateConflict())
+                    m_conflict = true;
+            }
+        } else {
+            m_conflict = (m_item->conflict());
+        }
+    }
+    return m_conflict;
 }
 
 void DriverItem::updateTextRecursive()
 {
-	if ( m_item->isOption() )
-		updateText();
+    if (m_item->isOption())
+        updateText();
 
-  for ( int i = 0; i < childCount(); ++i ) {
-    DriverItem	*item = (DriverItem*)child(i);
-    item->updateTextRecursive();
-  }
+    for (int i = 0; i < childCount(); ++i) {
+        DriverItem *item = (DriverItem*)child(i);
+        item->updateTextRecursive();
+    }
 }

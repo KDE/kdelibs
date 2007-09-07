@@ -20,20 +20,20 @@
 /*
  * Implementation of simple checking mechanism. Rules are defined in
  * the form of an URI. Available syntax is:
- *	- exec:/<execname>	->	check for an executable in
- *					$PATH variable.
- *	- config:/path/to/file	->      check for the existence of a file
- *					or directory in KDE or standard
- *					UNIX config locations
- *	- file:/path/to/file
- *	- dir:/path/to/dir	->	simply check the existence of the
- *					a file or directory
- *	- service:/serv 	->	try to connect to a port on the
- *					specified host (usually localhost)
- *					"serv" can be a port value or service name
+ * - exec:/<execname> -> check for an executable in
+ *     $PATH variable.
+ * - config:/path/to/file ->      check for the existence of a file
+ *     or directory in KDE or standard
+ *     UNIX config locations
+ * - file:/path/to/file
+ * - dir:/path/to/dir -> simply check the existence of the
+ *     a file or directory
+ * - service:/serv  -> try to connect to a port on the
+ *     specified host (usually localhost)
+ *     "serv" can be a port value or service name
  *
  * TO BE IMPLEMENTED:
- *	- run:/<execname>	->	check for a running executable
+ * - run:/<execname> -> check for a running executable
  */
 
 #include "kdeprintcheck.h"
@@ -45,77 +45,73 @@
 #include <unistd.h>
 
 static const char* const config_stddirs[] = {
-	"/etc/",
-	"/usr/etc/",
-	"/usr/local/etc/",
-	"/opt/etc/",
-	"/opt/local/etc/",
-	0
+    "/etc/",
+    "/usr/etc/",
+    "/usr/local/etc/",
+    "/opt/etc/",
+    "/opt/local/etc/",
+    0
 };
 
 bool KdeprintChecker::check(const KConfigGroup &conf)
 {
-	QStringList	uris = conf.readEntry("Require", QStringList());
-	return check(uris);
+    QStringList uris = conf.readEntry("Require", QStringList());
+    return check(uris);
 }
 
 bool KdeprintChecker::check(const QStringList& uris)
 {
-	bool	state(true);
-	for (QStringList::ConstIterator it=uris.begin(); it!=uris.end() && state; ++it)
-	{
-		state = (state && checkUrl(KUrl(*it)));
-		// kDebug( 500 ) << "auto-detection uri=" << *it << ", state=" << state;
-	}
-	return state;
+    bool state(true);
+    for (QStringList::ConstIterator it = uris.begin(); it != uris.end() && state; ++it) {
+        state = (state && checkUrl(KUrl(*it)));
+        // kDebug( 500 ) << "auto-detection uri=" << *it << ", state=" << state;
+    }
+    return state;
 }
 
 bool KdeprintChecker::checkUrl(const KUrl& url)
 {
-	QString	prot(url.protocol());
-	if (prot == "config")
-		return checkConfig(url);
-	else if (prot == "exec")
-		return checkExec(url);
-	else if (prot == "file" || prot == "dir")
-		return KStandardDirs::exists(url.url());
-	else if (prot == "service")
-		return checkService(url);
-	return false;
+    QString prot(url.protocol());
+    if (prot == "config")
+        return checkConfig(url);
+    else if (prot == "exec")
+        return checkExec(url);
+    else if (prot == "file" || prot == "dir")
+        return KStandardDirs::exists(url.url());
+    else if (prot == "service")
+        return checkService(url);
+    return false;
 }
 
 bool KdeprintChecker::checkConfig(const KUrl& url)
 {
-	// get the config filename (may contain a path)
-	QString	f(url.path().mid(1));
-	bool	state(false);
+    // get the config filename (may contain a path)
+    QString f(url.path().mid(1));
+    bool state(false);
 
-	// first check for standard KDE config file
-	if (!KStandardDirs::locate("config",f).isEmpty())
-		state = true;
-	else
-	// otherwise check in standard UNIX config directories
-	{
-		const char* const *p = config_stddirs;
-		while (*p)
-		{
-			// kDebug( 500 ) << "checkConfig() with " << QLatin1String( *p ) + f;
-			if ( QFile::exists( QLatin1String( *p ) + f ) )
-			{
-				state = true;
-				break;
-			}
-			else
-				p++;
-		}
-	}
-	return state;
+    // first check for standard KDE config file
+    if (!KStandardDirs::locate("config", f).isEmpty())
+        state = true;
+    else
+        // otherwise check in standard UNIX config directories
+    {
+        const char* const *p = config_stddirs;
+        while (*p) {
+            // kDebug( 500 ) << "checkConfig() with " << QLatin1String( *p ) + f;
+            if (QFile::exists(QLatin1String(*p) + f)) {
+                state = true;
+                break;
+            } else
+                p++;
+        }
+    }
+    return state;
 }
 
 bool KdeprintChecker::checkExec(const KUrl& url)
 {
-	QString	execname(url.path().mid(1));
-	return !(KStandardDirs::findExe(execname).isEmpty());
+    QString execname(url.path().mid(1));
+    return !(KStandardDirs::findExe(execname).isEmpty());
 }
 
 bool KdeprintChecker::checkService(const KUrl& url)
@@ -123,10 +119,10 @@ bool KdeprintChecker::checkService(const KUrl& url)
 #ifdef __GNUC__
 # warning "This code doesn't make sense"
 #endif
-	QString	serv(url.path().mid(1));
-        KLocalSocket sock;
-        sock.connectToPath(serv);
-        sock.waitForConnected();
+    QString serv(url.path().mid(1));
+    KLocalSocket sock;
+    sock.connectToPath(serv);
+    sock.waitForConnected();
 
-	return sock.isOpen();
+    return sock.isOpen();
 }

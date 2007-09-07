@@ -30,25 +30,25 @@ class DrMain;
 
 class KMSpecialManager : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit KMSpecialManager(KMManager *parent);
+    explicit KMSpecialManager(KMManager *parent);
 
-	bool loadPrinters();
-	bool savePrinters();
-	void refresh();
-	KXmlCommand* loadCommand(KMPrinter*);
-	KXmlCommand* loadCommand(const QString& cmd);
-	DrMain* loadDriver(KMPrinter*);
-	QString setupCommand(const QString& cmd, const QMap<QString,QString>& opts);
+    bool loadPrinters();
+    bool savePrinters();
+    void refresh();
+    KXmlCommand* loadCommand(KMPrinter*);
+    KXmlCommand* loadCommand(const QString& cmd);
+    DrMain* loadDriver(KMPrinter*);
+    QString setupCommand(const QString& cmd, const QMap<QString, QString>& opts);
 
 protected:
-	bool loadDesktopFile(const QString&);
+    bool loadDesktopFile(const QString&);
 
 private:
-	KMManager	*m_mgr;
-	bool		m_loaded;
+    KMManager *m_mgr;
+    bool  m_loaded;
 };
 
 #endif

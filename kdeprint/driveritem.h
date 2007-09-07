@@ -31,18 +31,22 @@ class DrBase;
 class DriverItem : public QTreeWidgetItem
 {
 public:
-	DriverItem(QTreeWidget *parent, DrBase *item);
-	DriverItem(QTreeWidgetItem *parent, QTreeWidgetItem *after, DrBase *item);
+    DriverItem(QTreeWidget *parent, DrBase *item);
+    DriverItem(QTreeWidgetItem *parent, QTreeWidgetItem *after, DrBase *item);
 
-	void updateText();
-	void updateTextRecursive();
-	DrBase* drItem() const 	{ return m_item; }
-	bool hasConflict()	{ return m_conflict; }
-	bool updateConflict();
+    void updateText();
+    void updateTextRecursive();
+    DrBase* drItem() const  {
+        return m_item;
+    }
+    bool hasConflict() {
+        return m_conflict;
+    }
+    bool updateConflict();
 
 private:
-	DrBase	*m_item;
-	bool	m_conflict;
+    DrBase *m_item;
+    bool m_conflict;
 };
 
 #endif

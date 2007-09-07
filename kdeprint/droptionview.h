@@ -39,17 +39,17 @@ class DriverItem;
 #endif
 class OptionBaseView : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	OptionBaseView(QWidget *parent = 0);
-	virtual void setOption(DrBase*);
-	virtual void setValue(const QString&);
+    OptionBaseView(QWidget *parent = 0);
+    virtual void setOption(DrBase*);
+    virtual void setValue(const QString&);
 
 Q_SIGNALS:
-	void valueChanged(const QString&);
+    void valueChanged(const QString&);
 
 protected:
-	bool	blockSS;
+    bool blockSS;
 };
 
 #ifdef __GNUC__
@@ -57,21 +57,21 @@ protected:
 #endif
 class OptionNumericView : public OptionBaseView
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	OptionNumericView(QWidget *parent = 0);
-	void setOption(DrBase *opt);
-	void setValue(const QString& val);
+    OptionNumericView(QWidget *parent = 0);
+    void setOption(DrBase *opt);
+    void setValue(const QString& val);
 
 protected Q_SLOTS:
-	void slotSliderChanged(int);
-	void slotEditChanged(const QString&);
+    void slotSliderChanged(int);
+    void slotEditChanged(const QString&);
 
 private:
-	QLineEdit	*m_edit;
-	QSlider		*m_slider;
-	QLabel		*m_minval, *m_maxval;
-	bool		m_integer;
+    QLineEdit *m_edit;
+    QSlider  *m_slider;
+    QLabel  *m_minval, *m_maxval;
+    bool  m_integer;
 };
 
 #ifdef __GNUC__
@@ -80,12 +80,12 @@ private:
 class OptionStringView : public OptionBaseView
 {
 public:
-	OptionStringView(QWidget *parent = 0);
-	void setOption(DrBase *opt);
-	void setValue(const QString& val);
+    OptionStringView(QWidget *parent = 0);
+    void setOption(DrBase *opt);
+    void setValue(const QString& val);
 
 private:
-	QLineEdit	*m_edit;
+    QLineEdit *m_edit;
 };
 
 #ifdef __GNUC__
@@ -93,18 +93,18 @@ private:
 #endif
 class OptionListView : public OptionBaseView
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	OptionListView(QWidget *parent = 0);
-	void setOption(DrBase *opt);
-	void setValue(const QString& val);
+    OptionListView(QWidget *parent = 0);
+    void setOption(DrBase *opt);
+    void setValue(const QString& val);
 
 protected Q_SLOTS:
-	void slotSelectionChanged();
+    void slotSelectionChanged();
 
 private:
-	KListWidget	*m_list;
-	QStringList	m_choices;
+    KListWidget *m_list;
+    QStringList m_choices;
 };
 
 #ifdef __GNUC__
@@ -112,20 +112,20 @@ private:
 #endif
 class OptionBooleanView : public OptionBaseView
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	OptionBooleanView(QWidget *parent = 0);
-	void setOption(DrBase *opt);
-	void setValue(const QString& val);
+    OptionBooleanView(QWidget *parent = 0);
+    void setOption(DrBase *opt);
+    void setValue(const QString& val);
 
 protected Q_SLOTS:
-	void slotSelected(int);
+    void slotSelected(int);
 
 private:
-	KButtonGroup	*m_group;
-	QRadioButton *m_btn1;
-	QRadioButton *m_btn2;
-	QStringList	m_choices;
+    KButtonGroup *m_group;
+    QRadioButton *m_btn1;
+    QRadioButton *m_btn2;
+    QStringList m_choices;
 };
 
 #ifdef __GNUC__
@@ -133,28 +133,30 @@ private:
 #endif
 class DrOptionView : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	DrOptionView(QWidget *parent = 0);
-	void setAllowFixed(bool on) 	{ m_allowfixed = on; }
+    DrOptionView(QWidget *parent = 0);
+    void setAllowFixed(bool on)  {
+        m_allowfixed = on;
+    }
 
 Q_SIGNALS:
-	void changed();
+    void changed();
 
 public Q_SLOTS:
-	void slotValueChanged(const QString&);
-	void slotItemSelected(QTreeWidgetItem*);
+    void slotValueChanged(const QString&);
+    void slotItemSelected(QTreeWidgetItem*);
 
 private:
-	OptionBaseView *optionBaseView( int id );
-	void setTitle(const QString& title);
-	
-	int m_optionBaseID[5];
-	QLabel		* m_title;
-	QStackedWidget	*m_stack;
-	DriverItem	*m_item;
-	bool		m_block;
-	bool		m_allowfixed;
+    OptionBaseView *optionBaseView(int id);
+    void setTitle(const QString& title);
+
+    int m_optionBaseID[5];
+    QLabel  * m_title;
+    QStackedWidget *m_stack;
+    DriverItem *m_item;
+    bool  m_block;
+    bool  m_allowfixed;
 };
 
 #endif

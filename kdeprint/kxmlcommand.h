@@ -32,90 +32,90 @@ class DrBase;
 
 class KDEPRINT_EXPORT KXmlCommand : public QObject
 {
-	friend class KXmlCommandManager;
+    friend class KXmlCommandManager;
 
 public:
-	~KXmlCommand();
+    ~KXmlCommand();
 
-	QString name() const;
-	void setName(const QString&);
-	QString command();
-	void setCommand(const QString&);
-	DrMain* driver();
-	DrMain* takeDriver();
-	void setDriver(DrMain*);
-	QString io(bool io_input = true, bool io_pipe = false);
-	void setIo(const QString&, bool io_input = true, bool io_pipe = false);
-	QString description();
-	void setDescription(const QString&);
-	QString mimeType();
-	void setMimeType(const QString&);
-	bool acceptMimeType(const QString&);
-	QStringList inputMimeTypes();
-	void setInputMimeTypes(const QStringList&);
-	QStringList requirements();
-	void setRequirements(const QStringList&);
-	QString comment();
-	void setComment( const QString& );
-	bool isValid();
+    QString name() const;
+    void setName(const QString&);
+    QString command();
+    void setCommand(const QString&);
+    DrMain* driver();
+    DrMain* takeDriver();
+    void setDriver(DrMain*);
+    QString io(bool io_input = true, bool io_pipe = false);
+    void setIo(const QString&, bool io_input = true, bool io_pipe = false);
+    QString description();
+    void setDescription(const QString&);
+    QString mimeType();
+    void setMimeType(const QString&);
+    bool acceptMimeType(const QString&);
+    QStringList inputMimeTypes();
+    void setInputMimeTypes(const QStringList&);
+    QStringList requirements();
+    void setRequirements(const QStringList&);
+    QString comment();
+    void setComment(const QString&);
+    bool isValid();
 
-	QString buildCommand(const QMap<QString,QString>& opts, bool pipein = true, bool pipeout = true);
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+    QString buildCommand(const QMap<QString, QString>& opts, bool pipein = true, bool pipeout = true);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
 
 protected:
-	void init();
-	void loadXml();
-	void saveXml();
-	void loadDesktop();
-	void saveDesktop();
-	void check(bool use_xml = false);
-	DrGroup* parseGroup(const QDomElement& e, DrGroup *grp = 0);
-	DrBase* parseArgument(const QDomElement& e);
-	void parseIO(const QDomElement& e, int n);
-	QDomElement createIO(QDomDocument&, int, const QString&);
-	QDomElement createGroup(QDomDocument&, DrGroup*);
-	QDomElement createElement(QDomDocument&, DrBase*);
+    void init();
+    void loadXml();
+    void saveXml();
+    void loadDesktop();
+    void saveDesktop();
+    void check(bool use_xml = false);
+    DrGroup* parseGroup(const QDomElement& e, DrGroup *grp = 0);
+    DrBase* parseArgument(const QDomElement& e);
+    void parseIO(const QDomElement& e, int n);
+    QDomElement createIO(QDomDocument&, int, const QString&);
+    QDomElement createGroup(QDomDocument&, DrGroup*);
+    QDomElement createElement(QDomDocument&, DrBase*);
 
-	// use protected constructor to only allow the manager to
-	// create KXmlCommand object.
-	KXmlCommand(const QString& xmlId = QString());
+    // use protected constructor to only allow the manager to
+    // create KXmlCommand object.
+    KXmlCommand(const QString& xmlId = QString());
 
 private:
-	class KXmlCommandPrivate;
-	KXmlCommandPrivate* const d;
+    class KXmlCommandPrivate;
+    KXmlCommandPrivate* const d;
 };
 
 class KDEPRINT_EXPORT KXmlCommandManager : public QObject
 {
 public:
-	enum IO_CheckType	{ None = 0, Basic, Advanced };
+    enum IO_CheckType { None = 0, Basic, Advanced };
 
-	KXmlCommandManager();
-	~KXmlCommandManager();
+    KXmlCommandManager();
+    ~KXmlCommandManager();
 
-	KXmlCommand* loadCommand(const QString& xmlId, bool check = false);
-	void saveCommand(KXmlCommand *xmlCmd);
-	QStringList commandList();
-	QStringList commandListWithDescription();
-	QString selectCommand(QWidget *parent = 0);
+    KXmlCommand* loadCommand(const QString& xmlId, bool check = false);
+    void saveCommand(KXmlCommand *xmlCmd);
+    QStringList commandList();
+    QStringList commandListWithDescription();
+    QString selectCommand(QWidget *parent = 0);
 
-	QStringList autoConvert(const QString& mimesrc, const QString& mimedest);
-	int insertCommand(QStringList& list, const QString& filtername, bool defaultToStart = true);
-	bool checkCommand(const QString&, int inputCheck = Advanced, int outputCheck = Advanced, QString *msg = 0);
-	bool configure(KXmlCommand*, QWidget *parent = 0);
-	void cleanUp();
+    QStringList autoConvert(const QString& mimesrc, const QString& mimedest);
+    int insertCommand(QStringList& list, const QString& filtername, bool defaultToStart = true);
+    bool checkCommand(const QString&, int inputCheck = Advanced, int outputCheck = Advanced, QString *msg = 0);
+    bool configure(KXmlCommand*, QWidget *parent = 0);
+    void cleanUp();
 
-	static KXmlCommandManager* self();
+    static KXmlCommandManager* self();
 
 protected:
-	void preload();
-	KXmlCommand* command(const QString&) const;
+    void preload();
+    KXmlCommand* command(const QString&) const;
 
 private:
-	class KXmlCommandManagerPrivate;
-	KXmlCommandManagerPrivate* const d;
-	static KXmlCommandManager	*m_self;
+    class KXmlCommandManagerPrivate;
+    KXmlCommandManagerPrivate* const d;
+    static KXmlCommandManager *m_self;
 };
 
 #endif

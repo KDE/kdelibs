@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef	MARGINPREVIEW_H
-#define	MARGINPREVIEW_H
+#ifndef MARGINPREVIEW_H
+#define MARGINPREVIEW_H
 
 #include <QtGui/QWidget>
 
@@ -27,44 +27,44 @@
 #endif
 class MarginPreview : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	MarginPreview(QWidget *parent = 0 );
-	~MarginPreview();
-	// note : unit -> points (1/72th in)
-	void setPageSize(float w, float h);
-	void setMargins(float t, float b, float l, float r);
-	void setNoPreview(bool on);
-	void setSymetric(bool on);
-	enum	StateType { Fixed = -1, None = 0, TMoving, BMoving, LMoving, RMoving };
+    MarginPreview(QWidget *parent = 0);
+    ~MarginPreview();
+    // note : unit -> points (1/72th in)
+    void setPageSize(float w, float h);
+    void setMargins(float t, float b, float l, float r);
+    void setNoPreview(bool on);
+    void setSymetric(bool on);
+    enum StateType { Fixed = -1, None = 0, TMoving, BMoving, LMoving, RMoving };
 
 public Q_SLOTS:
-	void enableRubberBand(bool on);
+    void enableRubberBand(bool on);
 
 Q_SIGNALS:
-	void marginChanged(int type, float value);
+    void marginChanged(int type, float value);
 
 protected:
-	void paintEvent(QPaintEvent *);
-	void resizeEvent(QResizeEvent *);
-	void mouseMoveEvent(QMouseEvent *);
-	void mousePressEvent(QMouseEvent *);
-	void mouseReleaseEvent(QMouseEvent *);
-	int locateMouse(const QPoint& p);
-	void drawTempLine(QPainter*);
+    void paintEvent(QPaintEvent *);
+    void resizeEvent(QResizeEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mousePressEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
+    int locateMouse(const QPoint& p);
+    void drawTempLine(QPainter*);
 
 private:
-	float	width_, height_;
-	float	top_, bottom_, left_, right_;
-	QRect	box_, margbox_;
-	float	zoom_;
-	bool	nopreview_;
-	int	state_;
-	int	oldpos_;
-	int m_newpos;
-	bool	symetric_;
-	bool	m_resizing;
+    float width_, height_;
+    float top_, bottom_, left_, right_;
+    QRect box_, margbox_;
+    float zoom_;
+    bool nopreview_;
+    int state_;
+    int oldpos_;
+    int m_newpos;
+    bool symetric_;
+    bool m_resizing;
 };
 
 #endif

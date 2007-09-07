@@ -53,53 +53,51 @@ QString urlToSmb(const KUrl& url);
 #ifdef __GNUC__
 #warning remove function from global namespace
 #endif
-KDEPRINT_EXPORT QString buildSmbURI( const QString& work, const QString& server, const QString& printer, const QString& user, const QString& passwd );
+KDEPRINT_EXPORT QString buildSmbURI(const QString& work, const QString& server, const QString& printer, const QString& user, const QString& passwd);
 
 #ifdef __GNUC__
 #warning remove function from global namespace
 #endif
-KDEPRINT_EXPORT bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& printer, QString& user, QString& passwd );
+KDEPRINT_EXPORT bool splitSmbURI(const QString& uri, QString& work, QString& server, QString& printer, QString& user, QString& passwd);
 
 #ifdef __GNUC__
 #warning remove function from global namespace
 #endif
-KDEPRINT_EXPORT QString shadowPassword( const QString& uri );
+KDEPRINT_EXPORT QString shadowPassword(const QString& uri);
 
-static const struct pagesizestruct
-{
-	const char*	text;
-	int 	ID;
-} page_sizes[] =
-{
-	{ "A0", KPrinter::A0 },
-	{ "A1", KPrinter::A1 },
-	{ "A2", KPrinter::A2 },
-	{ "A3", KPrinter::A3 },
-	{ "A4", KPrinter::A4 },
-	{ "A5", KPrinter::A5 },
-	{ "A6", KPrinter::A6 },
-	{ "A7", KPrinter::A7 },
-	{ "A8", KPrinter::A8 },
-	{ "A9", KPrinter::A9 },
-	{ "B1", KPrinter::B1 },
-	{ "B10", KPrinter::B10 },
-	{ "B2", KPrinter::B2 },
-	{ "B3", KPrinter::B3 },
-	{ "B4", KPrinter::B4 },
-	{ "B5", KPrinter::B5 },
-	{ "B6", KPrinter::B6 },
-	{ "B7", KPrinter::B7 },
-	{ "B8", KPrinter::B8 },
-	{ "B9", KPrinter::B9 },
-	{ I18N_NOOP("Envelope C5"), KPrinter::C5E },
-	{ I18N_NOOP("Envelope DL"), KPrinter::DLE },
-	{ I18N_NOOP("Envelope US #10"), KPrinter::Comm10E },
-	{ I18N_NOOP("Executive"), KPrinter::Executive },
-	{ I18N_NOOP("Folio"), KPrinter::Folio },
-	{ I18N_NOOP("Ledger"), KPrinter::Ledger },
-	{ I18N_NOOP("Tabloid"), KPrinter::Tabloid },
-	{ I18N_NOOP("US Legal"), KPrinter::Legal },
-	{ I18N_NOOP("US Letter"), KPrinter::Letter }
+static const struct pagesizestruct {
+    const char* text;
+    int  ID;
+} page_sizes[] = {
+    { "A0", KPrinter::A0 },
+    { "A1", KPrinter::A1 },
+    { "A2", KPrinter::A2 },
+    { "A3", KPrinter::A3 },
+    { "A4", KPrinter::A4 },
+    { "A5", KPrinter::A5 },
+    { "A6", KPrinter::A6 },
+    { "A7", KPrinter::A7 },
+    { "A8", KPrinter::A8 },
+    { "A9", KPrinter::A9 },
+    { "B1", KPrinter::B1 },
+    { "B10", KPrinter::B10 },
+    { "B2", KPrinter::B2 },
+    { "B3", KPrinter::B3 },
+    { "B4", KPrinter::B4 },
+    { "B5", KPrinter::B5 },
+    { "B6", KPrinter::B6 },
+    { "B7", KPrinter::B7 },
+    { "B8", KPrinter::B8 },
+    { "B9", KPrinter::B9 },
+    { I18N_NOOP("Envelope C5"), KPrinter::C5E },
+    { I18N_NOOP("Envelope DL"), KPrinter::DLE },
+    { I18N_NOOP("Envelope US #10"), KPrinter::Comm10E },
+    { I18N_NOOP("Executive"), KPrinter::Executive },
+    { I18N_NOOP("Folio"), KPrinter::Folio },
+    { I18N_NOOP("Ledger"), KPrinter::Ledger },
+    { I18N_NOOP("Tabloid"), KPrinter::Tabloid },
+    { I18N_NOOP("US Legal"), KPrinter::Legal },
+    { I18N_NOOP("US Letter"), KPrinter::Letter }
 };
 int findIndex(int ID);
 

@@ -40,500 +40,478 @@
 #include <unistd.h>
 
 KMManager::KMManager(QObject *parent)
-: QObject(parent)
+        : QObject(parent)
 {
-	m_hasmanagement = false;
-	m_printeroperationmask = 0;
-	m_serveroperationmask = 0;
-	m_printerfilter = new PrinterFilter(this);
+    m_hasmanagement = false;
+    m_printeroperationmask = 0;
+    m_serveroperationmask = 0;
+    m_printerfilter = new PrinterFilter(this);
 
-	m_specialmgr = new KMSpecialManager(this);
-	Q_CHECK_PTR(m_specialmgr);
-	m_virtualmgr = new KMVirtualManager(this);
-	Q_CHECK_PTR(m_virtualmgr);
+    m_specialmgr = new KMSpecialManager(this);
+    Q_CHECK_PTR(m_specialmgr);
+    m_virtualmgr = new KMVirtualManager(this);
+    Q_CHECK_PTR(m_virtualmgr);
 
-	// set default to true to not disturb code that
-	// hasn't been adapted yet. Otherwise, should be false
-	m_updatepossible = true;
+    // set default to true to not disturb code that
+    // hasn't been adapted yet. Otherwise, should be false
+    m_updatepossible = true;
 
-	m_pluginGroup = new QActionGroup(this);
-	m_pluginGroup->setExclusive(false);
+    m_pluginGroup = new QActionGroup(this);
+    m_pluginGroup->setExclusive(false);
 }
 
 KMManager::~KMManager()
 {
-  qDeleteAll(m_printers);
+    qDeleteAll(m_printers);
 }
 
 KMManager* KMManager::self()
 {
-	return KMFactory::self()->manager();
+    return KMFactory::self()->manager();
 }
 
 bool KMManager::notImplemented()
 {
-	setErrorMsg(i18n("This operation is not implemented."));
-	return false;
+    setErrorMsg(i18n("This operation is not implemented."));
+    return false;
 }
 
 bool KMManager::modifyPrinter(KMPrinter *oldp, KMPrinter *newp)
 {
-	if (oldp->printerName() != newp->printerName())
-	{
-		// remove the old one, then create the new one. But before removing
-		// the old one, retrieve its driver so that the new printer has the
-		// same.
-		DrMain	*driver = loadPrinterDriver(oldp, true);
-		newp->setDriver(driver);
-		if (!removePrinter(oldp))
-			return false;
-	}
-	return createPrinter(newp);
+    if (oldp->printerName() != newp->printerName()) {
+        // remove the old one, then create the new one. But before removing
+        // the old one, retrieve its driver so that the new printer has the
+        // same.
+        DrMain *driver = loadPrinterDriver(oldp, true);
+        newp->setDriver(driver);
+        if (!removePrinter(oldp))
+            return false;
+    }
+    return createPrinter(newp);
 }
 
 bool KMManager::createPrinter(KMPrinter*)
 {
-	return notImplemented();
+    return notImplemented();
 }
 
 bool KMManager::removePrinter(KMPrinter*)
 {
-	return notImplemented();
+    return notImplemented();
 }
 
 bool KMManager::removePrinter(const QString& name)
 {
-	KMPrinter	*p = findPrinter(name);
-	return (p ? removePrinter(p) : false);
+    KMPrinter *p = findPrinter(name);
+    return (p ? removePrinter(p) : false);
 }
 
 bool KMManager::enablePrinter(KMPrinter*, bool)
 {
-	return notImplemented();
+    return notImplemented();
 }
 
 bool KMManager::enablePrinter(const QString& name, bool state)
 {
-	KMPrinter	*p = findPrinter(name);
-	return (p ? enablePrinter(p, state) : false);
+    KMPrinter *p = findPrinter(name);
+    return (p ? enablePrinter(p, state) : false);
 }
 
 bool KMManager::startPrinter(KMPrinter*, bool)
 {
-	return notImplemented();
+    return notImplemented();
 }
 
 bool KMManager::startPrinter(const QString& name, bool state)
 {
-	KMPrinter	*p = findPrinter(name);
-	return (p ? startPrinter(p, state) : false);
+    KMPrinter *p = findPrinter(name);
+    return (p ? startPrinter(p, state) : false);
 }
 
 bool KMManager::upPrinter(KMPrinter *p, bool state)
 {
-	bool	result = enablePrinter(p, state);
-	if (result)
-		result = startPrinter(p, state);
-	return result;
+    bool result = enablePrinter(p, state);
+    if (result)
+        result = startPrinter(p, state);
+    return result;
 }
 
 bool KMManager::completePrinter(KMPrinter*)
 {
-	notImplemented();
-	return true;	// not false to allow instance config/creation
+    notImplemented();
+    return true; // not false to allow instance config/creation
 }
 
 bool KMManager::completePrinterShort(KMPrinter *p)
 {
-	return completePrinter(p);
+    return completePrinter(p);
 }
 
 bool KMManager::completePrinter(const QString& name)
 {
-	KMPrinter	*p = findPrinter(name);
-	return (p ? completePrinter(p) : false);
+    KMPrinter *p = findPrinter(name);
+    return (p ? completePrinter(p) : false);
 }
 
 bool KMManager::setDefaultPrinter(KMPrinter*)
 {
-	return notImplemented();
+    return notImplemented();
 }
 
 bool KMManager::setDefaultPrinter(const QString& name)
 {
-	KMPrinter	*p = findPrinter(name);
-	return (p ? setDefaultPrinter(p) : false);
+    KMPrinter *p = findPrinter(name);
+    return (p ? setDefaultPrinter(p) : false);
 }
 
 bool KMManager::testPrinter(KMPrinter *prt)
 {
-	// standard Test mechanism
-	QString	testpage = getTestPage();
-	if (testpage.isEmpty())
-	{
-		setErrorMsg(i18n("Unable to locate test page."));
-		return false;
-	}
-	KPrinter	pr;
-	bool		prExist = (findPrinter(prt->printerName()) != 0), result(false);
-	pr.setPrinterName(prt->printerName());
-	pr.setSearchName(prt->name());
-	pr.setDocName("KDE Print Test");
-	// the printing mechanism may involve some needed operations on the
-	// printer, so temporary printers (created when testing) should be
-	// temporarily added to the printer list, then taken out.
-	if (!prExist)
-		m_printers.append(prt);
-	result = pr.printFiles(QStringList(testpage), false, false);
-	if (!prExist)
-		m_printers.takeAt(m_printers.count()-1);
-	return result;
-	// return notImplemented();
+    // standard Test mechanism
+    QString testpage = getTestPage();
+    if (testpage.isEmpty()) {
+        setErrorMsg(i18n("Unable to locate test page."));
+        return false;
+    }
+    KPrinter pr;
+    bool  prExist = (findPrinter(prt->printerName()) != 0), result(false);
+    pr.setPrinterName(prt->printerName());
+    pr.setSearchName(prt->name());
+    pr.setDocName("KDE Print Test");
+    // the printing mechanism may involve some needed operations on the
+    // printer, so temporary printers (created when testing) should be
+    // temporarily added to the printer list, then taken out.
+    if (!prExist)
+        m_printers.append(prt);
+    result = pr.printFiles(QStringList(testpage), false, false);
+    if (!prExist)
+        m_printers.takeAt(m_printers.count() - 1);
+    return result;
+    // return notImplemented();
 }
 
 KMPrinter* KMManager::findPrinter(const QString& name)
 {
-	QListIterator<KMPrinter*>	it(m_printers);
-	while (it.hasNext()) {
-    KMPrinter *printer(it.next());
-		if (printer->name() == name) return printer;
-  }
-	//setErrorMsg(i18n("%1: printer not found.").arg(name));
-	return 0;
+    QListIterator<KMPrinter*> it(m_printers);
+    while (it.hasNext()) {
+        KMPrinter *printer(it.next());
+        if (printer->name() == name) return printer;
+    }
+    //setErrorMsg(i18n("%1: printer not found.").arg(name));
+    return 0;
 }
 
 KMPrinter* KMManager::softDefault() const
 {
-	QListIterator<KMPrinter*>	it(m_printers);
-	while (it.hasNext()) {
-    KMPrinter *printer(it.next());
-		if (printer->isSoftDefault()) return printer;
-  }
-	return 0;
+    QListIterator<KMPrinter*> it(m_printers);
+    while (it.hasNext()) {
+        KMPrinter *printer(it.next());
+        if (printer->isSoftDefault()) return printer;
+    }
+    return 0;
 }
 
 KMPrinter* KMManager::hardDefault() const
 {
-	QListIterator<KMPrinter*>	it(m_printers);
-	while (it.hasNext()) {
-    KMPrinter *printer(it.next());
-		if (printer->isHardDefault())
-			return printer;
-  }
-	return 0;
+    QListIterator<KMPrinter*> it(m_printers);
+    while (it.hasNext()) {
+        KMPrinter *printer(it.next());
+        if (printer->isHardDefault())
+            return printer;
+    }
+    return 0;
 }
 
 KMPrinter* KMManager::defaultPrinter()
 {
-	printerList(false);
-	KMPrinter	*prt = softDefault();
-	if (!prt)
-		prt = hardDefault();
-	return prt;
+    printerList(false);
+    KMPrinter *prt = softDefault();
+    if (!prt)
+        prt = hardDefault();
+    return prt;
 }
 
 QList<KMPrinter*> KMManager::printerList(bool reload)
 {
-	setErrorMsg(QString());
-	//kDebug(500) << "Getting printer list: " << reload;
+    setErrorMsg(QString());
+    //kDebug(500) << "Getting printer list: " << reload;
 
-	if (reload || m_printers.count() == 0)
-	{
-		// reset filter
-		m_printerfilter->update();
-		m_fprinters.clear();
+    if (reload || m_printers.count() == 0) {
+        // reset filter
+        m_printerfilter->update();
+        m_fprinters.clear();
 
-		// first discard all printers
-		discardAllPrinters(true);
+        // first discard all printers
+        discardAllPrinters(true);
 
-		// make sure virtual printers will be reloaded if we don't have
-		// any printer (for example if settings are wrong)
-		if (m_printers.count() == 0)
-			m_virtualmgr->reset();
+        // make sure virtual printers will be reloaded if we don't have
+        // any printer (for example if settings are wrong)
+        if (m_printers.count() == 0)
+            m_virtualmgr->reset();
 
-		// List real printers (in subclasses)
-		if ( m_updatepossible )
-			listPrinters();
-		// Listing of special printers has to be done before the instances
-		// because now special printers can also have instances
-		m_specialmgr->refresh();
-		// list virtual printers (and undiscard virtual printers if necessary)
-		if ( m_updatepossible )
-			m_virtualmgr->refresh();
+        // List real printers (in subclasses)
+        if (m_updatepossible)
+            listPrinters();
+        // Listing of special printers has to be done before the instances
+        // because now special printers can also have instances
+        m_specialmgr->refresh();
+        // list virtual printers (and undiscard virtual printers if necessary)
+        if (m_updatepossible)
+            m_virtualmgr->refresh();
 
-		// remove discarded printers
-		for (int i=0; i<m_printers.count(); i++)
-		{
-			KMPrinter	*prt = m_printers.at(i);
-			if (prt->isDiscarded())
-			{
-				m_printers.removeAt(i);
-				i--;
-			}
-			else if (prt->isSpecial() || m_printerfilter->filter(prt))
-				m_fprinters.append(prt);
-		}
+        // remove discarded printers
+        for (int i = 0; i < m_printers.count(); i++) {
+            KMPrinter *prt = m_printers.at(i);
+            if (prt->isDiscarded()) {
+                m_printers.removeAt(i);
+                i--;
+            } else if (prt->isSpecial() || m_printerfilter->filter(prt))
+                m_fprinters.append(prt);
+        }
 
-		// try to find the default printer from these situations:
-		//   - it already exists from .lpoptions file
-		//   - use the PRINTER variable
-		if (!softDefault())
-		{
-			KMPrinter	*defprinter = findPrinter(QLatin1String(getenv("PRINTER")));
-			if (defprinter)
-				setSoftDefault(defprinter);
-		}
-	}
+        // try to find the default printer from these situations:
+        //   - it already exists from .lpoptions file
+        //   - use the PRINTER variable
+        if (!softDefault()) {
+            KMPrinter *defprinter = findPrinter(QLatin1String(getenv("PRINTER")));
+            if (defprinter)
+                setSoftDefault(defprinter);
+        }
+    }
 
-	return m_fprinters;
+    return m_fprinters;
 }
 
 QList<KMPrinter*> KMManager::printerListComplete(bool reload)
 {
-	printerList(reload);
-	return m_printers;
+    printerList(reload);
+    return m_printers;
 }
 
 void KMManager::listPrinters()
 {
-	// do nothing
+    // do nothing
 }
 
 void KMManager::addPrinter(KMPrinter *p)
 {
-	if (p)
-	{
-		if (p->name().isEmpty())
-			// discard printer with empty name
-			delete p;
-		else
-		{
-			KMPrinter	*other = findPrinter(p->name());
-			if (other)
-			{
-				other->copy(*p);
-				delete p;
-			}
-			else
-			{
-				p->setDiscarded(false);
-				m_printers.inSort(p);
-			}
-		}
-	}
+    if (p) {
+        if (p->name().isEmpty())
+            // discard printer with empty name
+            delete p;
+        else {
+            KMPrinter *other = findPrinter(p->name());
+            if (other) {
+                other->copy(*p);
+                delete p;
+            } else {
+                p->setDiscarded(false);
+                m_printers.inSort(p);
+            }
+        }
+    }
 }
 
 QString KMManager::driverDbCreationProgram()
 {
-	return QString();
+    return QString();
 }
 
 QString KMManager::driverDirectory()
 {
-	return QString();
+    return QString();
 }
 
 DrMain* KMManager::loadPrinterDriver(KMPrinter*, bool)
 {
-	return NULL;
+    return NULL;
 }
 
 DrMain* KMManager::loadDbDriver(KMDBEntry *entry)
 {
-	return loadFileDriver(entry->file);
+    return loadFileDriver(entry->file);
 }
 
 DrMain* KMManager::loadFileDriver(const QString&)
 {
-	return NULL;
+    return NULL;
 }
 
 DrMain* KMManager::loadDriver(KMPrinter *p, bool config)
 {
-	if (p->isSpecial())
-		return m_specialmgr->loadDriver(p);
-	else
-		return loadPrinterDriver(p, config);
+    if (p->isSpecial())
+        return m_specialmgr->loadDriver(p);
+    else
+        return loadPrinterDriver(p, config);
 }
 
-bool KMManager::savePrinterDriver(KMPrinter*,DrMain*)
+bool KMManager::savePrinterDriver(KMPrinter*, DrMain*)
 {
-	return notImplemented();
+    return notImplemented();
 }
 
 bool KMManager::uncompressFile(const QString& filename, QString& destname)
 {
-	QFile	f(filename);
-	bool	result(true);
-	destname.clear();
-	if (f.exists() && f.open(QIODevice::ReadOnly))
-	{
-		char	buf[1024] = {0};
-		f.read(buf,2);
-		if ((uchar)(buf[0]) == 037 && (uchar)(buf[1]) == 0213)
-		{
-			f.close();
-			destname = KStandardDirs::locateLocal("tmp","kdeprint_") + KRandom::randomString(8);
-			f.setFileName(destname);
+    QFile f(filename);
+    bool result(true);
+    destname.clear();
+    if (f.exists() && f.open(QIODevice::ReadOnly)) {
+        char buf[1024] = {0};
+        f.read(buf, 2);
+        if ((uchar)(buf[0]) == 037 && (uchar)(buf[1]) == 0213) {
+            f.close();
+            destname = KStandardDirs::locateLocal("tmp", "kdeprint_") + KRandom::randomString(8);
+            f.setFileName(destname);
 
-			if (f.open(QIODevice::WriteOnly))
-			{
-				gzFile	in = gzopen(filename.toLatin1(),"r");
-				int	n(0);
-				while ((n=gzread(in,buf,1024)) > 0)
-					if (f.write(buf,n) != n)
-						break;
-				if (n != 0) result = false;
-				gzclose(in);
-				f.close();
-			}
-		}
-	}
-	return result;
+            if (f.open(QIODevice::WriteOnly)) {
+                gzFile in = gzopen(filename.toLatin1(), "r");
+                int n(0);
+                while ((n = gzread(in, buf, 1024)) > 0)
+                    if (f.write(buf, n) != n)
+                        break;
+                if (n != 0) result = false;
+                gzclose(in);
+                f.close();
+            }
+        }
+    }
+    return result;
 }
 
 void KMManager::setHardDefault(KMPrinter *p)
 {
-	QListIterator<KMPrinter*>	it(m_printers);
-	while (it.hasNext())
-		it.next()->setHardDefault(false);
-	if (p) p->setHardDefault(true);
+    QListIterator<KMPrinter*> it(m_printers);
+    while (it.hasNext())
+        it.next()->setHardDefault(false);
+    if (p) p->setHardDefault(true);
 }
 
 void KMManager::setSoftDefault(KMPrinter *p)
 {
-	QListIterator<KMPrinter*>	it(m_printers);
-	while (it.hasNext())
-        {
-          KMPrinter *printer(it.next());
-		printer->setSoftDefault(false);
-		printer->setOwnSoftDefault(false);
-        }
-	if (p)
-        {
-                p->setSoftDefault(true);
-                KMPrinter       *pp = findPrinter(p->printerName());
-                if (pp)
-                        pp->setOwnSoftDefault(true);
-        }
+    QListIterator<KMPrinter*> it(m_printers);
+    while (it.hasNext()) {
+        KMPrinter *printer(it.next());
+        printer->setSoftDefault(false);
+        printer->setOwnSoftDefault(false);
+    }
+    if (p) {
+        p->setSoftDefault(true);
+        KMPrinter       *pp = findPrinter(p->printerName());
+        if (pp)
+            pp->setOwnSoftDefault(true);
+    }
 }
 
 bool KMManager::restartServer()
 {
-	return notImplemented();
+    return notImplemented();
 }
 
 bool KMManager::configureServer(QWidget*)
 {
-	return notImplemented();
+    return notImplemented();
 }
 
 QString KMManager::testPage()
 {
-	return QString();
+    return QString();
 }
 
 QString KMManager::getTestPage()
 {
-	KConfig *cf = KMFactory::self()->printConfig();
-	KConfigGroup conf = cf->group( "General");
-	QString	tpage = conf.readPathEntry("TestPage");
+    KConfig *cf = KMFactory::self()->printConfig();
+    KConfigGroup conf = cf->group("General");
+    QString tpage = conf.readPathEntry("TestPage");
 
-	if (tpage.isEmpty())
-		tpage = testPage();
-	if(!tpage.isEmpty() && !QFile::exists(tpage))
-		tpage.clear();
+    if (tpage.isEmpty())
+        tpage = testPage();
+    if (!tpage.isEmpty() && !QFile::exists(tpage))
+        tpage.clear();
 
-	if (tpage.isEmpty())
-		tpage = KStandardDirs::locate("data","kdeprint/testprint.ps");
-	return tpage;
+    if (tpage.isEmpty())
+        tpage = KStandardDirs::locate("data", "kdeprint/testprint.ps");
+    return tpage;
 }
 
 void KMManager::discardAllPrinters(bool on)
 {
-	QListIterator<KMPrinter*>	it(m_printers);
-	while (it.hasNext()) {
-		KMPrinter *printer(it.next());
-		if (!on || !printer->isSpecial())
-			printer->setDiscarded(on);
-	}
+    QListIterator<KMPrinter*> it(m_printers);
+    while (it.hasNext()) {
+        KMPrinter *printer(it.next());
+        if (!on || !printer->isSpecial())
+            printer->setDiscarded(on);
+    }
 }
 
 bool KMManager::validateDbDriver(KMDBEntry*)
 {
-	return true;
+    return true;
 }
 
 bool KMManager::createSpecialPrinter(KMPrinter *p)
 {
-	if (p && p->isSpecial())
-	{
-		KMPrinter	*old = findPrinter(p->name());
-		if (old && !old->isSpecial())
-		{
-			setErrorMsg(i18n("Can not overwrite regular printer with special printer settings."));
-			return false;
-		}
-		// if the special printer already exists, it will be overwritten
-		addPrinter(p);
-		return m_specialmgr->savePrinters();
-	}
-	return false;
+    if (p && p->isSpecial()) {
+        KMPrinter *old = findPrinter(p->name());
+        if (old && !old->isSpecial()) {
+            setErrorMsg(i18n("Can not overwrite regular printer with special printer settings."));
+            return false;
+        }
+        // if the special printer already exists, it will be overwritten
+        addPrinter(p);
+        return m_specialmgr->savePrinters();
+    }
+    return false;
 }
 
 bool KMManager::removeSpecialPrinter(KMPrinter *p)
 {
-	if (p && p->isSpecial() && m_printers.contains(p))
-	{
-		m_printers.removeAll(p);
-		return m_specialmgr->savePrinters();
-	}
-	return false;
+    if (p && p->isSpecial() && m_printers.contains(p)) {
+        m_printers.removeAll(p);
+        return m_specialmgr->savePrinters();
+    }
+    return false;
 }
 
 /* format of output:
-	Class0, URI0, Desc0, Printer0, Class1, URI1, Desc1, Printer1, ...
+ Class0, URI0, Desc0, Printer0, Class1, URI1, Desc1, Printer1, ...
 
   Defaults to 3 parallel printers
 */
 QStringList KMManager::detectLocalPrinters()
 {
-	QStringList	list;
-	for (int i=0; i<3; i++)
-		list << QString() << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1", i+1) << QString();
-	return list;
+    QStringList list;
+    for (int i = 0; i < 3; i++)
+        list << QString() << QString::fromLatin1("parallel:/dev/lp%1").arg(i) << i18n("Parallel Port #%1", i + 1) << QString();
+    return list;
 }
 
 int KMManager::addPrinterWizard(QWidget *parent)
 {
-	KLibrary	*lib = KLibLoader::self()->library(QLatin1String("libkdeprint_management_module"));
-	if (!lib)
-		setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
-	else
-	{
-		int (*func)(QWidget*) = (int(*)(QWidget*))lib->resolveFunction("add_printer_wizard");
-		if (!func)
-			setErrorMsg(i18n("Unable to find wizard object in management library."));
-		else
-			return func(parent);
-	}
-	return (-1);
+    KLibrary *lib = KLibLoader::self()->library(QLatin1String("libkdeprint_management_module"));
+    if (!lib)
+        setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
+    else {
+        int (*func)(QWidget*) = (int(*)(QWidget*))lib->resolveFunction("add_printer_wizard");
+        if (!func)
+            setErrorMsg(i18n("Unable to find wizard object in management library."));
+        else
+            return func(parent);
+    }
+    return (-1);
 }
 
 bool KMManager::invokeOptionsDialog(QWidget *parent)
 {
-	KLibrary	*lib = KLibLoader::self()->library(QLatin1String("libkdeprint_management_module"));
-	if (!lib)
-		setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
-	else
-	{
-		bool (*func)(QWidget*) = (bool(*)(QWidget*))lib->resolveFunction("config_dialog");
-		if (!func)
-			setErrorMsg(i18n("Unable to find options dialog in management library."));
-		else
-			return func(parent);
-	}
-	return false;
+    KLibrary *lib = KLibLoader::self()->library(QLatin1String("libkdeprint_management_module"));
+    if (!lib)
+        setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
+    else {
+        bool (*func)(QWidget*) = (bool(*)(QWidget*))lib->resolveFunction("config_dialog");
+        if (!func)
+            setErrorMsg(i18n("Unable to find options dialog in management library."));
+        else
+            return func(parent);
+    }
+    return false;
 }
 
 void KMManager::createPluginActions(KActionCollection*)
@@ -546,41 +524,41 @@ void KMManager::validatePluginActions(KActionCollection*, KMPrinter*)
 
 void KMManager::enableFilter(bool on)
 {
-	m_printerfilter->setEnabled(on);
+    m_printerfilter->setEnabled(on);
 }
 
 bool KMManager::isFilterEnabled() const
 {
-	return m_printerfilter->isEnabled();
+    return m_printerfilter->isEnabled();
 }
 
 QString KMManager::stateInformation()
 {
-	return i18n("No plugin information available");
+    return i18n("No plugin information available");
 }
 
 void KMManager::checkUpdatePossible()
 {
-	m_updatepossible = false;
-	checkUpdatePossibleInternal();
+    m_updatepossible = false;
+    checkUpdatePossibleInternal();
 }
 
 void KMManager::checkUpdatePossibleInternal()
 {
-	setUpdatePossible( true );
+    setUpdatePossible(true);
 }
 
-void KMManager::setUpdatePossible( bool value )
+void KMManager::setUpdatePossible(bool value)
 {
-	if ( value != m_updatepossible )
-		m_virtualmgr->reset();
-	m_updatepossible = value;
-	emit updatePossible( m_updatepossible );
+    if (value != m_updatepossible)
+        m_virtualmgr->reset();
+    m_updatepossible = value;
+    emit updatePossible(m_updatepossible);
 }
 
-QActionGroup * KMManager::pluginGroup( ) const
+QActionGroup * KMManager::pluginGroup() const
 {
-	return m_pluginGroup;
+    return m_pluginGroup;
 }
 
 #include "kmmanager.moc"

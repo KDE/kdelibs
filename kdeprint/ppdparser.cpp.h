@@ -28,25 +28,25 @@
 /* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     TRANSLATION = 258,
-     OPENUI = 259,
-     CLOSEUI = 260,
-     OPENGROUP = 261,
-     CLOSEGROUP = 262,
-     DEFAULT = 263,
-     KEYWORD = 264,
-     OPTION = 265,
-     STRINGPART = 266,
-     QUOTED = 267,
-     CONSTRAINT = 268,
-     PAPERDIM = 269,
-     IMGAREA = 270,
-     FOODATA = 271,
-     COMMENT = 272
-   };
+/* Put the tokens into the symbol table, so that GDB and other debuggers
+   know about them.  */
+enum yytokentype {
+    TRANSLATION = 258,
+    OPENUI = 259,
+    CLOSEUI = 260,
+    OPENGROUP = 261,
+    CLOSEGROUP = 262,
+    DEFAULT = 263,
+    KEYWORD = 264,
+    OPTION = 265,
+    STRINGPART = 266,
+    QUOTED = 267,
+    CONSTRAINT = 268,
+    PAPERDIM = 269,
+    IMGAREA = 270,
+    FOODATA = 271,
+    COMMENT = 272
+};
 #endif
 #define TRANSLATION 258
 #define OPENUI 259

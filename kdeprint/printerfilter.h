@@ -32,21 +32,23 @@ class KMPrinter;
 class PrinterFilter : QObject
 {
 public:
-	PrinterFilter(QObject *parent = 0);
-	~PrinterFilter();
+    PrinterFilter(QObject *parent = 0);
+    ~PrinterFilter();
 
-	bool filter(KMPrinter*);
-	void update();
-	void setEnabled(bool on);
-	bool isEnabled() const;
+    bool filter(KMPrinter*);
+    void update();
+    void setEnabled(bool on);
+    bool isEnabled() const;
 
 private:
-	QRegExp		m_locationRe;
-	QStringList	m_printers;
-	bool		m_enabled;
+    QRegExp  m_locationRe;
+    QStringList m_printers;
+    bool  m_enabled;
 };
 
 inline bool PrinterFilter::isEnabled() const
-{ return m_enabled; }
+{
+    return m_enabled;
+}
 
 #endif

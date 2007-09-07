@@ -20,41 +20,40 @@
 #include "kpipeprocess.h"
 
 KPipeProcess::KPipeProcess(const QString& cmd, QIODevice::OpenModeFlag mode)
-: QFile()
+        : QFile()
 {
-	m_pipe = NULL;
-	if (!cmd.isEmpty())
-		open(cmd,mode);
+    m_pipe = NULL;
+    if (!cmd.isEmpty())
+        open(cmd, mode);
 }
 
 KPipeProcess::~KPipeProcess()
 {
-	close();
+    close();
 }
 
 bool KPipeProcess::open(const QString& cmd, QIODevice::OpenModeFlag mode)
 {
-	// close first if needed
-	close();
-	// check supported modes
-	if (mode != QIODevice::ReadOnly && mode != QIODevice::WriteOnly)
-		return false;
+    // close first if needed
+    close();
+    // check supported modes
+    if (mode != QIODevice::ReadOnly && mode != QIODevice::WriteOnly)
+        return false;
 
-	// create the pipe
-	m_pipe = popen(cmd.toLatin1(),(mode == QIODevice::WriteOnly ? "w" : "r"));
-	if (m_pipe)
-		if (!QFile::open(m_pipe, mode))
-			close();
-	return (m_pipe != NULL);
+    // create the pipe
+    m_pipe = popen(cmd.toLatin1(), (mode == QIODevice::WriteOnly ? "w" : "r"));
+    if (m_pipe)
+        if (!QFile::open(m_pipe, mode))
+            close();
+    return (m_pipe != NULL);
 }
 
 void KPipeProcess::close()
 {
-	if (m_pipe != NULL)
-	{
-		QFile::close();
-		/* pipe must be close to be sure the process is terminated */
-		pclose( m_pipe );
-		m_pipe = NULL;
-	}
+    if (m_pipe != NULL) {
+        QFile::close();
+        /* pipe must be close to be sure the process is terminated */
+        pclose(m_pipe);
+        m_pipe = NULL;
+    }
 }

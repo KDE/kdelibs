@@ -33,21 +33,21 @@ class QLabel;
 #endif
 class KDEPRINT_EXPORT PluginComboBox : public QWidget, public KPReloadObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	PluginComboBox(QWidget *parent = 0);
+    PluginComboBox(QWidget *parent = 0);
 
 protected Q_SLOTS:
-	void slotActivated(int);
+    void slotActivated(int);
 
 protected:
-	void reload();
-	void configChanged();
+    void reload();
+    void configChanged();
 
 private:
-	QComboBox	*m_combo;
-	QLabel		*m_plugininfo;
-	QStringList	m_pluginlist;
+    QComboBox *m_combo;
+    QLabel  *m_plugininfo;
+    QStringList m_pluginlist;
 };
 
 #endif

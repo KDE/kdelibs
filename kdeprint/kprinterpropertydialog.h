@@ -31,38 +31,44 @@ class QTabWidget;
 
 class KDEPRINT_EXPORT KPrinterPropertyDialog : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KPrinterPropertyDialog(KMPrinter *printer, QWidget *parent = 0);
-	~KPrinterPropertyDialog();
+    explicit KPrinterPropertyDialog(KMPrinter *printer, QWidget *parent = 0);
+    ~KPrinterPropertyDialog();
 
-	KMPrinter* printer() 		{ return m_printer; }
-	DrMain* driver()		{ return m_driver; }
-	void setDriver(DrMain* d) 	{ if (!m_driver) m_driver = d; }
-	void addPage(KPrintDialogPage*);
-	void setOptions(const QMap<QString,QString>&);
-	void getOptions(QMap<QString,QString>&, bool = false);
-	void enableSaveButton(bool);
+    KMPrinter* printer()   {
+        return m_printer;
+    }
+    DrMain* driver()  {
+        return m_driver;
+    }
+    void setDriver(DrMain* d)  {
+        if (!m_driver) m_driver = d;
+    }
+    void addPage(KPrintDialogPage*);
+    void setOptions(const QMap<QString, QString>&);
+    void getOptions(QMap<QString, QString>&, bool = false);
+    void enableSaveButton(bool);
 
-	static void setupPrinter(KMPrinter *printer, QWidget *parent);
+    static void setupPrinter(KMPrinter *printer, QWidget *parent);
 
 protected:
-	bool synchronize();
-	void collectOptions(QMap<QString,QString>& opts, bool incldef = false);
+    bool synchronize();
+    void collectOptions(QMap<QString, QString>& opts, bool incldef = false);
 
 protected Q_SLOTS:
-	void slotCurrentChanged(int);
-	void slotUser1();
-	void slotOk();
+    void slotCurrentChanged(int);
+    void slotUser1();
+    void slotOk();
 
 protected:
-	KMPrinter		*m_printer;
-	DrMain			*m_driver;
-	QList<KPrintDialogPage*>	m_pages;
-	KPrintDialogPage	*m_current;
-	QMap<QString,QString>	m_options;
-	QTabWidget		*m_tw;
-	QPushButton		*m_save;
+    KMPrinter  *m_printer;
+    DrMain   *m_driver;
+    QList<KPrintDialogPage*> m_pages;
+    KPrintDialogPage *m_current;
+    QMap<QString, QString> m_options;
+    QTabWidget  *m_tw;
+    QPushButton  *m_save;
 };
 
 #endif

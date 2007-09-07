@@ -33,32 +33,32 @@ class KPrinter;
 
 class KDEPRINT_EXPORT KPCopiesPage : public KPrintDialogPage, public KPReloadObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KPCopiesPage(KPrinter *prt = 0, QWidget *parent = 0);
-	~KPCopiesPage();
+    explicit KPCopiesPage(KPrinter *prt = 0, QWidget *parent = 0);
+    ~KPCopiesPage();
 
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
-	void initialize(bool usePlugin = true);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
+    void initialize(bool usePlugin = true);
 
 protected Q_SLOTS:
-	void slotRangeEntered();
-	void slotCollateClicked();
+    void slotRangeEntered();
+    void slotCollateClicked();
 
 protected:
-	void reload();
+    void reload();
 
 protected:
-	QRadioButton	*m_all, *m_current, *m_range;
-	QLineEdit	*m_rangeedit;
-	QComboBox	*m_pageset;
-	QCheckBox	*m_collate, *m_order;
-	QSpinBox	*m_copies;
-	QLabel		*m_collatepix;
-	bool		m_useplugin;
+    QRadioButton *m_all, *m_current, *m_range;
+    QLineEdit *m_rangeedit;
+    QComboBox *m_pageset;
+    QCheckBox *m_collate, *m_order;
+    QSpinBox *m_copies;
+    QLabel  *m_collatepix;
+    bool  m_useplugin;
 
-	KPrinter	*m_printer;
+    KPrinter *m_printer;
 };
 
 #endif

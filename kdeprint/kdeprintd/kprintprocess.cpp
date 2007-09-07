@@ -35,11 +35,14 @@ KPrintProcess::KPrintProcess()
 
 KPrintProcess::~KPrintProcess()
 {
+	kDebug() << "Die die die";
 	if ( !m_tempoutput.isEmpty() )
 		QFile::remove( m_tempoutput );
-	if ( m_tempfiles.size() > 0 )
+	if ( m_tempfiles.size() > 0 ) {
+		kDebug() << "Deleting" << m_tempfiles;
 		for ( QStringList::ConstIterator it=m_tempfiles.begin(); it!=m_tempfiles.end(); ++it )
 			QFile::remove( *it );
+	}
 }
 
 QString KPrintProcess::errorMessage() const

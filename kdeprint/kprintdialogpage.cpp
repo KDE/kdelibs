@@ -21,14 +21,14 @@
 #include "kprintdialogpage.h"
 
 KPrintDialogPage::KPrintDialogPage(QWidget *parent)
-    : QWidget(parent), m_printer(0), m_driver(0), m_ID(0), m_onlyreal(false),
-      d(0)
+        : QWidget(parent), m_printer(0), m_driver(0), m_ID(0), m_onlyreal(false),
+        d(0)
 {
 }
 
 KPrintDialogPage::KPrintDialogPage(KMPrinter *pr, DrMain *dr, QWidget *parent)
-    : QWidget(parent), m_printer(pr), m_driver(dr), m_ID(0), m_onlyreal(false),
-      d(0)
+        : QWidget(parent), m_printer(pr), m_driver(dr), m_ID(0), m_onlyreal(false),
+        d(0)
 {
 }
 
@@ -36,17 +36,17 @@ KPrintDialogPage::~KPrintDialogPage()
 {
 }
 
-void KPrintDialogPage::setOptions(const QMap<QString,QString>&)
+void KPrintDialogPage::setOptions(const QMap<QString, QString>&)
 {
 }
 
-void KPrintDialogPage::getOptions(QMap<QString,QString>&, bool)
+void KPrintDialogPage::getOptions(QMap<QString, QString>&, bool)
 {
 }
 
 bool KPrintDialogPage::isValid(QString&)
 {
-	return true;
+    return true;
 }
 
 int KPrintDialogPage::id() const
@@ -59,7 +59,7 @@ void KPrintDialogPage::setId(int ID)
     m_ID = ID;
 }
 
-QString	KPrintDialogPage::title() const
+QString KPrintDialogPage::title() const
 {
     return m_title;
 }

@@ -43,10 +43,10 @@
 #include <kstandardaction.h>
 
 KPreviewProc::KPreviewProc()
-: KProcess()
+        : KProcess()
 {
-	m_bOk = false;
-	connect(this, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(slotProcessExited()));
+    m_bOk = false;
+    connect(this, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(slotProcessExited()));
 }
 
 KPreviewProc::~KPreviewProc()
@@ -55,26 +55,24 @@ KPreviewProc::~KPreviewProc()
 
 bool KPreviewProc::startPreview()
 {
-	start();
-	if (waitForStarted())
-	{
-		QEventLoop eventLoop;
-		connect(this, SIGNAL(finished()), &eventLoop, SLOT(quit()));
-		eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
-		return m_bOk;
-	}
-	else
-		return false;
+    start();
+    if (waitForStarted()) {
+        QEventLoop eventLoop;
+        connect(this, SIGNAL(finished()), &eventLoop, SLOT(quit()));
+        eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+        return m_bOk;
+    } else
+        return false;
 }
 
 void KPreviewProc::slotProcessExited()
 {
-	emit finished();
-	if ( exitStatus() == NormalExit && exitCode() == 0 )
-		m_bOk = true;
-	else
-		kDebug(500) << "KPreviewProc::slotProcessExited: exitStatus=" << exitStatus()
-			<< " exitCode=" << exitCode() << endl;
+    emit finished();
+    if (exitStatus() == NormalExit && exitCode() == 0)
+        m_bOk = true;
+    else
+        kDebug(500) << "KPreviewProc::slotProcessExited: exitStatus=" << exitStatus()
+        << " exitCode=" << exitCode() << endl;
 }
 
 //*******************************************************************************************
@@ -82,266 +80,239 @@ void KPreviewProc::slotProcessExited()
 class KPrintPreview::KPrintPreviewPrivate
 {
 public:
-	KPrintPreviewPrivate(KPrintPreview *dlg) : gvpart_(0)
-	{
-		mainwidget_ = new QWidget( dlg );
-		mainwidget_->setObjectName( "MainWidget" );
-		toolbar_ = new KToolBar(mainwidget_, "PreviewToolBar", true);
-		actions_ = new KActionCollection(dlg);
-		previewonly_ = false;
-	}
-	~KPrintPreviewPrivate()
-	{
-		if (gvpart_) delete gvpart_;
-	}
-	void plugAction(QAction *act)
-	{
-		toolbar_->addAction( act );
-	}
+    KPrintPreviewPrivate(KPrintPreview *dlg) : gvpart_(0) {
+        mainwidget_ = new QWidget(dlg);
+        mainwidget_->setObjectName("MainWidget");
+        toolbar_ = new KToolBar(mainwidget_, "PreviewToolBar", true);
+        actions_ = new KActionCollection(dlg);
+        previewonly_ = false;
+    }
+    ~KPrintPreviewPrivate() {
+        if (gvpart_) delete gvpart_;
+    }
+    void plugAction(QAction *act) {
+        toolbar_->addAction(act);
+    }
 
-	KParts::ReadOnlyPart	*gvpart_;
-	KToolBar		*toolbar_;
-	KActionCollection	*actions_;
-	QWidget			*mainwidget_;
-	bool			previewonly_;
+    KParts::ReadOnlyPart *gvpart_;
+    KToolBar  *toolbar_;
+    KActionCollection *actions_;
+    QWidget   *mainwidget_;
+    bool   previewonly_;
 };
 
 static KPluginFactory* componentFactory()
 {
-	kDebug(500) << "kdeprint: querying trader for 'application/postscript' service";
-	KPluginFactory	*factory(0);
-	KService::List offers = KMimeTypeTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"));
-	for (KService::List::ConstIterator it = offers.begin(); it != offers.end(); ++it)
-	{
-		KService::Ptr	service = *it;
-		factory = KPluginLoader(QFile::encodeName(service->library())).factory();
-		if (factory)
-			break;
-	}
-	if (!factory)
-	{
-		// nothing has been found, try to load directly the KGhostview part
-		factory = KPluginLoader("libkghostviewpart").factory();
-	}
-	return factory;
+    kDebug(500) << "kdeprint: querying trader for 'application/postscript' service";
+    KPluginFactory *factory(0);
+    KService::List offers = KMimeTypeTrader::self()->query(QLatin1String("application/postscript"), QString::fromLatin1("KParts/ReadOnlyPart"));
+    for (KService::List::ConstIterator it = offers.begin(); it != offers.end(); ++it) {
+        KService::Ptr service = *it;
+        factory = KPluginLoader(QFile::encodeName(service->library())).factory();
+        if (factory)
+            break;
+    }
+    if (!factory) {
+        // nothing has been found, try to load directly the KGhostview part
+        factory = KPluginLoader("libkghostviewpart").factory();
+    }
+    return factory;
 }
 
 static bool continuePrint(const QString& msg_, QWidget *parent, bool previewOnly)
 {
-	QString	msg(msg_);
-	if (previewOnly)
-	{
-		KMessageBox::error(parent, msg);
-		return false;
-	}
-	else
-	{
-		msg.append(" ").append(i18n("Do you want to continue printing anyway?"));
-		return (KMessageBox::warningContinueCancel(parent, msg, QString(), KGuiItem(i18n("Print"),"document-print")) == KMessageBox::Continue);
-	}
+    QString msg(msg_);
+    if (previewOnly) {
+        KMessageBox::error(parent, msg);
+        return false;
+    } else {
+        msg.append(" ").append(i18n("Do you want to continue printing anyway?"));
+        return (KMessageBox::warningContinueCancel(parent, msg, QString(), KGuiItem(i18n("Print"), "document-print")) == KMessageBox::Continue);
+    }
 }
 
 //*******************************************************************************************
 
 KPrintPreview::KPrintPreview(QWidget *parent, bool previewOnly)
-: KDialog(parent),
-  d(new KPrintPreviewPrivate(this))
+        : KDialog(parent),
+        d(new KPrintPreviewPrivate(this))
 {
-  setCaption( i18n("Print Preview") );
+    setCaption(i18n("Print Preview"));
 
-	kDebug(500) << "kdeprint: creating preview dialog";
-	d->previewonly_ = previewOnly;
+    kDebug(500) << "kdeprint: creating preview dialog";
+    d->previewonly_ = previewOnly;
 
-	// create main view and actions
-	setMainWidget(d->mainwidget_);
-	if (previewOnly)
-		d->actions_->addAction(KStandardAction::Close, "close_print", this, SLOT(reject()));
-	else
-	{
-    KAction *action = 0;
-    action = new KAction(i18n("Print"), this);
-	d->actions_->addAction( "continue_print", action );
-    action->setIcon( KIcon( "document-print" ) );
-    action->setShortcut( QKeySequence(Qt::Key_Return) );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
+    // create main view and actions
+    setMainWidget(d->mainwidget_);
+    if (previewOnly)
+        d->actions_->addAction(KStandardAction::Close, "close_print", this, SLOT(reject()));
+    else {
+        KAction *action = 0;
+        action = new KAction(i18n("Print"), this);
+        d->actions_->addAction("continue_print", action);
+        action->setIcon(KIcon("document-print"));
+        action->setShortcut(QKeySequence(Qt::Key_Return));
+        connect(action, SIGNAL(triggered(bool)), this, SLOT(accept()));
 
-    action = new KAction(i18n("Print"), this);
-	d->actions_->addAction( "continue_print", action );
-    action->setIcon( KIcon( "document-print" ) );
-    action->setShortcut( QKeySequence(Qt::Key_Return) );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(accept()) );
+        action = new KAction(i18n("Print"), this);
+        d->actions_->addAction("continue_print", action);
+        action->setIcon(KIcon("document-print"));
+        action->setShortcut(QKeySequence(Qt::Key_Return));
+        connect(action, SIGNAL(triggered(bool)), this, SLOT(accept()));
 
-    action = new KAction(i18n("Cancel"), this);
-	d->actions_->addAction( "stop_print", action );
-    action->setIcon( KIcon( "process-stop" ) );
-    action->setShortcut( QKeySequence(Qt::Key_Escape) );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(reject()) );
-	}
+        action = new KAction(i18n("Cancel"), this);
+        d->actions_->addAction("stop_print", action);
+        action->setIcon(KIcon("process-stop"));
+        action->setShortcut(QKeySequence(Qt::Key_Escape));
+        connect(action, SIGNAL(triggered(bool)), this, SLOT(reject()));
+    }
 
 }
 
 KPrintPreview::~KPrintPreview()
 {
-	delete d;
+    delete d;
 }
 
 void KPrintPreview::initView(KPluginFactory *factory)
 {
-	// load the component
-	QVariantList args;
-	args << "Print/Preview";
-	d->gvpart_ = factory->create<KParts::ReadOnlyPart>(d->mainwidget_, args);
+    // load the component
+    QVariantList args;
+    args << "Print/Preview";
+    d->gvpart_ = factory->create<KParts::ReadOnlyPart>(d->mainwidget_, args);
 
-	// populate the toolbar
-	if (d->previewonly_)
-		d->plugAction(d->actions_->action("close_print"));
-	else
-	{
-		d->plugAction(d->actions_->action("continue_print"));
-		d->plugAction(d->actions_->action("stop_print"));
-	}
-	if (d->gvpart_)
-	{
-		QDomNodeList l = d->gvpart_->domDocument().elementsByTagName( "ToolBar" );
-		if ( l.length() > 0 )
-		{
-			d->toolbar_->addSeparator();
-			QDomNodeList acts = l.item( 0 ).toElement().elementsByTagName( "Action" );
-			for ( uint i=0; i<acts.length(); i++ )
-			{
-				QDomElement a = acts.item( i ).toElement();
-				if ( a.attribute( "name" ) == "goToPage" )
-					continue;
-				QAction *act = d->gvpart_->action( a );
-				if ( act != 0 )
-					d->plugAction( act );
-			}
-		}
-		/*
-		QAction	*act;
-		d->toolbar_->insertLineSeparator();
-		if ((act = d->gvpart_->action("zoomIn")) != 0)
-			d->plugAction(act);
-		if ((act = d->gvpart_->action("zoomOut")) != 0)
-			d->plugAction(act);
-		d->toolbar_->insertSeparator();
-		if ((act = d->gvpart_->action("prevPage")) != 0)
-			d->plugAction(act);
-		if ((act = d->gvpart_->action("nextPage")) != 0)
-			d->plugAction(act);
-			*/
-	}
-	d->toolbar_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	d->toolbar_->setMovable(false);
-	//d->adjustSize();
+    // populate the toolbar
+    if (d->previewonly_)
+        d->plugAction(d->actions_->action("close_print"));
+    else {
+        d->plugAction(d->actions_->action("continue_print"));
+        d->plugAction(d->actions_->action("stop_print"));
+    }
+    if (d->gvpart_) {
+        QDomNodeList l = d->gvpart_->domDocument().elementsByTagName("ToolBar");
+        if (l.length() > 0) {
+            d->toolbar_->addSeparator();
+            QDomNodeList acts = l.item(0).toElement().elementsByTagName("Action");
+            for (uint i = 0; i < acts.length(); i++) {
+                QDomElement a = acts.item(i).toElement();
+                if (a.attribute("name") == "goToPage")
+                    continue;
+                QAction *act = d->gvpart_->action(a);
+                if (act != 0)
+                    d->plugAction(act);
+            }
+        }
+        /*
+        QAction *act;
+        d->toolbar_->insertLineSeparator();
+        if ((act = d->gvpart_->action("zoomIn")) != 0)
+         d->plugAction(act);
+        if ((act = d->gvpart_->action("zoomOut")) != 0)
+         d->plugAction(act);
+        d->toolbar_->insertSeparator();
+        if ((act = d->gvpart_->action("prevPage")) != 0)
+         d->plugAction(act);
+        if ((act = d->gvpart_->action("nextPage")) != 0)
+         d->plugAction(act);
+         */
+    }
+    d->toolbar_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbar_->setMovable(false);
+    //d->adjustSize();
 
-	// construct the layout
-	QVBoxLayout	*l0 = new QVBoxLayout(d->mainwidget_);
-	l0->setMargin(0);
-	l0->setSpacing(0);
-	l0->addWidget(d->toolbar_, Qt::AlignTop);
-	if (d->gvpart_)
-		l0->addWidget(d->gvpart_->widget());
+    // construct the layout
+    QVBoxLayout *l0 = new QVBoxLayout(d->mainwidget_);
+    l0->setMargin(0);
+    l0->setSpacing(0);
+    l0->addWidget(d->toolbar_, Qt::AlignTop);
+    if (d->gvpart_)
+        l0->addWidget(d->gvpart_->widget());
 
-	resize(855, 500);
-	setCaption(i18n("Print Preview"));
+    resize(855, 500);
+    setCaption(i18n("Print Preview"));
 }
 
 void KPrintPreview::openFile(const QString& file)
 {
-	d->gvpart_->openUrl(KUrl(file));
+    d->gvpart_->openUrl(KUrl(file));
 }
 
 bool KPrintPreview::isValid() const
 {
-	return (d->gvpart_ != 0);
+    return (d->gvpart_ != 0);
 }
 
 bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 {
-	KMimeType::Ptr mime = KMimeType::findByPath( file );
-	bool isPS = ( mime->name() == "application/postscript" );
-	if ( !isPS )
-		kDebug( 500 ) << "Previewing a non PostScript file, built-in preview disabled";
+    KMimeType::Ptr mime = KMimeType::findByPath(file);
+    bool isPS = (mime->name() == "application/postscript");
+    if (!isPS)
+        kDebug(500) << "Previewing a non PostScript file, built-in preview disabled";
 
-	KConfig *cf = KMFactory::self()->printConfig();
-	KConfigGroup conf = cf->group("General");
-	KPluginFactory	*factory(0);
-	bool	externalPreview = conf.readEntry("ExternalPreview", false);
-	QWidget	*parentW = QWidget::find(parentId);
-	QString	exe;
-	if (!externalPreview && isPS && (factory = componentFactory()) != 0)
-	{
-		KPrintPreview	dlg(parentW, previewOnly);
-		dlg.initView(factory);
+    KConfig *cf = KMFactory::self()->printConfig();
+    KConfigGroup conf = cf->group("General");
+    KPluginFactory *factory(0);
+    bool externalPreview = conf.readEntry("ExternalPreview", false);
+    QWidget *parentW = QWidget::find(parentId);
+    QString exe;
+    if (!externalPreview && isPS && (factory = componentFactory()) != 0) {
+        KPrintPreview dlg(parentW, previewOnly);
+        dlg.initView(factory);
 
-		if (dlg.isValid())
-		{
-			dlg.openFile(file);
-			return dlg.exec();
-		}
-		else {
-			// do nothing at that point: try to use the other way around by
-			// using an external PS viewer if possible
-		}
-	}
+        if (dlg.isValid()) {
+            dlg.openFile(file);
+            return dlg.exec();
+        } else {
+            // do nothing at that point: try to use the other way around by
+            // using an external PS viewer if possible
+        }
+    }
 
-	// Either the PS viewer component was not found, or an external
-	// preview program has been specified
-	KPreviewProc	proc;
-	if (externalPreview && isPS )
-	{
-		exe = conf.readPathEntry("PreviewCommand", "gv");
-		if (KStandardDirs::findExe(exe).isEmpty())
-		{
-			QString	msg = i18n("The preview program %1 cannot be found. "
-						       "Check that the program is correctly installed and "
-						       "located in a directory included in your PATH "
-						       "environment variable.", exe);
-			return continuePrint(msg, parentW, previewOnly);
-		}
-		proc << exe << file;
-	}
-	else
-	{
-		KService::Ptr serv = KMimeTypeTrader::self()->preferredService( mime->name() );
-		if ( serv )
-		{
-			KUrl url;
-			url.setPath( file );
-			QStringList args = KRun::processDesktopExec( *serv, url, false );
-			proc << args;
-			exe = serv->name();
-		}
-		else
-		{
-			// in that case, the PS viewer component could not be loaded and no service
-			// could be found to view PS
-			QString msg;
-			if ( isPS )
-				msg = i18n("Preview failed: neither the internal KDE PostScript "
-			               "viewer (KGhostView) nor any other external PostScript "
-			               "viewer could be found.");
-			else
-				msg = i18n( "Preview failed: KDE could not find any application "
-						    "to preview files of type %1." ,  mime->name() );
+    // Either the PS viewer component was not found, or an external
+    // preview program has been specified
+    KPreviewProc proc;
+    if (externalPreview && isPS) {
+        exe = conf.readPathEntry("PreviewCommand", "gv");
+        if (KStandardDirs::findExe(exe).isEmpty()) {
+            QString msg = i18n("The preview program %1 cannot be found. "
+                               "Check that the program is correctly installed and "
+                               "located in a directory included in your PATH "
+                               "environment variable.", exe);
+            return continuePrint(msg, parentW, previewOnly);
+        }
+        proc << exe << file;
+    } else {
+        KService::Ptr serv = KMimeTypeTrader::self()->preferredService(mime->name());
+        if (serv) {
+            KUrl url;
+            url.setPath(file);
+            QStringList args = KRun::processDesktopExec(*serv, url, false);
+            proc << args;
+            exe = serv->name();
+        } else {
+            // in that case, the PS viewer component could not be loaded and no service
+            // could be found to view PS
+            QString msg;
+            if (isPS)
+                msg = i18n("Preview failed: neither the internal KDE PostScript "
+                           "viewer (KGhostView) nor any other external PostScript "
+                           "viewer could be found.");
+            else
+                msg = i18n("Preview failed: KDE could not find any application "
+                           "to preview files of type %1." ,  mime->name());
 
-			return continuePrint(msg, parentW, previewOnly);
-		}
-	}
+            return continuePrint(msg, parentW, previewOnly);
+        }
+    }
 
-	// start the preview process
-	if (!proc.startPreview())
-	{
-		QString	msg = i18n("Preview failed: unable to start program %1.", exe);
-		return continuePrint(msg, parentW, previewOnly);
-	}
-	else if (!previewOnly)
-	{
-		return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString(), KGuiItem(i18n("Print"),"document-print"), KStandardGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
-	}
-	else
-		return false;
+    // start the preview process
+    if (!proc.startPreview()) {
+        QString msg = i18n("Preview failed: unable to start program %1.", exe);
+        return continuePrint(msg, parentW, previewOnly);
+    } else if (!previewOnly) {
+        return (KMessageBox::questionYesNo(parentW, i18n("Do you want to continue printing?"), QString(), KGuiItem(i18n("Print"), "document-print"), KStandardGuiItem::cancel(), "continuePrinting") == KMessageBox::Yes);
+    } else
+        return false;
 }
 
 #include "kprintpreview.moc"

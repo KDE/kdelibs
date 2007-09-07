@@ -31,14 +31,14 @@
 class KDEPRINT_EXPORT KdeprintChecker
 {
 public:
-	static bool check(const KConfigGroup &conf);
-	static bool check(const QStringList& uris);
+    static bool check(const KConfigGroup &conf);
+    static bool check(const QStringList& uris);
 
 private:
-	static bool checkUrl(const KUrl&);
-	static bool checkConfig(const KUrl&);
-	static bool checkExec(const KUrl&);
-	static bool checkService(const KUrl&);
+    static bool checkUrl(const KUrl&);
+    static bool checkConfig(const KUrl&);
+    static bool checkExec(const KUrl&);
+    static bool checkService(const KUrl&);
 };
 
 #endif

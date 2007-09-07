@@ -32,82 +32,82 @@
 
 //****************************************************************************************************
 
-DriverView::DriverView( QWidget *parent )
-    : QWidget( parent )
+DriverView::DriverView(QWidget *parent)
+        : QWidget(parent)
 {
-	//WhatsThis strings.... (added by pfeifle@kde.org)
-	QString whatsThisPPDOptionsDriverPage = i18n( " <qt> "
-			" <b>List of Driver Options (from PPD)</b>."
-			" <p>The upper pane of this dialog page contains all printjob options as laid"
-			" down in the printer's description file (PostScript Printer Description == 'PPD') </p>"
-			" <p>Click on any item in the list and watch the lower pane of this dialog page"
-			" display the available values. </p>"
-			" <p>Set the values as needed. Then use one of the pushbuttons below to proceed:</p>"
-			" <ul> "
-			" <li><em>'Save'</em> your settings if you want to re-use"
-			" them in your next job(s) too. <em>'Save'</em> will store your settings permanently until"
-			" you change them again. </li>."
-			" <li>Click <em>'OK'</em> (without a prior click on <em>'Save'</em>), if you want to use"
-			" your selected settings just once, for the next print job. <em>'OK'</em>"
-			" will forget your current settings when kprinter is closed again, and will start next time"
-			" with the previously saved defaults. </li>"
-			" <li><em>'Cancel'</em> will not change anything. If you proceed to print after clicking"
-			" <em>'Cancel'</em>, the job will print with the default settings of this queue.</li>"
-			" </ul>"
-			" <p><b>Note.</b> The number of available job options depends strongly on the actual"
-			" driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a"
-			" PPD. For raw queues this tab page is not loaded by KDEPrint, and thus is not present"
-			" in the kprinter dialog.</p> "
-			" </qt>" );
+    //WhatsThis strings.... (added by pfeifle@kde.org)
+    QString whatsThisPPDOptionsDriverPage = i18n(" <qt> "
+                                            " <b>List of Driver Options (from PPD)</b>."
+                                            " <p>The upper pane of this dialog page contains all printjob options as laid"
+                                            " down in the printer's description file (PostScript Printer Description == 'PPD') </p>"
+                                            " <p>Click on any item in the list and watch the lower pane of this dialog page"
+                                            " display the available values. </p>"
+                                            " <p>Set the values as needed. Then use one of the pushbuttons below to proceed:</p>"
+                                            " <ul> "
+                                            " <li><em>'Save'</em> your settings if you want to re-use"
+                                            " them in your next job(s) too. <em>'Save'</em> will store your settings permanently until"
+                                            " you change them again. </li>."
+                                            " <li>Click <em>'OK'</em> (without a prior click on <em>'Save'</em>), if you want to use"
+                                            " your selected settings just once, for the next print job. <em>'OK'</em>"
+                                            " will forget your current settings when kprinter is closed again, and will start next time"
+                                            " with the previously saved defaults. </li>"
+                                            " <li><em>'Cancel'</em> will not change anything. If you proceed to print after clicking"
+                                            " <em>'Cancel'</em>, the job will print with the default settings of this queue.</li>"
+                                            " </ul>"
+                                            " <p><b>Note.</b> The number of available job options depends strongly on the actual"
+                                            " driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a"
+                                            " PPD. For raw queues this tab page is not loaded by KDEPrint, and thus is not present"
+                                            " in the kprinter dialog.</p> "
+                                            " </qt>");
 
-	QString whatsThisOptionSettingsDriverPage = i18n( " <qt> "
-			" <b>List of Possible Values for given Option (from PPD)</b>. "
-			" <p>The lower pane of this dialog page contains all possible values of the printoption"
-			" highlighted above, as laid"
-			" down in the printer's description file (PostScript Printer Description == 'PPD').</p>"
-			" <p>Select the value you want and proceed. </p> "
-			" <p>Then use one of the pushbuttons below to leave this dialog:</p> "
-			" <ul> "
-			" <li><em>'Save'</em> your settings if you want to re-use"
-			" them in your next job(s) too. <em>'Save'</em> will store your settings permanently until"
-			" you change them again. </li>."
-			" <li>Click <em>'OK'</em> if you want to use your selected settings just once, for the"
-			" next print job. <em>'OK'</em> "
-			" will forget your current settings when kprinter is closed again, and will start next time"
-			" with your previous defaults. </li>"
-			" <li><em>'Cancel'</em> will not change anything. If you proceed to print after clicking"
-			" <em>'Cancel'</em>, the job will print with the default settings of this queue.</li>"
-			" </ul>"
-			" <p><b>Note.</b> The number of available job options depends strongly on the actual"
-			" driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a"
-			" PPD. For raw queues this tab page is not loaded by KDEPrint, and thus is not present"
-			" in the kprinter dialog.</p> "
-			" </qt>" );
+    QString whatsThisOptionSettingsDriverPage = i18n(" <qt> "
+            " <b>List of Possible Values for given Option (from PPD)</b>. "
+            " <p>The lower pane of this dialog page contains all possible values of the printoption"
+            " highlighted above, as laid"
+            " down in the printer's description file (PostScript Printer Description == 'PPD').</p>"
+            " <p>Select the value you want and proceed. </p> "
+            " <p>Then use one of the pushbuttons below to leave this dialog:</p> "
+            " <ul> "
+            " <li><em>'Save'</em> your settings if you want to re-use"
+            " them in your next job(s) too. <em>'Save'</em> will store your settings permanently until"
+            " you change them again. </li>."
+            " <li>Click <em>'OK'</em> if you want to use your selected settings just once, for the"
+            " next print job. <em>'OK'</em> "
+            " will forget your current settings when kprinter is closed again, and will start next time"
+            " with your previous defaults. </li>"
+            " <li><em>'Cancel'</em> will not change anything. If you proceed to print after clicking"
+            " <em>'Cancel'</em>, the job will print with the default settings of this queue.</li>"
+            " </ul>"
+            " <p><b>Note.</b> The number of available job options depends strongly on the actual"
+            " driver used for your print queue. <em>'Raw'</em> queues do not have a driver or a"
+            " PPD. For raw queues this tab page is not loaded by KDEPrint, and thus is not present"
+            " in the kprinter dialog.</p> "
+            " </qt>");
 
-	m_driver = 0;
+    m_driver = 0;
 
-	QSplitter* splitter = new QSplitter(Qt::Vertical, this);
+    QSplitter* splitter = new QSplitter(Qt::Vertical, this);
 
-	m_view = new QTreeWidget(splitter);
-	m_view->header()->hide();
-	m_view->setWhatsThis(whatsThisPPDOptionsDriverPage);
-	splitter->addWidget(m_view);
+    m_view = new QTreeWidget(splitter);
+    m_view->header()->hide();
+    m_view->setWhatsThis(whatsThisPPDOptionsDriverPage);
+    splitter->addWidget(m_view);
 
-	m_optview = new DrOptionView(splitter);
-	m_optview->setWhatsThis(whatsThisOptionSettingsDriverPage);
-	splitter->addWidget(m_optview);
+    m_optview = new DrOptionView(splitter);
+    m_optview->setWhatsThis(whatsThisOptionSettingsDriverPage);
+    splitter->addWidget(m_optview);
 
-	// make sure the top gets enough room
-	splitter->setStretchFactor(0, 10);
+    // make sure the top gets enough room
+    splitter->setStretchFactor(0, 10);
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this);
-	main_->setMargin(0);
-	main_->setSpacing(KDialog::spacingHint());
-	main_->addWidget(splitter);
+    QVBoxLayout *main_ = new QVBoxLayout(this);
+    main_->setMargin(0);
+    main_->setSpacing(KDialog::spacingHint());
+    main_->addWidget(splitter);
 
-	connect(m_view,SIGNAL(itemSelectionChanged()), this, SLOT( slotItemSelectionChanged() ) );
-	connect(this,SIGNAL(itemSelected(QTreeWidgetItem*)), m_optview,SLOT(slotItemSelected(QTreeWidgetItem*)));
-	connect(m_optview,SIGNAL(changed()),SLOT(slotChanged()));
+    connect(m_view, SIGNAL(itemSelectionChanged()), this, SLOT(slotItemSelectionChanged()));
+    connect(this, SIGNAL(itemSelected(QTreeWidgetItem*)), m_optview, SLOT(slotItemSelected(QTreeWidgetItem*)));
+    connect(m_optview, SIGNAL(changed()), SLOT(slotChanged()));
 }
 
 DriverView::~DriverView()
@@ -116,48 +116,45 @@ DriverView::~DriverView()
 
 void DriverView::setDriver(DrMain *driver)
 {
-	m_driver = driver;
-	if (m_driver)
-	{
-		m_view->clear();
-		m_driver->createTreeView(m_view);
-		slotChanged();
-	}
+    m_driver = driver;
+    if (m_driver) {
+        m_view->clear();
+        m_driver->createTreeView(m_view);
+        slotChanged();
+    }
 }
 
 void DriverView::slotChanged()
 {
-	if (m_driver)
-	{
-		m_conflict = m_driver->checkConstraints();
-		((DriverItem*)m_view->topLevelItem(0))->updateConflict();
-	}
+    if (m_driver) {
+        m_conflict = m_driver->checkConstraints();
+        ((DriverItem*)m_view->topLevelItem(0))->updateConflict();
+    }
 }
 
 void DriverView::slotItemSelectionChanged()
 {
-  emit itemSelected( m_view->selectedItems().first() );
+    emit itemSelected(m_view->selectedItems().first());
 }
 
-void DriverView::setOptions(const QMap<QString,QString>& opts)
+void DriverView::setOptions(const QMap<QString, QString>& opts)
 {
-	if (m_driver)
-	{
-		m_driver->setOptions(opts);
-		static_cast<DriverItem*>( m_view->topLevelItem(0) )->updateTextRecursive();
-		slotChanged();
-		m_optview->slotItemSelected(m_view->currentItem());
-	}
+    if (m_driver) {
+        m_driver->setOptions(opts);
+        static_cast<DriverItem*>(m_view->topLevelItem(0))->updateTextRecursive();
+        slotChanged();
+        m_optview->slotItemSelected(m_view->currentItem());
+    }
 }
 
-void DriverView::getOptions(QMap<QString,QString>& opts, bool incldef)
+void DriverView::getOptions(QMap<QString, QString>& opts, bool incldef)
 {
-	if (m_driver)
-		m_driver->getOptions(opts,incldef);
+    if (m_driver)
+        m_driver->getOptions(opts, incldef);
 }
 
 void DriverView::setAllowFixed(bool on)
 {
-	m_optview->setAllowFixed(on);
+    m_optview->setAllowFixed(on);
 }
 #include "driverview.moc"

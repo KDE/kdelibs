@@ -28,31 +28,31 @@ class KActionCollection;
 
 class KDEPRINT_EXPORT KPrintAction : public KActionMenu
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	enum PrinterType { All, Regular, Specials };
+    enum PrinterType { All, Regular, Specials };
 
-	explicit KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0);
-	KPrintAction(const KIcon& icon, const QString& text, PrinterType type = All, QWidget *parentWidget = 0);
-	virtual ~KPrintAction();
+    explicit KPrintAction(const QString& text, PrinterType type = All, QWidget *parentWidget = 0);
+    KPrintAction(const KIcon& icon, const QString& text, PrinterType type = All, QWidget *parentWidget = 0);
+    virtual ~KPrintAction();
 
-	static KPrintAction* exportAll(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
-	static KPrintAction* exportRegular(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
-	static KPrintAction* exportSpecial(QWidget *parentWidget = 0, KActionCollection  *parent = 0, const char *name = 0);
+    static KPrintAction* exportAll(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+    static KPrintAction* exportRegular(QWidget *parentWidget = 0, KActionCollection *parent = 0, const char *name = 0);
+    static KPrintAction* exportSpecial(QWidget *parentWidget = 0, KActionCollection  *parent = 0, const char *name = 0);
 
 Q_SIGNALS:
-	void print(KPrinter*);
+    void print(KPrinter*);
 
 protected Q_SLOTS:
-	void slotAboutToShow();
-	void slotActivated(QAction*);
+    void slotAboutToShow();
+    void slotActivated(QAction*);
 
 protected:
-	void initialize(PrinterType type, QWidget *parentWidget);
+    void initialize(PrinterType type, QWidget *parentWidget);
 
 private:
-	class KPrintActionPrivate;
-	KPrintActionPrivate* const d;
+    class KPrintActionPrivate;
+    KPrintActionPrivate* const d;
 };
 
 #endif

@@ -44,83 +44,83 @@ class KPReloadObject;
 /// KDEPrint factory for [something]
 class KDEPRINT_EXPORT KMFactory : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	struct PluginInfo
-	{
-		QString		name;
-		QString		comment;
-		QStringList	detectUris;
-		int		detectPrecedence;
-		QStringList	mimeTypes;
-		QString		primaryMimeType;
-	};
+    struct PluginInfo {
+        QString  name;
+        QString  comment;
+        QStringList detectUris;
+        int  detectPrecedence;
+        QStringList mimeTypes;
+        QString  primaryMimeType;
+    };
 
-	static KMFactory* self();
-        static bool exists();
-	static void release();
+    static KMFactory* self();
+    static bool exists();
+    static void release();
 
-	KMFactory();
-	~KMFactory();
+    KMFactory();
+    ~KMFactory();
 
-	KMManager* manager();
-	KMJobManager* jobManager();
-	KMUiManager* uiManager();
-	KMVirtualManager* virtualManager();
-	KMSpecialManager* specialManager();
-	KXmlCommandManager* commandManager();
-	KPrinterImpl* printerImplementation();
-	KConfig *printConfig();
-	QString printSystem();
-	QList<PluginInfo> pluginList();
-	PluginInfo pluginInfo(const QString& name);
-	void saveConfig();
+    KMManager* manager();
+    KMJobManager* jobManager();
+    KMUiManager* uiManager();
+    KMVirtualManager* virtualManager();
+    KMSpecialManager* specialManager();
+    KXmlCommandManager* commandManager();
+    KPrinterImpl* printerImplementation();
+    KConfig *printConfig();
+    QString printSystem();
+    QList<PluginInfo> pluginList();
+    PluginInfo pluginInfo(const QString& name);
+    void saveConfig();
 
-	void reload(const QString& syst, bool saveSyst = true);
-	void registerObject(KPReloadObject*, bool = false);
-	void unregisterObject(KPReloadObject*);
+    void reload(const QString& syst, bool saveSyst = true);
+    void registerObject(KPReloadObject*, bool = false);
+    void unregisterObject(KPReloadObject*);
 
-	struct Settings
-	{
-		int	application;
-		int	standardDialogPages;
-		int	pageSelection;
-		int	orientation;
-		int	pageSize;
-	};
-	Settings* settings() const	{ return m_settings; }
+    struct Settings {
+        int application;
+        int standardDialogPages;
+        int pageSelection;
+        int orientation;
+        int pageSize;
+    };
+    Settings* settings() const {
+        return m_settings;
+    }
 
-	QPair<QString,QString> requestPassword( int& seqNbr, const QString& user, const QString& host = QLatin1String( "localhost" ), int port = 0 );
-	void initPassword( const QString& user, const QString& password, const QString& host = QLatin1String( "localhsot" ), int port = 0 );
+    QPair<QString, QString> requestPassword(int& seqNbr, const QString& user, const QString& host = QLatin1String("localhost"), int port = 0);
+    void initPassword(const QString& user, const QString& password, const QString& host = QLatin1String("localhsot"), int port = 0);
 
 private Q_SLOTS:
-	void slot_pluginChanged(int);
-	void slot_configChanged();
+    void slot_pluginChanged(int);
+    void slot_configChanged();
 
 Q_SIGNALS:
-	void pluginChanged(int);
-	void configChanged();
+    void pluginChanged(int);
+    void configChanged();
 
 private:
-	void createManager();
-	void createJobManager();
-	void createUiManager();
-	void createPrinterImpl();
-	void loadFactory(const QString& syst = QString());
-	void unload();
-	QString autoDetect();
+    void createManager();
+    void createJobManager();
+    void createUiManager();
+    void createPrinterImpl();
+    void loadFactory(const QString& syst = QString());
+    void unload();
+    QString autoDetect();
 
 private:
-	KMManager		*m_manager;
-	KMJobManager		*m_jobmanager;
-	KMUiManager		*m_uimanager;
-	KPrinterImpl		*m_implementation;
-	KPluginFactory		*m_factory;
+    KMManager  *m_manager;
+    KMJobManager  *m_jobmanager;
+    KMUiManager  *m_uimanager;
+    KPrinterImpl  *m_implementation;
+    KPluginFactory  *m_factory;
 
-	KConfig			*m_printconfig;
-	Settings		*m_settings;
-	QList<KPReloadObject*> m_objects;
+    KConfig   *m_printconfig;
+    Settings  *m_settings;
+    QList<KPReloadObject*> m_objects;
 };
 
 #endif

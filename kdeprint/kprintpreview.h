@@ -29,40 +29,40 @@ class KPluginFactory;
 
 class KPrintPreview : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KPrintPreview(QWidget *parent = 0, bool previewOnly = false);
-	~KPrintPreview();
+    explicit KPrintPreview(QWidget *parent = 0, bool previewOnly = false);
+    ~KPrintPreview();
 
-	void openFile(const QString& file);
-	bool isValid() const;
+    void openFile(const QString& file);
+    bool isValid() const;
 
-	static bool preview(const QString& file, bool previewOnly = false, WId parentId = 0);
-
-private:
-	void initView(KPluginFactory*);
+    static bool preview(const QString& file, bool previewOnly = false, WId parentId = 0);
 
 private:
-	class KPrintPreviewPrivate;
-	KPrintPreviewPrivate* const d;
+    void initView(KPluginFactory*);
+
+private:
+    class KPrintPreviewPrivate;
+    KPrintPreviewPrivate* const d;
 };
 
 class KPreviewProc : public KProcess
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KPreviewProc();
-	virtual ~KPreviewProc();
+    KPreviewProc();
+    virtual ~KPreviewProc();
 
-	bool startPreview();
+    bool startPreview();
 
 Q_SIGNALS:
-  void finished();
+    void finished();
 
 protected Q_SLOTS:
-	void slotProcessExited();
+    void slotProcessExited();
 private:
-	bool m_bOk;
+    bool m_bOk;
 };
 
 #endif

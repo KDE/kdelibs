@@ -27,36 +27,32 @@ KMDBEntry::KMDBEntry() : recommended(false)
 
 bool KMDBEntry::validate(bool checkIt)
 {
-	// check model: if one of "model" or "modelname" is empty, replace
-	// by the other one. At the end, "model" must be non empty.
-	if (model.isEmpty())
-	{
-		model = modelname;
-	}
-	if (modelname.isEmpty())
-	{
-		modelname = model;
-	}
-	if (model.isEmpty())
-		return false;
+    // check model: if one of "model" or "modelname" is empty, replace
+    // by the other one. At the end, "model" must be non empty.
+    if (model.isEmpty()) {
+        model = modelname;
+    }
+    if (modelname.isEmpty()) {
+        modelname = model;
+    }
+    if (model.isEmpty())
+        return false;
 
-	// check manufacturer
-	if (manufacturer.isEmpty())
-	{
-		int	p = model.indexOf(' ',0);
-		if (p != -1) manufacturer = model.left(p);
-		if (manufacturer.isEmpty()) return false;
-	}
+    // check manufacturer
+    if (manufacturer.isEmpty()) {
+        int p = model.indexOf(' ', 0);
+        if (p != -1) manufacturer = model.left(p);
+        if (manufacturer.isEmpty()) return false;
+    }
 
-	// extract manufacturer from model
-	if (model.indexOf(manufacturer,0,Qt::CaseInsensitive) == 0)
-	{
-		model = model.right(model.length()-manufacturer.length()-1).trimmed();
-		if (model.isEmpty()) return false;
-	}
+    // extract manufacturer from model
+    if (model.indexOf(manufacturer, 0, Qt::CaseInsensitive) == 0) {
+        model = model.right(model.length() - manufacturer.length() - 1).trimmed();
+        if (model.isEmpty()) return false;
+    }
 
-	if (checkIt)
-		return KMFactory::self()->manager()->validateDbDriver(this);
-	else
-		return true;
+    if (checkIt)
+        return KMFactory::self()->manager()->validateDbDriver(this);
+    else
+        return true;
 }

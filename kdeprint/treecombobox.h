@@ -28,8 +28,8 @@
 class TreeComboBox : public QComboBox
 {
 public:
-	TreeComboBox(QWidget *parent = 0);
-	void insertItem(const QIcon& icon, const QString& text, bool oneBlock = false);
+    TreeComboBox(QWidget *parent = 0);
+    void insertItem(const QIcon& icon, const QString& text, bool oneBlock = false);
 };
 
 #endif

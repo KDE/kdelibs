@@ -27,14 +27,14 @@ class KFileList;
 class KPFileSelectPage : public KPrintDialogPage
 {
 public:
-	KPFileSelectPage(QWidget *parent = 0);
+    KPFileSelectPage(QWidget *parent = 0);
 
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
-	void setOptions(const QMap<QString,QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
+    void setOptions(const QMap<QString, QString>& opts);
 
 private:
-	KFileList	*m_files;
-	bool	m_first;
+    KFileList *m_files;
+    bool m_first;
 };
 
 #endif

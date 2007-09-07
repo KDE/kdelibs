@@ -30,146 +30,136 @@
 #include <sys/types.h>
 #include <signal.h>
 
-#define CHARSEP	'$'
+#define CHARSEP '$'
 
 KMThreadJob::KMThreadJob(QObject *parent)
-: QObject(parent)
+        : QObject(parent)
 {
 }
 
 KMThreadJob::~KMThreadJob()
 {
-	qDeleteAll(m_jobs);
-	m_jobs.clear();
+    qDeleteAll(m_jobs);
+    m_jobs.clear();
 }
 
 QString KMThreadJob::jobFile()
 {
-	QString	f = KStandardDirs::locateLocal("data","kdeprint/printjobs");
-	return f;
+    QString f = KStandardDirs::locateLocal("data", "kdeprint/printjobs");
+    return f;
 }
 
 bool KMThreadJob::saveJobs()
 {
-	QFile	f(jobFile());
-	if (f.open(QIODevice::WriteOnly))
-	{
-		QTextStream	t(&f);
-		QMultiHash<int, KMJob*>::const_iterator it = m_jobs.constBegin();
-		while (it != m_jobs.constEnd()){
-			KMJob *tmpJob = it.value();
-			t << tmpJob->id() << CHARSEP << tmpJob->name() << CHARSEP << tmpJob->printer() << CHARSEP << tmpJob->owner() << CHARSEP << tmpJob->size() << endl;
-			++it;
-		}
-		return true;
-	}
-	return false;
+    QFile f(jobFile());
+    if (f.open(QIODevice::WriteOnly)) {
+        QTextStream t(&f);
+        QMultiHash<int, KMJob*>::const_iterator it = m_jobs.constBegin();
+        while (it != m_jobs.constEnd()) {
+            KMJob *tmpJob = it.value();
+            t << tmpJob->id() << CHARSEP << tmpJob->name() << CHARSEP << tmpJob->printer() << CHARSEP << tmpJob->owner() << CHARSEP << tmpJob->size() << endl;
+            ++it;
+        }
+        return true;
+    }
+    return false;
 }
 
 bool KMThreadJob::loadJobs()
 {
-	QFile	f(jobFile());
-	if (f.exists() && f.open(QIODevice::ReadOnly))
-	{
-		QTextStream	t(&f);
-		QString		line;
+    QFile f(jobFile());
+    if (f.exists() && f.open(QIODevice::ReadOnly)) {
+        QTextStream t(&f);
+        QString  line;
 
-		m_jobs.clear();
-		while (!t.atEnd())
-		{
-			line = t.readLine().trimmed();
-			if (line.isEmpty())
-				continue;
-			QStringList	ll = line.split(CHARSEP,QString::KeepEmptyParts);
-			if (ll.count() == 5)
-			{
-				KMJob	*job = new KMJob();
-				job->setId(ll[0].toInt());
-				job->setName(ll[1]);
-				job->setPrinter(ll[2]);
-				job->setOwner(ll[3]);
-				job->setSize(ll[4].toInt());
-				job->setState(KMJob::Printing);
-				job->setType(KMJob::Threaded);
-				job->setUri("proc:/"+ll[0]);
-				if (job->id() > 0 && checkJob(job->id()))
-					m_jobs.insert(job->id(),job);
-				else
-					delete job;
-			}
-		}
-		return true;
-	}
-	return false;
+        m_jobs.clear();
+        while (!t.atEnd()) {
+            line = t.readLine().trimmed();
+            if (line.isEmpty())
+                continue;
+            QStringList ll = line.split(CHARSEP, QString::KeepEmptyParts);
+            if (ll.count() == 5) {
+                KMJob *job = new KMJob();
+                job->setId(ll[0].toInt());
+                job->setName(ll[1]);
+                job->setPrinter(ll[2]);
+                job->setOwner(ll[3]);
+                job->setSize(ll[4].toInt());
+                job->setState(KMJob::Printing);
+                job->setType(KMJob::Threaded);
+                job->setUri("proc:/" + ll[0]);
+                if (job->id() > 0 && checkJob(job->id()))
+                    m_jobs.insert(job->id(), job);
+                else
+                    delete job;
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 bool KMThreadJob::checkJob(int ID)
 {
-	return (kill((pid_t)ID,0) == 0 || errno == EPERM);
+    return (kill((pid_t)ID, 0) == 0 || errno == EPERM);
 }
 
 KMJob* KMThreadJob::findJob(int ID)
 {
-	return m_jobs.value(ID);
+    return m_jobs.value(ID);
 }
 
 KMJob* KMThreadJob::findJob(const QString& uri)
 {
-	if (uri.startsWith("proc:/"))
-	{
-		int	pid = uri.mid(6).toInt();
-		if (pid > 0)
-			return m_jobs.value(pid);
-	}
-	return NULL;
+    if (uri.startsWith("proc:/")) {
+        int pid = uri.mid(6).toInt();
+        if (pid > 0)
+            return m_jobs.value(pid);
+    }
+    return NULL;
 }
 
 bool KMThreadJob::removeJob(int ID)
 {
-	if (!checkJob(ID) || kill((pid_t)ID, SIGTERM) == 0)
-	{
-		m_jobs.remove(ID);
-		saveJobs();
-		return true;
-	}
-	else
-		return false;
+    if (!checkJob(ID) || kill((pid_t)ID, SIGTERM) == 0) {
+        m_jobs.remove(ID);
+        saveJobs();
+        return true;
+    } else
+        return false;
 }
 
 void KMThreadJob::createJob(int ID, const QString& printer, const QString& name, const QString& owner, int size)
 {
-	KMThreadJob	mth(0);
-	KMJob	*job = new KMJob();
-	job->setId(ID);
-	job->setPrinter(printer);
-	job->setName(name);
-	job->setOwner(owner);
-	job->setSize(size);
-	job->setType(KMJob::Threaded);
-	mth.createJob(job);
+    KMThreadJob mth(0);
+    KMJob *job = new KMJob();
+    job->setId(ID);
+    job->setPrinter(printer);
+    job->setName(name);
+    job->setOwner(owner);
+    job->setSize(size);
+    job->setType(KMJob::Threaded);
+    mth.createJob(job);
 }
 
 void KMThreadJob::createJob(KMJob *job)
 {
-	if (job->id() > 0)
-	{
-		loadJobs();
-		if (!m_jobs.contains(job->id()))
-		{
-			m_jobs.insert(job->id(),job);
-			saveJobs();
-		}
-	}
+    if (job->id() > 0) {
+        loadJobs();
+        if (!m_jobs.contains(job->id())) {
+            m_jobs.insert(job->id(), job);
+            saveJobs();
+        }
+    }
 }
 
 void KMThreadJob::updateManager(KMJobManager *mgr)
 {
-	loadJobs();
-	QMultiHash<int, KMJob*>::const_iterator it = m_jobs.constBegin();
-	while (it != m_jobs.constEnd())
-	{
-		KMJob	*job = new KMJob(*(it.value()));
-		mgr->addJob(job);
-		++it;
-	}
+    loadJobs();
+    QMultiHash<int, KMJob*>::const_iterator it = m_jobs.constBegin();
+    while (it != m_jobs.constEnd()) {
+        KMJob *job = new KMJob(*(it.value()));
+        mgr->addJob(job);
+        ++it;
+    }
 }

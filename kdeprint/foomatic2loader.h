@@ -25,8 +25,8 @@
 
 // This include fixes linker errors under msvc:
 // In qdbusmessage.h QList<QVariant> is instantiated because
-// it is a base class of an exported class. This must be 
-// known here to avoid an additional instantiation. 
+// it is a base class of an exported class. This must be
+// known here to avoid an additional instantiation.
 #ifdef Q_CC_MSVC
 #include <QtDBus/qdbusmessage.h>
 #endif
@@ -41,27 +41,29 @@ class DrMain;
 class KDEPRINT_EXPORT Foomatic2Loader
 {
 public:
-	Foomatic2Loader();
-	~Foomatic2Loader();
+    Foomatic2Loader();
+    ~Foomatic2Loader();
 
-	bool read( QIODevice *d );
-	bool readFromBuffer( const QString& buffer );
-	bool readFromFile( const QString& filename );
-	QMap<QString,QVariant> data() const;
-	DrMain* buildDriver() const;
-	DrMain* modifyDriver( DrMain* ) const;
+    bool read(QIODevice *d);
+    bool readFromBuffer(const QString& buffer);
+    bool readFromFile(const QString& filename);
+    QMap<QString, QVariant> data() const;
+    DrMain* buildDriver() const;
+    DrMain* modifyDriver(DrMain*) const;
 
-	static DrMain* loadDriver( const QString& filename );
+    static DrMain* loadDriver(const QString& filename);
 
 private:
-	QMap<QString,QVariant> m_foodata;
+    QMap<QString, QVariant> m_foodata;
 
-	friend int kdeprint_foomatic2parse( void* );
-	DrBase* createValue( const QString&, const QMap<QString,QVariant>& ) const;
-	DrBase* createOption( const QMap<QString,QVariant>& ) const;
+    friend int kdeprint_foomatic2parse(void*);
+    DrBase* createValue(const QString&, const QMap<QString, QVariant>&) const;
+    DrBase* createOption(const QMap<QString, QVariant>&) const;
 };
 
-inline QMap<QString,QVariant> Foomatic2Loader::data() const
-{ return m_foodata; }
+inline QMap<QString, QVariant> Foomatic2Loader::data() const
+{
+    return m_foodata;
+}
 
 #endif /* FOOMATIC2LOADER_H */
