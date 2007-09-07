@@ -510,6 +510,7 @@ struct KDebugPrivate
     QDebug stream(QtMsgType type, unsigned int area, const char *debugFile, int line,
                   const char *funcinfo)
     {
+        static bool env_colored = (!qgetenv("KDE_COLOR_DEBUG").isEmpty());
         Cache::Iterator it = areaData(type, area);
         OutputMode mode = it->mode[level(type)];
         QString file = it->logFileName[level(type)];
@@ -517,7 +518,7 @@ struct KDebugPrivate
 
         if (areaName.isEmpty())
             areaName = cache.value(0).name;
-
+        
         bool colored=false;
 
         QDebug s(&devnull);
@@ -539,15 +540,7 @@ struct KDebugPrivate
             s = setupQtWriter(type);
 #ifndef Q_OS_WIN
             //only color if the debug goes to a tty.
-            //the default QtMsgHandler (0) goes to stderr
-            //we use this hack to check if the default MsgHandler is used.
-            {
-                QtMsgHandler old =  qInstallMsgHandler ( 0L );
-                if(!old)
-                    colored=isatty(fileno(stderr));  
-                else
-                    qInstallMsgHandler ( old );
-            }
+            colored = env_colored && isatty(fileno(stderr));  
 #endif
             break;
         }
