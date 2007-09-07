@@ -384,7 +384,7 @@ QSize KFilePlacesView::sizeHint() const
     for (int i=0; i<placesModel->rowCount(); ++i) {
         QModelIndex index = placesModel->index(i, 0);
         if (!placesModel->isHidden(index))
-           textWidth = qMax(textWidth,fm.width(placesModel->bookmarkForIndex(index).text()));
+           textWidth = qMax(textWidth,fm.width(index.data(Qt::DisplayRole).toString()));
     }
 
     const int iconSize = KIconLoader::global()->currentSize(K3Icon::Dialog);
@@ -435,8 +435,9 @@ void KFilePlacesView::Private::adaptItemSize()
     QFontMetrics fm = q->fontMetrics();
     for (int i=0; i<rowCount; ++i) {
         QModelIndex index = placesModel->index(i, 0);
+
         if (!placesModel->isHidden(index))
-           textWidth = qMax(textWidth,fm.width(placesModel->bookmarkForIndex(index).text()));
+           textWidth = qMax(textWidth,fm.width(index.data(Qt::DisplayRole).toString()));
     }
 
     const int maxWidth = q->width() - textWidth - 2 * KDialog::marginHint();

@@ -116,10 +116,11 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->placesView = new KFilePlacesView( page );
     d->placesView->setModel(new KFilePlacesModel(d->placesView));
     d->placesView->setObjectName( QLatin1String( "speedbar" ) );
+    d->placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     connect( d->placesView, SIGNAL( urlChanged( const KUrl& )),
              SLOT( setCurrentUrl( const KUrl& )) );
-    hlay->addWidget( d->placesView, 0 );
-    hlay->addLayout( m_mainLayout, 1 );
+    hlay->addWidget( d->placesView );
+    hlay->addLayout( m_mainLayout );
 
     // Create dir list
     m_treeView = new K3FileTreeView( page );
