@@ -75,7 +75,7 @@ const int XKeyRelease = KeyRelease;
 /* Initially added by Mark Donohoe <donohoe@kde.org>                   */
 /*                                                                     */
 /***********************************************************************/
- 
+
 class KKeySequenceWidgetPrivate
 {
 public:
@@ -349,7 +349,7 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 				  KKeySequenceWidgetPrivate::appendToSequence(d->keySequence,
 				                                              keyQt | d->modifierKeys);
 			} else {
-				d->keySequence = 
+				d->keySequence =
 				  KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
 			}
 
