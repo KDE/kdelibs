@@ -1171,8 +1171,8 @@ void KDirOperator::setView(KFile::FileView viewKind)
     QAbstractItemView *newView = createView(this, viewKind);
     setView(newView);
 
-    if (preview) {
-        togglePreview(true);
+    if (d->preview != 0) {
+        togglePreview(preview);
     }
 }
 
@@ -1310,7 +1310,7 @@ void KDirOperator::setView(QAbstractItemView *view)
     //    slotSortReversed();
 
     updateViewActions();
-    d->splitter->addWidget(d->itemView);
+    d->splitter->insertWidget(0, d->itemView);
 
     d->splitter->resize(size());
     d->itemView->show();
@@ -2059,6 +2059,7 @@ void KDirOperator::togglePreview(bool on)
 
         d->preview->show();
     } else {
+        d->viewKind = d->viewKind & ~KFile::PreviewContents;
         d->preview->hide();
         d->previewTimer->stop();
     }
