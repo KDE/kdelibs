@@ -3821,8 +3821,6 @@ try_again:
     mimeType( m_strMimeType );
   }
 
-  forwardHttpResponseHeader();
-
   if (m_request.method == HTTP_HEAD)
      return true;
 
