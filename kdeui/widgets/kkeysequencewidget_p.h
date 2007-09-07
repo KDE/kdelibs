@@ -40,7 +40,7 @@ protected:
 	/**
 	* Reimplemented for internal reasons.
 	*/
-//	void paintEvent(QPaintEvent *pe);
+	virtual bool event (QEvent *event);
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void keyReleaseEvent(QKeyEvent *event);
 

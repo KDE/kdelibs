@@ -84,10 +84,10 @@ public:
 	void init();
 
 	static QKeySequence appendToSequence(const QKeySequence& seq, int keyQt);
+	static bool isOkWhenModifierless(int keyQt);
+
 	void updateShortcutDisplay();
-
 	void startRecording();
-
 //private slot
 	void doneRecording(bool validate = true);
 	
@@ -286,23 +286,34 @@ KKeySequenceButton::~KKeySequenceButton()
 }
 
 
+//prevent Qt from special casing Tab and Backtab
+bool KKeySequenceButton::event (QEvent* e)
+{
+	if (d->isRecording && e->type() == QEvent::KeyPress) {
+		keyPressEvent(static_cast<QKeyEvent *>(e));
+		return true;
+	}
+
+	return QPushButton::event(e);
+}
+
+
 void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 {
-	QPushButton::keyPressEvent(e);
-
 	int keyQt = e->key();
-	if ( keyQt == Qt::Key_AltGr )
-		return;
-
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
-	//TODO: don't have the return key appear as first key of the sequence when it was pressed to start editing!
-	//Return, space, and escape all don't quite work as intended.
+
+	//don't have the return or space key appear as first key of the sequence when they
+	//were pressed to start editing - catch and them and imitate their effect
+	if (!d->isRecording && ((keyQt == Qt::Key_Return || keyQt == Qt::Key_Space))) {
+		d->startRecording();
+		d->modifierKeys = newModifiers;
+		d->updateShortcutDisplay();
+		return;
+	}
+
 	if (!d->isRecording) {
-		if (keyQt == Qt::Key_Return) {
-			d->startRecording();
-			d->modifierKeys = newModifiers;
-			d->updateShortcutDisplay();
-		}
+		QPushButton::keyPressEvent(e);
 		return;
 	}
 
@@ -310,6 +321,8 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		d->modifierKeys = newModifiers;
 
 	switch(keyQt) {
+	case Qt::Key_AltGr: //or else we get unicode salad
+		return;
 	case Qt::Key_Shift:
 	case Qt::Key_Control:
 	case Qt::Key_Alt:
@@ -322,22 +335,23 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		break;
 	default:
 		//Shift is not a modifier in the sense of Ctrl/Alt/WinKey
-		//Also, HACK to find out if a key is a plain letter or symbol key
 		if (!(d->modifierKeys & ~Qt::SHIFT)
-		    && QKeySequence(keyQt).toString().length() == 1) {
+		    && !KKeySequenceWidgetPrivate::isOkWhenModifierless(keyQt)) {
 			if (!d->allowModifierless)
 				return;
 			else
 				d->modifierlessTimeout.start(600);
 		}
 
-		if (d->nKey > 0 && keyQt == Qt::Key_Return)
-			d->doneRecording();
-		else if (keyQt) {
-			if (d->nKey == 0)
-				d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt | d->modifierKeys);
-			else
-				d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
+		if (keyQt) {
+			if (d->nKey == 0) {
+				d->keySequence =
+				  KKeySequenceWidgetPrivate::appendToSequence(d->keySequence,
+				                                              keyQt | d->modifierKeys);
+			} else {
+				d->keySequence = 
+				  KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
+			}
 
 			d->nKey++;
 			if (d->nKey >= 4) {
@@ -352,9 +366,10 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 
 void KKeySequenceButton::keyReleaseEvent(QKeyEvent *e)
 {
-	QPushButton::keyReleaseEvent(e);
-	if (!d->isRecording)
+	if (!d->isRecording) {
+		QPushButton::keyReleaseEvent(e);
 		return;
+	}
 
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
 
@@ -369,6 +384,7 @@ void KKeySequenceButton::keyReleaseEvent(QKeyEvent *e)
 }
 
 
+//static
 QKeySequence KKeySequenceWidgetPrivate::appendToSequence(const QKeySequence& seq, int keyQt)
 {
 	switch (seq.count()) {
@@ -382,6 +398,26 @@ QKeySequence KKeySequenceWidgetPrivate::appendToSequence(const QKeySequence& seq
 		return QKeySequence(seq[0], seq[1], seq[2], keyQt);
 	default:
 		return seq;
+	}
+}
+
+
+//static
+bool KKeySequenceWidgetPrivate::isOkWhenModifierless(int keyQt)
+{
+	//this whole function is a hack, but especially the first line of code
+	if (QKeySequence(keyQt).toString().length() == 1)
+		return false;
+
+	switch (keyQt) {
+	case Qt::Key_Return:
+	case Qt::Key_Space:
+	case Qt::Key_Tab:
+	case Qt::Key_Backtab: //does this ever happen?
+	case Qt::Key_Backspace:
+		return false;
+	default:
+		return true;
 	}
 }
 
