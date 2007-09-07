@@ -28,26 +28,26 @@ class DrMain;
 
 class KMWDriverTest : public KMWizardPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMWDriverTest(QWidget *parent = 0);
-	~KMWDriverTest();
+    KMWDriverTest(QWidget *parent = 0);
+    ~KMWDriverTest();
 
-	void initPrinter(KMPrinter*);
-	void updatePrinter(KMPrinter*);
+    void initPrinter(KMPrinter*);
+    void updatePrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotTest();
-	void slotSettings();
+    void slotTest();
+    void slotSettings();
 
 private:
-	QLabel	*m_manufacturer;
-	QLabel	*m_model;
-	QLabel	*m_driverinfo;
-	QPushButton	*m_test;
-	QPushButton	*m_settings;
-	DrMain		*m_driver;
-	KMPrinter	*m_printer;
+    QLabel *m_manufacturer;
+    QLabel *m_model;
+    QLabel *m_driverinfo;
+    QPushButton *m_test;
+    QPushButton *m_settings;
+    DrMain  *m_driver;
+    KMPrinter *m_printer;
 };
 
 #endif

@@ -24,27 +24,27 @@
 #include <klocale.h>
 
 KMConfigProxy::KMConfigProxy(QWidget *parent)
-    : KMConfigPage(parent)
+        : KMConfigPage(parent)
 {
-        setObjectName( "Proxy" );
-	setPageName(i18n("Proxy"));
-	setPageHeader(i18n("RLPR Proxy Server Settings"));
-	setPagePixmap("proxy");
+    setObjectName("Proxy");
+    setPageName(i18n("Proxy"));
+    setPageHeader(i18n("RLPR Proxy Server Settings"));
+    setPagePixmap("proxy");
 
-	m_widget = new KMProxyWidget(this);
-	QVBoxLayout	*lay0 = new QVBoxLayout(this);
-	lay0->setMargin(5);
-	lay0->setSpacing(0);
-	lay0->addWidget(m_widget);
-	lay0->addStretch(1);
+    m_widget = new KMProxyWidget(this);
+    QVBoxLayout *lay0 = new QVBoxLayout(this);
+    lay0->setMargin(5);
+    lay0->setSpacing(0);
+    lay0->addWidget(m_widget);
+    lay0->addStretch(1);
 }
 
 void KMConfigProxy::loadConfig(KConfig *conf)
 {
-	m_widget->loadConfig(conf);
+    m_widget->loadConfig(conf);
 }
 
 void KMConfigProxy::saveConfig(KConfig *conf)
 {
-	m_widget->saveConfig(conf);
+    m_widget->saveConfig(conf);
 }

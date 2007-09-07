@@ -28,13 +28,13 @@
 #include <QtGui/QLayout>
 
 KVisibleButtonGroup::KVisibleButtonGroup(QWidget *parent)
-    : QGroupBox(parent), QButtonGroup(parent)
+        : QGroupBox(parent), QButtonGroup(parent)
 {
-	m_layout = new QVBoxLayout(this);
-	m_layout->setMargin(0);
-	m_layout->setSpacing(KDialog::spacingHint());
-	m_layout->addStretch(1);
-	m_count = 0;
+    m_layout = new QVBoxLayout(this);
+    m_layout->setMargin(0);
+    m_layout->setSpacing(KDialog::spacingHint());
+    m_layout->addStretch(1);
+    m_count = 0;
 }
 
 KVisibleButtonGroup::~KVisibleButtonGroup()
@@ -43,27 +43,24 @@ KVisibleButtonGroup::~KVisibleButtonGroup()
 
 int KVisibleButtonGroup::addButton(QAbstractButton *btn, int ID)
 {
-	if(!btn)
-	{
-		KSeparator* sep = new KSeparator( Qt::Horizontal, this );
-		m_layout->insertWidget(m_count, sep);
-	}
-	else
-	{
-		if(ID == KVisibleButtonGroup::nextIndex)
-			dynamic_cast<QButtonGroup *>(this)->addButton(btn);
-		else
-			dynamic_cast<QButtonGroup *>(this)->addButton(btn, ID);
-		m_layout->insertWidget(m_count, btn);
-	}
-	m_count++;
+    if (!btn) {
+        KSeparator* sep = new KSeparator(Qt::Horizontal, this);
+        m_layout->insertWidget(m_count, sep);
+    } else {
+        if (ID == KVisibleButtonGroup::nextIndex)
+            dynamic_cast<QButtonGroup *>(this)->addButton(btn);
+        else
+            dynamic_cast<QButtonGroup *>(this)->addButton(btn, ID);
+        m_layout->insertWidget(m_count, btn);
+    }
+    m_count++;
 
-	return (m_count - 1);
+    return (m_count - 1);
 }
 
 KRadioButtonWithHandOver::KRadioButtonWithHandOver(const QString& txt, QWidget *parent)
-: QRadioButton(txt,parent)
+        : QRadioButton(txt, parent)
 {
-	setCursor(QCursor(Qt::PointingHandCursor));
+    setCursor(QCursor(Qt::PointingHandCursor));
 }
 

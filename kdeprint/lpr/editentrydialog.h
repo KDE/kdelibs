@@ -36,30 +36,30 @@ class QStackedWidget;
 #endif
 class EditEntryDialog : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit EditEntryDialog(PrintcapEntry *entry, QWidget *parent = 0, const char *name = 0);
+    explicit EditEntryDialog(PrintcapEntry *entry, QWidget *parent = 0, const char *name = 0);
 
-	void fillEntry(PrintcapEntry *entry);
+    void fillEntry(PrintcapEntry *entry);
 
 protected Q_SLOTS:
-	void slotItemSelected(Q3ListViewItem*);
-	void slotChanged();
-	void slotTypeChanged(int);
+    void slotItemSelected(Q3ListViewItem*);
+    void slotChanged();
+    void slotTypeChanged(int);
 
 protected:
-	Field createField();
+    Field createField();
 
 private:
-	QMap<QString,Field>	m_fields;
-	QLineEdit	*m_name, *m_string, *m_aliases;
-	QCheckBox	*m_boolean;
-	QComboBox	*m_type;
-	QSpinBox	*m_number;
-	Q3ListView	*m_view;
-	QStackedWidget	*m_stack;
-	QString		m_current;
-	bool		m_block;
+    QMap<QString, Field> m_fields;
+    QLineEdit *m_name, *m_string, *m_aliases;
+    QCheckBox *m_boolean;
+    QComboBox *m_type;
+    QSpinBox *m_number;
+    Q3ListView *m_view;
+    QStackedWidget *m_stack;
+    QString  m_current;
+    bool  m_block;
 };
 
 #endif

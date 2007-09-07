@@ -30,29 +30,29 @@ class QPushButton;
 
 class KMInstancePage : public QWidget, public KMPrinterPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMInstancePage(QWidget *parent = 0);
-	~KMInstancePage();
+    KMInstancePage(QWidget *parent = 0);
+    ~KMInstancePage();
 
-	void setPrinter(KMPrinter*);
+    void setPrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotNew();
-	void slotCopy();
-	void slotRemove();
-	void slotDefault();
-	void slotTest();
-	void slotSettings();
+    void slotNew();
+    void slotCopy();
+    void slotRemove();
+    void slotDefault();
+    void slotTest();
+    void slotSettings();
 
 protected:
-	void initActions();
-	void addButton(const QString& text, const QString& pixmap, const char *receiver);
+    void initActions();
+    void addButton(const QString& text, const QString& pixmap, const char *receiver);
 
 private:
-	KListWidget		*m_view;
-	QList<QPushButton*>	m_buttons;
-	KMPrinter		*m_printer;
+    KListWidget  *m_view;
+    QList<QPushButton*> m_buttons;
+    KMPrinter  *m_printer;
 };
 
 #endif

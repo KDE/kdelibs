@@ -33,31 +33,31 @@ class KMPrinter;
 #endif
 class PrintcapEntry
 {
-friend class KMLpdManager;
+    friend class KMLpdManager;
 public:
-	bool readLine(const QString& line);
-	void writeEntry(QTextStream&);
-	KMPrinter* createPrinter();
-	QString arg(const QString& key) const 	{ return m_args[key]; }
-	QString comment(int i);
+    bool readLine(const QString& line);
+    void writeEntry(QTextStream&);
+    KMPrinter* createPrinter();
+    QString arg(const QString& key) const  {
+        return m_args[key];
+    }
+    QString comment(int i);
 private:
-	QString			m_name;
-	QString			m_comment;
-	QMap<QString,QString>	m_args;
+    QString   m_name;
+    QString   m_comment;
+    QMap<QString, QString> m_args;
 };
 
 //*****************************************************************************************************
 
-struct Resolution
-{
-	int 	xdpi, ydpi;
-	QString	comment;
+struct Resolution {
+    int  xdpi, ydpi;
+    QString comment;
 };
 
-struct BitsPerPixel
-{
-	QString	bpp;
-	QString	comment;
+struct BitsPerPixel {
+    QString bpp;
+    QString comment;
 };
 
 #ifdef __GNUC__
@@ -65,14 +65,14 @@ struct BitsPerPixel
 #endif
 class PrinttoolEntry
 {
-friend class KMLpdManager;
+    friend class KMLpdManager;
 public:
-	bool readEntry(QTextStream& t);
-	DrMain* createDriver();
+    bool readEntry(QTextStream& t);
+    DrMain* createDriver();
 private:
-	QString			m_name, m_gsdriver, m_description, m_about;
-	QList<Resolution*>	m_resolutions;
-	QList<BitsPerPixel*>	m_depths;
+    QString   m_name, m_gsdriver, m_description, m_about;
+    QList<Resolution*> m_resolutions;
+    QList<BitsPerPixel*> m_depths;
 };
 
 //*****************************************************************************************************

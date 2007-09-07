@@ -23,47 +23,44 @@
 #include <kstandarddirs.h>
 
 SidePixmap::SidePixmap(QWidget *parent)
-: QFrame(parent)
+        : QFrame(parent)
 {
-	setLineWidth(1);
-	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
+    setLineWidth(1);
+    setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
 
-	m_side.load(KStandardDirs::locate("data", "kdeprint/side.png"));
-	m_tileup.load(KStandardDirs::locate("data", "kdeprint/tileup.png"));
-	m_tiledown.load(KStandardDirs::locate("data", "kdeprint/tiledown.png"));
+    m_side.load(KStandardDirs::locate("data", "kdeprint/side.png"));
+    m_tileup.load(KStandardDirs::locate("data", "kdeprint/tileup.png"));
+    m_tiledown.load(KStandardDirs::locate("data", "kdeprint/tiledown.png"));
 
-	setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum));
+    setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum));
 }
 
 bool SidePixmap::isValid()
 {
-	return (!m_side.isNull() && !m_tileup.isNull() && !m_tiledown.isNull()
-			&& (m_side.width() == m_tileup.width())
-			&& (m_side.width() == m_tiledown.width()));
+    return (!m_side.isNull() && !m_tileup.isNull() && !m_tiledown.isNull()
+            && (m_side.width() == m_tileup.width())
+            && (m_side.width() == m_tiledown.width()));
 }
 
 QSize SidePixmap::sizeHint() const
 {
-	return (QSize(m_side.width()+lineWidth(), 300+lineWidth()));
+    return (QSize(m_side.width() + lineWidth(), 300 + lineWidth()));
 }
 
 void SidePixmap::drawContents(QPainter *p)
 {
-	QRect	r = contentsRect();
-	if (r.height() <= m_side.height())
-	{
-		// case where the main pixmap is enough, just center it
-		int	yoffset = (m_side.height()-r.height())/2;
-		p->drawPixmap(r.left(), r.top(), m_side, 0, yoffset, r.width(), r.height());
-	}
-	else
-	{
-		// we need to add tiled pixmap. Make sure we have a multiple
-		// of 3 in the space above to simplifu tiling.
-		int	hh = (((r.height()-m_side.height())/2)/3)*3;
-		if (hh > 0)
-			p->drawTiledPixmap(r.left(), r.top(), r.width(), hh, m_tileup);
-		p->drawPixmap(r.left(), r.top()+hh, m_side);
-		p->drawTiledPixmap(r.left(), r.top()+m_side.height()+hh, r.width(), r.height()-m_side.height()-hh, m_tiledown);
-	}
+    QRect r = contentsRect();
+    if (r.height() <= m_side.height()) {
+        // case where the main pixmap is enough, just center it
+        int yoffset = (m_side.height() - r.height()) / 2;
+        p->drawPixmap(r.left(), r.top(), m_side, 0, yoffset, r.width(), r.height());
+    } else {
+        // we need to add tiled pixmap. Make sure we have a multiple
+        // of 3 in the space above to simplifu tiling.
+        int hh = (((r.height() - m_side.height()) / 2) / 3) * 3;
+        if (hh > 0)
+            p->drawTiledPixmap(r.left(), r.top(), r.width(), hh, m_tileup);
+        p->drawPixmap(r.left(), r.top() + hh, m_side);
+        p->drawTiledPixmap(r.left(), r.top() + m_side.height() + hh, r.width(), r.height() - m_side.height() - hh, m_tiledown);
+    }
 }

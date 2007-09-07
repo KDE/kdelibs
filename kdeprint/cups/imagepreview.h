@@ -29,24 +29,24 @@
 class ImagePreview : public QWidget
 {
 public:
-	ImagePreview(QWidget *parent=0);
-	~ImagePreview();
+    ImagePreview(QWidget *parent = 0);
+    ~ImagePreview();
 
-	void setParameters(int brightness, int hue, int saturation, int gamma);
-	void setImage(const QImage& image);
-	void setBlackAndWhite(bool on);
-	QSize minimumSizeHint() const;
+    void setParameters(int brightness, int hue, int saturation, int gamma);
+    void setImage(const QImage& image);
+    void setBlackAndWhite(bool on);
+    QSize minimumSizeHint() const;
 
 private: // Private attributes
-	int brightness_;
-	int hue_;
-	int saturation_;
-	int gamma_;
-	bool bw_;
-	QImage image_;
+    int brightness_;
+    int hue_;
+    int saturation_;
+    int gamma_;
+    bool bw_;
+    QImage image_;
 
 protected: // Protected methods
-	void paintEvent(QPaintEvent*);
+    void paintEvent(QPaintEvent*);
 };
 
 #endif

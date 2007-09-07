@@ -18,7 +18,7 @@
  **/
 
 #ifndef CUPSDCOMMENT_H
-#define	CUPSDCOMMENT_H
+#define CUPSDCOMMENT_H
 
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
@@ -31,14 +31,14 @@ class QFile;
 class Comment
 {
 public:
-        bool load(QFile* f);
-        QString toolTip() const;
-        QString comment() const;
-	QString key() const;
+    bool load(QFile* f);
+    QString toolTip() const;
+    QString comment() const;
+    QString key() const;
 private:
-        QString comment_;
-        QString example_;
-	QString key_;
+    QString comment_;
+    QString example_;
+    QString key_;
 };
 
 #ifdef __GNUC__
@@ -47,16 +47,16 @@ private:
 class CupsdComment
 {
 public:
-	QString operator[] (const QString& key);
-        QString comment(const QString& key);
-        QString toolTip(const QString& key);
-		~CupsdComment();
+    QString operator[](const QString& key);
+    QString comment(const QString& key);
+    QString toolTip(const QString& key);
+    ~CupsdComment();
 
 private:
-	bool loadComments();
+    bool loadComments();
 
 private:
-	QHash<QString, Comment*> comments_;
+    QHash<QString, Comment*> comments_;
 };
 
 #endif

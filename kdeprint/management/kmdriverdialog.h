@@ -27,18 +27,18 @@ class DrMain;
 
 class KMDriverDialog : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KMDriverDialog(QWidget *parent = 0, const char *name = 0);
-	~KMDriverDialog();
+    explicit KMDriverDialog(QWidget *parent = 0, const char *name = 0);
+    ~KMDriverDialog();
 
-	void setDriver(DrMain*);
+    void setDriver(DrMain*);
 
 protected Q_SLOTS:
-	void slotOk();
+    void slotOk();
 
 private:
-	DriverView	*m_view;
+    DriverView *m_view;
 };
 
 #endif

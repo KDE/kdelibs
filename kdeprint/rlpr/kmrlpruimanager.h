@@ -25,12 +25,12 @@
 class KMRlprUiManager : public KMUiManager
 {
 public:
-	KMRlprUiManager(QObject *parent, const QStringList & /*args*/);
-	~KMRlprUiManager();
+    KMRlprUiManager(QObject *parent, const QStringList & /*args*/);
+    ~KMRlprUiManager();
 
-	void setupPropertyPages(KMPropertyPage*);
-	void setupWizard(KMWizard*);
-	void setupConfigDialog(KMConfigDialog*);
+    void setupPropertyPages(KMPropertyPage*);
+    void setupWizard(KMWizard*);
+    void setupConfigDialog(KMConfigDialog*);
 };
 
 #endif

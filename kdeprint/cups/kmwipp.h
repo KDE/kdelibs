@@ -25,10 +25,10 @@
 class KMWIpp : public KMWInfoBase
 {
 public:
-	KMWIpp(QWidget *parent = 0);
+    KMWIpp(QWidget *parent = 0);
 
-	bool isValid(QString&);
-	void updatePrinter(KMPrinter*);
+    bool isValid(QString&);
+    void updatePrinter(KMPrinter*);
 };
 
 #endif

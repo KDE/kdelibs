@@ -27,26 +27,38 @@ class KConfig;
 
 class KDEPRINT_MANAGEMENT_EXPORT KMConfigPage : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMConfigPage(QWidget *parent = 0);
+    KMConfigPage(QWidget *parent = 0);
 
-	virtual void loadConfig(KConfig *conf);
-	virtual void saveConfig(KConfig *conf);
+    virtual void loadConfig(KConfig *conf);
+    virtual void saveConfig(KConfig *conf);
 
-	QString pageName() const 	{ return m_name; }
-	QString pageHeader() const 	{ return m_header; }
-	QString pagePixmap() const 	{ return m_pixmap; }
+    QString pageName() const  {
+        return m_name;
+    }
+    QString pageHeader() const  {
+        return m_header;
+    }
+    QString pagePixmap() const  {
+        return m_pixmap;
+    }
 
 protected:
-	void setPageName(const QString& s)	{ m_name = s; }
-	void setPageHeader(const QString& s)	{ m_header = s; }
-	void setPagePixmap(const QString& s)	{ m_pixmap = s; }
+    void setPageName(const QString& s) {
+        m_name = s;
+    }
+    void setPageHeader(const QString& s) {
+        m_header = s;
+    }
+    void setPagePixmap(const QString& s) {
+        m_pixmap = s;
+    }
 
 protected:
-	QString	m_name;
-	QString	m_header;
-	QString	m_pixmap;
+    QString m_name;
+    QString m_header;
+    QString m_pixmap;
 };
 
 #endif

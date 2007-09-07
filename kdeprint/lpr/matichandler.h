@@ -31,29 +31,29 @@
 class MaticHandler : public LprHandler
 {
 public:
-	MaticHandler(KMManager *mgr = 0);
+    MaticHandler(KMManager *mgr = 0);
 
-	bool validate(PrintcapEntry*);
-	KMPrinter* createPrinter(PrintcapEntry*);
-	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
-	DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
-	DrMain* loadDbDriver(const QString&);
-	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
-	PrintcapEntry* createEntry(KMPrinter*);
-	bool removePrinter(KMPrinter*, PrintcapEntry*);
-	QString printOptions(KPrinter*);
+    bool validate(PrintcapEntry*);
+    KMPrinter* createPrinter(PrintcapEntry*);
+    bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
+    DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
+    DrMain* loadDbDriver(const QString&);
+    bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
+    PrintcapEntry* createEntry(KMPrinter*);
+    bool removePrinter(KMPrinter*, PrintcapEntry*);
+    QString printOptions(KPrinter*);
 
 protected:
-	QString driverDirInternal();
+    QString driverDirInternal();
 
 private:
-	QString parsePostpipe(const QString&);
-	QString createPostpipe(const QString&);
-	bool savePpdFile(DrMain*, const QString&);
+    QString parsePostpipe(const QString&);
+    QString createPostpipe(const QString&);
+    bool savePpdFile(DrMain*, const QString&);
 
 private:
-	QString	m_exematicpath;
-	QString	m_ncpath, m_smbpath, m_rlprpath;
+    QString m_exematicpath;
+    QString m_ncpath, m_smbpath, m_rlprpath;
 };
 
 #endif

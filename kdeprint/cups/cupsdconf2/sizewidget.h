@@ -31,16 +31,16 @@ class QComboBox;
 class SizeWidget : public QWidget
 {
 public:
-	SizeWidget( QWidget *parent = 0 );
+    SizeWidget(QWidget *parent = 0);
 
-	void setSizeString( const QString& sizeString );
-	QString sizeString() const;
-	void setValue( int sz );
-	int value() const;
+    void setSizeString(const QString& sizeString);
+    QString sizeString() const;
+    void setValue(int sz);
+    int value() const;
 
 private:
-	QSpinBox *m_size;
-	QComboBox *m_unit;
+    QSpinBox *m_size;
+    QComboBox *m_unit;
 };
 
 #endif

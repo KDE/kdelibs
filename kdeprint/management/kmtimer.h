@@ -35,27 +35,27 @@
  */
 class KDEPRINT_MANAGEMENT_EXPORT KMTimer : public QTimer
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	void delay(int t);
-	~KMTimer();
+    void delay(int t);
+    ~KMTimer();
 
 public Q_SLOTS:
-	void hold();
-	void release();
-	void release(bool do_emit);
+    void hold();
+    void release();
+    void release(bool do_emit);
 
-	static KMTimer* self();
+    static KMTimer* self();
 
 private Q_SLOTS:
-	void slotTimeout();
+    void slotTimeout();
 
 private:
-	static KMTimer	*m_self;
-	int	m_count;
-	KMTimer(QObject *parent = 0, const char *name = 0);
-	void releaseTimer(bool do_emit = false);
-	void startTimer(int delay = -1);
+    static KMTimer *m_self;
+    int m_count;
+    KMTimer(QObject *parent = 0, const char *name = 0);
+    void releaseTimer(bool do_emit = false);
+    void startTimer(int delay = -1);
 };
 
 #endif

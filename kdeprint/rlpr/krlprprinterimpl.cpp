@@ -29,7 +29,7 @@
 #include <klocale.h>
 
 KRlprPrinterImpl::KRlprPrinterImpl(QObject *parent, const QStringList & /*args*/)
-    : KPrinterImpl(parent)
+        : KPrinterImpl(parent)
 {
 }
 
@@ -39,38 +39,33 @@ KRlprPrinterImpl::~KRlprPrinterImpl()
 
 bool KRlprPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
-	// retrieve the KMPrinter object, to get host and queue name
-	KMPrinter	*rpr = KMFactory::self()->manager()->findPrinter(printer->printerName());
-	if (!rpr)
-		return false;
+    // retrieve the KMPrinter object, to get host and queue name
+    KMPrinter *rpr = KMFactory::self()->manager()->findPrinter(printer->printerName());
+    if (!rpr)
+        return false;
 
-	QString	host(rpr->option("host")), queue(rpr->option("queue"));
-	if (!host.isEmpty() && !queue.isEmpty())
-	{
-		QString		exestr = KStandardDirs::findExe("rlpr");
-		if (exestr.isEmpty())
-		{
-			printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.", QString("rlpr")));
-			return false;
-		}
+    QString host(rpr->option("host")), queue(rpr->option("queue"));
+    if (!host.isEmpty() && !queue.isEmpty()) {
+        QString  exestr = KStandardDirs::findExe("rlpr");
+        if (exestr.isEmpty()) {
+            printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.", QString("rlpr")));
+            return false;
+        }
 
-		cmd = QString::fromLatin1("%1 -H %2 -P %3 -\\#%4").arg(exestr).arg(quote(host)).arg(quote(queue)).arg(printer->numCopies());
+        cmd = QString::fromLatin1("%1 -H %2 -P %3 -\\#%4").arg(exestr).arg(quote(host)).arg(quote(queue)).arg(printer->numCopies());
 
-		// proxy settings
-		KConfig *cf = KMFactory::self()->printConfig();
-		KConfigGroup conf = cf->group("RLPR");
-		QString	host = conf.readEntry("ProxyHost",QString()), port = conf.readEntry("ProxyPort",QString());
-		if (!host.isEmpty())
-		{
-			cmd.append(" -X ").append(quote(host));
-			if (!port.isEmpty()) cmd.append(" --port=").append(port);
-		}
+        // proxy settings
+        KConfig *cf = KMFactory::self()->printConfig();
+        KConfigGroup conf = cf->group("RLPR");
+        QString host = conf.readEntry("ProxyHost", QString()), port = conf.readEntry("ProxyPort", QString());
+        if (!host.isEmpty()) {
+            cmd.append(" -X ").append(quote(host));
+            if (!port.isEmpty()) cmd.append(" --port=").append(port);
+        }
 
-		return true;
-	}
-	else
-	{
-		printer->setErrorMessage(i18n("The printer is incompletely defined. Try to reinstall it."));
-		return false;
-	}
+        return true;
+    } else {
+        printer->setErrorMessage(i18n("The printer is incompletely defined. Try to reinstall it."));
+        return false;
+    }
 }

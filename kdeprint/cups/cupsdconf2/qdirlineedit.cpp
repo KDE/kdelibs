@@ -26,20 +26,20 @@
 #include <kiconloader.h>
 
 QDirLineEdit::QDirLineEdit(bool file, QWidget *parent)
-	: QWidget(parent)
+        : QWidget(parent)
 {
-	edit_ = new QLineEdit(this);
-	button_ = new KPushButton(this);
-	button_->setIcon(SmallIcon("document-open"));
-	connect(button_,SIGNAL(clicked()),SLOT(buttonClicked()));
+    edit_ = new QLineEdit(this);
+    button_ = new KPushButton(this);
+    button_->setIcon(SmallIcon("document-open"));
+    connect(button_, SIGNAL(clicked()), SLOT(buttonClicked()));
 
-	QHBoxLayout	*main_ = new QHBoxLayout(this);
-  main_->setMargin(0);
-  main_->setSpacing(3);
-	main_->addWidget(edit_);
-	main_->addWidget(button_);
+    QHBoxLayout *main_ = new QHBoxLayout(this);
+    main_->setMargin(0);
+    main_->setSpacing(3);
+    main_->addWidget(edit_);
+    main_->addWidget(button_);
 
-	fileedit_ = file;
+    fileedit_ = file;
 }
 
 QDirLineEdit::~QDirLineEdit()
@@ -48,28 +48,28 @@ QDirLineEdit::~QDirLineEdit()
 
 void QDirLineEdit::setUrl(const QString& txt)
 {
-	edit_->setText(txt);
+    edit_->setText(txt);
 }
 
 QString QDirLineEdit::url()
 {
-	return edit_->text();
+    return edit_->text();
 }
 
 void QDirLineEdit::buttonClicked()
 {
-	QString	dirname;
-	if (!fileedit_)
-		dirname = KFileDialog::getExistingDirectory(edit_->text(), this);
-	else
-		dirname = KFileDialog::getOpenFileName(edit_->text(), QString(), this);
-	if (!dirname.isEmpty())
-		edit_->setText(dirname);
+    QString dirname;
+    if (!fileedit_)
+        dirname = KFileDialog::getExistingDirectory(edit_->text(), this);
+    else
+        dirname = KFileDialog::getOpenFileName(edit_->text(), QString(), this);
+    if (!dirname.isEmpty())
+        edit_->setText(dirname);
 }
 
 void QDirLineEdit::setFileEdit(bool on)
 {
-	fileedit_ = on;
+    fileedit_ = on;
 }
 
 #include "qdirlineedit.moc"

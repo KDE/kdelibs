@@ -23,80 +23,78 @@
 #include <QtCore/QFile>
 
 KPrintProcess::KPrintProcess()
-: KProcess()
+        : KProcess()
 {
-	setOutputChannelMode( MergedChannels );
-	connect(this, SIGNAL(readyReadStandardError()),
-		SLOT(slotReadStandardError()));
-	connect( this, SIGNAL( finished(int,QProcess::ExitStatus) ),
-		SLOT( slotExited(int,QProcess::ExitStatus) ) );
-	m_state = None;
+    setOutputChannelMode(MergedChannels);
+    connect(this, SIGNAL(readyReadStandardError()),
+            SLOT(slotReadStandardError()));
+    connect(this, SIGNAL(finished(int, QProcess::ExitStatus)),
+            SLOT(slotExited(int, QProcess::ExitStatus)));
+    m_state = None;
 }
 
 KPrintProcess::~KPrintProcess()
 {
-	kDebug() << "Die die die";
-	if ( !m_tempoutput.isEmpty() )
-		QFile::remove( m_tempoutput );
-	if ( m_tempfiles.size() > 0 ) {
-		kDebug() << "Deleting" << m_tempfiles;
-		for ( QStringList::ConstIterator it=m_tempfiles.begin(); it!=m_tempfiles.end(); ++it )
-			QFile::remove( *it );
-	}
+    kDebug() << "Die die die";
+    if (!m_tempoutput.isEmpty())
+        QFile::remove(m_tempoutput);
+    if (m_tempfiles.size() > 0) {
+        kDebug() << "Deleting" << m_tempfiles;
+        for (QStringList::ConstIterator it = m_tempfiles.begin(); it != m_tempfiles.end(); ++it)
+            QFile::remove(*it);
+    }
 }
 
 QString KPrintProcess::errorMessage() const
 {
-	return m_error;
+    return m_error;
 }
 
 bool KPrintProcess::print()
 {
-	m_buffer.clear();
-	m_error.clear();
-	m_state = Printing;
-	start();
-	return waitForStarted();
+    m_buffer.clear();
+    m_error.clear();
+    m_state = Printing;
+    start();
+    return waitForStarted();
 }
 
 void KPrintProcess::slotReadStandardError()
 {
-	m_buffer += readAllStandardError();
+    m_buffer += readAllStandardError();
 }
 
 void KPrintProcess::slotExited(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	if ( !m_buffer.isEmpty() ) {
-		m_error = QString::fromLocal8Bit(m_buffer.trimmed());
-		m_error.append('\n');
-	}
-	switch ( m_state )
-	{
-		case Printing:
-			if ( !m_output.isEmpty() )
-			{
-                                kDebug(500) << "Copying file" << m_output;
-				QStringList args = QStringList() << "copy" << m_tempoutput << m_output;
-				setProgram( "kfmclient", args );
-				m_state = Finishing;
-				m_error = i18n( "File transfer failed." );
-				start();
-				if ( waitForStarted() )
-					return;
-			}
-		case Finishing:
-			if ( exitStatus != NormalExit )
-				emit printError( this, i18n( "Abnormal process termination (<b>%1</b>)." ,  m_command ) );
-			else if ( exitCode != 0 )
-				emit printError( this, i18n( "<b>%1</b>: execution failed with message:<p>%2</p>" ,  m_command ,  m_error ) );
-			else
-				emit printTerminated( this );
-			break;
-		default:
-			emit printError( this, "Internal error, printing terminated in unexpected state. "
-					"Report bug at <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a>." );
-			break;
-	}
+    if (!m_buffer.isEmpty()) {
+        m_error = QString::fromLocal8Bit(m_buffer.trimmed());
+        m_error.append('\n');
+    }
+    switch (m_state) {
+    case Printing:
+        if (!m_output.isEmpty()) {
+            kDebug(500) << "Copying file" << m_output;
+            QStringList args = QStringList() << "copy" << m_tempoutput << m_output;
+            setProgram("kfmclient", args);
+            m_state = Finishing;
+            m_error = i18n("File transfer failed.");
+            start();
+            if (waitForStarted())
+                return;
+        }
+    case Finishing:
+        if (exitStatus != NormalExit)
+            emit printError(this, i18n("Abnormal process termination (<b>%1</b>)." ,  m_command));
+        else if (exitCode != 0)
+            emit printError(this, i18n("<b>%1</b>: execution failed with message:<p>%2</p>" ,  m_command ,  m_error));
+        else
+            emit printTerminated(this);
+        break;
+    default:
+        emit printError(this, "Internal error, printing terminated in unexpected state. "
+                        "Report bug at <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a>.");
+        break;
+    }
 }
 
 #include "kprintprocess.moc"

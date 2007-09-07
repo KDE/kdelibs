@@ -27,16 +27,16 @@ class QTextBrowser;
 class KDEPRINT_MANAGEMENT_EXPORT KMPropMembers : public KMPropWidget
 {
 public:
-	KMPropMembers(QWidget *parent = 0);
-	~KMPropMembers();
+    KMPropMembers(QWidget *parent = 0);
+    ~KMPropMembers();
 
-	void setPrinter(KMPrinter*);
+    void setPrinter(KMPrinter*);
 
 protected:
-	void configureWizard(KMWizard*);
+    void configureWizard(KMWizard*);
 
 private:
-	QTextBrowser *m_members;
+    QTextBrowser *m_members;
 };
 
 #endif

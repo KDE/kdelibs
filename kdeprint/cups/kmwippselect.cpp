@@ -30,85 +30,82 @@
 #include <kiconloader.h>
 
 KMWIppSelect::KMWIppSelect(QWidget *parent)
-    : KMWizardPage(parent)
+        : KMWizardPage(parent)
 {
-	m_ID = KMWizard::IPPSelect;
-	m_title = i18n("Remote IPP Printer Selection");
-	m_nextpage = KMWizard::Driver;
+    m_ID = KMWizard::IPPSelect;
+    m_title = i18n("Remote IPP Printer Selection");
+    m_nextpage = KMWizard::Driver;
 
-	m_list = new KListWidget(this);
+    m_list = new KListWidget(this);
 
-	QVBoxLayout	*lay = new QVBoxLayout(this);
-	lay->setMargin(0);
-	lay->setSpacing(0);
-	lay->addWidget(m_list);
+    QVBoxLayout *lay = new QVBoxLayout(this);
+    lay->setMargin(0);
+    lay->setSpacing(0);
+    lay->addWidget(m_list);
 }
 
 bool KMWIppSelect::isValid(QString& msg)
 {
-	if (m_list->currentRow() == -1)
-	{
-		msg = i18n("You must select a printer.");
-		return false;
-	}
-	return true;
+    if (m_list->currentRow() == -1) {
+        msg = i18n("You must select a printer.");
+        return false;
+    }
+    return true;
 }
 
 void KMWIppSelect::initPrinter(KMPrinter *p)
 {
-	// storage variables
-	QString	host, login, password;
-	int	port;
+    // storage variables
+    QString host, login, password;
+    int port;
 
-	// save config
-	host = CupsInfos::self()->host();
-	login = CupsInfos::self()->login();
-	password = CupsInfos::self()->password();
-	port = CupsInfos::self()->port();
+    // save config
+    host = CupsInfos::self()->host();
+    login = CupsInfos::self()->login();
+    password = CupsInfos::self()->password();
+    port = CupsInfos::self()->port();
 
-	m_list->clear();
+    m_list->clear();
 
-	// retrieve printer list
-	KUrl	url = p->device();
-	CupsInfos::self()->setHost(url.host());
-	CupsInfos::self()->setLogin(url.user());
-	CupsInfos::self()->setPassword(url.pass());
-	CupsInfos::self()->setPort(url.port());
-	IppRequest	req;
-	QString		uri;
-	req.setOperation(CUPS_GET_PRINTERS);
-	uri = QString::fromLatin1("ipp://%1:%2/printers/").arg(url.host()).arg(url.port());
-	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
-	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",QLatin1String("printer-name"));
-	if (req.doRequest("/printers/"))
-	{
-		ipp_attribute_t	*attr = req.first();
-		while (attr)
-		{
-			if (attr->name && strcmp(attr->name,"printer-name") == 0) {
-				QListWidgetItem* item = new QListWidgetItem();
+    // retrieve printer list
+    KUrl url = p->device();
+    CupsInfos::self()->setHost(url.host());
+    CupsInfos::self()->setLogin(url.user());
+    CupsInfos::self()->setPassword(url.pass());
+    CupsInfos::self()->setPort(url.port());
+    IppRequest req;
+    QString  uri;
+    req.setOperation(CUPS_GET_PRINTERS);
+    uri = QString::fromLatin1("ipp://%1:%2/printers/").arg(url.host()).arg(url.port());
+    req.addURI(IPP_TAG_OPERATION, "printer-uri", uri);
+    req.addKeyword(IPP_TAG_OPERATION, "requested-attributes", QLatin1String("printer-name"));
+    if (req.doRequest("/printers/")) {
+        ipp_attribute_t *attr = req.first();
+        while (attr) {
+            if (attr->name && strcmp(attr->name, "printer-name") == 0) {
+                QListWidgetItem* item = new QListWidgetItem();
                 item->setIcon(SmallIcon("kdeprint-printer"));
-                item->setText(QLatin1String(attr->values[0].string.text)); 
+                item->setText(QLatin1String(attr->values[0].string.text));
                 m_list->addItem(item);
             }
-			attr = attr->next;
-		}
-		m_list->model()->sort(0);
-	}
+            attr = attr->next;
+        }
+        m_list->model()->sort(0);
+    }
 
-	// restore config
-	CupsInfos::self()->setHost(host);
-	CupsInfos::self()->setLogin(login);
-	CupsInfos::self()->setPassword(password);
-	CupsInfos::self()->setPort(port);
+    // restore config
+    CupsInfos::self()->setHost(host);
+    CupsInfos::self()->setLogin(login);
+    CupsInfos::self()->setPassword(password);
+    CupsInfos::self()->setPort(port);
 }
 
 void KMWIppSelect::updatePrinter(KMPrinter *p)
 {
-	KUrl	url = p->device();
-	QString	path = m_list->currentItem()->text();
-	path.prepend("/printers/");
-	url.setPath(path);
-	p->setDevice(url.url());
-kDebug(500) << url.url();
+    KUrl url = p->device();
+    QString path = m_list->currentItem()->text();
+    path.prepend("/printers/");
+    url.setPath(path);
+    p->setDevice(url.url());
+    kDebug(500) << url.url();
 }

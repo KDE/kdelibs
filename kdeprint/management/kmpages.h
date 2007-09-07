@@ -28,16 +28,16 @@ class KMPrinterPage;
 class KMPages : public QTabWidget
 {
 public:
-	KMPages(QWidget *parent = 0);
-	~KMPages();
+    KMPages(QWidget *parent = 0);
+    ~KMPages();
 
-	void setPrinter(KMPrinter *p);
+    void setPrinter(KMPrinter *p);
 
 protected:
-	void initialize();
+    void initialize();
 
 private:
-	QList<KMPrinterPage*>	m_pages;
+    QList<KMPrinterPage*> m_pages;
 };
 
 #endif

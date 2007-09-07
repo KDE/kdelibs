@@ -26,21 +26,21 @@ class KListWidget;
 
 class KMWClass : public KMWizardPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMWClass(QWidget *parent = 0);
-	~KMWClass();
+    KMWClass(QWidget *parent = 0);
+    ~KMWClass();
 
-	bool isValid(QString&);
-	void initPrinter(KMPrinter*);
-	void updatePrinter(KMPrinter*);
+    bool isValid(QString&);
+    void initPrinter(KMPrinter*);
+    void updatePrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotAdd();
-	void slotRemove();
+    void slotAdd();
+    void slotRemove();
 
 private:
-	KListWidget	*m_list1, *m_list2;
+    KListWidget *m_list1, *m_list2;
 };
 
 #endif

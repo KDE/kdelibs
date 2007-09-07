@@ -27,28 +27,28 @@
 #include <QtGui/QLayout>
 
 KMConfigCups::KMConfigCups(QWidget *parent)
-    : KMConfigPage(parent )
+        : KMConfigPage(parent)
 {
-        setObjectName( "ConfigCups" );
-	setPageName(i18n("CUPS Server"));
-	setPageHeader(i18n("CUPS Server Settings"));
-	setPagePixmap("gear");
+    setObjectName("ConfigCups");
+    setPageName(i18n("CUPS Server"));
+    setPageHeader(i18n("CUPS Server Settings"));
+    setPagePixmap("gear");
 
-	m_widget = new KMCupsConfigWidget(this);
+    m_widget = new KMCupsConfigWidget(this);
 
-	QVBoxLayout *lay0 = new QVBoxLayout(this);
-	lay0->setMargin(0);
-	lay0->setSpacing(KDialog::spacingHint());
-	lay0->addWidget(m_widget);
-	lay0->addStretch(1);
+    QVBoxLayout *lay0 = new QVBoxLayout(this);
+    lay0->setMargin(0);
+    lay0->setSpacing(KDialog::spacingHint());
+    lay0->addWidget(m_widget);
+    lay0->addStretch(1);
 }
 
 void KMConfigCups::loadConfig(KConfig *)
 {
-	m_widget->load();
+    m_widget->load();
 }
 
 void KMConfigCups::saveConfig(KConfig *conf)
 {
-	m_widget->saveConfig(conf);
+    m_widget->saveConfig(conf);
 }

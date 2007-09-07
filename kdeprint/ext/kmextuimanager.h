@@ -25,11 +25,11 @@
 class KMExtUiManager : public KMUiManager
 {
 public:
-	KMExtUiManager(QObject *parent, const QStringList & /*args*/);
-	~KMExtUiManager();
+    KMExtUiManager(QObject *parent, const QStringList & /*args*/);
+    ~KMExtUiManager();
 
-	int pluginPageCap();
-	void setupPrinterPropertyDialog( KPrinterPropertyDialog* );
+    int pluginPageCap();
+    void setupPrinterPropertyDialog(KPrinterPropertyDialog*);
 };
 
 #endif

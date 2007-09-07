@@ -30,33 +30,33 @@
 #include <keditlistbox.h>
 
 KMWUsers::KMWUsers(QWidget *parent)
-    : KMWizardPage(parent)
+        : KMWizardPage(parent)
 {
-	m_ID = KMWizard::Custom+4;
-	m_title = i18n("Users Access Settings");
-	m_nextpage = KMWizard::Name;
+    m_ID = KMWizard::Custom + 4;
+    m_title = i18n("Users Access Settings");
+    m_nextpage = KMWizard::Name;
 
-	m_users = new KEditListBox(i18n("Users"), this, 0, false, KEditListBox::Add|KEditListBox::Remove);
-	m_type = new QComboBox(this);
-	m_type->addItem(i18n("Allowed Users"));
-	m_type->addItem(i18n("Denied Users"));
+    m_users = new KEditListBox(i18n("Users"), this, 0, false, KEditListBox::Add | KEditListBox::Remove);
+    m_type = new QComboBox(this);
+    m_type->addItem(i18n("Allowed Users"));
+    m_type->addItem(i18n("Denied Users"));
 
-	QLabel	*lab1 = new QLabel(i18n("Define here a group of allowed/denied users for this printer."), this);
-	QLabel	*lab2 = new QLabel(i18n("&Type:"), this);
+    QLabel *lab1 = new QLabel(i18n("Define here a group of allowed/denied users for this printer."), this);
+    QLabel *lab2 = new QLabel(i18n("&Type:"), this);
 
-	lab2->setBuddy(m_type);
+    lab2->setBuddy(m_type);
 
-	QVBoxLayout	*l0 = new QVBoxLayout(this);
-	l0->setMargin(0);
-	l0->setSpacing(10);
-	QHBoxLayout	*l1 = new QHBoxLayout();
-  l1->setMargin(0);
-  l1->setSpacing(10);
-	l0->addWidget(lab1, 0);
-	l0->addLayout(l1, 0);
-	l1->addWidget(lab2, 0);
-	l1->addWidget(m_type, 1);
-	l0->addWidget(m_users, 1);
+    QVBoxLayout *l0 = new QVBoxLayout(this);
+    l0->setMargin(0);
+    l0->setSpacing(10);
+    QHBoxLayout *l1 = new QHBoxLayout();
+    l1->setMargin(0);
+    l1->setSpacing(10);
+    l0->addWidget(lab1, 0);
+    l0->addLayout(l1, 0);
+    l1->addWidget(lab2, 0);
+    l1->addWidget(m_type, 1);
+    l0->addWidget(m_users, 1);
 }
 
 KMWUsers::~KMWUsers()
@@ -65,36 +65,33 @@ KMWUsers::~KMWUsers()
 
 void KMWUsers::initPrinter(KMPrinter *p)
 {
-	QStringList	l;
-	int		i(1);
-	if (!p->option("requesting-user-name-denied").isEmpty())
-	{
-		l = p->option("requesting-user-name-denied").split(",", QString::SkipEmptyParts);
-		if (l.count() == 1 && l[0] == "none")
-			l.clear();
-	}
-	else if (!p->option("requesting-user-name-allowed").isEmpty())
-	{
-		i = 0;
-		l = p->option("requesting-user-name-allowed").split(",", QString::SkipEmptyParts);
-		if (l.count() && l[0] == "all")
-			l.clear();
-	}
-	m_users->insertStringList(l);
-	m_type->setCurrentIndex(i);
+    QStringList l;
+    int  i(1);
+    if (!p->option("requesting-user-name-denied").isEmpty()) {
+        l = p->option("requesting-user-name-denied").split(",", QString::SkipEmptyParts);
+        if (l.count() == 1 && l[0] == "none")
+            l.clear();
+    } else if (!p->option("requesting-user-name-allowed").isEmpty()) {
+        i = 0;
+        l = p->option("requesting-user-name-allowed").split(",", QString::SkipEmptyParts);
+        if (l.count() && l[0] == "all")
+            l.clear();
+    }
+    m_users->insertStringList(l);
+    m_type->setCurrentIndex(i);
 }
 
 void KMWUsers::updatePrinter(KMPrinter *p)
 {
-	p->removeOption("requesting-user-name-denied");
-	p->removeOption("requesting-user-name-allowed");
+    p->removeOption("requesting-user-name-denied");
+    p->removeOption("requesting-user-name-allowed");
 
-	QString	str;
-	if (m_users->count() > 0)
-		str = m_users->items().join(",");
-	else
-		str = (m_type->currentIndex() == 0 ? "all" : "none");
-	QString	optname = (m_type->currentIndex() == 0 ? "requesting-user-name-allowed" : "requesting-user-name-denied");
-	p->setOption(optname, str);
+    QString str;
+    if (m_users->count() > 0)
+        str = m_users->items().join(",");
+    else
+        str = (m_type->currentIndex() == 0 ? "all" : "none");
+    QString optname = (m_type->currentIndex() == 0 ? "requesting-user-name-allowed" : "requesting-user-name-denied");
+    p->setOption(optname, str);
 }
 #include "kmwusers.moc"

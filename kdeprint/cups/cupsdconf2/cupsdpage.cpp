@@ -20,9 +20,9 @@
 #include "cupsdpage.h"
 
 CupsdPage::CupsdPage(QWidget *parent)
-	: QWidget(parent)
+        : QWidget(parent)
 {
-	conf_ = 0;
+    conf_ = 0;
 }
 
 CupsdPage::~CupsdPage()

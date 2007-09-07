@@ -27,18 +27,18 @@ class QTableWidget;
 class KPTagsPage : public KPrintDialogPage
 {
 public:
-	explicit KPTagsPage(bool ro = false, QWidget *parent = 0);
-	~KPTagsPage();
+    explicit KPTagsPage(bool ro = false, QWidget *parent = 0);
+    ~KPTagsPage();
 
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
-	void setOptions(const QMap<QString,QString>& opts);
-	bool isValid(QString& msg);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
+    void setOptions(const QMap<QString, QString>& opts);
+    bool isValid(QString& msg);
 
-	QSize sizeHint() const;
-	QSize minimumSizeHint() const;
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
 
 private:
-	QTableWidget 	*m_tags;
+    QTableWidget  *m_tags;
 };
 
 #endif

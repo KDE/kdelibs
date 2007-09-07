@@ -29,64 +29,76 @@
 class CupsInfos : public KPReloadObject
 {
 public:
-	static CupsInfos* self();
+    static CupsInfos* self();
 
-	CupsInfos();
-	~CupsInfos();
+    CupsInfos();
+    ~CupsInfos();
 
-	const QString& host() const;
-	int port() const;
-	const QString hostaddr() const;
-	const QString ippaddr() const;
-	const QString& login() const;
-	const QString& password() const;
-	const QString& realLogin() const;
-	bool savePassword() const;
+    const QString& host() const;
+    int port() const;
+    const QString hostaddr() const;
+    const QString ippaddr() const;
+    const QString& login() const;
+    const QString& password() const;
+    const QString& realLogin() const;
+    bool savePassword() const;
 
-	void setHost(const QString& s);
-	void setPort(int p);
-	void setLogin(const QString& s);
-	void setPassword(const QString& s);
-	void setSavePassword( bool on );
+    void setHost(const QString& s);
+    void setPort(int p);
+    void setLogin(const QString& s);
+    void setPassword(const QString& s);
+    void setSavePassword(bool on);
 
-	const char* getPasswordCB();
+    const char* getPasswordCB();
 
-	void load();
-	void save();
+    void load();
+    void save();
 
 protected:
-	void reload();
-	void configChanged();
+    void reload();
+    void configChanged();
 
 private:
-	static CupsInfos	*unique_;
+    static CupsInfos *unique_;
 
-	QString	host_;
-	int	port_;
-	QString	login_;
-	QString	password_;
-	QString	reallogin_;
-	bool savepwd_;
+    QString host_;
+    int port_;
+    QString login_;
+    QString password_;
+    QString reallogin_;
+    bool savepwd_;
 
-	int	count_;
+    int count_;
 };
 
 inline const QString& CupsInfos::host() const
-{ return host_; }
+{
+    return host_;
+}
 
 inline int CupsInfos::port() const
-{ return port_; }
+{
+    return port_;
+}
 
 inline const QString& CupsInfos::login() const
-{ return login_; }
+{
+    return login_;
+}
 
 inline const QString& CupsInfos::password() const
-{ return password_; }
+{
+    return password_;
+}
 
 inline const QString& CupsInfos::realLogin() const
-{ return reallogin_; }
+{
+    return reallogin_;
+}
 
 inline bool CupsInfos::savePassword() const
-{ return savepwd_; }
+{
+    return savepwd_;
+}
 
 #endif

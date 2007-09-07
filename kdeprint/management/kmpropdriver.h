@@ -28,18 +28,18 @@ class QLabel;
 class KDEPRINT_MANAGEMENT_EXPORT KMPropDriver : public KMPropWidget
 {
 public:
-	KMPropDriver(QWidget *parent = 0);
-	~KMPropDriver();
+    KMPropDriver(QWidget *parent = 0);
+    ~KMPropDriver();
 
-	void setPrinter(KMPrinter*);
+    void setPrinter(KMPrinter*);
 
 protected:
-	void configureWizard(KMWizard*);
+    void configureWizard(KMWizard*);
 
 private:
-	QLabel	*m_manufacturer;
-	QLabel	*m_model;
-	QLabel	*m_driverinfo;
+    QLabel *m_manufacturer;
+    QLabel *m_model;
+    QLabel *m_driverinfo;
 };
 
 #endif

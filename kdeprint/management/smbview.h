@@ -30,43 +30,43 @@ class KTemporaryFile;
 #endif
 class SmbView : public K3ListView
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	SmbView(QWidget *parent = 0);
-	~SmbView();
+    SmbView(QWidget *parent = 0);
+    ~SmbView();
 
-	void setLoginInfos(const QString& login, const QString& password);
-	void setOpen(Q3ListViewItem*, bool);
-	void init();
-	void abort();
+    void setLoginInfos(const QString& login, const QString& password);
+    void setOpen(Q3ListViewItem*, bool);
+    void init();
+    void abort();
 
 Q_SIGNALS:
-	void printerSelected(const QString& work, const QString& server, const QString& printer);
-	void running(bool);
+    void printerSelected(const QString& work, const QString& server, const QString& printer);
+    void running(bool);
 
 protected:
-	void startProcess(int);
-	void endProcess();
-	void processGroups();
-	void processServers();
-	void processShares();
+    void startProcess(int);
+    void endProcess();
+    void processGroups();
+    void processServers();
+    void processShares();
 
 protected Q_SLOTS:
-	void slotReceivedStdout();
-	void slotProcessStarted();
-	void slotProcessError(QProcess::ProcessError);
-	void slotProcessExited(int exitCode, QProcess::ExitStatus);
-	void slotSelectionChanged(Q3ListViewItem*);
+    void slotReceivedStdout();
+    void slotProcessStarted();
+    void slotProcessError(QProcess::ProcessError);
+    void slotProcessExited(int exitCode, QProcess::ExitStatus);
+    void slotSelectionChanged(Q3ListViewItem*);
 
 private:
-	enum State { GroupListing, ServerListing, ShareListing, Idle };
-	int 		m_state;
-	Q3ListViewItem	*m_current;
-	KProcess	m_proc;
-	QString		m_buffer;
-	QString		m_login, m_password;
-	KTemporaryFile	*m_passwdFile;
-	QString		m_wins_server;
+    enum State { GroupListing, ServerListing, ShareListing, Idle };
+    int   m_state;
+    Q3ListViewItem *m_current;
+    KProcess m_proc;
+    QString  m_buffer;
+    QString  m_login, m_password;
+    KTemporaryFile *m_passwdFile;
+    QString  m_wins_server;
 };
 
 #endif

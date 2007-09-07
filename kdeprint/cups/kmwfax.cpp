@@ -31,57 +31,53 @@
 #include <kurl.h>
 
 KMWFax::KMWFax(QWidget *parent)
-    : KMWizardPage(parent)
+        : KMWizardPage(parent)
 {
-	m_ID = KMWizard::Custom+2;
-	m_title = i18n("Fax Serial Device");
-	m_nextpage = KMWizard::Driver;
+    m_ID = KMWizard::Custom + 2;
+    m_title = i18n("Fax Serial Device");
+    m_nextpage = KMWizard::Driver;
 
-	QLabel	*lab = new QLabel(this);
-	lab->setWordWrap(true);
-	lab->setText(i18n("<p>Select the device which your serial Fax/Modem is connected to.</p>"));
-	m_list = new KListWidget(this);
+    QLabel *lab = new QLabel(this);
+    lab->setWordWrap(true);
+    lab->setText(i18n("<p>Select the device which your serial Fax/Modem is connected to.</p>"));
+    m_list = new KListWidget(this);
 
-	QVBoxLayout	*l1 = new QVBoxLayout(this);
-	l1->setMargin(0);
-	l1->setSpacing(10);
-	l1->addWidget(lab,0);
-	l1->addWidget(m_list,1);
+    QVBoxLayout *l1 = new QVBoxLayout(this);
+    l1->setMargin(0);
+    l1->setSpacing(10);
+    l1->addWidget(lab, 0);
+    l1->addWidget(m_list, 1);
 
-	// initialize
-	IppRequest	req;
-	req.setOperation(CUPS_GET_DEVICES);
-	QString	uri = QString::fromLatin1("ipp://%1/printers/").arg(CupsInfos::self()->ippaddr());
-	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
-	if (req.doRequest("/"))
-	{
-		ipp_attribute_t	*attr = req.first();
-		while (attr)
-		{
-			if (attr->name && strcmp(attr->name,"device-uri") == 0 && strncmp(attr->values[0].string.text,"fax",3) == 0)
-			{
+    // initialize
+    IppRequest req;
+    req.setOperation(CUPS_GET_DEVICES);
+    QString uri = QString::fromLatin1("ipp://%1/printers/").arg(CupsInfos::self()->ippaddr());
+    req.addURI(IPP_TAG_OPERATION, "printer-uri", uri);
+    if (req.doRequest("/")) {
+        ipp_attribute_t *attr = req.first();
+        while (attr) {
+            if (attr->name && strcmp(attr->name, "device-uri") == 0 && strncmp(attr->values[0].string.text, "fax", 3) == 0) {
                 QListWidgetItem* item = new QListWidgetItem();
                 item->setIcon(SmallIcon("blockdevice"));
                 item->setText(QLatin1String(attr->values[0].string.text));
-				m_list->addItem(item);
-			}
-			attr = attr->next;
-		}
-	}
+                m_list->addItem(item);
+            }
+            attr = attr->next;
+        }
+    }
 }
 
 bool KMWFax::isValid(QString& msg)
 {
-	if (m_list->currentRow() == -1)
-	{
-		msg = i18n("You must select a device.");
-		return false;
-	}
-	return true;
+    if (m_list->currentRow() == -1) {
+        msg = i18n("You must select a device.");
+        return false;
+    }
+    return true;
 }
 
 void KMWFax::updatePrinter(KMPrinter *printer)
 {
-	QString	uri = m_list->currentItem()->text();
-	printer->setDevice(uri);
+    QString uri = m_list->currentItem()->text();
+    printer->setDevice(uri);
 }

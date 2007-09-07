@@ -26,7 +26,7 @@
 #include <klocale.h>
 
 KExtPrinterImpl::KExtPrinterImpl(QObject *parent, const QStringList & /*args*/)
-: KPrinterImpl(parent)
+        : KPrinterImpl(parent)
 {
 }
 
@@ -36,17 +36,16 @@ KExtPrinterImpl::~KExtPrinterImpl()
 
 void KExtPrinterImpl::preparePrinting(KPrinter *printer)
 {
-	printer->setOption("kde-qtcopies",QString::number(printer->numCopies()));
+    printer->setOption("kde-qtcopies", QString::number(printer->numCopies()));
 }
 
 bool KExtPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
-	cmd = printer->option("kde-printcommand").trimmed();
-	if (cmd.isEmpty())
-	{
-		printer->setErrorMessage(i18n("Empty print command."));
-		return false;
-	}
+    cmd = printer->option("kde-printcommand").trimmed();
+    if (cmd.isEmpty()) {
+        printer->setErrorMessage(i18n("Empty print command."));
+        return false;
+    }
 
-	return true;
+    return true;
 }

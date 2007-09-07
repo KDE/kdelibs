@@ -38,272 +38,253 @@
 //*********************************************************************************************
 
 SmbView::SmbView(QWidget *parent)
-    : K3ListView(parent)
+        : K3ListView(parent)
 {
-	addColumn(i18n("Printer"));
-	addColumn(i18n("Comment"));
-	setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
-	setLineWidth(1);
-	setAllColumnsShowFocus(true);
-	setRootIsDecorated(true);
+    addColumn(i18n("Printer"));
+    addColumn(i18n("Comment"));
+    setFrameStyle(QFrame::WinPanel | QFrame::Sunken);
+    setLineWidth(1);
+    setAllColumnsShowFocus(true);
+    setRootIsDecorated(true);
 
-	m_state = Idle;
-	m_current = 0;
-	m_proc.setOutputChannelMode(KProcess::OnlyStdoutChannel);
-	m_proc.setReadChannel(KProcess::StandardOutput);
-	m_passwdFile = 0;
-	connect(&m_proc,SIGNAL(finished(int,QProcess::ExitStatus)),SLOT(slotProcessExited(int,QProcess::ExitStatus)));
-	connect(&m_proc,SIGNAL(readyReadStandardOutput()),SLOT(slotReceivedStdout()));
-	connect(&m_proc,SIGNAL(started()),SLOT(slotProcessStarted()));
-	connect(&m_proc,SIGNAL(error ( QProcess::ProcessError)),SLOT(slotProcessError(QProcess::ProcessError)));
-	connect(this,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotSelectionChanged(Q3ListViewItem*)));
+    m_state = Idle;
+    m_current = 0;
+    m_proc.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+    m_proc.setReadChannel(KProcess::StandardOutput);
+    m_passwdFile = 0;
+    connect(&m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(slotProcessExited(int, QProcess::ExitStatus)));
+    connect(&m_proc, SIGNAL(readyReadStandardOutput()), SLOT(slotReceivedStdout()));
+    connect(&m_proc, SIGNAL(started()), SLOT(slotProcessStarted()));
+    connect(&m_proc, SIGNAL(error(QProcess::ProcessError)), SLOT(slotProcessError(QProcess::ProcessError)));
+    connect(this, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotSelectionChanged(Q3ListViewItem*)));
 }
 
 SmbView::~SmbView()
 {
-	delete m_passwdFile;
+    delete m_passwdFile;
 }
 
 void SmbView::setLoginInfos(const QString& login, const QString& password)
 {
-	m_login = login;
-	m_password = password;
+    m_login = login;
+    m_password = password;
 
-	// We can't pass the password via the command line or the environment
-	// because the command line is publically accessible on most OSes and
-	// the environment is publically accessible on some OSes.
-	// Therefor we write the password to a file and pass that file to
-	// smbclient with the -A option
-	delete m_passwdFile;
-	m_passwdFile = new KTemporaryFile;
-	if (!m_passwdFile->open()) return; // Error
+    // We can't pass the password via the command line or the environment
+    // because the command line is publically accessible on most OSes and
+    // the environment is publically accessible on some OSes.
+    // Therefor we write the password to a file and pass that file to
+    // smbclient with the -A option
+    delete m_passwdFile;
+    m_passwdFile = new KTemporaryFile;
+    if (!m_passwdFile->open()) return; // Error
 
-	QTextStream passwdFile ( m_passwdFile );
-	passwdFile << "username = " << m_login << endl;
-	passwdFile << "password = " << m_password << endl;
-	// passwdFile << "domain = " << ???? << endl;
-	passwdFile.flush();
+    QTextStream passwdFile(m_passwdFile);
+    passwdFile << "username = " << m_login << endl;
+    passwdFile << "password = " << m_password << endl;
+    // passwdFile << "domain = " << ???? << endl;
+    passwdFile.flush();
 }
 
 void SmbView::startProcess(int state)
 {
-	m_buffer.clear();
-	m_state = state;
-	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-	m_proc.start();
+    m_buffer.clear();
+    m_state = state;
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+    m_proc.start();
 }
 
 void SmbView::slotProcessStarted()
 {
-	emit running(true);
+    emit running(true);
 }
 
 void SmbView::slotProcessError(QProcess::ProcessError)
 {
-	endProcess();
+    endProcess();
 }
 
 void SmbView::endProcess()
 {
-	switch (m_state)
-	{
-		case GroupListing:
-			processGroups();
-			break;
-		case ServerListing:
-			processServers();
-			break;
-		case ShareListing:
-			processShares();
-			break;
-		default:
-			break;
-	}
-	m_state = Idle;
-	QApplication::restoreOverrideCursor();
-	emit running(false);
-	// clean up for future usage
-	m_proc.clearProgram();
+    switch (m_state) {
+    case GroupListing:
+        processGroups();
+        break;
+    case ServerListing:
+        processServers();
+        break;
+    case ShareListing:
+        processShares();
+        break;
+    default:
+        break;
+    }
+    m_state = Idle;
+    QApplication::restoreOverrideCursor();
+    emit running(false);
+    // clean up for future usage
+    m_proc.clearProgram();
 }
 
 void SmbView::slotProcessExited(int, QProcess::ExitStatus)
 {
-	endProcess();
+    endProcess();
 }
 
 void SmbView::slotReceivedStdout()
 {
-	m_buffer.append(m_proc.readAll());
+    m_buffer.append(m_proc.readAll());
 }
 
 void SmbView::init()
 {
-	// Open Samba configuration file and check if a WINS server is defined
-	m_wins_server.clear();
-	QLatin1String wins_keyword("wins server");	
-	QFile smb_conf ("/etc/samba/smb.conf");
-	if (smb_conf.exists () && smb_conf.open (QIODevice::ReadOnly))
-	{
-		QTextStream smb_stream (&smb_conf);
-		while (!smb_stream.atEnd ())
-		{
-			QString smb_line = smb_stream.readLine ();
-			if (smb_line.contains (wins_keyword, Qt::CaseInsensitive) > 0)
-			{
-				QString key = smb_line.section('=', 0, 0);
-				key = key.trimmed();
-				if (key.toLower() != wins_keyword)
-				{
-					continue;
-				}
-				m_wins_server = smb_line.section ('=', 1, 1);
-				// take only the first declared WINS server
-				m_wins_server = m_wins_server.section(',', 0, 0);
-				m_wins_server = m_wins_server.trimmed ();
-				m_wins_server = m_wins_server.section(' ', 0, 0);
-				// strip any server tag (see man smb.conf(5))
-				if (!m_wins_server.section(':', 1, 1).isNull())
-				{
-					m_wins_server = m_wins_server.section(':', 1, 1);
-				}
-				break;
-			}
-		}
-		smb_conf.close ();
-	}
-	m_wins_server = m_wins_server.isEmpty ()? " " : " -U " + m_wins_server + " ";
-	m_proc.setShellCommand ("nmblookup" + m_wins_server +
-					"-M -- - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>'");
-	startProcess(GroupListing);
+    // Open Samba configuration file and check if a WINS server is defined
+    m_wins_server.clear();
+    QLatin1String wins_keyword("wins server");
+    QFile smb_conf("/etc/samba/smb.conf");
+    if (smb_conf.exists() && smb_conf.open(QIODevice::ReadOnly)) {
+        QTextStream smb_stream(&smb_conf);
+        while (!smb_stream.atEnd()) {
+            QString smb_line = smb_stream.readLine();
+            if (smb_line.contains(wins_keyword, Qt::CaseInsensitive) > 0) {
+                QString key = smb_line.section('=', 0, 0);
+                key = key.trimmed();
+                if (key.toLower() != wins_keyword) {
+                    continue;
+                }
+                m_wins_server = smb_line.section('=', 1, 1);
+                // take only the first declared WINS server
+                m_wins_server = m_wins_server.section(',', 0, 0);
+                m_wins_server = m_wins_server.trimmed();
+                m_wins_server = m_wins_server.section(' ', 0, 0);
+                // strip any server tag (see man smb.conf(5))
+                if (!m_wins_server.section(':', 1, 1).isNull()) {
+                    m_wins_server = m_wins_server.section(':', 1, 1);
+                }
+                break;
+            }
+        }
+        smb_conf.close();
+    }
+    m_wins_server = m_wins_server.isEmpty() ? " " : " -U " + m_wins_server + " ";
+    m_proc.setShellCommand("nmblookup" + m_wins_server +
+                           "-M -- - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>'");
+    startProcess(GroupListing);
 }
 
 void SmbView::setOpen(Q3ListViewItem *item, bool on)
 {
-	if (on && item->childCount() == 0)
-	{
-		// XXX should use KProcessGroup once it is there
-		if (item->depth() == 0)
-		{ // opening group
-			m_current = item;
-			QString cmd;
-			cmd += "nmblookup"+m_wins_server+"-M ";
-			cmd += KShell::quoteArg(item->text(0));
-			cmd += " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -Iserv_name smbclient -N -L 'serv_name' -W ";
-			cmd += KShell::quoteArg(item->text(0));
-			cmd += " -A ";
-			cmd += KShell::quoteArg(m_passwdFile->fileName());
-			m_proc.setShellCommand(cmd);
-			startProcess(ServerListing);
-		}
-		else if (item->depth() == 1)
-		{ // opening server
-			char *krb5ccname = getenv ("KRB5CCNAME");
-			m_current = item;
-			QString cmd;
-			if (krb5ccname)
-			{
-				cmd += "smbclient -k -N -L ";
-			}
-			else
-			{
-				cmd += "smbclient -N -L ";
-			}
-			cmd += KShell::quoteArg(item->text (0));
-			cmd += " -W ";
-			cmd += KShell::quoteArg(item->parent ()->
-							text (0));
-			if (!krb5ccname)
-			{
-				cmd += " -A ";
-				cmd += KShell::
-					quoteArg (m_passwdFile->fileName ());
-			}
-			m_proc.setShellCommand(cmd);
-			startProcess(ShareListing);
-		}
-	}
-	Q3ListView::setOpen(item,on);
+    if (on && item->childCount() == 0) {
+        // XXX should use KProcessGroup once it is there
+        if (item->depth() == 0) { // opening group
+            m_current = item;
+            QString cmd;
+            cmd += "nmblookup" + m_wins_server + "-M ";
+            cmd += KShell::quoteArg(item->text(0));
+            cmd += " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -Iserv_name smbclient -N -L 'serv_name' -W ";
+            cmd += KShell::quoteArg(item->text(0));
+            cmd += " -A ";
+            cmd += KShell::quoteArg(m_passwdFile->fileName());
+            m_proc.setShellCommand(cmd);
+            startProcess(ServerListing);
+        } else if (item->depth() == 1) { // opening server
+            char *krb5ccname = getenv("KRB5CCNAME");
+            m_current = item;
+            QString cmd;
+            if (krb5ccname) {
+                cmd += "smbclient -k -N -L ";
+            } else {
+                cmd += "smbclient -N -L ";
+            }
+            cmd += KShell::quoteArg(item->text(0));
+            cmd += " -W ";
+            cmd += KShell::quoteArg(item->parent()->
+                                    text(0));
+            if (!krb5ccname) {
+                cmd += " -A ";
+                cmd += KShell::
+                       quoteArg(m_passwdFile->fileName());
+            }
+            m_proc.setShellCommand(cmd);
+            startProcess(ShareListing);
+        }
+    }
+    Q3ListView::setOpen(item, on);
 }
 
 void SmbView::processGroups()
 {
-	QStringList	grps = m_buffer.split('\n',QString::SkipEmptyParts);
-	clear();
-	for (QStringList::ConstIterator it=grps.begin(); it!=grps.end(); ++it)
-	{
-		int	p = (*it).indexOf("<1d>");
-		if (p == -1)
-			continue;
-		Q3ListViewItem	*item = new Q3ListViewItem(this,(*it).left(p).trimmed());
-		item->setExpandable(true);
-		item->setPixmap(0,SmallIcon("network-wired"));
-	}
+    QStringList grps = m_buffer.split('\n', QString::SkipEmptyParts);
+    clear();
+    for (QStringList::ConstIterator it = grps.begin(); it != grps.end(); ++it) {
+        int p = (*it).indexOf("<1d>");
+        if (p == -1)
+            continue;
+        Q3ListViewItem *item = new Q3ListViewItem(this, (*it).left(p).trimmed());
+        item->setExpandable(true);
+        item->setPixmap(0, SmallIcon("network-wired"));
+    }
 }
 
 void SmbView::processServers()
 {
-	QStringList	lines = m_buffer.split('\n',QString::SkipEmptyParts);
-	QString		line;
-	int 		index(0);
-	for (;index < lines.count();index++)
-		if (lines[index].trimmed().startsWith("Server"))
-			break;
-	index += 2;
-	while (index < lines.count())
-	{
-		line = lines[index++].trimmed();
-		if (line.isEmpty())
-			break;
-		QStringList	words = line.split(' ',QString::SkipEmptyParts);
-		Q3ListViewItem	*item = new Q3ListViewItem(m_current,words[0]);
-		item->setExpandable(true);
-		item->setPixmap(0,SmallIcon("kdeprint_computer"));
-	}
+    QStringList lines = m_buffer.split('\n', QString::SkipEmptyParts);
+    QString  line;
+    int   index(0);
+    for (;index < lines.count();index++)
+        if (lines[index].trimmed().startsWith("Server"))
+            break;
+    index += 2;
+    while (index < lines.count()) {
+        line = lines[index++].trimmed();
+        if (line.isEmpty())
+            break;
+        QStringList words = line.split(' ', QString::SkipEmptyParts);
+        Q3ListViewItem *item = new Q3ListViewItem(m_current, words[0]);
+        item->setExpandable(true);
+        item->setPixmap(0, SmallIcon("kdeprint_computer"));
+    }
 }
 
 void SmbView::processShares()
 {
-	QStringList	lines = m_buffer.split('\n',QString::SkipEmptyParts);
-	QString		line;
-	int 		index(0);
-	for (;index < lines.count();index++)
-		if (lines[index].trimmed().startsWith("Sharename"))
-			break;
-	index += 2;
-	while (index < lines.count())
-	{
-		line = lines[index++].trimmed();
-		if (line.isEmpty())
-			break;
-		else if ( line.startsWith( "Error returning" ) )
-		{
-			KMessageBox::error( this, line );
-			break;
-		}
-		QString	typestr(line.mid(15, 10).trimmed());
-		//QStringList	words = QStringList::split(' ',line,false);
-		//if (words[1] == "Printer")
-		if (typestr == "Printer")
-		{
-			QString	comm(line.mid(25).trimmed()), sharen(line.mid(0, 15).trimmed());
-			//for (uint i=2; i<words.count(); i++)
-			//	comm += (words[i]+" ");
-			//QListViewItem	*item = new QListViewItem(m_current,words[0],comm);
-			Q3ListViewItem	*item = new Q3ListViewItem(m_current,sharen,comm);
-			item->setPixmap(0,SmallIcon("kdeprint-printer"));
-		}
-	}
+    QStringList lines = m_buffer.split('\n', QString::SkipEmptyParts);
+    QString  line;
+    int   index(0);
+    for (;index < lines.count();index++)
+        if (lines[index].trimmed().startsWith("Sharename"))
+            break;
+    index += 2;
+    while (index < lines.count()) {
+        line = lines[index++].trimmed();
+        if (line.isEmpty())
+            break;
+        else if (line.startsWith("Error returning")) {
+            KMessageBox::error(this, line);
+            break;
+        }
+        QString typestr(line.mid(15, 10).trimmed());
+        //QStringList words = QStringList::split(' ',line,false);
+        //if (words[1] == "Printer")
+        if (typestr == "Printer") {
+            QString comm(line.mid(25).trimmed()), sharen(line.mid(0, 15).trimmed());
+            //for (uint i=2; i<words.count(); i++)
+            // comm += (words[i]+" ");
+            //QListViewItem *item = new QListViewItem(m_current,words[0],comm);
+            Q3ListViewItem *item = new Q3ListViewItem(m_current, sharen, comm);
+            item->setPixmap(0, SmallIcon("kdeprint-printer"));
+        }
+    }
 }
 
 void SmbView::slotSelectionChanged(Q3ListViewItem *item)
 {
-	if (item && item->depth() == 2)
-		emit printerSelected(item->parent()->parent()->text(0),item->parent()->text(0),item->text(0));
+    if (item && item->depth() == 2)
+        emit printerSelected(item->parent()->parent()->text(0), item->parent()->text(0), item->text(0));
 }
 
 void SmbView::abort()
 {
-	if (m_proc.state() != QProcess::NotRunning)
-		m_proc.kill();
+    if (m_proc.state() != QProcess::NotRunning)
+        m_proc.kill();
 }
 #include "smbview.moc"

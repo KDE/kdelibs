@@ -42,86 +42,86 @@ class KXmlCommand;
 
 class KXmlCommandAdvancedDlg : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KXmlCommandAdvancedDlg(QWidget *parent = 0);
-	~KXmlCommandAdvancedDlg();
+    KXmlCommandAdvancedDlg(QWidget *parent = 0);
+    ~KXmlCommandAdvancedDlg();
 
-	void setCommand(KXmlCommand*);
-	static bool editCommand(KXmlCommand *xmlcmd, QWidget *parent = 0);
+    void setCommand(KXmlCommand*);
+    static bool editCommand(KXmlCommand *xmlcmd, QWidget *parent = 0);
 
 protected:
-	void parseGroupItem(DrGroup*, Q3ListViewItem*);
-	void parseXmlCommand(KXmlCommand*);
-	void viewItem(Q3ListViewItem*);
-	void removeItem(Q3ListViewItem*);
-	void recreateGroup(Q3ListViewItem*, DrGroup*);
+    void parseGroupItem(DrGroup*, Q3ListViewItem*);
+    void parseXmlCommand(KXmlCommand*);
+    void viewItem(Q3ListViewItem*);
+    void removeItem(Q3ListViewItem*);
+    void recreateGroup(Q3ListViewItem*, DrGroup*);
 
 protected Q_SLOTS:
-	void slotSelectionChanged(Q3ListViewItem*);
-	void slotTypeChanged(int);
-	void slotAddValue();
-	void slotRemoveValue();
-	void slotApplyChanges();
-	void slotAddGroup();
-	void slotAddOption();
-	void slotRemoveItem();
-	void slotMoveUp();
-	void slotMoveDown();
-	void slotCommandChanged(const QString&);
-	void slotValueSelected(Q3ListViewItem*);
-	void slotOptionRenamed(Q3ListViewItem*, int);
-	void slotChanged();
+    void slotSelectionChanged(Q3ListViewItem*);
+    void slotTypeChanged(int);
+    void slotAddValue();
+    void slotRemoveValue();
+    void slotApplyChanges();
+    void slotAddGroup();
+    void slotAddOption();
+    void slotRemoveItem();
+    void slotMoveUp();
+    void slotMoveDown();
+    void slotCommandChanged(const QString&);
+    void slotValueSelected(Q3ListViewItem*);
+    void slotOptionRenamed(Q3ListViewItem*, int);
+    void slotChanged();
 
 private:
-	K3ListView	*m_view;
-	QLineEdit	*m_name, *m_desc, *m_format, *m_default, *m_command;
-	QComboBox	*m_type;
-	QWidget		*m_dummy;
-	K3ListView	*m_values;
-	QLineEdit	*m_edit1, *m_edit2;
-	QStackedWidget	*m_stack;
-	QToolButton	*m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
-	QLineEdit	*m_inputfile, *m_inputpipe, *m_outputfile, *m_outputpipe;
-	QToolButton	*m_addval, *m_delval;
-	QTextEdit   *m_comment;
-	QCheckBox *m_persistent;
+    K3ListView *m_view;
+    QLineEdit *m_name, *m_desc, *m_format, *m_default, *m_command;
+    QComboBox *m_type;
+    QWidget  *m_dummy;
+    K3ListView *m_values;
+    QLineEdit *m_edit1, *m_edit2;
+    QStackedWidget *m_stack;
+    QToolButton *m_apply, *m_addgrp, *m_addopt, *m_delopt, *m_up, *m_down;
+    QLineEdit *m_inputfile, *m_inputpipe, *m_outputfile, *m_outputpipe;
+    QToolButton *m_addval, *m_delval;
+    QTextEdit   *m_comment;
+    QCheckBox *m_persistent;
 
-	KXmlCommand	*m_xmlcmd;
-	QMap<QString, DrBase*>	m_opts;
+    KXmlCommand *m_xmlcmd;
+    QMap<QString, DrBase*> m_opts;
 };
 
 class KXmlCommandDlg : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KXmlCommandDlg(QWidget *parent = 0, const char *name = 0);
+    explicit KXmlCommandDlg(QWidget *parent = 0, const char *name = 0);
 
-	void setCommand(KXmlCommand*);
-	static bool editCommand(KXmlCommand*, QWidget *parent = 0);
+    void setCommand(KXmlCommand*);
+    static bool editCommand(KXmlCommand*, QWidget *parent = 0);
 
 protected Q_SLOTS:
-	void slotAddMime();
-	void slotRemoveMime();
-	void slotEditCommand();
-	void slotAddReq();
-	void slotRemoveReq();
-	void slotReqSelected(Q3ListViewItem*);
-	void slotAvailableSelected();
-	void slotSelectedSelected();
-	void slotOk();
+    void slotAddMime();
+    void slotRemoveMime();
+    void slotEditCommand();
+    void slotAddReq();
+    void slotRemoveReq();
+    void slotReqSelected(Q3ListViewItem*);
+    void slotAvailableSelected();
+    void slotSelectedSelected();
+    void slotOk();
 
 private:
-	QLineEdit	*m_description;
-	QLabel		*m_idname;
-	QComboBox	*m_mimetype;
-	KListWidget	*m_availablemime, *m_selectedmime;
-	QToolButton	*m_addmime, *m_removemime;
-	K3ListView	*m_requirements;
-	QToolButton	*m_removereq, *m_addreq;
+    QLineEdit *m_description;
+    QLabel  *m_idname;
+    QComboBox *m_mimetype;
+    KListWidget *m_availablemime, *m_selectedmime;
+    QToolButton *m_addmime, *m_removemime;
+    K3ListView *m_requirements;
+    QToolButton *m_removereq, *m_addreq;
 
-	QStringList	m_mimelist;
-	KXmlCommand	*m_cmd;
+    QStringList m_mimelist;
+    KXmlCommand *m_cmd;
 };
 
 #endif

@@ -29,17 +29,17 @@
 #endif
 class GsChecker : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit GsChecker(QObject *parent = 0, const char *name = 0);
-	bool checkGsDriver(const QString& name);
+    explicit GsChecker(QObject *parent = 0, const char *name = 0);
+    bool checkGsDriver(const QString& name);
 
 protected:
-	void loadDriverList();
+    void loadDriverList();
 
 private:
-	QStringList	m_driverlist;
+    QStringList m_driverlist;
 };
 
 #endif

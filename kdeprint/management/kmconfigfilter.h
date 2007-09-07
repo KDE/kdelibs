@@ -28,25 +28,25 @@ class QLineEdit;
 
 class KMConfigFilter : public KMConfigPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMConfigFilter(QWidget *parent = 0);
+    KMConfigFilter(QWidget *parent = 0);
 
-	void loadConfig(KConfig*);
-	void saveConfig(KConfig*);
+    void loadConfig(KConfig*);
+    void saveConfig(KConfig*);
 
 protected Q_SLOTS:
-	void slotSelectionChanged();
-	void slotAddClicked();
-	void slotRemoveClicked();
+    void slotSelectionChanged();
+    void slotAddClicked();
+    void slotRemoveClicked();
 
 protected:
-	void transfer(KListWidget *from, KListWidget *to);
+    void transfer(KListWidget *from, KListWidget *to);
 
 private:
-	KListWidget	*m_list1, *m_list2;
-	QToolButton	*m_add, *m_remove;
-	QLineEdit	*m_locationre;
+    KListWidget *m_list1, *m_list2;
+    QToolButton *m_add, *m_remove;
+    QLineEdit *m_locationre;
 };
 
 #endif

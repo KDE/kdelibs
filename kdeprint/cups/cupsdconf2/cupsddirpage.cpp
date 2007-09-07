@@ -28,83 +28,83 @@
 #include <klocale.h>
 
 CupsdDirPage::CupsdDirPage(QWidget *parent)
-	: CupsdPage(parent)
+        : CupsdPage(parent)
 {
-	setPageLabel(i18n("Folders"));
-	setHeader(i18n("Folders Settings"));
-	setPixmap("folder");
+    setPageLabel(i18n("Folders"));
+    setHeader(i18n("Folders Settings"));
+    setPixmap("folder");
 
-	datadir_ = new QDirLineEdit(false, this);
-	documentdir_ = new QDirLineEdit(false, this);
-	fontpath_ = new QDirMultiLineEdit(this);
-	requestdir_ = new QDirLineEdit(false, this);
-	serverbin_ = new QDirLineEdit(false, this);
-	serverfiles_ = new QDirLineEdit(false, this);
-	tmpfiles_ = new QDirLineEdit(false, this);
+    datadir_ = new QDirLineEdit(false, this);
+    documentdir_ = new QDirLineEdit(false, this);
+    fontpath_ = new QDirMultiLineEdit(this);
+    requestdir_ = new QDirLineEdit(false, this);
+    serverbin_ = new QDirLineEdit(false, this);
+    serverfiles_ = new QDirLineEdit(false, this);
+    tmpfiles_ = new QDirLineEdit(false, this);
 
-	QLabel *l1 = new QLabel(i18n("Data folder:"), this);
-	QLabel *l2 = new QLabel(i18n("Document folder:"), this);
-	QLabel *l3 = new QLabel(i18n("Font path:"), this);
-	QLabel *l4 = new QLabel(i18n("Request folder:"), this);
-	QLabel *l5 = new QLabel(i18n("Server binaries:"), this);
-	QLabel *l6 = new QLabel(i18n("Server files:"), this);
-	QLabel *l7 = new QLabel(i18n("Temporary files:"), this);
+    QLabel *l1 = new QLabel(i18n("Data folder:"), this);
+    QLabel *l2 = new QLabel(i18n("Document folder:"), this);
+    QLabel *l3 = new QLabel(i18n("Font path:"), this);
+    QLabel *l4 = new QLabel(i18n("Request folder:"), this);
+    QLabel *l5 = new QLabel(i18n("Server binaries:"), this);
+    QLabel *l6 = new QLabel(i18n("Server files:"), this);
+    QLabel *l7 = new QLabel(i18n("Temporary files:"), this);
 
-	QGridLayout	*m1 = new QGridLayout(this);
-  m1->setMargin(10);
-  m1->setSpacing(7);
-	m1->setRowStretch(7, 1);
-	m1->setColumnStretch(1, 1);
-	m1->addWidget(l1, 0, 0, Qt::AlignRight);
-	m1->addWidget(l2, 1, 0, Qt::AlignRight);
-	m1->addWidget(l3, 2, 0, Qt::AlignRight|Qt::AlignTop);
-	m1->addWidget(l4, 3, 0, Qt::AlignRight);
-	m1->addWidget(l5, 4, 0, Qt::AlignRight);
-	m1->addWidget(l6, 5, 0, Qt::AlignRight);
-	m1->addWidget(l7, 6, 0, Qt::AlignRight);
-	m1->addWidget(datadir_, 0, 1);
-	m1->addWidget(documentdir_, 1, 1);
-	m1->addWidget(fontpath_, 2, 1);
-	m1->addWidget(requestdir_, 3, 1);
-	m1->addWidget(serverbin_, 4, 1);
-	m1->addWidget(serverfiles_, 5, 1);
-	m1->addWidget(tmpfiles_, 6, 1);
+    QGridLayout *m1 = new QGridLayout(this);
+    m1->setMargin(10);
+    m1->setSpacing(7);
+    m1->setRowStretch(7, 1);
+    m1->setColumnStretch(1, 1);
+    m1->addWidget(l1, 0, 0, Qt::AlignRight);
+    m1->addWidget(l2, 1, 0, Qt::AlignRight);
+    m1->addWidget(l3, 2, 0, Qt::AlignRight | Qt::AlignTop);
+    m1->addWidget(l4, 3, 0, Qt::AlignRight);
+    m1->addWidget(l5, 4, 0, Qt::AlignRight);
+    m1->addWidget(l6, 5, 0, Qt::AlignRight);
+    m1->addWidget(l7, 6, 0, Qt::AlignRight);
+    m1->addWidget(datadir_, 0, 1);
+    m1->addWidget(documentdir_, 1, 1);
+    m1->addWidget(fontpath_, 2, 1);
+    m1->addWidget(requestdir_, 3, 1);
+    m1->addWidget(serverbin_, 4, 1);
+    m1->addWidget(serverfiles_, 5, 1);
+    m1->addWidget(tmpfiles_, 6, 1);
 }
 
 bool CupsdDirPage::loadConfig(CupsdConf *conf, QString&)
 {
-	conf_ = conf;
-	datadir_->setUrl(conf_->datadir_);
-	documentdir_->setUrl(conf_->documentdir_);
-	fontpath_->setUrls(conf_->fontpath_);
-	requestdir_->setUrl(conf_->requestdir_);
-	serverbin_->setUrl(conf_->serverbin_);
-	serverfiles_->setUrl(conf_->serverfiles_);
-	tmpfiles_->setUrl(conf_->tmpfiles_);
+    conf_ = conf;
+    datadir_->setUrl(conf_->datadir_);
+    documentdir_->setUrl(conf_->documentdir_);
+    fontpath_->setUrls(conf_->fontpath_);
+    requestdir_->setUrl(conf_->requestdir_);
+    serverbin_->setUrl(conf_->serverbin_);
+    serverfiles_->setUrl(conf_->serverfiles_);
+    tmpfiles_->setUrl(conf_->tmpfiles_);
 
-	return true;
+    return true;
 }
 
 bool CupsdDirPage::saveConfig(CupsdConf *conf, QString&)
 {
-	conf->datadir_ = datadir_->url();
-	conf->documentdir_ = documentdir_->url();
-	conf->fontpath_ = fontpath_->urls();
-	conf->requestdir_ = requestdir_->url();
-	conf->serverbin_ = serverbin_->url();
-	conf->serverfiles_ = serverfiles_->url();
-	conf->tmpfiles_ = tmpfiles_->url();
+    conf->datadir_ = datadir_->url();
+    conf->documentdir_ = documentdir_->url();
+    conf->fontpath_ = fontpath_->urls();
+    conf->requestdir_ = requestdir_->url();
+    conf->serverbin_ = serverbin_->url();
+    conf->serverfiles_ = serverfiles_->url();
+    conf->tmpfiles_ = tmpfiles_->url();
 
-	return true;
+    return true;
 }
 
 void CupsdDirPage::setInfos(CupsdConf *conf)
 {
-	datadir_->setWhatsThis(conf->comments_.toolTip("datadir"));
-	documentdir_->setWhatsThis(conf->comments_.toolTip("documentroot"));
-	fontpath_->setWhatsThis(conf->comments_.toolTip("fontpath"));
-	requestdir_->setWhatsThis(conf->comments_.toolTip("requestroot"));
-	serverbin_->setWhatsThis(conf->comments_.toolTip("serverbin"));
-	serverfiles_->setWhatsThis(conf->comments_.toolTip("serverroot"));
-	tmpfiles_->setWhatsThis(conf->comments_.toolTip("tempdir"));
+    datadir_->setWhatsThis(conf->comments_.toolTip("datadir"));
+    documentdir_->setWhatsThis(conf->comments_.toolTip("documentroot"));
+    fontpath_->setWhatsThis(conf->comments_.toolTip("fontpath"));
+    requestdir_->setWhatsThis(conf->comments_.toolTip("requestroot"));
+    serverbin_->setWhatsThis(conf->comments_.toolTip("serverbin"));
+    serverfiles_->setWhatsThis(conf->comments_.toolTip("serverroot"));
+    tmpfiles_->setWhatsThis(conf->comments_.toolTip("tempdir"));
 }

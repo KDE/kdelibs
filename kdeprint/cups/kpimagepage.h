@@ -31,33 +31,33 @@ class QRadioButton;
 
 class KPImagePage : public KPrintDialogPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KPImagePage(DrMain *driver = 0, QWidget *parent = 0);
-	~KPImagePage();
+    explicit KPImagePage(DrMain *driver = 0, QWidget *parent = 0);
+    ~KPImagePage();
 
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
 
 protected Q_SLOTS:
-	void slotSizeTypeChanged(int);
-	void slotPositionChanged();
-	void slotImageSettingsChanged();
-	void slotDefaultClicked();
+    void slotSizeTypeChanged(int);
+    void slotPositionChanged();
+    void slotImageSettingsChanged();
+    void slotDefaultClicked();
 
 private:
-	KIntNumInput	*m_brightness, *m_hue, *m_saturation, *m_gamma;
-	QComboBox		*m_sizetype;
-	KIntNumInput	*m_size;
-	QButtonGroup	*m_vertgrp, *m_horizgrp;
-	ImagePreview	*m_preview;
-	ImagePosition	*m_position;
-        QRadioButton    *m_bottom; 
-        QRadioButton    *m_top;
-        QRadioButton    *m_vcenter; 
-        QRadioButton    *m_left; 
-        QRadioButton    *m_right; 
-        QRadioButton    *m_hcenter; 
+    KIntNumInput *m_brightness, *m_hue, *m_saturation, *m_gamma;
+    QComboBox  *m_sizetype;
+    KIntNumInput *m_size;
+    QButtonGroup *m_vertgrp, *m_horizgrp;
+    ImagePreview *m_preview;
+    ImagePosition *m_position;
+    QRadioButton    *m_bottom;
+    QRadioButton    *m_top;
+    QRadioButton    *m_vcenter;
+    QRadioButton    *m_left;
+    QRadioButton    *m_right;
+    QRadioButton    *m_hcenter;
 
 };
 

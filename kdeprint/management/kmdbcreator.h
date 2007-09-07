@@ -30,29 +30,31 @@ class QProgressDialog;
 
 class KMDBCreator : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMDBCreator(QObject *parent = 0);
-	~KMDBCreator();
+    KMDBCreator(QObject *parent = 0);
+    ~KMDBCreator();
 
-	bool checkDriverDB(const QString& dirname, const QDateTime& d);
-	bool createDriverDB(const QString& dirname, const QString& filename, QWidget *parent = 0);
-	bool status() const	{ return m_status; }
+    bool checkDriverDB(const QString& dirname, const QDateTime& d);
+    bool createDriverDB(const QString& dirname, const QString& filename, QWidget *parent = 0);
+    bool status() const {
+        return m_status;
+    }
 
 protected Q_SLOTS:
-	void slotReceivedStdout();
-	void slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus);
-	void slotCancelled();
+    void slotReceivedStdout();
+    void slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus);
+    void slotCancelled();
 
 Q_SIGNALS:
-	void dbCreated();
+    void dbCreated();
 
 private:
-	KProcess	m_proc;
-	QString		m_dbfilename;
-	QProgressDialog	*m_dlg;
-	bool		m_status;
-	bool		m_firstflag;
+    KProcess m_proc;
+    QString  m_dbfilename;
+    QProgressDialog *m_dlg;
+    bool  m_status;
+    bool  m_firstflag;
 };
 
 #endif

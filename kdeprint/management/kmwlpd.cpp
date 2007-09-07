@@ -37,80 +37,75 @@ static bool checkLpdQueue(const char *host, const char *queue);
 //********************************************************************************************************
 
 KMWLpd::KMWLpd(QWidget *parent)
-    : KMWInfoBase(2,parent)
+        : KMWInfoBase(2, parent)
 {
-	m_ID = KMWizard::LPD;
-	m_title = i18n("LPD Queue Information");
-	m_nextpage = KMWizard::Driver;
+    m_ID = KMWizard::LPD;
+    m_title = i18n("LPD Queue Information");
+    m_nextpage = KMWizard::Driver;
 
-	setInfo(i18n("<p>Enter the information concerning the remote LPD queue; "
-		     "this wizard will check it before continuing.</p>"));
-	setLabel(0,i18n("Host:"));
-	setLabel(1,i18n("Queue:"));
+    setInfo(i18n("<p>Enter the information concerning the remote LPD queue; "
+                 "this wizard will check it before continuing.</p>"));
+    setLabel(0, i18n("Host:"));
+    setLabel(1, i18n("Queue:"));
 }
 
 bool KMWLpd::isValid(QString& msg)
 {
-	if (text(0).isEmpty() || text(1).isEmpty())
-	{
-		msg = i18n("Some information is missing.");
-		return false;
-	}
+    if (text(0).isEmpty() || text(1).isEmpty()) {
+        msg = i18n("Some information is missing.");
+        return false;
+    }
 
-	// check LPD queue
-	if (!checkLpdQueue(text(0).toLatin1(),text(1).toLatin1()))
-	{
-		if (KMessageBox::warningContinueCancel(this, i18n("Cannot find queue %1 on server %2; do you want to continue anyway?", text(1), text(0))) == KMessageBox::Cancel)
-			return false;
-	}
-	return true;
+    // check LPD queue
+    if (!checkLpdQueue(text(0).toLatin1(), text(1).toLatin1())) {
+        if (KMessageBox::warningContinueCancel(this, i18n("Cannot find queue %1 on server %2; do you want to continue anyway?", text(1), text(0))) == KMessageBox::Cancel)
+            return false;
+    }
+    return true;
 }
 
 void KMWLpd::updatePrinter(KMPrinter *p)
 {
-	QString	dev = QString::fromLatin1("lpd://%1/%2").arg(text(0)).arg(text(1));
-	p->setDevice(dev);
+    QString dev = QString::fromLatin1("lpd://%1/%2").arg(text(0)).arg(text(1));
+    p->setDevice(dev);
 }
 
 //*******************************************************************************************************
 
 bool checkLpdQueue(const char *host, const char *queue)
 {
-	QTcpSocket *sock = KSocketFactory::synchronousConnectToHost("printer", host, 515);
-	if (sock->isOpen() != 0)
-	{
-		delete sock;
-		return false;
-	}
+    QTcpSocket *sock = KSocketFactory::synchronousConnectToHost("printer", host, 515);
+    if (sock->isOpen() != 0) {
+        delete sock;
+        return false;
+    }
 
-	char	res[64] = {0};
-	qsnprintf(res,64,"%c%s\n",(char)4,queue);
-	if (sock->write(res, strlen(res)) != strlen(res) &&
-	    (sock->bytesToWrite() == 0 || sock->waitForBytesWritten()))
-	{
-		delete sock;
-		return false;
-	}
+    char res[64] = {0};
+    qsnprintf(res, 64, "%c%s\n", (char)4, queue);
+    if (sock->write(res, strlen(res)) != strlen(res) &&
+            (sock->bytesToWrite() == 0 || sock->waitForBytesWritten())) {
+        delete sock;
+        return false;
+    }
 
-	char	buf[1024] = {0};
-	int	n, tot(1);
-	while (sock->isOpen())
-	{
-		if (!sock->bytesAvailable())
-			sock->waitForReadyRead();
-		n = sock->read(res, 63);
-		if (n < 0)
-			break;
+    char buf[1024] = {0};
+    int n, tot(1);
+    while (sock->isOpen()) {
+        if (!sock->bytesAvailable())
+            sock->waitForReadyRead();
+        n = sock->read(res, 63);
+        if (n < 0)
+            break;
 
-		res[n] = 0;
-		tot += n;
-		if (tot >= 1024)
-			break;
-		else
-			strcat(buf, res);
-	}
-	delete sock;
-	if (strlen(buf) == 0 || strstr(buf, "unknown printer") != NULL)
-		return false;
-	return true;
+        res[n] = 0;
+        tot += n;
+        if (tot >= 1024)
+            break;
+        else
+            strcat(buf, res);
+    }
+    delete sock;
+    if (strlen(buf) == 0 || strstr(buf, "unknown printer") != NULL)
+        return false;
+    return true;
 }

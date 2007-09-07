@@ -24,14 +24,13 @@
 
 extern "C"
 {
-	void* init_kdeprint_lpd()
-	{
-		return new KLpdFactory;
-	}
+    void* init_kdeprint_lpd() {
+        return new KLpdFactory;
+    }
 };
 
 KLpdFactory::KLpdFactory(QObject *parent, const char *name)
-: KLibFactory(parent,name)
+        : KLibFactory(parent, name)
 {
 }
 
@@ -41,12 +40,12 @@ KLpdFactory::~KLpdFactory()
 
 QObject* KLpdFactory::createObject(QObject *parent, const char *name, const char *classname, const QStringList&)
 {
-	if (strcmp(classname,"KMManager") == 0)
-		return new KMLpdManager(parent,name);
-	else if (strcmp(classname,"KMUiManager") == 0)
-		return new KMLpdUiManager(parent,name);
-	else if (strcmp(classname,"KPrinterImpl") == 0)
-		return new KLpdPrinterImpl(parent,name);
-	else
-		return NULL;
+    if (strcmp(classname, "KMManager") == 0)
+        return new KMLpdManager(parent, name);
+    else if (strcmp(classname, "KMUiManager") == 0)
+        return new KMLpdUiManager(parent, name);
+    else if (strcmp(classname, "KPrinterImpl") == 0)
+        return new KLpdPrinterImpl(parent, name);
+    else
+        return NULL;
 }

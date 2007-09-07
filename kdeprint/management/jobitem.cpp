@@ -25,43 +25,43 @@
 #include <QtGui/QPixmap>
 
 JobItem::JobItem(QTreeWidget *parent, KMJob *job)
-: QTreeWidgetItem(parent)
+        : QTreeWidgetItem(parent)
 {
-	m_job = new KMJob;
-	init(job);
+    m_job = new KMJob;
+    init(job);
 }
 
 JobItem::~JobItem()
 {
-	delete m_job;
+    delete m_job;
 }
 
 void JobItem::init(KMJob *job)
 {
-	m_job->copy(job ? *job : KMJob());
+    m_job->copy(job ? *job : KMJob());
 
-	setIcon(0,SmallIcon(m_job->pixmap()));
-	setText(0,QString::number(m_job->id()));
-	//setText(6,m_job->printer());
-	setText(2,m_job->name());
-	setText(1,m_job->owner());
-	setText(3,m_job->stateString());
-	setText(4,QString::number(m_job->size()));
-	setText(5,QString::number(m_job->processedPages()));
-	m_ID = m_job->id();
-	m_uri = m_job->uri();
+    setIcon(0, SmallIcon(m_job->pixmap()));
+    setText(0, QString::number(m_job->id()));
+    //setText(6,m_job->printer());
+    setText(2, m_job->name());
+    setText(1, m_job->owner());
+    setText(3, m_job->stateString());
+    setText(4, QString::number(m_job->size()));
+    setText(5, QString::number(m_job->processedPages()));
+    m_ID = m_job->id();
+    m_uri = m_job->uri();
 
-	// additional attributes
-	for (int i=0; i<m_job->attributeCount(); i++)
-		setText(6+i, m_job->attribute(i));
+    // additional attributes
+    for (int i = 0; i < m_job->attributeCount(); i++)
+        setText(6 + i, m_job->attribute(i));
 }
 
 bool JobItem::operator<(const QTreeWidgetItem &other) const
 {
-  int column = 0;
+    int column = 0;
 
-  if (treeWidget())
-    column = treeWidget()->sortColumn();
+    if (treeWidget())
+        column = treeWidget()->sortColumn();
 
-  return (text(column).toInt() < other.text(column).toInt());
+    return (text(column).toInt() < other.text(column).toInt());
 }

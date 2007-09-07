@@ -27,17 +27,17 @@ class QLabel;
 class KMPropRlpr : public KMPropWidget
 {
 public:
-	KMPropRlpr(QWidget *parent = 0);
-	~KMPropRlpr();
+    KMPropRlpr(QWidget *parent = 0);
+    ~KMPropRlpr();
 
-	void setPrinter(KMPrinter*);
+    void setPrinter(KMPrinter*);
 
 protected:
-	void configureWizard(KMWizard*);
+    void configureWizard(KMWizard*);
 
 private:
-	QLabel	*m_host;
-	QLabel	*m_queue;
+    QLabel *m_host;
+    QLabel *m_queue;
 };
 
 #endif

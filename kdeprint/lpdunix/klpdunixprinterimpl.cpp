@@ -27,7 +27,7 @@
 #include <kmacroexpander.h>
 
 KLpdUnixPrinterImpl::KLpdUnixPrinterImpl(QObject *parent, const QStringList & /*args*/)
-: KPrinterImpl(parent)
+        : KPrinterImpl(parent)
 {
 }
 
@@ -37,48 +37,43 @@ KLpdUnixPrinterImpl::~KLpdUnixPrinterImpl()
 
 void KLpdUnixPrinterImpl::initLpPrint(QString& cmd, KPrinter *printer)
 {
-	cmd += QString::fromLatin1(" -d %1 -n%2").arg(quote(printer->printerName())).arg(printer->numCopies());
+    cmd += QString::fromLatin1(" -d %1 -n%2").arg(quote(printer->printerName())).arg(printer->numCopies());
 }
 
 void KLpdUnixPrinterImpl::initLprPrint(QString& cmd, KPrinter *printer)
 {
-	cmd += QString::fromLatin1(" -P %1 '-#%2'").arg(quote(printer->printerName())).arg(printer->numCopies());
+    cmd += QString::fromLatin1(" -P %1 '-#%2'").arg(quote(printer->printerName())).arg(printer->numCopies());
 }
 
 // look for executable, starting with "lpr"
 QString KLpdUnixPrinterImpl::executable()
 {
-	QString	exe = KStandardDirs::findExe("lpr");
-	if (exe.isEmpty())
-		exe = KStandardDirs::findExe("lp");
-	return exe;
+    QString exe = KStandardDirs::findExe("lpr");
+    if (exe.isEmpty())
+        exe = KStandardDirs::findExe("lp");
+    return exe;
 }
 
 bool KLpdUnixPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
-	QString exe = printer->option( "kde-printcommand" );
-	if ( exe.isEmpty() || exe == "<automatic>" )
-	{
-		exe = executable();
-		if (!exe.isEmpty())
-		{
-			cmd = exe;
-			if (exe.endsWith("lpr"))
-				initLprPrint(cmd,printer);
-			else
-				initLpPrint(cmd,printer);
-			return true;
-		}
-		else
-			printer->setErrorMessage(i18n("No valid print executable was found in your path. Check your installation."));
-		return false;
-	}
-	else
-	{
-		QHash<QString,QString> map;
-		map.insert( "printer", printer->printerName() );
-		map.insert( "copies", QString::number( printer->numCopies() ) );
-		cmd = KMacroExpander::expandMacrosShellQuote( exe, map );
-		return true;
-	}
+    QString exe = printer->option("kde-printcommand");
+    if (exe.isEmpty() || exe == "<automatic>") {
+        exe = executable();
+        if (!exe.isEmpty()) {
+            cmd = exe;
+            if (exe.endsWith("lpr"))
+                initLprPrint(cmd, printer);
+            else
+                initLpPrint(cmd, printer);
+            return true;
+        } else
+            printer->setErrorMessage(i18n("No valid print executable was found in your path. Check your installation."));
+        return false;
+    } else {
+        QHash<QString, QString> map;
+        map.insert("printer", printer->printerName());
+        map.insert("copies", QString::number(printer->numCopies()));
+        cmd = KMacroExpander::expandMacrosShellQuote(exe, map);
+        return true;
+    }
 }

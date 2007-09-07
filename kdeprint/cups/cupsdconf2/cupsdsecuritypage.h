@@ -33,28 +33,28 @@ struct CupsLocation;
 #endif
 class CupsdSecurityPage : public CupsdPage
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	CupsdSecurityPage(QWidget *parent = 0);
-	~CupsdSecurityPage();
+    CupsdSecurityPage(QWidget *parent = 0);
+    ~CupsdSecurityPage();
 
-	bool loadConfig(CupsdConf*, QString&);
-	bool saveConfig(CupsdConf*, QString&);
-	void setInfos(CupsdConf*);
+    bool loadConfig(CupsdConf*, QString&);
+    bool saveConfig(CupsdConf*, QString&);
+    void setInfos(CupsdConf*);
 
 protected Q_SLOTS:
-	void slotAdd();
-	void slotEdit(int);
-	void slotDefaultList();
-	void slotDeleted(int);
+    void slotAdd();
+    void slotEdit(int);
+    void slotDefaultList();
+    void slotDeleted(int);
 
 private:
-	QLineEdit	*remoteroot_, *systemgroup_;
-	QDirLineEdit	*encryptcert_, *encryptkey_;
-	EditList	*locations_;
+    QLineEdit *remoteroot_, *systemgroup_;
+    QDirLineEdit *encryptcert_, *encryptkey_;
+    EditList *locations_;
 
-	QList<CupsLocation*>	locs_;
+    QList<CupsLocation*> locs_;
 };
 
 #endif

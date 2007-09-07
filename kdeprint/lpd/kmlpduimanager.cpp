@@ -30,7 +30,7 @@
 #include <klocale.h>
 
 KMLpdUiManager::KMLpdUiManager(QObject *parent, const char *name)
-: KMUiManager(parent,name)
+        : KMUiManager(parent, name)
 {
 }
 
@@ -40,21 +40,21 @@ KMLpdUiManager::~KMLpdUiManager()
 
 void KMLpdUiManager::setupWizard(KMWizard *wizard)
 {
-	KMWBackend	*backend = wizard->backendPage();
-	backend->addBackend(KMWizard::Local,i18n("Local printer (parallel, serial, USB)"),true);
-	backend->addBackend(KMWizard::LPD,i18n("Remote LPD queue"),true);
-	backend->addBackend(KMWizard::SMB,i18n("SMB shared printer (Windows)"),false,KMWizard::Password);
-	backend->addBackend(KMWizard::TCP,i18n("Network printer (TCP)"),false);
-	backend->addBackend(KMWizard::File,i18n("File printer (print to file)"),true);
+    KMWBackend *backend = wizard->backendPage();
+    backend->addBackend(KMWizard::Local, i18n("Local printer (parallel, serial, USB)"), true);
+    backend->addBackend(KMWizard::LPD, i18n("Remote LPD queue"), true);
+    backend->addBackend(KMWizard::SMB, i18n("SMB shared printer (Windows)"), false, KMWizard::Password);
+    backend->addBackend(KMWizard::TCP, i18n("Network printer (TCP)"), false);
+    backend->addBackend(KMWizard::File, i18n("File printer (print to file)"), true);
 
-	KMManager	*mgr = KMFactory::self()->manager();
-	if (QFile::exists(mgr->driverDirectory()+"/smbprint")) backend->enableBackend(KMWizard::SMB,true);
-	if (QFile::exists(mgr->driverDirectory()+"/directprint")) backend->enableBackend(KMWizard::TCP,true);
-	if (QFile::exists(mgr->driverDirectory()+"/ncpprint")) backend->enableBackend(KMWizard::Custom+1,true);
+    KMManager *mgr = KMFactory::self()->manager();
+    if (QFile::exists(mgr->driverDirectory() + "/smbprint")) backend->enableBackend(KMWizard::SMB, true);
+    if (QFile::exists(mgr->driverDirectory() + "/directprint")) backend->enableBackend(KMWizard::TCP, true);
+    if (QFile::exists(mgr->driverDirectory() + "/ncpprint")) backend->enableBackend(KMWizard::Custom + 1, true);
 }
 
 void KMLpdUiManager::setupPropertyPages(KMPropertyPage *p)
 {
-	p->addPropPage(new KMPropBackend(p, "Backend"));
-	p->addPropPage(new KMPropDriver(p, "Driver"));
+    p->addPropPage(new KMPropBackend(p, "Backend"));
+    p->addPropPage(new KMPropDriver(p, "Driver"));
 }

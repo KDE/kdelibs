@@ -25,15 +25,15 @@
 class KLpdUnixPrinterImpl : public KPrinterImpl
 {
 public:
-	KLpdUnixPrinterImpl(QObject *parent, const QStringList & /*args*/);
-	~KLpdUnixPrinterImpl();
+    KLpdUnixPrinterImpl(QObject *parent, const QStringList & /*args*/);
+    ~KLpdUnixPrinterImpl();
 
-	bool setupCommand(QString&, KPrinter*);
+    bool setupCommand(QString&, KPrinter*);
 
 protected:
-	void initLpPrint(QString&, KPrinter*);
-	void initLprPrint(QString&, KPrinter*);
-	QString executable();
+    void initLpPrint(QString&, KPrinter*);
+    void initLprPrint(QString&, KPrinter*);
+    QString executable();
 };
 
 #endif

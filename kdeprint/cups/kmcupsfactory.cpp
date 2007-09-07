@@ -25,6 +25,6 @@
 #include <kglobal.h>
 #include <kgenericfactory.h>
 
-typedef K_TYPELIST_4( KMCupsManager, KMCupsJobManager, KMCupsUiManager, KCupsPrinterImpl ) Products;
-K_EXPORT_COMPONENT_FACTORY( kdeprint_cups, KGenericFactory< Products >( "ppdtranslations", "ppdtranslations4" ) )
+typedef K_TYPELIST_4(KMCupsManager, KMCupsJobManager, KMCupsUiManager, KCupsPrinterImpl) Products;
+K_EXPORT_COMPONENT_FACTORY(kdeprint_cups, KGenericFactory< Products >("ppdtranslations", "ppdtranslations4"))
 

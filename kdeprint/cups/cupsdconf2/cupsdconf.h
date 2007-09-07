@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef	CUPSDCONF_H
-#define	CUPSDCONF_H
+#ifndef CUPSDCONF_H
+#define CUPSDCONF_H
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -47,144 +47,141 @@ enum ResourceType { RESOURCE_GLOBAL, RESOURCE_PRINTER, RESOURCE_CLASS, RESOURCE_
 #ifdef __GNUC__
 #warning rename struct or remove from global namespace
 #endif
-struct CupsdConf
-{
+struct CupsdConf {
 // functions member
-	CupsdConf();
-	~CupsdConf();
+    CupsdConf();
+    ~CupsdConf();
 
-	bool loadFromFile(const QString& filename);
-	bool saveToFile(const QString& filename);
-	bool parseOption(const QString& line);
-	bool parseLocation(CupsLocation *location, QTextStream& file);
+    bool loadFromFile(const QString& filename);
+    bool saveToFile(const QString& filename);
+    bool parseOption(const QString& line);
+    bool parseLocation(CupsLocation *location, QTextStream& file);
 
-	bool loadAvailableResources();
+    bool loadAvailableResources();
 
-	static CupsdConf* get();
-	static void release();
+    static CupsdConf* get();
+    static void release();
 
 // data members
-	static CupsdConf	*unique_;
+    static CupsdConf *unique_;
 
-	// Server
-	QString	servername_;
-	QString	serveradmin_;
-	int classification_;
-	QString otherclassname_;
-	bool classoverride_;
-	QString charset_;
-	QString language_;
-	QString printcap_;
-	int printcapformat_;
+    // Server
+    QString servername_;
+    QString serveradmin_;
+    int classification_;
+    QString otherclassname_;
+    bool classoverride_;
+    QString charset_;
+    QString language_;
+    QString printcap_;
+    int printcapformat_;
 
-	// Security
-	QString remoteroot_;
-	QString systemgroup_;
-	QString encryptcert_;
-	QString encryptkey_;
-	QList<CupsLocation*> locations_;
-	QList<CupsResource*> resources_;
+    // Security
+    QString remoteroot_;
+    QString systemgroup_;
+    QString encryptcert_;
+    QString encryptkey_;
+    QList<CupsLocation*> locations_;
+    QList<CupsResource*> resources_;
 
-	// Network
-	int hostnamelookup_;
-	bool keepalive_;
-	int keepalivetimeout_;
-	int maxclients_;
-	QString maxrequestsize_;
-	int clienttimeout_;
-	QStringList listenaddresses_;
+    // Network
+    int hostnamelookup_;
+    bool keepalive_;
+    int keepalivetimeout_;
+    int maxclients_;
+    QString maxrequestsize_;
+    int clienttimeout_;
+    QStringList listenaddresses_;
 
-	// Log
-	QString accesslog_;
-	QString errorlog_;
-	QString pagelog_;
-	QString maxlogsize_;
-	int loglevel_;
+    // Log
+    QString accesslog_;
+    QString errorlog_;
+    QString pagelog_;
+    QString maxlogsize_;
+    int loglevel_;
 
-	// Jobs
-	bool keepjobhistory_;
-	bool keepjobfiles_;
-	bool autopurgejobs_;
-	int maxjobs_;
-	int maxjobsperprinter_;
-	int maxjobsperuser_;
+    // Jobs
+    bool keepjobhistory_;
+    bool keepjobfiles_;
+    bool autopurgejobs_;
+    int maxjobs_;
+    int maxjobsperprinter_;
+    int maxjobsperuser_;
 
-	// Filter
-	QString user_;
-	QString group_;
-	QString ripcache_;
-	int filterlimit_;
+    // Filter
+    QString user_;
+    QString group_;
+    QString ripcache_;
+    int filterlimit_;
 
-	// Directories
-	QString datadir_;
-	QString documentdir_;
-	QStringList fontpath_;
-	QString requestdir_;
-	QString serverbin_;
-	QString serverfiles_;
-	QString tmpfiles_;
+    // Directories
+    QString datadir_;
+    QString documentdir_;
+    QStringList fontpath_;
+    QString requestdir_;
+    QString serverbin_;
+    QString serverfiles_;
+    QString tmpfiles_;
 
-	// Browsing
-	bool browsing_;
-	QStringList browseprotocols_;
-	int browseport_;
-	int browseinterval_;
-	int browsetimeout_;
-	QStringList browseaddresses_;
-	int browseorder_;
-	bool useimplicitclasses_;
-	bool hideimplicitmembers_;
-	bool useshortnames_;
-	bool useanyclasses_;
-	
-	// cupsd.conf file comments
-	CupsdComment	comments_;
-	
-	// unrecognized options
-	QList< QPair<QString,QString> >	unknown_;
+    // Browsing
+    bool browsing_;
+    QStringList browseprotocols_;
+    int browseport_;
+    int browseinterval_;
+    int browsetimeout_;
+    QStringList browseaddresses_;
+    int browseorder_;
+    bool useimplicitclasses_;
+    bool hideimplicitmembers_;
+    bool useshortnames_;
+    bool useanyclasses_;
+
+    // cupsd.conf file comments
+    CupsdComment comments_;
+
+    // unrecognized options
+    QList< QPair<QString, QString> > unknown_;
 };
 
 #ifdef __GNUC__
 #warning rename struct or remove from global namespace
 #endif
-struct CupsLocation
-{
-	CupsLocation();
-	CupsLocation(const CupsLocation& loc);
+struct CupsLocation {
+    CupsLocation();
+    CupsLocation(const CupsLocation& loc);
 
-	bool parseOption(const QString& line);
-	bool parseResource(const QString& line);
+    bool parseOption(const QString& line);
+    bool parseResource(const QString& line);
 
-	CupsResource	*resource_;
-	QString	resourcename_;
-	int	authtype_;
-	int	authclass_;
-	QString	authname_;
-	int	encryption_;
-	int	satisfy_;
-	int	order_;
-	QStringList	addresses_;
+    CupsResource *resource_;
+    QString resourcename_;
+    int authtype_;
+    int authclass_;
+    QString authname_;
+    int encryption_;
+    int satisfy_;
+    int order_;
+    QStringList addresses_;
 };
 
 #ifdef __GNUC__
 #warning rename struct or remove from global namespace
 #endif
-struct CupsResource
-{
-	CupsResource();
-	CupsResource(const QString& path);
+struct CupsResource {
+    CupsResource();
+    CupsResource(const QString& path);
 
-	void setPath(const QString& path);
+    void setPath(const QString& path);
 
-	int	type_;
-	QString	path_;
-	QString	text_;
+    int type_;
+    QString path_;
+    QString text_;
 
-	static QString textToPath(const QString& text);
-	static QString pathToText(const QString& path);
-	static int typeFromPath(const QString& path);
-	static int typeFromText(const QString& text);
-	static QString typeToIconName(int type);
+    static QString textToPath(const QString& text);
+    static QString pathToText(const QString& path);
+    static int typeFromPath(const QString& path);
+    static int typeFromText(const QString& text);
+    static QString typeToIconName(int type);
 };
 
 #endif

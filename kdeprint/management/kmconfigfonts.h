@@ -29,26 +29,26 @@ class QCheckBox;
 
 class KMConfigFonts : public KMConfigPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMConfigFonts(QWidget *parent = 0);
+    KMConfigFonts(QWidget *parent = 0);
 
-	void loadConfig(KConfig*);
-	void saveConfig(KConfig*);
+    void loadConfig(KConfig*);
+    void saveConfig(KConfig*);
 
 protected Q_SLOTS:
-	void slotUp();
-	void slotDown();
-	void slotRemove();
-	void slotAdd();
-	void slotSelected();
-	void slotTextChanged(const QString&);
+    void slotUp();
+    void slotDown();
+    void slotRemove();
+    void slotAdd();
+    void slotSelected();
+    void slotTextChanged(const QString&);
 
 private:
-	QCheckBox	*m_embedfonts;
-	K3ListView	*m_fontpath;
-	KUrlRequester	*m_addpath;
-	QPushButton	*m_up, *m_down, *m_add, *m_remove;
+    QCheckBox *m_embedfonts;
+    K3ListView *m_fontpath;
+    KUrlRequester *m_addpath;
+    QPushButton *m_up, *m_down, *m_add, *m_remove;
 };
 
 #endif

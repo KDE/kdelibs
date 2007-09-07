@@ -21,12 +21,12 @@
 #include "kmwizard.h"
 
 KMWizardPage::KMWizardPage(QWidget *parent)
-    : QWidget(parent)
+        : QWidget(parent)
 {
-	m_ID = KMWizard::Error;
-	m_title = "KMWizardPage";
-	m_nextpage = KMWizard::Error;
-	m_needsinitonback = false;
+    m_ID = KMWizard::Error;
+    m_title = "KMWizardPage";
+    m_nextpage = KMWizard::Error;
+    m_needsinitonback = false;
 }
 
 KMWizardPage::~KMWizardPage()
@@ -35,7 +35,7 @@ KMWizardPage::~KMWizardPage()
 
 bool KMWizardPage::isValid(QString&)
 {
-	return true;
+    return true;
 }
 
 void KMWizardPage::initPrinter(KMPrinter*)

@@ -28,32 +28,32 @@ class KMPrinter;
 
 class KMListView : public Q3ListView
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KMListView(QWidget *parent = 0, const char *name = 0);
-	~KMListView();
+    explicit KMListView(QWidget *parent = 0, const char *name = 0);
+    ~KMListView();
 
-	void setPrinterList(QList<KMPrinter*> *list);
-	void setPrinter(const QString&);
-	void setPrinter(KMPrinter*);
+    void setPrinterList(QList<KMPrinter*> *list);
+    void setPrinter(const QString&);
+    void setPrinter(KMPrinter*);
 
 Q_SIGNALS:
-	void rightButtonClicked(const QString&, const QPoint&);
-	void printerSelected(const QString&);
+    void rightButtonClicked(const QString&, const QPoint&);
+    void printerSelected(const QString&);
 
 protected Q_SLOTS:
-	void slotRightButtonClicked(Q3ListViewItem*, const QPoint&, int);
-	void slotSelectionChanged();
-	void slotOnItem(Q3ListViewItem*);
-	void slotOnViewport();
+    void slotRightButtonClicked(Q3ListViewItem*, const QPoint&, int);
+    void slotSelectionChanged();
+    void slotOnItem(Q3ListViewItem*);
+    void slotOnViewport();
 
 protected:
-	KMListViewItem* findItem(KMPrinter*);
-	KMListViewItem* findItem(const QString&);
+    KMListViewItem* findItem(KMPrinter*);
+    KMListViewItem* findItem(const QString&);
 
 private:
-	QList<KMListViewItem*>	m_items;
-	KMListViewItem		*m_root, *m_classes, *m_printers, *m_specials;
+    QList<KMListViewItem*> m_items;
+    KMListViewItem  *m_root, *m_classes, *m_printers, *m_specials;
 };
 
 #endif

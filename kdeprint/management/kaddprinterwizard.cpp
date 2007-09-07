@@ -26,27 +26,26 @@
 
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
-	KCmdLineOptions options;
-	options.add("kdeconfig", ki18n("Configure KDE Print"));
-	options.add("serverconfig", ki18n("Configure print server"));
+    KCmdLineOptions options;
+    options.add("kdeconfig", ki18n("Configure KDE Print"));
+    options.add("serverconfig", ki18n("Configure print server"));
 
-	KCmdLineArgs::init(argc, argv, "kaddprinterwizard", "kdelibs4", ki18n("KAddPrinterWizard"),
-			"0.1", ki18n("Start the add printer wizard"));
-	KCmdLineArgs::addCmdLineOptions(options);
-	
-	KApplication app;
-	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();
-	bool	doConfig = args->isSet("kdeconfig");
-	bool	doSrvConfig = args->isSet("serverconfig");
+    KCmdLineArgs::init(argc, argv, "kaddprinterwizard", "kdelibs4", ki18n("KAddPrinterWizard"),
+                       "0.1", ki18n("Start the add printer wizard"));
+    KCmdLineArgs::addCmdLineOptions(options);
 
-	if (doConfig)
-		KMManager::self()->invokeOptionsDialog();
-	else if (doSrvConfig)
-		KMManager::self()->configureServer();
-	else if (KMManager::self()->addPrinterWizard() == -1)
-	{
-		KMessageBox::error(0, KMManager::self()->errorMsg().prepend("<qt>").append("</qt>"));
-	}
-	
-	return 0;
+    KApplication app;
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    bool doConfig = args->isSet("kdeconfig");
+    bool doSrvConfig = args->isSet("serverconfig");
+
+    if (doConfig)
+        KMManager::self()->invokeOptionsDialog();
+    else if (doSrvConfig)
+        KMManager::self()->configureServer();
+    else if (KMManager::self()->addPrinterWizard() == -1) {
+        KMessageBox::error(0, KMManager::self()->errorMsg().prepend("<qt>").append("</qt>"));
+    }
+
+    return 0;
 }

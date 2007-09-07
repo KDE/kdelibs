@@ -30,26 +30,26 @@ class QPushButton;
 #endif
 class QDirMultiLineEdit : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	QDirMultiLineEdit(QWidget *parent = 0);
-	~QDirMultiLineEdit();
+    QDirMultiLineEdit(QWidget *parent = 0);
+    ~QDirMultiLineEdit();
 
-	void setUrls(const QStringList&);
-	QStringList urls();
+    void setUrls(const QStringList&);
+    QStringList urls();
 
 protected:
-	void addUrl(const QString&);
+    void addUrl(const QString&);
 
 private Q_SLOTS:
-	void slotAddClicked();
-	void slotRemoveClicked();
-	void slotSelected();
+    void slotAddClicked();
+    void slotRemoveClicked();
+    void slotSelected();
 
 private:
-	QListWidget	*m_view;
-	QPushButton	*m_add, *m_remove;
+    QListWidget *m_view;
+    QPushButton *m_add, *m_remove;
 };
 
 #endif

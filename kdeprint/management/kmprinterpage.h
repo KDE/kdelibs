@@ -35,8 +35,8 @@ class KMPrinter;
 class KMPrinterPage
 {
 public:
-	virtual ~KMPrinterPage(){}
-	virtual void setPrinter(KMPrinter*) = 0;
+    virtual ~KMPrinterPage() {}
+    virtual void setPrinter(KMPrinter*) = 0;
 };
 
 #endif

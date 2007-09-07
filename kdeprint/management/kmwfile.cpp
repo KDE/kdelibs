@@ -29,53 +29,51 @@
 #include <kfiledialog.h>
 
 KMWFile::KMWFile(QWidget *parent)
-    : KMWizardPage(parent)
+        : KMWizardPage(parent)
 {
-	m_ID = KMWizard::File;
-	m_title = i18n("File Selection");
-	m_nextpage = KMWizard::Driver;
+    m_ID = KMWizard::File;
+    m_title = i18n("File Selection");
+    m_nextpage = KMWizard::Driver;
 
-	m_url = new KUrlRequester(this);
-	m_url->setMode(KFile::File|KFile::LocalOnly);
-	QLabel	*l1 = new QLabel(this);
-	l1->setWordWrap(true);
-	l1->setText(i18n("<p>The printing will be redirected to a file. Enter here the path "
-			 "of the file you want to use for redirection. Use an absolute path or "
-			 "the browse button for graphical selection.</p>"));
-	QLabel	*l2 = new QLabel(i18n("Print to file:"), this);
+    m_url = new KUrlRequester(this);
+    m_url->setMode(KFile::File | KFile::LocalOnly);
+    QLabel *l1 = new QLabel(this);
+    l1->setWordWrap(true);
+    l1->setText(i18n("<p>The printing will be redirected to a file. Enter here the path "
+                     "of the file you want to use for redirection. Use an absolute path or "
+                     "the browse button for graphical selection.</p>"));
+    QLabel *l2 = new QLabel(i18n("Print to file:"), this);
 
-	QVBoxLayout	*lay1 = new QVBoxLayout(this);
-	lay1->setMargin(0);
-	lay1->setSpacing(30);
-	QVBoxLayout	*lay2 = new QVBoxLayout();
-  lay2->setMargin(0);
-  lay2->setSpacing(5);
-	lay1->addWidget(l1);
-	lay1->addLayout(lay2);
-	lay1->addStretch(1);
-	lay2->addWidget(l2);
-	lay2->addWidget(m_url);
+    QVBoxLayout *lay1 = new QVBoxLayout(this);
+    lay1->setMargin(0);
+    lay1->setSpacing(30);
+    QVBoxLayout *lay2 = new QVBoxLayout();
+    lay2->setMargin(0);
+    lay2->setSpacing(5);
+    lay1->addWidget(l1);
+    lay1->addLayout(lay2);
+    lay1->addStretch(1);
+    lay2->addWidget(l2);
+    lay2->addWidget(m_url);
 }
 
 bool KMWFile::isValid(QString& msg)
 {
-	QFileInfo	fi(m_url->url().path());
-	if (fi.fileName().isEmpty())
-	{
-		msg = i18n("Empty file name.");
-		return false;
-	}
+    QFileInfo fi(m_url->url().path());
+    if (fi.fileName().isEmpty()) {
+        msg = i18n("Empty file name.");
+        return false;
+    }
 
-	if (!fi.dir().exists())
-	{
-		msg = i18n("Directory does not exist.");
-		return false;
-	}
+    if (!fi.dir().exists()) {
+        msg = i18n("Directory does not exist.");
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 void KMWFile::updatePrinter(KMPrinter *p)
 {
-	p->setDevice( m_url->url().url() );
+    p->setDevice(m_url->url().url());
 }

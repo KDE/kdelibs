@@ -25,27 +25,27 @@
 #include <klocale.h>
 
 KMWInfoPage::KMWInfoPage(QWidget *parent)
-    : KMWizardPage(parent)
+        : KMWizardPage(parent)
 {
-	m_ID = KMWizard::Start;
-	m_title = i18n("Introduction");
-	m_nextpage = KMWizard::Backend;
+    m_ID = KMWizard::Start;
+    m_title = i18n("Introduction");
+    m_nextpage = KMWizard::Backend;
 
-	QLabel	*label = new QLabel(this);
-	label->setText(i18n("<p>Welcome,</p><br />"
-		"<p>This wizard will help to install a new printer on your computer. "
-		"It will guide you through the various steps of the process of installing "
-		"and configuring a printer for your printing system. At each step, you "
-		"can always go back using the <b>Back</b> button.</p><br />"
-		"<p>We hope you'll enjoy this tool!</p><br />"
-		"<p align=right><a href=\"http://printing.kde.org\"><i>"
-		"The KDE printing team</i></a>.</p>"));
-	label->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-	label->setOpenExternalLinks(true);
+    QLabel *label = new QLabel(this);
+    label->setText(i18n("<p>Welcome,</p><br />"
+                        "<p>This wizard will help to install a new printer on your computer. "
+                        "It will guide you through the various steps of the process of installing "
+                        "and configuring a printer for your printing system. At each step, you "
+                        "can always go back using the <b>Back</b> button.</p><br />"
+                        "<p>We hope you'll enjoy this tool!</p><br />"
+                        "<p align=right><a href=\"http://printing.kde.org\"><i>"
+                        "The KDE printing team</i></a>.</p>"));
+    label->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+    label->setOpenExternalLinks(true);
     label->setWordWrap(true);
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this);
-	main_->setMargin(0);
-	main_->setSpacing(0);
-	main_->addWidget(label);
+    QVBoxLayout *main_ = new QVBoxLayout(this);
+    main_->setMargin(0);
+    main_->setSpacing(0);
+    main_->addWidget(label);
 }

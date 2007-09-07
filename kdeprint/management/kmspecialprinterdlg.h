@@ -31,27 +31,27 @@ class KXmlCommandSelector;
 
 class KMSpecialPrinterDlg : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KMSpecialPrinterDlg(QWidget *parent = 0, const char *name = 0);
+    explicit KMSpecialPrinterDlg(QWidget *parent = 0, const char *name = 0);
 
-	void setPrinter(KMPrinter*);
-	KMPrinter* printer();
+    void setPrinter(KMPrinter*);
+    KMPrinter* printer();
 
 protected:
-	bool checkSettings();
+    bool checkSettings();
 
 protected Q_SLOTS:
-	void slotOk();
-	void slotTextChanged(const QString &);
+    void slotOk();
+    void slotTextChanged(const QString &);
 
 private:
-	QLineEdit	*m_name, *m_description, *m_location, *m_extension;
-	QComboBox	*m_mimetype;
-	QCheckBox	*m_usefile;
-	QStringList	m_mimelist;
-	KIconButton	*m_icon;
-	KXmlCommandSelector	*m_command;
+    QLineEdit *m_name, *m_description, *m_location, *m_extension;
+    QComboBox *m_mimetype;
+    QCheckBox *m_usefile;
+    QStringList m_mimelist;
+    KIconButton *m_icon;
+    KXmlCommandSelector *m_command;
 };
 
 #endif

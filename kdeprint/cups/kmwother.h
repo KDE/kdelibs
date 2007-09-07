@@ -28,19 +28,19 @@ class Q3ListViewItem;
 
 class KMWOther : public KMWizardPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMWOther(QWidget *parent = 0);
+    KMWOther(QWidget *parent = 0);
 
-	void initPrinter(KMPrinter*);
-	void updatePrinter(KMPrinter*);
+    void initPrinter(KMPrinter*);
+    void updatePrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotPressed( Q3ListViewItem* );
+    void slotPressed(Q3ListViewItem*);
 
 private:
-	QLineEdit	*m_uri;
-	K3ListView *m_uriview;
+    QLineEdit *m_uri;
+    K3ListView *m_uriview;
 };
 
 #endif

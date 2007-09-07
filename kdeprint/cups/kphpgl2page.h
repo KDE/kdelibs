@@ -28,15 +28,15 @@ class QCheckBox;
 class KPHpgl2Page : public KPrintDialogPage
 {
 public:
-	KPHpgl2Page(QWidget *parent = 0);
-	~KPHpgl2Page();
+    KPHpgl2Page(QWidget *parent = 0);
+    ~KPHpgl2Page();
 
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
 
 private:
-	KIntNumInput	*m_penwidth;
-	QCheckBox		*m_blackplot, *m_fitplot;
+    KIntNumInput *m_penwidth;
+    QCheckBox  *m_blackplot, *m_fitplot;
 };
 
 #endif

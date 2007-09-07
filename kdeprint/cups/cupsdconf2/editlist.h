@@ -31,33 +31,33 @@ class QPushButton;
 #endif
 class EditList : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	EditList(QWidget *parent = 0);
+    EditList(QWidget *parent = 0);
 
-	QString text(int);
-	void setText(int, const QString&);
-	void insertItem(const QString&);
-	void insertItem(const QPixmap&, const QString&);
-	void insertItems(const QStringList&);
-	QStringList items();
-	void clear();
+    QString text(int);
+    void setText(int, const QString&);
+    void insertItem(const QString&);
+    void insertItem(const QPixmap&, const QString&);
+    void insertItems(const QStringList&);
+    QStringList items();
+    void clear();
 
 Q_SIGNALS:
-	void add();
-	void edit(int);
-	void defaultList();
-	void deleted(int);
+    void add();
+    void edit(int);
+    void defaultList();
+    void deleted(int);
 
 protected Q_SLOTS:
-	void slotDelete();
-	void slotEdit();
-	void slotSelected(int);
+    void slotDelete();
+    void slotEdit();
+    void slotSelected(int);
 
 private:
-	KListWidget	*list_;
-	QPushButton	*addbtn_, *editbtn_, *delbtn_, *defbtn_;
+    KListWidget *list_;
+    QPushButton *addbtn_, *editbtn_, *delbtn_, *defbtn_;
 };
 
 #endif

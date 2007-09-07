@@ -31,22 +31,22 @@ struct CupsdConf;
 #endif
 class BrowseDialog : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit BrowseDialog(QWidget *parent = 0, const char *name = 0);
+    explicit BrowseDialog(QWidget *parent = 0, const char *name = 0);
 
-	QString addressString();
-	void setInfos(CupsdConf*);
-	static QString newAddress(QWidget *parent = 0, CupsdConf *conf = 0);
-	static QString editAddress(const QString& s, QWidget *parent = 0, CupsdConf *conf = 0);
+    QString addressString();
+    void setInfos(CupsdConf*);
+    static QString newAddress(QWidget *parent = 0, CupsdConf *conf = 0);
+    static QString editAddress(const QString& s, QWidget *parent = 0, CupsdConf *conf = 0);
 
 protected Q_SLOTS:
-	void slotTypeChanged(int);
+    void slotTypeChanged(int);
 
 private:
-	QComboBox	*type_;
-	QLineEdit	*from_, *to_;
+    QComboBox *type_;
+    QLineEdit *from_, *to_;
 };
 
 #endif

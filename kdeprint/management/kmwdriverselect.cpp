@@ -31,92 +31,85 @@
 #include <kmessagebox.h>
 
 KMWDriverSelect::KMWDriverSelect(QWidget *parent)
-    : KMWizardPage(parent)
+        : KMWizardPage(parent)
 {
-	m_ID = KMWizard::DriverSelect;
-	m_title = i18n("Driver Selection");
-	m_nextpage = KMWizard::DriverTest;
-	m_entries = NULL;
+    m_ID = KMWizard::DriverSelect;
+    m_title = i18n("Driver Selection");
+    m_nextpage = KMWizard::DriverTest;
+    m_entries = NULL;
 
-	m_list = new KListWidget(this);
-	QLabel	*l1 = new QLabel(this);
-	l1->setWordWrap(true);
-	l1->setText(i18n("<p>Several drivers have been detected for this model. Select the driver "
-			 "you want to use. You will have the opportunity to test it as well as to "
-			 "change it if necessary.</p>"));
-	m_drivercomment = new KPushButton(i18n("Driver Information"), this);
-	connect(m_drivercomment, SIGNAL(clicked()), SLOT(slotDriverComment()));
+    m_list = new KListWidget(this);
+    QLabel *l1 = new QLabel(this);
+    l1->setWordWrap(true);
+    l1->setText(i18n("<p>Several drivers have been detected for this model. Select the driver "
+                     "you want to use. You will have the opportunity to test it as well as to "
+                     "change it if necessary.</p>"));
+    m_drivercomment = new KPushButton(i18n("Driver Information"), this);
+    connect(m_drivercomment, SIGNAL(clicked()), SLOT(slotDriverComment()));
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this);
-	main_->setMargin(0);
-	main_->setSpacing(10);
-	main_->addWidget(l1,0);
-	main_->addWidget(m_list,1);
-	QHBoxLayout	*lay0 = new QHBoxLayout();
-  lay0->setMargin(0);
-  lay0->setSpacing(0);
-	main_->addLayout(lay0,0);
-	lay0->addStretch(1);
-	lay0->addWidget(m_drivercomment);
+    QVBoxLayout *main_ = new QVBoxLayout(this);
+    main_->setMargin(0);
+    main_->setSpacing(10);
+    main_->addWidget(l1, 0);
+    main_->addWidget(m_list, 1);
+    QHBoxLayout *lay0 = new QHBoxLayout();
+    lay0->setMargin(0);
+    lay0->setSpacing(0);
+    main_->addLayout(lay0, 0);
+    lay0->addStretch(1);
+    lay0->addWidget(m_drivercomment);
 }
 
 bool KMWDriverSelect::isValid(QString& msg)
 {
-	if (m_list->currentRow() == -1)
-	{
-		msg = i18n("You must select a driver.");
-		return false;
-	}
-	return true;
+    if (m_list->currentRow() == -1) {
+        msg = i18n("You must select a driver.");
+        return false;
+    }
+    return true;
 }
 
 void KMWDriverSelect::initPrinter(KMPrinter *p)
 {
-	m_entries = KMDriverDB::self()->findEntry(p->manufacturer(),p->model());
-	m_list->clear();
-	if (m_entries)
-	{
-		KMDBEntryListIterator	it(*m_entries);
-		int	recomm(0);
-		while (it.hasNext())
-		{
-      KMDBEntry *entry(it.next());
-			QString	s(entry->description);
-			if (entry->recommended)
-			{
-				recomm = m_list->count();
-				s.append(i18n(" [recommended]"));
-			}
-			m_list->addItem(s);
-		}
-		if (m_entries->count() > 0)
-			m_list->item(recomm)->setSelected(true);
-	}
+    m_entries = KMDriverDB::self()->findEntry(p->manufacturer(), p->model());
+    m_list->clear();
+    if (m_entries) {
+        KMDBEntryListIterator it(*m_entries);
+        int recomm(0);
+        while (it.hasNext()) {
+            KMDBEntry *entry(it.next());
+            QString s(entry->description);
+            if (entry->recommended) {
+                recomm = m_list->count();
+                s.append(i18n(" [recommended]"));
+            }
+            m_list->addItem(s);
+        }
+        if (m_entries->count() > 0)
+            m_list->item(recomm)->setSelected(true);
+    }
 }
 
 void KMWDriverSelect::updatePrinter(KMPrinter *p)
 {
-	int	index = m_list->currentRow();
-	if (m_entries && index >= 0 && index < (int)(m_entries->count()))
-	{
-		KMDBEntry	*entry = m_entries->at(index);
-		p->setDbEntry(entry);
-		p->setDriverInfo(entry->description);
-	}
-	else
-	{
-		p->setDbEntry(0);
-		p->setDriverInfo(QString());
-	}
+    int index = m_list->currentRow();
+    if (m_entries && index >= 0 && index < (int)(m_entries->count())) {
+        KMDBEntry *entry = m_entries->at(index);
+        p->setDbEntry(entry);
+        p->setDriverInfo(entry->description);
+    } else {
+        p->setDbEntry(0);
+        p->setDriverInfo(QString());
+    }
 }
 
 void KMWDriverSelect::slotDriverComment()
 {
-	int	index = m_list->currentRow();
-	if (m_entries && index >=0 && index < (int)(m_entries->count()) && !m_entries->at(index)->drivercomment.isEmpty())
-		KMessageBox::information(this, m_entries->at(index)->drivercomment, QString(), QString(), KMessageBox::AllowLink);
-	else
-		KMessageBox::error(this, i18n("No information about the selected driver."));
+    int index = m_list->currentRow();
+    if (m_entries && index >= 0 && index < (int)(m_entries->count()) && !m_entries->at(index)->drivercomment.isEmpty())
+        KMessageBox::information(this, m_entries->at(index)->drivercomment, QString(), QString(), KMessageBox::AllowLink);
+    else
+        KMessageBox::error(this, i18n("No information about the selected driver."));
 }
 
 #include "kmwdriverselect.moc"

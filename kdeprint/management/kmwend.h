@@ -27,12 +27,12 @@ class QTextBrowser;
 class KMWEnd : public KMWizardPage
 {
 public:
-	KMWEnd(QWidget *parent = 0);
+    KMWEnd(QWidget *parent = 0);
 
-	void initPrinter(KMPrinter*);
+    void initPrinter(KMPrinter*);
 
 private:
-	QTextBrowser *m_view;
+    QTextBrowser *m_view;
 };
 
 #endif

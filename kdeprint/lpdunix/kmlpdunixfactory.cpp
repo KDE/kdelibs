@@ -23,7 +23,7 @@
 
 #include <kgenericfactory.h>
 
-typedef K_TYPELIST_3( KMLpdUnixManager, KLpdUnixPrinterImpl, KMLpdUnixUiManager ) Products;
-K_EXPORT_COMPONENT_FACTORY( kdeprint_lpdunix, KGenericFactory< Products > )
+typedef K_TYPELIST_3(KMLpdUnixManager, KLpdUnixPrinterImpl, KMLpdUnixUiManager) Products;
+K_EXPORT_COMPONENT_FACTORY(kdeprint_lpdunix, KGenericFactory< Products >)
 
 

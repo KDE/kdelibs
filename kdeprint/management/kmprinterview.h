@@ -29,33 +29,35 @@ class KMPrinter;
 
 class KMPrinterView : public QStackedWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	enum ViewType { Icons = 0, List, Tree };
+    enum ViewType { Icons = 0, List, Tree };
 
-	explicit KMPrinterView(QWidget *parent = 0, const char *name = 0);
-	~KMPrinterView();
+    explicit KMPrinterView(QWidget *parent = 0, const char *name = 0);
+    ~KMPrinterView();
 
-	void setPrinterList(QList<KMPrinter*> *list);
-	void setPrinter( KMPrinter* );
-	void setViewType(ViewType t);
-	ViewType viewType() const 	{ return m_type; }
+    void setPrinterList(QList<KMPrinter*> *list);
+    void setPrinter(KMPrinter*);
+    void setViewType(ViewType t);
+    ViewType viewType() const  {
+        return m_type;
+    }
 
-	QSize minimumSizeHint() const;
+    QSize minimumSizeHint() const;
 
 Q_SIGNALS:
-	void printerSelected(const QString&);
-	void rightButtonClicked(const QString&, const QPoint&);
+    void printerSelected(const QString&);
+    void rightButtonClicked(const QString&, const QPoint&);
 
 protected Q_SLOTS:
-	void slotPrinterSelected(const QString&);
+    void slotPrinterSelected(const QString&);
 
 private:
-	KMIconView	*m_iconview;
-	KMListView	*m_listview;
-	ViewType	m_type;
-	QString		m_current;
-	bool m_listset;
+    KMIconView *m_iconview;
+    KMListView *m_listview;
+    ViewType m_type;
+    QString  m_current;
+    bool m_listset;
 };
 
 #endif

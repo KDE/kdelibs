@@ -29,9 +29,9 @@
 #include <kiconloader.h>
 
 KMPropertyPage::KMPropertyPage(QWidget *parent)
-    : CJanusWidget(parent)
+        : CJanusWidget(parent)
 {
-	initialize();
+    initialize();
 }
 
 KMPropertyPage::~KMPropertyPage()
@@ -40,55 +40,54 @@ KMPropertyPage::~KMPropertyPage()
 
 void KMPropertyPage::setPrinter(KMPrinter *p)
 {
-	QListIterator<KMPropWidget*>	it(m_widgets);
-	while(it.hasNext())
-		it.next()->setPrinterBase(p);
+    QListIterator<KMPropWidget*> it(m_widgets);
+    while (it.hasNext())
+        it.next()->setPrinterBase(p);
 }
 
 void KMPropertyPage::addPropPage(KMPropWidget *w)
 {
-	if (w)
-	{
-		m_widgets.append(w);
-		KMPropContainer	*ctn = new KMPropContainer(this);
-                ctn->setObjectName( "Container" );
-		ctn->setWidget(w);
-		connect(ctn,SIGNAL(enable(bool)),SLOT(slotEnable(bool)));
+    if (w) {
+        m_widgets.append(w);
+        KMPropContainer *ctn = new KMPropContainer(this);
+        ctn->setObjectName("Container");
+        ctn->setWidget(w);
+        connect(ctn, SIGNAL(enable(bool)), SLOT(slotEnable(bool)));
 
-		QPixmap icon = KIconLoader::global()->loadIcon(
-		                                                           w->pixmap(),
-		                                                           K3Icon::NoGroup,
-		                                                           K3Icon::SizeMedium
- 		                                                          );
-		addPage(ctn,w->title(),w->header(),icon);
-	}
+        QPixmap icon = KIconLoader::global()->loadIcon(
+                           w->pixmap(),
+                           K3Icon::NoGroup,
+                           K3Icon::SizeMedium
+                       );
+        addPage(ctn, w->title(), w->header(), icon);
+    }
 }
 
 void KMPropertyPage::slotEnable(bool on)
 {
-	QWidget	*w = (QWidget*)(sender());
-	if (on)
-		enablePage(w);
-	else
-		disablePage(w);
+    QWidget *w = (QWidget*)(sender());
+    if (on)
+        enablePage(w);
+    else
+        disablePage(w);
 }
 
 void KMPropertyPage::initialize()
 {
-	// add General page
-        KMPropGeneral *mp = new KMPropGeneral( this );
-        mp->setObjectName( "General" );
-	addPropPage( mp );
-	// add plugin specific pages
-	KMFactory::self()->uiManager()->setupPropertyPages(this);
+    // add General page
+    KMPropGeneral *mp = new KMPropGeneral(this);
+    mp->setObjectName("General");
+    addPropPage(mp);
+    // add plugin specific pages
+    KMFactory::self()->uiManager()->setupPropertyPages(this);
 }
 
 void KMPropertyPage::reload()
 {
-	clearPages();
-	m_widgets.clear();
-	initialize();
-	setPrinter(0);
+    clearPages();
+    m_widgets.clear();
+    initialize();
+    setPrinter(0);
 }
 
 #include "kmpropertypage.moc"

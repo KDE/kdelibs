@@ -27,16 +27,16 @@ class QTextBrowser;
 class KMPropUsers : public KMPropWidget
 {
 public:
-	KMPropUsers(QWidget *parent = 0);
-	~KMPropUsers();
+    KMPropUsers(QWidget *parent = 0);
+    ~KMPropUsers();
 
-	void setPrinter(KMPrinter*);
+    void setPrinter(KMPrinter*);
 
 protected:
-	void configureWizard(KMWizard*);
+    void configureWizard(KMWizard*);
 
 private:
-	QTextBrowser *m_text;
+    QTextBrowser *m_text;
 };
 
 #endif

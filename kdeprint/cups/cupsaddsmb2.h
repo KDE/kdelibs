@@ -36,45 +36,45 @@ class KLineEdit;
 #endif
 class CupsAddSmb : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	enum State { None, Start, MkDir, Copy, AddDriver, AddPrinter };
-	explicit CupsAddSmb(QWidget *parent = 0, const char *name = 0);
-	~CupsAddSmb();
+    enum State { None, Start, MkDir, Copy, AddDriver, AddPrinter };
+    explicit CupsAddSmb(QWidget *parent = 0, const char *name = 0);
+    ~CupsAddSmb();
 
-	static bool exportDest(const QString& dest, const QString& datadir);
+    static bool exportDest(const QString& dest, const QString& datadir);
 
 protected Q_SLOTS:
-	void slotReceived();
-	void doNextAction();
-	void slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus);
-	void slotActionClicked();
+    void slotReceived();
+    void doNextAction();
+    void slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus);
+    void slotActionClicked();
 
 protected:
-	void checkActionStatus();
-	void nextAction();
-	bool startProcess();
-	bool doExport();
-	bool doInstall();
-	void showError(const QString& msg);
+    void checkActionStatus();
+    void nextAction();
+    bool startProcess();
+    bool doExport();
+    bool doInstall();
+    void showError(const QString& msg);
 
 private:
-	KProcess	m_proc;
-	QString		m_procname;
-	QStringList	m_buffer;
-	int		m_state;
-	QStringList	m_actions;
-	int		m_actionindex;
-	bool		m_status;
-	QProgressBar	*m_bar;
-	QString		m_dest;
-	SidePixmap	*m_side;
-	QPushButton	*m_doit, *m_cancel;
-	QLabel	*m_text;
-	QLabel *m_textinfo;
-	KLineEdit *m_logined, *m_passwded, *m_servered;
-	QString	m_datadir;
+    KProcess m_proc;
+    QString  m_procname;
+    QStringList m_buffer;
+    int  m_state;
+    QStringList m_actions;
+    int  m_actionindex;
+    bool  m_status;
+    QProgressBar *m_bar;
+    QString  m_dest;
+    SidePixmap *m_side;
+    QPushButton *m_doit, *m_cancel;
+    QLabel *m_text;
+    QLabel *m_textinfo;
+    KLineEdit *m_logined, *m_passwded, *m_servered;
+    QString m_datadir;
 };
 
 #endif

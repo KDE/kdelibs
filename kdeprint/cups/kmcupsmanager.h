@@ -31,76 +31,76 @@ class QIODevice;
 
 class KMCupsManager : public KMManager
 {
-	friend class KMWIppPrinter;
-	friend class KMCupsJobManager;
+    friend class KMWIppPrinter;
+    friend class KMCupsJobManager;
 
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMCupsManager(QObject *parent, const QStringList & /*args*/);
-	virtual ~KMCupsManager();
+    KMCupsManager(QObject *parent, const QStringList & /*args*/);
+    virtual ~KMCupsManager();
 
-	// printer management functions
-	bool createPrinter(KMPrinter *p);
-	bool removePrinter(KMPrinter *p);
-	bool enablePrinter(KMPrinter *p, bool state);
-	bool startPrinter(KMPrinter *p, bool state);
-	bool completePrinter(KMPrinter *p);
-	bool completePrinterShort(KMPrinter *p);
-	bool setDefaultPrinter(KMPrinter *p);
-	bool testPrinter(KMPrinter *p);
+    // printer management functions
+    bool createPrinter(KMPrinter *p);
+    bool removePrinter(KMPrinter *p);
+    bool enablePrinter(KMPrinter *p, bool state);
+    bool startPrinter(KMPrinter *p, bool state);
+    bool completePrinter(KMPrinter *p);
+    bool completePrinterShort(KMPrinter *p);
+    bool setDefaultPrinter(KMPrinter *p);
+    bool testPrinter(KMPrinter *p);
 
-	// printer listing functions
-	// driver DB functions
-	QString driverDbCreationProgram();
-	QString driverDirectory();
+    // printer listing functions
+    // driver DB functions
+    QString driverDbCreationProgram();
+    QString driverDirectory();
 
-	DrMain* loadPrinterDriver(KMPrinter *p, bool config = false);
-	DrMain* loadFileDriver(const QString& filename);
-	bool savePrinterDriver(KMPrinter *p, DrMain *d);
+    DrMain* loadPrinterDriver(KMPrinter *p, bool config = false);
+    DrMain* loadFileDriver(const QString& filename);
+    bool savePrinterDriver(KMPrinter *p, DrMain *d);
 
-	bool restartServer();
-	bool configureServer(QWidget *parent = 0);
-	QStringList detectLocalPrinters();
+    bool restartServer();
+    bool configureServer(QWidget *parent = 0);
+    QStringList detectLocalPrinters();
 
-	void createPluginActions(KActionCollection*);
-	void validatePluginActions(KActionCollection*, KMPrinter*);
-	QString stateInformation();
+    void createPluginActions(KActionCollection*);
+    void validatePluginActions(KActionCollection*, KMPrinter*);
+    QString stateInformation();
 
 public Q_SLOTS:
-	void exportDriver();
-	void printerIppReport();
+    void exportDriver();
+    void printerIppReport();
 
 protected Q_SLOTS:
-	void slotConnectionFailed( QAbstractSocket::SocketError );
-	void slotConnectionSuccess();
-	void slotAsyncConnect();
+    void slotConnectionFailed(QAbstractSocket::SocketError);
+    void slotConnectionSuccess();
+    void slotAsyncConnect();
 
-	void hostPingSlot();
-	void hostPingFailedSlot();
+    void hostPingSlot();
+    void hostPingFailedSlot();
 
 protected:
-	// the real printer listing job is done here
-	void listPrinters();
-	void loadServerPrinters();
-	void processRequest(IppRequest*);
-	bool setPrinterState(KMPrinter *p, int st);
-	DrMain* loadDriverFile(const QString& filename);
-	DrMain* loadMaticDriver(const QString& drname);
-	void saveDriverFile(DrMain *driver, const QString& filename);
-	void reportIppError(IppRequest*);
-	KLibrary::void_function_ptr loadCupsdConfFunction(const char*);
-	void unloadCupsdConf();
-	QString cupsInstallDir();
-	void ippReport(IppRequest&, int, const QString&);
-	QString testPage();
-	void checkUpdatePossibleInternal();
+    // the real printer listing job is done here
+    void listPrinters();
+    void loadServerPrinters();
+    void processRequest(IppRequest*);
+    bool setPrinterState(KMPrinter *p, int st);
+    DrMain* loadDriverFile(const QString& filename);
+    DrMain* loadMaticDriver(const QString& drname);
+    void saveDriverFile(DrMain *driver, const QString& filename);
+    void reportIppError(IppRequest*);
+    KLibrary::void_function_ptr loadCupsdConfFunction(const char*);
+    void unloadCupsdConf();
+    QString cupsInstallDir();
+    void ippReport(IppRequest&, int, const QString&);
+    QString testPage();
+    void checkUpdatePossibleInternal();
 
 private:
-	KLibrary	*m_cupsdconf;
-	KMPrinter	*m_currentprinter;
-	QIODevice	*m_socket;
-	bool m_hostSuccess;
-	bool m_lookupDone;
+    KLibrary *m_cupsdconf;
+    KMPrinter *m_currentprinter;
+    QIODevice *m_socket;
+    bool m_hostSuccess;
+    bool m_lookupDone;
 };
 
 #endif

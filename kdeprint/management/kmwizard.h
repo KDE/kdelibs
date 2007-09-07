@@ -35,66 +35,70 @@ class SidePixmap;
 
 class KDEPRINT_MANAGEMENT_EXPORT KMWizard : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	enum PageType {
-		Start   = 0,
-		End,
-		Error,
-		Backend,
-		Driver,
-		File,
-		SMB,
-		TCP,
-		Local,
-		LPD,
-		IPP,
-		IPPSelect,
-		Class,
-		Password,
-		DriverTest,
-		DriverSelect,
-		Name,
-		Banners,
-		Custom  = 100
-	};
+    enum PageType {
+        Start   = 0,
+        End,
+        Error,
+        Backend,
+        Driver,
+        File,
+        SMB,
+        TCP,
+        Local,
+        LPD,
+        IPP,
+        IPPSelect,
+        Class,
+        Password,
+        DriverTest,
+        DriverSelect,
+        Name,
+        Banners,
+        Custom  = 100
+    };
 
-	explicit KMWizard(QWidget *parent = 0, const char *name = 0);
-	~KMWizard();
+    explicit KMWizard(QWidget *parent = 0, const char *name = 0);
+    ~KMWizard();
 
-	void configure(int start, int end, bool inclusive = true);
-	void setCurrentPage(int ID, bool back = false);
-	void setPrinter(KMPrinter*);
-	KMPrinter* printer()		{ return m_printer; }
-	void addPage(KMWizardPage*);
-	KMWBackend* backendPage()	{ return m_backend; }
-	void setNextPage(int page, int next);
+    void configure(int start, int end, bool inclusive = true);
+    void setCurrentPage(int ID, bool back = false);
+    void setPrinter(KMPrinter*);
+    KMPrinter* printer()  {
+        return m_printer;
+    }
+    void addPage(KMWizardPage*);
+    KMWBackend* backendPage() {
+        return m_backend;
+    }
+    void setNextPage(int page, int next);
 
 public Q_SLOTS:
-	void enableWizard();
-	void disableWizard();
+    void enableWizard();
+    void disableWizard();
 
 protected Q_SLOTS:
-	void slotNext();
-	void slotPrev();
-	void slotHelp();
+    void slotNext();
+    void slotPrev();
+    void slotHelp();
 
 private:
-	QMultiHash<int,KMWizardPage*>	m_pagepool;
-	QStack<int>	m_pagestack;
+    QMultiHash<int, KMWizardPage*> m_pagepool;
+    QStack<int> m_pagestack;
 
-	QStackedWidget		*m_stack;
-	QLabel			*m_title;
-	QPushButton		*m_next, *m_prev;
-	int			m_start, m_end;
-	bool			m_inclusive;
-	KMPrinter		*m_printer;
+    QStackedWidget  *m_stack;
+    QLabel   *m_title;
+    QPushButton  *m_next, *m_prev;
+    int   m_start, m_end;
+    bool   m_inclusive;
+    KMPrinter  *m_printer;
 
-	// backend page
-	KMWBackend		*m_backend;
+    // backend page
+    KMWBackend  *m_backend;
 
-	// side pixmap
-	SidePixmap		*m_side;
+    // side pixmap
+    SidePixmap  *m_side;
 };
 
 #endif

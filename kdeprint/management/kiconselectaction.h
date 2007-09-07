@@ -24,16 +24,16 @@
 
 class KIconSelectAction : public KSelectAction
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KIconSelectAction(const QString& text, QObject *parent);
-	virtual ~KIconSelectAction();
+    explicit KIconSelectAction(const QString& text, QObject *parent);
+    virtual ~KIconSelectAction();
 
 public Q_SLOTS:
-	void setItems(const QStringList& lst, const QStringList& iconlst);
+    void setItems(const QStringList& lst, const QStringList& iconlst);
 
 private:
-	class KIconSelectActionPrivate* const	d;
+    class KIconSelectActionPrivate* const d;
 };
 
 #endif

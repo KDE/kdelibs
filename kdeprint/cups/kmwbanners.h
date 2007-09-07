@@ -28,16 +28,16 @@ class QComboBox;
 class KMWBanners : public KMWizardPage
 {
 public:
-	KMWBanners(QWidget *parent = 0);
+    KMWBanners(QWidget *parent = 0);
 
-	void initPrinter(KMPrinter*);
-	void updatePrinter(KMPrinter*);
+    void initPrinter(KMPrinter*);
+    void updatePrinter(KMPrinter*);
 
 private:
-	QComboBox	*m_start, *m_end;
-	QStringList	m_bans;
+    QComboBox *m_start, *m_end;
+    QStringList m_bans;
 };
 
-QString mapBanner( const QString& );
+QString mapBanner(const QString&);
 
 #endif

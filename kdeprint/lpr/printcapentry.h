@@ -38,21 +38,20 @@
 class Field
 {
 public:
-	enum Type { String, Integer, Boolean };
-	Field() : type(String) {}
-	Field(const Field &f) : type(f.type), name(f.name), value(f.value) {}
-	Field& operator= (const Field& f)
-	{
-		type = f.type;
-		name = f.name;
-		value = f.value;
-		return (*this);
-	}
-	QString toString() const;
+    enum Type { String, Integer, Boolean };
+    Field() : type(String) {}
+    Field(const Field &f) : type(f.type), name(f.name), value(f.value) {}
+    Field& operator= (const Field& f) {
+        type = f.type;
+        name = f.name;
+        value = f.value;
+        return (*this);
+    }
+    QString toString() const;
 
-	Type	type;
-	QString	name;
-	QString	value;
+    Type type;
+    QString name;
+    QString value;
 };
 
 /**
@@ -65,16 +64,20 @@ public:
 class PrintcapEntry
 {
 public:
-	QString			name;
-	QStringList		aliases;
-	QString			comment;
-	QMap<QString,Field>	fields;
-	QString			postcomment;
+    QString   name;
+    QStringList  aliases;
+    QString   comment;
+    QMap<QString, Field> fields;
+    QString   postcomment;
 
-	bool has(const QString& f) const	{ return fields.contains(f); }
-	QString field(const QString& f) const	{ return fields[f].value; }
-	bool writeEntry(QTextStream&);
-	void addField(const QString& name, Field::Type type = Field::Boolean, const QString& value = QString());
+    bool has(const QString& f) const {
+        return fields.contains(f);
+    }
+    QString field(const QString& f) const {
+        return fields[f].value;
+    }
+    bool writeEntry(QTextStream&);
+    void addField(const QString& name, Field::Type type = Field::Boolean, const QString& value = QString());
 };
 
 #endif

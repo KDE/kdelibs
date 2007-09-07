@@ -29,47 +29,47 @@
 #include <kcursor.h>
 
 KMProxyWidget::KMProxyWidget(QWidget *parent)
-	: QGroupBox(i18n("Proxy Settings"), parent)
+        : QGroupBox(i18n("Proxy Settings"), parent)
 {
-	setLayout( new QVBoxLayout );
+    setLayout(new QVBoxLayout);
 
-	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), this);
-	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), this);
-	m_useproxy = new QCheckBox(i18n("&Use proxy server"), this);
-	m_useproxy->setCursor(QCursor(Qt::PointingHandCursor));
-	m_proxyhost = new QLineEdit(this);
-	m_proxyport = new QLineEdit(this);
-	m_proxyport->setValidator(new QIntValidator(m_proxyport));
-	m_hostlabel->setBuddy(m_proxyhost);
-	m_portlabel->setBuddy(m_proxyport);
+    QLabel *m_hostlabel = new QLabel(i18n("&Host:"), this);
+    QLabel *m_portlabel = new QLabel(i18n("&Port:"), this);
+    m_useproxy = new QCheckBox(i18n("&Use proxy server"), this);
+    m_useproxy->setCursor(QCursor(Qt::PointingHandCursor));
+    m_proxyhost = new QLineEdit(this);
+    m_proxyport = new QLineEdit(this);
+    m_proxyport->setValidator(new QIntValidator(m_proxyport));
+    m_hostlabel->setBuddy(m_proxyhost);
+    m_portlabel->setBuddy(m_proxyport);
 
-	connect(m_useproxy,SIGNAL(toggled(bool)),m_proxyhost,SLOT(setEnabled(bool)));
-	connect(m_useproxy,SIGNAL(toggled(bool)),m_proxyport,SLOT(setEnabled(bool)));
-	m_proxyhost->setEnabled(false);
-	m_proxyport->setEnabled(false);
+    connect(m_useproxy, SIGNAL(toggled(bool)), m_proxyhost, SLOT(setEnabled(bool)));
+    connect(m_useproxy, SIGNAL(toggled(bool)), m_proxyport, SLOT(setEnabled(bool)));
+    m_proxyhost->setEnabled(false);
+    m_proxyport->setEnabled(false);
 
-	QGridLayout	*lay0 = new QGridLayout();
+    QGridLayout *lay0 = new QGridLayout();
     layout()->addItem(lay0);
     lay0->setMargin(10);
-	lay0->setColumnStretch(1,1);
-    lay0->addWidget(m_useproxy,0,0, 1, 2);
-	lay0->addWidget(m_hostlabel,1,0);
-	lay0->addWidget(m_portlabel,2,0);
-	lay0->addWidget(m_proxyhost,1,1);
-	lay0->addWidget(m_proxyport,2,1);
+    lay0->setColumnStretch(1, 1);
+    lay0->addWidget(m_useproxy, 0, 0, 1, 2);
+    lay0->addWidget(m_hostlabel, 1, 0);
+    lay0->addWidget(m_portlabel, 2, 0);
+    lay0->addWidget(m_proxyhost, 1, 1);
+    lay0->addWidget(m_proxyport, 2, 1);
 }
 
 void KMProxyWidget::loadConfig(KConfig *conf)
 {
-	KConfigGroup cg( conf, "RLPR");
-	m_proxyhost->setText(cg.readEntry("ProxyHost"));
-	m_proxyport->setText(cg.readEntry("ProxyPort"));
-	m_useproxy->setChecked(!m_proxyhost->text().isEmpty());
+    KConfigGroup cg(conf, "RLPR");
+    m_proxyhost->setText(cg.readEntry("ProxyHost"));
+    m_proxyport->setText(cg.readEntry("ProxyPort"));
+    m_useproxy->setChecked(!m_proxyhost->text().isEmpty());
 }
 
 void KMProxyWidget::saveConfig(KConfig *conf)
 {
-	KConfigGroup cg( conf, "RLPR");
-	cg.writeEntry("ProxyHost",(m_useproxy->isChecked() ? m_proxyhost->text() : QString()));
-	cg.writeEntry("ProxyPort",(m_useproxy->isChecked() ? m_proxyport->text() : QString()));
+    KConfigGroup cg(conf, "RLPR");
+    cg.writeEntry("ProxyHost", (m_useproxy->isChecked() ? m_proxyhost->text() : QString()));
+    cg.writeEntry("ProxyPort", (m_useproxy->isChecked() ? m_proxyport->text() : QString()));
 }

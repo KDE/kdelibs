@@ -27,72 +27,71 @@
 #include <klocale.h>
 
 AddressDialog::AddressDialog(QWidget *parent, const char *name)
-	: KDialog( parent )
+        : KDialog(parent)
 {
-  setCaption( i18n("ACL Address") );
-  setButtons( Ok | Cancel );
-  setDefaultButton( Ok );
-  setObjectName( name );
-  setModal( true );
-  showButtonSeparator( true );
+    setCaption(i18n("ACL Address"));
+    setButtons(Ok | Cancel);
+    setDefaultButton(Ok);
+    setObjectName(name);
+    setModal(true);
+    showButtonSeparator(true);
 
-	QWidget *w = new QWidget(this);
-	type_ = new QComboBox(w);
-	address_ = new QLineEdit(w);
+    QWidget *w = new QWidget(this);
+    type_ = new QComboBox(w);
+    address_ = new QLineEdit(w);
 
-	type_->addItem(i18n("Allow"));
-	type_->addItem(i18n("Deny"));
+    type_->addItem(i18n("Allow"));
+    type_->addItem(i18n("Deny"));
 
-	QLabel	*l1 = new QLabel(i18n("Type:"), w);
-	QLabel	*l2 = new QLabel(i18n("Address:"), w);
+    QLabel *l1 = new QLabel(i18n("Type:"), w);
+    QLabel *l2 = new QLabel(i18n("Address:"), w);
 
-	QGridLayout	*m1 = new QGridLayout(w);
-  m1->setMargin(0);
-  m1->setSpacing(5);
-	m1->setColumnStretch(1, 1);
-	m1->addWidget(l1, 0, 0, Qt::AlignRight);
-	m1->addWidget(l2, 1, 0, Qt::AlignRight);
-	m1->addWidget(type_, 0, 1);
-	m1->addWidget(address_, 1, 1);
+    QGridLayout *m1 = new QGridLayout(w);
+    m1->setMargin(0);
+    m1->setSpacing(5);
+    m1->setColumnStretch(1, 1);
+    m1->addWidget(l1, 0, 0, Qt::AlignRight);
+    m1->addWidget(l2, 1, 0, Qt::AlignRight);
+    m1->addWidget(type_, 0, 1);
+    m1->addWidget(address_, 1, 1);
 
-	setMainWidget(w);
-	resize(300, 100);
+    setMainWidget(w);
+    resize(300, 100);
 }
 
 QString AddressDialog::addressString()
 {
-	QString s;
-	if (type_->currentIndex() == 0)
-		s.append("Allow ");
-	else
-		s.append("Deny ");
-	if (address_->text().isEmpty())
-		s.append("All");
-	else
-		s.append(address_->text());
-	return s;
+    QString s;
+    if (type_->currentIndex() == 0)
+        s.append("Allow ");
+    else
+        s.append("Deny ");
+    if (address_->text().isEmpty())
+        s.append("All");
+    else
+        s.append(address_->text());
+    return s;
 }
 
 QString AddressDialog::newAddress(QWidget *parent)
 {
-	AddressDialog	dlg(parent);
-	if (dlg.exec())
-		return dlg.addressString();
-	else
-		return QString();
+    AddressDialog dlg(parent);
+    if (dlg.exec())
+        return dlg.addressString();
+    else
+        return QString();
 }
 
 QString AddressDialog::editAddress(const QString& addr, QWidget *parent)
 {
-	AddressDialog	dlg(parent);
-	int p = addr.indexOf(' ');
-	if (p != -1)
-	{
-		dlg.type_->setCurrentIndex(addr.left(p).toLower() == "deny" ? 1 : 0);
-		dlg.address_->setText(addr.mid(p+1));
-	}
-	if (dlg.exec())
-		return dlg.addressString();
-	else
-		return QString();
+    AddressDialog dlg(parent);
+    int p = addr.indexOf(' ');
+    if (p != -1) {
+        dlg.type_->setCurrentIndex(addr.left(p).toLower() == "deny" ? 1 : 0);
+        dlg.address_->setText(addr.mid(p + 1));
+    }
+    if (dlg.exec())
+        return dlg.addressString();
+    else
+        return QString();
 }

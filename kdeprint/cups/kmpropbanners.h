@@ -27,17 +27,17 @@ class QLabel;
 class KMPropBanners : public KMPropWidget
 {
 public:
-	explicit KMPropBanners(QWidget *parent = 0, const char *name = 0);
-	~KMPropBanners();
+    explicit KMPropBanners(QWidget *parent = 0, const char *name = 0);
+    ~KMPropBanners();
 
-	void setPrinter(KMPrinter*);
+    void setPrinter(KMPrinter*);
 
 protected:
-	void configureWizard(KMWizard*);
+    void configureWizard(KMWizard*);
 
 private:
-	QLabel	*m_startbanner;
-	QLabel	*m_stopbanner;
+    QLabel *m_startbanner;
+    QLabel *m_stopbanner;
 };
 
 #endif

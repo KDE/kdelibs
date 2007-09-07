@@ -27,17 +27,17 @@
 
 class KDEPRINT_MANAGEMENT_EXPORT KMConfigDialog : public KPageDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KMConfigDialog(QWidget *parent = 0, const char *name = 0);
+    explicit KMConfigDialog(QWidget *parent = 0, const char *name = 0);
 
-	void addConfigPage(KMConfigPage*);
+    void addConfigPage(KMConfigPage*);
 
 protected Q_SLOTS:
-	void slotOk();
+    void slotOk();
 
 private:
-	QList<KMConfigPage*>	m_pages;
+    QList<KMConfigPage*> m_pages;
 };
 
 #endif

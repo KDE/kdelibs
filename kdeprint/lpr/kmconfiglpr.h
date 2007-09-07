@@ -27,13 +27,13 @@ class QComboBox;
 class KMConfigLpr : public KMConfigPage
 {
 public:
-	KMConfigLpr(QWidget *parent = 0);
+    KMConfigLpr(QWidget *parent = 0);
 
-	void loadConfig(KConfig*);
-	void saveConfig(KConfig*);
+    void loadConfig(KConfig*);
+    void saveConfig(KConfig*);
 
 private:
-	QComboBox	*m_mode;
+    QComboBox *m_mode;
 };
 
 #endif

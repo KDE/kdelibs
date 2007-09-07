@@ -22,6 +22,6 @@
 #include "kfoomaticprinterimpl.h"
 
 #include <kgenericfactory.h>
-typedef K_TYPELIST_2( KMFoomaticManager, KFoomaticPrinterImpl ) Products;
-K_EXPORT_COMPONENT_FACTORY( kdeprint_foomatic, KGenericFactory< Products > )
+typedef K_TYPELIST_2(KMFoomaticManager, KFoomaticPrinterImpl) Products;
+K_EXPORT_COMPONENT_FACTORY(kdeprint_foomatic, KGenericFactory< Products >)
 

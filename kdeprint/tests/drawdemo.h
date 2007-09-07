@@ -16,18 +16,18 @@ public:
     DrawView();
     ~DrawView();
 public Q_SLOTS:
-    void   updateIt( int );
+    void   updateIt(int);
     void   printIt();
 protected:
-    void   drawIt( QPainter * );
-    void   paintEvent( QPaintEvent * );
-    void   resizeEvent( QResizeEvent * );
+    void   drawIt(QPainter *);
+    void   paintEvent(QPaintEvent *);
+    void   resizeEvent(QResizeEvent *);
 private:
-    KPrinter	 *printer;
-	KButtonGroup *bgroup;
-    QPushButton	 *print;
-    int		  drawindex;
-    int		  maxindex;
+    KPrinter  *printer;
+    KButtonGroup *bgroup;
+    QPushButton  *print;
+    int    drawindex;
+    int    maxindex;
 };
 
 #endif

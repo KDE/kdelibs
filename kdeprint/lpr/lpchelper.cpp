@@ -32,27 +32,26 @@
 
 static QString execute(const QStringList& cmd)
 {
-	KProcess proc;
-	proc.setProgram(cmd);
-	proc.setOutputChannelMode(KProcess::OnlyStdoutChannel);
-	if (!proc.execute())
-	{
-		QTextStream	t(&proc);
-		return t.readAll();
-	}
-	return QString();
+    KProcess proc;
+    proc.setProgram(cmd);
+    proc.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+    if (!proc.execute()) {
+        QTextStream t(&proc);
+        return t.readAll();
+    }
+    return QString();
 }
 
 LpcHelper::LpcHelper(QObject *parent)
-    : QObject(parent)
+        : QObject(parent)
 {
-	// look for the "lpc" executable. Use the PATH variable and
-	// add some specific dirs.
-	QString	PATH = getenv("PATH");
-	PATH.append(":/usr/sbin:/usr/local/sbin:/sbin:/opt/sbin:/opt/local/sbin");
-	m_exepath = KStandardDirs::findExe("lpc", PATH);
-	m_checkpcpath = KStandardDirs::findExe("checkpc", PATH);
-	m_lprmpath = KStandardDirs::findExe("lprm");
+    // look for the "lpc" executable. Use the PATH variable and
+    // add some specific dirs.
+    QString PATH = getenv("PATH");
+    PATH.append(":/usr/sbin:/usr/local/sbin:/sbin:/opt/sbin:/opt/local/sbin");
+    m_exepath = KStandardDirs::findExe("lpc", PATH);
+    m_checkpcpath = KStandardDirs::findExe("checkpc", PATH);
+    m_lprmpath = KStandardDirs::findExe("lprm");
 }
 
 LpcHelper::~LpcHelper()
@@ -61,127 +60,114 @@ LpcHelper::~LpcHelper()
 
 KMPrinter::PrinterState LpcHelper::state(const QString& prname) const
 {
-	if (m_state.contains(prname))
-		return m_state[prname];
-	return KMPrinter::Unknown;
+    if (m_state.contains(prname))
+        return m_state[prname];
+    return KMPrinter::Unknown;
 }
 
 KMPrinter::PrinterState LpcHelper::state(KMPrinter *prt) const
 {
-	return state(prt->printerName());
+    return state(prt->printerName());
 }
 
 void LpcHelper::parseStatusLPR(QTextStream &t)
 {
-	QString		printer, line;
-	int		p(-1);
+    QString  printer, line;
+    int  p(-1);
 
-	while (!t.atEnd())
-	{
-		line = t.readLine();
-		if (line.isEmpty())
-			continue;
-		else if (!line[0].isSpace() && (p = line.indexOf(':')) != -1)
-		{
-			printer = line.left(p);
-			m_state[printer] = KMPrinter::Idle;
-		}
-		else if (line.indexOf("printing is disabled") != -1)
-		{
-			if (!printer.isEmpty())
-				m_state[printer] = KMPrinter::PrinterState((KMPrinter::Stopped) | (m_state[printer] & ~KMPrinter::StateMask));
-		}
-		else if (line.indexOf("queuing is disabled") != -1)
-		{
-			if (!printer.isEmpty())
-				m_state[printer] = KMPrinter::PrinterState((KMPrinter::Rejecting) | (m_state[printer] & KMPrinter::StateMask));
-		}
-		else if (line.indexOf("entries") != -1)
-		{
-			if (!printer.isEmpty() &&
-			    (m_state[printer] & KMPrinter::StateMask) != KMPrinter::Stopped &&
-			    line.indexOf("no entries") == -1)
-				m_state[printer] = KMPrinter::PrinterState((m_state[printer] & ~KMPrinter::StateMask) | KMPrinter::Processing);
-		}
-	}
+    while (!t.atEnd()) {
+        line = t.readLine();
+        if (line.isEmpty())
+            continue;
+        else if (!line[0].isSpace() && (p = line.indexOf(':')) != -1) {
+            printer = line.left(p);
+            m_state[printer] = KMPrinter::Idle;
+        } else if (line.indexOf("printing is disabled") != -1) {
+            if (!printer.isEmpty())
+                m_state[printer] = KMPrinter::PrinterState((KMPrinter::Stopped) | (m_state[printer] & ~KMPrinter::StateMask));
+        } else if (line.indexOf("queuing is disabled") != -1) {
+            if (!printer.isEmpty())
+                m_state[printer] = KMPrinter::PrinterState((KMPrinter::Rejecting) | (m_state[printer] & KMPrinter::StateMask));
+        } else if (line.indexOf("entries") != -1) {
+            if (!printer.isEmpty() &&
+                    (m_state[printer] & KMPrinter::StateMask) != KMPrinter::Stopped &&
+                    line.indexOf("no entries") == -1)
+                m_state[printer] = KMPrinter::PrinterState((m_state[printer] & ~KMPrinter::StateMask) | KMPrinter::Processing);
+        }
+    }
 }
 
 void LpcHelper::parseStatusLPRng(QTextStream& t)
 {
-	QStringList	l;
-	int	p(-1);
-	QString	printer;
+    QStringList l;
+    int p(-1);
+    QString printer;
 
-	while (!t.atEnd())
-		if (t.readLine().trimmed().startsWith("Printer"))
-			break;
-	while (!t.atEnd())
-	{
-		l = t.readLine().split(QRegExp("\\s"), QString::SkipEmptyParts);
-		if (l.count() < 4)
-			continue;
-		p = l[0].indexOf('@');
-		if (p == 0)
-			printer = l[0];
-		else
-			printer = l[0].left(p);
-		int	st(0);
-		if (l[1] == "disabled")
-			st = KMPrinter::Stopped;
-		else if (l[3] != "0")
-			st = KMPrinter::Processing;
-		else
-			st = KMPrinter::Idle;
-		if (l[2] == "disabled")
-			st |= KMPrinter::Rejecting;
-		m_state[printer] = KMPrinter::PrinterState(st);
-	}
+    while (!t.atEnd())
+        if (t.readLine().trimmed().startsWith("Printer"))
+            break;
+    while (!t.atEnd()) {
+        l = t.readLine().split(QRegExp("\\s"), QString::SkipEmptyParts);
+        if (l.count() < 4)
+            continue;
+        p = l[0].indexOf('@');
+        if (p == 0)
+            printer = l[0];
+        else
+            printer = l[0].left(p);
+        int st(0);
+        if (l[1] == "disabled")
+            st = KMPrinter::Stopped;
+        else if (l[3] != "0")
+            st = KMPrinter::Processing;
+        else
+            st = KMPrinter::Idle;
+        if (l[2] == "disabled")
+            st |= KMPrinter::Rejecting;
+        m_state[printer] = KMPrinter::PrinterState(st);
+    }
 }
 
 void LpcHelper::updateStates()
 {
-	KPipeProcess	proc;
+    KPipeProcess proc;
 
-	m_state.clear();
-	if (!m_exepath.isEmpty() && proc.open(m_exepath + " status all"))
-	{
-		QTextStream	t(&proc);
+    m_state.clear();
+    if (!m_exepath.isEmpty() && proc.open(m_exepath + " status all")) {
+        QTextStream t(&proc);
 
-		switch (LprSettings::self()->mode())
-		{
-			default:
-			case LprSettings::LPR:
-				parseStatusLPR(t);
-				break;
-			case LprSettings::LPRng:
-				parseStatusLPRng(t);
-				break;
-		}
-		proc.close();
-	}
+        switch (LprSettings::self()->mode()) {
+        default:
+        case LprSettings::LPR:
+            parseStatusLPR(t);
+            break;
+        case LprSettings::LPRng:
+            parseStatusLPRng(t);
+            break;
+        }
+        proc.close();
+    }
 
 }
 
 bool LpcHelper::enable(KMPrinter *prt, bool state, QString& msg)
 {
-	int	st = m_state[prt->printerName()] & KMPrinter::StateMask;
-	if (changeState(prt->printerName(), (state ? "enable" : "disable"), msg))
-	{
-		m_state[prt->printerName()] = KMPrinter::PrinterState((state ? KMPrinter::Rejecting : 0) | st);
-		return true;
-	}
-	return false;
+    int st = m_state[prt->printerName()] & KMPrinter::StateMask;
+    if (changeState(prt->printerName(), (state ? "enable" : "disable"), msg)) {
+        m_state[prt->printerName()] = KMPrinter::PrinterState((state ? KMPrinter::Rejecting : 0) | st);
+        return true;
+    }
+    return false;
 }
 
 bool LpcHelper::start(KMPrinter *prt, bool state, QString& msg)
 {
-	int	rej = m_state[prt->printerName()] & ~KMPrinter::StateMask;
-	if (changeState(prt->printerName(), (state ? "start" : "stop"), msg))
-	{
-		m_state[prt->printerName()] = KMPrinter::PrinterState((state ? KMPrinter::Idle : KMPrinter::Stopped) | rej);
-		return true;
-	}
-	return false;
+    int rej = m_state[prt->printerName()] & ~KMPrinter::StateMask;
+    if (changeState(prt->printerName(), (state ? "start" : "stop"), msg)) {
+        m_state[prt->printerName()] = KMPrinter::PrinterState((state ? KMPrinter::Idle : KMPrinter::Stopped) | rej);
+        return true;
+    }
+    return false;
 }
 
 // status
@@ -191,129 +177,120 @@ bool LpcHelper::start(KMPrinter *prt, bool state, QString& msg)
 //    1 : unknown error
 int LpcHelper::parseStateChangeLPR(const QString& result, const QString& printer)
 {
-	if (result.startsWith(printer + ':'))
-		return 0;
-	else if (result.startsWith("?Privileged"))
-		return -1;
-	else if (result.startsWith("unknown"))
-		return -2;
-	else
-		return 1;
+    if (result.startsWith(printer + ':'))
+        return 0;
+    else if (result.startsWith("?Privileged"))
+        return -1;
+    else if (result.startsWith("unknown"))
+        return -2;
+    else
+        return 1;
 }
 
 static QString lprngAnswer(const QString& result, const QString& printer)
 {
-	int	p, q;
+    int p, q;
 
-	p = result.indexOf('\n' + printer);
-	if (p != -1)
-	{
-		q = result.indexOf(':', p)+2;
-		p = result.indexOf('\n', q);
-		QString	answer = result.mid(q, p-q).trimmed();
-		return answer;
-	}
-	return QString();
+    p = result.indexOf('\n' + printer);
+    if (p != -1) {
+        q = result.indexOf(':', p) + 2;
+        p = result.indexOf('\n', q);
+        QString answer = result.mid(q, p - q).trimmed();
+        return answer;
+    }
+    return QString();
 }
 
 int LpcHelper::parseStateChangeLPRng(const QString& result, const QString& printer)
 {
-	QString	answer = lprngAnswer(result, printer);
-	if (answer == "no")
-		return -1;
-	else if (answer == "disabled" || answer == "enabled" || answer == "started" || answer == "stopped")
-		return 0;
-	else
-		return 1;
+    QString answer = lprngAnswer(result, printer);
+    if (answer == "no")
+        return -1;
+    else if (answer == "disabled" || answer == "enabled" || answer == "started" || answer == "stopped")
+        return 0;
+    else
+        return 1;
 }
 
 bool LpcHelper::changeState(const QString& printer, const QString& op, QString& msg)
 {
-	if (m_exepath.isEmpty())
-	{
-		msg = i18n("The executable %1 could not be found in your PATH.", QString("lpc"));
-		return false;
-	}
-	QString	result = execute(QStringList() << m_exepath << op << printer);
-	int	status;
+    if (m_exepath.isEmpty()) {
+        msg = i18n("The executable %1 could not be found in your PATH.", QString("lpc"));
+        return false;
+    }
+    QString result = execute(QStringList() << m_exepath << op << printer);
+    int status;
 
-	switch (LprSettings::self()->mode())
-	{
-		default:
-		case LprSettings::LPR:
-			status = parseStateChangeLPR(result, printer);
-			break;
-		case LprSettings::LPRng:
-			status = parseStateChangeLPRng(result, printer);
-			break;
-	}
-	switch (status)
-	{
-		case 0:
-			break;
-		case -1:
-			msg = i18n("Permission denied.");
-			break;
-		case -2:
-			msg = i18n("Printer %1 does not exist.", printer);
-			break;
-		default:
-		case 1:
-			msg = i18n("Unknown error: %1", result.replace(QRegExp("\\n"), " "));
-			break;
-	}
-	return (status == 0);
+    switch (LprSettings::self()->mode()) {
+    default:
+    case LprSettings::LPR:
+        status = parseStateChangeLPR(result, printer);
+        break;
+    case LprSettings::LPRng:
+        status = parseStateChangeLPRng(result, printer);
+        break;
+    }
+    switch (status) {
+    case 0:
+        break;
+    case - 1:
+        msg = i18n("Permission denied.");
+        break;
+    case - 2:
+        msg = i18n("Printer %1 does not exist.", printer);
+        break;
+    default:
+    case 1:
+        msg = i18n("Unknown error: %1", result.replace(QRegExp("\\n"), " "));
+        break;
+    }
+    return (status == 0);
 }
 
 bool LpcHelper::removeJob(KMJob *job, QString& msg)
 {
-	if (m_lprmpath.isEmpty())
-	{
-		msg = i18n("The executable %1 could not be found in your PATH.", QString("lprm"));
-		return false;
-	}
-	QString	result = execute(QStringList() << m_lprmpath << "-P" << job->printer() << QString::number(job->id()));
-	if (result.indexOf("dequeued") != -1)
-		return true;
-	else if (result.indexOf("Permission denied") != -1 || result.indexOf("no permissions") != -1)
-		msg = i18n("Permission denied.");
-	else
-		msg = i18n("Execution of lprm failed: %1", result);
-	return false;
+    if (m_lprmpath.isEmpty()) {
+        msg = i18n("The executable %1 could not be found in your PATH.", QString("lprm"));
+        return false;
+    }
+    QString result = execute(QStringList() << m_lprmpath << "-P" << job->printer() << QString::number(job->id()));
+    if (result.indexOf("dequeued") != -1)
+        return true;
+    else if (result.indexOf("Permission denied") != -1 || result.indexOf("no permissions") != -1)
+        msg = i18n("Permission denied.");
+    else
+        msg = i18n("Execution of lprm failed: %1", result);
+    return false;
 }
 
 // LPRng only
 bool LpcHelper::changeJobState(KMJob *job, int state, QString& msg)
 {
-	if (m_lprmpath.isEmpty())
-	{
-		msg = i18n("The executable %1 could not be found in your PATH.", QString("lpc"));
-		return false;
-	}
-	QString	result = execute(QStringList() << m_exepath << (state == KMJob::Held ? "hold" : "release") << job->printer() << QString::number(job->id()));
-	QString	answer = lprngAnswer(result, job->printer());
-	if (answer == "no")
-	{
-		msg = i18n("Permission denied.");
-		return false;
-	}
-	else
-		return true;
+    if (m_lprmpath.isEmpty()) {
+        msg = i18n("The executable %1 could not be found in your PATH.", QString("lpc"));
+        return false;
+    }
+    QString result = execute(QStringList() << m_exepath << (state == KMJob::Held ? "hold" : "release") << job->printer() << QString::number(job->id()));
+    QString answer = lprngAnswer(result, job->printer());
+    if (answer == "no") {
+        msg = i18n("Permission denied.");
+        return false;
+    } else
+        return true;
 }
 
 bool LpcHelper::restart(QString& msg)
 {
-	QString	s;
-	if (m_exepath.isEmpty())
-		s = "lpc";
-	else if (m_checkpcpath.isEmpty())
-		s = "checkpc";
-	if (!s.isEmpty())
-	{
-		msg = i18n("The executable %1 could not be found in your PATH.", s);
-		return false;
-	}
-	::system(QFile::encodeName(m_exepath + " reread"));
-	::system(QFile::encodeName(m_checkpcpath + " -f"));
-	return true;
+    QString s;
+    if (m_exepath.isEmpty())
+        s = "lpc";
+    else if (m_checkpcpath.isEmpty())
+        s = "checkpc";
+    if (!s.isEmpty()) {
+        msg = i18n("The executable %1 could not be found in your PATH.", s);
+        return false;
+    }
+    ::system(QFile::encodeName(m_exepath + " reread"));
+    ::system(QFile::encodeName(m_checkpcpath + " -f"));
+    return true;
 }

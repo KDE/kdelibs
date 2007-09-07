@@ -28,23 +28,23 @@ class Q3ListViewItem;
 
 class KMWRlpr : public KMWizardPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMWRlpr(QWidget *parent = 0);
+    KMWRlpr(QWidget *parent = 0);
 
-	bool isValid(QString&);
-	void initPrinter(KMPrinter*);
-	void updatePrinter(KMPrinter*);
+    bool isValid(QString&);
+    void initPrinter(KMPrinter*);
+    void updatePrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotPrinterSelected(Q3ListViewItem*);
+    void slotPrinterSelected(Q3ListViewItem*);
 
 protected:
-	void initialize();
+    void initialize();
 
 private:
-	K3ListView	*m_view;
-	QLineEdit	*m_host, *m_queue;
+    K3ListView *m_view;
+    QLineEdit *m_host, *m_queue;
 };
 
 #endif

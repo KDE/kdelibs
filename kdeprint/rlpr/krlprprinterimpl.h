@@ -25,10 +25,10 @@
 class KRlprPrinterImpl : public KPrinterImpl
 {
 public:
-	KRlprPrinterImpl(QObject *parent, const QStringList & /*args*/);
-	~KRlprPrinterImpl();
+    KRlprPrinterImpl(QObject *parent, const QStringList & /*args*/);
+    ~KRlprPrinterImpl();
 
-	bool setupCommand(QString&, KPrinter*);
+    bool setupCommand(QString&, KPrinter*);
 };
 
 #endif

@@ -18,7 +18,7 @@
  **/
 
 #ifndef QDIRLINEEDIT_H
-#define	QDIRLINEEDIT_H
+#define QDIRLINEEDIT_H
 
 #include <QtGui/QWidget>
 #include <QtCore/QString>
@@ -31,22 +31,22 @@ class QPushButton;
 #endif
 class QDirLineEdit : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit QDirLineEdit(bool file, QWidget *parent = 0);
-	~QDirLineEdit();
+    explicit QDirLineEdit(bool file, QWidget *parent = 0);
+    ~QDirLineEdit();
 
-	void setUrl(const QString& txt);
-	QString url();
-	void setFileEdit(bool on = true);
+    void setUrl(const QString& txt);
+    QString url();
+    void setFileEdit(bool on = true);
 
 private Q_SLOTS:
-	void buttonClicked();
+    void buttonClicked();
 
 private:
-	QLineEdit	*edit_;
-	QPushButton	*button_;
-	bool		fileedit_;
+    QLineEdit *edit_;
+    QPushButton *button_;
+    bool  fileedit_;
 };
 
 #endif

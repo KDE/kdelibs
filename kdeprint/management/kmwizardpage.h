@@ -27,25 +27,35 @@ class KMPrinter;
 
 class KDEPRINT_MANAGEMENT_EXPORT KMWizardPage : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMWizardPage(QWidget *parent = 0);
-	virtual ~KMWizardPage();
+    KMWizardPage(QWidget *parent = 0);
+    virtual ~KMWizardPage();
 
-	int id() const 			{ return m_ID; }
-	const QString& title() const 	{ return m_title; }
-	int nextPage() const 		{ return m_nextpage; }
-	void setNextPage(int p)		{ m_nextpage = p; }
-	virtual bool isValid(QString&);
-	virtual void initPrinter(KMPrinter*);
-	virtual void updatePrinter(KMPrinter*);
-	bool needsInitOnBack() const		{ return m_needsinitonback; }
+    int id() const    {
+        return m_ID;
+    }
+    const QString& title() const  {
+        return m_title;
+    }
+    int nextPage() const   {
+        return m_nextpage;
+    }
+    void setNextPage(int p)  {
+        m_nextpage = p;
+    }
+    virtual bool isValid(QString&);
+    virtual void initPrinter(KMPrinter*);
+    virtual void updatePrinter(KMPrinter*);
+    bool needsInitOnBack() const  {
+        return m_needsinitonback;
+    }
 
 protected:
-	QString	m_title;
-	int	m_ID;
-	int	m_nextpage;
-	bool	m_needsinitonback;
+    QString m_title;
+    int m_ID;
+    int m_nextpage;
+    bool m_needsinitonback;
 };
 
 #endif

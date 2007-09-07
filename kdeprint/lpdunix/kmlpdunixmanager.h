@@ -25,18 +25,18 @@
 class KMLpdUnixManager : public KMManager
 {
 public:
-	KMLpdUnixManager(QObject *parent, const QStringList & /*args*/);
+    KMLpdUnixManager(QObject *parent, const QStringList & /*args*/);
 
 protected:
-	void listPrinters();
-	void parseEtcPrintcap();
-	void parseEtcPrintersConf();
-	void parseEtcLpPrinters();
-	void parseEtcLpMember();
-	void parseSpoolInterface();
+    void listPrinters();
+    void parseEtcPrintcap();
+    void parseEtcPrintersConf();
+    void parseEtcLpPrinters();
+    void parseEtcLpMember();
+    void parseSpoolInterface();
 
 private:
-	bool	m_loaded;
+    bool m_loaded;
 };
 
 #endif

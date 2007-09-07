@@ -30,48 +30,50 @@ class KMPrinter;
 class KMIconViewItem : public Q3IconViewItem, public KMObject
 {
 public:
-	KMIconViewItem(Q3IconView *parent, KMPrinter *p);
-	void updatePrinter(KMPrinter *printer = 0, int mode = Qt::DockBottom);
-	bool isClass() const	{ return m_isclass; }
+    KMIconViewItem(Q3IconView *parent, KMPrinter *p);
+    void updatePrinter(KMPrinter *printer = 0, int mode = Qt::DockBottom);
+    bool isClass() const {
+        return m_isclass;
+    }
 
 protected:
-	virtual void paintItem(QPainter*, const QColorGroup&);
+    virtual void paintItem(QPainter*, const QColorGroup&);
 
 private:
-	int		m_mode;
-	QString		m_pixmap;
-	char		m_state;
-	bool		m_isclass;
+    int  m_mode;
+    QString  m_pixmap;
+    char  m_state;
+    bool  m_isclass;
 };
 
 class KMIconView : public K3IconView
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	enum ViewMode { Big, Small };
+    enum ViewMode { Big, Small };
 
-	explicit KMIconView(QWidget *parent = 0, const char *name = 0);
-	~KMIconView();
+    explicit KMIconView(QWidget *parent = 0, const char *name = 0);
+    ~KMIconView();
 
-	void setPrinterList(QList<KMPrinter*> *list);
-	void setPrinter(const QString&);
-	void setPrinter(KMPrinter*);
-	void setViewMode(ViewMode);
+    void setPrinterList(QList<KMPrinter*> *list);
+    void setPrinter(const QString&);
+    void setPrinter(KMPrinter*);
+    void setViewMode(ViewMode);
 
 Q_SIGNALS:
-	void rightButtonClicked(const QString&, const QPoint&);
-	void printerSelected(const QString&);
+    void rightButtonClicked(const QString&, const QPoint&);
+    void printerSelected(const QString&);
 
 protected Q_SLOTS:
-	void slotRightButtonClicked(Q3IconViewItem*, const QPoint&);
-	void slotSelectionChanged();
+    void slotRightButtonClicked(Q3IconViewItem*, const QPoint&);
+    void slotSelectionChanged();
 
 private:
-	KMIconViewItem* findItem(KMPrinter *p);
+    KMIconViewItem* findItem(KMPrinter *p);
 
 private:
-	QList<KMIconViewItem*>	m_items;
-	ViewMode		m_mode;
+    QList<KMIconViewItem*> m_items;
+    ViewMode  m_mode;
 };
 
 #endif

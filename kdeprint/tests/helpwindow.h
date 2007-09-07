@@ -27,12 +27,12 @@ class HelpWindow : public KMainWindow
 {
     Q_OBJECT
 public:
-    HelpWindow( const QString& home_,  const QString& path, QWidget* parent = 0 );
+    HelpWindow(const QString& home_,  const QString& path, QWidget* parent = 0);
     ~HelpWindow();
 
 private Q_SLOTS:
-    void setBackwardAvailable( bool );
-    void setForwardAvailable( bool );
+    void setBackwardAvailable(bool);
+    void setForwardAvailable(bool);
 
     void textChanged();
     void about();
@@ -41,19 +41,19 @@ private Q_SLOTS:
     void newWindow();
     void print();
 
-    void pathSelected( const QString & );
-	void histChosen( QAction* );
-	void bookmChosen( QAction* );
+    void pathSelected(const QString &);
+    void histChosen(QAction*);
+    void bookmChosen(QAction*);
     void addBookmark();
-    
+
 private:
     void readHistory();
     void readBookmarks();
-    
+
     Q3TextBrowser* browser;
     QComboBox *pathCombo;
-	QAction *backwardAction;
-	QAction *forwardAction;
+    QAction *backwardAction;
+    QAction *forwardAction;
     QString selectedURL;
     QStringList history, bookmarks;
     QMap<QAction*, QString> mHistory, mBookmarks;

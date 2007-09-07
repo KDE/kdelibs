@@ -32,111 +32,99 @@
 LprSettings* LprSettings::m_self = 0;
 
 LprSettings::LprSettings(QObject *parent, const char *name)
-: QObject(parent), KPReloadObject(true)
+        : QObject(parent), KPReloadObject(true)
 {
-  setObjectName( name );
-	init();
+    setObjectName(name);
+    init();
 }
 
 LprSettings::~LprSettings()
 {
-	m_self = 0;
+    m_self = 0;
 }
 
 LprSettings* LprSettings::self()
 {
-	if (!m_self)
-	{
-		m_self = new LprSettings(KMManager::self(), "LprSettings");
-	}
-	return m_self;
+    if (!m_self) {
+        m_self = new LprSettings(KMManager::self(), "LprSettings");
+    }
+    return m_self;
 }
 
 void LprSettings::init()
 {
-	// LPR/LPRng mode
-	KConfig *cf = KMFactory::self()->printConfig();
-	KConfigGroup conf = cf->group( "LPR" );
+    // LPR/LPRng mode
+    KConfig *cf = KMFactory::self()->printConfig();
+    KConfigGroup conf = cf->group("LPR");
 
-	QString	modestr = conf.readEntry("Mode");
-	if (modestr == "LPRng")
-		m_mode = LPRng;
-	else if (modestr == "LPR")
-		m_mode = LPR;
-	else
-	{
-		// try to guess
-		if (QFile::exists(LPDCONF))
-			m_mode = LPRng;
-		else
-			m_mode = LPR;
-	}
+    QString modestr = conf.readEntry("Mode");
+    if (modestr == "LPRng")
+        m_mode = LPRng;
+    else if (modestr == "LPR")
+        m_mode = LPR;
+    else {
+        // try to guess
+        if (QFile::exists(LPDCONF))
+            m_mode = LPRng;
+        else
+            m_mode = LPR;
+    }
 
-	// Printcap file
-	m_printcapfile.clear();
-	m_local = true;
+    // Printcap file
+    m_printcapfile.clear();
+    m_local = true;
 
-	// Spool directory
-	m_spooldir = "/var/spool/lpd";
+    // Spool directory
+    m_spooldir = "/var/spool/lpd";
 }
 
 QString LprSettings::printcapFile()
 {
-	if (m_printcapfile.isEmpty())
-	{
-		// default value
-		m_printcapfile = PRINTCAP;
-		if (m_mode == LPRng)
-		{
-			// look into /etc/lpd/conf file
-			QFile cf(LPDCONF);
-			if (cf.open(QIODevice::ReadOnly))
-			{
-				QTextStream	t(&cf);
-				QString	line;
-				while (!t.atEnd())
-				{
-					line = t.readLine().trimmed();
-					if (line.startsWith("printcap_path"))
-					{
-						QString	filename = line.mid(14).trimmed();
-						if (filename[0] != '|')
-							m_printcapfile = filename;
-						else
-						{
-							// should download the printcap file
-							// and set m_local to false
-						}
-					}
-				}
-			}
-		}
-	}
-	return m_printcapfile;
+    if (m_printcapfile.isEmpty()) {
+        // default value
+        m_printcapfile = PRINTCAP;
+        if (m_mode == LPRng) {
+            // look into /etc/lpd/conf file
+            QFile cf(LPDCONF);
+            if (cf.open(QIODevice::ReadOnly)) {
+                QTextStream t(&cf);
+                QString line;
+                while (!t.atEnd()) {
+                    line = t.readLine().trimmed();
+                    if (line.startsWith("printcap_path")) {
+                        QString filename = line.mid(14).trimmed();
+                        if (filename[0] != '|')
+                            m_printcapfile = filename;
+                        else {
+                            // should download the printcap file
+                            // and set m_local to false
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return m_printcapfile;
 }
 
 QString LprSettings::defaultRemoteHost()
 {
-	if (m_defaultremotehost.isEmpty())
-	{
-		m_defaultremotehost = "localhost";
-		QFile cf(LPDCONF);
-		if (cf.open(QIODevice::ReadOnly))
-		{
-			QTextStream	t(&cf);
-			QString	line;
-			while (!t.atEnd())
-			{
-				line = t.readLine().trimmed();
-				if (line.startsWith("default_remote_host"))
-				{
-					QString	hostname = line.mid(20).trimmed();
-					m_defaultremotehost = hostname;
-				}
-			}
-		}
-	}
-	return m_defaultremotehost;
+    if (m_defaultremotehost.isEmpty()) {
+        m_defaultremotehost = "localhost";
+        QFile cf(LPDCONF);
+        if (cf.open(QIODevice::ReadOnly)) {
+            QTextStream t(&cf);
+            QString line;
+            while (!t.atEnd()) {
+                line = t.readLine().trimmed();
+                if (line.startsWith("default_remote_host")) {
+                    QString hostname = line.mid(20).trimmed();
+                    m_defaultremotehost = hostname;
+                }
+            }
+        }
+    }
+    return m_defaultremotehost;
 }
 
 void LprSettings::reload()
@@ -145,5 +133,5 @@ void LprSettings::reload()
 
 void LprSettings::configChanged()
 {
-	init();
+    init();
 }

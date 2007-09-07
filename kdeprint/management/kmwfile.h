@@ -27,13 +27,13 @@ class KUrlRequester;
 class KMWFile : public KMWizardPage
 {
 public:
-	KMWFile(QWidget *parent = 0);
+    KMWFile(QWidget *parent = 0);
 
-	bool isValid(QString&);
-	void updatePrinter(KMPrinter*);
+    bool isValid(QString&);
+    void updatePrinter(KMPrinter*);
 
 private:
-	KUrlRequester	*m_url;
+    KUrlRequester *m_url;
 };
 
 #endif

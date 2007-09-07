@@ -20,10 +20,10 @@
 #include "kmconfigpage.h"
 
 KMConfigPage::KMConfigPage(QWidget *parent)
-    : QWidget(parent)
+        : QWidget(parent)
 {
-	m_name = "Name";
-	m_header = "Header";
+    m_name = "Name";
+    m_header = "Header";
 }
 
 void KMConfigPage::loadConfig(KConfig *)

@@ -25,11 +25,11 @@
 class KMLpdUiManager : public KMUiManager
 {
 public:
-	explicit KMLpdUiManager(QObject *parent = 0, const char *name = 0);
-	~KMLpdUiManager();
+    explicit KMLpdUiManager(QObject *parent = 0, const char *name = 0);
+    ~KMLpdUiManager();
 
-	void setupWizard(KMWizard*);
-	void setupPropertyPages(KMPropertyPage*);
+    void setupWizard(KMWizard*);
+    void setupPropertyPages(KMPropertyPage*);
 };
 
 #endif

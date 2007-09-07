@@ -25,12 +25,12 @@
 class KCupsPrinterImpl : public KPrinterImpl
 {
 public:
-	explicit KCupsPrinterImpl(QObject *parent, const QStringList & /*args*/ = QStringList());
-	~KCupsPrinterImpl();
+    explicit KCupsPrinterImpl(QObject *parent, const QStringList & /*args*/ = QStringList());
+    ~KCupsPrinterImpl();
 
-	bool setupCommand(QString&, KPrinter*);
-	void preparePrinting(KPrinter*);
-	void broadcastOption(const QString& key, const QString& value);
+    bool setupCommand(QString&, KPrinter*);
+    void preparePrinting(KPrinter*);
+    void broadcastOption(const QString& key, const QString& value);
 };
 
 #endif

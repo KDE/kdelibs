@@ -24,38 +24,34 @@
 #include <QtCore/QTextStream>
 
 GsChecker::GsChecker(QObject *parent, const char *name)
-: QObject(parent,name)
+        : QObject(parent, name)
 {
 }
 
 bool GsChecker::checkGsDriver(const QString& name)
 {
-	if (m_driverlist.count() == 0)
-		loadDriverList();
-	return m_driverlist.contains(name);
+    if (m_driverlist.count() == 0)
+        loadDriverList();
+    return m_driverlist.contains(name);
 }
 
 void GsChecker::loadDriverList()
 {
-	KPipeProcess	proc;
-	if (proc.open("gs -h",QIODevice::ReadOnly))
-	{
-		QTextStream	t(&proc);
-		QString	buffer, line;
-		bool	ok(false);
-		while (!t.atEnd())
-		{
-			line = t.readLine().trimmed();
-			if (ok)
-			{
-				if (line.find(':') != -1)
-					break;
-				else
-					buffer.append(line).append(" ");
-			}
-			else if (line.startsWith(QLatin1String("Available devices:")))
-				ok = true;
-		}
-		m_driverlist = buffer.split(' ', QString::SkipEmptyParts);
-	}
+    KPipeProcess proc;
+    if (proc.open("gs -h", QIODevice::ReadOnly)) {
+        QTextStream t(&proc);
+        QString buffer, line;
+        bool ok(false);
+        while (!t.atEnd()) {
+            line = t.readLine().trimmed();
+            if (ok) {
+                if (line.find(':') != -1)
+                    break;
+                else
+                    buffer.append(line).append(" ");
+            } else if (line.startsWith(QLatin1String("Available devices:")))
+                ok = true;
+        }
+        m_driverlist = buffer.split(' ', QString::SkipEmptyParts);
+    }
 }

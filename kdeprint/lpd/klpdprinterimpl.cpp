@@ -25,7 +25,7 @@
 #include <klocale.h>
 
 KLpdPrinterImpl::KLpdPrinterImpl(QObject *parent, const char *name)
-: KPrinterImpl(parent,name)
+        : KPrinterImpl(parent, name)
 {
 }
 
@@ -35,17 +35,16 @@ KLpdPrinterImpl::~KLpdPrinterImpl()
 
 QString KLpdPrinterImpl::executable()
 {
-	return KStandardDirs::findExe("lpr");
+    return KStandardDirs::findExe("lpr");
 }
 
 bool KLpdPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 {
-	QString	exestr = executable();
-	if (exestr.isEmpty())
-	{
-		printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.", QString("lpr")));
-		return false;
-	}
-	cmd = QString::fromLatin1("%1 -P %2 '-#%3'").arg(exestr).arg(quote(printer->printerName())).arg(printer->numCopies());
-	return true;
+    QString exestr = executable();
+    if (exestr.isEmpty()) {
+        printer->setErrorMessage(i18n("The <b>%1</b> executable could not be found in your path. Check your installation.", QString("lpr")));
+        return false;
+    }
+    cmd = QString::fromLatin1("%1 -P %2 '-#%3'").arg(exestr).arg(quote(printer->printerName())).arg(printer->numCopies());
+    return true;
 }

@@ -30,49 +30,48 @@ class QSslError;
 
 class KDEPRINT_MANAGEMENT_EXPORT NetworkScanner : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit NetworkScanner( int port = 9100, QWidget *parent = 0 );
-	~NetworkScanner();
+    explicit NetworkScanner(int port = 9100, QWidget *parent = 0);
+    ~NetworkScanner();
 
-	struct SocketInfo
-	{
-		QString IP;
-		QString Name;
-		int Port;
-	};
+    struct SocketInfo {
+        QString IP;
+        QString Name;
+        int Port;
+    };
 
-	QList<NetworkScanner::SocketInfo*> printerList() const;
+    QList<NetworkScanner::SocketInfo*> printerList() const;
 
-	int timeout() const;
-	void setTimeout( int to );
-	QString subnet() const;
-	void setSubnet( const QString& );
-	int port() const;
-	void setPort( int );
-	bool checkPrinter( const QString&, int );
+    int timeout() const;
+    void setTimeout(int to);
+    QString subnet() const;
+    void setSubnet(const QString&);
+    int port() const;
+    void setPort(int);
+    bool checkPrinter(const QString&, int);
 
 Q_SIGNALS:
-	void scanStarted();
-	void scanFinished();
+    void scanStarted();
+    void scanFinished();
 
 protected Q_SLOTS:
-	void slotConnectionSuccess();
-	void slotConnectionFailed(const QList<QSslError>&);
-	void slotTimeout();
-	void slotScanClicked();
-	void slotSettingsClicked();
-	void slotNext();
+    void slotConnectionSuccess();
+    void slotConnectionFailed(const QList<QSslError>&);
+    void slotTimeout();
+    void slotScanClicked();
+    void slotSettingsClicked();
+    void slotNext();
 
 protected:
-	void next();
-	void finish();
-	void start();
+    void next();
+    void finish();
+    void start();
 
 private:
-	class NetworkScannerPrivate;
-	NetworkScannerPrivate* const d;
+    class NetworkScannerPrivate;
+    NetworkScannerPrivate* const d;
 };
 
 class QLineEdit;
@@ -80,19 +79,19 @@ class QComboBox;
 
 class NetworkScannerConfig : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit NetworkScannerConfig(NetworkScanner *scanner, const char *name = 0);
-	~NetworkScannerConfig();
+    explicit NetworkScannerConfig(NetworkScanner *scanner, const char *name = 0);
+    ~NetworkScannerConfig();
 
 protected Q_SLOTS:
-	void slotOk();
+    void slotOk();
 
 private:
-	QLineEdit	*mask_, *tout_;
-	QComboBox	*port_;
-	NetworkScanner *scanner_;
+    QLineEdit *mask_, *tout_;
+    QComboBox *port_;
+    NetworkScanner *scanner_;
 };
 
 #endif

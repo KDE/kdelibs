@@ -33,11 +33,11 @@
 class CJanusWidget::CPage
 {
 public:
-	QWidget			*m_widget;
-	QString			m_text;
-	QString			m_header;
-	QPixmap			m_pixmap;
-	QListWidgetItem	*m_item;
+    QWidget   *m_widget;
+    QString   m_text;
+    QString   m_header;
+    QPixmap   m_pixmap;
+    QListWidgetItem *m_item;
 };
 
 //***********************************************************************************
@@ -48,19 +48,19 @@ public:
 class CJanusWidget::CListBox : public KListWidget
 {
 public:
-	CListBox(QWidget *parent = 0);
-	~CListBox();
+    CListBox(QWidget *parent = 0);
+    ~CListBox();
 
-	void computeWidth();
+    void computeWidth();
 
 protected:
-	virtual bool eventFilter(QObject*, QEvent*);
+    virtual bool eventFilter(QObject*, QEvent*);
 };
 
 CJanusWidget::CListBox::CListBox(QWidget *parent)
-: KListWidget(parent)
+        : KListWidget(parent)
 {
-	verticalScrollBar()->installEventFilter(this);
+    verticalScrollBar()->installEventFilter(this);
 }
 
 CJanusWidget::CListBox::~CListBox()
@@ -69,183 +69,172 @@ CJanusWidget::CListBox::~CListBox()
 
 bool CJanusWidget::CListBox::eventFilter(QObject *o, QEvent *e)
 {
-	if (e->type() == QEvent::Show || e->type() == QEvent::Hide)
-		computeWidth();
-	return KListWidget::eventFilter(o,e);
+    if (e->type() == QEvent::Show || e->type() == QEvent::Hide)
+        computeWidth();
+    return KListWidget::eventFilter(o, e);
 }
 
 void CJanusWidget::CListBox::computeWidth()
 {
-	int	w(40);
-    for (int rowIndex = 0 ; rowIndex < count() ; rowIndex++)
-    {
-	    QListWidgetItem	*listItem = item(rowIndex);
-		w = qMax(w,visualItemRect(listItem).width());
+    int w(40);
+    for (int rowIndex = 0 ; rowIndex < count() ; rowIndex++) {
+        QListWidgetItem *listItem = item(rowIndex);
+        w = qMax(w, visualItemRect(listItem).width());
     }
 
-	if (verticalScrollBar()->isVisible())
-		w += verticalScrollBar()->sizeHint().width();
-	w += (frameWidth()*2);
-	setFixedWidth(w);
+    if (verticalScrollBar()->isVisible())
+        w += verticalScrollBar()->sizeHint().width();
+    w += (frameWidth() * 2);
+    setFixedWidth(w);
 }
 
 //***********************************************************************************
 
 CJanusWidget::CJanusWidget(QWidget *parent)
-    : QWidget(parent)
+        : QWidget(parent)
 {
 
-	m_stack = new QStackedWidget(this);
-	m_header = new QLabel(this);
-	QFont	f(m_header->font());
-	f.setBold(true);
-	m_header->setFont(f);
+    m_stack = new QStackedWidget(this);
+    m_header = new QLabel(this);
+    QFont f(m_header->font());
+    f.setBold(true);
+    m_header->setFont(f);
 
-	KSeparator* sep = new KSeparator( Qt::Horizontal, this);
-	sep->setFixedHeight(5);
+    KSeparator* sep = new KSeparator(Qt::Horizontal, this);
+    sep->setFixedHeight(5);
 
-	m_iconlist = new CListBox(this);
-	f = m_iconlist->font();
-	f.setBold(true);
-	m_iconlist->setFont(f);
- 	connect(m_iconlist,SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),SLOT(slotSelected(QListWidgetItem*)));
+    m_iconlist = new CListBox(this);
+    f = m_iconlist->font();
+    f.setBold(true);
+    m_iconlist->setFont(f);
+    connect(m_iconlist, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), SLOT(slotSelected(QListWidgetItem*)));
 
-	m_empty = new QWidget( this );
-	m_empty->setObjectName( "Empty" );
-	m_stack->insertWidget(0,m_empty);
+    m_empty = new QWidget(this);
+    m_empty->setObjectName("Empty");
+    m_stack->insertWidget(0, m_empty);
 
-	QHBoxLayout	*main_ = new QHBoxLayout(this);
-	main_->setMargin(0);
-	main_->setSpacing(10);
-	QVBoxLayout	*sub_ = new QVBoxLayout();
-	main_->addWidget(m_iconlist,0);
-	main_->addLayout(sub_,1);
-	sub_->setMargin(0);
-	sub_->setSpacing(5);
-	sub_->addWidget(m_header,0);
-	sub_->addWidget(sep,0);
-	sub_->addWidget(m_stack,1);
+    QHBoxLayout *main_ = new QHBoxLayout(this);
+    main_->setMargin(0);
+    main_->setSpacing(10);
+    QVBoxLayout *sub_ = new QVBoxLayout();
+    main_->addWidget(m_iconlist, 0);
+    main_->addLayout(sub_, 1);
+    sub_->setMargin(0);
+    sub_->setSpacing(5);
+    sub_->addWidget(m_header, 0);
+    sub_->addWidget(sep, 0);
+    sub_->addWidget(m_stack, 1);
 }
 
 CJanusWidget::~CJanusWidget()
 {
-	qDeleteAll(m_pages);
-	m_pages.clear();
+    qDeleteAll(m_pages);
+    m_pages.clear();
 }
 
 void CJanusWidget::addPage(QWidget *w, const QString& text, const QString& header, const QPixmap& pix)
 {
-	CPage	*page = new CPage();
-	m_pages.append(page);
-	page->m_widget = w;
-	page->m_text = text;
-	page->m_header = header;
-	page->m_pixmap = pix;
-	page->m_item = new QListWidgetItem(pix, text, m_iconlist);
-	m_iconlist->computeWidth();
-	m_stack->insertWidget(m_pages.count(),w);
+    CPage *page = new CPage();
+    m_pages.append(page);
+    page->m_widget = w;
+    page->m_text = text;
+    page->m_header = header;
+    page->m_pixmap = pix;
+    page->m_item = new QListWidgetItem(pix, text, m_iconlist);
+    m_iconlist->computeWidth();
+    m_stack->insertWidget(m_pages.count(), w);
 
-	if (m_iconlist->count() == 1)
-	{
-		page->m_item->setSelected(true);
-		slotSelected(page->m_item);
-	}
+    if (m_iconlist->count() == 1) {
+        page->m_item->setSelected(true);
+        slotSelected(page->m_item);
+    }
 }
 
 void CJanusWidget::enablePage(QWidget *w)
 {
-	CPage	*page = findPage(w);
-	if (page && !page->m_item)
-	{
-		page->m_item = new QListWidgetItem(page->m_pixmap, page->m_text, m_iconlist);
-		m_iconlist->computeWidth();
-		if (m_iconlist->count() == 1)
-			page->m_item->setSelected(true);
-	}
+    CPage *page = findPage(w);
+    if (page && !page->m_item) {
+        page->m_item = new QListWidgetItem(page->m_pixmap, page->m_text, m_iconlist);
+        m_iconlist->computeWidth();
+        if (m_iconlist->count() == 1)
+            page->m_item->setSelected(true);
+    }
 }
 
 void CJanusWidget::disablePage(QWidget *w)
 {
-	CPage	*page = findPage(w);
-	if (page && page->m_item)
-	{
-		bool	needReselect(page->m_item->isSelected());
-		delete page->m_item;
-		page->m_item = 0;
-		m_iconlist->computeWidth();
-		if (needReselect)
-			if (m_iconlist->count() > 0)
+    CPage *page = findPage(w);
+    if (page && page->m_item) {
+        bool needReselect(page->m_item->isSelected());
+        delete page->m_item;
+        page->m_item = 0;
+        m_iconlist->computeWidth();
+        if (needReselect)
+            if (m_iconlist->count() > 0)
                 m_iconlist->item(0)->setSelected(true);
-			else
-				slotSelected(0);
-	}
+            else
+                slotSelected(0);
+    }
 }
 
 void CJanusWidget::slotSelected(QListWidgetItem *item)
 {
-	CPage	*page = findPage(item);
-	if (page)
-	{
-		m_stack->setCurrentWidget(page->m_widget);
-		m_header->setText(page->m_header);
-	}
-	else
-	{
-		m_header->setText("");
-		m_stack->setCurrentWidget(m_empty);
-	}
+    CPage *page = findPage(item);
+    if (page) {
+        m_stack->setCurrentWidget(page->m_widget);
+        m_header->setText(page->m_header);
+    } else {
+        m_header->setText("");
+        m_stack->setCurrentWidget(m_empty);
+    }
 }
 
 CJanusWidget::CPage* CJanusWidget::findPage(QWidget *w)
 {
-	QListIterator<CPage*>	it(m_pages);
-	while(it.hasNext())
-	{
-		CPage *item = it.next();
-		if (item->m_widget == w)
-			return item;
-	}
-	return NULL;
+    QListIterator<CPage*> it(m_pages);
+    while (it.hasNext()) {
+        CPage *item = it.next();
+        if (item->m_widget == w)
+            return item;
+    }
+    return NULL;
 }
 
 CJanusWidget::CPage* CJanusWidget::findPage(QListWidgetItem *i)
 {
-	QListIterator<CPage*>	it(m_pages);
-	while(it.hasNext())
-	{
-		CPage *item = it.next();
-		if (item->m_item == i)
-			return item;
-	}
-	return NULL;
+    QListIterator<CPage*> it(m_pages);
+    while (it.hasNext()) {
+        CPage *item = it.next();
+        if (item->m_item == i)
+            return item;
+    }
+    return NULL;
 }
 
 QListWidgetItem* CJanusWidget::findPrevItem(CPage *p)
 {
-	QListIterator<CPage*>   it(m_pages);
+    QListIterator<CPage*>   it(m_pages);
 
-        if(it.findNext(p))
-            it.previous();
+    if (it.findNext(p))
+        it.previous();
 
-	while(it.hasPrevious())
-	{
-		CPage *item = it.previous();
-		if (item->m_item)
-			return item->m_item;
-	}
-	return NULL;
+    while (it.hasPrevious()) {
+        CPage *item = it.previous();
+        if (item->m_item)
+            return item->m_item;
+    }
+    return NULL;
 }
 
 void CJanusWidget::clearPages()
 {
-	QListIterator<CPage*>	it(m_pages);
-	while(it.hasNext())
-	{
-		CPage *item = it.next();
-		delete item->m_widget;
-		delete item->m_item;
-	}
-	m_pages.clear();
+    QListIterator<CPage*> it(m_pages);
+    while (it.hasNext()) {
+        CPage *item = it.next();
+        delete item->m_widget;
+        delete item->m_item;
+    }
+    m_pages.clear();
 }
 
 #include "cjanuswidget.moc"

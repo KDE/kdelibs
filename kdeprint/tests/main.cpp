@@ -13,9 +13,9 @@
 #include <stdlib.h>
 #include <QtGui/QDesktopWidget>
 #include <kcmdlineargs.h>
-int main( int argc, char ** argv )
+int main(int argc, char ** argv)
 {
-    KCmdLineArgs::init( argc, argv, "helpviewer", 0, ki18n("helpviewer"), 0);
+    KCmdLineArgs::init(argc, argv, "helpviewer", 0, ki18n("helpviewer"), 0);
     KApplication a;
 
     QString home;
@@ -28,14 +28,14 @@ int main( int argc, char ** argv )
     HelpWindow *help = new HelpWindow(home, ".", 0);
     help->setObjectName(QLatin1String("help viewer"));
 
-    if ( QApplication::desktop()->width() > 400
-	 && QApplication::desktop()->height() > 500 )
-	help->show();
+    if (QApplication::desktop()->width() > 400
+            && QApplication::desktop()->height() > 500)
+        help->show();
     else
-	help->showMaximized();
+        help->showMaximized();
 
-    QObject::connect( &a, SIGNAL(lastWindowClosed()),
-                      &a, SLOT(quit()) );
+    QObject::connect(&a, SIGNAL(lastWindowClosed()),
+                     &a, SLOT(quit()));
 
     return a.exec();
 }

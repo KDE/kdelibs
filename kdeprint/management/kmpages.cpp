@@ -28,9 +28,9 @@
 #include <kdialog.h>
 
 KMPages::KMPages(QWidget *parent)
-: QTabWidget(parent)
+        : QTabWidget(parent)
 {
-	initialize();
+    initialize();
 }
 
 KMPages::~KMPages()
@@ -39,37 +39,37 @@ KMPages::~KMPages()
 
 void KMPages::setPrinter(KMPrinter *p)
 {
-	QListIterator<KMPrinterPage*>	it(m_pages);
-	while(it.hasNext())
-			it.next()->setPrinter(p);
+    QListIterator<KMPrinterPage*> it(m_pages);
+    while (it.hasNext())
+        it.next()->setPrinter(p);
 }
 
 void KMPages::initialize()
 {
-	// Info page
-	KMInfoPage	*infopage = new KMInfoPage(this );
-        infopage->setObjectName("InfoPage");
-	addTab(infopage, SmallIcon("help-contents"), i18n("Information"));
-	m_pages.append(infopage);
+    // Info page
+    KMInfoPage *infopage = new KMInfoPage(this);
+    infopage->setObjectName("InfoPage");
+    addTab(infopage, SmallIcon("help-contents"), i18n("Information"));
+    m_pages.append(infopage);
 
-	// Job page
-	KMJobViewer	*jobviewer = new KMJobViewer(this );
-        jobviewer->setObjectName( "JobViewer" );
-	addTab(jobviewer, SmallIcon("folder"), i18n("Jobs"));
-	m_pages.append(jobviewer);
+    // Job page
+    KMJobViewer *jobviewer = new KMJobViewer(this);
+    jobviewer->setObjectName("JobViewer");
+    addTab(jobviewer, SmallIcon("folder"), i18n("Jobs"));
+    m_pages.append(jobviewer);
 
-	// Property page
-	KMPropertyPage	*proppage = new KMPropertyPage(this );
-        proppage->setObjectName( "Property");
-	addTab(proppage, SmallIcon("configure"), i18n("Properties"));
-	m_pages.append(proppage);
+    // Property page
+    KMPropertyPage *proppage = new KMPropertyPage(this);
+    proppage->setObjectName("Property");
+    addTab(proppage, SmallIcon("configure"), i18n("Properties"));
+    m_pages.append(proppage);
 
-	// Instance page
-	KMInstancePage	*instpage = new KMInstancePage(this );
-        instpage->setObjectName( "Instance");
-	addTab(instpage, SmallIcon("document-print"), i18n("Instances"));
-	m_pages.append(instpage);
+    // Instance page
+    KMInstancePage *instpage = new KMInstancePage(this);
+    instpage->setObjectName("Instance");
+    addTab(instpage, SmallIcon("document-print"), i18n("Instances"));
+    m_pages.append(instpage);
 
-	// initialize pages
-	setPrinter(0);
+    // initialize pages
+    setPrinter(0);
 }

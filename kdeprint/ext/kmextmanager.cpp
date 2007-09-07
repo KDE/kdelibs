@@ -23,10 +23,10 @@
 #include <klocale.h>
 
 KMExtManager::KMExtManager(QObject *parent, const QStringList & /*args*/)
-    : KMManager(parent)
+        : KMManager(parent)
 {
-	setHasManagement(false);
-	m_psprinter = 0;
+    setHasManagement(false);
+    m_psprinter = 0;
 }
 
 KMExtManager::~KMExtManager()
@@ -35,15 +35,13 @@ KMExtManager::~KMExtManager()
 
 void KMExtManager::listPrinters()
 {
-	if (!m_psprinter)
-	{
-		m_psprinter = new KMPrinter;
-		m_psprinter->setName(i18n("PS_printer"));
-		m_psprinter->setPrinterName(m_psprinter->name());
-		m_psprinter->setDescription(i18n("PostScript file generator"));
-		m_psprinter->setState(KMPrinter::Idle);
-		addPrinter(m_psprinter);
-	}
-	else
-		m_psprinter->setDiscarded(false);
+    if (!m_psprinter) {
+        m_psprinter = new KMPrinter;
+        m_psprinter->setName(i18n("PS_printer"));
+        m_psprinter->setPrinterName(m_psprinter->name());
+        m_psprinter->setDescription(i18n("PostScript file generator"));
+        m_psprinter->setState(KMPrinter::Idle);
+        addPrinter(m_psprinter);
+    } else
+        m_psprinter->setDiscarded(false);
 }

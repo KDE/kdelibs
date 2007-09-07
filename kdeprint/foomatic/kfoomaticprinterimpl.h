@@ -25,13 +25,13 @@
 class KFoomaticPrinterImpl : public KPrinterImpl
 {
 public:
-	KFoomaticPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/);
-	~KFoomaticPrinterImpl();
+    KFoomaticPrinterImpl(QObject *parent, const char *name, const QStringList & /*args*/);
+    ~KFoomaticPrinterImpl();
 
-	bool setupCommand(QString&, KPrinter*);
+    bool setupCommand(QString&, KPrinter*);
 
 protected:
-	QString executable();
+    QString executable();
 };
 
 #endif

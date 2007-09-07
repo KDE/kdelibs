@@ -28,23 +28,23 @@ class KMPrinter;
 
 class KMPropContainer : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMPropContainer(QWidget *parent = 0);
-	~KMPropContainer();
+    KMPropContainer(QWidget *parent = 0);
+    ~KMPropContainer();
 
-	void setWidget(KMPropWidget*);
-	void setPrinter(KMPrinter*);
+    void setWidget(KMPropWidget*);
+    void setPrinter(KMPrinter*);
 
 Q_SIGNALS:
-	void enable(bool);
+    void enable(bool);
 
 protected Q_SLOTS:
-	void slotEnableChange(bool);
+    void slotEnableChange(bool);
 
 private:
-	KMPropWidget	*m_widget;
-	QPushButton	*m_button;
+    KMPropWidget *m_widget;
+    QPushButton *m_button;
 };
 
 #endif

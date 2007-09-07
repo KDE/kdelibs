@@ -30,20 +30,20 @@ class KMJob;
 #endif
 class LpqHelper : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	LpqHelper(QObject *parent = 0);
-	~LpqHelper();
+    LpqHelper(QObject *parent = 0);
+    ~LpqHelper();
 
-	void listJobs(QList<KMJob*>& jobs, const QString& prname, int limit = 0);
+    void listJobs(QList<KMJob*>& jobs, const QString& prname, int limit = 0);
 
 protected:
-	KMJob* parseLineLpr(const QString&);
-	KMJob* parseLineLPRng(const QString&);
+    KMJob* parseLineLpr(const QString&);
+    KMJob* parseLineLPRng(const QString&);
 
 private:
-	QString		m_exepath;
+    QString  m_exepath;
 };
 
 #endif

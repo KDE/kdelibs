@@ -30,29 +30,29 @@ class Q3ListViewItem;
 
 class KMWLocal : public KMWizardPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMWLocal(QWidget *parent = 0);
+    KMWLocal(QWidget *parent = 0);
 
-	bool isValid(QString&);
-	void updatePrinter(KMPrinter*);
-	void initPrinter(KMPrinter*);
+    bool isValid(QString&);
+    void updatePrinter(KMPrinter*);
+    void initPrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotPortSelected(Q3ListViewItem*);
-	void slotTextChanged( const QString& );
+    void slotPortSelected(Q3ListViewItem*);
+    void slotTextChanged(const QString&);
 
 protected:
-	void initialize();
-	Q3ListViewItem* lookForItem( const QString& );
+    void initialize();
+    Q3ListViewItem* lookForItem(const QString&);
 
 protected:
-	K3ListView	*m_ports;
-	QLineEdit	*m_localuri;
-	QStringList	m_uris;
-	Q3ListViewItem	*m_parents[4];
-	bool		m_initialized;
-	bool m_block;
+    K3ListView *m_ports;
+    QLineEdit *m_localuri;
+    QStringList m_uris;
+    Q3ListViewItem *m_parents[4];
+    bool  m_initialized;
+    bool m_block;
 };
 
 #endif

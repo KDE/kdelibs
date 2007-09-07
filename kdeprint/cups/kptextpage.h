@@ -30,28 +30,28 @@ class MarginWidget;
 
 class KPTextPage : public KPrintDialogPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KPTextPage(DrMain *driver, QWidget *parent = 0);
-	~KPTextPage();
+    explicit KPTextPage(DrMain *driver, QWidget *parent = 0);
+    ~KPTextPage();
 
-	void setOptions(const QMap<QString,QString>& opts);
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
+    void setOptions(const QMap<QString, QString>& opts);
+    void getOptions(QMap<QString, QString>& opts, bool incldef = false);
 
 protected Q_SLOTS:
-	void slotPrettyChanged(int);
-	void slotColumnsChanged(int);
+    void slotPrettyChanged(int);
+    void slotColumnsChanged(int);
 
 protected:
-	void initPageSize(bool landscape);
+    void initPageSize(bool landscape);
 
 private:
-	KIntNumInput	*m_cpi, *m_lpi, *m_columns;
-	KButtonGroup	*m_prettyprint;
-	MarginWidget	*m_margin;
-	QLabel			*m_prettypix;
-	QString		m_currentps;
-	bool		m_block;
+    KIntNumInput *m_cpi, *m_lpi, *m_columns;
+    KButtonGroup *m_prettyprint;
+    MarginWidget *m_margin;
+    QLabel   *m_prettypix;
+    QString  m_currentps;
+    bool  m_block;
 };
 
 #endif

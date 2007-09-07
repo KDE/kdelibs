@@ -28,17 +28,17 @@ class LpcHelper;
 class KMLprJobManager : public KMJobManager
 {
 public:
-	KMLprJobManager(QObject *parent, const QStringList & /*args*/);
+    KMLprJobManager(QObject *parent, const QStringList & /*args*/);
 
-	int actions();
+    int actions();
 
 protected:
-	bool listJobs(const QString&, JobType, int = 0);
-	LpcHelper* lpcHelper();
-	bool sendCommandSystemJob(const QList<KMJob*>&, int, const QString& = QString());
+    bool listJobs(const QString&, JobType, int = 0);
+    LpcHelper* lpcHelper();
+    bool sendCommandSystemJob(const QList<KMJob*>&, int, const QString& = QString());
 
 private:
-	LpqHelper	*m_lpqhelper;
+    LpqHelper *m_lpqhelper;
 };
 
 #endif

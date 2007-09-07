@@ -22,38 +22,38 @@
 #include <kicon.h>
 
 KIconSelectAction::KIconSelectAction(const QString& text, QObject *parent)
-  : KSelectAction(text, parent)
-  , d(0L)
+        : KSelectAction(text, parent)
+        , d(0L)
 {
 }
 
 KIconSelectAction::~KIconSelectAction()
 {
-	//delete d;
+    //delete d;
 }
 
 void KIconSelectAction::setItems(const QStringList& lst, const QStringList& iconlst)
 {
-  clear();
+    clear();
 
-  Q_ASSERT(iconlst.count() >= lst.count());
+    Q_ASSERT(iconlst.count() >= lst.count());
 
-  for (int i = 0; i < lst.count(); ++i) {
-    if ( !lst.at(i).isEmpty() ) {
-      KAction* action = new KAction(lst.at(i), this);
-      action->setIcon( KIcon( iconlst.at(i) ) );
-      action->setShortcutConfigurable(false);
-      addAction(action);
+    for (int i = 0; i < lst.count(); ++i) {
+        if (!lst.at(i).isEmpty()) {
+            KAction* action = new KAction(lst.at(i), this);
+            action->setIcon(KIcon(iconlst.at(i)));
+            action->setShortcutConfigurable(false);
+            addAction(action);
 
-    } else {
-      QAction* action = new QAction(this);
-      action->setSeparator(true);
-      addAction(action);
+        } else {
+            QAction* action = new QAction(this);
+            action->setSeparator(true);
+            addAction(action);
+        }
     }
-  }
 
-  // Disable if empty and not editable
-  setEnabled( lst.count() > 0 || isEditable() );
+    // Disable if empty and not editable
+    setEnabled(lst.count() > 0 || isEditable());
 }
 
 #include "kiconselectaction.moc"

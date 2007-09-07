@@ -29,46 +29,52 @@ class QPushButton;
 
 class KMDriverDbWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMDriverDbWidget(QWidget *parent = 0);
-	~KMDriverDbWidget();
+    KMDriverDbWidget(QWidget *parent = 0);
+    ~KMDriverDbWidget();
 
-	void init();
-	void setHaveRaw(bool on);
-	void setHaveOther(bool on);
-	void setDriver(const QString& manu, const QString& model);
+    void init();
+    void setHaveRaw(bool on);
+    void setHaveOther(bool on);
+    void setDriver(const QString& manu, const QString& model);
 
-	QString manufacturer();
-	QString model();
-	QString description()		{ return m_desc; }
-	KMDBEntryList* drivers();
-	QString driverFile();
-	bool isRaw();
-	bool isExternal();
+    QString manufacturer();
+    QString model();
+    QString description()  {
+        return m_desc;
+    }
+    KMDBEntryList* drivers();
+    QString driverFile();
+    bool isRaw();
+    bool isExternal();
 
 protected Q_SLOTS:
-	void slotDbLoaded(bool reloaded);
-	void slotManufacturerSelected(const QString& name);
-	void slotPostscriptToggled(bool);
-	void slotOtherClicked();
-	void slotError(const QString&);
+    void slotDbLoaded(bool reloaded);
+    void slotManufacturerSelected(const QString& name);
+    void slotPostscriptToggled(bool);
+    void slotOtherClicked();
+    void slotError(const QString&);
 
 private:
-	QListWidget	*m_manu;
-	QListWidget	*m_model;
-	QCheckBox	*m_postscript;
-	QCheckBox	*m_raw;
-	QPushButton	*m_other;
-	QString		m_external;
-	QString		m_desc;
-	bool		m_valid;
+    QListWidget *m_manu;
+    QListWidget *m_model;
+    QCheckBox *m_postscript;
+    QCheckBox *m_raw;
+    QPushButton *m_other;
+    QString  m_external;
+    QString  m_desc;
+    bool  m_valid;
 };
 
 inline QString KMDriverDbWidget::driverFile()
-{ return m_external; }
+{
+    return m_external;
+}
 
 inline bool KMDriverDbWidget::isExternal()
-{ return !(m_external.isEmpty()); }
+{
+    return !(m_external.isEmpty());
+}
 
 #endif

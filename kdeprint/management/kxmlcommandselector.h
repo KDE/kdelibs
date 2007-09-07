@@ -34,35 +34,35 @@ class KDialog;
 
 class KDEPRINT_MANAGEMENT_EXPORT KXmlCommandSelector : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, KDialog *dlg = 0);
+    explicit KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, KDialog *dlg = 0);
 
-	void setCommand(const QString&);
-	QString command() const;
+    void setCommand(const QString&);
+    QString command() const;
 
 protected:
-	void loadCommands();
+    void loadCommands();
 
 protected Q_SLOTS:
-	void slotAddCommand();
-	void slotEditCommand();
-	void slotBrowse();
-	void slotCommandSelected(int);
-	void slotHelpCommand();
-	void slotXmlCommandToggled( bool );
+    void slotAddCommand();
+    void slotEditCommand();
+    void slotBrowse();
+    void slotCommandSelected(int);
+    void slotHelpCommand();
+    void slotXmlCommandToggled(bool);
 
 Q_SIGNALS:
-	void commandValid( bool );
+    void commandValid(bool);
 
 private:
-	QComboBox	*m_cmd;
-	QLineEdit	*m_line;
-	QCheckBox	*m_usefilter;
-	QStringList	m_cmdlist;
-	QLabel		*m_shortinfo;
-	QPushButton *m_helpbtn;
-	QString m_help;
+    QComboBox *m_cmd;
+    QLineEdit *m_line;
+    QCheckBox *m_usefilter;
+    QStringList m_cmdlist;
+    QLabel  *m_shortinfo;
+    QPushButton *m_helpbtn;
+    QString m_help;
 };
 
 #endif

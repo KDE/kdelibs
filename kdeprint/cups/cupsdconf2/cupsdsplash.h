@@ -18,7 +18,7 @@
  **/
 
 #ifndef CUPSDSPLASH_H
-#define	CUPSDSPLASH_H
+#define CUPSDSPLASH_H
 
 #include "cupsdpage.h"
 
@@ -28,11 +28,11 @@
 class CupsdSplash : public CupsdPage
 {
 public:
-	CupsdSplash(QWidget *parent = 0);
-	~CupsdSplash();
+    CupsdSplash(QWidget *parent = 0);
+    ~CupsdSplash();
 
-	bool loadConfig(CupsdConf *conf, QString& msg);
-	bool saveConfig(CupsdConf *conf, QString& msg);
+    bool loadConfig(CupsdConf *conf, QString& msg);
+    bool saveConfig(CupsdConf *conf, QString& msg);
 };
 
 #endif

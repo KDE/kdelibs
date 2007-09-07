@@ -27,20 +27,20 @@
 
 extern "C" int main(int argc, char *argv[])
 {
-	KCmdLineArgs::init(argc,argv,"cupsdconf","cupsdconf4",
-			   ki18n("A CUPS configuration tool"),"0.0.1",
-			   ki18n("A CUPS configuration tool"));
+    KCmdLineArgs::init(argc, argv, "cupsdconf", "cupsdconf4",
+                       ki18n("A CUPS configuration tool"), "0.0.1",
+                       ki18n("A CUPS configuration tool"));
 
-	KCmdLineOptions options;
-	options.add("+[file]", ki18n("Configuration file to load"));
-	KCmdLineArgs::addCmdLineOptions(options);
-	KApplication	app;
-	KCmdLineArgs	*args = KCmdLineArgs::parsedArgs();
+    KCmdLineOptions options;
+    options.add("+[file]", ki18n("Configuration file to load"));
+    KCmdLineArgs::addCmdLineOptions(options);
+    KApplication app;
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-	KUrl	configfile;
-	if (args->count() > 0)
-		CupsdDialog::configure(args->url(0).path());
-	else
-		CupsdDialog::configure();
-	return (0);
+    KUrl configfile;
+    if (args->count() > 0)
+        CupsdDialog::configure(args->url(0).path());
+    else
+        CupsdDialog::configure();
+    return (0);
 }

@@ -27,13 +27,13 @@ class KListWidget;
 class KMWFax : public KMWizardPage
 {
 public:
-	KMWFax(QWidget *parent = 0);
+    KMWFax(QWidget *parent = 0);
 
-	bool isValid(QString&);
-	void updatePrinter(KMPrinter*);
+    bool isValid(QString&);
+    void updatePrinter(KMPrinter*);
 
 private:
-	KListWidget	*m_list;
+    KListWidget *m_list;
 };
 
 #endif

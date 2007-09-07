@@ -25,7 +25,7 @@
 class KMWInfoPage : public KMWizardPage
 {
 public:
-	KMWInfoPage(QWidget *parent = 0);
+    KMWInfoPage(QWidget *parent = 0);
 };
 
 #endif

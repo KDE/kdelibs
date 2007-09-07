@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef	IMAGEPOSITION_H
-#define	IMAGEPOSITION_H
+#ifndef IMAGEPOSITION_H
+#define IMAGEPOSITION_H
 
 #include <QtGui/QWidget>
 #include <QtCore/QString>
@@ -30,32 +30,35 @@
 class ImagePosition : public QWidget
 {
 public:
-	enum PositionType {TopLeft,
-			   Top,
-			   TopRight,
-			   Left,
-			   Center,
-			   Right,
-			   BottomLeft,
-			   Bottom,
-			   BottomRight};
+    enum PositionType {TopLeft,
+                       Top,
+                       TopRight,
+                       Left,
+                       Center,
+                       Right,
+                       BottomLeft,
+                       Bottom,
+                       BottomRight
+                      };
 
-	ImagePosition(QWidget *parent = 0);
-	~ImagePosition();
+    ImagePosition(QWidget *parent = 0);
+    ~ImagePosition();
 
-	void setPosition(const char *type = "center");
-	void setPosition(PositionType type = Center);
-	void setPosition(int horiz = 1, int vert = 1);
-	PositionType position() const { return (PositionType)position_; }
-	QString positionString() const;
-	QSize sizeHint() const;
+    void setPosition(const char *type = "center");
+    void setPosition(PositionType type = Center);
+    void setPosition(int horiz = 1, int vert = 1);
+    PositionType position() const {
+        return (PositionType)position_;
+    }
+    QString positionString() const;
+    QSize sizeHint() const;
 
 protected:
-	void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *);
 
 private:
-	int	position_;
-	QPixmap	pix_;
+    int position_;
+    QPixmap pix_;
 };
 
 #endif

@@ -28,9 +28,9 @@
 #include <QtCore/QTextStream>
 
 LpqHelper::LpqHelper(QObject *parent)
-: QObject(parent)
+        : QObject(parent)
 {
-	m_exepath = KStandardDirs::findExe("lpq");
+    m_exepath = KStandardDirs::findExe("lpq");
 }
 
 LpqHelper::~LpqHelper()
@@ -39,80 +39,74 @@ LpqHelper::~LpqHelper()
 
 KMJob* LpqHelper::parseLineLpr(const QString& line)
 {
-	QString	rank = line.left(7);
-	if (!rank[0].isDigit() && rank != "active")
-		return NULL;
-	KMJob	*job = new KMJob;
-	job->setState((rank[0].isDigit() ? KMJob::Queued : KMJob::Printing));
-	job->setOwner(line.mid(7, 11).trimmed());
-	job->setId(line.mid(18, 5).toInt());
-	job->setName(line.mid(23, 38).trimmed());
-	int	p = line.indexOf(' ', 61);
-	if (p != -1)
-	{
-		job->setSize(line.mid(61, p-61).toInt() / 1000);
-	}
-	return job;
+    QString rank = line.left(7);
+    if (!rank[0].isDigit() && rank != "active")
+        return NULL;
+    KMJob *job = new KMJob;
+    job->setState((rank[0].isDigit() ? KMJob::Queued : KMJob::Printing));
+    job->setOwner(line.mid(7, 11).trimmed());
+    job->setId(line.mid(18, 5).toInt());
+    job->setName(line.mid(23, 38).trimmed());
+    int p = line.indexOf(' ', 61);
+    if (p != -1) {
+        job->setSize(line.mid(61, p - 61).toInt() / 1000);
+    }
+    return job;
 }
 
 KMJob* LpqHelper::parseLineLPRng(const QString& line)
 {
-	QString	rank = line.left(7).trimmed();
-	if (!rank[0].isDigit() && rank != "active" && rank != "hold")
-		return NULL;
-	KMJob	*job = new KMJob;
-	job->setState((rank[0].isDigit() ? KMJob::Queued : (rank == "hold" ? KMJob::Held : KMJob::Printing)));
-	int	p = line.indexOf('@', 7), q = line.indexOf(' ', 7);
-	job->setOwner(line.mid(7, qMin(p,q)-7));
-	while (line[q].isSpace())
-		q++;
-	q++;
-	while (line[q].isSpace())
-		q++;
-	p = line.indexOf(' ', q);
-	job->setId(line.mid(q, p-q).toInt());
-	while (line[p].isSpace())
-		p++;
-	q = p+25;
-	while (line[q].isDigit())
-		q--;
-	job->setName(line.mid(p, q-p).trimmed());
-	job->setSize(line.mid(q+1, p+26-q).toInt() / 1000);
-	return job;
+    QString rank = line.left(7).trimmed();
+    if (!rank[0].isDigit() && rank != "active" && rank != "hold")
+        return NULL;
+    KMJob *job = new KMJob;
+    job->setState((rank[0].isDigit() ? KMJob::Queued : (rank == "hold" ? KMJob::Held : KMJob::Printing)));
+    int p = line.indexOf('@', 7), q = line.indexOf(' ', 7);
+    job->setOwner(line.mid(7, qMin(p, q) - 7));
+    while (line[q].isSpace())
+        q++;
+    q++;
+    while (line[q].isSpace())
+        q++;
+    p = line.indexOf(' ', q);
+    job->setId(line.mid(q, p - q).toInt());
+    while (line[p].isSpace())
+        p++;
+    q = p + 25;
+    while (line[q].isDigit())
+        q--;
+    job->setName(line.mid(p, q - p).trimmed());
+    job->setSize(line.mid(q + 1, p + 26 - q).toInt() / 1000);
+    return job;
 }
 
 void LpqHelper::listJobs(QList<KMJob*>& jobs, const QString& prname, int limit)
 {
-	KPipeProcess	proc;
-	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + KShell::quoteArg(prname)))
-	{
-		QTextStream	t(&proc);
-		QString		line;
-		bool	lprng = (LprSettings::self()->mode() == LprSettings::LPRng);
-		int count = 0;
+    KPipeProcess proc;
+    if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + KShell::quoteArg(prname))) {
+        QTextStream t(&proc);
+        QString  line;
+        bool lprng = (LprSettings::self()->mode() == LprSettings::LPRng);
+        int count = 0;
 
-		while (!t.atEnd())
-		{
-			line = t.readLine().trimmed();
-			if (line.startsWith("Rank"))
-				break;
-		}
-		while (!t.atEnd())
-		{
-			line = t.readLine();
-			if ( limit > 0 && count >= limit )
-				continue;
-			KMJob	*job = (lprng ? parseLineLPRng(line) : parseLineLpr(line));
-			if (job)
-			{
-				job->setPrinter(prname);
-				job->setUri("lpd://"+prname+"/"+QString::number(job->id()));
-				jobs.append(job);
-				count++;
-			}
-			else
-				break;
-		}
-		proc.close();
-	}
+        while (!t.atEnd()) {
+            line = t.readLine().trimmed();
+            if (line.startsWith("Rank"))
+                break;
+        }
+        while (!t.atEnd()) {
+            line = t.readLine();
+            if (limit > 0 && count >= limit)
+                continue;
+            KMJob *job = (lprng ? parseLineLPRng(line) : parseLineLpr(line));
+            if (job) {
+                job->setPrinter(prname);
+                job->setUri("lpd://" + prname + "/" + QString::number(job->id()));
+                jobs.append(job);
+                count++;
+            } else
+                break;
+        }
+        proc.close();
+    }
 }

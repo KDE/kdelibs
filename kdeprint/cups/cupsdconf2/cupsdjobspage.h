@@ -30,21 +30,21 @@ class QCheckBox;
 #endif
 class CupsdJobsPage : public CupsdPage
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	CupsdJobsPage(QWidget *parent = 0);
+    CupsdJobsPage(QWidget *parent = 0);
 
-	bool loadConfig(CupsdConf*, QString&);
-	bool saveConfig(CupsdConf*, QString&);
-	void setInfos(CupsdConf*);
+    bool loadConfig(CupsdConf*, QString&);
+    bool saveConfig(CupsdConf*, QString&);
+    void setInfos(CupsdConf*);
 
 protected Q_SLOTS:
-	void historyChanged(bool);
+    void historyChanged(bool);
 
 private:
-	KIntNumInput	*maxjobs_, *maxjobsperprinter_, *maxjobsperuser_;
-	QCheckBox	*keepjobhistory_, *keepjobfiles_, *autopurgejobs_;
+    KIntNumInput *maxjobs_, *maxjobsperprinter_, *maxjobsperuser_;
+    QCheckBox *keepjobhistory_, *keepjobfiles_, *autopurgejobs_;
 };
 
 #endif

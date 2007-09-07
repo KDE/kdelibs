@@ -27,14 +27,14 @@ class KListWidget;
 class KMWIppSelect : public KMWizardPage
 {
 public:
-	KMWIppSelect(QWidget *parent = 0);
+    KMWIppSelect(QWidget *parent = 0);
 
-	bool isValid(QString&);
-	void initPrinter(KMPrinter*);
-	void updatePrinter(KMPrinter*);
+    bool isValid(QString&);
+    void initPrinter(KMPrinter*);
+    void updatePrinter(KMPrinter*);
 
 private:
-	KListWidget	*m_list;
+    KListWidget *m_list;
 };
 
 #endif

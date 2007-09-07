@@ -23,11 +23,11 @@
 
 // automatically connect to "pluginActionActived(int)" in the receiver.
 PluginAction::PluginAction(int ID, const QString& txt, const QString& icon, int accel, QObject *parent)
-: KAction(txt, parent)
+        : KAction(txt, parent)
 {
-  setIcon( KIcon( icon ) );
-  setShortcut( QKeySequence(accel) );
-  setData( ID );
+    setIcon(KIcon(icon));
+    setShortcut(QKeySequence(accel));
+    setData(ID);
 }
 
 #include "pluginaction.moc"

@@ -30,16 +30,16 @@ class KTextEdit;
 #endif
 class IppReportDlg : public KDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit IppReportDlg(QWidget *parent = 0, const char *name = 0);
-	static void report(IppRequest *req, int group, const QString& caption = QString());
+    explicit IppReportDlg(QWidget *parent = 0, const char *name = 0);
+    static void report(IppRequest *req, int group, const QString& caption = QString());
 
 protected Q_SLOTS:
-	void slotUser1();
-	
+    void slotUser1();
+
 private:
-	KTextEdit	*m_edit;
+    KTextEdit *m_edit;
 };
 
 #endif

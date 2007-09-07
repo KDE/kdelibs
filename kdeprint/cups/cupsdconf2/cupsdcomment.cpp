@@ -26,118 +26,102 @@
 
 QString Comment::comment() const
 {
-        QString str = comment_;
-        str.replace(QRegExp("<[^>]*>"), "");
-        str += ("#\n" + example_);
-        return str;
+    QString str = comment_;
+    str.replace(QRegExp("<[^>]*>"), "");
+    str += ("#\n" + example_);
+    return str;
 }
 
 QString Comment::toolTip() const
 {
-        QString str = comment_;
-        str.replace(QRegExp("^#[\\s]*"), "").replace(QRegExp("\n#[\\s]*"), "\n");
-        return i18nc("Do not translate the keyword between brackets (e.g. ServerName, ServerAdmin, etc.)", str.toUtf8());
+    QString str = comment_;
+    str.replace(QRegExp("^#[\\s]*"), "").replace(QRegExp("\n#[\\s]*"), "\n");
+    return i18nc("Do not translate the keyword between brackets (e.g. ServerName, ServerAdmin, etc.)", str.toUtf8());
 }
 
 QString Comment::key() const
 {
-	return key_;
+    return key_;
 }
 
 bool Comment::load(QFile *f)
 {
-        comment_ = "";
-        example_ = "";
-	key_ = "";
-        QByteArray line;
-	line.resize(1024);
-	QString *current = &comment_;
-        while (!f->atEnd())
-        {
-                f->readLine(line.data(), 1024);
-                if (line.startsWith("$$"))
-                {
-                        current = &example_;
-                }
-		else if (line.startsWith("%%"))
-		{
-			key_ = line.mid(2).trimmed();
-		}
-                else if (line.startsWith("@@"))
-                {
-                        return true;
-                }
-                else if (line.trimmed().isEmpty())
-                {
-                        ; // do nothing
-                }
-                else
-                {
-                        if (line[0] != '#') break;
-                        else
-                        {
-                                current->append(QString::fromLatin1(line)); // encoding ok?
-                        }
-                }
+    comment_ = "";
+    example_ = "";
+    key_ = "";
+    QByteArray line;
+    line.resize(1024);
+    QString *current = &comment_;
+    while (!f->atEnd()) {
+        f->readLine(line.data(), 1024);
+        if (line.startsWith("$$")) {
+            current = &example_;
+        } else if (line.startsWith("%%")) {
+            key_ = line.mid(2).trimmed();
+        } else if (line.startsWith("@@")) {
+            return true;
+        } else if (line.trimmed().isEmpty()) {
+            ; // do nothing
+        } else {
+            if (line[0] != '#') break;
+            else {
+                current->append(QString::fromLatin1(line)); // encoding ok?
+            }
         }
-        return false;
+    }
+    return false;
 }
 
 //------------------------------------------------------------------------------------------------------------
 
 CupsdComment::~CupsdComment()
 {
-	qDeleteAll(comments_);
+    qDeleteAll(comments_);
 }
 
-QString CupsdComment::operator[] (const QString& key)
+QString CupsdComment::operator[](const QString& key)
 {
-        return comment(key);
+    return comment(key);
 }
 
 QString CupsdComment::comment(const QString& key)
 {
-        if (!comments_.isEmpty() || loadComments())
-	{
-		Comment *comm = comments_.value(key);
-		if (comm)
-			return comm->comment();
-	}
-        return QString();
+    if (!comments_.isEmpty() || loadComments()) {
+        Comment *comm = comments_.value(key);
+        if (comm)
+            return comm->comment();
+    }
+    return QString();
 }
 
 QString CupsdComment::toolTip(const QString& key)
 {
-        if (!comments_.isEmpty() || loadComments())
-	{
-		Comment *comm = comments_.value(key);
-		if (comm)
-			return comm->toolTip();
-	}
-        return QString();
+    if (!comments_.isEmpty() || loadComments()) {
+        Comment *comm = comments_.value(key);
+        if (comm)
+            return comm->toolTip();
+    }
+    return QString();
 }
 
 bool CupsdComment::loadComments()
 {
-        qDeleteAll(comments_);
-        comments_.clear();
-        QFile f(KStandardDirs::locate("data", "kdeprint/cupsd.conf.template"));
-	if (f.exists() && f.open(QIODevice::ReadOnly))
-	{
-                Comment         *comm;
-                while (!f.atEnd())
-                {
-                        comm = new Comment();
-                        if (!comm->load(&f))
-                                break;
-                        else
-                        {
-				if (comm->key().isEmpty())
-					delete comm;
-				else
-					comments_.insert(comm->key(), comm);
-                        }
-                }
-	}
-        return true;
+    qDeleteAll(comments_);
+    comments_.clear();
+    QFile f(KStandardDirs::locate("data", "kdeprint/cupsd.conf.template"));
+    if (f.exists() && f.open(QIODevice::ReadOnly)) {
+        Comment         *comm;
+        while (!f.atEnd()) {
+            comm = new Comment();
+            if (!comm->load(&f))
+                break;
+            else {
+                if (comm->key().isEmpty())
+                    delete comm;
+                else
+                    comments_.insert(comm->key(), comm);
+            }
+        }
+    }
+    return true;
 }

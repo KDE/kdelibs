@@ -31,15 +31,15 @@ class QLineEdit;
 class AddressDialog : public KDialog
 {
 public:
-	explicit AddressDialog(QWidget *parent = 0, const char *name = 0);
+    explicit AddressDialog(QWidget *parent = 0, const char *name = 0);
 
-	QString addressString();
-	static QString newAddress(QWidget *parent = 0);
-	static QString editAddress(const QString& s, QWidget *parent = 0);
+    QString addressString();
+    static QString newAddress(QWidget *parent = 0);
+    static QString editAddress(const QString& s, QWidget *parent = 0);
 
 private:
-	QComboBox	*type_;
-	QLineEdit	*address_;
+    QComboBox *type_;
+    QLineEdit *address_;
 };
 
 #endif

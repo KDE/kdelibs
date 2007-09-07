@@ -28,14 +28,14 @@ class KUrlRequester;
 class KMConfigPreview : public KMConfigPage
 {
 public:
-	KMConfigPreview(QWidget *parent = 0);
+    KMConfigPreview(QWidget *parent = 0);
 
-	void loadConfig(KConfig*);
-	void saveConfig(KConfig*);
+    void loadConfig(KConfig*);
+    void saveConfig(KConfig*);
 
 private:
-	QCheckBox	*m_useext;
-	KUrlRequester	*m_program;
+    QCheckBox *m_useext;
+    KUrlRequester *m_program;
 };
 
 #endif

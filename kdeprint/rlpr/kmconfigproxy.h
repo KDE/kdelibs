@@ -28,13 +28,13 @@ class KConfig;
 class KMConfigProxy : public KMConfigPage
 {
 public:
-	KMConfigProxy(QWidget *parent = 0);
+    KMConfigProxy(QWidget *parent = 0);
 
-	void loadConfig(KConfig*);
-	void saveConfig(KConfig*);
+    void loadConfig(KConfig*);
+    void saveConfig(KConfig*);
 
 private:
-	KMProxyWidget	*m_widget;
+    KMProxyWidget *m_widget;
 };
 
 #endif

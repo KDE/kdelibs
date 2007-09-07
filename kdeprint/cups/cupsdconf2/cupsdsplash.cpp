@@ -26,41 +26,41 @@
 #include <kstandarddirs.h>
 
 CupsdSplash::CupsdSplash(QWidget *parent)
-	: CupsdPage(parent)
+        : CupsdPage(parent)
 {
-	setHeader(i18n("Welcome to the CUPS Server Configuration Tool"));
-	setPageLabel(i18n("Welcome"));
-	setPixmap("go");
+    setHeader(i18n("Welcome to the CUPS Server Configuration Tool"));
+    setPageLabel(i18n("Welcome"));
+    setPixmap("go");
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this );
-  main_->setMargin(10);
-  main_->setSpacing(10);
-  QHBoxLayout	*sub_ = new QHBoxLayout();
-  sub_->setMargin(0);
-  sub_->setSpacing(10);
-	main_->addLayout(sub_);
+    QVBoxLayout *main_ = new QVBoxLayout(this);
+    main_->setMargin(10);
+    main_->setSpacing(10);
+    QHBoxLayout *sub_ = new QHBoxLayout();
+    sub_->setMargin(0);
+    sub_->setSpacing(10);
+    main_->addLayout(sub_);
 
-	QLabel	*cupslogo_ = new QLabel(this);
-	QString	logopath = KStandardDirs::locate("data", QString("kdeprint/cups_logo.png"));
-	cupslogo_->setPixmap(logopath.isEmpty() ? QPixmap() : QPixmap(logopath));
-	cupslogo_->setAlignment(Qt::AlignCenter);
-	QLabel	*kupslogo_ = new QLabel(this);
-	logopath = KStandardDirs::locate("data", QString("kdeprint/kde_logo.png"));
-	kupslogo_->setPixmap(logopath.isEmpty() ? QPixmap() : QPixmap(logopath));
-	kupslogo_->setAlignment(Qt::AlignCenter);
+    QLabel *cupslogo_ = new QLabel(this);
+    QString logopath = KStandardDirs::locate("data", QString("kdeprint/cups_logo.png"));
+    cupslogo_->setPixmap(logopath.isEmpty() ? QPixmap() : QPixmap(logopath));
+    cupslogo_->setAlignment(Qt::AlignCenter);
+    QLabel *kupslogo_ = new QLabel(this);
+    logopath = KStandardDirs::locate("data", QString("kdeprint/kde_logo.png"));
+    kupslogo_->setPixmap(logopath.isEmpty() ? QPixmap() : QPixmap(logopath));
+    kupslogo_->setAlignment(Qt::AlignCenter);
 
-	QLabel	*helptxt_ = new QLabel(this);
-	helptxt_->setWordWrap(true);
-	helptxt_->setText(i18n( "<p>This tool will help you to configure graphically the server of the CUPS printing system. "
-				"The available options are grouped into sets of related topics and can be accessed "
-				"quickly through the icon view located on the left. Each option has a default value that is "
-				"shown if it has not been previously set. This default value should be OK in most cases.</p><br />"
-				"<p>You can access a short help message for each option using either the '?' button in the "
-				"the title bar, or the button at the bottom of this dialog.</p>"));
+    QLabel *helptxt_ = new QLabel(this);
+    helptxt_->setWordWrap(true);
+    helptxt_->setText(i18n("<p>This tool will help you to configure graphically the server of the CUPS printing system. "
+                           "The available options are grouped into sets of related topics and can be accessed "
+                           "quickly through the icon view located on the left. Each option has a default value that is "
+                           "shown if it has not been previously set. This default value should be OK in most cases.</p><br />"
+                           "<p>You can access a short help message for each option using either the '?' button in the "
+                           "the title bar, or the button at the bottom of this dialog.</p>"));
 
-	sub_->addWidget(cupslogo_);
-	sub_->addWidget(kupslogo_);
-	main_->addWidget(helptxt_, 1);
+    sub_->addWidget(cupslogo_);
+    sub_->addWidget(kupslogo_);
+    main_->addWidget(helptxt_, 1);
 }
 
 CupsdSplash::~CupsdSplash()
@@ -69,10 +69,10 @@ CupsdSplash::~CupsdSplash()
 
 bool CupsdSplash::loadConfig(CupsdConf*, QString&)
 {
-	return true;
+    return true;
 }
 
 bool CupsdSplash::saveConfig(CupsdConf*, QString&)
 {
-	return true;
+    return true;
 }

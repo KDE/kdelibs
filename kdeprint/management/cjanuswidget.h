@@ -30,36 +30,36 @@ class QListWidgetItem;
 
 class CJanusWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit CJanusWidget(QWidget *parent);
-	~CJanusWidget();
+    explicit CJanusWidget(QWidget *parent);
+    ~CJanusWidget();
 
-	void addPage(QWidget *w, const QString& text, const QString& header, const QPixmap& pix);
-	void enablePage(QWidget *w);
-	void disablePage(QWidget *w);
-	void clearPages();
+    void addPage(QWidget *w, const QString& text, const QString& header, const QPixmap& pix);
+    void enablePage(QWidget *w);
+    void disablePage(QWidget *w);
+    void clearPages();
 
 protected Q_SLOTS:
-	void slotSelected(QListWidgetItem*);
+    void slotSelected(QListWidgetItem*);
 
 public:
-	class CPage;
-	class CListBox;
-	class CListBoxItem;
+    class CPage;
+    class CListBox;
+    class CListBoxItem;
     class CListBoxItemDelegate;
 
 private:
-	CPage* findPage(QWidget *w);
-	CPage* findPage(QListWidgetItem *i);
-	QListWidgetItem* findPrevItem(CPage*);
+    CPage* findPage(QWidget *w);
+    CPage* findPage(QListWidgetItem *i);
+    QListWidgetItem* findPrevItem(CPage*);
 
 private:
-	QList<CPage*>		m_pages;
-	CListBox		*m_iconlist;
-	QLabel			*m_header;
-	QStackedWidget		*m_stack;
-	QWidget			*m_empty;
+    QList<CPage*>  m_pages;
+    CListBox  *m_iconlist;
+    QLabel   *m_header;
+    QStackedWidget  *m_stack;
+    QWidget   *m_empty;
 };
 
 #endif

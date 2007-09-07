@@ -31,20 +31,20 @@ class QDirMultiLineEdit;
 class CupsdDirPage : public CupsdPage
 {
 public:
-	CupsdDirPage(QWidget *parent = 0);
+    CupsdDirPage(QWidget *parent = 0);
 
-	bool loadConfig(CupsdConf*, QString&);
-	bool saveConfig(CupsdConf*, QString&);
-	void setInfos(CupsdConf*);
+    bool loadConfig(CupsdConf*, QString&);
+    bool saveConfig(CupsdConf*, QString&);
+    void setInfos(CupsdConf*);
 
 private:
-	QDirLineEdit	*datadir_,
-			*documentdir_,
-			*requestdir_,
-			*serverbin_,
-			*serverfiles_,
-			*tmpfiles_;
-	QDirMultiLineEdit	*fontpath_;
+    QDirLineEdit *datadir_,
+    *documentdir_,
+    *requestdir_,
+    *serverbin_,
+    *serverfiles_,
+    *tmpfiles_;
+    QDirMultiLineEdit *fontpath_;
 };
 
 #endif

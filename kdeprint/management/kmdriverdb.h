@@ -30,39 +30,41 @@ class KMDBCreator;
 
 class KMDriverDB : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	static KMDriverDB* self();
+    static KMDriverDB* self();
 
-	KMDriverDB(QObject *parent = 0);
-	~KMDriverDB();
+    KMDriverDB(QObject *parent = 0);
+    ~KMDriverDB();
 
-	void init(QWidget *parent = 0);
-	KMDBEntryList* findEntry(const QString& manu, const QString& model);
-	KMDBEntryList* findPnpEntry(const QString& manu, const QString& model);
-	QHash<QString, KMDBEntryList*>* findModels(const QString& manu);
-	const QHash<QString, QHash<QString, KMDBEntryList*>* >& manufacturers() const	{ return m_entries; }
+    void init(QWidget *parent = 0);
+    KMDBEntryList* findEntry(const QString& manu, const QString& model);
+    KMDBEntryList* findPnpEntry(const QString& manu, const QString& model);
+    QHash<QString, KMDBEntryList*>* findModels(const QString& manu);
+    const QHash<QString, QHash<QString, KMDBEntryList*>* >& manufacturers() const {
+        return m_entries;
+    }
 
 protected:
-	void loadDbFile();
-	void insertEntry(KMDBEntry *entry);
-	QString dbFile();
+    void loadDbFile();
+    void insertEntry(KMDBEntry *entry);
+    QString dbFile();
 
 protected Q_SLOTS:
-	void slotDbCreated();
+    void slotDbCreated();
 
 Q_SIGNALS:
-	void dbLoaded(bool reloaded);
-	void error(const QString&);
+    void dbLoaded(bool reloaded);
+    void error(const QString&);
 
 private:
-  void clear();
+    void clear();
 
-	KMDBCreator			*m_creator;
-	QHash<QString, QHash<QString, KMDBEntryList*>* >	m_entries;
-	QHash<QString, QHash<QString, KMDBEntryList*>* >	m_pnpentries;
+    KMDBCreator   *m_creator;
+    QHash<QString, QHash<QString, KMDBEntryList*>* > m_entries;
+    QHash<QString, QHash<QString, KMDBEntryList*>* > m_pnpentries;
 
-	static KMDriverDB	*m_self;
+    static KMDriverDB *m_self;
 };
 
 #endif

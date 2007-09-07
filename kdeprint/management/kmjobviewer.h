@@ -48,82 +48,84 @@ class QTreeWidgetItem;
  */
 class KDEPRINT_MANAGEMENT_EXPORT KMJobViewer : public KXmlGuiWindow, public KMPrinterPage, public KPReloadObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMJobViewer(QWidget *parent = 0);
-	~KMJobViewer();
+    KMJobViewer(QWidget *parent = 0);
+    ~KMJobViewer();
 
-	void setPrinter(const QString& prname);
-	void setPrinter(KMPrinter *p);
-	void refresh(bool reload = false);
-	QString printer() const;
-	bool isSticky() const;
-	
-	void tryToPrintFiles(const QStringList &files);
+    void setPrinter(const QString& prname);
+    void setPrinter(KMPrinter *p);
+    void refresh(bool reload = false);
+    QString printer() const;
+    bool isSticky() const;
+
+    void tryToPrintFiles(const QStringList &files);
 
 Q_SIGNALS:
-	void jobsShown(KMJobViewer*, bool hasJobs);
-	void refreshClicked();
-	void printerChanged(KMJobViewer*, const QString& prname);
-	void viewerDestroyed(KMJobViewer*);
+    void jobsShown(KMJobViewer*, bool hasJobs);
+    void refreshClicked();
+    void printerChanged(KMJobViewer*, const QString& prname);
+    void viewerDestroyed(KMJobViewer*);
 
 public Q_SLOTS:
-	void pluginActionActivated();
+    void pluginActionActivated();
 
 protected Q_SLOTS:
-	void slotSelectionChanged();
-	void slotHold();
-	void slotResume();
-	void slotRemove();
-	void slotRestart();
-	void slotContextMenu(const QPoint&);
-	void slotMove(QAction*);
-	void slotPrinterSelected(QAction*);
-	void slotShowCompleted(bool);
-	void slotRefresh();
-	void slotClose();
-	void slotShowMoveMenu();
-	void slotShowPrinterMenu();
-	void slotUserOnly(bool);
-	void slotUserChanged();
-	void slotConfigure();
+    void slotSelectionChanged();
+    void slotHold();
+    void slotResume();
+    void slotRemove();
+    void slotRestart();
+    void slotContextMenu(const QPoint&);
+    void slotMove(QAction*);
+    void slotPrinterSelected(QAction*);
+    void slotShowCompleted(bool);
+    void slotRefresh();
+    void slotClose();
+    void slotShowMoveMenu();
+    void slotShowPrinterMenu();
+    void slotUserOnly(bool);
+    void slotUserChanged();
+    void slotConfigure();
 
 protected:
-	void init();
-	void updateJobs();
-	void initActions();
-	JobItem* findItem(const QString& uri);
-	void jobSelection(QList<KMJob*>& l);
-	void send(int cmd, const QString& name, const QString& arg = QString());
-	void loadPrinters();
-	void loadPluginActions();
-	void removePluginActions();
-	void reload();
-	//void aboutToReload();
-	void closeEvent(QCloseEvent*);
-	void triggerRefresh();
-	void addToManager();
-	void removeFromManager();
-	void buildPrinterMenu(QMenu *menu, bool use_all = false, bool use_specials = false);
-	void updateCaption();
-	void updateStatusBar();
+    void init();
+    void updateJobs();
+    void initActions();
+    JobItem* findItem(const QString& uri);
+    void jobSelection(QList<KMJob*>& l);
+    void send(int cmd, const QString& name, const QString& arg = QString());
+    void loadPrinters();
+    void loadPluginActions();
+    void removePluginActions();
+    void reload();
+    //void aboutToReload();
+    void closeEvent(QCloseEvent*);
+    void triggerRefresh();
+    void addToManager();
+    void removeFromManager();
+    void buildPrinterMenu(QMenu *menu, bool use_all = false, bool use_specials = false);
+    void updateCaption();
+    void updateStatusBar();
 
 private:
-	QTreeWidget		*m_view;
-	QList<KMJob*>		m_jobs;
-	QList<JobItem*>		m_items;
-	QMenu		*m_pop;
-	QList<KMPrinter*>	m_printers;
-	QString	m_prname;
-	int	m_type;
-	QString	m_username;
-	QLineEdit	*m_userfield;
-	QCheckBox	*m_stickybox;
-	bool m_standalone;
+    QTreeWidget  *m_view;
+    QList<KMJob*>  m_jobs;
+    QList<JobItem*>  m_items;
+    QMenu  *m_pop;
+    QList<KMPrinter*> m_printers;
+    QString m_prname;
+    int m_type;
+    QString m_username;
+    QLineEdit *m_userfield;
+    QCheckBox *m_stickybox;
+    bool m_standalone;
 };
 
 inline QString KMJobViewer::printer() const
-{ return m_prname; }
+{
+    return m_prname;
+}
 
 #endif
 #endif

@@ -26,29 +26,29 @@
 #include <klocale.h>
 
 KMPropRlpr::KMPropRlpr(QWidget *parent)
-    : KMPropWidget(parent)
+        : KMPropWidget(parent)
 {
-	m_host = new QLabel("",this);
-	m_queue = new QLabel("",this);
+    m_host = new QLabel("", this);
+    m_queue = new QLabel("", this);
 
-	QLabel	*l1 = new QLabel(i18n("Host:"), this);
-	QLabel	*l2 = new QLabel(i18n("Queue:"), this);
+    QLabel *l1 = new QLabel(i18n("Host:"), this);
+    QLabel *l2 = new QLabel(i18n("Queue:"), this);
 
-	// layout
-	QGridLayout	*main_ = new QGridLayout(this);
+    // layout
+    QGridLayout *main_ = new QGridLayout(this);
     main_->setMargin(10);
     main_->setSpacing(7);
-	main_->setColumnStretch(0,0);
-	main_->setColumnStretch(1,1);
-	main_->setRowStretch(2,1);
-	main_->addWidget(l1,0,0);
-	main_->addWidget(l2,1,0);
-	main_->addWidget(m_host,0,1);
-	main_->addWidget(m_queue,1,1);
+    main_->setColumnStretch(0, 0);
+    main_->setColumnStretch(1, 1);
+    main_->setRowStretch(2, 1);
+    main_->addWidget(l1, 0, 0);
+    main_->addWidget(l2, 1, 0);
+    main_->addWidget(m_host, 0, 1);
+    main_->addWidget(m_queue, 1, 1);
 
-	m_pixmap = "connection-established";
-	m_title = i18n("Queue");
-	m_header = i18n("Remote LPD Queue Settings");
+    m_pixmap = "connection-established";
+    m_title = i18n("Queue");
+    m_header = i18n("Remote LPD Queue Settings");
 }
 
 KMPropRlpr::~KMPropRlpr()
@@ -57,21 +57,18 @@ KMPropRlpr::~KMPropRlpr()
 
 void KMPropRlpr::setPrinter(KMPrinter *p)
 {
-	if (p && !p->isSpecial())
-	{
-		m_host->setText(p->option("host"));
-		m_queue->setText(p->option("queue"));
-		emit enable(true);
-	}
-	else
-	{
-		emit enable(false);
-		m_host->setText("");
-		m_queue->setText("");
-	}
+    if (p && !p->isSpecial()) {
+        m_host->setText(p->option("host"));
+        m_queue->setText(p->option("queue"));
+        emit enable(true);
+    } else {
+        emit enable(false);
+        m_host->setText("");
+        m_queue->setText("");
+    }
 }
 
 void KMPropRlpr::configureWizard(KMWizard *w)
 {
-	w->configure(KMWizard::Custom+1,KMWizard::Custom+1,true);
+    w->configure(KMWizard::Custom + 1, KMWizard::Custom + 1, true);
 }

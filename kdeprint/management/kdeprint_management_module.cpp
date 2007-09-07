@@ -32,30 +32,27 @@
 
 extern "C"
 {
-	KDE_EXPORT int add_printer_wizard(QWidget *parent)
-	{
-                return kdeprint_management_add_printer_wizard( parent );
-	}
+    KDE_EXPORT int add_printer_wizard(QWidget *parent) {
+        return kdeprint_management_add_printer_wizard(parent);
+    }
 
-	KDE_EXPORT bool config_dialog(QWidget *parent)
-	{
-		KMConfigDialog	dlg(parent);
-		return dlg.exec();
-	}
+    KDE_EXPORT bool config_dialog(QWidget *parent) {
+        KMConfigDialog dlg(parent);
+        return dlg.exec();
+    }
 
-	KDE_EXPORT QString select_command( QWidget* parent )
-	{
-		KDialog dlg( parent );
-    dlg.setModal( true );
-    dlg.setCaption( i18n( "Select Command" ) );
-    dlg.setButtons( KDialog::Ok | KDialog::Cancel );
+    KDE_EXPORT QString select_command(QWidget* parent) {
+        KDialog dlg(parent);
+        dlg.setModal(true);
+        dlg.setCaption(i18n("Select Command"));
+        dlg.setButtons(KDialog::Ok | KDialog::Cancel);
 
-		KXmlCommandSelector *xmlSel = new KXmlCommandSelector( false, &dlg, &dlg );
-                xmlSel->setObjectName( "CommandSelector" );
-		dlg.setMainWidget( xmlSel );
-		if ( dlg.exec() )
-			return xmlSel->command();
-		return QString();
-	}
+        KXmlCommandSelector *xmlSel = new KXmlCommandSelector(false, &dlg, &dlg);
+        xmlSel->setObjectName("CommandSelector");
+        dlg.setMainWidget(xmlSel);
+        if (dlg.exec())
+            return xmlSel->command();
+        return QString();
+    }
 }
 

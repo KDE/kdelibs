@@ -28,15 +28,15 @@ class QLabel;
 class KMInfoPage : public QWidget, public KMPrinterPage
 {
 public:
-	KMInfoPage(QWidget *parent = 0);
-	~KMInfoPage();
+    KMInfoPage(QWidget *parent = 0);
+    ~KMInfoPage();
 
-	void setPrinter(KMPrinter *p);
+    void setPrinter(KMPrinter *p);
 
 protected:
-	QLabel	*m_title, *m_titlepixmap;
-	QLabel	*m_location, *m_description, *m_uri, *m_model, *m_type, *m_state, *m_device;
-	QLabel	*m_devlabel;
+    QLabel *m_title, *m_titlepixmap;
+    QLabel *m_location, *m_description, *m_uri, *m_model, *m_type, *m_state, *m_device;
+    QLabel *m_devlabel;
 };
 
 #endif

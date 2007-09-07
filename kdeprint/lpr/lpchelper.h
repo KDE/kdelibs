@@ -32,33 +32,33 @@ class KMJob;
 #endif
 class LpcHelper : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	LpcHelper(QObject *parent = 0);
-	~LpcHelper();
+    LpcHelper(QObject *parent = 0);
+    ~LpcHelper();
 
-	KMPrinter::PrinterState state(const QString&) const;
-	KMPrinter::PrinterState state(KMPrinter*) const;
-	void updateStates();
+    KMPrinter::PrinterState state(const QString&) const;
+    KMPrinter::PrinterState state(KMPrinter*) const;
+    void updateStates();
 
-	bool enable(KMPrinter*, bool, QString&);
-	bool start(KMPrinter*, bool, QString&);
-	bool removeJob(KMJob*, QString&);
-	bool changeJobState(KMJob*, int, QString&);
+    bool enable(KMPrinter*, bool, QString&);
+    bool start(KMPrinter*, bool, QString&);
+    bool removeJob(KMJob*, QString&);
+    bool changeJobState(KMJob*, int, QString&);
 
-	bool restart(QString&);
+    bool restart(QString&);
 
 protected:
-	bool changeState(const QString&, const QString&, QString&);
-	void parseStatusLPR(QTextStream&);
-	void parseStatusLPRng(QTextStream&);
-	int parseStateChangeLPR(const QString&, const QString&);
-	int parseStateChangeLPRng(const QString&, const QString&);
+    bool changeState(const QString&, const QString&, QString&);
+    void parseStatusLPR(QTextStream&);
+    void parseStatusLPRng(QTextStream&);
+    int parseStateChangeLPR(const QString&, const QString&);
+    int parseStateChangeLPRng(const QString&, const QString&);
 
 private:
-	QMap<QString, KMPrinter::PrinterState>	m_state;
-	QString	m_exepath, m_lprmpath, m_checkpcpath;
+    QMap<QString, KMPrinter::PrinterState> m_state;
+    QString m_exepath, m_lprmpath, m_checkpcpath;
 };
 
 #endif

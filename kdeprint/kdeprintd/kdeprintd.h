@@ -32,38 +32,38 @@ class StatusWindow;
 
 class KDEPrintd : public KDEDModule
 {
-	Q_OBJECT
-	Q_CLASSINFO("D-Bus Interface", "org.kde.KDEPrintd")
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KDEPrintd")
 
 public:
-	KDEPrintd();
-	~KDEPrintd();
+    KDEPrintd();
+    ~KDEPrintd();
 
 public Q_SLOTS:
-	// FIXME this method should return an int, but qdbus doesn't seem to export
-	// the method to the dbus interface if it is marked as returning int, so
-	// for now I've made it return a string.
-	Q_SCRIPTABLE QString print(const QString& cmd, const QStringList& files, bool remove);
-	
-	Q_SCRIPTABLE QString openPasswordDialog(const QString& user);
-	Q_SCRIPTABLE QString requestPassword( const QString& user, const QString& host, int port, int seqNbr, const QDBusMessage& msg );
-	Q_SCRIPTABLE void initPassword( const QString& user, const QString& passwd, const QString& host, int port );
-	Q_SCRIPTABLE Q_NOREPLY void statusMessage(const QString& msg, int pid = -1, const QString& appName = QString());
+    // FIXME this method should return an int, but qdbus doesn't seem to export
+    // the method to the dbus interface if it is marked as returning int, so
+    // for now I've made it return a string.
+    Q_SCRIPTABLE QString print(const QString& cmd, const QStringList& files, bool remove);
+
+    Q_SCRIPTABLE QString openPasswordDialog(const QString& user);
+    Q_SCRIPTABLE QString requestPassword(const QString& user, const QString& host, int port, int seqNbr, const QDBusMessage& msg);
+    Q_SCRIPTABLE void initPassword(const QString& user, const QString& passwd, const QString& host, int port);
+    Q_SCRIPTABLE Q_NOREPLY void statusMessage(const QString& msg, int pid = -1, const QString& appName = QString());
 
 protected Q_SLOTS:
-	void slotPrintTerminated( KPrintProcess* );
-	void slotPrintError( KPrintProcess*, const QString& );
-	void slotClosed();
-	void processRequest();
+    void slotPrintTerminated(KPrintProcess*);
+    void slotPrintError(KPrintProcess*, const QString&);
+    void slotClosed();
+    void processRequest();
 
 protected:
-	bool checkFiles(QString& cmd, const QStringList& files);
+    bool checkFiles(QString& cmd, const QStringList& files);
 
 private:
-	class Request;
-	QList<KPrintProcess*>	m_processpool;
-	QMultiHash<int,StatusWindow*>	m_windows;
-	QList<Request*>       m_requestsPending;
+    class Request;
+    QList<KPrintProcess*> m_processpool;
+    QMultiHash<int, StatusWindow*> m_windows;
+    QList<Request*>       m_requestsPending;
 };
 
 #endif

@@ -29,15 +29,15 @@ class KConfig;
 class KMCupsConfigWidget : public QWidget
 {
 public:
-	KMCupsConfigWidget(QWidget *parent = 0);
+    KMCupsConfigWidget(QWidget *parent = 0);
 
-	void load();
-	void save(bool sync = true);
-	void saveConfig(KConfig*);
+    void load();
+    void save(bool sync = true);
+    void saveConfig(KConfig*);
 
 protected:
-	QLineEdit	*m_host, *m_port, *m_login, *m_password;
-	QCheckBox	*m_anonymous, *m_savepwd;
+    QLineEdit *m_host, *m_port, *m_login, *m_password;
+    QCheckBox *m_anonymous, *m_savepwd;
 };
 
 #endif

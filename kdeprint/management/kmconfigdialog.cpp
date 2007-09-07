@@ -38,64 +38,63 @@
 #include <QtGui/QFrame>
 
 KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
-: KPageDialog( parent )
+        : KPageDialog(parent)
 {
-  setFaceType( List );
-  setCaption( i18n("KDE Print Configuration") );
-  setButtons( Ok|Cancel );
-  setDefaultButton( Ok );
-  setObjectName( name );
-  setModal( true );
-  showButtonSeparator( true );
+    setFaceType(List);
+    setCaption(i18n("KDE Print Configuration"));
+    setButtons(Ok | Cancel);
+    setDefaultButton(Ok);
+    setObjectName(name);
+    setModal(true);
+    showButtonSeparator(true);
 
-	addConfigPage(new KMConfigGeneral(this));
-	addConfigPage(new KMConfigPreview(this));
-	addConfigPage(new KMConfigFonts(this));
-	addConfigPage(new KMConfigCommand(this));
-	addConfigPage(new KMConfigFilter(this));
-	addConfigPage(new KMConfigJobs(this));
-	KMFactory::self()->uiManager()->setupConfigDialog(this);
+    addConfigPage(new KMConfigGeneral(this));
+    addConfigPage(new KMConfigPreview(this));
+    addConfigPage(new KMConfigFonts(this));
+    addConfigPage(new KMConfigCommand(this));
+    addConfigPage(new KMConfigFilter(this));
+    addConfigPage(new KMConfigJobs(this));
+    KMFactory::self()->uiManager()->setupConfigDialog(this);
 
-	// initialize pages
-	KConfig *conf = KMFactory::self()->printConfig();
-	QListIterator<KMConfigPage*>	it(m_pages);
-	while(it.hasNext())
-		it.next()->loadConfig(conf);
+    // initialize pages
+    KConfig *conf = KMFactory::self()->printConfig();
+    QListIterator<KMConfigPage*> it(m_pages);
+    while (it.hasNext())
+        it.next()->loadConfig(conf);
 
-	// resize dialog
-	resize(450,400);
-	connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
+    // resize dialog
+    resize(450, 400);
+    connect(this, SIGNAL(okClicked()), this, SLOT(slotOk()));
 }
 
 void KMConfigDialog::addConfigPage(KMConfigPage *page)
 {
-	if (page)
-	{
-		QFrame	*frame = new QFrame( this );
-		page->setParent(frame);
-		QVBoxLayout	*lay = new QVBoxLayout(frame);
-		lay->setMargin(0);
-		lay->setSpacing(0);
-		lay->addWidget(page);
-		m_pages.append(page);
+    if (page) {
+        QFrame *frame = new QFrame(this);
+        page->setParent(frame);
+        QVBoxLayout *lay = new QVBoxLayout(frame);
+        lay->setMargin(0);
+        lay->setSpacing(0);
+        lay->addWidget(page);
+        m_pages.append(page);
 
-    KPageWidgetItem *item = new KPageWidgetItem( frame, page->pageName() );
-    item->setHeader( page->pageHeader() );
-    item->setIcon( KIcon( page->pagePixmap() ) );
-    addPage( item );
-	}
+        KPageWidgetItem *item = new KPageWidgetItem(frame, page->pageName());
+        item->setHeader(page->pageHeader());
+        item->setIcon(KIcon(page->pagePixmap()));
+        addPage(item);
+    }
 }
 
 void KMConfigDialog::slotOk()
 {
-	// save configuration
-	KConfig *cf = KMFactory::self()->printConfig();
-	QListIterator<KMConfigPage*>	it(m_pages);
-	while(it.hasNext())
-		it.next()->saveConfig(cf);
-	KMFactory::self()->saveConfig();
+    // save configuration
+    KConfig *cf = KMFactory::self()->printConfig();
+    QListIterator<KMConfigPage*> it(m_pages);
+    while (it.hasNext())
+        it.next()->saveConfig(cf);
+    KMFactory::self()->saveConfig();
 
-	// close the dialog
-	KPageDialog::accept();
+    // close the dialog
+    KPageDialog::accept();
 }
 #include "kmconfigdialog.moc"

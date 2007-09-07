@@ -28,23 +28,23 @@ class QCheckBox;
 class QPushButton;
 class KMConfigGeneral : public KMConfigPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMConfigGeneral(QWidget *parent = 0);
+    KMConfigGeneral(QWidget *parent = 0);
 
-	void loadConfig(KConfig*);
-	void saveConfig(KConfig*);
+    void loadConfig(KConfig*);
+    void saveConfig(KConfig*);
 
 protected Q_SLOTS:
-	void slotTestPagePreview();
-	void testPageChanged(const QString & );
-	void setEnabledPreviewButton(bool b);
+    void slotTestPagePreview();
+    void testPageChanged(const QString &);
+    void setEnabledPreviewButton(bool b);
 private:
-	KIntNumInput	*m_timer;
-	KUrlRequester	*m_testpage;
-	QCheckBox	*m_defaulttestpage;
-	QPushButton	*m_preview;
-	QCheckBox	*m_statusmsg, *m_uselast;
+    KIntNumInput *m_timer;
+    KUrlRequester *m_testpage;
+    QCheckBox *m_defaulttestpage;
+    QPushButton *m_preview;
+    QCheckBox *m_statusmsg, *m_uselast;
 };
 
 #endif

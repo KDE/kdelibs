@@ -25,11 +25,11 @@
 class KExtPrinterImpl : public KPrinterImpl
 {
 public:
-	KExtPrinterImpl(QObject *parent, const QStringList & /*args*/);
-	~KExtPrinterImpl();
+    KExtPrinterImpl(QObject *parent, const QStringList & /*args*/);
+    ~KExtPrinterImpl();
 
-	void preparePrinting(KPrinter*);
-	bool setupCommand(QString&, KPrinter*);
+    void preparePrinting(KPrinter*);
+    bool setupCommand(QString&, KPrinter*);
 };
 
 #endif

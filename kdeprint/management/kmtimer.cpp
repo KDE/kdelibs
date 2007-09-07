@@ -27,73 +27,70 @@ KMTimer* KMTimer::m_self = 0;
 
 KMTimer* KMTimer::self()
 {
-	if (!m_self)
-	{
-		m_self = new KMTimer(KMFactory::self(), "InternalTimer");
-		Q_CHECK_PTR(m_self);
-	}
-	return m_self;
+    if (!m_self) {
+        m_self = new KMTimer(KMFactory::self(), "InternalTimer");
+        Q_CHECK_PTR(m_self);
+    }
+    return m_self;
 }
 
 KMTimer::KMTimer(QObject *parent, const char *name)
-: QTimer(parent), m_count(0)
+        : QTimer(parent), m_count(0)
 {
-  setObjectName( name );
-	connect(this, SIGNAL(timeout()), SLOT(slotTimeout()));
+    setObjectName(name);
+    connect(this, SIGNAL(timeout()), SLOT(slotTimeout()));
 }
 
 KMTimer::~KMTimer()
 {
-	m_self = 0;
+    m_self = 0;
 }
 
 void KMTimer::hold()
 {
-	if ((m_count++) == 0)
-		stop();
+    if ((m_count++) == 0)
+        stop();
 }
 
 void KMTimer::release()
 {
-	releaseTimer(false);
+    releaseTimer(false);
 }
 
 void KMTimer::release(bool do_emit)
 {
-	releaseTimer(do_emit);
+    releaseTimer(do_emit);
 }
 
 void KMTimer::releaseTimer(bool do_emit)
 {
-	m_count = qMax(0, m_count-1);
-	if (m_count == 0)
-	{
-		if (do_emit)
-			emit timeout();
-		startTimer();
-	}
+    m_count = qMax(0, m_count - 1);
+    if (m_count == 0) {
+        if (do_emit)
+            emit timeout();
+        startTimer();
+    }
 }
 
 void KMTimer::delay(int t)
 {
-	startTimer(t);
+    startTimer(t);
 }
 
 void KMTimer::slotTimeout()
 {
-	startTimer();
+    startTimer();
 }
 
 void KMTimer::startTimer(int t)
 {
-	if (t == -1)
-	{
-		KConfig *conf = KMFactory::self()->printConfig();
-		KConfigGroup cg = conf->group("General");
-		t = cg.readEntry("TimerDelay", 5) * 1000;
-	}
-  setSingleShot( true );
-	start(t);
+    if (t == -1) {
+        KConfig *conf = KMFactory::self()->printConfig();
+        KConfigGroup cg = conf->group("General");
+        t = cg.readEntry("TimerDelay", 5) * 1000;
+    }
+    setSingleShot(true);
+    start(t);
 }
 
 #include "kmtimer.moc"

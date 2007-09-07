@@ -29,23 +29,23 @@ class QLineEdit;
 class KDEPRINT_MANAGEMENT_EXPORT KMWInfoBase : public KMWizardPage
 {
 public:
-	explicit KMWInfoBase(int n = 1, QWidget *parent = 0);
+    explicit KMWInfoBase(int n = 1, QWidget *parent = 0);
 
-	void setInfo(const QString&);
-	void setLabel(int, const QString&);
-	void setText(int, const QString&);
-	void setCurrent(int);
+    void setInfo(const QString&);
+    void setLabel(int, const QString&);
+    void setText(int, const QString&);
+    void setCurrent(int);
 
-	QString text(int);
+    QString text(int);
 
 protected:
-	QLineEdit* lineEdit( int );
+    QLineEdit* lineEdit(int);
 
 private:
-	QList<QLabel*>		m_labels;
-	QList<QLineEdit*>	m_edits;
-	QLabel			*m_info;
-	int			m_nlines;
+    QList<QLabel*>  m_labels;
+    QList<QLineEdit*> m_edits;
+    QLabel   *m_info;
+    int   m_nlines;
 };
 
 #endif

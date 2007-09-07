@@ -21,62 +21,59 @@
 
 QString Field::toString() const
 {
-	QString	s = name;
-	switch (type)
-	{
-		case String:
-			s += ('=' + value);
-			break;
-		case Integer:
-			s += ('#' + value);
-			break;
-		case Boolean:
-			if (!value.toInt())
-				s += '@';
-			break;
-	}
-	return s;
+    QString s = name;
+    switch (type) {
+    case String:
+        s += ('=' + value);
+        break;
+    case Integer:
+        s += ('#' + value);
+        break;
+    case Boolean:
+        if (!value.toInt())
+            s += '@';
+        break;
+    }
+    return s;
 }
 
 bool PrintcapEntry::writeEntry(QTextStream& t)
 {
-	t << comment << endl;
-	t << name;
-	if (aliases.count() > 0)
-		t << '|' << aliases.join("|");
-	t << ':';
-	for (QMap<QString,Field>::ConstIterator it=fields.begin(); it!=fields.end(); ++it)
-	{
-		t << '\\' << endl << "    :";
-		t << (*it).name;
-		switch ((*it).type)
-		{
-			case Field::String:
-				t << '=' << (*it).value << ':';
-				break;
-			case Field::Integer:
-				t << '#' << (*it).value << ':';
-				break;
-			case Field::Boolean:
-				t << ':';
-				break;
-			default:
-				t << endl << endl;
-				return false;
-		}
-	}
-	t << endl;
-	if (!postcomment.isEmpty())
-		t << postcomment << endl;
-	t << endl;
-	return true;
+    t << comment << endl;
+    t << name;
+    if (aliases.count() > 0)
+        t << '|' << aliases.join("|");
+    t << ':';
+    for (QMap<QString, Field>::ConstIterator it = fields.begin(); it != fields.end(); ++it) {
+        t << '\\' << endl << "    :";
+        t << (*it).name;
+        switch ((*it).type) {
+        case Field::String:
+            t << '=' << (*it).value << ':';
+            break;
+        case Field::Integer:
+            t << '#' << (*it).value << ':';
+            break;
+        case Field::Boolean:
+            t << ':';
+            break;
+        default:
+            t << endl << endl;
+            return false;
+        }
+    }
+    t << endl;
+    if (!postcomment.isEmpty())
+        t << postcomment << endl;
+    t << endl;
+    return true;
 }
 
 void PrintcapEntry::addField(const QString& name, Field::Type type, const QString& value)
 {
-	Field	f;
-	f.name = name;
-	f.type = type;
-	f.value = value;
-	fields[name] = f;
+    Field f;
+    f.name = name;
+    f.type = type;
+    f.value = value;
+    fields[name] = f;
 }

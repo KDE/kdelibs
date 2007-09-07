@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef	KMWIPPPRINTER_H
-#define	KMWIPPPRINTER_H
+#ifndef KMWIPPPRINTER_H
+#define KMWIPPPRINTER_H
 
 #include "kmwizardpage.h"
 
@@ -31,26 +31,26 @@ class NetworkScanner;
 
 class KMWIppPrinter : public KMWizardPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMWIppPrinter(QWidget *parent = 0);
-	~KMWIppPrinter();
+    KMWIppPrinter(QWidget *parent = 0);
+    ~KMWIppPrinter();
 
-	bool isValid(QString&);
-	void updatePrinter(KMPrinter*);
+    bool isValid(QString&);
+    void updatePrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotScanStarted();
-	void slotScanFinished();
-	void slotPrinterSelected(Q3ListViewItem*);
-	void slotIppReport();
+    void slotScanStarted();
+    void slotScanFinished();
+    void slotPrinterSelected(Q3ListViewItem*);
+    void slotIppReport();
 
 private:
-	K3ListView	*m_list;
-	NetworkScanner *m_scanner;
-	QLineEdit	*m_uri;
-	QTextBrowser	*m_info;
-	QPushButton	*m_ippreport;
+    K3ListView *m_list;
+    NetworkScanner *m_scanner;
+    QLineEdit *m_uri;
+    QTextBrowser *m_info;
+    QPushButton *m_ippreport;
 };
 
 #endif

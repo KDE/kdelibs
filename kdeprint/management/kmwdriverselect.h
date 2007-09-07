@@ -28,21 +28,21 @@ class QPushButton;
 
 class KMWDriverSelect : public KMWizardPage
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMWDriverSelect(QWidget *parent = 0);
+    KMWDriverSelect(QWidget *parent = 0);
 
-	bool isValid(QString&);
-	void initPrinter(KMPrinter*);
-	void updatePrinter(KMPrinter*);
+    bool isValid(QString&);
+    void initPrinter(KMPrinter*);
+    void updatePrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotDriverComment();
+    void slotDriverComment();
 
 private:
-	KListWidget	*m_list;
-	KMDBEntryList	*m_entries;
-	QPushButton	*m_drivercomment;
+    KListWidget *m_list;
+    KMDBEntryList *m_entries;
+    QPushButton *m_drivercomment;
 };
 
 #endif

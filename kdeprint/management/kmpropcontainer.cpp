@@ -27,24 +27,24 @@
 #include <kguiitem.h>
 
 KMPropContainer::KMPropContainer(QWidget *parent)
-    : QWidget(parent)
+        : QWidget(parent)
 {
-	KSeparator* sep = new KSeparator( Qt::Horizontal, this);
-	sep->setFixedHeight(5);
+    KSeparator* sep = new KSeparator(Qt::Horizontal, this);
+    sep->setFixedHeight(5);
 
-	m_button = new KPushButton(KGuiItem(i18n("Change..."), "edit"), this);
-	m_widget = 0;
+    m_button = new KPushButton(KGuiItem(i18n("Change..."), "edit"), this);
+    m_widget = 0;
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this);
-  main_->setMargin(0);
-  main_->setSpacing(10);
-	QHBoxLayout	*btn_ = new QHBoxLayout();
-	main_->addWidget(sep,0);
-	main_->addLayout(btn_,0);
-  btn_->setMargin(0);
-  btn_->setSpacing(0);
-	btn_->addStretch(1);
-	btn_->addWidget(m_button);
+    QVBoxLayout *main_ = new QVBoxLayout(this);
+    main_->setMargin(0);
+    main_->setSpacing(10);
+    QHBoxLayout *btn_ = new QHBoxLayout();
+    main_->addWidget(sep, 0);
+    main_->addLayout(btn_, 0);
+    btn_->setMargin(0);
+    btn_->setSpacing(0);
+    btn_->addStretch(1);
+    btn_->addWidget(m_button);
 }
 
 KMPropContainer::~KMPropContainer()
@@ -53,29 +53,27 @@ KMPropContainer::~KMPropContainer()
 
 void KMPropContainer::setWidget(KMPropWidget *w)
 {
-	if (!m_widget)
-	{
-		m_widget = w;
-		m_widget->setParent(this);
-		connect(m_button,SIGNAL(clicked()),m_widget,SLOT(slotChange()));
-		connect(m_widget,SIGNAL(enable(bool)),SIGNAL(enable(bool)));
-		connect(m_widget,SIGNAL(enableChange(bool)),SLOT(slotEnableChange(bool)));
-		QVBoxLayout	*lay = dynamic_cast<QVBoxLayout*>(layout());
-		if (lay)
-		{
-			lay->insertWidget(0,m_widget,1);
-		}
-	}
+    if (!m_widget) {
+        m_widget = w;
+        m_widget->setParent(this);
+        connect(m_button, SIGNAL(clicked()), m_widget, SLOT(slotChange()));
+        connect(m_widget, SIGNAL(enable(bool)), SIGNAL(enable(bool)));
+        connect(m_widget, SIGNAL(enableChange(bool)), SLOT(slotEnableChange(bool)));
+        QVBoxLayout *lay = dynamic_cast<QVBoxLayout*>(layout());
+        if (lay) {
+            lay->insertWidget(0, m_widget, 1);
+        }
+    }
 }
 
 void KMPropContainer::setPrinter(KMPrinter *p)
 {
-	if (m_widget)
-		m_widget->setPrinterBase(p);
+    if (m_widget)
+        m_widget->setPrinterBase(p);
 }
 
 void KMPropContainer::slotEnableChange(bool on)
 {
-	m_button->setEnabled(on && (m_widget ? m_widget->canChange() : true));
+    m_button->setEnabled(on && (m_widget ? m_widget->canChange() : true));
 }
 #include "kmpropcontainer.moc"

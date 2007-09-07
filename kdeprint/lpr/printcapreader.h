@@ -38,7 +38,7 @@ public:
 private:
     QString m_buffer;
     QTextStream m_stream;
-    
+
     bool nextLine(QString&);
     void unputLine(const QString&);
 };

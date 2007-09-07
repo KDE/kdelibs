@@ -30,25 +30,25 @@
 class KVisibleButtonGroup : public QGroupBox, public QButtonGroup
 {
 public:
-	enum Index {
-		nextIndex = -1
-	};
+    enum Index {
+        nextIndex = -1
+    };
 
 public:
-	KVisibleButtonGroup(QWidget *parent = 0);
-	~KVisibleButtonGroup();
+    KVisibleButtonGroup(QWidget *parent = 0);
+    ~KVisibleButtonGroup();
 
-	int addButton(QAbstractButton *btn, int ID = KVisibleButtonGroup::nextIndex);
+    int addButton(QAbstractButton *btn, int ID = KVisibleButtonGroup::nextIndex);
 
 private:
-	QVBoxLayout	*m_layout;
-	int 		m_count;
+    QVBoxLayout *m_layout;
+    int   m_count;
 };
 
 class KRadioButtonWithHandOver : public QRadioButton
 {
 public:
-	explicit KRadioButtonWithHandOver(const QString& txt, QWidget *parent = 0);
+    explicit KRadioButtonWithHandOver(const QString& txt, QWidget *parent = 0);
 };
 
 #endif

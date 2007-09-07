@@ -26,22 +26,22 @@
 class KMRlprManager : public KMManager
 {
 public:
-	KMRlprManager(QObject *parent, const QStringList & /*args*/);
-	~KMRlprManager();
+    KMRlprManager(QObject *parent, const QStringList & /*args*/);
+    ~KMRlprManager();
 
-	bool createPrinter(KMPrinter*);
-	bool removePrinter(KMPrinter*);
-	bool testPrinter(KMPrinter*);
+    bool createPrinter(KMPrinter*);
+    bool removePrinter(KMPrinter*);
+    bool testPrinter(KMPrinter*);
 
 protected:
-	void listPrinters();
-	void savePrinters();
-	void loadPrintersConf(const QString& filename);
-	void savePrintersConf(const QString& filename);
-	QString printerFile();
+    void listPrinters();
+    void savePrinters();
+    void loadPrintersConf(const QString& filename);
+    void savePrintersConf(const QString& filename);
+    QString printerFile();
 
 private:
-	QDateTime	m_checktime;
+    QDateTime m_checktime;
 };
 
 #endif

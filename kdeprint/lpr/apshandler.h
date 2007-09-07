@@ -30,31 +30,31 @@
 class ApsHandler : public LprHandler
 {
 public:
-	explicit ApsHandler(KMManager*);
+    explicit ApsHandler(KMManager*);
 
-	bool validate(PrintcapEntry*);
-	KMPrinter* createPrinter(PrintcapEntry*);
-	bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
-	DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
-	DrMain* loadDbDriver(const QString&);
-	void reset();
-	PrintcapEntry* createEntry(KMPrinter*);
-	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
-	bool removePrinter(KMPrinter*, PrintcapEntry*);
-	QString printOptions(KPrinter*);
+    bool validate(PrintcapEntry*);
+    KMPrinter* createPrinter(PrintcapEntry*);
+    bool completePrinter(KMPrinter*, PrintcapEntry*, bool = true);
+    DrMain* loadDriver(KMPrinter*, PrintcapEntry*, bool = false);
+    DrMain* loadDbDriver(const QString&);
+    void reset();
+    PrintcapEntry* createEntry(KMPrinter*);
+    bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
+    bool removePrinter(KMPrinter*, PrintcapEntry*);
+    QString printOptions(KPrinter*);
 
 protected:
-	QString driverDirInternal();
+    QString driverDirInternal();
 
 private:
-	QMap<QString,QString> loadResources(PrintcapEntry*);
-	QMap<QString,QString> loadVarFile(const QString&);
-	QString sysconfDir();
-	QString shareDir();
-	DrMain* loadApsDriver(bool = false);
+    QMap<QString, QString> loadResources(PrintcapEntry*);
+    QMap<QString, QString> loadVarFile(const QString&);
+    QString sysconfDir();
+    QString shareDir();
+    DrMain* loadApsDriver(bool = false);
 
 private:
-	int	m_counter;
+    int m_counter;
 };
 
 #endif

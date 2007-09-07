@@ -28,10 +28,10 @@
 #endif
 class KDEPRINT_MANAGEMENT_EXPORT PluginAction : public KAction
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	PluginAction(int ID, const QString& txt, const QString& icon, int accel, QObject *parent);
+    PluginAction(int ID, const QString& txt, const QString& icon, int accel, QObject *parent);
 
 };
 

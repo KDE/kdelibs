@@ -27,13 +27,13 @@ class KMCupsConfigWidget;
 class KMConfigCups : public KMConfigPage
 {
 public:
-	KMConfigCups(QWidget *parent = 0);
+    KMConfigCups(QWidget *parent = 0);
 
-	void loadConfig(KConfig*);
-	void saveConfig(KConfig*);
+    void loadConfig(KConfig*);
+    void saveConfig(KConfig*);
 
 private:
-	KMCupsConfigWidget	*m_widget;
+    KMCupsConfigWidget *m_widget;
 };
 
 #endif

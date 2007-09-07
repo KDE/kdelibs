@@ -24,19 +24,19 @@
 #include <kmessagebox.h>
 
 KMDriverDialog::KMDriverDialog(QWidget *parent, const char *name)
-: KDialog( parent )
+        : KDialog(parent)
 {
-  setCaption( i18n("Configure") );
-  setButtons( Ok | Cancel );
-  setDefaultButton( Ok );
-  setObjectName( name );
-  setModal( true );
-  showButtonSeparator( false );
+    setCaption(i18n("Configure"));
+    setButtons(Ok | Cancel);
+    setDefaultButton(Ok);
+    setObjectName(name);
+    setModal(true);
+    showButtonSeparator(false);
 
-	m_view = new DriverView(0);
-	setMainWidget(m_view);
-	connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
-	resize(400,450);
+    m_view = new DriverView(0);
+    setMainWidget(m_view);
+    connect(this, SIGNAL(okClicked()), this, SLOT(slotOk()));
+    resize(400, 450);
 }
 
 KMDriverDialog::~KMDriverDialog()
@@ -45,18 +45,17 @@ KMDriverDialog::~KMDriverDialog()
 
 void KMDriverDialog::setDriver(DrMain *d)
 {
-	m_view->setDriver(d);
+    m_view->setDriver(d);
 }
 
 void KMDriverDialog::slotOk()
 {
-	if (m_view->hasConflict())
-	{
-		KMessageBox::error(this, "<qt>"+i18n("Some options are in conflict. You must resolve those conflicts "
-		                                     "before continuing.")+"</qt>");
-		return;
-	}
-	KDialog::accept();
+    if (m_view->hasConflict()) {
+        KMessageBox::error(this, "<qt>" + i18n("Some options are in conflict. You must resolve those conflicts "
+                                               "before continuing.") + "</qt>");
+        return;
+    }
+    KDialog::accept();
 }
 
 #include "kmdriverdialog.moc"

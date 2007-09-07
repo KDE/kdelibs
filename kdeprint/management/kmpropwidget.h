@@ -29,35 +29,43 @@ class KMWizard;
 
 class KDEPRINT_MANAGEMENT_EXPORT KMPropWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMPropWidget(QWidget *parent = 0);
-	virtual ~KMPropWidget();
+    KMPropWidget(QWidget *parent = 0);
+    virtual ~KMPropWidget();
 
-	virtual void setPrinter(KMPrinter*);
-	void setPrinterBase(KMPrinter*);
-	QString pixmap() const 	{ return m_pixmap; }
-	QString title() const 	{ return m_title; }
-	QString header() const 	{ return m_header; }
-	bool canChange() const 	{ return m_canchange; }
+    virtual void setPrinter(KMPrinter*);
+    void setPrinterBase(KMPrinter*);
+    QString pixmap() const  {
+        return m_pixmap;
+    }
+    QString title() const  {
+        return m_title;
+    }
+    QString header() const  {
+        return m_header;
+    }
+    bool canChange() const  {
+        return m_canchange;
+    }
 
 Q_SIGNALS:
-	void enable(bool);
-	void enableChange(bool);
+    void enable(bool);
+    void enableChange(bool);
 
 public Q_SLOTS:
-	void slotChange();
+    void slotChange();
 
 protected:
-	virtual int requestChange();
-	virtual void configureWizard(KMWizard*);
+    virtual int requestChange();
+    virtual void configureWizard(KMWizard*);
 
 protected:
-	QString		m_pixmap;
-	QString		m_title;
-	QString		m_header;
-	KMPrinter	*m_printer;
-	bool 		m_canchange;
+    QString  m_pixmap;
+    QString  m_title;
+    QString  m_header;
+    KMPrinter *m_printer;
+    bool   m_canchange;
 };
 
 #endif

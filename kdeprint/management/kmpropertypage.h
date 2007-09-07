@@ -31,23 +31,23 @@ class KMPrinter;
 
 class KDEPRINT_MANAGEMENT_EXPORT KMPropertyPage : public CJanusWidget, public KMPrinterPage, public KPReloadObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	KMPropertyPage(QWidget *parent = 0);
-	~KMPropertyPage();
+    KMPropertyPage(QWidget *parent = 0);
+    ~KMPropertyPage();
 
-	void addPropPage(KMPropWidget*);
-	void setPrinter(KMPrinter*);
+    void addPropPage(KMPropWidget*);
+    void setPrinter(KMPrinter*);
 
 protected Q_SLOTS:
-	void slotEnable(bool);
-	void initialize();
+    void slotEnable(bool);
+    void initialize();
 
 protected:
-	void reload();
+    void reload();
 
 private:
-	QList<KMPropWidget*>	m_widgets;
+    QList<KMPropWidget*> m_widgets;
 };
 
 #endif
