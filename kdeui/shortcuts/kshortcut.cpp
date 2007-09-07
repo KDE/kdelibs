@@ -111,7 +111,7 @@ KShortcut::KShortcut(const QString &s)
     if (sCuts.count() >= 2) {
         d->alternate = QKeySequence::fromString(sCuts.at(1));
 	if (d->alternate.isEmpty())
-	    kWarning() << "KShortcut: unusable alternate shortcut sequence " << sCuts[0];
+	    kWarning() << "KShortcut: unusable alternate shortcut sequence " << sCuts[1];
     }
 }
 
