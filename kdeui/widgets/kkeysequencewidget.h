@@ -64,15 +64,16 @@ public:
 	virtual ~KKeySequenceWidget();
 
 	/**
-	 * Set whether to accept plain letter or symbol keys without modifiers like Ctrl, Alt, Meta.
-	 * "Special" keys like F1, Insert, PageDown will always work.
 	 * This only applies to user input, not to setShortcut().
+	 * Set whether to accept "plain" keys without modifiers (like Ctrl, Alt, Meta).
+	 * Plain keys by our definition include letter and symbol keys and
+	 * text editing keys (Return, Space, Tab, Backspace, Delete).
+	 * "Special" keys like F1, Cursor keys, Insert, PageDown will always work.
 	 */
 	void setModifierlessAllowed(bool allow);
 
 	/**
-	 * Return if the widget accepts plain letter or symbol keys without modifiers like Ctrl, Alt, Meta.
-	 * "Special" keys like F1, Insert and so on will always work.
+	 * @see setModifierlessAllowed()
 	 */
 	bool isModifierlessAllowed();
 

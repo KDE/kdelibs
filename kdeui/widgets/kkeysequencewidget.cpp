@@ -415,6 +415,7 @@ bool KKeySequenceWidgetPrivate::isOkWhenModifierless(int keyQt)
 	case Qt::Key_Tab:
 	case Qt::Key_Backtab: //does this ever happen?
 	case Qt::Key_Backspace:
+	case Qt::Key_Delete:
 		return false;
 	default:
 		return true;
