@@ -288,15 +288,23 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     KActionCollection *coll = d->ops->actionCollection();
 
     // add nav items to the toolbar
-        d->toolbar->addAction( coll->action( "back" ) );
-    coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
-    d->toolbar->addAction( coll->action( "forward" ) );
-    coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
+    //
+    // NOTE:  The order of the button icons here differs from that 
+    // found in the file manager and web browser, but has been discussed
+    // and agreed upon on the kde-core-devel mailing list:
+    //
+    // http://lists.kde.org/?l=kde-core-devel&m=116888382514090&w=2 
+    //
     d->toolbar->addAction( coll->action( "up" ) );
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
                                             "For instance, if the current location is file:/home/%1 clicking this "
                                             "button will take you to file:/home.</qt>",  KUser().loginName() ));
 
+        d->toolbar->addAction( coll->action( "back" ) );
+    coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
+    d->toolbar->addAction( coll->action( "forward" ) );
+    coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
+    
     d->toolbar->addAction( coll->action( "reload" ) );
     coll->action( "reload" )->setWhatsThis(i18n("Click this button to reload the contents of the current location."));
     coll->action( "mkdir" )->setShortcut( QKeySequence(Qt::Key_F10) );
