@@ -627,13 +627,12 @@ int main(int argc, char *argv[])
     if (baseDir.isEmpty()) baseDir = args->arg(testcase_index++);
 
     QFileInfo bdInfo(baseDir);
-    baseDir = QFile::encodeName(bdInfo.absoluteFilePath());
 
     const char *subdirs[] = {"tests", "baseline", "output", "resources"};
     for ( int i = 0; i < 3; i++ ) {
-        QFileInfo sourceDir(QFile::encodeName( baseDir ) + "/" + subdirs[i]);	//krazy:exclude=duoblequote_chars DOM demands chars
+        QFileInfo sourceDir(baseDir + QLatin1Char('/') + QLatin1String(subdirs[i]));
         if ( !sourceDir.exists() || !sourceDir.isDir() ) {
-            fprintf(stderr,"ERROR: Source directory \"%s/%s\": no such directory.\n", (const char *)baseDir, subdirs[i]);
+            fprintf(stderr,"ERROR: Source directory \"%s\": no such directory.\n", sourceDir.filePath().toLocal8Bit().data());
             exit(1);
         }
     }
@@ -1436,9 +1435,9 @@ void RegressionTest::testStaticFile(const QString & filename)
 
     // Set arguments
     KParts::OpenUrlArguments args;
-    if (filename.endsWith(".html") || filename.endsWith(".htm")) args.setMimeType("text/html")
-    else if (filename.endsWith(".xhtml")) args.setMimeType("application/xhtml+xml")
-    else if (filename.endsWith(".xml")) args.setMimeType("text/xml")
+    if (filename.endsWith(".html") || filename.endsWith(".htm")) args.setMimeType("text/html");
+    else if (filename.endsWith(".xhtml")) args.setMimeType("application/xhtml+xml");
+    else if (filename.endsWith(".xml")) args.setMimeType("text/xml");
     m_part->setArguments(args);
     // load page
     KUrl url;
