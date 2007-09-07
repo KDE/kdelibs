@@ -257,7 +257,7 @@ KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConf
             if (state == QPalette::Active)
                 d = new KColorSchemePrivate(config, state, "Colors:Selection", defaultSelectionColors);
             else
-                d = new KColorSchemePrivate(config, state, "Colors:Window", defaultSelectionColors);
+                d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors);
             break;
         case Tooltip:
             d = new KColorSchemePrivate(config, state, "Colors:Tooltip", defaultTooltipColors);
