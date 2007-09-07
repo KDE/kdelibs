@@ -116,6 +116,21 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
     // apply state adjustments
     if (state != QPalette::Active) {
         // TODO - now tweak all the colors based on the state!
+        // FIXME - this code is temporary, proof-of-concept
+        if (state == QPalette::Inactive) {
+            _colors.bg[0] = KColorUtils::darken(_colors.bg[0], 0.3);
+            _colors.bg[1] = KColorUtils::darken(_colors.bg[1], 0.3);
+            _colors.deco[0] = KColorUtils::darken(_colors.deco[0], 0.3);
+            _colors.deco[1] = KColorUtils::darken(_colors.deco[1], 0.3);
+            for (int i=0; i<7; i++) {
+                _colors.fg[i] = KColorUtils::darken(_colors.fg[i], 0.3);
+            }
+        }
+        else {
+            for (int i=0; i<7; i++) {
+                _colors.fg[i] = KColorUtils::mix(_colors.fg[i], _colors.bg[0], 0.7);
+            }
+        }
     }
 
     // calculated backgrounds
