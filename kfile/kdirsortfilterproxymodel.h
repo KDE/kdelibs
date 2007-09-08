@@ -35,6 +35,7 @@
  * - item_10.png
  * - item_1.png
  * - item_2.png
+ *
  * are sorted like
  * - item_1.png
  * - item_2.png
