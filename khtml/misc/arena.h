@@ -96,7 +96,7 @@ void ArenaFinish(void);
         if (_q > _a->limit) \
             _p = (uword)ArenaAllocate(pool, _nb); \
         else { \
-            VALGRIND_MEMPOOL_ALLOC(_a->base, p, nb); \
+            VALGRIND_MEMPOOL_ALLOC(_a->base, _p, _nb); \
             _a->avail = _q; \
         } \
         p = (void *)_p;
