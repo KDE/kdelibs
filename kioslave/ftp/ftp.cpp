@@ -315,7 +315,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
   }
 
   kDebug(7102) << "ftpOpenConnection " << m_host << ":" << m_port << " "
-                << m_user << " [password hidden]" << endl;
+                << m_user << " [password hidden]";
 
   infoMessage( i18n("Opening connection to host %1", m_host) );
 
@@ -617,7 +617,7 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
   if ( cmd.indexOf( '\r' ) != -1 || cmd.indexOf( '\n' ) != -1)
   {
     kWarning(7102) << "Invalid command received (contains CR or LF):"
-                    << cmd.data() << endl;
+                    << cmd.data();
     error( ERR_UNSUPPORTED_ACTION, m_host );
     return false;
   }
@@ -671,8 +671,8 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
         return false;
       else
       {
-        kDebug(7102) << "Was not able to communicate with " << m_host << endl
-                      << "Attempting to re-establish connection." << endl;
+        kDebug(7102) << "Was not able to communicate with " << m_host
+                      << "Attempting to re-establish connection.";
 
         closeConnection(); // Close the old connection...
         openConnection();  // Attempt to re-establish a new connection...
@@ -747,7 +747,7 @@ int Ftp::ftpOpenPASVDataConnection()
        ( sscanf(start, "(%d,%d,%d,%d,%d,%d)",&i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6 &&
          sscanf(start, "=%d,%d,%d,%d,%d,%d", &i[0], &i[1], &i[2], &i[3], &i[4], &i[5]) != 6 ) )
   {
-    kError(7102) << "parsing IP and port numbers failed. String parsed: " << start << endl;
+    kError(7102) << "parsing IP and port numbers failed. String parsed: " << start;
     return ERR_INTERNAL;
   }
 
@@ -1283,7 +1283,7 @@ void Ftp::stat( const KUrl &url)
 
   if( !ftpOpenCommand( "list", listarg, 'I', ERR_DOES_NOT_EXIST ) )
   {
-    kError(7102) << "COULD NOT LIST" << endl;
+    kError(7102) << "COULD NOT LIST";
     return;
   }
   kDebug(7102) << "Starting of list was ok";
