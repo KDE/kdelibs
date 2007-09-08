@@ -37,7 +37,7 @@ using namespace KParts;
 class BrowserRun::BrowserRunPrivate
 {
 public:
-  bool m_bHideErrorDialog;
+    bool m_bHideErrorDialog;
     bool m_bRemoveReferrer;
     bool m_bTrustedSource;
     KParts::OpenUrlArguments m_args;
@@ -46,6 +46,7 @@ public:
     KParts::ReadOnlyPart *m_part; // QGuardedPtr?
     QPointer<QWidget> m_window;
     QString m_mimeType;
+    QString m_contentDisposition;
 };
 
 BrowserRun::BrowserRun( const KUrl& url, const KParts::OpenUrlArguments& args,
@@ -55,7 +56,7 @@ BrowserRun::BrowserRun( const KUrl& url, const KParts::OpenUrlArguments& args,
     : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
       d(new BrowserRunPrivate)
 {
-  d->m_bHideErrorDialog = hideErrorDialog;
+    d->m_bHideErrorDialog = hideErrorDialog;
     d->m_bRemoveReferrer = removeReferrer;
     d->m_bTrustedSource = trustedSource;
     d->m_args = args;
@@ -199,9 +200,10 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 
   // Suggested filename given by the server (e.g. HTTP content-disposition)
   // When set, we should really be saving instead of embedding
-  const QString suggestedFileName = job->queryMetaData("content-disposition");
+  const QString suggestedFileName = job->queryMetaData("content-disposition-filename");
   setSuggestedFileName(suggestedFileName); // store it (in KRun)
   //kDebug(1000) << "suggestedFileName=" << suggestedFileName;
+  d->m_contentDisposition = job->queryMetaData("content-disposition-type");
 
   // Make a copy to avoid a dead reference
   QString _type = type;
@@ -337,7 +339,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 
 //static
 // TODO should take a QWidget* parent argument
-BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int /*flags*/ )
+BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int flags )
 {
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC
     // NOTE: Keep this function in sync with kdebase/kcontrol/filetypes/filetypedetails.cpp
@@ -353,13 +355,14 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
     // - multipart/* ("server push", see kmultipart)
     // - other strange 'internal' mimetypes like print/manager...
     // KEEP IN SYNC!!!
-    if ( mime->is( "text/html" ) ||
+    if (flags != (int)AttachmentDisposition && (
+         mime->is( "text/html" ) ||
          mime->is( "application/xml" ) ||
          mime->is( "inode/directory" ) ||
          mimeType.startsWith( "image" ) ||
          mime->is( "multipart/x-mixed-replace" ) ||
          mime->is( "multipart/replace" ) ||
-         mimeType.startsWith( "print" ) )
+         mimeType.startsWith( "print" ) ) )
         return Open;
 
     QString question = makeQuestion( url, mimeType, suggestedFileName );
@@ -516,6 +519,10 @@ bool BrowserRun::isTextExecutable( const QString &mimeType )
 bool BrowserRun::hideErrorDialog() const
 {
     return d->m_bHideErrorDialog;
+}
+
+QString BrowserRun::contentDisposition() const {
+    return d->m_contentDisposition;
 }
 
 KParts::OpenUrlArguments& KParts::BrowserRun::arguments()

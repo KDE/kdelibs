@@ -67,6 +67,13 @@ namespace KParts {
 
         bool hideErrorDialog() const;
 
+        /**
+    	 * @return Suggested disposition by the server (e.g. HTTP content-disposition)
+    	 */
+        QString contentDisposition() const;
+
+        bool serverSuggestsSave() const { return contentDisposition() == QString::fromLatin1("attachment"); }
+
         enum AskSaveResult { Save, Open, Cancel };
         /**
          * Ask the user whether to save or open a url in another application.
@@ -77,13 +84,15 @@ namespace KParts {
          * @return Save, Open or Cancel.
          */
         static AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
+
+        enum AskEmbedOrSaveFlags { InlineDisposition = 0, AttachmentDisposition = 1 };
         /**
          * Similar to askSave but for the case where the current application is
          * able to embed the url itself (instead of passing it to another app).
          * @param url the URL in question
          * @param mimeType the mimetype of the URL
          * @param suggestedFileName optional filename suggested by the server
-         * @param flags reserved for later use
+         * @param flags set to AttachmentDisposition if suggested by the server
          * @return Save, Open or Cancel.
          */
         static AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );

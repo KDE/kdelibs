@@ -2650,7 +2650,8 @@ try_again:
   QByteArray locationStr; // In case we get a redirect.
   QByteArray cookieStr; // In case we get a cookie.
 
-  QString disposition; // Incase we get a Content-Disposition
+  QString dispositionType; // In case we get a Content-Disposition type
+  QString dispositionFilename; // In case we get a Content-Disposition filename
   QString mediaValue;
   QString mediaAttribute;
 
@@ -3181,7 +3182,7 @@ try_again:
               dispositionBuf--;
 
             if ( dispositionBuf > bufStart )
-              disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
+              dispositionFilename = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
 
             break;
           }
@@ -3194,7 +3195,7 @@ try_again:
             dispositionBuf++;
 
           if ( dispositionBuf > bufStart )
-            disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).trimmed();
+            dispositionType = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).trimmed();
 
           while ( *dispositionBuf == ';' || *dispositionBuf == ' ' )
             dispositionBuf++;
@@ -3203,16 +3204,21 @@ try_again:
 
       // Content-Dispostion is not allowed to dictate directory
       // path, thus we extract the filename only.
-      if ( !disposition.isEmpty() )
+      if ( !dispositionFilename.isEmpty() )
       {
-        int pos = disposition.lastIndexOf( '/' );
+        int pos = dispositionFilename.lastIndexOf( '/' );
 
         if( pos > -1 )
-          disposition = disposition.mid(pos+1);
+          dispositionFilename = dispositionFilename.mid(pos+1);
 
-        kDebug(7113) << "(" << m_pid << ") Content-Disposition: "
-                      << disposition<< endl;
+        kDebug(7113) << "(" << m_pid << ") Content-Disposition: filename="
+                      << dispositionFilename << endl;
       }
+    }
+    else if(strncasecmp(buf, "Content-Language:", 17) == 0) {
+        QString language = QString::fromLatin1(trimLead(buf+17)).trimmed();
+        if (!language.isEmpty())
+            setMetaData("content-language", language);
     }
     else if (strncasecmp(buf, "Proxy-Connection:", 17) == 0)
     {
@@ -3669,11 +3675,17 @@ try_again:
         m_strMimeType = QString::fromLatin1("video/x-ms-wmv");
   }
 
-  if( !disposition.isEmpty() )
+  if( !dispositionType.isEmpty() )
   {
-    kDebug(7113) << "(" << m_pid << ") Setting Content-Disposition metadata to: "
-                  << disposition << endl;
-    setMetaData("content-disposition", disposition);
+    kDebug(7113) << "(" << m_pid << ") Setting Content-Disposition type to: "
+                  << dispositionType << endl;
+    setMetaData("content-disposition-type", dispositionType);
+  }
+  if( !dispositionFilename.isEmpty() )
+  {
+    kDebug(7113) << "(" << m_pid << ") Setting Content-Disposition filename to: "
+                 << dispositionFilename << endl;
+    setMetaData("content-disposition-filename", dispositionFilename);
   }
 
   if (!m_request.lastModified.isEmpty())
