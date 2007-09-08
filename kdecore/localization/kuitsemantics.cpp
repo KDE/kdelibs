@@ -81,7 +81,7 @@ namespace Kuit {
             Window, Menu, Tab, Group, Column,
             Slider, Spinbox, Listbox, Textbox, Chooser,
             Check, Radio,
-            Inlistbox, Intable, Inrange,
+            Inlistbox, Intable, Inrange, Intext,
             Tooltip, Whatsthis, Status, Progress, Tipoftheday, Credit, Shell
         } Var;
     }
@@ -233,7 +233,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_ROL(Option, "option", Plain,
               Check << Radio);
     SETUP_ROL(Item, "item", Plain,
-              Inmenu << Inlistbox << Intable << Inrange);
+              Inmenu << Inlistbox << Intable << Inrange << Intext);
     SETUP_ROL(Info, "info", Rich,
                  Tooltip << Whatsthis << Kuit::Cue::Status << Progress
               << Tipoftheday << Credit << Shell);
@@ -269,6 +269,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_CUE(Inlistbox, "inlistbox");
     SETUP_CUE(Intable, "intable");
     SETUP_CUE(Inrange, "inrange");
+    SETUP_CUE(Intext, "intext");
     SETUP_CUE(Tooltip, "tooltip");
     SETUP_CUE(Whatsthis, "whatsthis");
     SETUP_CUE(Status, "status");
