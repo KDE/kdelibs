@@ -77,6 +77,7 @@ public:
     QTextCodec *m_codec;
     QTextDecoder *m_decoder; // utf16
     QTextCodec *m_defaultCodec;
+    QByteArray  m_storeDecoderName;
 
     KEncodingDetector::EncodingChoiceSource m_source;
     KEncodingDetector::AutoDetectScript m_autoDetectLanguage;
@@ -670,7 +671,8 @@ KEncodingDetector::EncodingChoiceSource KEncodingDetector::encodingChoiceSource(
 
 const char* KEncodingDetector::encoding() const
 {
-    return d->m_codec->name().data();
+    d->m_storeDecoderName = d->m_codec->name();
+    return d->m_storeDecoderName.data();
 }
 
 bool KEncodingDetector::visuallyOrdered() const
