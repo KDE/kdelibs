@@ -662,6 +662,30 @@ void KCookieJar::extractDomains(const QString &_fqdn,
     _domains.prepend( _fqdn );
 }
 
+/*
+   Changes dates in from the following format
+
+      Wed Sep 12 07:00:00 2007 GMT
+   to
+      Wed Sep 12 2007 07:00:00 GMT
+
+   to allow KRFCDate::parseDate to properly parse expiration date formats 
+   used in cookies by some servers such as amazon.com. See BR# 145244.
+*/
+static QString fixupDateTime(const QString& date)
+{
+  QStringList list = date.split(' ');
+  const int index = list.indexOf(QRegExp("[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}"));
+
+  if (index > -1 && (index+1) < list.count())
+  {
+    list.insert(index+1, list.takeAt(index));
+    return list.join(" ");
+  }
+
+  return date;
+}
+
 //
 // This function parses cookie_headers and returns a linked list of
 // KHttpCookie objects for all cookies found in cookie_headers.
@@ -787,6 +811,12 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             {
                 // Parse brain-dead netscape cookie-format
                 lastCookie->mExpireDate = KDateTime::fromString(Value, KDateTime::RFCDate).toTime_t();
+
+                // Workaround for servers that send the expiration date in
+                // 'Wed Sep 12 07:00:00 2007 GMT' format. See BR# 145244.
+                if (lastCookie->mExpireDate == 0)
+                  lastCookie->mExpireDate = KDateTime::fromString(fixupDateTime(Value), KDateTime::RFCDate).toTime_t();
+
             }
             else if (cName == "path")
             {
