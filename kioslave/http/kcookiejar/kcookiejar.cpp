@@ -669,7 +669,7 @@ void KCookieJar::extractDomains(const QString &_fqdn,
    to
       Wed Sep 12 2007 07:00:00 GMT
 
-   to allow KRFCDate::parseDate to properly parse expiration date formats 
+   to allow KDateTime::fromString to properly parse expiration date formats 
    used in cookies by some servers such as amazon.com. See BR# 145244.
 */
 static QString fixupDateTime(const QString& date)
