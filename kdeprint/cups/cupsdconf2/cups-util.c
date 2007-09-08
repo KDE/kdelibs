@@ -32,7 +32,11 @@ cupsGetConf(void)
   char		prompt[1024];		/* Prompt string */
   int		digest_tries;		/* Number of tries with Digest */
   static char	filename[HTTP_MAX_URI];	/* Local filename */
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+  const char    *fqdn = 0;
+#else
   char          fqdn[ HTTP_MAX_URI ];   /* Server name buffer */
+#endif
 
 
  /*
@@ -94,6 +98,7 @@ cupsGetConf(void)
 
     if (status == HTTP_UNAUTHORIZED)
     {
+      const char *www_authenticate;
       fprintf(stderr,"cupsGetConf: unauthorized...\n");
 
      /*
@@ -113,13 +118,22 @@ cupsGetConf(void)
       * See if we should retry the current digest password...
       */
 
-      if (strncmp( httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE ), "Basic", 5) == 0 ||
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+      www_authenticate = cups_server->fields[HTTP_FIELD_WWW_AUTHENTICATE];
+#else
+      www_authenticate = httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE );
+#endif
+      if (strncmp(www_authenticate, "Basic", 5) == 0 ||
           digest_tries > 1 || !pwdstring[0])
       {
        /*
 	* Nope - get a password from the user...
 	*/
-	httpGetHostname( cups_server, fqdn, sizeof( fqdn ) );
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+        fqdn = cups_server->hostname;
+#else
+        httpGetHostname( cups_server, fqdn, sizeof( fqdn ) );
+#endif
 
 	snprintf(prompt, sizeof(prompt), "Password for %s on %s? ", cupsUser(), fqdn );
 
@@ -140,7 +154,12 @@ cupsGetConf(void)
       * Got a password; encode it for the server...
       */
 
-      if (strncmp( httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE ), "Basic", 5) == 0)
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+      www_authenticate = cups_server->fields[HTTP_FIELD_WWW_AUTHENTICATE];
+#else
+      www_authenticate = httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE );
+#endif
+      if (strncmp(www_authenticate, "Basic", 5) == 0)
       {
        /*
 	* Basic authentication...
@@ -215,7 +234,13 @@ cupsGetConf(void)
   * OK, we need to copy the file...
   */
 
-  while ((bytes = httpRead2(cups_server, buffer, sizeof(buffer))) > 0)
+  while ((bytes =
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+          httpRead
+#else
+          httpRead2
+#endif
+          (cups_server, buffer, sizeof(buffer))) > 0)
   {
     write(fd, buffer, bytes);
   }
@@ -240,7 +265,11 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
   http_status_t	status;			/* HTTP status from server */
   char		prompt[1024];		/* Prompt string */
   int		digest_tries;		/* Number of tries with Digest */
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+  const char    *fqdn = 0;
+#else
   char          fqdn[ HTTP_MAX_URI ];   /* Server name buffer */
+#endif
 
   if (name == NULL)
     return 0;
@@ -311,16 +340,27 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
 	        break;
 	}
 	else
-	    httpWrite2(cups_server, buffer, bytes);
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+          httpWrite
+#else
+          httpWrite2
+#endif
+              (cups_server, buffer, bytes);
 
     if (status == HTTP_CONTINUE)
     {
-        httpWrite2(cups_server, buffer, 0);
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+        httpWrite
+#else
+        httpWrite2
+#endif
+            (cups_server, buffer, 0);
 	while ((status = httpUpdate(cups_server)) == HTTP_CONTINUE);
     }
 
     if (status == HTTP_UNAUTHORIZED)
     {
+      const char *www_authenticate;
       fprintf(stderr,"cupsPutConf: unauthorized...");
 
      /*
@@ -340,7 +380,12 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
       * See if we should retry the current digest password...
       */
 
-      if (strncmp( httpGetField ( cups_server, HTTP_FIELD_WWW_AUTHENTICATE ), "Basic", 5) == 0 ||
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+      www_authenticate = cups_server->fields[HTTP_FIELD_WWW_AUTHENTICATE];
+#else
+      www_authenticate = httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE );
+#endif
+      if (strncmp(www_authenticate, "Basic", 5) == 0 ||
           digest_tries > 1 || !pwdstring[0])
       {
        /*
@@ -348,7 +393,11 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
 	*/
 
 
-	httpGetHostname( cups_server, fqdn, sizeof( fqdn ) );
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+        fqdn = cups_server->hostname;
+#else
+        httpGetHostname( cups_server, fqdn, sizeof( fqdn ) );
+#endif
 	snprintf(prompt, sizeof(prompt), "Password for %s on %s? ", cupsUser(), fqdn );
 
         if ((password = cupsGetPassword(prompt)) == NULL)
@@ -368,7 +417,12 @@ cupsPutConf(const char *name)		/* I - Name of the config file to send */
       * Got a password; encode it for the server...
       */
 
-      if (strncmp(httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE ), "Basic", 5) == 0)
+#if CUPS_VERSION_MAJOR - 0 <= 1 && CUPS_VERSION_MINOR - 0 < 2
+      www_authenticate = cups_server->fields[HTTP_FIELD_WWW_AUTHENTICATE];
+#else
+      www_authenticate = httpGetField( cups_server, HTTP_FIELD_WWW_AUTHENTICATE );
+#endif
+      if (strncmp(www_authenticate, "Basic", 5) == 0)
       {
        /*
 	* Basic authentication...
