@@ -51,6 +51,8 @@ KJavaProcess::KJavaProcess( QObject* parent )
              this, SLOT( slotReceivedData() ) );
     connect( this, SIGNAL( finished( int, QProcess::ExitStatus ) ),
              this, SLOT( slotExited() ) );
+    connect( this, SIGNAL( error(  QProcess::ProcessError ) ),
+             this, SLOT( slotExited() ) );
 
     d->jvmPath = "java";
     d->mainClass = "-help";
@@ -228,9 +230,11 @@ bool KJavaProcess::invokeJVM()
 
     kDebug(6100) << "Invoking JVM now...with arguments = " << KShell::joinArgs(args);
 
+    setOutputChannelMode(KProcess::SeparateChannels);
     setProgram( d->jvmPath, args );
     start();
-    return waitForFinished();
+
+    return waitForStarted();
 }
 
 void KJavaProcess::killJVM()
