@@ -1900,7 +1900,8 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   setUrl(url);
 
   bool servedAsXHTML = args.mimeType() == "application/xhtml+xml";
-  KMimeType::Ptr mime = KMimeType::mimeType( args.mimeType() );
+  KMimeType::Ptr mime = KMimeType::mimeType( args.mimeType(), KMimeType::ResolveAliases );
+        // We want to make sure text/xml and application/xml are both handled right...
   bool servedAsXML = mime && mime->is( "text/xml" );
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
   if ( servedAsXML && !servedAsXHTML ) { // any XML derivative, except XHTML
