@@ -616,7 +616,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
         if (bPartExists && !_resume && !_overwrite && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
             kDebug(7101) << "FileProtocol::put : calling canResume with "
-                          << KIO::number(buff_part.st_size) << endl;
+                          << KIO::number(buff_part.st_size);
 
             // Maybe we can use this partial file for resuming
             // Tell about the size we have, and the app will tell us
@@ -1543,13 +1543,13 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 //		kDebug(7101) << "VOLMGT: vold ok.";
 		if( volmgt_check( devname.data() ) == 0 ) {
 			kDebug(7101) << "VOLMGT: no media in "
-					<< devname.data() << endl;
+					<< devname.data();
 			err = i18n("No Media inserted or Media not recognized.");
 			error( KIO::ERR_COULD_NOT_MOUNT, err );
 			return;
 		} else {
 			kDebug(7101) << "VOLMGT: " << devname.data()
-				<< ": media ok" << endl;
+				<< ": media ok";
 			finished();
 			return;
 		}
@@ -1690,7 +1690,7 @@ void FileProtocol::unmount( const QString& _point )
 
 	if( volmgt_running() ) {
 		kDebug(7101) << "VOLMGT: looking for "
-			<< _point.toLocal8Bit() << endl;
+			<< _point.toLocal8Bit();
 
 		if( (mnttab = KDE_fopen( MNTTAB, "r" )) == NULL ) {
 			err = "couldn't open mnttab";
@@ -1719,7 +1719,7 @@ void FileProtocol::unmount( const QString& _point )
 			err = "not in mnttab";
 			kDebug(7101) << "VOLMGT: "
 				<< QFile::encodeName(_point).data()
-				<< ": " << err << endl;
+				<< ": " << err;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 			return;
 		}
