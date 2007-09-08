@@ -388,9 +388,9 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 			// TODO  non-KAction QActions are not listed 
 			if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable())
 				new KShortcutsEditorItem((hier[l]), kact);
+
 			continue;
 		}
-		
 		if (!hier[l]->childCount())
 			delete hier[l];
 
@@ -423,9 +423,9 @@ void KShortcutsEditor::save()
 
 void KShortcutsEditor::undoChanges()
 {
-	//TODO: make this crash-proof. The tree widget does not seem to live long enough.
-	//Hey, it seems to work with 4.3-ish Qt versions. Look here if you get crashes
-	//when closing the dialog, though.
+	//This function used to crash sometimes when invoked by clicking on "cancel"
+	//with Qt 4.2.something. Apparently items were deleted too early by Qt.
+	//It seems to work with 4.3-ish Qt versions. Keep an eye on this.
 	for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
 		if ((*it)->childCount())
 			continue;
