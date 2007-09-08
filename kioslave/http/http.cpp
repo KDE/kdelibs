@@ -2625,17 +2625,40 @@ try_again:
      kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: cached "
                    << "data mimetype: " << m_strMimeType << endl;
 
-     if (!gzgets(m_request.fcache, buffer, 4096) )
-     {
-        // Error, delete cache entry
-        kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
-                      << "Could not access cached data! " << endl;
-        error( ERR_CONNECTION_BROKEN, m_state.hostname );
-        return false;
+     // read optional http-headers
+     while(true) {
+        if (!gzgets(m_request.fcache, buffer, 4096) )
+        {
+            // Error, delete cache entry
+            kDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader: "
+                            << "Could not access cached data! " << endl;
+            error( ERR_CONNECTION_BROKEN, m_state.hostname );
+            return false;
+        }
+        QString header = QString::fromUtf8( buffer).trimmed().toLower();
+        if (header.isEmpty()) break;
+        if (header.startsWith("content-type-charset: ")) {
+            QString value = header.mid(22);
+            m_request.strCharset = value;
+            setMetaData("charset", value);
+        } else
+        if (header.startsWith("content-language: ")) {
+            QString value = header.mid(18);
+            m_request.strLanguage = value;
+            setMetaData("content-language", value);
+        } else
+        if (header.startsWith("content-disposition-type: ")) {
+            QString value = header.mid(26);
+            m_request.strDisposition = value;
+            setMetaData("content-disposition-type", value);
+        } else
+        if (header.startsWith("content-disposition-filename: ")) {
+            QString value = header.mid(30);
+            m_request.strFilename = value;
+            setMetaData("content-disposition-filename", value);
+        }
      }
 
-     m_request.strCharset = QString::fromUtf8( buffer).trimmed().toLower();
-     setMetaData("charset", m_request.strCharset);
      if (!m_request.lastModified.isEmpty())
          setMetaData("modified", m_request.lastModified);
      QString tmp;
@@ -2650,8 +2673,6 @@ try_again:
   QByteArray locationStr; // In case we get a redirect.
   QByteArray cookieStr; // In case we get a cookie.
 
-  QString dispositionType; // In case we get a Content-Disposition type
-  QString dispositionFilename; // In case we get a Content-Disposition filename
   QString mediaValue;
   QString mediaAttribute;
 
@@ -3182,7 +3203,7 @@ try_again:
               dispositionBuf--;
 
             if ( dispositionBuf > bufStart )
-              dispositionFilename = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
+              m_request.strFilename = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
 
             break;
           }
@@ -3195,7 +3216,7 @@ try_again:
             dispositionBuf++;
 
           if ( dispositionBuf > bufStart )
-            dispositionType = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).trimmed();
+            m_request.strDisposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).trimmed();
 
           while ( *dispositionBuf == ';' || *dispositionBuf == ' ' )
             dispositionBuf++;
@@ -3204,21 +3225,23 @@ try_again:
 
       // Content-Dispostion is not allowed to dictate directory
       // path, thus we extract the filename only.
-      if ( !dispositionFilename.isEmpty() )
+      if ( !m_request.strFilename.isEmpty() )
       {
-        int pos = dispositionFilename.lastIndexOf( '/' );
+        int pos = m_request.strFilename.lastIndexOf( '/' );
 
         if( pos > -1 )
-          dispositionFilename = dispositionFilename.mid(pos+1);
+          m_request.strFilename = m_request.strFilename.mid(pos+1);
 
         kDebug(7113) << "(" << m_pid << ") Content-Disposition: filename="
-                      << dispositionFilename << endl;
+                      << m_request.strFilename << endl;
       }
     }
     else if(strncasecmp(buf, "Content-Language:", 17) == 0) {
         QString language = QString::fromLatin1(trimLead(buf+17)).trimmed();
-        if (!language.isEmpty())
+        if (!language.isEmpty()) {
+            m_request.strLanguage = language;
             setMetaData("content-language", language);
+        }
     }
     else if (strncasecmp(buf, "Proxy-Connection:", 17) == 0)
     {
@@ -3675,17 +3698,17 @@ try_again:
         m_strMimeType = QString::fromLatin1("video/x-ms-wmv");
   }
 
-  if( !dispositionType.isEmpty() )
+  if( !m_request.strDisposition.isEmpty() )
   {
     kDebug(7113) << "(" << m_pid << ") Setting Content-Disposition type to: "
-                  << dispositionType << endl;
-    setMetaData("content-disposition-type", dispositionType);
+                  << m_request.strDisposition << endl;
+    setMetaData("content-disposition-type", m_request.strDisposition);
   }
-  if( !dispositionFilename.isEmpty() )
+  if( !m_request.strFilename.isEmpty() )
   {
     kDebug(7113) << "(" << m_pid << ") Setting Content-Disposition filename to: "
-                 << dispositionFilename << endl;
-    setMetaData("content-disposition-filename", dispositionFilename);
+                 << m_request.strFilename << endl;
+    setMetaData("content-disposition-filename", m_request.strFilename);
   }
 
   if (!m_request.lastModified.isEmpty())
@@ -3789,22 +3812,18 @@ bool HTTPProtocol::sendBody()
     kDebug(7113) << "(" << m_pid << ") POST'ing live data...";
 
     QByteArray buffer;
-    int old_size;
 
-    m_bufPOST.resize(0);
-    do
-    {
+    m_bufPOST.clear();
+    while(true) {
       dataReq(); // Request for data
       result = readData( buffer );
-      if ( result > 0 )
-      {
+      if ( result > 0 ) {
         length += result;
-        old_size = m_bufPOST.size();
-        m_bufPOST.resize( old_size+result );
-        memcpy( m_bufPOST.data()+ old_size, buffer.data(), buffer.size() );
-        buffer.resize(0);
-      }
-    } while ( result > 0 );
+        m_bufPOST.append(buffer);
+        buffer.clear();
+      } else
+        break;
+    }
   }
 
   if ( result < 0 )
@@ -4785,8 +4804,26 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    gzputs(m_request.fcache, mimetype.toLatin1());  // Mimetype
    gzputc(m_request.fcache, '\n');
 
-   if (!m_request.strCharset.isEmpty())
-      gzputs(m_request.fcache, m_request.strCharset.toLatin1());    // Charset
+   if (!m_request.strCharset.isEmpty()) {
+      gzputs(m_request.fcache, "content-type-charset: ");
+      gzputs(m_request.fcache, m_request.strCharset.toLatin1());     // Charset
+      gzputc(m_request.fcache, '\n');
+   }
+   if (!m_request.strLanguage.isEmpty()) {
+      gzputs(m_request.fcache, "content-language: ");
+      gzputs(m_request.fcache, m_request.strLanguage.toLatin1());    // Content-language
+      gzputc(m_request.fcache, '\n');
+   }
+   if (!m_request.strDisposition.isEmpty()) {
+      gzputs(m_request.fcache, "content-disposition-type: ");
+      gzputs(m_request.fcache, m_request.strDisposition.toLatin1()); // Content-Disposition
+      gzputc(m_request.fcache, '\n');
+   }
+   if (!m_request.strFilename.isEmpty()) {
+      gzputs(m_request.fcache, "content-disposition-filename: ");
+      gzputs(m_request.fcache, m_request.strFilename.toLatin1());    // Content-Disposition: filename
+      gzputc(m_request.fcache, '\n');
+   }
    gzputc(m_request.fcache, '\n');
 
    return;

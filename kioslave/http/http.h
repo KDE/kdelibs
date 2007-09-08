@@ -165,6 +165,9 @@ public:
     time_t expireDate; // Date when the cache entry will expire
     time_t creationDate; // Date when the cache entry was created
     QString strCharset; // Charset
+    QString strLanguage; // Language
+    QString strDisposition;
+    QString strFilename;
 
     // Cookie flags
     enum { CookiesAuto, CookiesManual, CookiesNone } cookieMode;
