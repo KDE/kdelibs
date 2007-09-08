@@ -577,7 +577,5 @@ protected:
   int m_proxyConnTimeout;
   int m_remoteConnTimeout;
   int m_remoteRespTimeout;
-
-  int m_pid;
 };
 #endif
