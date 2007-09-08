@@ -68,9 +68,11 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 
     sep->setFixedHeight(10);
     QGroupBox *m_gb = new QGroupBox(i18n("Command &Settings"), dummy);
-    m_gb->setLayout(new QHBoxLayout);
+    QHBoxLayout *layout = new QHBoxLayout;
     m_command = new KXmlCommandSelector(true, m_gb, this);
     m_command->setObjectName("CommandSelector");
+    layout->addWidget(m_command);
+    m_gb->setLayout(layout);
     QGroupBox *m_outfile_gb = new QGroupBox(i18n("Outp&ut File"), dummy);
     m_outfile_gb->setLayout(new QHBoxLayout);
 

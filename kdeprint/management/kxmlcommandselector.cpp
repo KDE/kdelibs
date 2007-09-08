@@ -227,6 +227,9 @@ void KXmlCommandSelector::slotBrowse()
 
 void KXmlCommandSelector::slotCommandSelected(int ID)
 {
+    if(m_cmdlist.count() == 0)
+        return;
+
     KXmlCommand *xmlCmd = KXmlCommandManager::self()->loadCommand(m_cmdlist[ID], true);
     if (xmlCmd) {
         QString msg;

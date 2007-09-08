@@ -961,7 +961,8 @@ void KXmlCommandDlg::setCommand(KXmlCommand *xmlCmd)
     setCaption(i18n("Command Edit for %1", xmlCmd->name()));
 
     m_cmd = xmlCmd;
-    m_description->setText(i18n(xmlCmd->description().toUtf8()));
+    QString tmp = xmlCmd->description().toUtf8();
+    m_description->setText(tmp.isEmpty() ? "" : i18n(xmlCmd->description().toUtf8()));
     m_idname->setText(xmlCmd->name());
 
     m_requirements->clear();
