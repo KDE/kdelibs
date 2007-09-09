@@ -444,8 +444,6 @@ void KUrlNavigator::Private::switchView()
     updateContent();
     if (q->isUrlEditable()) {
         m_pathBox->setFocus();
-    } else {
-        q->setUrl(m_pathBox->currentText());
     }
     emit q->requestActivation();
 }
