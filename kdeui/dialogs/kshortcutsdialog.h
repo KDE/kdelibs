@@ -81,8 +81,8 @@ public:
 	 */
 	bool configure(bool saveSettings = true);
 
-    /** @see QWidget::sizeHint() */
-    virtual QSize sizeHint() const;
+	/** @see QWidget::sizeHint() */
+	virtual QSize sizeHint() const;
 
 	/**
 	 * Commit key setting changes so that changed settings actually become active.
