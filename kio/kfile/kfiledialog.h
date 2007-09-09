@@ -30,7 +30,6 @@
 #include <kfile.h>
 #include <kurl.h>
 #include <kmimetype.h>
-#include <kio/jobclasses.h> // TODO remove
 
 class KAbstractFileWidget;
 class KFileWidget;
@@ -304,7 +303,7 @@ public:
      *
      * @param w The widget to be used for the preview.
      */
-    void setPreviewWidget(const KPreviewWidgetBase *w);
+    void setPreviewWidget(KPreviewWidgetBase *w);
 
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;

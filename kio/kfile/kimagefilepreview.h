@@ -41,7 +41,6 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 		void showPreview();
 		void showPreview( const KUrl& url, bool force );
 
-		void toggleAuto(bool);
 		virtual void gotPreview( const KFileItem&, const QPixmap& );
 
 	protected:
@@ -54,7 +53,7 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 		virtual void slotFailed( const KFileItem& );
 
         private:
-                class KImageFilePreviewPrivate;
+        class KImageFilePreviewPrivate;
         KImageFilePreviewPrivate *const d;
 
         Q_DISABLE_COPY(KImageFilePreview)

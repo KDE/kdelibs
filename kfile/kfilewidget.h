@@ -257,8 +257,7 @@ public:
      *
      * @param w The widget to be used for the preview.
      */
-    // ### KDE5: remove 'const', as the widget must get layouted and will be deleted
-    virtual void setPreviewWidget(const KPreviewWidgetBase *w);
+    virtual void setPreviewWidget(KPreviewWidgetBase *w);
 
     /**
      * Sets the mode of the dialog.
@@ -370,7 +369,19 @@ public:
      *               When creating this widget, you don't need to specify a parent,
      *               since the widget's parent will be set automatically by KFileWidget.
      */
-    void setCustomWidget(QWidget* widget);
+    virtual void setCustomWidget(QWidget* widget);
+
+    /**
+     * Sets a custom widget that should be added below the location and the filter
+     * editors.
+     * @param text     Label of the custom widget, which is displayed below the labels
+     *                 "Location:" and "Filter:".
+     * @param widget   Any kind of widget, but preferable a combo box or a line editor
+     *                 to be compliant with the location and filter layout.
+     *                 When creating this widget, you don't need to specify a parent,
+     *                 since the widget's parent will be set automatically by KFileWidget.
+     */
+    virtual void setCustomWidget(const QString& text, QWidget* widget);
 
     /// @internal for future extensions
     virtual void virtual_hook( int id, void* data );

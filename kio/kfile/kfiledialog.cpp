@@ -164,7 +164,7 @@ KMimeType::Ptr KFileDialog::currentFilterMimeType()
     return KMimeType::mimeType( currentMimeFilter() );
 }
 
-void KFileDialog::setPreviewWidget(const KPreviewWidgetBase *w)
+void KFileDialog::setPreviewWidget(KPreviewWidgetBase *w)
 {
     d->w->setPreviewWidget(w);
 }

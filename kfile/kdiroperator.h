@@ -36,11 +36,13 @@ class QModelIndex;
 class QProgressBar;
 
 class KAction;
+class KActionMenu;
 class KDirLister;
 class KDirModel;
 class KDirSortFilterProxyModel;
+class KPreviewWidgetBase;
 class KToggleAction;
-class KActionMenu;
+
 namespace KIO
 {
 class CopyJob;
@@ -144,7 +146,7 @@ public:
 
     /**
      * Sets a filter like "*.cpp *.h *.o". Only files matching that filter
-     * will be shown. Call updateDir() to apply it.
+     * will be shown.
      *
      * @see KDirLister::setNameFilter
      * @see nameFilter
@@ -227,12 +229,6 @@ public:
     QAbstractItemView* view() const;
 
     /**
-     * Returns the widget of the current view. 0L if there is no view/widget.
-     * (KFileView itself is not a widget.)
-     */
-    QWidget* viewWidget() const;
-
-    /**
      * Sets one of the predefined fileviews.
      * @see KFile::FileView
      */
@@ -286,9 +282,7 @@ public:
      * The ownership of @p w is transferred to KDirOperator, so don't
      * delete it yourself!
      */
-    // ### KDE5: - remove the 'const', as the widget gets layouted and deleted...
-    //           - use KPreviewWidgetBase instead of QWidget
-    virtual void setPreviewWidget(const QWidget *w);
+    virtual void setPreviewWidget(KPreviewWidgetBase *w);
 
     /**
      * @returns a list of all currently selected items. If there is no view,
@@ -347,23 +341,19 @@ public:
      * @li forward : goes forward in the history
      * @li home : changes to the user's home directory
      * @li reload : reloads the current directory
-     * @li separator : a separator
      * @li mkdir : opens a dialog box to create a directory
      * @li delete : deletes the selected files/directories
      * @li sorting menu : an ActionMenu containing all sort-options
      * @li by name : sorts by name
-     * @li by date : sorts by date
      * @li by size : sorts by size
-     * @li reversed : reverses the sort order
-     * @li dirs first : sorts directories before files
-     * @li case insensitive : sorts case insensitively
+     * @li by date : sorts by date
+     * @li by type : sorts by type
+     * @li descending : reverses the sort order
      * @li view menu : an ActionMenu containing all actions concerning the view
      * @li short view : shows a simple fileview
      * @li detailed view : shows a detailed fileview (dates, permissions ,...)
      * @li show hidden : shows hidden files
-     * @li separate dirs : shows directories in a separate pane
      * @li preview  : shows a preview next to the fileview
-     * @li single : hides the separate view for directories or the preview
      * @li properties : shows a KPropertiesDialog for the selected files
      *
      * The short and detailed view are in an exclusive group. The sort-by
@@ -430,7 +420,6 @@ public:
      */
     virtual void writeConfig(KConfigGroup& configGroup);
 
-
     /**
      * This is a KFileDialog specific hack: we want to select directories with
      * single click, but not files. But as a generic class, we have to be able
@@ -458,18 +447,7 @@ public:
      * to the user.
      * @returns true if the directory could be created.
      */
-    // ### KDE5: turn QString into KUrl
     virtual bool mkdir(const QString& directory, bool enterDirectory = true);
-
-    /**
-     * Starts and returns a KIO::DeleteJob to delete the given @p items.
-     *
-     * @param items the list of items to be deleted
-     * @param ask specifies whether a confirmation dialog should be shown
-     * @param showProgress passed to the DeleteJob to show a progress dialog
-     */
-    virtual KIO::DeleteJob* del(const KFileItemList& items,
-                                bool ask = true, bool showProgress = true);
 
     /**
      * Starts and returns a KIO::DeleteJob to delete the given @p items.
@@ -479,7 +457,7 @@ public:
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
      */
-    virtual KIO::DeleteJob* del(const KFileItemList& items, QWidget *parent,
+    virtual KIO::DeleteJob* del(const QList<KFileItem>& items, QWidget *parent = 0,
                                 bool ask = true, bool showProgress = true);
 
     /**
@@ -540,7 +518,7 @@ public:
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the CopyJob to show a progress dialog
      */
-    virtual KIO::CopyJob* trash(const KFileItemList& items, QWidget *parent,
+    virtual KIO::CopyJob* trash(const QList<KFileItem>& items, QWidget *parent,
                                 bool ask = true, bool showProgress = true);
 
 protected:
@@ -601,6 +579,11 @@ protected:
      * Enables/disables the preview-action accordingly.
      */
     bool checkPreviewSupport();
+
+    /**
+     * Called upon right-click to activate the popupmenu.
+     */
+    virtual void activatedMenu(const KFileItem &item, const QPoint &pos);
 
 public Q_SLOTS:
     /**
@@ -685,18 +668,6 @@ protected Q_SLOTS:
     void pathChanged();
 
     /**
-     * Adds a new list of KFileItems to the view
-     * (coming from KDirLister)
-     */
-    void insertNewFiles(const KFileItemList &newone);
-
-    /**
-     * Removes the given KFileItem item from the view (usually called from
-     * KDirLister).
-     */
-    void itemDeleted(KFileItem *);
-
-    /**
      * Enters the directory specified by the given @p item.
      */
     virtual void selectDir(const KFileItem *item);
@@ -704,21 +675,12 @@ protected Q_SLOTS:
     /**
      * Emits fileSelected( item )
      */
-    // ### KDE5: change to 'const KFileItem &item'
     void selectFile(const KFileItem *item);
 
     /**
-     * Emits fileHighlighted( item )
+     * Emits fileHighlighted(item)
      */
-    // ### KDE5: change to 'const KFileItem &item'
     void highlightFile(const KFileItem *item);
-
-    /**
-     * Called upon right-click to activate the popupmenu.
-     */
-    // ### KDE5: - it is not required anymore that this method is a slot
-    //           - use const KFileItem& instead of KFileItem*
-    virtual void activatedMenu(const KFileItem *item, const QPoint &pos);
 
     /**
      * Changes sorting to sort by name
@@ -807,11 +769,21 @@ private:
     bool openUrl(const KUrl &url, bool keep = false, bool reload = false);
 
     /**
-     * Returns the column used by KDirModel which must be
-     * sorted to comply with \a sortFlags.
+     * Returns the column used by KDirModel dependent from d->sortOrder.
      */
-    int columnForSortFlags(QDir::SortFlags sortFlags) const;
+    int sortColumn() const;
 
+    /**
+     * Returns the sort order dependent from d->sortOrder.
+     */
+    Qt::SortOrder sortOrder() const;
+
+    /**
+     * Sorts the model depending from d->sorting and emits
+     * the signal sortingChanged(). It is assured that the
+     * selected item stays visible.
+     */
+    void triggerSorting();
 
 private Q_SLOTS:
     /**
@@ -840,10 +812,6 @@ private Q_SLOTS:
 
     void slotViewActionAdded(KAction *);
     void slotViewActionRemoved(KAction *);
-    void slotViewSortingChanged(QDir::SortFlags);
-
-    void slotClearView();
-    void slotRefreshItems(const KFileItemList& items);
 
     void slotProperties();
 
@@ -871,6 +839,19 @@ private Q_SLOTS:
     void showPreview();
 
     void slotSplitterMoved(int pos, int index);
+
+    /**
+     * Assures that the selection remains visible for
+     * the current view. This method should get invoked whenever
+     * the view or the layout has been changed.
+     */
+    void assureVisibleSelection();
+
+    /**
+     * Synchronizes the sorting actions with the current
+     * state of the sorting.
+     */
+    void synchronizeSortingState(int logicalIndex, Qt::SortOrder order);
 
 private:
     static bool isReadable(const KUrl &url);

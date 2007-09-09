@@ -40,21 +40,14 @@ public:
     {
     }
 
-    bool autoMode;
     KUrl currentURL;
-    QTimer *timer;
     QLabel *imageLabel;
-    QCheckBox *autoPreview;
-    QPushButton *previewButton;
     KIO::PreviewJob *m_job;
 };
 
 KImageFilePreview::KImageFilePreview( QWidget *parent )
     : KPreviewWidgetBase(parent), d(new KImageFilePreviewPrivate)
 {
-    KConfigGroup cg( KGlobal::config(), ConfigGroup );
-    d->autoMode = cg.readEntry("Automatic Preview", true);
-
     QVBoxLayout *vb = new QVBoxLayout( this );
     vb->setMargin( 0 );
     vb->setSpacing( KDialog::spacingHint() );
@@ -64,24 +57,8 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     d->imageLabel->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     vb->addWidget(d->imageLabel);
 
-    QHBoxLayout *hb = new QHBoxLayout();
-    hb->setSpacing( 0 );
-    vb->addLayout( hb );
-
-    d->autoPreview = new QCheckBox(i18n("&Automatic preview"), this);
-    d->autoPreview->setChecked(d->autoMode);
-    hb->addWidget(d->autoPreview);
-    connect(d->autoPreview, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)));
-
-    d->previewButton = new KPushButton(KIcon("thumbnail-show"), i18n("&Preview"), this);
-    hb->addWidget(d->previewButton);
-    connect(d->previewButton, SIGNAL(clicked()), SLOT(showPreview()));
-
-    d->timer = new QTimer(this);
-    d->timer->setSingleShot(true);
-    connect(d->timer, SIGNAL(timeout()), SLOT(showPreview()));
-
     setSupportedMimeTypes( KIO::PreviewJob::supportedMimeTypes() );
+    setMinimumWidth( 50 );
 }
 
 KImageFilePreview::~KImageFilePreview()
@@ -89,9 +66,6 @@ KImageFilePreview::~KImageFilePreview()
     if (d->m_job) {
         d->m_job->kill();
     }
-
-    KConfigGroup cg( KGlobal::config(), ConfigGroup );
-    cg.writeEntry("Automatic Preview", d->autoPreview->isChecked());
 
     delete d;
 }
@@ -120,44 +94,32 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
         clearPreview();
         d->currentURL = url;
 
-        if (d->autoMode || force) {
-            int w = d->imageLabel->contentsRect().width() - 4;
-            int h = d->imageLabel->contentsRect().height() - 4;
+        int w = d->imageLabel->contentsRect().width() - 4;
+        int h = d->imageLabel->contentsRect().height() - 4;
 
-            d->m_job = createJob(url, w, h);
-            if ( force ) // explicitly requested previews shall always be generated!
-                d->m_job->setIgnoreMaximumSize(true);
+        d->m_job = createJob(url, w, h);
+        if ( force ) // explicitly requested previews shall always be generated!
+            d->m_job->setIgnoreMaximumSize(true);
 
-            connect(d->m_job, SIGNAL(result(KJob *)),
-                     this, SLOT( slotResult( KJob * )));
-            connect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
-                                                const QPixmap& )),
-                     SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
+        connect(d->m_job, SIGNAL(result(KJob *)),
+                 this, SLOT( slotResult( KJob * )));
+        connect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
+                                            const QPixmap& )),
+                 SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
 
-            connect(d->m_job, SIGNAL(failed(const KFileItem&)),
-                     this, SLOT(slotFailed(const KFileItem&)));
-	}
-    }
-}
-
-void KImageFilePreview::toggleAuto( bool a )
-{
-    d->autoMode = a;
-    if (d->autoMode) {
-        // Pass a copy since clearPreview() will clear currentURL
-        KUrl url = d->currentURL;
-        showPreview( url, true );
+        connect(d->m_job, SIGNAL(failed(const KFileItem&)),
+                 this, SLOT(slotFailed(const KFileItem&)));
     }
 }
 
 void KImageFilePreview::resizeEvent( QResizeEvent * )
 {
-    d->timer->start(100); // forces a new preview
+    QMetaObject::invokeMethod(this, "showPreview", Qt::QueuedConnection);
 }
 
 QSize KImageFilePreview::sizeHint() const
 {
-    return QSize( 20, 200 ); // otherwise it ends up huge???
+    return QSize( 100, 200 );
 }
 
 KIO::PreviewJob * KImageFilePreview::createJob( const KUrl& url, int w, int h )

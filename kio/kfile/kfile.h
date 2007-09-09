@@ -79,7 +79,8 @@ public:
     // grr, who had the idea to set QDir::Name to 0x0?
     static bool isSortByName( const QDir::SortFlags& sort ) {
 	return (sort & QDir::Time) != QDir::Time &&
-	       (sort & QDir::Size) != QDir::Size;
+	       (sort & QDir::Size) != QDir::Size &&
+           (sort & QDir::Type) != QDir::Type;
     }
 
     static bool isSortBySize( const QDir::SortFlags& sort ) {
@@ -88,6 +89,10 @@ public:
 
     static bool isSortByDate( const QDir::SortFlags& sort ) {
 	return (sort & QDir::Time) == QDir::Time;
+    }
+
+    static bool isSortByType( const QDir::SortFlags& sort ) {
+    return (sort & QDir::Type) == QDir::Type;
     }
 
     static bool isSortDirsFirst( const QDir::SortFlags& sort ) {

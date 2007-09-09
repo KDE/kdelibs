@@ -23,6 +23,7 @@
 
 #include <config-kfile.h>
 
+#include <kabstractfilewidget.h>
 #include <kcombobox.h>
 #include <ktoolbar.h>
 #include <kglobal.h>
@@ -45,10 +46,8 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
 
   setOperationMode( type );
 
-  KToolBar *tb = toolBar();
-
-  d->encoding = new KComboBox(tb);
-  tb->addWidget(d->encoding);
+  d->encoding = new KComboBox(this);
+  fileWidget()->setCustomWidget(i18n("Encoding:"), d->encoding);
 
   d->encoding->clear ();
   QString sEncoding = encoding;

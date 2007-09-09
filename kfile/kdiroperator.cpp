@@ -156,7 +156,7 @@ protected:
 };
 
 DirOperatorDetailView::DirOperatorDetailView(QWidget *parent) :
-        QTreeView(parent)
+    QTreeView(parent)
 {
     setRootIsDecorated(false);
     setSortingEnabled(true);
@@ -180,8 +180,6 @@ bool DirOperatorDetailView::event(QEvent *event)
         headerView->setResizeMode(0, QHeaderView::Stretch);
 
         // hide columns
-        // TODO: provide a context menu for showing/hiding columns
-        // and remember the setting
         hideColumn(KDirModel::Permissions);
         hideColumn(KDirModel::Owner);
         hideColumn(KDirModel::Group);
@@ -347,14 +345,8 @@ KDirOperator::~KDirOperator()
 
 void KDirOperator::setSorting(QDir::SortFlags spec)
 {
-    if (d->proxyModel != 0) {
-        const int sortColumn = columnForSortFlags(spec);
-        const Qt::SortOrder sortOrder = (spec & QDir::Reversed) ?
-                                        Qt::DescendingOrder :
-                                        Qt::AscendingOrder;
-        d->proxyModel->sort(sortColumn, sortOrder);
-    }
     d->sorting = spec;
+    triggerSorting();
     updateSortActions();
 }
 
@@ -377,14 +369,6 @@ void KDirOperator::resetCursor()
 {
     QApplication::restoreOverrideCursor();
     d->progressBar->hide();
-}
-
-void KDirOperator::activatedMenu(const KFileItem *, const QPoint& pos)
-{
-    setupMenu();
-    updateSelectionDependentActions();
-
-    d->actionMenu->menu()->exec(pos);
 }
 
 void KDirOperator::sortByName()
@@ -436,12 +420,9 @@ void KDirOperator::updateSelectionDependentActions()
     d->actionCollection->action("properties")->setEnabled(hasSelection);
 }
 
-void KDirOperator::setPreviewWidget(const QWidget *w)
+void KDirOperator::setPreviewWidget(KPreviewWidgetBase *w)
 {
-    // see KDE5 comment in header for an explanation of the dirty casts:
-    KPreviewWidgetBase* previewWidget = qobject_cast<KPreviewWidgetBase*>(const_cast<QWidget*>(w));
-
-    const bool showPreview = (previewWidget != 0);
+    const bool showPreview = (w != 0);
     if (showPreview) {
         d->viewKind = (d->viewKind | KFile::PreviewContents);
     } else {
@@ -449,7 +430,7 @@ void KDirOperator::setPreviewWidget(const QWidget *w)
     }
 
     delete d->preview;
-    d->preview = previewWidget;
+    d->preview = w;
 
     KToggleAction *previewAction = static_cast<KToggleAction*>(d->actionCollection->action("preview"));
     previewAction->setEnabled(showPreview);
@@ -529,52 +510,77 @@ void KDirOperator::slotToggleHidden(bool show)
 {
     d->dirLister->setShowingDotFiles(show);
     updateDir();
-    //if ( d->fileView )
-    //    d->fileView->listingCompleted();
+}
+
+void KDirOperator::togglePreview(bool on)
+{
+    if (on) {
+        d->viewKind = d->viewKind | KFile::PreviewContents;
+        if (d->preview == 0) {
+            d->preview = new KFileMetaPreview(this);
+            d->actionCollection->action("preview")->setChecked(true);
+            d->splitter->addWidget(d->preview);
+        }
+
+        d->preview->show();
+
+        QMetaObject::invokeMethod(this, "assureVisibleSelection", Qt::QueuedConnection);
+        if (d->itemView != 0) {
+            const QModelIndex index = d->itemView->selectionModel()->currentIndex();
+            if (index.isValid()) {
+                triggerPreview(index);
+            }
+        }
+    } else if (d->preview != 0) {
+        d->viewKind = d->viewKind & ~KFile::PreviewContents;
+        d->preview->hide();
+        d->previewTimer->stop();
+    }
 }
 
 void KDirOperator::slotSortByName()
 {
-    // TODO:
-    //QDir::SortFlags sorting = (d->fileView->sorting()) & ~QDir::SortByMask;
-    //d->fileView->setSorting( sorting | QDir::Name );
-    //d->sorting = d->fileView->sorting();
+    d->sorting = QDir::Name;
+    d->actionCollection->action("by name")->setChecked(true);
+    triggerSorting();
 }
 
 void KDirOperator::slotSortBySize()
 {
-    // TODO:
-    //QDir::SortFlags sorting = (d->fileView->sorting()) & ~QDir::SortByMask;
-    //d->fileView->setSorting( sorting | QDir::Size );
-    //d->sorting = d->fileView->sorting();
+    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Size;
+    d->actionCollection->action("by size")->setChecked(true);
+    triggerSorting();
 }
 
 void KDirOperator::slotSortByDate()
 {
-    // TODO:
-    //QDir::SoFlags sorting = (d->fileView->sorting()) & ~QDir::SortByMask;
-    //d->fileView->setSorting( sorting | QDir::Time );
-    //d->sorting = d->fileView->sorting();
+    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Time;
+    d->actionCollection->action("by date")->setChecked(true);
+    triggerSorting();
 }
 
 void KDirOperator::slotSortByType()
 {
-    // TODO:
-    //QDir::SoFlags sorting = (d->fileView->sorting()) & ~QDir::SortByMask;
-    //d->fileView->setSorting( sorting | QDir::Time );
-    //d->sorting = d->fileView->sorting();
+    d->sorting = (d->sorting & ~QDir::SortByMask) | QDir::Type;
+    d->actionCollection->action("by type")->setChecked(true);
+    triggerSorting();
 }
 
 void KDirOperator::slotSortReversed()
 {
-    // TODO:
-    //if ( d->fileView )
-    //    d->fileView->sortReversed();
+    if (d->sorting & QDir::Reversed) {
+        d->sorting = d->sorting & ~QDir::Reversed;
+        d->actionCollection->action("descending")->setChecked(false);
+    } else {
+        d->sorting = d->sorting | QDir::Reversed;
+        d->actionCollection->action("descending")->setChecked(true);
+    }
+    triggerSorting();
 }
 
 void KDirOperator::slotToggleDirsFirst()
 {
-    // TODO:
+    // TODO: port to Qt4's QAbstractItemView
     /*if ( !d->fileView )
       return;
 
@@ -588,7 +594,7 @@ void KDirOperator::slotToggleDirsFirst()
 
 void KDirOperator::slotToggleIgnoreCase()
 {
-    // TODO:
+    // TODO: port to Qt4's QAbstractItemView
     /*if ( !d->fileView )
       return;
 
@@ -639,10 +645,10 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
     }
 
     if (exists) { // url was already existant
-        KMessageBox::sorry(viewWidget(), i18n("A file or folder named %1 already exists.", url.pathOrUrl()));
+        KMessageBox::sorry(d->itemView, i18n("A file or folder named %1 already exists.", url.pathOrUrl()));
         enterDirectory = false;
     } else if (!writeOk) {
-        KMessageBox::sorry(viewWidget(), i18n("You do not have permission to "
+        KMessageBox::sorry(d->itemView, i18n("You do not have permission to "
                                               "create that folder."));
     } else if (enterDirectory) {
         setUrl(url, true);
@@ -651,13 +657,7 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
     return writeOk;
 }
 
-KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
-                                   bool ask, bool showProgress)
-{
-    return del(items, this, ask, showProgress);
-}
-
-KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
+KIO::DeleteJob * KDirOperator::del(const QList<KFileItem>& items,
                                    QWidget *parent,
                                    bool ask, bool showProgress)
 {
@@ -668,10 +668,17 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
         return 0L;
     }
 
-    const KUrl::List urls = items.urlList();
+    if (parent == 0) {
+        parent = this;
+    }
+
+    KUrl::List urls;
     QStringList files;
-    foreach(const KUrl& url, urls)
-    files.append(url.pathOrUrl());
+    foreach (const KFileItem item, items) {
+        const KUrl url = item.url();
+        urls.append(url);
+        files.append(url.pathOrUrl());
+    }
 
     bool doIt = !ask;
     if (ask) {
@@ -705,16 +712,13 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
 
 void KDirOperator::deleteSelected()
 {
-    // TODO:
-    /*if ( !d->fileView )
-        return;
-
-    const KFileItemList *list = d->fileView->selectedItems();
-    if ( list )
-        del( *list );*/
+    const QList<KFileItem> list = selectedItems();
+    if (!list.isEmpty()) {
+        del(list, this);
+    }
 }
 
-KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
+KIO::CopyJob * KDirOperator::trash(const QList<KFileItem>& items,
                                    QWidget *parent,
                                    bool ask, bool showProgress)
 {
@@ -725,10 +729,13 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
         return 0L;
     }
 
-    const KUrl::List urls = items.urlList();
+    KUrl::List urls;
     QStringList files;
-    foreach(const KUrl& url, urls)
-    files.append(url.pathOrUrl());
+    foreach (const KFileItem item, items) {
+        const KUrl url = item.url();
+        urls.append(url);
+        files.append(url.pathOrUrl());
+    }
 
     bool doIt = !ask;
     if (ask) {
@@ -762,18 +769,19 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
 
 void KDirOperator::trashSelected()
 {
-    // TODO:
-    /*if ( !d->fileView )
+    if (d->itemView == 0) {
         return;
+    }
 
-    if ( reason == KAction::PopupMenuActivation && ( modifiers & Qt::ShiftModifier ) ) {
+    if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
         deleteSelected();
         return;
     }
 
-    const KFileItemList *list = d->fileView->selectedItems();
-    if ( list )
-        trash( *list, this );*/
+    const QList<KFileItem> list = selectedItems();
+    if (!list.isEmpty()) {
+        trash(list, this);
+    }
 }
 
 void KDirOperator::close()
@@ -864,7 +872,7 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
         newurl.cd(QLatin1String(".."));
         if (!isReadable(newurl)) {
             resetCursor();
-            KMessageBox::error(viewWidget(),
+            KMessageBox::error(d->itemView,
                                i18n("The specified folder does not exist "
                                     "or was not readable."));
             return;
@@ -899,10 +907,7 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
 
 void KDirOperator::updateDir()
 {
-    // TODO:
-    /*d->dirLister->emitChanges();
-    if ( d->fileView )
-        d->fileView->listingCompleted();*/
+    d->dirLister->emitChanges();
 }
 
 void KDirOperator::rereadDir()
@@ -921,19 +926,45 @@ bool KDirOperator::openUrl(const KUrl& url, bool keep, bool reload)
     return result;
 }
 
-int KDirOperator::columnForSortFlags(QDir::SortFlags sortFlags) const
+int KDirOperator::sortColumn() const
 {
     int column = KDirModel::Name;
-
-    if (sortFlags & QDir::Size) {
-        column = KDirModel::Size;
-    } else if (sortFlags & QDir::Time) {
+    if (KFile::isSortByDate(d->sorting)) {
         column = KDirModel::ModifiedTime;
-    } else if (sortFlags & QDir::Type) {
+    } else if (KFile::isSortBySize(d->sorting)) {
+        column = KDirModel::Size;
+    } else if (KFile::isSortByType(d->sorting)) {
         column = KDirModel::Type;
+    } else {
+        Q_ASSERT(KFile::isSortByName(d->sorting));
     }
 
     return column;
+}
+
+Qt::SortOrder KDirOperator::sortOrder() const
+{
+    return (d->sorting & QDir::Reversed) ? Qt::DescendingOrder :
+                                           Qt::AscendingOrder;
+}
+
+void KDirOperator::triggerSorting()
+{
+    d->proxyModel->sort(sortColumn(), sortOrder());
+
+    // TODO: The headers from QTreeView don't take care about a sorting
+    // change of the proxy model hence they must be updated the manually.
+    // This is done here by a qobject_cast, but it would be nicer to:
+    // - provide a signal 'sortingChanged()'
+    // - connect DirOperatorDetailView() with this signal and update the
+    //   header internally
+    QTreeView* treeView = qobject_cast<QTreeView*>(d->itemView);
+    if (treeView != 0) {
+        QHeaderView* headerView = treeView->header();
+        headerView->setSortIndicator(sortColumn(), sortOrder());
+    }
+
+    assureVisibleSelection();
 }
 
 // Protected
@@ -954,7 +985,7 @@ void KDirOperator::pathChanged()
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     if (!isReadable(d->currUrl)) {
-        KMessageBox::error(viewWidget(),
+        KMessageBox::error(d->itemView,
                            i18n("The specified folder does not exist "
                                 "or was not readable."));
         if (d->backStack.isEmpty())
@@ -1062,6 +1093,15 @@ bool KDirOperator::checkPreviewSupport()
     return hasPreviewSupport;
 }
 
+void KDirOperator::activatedMenu(const KFileItem &item, const QPoint &pos)
+{
+    Q_UNUSED(item);
+    setupMenu();
+    updateSelectionDependentActions();
+
+    d->actionMenu->menu()->exec(pos);
+}
+
 bool KDirOperator::checkPreviewInternal() const
 {
     QStringList supported = KIO::PreviewJob::supportedMimeTypes();
@@ -1123,9 +1163,12 @@ bool KDirOperator::checkPreviewInternal() const
 
 QAbstractItemView* KDirOperator::createView(QWidget* parent, KFile::FileView viewKind)
 {
-    QAbstractItemView* itemView = 0;
+    QAbstractItemView *itemView = 0;
     if (KFile::isDetailView(viewKind)) {
-        itemView = new DirOperatorDetailView(parent);
+        DirOperatorDetailView *detailView = new DirOperatorDetailView(parent);
+        connect(detailView->header(), SIGNAL(sortIndicatorChanged (int, Qt::SortOrder)),
+                this, SLOT(synchronizeSortingState(int, Qt::SortOrder)));
+        itemView = detailView;
     } else {
         itemView = new DirOperatorIconView(parent);
     }
@@ -1171,19 +1214,12 @@ void KDirOperator::setView(KFile::FileView viewKind)
     QAbstractItemView *newView = createView(this, viewKind);
     setView(newView);
 
-    if (d->preview != 0) {
-        togglePreview(preview);
-    }
+    togglePreview(preview);
 }
 
 QAbstractItemView * KDirOperator::view() const
 {
     return d->itemView;
-}
-
-QWidget * KDirOperator::viewWidget() const
-{
-    return 0; // TODO: d->fileView ? d->fileView->widget() : 0L;
 }
 
 KFile::Modes KDirOperator::mode() const
@@ -1212,58 +1248,22 @@ void KDirOperator::setView(QAbstractItemView *view)
 
     // TODO: do a real timer and restart it after that
     d->pendingMimeTypes.clear();
-    bool listDir = true;
+    const bool listDir = (d->itemView == 0);
 
-    /*if ( dirOnlyMode() )
-         view->setViewMode(KFileView::Directories);
-    else
-        view->setViewMode(KFileView::All);*/
-
-    /*if ( d->mode & KFile::Files )
-        view->setSelectionMode( KFile::Extended );
-    else
-        view->setSelectionMode( KFile::Single );*/
-
-    /*    if (d->fileView)
-    {
-        if ( d->configGroup ) // save and restore the views' configuration
-        {
-            d->fileView->writeConfig(d->configGroup);
-            view->readConfig(d->configGroup);
-        }
-
-        // transfer the state from old view to new view
-        view->clear();
-        view->addItemList( *d->fileView->items() );
-        listDir = false;
-
-        if ( d->fileView->widget()->hasFocus() )
-            view->widget()->setFocus();
-
-        KFileItem *oldCurrentItem = d->fileView->currentFileItem();
-        if ( oldCurrentItem ) {
-            view->setCurrentItem( oldCurrentItem );
-            view->setSelected( oldCurrentItem, false );
-            view->ensureItemVisible( oldCurrentItem );
-        }
-
-        const KFileItemList *oldSelected = d->fileView->selectedItems();
-        if ( !oldSelected->isEmpty() ) {
-            KFileItemList::const_iterator kit = oldSelected->begin();
-            const KFileItemList::const_iterator kend = oldSelected->end();
-            for ( ; kit != kend; ++kit )
-                view->setSelected( *kit, true );
-        }
-
-        d->fileView->widget()->hide();
-        delete d->fileView;
+    if (d->mode & KFile::Files) {
+        view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    } else {
+        view->setSelectionMode(QAbstractItemView::SingleSelection);
     }
 
-    else
-    {
-        if ( d->configGroup )
-            view->readConfig( d->configGroup );
-    }*/
+    QItemSelectionModel *selectionModel = 0;
+    if ((d->itemView != 0) && d->itemView->selectionModel()->hasSelection()) {
+        // remember the selection of the current item view and apply this selection
+        // to the new view later
+        const QItemSelection selection = d->itemView->selectionModel()->selection();
+        selectionModel = new QItemSelectionModel(d->proxyModel, this);
+        selectionModel->select(selection, QItemSelectionModel::Select);
+    }
 
     delete d->itemView;
     d->itemView = view;
@@ -1274,8 +1274,7 @@ void KDirOperator::setView(QAbstractItemView *view)
     d->itemView->viewport()->setAttribute(Qt::WA_Hover);
     d->itemView->setContextMenuPolicy(Qt::CustomContextMenu);
     d->itemView->setMouseTracking(true);
-    //d->fileView = view;
-    //d->fileView->setDropOptions(d->dropOptions);
+    //d->itemView->setDropOptions(d->dropOptions);
 
     connect(d->itemView, SIGNAL(pressed(const QModelIndex&)),
             this, SLOT(slotPressed(const QModelIndex&)));
@@ -1290,24 +1289,14 @@ void KDirOperator::setView(QAbstractItemView *view)
     connect(d->itemView, SIGNAL(viewportEntered()),
             this, SLOT(cancelPreview()));
 
-
-    /*KFileViewSignaler *sig = view->signaler();
-
-    connect(sig, SIGNAL( activatedMenu(const KFileItem *, const QPoint& ) ),
-            this, SLOT( activatedMenu(const KFileItem *, const QPoint& )));
-    connect(sig, SIGNAL( dirActivated(const KFileItem *) ),
-            this, SLOT( selectDir(const KFileItem*) ) );
-    connect(sig, SIGNAL( fileSelected(const KFileItem *) ),
-            this, SLOT( selectFile(const KFileItem*) ) );
-    connect(sig, SIGNAL( fileHighlighted(const KFileItem *) ),
-            this, SLOT( highlightFile(const KFileItem*) ));
-    connect(sig, SIGNAL( sortingChanged( QDir::SortFlags ) ),
-            this, SLOT( slotViewSortingChanged( QDir::SortFlags )));
-    connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&) ),
-            this, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&)) );*/
-
-    //if ( d->actionCollection->action("descending")->isChecked() != d->fileView->isReversed() )
-    //    slotSortReversed();
+    // assure that the sorting state d->sorting matches with the current action
+    const bool descending = d->actionCollection->action("descending")->isChecked();
+    if (!descending && d->sorting & QDir::Reversed) {
+        d->sorting = d->sorting & ~QDir::Reversed;
+    } else if (descending && !(d->sorting & QDir::Reversed)) {
+        d->sorting = d->sorting | QDir::Reversed;
+    }
+    triggerSorting();
 
     updateViewActions();
     d->splitter->insertWidget(0, d->itemView);
@@ -1319,8 +1308,11 @@ void KDirOperator::setView(QAbstractItemView *view)
         QApplication::setOverrideCursor(Qt::WaitCursor);
         openUrl(d->currUrl);
     }
-    //else
-    //    view->listingCompleted();
+
+    if (selectionModel != 0) {
+        d->itemView->setSelectionModel(selectionModel);
+        QMetaObject::invokeMethod(this, "assureVisibleSelection", Qt::QueuedConnection);
+    }
 
     emit viewChanged(view);
 }
@@ -1356,58 +1348,15 @@ void KDirOperator::setDirLister(KDirLister *lister)
     connect(d->dirLister, SIGNAL(percent(int)),
             SLOT(slotProgress(int)));
     connect(d->dirLister, SIGNAL(started(const KUrl&)), SLOT(slotStarted()));
-    connect(d->dirLister, SIGNAL(newItems(const KFileItemList &)),
-            SLOT(insertNewFiles(const KFileItemList &)));
     connect(d->dirLister, SIGNAL(completed()), SLOT(slotIOFinished()));
     connect(d->dirLister, SIGNAL(canceled()), SLOT(slotCanceled()));
-    connect(d->dirLister, SIGNAL(deleteItem(KFileItem *)),
-            SLOT(itemDeleted(KFileItem *)));
     connect(d->dirLister, SIGNAL(redirection(const KUrl&)),
             SLOT(slotRedirected(const KUrl&)));
-    connect(d->dirLister, SIGNAL(clear()), SLOT(slotClearView()));
-    connect(d->dirLister, SIGNAL(refreshItems(const KFileItemList&)),
-            SLOT(slotRefreshItems(const KFileItemList&)));
-}
-
-void KDirOperator::insertNewFiles(const KFileItemList &newone)
-{
-    //if ( newone.isEmpty() || !d->fileView )
-    //    return;
-
-    d->completeListDirty = true;
-    // TODO:
-    //d->fileView->addItemList( newone );
-    //emit updateInformation(d->fileView->numDirs(), d->fileView->numFiles());
-
-    KFileItemList::const_iterator kit = newone.begin();
-    const KFileItemList::const_iterator kend = newone.end();
-    for (; kit != kend; ++kit) {
-        const KFileItem* item = *kit;
-        // highlight the dir we come from, if possible
-        if (d->dirHighlighting && item->isDir() &&
-                item->url().url(KUrl::RemoveTrailingSlash) == d->lastURL) {
-            //d->fileView->setCurrentItem( item );
-            //d->fileView->ensureItemVisible( item );
-        }
-    }
-
-    QTimer::singleShot(200, this, SLOT(resetCursor()));
 }
 
 void KDirOperator::selectDir(const KFileItem *item)
 {
     setUrl(item->url(), true);
-}
-
-void KDirOperator::itemDeleted(KFileItem *item)
-{
-    d->pendingMimeTypes.removeAll(item);
-    // TODO:
-    /*if ( d->fileView )
-    {
-        d->fileView->removeItem( item );
-        emit updateInformation(d->fileView->numDirs(), d->fileView->numFiles());
-    }*/
 }
 
 void KDirOperator::selectFile(const KFileItem *item)
@@ -1429,27 +1378,30 @@ void KDirOperator::highlightFile(const KFileItem *item)
 
 void KDirOperator::setCurrentItem(const QString& filename)
 {
-    Q_UNUSED(filename);
-    // TODO:
-    /*if ( d->fileView ) {
-        const KFileItem *item = 0;
+    if (d->itemView == 0) {
+        return;
+    }
 
-        if ( !filename.isNull() )
-            item = d->dirLister->findByName( filename );
+    const KFileItem *item = 0;
+    if ( !filename.isNull() ) {
+        item = d->dirLister->findByName(filename);
+    }
 
-        d->fileView->clearSelection();
-        if ( item ) {
-            d->fileView->setCurrentItem( item );
-            d->fileView->setSelected( item, true );
-            d->fileView->ensureItemVisible( item );
-        }
-    }*/
+    QItemSelectionModel *selModel = d->itemView->selectionModel();
+    selModel->clear();
+    if (item != 0) {
+        const QModelIndex dirIndex = d->dirModel->indexForItem(*item);
+        const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
+        selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
+        selModel->select(proxyIndex, QItemSelectionModel::Select);
+        assureVisibleSelection();
+    }
 }
 
 QString KDirOperator::makeCompletion(const QString& string)
 {
     if (string.isEmpty()) {
-        //d->fileView->clearSelection(); TODO
+        d->itemView->selectionModel()->clear();
         return QString();
     }
 
@@ -1460,7 +1412,7 @@ QString KDirOperator::makeCompletion(const QString& string)
 QString KDirOperator::makeDirCompletion(const QString& string)
 {
     if (string.isEmpty()) {
-        //d->fileView->clearSelection(); TODO
+        d->itemView->selectionModel()->clear();
         return QString();
     }
 
@@ -1470,20 +1422,18 @@ QString KDirOperator::makeDirCompletion(const QString& string)
 
 void KDirOperator::prepareCompletionObjects()
 {
-    // TODO
-    //if ( !d->fileView )
-    //    return;
+    if (d->itemView == 0) {
+        return;
+    }
 
     if (d->completeListDirty) {   // create the list of all possible completions
-        /*const KFileItemList* itemList = d->fileView->items();
-        KFileItemList::const_iterator kit = itemList->begin();
-        const KFileItemList::const_iterator kend = itemList->end();
-        for ( ; kit != kend; ++kit ) {
-            KFileItem *item = *kit;
-            d->completion.addItem( item->name() );
-            if ( item->isDir() )
-                d->dirCompletion.addItem( item->name() );
-        }*/
+        const KFileItemList itemList = d->dirLister->items();
+        foreach (const KFileItem *item, itemList) {
+            d->completion.addItem(item->name());
+            if (item->isDir()) {
+                d->dirCompletion.addItem(item->name());
+            }
+        }
         d->completeListDirty = false;
     }
 }
@@ -1542,13 +1492,13 @@ void KDirOperator::setupActions()
     d->actionCollection->addAction("by name", byNameAction);
     connect(byNameAction, SIGNAL(triggered(bool)), this, SLOT(slotSortByName()));
 
-    KToggleAction *byDateAction = new KToggleAction(i18n("By Date"), this);
-    d->actionCollection->addAction("by date", byDateAction);
-    connect(byDateAction, SIGNAL(triggered(bool)), this, SLOT(slotSortByDate()));
-
     KToggleAction *bySizeAction = new KToggleAction(i18n("By Size"), this);
     d->actionCollection->addAction("by size", bySizeAction);
     connect(bySizeAction, SIGNAL(triggered(bool)), this, SLOT(slotSortBySize()));
+
+    KToggleAction *byDateAction = new KToggleAction(i18n("By Date"), this);
+    d->actionCollection->addAction("by date", byDateAction);
+    connect(byDateAction, SIGNAL(triggered(bool)), this, SLOT(slotSortByDate()));
 
     KToggleAction *byTypeAction = new KToggleAction(i18n("By Type"), this);
     d->actionCollection->addAction("by type", byTypeAction);
@@ -1560,8 +1510,8 @@ void KDirOperator::setupActions()
 
     QActionGroup* sortGroup = new QActionGroup(this);
     byNameAction->setActionGroup(sortGroup);
-    byDateAction->setActionGroup(sortGroup);
     bySizeAction->setActionGroup(sortGroup);
+    byDateAction->setActionGroup(sortGroup);
     byTypeAction->setActionGroup(sortGroup);
 
     KToggleAction *shortAction = new KToggleAction(i18n("Short View"), this);
@@ -1613,8 +1563,8 @@ void KDirOperator::setupMenu(int whichActions)
     KActionMenu *sortMenu = static_cast<KActionMenu*>(d->actionCollection->action("sorting menu"));
     sortMenu->menu()->clear();
     sortMenu->addAction(d->actionCollection->action("by name"));
-    sortMenu->addAction(d->actionCollection->action("by date"));
     sortMenu->addAction(d->actionCollection->action("by size"));
+    sortMenu->addAction(d->actionCollection->action("by date"));
     sortMenu->addAction(d->actionCollection->action("by type"));
     sortMenu->addSeparator();
     sortMenu->addAction(d->actionCollection->action("descending"));
@@ -1667,15 +1617,12 @@ void KDirOperator::updateSortActions()
         d->actionCollection->action("by name")->setChecked(true);
     } else if (KFile::isSortByDate(d->sorting)) {
         d->actionCollection->action("by date")->setChecked(true);
-    } else if (KFile::isSortBySize(d->sorting))
+    } else if (KFile::isSortBySize(d->sorting)) {
         d->actionCollection->action("by size")->setChecked(true);
-    //} else if (KFile::isSortByType(d->sorting)) {
-    //    d->actionCollection->action("by type")->setChecked(true);
-    //}
-
-    // TODO
-    //if ( d->fileView )
-    //    d->actionCollection->action("descending")->setChecked( d->fileView->isReversed() );
+    } else if (KFile::isSortByType(d->sorting)) {
+        d->actionCollection->action("by type")->setChecked(true);
+    }
+    d->actionCollection->action("descending")->setChecked(d->sorting & QDir::Reversed);
 }
 
 void KDirOperator::updateViewActions()
@@ -1736,11 +1683,12 @@ void KDirOperator::readConfig(const KConfigGroup& configGroup)
         d->actionCollection->action("show hidden")->setChecked(true);
         d->dirLister->setShowingDotFiles(true);
     }
-    if (configGroup.readEntry(QLatin1String("Sort reversed"),
-                              DefaultSortReversed)) {
-        d->actionCollection->action("by type")->setChecked(true);
+    const bool descending = configGroup.readEntry(QLatin1String("Sort reversed"),
+                                                  DefaultSortReversed);
+    d->actionCollection->action("descending")->setChecked(descending);
+    if (descending) {
+        d->sorting = d->sorting | QDir::Reversed;
     }
-
 }
 
 void KDirOperator::writeConfig(KConfigGroup& configGroup)
@@ -1750,8 +1698,9 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
         sortBy = QLatin1String("Size");
     } else if (KFile::isSortByDate(d->sorting)) {
         sortBy = QLatin1String("Date");
+    } else if (KFile::isSortByType(d->sorting)) {
+        sortBy = QLatin1String("Type");
     }
-    // TODO: sort by type
 
     configGroup.writeEntry(QLatin1String("Sort by"), sortBy);
 
@@ -1823,8 +1772,10 @@ void KDirOperator::resizeEvent(QResizeEvent *)
 void KDirOperator::setOnlyDoubleClickSelectsFiles(bool enable)
 {
     d->onlyDoubleClickSelectsFiles = enable;
-    //if ( d->fileView )
-    //    d->fileView->setOnlyDoubleClickSelectsFiles( enable );
+    // TODO: port to Qt4's QAbstractItemModel
+    //if (d->itemView != 0) {
+    //    d->itemView->setOnlyDoubleClickSelectsFiles(enable);
+    //}
 }
 
 bool KDirOperator::onlyDoubleClickSelectsFiles() const
@@ -1863,18 +1814,12 @@ void KDirOperator::slotIOFinished()
     d->progressBar->hide();
     emit finishedLoading();
     resetCursor();
-
-    //if ( d->fileView )
-    //    d->fileView->listingCompleted();
 }
 
 void KDirOperator::slotCanceled()
 {
     emit finishedLoading();
     resetCursor();
-
-    //if ( d->fileView )
-    //    d->fileView->listingCompleted();
 }
 
 QProgressBar * KDirOperator::progressBar() const
@@ -1903,12 +1848,6 @@ void KDirOperator::slotViewActionRemoved(KAction *action)
 {
     KActionMenu* viewMenu = static_cast<KActionMenu*>(d->actionCollection->action("view menu"));
     viewMenu->removeAction(action);
-}
-
-void KDirOperator::slotViewSortingChanged(QDir::SortFlags sort)
-{
-    d->sorting = sort;
-    updateSortActions();
 }
 
 void KDirOperator::setEnableDirHighlighting(bool enable)
@@ -1949,13 +1888,6 @@ void KDirOperator::slotProperties()
         KPropertiesDialog dialog(itemPtrList, this);
         dialog.exec();
     }
-}
-
-void KDirOperator::slotClearView()
-{
-    // TODO
-    //if ( d->fileView )
-    //    d->fileView->clearView();
 }
 
 void KDirOperator::slotPressed(const QModelIndex& index)
@@ -2009,7 +1941,7 @@ void KDirOperator::openContextMenu(const QPoint& pos)
     const QModelIndex proxyIndex = d->itemView->indexAt(pos);
     const QModelIndex dirIndex = d->proxyModel->mapToSource(proxyIndex);
     KFileItem item = d->dirModel->itemForIndex(dirIndex);
-    activatedMenu(item.isNull() ? 0 : &item, QCursor::pos());
+    activatedMenu(item, QCursor::pos());
 }
 
 void KDirOperator::triggerPreview(const QModelIndex& index)
@@ -2047,35 +1979,38 @@ void KDirOperator::slotSplitterMoved(int pos, int index)
     }
 }
 
-void KDirOperator::togglePreview(bool on)
+void KDirOperator::assureVisibleSelection()
 {
-    if (on) {
-        d->viewKind = d->viewKind | KFile::PreviewContents;
-        if (d->preview == 0) {
-            d->preview = new KFileMetaPreview(this);
-            d->actionCollection->action("preview")->setChecked(true);
-            d->splitter->addWidget(d->preview);
-        }
+    if (d->itemView == 0) {
+        return;
+    }
 
-        d->preview->show();
-    } else {
-        d->viewKind = d->viewKind & ~KFile::PreviewContents;
-        d->preview->hide();
-        d->previewTimer->stop();
+    QItemSelectionModel* selModel = d->itemView->selectionModel();
+    if (selModel->hasSelection()) {
+        const QModelIndexList list = selModel->selection().indexes();
+        d->itemView->scrollTo(list.first());
     }
 }
 
-void KDirOperator::slotRefreshItems(const KFileItemList& items)
-{
-    Q_UNUSED(items);
-    // TODO:
-    /*if ( !d->fileView )
-        return;
 
-    KFileItemList::const_iterator kit = items.begin();
-    const KFileItemList::const_iterator kend = items.end();
-    for ( ; kit != kend; ++kit )
-        d->fileView->updateView( *kit );*/
+void KDirOperator::synchronizeSortingState(int logicalIndex, Qt::SortOrder order)
+{
+    switch (logicalIndex) {
+    case KDirModel::Name: sortByName(); break;
+    case KDirModel::Size: sortBySize(); break;
+    case KDirModel::ModifiedTime: sortByDate(); break;
+    case KDirModel::Type: sortByType(); break;
+    }
+
+    const bool descending = d->actionCollection->action("descending")->isChecked();
+    const bool reverseSorting = ((order == Qt::Ascending) && descending) ||
+                                ((order == Qt::Descending) && !descending);
+    if (reverseSorting) {
+        sortReversed();
+    }
+
+    d->proxyModel->sort(sortColumn(), sortOrder());
+    QMetaObject::invokeMethod(this, "assureVisibleSelection", Qt::QueuedConnection);
 }
 
 void KDirOperator::setViewConfig(KConfigGroup& configGroup)

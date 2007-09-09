@@ -67,7 +67,8 @@ class KFileWidgetPrivate
 public:
     KFileWidgetPrivate( KFileWidget* q )
         : boxLayout(0),
-          customWidget(0),
+          labeledCustomWidget(0),
+          bottomCustomWidget(0),
           inAccept(false),
           q(q)
     {
@@ -122,6 +123,7 @@ public:
     // now following all kind of widgets, that I need to rebuild
     // the geometry management
     QBoxLayout *boxLayout;
+    QGridLayout *lafBox;
     QVBoxLayout *vbox;
 
     QLabel *locationLabel;
@@ -132,7 +134,8 @@ public:
     KPushButton *okButton, *cancelButton;
     KFilePlacesView *placesView;
     QSplitter *placesViewSplitter;
-    QWidget *customWidget;
+    QWidget *labeledCustomWidget;
+    QWidget *bottomCustomWidget;
 
     // Automatically Select Extension stuff
     QCheckBox *autoSelectExtCheckBox;
@@ -289,11 +292,11 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     // add nav items to the toolbar
     //
-    // NOTE:  The order of the button icons here differs from that 
+    // NOTE:  The order of the button icons here differs from that
     // found in the file manager and web browser, but has been discussed
     // and agreed upon on the kde-core-devel mailing list:
     //
-    // http://lists.kde.org/?l=kde-core-devel&m=116888382514090&w=2 
+    // http://lists.kde.org/?l=kde-core-devel&m=116888382514090&w=2
     //
     d->toolbar->addAction( coll->action( "up" ) );
     coll->action( "up" )->setWhatsThis(i18n("<qt>Click this button to enter the parent folder.<br /><br />"
@@ -304,7 +307,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     coll->action( "back" )->setWhatsThis(i18n("Click this button to move backwards one step in the browsing history."));
     d->toolbar->addAction( coll->action( "forward" ) );
     coll->action( "forward" )->setWhatsThis(i18n("Click this button to move forward one step in the browsing history."));
-    
+
     d->toolbar->addAction( coll->action( "reload" ) );
     coll->action( "reload" )->setWhatsThis(i18n("Click this button to reload the contents of the current location."));
     coll->action( "mkdir" )->setShortcut( QKeySequence(Qt::Key_F10) );
@@ -519,7 +522,7 @@ KMimeType::Ptr KFileWidget::currentFilterMimeType()
     return KMimeType::mimeType( currentMimeFilter() );
 }
 
-void KFileWidget::setPreviewWidget(const KPreviewWidgetBase *w) {
+void KFileWidget::setPreviewWidget(KPreviewWidgetBase *w) {
     d->ops->setPreviewWidget(w);
     d->ops->clearHistory();
     d->hasView = true;
@@ -1044,7 +1047,7 @@ void KFileWidgetPrivate::initGUI()
     vbox->addWidget(ops, 4);
     vbox->addSpacing(KDialog::spacingHint());
 
-    QGridLayout *lafBox = new QGridLayout();
+    lafBox = new QGridLayout();
 
     // The default minimum width of the location editor and the filter widget
     // is so huge, that it is no possible for the user to adjust the width
@@ -2078,15 +2081,15 @@ KToolBar * KFileWidget::toolBar() const
 
 void KFileWidget::setCustomWidget(QWidget* widget)
 {
-    delete d->customWidget;
-    d->customWidget = widget;
+    delete d->bottomCustomWidget;
+    d->bottomCustomWidget = widget;
 
     // add it to the dialog, below the filter list box.
 
     // Change the parent so that this widget is a child of the main widget
-    d->customWidget->setParent( this );
+    d->bottomCustomWidget->setParent( this );
 
-    d->vbox->addWidget( d->customWidget );
+    d->vbox->addWidget( d->bottomCustomWidget );
     //d->vbox->addSpacing(3); // can't do this every time...
 
     // FIXME: This should adjust the tab orders so that the custom widget
@@ -2094,8 +2097,18 @@ void KFileWidget::setCustomWidget(QWidget* widget)
     // somehow screws up the tab order of the file path combo box. Not a major
     // problem, but ideally the tab order with a custom widget should be
     // the same as the order without one.
-    setTabOrder(d->cancelButton, d->customWidget);
-    setTabOrder(d->customWidget, d->urlNavigator);
+    setTabOrder(d->cancelButton, d->bottomCustomWidget);
+    setTabOrder(d->bottomCustomWidget, d->urlNavigator);
+}
+
+void KFileWidget::setCustomWidget(const QString& text, QWidget* widget)
+{
+    delete d->labeledCustomWidget;
+    d->labeledCustomWidget = widget;
+
+    QLabel* label = new QLabel(text, this);
+    d->lafBox->addWidget(label, 2, 0, Qt::AlignVCenter);
+    d->lafBox->addWidget(widget, 2, 1, Qt::AlignVCenter);
 }
 
 void KFileWidget::virtual_hook( int id, void* data )

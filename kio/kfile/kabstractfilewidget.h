@@ -240,7 +240,7 @@ public:
      *
      * @param w The widget to be used for the preview.
      */
-   virtual void setPreviewWidget(const KPreviewWidgetBase *w) = 0;
+   virtual void setPreviewWidget(KPreviewWidgetBase *w) = 0;
 
     /**
      * Sets the mode of the dialog.
@@ -325,7 +325,7 @@ public:
     virtual KActionCollection *actionCollection() const = 0;
 
     /**
-     * Set a custom widget that should be added to the file dialog.
+     * Set a custom widget that should be added to the bottom of the file dialog.
      * @param widget A widget, or a widget of widgets, for displaying custom
      *               data in the file widget. This can be used, for example, to
      *               display a check box with the caption "Open as read-only".
@@ -333,6 +333,18 @@ public:
      *               since the widget's parent will be set automatically by KFileWidget.
      */
     virtual void setCustomWidget(QWidget* widget) = 0;
+
+    /**
+     * Sets a custom widget that should be added below the location and the filter
+     * editors.
+     * @param text     Label of the custom widget, which is displayed below the labels
+     *                 "Location:" and "Filter:".
+     * @param widget   Any kind of widget, but preferable a combo box or a line editor
+     *                 to be compliant with the location and filter layout.
+     *                 When creating this widget, you don't need to specify a parent,
+     *                 since the widget's parent will be set automatically by KFileWidget.
+     */
+    virtual void setCustomWidget(const QString& text, QWidget* widget) = 0;
 
     /**
      * Called when clicking ok (when this widget is used in KFileDialog)
