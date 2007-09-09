@@ -40,8 +40,11 @@ public:
 	virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 Q_SIGNALS:
 	void shortcutChanged(QVariant, const QModelIndex &);
+protected:
+	virtual bool eventFilter(QObject *, QEvent *);
 private:
 	mutable QModelIndex m_editingIndex;
+	QWidget *m_editor;
 private Q_SLOTS:
 	void itemActivated(QModelIndex index);
 	void keySequenceChanged(const QKeySequence &);

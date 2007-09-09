@@ -169,7 +169,8 @@ public:
 
 
 KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
- : KExtendableItemDelegate(parent)
+ : KExtendableItemDelegate(parent),
+   m_editor(0)
 {
 	Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
 	setExtendIcon(SmallIcon("go-down"));
@@ -211,30 +212,51 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 		m_editingIndex = index;
 		const QAbstractItemModel *model = index.model();
 		QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
-		QWidget *editor;
 
 		if (column >= LocalPrimary && column <= GlobalAlternate) {
-			editor = new ShortcutEditWidget(viewport,
-			        model->data(index, DefaultShortcutRole).value<QKeySequence>(),
-			        model->data(index, ShortcutRole).value<QKeySequence>());
+			m_editor = new ShortcutEditWidget(viewport,
+			          model->data(index, DefaultShortcutRole).value<QKeySequence>(),
+			          model->data(index, ShortcutRole).value<QKeySequence>());
 
-			connect(editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
+			connect(m_editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
 			        this, SLOT(keySequenceChanged(const QKeySequence &)));
 
 		} else if (column == RockerGesture) {
-			editor = new QLabel("A lame placeholder", viewport);
+			m_editor = new QLabel("A lame placeholder", viewport);
 
 		} else if (column == ShapeGesture) {
-			editor = new QLabel("<i>A towel</i>", viewport);
+			m_editor = new QLabel("<i>A towel</i>", viewport);
 
 		} else
 			return;
 
-		extendItem(editor, index);
+		m_editor->installEventFilter(this);
+		extendItem(m_editor, index);
 
 	} else {
 		contractItem(index);
 		m_editingIndex = QModelIndex();
+		m_editor = 0;
+	}
+}
+
+
+//Prevent clicks in the empty part of the editor widget from closing the editor
+//because they would propagate to the itemview and be interpreted as a click in
+//an item's rect. That in turn would lead to an itemActivated() call, closing
+//the current editor.
+bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
+{
+	if (o != m_editor)
+		return false;
+
+	switch (e->type()) {
+	case QEvent::MouseButtonPress:
+	case QEvent::MouseButtonRelease:
+	case QEvent::MouseButtonDblClick:
+		return true;
+	default:
+		return false;
 	}
 }
 
