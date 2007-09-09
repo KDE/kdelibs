@@ -179,7 +179,7 @@ void HostLineEdit::mousePressEvent(QMouseEvent* event)
         const KUrl currentUrl = m_urlNavigator->url();
         const KUrl newUrl(currentUrl.protocol() + "://" + text());
         if (currentUrl != newUrl) {
-            m_urlNavigator->setUrl(KUrl(newUrl));
+            m_urlNavigator->setUrl(newUrl);
         }
     }
 }
