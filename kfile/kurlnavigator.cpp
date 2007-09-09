@@ -125,18 +125,23 @@ inline int HistoryElem::contentsY() const
 class HostLineEdit : public KLineEdit
 {
 public:
-    explicit HostLineEdit(const QString& text, QWidget* parent = 0);
+    explicit HostLineEdit(const QString& text, KUrlNavigator* parent = 0);
     virtual ~HostLineEdit();
     virtual QSize sizeHint() const;
     inline void setOptimizeWidth(bool optimize);
 
+protected:
+    virtual void mousePressEvent(QMouseEvent* event);
+
 private:
     bool m_optimizeWidth;
+    KUrlNavigator* m_urlNavigator;
 };
 
-HostLineEdit::HostLineEdit(const QString& text, QWidget* parent) :
+HostLineEdit::HostLineEdit(const QString& text, KUrlNavigator* parent) :
     KLineEdit(text, parent),
-    m_optimizeWidth(true)
+    m_optimizeWidth(true),
+    m_urlNavigator(parent)
 {
 }
 
@@ -162,6 +167,21 @@ QSize HostLineEdit::sizeHint() const
     }
 
     return size;
+}
+
+void HostLineEdit::mousePressEvent(QMouseEvent* event)
+{
+    KLineEdit::mousePressEvent(event);
+
+    if (event->button() == Qt::LeftButton) {
+        // behave like a button when a mouse click has been done
+        // inside the host editor and go to the host URL
+        const KUrl currentUrl = m_urlNavigator->url();
+        const KUrl newUrl(currentUrl.protocol() + "://" + text());
+        if (currentUrl != newUrl) {
+            m_urlNavigator->setUrl(KUrl(newUrl));
+        }
+    }
 }
 
 ////
