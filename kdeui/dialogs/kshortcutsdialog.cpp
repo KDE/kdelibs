@@ -194,7 +194,7 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 	//check if we are dealing with a KShortcutsEditorItem
 	if (index.model()->data(index, ItemPointerRole).isNull())
 		return;
-		
+
 	//TODO: make clicking on the Name column do *exactly* the same thing
 	//as clicking on the LocalPrimary column, i.e. select LocalPrimary
 	int column = index.column();
@@ -407,7 +407,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 		else if (name.startsWith(QLatin1String("Group:")))
 			l = Group;
 		else if (qobject_cast<QAction *>(action)) {
-			// TODO  non-KAction QActions are not listed 
+			// TODO  non-KAction QActions are not listed
 			if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable())
 				new KShortcutsEditorItem((hier[l]), kact);
 
@@ -465,7 +465,9 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	ui.setupUi(q);
 	ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
 	ui.list->header()->setStretchLastSection(false);
-	ui.list->header()->hideSection(GlobalAlternate);  //not expected to be very useful
+    ui.list->header()->setResizeMode(QHeaderView::ResizeToContents);
+    ui.list->header()->setResizeMode(0, QHeaderView::Stretch);
+    ui.list->header()->hideSection(GlobalAlternate);  //not expected to be very useful
 	ui.list->header()->hideSection(ShapeGesture);  //mouse gestures didn't make it in time...
 	ui.list->header()->hideSection(RockerGesture);
 	if (!(actionTypes & KShortcutsEditor::GlobalAction)) {
@@ -727,20 +729,20 @@ void KShortcutsEditor::allDefault()
 
 		KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
 		KAction *act = item->m_action;
-		
+
 		if (act->shortcut() != act->shortcut(KAction::DefaultShortcut)) {
 			d->changeKeyShortcut(item, LocalPrimary, act->shortcut(KAction::DefaultShortcut).primary());
 			d->changeKeyShortcut(item, LocalAlternate, act->shortcut(KAction::DefaultShortcut).alternate());
 		}
-		
+
 		if (act->globalShortcut() != act->globalShortcut(KAction::DefaultShortcut)) {
 			d->changeKeyShortcut(item, GlobalPrimary, act->globalShortcut(KAction::DefaultShortcut).primary());
 			d->changeKeyShortcut(item, GlobalAlternate, act->globalShortcut(KAction::DefaultShortcut).alternate());
 		}
-		
+
 		if (act->shapeGesture() != act->shapeGesture(KAction::DefaultShortcut))
 			d->changeShapeGesture(item, act->shapeGesture(KAction::DefaultShortcut));
-		
+
 		if (act->rockerGesture() != act->rockerGesture(KAction::DefaultShortcut))
 			d->changeRockerGesture(item, act->rockerGesture(KAction::DefaultShortcut));
 	}
@@ -1060,6 +1062,10 @@ bool KShortcutsDialog::configure(bool saveSettings)
 	return retcode;
 }
 
+QSize KShortcutsDialog::sizeHint() const
+{
+    return QSize(500, 400);
+}
 
 int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor::LetterShortcuts allowLetterShortcuts,
                           QWidget *parent, bool saveSettings)
