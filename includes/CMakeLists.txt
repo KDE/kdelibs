@@ -88,7 +88,6 @@ install( FILES
   KBookmarkImporterBase
   KBookmarkManager
   KBookmarkMenu
-  KBookmarkNotifier
   KBookmarkOwner
   KBugReport
   KBuildSycocaProgressDialog
@@ -258,7 +257,6 @@ install( FILES
   KLocale
   KLocalizedString
   KLockFile
-  KMD4
   KMD5
   KMJob
   KMJobManager
