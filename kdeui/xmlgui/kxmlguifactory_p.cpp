@@ -624,8 +624,8 @@ bool BuildHelper::processActionElement( const QDomElement &e, int idx )
         return false;
 
     QAction* before = 0L;
-    if (idx > 0 && idx < parentNode->container->actions().count())
-      before = parentNode->container->actions()[idx - 1];
+    if (idx >= 0 && idx < parentNode->container->actions().count())
+      before = parentNode->container->actions()[idx];
 
     parentNode->container->insertAction(before, action);
 
