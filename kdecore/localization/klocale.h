@@ -79,6 +79,8 @@ public:
    */
   explicit KLocale(const QString& catalog, KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
+  KLocale(const QString& catalog, const QString &language, const QString &country = QString(), KConfig *config = 0);
+
   /**
    * Copy constructor.
    */
@@ -92,7 +94,7 @@ public:
   /**
    * Destructor.
    */
-  ~KLocale();
+  virtual ~KLocale();
 
   /**
    * Raw translation from message catalogs.
@@ -190,39 +192,6 @@ public:
    * @return True on success.
    */
   bool setEncoding(int mibEnum);
-
-  /**
-   * Changes the current language. The current language will be left
-   * unchanged if failed. It will force a reload of the country specific
-   * configuration as well.
-   *
-   * @param language the language code
-   *
-   * @return true on success
-   */
-  bool setLanguage(const QString &language);
-
-  /**
-   * Changes the list of preferred languages for the locale. The first valid
-   * language in the list will be used, or the default language (en_US)
-   * if none of the specified languages were available.
-   *
-   * @param languages the list of language codes
-   *
-   * @return true if one of the specified languages were used
-   */
-  bool setLanguage(const QStringList &languages);
-
-  /**
-   * Changes the current country. The current country will be left
-   * unchanged if failed. It will force a reload of the country specific
-   * configuration.
-   *
-   * @param country The ISO 3166 country code.
-   *
-   * @return True on success.
-   */
-  bool setCountry(const QString & country);
 
   /**
    * Various positions for where to place the positive or negative
@@ -1117,6 +1086,41 @@ public:
    * @internal Called from KConfigBackend to initialize language.
    */
   static QString _initLanguage(KConfigBase *config);
+
+protected:
+  /**
+   * Changes the current country. The current country will be left
+   * unchanged if failed. It will force a reload of the country specific
+   * configuration.
+   *
+   * @param country The ISO 3166 country code.
+   *
+   * @return True on success.
+   */
+  bool setCountry(const QString & country, KConfig *config);
+ 
+  /**
+   * Changes the current language. The current language will be left
+   * unchanged if failed. It will force a reload of the country specific
+   * configuration as well.
+   *
+   * @param language the language code
+   *
+   * @return true on success
+   */
+  bool setLanguage(const QString &language, KConfig *config);
+
+  /**
+   * Changes the list of preferred languages for the locale. The first valid
+   * language in the list will be used, or the default language (en_US)
+   * if none of the specified languages were available.
+   *
+   * @param languages the list of language codes
+   *
+   * @return true if one of the specified languages were used
+   */
+  bool setLanguage(const QStringList &languages);
+
 
 private:
   KLocalePrivate * const d;

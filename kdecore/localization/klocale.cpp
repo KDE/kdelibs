@@ -4,6 +4,7 @@
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1999-2002 Hans Petter Bieker <bieker@kde.org>
    Copyright (c) 2002 Lukas Tinkl <lukas@kde.org>
+   Copyright (C) 2007 Bernhard Loos <nhuh.put@web.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -103,19 +104,14 @@ public:
   static QString decodeFileNameUTF8( const QByteArray & localFileName );
 
   /**
-   * @internal Ensures that the format configuration is read.
-   */
-  void doFormatInit(const KLocale *parent);
-
-  /**
    * @internal Reads the format configuration from disk.
    */
-  void initFormat(KLocale *parent);
+  void initFormat(KConfig *config);
 
   /**
    * @internal The worker of the same-name KLocale API function.
    */
-  bool setLanguage(const QString & _language);
+  bool setLanguage(const QString & _language, KConfig *config);
 
   /**
    * @internal The worker of the same-name KLocale API function.
@@ -199,7 +195,7 @@ public:
   // Misc
   QString encoding;
   QTextCodec * codecForEncoding;
-  KSharedConfig::Ptr config;
+  //KSharedConfig::Ptr config;
   int pageSize;
   KLocale::MeasureSystem measureSystem;
   KConfigBase * languages;
@@ -210,7 +206,6 @@ public:
   bool nounDeclension:1;
   bool dateMonthNamePossessive:1;
   bool utf8FileEncoding:1;
-  bool formatInited:1;
 #ifdef Q_WS_WIN
   char win32SystemEncoding[3+7]; //"cp " + lang ID
 #endif
@@ -221,26 +216,52 @@ static KLocale *this_klocale = 0;
 KLocale::KLocale( const QString & catalog, KSharedConfig::Ptr config )
 	: d(new KLocalePrivate)
 {
-  d->config = config;
   d->languages = 0;
   d->calendar = 0;
-  d->formatInited = false;
 
   d->initEncoding(0);
   d->initFileNameEncoding(0);
 
-  KSharedConfig::Ptr cfg = d->config;
+  KSharedConfig::Ptr cfg = config;
   this_klocale = this;
   if (!cfg) cfg = KGlobal::config();
   this_klocale = 0;
-  Q_ASSERT( cfg );
+  Q_ASSERT( cfg ); 
 
   d->appName = catalog;
   d->initLanguageList(cfg.data(), !config);
   d->initMainCatalogs(catalog);
 
   d->useTranscript = false;
+
+  d->initFormat(cfg.data());
 }
+
+KLocale::KLocale(const QString& catalog, const QString &language, const QString &country, KConfig *config)
+	: d(new KLocalePrivate)
+{
+    bool useConfig = config;
+    d->languages = 0;
+    d->calendar = 0;
+
+    d->initFileNameEncoding(0);
+
+    this_klocale = this;
+    if (!config) config = KGlobal::config().data();
+    this_klocale = 0;
+    Q_ASSERT(config); 
+
+    d->appName = catalog;
+    d->language = language;
+    d->country = country;
+    d->initLanguageList(config, !useConfig);
+    d->initMainCatalogs(catalog);
+
+    d->useTranscript = false;
+
+    d->initFormat(config);
+}
+
 
 QString KLocale::_initLanguage(KConfigBase *config)
 {
@@ -285,7 +306,8 @@ void KLocalePrivate::initLanguageList(KConfigBase *config, bool useEnv)
 
   // Set the country as specified by the KDE config or use default,
   // do not consider environment variables.
-  country = cg.readEntry("Country");
+  if (country.isEmpty())
+    country = cg.readEntry("Country");
   if (country.isEmpty())
       country = KLocale::defaultCountry();
 
@@ -296,6 +318,9 @@ void KLocalePrivate::initLanguageList(KConfigBase *config, bool useEnv)
   // - environment variables considered by gettext(3)
   // The environment variables are not considered if useEnv is false.
   QStringList list;
+
+  if (!language.isEmpty())
+      list.append(language);
 
   // Collect languages set by KDE_LANG.
   if (useEnv)
@@ -345,29 +370,11 @@ void KLocalePrivate::initLanguageList(KConfigBase *config, bool useEnv)
   setLanguage(nlist);
 }
 
-void KLocalePrivate::doFormatInit(const KLocale *parent)
+void KLocalePrivate::initFormat(KConfig *config)
 {
-  if ( formatInited ) return;
+  Q_ASSERT(config);
 
-  initFormat(const_cast<KLocale *>(parent));
-
-  formatInited = true;
-}
-
-void KLocalePrivate::initFormat(KLocale *parent)
-{
-    if (!config) {
-        config = KGlobal::config();
-    }
-    Q_ASSERT(config);
-
-  kDebug(173) << "KLocale::initFormat";
-
-  // make sure the config files are read using the correct locale
-  // ### Why not add a KConfigBase::setLocale( const KLocale * )?
-  // ### Then we could remove this hack
-  KLocale *lsave = KGlobal::locale();
-  KGlobal::setLocale(parent);
+  kDebug(173) << "KLocalePrivate::KLocalePrivate";
 
   KConfigGroup cg(config, "Locale");
 
@@ -441,12 +448,9 @@ void KLocalePrivate::initFormat(KLocale *parent)
   read3ConfigBoolEntry("NounDeclension", false, nounDeclension);
   read3ConfigBoolEntry("DateMonthNamePossessive", false,
 		       dateMonthNamePossessive);
-
-  // end of hack
-  KGlobal::setLocale(lsave);
 }
 
-bool KLocale::setCountry(const QString & aCountry)
+bool KLocale::setCountry(const QString & aCountry, KConfig *config)
 {
   // Check if the file exists too??
   if ( aCountry.isEmpty() )
@@ -454,17 +458,17 @@ bool KLocale::setCountry(const QString & aCountry)
 
   d->country = aCountry;
 
-  d->formatInited = false;
+  d->initFormat(config);
 
   return true;
 }
 
-bool KLocale::setLanguage(const QString & language)
+bool KLocale::setLanguage(const QString & language, KConfig *config)
 {
-  return d->setLanguage(language);
+  return d->setLanguage(language, config);
 }
 
-bool KLocalePrivate::setLanguage(const QString & _language)
+bool KLocalePrivate::setLanguage(const QString & _language, KConfig *config)
 {
   if ( languageList.contains( _language ) ) {
  	 languageList.removeAll( _language );
@@ -477,7 +481,7 @@ bool KLocalePrivate::setLanguage(const QString & _language)
   // populating the catalog name list
   updateCatalogs();
 
-  formatInited = false;
+  initFormat(config);
 
   return true; // Maybe the mo-files for this language are empty, but in principle we can speak all languages
 }
@@ -830,92 +834,77 @@ QString KLocale::translateQt(const char *context, const char *sourceText,
 
 bool KLocale::nounDeclension() const
 {
-  d->doFormatInit(this);
   return d->nounDeclension;
 }
 
 bool KLocale::dateMonthNamePossessive() const
 {
-  d->doFormatInit(this);
   return d->dateMonthNamePossessive;
 }
 
 int KLocale::weekStartDay() const
 {
-  d->doFormatInit(this);
   return d->weekStartDay;
 }
 
 
 QString KLocale::decimalSymbol() const
 {
-  d->doFormatInit(this);
   return d->decimalSymbol;
 }
 
 QString KLocale::thousandsSeparator() const
 {
-  d->doFormatInit(this);
   return d->thousandsSeparator;
 }
 
 QString KLocale::currencySymbol() const
 {
-  d->doFormatInit(this);
   return d->currencySymbol;
 }
 
 QString KLocale::monetaryDecimalSymbol() const
 {
-  d->doFormatInit(this);
   return d->monetaryDecimalSymbol;
 }
 
 QString KLocale::monetaryThousandsSeparator() const
 {
-  d->doFormatInit(this);
   return d->monetaryThousandsSeparator;
 }
 
 QString KLocale::positiveSign() const
 {
-  d->doFormatInit(this);
   return d->positiveSign;
 }
 
 QString KLocale::negativeSign() const
 {
-  d->doFormatInit(this);
   return d->negativeSign;
 }
 
 int KLocale::fracDigits() const
 {
-  d->doFormatInit(this);
   return d->fracDigits;
 }
 
 bool KLocale::positivePrefixCurrencySymbol() const
 {
-  d->doFormatInit(this);
   return d->positivePrefixCurrencySymbol;
 }
 
 bool KLocale::negativePrefixCurrencySymbol() const
 {
-  d->doFormatInit(this);
   return d->negativePrefixCurrencySymbol;
 }
 
 KLocale::SignPosition KLocale::positiveMonetarySignPosition() const
 {
-  d->doFormatInit(this);
   return d->positiveMonetarySignPosition;
 }
 
 KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
 {
-  d->doFormatInit(this);
   return d->negativeMonetarySignPosition;
 }
 
@@ -2026,31 +2015,26 @@ QString KLocalePrivate::decodeFileNameUTF8( const QByteArray & localFileName )
 
 void KLocale::setDateFormat(const QString & format)
 {
-  d->doFormatInit(this);
   d->dateFormat = format.trimmed();
 }
 
 void KLocale::setDateFormatShort(const QString & format)
 {
-  d->doFormatInit(this);
   d->dateFormatShort = format.trimmed();
 }
 
 void KLocale::setDateMonthNamePossessive(bool possessive)
 {
-  d->doFormatInit(this);
   d->dateMonthNamePossessive = possessive;
 }
 
 void KLocale::setTimeFormat(const QString & format)
 {
-  d->doFormatInit(this);
   d->timeFormat = format.trimmed();
 }
 
 void KLocale::setWeekStartDay(int day)
 {
-  d->doFormatInit(this);
   if (day>7 || day<1)
     d->weekStartDay = 1; //Monday is default
   else
@@ -2059,118 +2043,99 @@ void KLocale::setWeekStartDay(int day)
 
 QString KLocale::dateFormat() const
 {
-  d->doFormatInit(this);
   return d->dateFormat;
 }
 
 QString KLocale::dateFormatShort() const
 {
-  d->doFormatInit(this);
   return d->dateFormatShort;
 }
 
 QString KLocale::timeFormat() const
 {
-  d->doFormatInit(this);
   return d->timeFormat;
 }
 
 void KLocale::setDecimalSymbol(const QString & symbol)
 {
-  d->doFormatInit(this);
   d->decimalSymbol = symbol.trimmed();
 }
 
 void KLocale::setThousandsSeparator(const QString & separator)
 {
-  d->doFormatInit(this);
   // allow spaces here
   d->thousandsSeparator = separator;
 }
 
 void KLocale::setPositiveSign(const QString & sign)
 {
-  d->doFormatInit(this);
   d->positiveSign = sign.trimmed();
 }
 
 void KLocale::setNegativeSign(const QString & sign)
 {
-  d->doFormatInit(this);
   d->negativeSign = sign.trimmed();
 }
 
 void KLocale::setPositiveMonetarySignPosition(SignPosition signpos)
 {
-  d->doFormatInit(this);
   d->positiveMonetarySignPosition = signpos;
 }
 
 void KLocale::setNegativeMonetarySignPosition(SignPosition signpos)
 {
-  d->doFormatInit(this);
   d->negativeMonetarySignPosition = signpos;
 }
 
 void KLocale::setPositivePrefixCurrencySymbol(bool prefix)
 {
-  d->doFormatInit(this);
   d->positivePrefixCurrencySymbol = prefix;
 }
 
 void KLocale::setNegativePrefixCurrencySymbol(bool prefix)
 {
-  d->doFormatInit(this);
   d->negativePrefixCurrencySymbol = prefix;
 }
 
 void KLocale::setFracDigits(int digits)
 {
-  d->doFormatInit(this);
   d->fracDigits = digits;
 }
 
 void KLocale::setMonetaryThousandsSeparator(const QString & separator)
 {
-  d->doFormatInit(this);
   // allow spaces here
   d->monetaryThousandsSeparator = separator;
 }
 
 void KLocale::setMonetaryDecimalSymbol(const QString & symbol)
 {
-  d->doFormatInit(this);
   d->monetaryDecimalSymbol = symbol.trimmed();
 }
 
 void KLocale::setCurrencySymbol(const QString & symbol)
 {
-  d->doFormatInit(this);
   d->currencySymbol = symbol.trimmed();
 }
 
 int KLocale::pageSize() const
 {
-  d->doFormatInit(this);
   return d->pageSize;
 }
 
 void KLocale::setPageSize(int size)
 {
   // #### check if it's in range??
-  d->doFormatInit(this);
   d->pageSize = size;
 }
 
 KLocale::MeasureSystem KLocale::measureSystem() const
 {
-  d->doFormatInit(this);
   return d->measureSystem;
 }
 
 void KLocale::setMeasureSystem(MeasureSystem value)
 {
-  d->doFormatInit(this);
   d->measureSystem = value;
 }
 
@@ -2186,7 +2151,6 @@ QString KLocale::defaultCountry()
 
 bool KLocale::useTranscript() const
 {
-  d->doFormatInit(this);
   return d->useTranscript;
 }
 
@@ -2283,8 +2247,6 @@ QString KLocale::countryCodeToName(const QString &country) const
 
 void KLocale::setCalendar(const QString & calType)
 {
-  d->doFormatInit(this);
-
   d->calendarType = calType;
 
   delete d->calendar;
@@ -2293,15 +2255,11 @@ void KLocale::setCalendar(const QString & calType)
 
 QString KLocale::calendarType() const
 {
-  d->doFormatInit(this);
-
   return d->calendarType;
 }
 
 const KCalendarSystem * KLocale::calendar() const
 {
-  d->doFormatInit(this);
-
   // Check if it's the correct calendar?!?
   if ( !d->calendar )
     d->calendar = KCalendarSystem::create( d->calendarType, this );

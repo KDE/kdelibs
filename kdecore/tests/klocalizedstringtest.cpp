@@ -31,8 +31,9 @@
 
 void KLocalizedStringTest::initTestCase ()
 {
-    KGlobal::locale()->setLanguage(QString("en_US"));
-    KGlobal::locale()->setCountry(QString("C"));
+    KLocale *locale = new KLocale(QString(), QLatin1String("en_US"), QLatin1String("C"));
+    delete KGlobal::locale();
+    KGlobal::setLocale(locale);
     KGlobal::locale()->setThousandsSeparator(QString(","));
 }
 
