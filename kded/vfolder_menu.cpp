@@ -308,6 +308,7 @@ VFolderMenu::VFolderMenu() : m_track(false)
 VFolderMenu::~VFolderMenu()
 {
    delete m_rootMenu;
+   delete m_appsInfo;
 }
 
 #define FOR_ALL_APPLICATIONS(it) \
