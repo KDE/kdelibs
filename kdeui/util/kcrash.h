@@ -35,14 +35,13 @@ class QString;
  * be called by the default crash handler, giving the application a chance
  * to save its data.
  */
-class KDEUI_EXPORT KCrash
+namespace KCrash
 {
- public:
   /**
    * The default crash handler.
    * @param signal the signal number
    */
-  static void defaultCrashHandler (int signal);
+  void defaultCrashHandler (int signal);
 
   /**
    * This function type is a pointer to a crash handler function.
@@ -61,13 +60,13 @@ class KDEUI_EXPORT KCrash
    * @param handler the crash handler
    */
 
-  static void setCrashHandler (HandlerType handler = defaultCrashHandler);
+  void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
   /**
    * Returns the installed crash handler.
    * @return the crash handler
    */
-  static HandlerType crashHandler();
+  HandlerType crashHandler();
 
   /**
    * Installs a function which should try to save the applications data.
@@ -76,13 +75,13 @@ class KDEUI_EXPORT KCrash
    * is installed to ensure the save function is called.
    * @param saveFunction the handler to install
    */
-  static void setEmergencySaveFunction (HandlerType saveFunction = 0);
+  void setEmergencySaveFunction (HandlerType saveFunction = 0);
 
   /**
    * Return the currently set emergency save function.
    * @return the emergency save function
    */
-  static HandlerType emergencySaveFunction();
+  HandlerType emergencySaveFunction();
 
   /**
    * Options to determine how KCrash should behave while firing up DrKonqi.
@@ -98,27 +97,22 @@ class KDEUI_EXPORT KCrash
    * Set DrKonqi fire-up options.
    * @param flags ORed together CrashFlags
    */
-  static void setFlags( CrashFlags flags );
+  void setFlags( CrashFlags flags );
 
   /**
    * Sets the application @p path which should be passed to
    * Dr. Konqi, our nice crash display application.
    * @param path the application path.
    */
-  static void setApplicationPath (const QString &path);
+  void setApplicationPath (const QString &path);
 
   /**
    * Sets the application name @p name which should be passed to
    * Dr. Konqi, our nice crash display application.
    * @param name the name of the application, as shown in Dr. Konqi
    */
-  static void setApplicationName (const QString &name);
-
-
- private:
-  static void startDrKonqi( const char* argv[], int argc );
-  static void startDirectly( const char* argv[], int argc );
-};
+  void setApplicationName (const QString &name);
+}
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCrash::CrashFlags)
 

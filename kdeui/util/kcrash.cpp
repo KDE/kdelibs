@@ -63,6 +63,13 @@ static char *s_appName = 0;
 static char *s_appPath = 0;
 static KCrash::CrashFlags s_flags = 0;
 
+namespace KCrash
+{
+  void startDrKonqi( const char* argv[], int argc );
+  void startDirectly( const char* argv[], int argc );
+}
+
+
 // This function sets the function which should be called when the
 // application crashes and the
 // application is asked to try to save its data.
