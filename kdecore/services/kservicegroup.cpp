@@ -280,7 +280,7 @@ void KServiceGroupPrivate::save( QDataStream& s )
      if (p->isType(KST_KService))
      {
         KService::Ptr service = KService::Ptr::staticCast( p );
-        groupList.append( service->desktopEntryPath() );
+        groupList.append( service->entryPath() );
      }
      else if (p->isType(KST_KServiceGroup))
      {

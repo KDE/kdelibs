@@ -65,14 +65,14 @@ int main(int argc, char *argv[])
    qDebug( "Looking for %s", desktopPath.toLatin1().constData() );
    KService::Ptr service = KService::serviceByDesktopPath( desktopPath );
    if ( service )
-       qDebug( "found: %s", service->desktopEntryPath().toLatin1().constData() );
+       qDebug( "found: %s", service->entryPath().toLatin1().constData() );
    else
        qDebug( "not found" );
 
    qDebug( "Looking for desktop name = %s", instname.toLatin1().constData() );
    service = KService::serviceByDesktopName( instname );
    if ( service )
-       qDebug( "found: %s", service->desktopEntryPath().toLatin1().constData() );
+       qDebug( "found: %s", service->entryPath().toLatin1().constData() );
    else
        qDebug( "not found" );
 
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
       {
           KService::Ptr service = KService::Ptr::staticCast( p );
          debug(service->name());
-         debug(service->desktopEntryPath());
+         debug(service->entryPath());
       }
       else if (p->isType(KST_KServiceGroup))
       {

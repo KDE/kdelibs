@@ -708,7 +708,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    if (!service->isValid())
    {
       requestResult.result = ENOEXEC;
-      requestResult.error = i18n("Service '%1' is malformatted.", service->desktopEntryPath());
+      requestResult.error = i18n("Service '%1' is malformatted.", service->entryPath());
       cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
@@ -744,7 +744,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    if (!request->arg_list.count())
    {
       requestResult.result = ENOEXEC;
-      requestResult.error = i18n("Service '%1' is malformatted.", service->desktopEntryPath());
+      requestResult.error = i18n("Service '%1' is malformatted.", service->entryPath());
       delete request;
       cancel_service_startup_info( NULL, startup_id, envs );
       return false;

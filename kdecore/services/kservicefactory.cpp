@@ -146,7 +146,7 @@ KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
     // Check whether the dictionary was right
     // It's ok that it's wrong, for the case where we're looking up an unknown service,
     // and the hash value gave us another one.
-    if (newService && (newService->desktopEntryPath() != _name)) {
+    if (newService && (newService->entryPath() != _name)) {
         // No it wasn't...
         return KService::Ptr();
     }

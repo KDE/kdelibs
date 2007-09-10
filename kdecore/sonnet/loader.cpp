@@ -292,10 +292,10 @@ void Loader::loadPlugin(const KSharedPtr<KService> &service)
         }
 
         kDebug() << "Successfully loaded plugin '"
-                 << service->desktopEntryPath() << "'" << endl;
+                 << service->entryPath() << "'" << endl;
     } else {
         kDebug() << "Loading plugin '"
-                 << service->desktopEntryPath()
+                 << service->entryPath()
                  << "' failed, KLibLoader reported error: '" << endl
                  << error << "'" << endl;
     }

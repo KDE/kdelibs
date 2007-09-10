@@ -203,7 +203,7 @@ class KDECORE_EXPORT KPluginInfo
         /**
          * @return The file containing the information about the plugin.
          */
-        QString desktopEntryPath() const;
+        QString entryPath() const;
 
         /**
          * @return The author of this plugin.

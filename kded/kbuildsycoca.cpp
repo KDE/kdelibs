@@ -450,7 +450,7 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
      if (bMenuTest)
      {
         if (!menu->isDeleted && !p->noDisplay())
-           printf("%s\t%s\t%s\n", qPrintable( caption ), qPrintable( p->menuId() ), qPrintable( KStandardDirs::locate("apps", p->desktopEntryPath() ) ) );
+           printf("%s\t%s\t%s\n", qPrintable( caption ), qPrintable( p->menuId() ), qPrintable( KStandardDirs::locate("apps", p->entryPath() ) ) );
      }
      else
      {

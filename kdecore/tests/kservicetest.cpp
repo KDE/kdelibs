@@ -61,7 +61,7 @@ void KServiceTest::testProperty()
 {
     KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kdeprintd.desktop");
     QVERIFY(kdeprintd);
-    QCOMPARE(kdeprintd->desktopEntryPath(), QString("kded/kdeprintd.desktop"));
+    QCOMPARE(kdeprintd->entryPath(), QString("kded/kdeprintd.desktop"));
 
     QCOMPARE(kdeprintd->property("ServiceTypes").toStringList().join(","), QString("KDEDModule"));
     QCOMPARE(kdeprintd->property("X-KDE-Kded-autoload").toBool(), false);
@@ -112,14 +112,14 @@ void KServiceTest::testAllServices()
         QVERIFY( service->isType( KST_KService ) );
 
         const QString name = service->name();
-        const QString dep = service->desktopEntryPath();
+        const QString dep = service->entryPath();
         //qDebug( "%s %s", qPrintable( name ), qPrintable( dep ) );
         QVERIFY( !name.isEmpty() );
         QVERIFY( !dep.isEmpty() );
 
         KService::Ptr lookedupService = KService::serviceByDesktopPath( dep );
         QVERIFY( lookedupService ); // not null
-        QCOMPARE( lookedupService->desktopEntryPath(), dep );
+        QCOMPARE( lookedupService->entryPath(), dep );
 
         if ( service->isApplication() )
         {
@@ -140,15 +140,15 @@ void KServiceTest::testAllServices()
 
 // Helper method for all the trader tests
 static bool offerListHasService( const KService::List& offers,
-                                 const QString& desktopEntryPath )
+                                 const QString& entryPath )
 {
     bool found = false;
     KService::List::const_iterator it = offers.begin();
     for ( ; it != offers.end() ; it++ )
     {
-        if ( (*it)->desktopEntryPath() == desktopEntryPath ) {
+        if ( (*it)->entryPath() == entryPath ) {
             if( found ) { // should be there only once
-                qWarning( "ERROR: %s was found twice in the list", qPrintable( desktopEntryPath ) );
+                qWarning( "ERROR: %s was found twice in the list", qPrintable( entryPath ) );
                 return false; // make test fail
             }
             found = true;
@@ -164,7 +164,7 @@ void KServiceTest::testDBUSStartupType()
     KService::Ptr konsole = KService::serviceByDesktopName( "konsole" );
     if ( !konsole )
         QSKIP( "konsole.desktop not found", SkipAll );
-    //qDebug() << konsole->desktopEntryPath();
+    //qDebug() << konsole->entryPath();
     QCOMPARE((int)konsole->DBUSStartupType(), (int)KService::DBUS_Unique);
 }
 
@@ -177,9 +177,9 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
     QVERIFY( offers.count() > 0 );
     //foreach( KService::Ptr service, offers )
-    //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->desktopEntryPath() ) );
+    //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->entryPath() ) );
 
-    m_firstOffer = offers[0]->desktopEntryPath();
+    m_firstOffer = offers[0]->entryPath();
 
     // Only test for parts provided by kdelibs:
     QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
@@ -193,7 +193,7 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     bool lastAllowedAsDefault = true;
     KService::List::const_iterator it = offers.begin();
     for ( ; it != offers.end() ; it++ ) {
-        const QString path = (*it)->desktopEntryPath();
+        const QString path = (*it)->entryPath();
         const int preference = (*it)->initialPreference(); // ## might be wrong if we use per-servicetype preferences...
         qDebug( "%s has preference %d, allowAsDefault=%d", qPrintable( path ), preference, (*it)->allowAsDefault() );
         if ( lastAllowedAsDefault && !(*it)->allowAsDefault() ) {
@@ -269,11 +269,11 @@ void KServiceTest::testWriteServiceTypeProfile()
     QVERIFY( offers.count() > 0 ); // not empty
 
     //foreach( KService::Ptr service, offers )
-    //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->desktopEntryPath() ) );
+    //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->entryPath() ) );
 
     QVERIFY( offers.count() >= 3 ); // at least 3, even
-    QCOMPARE( offers[0]->desktopEntryPath(), QString("khtmlimage.desktop") );
-    QCOMPARE( offers[1]->desktopEntryPath(), QString("katepart.desktop") );
+    QCOMPARE( offers[0]->entryPath(), QString("khtmlimage.desktop") );
+    QCOMPARE( offers[1]->entryPath(), QString("katepart.desktop") );
     QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) ); // should still be somewhere in there
     QVERIFY( !offerListHasService( offers, "khtml.desktop" ) ); // it got disabled above
 }
@@ -287,7 +287,7 @@ void KServiceTest::testDefaultOffers()
     QVERIFY( offerListHasService( offers, "khtml.desktop" ) ); // it's here even though it's disabled in the profile
     if ( m_firstOffer.isEmpty() )
         QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
-    QCOMPARE( offers[0]->desktopEntryPath(), m_firstOffer );
+    QCOMPARE( offers[0]->entryPath(), m_firstOffer );
 }
 
 void KServiceTest::testDeleteServiceTypeProfile()
@@ -301,5 +301,5 @@ void KServiceTest::testDeleteServiceTypeProfile()
 
     if ( m_firstOffer.isEmpty() )
         QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
-    QCOMPARE( offers[0]->desktopEntryPath(), m_firstOffer );
+    QCOMPARE( offers[0]->entryPath(), m_firstOffer );
 }

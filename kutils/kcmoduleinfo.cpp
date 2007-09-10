@@ -69,7 +69,7 @@ KCModuleInfo::Private::Private( KService::Ptr s )
   name = service->name();
   comment = service->comment();
   icon = service->icon();
-  fileName = service->desktopEntryPath();
+  fileName = service->entryPath();
   lib = service->library();
   keywords = service->keywords();
 }

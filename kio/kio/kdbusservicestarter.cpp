@@ -103,6 +103,6 @@ int KDBusServiceStarter::startServiceFor( const QString& serviceType,
     if ( offers.isEmpty() )
         return -1;
     KService::Ptr ptr = offers.first();
-    kDebug() << "KDBusServiceStarter: starting " << ptr->desktopEntryPath();
-    return KToolInvocation::startServiceByDesktopPath( ptr->desktopEntryPath(), QStringList(), error, dbusService );
+    kDebug() << "KDBusServiceStarter: starting " << ptr->entryPath();
+    return KToolInvocation::startServiceByDesktopPath( ptr->entryPath(), QStringList(), error, dbusService );
 }

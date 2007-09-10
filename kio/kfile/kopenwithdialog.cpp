@@ -777,7 +777,7 @@ void KOpenWithDialogPrivate::_k_slotOK()
             {
                 ok = true;
                 m_pService = serv;
-                kDebug(250) << "OK, found identical service: " << serv->desktopEntryPath();
+                kDebug(250) << "OK, found identical service: " << serv->entryPath();
             }
         }
         if (!ok) // service was found, but it was different -> keep looking
@@ -843,10 +843,10 @@ void KOpenWithDialogPrivate::_k_slotOK()
   QString menuId;
   if (m_pService)
   {
-    oldPath = m_pService->desktopEntryPath();
+    oldPath = m_pService->entryPath();
     newPath = m_pService->locateLocal();
     menuId = m_pService->menuId();
-    kDebug(250) << "Updating exitsing service " << m_pService->desktopEntryPath() << " ( " << newPath << " ) ";
+    kDebug(250) << "Updating exitsing service " << m_pService->entryPath() << " ( " << newPath << " ) ";
   }
   else
   {

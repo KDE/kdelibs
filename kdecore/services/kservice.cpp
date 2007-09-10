@@ -704,9 +704,9 @@ QString KService::storageId() const
 QString KService::locateLocal() const
 {
     Q_D(const KService);
-    if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden") ||
-        (QDir::isRelativePath(desktopEntryPath()) && d->categories.isEmpty()))
-        return KDesktopFile::locateLocal(desktopEntryPath());
+    if (d->menuId.isEmpty() || entryPath().startsWith(".hidden") ||
+        (QDir::isRelativePath(entryPath()) && d->categories.isEmpty()))
+        return KDesktopFile::locateLocal(entryPath());
 
     return KStandardDirs::locateLocal("xdgdata-apps", d->menuId);
 }

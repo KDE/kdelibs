@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
    KService::List::const_iterator s = services.begin();
    for ( ; s != services.end() ; ++s )
    {
-     kDebug() << (*s)->name() << " " << (*s)->desktopEntryPath();
+     kDebug() << (*s)->name() << " " << (*s)->entryPath();
    }
 //}
 

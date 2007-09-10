@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
    for(KService::List::ConstIterator it = list.begin(); it != list.end(); ++it)
    {
       if (((*it)->DCOPServiceType() == KService::DCOP_None) &&
-          !(*it)->desktopEntryPath().startsWith("SuSE") &&
+          !(*it)->entryPath().startsWith("SuSE") &&
            (*it)->hasServiceType("Application"))
       {
          if ((*it)->exec().startsWith((*it)->desktopEntryName()))
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
             else if (n == KService::DCOP_Multi)
                result = "Multi";
 
-            qWarning("%s %s", (*it)->desktopEntryPath().toLatin1().constData(),
+            qWarning("%s %s", (*it)->entryPath().toLatin1().constData(),
                               result.toLatin1().constData());
          }
       }

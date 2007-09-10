@@ -185,7 +185,7 @@ public:
     /**
      * Returns a normalized ID suitable for storing in configuration files.
      * It will be based on the menu-id when available and otherwise falls
-     * back to desktopEntryPath()
+     * back to entryPath()
      * @return the storage ID
      */
     QString storageId() const;
@@ -390,7 +390,7 @@ public:
     static Ptr serviceByName( const QString& _name );
 
     /**
-     * Find a service based on its path as returned by desktopEntryPath().
+     * Find a service based on its path as returned by entryPath().
      * It's usually better to use serviceByStorageId() instead.
      *
      * @param _path the path of the configuration file

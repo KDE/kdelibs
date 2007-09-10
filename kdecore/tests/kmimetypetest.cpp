@@ -382,15 +382,15 @@ void KMimeTypeTest::testMimeTypeParent()
 
 // Helper method for all the trader tests
 static bool offerListHasService( const KService::List& offers,
-                                 const QString& desktopEntryPath )
+                                 const QString& entryPath )
 {
     bool found = false;
     KService::List::const_iterator it = offers.begin();
     for ( ; it != offers.end() ; it++ )
     {
-        if ( (*it)->desktopEntryPath() == desktopEntryPath ) {
+        if ( (*it)->entryPath() == entryPath ) {
             if( found ) { // should be there only once
-                qWarning( "ERROR: %s was found twice in the list", qPrintable( desktopEntryPath ) );
+                qWarning( "ERROR: %s was found twice in the list", qPrintable( entryPath ) );
                 return false; // make test fail
             }
             found = true;
@@ -430,7 +430,7 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
     KService::List offers = KMimeTypeTrader::self()->query("text/x-patch", "KParts/ReadOnlyPart");
     QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
     QVERIFY( offerListHasService( offers, "faketextpart.desktop" ) );
-    QVERIFY( (*offers.begin())->desktopEntryPath() != "faketextpart.desktop" ); // in the list, but not preferred
+    QVERIFY( (*offers.begin())->entryPath() != "faketextpart.desktop" ); // in the list, but not preferred
 
     offers = KMimeTypeTrader::self()->query("text/x-patch", "KTextEditor/Plugin");
     QVERIFY( offers.count() > 0 );

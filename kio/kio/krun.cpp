@@ -227,7 +227,7 @@ KRunMX1::expandEscapedMacro( const QString &str, int pos, QStringList &ret )
       ret << service.name().replace( '%', "%%" );
       break;
    case 'k':
-      ret << service.desktopEntryPath().replace( '%', "%%" );
+      ret << service.entryPath().replace( '%', "%%" );
       break;
    case 'i':
       ret << "-icon" << service.icon().replace( '%', "%%" );
@@ -334,7 +334,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
 {
   QString exec = _service.exec();
   if ( exec.isEmpty() ) {
-      kWarning() << "KRun: no Exec field in `" << _service.desktopEntryPath() << "' !";
+      kWarning() << "KRun: no Exec field in `" << _service.entryPath() << "' !";
       return QStringList();
   }
 
@@ -478,10 +478,10 @@ static bool runCommandInternal( KProcess* proc, const KService* service, const Q
 {
   if( window != NULL )
       window = window->topLevelWidget();
-  if (service && !service->desktopEntryPath().isEmpty()
-      && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
+  if (service && !service->entryPath().isEmpty()
+      && !KDesktopFile::isAuthorizedDesktopFile( service->entryPath() ))
   {
-     kWarning() << "No authorization to execute " << service->desktopEntryPath();
+     kWarning() << "No authorization to execute " << service->entryPath();
      KMessageBox::sorry( window, i18n("You are not authorized to execute this file."));
      return false;
   }
@@ -661,10 +661,10 @@ static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service
 bool KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* window,
     bool tempFiles, const QString& suggestedFileName, const QByteArray& asn )
 {
-  if (!_service.desktopEntryPath().isEmpty() &&
-      !KDesktopFile::isAuthorizedDesktopFile( _service.desktopEntryPath()))
+  if (!_service.entryPath().isEmpty() &&
+      !KDesktopFile::isAuthorizedDesktopFile( _service.entryPath()))
   {
-     kWarning() << "No authorization to execute " << _service.desktopEntryPath();
+     kWarning() << "No authorization to execute " << _service.entryPath();
      KMessageBox::sorry( window, i18n("You are not authorized to execute this service.") );
      return false;
   }
@@ -679,12 +679,12 @@ bool KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* wind
       }
   }
 
-  if ( tempFiles || _service.desktopEntryPath().isEmpty() || !suggestedFileName.isEmpty() )
+  if ( tempFiles || _service.entryPath().isEmpty() || !suggestedFileName.isEmpty() )
   {
      return runTempService( _service, _urls, window, tempFiles, suggestedFileName, asn );
   }
 
-  kDebug(7010) << "KRun::run " << _service.desktopEntryPath();
+  kDebug(7010) << "KRun::run " << _service.entryPath();
 
   if (!_urls.isEmpty()) {
     kDebug(7010) << "First url " << _urls.first().url();
@@ -713,7 +713,7 @@ bool KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* wind
   }
 
   int i = KToolInvocation::startServiceByDesktopPath(
-        _service.desktopEntryPath(), urls.toStringList(), &error, 0L, &pid, myasn
+        _service.entryPath(), urls.toStringList(), &error, 0L, &pid, myasn
         );
 
   if (i != 0)

@@ -50,7 +50,7 @@ class KPluginInfoPrivate : public QSharedData
             , kcmservicesCached( false )
             {}
 
-        QString desktopEntryPath; // the filename of the file containing all the info
+        QString entryPath; // the filename of the file containing all the info
         QString name;
         QString comment;
         QString icon;
@@ -78,7 +78,7 @@ KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
 {
     KDesktopFile file( resource, filename );
 
-    d->desktopEntryPath = filename;
+    d->entryPath = filename;
 
     KConfigGroup cg = file.desktopGroup();
     d->hidden = cg.readEntry("Hidden", false);
@@ -108,7 +108,7 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
         return;
     }
     d->service = service;
-    d->desktopEntryPath = service->desktopEntryPath();
+    d->entryPath = service->entryPath();
 
     if ( service->isDeleted() )
     {
@@ -267,10 +267,10 @@ QString KPluginInfo::icon() const
     return d->icon;
 }
 
-QString KPluginInfo::desktopEntryPath() const
+QString KPluginInfo::entryPath() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->desktopEntryPath;
+    return d->entryPath;
 }
 
 QString KPluginInfo::author() const

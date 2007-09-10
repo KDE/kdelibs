@@ -25,6 +25,7 @@
 
 KFileWritePlugin::KFileWritePlugin(QObject* parent, const QStringList& args)
         :QObject(parent) {
+    Q_UNUSED(args);
 }
 KFileWritePlugin::~KFileWritePlugin() {
 }
