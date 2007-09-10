@@ -56,7 +56,7 @@
 #include <kurllabel.h>
 #include <klineedit.h>
 #include <kurl.h>
-#include <krun.h>
+#include <ktoolinvocation.h>
 #include <kmessagebox.h>
 #include <kglobalsettings.h>
 
@@ -1464,9 +1464,14 @@ void KPluginSelector::Private::PluginDelegate::slotDefaultClicked()
 }
 
 
-void KPluginSelector::Private::PluginDelegate::processUrl(const QString &url) const
+void KPluginSelector::Private::PluginDelegate::invokeMailer(const QString &url) const
 {
-    new KRun(KUrl(url), parent->parent);
+    KToolInvocation::invokeMailer(url);
+}
+
+void KPluginSelector::Private::PluginDelegate::invokeBrowser(const QString &url) const
+{
+    KToolInvocation::invokeBrowser(url);
 }
 
 QRect KPluginSelector::Private::PluginDelegate::checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const
@@ -1653,7 +1658,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                 sendEmail->setHighlightedColor(option.palette.color(QPalette::Link));
                 sendEmail->setSelectedColor(option.palette.color(QPalette::Link));
 
-                QObject::connect(sendEmail, SIGNAL(leftClickedUrl(QString)), this, SLOT(processUrl(QString)));
+                QObject::connect(sendEmail, SIGNAL(leftClickedUrl(QString)), this, SLOT(invokeMailer(QString)));
 
                 layout->addWidget(authorEmail);
                 layout->addWidget(sendEmail);
@@ -1674,7 +1679,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                 visitWebsite->setHighlightedColor(option.palette.color(QPalette::Link));
                 visitWebsite->setSelectedColor(option.palette.color(QPalette::Link));
 
-                QObject::connect(visitWebsite, SIGNAL(leftClickedUrl(QString)), this, SLOT(processUrl(QString)));
+                QObject::connect(visitWebsite, SIGNAL(leftClickedUrl(QString)), this, SLOT(invokeBrowser(QString)));
 
                 layout->addWidget(website);
                 layout->addWidget(visitWebsite);
