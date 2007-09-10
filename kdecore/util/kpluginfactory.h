@@ -256,6 +256,7 @@ public:
      * \param parent a parent object
      */
     explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
+    explicit KPluginFactory(const KAboutData &aboutData, QObject *parent = 0);
 
     explicit KDE_CONSTRUCTOR_DEPRECATED KPluginFactory(QObject *parent);
 
@@ -300,6 +301,9 @@ public:
      */
     template<typename T>
     T *create(const QString &keyword, QObject *parent = 0, const QVariantList &args = QVariantList());
+
+    template<typename T>
+    T *create(QWidget *parentWidget, QObject *parent, const QString &keyword = QString(), const QVariantList &args = QVariantList());
 
     template<typename T>
     KDE_DEPRECATED
@@ -380,6 +384,8 @@ protected:
 
     virtual KDE_DEPRECATED QObject *createObject(QObject *parent, const char *className, const QStringList &args);
 
+    virtual KDE_DEPRECATED KParts::Part *createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args);
+
     void setComponentData(const KComponentData &);
 
     /**
@@ -446,6 +452,18 @@ template<typename T>
 T *KPluginFactory::create(const QString &keyword, QObject *parent, const QVariantList &args)
 {
     QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, keyword);
+
+    T *t = qobject_cast<T *>(o);
+    if (!t) {
+        delete o;
+    }
+    return t;
+}
+
+template<typename T>
+T *KPluginFactory::create(QWidget *parentWidget, QObject *parent, const QString &keyword, const QVariantList &args)
+{
+    QObject *o = create(T::staticMetaObject.className(), parentWidget, parent, args, keyword);
 
     T *t = qobject_cast<T *>(o);
     if (!t) {

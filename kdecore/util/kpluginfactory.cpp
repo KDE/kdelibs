@@ -42,6 +42,14 @@ KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
     d->componentData = KComponentData(d->aboutData);
 }
 
+KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
+    : QObject(parent), d_ptr(new KPluginFactoryPrivate)
+{
+    Q_D(KPluginFactory);
+    d->q_ptr = this;
+    d->componentData = KComponentData(&aboutData);
+}
+
 KPluginFactory::KPluginFactory(QObject *parent)
     : QObject(parent), d_ptr(new KPluginFactoryPrivate())
 {
@@ -119,6 +127,15 @@ QObject *KPluginFactory::createObject(QObject *parent, const char *className, co
     return 0;
 }
 
+KParts::Part *KPluginFactory::createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args)
+{
+    Q_UNUSED(parent);
+    Q_UNUSED(parentWidget);
+    Q_UNUSED(classname);
+    Q_UNUSED(args);
+    return 0;
+}
+
 QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword)
 {
     Q_D(KPluginFactory);
@@ -128,6 +145,11 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
     if (!d->catalogInitialized) {
         d->catalogInitialized = true;
         setupTranslations();
+    }
+
+    if (keyword.isEmpty() && (obj = reinterpret_cast<QObject *>(createPartObject(parentWidget, parent, iface, variantListToStringList(args))))) {
+        objectCreated(obj);
+        return obj;
     }
 
     if (keyword.isEmpty() && (obj = createObject(parent, iface, variantListToStringList(args)))) {
