@@ -56,9 +56,6 @@ class QImage;
  * This will create and show a non-modal scanning dialog. Connect to more
  * signals if you like.
  *
- * If you implement an own scan-dialog, you also have to implement a
- * KScanDialogFactory.
- *
  * @short A baseclass and accessor for Scanning Dialogs
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
@@ -168,54 +165,6 @@ private:
 
 
 /**
- * A factory for creating a KScanDialog. You need to reimplement
- * createDialog().
- * @short Factory for creating KScanDialogs
- */
-class KIO_EXPORT KScanDialogFactory : public KPluginFactory
-{
-public:
-    virtual ~KScanDialogFactory();
-
-    /**
-     * Your library should reimplement this method to return your KScanDialog
-     * derived dialog.
-     * @param parent the QWidget's parent, or 0
-     */
-    virtual KScanDialog * createDialog( QWidget *parent=0 ) = 0;
-
-protected:
-    /**
-     * Creates a new KScanDialogFactory.
-     * @param parent the QWidget's parent, or 0
-     */
-    KScanDialogFactory( const char *componentName = 0,
-                        const char *catalogName = 0,
-                        QObject *parent = 0 );
-
-    virtual QObject* createObject( QObject* parent = 0,
-                                   const char* classname = "QObject",
-                                   const QStringList &args = QStringList() );
-
-
-    /**
-     * Creates a new instance with the given name.
-     * @param componentName the name of the instance
-     */
-    void setName(const QByteArray &componentName);
-
-    /**
-     * Returns the instance.
-     * @return the KComponentData
-     */
-    const KComponentData &componentData() const;
-
-private:
-    class KScanDialogFactoryPrivate;
-    KScanDialogFactoryPrivate * const d;
-};
-
-/**
  * Base class for OCR Dialogs.
  */
 class KIO_EXPORT KOCRDialog : public KPageDialog
@@ -283,58 +232,6 @@ Q_SIGNALS:
 private:
     class KOCRDialogPrivate;
     KOCRDialogPrivate * const d;
-};
-
-
-/**
- * A factory for creating a KOCRDialog. You need to reimplement
- * createDialog().
- * @short Factory for creating KScanDialogs
- */
-class KIO_EXPORT KOCRDialogFactory : public KPluginFactory
-{
-public:
-    virtual ~KOCRDialogFactory();
-
-    /**
-     * Your library should reimplement this method to return your KOCRDialog
-     * derived dialog.
-     * @param parent the QWidget's parent, or 0
-     * @param modal if true the dialog is model
-     */
-    virtual KOCRDialog * createDialog( QWidget *parent=0,
-					bool modal=false ) = 0;
-
-protected:
-    /**
-     * Creates a new KScanDialogFactory.
-     * @param parent the QWidget's parent, or 0
-     */
-
-    KOCRDialogFactory( const char *componentName = 0,
-                       const char *catalogName = 0,
-                       QObject *parent = 0 );
-
-    virtual QObject* createObject( QObject* parent = 0,
-                                   const char* classname = "QObject",
-                                   const QStringList &args = QStringList() );
-
-
-    /**
-     * Creates a new instance with the given name.
-     * @param componentName the name of the instance
-     */
-    void setName(const QByteArray &componentName);
-
-    /**
-     * Returns the instance.
-     * @return the KComponentData
-     */
-    const KComponentData &componentData() const;
-
-private:
-    class KOCRDialogFactoryPrivate;
-    KOCRDialogFactoryPrivate * const d;
 };
 
 
