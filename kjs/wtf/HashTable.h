@@ -32,7 +32,8 @@ namespace WTF {
 #define DUMP_HASHTABLE_STATS 0
 #define CHECK_HASHTABLE_CONSISTENCY 0
 
-//Because of BC concerns,we do not turn on the checking automatically
+// The Apple tree triggers this based on debug or not
+// We can't do this, since it would make the two builds BIC!
 #define CHECK_HASHTABLE_ITERATORS 0
 
 #if DUMP_HASHTABLE_STATS
@@ -288,9 +289,13 @@ namespace WTF {
         // in the table.
         template<typename T, typename Extra, typename HashTranslator> pair<iterator, bool> add(const T& key, const Extra&);
 
-        iterator find(const KeyType&);
-        const_iterator find(const KeyType&) const;
-        bool contains(const KeyType&) const;
+        iterator find(const KeyType& key) { return find<KeyType, IdentityTranslatorType>(key); }
+        const_iterator find(const KeyType& key) const { return find<KeyType, IdentityTranslatorType>(key); }
+        bool contains(const KeyType& key) const { return contains<KeyType, IdentityTranslatorType>(key); }
+
+        template <typename T, typename HashTranslator> iterator find(const T&);
+        template <typename T, typename HashTranslator> const_iterator find(const T&) const;
+        template <typename T, typename HashTranslator> bool contains(const T&) const;
 
         void remove(const KeyType&);
         void remove(iterator);
@@ -424,6 +429,11 @@ namespace WTF {
         FullLookupType lookupResult = lookup<T, HashTranslator>(key);
 
         ValueType *entry = lookupResult.first.first;
+	
+	// M.O: this code gets mis(?)-compiled by my gcc 4.2.1-ish install
+	// with pure -O2. The next line is a dirty hack around it.
+	// Not sure whether it's an aliasing problem in code or a gcc bug
+	ValueType** volatile hack = &entry; (void)hack;
         bool found = lookupResult.first.second;
         unsigned h = lookupResult.second;
 
@@ -464,36 +474,39 @@ namespace WTF {
     }
 
     template<typename Key, typename Value, typename Extractor, typename HashFunctions, typename Traits, typename KeyTraits>
-    typename HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::iterator HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::find(const Key& key)
+    template <typename T, typename HashTranslator> 
+    typename HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::iterator HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::find(const T& key)
     {
         if (!m_table)
             return end();
 
-        LookupType result = lookup(key);
+        LookupType result = lookup<T, HashTranslator>(key).first;
         if (!result.second)
             return end();
         return makeIterator(result.first);
     }
 
     template<typename Key, typename Value, typename Extractor, typename HashFunctions, typename Traits, typename KeyTraits>
-    typename HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::const_iterator HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::find(const Key& key) const
+    template <typename T, typename HashTranslator> 
+    typename HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::const_iterator HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::find(const T& key) const
     {
         if (!m_table)
             return end();
 
-        LookupType result = const_cast<HashTable *>(this)->lookup(key);
+        LookupType result = const_cast<HashTable *>(this)->lookup<T, HashTranslator>(key).first;
         if (!result.second)
             return end();
         return makeConstIterator(result.first);
     }
 
     template<typename Key, typename Value, typename Extractor, typename HashFunctions, typename Traits, typename KeyTraits>
-    bool HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::contains(const KeyType& key) const
+    template <typename T, typename HashTranslator> 
+    bool HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::contains(const T& key) const
     {
         if (!m_table)
             return false;
 
-        return const_cast<HashTable *>(this)->lookup(key).second;
+        return const_cast<HashTable *>(this)->lookup<T, HashTranslator>(key).first.second;
     }
 
     template<typename Key, typename Value, typename Extractor, typename HashFunctions, typename Traits, typename KeyTraits>
@@ -840,29 +853,29 @@ namespace WTF {
         static const bool value = firstNeedsRef || secondNeedsRef;
     };
 
-    template<bool needsRef, typename ValueTraits> struct RefCounterBase;
+    template<bool needsRef, typename ValueTraits, typename ValueStorageTraits> struct RefCounterBase;
 
-    template<typename ValueTraits>
-    struct RefCounterBase<false, ValueTraits> {
-        typedef typename ValueTraits::TraitType ValueType;
-        static void ref(const ValueType&) { }
-        static void deref(const ValueType&) { }
+    template<typename ValueTraits, typename ValueStorageTraits>
+    struct RefCounterBase<false, ValueTraits, ValueStorageTraits> {
+        typedef typename ValueStorageTraits::TraitType ValueStorageType;
+        static void ref(const ValueStorageType&) { }
+        static void deref(const ValueStorageType&) { }
     };
 
-    template<typename ValueTraits>
-    struct RefCounterBase<true, ValueTraits> {
-        typedef typename ValueTraits::TraitType ValueType;
-        static void ref(const ValueType& v) { ValueTraits::ref(*(const ValueType*)&v); }
-        static void deref(const ValueType& v) { ValueTraits::deref(*(const ValueType*)&v); }
+    template<typename ValueTraits, typename ValueStorageTraits>
+    struct RefCounterBase<true, ValueTraits, ValueStorageTraits> {
+        typedef typename ValueStorageTraits::TraitType ValueStorageType;
+        static void ref(const ValueStorageType& v) { ValueTraits::ref(v); }
+        static void deref(const ValueStorageType& v) { ValueTraits::deref(v); }
     };
 
     template<typename ValueTraits, typename ValueStorageTraits> struct RefCounter {
         typedef typename ValueTraits::TraitType ValueType;
         typedef typename ValueStorageTraits::TraitType ValueStorageType;
         static const bool needsRef = NeedsRef<ValueTraits, ValueStorageTraits>::value;
-        typedef RefCounterBase<needsRef, ValueTraits> Base;
-        static void ref(const ValueStorageType& v) { Base::ref(*(const ValueType*)&v); }
-        static void deref(const ValueStorageType& v) { Base::deref(*(const ValueType*)&v); }
+        typedef RefCounterBase<needsRef, ValueTraits, ValueStorageTraits> Base;
+        static void ref(const ValueStorageType& v) { Base::ref(v); }
+        static void deref(const ValueStorageType& v) { Base::deref(v); }
     };
 
     template<typename FirstTraits, typename SecondTraits, typename ValueStorageTraits>
@@ -874,15 +887,15 @@ namespace WTF {
         typedef typename ValueStorageTraits::TraitType ValueStorageType;
         static const bool firstNeedsRef = NeedsRef<FirstTraits, FirstStorageTraits>::value;
         static const bool secondNeedsRef = NeedsRef<SecondTraits, SecondStorageTraits>::value;
-        typedef RefCounterBase<firstNeedsRef, FirstTraits> FirstBase;
-        typedef RefCounterBase<secondNeedsRef, SecondTraits> SecondBase;
+        typedef RefCounterBase<firstNeedsRef, FirstTraits, FirstStorageTraits> FirstBase;
+        typedef RefCounterBase<secondNeedsRef, SecondTraits, SecondStorageTraits> SecondBase;
         static void ref(const ValueStorageType& v) {
-            FirstBase::ref(*(const FirstType*)&v.first);
-            SecondBase::ref(*(const SecondType*)&v.second);
+            FirstBase::ref(v.first);
+            SecondBase::ref(v.second);
         }
         static void deref(const ValueStorageType& v) {
-            FirstBase::deref(*(const FirstType*)&v.first);
-            SecondBase::deref(*(const SecondType*)&v.second);
+            FirstBase::deref(v.first);
+            SecondBase::deref(v.second);
         }
     };
 
@@ -926,6 +939,36 @@ namespace WTF {
         static void refAll(HashTableType& table) { Base::refAll(table); }
         static void derefAll(HashTableType& table) { Base::derefAll(table); }
     };
+
+    // helper template for HashMap and HashSet.
+    template<bool needsRef, typename FromType, typename ToType, typename FromTraits> struct Assigner;
+    
+    template<typename FromType, typename ToType, typename FromTraits> struct Assigner<false, FromType, ToType, FromTraits> {
+        typedef union { 
+            FromType m_from; 
+            ToType m_to; 
+        } UnionType;
+
+        static void assign(const FromType& from, ToType& to) { reinterpret_cast<UnionType*>(&to)->m_from = from; }
+    };
+    
+    template<typename FromType, typename ToType, typename FromTraits> struct Assigner<true, FromType, ToType, FromTraits> {
+        static void assign(const FromType& from, ToType& to) 
+        { 
+            ToType oldTo = to; 
+            memcpy(&to, &from, sizeof(FromType)); 
+            FromTraits::ref(to);
+            FromTraits::deref(oldTo);
+        }
+    };
+    
+    template<typename FromType, typename FromTraits> struct Assigner<false, FromType, FromType, FromTraits> {
+        static void assign(const FromType& from, FromType& to) { to = from; }
+    };    
+    
+    template<typename FromType, typename FromTraits> struct Assigner<true, FromType, FromType, FromTraits> {
+        static void assign(const FromType& from, FromType& to) { to = from; }
+    };    
 
 } // namespace WTF
 
