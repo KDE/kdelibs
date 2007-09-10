@@ -38,8 +38,7 @@ KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
 {
     Q_D(KPluginFactory);
     d->q_ptr = this;
-    d->aboutData = aboutData;
-    d->componentData = KComponentData(d->aboutData);
+    d->componentData = KComponentData(*aboutData);
 }
 
 KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
@@ -47,7 +46,7 @@ KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
 {
     Q_D(KPluginFactory);
     d->q_ptr = this;
-    d->componentData = KComponentData(&aboutData);
+    d->componentData = KComponentData(aboutData);
 }
 
 KPluginFactory::KPluginFactory(QObject *parent)

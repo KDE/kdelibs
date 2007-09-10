@@ -31,10 +31,9 @@
 class KComponentDataPrivate
 {
 public:
-    KComponentDataPrivate()
+    KComponentDataPrivate(const KAboutData &aboutData_)
         : dirs(0),
-        aboutData(0),
-        ownAboutdata(true),
+        aboutData(aboutData_),
         syncing(false),
         refCount(1)
     {
@@ -42,10 +41,6 @@ public:
 
     ~KComponentDataPrivate()
     {
-        if (ownAboutdata) {
-            delete aboutData;
-            aboutData = 0;
-        }
         delete dirs;
         dirs = 0;
     }
@@ -70,12 +65,9 @@ public:
     void checkConfig();
 
     KStandardDirs *dirs;
-    QString name;
-    QString catalog;
-    const KAboutData *aboutData;
+    const KAboutData aboutData;
     QString configName;
     KSharedConfig::Ptr sharedConfig;
-    bool ownAboutdata;
     bool syncing;
 
 private:

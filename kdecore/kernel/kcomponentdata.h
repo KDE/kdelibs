@@ -123,6 +123,7 @@ public:
      * @see KAboutData
      */
     explicit KComponentData(const KAboutData *aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
+    explicit KComponentData(const KAboutData &aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
 
     /**
      * Destructor.

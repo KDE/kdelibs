@@ -65,13 +65,9 @@ bool KComponentData::operator==(const KComponentData &rhs) const
 }
 
 KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog, MainComponentRegistration registerAsMain)
-    : d(new KComponentDataPrivate)
+    : d(new KComponentDataPrivate(KAboutData(name, catalog, KLocalizedString(), "", KLocalizedString())))
 {
     Q_ASSERT(!name.isEmpty());
-
-    d->name = QString::fromUtf8(name);
-    d->catalog = QString::fromUtf8(catalog);
-    d->aboutData = new KAboutData(name, catalog, KLocalizedString(), "", KLocalizedString());
 
     if (registerAsMain == RegisterAsMainComponent) {
         KGlobal::newComponentData(*this);
@@ -79,14 +75,19 @@ KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog
 }
 
 KComponentData::KComponentData(const KAboutData *aboutData, MainComponentRegistration registerAsMain)
-    : d(new KComponentDataPrivate)
+    : d(new KComponentDataPrivate(*aboutData))
 {
-    d->name = aboutData->appName();
-    d->catalog = aboutData->catalogName();
-    d->aboutData = aboutData;
-    d->ownAboutdata = false;
+    Q_ASSERT(!aboutData->appName().isEmpty());
 
-    Q_ASSERT(!d->name.isEmpty());
+    if (registerAsMain == RegisterAsMainComponent) {
+        KGlobal::newComponentData(*this);
+    }
+}
+
+KComponentData::KComponentData(const KAboutData &aboutData, MainComponentRegistration registerAsMain)
+    : d(new KComponentDataPrivate(aboutData))
+{
+    Q_ASSERT(!aboutData.appName().isEmpty());
 
     if (registerAsMain == RegisterAsMainComponent) {
         KGlobal::newComponentData(*this);
@@ -145,7 +146,7 @@ KStandardDirs *KComponentData::dirs() const
     if (d->dirs == 0) {
         d->dirs = new KStandardDirs(*this);
         // install appdata resource type
-        d->dirs->addResourceType("appdata", "data", d->name + QLatin1Char('/'), true);
+        d->dirs->addResourceType("appdata", "data", d->aboutData.appName() + QLatin1Char('/'), true);
 
         if (d->sharedConfig) {
             if (d->dirs->addCustomized(d->sharedConfig.data())) {
@@ -184,8 +185,8 @@ const KSharedConfig::Ptr &KComponentData::config() const
         }
 
         if (!d->sharedConfig) {
-            if (!d->name.isEmpty()) {
-                d->sharedConfig = KSharedConfig::openConfig(*this, d->name + "rc");
+            if (!d->aboutData.appName().isEmpty()) {
+                d->sharedConfig = KSharedConfig::openConfig(*this, d->aboutData.appName() + "rc");
             } else {
                 d->sharedConfig = KSharedConfig::openConfig(*this, QString());
             }
@@ -217,21 +218,19 @@ void KComponentData::setConfigName(const QString &configName)
 const KAboutData *KComponentData::aboutData() const
 {
     Q_ASSERT(d);
-    return d->aboutData;
+    return &d->aboutData;
 }
 
 QString KComponentData::componentName() const
 {
     Q_ASSERT(d);
-    return d->name;
+    return d->aboutData.appName();
 }
 
 QString KComponentData::catalogName() const
 {
     Q_ASSERT(d);
-    if (d->catalog.isEmpty())
-        return componentName();
-    return d->catalog;
+    return d->aboutData.catalogName();
 }
 
 void KComponentData::virtual_hook(int, void*)

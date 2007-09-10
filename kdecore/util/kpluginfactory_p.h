@@ -37,16 +37,14 @@ protected:
     typedef QPair<const QMetaObject *, KPluginFactory::CreateInstanceFunction> Plugin;
 
 
-    KPluginFactoryPrivate() : catalogInitialized(false), aboutData(0) {}
+    KPluginFactoryPrivate() : catalogInitialized(false) {}
     ~KPluginFactoryPrivate()
     {
-        delete aboutData;
     }
 
     QHash<QString, Plugin> createInstanceHash;
     KComponentData componentData;
     bool catalogInitialized;
-    const KAboutData *aboutData;
 
     KPluginFactory *q_ptr;
 };
