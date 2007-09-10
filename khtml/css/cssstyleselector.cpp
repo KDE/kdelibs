@@ -419,52 +419,6 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
 }
 
 #undef MAXFONTSIZES
-/*
-bool CSSStyleSelector::canShareStyleWithElement(NodeImpl* n)
-{
-    if (n->isElementNode()) {
-        ElementImpl* s = static_cast<ElementImpl*>(n);
-        RenderStyle* style = s->renderer()->style();
-        if (style &&
-            (s->id() == element->id()) && !s->hasID() &&
-            (s->hasClass() == element->hasClass()) && !s->inlineStyleDecl() &&
-            (s->hovered() == element->hovered()) &&
-            (s->active() == element->active()) &&
-            (s->focused() == element->focused())
-           ) {
-//             (s->isEnabled() == element->isEnabled()) &&
-//             (s->isIndeterminate() == element->isIndeterminate()) &&
-//             (s->isChecked() == element->isChecked()) &&
-            bool classesMatch = true;
-            if (s->hasClass()) {
-                const DOMString& class1 = element->getAttribute(ATTR_CLASS);
-                const DOMString& class2 = s->getAttribute(ATTR_CLASS);
-                classesMatch = (class1 == class2);
-            }
-
-            if (classesMatch) return true;
-        }
-    }
-    return false;
-}
-
-RenderStyle* CSSStyleSelector::locateSharedStyle()
-{
-    if (element && !element->hasID()) {
-        // Check previous siblings.
-        unsigned count = 0;
-        NodeImpl* n;
-        for (n = element->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
-        while (n) {
-            if (canShareStyleWithElement(n))
-                return n->renderer()->style();
-            if (++count > 10)
-                return 0;
-            for (n = n->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
-        }
-    }
-    return 0;
-}*/
 
 static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 {
@@ -511,14 +465,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     // reset dynamic DOM dependencies
     e->getDocument()->dynamicDomRestyler().resetDependencies(e);
-
-/*    if (true) {
-        style = locateSharedStyle();
-        if (style) {
-            style->ref();
-            return style;
-        }
-    }*/
 
     style = new RenderStyle();
     if( parentStyle )
@@ -667,23 +613,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
         adjustRenderStyle(pseudoStyle, 0);
         pseudoStyle = pseudoStyle->pseudoStyle;
     }
-
-    // Try and share the style with our siblings
-    NodeImpl *n = element;
-    do {
-        for (n = n->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
-        if (!n) break;
-        if (n->id() == element->id() && static_cast<ElementImpl*>(n)->renderer() ) {
-            style->compactWith(static_cast<ElementImpl*>(n)->renderer()->style());
-            break;
-        }
-    } while(true);
-    if (!n) {
-        n=element->parentNode();
-        if (n && n->renderer())
-            style->compactWith(static_cast<ElementImpl*>(n)->renderer()->style());
-    }
-
 
     // Now return the style.
     return style;
@@ -1005,11 +934,11 @@ static void precomputeAttributeDependenciesAux(DOM::DocumentImpl* doc, DOM::CSSS
     {
         // Sets up global dependencies of attributes
         if (isSubject)
-            doc->dynamicDomRestyler().addDependency(AttributeDependencies, sel->attr, PersonalDependency);
+            doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
         else if (isAncestor)
-            doc->dynamicDomRestyler().addDependency(AttributeDependencies, sel->attr, AncestorDependency);
+            doc->dynamicDomRestyler().addDependency(sel->attr, AncestorDependency);
         else
-            doc->dynamicDomRestyler().addDependency(AttributeDependencies, sel->attr, PredecessorDependency);
+            doc->dynamicDomRestyler().addDependency(sel->attr, PredecessorDependency);
     }
     if(sel->match == CSSSelector::PseudoClass)
     {
@@ -1535,13 +1464,13 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         case CSSSelector::PseudoLang: {
             // Set dynamic attribute dependency
             if (e == element) {
-                e->getDocument()->dynamicDomRestyler().addDependency(AttributeDependencies, ATTR_LANG, PersonalDependency);
-                e->getDocument()->dynamicDomRestyler().addDependency(AttributeDependencies, ATTR_LANG, AncestorDependency);
+                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, PersonalDependency);
+                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             }
             else if (isAncestor)
-                e->getDocument()->dynamicDomRestyler().addDependency(AttributeDependencies, ATTR_LANG, AncestorDependency);
+                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
             else
-                e->getDocument()->dynamicDomRestyler().addDependency(AttributeDependencies, ATTR_LANG, PredecessorDependency);
+                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, PredecessorDependency);
             // ### check xml:lang attribute in XML and XHTML documents
             DOMString value = e->getAttribute(ATTR_LANG);
             // The LANG attribute is inherited like a property
@@ -3678,7 +3607,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_COLOR:
         if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_COLOR)
         {
-            if (isInherit) {
+             if (isInherit) {
                 style->setBorderTopColor(parentStyle->borderTopColor());
                 style->setBorderBottomColor(parentStyle->borderBottomColor());
                 style->setBorderLeftColor(parentStyle->borderLeftColor());
