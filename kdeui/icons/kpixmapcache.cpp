@@ -662,15 +662,15 @@ bool KPixmapCache::Private::checkFileVersion(const QString& filename)
             if (version == KPIXMAPCACHE_VERSION) {
                 return true;
             } else if (version < KPIXMAPCACHE_VERSION) {
-                kWarning() << "File" << filename << "is outdated, will recreate...";
+                kDebug(264) << "File" << filename << "is outdated, will recreate...";
             } else {
                 // Don't recreate the cache if it has newer version to avoid
                 //  problems when upgrading kdelibs.
-                kWarning() << "File" << filename << "has newer version, disabling cache";
+                kDebug(264) << "File" << filename << "has newer version, disabling cache";
                 return false;
             }
         } else {
-            kWarning() << "File" << filename << "is not KPixmapCache file, will recreate...";
+            kDebug(264) << "File" << filename << "is not KPixmapCache file, will recreate...";
         }
     }
 
