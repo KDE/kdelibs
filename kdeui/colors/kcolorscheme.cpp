@@ -250,30 +250,6 @@ KColorScheme::~KColorScheme()
 {
 }
 
-KColorScheme::KColorScheme(ColorSet set, KSharedConfigPtr config)
-{
-    // bleh, copied code, a good reason for this ctor to go away
-    if (!config) {
-        config = KGlobal::config();
-    }
-    switch (set) {
-        case Window:
-            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:Window", defaultWindowColors);
-            break;
-        case Button:
-            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:Button", defaultButtonColors);
-            break;
-        case Selection:
-            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:Selection", defaultSelectionColors);
-            break;
-        case Tooltip:
-            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:Tooltip", defaultTooltipColors);
-            break;
-        default:
-            d = new KColorSchemePrivate(config, QPalette::Active, "Colors:View", defaultViewColors);
-    }
-}
-
 KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConfigPtr config)
 {
     if (!config) {
