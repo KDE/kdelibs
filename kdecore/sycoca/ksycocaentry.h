@@ -133,7 +133,7 @@ protected:
    KSycocaEntryPrivate *d_ptr;
 
 private:
-    Q_DISABLE_COPY(KSycocaEntry);
+    Q_DISABLE_COPY(KSycocaEntry)
 
     Q_DECLARE_PRIVATE(KSycocaEntry)
 };
