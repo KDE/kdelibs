@@ -213,27 +213,26 @@ public:
 
     // Attributes
 
+    KCategorizedSortFilterProxyModel *p;
+
     int sortColumn;
     Qt::SortOrder sortOrder;
     Qt::CaseSensitivity sortCaseSensitivity;
     int sortRole;
     bool sortLocaleAware;
 
+    bool dynamicSortFilter;
     bool categorizedModel;
 
     int filterColumn;
     QRegExp filterRegExp;
     int filterRole;
 
-    bool dynamicSortFilter;
-
     mutable QStringList categories;
     mutable QMap<QString, QVector<int> > categoriesRows;
     mutable QMap<QModelIndex, InternalInformation*> sourceIndexMap;
 
     QList<QPersistentModelIndex> persistentIndexes;
-
-    KCategorizedSortFilterProxyModel *p;
 
 public Q_SLOTS:
     void sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);

@@ -1086,10 +1086,10 @@ KCategorizedSortFilterProxyModel::Private::Private(KCategorizedSortFilterProxyMo
     , sortCaseSensitivity(Qt::CaseSensitive)
     , sortRole(Qt::DisplayRole)
     , sortLocaleAware(false)
-    , filterColumn(0)
-    , filterRole(Qt::DisplayRole)
     , dynamicSortFilter(false)
     , categorizedModel(true)
+    , filterColumn(0)
+    , filterRole(Qt::DisplayRole)
 {
 }
 
