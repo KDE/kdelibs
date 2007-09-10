@@ -41,7 +41,7 @@ namespace KCrash
    * The default crash handler.
    * @param signal the signal number
    */
-  void defaultCrashHandler (int signal);
+  KDEUI_EXPORT void defaultCrashHandler (int signal);
 
   /**
    * This function type is a pointer to a crash handler function.
@@ -60,13 +60,13 @@ namespace KCrash
    * @param handler the crash handler
    */
 
-  void setCrashHandler (HandlerType handler = defaultCrashHandler);
+  KDEUI_EXPORT void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
   /**
    * Returns the installed crash handler.
    * @return the crash handler
    */
-  HandlerType crashHandler();
+  KDEUI_EXPORT HandlerType crashHandler();
 
   /**
    * Installs a function which should try to save the applications data.
@@ -75,13 +75,13 @@ namespace KCrash
    * is installed to ensure the save function is called.
    * @param saveFunction the handler to install
    */
-  void setEmergencySaveFunction (HandlerType saveFunction = 0);
+  KDEUI_EXPORT void setEmergencySaveFunction (HandlerType saveFunction = 0);
 
   /**
    * Return the currently set emergency save function.
    * @return the emergency save function
    */
-  HandlerType emergencySaveFunction();
+  KDEUI_EXPORT HandlerType emergencySaveFunction();
 
   /**
    * Options to determine how KCrash should behave while firing up DrKonqi.
@@ -97,21 +97,21 @@ namespace KCrash
    * Set DrKonqi fire-up options.
    * @param flags ORed together CrashFlags
    */
-  void setFlags( CrashFlags flags );
+  KDEUI_EXPORT void setFlags( CrashFlags flags );
 
   /**
    * Sets the application @p path which should be passed to
    * Dr. Konqi, our nice crash display application.
    * @param path the application path.
    */
-  void setApplicationPath (const QString &path);
+  KDEUI_EXPORT void setApplicationPath (const QString &path);
 
   /**
    * Sets the application name @p name which should be passed to
    * Dr. Konqi, our nice crash display application.
    * @param name the name of the application, as shown in Dr. Konqi
    */
-  void setApplicationName (const QString &name);
+  KDEUI_EXPORT void setApplicationName (const QString &name);
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCrash::CrashFlags)
