@@ -100,6 +100,7 @@ install(TARGETS kimg_xview  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageforma
 
 if(OPENEXR_FOUND)
     include_directories( ${CMAKE_SOURCE_DIR}/kio ${OPENEXR_INCLUDE_DIR} )
+    add_definitions(${OPENEXR_DEFINITIONS})
     set(kimg_exr_LIB_SRCS exr.cpp)
     kde4_add_plugin(kimg_exr ${kimg_exr_LIB_SRCS})
     target_link_libraries(kimg_exr ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${OPENEXR_LIBRARIES} )
