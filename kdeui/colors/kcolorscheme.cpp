@@ -400,6 +400,11 @@ class KStatefulBrushPrivate : public QBrush // for now, just be a QBrush
         KStatefulBrushPrivate(const QBrush &brush) : QBrush(brush) {} // not explicit
 };
 
+KStatefulBrush::KStatefulBrush()
+{
+    d = new KStatefulBrushPrivate[3];
+}
+
 KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::ForegroundRole role,
                                KSharedConfigPtr config)
 {
