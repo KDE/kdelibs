@@ -785,11 +785,11 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
     allDocuments.append( d );
   }
 
-  QList<DocStruct>::Iterator best = allDocuments.end();
+  QList<DocStruct>::const_iterator best = allDocuments.end();
   uint bestVersion = 0;
 
-  QList<DocStruct>::Iterator docIt = allDocuments.begin();
-  QList<DocStruct>::Iterator docEnd = allDocuments.end();
+  QList<DocStruct>::const_iterator docIt = allDocuments.begin();
+  const QList<DocStruct>::const_iterator docEnd = allDocuments.end();
   for (; docIt != docEnd; ++docIt )
   {
     QString versionStr = findVersionNumber( (*docIt).data );
@@ -814,19 +814,19 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
   {
     if ( best != allDocuments.begin() )
     {
-      QList<DocStruct>::Iterator local = allDocuments.begin();
+      QList<DocStruct>::iterator local = allDocuments.begin();
+      if ( (*local).file.startsWith(KGlobal::dirs()->localkdedir()) ) {
 
-      // load the local document and extract the action properties
-      QDomDocument document;
-      document.setContent( (*local).data );
+        // load the local document and extract the action properties
+        QDomDocument document;
+        document.setContent( (*local).data );
 
-      ActionPropertiesMap properties = extractActionProperties( document );
+        ActionPropertiesMap properties = extractActionProperties( document );
 
-      // in case the document has a ActionProperties section
-      // we must not delete it but copy over the global doc
-      // to the local and insert the ActionProperties section
-      if ( !properties.isEmpty() )
-      {
+        // in case the document has a ActionProperties section
+        // we must not delete it but copy over the global doc
+        // to the local and insert the ActionProperties section
+        if ( !properties.isEmpty() ) {
           // now load the global one with the higher version number
           // into memory
           document.setContent( (*best).data );
@@ -845,13 +845,13 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
             f.write( utf8data.constData(), utf8data.length() );
             f.close();
           }
-      }
-      else
-      {
-        QString f = (*local).file;
-        QString backup = f + QLatin1String( ".backup" );
-        QDir dir;
-        dir.rename( f, backup );
+        }
+        else
+        {
+          QString f = (*local).file;
+          QString backup = f + QLatin1String( ".backup" );
+          QFile::rename( f, backup );
+        }
       }
     }
     doc = (*best).data;
