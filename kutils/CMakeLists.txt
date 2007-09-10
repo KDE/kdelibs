@@ -27,7 +27,6 @@ kcmoduleproxy.cpp
 kpluginselector.cpp
 kcmodulecontainer.cpp
 ksettingswidgetadaptor.cpp
-kcmodulefactory.cpp
 ${ksettings_STAT_SRCS}
 )
 
