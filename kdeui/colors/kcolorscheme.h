@@ -52,6 +52,19 @@ class KColorSchemePrivate;
  * foreground for any other set. Individual colors may be quickly referenced by
  * creating an anonymous instance and invoking a lookup member.
  *
+ * @note
+ * Historically, it was not needed for applications to give much concern to the
+ * state of a widget (active, inactive, disabled) since only the disabled state
+ * was different, and only slightly. As a result, the old KGlobalSettings color
+ * getters did not care about the widget state. However, starting with KDE4,
+ * the color palettes for the various states may be wildly different.
+ * Therefore, it is important to take the state into account. This is why the
+ * KColorScheme constructor requires a QPalette::ColorGroup as an argument.
+ *
+ * To facilitate working with potentially-varying states, two convenience API's
+ * are provided. These are KColorScheme::adjustBackground and its sister
+ * KColorScheme::adjustForeground, and the helper class ::KStatefulBrush.
+ *
  * @see KColorScheme::ColorSet, KColorScheme::ForegroundRole,
  * KColorScheme::BackgroundRole, KColorScheme::DecorationRole,
  * KColorScheme::ShadeRole
@@ -271,6 +284,10 @@ public:
     /**
      * Construct a palette from given color set and state, using the colors
      * from the given KConfig (if null, the system colors are used).
+     *
+     * @note Don't construct a KColorScheme unless you understand why you are
+     * doing so, and how you will deal with widget states (or why you don't
+     * need to). You probably want a ::KStatefulBrush instead.
      */
     explicit KColorScheme(QPalette::ColorGroup, ColorSet = View, KSharedConfigPtr = KSharedConfigPtr());
 
@@ -337,8 +354,153 @@ public:
     static QColor shade(const QColor&, ShadeRole,
                         qreal contrast, qreal chromaAdjust = 0.0);
 
+    /**
+     * Adjust a QPalette by replacing the specified QPalette::ColorRole with
+     * the requested background color for all states. Using this method is
+     * safer than replacing individual states, as it insulates you against
+     * changes in QPalette::ColorGroup.
+     *
+     * @note Although it is possible to replace a foreground color using this
+     * method, it's bad usability to do so. Just say "no".
+     */
+    static void adjustBackground(QPalette &,
+                                 BackgroundRole newRole = NormalBackground,
+                                 QPalette::ColorRole color = QPalette::Base,
+                                 ColorSet set = View,
+                                 KSharedConfigPtr = KSharedConfigPtr());
+
+    /**
+     * Adjust a QPalette by replacing the specified QPalette::ColorRole with
+     * the requested foreground color for all states. Using this method is
+     * safer than replacing individual states, as it insulates you against
+     * changes in QPalette::ColorGroup.
+     *
+     * @note Although it is possible to replace a background color using this
+     * method, it's bad usability to do so. Just say "no".
+     */
+    static void adjustForeground(QPalette &,
+                                 ForegroundRole newRole = NormalText,
+                                 QPalette::ColorRole color = QPalette::Text,
+                                 ColorSet set = View,
+                                 KSharedConfigPtr = KSharedConfigPtr());
+
 private:
     QExplicitlySharedDataPointer<KColorSchemePrivate> d;
+};
+
+/**
+ * A container for a "state-aware" brush.
+ *
+ * KStatefulBrush provides an easy and safe way to store a color for use in a
+ * user interface. It is "safe" both in that it will make it easy to deal with
+ * widget states in a correct manner, and that it insulates you against changes
+ * in QPalette::ColorGroup.
+ *
+ * Basically, a stateful brush is used to cache a particular "color" from the
+ * KDE system palette (usually, one which does not live in QPalette) in the way
+ * you would have used a QColor in KDE3. When you are ready to draw using the
+ * brush, you use the current state to retrieve the appropriate brush.
+ *
+ * Stateful brushes can also be used to apply state effects to arbitrary
+ * brushes, for example when working with a application specific user-defined
+ * color palette.
+ *
+ * @note As of Qt 4.3, QPalette::ColorGroup is missing a state for disabled
+ * widgets in an inactive window. Hopefully Trolltech will fix this bug, at
+ * which point KColorScheme and KStatefulBrush will be updated to recognize the
+ * new state. Using KStatefulBrush will allow your application to inherit these
+ * changes "for free", without even recompiling.
+ */
+class KDEUI_EXPORT KStatefulBrush
+{
+public:
+    /**
+     * Construct a "default" stateful brush. For such an instance, all
+     * overloads of KStatefulBrush::brush will return a default brush (i.e.
+     * <tt>QBrush()</tt>).
+     */
+    explicit KStatefulBrush();
+
+    /**
+     * Construct a stateful brush from given color set and foreground role,
+     * using the colors from the given KConfig (if null, the system colors are
+     * used).
+     */
+    explicit KStatefulBrush(KColorScheme::ColorSet,
+                            KColorScheme::ForegroundRole,
+                            KSharedConfigPtr = KSharedConfigPtr());
+
+    /**
+     * Construct a stateful brush from given color set and background role,
+     * using the colors from the given KConfig (if null, the system colors are
+     * used).
+     */
+    explicit KStatefulBrush(KColorScheme::ColorSet,
+                            KColorScheme::BackgroundRole,
+                            KSharedConfigPtr = KSharedConfigPtr());
+
+    /**
+     * Construct a stateful brush from given color set and decoration role,
+     * using the colors from the given KConfig (if null, the system colors are
+     * used).
+     */
+    explicit KStatefulBrush(KColorScheme::ColorSet,
+                            KColorScheme::DecorationRole,
+                            KSharedConfigPtr = KSharedConfigPtr());
+
+    /**
+     * Construct a stateful background brush from a specified QBrush (or
+     * QColor, via QBrush's implicit constructor). The various states are
+     * determined from the base QColor (which fills in the Active state)
+     * according to the same rules used to build stateful color schemes from
+     * the system color scheme. The state effects from the given KConfig are
+     * used (if null, the system state effects are used).
+     */
+    explicit KStatefulBrush(const QBrush&, KSharedConfigPtr = KSharedConfigPtr());
+
+    /**
+     * Construct a stateful foreground/decoration brush from a specified
+     * QBrush (or QColor, via QBrush's implicit constructor). The various
+     * states are determined from the base QBrush (which fills in the Active
+     * state) according to the same rules used to build stateful color schemes
+     * from the system color scheme. The state effects from the given KConfig
+     * are used (if null, the system state effects are used).
+     *
+     * @param background The background brush (or color) corresponding to the
+     * KColorScheme::NormalBackground role and QPalette::Active state for this
+     * foreground/decoration color.
+     */
+    explicit KStatefulBrush(const QBrush&, const QBrush &background,
+                            KSharedConfigPtr = KSharedConfigPtr());
+
+    KStatefulBrush(const KStatefulBrush&);
+    ~KStatefulBrush();
+
+    KStatefulBrush& operator=(const KStatefulBrush&);
+
+    /**
+     * Retrieve the brush for the specified widget state.
+     */
+    QBrush brush(QPalette::ColorGroup) const;
+
+    /**
+     * Retrieve the brush, using a QPalette reference to determine the correct
+     * state. Use when your painting code has easy access to the QPalette that
+     * it is supposed to be using.
+     */
+    QBrush brush(const QPalette&) const;
+
+    /**
+     * Retrieve the brush, using a QPalette reference to determine the correct
+     * state. Use when you have a pointer to the widget that you are painting.
+     *
+     * @note If you pass an invalid widget, you will get a default brush (i.e.
+     * <tt>QBrush()</tt>).
+     */
+    QBrush brush(const QWidget*) const;
+
+private:
+    class KStatefulBrushPrivate *d;
 };
 
 #endif // KCOLORSCHEME_H

@@ -27,6 +27,7 @@
 
 #include <QtGui/QColor>
 #include <QtGui/QBrush>
+#include <QtGui/QWidget>
 
 typedef struct {
     int NormalBackground[3];
@@ -69,6 +70,39 @@ DefaultColors defaultTooltipColors = {
     {   0,   0,   0 },
     { 232, 185, 149 }
 };
+
+// Apply state effects to a background brush
+QBrush applyStateEffects(QPalette::ColorGroup state, const QBrush &brush,
+                         const KSharedConfigPtr &config)
+{
+    Q_UNUSED(config); // TODO - actually use the config
+    // TODO - eventually, it would be great if this actually worked on brushes
+    // FIXME - this code is temporary, proof-of-concept
+    switch (state) {
+        case QPalette::Inactive:
+            return QBrush(KColorUtils::darken(brush.color(), 0.3));
+        default:
+            return brush;
+    }
+}
+
+// Apply state effects to a foreground brush
+QBrush applyStateEffects(QPalette::ColorGroup state, const QBrush &brush,
+                         const QBrush &background,
+                         const KSharedConfigPtr &config)
+{
+    Q_UNUSED(config); // TODO - actually use the config
+    // TODO - eventually, it would be great if this actually worked on brushes
+    // FIXME - this code is temporary, proof-of-concept
+    switch (state) {
+        case QPalette::Inactive:
+            return QBrush(KColorUtils::darken(brush.color(), 0.3));
+        case QPalette::Disabled:
+            return QBrush(KColorUtils::mix(brush.color(), background.color(), 0.7));
+        default:
+            return brush;
+    }
+}
 
 //BEGIN KColorSchemePrivate
 class KColorSchemePrivate : public QSharedData
@@ -115,8 +149,7 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
 
     // apply state adjustments
     if (state != QPalette::Active) {
-        // TODO - now tweak all the colors based on the state!
-        // FIXME - this code is temporary, proof-of-concept
+        // FIXME - convert to brushes, use applyStateEffects
         if (state == QPalette::Inactive) {
             _colors.bg[0] = KColorUtils::darken(_colors.bg[0], 0.3);
             _colors.bg[1] = KColorUtils::darken(_colors.bg[1], 0.3);
@@ -202,6 +235,7 @@ qreal KColorSchemePrivate::contrast() const
 }
 //END KColorSchemePrivate
 
+//BEGIN KColorScheme
 KColorScheme::KColorScheme(const KColorScheme &other) : d(other.d)
 {
 }
@@ -342,4 +376,119 @@ QColor KColorScheme::shade(const QColor &color, ShadeRole role, qreal contrast, 
             return KColorUtils::darken(KColorUtils::shade(color, darkAmount, chromaAdjust), 0.5 + 0.3 * y);
     }
 }
+
+void KColorScheme::adjustBackground(QPalette &palette, BackgroundRole newRole, QPalette::ColorRole color,
+                                    ColorSet set, KSharedConfigPtr config) {
+    palette.setBrush(QPalette::Active,   color, KColorScheme(QPalette::Active,   set, config).background(newRole));
+    palette.setBrush(QPalette::Inactive, color, KColorScheme(QPalette::Inactive, set, config).background(newRole));
+    palette.setBrush(QPalette::Disabled, color, KColorScheme(QPalette::Disabled, set, config).background(newRole));
+}
+
+void KColorScheme::adjustForeground(QPalette &palette, ForegroundRole newRole, QPalette::ColorRole color,
+                                    ColorSet set, KSharedConfigPtr config) {
+    palette.setBrush(QPalette::Active,   color, KColorScheme(QPalette::Active,   set, config).foreground(newRole));
+    palette.setBrush(QPalette::Inactive, color, KColorScheme(QPalette::Inactive, set, config).foreground(newRole));
+    palette.setBrush(QPalette::Disabled, color, KColorScheme(QPalette::Disabled, set, config).foreground(newRole));
+}
+//END KColorScheme
+
+//BEGIN KStatefulBrush
+class KStatefulBrushPrivate : public QBrush // for now, just be a QBrush
+{
+    public:
+        KStatefulBrushPrivate() : QBrush() {}
+        KStatefulBrushPrivate(const QBrush &brush) : QBrush(brush) {} // not explicit
+};
+
+KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::ForegroundRole role,
+                               KSharedConfigPtr config)
+{
+    d = new KStatefulBrushPrivate[3];
+    d[0] = KColorScheme(QPalette::Active,   set, config).foreground(role);
+    d[1] = KColorScheme(QPalette::Disabled, set, config).foreground(role);
+    d[2] = KColorScheme(QPalette::Inactive, set, config).foreground(role);
+}
+
+KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::BackgroundRole role,
+                               KSharedConfigPtr config)
+{
+    d = new KStatefulBrushPrivate[3];
+    d[0] = KColorScheme(QPalette::Active,   set, config).background(role);
+    d[1] = KColorScheme(QPalette::Disabled, set, config).background(role);
+    d[2] = KColorScheme(QPalette::Inactive, set, config).background(role);
+}
+
+KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::DecorationRole role,
+                               KSharedConfigPtr config)
+{
+    d = new KStatefulBrushPrivate[3];
+    d[0] = KColorScheme(QPalette::Active,   set, config).decoration(role);
+    d[1] = KColorScheme(QPalette::Disabled, set, config).decoration(role);
+    d[2] = KColorScheme(QPalette::Inactive, set, config).decoration(role);
+}
+
+KStatefulBrush::KStatefulBrush(const QBrush &brush, KSharedConfigPtr config)
+{
+    d = new KStatefulBrushPrivate[3];
+    d[0] = brush;
+    d[1] = applyStateEffects(QPalette::Disabled, brush, config);
+    d[2] = applyStateEffects(QPalette::Inactive, brush, config);
+}
+
+KStatefulBrush::KStatefulBrush(const QBrush &brush, const QBrush &background,
+                               KSharedConfigPtr config)
+{
+    d = new KStatefulBrushPrivate[3];
+    d[0] = brush;
+    d[1] = applyStateEffects(QPalette::Disabled, brush, background, config);
+    d[2] = applyStateEffects(QPalette::Inactive, brush, background, config);
+}
+
+KStatefulBrush::KStatefulBrush(const KStatefulBrush &other)
+{
+    d = new KStatefulBrushPrivate[3];
+    d[0] = other.d[0];
+    d[1] = other.d[1];
+    d[2] = other.d[2];
+}
+
+KStatefulBrush::~KStatefulBrush()
+{
+    delete[] d;
+}
+
+KStatefulBrush& KStatefulBrush::operator=(const KStatefulBrush &other)
+{
+    d[0] = other.d[0];
+    d[1] = other.d[1];
+    d[2] = other.d[2];
+    return *this;
+}
+
+QBrush KStatefulBrush::brush(QPalette::ColorGroup state) const
+{
+    switch (state) {
+        case QPalette::Inactive:
+            return d[2];
+        case QPalette::Disabled:
+            return d[1];
+        default:
+            return d[0];
+    }
+}
+
+QBrush KStatefulBrush::brush(const QPalette &pal) const
+{
+    return brush(pal.currentColorGroup());
+}
+
+QBrush KStatefulBrush::brush(const QWidget *widget) const
+{
+    if (widget)
+        return brush(widget->palette());
+    else
+        return QBrush();
+}
+//END KStatefulBrush
+
 // kate: space-indent on; indent-width 4; replace-tabs on; auto-insert-doxygen on;
