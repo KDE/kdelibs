@@ -998,17 +998,21 @@ void CSSStyleSelector::precomputeAttributeDependencies(DOM::DocumentImpl* doc, D
 }
 
 // Recursive check of selectors and combinators
-DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector)
+// It can return 3 different values:
+// * SelectorMatches - the selector is match for the node e
+// * SelectorFailsLocal - the selector fails for the node e
+// * SelectorFails - the selector fails for e and any sibling or ancestor of e
+CSSStyleSelector::SelectorMatch CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector)
 {
     // The simple selector has to match
-    if(!checkSimpleSelector(sel, e, isAncestor, isSubSelector)) return 0;
+    if(!checkSimpleSelector(sel, e, isAncestor, isSubSelector)) return SelectorFailsLocal;
 
     // The rest of the selectors has to match
     CSSSelector::Relation relation = sel->relation;
 
     // Prepare next sel
     sel = sel->tagHistory;
-    if (!sel) return e;
+    if (!sel) return SelectorMatches;
 
     switch(relation) {
         case CSSSelector::Descendant:
@@ -1016,9 +1020,11 @@ DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::El
             while(true)
             {
                 DOM::NodeImpl* n = e->parentNode();
-                if(!n || !n->isElementNode()) return 0;
+                if(!n || !n->isElementNode()) return SelectorFails;
                 e = static_cast<ElementImpl *>(n);
-                if(checkSelector(sel, e, true)) return e;
+                SelectorMatch match = checkSelector(sel, e, true);
+                if (match != SelectorFailsLocal)
+                    return match;
             }
             break;
         }
@@ -1027,10 +1033,9 @@ DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::El
             DOM::NodeImpl* n = e->parentNode();
             if (!strictParsing)
                 while (n && n->implicitNode()) n = n->parentNode();
-            if(!n || !n->isElementNode()) return 0;
+            if(!n || !n->isElementNode()) return SelectorFails;
             e = static_cast<ElementImpl *>(n);
-            if(checkSelector(sel, e, true)) return e;
-            break;
+            return checkSelector(sel, e, true);
         }
         case CSSSelector::IndirectAdjacent:
         {
@@ -1043,9 +1048,11 @@ DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::El
                 DOM::NodeImpl* n = e->previousSibling();
                 while( n && !n->isElementNode() )
                     n = n->previousSibling();
-                if( !n ) return 0;
+                if( !n ) return SelectorFailsLocal;
                 e = static_cast<ElementImpl *>(n);
-                if(checkSelector(sel, e, false)) return e;
+                SelectorMatch match = checkSelector(sel, e, false);
+                if (match != SelectorFailsLocal)
+                    return match;
             };
             break;
         }
@@ -1056,15 +1063,15 @@ DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::El
             DOM::NodeImpl* n = e->previousSibling();
             while( n && !n->isElementNode() )
                 n = n->previousSibling();
-            if( !n ) return 0;
+            if( !n ) return SelectorFailsLocal;
             e = static_cast<ElementImpl *>(n);
-            if(checkSelector(sel, e, false)) return e;
-            break;
+            return checkSelector(sel, e, false);
         }
         case CSSSelector::SubSelector:
             return checkSelector(sel, e, isAncestor, true);
     }
-    return 0;
+    assert(false); // never reached
+    return SelectorFails;
 }
 
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
@@ -1075,8 +1082,10 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
 
     selectorCache[ selIndex ].state = Invalid;
     CSSSelector *sel = selectors[ selIndex ];
+
     // Check the selector
-    if(!checkSelector(sel, e, true)) return;
+    SelectorMatch match = checkSelector(sel, e, true);
+    if(match != SelectorMatches) return;
 
     if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
 	selectorCache[selIndex].state = AppliesPseudo;
