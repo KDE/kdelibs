@@ -152,7 +152,8 @@ namespace khtml
 	/* checks if the selector matches the given Element */
 	bool checkSimpleSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector = false);
 
-       DOM::ElementImpl* checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector = false);
+        enum SelectorMatch {SelectorMatches = 0, SelectorFailsLocal, SelectorFails};
+        SelectorMatch checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector = false);
 
         void addDependency(StructuralDependencyType dependencyType, DOM::ElementImpl* dependency);
 #ifdef APPLE_CHANGES

@@ -1,3 +1,11 @@
+2007-10-09  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Optimize the case of double descendant selectors "a b c",
+        to avoid O(n^2) run-time where n is the depth of the DOM tree.
+
+        * css/cssstyleselector.h: Define new early termination value for checkSelector
+        * css/cssstyleselector.cpp: Bail-out when the selector-chain can't possibly match
+
 2007-04-22  Harri Porten  <porten@kde.org>
 
 	* ecma/xmlhttprequest.cpp: allow Accept header overrides
@@ -30,7 +38,7 @@
 
 	* html/html_formimpl.cpp (gatherWalletData): prevent crash occuring
 	on double form submits (bug report #105899)
-	
+
 2006-11-14  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement overflow-x and overflow-y

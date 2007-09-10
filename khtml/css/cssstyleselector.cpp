@@ -419,6 +419,52 @@ void CSSStyleSelector::computeFontSizesFor(QPaintDeviceMetrics* paintDeviceMetri
 }
 
 #undef MAXFONTSIZES
+/*
+bool CSSStyleSelector::canShareStyleWithElement(NodeImpl* n)
+{
+    if (n->isElementNode()) {
+        ElementImpl* s = static_cast<ElementImpl*>(n);
+        RenderStyle* style = s->renderer()->style();
+        if (style &&
+            (s->id() == element->id()) && !s->hasID() &&
+            (s->hasClass() == element->hasClass()) && !s->inlineStyleDecl() &&
+            (s->hovered() == element->hovered()) &&
+            (s->active() == element->active()) &&
+            (s->focused() == element->focused())
+           ) {
+//             (s->isEnabled() == element->isEnabled()) &&
+//             (s->isIndeterminate() == element->isIndeterminate()) &&
+//             (s->isChecked() == element->isChecked()) &&
+            bool classesMatch = true;
+            if (s->hasClass()) {
+                const DOMString& class1 = element->getAttribute(ATTR_CLASS);
+                const DOMString& class2 = s->getAttribute(ATTR_CLASS);
+                classesMatch = (class1 == class2);
+            }
+
+            if (classesMatch) return true;
+        }
+    }
+    return false;
+}
+
+RenderStyle* CSSStyleSelector::locateSharedStyle()
+{
+    if (element && !element->hasID()) {
+        // Check previous siblings.
+        unsigned count = 0;
+        NodeImpl* n;
+        for (n = element->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
+        while (n) {
+            if (canShareStyleWithElement(n))
+                return n->renderer()->style();
+            if (++count > 10)
+                return 0;
+            for (n = n->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
+        }
+    }
+    return 0;
+}*/
 
 static inline void bubbleSort( CSSOrderedProperty **b, CSSOrderedProperty **e )
 {
@@ -465,6 +511,14 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 
     // reset dynamic DOM dependencies
     e->getDocument()->dynamicDomRestyler().resetDependencies(e);
+
+/*    if (true) {
+        style = locateSharedStyle();
+        if (style) {
+            style->ref();
+            return style;
+        }
+    }*/
 
     style = new RenderStyle();
     if( parentStyle )
@@ -613,6 +667,23 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
         adjustRenderStyle(pseudoStyle, 0);
         pseudoStyle = pseudoStyle->pseudoStyle;
     }
+
+    // Try and share the style with our siblings
+    NodeImpl *n = element;
+    do {
+        for (n = n->previousSibling(); n && !n->isElementNode(); n = n->previousSibling());
+        if (!n) break;
+        if (n->id() == element->id() && static_cast<ElementImpl*>(n)->renderer() ) {
+            style->compactWith(static_cast<ElementImpl*>(n)->renderer()->style());
+            break;
+        }
+    } while(true);
+    if (!n) {
+        n=element->parentNode();
+        if (n && n->renderer())
+            style->compactWith(static_cast<ElementImpl*>(n)->renderer()->style());
+    }
+
 
     // Now return the style.
     return style;
@@ -934,11 +1005,11 @@ static void precomputeAttributeDependenciesAux(DOM::DocumentImpl* doc, DOM::CSSS
     {
         // Sets up global dependencies of attributes
         if (isSubject)
-            doc->dynamicDomRestyler().addDependency(sel->attr, PersonalDependency);
+            doc->dynamicDomRestyler().addDependency(AttributeDependencies, sel->attr, PersonalDependency);
         else if (isAncestor)
-            doc->dynamicDomRestyler().addDependency(sel->attr, AncestorDependency);
+            doc->dynamicDomRestyler().addDependency(AttributeDependencies, sel->attr, AncestorDependency);
         else
-            doc->dynamicDomRestyler().addDependency(sel->attr, PredecessorDependency);
+            doc->dynamicDomRestyler().addDependency(AttributeDependencies, sel->attr, PredecessorDependency);
     }
     if(sel->match == CSSSelector::PseudoClass)
     {
@@ -976,17 +1047,21 @@ void CSSStyleSelector::precomputeAttributeDependencies(DOM::DocumentImpl* doc, D
 }
 
 // Recursive check of selectors and combinators
-DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector)
+// It can return 3 different values:
+// * SelectorMatches - the selector is match for the node e
+// * SelectorFailsLocal - the selector fails for the node e
+// * SelectorFails - the selector fails for e and any sibling or ancestor of e
+CSSStyleSelector::SelectorMatch CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e, bool isAncestor, bool isSubSelector)
 {
     // The simple selector has to match
-    if(!checkSimpleSelector(sel, e, isAncestor, isSubSelector)) return 0;
+    if(!checkSimpleSelector(sel, e, isAncestor, isSubSelector)) return SelectorFailsLocal;
 
     // The rest of the selectors has to match
     CSSSelector::Relation relation = sel->relation;
 
     // Prepare next sel
     sel = sel->tagHistory;
-    if (!sel) return e;
+    if (!sel) return SelectorMatches;
 
     switch(relation) {
         case CSSSelector::Descendant:
@@ -994,9 +1069,11 @@ DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::El
             while(true)
             {
                 DOM::NodeImpl* n = e->parentNode();
-                if(!n || !n->isElementNode()) return 0;
+                if(!n || !n->isElementNode()) return SelectorFails;
                 e = static_cast<ElementImpl *>(n);
-                if(checkSelector(sel, e, true)) return e;
+                SelectorMatch match = checkSelector(sel, e, true);
+                if (match != SelectorFailsLocal)
+                    return match;
             }
             break;
         }
@@ -1005,10 +1082,9 @@ DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::El
             DOM::NodeImpl* n = e->parentNode();
             if (!strictParsing)
                 while (n && n->implicitNode()) n = n->parentNode();
-            if(!n || !n->isElementNode()) return 0;
+            if(!n || !n->isElementNode()) return SelectorFails;
             e = static_cast<ElementImpl *>(n);
-            if(checkSelector(sel, e, true)) return e;
-            break;
+            return checkSelector(sel, e, true);
         }
         case CSSSelector::IndirectAdjacent:
         {
@@ -1021,9 +1097,11 @@ DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::El
                 DOM::NodeImpl* n = e->previousSibling();
                 while( n && !n->isElementNode() )
                     n = n->previousSibling();
-                if( !n ) return 0;
+                if( !n ) return SelectorFailsLocal;
                 e = static_cast<ElementImpl *>(n);
-                if(checkSelector(sel, e, false)) return e;
+                SelectorMatch match = checkSelector(sel, e, false);
+                if (match != SelectorFailsLocal)
+                    return match;
             };
             break;
         }
@@ -1034,15 +1112,15 @@ DOM::ElementImpl* CSSStyleSelector::checkSelector(DOM::CSSSelector *sel, DOM::El
             DOM::NodeImpl* n = e->previousSibling();
             while( n && !n->isElementNode() )
                 n = n->previousSibling();
-            if( !n ) return 0;
+            if( !n ) return SelectorFailsLocal;
             e = static_cast<ElementImpl *>(n);
-            if(checkSelector(sel, e, false)) return e;
-            break;
+            return checkSelector(sel, e, false);
         }
         case CSSSelector::SubSelector:
             return checkSelector(sel, e, isAncestor, true);
     }
-    return 0;
+    assert(false); // never reached
+    return SelectorFails;
 }
 
 void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
@@ -1055,7 +1133,8 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl * e)
     CSSSelector *sel = selectors[ selIndex ];
 
     // Check the selector
-    if(!checkSelector(sel, e, true)) return;
+     SelectorMatch match = checkSelector(sel, e, true);
+     if(match != SelectorMatches) return;
 
     if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
 	selectorCache[selIndex].state = AppliesPseudo;
@@ -1456,13 +1535,13 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
         case CSSSelector::PseudoLang: {
             // Set dynamic attribute dependency
             if (e == element) {
-                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, PersonalDependency);
-                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
+                e->getDocument()->dynamicDomRestyler().addDependency(AttributeDependencies, ATTR_LANG, PersonalDependency);
+                e->getDocument()->dynamicDomRestyler().addDependency(AttributeDependencies, ATTR_LANG, AncestorDependency);
             }
             else if (isAncestor)
-                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, AncestorDependency);
+                e->getDocument()->dynamicDomRestyler().addDependency(AttributeDependencies, ATTR_LANG, AncestorDependency);
             else
-                e->getDocument()->dynamicDomRestyler().addDependency(ATTR_LANG, PredecessorDependency);
+                e->getDocument()->dynamicDomRestyler().addDependency(AttributeDependencies, ATTR_LANG, PredecessorDependency);
             // ### check xml:lang attribute in XML and XHTML documents
             DOMString value = e->getAttribute(ATTR_LANG);
             // The LANG attribute is inherited like a property
@@ -3599,7 +3678,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_BORDER_COLOR:
         if(id == CSS_PROP_BORDER || id == CSS_PROP_BORDER_COLOR)
         {
-             if (isInherit) {
+            if (isInherit) {
                 style->setBorderTopColor(parentStyle->borderTopColor());
                 style->setBorderBottomColor(parentStyle->borderBottomColor());
                 style->setBorderLeftColor(parentStyle->borderLeftColor());
