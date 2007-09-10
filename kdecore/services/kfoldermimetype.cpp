@@ -24,27 +24,37 @@
 #include <dirent.h>
 #include <QtCore/QFile>
 
+class KFolderMimeTypePrivate : public KMimeTypePrivate
+{
+public:
+    K_SYCOCATYPE( KST_KFolderMimeType, KMimeTypePrivate )
+
+    KFolderMimeTypePrivate(const QString &s)
+        : KMimeTypePrivate(s)
+    {}
+
+    KFolderMimeTypePrivate(QDataStream& str, int offset)
+        : KMimeTypePrivate(str, offset)
+    {}
+
+    virtual QString comment(const KUrl &url) const;
+    virtual QString iconName(const KUrl &url) const;
+
+};
+
 /*******************************************************
  *
  * KFolderMimeType
  *
  ******************************************************/
 
-class KFolderMimeTypePrivate: public KMimeTypePrivate
-{
-public:
-  Q_DECLARE_PUBLIC(KFolderMimeType)
-
-  KFolderMimeTypePrivate(KFolderMimeType *q): KMimeTypePrivate(q) {}
-};
-
 KFolderMimeType::KFolderMimeType( const QString& fullpath, const QString& name, const QString& comment )
-    : KMimeType( *new KFolderMimeTypePrivate(this), fullpath, name, comment )
+    : KMimeType(*new KFolderMimeTypePrivate(fullpath), name, comment )
 {
 }
 
 KFolderMimeType::KFolderMimeType( QDataStream& str, int offset )
-    : KMimeType( *new KFolderMimeTypePrivate(this), str, offset )
+    : KMimeType( *new KFolderMimeTypePrivate(str, offset))
 {
 }
 
@@ -52,10 +62,10 @@ KFolderMimeType::~KFolderMimeType()
 {
 }
 
-QString KFolderMimeType::iconName( const KUrl& _url ) const
+QString KFolderMimeTypePrivate::iconName( const KUrl& _url ) const
 {
   if ( _url.isEmpty() || !_url.isLocalFile() )
-    return KMimeType::iconName( _url );
+    return KMimeTypePrivate::iconName( _url );
 
   KUrl u( _url );
   u.addPath( ".directory" );
@@ -104,7 +114,7 @@ QString KFolderMimeType::iconName( const KUrl& _url ) const
   }
 
   if ( icon.isEmpty() )
-    return KMimeType::iconName( _url );
+    return KMimeTypePrivate::iconName( _url );
 
   if ( icon.startsWith( "./" ) ) {
     // path is relative with respect to the location
@@ -117,10 +127,10 @@ QString KFolderMimeType::iconName( const KUrl& _url ) const
   return icon;
 }
 
-QString KFolderMimeType::comment( const KUrl& _url ) const
+QString KFolderMimeTypePrivate::comment( const KUrl& _url ) const
 {
     if ( _url.isEmpty() || !_url.isLocalFile() )
-        return KMimeType::comment( _url );
+        return KMimeTypePrivate::comment( _url );
 
     KUrl u( _url );
     u.addPath( ".directory" );
@@ -128,10 +138,7 @@ QString KFolderMimeType::comment( const KUrl& _url ) const
     const KDesktopFile cfg( u.path() );
     QString comment = cfg.readComment();
     if ( comment.isEmpty() )
-        return KMimeType::comment( _url );
+        return KMimeTypePrivate::comment( _url );
 
     return comment;
 }
-
-void KFolderMimeType::virtual_hook( int id, void* data )
-{ KMimeType::virtual_hook( id, data ); }

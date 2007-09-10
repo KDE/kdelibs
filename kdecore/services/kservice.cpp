@@ -18,6 +18,7 @@
  */
 
 #include "kservice.h"
+#include "kservice_p.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -41,40 +42,7 @@
 #include "kservicefactory.h"
 #include "kservicetypefactory.h"
 
-class KService::Private
-{
-public:
-    Private()
-        : m_bValid(true)
-    {
-    }
-    void init(const KDesktopFile *config, KService* q);
-    void load( QDataStream& );
-    void save( QDataStream& );
-
-    QStringList categories;
-    QString menuId;
-    QString m_strType;
-    QString m_strName;
-    QString m_strExec;
-    QString m_strIcon;
-    QString m_strTerminalOptions;
-    QString m_strPath;
-    QString m_strComment;
-    QString m_strLibrary;
-    QStringList m_lstServiceTypes;
-    int m_initialPreference;
-    QString m_strDesktopEntryName;
-    DBUSStartupType_t m_DBUSStartusType;
-    QMap<QString,QVariant> m_mapProps;
-    QStringList m_lstKeywords;
-    QString m_strGenName;
-    bool m_bAllowAsDefault;
-    bool m_bTerminal;
-    bool m_bValid;
-};
-
-void KService::Private::init( const KDesktopFile *config, KService* q )
+void KServicePrivate::init( const KDesktopFile *config, KService* q )
 {
     const QString entryPath = q->entryPath();
     bool absPath = !QDir::isRelativePath(entryPath);
@@ -219,13 +187,13 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
     }
     entryMap.remove("X-DBUS-StartupType");
     if (dbusStartupType == "unique")
-        m_DBUSStartusType = DBUS_Unique;
+        m_DBUSStartusType = KService::DBUS_Unique;
     else if (dbusStartupType == "multi")
-        m_DBUSStartusType = DBUS_Multi;
+        m_DBUSStartusType = KService::DBUS_Multi;
     else if (dbusStartupType == "wait")
-        m_DBUSStartusType = DBUS_Wait;
+        m_DBUSStartusType = KService::DBUS_Wait;
     else
-        m_DBUSStartusType = DBUS_None;
+        m_DBUSStartusType = KService::DBUS_None;
 
     m_strDesktopEntryName = _name.toLower();
 
@@ -247,7 +215,7 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
     }
 }
 
-void KService::Private::load(QDataStream& s)
+void KServicePrivate::load(QDataStream& s)
 {
     // dummies are here because of fields that were removed, to keep bin compat.
     // Feel free to re-use, but fields for Applications only (not generic services)
@@ -271,14 +239,15 @@ void KService::Private::load(QDataStream& s)
 
     m_bAllowAsDefault = def;
     m_bTerminal = term;
-    m_DBUSStartusType = (DBUSStartupType_t) dst;
+    m_DBUSStartusType = (KService::DBUSStartupType_t) dst;
     m_initialPreference = initpref;
 
     m_bValid = true;
 }
 
-void KService::Private::save(QDataStream& s)
+void KServicePrivate::save(QDataStream& s)
 {
+    KSycocaEntryPrivate::save( s );
     qint8 def = m_bAllowAsDefault, initpref = m_initialPreference;
     qint8 term = m_bTerminal;
     qint8 dst = (qint8) m_DBUSStartusType;
@@ -301,8 +270,9 @@ void KService::Private::save(QDataStream& s)
 ////
 
 KService::KService( const QString & _name, const QString &_exec, const QString &_icon)
-    : KSycocaEntry(QString()), d(new Private)
+    : KSycocaEntry(*new KServicePrivate(QString()))
 {
+    Q_D(KService);
     d->m_strType = "Application";
     d->m_strName = _name;
     d->m_strExec = _exec;
@@ -314,41 +284,35 @@ KService::KService( const QString & _name, const QString &_exec, const QString &
 
 
 KService::KService( const QString & _fullpath )
-    : KSycocaEntry(_fullpath), d(new Private)
+    : KSycocaEntry(*new KServicePrivate(_fullpath))
 {
+    Q_D(KService);
+
     KDesktopFile config( _fullpath );
     d->init(&config, this);
 }
 
 KService::KService( const KDesktopFile *config )
-    : KSycocaEntry(config->fileName()), d(new Private)
+    : KSycocaEntry(*new KServicePrivate(config->fileName()))
 {
+    Q_D(KService);
+
     d->init(config, this);
 }
 
-KService::KService( QDataStream& _str, int _offset ) : KSycocaEntry( _str, _offset ), d(new Private)
+KService::KService( QDataStream& _str, int _offset )
+    : KSycocaEntry(*new KServicePrivate(_str, _offset))
 {
-    d->load( _str );
 }
 
 KService::~KService()
 {
-    delete d;
-}
-
-void KService::load( QDataStream& s )
-{
-    d->load(s);
-}
-
-void KService::save( QDataStream& s )
-{
-    KSycocaEntry::save( s );
-    d->save(s);
 }
 
 bool KService::hasServiceType( const QString& serviceType ) const
 {
+    Q_D(const KService);
+
     if (!d->m_bValid) return false; // (useless) safety test
     const KServiceType::Ptr ptr = KServiceType::serviceType( serviceType );
     // share the implementation, at least as long as
@@ -358,6 +322,7 @@ bool KService::hasServiceType( const QString& serviceType ) const
 
 bool KService::hasMimeType( const KServiceType* ptr ) const
 {
+    Q_D(const KService);
     if (!ptr) return false;
     int serviceOffset = offset();
     // doesn't seem to work:
@@ -428,7 +393,7 @@ protected:
    QByteArray value;
 };
 
-QVariant KService::property( const QString& _name) const
+QVariant KServicePrivate::property( const QString& _name) const
 {
     return property( _name, QVariant::Invalid);
 }
@@ -445,40 +410,46 @@ static QVariant makeStringVariant( const QString& string )
 
 QVariant KService::property( const QString& _name, QVariant::Type t ) const
 {
+    Q_D(const KService);
+    return d->property(_name, t);
+}
+
+QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) const
+{
     if ( _name == "Type" )
-        return QVariant( d->m_strType ); // can't be null
+        return QVariant( m_strType ); // can't be null
     else if ( _name == "Name" )
-        return QVariant( d->m_strName ); // can't be null
+        return QVariant( m_strName ); // can't be null
     else if ( _name == "Exec" )
-        return makeStringVariant( d->m_strExec );
+        return makeStringVariant( m_strExec );
     else if ( _name == "Icon" )
-        return makeStringVariant( d->m_strIcon );
+        return makeStringVariant( m_strIcon );
     else if ( _name == "Terminal" )
-        return QVariant( static_cast<int>(d->m_bTerminal) );
+        return QVariant( static_cast<int>(m_bTerminal) );
     else if ( _name == "TerminalOptions" )
-        return makeStringVariant( d->m_strTerminalOptions );
+        return makeStringVariant( m_strTerminalOptions );
     else if ( _name == "Path" )
-        return makeStringVariant( d->m_strPath );
+        return makeStringVariant( m_strPath );
     else if ( _name == "Comment" )
-        return makeStringVariant( d->m_strComment );
+        return makeStringVariant( m_strComment );
     else if ( _name == "GenericName" )
-        return makeStringVariant( d->m_strGenName );
+        return makeStringVariant( m_strGenName );
     else if ( _name == "ServiceTypes" )
-        return QVariant( d->m_lstServiceTypes );
+        return QVariant( m_lstServiceTypes );
     else if ( _name == "AllowAsDefault" )
-        return QVariant( static_cast<int>(d->m_bAllowAsDefault) );
+        return QVariant( static_cast<int>(m_bAllowAsDefault) );
     else if ( _name == "InitialPreference" )
-        return QVariant( d->m_initialPreference );
+        return QVariant( m_initialPreference );
     else if ( _name == "Library" )
-        return makeStringVariant( d->m_strLibrary );
+        return makeStringVariant( m_strLibrary );
     else if ( _name == "DesktopEntryPath" ) // can't be null
-        return QVariant( entryPath() );
+        return QVariant( path );
     else if ( _name == "DesktopEntryName")
-        return QVariant( d->m_strDesktopEntryName ); // can't be null
+        return QVariant( m_strDesktopEntryName ); // can't be null
     else if ( _name == "Categories")
-        return QVariant( d->categories );
+        return QVariant( categories );
     else if ( _name == "Keywords")
-        return QVariant( d->m_lstKeywords );
+        return QVariant( m_lstKeywords );
 
     // Ok we need to convert the property from a QString to its real type.
     // Maybe the caller helped us.
@@ -496,8 +467,8 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
 
     // Then we use a homebuild class based on KConfigBase to convert the QString.
     // For some often used property types we do the conversion ourselves.
-    QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( _name );
-    if ( (it == d->m_mapProps.end()) || (!it->isValid()))
+    QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
+    if ( (it == m_mapProps.end()) || (!it->isValid()))
     {
         //kDebug(7012) << "Property not found " << _name;
         return QVariant(); // No property set.
@@ -535,12 +506,12 @@ QVariant KService::property( const QString& _name, QVariant::Type t ) const
     }
 }
 
-QStringList KService::propertyNames() const
+QStringList KServicePrivate::propertyNames() const
 {
     QStringList res;
 
-    QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.begin();
-    for( ; it != d->m_mapProps.end(); ++it )
+    QMap<QString,QVariant>::ConstIterator it = m_mapProps.begin();
+    for( ; it != m_mapProps.end(); ++it )
         res.append( it.key() );
 
     res.append( "Type" );
@@ -637,6 +608,7 @@ QString KService::username() const {
 }
 
 bool KService::noDisplay() const {
+    Q_D(const KService);
     QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( "NoDisplay" );
     if ( (it != d->m_mapProps.end()) && (it->isValid()))
     {
@@ -675,6 +647,7 @@ QString KService::untranslatedGenericName() const {
 }
 
 QString KService::parentApp() const {
+    Q_D(const KService);
     QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( "X-KDE-ParentApp" );
     if ( (it == d->m_mapProps.end()) || (!it->isValid()))
     {
@@ -686,6 +659,7 @@ QString KService::parentApp() const {
 
 QString KService::pluginKeyword() const
 {
+    Q_D(const KService);
     QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find("X-KDE-PluginKeyword");
     if ((it == d->m_mapProps.end()) || (!it->isValid())) {
         return QString();
@@ -695,6 +669,7 @@ QString KService::pluginKeyword() const
 }
 
 bool KService::allowMultipleFiles() const {
+    Q_D(const KService);
     // Can we pass multiple files on the command line or do we have to start the application for every single file ?
     return (d->m_strExec.contains( "%F" ) || d->m_strExec.contains( "%U" ) ||
             d->m_strExec.contains( "%N" ) || d->m_strExec.contains( "%D" ));
@@ -702,21 +677,25 @@ bool KService::allowMultipleFiles() const {
 
 QStringList KService::categories() const
 {
+    Q_D(const KService);
     return d->categories;
 }
 
 QString KService::menuId() const
 {
+    Q_D(const KService);
     return d->menuId;
 }
 
 void KService::setMenuId(const QString &_menuId)
 {
+    Q_D(KService);
     d->menuId = _menuId;
 }
 
 QString KService::storageId() const
 {
+    Q_D(const KService);
     if (!d->menuId.isEmpty())
         return d->menuId;
     return entryPath();
@@ -724,6 +703,7 @@ QString KService::storageId() const
 
 QString KService::locateLocal() const
 {
+    Q_D(const KService);
     if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden") ||
         (QDir::isRelativePath(desktopEntryPath()) && d->categories.isEmpty()))
         return KDesktopFile::locateLocal(desktopEntryPath());
@@ -782,44 +762,43 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
 
 bool KService::isApplication() const
 {
+    Q_D(const KService);
     return d->m_strType == "Application";
 }
 
 QString KService::type() const
 {
+    Q_D(const KService);
     return d->m_strType;
-}
-
-void KService::virtual_hook( int id, void* data )
-{ KSycocaEntry::virtual_hook( id, data ); }
-
-QString KService::name() const
-{
-    return d->m_strName;
 }
 
 QString KService::exec() const
 {
+    Q_D(const KService);
     return d->m_strExec;
 }
 
 QString KService::library() const
 {
+    Q_D(const KService);
     return d->m_strLibrary;
 }
 
 QString KService::icon() const
 {
+    Q_D(const KService);
     return d->m_strIcon;
 }
 
 QString KService::terminalOptions() const
 {
+    Q_D(const KService);
     return d->m_strTerminalOptions;
 }
 
 bool KService::terminal() const
 {
+    Q_D(const KService);
     return d->m_bTerminal;
 }
 
@@ -831,72 +810,72 @@ QString KService::desktopEntryPath() const
 
 QString KService::desktopEntryName() const
 {
+    Q_D(const KService);
     return d->m_strDesktopEntryName;
 }
 
 KService::DBUSStartupType_t KService::DBUSStartupType() const
 {
+    Q_D(const KService);
     return d->m_DBUSStartusType;
 }
 
 QString KService::path() const
 {
+    Q_D(const KService);
     return d->m_strPath;
 }
 
 QString KService::comment() const
 {
+    Q_D(const KService);
     return d->m_strComment;
 }
 
 QString KService::genericName() const
 {
+    Q_D(const KService);
     return d->m_strGenName;
 }
 
 QStringList KService::keywords() const
 {
+    Q_D(const KService);
     return d->m_lstKeywords;
 }
 
 QStringList KService::serviceTypes() const
 {
+    Q_D(const KService);
     return d->m_lstServiceTypes;
 }
 
 bool KService::allowAsDefault() const
 {
+    Q_D(const KService);
     return d->m_bAllowAsDefault;
 }
 
 int KService::initialPreference() const
 {
+    Q_D(const KService);
     return d->m_initialPreference;
-}
-
-// unused now, it seems
-/*void KService::setInitialPreference( int i )
-  {
-  d->m_initialPreference = i;
-  }
-*/
-
-bool KService::isValid() const
-{
-    return d->m_bValid;
 }
 
 void KService::setTerminal(bool b)
 {
+    Q_D(KService);
     d->m_bTerminal = b;
 }
 
 void KService::setTerminalOptions(const QString &options)
 {
+    Q_D(KService);
     d->m_strTerminalOptions = options;
 }
 
 QStringList & KService::accessServiceTypes()
 {
+    Q_D(KService);
     return d->m_lstServiceTypes;
 }

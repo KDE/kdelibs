@@ -34,12 +34,6 @@ enum KSycocaType { KST_KSycocaEntry = 0, KST_KService = 1, KST_KServiceType = 2,
                    KST_KServiceSeparator = 10,
                    KST_KCustom = 1000 };
 
-#define K_SYCOCATYPE( type, baseclass ) \
-public: \
- virtual bool isType(KSycocaType t) const { if (t == type) return true; return baseclass::isType(t);} \
- virtual KSycocaType sycocaType() const { return type; } \
-private:
-
 /**
  * \relates KSycocaFactory
  * A KSycocaFactoryId is a code (out of the KSycocaFactoryId enum)

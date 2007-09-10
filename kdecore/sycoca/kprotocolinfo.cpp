@@ -18,6 +18,7 @@
 */
 
 #include "kprotocolinfo.h"
+#include "kprotocolinfo_p.h"
 #include "kprotocolinfofactory.h"
 
 #include <kstandarddirs.h>
@@ -27,28 +28,13 @@
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
 
-class KProtocolInfo::KProtocolInfoPrivate
-{
-public:
-  QString docPath;
-  QString protClass;
-  KProtocolInfo::ExtraFieldList extraFields;
-  bool showPreviews;
-  bool canRenameFromFile;
-  bool canRenameToFile;
-  bool canDeleteRecursive;
-  bool fileNameUsedForCopying; // true if using UDS_NAME, false if using KUrl::fileName() [default]
-  //KUrl::URIMode uriMode;
-  QStringList capabilities;
-  QString proxyProtocol;
-};
-
 //
 // Internal functions:
 //
 KProtocolInfo::KProtocolInfo(const QString &path)
- : KSycocaEntry(path), d( new KProtocolInfoPrivate )
+ : KSycocaEntry(*new KProtocolInfoPrivate(path, this))
 {
+    Q_D(KProtocolInfo);
   QString fullPath = KStandardDirs::locate("services", path);
 
   KConfig sconfig( fullPath );
@@ -118,36 +104,24 @@ KProtocolInfo::KProtocolInfo(const QString &path)
 
   d->showPreviews = config.readEntry( "ShowPreviews", d->protClass == ":local" );
 
-#if 0
-  tmp = config.readEntry( "URIMode", QString() ).toLower();
-  if (tmp == "rawuri")
-     d->uriMode = KUrl::RawURI;
-  else if (tmp == "mailto")
-     d->uriMode = KUrl::Mailto;
-  else if (tmp == "url")
-     d->uriMode = KUrl::URL;
-  else
-     d->uriMode = KUrl::Auto;
-#endif
-
   d->capabilities = config.readEntry( "Capabilities", QStringList() );
   d->proxyProtocol = config.readEntry( "ProxiedBy" );
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
-	KSycocaEntry( _str, offset), d( new KProtocolInfoPrivate )
+	KSycocaEntry(*new KProtocolInfoPrivate( _str, offset, this) )
 {
    load( _str );
 }
 
 KProtocolInfo::~KProtocolInfo()
 {
-   delete d;
 }
 
 void
 KProtocolInfo::load( QDataStream& _str)
 {
+    Q_D(KProtocolInfo);
    // You may add new fields at the end. Make sure to update the version
    // number in ksycoca.h
    qint32 i_inputType, i_outputType;
@@ -197,15 +171,12 @@ KProtocolInfo::load( QDataStream& _str)
    d->fileNameUsedForCopying = (i_fileNameUsedForCopying != 0);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
    d->showPreviews = (i_showPreviews != 0);
-#if 0
-   d->uriMode = (KUrl::URIMode) i_uriMode;
-#endif
 }
 
 void
-KProtocolInfo::save( QDataStream& _str)
+KProtocolInfoPrivate::save( QDataStream& _str)
 {
-   KSycocaEntry::save( _str );
+   KSycocaEntryPrivate::save( _str );
 
    // You may add new fields at the end. Make sure to update the version
    // number in ksycoca.h
@@ -220,35 +191,31 @@ KProtocolInfo::save( QDataStream& _str)
           i_uriMode, i_canRenameFromFile, i_canRenameToFile,
           i_canDeleteRecursive, i_fileNameUsedForCopying;
 
-   i_inputType = (qint32) m_inputType;
-   i_outputType = (qint32) m_outputType;
-   i_isSourceProtocol = m_isSourceProtocol ? 1 : 0;
-   i_isHelperProtocol = m_isHelperProtocol ? 1 : 0;
-   i_supportsListing = m_supportsListing ? 1 : 0;
-   i_supportsReading = m_supportsReading ? 1 : 0;
-   i_supportsWriting = m_supportsWriting ? 1 : 0;
-   i_supportsMakeDir = m_supportsMakeDir ? 1 : 0;
-   i_supportsDeleting = m_supportsDeleting ? 1 : 0;
-   i_supportsLinking = m_supportsLinking ? 1 : 0;
-   i_supportsMoving = m_supportsMoving ? 1 : 0;
-   i_supportsOpening = m_supportsOpening ? 1 : 0;
-   i_canCopyFromFile = m_canCopyFromFile ? 1 : 0;
-   i_canCopyToFile = m_canCopyToFile ? 1 : 0;
-   i_canRenameFromFile = d->canRenameFromFile ? 1 : 0;
-   i_canRenameToFile = d->canRenameToFile ? 1 : 0;
-   i_canDeleteRecursive = d->canDeleteRecursive ? 1 : 0;
-   i_fileNameUsedForCopying = d->fileNameUsedForCopying ? 1 : 0;
-   i_determineMimetypeFromExtension = m_determineMimetypeFromExtension ? 1 : 0;
-   i_showPreviews = d->showPreviews ? 1 : 0;
-#if 0
-   i_uriMode = d->uriMode;
-#else
-   i_uriMode = 0;
-#endif
+   i_inputType = (qint32) q->m_inputType;
+   i_outputType = (qint32) q->m_outputType;
+   i_isSourceProtocol = q->m_isSourceProtocol ? 1 : 0;
+   i_isHelperProtocol = q->m_isHelperProtocol ? 1 : 0;
+   i_supportsListing = q->m_supportsListing ? 1 : 0;
+   i_supportsReading = q->m_supportsReading ? 1 : 0;
+   i_supportsWriting = q->m_supportsWriting ? 1 : 0;
+   i_supportsMakeDir = q->m_supportsMakeDir ? 1 : 0;
+   i_supportsDeleting = q->m_supportsDeleting ? 1 : 0;
+   i_supportsLinking = q->m_supportsLinking ? 1 : 0;
+   i_supportsMoving = q->m_supportsMoving ? 1 : 0;
+   i_supportsOpening = q->m_supportsOpening ? 1 : 0;
+   i_canCopyFromFile = q->m_canCopyFromFile ? 1 : 0;
+   i_canCopyToFile = q->m_canCopyToFile ? 1 : 0;
+   i_canRenameFromFile = canRenameFromFile ? 1 : 0;
+   i_canRenameToFile = canRenameToFile ? 1 : 0;
+   i_canDeleteRecursive = canDeleteRecursive ? 1 : 0;
+   i_fileNameUsedForCopying = fileNameUsedForCopying ? 1 : 0;
+   i_determineMimetypeFromExtension = q->m_determineMimetypeFromExtension ? 1 : 0;
+   i_showPreviews = showPreviews ? 1 : 0;
+  i_uriMode = 0;
 
-   _str << m_name << m_exec << m_listing << m_defaultMimetype
+   _str << q->m_name << q->m_exec << q->m_listing << q->m_defaultMimetype
         << i_determineMimetypeFromExtension
-        << m_icon
+        << q->m_icon
         << i_inputType << i_outputType
         << i_isSourceProtocol << i_isHelperProtocol
         << i_supportsListing << i_supportsReading
@@ -256,23 +223,13 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsDeleting << i_supportsLinking
         << i_supportsMoving << i_supportsOpening
         << i_canCopyFromFile << i_canCopyToFile
-        << m_config << m_maxSlaves << d->docPath << d->protClass
-        << d->extraFields << i_showPreviews << i_uriMode
-        << d->capabilities << d->proxyProtocol
+        << q->m_config << q->m_maxSlaves << docPath << protClass
+        << extraFields << i_showPreviews << i_uriMode
+        << capabilities << proxyProtocol
         << i_canRenameFromFile << i_canRenameToFile
         << i_canDeleteRecursive << i_fileNameUsedForCopying;
 }
 
-
-bool KProtocolInfo::isValid() const
-{
-    return !m_name.isEmpty();
-}
-
-QString KProtocolInfo::name() const
-{
-    return m_name;
-}
 
 //
 // Static functions:
@@ -346,7 +303,7 @@ KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KUrl &url )
   if ( !prot )
     return ExtraFieldList();
 
-  return prot->d->extraFields;
+  return prot->d_func()->extraFields;
 }
 
 QString KProtocolInfo::docPath( const QString& _protocol )
@@ -355,7 +312,7 @@ QString KProtocolInfo::docPath( const QString& _protocol )
   if ( !prot )
     return QString();
 
-  return prot->d->docPath;
+  return prot->d_func()->docPath;
 }
 
 QString KProtocolInfo::protocolClass( const QString& _protocol )
@@ -364,7 +321,7 @@ QString KProtocolInfo::protocolClass( const QString& _protocol )
   if ( !prot )
     return QString();
 
-  return prot->d->protClass;
+  return prot->d_func()->protClass;
 }
 
 bool KProtocolInfo::showFilePreview( const QString& _protocol )
@@ -373,7 +330,7 @@ bool KProtocolInfo::showFilePreview( const QString& _protocol )
   if ( !prot )
     return false;
 
-  return prot->d->showPreviews;
+  return prot->d_func()->showPreviews;
 }
 
 /*
@@ -393,7 +350,7 @@ QStringList KProtocolInfo::capabilities( const QString& _protocol )
   if ( !prot )
     return QStringList();
 
-  return prot->d->capabilities;
+  return prot->d_func()->capabilities;
 }
 
 QString KProtocolInfo::proxiedBy( const QString& _protocol )
@@ -402,7 +359,7 @@ QString KProtocolInfo::proxiedBy( const QString& _protocol )
   if ( !prot )
     return QString();
 
-  return prot->d->proxyProtocol;
+  return prot->d_func()->proxyProtocol;
 }
 
 QString KProtocolInfo::defaultMimeType() const
@@ -417,21 +374,25 @@ bool KProtocolInfo::supportsListing() const
 
 bool KProtocolInfo::canRenameFromFile() const
 {
+    Q_D(const KProtocolInfo);
   return d->canRenameFromFile;
 }
 
 bool KProtocolInfo::canRenameToFile() const
 {
+    Q_D(const KProtocolInfo);
   return d->canRenameToFile;
 }
 
 bool KProtocolInfo::canDeleteRecursive() const
 {
+    Q_D(const KProtocolInfo);
   return d->canDeleteRecursive;
 }
 
 KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying() const
 {
+    Q_D(const KProtocolInfo);
   return d->fileNameUsedForCopying ? Name : FromUrl;
 }
 
@@ -481,5 +442,3 @@ QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field 
   return s;
 }
 
-void KProtocolInfo::virtual_hook( int id, void* data )
-{ KSycocaEntry::virtual_hook( id, data ); }

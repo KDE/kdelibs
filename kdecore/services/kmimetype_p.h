@@ -24,9 +24,30 @@
 class KMimeTypePrivate: public KServiceTypePrivate
 {
 public:
-  Q_DECLARE_PUBLIC(KMimeType)
-  
-  KMimeTypePrivate(KMimeType *q): KServiceTypePrivate(q) {}
+  K_SYCOCATYPE( KST_KMimeType, KServiceTypePrivate )
+
+  KMimeTypePrivate(const QString &path) : KServiceTypePrivate(path) {}
+  KMimeTypePrivate(QDataStream &_str, int offset)
+      : KServiceTypePrivate(_str, offset)
+  {
+    loadInternal(_str);
+  }
+
+  virtual void save(QDataStream &s);
+
+  virtual QVariant property(const QString &name ) const;
+
+  virtual QStringList propertyNames() const;
+
+  virtual QString iconName(const KUrl &) const
+  {
+    QString icon = name();
+    int slashindex = icon.indexOf( QLatin1Char( '/' ) );
+    if ( slashindex != -1 ) {
+        icon[ slashindex ] = QLatin1Char( '-' );
+    }
+    return icon;
+  }
   
   QStringList m_lstPatterns;
   QString m_parentMimeType;

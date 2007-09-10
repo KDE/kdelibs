@@ -24,11 +24,14 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <klibloader.h>
-#include "ksycocaentry.h"
+#include <ksycocaentry.h>
+#include <klocale.h>
 
 class KServiceType;
 class QDataStream;
 class KDesktopFile;
+
+class KServicePrivate;
 
 /**
  * Represent a service, like an application or plugin
@@ -49,8 +52,6 @@ class KDesktopFile;
  */
 class KDECORE_EXPORT KService : public KSycocaEntry
 {
-    K_SYCOCATYPE( KST_KService, KSycocaEntry )
-
     friend class KBuildSycoca;
 
 public:
@@ -100,13 +101,6 @@ public:
      * @deprecated use isApplication()
      */
     KDE_DEPRECATED QString type() const;
-
-    /**
-     * Returns the name of the service.
-     * @return the name of the service,
-     *         or QString() if not set
-     */
-    QString name() const;
 
     /**
      * Returns the executable.
@@ -165,10 +159,13 @@ public:
      * of the locations pointed to by $KDEDIRS (e.g. "Internet/kppp.desktop")
      * It is a full path if the desktop entry originates from another
      * location.
+     *
+     * @deprecated use entryPath() instead
+     *
      * @return the path of the service's desktop file,
      *         or QString() if not set
      */
-    QString desktopEntryPath() const;
+    KDE_DEPRECATED QString desktopEntryPath() const;
 
     /**
      * Returns the filename of the service desktop entry without any
@@ -346,20 +343,6 @@ public:
     QString pluginKeyword() const;
 
     /**
-     * Returns the requested property. Some often used properties
-     * have convenience access functions like exec(),
-     * serviceTypes etc.
-     *
-     * It depends upon the serviceTypes() of this service which
-     * properties a service can have.
-     *
-     * @param _name the name of the property
-     * @return the property, or invalid if not found
-     * @see KServiceType
-     */
-    QVariant property( const QString& _name ) const;
-
-    /**
      * Returns the requested property.
      *
      * @param _name the name of the property
@@ -369,18 +352,7 @@ public:
      */
     QVariant property( const QString& _name, QVariant::Type t ) const;
 
-    /**
-     * Returns the list of all properties that this service can have.
-     * That means, that some of these properties may be empty.
-     * @return the list of supported properties
-     */
-    QStringList propertyNames() const;
-
-    /**
-     * Checks whether the service is valid.
-     * @return true if the service is valid (e.g. name is not empty)
-     */
-    bool isValid() const;
+    using KSycocaEntry::property;
 
     /**
      * Returns a path that can be used for saving changes to this
@@ -389,16 +361,6 @@ public:
      */
     QString locateLocal() const;
 
-    /**
-     * @internal
-     * Load the service from a stream.
-     */
-    void load( QDataStream& );
-    /**
-     * @internal
-     * Save the service to a stream.
-     */
-    void save( QDataStream& );
     /**
      * @internal
      * Set the menu id
@@ -520,17 +482,35 @@ public:
     static T *createInstance(const KService::Ptr &service, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
-        KPluginLoader pluginLoader(service->library());
+        return service->createInstance<T>(parent, args, error);
+    }
+
+    /**
+     * This template allows to load the library for the specified service and ask the
+     * factory to create an instance of the given template type.
+     *
+     * @param parent The parent object (see QObject constructor)
+     * @param args A list of arguments, passed to the factory and possibly
+     *             to the component (see KPluginFactory)
+     * @param error A pointer to QString which should receive the error description or 0
+     *
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     */
+    template <class T>
+    T *createInstance(QObject *parent = 0,
+            const QVariantList &args = QVariantList(), QString *error = 0) const
+    {
+        KPluginLoader pluginLoader(*this);
         KPluginFactory *factory = pluginLoader.factory();
         if (factory) {
-            const QString keyword = service->pluginKeyword();
-            T *o = factory->create<T>(keyword, parent, args);
-            delete factory;
-            if (o) {
-                return o;
-            }
+            T *o = factory->create<T>(pluginKeyword(), parent, args);
+            if (!o && error)
+                *error = i18n("The service '%1' does not provide an interface '%2' with keyword '%3'",
+                              name(), T::staticMetaObject.className(), pluginKeyword());
+            return o;
         }
-        if (error) {
+        else if (error) {
             *error = pluginLoader.errorString();
         }
         return 0;
@@ -612,13 +592,7 @@ protected:
 
     /// @internal for KBuildSycoca only
     QStringList &accessServiceTypes();
-
-protected:
-    virtual void virtual_hook( int id, void* data );
 private:
-    Q_DISABLE_COPY(KService)
-    class Private;
-    friend class Private;
-    Private *const d;
+    Q_DECLARE_PRIVATE(KService)
 };
 #endif

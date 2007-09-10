@@ -19,15 +19,15 @@
 #ifndef KSYCOCAENTRY_H
 #define KSYCOCAENTRY_H
 
-#include <kdecore_export.h>
+#include <kglobal.h>
 #include <ksycocatype.h>
 #include <ksharedptr.h>
 
 #include <QtCore/QDataStream>
-#include <QtCore/QList>
+#include <QtCore/QStringList>
+#include <QtCore/QVariant>
 
-class QString;
-class QStringList;
+class KSycocaEntryPrivate;
 
 /**
  * Base class for all Sycoca entries.
@@ -43,9 +43,15 @@ class KDECORE_EXPORT KSycocaEntry : public KShared
 
 public:
    virtual ~KSycocaEntry();
-
-   virtual bool isType(KSycocaType t) const;
-   virtual KSycocaType sycocaType() const;
+    
+   /**
+    * internal
+    */
+   bool isType(KSycocaType t) const;
+   /**
+    * internal
+    */
+   KSycocaType sycocaType() const;
 
    typedef KSharedPtr<KSycocaEntry> Ptr;
    typedef QList<Ptr> List;
@@ -53,7 +59,7 @@ public:
    /**
     * Default constructor
     */
-   explicit KSycocaEntry(const QString &path);
+//   explicit KSycocaEntry(const QString &path);
 
    /**
     * Safe demarshalling functions.
@@ -61,16 +67,11 @@ public:
    static void read( QDataStream &s, QString &str );
    static void read( QDataStream &s, QStringList &list );
 
-   /**
-    * @internal
-    * Restores itself from a stream.
-    */
-   KSycocaEntry( QDataStream &_str, int iOffset );
 
    /**
     * @return the name of this entry
     */
-   virtual QString name() const = 0;
+   QString name() const;
 
    /**
     * @return the path of this entry
@@ -82,12 +83,29 @@ public:
    /**
     * @return true if valid
     */
-   virtual bool isValid() const = 0;
+   bool isValid() const;
 
    /**
     * @return true if deleted
     */
    bool isDeleted() const;
+
+    /**
+     * Returns the requested property. Some often used properties
+     * have convenience access functions like exec(),
+     * serviceTypes etc.
+     *
+     * @param _name the name of the property
+     * @return the property, or invalid if not found
+     */
+   QVariant property(const QString &name) const;
+
+    /**
+     * Returns the list of all properties that this service can have.
+     * That means, that some of these properties may be empty.
+     * @return the list of supported properties
+     */
+    QStringList propertyNames() const;
 
    /**
     * Sets whether or not this service is deleted
@@ -105,25 +123,19 @@ public:
     * Save ourselves to the database. Don't forget to call the parent class
     * first if you override this function.
     */
-   virtual void save(QDataStream &s);
+   void save(QDataStream &s);
 
-   /**
-    * @internal
-    * Load ourselves from the database. Don't call the parent class!
-    */
-   virtual void load(QDataStream &) = 0;
-
+//   KSycocaEntry(const KSycocaEntry &copy);
+//   KSycocaEntry &operator=(const KSycocaEntry &right);
 protected:
-   /** Virtual hook, used to add new "virtual" functions while maintaining
-       binary compatibility. Unused in this class.
-   */
-   virtual void virtual_hook( int id, void* data );
+
+   KSycocaEntry(KSycocaEntryPrivate &d);
+   KSycocaEntryPrivate *d_ptr;
 
 private:
-   Q_DISABLE_COPY(KSycocaEntry)
+    Q_DISABLE_COPY(KSycocaEntry);
 
-   class Private;
-   Private* const d;
+    Q_DECLARE_PRIVATE(KSycocaEntry)
 };
 
 #endif

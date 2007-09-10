@@ -42,9 +42,6 @@ class KServiceTypePrivate;
  */
 class KDECORE_EXPORT KServiceType : public KSycocaEntry
 {
-    K_SYCOCATYPE( KST_KServiceType, KSycocaEntry )  
-    Q_DECLARE_PRIVATE( KServiceType )
-
 public:
     typedef KSharedPtr<KServiceType> Ptr;
     typedef QList<Ptr> List;
@@ -70,18 +67,12 @@ public:
     QString comment() const;
 
     /**
-     * Returns the name of this service type.
-     * @return the name of the service type
-     */
-    QString name() const;
-
-    /**
      * Returns the relative path to the desktop entry file responsible for
      *         this servicetype.
      * For instance inode/directory.desktop, or kpart.desktop
      * @return the path of the desktop file
      */
-    QString desktopEntryPath() const;
+    KDE_DEPRECATED QString desktopEntryPath() const;
 
     /**
      * Checks whether this service type inherits another one.
@@ -103,36 +94,6 @@ public:
      * @return true if this servicetype is or inherits from @p servTypeName
      */
     bool inherits( const QString& servTypeName ) const;
-
-    /**
-     * Returns the requested property. Some often used properties
-     * have convenience access functions like name(),
-     * comment().
-     *
-     * @param _name the name of the property
-     * @return the property, or invalid if not found
-     */
-    virtual QVariant property( const QString& _name ) const;
-
-    /**
-     * Returns the list of all properties of this service type.
-     * Properties, apart from Name, and Comment, are defined in
-     * the servicetype .desktop file using
-     * @code
-     * [Property::MyPropertyName]
-     * Type=<the name of a type supported by QVariant>
-     * Value=<the value>
-     * @endcode
-     *
-     * @return the list of properties
-     */
-    virtual QStringList propertyNames() const;
-
-    /**
-     * Checks whether the service type is valid.
-     * @return true if the service is valid (e.g. name is not empty)
-     */
-    bool isValid() const;
 
     /**
      * Returns the type of the property definition with the given @p _name.
@@ -160,18 +121,6 @@ public:
 
     /// @internal (for KBuildServiceTypeFactory)
     QMap<QString,QVariant::Type> propertyDefs() const;
-
-    /**
-     * @internal
-     * Save ourselves to the data stream.
-     */
-    virtual void save( QDataStream& );
-
-    /**
-     * @internal
-     * Load ourselves from the data stream.
-     */
-    virtual void load( QDataStream& );
 
     /**
      * @internal
@@ -213,25 +162,18 @@ protected: // used by KMimeType
       * @internal construct a service from a stream.
       * The stream must already be positionned at the correct offset
       */
-     KServiceType( KServiceTypePrivate &dd, QDataStream& _str, int offset );
+     KServiceType( KServiceTypePrivate &dd);
     
     /**
      * Constructor for KMimeType.
-     * @param _fullpath the path of the service type's desktop file
      * @param _name the name of the service type
      * @param _comment a comment (can be empty)
      */
-    KServiceType( KServiceTypePrivate &dd, const QString& _fullpath, const QString& _name,
+    KServiceType( KServiceTypePrivate &dd, const QString& _name,
                   const QString& _comment );
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-
-protected:
-    KServiceTypePrivate *d_ptr;
-
 private:
-    Q_DISABLE_COPY(KServiceType)
+    Q_DECLARE_PRIVATE(KServiceType)
 };
 
 //QDataStream& operator>>( QDataStream& _str, KServiceType& s );

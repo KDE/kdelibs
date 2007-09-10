@@ -16,39 +16,24 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <ksycocaentry.h>
+#include "ksycocaentry.h"
+#include "ksycocaentry_p.h"
+
 #include <ksycoca.h>
 
-class KSycocaEntry::Private
+KSycocaEntryPrivate::KSycocaEntryPrivate(QDataStream &_str, int iOffset)
+    : offset(iOffset), deleted(false)
 {
-public:
-    Private()
-        : offset( 0 ),
-          deleted( false )
-    {
-    }
-
-    int offset;
-    bool deleted;
-    QString path;
-};
-
-KSycocaEntry::KSycocaEntry(const QString &path)
-    : d( new Private )
-{
-    d->path = path;
+    KSycocaEntry::read( _str, path );
 }
 
-KSycocaEntry::KSycocaEntry( QDataStream &_str, int iOffset )
-    : d( new Private )
+KSycocaEntry::KSycocaEntry(KSycocaEntryPrivate &d)
+    : d_ptr(&d)
 {
-    d->offset = iOffset;
-    read( _str, d->path );
 }
 
 KSycocaEntry::~KSycocaEntry()
 {
-    delete d;
 }
 
 void KSycocaEntry::read( QDataStream &s, QString &str )
@@ -101,41 +86,71 @@ void KSycocaEntry::read( QDataStream &s, QStringList &list )
 
 bool KSycocaEntry::isType(KSycocaType t) const
 {
-    return (t == KST_KSycocaEntry);
+    return d_ptr->isType(t);
 }
 
 KSycocaType KSycocaEntry::sycocaType() const
 {
-    return KST_KSycocaEntry;
+    return d_ptr->sycocaType();
 }
 
 QString KSycocaEntry::entryPath() const
 {
+    Q_D(const KSycocaEntry);
     return d->path;
 }
 
 bool KSycocaEntry::isDeleted() const
 {
+    Q_D(const KSycocaEntry);
     return d->deleted;
 }
 
 void KSycocaEntry::setDeleted( bool deleted )
 {
+    Q_D(KSycocaEntry);
     d->deleted = deleted;
 }
 
 int KSycocaEntry::offset() const
 {
+    Q_D(const KSycocaEntry);
     return d->offset;
+}
+
+void KSycocaEntryPrivate::save(QDataStream &s)
+{
+    offset = s.device()->pos(); // store position in member variable
+    s << qint32(sycocaType()) << path;
 }
 
 void KSycocaEntry::save(QDataStream &s)
 {
-    d->offset = s.device()->pos(); // store position in member variable
-    s << qint32(sycocaType()) << d->path;
+    Q_D(KSycocaEntry);
+    d->save(s);
 }
 
-void KSycocaEntry::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
+bool KSycocaEntry::isValid() const
+{
+    Q_D(const KSycocaEntry);
+    return d && d->isValid();
+}
 
+QString KSycocaEntry::name() const
+{
+    Q_D(const KSycocaEntry);
+    return d->name();
+}
+
+QStringList KSycocaEntry::propertyNames() const
+{
+    Q_D(const KSycocaEntry);
+    return d->propertyNames();
+}
+
+QVariant KSycocaEntry::property(const QString &name) const
+{
+    Q_D(const KSycocaEntry);
+    return d->property(name);
+}
 

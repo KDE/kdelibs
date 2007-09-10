@@ -32,31 +32,17 @@
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);
 
-KServiceType::KServiceType( KServiceTypePrivate &dd, const QString & _fullpath, const QString& _name,
+KServiceType::KServiceType( KServiceTypePrivate &dd, const QString& _name,
                             const QString& _comment )
-    : KSycocaEntry(_fullpath),
-      d_ptr(&dd)
+    : KSycocaEntry(dd)
 {
     Q_D(KServiceType);
     d->m_strName = _name;
     d->m_strComment = _comment;
-    d->m_bValid = !_name.isEmpty();
 }
-
-#if 0
-KServiceType::KServiceType( const QString & _fullpath)
-    : KSycocaEntry(_fullpath),
-      d_ptr(new KServiceTypePrivate(this))
-{
-    Q_D(KServiceType);
-    KDesktopFile config( _fullpath );
-    d->init(&config);
-}
-#endif
 
 KServiceType::KServiceType( KDesktopFile *config )
-    : KSycocaEntry(config->fileName()),
-      d_ptr(new KServiceTypePrivate(this))
+    : KSycocaEntry(*new KServiceTypePrivate(config->fileName()))
 {
     Q_D(KServiceType);
     d->init(config);
@@ -65,7 +51,7 @@ KServiceType::KServiceType( KDesktopFile *config )
 void
 KServiceTypePrivate::init( KDesktopFile *config )
 {
-    Q_Q(KServiceType);
+//    Q_Q(KServiceType);
 
     KConfigGroup desktopGroup = config->desktopGroup();
     // Is it a mimetype ? ### KDE4: remove
@@ -77,7 +63,7 @@ KServiceTypePrivate::init( KDesktopFile *config )
     }
 
     m_strComment = desktopGroup.readEntry("Comment");
-    q->setDeleted( desktopGroup.readEntry("Hidden", false) );
+    deleted = desktopGroup.readEntry("Hidden", false);
 
     // We store this as property to preserve BC, we can't change that
     // because KSycoca needs to remain BC between KDE 2.x and KDE 3.x
@@ -108,44 +94,37 @@ KServiceTypePrivate::init( KDesktopFile *config )
                                   QVariant::nameToType( cg.readEntry( "Type" ).toLatin1().constData() ) );
         }
     }
-
-    m_bValid = !m_strName.isEmpty();
 }
 
 KServiceType::KServiceType( QDataStream& _str, int offset )
-    : KSycocaEntry( _str, offset ), d_ptr(new KServiceTypePrivate(this))
+    : KSycocaEntry(*new KServiceTypePrivate(_str, offset))
 {
-    load( _str);
 }
 
-KServiceType::KServiceType( KServiceTypePrivate &dd, QDataStream& _str, int offset )
-    : KSycocaEntry( _str, offset ), d_ptr(&dd)
+KServiceType::KServiceType( KServiceTypePrivate &dd)
+    : KSycocaEntry(dd)
 {
-    load( _str);
 }
 
 void
-KServiceType::load( QDataStream& _str )
+KServiceTypePrivate::load( QDataStream& _str )
 {
-    Q_D(KServiceType);
     qint8 b;
     QString dummy;
-    _str >> d->m_strName >> dummy >> d->m_strComment >> d->m_mapProps >> d->m_mapPropDefs
-         >> b >> d->m_serviceOffersOffset;
-    d->m_bValid = b;
-    d->m_bDerived = d->m_mapProps.contains("X-KDE-Derived");
+    _str >> m_strName >> dummy >> m_strComment >> m_mapProps >> m_mapPropDefs
+         >> b >> m_serviceOffersOffset;
+    m_bDerived = m_mapProps.contains("X-KDE-Derived");
 }
 
 void
-KServiceType::save( QDataStream& _str )
+KServiceTypePrivate::save( QDataStream& _str )
 {
-  Q_D(KServiceType);
-  KSycocaEntry::save( _str );
+  KSycocaEntryPrivate::save( _str );
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
-  _str << d->m_strName << QString() /*was icon*/ << d->m_strComment << d->m_mapProps << d->m_mapPropDefs
-       << (qint8)d->m_bValid << d->m_serviceOffersOffset;
+  _str << m_strName << QString() /*was icon*/ << m_strComment << m_mapProps << m_mapPropDefs
+       << (qint8) 1 << m_serviceOffersOffset;
 }
 
 KServiceType::~KServiceType()
@@ -176,26 +155,24 @@ bool KServiceType::inherits( const QString& servTypeName ) const
 }
 
 QVariant
-KServiceType::property( const QString& _name ) const
+KServiceTypePrivate::property( const QString& _name ) const
 {
-    Q_D(const KServiceType);
     QVariant v;
 
     if ( _name == "Name" )
-        v = QVariant( d->m_strName );
+        v = QVariant( m_strName );
     else if ( _name == "Comment" )
-        v = QVariant( d->m_strComment );
+        v = QVariant( m_strComment );
     else
-        v = d->m_mapProps.value( _name );
+        v = m_mapProps.value( _name );
 
     return v;
 }
 
 QStringList
-KServiceType::propertyNames() const
+KServiceTypePrivate::propertyNames() const
 {
-    Q_D(const KServiceType);
-    QStringList res = d->m_mapProps.keys();
+    QStringList res = m_mapProps.keys();
     res.append( "Name" );
     res.append( "Comment" );
     return res;
@@ -259,13 +236,7 @@ int KServiceType::serviceOffersOffset() const
 QString KServiceType::comment() const
 {
     Q_D(const KServiceType);
-    return d->m_strComment;
-}
-
-QString KServiceType::name() const
-{
-    Q_D(const KServiceType);
-    return d->m_strName;
+    return d->comment();
 }
 
 // ## KDE4: remove?
@@ -280,17 +251,8 @@ bool KServiceType::isDerived() const
     return d->m_bDerived;
 }
 
-bool KServiceType::isValid() const
-{
-    Q_D(const KServiceType);
-    return d->m_bValid;
-}
-
 QMap<QString,QVariant::Type> KServiceType::propertyDefs() const
 {
     Q_D(const KServiceType);
     return d->m_mapPropDefs;
 }
-
-void KServiceType::virtual_hook( int id, void* data )
-{ KSycocaEntry::virtual_hook( id, data ); }

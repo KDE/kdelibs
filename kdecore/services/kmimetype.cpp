@@ -59,16 +59,6 @@ static void errorMissingMimeTypes( const QStringList& _types )
                 "Could not find mime types:\n<resource>%2</resource>", _types.count(), _types.join("</resource>\n<resource>") ) );
 }
 
-static QString iconForMime( const QString& mime )
-{
-    QString icon = mime;
-    int slashindex = icon.indexOf( QLatin1Char( '/' ) );
-    if ( slashindex != -1 ) {
-        icon[ slashindex ] = QLatin1Char( '-' );
-    }
-    return icon;
-}
-
 void KMimeTypePrivate::loadInternal( QDataStream& _str )
 {
     _str >> m_lstPatterns >> m_parentMimeType;
@@ -388,77 +378,49 @@ bool KMimeType::isBinaryData( const QString &fileName )
     return isBufferBinaryData(data);
 }
 
-KMimeType::KMimeType( KMimeTypePrivate &dd, const QString & fullpath, const QString& name,
+KMimeType::KMimeType( KMimeTypePrivate &dd, const QString& name,
                       const QString& comment )
-    : KServiceType( dd, fullpath, name, comment )
+    : KServiceType( dd, name, comment )
 {
 }
 
 KMimeType::KMimeType( const QString & fullpath, const QString& name,
                       const QString& comment )
-    : KServiceType( *new KMimeTypePrivate(this), fullpath, name, comment )
+    : KServiceType( *new KMimeTypePrivate(fullpath), name, comment )
 {
 }
 
-#if 0
-// TODO remove once all converted to xdg mime
-void KMimeType::init( KDesktopFile * config )
+KMimeType::KMimeType( KMimeTypePrivate &dd)
+    : KServiceType(dd)
 {
-  // TODO: move X-KDE-AutoEmbed to a kde (konqueror?) specific config file
-  const KConfigGroup group = config->desktopGroup();
-
-  // Read the X-KDE-AutoEmbed setting and store it in the properties map
-  QString XKDEAutoEmbed = QLatin1String("X-KDE-AutoEmbed");
-  if ( group.hasKey( XKDEAutoEmbed ) )
-    m_mapProps.insert( XKDEAutoEmbed, group.readEntry( XKDEAutoEmbed, false ) );
-
-}
-#endif
-
-KMimeType::KMimeType( KMimeTypePrivate &dd, QDataStream& _str, int offset )
-    : KServiceType( dd, _str, offset )
-{
-    Q_D(KMimeType);
-    d->loadInternal( _str ); // load our specific stuff
 }
 
 KMimeType::KMimeType( QDataStream& _str, int offset )
-    : KServiceType( *new KMimeTypePrivate(this), _str, offset )
+    : KServiceType( *new KMimeTypePrivate(_str, offset ))
 {
-    Q_D(KMimeType);
-    d->loadInternal( _str ); // load our specific stuff
 }
 
-void KMimeType::load( QDataStream& _str )
+void KMimeTypePrivate::save( QDataStream& _str )
 {
-    Q_D(KMimeType);
-    KServiceType::load( _str );
-    d->loadInternal( _str );
-}
-
-void KMimeType::save( QDataStream& _str )
-{
-    Q_D(KMimeType);
-    KServiceType::save( _str );
+    KServiceTypePrivate::save( _str );
     // Warning adding/removing fields here involves a binary incompatible change - update version
     // number in ksycoca.h
-    _str << d->m_lstPatterns << d->m_parentMimeType;
+    _str << m_lstPatterns << m_parentMimeType;
 }
 
-QVariant KMimeType::property( const QString& _name ) const
+QVariant KMimeTypePrivate::property( const QString& _name ) const
 {
-    Q_D(const KMimeType);
     if ( _name == "Patterns" )
-        return QVariant( d->m_lstPatterns );
+        return QVariant( m_lstPatterns );
     if ( _name == "Icon" )
-        return QVariant( iconName() );
+        return QVariant( iconName(KUrl()) );
 
-    return KServiceType::property( _name );
+    return KServiceTypePrivate::property( _name );
 }
 
-QStringList KMimeType::propertyNames() const
+QStringList KMimeTypePrivate::propertyNames() const
 {
-    QStringList res = KServiceType::propertyNames();
+    QStringList res = KServiceTypePrivate::propertyNames();
     res.append( "Patterns" );
     res.append( "Icon" );
     return res;
@@ -515,9 +477,10 @@ QString KMimeType::favIconForUrl( const KUrl& url )
     return result;              // default is QString()
 }
 
-QString KMimeType::comment( const KUrl& ) const
+QString KMimeType::comment( const KUrl &url) const
 {
-    return KServiceType::comment();
+    Q_D(const KMimeType);
+    return d->comment(url);
 }
 
 QString KMimeType::parentMimeType() const
@@ -569,14 +532,10 @@ QString KMimeType::defaultMimeType()
     return s_strDefaultMimeType;
 }
 
-QString KMimeType::iconName() const
+QString KMimeType::iconName( const KUrl& url) const
 {
-    return iconForMime( name() );
-}
-
-QString KMimeType::iconName( const KUrl& ) const
-{
-    return iconForMime( name() );
+    Q_D(const KMimeType);
+    return d->iconName(url);
 }
 
 QStringList KMimeType::patterns() const
@@ -604,6 +563,3 @@ void KMimeType::internalClearData()
     d->m_parentMimeType.clear();
     d->m_lstPatterns.clear();
 }
-
-void KMimeType::virtual_hook( int id, void* data )
-{ KServiceType::virtual_hook( id, data ); }

@@ -21,31 +21,55 @@ Boston, MA 02110-1301, USA.
 #ifndef __kservicetype_p_h__
 #define __kservicetype_p_h__
 
-class KServiceTypePrivate
+#include "kservicetype.h"
+#include <ksycocaentry_p.h>
+
+class KServiceTypePrivate : public KSycocaEntryPrivate
 {
 public:
-    Q_DECLARE_PUBLIC(KServiceType)
+    K_SYCOCATYPE( KST_KServiceType, KSycocaEntryPrivate )  
 
-    KServiceTypePrivate(KServiceType *q)
-      : q_ptr(q), m_serviceOffersOffset( -1 )
+
+    KServiceTypePrivate(const QString &path)
+        : KSycocaEntryPrivate(path),
+          m_serviceOffersOffset( -1 ), m_bDerived(false), m_parentTypeLoaded(false)
     {
-        m_bValid = false;
-        m_bDerived = false;
-        m_parentTypeLoaded = false;
+    }
+
+    KServiceTypePrivate(QDataStream &_str, int offset)
+        : KSycocaEntryPrivate(_str, offset),
+          m_serviceOffersOffset( -1 ), m_bDerived(false), m_parentTypeLoaded(false)
+    {
+        load(_str);
     }
   
     virtual ~KServiceTypePrivate() {}
     
-    void init( KDesktopFile *config );
+    virtual void save( QDataStream& );
 
-    KServiceType *q_ptr;
+    virtual QString name() const
+    {
+        return m_strName;
+    }
+
+    virtual QVariant property(const QString &name) const;
+
+    virtual QStringList propertyNames() const;
+
+    virtual QString comment(const KUrl & = KUrl()) const
+    {
+        return m_strComment;
+    }
+
+    void init( KDesktopFile *config );
+    void load(QDataStream& _str);
+
     KServiceType::Ptr parentType;
     QString m_strName;
     QString m_strComment;
     int m_serviceOffersOffset;
     QMap<QString, QVariant::Type> m_mapPropDefs;
     QMap<QString,QVariant> m_mapProps;
-    unsigned m_bValid: 1;
     unsigned m_bDerived: 1;
     unsigned m_parentTypeLoaded: 1;
 };

@@ -20,15 +20,15 @@
 #ifndef __kmimetype_h__
 #define __kmimetype_h__
 
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include <QtCore/QStringList>
 #include <QtCore/QList>
 
 #include <kurl.h>
 #include <ksycocatype.h>
 #include <kservicetype.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
 
 class KMimeTypePrivate;
 
@@ -45,25 +45,12 @@ class KMimeTypePrivate;
  */
 class KDECORE_EXPORT KMimeType : public KServiceType
 {
-    K_SYCOCATYPE( KST_KMimeType, KServiceType )
     Q_DECLARE_PRIVATE( KMimeType )
-
 public:
     typedef KSharedPtr<KMimeType> Ptr;
     typedef QList<Ptr> List;
 
     virtual ~KMimeType();
-
-    /**
-     * Returns the icon associated with this mime type. See also icon(url)
-     * which takes an URL and returns a special icon for this URL.
-     *
-     * For instance for a folder you can get the folder-specific icon instead
-     * of the generic folder icon.
-     *
-     * @return the name of the icon, can be QString().
-     */
-    QString iconName() const;
 
     /**
      * Return the filename of the icon associated with the mimetype.
@@ -74,7 +61,7 @@ public:
      *
      * @return The path to the icon associated with this MIME type.
      */
-    virtual QString iconName( const KUrl& ) const;
+    QString iconName( const KUrl &url = KUrl()) const;
 
     /**
      * Return the filename of the icon associated with the mimetype, for a given url.
@@ -106,7 +93,7 @@ public:
      *
      * @return The descriptive comment associated with the MIME type, if any.
      */
-    virtual QString comment( const KUrl& url = KUrl() ) const;
+    QString comment( const KUrl& url = KUrl() ) const;
 
     /**
      * Retrieve the list of patterns associated with the MIME Type.
@@ -114,34 +101,6 @@ public:
      *         (or, usually, the extensions) of files with this mime type
      */
     QStringList patterns() const;
-
-    /**
-     * Load the mimetype from a stream.
-     * @param qs the stream to load from
-     */
-    virtual void load( QDataStream &qs );
-
-    /**
-     * Save the mimetype to a stream.
-     * @param qs the stream to save to
-     */
-    virtual void save( QDataStream &qs );
-
-    /**
-     * Returns the property with the given @p name.
-     * @param name the name of the property
-     * @return the value of the property
-     * @see propertyNames()
-     */
-    virtual QVariant property( const QString& name ) const;
-
-    /**
-     * Retrieves a list of all properties associated with this
-     * KMimeType.
-     * @return a list of all property names
-     * @see property()
-     */
-    virtual QStringList propertyNames() const;
 
     enum FindByNameOption { DontResolveAlias, ResolveAliases = 1 };
 
@@ -379,7 +338,7 @@ protected:
      *
      * The stream must already be positioned at the correct offset
      */
-    KMimeType( KMimeTypePrivate &dd, QDataStream& str, int offset );
+    KMimeType( KMimeTypePrivate &dd);
 
     /**
      * Construct a mimetype and take all information from an XML file.
@@ -387,7 +346,7 @@ protected:
      * @param name the name of the mimetype (usually the end of the path)
      * @param comment the comment associated with the mimetype
      */
-    KMimeType( KMimeTypePrivate &dd, const QString& fullpath, const QString& name, const QString& comment );
+    KMimeType( KMimeTypePrivate &dd, const QString& name, const QString& comment );
 
     /// @internal for kbuildsycoca. Don't ever use this, or else...
     void addPattern(const QString& pattern);
@@ -403,9 +362,6 @@ private:
     static void checkEssentialMimeTypes();
     static KMimeType::Ptr findByUrlHelper( const KUrl& url, mode_t mode,
                                            bool is_local_file, QIODevice* device, int* accuracy );
-
-protected:
-    virtual void virtual_hook( int id, void* data );
 };
 
 #endif

@@ -18,6 +18,7 @@
  **/
 
 #include "kservicegroup.h"
+#include "kservicegroup_p.h"
 #include "kservicefactory.h"
 #include "kservicegroupfactory.h"
 #include "kservice.h"
@@ -29,33 +30,20 @@
 #include <ksortablelist.h>
 #include <kdesktopfile.h>
 
-class KServiceGroup::Private
-{
-public:
-    Private() { m_bNoDisplay = false; m_bShowEmptyMenu = false;m_bShowInlineHeader=false;m_bInlineAlias=false; m_bAllowInline = false;m_inlineValue = 4;}
-  bool m_bNoDisplay;
-    bool m_bShowEmptyMenu;
-    bool m_bShowInlineHeader;
-    bool m_bInlineAlias;
-    bool m_bAllowInline;
-    int m_inlineValue;
-    QStringList suppressGenericNames;
-    QString directoryEntryPath;
-    QStringList sortOrder;
-};
 
 KServiceGroup::KServiceGroup( const QString & name )
- : KSycocaEntry(name)
+ : KSycocaEntry(*new KServiceGroupPrivate(name, this))
  , m_bDeep(false)
- , m_childCount(-1),d( new KServiceGroup::Private)
+ , m_childCount(-1)
 {
 }
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
- : KSycocaEntry(_relpath)
+ : KSycocaEntry(*new KServiceGroupPrivate(_relpath, this))
  , m_bDeep(false)
- , m_childCount(-1),d( new KServiceGroup::Private)
+ , m_childCount(-1)
 {
+    Q_D(KServiceGroup);
   QString cfg = configFile;
   if (cfg.isEmpty())
      cfg = _relpath+".directory";
@@ -102,7 +90,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 }
 
 KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) :
-    KSycocaEntry( _str, offset ),d(new KServiceGroup::Private)
+    KSycocaEntry(*new KServiceGroupPrivate(_str, offset, this))
 {
   m_bDeep = deep;
   load( _str );
@@ -110,17 +98,6 @@ KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) :
 
 KServiceGroup::~KServiceGroup()
 {
-  delete d;
-}
-
-bool KServiceGroup::isValid() const
-{
-    return true;
-}
-
-QString KServiceGroup::name() const
-{
-    return entryPath();
 }
 
 QString KServiceGroup::relPath() const
@@ -172,66 +149,79 @@ int KServiceGroup::childCount() const
 
 bool KServiceGroup::showInlineHeader() const
 {
+    Q_D(const KServiceGroup);
     return d->m_bShowInlineHeader;
 }
 
 bool KServiceGroup::showEmptyMenu() const
 {
+    Q_D(const KServiceGroup);
     return d->m_bShowEmptyMenu;
 }
 
 bool KServiceGroup::inlineAlias() const
 {
+    Q_D(const KServiceGroup);
     return d->m_bInlineAlias;
 }
 
 void KServiceGroup::setInlineAlias(bool _b)
 {
+    Q_D(KServiceGroup);
     d->m_bInlineAlias = _b;
 }
 
 void KServiceGroup::setShowEmptyMenu(bool _b)
 {
+    Q_D(KServiceGroup);
     d->m_bShowEmptyMenu=_b;
 }
 
 void KServiceGroup::setShowInlineHeader(bool _b)
 {
+    Q_D(KServiceGroup);
     d->m_bShowInlineHeader=_b;
 }
 
 int KServiceGroup::inlineValue() const
 {
+    Q_D(const KServiceGroup);
     return d->m_inlineValue;
 }
 
 void KServiceGroup::setInlineValue(int _val)
 {
+    Q_D(KServiceGroup);
     d->m_inlineValue = _val;
 }
 
 bool KServiceGroup::allowInline() const
 {
+    Q_D(const KServiceGroup);
     return d->m_bAllowInline;
 }
 
 void KServiceGroup::setAllowInline(bool _b)
 {
+    Q_D(KServiceGroup);
     d->m_bAllowInline = _b;
 }
 
 bool KServiceGroup::noDisplay() const
 {
+    Q_D(const KServiceGroup);
   return d->m_bNoDisplay || m_strCaption.startsWith('.');
 }
 
 QStringList KServiceGroup::suppressGenericNames() const
 {
+    Q_D(const KServiceGroup);
   return d->suppressGenericNames;
 }
 
 void KServiceGroup::load( QDataStream& s )
 {
+    Q_D(KServiceGroup);
   QStringList groupList;
   qint8 noDisplay;
   qint8 _showEmptyMenu;
@@ -278,13 +268,13 @@ void KServiceGroup::addEntry( const KSycocaEntry::Ptr& entry)
   m_serviceList.append(entry);
 }
 
-void KServiceGroup::save( QDataStream& s )
+void KServiceGroupPrivate::save( QDataStream& s )
 {
-  KSycocaEntry::save( s );
+  KSycocaEntryPrivate::save( s );
 
   QStringList groupList;
-  for( List::ConstIterator it = m_serviceList.begin();
-       it != m_serviceList.end(); ++it)
+  for( KServiceGroup::List::ConstIterator it = q->m_serviceList.begin();
+       it != q->m_serviceList.end(); ++it)
   {
      KSycocaEntry::Ptr p = *it;
      if (p->isType(KST_KService))
@@ -303,17 +293,17 @@ void KServiceGroup::save( QDataStream& s )
      }
   }
 
-  (void) childCount();
+  (void) q->childCount();
 
-  qint8 noDisplay = d->m_bNoDisplay ? 1 : 0;
-  qint8 _showEmptyMenu = d->m_bShowEmptyMenu ? 1 : 0;
-  qint8 inlineHeader = d->m_bShowInlineHeader ? 1 : 0;
-  qint8 _inlineAlias = d->m_bInlineAlias ? 1 : 0;
-  qint8 _allowInline = d->m_bAllowInline ? 1 : 0;
-  s << m_strCaption << m_strIcon <<
-      m_strComment << groupList << m_strBaseGroupName << m_childCount <<
-      noDisplay << d->suppressGenericNames << d->directoryEntryPath <<
-      d->sortOrder <<_showEmptyMenu <<inlineHeader<<_inlineAlias<<_allowInline;
+  qint8 noDisplay = m_bNoDisplay ? 1 : 0;
+  qint8 _showEmptyMenu = m_bShowEmptyMenu ? 1 : 0;
+  qint8 inlineHeader = m_bShowInlineHeader ? 1 : 0;
+  qint8 _inlineAlias = m_bInlineAlias ? 1 : 0;
+  qint8 _allowInline = m_bAllowInline ? 1 : 0;
+  s << q->m_strCaption << q->m_strIcon <<
+      q->m_strComment << groupList << q->m_strBaseGroupName << q->m_childCount <<
+      noDisplay << suppressGenericNames << directoryEntryPath <<
+      sortOrder <<_showEmptyMenu <<inlineHeader<<_inlineAlias<<_allowInline;
 }
 
 KServiceGroup::List
@@ -339,6 +329,7 @@ static void addItem(KServiceGroup::List &sorted, const KSycocaEntry::Ptr &p, boo
 KServiceGroup::List
 KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName)
 {
+    Q_D(KServiceGroup);
     KServiceGroup::Ptr grp;
     KServiceGroup* group = this;
 
@@ -657,11 +648,13 @@ void KServiceGroup::parseAttribute( const QString &item ,  bool &showEmptyMenu, 
 
 void KServiceGroup::setLayoutInfo(const QStringList &layout)
 {
+    Q_D(KServiceGroup);
     d->sortOrder = layout;
 }
 
 QStringList KServiceGroup::layoutInfo() const
 {
+    Q_D(const KServiceGroup);
     return d->sortOrder;
 }
 
@@ -698,28 +691,29 @@ QString KServiceGroup::baseGroupName() const
 QString
 KServiceGroup::directoryEntryPath() const
 {
+    Q_D(const KServiceGroup);
    return d->directoryEntryPath;
 }
 
+class KServiceSeparatorPrivate : public KSycocaEntryPrivate
+{
+    public:
+        K_SYCOCATYPE( KST_KServiceSeparator, KSycocaEntryPrivate )
 
-void KServiceGroup::virtual_hook( int id, void* data )
-{ KSycocaEntry::virtual_hook( id, data ); }
+        KServiceSeparatorPrivate(const QString &name)
+            : KSycocaEntryPrivate(name)
+        {
+        }
 
+        virtual QString name() const
+        {
+            return QLatin1String("separator");
+        }
+
+};
 
 KServiceSeparator::KServiceSeparator( )
- : KSycocaEntry("separator")
+    : KSycocaEntry(*new KServiceSeparatorPrivate("separator"))
 {
 }
 
-bool KServiceSeparator::isValid() const
-{
-    return true;
-}
-
-QString KServiceSeparator::name() const
-{
-    return QLatin1String("separator");
-}
-
-void KServiceSeparator::load( QDataStream& ) { }
-void KServiceSeparator::save( QDataStream& ) { }

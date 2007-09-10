@@ -19,7 +19,7 @@
 #ifndef KPROTOCOLINFO_H
 #define KPROTOCOLINFO_H
 
-#include <kdecore_export.h>
+#include <kglobal.h>
 
 #include <kurl.h>
 #include <ksycocaentry.h>
@@ -28,6 +28,7 @@
 #include <QtCore/QStringList>
 
 class QDataStream;
+class KProtocolInfoPrivate;
 
 /**
  * Information about I/O (Internet, etc.) protocols supported by KDE.
@@ -48,28 +49,10 @@ class KDECORE_EXPORT KProtocolInfo : public KSycocaEntry
   friend class KProtocolInfoFactory;
   friend class KBuildProtocolInfoFactory;
   friend class KProtocolManager;
-  K_SYCOCATYPE( KST_KProtocolInfo, KSycocaEntry )
-
 public:
   typedef KSharedPtr<KProtocolInfo> Ptr;
 
 public:
-
-  /**
-   * Returns whether the protocol description file is valid.
-   * @return true if valid, false otherwise
-   */
-  virtual bool isValid() const;
-
-  /**
-   * Returns the name of the protocol.
-   *
-   * This corresponds to the "protocol=" field in the protocol description file.
-   *
-   * @return the name of the protocol
-   * @see KUrl::protocol()
-   */
-  virtual QString name() const;
 
   //
   // Static functions:
@@ -333,18 +316,6 @@ public:
 
   virtual ~KProtocolInfo();
 
-  /**
-   * @internal
-   * Load the protocol info from a stream.
-   */
-  virtual void load(QDataStream& );
-
-  /**
-   * @internal
-   * Save the protocol info to a stream.
-   */
-  virtual void save(QDataStream& );
-
   typedef enum { Name, FromUrl } FileNameUsedForCopying;
 
   /// @internal. Use KProtocolManager instead.
@@ -381,8 +352,6 @@ protected:
   bool canDeleteRecursive() const;
   FileNameUsedForCopying fileNameUsedForCopying() const;
 
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
   /**
    * Read a protocol description file
@@ -390,10 +359,9 @@ private:
    */
   KProtocolInfo( const QString & path);
 
-  // KDE4: In theory we could get rid of the d pointer.
-  // This class can only be instanciated by its friend classes.
-  class KProtocolInfoPrivate;
-  KProtocolInfoPrivate* const d;
+    Q_DECLARE_PRIVATE(KProtocolInfo)
+
+    void load(QDataStream &s);
 };
 
 KDECORE_EXPORT QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );

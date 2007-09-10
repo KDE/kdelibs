@@ -32,7 +32,6 @@ class KFolderMimeTypePrivate;
  */
 class KDECORE_EXPORT KFolderMimeType : public KMimeType
 {
-    K_SYCOCATYPE( KST_KFolderMimeType, KMimeType )
     Q_DECLARE_PRIVATE( KFolderMimeType )
 
 public:
@@ -44,12 +43,6 @@ public:
 
     /** Destructor. */
     ~KFolderMimeType();
-
-    virtual QString iconName( const KUrl& url ) const;
-    virtual QString comment( const KUrl& url ) const;
-
-protected:
-    virtual void virtual_hook( int id, void* data );
 };
 
 #endif

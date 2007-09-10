@@ -24,6 +24,8 @@
 
 class KBuildServiceGroupFactory;
 
+class KServiceGroupPrivate;
+
 /**
  * KServiceGroup represents a group of service, for example
  * screensavers.
@@ -58,8 +60,6 @@ class KBuildServiceGroupFactory;
 class KDECORE_EXPORT KServiceGroup : public KSycocaEntry
 {
   friend class KBuildServiceGroupFactory;
-  K_SYCOCATYPE( KST_KServiceGroup, KSycocaEntry )
-
 public:
   typedef KSharedPtr<KServiceGroup> Ptr;
   typedef KSharedPtr<KSycocaEntry> SPtr;
@@ -87,22 +87,10 @@ public:
   virtual ~KServiceGroup();
 
   /**
-   * Checks whether the entry is valid, returns always true.
-   * @return true
-   */
-  bool isValid() const;
-
-  /**
-   * Name used for indexing.
-   * @return the service group's name
-   */
-  virtual QString name() const;
-
-  /**
    * Returns the relative path of the service group.
    * @return the service group's relative path
    */
-  virtual QString relPath() const;
+  QString relPath() const;
 
   /**
    * Returns the caption of this group.
@@ -190,17 +178,6 @@ public:
   QStringList layoutInfo() const;
 
   /**
-   * @internal
-   * Load the service from a stream.
-   */
-  virtual void load( QDataStream& );
-  /**
-   * @internal
-   * Save the service to a stream.
-   */
-  virtual void save( QDataStream& );
-
-  /**
    * List of all Services and ServiceGroups within this
    * ServiceGroup.
    * @param sorted true to sort items
@@ -210,7 +187,7 @@ public:
    * @return the list of entries
    */
   List entries(bool sorted, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName=false);
-  virtual List entries(bool sorted, bool excludeNoDisplay);
+  List entries(bool sorted, bool excludeNoDisplay);
 
   /**
    * List of all Services and ServiceGroups within this
@@ -218,7 +195,7 @@ public:
    * @param sorted true to sort items
    * @return the list of entried
    */
-  virtual List entries(bool sorted = false);
+  List entries(bool sorted = false);
 
   /**
    * Returns a non-empty string if the group is a special base group.
@@ -286,17 +263,14 @@ protected:
   bool m_bDeep;
   QString m_strBaseGroupName;
   mutable int m_childCount;
-protected:
-  virtual void virtual_hook( int id, void* data );
 private:
-  class Private;
-  Private* const d;
+    Q_DECLARE_PRIVATE(KServiceGroup)
+
+    void load(QDataStream &s);
 };
 
 class KDECORE_EXPORT KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
 {
-  K_SYCOCATYPE( KST_KServiceSeparator, KSycocaEntry )
-
 public:
   typedef KSharedPtr<KServiceSeparator> Ptr;
 public:
@@ -305,13 +279,6 @@ public:
    */
   KServiceSeparator();
 
-  bool isValid() const;
-
-  virtual QString name() const;
-
-  // These are dummy functions
-  virtual void load( QDataStream& ds );
-  virtual void save( QDataStream& ds );
 };
 
 #endif
