@@ -134,10 +134,10 @@ KPageWidgetItem* KConfigDialog::addPageInternal(QWidget *page,
                                         const QString &pixmapName,
                                         const QString &header)
 {
-  KVBox *frame = new KVBox();
+  KVBox *frame = new KVBox(this);
   frame->setSpacing( 0 );
   frame->setMargin( 0 );
-  page->setParent(((QWidget*)frame));
+  page->setParent(frame);
 
   KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
   item->setHeader( header );
