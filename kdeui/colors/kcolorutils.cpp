@@ -78,7 +78,7 @@ QColor KColorUtils::tint(const QColor &base, const QColor &color, qreal amount)
     if (amount >= 1.0) return color;
     if (isnan(amount)) return base;
 
-    KColorSpaces::KHCY result(mix(base, color, pow(amount, 0.5)));
+    KColorSpaces::KHCY result(mix(base, color, pow(amount, 0.3)));
     result.y = mixQreal(luma(base), result.y, amount);
 
     return result.qColor();
