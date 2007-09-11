@@ -129,7 +129,6 @@ KServiceTypePrivate::save( QDataStream& _str )
 
 KServiceType::~KServiceType()
 {
-    delete d_ptr;
 }
 
 QString KServiceType::parentServiceType() const
