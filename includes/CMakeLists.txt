@@ -297,7 +297,6 @@ install( FILES
   KNotifyConfigWidget
   KNumInput
   KOCRDialog
-  KOCRDialogFactory
   KOpenWithDialog
   KOperaBookmarkExporterImpl
   KOperaBookmarkImporter
@@ -354,7 +353,6 @@ install( FILES
   KSambaShare
   KSaveFile
   KScanDialog
-  KScanDialogFactory
   KSelectAction
   KSelectionOwner
   KSelectionWatcher
