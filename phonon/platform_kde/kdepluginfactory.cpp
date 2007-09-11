@@ -110,28 +110,15 @@ QString KdePlatformPlugin::applicationName() const
 
 QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
 {
-    KPluginFactory *factory = 0;
     QString errorReason;
 #ifdef PHONON_LOAD_BACKEND_GLOBAL
+    KLibFactory *factory = 0;
     // This code is in here temporarily until NMM gets fixed.
     // Currently the NMM backend will fail with undefined symbols if
     // the backend is not loaded with global symbol resolution
-    //KLibrary *library = KLibLoader::self()->factory(newService->library(), QLibrary::ExportExternalSymbolsHint);
-    //if (library) {
-    //    factory = library->factory();
-    //}
-    factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
+    factory = KLibLoader::self()->factory(newService->library(), QLibrary::ExportExternalSymbolsHint);
     if (!factory) {
         errorReason = KLibLoader::self()->lastErrorMessage();
-    }
-#else
-    KPluginLoader loader(QFile::encodeName(newService->library()));
-    factory = loader.factory();
-    if (!factory) {
-        errorReason = loader.errorString();
-    }
-#endif
-    if (!factory) {
         kError(600) << "Can not create factory for " << newService->name() <<
             ":\n" << errorReason << endl;
 
@@ -143,19 +130,20 @@ QObject *KdePlatformPlugin::createBackend(KService::Ptr newService)
                 + QLatin1String("</html>"));
         return false;
     }
-
     QObject *backend = factory->create<QObject>();
     if (0 == backend) {
-        QString errorReason = i18n("create method returned 0");
+        errorReason = i18n("create method returned 0");
+    }
+#else
+    QObject *backend = newService->createInstance<QObject>(0, QVariantList(), &errorReason);
+#endif
+    if (0 == backend) {
         kError(600) << "Can not create backend object from factory for " <<
             newService->name() << ", " << newService->library() << ":\n" << errorReason << endl;
 
         KMessageBox::error(0,
-                QLatin1String("<qt>")
-                + i18n("Unable to use the <b>%1</b> Multimedia Backend:", newService->name())
-                + QLatin1Char('\n')
-                + errorReason
-                + QLatin1String("<qt>"));
+                i18n("<qt>Unable to use the <b>%1</b> Multimedia Backend:<br/>%2</qt>",
+                    newService->name(), errorReason));
         return false;
     }
 
