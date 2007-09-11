@@ -199,8 +199,58 @@ if(Soprano_FOUND)
 endif(Soprano_FOUND)
 
 
-########### install files ###############
+######## write dependency file which will be installed #########
 
+# write the versions 
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake  
+"# this file was generated during the kdelibs build process
+set(KDE_VERSION_MAJOR ${KDE_VERSION_MAJOR})
+set(KDE_VERSION_MINOR ${KDE_VERSION_MINOR})
+set(KDE_VERSION_RELEASE ${KDE_VERSION_RELEASE})
+set(KDE_VERSION \"${KDE_VERSION}\")
+set(KDE_VERSION_STRING \"${KDE_VERSION_STRING}\")
+")
+
+# write the installdirs
+
+if (WIN32)
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake  
+"if (NOT KDE4_INSTALL_DIR)
+  set(KDE4_INSTALL_DIR         \"${CMAKE_INSTALL_PREFIX}\")
+endif (NOT KDE4_INSTALL_DIR)
+set(KDE4_LIB_INSTALL_DIR     \"\${KDE4_INSTALL_DIR}/lib\")
+set(KDE4_LIBEXEC_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/bin\")
+set(KDE4_NCLUDE_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/include\")
+set(KDE4_IN_INSTALL_DIR     \"\${KDE4_INSTALL_DIR}/bin\")
+set(KDE4_BIN_INSTALL_DIR    \"\${KDE4_INSTALL_DIR}/sbin\")
+set(KDE4_DATA_INSTALL_DIR    \"\${KDE4_INSTALL_DIR}/share/apps\")
+set(KDE4_HTML_INSTALL_DIR    \"\${KDE4_INSTALL_DIR}/share/doc/HTML\")
+set(KDE4_CONFIG_INSTALL_DIR  \"\${KDE4_INSTALL_DIR}/share/config\")
+set(KDE4_ICON_INSTALL_DIR    \"\${KDE4_INSTALL_DIR}/share/icons\")
+set(KDE4_KCFG_INSTALL_DIR    \"\${KDE4_INSTALL_DIR}/share/config.kcfg\")
+set(KDE4_LOCALE_INSTALL_DIR  \"\${KDE4_INSTALL_DIR}/share/locale\")
+set(KDE4_MIME_INSTALL_DIR    \"\${KDE4_INSTALL_DIR}/share/mimelnk\")
+set(KDE4_SOUND_INSTALL_DIR   \"\${KDE4_INSTALL_DIR}/share/sounds\")
+set(KDE4_TEMPLATES_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/share/templates\")
+set(KDE4_WALLPAPER_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/share/wallpapers\")
+set(KDE4_KCONF_UPDATE_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/share/apps/kconf_update\")
+set(KDE4_APPLNK_INSTALL_DIR  \"\${KDE4_INSTALL_DIR}/share/applnk\")
+set(KDE4_AUTOSTART_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/share/autostart\")
+set(KDE4_XDG_APPS_INSTALL_DIR        \"\${KDE4_INSTALL_DIR}/share/applications/kde4\")
+set(KDE4_XDG_DIRECTORY_INSTALL_DIR   \"\${KDE4_INSTALL_DIR}/share/desktop-directories\")
+set(KDE4_SYSCONF_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/etc\")
+set(KDE4_MAN_INSTALL_DIR     \"\${KDE4_INSTALL_DIR}/man\")
+set(KDE4_INFO_INSTALL_DIR    \"\${KDE4_INSTALL_DIR}/info\")
+")
+# splitted, otherwise cmake crashes with a memory exhausted error
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake  
+"set(KDE4_DBUS_INTERFACES_DIR \"\${KDE4_INSTALL_DIR}/share/dbus-1/interfaces\")
+set(KDE4_DBUS_SERVICES_DIR   \"\${KDE4_INSTALL_DIR}/share/dbus-1/services\")
+set(KDE4_SERVICES_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/share/kde4/services\")
+set(KDE4_SERVICETYPES_INSTALL_DIR \"\${KDE4_INSTALL_DIR}/share/kde4/servicetypes\")
+")
+else (WIN32)
 # we need the absolute directories where stuff will be installed too
 # but since the variables which contain the destinations can be relative
 # or absolute paths, we need this macro to make them all absoulte, Alex
@@ -249,15 +299,8 @@ make_install_path_absolute(KDE4_DBUS_SERVICES_DIR   ${DBUS_SERVICES_INSTALL_DIR}
 make_install_path_absolute(KDE4_SERVICES_INSTALL_DIR ${SERVICES_INSTALL_DIR})
 make_install_path_absolute(KDE4_SERVICETYPES_INSTALL_DIR ${SERVICETYPES_INSTALL_DIR})
 
-# write the installdirs into a cmake file which will be installed
-file(WRITE  ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake 
-"# this file was generated during the kdelibs build process
-set(KDE_VERSION_MAJOR ${KDE_VERSION_MAJOR})
-set(KDE_VERSION_MINOR ${KDE_VERSION_MINOR})
-set(KDE_VERSION_RELEASE ${KDE_VERSION_RELEASE})
-set(KDE_VERSION \"${KDE_VERSION}\")
-set(KDE_VERSION_STRING \"${KDE_VERSION_STRING}\")
-set(KDE4_INSTALL_DIR         \"${KDE4_INSTALL_DIR}\")
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake  
+"set(KDE4_INSTALL_DIR         \"${KDE4_INSTALL_DIR}\")
 set(KDE4_LIB_INSTALL_DIR     \"${KDE4_LIB_INSTALL_DIR}\")
 set(KDE4_LIBEXEC_INSTALL_DIR \"${KDE4_LIBEXEC_INSTALL_DIR}\")
 set(KDE4_INCLUDE_INSTALL_DIR \"${KDE4_INCLUDE_INSTALL_DIR}\")
@@ -286,9 +329,32 @@ set(KDE4_DBUS_SERVICES_DIR   \"${KDE4_DBUS_SERVICES_DIR}\")
 set(KDE4_SERVICES_INSTALL_DIR \"${KDE4_SERVICES_INSTALL_DIR}\")
 set(KDE4_SERVICETYPES_INSTALL_DIR \"${KDE4_SERVICETYPES_INSTALL_DIR}\")
 ")
+endif (WIN32)
 
-# ...and append all library dependencies
-export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
+# write the library dependencies
+
+if (WIN32)
+    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake  
+"if (NOT QT_INSTALL_DIR)
+    set (QT_INSTALL_DIR \"${QT_INSTALL_DIR}\")
+endif (NOT QT_INSTALL_DIR)
+")
+    # replace hard codes pathes by variables 
+    # !!! the following stuff does not work because export_library_dependencies
+    # !!! does not wait until the file is written completly 
+    if (export_library_dependencies_is_fixed)
+        export_library_dependencies(${CMAKE_BINARY_DIR}/tmpdeps.cmake)
+        file(READ ${CMAKE_BINARY_DIR}/tmpdeps.cmake _deps)
+        string(REPLACE "${QT_INSTALL_DIR}" "\${QT_INSTALL_DIR}" __deps "${_deps}")
+        file (APPEND ${CMAKE_BINARY_DIR}/KDELibsDependencies.cmake "${__deps}")
+    else (export_library_dependencies_is_fixed)
+        export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
+    endif (export_library_dependencies_is_fixed)
+else (WIN32)
+    export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
+endif(WIN32)
+
+########### install files ###############
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
