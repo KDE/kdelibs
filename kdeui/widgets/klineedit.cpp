@@ -26,6 +26,7 @@
 */
 
 #include "klineedit.h"
+#include "klineedit_p.h"
 
 #include <kconfig.h>
 #include <QtGui/QToolTip>
@@ -49,9 +50,6 @@
 #include <QtGui/QStyle>
 #include <QtGui/QStyleOption>
 #include <kconfiggroup.h>
-
-#include "klineedit.moc"
-
 
 class KLineEdit::KLineEditPrivate
 {
@@ -78,7 +76,6 @@ public:
         }
 
         clearButton = 0;
-        clickButtonState = -1;
         clickInClear = false;
     }
 
@@ -113,8 +110,7 @@ public:
     bool possibleTripleClick :1;  // set in mousePressEvent, deleted in tripleClickTimeout
 
     bool clickInClear:1;
-    int  clickButtonState;
-    QLabel* clearButton;
+    KLineEditButton *clearButton;
 
     KCompletionBox *completionBox;
 
@@ -180,14 +176,13 @@ void KLineEdit::setClearButtonShown(bool show)
             return;
         }
 
-        d->clearButton = new QLabel( this );
-        d->clearButton->setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+        d->clearButton = new KLineEditButton(this);
         d->clearButton->setCursor( Qt::ArrowCursor );
         d->clearButton->setToolTip( i18n( "Clear text" ) );
 
         updateClearButtonIcon(text());
         updateClearButton();
-        d->clearButton->show();
+        d->clearButton->animateVisible(false);
         connect(this, SIGNAL(textChanged(QString)), this, SLOT(updateClearButtonIcon(QString)));
     } else {
         disconnect(this, SIGNAL(textChanged(QString)), this, SLOT(updateClearButtonIcon(QString)));
@@ -209,24 +204,27 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
         return;
     }
 
+    int clearButtonState = K3Icon::DefaultState;
+
     if (text.length() > 0) {
-        if (d->clickButtonState == K3Icon::DefaultState) {
-            return;
-        }
-
-        d->clickButtonState = K3Icon::DefaultState;
+        d->clearButton->animateVisible(true);
     } else {
-        if (d->clickButtonState == K3Icon::DisabledState) {
+/*        if (d->clickButtonState == K3Icon::DisabledState) {
             return;
         }
 
-        d->clickButtonState = K3Icon::DisabledState;
+        d->clickButtonState = K3Icon::DisabledState;*/
+        d->clearButton->animateVisible(false);
     }
 
-    if ( qApp->isLeftToRight() ) {
-        d->clearButton->setPixmap( SmallIcon( "clear-left", 0, d->clickButtonState ) );
+    if (!d->clearButton->pixmap().isNull()) {
+        return;
+    }
+
+    if (qApp->isLeftToRight()) {
+        d->clearButton->setPixmap(SmallIcon("clear-left", 0, clearButtonState));
     } else {
-        d->clearButton->setPixmap( SmallIcon("locationbar-erase", 0, d->clickButtonState ) );
+        d->clearButton->setPixmap(SmallIcon("locationbar-erase", 0, clearButtonState));
     }
 }
 
@@ -246,6 +244,7 @@ void KLineEdit::updateClearButton()
 
         // we don't need to check for RTL here as Qt does that for us
         // when it comes to style sheets
+        kDebug() << "setting padding right to " << buttonWidth;
         setStyleSheet( QString( "QLineEdit { padding-right: %1; }" )
                        .arg( buttonWidth ) );
     }
@@ -397,7 +396,7 @@ void KLineEdit::setReadOnly(bool readOnly)
         }
 
         if (d->clearButton) {
-            d->clearButton->hide();
+            d->clearButton->animateVisible(false);
             setStyleSheet(QString());
         }
     }
@@ -410,10 +409,10 @@ void KLineEdit::setReadOnly(bool readOnly)
         }
         setBackgroundRole(d->bgRole);
 
-        if (d->clearButton) {
+        if (d->clearButton && !text().isEmpty()) {
             int buttonWidth = d->clearButton->sizeHint().width();
             setStyleSheet(QString("QLineEdit { padding-right: %1; }").arg(buttonWidth));
-            d->clearButton->show();
+            d->clearButton->animateVisible(true);
         }
     }
 }
@@ -1586,4 +1585,7 @@ bool KLineEdit::passwordMode() const
 {
     return echoMode() == NoEcho || echoMode() == Password;
 }
+
+#include "klineedit.moc"
+#include "klineedit_p.moc"
 
