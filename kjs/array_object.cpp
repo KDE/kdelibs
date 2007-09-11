@@ -101,7 +101,7 @@ bool ArrayInstance::getOwnPropertySlot(ExecState* exec, const Identifier& proper
       JSValue *v = storage[index];
       if (!v || v->isUndefined())
         return false;      
-      slot.setValueSlot(this, &storage[index], PropertySlot::PermitDirectWrite);
+      slot.setValueSlot(this, &storage[index]);
       return true;
     }
   }
@@ -120,7 +120,7 @@ bool ArrayInstance::getOwnPropertySlot(ExecState *exec, unsigned index, Property
     JSValue *v = storage[index];
     if (!v || v->isUndefined())
       return false;
-    slot.setValueSlot(this, &storage[index], PropertySlot::PermitDirectWrite);
+    slot.setValueSlot(this, &storage[index]);
     return true;
   }
 

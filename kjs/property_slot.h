@@ -59,7 +59,7 @@ public:
         ForbidDirectWrite = 1
     };
     
-    void setValueSlot(JSObject *slotBase, JSValue **valueSlot, bool makeReadOnly) 
+    void setValueSlot(JSObject *slotBase, JSValue **valueSlot, bool makeReadOnly = ForbidDirectWrite) 
     {
         m_readOnly |= makeReadOnly;
         m_slotBase = slotBase;

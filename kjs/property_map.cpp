@@ -245,7 +245,7 @@ JSValue *PropertyMap::get(const Identifier &name) const
     return 0;
 }
 
-JSValue **PropertyMap::getLocation(const Identifier &name, bool& readOnly)
+JSValue **PropertyMap::getLocation(const Identifier &name)
 {
     assert(!name.isNull());
     
@@ -255,7 +255,6 @@ JSValue **PropertyMap::getLocation(const Identifier &name, bool& readOnly)
 #if USE_SINGLE_ENTRY
         UString::Rep *key = _singleEntry.key;
         if (rep == key) {
-            readOnly = ((_singleEntry.attributes & ReadOnly) == ReadOnly);
             return &_singleEntry.value;
         }
 #endif
@@ -273,7 +272,6 @@ JSValue **PropertyMap::getLocation(const Identifier &name, bool& readOnly)
 #endif
     while (UString::Rep *key = entries[i].key) {
         if (rep == key) {
-            readOnly = ((entries[i].attributes & ReadOnly) == ReadOnly);
             return &entries[i].value;
         }
         if (k == 0)

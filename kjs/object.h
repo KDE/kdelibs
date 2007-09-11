@@ -432,9 +432,7 @@ namespace KJS {
     JSValue *getDirect(const Identifier& propertyName) const
         { return _prop.get(propertyName); }
     JSValue **getDirectLocation(const Identifier& propertyName)
-        { bool dummy; return _prop.getLocation(propertyName, dummy); }
-    JSValue **getDirectLocation(const Identifier& propertyName, bool& ro)
-        { return _prop.getLocation(propertyName, ro); }
+        { return _prop.getLocation(propertyName); }
 
     void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0)
         { _prop.put(propertyName, value, attr); }
@@ -576,12 +574,11 @@ inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propert
 // base class call to this.
 ALWAYS_INLINE bool JSObject::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-    bool ro;
-    if (JSValue **location = getDirectLocation(propertyName, ro)) {
+    if (JSValue **location = getDirectLocation(propertyName)) {
         if (_prop.hasGetterSetterProperties() && location[0]->type() == GetterSetterType)
             fillGetterPropertySlot(slot, location);
         else
-            slot.setValueSlot(this, location, ro);
+            slot.setValueSlot(this, location);
         return true;
     }
 

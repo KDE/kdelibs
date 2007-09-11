@@ -76,7 +76,7 @@ namespace KJS {
         void remove(const Identifier &name);
         JSValue *get(const Identifier &name) const;
         JSValue *get(const Identifier &name, unsigned &attributes) const;
-        JSValue **getLocation(const Identifier &name, bool& readOnly);
+        JSValue **getLocation(const Identifier &name);
 
         void mark() const;
         void getEnumerablePropertyNames(PropertyNameArray&) const;

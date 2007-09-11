@@ -567,9 +567,8 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
       return true;
     }
 
-    bool ro;
-    if (JSValue** location = getDirectLocation(propertyName, ro)) {
-        slot.setValueSlot(this, location, ro);
+    if (JSValue** location = getDirectLocation(propertyName)) {
+        slot.setValueSlot(this, location);
         return true;
     }
 
