@@ -21,6 +21,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QImage>
 
 #include <kiconeffect.h>
 #include <kiconloader.h>
@@ -64,7 +65,7 @@ public:
     const QPixmap& grayPixmap() {
         if( grayPix.isNull() ) {
             grayPix = pixmap();
-            QImage image = pixmap.toImage();
+            QImage image = pixmap().toImage();
             KIconEffect::toGray( image, 1.0 ); // maybe Blitz::grayscale() would be better
             grayPix = QPixmap::fromImage( image );
         }
