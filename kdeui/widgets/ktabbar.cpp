@@ -92,12 +92,13 @@ void KTabBar::mouseDoubleClickEvent( QMouseEvent *event )
     return;
 
   int tab = selectTab( event->pos() );
-  if ( tab != -1 ) {
-    emit mouseDoubleClick( tab );
-    return;
-  }
 
-  QTabBar::mouseDoubleClickEvent( event );
+  if(tab == -1) {
+    emit newTabRequest();
+  } else {
+    emit mouseDoubleClick( tab ); //deprecated
+    emit tabDoubleClicked( tab );
+  }
 }
 
 void KTabBar::mousePressEvent( QMouseEvent *event )
@@ -109,8 +110,10 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
     int tab = selectTab( event->pos() );
     if ( tab != -1 ) {
       emit contextMenu( tab, mapToGlobal( event->pos() ) );
-      return;
+    } else {
+      emit emptyAreaContextMenu( mapToGlobal( event->pos() ) );
     }
+    return;
   }
 
   QTabBar::mousePressEvent( event );

@@ -210,7 +210,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget
     /**
      * If \a enable is true, tabs will be resized to the width of the tab bar.
      *
-     * Does not work reliable with "QTabWidget* foo=new KTabWidget()" and if
+     * Does not work reliably with "QTabWidget* foo=new KTabWidget()" and if
      * you change tabs via the tabbar or by accessing tabs directly.
      */
     void setAutomaticResizeTabs( bool enable );

@@ -87,8 +87,17 @@ class KDEUI_EXPORT KTabBar: public QTabBar
     int selectTab( const QPoint &position ) const;
 
   Q_SIGNALS:
+    /** Emitted when the user right-clicks a tab. */
     void contextMenu( int, const QPoint& );
-    void mouseDoubleClick( int );
+    /** Emitted when the user right-clicks the empty area on the tab bar. */
+    void emptyAreaContextMenu( const QPoint& );
+    /** @deprecated use tabDoubleClicked(int) and newTabRequest() instead. */
+    KDE_DEPRECATED void mouseDoubleClick( int );
+    /** Emitted when a tab has been double-clicked. */
+    void tabDoubleClicked( int );
+    /** Emitted when the user double-clicks the empty area on the tab bar. */
+    void newTabRequest();
+    /** Emitted when a tab has been middle-clicked. */
     void mouseMiddleClick( int );
     void initiateDrag( int );
     void testCanDecode( const QDragMoveEvent*, bool& );
