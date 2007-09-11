@@ -22,11 +22,10 @@
 #include <QtGui/QPixmap>
 #include <QtGui/QKeyEvent>
 
-#include <kpixmapeffect.h>
+#include <kiconeffect.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-
 
 class KRatingWidget::Private
 {
@@ -65,7 +64,9 @@ public:
     const QPixmap& grayPixmap() {
         if( grayPix.isNull() ) {
             grayPix = pixmap();
-            KPixmapEffect::toGray( grayPix, false );
+            QImage image = pixmap.toImage();
+            KIconEffect::toGray( image ); // maybe Blitz::grayscale() would be better
+            grayPix = QPixmap::fromImage( image );
         }
         return grayPix;
     }
