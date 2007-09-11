@@ -507,7 +507,7 @@ public:
             T *o = factory->create<T>(pluginKeyword(), parent, args);
             if (!o && error)
                 *error = i18n("The service '%1' does not provide an interface '%2' with keyword '%3'",
-                              name(), T::staticMetaObject.className(), pluginKeyword());
+                              name(), QString::fromLatin1(T::staticMetaObject.className()), pluginKeyword());
             return o;
         }
         else if (error) {
