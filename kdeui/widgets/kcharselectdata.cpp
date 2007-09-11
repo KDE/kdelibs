@@ -21,8 +21,6 @@
 #include "kcharselectdata_p.h"
 
 #include <QStringList>
-#include <QDebug>
-#include <QTime>
 #include <QFile>
 
 #include <string.h>

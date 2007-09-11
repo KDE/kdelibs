@@ -31,7 +31,6 @@
 #include <QtGui/QTableView>
 #include <klocale.h>
 
-#include <QDebug>
 #include "kcharselectdata_p.h"
 
 class KCharSelectTablePrivate;
