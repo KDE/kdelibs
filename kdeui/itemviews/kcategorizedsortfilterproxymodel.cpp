@@ -1087,7 +1087,7 @@ KCategorizedSortFilterProxyModel::Private::Private(KCategorizedSortFilterProxyMo
     , sortRole(Qt::DisplayRole)
     , sortLocaleAware(false)
     , dynamicSortFilter(false)
-    , categorizedModel(true)
+    , categorizedModel(false)
     , filterColumn(0)
     , filterRole(Qt::DisplayRole)
 {
