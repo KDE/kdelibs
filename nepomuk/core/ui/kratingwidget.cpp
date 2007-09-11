@@ -64,7 +64,6 @@ public:
 
     const QPixmap& grayPixmap() {
         if( grayPix.isNull() ) {
-            grayPix = pixmap();
             QImage image = pixmap().toImage();
             KIconEffect::toGray( image, 1.0 ); // maybe Blitz::grayscale() would be better
             grayPix = QPixmap::fromImage( image );
