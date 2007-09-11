@@ -169,11 +169,15 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
     /* Note: overload is an (old) C++ keyword, some compilers (KCC) choke
        on that, so call it Overload (capital 'O').  (matz) */
     int Overload = urls.count() - d->myMaximum + defaultList.count();
-    while ( Overload > 0 ) {
-        if (remove == RemoveBottom)
-            urls.removeLast();
-        else
-            urls.removeFirst();
+    while ( Overload > 0) {
+        if (remove == RemoveBottom) {
+            if (!urls.isEmpty())
+                urls.removeLast();
+        }                
+        else {
+            if (!urls.isEmpty())
+                urls.removeFirst();
+        }
         Overload--;
     }
 
