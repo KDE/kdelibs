@@ -1016,8 +1016,24 @@ was selected and the color itself as arguments</li>
 <p>Deprecated and renamed to K3ColorDrag. Use QMimeData directly instead or KColorMimeData, which most closely resembles KColorDrag</p>
 
 <h4>KColorScheme</h4>
-New class that provides access to system-wide, user configurable color roles.
-Like QPalette, the return type is now QBrush instead of QColor. As of 4.0 the brushes are solid colors, but this may change in the future.
+<p>New class that provides access to system-wide, user configurable color roles.
+Like QPalette, the return type is now QBrush instead of QColor.
+As of 4.0 the brushes are solid colors, but this may change in the future.</p>
+
+<p><b>Warning:</b> KDE4 is trying <i>really</i> hard to abandon the notion that
+the active palette == the inactive palette (because this is really helpful for
+the oxygen windeco which does not use "traditional" windeco colors, and because
+for various reasons kwin can't be entirely responsible for the effect). When
+porting to KDE4, you will need to take this into consideration. The new class
+KStatefulBrush has been added to help with this, as well as the adjustForeground
+and adjustBackground methods of KColorScheme.</p>
+
+<p>There are lots of bugs as a result of this; some in applications, and at
+least a few in Qt. Please report application bugs to the appropriate maintainer
+or list, and general (i.e. occurring in many/all applications) bugs to
+<a href="mailto:kde-core-devel@kde.org">k-c-d</a>.</p>
+
+<p>See the <a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kdeui/html/classKColorScheme.html">KColorScheme documentation</a> for further information.</p>
 
 <h4><a name="KColorTable">KColorTable</a> (was KPaletteTable)</h4>
 <ul>
