@@ -128,12 +128,11 @@ Kded::~Kded()
   m_pTimer->stop();
   delete m_pTimer;
   delete m_pDirWatch;
-
   // We have to delete the modules while we're still able to process incoming
   // DCOP messages, since modules might make DCOP calls in their destructors.
   QAsciiDictIterator<KDEDModule> it(m_modules);
-  for(; it.current(); ++it)
-    delete it.current();
+  while (!it.isEmpty()) 
+	delete it.toFirst();
 }
 
 bool Kded::process(const QCString &obj, const QCString &fun,
