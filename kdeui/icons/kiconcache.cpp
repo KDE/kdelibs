@@ -236,6 +236,8 @@ int KIconCache::defaultIconSize(K3Icon::Group group) const
 
 void KIconCache::setThemeInfo(const QList<KIconTheme*>& themes)
 {
+    if (themes.isEmpty())
+        return;
     // This as to be done always, even if the cache itself is disabled
     for (K3Icon::Group i = K3Icon::FirstGroup; i < K3Icon::LastGroup; i++) {
         d->mDefaultIconSize[i] = themes.first()->defaultSize(i);
