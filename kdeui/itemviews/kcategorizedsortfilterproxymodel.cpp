@@ -30,9 +30,6 @@
 #include <QStringList>
 #include <QSize>
 
-#include <kdebug.h>
-
-
 KCategorizedSortFilterProxyModel::KCategorizedSortFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
     , d(new Private(this))
@@ -1102,8 +1099,6 @@ void KCategorizedSortFilterProxyModel::Private::sourceItemsInserted(const QModel
                                                                     int end,
                                                                     Qt::Orientation orientation)
 {
-    kDebug() << "inicio de sourceItemsInserted" << endl;
-
     // If we have invalid indexes, return
     if ((start < 0) || (end < 0))
         return;
@@ -1212,8 +1207,6 @@ void KCategorizedSortFilterProxyModel::Private::sourceItemsInserted(const QModel
     {
         sortSourceRows(sourceItems, sourceParent);
     }
-
-    kDebug() << "voy a insertar elementos desde sourceItemsInserted" << endl;
 
     insertSourceItems(sourceToProxy, proxyToSource, sourceItems, sourceParent, orientation);
 }
@@ -1437,8 +1430,6 @@ void KCategorizedSortFilterProxyModel::Private::sortSourceRows(QVector<int> &sou
     LessThan ltcp(sourceParent, p->sourceModel(), p, LessThan::CategoryPurpose);
     foreach (const QString &key, categories)
     {
-        kDebug() << "CATEGORY FOUND: " << key << " - " << categoriesRows[key].count() << " elements" << endl;
-
         QVector<int> &rowList = categoriesRows[key];
         qStableSort(rowList.begin(), rowList.end(), ltcp);
         sourceRows << rowList;
