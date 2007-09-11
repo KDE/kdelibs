@@ -40,7 +40,7 @@
 #include <kregexpeditorinterface.h>
 #include <kservicetypetrader.h>
 
-KFindDialog::KFindDialog(QWidget *parent, long options, const QStringList &findStrings, bool hasSelection) :
+KFindDialog::KFindDialog(QWidget *parent, long options, const QStringList &findStrings, bool hasSelection, bool replaceDialog) :
     KDialog(parent),
     d(new KFindDialogPrivate)
 {
@@ -49,7 +49,7 @@ KFindDialog::KFindDialog(QWidget *parent, long options, const QStringList &findS
     setButtons( Ok | Cancel );
     setDefaultButton( Ok );
 
-    init(false, findStrings, hasSelection);
+    init(replaceDialog, findStrings, hasSelection);
     setOptions(options);
     setButtonGuiItem( KDialog::Cancel, KStandardGuiItem::close() );
 }

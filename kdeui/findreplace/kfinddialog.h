@@ -86,7 +86,7 @@ public:
      * @param hasSelection Whether a selection exists
      */
     explicit KFindDialog( QWidget *parent = 0, long options = 0,
-                 const QStringList &findStrings = QStringList(), bool hasSelection = false );
+                 const QStringList &findStrings = QStringList(), bool hasSelection = false, bool replaceDialog = false );
 
     /**
      * Destructor.
