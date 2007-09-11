@@ -34,6 +34,7 @@ KSycocaEntry::KSycocaEntry(KSycocaEntryPrivate &d)
 
 KSycocaEntry::~KSycocaEntry()
 {
+    delete d_ptr;
 }
 
 void KSycocaEntry::read( QDataStream &s, QString &str )
