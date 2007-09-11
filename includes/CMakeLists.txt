@@ -896,14 +896,19 @@ install( FILES
   Phonon/AudioDevice
   Phonon/AudioDeviceEnumerator
   Phonon/AudioOutput
+  Phonon/AudioOutputDevice
+  Phonon/AudioOutputDeviceModel
   Phonon/AudioOutputInterface
   Phonon/BackendCapabilities
   Phonon/BackendInterface
   Phonon/Effect
+  Phonon/EffectDescription
+  Phonon/EffectDescriptionModel
   Phonon/EffectParameter
   Phonon/EffectWidget
   Phonon/Global
   Phonon/MediaController
+  Phonon/MediaNode
   Phonon/MediaObject
   Phonon/MediaObjectInterface
   Phonon/MediaSource
