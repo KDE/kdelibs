@@ -41,8 +41,8 @@ public:
 
     ~KComponentDataPrivate()
     {
-        delete dirs;
-        dirs = 0;
+        Q_ASSERT(0 == sharedConfig);
+        Q_ASSERT(0 == dirs);
     }
 
     inline void ref()
@@ -63,6 +63,8 @@ public:
     }
 
     void checkConfig();
+
+    void createStandardDirs(const KComponentData &componentData);
 
     KStandardDirs *dirs;
     const KAboutData aboutData;

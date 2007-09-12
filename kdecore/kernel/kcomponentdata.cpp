@@ -106,13 +106,17 @@ void KComponentDataPrivate::checkConfig()
     }
     if (sharedConfig.isUnique()) {
         if (refCount == 1) {
+            Q_ASSERT(0 == dirs);
             if (!syncing) {
                 syncing = true;
                 sharedConfig->sync(); // sync before KComponentData doesn't have a KSharedConfig
                                       // object anymore
                 syncing = false;
             }
-            sharedConfig.clear(); // will delete sharedConfig and then deref this to 0
+            KSharedConfigPtr tmp = sharedConfig;
+            sharedConfig.clear();
+            // with tmp going out of scope the KConfig object owned by this KComponentData is
+            // deleted which will deref this KComponentDataPrivate to 0
         } else if (refCount == 2 && dirs) { // KStandardDirs holds a ref to us
             if (!syncing) {
                 syncing = true;
@@ -122,7 +126,7 @@ void KComponentDataPrivate::checkConfig()
             }
             KStandardDirs *tmp = dirs;
             dirs = 0;
-            delete tmp; // calls deref()
+            delete tmp; // calls deref() which calls checkConfig, dirs should be 0 then
         }
     }
 }
@@ -140,13 +144,20 @@ bool KComponentData::isValid() const
     return (d != 0);
 }
 
+void KComponentDataPrivate::createStandardDirs(const KComponentData &componentData)
+{
+    if (dirs == 0) {
+        dirs = new KStandardDirs(componentData);
+        // install appdata resource type
+        dirs->addResourceType("appdata", "data", aboutData.appName() + QLatin1Char('/'), true);
+    }
+}
+
 KStandardDirs *KComponentData::dirs() const
 {
     Q_ASSERT(d);
     if (d->dirs == 0) {
-        d->dirs = new KStandardDirs(*this);
-        // install appdata resource type
-        d->dirs->addResourceType("appdata", "data", d->aboutData.appName() + QLatin1Char('/'), true);
+        d->createStandardDirs(*this);
 
         if (d->sharedConfig) {
             if (d->dirs->addCustomized(d->sharedConfig.data())) {
@@ -173,6 +184,11 @@ const KSharedConfig::Ptr &KComponentData::config() const
 {
     Q_ASSERT(d);
     if (!d->sharedConfig) {
+        // if we create a KConfig object it will ask us for a KStandardDirs object. If it didn't
+        // exist at this point dirs() will call config() again.
+        // So we better make sure the KStandardDirs object is available before creating the KConfig
+        // object
+        d->createStandardDirs(*this);
         if (!d->configName.isEmpty()) {
             d->sharedConfig = KSharedConfig::openConfig(*this, d->configName);
 
