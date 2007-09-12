@@ -57,7 +57,7 @@ private Q_SLOTS:
     void calculateRemainingSeconds();
 
     // Remote tests
-    void copyFileToSystem();
+    //void copyFileToSystem();
 
     void getInvalidUrl();
 
@@ -78,7 +78,7 @@ private:
     void copyLocalDirectory( const QString& src, const QString& dest, int flags = 0 );
     void moveLocalFile( const QString& src, const QString& dest );
     void moveLocalDirectory( const QString& src, const QString& dest );
-    void copyFileToSystem( bool resolve_local_urls );
+    //void copyFileToSystem( bool resolve_local_urls );
 
     int m_result;
     QByteArray m_data;

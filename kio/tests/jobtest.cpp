@@ -66,6 +66,7 @@ static QString otherTmpDir()
 #endif
 }
 
+#if 0
 static KUrl systemTmpDir()
 {
 #ifdef Q_WS_WIN
@@ -79,6 +80,7 @@ static QString realSystemPath()
 {
     return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobtest-system/";
 }
+#endif
 
 void JobTest::initTestCase()
 {
@@ -97,6 +99,7 @@ void JobTest::initTestCase()
         if ( !ok )
             kFatal() << "Couldn't create " << otherTmpDir();
     }
+#if 0
     if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
         if ( !QFile::exists( realSystemPath() ) ) {
             bool ok = dir.mkdir( realSystemPath() );
@@ -104,15 +107,18 @@ void JobTest::initTestCase()
                 kFatal() << "Couldn't create " << realSystemPath();
         }
     }
+#endif
 }
 
 void JobTest::cleanupTestCase()
 {
     KIO::NetAccess::del( KUrl::fromPath( homeTmpDir() ), 0 );
     KIO::NetAccess::del( KUrl::fromPath( otherTmpDir() ), 0 );
+#if 0
     if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
         KIO::NetAccess::del( systemTmpDir(), 0 );
     }
+#endif
 }
 
 void JobTest::enterLoop()
@@ -937,6 +943,7 @@ void JobTest::calculateRemainingSeconds()
     QCOMPARE( text, i18n( "00:00:50" ) );
 }
 
+#if 0
 void JobTest::copyFileToSystem()
 {
     if ( !KProtocolInfo::isKnownProtocol( "system" ) ) {
@@ -1008,6 +1015,7 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
     // restore normal behavior
     kio_resolve_local_urls = true;
 }
+#endif
 
 void JobTest::getInvalidUrl()
 {
