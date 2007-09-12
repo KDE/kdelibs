@@ -11,7 +11,7 @@ X-KDE-FactoryName=kcm_phonon
 X-KDE-ParentApp=kcontrol
 X-KDE-System-Settings-Parent-Category=computer-administration
 
-Name=Phonon
+Name=Sound
 Name[ar]=فونون
 Name[kn]=ಫೋನಾನ್
 Name[ne]=फोनोन
