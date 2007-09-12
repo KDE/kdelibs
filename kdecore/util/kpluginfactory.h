@@ -105,9 +105,9 @@ KComponentData name::componentData() \
  * K_EXPORT_PLUGIN(MyPluginFactory("componentName", "catalogName"))
  *
  * // or:
- * static KAboutData *createAboutData()
+ * static KAboutData createAboutData()
  * {
- *     KAboutData *aboutData = new KAboutData("myplugin", "myplugin", ki18n("MyPlugin"), "0.1",
+ *     KAboutData aboutData("myplugin", "myplugin", ki18n("MyPlugin"), "0.1",
  *             ki18n("a description of the plugin"), KAboutData::License_LGPL,
  *             ki18n("Copyright (C) 2007 Your Name"));
  *     aboutData->addAuthor(ki18n("Your Name"), ...);
@@ -118,7 +118,8 @@ KComponentData name::componentData() \
  * class MyPlugin : public PluginInterface
  * {
  *     ...
- *     KComponentData kcd = MyPluginFactory::componentData();
+ *     KComponentData kcd = MyPluginFactory::componentData();   //use the static version of
+ *                     //componentData() only in the constructor of the class created from the factory
  *     ...
  * };
  * \endcode
@@ -179,7 +180,8 @@ KComponentData name::componentData() \
  * class MyPlugin : public PluginInterface
  * {
  *     ...
- *     KComponentData kcd = MyPluginFactory::componentData();
+ *     KComponentData kcd = MyPluginFactory::componentData();   //use the static version of
+ *                     //componentData() only in the constructor of the class created from the factory
  *     ...
  * };
  * \endcode
@@ -255,8 +257,8 @@ public:
      * \param aboutData the KAboutData for the plugin
      * \param parent a parent object
      */
-    explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
     explicit KPluginFactory(const KAboutData &aboutData, QObject *parent = 0);
+    KDE_CONSTRUCTOR_DEPRECATED explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
 
     explicit KDE_CONSTRUCTOR_DEPRECATED KPluginFactory(QObject *parent);
 
@@ -269,6 +271,8 @@ public:
     /**
      * You can use this method to get the component data of the plugin. It is filled with the
      * information given to the constructor of KPluginFactory.
+     * The K_PLUGIN_FACTORY macros provide a static version of this method, but be careful: You
+     * can use the static verion only in the constructor of classes created from the factory!
      *
      * \returns The KComponentData for the plugin
      */
@@ -302,6 +306,19 @@ public:
     template<typename T>
     T *create(const QString &keyword, QObject *parent = 0, const QVariantList &args = QVariantList());
 
+    /**
+     * Use this methode to created an object. It will try to created an object which inherits
+     * \p T and was registered with \p keyword.
+     * This overload has an additional \p parentWidget argument, which is used by some plugins (e.g. Parts).
+
+     * \param T The interface for which an object should be created. The object will inherit \p T.
+     * \param parentWidget An additional parent widget.
+     * \param parent The parent of the object. If \p parent is a widget type, it will also passed
+     *               to the parentWidget argument of the CreateInstanceFunction for the object.
+     * \param keyword The keyword of the object.
+     * \param args Additional arguments which will be passed to the object.
+     * \returns A pointer to the created object is returned, or 0 if an error occured.
+     */
     template<typename T>
     T *create(QWidget *parentWidget, QObject *parent, const QString &keyword = QString(), const QVariantList &args = QVariantList());
 
