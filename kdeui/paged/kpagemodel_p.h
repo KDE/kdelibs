@@ -25,6 +25,9 @@
 class KPageModelPrivate
 {
     Q_DECLARE_PUBLIC(KPageModel)
+    public:
+        virtual ~KPageModelPrivate();
+
     protected:
         KPageModel *q_ptr;
 };

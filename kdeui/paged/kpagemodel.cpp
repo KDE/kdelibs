@@ -22,6 +22,10 @@
 #include "kpagemodel.h"
 #include "kpagemodel_p.h"
 
+KPageModelPrivate::~KPageModelPrivate()
+{
+}
+
 KPageModel::KPageModel( QObject *parent )
     : QAbstractItemModel(parent), d_ptr(0)
 {
