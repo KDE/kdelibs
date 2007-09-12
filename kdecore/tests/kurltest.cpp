@@ -288,8 +288,8 @@ int main(int argc, char *argv[])
   check("KURL::prettyURL()", url15582.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
   check("KURL::url()", url15582.url(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html");
 
-  KURL whitespaceInUser("http://www.google.com%20%20%20%20%20@foobar.com/");
-  check("KURL::prettyURL()", whitespaceInUser.prettyURL(), "http://www.google.com%20%20%20%20%20@foobar.com/");
+  KURL whitespaceInUser("http://google.com%20%20%20@foobar.com/");
+  check("KURL::prettyURL()", whitespaceInUser.prettyURL(), "http://google.com%20%20%20@foobar.com/");
 
   KURL whitespaceInPath("http://www.google.com/foo%20bar/");
   check("KURL::prettyURL()", whitespaceInPath.prettyURL(), "http://www.google.com/foo bar/");
