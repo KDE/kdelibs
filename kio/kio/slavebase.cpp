@@ -267,10 +267,14 @@ void SlaveBase::dispatchLoop()
             QByteArray data;
             ret = appconn->read(&cmd, data);
 
-            if (d->inOpenLoop)
-                dispatchOpenCommand(cmd, data);
-            else
-                dispatch(cmd, data);
+            if (ret != -1) {
+                if (d->inOpenLoop)
+                    dispatchOpenCommand(cmd, data);
+                else
+                    dispatch(cmd, data);
+            }
+        } else {
+            ret = appconn->isConnected() ? 0 : -1;
         }
 
         if (ret == -1) { // some error occurred, perhaps no more applicationi

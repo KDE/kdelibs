@@ -47,6 +47,7 @@ public:
     void dequeue();
     void commandReceived(const Task &task);
     void disconnected();
+    void setBackend(AbstractConnectionBackend *b);
 
     QQueue<Task> outgoingTasks;
     QQueue<Task> incomingTasks;
@@ -90,6 +91,17 @@ void ConnectionPrivate::commandReceived(const Task &task)
 void ConnectionPrivate::disconnected()
 {
     q->close();
+    QMetaObject::invokeMethod(q, "readyRead", Qt::QueuedConnection);
+}
+
+void ConnectionPrivate::setBackend(AbstractConnectionBackend *b)
+{
+    backend = b;
+    if (backend) {
+        q->connect(backend, SIGNAL(commandReceived(Task)), SLOT(commandReceived(Task)));
+        q->connect(backend, SIGNAL(disconnected()), SLOT(disconnected()));
+        backend->setSuspended(suspended);
+    }
 }
 
 AbstractConnectionBackend::AbstractConnectionBackend(QObject *parent)
@@ -118,7 +130,8 @@ SocketConnectionBackend::~SocketConnectionBackend()
 
 void SocketConnectionBackend::setSuspended(bool enable)
 {
-    Q_ASSERT(state == Connected);
+    if (state != Connected)
+        return;
     Q_ASSERT(socket);
     Q_ASSERT(!localServer);     // !tcpServer as well
 
@@ -169,9 +182,15 @@ bool SocketConnectionBackend::connectToRemote(const KUrl &url)
         }
     }
     connect(socket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
-    connect(socket, SIGNAL(disconnected()), SIGNAL(disconnected()));
+    connect(socket, SIGNAL(disconnected()), SLOT(socketDisconnected()));
     state = Connected;
     return true;
+}
+
+void SocketConnectionBackend::socketDisconnected()
+{
+    state = Idle;
+    emit disconnected();
 }
 
 bool SocketConnectionBackend::listenForRemote()
@@ -292,7 +311,7 @@ AbstractConnectionBackend *SocketConnectionBackend::nextPendingConnection()
     result->socket = newSocket;
     newSocket->setParent(result);
     connect(newSocket, SIGNAL(readyRead()), result, SLOT(socketReadyRead()));
-    connect(newSocket, SIGNAL(disconnected()), SIGNAL(disconnected()));
+    connect(newSocket, SIGNAL(disconnected()), result, SLOT(socketDisconnected()));
 
     return result;
 }
@@ -413,9 +432,9 @@ void Connection::connectToRemote(const QString &address)
     QString scheme = url.protocol();
 
     if (scheme == QLatin1String("local")) {
-        d->backend = new SocketConnectionBackend(SocketConnectionBackend::LocalSocketMode, this);
+        d->setBackend(new SocketConnectionBackend(SocketConnectionBackend::LocalSocketMode, this));
     } else if (scheme == QLatin1String("tcp")) {
-        d->backend = new SocketConnectionBackend(SocketConnectionBackend::TcpSocketMode, this);
+        d->setBackend(new SocketConnectionBackend(SocketConnectionBackend::TcpSocketMode, this));
     } else {
         kWarning(7017) << "Unknown requested KIO::Connection protocol='" << scheme
                        << "' (" << address << ")" << endl;
@@ -431,8 +450,6 @@ void Connection::connectToRemote(const QString &address)
         return;
     }
 
-    connect(d->backend, SIGNAL(commandReceived(Task)), SLOT(commandReceived(Task)));
-    d->backend->setSuspended(d->suspended);
     d->dequeue();
 }
 
@@ -555,9 +572,8 @@ Connection *ConnectionServer::nextPendingConnection()
         return 0;               // no new backend...
 
     Connection *result = new Connection;
-    result->d->backend = newBackend;
+    result->d->setBackend(newBackend);
     newBackend->setParent(result);
-    connect(newBackend, SIGNAL(commandReceived(Task)), result, SLOT(commandReceived(Task)));
 
     return result;
 }
@@ -568,8 +584,8 @@ void ConnectionServer::setNextPendingConnection(Connection *conn)
     Q_ASSERT(newBackend);
 
     conn->d->backend = newBackend;
+    conn->d->setBackend(newBackend);
     newBackend->setParent(conn);
-    connect(newBackend, SIGNAL(commandReceived(Task)), conn, SLOT(commandReceived(Task)));
 
     conn->d->dequeue();
 }

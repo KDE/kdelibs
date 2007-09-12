@@ -87,6 +87,7 @@ namespace KIO {
         AbstractConnectionBackend *nextPendingConnection();
     public slots:
         void socketReadyRead();
+        void socketDisconnected();
     };
 }
 
