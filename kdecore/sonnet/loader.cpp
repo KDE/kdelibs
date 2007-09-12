@@ -272,8 +272,7 @@ void Loader::loadPlugin(const KSharedPtr<KService> &service)
 {
     QString error;
 
-    Client *client = KService::createInstance<Client>(service,
-                                                      this,
+    Client *client = service->createInstance<Client>(this,
                                                       QVariantList(),
                                                       &error);
 
@@ -291,13 +290,9 @@ void Loader::loadPlugin(const KSharedPtr<KService> &service)
                 d->languageClients[*itr].prepend(client);
         }
 
-        kDebug() << "Successfully loaded plugin '"
-                 << service->entryPath() << "'" << endl;
+        kDebug() << "Successfully loaded plugin:" << service->entryPath();
     } else {
-        kDebug() << "Loading plugin '"
-                 << service->entryPath()
-                 << "' failed, KLibLoader reported error: '" << endl
-                 << error << "'" << endl;
+        kDebug() << error;
     }
 }
 
