@@ -123,10 +123,18 @@ Word Filter::nextWord() const
 	*/
 
         foundWord += currentChar;
-        ++m_currentPosition;
         //Test if currentPosition exists, otherwise go out
-        if( m_currentPosition >= m_buffer.length())
-            return Filter::end();
+        if( (m_currentPosition + 1) >= m_buffer.length()) {
+            if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) ) {
+                ++m_currentPosition;
+                return nextWord();
+            }
+            else {
+                ++m_currentPosition;
+                return Word( foundWord, start );
+            }
+        }
+        ++m_currentPosition;
         currentChar = m_buffer.at( m_currentPosition );
     }
     if ( shouldBeSkipped( allUppercase, runTogether, foundWord ) )
