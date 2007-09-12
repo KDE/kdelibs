@@ -164,6 +164,8 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
 
     m_lstKeywords = desktopGroup.readEntry("Keywords", QStringList());
     entryMap.remove("Keywords");
+    m_lstKeywords += desktopGroup.readEntry("X-KDE-Keywords", QStringList());
+    entryMap.remove("X-KDE-Keywords");
     categories = desktopGroup.readEntry("Categories", QStringList(), ';');
     entryMap.remove("Categories");
     m_strLibrary = desktopGroup.readEntry( "X-KDE-Library" );
@@ -171,6 +173,8 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
 
     m_lstServiceTypes = desktopGroup.readEntry( "ServiceTypes", QStringList() );
     entryMap.remove("ServiceTypes");
+    m_lstServiceTypes += desktopGroup.readEntry( "X-KDE-ServiceTypes", QStringList() );
+    entryMap.remove("X-KDE-ServiceTypes");
     m_lstServiceTypes += desktopGroup.readEntry( "MimeType", QStringList(), ';' ); // freedesktop.org standard
     entryMap.remove("MimeType");
 
