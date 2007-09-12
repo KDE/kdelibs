@@ -712,21 +712,21 @@ int main(int argc, char *argv[])
 
     int rv = 1;
 
-    if ( args->isSet( "debug" ) ) {
-        KConfig dc( "kdebugrc", KConfig::OnlyLocal );
-        static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
-                               6031, 6035, 6036, 6040, 6041, 6045,
-                               6050, 6060, 6061, 7000, 7006, 170,
-                               171, 7101, 7002, 7019, 7027, 7014,
-                               7011, 6070, 6080, 6090, 0};
-        for ( int i = 0; areas[i]; ++i ) {
-            dc.setGroup( QString::number( areas[i] ) );
-            dc.writeEntry( "InfoOutput", 4 );
-        }
-        dc.sync();
+    bool outputDebug = args->isSet( "debug" );
 
-        kClearDebugConfig();
+    KConfig dc( "kdebugrc", KConfig::OnlyLocal );
+    static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
+                            6031, 6035, 6036, 6040, 6041, 6045,
+                            6050, 6060, 6061, 7000, 7006, 170,
+                            171, 7101, 7002, 7019, 7027, 7014,
+                            7011, 6070, 6080, 6090, 0};
+    for ( int i = 0; areas[i]; ++i ) {
+        dc.setGroup( QString::number( areas[i] ) );
+        dc.writeEntry( "InfoOutput", outputDebug ? 2 : 4 );
     }
+    dc.sync();
+
+    kClearDebugConfig();
 
     // create widgets
     KHTMLFactory *fac = new KHTMLFactory();
