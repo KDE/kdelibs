@@ -289,7 +289,8 @@ ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
   case TimeStamp:
     return Number((long unsigned int)event.timeStamp()); // ### long long ?
   case ReturnValue: // MSIE extension
-    return Boolean(event.defaultPrevented());
+    // return false == cancel, so this returns the -opposite- of defaultPrevented
+    return Boolean(!event.defaultPrevented());
   case CancelBubble: // MSIE extension
     return Boolean(event.propagationStopped());
   default:
