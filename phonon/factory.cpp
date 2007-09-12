@@ -269,7 +269,8 @@ PlatformPlugin *FactoryPrivate::platformPlugin()
             if (pluginLib.load()) {
                 pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
                 QPluginLoader pluginLoader(pluginLib.fileName());
-                Q_ASSERT(pluginLoader.load());
+                Q_ASSERT_X(pluginLoader.load(), Q_FUNC_INFO,
+                           qPrintable(pluginLoader.errorString()));
                 pDebug() << pluginLoader.instance();
                 m_platformPlugin = qobject_cast<PlatformPlugin *>(pluginLoader.instance());
                 pDebug() << m_platformPlugin;
