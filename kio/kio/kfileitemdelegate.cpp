@@ -42,6 +42,7 @@
 #include <kpixmapeffect.h>
 #include <kdirmodel.h>
 #include <kfileitem.h>
+#include <kcolorscheme.h>
 
 #include "delegateanimationhandler_p.h"
 
@@ -83,7 +84,7 @@ class KFileItemDelegate::Private
         QPainterPath roundedRectangle(const QRectF &rect, qreal radius) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QColor &color) const;
         QPixmap toPixmap(const QStyleOptionViewItem &option, const QIcon &icon) const;
-        inline QBrush brush(const QVariant &value) const;
+        inline QBrush brush(const QVariant &value, const QStyleOptionViewItem &option) const;
         QBrush composite(const QColor &over, const QBrush &brush) const;
         QBrush foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
         QBrush backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -507,10 +508,11 @@ QPixmap KFileItemDelegate::Private::toPixmap(const QStyleOptionViewItem &option,
     return pixmap;
 }
 
-
 // Converts a QVariant of type Brush or Color to a QBrush
-QBrush KFileItemDelegate::Private::brush(const QVariant &value) const
+QBrush KFileItemDelegate::Private::brush(const QVariant &value, const QStyleOptionViewItem &option) const
 {
+    if (value.userType() == qMetaTypeId<KStatefulBrush>())
+        return qvariant_cast<KStatefulBrush>(value).brush(option.palette);
     switch (value.type())
     {
         case QVariant::Color:
@@ -571,7 +573,7 @@ QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItem &o
     // If the model provides its own foreground color/brush for this item
     const QVariant value = index.model()->data(index, Qt::ForegroundRole);
     if (value.isValid())
-        return brush(value);
+        return brush(value, option);
 
     return option.palette.brush(QPalette::Text);
 }
@@ -590,7 +592,7 @@ QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &o
         // color/brush for this item
         const QVariant value = index.model()->data(index, Qt::BackgroundRole);
         if (value.isValid())
-            background = brush(value);
+            background = brush(value, option);
     }
 
     // If we don't already have a background brush, check if the background color
