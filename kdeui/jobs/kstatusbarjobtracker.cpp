@@ -135,19 +135,19 @@ bool KStatusBarJobTracker::eventFilter(QObject *obj, QEvent *event)
     return KAbstractWidgetJobTracker::eventFilter(obj, event);
 }
 
-void KStatusBarJobTracker::totalAmount(KJob */*job*/, KJob::Unit unit, qulonglong amount)
+void KStatusBarJobTracker::totalAmount(KJob *, KJob::Unit unit, qulonglong amount)
 {
     if (unit==KJob::Bytes) {
         d->totalSize = amount;
     }
 }
 
-void KStatusBarJobTracker::percent(KJob */*job*/, unsigned long percent)
+void KStatusBarJobTracker::percent(KJob *, unsigned long percent)
 {
     d->progressBar->setValue(percent);
 }
 
-void KStatusBarJobTracker::speed(KJob */*job*/, unsigned long value)
+void KStatusBarJobTracker::speed(KJob *, unsigned long value)
 {
     if (value == 0 ) { // speed is measured in bytes-per-second
         d->label->setText(i18n(" Stalled "));
