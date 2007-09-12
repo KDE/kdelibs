@@ -45,7 +45,7 @@
 class KConfigBase::Private
 {
 public:
-     Private( KComponentData* _componentData, KConfigBase* base )
+     Private(const KComponentData &_componentData, KConfigBase* base )
          : backEnd(0),
            readDefaults( false ),
            bDirty( false ),
@@ -60,9 +60,6 @@ public:
      {
          delete backEnd;
          backEnd = 0;
-
-         delete componentData;
-         componentData = 0;
      }
 
      /**
@@ -82,7 +79,7 @@ public:
      bool bDirty;
      bool bLocaleInitialized;
      bool bExpand;     // whether dollar expansion is used
-     KComponentData *componentData;
+     KComponentData componentData;
 
      /**
       * The currently selected group. */
@@ -90,12 +87,12 @@ public:
 };
 
 KConfigBase::KConfigBase()
-  : d( new Private( new KComponentData(KGlobal::mainComponent()) , this ) )
+  : d(new Private(KGlobal::mainComponent(), this))
 {
 }
 
 KConfigBase::KConfigBase(const KComponentData &componentData)
-    : d( new Private( new KComponentData( componentData ) , this ) )
+    : d(new Private(componentData, this))
 {
 }
 
@@ -106,7 +103,7 @@ KConfigBase::~KConfigBase()
 
 const KComponentData &KConfigBase::componentData() const
 {
-    return *d->componentData;
+    return d->componentData;
 }
 
 void KConfigBase::setLocale()
