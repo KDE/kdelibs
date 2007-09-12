@@ -52,7 +52,7 @@ public:
     m_actionGroup = new QActionGroup(0L);
   }
 
-  ~KSelectActionPrivate()
+  virtual ~KSelectActionPrivate()
   {
     delete m_actionGroup;
   }

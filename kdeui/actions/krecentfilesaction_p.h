@@ -39,6 +39,10 @@ public:
     m_noEntriesAction=0;
   }
 
+  virtual ~KRecentFilesActionPrivate()
+  {
+  }
+
   int m_maxItems;
   QMap<QAction*, QString> m_shortNames;
   QMap<QAction*, KUrl> m_urls;
