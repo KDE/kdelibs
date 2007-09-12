@@ -297,13 +297,13 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 {
 	QGridLayout *layout = new QGridLayout(this);
 
-	m_defaultRadio = new QRadioButton("Default:", this);
+	m_defaultRadio = new QRadioButton(i18n("Default:"), this);
 	QString defaultText = defaultSeq.toString();
 	if (defaultText.isEmpty())
 		defaultText = i18n("None");
 	QLabel *defaultLabel = new QLabel(defaultText, this);
 
-	m_customRadio = new QRadioButton("Custom:", this);
+	m_customRadio = new QRadioButton(i18n("Custom:"), this);
 	m_customEditor = new KKeySequenceWidget(this);
 
 	if (activeSeq == defaultSeq) {
