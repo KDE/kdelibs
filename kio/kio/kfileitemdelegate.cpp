@@ -526,6 +526,7 @@ QBrush KFileItemDelegate::Private::brush(const QVariant &value) const
 
 
 // Composites over over brush, using the Porter/Duff over operator
+// TODO move to KColorUtils?
 QBrush KFileItemDelegate::Private::composite(const QColor &over, const QBrush &brush) const
 {
     switch (brush.style())
@@ -563,32 +564,26 @@ QBrush KFileItemDelegate::Private::composite(const QColor &over, const QBrush &b
 
 QBrush KFileItemDelegate::Private::foregroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    const QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
-            QPalette::Normal : QPalette::Disabled;
-
     // Always use the highlight color for selected items
     if (option.state & QStyle::State_Selected)
-        return option.palette.brush(group, QPalette::HighlightedText);
+        return option.palette.brush(QPalette::HighlightedText);
 
     // If the model provides its own foreground color/brush for this item
     const QVariant value = index.model()->data(index, Qt::ForegroundRole);
     if (value.isValid())
         return brush(value);
 
-    return option.palette.brush(group, QPalette::Text);
+    return option.palette.brush(QPalette::Text);
 }
 
 
 QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    const QPalette::ColorGroup group = option.state & QStyle::State_Enabled ?
-            QPalette::Normal : QPalette::Disabled;
-
     QBrush background(Qt::NoBrush);
 
     // Always use the highlight color for selected items
     if (option.state & QStyle::State_Selected)
-        background = option.palette.brush(group, QPalette::Highlight);
+        background = option.palette.brush(QPalette::Highlight);
     else
     {
         // If the item isn't selected, check if model provides its own background
@@ -601,13 +596,13 @@ QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &o
     // If we don't already have a background brush, check if the background color
     // should be alternated for this item.
     if (background.style() == Qt::NoBrush && alternateBackground(option, index))
-        background = option.palette.brush(group, QPalette::AlternateBase);
+        background = option.palette.brush(QPalette::AlternateBase);
 
     // Composite the hover color over the background brush
     if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
     {
         // Use a lighter version of the highlight color with 1/3 opacity
-        QColor hover = option.palette.color(group, QPalette::Highlight).light();
+        QColor hover = option.palette.color(QPalette::Highlight).light();
         hover.setAlpha(88);
 
         background = composite(hover, background);
@@ -1000,11 +995,11 @@ QPixmap KFileItemDelegate::Private::decoration(const QStyleOptionViewItem &optio
         // text label, blend the pixmap with the highlight color.
         if (!option.showDecorationSelected && option.state & QStyle::State_Selected)
         {
-            QPalette::ColorGroup group = option.state & QStyle::State_Enabled ? 
-                    QPalette::Normal : QPalette::Disabled;
-
-            pixmap = KPixmapEffect::selectedPixmap(pixmap,
-                                option.palette.color(group, QPalette::Highlight));
+            QPainter p(&pixmap);
+            QColor color = option.palette.color(QPalette::Highlight);
+            color.setAlphaF(0.5);
+            p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+            p.fillRect(pixmap.rect(), color);
         }
 
         // Apply the configured hover effect
