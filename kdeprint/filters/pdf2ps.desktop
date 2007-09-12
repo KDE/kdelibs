@@ -2,5 +2,9 @@
 Name=pdf2ps
 Require=exec:/gs
 Comment=PDF to PostScript Converter
+Comment[el]=Μετατροπέας από PostScript σε PDF
+Comment[pt]=Conversor de PDF para PostScript
+Comment[pt_BR]=Conversor de PDF para PostScript
+Comment[sk]=Prevod súborov z PDF do PostScript
 MimeTypeIn=application/pdf
 MimeTypeOut=application/postscript
