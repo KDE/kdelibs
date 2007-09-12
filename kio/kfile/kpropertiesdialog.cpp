@@ -567,17 +567,13 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
 
   kDebug( 250 ) << "trader query: " << query;
   KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KPropertiesDialog/Plugin", query );
-  KService::List::ConstIterator it = offers.begin();
-  KService::List::ConstIterator end = offers.end();
-  for (; it != end; ++it )
-  {
-    KPropertiesDialogPlugin *plugin = KLibLoader
-        ::createInstance<KPropertiesDialogPlugin>( (*it)->library().toLocal8Bit().data(), q);
-    if ( !plugin )
+  foreach (const KService::Ptr ptr, offers) {
+    KPropertiesDialogPlugin *plugin = ptr->createInstance<KPropertiesDialogPlugin>(q);
+    if (!plugin)
         continue;
-    plugin->setObjectName( (*it)->name() );
+    plugin->setObjectName(ptr->name());
 
-        q->insertPlugin(plugin);
+    q->insertPlugin(plugin);
   }
 }
 
