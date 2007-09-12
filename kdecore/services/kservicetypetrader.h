@@ -157,14 +157,17 @@ public:
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
-        if (offers.isEmpty()) {
-            if (error) {
-                *error = KLibLoader::errorString(KLibLoader::ErrNoServiceFound);
+        foreach (const KService::Ptr ptr, offers) {
+            T *component = ptr->createInstance<T>(parent, args, error);
+            if (component) {
+                if (error)
+                    error->clear();
+                return component;
             }
-            return 0;
         }
-
-        return KService::createInstance<T>(offers.begin(), offers.end(), parent, args, error);
+        if (error) 
+            *error = i18n("No service matching the requirements was found");
+        return 0;
     }
 
     template <class T>
