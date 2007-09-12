@@ -168,7 +168,7 @@ KDataTool* KDataToolInfo::createTool( QObject* parent ) const
     if ( !d->service )
         return 0;
 
-    KDataTool* tool = KService::createInstance<KDataTool>( d->service, parent );
+    KDataTool* tool = d->service->createInstance<KDataTool>(parent);
     if ( tool )
         tool->setComponentData(d->componentData);
     return tool;

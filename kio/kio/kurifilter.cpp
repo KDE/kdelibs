@@ -401,19 +401,12 @@ void KUriFilter::loadPlugins()
 {
     const KService::List offers = KServiceTypeTrader::self()->query( "KUriFilter/Plugin" );
 
-    KService::List::ConstIterator it = offers.begin();
-    const KService::List::ConstIterator end = offers.end();
-
-    for (; it != end; ++it )
-    {
-        KUriFilterPlugin *plugin = KService::createInstance<KUriFilterPlugin>( *it );
-
-        if ( plugin ) {
-            // plugins set their name already
-            //plugin->setObjectName( (*it)->desktopEntryName() );
-            Q_ASSERT( !plugin->objectName().isEmpty() );
-            d->lstPlugins.append( plugin );
-        }
+    foreach (const KService::Ptr ptr, offers) {
+        KUriFilterPlugin *plugin = ptr->createInstance<KUriFilterPlugin>();
+        if (!plugin)
+            continue;
+        Q_ASSERT( !plugin->objectName().isEmpty() );
+        d->lstPlugins.append( plugin );
     }
 
     // NOTE: Plugin priority is determined by

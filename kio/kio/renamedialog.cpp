@@ -163,20 +163,16 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         if(!plugin_offers.isEmpty() ){
             RenameDialogPlugin::FileItem src( _src, d->mimeSrc, sizeSrc, ctimeSrc, mtimeSrc );
             RenameDialogPlugin::FileItem dst( _dest,d->mimeDest, sizeDest, ctimeDest, mtimeDest );
-            kDebug(7024) << "Offers";
-            KService::List::ConstIterator it = plugin_offers.begin();
-            const KService::List::ConstIterator end = plugin_offers.end();
-            for( ; it != end; ++it ){
-                RenameDialogPlugin *plugin = KLibLoader::createInstance<RenameDialogPlugin>( (*it)->library().toLocal8Bit(), this );
+            foreach (const KService::Ptr ptr, plugin_offers) {
+                RenameDialogPlugin *plugin = ptr->createInstance<RenameDialogPlugin>(this);
                 if( !plugin )
                     continue;
 
-                plugin->setObjectName( (*it)->name() );
+                plugin->setObjectName( ptr->name() );
                 if( plugin->wantToHandle( _mode, src, dst ) ) {
                     d->plugin = true;
                     plugin->handle( _mode, src, dst );
                     pLayout->addWidget(plugin );
-                    kDebug(7024) << "RenameDialogPlugin";
                     break;
                 } else {
                     delete plugin;

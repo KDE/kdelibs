@@ -52,13 +52,7 @@ KFileWriterProvider::loadPlugin(const QString& key) {
     if (offers.isEmpty()) {
         return 0;
     }
-    KService::Ptr service = *(offers.begin());
-    if (!service || !service->isValid()) {
-        return 0;
-    }
-    KFileWritePlugin* plugin
-        = KService::createInstance<KFileWritePlugin>(service);
-    return plugin;
+    return offers.first()->createInstance<KFileWritePlugin>();
 }
 
 #include "kfilewriteplugin.moc"
