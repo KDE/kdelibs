@@ -157,7 +157,7 @@ public:
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
-        foreach (const KService::Ptr ptr, offers) {
+        Q_FOREACH (const KService::Ptr &ptr, offers) {
             T *component = ptr->createInstance<T>(parent, args, error);
             if (component) {
                 if (error)
