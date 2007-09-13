@@ -264,9 +264,13 @@ public:
         ShadowShade
     };
 
+    /** Construct a copy of another KColorScheme. */
     KColorScheme(const KColorScheme&);
+
+    /** Destructor */
     virtual ~KColorScheme();
 
+    /** Standard assignment operator */
     KColorScheme& operator=(const KColorScheme&);
 
     /**
@@ -439,7 +443,7 @@ public:
     /**
      * Construct a stateful background brush from a specified QBrush (or
      * QColor, via QBrush's implicit constructor). The various states are
-     * determined from the base QColor (which fills in the Active state)
+     * determined from the base QBrush (which fills in the Active state)
      * according to the same rules used to build stateful color schemes from
      * the system color scheme. The state effects from the given KConfig are
      * used (if null, the system state effects are used).
@@ -461,9 +465,13 @@ public:
     explicit KStatefulBrush(const QBrush&, const QBrush &background,
                             KSharedConfigPtr = KSharedConfigPtr());
 
+    /** Construct a copy of another KStatefulBrush. */
     KStatefulBrush(const KStatefulBrush&);
+
+    /** Destructor */
     ~KStatefulBrush();
 
+    /** Standard assignment operator */
     KStatefulBrush& operator=(const KStatefulBrush&);
 
     /**
@@ -479,7 +487,7 @@ public:
     QBrush brush(const QPalette&) const;
 
     /**
-     * Retrieve the brush, using a QPalette reference to determine the correct
+     * Retrieve the brush, using a QWidget pointer to determine the correct
      * state. Use when you have a pointer to the widget that you are painting.
      *
      * @note If you pass an invalid widget, you will get a default brush (i.e.
