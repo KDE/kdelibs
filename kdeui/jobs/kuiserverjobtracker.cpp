@@ -47,8 +47,9 @@ KUiServerJobTracker::KUiServerJobTracker(QObject *parent)
 
 KUiServerJobTracker::~KUiServerJobTracker()
 {
-    foreach(int id, d->progressIds.values()) {
-        serverProxy->jobFinished(id, KJob::KilledJobError);
+    if (!d->progressIds.isEmpty()) {
+        qWarning() << "A KUiServerJobTracker instance contains"
+                   << d->progressIds.size() << "stalled jobs";
     }
 
     delete d;
