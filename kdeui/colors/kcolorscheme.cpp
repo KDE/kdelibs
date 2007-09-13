@@ -38,7 +38,7 @@ QBrush applyStateEffects(QPalette::ColorGroup state, const QBrush &brush,
     // FIXME - this code is temporary, proof-of-concept
     switch (state) {
         case QPalette::Inactive:
-            return QBrush(KColorUtils::darken(brush.color(), 0.3));
+            return QBrush(KColorUtils::darken(brush.color(), 0.2));
         default:
             return brush;
     }
@@ -54,7 +54,7 @@ QBrush applyStateEffects(QPalette::ColorGroup state, const QBrush &brush,
     // FIXME - this code is temporary, proof-of-concept
     switch (state) {
         case QPalette::Inactive:
-            return QBrush(KColorUtils::darken(brush.color(), 0.3));
+            return QBrush(KColorUtils::darken(brush.color(), 0.2));
         case QPalette::Disabled:
             return QBrush(KColorUtils::mix(brush.color(), background.color(), 0.7));
         default:
