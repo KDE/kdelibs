@@ -29,48 +29,6 @@
 #include <QtGui/QBrush>
 #include <QtGui/QWidget>
 
-typedef struct {
-    int NormalBackground[3];
-    int AlternateBackground[3];
-    int NormalText[3];
-    int InactiveText[3];
-} DefaultColors;
-
-DefaultColors defaultViewColors = {
-    { 255, 255, 255 },
-    { 241, 241, 239 },
-    {   0,   0,   0 },
-    { 152, 152, 152 }
-};
-
-DefaultColors defaultWindowColors = {
-    { 241, 241, 241 },
-    { 227, 227, 227 },
-    {   0,   0,   0 },
-    { 152, 152, 152 }
-};
-
-DefaultColors defaultButtonColors = {
-    { 218, 221, 215 },
-    { 218, 221, 215 },
-    {   0,   0,   0 },
-    { 152, 154, 149 }
-};
-
-DefaultColors defaultSelectionColors = {
-    {  60, 131, 208 },
-    {  60, 131, 208 },
-    { 255, 255, 255 },
-    { 177, 202, 232 }
-};
-
-DefaultColors defaultTooltipColors = {
-    { 255, 248, 209 },
-    { 255, 248, 209 },
-    {   0,   0,   0 },
-    { 232, 185, 149 }
-};
-
 // Apply state effects to a background brush
 QBrush applyStateEffects(QPalette::ColorGroup state, const QBrush &brush,
                          const KSharedConfigPtr &config)
@@ -104,11 +62,71 @@ QBrush applyStateEffects(QPalette::ColorGroup state, const QBrush &brush,
     }
 }
 
+//BEGIN default colors
+struct SetDefaultColors {
+    int NormalBackground[3];
+    int AlternateBackground[3];
+    int NormalText[3];
+    int InactiveText[3];
+};
+
+typedef int RoleDefaultColors[3];
+
+SetDefaultColors defaultViewColors = {
+    { 255, 255, 255 },
+    { 241, 241, 239 },
+    {   0,   0,   0 },
+    { 152, 152, 152 }
+};
+
+SetDefaultColors defaultWindowColors = {
+    { 241, 241, 241 },
+    { 227, 227, 227 },
+    {   0,   0,   0 },
+    { 152, 152, 152 }
+};
+
+SetDefaultColors defaultButtonColors = {
+    { 218, 221, 215 },
+    { 218, 221, 215 },
+    {   0,   0,   0 },
+    { 152, 154, 149 }
+};
+
+SetDefaultColors defaultSelectionColors = {
+    {  60, 131, 208 },
+    {  60, 131, 208 },
+    { 255, 255, 255 },
+    { 177, 202, 232 }
+};
+
+SetDefaultColors defaultTooltipColors = {
+    { 255, 248, 209 },
+    { 255, 248, 209 },
+    {   0,   0,   0 },
+    { 232, 185, 149 }
+};
+
+RoleDefaultColors defaultForegroundColors[] = {
+    { 255,   0,   0 }, // Active
+    {   0,   0, 255 }, // Link
+    {  88,  55, 150 }, // Visited
+    { 107,   0,   0 }, // Negative
+    {   0,  90,  95 }, // Neutral
+    {   0,  95,   0 }, // Positive
+};
+
+RoleDefaultColors defaultDecorationColors[] = {
+    {  72, 177,  60 }, // Hover
+    { 239, 132,  65 }, // Focus
+};
+//END default colors
+
 //BEGIN KColorSchemePrivate
 class KColorSchemePrivate : public QSharedData
 {
 public:
-    explicit KColorSchemePrivate(const KSharedConfigPtr&, QPalette::ColorGroup, const char*, DefaultColors);
+    explicit KColorSchemePrivate(const KSharedConfigPtr&, QPalette::ColorGroup, const char*, SetDefaultColors);
 
     QBrush background(KColorScheme::BackgroundRole) const;
     QBrush foreground(KColorScheme::ForegroundRole) const;
@@ -119,33 +137,47 @@ private:
         QBrush fg[8], bg[8], deco[2];
     } _brushes;
     qreal _contrast;
+
+    enum DefaultIndex {
+        Active = 0,
+        Link = 1,
+        Visited = 2,
+        Negative = 3,
+        Neutral = 4,
+        Positive = 5,
+        Hover = 0,
+        Focus = 1
+    };
 };
 
-#define DEFAULT(a) QColor( defaults.a[0], defaults.a[1], defaults.a[2] )
+#define DEFAULT(c) QColor( c[0], c[1], c[2] )
+#define  SET_DEFAULT(a) DEFAULT( defaults.a )
+#define   FG_DEFAULT(a) DEFAULT( defaultForegroundColors[a] )
+#define DECO_DEFAULT(a) DEFAULT( defaultDecorationColors[a] )
 
 KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
                                          QPalette::ColorGroup state,
                                          const char *group,
-                                         DefaultColors defaults)
+                                         SetDefaultColors defaults)
 {
     KConfigGroup cfg( config, group );
     _contrast = KGlobalSettings::contrastF( config );
 
     // loaded-from-config colors
-    _brushes.fg[0] = cfg.readEntry( "ForegroundNormal", DEFAULT(NormalText) );
-    _brushes.fg[1] = cfg.readEntry( "ForegroundInactive", DEFAULT(InactiveText) );
-    _brushes.fg[2] = cfg.readEntry( "ForegroundActive", QColor(255,0,0) );
-    _brushes.fg[3] = cfg.readEntry( "ForegroundLink", QColor(0,0,255) );
-    _brushes.fg[4] = cfg.readEntry( "ForegroundVisited", QColor(88,55,150) );
-    _brushes.fg[5] = cfg.readEntry( "ForegroundNegative", QColor(107,0,0) );
-    _brushes.fg[6] = cfg.readEntry( "ForegroundNeutral", QColor(0,90,95) );
-    _brushes.fg[7] = cfg.readEntry( "ForegroundPositive", QColor(0,95,0) );
+    _brushes.fg[0] = cfg.readEntry( "ForegroundNormal", SET_DEFAULT(NormalText) );
+    _brushes.fg[1] = cfg.readEntry( "ForegroundInactive", SET_DEFAULT(InactiveText) );
+    _brushes.fg[2] = cfg.readEntry( "ForegroundActive", FG_DEFAULT(Active) );
+    _brushes.fg[3] = cfg.readEntry( "ForegroundLink", FG_DEFAULT(Link) );
+    _brushes.fg[4] = cfg.readEntry( "ForegroundVisited", FG_DEFAULT(Visited) );
+    _brushes.fg[5] = cfg.readEntry( "ForegroundNegative", FG_DEFAULT(Negative) );
+    _brushes.fg[6] = cfg.readEntry( "ForegroundNeutral", FG_DEFAULT(Neutral) );
+    _brushes.fg[7] = cfg.readEntry( "ForegroundPositive", FG_DEFAULT(Positive) );
 
-    _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", DEFAULT(NormalBackground) );
-    _brushes.bg[1] = cfg.readEntry( "BackgroundAlternate", DEFAULT(AlternateBackground) );
+    _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", SET_DEFAULT(NormalBackground) );
+    _brushes.bg[1] = cfg.readEntry( "BackgroundAlternate", SET_DEFAULT(AlternateBackground) );
 
-    _brushes.deco[0] = cfg.readEntry( "DecorationHover", QColor(72,177,60) );
-    _brushes.deco[1] = cfg.readEntry( "DecorationFocus", QColor(239,132,65) );
+    _brushes.deco[0] = cfg.readEntry( "DecorationHover", DECO_DEFAULT(Hover) );
+    _brushes.deco[1] = cfg.readEntry( "DecorationFocus", DECO_DEFAULT(Focus) );
 
     // apply state adjustments
     if (state != QPalette::Active) {
