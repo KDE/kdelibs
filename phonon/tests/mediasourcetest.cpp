@@ -88,7 +88,20 @@ void MediaSourceTest::testLocalFile()
     //QCOMPARE(c.audioCaptureDevice(), AudioCaptureDevice());
     //QCOMPARE(c.videoCaptureDevice(), VideoCaptureDevice());
 
+    // non-existing files should become invalid sources
+    filename = "/some/invalid/file.xyz";
+    MediaSource invalid(filename);
+    QCOMPARE(invalid.type(), MediaSource::Invalid);
+    QCOMPARE(invalid.fileName(), QString());
+
     //test that a relative file path is correctly set as an absolute URL
+    QFile testFile("foo.ogg");
+    bool deleteFile = false;
+    if (!testFile.exists()) {
+        deleteFile = true;
+        testFile.open(QIODevice::WriteOnly);
+        testFile.close();
+    }
     filename = "foo.ogg";
     MediaSource relative(filename);
     //QCOMPARE(relative.fileName(), filename);
@@ -96,6 +109,9 @@ void MediaSourceTest::testLocalFile()
     QVERIFY(urlInfo.isAbsolute());
     QCOMPARE(urlInfo.fileName(), filename);
     QCOMPARE(urlInfo.absolutePath(), QDir::currentPath());
+    if (deleteFile) {
+        testFile.remove();
+    }
 }
 
 void MediaSourceTest::testUrl()
