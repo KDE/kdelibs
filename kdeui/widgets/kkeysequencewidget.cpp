@@ -335,13 +335,13 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		break;
 	default:
 		//Shift is not a modifier in the sense of Ctrl/Alt/WinKey
-        if (!(d->modifierKeys & ~Qt::SHIFT)) {
-           if (!KKeySequenceWidgetPrivate::isOkWhenModifierless(keyQt) && !d->allowModifierless) {
-               return;
-           } else {
-               d->modifierlessTimeout.start(600);
-           }
-        }
+		if (!(d->modifierKeys & ~Qt::SHIFT)) {
+			if (!KKeySequenceWidgetPrivate::isOkWhenModifierless(keyQt) && !d->allowModifierless) {
+				return;
+			} else {
+				d->modifierlessTimeout.start(600);
+			}
+		}
 
 		if (keyQt) {
 			if (d->nKey == 0) {
@@ -424,5 +424,3 @@ bool KKeySequenceWidgetPrivate::isOkWhenModifierless(int keyQt)
 
 #include "kkeysequencewidget.moc"
 #include "kkeysequencewidget_p.moc"
-
-// vim: ts=4
