@@ -92,7 +92,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar
     /** Emitted when the user right-clicks the empty area on the tab bar. */
     void emptyAreaContextMenu( const QPoint& );
     /** @deprecated use tabDoubleClicked(int) and newTabRequest() instead. */
-    KDE_DEPRECATED void mouseDoubleClick( int );
+    QT_MOC_COMPAT void mouseDoubleClick( int );
     /** Emitted when a tab has been double-clicked. */
     void tabDoubleClicked( int );
     /** Emitted when the user double-clicks the empty area on the tab bar. */
