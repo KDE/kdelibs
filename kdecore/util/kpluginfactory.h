@@ -37,35 +37,31 @@ class name : public baseFactory \
 { \
     public: \
         explicit name(const char * = 0, const char * = 0, QObject * = 0); \
-        explicit name(const KAboutData *, QObject * = 0); \
+        explicit name(const KAboutData &, QObject * = 0); \
         ~name(); \
         static KComponentData componentData(); \
     private: \
-        static KPluginFactory *s_instance; \
+        void init(); \
 };
 
 #define K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations) \
-KPluginFactory *name::s_instance = 0; \
+K_GLOBAL_STATIC(KComponentData, name##factorycomponentdata) \
 name::name(const char *componentName, const char *catalogName, QObject *parent) \
-    : baseFactory(componentName, catalogName, parent) \
+    : baseFactory(componentName, catalogName, parent) { init(); } \
+name::name(const KAboutData &aboutData, QObject *parent) \
+    : baseFactory(aboutData, parent) { init(); } \
+void name::init() \
 { \
-    Q_ASSERT(s_instance == 0); \
-    s_instance = this; \
+    if (name##factorycomponentdata->isValid()) \
+        setComponentData(*name##factorycomponentdata); \
+    else \
+        *name##factorycomponentdata = KPluginFactory::componentData(); \
     pluginRegistrations \
 } \
-name::name(const KAboutData *aboutData, QObject *parent) \
-    : baseFactory(aboutData, parent) \
-{ \
-    pluginRegistrations \
-} \
-name::~name() \
-{ \
-    s_instance = 0; \
-} \
+name::~name() {} \
 KComponentData name::componentData() \
 { \
-    Q_ASSERT(s_instance); \
-    return static_cast<baseFactory *>(s_instance)->componentData(); \
+    return *name##factorycomponentdata; \
 }
 
 #define K_PLUGIN_FACTORY_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations) \
@@ -488,6 +484,5 @@ T *KPluginFactory::create(QWidget *parentWidget, QObject *parent, const QString 
     }
     return t;
 }
-
 
 #endif // KDECORE_KPLUGINFACTORY_H

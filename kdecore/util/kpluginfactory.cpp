@@ -22,6 +22,9 @@
 #include "kpluginfactory.h"
 #include "kpluginfactory_p.h"
 
+#include <QtCore/QObjectCleanupHandler>
+
+K_GLOBAL_STATIC(QObjectCleanupHandler, factorycleanup)
 
 KPluginFactory::KPluginFactory(const char *componentName, const char *catalogName, QObject *parent)
     : QObject(parent), d_ptr(new KPluginFactoryPrivate)
@@ -31,6 +34,8 @@ KPluginFactory::KPluginFactory(const char *componentName, const char *catalogNam
 
     if (componentName)
         d->componentData = KComponentData(componentName, catalogName);
+
+    factorycleanup->add(this);
 }
 
 KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
@@ -39,6 +44,8 @@ KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
     Q_D(KPluginFactory);
     d->q_ptr = this;
     d->componentData = KComponentData(*aboutData);
+
+    factorycleanup->add(this);
 }
 
 KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
@@ -47,6 +54,8 @@ KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
     Q_D(KPluginFactory);
     d->q_ptr = this;
     d->componentData = KComponentData(aboutData);
+
+    factorycleanup->add(this);
 }
 
 KPluginFactory::KPluginFactory(QObject *parent)
@@ -54,11 +63,13 @@ KPluginFactory::KPluginFactory(QObject *parent)
 {
     Q_D(KPluginFactory);
     d->q_ptr = this;
+    factorycleanup->add(this);
 }
 
 KPluginFactory::KPluginFactory(KPluginFactoryPrivate &d, QObject *parent)
     : QObject(parent), d_ptr(&d)
 {
+    factorycleanup->add(this);
 }
 
 KPluginFactory::~KPluginFactory()
