@@ -983,7 +983,8 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
                 newText = QApplication::clipboard()->text( QClipboard::Selection );
                 setText( newText );
             } else {
-                clear();
+                setSelection(0, text().size());
+                del();
                 emit clearButtonClicked();
             }
             emit textChanged( newText );
