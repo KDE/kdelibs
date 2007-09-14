@@ -2006,7 +2006,7 @@ trim (dest, str)
 	}
 
       strncpy(tmp, &str[1], (end - str) - 1);
-      tmp[len-3] = '\0';
+      tmp[end-str-1] = '\0';
       *dest = tmp;
     }
   else
