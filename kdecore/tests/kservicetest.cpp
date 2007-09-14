@@ -130,10 +130,6 @@ void KServiceTest::testAllServices()
             lookedupService = KService::serviceByMenuId( menuId );
             QVERIFY( lookedupService ); // not null
             QCOMPARE( lookedupService->menuId(), menuId );
-
-            if (service->exec().isEmpty())
-                qWarning( "%s has an empty exec!", qPrintable( dep ) );
-            QVERIFY(!service->exec().isEmpty());
         }
     }
 }

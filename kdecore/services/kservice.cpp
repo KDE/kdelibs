@@ -141,11 +141,6 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
 
     m_strExec = desktopGroup.readPathEntry( "Exec" );
     entryMap.remove("Exec");
-    if (m_strType == "Application" && m_strExec.isEmpty())
-    {
-        kWarning(7012) << "The desktop entry file " << entryPath
-                       << " has Type=" << m_strType << " but has no Exec field." << endl;
-    }
 
     m_strIcon = desktopGroup.readEntry( "Icon" );
     entryMap.remove("Icon");
@@ -779,6 +774,11 @@ QString KService::type() const
 QString KService::exec() const
 {
     Q_D(const KService);
+    if (d->m_strType == "Application" && d->m_strExec.isEmpty())
+    {
+        kWarning(7012) << "The desktop entry file " << entryPath()
+                       << " has Type=" << d->m_strType << " but has no Exec field." << endl;
+    }
     return d->m_strExec;
 }
 
