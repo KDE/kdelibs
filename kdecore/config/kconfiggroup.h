@@ -668,7 +668,7 @@ inline T KConfigGroup::readEntry( const char* pKey, const T& aDefault) const
 }
 
 template <typename T>
-void KConfigGroup::writeEntry( const char* pKey, const QList<T>& value,
+inline void KConfigGroup::writeEntry( const char* pKey, const QList<T>& value,
                               WriteConfigFlags pFlags )
 {
 #if KCONFIG_QVARIANT_CHECK
