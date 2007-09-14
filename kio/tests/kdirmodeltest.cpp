@@ -29,6 +29,7 @@
 #endif
 #include <kdebug.h>
 #include <kio/deletejob.h>
+#include <kio/job.h>
 #include <kio/netaccess.h>
 #include <kdirwatch.h>
 #include "kiotesthelper.h"
@@ -297,12 +298,23 @@ void KDirModelTest::testCreateFile()
     //createTestFile("toplevelfile_4");
 }
 
+Q_DECLARE_METATYPE(QModelIndex); // needed for .value<QModelIndex>()
+
+// We want more info than just "the values differ", if they do.
+#define COMPARE_INDEXES(a, b) \
+    QCOMPARE(a.row(), b.row()); \
+    QCOMPARE(a.column(), b.column()); \
+    QCOMPARE(a.model(), b.model()); \
+    QCOMPARE(a.parent().isValid(), b.parent().isValid()); \
+    QCOMPARE(a, b);
+
 void KDirModelTest::testModifyFile()
 {
     const QString file = m_tempDir.name() + "toplevelfile_2";
     const KUrl url(file);
 
     qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
+    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
     connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
 
@@ -318,6 +330,43 @@ void KDirModelTest::testModifyFile()
     enterLoop();
 
     // If we come here, then dataChanged() was emitted - all good.
+    QCOMPARE(spyDataChanged.count(), 1);
+    QModelIndex receivedIndex = spyDataChanged[0][0].value<QModelIndex>();
+    COMPARE_INDEXES(receivedIndex, m_secondFileIndex);
+    receivedIndex = spyDataChanged[0][1].value<QModelIndex>();
+    QCOMPARE(receivedIndex.row(), m_secondFileIndex.row()); // only compare row; column is count-1
+
+    disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                &m_eventLoop, SLOT(quit()) );
+}
+
+void KDirModelTest::testRenameFile()
+{
+    const QString file = m_tempDir.name() + "toplevelfile_2";
+    const KUrl url(file);
+    const QString newFile = m_tempDir.name() + "toplevelfile_2_renamed";
+    const KUrl newUrl(newFile);
+
+    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
+    QSignalSpy spyDataChanged(&m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+             &m_eventLoop, SLOT(quit()) );
+
+    KIO::SimpleJob* job = KIO::rename(url, newUrl, true);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
+    enterLoop();
+
+    // If we come here, then dataChanged() was emitted - all good.
+    QCOMPARE(spyDataChanged.count(), 1);
+    COMPARE_INDEXES(spyDataChanged[0][0].value<QModelIndex>(), m_secondFileIndex);
+    QModelIndex receivedIndex = spyDataChanged[0][1].value<QModelIndex>();
+    QCOMPARE(receivedIndex.row(), m_secondFileIndex.row()); // only compare row; column is count-1
+
+    // check renaming happened
+    QCOMPARE( m_dirModel.itemForIndex( m_secondFileIndex ).url().url(), newUrl.url() );
 
     disconnect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(quit()) );

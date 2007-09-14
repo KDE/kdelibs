@@ -110,7 +110,8 @@ public:
   // In KDE 4 the interfaces have been adjusted using KFileItem
   // per value instead of per pointer. For backward compatibility
   // the KFileItemList signals are still supported.
-  QList<KFileItem> *lstNewItemsV2, *lstRefreshItemsV2;
+  QList<KFileItem> *lstNewItemsV2;
+  QList<QPair<KFileItem,KFileItem> > *lstRefreshItemsV2;
   QList<KFileItem> *lstMimeFilteredItemsV2, *lstRemoveItemsV2;
 
   int changes;
@@ -239,7 +240,7 @@ private:
   void emitRedirections( const KUrl &oldUrl, const KUrl &url );
 
   void aboutToRefreshItem( KFileItem *fileitem );
-  void emitRefreshItem( KFileItem *fileitem );
+  void emitRefreshItem( const KFileItem& oldItem, KFileItem *fileitem );
 
 #ifndef NDEBUG
   void printDebug();

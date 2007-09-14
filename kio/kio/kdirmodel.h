@@ -182,7 +182,7 @@ Q_SIGNALS:
 private Q_SLOTS:
     void slotNewItems(const QList<KFileItem>&);
     void slotDeleteItem(const KFileItem&);
-    void slotRefreshItems(const QList<KFileItem>&);
+    void slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
     void slotClear();
 
 private:

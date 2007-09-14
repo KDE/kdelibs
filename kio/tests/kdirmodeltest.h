@@ -40,6 +40,7 @@ private Q_SLOTS:
     void testDeleteFile();
     void testCreateFile();
     void testModifyFile();
+    void testRenameFile();
     void testExpandToUrl();
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib

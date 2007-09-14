@@ -559,9 +559,12 @@ Q_SIGNALS:
   /**
    * Signal an item to refresh (its mimetype/icon/name has changed).
    * Note: KFileItem::refresh has already been called on those items.
-   * @param items the items to refresh
+   * @param items the items to refresh. This is a list of pairs, where
+   * the first item in the pair is the OLD item, and the second item is the
+   * NEW item. This allows to track which item has changed, especially after
+   * a renaming.
    */
-  void refreshItems( const QList<KFileItem>& items );
+  void refreshItems( const QList<QPair<KFileItem, KFileItem> >& items );
 
   /**
    * Emitted to display information about running jobs.
@@ -668,7 +671,7 @@ private:
   void addNewItem( KFileItem *item );
   void addNewItems( const KFileItemList& items );
   void aboutToRefreshItem( const KFileItem *item );
-  void addRefreshItem( KFileItem *item );
+    void addRefreshItem( const KFileItem& oldItem, KFileItem *item );
   void emitItems();
   void emitDeleteItem( KFileItem *item );
     void redirect( const KUrl& oldUrl, const KUrl& newUrl );

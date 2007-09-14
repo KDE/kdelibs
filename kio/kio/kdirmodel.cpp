@@ -49,6 +49,7 @@ public:
 
     // m_item is KFileItem() for the root item
     const KFileItem& item() const { return m_item; }
+    void setItem(const KFileItem& item) { m_item = item; }
     KDirModelDirNode* parent() const { return m_parent; }
     // linear search
     int rowNumber() const;
@@ -264,8 +265,8 @@ void KDirModel::setDirLister(KDirLister* dirLister)
              this, SLOT(slotNewItems(QList<KFileItem>)) );
     connect( d->m_dirLister, SIGNAL(deleteItem(KFileItem)),
              this, SLOT(slotDeleteItem(KFileItem)) );
-    connect( d->m_dirLister, SIGNAL(refreshItems(QList<KFileItem>)),
-             this, SLOT(slotRefreshItems(QList<KFileItem>)) );
+    connect( d->m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem, KFileItem> >)),
+             this, SLOT(slotRefreshItems(QList<QPair<KFileItem, KFileItem> >)) );
     connect( d->m_dirLister, SIGNAL(clear()),
              this, SLOT(slotClear()) );
 }
@@ -355,14 +356,15 @@ void KDirModel::slotDeleteItem(const KFileItem& item)
     endRemoveRows();
 }
 
-void KDirModel::slotRefreshItems(const QList<KFileItem>& items)
+void KDirModel::slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 {
     QModelIndex topLeft, bottomRight;
 
     // Solution 1: we could emit dataChanged for one row (if items.size()==1) or all rows
     // Solution 2: more fine-grained, actually figure out the beginning and end rows.
-    for ( QList<KFileItem>::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
-        const QModelIndex index = indexForUrl( fit->url() ); // O(n*m); maybe we could look up to the parent only once
+    for ( QList<QPair<KFileItem, KFileItem> >::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
+        const QModelIndex index = indexForUrl( fit->first.url() ); // O(n*m); maybe we could look up to the parent only once
+        d->nodeForIndex(index)->setItem(fit->second);
         if (!topLeft.isValid() || index.row() < topLeft.row()) {
             topLeft = index;
         }
@@ -402,7 +404,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
 {
     if (index.isValid()) {
         KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
-        const KFileItem& item (node->item());
+        const KFileItem& item( node->item() );
         switch (role) {
         case Qt::DisplayRole:
             switch (index.column()) {
@@ -548,8 +550,8 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 KFileItem KDirModel::itemForIndex( const QModelIndex& index ) const
 {
     if (!index.isValid()) {
-        KFileItem* item=d->m_dirLister->rootItem();
-        return item?(*item):KFileItem();
+        KFileItem* item = d->m_dirLister->rootItem();
+        return item ? (*item) : KFileItem();
     } else {
         return static_cast<KDirModelNode*>(index.internalPointer())->item();
     }

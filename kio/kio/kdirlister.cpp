@@ -733,8 +733,9 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
       {
           // we need to refresh the item, because e.g. the permissions can have changed.
           aboutToRefreshItem( fileitem );
+          KFileItem oldItem = *fileitem;
           fileitem->refresh();
-          emitRefreshItem( fileitem );
+          emitRefreshItem( oldItem, fileitem );
       }
       else
           kDebug(7004) << "item not found";
@@ -789,12 +790,13 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
     else
     {
         aboutToRefreshItem( fileitem );
+        KFileItem oldItem = *fileitem;
         if( nameOnly )
             fileitem->setName( dst.fileName() );
         else
             fileitem->setUrl( dst );
         fileitem->refreshMimeType();
-        emitRefreshItem( fileitem );
+        emitRefreshItem( oldItem, fileitem );
     }
   }
 #ifdef DEBUG_CACHE
@@ -821,7 +823,7 @@ void KDirListerCache::aboutToRefreshItem( KFileItem *fileitem )
         kdl->aboutToRefreshItem( fileitem );
 }
 
-void KDirListerCache::emitRefreshItem( KFileItem *fileitem )
+void KDirListerCache::emitRefreshItem( const KFileItem& oldItem, KFileItem *fileitem )
 {
     // Look whether this item was shown in any view, i.e. held by any dirlister
     KUrl parentDir( fileitem->url() );
@@ -833,7 +835,7 @@ void KDirListerCache::emitRefreshItem( KFileItem *fileitem )
     // Also look in listersCurrentlyListing, in case the user manages to rename during a listing
     foreach ( KDirLister *kdl, (*dit).listersCurrentlyHolding + (*dit).listersCurrentlyListing )
     {
-        kdl->addRefreshItem( fileitem );
+        kdl->addRefreshItem( oldItem, fileitem );
         kdl->emitItems();
     }
 }
@@ -1451,10 +1453,11 @@ void KDirListerCache::slotUpdateResult( KJob * j )
                     kdl->aboutToRefreshItem( tmp );
 
                 //kDebug(7004) << "slotUpdateResult: file changed: " << tmp->name();
-                *tmp = item;
 
+                const KFileItem oldItem = *tmp;
+                *tmp = item;
                 foreach ( KDirLister *kdl, listers )
-                    kdl->addRefreshItem( tmp );
+                    kdl->addRefreshItem( oldItem, tmp /*must be address of item in cache*/ );
             }
             tmp->mark();
         }
@@ -1626,8 +1629,9 @@ void KDirListerCache::processPendingUpdates()
         if ( item ) {
             // we need to refresh the item, because e.g. the permissions can have changed.
             aboutToRefreshItem( item );
+            KFileItem oldItem = *item;
             item->refresh();
-            emitRefreshItem( item );
+            emitRefreshItem( oldItem, item );
         }
     }
     pendingUpdates.clear();
@@ -2121,7 +2125,7 @@ void KDirLister::aboutToRefreshItem( const KFileItem *item )
     d->refreshItemWasFiltered = false;
 }
 
-void KDirLister::addRefreshItem( KFileItem *item )
+void KDirLister::addRefreshItem( const KFileItem& oldItem, KFileItem* item )
 {
   bool isExcluded = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
 
@@ -2144,12 +2148,12 @@ void KDirLister::addRefreshItem( KFileItem *item )
       if ( !d->lstRefreshItems ) {
         Q_ASSERT( !d->lstRefreshItemsV2 );
         d->lstRefreshItems = new KFileItemList;
-        d->lstRefreshItemsV2 = new QList<KFileItem>;
+        d->lstRefreshItemsV2 = new QList<QPair<KFileItem,KFileItem> >;
       }
 
       Q_ASSERT( item );
       d->lstRefreshItems->append( item );
-      d->lstRefreshItemsV2->append( *item );
+      d->lstRefreshItemsV2->append( qMakePair(oldItem, *item) );
     }
   }
   else if ( !d->refreshItemWasFiltered )
@@ -2164,7 +2168,7 @@ void KDirLister::addRefreshItem( KFileItem *item )
     // a filter or does match an exclude filter
     Q_ASSERT( item );
     d->lstRemoveItems->append( item );
-    d->lstRefreshItemsV2->append( *item );
+    d->lstRefreshItemsV2->append( qMakePair(oldItem, *item) );
   }
 }
 
@@ -2185,7 +2189,7 @@ void KDirLister::emitItems()
   KFileItemList *tmpRefresh = d->lstRefreshItems;
   d->lstRefreshItems = 0;
 
-  QList<KFileItem> *tmpRefreshV2 = d->lstRefreshItemsV2;
+  QList<QPair<KFileItem, KFileItem> > *tmpRefreshV2 = d->lstRefreshItemsV2;
   d->lstRefreshItemsV2 = 0;
 
   KFileItemList *tmpRemove = d->lstRemoveItems;
