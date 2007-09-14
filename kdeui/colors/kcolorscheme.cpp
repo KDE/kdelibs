@@ -73,28 +73,28 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
         case QPalette::Disabled:
         {
             KConfigGroup cfg(config, "ColorEffects:Disabled");
-            _effects[Intensity] = cfg.readEntry( "Effects0", (int)IntensityNoEffect );
-            _effects[Color]     = cfg.readEntry( "Effects1", (int)ColorNoEffect );
-            _effects[Contrast]  = cfg.readEntry( "Effects2", (int)ContrastFade );
-            _amount[Intensity]  = cfg.readEntry( "Amount0", +0.0 );
-            _amount[Color]      = cfg.readEntry( "Amount1", +0.0 );
-            _amount[Contrast]   = cfg.readEntry( "Amount2", +0.7 );
+            _effects[Intensity] = cfg.readEntry( "IntensityEffect", (int)IntensityNoEffect );
+            _effects[Color]     = cfg.readEntry(     "ColorEffect", (int)ColorNoEffect );
+            _effects[Contrast]  = cfg.readEntry(  "ContrastEffect", (int)ContrastFade );
+            _amount[Intensity]  = cfg.readEntry( "IntensityAmount", +0.0 );
+            _amount[Color]      = cfg.readEntry(     "ColorAmount", +0.0 );
+            _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", +0.7 );
             if (_effects[0] >= ColorFade) {
-                _color = cfg.readEntry( "Color1", QColor(128,128,128) );
+                _color = cfg.readEntry( "Color", QColor(128,128,128) );
             }
         } break;
         // TODO (Inactive+Disabled) - create chain and fall through
         case QPalette::Inactive:
         {
             KConfigGroup cfg(config, "ColorEffects:Inactive");
-            _effects[Intensity] = cfg.readEntry( "Effects0", (int)IntensityShade );
-            _effects[Color]     = cfg.readEntry( "Effects1", (int)ColorNoEffect );
-            _effects[Contrast]  = cfg.readEntry( "Effects2", (int)ContrastFade );
-            _amount[Intensity]  = cfg.readEntry( "Amount0", -0.2 );
-            _amount[Color]      = cfg.readEntry( "Amount1", +0.0 );
-            _amount[Contrast]   = cfg.readEntry( "Amount2", +0.4 );
+            _effects[Intensity] = cfg.readEntry( "IntensityEffect", (int)IntensityShade );
+            _effects[Color]     = cfg.readEntry(     "ColorEffect", (int)ColorNoEffect );
+            _effects[Contrast]  = cfg.readEntry(  "ContrastEffect", (int)ContrastFade );
+            _amount[Intensity]  = cfg.readEntry( "IntensityAmount", -0.2 );
+            _amount[Color]      = cfg.readEntry(     "ColorAmount", +0.0 );
+            _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", +0.4 );
             if (_effects[Color] >= ColorFade) {
-                _color = cfg.readEntry( "Color1", QColor(128,128,128) );
+                _color = cfg.readEntry( "Color", QColor(128,128,128) );
             }
         } break;
         default:
