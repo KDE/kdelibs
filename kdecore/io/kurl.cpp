@@ -28,12 +28,10 @@
 
 #include "kurl.h"
 
-// KDE_QT_ONLY is first used for dcop/client (e.g. marshalling)
-#ifndef KDE_QT_ONLY
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kshell.h>
-#endif
+#include <kstringhandler.h>
 
 #include <stdio.h>
 #include <assert.h>
@@ -60,18 +58,10 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
 
   if (decodeDots)
   {
-#ifndef KDE_QT_ONLY
      static const QString &encodedDot = KGlobal::staticQString("%2e");
-#else
-     QString encodedDot("%2e");
-#endif
      if (path.indexOf(encodedDot, 0, Qt::CaseInsensitive) != -1)
      {
-#ifndef KDE_QT_ONLY
         static const QString &encodedDOT = KGlobal::staticQString("%2E"); // Uppercase!
-#else
-        QString encodedDOT("%2E");
-#endif
         path.replace(encodedDot, ".");
         path.replace(encodedDOT, ".");
         len = path.length();
@@ -928,6 +918,9 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 
   QString tmp = userName();
   if (!tmp.isEmpty()) {
+    if (!hasPass())
+      tmp = KStringHandler::csqueeze(tmp, 16);  
+      
     result += QUrl::toPercentEncoding(tmp);
     result += QLatin1Char('@');
   }
@@ -1568,11 +1561,7 @@ void KUrl::setPath( const QString& _path )
 #endif
     if ( scheme().isEmpty() )
         setScheme( "file" );
-#ifndef KDE_QT_ONLY
     QString path = KShell::tildeExpand( _path );
-#else
-    const QString& path = _path;
-#endif
     QUrl::setPath( path );
 }
 
