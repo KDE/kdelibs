@@ -12,6 +12,9 @@ X-KDE-ParentApp=kcontrol
 X-KDE-System-Settings-Parent-Category=computer-administration
 
 Name=Sound
+Name[ga]=Fuaim
+Name[nds]=Klang
+Name[sv]=Ljud
 Comment=Sound System Configuration
 Comment[ar]=ضبط نظام الصوت
 Comment[ca]=Configuració del sistema de so
