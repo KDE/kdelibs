@@ -510,6 +510,7 @@ void KDirOperator::slotToggleHidden(bool show)
 {
     d->dirLister->setShowingDotFiles(show);
     updateDir();
+    assureVisibleSelection();
 }
 
 void KDirOperator::togglePreview(bool on)
