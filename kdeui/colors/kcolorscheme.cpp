@@ -57,7 +57,7 @@ private:
         // Contrast
         ContrastNoEffect = 0,
         ContrastFade = 1,
-        ContrastTint = 2,
+        ContrastTint = 2
     };
 
     int _effects[3];
