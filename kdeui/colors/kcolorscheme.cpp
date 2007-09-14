@@ -57,7 +57,7 @@ private:
         // Contrast
         ContrastNoEffect = 0,
         ContrastFade = 1,
-        ContrastTint = 2
+        ContrastTint = 2,
     };
 
     int _effects[3];
@@ -69,27 +69,38 @@ private:
 StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &config)
     : _color(0,0,0,0)//, _chain(0) not needed yet
 {
-    QString group;
-    if(state == QPalette::Disabled)
-        group = "ColorEffects:Disabled";
-    else if(state == QPalette::Inactive)
-        group = "ColorEffects:Inactive";
-    else {
-        _effects[0] = 0;
-        _effects[1] = 0;
-        _effects[2] = 0;
-    }
-
-    if(! group.isEmpty()) {
-        KConfigGroup cfg(config, group);
-        _effects[Intensity] = cfg.readEntry( "IntensityEffect", (int)IntensityNoEffect );
-        _effects[Color]     = cfg.readEntry(     "ColorEffect", (int)ColorNoEffect );
-        _effects[Contrast]  = cfg.readEntry(  "ContrastEffect", (int)ContrastFade );
-        _amount[Intensity]  = cfg.readEntry( "IntensityAmount", 0.0 );
-        _amount[Color]      = cfg.readEntry(     "ColorAmount", 0.0 );
-        _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", 0.7 );
-        if (_effects[0] >= ColorFade)
-            _color = cfg.readEntry( "Color", QColor(128, 128, 128) );
+    switch (state) {
+        case QPalette::Disabled:
+        {
+            KConfigGroup cfg(config, "ColorEffects:Disabled");
+            _effects[Intensity] = cfg.readEntry( "IntensityEffect", (int)IntensityNoEffect );
+            _effects[Color]     = cfg.readEntry(     "ColorEffect", (int)ColorNoEffect );
+            _effects[Contrast]  = cfg.readEntry(  "ContrastEffect", (int)ContrastFade );
+            _amount[Intensity]  = cfg.readEntry( "IntensityAmount", +0.0 );
+            _amount[Color]      = cfg.readEntry(     "ColorAmount", +0.0 );
+            _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", +0.7 );
+            if (_effects[0] >= ColorFade) {
+                _color = cfg.readEntry( "Color", QColor(128,128,128) );
+            }
+        } break;
+        // TODO (Inactive+Disabled) - create chain and fall through
+        case QPalette::Inactive:
+        {
+            KConfigGroup cfg(config, "ColorEffects:Inactive");
+            _effects[Intensity] = cfg.readEntry( "IntensityEffect", (int)IntensityNoEffect );
+            _effects[Color]     = cfg.readEntry(     "ColorEffect", (int)ColorNoEffect );
+            _effects[Contrast]  = cfg.readEntry(  "ContrastEffect", (int)ContrastFade );
+            _amount[Intensity]  = cfg.readEntry( "IntensityAmount", +0.0 );
+            _amount[Color]      = cfg.readEntry(     "ColorAmount", +0.0 );
+            _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", +0.4 );
+            if (_effects[Color] >= ColorFade) {
+                _color = cfg.readEntry( "Color", QColor(128,128,128) );
+            }
+        } break;
+        default:
+            _effects[0] = 0;
+            _effects[1] = 0;
+            _effects[2] = 0;
     }
 }
 
