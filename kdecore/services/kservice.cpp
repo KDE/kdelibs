@@ -551,9 +551,14 @@ KService::Ptr KService::serviceByDesktopPath( const QString& _name )
 
 KService::Ptr KService::serviceByDesktopName( const QString& _name )
 {
-    KService::Ptr s = KServiceFactory::self()->findServiceByDesktopName( _name.toLower() );
-    if (!s && !_name.startsWith("kde4-"))
-        s = KServiceFactory::self()->findServiceByDesktopName( "kde4-"+_name.toLower() );
+    // Prefer kde4-konsole over kde-konsole, if both are available
+    const QString name = _name.toLower();
+    KService::Ptr s;
+    if (!_name.startsWith("kde4-"))
+        s = KServiceFactory::self()->findServiceByDesktopName( "kde4-" + name );
+    if (!s)
+        s = KServiceFactory::self()->findServiceByDesktopName( name );
+
     return s;
 }
 

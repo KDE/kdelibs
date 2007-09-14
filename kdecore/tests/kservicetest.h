@@ -40,6 +40,7 @@ private Q_SLOTS:
 
 private:
     QString m_firstOffer;
+    bool m_hasKde4Konsole;
 };
 
 #endif

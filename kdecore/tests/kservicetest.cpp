@@ -39,6 +39,8 @@ void KServiceTest::initTestCase()
     profilerc = KStandardDirs::locateLocal( "config", "servicetype_profilerc" );
     if ( !profilerc.isEmpty() )
         QFile::remove( profilerc );
+
+    m_hasKde4Konsole = false;
 }
 
 QTEST_KDEMAIN_CORE( KServiceTest )
@@ -112,20 +114,22 @@ void KServiceTest::testAllServices()
         QVERIFY( service->isType( KST_KService ) );
 
         const QString name = service->name();
-        const QString dep = service->entryPath();
-        //qDebug( "%s %s", qPrintable( name ), qPrintable( dep ) );
+        const QString entryPath = service->entryPath();
+        //kDebug() << name << "entryPath=" << entryPath << "menuId=" << service->menuId();
         QVERIFY( !name.isEmpty() );
-        QVERIFY( !dep.isEmpty() );
+        QVERIFY( !entryPath.isEmpty() );
 
-        KService::Ptr lookedupService = KService::serviceByDesktopPath( dep );
+        KService::Ptr lookedupService = KService::serviceByDesktopPath( entryPath );
         QVERIFY( lookedupService ); // not null
-        QCOMPARE( lookedupService->entryPath(), dep );
+        QCOMPARE( lookedupService->entryPath(), entryPath );
 
         if ( service->isApplication() )
         {
             const QString menuId = service->menuId();
             if ( menuId.isEmpty() )
-                qWarning( "%s has an empty menuId!", qPrintable( dep ) );
+                qWarning( "%s has an empty menuId!", qPrintable( entryPath ) );
+            else if ( menuId == "kde4-konsole.desktop" )
+                m_hasKde4Konsole = true;
             QVERIFY( !menuId.isEmpty() );
             lookedupService = KService::serviceByMenuId( menuId );
             QVERIFY( lookedupService ); // not null
@@ -157,9 +161,12 @@ void KServiceTest::testDBUSStartupType()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
+    if ( !m_hasKde4Konsole )
+        QSKIP( "kde4-konsole.desktop not available", SkipAll );
+    //KService::Ptr konsole = KService::serviceByMenuId( "kde4-konsole.desktop" );
     KService::Ptr konsole = KService::serviceByDesktopName( "konsole" );
-    if ( !konsole )
-        QSKIP( "konsole.desktop not found", SkipAll );
+    QVERIFY(konsole);
+    QCOMPARE(konsole->menuId(), QString("kde4-konsole.desktop"));
     //qDebug() << konsole->entryPath();
     QCOMPARE((int)konsole->DBUSStartupType(), (int)KService::DBUS_Unique);
 }
@@ -191,7 +198,7 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     for ( ; it != offers.end() ; it++ ) {
         const QString path = (*it)->entryPath();
         const int preference = (*it)->initialPreference(); // ## might be wrong if we use per-servicetype preferences...
-        qDebug( "%s has preference %d, allowAsDefault=%d", qPrintable( path ), preference, (*it)->allowAsDefault() );
+        //qDebug( "%s has preference %d, allowAsDefault=%d", qPrintable( path ), preference, (*it)->allowAsDefault() );
         if ( lastAllowedAsDefault && !(*it)->allowAsDefault() ) {
             // first "not allowed as default" offer
             lastAllowedAsDefault = false;
