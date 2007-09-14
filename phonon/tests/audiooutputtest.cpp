@@ -43,14 +43,14 @@ using namespace Phonon;
 
 void AudioOutputTest::initTestCase()
 {
-    QCoreApplication::setApplicationName("audiopathtest");
+    QCoreApplication::setApplicationName("audiooutputtest");
     Phonon::loadFakeBackend();
 }
 
 void AudioOutputTest::checkName()
 {
     AudioOutput ao(Phonon::NotificationCategory, this);
-    QCOMPARE(ao.name(), QLatin1String("audiopathtest"));
+    QCOMPARE(ao.name(), QLatin1String("audiooutputtest"));
     QString n("lsdf");
     ao.setName(n);
     QCOMPARE(ao.name(), n);
@@ -70,6 +70,7 @@ void AudioOutputTest::checkVolume()
         QCOMPARE(volumeSignalSpy.size(), 1);
         QCOMPARE(qvariant_cast<float>(volumeSignalSpy.takeFirst().at(0)), static_cast<float>(v));
     }
+    ao.setVolume(1.0); // the last value is what gets stored and restored next time
 }
 
 void AudioOutputTest::checkMute()
@@ -134,6 +135,8 @@ void AudioOutputTest::checkMute()
     QCOMPARE(static_cast<float>(ao.volume()), static_cast<float>(v));
     QCOMPARE(ao.isMuted(), false);
     QCOMPARE(muteSignalSpy.takeFirst().at(0).toBool(), false);
+
+    ao.setVolume(1.0); // the last value is what gets stored and restored next time
 }
 
 void AudioOutputTest::checkCategory()
