@@ -29,38 +29,126 @@
 #include <QtGui/QBrush>
 #include <QtGui/QWidget>
 
-// Apply state effects to a background brush
-QBrush applyStateEffects(QPalette::ColorGroup state, const QBrush &brush,
-                         const KSharedConfigPtr &config)
+//BEGIN StateEffects
+class StateEffects {
+public:
+    explicit StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr&);
+    ~StateEffects() {} //{ delete chain; } not needed yet
+
+    QBrush brush(const QBrush &background) const;
+    QBrush brush(const QBrush &foreground, const QBrush &background) const;
+
+private:
+    enum Effects {
+        // Effects
+        Intensity = 0,
+        Color = 1,
+        Contrast = 2,
+        // Intensity
+        IntensityNoEffect = 0,
+        IntensityShade = 1,
+        IntensityDarken = 2,
+        IntensityLighten = 3,
+        // Color
+        ColorNoEffect = 0,
+        ColorDesaturate = 1,
+        ColorFade = 2,
+        ColorTint = 3,
+        // Contrast
+        ContrastNoEffect = 0,
+        ContrastFade = 1,
+        ContrastTint = 2,
+    };
+
+    int _effects[3];
+    double _amount[3];
+    QColor _color;
+//     StateEffects *_chain; not needed yet
+};
+
+StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &config)
+    : _color(0,0,0,0)//, _chain(0) not needed yet
 {
-    Q_UNUSED(config); // TODO - actually use the config
-    // TODO - eventually, it would be great if this actually worked on brushes
-    // FIXME - this code is temporary, proof-of-concept
     switch (state) {
+        case QPalette::Disabled:
+        {
+            KConfigGroup cfg(config, "ColorEffects:Disabled");
+            _effects[Intensity] = cfg.readEntry( "Effects0", (int)IntensityNoEffect );
+            _effects[Color]     = cfg.readEntry( "Effects1", (int)ColorNoEffect );
+            _effects[Contrast]  = cfg.readEntry( "Effects2", (int)ContrastFade );
+            _amount[Intensity]  = cfg.readEntry( "Amount0", +0.0 );
+            _amount[Color]      = cfg.readEntry( "Amount1", +0.0 );
+            _amount[Contrast]   = cfg.readEntry( "Amount2", +0.7 );
+            if (_effects[0] >= ColorFade) {
+                _color = cfg.readEntry( "Color1", QColor(128,128,128) );
+            }
+        } break;
+        // TODO (Inactive+Disabled) - create chain and fall through
         case QPalette::Inactive:
-            return QBrush(KColorUtils::darken(brush.color(), 0.2));
+        {
+            KConfigGroup cfg(config, "ColorEffects:Inactive");
+            _effects[Intensity] = cfg.readEntry( "Effects0", (int)IntensityShade );
+            _effects[Color]     = cfg.readEntry( "Effects1", (int)ColorNoEffect );
+            _effects[Contrast]  = cfg.readEntry( "Effects2", (int)ContrastFade );
+            _amount[Intensity]  = cfg.readEntry( "Amount0", -0.2 );
+            _amount[Color]      = cfg.readEntry( "Amount1", +0.0 );
+            _amount[Contrast]   = cfg.readEntry( "Amount2", +0.4 );
+            if (_effects[Color] >= ColorFade) {
+                _color = cfg.readEntry( "Color1", QColor(128,128,128) );
+            }
+        } break;
         default:
-            return brush;
+            _effects[0] = 0;
+            _effects[1] = 0;
+            _effects[2] = 0;
     }
 }
 
-// Apply state effects to a foreground brush
-QBrush applyStateEffects(QPalette::ColorGroup state, const QBrush &brush,
-                         const QBrush &background,
-                         const KSharedConfigPtr &config)
+QBrush StateEffects::brush(const QBrush &background) const
 {
-    Q_UNUSED(config); // TODO - actually use the config
-    // TODO - eventually, it would be great if this actually worked on brushes
-    // FIXME - this code is temporary, proof-of-concept
-    switch (state) {
-        case QPalette::Inactive:
-            return QBrush(KColorUtils::darken(brush.color(), 0.2));
-        case QPalette::Disabled:
-            return QBrush(KColorUtils::mix(brush.color(), background.color(), 0.7));
-        default:
-            return brush;
+    QColor color = background.color(); // TODO - actually work on brushes
+    switch (_effects[Intensity]) {
+        case IntensityShade:
+            color = KColorUtils::shade(color, _amount[Intensity]);
+            break;
+        case IntensityDarken:
+            color = KColorUtils::darken(color, _amount[Intensity]);
+            break;
+        case IntensityLighten:
+            color = KColorUtils::lighten(color, _amount[Intensity]);
+            break;
     }
+    switch (_effects[Color]) {
+        case ColorDesaturate:
+            color = KColorUtils::darken(color, 0.0, 1.0 - _amount[Color]);
+            break;
+        case ColorFade:
+            color = KColorUtils::mix(color, _color, _amount[Color]);
+            break;
+        case ColorTint:
+            color = KColorUtils::tint(color, _color, _amount[Color]);
+            break;
+    }
+    return QBrush(color);
 }
+
+QBrush StateEffects::brush(const QBrush &foreground, const QBrush &background) const
+{
+    QColor color = foreground.color(); // TODO - actually work on brushes
+    QColor bg = background.color();
+    // Apply the foreground effects
+    switch (_effects[Contrast]) {
+        case ContrastFade:
+            color = KColorUtils::mix(color, bg, _amount[Contrast]);
+            break;
+        case ContrastTint:
+            color = KColorUtils::tint(color, bg, _amount[Contrast]);
+            break;
+    }
+    // Now apply global effects
+    return brush(color);
+}
+//END StateEffects
 
 //BEGIN default colors
 struct SetDefaultColors {
@@ -127,6 +215,7 @@ class KColorSchemePrivate : public QSharedData
 {
 public:
     explicit KColorSchemePrivate(const KSharedConfigPtr&, QPalette::ColorGroup, const char*, SetDefaultColors);
+    ~KColorSchemePrivate() {}
 
     QBrush background(KColorScheme::BackgroundRole) const;
     QBrush foreground(KColorScheme::ForegroundRole) const;
@@ -181,13 +270,14 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
 
     // apply state adjustments
     if (state != QPalette::Active) {
+        StateEffects effects(state, config);
         for (int i=0; i<7; i++) {
-            _brushes.fg[i] = applyStateEffects(state, _brushes.fg[i], _brushes.bg[0], config);
+            _brushes.fg[i] = effects.brush(_brushes.fg[i], _brushes.bg[0]);
         }
-        _brushes.deco[0] = applyStateEffects(state, _brushes.deco[0], _brushes.bg[0], config);
-        _brushes.deco[1] = applyStateEffects(state, _brushes.deco[1], _brushes.bg[0], config);
-        _brushes.bg[0] = applyStateEffects(state, _brushes.bg[0], config);
-        _brushes.bg[1] = applyStateEffects(state, _brushes.bg[0], config);
+        _brushes.deco[0] = effects.brush(_brushes.deco[0], _brushes.bg[0]);
+        _brushes.deco[1] = effects.brush(_brushes.deco[1], _brushes.bg[0]);
+        _brushes.bg[0] = effects.brush(_brushes.bg[0]);
+        _brushes.bg[1] = effects.brush(_brushes.bg[0]);
     }
 
     // calculated backgrounds
@@ -436,8 +526,8 @@ KStatefulBrush::KStatefulBrush(const QBrush &brush, KSharedConfigPtr config)
 {
     d = new KStatefulBrushPrivate[3];
     d[0] = brush;
-    d[1] = applyStateEffects(QPalette::Disabled, brush, config);
-    d[2] = applyStateEffects(QPalette::Inactive, brush, config);
+    d[1] = StateEffects(QPalette::Disabled, config).brush(brush);
+    d[2] = StateEffects(QPalette::Inactive, config).brush(brush);
 }
 
 KStatefulBrush::KStatefulBrush(const QBrush &brush, const QBrush &background,
@@ -445,8 +535,8 @@ KStatefulBrush::KStatefulBrush(const QBrush &brush, const QBrush &background,
 {
     d = new KStatefulBrushPrivate[3];
     d[0] = brush;
-    d[1] = applyStateEffects(QPalette::Disabled, brush, background, config);
-    d[2] = applyStateEffects(QPalette::Inactive, brush, background, config);
+    d[1] = StateEffects(QPalette::Disabled, config).brush(brush, background);
+    d[2] = StateEffects(QPalette::Inactive, config).brush(brush, background);
 }
 
 KStatefulBrush::KStatefulBrush(const KStatefulBrush &other)
