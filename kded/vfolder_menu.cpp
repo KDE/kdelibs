@@ -1022,7 +1022,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
             continue;
 
          KService::Ptr service;
-         emit newService(pathfn, &service);
+         emit newService(pathfn, &service); // calls KBuildSycoca::slotCreateEntry
          if (service)
             addApplication(prefix+fn, service);
       }
