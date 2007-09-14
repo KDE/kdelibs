@@ -491,7 +491,6 @@ public:
     virtual void layout();
     virtual void setStyle(RenderStyle *style);
 
-    virtual void close ( );
     virtual void updateFromElement();
 
     // don't even think about making this method virtual!
@@ -500,6 +499,8 @@ public:
     { return static_cast<DOM::HTMLTextAreaElementImpl*>(RenderObject::element()); }
 
     QString text();
+    void    setText(const QString& text);
+
     void highLightWord( unsigned int length, unsigned int pos );
 
     void select();

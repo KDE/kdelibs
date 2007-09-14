@@ -540,6 +540,7 @@ public:
     ~HTMLTextAreaElementImpl();
 
     virtual Id id() const;
+    virtual void childrenChanged();
 
     long cols() const { return m_cols; }
 
@@ -584,7 +585,6 @@ protected:
     WrapMethod m_wrap;
     QString m_value;
     bool m_changed: 1;    //States whether the contents has been editted
-    bool m_dirtyvalue: 1; //States whether m_value is out-of-date compared to the renderer or default
     bool m_unsubmittedFormChange: 1;
     bool m_initialized: 1;
 };

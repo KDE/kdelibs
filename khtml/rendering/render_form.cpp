@@ -1652,23 +1652,18 @@ RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     edit->setTabChangesFocus( ! settings->allowTabulation() );
 
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
+
+    setText(element->value().string());
 }
 
 RenderTextArea::~RenderTextArea()
 {
-    if ( element()->m_dirtyvalue ) {
-        element()->m_value = text();
-        element()->m_dirtyvalue = false;
-    }
+    element()->m_value = text();
 }
 
 void RenderTextArea::handleFocusOut()
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    if ( w && element()->m_dirtyvalue ) {
-        element()->m_value = text();
-        element()->m_dirtyvalue = false;
-    }
 
     if ( w && element()->m_changed ) {
         element()->m_changed = false;
@@ -1726,37 +1721,37 @@ void RenderTextArea::layout()
     }
 }
 
-void RenderTextArea::updateFromElement()
+void RenderTextArea::setText(const QString& newText)
 {
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-    w->setReadOnly(element()->readOnly());
-    QString elementText = element()->value().string();
-    if ( elementText != text() )
-    {
+
+    // When this is called, m_value in the element must have just 
+    // been set to new value --- see if we have any work to do
+    if ( newText != text() ) {
         bool blocked = w->blockSignals(true);
         QTextCursor tc = w->textCursor();
         int cx = w->horizontalScrollBar()->value();
         int cy = w->verticalScrollBar()->value();
-        w->setPlainText( elementText );
+        w->setPlainText( newText );
         w->setTextCursor(tc);
         w->horizontalScrollBar()->setValue( cx );
         w->verticalScrollBar()->setValue( cy );
         w->blockSignals(blocked);
     }
-    element()->m_dirtyvalue = false;
-
-    RenderFormElement::updateFromElement();
 }
 
-void RenderTextArea::close( )
+void RenderTextArea::updateFromElement()
 {
-    element()->setValue( element()->defaultValue() );
-
-    RenderFormElement::close();
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    w->setReadOnly(element()->readOnly());
+    RenderFormElement::updateFromElement();
 }
 
 QString RenderTextArea::text()
 {
+    // ### We may want to cache this when physical, since the DOM no longer caches, 
+    // but seeing how text() has always been called on textChanged(), it's probably not needed
+
     QString txt;
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
 #ifdef __GNUC__
@@ -1787,7 +1782,6 @@ void RenderTextArea::highLightWord( unsigned int length, unsigned int pos )
 
 void RenderTextArea::slotTextChanged()
 {
-    element()->m_dirtyvalue = true;
     element()->m_changed    = true;
     if (element()->m_value != text())
         element()->m_unsubmittedFormChange = true;

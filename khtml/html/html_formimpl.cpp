@@ -2676,6 +2676,17 @@ HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect() const
 
 // -------------------------------------------------------------------------
 
+/*
+ The rules for storing the value are simple:
+
+ If there is no renderer, either m_value or defaultValue() is definitive, 
+    depending on whether m_initialized is true or not.
+ If there is a renderer, m_render->text() is definitive. During its construction,
+    m_value is initialized if needed,  so there is no longer any need to worry 
+    about default values or not.
+*/
+
+
 HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f)
     : HTMLGenericFormElementImpl(doc, f)
 {
@@ -2684,7 +2695,6 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElem
     m_cols = 20;
     m_wrap = ta_Virtual;
     m_changed     = false;
-    m_dirtyvalue  = true;
     m_initialized = false;
     m_unsubmittedFormChange = false;
 }
@@ -2713,7 +2723,6 @@ void HTMLTextAreaElementImpl::restoreState(const QString &state)
 {
     setDefaultValue(state.left(state.length()-1));
     m_unsubmittedFormChange = state.endsWith('M');
-    // the close() in the rendertree will take care of transferring defaultvalue to 'value'
 }
 
 void HTMLTextAreaElementImpl::select(  )
@@ -2721,6 +2730,11 @@ void HTMLTextAreaElementImpl::select(  )
     if (m_render)
         static_cast<RenderTextArea*>(m_render)->select();
     onSelect();
+}
+
+void HTMLTextAreaElementImpl::childrenChanged()
+{
+    setValue(defaultValue());
 }
 
 void HTMLTextAreaElementImpl::parseAttribute(AttributeImpl *attr)
@@ -2842,15 +2856,13 @@ void HTMLTextAreaElementImpl::reset()
 
 DOMString HTMLTextAreaElementImpl::value()
 {
-    if ( m_dirtyvalue) {
-        if ( m_render && m_initialized ) {
-            RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
-            m_value = renderArea->text();
-            m_dirtyvalue = false;
-        } else {
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        m_value = renderArea->text();
+    } else {
+        if (!m_initialized) {
             m_value = defaultValue().string();
             m_initialized = true;
-            m_dirtyvalue = false;
         }
     }
 
@@ -2864,8 +2876,13 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
     // \r\n -> \n, \r -> \n
     QString str = _value.string().replace( "\r\n", "\n" );
     m_value = str.replace( '\r', '\n' );
-    m_dirtyvalue = false;
     m_initialized = true;
+
+    if (m_render) {
+        RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
+        renderArea->setText( m_value );
+    }
+
     setChanged(true);
 }
 
