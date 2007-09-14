@@ -450,7 +450,7 @@ private:
 KDE_DEPRECATED typedef KPluginFactory KLibFactory;
 
 template<typename T>
-T *KPluginFactory::create(QObject *parent, const QVariantList &args)
+inline T *KPluginFactory::create(QObject *parent, const QVariantList &args)
 {
     QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, QString());
 
@@ -462,7 +462,7 @@ T *KPluginFactory::create(QObject *parent, const QVariantList &args)
 }
 
 template<typename T>
-T *KPluginFactory::create(const QString &keyword, QObject *parent, const QVariantList &args)
+inline T *KPluginFactory::create(const QString &keyword, QObject *parent, const QVariantList &args)
 {
     QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, keyword);
 
@@ -474,7 +474,7 @@ T *KPluginFactory::create(const QString &keyword, QObject *parent, const QVarian
 }
 
 template<typename T>
-T *KPluginFactory::create(QWidget *parentWidget, QObject *parent, const QString &keyword, const QVariantList &args)
+inline T *KPluginFactory::create(QWidget *parentWidget, QObject *parent, const QString &keyword, const QVariantList &args)
 {
     QObject *o = create(T::staticMetaObject.className(), parentWidget, parent, args, keyword);
 
