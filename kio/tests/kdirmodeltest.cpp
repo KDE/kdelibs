@@ -298,7 +298,7 @@ void KDirModelTest::testCreateFile()
     //createTestFile("toplevelfile_4");
 }
 
-Q_DECLARE_METATYPE(QModelIndex); // needed for .value<QModelIndex>()
+Q_DECLARE_METATYPE(QModelIndex) // needed for .value<QModelIndex>()
 
 // We want more info than just "the values differ", if they do.
 #define COMPARE_INDEXES(a, b) \
