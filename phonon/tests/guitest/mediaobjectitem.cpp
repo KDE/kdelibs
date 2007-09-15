@@ -207,7 +207,9 @@ void MediaObjectItem::stateChanged(Phonon::State newstate, Phonon::State oldstat
         m_statelabel->setText("Error");
         {
             QString text = m_media.errorString();
-            if (!text.isEmpty()) {
+            if (text.isEmpty()) {
+                KMessageBox::error(m_frame, "reached error state but the backend did not report an errorString");
+            } else {
                 KMessageBox::error(m_frame, text);
             }
         }

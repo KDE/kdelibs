@@ -87,7 +87,7 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 sink = qgraphicsitem_cast<SinkItem *>(endItem);
             }
             if (source && sink && endItem != m_startItem) {
-                Path p = createPath(source->mediaNode(), sink->mediaNode());
+                Path p = Phonon::createPath(source->mediaNode(), sink->mediaNode());
                 if (p.isValid()) {
                     addItem(new PathItem(source, sink, p));
                     m_startItem = 0;
