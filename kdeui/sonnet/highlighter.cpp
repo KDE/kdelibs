@@ -90,7 +90,6 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     d->dict   = new Sonnet::Speller();
     if(d->dict->isValid()) {
 	d->spellCheckerFound = false;
-	KMessageBox::error(textEdit, i18n("Sorry any dict was found. Please reconfigure it"));
     } else {
         d->dictCache.insert(d->dict->language(),
                             d->dict);
