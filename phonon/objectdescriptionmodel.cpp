@@ -29,11 +29,6 @@
 #include <QtGui/QIcon>
 #include "factory.h"
 
-#ifdef USE_TROLLTECH_LABS_MODELTEST
-#include <QtCore/QSet>
-#include "modeltest.h"
-#endif
-
 #if Q_MOC_OUTPUT_REVISION != 59
 #ifdef __GNUC__
 #warning "Parts of this file were written to resemble the output of the moc"
@@ -274,13 +269,6 @@ void ObjectDescriptionModelData::setModelData(const QList<QExplicitlySharedDataP
 {
     d->data = newData;
     d->model->reset();
-#ifdef USE_TROLLTECH_LABS_MODELTEST
-    static QSet<QAbstractListModel *> modelTested;
-    if (!modelTested.contains(d->model)) {
-        new ModelTest(d->model, d->model);
-        modelTested << d->model;
-    }
-#endif
 }
 
 QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > ObjectDescriptionModelData::modelData() const

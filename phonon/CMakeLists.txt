@@ -44,12 +44,6 @@ set(phonon_LIB_SRCS
 	iodevicestream.cpp
 	)
 
-#option(PHONON_BUILD_MODELTEST  "Build Modeltest into libphonon's ObjectDescriptionModel. You need to have modeltest.h and modeltest.cpp from labs.trolltech.com for this to work. (Enabling this option effectively makes libphonon GPL).")
-#IF(PHONON_BUILD_MODELTEST)
-#set(phonon_LIB_SRCS ${phonon_LIB_SRCS} modeltest.cpp)
-#add_definitions(-DUSE_TROLLTECH_LABS_MODELTEST)
-#ENDIF(PHONON_BUILD_MODELTEST)
-
 kde4_add_library(phonon SHARED ${phonon_LIB_SRCS})
 target_link_libraries(phonon ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 set_target_properties(phonon PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )

@@ -1,6 +1,6 @@
 #!/bin/sh
 EXTRACT="`dirname $0`/extractmethodcalls.rb"
-IGNORE="^\(path\|platform\|iodevicestream\|medianode\|modeltest\|streaminterface\|mediasource\|abstractmediastream\|audioplayer\|globalconfig\|objectdescriptionmodel\|audiooutputadaptor\|effectwidget\|videoplayer\|seekslider\|volumeslider\).cpp$"
+IGNORE="^\(path\|platform\|iodevicestream\|medianode\|streaminterface\|mediasource\|abstractmediastream\|audioplayer\|globalconfig\|objectdescriptionmodel\|audiooutputadaptor\|effectwidget\|videoplayer\|seekslider\|volumeslider\).cpp$"
 
 if test -n "$1" -a -f "$1"; then
 	echo "preprocessing $1"
