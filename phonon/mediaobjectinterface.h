@@ -270,6 +270,12 @@ class MediaObjectInterface
          * If the backend does not know how to handle the source it needs to
          * change state to Phonon::ErrorState. Don't bother about handling KIO
          * URLs. It is enough to handle AbstractMediaStream sources correctly.
+         *
+         * \warning Keep the MediaSource object around as long as the backend
+         * uses the AbstractMediaStream returned by the MediaSource. In case
+         * that no other reference to the MediaSource exists and it is set to
+         * MediaSource::autoDelete, the AbstractMediaStream is deleted when the
+         * last MediaSource ref is deleted.
          */
         virtual void setSource(const MediaSource &) = 0;
 
@@ -281,6 +287,12 @@ class MediaObjectInterface
          * \param source The source to transition to (crossfade/gapless/gap). If
          * \p source is an invalid MediaSource object then the queue is empty
          * and the playback should stop normally.
+         *
+         * \warning Keep the MediaSource object around as long as the backend
+         * uses the AbstractMediaStream returned by the MediaSource. In case
+         * that no other reference to the MediaSource exists and it is set to
+         * MediaSource::autoDelete, the AbstractMediaStream is deleted when the
+         * last MediaSource ref is deleted.
          */
         virtual void setNextSource(const MediaSource &source) = 0;
 

@@ -22,6 +22,7 @@
 
 #include "mediasource.h"
 #include "objectdescription.h"
+#include "abstractmediastream.h"
 
 #include <QtCore/QUrl>
 #include <QtCore/QString>
@@ -37,8 +38,17 @@ class MediaSourcePrivate : public QSharedData
     public:
         MediaSourcePrivate(MediaSource::Type t)
             : type(t), discType(NoDisc), stream(0),
-            resourceFile(0)
+            ioDevice(0),
+            autoDelete(false)
         {
+        }
+
+        ~MediaSourcePrivate()
+        {
+            if (autoDelete) {
+                delete stream;
+                delete ioDevice;
+            }
         }
 
         MediaSource::Type type;
@@ -48,8 +58,9 @@ class MediaSourcePrivate : public QSharedData
         QPointer<AbstractMediaStream> stream;
 //        AudioCaptureDevice audioCaptureDevice;
 //        VideoCaptureDevice videoCaptureDevice;
-        QFile *resourceFile;
+        QIODevice *ioDevice;
         QList<MediaSource> linkedSources;
+        bool autoDelete;
 };
 
 } // namespace Phonon

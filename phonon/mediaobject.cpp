@@ -242,14 +242,19 @@ MediaSource MediaObject::currentSource() const
 void MediaObject::setCurrentSource(const MediaSource &newSource)
 {
     K_D(MediaObject);
+    if (!k_ptr->backendObject()) {
+        d->mediaSource = newSource;
+        return;
+    }
+
     MediaSource::Type oldSourceType = d->mediaSource.type();
     d->mediaSource = newSource;
-    if (k_ptr->backendObject()) {
-        stop(); // first call stop as that often is the expected state
-                // for setting a new URL
+    d->kiofallback = 0; // kiofallback auto-deletes
+
+    stop(); // first call stop as that often is the expected state
+            // for setting a new URL
 
 //X         if (url.scheme() == "http") {
-//X             if (!d->kiofallback) {
 //X                 d->kiofallback = Platform::createMediaStream(url, this);
 //X                 if (d->kiofallback) {
 //X                     // k_ptr->backendObject() is a MediaObject, we want a ByteStream
@@ -262,25 +267,23 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
 //X                     d->kiofallback->setupKioStreaming();
 //X                     return;
 //X                 }
-//X             }
 //X         }
 
-        if (d->mediaSource.type() == MediaSource::Stream) {
-            Q_ASSERT(d->mediaSource.stream());
-            d->mediaSource.stream()->d_func()->setMediaObjectPrivate(d);
-        } else if (d->mediaSource.type() == MediaSource::Invalid) {
-            pWarning() << "requested invalid MediaSource for the current source of MediaObject";
-            return;
-        }
-        if (d->mediaSource.type() == MediaSource::Url && oldSourceType != MediaSource::Url) {
-            disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
-            connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
-        } else if (d->mediaSource.type() != MediaSource::Url && oldSourceType == MediaSource::Url) {
-            disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
-            connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
-        }
-        INTERFACE_CALL(setSource(d->mediaSource));
+    if (d->mediaSource.type() == MediaSource::Stream) {
+        Q_ASSERT(d->mediaSource.stream());
+        d->mediaSource.stream()->d_func()->setMediaObjectPrivate(d);
+    } else if (d->mediaSource.type() == MediaSource::Invalid) {
+        pWarning() << "requested invalid MediaSource for the current source of MediaObject";
+        return;
     }
+    if (d->mediaSource.type() == MediaSource::Url && oldSourceType != MediaSource::Url) {
+        disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
+        connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
+    } else if (d->mediaSource.type() != MediaSource::Url && oldSourceType == MediaSource::Url) {
+        disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
+        connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
+    }
+    INTERFACE_CALL(setSource(d->mediaSource));
 }
 
 QList<MediaSource> MediaObject::queue() const
@@ -369,7 +372,7 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
             emit q->stateChanged(newstate, oldstate);
             return;
         }
-        pDebug() << "backend MediaObject reached ErrorState, trying ByteStream now";
+        pDebug() << "backend MediaObject reached ErrorState, trying Platform::createMediaStream now";
         ignoreLoadingToBufferingStateChange = false;
         switch (oldstate) {
         case Phonon::BufferingState:
@@ -387,7 +390,9 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
             break;
         }
         kiofallback->d_func()->setMediaObjectPrivate(this);
-        pINTERFACE_CALL(setSource(MediaSource(kiofallback)));
+        MediaSource mediaSource(kiofallback);
+        mediaSource.setAutoDelete(true);
+        pINTERFACE_CALL(setSource(mediaSource));
         if (oldstate == Phonon::BufferingState) {
             q->play();
         }
@@ -419,6 +424,9 @@ void MediaObjectPrivate::_k_aboutToFinish()
 {
     Q_Q(MediaObject);
     pDebug() << Q_FUNC_INFO;
+
+    kiofallback = 0; // kiofallback auto-deletes
+
     if (sourceQueue.isEmpty()) {
         pINTERFACE_CALL(setNextSource(MediaSource()));
         emit q->aboutToFinish();
@@ -485,11 +493,13 @@ void MediaObjectPrivate::setupBackendObject()
     }
 
     // set up attributes
-    if (mediaSource.type() == MediaSource::Stream) {
-        Q_ASSERT(mediaSource.stream());
-        mediaSource.stream()->d_func()->setMediaObjectPrivate(this);
+    if (mediaSource.type() != MediaSource::Invalid) {
+        if (mediaSource.type() == MediaSource::Stream) {
+            Q_ASSERT(mediaSource.stream());
+            mediaSource.stream()->d_func()->setMediaObjectPrivate(this);
+        }
+        pINTERFACE_CALL(setSource(mediaSource));
     }
-    pINTERFACE_CALL(setSource(mediaSource));
 }
 
 void MediaObjectPrivate::_k_resumePlay()

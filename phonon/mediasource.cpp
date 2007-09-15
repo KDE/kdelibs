@@ -20,6 +20,8 @@
 #include "mediasource.h"
 #include "mediasource_p.h"
 #include "iodevicestream.h"
+#include "abstractmediastream_p.h"
+
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
 
@@ -37,8 +39,8 @@ MediaSource::MediaSource(const QString &filename)
     if (filename.size() > 0 && filename.startsWith(QLatin1Char(':'))) {
         // it's a Qt resource -> use QFile
         d->type = Stream;
-        d->resourceFile = new QFile(filename);
-        d->stream = new IODeviceStream(d->resourceFile, d->resourceFile);
+        d->ioDevice = new QFile(filename);
+        d->stream = new IODeviceStream(d->ioDevice, d->ioDevice);
     } else {
         const QFileInfo fileInfo(filename);
         if (fileInfo.exists()) {
@@ -85,6 +87,7 @@ MediaSource::MediaSource(QIODevice *ioDevice)
 {
     if (ioDevice) {
         d->stream = new IODeviceStream(ioDevice, ioDevice);
+        d->ioDevice = ioDevice;
     } else {
         d->type = Invalid;
     }
@@ -108,8 +111,6 @@ QList<MediaSource> MediaSource::substreams() const
 
 MediaSource::~MediaSource()
 {
-    delete d->resourceFile;
-    d->resourceFile = 0;
 }
 
 MediaSource::MediaSource(const MediaSource &rhs)
@@ -126,6 +127,16 @@ MediaSource &MediaSource::operator=(const MediaSource &rhs)
 bool MediaSource::operator==(const MediaSource &rhs) const
 {
     return d == rhs.d;
+}
+
+void MediaSource::setAutoDelete(bool autoDelete)
+{
+    d->autoDelete = autoDelete;
+}
+
+bool MediaSource::autoDelete() const
+{
+    return d->autoDelete;
 }
 
 MediaSource::Type MediaSource::type() const

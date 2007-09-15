@@ -76,8 +76,6 @@ PHONON_CLASSNAME::PHONON_CLASSNAME(QObject *parent) \
     : QObject(parent), \
     MediaNode(*new PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private)()) \
 { \
-    PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private) *d = k_func(); \
-    d->createBackendObject(); \
 } \
 void PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private)::createBackendObject() \
 { \
@@ -94,8 +92,6 @@ void PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private)::createBackendObject() \
 PHONON_CLASSNAME::PHONON_CLASSNAME(QObject *parent) \
     : parentclass(*new PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private), parent) \
 { \
-    PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private) *d = k_func(); \
-    d->createBackendObject(); \
 } \
 void PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private)::createBackendObject() \
 { \

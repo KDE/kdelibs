@@ -21,10 +21,10 @@
 #define STREAMINTERFACE_P_H
 
 #include "streaminterface.h"
+#include "mediasource.h"
 
 namespace Phonon
 {
-class AbstractMediaStream;
 class StreamInterfacePrivate
 {
     friend class StreamInterface;
@@ -33,13 +33,12 @@ class StreamInterfacePrivate
 
     protected:
         StreamInterfacePrivate()
-            : mediaStream(0),
-            connected(false)
+            : connected(false)
         {
         }
 
         StreamInterface* q;
-        AbstractMediaStream *mediaStream;
+        MediaSource mediaSource;
         bool connected;
 };
 

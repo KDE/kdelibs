@@ -35,7 +35,8 @@ StreamInterface::StreamInterface()
 StreamInterface::~StreamInterface()
 {
     if (d->connected) {
-        d->mediaStream->d_func()->setStreamInterface(0);
+        AbstractMediaStreamPrivate *dd = d->mediaSource.stream()->d_func();
+        dd->setStreamInterface(0);
     }
     delete d;
 }
@@ -44,15 +45,18 @@ void StreamInterface::connectToSource(const MediaSource &mediaSource)
 {
     Q_ASSERT(!d->connected);
     d->connected = true;
-    d->mediaStream = mediaSource.stream();
-    mediaSource.stream()->d_func()->setStreamInterface(this);
+    d->mediaSource = mediaSource;
+    Q_ASSERT(d->mediaSource.type() == MediaSource::Stream);
+    Q_ASSERT(d->mediaSource.stream());
+    AbstractMediaStreamPrivate *dd = d->mediaSource.stream()->d_func();
+    dd->setStreamInterface(this);
 }
 
 void StreamInterfacePrivate::disconnectMediaStream()
 {
     Q_ASSERT(connected);
     connected = false;
-    mediaStream = 0;
+    mediaSource = MediaSource();
     q->endOfData();
     q->setStreamSeekable(false);
 }
@@ -60,24 +64,24 @@ void StreamInterfacePrivate::disconnectMediaStream()
 void StreamInterface::needData()
 {
     Q_ASSERT(d->connected);
-    if (d->mediaStream) {
-        d->mediaStream->needData();
+    if (d->mediaSource.type() == MediaSource::Stream) {
+        d->mediaSource.stream()->needData();
     }
 }
 
 void StreamInterface::enoughData()
 {
     Q_ASSERT(d->connected);
-    if (d->mediaStream) {
-        d->mediaStream->enoughData();
+    if (d->mediaSource.type() == MediaSource::Stream) {
+        d->mediaSource.stream()->enoughData();
     }
 }
 
 void StreamInterface::seekStream(qint64 offset)
 {
     Q_ASSERT(d->connected);
-    if (d->mediaStream) {
-        d->mediaStream->seekStream(offset);
+    if (d->mediaSource.type() == MediaSource::Stream) {
+        d->mediaSource.stream()->seekStream(offset);
     }
 }
 

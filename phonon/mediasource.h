@@ -175,6 +175,25 @@ class PHONON_EXPORT MediaSource
         bool operator==(const MediaSource &rhs) const;
 
         /**
+         * Tell the AbstractMediaStream to auto-delete itself if enable is \p true.
+         *
+         * The default setting is \p false, for safety. If you turn it on, be careful about
+         * accessing the AbstractMediaStream after playback has started. The AbstractMediaStream is
+         * reference counted then so as long as you keep the MediaSource object wrapping the stream
+         * the object will not get deleted.
+         *
+         * \see autoDelete
+         */
+        void setAutoDelete(bool enable);
+
+        /**
+         * Returns the setting of the auto-delete option. The default is \p false.
+         *
+         * \see setAutoDelete
+         */
+        bool autoDelete() const;
+
+        /**
          * Returns the type of the MediaSource (depends on the constructor that was used).
          *
          * \see Type
