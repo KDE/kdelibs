@@ -260,8 +260,8 @@ namespace khtml
 	virtual ~CachedImage();
 
 	QPixmap pixmap() const;
-	QPixmap scaled_pixmap(int xWidth, int xHeight);
-	QPixmap tiled_pixmap(const QColor& bg, int xWidth = -1, int xHeight = -1);
+	QPixmap* scaled_pixmap(int xWidth, int xHeight);
+	QPixmap  tiled_pixmap(const QColor& bg, int xWidth = -1, int xHeight = -1);
 
         QSize pixmap_size() const;    // returns the size of the complete (i.e. when finished) loading
         //QRect valid_rect() const;     // returns the rectangle of pixmap that has been loaded already

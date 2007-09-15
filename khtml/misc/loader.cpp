@@ -491,7 +491,7 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
 
     //See whether we should scale
     if (xWidth != s.width() || xHeight != s.height()) {
-        src = &scaled_pixmap(xWidth, xHeight);
+        src = scaled_pixmap(xWidth, xHeight);
     } else {
         src = &r;
     }
@@ -557,22 +557,23 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
 }
 
 
-QPixmap CachedImage::scaled_pixmap( int xWidth, int xHeight )
+QPixmap* CachedImage::scaled_pixmap( int xWidth, int xHeight )
 {
     // no error indication for background images
-    if(m_hadError||m_wasBlocked) return *Cache::nullPixmap;
+    if(m_hadError||m_wasBlocked) return Cache::nullPixmap;
 
     // If we don't have size yet, nothing to draw yet
     if (i->size().width() == 0 || i->size().height() == 0)
-        return *Cache::nullPixmap;
+        return Cache::nullPixmap;
 
     if (scaled) {
         if (scaled->width() == xWidth && scaled->height() == xHeight)
-            return *scaled;
+            return scaled;
         delete scaled;
     }
 
-    //### this is quite awful performance-wise
+    //### this is quite awful performance-wise. It should avoid 
+    // alpha if not needed, and go to pixmap, etc. 
     QImage im(xWidth, xHeight, QImage::Format_ARGB32_Premultiplied);
 
     QPainter paint(&im);
@@ -583,7 +584,7 @@ QPixmap CachedImage::scaled_pixmap( int xWidth, int xHeight )
 
     scaled = new QPixmap(QPixmap::fromImage(im));
 
-    return *scaled;
+    return scaled;
 }
 
 QPixmap CachedImage::pixmap( ) const
