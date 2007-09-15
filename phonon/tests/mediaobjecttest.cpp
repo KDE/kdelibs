@@ -41,6 +41,7 @@ class MediaObjectTest : public QObject
         void continueTestPlayOnFinish();
     protected Q_SLOTS:
         void setMediaAndPlay();
+        void stateChanged(Phonon::State, Phonon::State);
 
     private Q_SLOTS:
         void init();
@@ -92,6 +93,11 @@ static qint64 castQVariantToInt64(const QVariant &variant)
 static qint32 castQVariantToInt32(const QVariant &variant)
 {
     return *reinterpret_cast<const qint32 *>(variant.constData());
+}
+
+void MediaObjectTest::stateChanged(Phonon::State newstate, Phonon::State oldstate)
+{
+    qDebug() << ".........................................................." << QTest::toString(oldstate) << "to" << QTest::toString(newstate);
 }
 
 void MediaObjectTest::init()
@@ -204,6 +210,7 @@ void MediaObjectTest::initTestCase()
     m_url = testUrl();
 
     m_media = new MediaObject(this);
+    connect(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), SLOT(stateChanged(Phonon::State, Phonon::State)));
     m_stateChangedSignalSpy = new QSignalSpy(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
     QVERIFY(m_stateChangedSignalSpy->isValid());
     m_stateChangedSignalSpy->clear();
@@ -227,14 +234,6 @@ void MediaObjectTest::initTestCase()
     }
     if (s != Phonon::LoadingState) {
         // there should exactly be one state change
-        if (emits > 1) {
-            QList<QList<QVariant> > emittedSignals = *m_stateChangedSignalSpy;
-            foreach (const QList<QVariant> &args, emittedSignals) {
-                Phonon::State newstate = qvariant_cast<Phonon::State>(args.at(0));
-                Phonon::State oldstate = qvariant_cast<Phonon::State>(args.at(1));
-                qDebug() << oldstate << "->" << newstate;
-            }
-        }
         QCOMPARE(emits, 1);
         QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
         Phonon::State newstate = qvariant_cast<Phonon::State>(args.at(0));
