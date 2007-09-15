@@ -190,6 +190,7 @@ KStyle::KStyle() : clickedLabel(0), d(0)
 
     setWidgetLayoutProp(WT_ToolButton, ToolButton::ContentsMargin, 5);
     setWidgetLayoutProp(WT_ToolButton, ToolButton::FocusMargin,    3);
+    setWidgetLayoutProp(WT_ToolButton, ToolButton::MenuIndicatorSize, 11);
 
     setWidgetLayoutProp(WT_ToolBoxTab, ToolBoxTab::Margin, 0);
 
@@ -2001,7 +2002,10 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
         case PM_ButtonShiftVertical:
             return widgetLayoutProp(WT_PushButton, PushButton::PressedShiftVertical, option, widget);
         case PM_MenuButtonIndicator:
-            return widgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize, option, widget);
+            if (qstyleoption_cast<const QStyleOptionToolButton*>(option))
+                return widgetLayoutProp(WT_ToolButton, ToolButton::MenuIndicatorSize, option, widget);
+            else
+                return widgetLayoutProp(WT_PushButton, PushButton::MenuIndicatorSize, option, widget);
 
         case PM_SplitterWidth:
             return widgetLayoutProp(WT_Splitter, Splitter::Width, option, widget);
@@ -2756,8 +2760,10 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                     drawKStylePrimitive(WT_ToolButton, Generic::FocusIndicator, &tOpt, focusRect, pal, bflags, p, w);
                 }
 
-                // label
-                drawControl(CE_ToolButtonLabel, opt, p, w);
+                // CE_ToolButtonLabel expects a readjusted rect, for the button area proper
+                QStyleOptionToolButton labelOpt = *tool;
+                labelOpt.rect = buttonRect;
+                drawControl(CE_ToolButtonLabel, &labelOpt, p, w);
 
                 return;
             }
@@ -3384,7 +3390,24 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
 
         case CT_ToolButton:
         {
-            return expandDim(contentsSize, WT_ToolButton, ToolButton::ContentsMargin, option, widget);
+            // We want to avoid super-skiny buttons, for things like "up" when icons + text
+            // For this, we would like to make width >= height.
+            // However, once we get here, QToolButton may have already put in the menu area 
+            // (PM_MenuButtonIndicator) into the width. So we may have to take it out, fix things 
+            // up, and add it back in. So much for class-independent rendering...
+            QSize size = contentsSize;
+            int   menuAreaWidth = 0;
+            if (const QStyleOptionToolButton* tbOpt = qstyleoption_cast<const QStyleOptionToolButton*>(option)) {
+                if (tbOpt->features & QStyleOptionToolButton::MenuButtonPopup)
+                    menuAreaWidth = pixelMetric(QStyle::PM_MenuButtonIndicator, option, widget);
+            }
+            
+            size.setWidth(size.width() - menuAreaWidth);
+            if (size.width() < size.height())
+                size.setWidth(size.height());
+            size.setWidth(size.width() + menuAreaWidth);
+            
+            return expandDim(size, WT_ToolButton, ToolButton::ContentsMargin, option, widget);
         }
 
         case CT_CheckBox:

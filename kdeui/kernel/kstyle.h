@@ -444,7 +444,7 @@ protected:
             DefaultIndicatorMargin = FocusMargin    + MarginInc, ///< (\b 0 ?) Default indicator between the very outside and the bevel. KStyle may reserve this for auto-default buttons, too, for consistency's sake. [the MainMargin sets QStyle::PM_ButtonDefaultIndicator]
             PressedShiftHorizontal = DefaultIndicatorMargin + MarginInc, ///< (\b 2) horizontal contents shift for pressed buttons [sets QStyle::PM_ButtonShiftHorizontal]
             PressedShiftVertical, ///< (\b 2) vertical contents shift for pressed buttons [sets QStyle::PM_ButtonShiftVertical]
-            MenuIndicatorSize, ///< (\b 8) Space inside the content area, which is allocated to the down arrow if there is a popup menu [sets QStyle::PM_MenuButtonIndicator]
+            MenuIndicatorSize, ///< (\b 8) Space inside the content area, which is allocated to the down arrow if there is a popup menu [sets QStyle::PM_MenuButtonIndicator, except for toolbuttons]
             TextToIconSpace ///< (\b 6) space between the icon and the text if both exist
         };
 
@@ -1316,6 +1316,8 @@ protected:
             FocusMargin            = ContentsMargin + MarginInc,
                              /**< (\b 3) Where the focus rect will be drawn, measured
                               * from the widget sides */
+            MenuIndicatorSize, /** < (\b 11) Size for the separate menu arrows on tool buttons
+                                 * [sets QStyle::PM_MenuButtonIndicator wheen a toolbutton option is passed in] */
             DummyProp      = FocusMargin + MarginInc
         };
 
