@@ -227,6 +227,14 @@ void MediaObjectTest::initTestCase()
     }
     if (s != Phonon::LoadingState) {
         // there should exactly be one state change
+        if (emits > 1) {
+            QList<QList<QVariant> > emittedSignals = *m_stateChangedSignalSpy;
+            foreach (const QList<QVariant> &args, emittedSignals) {
+                Phonon::State newstate = qvariant_cast<Phonon::State>(args.at(0));
+                Phonon::State oldstate = qvariant_cast<Phonon::State>(args.at(1));
+                qDebug() << oldstate << "->" << newstate;
+            }
+        }
         QCOMPARE(emits, 1);
         QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
         Phonon::State newstate = qvariant_cast<Phonon::State>(args.at(0));
