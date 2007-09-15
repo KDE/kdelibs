@@ -4797,7 +4797,10 @@ void HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
 void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
 {
-   if (gzwrite(m_request.fcache, buffer, nbytes) == 0)
+   // gzwrite's second argument has type void *const in 1.1.4 and
+   // const void * in 1.2.3, so we futz buffer to a plain void * and
+   // let the compiler figure it out from there.
+   if (gzwrite(m_request.fcache, const_cast<void *>(static_cast<const void *>(buffer)), nbytes) == 0)
    {
       kWarning(7113) << "writeCacheEntry: writing " << nbytes << " bytes failed.";
       gzclose(m_request.fcache);
