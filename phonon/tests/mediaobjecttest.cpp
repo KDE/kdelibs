@@ -78,6 +78,7 @@ class MediaObjectTest : public QObject
         QUrl m_url;
         Phonon::MediaObject *m_media;
         QSignalSpy *m_stateChangedSignalSpy;
+        QFile *m_file;
 };
 const qint64 ALLOWED_TIME_FOR_SEEKING = 1000; // 1s
 const qint64 ALLOWED_SEEK_INACCURACY = 300; // 0.3s
@@ -104,7 +105,11 @@ void MediaObjectTest::init()
 {
     QCOMPARE(m_media->outputPaths().size(), 1);
     if (m_media->state() == Phonon::ErrorState) {
-        m_media->setCurrentSource(m_url);
+        if (m_file) {
+            m_media->setCurrentSource(m_file);
+        } else {
+            m_media->setCurrentSource(m_url);
+        }
         if (m_media->state() == Phonon::ErrorState) {
             QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
         }
@@ -204,10 +209,19 @@ void MediaObjectTest::pausePlayback()
 
 void MediaObjectTest::initTestCase()
 {
+    m_file = 0;
     QCoreApplication::setApplicationName("mediaobjecttest");
 
     Phonon::loadFakeBackend();
-    m_url = testUrl();
+    if (getenv("PHONON_TEST_MEDIASTREAM")) {
+        m_file = new QFile(getenv("PHONON_TESTURL"));
+        m_file->open(QIODevice::ReadOnly);
+        QVERIFY(m_file->isOpen());
+        QVERIFY(m_file->isReadable());
+    }
+    if (!m_file) {
+        m_url = testUrl();
+    }
 
     m_media = new MediaObject(this);
     connect(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), SLOT(stateChanged(Phonon::State, Phonon::State)));
@@ -220,9 +234,14 @@ void MediaObjectTest::initTestCase()
     QCOMPARE(m_media->currentSource().type(), MediaSource::Invalid);
     QCOMPARE(m_media->state(), Phonon::LoadingState);
     QCOMPARE(m_stateChangedSignalSpy->count(), 0);
-    m_media->setCurrentSource(m_url);
-    QCOMPARE(m_media->currentSource().type(), MediaSource::Url);
-    QCOMPARE(m_media->currentSource().url(), m_url);
+    if (m_file) {
+        m_media->setCurrentSource(m_file);
+        QCOMPARE(m_media->currentSource().type(), MediaSource::Stream);
+    } else {
+        m_media->setCurrentSource(m_url);
+        QCOMPARE(m_media->currentSource().type(), MediaSource::Url);
+        QCOMPARE(m_media->currentSource().url(), m_url);
+    }
     int emits = m_stateChangedSignalSpy->count();
     Phonon::State s = m_media->state();
     if (s == Phonon::LoadingState) {
@@ -565,7 +584,11 @@ void MediaObjectTest::setMediaAndPlay()
     QVERIFY(m_media->currentSource().type() != MediaSource::Invalid);
     Phonon::State state = m_media->state();
     QVERIFY(state == Phonon::StoppedState || state == Phonon::PlayingState);
-    m_media->setCurrentSource(m_url);
+    if (m_file) {
+        m_media->setCurrentSource(m_file);
+    } else {
+        m_media->setCurrentSource(m_url);
+    }
     // before calling play() we better make sure that if play() finishes very fast that we don't get
     // called again
     disconnect(m_media, SIGNAL(finished()), this, SLOT(setMediaAndPlay()));
@@ -633,7 +656,11 @@ void MediaObjectTest::testPlayBeforeFinish()
     QCOMPARE(m_stateChangedSignalSpy->size(), 0);
     Phonon::State state = m_media->state();
     QCOMPARE(state, Phonon::PlayingState);
-    m_media->setCurrentSource(m_url);
+    if (m_file) {
+        m_media->setCurrentSource(m_file);
+    } else {
+        m_media->setCurrentSource(m_url);
+    }
     m_media->play();
     if (m_stateChangedSignalSpy->isEmpty()) {
         QVERIFY(QTest::kWaitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000));
@@ -737,6 +764,7 @@ void MediaObjectTest::cleanupTestCase()
 {
     delete m_stateChangedSignalSpy;
     delete m_media;
+    delete m_file;
 }
 
 QTEST_MAIN(MediaObjectTest)
