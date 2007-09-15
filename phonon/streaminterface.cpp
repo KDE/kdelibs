@@ -56,6 +56,11 @@ void StreamInterfacePrivate::disconnectMediaStream()
 {
     Q_ASSERT(connected);
     connected = false;
+
+    // if mediaSource has autoDelete set then it will delete the AbstractMediaStream again who's
+    // destructor is calling us right now
+    mediaSource.setAutoDelete(false);
+
     mediaSource = MediaSource();
     q->endOfData();
     q->setStreamSeekable(false);
@@ -63,7 +68,6 @@ void StreamInterfacePrivate::disconnectMediaStream()
 
 void StreamInterface::needData()
 {
-    Q_ASSERT(d->connected);
     if (d->mediaSource.type() == MediaSource::Stream) {
         d->mediaSource.stream()->needData();
     }
