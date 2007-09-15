@@ -247,10 +247,11 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
         styleDecl.removeProperty(pId);
       else {
         int important = propvalue.indexOf("!important", 0, Qt::CaseInsensitive);
+	int exception_value = exception;
         if (important == -1)
-            styleDecl.setProperty(pId, DOM::DOMString(propvalue), "", exception);
+            styleDecl.setProperty(pId, DOM::DOMString(propvalue), "", exception_value);
         else
-            styleDecl.setProperty(pId, DOM::DOMString(propvalue.left(important - 1)), "important", exception);
+            styleDecl.setProperty(pId, DOM::DOMString(propvalue.left(important - 1)), "important", exception_value);
       }
     }
     else
