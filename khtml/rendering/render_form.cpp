@@ -1331,7 +1331,7 @@ ListBoxWidget* RenderSelect::createListBox()
 {
     ListBoxWidget *lb = new ListBoxWidget(view()->widget());
     lb->setSelectionMode(m_multiple ? QListWidget::ExtendedSelection : QListWidget::SingleSelection);
-    connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
+    connect( lb, SIGNAL( itemSelectionChanged() ), this, SLOT( slotSelectionChanged() ) );
     m_ignoreSelectEvents = false;
     lb->setMouseTracking(true);
 
