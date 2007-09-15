@@ -1,4 +1,5 @@
 add_subdirectory(fakebackend)
+add_subdirectory(guitest)
 
 include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_SOURCE_DIR}/solid)
 
@@ -37,7 +38,6 @@ PHONON_EXECUTABLE_TESTS(
 	#bytestreamtest2
 	seekslidertest
 	volumeslidertest
-	#guitest
 	mediaplayer
 	)
 
@@ -61,7 +61,6 @@ PHONON_UNIT_TESTS_FAKE(
 target_link_libraries(backendcapabilitiestest ${KDE4_KDECORE_LIBS})
 target_link_libraries(audiodevicelisttest ${KDE4_KAUDIODEVICELIST_LIBS})
 target_link_libraries(mediaplayer ${KDE4_KIO_LIBS})
-#target_link_libraries(guitest ${KDE4_KIO_LIBS})
 target_link_libraries(backendcapabilitiestest_fake ${KDE4_KDECORE_LIBS})
 #methodtest does not link against libphonon
 kde4_add_test_executable(methodtest methodtest.cpp ../factory.cpp ../phononnamespace.cpp)
