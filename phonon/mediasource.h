@@ -131,6 +131,8 @@ class PHONON_EXPORT MediaSource
          * passing a pointer to that object. %Phonon will never delete the \p stream.
          *
          * \param stream The AbstractMediaStream subclass to provide the media data.
+         *
+         * \see setAutoDelete
          */
         MediaSource(AbstractMediaStream *stream); //krazy:exclude=explicit
 
@@ -142,6 +144,8 @@ class PHONON_EXPORT MediaSource
          * \param ioDevice An arbitrary readable QIODevice subclass. If the device is not opened
          * MediaSource will open it as QIODevice::ReadOnly. Sequential I/O devices are possible,
          * too. For those MediaObject::isSeekable() will have to return false obviously.
+         *
+         * \see setAutoDelete
          */
         MediaSource(QIODevice *ioDevice); //krazy:exclude=explicit
 
@@ -175,11 +179,12 @@ class PHONON_EXPORT MediaSource
         bool operator==(const MediaSource &rhs) const;
 
         /**
-         * Tell the AbstractMediaStream to auto-delete itself if enable is \p true.
+         * Tell the MediaSource to take ownership of the AbstractMediaStream or QIODevice that was
+         * passed in the constructor.
          *
-         * The default setting is \p false, for safety. If you turn it on, be careful about
-         * accessing the AbstractMediaStream after playback has started. The AbstractMediaStream is
-         * reference counted then so as long as you keep the MediaSource object wrapping the stream
+         * The default setting is \p false, for safety. If you turn it on, you should only access
+         * the AbstractMediaStream/QIODevice object as long as you yourself keep a MediaSource
+         * object around. As long as you keep the MediaSource object wrapping the stream/device
          * the object will not get deleted.
          *
          * \see autoDelete
