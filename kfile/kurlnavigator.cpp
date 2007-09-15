@@ -249,7 +249,7 @@ public:
     QString retrievePlacePath(const QString& path) const;
 
     /**
-     * Returns TRUE, if the MIME type of the path represents a
+     * Returns true, if the MIME type of the path represents a
      * compressed file like TAR or ZIP.
      */
     bool isCompressedPath(const KUrl& path) const;
