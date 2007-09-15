@@ -248,6 +248,12 @@ public:
      */
     QString retrievePlacePath(const QString& path) const;
 
+    /**
+     * Returns TRUE, if the MIME type of the path represents a
+     * compressed file like TAR or ZIP.
+     */
+    bool isCompressedPath(const KUrl& path) const;
+
     bool m_editable;
     bool m_active;
     bool m_showPlacesSelector;
@@ -752,6 +758,19 @@ QString KUrlNavigator::Private::retrievePlacePath(const QString& path) const
     return (idx < 0) ? path : path.left(idx);
 }
 
+bool KUrlNavigator::Private::isCompressedPath(const KUrl& path) const
+{
+    const KMimeType::Ptr mime = KMimeType::findByPath(path.url(KUrl::RemoveTrailingSlash));
+    // TODO: check whether those MIME-types are complete
+    return  mime->is("application/x-compressed-tar") ||
+            mime->is("application/x-tar") ||
+            mime->is("application/x-tarz") ||
+            mime->is("application/x-tbz") ||
+            mime->is("application/x-tgz") ||
+            mime->is("application/x-tzo") ||
+            mime->is("application/x-zip");
+}
+
 void KUrlNavigator::Private::createHostLineEdit(const QString& text)
 {
     Q_ASSERT(m_host == 0);
@@ -815,21 +834,21 @@ KUrl KUrlNavigator::url(int index) const
 
     // keep scheme, hostname etc. maybe we will need this in the future
     // for e.g. browsing ftp repositories.
-    KUrl newUrl(url());
+    KUrl newUrl = url();
     newUrl.setPath(QString());
 
-    QString path(url().path());
-    if (!path.isEmpty()) {
+    QString pathOrUrl = url().pathOrUrl();
+    if (!pathOrUrl.isEmpty()) {
         if (index == 0) {
             // prevent the last "/" from being stripped
             // or we end up with an empty path
-            path = "/";
+            pathOrUrl = "/";
         } else {
-            path = path.section('/', 0, index);
+            pathOrUrl = pathOrUrl.section('/', 0, index);
         }
     }
 
-    newUrl.setPath(path);
+    newUrl.setPath(KUrl(pathOrUrl).path());
     return newUrl;
 }
 
@@ -939,18 +958,35 @@ void KUrlNavigator::setUrl(const KUrl& url)
 {
     QString urlStr(url.pathOrUrl());
 
-    // TODO: a patch has been submitted by Filip Brcic which adjusts
-    // the URL for tar and zip files. See https://bugs.kde.org/show_bug.cgi?id=142781
-    // for details. The URL navigator part of the patch has not been committed yet,
-    // as the URL navigator will be subject of change and
-    // we might think of a more generic approach to check the protocol + MIME type for
-    // this use case.
-
     //kDebug() << "setUrl(" << url << ")";
     if (urlStr.length() > 0 && urlStr.at(0) == '~') {
         // replace '~' by the home directory
         urlStr.remove(0, 1);
         urlStr.insert(0, QDir::homePath());
+    }
+
+    if ((url.protocol() == "tar") || (url.protocol() == "zip")) {
+        // The URL represents a tar- or zip-file. Check whether
+        // the URL is really part of the tar- or zip-file, otherwise
+        // replace it by the local path again.
+        bool insideCompressedPath = d->isCompressedPath(url);
+        if (!insideCompressedPath) {
+            KUrl prevUrl = url;
+            KUrl parentUrl = url.upUrl();
+            while (parentUrl != prevUrl) {
+                if (d->isCompressedPath(parentUrl)) {
+                    insideCompressedPath = true;
+                    break;
+                }
+                prevUrl = parentUrl;
+                parentUrl = parentUrl.upUrl();
+            }
+        }
+        if (!insideCompressedPath) {
+            // drop the tar: or zip: protocol since we are not
+            // inside the compressed path anymore
+            urlStr = url.path();
+        }
     }
 
     const KUrl transformedUrl(urlStr);
