@@ -36,6 +36,13 @@
 using namespace WTF;
 using namespace Unicode;
 
+// GCC cstring uses these automatically, but not all implementations do.
+using std::strlen;
+using std::strcpy;
+using std::strncpy;
+using std::memset;
+using std::memcpy;
+
 // we can't specify the namespace in yacc's C output, so do it here
 using namespace KJS;
 

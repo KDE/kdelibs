@@ -32,6 +32,13 @@
 #include <wtf/Vector.h>
 using WTF::Vector;
 
+// GCC cstring uses these automatically, but not all implementations do.
+using std::strlen;
+using std::strcpy;
+using std::strncpy;
+using std::memset;
+using std::memcpy;
+
 namespace KJS {
 
 #ifdef PCRE_CONFIG_UTF8

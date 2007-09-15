@@ -83,7 +83,7 @@ namespace WTF {
     {
         static void initialize(T* begin, T* end) 
         {
-            memset(begin, 0, reinterpret_cast<char *>(end) - reinterpret_cast<char *>(begin));
+            std::memset(begin, 0, reinterpret_cast<char *>(end) - reinterpret_cast<char *>(begin));
         }
     };
 
@@ -123,11 +123,11 @@ namespace WTF {
     {
         static void move(const T* src, const T* srcEnd, T* dst) 
         {
-            memcpy(dst, src, reinterpret_cast<const char *>(srcEnd) - reinterpret_cast<const char *>(src));
+            std::memcpy(dst, src, reinterpret_cast<const char *>(srcEnd) - reinterpret_cast<const char *>(src));
         }
         static void moveOverlapping(const T* src, const T* srcEnd, T* dst) 
         {
-            memmove(dst, src, reinterpret_cast<const char *>(srcEnd) - reinterpret_cast<const char *>(src));
+            std::memmove(dst, src, reinterpret_cast<const char *>(srcEnd) - reinterpret_cast<const char *>(src));
         }
     };
 
@@ -152,7 +152,7 @@ namespace WTF {
     {
         static void uninitializedCopy(const T* src, const T* srcEnd, T* dst) 
         {
-            memcpy(dst, src, reinterpret_cast<const char *>(srcEnd) - reinterpret_cast<const char *>(src));
+            std::memcpy(dst, src, reinterpret_cast<const char *>(srcEnd) - reinterpret_cast<const char *>(src));
         }
     };
 
@@ -177,7 +177,7 @@ namespace WTF {
         static void uninitializedFill(T* dst, T* dstEnd, const T& val) 
         {
             ASSERT(sizeof(T) == sizeof(char));
-            memset(dst, val, dstEnd - dst);
+            std::memset(dst, val, dstEnd - dst);
         }
     };
     

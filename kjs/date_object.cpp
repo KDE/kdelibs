@@ -68,6 +68,14 @@
 #endif
 #endif
 
+// GCC cstring uses these automatically, but not all implementations do.
+using std::strlen;
+using std::strcpy;
+using std::strncpy;
+using std::memset;
+using std::memcpy;
+
+
 inline int gmtoffset(const tm& t)
 {
 #if PLATFORM(WIN_OS)

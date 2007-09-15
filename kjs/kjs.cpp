@@ -45,6 +45,8 @@ enum ExitCode { ErrorNone,
                 ErrorEval
 };
 
+using std::strcmp;
+
 using namespace KJS;
 
 static void printUsage(const char *app)

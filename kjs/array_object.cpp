@@ -33,8 +33,15 @@
 #include <wtf/HashSet.h>
 #include <stdio.h>
 
+// GCC cstring uses these automatically, but not all implementations do.
+using std::strlen;
+using std::strcpy;
+using std::strncpy;
+using std::memset;
+using std::memcpy;
 
 using namespace KJS;
+
 
 // ------------------------------ ArrayInstance -----------------------------
 

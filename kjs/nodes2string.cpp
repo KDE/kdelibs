@@ -38,6 +38,13 @@
 // #define NOINLINE    __attribute__ (noinline)
 #endif
 
+// GCC cstring uses these automatically, but not all implementations do.
+using std::strlen;
+using std::strcpy;
+using std::strncpy;
+using std::memset;
+using std::memcpy;
+
 namespace KJS {
   const bool kDontQuote = false, kQuote = true;
 

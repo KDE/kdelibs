@@ -32,6 +32,13 @@
 
 using namespace KJS;
 
+// GCC cstring uses these automatically, but not all implementations do.
+using std::strlen;
+using std::strcpy;
+using std::strncpy;
+using std::memset;
+using std::memcpy;
+
 // ------------------------------ NumberInstance ----------------------------
 
 const ClassInfo NumberInstance::info = {"Number", 0, 0, 0};
