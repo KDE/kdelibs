@@ -150,6 +150,7 @@ KStyle::KStyle() : clickedLabel(0), d(0)
     setWidgetLayoutProp(WT_TabBar, TabBar::BaseHeight, 2);
     setWidgetLayoutProp(WT_TabBar, TabBar::BaseOverlap, 2);
     setWidgetLayoutProp(WT_TabBar, TabBar::ScrollButtonWidth, 10);
+    setWidgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, 6); 
 
     setWidgetLayoutProp(WT_TabWidget, TabWidget::ContentsMargin, 2);
 
@@ -2469,7 +2470,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
         case CC_Q3ListView:
         {
             const QStyleOptionQ3ListView* lvOpt = qstyleoption_cast<const QStyleOptionQ3ListView*>(opt);
-	    Q_ASSERT (lvOpt);
+            Q_ASSERT (lvOpt);
 
             if (lvOpt->subControls & SC_Q3ListView)
                 QCommonStyle::drawComplexControl(cc, opt, p, w);
