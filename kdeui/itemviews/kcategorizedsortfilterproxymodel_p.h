@@ -227,8 +227,6 @@ public:
     QRegExp filterRegExp;
     int filterRole;
 
-    mutable QStringList categories;
-    mutable QMap<QString, QVector<int> > categoriesRows;
     mutable QMap<QModelIndex, InternalInformation*> sourceIndexMap;
 
     QList<QPersistentModelIndex> persistentIndexes;

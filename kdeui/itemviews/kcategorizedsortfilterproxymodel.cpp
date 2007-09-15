@@ -47,9 +47,6 @@ KCategorizedSortFilterProxyModel::~KCategorizedSortFilterProxyModel()
 
 void KCategorizedSortFilterProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
 {
-    d->categories.clear();
-    d->categoriesRows.clear();
-
     if (this->sourceModel())
     {
         disconnect(this->sourceModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)),
@@ -136,15 +133,6 @@ void KCategorizedSortFilterProxyModel::setSourceModel(QAbstractItemModel *source
 
 void KCategorizedSortFilterProxyModel::sort(int column, Qt::SortOrder order)
 {
-    if (d->sortColumn == column && d->sortOrder == order)
-    {
-        // I'm pretty fast sorting, huh ? :P
-        return;
-    }
-
-    d->categories.clear();
-    d->categoriesRows.clear();
-
     d->sortColumn = column;
     d->sortOrder = order;
 
@@ -246,7 +234,7 @@ void KCategorizedSortFilterProxyModel::setSortCaseSensitivity(Qt::CaseSensitivit
     }
 
     d->sortCaseSensitivity = cs;
-    sort(d->sortColumn, d->sortOrder); //### THIS WONT SORT. WILL RETURN. SEPARATE sort() as it is done in Qt
+    sort(d->sortColumn, d->sortOrder);
 }
 
 bool KCategorizedSortFilterProxyModel::isSortLocaleAware() const
@@ -262,7 +250,7 @@ void KCategorizedSortFilterProxyModel::setSortLocaleAware(bool on)
     }
 
     d->sortLocaleAware = on;
-    sort(d->sortColumn, d->sortOrder); //### THIS WONT SORT. WILL RETURN. SEPARATE sort() as it is done in Qt
+    sort(d->sortColumn, d->sortOrder);
 }
 
 bool KCategorizedSortFilterProxyModel::dynamicSortFilter() const
@@ -288,7 +276,7 @@ void KCategorizedSortFilterProxyModel::setSortRole(int role)
     }
 
     d->sortRole = role;
-    sort(d->sortColumn, d->sortOrder); //### THIS WONT SORT. WILL RETURN. SEPARATE sort() as it is done in Qt
+    sort(d->sortColumn, d->sortOrder);
 }
 
 int KCategorizedSortFilterProxyModel::filterRole() const
@@ -786,9 +774,6 @@ void KCategorizedSortFilterProxyModel::clear()
 {
     emit layoutAboutToBeChanged();
 
-    d->categories.clear();
-    d->categoriesRows.clear();
-
     // store the persistent indexes
     QModelIndexList sourceIndexes = d->storePersistentIndexes();
 
@@ -804,9 +789,6 @@ void KCategorizedSortFilterProxyModel::clear()
 void KCategorizedSortFilterProxyModel::invalidate()
 {
     emit layoutAboutToBeChanged();
-
-    d->categories.clear();
-    d->categoriesRows.clear();
 
     // store the persistent indexes
     QModelIndexList sourceIndexes = d->storePersistentIndexes();
@@ -924,7 +906,7 @@ void KCategorizedSortFilterProxyModel::Private::sourceDataChanged(const QModelIn
         QModelIndexList sourceIndexes = storePersistentIndexes();
 
         removeSourceItems(info->proxyRows, info->sourceRows,
-                             sourceRowsResort, sourceParent, Qt::Vertical, false);
+                          sourceRowsResort, sourceParent, Qt::Vertical, false);
 
         sortSourceRows(sourceRowsResort, sourceParent);
 
@@ -933,10 +915,18 @@ void KCategorizedSortFilterProxyModel::Private::sourceDataChanged(const QModelIn
 
         updatePersistentIndexes(sourceIndexes);
 
-        emit p->layoutChanged();
-
         // We want to emit dataChanged for the rows too
         sourceRowsChange += sourceRowsResort;
+
+        int proxyStartRow;
+        int proxyEndRow;
+        proxyItemRange(info->proxyRows, sourceRowsChange, proxyStartRow, proxyEndRow);
+        QModelIndex proxyTopLeft = p->createIndex(proxyStartRow, info->proxyColumns.at(topLeft.column()), *it);
+        QModelIndex proxyBottomRight = p->createIndex(proxyEndRow, info->proxyColumns.at(bottomRight.column()), *it);
+
+        emit p->dataChanged(proxyTopLeft, proxyBottomRight);
+
+        emit p->layoutChanged();
     }
 
     if (!sourceRowsChange.isEmpty())
@@ -1356,7 +1346,7 @@ void KCategorizedSortFilterProxyModel::Private::buildSourceToProxyMapping(const 
 
 void KCategorizedSortFilterProxyModel::Private::sortSourceRows(QVector<int> &sourceRows, const QModelIndex &sourceParent) const
 {
-    if (sortColumn < 0)
+    if ((sortColumn < 0) || (!sourceRows.count()))
     {
         return;
     }
@@ -1366,7 +1356,7 @@ void KCategorizedSortFilterProxyModel::Private::sortSourceRows(QVector<int> &sou
         LessThan lt(sourceParent, p->sourceModel(), p, LessThan::CategoryPurpose);
         qStableSort(sourceRows.begin(), sourceRows.end(), lt);
 
-         return;
+        return;
     }
 
     QVector<int> sourceRowSortedList(sourceRows);
@@ -1376,8 +1366,11 @@ void KCategorizedSortFilterProxyModel::Private::sortSourceRows(QVector<int> &sou
 
     // Explore categories
     QString prevCategory = p->sourceModel()->data(p->sourceModel()->index(sourceRowSortedList.at(0), sortColumn, sourceParent), KCategorizedSortFilterProxyModel::CategoryRole).toString();
+
     QString lastCategory = prevCategory;
+    QMap<QString, QVector<int> > categoriesRows;
     QVector<int> modelRowList;
+    QStringList categories;
     foreach (int row, sourceRowSortedList)
     {
         lastCategory = p->sourceModel()->data(p->sourceModel()->index(row, sortColumn, sourceParent), KCategorizedSortFilterProxyModel::CategoryRole).toString();
@@ -1501,9 +1494,6 @@ void KCategorizedSortFilterProxyModel::Private::removeSourceItems(QVector<int> &
         return;
     }
 
-    categories.clear();
-    categoriesRows.clear();
-
     QVector<QPair<int, int> > proxyIntervals;
     proxyIntervals = proxyIntervalsForSourceItems(sourceToProxy, sourceItems);
 
@@ -1567,19 +1557,22 @@ QVector<QPair<int, int > > KCategorizedSortFilterProxyModel::Private::proxyInter
 
 void KCategorizedSortFilterProxyModel::Private::removeProxyInterval(QVector<int> &sourceToProxy, QVector<int> &proxyToSource, int proxyStart, int proxyEnd, const QModelIndex &proxyParent, Qt::Orientation orientation, bool emitSignal)
 {
+    int m_proxyStart = qMin(proxyStart, proxyEnd);
+    int m_proxyEnd = qMax(proxyStart, proxyEnd);
+
     if (emitSignal)
     {
         if (orientation == Qt::Vertical)
         {
-            emit p->beginRemoveRows(proxyParent, proxyStart, proxyEnd);
+            emit p->beginRemoveRows(proxyParent, m_proxyStart, m_proxyEnd);
         }
         else
         {
-            emit p->beginRemoveColumns(proxyParent, proxyStart, proxyEnd);
+            emit p->beginRemoveColumns(proxyParent, m_proxyStart, m_proxyEnd);
         }
     }
 
-    proxyToSource.remove(proxyStart, proxyEnd - proxyStart + 1);
+    proxyToSource.remove(m_proxyStart, m_proxyEnd - m_proxyStart + 1);
 
     buildSourceToProxyMapping(proxyToSource, sourceToProxy);
 
@@ -1654,6 +1647,8 @@ void KCategorizedSortFilterProxyModel::Private::sourceItemsRemoved(const QModelI
     QVector<int> &proxyToSource = (orientation == Qt::Vertical) ? info->sourceRows
                                                                 : info->sourceColumns;
 
+    emit p->layoutAboutToBeChanged();
+
     if (end >= sourceToProxy.size())
     {
         end = sourceToProxy.size() - 1;
@@ -1687,10 +1682,14 @@ void KCategorizedSortFilterProxyModel::Private::sourceItemsRemoved(const QModelI
     buildSourceToProxyMapping(proxyToSource, sourceToProxy);
 
     updateChildrenMapping(sourceParent, info, orientation, start, end, itemCount, true);
+
+    emit p->layoutChanged();
 }
 
 void KCategorizedSortFilterProxyModel::Private::filterChanged()
 {
+    emit p->layoutAboutToBeChanged();
+
     QMap<QModelIndex, InternalInformation*>::const_iterator it;
 
     for (it = sourceIndexMap.constBegin(); it != sourceIndexMap.constEnd(); it++)
@@ -1701,6 +1700,8 @@ void KCategorizedSortFilterProxyModel::Private::filterChanged()
         handleFilterChanged(info->proxyRows, info->sourceRows, sourceParent, Qt::Vertical);
         handleFilterChanged(info->proxyColumns, info->sourceColumns, sourceParent, Qt::Horizontal);
     }
+
+    emit p->layoutChanged();
 }
 
 void KCategorizedSortFilterProxyModel::Private::handleFilterChanged(QVector<int> &sourceToProxy, QVector<int> &proxyToSource, const QModelIndex &sourceParent, Qt::Orientation orientation)
@@ -1794,6 +1795,7 @@ QVector<QPair<int, QVector<int> > > KCategorizedSortFilterProxyModel::Private::p
         sourceItemsInInterval << firstNewSourceItem;
         sourceItemsIndex++;
 
+        proxyLow = 0;
         int proxyHigh = proxyToSource.size() - 1;
         QModelIndex i = compare ? p->sourceModel()->index(firstNewSourceItem, sortColumn, sourceParent)
                                 : QModelIndex();
