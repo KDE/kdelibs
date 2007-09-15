@@ -112,7 +112,7 @@ protected:
 struct AttributeImpl
 {
     NodeImpl::Id id() const { return m_attrId ? m_attrId : m_data.attr->id(); }
-    DOMStringImpl *val() const { return m_attrId ? m_data.value : m_data.attr->val(); }
+    DOMStringImpl *val() const { if (m_attrId) return m_data.value; else return m_data.attr->val(); }
     DOMString value() const { return val(); }
     AttrImpl *attr() const { return m_attrId ? 0 : m_data.attr; }
     DOMString namespaceURI() { return m_attrId ? DOMString() : m_data.attr->namespaceURI(); }
