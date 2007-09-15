@@ -55,34 +55,36 @@ class MediaObjectPrivate : public MediaNodePrivate, private MediaNodeDestruction
         PHONON_EXPORT void _k_stateChanged(Phonon::State, Phonon::State);
 
         MediaObjectPrivate()
-            : state(Phonon::LoadingState),
-            currentTime(0),
+            : currentTime(0),
             tickInterval(0),
             metaData(),
-            errorOverride(false),
             errorString(),
-            errorType(Phonon::NormalError),
             prefinishMark(0),
             transitionTime(0), // gapless playback
             kiofallback(0),
-            ignoreLoadingToBufferingStateChange(false)
+            state(Phonon::LoadingState),
+            errorType(Phonon::NormalError),
+            errorOverride(false),
+            ignoreLoadingToBufferingStateChange(false),
+            ignoreErrorToLoadingStateChange(false)
         {
         }
 
-        State state;
         qint64 currentTime;
         qint32 tickInterval;
         //AudioStreamDescription currentAudioStream;
         //VideoStreamDescription currentVideoStream;
         //SubtitleStreamDescription currentSubtitleStream;
         QMultiMap<QString, QString> metaData;
-        bool errorOverride;
         QString errorString;
-        ErrorType errorType;
         qint32 prefinishMark;
         qint32 transitionTime;
         AbstractMediaStream *kiofallback;
-        bool ignoreLoadingToBufferingStateChange;
+        State state : 8;
+        ErrorType errorType : 4;
+        bool errorOverride : 1;
+        bool ignoreLoadingToBufferingStateChange : 1;
+        bool ignoreErrorToLoadingStateChange : 1;
         MediaSource mediaSource;
         QQueue<MediaSource> sourceQueue;
 };

@@ -64,6 +64,12 @@ MediaObject::~MediaObject()
 Phonon::State MediaObject::state() const
 {
     K_D(const MediaObject);
+    if (d->ignoreLoadingToBufferingStateChange) {
+        return BufferingState;
+    }
+    if (d->ignoreErrorToLoadingStateChange) {
+        return LoadingState;
+    }
     if (!d->m_backendObject || d->errorOverride) {
         return d->state;
     }
@@ -374,6 +380,7 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
         }
         pDebug() << "backend MediaObject reached ErrorState, trying Platform::createMediaStream now";
         ignoreLoadingToBufferingStateChange = false;
+        ignoreErrorToLoadingStateChange = false;
         switch (oldstate) {
         case Phonon::BufferingState:
             // play() has already been called, we need to make sure it is called
@@ -381,6 +388,7 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
             ignoreLoadingToBufferingStateChange = true;
             break;
         case Phonon::LoadingState:
+            ignoreErrorToLoadingStateChange = true;
             // no extras
             break;
         default:
@@ -404,17 +412,11 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
             emit q->stateChanged(newstate, Phonon::BufferingState);
         }
         return;
-//X     } else if (newstate == StoppedState && kiofallback) {
-//X         switch (oldstate) {
-//X         case PlayingState:
-//X         case PausedState:
-//X         case BufferingState:
-//X             kiofallback->stopped();
-//X             break;
-//X         default:
-//X             // nothing
-//X             break;
-//X         }
+    } else if (ignoreErrorToLoadingStateChange && kiofallback && oldstate == ErrorState) {
+        if (newstate != LoadingState) {
+            emit q->stateChanged(newstate, Phonon::LoadingState);
+        }
+        return;
     }
 
     emit q->stateChanged(newstate, oldstate);
