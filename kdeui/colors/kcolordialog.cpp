@@ -969,6 +969,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   d->filter = 0;
 #endif
   d->cbDefaultColor = 0L;
+  d->_mode = ChooserClassic;
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
   connect( this, SIGNAL(closeClicked(void)),this,SLOT(slotWriteSettings(void)));
 

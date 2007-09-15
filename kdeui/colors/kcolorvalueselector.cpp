@@ -25,7 +25,7 @@
 class KColorValueSelector::Private
 {
 public:
-  Private(KColorValueSelector *q): q(q), _hue(0), _sat(0), _colorValue(0) {}
+  Private(KColorValueSelector *q): q(q), _hue(0), _sat(0), _colorValue(0), _mode(ChooserClassic) {}
 
     KColorValueSelector *q;
     int _hue;
