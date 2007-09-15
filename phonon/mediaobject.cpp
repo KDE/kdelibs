@@ -64,13 +64,16 @@ MediaObject::~MediaObject()
 Phonon::State MediaObject::state() const
 {
     K_D(const MediaObject);
+    if (d->errorOverride) {
+        return d->state;
+    }
     if (d->ignoreLoadingToBufferingStateChange) {
         return BufferingState;
     }
     if (d->ignoreErrorToLoadingStateChange) {
         return LoadingState;
     }
-    if (!d->m_backendObject || d->errorOverride) {
+    if (!d->m_backendObject) {
         return d->state;
     }
     return INTERFACE_CALL(state());
@@ -253,6 +256,8 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
         return;
     }
 
+    pDebug() << Q_FUNC_INFO << newSource.url();
+
     MediaSource::Type oldSourceType = d->mediaSource.type();
     d->mediaSource = newSource;
     d->kiofallback = 0; // kiofallback auto-deletes
@@ -261,18 +266,11 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
             // for setting a new URL
 
 //X         if (url.scheme() == "http") {
-//X                 d->kiofallback = Platform::createMediaStream(url, this);
-//X                 if (d->kiofallback) {
-//X                     // k_ptr->backendObject() is a MediaObject, we want a ByteStream
-//X                     d->deleteBackendObject();
-//X                     if (d->state == PlayingState || d->state == PausedState || d->state == BufferingState) {
-//X                         emit stateChanged(StoppedState, d->state);
-//X                         d->state = StoppedState;
-//X                     }
-//X                     // catch URLs that we rather want KIO to handle
-//X                     d->kiofallback->setupKioStreaming();
-//X                     return;
-//X                 }
+//X             d->kiofallback = Platform::createMediaStream(url, this);
+//X             if (d->kiofallback) {
+//X                 ...
+//X                 return;
+//X             }
 //X         }
 
     if (d->mediaSource.type() == MediaSource::Stream) {
@@ -286,6 +284,8 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
         disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
         connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
     } else if (d->mediaSource.type() != MediaSource::Url && oldSourceType == MediaSource::Url) {
+        d->errorOverride = false;
+        emit stateChanged(ErrorState, INTERFACE_CALL(state()));
         disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
         connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
     }
@@ -362,13 +362,21 @@ void MediaObjectPrivate::streamError(Phonon::ErrorType type, const QString &text
     errorType = type;
     errorString = text;
     state = ErrorState;
-    emit q->stateChanged(ErrorState, lastState);
+    QMetaObject::invokeMethod(q, "stateChanged", Qt::QueuedConnection, Q_ARG(Phonon::State, Phonon::ErrorState), Q_ARG(Phonon::State, lastState));
+    //emit q->stateChanged(ErrorState, lastState);
 }
 
 void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State oldstate)
 {
     Q_Q(MediaObject);
     Q_ASSERT(mediaSource.type() == MediaSource::Url);
+    if (errorOverride) {
+        errorOverride = false;
+        if (newstate == ErrorState) {
+            return;
+        }
+        oldstate = ErrorState;
+    }
 
     // backend MediaObject reached ErrorState, try a KioMediaSource
     if (newstate == Phonon::ErrorState && !kiofallback) {
