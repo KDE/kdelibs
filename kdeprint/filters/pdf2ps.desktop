@@ -11,6 +11,7 @@ Comment[nl]=Conversie van PDF naar PostScript
 Comment[pt]=Conversor de PDF para PostScript
 Comment[pt_BR]=Conversor de PDF para PostScript
 Comment[sk]=Prevod súborov z PDF do PostScript
+Comment[sl]=Pretvornik datotek PDF v PostScript
 Comment[sv]=PDF till Postscript-konverterare
 MimeTypeIn=application/pdf
 MimeTypeOut=application/postscript
