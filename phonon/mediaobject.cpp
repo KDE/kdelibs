@@ -438,9 +438,11 @@ void MediaObjectPrivate::_k_aboutToFinish()
     kiofallback = 0; // kiofallback auto-deletes
 
     if (sourceQueue.isEmpty()) {
-        pINTERFACE_CALL(setNextSource(MediaSource()));
         emit q->aboutToFinish();
-        return;
+        if (sourceQueue.isEmpty()) {
+            pINTERFACE_CALL(setNextSource(MediaSource()));
+            return;
+        }
     }
     mediaSource = sourceQueue.dequeue();
     pINTERFACE_CALL(setNextSource(mediaSource));
