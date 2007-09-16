@@ -29,7 +29,6 @@
 #include <kicontheme.h>
 
 class QIcon;
-class QImage;
 class QMovie;
 class QPixmap;
 

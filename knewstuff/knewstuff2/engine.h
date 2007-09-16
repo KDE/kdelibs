@@ -24,9 +24,6 @@
 
 namespace KNS {
 
-class UploadDialog;
-class DownloadDialog;
-class Feed;
 
 class EnginePrivate;
 

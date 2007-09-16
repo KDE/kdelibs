@@ -23,9 +23,7 @@
 #include <kxmlguiclient.h>
 #include <kdialog.h>
 
-class KProcess;
 class KActionCollection;
-class QTreeWidget;
 
 class KEditToolBarWidget;
 class KEditToolBarPrivate;

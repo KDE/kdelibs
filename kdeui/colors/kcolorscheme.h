@@ -27,7 +27,6 @@
 
 #include <QtGui/QPalette>
 
-class KConfigBase;
 class QColor;
 class QBrush;
 

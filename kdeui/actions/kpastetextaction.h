@@ -29,7 +29,6 @@
 
 #include <kaction.h>
 
-class KMenu;
 
 class KPasteTextActionPrivate;
 /**

@@ -9,8 +9,6 @@
 #include <kxmlguiwindow.h>
 
 class QTextEdit;
-class KToolBarRadioGroup;
-class KHelpMenu;
 
 class TestWindow  : public KXmlGuiWindow
 {

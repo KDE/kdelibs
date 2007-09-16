@@ -27,7 +27,6 @@ class KConfig;
 
 namespace Sonnet
 {
-    class Loader;
     class KDEUI_EXPORT ConfigWidget : public QWidget
     {
         Q_OBJECT

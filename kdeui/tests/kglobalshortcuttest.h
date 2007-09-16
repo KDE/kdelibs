@@ -24,7 +24,6 @@
 
 #include <QtCore/QObject>
 
-class KdedGlobalAccel;
 class KAction;
 
 class KGlobalShortcutTest : public QObject

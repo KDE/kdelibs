@@ -38,7 +38,6 @@
 #define KDE_DEFAULT_SHADE_SORT_COLUMN true
 #define KDE_DEFAULT_ALLOW_DEFAULT_BACKGROUND_IMAGES true
 
-class KConfigBase;
 class KUrl;
 
 class QColor;

@@ -26,7 +26,6 @@
 
 namespace Sonnet
 {
-    class Loader;
     class KDEUI_EXPORT ConfigDialog : public KDialog
     {
         Q_OBJECT

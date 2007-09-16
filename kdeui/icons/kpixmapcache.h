@@ -28,7 +28,6 @@
 #include <QtCore/QSize>
 
 class QString;
-class QStringList;
 class QPixmap;
 
 
