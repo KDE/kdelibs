@@ -294,7 +294,7 @@ MediaSource MediaObject::source() const
 
 void MediaObject::setNextSource(const MediaSource &source)
 {
-    setSource(source);
+    m_nextSource = source;
 }
 
 void MediaObject::setSource(const MediaSource &source)
@@ -306,15 +306,14 @@ void MediaObject::setSource(const MediaSource &source)
     switch (m_source.type()) {
     case MediaSource::Invalid:
         return;
+    case MediaSource::Disc:
+        Q_ASSERT(m_source.discType() != NoDisc);
+        break;
     case MediaSource::Url:
-        if (!m_source.url().isValid()) {
-            return;
-        }
+        Q_ASSERT(m_source.url().isValid());
         break;
     case MediaSource::LocalFile:
-        if (m_source.fileName().isEmpty()) {
-            return;
-        }
+        Q_ASSERT(!m_source.fileName().isEmpty());
         break;
     case MediaSource::Stream:
         //Stream *s = new Stream(m_source, this);
@@ -442,8 +441,35 @@ void MediaObject::emitTick()
     }
     if (currentTime() >= totalTime()) // finished
     {
-        stop();
-        emit finished();
+        emit aboutToFinish();
+        if (m_nextSource.type() == MediaSource::Invalid) {
+            stop();
+            emit finished();
+        } else {
+            m_prefinishMarkReachedNotEmitted = true;
+            m_source = m_nextSource;
+            m_nextSource = MediaSource();
+            switch (m_source.type()) {
+            case MediaSource::Invalid:
+                abort();
+            case MediaSource::Disc:
+                Q_ASSERT(m_source.discType() != NoDisc);
+                break;
+            case MediaSource::Url:
+                Q_ASSERT(m_source.url().isValid());
+                break;
+            case MediaSource::LocalFile:
+                Q_ASSERT(!m_source.fileName().isEmpty());
+                break;
+            case MediaSource::Stream:
+                break;
+            }
+            emit totalTimeChanged(totalTime());
+            QMultiMap<QString, QString> metaData;
+            metaData.insert("TITLE", "Fake video");
+            metaData.insert("ARTIST", "Matthias Kretz");
+            emit metaDataChanged(metaData);
+        }
     }
 }
 bool MediaObject::wait()

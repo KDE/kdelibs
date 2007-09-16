@@ -150,6 +150,7 @@ namespace Fake
             QHash<const QObject *, QString> m_selectedVideoStream;
             QHash<const QObject *, QString> m_selectedSubtitleStream;
             MediaSource m_source;
+            MediaSource m_nextSource;
             qint32 m_prefinishMark;
             qint32 m_transitionTime;
             bool m_prefinishMarkReachedNotEmitted;
