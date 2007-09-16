@@ -89,7 +89,6 @@ protected:
             return;
         }
 
-        kDebug() << "painting " << m_timeline->currentValue();
         QPainter p(this);
         p.setOpacity(m_timeline->currentValue());
         p.drawPixmap((width() - m_pixmap.width()) / 2,
