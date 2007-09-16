@@ -2216,13 +2216,17 @@ bool KHTMLView::focusNextPrevNode(bool next)
     DocumentImpl *doc = m_part->xmlDocImpl();
     NodeImpl *oldFocusNode = doc->focusNode();
 
-    // See whether we're in the middle of detach. If so, we want to
-    // clear focus... The document code will be careful to not
-    // emit events in that case..
-    if (oldFocusNode && oldFocusNode->renderer() &&
-        !oldFocusNode->renderer()->parent()) {
-        doc->setFocusNode(0);
-        return true;
+    // See whether we're in the middle of a detach, or hiding of the
+    // widget. In this case, we will just clear focus, the document code
+    // will be careful to not emit events in that case... Doing this 
+    // also prevents the code below from going bonkers with oldFocusNode
+    // not actually being focusable, etc.
+    if (oldFocusNode) {
+	if (oldFocusNode->renderer() && !oldFocusNode->renderer()->parent()
+	      || !oldFocusNode->isTabFocusable()) {
+	    doc->setFocusNode(0);
+	    return true;
+	}
     }
 
 #if 1
