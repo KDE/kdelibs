@@ -152,7 +152,7 @@ KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent
     link->setGlowEnabled(false);
     link->setUnderline(false);
     link->setFloatEnabled(true);
-    link->setUseCursor(false);
+    link->setUseCursor(true);
     link->setHighlightedColor(palette().color(QPalette::Link));
     link->setSelectedColor(palette().color(QPalette::Link));
     link->setText(i18n("Automatic changes have been performed due to plugin dependencies"));
@@ -1654,7 +1654,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                 sendEmail->setGlowEnabled(false);
                 sendEmail->setUnderline(false);
                 sendEmail->setFloatEnabled(true);
-                sendEmail->setUseCursor(false);
+                sendEmail->setUseCursor(true);
                 sendEmail->setHighlightedColor(option.palette.color(QPalette::Link));
                 sendEmail->setSelectedColor(option.palette.color(QPalette::Link));
 
@@ -1675,7 +1675,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                 visitWebsite->setGlowEnabled(false);
                 visitWebsite->setUnderline(false);
                 visitWebsite->setFloatEnabled(true);
-                visitWebsite->setUseCursor(false);
+                visitWebsite->setUseCursor(true);
                 visitWebsite->setHighlightedColor(option.palette.color(QPalette::Link));
                 visitWebsite->setSelectedColor(option.palette.color(QPalette::Link));
 
