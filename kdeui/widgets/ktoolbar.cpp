@@ -339,7 +339,7 @@ KMenu *KToolBar::Private::contextMenu()
       unlockedMovable = false;
 
     delete contextLockAction;
-    contextLockAction = new KToggleAction( KIcon( "system-lock-screen" ), i18n( "Lock Toolbars" ), parent );
+    contextLockAction = new KToggleAction( KIcon( "system-lock-screen" ), (parent->toolBarsLocked())?i18n( "Unlock Toolbars" ):i18n( "Lock Toolbars" ), parent );
     context->addAction( contextLockAction );
     contextLockAction->setChecked( parent->toolBarsLocked() );
     connect( contextLockAction, SIGNAL( toggled( bool ) ), parent, SLOT( slotLockToolBars( bool ) ) );
@@ -611,6 +611,11 @@ void KToolBar::Private::slotContextIconSize()
 void KToolBar::Private::slotLockToolBars( bool lock )
 {
   parent->setToolBarsLocked( lock );
+
+  if(lock)
+    contextLockAction->setText(i18n( "Unlock Toolbars" ));
+  else
+    contextLockAction->setText(i18n( "Lock Toolbars" ));
 }
 
 
