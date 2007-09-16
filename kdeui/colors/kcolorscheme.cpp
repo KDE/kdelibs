@@ -87,7 +87,7 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
         _effects[Contrast]  = cfg.readEntry(  "ContrastEffect", (int)ContrastFade );
         _amount[Intensity]  = cfg.readEntry( "IntensityAmount", 0.0 );
         _amount[Color]      = cfg.readEntry(     "ColorAmount", 0.0 );
-        _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", 0.7 );
+        _amount[Contrast]   = cfg.readEntry(  "ContrastAmount", state == QPalette::Disabled ? 0.7 : 0.0 );
         if (_effects[0] >= ColorFade)
             _color = cfg.readEntry( "Color", QColor(128, 128, 128) );
     }
