@@ -50,6 +50,7 @@ void StreamInterface::connectToSource(const MediaSource &mediaSource)
     Q_ASSERT(d->mediaSource.stream());
     AbstractMediaStreamPrivate *dd = d->mediaSource.stream()->d_func();
     dd->setStreamInterface(this);
+    d->mediaSource.stream()->reset();
 }
 
 void StreamInterfacePrivate::disconnectMediaStream()
