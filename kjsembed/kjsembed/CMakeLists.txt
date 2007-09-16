@@ -73,7 +73,11 @@ kde4_add_library(${KJSEMBEDLIBNAME} SHARED ${kjsembed_LIB_SRCS})
 target_link_libraries(${KJSEMBEDLIBNAME} ${KDE4_KDECORE_LIBS} ${QT_QTUITOOLS_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${KJSLIBNAME} )
 
 set_target_properties(${KJSEMBEDLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS ${KJSEMBEDLIBNAME}  DESTINATION ${LIB_INSTALL_DIR} )
+install(TARGETS ${KJSEMBEDLIBNAME}
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 
 
 ########### install files ###############
@@ -89,6 +93,7 @@ install( FILES kjseglobal.h binding_support.h static_binding.h variant_binding.h
                pixmap.h point.h rect.h size.h url.h pointer.h
                bind_qlcdnumber.h bind_qtimer.h quiloader_binding.h
          DESTINATION  ${INCLUDE_INSTALL_DIR}/kjsembed )
+
 
 
 

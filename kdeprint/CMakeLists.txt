@@ -108,8 +108,11 @@ kde4_add_library(kdeprint SHARED ${kdeprint_LIB_SRCS})
 target_link_libraries(kdeprint  ${KDE4_KDECORE_LIBS} kparts )
 
 set_target_properties(kdeprint PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
-install(TARGETS kdeprint  DESTINATION ${LIB_INSTALL_DIR} )
-
+install(TARGETS kdeprint
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 
 ########### install files ###############
 
@@ -120,6 +123,7 @@ install( FILES kdeprintrc.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 install( FILES kdeprint_export.h kprinter.h kprintaction.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES kprintdialogpage.h kpreloadobject.h kmmanager.h kmprinter.h kmobject.h kprintdialog.h driver.h kmjobmanager.h kmjob.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kdeprint )
 install( FILES org.kde.KDEPrint.KMFactory.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
+
 
 
 

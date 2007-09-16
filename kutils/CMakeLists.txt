@@ -35,8 +35,11 @@ kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 target_link_libraries(kutils  ${KDE4_KDEUI_LIBS} )
 
 set_target_properties(kutils PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kutils  DESTINATION ${LIB_INSTALL_DIR} )
-
+install(TARGETS kutils
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 
 ########### install files ###############
 
@@ -49,5 +52,6 @@ install( FILES
  kpluginselector.h
  kcmodulecontainer.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
+
 
 

@@ -44,7 +44,11 @@ target_link_libraries(nepomuk-middleware
 
 set_target_properties(nepomuk-middleware PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 
-install(TARGETS nepomuk-middleware DESTINATION ${LIB_INSTALL_DIR} )
+install(TARGETS nepomuk-middleware
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 install(FILES
   registry.h
   service.h

@@ -27,13 +27,17 @@ kde4_add_library(kparts SHARED ${kparts_LIB_SRCS})
 target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio)
 
 set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kparts  DESTINATION ${LIB_INSTALL_DIR} )
-
+install(TARGETS kparts
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 
 ########### install files ###############
 
 install( FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop   DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES kparts_export.h part.h plugin.h partmanager.h mainwindow.h event.h   browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h     componentfactory.h browserrun.h statusbarextension.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kparts )
+
 
 
 

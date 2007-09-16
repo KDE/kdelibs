@@ -22,11 +22,15 @@ kde4_add_library(kdefx SHARED ${kdefx_LIB_SRCS})
 target_link_libraries(kdefx ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(kdefx PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
-install(TARGETS kdefx  DESTINATION ${LIB_INSTALL_DIR} )
-
+install(TARGETS kdefx
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 
 ########### install files ###############
 install( FILES kdefx_export.h kpixmapsplitter.h  kpixmapeffect.h kimageeffect.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
+
 
 
 

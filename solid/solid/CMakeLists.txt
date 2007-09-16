@@ -123,7 +123,11 @@ kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 set_target_properties(solid PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
+install(TARGETS solid
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 
 install(FILES org.kde.Solid.Networking.Client.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
@@ -162,6 +166,7 @@ add_custom_command(OUTPUT ${parser_FILE}.c ${parser_FILE}.h
                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 endif(SOLID_PREDICATE_PARSER_UPDATE)
+
 
 
 
