@@ -33,6 +33,8 @@ class VideoDataOutputPrivate : public AbstractVideoOutputPrivate
 {
     Q_DECLARE_PUBLIC(VideoDataOutput)
     PHONON_PRIVATECLASS
+    public:
+        virtual QObject *qObject() { return q_func(); }
     protected:
         VideoDataOutputPrivate()
            :  latency(0)

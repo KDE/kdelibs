@@ -73,7 +73,7 @@ void VideoDataOutputPrivate::setupBackendObject()
 
 bool VideoDataOutput::isRunning() const
 {
-     K_D(const VideoDataOutput);
+     //K_D(const VideoDataOutput);
      //return d->m_backendObject->isRunning();
      return false;
 }

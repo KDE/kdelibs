@@ -33,6 +33,8 @@ class VisualizationPrivate : public MediaNodePrivate, private MediaNodeDestructi
 {
     Q_DECLARE_PUBLIC(Visualization)
     PHONON_PRIVATECLASS
+    public:
+        virtual QObject *qObject() { return q_func(); }
     protected:
         VisualizationDescription description;
 
