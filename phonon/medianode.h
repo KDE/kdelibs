@@ -34,6 +34,7 @@ namespace Phonon
     {
         friend class Path;
         friend class PathPrivate;
+        friend PHONON_EXPORT Path createPath(MediaNode *source, MediaNode *sink);
         K_DECLARE_PRIVATE(MediaNode)
     public:
         virtual ~MediaNode();

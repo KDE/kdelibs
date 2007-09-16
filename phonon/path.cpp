@@ -378,7 +378,15 @@ void PathPrivate::phononObjectDestroyed(MediaNodePrivate *mediaNodePrivate)
 Path createPath(MediaNode *source, MediaNode *sink)
 {
     Path p;
-    p.reconnect(source, sink);
+    if (!p.reconnect(source, sink)) {
+        const QObject *const src = source ? source->k_ptr->qObject() : 0;
+        const QObject *const snk = sink ? sink->k_ptr->qObject() : 0;
+        qWarning("Phonon::createPath: Cannot connect %s(%s) to %s(%s).",
+                src ? src->metaObject()->className() : "",
+                src ? (src->objectName().isEmpty() ? "no objectName" : qPrintable(src->objectName())) : "null",
+                snk ? snk->metaObject()->className() : "",
+                snk ? (snk->objectName().isEmpty() ? "no objectName" : qPrintable(snk->objectName())) : "null");
+    }
     return p;
 }
 

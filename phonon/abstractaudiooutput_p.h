@@ -30,6 +30,8 @@ class AbstractAudioOutputPrivate : public MediaNodePrivate
 {
     Q_DECLARE_PUBLIC(AbstractAudioOutput)
     PHONON_PRIVATEABSTRACTCLASS
+    public:
+        virtual QObject *qObject() { return q_func(); }
     protected:
         AbstractAudioOutputPrivate(CastId castId = AbstractAudioOutputPrivateType)
             : MediaNodePrivate(castId)

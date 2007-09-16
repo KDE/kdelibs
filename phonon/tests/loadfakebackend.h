@@ -36,7 +36,7 @@ void loadFakeBackend()
 QUrl testUrl()
 {
 #ifdef USE_FAKE_BACKEND
-    return QUrl("file::////foo.ogg");
+    return QUrl("file:///foo.ogg");
 #else
     QUrl url(getenv("PHONON_TESTURL"));
     if (!url.isValid()) {

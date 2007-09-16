@@ -40,6 +40,7 @@ class MediaObjectPrivate : public MediaNodePrivate, private MediaNodeDestruction
     friend class AbstractMediaStreamPrivate;
     Q_DECLARE_PUBLIC(MediaObject)
     public:
+        virtual QObject *qObject() { return q_func(); }
         QList<FrontendInterfacePrivate *> interfaceList;
     protected:
         virtual bool aboutToDeleteBackendObject();

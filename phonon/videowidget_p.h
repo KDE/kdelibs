@@ -35,6 +35,8 @@ namespace Phonon
 class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 {
     Q_DECLARE_PUBLIC(VideoWidget)
+    public:
+        virtual QObject *qObject() { return q_func(); }
     protected:
         virtual bool aboutToDeleteBackendObject();
         virtual void createBackendObject();
