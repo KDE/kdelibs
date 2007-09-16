@@ -175,7 +175,7 @@ void KUrlLabel::setUseCursor( bool on, QCursor* cursor )
     if ( cursor ) {
         setCursor( *cursor );
     } else {
-        setCursor( QCursor( Qt::OpenHandCursor ) );
+        setCursor( QCursor( Qt::PointingHandCursor ) );
     }
   } else
     unsetCursor();
