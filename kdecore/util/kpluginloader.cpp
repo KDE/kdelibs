@@ -72,14 +72,20 @@ static inline QString findLibraryInternal(const QString &name, const KComponentD
 {
     QString libname = makeLibName(name);
 
-    if (QFileInfo(name).fileName().startsWith("lib"))
+    QFileInfo fileinfo(name);
+    bool hasPraefix = fileinfo.fileName().startsWith("lib");
+
+    if (hasPraefix)
         kDebug(150) << "plugins shouldn't have a 'lib' suffix:" << libname;
 
     QString libfile;
     if (QDir::isRelativePath(libname)) {
         libfile = cData.dirs()->findResource("module", libname);
-        if ( libfile.isEmpty() )
-        {
+        if (libfile.isEmpty()) {
+#ifndef Q_OS_WIN
+            if (!hasPraefix)
+                libname = fileinfo.path() + QLatin1String("/lib") + fileinfo.fileName();
+#endif
             libfile = cData.dirs()->findResource("lib", libname);
             if (!libfile.isEmpty())
                 kDebug(150) << "library" << libname << "not found under 'module' but under 'lib'";
@@ -133,9 +139,6 @@ KPluginFactory *KPluginLoader::factory()
 
     if (d->lib) {
         factory = d->lib->factory(d->name.toUtf8());
-        if (factory == 0) {
-            d->errorString = KLibLoader::self()->lastErrorMessage();
-        }
         return factory;
     }
 

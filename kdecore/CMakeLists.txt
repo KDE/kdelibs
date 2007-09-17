@@ -214,6 +214,7 @@ set(kdecore_LIB_SRCS
    util/kdeversion.cpp
    util/klauncher_iface.cpp
    util/klibloader.cpp
+   util/klibrary.cpp
    util/kmacroexpander.cpp
    util/kpluginfactory.cpp
    util/kpluginloader.cpp

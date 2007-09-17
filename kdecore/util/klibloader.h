@@ -28,96 +28,10 @@
 
 #include "kpluginfactory.h"
 #include "kpluginloader.h"
-
-class QString;
-class KLibraryPrivate;
-class KLibLoaderPrivate;
+#include "klibrary.h"
 
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
     extern "C" { KDE_EXPORT KLibFactory *init_##libname() { return new factory; } }
-
-/**
- * @short Represents a dynamically loaded library.
- *
- * KLibrary allows you to look up symbols of the shared library.
- * Use KLibLoader to create a new instance of KLibrary.
- *
- * @see KLibLoader
- * @author Torben Weis <weis@kde.org>
- */
-class KDECORE_EXPORT KLibrary : public QObject
-{
-    friend class KLibLoader;
-    friend class KLibLoaderPrivate;
-    friend class KLibraryPrivate;
-
-    KLibrary( const QString& libname, const QString& filename, QLibrary * handle );
-
-    Q_OBJECT
-public:
-
-    typedef void (*void_function_ptr) ();
-
-    /**
-     * Returns the name of the library.
-     * @return The name of the library like "libkspread".
-     */
-    QString name() const;
-
-    /**
-     * Returns the file name of the library.
-     * @return The filename of the library, for example "/opt/kde2&/lib/libkspread.la"
-     */
-    QString fileName() const;
-
-    /**
-     * Returns the factory of the library.
-     * @param factoryname The postfix to the init_ symbol used to create the
-     * factory object. It corresponds to the first parameter to
-     * K_EXPORT_COMPONENT_FACTORY.
-     * @return The factory of the library if there is any, otherwise 0
-     */
-    KPluginFactory* factory( const char* factoryname = 0 );
-
-    /**
-     * Looks up a symbol from the library. This is a very low level
-     * function that you usually don't want to use.
-     * @param name the name of the symbol to look up
-     * @return the address of the symbol, or 0 if it does not exist
-     */
-    void* resolveSymbol( const char* name ) const;
-
-    /**
-     * Looks up a symbol from the library. This is a very low level
-     * function that you usually don't want to use.
-     * @param name the name of the symbol to look up
-     * @return the address of the symbol, or 0 if it does not exist
-     */
-    void_function_ptr resolveFunction( const char* name ) const;
-
-    /**
-     * Unloads the library.
-     * This typically results in the deletion of this object. You should
-     * not reference its pointer after calling this function.
-     */
-    void unload() const;
-
-private Q_SLOTS:
-    void slotObjectCreated( QObject *obj );
-    void slotObjectDestroyed();
-    void slotTimeout();
-    void slotFactoryDestroyed();
-
-private:
-    /**
-     * @internal
-     * Don't destruct KLibrary objects yourself. Instead use unload() instead.
-     */
-    ~KLibrary();
-
-    KLibraryPrivate * const d;
-    void *symbol( const char* name ) const;
-};
 
 /**
  * The KLibLoader allows you to load libraries dynamically at runtime.
@@ -351,10 +265,6 @@ public:
         return res;
     }
 
-Q_SIGNALS:
-    /// @internal for KApplication. Do not use.
-    void kapplication_hook_clearClipboard();
-
 private:
     /**
      * You should NEVER destruct an instance of KLibLoader
@@ -364,9 +274,6 @@ private:
     ~KLibLoader();
 
     KLibLoader(QObject *parent = 0);
-
-private Q_SLOTS:
-    void slotLibraryDestroyed();
 };
 
 #endif
