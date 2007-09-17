@@ -77,6 +77,6 @@ Keywords[sl]=Šifriranje,šifre,šifra,SSL,HTTPS,potrdila,TLS,varnost
 Keywords[sv]=Krypto,Kryptografi,kryptering,SSL,https,certifikat,chiffer,TLS,säker,säkerhet
 Keywords[th]=เข้า-ถอดรหัส,Krypto,เรื่องเกี่ยวกับการเข้า-ถอดรหัส,การเข้ารหัส,SSL,https,ใบรับรอง,ciphers,TLS,ปลอดภัย,ความปลอดภัย
 Keywords[vi]=Crypto,mật mã,mã hoá,Krypto,Cryptography,encryption,SSL,https,certificates,chứng nhận,ciphers,TLS,secure,bảo mật,security
-Keywords[zh_CN]=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,security,加密,证书,加密算法,安全
+Keywords[zh_CN]=Crypto、Krypto、Cryptography、encryption、SSL、https、certificates、ciphers、TLS、secure、security
 
 Categories=Qt;KDE;X-KDE-settings-security;
