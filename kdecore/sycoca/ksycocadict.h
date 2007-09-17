@@ -75,6 +75,20 @@ public:
    int find_string(const QString &key ) const;
 
    /**
+    * Looks up all entries identified by 'key'.
+    * This is useful when the dict is used as a multi-hash.
+    *
+    * If an empty list is returned, no matching entry exists.
+    * Otherwise, the offset of the matching entries are returned.
+    *
+    * NOTE: It is not guaranteed that each entry is
+    * indeed among the ones you were looking for.
+    * After loading each entry you should check that it
+    * indeed matches the search key.
+    */
+   QList<int> findMultiString(const QString &key ) const;
+
+    /**
     * The number of entries in the dictionary.
     *
     * Only valid when building the database.
@@ -109,9 +123,6 @@ public:
     *   The duplicate list size will be approx. 12Kb.
     **/
    void save(QDataStream &str);
-
-private:
-   quint32 hashKey( const QString &) const;
 
 private:
     Q_DISABLE_COPY(KSycocaDict)
