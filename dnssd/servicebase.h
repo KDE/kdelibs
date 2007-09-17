@@ -89,9 +89,9 @@ public:
 	QMap<QString,QByteArray> textData() const;
 
 protected:
-	ServiceBase(ServiceBasePrivate* const dptr);
+	ServiceBase(ServiceBasePrivate* const d);
 	virtual void virtual_hook(int, void*);
-	ServiceBasePrivate* const dptr;
+	ServiceBasePrivate* const d;
 
 };
 

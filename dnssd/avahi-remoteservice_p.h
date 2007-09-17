@@ -29,7 +29,7 @@
 #include "avahi_serviceresolver_interface.h"
 
 
-#define K_D RemoteServicePrivate* d=static_cast<RemoteServicePrivate*>(dptr)
+#define K_D RemoteServicePrivate* d=static_cast<RemoteServicePrivate*>(this->d)
 
 namespace DNSSD
 {

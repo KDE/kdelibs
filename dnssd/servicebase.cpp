@@ -28,42 +28,46 @@ namespace DNSSD
 {
 
 ServiceBase::ServiceBase(const QString& name, const QString& type, const QString& domain,
-			 const QString& host, unsigned short port) :  dptr(new ServiceBasePrivate(name,type,domain,host,port))
+			 const QString& host, unsigned short port) 
+    :  d(new ServiceBasePrivate(name,type,domain,host,port))
 {}
 
-ServiceBase::ServiceBase(ServiceBasePrivate* const d) :  dptr(d)
+ServiceBase::ServiceBase(ServiceBasePrivate* const _d) 
+:  d(_d)
 {}
 
 ServiceBase::~ServiceBase()
-{}
+{
+    delete d;
+}
 
 QString ServiceBase::serviceName() const
 {
-	return dptr->m_serviceName;
+    return d->m_serviceName;
 }
 
 QString ServiceBase::type() const
 {
-	return dptr->m_type;
+    return d->m_type;
 }
 
 QString ServiceBase::domain() const
 {
-	return dptr->m_domain;
+    return d->m_domain;
 }
 
 QString ServiceBase::hostName() const
 {
-	return dptr->m_hostName;
+    return d->m_hostName;
 }
 
 unsigned short ServiceBase::port() const
 {
-	return dptr->m_port;
+    return d->m_port;
 }
 QMap<QString,QByteArray> ServiceBase::textData() const
 {
-	return dptr->m_textData;
+    return d->m_textData;
 }
 
 void ServiceBase::virtual_hook(int, void*)
