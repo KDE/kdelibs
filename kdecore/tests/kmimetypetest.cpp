@@ -132,6 +132,8 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
         QSKIP( "ksycoca not available", SkipAll );
     QTest::addColumn<QString>("fileName");
     QTest::addColumn<QString>("expectedMimeType");
+    // Maybe we could also add a expectedAccuracy column...
+
     QTest::newRow("text") << "textfile.txt" << "text/plain";
     QTest::newRow("case-insensitive search") << "textfile.TxT" << "text/plain";
     QTest::newRow("case-sensitive uppercase match") << "textfile.C" << "text/x-c++src";
@@ -140,6 +142,13 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("old kdelnk file is x-desktop too") << "foo.kdelnk" << "application/x-desktop";
     QTest::newRow("double-extension file") << "foo.tar.bz2" << "application/x-bzip-compressed-tar";
     QTest::newRow("single-extension file") << "foo.bz2" << "application/x-bzip";
+    QTest::newRow("glob that uses [] syntax, 1") << "Makefile" << "text/x-makefile";
+    QTest::newRow("glob that uses [] syntax, 2") << "makefile" << "text/x-makefile";
+    QTest::newRow("glob that ends with *, no extension") << "README" << "text/x-readme";
+    QTest::newRow("glob that ends with *, extension") << "README.foo" << "text/x-readme";
+    // Tricky case, README* and *.txt both match. File doesn't exist, so no magic -> last one wins
+    QTest::newRow("glob that ends with *, also matches *.txt, which wins") << "README.txt" << "text/x-readme";
+    QTest::newRow("glob that ends with *, double match for same mimetype") << "README.nfo" << "text/x-readme";
     QTest::newRow("directory") << "/" << "inode/directory";
     QTest::newRow("doesn't exist, no extension") << "IDontExist" << "application/octet-stream";
     QTest::newRow("doesn't exist but has known extension") << "IDontExist.txt" << "text/plain";

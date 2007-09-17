@@ -122,15 +122,6 @@ namespace KShell {
      * @return the expanded path
      */
     KDECORE_EXPORT QString tildeExpand( const QString &path );
-
-    /* Match a filename.
-     * @param filename is the real decoded filename (or dirname
-     *        without trailing '/').
-     * @param pattern is a pattern like *.txt, *.tar.gz, Makefile.*, *README*, etc.
-     * Patterns with two asterisks like "*.*pk" are not supported.
-     * @return true if the given filename matches the given pattern
-     */
-    KDECORE_EXPORT bool matchFileName( const QString &filename, const QString &pattern );
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KShell::Options)

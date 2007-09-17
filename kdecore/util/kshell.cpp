@@ -61,39 +61,3 @@ QString KShell::tildeExpand( const QString &fname )
     }
     return fname;
 }
-
-bool KShell::matchFileName( const QString &filename, const QString &pattern )
-{
-    int len = filename.length();
-    int pattern_len = pattern.length();
-
-    if (!pattern_len)
-        return false;
-
-    // Patterns like "Makefile*"
-    if (pattern[pattern_len - 1] == '*' && len + 1 >= pattern_len) {
-        if (pattern[0] == '*')
-            return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
-
-        const QChar *c1 = pattern.unicode();
-        const QChar *c2 = filename.unicode();
-        int cnt = 1;
-        while (cnt < pattern_len && *c1++ == *c2++)
-           ++cnt;
-        return cnt == pattern_len;
-    }
-
-    // Patterns like "*~", "*.extension"
-    if (pattern[0] == '*' && len + 1 >= pattern_len)
-    {
-        const QChar *c1 = pattern.unicode() + pattern_len - 1;
-        const QChar *c2 = filename.unicode() + len - 1;
-        int cnt = 1;
-        while (cnt < pattern_len && *c1-- == *c2--)
-            ++cnt;
-        return cnt == pattern_len;
-    }
-
-    // Patterns like "Makefile"
-    return filename == pattern;
-}

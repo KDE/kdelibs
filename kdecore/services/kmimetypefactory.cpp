@@ -181,6 +181,43 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &e
     return mimeList;
 }
 
+static bool matchFileName( const QString &filename, const QString &pattern )
+{
+    int pattern_len = pattern.length();
+    if (!pattern_len)
+        return false;
+    int len = filename.length();
+
+    // Patterns like "*~", "*.extension"
+    if (pattern[0] == '*' && len + 1 >= pattern_len && pattern.indexOf('[') == -1)
+    {
+        const QChar *c1 = pattern.unicode() + pattern_len - 1;
+        const QChar *c2 = filename.unicode() + len - 1;
+        int cnt = 1;
+        while (cnt < pattern_len && *c1-- == *c2--)
+            ++cnt;
+        return cnt == pattern_len;
+    }
+
+    // Patterns like "README*" (well this is currently the only one like that...)
+    if (pattern[pattern_len - 1] == '*' && len + 1 >= pattern_len) {
+        if (pattern[0] == '*')
+            return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
+
+        const QChar *c1 = pattern.unicode();
+        const QChar *c2 = filename.unicode();
+        int cnt = 1;
+        while (cnt < pattern_len && *c1++ == *c2++)
+           ++cnt;
+        return cnt == pattern_len;
+    }
+
+    // Other patterns, like "[Mm]akefile" or "README": use slow but correct method
+    QRegExp rx(pattern);
+    rx.setPatternSyntax(QRegExp::Wildcard);
+    return rx.exactMatch(filename);
+}
+
 QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_filename, QString *match )
 {
     QList<KMimeType::Ptr> matchingMimeTypes;
@@ -231,7 +268,7 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_
 
     for ( ; it != end; ++it, ++it_offset ) {
         const QString pattern = *it;
-        if ( KShell::matchFileName( _filename, pattern ) ) {
+        if ( matchFileName( _filename, pattern ) ) {
             // Is this a better match than the simpleExtension, like *.tar.bz2?
             if (pattern.endsWith(simpleExtension))
                 matchingMimeTypes.clear();

@@ -311,7 +311,9 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     if (!mimeList.isEmpty()) {
         if (accuracy)
             *accuracy = 20;
-        return mimeList.first();
+        // Return the last match. Ideally the longest match (README* is more specific than *.txt)
+        // but this case only works here because we check for fast-patterns before other-patterns...
+        return mimeList.last();
     }
 
     // Find a fallback from the protocol
