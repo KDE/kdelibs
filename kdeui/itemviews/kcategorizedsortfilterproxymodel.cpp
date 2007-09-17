@@ -1012,7 +1012,7 @@ void KCategorizedSortFilterProxyModel::Private::sourceLayoutAboutToBeChanged()
 {
     persistentIndexes.clear();
 
-    if (staticPersistentIndexes->isEmpty())
+    if (persistentIndexesData.isEmpty())
         return;
 
     emit p->layoutAboutToBeChanged();
@@ -1748,11 +1748,11 @@ void KCategorizedSortFilterProxyModel::Private::handleFilterChanged(QVector<int>
 QModelIndexList KCategorizedSortFilterProxyModel::Private::storePersistentIndexes()
 {
     QModelIndexList sourceIndexes;
-    int persistentCount = staticPersistentIndexes->count();
+    int persistentCount = persistentIndexesData.count();
 
     for (int i = 0; i < persistentCount; i++)
     {
-        QModelIndex proxyIndex = staticPersistentIndexes->at(i)->index;
+        QModelIndex proxyIndex = persistentIndexesData.at(i)->index;
         QModelIndex sourceIndex = proxyToSource(proxyIndex);
 
         sourceIndexes << sourceIndex;
@@ -1768,7 +1768,7 @@ void KCategorizedSortFilterProxyModel::Private::updatePersistentIndexes(const QM
         QModelIndex sourceIndex = sourceIndexes.at(i);
         createInternalInformation(sourceIndex.parent());
         QModelIndex proxyIndex = sourceToProxy(sourceIndex);
-        staticPersistentIndexes->at(i)->index = proxyIndex;
+        persistentIndexesData.at(i)->index = proxyIndex;
     }
 }
 

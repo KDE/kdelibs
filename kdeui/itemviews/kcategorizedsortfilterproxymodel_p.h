@@ -103,12 +103,6 @@ public:
   */
 K_GLOBAL_STATIC(KEmptyItemModel, dummyModel) ///< Declaration of the static object
 
-/**
-  * @internal
-  * Emulation of persistent.indexes from qabstractitemmodel_p.h
-  */
-K_GLOBAL_STATIC(QVector<QPersistentModelIndexData*>, staticPersistentIndexes)
-
 
 /**
   * @internal
@@ -230,6 +224,9 @@ public:
     mutable QMap<QModelIndex, InternalInformation*> sourceIndexMap;
 
     QList<QPersistentModelIndex> persistentIndexes;
+
+    // Emulation of persistent.indexes from qabstractitemmodel_p.h
+    QVector<QPersistentModelIndexData*> persistentIndexesData;
 
 public Q_SLOTS:
     void sourceDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
