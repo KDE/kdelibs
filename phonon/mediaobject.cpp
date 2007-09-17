@@ -258,12 +258,12 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
 
     pDebug() << Q_FUNC_INFO << newSource.url();
 
+    stop(); // first call stop as that often is the expected state
+            // for setting a new URL
+
     MediaSource::Type oldSourceType = d->mediaSource.type();
     d->mediaSource = newSource;
     d->kiofallback = 0; // kiofallback auto-deletes
-
-    stop(); // first call stop as that often is the expected state
-            // for setting a new URL
 
 //X         if (url.scheme() == "http") {
 //X             d->kiofallback = Platform::createMediaStream(url, this);
