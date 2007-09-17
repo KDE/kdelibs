@@ -221,7 +221,7 @@ void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& 
 #ifdef Q_WS_WIN
     error( KIO::ERR_CANNOT_CHOWN, _path );
 #else
-    
+
     uid_t uid;
     gid_t gid;
 
@@ -365,9 +365,14 @@ void FileProtocol::get( const KUrl& url )
 #endif
 
     // Determine the mimetype of the file to be retrieved, and emit it.
-    // This is mandatory in all slaves (for KRun/BrowserRun to work).
+    // This is mandatory in all slaves (for KRun/BrowserRun to work)
+    // In real "remote" slaves, this is usually done using findByNameAndContent
+    // after receiving some data. But we don't know how much data the mimemagic rules
+    // need, so for local files, better use findByUrl with localUrl=true.
     KMimeType::Ptr mt = KMimeType::findByUrl( url, buff.st_mode, true /* local URL */ );
     emit mimeType( mt->name() );
+    // Emit total size AFTER mimetype
+    totalSize( buff.st_size );
 
     KIO::filesize_t processed_size = 0;
 
@@ -389,7 +394,6 @@ void FileProtocol::get( const KUrl& url )
 
     char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
-    bool mimetypeEmitted = false;
 
     while( 1 )
     {
@@ -406,19 +410,6 @@ void FileProtocol::get( const KUrl& url )
           break; // Finished
 
        array = QByteArray::fromRawData(buffer, n);
-
-       // get the mime type and set the total size ...
-       if(!mimetypeEmitted)
-       {
-           mimetypeEmitted = true;
-           KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), array);
-           kDebug(7101) << "Emitting mimetype " << mime->name();
-           mimeType( mime->name() );
-           // Emit total size AFTER mimetype
-           totalSize( buff.st_size );
-       }
-
-
        data( array );
        array.clear();
 
