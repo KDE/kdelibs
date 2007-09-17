@@ -190,15 +190,16 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_
 
     // Extract extension
     const int lastDot = _filename.lastIndexOf('.');
+    QString simpleExtension;
 
     if (lastDot != -1) { // if no '.', skip the extension lookup
         const int ext_len = _filename.length() - lastDot - 1;
-        const QString extension = _filename.right( ext_len );
+        simpleExtension = _filename.right( ext_len );
 
-        matchingMimeTypes = findFromFastPatternDict(extension);
+        matchingMimeTypes = findFromFastPatternDict(simpleExtension);
         if (!matchingMimeTypes.isEmpty()) {
             if (match)
-                *match = extension;
+                *match = simpleExtension;
             // Keep going, there might be some matches from the 'other' list, like *.tar.bz2
         }
     }
@@ -231,6 +232,9 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_
     for ( ; it != end; ++it, ++it_offset ) {
         const QString pattern = *it;
         if ( KShell::matchFileName( _filename, pattern ) ) {
+            // Is this a better match than the simpleExtension, like *.tar.bz2?
+            if (pattern.endsWith(simpleExtension))
+                matchingMimeTypes.clear();
             KMimeType *newMimeType = createEntry( *it_offset );
             assert (newMimeType && newMimeType->isType( KST_KMimeType ));
             matchingMimeTypes.append( KMimeType::Ptr( newMimeType ) );

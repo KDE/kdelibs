@@ -138,6 +138,8 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("case-sensitive lowercase match") << "textfile.c" << "text/x-csrc";
     QTest::newRow("desktop file") << "foo.desktop" << "application/x-desktop";
     QTest::newRow("old kdelnk file is x-desktop too") << "foo.kdelnk" << "application/x-desktop";
+    QTest::newRow("double-extension file") << "foo.tar.bz2" << "application/x-bzip-compressed-tar";
+    QTest::newRow("single-extension file") << "foo.bz2" << "application/x-bzip";
     QTest::newRow("directory") << "/" << "inode/directory";
     QTest::newRow("doesn't exist, no extension") << "IDontExist" << "application/octet-stream";
     QTest::newRow("doesn't exist but has known extension") << "IDontExist.txt" << "text/plain";
