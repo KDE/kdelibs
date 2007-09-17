@@ -37,11 +37,11 @@ private Q_SLOTS:
     void testIndexForItem();
     void testData();
     void testReload();
-    void testDeleteFile();
     void testCreateFile();
     void testModifyFile();
     void testRenameFile();
     void testExpandToUrl();
+    void testDeleteFile();
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void slotListingCompleted();

@@ -269,29 +269,6 @@ void KDirModelTest::testReload()
     testItemForIndex();
 }
 
-void KDirModelTest::testDeleteFile()
-{
-    const QString file = m_tempDir.name() + "toplevelfile_1";
-    const KUrl url(file);
-
-    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
-    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-             &m_eventLoop, SLOT(quit()) );
-
-    KIO::DeleteJob* job = KIO::del(url);
-    bool ok = job->exec();
-    QVERIFY(ok);
-
-    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
-    enterLoop();
-
-    // If we come here, then rowsRemoved() was emitted - all good.
-    const int topLevelRowCount = m_dirModel.rowCount();
-    QCOMPARE(topLevelRowCount, 3); // one less than before
-    disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                &m_eventLoop, SLOT(quit()) );
-}
-
 void KDirModelTest::testCreateFile()
 {
     // TODO
@@ -382,4 +359,28 @@ void KDirModelTest::testExpandToUrl()
     dirModelForExpand.expandToUrl(KUrl(path+"subdir/subsubdir"));
     enterLoop();
     QCOMPARE(spyExpand.count(), 1);
+}
+
+// Must be done last because it changes the other indexes
+void KDirModelTest::testDeleteFile()
+{
+    const QString file = m_tempDir.name() + "toplevelfile_1";
+    const KUrl url(file);
+
+    qRegisterMetaType<QModelIndex>("QModelIndex"); // beats me why Qt doesn't do that
+    connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+             &m_eventLoop, SLOT(quit()) );
+
+    KIO::DeleteJob* job = KIO::del(url);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
+    enterLoop();
+
+    // If we come here, then rowsRemoved() was emitted - all good.
+    const int topLevelRowCount = m_dirModel.rowCount();
+    QCOMPARE(topLevelRowCount, 3); // one less than before
+    disconnect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
+                &m_eventLoop, SLOT(quit()) );
 }
