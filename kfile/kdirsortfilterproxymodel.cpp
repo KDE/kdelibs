@@ -31,7 +31,7 @@
 // in the form of a separate subclass
 
 KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
-    : QSortFilterProxyModel(parent)
+    : KCategorizedSortFilterProxyModel(parent)
 {
     setDynamicSortFilter(true);
 
@@ -288,7 +288,79 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
 
     // We have set a SortRole and trust the ProxyModel to do
     // the right thing for now.
-    return QSortFilterProxyModel::lessThan(left, right);
+    return KCategorizedSortFilterProxyModel::lessThan(left, right);
 }
 
+bool KDirSortFilterProxyModel::lessThanCategoryPurpose(const QModelIndex &left,
+                                                       const QModelIndex &right) const
+{
+    return lessThan(left, right);
+}
 
+bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
+                                                      const QModelIndex &right) const
+{
+    KDirModel* dirModel = static_cast<KDirModel*>(sourceModel());
+
+    const KFileItem leftFileItem  = dirModel->itemForIndex(left);
+    const KFileItem rightFileItem = dirModel->itemForIndex(right);
+
+    switch (left.column()) {
+    case KDirModel::Name: {
+        QString leftFileName(leftFileItem.name());
+        if (leftFileName.at(0) == '.') {
+            leftFileName = leftFileName.mid(1);
+        }
+
+        QString rightFileName(rightFileItem.name());
+        if (rightFileName.at(0) == '.') {
+            rightFileName = rightFileName.mid(1);
+        }
+
+        return naturalCompare(leftFileName[0].toLower(), rightFileName[0].toLower()) < 0;
+    }
+
+    case KDirModel::Size:
+        // If we are sorting by size, show folders first. We will sort them
+        // correctly later.
+        return leftFileItem.isDir() && !rightFileItem.isDir();
+
+    case KDirModel::ModifiedTime: {
+        KDateTime leftTime = leftFileItem.time(KFileItem::ModificationTime);
+        KDateTime rightTime = rightFileItem.time(KFileItem::ModificationTime);
+        return leftTime > rightTime;
+    }
+
+    case KDirModel::Permissions: {
+        return naturalCompare(leftFileItem.permissionsString(),
+                              rightFileItem.permissionsString()) < 0;
+    }
+
+    case KDirModel::Owner: {
+        return naturalCompare(leftFileItem.user().toLower(),
+                              rightFileItem.user().toLower()) < 0;
+    }
+
+    case KDirModel::Group: {
+        return naturalCompare(leftFileItem.group().toLower(),
+                              rightFileItem.group().toLower()) < 0;
+    }
+
+    case KDirModel::Type: {
+        // If we are sorting by size, show folders first. We will sort them
+        // correctly later.
+        if (leftFileItem.isDir() && !rightFileItem.isDir()) {
+            return true;
+        } else if (!leftFileItem.isDir() && rightFileItem.isDir()) {
+            return false;
+        }
+
+        return naturalCompare(leftFileItem.mimeComment().toLower(),
+                              rightFileItem.mimeComment().toLower()) < 0;
+    }
+
+    default:
+        break;
+    }
+    return false;
+}

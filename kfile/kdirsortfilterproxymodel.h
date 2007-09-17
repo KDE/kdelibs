@@ -23,7 +23,8 @@
 #ifndef KDIRSORTFILTERPROXYMODEL_H
 #define KDIRSORTFILTERPROXYMODEL_H
 
-#include <QtGui/QSortFilterProxyModel>
+#include <kcategorizedsortfilterproxymodel.h>
+
 #include <kfile_export.h>
 //#include <kio/kio_export.h>
 
@@ -46,7 +47,8 @@
  *
  * @author Dominic Battre, Martin Pool and Peter Penz
  */
-class KFILE_EXPORT /*KIO_EXPORT*/ KDirSortFilterProxyModel : public QSortFilterProxyModel
+class KFILE_EXPORT /*KIO_EXPORT*/ KDirSortFilterProxyModel
+    : public KCategorizedSortFilterProxyModel
 {
     Q_OBJECT
 
@@ -76,6 +78,12 @@ protected:
      */
     virtual bool lessThan(const QModelIndex& left,
                           const QModelIndex& right) const;
+
+    virtual bool lessThanCategoryPurpose(const QModelIndex &left,
+                                         const QModelIndex &right) const;
+
+    virtual bool lessThanGeneralPurpose(const QModelIndex &left,
+                                        const QModelIndex &right) const;
 };
 
 
