@@ -327,15 +327,15 @@ void KTextEdit::wheelEvent( QWheelEvent *event )
 
 void KTextEdit::createHighlighter()
 {
-    setHightighter(new Sonnet::Highlighter(this, d->spellChechingConfigFileName));
+    setHighlighter(new Sonnet::Highlighter(this, d->spellChechingConfigFileName));
 }
 
-Sonnet::Highlighter* KTextEdit::hightighter() const
+Sonnet::Highlighter* KTextEdit::highlighter() const
 {
     return d->highlighter;
 }
 
-void KTextEdit::setHightighter(Sonnet::Highlighter *_highLighter)
+void KTextEdit::setHighlighter(Sonnet::Highlighter *_highLighter)
 {
     delete d->highlighter;
     d->highlighter = _highLighter;
