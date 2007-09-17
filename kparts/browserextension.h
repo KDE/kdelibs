@@ -646,7 +646,7 @@ public:  // yes, those signals are public; don't tell moc or doxygen :)
    * Used when a set of files/URLs is selected (with full information
    * about those URLs, including size, permissions etc.)
    */
-  void selectionInfo( const KFileItemList &items );
+  void selectionInfo( const QList<KFileItem>& items );
   /**
    * Inform the hosting application about the current selection.
    * Used when some text is selected.
