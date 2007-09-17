@@ -74,6 +74,15 @@ void KTemporaryFileTest::testKTemporaryFile()
         QVERIFY(QFile::exists(file.fileName()));
     }
 
+    //Test suffix only
+    {
+        KTemporaryFile file;
+        file.setSuffix("eggs");
+        QVERIFY(file.open());
+        QVERIFY(file.fileName().endsWith("eggs"));
+        QVERIFY(QFile::exists(file.fileName()));
+    }
+
     //TODO: How to test outside of tmp when we can't be sure what
     //directories we have write access to?
 }
