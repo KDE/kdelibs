@@ -71,7 +71,6 @@
 #include <kio/previewjob.h>
 #include <kio/renamedialog.h>
 #include <kpropertiesdialog.h>
-#include <kmimetypefactory.h>
 #include <kstandardshortcut.h>
 #include <kde_file.h>
 #include <kactioncollection.h>
@@ -1133,15 +1132,14 @@ bool KDirOperator::checkPreviewInternal() const
         }
 
         if (!nameFilter.isEmpty()) {
-            // find the mimetypes of all the filter-patterns and
-            KMimeTypeFactory *fac = KMimeTypeFactory::self();
-            QStringList::Iterator it1 = nameFilter.begin();
+            // find the mimetypes of all the filter-patterns
+            QStringList::const_iterator it1 = nameFilter.begin();
             for (; it1 != nameFilter.end(); ++it1) {
                 if ((*it1) == "*") {
                     return true;
                 }
 
-                KMimeType::Ptr mt = fac->findFromPattern(*it1);
+                KMimeType::Ptr mt = KMimeType::findByPath(*it1, 0, true /*fast mode, no file contents exist*/);
                 if (!mt)
                     continue;
                 QString mime = mt->name();
