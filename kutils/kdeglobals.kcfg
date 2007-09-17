@@ -361,7 +361,6 @@
   <entry key="SingleClick" type="String" />
   <entry key="StartDragDist" type="String" />
   <entry key="StartDragTime" type="String" />
-  <entry key="VisualActivate" type="String" />
   <entry key="WheelScrollLines" type="String" />
   <entry key="colorScheme" type="String" />
   <entry key="contrast" type="String" />

@@ -145,20 +145,6 @@ public:
     QImage doublePixels(const QImage &src) const;
 
     /**
-     * Provides visual feedback to show activation of an icon on a widget.
-     *
-     * Not strictly an 'icon effect', but in practice that's what it looks
-     * like.
-     *
-     * This method does nothing if the global 'Visual feedback on activation'
-     * option is not activated (See kcontrol/Peripherals/Mouse).
-     *
-     * @param widget The widget on which the effect should be painted
-     * @param rect This rectangle defines the effect's borders
-     */
-    static void visualActivate(QWidget *widget, const QRect &rect);
-
-    /**
      * Tints an image gray.
      *
      * @param image The image

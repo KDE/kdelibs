@@ -29,8 +29,6 @@
 #define KDE_DEFAULT_AUTOSELECTDELAY -1
 #define KDE_DEFAULT_CHANGECURSOR true
 #define KDE_DEFAULT_LARGE_CURSOR false
-#define KDE_DEFAULT_VISUAL_ACTIVATE true
-#define KDE_DEFAULT_VISUAL_ACTIVATE_SPEED 50
 #define KDE_DEFAULT_WHEEL_ZOOM false
 #define KDE_DEFAULT_ICON_ON_PUSHBUTTON true
 #define KDE_DEFAULT_OPAQUE_RESIZE true
@@ -132,20 +130,6 @@ public:
      * @return the KDE setting for "change cursor over icon"
      */
     static bool changeCursorOverIcon();
-
-    /**
-     * Checks whether to show feedback when in item (specifically an
-     * icon) is activated.
-     * @return whether to show some feedback when an item is activated.
-     */
-    static bool visualActivate();
-
-    /**
-     * Returns the speed of the visual activation feedback.
-     * @return the speed of the visual activation feedback, between
-     *         0 for minimum and 100 for maximum speed
-     */
-    static unsigned int visualActivateSpeed();
 
     /**
      * Returns the KDE setting for the auto-select option.
