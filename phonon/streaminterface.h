@@ -48,6 +48,7 @@ class PHONON_EXPORT StreamInterface
         void needData();
         void enoughData();
         void seekStream(qint64);
+        void reset();
 
     protected:
         StreamInterface();

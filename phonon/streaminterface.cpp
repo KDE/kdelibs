@@ -90,6 +90,14 @@ void StreamInterface::seekStream(qint64 offset)
     }
 }
 
+void StreamInterface::reset()
+{
+    Q_ASSERT(d->connected);
+    if (d->mediaSource.type() == MediaSource::Stream) {
+        d->mediaSource.stream()->reset();
+    }
+}
+
 } // namespace Phonon
 
 // vim: sw=4 sts=4 et tw=100
