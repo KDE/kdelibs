@@ -44,6 +44,7 @@ KDECORE_UNIT_TESTS(
  ktemporaryfiletest
  kautostarttest
  kjobtest
+ ksycocadicttest
  kservicetest
  kglobalstatictest
  kglobaltest
