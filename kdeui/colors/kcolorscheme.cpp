@@ -356,9 +356,9 @@ KColorScheme::~KColorScheme()
 
 KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConfigPtr config)
 {
-    if (!config) {
+    if (!config)
         config = KGlobal::config();
-    }
+
     switch (set) {
         case Window:
             d = new KColorSchemePrivate(config, state, "Colors:Window", defaultWindowColors);
@@ -514,6 +514,8 @@ KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::Decorat
 
 KStatefulBrush::KStatefulBrush(const QBrush &brush, KSharedConfigPtr config)
 {
+    if (!config)
+        config = KGlobal::config();
     d = new KStatefulBrushPrivate[3];
     d[0] = brush;
     d[1] = StateEffects(QPalette::Disabled, config).brush(brush);
@@ -523,6 +525,8 @@ KStatefulBrush::KStatefulBrush(const QBrush &brush, KSharedConfigPtr config)
 KStatefulBrush::KStatefulBrush(const QBrush &brush, const QBrush &background,
                                KSharedConfigPtr config)
 {
+    if (!config)
+        config = KGlobal::config();
     d = new KStatefulBrushPrivate[3];
     d[0] = brush;
     d[1] = StateEffects(QPalette::Disabled, config).brush(brush, background);
