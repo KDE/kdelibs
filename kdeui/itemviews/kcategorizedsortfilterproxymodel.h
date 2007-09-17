@@ -43,7 +43,9 @@ class KDEUI_EXPORT KCategorizedSortFilterProxyModel
 
 public:
     enum AdditionalRoles {
-        CategoryRole = 32
+        // Note: use printf "0x%08X\n" $(($RANDOM*$RANDOM))
+        // to define additional roles.
+        CategoryRole = 0x17CE990A
     };
 
     KCategorizedSortFilterProxyModel(QObject *parent = 0);
