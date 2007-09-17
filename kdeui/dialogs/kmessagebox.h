@@ -297,7 +297,7 @@ public:
                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                          const KGuiItem &buttonNo = KStandardGuiItem::no(),
                          const QString &dontAskAgainName = QString(),
-                         Options options = Option(Notify | Dangerous));
+                         Options options = Options(Notify | Dangerous));
 
  /**
   * Display a "warning" dialog with a listbox to show information to the user
@@ -340,7 +340,7 @@ public:
                             const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                             const KGuiItem &buttonNo = KStandardGuiItem::no(),
                             const QString &dontAskAgainName = QString(),
-                            Options options = Option(Notify | Dangerous));
+                            Options options = Options(Notify | Dangerous));
 
  /**
   * This function accepts the window id of the parent window, instead
@@ -353,7 +353,7 @@ public:
                             const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                             const KGuiItem &buttonNo = KStandardGuiItem::no(),
                             const QString &dontAskAgainName = QString(),
-                            Options options = Option(Notify | Dangerous));
+                            Options options = Options(Notify | Dangerous));
 
  /**
   * Display a "warning" dialog.
