@@ -681,33 +681,7 @@ QStringList KConfigGroup::readPathListEntry( const char *pKey, char sep ) const
 void KConfigGroup::writeEntry( const char *pKey, const QString& value,
                                KConfigBase::WriteConfigFlags pFlags )
 {
-    // the KConfig object is dirty now
-    // set this before any IO takes place so that if any derivative
-    // classes do caching, they won't try and flush the cache out
-    // from under us before we read. A race condition is still
-    // possible but minimized.
-    if( pFlags & KConfigBase::Persistent ) {
-        setDirty(true);
-    }
-
-    if ( !d->master->localeInitialized() && KGlobal::locale() ) {
-        d->master->setLocale();
-    }
-
-    KEntryKey entryKey(d->group, pKey);
-    entryKey.bLocal = pFlags & KConfigBase::NLS;
-
-    KEntry aEntryData;
-    aEntryData.mValue = value.toUtf8();  // set new value
-    aEntryData.bGlobal = pFlags & KConfigBase::Global;
-    aEntryData.bNLS = pFlags & KConfigBase::NLS;
-
-    if (pFlags & KConfigBase::Persistent) {
-        aEntryData.bDirty = true;
-    }
-
-    // rewrite the new value
-    putData(entryKey, aEntryData, true);
+    writeEntry( pKey, value.toUtf8(), pFlags );
 }
 
 void KConfigGroup::writeEntry( const QString& pKey, const QStringList &value,
@@ -732,7 +706,33 @@ void KConfigGroup::writeEntry( const char *pKey, const char *value,
 void KConfigGroup::writeEntry( const char *pKey, const QByteArray& value,
                      WriteConfigFlags pFlags )
 {
-    writeEntry(pKey, QString::fromLatin1(value, value.size()), pFlags);
+    // the KConfig object is dirty now
+    // set this before any IO takes place so that if any derivative
+    // classes do caching, they won't try and flush the cache out
+    // from under us before we read. A race condition is still
+    // possible but minimized.
+    if( pFlags & KConfigBase::Persistent ) {
+        setDirty(true);
+    }
+
+    if ( !d->master->localeInitialized() && KGlobal::locale() ) {
+        d->master->setLocale();
+    }
+
+    KEntryKey entryKey(d->group, pKey);
+    entryKey.bLocal = pFlags & KConfigBase::NLS;
+
+    KEntry aEntryData;
+    aEntryData.mValue = value;  // set new value
+    aEntryData.bGlobal = pFlags & KConfigBase::Global;
+    aEntryData.bNLS = pFlags & KConfigBase::NLS;
+
+    if (pFlags & KConfigBase::Persistent) {
+        aEntryData.bDirty = true;
+    }
+
+    // rewrite the new value
+    putData(entryKey, aEntryData, true);
 }
 
 void KConfigGroup::writePathEntry( const QString& pKey, const QString & path,
@@ -888,8 +888,7 @@ void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
       writeEntry( pKey, prop.toStringList(), ',', pFlags );
       return;
     case QVariant::ByteArray: {
-      const QByteArray ba = prop.toByteArray();
-      writeEntry( pKey, QString::fromUtf8(ba.constData(), ba.length()), pFlags );
+      writeEntry( pKey, prop.toByteArray(), pFlags );
       return;
     }
     case QVariant::Point: {
