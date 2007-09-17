@@ -174,6 +174,41 @@ void KMimeTypeTest::testFindByPath()
     mime = KMimeType::findByPath( tempFileName );
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1( "application/pdf" ) );
+    // fast mode cannot find the mimetype
+    mime = KMimeType::findByPath( tempFileName, 0, true );
+    QVERIFY( mime );
+    QCOMPARE(mime->name(), QString::fromLatin1("application/octet-stream"));
+
+    // Test the case where the extension doesn't match the contents: extension wins
+    {
+        KTemporaryFile txtTempFile;
+        txtTempFile.setSuffix(".txt");
+        QVERIFY(txtTempFile.open());
+        txtTempFile.write("%PDF-");
+        QString txtTempFileName = txtTempFile.fileName();
+        txtTempFile.close();
+        mime = KMimeType::findByPath( txtTempFileName );
+        QVERIFY( mime );
+        QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
+        // fast mode finds the same
+        mime = KMimeType::findByPath( txtTempFileName, 0, true );
+        QVERIFY( mime );
+        QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
+    }
+
+    // Now the case where extension differs from contents, but contents has >80 magic rule
+    // XDG spec says: contents wins. But we can't sniff all files...
+    {
+        KTemporaryFile txtTempFile;
+        txtTempFile.setSuffix(".txt");
+        QVERIFY(txtTempFile.open());
+        txtTempFile.write("<smil");
+        QString txtTempFileName = txtTempFile.fileName();
+        txtTempFile.close();
+        mime = KMimeType::findByPath( txtTempFileName );
+        QVERIFY( mime );
+        QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
+    }
 
     // Can't use KIconLoader since this is a "without GUI" test.
     QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
@@ -237,17 +272,14 @@ void KMimeTypeTest::testFindByNameAndContent()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
 
-    // textfile.doc -> text/plain. We don't trust the .doc extension, because of this case.
+    // textfile.doc -> text/plain. We added this to the mimetype database so that it can be handled.
     mime = KMimeType::findByNameAndContent("textfile.doc", textData);
     QVERIFY( mime );
-    // Well, Thomas Leonard (freedesktop.org) doesn't agree that this matters,
-    // so currently the xdg mime database has application/msword:*.doc
-    //QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
-    QCOMPARE( mime->name(), QString::fromLatin1("application/msword") );
+    QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
 
     // mswordfile.doc -> application/msword. Found by contents, because of the above case.
     // Note that it's application/msword, not application/vnd.ms-word, since it's the former that is registered to IANA.
-    QByteArray mswordData = "\320\317\021\340\241\261";
+    QByteArray mswordData = "\320\317\021\340\241\261\032\341";
     mime = KMimeType::findByNameAndContent("mswordfile.doc", mswordData);
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("application/msword") );
@@ -302,6 +334,13 @@ void KMimeTypeTest::testFindByContent()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("application/pdf") );
 
+    QByteArray mswordData = "\320\317\021\340\241\261\032\341";
+    QVERIFY(KMimeType::isBufferBinaryData(mswordData));
+    mime = KMimeType::findByContent(mswordData);
+    QVERIFY( mime );
+    // We have no magic specific to msword data, so finding x-ole-storage is correct.
+    QCOMPARE( mime->name(), QString::fromLatin1("application/x-ole-storage") );
+
     // Calling findByContent on a directory
     mime = KMimeType::findByFileContent("/");
     QVERIFY( mime );
@@ -354,9 +393,17 @@ void KMimeTypeTest::testMimeTypeParent()
         QSKIP( "ksycoca not available", SkipAll );
 
     // All file-like mimetypes inherit from octet-stream
+    const KMimeType::Ptr wordperfect = KMimeType::mimeType("application/vnd.wordperfect");
+    QVERIFY(wordperfect);
+    QCOMPARE(wordperfect->parentMimeType(), QString("application/octet-stream"));
+    QVERIFY(wordperfect->is("application/octet-stream"));
+
+    // Check that msword derives from ole-storage [it didn't in 0.20, but we added it to kde.xml]
     const KMimeType::Ptr msword = KMimeType::mimeType("application/msword");
     QVERIFY(msword);
-    QCOMPARE(msword->parentMimeType(), QString("application/octet-stream"));
+    const KMimeType::Ptr olestorage = KMimeType::mimeType("application/x-ole-storage");
+    QVERIFY(olestorage);
+    QVERIFY(msword->is(olestorage->name()));
     QVERIFY(msword->is("application/octet-stream"));
 
     const KMimeType::Ptr directory = KMimeType::mimeType("inode/directory");
@@ -620,10 +667,11 @@ void KMimeTypeTest::testParseMagicFile()
     testBuffer.setData(testData.toLatin1());
     QVERIFY(testBuffer.open(QIODevice::ReadOnly));
     QString found;
+    QByteArray beginning;
     for ( QList<KMimeMagicRule>::const_iterator it = m_rules.begin(), end = m_rules.end();
           it != end; ++it ) {
         const KMimeMagicRule& rule = *it;
-        if (rule.match(&testBuffer, QByteArray())) {
+        if (rule.match(&testBuffer, beginning)) {
             found = rule.mimetype();
             break;
         }

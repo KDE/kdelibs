@@ -50,12 +50,22 @@ KMimeTypeFactory::KMimeTypeFactory()
             KSycocaEntry::read(*m_str, str2);
             m_aliases.insert(str1, str2);
         }
+
+        const int saveOffset = m_str->device()->pos();
+        // Init index tables
+        m_fastPatternDict = new KSycocaDict(m_str, m_fastPatternOffset);
+        m_str->device()->seek(saveOffset);
+
+    } else {
+        // Build new database
+        m_fastPatternDict = new KSycocaDict();
     }
 }
 
 KMimeTypeFactory::~KMimeTypeFactory()
 {
     _self = 0;
+    delete m_fastPatternDict;
 }
 
 KMimeTypeFactory * KMimeTypeFactory::self()
@@ -135,77 +145,67 @@ QString KMimeTypeFactory::resolveAlias(const QString& mime)
     return m_aliases.value(mime);
 }
 
-KMimeType::Ptr KMimeTypeFactory::findFromPattern( const QString &filename, QString *match )
+QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileName( const QString &filename, QString *match )
 {
     // Assume we're NOT building a database
-    if (!m_str) return KMimeType::Ptr();
+    if (!m_str) return QList<KMimeType::Ptr>();
 
     // "Applications MUST first try a case-sensitive match, then try again with
     // the filename converted to lower-case if that fails. This is so that
     // main.C will be seen as a C++ file, but IMAGE.GIF will still use the
     // *.gif pattern."
-    KMimeType::Ptr mime = findFromPatternHelper(filename, match);
-    if (!mime) {
+    QList<KMimeType::Ptr> mimeList = findFromFileNameHelper(filename, match);
+    if (mimeList.isEmpty()) {
         const QString lowerCase = filename.toLower();
         if (lowerCase != filename)
-            mime = findFromPatternHelper(lowerCase, match);
+            mimeList = findFromFileNameHelper(lowerCase, match);
     }
-    return mime;
+    return mimeList;
 }
 
-KMimeType::Ptr KMimeTypeFactory::findFromPatternHelper( const QString &_filename, QString *match )
+QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &extension)
 {
+    QList<KMimeType::Ptr> mimeList;
+    if (!m_fastPatternDict) return mimeList; // Error!
+
+    // Warning : this assumes we're NOT building a database
+
+    const QList<int> offsetList = m_fastPatternDict->findMultiString(extension);
+    foreach(int offset, offsetList) {
+        KMimeType::Ptr newMimeType(createEntry(offset));
+        // Check whether the dictionary was right.
+        if (newMimeType && (newMimeType->patterns().contains("*."+extension))) {
+            mimeList.append(newMimeType);
+        }
+    }
+    return mimeList;
+}
+
+QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_filename, QString *match )
+{
+    QList<KMimeType::Ptr> matchingMimeTypes;
+
     // Get stream to the header
     QDataStream *str = m_str;
 
-    str->device()->seek( m_fastPatternOffset );
-
-    qint32 nrOfEntries;
-    (*str) >> nrOfEntries;
-    qint32 entrySize;
-    (*str) >> entrySize;
-
-    qint32 fastOffset =  str->device()->pos();
-
-    qint32 matchingOffset = 0;
-
-    // Let's go for a binary search in the "fast" pattern index
-    // TODO: we could use a hash-table instead, for more performance and no extension-length limit.
-    qint32 left = 0;
-    qint32 right = nrOfEntries - 1;
-    qint32 middle;
     // Extract extension
     const int lastDot = _filename.lastIndexOf('.');
-    const int ext_len = _filename.length() - lastDot - 1;
-    if (lastDot != -1 && ext_len <= 4) // if no '.', skip the extension lookup
-    {
-        const QString extension = _filename.right( ext_len ).leftJustified(4);
 
-        QString pattern;
-        while (left <= right) {
-            middle = (left + right) / 2;
-            // read pattern at position "middle"
-            str->device()->seek( middle * entrySize + fastOffset );
-            KSycocaEntry::read(*str, pattern);
-            int cmp = pattern.compare( extension );
-            if (cmp < 0)
-                left = middle + 1;
-            else if (cmp == 0) // found
-            {
-                (*str) >> matchingOffset;
-                // don't return newMimeType - there may be an "other" pattern that
-                // matches best this file, like *.tar.bz
-                if (match)
-                    *match = "*." + pattern.trimmed();
-                break; // but get out of the fast patterns
-            }
-            else
-                right = middle - 1;
+    if (lastDot != -1) { // if no '.', skip the extension lookup
+        const int ext_len = _filename.length() - lastDot - 1;
+        const QString extension = _filename.right( ext_len );
+
+        matchingMimeTypes = findFromFastPatternDict(extension);
+        if (!matchingMimeTypes.isEmpty()) {
+            if (match)
+                *match = extension;
+            // Keep going, there might be some matches from the 'other' list, like *.tar.bz2
         }
     }
 
     // Now try the "other" Pattern table
-    if ( m_patterns.isEmpty() ) {
+    if ( m_otherPatterns.isEmpty() ) {
+        // Load it only once
         str->device()->seek( m_otherPatternOffset );
 
         QString pattern;
@@ -217,41 +217,33 @@ KMimeType::Ptr KMimeTypeFactory::findFromPatternHelper( const QString &_filename
             if (pattern.isEmpty()) // end of list
                 break;
             (*str) >> mimetypeOffset;
-            m_patterns.push_back( pattern );
-            m_pattern_offsets.push_back( mimetypeOffset );
+            m_otherPatterns.push_back( pattern );
+            m_otherPatterns_offsets.push_back( mimetypeOffset );
         }
     }
 
-    assert( m_patterns.size() == m_pattern_offsets.size() );
+    assert( m_otherPatterns.size() == m_otherPatterns_offsets.size() );
 
-    QStringList::const_iterator it = m_patterns.begin();
-    const QStringList::const_iterator end = m_patterns.end();
-    QList<qint32>::const_iterator it_offset = m_pattern_offsets.begin();
+    QStringList::const_iterator it = m_otherPatterns.begin();
+    const QStringList::const_iterator end = m_otherPatterns.end();
+    QList<qint32>::const_iterator it_offset = m_otherPatterns_offsets.begin();
 
-    for ( ; it != end; ++it, ++it_offset )
-    {
-        if ( KShell::matchFileName( _filename, *it ) )
-        {
-            if ( !matchingOffset || !(*it).endsWith( '*' ) ) // *.html wins over Makefile.*
-            {
-                matchingOffset = *it_offset;
-                if (match)
-                    *match = *it;
-                break;
-            }
+    for ( ; it != end; ++it, ++it_offset ) {
+        const QString pattern = *it;
+        if ( KShell::matchFileName( _filename, pattern ) ) {
+            KMimeType *newMimeType = createEntry( *it_offset );
+            assert (newMimeType && newMimeType->isType( KST_KMimeType ));
+            matchingMimeTypes.append( KMimeType::Ptr( newMimeType ) );
+            if (match && pattern.startsWith("*."))
+                *match = pattern.mid(2);
         }
     }
 
-    if ( matchingOffset ) {
-        KMimeType *newMimeType = createEntry( matchingOffset );
-        assert (newMimeType && newMimeType->isType( KST_KMimeType ));
-        return KMimeType::Ptr( newMimeType );
-    }
-    else
-        return KMimeType::Ptr();
+    return matchingMimeTypes;
 }
 
-KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriority whichPriority, int* accuracy, const QByteArray& beginning)
+// TODO: remove unused whichPriority argument, once XDG shared-mime is updated
+KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriority whichPriority, int* accuracy, QByteArray& beginning)
 {
     Q_ASSERT(device->isOpen());
     if (device->size() == 0)

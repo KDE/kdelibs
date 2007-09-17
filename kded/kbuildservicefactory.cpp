@@ -31,7 +31,6 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <assert.h>
-#include <QtCore/QHash>
 #include <kmimetypefactory.h>
 
 KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,

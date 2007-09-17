@@ -167,11 +167,11 @@ void KStandarddirsTest::testFindExe()
 
 void KStandarddirsTest::testLocate()
 {
-    const QString textPlain = "/usr/share/mime/text/plain.xml";
+    const QString textPlain = "/usr/share/mime/text/x-patch.xml";
     if (!QFile::exists(textPlain))
         QSKIP("xdg-share-mime not installed", SkipAll);
 
-    const QString res = KGlobal::dirs()->locate("xdgdata-mime", "text/plain.xml");
+    const QString res = KGlobal::dirs()->locate("xdgdata-mime", "text/x-patch.xml");
     QCOMPARE(res, textPlain);
 }
 

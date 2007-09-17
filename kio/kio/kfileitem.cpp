@@ -1240,12 +1240,10 @@ KMimeType::Ptr KFileItem::mimeTypePtr() const
         d->m_pMimeType = KMimeType::findByUrl( url, d->m_fileMode, isLocalUrl,
                                                // use fast mode if delayed mimetype determination can refine it later
                                                d->m_delayedMimeTypes, &accuracy );
-        // Technically we could refine all files, given the >80 magic rules...
-        // But do we really need to?
-        const bool canDoBetter = d->m_delayedMimeTypes && accuracy < 80;
-        //kDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name();
-        // if we didn't use fast mode, or if we got a result, then this is the mimetype
-        // otherwise, determineMimeType will be able to do better.
+        // If we used the "fast mode" (no sniffing), and we didn't get a perfect (extension-based) match,
+        // then determineMimeType will be able to do better.
+        const bool canDoBetter = d->m_delayedMimeTypes && accuracy < 100;
+        //kDebug() << "finding mimetype for" << url() << ":" << m_pMimeType->name();
         d->m_bMimeTypeKnown = !canDoBetter;
     }
     return d->m_pMimeType;

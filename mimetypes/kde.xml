@@ -183,6 +183,36 @@ Notes:
     <glob pattern="*.pnx"/>
     <glob pattern="*.rdc"/>
   </mime-type>
+  <mime-type type="text/plain"> <!-- As discussed on xdg list, needed for disambiguation -->
+    <glob pattern="*.doc"/>
+  </mime-type>
+  <mime-type type="application/msword"> <!-- As discussed on xdg list, subclass was missing -->
+    <sub-class-of type="application/x-ole-storage"/>
+      <comment>Word document</comment>
+      <comment xml:lang="bg">Документ, формат Word</comment>
+      <comment xml:lang="cs">Dokument Word</comment>
+      <comment xml:lang="de">Word-Dokument</comment>
+      <comment xml:lang="es">Documento de Word</comment>
+      <comment xml:lang="eu">Word dokumentua</comment>
+      <comment xml:lang="hu">Word dokumentum</comment>
+      <comment xml:lang="it">Documento Word</comment>
+      <comment xml:lang="ko">Word 문서</comment>
+      <comment xml:lang="nb">Word-dokument</comment>
+      <comment xml:lang="nn">Word-dokument</comment>
+      <comment xml:lang="sv">Word-dokument</comment>
+      <comment xml:lang="uk">Документ Word</comment>
+      <comment xml:lang="vi">Tài liệu Word của Microsoft™</comment>
+    <magic priority="50">
+      <match value="\x31\xbe\x00\x00" type="string" offset="0"/>
+      <match value="PO^Q`" type="string" offset="0"/>
+      <match value="\376\067\0\043" type="string" offset="0"/>
+      <match value="\333\245-\0\0\0" type="string" offset="0"/>
+      <match value="Microsoft Word 6.0 Document" type="string" offset="2080"/>
+      <match value="Microsoft Word document data" type="string" offset="2112"/>
+    </magic>
+    <glob pattern="*.doc"/>
+    <alias type="application/vnd.ms-word"/>
+  </mime-type>
   <mime-type type="text/x-hex">
     <sub-class-of type="text/plain"/>
     <comment>Intel® hexadecimal object file</comment>

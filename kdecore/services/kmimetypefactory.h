@@ -61,6 +61,8 @@ public:
      */
     virtual KMimeType::Ptr findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options = KMimeType::DontResolveAlias);
 
+private: // only for KMimeType
+    friend class KMimeType;
     /**
      * Check if mime is an alias, and return the canonical name for it if it is.
      */
@@ -69,11 +71,11 @@ public:
     /**
      * Find a mimetype from a filename (using the pattern list)
      * @param filename filename to check.
-     * @param match if provided, returns the pattern that matched.
+     * @param match if provided, returns the extension that matched.
      *
      * This is internal API, use KMimeType::findByUrl instead.
      */
-    KMimeType::Ptr findFromPattern(const QString &filename, QString *match = 0);
+    QList<KMimeType::Ptr> findFromFileName(const QString &filename, QString *match = 0);
 
     enum WhichPriority { LowPriorityRules, HighPriorityRules, AllRules };
     /**
@@ -81,17 +83,11 @@ public:
      * @param device the file or buffer. Must be open.
      * @param whichPriority whether to use only low (<80) or high priority (>=80) rules, or all.
      * @param accuracy returns the priority of the rule that matched
-     * @param beginning the first N bytes of the device, to avoid repeated seeks
+     * @param beginning will contain the first N bytes of the device; used as cache to avoid repeated seeks
      *
      * This is internal API, use KMimeType::findByUrl instead.
      */
-    KMimeType::Ptr findFromContent(QIODevice* device, WhichPriority whichPriority, int* accuracy = 0, const QByteArray& beginning = QByteArray());
-
-    /**
-     * @return all mimetypes
-     * Slow and memory consuming, avoid using
-     */
-    KMimeType::List allMimeTypes();
+    KMimeType::Ptr findFromContent(QIODevice* device, WhichPriority whichPriority, int* accuracy, QByteArray& beginning);
 
     /**
      * @return true if at least one mimetype is present
@@ -99,15 +95,23 @@ public:
      */
     bool checkMimeTypes();
 
-    /**
-     * @return the unique mimetype factory, creating it if necessary
-     */
-    static KMimeTypeFactory * self();
-
+protected:
     /**
      * @internal for kbuildsycoca
      */
     QMap<QString, QString>& aliases();
+
+public:
+    /**
+     * @return all mimetypes
+     * Slow and memory consuming, avoid using
+     */
+    KMimeType::List allMimeTypes();
+
+    /**
+     * @return the unique mimetype factory, creating it if necessary
+     */
+    static KMimeTypeFactory * self();
 
     /**
      * @internal (public for unit tests only)
@@ -123,13 +127,19 @@ protected: // accessed by KBuildMimeTypeFactory
     /// @internal
     int m_otherPatternOffset;
 
+    KSycocaDict* m_fastPatternDict;
+
 private:
     // Read magic files
     void parseMagic();
-    KMimeType::Ptr findFromPatternHelper(const QString &filename, QString *match = 0);
 
-    QStringList m_patterns;
-    QList<qint32> m_pattern_offsets;
+    QList<KMimeType::Ptr> findFromFileNameHelper(const QString &filename, QString *match = 0);
+    QList<KMimeType::Ptr> findFromFastPatternDict(const QString &extension);
+
+    // TODO combine both lists into a single QList<QPair<QString,qint32> >.
+    QStringList m_otherPatterns;
+    QList<qint32> m_otherPatterns_offsets;
+
     QMap<QString, QString> m_aliases; // alias -> canonicalName
 
     bool m_magicFilesParsed;

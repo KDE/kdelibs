@@ -119,19 +119,61 @@ void KFileItemTest::testMimeTypeOnDemand()
     KTemporaryFile file;
     QVERIFY(file.open());
 
-    KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
-    QCOMPARE(fileItem.mimeTypePtr()->name(), KMimeType::defaultMimeType());
-    QVERIFY(!fileItem.isMimeTypeKnown());
-    kDebug() << fileItem.determineMimeType()->name();
-    QCOMPARE(fileItem.determineMimeType()->name(), QString("application/x-zerosize"));
-    QCOMPARE(fileItem.mimetype(), QString("application/x-zerosize"));
-    QVERIFY(fileItem.isMimeTypeKnown());
+    {
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+        QCOMPARE(fileItem.mimeTypePtr()->name(), KMimeType::defaultMimeType());
+        QVERIFY(!fileItem.isMimeTypeKnown());
+        //kDebug() << fileItem.determineMimeType()->name();
+        QCOMPARE(fileItem.determineMimeType()->name(), QString("application/x-zerosize"));
+        QCOMPARE(fileItem.mimetype(), QString("application/x-zerosize"));
+        QVERIFY(fileItem.isMimeTypeKnown());
+    }
 
-    // Calling mimeType directly also does mimetype determination
-    KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
-    QVERIFY(!fileItem2.isMimeTypeKnown());
-    QCOMPARE(fileItem2.mimetype(), QString("application/x-zerosize"));
-    QVERIFY(fileItem2.isMimeTypeKnown());
+    {
+        // Calling mimeType directly also does mimetype determination
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+        QVERIFY(!fileItem.isMimeTypeKnown());
+        QCOMPARE(fileItem.mimetype(), QString("application/x-zerosize"));
+        QVERIFY(fileItem.isMimeTypeKnown());
+    }
+
+    {
+        KTemporaryFile file;
+        QVERIFY(file.open());
+        // Check whether mime-magic is used.
+        // No known extension, so it should be used by determineMimeType.
+        file.write("%PDF-");
+        QString fileName = file.fileName();
+        QVERIFY(!fileName.isEmpty());
+        file.close();
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(fileName), true /*on demand*/);
+        QCOMPARE(fileItem.mimeTypePtr()->name(), KMimeType::defaultMimeType());
+        QVERIFY(!fileItem.isMimeTypeKnown());
+        QCOMPARE(fileItem.determineMimeType()->name(), QString("application/pdf"));
+        QCOMPARE(fileItem.mimetype(), QString("application/pdf"));
+    }
+
+    {
+        KTemporaryFile file;
+        file.setSuffix(".txt");
+        QVERIFY(file.open());
+        // Check whether mime-magic is used.
+        // Known extension, so it should NOT be used.
+        file.write("<smil");
+        QString fileName = file.fileName();
+        QVERIFY(!fileName.isEmpty());
+        file.close();
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(fileName), true /*on demand*/);
+        QCOMPARE(fileItem.mimeTypePtr()->name(), QString("text/plain"));
+        QVERIFY(fileItem.isMimeTypeKnown());
+        QCOMPARE(fileItem.determineMimeType()->name(), QString("text/plain"));
+        QCOMPARE(fileItem.mimetype(), QString("text/plain"));
+
+        // And if the mimetype is not on demand?
+        KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, KUrl(fileName));
+        QCOMPARE(fileItem2.mimeTypePtr()->name(), QString("text/plain")); // XDG says: application/smil; but can't sniff all files so this can't work
+        QVERIFY(fileItem2.isMimeTypeKnown());
+    }
 }
 
 void KFileItemTest::testCmp()

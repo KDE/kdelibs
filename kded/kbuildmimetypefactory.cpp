@@ -276,8 +276,6 @@ static bool isFastPattern(const QString& pattern)
    // starts with "*.", has no other '*' and no other '.'
    return pattern.lastIndexOf('*') == 0
       && pattern.lastIndexOf('.') == 1
-      // and is max 6 chars
-      && pattern.length() <= 6
       // and contains no other special character
       && !pattern.contains('?')
       && !pattern.contains('[')
@@ -287,82 +285,50 @@ static bool isFastPattern(const QString& pattern)
 void
 KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
 {
-   // Store each patterns in one of the 2 string lists (for sorting)
-   QStringList fastPatterns;  // for *.a to *.abcd
-   QStringList otherPatterns; // for the rest (core.*, *.tar.bz2, *~) ...
-   QHash<QString, const KMimeType*> dict; // KMimeType::Ptr not needed here, this is short term
+    // Store each patterns into either m_fastPatternDict (*.txt, *.html etc.)
+    // or otherPatterns (for the rest, like core.*, *.tar.bz2, *~)
 
-   // For each mimetype in mimetypeFactory
-   for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
-       it != m_entryDict->end();
-       ++it)
-   {
-      const KSycocaEntry::Ptr& entry = (*it);
-      Q_ASSERT( entry->isType( KST_KMimeType ) );
+    // KMimeType::Ptr not needed here, this is short term
+    typedef QMultiMap<QString, const KMimeType*> PatternMap;
+    PatternMap otherPatterns;
 
-      const KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
-      const QStringList pat = mimeType->patterns();
-      QStringList::ConstIterator patit = pat.begin();
-      for ( ; patit != pat.end() ; ++patit )
-      {
-         const QString &pattern = *patit;
-         if (isFastPattern(pattern))
-            fastPatterns.append( pattern );
-         else if (!pattern.isEmpty()) // some stupid mimetype files have "Patterns=;"
-            otherPatterns.append( pattern );
-         // Assumption : there is only one mimetype for that pattern
-         // It doesn't really make sense otherwise, anyway.
-         dict.insert( pattern, mimeType.constData() );
-      }
-   }
+    // For each mimetype in mimetypeFactory
+    for(KSycocaEntryDict::Iterator it = m_entryDict->begin();
+        it != m_entryDict->end();
+        ++it)
+    {
+        const KSycocaEntry::Ptr& entry = (*it);
+        Q_ASSERT( entry->isType( KST_KMimeType ) );
 
-   // Sort the list - the fast one, useless for the other one
-   fastPatterns.sort();
+        const KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
+        const QStringList pat = mimeType->patterns();
+        QStringList::ConstIterator patit = pat.begin();
+        for ( ; patit != pat.end() ; ++patit )
+        {
+            const QString &pattern = *patit;
+            Q_ASSERT(!pattern.isEmpty());
+            if (isFastPattern(pattern))
+                m_fastPatternDict->add(pattern.mid(2) /* extension only*/, entry);
+            else
+                otherPatterns.insert(pattern, mimeType.constData());
+        }
+    }
 
-   qint32 entrySize = 0;
-   qint32 nrOfEntries = 0;
+    m_fastPatternOffset = str.device()->pos();
+    m_fastPatternDict->save(str);
 
-   m_fastPatternOffset = str.device()->pos();
+    // For the other patterns
+    m_otherPatternOffset = str.device()->pos();
+    str.device()->seek(m_otherPatternOffset);
 
-   // Write out fastPatternHeader (Pass #1)
-   str.device()->seek(m_fastPatternOffset);
-   str << nrOfEntries;
-   str << entrySize;
+    for ( PatternMap::ConstIterator it = otherPatterns.begin(); it != otherPatterns.end() ; ++it )
+    {
+        //kDebug(7021) << "OTHER:" << it.key() << it.value()->name();
+        str << it.key();
+        str << it.value()->offset();
+    }
 
-   // For each fast pattern
-   for ( QStringList::ConstIterator it = fastPatterns.begin(); it != fastPatterns.end() ; ++it )
-   {
-     int start = str.device()->pos();
-     // Justify to 6 chars with spaces, so that the size remains constant
-     // in the database file. This is useful for doing a binary search in kmimetypefactory.cpp
-     // TODO: we could use a hash-table instead, for more performance and no extension-length limit.
-     QString paddedPattern = (*it).leftJustified(6).right(4); // remove leading "*."
-     //kDebug(7021) << QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name());
-     str << paddedPattern;
-     str << dict[(*it)]->offset();
-     entrySize = str.device()->pos() - start;
-     nrOfEntries++;
-   }
-
-   // store position
-   m_otherPatternOffset = str.device()->pos();
-
-   // Write out fastPatternHeader (Pass #2)
-   str.device()->seek(m_fastPatternOffset);
-   str << nrOfEntries;
-   str << entrySize;
-
-   // For the other patterns
-   str.device()->seek(m_otherPatternOffset);
-
-   for ( QStringList::ConstIterator it = otherPatterns.begin(); it != otherPatterns.end() ; ++it )
-   {
-     //kDebug(7021) << QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name());
-     str << (*it);
-     str << dict[(*it)]->offset();
-   }
-
-   str << QString(""); // end of list marker (has to be a string !)
+    str << QString(""); // end of list marker (has to be a string !)
 }
 
 void

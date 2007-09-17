@@ -42,12 +42,12 @@
  *
  */
 
-static bool testMatches(QIODevice* device, const QByteArray& beginning, const QList<KMimeMagicMatch>& matches)
+static bool testMatches(QIODevice* device, QByteArray& availableData, const QList<KMimeMagicMatch>& matches, const QString& mimeType)
 {
     for ( QList<KMimeMagicMatch>::const_iterator it = matches.begin(), end = matches.end() ;
           it != end ; ++it ) {
         const KMimeMagicMatch& match = *it;
-        if (match.match(device, beginning)) {
+        if (match.match(device, availableData, mimeType)) {
             // One of the hierarchies matched -> mimetype recognized.
             return true;
         }
@@ -99,12 +99,12 @@ static int indexOf(const QByteArray& that, const QByteArray &ba)
 }
 
 
-bool KMimeMagicRule::match(QIODevice* device, const QByteArray& beginning) const
+bool KMimeMagicRule::match(QIODevice* device, QByteArray& availableData) const
 {
-    return testMatches(device, beginning, m_matches);
+    return testMatches(device, availableData, m_matches, m_mimetype);
 }
 
-bool KMimeMagicMatch::match(QIODevice* device, const QByteArray& beginning) const
+bool KMimeMagicMatch::match(QIODevice* device, QByteArray& availableData, const QString& mimeType) const
 {
     // First, check that "this" matches, then we'll dive into subMatches if any.
 
@@ -119,17 +119,21 @@ bool KMimeMagicMatch::match(QIODevice* device, const QByteArray& beginning) cons
     QByteArray readData;
 
     /*kDebug() << "need " << dataNeeded << " bytes of data starting at " << m_rangeStart
-             << "  - beginning has " << beginning.size() << " bytes,"
+             << "  - availableData has " << availableData.size() << " bytes,"
              << " device has " << deviceSize << " bytes." << endl;*/
 
-    if (m_rangeStart + dataNeeded > beginning.size() && beginning.size() < deviceSize) {
+    if (m_rangeStart + dataNeeded > availableData.size() && availableData.size() < deviceSize) {
         // Need to read from device
         if (!device->seek(m_rangeStart))
             return false;
         readData.resize(dataNeeded);
         const int nread = device->read(readData.data(), dataNeeded);
+        //kDebug() << "readData (from device): reading" << dataNeeded << "bytes.";
         if (nread < mDataSize)
             return false; // error (or not enough data but we checked for that already)
+        if (m_rangeStart == 0 && readData.size() > availableData.size()) {
+            availableData = readData; // update cache
+        }
         if (nread < readData.size()) {
             // File big enough to contain m_data, but not big enough for the full rangeLength.
             // Pad with zeros.
@@ -137,11 +141,11 @@ bool KMimeMagicMatch::match(QIODevice* device, const QByteArray& beginning) cons
         }
         //kDebug() << "readData (from device) at pos " << m_rangeStart << ":" << readData;
     } else {
-        readData = QByteArray::fromRawData(beginning.constData() + m_rangeStart,
+        readData = QByteArray::fromRawData(availableData.constData() + m_rangeStart,
                                            dataNeeded);
         // Warning, readData isn't null-terminated so this kDebug
         // gives valgrind warnings (when printing as char* data).
-        //kDebug() << "readData (from beginning) at pos " << m_rangeStart << ":" << readData;
+        //kDebug() << "readData (from availableData) at pos " << m_rangeStart << ":" << readData;
     }
 
     // All we need to do now, is to look for m_data in readData (whose size is dataNeeded).
@@ -151,6 +155,8 @@ bool KMimeMagicMatch::match(QIODevice* device, const QByteArray& beginning) cons
     if (m_mask.isEmpty()) {
         //kDebug() << "m_data=" << m_data;
         found = ::indexOf(readData, m_data) != -1;
+        //if (found)
+        //    kDebug() << "Matched readData=" << readData << "with m_data=" << m_data << "so this is" << mimeType;
     } else {
         const char* mask = m_mask.constData();
         const char* refData = m_data.constData();
@@ -181,5 +187,5 @@ bool KMimeMagicMatch::match(QIODevice* device, const QByteArray& beginning) cons
         return true;
 
     // Check that one of the submatches matches too
-    return testMatches(device, beginning, m_subMatches);
+    return testMatches(device, availableData, m_subMatches, mimeType);
 }

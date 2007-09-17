@@ -137,7 +137,7 @@ void KMimeType::checkEssentialMimeTypes()
     missingMimeTypes.append( "inode/socket" );
   if ( !KMimeType::mimeType( "inode/fifo" ) )
     missingMimeTypes.append( "inode/fifo" );
-#endif    
+#endif
   if ( !KMimeType::mimeType( "application/x-shellscript" ) )
     missingMimeTypes.append( "application/x-shellscript" );
   if ( !KMimeType::mimeType( "application/x-executable" ) )
@@ -209,6 +209,30 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
     return KMimeType::Ptr();
 }
 
+/*
+
+As agreed on the XDG list (and unlike the current shared-mime spec):
+
+If only one glob matches, use that
+
+If no glob matches, sniff and use that
+
+If several globs matches, and sniffing gives a result we do:
+  if sniffed prio >= 80, use sniffed type
+  for glob_match in glob_matches:
+     if glob_match is subclass or equal to sniffed_type, use glob_match
+
+If several globs matches, and sniffing fails, or doesn't help:
+  fall back to the first glob match
+
+This algorithm only sniffs when there is some uncertainty with the
+extension matching (thus, it's usable for a file manager).
+
+Note: in KDE we want the file views to sniff in a delayed manner.
+So there's also a fast mode which is:
+ if no glob matches, or if more than one glob matches, use default mimetype and mark as "can be refined".
+
+*/
 
 KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
                                            bool is_local_file,
@@ -226,79 +250,97 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     if (mimeFromMode)
         return mimeFromMode;
 
-    // We can optimize some device reading for use by the two findFromContent calls and isBinaryData
+    // First try to find out by looking at the filename (if there's one)
+    const QString fileName( _url.fileName() );
+    QList<KMimeType::Ptr> mimeList;
+    if ( !fileName.isEmpty() && !path.endsWith( '/' ) ) {
+        // and if we can trust it (e.g. don't trust *.pl over HTTP, could be anything)
+        if ( is_local_file || _url.hasSubUrl() || // Explicitly trust suburls
+             KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) ) {
+            mimeList = KMimeTypeFactory::self()->findFromFileName( fileName );
+            // Found one glob match exactly: OK, use that.
+            // We disambiguate multiple glob matches by sniffing, below.
+            if ( mimeList.count() == 1 ) {
+                return mimeList.first();
+            }
+        }
+    }
+
+    if ( device && !device->isOpen() ) {
+        if ( !device->open(QIODevice::ReadOnly) ) {
+            device = 0;
+        }
+    }
+
+    // Try the magic matches (if we can read the data)
     QByteArray beginning;
     if ( device ) {
-        if ( !device->isOpen() ) {
-            if ( !device->open(QIODevice::ReadOnly) ) {
-                device = 0;
-            }
-        }
-        if ( device ) {
-            // Most magic rules care about 0 to 256 only, tar magic looks at offset 257, only the broken msoffice magic looks at > 2000...
-            // So 256 or 512 is a good choice imho.
-            beginning = device->read(512);
-        }
-    }
-
-    // First try the high-priority magic matches (if we can read the data)
-    if ( device ) {
+        int magicAccuracy;
         KMimeType::Ptr mime = KMimeTypeFactory::self()->findFromContent(
-            device, KMimeTypeFactory::HighPriorityRules, accuracy, beginning );
-        if (mime)
-            return mime;
-    }
+            device, KMimeTypeFactory::AllRules, &magicAccuracy, beginning );
+        // mime can't be 0, except in case of install problems.
+        // However we get magicAccuracy==0 for octet-stream, i.e. no magic match found.
+        //kDebug(7009) << "findFromContent said" << (mime?mime->name():QString()) << "with accuracy" << magicAccuracy;
+        if (mime && magicAccuracy > 0) {
 
-    // Then try to find out by looking at the filename (if there's one)
-    const QString fileName( _url.fileName() );
-    static const QString& slash = KGlobal::staticQString("/");
-    if ( !fileName.isEmpty() && !path.endsWith( slash ) ) {
-        KMimeType::Ptr mime( KMimeTypeFactory::self()->findFromPattern( fileName ) );
-        if ( mime ) {
-            // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
-            if ( is_local_file || _url.hasSubUrl() || // Explicitly trust suburls
-                 KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) ) {
-                if (accuracy)
-                    *accuracy = 80;
-                return mime;
+            // Disambiguate conflicting extensions (if magic found something and the magicrule was <80)
+            if (magicAccuracy < 80 && !mimeList.isEmpty()) {
+                // "for glob_match in glob_matches:"
+                // "if glob_match is subclass or equal to sniffed_type, use glob_match"
+                const QString sniffedMime = mime->name();
+                foreach(KMimeType::Ptr mimeFromPattern, mimeList) {
+                    //kDebug(7009) << "sniffedMime=" << sniffedMime << "mimeFromPattern=" << mimeFromPattern->name();
+                    if (mimeFromPattern->is(sniffedMime)) {
+                        // We have magic + pattern pointing to this, so it's a pretty good match
+                        if (accuracy)
+                            *accuracy = 100;
+                        return mimeFromPattern;
+                    }
+                }
             }
+
+            if (accuracy)
+                *accuracy = magicAccuracy;
+            return mime;
         }
     }
 
-    // Try the low-priority magic matches (if we can read the data)
-    if ( device ) {
-        KMimeType::Ptr mime = KMimeTypeFactory::self()->findFromContent(
-            device, KMimeTypeFactory::LowPriorityRules, accuracy, beginning );
-        // this function always must return a mimetype (as findByUrl does)
-        if (mime)
-            return mime;
-    } else { // Not a local file, or no magic allowed, find a fallback from the protocol
+    // Not a local file, or no magic allowed, or magic found nothing
+
+    // Maybe we had multiple matches from globs?
+    if (!mimeList.isEmpty()) {
         if (accuracy)
-            *accuracy = 10;
-        // ## this breaks with proxying; find a way to move proxying info to kdecore's kprotocolinfo?
-        KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _url.protocol() );
-        QString def;
-        if (prot)
-            def = prot->defaultMimeType();
-        if ( !def.isEmpty() && def != defaultMimeType() ) {
-            // The protocol says it always returns a given mimetype (e.g. text/html for "man:")
-            KMimeType::Ptr mime = mimeType( def );
-            if (mime)
-                return mime;
-        }
-        if ( path.endsWith( slash ) || path.isEmpty() ) {
-            // We have no filename at all. Maybe the protocol has a setting for
-            // which mimetype this means (e.g. directory).
-            // For HTTP (def==defaultMimeType()) we don't assume anything,
-            // because of redirections (e.g. freshmeat downloads).
-            if ( def.isEmpty() ) {
-                // Assume inode/directory, if the protocol supports listing.
-                KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _url.protocol() );
-                if ( prot && prot->supportsListing() )
-                    return mimeType( QLatin1String("inode/directory") );
-                else
-                    return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"
-            }
+            *accuracy = 20;
+        return mimeList.first();
+    }
+
+    // Find a fallback from the protocol
+    if (accuracy)
+        *accuracy = 10;
+    // ## this breaks with proxying; find a way to move proxying info to kdecore's kprotocolinfo?
+    // ## or hardcode the only case of proxying that we ever had? (ftp-over-http)
+    KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _url.protocol() );
+    QString def;
+    if (prot)
+        def = prot->defaultMimeType();
+    if ( !def.isEmpty() && def != defaultMimeType() ) {
+        // The protocol says it always returns a given mimetype (e.g. text/html for "man:")
+        KMimeType::Ptr mime = mimeType( def );
+        if (mime)
+            return mime;
+    }
+    if ( path.endsWith( '/' ) || path.isEmpty() ) {
+        // We have no filename at all. Maybe the protocol has a setting for
+        // which mimetype this means (e.g. directory).
+        // For HTTP (def==defaultMimeType()) we don't assume anything,
+        // because of redirections (e.g. freshmeat downloads).
+        if ( def.isEmpty() ) {
+            // Assume inode/directory, if the protocol supports listing.
+            KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _url.protocol() );
+            if ( prot && prot->supportsListing() )
+                return mimeType( QLatin1String("inode/directory") );
+            else
+                return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"
         }
     }
 
@@ -340,18 +382,17 @@ KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByte
 QString KMimeType::extractKnownExtension(const QString &fileName)
 {
     QString pattern;
-    KMimeTypeFactory::self()->findFromPattern( fileName, &pattern );
-    if ( !pattern.isEmpty() && pattern.startsWith( "*." ) && pattern.indexOf('*', 2) == -1 )
-        return pattern.mid( 2 ); // remove the leading "*."
-    return QString();
+    KMimeTypeFactory::self()->findFromFileName( fileName, &pattern );
+    return pattern;
 }
 
 KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
 {
     QBuffer buffer(const_cast<QByteArray *>(&data));
     buffer.open(QIODevice::ReadOnly);
+    QByteArray cache;
     return KMimeTypeFactory::self()->findFromContent(
-        &buffer, KMimeTypeFactory::AllRules, accuracy );
+        &buffer, KMimeTypeFactory::AllRules, accuracy, cache );
 }
 
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
@@ -365,8 +406,9 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
         return KMimeType::defaultMimeTypePtr();
     }
 
+    QByteArray cache;
     return KMimeTypeFactory::self()->findFromContent(
-        &device, KMimeTypeFactory::AllRules, accuracy );
+        &device, KMimeTypeFactory::AllRules, accuracy, cache );
 }
 
 bool KMimeType::isBinaryData( const QString &fileName )
