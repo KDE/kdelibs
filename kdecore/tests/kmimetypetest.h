@@ -30,7 +30,9 @@ private Q_SLOTS:
     void testByName();
     void testIcons();
     void testFindByUrl();
-    void testFindByPath();
+    void testFindByPathUsingFileName_data();
+    void testFindByPathUsingFileName();
+    void testFindByPathWithContent();
     void testFindByNameAndContent();
     void testFindByContent();
     void testAllMimeTypes();
@@ -41,11 +43,12 @@ private Q_SLOTS:
     void testMimeTypeTraderForAlias();
     void testHasServiceType1();
     void testHasServiceType2();
+    void testPatterns_data();
     void testPatterns();
+    void testExtractKnownExtension_data();
     void testExtractKnownExtension();
-
-    void testParseMagicFile();
     void testParseMagicFile_data();
+    void testParseMagicFile();
 private:
     QList<KMimeMagicRule> m_rules;
 };

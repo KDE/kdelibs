@@ -125,44 +125,60 @@ void KMimeTypeTest::testIcons()
     }
 }
 
-void KMimeTypeTest::testFindByPath()
+
+void KMimeTypeTest::testFindByPathUsingFileName_data()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP( "ksycoca not available", SkipAll );
+    QTest::addColumn<QString>("fileName");
+    QTest::addColumn<QString>("expectedMimeType");
+    QTest::newRow("text") << "textfile.txt" << "text/plain";
+    QTest::newRow("case-insensitive search") << "textfile.TxT" << "text/plain";
+    QTest::newRow("case-sensitive uppercase match") << "textfile.C" << "text/x-c++src";
+    QTest::newRow("case-sensitive lowercase match") << "textfile.c" << "text/x-csrc";
+    QTest::newRow("desktop file") << "foo.desktop" << "application/x-desktop";
+    QTest::newRow("old kdelnk file is x-desktop too") << "foo.kdelnk" << "application/x-desktop";
+    QTest::newRow("directory") << "/" << "inode/directory";
+    QTest::newRow("doesn't exist, no extension") << "IDontExist" << "application/octet-stream";
+    QTest::newRow("doesn't exist but has known extension") << "IDontExist.txt" << "text/plain";
+
+    // Can't use KIconLoader since this is a "without GUI" test.
+    QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
+    QVERIFY( !fh.isEmpty() ); // if the file doesn't exist, please fix the above to point to an existing icon
+    QTest::newRow("png image") << fh << "image/png";
+
+    QString exePath = KStandardDirs::findExe( "kioexec" );
+    if ( exePath.isEmpty() )
+        kWarning() << "kioexec not found";
+    else {
+#ifdef Q_WS_WIN
+        const QString executableType = QString::fromLatin1( "application/x-ms-dos-executable" );
+#else
+        const QString executableType = QString::fromLatin1( "application/x-executable" );
+#endif
+        QTest::newRow("executable") << exePath << executableType;
+    }
+}
+
+void KMimeTypeTest::testFindByPathUsingFileName()
+{
+    QFETCH(QString, fileName);
+    QFETCH(QString, expectedMimeType);
+    KMimeType::Ptr mime = KMimeType::findByPath(fileName);
+    QVERIFY( mime );
+    QCOMPARE(mime->name(), expectedMimeType);
+
+}
+
+// All the simple tests for findByPath are in testFindByPathUsingFileName_data.
+// In here we do the tests that need some content in a temporary file.
+void KMimeTypeTest::testFindByPathWithContent()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
+
     KMimeType::Ptr mime;
-
-    QString exePath = KStandardDirs::findExe( "kioexec" );
-    if ( exePath.isEmpty() )
-        QSKIP( "kioexec not found", SkipAll );
-
-    mime = KMimeType::findByPath( exePath );
-    QVERIFY( mime );
-
-#ifdef Q_WS_WIN
-    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-ms-dos-executable" ) );
-#else
-    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-executable" ) );
-#endif
-
-    mime = KMimeType::findByPath("textfile.txt");
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
-
-    mime = KMimeType::findByPath("textfile.TxT"); // case-insensitive search
-    QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
-
-    mime = KMimeType::findByPath("textfile.C"); // case-sensitive uppercase match
-    QCOMPARE( mime->name(), QString::fromLatin1( "text/x-c++src" ) );
-    mime = KMimeType::findByPath("textfile.c"); // for comparison
-    QCOMPARE( mime->name(), QString::fromLatin1( "text/x-csrc" ) );
-
-    mime = KMimeType::findByPath("foo.desktop");
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-desktop" ) );
-    mime = KMimeType::findByPath("foo.kdelnk");
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-desktop" ) );
 
     // Test a real PDF file.
     // If we find x-matlab because it starts with '%' then we are not ordering by priority.
@@ -209,28 +225,6 @@ void KMimeTypeTest::testFindByPath()
         QVERIFY( mime );
         QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
     }
-
-    // Can't use KIconLoader since this is a "without GUI" test.
-    QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
-    QVERIFY( !fh.isEmpty() ); // if the file doesn't exist, please fix the above to point to an existing icon
-    mime = KMimeType::findByPath( fh );
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1( "image/png" ) );
-
-    // Calling findByPath on a directory
-    mime = KMimeType::findByPath("/");
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1("inode/directory") );
-
-    // Test a file that doesn't exist
-    mime = KMimeType::findByPath("/IDontExist");
-    QVERIFY( mime );
-    QCOMPARE(mime->name(), QString::fromLatin1("application/octet-stream"));
-
-    // Test a file that doesn't exist but that has a known extension
-    mime = KMimeType::findByPath("/IDontExist.txt");
-    QVERIFY( mime );
-    QCOMPARE(mime->name(), QString::fromLatin1("text/plain"));
 }
 
 void KMimeTypeTest::testFindByUrl()
@@ -542,30 +536,39 @@ void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( !ktexteditor_insertfile->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
+void KMimeTypeTest::testPatterns_data()
+{
+    QTest::addColumn<QString>("mimeType");
+    QTest::addColumn<QString>("patterns");
+    QTest::newRow("mimetype with a single pattern") << "application/pdf" << "*.pdf";
+    QTest::newRow("mimetype with multiple patterns") << "application/x-kpresenter" << "*.kpr,*.kpt";
+    QTest::newRow("mimetype with no patterns") << "application/pkcs7-mime" << QString();
+}
+
 void KMimeTypeTest::testPatterns()
 {
-    // mimetype with a single pattern
-    KMimeType::Ptr mime_pdf = KMimeType::mimeType( "application/pdf" );
-    QVERIFY( mime_pdf );
-    QCOMPARE( mime_pdf->patterns().join(","), QString("*.pdf") );
-    // mimetype with more than one pattern
-    KMimeType::Ptr mime_kpresenter = KMimeType::mimeType( "application/x-kpresenter" );
-    QVERIFY( mime_kpresenter );
-    QCOMPARE( mime_kpresenter->patterns().join(","), QString("*.kpr,*.kpt") );
-    // mimetype with a no patterns
-    KMimeType::Ptr mime_pkcs7 = KMimeType::mimeType( "application/pkcs7-mime" );
-    QVERIFY( mime_pkcs7 );
-    QCOMPARE( mime_pkcs7->patterns().join(","), QString() );
+    QFETCH(QString, mimeType);
+    QFETCH(QString, patterns);
+    KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
+    QVERIFY( mime );
+    QCOMPARE( mime->patterns().join(","), patterns );
+}
+
+void KMimeTypeTest::testExtractKnownExtension_data()
+{
+    QTest::addColumn<QString>("fileName");
+    QTest::addColumn<QString>("extension");
+    QTest::newRow("simple extension") << "foo.pdf" << "pdf";
+    QTest::newRow("filename has two extensions, last one matches") << "kpresenter.foo.kpt" << "kpt";
+    QTest::newRow("filename has two extensions, pattern for both exist") << "foo.tar.bz2" << "tar.bz2";
+    QTest::newRow("bz2 alone works too") << "foo.bz2" << "bz2";
 }
 
 void KMimeTypeTest::testExtractKnownExtension()
 {
-    const QString pdf = KMimeType::extractKnownExtension("foo.pdf");
-    QCOMPARE(pdf, QString("pdf"));
-    const QString kpt = KMimeType::extractKnownExtension("kpresenter.foo.kpt");
-    QCOMPARE(kpt, QString("kpt"));
-    const QString tarbz2 = KMimeType::extractKnownExtension("foo.tar.bz2");
-    QCOMPARE(tarbz2, QString("tar.bz2"));
+    QFETCH(QString, fileName);
+    QFETCH(QString, extension);
+    QCOMPARE(KMimeType::extractKnownExtension(fileName), extension);
 }
 
 void KMimeTypeTest::testParseMagicFile_data()
