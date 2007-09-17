@@ -29,7 +29,7 @@ PublicService::PublicService(const QString& name, const QString& type, unsigned 
 			      const QString& domain, const QStringList&)
   		: QObject(), ServiceBase(name, type, QString(), domain, port)
 {
-	if (domain.isNull())  dptr->m_domain=QLatin1String("local.");
+	if (domain.isNull())  d->m_domain=QLatin1String("local.");
 }
 
 
@@ -38,27 +38,27 @@ PublicService::~PublicService()
 
 void PublicService::setServiceName(const QString& serviceName)
 {
-	dptr->m_serviceName = serviceName;
+	d->m_serviceName = serviceName;
 }
 
 void PublicService::setDomain(const QString& domain)
 {
-	dptr->m_domain = domain;
+	d->m_domain = domain;
 }
 
 void PublicService::setTextData(const QMap<QString,QByteArray>& textData)
 {
-	dptr->m_textData = textData;
+	d->m_textData = textData;
 }
 
 void PublicService::setType(const QString& type)
 {
-	dptr->m_type = type;
+	d->m_type = type;
 }
 
 void PublicService::setPort(unsigned short port)
 {
-	dptr->m_port = port;
+	d->m_port = port;
 }
 
 QStringList PublicService::subtypes() const
