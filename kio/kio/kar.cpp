@@ -65,7 +65,7 @@ bool KAr::doPrepareWriting( const QString&, const QString&, const QString&,
     return false;
 }
 
-bool KAr::doFinishWriting( qint64 size )
+bool KAr::doFinishWriting( qint64 )
 {
     return false;
 }

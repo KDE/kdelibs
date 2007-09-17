@@ -140,7 +140,7 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString
 {
     if(dbusObjectName.isNull()) // get dbusObjectName from file
         if ( QFile::exists(d->m_bookmarksFile) )
-            parse(); //sets d->m_dbusObjectnName            
+            parse(); //sets d->m_dbusObjectnName
 
     init( "/KBookmarkManager/"+d->m_dbusObjectName );
 
@@ -234,7 +234,7 @@ void KBookmarkManager::parse() const
         if(d->m_dbusObjectName.isNull())
         {
             d->m_dbusObjectName = docElem.attribute("dbusName");
-        } 
+        }
         else if(docElem.attribute("dbusName") != d->m_dbusObjectName)
         {
             docElem.setAttribute("dbusName", d->m_dbusObjectName);
@@ -564,7 +564,7 @@ KBookmarkSettings *KBookmarkSettings::self()
 
 /////////// KBookmarkOwner
 
-bool KBookmarkOwner::enableOption(BookmarkOption action) const 
+bool KBookmarkOwner::enableOption(BookmarkOption action) const
 {
     if(action == ShowAddBookmark)
         return true;
@@ -578,7 +578,7 @@ KBookmarkDialog * KBookmarkOwner::bookmarkDialog(KBookmarkManager * mgr, QWidget
     return new KBookmarkDialog(mgr, parent);
 }
 
-void KBookmarkOwner::openFolderinTabs(const KBookmarkGroup &bm)
+void KBookmarkOwner::openFolderinTabs(const KBookmarkGroup &)
 {
 
 }
