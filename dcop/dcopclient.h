@@ -793,13 +793,13 @@ signals:
   void callBack(int, const QCString&, const QByteArray &);
 
 public slots:
-
-protected slots:
   /**
    * Process data from the socket.
    * @param socknum the fd of the socket
    */
   void processSocketData(int socknum);
+
+protected slots:
 
 private slots:
   void processPostedMessagesInternal();

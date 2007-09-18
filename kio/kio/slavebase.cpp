@@ -249,6 +249,7 @@ DCOPClient *SlaveBase::dcopClient()
        d->dcopClient = KApplication::dcopClient();
        if (!d->dcopClient->isAttached())
           d->dcopClient->attach();
+       d->dcopClient->setDaemonMode( true );
     }
     return d->dcopClient;
 }
@@ -271,18 +272,25 @@ void SlaveBase::dispatchLoop()
        FD_ZERO(&rfds);
 
        assert(appconn->inited());
+       int maxfd = appconn->fd_from();
        FD_SET(appconn->fd_from(), &rfds);
+       if( d->dcopClient )
+       {
+           FD_SET( d->dcopClient->socket(), &rfds );
+           if( d->dcopClient->socket() > maxfd )
+               maxfd = d->dcopClient->socket();
+       }
 
        if (!d->timeout) // we can wait forever
        {
-          retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, NULL);
+          retval = select( maxfd + 1, &rfds, NULL, NULL, NULL);
        }
        else
        {
           struct timeval tv;
           tv.tv_sec = kMax(d->timeout-time(0),(time_t) 1);
           tv.tv_usec = 0;
-          retval = select(appconn->fd_from()+ 1, &rfds, NULL, NULL, &tv);
+          retval = select( maxfd + 1, &rfds, NULL, NULL, &tv);
        }
        if ((retval>0) && FD_ISSET(appconn->fd_from(), &rfds))
        { // dispatch application messages
@@ -308,7 +316,11 @@ void SlaveBase::dispatchLoop()
              }
           }
        }
-       else if ((retval<0) && (errno != EINTR))
+       if( retval > 0 && d->dcopClient && FD_ISSET( d->dcopClient->socket(), &rfds ))
+       {
+           d->dcopClient->processSocketData( d->dcopClient->socket());
+       }
+       if ((retval<0) && (errno != EINTR))
        {
           kdDebug(7019) << "dispatchLoop(): select returned " << retval << " "
             << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")

@@ -1998,12 +1998,14 @@ void DCOPClient::processSocketData(int fd)
         return;
 
     if ( d->non_blocking_call_lock ) {
-        qApp->exit_loop();
+        if( qApp )
+            qApp->exit_loop();
         return;
     }
 
     if (!d->iceConn) {
-        d->notifier->deleteLater();
+        if( d->notifier )
+            d->notifier->deleteLater();
         d->notifier = 0;
         qWarning("received an error processing data from the DCOP server!");
         return;
