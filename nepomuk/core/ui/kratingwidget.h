@@ -30,7 +30,7 @@
 class NEPOMUK_EXPORT KRatingWidget : public QFrame
 {
     Q_OBJECT
-  
+
  public:
     /**
      * Creates a new rating widget.
@@ -71,11 +71,11 @@ class NEPOMUK_EXPORT KRatingWidget : public QFrame
      * Set the maximum allowed rating value. The default is 10 which means
      * that a rating from 1 to 10 is selectable. If \a max is uneven steps
      * are automatically only allowed full.
-     */ 
+     */
     void setMaxRating( unsigned int max );
 
     /**
-     * Painting only full steps means that each step of the rating is displayed  
+     * Painting only full steps means that each step of the rating is displayed
      * using one pixmap. Otherwise two steps are displayed using one pixmap
      * by painting a smaller one or only coloring half of the pixmap.
      *
@@ -109,7 +109,7 @@ class NEPOMUK_EXPORT KRatingWidget : public QFrame
     void resizeEvent( QResizeEvent* e );
 
  private:
-    void drawRatingPixmaps( QPainter* p, int pix, int grayPix, bool half );
+    void drawRatingPixmaps( QPainter* p, int pix, int hoverPix, int grayPix, bool half );
     unsigned int posToRating( int pos ) const;
 
     class Private;

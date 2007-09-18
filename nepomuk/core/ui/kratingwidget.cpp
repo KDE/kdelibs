@@ -42,36 +42,15 @@ public:
           pixmapForced( false ) {
     }
 
-    void setUsedPixmap( const QPixmap& _pix ) {
-        pix = _pix;
-        smallPix = QPixmap();
-        grayPix = QPixmap();
-    }
+    void setUsedPixmap( const QPixmap& _pix );
 
-    const QPixmap& pixmap() {
-        // FIXME: maybe resize according to widget size
-        //        maybe even use SVG?
-        if( pix.isNull() )
-            pix = origPix;
-        return pix;
-    }
+    const QPixmap& pixmap();
+    const QPixmap& smallPixmap();
+    const QPixmap& hoverSmallPixmap();
+    const QPixmap& grayPixmap();
+    const QPixmap& hoverPixmap();
 
-    const QPixmap& smallPixmap() {
-        if( smallPix.isNull() )
-            smallPix = pixmap().scaled( pixmap().height()/2, pixmap().width()/2, Qt::KeepAspectRatio, Qt::SmoothTransformation );
-        return smallPix;
-    }
-
-    const QPixmap& grayPixmap() {
-        if( grayPix.isNull() ) {
-            QImage image = pixmap().toImage();
-            KIconEffect::toGray( image, 1.0 ); // maybe Blitz::grayscale() would be better
-            grayPix = QPixmap::fromImage( image );
-        }
-        return grayPix;
-    }
-
-    int numUsedPix() {
+    int numUsedPix() const {
         return ( onlyFullSteps ? max : max/2 );
     }
 
@@ -89,10 +68,73 @@ public:
     QPixmap origPix;
     QPixmap pix;
     QPixmap smallPix;
+    QPixmap hoverSmallPix;
     QPixmap grayPix;
+    QPixmap hoverPix;
 
     bool pixmapForced;
 };
+
+
+void KRatingWidget::Private::setUsedPixmap( const QPixmap& _pix )
+{
+    pix = _pix;
+    smallPix = QPixmap();
+    hoverSmallPix = QPixmap();
+    grayPix = QPixmap();
+    hoverPix = QPixmap();
+}
+
+
+const QPixmap& KRatingWidget::Private::pixmap()
+{
+        // FIXME: maybe resize according to widget size
+        //        maybe even use SVG?
+    if( pix.isNull() )
+        pix = origPix;
+    return pix;
+}
+
+
+const QPixmap& KRatingWidget::Private::smallPixmap()
+{
+    if( smallPix.isNull() )
+        smallPix = pixmap().scaled( pixmap().height()/2, pixmap().width()/2, Qt::KeepAspectRatio, Qt::SmoothTransformation );
+    return smallPix;
+}
+
+
+const QPixmap& KRatingWidget::Private::hoverSmallPixmap()
+{
+    if( hoverSmallPix.isNull() ) {
+        hoverSmallPix = pixmap().scaled( pixmap().height()/2, pixmap().width()/2, Qt::KeepAspectRatio, Qt::SmoothTransformation );
+        QImage image = hoverSmallPix.toImage();
+        KIconEffect::toGray( image, 0.5 ); // maybe Blitz::grayscale() would be better
+        hoverSmallPix = QPixmap::fromImage( image );
+    }
+    return hoverSmallPix;
+}
+
+const QPixmap& KRatingWidget::Private::grayPixmap()
+{
+    if( grayPix.isNull() ) {
+        QImage image = pixmap().toImage();
+        KIconEffect::toGray( image, 1.0 ); // maybe Blitz::grayscale() would be better
+        grayPix = QPixmap::fromImage( image );
+    }
+    return grayPix;
+}
+
+
+const QPixmap& KRatingWidget::Private::hoverPixmap()
+{
+    if( hoverPix.isNull() ) {
+        QImage image = pixmap().toImage();
+        KIconEffect::toGray( image, 0.5 );
+        hoverPix = QPixmap::fromImage( image );
+    }
+    return hoverPix;
+}
 
 
 KRatingWidget::KRatingWidget( QWidget* parent )
@@ -213,18 +255,19 @@ void KRatingWidget::leaveEvent( QEvent* )
 
 void KRatingWidget::paintEvent( QPaintEvent* )
 {
-    int r = ( d->hovering ? d->hoverRating : d->rating );
+    const int rating = d->rating;
+    const int hoverRating = d->hovering ? d->hoverRating : 0;
 
     QPainter p( this );
 
-    if( r > 0 ) {
-        if( !d->onlyFullSteps )
-            drawRatingPixmaps( &p, (r+1)/2, d->numUsedPix(), r%2 );
+    if( rating > 0 ) {
+        if( d->onlyFullSteps )
+            drawRatingPixmaps( &p, rating, hoverRating, d->numUsedPix(), false );
         else
-            drawRatingPixmaps( &p, r, d->numUsedPix(), false );
+            drawRatingPixmaps( &p, (rating+1)/2, (hoverRating+1)/2, d->numUsedPix(), rating%2 );
     }
     else {
-        drawRatingPixmaps( &p, 0, d->numUsedPix(), false );
+        drawRatingPixmaps( &p, 0, 0, d->numUsedPix(), false );
         p.drawText( contentsRect(), Qt::AlignCenter, i18n("Not yet rated") );
     }
 }
@@ -233,38 +276,64 @@ void KRatingWidget::paintEvent( QPaintEvent* )
 // inspired by Amarok's playlistitem.cpp:
 // (C) 2005 by Gav Wood
 // (C) 2005 by Alexandre Oliveira
-void KRatingWidget::drawRatingPixmaps( QPainter* p, int pix, int grayPix, bool half )
+void KRatingWidget::drawRatingPixmaps( QPainter* p, int pix, int hoverPix, int grayPix, bool half )
 {
+    bool drawHoverSmallPix = false;
+    if ( ( hoverPix > 0 ) && ( hoverPix < pix ) ) {
+        int temp = pix;
+        pix = hoverPix;
+        hoverPix = temp;
+        if ( half) {
+            ++pix;
+            drawHoverSmallPix = true;
+        }
+    }
+
     int w = contentsRect().width();
     w -= d->numUsedPix()*d->pixmap().width();
     int usedSpacing = w / (d->numUsedPix()-1);
 
     int i = 1, x = 1;
+    int xInc = d->pixmap().width() + usedSpacing;
+    if ( layoutDirection() == Qt::RightToLeft ) {
+        x = contentsRect().width() - d->pixmap().width() - x;
+        xInc = -xInc;
+    }
+
     const int y = contentsRect().height() / 2 - d->pixmap().height() / 2;
     if( half )
         i++;
     for(; i <= pix; ++i ) {
-        //bitBlt( p->device(), x, y, star() );
         p->drawPixmap( x, y, d->pixmap() );
-        x += d->pixmap().width() + usedSpacing;
+        x += xInc;
     }
-    if( half ) {
-        //bitBlt( p->device(), x, y, smallStar() );
-        p->drawPixmap( x + ( d->pixmap().width() - d->smallPixmap().width() ) / 2,
-                       y + ( d->pixmap().height() - d->smallPixmap().height() ) / 2, d->smallPixmap() );
-        x += d->pixmap().width() + usedSpacing;
+    if( half && !drawHoverSmallPix ) {
+        const QPixmap& pix = d->smallPixmap();
+        p->drawPixmap( x + ( d->pixmap().width() - pix.width() ) / 2,
+                       y + ( d->pixmap().height() - pix.height() ) / 2, pix );
+        x += xInc;
+    }
+    for (; i <= hoverPix; ++i ) {
+        p->drawPixmap( x, y, d->hoverPixmap() );
+        x += xInc;
+    }
+    if( half && drawHoverSmallPix) {
+        const QPixmap& pix = d->hoverSmallPixmap();
+        p->drawPixmap( x + ( d->pixmap().width() - pix.width() ) / 2,
+                       y + ( d->pixmap().height() - pix.height() ) / 2, pix );
+        x += xInc;
     }
     for(; i <= grayPix; ++i ) {
-        //      bitBlt( p->device(), x, y, grayedStar() );
         p->drawPixmap( x, y, d->grayPixmap() );
-        x += d->pixmap().width() + usedSpacing;
+        x += xInc;
     }
 }
-
 
 unsigned int KRatingWidget::posToRating( int pos ) const
 {
     int w = contentsRect().width();
+    if ( layoutDirection() == Qt::RightToLeft )
+        pos = w - pos;
 
     int usedSpacing = (w - d->numUsedPix()*d->pixmap().width()) / (d->numUsedPix()-1);
 
