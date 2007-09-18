@@ -267,7 +267,7 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
         _brushes.deco[0] = effects.brush(_brushes.deco[0], _brushes.bg[0]);
         _brushes.deco[1] = effects.brush(_brushes.deco[1], _brushes.bg[0]);
         _brushes.bg[0] = effects.brush(_brushes.bg[0]);
-        _brushes.bg[1] = effects.brush(_brushes.bg[0]);
+        _brushes.bg[1] = effects.brush(_brushes.bg[1]);
     }
 
     // calculated backgrounds
