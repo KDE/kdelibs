@@ -380,6 +380,7 @@ install( FILES
    util/kgenericfactory.tcc
    util/klauncher_iface.h
    util/klibloader.h
+   util/klibrary.h
    util/kmacroexpander.h
    util/kpluginfactory.h
    util/kpluginloader.h
