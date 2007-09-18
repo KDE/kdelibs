@@ -24,6 +24,7 @@
 #include <QtGui/QIcon>
 
 class KIconLoader;
+class QStringList;
 
 /**
  * \short A wrapper around QIcon that provides KDE icon features
@@ -50,8 +51,18 @@ public:
      *                 loaded from the emblems icons and up to four (one per
      *                 corner) is currently supported
      */
-    explicit KIcon(const QString& iconName, KIconLoader* iconLoader = 0L,
-                   const QStringList& overlays = QStringList());
+    explicit KIcon(const QString& iconName, KIconLoader* iconLoader,
+                   const QStringList& overlays);
+
+    /**
+     * \overload
+     */
+    explicit KIcon(const QString& iconName, KIconLoader* iconLoader);
+
+    /**
+     * \overload
+     */
+    explicit KIcon(const QString& iconName);
 
     /**
      * Copy constructor which takes any QIcon.

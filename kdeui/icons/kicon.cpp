@@ -28,6 +28,16 @@ KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader, const QStringList
 {
 }
 
+KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader)
+  : QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global()))
+{
+}
+
+KIcon::KIcon(const QString& iconName)
+  : QIcon(new KIconEngine(iconName, KIconLoader::global()))
+{
+}
+
 KIcon::KIcon()
 {
 }

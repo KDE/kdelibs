@@ -41,6 +41,13 @@ KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader, const
     d->overlays = overlays;
 }
 
+KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader)
+    : d(new Private)
+{
+    d->iconName = iconName;
+    d->iconLoader = iconLoader;
+}
+
 KIconEngine::~KIconEngine()
 {
     delete d;

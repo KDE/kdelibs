@@ -49,6 +49,11 @@ class KIconEngine : public QIconEngineV2
     KIconEngine(const QString& iconName, KIconLoader* iconLoader, const QStringList& overlays);
 
     /**
+     * \overload
+     */
+    KIconEngine(const QString& iconName, KIconLoader* iconLoader);
+
+    /**
      * Destructor.
      */
     virtual ~KIconEngine();
