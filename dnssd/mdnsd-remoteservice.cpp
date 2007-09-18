@@ -41,7 +41,7 @@ void resolve_callback    (    DNSServiceRef,
 				void                                *context
 			 );
 
-#define K_D RemoteServicePrivate* d=static_cast<RemoteServicePrivate*>(dptr)
+#define K_D RemoteServicePrivate* d=static_cast<RemoteServicePrivate*>(this->d)
 
 class RemoteServicePrivate : public Responder, public ServiceBasePrivate
 {
