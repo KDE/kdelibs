@@ -266,7 +266,7 @@ QString KTranslitSerbian::transliterate (const QString &str_,
             QChar c = str[i];
             QString r = d->dictC2L[c];
             if (!r.isEmpty()) {
-                if (   r.length() > 1
+                if (   r.length() > 1 && c.isUpper()
                     && (   (i + 1 < slen && str[i + 1].isUpper())
                         || (i > 0 && str[i - 1].isUpper()))) {
                     nstr.append(r.toUpper());
