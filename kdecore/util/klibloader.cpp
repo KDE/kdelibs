@@ -134,8 +134,17 @@ KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
 
     KLibrary *lib = new KLibrary(_name);
 
-    if (lib)
-        kLibLoaderPrivate->cleanuphandler.add(lib);
+    lib->setLoadHints(hint);
+
+    lib->load();
+
+    if (!lib->isLoaded()) {
+        delete lib;
+        return 0;
+    }
+
+    kLibLoaderPrivate->cleanuphandler.add(lib);
+
     return lib;
 }
 
