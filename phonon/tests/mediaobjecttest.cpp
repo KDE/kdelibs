@@ -243,6 +243,9 @@ void MediaObjectTest::initTestCase()
     Phonon::loadFakeBackend();
     if (getenv("PHONON_TEST_MEDIASTREAM")) {
         QByteArray filename = getenv("PHONON_TESTURL");
+        if (filename.isEmpty()) {
+            QWARN("You need to set PHONON_TESTURL to a valid URL. Expect to see failures.");
+        }
         if (filename.startsWith("file:///")) {
             filename = filename.right(filename.length() - 7);
         }
