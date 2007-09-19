@@ -331,10 +331,10 @@ bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
                 ++currB;
         }
 
-        if (!leftFileNameStartsByLetter && rightFileNameStartsByLetter)
+        if (!rightFileNameStartsByLetter)
             return true;
 
-        if (!rightFileNameStartsByLetter)
+        if (!leftFileNameStartsByLetter && rightFileNameStartsByLetter)
             return false;
 
         return naturalCompare(*currA, *currB) < 0;
