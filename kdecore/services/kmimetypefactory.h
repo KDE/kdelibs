@@ -75,7 +75,7 @@ private: // only for KMimeType
      *
      * This is internal API, use KMimeType::findByUrl instead.
      */
-    QList<KMimeType::Ptr> findFromFileName(const QString &filename, QString *match = 0);
+    QList<KMimeType::Ptr> findFromFileName(const QString &filename, QString *matchingExtension = 0);
 
     enum WhichPriority { LowPriorityRules, HighPriorityRules, AllRules };
     /**
@@ -133,7 +133,7 @@ private:
     // Read magic files
     void parseMagic();
 
-    QList<KMimeType::Ptr> findFromFileNameHelper(const QString &filename, QString *match = 0);
+    QList<KMimeType::Ptr> findFromFileNameHelper(const QString &filename, QString *matchingExtension);
     QList<KMimeType::Ptr> findFromFastPatternDict(const QString &extension);
 
     // TODO combine both lists into a single QList<QPair<QString,qint32> >.

@@ -145,7 +145,7 @@ QString KMimeTypeFactory::resolveAlias(const QString& mime)
     return m_aliases.value(mime);
 }
 
-QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileName( const QString &filename, QString *match )
+QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileName( const QString &filename, QString *matchingExtension )
 {
     // Assume we're NOT building a database
     if (!m_str) return QList<KMimeType::Ptr>();
@@ -154,11 +154,11 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileName( const QString &filenam
     // the filename converted to lower-case if that fails. This is so that
     // main.C will be seen as a C++ file, but IMAGE.GIF will still use the
     // *.gif pattern."
-    QList<KMimeType::Ptr> mimeList = findFromFileNameHelper(filename, match);
+    QList<KMimeType::Ptr> mimeList = findFromFileNameHelper(filename, matchingExtension);
     if (mimeList.isEmpty()) {
         const QString lowerCase = filename.toLower();
         if (lowerCase != filename)
-            mimeList = findFromFileNameHelper(lowerCase, match);
+            mimeList = findFromFileNameHelper(lowerCase, matchingExtension);
     }
     return mimeList;
 }
@@ -174,7 +174,7 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFastPatternDict(const QString &e
     foreach(int offset, offsetList) {
         KMimeType::Ptr newMimeType(createEntry(offset));
         // Check whether the dictionary was right.
-        if (newMimeType && (newMimeType->patterns().contains("*."+extension))) {
+        if (newMimeType && newMimeType->patterns().contains("*."+extension)) {
             mimeList.append(newMimeType);
         }
     }
@@ -218,7 +218,7 @@ static bool matchFileName( const QString &filename, const QString &pattern )
     return rx.exactMatch(filename);
 }
 
-QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_filename, QString *match )
+QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_filename, QString *matchingExtension )
 {
     QList<KMimeType::Ptr> matchingMimeTypes;
 
@@ -227,16 +227,17 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_
 
     // Extract extension
     const int lastDot = _filename.lastIndexOf('.');
-    QString simpleExtension;
+    int matchingPatternLength = 0;
 
     if (lastDot != -1) { // if no '.', skip the extension lookup
         const int ext_len = _filename.length() - lastDot - 1;
-        simpleExtension = _filename.right( ext_len );
+        const QString simpleExtension = _filename.right( ext_len );
 
         matchingMimeTypes = findFromFastPatternDict(simpleExtension);
         if (!matchingMimeTypes.isEmpty()) {
-            if (match)
-                *match = simpleExtension;
+            matchingPatternLength = simpleExtension.length() + 2; // *.foo -> length=5
+            if (matchingExtension)
+                *matchingExtension = simpleExtension;
             // Keep going, there might be some matches from the 'other' list, like *.tar.bz2
         }
     }
@@ -269,14 +270,18 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_
     for ( ; it != end; ++it, ++it_offset ) {
         const QString pattern = *it;
         if ( matchFileName( _filename, pattern ) ) {
-            // Is this a better match than the simpleExtension, like *.tar.bz2?
-            if (pattern.endsWith(simpleExtension))
+            // Is this a shorter or a longer match than an existing one, or same length?
+            if (pattern.length() < matchingPatternLength) {
+                continue; // too short, ignore
+            } else if (pattern.length() > matchingPatternLength) {
+                // longer: clear any previous match (like *.bz2, when pattern is *.tar.bz2)
                 matchingMimeTypes.clear();
+            }
             KMimeType *newMimeType = createEntry( *it_offset );
             assert (newMimeType && newMimeType->isType( KST_KMimeType ));
             matchingMimeTypes.append( KMimeType::Ptr( newMimeType ) );
-            if (match && pattern.startsWith("*."))
-                *match = pattern.mid(2);
+            if (matchingExtension && pattern.startsWith("*."))
+                *matchingExtension = pattern.mid(2);
         }
     }
 

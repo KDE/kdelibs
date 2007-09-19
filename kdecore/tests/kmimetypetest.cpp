@@ -146,8 +146,8 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("glob that uses [] syntax, 2") << "makefile" << "text/x-makefile";
     QTest::newRow("glob that ends with *, no extension") << "README" << "text/x-readme";
     QTest::newRow("glob that ends with *, extension") << "README.foo" << "text/x-readme";
-    // Tricky case, README* and *.txt both match. File doesn't exist, so no magic -> last one wins
-    QTest::newRow("glob that ends with *, also matches *.txt, which wins") << "README.txt" << "text/x-readme";
+    QTest::newRow("glob that ends with *, also matches *.txt. Longer match wins (is also a subclass).") << "README.txt" << "text/x-readme";
+    QTest::newRow("glob that ends with *, also matches *.doc. Longer match wins.") << "README.doc" << "text/x-readme";
     QTest::newRow("glob that ends with *, double match for same mimetype") << "README.nfo" << "text/x-readme";
     QTest::newRow("directory") << "/" << "inode/directory";
     QTest::newRow("doesn't exist, no extension") << "IDontExist" << "application/octet-stream";

@@ -213,6 +213,11 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
 
 As agreed on the XDG list (and unlike the current shared-mime spec):
 
+Glob-matching should prefer derived mimetype over base mimetype, and longer matches
+over shorter ones. However if two globs of the same length match the file, and the two
+matches are not related in the inheritance tree, then we have a "glob conflict", which
+will be resolved below.
+
 If only one glob matches, use that
 
 If no glob matches, sniff and use that
@@ -311,9 +316,8 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     if (!mimeList.isEmpty()) {
         if (accuracy)
             *accuracy = 20;
-        // Return the last match. Ideally the longest match (README* is more specific than *.txt)
-        // but this case only works here because we check for fast-patterns before other-patterns...
-        return mimeList.last();
+        // We have to pick one...
+        return mimeList.first();
     }
 
     // Find a fallback from the protocol
