@@ -1794,8 +1794,17 @@ QVector<QPair<int, QVector<int> > > KCategorizedSortFilterProxyModel::Private::p
 
         proxyLow = 0;
         int proxyHigh = proxyToSource.size() - 1;
-        QModelIndex i = compare ? p->sourceModel()->index(firstNewSourceItem, sortColumn, sourceParent)
+        QModelIndex iMain = compare ? p->sourceModel()->index(firstNewSourceItem, sortColumn, sourceParent)
                                 : QModelIndex();
+        QModelIndex iCurrent;
+        //a little trick to avoid checking sortOrder inside the loop
+        QModelIndex& i1=iMain;
+        QModelIndex& i2=iCurrent;
+        if (sortOrder==Qt::DescendingOrder)
+        {
+            i1=iCurrent;
+            i2=iMain;
+        }
 
         // Start the binary search
         while (proxyLow <= proxyHigh)
@@ -1804,32 +1813,17 @@ QVector<QPair<int, QVector<int> > > KCategorizedSortFilterProxyModel::Private::p
 
             if (compare)
             {
-                QModelIndex i2 = p->sourceModel()->index(proxyToSource.at(proxyItem), sortColumn, sourceParent);
+                iCurrent = p->sourceModel()->index(proxyToSource.at(proxyItem), sortColumn, sourceParent);
 
-                if (categorizedModel)
-                {
                     // The Big Trick (ereslibre)
-                    if ((sortOrder == Qt::AscendingOrder) ? p->lessThanGeneralPurpose(i, i2) || (!p->lessThanGeneralPurpose(i2, i) && p->lessThanCategoryPurpose(i, i2))
-                                                          : p->lessThanGeneralPurpose(i2, i) || (!p->lessThanGeneralPurpose(i, i2) && p->lessThanCategoryPurpose(i2, i)))
-                    {
-                        proxyHigh = proxyItem - 1;
-                    }
-                    else
-                    {
-                        proxyLow = proxyItem + 1;
-                    }
+                if (categorizedModel?(p->lessThanGeneralPurpose(i1, i2)||(  !p->lessThanGeneralPurpose(i2, i1)&&p->lessThanCategoryPurpose(i1, i2)  ))
+                                    :(p->lessThan(i1, i2)))
+                {
+                    proxyHigh = proxyItem - 1;
                 }
                 else
                 {
-                    if ((sortOrder == Qt::AscendingOrder) ? p->lessThan(i, i2)
-                                                          : p->lessThan(i2, i))
-                    {
-                        proxyHigh = proxyItem - 1;
-                    }
-                    else
-                    {
-                        proxyLow = proxyItem + 1;
-                    }
+                    proxyLow = proxyItem + 1;
                 }
             }
             else
@@ -1856,7 +1850,7 @@ QVector<QPair<int, QVector<int> > > KCategorizedSortFilterProxyModel::Private::p
         }
         else
         {
-            i = compare ? p->sourceModel()->index(proxyToSource.at(proxyItem), sortColumn, sourceParent)
+            iMain = compare ? p->sourceModel()->index(proxyToSource.at(proxyItem), sortColumn, sourceParent)
                         : QModelIndex();
 
             for (; sourceItemsIndex < sourceItems.size(); sourceItemsIndex++)
@@ -1865,24 +1859,13 @@ QVector<QPair<int, QVector<int> > > KCategorizedSortFilterProxyModel::Private::p
 
                 if (compare)
                 {
-                    QModelIndex i2 = p->sourceModel()->index(newSourceItem, sortColumn, sourceParent);
+                    iCurrent = p->sourceModel()->index(newSourceItem, sortColumn, sourceParent);
 
-                    if (categorizedModel)
+                    // The Big Trick (ereslibre)
+                    if (categorizedModel?(p->lessThanGeneralPurpose(i1, i2)||(  !p->lessThanGeneralPurpose(i2, i1)&&p->lessThanCategoryPurpose(i1, i2)  ))
+                                        :(p->lessThan(i1, i2)))
                     {
-                        // The Big Trick (ereslibre)
-                        if ((sortOrder == Qt::AscendingOrder) ? p->lessThanGeneralPurpose(i, i2) || (!p->lessThanGeneralPurpose(i2, i) && p->lessThanCategoryPurpose(i, i2))
-                                                              : p->lessThanGeneralPurpose(i2, i) || (!p->lessThanGeneralPurpose(i, i2) && p->lessThanCategoryPurpose(i2, i)))
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if ((sortOrder == Qt::AscendingOrder) ? p->lessThan(i, i2)
-                                                              : p->lessThan(i2, i))
-                        {
-                            break;
-                        }
+                        break;
                     }
                 }
                 else
