@@ -307,17 +307,37 @@ bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
 
     switch (left.column()) {
     case KDirModel::Name: {
-        QString leftFileName(leftFileItem.name());
-        if (leftFileName.at(0) == '.') {
-            leftFileName = leftFileName.mid(1);
+        bool leftFileNameStartsByLetter = false;
+        const QString str(leftFileItem.name().toUpper());
+        const QChar* currA = str.unicode();
+        while (!currA->isNull() && !leftFileNameStartsByLetter) {
+            if (currA->isLetter())
+                leftFileNameStartsByLetter = true;
+            else if (currA->isDigit()) {
+                break;
+            } else
+                ++currA;
         }
 
-        QString rightFileName(rightFileItem.name());
-        if (rightFileName.at(0) == '.') {
-            rightFileName = rightFileName.mid(1);
+        bool rightFileNameStartsByLetter = false;
+        const QString strb(rightFileItem.name().toUpper());
+        const QChar *currB = strb.unicode();
+        while (!currB->isNull() && !rightFileNameStartsByLetter) {
+            if (currB->isLetter())
+                rightFileNameStartsByLetter = true;
+            else if (currB->isDigit()) {
+                break;
+            } else
+                ++currB;
         }
 
-        return naturalCompare(leftFileName[0].toLower(), rightFileName[0].toLower()) < 0;
+        if (!leftFileNameStartsByLetter && rightFileNameStartsByLetter)
+            return true;
+
+        if (!rightFileNameStartsByLetter)
+            return false;
+
+        return naturalCompare(*currA, *currB) < 0;
     }
 
     case KDirModel::Size:
