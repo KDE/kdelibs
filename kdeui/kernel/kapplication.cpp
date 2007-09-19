@@ -581,8 +581,6 @@ void KApplication::init(bool GUIenabled)
 
     connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),
             this, SLOT(slot_KToolInvocation_hook(QStringList&,QByteArray&)));
-    connect(KLibLoader::self(), SIGNAL(kapplication_hook_clearClipboard()),
-            this, SLOT(slot_KLibLoader_hook_clearClipboard()));
   }
 
 #ifdef Q_WS_MAC
@@ -1183,19 +1181,6 @@ void KApplication::setSynchronizeClipboard(bool synchronize)
 {
     KClipboardSynchronizer::self()->setSynchronizing(synchronize);
     KClipboardSynchronizer::self()->setReverseSynchronizing(synchronize);
-}
-
-void KApplication::slot_KLibLoader_hook_clearClipboard()
-{
-    kDebug() ;
-    if( clipboard()->ownsSelection()) {
-	clipboard()->setText(
-            clipboard()->text( QClipboard::Selection ), QClipboard::Selection );
-    }
-    if( clipboard()->ownsClipboard()) {
-	clipboard()->setText(
-            clipboard()->text( QClipboard::Clipboard ), QClipboard::Clipboard );
-    }
 }
 
 #include "kapplication.moc"
