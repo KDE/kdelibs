@@ -375,6 +375,7 @@ public:
         m_waitForSave = false;
         m_duringSaveAs = false;
         m_bTemp = false;
+        m_bAutoDetectedMime = false;
     }
 
     ~ReadOnlyPartPrivate()
@@ -397,6 +398,9 @@ public:
      * If @p true, @p m_file is a temporary file that needs to be deleted later.
      */
     bool m_bTemp: 1;
+
+    // whether the mimetype in the arguments was detected by the part itself
+    bool m_bAutoDetectedMime : 1;
 
     /**
      * Remote (or local) url - the one displayed to the user.
@@ -521,6 +525,10 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
 
     if ( !url.isValid() )
         return false;
+    if (d->m_bAutoDetectedMime) {
+        d->m_arguments.setMimeType(QString());
+        d->m_bAutoDetectedMime = false;
+    }
     OpenUrlArguments args = d->m_arguments;
     if ( !closeUrl() )
         return false;
@@ -538,6 +546,7 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
             KMimeType::Ptr mime = KMimeType::findByUrl(d->m_url, 0, true /* local file*/);
             if (mime) {
                 d->m_arguments.setMimeType(mime->name());
+                d->m_bAutoDetectedMime = true;
             }
         }
         bool ret = openFile();
@@ -631,6 +640,7 @@ void ReadOnlyPartPrivate::_k_slotGotMimeType(KIO::Job *job, const QString &mime)
     // set the mimetype only if it was not already set (for example, by the host application)
     if (m_arguments.mimeType().isEmpty()) {
         m_arguments.setMimeType(mime);
+        m_bAutoDetectedMime = true;
     }
 }
 
@@ -679,6 +689,7 @@ void KParts::ReadOnlyPart::setArguments(const OpenUrlArguments& arguments)
 {
     Q_D(ReadOnlyPart);
     d->m_arguments = arguments;
+    d->m_bAutoDetectedMime = arguments.mimeType().isEmpty();
 }
 
 OpenUrlArguments KParts::ReadOnlyPart::arguments() const
