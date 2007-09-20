@@ -149,15 +149,15 @@ install(TARGETS ${KJSLIBNAME}
              ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
 )
 
-########### js - basic shell ###############
+########### kjs - basic shell ###############
 
-set(js_SRCS kjs.cpp)
+set(kjs_SRCS kjs.cpp)
 
-kde4_add_executable(js NOGUI ${js_SRCS})
+kde4_add_executable(kjs NOGUI ${js_SRCS})
 
-target_link_libraries(js ${KJSLIBNAME})
+target_link_libraries(kjs ${KJSLIBNAME})
 
-install(TARGETS js DESTINATION ${BIN_INSTALL_DIR})
+install(TARGETS kjs DESTINATION ${BIN_INSTALL_DIR})
 
 ########### install files ###############
 install( FILES
