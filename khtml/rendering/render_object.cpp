@@ -485,8 +485,8 @@ RenderObject* RenderObject::offsetParent() const
     bool skipTables = isPositioned() || isRelPositioned();
     bool strict = !style()->htmlHacks();
     RenderObject* curr = parent();
-    while (curr && (!curr->element() || 
-                    (!curr->isPositioned() && !curr->isRelPositioned() && 
+    while (curr && (!curr->element() ||
+                    (!curr->isPositioned() && !curr->isRelPositioned() &&
                         !(strict && skipTables ? curr->isRoot() : curr->isBody())))) {
         if (!skipTables && curr->element() && (curr->isTableCell() || curr->isTable()))
             break;
@@ -750,7 +750,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     if(!c.isValid()) {
         if(invalidisInvert)
         {
-            p->setCompositionMode(QPainter::CompositionMode_Xor);
+            p->setCompositionMode(QPainter::CompositionMode_Difference);
             c = Qt::white;
         }
         else {
@@ -773,7 +773,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
 
         return;
     case DOTTED:
-    case DASHED: 
+    case DASHED:
     {
         //Figure out on/off spacing
         int onLen  = width;
@@ -792,7 +792,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
                 offLen = width;
             }
         }
-        
+
         //Make the mask pixmap.
         QBitmap mask;
         if (s == BSBottom || s == BSTop) //Horizontal
@@ -1360,7 +1360,7 @@ void RenderObject::setStyle(RenderStyle *style)
         } else if (!isText() && d >= RenderStyle::Visible) {
             // a repaint is enough
             if (layer()) {
-                if (canvas() && canvas()->needsWidgetMasks()) { 
+                if (canvas() && canvas()->needsWidgetMasks()) {
                     // update our widget masks
                     RenderLayer *p, *d = 0;
                     for (p=layer()->parent();p;p=p->parent())
@@ -2294,12 +2294,12 @@ void RenderObject::updateWidgetMasks() {
 #endif
                 r.translate(-x,-y);
 
-                // ### Scrollarea's widget doesn't update when mask change. 
+                // ### Scrollarea's widget doesn't update when mask change.
                 // Might be a Qt bug. Might be the way we handle updates. Investigate.
                 if (::qobject_cast<QScrollArea*>(w)) {
                     QScrollArea* sa = static_cast<QScrollArea*>(w);
                     if (!w->mask().isEmpty()) {
-                      QPoint off( sa->horizontalScrollBar()->value(), 
+                      QPoint off( sa->horizontalScrollBar()->value(),
                                   sa->verticalScrollBar()->value() );
                       sa->widget()->update(w->mask().translated(off));
                       sa->horizontalScrollBar()->update();
@@ -2313,7 +2313,7 @@ void RenderObject::updateWidgetMasks() {
         }
         else if (!curr->layer() || !curr->layer()->isStackingContext())
             curr->updateWidgetMasks();
-  
+
     }
 }
 
