@@ -32,6 +32,9 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
     printf("mode=%07o %s %s %s%s %lld isdir=%d\n", entry->permissions(), entry->user().toLatin1().constData(), entry->group().toLatin1().constData(), path.toLatin1().constData(), (*it).toLatin1().constData(),
             entry->isFile() ? static_cast<const KArchiveFile *>(entry)->size() : 0,
             entry->isDirectory());
+    if (!entry->symlink().isEmpty()) {
+        printf("  (symlink to %s)\n",qPrintable(entry->symlink()));
+    }
     if (entry->isDirectory())
       recursive_print( (KArchiveDirectory *)entry, path+(*it)+'/' );
   }

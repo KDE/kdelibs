@@ -43,6 +43,9 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef Q_OS_UNIX
+#include <limits.h>  // PATH_MAX
+#endif
 
 class KArchivePrivate
 {
@@ -214,7 +217,21 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     }
 
     if (fileInfo.isSymLink()) {
-        return writeSymLink(destName, fileInfo.readLink(), fileInfo.owner(),
+        QString symLinkTarget;
+        // Do NOT use fileInfo.readLink() for unix symlinks!
+        // It returns the -full- path to the target, while we want the target string "as is".
+#if defined(Q_OS_UNIX) && !defined(Q_OS_OS2EMX)
+        QByteArray s;
+        s.resize(PATH_MAX+1);
+        int len = readlink( QFile::encodeName(fileName).data(), s.data(), PATH_MAX );
+        if ( len >= 0 ) {
+            s[len] = '\0';
+            symLinkTarget = QFile::decodeName(s);
+        }
+#endif
+        if (symLinkTarget.isEmpty()) // Mac or Windows
+            symLinkTarget = fileInfo.symLinkTarget();
+        return writeSymLink(destName, symLinkTarget, fileInfo.owner(),
                             fileInfo.group(), fi.st_mode, fi.st_atime, fi.st_mtime,
                             fi.st_ctime);
     }/*end if*/
@@ -733,8 +750,6 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
   QList<const KArchiveFile*> fileList;
   QMap<qint64, QString> fileToDir;
 
-  QStringList::Iterator it;
-
   // placeholders for iterated items
   QStringList dirEntries;
 
@@ -749,22 +764,33 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
     root.mkdir(curDirName);
 
     dirEntries = curDir->entries();
-    for ( it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
+    for ( QStringList::const_iterator it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
       const KArchiveEntry* curEntry = curDir->entry(*it);
-      if ( curEntry->isFile() ) {
-        const KArchiveFile* curFile = dynamic_cast<const KArchiveFile*>( curEntry );
-	if (curFile) {
-          fileList.append( curFile );
-          fileToDir.insert( curFile->position(), curDirName );
-        }
-      }
+      if (!curEntry->symlink().isEmpty()) {
+          const QString linkName = curDirName+'/'+curEntry->name();
+#ifdef Q_OS_UNIX
+          if (!::symlink(curEntry->symlink().toLocal8Bit(), linkName.toLocal8Bit())) {
+              kDebug() << "symlink(" << curEntry->symlink() << ',' << linkName << ") failed:" << strerror(errno);
+          }
+#else
+          // TODO - how to create symlinks on other platforms?
+#endif
+      } else {
+          if ( curEntry->isFile() ) {
+              const KArchiveFile* curFile = dynamic_cast<const KArchiveFile*>( curEntry );
+              if (curFile) {
+                  fileList.append( curFile );
+                  fileToDir.insert( curFile->position(), curDirName );
+              }
+          }
 
-      if ( curEntry->isDirectory() && recursiveCopy ) {
-        const KArchiveDirectory *ad = dynamic_cast<const KArchiveDirectory*>( curEntry );
-        if (ad) {
-          dirStack.push( ad );
-          dirNameStack.push( curDirName + '/' + curEntry->name() );
-        }
+          if ( curEntry->isDirectory() && recursiveCopy ) {
+              const KArchiveDirectory *ad = dynamic_cast<const KArchiveDirectory*>( curEntry );
+              if (ad) {
+                  dirStack.push( ad );
+                  dirNameStack.push( curDirName + '/' + curEntry->name() );
+              }
+          }
       }
     }
   } while (!dirStack.isEmpty());

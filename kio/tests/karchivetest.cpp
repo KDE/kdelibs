@@ -28,6 +28,10 @@
 #include <kdebug.h>
 #include <kfilterdev.h>
 #include <ktempdir.h>
+#ifndef Q_OS_WIN
+#include <unistd.h> // symlink
+#include <errno.h>
+#endif
 
 QTEST_KDEMAIN( KArchiveTest, NoGUI )
 
@@ -49,14 +53,17 @@ static void writeTestFilesToArchive( KArchive* archive )
     QVERIFY( ok );
     ok = archive->finishWriting( 8 );
     QVERIFY( ok );
+    // Add local file
     QFile localFile( "test3" );
     ok = localFile.open( QIODevice::WriteOnly );
     QVERIFY( ok );
     ok = localFile.write( "Noch so einer", 13 ) == 13;
     QVERIFY( ok );
     localFile.close();
-    ok = archive->addLocalFile( "test3", "mydir/test3" );
+    ok = archive->addLocalFile( "test3", "z/test3" );
     QVERIFY( ok );
+
+    // writeFile API
     ok = archive->writeFile( "my/dir/test3", "dfaure", "hackers", "I do not speak German\nDavid.", 29 );
     QVERIFY( ok );
 
@@ -76,6 +83,12 @@ static void writeTestFilesToArchive( KArchive* archive )
     ok = archive->writeFile( "hugefile", "user", "group", huge, n );
     QVERIFY( ok );
     delete [] huge;
+
+#ifndef Q_OS_WIN
+    // Add local symlink
+    ok = archive->addLocalFile( "test3_symlink", "z/test3_symlink");
+    QVERIFY( ok );
+#endif
 }
 
 enum { WithUserGroup = 1 }; // ListingFlags
@@ -101,6 +114,8 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
     descr += QString("type=") + ( entry->isDirectory() ? "dir" : "file" );
     if ( entry->isFile() )
         descr += QString(" size=") + QString::number( static_cast<const KArchiveFile *>(entry)->size() );
+    if (!entry->symlink().isEmpty())
+        descr += QString(" symlink=") + entry->symlink();
 
     // TODO add date and time
 
@@ -117,7 +132,7 @@ static void testFileData( KArchive* archive )
 {
     const KArchiveDirectory* dir = archive->directory();
 
-    const KArchiveEntry* e = dir->entry( "mydir/test3" );
+    const KArchiveEntry* e = dir->entry( "z/test3" );
     QVERIFY( e );
     QVERIFY( e->isFile() );
     const KArchiveFile* f = static_cast<const KArchiveFile*>( e );
@@ -158,6 +173,12 @@ static void testFileData( KArchive* archive )
     QByteArray secondLine = dev->read(100);
     QCOMPARE(QString::fromLatin1(secondLine), QString::fromLatin1("David."));
     delete dev;
+#ifndef Q_OS_WIN
+    e = dir->entry( "z/test3_symlink" );
+    QVERIFY(e);
+    QVERIFY(e->isFile());
+    QCOMPARE(e->symlink(), QString("test3"));
+#endif
 }
 
 static void testCopyTo( KArchive* archive )
@@ -190,6 +211,24 @@ static void testCopyTo( KArchive* archive )
     QVERIFY(fileInfo4.exists());
     QVERIFY(fileInfo4.isFile());
     QCOMPARE(fileInfo4.size(), Q_INT64_C(29));
+
+#ifndef Q_OS_WIN
+    const QString fileName = dirName+"z/test3_symlink";
+    const QFileInfo fileInfo5(fileName);
+    QVERIFY(fileInfo5.exists());
+    QVERIFY(fileInfo5.isFile());
+    // Do not use fileInfo.readLink() for unix symlinks
+    // It returns the -full- path to the target, while we want the target string "as is".
+    QString symLinkTarget;
+    QByteArray s;
+    s.resize(PATH_MAX+1);
+    int len = readlink( QFile::encodeName(fileName).data(), s.data(), PATH_MAX );
+    if ( len >= 0 ) {
+        s[len] = '\0';
+        symLinkTarget = QFile::decodeName(s);
+    }
+    QCOMPARE(symLinkTarget, QString("test3"));
+#endif
 }
 
 static const char* s_tarFileName = "karchivetest.tar";
@@ -248,7 +287,7 @@ void KArchiveTest::testReadTar()
 
     QFileInfo localFileData("test3");
 
-    QCOMPARE( listing.count(), 13 );
+    QCOMPARE( listing.count(), 14 );
     QCOMPARE( listing[ 0],
 	      QString("mode=40777 user=%1 group=%2 path=dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     QCOMPARE( listing[ 1],
@@ -260,13 +299,18 @@ void KArchiveTest::testReadTar()
     QCOMPARE( listing[ 6], QString("mode=40777 user=%1 group=%2 path=my type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     QCOMPARE( listing[ 8], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29") );
-    QCOMPARE( listing[ 9], QString("mode=40777 user=%1 group=%2 path=mydir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QCOMPARE( listing[ 9], QString("mode=100644 user=weis group=users path=test1 type=file size=5") );
+    QCOMPARE( listing[10], QString("mode=100644 user=weis group=users path=test2 type=file size=8") );
+    QCOMPARE( listing[11], QString("mode=40777 user=%1 group=%2 path=z type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
     // This one was added with addLocalFile, so ignore mode/user/group.
-    QString str = listing[10];
+    QString str = listing[12];
     str.replace(QRegExp("mode.*path"), "path" );
-    QCOMPARE( str, QString("path=mydir/test3 type=file size=13") );
-    QCOMPARE( listing[11], QString("mode=100644 user=weis group=users path=test1 type=file size=5") );
-    QCOMPARE( listing[12], QString("mode=100644 user=weis group=users path=test2 type=file size=8") );
+    QCOMPARE( str, QString("path=z/test3 type=file size=13") );
+#ifndef Q_OS_WIN
+    str = listing[13];
+    str.replace(QRegExp("mode.*path"), "path" );
+    QCOMPARE( str, QString("path=z/test3_symlink type=file size=0 symlink=test3") );
+#endif
 
     ok = tar.close();
     QVERIFY( ok );
@@ -440,7 +484,7 @@ void KArchiveTest::testReadZip()
     // ZIP has no support for per-file user/group, so omit them from the listing
     const QStringList listing = recursiveListEntries( dir, "", 0 );
 
-    QCOMPARE( listing.count(), 14 );
+    QCOMPARE( listing.count(), 15 );
     QCOMPARE( listing[ 0], QString("mode=40777 path=dir type=dir") );
     QCOMPARE( listing[ 1], QString("mode=40777 path=dir/subdir type=dir") );
     QCOMPARE( listing[ 2], QString("mode=100644 path=dir/subdir/mediumfile2 type=file size=100") );
@@ -451,13 +495,18 @@ void KArchiveTest::testReadZip()
     QCOMPARE( listing[ 7], QString("mode=40777 path=my type=dir") );
     QCOMPARE( listing[ 8], QString("mode=40777 path=my/dir type=dir") );
     QCOMPARE( listing[ 9], QString("mode=100644 path=my/dir/test3 type=file size=29") );
-    QCOMPARE( listing[10], QString("mode=40777 path=mydir type=dir") );
+    QCOMPARE( listing[10], QString("mode=100644 path=test1 type=file size=5") );
+    QCOMPARE( listing[11], QString("mode=100644 path=test2 type=file size=8") );
+    QCOMPARE( listing[12], QString("mode=40777 path=z type=dir") );
     // This one was added with addLocalFile, so ignore mode
-    QString str = listing[11];
+    QString str = listing[13];
     str.replace(QRegExp("mode.*path"), "path" );
-    QCOMPARE( str, QString("path=mydir/test3 type=file size=13") );
-    QCOMPARE( listing[12], QString("mode=100644 path=test1 type=file size=5") );
-    QCOMPARE( listing[13], QString("mode=100644 path=test2 type=file size=8") );
+    QCOMPARE( str, QString("path=z/test3 type=file size=13") );
+#ifndef Q_OS_WIN
+    str = listing[14];
+    str.replace(QRegExp("mode.*path"), "path" );
+    QCOMPARE( str, QString("path=z/test3_symlink type=file size=5 symlink=test3") );
+#endif
 
     ok = zip.close();
     QVERIFY( ok );
@@ -532,4 +581,19 @@ void KArchiveTest::cleanupTestCase()
     QFile::remove("karchivetest-maxlength.zip");
     QFile::remove("karchivetest.tar.gz");
     QFile::remove("karchivetest.zip");
+#ifndef Q_OS_WIN
+    QFile::remove("test3_symlink");
+#endif
+}
+
+void KArchiveTest::initTestCase()
+{
+#ifndef Q_OS_WIN
+    // Prepare local symlink
+    QFile::remove("test3_symlink");
+    if (::symlink("test3", "test3_symlink") != 0) {
+        qDebug() << errno;
+        QVERIFY(false);
+    }
+#endif
 }

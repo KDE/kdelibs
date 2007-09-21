@@ -26,6 +26,8 @@ class KArchiveTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
+
     void testCreateTar();
     void testCreateTarGz();
     void testReadTar();
