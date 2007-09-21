@@ -64,7 +64,8 @@ public:
     /**
      * Null KFileItem. Doesn't represent any file, only exists for convenience.
      *
-     * NOTE KDE 4.0 KFileItem* => KFileItem& conversion: '(KFileItem*)a==0'  maps to '(KFileItem)a==KFileItem()'
+     * NOTE KDE 4.0 when porting from KFileItem* to KFileItem&:
+     * '(KFileItem*)a==0'  becomes '(KFileItem)a.isNull()'
      */
     KFileItem();
 

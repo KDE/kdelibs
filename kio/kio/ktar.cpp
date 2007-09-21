@@ -253,7 +253,7 @@ qint64 KTar::readHeader( char *buffer, QString &name, QString &symlink ) {
     // and neither longlink nor \0 terminated (bug:101472)
     name = QFile::decodeName(QByteArray(buffer, 100));
   if (symlink.isEmpty())
-    symlink = QFile::decodeName(QByteArray(buffer + 0x9d, 100));
+      symlink = QFile::decodeName(QByteArray(buffer + 0x9d /*?*/, 100));
 
   return 0x200;
 }
@@ -577,7 +577,7 @@ void KTar::fillBuffer( char * buffer,
                        const char * uname, const char * gname ) {
   // mode (as in stpos())
   assert( strlen(mode) == 6 );
-  strcpy( buffer+0x64, mode );
+  memcpy( buffer+0x64, mode, 6 );
   buffer[ 0x6a ] = ' ';
   buffer[ 0x6b ] = '\0';
 
@@ -588,15 +588,15 @@ void KTar::fillBuffer( char * buffer,
 
   // size
   QByteArray s = QByteArray::number( size, 8 ); // octal
-  s = s.rightJustified( 11, ' ' );
-  strcpy( buffer + 0x7c, s.data() );
+  s = s.rightJustified( 11, '0' );
+  memcpy( buffer + 0x7c, s.data(), 11 );
   buffer[ 0x87 ] = ' '; // space-terminate (no null after)
 
   // modification time
   s = QByteArray::number( static_cast<qulonglong>(mtime), 8 ); // octal
-  s = s.rightJustified( 11, ' ' );
-  strcpy( buffer + 0x88, s.data() );
-  buffer[ 0x93 ] = ' '; // space-terminate (no null after)
+  s = s.rightJustified( 11, '0' );
+  memcpy( buffer + 0x88, s.data(), 11 );
+  buffer[ 0x93 ] = ' '; // space-terminate (no null after) -- well current tar writes a null byte
 
   // spaces, replaced by the check sum later
   buffer[ 0x94 ] = 0x20;
@@ -617,7 +617,7 @@ void KTar::fillBuffer( char * buffer,
   // type flag (dir, file, link)
   buffer[ 0x9c ] = typeflag;
 
- // magic + version
+  // magic + version
   strcpy( buffer + 0x101, "ustar");
   strcpy( buffer + 0x107, "00" );
 
@@ -631,8 +631,8 @@ void KTar::fillBuffer( char * buffer,
   for( uint j = 0; j < 0x200; ++j )
     check += buffer[j];
   s = QByteArray::number( check, 8 ); // octal
-  s = s.rightJustified( 7, ' ' );
-  strcpy( buffer + 0x94, s.data() );
+  s = s.rightJustified( 6, '0' );
+  memcpy( buffer + 0x94, s.constData(), 6 );
 }
 
 void KTar::writeLonglink(char *buffer, const QByteArray &name, char typeflag,
@@ -711,7 +711,7 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
     memset(buffer+0x9d, 0, 0x200 - 0x9d);
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
-    permstr = permstr.rightJustified(6, ' ');
+    permstr = permstr.rightJustified(6, '0');
     fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
 
     // Write header
