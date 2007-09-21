@@ -181,6 +181,7 @@ public:
     void createNextDir();
     void slotResultCopyingFiles( KJob * job );
     void slotResultConflictCopyingFiles( KJob * job );
+    KIO::Job* linkNextFile( const KUrl& uSource, const KUrl& uDest, bool overwrite );
     void copyNextFile();
     void slotResultDeletingDirs( KJob * job );
     void deleteNextDir();
@@ -1237,6 +1238,82 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
     copyNextFile();
 }
 
+KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, bool overwrite )
+{
+    //kDebug(7007) << "Linking";
+    if (
+        (uSource.protocol() == uDest.protocol()) &&
+        (uSource.host() == uDest.host()) &&
+        (uSource.port() == uDest.port()) &&
+        (uSource.user() == uDest.user()) &&
+        (uSource.pass() == uDest.pass()) )
+    {
+        // This is the case of creating a real symlink
+        KIO::SimpleJob *newJob = KIO::symlink( uSource.path(), uDest, overwrite, false /*no GUI*/ );
+        Scheduler::scheduleJob(newJob);
+        //kDebug(7007) << "CopyJob::copyNextFile : Linking target=" << uSource.path() << " link=" << uDest;
+        //emit linking( this, uSource.path(), uDest );
+        m_bCurrentOperationIsLink = true;
+        m_currentSrcURL=uSource;
+        m_currentDestURL=uDest;
+        m_bURLDirty = true;
+        //Observer::self()->slotCopying( this, uSource, uDest ); // should be slotLinking perhaps
+        return newJob;
+    } else {
+        Q_Q(CopyJob);
+        //kDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << uSource << " link=" << uDest;
+        if ( uDest.isLocalFile() ) {
+            // if the source is a devices url, handle it a littlebit special
+
+            QString path = uDest.path();
+            //kDebug(7007) << "CopyJob::copyNextFile path=" << path;
+            QFile f( path );
+            if ( f.open( QIODevice::ReadWrite ) )
+            {
+                f.close();
+                KDesktopFile desktopFile( path );
+                KConfigGroup config = desktopFile.desktopGroup();
+                KUrl url = uSource;
+                url.setPass( "" );
+                config.writePathEntry( "URL", url.url() );
+                config.writeEntry( "Name", url.url() );
+                config.writeEntry( "Type", QString::fromLatin1("Link") );
+                QString protocol = uSource.protocol();
+                if ( protocol == QLatin1String("ftp") )
+                    config.writeEntry( "Icon", QString::fromLatin1("ftp") );
+                else if ( protocol == QLatin1String("http") )
+                    config.writeEntry( "Icon", QString::fromLatin1("www") );
+                else if ( protocol == QLatin1String("info") )
+                    config.writeEntry( "Icon", QString::fromLatin1("info") );
+                else if ( protocol == QLatin1String("mailto") )   // sven:
+                    config.writeEntry( "Icon", QString::fromLatin1("kmail") ); // added mailto: support
+                else
+                    config.writeEntry( "Icon", QString::fromLatin1("unknown") );
+                config.sync();
+                files.erase( files.begin() ); // done with this one, move on
+                m_processedFiles++;
+                //emit processedAmount( this, KJob::Files, m_processedFiles );
+                copyNextFile();
+                return 0;
+            }
+            else
+            {
+                kDebug(7007) << "CopyJob::copyNextFile ERR_CANNOT_OPEN_FOR_WRITING";
+                q->setError( ERR_CANNOT_OPEN_FOR_WRITING );
+                q->setErrorText( uDest.path() );
+                q->emitResult();
+                return 0;
+            }
+        } else {
+            // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
+            q->setError( ERR_CANNOT_SYMLINK );
+            q->setErrorText( uDest.prettyUrl() );
+            q->emitResult();
+            return 0;
+        }
+    }
+}
+
 void CopyJobPrivate::copyNextFile()
 {
     Q_Q(CopyJob);
@@ -1257,132 +1334,64 @@ void CopyJobPrivate::copyNextFile()
 
     if (bCopyFile) // any file to create, finally ?
     {
+        const KUrl& uSource = (*it).uSource;
+        const KUrl& uDest = (*it).uDest;
         // Do we set overwrite ?
         bool bOverwrite;
-        const QString destFile = (*it).uDest.path();
+        const QString destFile = uDest.path();
         kDebug(7007) << "copying " << destFile;
-        if ( (*it).uDest == (*it).uSource )
+        if ( uDest == uSource )
             bOverwrite = false;
         else
             bOverwrite = shouldOverwrite( destFile );
 
         m_bCurrentOperationIsLink = false;
-        KIO::Job * newjob = 0L;
-        if ( m_mode == CopyJob::Link )
-        {
-            //kDebug(7007) << "Linking";
-            if (
-                ((*it).uSource.protocol() == (*it).uDest.protocol()) &&
-                ((*it).uSource.host() == (*it).uDest.host()) &&
-                ((*it).uSource.port() == (*it).uDest.port()) &&
-                ((*it).uSource.user() == (*it).uDest.user()) &&
-                ((*it).uSource.pass() == (*it).uDest.pass()) )
-            {
-                // This is the case of creating a real symlink
-                KIO::SimpleJob *newJob = KIO::symlink( (*it).uSource.path(), (*it).uDest, bOverwrite, false /*no GUI*/ );
-                newjob = newJob;
-                Scheduler::scheduleJob(newJob);
-                //kDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).uSource.path() << " link=" << (*it).uDest;
-                //emit linking( this, (*it).uSource.path(), (*it).uDest );
-                m_bCurrentOperationIsLink = true;
-                m_currentSrcURL=(*it).uSource;
-                m_currentDestURL=(*it).uDest;
-                m_bURLDirty = true;
-                //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
-            } else {
-                //kDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource << " link=" << (*it).uDest;
-                if ( (*it).uDest.isLocalFile() )
-                {
-                    // if the source is a devices url, handle it a littlebit special
-
-                    QString path = (*it).uDest.path();
-                    //kDebug(7007) << "CopyJob::copyNextFile path=" << path;
-                    QFile f( path );
-                    if ( f.open( QIODevice::ReadWrite ) )
-                    {
-                        f.close();
-                        KDesktopFile desktopFile( path );
-                        KConfigGroup config = desktopFile.desktopGroup();
-                        KUrl url = (*it).uSource;
-                        url.setPass( "" );
-                        config.writePathEntry( "URL", url.url() );
-                        config.writeEntry( "Name", url.url() );
-                        config.writeEntry( "Type", QString::fromLatin1("Link") );
-                        QString protocol = (*it).uSource.protocol();
-                        if ( protocol == QLatin1String("ftp") )
-                            config.writeEntry( "Icon", QString::fromLatin1("ftp") );
-                        else if ( protocol == QLatin1String("http") )
-                            config.writeEntry( "Icon", QString::fromLatin1("www") );
-                        else if ( protocol == QLatin1String("info") )
-                            config.writeEntry( "Icon", QString::fromLatin1("info") );
-                        else if ( protocol == QLatin1String("mailto") )   // sven:
-                            config.writeEntry( "Icon", QString::fromLatin1("kmail") ); // added mailto: support
-                        else
-                            config.writeEntry( "Icon", QString::fromLatin1("unknown") );
-                        config.sync();
-                        files.erase( it );
-                        m_processedFiles++;
-                        //emit processedAmount( this, KJob::Files, m_processedFiles );
-                        copyNextFile();
-                        return;
-                    }
-                    else
-                    {
-                        kDebug(7007) << "CopyJob::copyNextFile ERR_CANNOT_OPEN_FOR_WRITING";
-                        q->setError( ERR_CANNOT_OPEN_FOR_WRITING );
-                        q->setErrorText( (*it).uDest.path() );
-                        q->emitResult();
-                        return;
-                    }
-                } else {
-                    // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
-                    q->setError( ERR_CANNOT_SYMLINK );
-                    q->setErrorText( (*it).uDest.prettyUrl() );
-                    q->emitResult();
-                    return;
-                }
-            }
-        }
-        else if ( !(*it).linkDest.isEmpty() &&
-                  ((*it).uSource.protocol() == (*it).uDest.protocol()) &&
-                  ((*it).uSource.host() == (*it).uDest.host()) &&
-                  ((*it).uSource.port() == (*it).uDest.port()) &&
-                  ((*it).uSource.user() == (*it).uDest.user()) &&
-                  ((*it).uSource.pass() == (*it).uDest.pass()))
+        KIO::Job * newjob = 0;
+        if ( m_mode == CopyJob::Link ) {
+            // User requested that a symlink be made
+            newjob = linkNextFile(uSource, uDest, bOverwrite);
+            if (!newjob)
+                return;
+        } else if ( !(*it).linkDest.isEmpty() &&
+                  (uSource.protocol() == uDest.protocol()) &&
+                  (uSource.host() == uDest.host()) &&
+                  (uSource.port() == uDest.port()) &&
+                  (uSource.user() == uDest.user()) &&
+                  (uSource.pass() == uDest.pass()))
             // Copying a symlink - only on the same protocol/host/etc. (#5601, downloading an FTP file through its link),
         {
-            KIO::SimpleJob *newJob = KIO::symlink( (*it).linkDest, (*it).uDest, bOverwrite, false /*no GUI*/ );
+            KIO::SimpleJob *newJob = KIO::symlink( (*it).linkDest, uDest, bOverwrite, false /*no GUI*/ );
             Scheduler::scheduleJob(newJob);
             newjob = newJob;
-            //kDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << (*it).uDest;
-            //emit linking( this, (*it).linkDest, (*it).uDest );
+            //kDebug(7007) << "CopyJob::copyNextFile : Linking target=" << (*it).linkDest << " link=" << uDest;
             m_currentSrcURL = KUrl( (*it).linkDest );
-            m_currentDestURL=(*it).uDest;
+            m_currentDestURL = uDest;
             m_bURLDirty = true;
-            //Observer::self()->slotCopying( this, m_currentSrcURL, (*it).uDest ); // should be slotLinking perhaps
+            //emit linking( this, (*it).linkDest, uDest );
+            //Observer::self()->slotCopying( this, m_currentSrcURL, uDest ); // should be slotLinking perhaps
             m_bCurrentOperationIsLink = true;
             // NOTE: if we are moving stuff, the deletion of the source will be done in slotResultCopyingFiles
         } else if (m_mode == CopyJob::Move) // Moving a file
         {
-            KIO::FileCopyJob * moveJob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
+            KIO::FileCopyJob * moveJob = KIO::file_move( uSource, uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
             moveJob->setSourceSize( (*it).size );
             newjob = moveJob;
-            //kDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource << " to " << (*it).uDest;
-            //emit moving( this, (*it).uSource, (*it).uDest );
-            m_currentSrcURL=(*it).uSource;
-            m_currentDestURL=(*it).uDest;
+            //kDebug(7007) << "CopyJob::copyNextFile : Moving " << uSource << " to " << uDest;
+            //emit moving( this, uSource, uDest );
+            m_currentSrcURL=uSource;
+            m_currentDestURL=uDest;
             m_bURLDirty = true;
-            //Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
+            //Observer::self()->slotMoving( this, uSource, uDest );
         }
         else // Copying a file
         {
             // If source isn't local and target is local, we ignore the original permissions
             // Otherwise, files downloaded from HTTP end up with -r--r--r--
-            bool remoteSource = !KProtocolManager::supportsListing((*it).uSource);
+            bool remoteSource = !KProtocolManager::supportsListing(uSource);
             int permissions = (*it).permissions;
-            if ( m_defaultPermissions || ( remoteSource && (*it).uDest.isLocalFile() ) )
+            if ( m_defaultPermissions || ( remoteSource && uDest.isLocalFile() ) )
                 permissions = -1;
-            KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
+            KIO::FileCopyJob * copyJob = KIO::file_copy( uSource, uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setParentJob( q ); // in case of rename dialog
             copyJob->setSourceSize( (*it).size );
             if ((*it).mtime != -1) {
@@ -1390,9 +1399,9 @@ void CopyJobPrivate::copyNextFile()
                 copyJob->setModificationTime( dt );
             }
             newjob = copyJob;
-            //kDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource << " to " << (*it).uDest;
-            m_currentSrcURL=(*it).uSource;
-            m_currentDestURL=(*it).uDest;
+            //kDebug(7007) << "CopyJob::copyNextFile : Copying " << uSource << " to " << uDest;
+            m_currentSrcURL=uSource;
+            m_currentDestURL=uDest;
             m_bURLDirty = true;
         }
         q->addSubjob(newjob);
