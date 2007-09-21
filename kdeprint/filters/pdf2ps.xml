@@ -1,7 +1,7 @@
 <!DOCTYPE kprintfilter>
 <kprintfilter name="pdf2ps" >
-	<filtercommand data="gs -q -dSAFER -dPARANOIDSAFER -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=%filteroutput -sPAPERSIZE=%psl %filterargs -c .setpdfwrite -f %filterinput" />
- <filterargs name="__root__" description="ps2pdf" >
+	<filtercommand data="gs -q -dSAFER -dPARANOIDSAFER -dNOPAUSE -dBATCH -sDEVICE=pswrite -sOutputFile=%filteroutput -sPAPERSIZE=%psl %filterargs -f %filterinput" />
+ <filterargs name="__root__" description="pdf2ps" >
   <filtergroup name="general" description="General" >
    <filterarg format="-dPDFSETTINGS=%value" type="list" name="targetdevice" default="/default" description="Target device" >
     <value name="/default" description="Default" />
