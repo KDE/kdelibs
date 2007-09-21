@@ -197,10 +197,10 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
         QList<KAboutPerson>::ConstIterator it;
         for(it = translatorList.begin(); it != translatorList.end(); ++it) {
-            translatorPageText += QString("<br />%1<br />").arg((*it).name());
+            translatorPageText += QString("%1<p style=\"margin: 0px; margin-bottom: 10px; margin-left: 15px;\">").arg((*it).name());
             if (!(*it).emailAddress().isEmpty())
-                translatorPageText += QString("<p style=\"margin: 0px; margin-bottom: 10px; margin-left: 15px;\">"
-                                              "<a href=\"mailto:%1\">%1</a></p>").arg((*it).emailAddress());
+                translatorPageText += QString("<a href=\"mailto:%1\">%1</a>").arg((*it).emailAddress());
+            translatorPageText += "</p>";
         }
 
         translatorPageText += KAboutData::aboutTranslationTeam();
