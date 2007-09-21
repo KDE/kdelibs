@@ -945,11 +945,12 @@ QString KWindowSystem::readNameProperty( WId win, unsigned long atom )
     QString result;
     if ( XGetTextProperty( QX11Info::display(), win, &tp, atom ) != 0 && tp.value != NULL ) {
         create_atoms();
-        if ( XmbTextPropertyToTextList( QX11Info::display(), &tp, &text, &count) == Success &&
+
+        if ( tp.encoding == kwm_utf8_string ) {
+            result = QString::fromUtf8 ( (const char*) tp.value );
+        } else if ( XmbTextPropertyToTextList( QX11Info::display(), &tp, &text, &count) == Success &&
                   text != NULL && count > 0 ) {
             result = QString::fromLocal8Bit( text[0] );
-        } else if ( tp.encoding == kwm_utf8_string ) {
-            result = QString::fromUtf8 ( (const char*) tp.value );
         } else if ( tp.encoding == XA_STRING )
             result = QString::fromLocal8Bit( (const char*) tp.value );
         if( text != NULL )
