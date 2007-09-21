@@ -626,22 +626,32 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
     dirEntries = curDir->entries();
     for ( it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
       curEntry = curDir->entry(*it);
-      if ( curEntry->isFile() ) {
-        curFile = dynamic_cast<KArchiveFile*>( curEntry );
-	if (curFile) {
-          fileList.append( curFile );
-          fileToDir.insert( curFile->position(), curDirName );
-        }
-      }
-
-      if ( curEntry->isDirectory() )
-        if ( recursiveCopy ) {
-          KArchiveDirectory *ad = dynamic_cast<KArchiveDirectory*>( curEntry );
-          if (ad) {
-            dirStack.push( ad );
-            dirNameStack.push( curDirName + "/" + curEntry->name() );
+      if (!curEntry->symlink().isEmpty()) {
+          const QString linkName = curDirName+'/'+curEntry->name();
+          kdDebug() << "symlink(" << curEntry->symlink() << ',' << linkName << ')';
+#ifdef Q_OS_UNIX
+          if (!::symlink(curEntry->symlink().local8Bit(), linkName.local8Bit())) {
+              kdDebug() << "symlink(" << curEntry->symlink() << ',' << linkName << ") failed:" << strerror(errno);
           }
-        }
+#endif
+      } else {
+          if ( curEntry->isFile() ) {
+              curFile = dynamic_cast<KArchiveFile*>( curEntry );
+              if (curFile) {
+                  fileList.append( curFile );
+                  fileToDir.insert( curFile->position(), curDirName );
+              }
+          }
+
+          if ( curEntry->isDirectory() )
+              if ( recursiveCopy ) {
+                  KArchiveDirectory *ad = dynamic_cast<KArchiveDirectory*>( curEntry );
+                  if (ad) {
+                      dirStack.push( ad );
+                      dirNameStack.push( curDirName + "/" + curEntry->name() );
+                  }
+              }
+      }
     }
   } while (!dirStack.isEmpty());
 
