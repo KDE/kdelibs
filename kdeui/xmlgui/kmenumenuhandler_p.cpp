@@ -112,7 +112,7 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
     if(!action)
         return;
     
-    QString actionName = action->property("_k_ActionName").toString();
+    QString actionName = action->objectName(); // set by KActionCollection::addAction
     KActionCollection *collection= qobject_cast<KActionCollection*>(qvariant_cast<QObject*>(action->property("_k_ActionCollection")));
     if(!collection)
     {
