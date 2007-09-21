@@ -68,8 +68,11 @@ void SeekSlider::setMediaObject(MediaObject *media)
         connect(media, SIGNAL(tick(qint64)), SLOT(_k_tick(qint64)));
         connect(media, SIGNAL(seekableChanged(bool)), SLOT(_k_seekableChanged(bool)));
         d->_k_stateChanged(media->state());
+        d->_k_seekableChanged(media->isSeekable());
+        d->_k_length(media->totalTime());
     } else {
         d->_k_stateChanged(Phonon::StoppedState);
+        d->_k_seekableChanged(false);
     }
 }
 
