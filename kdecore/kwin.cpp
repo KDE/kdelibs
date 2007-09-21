@@ -1250,11 +1250,12 @@ QString KWin::readNameProperty( WId win, unsigned long atom )
         if (!kwin_UTF8_STRING)
           kwin_UTF8_STRING = XInternAtom( qt_xdisplay(), "UTF8_STRING", False);
 
-        if ( XmbTextPropertyToTextList( qt_xdisplay(), &tp, &text, &count) == Success &&
+        if ( tp.encoding == kwin_UTF8_STRING ) {
+            result = QString::fromUtf8 ( (const char*) tp.value );
+        }
+        else if ( XmbTextPropertyToTextList( qt_xdisplay(), &tp, &text, &count) == Success &&
                   text != NULL && count > 0 ) {
             result = QString::fromLocal8Bit( text[0] );
-        } else if ( tp.encoding == kwin_UTF8_STRING ) {
-            result = QString::fromUtf8 ( (const char*) tp.value );
         } else if ( tp.encoding == XA_STRING )
             result = QString::fromLocal8Bit( (const char*) tp.value );
         if( text != NULL )
