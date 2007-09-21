@@ -253,9 +253,11 @@ PlatformPlugin *FactoryPrivate::platformPlugin()
         if (m_noPlatformPlugin) {
             return 0;
         }
+#ifndef QT_NO_DBUS
         if (!QCoreApplication::instance() || QCoreApplication::applicationName().isEmpty()) {
-            pFatal("Phonon needs QCoreApplication::applicationName to be set");
+            pWarning() << "Phonon needs QCoreApplication::applicationName to be set to export audio output names through the DBUS interface";
         }
+#endif
         const QString suffix(QLatin1String("/phonon_platform"));
         Q_ASSERT(QCoreApplication::instance());
         foreach (QString libPath, QCoreApplication::libraryPaths()) {

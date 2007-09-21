@@ -77,7 +77,10 @@ QString Platform::applicationName()
     if (f) {
         return f->applicationName();
     }
-    return QCoreApplication::applicationName();
+    QString ret = QCoreApplication::applicationName();
+    if (ret.isEmpty())
+        ret = QCoreApplication::applicationFilePath();
+    return ret;
 }
 
 } // namespace Phonon
