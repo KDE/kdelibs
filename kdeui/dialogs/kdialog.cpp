@@ -553,7 +553,7 @@ void KDialog::centerOnScreen( QWidget *widget, int screen )
     return;
 
 #ifdef Q_WS_X11
-  if( !( widget->windowFlags() & Qt::X11BypassWindowManagerHint )
+  if( !( widget->windowFlags() & ( Qt::X11BypassWindowManagerHint | Qt::Popup ))
       && NETRootInfo( QX11Info::display(), NET::Supported ).isSupported( NET::WM2FullPlacement )) {
       return; // the WM can handle placement much better
   }
