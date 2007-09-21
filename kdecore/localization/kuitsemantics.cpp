@@ -748,7 +748,7 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     }
     else {
         kDebug(173) << QString("Format of integer numbers '%1', selected in "
-                               "kdelibs.po, is not valid; using POSIX format.")
+                               "kdelibs4.po, is not valid; using POSIX format.")
                               .arg(fmtnameInt);
     }
 
@@ -761,7 +761,7 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
     }
     else {
         kDebug(173) << QString("Format of real numbers '%1', selected in "
-                               "kdelibs.po, is not valid; using POSIX format.")
+                               "kdelibs4.po, is not valid; using POSIX format.")
                               .arg(fmtnameReal);
     }
 
