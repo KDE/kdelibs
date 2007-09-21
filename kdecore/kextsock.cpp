@@ -985,26 +985,12 @@ int KExtendedSocket::connect()
       return -2;
 
   timeval end, now;
+  timeval timeout_copy = d->timeout;
   // Ok, things are a little tricky here
   // Let me explain
   // getaddrinfo() will return several different families of sockets
   // When we have to bind before we connect, we have to make sure we're binding
   // and connecting to the same family, or things won't work
-
-  bool doingtimeout = d->timeout.tv_sec > 0 || d->timeout.tv_usec > 0;
-  if (doingtimeout)
-    {
-      gettimeofday(&end, NULL);
-      end.tv_usec += d->timeout.tv_usec;
-      end.tv_sec += d->timeout.tv_sec;
-      if (end.tv_usec > 1000*1000)
-	{
-	  end.tv_usec -= 1000*1000;
-	  end.tv_sec++;
-	}
-//	kdDebug(170).form("Connection with timeout of %d.%06d seconds (ends in %d.%06d)\n",
-//		     d->timeout.tv_sec, d->timeout.tv_usec, end.tv_sec, end.tv_usec);
-    }
 
   KResolverResults remote = d->resRemote.results(),
     local = d->resLocal.results();
@@ -1012,8 +998,25 @@ int KExtendedSocket::connect()
   //kdDebug(170) << "Starting connect to " << host() << '|' << port() 
   //             << ": have " << local.count() << " local entries and "
   //             << remote.count() << " remote" << endl;
+
+  int ret = -1;
   for (it = remote.begin(), it2 = local.begin(); it != remote.end(); ++it)
     {
+      bool doingtimeout = d->timeout.tv_sec > 0 || d->timeout.tv_usec > 0;
+      if (doingtimeout)
+        {
+          gettimeofday(&end, NULL);
+          end.tv_usec += d->timeout.tv_usec;
+          end.tv_sec += d->timeout.tv_sec;
+          if (end.tv_usec > 1000*1000)
+            {
+              end.tv_usec -= 1000*1000;
+              end.tv_sec++;
+            }
+          //kdDebug(170).form("Connection with timeout of %d.%06d seconds (ends in %d.%06d)\n",
+          //    d->timeout.tv_sec, d->timeout.tv_usec, end.tv_sec, end.tv_usec);
+        }
+
       //kdDebug(170) << "Trying to connect to " << (*it).address().toString() << endl;
       if (it2 != local.end())
 	{
@@ -1107,9 +1110,18 @@ int KExtendedSocket::connect()
 		  sockfd = -1;
 //		  kdDebug(170) << "Time out while trying to connect to " <<
 //		    (*it).address().toString() << endl;
-		  d->status = lookupDone;
 		  setError(IO_TimeOutError, 0);
-		  return -3;	// time out
+		  ret = -3;	// time out
+
+                  d->timeout.tv_usec += timeout_copy.tv_usec;
+                  d->timeout.tv_sec  += timeout_copy.tv_sec;
+                  if (d->timeout.tv_usec < 0)
+                    {
+                      d->timeout.tv_usec += 1000*1000;
+                      d->timeout.tv_sec--;
+                    }
+
+		  continue;
 		}
 
 	      // adjust remaining time
@@ -1187,7 +1199,7 @@ int KExtendedSocket::connect()
   // getting here means no socket connected or stuff like that
   emit connectionFailed(d->syserror);
   //kdDebug(170) << "Failed to connect\n";
-  return -1;
+  return ret;
 }
 
 int KExtendedSocket::startAsyncConnect()
