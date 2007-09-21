@@ -75,8 +75,8 @@ class KToggleFullScreenAction;
  *
  * Basically, the XML building code matches names in the XML code with
  * the internal names of the actions.  You can find out the internal
- * names of each of the standard actions by using the stdName
- * action like so: KStandardAction::stdName(KStandardAction::Cut) would return
+ * names of each of the standard actions by using the name
+ * method like so: KStandardAction::name(KStandardAction::Cut) would return
  * 'edit_cut'.  The XML building code will match 'edit_cut' to the
  * attribute in the global XML file and place your action there.
  *
@@ -97,7 +97,7 @@ class KToggleFullScreenAction;
  * could do it the hard way:
  *
  * \code
- * KAction *cut = actionCollection()->action(KStandardAction::stdName(KStandardAction::Cut));
+ * KAction *cut = actionCollection()->action(KStandardAction::name(KStandardAction::Cut));
  * \endcode
  *
  * Another non-standard usage concerns instantiating the action in the
