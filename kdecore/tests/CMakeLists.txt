@@ -50,6 +50,8 @@ KDECORE_UNIT_TESTS(
  kglobaltest
  globalcleanuptest
  kprocesstest
+ kconfigafterkglobaltest1
+ kconfigafterkglobaltest2
 )
 
 if(UNIX)
