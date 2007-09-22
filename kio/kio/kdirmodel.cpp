@@ -349,10 +349,10 @@ void KDirModel::slotDeleteItem(const KFileItem& item)
 
     KDirModelDirNode* dirNode = node->parent();
     Q_ASSERT(dirNode);
-    dirNode->m_childNodes.removeAt(rowNumber);
 
     QModelIndex parentIndex = d->indexForNode(dirNode); // O(n)
     beginRemoveRows( parentIndex, rowNumber, rowNumber );
+    dirNode->m_childNodes.removeAt(rowNumber);
     endRemoveRows();
 }
 
