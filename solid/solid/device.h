@@ -151,7 +151,6 @@ namespace Solid
          *
          * @return the device's parent
          * @see parentUdi()
-         * @see DeviceManager::findDevice()
          */
         Device parent() const;
 
