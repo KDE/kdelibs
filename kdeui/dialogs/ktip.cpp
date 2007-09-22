@@ -415,6 +415,7 @@ KTipDialog::~KTipDialog()
 {
   if ( Private::mInstance == this )
     Private::mInstance = 0L;
+  delete d;
 }
 
 void KTipDialog::showTip( const QString &tipFile, bool force )

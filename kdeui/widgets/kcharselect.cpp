@@ -92,7 +92,6 @@ KCharSelectTable::KCharSelectTable(QWidget *parent, const QFont &_font)
         : QTableView(parent), d(new KCharSelectTablePrivate(this))
 {
     d->font = _font;
-    d->model = 0;
 
     setTabKeyNavigation(false);
     setSelectionMode(QAbstractItemView::SingleSelection);
