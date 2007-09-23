@@ -153,7 +153,7 @@ install(TARGETS ${KJSLIBNAME}
 
 set(kjs_SRCS kjs.cpp)
 
-kde4_add_executable(kjs NOGUI ${js_SRCS})
+kde4_add_executable(kjs NOGUI ${kjs_SRCS})
 
 target_link_libraries(kjs ${KJSLIBNAME})
 
