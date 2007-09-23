@@ -321,7 +321,9 @@ bool KPty::open()
   ioctl(d->slaveFd, I_PUSH, "ldterm");
 #endif
 
+#if defined(HAVE_OPENPTY) && defined(__FreeBSD__)
 gotptyandmode:
+#endif
 
   fcntl(d->masterFd, F_SETFD, FD_CLOEXEC);
   fcntl(d->slaveFd, F_SETFD, FD_CLOEXEC);
