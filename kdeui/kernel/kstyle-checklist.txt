@@ -1,3 +1,7 @@
+- Vertical tabs and titles of dockwidgets are broken
+	Vertical tabs are drawn as yellow rectangle (unfilled) without title
+	Vertical titles of dockwidgets are not rotated
+
 drawComplexControl:
   CC_SpinBox:
     Needs to honor stepEnabled
