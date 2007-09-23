@@ -98,20 +98,7 @@ KConfig::KConfig(const KComponentData &componentData,
     // set the object's back end pointer to this new backend
     setBackEnd( aBackEnd );
 
-    // read initial information off disk
-    reparseConfiguration();
-
-    // we let KStandardDirs add custom user config files. It will do
-    // this only once. So only the first call ever to this constructor
-    // will anything else than return here We have to reparse here as
-    // configuration files may appear after customized directories have
-    // been added. and the info they contain needs to be inserted into the
-    // config object.
-    // Since this makes only sense for config directories, addCustomized
-    // returns true only if new config directories appeared.
-    if (componentData.dirs()->addCustomized(this)) {
-        reparseConfiguration();
-    }
+    setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
 }
 
 KConfig::KConfig( const QString& _fileName,
@@ -143,20 +130,7 @@ KConfig::KConfig( const QString& _fileName,
     // set the object's back end pointer to this new backend
     setBackEnd( aBackEnd );
 
-    // read initial information off disk
-    reparseConfiguration();
-
-    // we let KStandardDirs add custom user config files. It will do
-    // this only once. So only the first call ever to this constructor
-    // will anything else than return here We have to reparse here as
-    // configuration files may appear after customized directories have
-    // been added. and the info they contain needs to be inserted into the
-    // config object.
-    // Since this makes only sense for config directories, addCustomized
-    // returns true only if new config directories appeared.
-    if (componentData().dirs()->addCustomized(this)) {
-        reparseConfiguration();
-    }
+    setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
 }
 
 KConfig::KConfig( const char* resType,
@@ -189,20 +163,7 @@ KConfig::KConfig( const char* resType,
     // set the object's back end pointer to this new backend
     setBackEnd( aBackEnd );
 
-    // read initial information off disk
-    reparseConfiguration();
-
-    // we let KStandardDirs add custom user config files. It will do
-    // this only once. So only the first call ever to this constructor
-    // will anything else than return here We have to reparse here as
-    // configuration files may appear after customized directories have
-    // been added. and the info they contain needs to be inserted into the
-    // config object.
-    // Since this makes only sense for config directories, addCustomized
-    // returns true only if new config directories appeared.
-    if (componentData().dirs()->addCustomized(this)) {
-        reparseConfiguration();
-    }
+    setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
 }
 
 KConfig::KConfig(KConfigBackEnd *aBackEnd)
@@ -498,6 +459,16 @@ KConfigGroup KConfig::group( const QString &arr)
 const KConfigGroup KConfig::group( const QByteArray &arr) const
 {
     return KConfigGroup(const_cast<KConfig*>(this), arr);
+}
+
+bool KConfig::setLocale(const QString &locale)
+{
+    if (locale != KConfigBase::locale()) {
+        KConfigBase::setLocale(locale);
+        reparseConfiguration();
+        return true;
+    }
+    return false;
 }
 
 void KConfig::virtual_hook( int id, void* data )

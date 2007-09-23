@@ -1,6 +1,7 @@
 /*
    This file is part of the KDE libraries
    Copyright (C) 2007 Christian Ehrlicher <ch.ehrlicher@gmx.de>
+   Copyright (C) 2007 Bernhard Loos <nhuh.put@web.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -38,7 +39,19 @@
 # define WIN32_CAST_CHAR (LPCWSTR)
 #endif
 
-static HINSTANCE g_hInstance = NULL;
+static void kMessageOutput(QtMsgType type, const char *msg);
+
+static class kGlobalClass {
+    public: 
+        kGlobalClass() {
+            qInstallMsgHandler(kMessageOutput);
+            kde4prefix[0] = 0;
+        }
+
+        wchar_t kde4prefix[MAX_PATH + 1];
+} myGlobals; 
+
+static HINSTANCE kdecoreDllInstance = NULL;
 
 /**
  * The dll entry point - get the instance handle for GetModuleFleNameW
@@ -48,7 +61,7 @@ BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID )
 {
     switch ( fdwReason ) {
     case DLL_PROCESS_ATTACH:
-        g_hInstance = hinstDLL;
+        kdecoreDllInstance = hinstDLL;
         break;
     default:
         break;
@@ -60,17 +73,25 @@ BOOL WINAPI DllMain ( HINSTANCE hinstDLL,DWORD fdwReason,LPVOID )
 // don't have an instantiated QCoreApplication
 QString getKde4Prefix()
 {
-    static QString modFilePath;
-    if ( modFilePath.isEmpty() ) {
-        wchar_t module_name[256];
-        GetModuleFileNameW ( g_hInstance, module_name, sizeof ( module_name ) / sizeof ( wchar_t ) );
-        modFilePath = QString::fromUtf16 ( ( ushort * ) module_name );
-        int idx = modFilePath.lastIndexOf ( '\\' );
-        if ( idx != -1 )
-            modFilePath = modFilePath.left ( idx );
-        modFilePath = QDir ( modFilePath + "/../" ).canonicalPath();
+    if (myGlobals.kde4prefix[0] == 0) {
+        //the path is C:\some\path\kde4\bin\kdecore.dll
+        GetModuleFileNameW(kdecoreDllInstance, myGlobals.kde4prefix, MAX_PATH + 1);
+        int bs1 = 0, bs2 = 0;
+
+        //we convert \ to / and remove \bin\kdecore.dll from the string
+        int pos;
+        for (pos = 0; pos < MAX_PATH + 1 && myGlobals.kde4prefix[pos] != 0; ++pos) {
+            if (myGlobals.kde4prefix[pos] == '\\') {
+                bs1 = bs2;
+                bs2 = pos;
+                myGlobals.kde4prefix[pos] = '/';
+            }
+        }
+        Q_ASSERT(bs1);
+        Q_ASSERT(pos < MAX_PATH + 1);
+        myGlobals.kde4prefix[bs1] = 0;
     }
-    return modFilePath;
+    return QString::fromUtf16((ushort *) myGlobals.kde4prefix);
 }
 
 /**
@@ -157,7 +178,7 @@ QString getWin32ShellFoldersPath ( const QString& folder )
                                    folder );
 }
 
-static void kMessageOutput(QtMsgType type, const char *msg)
+void kMessageOutput(QtMsgType type, const char *msg)
 {
 #if 1
     int BUFSIZE=4096;
@@ -201,14 +222,5 @@ static void kMessageOutput(QtMsgType type, const char *msg)
     }
 #endif
 }
-
-class kGlobalClass {
-    public: 
-        kGlobalClass() {
-            qInstallMsgHandler(kMessageOutput);
-        }
-}; 
-
-static kGlobalClass myGlobals; 
 
 #endif  // Q_OS_WIN

@@ -45,10 +45,6 @@ class KComponentDataPrivate;
  */
 class KDECORE_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared)
 {
-    friend class KStandardDirs;
-    friend class KGlobalPrivate;
-    KSharedConfig::Ptr &privateConfig() const;
-
 public:
     /**
      * Creates an invalid KComponentData object.
@@ -192,6 +188,7 @@ protected:
 private:
     // Ref-counted data
     KComponentDataPrivate* d;
+    friend class KComponentDataPrivate;
 };
 
 #endif // KCOMPONENTDATA_H

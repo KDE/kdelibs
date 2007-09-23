@@ -63,7 +63,6 @@ class KGlobalPrivate
             // make sure all Qt/KDE global/local statics that we need are created here, that way
             // we may use them in the dtor as well
             qrand();
-            KStandardDirs::installPath(0);
         }
 
         inline ~KGlobalPrivate()
@@ -125,14 +124,10 @@ KLocale *KGlobal::locale()
             return 0;
         }
 
-        // will set d->locale if it works - otherwise 0 is returned
         d->locale = new KLocale(d->mainComponent.catalogName());
         QTextCodec::setCodecForLocale(d->locale->codecForEncoding());
-        if (d->mainComponent.aboutData()) {
-            d->mainComponent.aboutData()->translateInternalProgramName();
-        }
+        d->mainComponent.aboutData()->translateInternalProgramName();
     }
-
     return d->locale;
 }
 

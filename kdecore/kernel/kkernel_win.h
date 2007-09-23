@@ -35,13 +35,6 @@
 */
 
 /**
- * Returns the prefix because it can't be hardcoded on Windows
- *
- * @return base path for all global kde directories
- */
-KDECORE_EXPORT QString getKde4Prefix();
-
-/**
  \return a value from MS Windows native registry for shell folder \a folder.
 */
 KDECORE_EXPORT QString getWin32ShellFoldersPath(const QString& folder);

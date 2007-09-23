@@ -294,12 +294,6 @@ void KConfigINIBackEndPrivate::parseLocalConfig(const QString &fileName, const Q
     bool bReadFile = !fileName.isEmpty();
     while(bReadFile) {
         bReadFile = false;
-        QString bootLanguage;
-        if (q->useKDEGlobals && q->localeString.isEmpty() && !KGlobal::hasLocale()) {
-            // Boot strap language
-            bootLanguage = KLocale::_initLanguage(q->pConfig);
-            q->setLocaleString(bootLanguage.toUtf8());
-        }
 
         q->bFileImmutable = false;
         QStringList list;
@@ -326,18 +320,6 @@ void KConfigINIBackEndPrivate::parseLocalConfig(const QString &fileName, const Q
         }
         if (q->pConfig->componentData().dirs()->isRestrictedResource(q->resType, fileName))
             q->bFileImmutable = true;
-        QString currentLanguage;
-        if (!bootLanguage.isEmpty())
-        {
-            currentLanguage = KLocale::_initLanguage(q->pConfig);
-            // If the file changed the language, we need to read the file again
-            // with the new language setting.
-            if (bootLanguage != currentLanguage)
-            {
-                bReadFile = true;
-                q->setLocaleString(currentLanguage.toUtf8());
-            }
-        }
     }
 }
 

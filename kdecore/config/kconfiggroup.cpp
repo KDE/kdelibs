@@ -253,16 +253,6 @@ QString KConfigGroup::readEntry( const char *pKey, const char *aDefault ) const
 QString KConfigGroup::readEntry( const char *pKey,
                                 const QString& aDefault ) const
 {
-  // we need to access hasLocale() instead of the method locale()
-  // because calling locale() will create a locale object if it
-  // doesn't exist, which requires KConfig, which will create a infinite
-  // loop, and nobody likes those.
-  if ( !d->master->localeInitialized() && KGlobal::hasLocale() ) {
-    // get around const'ness.
-    KConfigBase *that = const_cast<KConfigBase *>(d->master);
-    that->setLocale();
-  }
-
   QString aValue;
 
   bool expand = false;
@@ -715,10 +705,6 @@ void KConfigGroup::writeEntry( const char *pKey, const QByteArray& value,
         setDirty(true);
     }
 
-    if ( !d->master->localeInitialized() && KGlobal::locale() ) {
-        d->master->setLocale();
-    }
-
     KEntryKey entryKey(d->group, pKey);
     entryKey.bLocal = pFlags & KConfigBase::NLS;
 
@@ -846,10 +832,6 @@ void KConfigGroup::deleteEntry( const char *pKey, KConfigBase::WriteConfigFlags 
     // from under us before we read. A race condition is still
     // possible but minimized.
     setDirty(true);
-
-    if ( !d->master->localeInitialized() && KGlobal::locale() ) {
-        d->master->setLocale();
-    }
 
     KEntryKey entryKey(d->group, pKey);
     KEntry aEntryData;

@@ -213,6 +213,17 @@ public:
   KConfig* copyTo(const QString &file, KConfig *config=0) const;
 
   /**
+   * Use this method to change the locale for which the config entries are read.
+   * The default value is KGlobal::locale()->language() if available or
+   * KLocale::defaultLanguage(). If the new locale is different from the previous
+   * one, reparseConfiguration() is called.
+   *
+   * \param locale the code of the new locale
+   * \return true, if the locale changed and the config is reparsed
+   */
+  bool setLocale(const QString &locale);
+
+  /**
    * Returns a lock file object for the configuration file or 0 if
    * the backend does not support locking.
    * @param bGlobal if true, return the lock file for the global config file

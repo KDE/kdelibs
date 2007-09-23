@@ -214,8 +214,6 @@ public:
 #endif
 };
 
-static KLocale *this_klocale = 0;
-
 KLocale::KLocale( const QString & catalog, KSharedConfig::Ptr config )
 	: d(new KLocalePrivate)
 {
@@ -226,9 +224,7 @@ KLocale::KLocale( const QString & catalog, KSharedConfig::Ptr config )
   d->initFileNameEncoding(0);
 
   KSharedConfig::Ptr cfg = config;
-  this_klocale = this;
   if (!cfg) cfg = KGlobal::config();
-  this_klocale = 0;
   Q_ASSERT( cfg ); 
 
   d->appName = catalog;
@@ -249,9 +245,7 @@ KLocale::KLocale(const QString& catalog, const QString &language, const QString 
 
     d->initFileNameEncoding(0);
 
-    this_klocale = this;
     if (!config) config = KGlobal::config().data();
-    this_klocale = 0;
     Q_ASSERT(config); 
 
     d->appName = catalog;
@@ -268,12 +262,8 @@ KLocale::KLocale(const QString& catalog, const QString &language, const QString 
 
 QString KLocale::_initLanguage(KConfigBase *config)
 {
-  if (this_klocale)
-  {
-     this_klocale->d->initLanguageList(config, true);
-     return this_klocale->language();
-  }
-  return QString();
+    Q_ASSERT(false);
+    return QString();
 }
 
 void KLocalePrivate::initMainCatalogs(const QString & catalog)
@@ -379,11 +369,14 @@ void KLocalePrivate::initFormat(KConfig *config)
 
   kDebug(173) << "KLocalePrivate::KLocalePrivate";
 
+  config->setLocale(language);
+
   KConfigGroup cg(config, "Locale");
 
   KConfig entryFile(KStandardDirs::locate("locale",
                                            QString::fromLatin1("l10n/%1/entry.desktop")
                                            .arg(country)));
+  entryFile.setLocale(language);
   KConfigGroup entry(&entryFile, "KCM Locale");
 
   // Numeric

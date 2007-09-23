@@ -49,7 +49,6 @@ public:
          : backEnd(0),
            readDefaults( false ),
            bDirty( false ),
-           bLocaleInitialized( false ),
            bExpand( false ),
            componentData( _componentData ),
            group( base, QString() )
@@ -77,7 +76,6 @@ public:
       * Indicates whether there are any dirty entries in the config object
       * that need to be written back to disk. */
      bool bDirty;
-     bool bLocaleInitialized;
      bool bExpand;     // whether dollar expansion is used
      KComponentData componentData;
 
@@ -106,15 +104,12 @@ const KComponentData &KConfigBase::componentData() const
     return d->componentData;
 }
 
-void KConfigBase::setLocale()
+void KConfigBase::setLocale(const QString &locale)
 {
-    d->bLocaleInitialized = true;
+    if (locale.isEmpty())
+        return;
 
-    if ( KGlobal::locale() ) {
-        d->aLocaleString = KGlobal::locale()->language().toUtf8();
-    } else {
-        d->aLocaleString = KLocale::defaultLanguage().toUtf8();
-    }
+    d->aLocaleString = locale.toUtf8();
 
     if ( d->backEnd ) {
         d->backEnd->setLocaleString( d->aLocaleString );
@@ -438,7 +433,7 @@ bool KConfigBase::isDollarExpansion() const
 
 bool KConfigBase::localeInitialized() const
 {
-    return d->bLocaleInitialized;
+    return true;
 }
 
 #ifdef KDE3_SUPPORT
@@ -501,9 +496,6 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
 
 void KConfigBase::parseConfigFiles()
 {
-    if (!d->bLocaleInitialized && KGlobal::hasLocale()) {
-        setLocale();
-    }
     if (d->backEnd)
     {
         d->backEnd->parseConfigFiles();

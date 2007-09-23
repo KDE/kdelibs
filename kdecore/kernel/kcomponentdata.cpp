@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
+   Copyright (C) 2007 Bernhard Loos <nhuh.put@web.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -96,39 +97,6 @@ KComponentData::KComponentData(const KAboutData &aboutData, MainComponentRegistr
 
 void KComponentData::_checkConfig() // called by KSharedConfigPtr
 {
-    d->checkConfig();
-}
-
-void KComponentDataPrivate::checkConfig()
-{
-    if (syncing) {
-        return;
-    }
-    if (sharedConfig.isUnique()) {
-        if (refCount == 1) {
-            Q_ASSERT(0 == dirs);
-            if (!syncing) {
-                syncing = true;
-                sharedConfig->sync(); // sync before KComponentData doesn't have a KSharedConfig
-                                      // object anymore
-                syncing = false;
-            }
-            KSharedConfigPtr tmp = sharedConfig;
-            sharedConfig.clear();
-            // with tmp going out of scope the KConfig object owned by this KComponentData is
-            // deleted which will deref this KComponentDataPrivate to 0
-        } else if (refCount == 2 && dirs) { // KStandardDirs holds a ref to us
-            if (!syncing) {
-                syncing = true;
-                sharedConfig->sync(); // sync before KComponentData doesn't have a KSharedConfig
-                                      // object anymore
-                syncing = false;
-            }
-            KStandardDirs *tmp = dirs;
-            dirs = 0;
-            delete tmp; // calls deref() which calls checkConfig, dirs should be 0 then
-        }
-    }
 }
 
 KComponentData::~KComponentData()
@@ -144,83 +112,63 @@ bool KComponentData::isValid() const
     return (d != 0);
 }
 
-void KComponentDataPrivate::createStandardDirs(const KComponentData &componentData)
+void KComponentDataPrivate::lazyInit(const KComponentData &component)
 {
     if (dirs == 0) {
-        dirs = new KStandardDirs(componentData);
+        dirs = new KStandardDirs();
         // install appdata resource type
         dirs->addResourceType("appdata", "data", aboutData.appName() + QLatin1Char('/'), true);
+        
+        configInit(component);
+
+        if (dirs->addCustomized(sharedConfig.data()))
+            sharedConfig->reparseConfiguration();
+    }
+}
+
+bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
+bool kde_kiosk_admin = false;
+
+void KComponentDataPrivate::configInit(const KComponentData &component)
+{
+    Q_ASSERT(!sharedConfig);
+
+    if (!configName.isEmpty()) {
+        sharedConfig = KSharedConfig::openConfig(component, configName);
+
+        //FIXME: this is broken and I don't know how to repair it
+        // Check whether custom config files are allowed.
+        KConfigGroup cg(sharedConfig, "KDE Action Restrictions");
+        QString kioskException = cg.readEntry("kiosk_exception");
+        if (!cg.readEntry("custom_config", true)) {
+           sharedConfig = 0;
+        }
+    }
+    
+    if (!sharedConfig) {
+        sharedConfig = KSharedConfig::openConfig(component);
+    }
+
+    // Check if we are excempt from kiosk restrictions
+    if (kde_kiosk_admin && !kde_kiosk_exception && !QByteArray(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty()) {
+        kde_kiosk_exception = true;
+        sharedConfig = 0;
+        configInit(component); // Reread...
     }
 }
 
 KStandardDirs *KComponentData::dirs() const
 {
     Q_ASSERT(d);
-    if (d->dirs == 0) {
-        d->createStandardDirs(*this);
-
-        if (d->sharedConfig) {
-            if (d->dirs->addCustomized(d->sharedConfig.data())) {
-                d->sharedConfig->reparseConfiguration();
-            }
-        } else {
-            config(); // trigger adding of possible customized dirs
-        }
-    }
+    d->lazyInit(*this);
 
     return d->dirs;
-}
-
-bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
-bool kde_kiosk_admin = false;
-
-KSharedConfig::Ptr &KComponentData::privateConfig() const
-{
-    Q_ASSERT(d);
-    return d->sharedConfig;
 }
 
 const KSharedConfig::Ptr &KComponentData::config() const
 {
     Q_ASSERT(d);
-    if (!d->sharedConfig) {
-        // if we create a KConfig object it will ask us for a KStandardDirs object. If it didn't
-        // exist at this point dirs() will call config() again.
-        // So we better make sure the KStandardDirs object is available before creating the KConfig
-        // object
-        d->createStandardDirs(*this);
-        if (!d->configName.isEmpty()) {
-            d->sharedConfig = KSharedConfig::openConfig(*this, d->configName);
-
-            // Check whether custom config files are allowed.
-            KConfigGroup cg(d->sharedConfig, "KDE Action Restrictions");
-            QString kioskException = cg.readEntry("kiosk_exception");
-            if (!cg.readEntry("custom_config", true)) {
-               d->sharedConfig = 0;
-            }
-        }
-
-        if (!d->sharedConfig) {
-            if (!d->aboutData.appName().isEmpty()) {
-                d->sharedConfig = KSharedConfig::openConfig(*this, d->aboutData.appName() + "rc");
-            } else {
-                d->sharedConfig = KSharedConfig::openConfig(*this, QString());
-            }
-        }
-
-        // Check if we are excempt from kiosk restrictions
-        if (kde_kiosk_admin && !kde_kiosk_exception && !QByteArray(getenv("KDE_KIOSK_NO_RESTRICTIONS")).isEmpty()) {
-            kde_kiosk_exception = true;
-            d->sharedConfig = 0;
-            return config(); // Reread...
-        }
-
-        if (d->dirs) {
-            if (d->dirs->addCustomized(d->sharedConfig.data())) {
-                d->sharedConfig->reparseConfiguration();
-            }
-        }
-    }
+    d->lazyInit(*this);
 
     return d->sharedConfig;
 }

@@ -22,6 +22,7 @@
 #include "ksharedconfig.h"
 #include "kconfigbackend.h"
 #include "kcomponentdata.h"
+#include "kaboutdata.h"
 
 K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
 
@@ -37,12 +38,16 @@ KSharedConfigPtr KSharedConfig::openConfig( const KComponentData &componentData,
                                             OpenFlags flags,
                                             const char *resType )
 {
+    QString myFileName(fileName);
+    if (myFileName.isEmpty())
+        myFileName = componentData.aboutData()->appName() + "rc";
+
     bool useKDEGlobals = flags & IncludeGlobals;
     QList<KSharedConfig*> *list = globalSharedConfigList;
     if (list) {
         for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
             if (
-                    (*it)->backEnd()->fileName() == fileName &&
+                    (*it)->backEnd()->fileName() == myFileName &&
                     (*it)->backEnd()->useKDEGlobals == useKDEGlobals &&
                     (*it)->backEnd()->resType == resType &&
                     (*it)->componentData() == componentData
@@ -51,7 +56,7 @@ KSharedConfigPtr KSharedConfig::openConfig( const KComponentData &componentData,
             }
         }
     }
-    return KSharedConfigPtr(new KSharedConfig(fileName, flags, resType, componentData));
+    return KSharedConfigPtr(new KSharedConfig(myFileName, flags, resType, componentData));
 }
 
 
@@ -82,9 +87,9 @@ KSharedConfigPtr::~KSharedConfigPtr()
         // at the end. (d refs d->componentData() and d->componentData() refs d)
         // KComponentData::_checkConfig does that check and breaks the cyclic ref if that's all
         // that was left. Only then can the KConfig object be deleted.
-        } else if (d->ref == 1 && d->componentData().isValid()) {
+        /*} else if (d->ref == 1 && d->componentData().isValid()) {
             // it might be KComponentData holding the last ref
-            const_cast<KComponentData&>(d->componentData())._checkConfig();
+            const_cast<KComponentData&>(d->componentData())._checkConfig();*/
         }
         d = 0;
     }
@@ -105,10 +110,10 @@ void KSharedConfigPtr::attach(KSharedConfig *p)
             // at the end. (d refs d->componentData() and d->componentData() refs d)
             // KComponentData::_checkConfig does that check and breaks the cyclic ref if that's all
             // that was left. Only then can the KConfig object be deleted.
-            } else if (d->ref == 1 && d->componentData().isValid()) {
+            } /*else if (d->ref == 1 && d->componentData().isValid()) {
                 // it might be KComponentData holding the last ref
                 const_cast<KComponentData&>(d->componentData())._checkConfig();
-            }
+            }*/
         }
         d = p;
     }

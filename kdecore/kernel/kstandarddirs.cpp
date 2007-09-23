@@ -34,7 +34,7 @@
 #include "kkernel_win.h"
 
 #include <config.h>
-#include <config-prefix.h> // for KDESYSCONFDIR, __KDE_BINDIR and KDEDIR
+#include <config-prefix.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -61,12 +61,10 @@
 class KStandardDirs::KStandardDirsPrivate
 {
 public:
-    KStandardDirsPrivate(const KComponentData &cd)
+    KStandardDirsPrivate()
         : restrictionsActive(false),
           dataRestrictionActive(false),
-          checkRestrictions(true),
-          componentData(cd),
-          addedCustoms(false)
+          checkRestrictions(true)
     { }
 
     bool restrictionsActive;
@@ -77,7 +75,6 @@ public:
     QStringList xdgconf_prefixes;
 
     QStringList prefixes;
-    KComponentData componentData;
 
     // Directory dictionaries
     QMap<QByteArray, QStringList> absolutes;
@@ -85,138 +82,7 @@ public:
 
     mutable QMap<QByteArray, QStringList> dircache;
     mutable QMap<QByteArray, QString> savelocations;
-
-    bool addedCustoms;
 };
-
-// Singleton, with data shared by all kstandarddirs instances.
-// Used in static methods like findExe()
-class KStandardDirsSingleton
-{
-public:
-    QString defaultprefix;
-    QString defaultbindir;
-    QString defaultlibexecdir;
-
-    QMap<QByteArray, QString> install;
-
-    void initInstallDirs()
-    {
-        static bool _init = false;
-        if (_init)
-            return;
-        _init = true;
-
-#ifdef Q_OS_WIN
-        QString prefix = getKde4Prefix();
-        QString share         = prefix + QLatin1String("/share");
-        QString kde_moduledir = QLatin1String("lib/kde4");
-
-        install["apps"] = share + QLatin1String("/applnk");
-        install["config"] = share + QLatin1String("/config");
-        install["kcfg"] = share + QLatin1String("/config.kcfg");
-        install["data"] = share + QLatin1String("/apps");
-        install["exe"] = prefix;
-        install["html"] = share + QLatin1String("/doc/HTML");
-        install["icon"] = share + QLatin1String("/icons");
-        install["lib"] = prefix + "/lib";
-        install["module"] = kde_moduledir;
-        install["qtplugins"] = kde_moduledir + QLatin1String("/plugins");
-        install["locale"] = share + QLatin1String("/locale");
-        install["mime"] = share + QLatin1String("/mimelnk");
-        install["services"] = share + QLatin1String("/kde4/services");
-        install["servicetypes"] = share + QLatin1String("/kde4/servicetypes");
-        install["sound"] = share + QLatin1String("/sounds");
-        install["templates"] = share + QLatin1String("/templates");
-        install["wallpaper"] = share + QLatin1String("/wallpapers");
-        install["xdgconf-menu"] = share + QLatin1String("/currently/undefined");
-        install["xdgdata-apps"] = share + QLatin1String("/applications/kde4");
-        install["xdgdata-dirs"] = share + QLatin1String("/desktop-directories");
-        install["include"] = prefix + "/include";
-#else
-        install["apps"] = QString::fromLatin1(APPLNK_INSTALL_DIR);
-        install["config"] = CONFIG_INSTALL_DIR;
-        install["kcfg"] = KCFG_INSTALL_DIR;
-        install["data"] = DATA_INSTALL_DIR;
-        install["exe"] = BIN_INSTALL_DIR;
-        install["html"] = HTML_INSTALL_DIR;
-        install["icon"] = ICON_INSTALL_DIR;
-        install["lib"] = LIB_INSTALL_DIR;
-        install["module"] = PLUGIN_INSTALL_DIR;
-        install["qtplugins"] = PLUGIN_INSTALL_DIR "/plugins";
-        install["locale"] = LOCALE_INSTALL_DIR;
-        install["mime"] = MIME_INSTALL_DIR;
-        install["services"] = SERVICES_INSTALL_DIR;
-        install["servicetypes"] = SERVICETYPES_INSTALL_DIR;
-        install["sound"] = SOUND_INSTALL_DIR;
-        install["templates"] = TEMPLATES_INSTALL_DIR;
-        install["wallpaper"] = WALLPAPER_INSTALL_DIR;
-        install["xdgconf-menu"] = SYSCONF_INSTALL_DIR "/xdg/menus";
-        install["xdgdata-apps"] = XDG_APPS_INSTALL_DIR;
-        install["xdgdata-dirs"] = XDG_DIRECTORY_INSTALL_DIR;
-        install["include"] = INCLUDE_INSTALL_DIR;
-#endif
-    }
-
-};
-
-K_GLOBAL_STATIC(KStandardDirsSingleton, kStandardDirsGlobals)
-
-/**
- * @internal
- * Returns the default toplevel directory where KDE is installed.
- */
-static QString kfsstnd_defaultprefix()
-{
-    KStandardDirsSingleton* s = kStandardDirsGlobals;
-    if (!s->defaultprefix.isEmpty())
-        return s->defaultprefix;
-#ifdef Q_WS_WIN
-    s->defaultprefix = getKde4Prefix();
-#else //UNIX
-    s->defaultprefix = KDEDIR;
-#endif
-
-    if (s->defaultprefix.isEmpty())
-        kWarning() << "KStandardDirs::kfsstnd_defaultprefix(): default KDE prefix not found!";
-    return s->defaultprefix;
-}
-
-/**
- * @internal
- * Returns the default bin directory in which KDE executables are stored.
- */
-static QString kfsstnd_defaultbindir()
-{
-    KStandardDirsSingleton* s = kStandardDirsGlobals;
-    if (!s->defaultbindir.isEmpty())
-        return s->defaultbindir;
-#ifdef Q_WS_WIN
-    s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
-#else //UNIX
-    s->defaultbindir = __KDE_BINDIR;
-    if (s->defaultbindir.isEmpty())
-        s->defaultbindir = kfsstnd_defaultprefix() + QLatin1String("/bin");
-#endif
-    if (s->defaultbindir.isEmpty())
-        kWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!";
-    return s->defaultbindir;
-}
-
-/**
- * @internal
- * Returns the default libexec directory in which KDE tool executables are stored.
- */
-static QString kfsstnd_defaultlibexecdir()
-{
-    KStandardDirsSingleton* s = kStandardDirsGlobals;
-    if (!s->defaultlibexecdir.isEmpty())
-        return s->defaultlibexecdir;
-    s->defaultlibexecdir = kfsstnd_defaultprefix() + QLatin1String("/lib" KDELIBSUFF "/kde4/libexec");
-    //if (s->defaultlibexecdir.isEmpty())
-    //   kWarning() << "KStandardDirs::kfsstnd_defaultlibexecdir(): default libexec KDE dir not found!";
-    return s->defaultlibexecdir;
-}
 
 /* If you add a new resource type here, make sure to
  * 1) regenerate using "generate_string_table.pl types" and the data below.
@@ -343,7 +209,13 @@ static int tokenize( QStringList& token, const QString& str,
                      const QString& delim );
 
 KStandardDirs::KStandardDirs(const KComponentData &componentData)
-    : d(new KStandardDirsPrivate(componentData))
+    : d(new KStandardDirsPrivate())
+{
+    addKDEDefaults();
+}
+
+KStandardDirs::KStandardDirs()
+    : d(new KStandardDirsPrivate())
 {
     addKDEDefaults();
 }
@@ -1005,7 +877,7 @@ void KStandardDirs::createSpecialResource(const char *type)
 #else //UNIX
     if (relink)
     {
-        QString srv = findExe(QLatin1String("lnusertemp"), kfsstnd_defaultlibexecdir());
+        QString srv = findExe(QLatin1String("lnusertemp"), installPath("libexec"));
         if (srv.isEmpty())
             srv = findExe(QLatin1String("lnusertemp"));
         if (!srv.isEmpty())
@@ -1244,14 +1116,14 @@ QString KStandardDirs::findExe( const QString& appname,
 
     // Look in the default bin and libexec dirs. Maybe we should use the "exe" resource instead?
 
-    QString p = kfsstnd_defaultlibexecdir() + '/' + real_appname;
+    QString p = installPath("libexec") + real_appname;
     QString result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result;
         return result;
     }
 
-    p = kfsstnd_defaultbindir() + '/' + real_appname;
+    p = installPath("exe") + real_appname;
     result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result;
@@ -1546,7 +1418,7 @@ void KStandardDirs::addKDEDefaults()
     {
         tokenize(kdedirList, kdedirs, QString(QChar(KPATH_SEPARATOR)));
     }
-    kdedirList.append(QFile::decodeName(KDEDIR));
+    kdedirList.append(installPath("kdedir"));
 
     QString execPrefix(EXEC_INSTALL_PREFIX);
     if (!execPrefix.isEmpty() && !kdedirList.contains(execPrefix))
@@ -1601,7 +1473,7 @@ void KStandardDirs::addKDEDefaults()
         xdgdirList.clear();
         xdgdirList.append("/etc/xdg");
 #ifdef Q_WS_WIN
-        xdgdirList.append(kfsstnd_defaultprefix() + "/etc/xdg");
+        xdgdirList.append(installPath("kdedir") + "etc/xdg");
 #else
         xdgdirList.append(KDESYSCONFDIR "/xdg");
 #endif
@@ -1692,6 +1564,7 @@ void KStandardDirs::addKDEDefaults()
 
 void KStandardDirs::checkConfig() const
 {
+#if 0
     if (!d->addedCustoms) {
         if (d->componentData.isValid() && d->componentData.privateConfig()) {
             const_cast<KStandardDirs*>(this)->addCustomized(d->componentData.privateConfig().data());
@@ -1699,9 +1572,10 @@ void KStandardDirs::checkConfig() const
             const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::mainComponent().privateConfig().data());
         }
     }
+#endif
 }
 
-static QStringList lookupProfiles(const QString &mapFile, const KComponentData &componentData)
+static QStringList lookupProfiles(const QString &mapFile)
 {
     QStringList profiles;
 
@@ -1723,7 +1597,7 @@ static QStringList lookupProfiles(const QString &mapFile, const KComponentData &
     gid_t sup_gids[512];
     int sup_gids_nr = getgroups(512, sup_gids);
 
-    KConfig mapCfgFile(componentData, mapFile );
+    KConfig mapCfgFile(mapFile);
     KConfigGroup mapCfg(&mapCfgFile, "Users");
     if (mapCfg.hasKey(user.data()))
     {
@@ -1772,18 +1646,15 @@ extern bool kde_kiosk_admin;
 
 bool KStandardDirs::addCustomized(KConfig *config)
 {
-    if (d->addedCustoms && !d->checkRestrictions) // there are already customized entries
+    if (!d->checkRestrictions) // there are already customized entries
         return false; // we just quit and hope they are the right ones
 
     // save the numbers of config directories. If this changes,
     // we will return true to give KConfig a chance to reparse
     int configdirs = resourceDirs("config").count();
 
-    if (!d->addedCustoms)
+    if (true)
     {
-        // We only add custom entries once
-        d->addedCustoms = true;
-
         // reading the prefixes in
         QString group = QLatin1String("Directories");
         KConfigGroup cg(config, group);
@@ -1820,7 +1691,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
         QStringList profiles;
         if (readProfiles)
-            profiles = lookupProfiles(userMapFile, d->componentData);
+            profiles = lookupProfiles(userMapFile);
         QString profile;
 
         bool priority = false;
@@ -1944,19 +1815,6 @@ QString KStandardDirs::locateLocal( const char *type,
     QString dir = filename.left(slash);
     QString file = filename.mid(slash);
     return cData.dirs()->saveLocation(type, dir, createDir) + file;
-}
-
-QString KStandardDirs::installPath(const char *type)
-{
-    kStandardDirsGlobals->initInstallDirs();
-    QString tmp = kStandardDirsGlobals->install[type];
-    if (tmp.isEmpty())
-        return QString();
-
-    if (!tmp.endsWith('/'))
-        tmp += '/';
-
-    return tmp;
 }
 
 bool KStandardDirs::checkAccess(const QString& pathname, int mode)

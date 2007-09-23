@@ -41,8 +41,9 @@ public:
 
     ~KComponentDataPrivate()
     {
-        Q_ASSERT(0 == sharedConfig);
-        Q_ASSERT(0 == dirs);
+        refCount = -0x00FFFFFF; //prevent a reentering of the dtor
+        sharedConfig = 0;   //delete the config object first, because it could access the standard dirs while syncing
+        delete dirs;
     }
 
     inline void ref()
@@ -57,14 +58,18 @@ public:
         //qDebug() << refCount + 1 << "->" << refCount << kBacktrace() << endl;
         if (refCount == 0) {
             delete this;
-        } else {
-            checkConfig();
+        } else if (refCount == 1 && sharedConfig && sharedConfig->componentData().d == this) { //sharedConfig has a reference to us
+            if (sharedConfig.count() == 1) {    //we are the only class with a reference to the config object
+                delete this;
+            } else if (sharedConfig.count() > 0) {  //there are other references to it. 
+                sharedConfig->ref.deref();  //we don't have a reference to the config object anymore, but it has still a reference to us
+                                            //this breaks the circular dependencies
+            }
         }
     }
 
-    void checkConfig();
-
-    void createStandardDirs(const KComponentData &componentData);
+    void lazyInit(const KComponentData &component);
+    void configInit(const KComponentData &component);  //call this only from lazyInit()!
 
     KStandardDirs *dirs;
     const KAboutData aboutData;

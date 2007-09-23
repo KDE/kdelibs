@@ -51,6 +51,7 @@ if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
+      kernel/kstandarddirs_win.cpp
       network/klocalsocket_win.cpp
       io/klockfile_win.cpp
       util/kshell_win.cpp
@@ -62,6 +63,7 @@ endif (WIN32)
 if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp 
+      kernel/kstandarddirs_unix.cpp
       network/k3httpproxysocketdevice.cpp
       network/k3socks.cpp
       network/k3sockssocketdevice.cpp

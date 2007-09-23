@@ -178,7 +178,8 @@ public:
     /**
      * KStandardDirs' constructor. It just initializes the caches.
      **/
-    KStandardDirs(const KComponentData &componentData = KGlobal::mainComponent());
+    KStandardDirs();
+    KStandardDirs(const KComponentData &componentData);
 
     enum SearchOption { NoSearchOptions = 0,
                         Recursive = 1,
