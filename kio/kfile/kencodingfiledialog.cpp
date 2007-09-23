@@ -51,11 +51,13 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
 
   d->encoding->clear ();
   QString sEncoding = encoding;
+  QString systemEncoding = QLatin1String(KGlobal::locale()->encoding());
   if (sEncoding.isEmpty())
-     sEncoding = QLatin1String(KGlobal::locale()->encoding());
+     sEncoding = systemEncoding;
 
   QStringList encodings (KGlobal::charsets()->availableEncodingNames());
-  int insert = 0;
+  int insert = 0, system = 0;
+  bool foundRequested=false;
   for (int i=0; i < encodings.count(); i++)
   {
     bool found = false;
@@ -67,12 +69,17 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
       if ( (codecForEnc->name() == sEncoding) || (encodings[i] == sEncoding) )
       {
         d->encoding->setCurrentIndex(insert);
+        foundRequested=true;
       }
 
+      if ( (codecForEnc->name() == systemEncoding) || (encodings[i] == systemEncoding) )
+        system=insert;
       insert++;
     }
   }
-
+  
+  if ( !foundRequested )
+    d->encoding->setCurrentIndex(system); 
 
 }
 
