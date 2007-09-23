@@ -1983,6 +1983,7 @@ void KFileWidget::toggleBookmarks(bool show)
                     SLOT( enterUrl( const QString& )));
 
         d->bookmarkButton = new KActionMenu(KIcon("bookmark"),i18n("Bookmarks"), this);
+        d->bookmarkButton->setDelayed(false);
         actionCollection()->addAction("bookmark", d->bookmarkButton);
         d->bookmarkButton->setMenu(d->bookmarkHandler->menu());
         d->bookmarkButton->setWhatsThis(i18n("<qt>This button allows you to bookmark specific locations. "
