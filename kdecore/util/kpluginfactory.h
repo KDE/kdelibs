@@ -114,8 +114,7 @@ KComponentData name::componentData() \
  * class MyPlugin : public PluginInterface
  * {
  *     ...
- *     KComponentData kcd = MyPluginFactory::componentData();   //use the static version of
- *                     //componentData() only in the constructor of the class created from the factory
+ *     KComponentData kcd = MyPluginFactory::componentData();
  *     ...
  * };
  * \endcode
@@ -176,8 +175,7 @@ KComponentData name::componentData() \
  * class MyPlugin : public PluginInterface
  * {
  *     ...
- *     KComponentData kcd = MyPluginFactory::componentData();   //use the static version of
- *                     //componentData() only in the constructor of the class created from the factory
+ *     KComponentData kcd = MyPluginFactory::componentData();
  *     ...
  * };
  * \endcode
@@ -267,8 +265,8 @@ public:
     /**
      * You can use this method to get the component data of the plugin. It is filled with the
      * information given to the constructor of KPluginFactory.
-     * The K_PLUGIN_FACTORY macros provide a static version of this method, but be careful: You
-     * can use the static verion only in the constructor of classes created from the factory!
+     * The K_PLUGIN_FACTORY macros provide a static version of this method, this can be used from
+     * any place within the plugin.
      *
      * \returns The KComponentData for the plugin
      */
@@ -374,7 +372,7 @@ protected:
      */
     template<class T>
     void registerPlugin(const QString &keyword = QString(), CreateInstanceFunction instanceFunction
-            = InheritanceChecker<T>::createInstanceFunction(reinterpret_cast<T *>(0)))
+            = InheritanceChecker<T>().createInstanceFunction(reinterpret_cast<T *>(0)))
     {
         registerPlugin(keyword, &T::staticMetaObject, instanceFunction);
     }
@@ -399,7 +397,19 @@ protected:
 
     virtual KDE_DEPRECATED KParts::Part *createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args);
 
-    void setComponentData(const KComponentData &);
+    
+    /**
+     * This method sets the component data of the plugin. You can access the component data object
+     * later with componentData().
+     * Normally you don't have to call this, because the factory constructs a component data object
+     * from the information given to the constructor.
+     * The object is destroyed, when the module containing the plugin is unloaded. Normally this happens
+     * only on application shutdown.
+     *
+     * \param componentData the new KComponentData object
+     */
+
+    void setComponentData(const KComponentData &componentData);
 
     /**
      * This function is called when the factory asked to create an Object.
@@ -435,12 +445,16 @@ protected:
         return new impl(parentWidget, parent, args);
     }
 
+    /**
+     * This is used to detect the arguments need for the constructor of plugin classes.
+     * You can inherit it, if you want to add new classes and still keep support for the old ones.
+     */
     template<class impl>
     struct InheritanceChecker
     {
-        static CreateInstanceFunction createInstanceFunction(KParts::Part *) { return &createPartInstance<impl>; }
-        static CreateInstanceFunction createInstanceFunction(QWidget *) { return &createInstance<impl, QWidget>; }
-        static CreateInstanceFunction createInstanceFunction(...) { return &createInstance<impl, QObject>; }
+        CreateInstanceFunction createInstanceFunction(KParts::Part *) { return &createPartInstance<impl>; }
+        CreateInstanceFunction createInstanceFunction(QWidget *) { return &createInstance<impl, QWidget>; }
+        CreateInstanceFunction createInstanceFunction(...) { return &createInstance<impl, QObject>; }
     };
 
 private:
