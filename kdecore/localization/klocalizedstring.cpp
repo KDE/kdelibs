@@ -25,7 +25,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcomponentdata.h>
-#include <klibloader.h>
+#include <klibrary.h>
 #include <kstandarddirs.h>
 #include <ktranscript_p.h>
 #include <ktranslit_p.h>
@@ -854,17 +854,16 @@ void KLocalizedStringPrivate::loadTranscript ()
     s->loadTranscriptCalled = true;
     s->ktrs = NULL; // null indicates that Transcript is not available
 
-    KLibrary *lib = KLibLoader::self()->library(QLatin1String("ktranscript"));
-    if (!lib) {
-        kDebug(173) << QString("Cannot load transcript plugin: %1")
-                              .arg(KLibLoader::self()->lastErrorMessage());
+    KLibrary lib(QLatin1String("ktranscript"));
+    if (!lib.load()) {
+        kDebug(173) << "Cannot load transcript plugin:" << lib.errorString();
         return;
     }
 
-    InitFunc initf = (InitFunc) lib->resolveFunction("load_transcript");
+    InitFunc initf = (InitFunc) lib.resolveFunction("load_transcript");
     if (!initf) {
-        lib->unload();
-        kDebug(173) << QString("Cannot find function load_transcript in transcript plugin.");
+        lib.unload();
+        kDebug(173) << "Cannot find function load_transcript in transcript plugin.";
         return;
     }
 
