@@ -1,5 +1,8 @@
 add_subdirectory(fakebackend)
-add_subdirectory(guitest)
+if(NOT MINGW)
+  # ICE in audiooutputitem.cpp
+  add_subdirectory(guitest)
+endif(NOT MINGW)
 
 include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_SOURCE_DIR}/solid)
 
