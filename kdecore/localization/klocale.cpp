@@ -34,6 +34,9 @@
 #ifdef HAVE_TIME_H
 #include <time.h>
 #endif
+#ifdef HAVE_LANGINFO_H
+#include <langinfo.h>
+#endif
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QFile>
@@ -1978,7 +1981,17 @@ void KLocalePrivate::initEncoding(KConfigBase *)
   const int mibDefault = 4; // ISO 8859-1
 
   // This all made more sense when we still had the EncodingEnum config key.
+#ifdef HAVE_LANGINFO_H
+  // Qt since 4.2 always returns 'System' as codecForLocale and KDE (for example KEncodingFileDialog) 
+  // expects real encoding name. So on systems that have langinfo.h use nl_langinfo instead,
+  // just like Qt compiled without iconv does. Windows already has its own workaround
+  
+  QTextCodec* codec = QTextCodec::codecForName( nl_langinfo(CODESET) );
+  if ( codec )
+    setEncoding( codec->mibEnum() );
+#else
   setEncoding( QTextCodec::codecForLocale()->mibEnum() );
+#endif 
 
   if ( ! codecForEncoding )
     {
