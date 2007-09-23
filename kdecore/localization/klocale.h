@@ -1080,13 +1080,6 @@ public:
    * @param language language to check
    */
   bool isApplicationTranslatedInto( const QString & language);
-
-
-  /**
-   * @internal Called from KConfigBackend to initialize language.
-   */
-  static QString _initLanguage(KConfigBase *config);
-
 protected:
   /**
    * Changes the current country. The current country will be left

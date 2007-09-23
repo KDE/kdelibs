@@ -137,13 +137,6 @@ public:
   virtual QStringList groupList() const = 0;
 
   /**
-   * Returns a the current locale.
-   *
-   * @return A string representing the current locale.
-   */
-  QString locale() const;
-
-  /**
    * Reads the value of an entry specified by @p pKey in the current group.
    *
    * @param pKey The key to search for.
@@ -885,12 +878,6 @@ public:
   bool isDollarExpansion() const;
 
   /**
-   * Returns whether the locale has been set.
-   * @return true if the locale has been initialized
-   */
-  bool localeInitialized() const;
-
-  /**
    * Mark the config object as "clean," i.e. don't write dirty entries
    * at destruction time. If @p bDeep is false, only the global dirty
    * flag of the KConfig object gets cleared. If you then call
@@ -1069,14 +1056,6 @@ public:
   bool hasDefault(const QString &key) const;
 
 protected:
-  /**
-   * Reads the locale and put in the configuration data struct.
-   * Note that this should be done in the constructor, but this is not
-   * possible due to some mutual dependencies in KApplication::init()
-   */
-  void setLocale(const QString &locale);
-  void setLocale();
-
   /**
    * Sets the global dirty flag of the config object
    *

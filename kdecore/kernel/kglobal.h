@@ -39,9 +39,10 @@ class KCharsets;
 class KConfig;
 class KLocale;
 class KStandardDirs;
-class KStaticDeleterBase;
-class QString;
-class KSharedConfigPtr;
+class KSharedConfig;
+template<class T>
+class KSharedPtr;
+typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
 
 /// @cond InternalDocs
 

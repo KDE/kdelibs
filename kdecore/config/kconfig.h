@@ -39,6 +39,7 @@
 */
 class KDECORE_EXPORT KConfig : public KConfigBase
 {
+    friend class KConfigGroup;
 public:
     enum OpenFlags {
         NoGlobals = 0x01,
@@ -222,6 +223,13 @@ public:
    * \return true, if the locale changed and the config is reparsed
    */
   bool setLocale(const QString &locale);
+
+  /**
+   * Returns a the current locale.
+   *
+   * @return A string representing the current locale.
+   */
+  QString locale() const;
 
   /**
    * Returns a lock file object for the configuration file or 0 if

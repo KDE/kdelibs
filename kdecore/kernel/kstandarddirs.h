@@ -179,7 +179,6 @@ public:
      * KStandardDirs' constructor. It just initializes the caches.
      **/
     KStandardDirs();
-    KStandardDirs(const KComponentData &componentData);
 
     enum SearchOption { NoSearchOptions = 0,
                         Recursive = 1,
@@ -762,7 +761,6 @@ private:
     class KStandardDirsPrivate;
     KStandardDirsPrivate* const d;
 
-    void checkConfig() const;
     void applyDataRestrictions(const QString &) const;
     void createSpecialResource(const char*);
 

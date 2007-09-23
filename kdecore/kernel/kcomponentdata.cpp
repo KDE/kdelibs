@@ -95,10 +95,6 @@ KComponentData::KComponentData(const KAboutData &aboutData, MainComponentRegistr
     }
 }
 
-void KComponentData::_checkConfig() // called by KSharedConfigPtr
-{
-}
-
 KComponentData::~KComponentData()
 {
     if (d) {

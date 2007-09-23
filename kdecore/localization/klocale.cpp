@@ -259,13 +259,6 @@ KLocale::KLocale(const QString& catalog, const QString &language, const QString 
     d->initFormat(config);
 }
 
-
-QString KLocale::_initLanguage(KConfigBase *config)
-{
-    Q_ASSERT(false);
-    return QString();
-}
-
 void KLocalePrivate::initMainCatalogs(const QString & catalog)
 {
   // Use the first non-null string.

@@ -1056,20 +1056,18 @@ void KConfigGroup::revertToDefault(const QString &key)
   KEntryKey aEntryKey(d->group, key.toUtf8());
   aEntryKey.bDefault = true;
 
-  if (!d->master->locale().isNull()) {
-    // try the localized key first
-    aEntryKey.bLocal = true;
-    KEntry entry = lookupData(aEntryKey);
-    if (entry.mValue.isNull())
-        entry.bDeleted = true;
+  // try the localized key first
+  aEntryKey.bLocal = true;
+  KEntry entry = lookupData(aEntryKey);
+  if (entry.mValue.isNull())
+      entry.bDeleted = true;
 
-    entry.bDirty = true;
-    putData(aEntryKey, entry, true); // Revert
-    aEntryKey.bLocal = false;
-  }
+  entry.bDirty = true;
+  putData(aEntryKey, entry, true); // Revert
+  aEntryKey.bLocal = false;
 
   // try the non-localized version
-  KEntry entry = lookupData(aEntryKey);
+  entry = lookupData(aEntryKey);
   if (entry.mValue.isNull())
      entry.bDeleted = true;
   entry.bDirty = true;
@@ -1081,18 +1079,16 @@ bool KConfigGroup::hasDefault(const QString &key) const
   KEntryKey aEntryKey(d->group, key.toUtf8());
   aEntryKey.bDefault = true;
 
-  if (!d->master->locale().isNull()) {
-    // try the localized key first
-    aEntryKey.bLocal = true;
-    KEntry entry = lookupData(aEntryKey);
-    if (!entry.mValue.isNull())
-        return true;
+  // try the localized key first
+  aEntryKey.bLocal = true;
+  KEntry entry = lookupData(aEntryKey);
+  if (!entry.mValue.isNull())
+      return true;
 
-    aEntryKey.bLocal = false;
-  }
+  aEntryKey.bLocal = false;
 
   // try the non-localized version
-  KEntry entry = lookupData(aEntryKey);
+  entry = lookupData(aEntryKey);
   if (!entry.mValue.isNull())
      return true;
 
@@ -1110,18 +1106,16 @@ bool KConfigGroup::hasKey(const char *pKey) const
   aEntryKey.c_key = pKey;
   aEntryKey.bDefault = d->master->readDefaults();
 
-  if (!d->master->locale().isNull()) {
-    // try the localized key first
-    aEntryKey.bLocal = true;
-    KEntry entry = lookupData(aEntryKey);
-    if (!entry.mValue.isNull()) {
-       return true;
-    }
-    aEntryKey.bLocal = false;
+  // try the localized key first
+  aEntryKey.bLocal = true;
+  KEntry entry = lookupData(aEntryKey);
+  if (!entry.mValue.isNull()) {
+     return true;
   }
+  aEntryKey.bLocal = false;
 
   // try the non-localized version
-  KEntry entry = lookupData(aEntryKey);
+  entry = lookupData(aEntryKey);
   return !entry.mValue.isNull();
 }
 

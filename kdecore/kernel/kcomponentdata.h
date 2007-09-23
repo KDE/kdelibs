@@ -171,16 +171,12 @@ public:
 
 protected:
     friend class KApplication;
-    friend class KSharedConfigPtr;
-    friend class KConfigBackEnd;
 
     /**
      * Set name of default config file.
      * @param name the name of the default config file
      */
     void setConfigName(const QString &name);
-
-    void _checkConfig();
 
     /** Standard trick to add virtuals later. @internal */
     virtual void virtual_hook( int id, void* data );

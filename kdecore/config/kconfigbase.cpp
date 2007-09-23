@@ -69,10 +69,6 @@ public:
      bool readDefaults;
 
      /**
-      * The locale to retrieve keys under if possible, i.e en_US or fr.  */
-     QByteArray aLocaleString;
-
-     /**
       * Indicates whether there are any dirty entries in the config object
       * that need to be written back to disk. */
      bool bDirty;
@@ -102,28 +98,6 @@ KConfigBase::~KConfigBase()
 const KComponentData &KConfigBase::componentData() const
 {
     return d->componentData;
-}
-
-void KConfigBase::setLocale()
-{
-    setLocale(QString());
-}
-
-void KConfigBase::setLocale(const QString &locale)
-{
-    if (locale.isEmpty())
-        return;
-
-    d->aLocaleString = locale.toUtf8();
-
-    if ( d->backEnd ) {
-        d->backEnd->setLocaleString( d->aLocaleString );
-    }
-}
-
-QString KConfigBase::locale() const
-{
-  return QString::fromUtf8( d->aLocaleString );
 }
 
 void KConfigBase::setGroup( const QString& _group )
@@ -434,11 +408,6 @@ void KConfigBase::setDollarExpansion( bool _bExpand )
 bool KConfigBase::isDollarExpansion() const
 {
     return d->bExpand;
-}
-
-bool KConfigBase::localeInitialized() const
-{
-    return true;
 }
 
 #ifdef KDE3_SUPPORT

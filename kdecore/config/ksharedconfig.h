@@ -24,8 +24,6 @@
 
 #include "kconfig.h"
 
-class KSharedConfigPtr;
-
 /**
  * KConfig variant using shared memory
  *
@@ -35,7 +33,7 @@ class KSharedConfigPtr;
 class KDECORE_EXPORT KSharedConfig : public KConfig, public QSharedData //krazy:exclude=dpointer (only for refcounting)
 {
 public:
-  typedef KSharedConfigPtr Ptr;
+  typedef KSharedPtr<KSharedConfig> Ptr;
 
 public:
   /**
@@ -74,44 +72,6 @@ private:
                  KConfig::OpenFlags,
                  const char *resType,
                  const KComponentData &componentData);
-};
-
-class KDECORE_EXPORT KSharedConfigPtr : public KSharedPtr<KSharedConfig> //krazy:exclude=dpointer (only for refcounting)
-{
-public:
-    /**
-     * Creates a null pointer.
-     */
-    inline KSharedConfigPtr()
-        : KSharedPtr<KSharedConfig>()
-    {}
-
-    /**
-     * Creates a new pointer.
-     * @param p the pointer
-     */
-    inline explicit KSharedConfigPtr(KSharedConfig *p)
-        : KSharedPtr<KSharedConfig>(p)
-    {}
-
-    /**
-     * Copies a pointer.
-     * @param o the pointer to copy
-     */
-    inline KSharedConfigPtr(const KSharedConfigPtr& o)
-        : KSharedPtr<KSharedConfig>(o)
-    {}
-
-    /**
-     * Unreferences the object that this pointer points to. If it was
-     * the last reference, the object will be deleted.
-     */
-    ~KSharedConfigPtr();
-
-    inline KSharedConfigPtr &operator= ( const KSharedConfigPtr& o ) { attach(o.d); return *this; }
-    inline KSharedConfigPtr &operator= ( KSharedConfig *p ) { attach(p); return *this; }
-
-    void attach(KSharedConfig *p);
 };
 
 #endif // multiple inclusion guard

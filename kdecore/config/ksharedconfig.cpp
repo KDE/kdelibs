@@ -76,49 +76,6 @@ KSharedConfig::~KSharedConfig()
     }
 }
 
-KSharedConfigPtr::~KSharedConfigPtr()
-{
-    if (d) {
-        if (!d->ref.deref()) {
-            delete d;
-
-        // so much for standard ~KSharedPtr, now, if we're derefing a KConfig object that
-        // is referenced by a KComponentData we need to make sure that cyclic refs are broken up
-        // at the end. (d refs d->componentData() and d->componentData() refs d)
-        // KComponentData::_checkConfig does that check and breaks the cyclic ref if that's all
-        // that was left. Only then can the KConfig object be deleted.
-        /*} else if (d->ref == 1 && d->componentData().isValid()) {
-            // it might be KComponentData holding the last ref
-            const_cast<KComponentData&>(d->componentData())._checkConfig();*/
-        }
-        d = 0;
-    }
-}
-
-void KSharedConfigPtr::attach(KSharedConfig *p)
-{
-    if (d != p) {
-        if (p) {
-            p->ref.ref();
-        }
-        if (d) {
-            if (!d->ref.deref()) {
-                delete d;
-
-            // so much for standard KSharedPtr::attach, now, if we're derefing a KConfig object that
-            // is referenced by a KComponentData we need to make sure that cyclic refs are broken up
-            // at the end. (d refs d->componentData() and d->componentData() refs d)
-            // KComponentData::_checkConfig does that check and breaks the cyclic ref if that's all
-            // that was left. Only then can the KConfig object be deleted.
-            } /*else if (d->ref == 1 && d->componentData().isValid()) {
-                // it might be KComponentData holding the last ref
-                const_cast<KComponentData&>(d->componentData())._checkConfig();
-            }*/
-        }
-        d = p;
-    }
-}
-
 KConfigGroup KSharedConfig::group(const QByteArray &groupName)
 {
     return KConfigGroup( KSharedConfigPtr(this), groupName);

@@ -31,8 +31,11 @@
 #include <QtCore/QVariant>
 
 class KConfigBase;
-class KSharedConfigPtr;
 class KConfigGroupPrivate;
+class KSharedConfig;
+template<class T>
+class KSharedPtr;
+typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
 
 /**
  * A class for one specific group in a KConfig object.

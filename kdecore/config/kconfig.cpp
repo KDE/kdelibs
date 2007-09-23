@@ -65,6 +65,8 @@ public:
      * set to QString().
      */
     KEntryMap entryMap;
+
+    QString locale;
 };
 
 KConfig::KConfig(const KComponentData &componentData,
@@ -463,12 +465,17 @@ const KConfigGroup KConfig::group( const QByteArray &arr) const
 
 bool KConfig::setLocale(const QString &locale)
 {
-    if (locale != KConfigBase::locale()) {
-        KConfigBase::setLocale(locale);
+    if (locale != d->locale) {
+        d->locale = locale;
         reparseConfiguration();
         return true;
     }
     return false;
+}
+
+QString KConfig::locale() const
+{
+    return d->locale;
 }
 
 void KConfig::virtual_hook( int id, void* data )

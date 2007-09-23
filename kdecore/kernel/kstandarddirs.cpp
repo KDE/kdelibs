@@ -208,12 +208,6 @@ static const int types_indices[] = {
 static int tokenize( QStringList& token, const QString& str,
                      const QString& delim );
 
-KStandardDirs::KStandardDirs(const KComponentData &componentData)
-    : d(new KStandardDirsPrivate())
-{
-    addKDEDefaults();
-}
-
 KStandardDirs::KStandardDirs()
     : d(new KStandardDirsPrivate())
 {
@@ -490,8 +484,6 @@ QStringList KStandardDirs::findDirs( const char *type,
         return list;
     }
 
-    checkConfig();
-
     if (d->restrictionsActive && (strcmp(type, "data")==0))
         applyDataRestrictions(reldir);
     QStringList candidates = resourceDirs(type);
@@ -743,8 +735,6 @@ KStandardDirs::findAllResources( const char *type,
             filterFile = filter.mid(slash + 1);
         }
     }
-
-    checkConfig();
 
     QStringList candidates;
     if ( !QDir::isRelativePath(filter) ) // absolute path
@@ -1224,8 +1214,6 @@ QString KStandardDirs::saveLocation(const char *type,
                                     const QString& suffix,
                                     bool create) const
 {
-    checkConfig();
-
     QString path = d->savelocations.value(type);
     if (path.isEmpty())
     {
@@ -1560,19 +1548,6 @@ void KStandardDirs::addKDEDefaults()
     addResourceType("exe", "lib", "kde4/libexec", true );
 
     addResourceDir("home", QDir::homePath(), false);
-}
-
-void KStandardDirs::checkConfig() const
-{
-#if 0
-    if (!d->addedCustoms) {
-        if (d->componentData.isValid() && d->componentData.privateConfig()) {
-            const_cast<KStandardDirs*>(this)->addCustomized(d->componentData.privateConfig().data());
-        } else if (KGlobal::hasMainComponent() && KGlobal::mainComponent().privateConfig()) {
-            const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::mainComponent().privateConfig().data());
-        }
-    }
-#endif
 }
 
 static QStringList lookupProfiles(const QString &mapFile)
