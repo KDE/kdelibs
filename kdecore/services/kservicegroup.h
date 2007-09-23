@@ -20,7 +20,7 @@
 #define KSERVICEGROUP_H
 
 #include <kdecore_export.h>
-#include <kservice.h>
+#include "ksycocaentry.h"
 
 class KBuildServiceGroupFactory;
 
@@ -197,20 +197,6 @@ public:
    */
   List entries(bool sorted = false);
 
-  enum EntriesOption
-  {
-      NoOptions,
-      SortEntries,
-      ExcludeNoDisplay,
-      AllowSeparators,
-      SortByGenericName
-  };
-  Q_DECLARE_FLAGS(EntriesOptions, EntriesOption)
-
-  
-      QList<Ptr> groupEntries(EntriesOptions options);
-      KService::List serviceEntries(EntriesOptions options);
-
   /**
    * Returns a non-empty string if the group is a special base group.
    * By default, "Settings/" is the kcontrol base group ("settings")
@@ -282,8 +268,6 @@ private:
 
     void load(QDataStream &s);
 };
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(KServiceGroup::EntriesOptions)
 
 class KDECORE_EXPORT KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
 {

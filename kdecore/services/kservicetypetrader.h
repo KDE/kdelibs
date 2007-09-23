@@ -154,7 +154,7 @@ public:
             const QString &constraint = QString(), QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
-        return createInstanceFromQuery(serviceType, 0, parent, constraint, args, error);
+        return createInstanceFromQuery<T>(serviceType, 0, parent, constraint, args, error);
     }
 
     /**
