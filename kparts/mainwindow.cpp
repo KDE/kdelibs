@@ -85,8 +85,6 @@ void MainWindow::createGUI( Part * part )
 
   assert( factory );
 
-  //setUpdatesEnabled( false );
-
   if ( d->m_activePart )
   {
     kDebug(1000) << "deactivating GUI for " << d->m_activePart << " "
@@ -129,8 +127,6 @@ void MainWindow::createGUI( Part * part )
         applyMainWindowSettings(cg);
     }
   }
-
-  //setUpdatesEnabled( true );
 
   d->m_activePart = part;
 }
