@@ -38,17 +38,14 @@ void KUrlDropDownButton::paintEvent(QPaintEvent* event)
     QPainter painter(this);
     painter.setClipRect(event->rect());
 
-    const int buttonWidth = width();
-    const int buttonHeight = height();
-
     // draw button background
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(backgroundColor());
-    painter.drawRect(0, 0, buttonWidth, buttonHeight);
+    QColor bgColor = backgroundColor();
+    if (bgColor != Qt::transparent)
+        painter.fillRect(rect(), bgColor);
 
     // draw '...'
     painter.setPen(foregroundColor());
-    painter.drawText(QRect(0, 0, buttonWidth, buttonHeight), Qt::AlignCenter, "...");
+    painter.drawText(rect(), Qt::AlignCenter, "...");
 }
 
 #include "kurldropdownbutton_p.moc"

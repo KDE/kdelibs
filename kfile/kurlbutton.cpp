@@ -129,8 +129,8 @@ QColor KUrlButton::foregroundColor() const
                                isDisplayHintEnabled(DraggedHint) ||
                                isDisplayHintEnabled(PopupActiveHint);
 
-    QColor foregroundColor = isHighlighted ? KColorScheme(QPalette::Active, KColorScheme::Selection).foreground().color() :
-                                             KColorScheme(QPalette::Active, KColorScheme::Button).foreground().color();
+    QColor foregroundColor = isHighlighted ? palette().color(QPalette::HighlightedText) :
+                                             palette().color(foregroundRole());
     const bool isActive = m_urlNavigator->isActive();
 
     int alpha = isActive ? 255 : 128;
@@ -148,8 +148,7 @@ QColor KUrlButton::backgroundColor() const
                                isDisplayHintEnabled(DraggedHint) ||
                                isDisplayHintEnabled(PopupActiveHint);
 
-    QColor backgroundColor = isHighlighted ? KColorScheme(QPalette::Active, KColorScheme::Selection).background().color() :
-                                             palette().brush(QPalette::Background).color();
+    QColor backgroundColor = isHighlighted ? palette().color(QPalette::Highlight) : Qt::transparent;
     if (!urlNavigator()->isActive() && isHighlighted) {
         backgroundColor.setAlpha(128);
     }

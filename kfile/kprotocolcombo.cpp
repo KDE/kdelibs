@@ -96,9 +96,8 @@ void KProtocolCombo::paintEvent(QPaintEvent* event)
     const QColor fgColor = foregroundColor();
 
     // draw button background
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(bgColor);
-    painter.drawRect(0, 0, buttonWidth, buttonHeight);
+    if (bgColor != Qt::transparent)
+        painter.fillRect(rect(), bgColor);
 
     painter.setPen(fgColor);
 

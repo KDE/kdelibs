@@ -301,9 +301,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_layout->setMargin(0);
 
     // initialize the places selector
-    QPalette p;
-    p.setColor(QPalette::Background, Qt::transparent);
-    q->setPalette(p);
+    q->setAutoFillBackground(false);
 
     if (placesModel != 0) {
         m_placesSelector = new KFilePlacesSelector(q, placesModel);
