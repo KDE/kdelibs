@@ -23,6 +23,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
+#include <klibloader.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <ksycocaentry.h>
