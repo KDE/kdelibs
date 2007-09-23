@@ -55,7 +55,7 @@ namespace Kuit {
             TopLong, TopShort,
             Title, Subtitle, Para, List, Item, Note, Warning, Link,
             Filename, Application, Command, Resource, Icode, Bcode, Shortcut,
-            Interface, Emphasis, Placeholder, Email, Numid, Envar, Message,
+            Interface, Emphasis, Placeholder, Email, Numid, Envar, Message, Nl,
             NumIntg, NumReal // internal helpers for numbers, not part of DTD
         } Var;
     }
@@ -161,7 +161,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     #define INLINES \
         Filename << Link << Application << Command << Resource << Icode << \
         Shortcut << Interface << Emphasis << Placeholder << Email << \
-        Numid << Envar
+        Numid << Envar << Nl
 
     SETUP_TAG(TopLong, "kuit", Ctx, Title << Subtitle << Para);
     SETUP_TAG(TopShort, "kuil", Ctx, INLINES << Note << Warning << Message);
@@ -190,6 +190,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_TAG(Envar, "envar", None, None);
     SETUP_TAG(Message, "message", None, None);
     SETUP_TAG(Numid, "numid", None, None);
+    SETUP_TAG(Nl, "nl", None, None);
 
     SETUP_TAG(NumIntg, KUIT_NUMINTG, None, None); // internal, not part of DTD
     SETUP_TAG(NumReal, KUIT_NUMREAL, None, None); // internal, not part of DTD
@@ -733,6 +734,16 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
                 I18N_NOOP2("@message/rich",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
                            "<i>%1</i>"));
+
+    // -------> Nl
+    SET_PATTERN(Tag::Nl, Att::None, Fmt::Plain,
+                XXXX_NOOP2("@nl/plain",
+    // i18n: KUIT pattern, see the comment to the first of these entries above.
+                           "%1\n"));
+    SET_PATTERN(Tag::Nl, Att::None, Fmt::Rich,
+                XXXX_NOOP2("@nl/rich",
+    // i18n: KUIT pattern, see the comment to the first of these entries above.
+                           "%1<br/>"));
 }
 
 void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
