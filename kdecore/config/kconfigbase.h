@@ -1074,7 +1074,8 @@ protected:
    * Note that this should be done in the constructor, but this is not
    * possible due to some mutual dependencies in KApplication::init()
    */
-  void setLocale(const QString &locale = QString());
+  void setLocale(const QString &locale);
+  void setLocale();
 
   /**
    * Sets the global dirty flag of the config object

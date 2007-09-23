@@ -104,6 +104,11 @@ const KComponentData &KConfigBase::componentData() const
     return d->componentData;
 }
 
+void KConfigBase::setLocale()
+{
+    setLocale(QString());
+}
+
 void KConfigBase::setLocale(const QString &locale)
 {
     if (locale.isEmpty())
