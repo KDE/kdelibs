@@ -130,6 +130,9 @@ QPixmap KPasswordDialog::pixmap() const
 
 void KPasswordDialog::setUsername(const QString& user)
 {
+    if ( user.isEmpty() )
+	return; 
+
     d->ui.userEdit->setText(user);
     d->activated(user);
     if ( d->ui.userEdit->isVisibleTo( this ) )
