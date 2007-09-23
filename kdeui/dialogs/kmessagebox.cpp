@@ -162,7 +162,10 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     // Calculate a proper size for the text.
     {
         QTextDocument document;
-       //Text with HTML tags will be displayed correctly.
+        QTextOption option;
+        option.setWrapMode(QTextOption::WordWrap);
+        document.setDefaultTextOption(option);
+        //Text with HTML tags will be displayed correctly.
         document.setHtml( text );
         document.setDefaultFont( dialog->font() );
 
