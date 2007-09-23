@@ -252,8 +252,14 @@ public:
      * \param parent a parent object
      */
     explicit KPluginFactory(const KAboutData &aboutData, QObject *parent = 0);
+    /**
+     * @deprecated
+     */
     KDE_CONSTRUCTOR_DEPRECATED explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
 
+    /**
+     * @deprecated
+     */
     explicit KDE_CONSTRUCTOR_DEPRECATED KPluginFactory(QObject *parent);
 
     /**
@@ -316,6 +322,9 @@ public:
     template<typename T>
     T *create(QWidget *parentWidget, QObject *parent, const QString &keyword = QString(), const QVariantList &args = QVariantList());
 
+    /**
+     * @deprecated
+     */
     template<typename T>
     KDE_DEPRECATED
     T *create(QObject *parent, const QStringList &args)
@@ -323,6 +332,9 @@ public:
         return create<T>(parent, stringListToVariantList(args));
     }
 
+    /**
+     * @deprecated
+     */
     KDE_DEPRECATED QObject *create(QObject *parent = 0, const char *classname = "QObject", const QStringList &args = QStringList())
     {
         return create(classname, 0, parent, stringListToVariantList(args), QString());
@@ -393,8 +405,14 @@ protected:
 
     KPluginFactoryPrivate *const d_ptr;
 
+    /**
+     * @deprecated
+     */
     virtual KDE_DEPRECATED QObject *createObject(QObject *parent, const char *className, const QStringList &args);
 
+    /**
+     * @deprecated
+     */
     virtual KDE_DEPRECATED KParts::Part *createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args);
 
     
