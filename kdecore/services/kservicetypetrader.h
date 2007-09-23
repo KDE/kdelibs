@@ -144,10 +144,8 @@ public:
      * @param serviceType the type of service for which to find a plugin
      * @param constraint an optional constraint to pass to the trader (see KTrader)
      * @param parent the parent object for the part itself
-     * @param args A list of string arguments, passed to the factory and possibly
-     *             to the component (see KLibFactory)
-     * @param error The int passed here will receive an error code in case of errors.
-     *              (See enum KLibLoader::ComponentLoadingError)
+     * @param args A list of arguments passed to the service component
+     * @param error The string passed here will contain an error description.
      * @return A pointer to the newly created object or a null pointer if the
      *         factory was unable to create an object of the given type.
      */
@@ -156,9 +154,29 @@ public:
             const QString &constraint = QString(), QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
-        const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
+        return createInstanceFromQuery(serviceType, 0, parent, constraint, args, error);
+    }
+
+    /**
+     * This method works like the previous one, but you can specify an additional parent widget.
+     * This is used for example for parts
+     *
+     * @param serviceType the type of service for which to find a plugin
+     * @param constraint an optional constraint to pass to the trader (see KTrader)
+     * @param parent the parent object for the part itself
+     * @param args A list of arguments passed to the service component
+     * @param error The string passed here will contain an error description.
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     */
+    template <class T>
+    static T *createInstanceFromQuery(const QString &serviceType,
+            QWidget *parentWidget, QObject *parent, const QString &constraint = QString(), 
+            const QVariantList &args = QVariantList(), QString *error = 0)
+    {
+        const KService::List offers = self()->query(serviceType, constraint);
         Q_FOREACH (const KService::Ptr &ptr, offers) {
-            T *component = ptr->createInstance<T>(parent, args, error);
+            T *component = ptr->createInstance<T>(parentWidget, parent, args, error);
             if (component) {
                 if (error)
                     error->clear();

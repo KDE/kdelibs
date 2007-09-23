@@ -23,13 +23,15 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <klibloader.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <ksycocaentry.h>
 #include <klocale.h>
 
 class KServiceType;
 class QDataStream;
 class KDesktopFile;
+class QWidget;
 
 class KServicePrivate;
 
@@ -470,25 +472,6 @@ public:
      * This template allows to load the library for the specified service and ask the
      * factory to create an instance of the given template type.
      *
-     * @param service The service describing the library to open
-     * @param parent The parent object (see QObject constructor)
-     * @param args A list of string arguments, passed to the factory and possibly
-     *             to the component (see KLibFactory)
-     * @param error see KLibLoader
-     * @return A pointer to the newly created object or a null pointer if the
-     *         factory was unable to create an object of the given type.
-     */
-    template <class T>
-    static T *createInstance(const KService::Ptr &service, QObject *parent = 0,
-            const QVariantList &args = QVariantList(), QString *error = 0)
-    {
-        return service->createInstance<T>(parent, args, error);
-    }
-
-    /**
-     * This template allows to load the library for the specified service and ask the
-     * factory to create an instance of the given template type.
-     *
      * @param parent The parent object (see QObject constructor)
      * @param args A list of arguments, passed to the factory and possibly
      *             to the component (see KPluginFactory)
@@ -501,10 +484,30 @@ public:
     T *createInstance(QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0) const
     {
+        return createInstance<T>(0, parent, args, error);
+    }
+
+    /**
+     * This template allows to load the library for the specified service and ask the
+     * factory to create an instance of the given template type.
+     *
+     * @param parentWidget A parent widget for the service. This is used e. g. for parts
+     * @param parent The parent object (see QObject constructor)
+     * @param args A list of arguments, passed to the factory and possibly
+     *             to the component (see KPluginFactory)
+     * @param error A pointer to QString which should receive the error description or 0
+     *
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     */
+    template <class T>
+    T *createInstance(QWidget *parentWidget, QObject *parent,
+            const QVariantList &args = QVariantList(), QString *error = 0) const
+    {
         KPluginLoader pluginLoader(*this);
         KPluginFactory *factory = pluginLoader.factory();
         if (factory) {
-            T *o = factory->create<T>(pluginKeyword(), parent, args);
+            T *o = factory->create<T>(parentWidget, parent, pluginKeyword(), args);
             if (!o && error)
                 *error = i18n("The service '%1' does not provide an interface '%2' with keyword '%3'",
                               name(), QString::fromLatin1(T::staticMetaObject.className()), pluginKeyword());
@@ -512,8 +515,16 @@ public:
         }
         else if (error) {
             *error = pluginLoader.errorString();
+            pluginLoader.unload();
         }
         return 0;
+    }
+
+    template <class T>
+    KDE_DEPRECATED static T *createInstance(const KService::Ptr &service, QObject *parent = 0,
+            const QVariantList &args = QVariantList(), QString *error = 0)
+    {
+        return service->createInstance<T>(parent, args, error);
     }
 
     template <class T>
@@ -537,6 +548,8 @@ public:
      * This template allows to create a component from a list of services,
      * usually coming from a trader query. You probably want to use KServiceTypeTrader instead.
      *
+     * @deprecated Use KServiceTypeTrader::createInstanceFromQuery instead
+     *
      * @param begin The start iterator to the service describing the library to open
      * @param end The end iterator to the service describing the library to open
      * @param parent The parent object (see QObject constructor)
@@ -547,7 +560,7 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <class T, class ServiceIterator>
-    static T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
+    KDE_DEPRECATED static T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         for (; begin != end; ++begin) {

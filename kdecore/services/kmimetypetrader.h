@@ -100,6 +100,47 @@ public:
     KService::Ptr preferredService( const QString & mimeType, const QString & genericServiceType = QString::fromLatin1("Application") );
 
     /**
+     * This method creates and returns a part object from the trader query for a given \p mimeType.
+     *
+     * Example:
+     * \code
+     * KParts::ReadOnlyPart* part = KMimeTypeTrader::createInstanceFromQuery<KParts::ReadOnlyPart>("text/plain", parentWidget, parentObject);
+     * if (part) {
+     *     part->openUrl(url);
+     *     part->widget()->show();  // also insert the widget into a layout, or simply use a KVBox as parentWidget
+     * }
+     * \endcode
+     *
+     * @param mimeType the mimetype which this part is associated with
+     * @param parentWidget the parent widget, will be set as the parent of the part's widget
+     * @param parent the parent object for the part itself
+     * @param constraint an optional constraint to pass to the trader
+     * @param args A list of arguments passed to the service component
+     * @param error The string passed here will contain an error description.
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     */
+    template <class T>
+    static T *createInstanceFromQuery(const QString &mimeType, QWidget *parentWidget = 0, QObject *parent = 0,
+                                      const QString &constraint = QString(),
+                                      const QVariantList &args = QVariantList(),
+                                      QString *error = 0)
+    {
+        const KService::List offers = self()->query(mimeType, QString::fromAscii("KParts/ReadOnlyPart"), constraint);
+        Q_FOREACH (const KService::Ptr &ptr, offers) {
+            T *component = ptr->createInstance<T>(parentWidget, parent, args, error);
+            if (component) {
+                if (error)
+                    error->clear();
+                return component;
+            }
+        }
+        if (error) 
+            *error = i18n("No service matching the requirements was found");
+        return 0;
+    }
+
+    /**
      * This is a static pointer to the KMimeTypeTrader singleton.
      *
      * You will need to use this to access the KMimeTypeTrader functionality since the
