@@ -48,7 +48,8 @@ class Nepomuk::ResourceManager::Private
 {
 public:
     Private( ResourceManager* manager )
-        : mainModel( 0 ),
+        : client( "/org/kde/nepomuk/repository" ),
+          mainModel( 0 ),
           m_parent(manager) {
     }
 
