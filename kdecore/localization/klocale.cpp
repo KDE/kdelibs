@@ -214,7 +214,10 @@ public:
 };
 
 KLocalePrivate::KLocalePrivate(const QString& catalog, KConfig *config, const QString &language_, const QString &country_)
-    : calendar(0), codecForEncoding(0), languages(0), appName(catalog), useTranscript(false), language(language_), country(country_)
+    : language(language_),
+      country(country_),
+      useTranscript(false), codecForEncoding(0),
+      languages(0), calendar(0), appName(catalog)
 {
     initEncoding();
     initFileNameEncoding();
