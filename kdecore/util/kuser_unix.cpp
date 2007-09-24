@@ -34,8 +34,8 @@ public:
     uid_t uid;
     gid_t gid;
     QString loginName, fullName;
-    QString roomNumber, workPhone, homePhone;
     QString homeDir, shell;
+    QMap<const QByteArray, QVariant> extendedProperties;
 
     Private() : uid(uid_t(-1)), gid(gid_t(-1)) {}
     Private(const char *name) : uid(uid_t(-1)), gid(gid_t(-1))
@@ -60,9 +60,9 @@ public:
             gid = p->pw_gid;
             loginName = QString::fromLocal8Bit(p->pw_name);
             fullName = gecosList[0];
-            roomNumber = gecosList[1];
-            workPhone = gecosList[2];
-            homePhone = gecosList[3];
+            extendedProperties["roomnumber"] = QVariant(gecosList[1]);
+            extendedProperties["workphone"] = QVariant(gecosList[2]);
+            extendedProperties["homephone"] = QVariant(gecosList[3]);
             homeDir = QString::fromLocal8Bit(p->pw_dir);
             shell = QString::fromLocal8Bit(p->pw_shell);
         }
@@ -85,7 +85,7 @@ KUser::KUser(UIDMode mode)
 	}
 }
 
-KUser::KUser(uid_t _uid)
+KUser::KUser(K_UID _uid)
     : d(new Private( ::getpwuid( _uid ) ))
 {
 }
@@ -128,11 +128,11 @@ bool KUser::isValid() const {
 	return uid() != uid_t(-1);
 }
 
-uid_t KUser::uid() const {
+const K_UID KUser::uid() const {
 	return d->uid;
 }
 
-gid_t KUser::gid() const {
+const K_GID KUser::gid() const {
 	return d->gid;
 }
 
@@ -146,18 +146,6 @@ QString KUser::loginName() const {
 
 QString KUser::fullName() const {
 	return d->fullName;
-}
-
-QString KUser::roomNumber() const {
-	return d->roomNumber;
-}
-
-QString KUser::workPhone() const {
-	return d->workPhone;
-}
-
-QString KUser::homePhone() const {
-	return d->homePhone;
 }
 
 QString KUser::homeDir() const {
@@ -194,6 +182,10 @@ QStringList KUser::groupNames() const {
   return result;
 }
 
+QVariant KUser::extendedProperty(const QByteArray &which) const
+{
+    return d->extendedProperties.value(which);
+}
 
 QList<KUser> KUser::allUsers() {
   QList<KUser> result;
@@ -257,7 +249,7 @@ KUserGroup::KUserGroup(KUser::UIDMode mode)
     d = new Private(getgrgid(KUser(mode).gid()));
 }
 
-KUserGroup::KUserGroup(gid_t _gid)
+KUserGroup::KUserGroup(K_GID _gid)
     : d(new Private(getgrgid(_gid)))
 {
 }
@@ -299,7 +291,7 @@ bool KUserGroup::isValid() const {
 	return gid() != gid_t(-1);
 }
 
-gid_t KUserGroup::gid() const {
+K_GID KUserGroup::gid() const {
 	return d->gid;
 }
 

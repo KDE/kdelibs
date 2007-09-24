@@ -23,14 +23,26 @@
 #define KUSER_H
 
 #include <kdecore_export.h>
-#include "ksharedptr.h"
-#include <sys/types.h>
+#include <ksharedptr.h>
+
+#include <QtCore/QVariant>
 
 class KUserGroup;
 class QString;
 class QStringList;
-struct passwd;
 template <class T> class QList;
+
+#ifdef Q_OS_WIN
+typedef void *K_UID;
+typedef void *K_GID;
+#else
+#include <sys/types.h>
+typedef uid_t K_UID;
+typedef gid_t K_GID;
+struct passwd;
+struct group;
+#endif
+
 
 /**
  * @short Represents a user on your system
@@ -71,7 +83,7 @@ public:
    * If the user does not exist isValid() will return false.
    * @param uid the user id
    */
-  explicit KUser(uid_t uid);
+  explicit KUser(K_UID uid);
 
   /**
    * Creates an object that contains information about the user with the given
@@ -89,6 +101,7 @@ public:
    */
   explicit KUser(const char* name);
 
+#ifndef Q_OS_WIN
   /**
    * Creates an object from a passwd structure.
    * If the pointer is null isValid() will return false.
@@ -96,6 +109,7 @@ public:
    * @param p the passwd structure to create the user from
    */
   explicit KUser(const passwd *p);
+#endif
 
   /**
    * Creates an object from another KUser object
@@ -133,13 +147,15 @@ public:
    * Returns the user id of the user.
    * @return the id of the user or -1 if user is invalid
    */
-  uid_t uid() const;
+  const K_UID uid() const;
 
+#ifndef Q_OS_WIN
   /**
    * Returns the group id of the user.
    * @return the id of the group or -1 if user is invalid
    */
-  gid_t gid() const;
+  const K_GID gid() const;
+#endif
 
   /**
    * Checks whether the user is the super user (root).
@@ -158,27 +174,6 @@ public:
    * @return the full name of the user or QString() if user is invalid
    */
   QString fullName() const;
-
-  /**
-   * The user's room number.
-   * @return the room number of the user or QString() if not set or the
-   *         user is invalid
-   */
-  QString roomNumber() const;
-
-  /**
-   * The user's work phone.
-   * @return the work phone of the user or QString() if not set or the
-   *         user is invalid
-   */
-  QString workPhone() const;
-
-  /**
-   * The user's home phone.
-   * @return the home phone of the user or QString() if not set or the
-   *         user is invalid
-   */
-  QString homePhone() const;
 
   /**
    * The path to the user's home directory.
@@ -206,6 +201,16 @@ public:
    */
   QStringList groupNames() const;
 
+  /**
+   * Returns an extended property.
+   *
+   * Supported properties on UNIX: @c roomnumer, @c workphone and @c homephone.
+   * Under Windows, no extended properties are supported currently.
+   *
+   * @return a QVariant with the value of the property or an invalid QVariant,
+   *         if the property is not set
+   */
+  QVariant extendedProperty(const QByteArray &which) const;
 
   /**
    * Destructor.
@@ -229,8 +234,6 @@ private:
   KSharedPtr<Private> d;
 };
 
-struct group;
-
 /**
  * @short Represents a group on your system
  *
@@ -245,6 +248,21 @@ class KDECORE_EXPORT KUserGroup {
 
 public:
 
+  /**
+   * Create an object from a group name.
+   * If the group does not exist, isValid() will return false.
+   * @param name the name of the group
+   */
+  explicit KUserGroup(const QString& name);
+
+  /**
+   * Create an object from a group name.
+   * If the group does not exist, isValid() will return false.
+   * @param name the name of the group
+   */
+  explicit KUserGroup(const char *name);
+
+#ifndef Q_OS_WIN
   /**
    * Create an object from the group of the current user.
    * @param mode if #KUser::UseEffectiveUID is passed the effective user
@@ -262,21 +280,7 @@ public:
    * If the group does not exist, isValid() will return false.
    * @param gid the group id
    */
-  explicit KUserGroup(gid_t gid);
-
-  /**
-   * Create an object from a group name.
-   * If the group does not exist, isValid() will return false.
-   * @param name the name of the group
-   */
-  explicit KUserGroup(const QString& name);
-
-  /**
-   * Create an object from a group name.
-   * If the group does not exist, isValid() will return false.
-   * @param name the name of the group
-   */
-  explicit KUserGroup(const char *name);
+  explicit KUserGroup(K_GID gid);
 
   /**
    * Creates an object from a group structure.
@@ -284,6 +288,7 @@ public:
    * @param g the group structure to create the group from.
    */
   explicit KUserGroup(const group *g);
+#endif
 
   /**
    * Creates a new KUserGroup instance from another KUserGroup object
@@ -320,11 +325,13 @@ public:
    */
   bool isValid() const;
 
+#ifndef Q_OS_WIN
   /**
    * Returns the group id of the group.
    * @return the group id of the group or -1 if the group is invalid
    */
-  gid_t gid() const;
+  K_GID gid() const;
+#endif
 
   /**
    * The name of the group.

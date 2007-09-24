@@ -56,6 +56,7 @@ if (WIN32)
       io/klockfile_win.cpp
       util/kshell_win.cpp
       util/kmacroexpander_win.cpp
+      util/kuser_win.cpp
    )
 endif (WIN32)
 
@@ -76,6 +77,7 @@ if (UNIX)
       io/kptyprocess.cpp
       io/klockfile_unix.cpp
       util/kshell_unix.cpp
+      util/kuser_unix.cpp
       util/kmacroexpander_unix.cpp
       fakes.c 
    )
@@ -223,7 +225,6 @@ set(kdecore_LIB_SRCS
    util/kshell.cpp
    util/krandom.cpp
    util/krandomsequence.cpp
-   util/kuser.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
 
