@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_subdirectory( ifaces )
 add_subdirectory( backends )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
@@ -109,10 +110,11 @@ set(solid_LIB_SRCS
    backends/fakehw/fakevolume.cpp
 )
 
-qt4_add_dbus_interfaces_no_namespace(solid_LIB_SRCS
-   org.kde.Solid.PowerManagement.xml
-   org.kde.Solid.PowerManagement.Inhibit.xml
-)
+SET_SOURCE_FILES_PROPERTIES( org.kde.Solid.PowerManagement.xml
+org.kde.Solid.PowerManagement.Inhibit.xml PROPERTIES NO_NAMESPACE TRUE)
+
+QT4_ADD_DBUS_INTERFACES(solid_LIB_SRCS org.kde.Solid.PowerManagement.xml
+org.kde.Solid.PowerManagement.Inhibit.xml )
 
 qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
     org_kde_solid_networking_client)

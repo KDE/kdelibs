@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_subdirectory(fakebackend)
 if(NOT MINGW)
   # ICE in audiooutputitem.cpp
@@ -24,7 +25,7 @@ ENDMACRO(PHONON_UNIT_TESTS_FAKE)
 
 MACRO(PHONON_EXECUTABLE_TESTS)
 	FOREACH(_testname ${ARGN})
-		kde4_add_test_executable(${_testname} ${_testname}.cpp)
+		kde4_add_executable(${_testname} TEST ${_testname}.cpp)
 		target_link_libraries(${_testname} ${KDE4_PHONON_LIBS} ${QT_QTTEST_LIBRARY})
 	ENDFOREACH(_testname)
 ENDMACRO(PHONON_EXECUTABLE_TESTS)
@@ -66,7 +67,7 @@ target_link_libraries(audiodevicelisttest ${KDE4_KAUDIODEVICELIST_LIBS})
 target_link_libraries(mediaplayer ${KDE4_KIO_LIBS})
 target_link_libraries(backendcapabilitiestest_fake ${KDE4_KDECORE_LIBS})
 #methodtest does not link against libphonon
-kde4_add_test_executable(methodtest methodtest.cpp ../factory.cpp ../phononnamespace.cpp)
+kde4_add_executable(methodtest TEST methodtest.cpp ../factory.cpp ../phononnamespace.cpp)
 target_link_libraries(methodtest ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY}  ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY} ${KDE4_PHONON_LIBS})
 SET_TARGET_PROPERTIES(methodtest PROPERTIES COMPILE_FLAGS "-DPHONON_METHODTEST -DPHONON_EXPORT=")
 kde4_add_unit_test(methodtest_fake methodtest.cpp ../factory.cpp ../phononnamespace.cpp)
@@ -80,7 +81,7 @@ target_link_libraries(mediasourcetest ${KDE4_PHONON_LIBS} ${QT_QTTEST_LIBRARY})
 
 SET(backendtester_SRCS backendtester.cpp)
 kde4_add_ui_files(backendtester_SRCS backendtester.ui)
-kde4_add_test_executable(backendtester ${backendtester_SRCS})
+kde4_add_executable(backendtester TEST ${backendtester_SRCS})
 target_link_libraries(backendtester ${KDE4_KDEUI_LIBS})
 
 # vim: noet sw=8

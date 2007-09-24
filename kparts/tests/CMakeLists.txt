@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 
@@ -10,7 +11,7 @@ notepad.cpp
 )
 
 
-kde4_add_test_executable(kpartstest ${kpartstest_SRCS})
+kde4_add_executable(kpartstest TEST ${kpartstest_SRCS})
 
 target_link_libraries(kpartstest  ${KDE4_KPARTS_LIBS} )
 
@@ -24,7 +25,7 @@ notepad.cpp
 )
 
 
-kde4_add_test_executable(normalktmtest ${normalktmtest_SRCS})
+kde4_add_executable(normalktmtest TEST ${normalktmtest_SRCS})
 
 target_link_libraries(normalktmtest  ${KDE4_KPARTS_LIBS} )
 
@@ -36,7 +37,7 @@ ghostview.cpp
 )
 
 
-kde4_add_test_executable(ghostviewtest ${ghostviewtest_SRCS})
+kde4_add_executable(ghostviewtest TEST ${ghostviewtest_SRCS})
 
 target_link_libraries(ghostviewtest  ${KDE4_KPARTS_LIBS} )
 
@@ -76,7 +77,7 @@ MACRO(KPARTS_UNIT_TESTS)
 ENDMACRO(KPARTS_UNIT_TESTS)
 MACRO(KPARTS_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_test_executable(${_testname} ${_testname}.cpp)
+               kde4_add_executable(${_testname} TEST ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY})
                set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
        ENDFOREACH(_testname)

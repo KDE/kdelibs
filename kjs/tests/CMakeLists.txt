@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN32_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/.. )
 
@@ -11,7 +12,7 @@ endif (NOT DEFINED QT_ONLY)
 
 set(testkjs_static_SRCS testkjs.cpp )
 
-kde4_add_test_executable(testkjs_static ${testkjs_static_SRCS})
+kde4_add_executable(testkjs_static TEST ${testkjs_static_SRCS})
 
 target_link_libraries(testkjs_static ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
@@ -19,7 +20,7 @@ target_link_libraries(testkjs_static ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
 set(testkjs_SRCS testkjs.cpp )
 
-kde4_add_test_executable(testkjs ${testkjs_SRCS})
+kde4_add_executable(testkjs TEST ${testkjs_SRCS})
 
 target_link_libraries(testkjs ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 

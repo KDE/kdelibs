@@ -3,6 +3,8 @@ include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${CMAKE_CURRENT_S
 
 include_directories( ../Weaver/ )
 
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
+
 ########### next target ###############
 
 set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp)

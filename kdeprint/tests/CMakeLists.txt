@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 ########### next target ###############
@@ -9,7 +10,7 @@ set(helpviewer_SRCS
    )
 
 
-kde4_add_test_executable(helpviewer ${helpviewer_SRCS})
+kde4_add_executable(helpviewer TEST ${helpviewer_SRCS})
 
 target_link_libraries(helpviewer  ${KDE4_KDECORE_LIBS} kdeprint ${QT_QT3SUPPORT_LIBRARY})
 
@@ -19,7 +20,7 @@ target_link_libraries(helpviewer  ${KDE4_KDECORE_LIBS} kdeprint ${QT_QT3SUPPORT_
 set(drawdemo_SRCS drawdemo.cpp )
 
 
-kde4_add_test_executable(drawdemo ${drawdemo_SRCS})
+kde4_add_executable(drawdemo TEST ${drawdemo_SRCS})
 
 target_link_libraries(drawdemo  ${KDE4_KDECORE_LIBS} kdeprint )
 

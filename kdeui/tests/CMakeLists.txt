@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_subdirectory(kconfig_compiler)
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
@@ -11,7 +12,7 @@ MACRO(KDEUI_UNIT_TESTS)
 ENDMACRO(KDEUI_UNIT_TESTS)
 MACRO(KDEUI_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_test_executable(${_testname} ${_testname}.cpp)
+               kde4_add_executable(${_testname} TEST ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KDEUI_EXECUTABLE_TESTS)
@@ -112,5 +113,5 @@ endif (Q_WS_X11)
 ## kplottest
 
 set(kplottest_SRCS testplot_widget.cpp testplot_main.cpp)
-kde4_add_test_executable(kplottest ${kplottest_SRCS})
+kde4_add_executable(kplottest TEST ${kplottest_SRCS})
 target_link_libraries(kplottest ${KDE4_KDEUI_LIBS})

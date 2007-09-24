@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories(${KDE4_KIO_INCLUDES})
 
 MACRO(PHONON_UNIT_TESTS)
@@ -18,7 +19,7 @@ ENDMACRO(PHONON_UNIT_TESTS_FAKE)
 
 MACRO(PHONON_EXECUTABLE_TESTS)
 	FOREACH(_testname ${ARGN})
-		kde4_add_test_executable(${_testname} ${_testname}.cpp)
+		kde4_add_executable(${_testname} TEST ${_testname}.cpp)
 		target_link_libraries(${_testname} ${KDE4_PHONONUI_LIBS} phononexperimental ${QT_QTTEST_LIBRARY})
 
 	ENDFOREACH(_testname)

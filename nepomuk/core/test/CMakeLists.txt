@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 project(kmetadata_tests)
 
 include_directories(
@@ -55,5 +56,5 @@ target_link_libraries(resourcedatatest
   ${KDE4_KDECORE_LIBRARY})
 
 # Not a real test, just a simple app for testing a widget manually
-kde4_add_test_executable(tagcloudtest tagcloudtest.cpp)
+kde4_add_executable(tagcloudtest TEST tagcloudtest.cpp)
 target_link_libraries(tagcloudtest kmetadata)

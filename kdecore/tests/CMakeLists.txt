@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 MACRO(KDECORE_UNIT_TESTS)
@@ -8,7 +9,7 @@ MACRO(KDECORE_UNIT_TESTS)
 ENDMACRO(KDECORE_UNIT_TESTS)
 MACRO(KDECORE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_test_executable(${_testname} ${_testname}.cpp)
+               kde4_add_executable(${_testname} TEST ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KDECORE_EXECUTABLE_TESTS)

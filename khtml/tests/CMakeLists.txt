@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 include_directories( ${KDE4_KPARTS_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui )
@@ -12,7 +13,7 @@ if(NOT MSVC)
     )
 
     qt4_add_resources( khtmltest_SRCS testkhtml.qrc )
-    kde4_add_test_executable(khtmltest ${khtmltest_SRCS} )
+    kde4_add_executable(khtmltest TEST ${khtmltest_SRCS} )
     target_link_libraries( khtmltest ${KDE4_KDECORE_LIBS} khtml )
 
     ########### next target ###############

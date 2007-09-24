@@ -1,3 +1,4 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 ########### fakehardwaretest ###############
@@ -56,7 +57,7 @@ target_link_libraries(solidhwtest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT
 #QT4_ADD_DBUS_ADAPTOR(solidnettestdbusservice_SRCS ../solid/org.kde.Solid.Networking.Client.xml
 #                         solidnettestdbusservice.h TestNetworkingService)
 
-#kde4_add_test_executable(solidnettestdbusservice ${solidnettestdbusservice_SRCS})
+#kde4_add_executable(solidnettestdbusservice TEST ${solidnettestdbusservice_SRCS})
 
 #target_link_libraries(solidnettestdbusservice ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY})
 
@@ -72,7 +73,7 @@ kde4_add_ui_files(networkingclient_SRCS networkingclientview.ui)
 qt4_add_dbus_interface(networkingclient_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../solid/org.kde.Solid.Networking.Client.xml clientinterface)
 
 
-kde4_add_test_executable(networkingclient ${networkingclient_SRCS})
+kde4_add_executable(networkingclient TEST ${networkingclient_SRCS})
 
 target_link_libraries(networkingclient solid_static ${KDE4_KIO_LIBS})
 ########### install files ###############

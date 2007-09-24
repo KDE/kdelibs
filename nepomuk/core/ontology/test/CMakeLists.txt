@@ -7,6 +7,7 @@ include_directories(
 
 include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_SOURCE_DIR}/konto )
 include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 # tests
 kde4_add_unit_test(kontotest kontotest.cpp)

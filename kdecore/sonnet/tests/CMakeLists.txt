@@ -1,10 +1,11 @@
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 ########### next target ###############
 
 # TODO automate and merge with test_filter?
 set(test_suggest_SRCS test.cpp)
 
 
-kde4_add_test_executable(test_suggest ${test_suggest_SRCS})
+kde4_add_executable(test_suggest TEST ${test_suggest_SRCS})
 
 target_link_libraries(test_suggest ${KDE4_KDECORE_LIBS} )
 
