@@ -153,11 +153,14 @@ install(TARGETS ${KJSLIBNAME}
 
 set(kjs_SRCS kjs.cpp)
 
-kde4_add_executable(kjs NOGUI ${kjs_SRCS})
+# 'kjs_bin' because cmake doesn't like having a lib and app with the same name
+kde4_add_executable(kjs_bin NOGUI ${kjs_SRCS})
 
-target_link_libraries(kjs ${KJSLIBNAME})
+set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME kjs)
 
-install(TARGETS kjs DESTINATION ${BIN_INSTALL_DIR})
+target_link_libraries(kjs_bin ${KJSLIBNAME})
+
+install(TARGETS kjs_bin DESTINATION ${BIN_INSTALL_DIR})
 
 ########### install files ###############
 install( FILES
