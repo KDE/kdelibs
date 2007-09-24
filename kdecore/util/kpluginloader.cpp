@@ -23,7 +23,7 @@
 #include <klocale.h>
 #include "kpluginfactory.h"
 #include <kservice.h>
-#include "klibloader.h"
+#include "klibrary.h"
 
 #include <QtCore/QLibrary>
 #include <QtCore/QDir>
@@ -37,6 +37,10 @@ protected:
     KPluginLoaderPrivate(const QString &libname)
         : name(libname), pluginVersion(-1), verificationData(0), lib(0)
     {}
+    ~KPluginLoaderPrivate()
+    {
+        delete lib;
+    }
 
     KPluginLoader *q_ptr;
     const QString name;
@@ -161,8 +165,8 @@ bool KPluginLoader::load()
 {
     Q_D(KPluginLoader);
     if (!QPluginLoader::load()) {
-        d->lib = KLibLoader::self()->library(d->name);
-        if (d->lib)
+        d->lib = new KLibrary(d->name);
+        if (d->lib->load())
             return true;
 
         return false;
