@@ -21,6 +21,7 @@ if(JASPER_FOUND)
     install( FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 endif(JASPER_FOUND)
+macro_log_feature(JASPER_FOUND "JasPer" "JasPer JPEG2000 Library" "http://www.ece.uvic.ca/~mdadams/jasper/" FALSE "" "Provides support for JPEG-2000 images.")
 
 ##################################
 
