@@ -19,6 +19,7 @@ set(kaudiodevicelist_LIB_SRCS
 	audiodevice.cpp
 	audiodeviceenumerator.cpp
 	)
+#QT4_ADD_RESOURCES(kaudiodevicelist_LIB_SRCS resources.qrc)
 kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
 target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} ${KDE4_PHONON_LIBS} ${KDE4_KIO_LIBS} ${ASOUND_LIBRARY})
 

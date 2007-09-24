@@ -55,6 +55,8 @@ namespace Phonon
         friend class AudioDeviceEnumeratorPrivate;
 
         public:
+            //static QStringList addSoftVolumeMixerControl(const AudioDevice &device, const QStringList &mixerControlNames);
+
             /**
              * \internal
              * Creates an invalid and empty instance.
@@ -116,6 +118,13 @@ namespace Phonon
              * Unique index to identify the device.
              */
             int index() const;
+
+            /**
+             * Returns the initial preference for this device.
+             *
+             * The higher the number the more preferred the device is.
+             */
+            int initialPreference() const;
 
             /**
              * Returns whether the device is available.

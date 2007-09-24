@@ -21,6 +21,7 @@
 
 #include "audiodevice_p.h"
 #include "audiodeviceenumerator.h"
+#include <QtCore/QFile>
 #include <solid/device.h>
 #include <solid/audiointerface.h>
 #include <kconfiggroup.h>
@@ -33,6 +34,47 @@
 
 namespace Phonon
 {
+#if 0
+QStringList AudioDevice::addSoftVolumeMixerControl(const AudioDevice &device, const QStringList &mixerControlNames)
+{
+    if (device.driver() != Solid::AudioInterface::Alsa) {
+        return QStringList();
+    }
+    static bool softvolReady = false;
+    if (!softvolReady) {
+        QFile softvolDefinition(":/phonon/softvol.alsa");
+        softvolDefinition.open(QIODevice::ReadOnly);
+        const QByteArray softvolDefinitionData = softvolDefinition.readAll();
+
+        snd_input_t *sndInput = 0;
+        if (0 != snd_input_buffer_open(&sndInput, softvolDefinitionData.constData(), softvolDefinitionData.size())) {
+            // error
+            return QStringList();
+        }
+        Q_ASSERT(sndInput);
+
+        snd_config_load(snd_config, sndInput);
+        snd_input_close(sndInput);
+        softvolReady = true;
+    }
+
+
+    QStringList ids = device.deviceIds();
+    foreach (const QString &mixerControlName, mixerControlNames) {
+        QStringList tmp;
+        foreach (QString id, ids) {
+            id.replace(QLatin1Char('"'), QLatin1String("\\\""));
+            tmp << QString("phonon_softvol:CARD=\"%1\",NAME=\"%2\",SLAVE=\"%3\"")
+                .arg(0)
+                .arg(mixerControlName)
+                .arg(id);
+        }
+        ids = tmp;
+    }
+    return ids;
+}
+#endif
+
 AudioDevice::AudioDevice()
     : d(new AudioDevicePrivate)
 {
@@ -374,6 +416,11 @@ QString AudioDevice::udi() const
 int AudioDevice::index() const
 {
     return d->index;
+}
+
+int AudioDevice::initialPreference() const
+{
+    return 0;
 }
 
 bool AudioDevice::isAvailable() const

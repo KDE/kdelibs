@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/phonon" >
+        <file>softvol.alsa</file>
+    </qresource>
+</RCC>
