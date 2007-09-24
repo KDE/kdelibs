@@ -33,7 +33,7 @@ class KVBox;
 class QSystemTrayIcon;
 
 /**
- * @short A dialog-like popup that displays messages without interupting the user.
+ * @short A dialog-like popup that displays messages without interrupting the user.
  *
  * The simplest uses of KPassivePopup are by using the various message() static
  * methods. The position the popup appears at depends on the type of the parent window:
