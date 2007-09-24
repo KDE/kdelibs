@@ -206,6 +206,14 @@ class ObjectDescription
         }
 
         /**
+         * Returns \c false if this ObjectDescription describes the same
+         * as \p otherDescription; otherwise returns \c true.
+         */
+        inline bool operator!=(const ObjectDescription &otherDescription) const {
+            return !operator==(otherDescription);
+        }
+
+        /**
          * Returns the name of the capture source.
          *
          * \return A string that should be presented to the user to
