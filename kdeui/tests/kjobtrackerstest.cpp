@@ -167,8 +167,8 @@ int main(int argc, char **argv)
 
     testJob->start();
 
-    tracker1->widget()->show();
-    tracker2->widget()->show();
+    tracker1->widget(testJob)->show();
+    tracker2->widget(testJob)->show();
 
     return app.exec();
 }

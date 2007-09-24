@@ -149,7 +149,6 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   // statusbar progress widget
   statusTracker = new KStatusBarJobTracker( statusBar() );
-  statusBar()->addPermanentWidget( statusTracker->widget(), 0 );
 
   // run & stop butons
   hbLayout = new QHBoxLayout();
@@ -316,6 +315,8 @@ void KioslaveTest::startJob() {
     job = myJob;
   }
 
+  statusBar()->addPermanentWidget( statusTracker->widget(job), 0 );
+
   connect( job, SIGNAL( result( KJob * ) ),
            SLOT( slotResult( KJob * ) ) );
 
@@ -367,7 +368,7 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
 {
     // It's rather rare to iterate that way, usually you'd use numberValue/stringValue directly.
     // This is just to print out all that we got
-    
+
     /*
     KIO::UDSEntry::ConstIterator it = entry.begin();
     for( ; it != entry.end(); it++ ) {
@@ -408,7 +409,7 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
     }
     */
     kDebug() << "this test has been turned off temporarily";
-    
+
     // TODO: turn it on again
 }
 
