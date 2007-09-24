@@ -72,7 +72,7 @@ public:
 OntologyParser::OntologyParser()
 {
     d = new Private;
-    d->rdfParser = Soprano::PluginManager::instance()->discoverParserForSerialization( Soprano::SERIALIZATION_RDF_XML );
+    d->rdfParser = Soprano::PluginManager::instance()->discoverParserForSerialization( Soprano::SerializationRdfXml );
     Q_ASSERT( d->rdfParser );
 }
 
@@ -123,7 +123,7 @@ bool OntologyParser::parse( const QString& filename )
     }
 
     // FIXME: the serialization should be somehow specified
-    Soprano::StatementIterator it = d->rdfParser->parseFile( filename, QUrl(), Soprano::SERIALIZATION_RDF_XML );
+    Soprano::StatementIterator it = d->rdfParser->parseFile( filename, QUrl(), Soprano::SerializationRdfXml );
     bool success = true;
 
     while( it.next() ) {

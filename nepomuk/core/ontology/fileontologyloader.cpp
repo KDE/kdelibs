@@ -29,7 +29,7 @@ class Nepomuk::FileOntologyLoader::Private
 {
 public:
     Private()
-        : serialization( Soprano::SERIALIZATION_UNKNOWN ) {
+        : serialization( Soprano::SerializationUnknown ) {
     }
 
     QString filename;

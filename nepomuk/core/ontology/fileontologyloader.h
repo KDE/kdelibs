@@ -43,7 +43,7 @@ namespace Nepomuk {
 	 * ontology from the specified filename.
 	 */
 	explicit FileOntologyLoader( const QString& filename,
-                                     Soprano::RdfSerialization serialization = Soprano::SERIALIZATION_UNKNOWN );
+                                     Soprano::RdfSerialization serialization = Soprano::SerializationUnknown );
 
 	/**
 	 * Destructor
@@ -67,7 +67,7 @@ namespace Nepomuk {
 	
 	/**
 	 * Set the serialization that is used in the file.
-	 * Defaults to Soprano::SERIALIZATION_UNKNOWN
+	 * Defaults to Soprano::SerializationUnknown
 	 */
 	void setSerialization( Soprano::RdfSerialization );
 
