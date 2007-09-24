@@ -326,7 +326,6 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
 
 void FileProtocol::get( const KUrl& url )
 {
-    kDebug( 7101 ) << "File::get";
     if (!url.isLocalFile()) {
         KUrl redir(url);
 	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));

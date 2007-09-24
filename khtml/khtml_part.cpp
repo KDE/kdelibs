@@ -3706,7 +3706,7 @@ void KHTMLPart::resetHoverText()
      emit onURL( QString() );
      // revert to default statusbar text
      setStatusBarText(QString(), BarHoverText);
-     emit d->m_extension->mouseOverInfo(0);
+     emit d->m_extension->mouseOverInfo(KFileItem());
   }
 }
 
@@ -3735,7 +3735,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   }
 
   KFileItem item(u, QString(), KFileItem::Unknown);
-  emit d->m_extension->mouseOverInfo(&item);
+  emit d->m_extension->mouseOverInfo(item);
 
   QString com;
 

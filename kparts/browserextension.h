@@ -662,7 +662,7 @@ public:  // yes, those signals are public; don't tell moc or doxygen :)
    * Inform the hosting application that the user moved the mouse over an item.
    * Used when the mouse is on an URL.
    */
-  void mouseOverInfo( const KFileItem* item );
+  void mouseOverInfo( const KFileItem& item );
 
   /**
    * Ask the hosting application to add a new HTML (aka Mozilla/Netscape)

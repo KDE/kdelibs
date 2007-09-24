@@ -383,8 +383,8 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( selectionInfo( const QString& ) ) );
         connect( childExtension, SIGNAL( selectionInfo( const KUrl::List& ) ),
                  m_extension, SIGNAL( selectionInfo( const KUrl::List& ) ) );
-        connect( childExtension, SIGNAL( mouseOverInfo( const KFileItem* ) ),
-                 m_extension, SIGNAL( mouseOverInfo( const KFileItem* ) ) );
+        connect( childExtension, SIGNAL( mouseOverInfo( const KFileItem& ) ),
+                 m_extension, SIGNAL( mouseOverInfo( const KFileItem& ) ) );
         connect( childExtension, SIGNAL( moveTopLevelWidget( int, int ) ),
                  m_extension, SIGNAL( moveTopLevelWidget( int, int ) ) );
         connect( childExtension, SIGNAL( resizeTopLevelWidget( int, int ) ),
