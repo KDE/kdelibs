@@ -149,7 +149,6 @@ void KLineEdit::init()
     // Enable the context menu by default.
     QLineEdit::setContextMenuPolicy( Qt::DefaultContextMenu );
     KCursor::setAutoHideCursor( this, true, true );
-    installEventFilter( this );
 
     KGlobalSettings::Completion mode = completionMode();
     d->autoSuggest = (mode == KGlobalSettings::CompletionMan ||
@@ -1149,54 +1148,51 @@ void KLineEdit::dropEvent(QDropEvent *e)
     QLineEdit::dropEvent(e);
 }
 
-bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
+bool KLineEdit::event( QEvent* ev )
 {
-    if( o == this )
+    KCursor::autoHideEventFilter( this, ev );
+    if ( ev->type() == QEvent::ShortcutOverride )
     {
-        KCursor::autoHideEventFilter( this, ev );
-        if ( ev->type() == QEvent::ShortcutOverride )
+        QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+        if (overrideAccel (e))
         {
-            QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-            if (overrideAccel (e))
-            {
-                e->accept();
-                return true;
-            }
-        }
-        else if( ev->type() == QEvent::KeyPress )
-        {
-            QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-
-            if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
-            {
-                bool trap = d->completionBox && d->completionBox->isVisible();
-
-                bool stopEvent = trap || (d->grabReturnKeyEvents &&
-                                          (e->modifiers() == Qt::NoButton ||
-                                           e->modifiers() == Qt::KeypadModifier));
-
-                // Qt will emit returnPressed() itself if we return false
-                if ( stopEvent )
-                {
-                  emit QLineEdit::returnPressed();
-                  e->accept ();
-                }
-
-                emit returnPressed( displayText() );
-
-                if ( trap )
-                {
-                    d->completionBox->hide();
-                    deselect();
-                    setCursorPosition(text().length());
-                }
-
-                // Eat the event if the user asked for it, or if a completionbox was visible
-                return stopEvent;
-            }
+            ev->accept();
         }
     }
-    return QLineEdit::eventFilter( o, ev );
+    else if( ev->type() == QEvent::KeyPress )
+    {
+        QKeyEvent *e = static_cast<QKeyEvent *>( ev );
+
+        if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
+        {
+            bool trap = d->completionBox && d->completionBox->isVisible();
+
+            bool stopEvent = trap || (d->grabReturnKeyEvents &&
+                                      (e->modifiers() == Qt::NoButton ||
+                                       e->modifiers() == Qt::KeypadModifier));
+
+            // Qt will emit returnPressed() itself if we return false
+            if ( stopEvent )
+            {
+                emit QLineEdit::returnPressed();
+                e->accept();
+            }
+
+            emit returnPressed( displayText() );
+
+            if ( trap )
+            {
+                d->completionBox->hide();
+                deselect();
+                setCursorPosition(text().length());
+            }
+
+            // Eat the event if the user asked for it, or if a completionbox was visible
+            if (stopEvent)
+                return true;
+        }
+    }
+    return QLineEdit::event( ev );
 }
 
 

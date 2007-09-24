@@ -91,7 +91,7 @@ class KUrl;
  * for the read-write mode. This differs from QLineEdit's implementation
  * and is done to give visual distinction between the three different modes:
  * disabled, read-only, and read-write.
- * 
+ *
  * KLineEdit has also a password mode which depends of globals KDE settings.  Use
  * KLineEdit::setPasswordMode instead of QLineEdit::echoMode property to have a password field.
  *
@@ -218,7 +218,7 @@ public:
     * if you do not want this behavior.
     *
     * @param showMenu If @p true, show the context menu.
-    * @deprecated use setContextMenuPolicy 
+    * @deprecated use setContextMenuPolicy
     */
     virtual KDE_DEPRECATED void setContextMenuEnabled( bool showMenu );
 
@@ -261,12 +261,6 @@ public:
      * @see setTrapReturnKey ()
      */
     bool trapReturnKey() const;
-
-    /**
-     * Re-implemented for internal reasons.  API not affected.
-     *
-     */
-    virtual bool eventFilter( QObject *, QEvent * );
 
     /**
      * @returns the completion-box, that is used in completion mode
@@ -496,6 +490,11 @@ protected Q_SLOTS:
     void userCancelled(const QString & cancelText);
 
 protected:
+
+    /**
+     * Re-implemented for internal reasons.  API not affected.
+     */
+    virtual bool event( QEvent * );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
