@@ -60,8 +60,14 @@ const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Node& node )
     if ( type == Soprano::Node::LiteralNode ) {
         node = Soprano::Node( Soprano::LiteralValue::fromString( value, dataTypeUri ), language );
     }
+    else if ( type == Soprano::Node::BlankNode ) {
+        node = Soprano::Node( value );
+    }
+    else if ( type == Soprano::Node::ResourceNode ) {
+        node = Soprano::Node( QUrl( value ) );
+    }
     else {
-        node = Soprano::Node( QUrl( value ), ( Soprano::Node::Type )type );
+        node = Soprano::Node();
     }
     arg.endStructure();
     return arg;

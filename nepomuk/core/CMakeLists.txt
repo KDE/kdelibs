@@ -49,7 +49,8 @@ kde4_add_library(nepomuk SHARED ${nepomuk_LIB_SRCS})
 add_dependencies(nepomuk nepomuk-rcgen)
 
 target_link_libraries(nepomuk
-  nepomuk-middleware
+  ${SOPRANO_LIBRARIES}
+  ${SOPRANO_CLIENT_LIBRARIES}
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}

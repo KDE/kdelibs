@@ -20,27 +20,19 @@
 #include "nepomukontologyloader.h"
 #include "global.h"
 
-#include "middleware/registry.h"
-#include "middleware/service.h"
-#include "middleware/services/rdfrepository.h"
-
-#include <soprano/statement.h>
+#include <soprano/Statement>
+#include <soprano/Model>
+#include <soprano/QueryLegacy>
+#include <soprano/QueryResultIterator>
+#include <soprano/Client/DBusClient>
 
 #include <QtCore/QDebug>
 
 
-using namespace Nepomuk::RDF;
-
 class Nepomuk::NepomukOntologyLoader::Private
 {
 public:
-    Private()
-        : registry( 0 ),
-          repository( 0 ) {
-    }
-
-    Nepomuk::Middleware::Registry* registry;
-    Nepomuk::Services::RDFRepository* repository;
+    Soprano::Client::DBusClient client;
 };
 
 
@@ -48,44 +40,32 @@ Nepomuk::NepomukOntologyLoader::NepomukOntologyLoader()
     : OntologyLoader(),
       d( new Private() )
 {
-    d->registry = new Nepomuk::Middleware::Registry();
 }
 
 
 Nepomuk::NepomukOntologyLoader::~NepomukOntologyLoader()
 {
-    delete d->repository;
-    delete d->registry;
     delete d;
 }
 
 
 QList<Soprano::Statement> Nepomuk::NepomukOntologyLoader::loadOntology( const QUrl& uri )
 {
-    if ( !d->repository ) {
-        Nepomuk::Middleware::Service* service = d->registry->discoverRDFRepository();
-        if ( service ) {
-            d->repository = new Nepomuk::Services::RDFRepository( service );
-        }
-        else {
-            qDebug() << "(NepomukOntologyLoader) Could not find RDFRepository service.";
-            return QList<Soprano::Statement>();
-        }
-    }
+    QList<Soprano::Statement> sl;
 
-    if ( d->repository->contains( "main", Soprano::Statement( uri,
-                                                              QUrl( RDF::type() ),
-                                                              QUrl( NRL::Ontology() ),
-                                                              Soprano::Node() ) ) ) {
-
+    if ( Soprano::Model* model = d->client.createModel( "main" ) ) {
         // get the complete named graph describing the ontology
-        return d->repository->constructSparql( "main",
-                                               QString( "construct {?s ?p ?o} "
-                                                        "where GRAPH <%1> { ?s ?p ?o. }" )
-                                               .arg( uri.toString() ) );
+        Soprano::QueryResultIterator it = model->executeQuery( Soprano::QueryLegacy( QString( "construct {?s ?p ?o} "
+                                                                                              "where GRAPH <%1> { ?s ?p ?o. }" )
+                                                                                     .arg( uri.toString() ),
+                                                                                     Soprano::QueryLegacy::SPARQL ) );
+        while ( it.next() ) {
+            sl.append( it.currentStatement() );
+        }
     }
     else {
         qDebug() << "(NepomukOntologyLoader) could not find ontology statements for " << uri;
-        return QList<Soprano::Statement>();
     }
+
+    return sl;
 }

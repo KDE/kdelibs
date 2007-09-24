@@ -42,6 +42,7 @@ namespace Nepomuk {
     public:
 	virtual ~OntologyLoader();
 
+        // FIXME: use StatementIterator
 	virtual QList<Soprano::Statement> loadOntology( const QUrl& url ) = 0;
 
     protected:

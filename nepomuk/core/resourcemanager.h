@@ -28,6 +28,10 @@
 #include <QtCore/QObject>
 
 
+namespace Soprano {
+    class Model;
+}
+
 namespace Nepomuk {
     namespace Middleware {
 	class Registry;
@@ -52,7 +56,8 @@ namespace Nepomuk {
          * Initialize the KMetaData framework. This method will initialize the communication with
          * the local Nepomuk-KDE services, ie. the RDF repository.
          *
-         * KMetaData cannot be used before a successful call to init.
+         * Calling init() manually is optional now. In the future we might introduce options
+         * that make calling it useful.
          *
          * \return 0 if all necessary components could be found and -1 otherwise.
          *
@@ -72,9 +77,9 @@ namespace Nepomuk {
         Ontology* ontology() const;
 
         /**
-         * The NEPOMUK Service Registry used.
+         * Retrieve the main data storage model.
          */
-        Middleware::Registry* serviceRegistry() const;
+        Soprano::Model* mainModel();
 
         /**
          * Creates a Resource object representing the data referenced by \a uri.
@@ -100,7 +105,7 @@ namespace Nepomuk {
          * This includes Resources that are not synced yet so it might
          * not represent exactly the state as in the RDF store.
          */
-        QList<Resource> allResourcesOfType( const QString& type ) const;
+        QList<Resource> allResourcesOfType( const QString& type );
 
         /**
          * Retrieve a list of all resources that have property \a uri defined with a value of \a v.
@@ -113,13 +118,13 @@ namespace Nepomuk {
          *            prepended.
          * \param v The value all returned resources should have set as properts \a uri.
          */
-        QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v ) const;
+        QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v );
 
         /**
          * Generates a unique URI that is not used in the store yet. This method ca be used to 
          * generate URIs for virtual types such as Tag.
          */
-        QString generateUniqueUri() const;
+        QString generateUniqueUri();
 
         /**
          * \internal Non-public API. Used by Resource to signalize errors.

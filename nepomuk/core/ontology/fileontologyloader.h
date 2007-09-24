@@ -24,6 +24,8 @@
 #include "nepomuk_export.h"
 
 #include <soprano/parser.h>
+#include <soprano/sopranotypes.h>
+
 
 namespace Nepomuk {
     class NEPOMUK_EXPORT FileOntologyLoader : public OntologyLoader
@@ -41,7 +43,7 @@ namespace Nepomuk {
 	 * ontology from the specified filename.
 	 */
 	explicit FileOntologyLoader( const QString& filename,
-                Soprano::RdfSerialization serialization = Soprano::UNKNOWN );
+                                     Soprano::RdfSerialization serialization = Soprano::SERIALIZATION_UNKNOWN );
 
 	/**
 	 * Destructor
@@ -65,7 +67,7 @@ namespace Nepomuk {
 	
 	/**
 	 * Set the serialization that is used in the file.
-	 * Defaults to Soprano::UNKNOWN
+	 * Defaults to Soprano::SERIALIZATION_UNKNOWN
 	 */
 	void setSerialization( Soprano::RdfSerialization );
 

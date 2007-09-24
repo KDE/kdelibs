@@ -29,7 +29,7 @@ class Nepomuk::FileOntologyLoader::Private
 {
 public:
     Private()
-        : serialization( Soprano::UNKNOWN ) {
+        : serialization( Soprano::SERIALIZATION_UNKNOWN ) {
     }
 
     QString filename;
@@ -95,11 +95,9 @@ QList<Soprano::Statement> Nepomuk::FileOntologyLoader::loadOntology( const QUrl&
     QFile f( filename );
     if ( f.open( QIODevice::ReadOnly ) ) {
         // TODO: how can we check if the requested onto is really defined in this file?
-        Soprano::Parser* rdfParser = Soprano::createParser();
-        Soprano::Model* model = rdfParser->parseFile( d->filename, url, d->serialization );
-        Soprano::StatementIterator it = model->listStatements();
-        while( it.hasNext() ) {
-            sl.append( it.next() );
+        const Soprano::Parser* rdfParser = Soprano::PluginManager::instance()->discoverParserForSerialization( d->serialization );
+        if ( rdfParser ) {
+            sl = rdfParser->parseFile( d->filename, url, d->serialization ).allStatements();
         }
     }
     else {

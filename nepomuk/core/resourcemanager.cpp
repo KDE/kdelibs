@@ -26,18 +26,18 @@
 
 #include "resource.h"
 
-#include "services/rdfrepository.h"
-#include "rdf/statementlistiterator.h"
-#include "registry.h"
-
 #include <kglobal.h>
 #include <kdebug.h>
 #include <krandom.h>
 
+#include <soprano/Client/DBusClient>
+#include <soprano/Node>
+#include <soprano/Statement>
+#include <soprano/Model>
+#include <soprano/Vocabulary/RDF>
+#include <soprano/StatementIterator>
 
 
-using namespace Nepomuk::Services;
-using namespace Nepomuk::RDF;
 using namespace Soprano;
 
 
@@ -48,14 +48,12 @@ class Nepomuk::ResourceManager::Private
 {
 public:
     Private( ResourceManager* manager )
-        : initialized(false),
-          registry(0),
+        : mainModel( 0 ),
           m_parent(manager) {
     }
 
-    bool initialized;
-
-    Nepomuk::Middleware::Registry* registry;
+    Soprano::Client::DBusClient client;
+    Soprano::Model* mainModel;
 
 private:
     ResourceManager* m_parent;
@@ -92,41 +90,13 @@ Nepomuk::ResourceManager* Nepomuk::ResourceManager::instance()
 
 int Nepomuk::ResourceManager::init()
 {
-    if( !d->initialized ) {
-        if( !d->registry )
-            d->registry = new Middleware::Registry( this );
-
-        //   if( serviceRegistry()->status() != VALID ) {
-        //     kDebug(300004) << "(ResourceManager) failed to initialize registry.";
-        //     return -1;
-        //  }
-
-        if( !serviceRegistry()->discoverRDFRepository() ) {
-            kDebug(300004) << "(ResourceManager) No NEPOMUK RDFRepository service found.";
-            return -1;
-        }
-
-        //   if( !serviceRegistry()->discoverResourceIdService() ) {
-        //     kDebug(300004) << "(ResourceManager) No NEPOMUK ResourceId service found.";
-        //     return -1;
-        //   }
-
-        d->initialized = true;
-    }
-
     return 0;
 }
 
 
 bool Nepomuk::ResourceManager::initialized() const
 {
-    return d->initialized;
-}
-
-
-Nepomuk::Middleware::Registry* Nepomuk::ResourceManager::serviceRegistry() const
-{
-    return d->registry;
+    return true;
 }
 
 
@@ -142,7 +112,7 @@ void Nepomuk::ResourceManager::notifyError( const QString& uri, int errorCode )
 }
 
 
-QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QString& type ) const
+QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QString& type )
 {
     QList<Resource> l;
 
@@ -156,14 +126,11 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
 
         kDebug(300004) << " added local resources: " << l.count();
 
-        // check remote data
-        RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
-        StatementListIterator it( rdfr.queryListStatements( Nepomuk::defaultGraph(),
-                                                            Statement( Node(), QUrl( Nepomuk::typePredicate() ), QUrl(type) ),
-                                                            100 ),
-                                  &rdfr );
-        while( it.hasNext() ) {
-            const Statement& s = it.next();
+        Soprano::Model* model = mainModel();
+        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), Soprano::Vocabulary::RDF::TYPE(), QUrl(type) ) );
+
+        while( it.next() ) {
+            Statement s = *it;
             Resource res( s.subject().toString() );
             if( !l.contains( res ) )
                 l.append( res );
@@ -176,7 +143,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
 }
 
 
-QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QString& uri, const Variant& v ) const
+QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( const QString& uri, const Variant& v )
 {
     QList<Resource> l;
 
@@ -192,21 +159,19 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
         }
 
         // check remote data
-        RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
-        Node n;
+        Soprano::Node n;
         if( v.isResource() ) {
             n = QUrl( v.toResource().uri() );
         }
         else {
-            n = Nepomuk::valueToRDFNode( v );
+            n = valueToRDFNode(v);
         }
 
-        StatementListIterator it( rdfr.queryListStatements( Nepomuk::defaultGraph(),
-                                                            Statement( Node(), QUrl(uri), n ),
-                                                            100 ), &rdfr );
+        Soprano::Model* model = mainModel();
+        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), QUrl(uri), n ) );
 
-        while( it.hasNext() ) {
-            const Statement& s = it.next();
+        while( it.next() ) {
+            Statement s = *it;
             Resource res( s.subject().toString() );
             if( !l.contains( res ) )
                 l.append( res );
@@ -217,20 +182,38 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesWithProperty( con
 }
 
 
-QString Nepomuk::ResourceManager::generateUniqueUri() const
+QString Nepomuk::ResourceManager::generateUniqueUri()
 {
-    RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
-
+    Soprano::Model* model = mainModel();
     QUrl s;
     while( 1 ) {
         // Should we use the Nepomuk localhost whatever namespace here?
         s = NEPOMUK_NAMESPACE + KRandom::randomString( 20 );
-        if( !rdfr.listRepositoryIds().contains( Nepomuk::defaultGraph() ) ||
-            ( !rdfr.contains( Nepomuk::defaultGraph(), Statement( s, Node(), Node() ) ) &&
-              !rdfr.contains( Nepomuk::defaultGraph(), Statement( Node(), s, Node() ) ) &&
-              !rdfr.contains( Nepomuk::defaultGraph(), Statement( Node(), Node(), s ) ) ) )
+        if( !model->containsContext( s ) &&
+            !model->containsAnyStatement( Soprano::Statement( s, Soprano::Node(), Soprano::Node() ) ) &&
+            !model->containsAnyStatement( Soprano::Statement( Soprano::Node(), s, Soprano::Node() ) ) &&
+            !model->containsAnyStatement( Soprano::Statement( Soprano::Node(), Soprano::Node(), s ) ) )
             return s.toString();
     }
+}
+
+
+Soprano::Model* Nepomuk::ResourceManager::mainModel()
+{
+    // make sure we are initialized
+    if ( !initialized() ) {
+        delete d->mainModel;
+        d->mainModel = 0;
+        if ( !init() ) {
+            return 0;
+        }
+    }
+
+    if ( !d->mainModel ) {
+        d->mainModel = d->client.createModel( "main" );
+    }
+
+    return d->mainModel;
 }
 
 #include "resourcemanager.moc"

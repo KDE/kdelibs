@@ -39,7 +39,7 @@ public:
     QMap<QString, ResourceClass> resources;
     QMap<QString, Property> properties;
     QMap<QString, QString> comments;
-    Soprano::Parser* rdfParser;
+    const Soprano::Parser* rdfParser;
 
     QHash<QString, QString> namespaceAbbr;
 
@@ -72,14 +72,13 @@ public:
 OntologyParser::OntologyParser()
 {
     d = new Private;
-    d->rdfParser = Soprano::createParser();
+    d->rdfParser = Soprano::PluginManager::instance()->discoverParserForSerialization( Soprano::SERIALIZATION_RDF_XML );
     Q_ASSERT( d->rdfParser );
 }
 
 
 OntologyParser::~OntologyParser()
 {
-    delete d->rdfParser;
     delete d;
 }
 
@@ -124,15 +123,11 @@ bool OntologyParser::parse( const QString& filename )
     }
 
     // FIXME: the serialization should be somehow specified
-    Soprano::Model* model = d->rdfParser->parseFile( filename, QUrl(), Soprano::RDF_XML );
+    Soprano::StatementIterator it = d->rdfParser->parseFile( filename, QUrl(), Soprano::SERIALIZATION_RDF_XML );
     bool success = true;
 
-    if( !model )
-        return false;
-
-    Soprano::StatementIterator it = model->listStatements();
-    while( it.hasNext() ) {
-        const Soprano::Statement& s = it.next();
+    while( it.next() ) {
+        const Soprano::Statement& s = *it;
 
         if( s.predicate().uri().toString().endsWith( "#subClassOf" ) ) {
             ResourceClass& rc = d->getResource( s.subject().uri().toString() );
@@ -166,8 +161,6 @@ bool OntologyParser::parse( const QString& filename )
             d->getProperty(s.object().uri().toString()).inverse = &d->getProperty(s.subject().uri().toString());
         }
     }
-
-    delete model;
 
     // determine the reverse properties
     for( QMap<QString, Property>::const_iterator propIt = d->properties.constBegin();
