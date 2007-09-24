@@ -49,6 +49,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
+#include <ktoolinvocation.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include "kaction.h"
@@ -66,6 +67,10 @@ public:
      : enabled(true),
        iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
     {
+        // Make sure kded is running
+        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+            KToolInvocation::klauncher(); // this calls startKdeinit
+        }
     }
 
     //for all actions with (isEnabled() && globalShortcutAllowed())
