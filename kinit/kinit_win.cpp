@@ -33,6 +33,7 @@
 
 
 #include <QtCore/QProcess>
+#include <QtCore/QFileInfo>
 #include <QtDBus/QtDBus>
 
 #include <kcomponentdata.h>
@@ -42,6 +43,7 @@
 
 
 #define KDED_EXENAME "kded4"
+#define KNOTIFY_EXENAME "knotify4"
 
 static KComponentData *s_instance = 0;
 
@@ -97,8 +99,16 @@ bool checkIfRegisteredInDBus(const QString &name, int _timeout=10)
 
 class ProcessListEntry {
     public:
-       ProcessListEntry(HANDLE _handle,char *_name, int _pid ) {handle = _handle; name = _name; pid = _pid; name.replace(".exe","");}
+       ProcessListEntry(HANDLE _handle,char *_path, int _pid ) 
+       {    
+           QFileInfo p(_path);
+           path = p.absolutePath();
+           name = p.baseName();
+           handle = _handle; 
+           pid = _pid; 
+       }
        QString name;
+       QString path;
        int pid;
        HANDLE handle;
 };
@@ -140,7 +150,7 @@ void ProcessList::getProcessNameAndID( DWORD processID )
        if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod),
               &cbNeeded) )
        {
-             GetModuleBaseNameA( hProcess, hMod, szProcessName,
+             GetModuleFileNameExA( hProcess, hMod, szProcessName,
                                            sizeof(szProcessName)/sizeof(TCHAR) );
        }
     }
@@ -274,9 +284,12 @@ int main(int argc, char **argv, char **envp)
             exit(0);
         }
         if (strcmp(safe_argv[i], "--terminate") == 0) {
-            processList.terminateProcess(KDED_EXENAME);
-            processList.terminateProcess("klauncher");
-            processList.terminateProcess("dbus-daemon");
+            QStringList appList;
+            appList << KDED_EXENAME << KNOTIFY_EXENAME << "nepomukdaemon" 
+                      << "kuiserver"  << "kioslave" << "klauncher" << "dbus-daemon";
+
+            foreach(QString app, appList)
+                processList.terminateProcess(app);
             exit(0);
         }
     }
