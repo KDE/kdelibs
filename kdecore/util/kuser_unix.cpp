@@ -22,6 +22,7 @@
 #include <kuser.h>
 
 #include <QtCore/QMutableStringListIterator>
+#include <QtCore/QDir>
 
 #include <pwd.h>
 #include <unistd.h>
@@ -152,6 +153,11 @@ QString KUser::homeDir() const {
 	return d->homeDir;
 }
 
+QString KUser::faceIconPath() const
+{
+    return homeDir() + QDir::separator() + ".face.icon";
+}
+
 QString KUser::shell() const {
 	return d->shell;
 }
@@ -225,11 +231,11 @@ public:
     QList<KUser> users;
 
     Private() : gid(gid_t(-1)) {}
-    Private(const char *_name) : gid(gid_t(-1)) 
+    Private(const char *_name) : gid(gid_t(-1))
     {
         fillGroup(_name ? ::getgrnam( _name ) : 0);
     }
-    Private(const ::group *p) : gid(gid_t(-1)) 
+    Private(const ::group *p) : gid(gid_t(-1))
     {
         fillGroup(p);
     }

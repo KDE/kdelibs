@@ -78,12 +78,12 @@ class KUser::Private : public KShared
         {
             if (userInfo)
                 NetApiBufferFree(userInfo);
-            
+
             delete[] sid;
         }
 };
 
-KUser::KUser(UIDMode mode) 
+KUser::KUser(UIDMode mode)
         : d(0)
 {
     Q_UNUSED(mode)
@@ -163,13 +163,19 @@ QString KUser::homeDir() const
 {
     wchar_t profilesDir[MAX_PATH + 1] = { 0 };
     DWORD Size = MAX_PATH+1;
- 
+
     if (d->userInfo == NULL || !GetProfilesDirectoryW(profilesDir, &Size)) {
         return QString();
     }
 
     QDir dir = QDir::fromNativeSeparators(QString::fromUtf16((ushort *) profilesDir));
     return dir.absolutePath().append(QLatin1Char('/')).append(loginName());
+}
+
+QString KUser::faceIconPath() const
+{
+    // FIXME: this needs to be adapted to windows systems (BC changes)
+    return QString();
 }
 
 QString KUser::shell() const
@@ -193,7 +199,7 @@ QList<KUserGroup> KUser::groups() const
 QStringList KUser::groupNames() const
 {
     QStringList result;
- 
+
     if (!d->userInfo) {
         return result;
     }
@@ -287,7 +293,7 @@ class KUserGroup::Private : public KShared
 
         Private() : groupInfo(NULL) {}
         Private(PGROUP_INFO_0 groupInfo_) : groupInfo(groupInfo_) {}
-        Private(const QString &Name) : groupInfo(NULL) 
+        Private(const QString &Name) : groupInfo(NULL)
         {
             NetGroupGetInfo(NULL, (PCWSTR) Name.utf16(), 0, (PBYTE *) &groupInfo);
         }
@@ -324,7 +330,7 @@ KUserGroup& KUserGroup::operator =(const KUserGroup &group)
 bool KUserGroup::operator==(const KUserGroup &group) const
 {
     if (d->groupInfo == NULL || group.d->groupInfo == NULL) {
-        return false; 
+        return false;
     }
     return wcscmp(d->groupInfo->grpi0_name, group.d->groupInfo->grpi0_name) == 0;
 }
@@ -360,7 +366,7 @@ QList<KUser> KUserGroup::users() const
 QStringList KUserGroup::userNames() const
 {
     QStringList result;
- 
+
     if (!d->groupInfo) {
         return result;
     }

@@ -183,6 +183,13 @@ public:
   QString homeDir() const;
 
   /**
+   * The path to the user's face file.
+   * @return the path to the user's face file or QString() if no
+   *         face has been set
+   */
+  QString faceIconPath() const;
+
+  /**
    * The path to the user's login shell.
    * @return the login shell of the user or QString() if the
    *         user is invalid
