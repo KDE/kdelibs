@@ -33,7 +33,7 @@
 #include <soprano/Client/DBusClient>
 #include <soprano/Node>
 #include <soprano/Statement>
-#include <soprano/Model>
+#include <soprano/DummyModel>
 #include <soprano/Vocabulary/RDF>
 #include <soprano/StatementIterator>
 
@@ -48,13 +48,16 @@ class Nepomuk::ResourceManager::Private
 {
 public:
     Private( ResourceManager* manager )
-        : client( "/org/kde/nepomuk/repository" ),
+        : client( "org.kde.nepomuk.DataRepository" ),
           mainModel( 0 ),
+          dummyModel( 0 ),
           m_parent(manager) {
     }
 
     Soprano::Client::DBusClient client;
     Soprano::Model* mainModel;
+
+    Soprano::DummyModel* dummyModel;
 
 private:
     ResourceManager* m_parent;
@@ -70,6 +73,7 @@ Nepomuk::ResourceManager::ResourceManager()
 
 Nepomuk::ResourceManager::~ResourceManager()
 {
+    delete d->dummyModel;
     delete d;
 }
 
@@ -205,14 +209,21 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
     if ( !initialized() ) {
         delete d->mainModel;
         d->mainModel = 0;
-        if ( !init() ) {
-            return 0;
-        }
+        init();
     }
 
     if ( !d->mainModel ) {
         d->mainModel = d->client.createModel( "main" );
     }
+
+    // FIXME: enable this again once the redland backend can handle multiple open its or
+    // if creation of model fails, create a dummy model to protect against crashes
+//     if ( !d->mainModel ) {
+        if ( !d->dummyModel ) {
+            d->dummyModel = new Soprano::DummyModel();
+        }
+        return d->dummyModel;
+//    }
 
     return d->mainModel;
 }
