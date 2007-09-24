@@ -80,6 +80,7 @@ public:
     void setDefaultColor( const QColor &c );
 
     QSize sizeHint() const;
+    QSize minimumSizeHint() const;
 
 Q_SIGNALS:
     /**

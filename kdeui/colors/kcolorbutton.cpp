@@ -33,6 +33,7 @@
 #include <QStyleOptionButton>
 #include "kcolordialog.h"
 #include "kcolormimedata.h"
+#include "kdebug.h"
 
 class KColorButton::KColorButtonPrivate
 {
@@ -169,6 +170,14 @@ QSize KColorButton::sizeHint() const
     QStyleOptionButton opt;
     d->initStyleOption(&opt);
     return style()->sizeFromContents(QStyle::CT_PushButton, &opt, QSize(40, 15), this).
+	  	expandedTo(QApplication::globalStrut());
+}
+
+QSize KColorButton::minimumSizeHint() const
+{
+    QStyleOptionButton opt;
+    d->initStyleOption(&opt);
+    return style()->sizeFromContents(QStyle::CT_PushButton, &opt, QSize(3, 3), this).
 	  	expandedTo(QApplication::globalStrut());
 }
 
