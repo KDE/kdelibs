@@ -128,7 +128,7 @@ QList<Nepomuk::Resource> Nepomuk::ResourceManager::allResourcesOfType( const QSt
         kDebug(300004) << " added local resources: " << l.count();
 
         Soprano::Model* model = mainModel();
-        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), Soprano::Vocabulary::RDF::TYPE(), QUrl(type) ) );
+        Soprano::StatementIterator it = model->listStatements( Soprano::Statement( Soprano::Node(), Soprano::Vocabulary::RDF::type(), QUrl(type) ) );
 
         while( it.next() ) {
             Statement s = *it;
