@@ -65,6 +65,7 @@ static const char *maincatalog = 0;
 class KLocalePrivate
 {
 public:
+    KLocalePrivate(const QString& catalog, KConfig *config, const QString &language_ = QString(), const QString &country_ = QString());
   /**
    * @internal Initializes the catalogs appname, kdelibs and kio for all chosen languages.
    *
@@ -85,16 +86,14 @@ public:
 
   /**
    * @internal Figures out which encoding the user prefers.
-   *
-   * @param config The configuration object used for init
    */
-  void initEncoding(KConfigBase * config);
+  void initEncoding();
 
   /**
    * @internal Figures out which encoding the user prefers for filenames
    * and sets up the appropriate QFile encoding and decoding functions.
    */
-  void initFileNameEncoding(KConfigBase *config);
+  void initFileNameEncoding();
 
   /**
    * @internal A QFile filename encoding function (QFile::encodeFn).
@@ -214,49 +213,33 @@ public:
 #endif
 };
 
-KLocale::KLocale( const QString & catalog, KSharedConfig::Ptr config )
-	: d(new KLocalePrivate)
+KLocalePrivate::KLocalePrivate(const QString& catalog, KConfig *config, const QString &language_, const QString &country_)
+    : calendar(0), codecForEncoding(0), languages(0), appName(catalog), useTranscript(false), language(language_), country(country_)
 {
-  d->languages = 0;
-  d->calendar = 0;
+    initEncoding();
+    initFileNameEncoding();
 
-  d->initEncoding(0);
-  d->initFileNameEncoding(0);
+    if (config) {
+        initLanguageList(config, false);
+    }
+    else {
+        config = KGlobal::config().data();
+        initLanguageList(config, true);
+    }
 
-  KSharedConfig::Ptr cfg = config;
-  if (!cfg) cfg = KGlobal::config();
-  Q_ASSERT( cfg ); 
+    initMainCatalogs(catalog);
 
-  d->appName = catalog;
-  d->initLanguageList(cfg.data(), !config);
-  d->initMainCatalogs(catalog);
+    initFormat(config);
+}
 
-  d->useTranscript = false;
-
-  d->initFormat(cfg.data());
+KLocale::KLocale( const QString & catalog, KSharedConfig::Ptr config )
+	: d(new KLocalePrivate(catalog, config.data()))
+{
 }
 
 KLocale::KLocale(const QString& catalog, const QString &language, const QString &country, KConfig *config)
-	: d(new KLocalePrivate)
+	: d(new KLocalePrivate(catalog, config, language, country))
 {
-    bool useConfig = config;
-    d->languages = 0;
-    d->calendar = 0;
-
-    d->initFileNameEncoding(0);
-
-    if (!config) config = KGlobal::config().data();
-    Q_ASSERT(config); 
-
-    d->appName = catalog;
-    d->language = language;
-    d->country = country;
-    d->initLanguageList(config, !useConfig);
-    d->initMainCatalogs(catalog);
-
-    d->useTranscript = false;
-
-    d->initFormat(config);
 }
 
 void KLocalePrivate::initMainCatalogs(const QString & catalog)
@@ -1962,7 +1945,7 @@ bool KLocalePrivate::useDefaultLanguage() const
   return language == KLocale::defaultLanguage();
 }
 
-void KLocalePrivate::initEncoding(KConfigBase *)
+void KLocalePrivate::initEncoding()
 {
   const int mibDefault = 4; // ISO 8859-1
 
@@ -1988,7 +1971,7 @@ void KLocalePrivate::initEncoding(KConfigBase *)
   Q_ASSERT( codecForEncoding );
 }
 
-void KLocalePrivate::initFileNameEncoding(KConfigBase *)
+void KLocalePrivate::initFileNameEncoding()
 {
   // If the following environment variable is set, assume all filenames
   // are in UTF-8 regardless of the current C locale.
@@ -2266,9 +2249,10 @@ const KCalendarSystem * KLocale::calendar() const
   return d->calendar;
 }
 
-KLocale::KLocale(const KLocale & rhs) : d(new KLocalePrivate)
+KLocale::KLocale(const KLocale & rhs) : d(new KLocalePrivate(*rhs.d))
 {
-  *this = rhs;
+  d->languages = 0; // Don't copy languages
+  d->calendar = 0; // Don't copy the calendar
 }
 
 KLocale & KLocale::operator=(const KLocale & rhs)
