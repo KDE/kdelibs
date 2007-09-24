@@ -36,6 +36,7 @@ class KLibLoaderPrivate
 public:
     KLibLoader instance;
     QObjectCleanupHandler cleanuphandler;
+    QString errorString;
 };
 
 K_GLOBAL_STATIC(KLibLoaderPrivate, kLibLoaderPrivate)
@@ -139,6 +140,7 @@ KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
     lib->load();
 
     if (!lib->isLoaded()) {
+        kLibLoaderPrivate->errorString = lib->errorString();
         delete lib;
         return 0;
     }
@@ -150,20 +152,18 @@ KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
 
 QString KLibLoader::lastErrorMessage() const
 {
-    return QString();
+    return kLibLoaderPrivate->errorString;
 }
 
-void KLibLoader::unloadLibrary( const QString &libname )
+void KLibLoader::unloadLibrary( const QString &)
 {
 }
 
 KPluginFactory* KLibLoader::factory( const QString &_name, QLibrary::LoadHints hint )
 {
-    KLibrary* lib = library( _name);
+    KLibrary* lib = library( _name, hint);
     if ( !lib )
         return 0;
-
-    lib->setLoadHints(hint);
 
     return lib->factory();
 }
