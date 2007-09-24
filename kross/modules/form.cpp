@@ -31,11 +31,16 @@
 #include <QtGui/QStackedLayout>
 #include <QtGui/QSizePolicy>
 #include <QtGui/QApplication>
-#include <QtGui/QProgressDialog>
+#include <QtGui/QProgressBar>
+//#include <QtGui/QProgressDialog>
+#include <QtGui/QTextBrowser>
 #include <QUiLoader>
 #include <QtDesigner/QFormBuilder>
+#include <QTextCursor>
+#include <QTextBlock>
 
 #include <kdebug.h>
+#include <klocale.h>
 #include <kurl.h>
 #include <kpushbutton.h>
 //#include <kurlcombobox.h>
@@ -55,6 +60,7 @@
 #include <kfilewidget.h>
 #include <kurlcombobox.h>
 #include <kshell.h>
+#include <widgets/ksqueezedtextlabel.h>
 
 extern "C"
 {
@@ -157,6 +163,135 @@ QString FormFileWidget::selectedFile() const
     }
     QFileInfo fi( selectedUrl.path(), d->filewidget->locationEdit()->currentText() );
     return fi.absoluteFilePath();
+}
+
+/*********************************************************************************
+ * FormProgressDialog
+ */
+
+namespace Kross {
+    /// \internal d-pointer class.
+    class FormProgressDialog::Private
+    {
+        public:
+            QTextBrowser* browser;
+            QProgressBar* bar;
+            bool gotCanceled;
+            QTime time;
+            void update() {
+                if( time.elapsed() >= 1000 ) {
+                    time.restart();
+                    qApp->processEvents();
+                }
+            }
+    };
+}
+
+FormProgressDialog::FormProgressDialog(const QString& caption, const QString& labelText) : KPageDialog(), d(new Private)
+{
+    d->gotCanceled = false;
+    d->time.start();
+
+    setCaption(caption);
+    KDialog::setButtons(KDialog::Ok|KDialog::Cancel);
+    setFaceType(KPageDialog::Plain);
+    enableButton(KDialog::Ok, false);
+    //setWindowModality(Qt::WindowModal);
+    setModal(false); //true);
+    setMinimumWidth(540);
+    setMinimumHeight(400);
+
+    QWidget* widget = new QWidget( mainWidget() );
+    KPageWidgetItem* item = KPageDialog::addPage(widget, QString());
+    item->setHeader(labelText);
+    //item->setIcon( KIcon(iconname) );
+    widget = item->widget();
+    QVBoxLayout* layout = new QVBoxLayout(widget);
+    layout->setMargin(0);
+    widget->setLayout(layout);
+
+    d->browser = new QTextBrowser(this);
+    d->browser->setHtml(labelText);
+    layout->addWidget(d->browser);
+
+    d->bar = new QProgressBar(this);
+    //d->bar->setFormat("%v");
+    d->bar->setVisible(false);
+    layout->addWidget(d->bar);
+
+    setSizePolicy( QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding) );
+    show();
+    qApp->processEvents();
+}
+
+FormProgressDialog::~FormProgressDialog()
+{
+    delete d;
+}
+
+void FormProgressDialog::setValue(int progress)
+{
+    if( progress < 0 ) {
+        if( d->bar->isVisible() ) {
+            d->bar->setVisible(false);
+            d->bar->setValue(0);
+            qApp->processEvents();
+        }
+        return;
+    }
+    if( ! d->bar->isVisible() )
+        d->bar->setVisible(true);
+    d->bar->setValue(progress);
+    d->update();
+}
+
+void FormProgressDialog::setRange(int minimum, int maximum)
+{
+    d->bar->setRange(minimum, maximum);
+}
+
+void FormProgressDialog::setText(const QString& text)
+{
+    d->browser->setHtml(text);
+    d->update();
+}
+
+void FormProgressDialog::addText(const QString& text)
+{
+    QTextCursor cursor( d->browser->document()->end() );
+    cursor.movePosition(QTextCursor::End);
+    cursor.insertBlock();
+    cursor.insertHtml(text);
+    d->browser->moveCursor(QTextCursor::End);
+    d->browser->ensureCursorVisible();
+    d->update();
+}
+
+void FormProgressDialog::done(int r)
+{
+    if( r == Rejected && ! d->gotCanceled ) {
+        if( KMessageBox::messageBox(this, KMessageBox::WarningContinueCancel, i18n("Abort?")) == KMessageBox::Continue ) {
+            d->gotCanceled = true;
+            enableButton(KDialog::Cancel, false);
+            emit canceled();
+        }
+        return;
+    }
+    KPageDialog::done(r);
+}
+
+int FormProgressDialog::exec()
+{
+    enableButton(KDialog::Ok, true);
+    enableButton(KDialog::Cancel, false);
+    if( d->bar->isVisible() )
+        d->bar->setValue( d->bar->maximum() );
+    return KDialog::exec();
+}
+
+bool FormProgressDialog::isCanceled()
+{
+    return d->gotCanceled;
 }
 
 /*********************************************************************************
@@ -373,18 +508,7 @@ QString FormModule::showMessageBox(const QString& dialogtype, const QString& cap
 
 QWidget* FormModule::showProgressDialog(const QString& caption, const QString& labelText)
 {
-    QProgressDialog* progress = new QProgressDialog();
-    //progress->setWindowModality(Qt::WindowModal);
-    progress->setModal(true);
-    progress->setWindowTitle(caption);
-    progress->setLabelText(labelText);
-    progress->setAutoClose(true);
-    progress->setAutoReset(true);
-    progress->setCancelButtonText(QString());
-    progress->setMinimumWidth(300);
-    progress->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-    progress->show();
-    return progress;
+    return new FormProgressDialog(caption, labelText);
 }
 
 QWidget* FormModule::createDialog(const QString& caption)

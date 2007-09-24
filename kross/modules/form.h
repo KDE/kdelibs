@@ -20,7 +20,6 @@
 #ifndef KROSS_FORM_H
 #define KROSS_FORM_H
 
-
 #include <QtGui/QWidget>
 #include <QtCore/QUrl>
 
@@ -106,6 +105,77 @@ namespace Kross {
             */
             void filterChanged(const QString& filter);
 
+        private:
+            /// \internal d-pointer class.
+            class Private;
+            /// \internal d-pointer instance.
+            Private* const d;
+    };
+
+    /**
+     * The FormProgressDialog class provides access to progressbar.
+     *
+     * Example (in Python) :
+     * \code
+     * import time, Kross
+     * forms = Kross.module("forms")
+     * progress = forms.showProgressDialog("My Title")
+     * progress.setText("Some <i>detailed</i> text.")
+     * for i in range(0,101):
+     *     progress.setValue(i)
+     *     progress.addText("%s" % i)
+     *     time.sleep(1)
+     * progress.reset()
+     * \endcode
+     */
+    class FormProgressDialog : public KPageDialog
+    {
+            Q_OBJECT
+        public:
+            FormProgressDialog(const QString& caption, const QString& labelText);
+            virtual ~FormProgressDialog();
+            virtual void done(int r);
+        public Q_SLOTS:
+            /**
+            * Set the value of the progressbar. If -1 the progressbar will be hidden.
+            */
+            void setValue(int progress);
+            /**
+            * Set the minimum and maximum range of the progressbar.
+            */
+            void setRange(int minimum, int maximum);
+            /**
+            * Set the HTML-text that is displayed as information to the text \p text .
+            */
+            void setText(const QString& text);
+            /**
+            * Add to the HTML-text that is displayed as information the text \p text .
+            */
+            void addText(const QString& text);
+            /**
+             * Shows the dialog as a modal dialog, blocking until the user
+             * closes it and returns the execution result.
+             *
+             * \return >=1 if the dialog was accepted (e.g. "Ok" pressed) else
+             * the user rejected the dialog (e.g. by pressing "Cancel" or just
+             * closing the dialog by pressing the escape-key).
+             */
+            int exec();
+            /**
+             * Same as the \a exec() method above provided for Python-lovers (python
+             * does not like functions named "exec" and PyQt named it "exec_loop", so
+             * just let's do the same).
+             */
+            int exec_loop() { return exec(); }
+            /**
+             * Returns true if the user requested to cancel the operation.
+             */
+            bool isCanceled();
+        Q_SIGNALS:
+            /**
+             * This signal got emitted if the user requests to cancel the operation.
+             */
+            void canceled();
         private:
             /// \internal d-pointer class.
             class Private;
