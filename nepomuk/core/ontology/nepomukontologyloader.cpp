@@ -22,7 +22,6 @@
 
 #include <soprano/Statement>
 #include <soprano/Model>
-#include <soprano/QueryLegacy>
 #include <soprano/QueryResultIterator>
 #include <soprano/Client/DBusClient>
 
@@ -55,10 +54,10 @@ QList<Soprano::Statement> Nepomuk::NepomukOntologyLoader::loadOntology( const QU
 
     if ( Soprano::Model* model = d->client.createModel( "main" ) ) {
         // get the complete named graph describing the ontology
-        Soprano::QueryResultIterator it = model->executeQuery( Soprano::QueryLegacy( QString( "construct {?s ?p ?o} "
-                                                                                              "where GRAPH <%1> { ?s ?p ?o. }" )
-                                                                                     .arg( uri.toString() ),
-                                                                                     Soprano::QueryLegacy::SPARQL ) );
+        Soprano::QueryResultIterator it = model->executeQuery( QString( "construct {?s ?p ?o} "
+                                                                        "where GRAPH <%1> { ?s ?p ?o. }" )
+                                                               .arg( uri.toString() ),
+                                                               Soprano::Query::QUERY_LANGUAGE_SPARQL );
         while ( it.next() ) {
             sl.append( it.currentStatement() );
         }
