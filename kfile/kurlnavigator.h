@@ -188,6 +188,12 @@ public:
     int historyIndex() const;
 
     /**
+     * Returns the saved root URL for the current URL
+     * (see KUrlNavigator::saveRootUrl()).
+     */
+    const KUrl& savedRootUrl() const;
+
+    /**
      * Returns the saved contents position of the upper left corner
      * for the current URL.
      */
@@ -223,6 +229,14 @@ public Q_SLOTS:
      * and emits the signal KUrlNavigator::activationChanged().
      */
     void requestActivation();
+
+    /**
+     * Saves the used root URL of the content for the current history element.
+     * Saving the root URL might be useful if the item view is represented by a tree or
+     * columns, where it is mandatory to restore the the root URL too iterating
+     * through the history.
+     */
+    void saveRootUrl(const KUrl& url);
 
     /**
      * Saves the coordinates of the contents for

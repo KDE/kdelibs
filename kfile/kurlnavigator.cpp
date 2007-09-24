@@ -55,10 +55,13 @@ class HistoryElem
 {
 public:
     HistoryElem();
-    HistoryElem(const KUrl& url);
+    HistoryElem(const KUrl& url, const KUrl& rootUrl);
     ~HistoryElem(); // non virtual
 
     const KUrl& url() const;
+
+    void setRootUrl(const KUrl& url);
+    const KUrl& rootUrl() const;
 
     void setContentsX(int x);
     int contentsX() const;
@@ -68,19 +71,22 @@ public:
 
 private:
     KUrl m_url;
+    KUrl m_rootUrl;
     int m_contentsX;
     int m_contentsY;
 };
 
 HistoryElem::HistoryElem() :
     m_url(),
+    m_rootUrl(),
     m_contentsX(0),
     m_contentsY(0)
 {
 }
 
-HistoryElem::HistoryElem(const KUrl& url) :
+HistoryElem::HistoryElem(const KUrl& url, const KUrl& rootUrl) :
     m_url(url),
+    m_rootUrl(rootUrl),
     m_contentsX(0),
     m_contentsY(0)
 {
@@ -93,6 +99,16 @@ HistoryElem::~HistoryElem()
 inline const KUrl& HistoryElem::url() const
 {
     return m_url;
+}
+
+inline void HistoryElem::setRootUrl(const KUrl& url)
+{
+    m_rootUrl = url;
+}
+
+inline const KUrl& HistoryElem::rootUrl() const
+{
+    return m_rootUrl;
 }
 
 inline void HistoryElem::setContentsX(int x)
@@ -261,6 +277,7 @@ public:
 
     QHBoxLayout* m_layout;
 
+    KUrl m_rootUrl;
     QList<HistoryElem> m_history;
     KFilePlacesSelector* m_placesSelector;
     KUrlComboBox* m_pathBox;
@@ -286,6 +303,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_editable(false),
     m_active(true),
     m_showPlacesSelector(placesModel != 0),
+    m_rootUrl(),
     m_historyIndex(0),
     m_layout(new QHBoxLayout),
     m_placesSelector(0),
@@ -792,7 +810,7 @@ KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
     QWidget(parent),
     d(new Private(this, placesModel))
 {
-    d->m_history.prepend(HistoryElem(url));
+    d->m_history.prepend(HistoryElem(url, url));
 
     QFontMetrics fontMetrics(font());
     setMinimumHeight(fontMetrics.height() + 10);
@@ -855,8 +873,8 @@ bool KUrlNavigator::goBack()
     if (d->m_historyIndex < count - 1) {
         ++d->m_historyIndex;
         d->updateContent();
-        emit urlChanged(url());
         emit historyChanged();
+        emit urlChanged(url());
         return true;
     }
 
@@ -868,8 +886,8 @@ bool KUrlNavigator::goForward()
     if (d->m_historyIndex > 0) {
         --d->m_historyIndex;
         d->updateContent();
-        emit urlChanged(url());
         emit historyChanged();
+        emit urlChanged(url());
         return true;
     }
 
@@ -1001,10 +1019,10 @@ void KUrlNavigator::setUrl(const KUrl& url)
 
     if (this->url() != transformedUrl) {
         // don't insert duplicate history elements
-        d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl));
+        d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl, d->m_rootUrl));
 
-        emit urlChanged(transformedUrl);
         emit historyChanged();
+        emit urlChanged(transformedUrl);
 
         // Prevent an endless growing of the history: remembering
         // the last 100 Urls should be enough...
@@ -1022,6 +1040,13 @@ void KUrlNavigator::setUrl(const KUrl& url)
 void KUrlNavigator::requestActivation()
 {
     setActive(true);
+}
+
+void KUrlNavigator::saveRootUrl(const KUrl& url)
+{
+    d->m_rootUrl = url;
+    HistoryElem& hist = d->m_history[d->m_historyIndex];
+    hist.setRootUrl(url);
 }
 
 void KUrlNavigator::savePosition(int x, int y)
@@ -1066,6 +1091,12 @@ int KUrlNavigator::historySize() const
 int KUrlNavigator::historyIndex() const
 {
     return d->m_historyIndex;
+}
+
+const KUrl& KUrlNavigator::savedRootUrl() const
+{
+    const HistoryElem& histElem = d->m_history[d->m_historyIndex];
+    return histElem.rootUrl();
 }
 
 QPoint KUrlNavigator::savedPosition() const
