@@ -103,12 +103,7 @@ public:
     /**
      * Constructor.
      *
-     * When instanciating a KComponentData that is not your KApplication,
-     * make sure that the KAboutData and the KComponentData have the same life time.
-     * You have to destroy both, since KComponentData does not own the about data.
-     * Do not create a KAboutData on the stack in this case!
-     * Building a KAboutData on the stack is only ok for usage with
-     * KCmdLineArgs and KApplication (not destroyed until the app exits).
+     * A copy of the aboutData object is made.
      *
      * @param aboutData data about this component
      * @param registerAsMain whether to register the component as the main component
@@ -118,8 +113,8 @@ public:
      *
      * @see KAboutData
      */
-    explicit KComponentData(const KAboutData *aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
     explicit KComponentData(const KAboutData &aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
+    explicit KComponentData(const KAboutData *aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
 
     /**
      * Destructor.
