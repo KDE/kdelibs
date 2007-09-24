@@ -155,7 +155,13 @@ QString KUser::homeDir() const {
 
 QString KUser::faceIconPath() const
 {
-    return homeDir() + QDir::separator() + ".face.icon";
+    QString pathToFaceIcon(homeDir() + QDir::separator() + ".face.icon");
+
+    if (QFile::exists(pathToFaceIcon)) {
+        return pathToFaceIcon;
+    }
+
+    return QString();
 }
 
 QString KUser::shell() const {
