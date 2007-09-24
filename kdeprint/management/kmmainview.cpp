@@ -362,6 +362,7 @@ void KMMainView::initActions()
     KActionMenu* actionMenu = new KActionMenu(i18n("Add"), this);
     m_actions->addAction("wizard", actionMenu);
     actionMenu->setMenu(menu);
+    actionMenu->setDelayed(false);
     m_menubar->addAction(actionMenu);
     menu = new KMenu(this);
     menu->addAction(m_actions->action("printer_state_change"));
@@ -379,6 +380,7 @@ void KMMainView::initActions()
     actionMenu = new KActionMenu(i18n("Printer"), this);
     m_actions->addAction("printer1", actionMenu);
     actionMenu->setMenu(menu);
+    actionMenu->setDelayed(false);
     m_menubar->addAction(actionMenu);
     menu = new KMenu(this);
     menu->addAction(m_actions->action("server_restart"));
@@ -387,6 +389,7 @@ void KMMainView::initActions()
     actionMenu = new KActionMenu(i18n("Print Server"), this);
     m_actions->addAction("misc", actionMenu);
     actionMenu->setMenu(menu);
+    actionMenu->setDelayed(false);
     m_menubar->addAction(actionMenu);
     menu = new KMenu(this);
     menu->addAction(m_actions->action("manager_configure"));
@@ -394,9 +397,11 @@ void KMMainView::initActions()
     //m_menubar->insertItem( i18n( "Manager" ), menu );
     actionMenu = new KActionMenu(i18n("Print Manager"), this);
     m_actions->addAction("kdeprint_configmgr", actionMenu);
+    actionMenu->setDelayed(false);
     actionMenu->setMenu(menu);
     m_menubar->addAction(actionMenu);
     menu = new KMenu(this);
+    actionMenu->setDelayed(false);
     menu->addAction(m_actions->action("view_printerinfos"));
     menu->addAction(m_actions->action("view_change"));
     menu->addAction(m_actions->action("orientation_change"));
@@ -408,12 +413,14 @@ void KMMainView::initActions()
     actionMenu = new KActionMenu(i18n("View"), this);
     m_actions->addAction("view_remove", actionMenu);
     actionMenu->setMenu(menu);
+    actionMenu->setDelayed(false);
     m_menubar->addAction(actionMenu);
     //m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
     menu = new KMenu(this);
     menu->addAction(m_actions->action("invoke_help"));
     menu->addAction(m_actions->action("invoke_web"));
     actionMenu = new KActionMenu(i18n("Documentation"), this);
+    actionMenu->setDelayed(false);
     m_actions->addAction("help", actionMenu);
     actionMenu->setMenu(menu);
     m_menubar->addAction(actionMenu);
