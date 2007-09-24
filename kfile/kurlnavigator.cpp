@@ -756,17 +756,16 @@ QString KUrlNavigator::Private::retrievePlacePath(const QString& path) const
     return (idx < 0) ? path : path.left(idx);
 }
 
-bool KUrlNavigator::Private::isCompressedPath(const KUrl& path) const
+bool KUrlNavigator::Private::isCompressedPath(const KUrl& url) const
 {
-    const KMimeType::Ptr mime = KMimeType::findByPath(path.url(KUrl::RemoveTrailingSlash));
-    // TODO: check whether those MIME-types are complete
+    const KMimeType::Ptr mime = KMimeType::findByPath(url.path(KUrl::RemoveTrailingSlash));
+    // Note: this list of MIME types depends on the protocols implemented by kio_archive
     return  mime->is("application/x-compressed-tar") ||
             mime->is("application/x-tar") ||
             mime->is("application/x-tarz") ||
-            mime->is("application/x-tbz") ||
-            mime->is("application/x-tgz") ||
-            mime->is("application/x-tzo") ||
-            mime->is("application/x-zip");
+            mime->is("application/x-tzo") || // (not sure KTar supports those?)
+            mime->is("application/zip") ||
+            mime->is("application/x-archive");
 }
 
 void KUrlNavigator::Private::createHostLineEdit(const QString& text)
