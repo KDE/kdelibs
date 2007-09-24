@@ -200,7 +200,7 @@ bool Nepomuk::ResourceData::store()
                 statements.append( Statement( QUrl(m_uri), QUrl(Resource::identifierUri()), LiteralValue(m_kickoffIdentifier) ) );
             }
 
-            return ResourceManager::instance()->mainModel()->addStatements( statements ) == Soprano::Error::ERROR_NONE;
+            return ResourceManager::instance()->mainModel()->addStatements( statements ) == Soprano::Error::ErrorNone;
         }
         else {
             return true;
