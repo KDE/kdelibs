@@ -23,6 +23,8 @@
 #ifndef KDIRSORTFILTERPROXYMODEL_H
 #define KDIRSORTFILTERPROXYMODEL_H
 
+#include <QFileInfo>
+
 #include <kcategorizedsortfilterproxymodel.h>
 
 #include <kfile_export.h>
@@ -71,6 +73,12 @@ public:
      * is returned if both values are equal.
      */
     static int naturalCompare(const QString& a, const QString& b);
+
+    /**
+     * Returns the permissions in "points". This is useful for sorting by
+     * permissions.
+     */
+    static int pointsForPermissions(const QFileInfo &info);
 
 protected:
     /**

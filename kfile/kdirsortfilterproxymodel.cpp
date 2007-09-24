@@ -159,6 +159,27 @@ int KDirSortFilterProxyModel::naturalCompare(const QString& a,
     return currA->isNull() ? -1 : + 1;
 }
 
+int KDirSortFilterProxyModel::pointsForPermissions(const QFileInfo &info)
+{
+    int points = 0;
+
+    QFile::Permission permissionsCheck[] = { QFile::ReadUser,
+                                             QFile::WriteUser,
+                                             QFile::ExeUser,
+                                             QFile::ReadGroup,
+                                             QFile::WriteGroup,
+                                             QFile::ExeGroup,
+                                             QFile::ReadOther,
+                                             QFile::WriteOther,
+                                             QFile::ExeOther };
+
+    for (int i = 0; i < 9; i++) {
+        points += info.permission(permissionsCheck[i]) ? 1 : 0;
+    }
+
+    return points;
+}
+
 bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
                                         const QModelIndex& right) const
 {
@@ -243,14 +264,19 @@ bool KDirSortFilterProxyModel::lessThan(const QModelIndex& left,
     }
 
     case KDirModel::Permissions: {
-        if (leftFileItem.permissionsString() == rightFileItem.permissionsString()) {
+        QFileInfo leftFileInfo(leftFileItem.url().pathOrUrl());
+        QFileInfo rightFileInfo(rightFileItem.url().pathOrUrl());
+
+        int leftPermissionsPoints = pointsForPermissions(leftFileInfo);
+        int rightPermissionsPoints = pointsForPermissions(rightFileInfo);
+
+        if (leftPermissionsPoints == rightPermissionsPoints) {
             return sortCaseSensitivity() ?
                    (naturalCompare(leftFileItem.name(), rightFileItem.name()) < 0) :
                    (naturalCompare(leftFileItem.name().toLower(), rightFileItem.name().toLower()) < 0);
         }
 
-        return naturalCompare(leftFileItem.permissionsString(),
-                              rightFileItem.permissionsString()) < 0;
+        return leftPermissionsPoints > rightPermissionsPoints;
     }
 
     case KDirModel::Owner: {
@@ -352,8 +378,13 @@ bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
     }
 
     case KDirModel::Permissions: {
-        return naturalCompare(leftFileItem.permissionsString(),
-                              rightFileItem.permissionsString()) < 0;
+        QFileInfo leftFileInfo(leftFileItem.url().pathOrUrl());
+        QFileInfo rightFileInfo(rightFileItem.url().pathOrUrl());
+
+        int leftPermissionsPoints = pointsForPermissions(leftFileInfo);
+        int rightPermissionsPoints = pointsForPermissions(rightFileInfo);
+
+        return leftPermissionsPoints > rightPermissionsPoints;
     }
 
     case KDirModel::Owner: {
