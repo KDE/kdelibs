@@ -2280,3 +2280,9 @@ KLocale & KLocale::operator=(const KLocale & rhs)
 
   return *this;
 }
+
+void KLocale::copyCatalogsTo(KLocale *locale)
+{
+    locale->d->catalogNames = d->catalogNames;
+    locale->d->updateCatalogs();
+}

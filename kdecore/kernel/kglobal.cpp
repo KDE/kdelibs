@@ -176,9 +176,12 @@ void KGlobal::newComponentData(const KComponentData &c)
     KGlobal::setActiveComponent(c);
 }
 
-void KGlobal::setLocale(KLocale *locale)
+void KGlobal::setLocale(KLocale *locale, CopyCatalogs copy)
 {
     PRIVATE_DATA;
+    if (copy == DoCopyCatalogs && d->locale)
+        d->locale->copyCatalogsTo(locale);
+    delete d->locale;
     d->locale = locale;
 }
 

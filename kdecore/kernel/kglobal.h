@@ -434,8 +434,13 @@ namespace KGlobal
      */
     KDECORE_EXPORT QString caption();
 
+    /**
+     * For setLocale
+     */
+    enum CopyCatalogs { DoCopyCatalogs, DontCopyCatalogs};
+
     ///@internal
-    KDECORE_EXPORT void setLocale(KLocale *);
+    KDECORE_EXPORT void setLocale(KLocale *, CopyCatalogs copy = DoCopyCatalogs);
 }
 
 #ifdef KDE_SUPPORT

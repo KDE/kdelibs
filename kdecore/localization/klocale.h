@@ -1080,6 +1080,12 @@ public:
    * @param language language to check
    */
   bool isApplicationTranslatedInto( const QString & language);
+
+  /**
+   * Copies the catalogs of this objct to an other KLocale object.
+   */
+  void copyCatalogsTo(KLocale *locale);
+
 protected:
   /**
    * Changes the current country. The current country will be left
@@ -1113,7 +1119,6 @@ protected:
    * @return true if one of the specified languages were used
    */
   bool setLanguage(const QStringList &languages);
-
 
 private:
   KLocalePrivate * const d;
