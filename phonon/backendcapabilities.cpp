@@ -32,6 +32,16 @@
 
 PHONON_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
 
+template<class T>
+static inline bool sortByInitialPreference(const T &o1, const T &o2)
+{
+    // QVariant::toInt() returns 0 if the type() is not convertable to int
+    const int initialPreference1 = o1.property("initialPreference").toInt();
+    const int initialPreference2 = o2.property("initialPreference").toInt();
+    // the higher the number the higher it should appear in the list
+    return initialPreference1 > initialPreference2;
+}
+
 namespace Phonon
 {
 
@@ -91,6 +101,7 @@ QList<T> BackendCapabilities::available ## T ## s() \
         foreach (int i, deviceIndexes) \
             ret.append(T::fromIndex(i)); \
     } \
+    qSort(ret.begin(), ret.end(), sortByInitialPreference<T>); \
     return ret; \
 }
 
@@ -104,6 +115,7 @@ QList<T ## Description> BackendCapabilities::available ## T ## s() \
         foreach (int i, deviceIndexes) \
             ret.append(T ## Description::fromIndex(i)); \
     } \
+    qSort(ret.begin(), ret.end(), sortByInitialPreference<T ## Description>); \
     return ret; \
 }
 availableDevicesImpl(AudioOutputDevice)
