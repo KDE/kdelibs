@@ -32,8 +32,11 @@ class K3FileTreeView;
 class K3FileTreeViewItem;
 class KToggleAction;
 class Q3ListViewItem;
-class KSharedConfigPtr;
 
+class KSharedConfig;
+template<class T>
+class KSharedPtr;
+typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
 
 class K3ListView;
 
