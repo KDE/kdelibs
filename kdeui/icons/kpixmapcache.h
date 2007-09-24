@@ -68,7 +68,7 @@ public:
      * @param size size of the pixmap where the SVG is render to. If not given
      *  then SVG's default size is used.
      **/
-    QPixmap loadFromSVG(const QString& filename, const QSize& size = QSize());
+    QPixmap loadFromSvg(const QString& filename, const QSize& size = QSize());
 
     /**
      * @return timestamp of the cache, set using the @p setTimestamp method.

@@ -1383,7 +1383,7 @@ QPixmap KPixmapCache::loadFromFile(const QString& filename)
     return pix;
 }
 
-QPixmap KPixmapCache::loadFromSVG(const QString& filename, const QSize& size)
+QPixmap KPixmapCache::loadFromSvg(const QString& filename, const QSize& size)
 {
     QFileInfo fi(filename);
     if (!fi.exists()) {
