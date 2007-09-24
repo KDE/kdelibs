@@ -50,6 +50,10 @@
 #define MYASSERT(x) /* nope */
 #endif
 
+// ~KConfig needs qrand(). qrand() depends on a Q_GLOBAL_STATIC. With this Q_CONSTRUCTOR_FUNCTION we
+// try to make qrand() live longer than any KConfig object.
+Q_CONSTRUCTOR_FUNCTION(qrand);
+
 typedef QSet<QString> KStringDict;
 
 class KGlobalPrivate
@@ -60,9 +64,6 @@ class KGlobalPrivate
             locale(0),
             charsets(0)
         {
-            // make sure all Qt/KDE global/local statics that we need are created here, that way
-            // we may use them in the dtor as well
-            qrand();
         }
 
         inline ~KGlobalPrivate()
