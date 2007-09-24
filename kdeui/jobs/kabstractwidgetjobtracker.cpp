@@ -1,6 +1,7 @@
 /*  This file is part of the KDE project
     Copyright (C) 2000 Matej Koss <koss@miesto.sk>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2007 Rafael Fernández López <ereslibre@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,26 +24,29 @@
 #include <QWidget>
 #include <QTimer>
 #include <QEvent>
+#include <QMap>
+
+#include <kdebug.h>
 
 class KAbstractWidgetJobTracker::Private
 {
 public:
     Private(KAbstractWidgetJobTracker *parent)
-        : q(parent), job(0),
-          stopOnClose(true), autoDelete(true) { }
+        : q(parent) { }
 
     KAbstractWidgetJobTracker *const q;
-    KJob *job;
-    bool stopOnClose;
-    bool autoDelete;
 
-    void _k_installEventFilter();
+    struct MoreOptions {
+        bool stopOnClose;
+        bool autoDelete;
+    };
+
+    QMap<KJob*, MoreOptions> moreOptions;
 };
 
 KAbstractWidgetJobTracker::KAbstractWidgetJobTracker(QWidget *parent)
     : KJobTrackerInterface(parent), d(new Private(this))
 {
-    QTimer::singleShot(0, this, SLOT(_k_installEventFilter()));
 }
 
 KAbstractWidgetJobTracker::~KAbstractWidgetJobTracker()
@@ -52,104 +56,117 @@ KAbstractWidgetJobTracker::~KAbstractWidgetJobTracker()
 
 void KAbstractWidgetJobTracker::registerJob(KJob *job)
 {
-    if (d->job) {
-        unregisterJob(d->job);
+    if (d->moreOptions.contains(job)) {
+        return;
     }
 
-    d->job = job;
+    Private::MoreOptions mo;
+    mo.stopOnClose = true;
+    mo.autoDelete = true;
+
+    d->moreOptions.insert(job, mo);
+
     KJobTrackerInterface::registerJob(job);
 }
 
 void KAbstractWidgetJobTracker::unregisterJob(KJob *job)
 {
-    d->job = 0;
+    if (!d->moreOptions.contains(job)) {
+        return;
+    }
+
+    d->moreOptions.remove(job);
     KJobTrackerInterface::unregisterJob(job);
 }
 
-void KAbstractWidgetJobTracker::setStopOnClose(bool stopOnClose)
+void KAbstractWidgetJobTracker::setStopOnClose(KJob *job, bool stopOnClose)
 {
-    d->stopOnClose = stopOnClose;
+    if (!d->moreOptions.contains(job)) {
+        return;
+    }
+
+    d->moreOptions[job].stopOnClose = stopOnClose;
 }
 
-bool KAbstractWidgetJobTracker::stopOnClose() const
+bool KAbstractWidgetJobTracker::stopOnClose(KJob *job) const
 {
-    return d->stopOnClose;
+    if (!d->moreOptions.contains(job)) {
+        return false;
+    }
+
+    return d->moreOptions[job].stopOnClose;
 }
 
-void KAbstractWidgetJobTracker::setAutoDelete(bool autoDelete)
+void KAbstractWidgetJobTracker::setAutoDelete(KJob *job, bool autoDelete)
 {
-    d->autoDelete = autoDelete;
+    if (!d->moreOptions.contains(job)) {
+        return;
+    }
+
+    d->moreOptions[job].autoDelete = autoDelete;
 }
 
-bool KAbstractWidgetJobTracker::autoDelete() const
+bool KAbstractWidgetJobTracker::autoDelete(KJob *job) const
 {
-    return d->autoDelete;
+    return d->moreOptions[job].autoDelete;
 }
 
-void KAbstractWidgetJobTracker::finished(KJob * /*job*/)
+void KAbstractWidgetJobTracker::finished(KJob *job)
 {
+    if (!d->moreOptions.contains(job)) {
+        return;
+    }
+
     // clean or delete dialog
-    if (d->autoDelete) {
-        deleteLater();
+    if (d->moreOptions[job].autoDelete) {
+        widget(job)->deleteLater();
     } else {
-        slotClean();
+        slotClean(job);
     }
 }
 
-void KAbstractWidgetJobTracker::slotStop()
+void KAbstractWidgetJobTracker::slotStop(KJob *job)
 {
-    if (d->job) {
-        d->job->kill(); // this will call slotFinished
-        d->job = 0L;
-    } else {
-        finished(0); // here we call it ourselves
+    if (!d->moreOptions.contains(job)) {
+        return;
     }
 
-    emit stopped();
+    job->kill();
+
+    emit stopped(job);
 }
 
-void KAbstractWidgetJobTracker::slotSuspend()
+void KAbstractWidgetJobTracker::slotSuspend(KJob *job)
 {
-    if (d->job) {
-        d->job->suspend();
+    if (!d->moreOptions.contains(job)) {
+        return;
     }
 
-    emit suspend();
+    job->suspend();
+
+    emit suspend(job);
 }
 
-void KAbstractWidgetJobTracker::slotResume()
+void KAbstractWidgetJobTracker::slotResume(KJob *job)
 {
-    if (d->job ) {
-        d->job->resume();
+    if (!d->moreOptions.contains(job)) {
+        return;
     }
 
-    emit resume();
+    job->resume();
+
+    emit resume(job);
 }
 
-void KAbstractWidgetJobTracker::slotClean()
+void KAbstractWidgetJobTracker::slotClean(KJob *job)
 {
-    widget()->hide();
-}
-
-bool KAbstractWidgetJobTracker::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj==widget() && event->type()==QEvent::Close) {
-        // kill job when desired
-        if (d->stopOnClose) {
-            slotStop();
-        } else if (d->autoDelete) { // clean or delete dialog
-            deleteLater();
-        } else {
-            slotClean();
-        }
+    if (!d->moreOptions.contains(job)) {
+        return;
     }
 
-    return KJobTrackerInterface::eventFilter(obj, event);
-}
-
-void KAbstractWidgetJobTracker::Private::_k_installEventFilter()
-{
-    q->widget()->installEventFilter(q);
+    if (widget(job)) {
+        widget(job)->hide();
+    }
 }
 
 #include "kabstractwidgetjobtracker.moc"

@@ -1,6 +1,7 @@
 /*  This file is part of the KDE project
     Copyright (C) 2000 Matej Koss <koss@miesto.sk>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2007 Rafael Fernández López <ereslibre@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -19,153 +20,126 @@
 */
 
 #include "kstatusbarjobtracker.h"
+#include "kstatusbarjobtracker_p.h"
 
 #include <QWidget>
 #include <QProgressBar>
 #include <QLabel>
-#include <QPushButton>
 #include <QBoxLayout>
 #include <QStackedWidget>
 #include <QMouseEvent>
 
+#include <kpushbutton.h>
 #include <klocale.h>
 
-class KStatusBarJobTracker::Private
-{
-public:
-    Private() : widget(0), progressBar(0), label(0), button(0),
-                box(0), stack(0), totalSize(0),
-                mode(None), showButton(false) { }
-
-    QWidget *widget;
-    QProgressBar *progressBar;
-    QLabel *label;
-    QPushButton *button;
-    QBoxLayout *box;
-    QStackedWidget *stack;
-
-    qulonglong totalSize;
-
-    enum Mode { None, Label, Progress };
-    Mode mode;
-
-    bool showButton;
-
-    void setMode(Mode newMode);
-};
-
-
 KStatusBarJobTracker::KStatusBarJobTracker(QWidget *parent, bool button)
-    : KAbstractWidgetJobTracker(parent), d(new Private)
+    : KAbstractWidgetJobTracker(parent), d(new Private(parent))
 {
-    d->showButton = button;
-
-    // only clean this dialog
-    setAutoDelete(false);
-
-    d->widget = new QWidget(parent);
-
-    int w = d->widget->fontMetrics().width( " 999.9 kB/s 00:00:01 " ) + 8;
-    d->box = new QHBoxLayout(d->widget);
-    d->box->setMargin(0);
-    d->box->setSpacing(0);
-
-    d->button = new QPushButton("X", d->widget);
-    d->box->addWidget(d->button);
-    d->stack = new QStackedWidget(d->widget);
-    d->box->addWidget(d->stack);
-    connect(d->button, SIGNAL(clicked()),
-            this, SLOT(slotStop()));
-
-    d->progressBar = new QProgressBar(d->widget);
-//    d->progressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
-//    d->progressBar->setLineWidth( 1 );
-    d->progressBar->setBackgroundRole(QPalette::Window); // ### KDE4: still needed?
-    d->progressBar->installEventFilter(this);
-    d->progressBar->setMinimumWidth(w);
-    d->stack->insertWidget(1, d->progressBar);
-
-    d->label = new QLabel("", d->widget);
-    d->label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    d->label->installEventFilter(this);
-    d->label->setMinimumWidth(w);
-    d->stack->insertWidget(2, d->label);
-    d->widget->setMinimumSize(d->widget->sizeHint());
-
-    d->setMode(KStatusBarJobTracker::Private::None);
 }
 
 KStatusBarJobTracker::~KStatusBarJobTracker()
 {
-    delete d->widget;
     delete d;
 }
 
 void KStatusBarJobTracker::registerJob(KJob *job)
 {
     KAbstractWidgetJobTracker::registerJob(job);
-    d->setMode(KStatusBarJobTracker::Private::Progress);
-}
 
-QWidget *KStatusBarJobTracker::widget()
-{
-    return d->widget;
-}
-
-bool KStatusBarJobTracker::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj==d->progressBar || obj==d->label) {
-
-        if (event->type() == QEvent::MouseButtonPress) {
-            QMouseEvent *e = static_cast<QMouseEvent*>(event);
-
-            if (e->button() == Qt::LeftButton) {    // toggle view on left mouse button
-                if (d->mode == KStatusBarJobTracker::Private::Label) {
-                    d->setMode(KStatusBarJobTracker::Private::Progress);
-                } else if (d->mode == KStatusBarJobTracker::Private::Progress) {
-                    d->setMode(KStatusBarJobTracker::Private::Label);
-                }
-                return true;
-            }
-        }
-
-        return false;
+    if (d->progressWidget.contains(job)) {
+        return;
     }
 
-    return KAbstractWidgetJobTracker::eventFilter(obj, event);
+    Private::ProgressWidget *vi = new Private::ProgressWidget(job, this, d->parent);
+
+    d->progressWidget.insert(job, vi);
 }
 
-void KStatusBarJobTracker::totalAmount(KJob *, KJob::Unit unit, qulonglong amount)
+QWidget *KStatusBarJobTracker::widget(KJob *job)
 {
-    if (unit==KJob::Bytes) {
-        d->totalSize = amount;
+    if (!d->progressWidget.contains(job)) {
+        return 0;
     }
+
+    return d->progressWidget[job];
 }
 
-void KStatusBarJobTracker::percent(KJob *, unsigned long percent)
+void KStatusBarJobTracker::totalAmount(KJob *job, KJob::Unit unit, qulonglong amount)
 {
-    d->progressBar->setValue(percent);
-}
-
-void KStatusBarJobTracker::speed(KJob *, unsigned long value)
-{
-    if (value == 0 ) { // speed is measured in bytes-per-second
-        d->label->setText(i18n(" Stalled "));
-    } else {
-        d->label->setText(i18n(" %1/s ", KGlobal::locale()->formatByteSize(value)));
+    if (!d->progressWidget.contains(job)) {
+        return;
     }
+
+    d->progressWidget[job]->totalAmount(unit, amount);
 }
 
-void KStatusBarJobTracker::slotClean()
+void KStatusBarJobTracker::percent(KJob *job, unsigned long percent)
 {
-    // we don't want to delete this widget, only clean
-    d->progressBar->setValue(0);
-    d->label->clear();
+    if (!d->progressWidget.contains(job)) {
+        return;
+    }
 
-    d->setMode(KStatusBarJobTracker::Private::None);
+    d->progressWidget[job]->percent(percent);
 }
 
-void KStatusBarJobTracker::Private::setMode(Mode newMode)
+void KStatusBarJobTracker::speed(KJob *job, unsigned long value)
+{
+    if (!d->progressWidget.contains(job)) {
+        return;
+    }
+
+    d->progressWidget[job]->speed(value);
+}
+
+void KStatusBarJobTracker::slotClean(KJob *job)
+{
+    if (!d->progressWidget.contains(job)) {
+        return;
+    }
+
+    d->progressWidget[job]->slotClean();
+}
+
+void KStatusBarJobTracker::Private::ProgressWidget::init(QWidget *parent)
+{
+    showButton = button;
+
+    // only clean this dialog
+    q->setAutoDelete(job, false);
+
+    widget = new QWidget(parent);
+
+    int w = fontMetrics().width( " 999.9 kB/s 00:00:01 " ) + 8;
+    box = new QHBoxLayout(widget);
+    box->setMargin(0);
+    box->setSpacing(0);
+
+    button = new KPushButton("X", widget);
+    box->addWidget(button);
+    stack = new QStackedWidget(widget);
+    box->addWidget(stack);
+    connect(button, SIGNAL(clicked()),
+            this, SLOT(slotStop()));
+
+    progressBar = new QProgressBar(widget);
+//    progressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
+//    progressBar->setLineWidth( 1 );
+    progressBar->setBackgroundRole(QPalette::Window); // ### KDE4: still needed?
+    progressBar->installEventFilter(this);
+    progressBar->setMinimumWidth(w);
+    stack->insertWidget(1, progressBar);
+
+    label = new QLabel("", widget);
+    label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    label->installEventFilter(this);
+    label->setMinimumWidth(w);
+    stack->insertWidget(2, label);
+    setMinimumSize(sizeHint());
+
+    setMode(KStatusBarJobTracker::Private::ProgressWidget::None);
+}
+
+void KStatusBarJobTracker::Private::ProgressWidget::setMode(Mode newMode)
 {
     switch (newMode)
     {
@@ -196,4 +170,58 @@ void KStatusBarJobTracker::Private::setMode(Mode newMode)
     mode = newMode;
 }
 
+void KStatusBarJobTracker::Private::ProgressWidget::totalAmount(KJob::Unit unit, qulonglong amount)
+{
+    if (unit==KJob::Bytes) {
+        totalSize = amount;
+    }
+}
+
+void KStatusBarJobTracker::Private::ProgressWidget::percent(unsigned long percent)
+{
+    progressBar->setValue(percent);
+}
+
+void KStatusBarJobTracker::Private::ProgressWidget::speed(unsigned long value)
+{
+    if (value == 0 ) { // speed is measured in bytes-per-second
+        label->setText(i18n(" Stalled "));
+    } else {
+        label->setText(i18n(" %1/s ", KGlobal::locale()->formatByteSize(value)));
+    }
+}
+
+void KStatusBarJobTracker::Private::ProgressWidget::slotClean()
+{
+    // we don't want to delete this widget, only clean
+    progressBar->setValue(0);
+    label->clear();
+
+    setMode(KStatusBarJobTracker::Private::ProgressWidget::None);
+}
+
+bool KStatusBarJobTracker::Private::ProgressWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj==progressBar || obj==label) {
+
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *e = static_cast<QMouseEvent*>(event);
+
+            if (e->button() == Qt::LeftButton) {    // toggle view on left mouse button
+                if (mode == KStatusBarJobTracker::Private::ProgressWidget::Label) {
+                    setMode(KStatusBarJobTracker::Private::ProgressWidget::Progress);
+                } else if (mode == KStatusBarJobTracker::Private::ProgressWidget::Progress) {
+                    setMode(KStatusBarJobTracker::Private::ProgressWidget::Label);
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    return QWidget::eventFilter(obj, event);
+}
+
 #include "kstatusbarjobtracker.moc"
+#include "kstatusbarjobtracker_p.moc"

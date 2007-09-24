@@ -57,16 +57,13 @@ public:
      *
      * @return the widget displaying the job progresses
      */
-    virtual QWidget *widget();
+    virtual QWidget *widget(KJob *job);
 
-protected:
-    virtual bool eventFilter(QObject *obj, QEvent *event);
-
-protected Q_SLOTS:
+public Q_SLOTS:
     virtual void totalAmount(KJob *job, KJob::Unit unit, qulonglong amount);
     virtual void percent(KJob *job, unsigned long percent);
     virtual void speed(KJob *job, unsigned long value);
-    virtual void slotClean();
+    virtual void slotClean(KJob *job);
 
 private:
     class Private;

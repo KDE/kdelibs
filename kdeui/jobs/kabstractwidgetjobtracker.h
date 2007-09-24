@@ -66,26 +66,29 @@ public:
     /**
      * The widget associated to this tracker.
      *
+     * @param job the job that is assigned the widget we want to return
      * @return the widget displaying the job progresses
      */
-    virtual QWidget *widget() = 0;
+    virtual QWidget *widget(KJob *job) = 0;
 
     /**
      * This controls whether the job should be canceled if the dialog is closed.
      *
+     * @param job the job's widget that will be stopped when closing
      * @param stopOnClose If true the job will be stopped if the dialog is closed,
      * otherwise the job will continue even on close.
      * @see stopOnClose()
      */
-    void setStopOnClose(bool stopOnClose);
+    void setStopOnClose(KJob *job, bool stopOnClose);
 
     /**
      * Checks whether the job will be killed when the dialog is closed.
      *
+     * @param job the job's widget that will be stopped when closing
      * @return true if the job is killed on close event, false otherwise.
      * @see setStopOnClose()
      */
-    bool stopOnClose() const;
+    bool stopOnClose(KJob *job) const;
 
     /**
      * This controls whether the dialog should be deleted or only cleaned when
@@ -94,19 +97,22 @@ public:
      * If your dialog is an embedded widget and not a separate window, you should
      * setAutoDelete(false) in the constructor of your custom dialog.
      *
+     * @param job the job's widget that is going to be auto-deleted
      * @param autoDelete If false the dialog will only call method slotClean.
      * If true the dialog will be deleted.
      * @see autoDelete()
      */
-    void setAutoDelete(bool autoDelete);
+    void setAutoDelete(KJob *job, bool autoDelete);
 
     /**
      * Checks whether the dialog should be deleted or cleaned.
+     *
+     * @param job the job's widget that will be auto-deleted
      * @return false if the dialog only calls slotClean, true if it will be
      *         deleted
      * @see setAutoDelete()
      */
-    bool autoDelete() const;
+    bool autoDelete(KJob *job) const;
 
 protected Q_SLOTS:
     /**
@@ -120,52 +126,58 @@ protected Q_SLOTS:
     /**
      * This method should be called for correct cancellation of IO operation
      * Connect this to the progress widgets buttons etc.
+     *
+     * @param job The job that is being stopped
      */
-    void slotStop();
+    void slotStop(KJob *job);
 
     /**
      * This method should be called for pause/resume
      * Connect this to the progress widgets buttons etc.
+     *
+     * @param job The job that is being suspended
      */
-    void slotSuspend();
+    void slotSuspend(KJob *job);
 
     /**
      * This method should be called for pause/resume
      * Connect this to the progress widgets buttons etc.
+     *
+     * @param job The job that is being resumed
      */
-    void slotResume();
+    void slotResume(KJob *job);
 
     /**
      * This method is called when the widget should be cleaned (after job is finished).
      * redefine this for custom behavior.
+     *
+     * @param job The job that is being cleaned
      */
-    virtual void slotClean();
+    virtual void slotClean(KJob *job);
 
 Q_SIGNALS:
     /**
      * Emitted when the user aborted the operation
+     *
+     * @param job The job that has been stopped
      */
-    void stopped();
+    void stopped(KJob *job);
 
     /**
      * Emitted when the user suspended the operation
+     *
+     * @param job The job that has been suspended
      */
-    void suspend();
+    void suspend(KJob *job);
 
     /**
      * Emitted when the user resumed the operation
+     *
+     * @param job The job that has been resumed
      */
-    void resume();
-
-protected:
-    /**
-     * @internal
-     */
-    bool eventFilter(QObject *obj, QEvent *event);
+    void resume(KJob *job);
 
 private:
-    Q_PRIVATE_SLOT(d, void _k_installEventFilter())
-
     class Private;
     Private *const d;
 };

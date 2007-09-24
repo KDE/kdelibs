@@ -47,11 +47,26 @@ public:
     /**
      * The widget associated to this tracker.
      *
+     * @param job the job that is assigned the widget we want to get
      * @return the widget displaying the job progresses
      */
-    virtual QWidget *widget();
+    virtual QWidget *widget(KJob *job);
 
-    bool keepOpen() const;
+    /**
+     * Register a new job in this tracker.
+     *
+     * @param job the job to register
+     */
+    virtual void registerJob(KJob *job);
+
+    /**
+     * Unregister a job from this tracker.
+     *
+     * @param job the job to unregister
+     */
+    virtual void unregisterJob(KJob *job);
+
+    bool keepOpen(KJob *job) const;
 
 protected Q_SLOTS:
     virtual void infoMessage(KJob *job, const QString &plain, const QString &rich);
@@ -62,18 +77,13 @@ protected Q_SLOTS:
     virtual void processedAmount(KJob *job, KJob::Unit unit, qulonglong amount);
     virtual void percent(KJob *job, unsigned long percent);
     virtual void speed(KJob *job, unsigned long value);
-    virtual void slotClean();
+    virtual void slotClean(KJob *job);
     virtual void suspended(KJob *job);
     virtual void resumed(KJob *job);
 
     //TODO: Misses canResume()
 
-private:
-    Q_PRIVATE_SLOT(d, void _k_keepOpenToggled(bool))
-    Q_PRIVATE_SLOT(d, void _k_openFile())
-    Q_PRIVATE_SLOT(d, void _k_openLocation())
-    Q_PRIVATE_SLOT(d, void _k_pauseResumeClicked())
-
+ private:
     class Private;
     Private *const d;
 };
