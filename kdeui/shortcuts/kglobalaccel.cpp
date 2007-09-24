@@ -83,6 +83,7 @@ public:
     org::kde::KdedGlobalAccelInterface iface;
 };
 
+
 KGlobalAccel::KGlobalAccel()
     : d(new KGlobalAccelPrivate)
 {
@@ -97,11 +98,13 @@ KGlobalAccel::KGlobalAccel()
         d->mainComponentName = KGlobal::mainComponent().componentName();
 }
 
+
 KGlobalAccel::~KGlobalAccel()
 {
     //TODO *maybe* we need to ungrab/unregister all
     delete d;
 }
+
 
 bool KGlobalAccel::isEnabled()
 {
@@ -125,6 +128,12 @@ void KGlobalAccel::setEnabled( bool enabled )
         d->grabbedKeys.clear();
     }
 #endif
+}
+
+
+void KGlobalAccel::overrideMainComponentData(const KComponentData &kcd)
+{
+    d->mainComponentName = kcd.componentName();
 }
 
 

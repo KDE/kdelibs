@@ -28,6 +28,7 @@
 
 class QWidget;
 class KShortcut;
+class KComponentData;
 
 /**
  * @short Configurable global shortcut support
@@ -62,6 +63,17 @@ public:
      *  should be disabled.
      */
     void setEnabled(bool enabled);
+
+    /**
+     * Set the KComponentData for which to manipulate shortcuts. This is for exceptional
+     * situations, when you want to modify the shortcuts of another application
+     * as if they were yours. An example is the KControl Module of the window manager KWin.
+     * KWin's configuration is largely not managed by KWin itself.
+     *
+     * @param componentData a KComponentData about the application for which you want to
+     *                      manipulate shortcuts.
+     */
+    void overrideMainComponentData(const KComponentData &componentData);
 
     /**
      * Return the name of the action that uses the given key sequence. This applies to
