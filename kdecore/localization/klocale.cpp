@@ -1951,6 +1951,7 @@ bool KLocalePrivate::useDefaultLanguage() const
 void KLocalePrivate::initEncoding()
 {
   const int mibDefault = 4; // ISO 8859-1
+  codecForEncoding = 0;
 
   // This all made more sense when we still had the EncodingEnum config key.
 #ifdef HAVE_LANGINFO_H
