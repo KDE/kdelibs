@@ -144,7 +144,7 @@ QList<Effect *> Path::effects() const
 
 bool Path::reconnect(MediaNode *source, MediaNode *sink)
 {
-    if (!source || !sink || !source->k_ptr->backendObject() || !source->k_ptr->backendObject()) {
+    if (!source || !sink || !source->k_ptr->backendObject() || !sink->k_ptr->backendObject()) {
         return false;
     }
 
