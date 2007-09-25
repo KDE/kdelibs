@@ -2959,7 +2959,7 @@ ValueImp *HTMLCollection::nameGetter(ExecState *exec, JSObject*, const Identifie
 bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLCollection::getOwnPropertySlot " << propertyName.toAscii().constData();
+  kDebug(6070) << "KJS::HTMLCollection::getOwnPropertySlot " << propertyName.ascii();
 #endif
   if (propertyName == exec->propertyNames().length)
   {
@@ -3037,7 +3037,7 @@ ValueImp* KJS::HTMLCollection::callAsFunction(ExecState *exec, ObjectImp *, cons
 ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.toAscii().constData();
+  kDebug(6070) << "KJS::HTMLCollection::getNamedItems " << propertyName.ascii();
 #endif
 
   DOM::DOMString pstr = propertyName.domString();
