@@ -417,6 +417,7 @@ ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
         return Undefined();
   }
   assert(0);
+  return 0;
 }
 
 void KJS::HTMLDocument::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
