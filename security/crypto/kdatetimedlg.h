@@ -50,7 +50,6 @@ public:
 protected Q_SLOTS:
 
 private:
-   KPushButton *_ok, *_cancel;
    KDatePicker *_date;
    KIntNumInput *_hours, *_mins, *_secs;
 

@@ -38,10 +38,14 @@
 KDateTimeDlg::KDateTimeDlg(QWidget *parent)
  : KDialog(parent)
 {
-   QGridLayout *grid = new QGridLayout(this);
+   QWidget *widget = new QWidget(this);
+   setMainWidget(widget);
+
+   QGridLayout *grid = new QGridLayout;
    grid->setSpacing(spacingHint());
    grid->setMargin(marginHint());
-
+   setButtons(Ok|Cancel);
+   widget->setLayout(grid);
    setCaption(i18nc("Select Time and Date", "Date & Time Selector"));
 
    _date = new KDatePicker(this);
@@ -61,14 +65,6 @@ KDateTimeDlg::KDateTimeDlg(QWidget *parent)
    _secs = new KIntNumInput(this);
    _secs->setRange(0, 59, 1, false);
    grid->addWidget(_secs, 7, 5);
-
-   _ok = new KPushButton(KStandardGuiItem::ok(), this);
-   grid->addWidget(_ok, 8, 4);
-   connect(_ok, SIGNAL(clicked()), SLOT(accept()));
-
-   _cancel = new KPushButton(KStandardGuiItem::cancel(), this);
-   grid->addWidget(_cancel, 8, 5);
-   connect(_cancel, SIGNAL(clicked()), SLOT(reject()));
 
 }
 
