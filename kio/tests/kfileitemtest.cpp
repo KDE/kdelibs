@@ -39,6 +39,7 @@ void KFileItemTest::testPermissionsString()
     KFileItem dirItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
     QCOMPARE((uint)dirItem.permissions(), (uint)0700);
     QCOMPARE(dirItem.permissionsString(), QString("drwx------"));
+    QVERIFY(dirItem.isReadable());
 
     // File
     QFile file(tempDir.name() + "afile");
@@ -47,6 +48,7 @@ void KFileItemTest::testPermissionsString()
     KFileItem fileItem(KUrl(file.fileName()), QString(), KFileItem::Unknown);
     QCOMPARE((uint)fileItem.permissions(), (uint)0604);
     QCOMPARE(fileItem.permissionsString(), QString("-rw----r--"));
+    QVERIFY(fileItem.isReadable());
 
     // Symlink
     QString symlink = tempDir.name() + "asymlink";
@@ -57,6 +59,7 @@ void KFileItemTest::testPermissionsString()
     // This is a bit different from "ls -l": we get the 'l' but we see the permissions of the target.
     // This is actually useful though; the user sees it's a link, and can check if he can read the [target] file.
     QCOMPARE(symlinkItem.permissionsString(), QString("lrw----r--"));
+    QVERIFY(symlinkItem.isReadable());
 }
 
 void KFileItemTest::testNull()
@@ -66,9 +69,19 @@ void KFileItemTest::testNull()
     KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);
     QVERIFY(!fileItem.isNull());
     fileItem.mark();
-    null = fileItem;
+    null = fileItem; // ok, now 'null' isn't so null anymore
     QVERIFY(!null.isNull());
     QVERIFY(null.isMarked());
+    QVERIFY(null.isReadable());
+}
+
+void KFileItemTest::testDoesNotExist()
+{
+    KFileItem fileItem(KUrl("/doesnotexist"), QString(), KFileItem::Unknown);
+    QVERIFY(!fileItem.isNull());
+    QVERIFY(!fileItem.isReadable());
+    QVERIFY(fileItem.user().isEmpty());
+    QVERIFY(fileItem.group().isEmpty());
 }
 
 void KFileItemTest::testDetach()

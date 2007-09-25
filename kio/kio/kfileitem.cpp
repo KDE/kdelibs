@@ -70,7 +70,7 @@ public:
           m_delayedMimeTypes( delayedMimeTypes ),
           m_hidden( Auto )
     {
-        if (!entry.count()==0) {
+        if (entry.count() != 0) {
             readUDSEntry( urlIsDirectory );
         } else {
             m_strName = url.fileName();
@@ -833,12 +833,18 @@ bool KFileItem::isReadable() const
       // for the groups... then we need to handle the deletion properly...
       */
 
-    // No read permission at all
-    if ( !(S_IRUSR & d->m_permissions) && !(S_IRGRP & d->m_permissions) && !(S_IROTH & d->m_permissions) )
-        return false;
+    if (d->m_permissions != KFileItem::Unknown) {
+        // No read permission at all
+        if ( !(S_IRUSR & d->m_permissions) && !(S_IRGRP & d->m_permissions) && !(S_IROTH & d->m_permissions) )
+            return false;
+
+        // Read permissions for all: save a stat call
+        if ( (S_IRUSR|S_IRGRP|S_IROTH) & d->m_permissions )
+            return true;
+    }
 
     // Or if we can't read it [using ::access()] - not network transparent
-    else if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.path()), R_OK ) == -1 )
+    if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.path()), R_OK ) == -1 )
         return false;
 
     return true;
@@ -854,12 +860,14 @@ bool KFileItem::isWritable() const
       // for the groups... then we need to handle the deletion properly...
       */
 
-    // No write permission at all
-    if ( !(S_IWUSR & d->m_permissions) && !(S_IWGRP & d->m_permissions) && !(S_IWOTH & d->m_permissions) )
-        return false;
+    if (d->m_permissions != KFileItem::Unknown) {
+        // No write permission at all
+        if ( !(S_IWUSR & d->m_permissions) && !(S_IWGRP & d->m_permissions) && !(S_IWOTH & d->m_permissions) )
+            return false;
+    }
 
     // Or if we can't read it [using ::access()] - not network transparent
-    else if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.path()), W_OK ) == -1 )
+    if ( d->m_bIsLocalUrl && ::access( QFile::encodeName(d->m_url.path()), W_OK ) == -1 )
         return false;
 
     return true;
@@ -1091,7 +1099,7 @@ void KFileItem::removeExtraData( const void *key )
 
 QString KFileItem::permissionsString() const
 {
-    if (d->m_access.isNull())
+    if (d->m_access.isNull() && d->m_permissions != KFileItem::Unknown)
         d->m_access = d->parsePermissions( d->m_permissions );
 
     return d->m_access;
