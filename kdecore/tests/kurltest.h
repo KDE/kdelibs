@@ -30,6 +30,7 @@ private Q_SLOTS:
     void testIsValid();
     void testSetQuery();
     void testSetRef();
+    void testSetHTMLRef();
     void testDirectory();
     void testUtf8();
     void testIsLocalFile();
