@@ -450,11 +450,12 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         if (mailCatcher) {
             KUrlLabel *mail = new KUrlLabel(tmp, tmp);
+            grid->addWidget( mail, row, 1 );
             connect(mail, SIGNAL(leftClickedURL(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
         } else {
             label = new QLabel(tmp);
+            grid->addWidget( label, row, 1 );
         }
-        grid->addWidget( label, row, 1 );
     }
     if (label && viewport()) {
         viewport()->setBackgroundRole(label->backgroundRole());
