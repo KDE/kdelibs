@@ -422,10 +422,10 @@ public:
     QString group() const;
 
     /**
-     * Symlink if there is one.
+     * Returns the symlink target if this entry is a symlink.
      * @return the symlink, or QString()
      */
-    QString symlink() const;
+    QString symlink() const; // TODO: should be renamed to symLinkTarget for consistency with Qt4
 
     /**
      * Checks whether the entry is a file.
