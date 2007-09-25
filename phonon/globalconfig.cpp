@@ -78,7 +78,6 @@ QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) con
     QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
 
     QList<int> defaultList = deviceIndexes.toList();
-    qSort(defaultList);
 
     //Now the list from m_config
     const QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(category));
@@ -86,7 +85,7 @@ QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) con
     if (deviceList.isEmpty()) {
         //try to read from global group for defaults
         const QSettingsGroup globalConfig(&m_config, QLatin1String("AudioOutputDevice"));
-        deviceList = globalConfig.value(categoryKey, defaultList);
+        deviceList = globalConfig.value(categoryKey, QList<int>());
     }
 
     QMutableListIterator<int> i(deviceList);
@@ -95,6 +94,15 @@ QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) con
             //if there are devices in m_config that the backend doesn't report, remove them from the list
             i.remove();
     //if the backend reports more devices that are not in m_config append them to the list
+    if (defaultList.size() > 1) {
+        // initial order is important
+        QMap<int, int> orderedList;
+        foreach (int index, defaultList) {
+            const QHash<QByteArray, QVariant> properties = backendIface->objectDescriptionProperties(Phonon::AudioOutputDeviceType, index);
+            orderedList.insertMulti(-properties.value("initialPreference").toInt(), index);
+        }
+        defaultList = orderedList.values();
+    }
     deviceList += defaultList;
 
     return deviceList;
