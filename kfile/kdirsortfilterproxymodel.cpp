@@ -366,15 +366,22 @@ bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
         return naturalCompare(*currA, *currB) < 0;
     }
 
-    case KDirModel::Size:
+    case KDirModel::Size: {
         // If we are sorting by size, show folders first. We will sort them
         // correctly later.
-        return leftFileItem.isDir() && !rightFileItem.isDir();
+        if (leftFileItem.isDir() && !rightFileItem.isDir()) {
+            return true;
+        }
+
+        if (!leftFileItem.isDir() && !rightFileItem.isDir()) {
+            return leftFileItem.size() < rightFileItem.size();
+        }
+
+        return false;
+    }
 
     case KDirModel::ModifiedTime: {
-        KDateTime leftTime = leftFileItem.time(KFileItem::ModificationTime);
-        KDateTime rightTime = rightFileItem.time(KFileItem::ModificationTime);
-        return leftTime > rightTime;
+        return lessThanCategoryPurpose(left, right);
     }
 
     case KDirModel::Permissions: {
