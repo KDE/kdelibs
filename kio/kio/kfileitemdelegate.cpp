@@ -425,7 +425,7 @@ void KFileItemDelegate::Private::setLayoutOptions(QTextLayout &layout, const QSt
 {
     QTextOption textoption;
     textoption.setTextDirection(option.direction);
-    textoption.setAlignment(alignment(option, index));
+    textoption.setAlignment(QStyle::visualAlignment(option.direction, alignment(option, index)));
     textoption.setWrapMode(wordWrapText(option) ? QTextOption::WordWrap : QTextOption::NoWrap);
 
     layout.setFont(font(option, index, item));
@@ -853,7 +853,7 @@ void KFileItemDelegate::Private::drawBackground(QPainter *painter, const QStyleO
         else
         {
             rect = option.rect;
-            radius = 10;
+            radius = option.decorationSize.width() > 24 ? 10 : 5;
         }
 
         // Always draw rounded selection rectangles in list views
