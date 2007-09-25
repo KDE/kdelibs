@@ -68,6 +68,7 @@ class KTranscriptImp : public KTranscript
 
     QStringList postCalls (const QString &lang);
 
+    // Lexical path of the module for the executing code.
     QString currentModulePath;
 
     private:
@@ -101,6 +102,9 @@ class Scriptface : public JSObject
     JSValue *msgstrff (ExecState *exec);
     JSValue *dbgputsf (ExecState *exec, JSValue *str);
     JSValue *lscrf (ExecState *exec);
+    JSValue *normKeyf (ExecState *exec, JSValue *phrase);
+    JSValue *loadPropsf (ExecState *exec, const List &fnames);
+    JSValue *getPropf (ExecState *exec, JSValue *phrase, JSValue *prop);
 
     enum {
         Load,
@@ -114,7 +118,10 @@ class Scriptface : public JSObject
         Msgkey,
         Msgstrf,
         Dbgputs,
-        Lscr
+        Lscr,
+        normKey,
+        loadProps,
+        getProp
     };
 
     // Virtual implementations.
@@ -143,6 +150,9 @@ class Scriptface : public JSObject
 
     // Ordering of those functions which execute for all messages.
     QList<QString> nameForalls;
+
+    // Property values per phrase (used by *Prop interface calls).
+    QHash<QString, QHash<QString, QString> > phraseProps;
 };
 
 // ----------------------------------------------------------------------
@@ -211,6 +221,84 @@ QString expt2str (ExecState *exec)
         QString strexpt = exec->exception()->toString(exec).qstring();
         return QString("Caught exception: %1").arg(strexpt);
     }
+}
+
+// ----------------------------------------------------------------------
+// Count number of lines in the string,
+// up to and excluding the requested position.
+int countLines (const QString &s, int p)
+{
+    int n = 1;
+    int len = s.length();
+    for (int i = 0; i < p && i < len; ++i) {
+        if (s[i] == '\n') {
+            ++n;
+        }
+    }
+    return n;
+}
+
+// ----------------------------------------------------------------------
+// Normalize string key for hash lookups,
+QString normKeystr (const QString &raw)
+{
+    // NOTE: Regexes are not used here for performance reasons.
+    // This function may potentially be called thousands of times
+    // on application startup.
+
+    QString key = raw;
+
+    // Strip all whitespace.
+    // Convert all non-alphanumeric sequences to single underscore.
+    int len = key.length();
+    QString nkey;
+    for (int i = 0; i < len; ++i) {
+        QChar c = key[i];
+        if (c.isLetter() || c.isDigit()) {
+            nkey.append(c);
+        }
+        else if (!c.isSpace() && !nkey.endsWith('_')) {
+            nkey.append('_');
+        }
+    }
+    key = nkey;
+
+    // Convert to lower case.
+    key = key.toLower();
+
+    return key;
+}
+
+// ----------------------------------------------------------------------
+// Trim multiline string in a "smart" way:
+// Remove leading and trailing whitespace up to and including first
+// newline from that side, if there is one; otherwise, don't touch.
+QString trimSmart (const QString &raw)
+{
+    // NOTE: This could be done by a single regex, but is not due to
+    // performance reasons.
+    // This function may potentially be called thousands of times
+    // on application startup.
+
+    int len = raw.length();
+
+    int is = 0;
+    while (is < len && raw[is].isSpace() && raw[is] != '\n') {
+        ++is;
+    }
+    if (is >= len || raw[is] != '\n') {
+        is = -1;
+    }
+
+    int ie = len - 1;
+    while (ie >= 0 && raw[ie].isSpace() && raw[ie] != '\n') {
+        --ie;
+    }
+    if (ie < 0 || raw[ie] != '\n') {
+        ie = len;
+    }
+
+    return raw.mid(is + 1, ie - is - 1);
 }
 
 // ----------------------------------------------------------------------
@@ -467,6 +555,9 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     msgstrf         Scriptface::Msgstrf         DontDelete|ReadOnly|Function 0
     dbgputs         Scriptface::Dbgputs         DontDelete|ReadOnly|Function 1
     lscr            Scriptface::Lscr            DontDelete|ReadOnly|Function 0
+    normKey         Scriptface::normKey         DontDelete|ReadOnly|Function 1
+    loadProps       Scriptface::loadProps       DontDelete|ReadOnly|Function 0
+    getProp         Scriptface::getProp         DontDelete|ReadOnly|Function 2
 @end
 */
 /* Source for ScriptfaceTable.
@@ -546,6 +637,12 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->dbgputsf(exec, CALLARG(0));
         case Scriptface::Lscr:
             return obj->lscrf(exec);
+        case Scriptface::normKey:
+            return obj->normKeyf(exec, CALLARG(0));
+        case Scriptface::loadProps:
+            return obj->loadPropsf(exec, args);
+        case Scriptface::getProp:
+            return obj->getPropf(exec, CALLARG(0), CALLARG(1));
         default:
             return Undefined();
     }
@@ -574,7 +671,8 @@ JSValue *Scriptface::loadf (ExecState *exec, const List &fnames)
         QFile file(qfpath);
         if (!file.open(QIODevice::ReadOnly))
             return throwError(exec, GeneralError,
-                              QString("Cannot read file '%1'").arg(qfpath));
+                              QString(SPREF"load: cannot read file '%1'")\
+                                     .arg(qfpath));
 
         QTextStream stream(&file);
         stream.setCodec("UTF-8");
@@ -740,4 +838,203 @@ JSValue *Scriptface::lscrf (ExecState *exec)
 {
     Q_UNUSED(exec);
     return String(*lscr);
+}
+
+JSValue *Scriptface::normKeyf (ExecState *exec, JSValue *phrase)
+{
+    if (!phrase->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"normKey: expected string as first argument");
+    }
+
+    QString nqphrase = normKeystr(phrase->toString(exec).qstring());
+    return String(nqphrase);
+}
+
+JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
+{
+    if (globalKTI->currentModulePath.isEmpty()) {
+        return throwError(exec, GeneralError,
+                          SPREF"loadProps: no current module path, aiiie...");
+    }
+
+    for (int i = 0; i < fnames.size(); ++i) {
+        if (!fnames[i]->isString()) {
+            return throwError(exec, TypeError,
+                              SPREF"loadProps: expected string as file name");
+        }
+    }
+
+    for (int i = 0; i < fnames.size(); ++i)
+    {
+        QString qfname = fnames[i]->getString().qstring();
+        QString qfpath = globalKTI->currentModulePath + '/' + qfname + ".pmap";
+
+        QFile file(qfpath);
+        if (!file.open(QIODevice::ReadOnly)) {
+            return throwError(exec, GeneralError,
+                              QString(SPREF"loadProps: cannot read file '%1'")\
+                                     .arg(qfpath));
+        }
+
+        QTextStream stream(&file);
+        stream.setCodec("UTF-8");
+        QString s = stream.readAll();
+        file.close();
+
+        // Parse the map.
+        // Should care about performance: possibly executed on each KDE
+        // app startup and reading houndreds of thousands of characters.
+        enum {s_nextEntry, s_nextKey, s_nextValue};
+        QStringList ekeys; // holds keys for current entry
+        QHash<QString, QString> props; // holds properties for current entry
+        int slen = s.length();
+        int state = s_nextEntry;
+        QString pkey;
+        QChar prop_sep, key_sep;
+        while (1) {
+            int i_checkpoint = i;
+
+            if (state == s_nextEntry) {
+                while (s[i].isSpace()) {
+                    ++i;
+                    if (i >= slen) goto END_PROP_PARSE;
+                }
+                if (i + 1 >= slen) {
+                    return throwError(exec, SyntaxError,
+                        QString(SPREF"loadProps: unexpected end "
+                                "of file in %1").arg(qfpath));
+                }
+                // Separator characters for this entry.
+                key_sep = s[i];
+                prop_sep = s[i + 1];
+                if (key_sep.isLetter() || prop_sep.isLetter()) {
+                    return throwError(exec, SyntaxError,
+                        QString(SPREF"loadProps: separator characters must "
+                                "not be letters at %1:%2")
+                               .arg(qfpath).arg(countLines(s, i)));
+                }
+
+                // Reset all data for current entry.
+                ekeys.clear();
+                props.clear();
+                pkey.clear();
+
+                i += 2;
+                state = s_nextKey;
+            }
+            else if (state == s_nextKey) {
+                int ip = i;
+                // Proceed up to next key or property separator.
+                while (s[i] != key_sep && s[i] != prop_sep) {
+                    ++i;
+                    if (i >= slen) goto END_PROP_PARSE;
+                }
+                if (s[i] == key_sep) {
+                    // This is a property key,
+                    // record for when the value gets parsed.
+                    pkey = normKeystr(s.mid(ip, i - ip));
+
+                    i += 1;
+                    state = s_nextValue;
+                }
+                else { // if (s[i] == prop_sep) {
+                    // This is an entry key, or end of entry.
+                    QString ekey = normKeystr(s.mid(ip, i - ip));
+                    if (!ekey.isEmpty()) {
+                        // An entry key.
+                        ekeys.append(ekey);
+
+                        i += 1;
+                        state = s_nextKey;
+                    }
+                    else {
+                        // End of entry.
+                        if (ekeys.size() < 1) {
+                            return throwError(exec, SyntaxError,
+                                QString(SPREF"loadProps: no entry key "
+                                        "for entry ending at %1:%2")
+                                       .arg(qfpath).arg(countLines(s, i)));
+                        }
+
+                        // Put collected properties into global store,
+                        // filed once under each entry key.
+                        // TODO: Wastes memory, perhaps it would be better
+                        // to store pointers to single property hash.
+                        foreach (const QString &ekey, ekeys) {
+                            phraseProps[ekey] = props;
+                        }
+
+                        i += 1;
+                        state = s_nextEntry;
+                    }
+                }
+            }
+            else if (state == s_nextValue) {
+                int ip = i;
+                // Proceed up to next property separator.
+                while (s[i] != prop_sep) {
+                    ++i;
+                    if (i >= slen) goto END_PROP_PARSE;
+                    if (s[i] == key_sep) {
+                        return throwError(exec, SyntaxError,
+                            QString(SPREF"loadProps: property separator "
+                                    "inside property value at %1:%2")
+                                   .arg(qfpath).arg(countLines(s, i)));
+                    }
+                }
+                // Extract the property value and store the property.
+                QString pval = trimSmart(s.mid(ip, i - ip));
+                props[pkey] = pval;
+
+                i += 1;
+                state = s_nextKey;
+            }
+            else {
+                return throwError(exec, GeneralError,
+                    QString(SPREF"loadProps: internal error 10 at %1:%2")
+                           .arg(qfpath).arg(countLines(s, i)));
+            }
+
+            // To avoid infinite looping and stepping out.
+            if (i == i_checkpoint || i >= slen) {
+                return throwError(exec, GeneralError,
+                    QString(SPREF"loadProps: internal error 20 at %1:%2")
+                           .arg(qfpath).arg(countLines(s, i)));
+            }
+        }
+
+        END_PROP_PARSE:
+        if (state != s_nextEntry) {
+            return throwError(exec, SyntaxError,
+                              QString(SPREF"loadProps: unexpected end of "
+                                      "file in %1").arg(qfpath));
+        }
+
+        dbgout("Loaded property map: %1", qfpath);
+    }
+
+    return Undefined();
+}
+
+JSValue *Scriptface::getPropf (ExecState *exec, JSValue *phrase, JSValue *prop)
+{
+    if (!phrase->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"getProp: expected string as first argument");
+    }
+    if (!prop->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"getProp: expected string as second argument");
+    }
+
+    QString qphrase = normKeystr(phrase->toString(exec).qstring());
+    QString qprop = prop->toString(exec).qstring();
+
+    if (phraseProps.contains(qphrase)) {
+        if (phraseProps[qphrase].contains(qprop)) {
+            return String(phraseProps[qphrase][qprop]);
+        }
+    }
+    return Undefined();
 }
