@@ -399,7 +399,6 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     QGridLayout *grid = new QGridLayout(_frame);
     grid->setMargin(KDialog::marginHint());
     grid->setSpacing(KDialog::spacingHint());
-    _frame->setLayout(grid);
     int row = 0;
     QLabel *label = 0L;
     if (!(tmp = cert.getValue("O")).isEmpty()) {
