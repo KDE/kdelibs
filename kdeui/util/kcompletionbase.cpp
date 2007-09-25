@@ -64,10 +64,10 @@ KCompletionBase::KCompletionBase()
     // the event filter will use the global settings.
     useGlobalKeyBindings();
 
-    // By default we initialize everything to false.
+    // By default we initialize everything except hsig to false.
     // All the variables would be setup properly when
     // the appropriate member functions are called.
-    setup( false, false, false );
+    setup( false, true, false );
 }
 
 KCompletionBase::~KCompletionBase()
