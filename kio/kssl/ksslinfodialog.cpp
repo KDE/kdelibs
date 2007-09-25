@@ -395,59 +395,66 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     KSSLX509Map cert(certName);
     QString tmp;
     viewport()->setBackgroundRole(QPalette::Button);
-    QFrame* _frame = new QFrame(this);
+    QFrame* _frame = new QFrame;
     QGridLayout *grid = new QGridLayout(_frame);
     grid->setMargin(KDialog::marginHint());
     grid->setSpacing(KDialog::spacingHint());
-
+    _frame->setLayout(grid);
     int row = 0;
     QLabel *label = 0L;
     if (!(tmp = cert.getValue("O")).isEmpty()) {
-        label = new QLabel(i18n("Organization:"), _frame);
+        label = new QLabel(i18n("Organization:"));
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        grid->addWidget( label,row, 0);
+        grid->addWidget( new QLabel(tmp), row, 1 );
         row++;
     }
     if (!(tmp = cert.getValue("OU")).isEmpty()) {
-        label = new QLabel(i18n("Organizational unit:"), _frame);
+        label = new QLabel(i18n("Organizational unit:"));
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        grid->addWidget( label,row, 0);
+        grid->addWidget( new QLabel(tmp), row, 1 );
         row++;
     }
     if (!(tmp = cert.getValue("L")).isEmpty()) {
-        label = new QLabel(i18n("Locality:"), _frame);
+        label = new QLabel(i18n("Locality:"));
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        grid->addWidget( label,row, 0);
+        grid->addWidget( new QLabel(tmp), row, 1 );
         row++;
     }
     if (!(tmp = cert.getValue("ST")).isEmpty()) {
-        label = new QLabel(i18nc("Federal State","State:"), _frame);
+        label = new QLabel(i18nc("Federal State","State:"));
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        grid->addWidget( label,row, 0);
+        grid->addWidget( new QLabel(tmp), row, 1 );
         row++;
     }
     if (!(tmp = cert.getValue("C")).isEmpty()) {
-        label = new QLabel(i18n("Country:"), _frame);
+        label = new QLabel(i18n("Country:"));
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        grid->addWidget( label,row, 0);
+        grid->addWidget( new QLabel(tmp), row, 1 );
         row++;
     }
     if (!(tmp = cert.getValue("CN")).isEmpty()) {
-        label = new QLabel(i18n("Common name:"), _frame);
+        label = new QLabel(i18n("Common name:"));
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-        grid->addWidget( new QLabel(tmp, _frame), row, 0 );
+        grid->addWidget( label,row, 0);
+        grid->addWidget( new QLabel(tmp), row, 1 );
         row++;
     }
     if (!(tmp = cert.getValue("Email")).isEmpty()) {
-        label = new QLabel(i18n("Email:"), _frame);
+        label = new QLabel(i18n("Email:"));
+        grid->addWidget( label,row, 0);
         label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
         if (mailCatcher) {
-            KUrlLabel *mail = new KUrlLabel(tmp, tmp, _frame);
+            KUrlLabel *mail = new KUrlLabel(tmp, tmp);
             connect(mail, SIGNAL(leftClickedURL(const QString &)), mailCatcher, SLOT(mailClicked(const QString &)));
         } else {
-            label = new QLabel(tmp, _frame);
+            label = new QLabel(tmp);
         }
-        grid->addWidget( label, row, 0 );
+        grid->addWidget( label, row, 1 );
     }
     if (label && viewport()) {
         viewport()->setBackgroundRole(label->backgroundRole());
