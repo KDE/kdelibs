@@ -63,4 +63,9 @@ QString KFileBookmarkHandler::currentUrl() const
     return m_widget->baseUrl().url();
 }
 
+QString KFileBookmarkHandler::currentTitle() const
+{
+    return m_widget->baseUrl().prettyUrl();
+}
+
 #include "kfilebookmarkhandler.moc"

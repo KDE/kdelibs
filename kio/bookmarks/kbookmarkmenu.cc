@@ -576,6 +576,7 @@ void KBookmarkMenu::slotAddBookmark()
   else
   {
       parentBookmark.addBookmark(m_pOwner->currentTitle(), KUrl(m_pOwner->currentUrl()));
+      m_pManager->emitChanged( parentBookmark );
   }
       
 }

@@ -40,6 +40,7 @@ public:
 
     // KBookmarkOwner interface:
     virtual QString currentUrl() const;
+    virtual QString currentTitle() const;
 
     KMenu *menu() const { return m_menu; }
 
