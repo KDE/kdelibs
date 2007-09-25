@@ -628,12 +628,18 @@ bool KFileItem::isReadable() const
   // for the groups... then we need to handle the deletion properly...
   */
 
-  // No read permission at all
-  if ( !(S_IRUSR & m_permissions) && !(S_IRGRP & m_permissions) && !(S_IROTH & m_permissions) )
-      return false;
+  if ( m_permissions != KFileItem::Unknown ) {
+    // No read permission at all
+    if ( !(S_IRUSR & m_permissions) && !(S_IRGRP & m_permissions) && !(S_IROTH & m_permissions) )
+        return false;
+
+    // Read permissions for all: save a stat call
+    if ( (S_IRUSR|S_IRGRP|S_IROTH) & m_permissions )
+        return true;
+  }
 
   // Or if we can't read it [using ::access()] - not network transparent
-  else if ( m_bIsLocalURL && ::access( QFile::encodeName(m_url.path()), R_OK ) == -1 )
+  if ( m_bIsLocalURL && ::access( QFile::encodeName(m_url.path()), R_OK ) == -1 )
       return false;
 
   return true;
@@ -649,12 +655,14 @@ bool KFileItem::isWritable() const
   // for the groups... then we need to handle the deletion properly...
   */
 
-  // No write permission at all
-  if ( !(S_IWUSR & m_permissions) && !(S_IWGRP & m_permissions) && !(S_IWOTH & m_permissions) )
-      return false;
+  if ( m_permissions != KFileItem::Unknown ) {
+    // No write permission at all
+    if ( !(S_IWUSR & m_permissions) && !(S_IWGRP & m_permissions) && !(S_IWOTH & m_permissions) )
+        return false;
+  }
 
   // Or if we can't read it [using ::access()] - not network transparent
-  else if ( m_bIsLocalURL && ::access( QFile::encodeName(m_url.path()), W_OK ) == -1 )
+ if ( m_bIsLocalURL && ::access( QFile::encodeName(m_url.path()), W_OK ) == -1 )
       return false;
 
   return true;
