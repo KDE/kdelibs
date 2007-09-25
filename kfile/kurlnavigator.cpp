@@ -332,7 +332,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
             q, SLOT(openPathSelectorMenu()));
 
     // initialize the path box of the traditional view
-    m_pathBox = new KUrlComboBox(KUrlComboBox::Directories, true, q);
+    m_pathBox = new KUrlComboBox(KUrlComboBox::Both, true, q);
     m_pathBox->setMinimumWidth(50);
 
     KUrlCompletion* kurlCompletion = new KUrlCompletion(KUrlCompletion::DirCompletion);
