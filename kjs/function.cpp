@@ -208,7 +208,7 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
 #ifdef KJS_VERBOSE
   fprintf(stderr, "---------------------------------------------------\n"
 	  "processing parameters for %s call\n",
-	  name().isEmpty() ? "(internal)" : name().ascii());
+	  functionName().isEmpty() ? "(internal)" : functionName().ascii());
 #endif
 
   ListIterator it = args.begin();
@@ -220,7 +220,7 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
       ++it;
     }
 #ifdef KJS_VERBOSE
-    fprintf(stderr, "setting parameter %s", body->paramName(paramPos));
+    fprintf(stderr, "setting parameter %s", body->paramName(paramPos).ascii());
     printInfo(exec,"to", v);
 #endif
     variable->putLocal(writeTo, v);
