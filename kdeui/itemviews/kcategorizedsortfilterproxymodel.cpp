@@ -1113,8 +1113,7 @@ void KCategorizedSortFilterProxyModel::Private::sourceItemsInserted(const QModel
             //       row or column depending on that ?
 
             // If the parent is filtered, return
-            const int rowIndex = sourceParent.row();
-            if (rowIndex >= grandParentInfo->proxyRows.count() || grandParentInfo->proxyRows.at(rowIndex) == -1)
+            if (grandParentInfo->proxyRows.at(sourceParent.row()) == -1)
             {
                 return;
             }
