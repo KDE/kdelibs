@@ -312,10 +312,8 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		return;
 	}
 
-	if (!d->isRecording) {
-		QPushButton::keyPressEvent(e);
-		return;
-	}
+	if (!d->isRecording)
+		return QPushButton::keyPressEvent(e);
 
 	if (d->nKey == 0)
 		d->modifierKeys = newModifiers;
@@ -366,10 +364,8 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 
 void KKeySequenceButton::keyReleaseEvent(QKeyEvent *e)
 {
-	if (!d->isRecording) {
-		QPushButton::keyReleaseEvent(e);
-		return;
-	}
+	if (!d->isRecording)
+		return QPushButton::keyReleaseEvent(e);
 
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
 
