@@ -182,11 +182,6 @@ int KGlobalSettings::contextMenuKey ()
     return QKeySequence::fromString(s)[0];
 }
 
-QColor KGlobalSettings::toolBarHighlightColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::Button).decoration(KColorScheme::HoverColor).color();
-}
-
 QColor KGlobalSettings::inactiveTitleColor()
 {
 #ifdef Q_WS_WIN
@@ -248,16 +243,6 @@ qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
     return 0.1 * (qreal)contrast();
 }
 
-QColor KGlobalSettings::buttonBackground()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::Button).background().color();
-}
-
-QColor KGlobalSettings::buttonTextColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::Button).foreground().color();
-}
-
 QColor KGlobalSettings::baseColor()
 {
     return KColorScheme(QPalette::Active, KColorScheme::View).background().color();
@@ -278,28 +263,6 @@ QColor KGlobalSettings::highlightColor()
     return KColorScheme(QPalette::Active, KColorScheme::Selection).background().color();
 }
 
-QColor KGlobalSettings::alternateBackgroundColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::View).background(KColorScheme::AlternateBackground).color();
-}
-
-QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
-{
-    if (base == Qt::white)
-        return QColor(238,246,255);
-    else
-    {
-        int h, s, v;
-        base.getHsv( &h, &s, &v );
-        if (v > 128)
-            return base.dark(106);
-        else if (base != Qt::black)
-            return base.light(110);
-
-        return QColor(32,32,32);
-    }
-}
-
 bool KGlobalSettings::shadeSortColumn()
 {
     KConfigGroup g( KGlobal::config(), "General" );
@@ -310,16 +273,6 @@ bool KGlobalSettings::allowDefaultBackgroundImages()
 {
     KConfigGroup g( KGlobal::config(), "General" );
     return g.readEntry( "allowDefaultBackgroundImages", KDE_DEFAULT_ALLOW_DEFAULT_BACKGROUND_IMAGES );
-}
-
-QColor KGlobalSettings::linkColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::LinkText).color();
-}
-
-QColor KGlobalSettings::visitedLinkColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::View).foreground(KColorScheme::VisitedText).color();
 }
 
 QFont KGlobalSettings::generalFont()

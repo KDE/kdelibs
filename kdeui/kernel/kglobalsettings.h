@@ -230,18 +230,6 @@ public:
 
 
     /**
-     * The default color to use when highlighting toolbar buttons.
-     * @return the toolbar highlight color
-     * @deprecated use KColorScheme([state], KColorScheme::Button).decoration(KColorScheme::HoverColor) instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4. Note that each
-     * color set now provides its own colors to be used for focus and hover
-     * effects.
-     */
-    static KDE_DEPRECATED QColor toolBarHighlightColor();
-
-    /**
      * The default color to use for inactive titles.
      * @return the inactive title color
      */
@@ -282,26 +270,6 @@ public:
     static qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
-     * Returns the button background color
-     * @return the button background color
-     * @deprecated use KColorScheme([state], KColorScheme::Button).background() instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4.
-     */
-    static KDE_DEPRECATED QColor buttonBackground();
-
-    /**
-     * Returns the button text color
-     * @return the button text color
-     * @deprecated use KColorScheme([state], KColorScheme::Button).foreground() instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4.
-     */
-    static KDE_DEPRECATED QColor buttonTextColor();
-
-    /**
      * Returns the default base (background) color.
      * @return the default base (background) color
      * @see QPalette::base()
@@ -324,32 +292,6 @@ public:
     static KDE_DEPRECATED QColor textColor();
 
     /**
-     * Returns the default link color.
-     * @return the default link color
-     * @deprecated use KColorScheme([state], [set]).foreground(KColorScheme::LinkText) instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4. Also note that link
-     * color is now a standard foreground role, defined for each color set; the
-     * link color for one set may be different from the link color for another
-     * set.
-     */
-    static KDE_DEPRECATED QColor linkColor();
-
-    /**
-     * Returns the default color for visited links.
-     * @return the default color for visited links
-     * @deprecated use KColorScheme([state], [set]).foreground(KColorScheme::VisitedText) instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4. Also note that
-     * visited link color is now a standard foreground role, defined for each
-     * color set; the cisited link color for one set may be different from the
-     * visited link color for another set.
-     */
-    static KDE_DEPRECATED QColor visitedLinkColor();
-
-    /**
      * Returns the default color for highlighted text.
      * @return the default color for highlighted text
      * @see QPalette::hightlightedText()
@@ -370,36 +312,6 @@ public:
      * access to the full range of new color roles in KDE4.
      */
     static KDE_DEPRECATED QColor highlightColor();
-
-    /**
-     * Returns the alternate background color used by K3ListView with
-     * K3ListViewItem. Any other list that uses alternating background
-     * colors should use this too, to obey to the user's preferences. Returns
-     * the same as color(View, BackgroundNormal) if the user doesn't want
-     * alternating backgrounds.
-     * @return the alternate background color
-     * @see calculateAlternateBackgroundColor
-     * @deprecated use KColorScheme([state], KColorScheme::View).background(KColorScheme::AlternateBackground) instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4.
-     */
-    static KDE_DEPRECATED QColor alternateBackgroundColor();
-
-    /**
-     * Calculates a color based on @p base to be used as alternating
-     * color for e.g. listviews.
-     * @param base the base for the calculation
-     * @return the calculated color
-     * @see alternateBackgroundColor
-     * @deprecated use KColorScheme([state], [set]).background(KColorScheme::AlternateBackground) instead.
-     * You shouldn't need to use this; all color sets now provide their own
-     * alternate background color (as well as a variety of other colors) that
-     * KColorScheme provides access to. If for some reason KColorScheme does
-     * not meet your needs, you probably want to look at KColorUtils for
-     * various methods to manipulate colors.
-     */
-    static KDE_DEPRECATED QColor calculateAlternateBackgroundColor(const QColor& base);
 
     /**
      * Returns if the sorted column in a K3ListView shall be drawn with a
