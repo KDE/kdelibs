@@ -55,7 +55,7 @@ class HistoryElem
 {
 public:
     HistoryElem();
-    HistoryElem(const KUrl& url, const KUrl& rootUrl);
+    HistoryElem(const KUrl& url);
     ~HistoryElem(); // non virtual
 
     const KUrl& url() const;
@@ -84,9 +84,9 @@ HistoryElem::HistoryElem() :
 {
 }
 
-HistoryElem::HistoryElem(const KUrl& url, const KUrl& rootUrl) :
+HistoryElem::HistoryElem(const KUrl& url) :
     m_url(url),
-    m_rootUrl(rootUrl),
+    m_rootUrl(),
     m_contentsX(0),
     m_contentsY(0)
 {
@@ -277,7 +277,6 @@ public:
 
     QHBoxLayout* m_layout;
 
-    KUrl m_rootUrl;
     QList<HistoryElem> m_history;
     KFilePlacesSelector* m_placesSelector;
     KUrlComboBox* m_pathBox;
@@ -303,7 +302,6 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_editable(false),
     m_active(true),
     m_showPlacesSelector(placesModel != 0),
-    m_rootUrl(),
     m_historyIndex(0),
     m_layout(new QHBoxLayout),
     m_placesSelector(0),
@@ -810,7 +808,7 @@ KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
     QWidget(parent),
     d(new Private(this, placesModel))
 {
-    d->m_history.prepend(HistoryElem(url, url));
+    d->m_history.prepend(HistoryElem(url));
 
     QFontMetrics fontMetrics(font());
     setMinimumHeight(fontMetrics.height() + 10);
@@ -1019,7 +1017,7 @@ void KUrlNavigator::setUrl(const KUrl& url)
 
     if (this->url() != transformedUrl) {
         // don't insert duplicate history elements
-        d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl, d->m_rootUrl));
+        d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl));
 
         emit historyChanged();
         emit urlChanged(transformedUrl);
@@ -1044,7 +1042,6 @@ void KUrlNavigator::requestActivation()
 
 void KUrlNavigator::saveRootUrl(const KUrl& url)
 {
-    d->m_rootUrl = url;
     HistoryElem& hist = d->m_history[d->m_historyIndex];
     hist.setRootUrl(url);
 }
