@@ -216,14 +216,12 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
         d->mainModel = d->client.createModel( "main" );
     }
 
-    // FIXME: enable this again once the redland backend can handle multiple open its or
-    // if creation of model fails, create a dummy model to protect against crashes
-//     if ( !d->mainModel ) {
+    if ( !d->mainModel ) {
         if ( !d->dummyModel ) {
             d->dummyModel = new Soprano::DummyModel();
         }
         return d->dummyModel;
-//    }
+    }
 
     return d->mainModel;
 }
