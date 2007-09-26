@@ -56,7 +56,6 @@ target_link_libraries(nepomuk
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDECORE_LIBRARY}
   kdeui
-  kdefx
 )
 
 set_target_properties(nepomuk PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
