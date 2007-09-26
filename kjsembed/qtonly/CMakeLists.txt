@@ -96,7 +96,7 @@ remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 link_directories(${QJS_LIB_DIR})
 
 # for including config.h and for includes like <kparts/foo.h>
-include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kdefx)
+include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces)
 
 # Those variables for  are only valid inside of kdelibs, of course.
 # Use the one variable for the lib you depend upon.
