@@ -478,7 +478,7 @@ bool Ftp::ftpLogin()
       }
     }
 
-    tempbuf = "user ";
+    tempbuf = "USER ";
     tempbuf += user.toLatin1();
     if ( m_bUseProxy )
     {
@@ -528,7 +528,7 @@ bool Ftp::ftpLogin()
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Sgaard) for this hint
-  if( ftpSendCmd("syst") && (m_iRespType == 2) )
+  if( ftpSendCmd("SYST") && (m_iRespType == 2) )
   {
     if( !strncmp( ftpResponse(0), "215 Windows_NT", 14 ) ) // should do for any version
     {
@@ -543,14 +543,14 @@ bool Ftp::ftpLogin()
     }
   }
   else
-    kWarning(7102) << "syst failed";
+    kWarning(7102) << "SYST failed";
 
   if ( config()->readEntry ("EnableAutoLoginMacro", false) )
     ftpAutoLoginMacro ();
 
   // Get the current working directory
   kDebug(7102) << "Searching for pwd";
-  if( !ftpSendCmd("pwd") || (m_iRespType != 2) )
+  if( !ftpSendCmd("PWD") || (m_iRespType != 2) )
   {
     kDebug(7102) << "Couldn't issue pwd command";
     error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.", m_host) ); // or anything better ?
