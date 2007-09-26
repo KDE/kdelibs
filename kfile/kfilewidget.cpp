@@ -1387,6 +1387,8 @@ void KFileWidget::showEvent(QShowEvent* event)
 {
     if ( !d->hasView ) { // delayed view-creation
         d->ops->setView(KFile::Default);
+        d->ops->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+        d->ops->view()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
         d->hasView = true;
     }
     d->ops->clearHistory();
