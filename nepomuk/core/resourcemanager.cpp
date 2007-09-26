@@ -95,13 +95,13 @@ Nepomuk::ResourceManager* Nepomuk::ResourceManager::instance()
 
 int Nepomuk::ResourceManager::init()
 {
-    return 0;
+    return ( initialized() ? 0 : -1 );
 }
 
 
 bool Nepomuk::ResourceManager::initialized() const
 {
-    return true;
+    return d->client.isValid();
 }
 
 
