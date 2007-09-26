@@ -475,7 +475,7 @@ protected:
   bool m_bEOD;
 
 //--- Settings related to a single response only
-  QString m_responseHeader; // All response headers
+  QStringList m_responseHeader; // All headers
   KURL m_redirectLocation;
   bool m_bRedirect; // Indicates current request is a redirection
 
@@ -487,7 +487,7 @@ protected:
   QByteArray m_bufReceive; // Receive buffer
   bool m_dataInternal; // Data is for internal consumption
   char m_lineBuf[1024];
-  char m_rewindBuf[4096];
+  char m_rewindBuf[8192];
   size_t m_rewindCount;
   char *m_linePtr;
   size_t m_lineCount;

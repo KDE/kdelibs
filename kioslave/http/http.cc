@@ -263,11 +263,11 @@ void HTTPProtocol::resetResponseSettings()
   m_bChunked = false;
   m_iSize = NO_SIZE;
 
+  m_responseHeader.clear();
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_sContentMD5 = QString::null;
   m_strMimeType = QString::null;
-  m_responseHeader = QString::null;
 
   setMetaData("request-id", m_request.id);
 }
@@ -2647,13 +2647,10 @@ void HTTPProtocol::forwardHttpResponseHeader()
   // Send the response header if it was requested
   if ( config()->readBoolEntry("PropagateHttpHeader", false) )
   {
-    setMetaData("HTTP-Headers", m_responseHeader);
+    setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
     sendMetaData();
-    //kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::forwardHttpResponseHeader =====" << endl;
-    //kdDebug(7113) << "(" << m_pid << m_responseHeader << endl;
   }
-
-  m_responseHeader = QString::null;
+  m_responseHeader.clear();
 }
 
 /**
@@ -2670,7 +2667,7 @@ try_again:
   // Check
   if (m_request.bCachedRead)
   {
-     m_responseHeader = QString::fromLatin1("HTTP-CACHE");
+     m_responseHeader << "HTTP-CACHE";
      // Read header from cache...
      char buffer[4097];
      if (!fgets(buffer, 4096, m_request.fcache) )
@@ -2738,9 +2735,9 @@ try_again:
   int maxAge = -1; // -1 = no max age, 0 already expired, > 0 = actual time
   int maxHeaderSize = 64*1024; // 64Kb to catch DOS-attacks
 
-  // read in 4096 bytes at a time (HTTP cookies can be quite large.)
+  // read in 8192 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
-  char buffer[4097];
+  char buffer[8193];
   bool cont = false;
   bool cacheValidated = false; // Revalidation was successful
   bool mayCache = true;
@@ -2843,7 +2840,7 @@ try_again:
 
     // Store the the headers so they can be passed to the
     // calling application later
-    m_responseHeader += QString::fromLatin1(buf);
+    m_responseHeader << QString::fromLatin1(buf);
 
     if ((strncasecmp(buf, "HTTP", 4) == 0) ||
         (strncasecmp(buf, "ICY ", 4) == 0)) // Shoutcast support
@@ -3412,7 +3409,7 @@ try_again:
 
   } while (!m_bEOF && (len || noHeader) && (headerSize < maxHeaderSize) && (gets(buffer, sizeof(buffer)-1)));
 
-  // Send the current response before processing starts or it 
+  // Send the current response before processing starts or it
   // might never get sent...
   forwardHttpResponseHeader();
 
@@ -3611,7 +3608,7 @@ try_again:
         (m_request.url.host() == u.host()) &&
         (m_request.url.protocol() == u.protocol()))
       u.setRef(m_request.url.ref());
-    
+
     m_bRedirect = true;
     m_redirectLocation = u;
 
@@ -3680,7 +3677,7 @@ try_again:
                m_strMimeType != "application/x-tgz" &&
                m_strMimeType != "application/x-targz" &&
                m_strMimeType != "application/x-gzip" &&
-               m_request.url.path().right(6) == ".ps.gz" ) 
+               m_request.url.path().right(6) == ".ps.gz" )
      {
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
         m_strMimeType = QString::fromLatin1("application/x-gzpostscript");
@@ -4539,7 +4536,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   {
      if (m_request.bCachedWrite && m_request.fcache)
         closeCacheEntry();
-     else if (m_request.bCachedWrite) 
+     else if (m_request.bCachedWrite)
         kdDebug(7113) << "(" << m_pid << ") no cache file!\n";
   }
   else
@@ -4550,7 +4547,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   if (sz <= 1)
   {
-    /* kdDebug(7113) << "(" << m_pid << ") readBody: sz = " << KIO::number(sz) 
+    /* kdDebug(7113) << "(" << m_pid << ") readBody: sz = " << KIO::number(sz)
                      << ", responseCode =" << m_responseCode << endl; */
     if (m_responseCode >= 500 && m_responseCode <= 599)
       error(ERR_INTERNAL_SERVER, m_state.hostname);
