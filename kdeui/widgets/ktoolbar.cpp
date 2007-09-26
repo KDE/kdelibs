@@ -1008,18 +1008,18 @@ void KToolBar::applyAppearanceSettings( KConfigGroup &_cg, bool forceGlobal )
   // this is the first iteration
 
   { // start block for KConfigGroup
-      KConfigGroup cg(gconfig, "Toolbar style");
+      KConfigGroup globals(gconfig, "Toolbar style");
 
     // we read in the ToolButtonStyle property *only* if we intend on actually
     // honoring it
     if ( d->honorStyle )
-        d->ToolButtonStyleDefault = d->toolButtonStyleFromString( cg.readEntry( "ToolButtonStyle",
+        d->ToolButtonStyleDefault = d->toolButtonStyleFromString( globals.readEntry( "ToolButtonStyle",
                                         d->toolButtonStyleToString( d->ToolButtonStyleDefault ) ) );
     else
       d->ToolButtonStyleDefault = Qt::ToolButtonTextUnderIcon;
 
     // Use the default icon size for toolbar icons.
-    d->IconSizeDefault = cg.readEntry( "IconSize", int(d->IconSizeDefault) );
+    d->IconSizeDefault = globals.readEntry( "IconSize", int(d->IconSizeDefault) );
 
     iconSize = d->IconSizeDefault;
     ToolButtonStyle = d->ToolButtonStyleDefault;
