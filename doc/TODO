@@ -1,0 +1,49 @@
+docs we need to write (handbook and manpages):
+
+kde4-config
+kconfig_compiler
+preparetips
+makekdewidgets
+meinproc4
+<DONE> checkXML
+kcookiejar4
+kjs
+kjsconsole
+embed
+kjscmd
+kross
+kdeinit4
+
+kdeinit4 execs:
+ kded4
+ <DONE> kbuildsycoca4
+ 
+kwrapper4
+kdeinint4_wrapper
+kshell4
+kdeinit4_shutdown
+
+nepomuk-rcgen
+
+
+kinit4 libexec stuff:
+ kconf_update
+ klauncher
+ kaddprinterwizard
+ kdeinit_kio_http_cache_cleaner
+
+other libexec stuff:
+ cupsdoprint
+ filesharelist, fileshareset
+ kdesu_stub
+ kdontchangethehostname
+ kgrantpty
+ kioexec
+ kioslave
+ kmailservice
+ kpac_dhcp_helper
+ ksendbugmail
+ ktelnetservice
+ lnusertemp
+ make_driver_db_cups
+ make_driver_db_lpr
