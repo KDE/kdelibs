@@ -24,7 +24,6 @@
 #endif
 
 #include <kde3support_export.h>
-#include <kpixmapeffect.h>
 
 #include <Qt3Support/Q3PopupMenu>
 #include <QtGui/QMenuItem>

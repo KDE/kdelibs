@@ -29,10 +29,10 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kiconeffect.h>
 #include <kglobalsettings.h>
 
 #include <kcursor.h>
-#include <kpixmapeffect.h>
 #include <QApplication>
 
 class K3IconView::K3IconViewPrivate
@@ -419,7 +419,15 @@ QPixmap K3IconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
     QPixmap m;
     if ( d->maskCache.find( QString::number( pix->serialNumber() ), m ) )
 	return m;
-    m = KPixmapEffect::selectedPixmap( *pix, col );
+    m = *pix;
+    {
+        QPainter p(&m);
+        QColor h = col;
+        h.setAlphaF(0.5);
+        p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+        p.fillRect(m.rect(), h);
+        p.end();
+    }
     d->maskCache.insert( QString::number( pix->serialNumber() ), m );
     return m;
 }
