@@ -21,12 +21,12 @@
 </refentryinfo>
 
 <refmeta>
-<refentrytitle>KBuildSycoca</refentrytitle>
+<refentrytitle><command>kbuildsycoca4</command></refentrytitle>
 <manvolnum>8</manvolnum>
 </refmeta>
 
 <refnamediv>
-<refname>Description</refname>
+<refname><command>kbuildsycoca4</command></refname>
 <refpurpose>Rebuilds the system configuration cache.</refpurpose>
 </refnamediv>
 
@@ -204,7 +204,7 @@ installations</para>
 <refsect1>
 <title>See Also</title>
 
-<para>ksycoca(3), kblah(4), knogga(6)</para>
+<para>kdeinit4</para>
 
 </refsect1>
 
