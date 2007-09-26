@@ -148,7 +148,9 @@ KSystemTimeZones::KSystemTimeZones()
 {
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "configChanged", this, SLOT(configChanged()));
-    dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "definitionChanged", this, SLOT(zoneDefinitionChanged(QString)));
+    dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "zonetabChanged", this, SLOT(zonetabChanged(QString)));
+    // No need to connect to definitionChanged() - see comments in zoneDefinitionChanged()
+    //dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "definitionChanged", this, SLOT(zoneDefinitionChanged(QString)));
 }
 
 KSystemTimeZones::~KSystemTimeZones()
@@ -198,11 +200,23 @@ void KSystemTimeZones::configChanged()
     KSystemTimeZonesPrivate::readConfig(false);
 }
 
+void KSystemTimeZones::zonetabChanged(const QString &zonetab)
+{
+    kDebug(161) << "KSystemTimeZones::zonetabChanged()";
+    // Re-read zone.tab and remove any deleted zones from our collection,
+    // and add any new zones.
+#ifdef __GNUC__
+#warning Implement this
+#endif
+}
+
 void KSystemTimeZones::zoneDefinitionChanged(const QString &zone)
 {
-#ifdef __GNUC__
-#warning Not yet implemented
-#endif
+	// No need to do anything when the definition (as opposed to the
+	// identity) of the local zone changes, since the updated details
+	// will always be accessed by the system library calls to fetch
+	// local zone information.
+	Q_UNUSED(zone)
 }
 
 // Perform initialization, create the unique KSystemTimeZones instance,

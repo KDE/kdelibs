@@ -159,6 +159,7 @@ public:
 private Q_SLOTS:
     // Connected to D-Bus signals
     void configChanged();
+    void zonetabChanged(const QString &zonetab);
     void zoneDefinitionChanged(const QString &zone);
 
 private:
