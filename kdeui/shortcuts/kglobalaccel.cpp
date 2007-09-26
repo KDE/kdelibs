@@ -65,7 +65,8 @@ class KGlobalAccelPrivate
 {
 public:
     KGlobalAccelPrivate()
-     : enabled(true),
+     : isUsingForeignComponentName(false),
+       enabled(true),
        iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
     {
         // Make sure kded is running
@@ -79,6 +80,7 @@ public:
     QHash<KAction *, QString> actionToName;
 
     QString mainComponentName;
+    bool isUsingForeignComponentName;
     bool enabled;
 
     org::kde::KdedGlobalAccelInterface iface;
@@ -135,6 +137,7 @@ void KGlobalAccel::setEnabled( bool enabled )
 void KGlobalAccel::overrideMainComponentData(const KComponentData &kcd)
 {
     d->mainComponentName = kcd.componentName();
+    d->isUsingForeignComponentName = true;
 }
 
 
@@ -209,8 +212,15 @@ void KGlobalAccel::updateGlobalShortcut(KAction *action, uint flags)
                                              setterFlags);
     KShortcut scResult(shortcutFromIntList(result));
 
-    if (scResult != action->globalShortcut())
+    if (scResult != action->globalShortcut()) {
         action->setActiveGlobalShortcutNoEnable(scResult);
+    }
+
+    //We might be able to avoid that call sometimes, but it's neither worth the effort nor
+    //the bytes to determine the cases where it's safe to avoid it.
+    if (d->isUsingForeignComponentName) {
+        d->iface.setForeignShortcut(actionId, result);
+    }
 }
 
 
@@ -240,7 +250,7 @@ KShortcut KGlobalAccel::shortcutFromIntList(const QList<int> &list)
 void KGlobalAccel::invokeAction(const QStringList &actionId)
 {
     //TODO: can we make it so that we don't have to check the mainComponentName? (i.e. targeted signals)
-    if (actionId.at(0) != d->mainComponentName)
+    if (actionId.at(0) != d->mainComponentName || d->isUsingForeignComponentName)
         return;
 
     KAction *action = d->nameToAction.value(actionId.at(1));
