@@ -152,6 +152,7 @@ public:
 
 protected:
     virtual bool event(QEvent *event);
+    virtual void resizeEvent(QResizeEvent* event);
 };
 
 DirOperatorDetailView::DirOperatorDetailView(QWidget *parent) :
@@ -185,6 +186,39 @@ bool DirOperatorDetailView::event(QEvent *event)
     }
 
     return QTreeView::event(event);
+}
+
+void DirOperatorDetailView::resizeEvent(QResizeEvent* event)
+{
+    QTreeView::resizeEvent(event);
+
+    // assure that the width of the name-column does not get too small
+    const int minWidth = 120;
+    QHeaderView* headerView = header();
+    bool useFixedWidth = (headerView->sectionSize(KDirModel::Name) <= minWidth)
+                          && (headerView->resizeMode(0) != QHeaderView::Fixed);
+    if (useFixedWidth) {
+        // the current width of the name-column is too small, hence
+        // use a fixed size
+        headerView->setResizeMode(QHeaderView::Interactive);
+        headerView->setResizeMode(0, QHeaderView::Fixed);
+        headerView->resizeSection(KDirModel::Name, minWidth);
+    } else if (headerView->resizeMode(0) != QHeaderView::Stretch) {
+        // check whether there is enough available viewport width
+        // to automatically resize the columns
+        const int availableWidth = viewport()->width();
+
+        int headerWidth = 0;
+        const int count = headerView->count();
+        for (int i = 0; i < count; ++i) {
+            headerWidth += headerView->sectionSize(i);
+        }
+
+        if (headerWidth < availableWidth) {
+            headerView->setResizeMode(QHeaderView::ResizeToContents);
+            headerView->setResizeMode(0, QHeaderView::Stretch);
+        }
+    }
 }
 
 class KDirOperator::KDirOperatorPrivate
