@@ -176,7 +176,8 @@ bool DirOperatorDetailView::event(QEvent *event)
         QHeaderView *headerView = header();
         headerView->setStretchLastSection(false);
         headerView->setResizeMode(QHeaderView::ResizeToContents);
-        headerView->setResizeMode(0, QHeaderView::Stretch);
+        headerView->setMinimumSectionSize(-1);
+        headerView->setDefaultSectionSize(viewport()->width());
 
         // hide columns
         hideColumn(KDirModel::Permissions);
