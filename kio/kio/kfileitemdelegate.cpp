@@ -39,7 +39,6 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
-#include <kpixmapeffect.h>
 #include <kdirmodel.h>
 #include <kfileitem.h>
 #include <kcolorscheme.h>
