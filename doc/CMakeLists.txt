@@ -1,6 +1,8 @@
 
 add_subdirectory( common )
+
 add_subdirectory( checkXML )
 add_subdirectory( kbuildsycoca4 )
+add_subdirectory( kdeoptions )
 add_subdirectory( sonnet )
-add_subdirectory( kdelibs )
+add_subdirectory( qtoptions )

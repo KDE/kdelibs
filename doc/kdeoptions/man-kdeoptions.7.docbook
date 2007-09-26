@@ -17,7 +17,7 @@
 </refmeta>
 
 <refnamediv>
-<refname>KDE options</refname>
+<refname>kdeoptions</refname>
 <refpurpose>Common commandline options for all applications based on the KDE libraries</refpurpose>
 </refnamediv>
 
@@ -72,7 +72,7 @@ titlebar.</para></listitem>
 
 <refsect1>
 <title>See Also</title>
-<para>qtoptions.7</para>
+<para>qtoptions(7)</para>
 
 </refsect1>
 

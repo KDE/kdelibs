@@ -17,7 +17,7 @@
 </refmeta>
 
 <refnamediv>
-<refname>Qt options</refname>
+<refname>qtoptions</refname>
 <refpurpose>Common commandline options for all applications based on the Qt toolkit</refpurpose>
 </refnamediv>
 
@@ -211,7 +211,7 @@ visual on an 8-bit display.</para>
 
 <refsect1>
 <title>See Also</title>
-<para>kde-options.7</para>
+<para>kdeoptions(7)</para>
 
 </refsect1>
 
