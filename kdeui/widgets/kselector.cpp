@@ -26,8 +26,6 @@
 #include <QStyle>
 #include <QStyleOption>
 
-#include <kimageeffect.h>
-
 #include <stdio.h>
 
 //-----------------------------------------------------------------------------
@@ -55,9 +53,9 @@ class KGradientSelector::KGradientSelectorPrivate
 {
 public:
   KGradientSelectorPrivate(KGradientSelector *q): q(q) {}
-  
+
   void init();
-  
+
   KGradientSelector *q;
   QColor color1;
   QColor color2;
@@ -377,6 +375,7 @@ void KGradientSelector::drawContents( QPainter *painter )
          sizeof( unsigned int ) * image.width() );
   }
 
+  /*
   QColor ditherPalette[8];
 
   for ( int s = 0; s < 8; s++ )
@@ -385,6 +384,7 @@ void KGradientSelector::drawContents( QPainter *painter )
                 d->color1.blue() + blueDiff * s / 8 );
 
   KImageEffect::dither( image, ditherPalette, 8 );
+  */
 
   QPixmap p = QPixmap::fromImage(image);
 

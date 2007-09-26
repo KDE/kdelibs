@@ -21,7 +21,6 @@
 
 #include <QtGui/QPainter>
 #include <kglobal.h>
-#include <kimageeffect.h>
 
 K_GLOBAL_STATIC(QVector<QColor>, s_standardPalette)
 
@@ -210,11 +209,13 @@ void KHueSaturationSelector::drawPalette( QPixmap *pixmap )
         }
     }
 
-	if ( pixmap->depth() <= 8 )
-	{
+    /*
+    if ( pixmap->depth() <= 8 )
+    {
         const QVector<QColor> standardPalette = kdeui_standardPalette();
         KImageEffect::dither( image, standardPalette.data(), standardPalette.size() );
     }
+    */
     *pixmap = QPixmap::fromImage( image );
 }
 

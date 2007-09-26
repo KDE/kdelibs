@@ -18,7 +18,6 @@
 */
 
 #include "kcolorvalueselector.h"
-#include <kimageeffect.h>
 #include <QPainter>
 #include <iostream>
 
@@ -206,12 +205,14 @@ void KColorValueSelector::drawPalette( QPixmap *pixmap )
         }
     }
 
-	if ( pixmap->depth() <= 8 )
-	{
+    /*
+    if ( pixmap->depth() <= 8 )
+    {
         extern QVector<QColor> kdeui_standardPalette();
         const QVector<QColor> standardPalette = kdeui_standardPalette();
         KImageEffect::dither( image, standardPalette.data(), standardPalette.size() );
     }
+    */
     *pixmap = QPixmap::fromImage( image );
 }
 
