@@ -197,22 +197,32 @@ void OutputDeviceChoice::updateAudioOutputDevices()
         hash.insert(dev.index(), dev);
     }
     for (int i = 0; i <= Phonon::LastCategory; ++i) {
+        Phonon::AudioOutputDeviceModel *model = m_outputModel.value(i);
+        Q_ASSERT(model);
+
         QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
         QList<Phonon::AudioOutputDevice> orderedList;
-        if (m_outputModel.value(i)) {
+        if (model->rowCount() > 0) {
             QList<int> order = m_outputModel.value(i)->tupleIndexOrder();
             foreach (int idx, order) {
                 if (hashCopy.contains(idx)) {
                     orderedList << hashCopy.take(idx);
                 }
             }
-            foreach (Phonon::AudioOutputDevice dev, hashCopy) {
-                orderedList << dev;
+            if (hashCopy.size() > 1) {
+                // keep the order of the original list
+                foreach (const Phonon::AudioOutputDevice &dev, list) {
+                    if (hashCopy.contains(dev.index())) {
+                        orderedList << hashCopy.take(dev.index());
+                    }
+                }
+            } else if (hashCopy.size() == 1) {
+                orderedList += hashCopy.values();
             }
+            model->setModelData(orderedList);
         } else {
-            orderedList = list;
+            model->setModelData(list);
         }
-        m_outputModel[i]->setModelData(orderedList);
     }
 }
 
