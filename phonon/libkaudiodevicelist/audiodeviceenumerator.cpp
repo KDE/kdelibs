@@ -199,6 +199,35 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 
     snd_config_update_free_global();
     snd_config_update();
+    Q_ASSERT(snd_config);
+    // after recreating the global configuration we can go and install custom configuration
+    {
+        // x-phonon: device
+        QFile phononDefinition(":/phonon/phonondevice.alsa");
+        phononDefinition.open(QIODevice::ReadOnly);
+        const QByteArray phononDefinitionData = phononDefinition.readAll();
+
+        snd_input_t *sndInput = 0;
+        if (0 == snd_input_buffer_open(&sndInput, phononDefinitionData.constData(), phononDefinitionData.size())) {
+            Q_ASSERT(sndInput);
+            snd_config_load(snd_config, sndInput);
+            snd_input_close(sndInput);
+        }
+
+#if 0
+        // phonon_softvol: device
+        QFile softvolDefinition(":/phonon/softvol.alsa");
+        softvolDefinition.open(QIODevice::ReadOnly);
+        const QByteArray softvolDefinitionData = softvolDefinition.readAll();
+
+        sndInput = 0;
+        if (0 == snd_input_buffer_open(&sndInput, softvolDefinitionData.constData(), softvolDefinitionData.size())) {
+            Q_ASSERT(sndInput);
+            snd_config_load(snd_config, sndInput);
+            snd_input_close(sndInput);
+        }
+#endif
+    }
     foreach (const DeviceHint &deviceHint, deviceHints) {
         AudioDevice dev(deviceHint.name, deviceHint.description, config);
         if (dev.isPlaybackDevice()) {
@@ -212,7 +241,39 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
             }
         }
     }
-#endif //HAS_LIBASOUND_DEVICE_NAME_HINT
+#elif defined(HAVE_LIBASOUND2)
+#warning "please update your libasound! this code is not supported"
+    snd_config_update();
+    Q_ASSERT(snd_config);
+    // after recreating the global configuration we can go and install custom configuration
+    {
+        // x-phonon: device
+        QFile phononDefinition(":/phonon/phonondevice.alsa");
+        phononDefinition.open(QIODevice::ReadOnly);
+        const QByteArray phononDefinitionData = phononDefinition.readAll();
+
+        snd_input_t *sndInput = 0;
+        if (0 == snd_input_buffer_open(&sndInput, phononDefinitionData.constData(), phononDefinitionData.size())) {
+            Q_ASSERT(sndInput);
+            snd_config_load(snd_config, sndInput);
+            snd_input_close(sndInput);
+        }
+
+#if 0
+        // phonon_softvol: device
+        QFile softvolDefinition(":/phonon/softvol.alsa");
+        softvolDefinition.open(QIODevice::ReadOnly);
+        const QByteArray softvolDefinitionData = softvolDefinition.readAll();
+
+        sndInput = 0;
+        if (0 == snd_input_buffer_open(&sndInput, softvolDefinitionData.constData(), softvolDefinitionData.size())) {
+            Q_ASSERT(sndInput);
+            snd_config_load(snd_config, sndInput);
+            snd_input_close(sndInput);
+        }
+#endif
+    }
+#endif //HAS_LIBASOUND_DEVICE_NAME_HINT / HAVE_LIBASOUND2
 }
 
 void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)

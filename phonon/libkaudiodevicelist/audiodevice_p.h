@@ -35,6 +35,7 @@ class AudioDevicePrivate : public QSharedData
             : refCount(1),
             driver(Solid::AudioInterface::UnknownAudioDriver),
             index(-1),
+            initialPreference(30),
             available(false),
             valid(false),
             captureDevice(false),
@@ -61,6 +62,7 @@ class AudioDevicePrivate : public QSharedData
             int subdevice;
         } alsaId;
         int index;
+        int initialPreference;
         bool available : 1;
         bool valid : 1;
         bool captureDevice : 1;

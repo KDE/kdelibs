@@ -21,7 +21,6 @@
 
 #include "audiodevice_p.h"
 #include "audiodeviceenumerator.h"
-#include <QtCore/QFile>
 #include <solid/device.h>
 #include <solid/audiointerface.h>
 #include <kconfiggroup.h>
@@ -40,24 +39,6 @@ QStringList AudioDevice::addSoftVolumeMixerControl(const AudioDevice &device, co
     if (device.driver() != Solid::AudioInterface::Alsa) {
         return QStringList();
     }
-    static bool softvolReady = false;
-    if (!softvolReady) {
-        QFile softvolDefinition(":/phonon/softvol.alsa");
-        softvolDefinition.open(QIODevice::ReadOnly);
-        const QByteArray softvolDefinitionData = softvolDefinition.readAll();
-
-        snd_input_t *sndInput = 0;
-        if (0 != snd_input_buffer_open(&sndInput, softvolDefinitionData.constData(), softvolDefinitionData.size())) {
-            // error
-            return QStringList();
-        }
-        Q_ASSERT(sndInput);
-
-        snd_config_load(snd_config, sndInput);
-        snd_input_close(sndInput);
-        softvolReady = true;
-    }
-
 
     QStringList ids = device.deviceIds();
     foreach (const QString &mixerControlName, mixerControlNames) {
@@ -88,6 +69,10 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     d->udi = audioDevice.udi();
     d->cardName = audioHw->name();
     d->driver = audioHw->driver();
+
+    // prefer devices Solid tells us about
+    d->initialPreference += 5;
+
     const QVariant handle = audioHw->driverHandle();
     switch (d->driver) {
     case Solid::AudioInterface::UnknownAudioDriver:
@@ -110,19 +95,17 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
             d->valid = false;
             return;
         }
-        const QString defaultId = QLatin1String("default:CARD=") + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
-        d->deviceIds << defaultId;
-        QString dmixId   = QLatin1String("dmix:CARD=")   + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
-        QString dsnoopId = QLatin1String("dsnoop:CARD=") + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
+        QString x_phononId = QLatin1String("x-phonon:CARD=") + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
+        QString fallbackId = QLatin1String("plughw:CARD=")   + handles.first().toString(); // the first is either an int (card number) or a QString (card id)
         if (handles.size() > 1 && handles.at(1).isValid()) {
-            dmixId   += ",DEV=" + handles.at(1).toString();
-            dsnoopId += ",DEV=" + handles.at(1).toString();
+            x_phononId += ",DEV=" + handles.at(1).toString();
+            fallbackId += ",DEV=" + handles.at(1).toString();
             if (handles.size() > 2 && handles.at(2).isValid()) {
-                dmixId   += ",SUBDEV=" + handles.at(2).toString();
-                dsnoopId += ",SUBDEV=" + handles.at(2).toString();
+                x_phononId += ",SUBDEV=" + handles.at(2).toString();
+                fallbackId += ",SUBDEV=" + handles.at(2).toString();
             }
         }
-        d->deviceIds << dmixId << dsnoopId;
+        d->deviceIds << x_phononId << fallbackId;
         break;
     }
     switch (audioHw->soundcardType()) {
@@ -131,12 +114,15 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         break;
     case Solid::AudioInterface::UsbSoundcard:
         d->icon = QLatin1String("audio-card-usb");
+        d->initialPreference -= 10;
         break;
     case Solid::AudioInterface::FirewireSoundcard:
         d->icon = QLatin1String("audio-card-firewire");
+        d->initialPreference -= 10;
         break;
     case Solid::AudioInterface::Headset:
         d->icon = QLatin1String("audio-headset");
+        d->initialPreference -= 10;
         break;
     case Solid::AudioInterface::Modem:
         d->icon = QLatin1String("modem");
@@ -182,9 +168,11 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         deviceGroup.writeEntry("captureDevice", d->captureDevice);
         deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
         deviceGroup.writeEntry("udi", d->udi);
+        deviceGroup.writeEntry("initialPreference", d->initialPreference);
         config->sync();
     } else {
-        if (!deviceGroup.hasKey("udi")) {
+        if (!deviceGroup.hasKey("udi") || !deviceGroup.hasKey("initialPreference")) {
+            deviceGroup.writeEntry("initialPreference", d->initialPreference);
             deviceGroup.writeEntry("udi", d->udi);
             config->sync();
         }
@@ -206,6 +194,7 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     d->udi = deviceGroup.readEntry("udi", d->udi);
     d->valid = true;
     d->available = false;
+    d->initialPreference = deviceGroup.readEntry("initialPreference", 0);
     // deviceIds stays empty because it's not available
 }
 
@@ -234,7 +223,11 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr confi
         deviceGroup.writeEntry("driver", static_cast<int>(d->driver));
         deviceGroup.writeEntry("captureDevice", d->captureDevice);
         deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
+        deviceGroup.writeEntry("initialPreference", d->initialPreference);
     } else {
+        if (!deviceGroup.hasKey("initialPreference")) {
+            deviceGroup.writeEntry("initialPreference", d->initialPreference);
+        }
         if (d->captureDevice) { // only "promote" devices
             deviceGroup.writeEntry("captureDevice", d->captureDevice);
         }
@@ -279,14 +272,17 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
         // it's a headset
         if (description.contains("usb", Qt::CaseInsensitive)) {
             d->icon = QLatin1String("audio-headset-usb");
+            d->initialPreference -= 10;
         } else {
             d->icon = QLatin1String("audio-headset");
+            d->initialPreference -= 10;
         }
     } else {
         //Get card driver name from a CTL card info.
         if (description.contains("usb", Qt::CaseInsensitive)) {
             // it's an external USB device
             d->icon = QLatin1String("audio-card-usb");
+            d->initialPreference -= 10;
         } else {
             d->icon = QLatin1String("audio-card");
         }
@@ -308,7 +304,11 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
         deviceGroup.writeEntry("driver", static_cast<int>(d->driver));
         deviceGroup.writeEntry("captureDevice", d->captureDevice);
         deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
+        deviceGroup.writeEntry("initialPreference", d->initialPreference);
     } else {
+        if (!deviceGroup.hasKey("initialPreference")) {
+            deviceGroup.writeEntry("initialPreference", d->initialPreference);
+        }
         if (d->captureDevice) { // only "promote" devices
             deviceGroup.writeEntry("captureDevice", d->captureDevice);
         }
@@ -384,6 +384,16 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
         }
         snd_ctl_card_info_free(cardInfo);
 
+        if (deviceNameEnc.startsWith("iec958:")) {
+            initialPreference -= 10;
+        } else if (cardName.contains("IEC958", Qt::CaseInsensitive) ||
+                    cardName.contains("s/pdif", Qt::CaseInsensitive) ||
+                    cardName.contains("spdif", Qt::CaseInsensitive) ||
+                    probablyTheCardName.contains("IEC958", Qt::CaseInsensitive) ||
+                    probablyTheCardName.contains("s/pdif", Qt::CaseInsensitive) ||
+                    probablyTheCardName.contains("spdif", Qt::CaseInsensitive)) {
+            initialPreference -= 10;
+        }
         if (cardName.contains("headset", Qt::CaseInsensitive) ||
                 cardName.contains("headphone", Qt::CaseInsensitive) ||
                 probablyTheCardName.contains("headset", Qt::CaseInsensitive) ||
@@ -391,14 +401,17 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
             // it's a headset
             if (driver.contains("usb", Qt::CaseInsensitive)) {
                 icon = QLatin1String("audio-headset-usb");
+                initialPreference -= 10;
             } else {
                 icon = QLatin1String("audio-headset");
+                initialPreference -= 10;
             }
         } else {
             //Get card driver name from a CTL card info.
             if (driver.contains("usb", Qt::CaseInsensitive)) {
                 // it's an external USB device
                 icon = QLatin1String("audio-card-usb");
+                initialPreference -= 10;
             } else {
                 icon = QLatin1String("audio-card");
             }
@@ -420,7 +433,7 @@ int AudioDevice::index() const
 
 int AudioDevice::initialPreference() const
 {
-    return 0;
+    return d->initialPreference;
 }
 
 bool AudioDevice::isAvailable() const
