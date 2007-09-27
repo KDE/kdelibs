@@ -23,6 +23,7 @@
 #include "phonon_export.h"
 
 #include <QtCore/QExplicitlySharedDataPointer>
+#include <QtCore/QtDebug>
 #include <QtCore/QList>
 #include <QtCore/QSharedData>
 #include <QtCore/QString>
