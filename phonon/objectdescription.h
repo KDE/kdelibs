@@ -268,6 +268,12 @@ class ObjectDescription
         QExplicitlySharedDataPointer<ObjectDescriptionData> d;
 };
 
+template<ObjectDescriptionType T>
+inline QDebug operator<<(QDebug s, const ObjectDescription<T> &o)
+{
+    return s << o.name();
+}
+
 /**
  * \ingroup BackendInformation
  */
