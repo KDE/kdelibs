@@ -34,7 +34,7 @@
 #include <kdirwatch.h>
 #include "kiotesthelper.h"
 
-QTEST_KDEMAIN( KDirModelTest, GUI )
+QTEST_KDEMAIN( KDirModelTest, NoGUI )
 
 void KDirModelTest::initTestCase()
 {
@@ -371,7 +371,7 @@ void KDirModelTest::testDeleteFile()
     connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
-    KIO::DeleteJob* job = KIO::del(url);
+    KIO::DeleteJob* job = KIO::del(url, false, false);
     bool ok = job->exec();
     QVERIFY(ok);
 

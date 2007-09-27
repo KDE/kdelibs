@@ -22,7 +22,7 @@
 #include <kdirlister.h>
 #include <qtest_kde.h>
 
-QTEST_KDEMAIN( KDirListerTest, GUI )
+QTEST_KDEMAIN( KDirListerTest, NoGUI )
 
 #include <kdebug.h>
 #include "kiotesthelper.h"
@@ -233,8 +233,8 @@ void KDirListerTest::testDeleteItem()
 {
     const QString path = m_tempDir.name();
     qRegisterMetaType<KFileItem*>("KFileItem*");
-    QSignalSpy spyDeleteItem(&m_dirLister, SIGNAL(deleteItem(KFileItem*)));
-    connect(&m_dirLister, SIGNAL(deleteItem(KFileItem*)), this, SLOT(exitLoop()));
+    QSignalSpy spyDeleteItem(&m_dirLister, SIGNAL(deleteItem(KFileItem)));
+    connect(&m_dirLister, SIGNAL(deleteItem(KFileItem)), this, SLOT(exitLoop()));
 
     //kDebug() << "Removing " << path+"toplevelfile_1";
     QFile::remove(path+"toplevelfile_1");
