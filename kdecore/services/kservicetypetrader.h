@@ -99,7 +99,7 @@ public:
      *                    get all services of the given @p servicetype
      *
      * @return A list of services that satisfy the query
-     * @see http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html
+     * @see http://techbase.kde.org/Development/Tutorials/Services/Traders#The_KTrader_Query_Language 
      */
     KService::List query( const QString& servicetype,
                           const QString& constraint = QString() ) const;
