@@ -12,8 +12,6 @@ include_directories(
 add_subdirectory(tests)
 
 set(kfile_LIB_SRCS
-  k3mimetyperesolver.cpp
-  k3fileiconview.cpp
   k3filetreeview.cpp
   k3filetreeviewitem.cpp
   kdiroperator.cpp
@@ -54,8 +52,6 @@ install(TARGETS kfile
 )
 
 install( FILES
-  k3mimetyperesolver.h
-  k3fileiconview.h
   k3filetreeview.h
   k3filetreeviewitem.h
   kdiroperator.h
