@@ -825,6 +825,8 @@ void KToolBar::loadState( const QDomElement &element )
       setToolButtonStyle( d->toolButtonStyleFromString( attrIconText ) );
     } else {
       if ( d->honorStyle )
+        setToolButtonStyle( toolButtonStyleSetting() );
+      else
         setToolButtonStyle( d->ToolButtonStyleDefault );
     }
   }
