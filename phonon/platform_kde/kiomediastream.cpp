@@ -101,7 +101,8 @@ void KioMediaStream::needData()
             d->reading = true;
         } else if (!d->reading) {
             d->reading = true;
-            filejob->read(32768);
+            QMetaObject::invokeMethod(this, "_k_read", Qt::QueuedConnection);
+            //filejob->read(32768);
         }
     } else {
         // KIO::TransferJob
@@ -127,6 +128,7 @@ void KioMediaStream::seekStream(qint64 position)
     Q_D(KioMediaStream);
     if (!d->kiojob || d->endOfDataSent) {
         // no job => job is finished and endOfData was already sent
+        kDebug(600) << "no job/job finished -> recreate it";
         reset();
     }
     Q_ASSERT(d->kiojob);
@@ -166,7 +168,8 @@ void KioMediaStreamPrivate::_k_bytestreamData(KIO::Job *, const QByteArray &data
     if (reading) {
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
         Q_ASSERT(filejob);
-        filejob->read(32768);
+        //filejob->read(32768);
+        QMetaObject::invokeMethod(q, "_k_read", Qt::QueuedConnection);
     }
 }
 
@@ -221,7 +224,8 @@ void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
     if (seeking) {
         filejob->seek(seekPosition);
     } else if (reading) {
-        filejob->read(32768);
+        //filejob->read(32768);
+        QMetaObject::invokeMethod(q, "_k_read", Qt::QueuedConnection);
     }
 }
 
@@ -232,10 +236,19 @@ void KioMediaStreamPrivate::_k_bytestreamSeekDone(KIO::Job *, KIO::filesize_t of
     seeking = false;
     endOfDataSent = false;
     if (reading) {
+        Q_Q(KioMediaStream);
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
         Q_ASSERT(filejob);
-        filejob->read(32768);
+        //filejob->read(32768);
+        QMetaObject::invokeMethod(q, "_k_read", Qt::QueuedConnection);
     }
+}
+
+void KioMediaStreamPrivate::_k_read()
+{
+    KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
+    Q_ASSERT(filejob);
+    filejob->read(32768);
 }
 
 } // namespace Phonon

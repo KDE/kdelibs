@@ -59,6 +59,7 @@ class KioMediaStreamPrivate : public AbstractMediaStreamPrivate
         void _k_bytestreamSeekStream(qint64);
         void _k_bytestreamFileJobOpen(KIO::Job *);
         void _k_bytestreamSeekDone(KIO::Job *, KIO::filesize_t);
+        void _k_read();
 
         KUrl url;
         bool endOfDataSent;
