@@ -467,6 +467,10 @@ bool KConfig::setLocale(const QString &locale)
 {
     if (locale != d->locale) {
         d->locale = locale;
+
+        if (backEnd())
+            backEnd()->setLocaleString(locale.toLatin1());
+
         reparseConfiguration();
         return true;
     }
