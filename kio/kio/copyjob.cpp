@@ -744,7 +744,7 @@ void CopyJobPrivate::startListing( const KUrl & src )
     Q_Q(CopyJob);
     state = STATE_LISTING;
     m_bURLDirty = true;
-    ListJob * newjob = listRecursive(src);
+    ListJob * newjob = listRecursive(src, false);
     newjob->setUiDelegate(new JobUiDelegate());
     newjob->setUnrestricted(true);
     q->connect(newjob, SIGNAL(entries( KIO::Job *,const KIO::UDSEntryList& )),
