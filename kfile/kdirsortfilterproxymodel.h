@@ -23,12 +23,11 @@
 #ifndef KDIRSORTFILTERPROXYMODEL_H
 #define KDIRSORTFILTERPROXYMODEL_H
 
-#include <QFileInfo>
+#include <QtCore/QFileInfo>
 
 #include <kcategorizedsortfilterproxymodel.h>
 
 #include <kfile_export.h>
-//#include <kio/kio_export.h>
 
 /**
  * @brief Acts as proxy model for KDirModel to sort and filter
@@ -49,7 +48,7 @@
  *
  * @author Dominic Battre, Martin Pool and Peter Penz
  */
-class KFILE_EXPORT /*KIO_EXPORT*/ KDirSortFilterProxyModel
+class KFILE_EXPORT KDirSortFilterProxyModel
     : public KCategorizedSortFilterProxyModel
 {
     Q_OBJECT
