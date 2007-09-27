@@ -34,7 +34,7 @@
 #include <kdirwatch.h>
 #include "kiotesthelper.h"
 
-QTEST_KDEMAIN( KDirModelTest, NoGUI )
+QTEST_KDEMAIN( KDirModelTest, GUI )
 
 void KDirModelTest::initTestCase()
 {
