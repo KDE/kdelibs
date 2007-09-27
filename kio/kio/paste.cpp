@@ -24,6 +24,7 @@
 #include "kio/netaccess.h"
 #include "kio/renamedialog.h"
 #include "kio/kprotocolmanager.h"
+#include "jobuidelegate.h"
 
 #include <kurl.h>
 #include <kdebug.h>
@@ -38,20 +39,20 @@
 #include <QMimeData>
 #include <QtCore/QTextIStream>
 
-static KUrl getNewFileName( const KUrl &u, const QString& text )
+static KUrl getNewFileName( const KUrl &u, const QString& text, QWidget *widget )
 {
   bool ok;
   QString dialogText( text );
   if ( dialogText.isEmpty() )
     dialogText = i18n( "Filename for clipboard content:" );
-  QString file = KInputDialog::getText( QString(), dialogText, QString(), &ok );
+  QString file = KInputDialog::getText( QString(), dialogText, QString(), &ok, widget );
   if ( !ok )
      return KUrl();
 
   KUrl myurl(u);
   myurl.addPath( file );
 
-  if (KIO::NetAccess::exists(myurl, KIO::NetAccess::DestinationSide, 0))
+  if (KIO::NetAccess::exists(myurl, KIO::NetAccess::DestinationSide, widget))
   {
       kDebug(7007) << "Paste will overwrite file.  Prompting...";
       KIO::RenameDialog_Result res = KIO::R_OVERWRITE;
@@ -139,7 +140,9 @@ static KIO::CopyJob* chooseAndPaste( const KUrl& u, const QMimeData* mimeData,
         mimeData = QApplication::clipboard()->mimeData();
     }
     const QByteArray ba = mimeData->data( chosenFormat );
-    return pasteDataAsyncTo( newUrl, ba );
+    KIO::CopyJob* job = pasteDataAsyncTo( newUrl, ba );
+    job->ui()->setWindow(widget);
+    return job;
 }
 #endif
 
@@ -187,7 +190,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const KUrl& destU
     return 0;
   }
 
-  return pasteDataAsync( destUrl, ba, dialogText );
+  return pasteDataAsync( destUrl, ba, widget, dialogText );
 }
 #endif
 
@@ -210,6 +213,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
       res = KIO::move( urls, destUrl );
     else
       res = KIO::copy( urls, destUrl );
+    res->ui()->setWindow(widget);
 
     // If moving, erase the clipboard contents, the original files don't exist anymore
     if ( move )
@@ -230,17 +234,17 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
       txtStream << *it;
   if ( ba.size() == 0 )
   {
-    KMessageBox::sorry(0, i18n("The clipboard is empty"));
+    KMessageBox::sorry(widget, i18n("The clipboard is empty"));
     return 0;
   }
-  return pasteDataAsync( destUrl, ba );
+  return pasteDataAsync( destUrl, ba, widget );
 #endif
 }
 
 
 KIO_EXPORT void KIO::pasteData( const KUrl& u, const QByteArray& _data, QWidget* widget )
 {
-    const KUrl newUrl = getNewFileName( u, QString() );
+    const KUrl newUrl = getNewFileName( u, QString(), widget );
     // We could use KIO::put here, but that would require a class
     // for the slotData call. With NetAccess, we can do a synchronous call.
 
@@ -255,14 +259,16 @@ KIO_EXPORT void KIO::pasteData( const KUrl& u, const QByteArray& _data, QWidget*
     (void) KIO::NetAccess::upload( tempFile.fileName(), newUrl, widget );
 }
 
-KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _data, const QString& text )
+KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _data, QWidget *widget, const QString& text )
 {
-    KUrl newUrl = getNewFileName( u, text );
+    KUrl newUrl = getNewFileName( u, text, widget );
 
     if (newUrl.isEmpty())
        return 0;
 
-    return pasteDataAsyncTo( newUrl, _data );
+    KIO::CopyJob* job = pasteDataAsyncTo( newUrl, _data );
+    job->ui()->setWindow(widget);
+    return job;
 }
 
 KIO_EXPORT QString KIO::pasteActionText()

@@ -25,8 +25,6 @@
 class QWidget;
 class QMimeSource;
 
-// KDE4 TODO pass a parent widget to all methods that will display a message box
-
 namespace KIO {
   class Job;
   class CopyJob;
@@ -70,7 +68,7 @@ namespace KIO {
    * @param dialogText the text to show in the dialog
    * @see pasteClipboard()
    */
-  KIO_EXPORT CopyJob *pasteDataAsync( const KUrl& destURL, const QByteArray& data, const QString& dialogText = QString() );
+  KIO_EXPORT CopyJob *pasteDataAsync( const KUrl& destURL, const QByteArray& data, QWidget *widget, const QString& dialogText = QString() );
 
 
   /**
