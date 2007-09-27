@@ -39,10 +39,10 @@ KDEUI_UNIT_TESTS(
 
 KDEUI_EXECUTABLE_TESTS(
   kpassivepopuptest
-  kblendtest
+# kblendtest
   kdialogbuttonboxtest
   kcharselecttest
-  kcolortest
+# kcolortest
   kcolordlgtest
   kcolorcombotest
   kcomboboxtest
@@ -51,9 +51,9 @@ KDEUI_EXECUTABLE_TESTS(
   kdatewidgettest
   keditlistboxtest
   kfontdialogtest
-  kgradienttest
-  khashtest
-  kdesattest
+# kgradienttest
+# khashtest
+# kdesattest
   kledtest
   klineedittest
   kmessageboxtest
@@ -64,7 +64,7 @@ KDEUI_EXECUTABLE_TESTS(
   krulertest
   kseparatortest
   kstatusbartest
-  kunbalancedgrdtest
+# kunbalancedgrdtest
   kwindowtest
   kselectactiontest
   kxmlguitest
