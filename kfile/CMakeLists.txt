@@ -17,13 +17,11 @@ set(kfile_LIB_SRCS
   k3fileiconview.cpp
   k3filetreeview.cpp
   k3filetreeviewitem.cpp
-  kcombiview.cpp
   kdiroperator.cpp
   kdirselectdialog.cpp
   kdirsortfilterproxymodel.cpp #used in combination with kio/kio/kdirmodel.cpp
   kfilebookmarkhandler.cpp
   kfilefiltercombo.cpp
-  kfilepreview.cpp
   kfiletreebranch.cpp
   kfileview.cpp
   kfilewidget.cpp
@@ -62,14 +60,12 @@ install( FILES
   k3fileiconview.h
   k3filetreeview.h
   k3filetreeviewitem.h
-  kcombiview.h
   kdiroperator.h
   kdirselectdialog.h
   kdirsortfilterproxymodel.h
   kfilefiltercombo.h
   kfileplacesmodel.h
   kfileplacesview.h
-  kfilepreview.h
   kfiletreebranch.h
   kfileview.h
   kfilewidget.h

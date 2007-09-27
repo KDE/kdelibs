@@ -19,7 +19,6 @@
 */
 
 #include "kdiroperator.h"
-#include "kcombiview.h"
 #include "kdirmodel.h"
 #include "kdirsortfilterproxymodel.h"
 #include "kfilepreview.h"
