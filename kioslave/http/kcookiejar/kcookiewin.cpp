@@ -65,7 +65,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 {
 	setModal(true);
 	setObjectName("cookiealert");
-	setButtons(User1|User2|Details);
+	setButtons(Yes|No|Details);
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
     setWindowIcon( KIcon("cookie") );
@@ -161,15 +161,13 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 	m_allCookies->setChecked(true);
     else
 	m_onlyCookies->setChecked(true);
-    setButtonText(KDialog::User1, i18n("&Accept"));
-    setButtonText(KDialog::User2, i18n("&Reject"));
-    connect(this,SIGNAL(user2Clicked()),SLOT(reject()));
-    connect(this,SIGNAL(user1Clicked()),SLOT(accept()));
+    setButtonText(KDialog::Yes, i18n("&Accept"));
+    setButtonText(KDialog::No, i18n("&Reject"));
     //QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
 #ifndef QT_NO_WHATSTHIS    
     setButtonToolTip(Details, i18n("See or modify the cookie information") );
 #endif
-    setDefaultButton(User1);
+    setDefaultButton(Yes);
 
     setDetailsWidgetVisible(showDetails);
 }
@@ -184,7 +182,7 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
     
     cookiejar->setShowCookieDetails ( isDetailsWidgetVisible() );
     
-    KCookieAdvice advice = (result==QDialog::Accepted) ? KCookieAccept:KCookieReject;
+    KCookieAdvice advice = (result==KDialog::Yes) ? KCookieAccept : KCookieReject;
     
     int preferredPolicy=-1;
     if( m_onlyCookies->isChecked())
