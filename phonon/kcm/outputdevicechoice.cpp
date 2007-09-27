@@ -246,8 +246,15 @@ void OutputDeviceChoice::load()
                 orderedList << hashCopy.take(idx);
             }
         }
-        foreach (Phonon::AudioOutputDevice dev, hashCopy) {
-            orderedList << dev;
+        if (hashCopy.size() > 1) {
+            // keep the order of the original list
+            foreach (const Phonon::AudioOutputDevice &dev, list) {
+                if (hashCopy.contains(dev.index())) {
+                    orderedList << hashCopy.take(dev.index());
+                }
+            }
+        } else if (hashCopy.size() == 1) {
+            orderedList += hashCopy.values();
         }
         m_outputModel[i]->setModelData(orderedList);
     }
