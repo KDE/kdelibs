@@ -180,7 +180,6 @@ install( FILES
   KFileDialog
   KFileFilter
   KFileFilterCombo
-  K3FileIconView
   K3FileIconViewItem
   KFileItem
   KFileItemList
