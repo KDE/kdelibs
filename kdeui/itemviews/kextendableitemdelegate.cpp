@@ -40,6 +40,7 @@ public:
 	QPixmap contractIcon;
 	//mostly for quick startup - don't look for extenders while the view
 	//is being populated.
+	int stateTick;
 	bool hasExtenders;
 };
 
@@ -49,6 +50,7 @@ KExtendableItemDelegate::KExtendableItemDelegate(QAbstractItemView* parent)
    d(new KExtendableItemDelegatePrivate)
 {
 	d->hasExtenders = false;
+	d->stateTick = 0;
 	//parent->installEventFilter(this); //not sure if this is good
 }
 
@@ -64,7 +66,9 @@ void KExtendableItemDelegate::extendItem(QWidget *ext, const QModelIndex &index)
 	if (!ext || !index.isValid())
 		return;
 	//maintain the invariant "zero or one extender per row"
+	d->stateTick++;
 	contractItem(indexOfExtendedColumnInSameRow(index));
+	d->stateTick++;
 	//reparent, as promised in the docs
 	QAbstractItemView *aiv = qobject_cast<QAbstractItemView *>(parent());
 	if (!aiv)
@@ -81,10 +85,11 @@ void KExtendableItemDelegate::extendItem(QWidget *ext, const QModelIndex &index)
 
 void KExtendableItemDelegate::contractItem(const QModelIndex& index)
 {
-	QWidget *extender = d->extenders.take(index);
+	QWidget *extender = d->extenders.value(index);
 	if (!extender)
 		return;
 
+	extender->hide();
 	extender->deleteLater();
 
 	scheduleUpdateViewLayout();
@@ -95,9 +100,9 @@ void KExtendableItemDelegate::contractItem(const QModelIndex& index)
 void KExtendableItemDelegate::extenderDestructionHandler(QObject *destroyed)
 {
 	QWidget *extender = static_cast<QWidget *>(destroyed);
+	d->stateTick++;
 
-	//An invalid model index here is a "can't happen" situation. We don't catch it because
-	//everything would be broken already.
+	Q_ASSERT(d->extenderIndices.value(extender).isValid());
 
 	if (receivers(SIGNAL(extenderDestroyed(QWidget *, QModelIndex)))) {
 		QPersistentModelIndex persistentIndex = d->extenderIndices.take(extender);
@@ -163,16 +168,19 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 	}
 
 	//indexOfExtendedColumnInSameRow() is very expensive, try to avoid calling it.
-	static int cachedRow = -20; //Qt uses -1 for invalid indexes
+	static int cachedStateTick = -1;
+	static int cachedRow = -20; //Qt uses -1 for invalid indices
 	static QModelIndex cachedParentIndex;
-	static QWidget *extender;
+	static QWidget *extender = 0;
 	static int extenderHeight;
 	int row = index.row();
 	QModelIndex parentIndex = index.parent();
 
 	//for some reason, caching doesn't work on row 0 (in QTreeView).
-	if (row != cachedRow || cachedParentIndex != parentIndex || row == 0) {
+	if (row != cachedRow || cachedStateTick != d->stateTick
+		|| cachedParentIndex != parentIndex) {
 		extender = d->extenders.value(indexOfExtendedColumnInSameRow(index));
+		cachedStateTick = d->stateTick;
 		cachedRow = row;
 		cachedParentIndex = parentIndex;
 		if (extender)
@@ -273,19 +281,19 @@ QSize KExtendableItemDelegate::maybeExtendedSize(const QStyleOptionViewItem &opt
 
 QModelIndex KExtendableItemDelegate::indexOfExtendedColumnInSameRow(const QModelIndex &index) const
 {
-	const QAbstractItemModel *model = index.model();
-	QModelIndex parentIndex(index.parent());
-	int row = index.row();
+	const QAbstractItemModel *const model = index.model();
+	const QModelIndex parentIndex(index.parent());
+	const int row = index.row();
+	const int columnCount = model->columnCount();
 
 	//slow, slow, slow
-	for (int column=0;; column++) {
+	for (int column = 0; column < columnCount; column++) {
 		QModelIndex indexOfExt(model->index(row, column, parentIndex));
-		if (!indexOfExt.isValid())
-			return QModelIndex();
-		
 		if (d->extenders.value(indexOfExt))
 			return indexOfExt;
 	}
+
+	return QModelIndex();
 }
 
 
