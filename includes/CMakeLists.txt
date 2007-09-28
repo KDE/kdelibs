@@ -119,7 +119,6 @@ install( FILES
   KColorTable
   KColorUtils
   KColorValueSelector
-  KCombiView
   KComboBox
   KCompletion
   KCompletionBase
@@ -176,7 +175,6 @@ install( FILES
   KEntry
   KEntryKey
   KFile
-  K3FileDetailView
   KFileDialog
   KFileFilter
   KFileFilterCombo
@@ -189,7 +187,6 @@ install( FILES
   KFileMetaInfoGroup
   KFileMetaInfoItem
   KFilePermissionsPropsPlugin
-  KFilePreview
   KFilePropsPlugin
   KFileShare
   KFileSharePropsPlugin
