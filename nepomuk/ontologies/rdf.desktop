@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=RDF
+Name[x-test]=xxRDFxx
 Comment=RDF Vocabulary Description Language 1.0
 Comment[ar]=لغة وصف المفردات RDF 1.0
 Comment[ca]=Llenguatge de descripció de vocabulari RDF 1.0
@@ -21,6 +22,7 @@ Comment[sv]=RDF-ordförrådsbeskrivningsspråk 1.0
 Comment[th]=ภาษาสำหรับอธิบายคำศัพท์ RDF 1.0
 Comment[vi]=Ngôn ngữ Diễn tả Từ vựng RDF 1.0
 Comment[wa]=Lingaedje di discrijhaedje di vocabulaire RDF 1.0
+Comment[x-test]=xxRDF Vocabulary Description Language 1.0xx
 Comment[zh_CN]=RDF 词汇描述语言 1.0
 Comment[zh_TW]=RDF 字彙描述語言 1.0
 URL=http://www.w3.org/1999/02/22-rdf-syntax-ns#

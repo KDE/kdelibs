@@ -29,6 +29,7 @@ Name[sv]=Krypto
 Name[th]=การเข้ารหัส
 Name[vi]=Mật mã
 Name[wa]=Criptografeye
+Name[x-test]=xxCryptoxx
 Name[zh_CN]=加密方式
 Comment=Configure SSL, manage certificates, and other cryptography settings
 Comment[ar]=اضبط SSL، أدر الشهادات وإعدادات تعمية أخرى
@@ -56,6 +57,7 @@ Comment[sv]=Anpassa SSL, hantera certifikat och andra kryptografiska inställnin
 Comment[th]=ปรับแต่ง SSL, จัดการใบรับรอง, และการตั้งค่าเกี่ยวกับการเข้ารหัสอื่นๆ
 Comment[vi]=Cấu hình SSL, quản lý chứng nhận và các thiết lập mật mã khác
 Comment[wa]=Apontyî SSL, manaedjî les acertineures, eyet ds ôtes apontiaedjes del criptografeye
+Comment[x-test]=xxConfigure SSL, manage certificates, and other cryptography settingsxx
 Comment[zh_CN]=配置 SSL、管理证书及其它加密设置
 Comment[zh_TW]=設定 SSL、管理憑證與其他加密設定
 
@@ -80,6 +82,7 @@ Keywords[sv]=Krypto,Kryptografi,kryptering,SSL,https,certifikat,chiffer,TLS,säk
 Keywords[th]=เข้า-ถอดรหัส,Krypto,เรื่องเกี่ยวกับการเข้า-ถอดรหัส,การเข้ารหัส,SSL,https,ใบรับรอง,ciphers,TLS,ปลอดภัย,ความปลอดภัย
 Keywords[vi]=Crypto,mật mã,mã hoá,Krypto,Cryptography,encryption,SSL,https,certificates,chứng nhận,ciphers,TLS,secure,bảo mật,security
 Keywords[wa]=criptografeye,ecriptaedje,SSL,https,acertineures,acertiner,acertinaedje,chifraedje,TLS,seur,seure,såvrité
+Keywords[x-test]=xxCrypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,securityxx
 Keywords[zh_CN]=Crypto、Krypto、Cryptography、encryption、SSL、https、certificates、ciphers、TLS、secure、security
 
 Categories=Qt;KDE;X-KDE-settings-security;

@@ -1,6 +1,12 @@
 [Global]
 IconName=phonon
 Comment=Phonon: KDE's Multimedia Library
+Comment[el]=Phonon: Βιβλιοθήκη πολυμέσων του KDE
+Comment[ga]=Phonon: Leabharlann Il-mheán KDE
+Comment[ja]=Phonon: KDE のマルチメディアライブラリ
+Comment[nds]=Phonon: KDE sien Multimedia-Bibliotheek
+Comment[sv]=Phonon: KDE:s multimediabibliotek
+Comment[x-test]=xxPhonon: KDE's Multimedia Libraryxx
 
 [Context/Application]
 Name=Application
@@ -73,6 +79,18 @@ Name[zh_TW]=應用程式
 
 [Event/AudioDeviceFallback]
 Name=Audio Device Fallback
+Name[el]=Εφεδρική συσκευή ήχου
+Name[ga]=Gléas Tacachumais Fuaime
+Name[ja]=オーディオデバイスのフォールバック
+Name[nds]=Opback-Klangreedschap
+Name[sv]=Reservenhet för ljud vald
+Name[x-test]=xxAudio Device Fallbackxx
 Comment=Notification on automatic fallback if the preferred devices in unavailable
+Comment[el]=Ειδοποίηση όταν γίνει αυτόματη αλλαγή στην εφεδρική συσκευή ήχου, αν η προκαθορισμένη δεν είναι διαθέσιμη
+Comment[ga]=Fógairt maidir le gléas tacachumais nuair nach bhfuil do rogha gléis ar fáil
+Comment[ja]=優先デバイスが利用できないために自動的にフォールバックしたときの通知
+Comment[nds]=Bescheed, wenn de vörtrocken Reedschap nich verföögbor is un ansteed de Opbackreedschap bruukt warrt
+Comment[sv]=Underrättelse vid automatisk val av reservenhet om önskad enhet inte är tillgänglig
+Comment[x-test]=xxNotification on automatic fallback if the preferred devices in unavailablexx
 Contexts=Application
 Action=Popup

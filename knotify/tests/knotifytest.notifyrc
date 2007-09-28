@@ -1,23 +1,58 @@
 [Global]
 IconName=knotifytest
 Comment=Test for Knotify
+Comment[el]=Δοκιμή του Knotify
+Comment[ga]=Tástáil Knotify
+Comment[nds]=Na KNotify kieken
+Comment[sv]=Test av Knotify
+Comment[x-test]=xxTest for Knotifyxx
 Version=4
 
 [Context/group]
 Name=Group
+Name[el]=Ομάδα
+Name[ga]=Grúpa
+Name[nds]=Koppel
+Name[sv]=Grupp
+Name[x-test]=xxGroupxx
 Comment=The group
+Comment[el]=Η ομάδα
+Comment[ga]=An grúpa
+Comment[nds]=De Koppel
+Comment[sv]=Gruppen
+Comment[x-test]=xxThe groupxx
 Icon=folder
 
 [Event/online]
 Name=Online
+Name[el]=Σε σύνδεση
+Name[ga]=Ar Líne
+Name[nds]=Tokoppelt
+Name[sv]=Uppkopplad
+Name[x-test]=xxOnlinexx
 Comment=The contact is now connected
+Comment[el]=Η επαφή είναι τώρα συνδεδεμένη
+Comment[ga]=Tá an teagmháil nasctha anois
+Comment[nds]=De Kontakt is nu tokoppelt
+Comment[sv]=Kontakten är nu uppkopplad
+Comment[x-test]=xxThe contact is now connectedxx
 Contexts=group
 Action=Popup
 
 
 [Event/message]
 Name=Message Received
+Name[el]=Λήφθηκε μήνυμα
+Name[ga]=Fuarthas Teachtaireacht
+Name[nds]=Bescheed kregen
+Name[sv]=Meddelande mottaget
+Name[x-test]=xxMessage Receivedxx
 Comment=A Message has been received
+Comment[el]=Ένα μήνυμα λήφθηκε
+Comment[ga]=Fuarthas teachtaireacht
+Comment[nds]=Dat en Bescheed geven
+Comment[sv]=Ett meddelande har tagits emot
+Comment[x-test]=xxA Message has been receivedxx
 Contexts=group
 Action=Popup
 
