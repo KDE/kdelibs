@@ -356,7 +356,6 @@
 #9033        kdevelop (diff frontend)
 #9034        kdevelop (filecreate part)
 9035        kdevelop (konsole part)
-#9036        kdevelop (subversion part)
 9037        kdevelop (make builder)
 9038        kdevelop (qtdesigner)
 9039        kdevelop (qmake builder)
@@ -372,6 +371,7 @@
 9507        kdevplatform (outputview)
 9508        kdevplatform (util)
 9509        kdevplatform (vcs)
+9510        kdevelop (subversion)
 
 # toys and games
 10000        amor
