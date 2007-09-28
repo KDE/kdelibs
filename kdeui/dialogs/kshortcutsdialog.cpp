@@ -30,12 +30,14 @@
 
 #include <string.h>
 
-#include <QtDebug>
-#include <QTreeWidgetItem>
-#include <QTimer>
 #include <QHeaderView>
-#include <QRadioButton>
 #include <QLabel>
+#include <QPainter>
+#include <QRadioButton>
+#include <QtDebug>
+#include <QTimer>
+#include <QTreeWidgetItem>
+
 
 #include <kaction.h>
 #include <kconfig.h>
@@ -44,11 +46,8 @@
 #include <kglobalaccel.h>
 #include <kicon.h>
 #include "kiconloader.h"
-#include <kcomponentdata.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kxmlguifactory.h>
-#include <kaboutdata.h>
 #include <kshortcut.h>
 #include <kstandardshortcut.h>
 #include <kconfiggroup.h>
@@ -289,9 +288,22 @@ void KShortcutsEditorDelegate::rockerGestureChanged(const KRockerGesture &gest)
 }
 
 
+void TabConnectedWidget::paintEvent(QPaintEvent *e)
+{
+	QWidget::paintEvent(e);
+	QPainter p(this);
+	QPen pen(QPalette().highlight().color());
+	pen.setWidth(4);
+	pen.setJoinStyle(Qt::MiterJoin);
+	QRect r(1, 1, width() - 3, height() - 3);
+	p.setPen(pen);
+	p.drawRect(r);
+}
+
+
 ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq,
                                        const QKeySequence &activeSeq)
- : QWidget(viewport),
+ : TabConnectedWidget(viewport),
    m_defaultKeySequence(defaultSeq),
    m_isUpdating(false)
 {

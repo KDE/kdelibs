@@ -53,7 +53,18 @@ private Q_SLOTS:
 };
 
 
-class ShortcutEditWidget : public QWidget
+class TabConnectedWidget : public QWidget
+{
+	Q_OBJECT
+public:
+	TabConnectedWidget(QWidget *parent)
+	 : QWidget(parent) {}
+protected:
+	void paintEvent(QPaintEvent *pe);
+};
+
+
+class ShortcutEditWidget : public TabConnectedWidget
 {
 	Q_OBJECT
 public:
