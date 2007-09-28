@@ -2017,7 +2017,9 @@ void KDirOperator::assureVisibleSelection()
     QItemSelectionModel* selModel = d->itemView->selectionModel();
     if (selModel->hasSelection()) {
         const QModelIndexList list = selModel->selection().indexes();
-        d->itemView->scrollTo(list.first());
+        const QModelIndex index = list.first();
+        d->itemView->scrollTo(index);
+        triggerPreview(index);
     }
 }
 
