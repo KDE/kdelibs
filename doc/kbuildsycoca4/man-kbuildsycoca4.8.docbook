@@ -6,7 +6,7 @@
 <refentry>
 
 <refentryinfo>
-
+<title>&kde; User's Manual</title>
 <author>
 <firstname>Darian</firstname>
 <surname>Lanx</surname>
@@ -65,8 +65,8 @@ database.
 </para>
 
 <para>
-&kde; itself accesses this databse during operation to provide
-configurational information a program needs to run.
+&kde; itself accesses this database during operation to provide
+configuration information a program needs to run.
 </para>
 
 <para>
