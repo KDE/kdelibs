@@ -82,7 +82,6 @@ namespace Phonon
         protected:
             AudioDeviceEnumerator(AudioDeviceEnumeratorPrivate *);
             ~AudioDeviceEnumerator();
-            AudioDevice *deviceFor(const QString &internalId);
 
         private:
             AudioDeviceEnumeratorPrivate *const d;

@@ -58,18 +58,6 @@ AudioDeviceEnumerator *AudioDeviceEnumerator::self()
     return &audioDeviceEnumeratorPrivate->q;
 }
 
-/*
-AudioDevice *AudioDeviceEnumerator::deviceFor(const QString &internalId)
-{
-    for (int i = 0; i < d->devicelist.size(); ++i) {
-        if (d->devicelist[i].d->internalId == internalId) {
-            return &d->devicelist[i];
-        }
-    }
-    return 0;
-}
-*/
-
 void AudioDeviceEnumeratorPrivate::findDevices()
 {
     // ask Solid for the available audio hardware
