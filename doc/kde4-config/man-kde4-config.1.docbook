@@ -1,0 +1,167 @@
+<?xml version="1.0" ?>
+<!DOCTYPE refentry PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
+<!ENTITY % English "INCLUDE">
+]>
+
+<refentry lang="&language;">
+<refentryinfo>
+<title>&kde; User's Manual</title>
+<author>
+<firstname>Stephan</firstname>
+<surname>Kulow</surname>
+<affiliation><address><email>coolo@kde.org</email></address></affiliation>
+</author>
+<date>2007-09-28</date>
+<productname>K Desktop Environment</productname>
+</refentryinfo>
+
+<refmeta>
+<refentrytitle><command>kde4-config</command></refentrytitle>
+<manvolnum>1</manvolnum>
+</refmeta>
+
+<refnamediv>
+<refname><command>kde4-config</command></refname>
+<refpurpose>Prints &kde; installation paths</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>kde4-config</command>
+<arg>--expandvars</arg>
+<arg>--prefix</arg>
+<arg>--exec-prefix</arg>
+<arg>--libsuffix</arg>
+<arg>--localprefix</arg>
+<arg>--version</arg>
+<arg>--types</arg>
+<arg>--path <replaceable>type</replaceable></arg>
+<arg>--userpath <replaceable>type</replaceable></arg>
+<arg>--install <replaceable>type</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1>
+<title>Description</title>
+<para>kde4-config is a command line program used to retrieve information
+about &kde; installation or user paths.</para>
+
+<para>Use this program to determine where the various aspects of the &kde;
+installation reside on your system.
+</para> 
+
+</refsect1>
+
+<refsect1>
+<title>Options</title>
+<variablelist>
+
+<varlistentry>
+<term><option>--expandvars</option></term>
+<listitem>
+<para>expand ${prefix} and ${exec_prefix} in output</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--prefix</option></term>
+<listitem>
+<para>Compiled in prefix for &kde; libraries</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--exec-prefix</option></term>
+<listitem>
+<para>Compiled in exec_prefix for &kde; libraries</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--libsuffix</option></term>
+<listitem>
+<para>Compiled in library path suffix</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--localprefix</option></term>
+<listitem>
+<para>Prefix in $<envar>HOME</envar> used to write files</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--version</option></term>
+<listitem>
+<para>Compiled in version string for &kde; libraries</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--types</option></term>
+<listitem>
+<para>Print a list of all available &kde; resource types</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--path <replaceable>type</replaceable></option></term>
+<listitem>
+<para>Search path for the specified <replaceable>type</replaceable></para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--userpath <replaceable>type</replaceable></option></term>
+<listitem>
+<para>User paths for the types: desktop|autostart|trash|document</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term><option>--install <replaceable>type</replaceable></option></term>
+<listitem>
+<para>Prefix to install resource files to</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</refsect1>
+
+<refsect1>
+<title>Examples</title>
+
+<para>Print the top-level &kde; installation directory:</para>
+<para>
+<prompt>&percnt;</prompt><userinput> <command>kde4-config --prefix</command>
+</userinput>
+</para>
+
+<para>Print a list of all resource types:</para>
+
+<para>
+<prompt>&percnt;</prompt><userinput> <command>kde4-config --types</command>
+</userinput>
+</para>
+
+<para>Print the installed wallpaper path:</para>
+
+<para>
+<prompt>&percnt;</prompt><userinput> <command>kde4-config --path wallpaper</command>
+</userinput>
+</para>
+
+</refsect1>
+
+<refsect1>
+<title>See Also</title>
+<para>kdeoptions(7)</para>
+</refsect1>
+
+<refsect1>
+<title>Bugs</title>
+<para>None known.</para>
+</refsect1>
+
+</refentry>

@@ -1,6 +1,6 @@
 docs we need to write (handbook and manpages):
 
-kde4-config
+<DONE> kde4-config
 kconfig_compiler
 preparetips
 makekdewidgets
