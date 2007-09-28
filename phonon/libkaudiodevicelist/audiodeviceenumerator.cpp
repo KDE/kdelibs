@@ -104,34 +104,9 @@ void AudioDeviceEnumeratorPrivate::findDevices()
         }
     }
 
-    // now that we know about the hardware let's see what devices we can find in ~/.asoundrc and
-    // /etc/asound.conf
-//X     AudioDevice defaultDevice(QLatin1String("default"), config);
-//X     if (defaultDevice.isValid()) {
-//X         foreach (const AudioDevice &dev, capturedevicelist) {
-//X             if (dev.d->alsaId == defaultCtlDevice.d->alsaId) {
-//X                 AudioDevice foo = dev;
-//X                 foo.d->deviceIds = defaultCtlDevice.d->deviceIds + foo.d->deviceIds;
-//X                 break;
-//X             }
-//X         }
-//X         foreach (const AudioDevice &dev, playbackdevicelist) {
-//X             if (dev.d->alsaId == defaultCtlDevice.d->alsaId) {
-//X                 AudioDevice foo = dev;
-//X                 foo.d->deviceIds = defaultCtlDevice.d->deviceIds + foo.d->deviceIds;
-//X                 break;
-//X             }
-//X         }
-//X         if (defaultDevice.isPlaybackDevice()) {
-//X             playbackdevicelist << defaultDevice;
-//X         }
-//X         if (defaultDevice.isCaptureDevice()) {
-//X             capturedevicelist << defaultDevice;
-//X         }
-//X     }
+    // now that we know about the hardware let's see what virtual devices we can find in
+    // ~/.asoundrc and /etc/asound.conf
     findVirtualDevices();
-    //findAsoundrcDevices(QLatin1String("/etc/asound.conf"));
-    //findAsoundrcDevices(QDir::homePath() + QLatin1String("/.asoundrc"));
 
 //X     QFileSystemWatcher *watcher = new QFileSystemWatcher(QCoreApplication::instance());
 //X     watcher->addPath(QDir::homePath() + QLatin1String("/.asoundrc"));
@@ -302,8 +277,6 @@ void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
     snd_config_update_free_global();
     snd_config_update();
     findVirtualDevices();
-    //findAsoundrcDevices(QLatin1String("/etc/asound.conf"));
-    //findAsoundrcDevices(QDir::homePath() + QLatin1String("/.asoundrc"));
 
     foreach (const AudioDevice &dev, oldCapturedevicelist) {
         if (!capturedevicelist.contains(dev)) {
@@ -392,55 +365,6 @@ void AudioDeviceEnumeratorPrivate::_k_deviceRemoved(const QString &udi)
     if (dev.isValid()) {
         kDebug(600) << "emit q.deviceUnplugged " << dev.cardName();
         emit q.deviceUnplugged(dev);
-    }
-}
-
-void AudioDeviceEnumeratorPrivate::findAsoundrcDevices(const QString &fileName)
-{
-    QFile asoundrcFile(fileName);
-    asoundrcFile.open(QIODevice::ReadOnly);
-    QTextStream asoundrcStream(&asoundrcFile);
-    QString line;
-    QStringList words;
-    int depth = 0;
-    while (!asoundrcStream.atEnd()) {
-        line = asoundrcStream.readLine().simplified();
-        //kDebug(600) << "'" << line << "'";
-        if (line.startsWith('#')) {
-            continue; //skip comment lines
-        }
-        if (line.contains('#')) { // truncate comments at the end of the line
-            line = line.left(line.indexOf('#'));
-            //kDebug(600) << "'" << line << "'";
-        }
-        words = line.split(' ', QString::SkipEmptyParts);
-        foreach (QString word, words) {
-            if (word == QLatin1String("{")) {
-                ++depth;
-            } else if (word == QLatin1String("}")) {
-                --depth;
-            } else if (depth == 0) {
-                int index = word.indexOf('.');
-                if (index != -1) {
-                    QString type = word.left(index).toLower();
-                    if (type == QLatin1String("pcm")) {
-                        QString deviceName = word.right(word.size() - index - 1);
-                        if (deviceName.startsWith('!')) {
-                            deviceName = deviceName.right(deviceName.size() - 1);
-                        }
-                        AudioDevice dev(deviceName, config);
-                        if (dev.isValid()) {
-                            if (dev.isPlaybackDevice()) {
-                                playbackdevicelist << dev;
-                            }
-                            if (dev.isCaptureDevice()) {
-                                capturedevicelist << dev;
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 
