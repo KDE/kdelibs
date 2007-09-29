@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2005 Olivier Goffart <ogoffart at kde.org>
+   Copyright (C) 2005-2007 Olivier Goffart <ogoffart at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,6 +20,8 @@
 
 #include <kiconloader.h>
 
+#include <phonon/mediaobject.h>
+
 KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	: QWidget(parent)
 {
@@ -31,9 +33,8 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	connect(m_ui.Logfile_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Execute_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Taskbar_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
+	connect(m_ui.Sound_play,SIGNAL(clicked()), this, SLOT(slotPlay()));
 }
-
-
 
 void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config )
 {
@@ -72,6 +73,15 @@ void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
 	config->writeEntry( "sound" , m_ui.Sound_select->url().url() );
 	config->writeEntry( "logfile" , m_ui.Logfile_select->url().url() );
 	config->writeEntry( "execute" , m_ui.Execute_select->url().url() );
+}
+
+void KNotifyConfigActionsWidget::slotPlay(  )
+{
+	KUrl soundURL = m_ui.Sound_select->url();
+	Phonon::MediaObject* media = Phonon::createPlayer( Phonon::NotificationCategory );
+	media->setCurrentSource(soundURL);
+	media->play();
+	connect(media, SIGNAL(finished()), media, SLOT(deleteLater()));
 }
 
 #include "knotifyconfigactionswidget.moc"

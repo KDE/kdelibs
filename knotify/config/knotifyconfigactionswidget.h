@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-   Copyright (C) 2005-2006 by Olivier Goffart <ogoffart at kde.org>
+   Copyright (C) 2005-2007 by Olivier Goffart <ogoffart at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -27,7 +27,8 @@ class KNotifyConfigElement;
 
 /**
  * Represent the config for an event
-        @author Olivier Goffart <ogoffart @ kde.org>
+ *  @internal
+ *  @author Olivier Goffart <ogoffart @ kde.org>
  */
 class KNotifyConfigActionsWidget : public QWidget
 {
@@ -38,8 +39,10 @@ class KNotifyConfigActionsWidget : public QWidget
 
 		void setConfigElement( KNotifyConfigElement *config );
 		void save( KNotifyConfigElement *config );
-        Q_SIGNALS:
+	Q_SIGNALS:
 		void changed();
+	private Q_SLOTS:
+		void slotPlay();
 	private:
 		Ui::KNotifyConfigActionsWidgetBase m_ui;
 };
