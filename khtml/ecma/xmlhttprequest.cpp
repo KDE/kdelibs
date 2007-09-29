@@ -674,7 +674,8 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
     if (!encoding.isNull())
       decoder->setEncoding(encoding.latin1(), Decoder::EncodingFromHTTPHeader);
     else {
-      // FIXME: Inherit the default encoding from the parent document?
+      // Per section 2 of W3C working draft spec, fall back to "UTF-8".
+      decoder->setEncoding("UTF-8", Decoder::DefaultEncoding);
     }
   }
   if (len == 0)
