@@ -362,7 +362,7 @@ public:
      * If a job fetches some data, pass a QByteArray pointer as data parameter to this function
      * and after the function returns it will contain all the data fetched by this job.
      *
-     * <code>
+     * @code
      * KIO::Job *job = KIO::get( url, false, false );
      * QMap<QString, QString> metaData;
      * metaData.insert( "PropagateHttpHeader", "true" );
@@ -370,7 +370,7 @@ public:
      *   QString responseHeaders = metaData[ "HTTP-Headers" ];
      *   kDebug()<<"Response header = "<< responseHeaders;
      * }
-     * </code>
+     * @endcode
      *
      * @param job job which the function will run. Note that after this function
      *            finishes running, job is deleted and you can't access it anymore!
