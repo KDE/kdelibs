@@ -147,6 +147,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
                 nextHint.name.startsWith("surround50:") ||
                 nextHint.name.startsWith("surround51:") ||
                 nextHint.name.startsWith("surround71:") ||
+                nextHint.name.startsWith("default:") ||
                 nextHint.name == "null"
                 ) {
             continue;
