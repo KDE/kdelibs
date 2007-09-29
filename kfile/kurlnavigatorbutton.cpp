@@ -133,6 +133,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         const int arrowY = (buttonHeight - arrowSize) / 2;
 
         QStyleOption option;
+        option.initFrom(this);
         option.rect = QRect(arrowX, arrowY, arrowSize, arrowSize);
         option.palette = palette();
         option.palette.setColor(QPalette::Text, fgColor);
