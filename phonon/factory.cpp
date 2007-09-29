@@ -298,6 +298,9 @@ PlatformPlugin *Factory::platformPlugin()
 
 QObject *Factory::backend(bool createWhenNull)
 {
+    if (globalFactory.isDestroyed()) {
+        return 0;
+    }
     if (createWhenNull && globalFactory->m_backendObject == 0) {
         globalFactory->createBackend();
         // XXX: might create "reentrancy" problems:

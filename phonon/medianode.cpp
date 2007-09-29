@@ -54,7 +54,7 @@ bool MediaNode::isValid() const
 
     QObject *MediaNodePrivate::backendObject()
     {
-        if (!m_backendObject) {
+        if (!m_backendObject && Factory::backend()) {
             createBackendObject();
         }
         return m_backendObject;
