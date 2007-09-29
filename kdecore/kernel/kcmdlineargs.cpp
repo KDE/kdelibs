@@ -817,7 +817,7 @@ KCmdLineArgsStatic::findOption(const QString &optv, const QString &_opt,
          if (i >= s->argc)
          {
             KCmdLineArgs::enable_i18n();
-            KCmdLineArgs::usageError( i18nc("@info %1 is cmdoption name","'%1' missing.",  opt_name));
+            KCmdLineArgs::usageError( i18nc("@info:shell %1 is cmdoption name","'%1' missing.",  opt_name));
          }
          argument = s->decodeInput(s->argv[i]);
       }
@@ -899,7 +899,7 @@ KCmdLineArgsStatic::parseAllArgs()
            for (QList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
              QString email;
              if ( !(*it).emailAddress().isEmpty() )
-               email = " <" + (*it).emailAddress() + '>';
+               email = " &lt;" + (*it).emailAddress() + "&gt;";
              authorlist += QString("    ") + (*it).name() + email + '\n';
            }
            s->printQ( i18nc("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2",   QString(s->about->programName()) ,  authorlist ) );

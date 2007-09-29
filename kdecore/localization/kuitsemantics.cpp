@@ -246,6 +246,8 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     } while (0)
     SETUP_ROLCUEFMT(Info, Status, Plain);
     SETUP_ROLCUEFMT(Info, Progress, Plain);
+    SETUP_ROLCUEFMT(Info, Credit, Plain);
+    SETUP_ROLCUEFMT(Info, Shell, Term);
 
     // Setup known subcue names.
     #undef SETUP_CUE
