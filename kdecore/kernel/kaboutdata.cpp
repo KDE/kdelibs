@@ -624,30 +624,30 @@ QString KAboutData::licenseName(NameFormat formatName) const
     switch (d->_licenseKey) {
     case License_GPL_V2:
         licenseShort = "GPL v2";
-        licenseFull = i18nc("@info license","GNU General Public License Version 2");
+        licenseFull = i18nc("@item license","GNU General Public License Version 2");
         break;
     case License_LGPL_V2:
         licenseShort = "LGPL v2";
-        licenseFull = i18nc("@info license","GNU Library General Public License Version 2");
+        licenseFull = i18nc("@item license","GNU Library General Public License Version 2");
         break;
     case License_BSD:
         licenseShort = "BSD License";
-        licenseFull = i18nc("@info license","BSD License");
+        licenseFull = i18nc("@item license","BSD License");
         break;
     case License_Artistic:
         licenseShort = "Artistic License";
-        licenseFull = i18nc("@info license","Artistic License");
+        licenseFull = i18nc("@item license","Artistic License");
         break;
     case License_QPL_V1_0:
         licenseShort = "QPL v1.0";
-        licenseFull = i18nc("@info license","Q Public License");
+        licenseFull = i18nc("@item license","Q Public License");
         break;
     case License_Custom:
     case License_File:
-        licenseShort = licenseFull = i18nc("@info license","Custom");
+        licenseShort = licenseFull = i18nc("@item license","Custom");
         break;
     default:
-        licenseShort = licenseFull = i18nc("@info license","Not specified");
+        licenseShort = licenseFull = i18nc("@item license","Not specified");
     }
 
     switch (formatName) {
