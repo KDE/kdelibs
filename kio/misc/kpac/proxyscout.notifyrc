@@ -2,6 +2,7 @@
 IconName=proxy
 Comment=Automatic Proxy Configuration
 Comment[br]=Kefluniadur emgefreekh ar proksi
+Comment[ca]=Configuració automàtica de l'intermediari
 Comment[el]=Αυτόματη ρύθμιση διαμεσολαβητή
 Comment[ga]=Uathchumraíocht an tSeachfhreastalaí
 Comment[it]=Configurazione automatica proxy
@@ -13,6 +14,7 @@ Comment[x-test]=xxAutomatic Proxy Configurationxx
 
 [Event/script-error]
 Name=Invalid Proxy Script
+Name[ca]=Script de l'intermediari no vàlid
 Name[el]=Μη έγκυρο σενάριο διαμεσολαβητή
 Name[ga]=Script Neamhbhailí Seachfhreastalaí
 Name[ja]=無効なプロキシスクリプト
@@ -22,6 +24,7 @@ Name[x-test]=xxInvalid Proxy Scriptxx
 Comment=The downloaded proxy configuration script is invalid
 Comment[af]=Die proksie skipt wat afgelaai was is ongeldig
 Comment[br]=N'eo ket mat urzhiaoug kefluniadur ar proksi
+Comment[ca]=L'script descarregat de configuració de l'intermediari no és vàlid
 Comment[cs]=Stažený konfigurační skript pro proxy je neplatný
 Comment[cy]=Mae'r sgript ffurfweddu'r dirprwy a chafodd ei lawrlwytho yn annilys
 Comment[da]=Det hentede proxy-indstillingsscript er ugyldigt
@@ -59,8 +62,9 @@ Action=Popup
 
 [Event/download-error]
 Name=Script Download Error
+Name[ca]=Error de descàrrega de l'script
 Name[el]=Σφάλμα λήψης σεναρίου
-Name[ga]=Earráid Íoslódála Scripte
+Name[ga]=Earráid Íosluchtaithe Scripte
 Name[ja]=スクリプトのダウンロードエラー
 Name[nds]=Skript-Daallaadfehler
 Name[sv]=Nerladdningsfel för skript
@@ -68,6 +72,7 @@ Name[x-test]=xxScript Download Errorxx
 Comment=The proxy configuration script could not be downloaded
 Comment[af]=Die proksie opstelling skrip kon nie afgelaai word nie
 Comment[br]=Ne m'eus ket enkargañ urzhiaoug kefluniadur ar proksi
+Comment[ca]=L'script de configuració de l'intermediari no és pot descarregar
 Comment[cs]=Nelze stáhnout konfigurační skript pro proxy
 Comment[cy]=Y sgript ffurfweddu'r dirprwy
 Comment[da]=Proxy-indstillingsscriptet kunne ikke hentes
@@ -77,7 +82,7 @@ Comment[eu]=Proxy-aren konfigurazioko script-a ezin izan da deskargatu
 Comment[fi]=Proxyn asetusskriptiä ei voitu ladata
 Comment[fr]=Le script de configuration du proxy n'a pas pu être téléchargé
 Comment[fy]=It ynladen fan de proxy ynstellings skript is net slagge
-Comment[ga]=Níorbh fhéidir script chumraíochta an tseachfhreastalaí a íoslódáil
+Comment[ga]=Níorbh fhéidir script chumraíochta an tseachfhreastalaí a íosluchtú
 Comment[gl]=Non se pudo descarregar o guión de configuración do proxy
 Comment[hr]=Skripta konfiguriranja proxyja nije mogla biti preuzetom s Interneta
 Comment[is]=Gat ekki sótt stillingaskriftu milliþjóns
@@ -105,6 +110,7 @@ Action=Popup
 
 [Event/evaluation-error]
 Name=Script Evaluation Error
+Name[ca]=Error d'avaluació de l'script
 Name[el]=Σφάλμα αποτίμησης σεναρίου
 Name[ga]=Earráid agus Script á Luacháil
 Name[ja]=スクリプト評価エラー
@@ -114,6 +120,7 @@ Name[x-test]=xxScript Evaluation Errorxx
 Comment=There was an error executing the proxy configuration script
 Comment[af]=Daar was 'n fout met die uitvoer van die proksie opstell skrip
 Comment[br]=Degouezhet ez eus ur fazi en ur seveniñ urzhiaoug kefluniadur ar proksi
+Comment[ca]=Hi ha hagut un error en executar l'script de configuració de l'intermediari
 Comment[cs]=Nastala chyba při spouštění konfiguračního skriptu proxy
 Comment[cy]=Digwyddodd gwall wrth weithredu'r sgript ffurfweddu'r dirprwy
 Comment[da]=Der opstod en fejl ved kørslen af proxy-indstillingsscriptet

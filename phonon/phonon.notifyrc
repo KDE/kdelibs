@@ -1,6 +1,7 @@
 [Global]
 IconName=phonon
 Comment=Phonon: KDE's Multimedia Library
+Comment[ca]=Phonon: biblioteca multimèdia del KDE
 Comment[el]=Phonon: Βιβλιοθήκη πολυμέσων του KDE
 Comment[ga]=Phonon: Leabharlann Il-mheán KDE
 Comment[ja]=Phonon: KDE のマルチメディアライブラリ
@@ -79,6 +80,7 @@ Name[zh_TW]=應用程式
 
 [Event/AudioDeviceFallback]
 Name=Audio Device Fallback
+Name[ca]=Dispositiu d'àudio de reserva
 Name[el]=Εφεδρική συσκευή ήχου
 Name[ga]=Gléas Tacachumais Fuaime
 Name[ja]=オーディオデバイスのフォールバック
@@ -86,6 +88,7 @@ Name[nds]=Opback-Klangreedschap
 Name[sv]=Reservenhet för ljud vald
 Name[x-test]=xxAudio Device Fallbackxx
 Comment=Notification on automatic fallback if the preferred devices in unavailable
+Comment[ca]=Notificació del funcionament automàtic del de reserva si el dispositiu preferit no és disponible
 Comment[el]=Ειδοποίηση όταν γίνει αυτόματη αλλαγή στην εφεδρική συσκευή ήχου, αν η προκαθορισμένη δεν είναι διαθέσιμη
 Comment[ga]=Fógairt maidir le gléas tacachumais nuair nach bhfuil do rogha gléis ar fáil
 Comment[ja]=優先デバイスが利用できないために自動的にフォールバックしたときの通知
