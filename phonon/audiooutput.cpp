@@ -195,7 +195,7 @@ void AudioOutputPrivate::setupBackendObject()
     QObject::connect(m_backendObject, SIGNAL(audioDeviceFailed()), q, SLOT(_k_audioDeviceFailed()));
 
     // set up attributes
-    pINTERFACE_CALL(setVolume(volume));
+    pINTERFACE_CALL(setVolume(std::pow(volume, 1.4925373)));
 
     // if the output device is not available and the device was not explicitly set
     if (!pINTERFACE_CALL(setOutputDevice(outputDeviceIndex)) && !outputDeviceOverridden) {
