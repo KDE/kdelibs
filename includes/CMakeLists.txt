@@ -179,11 +179,9 @@ install( FILES
   KFileDialog
   KFileFilter
   KFileFilterCombo
-  K3FileIconViewItem
   KFileItem
   KFileItemList
   KFileItemDelegate
-  K3FileListViewItem
   KFileMetaInfo
   KFileMetaInfoGroup
   KFileMetaInfoItem
