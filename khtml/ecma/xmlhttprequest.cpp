@@ -735,11 +735,11 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
     }
 
     decoder = new KEncodingDetector;
+
     if (!encoding.isNull())
       decoder->setEncoding(encoding.toLatin1().constData(), KEncodingDetector::EncodingFromHTTPHeader);
-    else {
-      // FIXME: Inherit the default encoding from the parent document?
-    }
+    else
+      decoder->setEncoding("UTF-8", KEncodingDetector::DefaultEncoding);
   }
   if (len == 0)
     return;
