@@ -293,7 +293,7 @@ void KTabWidget::setTabText( int index, const QString &text )
 
   if ( d->m_automaticResizeTabs ) {
 
-    tabBar()->setUpdatesEnabled(false); //no flicker
+    setUpdatesEnabled(false); //no flicker
 
     QTabWidget::setTabText( index, text );
 
@@ -302,7 +302,7 @@ void KTabWidget::setTabText( int index, const QString &text )
       d->resizeTabs( index );
     }
 
-    tabBar()->setUpdatesEnabled(true);
+    setUpdatesEnabled(true);
 
   } else {
     QTabWidget::setTabText( index, text );
@@ -428,7 +428,7 @@ void KTabWidget::mouseMiddleClick( int index )
 
 void KTabWidget::moveTab( int from, int to )
 {
-  tabBar()->setUpdatesEnabled(false);
+  setUpdatesEnabled(false);
 
   QString tablabel = tabText( from );
   QWidget *w = widget( from );
@@ -459,7 +459,7 @@ void KTabWidget::moveTab( int from, int to )
   setTabEnabled( to, enabled );
   blockSignals( blocked );
 
-  tabBar()->setUpdatesEnabled(true);
+  setUpdatesEnabled(true);
 
   emit ( movedTab( from, to ) );
 }
@@ -468,12 +468,12 @@ void KTabWidget::removePage( QWidget *widget )
 {
   if ( d->m_automaticResizeTabs ) {
 
-    tabBar()->setUpdatesEnabled(false);
+    setUpdatesEnabled(false);
 
     QTabWidget::removeTab( indexOf( widget ) );
     d->resizeTabs();
 
-    tabBar()->setUpdatesEnabled(true);
+    setUpdatesEnabled(true);
 
   } else {
     QTabWidget::removeTab( indexOf( widget ) );
@@ -484,12 +484,12 @@ void KTabWidget::removeTab( int index )
 {
   if ( d->m_automaticResizeTabs ) {
 
-    tabBar()->setUpdatesEnabled(false);
+    setUpdatesEnabled(false);
 
     QTabWidget::removeTab( index );
     d->resizeTabs();
 
-    tabBar()->setUpdatesEnabled(true);
+    setUpdatesEnabled(true);
 
   } else {
     QTabWidget::removeTab( index );
@@ -521,7 +521,7 @@ void KTabWidget::setAutomaticResizeTabs( bool enabled )
   if ( d->m_automaticResizeTabs == enabled )
     return;
 
-  tabBar()->setUpdatesEnabled(false);
+  setUpdatesEnabled(false);
 
   d->m_automaticResizeTabs = enabled;
   if ( enabled ) {
@@ -534,7 +534,7 @@ void KTabWidget::setAutomaticResizeTabs( bool enabled )
 
   d->resizeTabs();
 
-  tabBar()->setUpdatesEnabled(true);
+  setUpdatesEnabled(true);
 }
 
 bool KTabWidget::automaticResizeTabs() const
