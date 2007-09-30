@@ -18,6 +18,7 @@
 #include "knotifyconfigactionswidget.h"
 #include "knotifyconfigelement.h"
 
+#include <kstandarddirs.h>
 #include <kiconloader.h>
 
 #include <phonon/mediaobject.h>
@@ -48,9 +49,9 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 	m_ui.Execute_check->setChecked( actions.contains("Execute") );
 	m_ui.Taskbar_check->setChecked( actions.contains("Taskbar") );
 
-	m_ui.Sound_select->setUrl( KUrl( config->readEntry( "sound" , true ) ) );
-	m_ui.Logfile_select->setUrl( KUrl( config->readEntry( "logfile" , true ) ) );
-	m_ui.Execute_select->setUrl( KUrl( config->readEntry( "execute"  ) ) );
+	m_ui.Sound_select->setUrl( KUrl( config->readEntry( "Sound" , true ) ) );
+	m_ui.Logfile_select->setUrl( KUrl( config->readEntry( "Logfile" , true ) ) );
+	m_ui.Execute_select->setUrl( KUrl( config->readEntry( "Execute"  ) ) );
 	blockSignals(blocked);
 }
 
@@ -70,16 +71,24 @@ void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
 
 	config->writeEntry( "Action" , actions.join("|") );
 
-	config->writeEntry( "sound" , m_ui.Sound_select->url().url() );
-	config->writeEntry( "logfile" , m_ui.Logfile_select->url().url() );
-	config->writeEntry( "execute" , m_ui.Execute_select->url().url() );
+	config->writeEntry( "Sound" , m_ui.Sound_select->url().url() );
+	config->writeEntry( "Logfile" , m_ui.Logfile_select->url().url() );
+	config->writeEntry( "Execute" , m_ui.Execute_select->url().url() );
 }
 
 void KNotifyConfigActionsWidget::slotPlay(  )
 {
 	KUrl soundURL = m_ui.Sound_select->url();
-	Phonon::MediaObject* media = Phonon::createPlayer( Phonon::NotificationCategory );
-	media->setCurrentSource(soundURL);
+	if ( soundURL.isRelative() )
+	{
+		QString soundString = soundURL.toLocalFile();
+		// we need a way to get the application name in order to ba able to do this :
+		/*QString search = QString("%1/sounds/%2").arg(config->appname).arg(soundFile);
+		search = KGlobal::mainComponent().dirs()->findResource("data", search);
+		if ( search.isEmpty() )*/
+		soundURL = KUrl::fromPath( KStandardDirs::locate( "sound", soundString ) );
+	}
+	Phonon::MediaObject* media = Phonon::createPlayer( Phonon::NotificationCategory, soundURL );
 	media->play();
 	connect(media, SIGNAL(finished()), media, SLOT(deleteLater()));
 }
