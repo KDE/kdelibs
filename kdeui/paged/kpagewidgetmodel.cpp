@@ -106,6 +106,8 @@ QWidget* KPageWidgetItem::widget() const
 void KPageWidgetItem::setName( const QString &name )
 {
   d->name = name;
+
+  emit changed();
 }
 
 QString KPageWidgetItem::name() const
