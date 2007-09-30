@@ -90,14 +90,18 @@ KWhatsThisManager::KWhatsThisManager()
 
 bool KWhatsThisManager::eventFilter( QObject *object, QEvent *event )
 {
-  if ( event->type() == QEvent::ChildAdded ) {
-
-    QChildEvent *childEvent = (QChildEvent*)event;
-    if ( childEvent->added() && childEvent->child()->isWidgetType() ) {
-
-      QWidget *widget = (QWidget *)(childEvent->child());
+  if ( event->type() == QEvent::WhatsThis ) {
+    QHelpEvent *he = (QHelpEvent*)event;
+    QWidget *widget = qobject_cast<QWidget*>( object );
+    if ( widget ) {
       if ( widget->whatsThis().isEmpty() ) {
-        widget->setWhatsThis( text() );
+        for ( QWidget *w = widget->parentWidget();  w;  w = w->parentWidget() ) {
+          if ( !w->whatsThis().isEmpty() ) {
+            return false;
+          }
+        }
+        QWhatsThis::showText(he->globalPos(), text() );
+        return true;
       }
     }
   } else if ( event->type() == QEvent::WhatsThisClicked ) {
