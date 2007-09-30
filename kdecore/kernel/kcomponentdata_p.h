@@ -27,6 +27,7 @@
 #include <kconfig.h>
 #include <kaboutdata.h>
 #include <kstandarddirs.h>
+#include <klocale.h>
 
 class KComponentDataPrivate
 {
@@ -37,11 +38,16 @@ public:
         syncing(false),
         refCount(1)
     {
+        if (KGlobal::hasLocale())
+            KGlobal::locale()->insertCatalog(aboutData.catalogName());
     }
 
     ~KComponentDataPrivate()
     {
         refCount = -0x00FFFFFF; //prevent a reentering of the dtor
+        if (KGlobal::hasLocale())
+            KGlobal::locale()->removeCatalog(aboutData.catalogName());
+
         sharedConfig = 0;   //delete the config object first, because it could access the standard dirs while syncing
         delete dirs;
     }

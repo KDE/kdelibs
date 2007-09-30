@@ -55,6 +55,7 @@
 #include "klocalizedstring.h"
 #include "ktranslit_p.h"
 #include "kconfiggroup.h"
+#include "kcatalogname_p.h"
 
 #ifdef Q_WS_WIN
 #include <windows.h>
@@ -189,7 +190,8 @@ public:
 
   // Handling of translation catalogs
   QStringList languageList;
-  QStringList catalogNames; // list of all catalogs (regardless of language)
+
+  QList<KCatalogName> catalogNames; // list of all catalogs (regardless of language)
   QList<KCatalog> catalogs; // list of all found catalogs, one instance per catalog name and language
   int numberOfSysCatalogs; // number of catalogs that each app draws from
   bool useTranscript; // indicates if scripted messages are to be executed
@@ -259,14 +261,14 @@ void KLocalePrivate::initMainCatalogs(const QString & catalog)
   }
   else {
     // do not use insertCatalog here, that would already trigger updateCatalogs
-    catalogNames.append( mainCatalog );   // application catalog
+    catalogNames.append(KCatalogName(mainCatalog));   // application catalog
 
     // catalogs from which each application can draw translations
     numberOfSysCatalogs = 4;
-    catalogNames.append("kdeqt");
-    catalogNames.append("kdelibs4");
-    catalogNames.append("kio4");
-    catalogNames.append("libphonon");
+    catalogNames.append(KCatalogName("kdeqt"));
+    catalogNames.append(KCatalogName("kdelibs4"));
+    catalogNames.append(KCatalogName("kio4"));
+    catalogNames.append(KCatalogName("libphonon"));
 
     updateCatalogs(); // evaluate this for all languages
   }
@@ -479,11 +481,11 @@ bool KLocalePrivate::setLanguage(const QStringList & languages)
   //    but nothing from appname.mo, you get a mostly English app with layout from right to left.
   //    That was considered to be a bug by the Hebrew translators.
   QStringList list;
-  foreach ( const QString &language, languages )
-    if (    !language.isEmpty()
-         && !list.contains( language )
-         && isApplicationTranslatedInto( language ) )
-      list.append( language );
+  foreach (const QString &language, languages) {
+      if (!language.isEmpty() && !list.contains(language) && isApplicationTranslatedInto(language)) {
+          list.append(language);
+      }
+  }
 
   if ( !list.contains( KLocale::defaultLanguage() ) ) {
     // English should always be added as final possibility; this is important
@@ -491,6 +493,7 @@ bool KLocalePrivate::setLanguage(const QStringList & languages)
     // needed for English too, like semantic to visual formatting, etc.
     list.append( KLocale::defaultLanguage() );
   }
+
   language = list.first(); // keep this for shortcut evaluations
 
   languageList = list; // keep this new list of languages to use
@@ -587,13 +590,17 @@ QString KLocale::country() const
 
 void KLocale::insertCatalog( const QString & catalog )
 {
-  if ( !d->catalogNames.contains( catalog) ) {
+    int pos = d->catalogNames.indexOf(KCatalogName(catalog));
+    if (pos != -1) {
+        ++d->catalogNames[pos].loadCount;
+        return;
+    }
+
     // Insert new catalog just before system catalogs, to preserve the
     // lowest priority of system catalogs.
-    d->catalogNames.insert( d->catalogNames.size() - d->numberOfSysCatalogs,
-                            catalog );
-  }
-  d->updateCatalogs( ); // evaluate the changed list and generate the necessary KCatalog objects
+    d->catalogNames.insert(d->catalogNames.size() - d->numberOfSysCatalogs,
+                           KCatalogName(catalog));
+    d->updateCatalogs(); // evaluate the changed list and generate the necessary KCatalog objects
 }
 
 void KLocalePrivate::updateCatalogs( )
@@ -609,11 +616,11 @@ void KLocalePrivate::updateCatalogs( )
   // and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be in trouble with a language
   // sequende nds,en_US, de. In this case en_US must hide everything below in the language list.
   foreach ( const QString &lang, languageList )
-    foreach ( const QString &name, catalogNames )
+    foreach ( const KCatalogName &name, catalogNames )
       // create and add catalog for this name and language if it exists
-      if ( ! KCatalog::catalogLocaleDir( name, lang ).isEmpty() )
+      if ( ! KCatalog::catalogLocaleDir( name.name, lang ).isEmpty() )
       {
-        catalogs.append( KCatalog( name, lang ) );
+        catalogs.append( KCatalog( name.name, lang ) );
         //kDebug(173) << "Catalog: " << name << ":" << lang;
       }
 
@@ -623,20 +630,23 @@ void KLocalePrivate::updateCatalogs( )
 
 void KLocale::removeCatalog(const QString &catalog)
 {
-  if ( d->catalogNames.contains( catalog )) {
-    d->catalogNames.removeAll( catalog );
+    int pos = d->catalogNames.indexOf(KCatalogName(catalog));
+    if (pos == -1)
+        return;
+    if (--d->catalogNames[pos].loadCount > 0)
+        return;
+    d->catalogNames.removeAt(pos);
     if (KGlobal::hasMainComponent())
-      d->updateCatalogs();  // walk through the KCatalog instances and weed out everything we no longer need
-  }
+        d->updateCatalogs();  // walk through the KCatalog instances and weed out everything we no longer need
 }
 
 void KLocale::setActiveCatalog(const QString &catalog)
 {
-  if ( d->catalogNames.contains( catalog ) ) {
-	d->catalogNames.removeAll( catalog );
-	d->catalogNames.prepend( catalog );
+    int pos = d->catalogNames.indexOf(KCatalogName(catalog));
+    if (pos == -1)
+        return;
+    d->catalogNames.move(pos, 0);
 	d->updateCatalogs();  // walk through the KCatalog instances and adapt to the new order
-  }
 }
 
 KLocale::~KLocale()

@@ -30,6 +30,7 @@
 #include <ktranscript_p.h>
 #include <ktranslit_p.h>
 #include <kuitsemantics_p.h>
+#include "kcatalogname_p.h"
 
 #include <QStringList>
 #include <QByteArray>
@@ -92,7 +93,7 @@ class KLocalizedStringPrivate
                             const QString &final) const;
 
     static void notifyCatalogsUpdated (const QStringList &languages,
-                                       const QStringList &catalogs);
+                                       const QList<KCatalogName> &catalogs);
     static void loadTranscript ();
 };
 
@@ -871,13 +872,13 @@ void KLocalizedStringPrivate::loadTranscript ()
 }
 
 void KLocalizedString::notifyCatalogsUpdated (const QStringList &languages,
-                                              const QStringList &catalogs)
+                                              const QList<KCatalogName> &catalogs)
 {
     KLocalizedStringPrivate::notifyCatalogsUpdated(languages, catalogs);
 }
 
 void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &languages,
-                                                     const QStringList &catalogs)
+                                                     const QList<KCatalogName> &catalogs)
 {
     if (staticsKLSP.isDestroyed()) {
         return;
@@ -887,20 +888,20 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
     // Find script modules for all included language/catalogs that have them,
     // and remember their paths.
     foreach (const QString &lang, languages) {
-        foreach (const QString &cat, catalogs) {
+        foreach (const KCatalogName &cat, catalogs) {
             // Assemble module's relative path.
             QString modrpath =   lang + '/' + s->scriptDir + '/'
-                               + cat + '/' + cat + ".js";
+                            + cat.name + '/' + cat.name + ".js";
 
             // Try to find this module.
             QString modapath = KStandardDirs::locate("locale", modrpath);
 
             // If the module exists and hasn't been already included.
             if (   !modapath.isEmpty()
-                && !s->scriptModules[lang].contains(cat))
+                && !s->scriptModules[lang].contains(cat.name))
             {
                 // Indicate that the module has been considered.
-                s->scriptModules[lang].append(cat);
+                s->scriptModules[lang].append(cat.name);
 
                 // Store the absolute path and language of the module,
                 // to load on next script evaluation.
