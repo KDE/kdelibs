@@ -172,7 +172,7 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
    m_editor(0)
 {
 	Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
-	setExtendIcon(SmallIcon("go-down"));
+	//setExtendIcon(SmallIcon("go-down"));
 	setContractIcon(SmallIcon("go-up"));
 	connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
 }
