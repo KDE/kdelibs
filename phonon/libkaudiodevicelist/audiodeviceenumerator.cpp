@@ -132,7 +132,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
     void **hints;
     //snd_config_update();
     if (snd_device_name_hint(-1, "pcm", &hints) < 0) {
-        kDebug(600) << "snd_device_name_hint failed for 'pcm'";
+        kDebug(603) << "snd_device_name_hint failed for 'pcm'";
     }
 
     for (void **cStrings = hints; *cStrings; ++cStrings) {
@@ -201,7 +201,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
             capturedevicelist << dev;
         } else {
             if (!dev.isPlaybackDevice()) {
-                kDebug(600) << deviceHint.name << " doesn't work.";
+                kDebug(603) << deviceHint.name << " doesn't work.";
             }
         }
     }
@@ -243,7 +243,7 @@ void AudioDeviceEnumeratorPrivate::findVirtualDevices()
 void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
 {
 #ifdef HAVE_LIBASOUND2
-    kDebug(600) << file;
+    kDebug(603) << file;
     QFileInfo changedFile(file);
     QFileInfo asoundrc(QDir::homePath() + QLatin1String("/.asoundrc"));
     if (changedFile != asoundrc) {
@@ -304,7 +304,7 @@ void AudioDeviceEnumeratorPrivate::_k_asoundrcChanged(const QString &file)
 
 void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
 {
-    kDebug(600) << udi;
+    kDebug(603) << udi;
     Solid::Device _device(udi);
     Solid::AudioInterface *audiohw = _device.as<Solid::AudioInterface>();
     if (audiohw && (audiohw->deviceType()  & (Solid::AudioInterface::AudioInput |
@@ -316,7 +316,7 @@ void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
                 foreach (const AudioDevice &listedDev, capturedevicelist) {
                     if (listedDev == dev && !listedDev.isAvailable()) {
                         // listedDev is the same devices as dev but shown as unavailable
-                        kDebug(600) << "removing from capturedevicelist: " << listedDev.cardName();
+                        kDebug(603) << "removing from capturedevicelist: " << listedDev.cardName();
                         capturedevicelist.removeAll(listedDev);
                         break;
                     }
@@ -327,14 +327,14 @@ void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
                 foreach (const AudioDevice &listedDev, playbackdevicelist) {
                     if (listedDev == dev && !listedDev.isAvailable()) {
                         // listedDev is the same devices as dev but shown as unavailable
-                        kDebug(600) << "removing from playbackdevicelist: " << listedDev.cardName();
+                        kDebug(603) << "removing from playbackdevicelist: " << listedDev.cardName();
                         playbackdevicelist.removeAll(listedDev);
                         break;
                     }
                 }
                 playbackdevicelist << dev;
             }
-            kDebug(600) << "emit q.devicePlugged " << dev.cardName();
+            kDebug(603) << "emit q.devicePlugged " << dev.cardName();
             emit q.devicePlugged(dev);
         }
     }
@@ -342,12 +342,12 @@ void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
 
 void AudioDeviceEnumeratorPrivate::_k_deviceRemoved(const QString &udi)
 {
-    kDebug(600) << udi;
+    kDebug(603) << udi;
     AudioDevice dev;
     foreach (const AudioDevice &listedDev, capturedevicelist) {
         if (listedDev.udi() == udi && listedDev.isAvailable()) {
             // listedDev is the same devices as was removed
-            kDebug(600) << "removing from capturedevicelist: " << listedDev.cardName();
+            kDebug(603) << "removing from capturedevicelist: " << listedDev.cardName();
             dev = listedDev;
             capturedevicelist.removeAll(listedDev);
             break;
@@ -356,7 +356,7 @@ void AudioDeviceEnumeratorPrivate::_k_deviceRemoved(const QString &udi)
     foreach (const AudioDevice &listedDev, playbackdevicelist) {
         if (listedDev.udi() == udi && listedDev.isAvailable()) {
             // listedDev is the same devices as was removed
-            kDebug(600) << "removing from playbackdevicelist: " << listedDev.cardName();
+            kDebug(603) << "removing from playbackdevicelist: " << listedDev.cardName();
             dev = listedDev;
             playbackdevicelist.removeAll(listedDev);
             break;
@@ -364,7 +364,7 @@ void AudioDeviceEnumeratorPrivate::_k_deviceRemoved(const QString &udi)
     }
 
     if (dev.isValid()) {
-        kDebug(600) << "emit q.deviceUnplugged " << dev.cardName();
+        kDebug(603) << "emit q.deviceUnplugged " << dev.cardName();
         emit q.deviceUnplugged(dev);
     }
 }

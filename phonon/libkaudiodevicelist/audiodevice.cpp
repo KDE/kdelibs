@@ -65,7 +65,7 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
     Solid::AudioInterface *audioHw = audioDevice.as<Solid::AudioInterface>();
-    kDebug(600) << audioHw->driverHandle();
+    kDebug(603) << audioHw->driverHandle();
     d->udi = audioDevice.udi();
     d->cardName = audioHw->name();
     d->driver = audioHw->driver();
@@ -178,7 +178,7 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         }
         deviceGroup.writeEntry("icon", d->icon);
     }
-    kDebug(600) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi;
+    kDebug(603) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi;
     //Q_ASSERT(deviceGroup.readEntry("udi", d->udi) == d->udi);
 }
 
@@ -324,7 +324,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, const QString &descripti
 #ifdef HAVE_LIBASOUND2
 void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 {
-    kDebug(600) << deviceName;
+    kDebug(603) << deviceName;
     snd_pcm_info_t *pcmInfo;
     snd_pcm_info_malloc(&pcmInfo);
 
