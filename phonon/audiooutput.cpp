@@ -45,7 +45,8 @@ AudioOutput::AudioOutput(Phonon::Category category, QObject *parent)
     d->createBackendObject();
 #ifndef QT_NO_DBUS
     new AudioOutputAdaptor(this);
-    for (int i = 0; !QDBusConnection::sessionBus().registerObject("/AudioOutputs/" + QString::number(i), this); ++i);
+    static unsigned int number = 0;
+    QDBusConnection::sessionBus().registerObject("/AudioOutputs/" + QString::number(number++), this);
 #endif
 
     connect(Factory::sender(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(_k_deviceListChanged()));
