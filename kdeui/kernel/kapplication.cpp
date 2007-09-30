@@ -988,6 +988,9 @@ void KApplication::updateUserTimestamp( int time )
     if( QX11Info::appUserTime() == 0
         || NET::timestampCompare( time, QX11Info::appUserTime()) > 0 ) // time > appUserTime
         QX11Info::setAppUserTime(time);
+    if( QX11Info::appTime() == 0
+        || NET::timestampCompare( time, QX11Info::appTime()) > 0 ) // time > appTime
+        QX11Info::setAppTime(time);
 #endif
 }
 
