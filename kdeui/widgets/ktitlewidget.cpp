@@ -241,7 +241,7 @@ void KTitleWidget::setPixmap(const QString &icon, ImageAlignment alignment)
 
 void KTitleWidget::setPixmap(const QIcon& icon, ImageAlignment alignment)
 {
-    setPixmap(icon.pixmap(IconSize(K3Icon::Dialog)), alignment);
+    setPixmap(icon.pixmap(IconSize(KIconLoader::Dialog)), alignment);
 }
 
 void KTitleWidget::setPixmap(MessageType type, ImageAlignment alignment)

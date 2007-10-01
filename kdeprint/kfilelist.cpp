@@ -188,7 +188,7 @@ void KFileList::addFiles(const KUrl::List& files)
             QStringList data;
             data << (*it).fileName() << mime->comment() << (*it).url();
             QTreeWidgetItem *item = new QTreeWidgetItem(data);
-            item->setIcon(0, KIconLoader::global()->loadMimeTypeIcon(mime->iconName(*it), K3Icon::Small));
+            item->setIcon(0, KIconLoader::global()->loadMimeTypeIcon(mime->iconName(*it), KIconLoader::Small));
             m_files->insertTopLevelItem(m_files->topLevelItemCount(), item);
         }
 

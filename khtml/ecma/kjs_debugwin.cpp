@@ -84,7 +84,7 @@ SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char 
 {
   verticalScrollBar()->setSingleStep(QFontMetrics(m_font).height());
   viewport()->setAttribute(Qt::WA_NoSystemBackground);
-  m_breakpointIcon = KIconLoader::global()->loadIcon("process-stop",K3Icon::Small);
+  m_breakpointIcon = KIconLoader::global()->loadIcon("process-stop",KIconLoader::Small);
 }
 
 SourceDisplay::~SourceDisplay()
@@ -308,8 +308,8 @@ KJSErrorDialog::KJSErrorDialog(QWidget *parent, const QString& errorMessage, boo
 
   QLabel *iconLabel = new QLabel("",page);
   iconLabel->setPixmap(KIconLoader::global()->loadIcon("dialog-error",
-                                                    K3Icon::NoGroup,K3Icon::SizeMedium,
-                                                    K3Icon::DefaultState,0,true));
+                                                    KIconLoader::NoGroup,KIconLoader::SizeMedium,
+                                                    KIconLoader::DefaultState,0,true));
 
   QWidget *contents = new QWidget(page);
   QLabel *label = new QLabel(errorMessage,contents);
@@ -377,7 +377,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   m_execsAlloc = 0;
   m_steppingDepth = 0;
 
-  m_stopIcon = KIconLoader::global()->loadIcon("process-stop",K3Icon::Small);
+  m_stopIcon = KIconLoader::global()->loadIcon("process-stop",KIconLoader::Small);
   m_emptyIcon = QPixmap(m_stopIcon.width(),m_stopIcon.height());
   QBitmap emptyMask(m_stopIcon.width(),m_stopIcon.height());
   emptyMask.clear();

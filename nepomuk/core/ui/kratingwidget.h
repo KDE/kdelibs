@@ -97,7 +97,7 @@ class NEPOMUK_EXPORT KRatingWidget : public QFrame
     /**
      * Set the size of the pixmap. It will be resized accordingly.
      * KRatingWidget also tries to reload another version of the pixmap
-     * if \a size is one of K3Icon::StdSizes.
+     * if \a size is one of KIconLoader::StdSizes.
      */
     void setPixmapSize( int size );
 

@@ -89,7 +89,7 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     opt.text = "foo"; // height() will be checked, and that does not depend on the string
     if (KGlobalSettings::showIconsOnPushButtons())
     {
-        opt.iconSize = QSize(KIconLoader::global()->currentSize(K3Icon::Small), KIconLoader::global()->currentSize(K3Icon::Small));
+        opt.iconSize = QSize(KIconLoader::global()->currentSize(KIconLoader::Small), KIconLoader::global()->currentSize(KIconLoader::Small));
     }
     opt.rect = pluginDelegate->aboutButtonRect(opt);
 
@@ -110,7 +110,7 @@ void KPluginSelector::Private::checkIfShowIcons(const QList<KPluginInfo> &plugin
 {
     foreach (KPluginInfo pluginInfo, pluginInfoList)
     {
-        if (!KIconLoader::global()->iconPath(pluginInfo.icon(), K3Icon::NoGroup, true).isNull())
+        if (!KIconLoader::global()->iconPath(pluginInfo.icon(), KIconLoader::NoGroup, true).isNull())
         {
             showIcons = true;
             return;
@@ -143,7 +143,7 @@ KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent
     layout->setAlignment(Qt::AlignLeft);
     QLabel *label = new QLabel();
     label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    label->setPixmap(KIconLoader::global()->loadIcon("dialog-information", K3Icon::Dialog));
+    label->setPixmap(KIconLoader::global()->loadIcon("dialog-information", KIconLoader::Dialog));
     label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     layout->addWidget(label);
     KUrlLabel *link = new KUrlLabel();
@@ -839,8 +839,8 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
             opt.state |= QStyle::State_Enabled;
             if (KGlobalSettings::showIconsOnPushButtons())
             {
-                opt.icon = iconLoader->loadIcon("configure", K3Icon::Small);
-                opt.iconSize = QSize(iconLoader->currentSize(K3Icon::Small), iconLoader->currentSize(K3Icon::Small));
+                opt.icon = iconLoader->loadIcon("configure", KIconLoader::Small);
+                opt.iconSize = QSize(iconLoader->currentSize(KIconLoader::Small), iconLoader->currentSize(KIconLoader::Small));
             }
             opt.text = details;
             opt.fontMetrics = option.fontMetrics;
@@ -875,8 +875,8 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         opt.state |= QStyle::State_Enabled;
         if (KGlobalSettings::showIconsOnPushButtons())
         {
-            opt.icon = iconLoader->loadIcon("dialog-information", K3Icon::Small);
-            opt.iconSize = QSize(iconLoader->currentSize(K3Icon::Small), iconLoader->currentSize(K3Icon::Small));
+            opt.icon = iconLoader->loadIcon("dialog-information", KIconLoader::Small);
+            opt.iconSize = QSize(iconLoader->currentSize(KIconLoader::Small), iconLoader->currentSize(KIconLoader::Small));
         }
         opt.text = about;
         opt.fontMetrics = option.fontMetrics;
@@ -1023,7 +1023,7 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
         opt.fontMetrics = option.fontMetrics;
         if (KGlobalSettings::showIconsOnPushButtons())
         {
-            opt.iconSize = QSize(iconLoader->currentSize(K3Icon::Small), iconLoader->currentSize(K3Icon::Small));
+            opt.iconSize = QSize(iconLoader->currentSize(KIconLoader::Small), iconLoader->currentSize(KIconLoader::Small));
         }
         opt.rect = option.rect;
         opt.rect = aboutButtonRect(opt);
@@ -1337,7 +1337,7 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
             opt.direction = listView->layoutDirection();
             if (KGlobalSettings::showIconsOnPushButtons())
             {
-                opt.iconSize = QSize(KIconLoader::global()->currentSize(K3Icon::Small), KIconLoader::global()->currentSize(K3Icon::Small));
+                opt.iconSize = QSize(KIconLoader::global()->currentSize(KIconLoader::Small), KIconLoader::global()->currentSize(KIconLoader::Small));
             }
             opt.rect = listView->visualRect(currentIndex);
             opt.rect = aboutButtonRect(opt);
@@ -1398,7 +1398,7 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
             opt.direction = listView->layoutDirection();
             if (KGlobalSettings::showIconsOnPushButtons())
             {
-                opt.iconSize = QSize(KIconLoader::global()->currentSize(K3Icon::Small), KIconLoader::global()->currentSize(K3Icon::Small));
+                opt.iconSize = QSize(KIconLoader::global()->currentSize(KIconLoader::Small), KIconLoader::global()->currentSize(KIconLoader::Small));
             }
             opt.rect = listView->visualRect(currentIndex);
             opt.rect = aboutButtonRect(opt);
@@ -1523,7 +1523,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
     opt.text = about;
     if (KGlobalSettings::showIconsOnPushButtons())
     {
-        opt.iconSize = QSize(iconLoader->currentSize(K3Icon::Small), iconLoader->currentSize(K3Icon::Small));
+        opt.iconSize = QSize(iconLoader->currentSize(KIconLoader::Small), iconLoader->currentSize(KIconLoader::Small));
     }
     opt.fontMetrics = option.fontMetrics;
     opt.direction = option.direction;

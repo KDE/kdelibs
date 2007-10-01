@@ -69,9 +69,9 @@ void KMIconViewItem::updatePrinter(KMPrinter *p, int mode)
             m_pixmap = p->pixmap();
         m_mode = mode;
         if (m_mode == Qt::DockBottom)
-            setPixmap(DesktopIcon(m_pixmap, 0, K3Icon::DefaultState, overlays));
+            setPixmap(DesktopIcon(m_pixmap, 0, KIconLoader::DefaultState, overlays));
         else
-            setPixmap(SmallIcon(m_pixmap, 0, K3Icon::DefaultState, overlays));
+            setPixmap(SmallIcon(m_pixmap, 0, KIconLoader::DefaultState, overlays));
     }
     //if (update)
     // repaint();

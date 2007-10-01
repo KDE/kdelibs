@@ -678,7 +678,7 @@ void K3AboutContainerBase::setProduct(const QString &appName,
     return;
   }
 
-  int size = IconSize(K3Icon::Desktop);
+  int size = IconSize(KIconLoader::Desktop);
   mIconLabel->setPixmap(qApp->windowIcon().pixmap(size,size));
 
   const QString msg1 = i18n("<html><font size=\"5\">%1</font><br/><b>version %2</b><br/>Using KDE %3</html>", appName, version,

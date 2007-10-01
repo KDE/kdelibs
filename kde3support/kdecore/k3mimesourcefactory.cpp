@@ -78,23 +78,23 @@ QString K3MimeSourceFactory::makeAbsolute (const QString& absOrRelName, const QS
 
   if (myContext == "desktop")
 	{
-	  result = d->kil->iconPath (myName, K3Icon::Desktop);
+	  result = d->kil->iconPath (myName, KIconLoader::Desktop);
 	}
   else if (myContext == "toolbar")
 	{
-	  result = d->kil->iconPath (myName, K3Icon::Toolbar);
+	  result = d->kil->iconPath (myName, KIconLoader::Toolbar);
 	}
   else if (myContext == "maintoolbar")
 	{
-	  result = d->kil->iconPath (myName, K3Icon::MainToolbar);
+	  result = d->kil->iconPath (myName, KIconLoader::MainToolbar);
 	}
   else if (myContext == "small")
 	{
-	  result = d->kil->iconPath (myName, K3Icon::Small);
+	  result = d->kil->iconPath (myName, KIconLoader::Small);
 	}
   else if (myContext == "user")
 	{
-	  result = d->kil->iconPath (myName, K3Icon::User);
+	  result = d->kil->iconPath (myName, KIconLoader::User);
 	}
 
   if (result.isEmpty())

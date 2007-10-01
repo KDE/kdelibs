@@ -74,7 +74,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QIcon ret = KIconLoader::global()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeLarge, K3Icon::DefaultState, QStringList(), 0, true);
+   QIcon ret = KIconLoader::global()->loadIcon(icon_name, KIconLoader::NoGroup, KIconLoader::SizeLarge, KIconLoader::DefaultState, QStringList(), 0, true);
 
    if (ret.isNull()) {
        return QMessageBox::standardIcon(icon);
@@ -145,7 +145,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     QLabel *label1 = new QLabel( contents);
 
     if (!icon.isNull()) {
-       int size = IconSize(K3Icon::Dialog);
+       int size = IconSize(KIconLoader::Dialog);
        label1->setPixmap(icon.pixmap(size, size));
     }
 

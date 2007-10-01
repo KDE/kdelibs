@@ -64,10 +64,10 @@ public:
 
     /**
      * The default size of current theme for a certain icon group.
-     * @param group The icon group. See K3Icon::Group.
+     * @param group The icon group. See KIconLoader::Group.
      * @return The default size in pixels for the given icon group.
      */
-    int defaultIconSize(K3Icon::Group group) const;
+    int defaultIconSize(KIconLoader::Group group) const;
 
     void setThemeInfo(const QList<KIconTheme*>& themes);
 

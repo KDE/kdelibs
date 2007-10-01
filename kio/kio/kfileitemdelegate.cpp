@@ -641,8 +641,8 @@ QPixmap KFileItemDelegate::Private::applyHoverEffect(const QPixmap &icon) const
     // Note that in KIconLoader terminology, active = hover.
     // ### We're assuming that the icon group is desktop/filemanager, since this
     //     is KFileItemDelegate.
-    if (effect->hasEffect(K3Icon::Desktop, K3Icon::ActiveState))
-        return effect->apply(icon, K3Icon::Desktop, K3Icon::ActiveState);
+    if (effect->hasEffect(KIconLoader::Desktop, KIconLoader::ActiveState))
+        return effect->apply(icon, KIconLoader::Desktop, KIconLoader::ActiveState);
 
     return icon;
 }

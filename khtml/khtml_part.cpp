@@ -605,7 +605,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
     if (userAgent != KProtocolManager::userAgentForHost(QString())) {
       if (!d->m_statusBarUALabel) {
         d->m_statusBarUALabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-        d->m_statusBarUALabel->setFixedHeight(KHTMLFactory::iconLoader()->currentSize(K3Icon::Small));
+        d->m_statusBarUALabel->setFixedHeight(KHTMLFactory::iconLoader()->currentSize(KIconLoader::Small));
         d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         d->m_statusBarUALabel->setUseCursor(false);
         d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
@@ -1093,7 +1093,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
 
   if (!d->m_statusBarJSErrorLabel) {
     d->m_statusBarJSErrorLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarJSErrorLabel->setFixedHeight(KIconLoader::global()->currentSize(K3Icon::Small));
+    d->m_statusBarJSErrorLabel->setFixedHeight(KIconLoader::global()->currentSize(KIconLoader::Small));
     d->m_statusBarJSErrorLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarJSErrorLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarJSErrorLabel, 0, false);
@@ -6452,13 +6452,13 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     {
       img = static_cast<HTMLImageElementImpl *>(innerNode.handle());
       u = KUrl( completeURL( khtml::parseURL(img->getAttribute(ATTR_SRC)).string() ) );
-      pix = KIconLoader::global()->loadIcon("image-png", K3Icon::Desktop);
+      pix = KIconLoader::global()->loadIcon("image-png", KIconLoader::Desktop);
     }
     else
     {
       // Text or image link...
       u = completeURL( d->m_strSelectedURL );
-      pix = KIO::pixmapForUrl(u, 0, K3Icon::Desktop, K3Icon::SizeMedium);
+      pix = KIO::pixmapForUrl(u, 0, KIconLoader::Desktop, KIconLoader::SizeMedium);
     }
 
     u.setPass(QString());
@@ -7213,7 +7213,7 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
 
   if (!d->m_statusBarWalletLabel) {
     d->m_statusBarWalletLabel = new KUrlLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarWalletLabel->setFixedHeight(KHTMLFactory::iconLoader()->currentSize(K3Icon::Small));
+    d->m_statusBarWalletLabel->setFixedHeight(KHTMLFactory::iconLoader()->currentSize(KIconLoader::Small));
     d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarWalletLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
@@ -7353,7 +7353,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 
     if ( enable && !d->m_statusBarPopupLabel ) {
         d->m_statusBarPopupLabel = new KUrlLabel( d->m_statusBarExtension->statusBar() );
-        d->m_statusBarPopupLabel->setFixedHeight( KHTMLFactory::iconLoader()->currentSize( K3Icon::Small) );
+        d->m_statusBarPopupLabel->setFixedHeight( KHTMLFactory::iconLoader()->currentSize( KIconLoader::Small) );
         d->m_statusBarPopupLabel->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ));
         d->m_statusBarPopupLabel->setUseCursor( false );
         d->m_statusBarExtension->addStatusBarItem( d->m_statusBarPopupLabel, 0, false );

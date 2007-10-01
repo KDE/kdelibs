@@ -266,7 +266,7 @@ void KHelpMenu::aboutApplication()
 
       QLabel *label1 = new QLabel(hbox);
 
-      int size = IconSize(K3Icon::Dialog);
+      int size = IconSize(KIconLoader::Dialog);
       label1->setPixmap( qApp->windowIcon().pixmap(size,size) );
       QLabel *label2 = new QLabel(hbox);
       label2->setText( d->mAboutAppText );

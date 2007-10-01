@@ -18,11 +18,11 @@ int main(int argc, char *argv[])
   KApplication app;
 
   KIconLoader * mpLoader = KIconLoader::global();
-  K3Icon::Context mContext = K3Icon::Application;
+  KIconLoader::Context mContext = KIconLoader::Application;
   QTime dt;
   dt.start();
   int count = 0;
-  for ( int mGroup = 0; mGroup < K3Icon::LastGroup ; ++mGroup )
+  for ( int mGroup = 0; mGroup < KIconLoader::LastGroup ; ++mGroup )
   {
       kDebug() << "queryIcons " << mGroup << "," << mContext;
       const QStringList filelist = mpLoader->queryIcons(mGroup, mContext);
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
           ++it, ++i )
       {
           //kDebug() << ( i==9 ? "..." : (*it) );
-          mpLoader->loadIcon( (*it), (K3Icon::Group)mGroup );
+          mpLoader->loadIcon( (*it), (KIconLoader::Group)mGroup );
           ++count;
       }
   }

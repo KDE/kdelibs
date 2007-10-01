@@ -42,7 +42,7 @@ class KIconEngine : public QIconEngineV2
      *
      * @param iconName the name of the icon to load
      * @param iconLoader The KDE icon loader that this engine is to use.
-     * @param overlays Add one or more overlays to the icon. See K3Icon::Overlays.
+     * @param overlays Add one or more overlays to the icon. See KIconLoader::Overlays.
      *
      * @sa KIconLoader
      */

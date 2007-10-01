@@ -814,7 +814,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
-    QPixmap p = KIconLoader::global()->loadMimeTypeIcon( mime->iconName( url ), K3Icon::Desktop, _size, _state );
+    QPixmap p = KIconLoader::global()->loadMimeTypeIcon( mime->iconName( url ), KIconLoader::Desktop, _size, _state );
     //kDebug() << "finding pixmap for " << url.url() << " : " << mime->name();
     if (p.isNull())
         kWarning() << "Pixmap not found for mimetype " << d->m_pMimeType->name();

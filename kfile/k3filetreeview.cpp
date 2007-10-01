@@ -75,7 +75,7 @@ K3FileTreeView::K3FileTreeView( QWidget *parent )
     m_bDrag = false;
     m_branches.setAutoDelete( true );
 
-    m_openFolderPixmap = DesktopIcon( "folder-open",K3Icon::SizeSmall,K3Icon::ActiveState );
+    m_openFolderPixmap = DesktopIcon( "folder-open",KIconLoader::SizeSmall,KIconLoader::ActiveState );
 }
 
 K3FileTreeView::~K3FileTreeView()
@@ -357,7 +357,7 @@ KFileTreeBranch* K3FileTreeView::addBranch( const KUrl &path, const QString& nam
                               bool showHidden )
 {
     const QPixmap& folderPix = KIconLoader::global()->loadMimeTypeIcon( KMimeType::mimeType("inode/directory")->iconName(),
-                                                                        K3Icon::Desktop, K3Icon::SizeSmall );
+                                                                        KIconLoader::Desktop, KIconLoader::SizeSmall );
 
     return addBranch( path, name, folderPix, showHidden);
 }
@@ -491,7 +491,7 @@ QPixmap K3FileTreeView::itemIcon( K3FileTreeViewItem *item, int gap ) const
       else
       {
          // TODO: different modes, user Pixmaps ?
-         pix = item->fileItem().pixmap( K3Icon::SizeSmall ); // , K3Icon::DefaultState);
+         pix = item->fileItem()->pixmap( KIconLoader::SizeSmall ); // , KIconLoader::DefaultState);
 
          /* Only if it is a dir and the user wants open dir pixmap and it is open,
           * change the fileitem's pixmap to the open folder pixmap. */
@@ -524,7 +524,7 @@ void K3FileTreeView::slotAnimation()
       uint & iconNumber = it.value().iconNumber;
       QString icon = QString::fromLatin1( it.value().iconBaseName ).append( QString::number( iconNumber ) );
       // kDebug(250) << "Loading icon " << icon;
-      item->setPixmap( 0, DesktopIcon( icon,K3Icon::SizeSmall,K3Icon::ActiveState )); // KFileTreeViewFactory::instance() ) );
+      item->setPixmap( 0, DesktopIcon( icon,KIconLoader::SizeSmall,KIconLoader::ActiveState )); // KFileTreeViewFactory::instance() ) );
 
       iconNumber++;
       if ( iconNumber > it.value().iconCount )

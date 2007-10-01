@@ -161,7 +161,7 @@ KIcon KGuiItem::icon( ) const
 }
 
 // deprecated
-QIcon KGuiItem::iconSet( K3Icon::Group group, int size ) const
+QIcon KGuiItem::iconSet( KIconLoader::Group group, int size ) const
 {
     if (d->m_hasIcon && KGlobal::mainComponent().isValid()) {
         if( !d->m_iconName.isEmpty()) {

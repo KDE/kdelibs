@@ -206,7 +206,7 @@ void KHistoryComboBox::addToHistory( const QString& item )
 
     // now add the item
     if ( d->myPixProvider )
-        insertItem( 0, d->myPixProvider->pixmapFor(item, K3Icon::SizeSmall), item);
+        insertItem( 0, d->myPixProvider->pixmapFor(item, KIconLoader::SizeSmall), item);
     else
         insertItem( 0, item );
 
@@ -397,7 +397,7 @@ void KHistoryComboBox::insertItems( const QStringList& items )
         const QString item = *it;
         if ( !item.isEmpty() ) { // only insert non-empty items
             if ( d->myPixProvider )
-                addItem( d->myPixProvider->pixmapFor(item, K3Icon::SizeSmall),
+                addItem( d->myPixProvider->pixmapFor(item, KIconLoader::SizeSmall),
                             item );
             else
                 addItem( item );

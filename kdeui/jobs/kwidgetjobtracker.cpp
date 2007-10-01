@@ -377,8 +377,8 @@ void KWidgetJobTracker::Private::ProgressWidget::init(QWidget *parent)
 #ifdef Q_WS_X11 //FIXME(E): Remove once all the KWindowSystem::foo calls have been ported to QWS
     // Set a useful icon for this window!
     KWindowSystem::setIcons( winId(),
-                    KIconLoader::global()->loadIcon( "document-save", K3Icon::NoGroup, 32 ),
-                    KIconLoader::global()->loadIcon( "document-save", K3Icon::NoGroup, 16 ) );
+                    KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 32 ),
+                    KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 16 ) );
 #endif
 
     QVBoxLayout *topLayout = new QVBoxLayout(this);

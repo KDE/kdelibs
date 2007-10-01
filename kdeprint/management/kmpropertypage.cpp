@@ -56,8 +56,8 @@ void KMPropertyPage::addPropPage(KMPropWidget *w)
 
         QPixmap icon = KIconLoader::global()->loadIcon(
                            w->pixmap(),
-                           K3Icon::NoGroup,
-                           K3Icon::SizeMedium
+                           KIconLoader::NoGroup,
+                           KIconLoader::SizeMedium
                        );
         addPage(ctn, w->title(), w->header(), icon);
     }

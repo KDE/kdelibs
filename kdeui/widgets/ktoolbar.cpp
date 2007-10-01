@@ -280,9 +280,9 @@ KMenu *KToolBar::Private::contextMenu()
     QList<int> avSizes;
     if ( theme ) {
       if ( isMainToolBar() )
-        avSizes = theme->querySizes( K3Icon::MainToolbar );
+        avSizes = theme->querySizes( KIconLoader::MainToolbar );
       else
-        avSizes = theme->querySizes( K3Icon::Toolbar );
+        avSizes = theme->querySizes( KIconLoader::Toolbar );
     }
 
     iconSizes = avSizes;
@@ -1064,9 +1064,9 @@ void KToolBar::setIconDimensions( int size )
 int KToolBar::iconSizeDefault() const
 {
   if ( QObject::objectName() == "mainToolBar" )
-    return KIconLoader::global()->currentSize( K3Icon::MainToolbar );
+    return KIconLoader::global()->currentSize( KIconLoader::MainToolbar );
 
-  return KIconLoader::global()->currentSize( K3Icon::Toolbar );
+  return KIconLoader::global()->currentSize( KIconLoader::Toolbar );
 }
 
 void KToolBar::slotMovableChanged( bool movable )

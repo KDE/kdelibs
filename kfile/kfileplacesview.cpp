@@ -387,7 +387,7 @@ QSize KFilePlacesView::sizeHint() const
            textWidth = qMax(textWidth,fm.width(index.data(Qt::DisplayRole).toString()));
     }
 
-    const int iconSize = KIconLoader::global()->currentSize(K3Icon::Dialog);
+    const int iconSize = KIconLoader::global()->currentSize(KIconLoader::Dialog);
     return QSize(iconSize + textWidth + 2*KDialog::marginHint(), height);
 }
 

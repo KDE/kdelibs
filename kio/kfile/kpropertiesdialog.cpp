@@ -909,11 +909,11 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       KConfigGroup group = config.desktopGroup();
       iconStr = group.readEntry( "Icon" );
       if ( config.hasDeviceType() )
-	iconButton->setIconType( K3Icon::Desktop, K3Icon::Device );
+	iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Device );
       else
-	iconButton->setIconType( K3Icon::Desktop, K3Icon::Application );
+	iconButton->setIconType( KIconLoader::Desktop, KIconLoader::Application );
     } else
-      iconButton->setIconType( K3Icon::Desktop, K3Icon::FileSystem );
+      iconButton->setIconType( KIconLoader::Desktop, KIconLoader::FileSystem );
     iconButton->setIcon(iconStr);
     d->iconArea = iconButton;
     connect( iconButton, SIGNAL( iconChanged(const QString&) ),
@@ -922,7 +922,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     QLabel *iconLabel = new QLabel( d->m_frame );
     int bsize = 66 + 2 * iconLabel->style()->pixelMetric(QStyle::PM_ButtonMargin);
     iconLabel->setFixedSize(bsize, bsize);
-    iconLabel->setPixmap( KIconLoader::global()->loadIcon( iconStr, K3Icon::Desktop, 48) );
+    iconLabel->setPixmap( KIconLoader::global()->loadIcon( iconStr, KIconLoader::Desktop, 48) );
     d->iconArea = iconLabel;
   }
   grid->addWidget(d->iconArea, curRow, 0, Qt::AlignLeft);
@@ -2959,7 +2959,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
   d->unmounted = new KIconButton( d->m_frame );
   int bsize = 66 + 2 * d->unmounted->style()->pixelMetric(QStyle::PM_ButtonMargin);
   d->unmounted->setFixedSize(bsize, bsize);
-  d->unmounted->setIconType(K3Icon::Desktop, K3Icon::Device);
+  d->unmounted->setIconType(KIconLoader::Desktop, KIconLoader::Device);
   layout->addWidget(d->unmounted, 7, 0);
 
   label = new QLabel( i18n("Unmounted Icon"),  d->m_frame );

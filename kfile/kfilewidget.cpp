@@ -222,20 +222,20 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
         u.setPath( drive.filePath() );
         text = i18n("Drive: %1",  u.toLocalFile() );
         pathCombo->addDefaultUrl( u,
-                                  KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+                                  KIO::pixmapForUrl( u, 0, KIconLoader::Small ),
                                   text );
     }
 #else
     u.setPath( QDir::rootPath() );
     text = i18n("Root Folder: %1",  u.toLocalFile() );
     pathCombo->addDefaultUrl( u,
-                              KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+                              KIO::pixmapForUrl( u, 0, KIconLoader::Small ),
                               text );
 #endif
 
     u.setPath( QDir::homePath() );
     text = i18n("Home Folder: %1",  u.path( KUrl::AddTrailingSlash ) );
-    pathCombo->addDefaultUrl( u, KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+    pathCombo->addDefaultUrl( u, KIO::pixmapForUrl( u, 0, KIconLoader::Small ),
                               text );
 
     KUrl docPath;
@@ -245,14 +245,14 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     {
       text = i18n("Documents: %1",  docPath.path( KUrl::AddTrailingSlash ) );
         pathCombo->addDefaultUrl( docPath,
-                                  KIO::pixmapForUrl( docPath, 0, K3Icon::Small ),
+                                  KIO::pixmapForUrl( docPath, 0, KIconLoader::Small ),
                                   text );
     }
 
     u.setPath( KGlobalSettings::desktopPath() );
     text = i18n("Desktop: %1",  u.path( KUrl::AddTrailingSlash ) );
     pathCombo->addDefaultUrl( u,
-                              KIO::pixmapForUrl( u, 0, K3Icon::Small ),
+                              KIO::pixmapForUrl( u, 0, KIconLoader::Small ),
                               text );
 
     d->url = getStartUrl( startDir, d->fileClass );

@@ -111,7 +111,7 @@ public:
 
     /**
      * Sets the size of the icons to be shown / selected.
-     * @see K3Icon::StdSizes
+     * @see KIconLoader::StdSizes
      * @see iconSize
      */
     void setIconSize(int size);
@@ -129,8 +129,8 @@ public:
      * dir itself.
      */
 
-    void setup( K3Icon::Group group,
-                K3Icon::Context context = K3Icon::Application,
+    void setup( KIconLoader::Group group,
+                KIconLoader::Context context = KIconLoader::Application,
                 bool strictIconSize = false, int iconSize = 0,
                 bool user = false, bool lockUser = false,
                 bool lockCustomDir = false );
@@ -168,8 +168,8 @@ public:
      * @return The name of the icon, suitable for loading with KIconLoader.
      * @version New in 3.0
      */
-    static QString getIcon(K3Icon::Group group=K3Icon::Desktop,
-                           K3Icon::Context context=K3Icon::Application,
+    static QString getIcon(KIconLoader::Group group=KIconLoader::Desktop,
+                           KIconLoader::Context context=KIconLoader::Application,
                            bool strictIconSize=false, int iconSize = 0,
                            bool user=false, QWidget *parent=0,
                            const QString &caption=QString());
@@ -239,10 +239,10 @@ public:
     bool strictIconSize() const;
 
     /**
-     * Sets the icon group and context. Use K3Icon::NoGroup if you want to
+     * Sets the icon group and context. Use KIconLoader::NoGroup if you want to
      * allow icons for any group in the given context.
      */
-    void setIconType(K3Icon::Group group, K3Icon::Context context, bool user=false);
+    void setIconType(KIconLoader::Group group, KIconLoader::Context context, bool user=false);
 
     /**
      * Sets the button's initial icon.
@@ -263,7 +263,7 @@ public:
 
     /**
      * Sets the size of the icon to be shown / selected.
-     * @see K3Icon::StdSizes
+     * @see KIconLoader::StdSizes
      * @see iconSize
      */
     void setIconSize( int size );

@@ -224,9 +224,9 @@ unsigned int KIconCache::mostRecentMTime(const QSet<QString>& dirNames) const
     return timestamp;
 }
 
-int KIconCache::defaultIconSize(K3Icon::Group group) const
+int KIconCache::defaultIconSize(KIconLoader::Group group) const
 {
-    if ((group < 0) || (group >= K3Icon::LastGroup))
+    if ((group < 0) || (group >= KIconLoader::LastGroup))
     {
         kDebug(264) << "Illegal icon group:" << group;
         return -1;
@@ -239,7 +239,7 @@ void KIconCache::setThemeInfo(const QList<KIconTheme*>& themes)
     if (themes.isEmpty())
         return;
     // This as to be done always, even if the cache itself is disabled
-    for (K3Icon::Group i = K3Icon::FirstGroup; i < K3Icon::LastGroup; i++) {
+    for (KIconLoader::Group i = KIconLoader::FirstGroup; i < KIconLoader::LastGroup; i++) {
         d->mDefaultIconSize[i] = themes.first()->defaultSize(i);
     }
 

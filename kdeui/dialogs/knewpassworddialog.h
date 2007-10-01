@@ -91,7 +91,7 @@ public:
     /**
      * Sets the pixmap that appears next to the prompt in the dialog.  The default pixmap represent a simple key.
      *
-     * the recommended size is K3Icon::SizeHuge
+     * the recommended size is KIconLoader::SizeHuge
      */
     void setPixmap(const QPixmap&);
 

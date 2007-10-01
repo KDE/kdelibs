@@ -649,8 +649,8 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
 	    if( XGetClassHint( QX11Info::display(), win, &hint ) ) {
 	        QString className = hint.res_class;
 
-                QPixmap pm = KIconLoader::global()->loadIcon( className.toLower(), K3Icon::Small, iconWidth,
-                                                           K3Icon::DefaultState, QStringList(), 0, true );
+                QPixmap pm = KIconLoader::global()->loadIcon( className.toLower(), KIconLoader::Small, iconWidth,
+                                                           KIconLoader::DefaultState, QStringList(), 0, true );
 	        if( scale && !pm.isNull() )
 		    result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	        else
@@ -666,8 +666,8 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
         // If the icon is still a null pixmap, load the icon for X applications
         // as a last resort:
         if ( result.isNull() ) {
-            QPixmap pm = KIconLoader::global()->loadIcon( "x", K3Icon::Small, iconWidth,
-                                                          K3Icon::DefaultState, QStringList(), 0, true );
+            QPixmap pm = KIconLoader::global()->loadIcon( "x", KIconLoader::Small, iconWidth,
+                                                          KIconLoader::DefaultState, QStringList(), 0, true );
 	    if( scale && !pm.isNull() )
 		result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	    else

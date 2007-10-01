@@ -576,7 +576,7 @@ void KPrintDialog::initialize(KPrinter *printer)
                 overlays.append("lock");
             }
 
-            d->m_printers->insertItem(SmallIcon(printerIt->pixmap(), 0, K3Icon::DefaultState, overlays), printerIt->name(), false/*sep*/);
+            d->m_printers->insertItem(SmallIcon(printerIt->pixmap(), 0, KIconLoader::DefaultState, overlays), printerIt->name(), false/*sep*/);
             if (printerIt->isSoftDefault())
                 defsoft = d->m_printers->count() - 1;
             if (printerIt->isHardDefault())

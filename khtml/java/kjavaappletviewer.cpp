@@ -210,7 +210,7 @@ void CoverWidget::resizeEvent (QResizeEvent * e) {
 class StatusBarIcon : public QLabel {
 public:
     StatusBarIcon (QWidget * parent) : QLabel (parent) {
-        setPixmap ( KJavaAppletViewerFactory::iconLoader()->loadIcon("java", K3Icon::Small) );
+        setPixmap ( KJavaAppletViewerFactory::iconLoader()->loadIcon("java", KIconLoader::Small) );
     }
 protected:
     void mousePressEvent (QMouseEvent *) {

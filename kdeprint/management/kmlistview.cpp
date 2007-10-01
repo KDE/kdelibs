@@ -89,7 +89,7 @@ void KMListViewItem::updatePrinter(KMPrinter *p)
         QString name = (p->isVirtual() ? p->instanceName() : p->name());
         if (name != text(0))
             setText(0, name);
-        setPixmap(0, SmallIcon(p->pixmap(), 0, K3Icon::DefaultState, overlays));
+        setPixmap(0, SmallIcon(p->pixmap(), 0, KIconLoader::DefaultState, overlays));
         m_isclass = p->isClass();
     }
     setDiscarded(false);

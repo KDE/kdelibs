@@ -290,7 +290,7 @@ QIcon KSystemTrayIcon::loadIcon(const QString &icon, const KComponentData &compo
 {
     KConfigGroup cg(componentData.config(), "System Tray");
     int iconWidth = cg.readEntry("systrayIconWidth", 22);
-    return KIconLoader::global()->loadIcon( icon, K3Icon::Panel, iconWidth );
+    return KIconLoader::global()->loadIcon( icon, KIconLoader::Panel, iconWidth );
 }
 
 void KSystemTrayIcon::toggleActive()

@@ -336,7 +336,7 @@ void K3PasswordDialog::init()
 
     // Row 1: pixmap + prompt
     QLabel *lbl;
-    const QPixmap pix( KIconLoader::global()->loadIcon( d->iconName, K3Icon::NoGroup, K3Icon::SizeHuge, 0, QStringList(), 0, true));
+    const QPixmap pix( KIconLoader::global()->loadIcon( d->iconName, KIconLoader::NoGroup, KIconLoader::SizeHuge, 0, QStringList(), 0, true));
     if (!pix.isNull()) {
 	lbl = new QLabel(m_pMain);
 	lbl->setPixmap(pix);

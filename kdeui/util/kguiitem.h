@@ -60,7 +60,7 @@ public:
     QString plainText() const;
 
     /// @deprecated use icon() instead
-    KDE_DEPRECATED QIcon iconSet( K3Icon::Group=K3Icon::Small, int size = 0) const;
+    KDE_DEPRECATED QIcon iconSet( KIconLoader::Group=KIconLoader::Small, int size = 0) const;
 
     KIcon icon( ) const;
 

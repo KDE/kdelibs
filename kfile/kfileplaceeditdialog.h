@@ -87,7 +87,7 @@ public:
     KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
                          const QString& description, const QString &icon,
                          bool appLocal = true,
-                         int iconSize = K3Icon::SizeMedium,
+                         int iconSize = KIconLoader::SizeMedium,
                          QWidget *parent = 0);
     /**
      * Destroys the dialog.

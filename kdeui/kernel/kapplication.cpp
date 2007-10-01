@@ -587,7 +587,7 @@ void KApplication::init(bool GUIenabled)
   if (type() == GuiClient) {
       QSystemTrayIcon *trayIcon;
       QPixmap pixmap = KIconLoader::global()->loadIcon( KCmdLineArgs::appName(),
-              K3Icon::NoGroup, K3Icon::SizeEnormous, K3Icon::DefaultState, QStringList(), false );
+              KIconLoader::NoGroup, KIconLoader::SizeEnormous, KIconLoader::DefaultState, QStringList(), false );
       if (!pixmap.isNull() && QSystemTrayIcon::isSystemTrayAvailable())
       {
           trayIcon = new QSystemTrayIcon(this);

@@ -59,13 +59,13 @@ static int qIconModeToKIconState( QIcon::Mode mode )
     switch (mode) {
     default:
     case QIcon::Normal:
-        kstate = K3Icon::DefaultState;
+        kstate = KIconLoader::DefaultState;
         break;
     case QIcon::Active:
-        kstate = K3Icon::ActiveState;
+        kstate = KIconLoader::ActiveState;
         break;
     case QIcon::Disabled:
-        kstate = K3Icon::DisabledState;
+        kstate = KIconLoader::DisabledState;
         break;
     }
     return kstate;
@@ -78,7 +78,7 @@ QSize KIconEngine::actualSize( const QSize & size, QIcon::Mode mode, QIcon::Stat
     const int kstate = qIconModeToKIconState(mode);
     // We ignore overlays here
 
-    QPixmap pix = iconLoader()->loadIcon(d->iconName, K3Icon::Desktop, qMin(size.width(), size.height()), kstate);
+    QPixmap pix = iconLoader()->loadIcon(d->iconName, KIconLoader::Desktop, qMin(size.width(), size.height()), kstate);
     return pix.size();
 }
 
@@ -87,13 +87,13 @@ void KIconEngine::paint( QPainter * painter, const QRect & rect, QIcon::Mode mod
     Q_UNUSED(state)
 
     const int kstate = qIconModeToKIconState(mode);
-    K3Icon::Group group = K3Icon::Desktop;
+    KIconLoader::Group group = KIconLoader::Desktop;
 
     if (QWidget* targetWidget = dynamic_cast<QWidget*>(painter->device())) {
         if (qobject_cast<QMenu*>(targetWidget))
-            group = K3Icon::Small;
+            group = KIconLoader::Small;
         else if (qobject_cast<QToolBar*>(targetWidget->parent()))
-            group = K3Icon::Toolbar;
+            group = KIconLoader::Toolbar;
     }
 
     const int iconSize = qMin(rect.width(), rect.height());
@@ -123,7 +123,7 @@ QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State 
     const int kstate = qIconModeToKIconState(mode);
     const int iconSize = qMin(size.width(), size.height());
 
-    painter.drawPixmap(QPoint(), iconLoader()->loadIcon(d->iconName, K3Icon::Desktop,
+    painter.drawPixmap(QPoint(), iconLoader()->loadIcon(d->iconName, KIconLoader::Desktop,
                                                         iconSize, kstate, d->overlays));
 
     return pix;

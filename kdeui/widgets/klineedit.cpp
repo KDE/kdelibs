@@ -38,6 +38,7 @@
 #include <kcompletionbox.h>
 #include <kurl.h>
 #include <kiconloader.h>
+#include <kicontheme.h>
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kicon.h>
@@ -203,16 +204,16 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
         return;
     }
 
-    int clearButtonState = K3Icon::DefaultState;
+    int clearButtonState = KIconLoader::DefaultState;
 
     if (text.length() > 0) {
         d->clearButton->animateVisible(true);
     } else {
-/*        if (d->clickButtonState == K3Icon::DisabledState) {
+/*        if (d->clickButtonState == KIconLoader::DisabledState) {
             return;
         }
 
-        d->clickButtonState = K3Icon::DisabledState;*/
+        d->clickButtonState = KIconLoader::DisabledState;*/
         d->clearButton->animateVisible(false);
     }
 

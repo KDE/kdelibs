@@ -358,13 +358,13 @@ namespace KIO
    * @param _group The icon group where the icon is going to be used.
    * @param _force_size Override globally configured icon size.
    *        Use 0 for the default size
-   * @param _state The icon state, one of: K3Icon::DefaultState,
-   * K3Icon::ActiveState or K3Icon::DisabledState.
+   * @param _state The icon state, one of: KIconLoader::DefaultState,
+   * KIconLoader::ActiveState or KIconLoader::DisabledState.
    * @param _path Output parameter to get the full path. Seldom needed.
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  KIO_EXPORT QPixmap pixmapForUrl( const KUrl & _url, mode_t _mode = 0, K3Icon::Group _group = K3Icon::Desktop,
+  KIO_EXPORT QPixmap pixmapForUrl( const KUrl & _url, mode_t _mode = 0, KIconLoader::Group _group = KIconLoader::Desktop,
                                    int _force_size = 0, int _state = 0, QString * _path = 0 );
 
   KIO_EXPORT KJobTrackerInterface *getJobTracker();

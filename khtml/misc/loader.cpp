@@ -1432,7 +1432,7 @@ void Cache::init()
         nullPixmap = new QPixmap;
 
     if ( !brokenPixmap )
-        brokenPixmap = new QPixmap(KHTMLFactory::iconLoader()->loadIcon("file-broken", K3Icon::Desktop, 16, K3Icon::DisabledState));
+        brokenPixmap = new QPixmap(KHTMLFactory::iconLoader()->loadIcon("file-broken", KIconLoader::Desktop, 16, KIconLoader::DisabledState));
 
     if ( !blockedPixmap ) {
         blockedPixmap = new QPixmap();

@@ -89,7 +89,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     // Cookie image and message to user
     KHBox* hBox = new KHBox( vBox1 );
     QLabel* icon = new QLabel( hBox );
-    icon->setPixmap(KIcon("dialog-warning").pixmap(IconSize(K3Icon::Desktop)));
+    icon->setPixmap(KIcon("dialog-warning").pixmap(IconSize(KIconLoader::Desktop)));
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
 

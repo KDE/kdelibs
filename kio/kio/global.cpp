@@ -1270,7 +1270,7 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
     return QString();
 }
 
-QPixmap KIO::pixmapForUrl( const KUrl & _url, mode_t _mode, K3Icon::Group _group,
+QPixmap KIO::pixmapForUrl( const KUrl & _url, mode_t _mode, KIconLoader::Group _group,
                            int _force_size, int _state, QString * _path )
 {
     const QString iconName = KMimeType::iconNameForUrl( _url, _mode );

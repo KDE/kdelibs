@@ -108,7 +108,7 @@ DirOperatorIconView::DirOperatorIconView(QWidget *parent) :
     m_viewOptions.showDecorationSelected = true;
     m_viewOptions.decorationPosition = QStyleOptionViewItem::Left;
     m_viewOptions.displayAlignment = Qt::AlignLeft | Qt::AlignVCenter;
-    m_viewOptions.decorationSize = QSize(K3Icon::SizeSmall, K3Icon::SizeSmall);
+    m_viewOptions.decorationSize = QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
 
     QFontMetrics metrics(m_viewOptions.font);
     const int fontHeight = metrics.height();

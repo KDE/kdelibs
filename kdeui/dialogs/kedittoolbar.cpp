@@ -780,10 +780,10 @@ void KEditToolBarWidgetPrivate::setupLayout()
                    m_widget,       SLOT(slotToolBarSelected(const QString&)));
 
 //  QPushButton *new_toolbar = new QPushButton(i18n("&New"), this);
-//  new_toolbar->setPixmap(BarIcon("document-new", K3Icon::SizeSmall));
+//  new_toolbar->setPixmap(BarIcon("document-new", KIconLoader::SizeSmall));
 //  new_toolbar->setEnabled(false); // disabled until implemented
 //  QPushButton *del_toolbar = new QPushButton(i18n("&Delete"), this);
-//  del_toolbar->setPixmap(BarIcon("edit-delete", K3Icon::SizeSmall));
+//  del_toolbar->setPixmap(BarIcon("edit-delete", KIconLoader::SizeSmall));
 //  del_toolbar->setEnabled(false); // disabled until implemented
 
   // our list of inactive actions

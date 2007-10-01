@@ -140,8 +140,8 @@ void KImageFilePreview::slotFailed( const KFileItem& item )
     if ( item.isDir() )
         d->imageLabel->clear();
     else if (item.url() == d->currentURL) // should always be the case
-        d->imageLabel->setPixmap(SmallIcon( "file-broken", K3Icon::SizeLarge,
-                                          K3Icon::DisabledState ));
+        d->imageLabel->setPixmap(SmallIcon( "file-broken", KIconLoader::SizeLarge,
+                                          KIconLoader::DisabledState ));
 }
 
 void KImageFilePreview::slotResult( KJob *job )

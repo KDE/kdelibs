@@ -38,7 +38,7 @@ public:
           hoverRating(0),
           hovering(false),
           spacing(2),
-          pixSize( K3Icon::Small ),
+          pixSize( KIconLoader::Small ),
           pixmapForced( false ) {
     }
 
@@ -165,7 +165,7 @@ void KRatingWidget::setPixmapSize( int size )
 {
     if ( !d->pixmapForced ) {
         // try to load the new size
-        QPixmap pix = KIconLoader::global()->loadIcon( "rating", K3Icon::NoGroup, size, K3Icon::DefaultState, QStringList(), 0L, true );
+        QPixmap pix = KIconLoader::global()->loadIcon( "rating", KIconLoader::NoGroup, size, KIconLoader::DefaultState, QStringList(), 0L, true );
         if ( !pix.isNull() ) {
             d->setUsedPixmap( pix );
             update();
