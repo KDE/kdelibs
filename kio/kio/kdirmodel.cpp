@@ -719,6 +719,8 @@ void KDirModel::expandToUrl(const KUrl& url)
     const QPair<int, KDirModelNode*> result = d->nodeForUrl(url, true /*return last parent*/); // O(n*m)
     if (!result.second) // doesn't seem related to our base url?
         return;
+    if (result.second == d->m_rootNode) // this -is- our base url, nothing to do
+        return;
     if (!(result.second->item().isNull()) && result.second->item().url() == url) {
         // We have it already, nothing to do
         kDebug(7008) << "have it already item=" <<url /*result.second->item()*/;
