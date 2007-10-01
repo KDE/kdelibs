@@ -123,8 +123,14 @@ void MainWindow::createGUI( Part * part )
     QApplication::sendEvent( part, &ev );
 
     if ( autoSaveSettings() ) {
+        QWidget *focus = QApplication::focusWidget();
         KConfigGroup cg(KGlobal::config(), autoSaveGroup());
         applyMainWindowSettings(cg);
+
+        //The call to applyMainWindowSettings likes to steal focus via the
+        //call to QMainWindow::restoreState.  Don't let it.
+        if (focus)
+            focus->setFocus();
     }
   }
 
