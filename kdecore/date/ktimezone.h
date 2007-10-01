@@ -1007,6 +1007,24 @@ public:
     const KTimeZoneData *data(bool create = false) const;
 
     /**
+     * Update the definition of the time zone to be identical to another
+     * KTimeZone instance. A prerequisite is that the two instances must
+     * have the same name.
+     *
+     * The main purpose of this method is to allow updates of the time zone
+     * definition by derived classes without invalidating pointers to the
+     * instance (particularly pointers held by KDateTime objects). Note
+     * that the KTimeZoneData object and KTimeZoneSource pointer are not
+     * updated: the caller class should do this itself by calling setData().
+     *
+     * @param other time zone whose definition is to be used
+     * @return true if definition was updated (i.e. names are the same)
+     *
+     * @see setData()
+     */
+    bool updateBase(const KTimeZone &other);
+
+    /**
      * Converts a UTC time, measured in seconds since 00:00:00 UTC 1st January 1970
      * (as returned by time(2)), to a UTC QDateTime value.
      * QDateTime::setTime_t() is limited to handling @p t >= 0, since its parameter
@@ -1071,24 +1089,6 @@ protected:
      * @see data()
      */
     void setData(KTimeZoneData *data, KTimeZoneSource *source = 0);
-
-    /**
-     * Update the definition of the time zone to be identical to another
-     * KTimeZone instance. A prerequisite is that the two instances must
-     * have the same name.
-     *
-     * The purpose of this method is to allow updates of the time zone
-     * definition by derived classes without invalidating pointers to the
-     * instance (particularly pointers held by KDateTime objects). Note
-     * that the KTimeZoneData object and KTimeZoneSource pointer are not
-     * updated: the derived class should do this itself by calling setData().
-     *
-     * @param other time zone whose definition is to be used
-     * @return true if definition was updated (i.e. names are the same)
-     *
-     * @see setData()
-     */
-    bool updateBase(const KTimeZone &other);
 
 private:
     KTimeZoneBackend *d;

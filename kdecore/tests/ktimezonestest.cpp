@@ -21,6 +21,7 @@
 #include <qtest_kde.h>
 #include <QtCore/QDir>
 #include <QtCore/QDate>
+#include <QtDBus/QtDBus>
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
 #include "ktimezonestest.moc"
@@ -34,21 +35,16 @@ void KTimeZonesTest::initTestCase()
 
     mDataDir = QDir::homePath() + "/.kde-unit-test/ktimezonestest";
     QVERIFY(QDir().mkpath(mDataDir));
-    QFile f;
-    f.setFileName(mDataDir + QLatin1String("/zone.tab"));
-    f.open(QIODevice::WriteOnly);
-    QTextStream fStream(&f);
-    fStream << "EG	+3003+03115	Africa/Cairo\n"
-               "FR	+4852+00220	Europe/Paris\n"
-               "GB	+512830-0001845	Europe/London	Great Britain\n"
-               "US	+340308-1181434	America/Los_Angeles	Pacific Time\n";
-    f.close();
+    writeZoneTab(false);
     QDir dir(mDataDir);
     QVERIFY(dir.mkdir("Africa"));
     QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Cairo"), mDataDir + QLatin1String("/Africa/Cairo"));
     QVERIFY(dir.mkdir("America"));
     QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Los_Angeles"), mDataDir + QLatin1String("/America/Los_Angeles"));
+    QVERIFY(dir.mkdir("Asia"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Dili"), mDataDir + QLatin1String("/Asia/Dili"));
     QVERIFY(dir.mkdir("Europe"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Berlin"), mDataDir + QLatin1String("/Europe/Berlin"));
     QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/London"), mDataDir + QLatin1String("/Europe/London"));
     QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Paris"), mDataDir + QLatin1String("/Europe/Paris"));
 
@@ -64,10 +60,32 @@ void KTimeZonesTest::cleanupTestCase()
 {
     removeDir(QLatin1String("ktimezonestest/Africa"));
     removeDir(QLatin1String("ktimezonestest/America"));
+    removeDir(QLatin1String("ktimezonestest/Asia"));
     removeDir(QLatin1String("ktimezonestest/Europe"));
     removeDir(QLatin1String("ktimezonestest"));
     removeDir(QLatin1String("share/config"));
     QDir().rmpath(QDir::homePath() + "/.kde-unit-test/share");
+}
+
+void KTimeZonesTest::writeZoneTab(bool testcase)
+{
+    QFile f;
+    f.setFileName(mDataDir + QLatin1String("/zone.tab"));
+    f.open(QIODevice::WriteOnly);
+    QTextStream fStream(&f);
+    if (testcase)
+        fStream << "DE	+5230+01322	Europe/Berlin\n"
+                   "EG	+3003+03115	Africa/Cairo\n"
+                   "FR	+4852+00220	Europe/Paris\n"
+                   "XX	-512830+0001845	Europe/London	Greater Britain\n"
+                   "TL	-0833+12535	Asia/Dili\n"
+                   "US	+340308-1181434	America/Los_Angeles	Pacific Time\n";
+    else
+        fStream << "EG	+3003+03115	Africa/Cairo\n"
+                   "FR	+4852+00220	Europe/Paris\n"
+                   "GB	+512830-0001845	Europe/London	Great Britain\n"
+                   "US	+340308-1181434	America/Los_Angeles	Pacific Time\n";
+    f.close();
 }
 
 void KTimeZonesTest::removeDir(const QString &subdir)
@@ -170,6 +188,11 @@ void KTimeZonesTest::zone()
     QVERIFY(losAngeles.isValid());
     KTimeZone london = KSystemTimeZones::zone("Europe/London");
     QVERIFY(london.isValid());
+    QCOMPARE(london.countryCode(), QString("GB"));
+    QCOMPARE(london.latitude(), float(51*3600 + 28*60 + 30)/3600.0f);
+    QCOMPARE(london.longitude(), -float(0*3600 + 18*60 + 45)/3600.0f);
+    QCOMPARE(london.comment(), QString("Great Britain"));
+    QCOMPARE(losAngeles.longitude(), -float(118*3600 + 14*60 + 34)/3600.0f);
 }
 
 void KTimeZonesTest::zoneinfoDir()
@@ -178,10 +201,77 @@ void KTimeZonesTest::zoneinfoDir()
     QCOMPARE(zoneinfo, mDataDir);
 }
 
+void KTimeZonesTest::zonetabChange()
+{
+    QEventLoop loop;
+    QTimer timer;
+    timer.setSingleShot(true);
+    QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
 
-    ////////////////////////
-    // KSystemTimeZone tests
-    ////////////////////////
+    QCOMPARE(KSystemTimeZones::zones().count(), 4);
+    KTimeZone london = KSystemTimeZones::zone("Europe/London");
+    QVERIFY(london.isValid());
+    QCOMPARE(london.countryCode(), QString("GB"));
+    QCOMPARE(london.latitude(), float(51*3600 + 28*60 + 30)/3600.0f);
+    QCOMPARE(london.longitude(), -float(0*3600 + 18*60 + 45)/3600.0f);
+    QCOMPARE(london.comment(), QString("Great Britain"));
+    QVERIFY(!KSystemTimeZones::zone("Europe/Berlin").isValid());
+    QVERIFY(KSystemTimeZones::zone("Europe/Paris").isValid());
+    QVERIFY(KSystemTimeZones::zone("Europe/London").isValid());
+    QVERIFY(KSystemTimeZones::zone("Africa/Cairo").isValid());
+    QVERIFY(!KSystemTimeZones::zone("Asia/Dili").isValid());
+    QVERIFY(KSystemTimeZones::zone("America/Los_Angeles").isValid());
+
+    // Check that 'london' is automatically updated with the new zone.tab
+    // contents, and that the new zones are added to KSystemTimeZones.
+    writeZoneTab(true);
+    QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "zonetabChanged");
+    QList<QVariant> args;
+    args += mDataDir + QLatin1String("/zone.tab");
+    message.setArguments(args);
+    QDBusConnection::sessionBus().send(message);
+    timer.start(1000);
+    loop.exec();
+    QCOMPARE(KSystemTimeZones::zones().count(), 6);
+    QVERIFY(london.isValid());
+    QCOMPARE(london.countryCode(), QString("XX"));
+    QCOMPARE(london.latitude(), -float(51*3600 + 28*60 + 30)/3600.0f);
+    QCOMPARE(london.longitude(), float(0*3600 + 18*60 + 45)/3600.0f);
+    QCOMPARE(london.comment(), QString("Greater Britain"));
+    QCOMPARE(KSystemTimeZones::zone("Europe/London"), london);
+    QVERIFY(KSystemTimeZones::zone("Europe/Berlin").isValid());
+    QVERIFY(KSystemTimeZones::zone("Europe/Paris").isValid());
+    QVERIFY(KSystemTimeZones::zone("Europe/London").isValid());
+    QVERIFY(KSystemTimeZones::zone("Africa/Cairo").isValid());
+    QVERIFY(KSystemTimeZones::zone("Asia/Dili").isValid());
+    QVERIFY(KSystemTimeZones::zone("America/Los_Angeles").isValid());
+
+    // Check that 'london' is automatically updated with the new zone.tab
+    // contents, and that the removed zones are deleted from KSystemTimeZones.
+    writeZoneTab(false);
+    QDBusConnection::sessionBus().send(message);
+    timer.start(1000);
+    loop.exec();
+    QCOMPARE(KSystemTimeZones::zones().count(), 4);
+    QVERIFY(london.isValid());
+    QCOMPARE(london.countryCode(), QString("GB"));
+    QCOMPARE(london.latitude(), float(51*3600 + 28*60 + 30)/3600.0f);
+    QCOMPARE(london.longitude(), -float(0*3600 + 18*60 + 45)/3600.0f);
+    QCOMPARE(london.comment(), QString("Great Britain"));
+    QCOMPARE(KSystemTimeZones::zone("Europe/London"), london);
+    QVERIFY(!KSystemTimeZones::zone("Europe/Berlin").isValid());
+    QVERIFY(KSystemTimeZones::zone("Europe/Paris").isValid());
+    QVERIFY(KSystemTimeZones::zone("Europe/London").isValid());
+    QVERIFY(KSystemTimeZones::zone("Africa/Cairo").isValid());
+    QVERIFY(!KSystemTimeZones::zone("Asia/Dili").isValid());
+    QVERIFY(KSystemTimeZones::zone("America/Los_Angeles").isValid());
+}
+
+
+////////////////////////
+// KSystemTimeZone tests
+////////////////////////
 
 void KTimeZonesTest::currentOffset()
 {

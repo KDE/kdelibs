@@ -34,6 +34,7 @@ private Q_SLOTS:
     void local();
     void zone();
     void zoneinfoDir();
+    void zonetabChange();
     void currentOffset();
     void offsetAtUtc();
     void offsetAtZoneTime();
@@ -50,6 +51,7 @@ private Q_SLOTS:
     void tzfileTransitions();
 private:
     void removeDir(const QString &subdir);
+    void writeZoneTab(bool testcase);
     QString mDataDir;
 };
 

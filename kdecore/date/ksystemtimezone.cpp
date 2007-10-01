@@ -56,7 +56,7 @@
 #include "ktzfiletimezone.h"
 
 
-#define KTIMEZONED_DBUS_IFACE "org.kde.kded.KTimeZoned"
+#define KTIMEZONED_DBUS_IFACE "org.kde.KTimeZoned"
 
 
 /* Return the offset to UTC in the current time zone at the specified UTC time.
@@ -114,6 +114,9 @@ public:
     static KSystemTimeZonesPrivate *instance();
     static void cleanup();
     static void readConfig(bool init);
+#ifndef Q_OS_WIN
+    static void updateZonetab()  { instance()->readZoneTab(true); }
+#endif
 
     static KTimeZone m_localZone;
     static QString m_localZoneName;
@@ -125,7 +128,7 @@ public:
 private:
     KSystemTimeZonesPrivate() {}
 #ifndef Q_OS_WIN
-    void readZoneTab();
+    void readZoneTab(bool update);
     static float convertCoordinate(const QString &coordinate);
 #endif
 
@@ -202,21 +205,22 @@ void KSystemTimeZones::configChanged()
 
 void KSystemTimeZones::zonetabChanged(const QString &zonetab)
 {
+    Q_UNUSED(zonetab)
+#ifndef Q_OS_WIN
     kDebug(161) << "KSystemTimeZones::zonetabChanged()";
-    // Re-read zone.tab and remove any deleted zones from our collection,
-    // and add any new zones.
-#ifdef __GNUC__
-#warning Implement this
+    // Re-read zone.tab and update our collection, removing any deleted
+    // zones and adding any new zones.
+    KSystemTimeZonesPrivate::updateZonetab();
 #endif
 }
 
 void KSystemTimeZones::zoneDefinitionChanged(const QString &zone)
 {
-	// No need to do anything when the definition (as opposed to the
-	// identity) of the local zone changes, since the updated details
-	// will always be accessed by the system library calls to fetch
-	// local zone information.
-	Q_UNUSED(zone)
+        // No need to do anything when the definition (as opposed to the
+        // identity) of the local zone changes, since the updated details
+        // will always be accessed by the system library calls to fetch
+        // local zone information.
+        Q_UNUSED(zone)
 }
 
 // Perform initialization, create the unique KSystemTimeZones instance,
@@ -263,7 +267,7 @@ kDebug(161)<<"instance(): ... initialised";
 #else
         // For Unix, read zone.tab.
         if (!m_zonetab.isEmpty())
-            m_instance->readZoneTab();
+            m_instance->readZoneTab(false);
 #endif
         m_localZone = m_instance->zone(m_localZoneName);
         if (!m_localZone.isValid())
@@ -285,6 +289,7 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
     m_localZoneName = group.readEntry("LocalZone");
     if (!init)
         m_localZone = m_instance->zone(m_localZoneName);
+    kDebug(161) << "readConfig(): local zone=" << m_localZoneName;
 }
 
 void KSystemTimeZonesPrivate::cleanup()
@@ -300,9 +305,10 @@ void KSystemTimeZonesPrivate::cleanup()
  * Find the location of the zoneinfo files and store in mZoneinfoDir.
  * Parse zone.tab and for each time zone, create a KSystemTimeZone instance.
  */
-void KSystemTimeZonesPrivate::readZoneTab()
+void KSystemTimeZonesPrivate::readZoneTab(bool update)
 {
     kDebug(161) << "readZoneTab(" << m_zonetab<< ")";
+    QStringList newZones;
     QFile f;
     f.setFileName(m_zonetab);
     if (!f.open(QIODevice::ReadOnly))
@@ -326,15 +332,15 @@ void KSystemTimeZonesPrivate::readZoneTab()
         }
 
         // Got three tokens. Now check for two ordinates plus first one is "".
-        QStringList ordinates = KStringHandler::perlSplit(ordinateSeparator, tokens[1], 2);
-        if (ordinates.count() < 2)
+        int i = tokens[1].indexOf(QRegExp("[+-]"), 1);
+        if (i < 0)
         {
             kError(161) << "readZoneTab() " << tokens[2] << ": invalid coordinates: " << tokens[1] << endl;
             continue;
         }
 
-        float latitude = convertCoordinate(ordinates[0]);
-        float longitude = convertCoordinate(ordinates[1]);
+        float latitude = convertCoordinate(tokens[1].left(i));
+        float longitude = convertCoordinate(tokens[1].mid(i));
 
         // Add entry to list.
         if (tokens[0] == "??")
@@ -343,9 +349,32 @@ void KSystemTimeZonesPrivate::readZoneTab()
         // Clean it up.
         if (n > 3  &&  tokens[3] == "-")
             tokens[3] = "";
-        add(KSystemTimeZone(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString())));
+        KSystemTimeZone tz(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
+        if (update)
+        {
+            // Update the existing collection with the new zone definition
+            newZones += tz.name();
+            KTimeZone oldTz = zone(tz.name());
+            if (oldTz.isValid())
+                oldTz.updateBase(tz);   // the zone previously existed, so update its definition
+            else
+                add(tz);   // the zone didn't previously exist, so add it
+        }
+        else
+            add(tz);
     }
     f.close();
+
+    if (update)
+    {
+        // Remove any zones from the collection which no longer exist
+        const ZoneMap oldZones = zones();
+        for (ZoneMap::const_iterator it = oldZones.begin();  it != oldZones.end();  ++it)
+        {
+            if (newZones.indexOf(it.key()) < 0)
+                remove(it.value());
+        }
+    }
 }
 
 /**
@@ -358,7 +387,7 @@ float KSystemTimeZonesPrivate::convertCoordinate(const QString &coordinate)
     int minutes = 0;
     int seconds = 0;
 
-    if (coordinate.length() > 11)
+    if (coordinate.length() > 6)
     {
         degrees = value / 10000;
         value -= degrees * 10000;
