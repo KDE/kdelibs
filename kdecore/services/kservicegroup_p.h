@@ -29,17 +29,18 @@ class KServiceGroupPrivate : public KSycocaEntryPrivate
 public:
     K_SYCOCATYPE( KST_KServiceGroup, KSycocaEntryPrivate )
 
-    KServiceGroupPrivate(const QString &path, KServiceGroup *q_) 
-        : KSycocaEntryPrivate(path), q(q_),
+    KServiceGroupPrivate(const QString &path) 
+        : KSycocaEntryPrivate(path),
           m_bNoDisplay(false), m_bShowEmptyMenu(false), m_bShowInlineHeader(false), m_bInlineAlias(false),
-          m_bAllowInline(false), m_inlineValue(4)
+          m_bAllowInline(false), m_inlineValue(4), m_bDeep(false), m_childCount(-1)
     {
     }
 
-    KServiceGroupPrivate(QDataStream &str, int offset, KServiceGroup *q_) 
-        : KSycocaEntryPrivate(str, offset), q(q_),
+    KServiceGroupPrivate(QDataStream &str, int offset) 
+        : KSycocaEntryPrivate(str, offset),
           m_bNoDisplay(false), m_bShowEmptyMenu(false), m_bShowInlineHeader(false), m_bInlineAlias(false),
-          m_bAllowInline(false), m_inlineValue(4)
+          m_bAllowInline(false), m_inlineValue(4), m_bDeep(false), m_childCount(-1)
+
     {
     }
 
@@ -47,11 +48,14 @@ public:
 
     virtual QString name() const
     {
-        return q->entryPath();
+        return path;
     }
 
+    void load(const QString &cfg);
+    void load(QDataStream &s);
 
-    KServiceGroup *q;
+    int childCount() const;
+
     bool m_bNoDisplay;
     bool m_bShowEmptyMenu;
     bool m_bShowInlineHeader;
@@ -61,6 +65,14 @@ public:
     QStringList suppressGenericNames;
     QString directoryEntryPath;
     QStringList sortOrder;
+    QString m_strCaption;
+    QString m_strIcon;
+    QString m_strComment;
+
+    KServiceGroup::List m_serviceList;
+    bool m_bDeep;
+    QString m_strBaseGroupName;
+    mutable int m_childCount;
 };
 
 

@@ -20,6 +20,7 @@
 #include "ksycoca.h"
 #include "ksycocadict.h"
 #include "kresourcelist.h"
+#include <kservicegroup_p.h>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -85,7 +86,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   if (!entry)
      entry = new KServiceGroup(file, menuName);
 
-  entry->m_childCount = -1; // Recalculate
+  entry->d_func()->m_childCount = -1; // Recalculate
 
   addEntry( KSycocaEntry::Ptr::staticCast(entry) );
 
@@ -142,7 +143,7 @@ KBuildServiceGroupFactory::addEntry( const KSycocaEntry::Ptr& newEntry)
 {
    KSycocaFactory::addEntry(newEntry);
    KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast( newEntry );
-   serviceGroup->m_serviceList.clear();
+   serviceGroup->d_func()->m_serviceList.clear();
 
    if ( !serviceGroup->baseGroupName().isEmpty() )
    {

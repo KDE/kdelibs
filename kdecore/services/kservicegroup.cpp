@@ -32,23 +32,25 @@
 
 
 KServiceGroup::KServiceGroup( const QString & name )
- : KSycocaEntry(*new KServiceGroupPrivate(name, this))
- , m_bDeep(false)
- , m_childCount(-1)
+ : KSycocaEntry(*new KServiceGroupPrivate(name))
 {
 }
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
- : KSycocaEntry(*new KServiceGroupPrivate(_relpath, this))
- , m_bDeep(false)
- , m_childCount(-1)
+ : KSycocaEntry(*new KServiceGroupPrivate(_relpath))
 {
     Q_D(KServiceGroup);
-  QString cfg = configFile;
-  if (cfg.isEmpty())
-     cfg = _relpath+".directory";
 
-  d->directoryEntryPath = cfg;
+    QString cfg = configFile;
+    if (cfg.isEmpty())
+        cfg = _relpath + ".directory";
+
+    d->load(cfg);
+}
+
+void KServiceGroupPrivate::load(const QString &cfg)
+{
+  directoryEntryPath = cfg;
 
   const KDesktopFile desktopFile( cfg );
 
@@ -57,28 +59,28 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   m_strCaption = config.readEntry( "Name" );
   m_strIcon = config.readEntry( "Icon" );
   m_strComment = config.readEntry( "Comment" );
-  setDeleted( config.readEntry("Hidden", false ) );
-  d->m_bNoDisplay = config.readEntry("NoDisplay", false );
+  deleted = config.readEntry("Hidden", false );
+  m_bNoDisplay = config.readEntry("NoDisplay", false );
   QStringList tmpList;
   if (config.hasKey("OnlyShowIn"))
   {
      if (!config.readEntry("OnlyShowIn", QStringList(), ';').contains("KDE"))
-        d->m_bNoDisplay = true;
+        m_bNoDisplay = true;
   }
   if (config.hasKey("NotShowIn"))
   {
      if (config.readEntry("NotShowIn", QStringList(), ';').contains("KDE"))
-        d->m_bNoDisplay = true;
+        m_bNoDisplay = true;
   }
 
   m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
-  d->suppressGenericNames = config.readEntry( "X-KDE-SuppressGenericNames", QStringList() );
+  suppressGenericNames = config.readEntry( "X-KDE-SuppressGenericNames", QStringList() );
 //  d->sortOrder = config.readEntry("SortOrder", QStringList());
 
   // Fill in defaults.
   if (m_strCaption.isEmpty())
   {
-     m_strCaption = _relpath;
+     m_strCaption = path;
      if (m_strCaption.endsWith(QLatin1Char('/')))
         m_strCaption = m_strCaption.left(m_strCaption.length()-1);
      int i = m_strCaption.lastIndexOf('/');
@@ -90,10 +92,11 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 }
 
 KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) :
-    KSycocaEntry(*new KServiceGroupPrivate(_str, offset, this))
+    KSycocaEntry(*new KServiceGroupPrivate(_str, offset))
 {
-  m_bDeep = deep;
-  load( _str );
+  Q_D(KServiceGroup);
+  d->m_bDeep = deep;
+  d->load( _str );
 }
 
 KServiceGroup::~KServiceGroup()
@@ -107,26 +110,35 @@ QString KServiceGroup::relPath() const
 
 QString KServiceGroup::caption() const
 {
-    return m_strCaption;
+    Q_D(const KServiceGroup);
+    return d->m_strCaption;
 }
 
 QString KServiceGroup::icon() const
 {
-    return m_strIcon;
+    Q_D(const KServiceGroup);
+    return d->m_strIcon;
 }
 
 QString KServiceGroup::comment() const
 {
-    return m_strComment;
+    Q_D(const KServiceGroup);
+    return d->m_strComment;
 }
 
 int KServiceGroup::childCount() const
+{
+    Q_D(const KServiceGroup);
+    return d->childCount();
+}
+
+int KServiceGroupPrivate::childCount() const
 {
   if (m_childCount == -1)
   {
      m_childCount = 0;
 
-     for( List::ConstIterator it = m_serviceList.begin();
+     for( KServiceGroup::List::ConstIterator it = m_serviceList.begin();
           it != m_serviceList.end(); ++it)
      {
         KSycocaEntry::Ptr p = *it;
@@ -210,7 +222,7 @@ void KServiceGroup::setAllowInline(bool _b)
 bool KServiceGroup::noDisplay() const
 {
     Q_D(const KServiceGroup);
-  return d->m_bNoDisplay || m_strCaption.startsWith('.');
+  return d->m_bNoDisplay || d->m_strCaption.startsWith('.');
 }
 
 QStringList KServiceGroup::suppressGenericNames() const
@@ -219,9 +231,8 @@ QStringList KServiceGroup::suppressGenericNames() const
   return d->suppressGenericNames;
 }
 
-void KServiceGroup::load( QDataStream& s )
+void KServiceGroupPrivate::load( QDataStream& s )
 {
-    Q_D(KServiceGroup);
   QStringList groupList;
   qint8 noDisplay;
   qint8 _showEmptyMenu;
@@ -230,14 +241,14 @@ void KServiceGroup::load( QDataStream& s )
   qint8 _allowInline;
   s >> m_strCaption >> m_strIcon >>
       m_strComment >> groupList >> m_strBaseGroupName >> m_childCount >>
-      noDisplay >> d->suppressGenericNames >> d->directoryEntryPath >>
-      d->sortOrder >> _showEmptyMenu >> inlineHeader >> _inlineAlias >> _allowInline;
+      noDisplay >> suppressGenericNames >> directoryEntryPath >>
+      sortOrder >> _showEmptyMenu >> inlineHeader >> _inlineAlias >> _allowInline;
 
-  d->m_bNoDisplay = (noDisplay != 0);
-  d->m_bShowEmptyMenu = ( _showEmptyMenu != 0 );
-  d->m_bShowInlineHeader = ( inlineHeader != 0 );
-  d->m_bInlineAlias = ( _inlineAlias != 0 );
-  d->m_bAllowInline = ( _allowInline != 0 );
+  m_bNoDisplay = (noDisplay != 0);
+  m_bShowEmptyMenu = ( _showEmptyMenu != 0 );
+  m_bShowInlineHeader = ( inlineHeader != 0 );
+  m_bInlineAlias = ( _inlineAlias != 0 );
+  m_bAllowInline = ( _allowInline != 0 );
 
   if (m_bDeep)
   {
@@ -250,14 +261,14 @@ void KServiceGroup::load( QDataStream& s )
            KServiceGroup::Ptr serviceGroup;
            serviceGroup = KServiceGroupFactory::self()->findGroupByDesktopPath(path, false);
            if (serviceGroup)
-              m_serviceList.append( SPtr::staticCast(serviceGroup) );
+               m_serviceList.append( KServiceGroup::SPtr::staticCast(serviceGroup) );
         }
         else
         {
            KService::Ptr service;
            service = KServiceFactory::self()->findServiceByDesktopPath(path);
            if (service)
-              m_serviceList.append( SPtr::staticCast(service) );
+              m_serviceList.append( KServiceGroup::SPtr::staticCast(service) );
         }
      }
   }
@@ -265,7 +276,8 @@ void KServiceGroup::load( QDataStream& s )
 
 void KServiceGroup::addEntry( const KSycocaEntry::Ptr& entry)
 {
-  m_serviceList.append(entry);
+    Q_D(KServiceGroup);
+  d->m_serviceList.append(entry);
 }
 
 void KServiceGroupPrivate::save( QDataStream& s )
@@ -273,8 +285,8 @@ void KServiceGroupPrivate::save( QDataStream& s )
   KSycocaEntryPrivate::save( s );
 
   QStringList groupList;
-  for( KServiceGroup::List::ConstIterator it = q->m_serviceList.begin();
-       it != q->m_serviceList.end(); ++it)
+  for( KServiceGroup::List::ConstIterator it = m_serviceList.begin();
+       it != m_serviceList.end(); ++it)
   {
      KSycocaEntry::Ptr p = *it;
      if (p->isType(KST_KService))
@@ -293,15 +305,15 @@ void KServiceGroupPrivate::save( QDataStream& s )
      }
   }
 
-  (void) q->childCount();
+  (void) childCount();
 
   qint8 noDisplay = m_bNoDisplay ? 1 : 0;
   qint8 _showEmptyMenu = m_bShowEmptyMenu ? 1 : 0;
   qint8 inlineHeader = m_bShowInlineHeader ? 1 : 0;
   qint8 _inlineAlias = m_bInlineAlias ? 1 : 0;
   qint8 _allowInline = m_bAllowInline ? 1 : 0;
-  s << q->m_strCaption << q->m_strIcon <<
-      q->m_strComment << groupList << q->m_strBaseGroupName << q->m_childCount <<
+  s << m_strCaption << m_strIcon <<
+      m_strComment << groupList << m_strBaseGroupName << m_childCount <<
       noDisplay << suppressGenericNames << directoryEntryPath <<
       sortOrder <<_showEmptyMenu <<inlineHeader<<_inlineAlias<<_allowInline;
 }
@@ -337,7 +349,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
     // together with the entries. We can't only load the entries afterwards
     // since the offsets could have been changed if the database has changed.
 
-    if (!m_bDeep) {
+    if (!d->m_bDeep) {
 
         grp = KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
 
@@ -347,14 +359,14 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
     }
 
     if (!sort)
-        return group->m_serviceList;
+        return group->d_func()->m_serviceList;
 
     // Sort the list alphabetically, according to locale.
     // Groups come first, then services.
 
     KSortableList<SPtr,QByteArray> slist;
     KSortableList<SPtr,QByteArray> glist;
-    for (List::ConstIterator it(group->m_serviceList.begin()); it != group->m_serviceList.end(); ++it)
+    for (List::ConstIterator it(group->d_func()->m_serviceList.begin()); it != group->d_func()->m_serviceList.end(); ++it)
     {
         KSycocaEntry::Ptr p = (*it);
         bool noDisplay = p->isType(KST_KServiceGroup) ?
@@ -549,7 +561,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
         {
             QString groupPath = rp + item.mid(1) + '/';
 
-            for (List::ConstIterator it2(group->m_serviceList.begin()); it2 != group->m_serviceList.end(); ++it2)
+            for (List::ConstIterator it2(group->d_func()->m_serviceList.begin()); it2 != group->d_func()->m_serviceList.end(); ++it2)
             {
                 if (!(*it2)->isType(KST_KServiceGroup))
                     continue;
@@ -595,7 +607,7 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, b
         }
         else
         {
-            for (List::ConstIterator it2(group->m_serviceList.begin()); it2 != group->m_serviceList.end(); ++it2)
+            for (List::ConstIterator it2(group->d_func()->m_serviceList.begin()); it2 != group->d_func()->m_serviceList.end(); ++it2)
             {
                 if (!(*it2)->isType(KST_KService))
                     continue;
@@ -685,7 +697,7 @@ KServiceGroup::childGroup(const QString &parent)
 
 QString KServiceGroup::baseGroupName() const
 {
-    return m_strBaseGroupName;
+    return d_func()->m_strBaseGroupName;
 }
 
 QString

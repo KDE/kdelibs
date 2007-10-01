@@ -254,19 +254,8 @@ protected:
    * Add a service to this group
    */
   void addEntry( const KSycocaEntry::Ptr& entry);
-
-  QString m_strCaption;
-  QString m_strIcon;
-  QString m_strComment;
-
-  List m_serviceList;
-  bool m_bDeep;
-  QString m_strBaseGroupName;
-  mutable int m_childCount;
 private:
     Q_DECLARE_PRIVATE(KServiceGroup)
-
-    void load(QDataStream &s);
 };
 
 class KDECORE_EXPORT KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
