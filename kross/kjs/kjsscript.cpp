@@ -26,7 +26,7 @@
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>
 #include <kjs/object.h>
-//#include <kjs/PropertyNameArray.h>
+#include <kjs/PropertyNameArray.h>
 //#include <kjs/array_instance.h>
 #include <kjs/function_object.h>
 
@@ -87,6 +87,11 @@ namespace Kross {
             * \see ChildrenInterface::AutoConnectSignals
             */
             QList< QObject* > m_autoconnect;
+
+            /**
+            * The list of functionnames that are in the script per default.
+            */
+            QStringList m_defaultFunctionNames;
 
             /**
             * This method does walk through the list of children the \a ChildrenInterface
@@ -176,6 +181,9 @@ bool KjsScript::initialize()
     kjsinterpreter->setShouldPrintExceptions(true);
     KJS::ExecState* exec = kjsinterpreter->globalExec();
 
+    d->m_defaultFunctionNames = functionNames();
+    d->m_defaultFunctionNames << "Kross";
+
     { // publish the global objects.
         QHash< QString, QObject* > objects = Manager::self().objects();
         QHash< QString, QObject* >::Iterator it(objects.begin()), end(objects.end());
@@ -208,6 +216,7 @@ bool KjsScript::initialize()
 void KjsScript::finalize()
 {
     d->m_autoconnect.clear();
+    d->m_defaultFunctionNames.clear();
     delete d->m_engine;
     d->m_engine = 0;
 }
@@ -255,7 +264,8 @@ void KjsScript::execute()
                     continue;
                 KJS::JSObject *function = functionvalue->toObject(exec);
                 Q_ASSERT( ! exec->hadException() );
-                //if( exec->hadException() ) continue;
+                if( exec->hadException() )
+                    continue;
                 if ( function && function->implementsCall() ) {
                     krossdebug( QString("KjsScript::execute connect function=%1 with signal=%2").arg(name.data()).arg(signature) );
 
@@ -279,15 +289,73 @@ void KjsScript::execute()
 
 QStringList KjsScript::functionNames()
 {
-    //TODO
-    return QStringList();
+    KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
+    KJS::ExecState* exec = kjsinterpreter->globalExec();
+    KJS::JSObject* kjsglobal = kjsinterpreter->globalObject();
+    if( exec->hadException() ) {
+        return QStringList();
+    }
+
+    KJS::PropertyNameArray props;
+    kjsglobal->getPropertyNames(exec, props);
+
+    QStringList list;
+    for(KJS::PropertyNameArrayIterator it = props.begin(); it != props.end(); ++it) {
+        const char* name = it->ascii();
+        KJS::Identifier id = KJS::Identifier(name);
+        KJS::JSValue *value = kjsglobal->get(exec, id);
+        if( ! value || ! value->isObject() )
+            continue;
+        KJS::JSObject *obj = value->toObject(exec);
+        if( ! obj || ! obj->implementsCall() || ! obj->implementsConstruct() || ! obj->classInfo() )
+            continue;
+        if( d->m_defaultFunctionNames.contains(name) )
+            continue;
+        list << name;
+    }
+
+    Q_ASSERT( ! exec->hadException() );
+    return list;
 }
 
 QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
 {
-    //TODO
-    Q_UNUSED(name);
-    Q_UNUSED(args);
-    return QVariant();
+    KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
+    KJS::ExecState* exec = kjsinterpreter->globalExec();
+    KJS::JSObject* kjsglobal = kjsinterpreter->globalObject();
+    if( ! exec->hadException() ) {
+        //setError()
+        return QVariant();
+    }
+
+    KJS::Identifier id = KJS::Identifier( KJS::UString(name.toLatin1().data()) );
+    KJS::JSValue *functionvalue = kjsglobal->get(exec, id);
+    if( exec->hadException() ) {
+        //setError()
+        return QVariant();
+    }
+
+    KJS::JSObject *function = functionvalue->toObject(exec);
+    if ( ! function || ! function->implementsCall() ) {
+        //setError()
+        return QVariant();
+    }
+
+    KJS::List kjsargs;
+    foreach(QVariant variant, args) {
+        KJS::JSValue* jsvalue = KJSEmbed::convertToValue(exec, variant);
+        Q_ASSERT( ! exec->hadException() );
+        kjsargs.append(jsvalue);
+    }
+
+    KJS::JSValue *retValue = function->call(exec, kjsglobal, kjsargs);
+    if( exec->hadException() ) {
+        //setError()
+        return QVariant();
+    }
+
+    QVariant result = KJSEmbed::convertToVariant(exec, retValue);
+    Q_ASSERT( ! exec->hadException() );
+    return result;
 }
 
