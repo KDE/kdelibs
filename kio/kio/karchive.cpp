@@ -556,7 +556,7 @@ QString KArchiveEntry::group() const
     return d->group;
 }
 
-QString KArchiveEntry::symlink() const
+QString KArchiveEntry::symLinkTarget() const
 {
     return d->symlink;
 }
@@ -766,11 +766,11 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
     dirEntries = curDir->entries();
     for ( QStringList::const_iterator it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
       const KArchiveEntry* curEntry = curDir->entry(*it);
-      if (!curEntry->symlink().isEmpty()) {
+      if (!curEntry->symLinkTarget().isEmpty()) {
           const QString linkName = curDirName+'/'+curEntry->name();
 #ifdef Q_OS_UNIX
-          if (!::symlink(curEntry->symlink().toLocal8Bit(), linkName.toLocal8Bit())) {
-              kDebug() << "symlink(" << curEntry->symlink() << ',' << linkName << ") failed:" << strerror(errno);
+          if (!::symlink(curEntry->symLinkTarget().toLocal8Bit(), linkName.toLocal8Bit())) {
+              kDebug() << "symlink(" << curEntry->symLinkTarget() << ',' << linkName << ") failed:" << strerror(errno);
           }
 #else
           // TODO - how to create symlinks on other platforms?
