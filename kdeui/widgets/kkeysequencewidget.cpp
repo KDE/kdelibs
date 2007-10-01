@@ -162,7 +162,7 @@ KKeySequenceWidget::KKeySequenceWidget(QWidget *parent)
 
 void KKeySequenceWidgetPrivate::init()
 {
-	stealAction = 0L;
+	stealAction = 0;
 	isRecording = false;
 	allowModifierless = false;
 	
@@ -274,7 +274,7 @@ void KKeySequenceWidgetPrivate::startRecording()
 
 void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 {
-	KAction *steal=0l;
+	KAction *steal=0;
 	modifierlessTimeout.stop();
 	isRecording = false;
 	keyButton->releaseKeyboard();
