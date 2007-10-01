@@ -84,6 +84,19 @@ KShortcut KShortcutWidget::shortcut() const
     return ret;
 }
 
+void KShortcutWidget::setCheckActionList(const QList<QAction*> &checkList)
+{
+    d->ui.priEditor->setCheckActionList(checkList);
+    d->ui.altEditor->setCheckActionList(checkList);
+}
+
+//slot
+void KShortcutWidget::applyStealShortcut()
+{
+    d->ui.priEditor->applyStealShortcut();
+    d->ui.altEditor->applyStealShortcut();
+}
+
 
 //slot
 void KShortcutWidget::setShortcut(const KShortcut &newSc)

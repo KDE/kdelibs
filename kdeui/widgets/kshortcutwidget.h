@@ -38,12 +38,33 @@ public:
 
     KShortcut shortcut() const;
 
+    /**
+     * Set a list of action to check against for conflictuous shortcut.
+     * 
+     * If there is a conflictuous shortcut with a KAction, and that his shortcut can be configured
+     * (KAction::isShortcutConfigurable() returns true) the user will be prompted for eventually steal 
+     * the shortcut from this action
+     * 
+     * The action you are editing the shortcut shouldn't be in that list, or there may be unexcepted behaviour
+     * 
+     * Global shortcuts are automatically checked for conflicts
+     *  
+     * Don't forget to call applyStealShortcut to actually steal the shortcut.
+    */
+    void setCheckActionList(const QList<QAction*> &checkList);
 Q_SIGNALS:
     void shortcutChanged(const KShortcut &cut);
 
 public Q_SLOTS:
     void setShortcut(const KShortcut &cut);
     void clearShortcut();
+    
+    /**
+     * Actualy remove shortcut of action that the user wanted to steal.
+     * 
+     * To be called before you apply your changes.  No shortcut are stolen untill this function is called.
+     */
+    void applyStealShortcut();
 
 private:
     Q_PRIVATE_SLOT(d, void priKeySequenceChanged(const QKeySequence &))

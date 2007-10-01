@@ -80,22 +80,33 @@ void KMenuMenuHandler::buildToolbarAction()
 
 void KMenuMenuHandler::slotSetShortcut()
 {
-  KMenu * menu=KMenu::contextMenuFocus();
-  if(!menu)
-    return;
-  KAction *action= qobject_cast<KAction*>(menu->contextMenuFocusAction());
-  if(!action)
-    return;
-  KDialog dialog(m_builder->widget());
-  KShortcutWidget swidget(&dialog);
-  swidget.setShortcut(action->shortcut());
-  dialog.setMainWidget(&swidget);
-  if(dialog.exec())
-  {
-    action->setShortcut(swidget.shortcut(), KAction::ActiveShortcut);
-    if(KActionCollection *collection = qobject_cast<KActionCollection *>(action->parent()))
-        collection->writeSettings();
-  }
+    KMenu * menu=KMenu::contextMenuFocus();
+    if(!menu)
+        return;
+    KAction *action= qobject_cast<KAction*>(menu->contextMenuFocusAction());
+    if(!action)
+        return;
+    
+    KDialog dialog(m_builder->widget());
+    KShortcutWidget swidget(&dialog);
+    swidget.setShortcut(action->shortcut());
+    dialog.setMainWidget(&swidget);
+    if(dynamic_cast<KXMLGUIClient*>(m_builder))
+    {
+        QList<QAction*> checklist;
+        KXMLGUIFactory *factory=dynamic_cast<KXMLGUIClient*>(m_builder)->factory();
+        foreach(KXMLGUIClient *client, factory->clients())
+            checklist+=client->actionCollection()->actions();
+        swidget.setCheckActionList(checklist);
+    }
+    
+    if(dialog.exec())
+    {
+        action->setShortcut(swidget.shortcut(), KAction::ActiveShortcut);
+        swidget.applyStealShortcut();
+        if(KActionCollection *collection = qobject_cast<KActionCollection*>(qvariant_cast<QObject*>(action->property("_k_ActionCollection"))))
+            collection->writeSettings();
+    }
 }
 
 

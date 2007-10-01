@@ -43,7 +43,10 @@
 #include <kglobalaccel.h>
 #include <kicon.h>
 #include <klocale.h>
-
+#include <kmessagebox.h>
+#include <kshortcut.h>
+#include <kaction.h>
+#include <kactioncollection.h>
 
 #if 0
 #ifdef Q_WS_X11
@@ -104,8 +107,41 @@ public:
 	uint nKey;
 	uint modifierKeys;
 	bool isRecording;
-	bool denyValidation;
+	
+	/**
+	 * The list of action to check against for conflict shortcut
+	 */
+	QList<QAction*> checkList;
+	/**
+	 * The action to steal the shortcut from.
+	 */
+	KAction* stealAction;
+	
+	bool stealShortcut(QAction *item, const QKeySequence &seq);
+	void wontStealShortcut(QAction *item, const QKeySequence &seq);
+			
 };
+
+bool KKeySequenceWidgetPrivate::stealShortcut(QAction *item, const QKeySequence &seq)
+{
+	QString title = i18n("Key Conflict");
+	QString message = i18n("The '%1' key combination has already been allocated to the \"%2\" action.\n"
+            "Do you want to reassign it from that action to the current one?", seq.toString(), item->text().remove('&'));
+
+	if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign"))) != KMessageBox::Continue)
+		return false;
+	
+	return true;
+}
+
+void KKeySequenceWidgetPrivate::wontStealShortcut(QAction *item, const QKeySequence &seq)
+{
+	QString title( i18n( "Shortcut conflict" ) );
+	QString msg( i18n( "<qt>The '%1' key combination is already used by the <b>%2</b> action.<br>"
+			"Please select a different one.</qt>", seq.toString() , item->text().remove('&') ) );
+	KMessageBox::sorry( q, msg );
+}
+
 
 
 KKeySequenceWidget::KKeySequenceWidget(QWidget *parent)
@@ -126,6 +162,7 @@ KKeySequenceWidget::KKeySequenceWidget(QWidget *parent)
 
 void KKeySequenceWidgetPrivate::init()
 {
+	stealAction = 0L;
 	isRecording = false;
 	allowModifierless = false;
 	
@@ -169,6 +206,10 @@ void KKeySequenceWidget::setClearButtonShown(bool show)
 	d->clearButton->setVisible(show);
 }
 
+void KKeySequenceWidget::setCheckActionList(const QList<QAction*> &checkList)
+{
+	d->checkList = checkList;
+}
 
 //slot
 void KKeySequenceWidget::captureKeySequence()
@@ -198,13 +239,18 @@ void KKeySequenceWidget::clearKeySequence()
 	setKeySequence(QKeySequence());
 }
 
-
 //slot
-void KKeySequenceWidget::denyValidation()
+void KKeySequenceWidget::applyStealShortcut()
 {
-	d->denyValidation = true;
+	if(d->stealAction) {
+		KShortcut cut=d->stealAction->shortcut();
+		cut.remove(d->keySequence);
+		d->stealAction->setShortcut(cut, KAction::ActiveShortcut);
+		if(KActionCollection *collection = qobject_cast<KActionCollection*>(qvariant_cast<QObject*>(d->stealAction->property("_k_ActionCollection"))))
+			collection->writeSettings();
+	}
+	KGlobalAccel::stealShortcutSystemwide(d->keySequence);	
 }
-
 
 void KKeySequenceButton::setText(const QString &text)
 {
@@ -228,21 +274,54 @@ void KKeySequenceWidgetPrivate::startRecording()
 
 void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 {
+	KAction *steal=0l;
 	modifierlessTimeout.stop();
 	isRecording = false;
 	keyButton->releaseKeyboard();
 	keyButton->setDown(false);
-	if (keySequence != oldKeySequence) {
-		if (validate) {
-			denyValidation = false;
-			emit q->validationHook(keySequence);
-			if (denyValidation)
-				keySequence = oldKeySequence;
+    //We don't check for global shortcut when the checklist is empty because we are not certain that apply will be called.
+	if (keySequence != oldKeySequence && validate && !checkList.isEmpty()) {
+		//find conflicting shortcuts with existing actions
+		foreach(QAction * qaction , checkList )
+		{
+			KAction *kaction=qobject_cast<KAction*>(qaction);
+			if(kaction) {
+				if(kaction->shortcut().contains(keySequence)) {
+					if(kaction->isShortcutConfigurable ()) {
+						if(!stealShortcut(kaction, keySequence))
+							goto reset;
+						steal = kaction;
+						break;
+					} else {
+						wontStealShortcut(kaction, keySequence);
+						goto reset;
+					}
+				}
+			} else {
+				if(qaction->shortcut() ==  keySequence)
+				{
+					wontStealShortcut(qaction, keySequence);
+					goto reset;
+				}
+			}
+		}
+		//check for conflicts with other applications' global shortcuts
+		QStringList conflicting = KGlobalAccel::findActionNameSystemwide(keySequence);
+		if (!conflicting.isEmpty()) {
+			if (!KGlobalAccel::promptStealShortcutSystemwide(0/*TODO:right?*/, conflicting, keySequence))
+				goto reset;
 		}
 	}
+	stealAction = steal;
 	updateShortcutDisplay();
 	if (keySequence != oldKeySequence)
 		emit q->keySequenceChanged(keySequence);
+	return;
+	
+reset:
+	keySequence = oldKeySequence;
+	updateShortcutDisplay();
+	return;
 }
 
 
