@@ -130,8 +130,6 @@ class KDirListerCache : public QObject
 {
     Q_OBJECT
 public:
-    static KDirListerCache *self();
-
     KDirListerCache(); // only called by K_GLOBAL_STATIC
     ~KDirListerCache();
 

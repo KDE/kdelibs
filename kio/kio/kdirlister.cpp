@@ -50,7 +50,7 @@
 #undef DEBUG_CACHE
 #endif
 
-K_GLOBAL_STATIC(KDirListerCache, s_pCache)
+K_GLOBAL_STATIC(KDirListerCache, kDirListerCache)
 
 KDirListerCache::KDirListerCache()
     : itemsCached( 10 ) // keep the last 10 directories around
@@ -75,7 +75,7 @@ KDirListerCache::KDirListerCache()
 
   // The use of QUrl::url() in ~DirItem (sendSignal) crashes if the static for QRegExpEngine got deleted already,
   // so we need to destroy the KDirListerCache before that.
-  qAddPostRoutine(s_pCache.destroy);
+  qAddPostRoutine(kDirListerCache.destroy);
 }
 
 KDirListerCache::~KDirListerCache()
@@ -836,11 +836,6 @@ void KDirListerCache::emitRefreshItem( const KFileItem& oldItem, const KFileItem
         kdl->addRefreshItem( oldItem, fileitem );
         kdl->emitItems();
     }
-}
-
-KDirListerCache* KDirListerCache::self()
-{
-  return s_pCache;
 }
 
 // private slots
@@ -1696,8 +1691,10 @@ KDirLister::~KDirLister()
     kDebug(7003) << "-KDirLister";
 
     // Stop all running jobs
-    stop();
-    KDirListerCache::self()->forgetDirs( this );
+    if (!kDirListerCache.isDestroyed()) {
+        stop();
+        kDirListerCache->forgetDirs( this );
+    }
 
     delete d;
 }
@@ -1710,19 +1707,19 @@ bool KDirLister::openUrl( const KUrl& _url, bool _keep, bool _reload )
 
     d->changes = NONE;
 
-    return KDirListerCache::self()->listDir( this, _url, _keep, _reload );
+    return kDirListerCache->listDir( this, _url, _keep, _reload );
 }
 
 void KDirLister::stop()
 {
     kDebug(7003) ;
-    KDirListerCache::self()->stop( this );
+    kDirListerCache->stop( this );
 }
 
 void KDirLister::stop( const KUrl& _url )
 {
     kDebug(7003) << _url;
-    KDirListerCache::self()->stop( this, _url );
+    kDirListerCache->stop( this, _url );
 }
 
 bool KDirLister::autoUpdate() const
@@ -1736,7 +1733,7 @@ void KDirLister::setAutoUpdate( bool _enable )
         return;
 
     d->autoUpdate = _enable;
-    KDirListerCache::self()->setAutoUpdate( this, _enable );
+    kDirListerCache->setAutoUpdate( this, _enable );
 }
 
 bool KDirLister::showingDotFiles() const
@@ -1796,7 +1793,7 @@ void KDirLister::emitChanges()
   for ( KUrl::List::Iterator it = d->lstDirs.begin();
         it != d->lstDirs.end(); ++it )
   {
-    const KFileItemList* itemList = KDirListerCache::self()->itemsForDir( *it );
+    const KFileItemList* itemList = kDirListerCache->itemsForDir( *it );
     KFileItemList::const_iterator kit = itemList->begin();
     const KFileItemList::const_iterator kend = itemList->end();
     for ( ; kit != kend; ++kit )
@@ -1883,7 +1880,7 @@ void KDirLister::emitChanges()
 
 void KDirLister::updateDirectory( const KUrl& _u )
 {
-  KDirListerCache::self()->updateDirectory( _u );
+  kDirListerCache->updateDirectory( _u );
 }
 
 bool KDirLister::isFinished() const
@@ -1898,12 +1895,12 @@ KFileItem KDirLister::rootItem() const
 
 KFileItem KDirLister::findByUrl( const KUrl& _url ) const
 {
-  return KDirListerCache::self()->findByUrl( this, _url );
+  return kDirListerCache->findByUrl( this, _url );
 }
 
 KFileItem KDirLister::findByName( const QString& _name ) const
 {
-  return KDirListerCache::self()->findByName( this, _name );
+  return kDirListerCache->findByName( this, _name );
 }
 
 
@@ -2328,7 +2325,7 @@ KFileItemList KDirLister::items( WhichItems which ) const
 
 KFileItemList KDirLister::itemsForDir( const KUrl& dir, WhichItems which ) const
 {
-    KFileItemList *allItems = KDirListerCache::self()->itemsForDir( dir );
+    KFileItemList *allItems = kDirListerCache->itemsForDir( dir );
     if ( !allItems )
         return KFileItemList();
 
