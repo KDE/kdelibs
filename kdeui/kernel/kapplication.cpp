@@ -1008,7 +1008,7 @@ void KApplication::updateRemoteUserTimestamp( const QString& service, int time )
 #if defined Q_WS_X11
     if( time == 0 )
         time = QX11Info::appUserTime();
-    QDBusInterface(service, QLatin1String("/MainApplication"),
+    QDBusInterface(service.contains('.')?service:"org.kde."+service, QLatin1String("/MainApplication"),
             QString(QLatin1String("org.kde.KApplication")))
         .call(QLatin1String("updateUserTimestamp"), time);
 #endif
