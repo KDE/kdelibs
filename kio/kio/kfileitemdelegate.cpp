@@ -116,7 +116,7 @@ class KFileItemDelegate::Private
         QPixmap transition(const QPixmap &from, const QPixmap &to, qreal amount) const;
 
     public:
-        KFileItemDelegate::AdditionalInformation additionalInformation;
+        KFileItemDelegate::InformationList informationList;
 
     private:
         KFileItemDelegate * const q;
@@ -231,44 +231,67 @@ QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFi
 QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &option, const QModelIndex &index,
                                                 const KFileItem &item) const
 {
-    if (additionalInformation == KFileItemDelegate::NoInformation || item.isNull() || !isListView(option))
-        return QString();
+    QString string;
 
-    switch (additionalInformation)
+    if (informationList.isEmpty() || item.isNull() || !isListView(option))
+        return string;
+
+    foreach (KFileItemDelegate::Information info, informationList)
     {
-        case KFileItemDelegate::Size:
-            return itemSize(index, item);
+        if (info == KFileItemDelegate::NoInformation)
+            continue;
 
-        case KFileItemDelegate::Permissions:
-            return item.permissionsString();
+        if (!string.isEmpty())
+            string += QChar::LineSeparator;
 
-        case KFileItemDelegate::OctalPermissions:
-            return QString('0') + QString::number(item.permissions(), 8);
+        switch (info)
+        {
+            case KFileItemDelegate::Size:
+                string += itemSize(index, item);
+                break;
 
-        case KFileItemDelegate::Owner:
-            return item.user();
+            case KFileItemDelegate::Permissions:
+                string += item.permissionsString();
+                break;
 
-        case KFileItemDelegate::OwnerAndGroup:
-            return item.user() + ':' + item.group();
+            case KFileItemDelegate::OctalPermissions:
+                string += QString('0') + QString::number(item.permissions(), 8);
+                break;
 
-        case KFileItemDelegate::CreationTime:
-            return item.timeString(KFileItem::CreationTime);
+            case KFileItemDelegate::Owner:
+                string += item.user();
+                break;
 
-        case KFileItemDelegate::ModificationTime:
-            return item.timeString(KFileItem::ModificationTime);
+            case KFileItemDelegate::OwnerAndGroup:
+                string += item.user() + ':' + item.group();
+                break;
 
-        case KFileItemDelegate::AccessTime:
-            return item.timeString(KFileItem::AccessTime);
+            case KFileItemDelegate::CreationTime:
+                string += item.timeString(KFileItem::CreationTime);
+                break;
 
-        case KFileItemDelegate::MimeType:
-            return item.isMimeTypeKnown() ? item.mimetype() : i18nc("@info mimetype","Unknown");
+            case KFileItemDelegate::ModificationTime:
+                string += item.timeString(KFileItem::ModificationTime);
+                break;
 
-        case KFileItemDelegate::FriendlyMimeType:
-            return item.isMimeTypeKnown() ? item.mimeComment() : i18nc("@info mimetype","Unknown");
+            case KFileItemDelegate::AccessTime:
+                string += item.timeString(KFileItem::AccessTime);
+                break;
 
-        default:
-            return QString();
-    }
+            case KFileItemDelegate::MimeType:
+                string += item.isMimeTypeKnown() ? item.mimetype() : i18nc("@info mimetype","Unknown");
+                break;
+
+            case KFileItemDelegate::FriendlyMimeType:
+                string += item.isMimeTypeKnown() ? item.mimeComment() : i18nc("@info mimetype","Unknown");
+                break;
+
+            default:
+                break;
+        } // switch (info)
+    } // foreach (info, list)
+
+    return string;
 }
 
 
@@ -889,7 +912,7 @@ KFileItemDelegate::KFileItemDelegate(QObject *parent)
     d->setVerticalMargin(Private::IconMargin, focusHMargin, focusVMargin);
     d->setVerticalMargin(Private::ItemMargin, 0, 0);
 
-    setAdditionalInformation(NoInformation);
+    setShowInformation(NoInformation);
 }
 
 
@@ -955,15 +978,24 @@ QString KFileItemDelegate::Private::display(const QModelIndex &index) const
 }
 
 
-void KFileItemDelegate::setAdditionalInformation(AdditionalInformation value)
+void KFileItemDelegate::setShowInformation(const InformationList &list)
 {
-    d->additionalInformation = value;
+    d->informationList = list;
 }
 
 
-KFileItemDelegate::AdditionalInformation KFileItemDelegate::additionalInformation() const
+void KFileItemDelegate::setShowInformation(Information value)
 {
-    return d->additionalInformation;
+    if (value != NoInformation)
+        d->informationList = InformationList() << value;
+    else
+        d->informationList = InformationList();
+}
+
+
+KFileItemDelegate::InformationList KFileItemDelegate::showInformation() const
+{
+    return d->informationList;
 }
 
 

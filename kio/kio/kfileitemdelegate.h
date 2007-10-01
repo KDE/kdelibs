@@ -50,9 +50,9 @@ class QPainter;
  * the file items below the icon labels.
  *
  * Which information should be shown, if any, is controlled by the
- * @ref information property, which can be set by calling
- * setAdditionalInformation(), and read by calling additionalInformation().
- * The default value for this property is @ref NoInformation.
+ * @ref information property, which is a list that can be set by calling
+ * setShowInformation(), and read by calling showInformation().
+ * By default this list is empty.
  *
  * To use KFileItemDelegate, instantiate an object from the delegate,
  * and call setItemDelegate() in one of the standard item views in Qt:
@@ -72,11 +72,11 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
      * items in icon views.
      *
      * Access functions:
-     * @li void setAdditionalInformation(AdditionalInformation information)
-     * @li Information additionalInformation() const
+     * @li void setShownformation(InformationList information)
+     * @li InformationList showInformation() const
      */
-    Q_PROPERTY(AdditionalInformation information READ additionalInformation WRITE setAdditionalInformation)
-    Q_ENUMS(AdditionalInformation)
+    Q_PROPERTY(InformationList information READ showInformation WRITE setShowInformation)
+    Q_ENUMS(Information)
 
 
     public:
@@ -97,11 +97,11 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
          * types are resolved. If the mime type isn't known, "Unknown" will be displayed until
          * the mime type has been successfully resolved.
          *
-         * @see setAdditionalInformation()
-         * @see additionalInformation()
+         * @see setShowInformation()
+         * @see showInformation()
          * @see information
          */
-        enum AdditionalInformation {
+        enum Information {
             NoInformation,     ///< No additional information will be shown for items.
             Size,              ///< The file size for files, and the number of items for folders.
             Permissions,       ///< A UNIX permissions string, e.g. -rwxr-xr-x.
@@ -114,6 +114,8 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
             MimeType,          ///< The mime type for the item, e.g. text/html.
             FriendlyMimeType   ///< The descriptive name for the mime type, e.g. HTML Document.
         };
+
+        typedef QList<Information> InformationList;
 
 
         /**
@@ -200,17 +202,39 @@ class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
 
 
         /**
-         * Sets the additional information that should be shown below below item labels in icon views.
+         * Sets the list of information lines that are shown below the icon label in list views.
          *
-         * @param information The information that should be shown
+         * You will typically construct the list like this:
+         * @code
+         * KFileItemDelegate::InformationList list;
+         * list << KFileItemDelegate::FriendlyMimeType << KFileItemDelegate::Size;
+         * delegate->setShowInformation(list);
+         * @endcode
+         *
+         * The information lines will be displayed in the list order.
+         * The delegate will first draw the item label, and then as many information
+         * lines as will fit in the available space.
+         *
+         * @param list A list of information items that should be shown
          */
-        void setAdditionalInformation(AdditionalInformation information);
+        void setShowInformation(const InformationList &list);
 
 
         /**
-         * Returns the additional information that should be shown below item labels in icon views.
+         * Sets a single information line that is shown below the icon label in list views.
+         *
+         * This is a convenience function for when you only want to show a single line
+         * of information.
+         *
+         * @param information The information that should be shown
          */
-        AdditionalInformation additionalInformation() const;
+        void setShowInformation(Information information);
+
+
+        /**
+         * Returns the file item information that should be shown below item labels in list views.
+         */
+        InformationList showInformation() const;
 
 
     public Q_SLOTS:
