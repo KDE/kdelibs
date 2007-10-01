@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>KNotifyConfigActionsWidgetBase</class>
  <widget class="QWidget" name="KNotifyConfigActionsWidgetBase" >
   <property name="geometry" >
@@ -9,23 +6,41 @@
     <x>0</x>
     <y>0</y>
     <width>478</width>
-    <height>233</height>
+    <height>149</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" >
-   <property name="margin" >
-    <number>9</number>
-   </property>
    <property name="spacing" >
     <number>6</number>
    </property>
+   <property name="leftMargin" >
+    <number>9</number>
+   </property>
+   <property name="topMargin" >
+    <number>9</number>
+   </property>
+   <property name="rightMargin" >
+    <number>9</number>
+   </property>
+   <property name="bottomMargin" >
+    <number>9</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
      <property name="spacing" >
       <number>6</number>
+     </property>
+     <property name="leftMargin" >
+      <number>0</number>
+     </property>
+     <property name="topMargin" >
+      <number>0</number>
+     </property>
+     <property name="rightMargin" >
+      <number>0</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>0</number>
      </property>
      <item>
       <widget class="QCheckBox" name="Sound_check" >
@@ -45,14 +60,12 @@
       </widget>
      </item>
      <item>
-      <widget class="KUrlRequester" name="Sound_select" >
+      <widget class="KUrlRequester" native="1" name="Sound_select" >
        <property name="enabled" >
         <bool>false</bool>
        </property>
        <property name="sizePolicy" >
-        <sizepolicy>
-         <hsizetype>7</hsizetype>
-         <vsizetype>0</vsizetype>
+        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -73,18 +86,25 @@
    </item>
    <item>
     <layout class="QHBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
      <property name="spacing" >
       <number>6</number>
+     </property>
+     <property name="leftMargin" >
+      <number>0</number>
+     </property>
+     <property name="topMargin" >
+      <number>0</number>
+     </property>
+     <property name="rightMargin" >
+      <number>0</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>0</number>
      </property>
      <item>
       <widget class="QCheckBox" name="Logfile_check" >
        <property name="sizePolicy" >
-        <sizepolicy>
-         <hsizetype>1</hsizetype>
-         <vsizetype>0</vsizetype>
+        <sizepolicy vsizetype="Fixed" hsizetype="Minimum" >
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -95,17 +115,15 @@
       </widget>
      </item>
      <item>
-      <widget class="KUrlRequester" name="Logfile_select" >
+      <widget class="KUrlRequester" native="1" name="Logfile_select" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
        <property name="sizePolicy" >
-        <sizepolicy>
-         <hsizetype>7</hsizetype>
-         <vsizetype>0</vsizetype>
+        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="enabled" >
-        <bool>false</bool>
        </property>
        <property name="toolTip" >
         <string>Select the sound to play</string>
@@ -123,11 +141,20 @@
    </item>
    <item>
     <layout class="QHBoxLayout" >
-     <property name="margin" >
-      <number>0</number>
-     </property>
      <property name="spacing" >
       <number>6</number>
+     </property>
+     <property name="leftMargin" >
+      <number>0</number>
+     </property>
+     <property name="topMargin" >
+      <number>0</number>
+     </property>
+     <property name="rightMargin" >
+      <number>0</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>0</number>
      </property>
      <item>
       <widget class="QCheckBox" name="Execute_check" >
@@ -137,11 +164,12 @@
       </widget>
      </item>
      <item>
-      <widget class="KUrlRequester" name="Execute_select" >
+      <widget class="KUrlRequester" native="1" name="Execute_select" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
        <property name="sizePolicy" >
-        <sizepolicy>
-         <hsizetype>7</hsizetype>
-         <vsizetype>0</vsizetype>
+        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -149,36 +177,18 @@
        <property name="toolTip" >
         <string>Select the sound to play</string>
        </property>
-       <property name="enabled" >
-        <bool>false</bool>
-       </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item>
-    <spacer>
-     <property name="orientation" >
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" >
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
  </widget>
- <pixmapfunction></pixmapfunction>
  <customwidgets>
   <customwidget>
    <class>KUrlRequester</class>
    <extends>QWidget</extends>
    <header>kurlrequester.h</header>
    <container>1</container>
-   <pixmap></pixmap>
   </customwidget>
  </customwidgets>
  <resources/>

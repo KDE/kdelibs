@@ -23,6 +23,7 @@
 
 #include <kapplication.h>
 #include <kdialog.h>
+#include <QVBoxLayout>
 
 struct KNotifyConfigWidget::Private
 {
@@ -33,7 +34,7 @@ struct KNotifyConfigWidget::Private
 
 
 KNotifyConfigWidget::KNotifyConfigWidget( QWidget * parent )
-	: KVBox(parent) , d(new Private)
+	: QWidget(parent) , d(new Private)
 {
 	d->currentElement=0l;
 	d->eventList=new KNotifyEventList( this );
@@ -43,6 +44,11 @@ KNotifyConfigWidget::KNotifyConfigWidget( QWidget * parent )
 	connect(d->eventList , SIGNAL(eventSelected( KNotifyConfigElement* )) , 
 			this , SLOT(slotEventSelected( KNotifyConfigElement* )));
 	connect(d->actionsconfig,SIGNAL(changed()),this,SLOT(slotActionChanged()));
+    
+	QVBoxLayout *layout = new QVBoxLayout(this);
+	layout->addWidget(d->eventList,1);
+	layout->addWidget(d->actionsconfig);
+	setLayout(layout);
 }
 
 

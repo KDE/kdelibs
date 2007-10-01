@@ -20,7 +20,7 @@
 #define KNOTIFYCONFIGWIDGET_H
 
 #include <knotifyconfig_export.h>
-#include <kvbox.h>
+#include <QtGui/QWidget>
 #include <QtCore/QString>
 
 class KNotifyConfigElement;
@@ -34,7 +34,7 @@ class KNotifyConfigElement;
  * 
  * @author Olivier Goffart <ogoffart @ kde.org>
  */
-class KNOTIFYCONFIG_EXPORT KNotifyConfigWidget : public KVBox
+class KNOTIFYCONFIG_EXPORT KNotifyConfigWidget : public QWidget
 { 
 	Q_OBJECT
 public:
