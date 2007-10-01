@@ -129,7 +129,7 @@ KSycoca::KSycoca()
    KSycocaPrivate::_self = this;
    // We register with D-Bus _before_ we try to open the database.
    // This way we can be relatively sure that the KDE framework is
-   // up and running (kdeinit, dcopserver, klauncher, kded) and
+   // up and running (kdeinit, klauncher, kded) and
    // that the database is up to date.
 
    //   -> huh? -thiago

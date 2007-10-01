@@ -639,6 +639,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
                          bool recursive, bool unique)
 {
     if (relpath.isEmpty()) {
+        Q_ASSERT(prefix != "/");
         lookupDirectory(prefix, relPart, regexp, list,
                         relList, recursive, unique);
         return;
