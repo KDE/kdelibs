@@ -2028,8 +2028,8 @@ void KDirOperator::synchronizeSortingState(int logicalIndex, Qt::SortOrder order
     }
 
     const bool descending = d->actionCollection->action("descending")->isChecked();
-    const bool reverseSorting = ((order == Qt::Ascending) && descending) ||
-                                ((order == Qt::Descending) && !descending);
+    const bool reverseSorting = ((order == Qt::AscendingOrder) && descending) ||
+                                ((order == Qt::DescendingOrder) && !descending);
     if (reverseSorting) {
         sortReversed();
     }
