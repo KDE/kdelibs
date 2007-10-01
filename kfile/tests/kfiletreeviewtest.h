@@ -1,5 +1,6 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 2001 Klaas Freitag <freitag@suse.de>
+/*
+    This file is part of the KDE libraries
+    Copyright (C) 2007 Tobias Koenig <tokoe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,22 +21,23 @@
 #ifndef KFILETREEVIEWTEST
 #define KFILETREEVIEWTEST
 
-class testFrame: public KMainWindow
-{
-   Q_OBJECT
-public:
-   testFrame();
-   void showPath( const KUrl & );
-   void setDirOnly( ) { dirOnlyMode = true; }
-public Q_SLOTS:
-   void slotPopulateFinished(K3FileTreeViewItem *);
-   void slotSetChildCount( K3FileTreeViewItem *item, int c );
+#include <kmainwindow.h>
 
-   void urlsDropped( QWidget*, QDropEvent*, KUrl::List& );
-   void copyUrls( KUrl::List& list, KUrl& to );
-private:
-   K3FileTreeView *treeView;
-   bool          dirOnlyMode;
+class KFileTreeView;
+
+class Window : public KMainWindow
+{
+    Q_OBJECT
+
+    public:
+        Window();
+
+    public Q_SLOTS:
+        void showHome();
+        void showRoot();
+
+    private:
+        KFileTreeView *mTreeView;
 };
 
 

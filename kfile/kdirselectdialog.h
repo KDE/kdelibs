@@ -25,20 +25,7 @@
 #include <kdialog.h>
 #include <kurl.h>
 
-class QMenu;
-class QVBoxLayout;
-class KFileTreeBranch;
-class K3FileTreeView;
-class K3FileTreeViewItem;
-class KToggleAction;
-class Q3ListViewItem;
-
-class KSharedConfig;
-template<class T>
-class KSharedPtr;
-typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
-
-class K3ListView;
+class QAbstractItemView;
 
 /**
  * A pretty dialog for a KDirSelect control for selecting directories.
@@ -51,29 +38,35 @@ class KFILE_EXPORT KDirSelectDialog : public KDialog
 
 public:
     /**
-     * The constructor. Creates a dialog to select a directory (url).
+     * Creates a new directory selection dialog.
      * @internal use the static selectDirectory function
      * @param startDir the directory, initially shown
      * @param localOnly unused. You can only select paths below the startDir
      * @param parent the parent for the dialog, usually 0L
      */
     explicit KDirSelectDialog(const KUrl& startDir = KUrl(),
-                     bool localOnly = false,
-                     QWidget *parent = 0L);
+                              bool localOnly = false,
+                              QWidget *parent = 0L);
 
     /**
+     * Destroys the directory selection dialog.
      */
     ~KDirSelectDialog();
 
     /**
-     * Returns the currently-selected URL, or a blank URL if none is selected.
-     * @return The currently-selected URL, if one was selected.
+     * @return The currently selected URL, or an empty one if no item is selected.
      */
     KUrl url() const;
 
-    K3FileTreeView * view() const { return m_treeView; }
+    /**
+     * Returns a pointer to the view which is used for displaying the directories.
+     */
+    QAbstractItemView* view() const;
 
-    bool localOnly() const { return m_localOnly; }
+    /**
+     * Returns whether only local directories can be selected.
+     */
+    bool localOnly() const;
 
     /**
      * Creates a KDirSelectDialog, and returns the result.
@@ -92,44 +85,27 @@ public:
     /**
      * @return The path for the root node
      */
-    KUrl startDir() const { return m_startDir; }
+    KUrl startDir() const;
 
 public Q_SLOTS:
+    /**
+     * Sets the current @p url in the dialog.
+     */
     void setCurrentUrl( const KUrl& url );
-
-protected Q_SLOTS:
-    virtual void slotUser1();
 
 protected:
     virtual void accept();
 
-    // Layouts protected so that subclassing is easy
-    QVBoxLayout *m_mainLayout;
-    KUrl m_startDir;
-
-private Q_SLOTS:
-    void slotCurrentChanged();
-    void slotUrlActivated( const QString& );
-    void slotNextDirToList( K3FileTreeViewItem *dirItem );
-    void slotComboTextChanged( const QString& text );
-    void slotContextMenu( K3ListView *, Q3ListViewItem *, const QPoint & );
-    void slotShowHiddenFoldersToggled();
-    void slotMkdir();
-
 private:
-    void readConfig(const KSharedConfigPtr &config, const QString& group);
-    void saveConfig(KSharedConfigPtr config, const QString& group);
-    void openNextDir( K3FileTreeViewItem *parent );
-    KFileTreeBranch * createBranch( const KUrl& url );
+    class Private;
+    Private* const d;
 
-    K3FileTreeView *m_treeView;
-    QMenu *m_contextMenu;
-    KToggleAction *m_showHiddenFolders;
-    bool m_localOnly;
-
-private:
-    class KDirSelectDialogPrivate;
-    KDirSelectDialogPrivate* const d;
+    Q_PRIVATE_SLOT( d, void _k_slotCurrentChanged() )
+    Q_PRIVATE_SLOT( d, void _k_slotExpand(const QModelIndex&) )
+    Q_PRIVATE_SLOT( d, void _k_slotUrlActivated(const QString&) )
+    Q_PRIVATE_SLOT( d, void _k_slotComboTextChanged(const QString&) )
+    Q_PRIVATE_SLOT( d, void _k_slotContextMenu(const QPoint&) )
+    Q_PRIVATE_SLOT( d, void _k_slotUser1() )
 };
 
 #endif

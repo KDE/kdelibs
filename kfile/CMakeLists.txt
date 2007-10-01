@@ -20,6 +20,7 @@ set(kfile_LIB_SRCS
   kfilebookmarkhandler.cpp
   kfilefiltercombo.cpp
   kfiletreebranch.cpp
+  kfiletreeview.cpp
   kfileview.cpp
   kfilewidget.cpp
   kfileplacesitem.cpp
@@ -61,6 +62,7 @@ install( FILES
   kfileplacesmodel.h
   kfileplacesview.h
   kfiletreebranch.h
+  kfiletreeview.h
   kfileview.h
   kfilewidget.h
   # kurlbar.h
