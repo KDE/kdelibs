@@ -154,7 +154,7 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
     painter.drawRect(0, 0, buttonWidth, buttonHeight);
 
     // draw icon
-    const QPixmap pixmap = icon().pixmap();
+    const QPixmap pixmap = icon().pixmap(QSize(22, 22), QIcon::Normal);
     const int x = (buttonWidth -  pixmap.width()) / 2;
     const int y = (buttonHeight - pixmap.height()) / 2;
     painter.drawPixmap(x, y, pixmap);
