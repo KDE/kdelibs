@@ -36,7 +36,7 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
 	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
 	path.toLatin1().constData(), (*it).toLatin1().constData(), entry->isDirectory(),
-	entry->symlink().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symlink()).toLatin1().constData() );
+	entry->symLinkTarget().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symLinkTarget()).toLatin1().constData() );
 
 //    if (!entry->isDirectory()) printf("%d", ((KArchiveFile*)entry)->size());
     printf("\n");
@@ -66,12 +66,12 @@ void recursive_transfer(const KArchiveDirectory * dir,
     	    QString str( arr );
     	    printf("DATA=%s\n", str.toLatin1().constData());
 
-	    if (e->symlink().isEmpty()) {
+	    if (e->symLinkTarget().isEmpty()) {
 	        zip->writeFile( path+e->name().toLatin1().constData(),
 			    "holgi", "holgrp",
 			    f->data(), arr.size() );
 	    } else
-	        zip->writeSymLink(path+e->name(), e->symlink(), "leo", "leo",
+	        zip->writeSymLink(path+e->name(), e->symLinkTarget(), "leo", "leo",
 				0120777, 1000000000l, 1000000000l, 1000000000l);
 	}
 	else if (e->isDirectory())
