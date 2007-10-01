@@ -94,7 +94,7 @@ public:
    pid_t pid;
    status_t status;
    QDBusMessage transaction;
-   KService::DBUSStartupType_t dbus_startup_type;
+   KService::DBusStartupType dbus_startup_type;
    bool autoStart;
    QString errorMsg;
 #ifdef Q_WS_X11

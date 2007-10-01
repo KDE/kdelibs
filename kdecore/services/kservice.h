@@ -205,13 +205,13 @@ public:
      * @li Wait - This service has no DBUS support, the launcher will wait
      *            till it is finished.
      */
-    enum DBUSStartupType_t { DBUS_None = 0, DBUS_Unique, DBUS_Multi, DBUS_Wait };
+    enum DBusStartupType { DBusNone = 0, DBusUnique, DBusMulti, DBusWait };
 
     /**
      * Returns the DBUSStartupType supported by this service.
      * @return the DBUSStartupType supported by this service
      */
-    DBUSStartupType_t DBUSStartupType() const;
+    DBusStartupType dbusStartupType() const;
 
     /**
      * Returns the working directory to run the program in.

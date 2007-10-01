@@ -341,12 +341,12 @@ void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
         ") up and running.";
      switch(lastRequest->dbus_startup_type)
      {
-       case KService::DBUS_None:
+       case KService::DBusNone:
          lastRequest->status = KLaunchRequest::Running;
          break;
-       case KService::DBUS_Unique:
-       case KService::DBUS_Wait:
-       case KService::DBUS_Multi:
+       case KService::DBusUnique:
+       case KService::DBusWait:
+       case KService::DBusMulti:
          lastRequest->status = KLaunchRequest::Launching;
          break;
      }
@@ -373,9 +373,9 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
    {
       if (request->pid == pid)
       {
-         if (request->dbus_startup_type == KService::DBUS_Wait)
+         if (request->dbus_startup_type == KService::DBusWait)
             request->status = KLaunchRequest::Done;
-         else if ((request->dbus_startup_type == KService::DBUS_Unique)
+         else if ((request->dbus_startup_type == KService::DBusUnique)
                   && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name))
             request->status = KLaunchRequest::Running;
          else
@@ -400,7 +400,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
          continue;
 
       // For unique services check the requested service name first
-      if ((request->dbus_startup_type == KService::DBUS_Unique) &&
+      if ((request->dbus_startup_type == KService::DBusUnique) &&
           ((appId == request->dbus_name) ||
            QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)))
       {
@@ -625,7 +625,7 @@ void KLauncher::exec_blind(const QString &name, const QStringList &arg_list, con
    request->autoStart = false;
    request->name = name;
    request->arg_list =  arg_list;
-   request->dbus_startup_type = KService::DBUS_None;
+   request->dbus_startup_type = KService::DBusNone;
    request->pid = 0;
    request->status = KLaunchRequest::Launching;
    request->envs = envs;
@@ -751,10 +751,10 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    }
 
    request->name = request->arg_list.takeFirst();
-   request->dbus_startup_type =  service->DBUSStartupType();
+   request->dbus_startup_type =  service->dbusStartupType();
 
-   if ((request->dbus_startup_type == KService::DBUS_Unique) ||
-       (request->dbus_startup_type == KService::DBUS_Multi))
+   if ((request->dbus_startup_type == KService::DBusUnique) ||
+       (request->dbus_startup_type == KService::DBusMulti))
    {
       QVariant v = service->property("X-DBUS-ServiceName");
       if (v.isValid())
@@ -882,9 +882,9 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    request->name = app.toLocal8Bit();
 
    if (wait)
-      request->dbus_startup_type = KService::DBUS_Wait;
+      request->dbus_startup_type = KService::DBusWait;
    else
-      request->dbus_startup_type = KService::DBUS_None;
+      request->dbus_startup_type = KService::DBusNone;
    request->pid = 0;
 #ifdef Q_WS_X11
    request->startup_id = startup_id;
@@ -1066,7 +1066,7 @@ KLauncher::requestSlave(const QString &protocol,
     request->autoStart = false;
     request->name = name;
     request->arg_list =  arg_list;
-    request->dbus_startup_type = KService::DBUS_None;
+    request->dbus_startup_type = KService::DBusNone;
     request->pid = 0;
 #ifdef Q_WS_X11
     request->startup_id = "0";

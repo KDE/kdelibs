@@ -73,7 +73,7 @@ public:
     QStringList m_lstServiceTypes;
     int m_initialPreference;
     QString m_strDesktopEntryName;
-    KService::DBUSStartupType_t m_DBUSStartusType;
+    KService::DBusStartupType m_DBUSStartusType;
     QMap<QString,QVariant> m_mapProps;
     QStringList m_lstKeywords;
     QString m_strGenName;

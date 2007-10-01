@@ -186,13 +186,13 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     }
     entryMap.remove("X-DBUS-StartupType");
     if (dbusStartupType == "unique")
-        m_DBUSStartusType = KService::DBUS_Unique;
+        m_DBUSStartusType = KService::DBusUnique;
     else if (dbusStartupType == "multi")
-        m_DBUSStartusType = KService::DBUS_Multi;
+        m_DBUSStartusType = KService::DBusMulti;
     else if (dbusStartupType == "wait")
-        m_DBUSStartusType = KService::DBUS_Wait;
+        m_DBUSStartusType = KService::DBusWait;
     else
-        m_DBUSStartusType = KService::DBUS_None;
+        m_DBUSStartusType = KService::DBusNone;
 
     m_strDesktopEntryName = _name.toLower();
 
@@ -238,7 +238,7 @@ void KServicePrivate::load(QDataStream& s)
 
     m_bAllowAsDefault = def;
     m_bTerminal = term;
-    m_DBUSStartusType = (KService::DBUSStartupType_t) dst;
+    m_DBUSStartusType = (KService::DBusStartupType) dst;
     m_initialPreference = initpref;
 
     m_bValid = true;
@@ -823,7 +823,7 @@ QString KService::desktopEntryName() const
     return d->m_strDesktopEntryName;
 }
 
-KService::DBUSStartupType_t KService::DBUSStartupType() const
+KService::DBusStartupType KService::dbusStartupType() const
 {
     Q_D(const KService);
     return d->m_DBUSStartusType;
