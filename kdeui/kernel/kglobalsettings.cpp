@@ -243,26 +243,6 @@ qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
     return 0.1 * (qreal)contrast();
 }
 
-QColor KGlobalSettings::baseColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::View).background().color();
-}
-
-QColor KGlobalSettings::textColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::View).foreground().color();
-}
-
-QColor KGlobalSettings::highlightedTextColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::Selection).foreground().color();
-}
-
-QColor KGlobalSettings::highlightColor()
-{
-    return KColorScheme(QPalette::Active, KColorScheme::Selection).background().color();
-}
-
 bool KGlobalSettings::shadeSortColumn()
 {
     KConfigGroup g( KGlobal::config(), "General" );

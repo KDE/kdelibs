@@ -270,50 +270,6 @@ public:
     static qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
-     * Returns the default base (background) color.
-     * @return the default base (background) color
-     * @see QPalette::base()
-     * @deprecated use KColorScheme([state], KColorScheme::View).background() instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4.
-     */
-    static KDE_DEPRECATED QColor baseColor();
-
-    /**
-     * Returns the default text color.
-     * @return the default text color
-     * @see QPalette::text()
-     * @deprecated use KColorScheme([state], KColorScheme::View).foreground() instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4.
-     */
-    static KDE_DEPRECATED QColor textColor();
-
-    /**
-     * Returns the default color for highlighted text.
-     * @return the default color for highlighted text
-     * @see QPalette::hightlightedText()
-     * @deprecated use KColorScheme([state], KColorScheme::Selection).foreground() instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4.
-     */
-    static KDE_DEPRECATED QColor highlightedTextColor();
-
-    /**
-     * Returns the default color for text highlights.
-     * @return the default color for text highlights
-     * @see QPalette::hightlight()
-     * @deprecated use KColorScheme([state], KColorScheme::Selection).background() instead.
-     * Color accessors in KGlobalSettings are broken because they do not take
-     * widget state into account. KColorScheme fixes this, as well as offering
-     * access to the full range of new color roles in KDE4.
-     */
-    static KDE_DEPRECATED QColor highlightColor();
-
-    /**
      * Returns if the sorted column in a K3ListView shall be drawn with a
      * shaded background color.
      * @return true if the sorted column shall be shaded
