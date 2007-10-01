@@ -168,7 +168,7 @@ void KServiceTest::testDBUSStartupType()
     QVERIFY(konsole);
     QCOMPARE(konsole->menuId(), QString("kde4-konsole.desktop"));
     //qDebug() << konsole->entryPath();
-    QCOMPARE((int)konsole->DBUSStartupType(), (int)KService::DBUS_Unique);
+    QCOMPARE((int)konsole->dbusStartupType(), (int)KService::DBusUnique);
 }
 
 void KServiceTest::testServiceTypeTraderForReadOnlyPart()
