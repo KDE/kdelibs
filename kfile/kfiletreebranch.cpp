@@ -189,8 +189,8 @@ void KFileTreeBranch::slotRefreshItems( const QList<QPair<KFileItem, KFileItem> 
 
         K3FileTreeViewItem *item = findTVIByUrl(fileItem.url());
         if (item) {
-            item->setPixmap(0, item->fileItem()->pixmap( KIconLoader::SizeSmall ));
-            item->setText( 0, item->fileItem()->text());
+            item->setPixmap(0, item->fileItem().pixmap( KIconLoader::SizeSmall ));
+            item->setText( 0, item->fileItem().text());
         }
     }
 }

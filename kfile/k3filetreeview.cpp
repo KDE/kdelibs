@@ -491,7 +491,7 @@ QPixmap K3FileTreeView::itemIcon( K3FileTreeViewItem *item, int gap ) const
       else
       {
          // TODO: different modes, user Pixmaps ?
-         pix = item->fileItem()->pixmap( KIconLoader::SizeSmall ); // , KIconLoader::DefaultState);
+         pix = item->fileItem().pixmap( KIconLoader::SizeSmall ); // , KIconLoader::DefaultState);
 
          /* Only if it is a dir and the user wants open dir pixmap and it is open,
           * change the fileitem's pixmap to the open folder pixmap. */
