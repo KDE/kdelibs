@@ -290,18 +290,24 @@ void KBookmark::setUrl(const KUrl &url)
 QString KBookmark::icon() const
 {
     QString icon = element.attribute("icon");
-    if(icon == "bookmark_folder")
-      return "bookmark-folder";
-    if ( icon.isEmpty() )
+    if (icon == "bookmark_folder") {
+        return "folder-bookmarks";
+    }
+    if (icon.isEmpty()) {
         // Default icon depends on URL for bookmarks, and is default directory
         // icon for groups.
-        if ( isGroup() )
-            icon = "bookmark-folder";
-        else
-            if ( isSeparator() )
-                icon = "eraser"; // whatever
-            else
-                icon = KMimeType::iconNameForUrl( url() );
+        if (isGroup()) {
+            icon = "folder-bookmarks";
+        }
+        else {
+            if (isSeparator()) {
+                icon = "edit-clear"; // whatever
+            }
+            else {
+                icon = KMimeType::iconNameForUrl(url());
+            }
+        }
+    }
     return icon;
 }
 
