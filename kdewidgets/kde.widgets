@@ -229,12 +229,6 @@ ToolTip=The KColorPatch widget is a (usually small) widget showing a selected co
 Group=Display (KDE)
 ConstructorArgs=(parent)
 
-[KColorTable]
-IncludeFile=kcolordialog.h
-ToolTip=A color palette in table form.
-Group=Display (KDE)
-ConstructorArgs=(parent, 210, 16)
-
 #[KABC::LdapConfigWidget]
 #IncludeFile=kabc/ldapconfigwidget.h
 #ToolTip=A widget which allows the user to set up LDAP connection parameters
