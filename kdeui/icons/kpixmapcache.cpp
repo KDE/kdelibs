@@ -737,6 +737,19 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
 {
     // New entry will be written to the end of the file
     qint32 offset = stream.device()->size();
+    // Find parent index node for this node.
+    int parentoffset = binarySearchKey(stream, key, mIndexRootOffset);
+    if (parentoffset != stream.device()->size()) {
+        // Check if this entry has the same key
+        QString fkey;
+        stream.device()->seek(parentoffset);
+        stream >> fkey;
+        if (key == fkey) {
+            // We're overwriting an existing entry
+            offset = parentoffset;
+        }
+    }
+
     stream.device()->seek(offset);
     // Write the data
     stream << key << (qint32)dataoffset;
@@ -745,10 +758,9 @@ void KPixmapCache::Private::writeIndexEntry(QDataStream& stream, const QString& 
     // Write (empty) children offsets
     stream << (qint32)0 << (qint32)0;
 
-    // Find parent index node for this node.
-    int parentoffset = binarySearchKey(stream, key, mIndexRootOffset);
-    // If we created the root node then the two offsets are equal and we're
-    //  done. Otherwise set parent's child offset to correct value.
+    // If we created the root node or overwrote existing entry then the two
+    //  offsets are equal and we're done. Otherwise set parent's child offset
+    //  to correct value.
     if (parentoffset != offset) {
         stream.device()->seek(parentoffset);
         QString fkey;
@@ -1285,17 +1297,9 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
         return;
     }
 
-    // Make sure this key isn't already in the cache
-    QString indexkey = d->indexKey(key);
-    int offset = d->findOffset(indexkey);
-    if (offset >= 0) {
-        // This pixmap is already in cache
-        kDebug(264) << "pixmap already present in cache";
-        return;
-    }
-
     // Insert to cache
-    offset = writeData(key, pix);
+    QString indexkey = d->indexKey(key);
+    int offset = writeData(key, pix);
     //kDebug(264) << "data is at offset" << offset;
     if (offset == -1) {
         return;
