@@ -172,8 +172,9 @@ public:
   /**
    * The full name of the user.
    * @return the full name of the user or QString() if user is invalid
+   * @deprecated use propertie(KUser::FullName) instead
    */
-  QString fullName() const;
+  KDE_DEPRECATED QString fullName() const;
 
   /**
    * The path to the user's home directory.
@@ -208,16 +209,17 @@ public:
    */
   QStringList groupNames() const;
 
+  enum UserProperty { FullName, RoomNumber, WorkPhone, HomePhone };
+
   /**
    * Returns an extended property.
    *
-   * Supported properties on UNIX: @c roomnumer, @c workphone and @c homephone.
-   * Under Windows, no extended properties are supported currently.
+   * Under Windows, @p RoomNumber, @p WorkPhone and @p HomePhone are unsopported.
    *
    * @return a QVariant with the value of the property or an invalid QVariant,
    *         if the property is not set
    */
-  QVariant extendedProperty(const QByteArray &which) const;
+  QVariant property(UserProperty which) const;
 
   /**
    * Destructor.

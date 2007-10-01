@@ -34,9 +34,9 @@ class KUser::Private : public KShared
 public:
     uid_t uid;
     gid_t gid;
-    QString loginName, fullName;
+    QString loginName;
     QString homeDir, shell;
-    QMap<QByteArray, QVariant> extendedProperties;
+    QList<QVariant> properties;
 
     Private() : uid(uid_t(-1)), gid(gid_t(-1)) {}
     Private(const char *name) : uid(uid_t(-1)), gid(gid_t(-1))
@@ -60,10 +60,10 @@ public:
             uid = p->pw_uid;
             gid = p->pw_gid;
             loginName = QString::fromLocal8Bit(p->pw_name);
-            fullName = gecosList[0];
-            extendedProperties["roomnumber"] = QVariant(gecosList[1]);
-            extendedProperties["workphone"] = QVariant(gecosList[2]);
-            extendedProperties["homephone"] = QVariant(gecosList[3]);
+            properties[KUser::FullName] = QVariant(gecosList[0]);
+            properties[KUser::RoomNumber] = QVariant(gecosList[1]);
+            properties[KUser::WorkPhone] = QVariant(gecosList[2]);
+            properties[KUser::HomePhone] = QVariant(gecosList[3]);
             homeDir = QString::fromLocal8Bit(p->pw_dir);
             shell = QString::fromLocal8Bit(p->pw_shell);
         }
@@ -146,7 +146,7 @@ QString KUser::loginName() const {
 }
 
 QString KUser::fullName() const {
-	return d->fullName;
+	return d->properties[FullName].toString();
 }
 
 QString KUser::homeDir() const {
@@ -194,9 +194,9 @@ QStringList KUser::groupNames() const {
   return result;
 }
 
-QVariant KUser::extendedProperty(const QByteArray &which) const
+QVariant KUser::property(UserProperty which) const
 {
-    return d->extendedProperties.value(which);
+    return d->properties.value(which);
 }
 
 QList<KUser> KUser::allUsers() {

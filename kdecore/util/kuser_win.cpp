@@ -229,8 +229,11 @@ K_UID KUser::uid() const
     return d->sid;
 }
 
-QVariant KUser::extendedProperty(const QByteArray &which) const
+QVariant KUser::property(UserProperty which) const
 {
+    if (which == FullName) 
+        return QVariant(d->userInfo ? QString::fromUtf16((ushort *) d->userInfo->usri11_full_name) : QString());
+
     return QVariant();
 }
 
