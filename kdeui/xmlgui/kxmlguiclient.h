@@ -35,6 +35,8 @@ class KXMLGUIClientPrivate;
 class KXMLGUIFactory;
 class KXMLGUIBuilder;
 
+namespace KDEPrivate { class KEditToolBarWidget; }
+
 /**
  *
  * A KXMLGUIClient can be used with KXMLGUIFactory to create a
@@ -43,7 +45,7 @@ class KXMLGUIBuilder;
  */
 class KDEUI_EXPORT KXMLGUIClient
 {
-    friend class KEditToolBarWidget; // for setXMLFile(3 args)
+    friend class KDEPrivate::KEditToolBarWidget; // for setXMLFile(3 args)
 public:
   /**
    * Constructs a KXMLGUIClient which can be used with a

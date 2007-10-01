@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 #include <kedittoolbar.h>
+#include <kedittoolbar_p.h>
+
 
 #include <QtXml/QDomDocument>
 #include <QtGui/QLayout>
@@ -54,6 +56,7 @@ static const char * const separatorstring = I18N_NOOP("--- separator ---");
 
 #define SEPARATORSTRING i18n(separatorstring)
 
+
 static void dump_xml(const QDomDocument& doc)
 {
     QString str;
@@ -63,6 +66,8 @@ static void dump_xml(const QDomDocument& doc)
 }
 
 typedef QList<QDomElement> ToolBarList;
+
+namespace KDEPrivate {
 
 class XmlData
 {
@@ -366,6 +371,11 @@ public:
   bool m_hasKDialog;
   bool m_loadedOnce;
 };
+
+}
+
+using namespace KDEPrivate;
+
 
 class KEditToolBarPrivate {
 public:
@@ -1443,3 +1453,4 @@ void KEditToolBar::hideEvent(QHideEvent* event)
 }
 
 #include "kedittoolbar.moc"
+#include "kedittoolbar_p.moc"
