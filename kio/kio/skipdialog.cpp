@@ -34,11 +34,10 @@
 
 using namespace KIO;
 
-SkipDialog::SkipDialog(QWidget *parent, bool _multi, const QString& _error_text, bool _modal )
-  : KDialog ( parent ), modal( _modal ), d( 0 )
+SkipDialog::SkipDialog(QWidget *parent, bool _multi, const QString& _error_text )
+  : KDialog ( parent ), d( 0 )
 {
   setCaption( i18n( "Information" ) );
-  setModal( _modal );
 
   if ( !_multi ) {
     setButtons( Cancel );
@@ -65,32 +64,17 @@ SkipDialog::~SkipDialog()
 
 void SkipDialog::b0Pressed()
 {
-  if ( modal )
-    done( 0 );
-  else
-    emit result( this, 0 );
+  done(0);
 }
 
 void SkipDialog::b1Pressed()
 {
-  if ( modal )
-    done( 1 );
-  else
-    emit result( this, 1 );
+  done(0);
 }
 
 void SkipDialog::b2Pressed()
 {
-  if ( modal )
-    done( 2 );
-  else
-    emit result( this, 2 );
-}
-
-SkipDialog_Result SkipDialog::open( bool _multi, const QString& _error_text )
-{
-  SkipDialog dlg( 0L, _multi, _error_text, true );
-  return (SkipDialog_Result) dlg.exec();
+  done(0);
 }
 
 #include "skipdialog.moc"

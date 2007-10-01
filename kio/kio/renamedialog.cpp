@@ -505,24 +505,4 @@ void RenameDialog::pluginHandling()
   kDebug(7024) << "Dest Mimetype: "<< d->mimeDest;
 }
 
-
-RenameDialog_Result RenameDialog::open( const QString & _caption,
-                                      const KUrl & _src, const KUrl & _dest,
-                                      RenameDialog_Mode _mode,
-                                      QString& _new,
-                                      KIO::filesize_t sizeSrc,
-                                      KIO::filesize_t sizeDest,
-                                      time_t ctimeSrc,
-                                      time_t ctimeDest,
-                                      time_t mtimeSrc,
-                                      time_t mtimeDest)
-{
-  RenameDialog dlg( 0, _caption, _src, _dest, _mode,
-                 sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest );
-  int i = dlg.exec();
-  _new = dlg.newDestUrl().path();
-
-  return (RenameDialog_Result)i;
-}
-
 #include "renamedialog.moc"

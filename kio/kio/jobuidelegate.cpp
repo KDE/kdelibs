@@ -70,10 +70,12 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
     kDebug() << "Observer::RenameDialog::open job=" << job;
     // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
     // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
-    RenameDialog_Result res = KIO::RenameDialog::open(caption, src, dest, mode,
-                                                     newDest, sizeSrc, sizeDest,
+    KIO::RenameDialog dlg( window(), caption, src, dest, mode,
+                                                     sizeSrc, sizeDest,
                                                      ctimeSrc, ctimeDest, mtimeSrc,
                                                      mtimeDest);
+    KIO::RenameDialog_Result res = static_cast<RenameDialog_Result>(dlg.exec());
+    newDest = dlg.newDestUrl().path();
     return res;
 }
 
@@ -82,8 +84,8 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob *,
                                               const QString & error_text)
 {
     // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
-    SkipDialog_Result res = KIO::SkipDialog::open(multi, error_text);
-    return res;
+    KIO::SkipDialog dlg( window(), multi, error_text );
+    return static_cast<KIO::SkipDialog_Result>(dlg.exec());
 }
 
 #include "jobuidelegate.moc"
