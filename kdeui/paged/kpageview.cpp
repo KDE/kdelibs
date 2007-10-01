@@ -213,7 +213,7 @@ void KPageViewPrivate::_k_pageSelected(const QModelIndex &index, const QModelInd
 
     stack->setCurrentWidget( widget );
   } else {
-    //d->stack->setCurrentWidget( d->emptyWidget );
+    stack->setCurrentWidget( defaultWidget );
   }
 
   updateTitleWidget(index);
@@ -267,6 +267,9 @@ void KPageViewPrivate::init()
     titleWidget = new KTitleWidget(q);
     layout->addWidget(titleWidget, 1, 1);
     layout->addWidget(stack, 2, 1);
+
+    defaultWidget = new QWidget(q);
+    stack->addWidget(defaultWidget);
 
     // stack should use most space
     layout->setColumnStretch(1, 1);
@@ -370,6 +373,25 @@ QAbstractItemDelegate* KPageView::itemDelegate() const
     return 0;
 }
 
+void KPageView::setDefaultWidget( QWidget *widget )
+{
+    Q_D(KPageView);
+
+    Q_ASSERT(widget);
+
+    bool isCurrent = (d->stack->currentIndex() == d->stack->indexOf( d->defaultWidget ));
+
+    // remove old default widget
+    d->stack->removeWidget( d->defaultWidget );
+    delete d->defaultWidget;
+
+    // add new default widget
+    d->defaultWidget = widget;
+    d->stack->addWidget(d->defaultWidget);
+
+    if (isCurrent)
+        d->stack->setCurrentWidget(d->defaultWidget);
+}
 
 QAbstractItemView* KPageView::createView()
 {

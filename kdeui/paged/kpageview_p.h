@@ -71,6 +71,7 @@ class KPageViewPrivate
         QGridLayout *layout;
         KPageStackedWidget *stack;
         KTitleWidget *titleWidget;
+        QWidget *defaultWidget;
 
         QAbstractItemView *view;
 

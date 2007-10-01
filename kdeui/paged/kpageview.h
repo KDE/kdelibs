@@ -146,6 +146,12 @@ class KDEUI_EXPORT KPageView : public QWidget
      */
     QAbstractItemDelegate* itemDelegate() const;
 
+    /**
+     * Sets the @p widget which will be shown when a page is selected
+     * that has no own widget set.
+     */
+    void setDefaultWidget( QWidget *widget );
+
   Q_SIGNALS:
     /**
      * This signal is emitted whenever the current page changes.
@@ -178,7 +184,7 @@ class KDEUI_EXPORT KPageView : public QWidget
      * This method can be reimplemented for adapting custom
      * views.
      */
-    Qt::Alignment viewPosition() const;
+    virtual Qt::Alignment viewPosition() const;
 
         KPageView(KPageViewPrivate &dd, QWidget *parent);
         KPageViewPrivate *const d_ptr;
