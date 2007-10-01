@@ -147,14 +147,14 @@ public:
    * Returns the user id of the user.
    * @return the id of the user or -1 if user is invalid
    */
-  const K_UID uid() const;
+  K_UID uid() const;
 
 #ifndef Q_OS_WIN
   /**
    * Returns the group id of the user.
    * @return the id of the group or -1 if user is invalid
    */
-  const K_GID gid() const;
+  K_GID gid() const;
 #endif
 
   /**

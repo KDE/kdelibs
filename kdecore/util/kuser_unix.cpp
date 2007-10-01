@@ -129,11 +129,11 @@ bool KUser::isValid() const {
 	return uid() != uid_t(-1);
 }
 
-const K_UID KUser::uid() const {
+K_UID KUser::uid() const {
 	return d->uid;
 }
 
-const K_GID KUser::gid() const {
+K_GID KUser::gid() const {
 	return d->gid;
 }
 

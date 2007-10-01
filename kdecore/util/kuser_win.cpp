@@ -224,7 +224,7 @@ QStringList KUser::groupNames() const
     return result;
 }
 
-const K_UID KUser::uid() const
+K_UID KUser::uid() const
 {
     return d->sid;
 }
