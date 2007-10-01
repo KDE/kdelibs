@@ -292,7 +292,7 @@ install(TARGETS kdeui
 
 install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png dialogs/ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES widgets/kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect )
-install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
+install( FILES xmlgui/ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  kdeui_export.h
  actions/kactioncollection.h
