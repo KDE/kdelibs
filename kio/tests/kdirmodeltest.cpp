@@ -349,16 +349,35 @@ void KDirModelTest::testRenameFile()
                 &m_eventLoop, SLOT(quit()) );
 }
 
+struct ExpandToUrlTest {
+    ExpandToUrlTest(const QString& p, int er) : path(p), expectedResult(er) {}
+    QString path;
+    int expectedResult;
+};
+
 void KDirModelTest::testExpandToUrl()
 {
     const QString path = m_tempDir.name();
-    KDirModel dirModelForExpand;
-    KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
-    dirListerForExpand->openUrl(KUrl(path), false, false); // it gets them from the cache, so this is sync
-    QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
-    dirModelForExpand.expandToUrl(KUrl(path+"subdir/subsubdir"));
-    enterLoop();
-    QCOMPARE(spyExpand.count(), 1);
+    QList<ExpandToUrlTest> tests;
+    tests << ExpandToUrlTest(path, 0); // the root, nothing to do
+    tests << ExpandToUrlTest(path+"subdir", 0); // already known child, nothing to do
+    tests << ExpandToUrlTest(path+"subdir/subsubdir", 1); // must list and then expand is emitted
+    tests << ExpandToUrlTest(path+"subdir/subsubdir/testfile", 1); // must list two levels and then expand is emitted
+
+    for (int i=0; i < tests.count(); ++i ) {
+        KDirModel dirModelForExpand;
+        KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
+        dirListerForExpand->openUrl(KUrl(path), false, false); // it gets them from the cache, so this is sync
+        QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
+        KUrl url(tests[i].path);
+        dirModelForExpand.expandToUrl(url);
+        if (tests[i].expectedResult == 0) {
+            QCOMPARE(spyExpand.count(), 0);
+        } else {
+            enterLoop();
+            QCOMPARE(spyExpand.count(), 1);
+        }
+    }
 }
 
 // Must be done last because it changes the other indexes

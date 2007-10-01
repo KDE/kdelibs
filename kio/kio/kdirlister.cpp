@@ -55,7 +55,7 @@ K_GLOBAL_STATIC(KDirListerCache, kDirListerCache)
 KDirListerCache::KDirListerCache()
     : itemsCached( 10 ) // keep the last 10 directories around
 {
-  kDebug(7004) << "+KDirListerCache";
+    //kDebug(7004) << "+KDirListerCache";
 
   connect( &pendingUpdateTimer, SIGNAL(timeout()), this, SLOT(processPendingUpdates()) );
   pendingUpdateTimer.setSingleShot( true );
@@ -109,8 +109,8 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 #ifdef DEBUG_CACHE
   printDebug();
 #endif
-  kDebug(7004) << lister << " url=" << _url
-                << " keep=" << _keep << " reload=" << _reload << endl;
+  kDebug(7004) << lister << "url=" << _url
+                << "keep=" << _keep << "reload=" << _reload << endl;
 
   if ( !_keep )
   {
@@ -156,7 +156,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
     if ( itemU )
     {
-      kDebug(7004) << "listDir: Entry already in use: " << _url;
+      kDebug(7004) << "Entry already in use:" << _url;
 
       bool oldState = lister->d->complete;
       lister->d->complete = false;
@@ -184,7 +184,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
     }
     else if ( !_reload && (itemC = itemsCached.take(urlStr)) )
     {
-      kDebug(7004) << "listDir: Entry in cache: " << _url;
+      kDebug(7004) << "Entry in cache:" << _url;
 
       itemC->decAutoUpdate();
       itemsInUse.insert( urlStr, itemC );
@@ -215,7 +215,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
     }
     else  // dir not in cache or _reload is true
     {
-      kDebug(7004) << "listDir: Entry not in cache or reloaded: " << _url;
+      kDebug(7004) << "Entry not in cache or reloaded:" << _url;
 
       dirData.listersCurrentlyListing.append( lister );
 
@@ -258,7 +258,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   }
   else
   {
-    kDebug(7004) << "listDir: Entry currently being listed: " << _url;
+    kDebug(7004) << "Entry currently being listed:" << _url;
 
     emit lister->started( _url );
 
@@ -316,7 +316,7 @@ void KDirListerCache::stop( KDirLister *lister )
 #ifdef DEBUG_CACHE
     printDebug();
 #endif
-    kDebug(7004) << "lister: " << lister;
+    //kDebug(7004) << "lister: " << lister;
     bool stopped = false;
 
     QHash<QString,DirectoryData>::iterator dirit = directoryData.begin();
@@ -405,7 +405,7 @@ void KDirListerCache::setAutoUpdate( KDirLister *lister, bool enable )
 
 void KDirListerCache::forgetDirs( KDirLister *lister )
 {
-    kDebug(7004) << lister;
+    //kDebug(7004) << lister;
 
     emit lister->clear();
     // clear lister->d->lstDirs before calling forgetDirs(), so that
@@ -437,7 +437,7 @@ static bool manually_mounted(const QString& path, const KMountPoint::List& possi
 
 void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool notify )
 {
-    kDebug(7004) << lister << " _url: " << _url;
+    //kDebug(7004) << lister << " _url: " << _url;
 
     KUrl url( _url );
     url.adjustPath( KUrl::RemoveTrailingSlash );
@@ -555,7 +555,9 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
         foreach ( KDirLister *kdl, holders )
             kdl->jobDone( job );
     }
-    kDebug(7004) << "Killed = " << killed;
+    if (killed) {
+        kDebug(7004) << "Killed=" << killed;
+    }
 
     // we don't need to emit canceled signals since we only replaced the job,
     // the listing is continuing.
@@ -570,7 +572,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
     connect( job, SIGNAL(result( KJob * )),
              this, SLOT(slotUpdateResult( KJob * )) );
 
-    kDebug(7004) << "update started in " << _dir;
+    kDebug(7004) << "update started in" << _dir;
 
     foreach ( KDirLister *kdl, listers ) {
         kdl->jobStarted( job );
@@ -758,7 +760,7 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
 {
   KUrl src( _src );
   KUrl dst( _dst );
-  kDebug(7004) << src << " -> " << dst;
+  kDebug(7004) << src << "->" << dst;
 #ifdef DEBUG_CACHE
   printDebug();
 #endif
@@ -953,7 +955,7 @@ void KDirListerCache::slotResult( KJob *j )
   jobUrl.adjustPath(KUrl::RemoveTrailingSlash);  // need remove trailing slashes again, in case of redirections
   QString jobUrlStr = jobUrl.url();
 
-  kDebug(7004) << "finished listing " << jobUrl;
+  kDebug(7004) << "finished listing" << jobUrl;
 #ifdef DEBUG_CACHE
   printDebug();
 #endif
@@ -1032,7 +1034,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
     const QString oldUrlStr = oldUrl.url();
     const QString newUrlStr = newUrl.url();
 
-    kDebug(7004) << oldUrl << " -> " << newUrl;
+    kDebug(7004) << oldUrl << "->" << newUrl;
 
 #ifdef DEBUG_CACHE
     printDebug();
@@ -1072,7 +1074,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
     DirItem *newDir = itemsInUse.value(newUrlStr);
     if ( newDir ) {
-        kDebug(7004) << "slotRedirection: " << newUrl << " already in use";
+        kDebug(7004) << newUrl << "already in use";
 
         // only in this case there can newUrl already be in listersCurrentlyListing or listersCurrentlyHolding
         delete dir;
@@ -1087,7 +1089,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
         QList<KDirLister *>& curListers = newDirData.listersCurrentlyListing;
         if ( !curListers.isEmpty() ) {
-            kDebug(7004) << "slotRedirection: and it is currently listed";
+            kDebug(7004) << "and it is currently listed";
 
             Q_ASSERT( oldJob );  // ?!
 
@@ -1111,7 +1113,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
         // holders of newUrl: use the already running job which will be converted to an updateJob
         QList<KDirLister *>& curHolders = newDirData.listersCurrentlyHolding;
         if ( !curHolders.isEmpty() ) {
-            kDebug(7004) << "slotRedirection: and it is currently held.";
+            kDebug(7004) << "and it is currently held.";
 
             foreach ( KDirLister *kdl, curHolders ) {  // holders of newUrl
                 kdl->jobStarted( job );
@@ -1136,7 +1138,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
             kdl->emitItems();
         }
     } else if ( (newDir = itemsCached.take( newUrlStr )) ) {
-        kDebug(7004) << "slotRedirection: " << newUrl << " is unused, but already in the cache.";
+        kDebug(7004) << newUrl << "is unused, but already in the cache.";
 
         delete dir;
         itemsInUse.insert( newUrlStr, newDir );
@@ -1153,7 +1155,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
             kdl->emitItems();
         }
     } else {
-        kDebug(7004) << "slotRedirection: " << newUrl << " has not been listed yet.";
+        kDebug(7004) << newUrl << "has not been listed yet.";
 
         dir->rootItem = KFileItem();
         dir->lstItems.clear();
@@ -1188,7 +1190,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
 
 void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
 {
-    kDebug(7004) << oldUrl << " -> " << newUrl;
+    kDebug(7004) << oldUrl << "->" << newUrl;
     const QString oldUrlStr = oldUrl.url(KUrl::RemoveTrailingSlash);
     const QString newUrlStr = newUrl.url(KUrl::RemoveTrailingSlash);
 
@@ -1207,7 +1209,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
         goNext = true;
         DirItem *dir = itu.value();
         KUrl oldDirUrl ( itu.key() );
-        //kDebug(7004) << "itemInUse: " << oldDirUrl;
+        //kDebug(7004) << "itemInUse:" << oldDirUrl;
         // Check if this dir is oldUrl, or a subfolder of it
         if ( oldUrl.isParentOf( oldDirUrl ) ) {
             // TODO should use KUrl::cleanpath like isParentOf does
@@ -1216,7 +1218,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
             KUrl newDirUrl( newUrl ); // take new base
             if ( !relPath.isEmpty() )
                 newDirUrl.addPath( relPath ); // add unchanged relative path
-            //kDebug(7004) << "KDirListerCache::renameDir new url=" << newDirUrl;
+            //kDebug(7004) << "new url=" << newDirUrl;
 
             // Update URL in dir item and in itemsInUse
             dir->redirect( newDirUrl );
@@ -1234,7 +1236,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
                 KUrl newItemUrl( oldItemUrl );
                 newItemUrl.setPath( newDirUrl.path() );
                 newItemUrl.addPath( oldItemUrl.fileName() );
-                kDebug(7004) << "KDirListerCache::renameDir renaming " << oldItemUrlStr << " to " << newItemUrl.url();
+                kDebug(7004) << "renaming" << oldItemUrlStr << "to" << newItemUrl.url();
                 (*kit).setUrl( newItemUrl );
             }
             emitRedirections( oldDirUrl, newDirUrl );
@@ -1257,7 +1259,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
 // helper for renameDir, not used for redirections from KIO::listDir().
 void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &newUrl )
 {
-    kDebug(7004) << oldUrl << " -> " << newUrl;
+    kDebug(7004) << oldUrl << "->" << newUrl;
     const QString oldUrlStr = oldUrl.url(KUrl::RemoveTrailingSlash);
     const QString newUrlStr = newUrl.url(KUrl::RemoveTrailingSlash);
 
@@ -1314,7 +1316,7 @@ void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &newUrl )
 
 void KDirListerCache::removeDirFromCache( const KUrl& dir )
 {
-    kDebug(7004) << "KDirListerCache::removeDirFromCache " << dir;
+    kDebug(7004) << dir;
     const QList<QString> cachedDirs = itemsCached.keys(); // seems slow, but there's no qcache iterator...
     foreach(const QString& cachedDir, cachedDirs) {
         if ( dir.isParentOf( KUrl( cachedDir ) ) )
@@ -1336,7 +1338,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     jobUrl.adjustPath(KUrl::RemoveTrailingSlash);  // need remove trailing slashes again, in case of redirections
     QString jobUrlStr (jobUrl.url());
 
-    kDebug(7004) << "finished update " << jobUrl;
+    kDebug(7004) << "finished update" << jobUrl;
 
     DirectoryData& dirData = directoryData[jobUrlStr];
     QList<KDirLister *> &listers = dirData.listersCurrentlyHolding;
@@ -1609,7 +1611,7 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
 // delayed updating of files, FAM is flooding us with events
 void KDirListerCache::processPendingUpdates()
 {
-    foreach(const QString file, pendingUpdates) {
+    foreach(const QString& file, pendingUpdates) {
         kDebug(7004) << file;
         KUrl u(file);
         KFileItem item = findByUrl( 0, u ); // search all items
@@ -1675,7 +1677,7 @@ void KDirListerCache::printDebug()
 KDirLister::KDirLister( QObject* parent )
     : QObject(parent), d(new KDirListerPrivate)
 {
-    kDebug(7003) << "+KDirLister";
+    //kDebug(7003) << "+KDirLister";
 
     d->complete = true;
 
@@ -1688,7 +1690,7 @@ KDirLister::KDirLister( QObject* parent )
 
 KDirLister::~KDirLister()
 {
-    kDebug(7003) << "-KDirLister";
+    //kDebug(7003) << "-KDirLister";
 
     // Stop all running jobs
     if (!kDirListerCache.isDestroyed()) {
