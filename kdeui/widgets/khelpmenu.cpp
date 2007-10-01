@@ -185,7 +185,7 @@ KMenu* KHelpMenu::menu()
 
     if (KAuthorized::authorizeKAction("help_about_kde"))
     {
-      d->mAboutKDEAction = d->mMenu->addAction( KIcon("about-kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
+      d->mAboutKDEAction = d->mMenu->addAction( KIcon("help-about-kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
     }
   }
 

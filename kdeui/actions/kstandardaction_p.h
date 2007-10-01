@@ -112,7 +112,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { ReportBug,     KStandardShortcut::AccelNone, "help_report_bug", I18N_NOOP("&Report Bug..."), 0, 0 },
   { SwitchApplicationLanguage, KStandardShortcut::AccelNone, "switch_application_language", I18N_NOOP("Switch Application &Language..."), 0, 0 },
   { AboutApp,      KStandardShortcut::AccelNone, "help_about_app", I18N_NOOP("&About %1"), 0, 0 },
-  { AboutKDE,      KStandardShortcut::AccelNone, "help_about_kde", I18N_NOOP("About &KDE"), 0,"about-kde" },
+  { AboutKDE,      KStandardShortcut::AccelNone, "help_about_kde", I18N_NOOP("About &KDE"), 0,"help-about-kde" },
   { ActionNone, KStandardShortcut::AccelNone, 0, 0, 0, 0 }
 };
 
