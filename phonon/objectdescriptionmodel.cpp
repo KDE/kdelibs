@@ -188,9 +188,9 @@ Qt::ItemFlags ObjectDescriptionModelData::flags(const QModelIndex &index) const
 
     QVariant available = d->data.at(index.row())->property("available");
     if (available.isValid() && available.type() == QVariant::Bool && !available.toBool()) {
-        return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+        return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
     }
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled;
 }
 
 QList<int> ObjectDescriptionModelData::tupleIndexOrder() const
