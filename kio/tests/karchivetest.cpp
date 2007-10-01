@@ -114,8 +114,8 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
     descr += QString("type=") + ( entry->isDirectory() ? "dir" : "file" );
     if ( entry->isFile() )
         descr += QString(" size=") + QString::number( static_cast<const KArchiveFile *>(entry)->size() );
-    if (!entry->symlink().isEmpty())
-        descr += QString(" symlink=") + entry->symlink();
+    if (!entry->symLinkTarget().isEmpty())
+        descr += QString(" symlink=") + entry->symLinkTarget();
 
     // TODO add date and time
 
@@ -177,7 +177,7 @@ static void testFileData( KArchive* archive )
     e = dir->entry( "z/test3_symlink" );
     QVERIFY(e);
     QVERIFY(e->isFile());
-    QCOMPARE(e->symlink(), QString("test3"));
+    QCOMPARE(e->symLinkTarget(), QString("test3"));
 #endif
 }
 
