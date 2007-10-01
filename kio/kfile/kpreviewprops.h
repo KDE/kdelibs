@@ -40,7 +40,7 @@ public:
   /**
    * Tests whether a preview for the first item should be shown
    */
-  static bool supports( KFileItemList _items );
+  static bool supports( const KFileItemList& _items );
 
 private Q_SLOTS:
   void currentPageChanged( KPageWidgetItem *, KPageWidgetItem * );

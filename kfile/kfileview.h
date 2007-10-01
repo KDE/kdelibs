@@ -44,8 +44,8 @@ public:
       * Call this method when an item is selected (depends on single click /
       * double click configuration). Emits the appropriate signal.
       **/
-    void activate( const KFileItem *item ) {
-        if ( item->isDir() )
+    void activate( const KFileItem &item ) {
+        if ( item.isDir() )
             dirActivated( item );
         else
             fileSelected( item );
@@ -54,9 +54,9 @@ public:
      * emits the highlighted signal for item. Call this in your view class
      * whenever the selection changes.
      */
-    void highlightFile(const KFileItem *i) { fileHighlighted(i); }
+    void highlightFile(const KFileItem &i) { fileHighlighted(i); }
 
-    void activateMenu( const KFileItem *i, const QPoint& pos ) {
+    void activateMenu( const KFileItem &i, const QPoint& pos ) {
         activatedMenu( i, pos );
     }
 
@@ -64,12 +64,12 @@ public:
         sortingChanged( sorting );
     }
 
-    void dropURLs(const KFileItem *i, QDropEvent*e, const KUrl::List&urls) {
+    void dropURLs(const KFileItem &i, QDropEvent*e, const KUrl::List&urls) {
         dropped(i, e, urls);
     }
 
 Q_SIGNALS:
-    void dirActivated(const KFileItem*);
+    void dirActivated(const KFileItem&);
 
     void sortingChanged( QDir::SortFlags );
 
@@ -77,10 +77,10 @@ Q_SIGNALS:
      * the item maybe be 0L, indicating that we're in multiselection mode and
      * the selection has changed.
      */
-    void fileHighlighted(const KFileItem*);
-    void fileSelected(const KFileItem*);
-    void activatedMenu( const KFileItem *i, const QPoint& );
-    void dropped(const KFileItem *, QDropEvent*, const KUrl::List&);
+    void fileHighlighted(const KFileItem&);
+    void fileSelected(const KFileItem&);
+    void activatedMenu( const KFileItem &i, const QPoint& );
+    void dropped(const KFileItem &, QDropEvent*, const KUrl::List&);
 };
 
 /**
@@ -132,14 +132,14 @@ public:
      * Reimplement this to set @p item the current item in the view, e.g.
      * the item having focus.
      */
-    virtual void setCurrentItem( const KFileItem *item ) = 0;
+    virtual void setCurrentItem( const KFileItem &item ) = 0;
 
     /**
      * @returns the "current" KFileItem, e.g. where the cursor is.
-     * Returns 0L when there is no current item (e.g. in an empty view).
+     * Returns an null file item when there is no current item (e.g. in an empty view).
      * Subclasses have to implement this.
      */
-    virtual KFileItem *currentFileItem() const = 0;
+    virtual KFileItem currentFileItem() const = 0;
 
     /**
      * Clears the view and all item lists.
@@ -156,13 +156,13 @@ public:
       **/
     virtual void updateView(bool f = true);
 
-    virtual void updateView(const KFileItem*);
+    virtual void updateView(const KFileItem&);
 
     /**
      * Removes an item from the list; has to be implemented by the view.
      * Call KFileView::removeItem( item ) after removing it.
      */
-    virtual void removeItem(const KFileItem *item);
+    virtual void removeItem(const KFileItem &item);
 
     /**
      * This hook is called when all items of the currently listed directory
@@ -250,7 +250,7 @@ public:
      * KFileView::insertItem( i );
      *
      */
-    virtual void insertItem( KFileItem *i);
+    virtual void insertItem( const KFileItem &i);
 
     /**
      * pure virtual function, that should be implemented to clear
@@ -262,7 +262,7 @@ public:
      * pure virtual function, that should be implemented to make item i
      * visible, i.e. by scrolling the view appropriately.
      */
-    virtual void ensureItemVisible( const KFileItem *i ) = 0;
+    virtual void ensureItemVisible( const KFileItem &i ) = 0;
 
     /**
      * Clears any selection, unhighlights everything. Must be implemented by
@@ -287,27 +287,27 @@ public:
      * Tells the view that it should highlight the item.
      * This function must be implemented by the view.
      **/
-    virtual void setSelected(const KFileItem *, bool enable) = 0;
+    virtual void setSelected(const KFileItem &, bool enable) = 0;
 
     /**
      * @returns whether the given item is currently selected.
      * Must be implemented by the view.
      */
-    virtual bool isSelected( const KFileItem * ) const = 0;
+    virtual bool isSelected( const KFileItem & ) const = 0;
 
     /**
      * @returns all currently highlighted items.
      */
-    const KFileItemList * selectedItems() const;
+    KFileItemList selectedItems() const;
 
     /**
      * @returns all items currently available in the current sort-order
      */
-    const KFileItemList * items() const;
+    KFileItemList items() const;
 
-    virtual KFileItem * firstFileItem() const = 0;
-    virtual KFileItem * nextItem( const KFileItem * ) const = 0;
-    virtual KFileItem * prevItem( const KFileItem * ) const = 0;
+    virtual KFileItem firstFileItem() const = 0;
+    virtual KFileItem nextItem( const KFileItem & ) const = 0;
+    virtual KFileItem prevItem( const KFileItem & ) const = 0;
 
     /**
      * This is a KFileDialog specific hack: we want to select directories with
@@ -332,7 +332,7 @@ public:
      * increases the number of dirs and files.
      * @returns true if the item fits the view mode
      */
-    bool updateNumbers(const KFileItem *i);
+    bool updateNumbers(const KFileItem &i);
 
     /**
      * @returns the view-specific action-collection. Every view should
@@ -417,11 +417,6 @@ private:
     ViewMode view_mode;
     KFile::SelectionMode selection_mode;
 
-    // never use! It's only guaranteed to contain valid items in the items()
-    // method!
-    mutable KFileItemList m_itemList;
-
-    mutable KFileItemList *m_selectedList;
     bool myOnlyDoubleClickSelectsFiles;
 
 private:

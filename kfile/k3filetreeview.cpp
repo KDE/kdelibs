@@ -261,7 +261,7 @@ Q3DragObject * K3FileTreeView::dragObject()
       pixmap = DesktopIcon( "kmultiple", 16 );
    }
    if( pixmap.isNull() )
-      pixmap = currentKFileTreeViewItem()->fileItem()->pixmap( 16 );
+      pixmap = currentKFileTreeViewItem()->fileItem().pixmap( 16 );
    hotspot.setX( pixmap.width() / 2 );
    hotspot.setY( pixmap.height() / 2 );
 #if 0 // there is no more kurldrag, this should use urls.setInMimeData( mimeData ) instead
@@ -491,7 +491,7 @@ QPixmap K3FileTreeView::itemIcon( K3FileTreeViewItem *item, int gap ) const
       else
       {
          // TODO: different modes, user Pixmaps ?
-         pix = item->fileItem()->pixmap( K3Icon::SizeSmall ); // , K3Icon::DefaultState);
+         pix = item->fileItem().pixmap( K3Icon::SizeSmall ); // , K3Icon::DefaultState);
 
          /* Only if it is a dir and the user wants open dir pixmap and it is open,
           * change the fileitem's pixmap to the open folder pixmap. */
@@ -640,12 +640,12 @@ K3FileTreeViewItem *K3FileTreeView::findItem( KFileTreeBranch* brnch, const QStr
 
          kDebug(250) << "assembled complete dir string " << url.prettyUrl();
 
-         KFileItem *fi = brnch->findByUrl( url );
-         if( fi )
+         KFileItem fi = brnch->findByUrl( url );
+         if( !fi.isNull() )
          {
             ret =
                 const_cast<K3FileTreeViewItem *>(
-                static_cast<const K3FileTreeViewItem*>(fi->extraData(brnch)));
+                static_cast<const K3FileTreeViewItem*>(fi.extraData(brnch)));
             kDebug(250) << "Found item !" <<ret;
          }
       }

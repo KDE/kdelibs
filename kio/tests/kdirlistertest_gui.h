@@ -67,18 +67,18 @@ public Q_SLOTS:
       cout << "*** newItems: " << endl;
       KFileItemList::const_iterator it, itEnd = items.constEnd();
       for ( it = items.constBegin() ; it != itEnd ; ++it )
-          cout << (*it) << " " << (*it)->name().toLocal8Bit().data() << endl;
+          cout << (*it).name().toLocal8Bit().data() << endl;
    }
-   void deleteItem( KFileItem* item )
+   void deleteItem( const KFileItem& item )
    {
-      cout << "*** deleteItem: " << item->url().prettyUrl().toLocal8Bit().data() << endl;
+      cout << "*** deleteItem: " << item.url().prettyUrl().toLocal8Bit().data() << endl;
    }
    void itemsFilteredByMime( const KFileItemList&  )
    {
       cout << "*** itemsFilteredByMime: " << endl;
       // TODO
    }
-   void refreshItems( const KFileItemList&  )
+   void refreshItems( const QList<QPair<KFileItem, KFileItem> >& )
    {
       cout << "*** refreshItems: " << endl;
       // TODO

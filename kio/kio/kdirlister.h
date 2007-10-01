@@ -258,24 +258,24 @@ public:
   /**
    * Returns the file item of the URL.
    *
-   * Can return 0. TODO is it OK? maybe use KFileItem(void)?
+   * Can return an empty KFileItem.
    * @return the file item for url() itself (".")
    */
-  KFileItem *rootItem() const;
+  KFileItem rootItem() const;
 
   /**
    * Find an item by its URL.
    * @param _url the item URL
-   * @return the pointer to the KFileItem
+   * @return the KFileItem
    */
-  virtual KFileItem *findByUrl( const KUrl& _url ) const;
+  virtual KFileItem findByUrl( const KUrl& _url ) const;
 
   /**
    * Find an item by its name.
    * @param name the item name
-   * @return the pointer to the KFileItem
+   * @return the KFileItem
    */
-  virtual KFileItem *findByName( const QString& name ) const;
+  virtual KFileItem findByName( const QString& name ) const;
 
   /**
    * Set a name filter to only list items matching this name, e.g. "*.cpp".
@@ -485,10 +485,6 @@ Q_SIGNALS:
 
   /**
    * Signal new items.
-   * For KDE 4 applications it is recommended using
-   * KDirLister::newItems(const QList<KFileItem>& items) instead,
-   * as the interfaces have been adjusted using KFileItem per value
-   * instead of per pointer.
    *
    * So use this signal only if you want to modify original KFileItems
    * @param items a list of new items
@@ -496,65 +492,17 @@ Q_SIGNALS:
   void newItems( const KFileItemList& items );
 
   /**
-   * Signal new items.
-   * @param items a list of new items
-   */
-  void newItems( const QList<KFileItem>& items );
-
-  /**
    * Send a list of items filtered-out by mime-type.
-   * For KDE 4 applications it is recommended using
-   * KDirLister::itemsFilteredByMime(const QList<KFileItem>& items) instead,
-   * as the interfaces have been adjusted using KFileItem per value
-   * instead of per pointer.
    * @param items the list of filtered items
    */
   void itemsFilteredByMime( const KFileItemList& items );
 
   /**
-   * Send a list of items filtered-out by mime-type.
-   * @param items the list of filtered items
-   */
-  void itemsFilteredByMime( const QList<KFileItem>& items );
-
-  /**
-   * Signal an item to remove.
-   * For KDE 4 applications it is recommended using
-   * KDirLister::deleteItem(KFileItem _fileItem) instead,
-   * as the interfaces have been adjusted using KFileItem per value
-   * instead of per pointer.
-   *
-   * ATTENTION: if @p _fileItem == rootItem() the directory this lister
-   *            is holding was deleted and you HAVE to release especially the
-   *            rootItem() of this lister, otherwise your app will CRASH!!
-   *            The clear() signals have been emitted already.
-   * @param _fileItem the fileItem to delete
-   */
-  void deleteItem( KFileItem *_fileItem );
-
-  /**
    * Signal an item to remove.
    *
-   * ATTENTION: if @p _fileItem == rootItem() the directory this lister
-   *            is holding was deleted and you HAVE to release especially the
-   *            rootItem() of this lister, otherwise your app will CRASH!!
-   *            The clear() signals have been emitted already.
    * @param _fileItem the fileItem to delete
    */
-  void deleteItem( KFileItem _fileItem );
-
-  /**
-   * Signal an item to refresh (its mimetype/icon/name has changed).
-   * Note: KFileItem::refresh has already been called on those items.
-   * For KDE 4 applications it is recommended using
-   * KDirLister::refreshItems(const QList<KFileItem>& items) instead,
-   * as the interfaces have been adjusted using KFileItem per value
-   * instead of per pointer.
-   *
-   * So use this signal only if you want to modify original KFileItems
-   * @param items the items to refresh
-   */
-  void refreshItems( const KFileItemList& items );
+  void deleteItem( const KFileItem &_fileItem );
 
   /**
    * Signal an item to refresh (its mimetype/icon/name has changed).
@@ -615,7 +563,7 @@ protected:
    * @see matchesFilter
    * @see setNameFilter
    */
-  virtual bool matchesFilter( const KFileItem * ) const;
+  virtual bool matchesFilter( const KFileItem& ) const;
 
   /**
    * Called for every new item before emitting newItems().
@@ -629,7 +577,7 @@ protected:
    * @see matchesMimeFilter
    * @see setMimeFilter
    */
-  virtual bool matchesMimeFilter( const KFileItem * ) const;
+  virtual bool matchesMimeFilter( const KFileItem& ) const;
 
   /**
    * Called by the public matchesFilter() to do the
@@ -668,13 +616,13 @@ private:
 
   uint numJobs();
 
-  void addNewItem( KFileItem *item );
+  void addNewItem( const KFileItem& item );
   void addNewItems( const KFileItemList& items );
-  void aboutToRefreshItem( const KFileItem *item );
-    void addRefreshItem( const KFileItem& oldItem, KFileItem *item );
+  void aboutToRefreshItem( const KFileItem& item );
+  void addRefreshItem( const KFileItem& oldItem, const KFileItem& item );
   void emitItems();
-  void emitDeleteItem( KFileItem *item );
-    void redirect( const KUrl& oldUrl, const KUrl& newUrl );
+  void emitDeleteItem( const KFileItem &item );
+  void redirect( const KUrl& oldUrl, const KUrl& newUrl );
 
   KDirListerPrivate* const d;
 };

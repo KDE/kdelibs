@@ -75,7 +75,7 @@
 #include <kconfiggroup.h>
 
 
-template class QHash<QString, KFileItem*>;
+template class QHash<QString, KFileItem>;
 
 /**
  * Default icon view for KDirOperator using
@@ -487,13 +487,13 @@ QList<KFileItem> KDirOperator::selectedItems() const
     return itemList;
 }
 
-bool KDirOperator::isSelected(const KFileItem *item) const
+bool KDirOperator::isSelected(const KFileItem &item) const
 {
-    if ((item == 0) || (d->itemView == 0)) {
+    if ((item.isNull()) || (d->itemView == 0)) {
         return false;
     }
 
-    const QModelIndex dirIndex = d->dirModel->indexForItem(*item);
+    const QModelIndex dirIndex = d->dirModel->indexForItem(item);
     const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
     return d->itemView->selectionModel()->isSelected(proxyIndex);
 }
@@ -1383,23 +1383,23 @@ void KDirOperator::setDirLister(KDirLister *lister)
             SLOT(slotRedirected(const KUrl&)));
 }
 
-void KDirOperator::selectDir(const KFileItem *item)
+void KDirOperator::selectDir(const KFileItem &item)
 {
-    setUrl(item->url(), true);
+    setUrl(item.url(), true);
 }
 
-void KDirOperator::selectFile(const KFileItem *item)
+void KDirOperator::selectFile(const KFileItem &item)
 {
     QApplication::restoreOverrideCursor();
 
     emit fileSelected(item);
 }
 
-void KDirOperator::highlightFile(const KFileItem *item)
+void KDirOperator::highlightFile(const KFileItem &item)
 {
-    Q_ASSERT(item != 0);
+    Q_ASSERT(!item.isNull());
     if (d->preview != 0) {
-        d->preview->showPreview(item->url());
+        d->preview->showPreview(item.url());
     }
 
     emit fileHighlighted(item);
@@ -1411,15 +1411,15 @@ void KDirOperator::setCurrentItem(const QString& filename)
         return;
     }
 
-    const KFileItem *item = 0;
+    KFileItem item;
     if ( !filename.isNull() ) {
         item = d->dirLister->findByName(filename);
     }
 
     QItemSelectionModel *selModel = d->itemView->selectionModel();
     selModel->clear();
-    if (item != 0) {
-        const QModelIndex dirIndex = d->dirModel->indexForItem(*item);
+    if (!item.isNull()) {
+        const QModelIndex dirIndex = d->dirModel->indexForItem(item);
         const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
         selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
         selModel->select(proxyIndex, QItemSelectionModel::Select);
@@ -1457,10 +1457,10 @@ void KDirOperator::prepareCompletionObjects()
 
     if (d->completeListDirty) {   // create the list of all possible completions
         const KFileItemList itemList = d->dirLister->items();
-        foreach (const KFileItem *item, itemList) {
-            d->completion.addItem(item->name());
-            if (item->isDir()) {
-                d->dirCompletion.addItem(item->name());
+        foreach (const KFileItem item, itemList) {
+            d->completion.addItem(item.name());
+            if (item.isDir()) {
+                d->dirCompletion.addItem(item.name());
             }
         }
         d->completeListDirty = false;
@@ -1908,13 +1908,7 @@ void KDirOperator::slotProperties()
 
     const QList<KFileItem> list = selectedItems();
     if (!list.isEmpty()) {
-        // TODO: KPropertiesDialog still uses pointer-based KFileItemList
-        KFileItemList itemPtrList;
-        foreach (KFileItem item, list) {
-            itemPtrList << &item;
-        }
-
-        KPropertiesDialog dialog(itemPtrList, this);
+        KPropertiesDialog dialog(list, this);
         dialog.exec();
     }
 }
@@ -1939,12 +1933,12 @@ void KDirOperator::slotClicked(const QModelIndex& index)
     KFileItem item = d->dirModel->itemForIndex(dirIndex);
     if (item.isDir()) {
         if (KGlobalSettings::singleClick()) {
-            selectDir(&item);
+            selectDir(item);
         } else {
-            highlightFile(&item);
+            highlightFile(item);
         }
     } else {
-        highlightFile(&item);
+        highlightFile(item);
     }
 }
 
@@ -1957,9 +1951,9 @@ void KDirOperator::slotDoubleClicked(const QModelIndex& index)
     const QModelIndex dirIndex = d->proxyModel->mapToSource(index);
     KFileItem item = d->dirModel->itemForIndex(dirIndex);
     if (item.isDir()) {
-        selectDir(&item);
+        selectDir(item);
     } else {
-        selectFile(&item);
+        selectFile(item);
     }
 }
 

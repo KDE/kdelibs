@@ -51,7 +51,7 @@ KFileTreeBranch::KFileTreeBranch( K3FileTreeView *parent, const KUrl& url,
     if( ! branchRoot )
     {
         m_root =  new K3FileTreeViewItem( parent,
-                                         new KFileItem( url, "inode/directory",
+                                          KFileItem( url, "inode/directory",
                                                         S_IFDIR  ),
                                          this );
     }
@@ -62,8 +62,8 @@ KFileTreeBranch::KFileTreeBranch( K3FileTreeView *parent, const KUrl& url,
 
     setShowingDotFiles( showHidden );
 
-    connect( this, SIGNAL( refreshItems(const KFileItemList&)),
-             this, SLOT  ( slotRefreshItems( const KFileItemList& )));
+    connect( this, SIGNAL( refreshItems(const QList<QPair<KFileItem, KFileItem> >&)),
+             this, SLOT  ( slotRefreshItems( const QList<QPair<KFileItem, KFileItem> >& )));
 
     connect( this, SIGNAL( newItems(const KFileItemList&)),
              this, SLOT  ( addItems( const KFileItemList& )));
@@ -74,8 +74,8 @@ KFileTreeBranch::KFileTreeBranch( K3FileTreeView *parent, const KUrl& url,
     connect( this, SIGNAL( started( const KUrl& )),
              this,   SLOT( slotListerStarted( const KUrl& )));
 
-    connect( this, SIGNAL( deleteItem( KFileItem* )),
-             this,   SLOT( slotDeleteItem( KFileItem* )));
+    connect( this, SIGNAL( deleteItem( const KFileItem& )),
+             this,   SLOT( slotDeleteItem( const KFileItem& )));
 
     connect( this, SIGNAL( canceled(const KUrl&) ),
              this,   SLOT( slotCanceled(const KUrl&) ));
@@ -151,23 +151,23 @@ void KFileTreeBranch::slotListerStarted( const KUrl &url )
 }
 
 
-K3FileTreeViewItem* KFileTreeBranch::treeItemForFileItem(KFileItem *it)
+K3FileTreeViewItem* KFileTreeBranch::treeItemForFileItem(const KFileItem &it)
 {
     return
         const_cast<K3FileTreeViewItem *>(
-        static_cast<const K3FileTreeViewItem*>(it->extraData(this)));
+        static_cast<const K3FileTreeViewItem*>(it.extraData(this)));
 }
 
-K3FileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
+K3FileTreeViewItem *KFileTreeBranch::parentKFTVItem( const KFileItem &item )
 {
     K3FileTreeViewItem *parent = 0;
 
-    if( ! item ) return 0;
+    if( item.isNull() ) return 0;
 
     /* If it is a directory, check, if it exists in the dict. If not, go one up
      * and check again.
      */
-    KUrl url = item->url();
+    KUrl url = item.url();
     // kDebug(250) << "Item's url is " << url.prettyUrl();
     KUrl dirUrl( url );
     dirUrl.setFileName( QString() );
@@ -179,18 +179,18 @@ K3FileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
 }
 
 
-void KFileTreeBranch::slotRefreshItems( const KFileItemList& list )
+void KFileTreeBranch::slotRefreshItems( const QList<QPair<KFileItem, KFileItem> > &list )
 {
     kDebug(250) << "Refreshing " << list.count() << " items !";
 
-    KFileItemList::const_iterator kit = list.begin();
-    const KFileItemList::const_iterator kend = list.end();
-    for ( ; kit != kend; ++kit )
+    for ( int i = 0; i < list.count(); ++i )
     {
-        K3FileTreeViewItem *item = findTVIByUrl((*kit)->url());
+        const KFileItem fileItem = list[ i ].second;
+
+        K3FileTreeViewItem *item = findTVIByUrl(fileItem.url());
         if (item) {
-            item->setPixmap(0, item->fileItem()->pixmap( K3Icon::SizeSmall ));
-            item->setText( 0, item->fileItem()->text());
+            item->setPixmap(0, item->fileItem().pixmap( K3Icon::SizeSmall ));
+            item->setText( 0, item->fileItem().text());
         }
     }
 }
@@ -205,7 +205,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
     const KFileItemList::const_iterator kend = list.end();
     for ( ; kit != kend; ++kit )
     {
-        KFileItem* currItem = *kit;
+        KFileItem currItem = *kit;
         parentItem = parentKFTVItem( currItem );
 
         /* Only create a new K3FileTreeViewItem if it does not yet exist */
@@ -219,12 +219,12 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
                 // TODO: Don't fail if parentItem == 0
                 continue;
             }
-            currItem->setExtraData( this, newKFTVI );
+            currItem.setExtraData( this, newKFTVI );
 
             /* Cut off the file extension in case it is not a directory */
-            if( !m_showExtensions && !currItem->isDir() )	/* Need to cut the extension */
+            if( !m_showExtensions && !currItem.isDir() )	/* Need to cut the extension */
             {
-                QString name = currItem->text();
+                QString name = currItem.text();
                 int mPoint = name.lastIndexOf( '.' );
                 if( mPoint > 0 )
                     name = name.left( mPoint );
@@ -235,9 +235,9 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
         /* Now try to find out if there are children for dirs in the treeview */
         /* This stats a directory on the local file system and checks the */
         /* hardlink entry in the stat-buf. This works only for local directories. */
-        if( dirOnlyMode() && !m_recurseChildren && currItem->isLocalFile( ) && currItem->isDir() )
+        if( dirOnlyMode() && !m_recurseChildren && currItem.isLocalFile( ) && currItem.isDir() )
         {
-            KUrl url = currItem->url();
+            KUrl url = currItem.url();
             QString filename = url.directory( KUrl::ObeyTrailingSlash ) + url.fileName();
             /* do the stat trick of Carsten. The problem is, that the hardlink
              *  count only contains directory links. Thus, this method only seem
@@ -278,10 +278,10 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 }
 
 K3FileTreeViewItem* KFileTreeBranch::createTreeViewItem( K3FileTreeViewItem *parent,
-							KFileItem *fileItem )
+							const KFileItem &fileItem )
 {
     K3FileTreeViewItem  *tvi = 0;
-    if( parent && fileItem )
+    if( parent && !fileItem.isNull() )
     {
         tvi = new K3FileTreeViewItem( parent,
                                      fileItem,
@@ -322,10 +322,10 @@ bool KFileTreeBranch::showExtensions( ) const
  * for its children arrive. Thus, we must walk through the children of a dir and
  * remove them before removing the dir itself.
  */
-void KFileTreeBranch::slotDeleteItem( KFileItem *it )
+void KFileTreeBranch::slotDeleteItem( const KFileItem &it )
 {
-    if( !it ) return;
-    kDebug(250) << "Slot Delete Item hitted for " << it->url().prettyUrl();
+    if( it.isNull() ) return;
+    kDebug(250) << "Slot Delete Item hitted for " << it.url().prettyUrl();
 
     K3FileTreeViewItem *kfti = treeItemForFileItem(it);
 
@@ -346,7 +346,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
         }
 
         kDebug(250) << "Found corresponding K3FileTreeViewItem";
-        if( m_lastFoundURL.equals(it->url(), KUrl::CompareWithoutTrailingSlash ))
+        if( m_lastFoundURL.equals(it.url(), KUrl::CompareWithoutTrailingSlash ))
         {
           m_lastFoundURL = KUrl();
           m_lastFoundItem = 0L;
@@ -383,8 +383,8 @@ void KFileTreeBranch::slotDirlisterClear()
 void KFileTreeBranch::slotDirlisterClearUrl( const KUrl& url )
 {
     kDebug(250)<< "*** Clear for URL !" << url.prettyUrl();
-    KFileItem *item = findByUrl( url );
-    if( item )
+    const KFileItem item = findByUrl( url );
+    if( !item.isNull() )
     {
         K3FileTreeViewItem *ftvi = treeItemForFileItem(item);
         deleteChildrenOf( ftvi );
@@ -428,9 +428,9 @@ K3FileTreeViewItem* KFileTreeBranch::findTVIByUrl( const KUrl& url )
     {
         kDebug(250) << "findByURL: searching by dirlister: " << url.url();
 
-        KFileItem *it = findByUrl( url );
+        const KFileItem it = findByUrl( url );
 
-        if( it )
+        if( !it.isNull() )
         {
             resultItem = treeItemForFileItem(it);
             m_lastFoundItem = resultItem;
@@ -517,10 +517,10 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
             {
                 if( nextChild->isDir() && ! nextChild->alreadyListed())
                 {
-                    KFileItem *kfi = nextChild->fileItem();
-                    if( kfi && kfi->isReadable())
+                    const KFileItem kfi = nextChild->fileItem();
+                    if( !kfi.isNull() && kfi.isReadable())
                     {
-                        KUrl recurseUrl = kfi->url();
+                        KUrl recurseUrl = kfi.url();
                         kDebug(250) << "Starting to recurse NOW " << recurseUrl.prettyUrl();
                         openUrl( recurseUrl, true );
                     }

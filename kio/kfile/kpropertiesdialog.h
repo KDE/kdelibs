@@ -92,7 +92,7 @@ public:
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    */
-  explicit KPropertiesDialog( KFileItem * item,
+  explicit KPropertiesDialog( const KFileItem& item,
                               QWidget* parent = 0 );
 
   /**
@@ -172,7 +172,7 @@ public:
    *
    * @return true on successful dialog displaying (can be false on win32).
    */
-  static bool showDialog(KFileItem* item, QWidget* parent = 0,
+  static bool showDialog(const KFileItem& item, QWidget* parent = 0,
                          bool modal = true);
 
   /**
@@ -229,7 +229,7 @@ public:
    * This means that you should use this only if you are sure the dialog is used
    * for a single item. Otherwise, you probably want items() instead.
    */
-  KFileItem *item();
+  KFileItem& item();
 
   /**
    * @return the items for which the dialog is shown
@@ -380,7 +380,7 @@ public:
    * Convenience method for most ::supports methods
    * @return true if the file is a local, regular, readable, desktop file
    */
-  static bool isDesktopFile( KFileItem * _item );
+  static bool isDesktopFile( const KFileItem& _item );
 
   void setDirty( bool b );
   bool isDirty() const;

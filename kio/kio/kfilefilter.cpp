@@ -99,22 +99,22 @@ mode_t KSimpleFileFilter::modeFilter() const
     return d->m_modeFilter;
 }
 
-bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
+bool KSimpleFileFilter::passesFilter( const KFileItem &item ) const
 {
-    const QString& name = item->name();
+    const QString& name = item.name();
 
-    if ( d->m_filterDotFiles && item->isHidden() )
+    if ( d->m_filterDotFiles && item.isHidden() )
         return false;
 
     if ( d->m_filterSpecials && (name == "." || name == "..") )
         return false;
 
-    if ( d->m_modeFilter && !(d->m_modeFilter & item->mode()) )
+    if ( d->m_modeFilter && !(d->m_modeFilter & item.mode()) )
         return false;
 
     if ( !d->m_mimeFilters.isEmpty() ) {
         // correct or guessed mimetype -- we don't mind
-        KMimeType::Ptr mime = item->mimeTypePtr();
+        KMimeType::Ptr mime = item.mimeTypePtr();
         bool ok = false;
 
         QStringList::ConstIterator it = d->m_mimeFilters.begin();

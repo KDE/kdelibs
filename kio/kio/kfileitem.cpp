@@ -83,7 +83,7 @@ public:
     {
     }
 
-    //KFileItemPrivate(const KFileItemPrivate& other);
+//    KFileItemPrivate(const KFileItemPrivate& other);
 
     /**
      * Computes the text and mode from the UDSEntry
@@ -221,7 +221,7 @@ void KFileItemPrivate::init()
 }
 
 // let's see if we can just copy everything (default copy ctor)
-#if 0
+/*
 KFileItemPrivate::KFileItemPrivate(const KFileItemPrivate& other)
     : QSharedData(other)
 {
@@ -247,10 +247,9 @@ KFileItemPrivate::KFileItemPrivate(const KFileItemPrivate& other)
     // deleting the data or not.
 
     // We had a mimetype previously (probably), so we need to re-determine it
-    determineMimeType();
+//    determineMimeType();
 }
-#endif
-
+*/
 void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
 {
     // extract fields from the KIO::UDS Entry
@@ -1288,28 +1287,36 @@ bool KFileItem::isNull() const
     return d == 0;
 }
 
+KFileItemList::KFileItemList()
+{
+}
 
-KFileItem* KFileItemList::findByName( const QString& fileName ) const
+KFileItemList::KFileItemList( const QList<KFileItem> &items )
+  : QList<KFileItem>( items )
+{
+}
+
+KFileItem KFileItemList::findByName( const QString& fileName ) const
 {
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {
-        if ( (*it)->name() == fileName ) {
+        if ( (*it).name() == fileName ) {
             return *it;
         }
     }
-    return 0;
+    return KFileItem();
 }
 
-KFileItem* KFileItemList::findByUrl( const KUrl& url ) const {
+KFileItem KFileItemList::findByUrl( const KUrl& url ) const {
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {
-        if ( (*it)->url() == url ) {
+        if ( (*it).url() == url ) {
             return *it;
         }
     }
-    return 0;
+    return KFileItem();
 }
 
 KUrl::List KFileItemList::urlList() const {
@@ -1317,7 +1324,7 @@ KUrl::List KFileItemList::urlList() const {
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {
-        lst.append( (*it)->url() );
+        lst.append( (*it).url() );
     }
     return lst;
 }

@@ -161,7 +161,7 @@ protected:
     * for new items.
     */
    virtual K3FileTreeViewItem *createTreeViewItem( K3FileTreeViewItem *parent,
-						  KFileItem *fileItem );
+						  const KFileItem &fileItem );
 
 public:
    /**
@@ -188,20 +188,20 @@ Q_SIGNALS:
    void directoryChildCount( K3FileTreeViewItem* item, int count );
 
 private Q_SLOTS:
-   void slotRefreshItems( const KFileItemList& );
+   void slotRefreshItems( const QList<QPair<KFileItem, KFileItem> >& );
    void addItems( const KFileItemList& );
    void slCompleted( const KUrl& );
    void slotCanceled( const KUrl& );
    void slotListerStarted( const KUrl& );
-   void slotDeleteItem( KFileItem* );
+   void slotDeleteItem( const KFileItem& );
    void slotDirlisterClear();
    void slotDirlisterClearUrl( const KUrl& url );
    void slotRedirect( const KUrl& oldUrl, const KUrl&newUrl );
 
 private:
-   K3FileTreeViewItem    *parentKFTVItem( KFileItem *item );
+   K3FileTreeViewItem    *parentKFTVItem( const KFileItem &item );
    static void           deleteChildrenOf( Q3ListViewItem *parent );
-   K3FileTreeViewItem* treeItemForFileItem(KFileItem *it);
+   K3FileTreeViewItem* treeItemForFileItem(const KFileItem &it);
 
    K3FileTreeViewItem 	*m_root;
    KUrl 		m_startURL;

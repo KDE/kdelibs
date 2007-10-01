@@ -569,20 +569,29 @@ private:
 
 Q_DECLARE_METATYPE(KFileItem)
 
+Q_CORE_EXPORT uint qHash(const QString &key);
+inline uint qHash(const KFileItem& item){ return qHash(item.url().url()); }
+
 /**
  * List of KFileItems
  * This class adds a few helper methods to QList<KFileItem *>
  */
-class KIO_EXPORT KFileItemList : public QList<KFileItem *> // TODO QList<KFileItem>
+class KIO_EXPORT KFileItemList : public QList<KFileItem>
 {
 public:
+  /// Creates an empty list of file items
+  KFileItemList();
+
+  /// Creates a new KFileItemList from a QList of file @p items
+  KFileItemList( const QList<KFileItem> &items );
+
   /// Find a KFileItem by name and return it.
   /// @return the item with the given name, or 0 if none was found
-  KFileItem* findByName( const QString& fileName ) const;
+  KFileItem findByName( const QString& fileName ) const;
 
   /// Find a KFileItem by URL and return it.
   /// @return the item with the given URL, or 0 if none was found
-  KFileItem* findByUrl( const KUrl& url ) const;
+  KFileItem findByUrl( const KUrl& url ) const;
 
   /// @return the list of URLs that those items represent
   KUrl::List urlList() const;

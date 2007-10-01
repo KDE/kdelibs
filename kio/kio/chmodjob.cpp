@@ -116,14 +116,14 @@ void ChmodJobPrivate::_k_processList()
     Q_Q(ChmodJob);
     while ( !m_lstItems.isEmpty() )
     {
-        KFileItem * item = m_lstItems.first();
-        if ( !item->isLink() ) // don't do anything with symlinks
+        const KFileItem item = m_lstItems.first();
+        if ( !item.isLink() ) // don't do anything with symlinks
         {
             // File or directory -> remember to chmod
             ChmodInfo info;
-            info.url = item->url();
+            info.url = item.url();
             // This is a toplevel file, we apply changes directly (no +X emulation here)
-            info.permissions = ( m_permissions & m_mask ) | ( item->permissions() & ~m_mask );
+            info.permissions = ( m_permissions & m_mask ) | ( item.permissions() & ~m_mask );
             /*kDebug(7007) << "\n current permissions=" << QString::number(item->permissions(),8)
                           << "\n wanted permission=" << QString::number(m_permissions,8)
                           << "\n with mask=" << QString::number(m_mask,8)
@@ -134,10 +134,10 @@ void ChmodJobPrivate::_k_processList()
             m_infos.prepend( info );
             //kDebug(7007) << "processList : Adding info for " << info.url.prettyUrl();
             // Directory and recursive -> list
-            if ( item->isDir() && m_recursive )
+            if ( item.isDir() && m_recursive )
             {
                 //kDebug(7007) << "ChmodJob::processList dir -> listing";
-                KIO::ListJob * listJob = KIO::listRecursive( item->url(), false /* no GUI */ );
+                KIO::ListJob * listJob = KIO::listRecursive( item.url(), false /* no GUI */ );
                 q->connect( listJob, SIGNAL(entries( KIO::Job *,
                                                      const KIO::UDSEntryList& )),
                             SLOT(_k_slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
@@ -166,7 +166,7 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
             const mode_t permissions = entry.numberValue( KIO::UDSEntry::UDS_ACCESS );
 
             ChmodInfo info;
-            info.url = m_lstItems.first()->url(); // base directory
+            info.url = m_lstItems.first().url(); // base directory
             info.url.addPath( relativePath );
             int mask = m_mask;
             // Emulate -X: only give +x to files that had a +x bit already

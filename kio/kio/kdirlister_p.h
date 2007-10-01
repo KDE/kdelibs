@@ -53,17 +53,12 @@ public:
 
     delayedMimeTypes = false;
 
-    rootFileItem = 0;
+    rootFileItem = KFileItem();
 
     lstNewItems = 0;
     lstRefreshItems = 0;
     lstMimeFilteredItems = 0;
     lstRemoveItems = 0;
-
-    lstNewItemsV2 = 0;
-    lstRefreshItemsV2 = 0;
-    lstMimeFilteredItemsV2 = 0;
-    lstRemoveItemsV2 = 0;
 
     refreshItemWasFiltered = false;
 
@@ -102,17 +97,11 @@ public:
   QMap<KIO::ListJob *, JobData> jobData;
 
   // file item for the root itself (".")
-  KFileItem *rootFileItem;
+  KFileItem rootFileItem;
 
-  KFileItemList *lstNewItems, *lstRefreshItems;
+  KFileItemList *lstNewItems;
+  QList<QPair<KFileItem,KFileItem> > *lstRefreshItems;
   KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
-
-  // In KDE 4 the interfaces have been adjusted using KFileItem
-  // per value instead of per pointer. For backward compatibility
-  // the KFileItemList signals are still supported.
-  QList<KFileItem> *lstNewItemsV2;
-  QList<QPair<KFileItem,KFileItem> > *lstRefreshItemsV2;
-  QList<KFileItem> *lstMimeFilteredItemsV2, *lstRemoveItemsV2;
 
   int changes;
 
@@ -148,7 +137,7 @@ public:
 
     void updateDirectory( const KUrl& dir );
 
-    KFileItem *itemForUrl( const KUrl& url ) const;
+    KFileItem itemForUrl( const KUrl& url ) const;
     KFileItemList *itemsForDir( const KUrl& dir ) const;
 
     bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
@@ -163,9 +152,9 @@ public:
   void forgetDirs( KDirLister *lister );
   void forgetDirs( KDirLister *lister, const KUrl &_url, bool notify );
 
-  KFileItem *findByName( const KDirLister *lister, const QString &_name ) const;
+  KFileItem findByName( const KDirLister *lister, const QString &_name ) const;
   // if lister is set, it is checked that the url is held by the lister
-  KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
+  KFileItem findByUrl( const KDirLister *lister, const KUrl &_url ) const;
 
 public Q_SLOTS:
   /**
@@ -239,8 +228,8 @@ private:
   // helper for renameDir
   void emitRedirections( const KUrl &oldUrl, const KUrl &url );
 
-  void aboutToRefreshItem( KFileItem *fileitem );
-  void emitRefreshItem( const KFileItem& oldItem, KFileItem *fileitem );
+  void aboutToRefreshItem( const KFileItem& fileitem );
+  void emitRefreshItem( const KFileItem& oldItem, const KFileItem& fileitem );
 
 #ifndef NDEBUG
   void printDebug();
@@ -249,7 +238,7 @@ private:
   struct DirItem
   {
     DirItem( const KUrl &dir )
-      : url(dir), rootItem(0), lstItems()
+      : url(dir)
     {
       autoUpdates = 0;
       complete = false;
@@ -263,8 +252,7 @@ private:
             KDirWatch::self()->removeDir( url.path() );
         sendSignal( false, url );
       }
-      delete rootItem;
-      qDeleteAll( lstItems );
+      lstItems.clear();
     }
 
     void sendSignal( bool entering, const KUrl& url )
@@ -292,8 +280,8 @@ private:
 
       url = newUrl;
 
-      if ( rootItem )
-        rootItem->setUrl( newUrl );
+      if ( !rootItem.isNull() )
+        rootItem.setUrl( newUrl );
     }
 
     void incAutoUpdate()
@@ -331,7 +319,7 @@ private:
     // KFileItem representing the root of this directory.
     // Remember that this is optional. FTP sites don't return '.' in
     // the list, so they give no root item
-    KFileItem *rootItem;
+    KFileItem rootItem;
     KFileItemList lstItems;
   };
 

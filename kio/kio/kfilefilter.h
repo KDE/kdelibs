@@ -46,7 +46,7 @@ public:
      * @param item the item to filter
      * @return true if the @p item passes the filter, false otherwise
      */
-    virtual bool passesFilter( const KFileItem *item ) const = 0;
+    virtual bool passesFilter( const KFileItem &item ) const = 0;
 protected:
     virtual void virtual_hook( int id, void* data );
 };
@@ -138,7 +138,7 @@ public:
      * @param item the item to filter
      * @return true if the @p item passes the filter, false otherwise
      */
-    virtual bool passesFilter( const KFileItem *item ) const;
+    virtual bool passesFilter( const KFileItem &item ) const;
 
 protected:
     QList<QRegExp>   m_nameFilters;

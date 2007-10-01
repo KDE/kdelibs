@@ -27,34 +27,37 @@
 /*
  */
 K3FileTreeViewItem::K3FileTreeViewItem( K3FileTreeViewItem *parent,
-				      KFileItem* item,
+				      const KFileItem &item,
 				      KFileTreeBranch *brnch )
    : K3ListViewItem( parent ),
      m_kfileitem( item ),
      m_branch( brnch ),
      m_wasListed(false)
 {
-   setPixmap(0, item->pixmap( K3Icon::SizeSmall ));
-   setText( 0, item->text());
+   setPixmap(0, item.pixmap( K3Icon::SizeSmall ));
+   setText( 0, item.text());
 
+   m_kfileitem.setExtraData( m_branch, this );
 }
 
 K3FileTreeViewItem::K3FileTreeViewItem( K3FileTreeView* parent,
-				      KFileItem* item,
+				      const KFileItem &item,
 				      KFileTreeBranch *brnch )
    :K3ListViewItem( (Q3ListView*)parent ),
     m_kfileitem(item ),
     m_branch( brnch ),
     m_wasListed(false)
 {
-   setPixmap(0, item->pixmap( K3Icon::SizeSmall ));
-   setText( 0, item->text());
+   setPixmap(0, item.pixmap( K3Icon::SizeSmall ));
+   setText( 0, item.text());
+
+   m_kfileitem.setExtraData( m_branch, this );
 }
 
 K3FileTreeViewItem::~K3FileTreeViewItem()
 {
-    if ( m_kfileitem )
-        m_kfileitem->removeExtraData( m_branch );
+    if ( !m_kfileitem.isNull() )
+        m_kfileitem.removeExtraData( m_branch );
 }
 
 bool K3FileTreeViewItem::alreadyListed() const
@@ -69,15 +72,15 @@ void K3FileTreeViewItem::setListed( bool wasListed )
 
 KUrl K3FileTreeViewItem::url() const
 {
-    return m_kfileitem ? m_kfileitem->url() : KUrl();
+    return !m_kfileitem.isNull() ? m_kfileitem.url() : KUrl();
 }
 
 QString K3FileTreeViewItem::path()  const
 {
-    return m_kfileitem ? m_kfileitem->url().path() : QString();
+    return !m_kfileitem.isNull() ? m_kfileitem.url().path() : QString();
 }
 
 bool K3FileTreeViewItem::isDir() const
 {
-    return m_kfileitem ? m_kfileitem->isDir() : false;
+    return !m_kfileitem.isNull() ? m_kfileitem.isDir() : false;
 }

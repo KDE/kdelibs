@@ -54,14 +54,14 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
   : KPropertiesDialogPlugin(props),d(new KFileMetaPropsPluginPrivate)
 {
 
-    KFileItem * fileitem = properties->item();
+    KFileItem &fileitem = properties->item();
     kDebug(250) << "KFileMetaPropsPlugin constructor";
 
-    d->m_info  = fileitem->metaInfo();
+    d->m_info  = fileitem.metaInfo();
     if (!d->m_info.isValid())
     {
         d->m_info = KFileMetaInfo(properties->kurl().path(KUrl::RemoveTrailingSlash));
-        fileitem->setMetaInfo(d->m_info);
+        fileitem.setMetaInfo(d->m_info);
     }
 
     if ( properties->items().count() > 1 )
@@ -79,7 +79,7 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
 
 void KFileMetaPropsPlugin::createLayout()
 {
-    QFileInfo file_info(properties->item()->url().path());
+    QFileInfo file_info(properties->item().url().path());
 
     kDebug(250) << "KFileMetaPropsPlugin::createLayout";
 
@@ -218,7 +218,7 @@ bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
     if (_items.count() != 1)
         return false;
 
-    bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
+    bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first().url());
     kDebug() << "metaDataEnabled=" << metaDataEnabled;
     return metaDataEnabled;
 }

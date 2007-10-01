@@ -197,7 +197,8 @@ void KDirListerTest::testRefreshItems()
     QSignalSpy spyCompletedKUrl(&m_dirLister, SIGNAL(completed(KUrl)));
     QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
     QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
-    connect(&m_dirLister, SIGNAL(refreshItems(KFileItemList)), this, SLOT(slotRefreshItems(KFileItemList)));
+    connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
+            this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
 
     QFile file(path+"toplevelfile_2");
     QVERIFY(file.open(QIODevice::Append));
@@ -223,8 +224,8 @@ void KDirListerTest::testRefreshItems()
     QCOMPARE(spyClear.count(), 0);
     QCOMPARE(spyClearKUrl.count(), 0);
     QCOMPARE(m_refreshedItems.count(), 1);
-    KFileItem* newItem = m_refreshedItems.first();
-    QCOMPARE(newItem->size(), KIO::filesize_t(11 /*Hello world*/ + 3 /*foo*/));
+    QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
+    QCOMPARE(entry.second.size(), KIO::filesize_t(11 /*Hello world*/ + 3 /*foo*/));
     disconnect(&m_dirLister, 0, this, 0);
 }
 
@@ -232,9 +233,9 @@ void KDirListerTest::testRefreshItems()
 void KDirListerTest::testDeleteItem()
 {
     const QString path = m_tempDir.name();
-    qRegisterMetaType<KFileItem*>("KFileItem*");
-    QSignalSpy spyDeleteItem(&m_dirLister, SIGNAL(deleteItem(KFileItem)));
-    connect(&m_dirLister, SIGNAL(deleteItem(KFileItem)), this, SLOT(exitLoop()));
+    qRegisterMetaType<KFileItem>("KFileItem");
+    QSignalSpy spyDeleteItem(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)));
+    connect(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)), this, SLOT(exitLoop()));
 
     //kDebug() << "Removing " << path+"toplevelfile_1";
     QFile::remove(path+"toplevelfile_1");
@@ -297,7 +298,7 @@ void KDirListerTest::slotNewItems(const KFileItemList& lst)
     m_items += lst;
 }
 
-void KDirListerTest::slotRefreshItems(const KFileItemList& lst)
+void KDirListerTest::slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > & lst)
 {
     m_refreshedItems += lst;
 }

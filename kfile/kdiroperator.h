@@ -78,10 +78,10 @@ class DeleteJob;
  *   // some signals you might be interested in
  *   connect(op, SIGNAL(urlEntered(const KUrl&)),
  *           SLOT(urlEntered(const KUrl&)));
- *   connect(op, SIGNAL(fileHighlighted(const KFileItem *)),
- *           SLOT(fileHighlighted(const KFileItem *)));
- *   connect(op, SIGNAL(fileSelected(const KFileItem *)),
- *           SLOT(fileSelected(const KFileItem *)));
+ *   connect(op, SIGNAL(fileHighlighted(const KFileItem &)),
+ *           SLOT(fileHighlighted(const KFileItem &)));
+ *   connect(op, SIGNAL(fileSelected(const KFileItem &)),
+ *           SLOT(fileSelected(const KFileItem &)));
  *   connect(op, SIGNAL(finishedLoading()),
  *           SLOT(slotLoadingFinished()));
  *
@@ -293,8 +293,7 @@ public:
     /**
      * @returns true if @p item is currently selected, or false otherwise.
      */
-    // ### KDE5: change 'const KFileItem *item' to 'const KFileItem& item'
-    bool isSelected(const KFileItem *item) const;
+    bool isSelected(const KFileItem &item) const;
 
     /**
      * @returns the number of directories in the currently listed url.
@@ -670,17 +669,17 @@ protected Q_SLOTS:
     /**
      * Enters the directory specified by the given @p item.
      */
-    virtual void selectDir(const KFileItem *item);
+    virtual void selectDir(const KFileItem &item);
 
     /**
      * Emits fileSelected( item )
      */
-    void selectFile(const KFileItem *item);
+    void selectFile(const KFileItem &item);
 
     /**
      * Emits fileHighlighted(item)
      */
-    void highlightFile(const KFileItem *item);
+    void highlightFile(const KFileItem &item);
 
     /**
      * Changes sorting to sort by name
@@ -741,9 +740,9 @@ Q_SIGNALS:
      * multiselection mode. In the latter case, @p item is 0L. You can access
      * the selected items with selectedItems().
      */
-    void fileHighlighted(const KFileItem *item);
-    void dirActivated(const KFileItem *item);
-    void fileSelected(const KFileItem *item);
+    void fileHighlighted(const KFileItem &item);
+    void dirActivated(const KFileItem &item);
+    void fileSelected(const KFileItem &item);
     /**
      * Emitted when files are dropped. Dropping files is disabled by
      * default. You need to enable it with setAcceptDrops()
@@ -751,7 +750,7 @@ Q_SIGNALS:
      * @param event the drop event itself.
      * @param urls the urls that where dropped.
      */
-    void dropped(const KFileItem *item, QDropEvent *event, const KUrl::List &urls);
+    void dropped(const KFileItem &item, QDropEvent *event, const KUrl::List &urls);
 
 private:
     /**

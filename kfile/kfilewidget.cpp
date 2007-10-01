@@ -278,10 +278,10 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->ops->setOnlyDoubleClickSelectsFiles( true );
     connect(d->ops, SIGNAL(urlEntered(const KUrl&)),
             SLOT(urlEntered(const KUrl&)));
-    connect(d->ops, SIGNAL(fileHighlighted(const KFileItem *)),
-            SLOT(fileHighlighted(const KFileItem *)));
-    connect(d->ops, SIGNAL(fileSelected(const KFileItem *)),
-            SLOT(fileSelected(const KFileItem *)));
+    connect(d->ops, SIGNAL(fileHighlighted(const KFileItem &)),
+            SLOT(fileHighlighted(const KFileItem &)));
+    connect(d->ops, SIGNAL(fileSelected(const KFileItem &)),
+            SLOT(fileSelected(const KFileItem &)));
     connect(d->ops, SIGNAL(finishedLoading()),
             SLOT(slotLoadingFinished()));
 
@@ -890,19 +890,19 @@ void KFileWidget::accept()
 }
 
 
-void KFileWidget::fileHighlighted(const KFileItem *i)
+void KFileWidget::fileHighlighted(const KFileItem &i)
 {
-    if (i && i->isDir())
+    if (!i.isNull() && i.isDir())
         return;
 
     if ( (d->ops->mode() & KFile::Files) != KFile::Files ) {
-        if ( !i )
+        if ( i.isNull() )
             return;
 
-        d->url = i->url();
+        d->url = i.url();
 
         if ( !d->locationEdit->hasFocus() ) { // don't disturb while editing
-            d->setLocationText( i->name() );
+            d->setLocationText( i.name() );
         }
         emit fileHighlighted(d->url.url());
     }
@@ -913,17 +913,17 @@ void KFileWidget::fileHighlighted(const KFileItem *i)
     }
 }
 
-void KFileWidget::fileSelected(const KFileItem *i)
+void KFileWidget::fileSelected(const KFileItem &i)
 {
-    if (i && i->isDir())
+    if (!i.isNull() && i.isDir())
         return;
 
     if ( (d->ops->mode() & KFile::Files) != KFile::Files ) {
-        if ( !i )
+        if ( i.isNull() )
             return;
 
-        d->url = i->url();
-        d->setLocationText( i->name() );
+        d->url = i.url();
+        d->setLocationText( i.name() );
     }
     else {
         d->multiSelectionChanged();

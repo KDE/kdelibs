@@ -64,10 +64,10 @@ KPreviewPropsPlugin::~KPreviewPropsPlugin()
     delete d;
 }
 
-bool KPreviewPropsPlugin::supports( KFileItemList _items )
+bool KPreviewPropsPlugin::supports( const KFileItemList &_items )
 {
-    bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
-    KMimeType::Ptr mt = KMimeType::findByUrl( _items.first()->url() );
+    bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first().url());
+    KMimeType::Ptr mt = KMimeType::findByUrl( _items.first().url() );
 
     if ( _items.count() != 1 || !metaDataEnabled || mt->name() == "inode/directory" || mt->name().startsWith( "media/" ) )
         return false;
@@ -83,7 +83,7 @@ void KPreviewPropsPlugin::currentPageChanged( KPageWidgetItem *current, KPageWid
         return;
 
     disconnect( properties, SIGNAL( currentPageChanged( KPageWidgetItem *, KPageWidgetItem * ) ), this, SLOT( currentPageChanged( KPageWidgetItem *, KPageWidgetItem * ) ) );
-    preview->showPreview(properties->item()->url());
+    preview->showPreview(properties->item().url());
 }
 
 #include "kpreviewprops.moc"

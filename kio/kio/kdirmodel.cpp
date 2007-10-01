@@ -135,7 +135,7 @@ public:
 };
 
 // If we want to support arbitrary trees like "home:/ as a child of system:/" then,
-// we need to get the parent KFileItem in slotNewItems, and then we can use a QHash<KFileItem*,KDirModelNode*> cache.
+// we need to get the parent KFileItem in slotNewItems, and then we can use a QHash<KFileItem,KDirModelNode*> cache.
 // (well there isn't a parent kfileitem, rather a parent url... hmm, back to square one with hashes-of-urls..)
 // For now we'll assume "child url = parent url + filename"
 QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastParent) const // O(n*m)
@@ -261,8 +261,8 @@ void KDirModel::setDirLister(KDirLister* dirLister)
     }
     d->m_dirLister = dirLister;
     d->m_dirLister->setParent(this);
-    connect( d->m_dirLister, SIGNAL(newItems(QList<KFileItem>)),
-             this, SLOT(slotNewItems(QList<KFileItem>)) );
+    connect( d->m_dirLister, SIGNAL(newItems(KFileItemList)),
+             this, SLOT(slotNewItems(KFileItemList)) );
     connect( d->m_dirLister, SIGNAL(deleteItem(KFileItem)),
              this, SLOT(slotDeleteItem(KFileItem)) );
     connect( d->m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem, KFileItem> >)),
@@ -276,7 +276,7 @@ KDirLister* KDirModel::dirLister() const
     return d->m_dirLister;
 }
 
-void KDirModel::slotNewItems(const QList<KFileItem>& items)
+void KDirModel::slotNewItems(const KFileItemList& items)
 {
     // Find parent item - it's the same for all the items
     // TODO (if Michael Brade agrees): add parent url to the newItems signal
@@ -550,8 +550,7 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 KFileItem KDirModel::itemForIndex( const QModelIndex& index ) const
 {
     if (!index.isValid()) {
-        KFileItem* item = d->m_dirLister->rootItem();
-        return item ? (*item) : KFileItem();
+        return d->m_dirLister->rootItem();
     } else {
         return static_cast<KDirModelNode*>(index.internalPointer())->item();
     }

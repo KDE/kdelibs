@@ -75,10 +75,10 @@ KDirListerTest::KDirListerTest( QWidget *parent )
            debug,  SLOT( newItems( const KFileItemList & ) ) );
   connect( lister, SIGNAL( itemsFilteredByMime( const KFileItemList & ) ),
            debug,  SLOT( itemsFilteredByMime( const KFileItemList & ) ) );
-  connect( lister, SIGNAL( deleteItem( KFileItem * ) ),
-           debug,  SLOT( deleteItem( KFileItem * ) ) );
-  connect( lister, SIGNAL( refreshItems( const KFileItemList & ) ),
-           debug,  SLOT( refreshItems( const KFileItemList & ) ) );
+  connect( lister, SIGNAL( deleteItem( const KFileItem & ) ),
+           debug,  SLOT( deleteItem( const KFileItem & ) ) );
+  connect( lister, SIGNAL( refreshItems( const QList<QPair<KFileItem, KFileItem> > & ) ),
+           debug,  SLOT( refreshItems( const QList<QPair<KFileItem, KFileItem> > & ) ) );
   connect( lister, SIGNAL( infoMessage( const QString& ) ),
            debug,  SLOT( infoMessage( const QString& ) ) );
   connect( lister, SIGNAL( percent( int ) ),
@@ -146,9 +146,9 @@ void KDirListerTest::completed()
 {
     if ( lister->url().path() == QDir::rootPath() )
     {
-        KFileItem* item = lister->findByUrl( KUrl( QDir::tempPath() ) );
-        if ( item )
-            kDebug() << "Found " << QDir::tempPath() << ": " << item;
+        const KFileItem item = lister->findByUrl( KUrl( QDir::tempPath() ) );
+        if ( !item.isNull() )
+            kDebug() << "Found " << QDir::tempPath() << ": " << item.name();
         else
             kWarning() << QDir::tempPath() << " not found! Bug in findByURL?";
     }

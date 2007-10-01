@@ -71,7 +71,6 @@ KFileView::KFileView()
     sig = new KFileViewSignaler();
     sig->setObjectName("view-signaller");
 
-    m_selectedList = 0L;
     filesNumber = 0;
     dirsNumber = 0;
 
@@ -86,38 +85,37 @@ KFileView::~KFileView()
 {
     delete d;
     delete sig;
-    delete m_selectedList;
 }
 
 void KFileView::setParentView(KFileView *parent)
 {
     if ( parent ) { // pass all signals right to our parent
-        QObject::connect(sig, SIGNAL( activatedMenu(const KFileItem *,
+        QObject::connect(sig, SIGNAL( activatedMenu(const KFileItem &,
                                                         const QPoint& ) ),
-                parent->sig, SIGNAL( activatedMenu(const KFileItem *,
+                parent->sig, SIGNAL( activatedMenu(const KFileItem &,
                                                         const QPoint& )));
-        QObject::connect(sig, SIGNAL( dirActivated(const KFileItem *)),
-                parent->sig, SIGNAL( dirActivated(const KFileItem*)));
-        QObject::connect(sig, SIGNAL( fileSelected(const KFileItem *)),
-                parent->sig, SIGNAL( fileSelected(const KFileItem*)));
-        QObject::connect(sig, SIGNAL( fileHighlighted(const KFileItem *) ),
-                            parent->sig,SIGNAL(fileHighlighted(const KFileItem*)));
+        QObject::connect(sig, SIGNAL( dirActivated(const KFileItem &)),
+                parent->sig, SIGNAL( dirActivated(const KFileItem&)));
+        QObject::connect(sig, SIGNAL( fileSelected(const KFileItem &)),
+                parent->sig, SIGNAL( fileSelected(const KFileItem&)));
+        QObject::connect(sig, SIGNAL( fileHighlighted(const KFileItem &) ),
+                            parent->sig,SIGNAL(fileHighlighted(const KFileItem&)));
         QObject::connect(sig, SIGNAL( sortingChanged( QDir::SortFlags ) ),
                             parent->sig, SIGNAL(sortingChanged( QDir::SortFlags)));
-        QObject::connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KUrl::List&) ),
-                            parent->sig, SIGNAL(dropped(const KFileItem *, QDropEvent*, const KUrl::List&)));
+        QObject::connect(sig, SIGNAL( dropped(const KFileItem &, QDropEvent*, const KUrl::List&) ),
+                            parent->sig, SIGNAL(dropped(const KFileItem &, QDropEvent*, const KUrl::List&)));
     }
 }
 
-bool KFileView::updateNumbers(const KFileItem *i)
+bool KFileView::updateNumbers(const KFileItem &i)
 {
-    if (!( viewMode() & Files ) && i->isFile())
+    if (!( viewMode() & Files ) && i.isFile())
         return false;
 
-    if (!( viewMode() & Directories ) && i->isDir())
+    if (!( viewMode() & Directories ) && i.isDir())
         return false;
 
-    if (i->isDir())
+    if (i.isDir())
         dirsNumber++;
     else
         filesNumber++;
@@ -132,14 +130,14 @@ void KFileView::addItemList(const KFileItemList& list)
     KFileItemList::const_iterator kit = list.begin();
     const KFileItemList::const_iterator kend = list.end();
     for ( ; kit != kend; ++kit ) {
-        KFileItem *item = *kit;
+        const KFileItem item = *kit;
         if (!updateNumbers(item))
             continue;
         insertItem(item);
     }
 }
 
-void KFileView::insertItem( KFileItem * )
+void KFileView::insertItem( const KFileItem& )
 {
 }
 
@@ -155,7 +153,6 @@ void KFileView::setSorting(QDir::SortFlags new_sort)
 
 void KFileView::clear()
 {
-    m_itemList.clear();
     filesNumber = 0;
     dirsNumber = 0;
     clearView();
@@ -281,16 +278,16 @@ void  KFileView::updateView(bool)
     widget()->repaint();
 }
 
-void KFileView::updateView(const KFileItem *)
+void KFileView::updateView(const KFileItem &)
 {
 }
 
 void KFileView::setCurrentItem(const QString &filename )
 {
     if (!filename.isNull()) {
-        KFileItem *item;
-        for ( (item = firstFileItem()); item; item = nextItem( item ) ) {
-            if (item->name() == filename) {
+        KFileItem item;
+        for ( (item = firstFileItem()); !item.isNull(); item = nextItem( item ) ) {
+            if (item.name() == filename) {
                 setCurrentItem( item );
                 return;
             }
@@ -300,18 +297,14 @@ void KFileView::setCurrentItem(const QString &filename )
     kDebug(kfile_area) << "setCurrentItem: no match found: " << filename;
 }
 
-// KDE4 TODO: remove pointer, return by value
-// KDE4 TODO: remove m_itemList
-const KFileItemList * KFileView::items() const
+KFileItemList KFileView::items() const
 {
-    KFileItem *item = 0L;
+    KFileItemList list;
 
-    // only ever use m_itemList in this method!
-    m_itemList.clear();
-    for ( (item = firstFileItem()); item; item = nextItem( item ) )
-        m_itemList.append( item );
+    for ( KFileItem item = firstFileItem(); !item.isNull(); item = nextItem( item ) )
+        list.append( item );
 
-    return &m_itemList;
+    return list;
 }
 
 void KFileView::setOnlyDoubleClickSelectsFiles( bool enable ) {
@@ -323,20 +316,16 @@ bool KFileView::onlyDoubleClickSelectsFiles() const {
 }
 
 
-const KFileItemList * KFileView::selectedItems() const
+KFileItemList KFileView::selectedItems() const
 {
-    if ( !m_selectedList )
-	m_selectedList = new KFileItemList;
+    KFileItemList list;
 
-    m_selectedList->clear();
-
-    KFileItem *item;
-    for ( (item = firstFileItem()); item; item = nextItem( item ) ) {
+    for ( KFileItem item = firstFileItem(); !item.isNull(); item = nextItem( item ) ) {
         if ( isSelected( item ) )
-            m_selectedList->append( item );
+            list.append( item );
     }
 
-    return m_selectedList;
+    return list;
 }
 
 void KFileView::selectAll()
@@ -344,16 +333,14 @@ void KFileView::selectAll()
     if (selection_mode == KFile::NoSelection || selection_mode== KFile::Single)
         return;
 
-    KFileItem *item = 0L;
-    for ( (item = firstFileItem()); item; item = nextItem( item ) )
+    for ( KFileItem item = firstFileItem(); !item.isNull(); item = nextItem( item ) )
         setSelected( item, true );
 }
 
 
 void KFileView::invertSelection()
 {
-    KFileItem *item = 0L;
-    for ( (item = firstFileItem()); item; item = nextItem( item ) )
+    for ( KFileItem item = firstFileItem(); !item.isNull(); item = nextItem( item ) )
         setSelected( item, !isSelected( item ) );
 }
 
@@ -388,18 +375,15 @@ void KFileView::setViewName( const QString& name )
     m_viewName = name;
 }
 
-void KFileView::removeItem( const KFileItem *item )
+void KFileView::removeItem( const KFileItem &item )
 {
-    if ( !item )
-	return;
+    if ( item.isNull() )
+        return;
 
-    if ( item->isDir() )
+    if ( item.isDir() )
         dirsNumber--;
     else
         filesNumber--;
-
-    if ( m_selectedList )
-        m_selectedList->removeAll( const_cast<KFileItem *>( item ) );
 }
 
 void KFileView::listingCompleted()

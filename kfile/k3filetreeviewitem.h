@@ -41,8 +41,8 @@ class KFileTreeBranch;
 class KFILE_EXPORT K3FileTreeViewItem : public K3ListViewItem
 {
 public:
-   K3FileTreeViewItem( K3FileTreeViewItem*, KFileItem*, KFileTreeBranch * );
-   K3FileTreeViewItem( K3FileTreeView*, KFileItem*, KFileTreeBranch * );
+   K3FileTreeViewItem( K3FileTreeViewItem*, const KFileItem&, KFileTreeBranch * );
+   K3FileTreeViewItem( K3FileTreeView*, const KFileItem&, KFileTreeBranch * );
    ~K3FileTreeViewItem();
 
    /**
@@ -53,7 +53,7 @@ public:
    /**
     * @return the KFileItem the viewitem is representing.
     */
-   KFileItem *fileItem() const         { return m_kfileitem; }
+   KFileItem fileItem() const         { return m_kfileitem; }
 
    /**
     * @return the path of the item.
@@ -84,7 +84,7 @@ protected:
 
 private:
 
-   KFileItem *m_kfileitem;
+   KFileItem m_kfileitem;
    KFileTreeBranch *m_branch;
    bool  m_wasListed;
    class K3FileTreeViewItemPrivate;

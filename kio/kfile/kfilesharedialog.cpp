@@ -84,9 +84,9 @@ bool KFileSharePropsPlugin::supports( const KFileItemList& items )
     const KFileItemList::const_iterator kend = items.end();
     for ( ; kit != kend; ++kit )
     {
-        bool isLocal = (*kit)->isLocalFile();
+        bool isLocal = (*kit).isLocalFile();
         // We only support local dirs
-        if ( !(*kit)->isDir() || !isLocal )
+        if ( !(*kit).isDir() || !isLocal )
             return false;
     }
     return true;
@@ -120,7 +120,7 @@ void KFileSharePropsPlugin::init()
         for ( ; kit != kend && ok; ++kit )
         {
             // We know it's local, see supports()
-            const QString path = (*kit)->url().path();
+            const QString path = (*kit).url().path();
             if ( !path.startsWith( home ) )
                 ok = false;
             if ( KFileShare::isDirectoryShared( path ) )
@@ -249,7 +249,7 @@ void KFileSharePropsPlugin::applyChanges()
         const KFileItemList::const_iterator kend = items.end();
         for ( ; kit != kend && ok; ++kit )
         {
-             const QString path = (*kit)->url().path();
+             const QString path = (*kit).url().path();
              ok = setShared( path, share );
              if (!ok) {
                 if (share)

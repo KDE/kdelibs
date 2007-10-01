@@ -88,7 +88,7 @@ KDE 3.x when you want to port them to KDE 4.0.<br>
 
 <h3><a name="gettingstarted">Getting started</a></h3>
 
-As a start you should have a look at doc/html/porting4.html in the Qt package,
+<p>As a start you should have a look at doc/html/porting4.html in the Qt package,
 or <a href="http://doc.trolltech.com/4.3/porting4.html">this page online</a>.</p>
 
 <p>To start with the porting, you can run "qt3to4 -strict list_of_files"
@@ -949,7 +949,6 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 <h4>KActionSeparator</h4>
 <p>Used to be renamed to KSeparatorAction. KSeparatorAction/KActionSeparator is dead now. Just create a QAction object and call setSeparator(true); on it.</p>
 <p><b>Note:</b> you need to create multiple separator actions if you want to insert multiple separators into a widget, unlike with KDE3.</p>
-</ul>
 
 <h4>KActiveLabel</h4>
 <p>Deprecated and renamed to K3ActiveLabel. Use QLabel instead.</p>
@@ -1442,8 +1441,9 @@ warningContinueCancelList(), warningContinueCancelListWId(), warningYesNoCancel(
 <li>asking for a new password -&gt;  KNewPasswordDialog</li>
 <li>password() return QString</li>
 <li>getPassword() gone, use the following code instead</li>
-<!-- <li>kpassdlg.h was renamed kpassworddialog.h.</li>
-<li>checkPassword take now a QString as argument</li> -->
+<!-- <li>kpassdlg.h was renamed kpassworddialog.h.</li> -->
+<!-- <li>checkPassword take now a QString as argument</li> -->
+</ul>
 <pre>
 KPasswordDialog dlg(parent);
 dlg.setPrompt( prompt );
@@ -1452,7 +1452,6 @@ if( dlg.exec() != QDialog::Accepted )
     return;
 use( dlg.password() );
 </pre>
-</ul>
 
 <h4>KPixmapIO</h4>
 <p>Removed. Use QPixmap.toImage() and QPixmap::fromImage().</p>
@@ -1771,6 +1770,21 @@ in the drop/paste side.</li>
 <h4>KDirLister class</h4>
 <ul>
 <li>The constructor argument is now a separate setter, so: KDirLister(false) -&gt; KDirLister(); KDirLister(true) -&gt; KDirLister() + setDelayedMimeTypes(true). On the other hand, KDirLister being a QObject, it takes a QObject* parent argument.</li>
+<li>KDirLister uses KFileItem by value now:
+  <ul>
+  <li>KFileItem* rootItem() const -&gt; KFileItem rootItem() const</li>
+  <li>KFileItem* findByUrl( const KUrl&amp; url ) const -&gt; KFileItem findByUrl( const KUrl&amp; url ) const</li>
+  <li>KFileItem* findByName( const QString&amp; name ) const -&gt; KFileItem* findByName( const QString&amp; name ) const</li>
+  <li>bool matchesFilter( const KFileItem* ) const -&gt; bool matchesFilter( const KFileItem&amp; ) const</li>
+  <li>bool matchesMimeFilter( const KFileItem* ) const -&gt; bool matchesMimeFilter( const KFileItem&amp; ) const</li>
+  </ul>
+</li>
+<li>The following signals have changed:
+  <ul>
+  <li>void deleteItem( KFileItem *_fileItem ) -&gt; void deleteItem( const KFileItem &amp;fileItem )</li>
+  <li>void refreshItems( const KFileItemList &amp;items ) -&gt; void refreshItems( const QList&lt;QPair&lt;KFileItem, KFileItem&gt;&gt; &amp;entries)</li>
+  </ul>
+</li>
 </ul>
 
 <h4>KDiskFreeSp class</h4>
@@ -2154,22 +2168,24 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 
 <h4>BrowserExtension</h4>
 <ul>
-<li>The following signals have changed:</li>
+<li>The following signals have changed:
   <ul>
       <li>openUrlRequest(const KUrl &amp;, const KParts::URLArgs&amp;) -&gt; openUrlRequestDelayed(const KUrl &amp;, const KParts::OpenUrlArguments&amp;, const KParts::BrowserArguments&amp;)</li>
       <li>openUrlRequestDelayed(const KUrl &amp;, const KParts::URLArgs&amp;) -&gt; openUrlRequestDelayed(const KUrl &amp;, const KParts::OpenUrlArguments&amp;, const KParts::BrowserArguments&amp;)</li>
       <li>The two createNewWindow signals have been merged into a single one: createNewWindow(url, args, browserArgs [, windowArgs, &amp;part] )</li>
       <li>The two popupMenu signals which had URLArgs, now have OpenUrlArguments and BrowserArguments separated as well</li>
   </ul>
+</li>
 <li>Because of the URLArgs split, make sure to replace BrowserExtension::setUrlArgs with BrowserExtension::setBrowserArguments + part-&gt;setArguments</li>
 </ul>
 
 <h4>BrowserHostExtension</h4>
 <ul>
-<li>The following virtal methods have changed:</li>
+<li>The following virtal methods have changed:
   <ul>
       <li>openURLInFrame(const KUrl &amp;, const KParts::URLArgs&amp;) -&gt; openUrlInFrame(const KUrl &amp;, const KParts::OpenUrlArguments&amp;, const KParts::BrowserArguments&amp;)</li>
   </ul>
+</li>
 </ul>
 
 <h4>BrowserRun</h4>
@@ -2191,7 +2207,7 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 
 <h4>KParts::URLArgs</h4>
 <ul>
-<li>URLArgs has been splitted into OpenUrlArguments and BrowserArguments.</li>
+<li>URLArgs has been splitted into OpenUrlArguments and BrowserArguments.
   <ul>
       <li>URLArgs.reload -&gt; OpenUrlArguments.reload()/setReload()</li>
       <li>URLArgs.xOffset -&gt; OpenUrlArguments.xOffset()/setXOffset()</li>
@@ -2200,10 +2216,12 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
       <li>URLArgs.metaData() -&gt; OpenUrlArguments.metaData()</li>
       <li>For anything else (docState, frameName, postData, setDoPost, setContentType etc.): URLArgs -&gt; BrowserArguments</li>
   </ul>
-<li>The BrowserArguments are still set and retrieved from the BrowserExtension, however the OpenUrlArguments are simply stored in KParts::ReadOnlyPart. So for instance:</li>
+</li>
+<li>The BrowserArguments are still set and retrieved from the BrowserExtension, however the OpenUrlArguments are simply stored in KParts::ReadOnlyPart. So for instance:
   <ul>
       <li>m_extension-&gt; urlArgs().xOffset -&gt; arguments().xOffset()</li>
   </ul>
+  </li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
@@ -2552,7 +2570,7 @@ ki18n("Welcome").toString(myLocale);
   <li>(alias) means that the old KDE mime type is an alias in the corresponding XDG mime type, so the conversion is not strictly needed (although suggested)</li>
 </ul>
 
-<table border="1">
+<table border="1" summary="Table of KDE vs. XDG mime types">
 <tr>
   <th>Old KDE mime type</th>
   <th>XDG mime type</th>

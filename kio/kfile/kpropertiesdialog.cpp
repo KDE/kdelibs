@@ -199,16 +199,16 @@ public:
     QList<KPropertiesDialogPlugin*> m_pageList;
 };
 
-KPropertiesDialog::KPropertiesDialog (KFileItem* item,
+KPropertiesDialog::KPropertiesDialog (const KFileItem& item,
                                       QWidget* parent)
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
-  setCaption( i18n( "Properties for %1" , KIO::decodeFileName(item->url().fileName())) );
+  setCaption( i18n( "Properties for %1" , KIO::decodeFileName(item.url().fileName())) );
 
-  assert( item );
-    d->m_items.append(new KFileItem(*item)); // deep copy
+  assert( !item.isNull() );
+    d->m_items.append(item);
 
-    d->m_singleUrl = item->url();
+    d->m_singleUrl = item.url();
     assert(!d->m_singleUrl.isEmpty());
 
     d->init();
@@ -230,18 +230,13 @@ KPropertiesDialog::KPropertiesDialog(const KFileItemList& _items,
   if ( _items.count() > 1 )
     setCaption( i18np( "Properties for 1 item", "Properties for %1 Selected Items", _items.count() ) );
   else
-    setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_items.first()->url().fileName())) );
+    setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_items.first().url().fileName())) );
 
   assert( !_items.isEmpty() );
-    d->m_singleUrl = _items.first()->url();
+    d->m_singleUrl = _items.first().url();
     assert(!d->m_singleUrl.isEmpty());
 
-  // Make copies
-  // TODO turn m_items into a list of KFileItems by values instead of by pointers
-  KFileItemList::const_iterator kit = _items.begin();
-  const KFileItemList::const_iterator kend = _items.end();
-  for ( ; kit != kend; ++kit )
-        d->m_items.append(new KFileItem(**kit));
+    d->m_items = _items;
 
     d->init();
 }
@@ -257,7 +252,7 @@ KPropertiesDialog::KPropertiesDialog (const KUrl& _url,
   KIO::UDSEntry entry;
   KIO::NetAccess::stat(_url, entry, parent);
 
-    d->m_items.append(new KFileItem(entry, _url));
+    d->m_items.append(KFileItem(entry, _url));
     d->init();
 }
 
@@ -274,17 +269,17 @@ KPropertiesDialog::KPropertiesDialog (const KUrl& _tempUrl, const KUrl& _current
     assert(!d->m_singleUrl.isEmpty());
 
   // Create the KFileItem for the _template_ file, in order to read from it.
-    d->m_items.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->m_singleUrl));
+    d->m_items.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->m_singleUrl));
     d->init();
 }
 
-bool KPropertiesDialog::showDialog(KFileItem* item, QWidget* parent,
+bool KPropertiesDialog::showDialog(const KFileItem& item, QWidget* parent,
                                    bool modal)
 {
   // TODO: do we really want to show the win32 property dialog?
   // This means we lose metainfo, support for .desktop files, etc. (DF)
 #ifdef Q_WS_WIN
-  QString localPath = item->localPath();
+  QString localPath = item.localPath();
   if (!localPath.isEmpty())
     return showWin32FilePropertyDialog(localPath);
 #endif
@@ -319,10 +314,10 @@ bool KPropertiesDialog::showDialog(const KFileItemList& _items, QWidget* parent,
                                    bool modal)
 {
   if (_items.count()==1) {
-      KFileItem * item = _items.first();
-      if (item->entry().count() == 0 && item->localPath().isEmpty()) // this remote item wasn't listed by a slave
+      const KFileItem item = _items.first();
+      if (item.entry().count() == 0 && item.localPath().isEmpty()) // this remote item wasn't listed by a slave
          // Let's stat to get more info on the file
-          return KPropertiesDialog::showDialog(item->url(), parent, modal);
+          return KPropertiesDialog::showDialog(item.url(), parent, modal);
       else
           return KPropertiesDialog::showDialog(_items.first(), parent, modal);
   }
@@ -376,7 +371,6 @@ void KPropertiesDialog::setFileNameReadOnly( bool ro )
 
 KPropertiesDialog::~KPropertiesDialog()
 {
-    qDeleteAll(d->m_items);
     qDeleteAll(d->m_pageList);
     delete d;
 
@@ -397,7 +391,7 @@ KUrl KPropertiesDialog::kurl() const
     return d->m_singleUrl;
 }
 
-KFileItem* KPropertiesDialog::item()
+KFileItem& KPropertiesDialog::item()
 {
     return d->m_items.first();
 }
@@ -554,8 +548,8 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
   if ( m_items.count() != 1 )
     return;
 
-  KFileItem *item = m_items.first();
-  QString mimetype = item->mimetype();
+  const KFileItem item = m_items.first();
+  const QString mimetype = item.mimetype();
 
   if ( mimetype.isEmpty() )
     return;
@@ -563,7 +557,7 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
   QString query = QString::fromLatin1(
       "((not exist [X-KDE-Protocol]) or "
       " ([X-KDE-Protocol] == '%1'  )   )"
-      ).arg(item->url().protocol());
+      ).arg(item.url().protocol());
 
   kDebug( 250 ) << "trader query: " << query;
   KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KPropertiesDialog/Plugin", query );
@@ -586,7 +580,7 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
   kDebug(250) << "KPropertiesDialog::updateUrl (post)" << newUrl.url();
 
     d->m_singleUrl = newUrl;
-    d->m_items.first()->setUrl(newUrl);
+    d->m_items.first().setUrl(newUrl);
     assert(!d->m_singleUrl.isEmpty());
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
@@ -654,16 +648,16 @@ KPropertiesDialogPlugin::~KPropertiesDialogPlugin()
   delete d;
 }
 
-bool KPropertiesDialogPlugin::isDesktopFile( KFileItem * _item )
+bool KPropertiesDialogPlugin::isDesktopFile( const KFileItem& _item )
 {
   // only local files
   bool isLocal;
-  const KUrl url = _item->mostLocalUrl( isLocal );
+  const KUrl url = _item.mostLocalUrl( isLocal );
   if ( !isLocal )
     return false;
 
   // only regular files
-  if ( !S_ISREG( _item->mode() ) )
+  if ( !S_ISREG( _item.mode() ) )
     return false;
 
   QString t( url.path() );
@@ -675,7 +669,7 @@ bool KPropertiesDialogPlugin::isDesktopFile( KFileItem * _item )
   fclose(f);
 
   // return true if desktop file
-  return ( _item->mimetype() == "application/x-desktop" );
+  return ( _item.mimetype() == "application/x-desktop" );
 }
 
 void KPropertiesDialogPlugin::setDirty( bool b )
@@ -756,19 +750,19 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   // We set this data from the first item, and we'll
   // check that the other items match against it, resetting when not.
   bool isLocal;
-  KFileItem * item = properties->item();
-  KUrl url = item->mostLocalUrl( isLocal );
-  bool isReallyLocal = item->url().isLocalFile();
+  const KFileItem item = properties->item();
+  KUrl url = item.mostLocalUrl( isLocal );
+  bool isReallyLocal = item.url().isLocalFile();
   bool bDesktopFile = isDesktopFile(item);
-  mode_t mode = item->mode();
-  bool hasDirs = item->isDir() && !item->isLink();
+  mode_t mode = item.mode();
+  bool hasDirs = item.isDir() && !item.isLink();
   bool hasRoot = url.path() == QLatin1String("/");
   QString iconStr = KMimeType::iconNameForUrl(url, mode);
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
-  QString mimeComment = item->mimeComment();
-  d->mimeType = item->mimetype();
-  KIO::filesize_t totalSize = item->size();
+  QString mimeComment = item.mimeComment();
+  d->mimeType = item.mimetype();
+  KIO::filesize_t totalSize = item.size();
   QString magicMimeComment;
   if ( isLocal ) {
       KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
@@ -825,7 +819,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // Extract the file name only
     filename = properties->defaultName();
     if ( filename.isEmpty() ) { // no template
-      filename = item->name(); // this gives support for UDS_NAME, e.g. for kio_trash or kio_system
+      filename = item.name(); // this gives support for UDS_NAME, e.g. for kio_trash or kio_system
     } else {
       d->m_bFromTemplate = true;
       setDirty(); // to enforce that the copy happens
@@ -852,7 +846,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     const KFileItemList::const_iterator kend = items.end();
     for ( ++kit /*no need to check the first one again*/ ; kit != kend; ++kit )
     {
-      const KUrl url = (*kit)->url();
+      const KUrl url = (*kit).url();
       kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.prettyUrl();
       // The list of things we check here should match the variables defined
       // at the beginning of this method.
@@ -860,7 +854,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         isLocal = false; // not all local
       if ( bDesktopFile && isDesktopFile(*kit) != bDesktopFile )
         bDesktopFile = false; // not all desktop files
-      if ( (*kit)->mode() != mode )
+      if ( (*kit).mode() != mode )
         mode = (mode_t)0;
       if ( KMimeType::iconNameForUrl(url, mode) != iconStr )
         iconStr = "kmultiple";
@@ -868,7 +862,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         directory.clear();
       if ( url.protocol() != protocol )
         protocol.clear();
-      if ( !mimeComment.isNull() && (*kit)->mimeComment() != mimeComment )
+      if ( !mimeComment.isNull() && (*kit).mimeComment() != mimeComment )
         mimeComment.clear();
       if ( isLocal && !magicMimeComment.isNull() ) {
           KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
@@ -878,7 +872,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
       if ( isLocal && url.path() == QLatin1String("/") )
         hasRoot = true;
-      if ( (*kit)->isDir() && !(*kit)->isLink() )
+      if ( (*kit).isDir() && !(*kit).isLink() )
       {
         iDirCount++;
         hasDirs = true;
@@ -886,7 +880,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       else
       {
         iFileCount++;
-        totalSize += (*kit)->size();
+        totalSize += (*kit).size();
       }
     }
   }
@@ -1057,17 +1051,17 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       d->m_sizeStopButton->setEnabled( false );
   }
 
-  if (!d->bMultiple && item->isLink()) {
+  if (!d->bMultiple && item.isLink()) {
     l = new QLabel(i18n("Points to:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    l = new KSqueezedTextLabel(item->linkDest(), d->m_frame );
+    l = new KSqueezedTextLabel(item.linkDest(), d->m_frame );
     grid->addWidget(l, curRow++, 2);
   }
 
   if (!d->bMultiple) // Dates for multiple don't make much sense...
   {
-    KDateTime dt = item->time(KFileItem::CreationTime);
+    KDateTime dt = item.time(KFileItem::CreationTime);
     if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Created:"), d->m_frame );
@@ -1077,7 +1071,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget(l, curRow++, 2);
     }
 
-    dt = item->time(KFileItem::ModificationTime);
+    dt = item.time(KFileItem::ModificationTime);
     if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Modified:"), d->m_frame );
@@ -1087,7 +1081,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget(l, curRow++, 2);
     }
 
-    dt = item->time(KFileItem::AccessTime);
+    dt = item.time(KFileItem::AccessTime);
     if ( !dt.isNull() )
     {
       l = new QLabel(i18n("Accessed:"), d->m_frame );
@@ -1264,14 +1258,9 @@ void KFilePropsPlugin::slotSizeDetermine()
 {
   d->m_sizeLabel->setText( i18n("Calculating...") );
   kDebug(250) << " KFilePropsPlugin::slotSizeDetermine() properties->item()=" <<  properties->item();
-  kDebug(250) << " URL=" << properties->item()->url().url();
+  kDebug(250) << " URL=" << properties->item().url().url();
 
-  // Must turn QList<KFileItem *> to QList<KFileItem>... # TODO port KPropertiesDialog to QList<KFileItem>
-  QList<KFileItem> itemList;
-  foreach( KFileItem* it, properties->items() )
-      itemList.append( *it );
-
-  d->dirSizeJob = KIO::directorySize( itemList );
+  d->dirSizeJob = KIO::directorySize( properties->items() );
   d->dirSizeUpdateTimer = new QTimer(this);
   connect( d->dirSizeUpdateTimer, SIGNAL( timeout() ),
            SLOT( slotDirSizeUpdate() ) );
@@ -1285,8 +1274,8 @@ void KFilePropsPlugin::slotSizeDetermine()
   if ( d->m_freeSpaceLabel )
   {
     bool isLocal;
-    KFileItem * item = properties->item();
-    KUrl url = item->mostLocalUrl( isLocal );
+    const KFileItem item = properties->item();
+    KUrl url = item.mostLocalUrl( isLocal );
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
     if (mp) {
       KDiskFreeSpace * job = new KDiskFreeSpace;
@@ -1409,8 +1398,8 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
     }
   }
 
-  assert( properties->item() );
-  assert( !properties->item()->url().isEmpty() );
+  assert( !properties->item().isNull() );
+  assert( !properties->item().url().isEmpty() );
 
   // Save the file where we can -> usually in ~/.kde/...
   if (KBindingPropsPlugin::supports(properties->items()) && !d->m_sRelativePath.isEmpty())
@@ -1452,7 +1441,7 @@ void KFilePropsPlugin::applyIconChanges()
   if ( url.isLocalFile()) {
     QString path;
 
-    if (S_ISDIR(properties->item()->mode()))
+    if (S_ISDIR(properties->item().mode()))
     {
       path = url.path(KUrl::AddTrailingSlash) + QString::fromLatin1(".directory");
       // don't call updateUrl because the other tabs (i.e. permissions)
@@ -1463,7 +1452,7 @@ void KFilePropsPlugin::applyIconChanges()
 
     // Get the default image
     QString str = KMimeType::findByUrl( url,
-                                        properties->item()->mode(),
+                                        properties->item().mode(),
                                         true )->iconName();
     // Is it another one than the default ?
     QString sIcon;
@@ -1589,18 +1578,18 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   bool isTrash = ( properties->kurl().protocol().toLower() == "trash" );
   bool IamRoot = (geteuid() == 0);
 
-  KFileItem * item = properties->item();
-  bool isLink = item->isLink();
-  bool isDir = item->isDir(); // all dirs
-  bool hasDir = item->isDir(); // at least one dir
-  d->permissions = item->permissions(); // common permissions to all files
+  const KFileItem item = properties->item();
+  bool isLink = item.isLink();
+  bool isDir = item.isDir(); // all dirs
+  bool hasDir = item.isDir(); // at least one dir
+  d->permissions = item.permissions(); // common permissions to all files
   d->partialPermissions = d->permissions; // permissions that only some files have (at first we take everything)
   d->isIrregular = isIrregular(d->permissions, isDir, isLink);
-  d->strOwner = item->user();
-  d->strGroup = item->group();
-  d->hasExtendedACL = item->ACL().isExtended() || item->defaultACL().isValid();
-  d->extendedACL = item->ACL();
-  d->defaultACL = item->defaultACL();
+  d->strOwner = item.user();
+  d->strGroup = item.group();
+  d->hasExtendedACL = item.ACL().isExtended() || item.defaultACL().isValid();
+  d->extendedACL = item.ACL();
+  d->defaultACL = item.defaultACL();
   d->fileSystemSupportsACLs = false;
 
   if ( properties->items().count() > 1 )
@@ -1611,25 +1600,25 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     const KFileItemList::const_iterator kend = items.end();
     for ( ++it /*no need to check the first one again*/ ; it != kend; ++it )
     {
-      const KUrl url = (*it)->url();
+      const KUrl url = (*it).url();
       if (!d->isIrregular)
-	d->isIrregular |= isIrregular((*it)->permissions(),
-				      (*it)->isDir() == isDir,
-				      (*it)->isLink() == isLink);
-      d->hasExtendedACL = d->hasExtendedACL || (*it)->hasExtendedACL();
-      if ( (*it)->isLink() != isLink )
+	d->isIrregular |= isIrregular((*it).permissions(),
+				      (*it).isDir() == isDir,
+				      (*it).isLink() == isLink);
+      d->hasExtendedACL = d->hasExtendedACL || (*it).hasExtendedACL();
+      if ( (*it).isLink() != isLink )
         isLink = false;
-      if ( (*it)->isDir() != isDir )
+      if ( (*it).isDir() != isDir )
         isDir = false;
-      hasDir |= (*it)->isDir();
-      if ( (*it)->permissions() != d->permissions )
+      hasDir |= (*it).isDir();
+      if ( (*it).permissions() != d->permissions )
       {
-        d->permissions &= (*it)->permissions();
-        d->partialPermissions |= (*it)->permissions();
+        d->permissions &= (*it).permissions();
+        d->partialPermissions |= (*it).permissions();
       }
-      if ( (*it)->user() != d->strOwner )
+      if ( (*it).user() != d->strOwner )
         d->strOwner.clear();
-      if ( (*it)->group() != d->strGroup )
+      if ( (*it).group() != d->strGroup )
         d->strGroup.clear();
     }
   }
@@ -2133,7 +2122,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
   // FIXME make it work with partial entries
   if ( properties->items().count() == 1 ) {
-    QByteArray path = QFile::encodeName( properties->item()->url().path() );
+    QByteArray path = QFile::encodeName( properties->item().url().path() );
     d->fileSystemSupportsACLs = fileSystemSupportsACL( path );
   }
   if ( d->fileSystemSupportsACLs  ) {
@@ -2148,7 +2137,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     if ( d->defaultACL.isValid() )
       extendedACLs->setDefaultACL( d->defaultACL );
 
-    if ( properties->items().first()->isDir() )
+    if ( properties->items().first().isDir() )
       extendedACLs->setAllowDefaults( true );
   }
 #endif
@@ -2178,8 +2167,8 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
   KFileItemList::const_iterator it = items.begin();
   const KFileItemList::const_iterator kend = items.end();
   for ( ; it != kend; ++it ) {
-    if (isIrregular(((*it)->permissions() & andPermissions) | orPermissions,
-		    (*it)->isDir(), (*it)->isLink())) {
+    if (isIrregular(((*it).permissions() & andPermissions) | orPermissions,
+		    (*it).isDir(), (*it).isLink())) {
       d->isIrregular = true;
       break;
     }
@@ -2509,20 +2498,20 @@ void KFilePermissionsPropsPlugin::applyChanges()
   KFileItemList::const_iterator it = items.begin();
   const KFileItemList::const_iterator kend = items.end();
   for ( ; it != kend; ++it ) {
-    if ((*it)->isDir()) {
+    if ((*it).isDir()) {
       dirs.append(*it);
-      if ((*it)->permissions() != (((*it)->permissions() & andDirPermissions) | orDirPermissions))
+      if ((*it).permissions() != (((*it).permissions() & andDirPermissions) | orDirPermissions))
 	permissionChange = true;
     }
-    else if ((*it)->isFile()) {
+    else if ((*it).isFile()) {
       files.append(*it);
-      if ((*it)->permissions() != (((*it)->permissions() & andFilePermissions) | orFilePermissions))
+      if ((*it).permissions() != (((*it).permissions() & andFilePermissions) | orFilePermissions))
 	permissionChange = true;
     }
   }
 
-  const bool ACLChange = ( d->extendedACL !=  properties->item()->ACL() );
-  const bool defaultACLChange = ( d->defaultACL != properties->item()->defaultACL() );
+  const bool ACLChange = ( d->extendedACL !=  properties->item().ACL() );
+  const bool defaultACLChange = ( d->defaultACL != properties->item().defaultACL() );
 
   if ( owner.isEmpty() && group.isEmpty() && !recursive
       && !permissionChange && !ACLChange && !defaultACLChange )
@@ -2640,13 +2629,13 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
 {
   if ( _items.count() != 1 )
     return false;
-  KFileItem * item = _items.first();
+  const KFileItem item = _items.first();
   // check if desktop file
   if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
     return false;
 
   // open file and check type
-  KDesktopFile config( item->url().path() );
+  KDesktopFile config( item.url().path() );
   return config.hasLinkType();
 }
 
@@ -2809,13 +2798,13 @@ bool KBindingPropsPlugin::supports( const KFileItemList& _items )
 {
   if ( _items.count() != 1 )
     return false;
-  KFileItem * item = _items.first();
+  const KFileItem item = _items.first();
   // check if desktop file
   if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
     return false;
 
   // open file and check type
-  KDesktopFile config( item->url().path() );
+  KDesktopFile config( item.url().path() );
   return config.hasMimeTypeType();
 }
 
@@ -3104,12 +3093,12 @@ bool KDevicePropsPlugin::supports( const KFileItemList& _items )
 {
   if ( _items.count() != 1 )
     return false;
-  KFileItem * item = _items.first();
+  const KFileItem item = _items.first();
   // check if desktop file
   if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
     return false;
   // open file and check type
-  KDesktopFile config( item->url().path() );
+  KDesktopFile config( item.url().path() );
   return config.hasDeviceType();
 }
 
@@ -3560,12 +3549,12 @@ bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
 {
   if ( _items.count() != 1 )
     return false;
-  KFileItem * item = _items.first();
+  const KFileItem item = _items.first();
   // check if desktop file
   if ( !KPropertiesDialogPlugin::isDesktopFile( item ) )
     return false;
   // open file and check type
-  KDesktopFile config( item->url().path() );
+  KDesktopFile config( item.url().path() );
   return config.hasApplicationType() && KAuthorized::authorize("run_desktop_files") && KAuthorized::authorize("shell_access");
 }
 

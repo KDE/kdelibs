@@ -449,8 +449,8 @@ private Q_SLOTS:
     void locationAccepted( const QString& url );
 
     void slotFilterChanged();
-    void fileHighlighted(const KFileItem *i);
-    void fileSelected(const KFileItem *i);
+    void fileHighlighted(const KFileItem &i);
+    void fileSelected(const KFileItem &i);
     void slotStatResult(KJob* job);
     void slotLoadingFinished();
     void fileCompletion( const QString& );
