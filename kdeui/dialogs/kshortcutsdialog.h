@@ -53,7 +53,7 @@ class KDEUI_EXPORT KShortcutsDialog : public KDialog
 public:
 	/**
 	 * Constructs a KShortcutsDialog as a child of @p parent.
-	 * Set @p bAllowLetterShortcuts to false if unmodified alphanumeric
+	 * Set @p allowLetterShortcuts to false if unmodified alphanumeric
 	 * keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
 	explicit KShortcutsDialog(KShortcutsEditor::ActionTypes types = KShortcutsEditor::AllActions,
