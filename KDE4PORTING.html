@@ -2030,7 +2030,7 @@ a listDir result.</li>
 
 <h4>KMimeType</h4>
 <ul>
-<li>KMimeType::pixmap() has been deprecated (for core/gui separation), use icon() or icon(url)
+<li>KMimeType::pixmap() has been deprecated (for core/gui separation), use iconName() or iconName(url)
 and KIconLoader::loadMimeTypeIcon with that icon name.</li>
 <li>KMimeType::pixmapForURL -&gt; KIO::pixmapForURL</li>
 <li>KMimeType::comment(KUrl,bool) -&gt; KIO::comment(KUrl)</li>
@@ -2173,7 +2173,7 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
       <li>openUrlRequest(const KUrl &amp;, const KParts::URLArgs&amp;) -&gt; openUrlRequestDelayed(const KUrl &amp;, const KParts::OpenUrlArguments&amp;, const KParts::BrowserArguments&amp;)</li>
       <li>openUrlRequestDelayed(const KUrl &amp;, const KParts::URLArgs&amp;) -&gt; openUrlRequestDelayed(const KUrl &amp;, const KParts::OpenUrlArguments&amp;, const KParts::BrowserArguments&amp;)</li>
       <li>The two createNewWindow signals have been merged into a single one: createNewWindow(url, args, browserArgs [, windowArgs, &amp;part] )</li>
-      <li>The two popupMenu signals which had URLArgs, now have OpenUrlArguments and BrowserArguments separated as well</li>
+      <li>The popupMenu signals have been greatly simplified, 2 signals instead of 5. URLArgs has been split into OpenUrlArguments and BrowserArguments; the KXMLGUIClient argument has been removed, and the ActionGroupMap mechanism replaces it.</li>
   </ul>
 </li>
 <li>Because of the URLArgs split, make sure to replace BrowserExtension::setUrlArgs with BrowserExtension::setBrowserArguments + part-&gt;setArguments</li>

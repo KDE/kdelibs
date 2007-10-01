@@ -112,12 +112,14 @@ private:
  * @internal
  * INTERNAL class. *NOT* part of the public API.
  */
-class KHTMLPopupGUIClient : public QObject, public KXMLGUIClient
+class KHTMLPopupGUIClient : public QObject
 {
   Q_OBJECT
 public:
-  KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KUrl &url );
+  KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url );
   virtual ~KHTMLPopupGUIClient();
+
+    KParts::BrowserExtension::ActionGroupMap actionGroups() const;
 
   static void saveURL( QWidget *parent, const QString &caption, const KUrl &url,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),

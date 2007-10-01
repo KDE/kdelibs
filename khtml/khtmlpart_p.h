@@ -367,7 +367,6 @@ public:
 
   KParts::PartManager *m_manager;
 
-  QString m_popupMenuXML;
   KHTMLPart::GUIProfile m_guiProfile;
 
   int m_zoomFactor;

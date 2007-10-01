@@ -344,7 +344,8 @@ public:
       NoDeletion=0x0040, /**< deletion, trashing and renaming not allowed (e.g. parent dir not writeable).
        *            (this is only needed if the protocol itself supports deletion, unlike e.g. HTTP) */
       IsLink=0x0080, /**< show "Bookmark This Link" and other link-related actions (linkactions merging group) */
-      ShowUrlOperations=0x0100 /**< show copy,cut,paste, as well as rename+trash+delete, if NoDeletion is not set. */
+      ShowUrlOperations=0x0100, /**< show copy,cut,paste, as well as rename+trash+delete, if NoDeletion is not set. */
+      ShowProperties=0x200     /**< show "Properties" action (usually done by directory views) */
   };
 
   Q_DECLARE_FLAGS( PopupFlags, PopupFlag )
@@ -480,6 +481,14 @@ public:
    */
   void pasteRequest();
 
+    /**
+     * Associates a list of actions with a predefined name known by the host's popupmenu:
+     * "editactions" for actions related text editing,
+     * "linkactions" for actions related to hyperlinks,
+     * "partactions" for any other actions provided by the part
+     */
+    typedef QMap<QString, QList<QAction *> > ActionGroupMap;
+
 Q_SIGNALS:
 #ifndef Q_MOC_RUN
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -585,61 +594,41 @@ public:  // yes, those signals are public; don't tell moc or doxygen :)
   void infoMessage( const QString & );
 
   /**
-   * Emit this to make the browser show a standard popup menu
-   * at the point @p global for the files @p items.
-   */
-  void popupMenu( const QPoint &global, const KFileItemList &items );
-
-  /**
-   * Emit this to make the browser show a standard popup menu
-   * at the point @p global for the files @p items.
+   * Emit this to make the browser show a standard popup menu for the files @p items.
    *
-   * The GUI described by @p client is being merged with the popupmenu of the host
+   * @param global global coordinates where the popup should be shown
+   * @param items list of file items which the popup applies to
+   * @param args OpenUrlArguments, mostly for metadata here
+   * @param browserArguments BrowserArguments, mostly for referrer
+   * @param flags enables/disables certain builtin actions in the popupmenu
+   * @param actionGroups named groups of actions which should be inserted into the popup, see ActionGroupMap
    */
-  void popupMenu( KXMLGUIClient *client, const QPoint &global, const KFileItemList &items,
+  void popupMenu( const QPoint &global, const KFileItemList &items,
                   const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
                   const KParts::BrowserArguments &browserArgs = KParts::BrowserArguments(),
-                  KParts::BrowserExtension::PopupFlags flags = KParts::BrowserExtension::DefaultPopupItems );
+                  KParts::BrowserExtension::PopupFlags flags = KParts::BrowserExtension::DefaultPopupItems,
+                  const KParts::BrowserExtension::ActionGroupMap& actionGroups = ActionGroupMap() );
 
   /**
-   * Emit this to make the browser show a standard popup menu
-   * at the point @p global for the given @p url.
+   * Emit this to make the browser show a standard popup menu for the given @p url.
    *
-   * Give as much information
-   * about this URL as possible, like the @p mimeType and the file type
-   * (@p mode: S_IFREG, S_IFDIR...)
+   * Give as much information about this URL as possible,
+   * like @p args.mimeType and the file type @p mode
+   *
+   * @param global global coordinates where the popup should be shown
+   * @param url the URL this popup applies to
+   * @param mode the file type of the url (S_IFREG, S_IFDIR...)
+   * @param args OpenUrlArguments, set the mimetype of the URL using setMimeType()
+   * @param browserArguments BrowserArguments, mostly for referrer
+   * @param flags enables/disables certain builtin actions in the popupmenu
+   * @param actionGroups named groups of actions which should be inserted into the popup, see ActionGroupMap
    */
   void popupMenu( const QPoint &global, const KUrl &url,
-                  const QString &mimeType, mode_t mode = (mode_t)-1 );
-
-  /**
-   * Emit this to make the browser show a standard popup menu
-   * at the point @p global for the given @p url.
-   *
-   * Give as much information
-   * about this URL as possible, like the @p mimeType and the file type
-   * (@p mode: S_IFREG, S_IFDIR...)
-   * The GUI described by @p client is being merged with the popupmenu of the host
-   */
-  void popupMenu( KXMLGUIClient *client,
-                  const QPoint &global, const KUrl &url,
-                  const QString &mimeType, mode_t mode = (mode_t)-1 );
-
-  /**
-   * Emit this to make the browser show a standard popup menu
-   * at the point @p global for the given @p url.
-   *
-   * Give as much information
-   * about this URL as possible, like @p args.mimeType and the file type
-   * (@p mode: S_IFREG, S_IFDIR...)
-   * The GUI described by @p client is being merged with the popupmenu of the host
-   */
-  void popupMenu( KXMLGUIClient *client,
-                  const QPoint &global, const KUrl &url,
-                  const KParts::OpenUrlArguments &args,
-                  const KParts::BrowserArguments &browserArgs,
-                  KParts::BrowserExtension::PopupFlags flags,
-                  mode_t mode = (mode_t)-1 );
+                  mode_t mode = (mode_t)-1,
+                  const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
+                  const KParts::BrowserArguments &browserArgs = KParts::BrowserArguments(),
+                  KParts::BrowserExtension::PopupFlags flags = KParts::BrowserExtension::DefaultPopupItems,
+                  const KParts::BrowserExtension::ActionGroupMap& actionGroups = ActionGroupMap() );
 
   /**
    * Inform the hosting application about the current selection.

@@ -432,8 +432,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( this, SIGNAL( started( KIO::Job * ) ),
            this, SLOT( updateActions() ) );
 
-  d->m_popupMenuXML = KXMLGUIFactory::readConfigFile( KStandardDirs::locate( "data", "khtml/khtml_popupmenu.rc", KHTMLFactory::componentData() ) );
-
   connect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
            this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
   connect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
@@ -4551,18 +4549,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
       connect( child->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, const KParts::WindowArgs &, KParts::ReadOnlyPart ** ) ),
                d->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & , const KParts::WindowArgs &, KParts::ReadOnlyPart **) ) );
 
-      connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
-               d->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
-      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ),
-               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
-      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags ) ),
-               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags ) ) );
-      connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ),
-               d->m_extension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ) );
-      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ),
-               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ) );
-      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t ) ),
-               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t ) ) );
+      connect( child->m_extension, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
+             d->m_extension, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
+      connect( child->m_extension, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
+             d->m_extension, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
 
       connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
                d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
@@ -4979,7 +4969,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 
   // Danger, Will Robinson. The Popup might stay around for a much
   // longer time than KHTMLPart. Deal with it.
-  KHTMLPopupGUIClient* client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, linkKUrl );
+  KHTMLPopupGUIClient* client = new KHTMLPopupGUIClient( this, linkKUrl );
   QPointer<QObject> guard( client );
 
   QString mimetype = QLatin1String( "text/html" );
@@ -4993,7 +4983,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     }
     else						// look at "extension" of link
     {
-		const QString fname(popupURL.fileName(KUrl::ObeyTrailingSlash));
+      const QString fname(popupURL.fileName(KUrl::ObeyTrailingSlash));
       if (!fname.isEmpty() && !popupURL.hasRef() && popupURL.query().isEmpty())
       {
         KMimeType::Ptr pmt = KMimeType::findByPath(fname,0,true);
@@ -5016,7 +5006,9 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 
   args.setMimeType(mimetype);
 
-  emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL, args, browserArgs, itemflags, S_IFREG /*always a file*/);
+  emit d->m_extension->popupMenu( QCursor::pos(), popupURL, S_IFREG /*always a file*/,
+                                  args, browserArgs, itemflags,
+                                  client->actionGroups() );
 
   if ( !guard.isNull() ) {
      delete client;

@@ -394,298 +394,330 @@ public:
   KUrl m_imageURL;
   QPixmap m_pixmap;
   QString m_suggestedFilename;
+    KActionCollection* m_actionCollection;
+    KParts::BrowserExtension::ActionGroupMap actionGroups;
 };
 
 
-KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, const KUrl &url )
-  : QObject( khtml ), d(new KHTMLPopupGUIClientPrivate)
+KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
+    : QObject( khtml ), d(new KHTMLPopupGUIClientPrivate)
 {
-  d->m_khtml = khtml;
-  d->m_url = url;
-  bool isImage = false;
-  bool hasSelection = khtml->hasSelection();
-  setComponentData( khtml->componentData() );
+    d->m_khtml = khtml;
+    d->m_url = url;
+    d->m_actionCollection = new KActionCollection(this);
+    bool isImage = false;
+    bool hasSelection = khtml->hasSelection();
 
-  DOM::Element e;
-  e = khtml->nodeUnderMouse();
+    DOM::Element e = khtml->nodeUnderMouse();
 
-  if ( !e.isNull() && (e.elementId() == ID_IMG ||
-                       (e.elementId() == ID_INPUT && !static_cast<DOM::HTMLInputElement>(e).src().isEmpty())))
-  {
-    if (e.elementId() == ID_IMG) {
-      DOM::HTMLImageElementImpl *ie = static_cast<DOM::HTMLImageElementImpl*>(e.handle());
-      khtml::RenderImage *ri = dynamic_cast<khtml::RenderImage*>(ie->renderer());
-      if (ri && ri->contentObject()) {
-        d->m_suggestedFilename = static_cast<khtml::CachedImage*>(ri->contentObject())->suggestedFilename();
-      }
+    if ( !e.isNull() && (e.elementId() == ID_IMG ||
+                         (e.elementId() == ID_INPUT && !static_cast<DOM::HTMLInputElement>(e).src().isEmpty())))
+    {
+        if (e.elementId() == ID_IMG) {
+            DOM::HTMLImageElementImpl *ie = static_cast<DOM::HTMLImageElementImpl*>(e.handle());
+            khtml::RenderImage *ri = dynamic_cast<khtml::RenderImage*>(ie->renderer());
+            if (ri && ri->contentObject()) {
+                d->m_suggestedFilename = static_cast<khtml::CachedImage*>(ri->contentObject())->suggestedFilename();
+            }
+        }
+        isImage=true;
     }
-    isImage=true;
-  }
 
-  if (hasSelection)
-  {
-      QAction* copyAction = actionCollection()->addAction( KStandardAction::Copy, "copy",
-                                                           d->m_khtml->browserExtension(), SLOT( copy() ) );
+    if (hasSelection) {
+        QList<QAction *> editActions;
+        QAction* copyAction = d->m_actionCollection->addAction( KStandardAction::Copy, "copy",
+                                                                d->m_khtml->browserExtension(), SLOT( copy() ) );
 
-      copyAction->setText(i18n("&Copy Text"));
-      copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
-      actionCollection()->addAction( "selectAll", khtml->actionCollection()->action( "selectAll" ) );
+        copyAction->setText(i18n("&Copy Text"));
+        copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
+        editActions.append(copyAction);
+
+        editActions.append(khtml->actionCollection()->action("selectAll"));
 
 
-      // Fill search provider entries
-      KConfig config("kuriikwsfilterrc");
-      KConfigGroup cg = config.group("General");
-      const QString defaultEngine = cg.readEntry("DefaultSearchEngine", "google");
-      const char keywordDelimiter = cg.readEntry("KeywordDelimiter", static_cast<int>(':'));
+        // Fill search provider entries
+        KConfig config("kuriikwsfilterrc");
+        KConfigGroup cg = config.group("General");
+        const QString defaultEngine = cg.readEntry("DefaultSearchEngine", "google");
+        const char keywordDelimiter = cg.readEntry("KeywordDelimiter", static_cast<int>(':'));
 
-      // search text
-      QString selectedText = khtml->selectedText();
-      selectedText.replace("&", "&&");
-      if ( selectedText.length()>18 ) {
-        selectedText.truncate(15);
-        selectedText+="...";
-      }
+        // search text
+        QString selectedText = khtml->selectedText();
+        selectedText.replace("&", "&&");
+        if ( selectedText.length()>18 ) {
+            selectedText.truncate(15);
+            selectedText+="...";
+        }
 
-      // default search provider
-      KService::Ptr service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(defaultEngine));
+        // default search provider
+        KService::Ptr service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(defaultEngine));
 
-      // search provider icon
-      QPixmap icon;
-      KUriFilterData data;
-      QStringList list;
-      data.setData( QString("some keyword") );
-      list << "kurisearchfilter" << "kuriikwsfilter";
+        // search provider icon
+        QPixmap icon;
+        KUriFilterData data;
+        QStringList list;
+        data.setData( QString("some keyword") );
+        list << "kurisearchfilter" << "kuriikwsfilter";
 
-      QString name;
-      if ( KUriFilter::self()->filterUri(data, list) )
-      {
-        QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
-        if ( iconPath.isEmpty() )
-          icon = SmallIcon("edit-find");
-        else
-          icon = QPixmap( iconPath );
-        name = service->name();
-      }
-      else
-      {
-        icon = SmallIcon("google");
-        name = "Google";
-      }
-
-      KAction *action = new KAction( i18n( "Search for '%1' with %2" ,  selectedText ,  name ), this );
-      actionCollection()->addAction( "searchProvider", action );
-      static_cast<QAction*>( action )->setIcon( QIcon( icon ) );
-      connect( action, SIGNAL( triggered( bool ) ), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
-
-      // favorite search providers
-      QStringList favoriteEngines;
-      favoriteEngines << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
-      favoriteEngines = cg.readEntry("FavoriteSearchEngines", favoriteEngines);
-
-      if ( !favoriteEngines.isEmpty()) {
-        KActionMenu* providerList = new KActionMenu( i18n( "Search for '%1' with" ,  selectedText ), this );
-        actionCollection()->addAction( "searchProviderList", providerList );
-
-        QStringList::ConstIterator it = favoriteEngines.begin();
-        for ( ; it != favoriteEngines.end(); ++it ) {
-          if (*it==defaultEngine)
-            continue;
-          service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(*it));
-          if (!service)
-            continue;
-          const QString searchProviderPrefix = *(service->property("Keys").toStringList().begin()) + keywordDelimiter;
-          data.setData( searchProviderPrefix + "some keyword" );
-
-          if ( KUriFilter::self()->filterUri(data, list) )
-          {
+        QString name;
+        if ( KUriFilter::self()->filterUri(data, list) )
+        {
             QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
             if ( iconPath.isEmpty() )
-              icon = SmallIcon("edit-find");
+                icon = SmallIcon("edit-find");
             else
-              icon = QPixmap( iconPath );
+                icon = QPixmap( iconPath );
             name = service->name();
-
-            KAction *action = new KAction( name, this  );
-            actionCollection()->addAction( QString( "searchProvider" + searchProviderPrefix ).toLatin1().constData(), action );
-            static_cast<QAction*>( action )->setIcon( QIcon( icon ) );
-            connect( action, SIGNAL( triggered( bool ) ), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
-
-            providerList->addAction(action);
-          }
         }
-      }
+        else
+        {
+            icon = SmallIcon("google");
+            name = "Google";
+        }
 
+        KAction *action = new KAction( i18n( "Search for '%1' with %2", selectedText, name ), this );
+        d->m_actionCollection->addAction( "searchProvider", action );
+        editActions.append(action);
+        static_cast<QAction*>( action )->setIcon( QIcon( icon ) );
+        connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
 
-      if ( selectedText.contains("://") && KUrl(selectedText).isValid() ) {
-         KAction *action = new KAction( i18n( "Open '%1'" ,  selectedText ), this );
-         actionCollection()->addAction( "openSelection", action );
-         action->setIcon( KIcon( "window-new" ) );
-         connect( action, SIGNAL( triggered( bool ) ), d->m_khtml->browserExtension(), SLOT( openSelection() ) );
-      }
-  }
-  else if ( url.isEmpty() && !isImage )
-  {
-      actionCollection()->addAction( "security", khtml->actionCollection()->action( "security" ) );
-      actionCollection()->addAction( "setEncoding", khtml->actionCollection()->action( "setEncoding" ) );
-      KAction *action = new KAction( i18n( "Stop Animations" ), this );
-      actionCollection()->addAction( "stopanimations", action );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotStopAnimations() ) );
-  }
+        // favorite search providers
+        QStringList favoriteEngines;
+        favoriteEngines << "google" << "google_groups" << "google_news" << "webster" << "dmoz" << "wikipedia";
+        favoriteEngines = cg.readEntry("FavoriteSearchEngines", favoriteEngines);
 
-  if ( !url.isEmpty() )
-  {
-    if (url.protocol() == "mailto")
-    {
-      KAction *action = new KAction( i18n( "Copy Email Address" ), this );
-      actionCollection()->addAction( "copylinklocation", action );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotCopyLinkLocation() ) );
+        if ( !favoriteEngines.isEmpty()) {
+            KActionMenu* providerList = new KActionMenu( i18n( "Search for '%1' with" ,  selectedText ), this );
+            d->m_actionCollection->addAction( "searchProviderList", providerList );
+            editActions.append(providerList);
+
+            QStringList::ConstIterator it = favoriteEngines.begin();
+            for ( ; it != favoriteEngines.end(); ++it ) {
+                if (*it==defaultEngine)
+                    continue;
+                service = KService::serviceByDesktopPath(QString("searchproviders/%1.desktop").arg(*it));
+                if (!service)
+                    continue;
+                const QString searchProviderPrefix = *(service->property("Keys").toStringList().begin()) + keywordDelimiter;
+                data.setData( searchProviderPrefix + "some keyword" );
+
+                if ( KUriFilter::self()->filterUri(data, list) )
+                {
+                    QString iconPath = KStandardDirs::locate("cache", KMimeType::favIconForUrl(data.uri()) + ".png");
+                    if ( iconPath.isEmpty() )
+                        icon = SmallIcon("edit-find");
+                    else
+                        icon = QPixmap( iconPath );
+                    name = service->name();
+
+                    KAction *action = new KAction( name, this  );
+                    d->m_actionCollection->addAction( QString( "searchProvider" + searchProviderPrefix ).toLatin1().constData(), action );
+                    static_cast<QAction*>( action )->setIcon( QIcon( icon ) );
+                    connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( searchProvider() ) );
+
+                    providerList->addAction(action);
+                }
+            }
+        }
+
+        if ( selectedText.contains("://") && KUrl(selectedText).isValid() ) {
+            KAction *action = new KAction( i18n( "Open '%1'", selectedText ), this );
+            d->m_actionCollection->addAction( "openSelection", action );
+            action->setIcon( KIcon( "window-new" ) );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( openSelection() ) );
+            editActions.append(action);
+        }
+
+        KAction* separator = new KAction(d->m_actionCollection);
+        separator->setSeparator(true);
+        editActions.append(separator);
+
+        d->actionGroups.insert("editactions", editActions);
     }
-    else
-    {
-      KAction *action = new KAction( i18n( "&Save Link As..." ), this );
-      actionCollection()->addAction( "savelinkas", action );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveLinkAs() ) );
 
-      action = new KAction( i18n( "Copy &Link Address" ), this );
-      actionCollection()->addAction( "copylinklocation", action );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotCopyLinkLocation() ) );
+    if (!url.isEmpty()) {
+        QList<QAction *> linkActions;
+        if (url.protocol() == "mailto") {
+            KAction *action = new KAction( i18n( "Copy Email Address" ), this );
+            d->m_actionCollection->addAction( "copylinklocation", action );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyLinkLocation()) );
+            linkActions.append(action);
+        } else {
+            KAction *action = new KAction( i18n( "&Save Link As..." ), this );
+            d->m_actionCollection->addAction( "savelinkas", action );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotSaveLinkAs()) );
+            linkActions.append(action);
+
+            action = new KAction( i18n( "Copy &Link Address" ), this );
+            d->m_actionCollection->addAction( "copylinklocation", action );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotCopyLinkLocation() ) );
+            linkActions.append(action);
+        }
+        d->actionGroups.insert("linkactions", linkActions);
     }
-  }
 
-  // frameset? -> add "Reload Frame" etc.
-  if (!hasSelection)
-  {
-    if ( khtml->parentPart() )
-    {
-      KAction *action = new KAction( i18n( "Open in New &Window" ), this );
-      actionCollection()->addAction( "frameinwindow", action );
-      action->setIcon( KIcon( "window-new" ) );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotFrameInWindow() ) );
+    QList<QAction *> partActions;
+    // frameset? -> add "Reload Frame" etc.
+    if (!hasSelection) {
+        if ( khtml->parentPart() ) {
+            KActionMenu* menu = new KActionMenu(this);
+            KAction *action = new KAction( i18n( "Open in New &Window" ), this );
+            d->m_actionCollection->addAction( "frameinwindow", action );
+            action->setIcon( KIcon( "window-new" ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInWindow()) );
+            menu->addAction(action);
 
-      action = new KAction( i18n( "Open in &This Window" ), this );
-      actionCollection()->addAction( "frameintop", action );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotFrameInTop() ) );
+            action = new KAction( i18n( "Open in &This Window" ), this );
+            d->m_actionCollection->addAction( "frameintop", action );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotFrameInTop() ) );
+            menu->addAction(action);
 
-      action = new KAction( i18n( "Open in &New Tab" ), this );
-      actionCollection()->addAction( "frameintab", action );
-      action->setIcon( KIcon( "tab-new" ) );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotFrameInTab() ) );
+            action = new KAction( i18n( "Open in &New Tab" ), this );
+            d->m_actionCollection->addAction( "frameintab", action );
+            action->setIcon( KIcon( "tab-new" ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotFrameInTab() ) );
+            menu->addAction(action);
 
-      action = new KAction( i18n( "Reload Frame" ), this );
-      actionCollection()->addAction( "reloadframe", action );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotReloadFrame() ) );
+            action = new KAction(d->m_actionCollection);
+            action->setSeparator(true);
+            menu->addAction(action);
 
-      if ( KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled() ) {
-          if ( khtml->d->m_frame->m_type == khtml::ChildFrame::IFrame ) {
-              action = new KAction( i18n( "Block IFrame..." ), this );
-              actionCollection()->addAction( "blockiframe", action );
-              connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotBlockIFrame() ) );
-          }
-      }
+            action = new KAction( i18n( "Reload Frame" ), this );
+            d->m_actionCollection->addAction( "reloadframe", action );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotReloadFrame() ) );
+            menu->addAction(action);
 
-      action = new KAction( i18n( "View Frame Source" ), this );
-      actionCollection()->addAction( "viewFrameSource", action );
-      connect( action, SIGNAL( triggered( bool ) ), d->m_khtml, SLOT( slotViewDocumentSource() ) );
+            action = new KAction( i18n( "Print Frame..." ), this );
+            d->m_actionCollection->addAction( "printFrame", action );
+            action->setIcon( KIcon( "print-frame" ) );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( print() ) );
+            menu->addAction(action);
 
-      action = new KAction( i18n( "View Frame Information" ), this );
-      actionCollection()->addAction( "viewFrameInfo", action );
-      connect( action, SIGNAL( triggered( bool ) ), d->m_khtml, SLOT( slotViewPageInfo() ) );
+            action = new KAction( i18n( "Save &Frame As..." ), this );
+            d->m_actionCollection->addAction( "saveFrame", action );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT( slotSaveFrame() ) );
+            menu->addAction(action);
 
-      // This one isn't in khtml_popupmenu.rc anymore, because Print isn't either,
-      // and because print frame is already in the toolbar and the menu.
-      // But leave this here, so that it's easy to read it.
-      action = new KAction( i18n( "Print Frame..." ), this );
-      actionCollection()->addAction( "printFrame", action );
-      action->setIcon( KIcon( "print-frame" ) );
-      connect( action, SIGNAL( triggered( bool ) ), d->m_khtml->browserExtension(), SLOT( print() ) );
-      action = new KAction( i18n( "Save &Frame As..." ), this );
-      actionCollection()->addAction( "saveFrame", action );
-      connect( action, SIGNAL( triggered( bool ) ), d->m_khtml, SLOT( slotSaveFrame() ) );
+            action = new KAction( i18n( "View Frame Source" ), this );
+            d->m_actionCollection->addAction( "viewFrameSource", action );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT( slotViewDocumentSource() ) );
+            menu->addAction(action);
 
-      actionCollection()->addAction( "viewDocumentSource",
-                                     khtml->parentPart()->actionCollection()->action( "viewDocumentSource" ) );
-      actionCollection()->addAction( "viewPageInfo", khtml->parentPart()->actionCollection()->action( "viewPageInfo" ) );
-    } else {
-      actionCollection()->addAction( "viewDocumentSource", khtml->actionCollection()->action( "viewDocumentSource" ) );
-      actionCollection()->addAction( "viewPageInfo", khtml->actionCollection()->action( "viewPageInfo" ) );
+            action = new KAction( i18n( "View Frame Information" ), this );
+            d->m_actionCollection->addAction( "viewFrameInfo", action );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT( slotViewPageInfo() ) );
+
+            action = new KAction(d->m_actionCollection);
+            action->setSeparator(true);
+            menu->addAction(action);
+
+            if ( KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled() ) {
+                if ( khtml->d->m_frame->m_type == khtml::ChildFrame::IFrame ) {
+                    action = new KAction( i18n( "Block IFrame..." ), this );
+                    d->m_actionCollection->addAction( "blockiframe", action );
+                    connect( action, SIGNAL(triggered(bool)), this, SLOT( slotBlockIFrame() ) );
+                    menu->addAction(action);
+                }
+            }
+
+            partActions.append(menu);
+        }
     }
-  } else if (isImage || !url.isEmpty()) {
-    actionCollection()->addAction( "viewDocumentSource", khtml->actionCollection()->action( "viewDocumentSource" ) );
-    actionCollection()->addAction( "viewPageInfo", khtml->actionCollection()->action( "viewPageInfo" ) );
-    KAction *action = new KAction( i18n( "Stop Animations" ), this );
-    actionCollection()->addAction( "stopanimations", action );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotStopAnimations() ) );
-  }
 
-  if (isImage)
-  {
-    if ( e.elementId() == ID_IMG ) {
-      d->m_imageURL = KUrl( static_cast<DOM::HTMLImageElement>( e ).src().string() );
-      DOM::HTMLImageElementImpl *imageimpl = static_cast<DOM::HTMLImageElementImpl *>( e.handle() );
-      Q_ASSERT(imageimpl);
-      if(imageimpl) // should be true always.  right?
-      {
-        if(imageimpl->complete()) {
-	  d->m_pixmap = imageimpl->currentPixmap();
-	}
-      }
-    }
-    else
-      d->m_imageURL = KUrl( static_cast<DOM::HTMLInputElement>( e ).src().string() );
-    KAction *action = new KAction( i18n( "Save Image As..." ), this );
-    actionCollection()->addAction( "saveimageas", action );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveImageAs() ) );
-    action = new KAction( i18n( "Send Image..." ), this );
-    actionCollection()->addAction( "sendimage", action );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotSendImage() ) );
+    if (isImage) {
+        if ( e.elementId() == ID_IMG ) {
+            d->m_imageURL = KUrl( static_cast<DOM::HTMLImageElement>( e ).src().string() );
+            DOM::HTMLImageElementImpl *imageimpl = static_cast<DOM::HTMLImageElementImpl *>( e.handle() );
+            Q_ASSERT(imageimpl);
+            if(imageimpl) // should be true always.  right?
+            {
+                if(imageimpl->complete()) {
+                    d->m_pixmap = imageimpl->currentPixmap();
+                }
+            }
+        }
+        else
+            d->m_imageURL = KUrl( static_cast<DOM::HTMLInputElement>( e ).src().string() );
+        KAction *action = new KAction( i18n( "Save Image As..." ), this );
+        d->m_actionCollection->addAction( "saveimageas", action );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT( slotSaveImageAs() ) );
+        partActions.append(action);
+
+        action = new KAction( i18n( "Send Image..." ), this );
+        d->m_actionCollection->addAction( "sendimage", action );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT( slotSendImage() ) );
+        partActions.append(action);
 
 #ifndef QT_NO_MIMECLIPBOARD
-    action = new KAction( i18n( "Copy Image" ), this );
-    actionCollection()->addAction( "copyimage", action );
-    action->setEnabled(!d->m_pixmap.isNull());
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotCopyImage() ) );
+        action = new KAction( i18n( "Copy Image" ), this );
+        d->m_actionCollection->addAction( "copyimage", action );
+        action->setEnabled(!d->m_pixmap.isNull());
+        connect( action, SIGNAL(triggered(bool)), this, SLOT( slotCopyImage() ) );
+        partActions.append(action);
 #endif
 
-    if(d->m_pixmap.isNull()) {    //fallback to image location if still loading the image.  this will always be true if ifdef QT_NO_MIMECLIPBOARD
-      action = new KAction( i18n( "Copy Image Location" ), this );
-      actionCollection()->addAction( "copyimagelocation", action );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotCopyImageLocation() ) );
+        if(d->m_pixmap.isNull()) {    //fallback to image location if still loading the image.  this will always be true if ifdef QT_NO_MIMECLIPBOARD
+            action = new KAction( i18n( "Copy Image Location" ), this );
+            d->m_actionCollection->addAction( "copyimagelocation", action );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotCopyImageLocation() ) );
+            partActions.append(action);
+        }
+
+        QString actionText = d->m_suggestedFilename.isEmpty() ?
+                                   KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25)
+                                   : d->m_suggestedFilename;
+        action = new KAction( i18n("View Image (%1)", actionText.replace("&", "&&")), this );
+        d->m_actionCollection->addAction( "viewimage", action );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT( slotViewImage() ) );
+        partActions.append(action);
+
+        if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled()) {
+            action = new KAction( i18n( "Block Image..." ), this );
+            d->m_actionCollection->addAction( "blockimage", action );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotBlockImage() ) );
+            partActions.append(action);
+
+            if (!d->m_imageURL.host().isEmpty() &&
+                !d->m_imageURL.protocol().isEmpty())
+            {
+                action = new KAction( i18n( "Block Images From %1" , d->m_imageURL.host()), this );
+                d->m_actionCollection->addAction( "blockhost", action );
+                connect( action, SIGNAL(triggered(bool)), this, SLOT( slotBlockHost() ) );
+                partActions.append(action);
+            }
+        }
+        KAction* separator = new KAction(d->m_actionCollection);
+        separator->setSeparator(true);
+        partActions.append(separator);
     }
 
-    QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
-    action = new KAction( i18n( "View Image (%1)" , d->m_suggestedFilename.isEmpty() ? name.replace("&", "&&") : d->m_suggestedFilename.replace("&", "&&")), this );
-    actionCollection()->addAction( "viewimage", action );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotViewImage() ) );
-
-
-    if (KHTMLFactory::defaultHTMLSettings()->isAdFilterEnabled())
-    {
-      action = new KAction( i18n( "Block Image..." ), this );
-      actionCollection()->addAction( "blockimage", action );
-      connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotBlockImage() ) );
-
-      if (!d->m_imageURL.host().isEmpty() &&
-          !d->m_imageURL.protocol().isEmpty())
-      {
-        action = new KAction( i18n( "Block Images From %1" , d->m_imageURL.host()), this );
-        actionCollection()->addAction( "blockhost", action );
-        connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotBlockHost() ) );
-      }
+    if ( isImage || url.isEmpty() ) {
+        KAction *action = new KAction( i18n( "Stop Animations" ), this );
+        d->m_actionCollection->addAction( "stopanimations", action );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT(slotStopAnimations()) );
+        partActions.append(action);
+        KAction* separator = new KAction(d->m_actionCollection);
+        separator->setSeparator(true);
+        partActions.append(separator);
     }
-  }
-
-  setXML( doc );
-  setDOMDocument( QDomDocument(), true ); // ### HACK
-
-  QDomElement menu = domDocument().documentElement().namedItem( "Menu" ).toElement();
-
-  if ( actionCollection()->actions().count() > 0 )
-    menu.insertBefore( domDocument().createElement( "separator" ), menu.firstChild() );
+    if (!hasSelection || isImage || !url.isEmpty()) {
+        partActions.append(khtml->actionCollection()->action("viewDocumentSource"));
+    }
+    if (!hasSelection && url.isEmpty() && !isImage) {
+        partActions.append(khtml->actionCollection()->action("setEncoding"));
+    }
+    d->actionGroups.insert("partactions", partActions);
 }
 
 KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
 {
-  delete d;
+    delete d->m_actionCollection;
+    delete d;
+}
+
+KParts::BrowserExtension::ActionGroupMap KHTMLPopupGUIClient::actionGroups() const
+{
+    return d->actionGroups;
 }
 
 void KHTMLPopupGUIClient::slotSaveLinkAs()
