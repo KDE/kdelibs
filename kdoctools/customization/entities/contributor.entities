@@ -141,6 +141,8 @@
 <!ENTITY Bernd.Gehrmann.mail '<email>bernd@mail.berlios.de</email>'>
 <!ENTITY Francis.Giannaros '<personname><firstname>Francis</firstname><surname>Giannaros</surname></personname>'>
 <!ENTITY Francis.Giannaros.mail '<email>francisg@gmail.com</email>'>
+<!ENTITY Frederik.Gladhorn '<personname><firstname>Frederik</firstname><surname>Gladhorn</surname></personname>'>
+<!ENTITY Frederik.Gladhorn.mail '<email>frederik.gladhorn@kdemail.net</email>'>
 <!ENTITY Michael.Goffioul '<personname><firstname>Michael</firstname><surname>Goffioul</surname></personname>'>
 <!ENTITY Michael.Goffioul.mail '<email>kdeprint@swing.be</email>'>
 <!ENTITY Robert.Gogolok '<personname><firstname>Robert</firstname><surname>Gogolok</surname></personname>'>

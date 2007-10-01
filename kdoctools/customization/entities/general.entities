@@ -373,6 +373,7 @@
 <!ENTITY noatun	"<application>Noatun</application>">
 <!ENTITY PalmOS	'<trademark class="registered">Palm OS</trademark>'>
 <!ENTITY PalmPilot	"<productname><trademark>PalmPilot</trademark></productname>">
+<!ENTITY parley	"<application>Parley</application>">
 <!ENTITY PMX	"<application>PMX</application>"><!-- acronym too? -->
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
