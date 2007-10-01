@@ -30,6 +30,8 @@
 //
 
 #include "kcolordialog.h"
+#include "kcolordialog_p.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,6 +81,8 @@
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif
+
+using KDEPrivate::KColorTable;
 
 struct ColorCollectionNameType
 {
@@ -1824,4 +1828,5 @@ void KColorDialog::KColorDialogPrivate::setHsvEdit( const QColor &col )
 }
 
 #include "kcolordialog.moc"
+#include "kcolordialog_p.moc"
 //#endif
