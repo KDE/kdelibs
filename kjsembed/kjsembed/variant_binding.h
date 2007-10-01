@@ -237,7 +237,7 @@ namespace KJSEmbed
     * If the type is supported by QVariant, but is not supported by KJSEmbed then it will just be wrapped.
     * This wrapped value can be used just like normal value bindings, save for the lack of methods available to the object.
     */
-    KJS::JSValue* convertToValue( KJS::ExecState *exec, const QVariant &value );
+    KJSEMBED_EXPORT KJS::JSValue* convertToValue( KJS::ExecState *exec, const QVariant &value );
 
     /**
     * The Bindings for the KJSEmbed::VariantBinding
