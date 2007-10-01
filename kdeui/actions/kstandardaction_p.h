@@ -83,7 +83,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { Prior,         KStandardShortcut::Prior, "go_previous", I18N_NOOP("&Previous Page"), 0, "find-previous" },
   { Next,          KStandardShortcut::Next, "go_next", I18N_NOOP("&Next Page"), 0, "find-next" },
   { Goto,          KStandardShortcut::AccelNone, "go_goto", I18N_NOOP("&Go To..."), 0, 0 },
-  { GotoPage,      KStandardShortcut::AccelNone, "go_goto_page", I18N_NOOP("&Go to Page..."), 0, "goto-page" },
+  { GotoPage,      KStandardShortcut::AccelNone, "go_goto_page", I18N_NOOP("&Go to Page..."), 0, "go-jump" },
   { GotoLine,      KStandardShortcut::GotoLine, "go_goto_line", I18N_NOOP("&Go to Line..."), 0, 0 },
   { FirstPage,     KStandardShortcut::Home, "go_first", I18N_NOOP("&First Page"), 0, "go-first" },
   { LastPage,      KStandardShortcut::End, "go_last", I18N_NOOP("&Last Page"), 0, "go-last" },
