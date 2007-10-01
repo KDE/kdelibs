@@ -30,12 +30,12 @@
 #include <kdebug.h>
 #include <krandom.h>
 
-#include <soprano/Client/DBusClient>
-#include <soprano/Node>
-#include <soprano/Statement>
-#include <soprano/DummyModel>
-#include <soprano/Vocabulary/RDF>
-#include <soprano/StatementIterator>
+#include <Soprano/Client/DBusClient>
+#include <Soprano/Node>
+#include <Soprano/Statement>
+#include <Soprano/DummyModel>
+#include <Soprano/Vocabulary/RDF>
+#include <Soprano/StatementIterator>
 
 
 using namespace Soprano;

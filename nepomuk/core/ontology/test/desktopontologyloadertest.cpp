@@ -33,7 +33,7 @@
 #include <kio/deletejob.h>
 #include <qtest_kde.h>
 
-#include <soprano/statement.h>
+#include <Soprano/Statement>
 
 
 void DesktopOntologyLoaderTest::initTestCase()

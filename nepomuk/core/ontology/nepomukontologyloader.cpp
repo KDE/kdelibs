@@ -20,10 +20,10 @@
 #include "nepomukontologyloader.h"
 #include "global.h"
 
-#include <soprano/Statement>
-#include <soprano/Model>
-#include <soprano/QueryResultIterator>
-#include <soprano/Client/DBusClient>
+#include <Soprano/Statement>
+#include <Soprano/Model>
+#include <Soprano/QueryResultIterator>
+#include <Soprano/Client/DBusClient>
 
 #include <QtCore/QDebug>
 

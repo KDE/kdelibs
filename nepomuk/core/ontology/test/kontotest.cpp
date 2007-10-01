@@ -25,7 +25,7 @@
 #include "../global.h"
 #include "../property.h"
 
-#include <soprano/statement.h>
+#include <Soprano/Statement>
 
 #include <QtTest/QTest>
 #include <QtCore/QCoreApplication>

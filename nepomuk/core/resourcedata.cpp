@@ -25,9 +25,9 @@
 #include "tools.h"
 #include "generated/resource.h"
 
-#include <soprano/Statement>
-#include <soprano/StatementIterator>
-#include <soprano/Model>
+#include <Soprano/Statement>
+#include <Soprano/StatementIterator>
+#include <Soprano/Model>
 
 #include "ontology/class.h"
 
