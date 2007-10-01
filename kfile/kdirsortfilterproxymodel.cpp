@@ -381,7 +381,10 @@ bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
     }
 
     case KDirModel::ModifiedTime: {
-        return lessThanCategoryPurpose(left, right);
+        KDateTime leftTime = leftFileItem.time(KFileItem::ModificationTime);
+        KDateTime rightTime = rightFileItem.time(KFileItem::ModificationTime);
+
+        return leftTime >= rightTime;
     }
 
     case KDirModel::Permissions: {
