@@ -23,7 +23,7 @@
 #include "kjs_binding.h"
 
 #include <config-khtml.h>
-#if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
+#if defined(HAVE_VALGRIND_MEMCHECK_H)
 
 #include <valgrind/memcheck.h>
 #define VALGRIND_SUPPORT
@@ -150,8 +150,8 @@ void ScriptInterpreter::startCPUGuard()
 
   unsigned time = 5000;
 #ifdef VALGRIND_SUPPORT
-    if (RUNNING_ON_VALGRIND)
-        time *= 50;
+  if (RUNNING_ON_VALGRIND)
+    time *= 50;
 #endif
 
   setTimeoutTime(time);
