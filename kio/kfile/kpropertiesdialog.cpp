@@ -42,6 +42,8 @@
  */
 
 #include "kpropertiesdialog.h"
+#include "kpropertiesdialog_p.h"
+
 
 #include <config.h>
 #include <config-acl.h>
@@ -137,6 +139,8 @@ extern "C" {
 # warning TODO: port completely to win32
 #endif
 #endif
+
+using namespace KDEPrivate;
 
 static QString nameFromFileName(QString nameStr)
 {
@@ -3559,3 +3563,5 @@ bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
 }
 
 #include "kpropertiesdialog.moc"
+#include "kpropertiesdialog_p.moc"
+

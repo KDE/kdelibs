@@ -17,6 +17,7 @@
  */
 
 #include "kmetaprops.h"
+#include "kpropertiesdialog_p.h"
 
 #include <kdebug.h>
 #include <kfilemetainfowidget.h>
@@ -36,6 +37,8 @@
 #include <QtCore/QLinkedList>
 #include <QScrollArea>
 #include <QTextDocument>
+
+using namespace KDEPrivate;
 
 class KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate
 {
