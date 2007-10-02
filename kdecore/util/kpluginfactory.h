@@ -479,7 +479,7 @@ private:
     void registerPlugin(const QString &keyword, const QMetaObject *metaObject, CreateInstanceFunction instanceFunction);
 };
 
-KDE_DEPRECATED typedef KPluginFactory KLibFactory;
+typedef KPluginFactory KLibFactory;
 
 template<typename T>
 inline T *KPluginFactory::create(QObject *parent, const QVariantList &args)

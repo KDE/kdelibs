@@ -208,7 +208,7 @@ public:
                 *error = ErrNoFactory;
             return 0;
         }
-        QObject *object = factory->create<T>(keyword, parent, args);
+        QObject *object = factory->template create<T>(keyword, parent, args);
         T *res = qobject_cast<T *>( object );
         if ( !res )
         {
@@ -233,8 +233,7 @@ public:
      *             KPluginLoader or KService::createInstance instead
      */
     template <typename T>
-    KDE_DEPRECATED
-    static T *createInstance( const QString &libname, QObject *parent,
+    static KDE_DEPRECATED T *createInstance( const QString &libname, QObject *parent,
                               const QStringList &args,
                               int *error = 0 )
     {
@@ -253,7 +252,7 @@ public:
                 *error = ErrNoFactory;
             return 0;
         }
-        QObject *object = factory->create<T>(parent, args);
+        QObject *object = factory->template create<T>(parent, args);
         T *res = qobject_cast<T *>( object );
         if ( !res )
         {

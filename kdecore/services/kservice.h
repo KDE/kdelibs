@@ -508,7 +508,7 @@ public:
         KPluginLoader pluginLoader(*this);
         KPluginFactory *factory = pluginLoader.factory();
         if (factory) {
-            T *o = factory->create<T>(parentWidget, parent, pluginKeyword(), args);
+            T *o = factory->template create<T>(parentWidget, parent, pluginKeyword(), args);
             if (!o && error)
                 *error = i18n("The service '%1' does not provide an interface '%2' with keyword '%3'",
                               name(), QString::fromLatin1(T::staticMetaObject.className()), pluginKeyword());
@@ -522,15 +522,14 @@ public:
     }
 
     template <class T>
-    KDE_DEPRECATED static T *createInstance(const KService::Ptr &service, QObject *parent = 0,
+    static KDE_DEPRECATED T *createInstance(const KService::Ptr &service, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         return service->createInstance<T>(parent, args, error);
     }
 
     template <class T>
-    KDE_DEPRECATED
-    static T *createInstance( const KService::Ptr &service,
+    static KDE_DEPRECATED T *createInstance( const KService::Ptr &service,
                               QObject *parent,
                               const QStringList &args,
                               int *error = 0 )
@@ -561,7 +560,7 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <class T, class ServiceIterator>
-    KDE_DEPRECATED static T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
+    static KDE_DEPRECATED T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         for (; begin != end; ++begin) {
@@ -582,8 +581,7 @@ public:
     }
 
     template <class T, class ServiceIterator>
-    KDE_DEPRECATED
-    static T *createInstance( ServiceIterator begin, ServiceIterator end,
+    static KDE_DEPRECATED T *createInstance( ServiceIterator begin, ServiceIterator end,
                               QObject *parent,
                               const QStringList &args,
                               int *error = 0 )

@@ -176,7 +176,7 @@ public:
     {
         const KService::List offers = self()->query(serviceType, constraint);
         Q_FOREACH (const KService::Ptr &ptr, offers) {
-            T *component = ptr->createInstance<T>(parentWidget, parent, args, error);
+            T *component = ptr->template createInstance<T>(parentWidget, parent, args, error);
             if (component) {
                 if (error)
                     error->clear();
@@ -189,8 +189,7 @@ public:
     }
 
     template <class T>
-    KDE_DEPRECATED
-    static T *createInstanceFromQuery(const QString &serviceType, const QString &constraint,
+    static KDE_DEPRECATED T *createInstanceFromQuery(const QString &serviceType, const QString &constraint,
             QObject *parent, const QStringList &args, int *error = 0)
     {
         const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);

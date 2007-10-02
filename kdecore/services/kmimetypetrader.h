@@ -128,7 +128,7 @@ public:
     {
         const KService::List offers = self()->query(mimeType, QString::fromAscii("KParts/ReadOnlyPart"), constraint);
         Q_FOREACH (const KService::Ptr &ptr, offers) {
-            T *component = ptr->createInstance<T>(parentWidget, parent, args, error);
+            T *component = ptr->template createInstance<T>(parentWidget, parent, args, error);
             if (component) {
                 if (error)
                     error->clear();
