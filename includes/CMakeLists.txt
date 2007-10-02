@@ -212,7 +212,6 @@ install( FILES
   KIconEffect
   KIconLoader
   KIconTheme
-  KImageEffect
   KImageFilePreview
   KImageIO
   KInputDialog
@@ -282,7 +281,6 @@ install( FILES
   KPasswordDialog
   KPasteTextAction
   KPixmapCache
-  KPixmapEffect
   KPixmapProvider
   KPixmapRegionSelectorDialog
   KPixmapRegionSelectorWidget
