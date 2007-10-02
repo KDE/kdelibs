@@ -101,6 +101,10 @@ PassRefPtr<ProgramNode> Parser::parse(const UString& sourceURL, int startingLine
             *errMsg = "Parse error";
         return 0;
     }
+    
+#ifdef KJS_VERBOSE
+  fprintf( stderr, "%s\n", prog->toString().ascii() );
+#endif
 
     // Semantically check the parsed program, and do some of the binding..
     SemanticChecker sc;

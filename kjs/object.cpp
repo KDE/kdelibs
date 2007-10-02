@@ -588,6 +588,12 @@ const char * const * const Error::errorNames = errorNamesArr;
 JSObject *Error::create(ExecState *exec, ErrorType errtype, const UString &message,
                          int lineno, int sourceId, const UString &sourceURL)
 {
+#ifdef KJS_VERBOSE
+  // message could be 0L. Don't enable this on Solaris ;)
+  fprintf(stderr, "WARNING: KJS %s: %s\n", errorNamesArr[errtype], message.ascii());
+#endif
+
+
   Interpreter* interp = exec->lexicalInterpreter();
   JSObject *cons;
   switch (errtype) {
