@@ -75,5 +75,17 @@ public:
     mutable int m_childCount;
 };
 
+class KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
+{
+public:
+  typedef KSharedPtr<KServiceSeparator> Ptr;
+public:
+  /**
+   * Construct a service separator
+   */
+  KServiceSeparator();
+
+};
+
 
 #endif

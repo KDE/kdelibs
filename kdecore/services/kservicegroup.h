@@ -258,16 +258,4 @@ private:
     Q_DECLARE_PRIVATE(KServiceGroup)
 };
 
-class KDECORE_EXPORT KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
-{
-public:
-  typedef KSharedPtr<KServiceSeparator> Ptr;
-public:
-  /**
-   * Construct a service separator
-   */
-  KServiceSeparator();
-
-};
-
 #endif
