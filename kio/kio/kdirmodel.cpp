@@ -303,8 +303,8 @@ void KDirModel::slotNewItems(const KFileItemList& items)
     const KUrl::List urlsBeingFetched = d->m_urlsBeingFetched.value(dirNode);
     //kDebug(7008) << "urlsBeingFetched for dir" << dirNode << dir << ":" << urlsBeingFetched;
 
-    QList<KFileItem>::const_iterator it = items.begin();
-    const QList<KFileItem>::const_iterator end = items.end();
+    KFileItemList::const_iterator it = items.begin();
+    KFileItemList::const_iterator end = items.end();
     for ( ; it != end ; ++it ) {
         const bool isDir = it->isDir();
         KDirModelNode* node = isDir

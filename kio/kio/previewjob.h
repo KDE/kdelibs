@@ -54,7 +54,7 @@ namespace KIO {
 	 * @param enabledPlugins if non-zero, this points to a list containing
 	 * the names of the plugins that may be used.
 	 */
-        PreviewJob( const QList<KFileItem>& items, int width, int height,
+        PreviewJob( const KFileItemList& items, int width, int height,
             int iconSize, int iconAlpha, bool scale, bool save,
             const QStringList *enabledPlugins );
         virtual ~PreviewJob();
@@ -133,7 +133,7 @@ namespace KIO {
      * @return the new PreviewJob
      * @see PreviewJob::availablePlugins()
      */
-    KIO_EXPORT PreviewJob *filePreview( const QList<KFileItem> &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+    KIO_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 
     /**
      * Creates a PreviewJob to generate or retrieve a preview image

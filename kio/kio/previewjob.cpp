@@ -72,7 +72,7 @@ public:
     } state;
     PreviewJob *q;
 
-    QList<KFileItem> initialItems;
+    KFileItemList initialItems;
     const QStringList *enabledPlugins;
     // Our todo list :)
     // We remove the first item at every step, so use QLinkedList
@@ -128,7 +128,7 @@ public:
     Q_DECLARE_PUBLIC(PreviewJob)
 };
 
-PreviewJob::PreviewJob( const QList<KFileItem> &items, int width, int height,
+PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
     : KIO::Job(*new PreviewJobPrivate)
@@ -183,8 +183,8 @@ void PreviewJobPrivate::startPreview()
 
     // Look for images and store the items in our todo list :)
     bool bNeedCache = false;
-    QList<KFileItem>::const_iterator kit = initialItems.begin();
-    const QList<KFileItem>::const_iterator kend = initialItems.end();
+    KFileItemList::const_iterator kit = initialItems.begin();
+    const KFileItemList::const_iterator kend = initialItems.end();
     for ( ; kit != kend; ++kit )
     {
         PreviewItem item;
@@ -553,7 +553,7 @@ QStringList PreviewJob::supportedMimeTypes()
     return result;
 }
 
-PreviewJob *KIO::filePreview( const QList<KFileItem> &items, int width, int height,
+PreviewJob *KIO::filePreview( const KFileItemList &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
 {
@@ -565,7 +565,7 @@ PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
 {
-    QList<KFileItem> fileItems;
+    KFileItemList fileItems;
     for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it) {
         Q_ASSERT( (*it).isValid() ); // please call us with valid urls only
         fileItems.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));

@@ -467,9 +467,9 @@ void KDirOperator::setPreviewWidget(KPreviewWidgetBase *w)
     setView(static_cast<KFile::FileView>(d->viewKind));
 }
 
-QList<KFileItem> KDirOperator::selectedItems() const
+KFileItemList KDirOperator::selectedItems() const
 {
-    QList<KFileItem> itemList;
+    KFileItemList itemList;
     if (d->itemView == 0) {
         return itemList;
     }
@@ -687,7 +687,7 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
     return writeOk;
 }
 
-KIO::DeleteJob * KDirOperator::del(const QList<KFileItem>& items,
+KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
                                    QWidget *parent,
                                    bool ask, bool showProgress)
 {
@@ -742,13 +742,13 @@ KIO::DeleteJob * KDirOperator::del(const QList<KFileItem>& items,
 
 void KDirOperator::deleteSelected()
 {
-    const QList<KFileItem> list = selectedItems();
+    const KFileItemList list = selectedItems();
     if (!list.isEmpty()) {
         del(list, this);
     }
 }
 
-KIO::CopyJob * KDirOperator::trash(const QList<KFileItem>& items,
+KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
                                    QWidget *parent,
                                    bool ask, bool showProgress)
 {
@@ -808,7 +808,7 @@ void KDirOperator::trashSelected()
         return;
     }
 
-    const QList<KFileItem> list = selectedItems();
+    const KFileItemList list = selectedItems();
     if (!list.isEmpty()) {
         trash(list, this);
     }
@@ -1906,7 +1906,7 @@ void KDirOperator::slotProperties()
         return;
     }
 
-    const QList<KFileItem> list = selectedItems();
+    const KFileItemList list = selectedItems();
     if (!list.isEmpty()) {
         KPropertiesDialog dialog(list, this);
         dialog.exec();

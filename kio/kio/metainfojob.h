@@ -60,7 +60,7 @@ namespace KIO {
          *  @param requestedfields The names of fields or groups of fields that should
          *                  be retrieved first.
          */
-        explicit MetaInfoJob(const QList<KFileItem>& items, KFileMetaInfo::WhatFlags w = KFileMetaInfo::Everything,
+        explicit MetaInfoJob(const KFileItemList& items, KFileMetaInfo::WhatFlags w = KFileMetaInfo::Everything,
             int iocost = 3, int cpucost = 6, const QStringList& requiredfields = QStringList(),
             const QStringList& requestedfields = QStringList());
         virtual ~MetaInfoJob();
@@ -111,7 +111,7 @@ namespace KIO {
      * @param items files to get metainfo for
      * @return the MetaInfoJob to retrieve the items
      */
-    KIO_EXPORT MetaInfoJob* fileMetaInfo(const QList<KFileItem>& items);
+    KIO_EXPORT MetaInfoJob* fileMetaInfo(const KFileItemList& items);
 
     /**
      * Retrieves meta information for the given items.

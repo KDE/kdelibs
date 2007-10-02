@@ -36,7 +36,7 @@ namespace KIO
             , m_currentItem(0)
         {
         }
-        DirectorySizeJobPrivate( const QList<KFileItem> & lstItems )
+        DirectorySizeJobPrivate( const KFileItemList & lstItems )
             : m_totalSize(0L)
             , m_totalFiles(0L)
             , m_totalSubdirs(0L)
@@ -47,7 +47,7 @@ namespace KIO
         KIO::filesize_t m_totalSize;
         KIO::filesize_t m_totalFiles;
         KIO::filesize_t m_totalSubdirs;
-        QList<KFileItem> m_lstItems;
+        KFileItemList m_lstItems;
         int m_currentItem;
 
         void startNextJob( const KUrl & url );
@@ -65,7 +65,7 @@ namespace KIO
             return job;
         }
 
-        static inline DirectorySizeJob *newJob( const QList<KFileItem> & lstItems )
+        static inline DirectorySizeJob *newJob( const KFileItemList & lstItems )
         {
             DirectorySizeJobPrivate *d = new DirectorySizeJobPrivate(lstItems);
             DirectorySizeJob *job = new DirectorySizeJob(*d);
@@ -190,7 +190,7 @@ DirectorySizeJob * KIO::directorySize( const KUrl & directory )
 }
 
 //static
-DirectorySizeJob * KIO::directorySize( const QList<KFileItem> & lstItems )
+DirectorySizeJob * KIO::directorySize( const KFileItemList & lstItems )
 {
     return DirectorySizeJobPrivate::newJob(lstItems);
 }

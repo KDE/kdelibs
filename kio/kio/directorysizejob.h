@@ -85,7 +85,7 @@ KIO_EXPORT DirectorySizeJob * directorySize( const KUrl & directory );
  * we directly know if the item is a file or a directory,
  * and in case of a file, we already have its size.
  */
-KIO_EXPORT DirectorySizeJob * directorySize( const QList<KFileItem> & lstItems );
+KIO_EXPORT DirectorySizeJob * directorySize( const KFileItemList & lstItems );
 
 }
 

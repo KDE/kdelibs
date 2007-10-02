@@ -580,7 +580,7 @@ void KFileWidget::slotOk()
 
     // a list of all selected files/directories (if any)
     // can only be used if the user didn't type any filenames/urls himself
-    const QList<KFileItem> items = d->ops->selectedItems();
+    const KFileItemList items = d->ops->selectedItems();
 
     if ( (mode() & KFile::Directory) != KFile::Directory ) {
         if ( d->locationEdit->currentText().trimmed().isEmpty() ) {
@@ -964,7 +964,7 @@ void KFileWidgetPrivate::multiSelectionChanged()
         return;
 
     locationEdit->lineEdit()->setModified( false );
-    const QList<KFileItem> list = ops->selectedItems();
+    const KFileItemList list = ops->selectedItems();
     if ( list.isEmpty() ) {
         locationEdit->clearEditText();
         return;

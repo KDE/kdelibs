@@ -35,14 +35,14 @@ using namespace KIO;
 class KIO::MetaInfoJobPrivate: public KIO::JobPrivate
 {
 public:
-    QList<KFileItem>       items;       // all the items we got
+    KFileItemList          items;       // all the items we got
     int                    currentItem;
     bool                   succeeded;   // if the current item is ok
 
     Q_DECLARE_PUBLIC(MetaInfoJob)
 };
 
-MetaInfoJob::MetaInfoJob(const QList<KFileItem>& items, KFileMetaInfo::WhatFlags,
+MetaInfoJob::MetaInfoJob(const KFileItemList& items, KFileMetaInfo::WhatFlags,
      int, int, const QStringList&, const QStringList&)
     : KIO::Job(*new MetaInfoJobPrivate)
 {
@@ -156,14 +156,14 @@ void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
     d->succeeded = true;
 }
 
-KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const QList<KFileItem>& items)
+KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KFileItemList& items)
 {
     return new MetaInfoJob(items);
 }
 
 KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KUrl::List &items)
 {
-    QList<KFileItem> fileItems;
+    KFileItemList fileItems;
     foreach (const KUrl& url, items) {
         fileItems.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, url,
             true));

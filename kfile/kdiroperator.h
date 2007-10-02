@@ -288,7 +288,7 @@ public:
      * @returns a list of all currently selected items. If there is no view,
      * or there are no selected items, an empty list is returned.
      */
-    QList<KFileItem> selectedItems() const;
+    KFileItemList selectedItems() const;
 
     /**
      * @returns true if @p item is currently selected, or false otherwise.
@@ -456,7 +456,7 @@ public:
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the DeleteJob to show a progress dialog
      */
-    virtual KIO::DeleteJob* del(const QList<KFileItem>& items, QWidget *parent = 0,
+    virtual KIO::DeleteJob* del(const KFileItemList& items, QWidget *parent = 0,
                                 bool ask = true, bool showProgress = true);
 
     /**
@@ -517,7 +517,7 @@ public:
      * @param ask specifies whether a confirmation dialog should be shown
      * @param showProgress passed to the CopyJob to show a progress dialog
      */
-    virtual KIO::CopyJob* trash(const QList<KFileItem>& items, QWidget *parent,
+    virtual KIO::CopyJob* trash(const KFileItemList& items, QWidget *parent,
                                 bool ask = true, bool showProgress = true);
 
 protected:

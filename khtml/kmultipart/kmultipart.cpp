@@ -377,8 +377,8 @@ void KMultiPart::setPart( const QString& mimeType )
         if ( m_isHTMLPart ) // for non-HTML we have our own
             connect( childExtension, SIGNAL( speedProgress( int ) ),
                      m_extension, SIGNAL( speedProgress( int ) ) );
-        connect( childExtension, SIGNAL( selectionInfo( const QList<KFileItem>& ) ),
-                 m_extension, SIGNAL( selectionInfo( const QList<KFileItem> & ) ) );
+        connect( childExtension, SIGNAL( selectionInfo( const KFileItemList& ) ),
+                 m_extension, SIGNAL( selectionInfo( const KFileItemList& ) ) );
         connect( childExtension, SIGNAL( selectionInfo( const QString& ) ),
                  m_extension, SIGNAL( selectionInfo( const QString& ) ) );
         connect( childExtension, SIGNAL( selectionInfo( const KUrl::List& ) ),
