@@ -15,6 +15,8 @@
 
 #include <kdesu/kdesu_export.h>
 
+namespace KDESu {
+
 /**
  * Executes a remote command, using ssh.
  */
@@ -75,5 +77,7 @@ private:
     class SshProcessPrivate;
     SshProcessPrivate * const d;
 };
+
+}
 
 #endif

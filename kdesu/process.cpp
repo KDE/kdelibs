@@ -53,6 +53,11 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 
+
+namespace KDESu {
+
+using namespace KDESuPrivate;
+
 /*
 ** Wait for @p ms miliseconds
 ** @param fd file descriptor
@@ -530,3 +535,5 @@ int PtyProcess::setupTTY()
 
 void PtyProcess::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
+
+}

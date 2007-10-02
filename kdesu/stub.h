@@ -15,9 +15,13 @@
 #include <QtCore/QList>
 
 #include "process.h"
-#include "kcookie.h"
 
 #include <kdesu/kdesu_export.h>
+
+namespace KDESu {
+    
+namespace KDESuPrivate { class KCookie; }
+
 
 /**
  * Chat with kdesu_stub.
@@ -87,7 +91,7 @@ protected:
     int  m_Scheduler;
     QByteArray m_Command;
     QByteArray m_User;
-    KCookie *m_pCookie;
+    KDESuPrivate::KCookie *m_pCookie;
 
 private:
     QByteArray commaSeparatedList(const QList<QByteArray> &);
@@ -98,5 +102,7 @@ private:
     class StubProcessPrivate;
     StubProcessPrivate * const d;
 };
+
+}
 
 #endif // __Stub_h_Included__

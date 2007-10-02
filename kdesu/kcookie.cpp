@@ -21,6 +21,9 @@
 
 #include <kdebug.h>
 
+namespace KDESu {
+namespace KDESuPrivate {
+
 class KCookie::KCookiePrivate
 {
 public:
@@ -96,3 +99,5 @@ void KCookie::getXCookie()
     d->m_DisplayAuth = (lst[1] + ' ' + lst[2]);
 #endif
 }
+
+}}

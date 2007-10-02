@@ -22,6 +22,9 @@
 #include <kapplication.h>
 #include <kdebug.h>
 
+namespace KDESu { 
+    
+using namespace KDESuPrivate;
 
 StubProcess::StubProcess()
     : d(0)
@@ -199,3 +202,5 @@ QByteArray StubProcess::displayAuth()
 
 void StubProcess::virtual_hook( int id, void* data )
 { PtyProcess::virtual_hook( id, data ); }
+
+}

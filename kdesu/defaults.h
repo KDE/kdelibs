@@ -11,8 +11,12 @@
 #ifndef __Defaults_h_included__
 #define __Defaults_h_included__
 
+namespace KDESu {
+
 const int defTimeout = 120*60;
 const int defEchoMode = 0;
 const int defKeep = false;
+
+}
 
 #endif

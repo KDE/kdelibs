@@ -25,6 +25,7 @@
 
 #include <QtCore/QByteArray>
 
+namespace KDESu {
 
 /**
  * A client class to access kdesud, the KDE su daemon. Kdesud can assist in
@@ -195,6 +196,8 @@ private:
     class KDEsuClientPrivate;
     KDEsuClientPrivate* const d;
 };
+
+} //END namespace KDESu
 
 #endif //Q_OS_UNIX
 

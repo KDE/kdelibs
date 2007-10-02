@@ -24,6 +24,8 @@
 
 #include <kpty.h>
 
+namespace KDESu {
+
 /**
  * Synchronous communication with tty programs.
  *
@@ -186,5 +188,6 @@ private:
     PtyProcessPrivate* const d;
 };
 
+}
 
 #endif

@@ -36,7 +36,7 @@ install(TARGETS kdesu_stub DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 
 ########### install files ###############
-install( FILES kdesu_export.h defaults.h client.h process.h kcookie.h su.h ssh.h stub.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kdesu )
+install( FILES kdesu_export.h client.h process.h su.h ssh.h stub.h defaults.h DESTINATION  ${INCLUDE_INSTALL_DIR}/kdesu )
 
 
 

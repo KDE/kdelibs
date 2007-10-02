@@ -34,6 +34,10 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
+namespace KDESu {
+    
+using namespace KDESuPrivate;
+
 class SshProcess::SshProcessPrivate
 {
 public:
@@ -251,3 +255,5 @@ QByteArray SshProcess::displayAuth()
 
 void SshProcess::virtual_hook( int id, void* data )
 { StubProcess::virtual_hook( id, data ); }
+
+}

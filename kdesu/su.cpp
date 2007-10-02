@@ -52,6 +52,10 @@
 //change to sudo or su according to your preferences
 #define DEFAULT_SUPER_USER_COMMAND "sudo"
 
+
+namespace KDESu {
+using namespace KDESuPrivate;
+
 class SuProcess::SuProcessPrivate
 {
 public:
@@ -346,4 +350,4 @@ int SuProcess::ConverseSU(const char *password)
 void SuProcess::virtual_hook( int id, void* data )
 { StubProcess::virtual_hook( id, data ); }
 
-
+}

@@ -13,14 +13,18 @@
 
 #include <QtCore/QByteRef>
 
-#include <kdesu/kdesu_export.h>
+
+namespace KDESu {
+
+namespace KDESuPrivate {
 
 /**
  * Utility class to access the authentication tokens needed to run a KDE
  * program (X11 cookies on X11, for instance).
+ * @internal
  */
 
-class KDESU_EXPORT KCookie
+class KCookie
 {
 public:
     KCookie();
@@ -45,5 +49,6 @@ private:
     KCookiePrivate * const d;
 };
 
+}}
 
 #endif // __KCookie_h_Included__

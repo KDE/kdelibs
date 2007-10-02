@@ -35,6 +35,9 @@
 #include <ktoolinvocation.h>
 #include <kde_file.h>
 
+
+namespace KDESu {
+
 class KDEsuClient::KDEsuClientPrivate {
 public:
     KDEsuClientPrivate() : sockfd(-1) {}
@@ -431,4 +434,6 @@ int KDEsuClient::startServer()
     int ret = KToolInvocation::kdeinitExecWait(d->daemon);
     connect();
     return ret;
+}
+
 }

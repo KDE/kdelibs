@@ -15,6 +15,9 @@
 
 #include "stub.h"
 
+
+namespace KDESu {
+
 /**
  * Executes a command under elevated privileges, using su.
  */
@@ -67,5 +70,7 @@ private:
     class SuProcessPrivate;
     SuProcessPrivate * const d;
 };
+
+}
 
 #endif
