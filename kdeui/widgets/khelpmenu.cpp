@@ -30,7 +30,7 @@
 
 #include <kaboutapplicationdialog.h>
 #include <kaboutdata.h>
-#include <kaboutkdedialog.h>
+#include <kaboutkdedialog_p.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kapplication.h>
@@ -45,13 +45,15 @@
 #include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kstandardguiitem.h>
-#include <kswitchlanguagedialog.h>
+#include <kswitchlanguagedialog_p.h>
 #include <ktoolinvocation.h>
 
 #include <config.h>
 #ifdef Q_WS_X11
 #include <QX11EmbedWidget>
 #endif
+
+using namespace KDEPrivate;
 
 class KHelpMenuPrivate
 {

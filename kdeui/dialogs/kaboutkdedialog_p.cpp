@@ -19,7 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kaboutkdedialog.h"
+#include "kaboutkdedialog_p.h"
 
 #include <QFrame>
 #include <QLabel>
@@ -31,6 +31,9 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <ktitlewidget.h>
+
+namespace KDEPrivate {
+
 
 KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
   : KDialog(parent),
@@ -148,4 +151,6 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     setMainWidget(mainWidget);
 }
 
-#include "kaboutkdedialog.moc"
+}
+
+#include "kaboutkdedialog_p.moc"

@@ -64,7 +64,7 @@ set(kdeui_LIB_SRCS
  colors/khuesaturationselect.cpp
  config/kconfigskeleton.cpp
  config/kconfiggroupgui.cpp
- dialogs/kaboutkdedialog.cpp
+ dialogs/kaboutkdedialog_p.cpp
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
@@ -81,7 +81,7 @@ set(kdeui_LIB_SRCS
  dialogs/kprogressdialog.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/ksplashscreen.cpp
- dialogs/kswitchlanguagedialog.cpp
+ dialogs/kswitchlanguagedialog_p.cpp
  dialogs/ktip.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
@@ -323,7 +323,6 @@ install( FILES
  colors/khuesaturationselect.h
  config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
- dialogs/kaboutkdedialog.h
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h
  dialogs/kconfigdialog.h
@@ -340,7 +339,6 @@ install( FILES
  dialogs/ksplashscreen.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
- dialogs/kswitchlanguagedialog.h
  dialogs/ktip.h
  findreplace/kfind.h
  findreplace/kreplace.h

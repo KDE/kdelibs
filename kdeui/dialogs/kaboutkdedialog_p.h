@@ -24,6 +24,8 @@
 
 #include <kdialog.h>
 
+namespace KDEPrivate {
+
 /**
  * @short Standard "About KDE" dialog box
  *
@@ -35,9 +37,10 @@
  * KMainWindow::helpMenu() function.
  *
  * @author Urs Wolfer uwolfer @ kde.org
+ * @internal
  */
 
-class KDEUI_EXPORT KAboutKdeDialog : public KDialog
+class KAboutKdeDialog : public KDialog
 {
     Q_OBJECT
 
@@ -57,5 +60,7 @@ class KDEUI_EXPORT KAboutKdeDialog : public KDialog
         Private* const d;
         Q_DISABLE_COPY( KAboutKdeDialog )
 };
+
+}
 
 #endif

@@ -19,7 +19,7 @@
  *
  */
 
-#include "kswitchlanguagedialog.moc"
+#include "kswitchlanguagedialog_p.moc"
 
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
@@ -31,6 +31,8 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <kpushbutton.h>
+
+namespace KDEPrivate {
 
 struct LanguageRowData
 {
@@ -323,3 +325,4 @@ void KSwitchLanguageDialogPrivate::addLanguageButton(const QString & languageCod
     languageLabel->show();
 }
 
+}

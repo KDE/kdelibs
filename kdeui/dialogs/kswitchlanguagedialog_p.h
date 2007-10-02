@@ -24,6 +24,8 @@
 
 #include <kdialog.h>
 
+namespace KDEPrivate {
+
 class KSwitchLanguageDialogPrivate;
 
 /**
@@ -33,9 +35,10 @@ class KSwitchLanguageDialogPrivate;
  * in KHelpMenu
  *
  * @author Krzysztof Lichota (lichota@mimuw.edu.pl)
+ * @internal
  */
 
-class KDEUI_EXPORT KSwitchLanguageDialog : public KDialog
+class KSwitchLanguageDialog : public KDialog
 {
   Q_OBJECT
 
@@ -83,5 +86,7 @@ class KDEUI_EXPORT KSwitchLanguageDialog : public KDialog
         
         friend class KSwitchLanguageDialogPrivate;
 };
+
+}
 
 #endif
