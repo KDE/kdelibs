@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kcatalog.h"
+#include "kcatalog_p.h"
 #include "kstandarddirs.h"
 
 #include <config.h>
@@ -201,3 +201,4 @@ QString KCatalog::translateStrict(const char * msgctxt, const char * msgid,
   const char *msgstr = dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n);
   return msgstr != msgid && msgstr != msgid_plural ? QString::fromUtf8(msgstr) : QString();
 }
+

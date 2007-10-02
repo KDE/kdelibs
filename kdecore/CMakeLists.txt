@@ -363,7 +363,6 @@ install( FILES
    services/kservicetypetrader.h
    #services/kserviceoffer.h: do not install, internal API
    services/kplugininfo.h
-   localization/kcatalog.h
    localization/kcharsets.h
    localization/kencodingdetector.h
    localization/klocale.h

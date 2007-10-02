@@ -44,7 +44,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 
-#include "kcatalog.h"
+#include "kcatalog_p.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "kconfig.h"

@@ -20,7 +20,6 @@
 #ifndef KCATALOG_H
 #define KCATALOG_H
 
-#include <kdecore_export.h>
 #include <QtCore/QString>
 
 class KCatalogPrivate;
@@ -30,9 +29,10 @@ class KCatalogPrivate;
  * needed gettext bindings.
  *
  * @see KLocale
+ * @internal
  */
 //REVISED: hausmann
-class KDECORE_EXPORT KCatalog
+class KCatalog
 {
 public:
   /**
@@ -205,5 +205,6 @@ public:
 private:
   KCatalogPrivate* const d;
 };
+
 
 #endif

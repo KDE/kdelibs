@@ -32,7 +32,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kcatalog.h>
+#include <kcatalog_p.h>
 #include <kuitformats_p.h>
 
 // Truncates string, for output of long messages.
