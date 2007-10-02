@@ -20,6 +20,8 @@ namespace KParts
          *     KViewPart *doc = KParts::ComponentFactory::createPartInstanceFromFactory&lt;KViewPart&gt;( factory, parent );
          * \endcode
          *
+         * @deprecated use KPluginFactory::create instead
+         *
          * @param factory The factory to ask for the creation of the component
          * @param parentWidget the parent widget for the part
          * @param parent The parent object (see QObject constructor)
@@ -29,7 +31,7 @@ namespace KParts
          *         factory was unable to create an object of the given type.
          */
         template <class T>
-        T *createPartInstanceFromFactory( KParts::Factory *factory,
+        KDE_DEPRECATED T *createPartInstanceFromFactory( KParts::Factory *factory,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
                                           const QStringList &args = QStringList() )
@@ -44,9 +46,11 @@ namespace KParts
                 delete object;
             return result;
         }
-
+        /*
+         * @deprecated use KPluginFactory::create instead
+         */
         template <class T>
-        T *createPartInstanceFromLibrary( const char *libraryName,
+        KDE_DEPRECATED T *createPartInstanceFromLibrary( const char *libraryName,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
                                           const QStringList &args = QStringList(),
@@ -86,8 +90,11 @@ namespace KParts
             return res;
         }
 
+        /**
+         * @deprecated use KService::createInstance instead
+         */
         template <class T>
-        T *createPartInstanceFromService( const KService::Ptr &service,
+        KDE_DEPRECATED T *createPartInstanceFromService( const KService::Ptr &service,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
                                           const QStringList &args = QStringList(),
@@ -106,7 +113,7 @@ namespace KParts
         }
 
         template <class T, class ServiceIterator>
-        T *createPartInstanceFromServices( ServiceIterator begin,
+        KDE_DEPRECATED T *createPartInstanceFromServices( ServiceIterator begin,
                                            ServiceIterator end,
                                            QWidget *parentWidget = 0,
                                            QObject *parent = 0,
@@ -148,6 +155,8 @@ namespace KParts
          * }
          * \endcode
          *
+         * @deprecated use KMimeTypeTrader::createPartInstanceFromQuery instead
+         *
          * @param mimeType the mimetype which this part is associated with
          * @param constraint an optional constraint to pass to the trader (see KTrader)
          * @param parentWidget the parent widget, will be set as the parent of the part's widget
@@ -188,4 +197,3 @@ namespace KParts
  */
 
 #endif
-
