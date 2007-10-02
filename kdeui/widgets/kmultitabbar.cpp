@@ -39,6 +39,13 @@
 #include <QtGui/QApplication>
 #include <math.h>
 
+/**
+ A bit of an overview about what's going on here:
+ There are two sorts of things that can be in the tab bar: tabs and regular 
+ buttons. The former are managed by KMultiTabBarInternal, the later 
+ by the KMultiTabBar itself. 
+*/
+
 class KMultiTabBarPrivate
 {
 public:
@@ -49,134 +56,36 @@ public:
     KMultiTabBar::KMultiTabBarPosition m_position;
 };
 
-class KMultiTabBarButtonPrivate
-{
-public:
-    KMultiTabBarButtonPrivate(int id) : m_id(id) {}
-    int m_id;
-    QString m_text;
-};
 
-class KMultiTabBarTabPrivate
+KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos):QFrame(parent)
 {
-public:
-    KMultiTabBarTabPrivate() : m_showActiveTabText(false), m_expandedSize(24) {}
-    QPixmap pix;
-    bool m_showActiveTabText;
-    int m_expandedSize;
-};
-
-
-KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarMode bm):QScrollArea(parent)
-{
-	m_expandedTabSize=-1;
-	m_showActiveTabTexts=false;
-	m_barMode=bm;
-	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	if (bm==KMultiTabBar::Vertical)
-	{
-		box=new QWidget(viewport());
-		mainLayout=new QVBoxLayout(box);
-		box->setFixedWidth(24);
-		setFixedWidth(24);
-	}
+	m_position = pos;
+	if (pos == KMultiTabBar::Left || pos == KMultiTabBar::Right)
+		mainLayout=new QVBoxLayout(this);
 	else
-	{
-		box=new QWidget(viewport());
-		mainLayout=new QHBoxLayout(box);
-		box->setFixedHeight(24);
-		setFixedHeight(24);
-	}
-//	mainLayout->setAutoAdd(true);
+		mainLayout=new QHBoxLayout(this);
 	mainLayout->setMargin(0);
 	mainLayout->setSpacing(0);
+	mainLayout->addStretch();
 	setFrameStyle(NoFrame);
-	viewport()->setBackgroundRole(QPalette::Background);
+	setBackgroundRole(QPalette::Background);
 }
 
 KMultiTabBarInternal::~KMultiTabBarInternal()
 {
-    qDeleteAll(m_tabs);
-    m_tabs.clear();
+	qDeleteAll(m_tabs);
+	m_tabs.clear();
 }
 
 void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
 {
 	m_style=style;
-        for (int i=0;i<m_tabs.count();i++)
-                m_tabs.at(i)->setStyle(m_style);
+	for (int i=0;i<m_tabs.count();i++)
+		m_tabs.at(i)->setStyle(m_style);
 
-	if  ( (m_style==KMultiTabBar::KDEV3) ||
-		(m_style==KMultiTabBar::KDEV3ICON ) ) {
-		delete mainLayout;
-		mainLayout=0;
-		resizeEvent(0);
-	} else if (mainLayout==0) {
-		if (m_barMode==KMultiTabBar::Vertical)
-		{
-			box=new QWidget(viewport());
-			mainLayout=new QVBoxLayout(box);
-			box->setFixedWidth(24);
-			setFixedWidth(24);
-		}
-		else
-		{
-			box=new QWidget(viewport());
-			mainLayout=new QHBoxLayout(box);
-			box->setFixedHeight(24);
-			setFixedHeight(24);
-		}
-	        for (int i=0;i<m_tabs.count();i++)
-        	        mainLayout->addWidget(m_tabs.at(i));
-//		mainLayout->setAutoAdd(true);
-	}
-	viewport()->update();
+	updateGeometry();
 }
 
-#ifdef __GNUC__
-#warning "This needs porting"
-#endif
-/*
-void KMultiTabBarInternal::drawContents ( QPainter * paint, int clipx, int clipy, int clipw, int cliph )
-{
-	QScrollArea::drawContents (paint , clipx, clipy, clipw, cliph );
-
-	if (m_position==KMultiTabBar::Right)
-	{
-      paint->setPen( palette().color( QPalette::Shadow ) );
-      paint->drawLine(0,0,0,viewport()->height());
-      paint->setPen( palette().color( QPalette::Background ).dark( 120 ) );
-      paint->drawLine(1,0,1,viewport()->height());
-	}
-	else
-	if (m_position==KMultiTabBar::Left)
-	{
-      paint->setPen( palette().color( QPalette::Light ) );
-      paint->drawLine(23,0,23,viewport()->height());
-      paint->drawLine(22,0,22,viewport()->height());
-
-      paint->setPen( palette().color( QPalette::Shadow ) );
-      paint->drawLine(0,0,0,viewport()->height());
-	}
-	else
-	if (m_position==KMultiTabBar::Bottom)
-	{
-		paint->setPen( palette().color( QPalette::Shadow ) );
-		paint->drawLine(0,0,viewport()->width(),0);
-                paint->setPen( palette().color( QPalette::Background ).dark( 120 ) );
-                paint->drawLine(0,1,viewport()->width(),1);
-	}
-	else
-	{
-	    paint->setPen( palette().color( QPalette::Light ) );
-      paint->drawLine(0,23,viewport()->width(),23);
-      paint->drawLine(0,22,viewport()->width(),22);
-	}
-
-
-}
-*/
 void KMultiTabBarInternal::contentsMousePressEvent(QMouseEvent *ev)
 {
 	ev->ignore();
@@ -187,196 +96,24 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 	ev->ignore();
 }
 
-
-#define CALCDIFF(m_tabs,diff,i) if (m_lines>(int)lines) {\
-					/*kDebug()<<"i="<<i<<" tabCount="<<tabCount<<" space="<<space;*/ \
-					uint ulen=0;\
-					diff=0; \
-					for (uint i2=i;i2<tabCount;i2++) {\
-						uint l1=m_tabs.at(i2)->neededSize();\
-						if ((ulen+l1)>space){\
-							if (ulen==0) diff=0;\
-							else diff=((float)(space-ulen))/(i2-i);\
-							break;\
-						}\
-						ulen+=l1;\
-					}\
-				} else {diff=0; }
-
-
-void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
-/*	kDebug()<<"KMultiTabBarInternal::resizeEvent";
-	kDebug()<<"KMultiTabBarInternal::resizeEvent - box geometry"<<box->geometry();
-	kDebug()<<"KMultiTabBarInternal::resizeEvent - geometry"<<geometry();*/
-	if (ev) QScrollArea::resizeEvent(ev);
-
-	if ( (m_style==KMultiTabBar::KDEV3) ||
-		(m_style==KMultiTabBar::KDEV3ICON) ){
-		box->setGeometry(0,0,width(),height());
-		int lines=1;
-		uint space;
-		float tmp=0;
-		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top))
-			space=width();
-		else
-			space=height();
-
-		int cnt=0;
-//CALCULATE LINES
-		const uint tabCount=m_tabs.count();
-	        for (uint i=0;i<tabCount;i++) {
-			cnt++;
-			tmp+=m_tabs.at(i)->neededSize();
-			if (tmp>space) {
-				if (cnt>1)i--;
-				else if (i==(tabCount-1)) break;
-				cnt=0;
-				tmp=0;
-				lines++;
-			}
-		}
-//SET SIZE & PLACE
-		float diff=0;
-		cnt=0;
-
-		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top)) {
-
-			setFixedHeight(lines*24);
-			box->setFixedHeight(lines*24);
-			m_lines=height()/24-1;
-			lines=0;
-			CALCDIFF(m_tabs,diff,0)
-			tmp=-diff;
-
-			//kDebug()<<"m_lines recalculated="<<m_lines;
-		        for (uint i=0;i<tabCount;i++) {
-				KMultiTabBarTab *tab=m_tabs.at(i);
-				cnt++;
-				tmp+=tab->neededSize()+diff;
-				if (tmp>space) {
-					//kDebug()<<"about to start new line";
-					if (cnt>1) {
-						CALCDIFF(m_tabs,diff,i)
-						i--;
-					}
-					else {
-						//kDebug()<<"placing line on old line";
-						kDebug()<<"diff="<<diff;
-						tab->removeEventFilter(this);
-						tab->move(qRound(tmp-tab->neededSize()),lines*24);
-//						tab->setFixedWidth(tab->neededSize()+diff);
-						tab->setFixedWidth(qRound(tmp+diff)-tab->x());;
-						tab->installEventFilter(this);
-						CALCDIFF(m_tabs,diff,(i+1))
-
-					}
-					tmp=-diff;
-					cnt=0;
-					lines++;
-					//kDebug()<<"starting new line:"<<lines;
-
-				} else 	{
-					//kDebug()<<"Placing line on line:"<<lines<<" pos: (x/y)=("<<tmp-m_tabs.at(i)->neededSize()<<"/"<<lines*24<<")";
-					//kDebug()<<"diff="<<diff;
-					tab->removeEventFilter(this);
-					tab->move(qRound(tmp-tab->neededSize()),lines*24);
-					tab->setFixedWidth(qRound(tmp+diff)-tab->x());;
-
-					//tab->setFixedWidth(tab->neededSize()+diff);
-					tab->installEventFilter(this);
-
-				}
-			}
-		}
-		else {
-			setFixedWidth(lines*24);
-			box->setFixedWidth(lines*24);
-			m_lines=lines=width()/24;
-			lines=0;
-			CALCDIFF(m_tabs,diff,0)
-			tmp=-diff;
-
-		        for (uint i=0;i<tabCount;i++) {
-				KMultiTabBarTab *tab=m_tabs.at(i);
-				cnt++;
-				tmp+=tab->neededSize()+diff;
-				if (tmp>space) {
-					if (cnt>1) {
-						CALCDIFF(m_tabs,diff,i);
-						tmp=-diff;
-						i--;
-					}
-					else {
-						tab->removeEventFilter(this);
-						tab->move(lines*24,qRound(tmp-tab->neededSize()));
-                                                tab->setFixedHeight(qRound(tmp+diff)-tab->y());;
-						tab->installEventFilter(this);
-					}
-					cnt=0;
-					tmp=-diff;
-					lines++;
-				} else 	{
-					tab->removeEventFilter(this);
-					tab->move(lines*24,qRound(tmp-tab->neededSize()));
-                                        tab->setFixedHeight(qRound(tmp+diff)-tab->y());;
-					tab->installEventFilter(this);
-				}
-			}
-		}
-
-
-		//kDebug()<<"needed lines:"<<m_lines;
-	} else {
-		int size=0; /*move the calculation into another function and call it only on add tab and tab click events*/
-		for (int i=0;i<(int)m_tabs.count();i++)
-			size+=(m_barMode==KMultiTabBar::Vertical?m_tabs.at(i)->height():m_tabs.at(i)->width());
-		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top))
-			box->setGeometry(0,0,size,height());
-		else box->setGeometry(0,0,width(),size);
-
-	}
-}
-
-
-void KMultiTabBarInternal::showActiveTabTexts(bool show)
-{
-	m_showActiveTabTexts=show;
-}
-
-
 KMultiTabBarTab* KMultiTabBarInternal::tab(int id) const
 {
 	QListIterator<KMultiTabBarTab*> it(m_tabs);
-	while (it.hasNext()){
+	while (it.hasNext()) {
 		KMultiTabBarTab *tab = it.next();
 		if (tab->id()==id) return tab;
 	}
-        return 0;
+	return 0;
 }
 
-bool KMultiTabBarInternal::eventFilter(QObject *, QEvent *e) {
-	if (e->type()==QEvent::Resize) resizeEvent(0);
-	return false;
-}
-
-int KMultiTabBarInternal::appendTab(const QPixmap &pic ,int id,const QString& text)
+int KMultiTabBarInternal::appendTab(const QPixmap &pic, int id, const QString& text)
 {
 	KMultiTabBarTab  *tab;
-	m_tabs.append(tab= new KMultiTabBarTab(pic,text,id,box,m_position,m_style));
-	tab->installEventFilter(this);
-	tab->showActiveTabText(m_showActiveTabTexts);
+	m_tabs.append(tab= new KMultiTabBarTab(pic,text,id,this,m_position,m_style));
 
-	if (m_style==KMultiTabBar::KONQSBC)
-	{
-		if (m_expandedTabSize<tab->neededSize()) {
-			m_expandedTabSize=tab->neededSize();
-			for (int i=0;i<m_tabs.count();i++)
-				m_tabs.at(i)->setSize(m_expandedTabSize);
-
-		} else tab->setSize(m_expandedTabSize);
-	} else tab->updateState();
+	// Insert before the stretch..
+	mainLayout->insertWidget(m_tabs.size()-1, tab);
 	tab->show();
-	resizeEvent(0);
 	return 0;
 }
 
@@ -386,9 +123,8 @@ void KMultiTabBarInternal::removeTab(int id)
 	{
 		if (m_tabs.at(pos)->id()==id)
 		{
-                        // remove & delete the tab
+			// remove & delete the tab
 			delete m_tabs.takeAt(pos);
-			resizeEvent(0);
 			break;
 		}
 	}
@@ -398,62 +134,34 @@ void KMultiTabBarInternal::setPosition(enum KMultiTabBar::KMultiTabBarPosition p
 {
 	m_position=pos;
 	for (int i=0;i<m_tabs.count();i++)
-		m_tabs.at(i)->setTabsPosition(m_position);
-	viewport()->update();
+		m_tabs.at(i)->setPosition(m_position);
+	updateGeometry();
 }
 
-KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic,const QString& text, QMenu *popup,
-                                       int id, QWidget *parent,
-                                       KMultiTabBar::KMultiTabBarPosition pos,
-                                       KMultiTabBar::KMultiTabBarStyle style)
-	: QPushButton(QIcon(),text,parent), m_style(style), d(new KMultiTabBarButtonPrivate(id))
+// KMultiTabBarButton
+///////////////////////////////////////////////////////////////////////////////
+
+KMultiTabBarButton::KMultiTabBarButton(const QPixmap& pic, const QString& text,
+                                       int id, QWidget *parent)
+	: QPushButton(QIcon(pic), text, parent), m_id(id), d(0)
 {
-	setIcon(pic);
-	setText(text);
-	m_position=pos;
-  	if (popup) setMenu(popup);
-	setFlat(true);
-	setFixedHeight(24);
-	setFixedWidth(24);
-	setToolTip(text);
 	connect(this,SIGNAL(clicked()),this,SLOT(slotClicked()));
+	setFlat(true);
 }
 
-KMultiTabBarButton::~KMultiTabBarButton() {
-    delete d;
-}
-
-int KMultiTabBarButton::id() const{
-	return d->m_id;
-}
-
-void KMultiTabBarButton::setText(const QString& text)
+KMultiTabBarButton::~KMultiTabBarButton()
 {
-	QPushButton::setText(text);
-	d->m_text=text;
-	setToolTip(text);
-}
-
-QString KMultiTabBarButton::text() const
-{
-    return d->m_text;
 }
 
 void KMultiTabBarButton::slotClicked()
 {
-	emit clicked(d->m_id);
+	updateGeometry();
+	emit clicked(m_id);
 }
 
-void KMultiTabBarButton::setPosition(KMultiTabBar::KMultiTabBarPosition pos)
+int KMultiTabBarButton::id() const 
 {
-	m_position=pos;
-	update();
-}
-
-void KMultiTabBarButton::setStyle(KMultiTabBar::KMultiTabBarStyle style)
-{
-	m_style=style;
-	update();
+	return m_id;
 }
 
 void KMultiTabBarButton::hideEvent( QHideEvent* he) {
@@ -468,81 +176,134 @@ void KMultiTabBarButton::showEvent( QShowEvent* he) {
 	if (tb) tb->updateSeparator();
 }
 
-
-QSize KMultiTabBarButton::sizeHint() const
-{
-    ensurePolished();
-
-    int w = 0, h = 0;
-
-    // calculate contents size...
-#ifndef QT_NO_ICONSET
-    int iw = 0, ih = 0;
-    if ( !icon().isNull() ) {
-        iw = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), QIcon::Normal ).width() + 4;
-        ih = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), QIcon::Normal ).height();
-        w += iw;
-        h = qMax( h, ih );
-    }
-#endif
-    if ( menu() != 0 )
-        w += style()->pixelMetric(QStyle::PM_MenuButtonIndicator, 0L, this);
-
-        QString s( text() );
-        bool empty = s.isEmpty();
-        if ( empty )
-            s = QLatin1String("XXXX");
-        QFontMetrics fm = fontMetrics();
-        QSize sz = fm.size( Qt::TextShowMnemonic, s );
-        if(!empty || !w)
-            w += sz.width();
-        if(!empty || !h)
-            h = qMax(h, sz.height());
-
-
-    QStyleOptionToolButton opt;
-    opt.init(this);
-    opt.rect = QRect(0, 0, w, h);
-    opt.subControls       = QStyle::SC_All;
-    opt.activeSubControls = 0;
-    opt.text              = text();
-    opt.font              = font();
-    opt.icon              = icon();
-    opt.iconSize          = QSize(iw, ih);
-    return (style()->sizeFromContents(QStyle::CT_ToolButton, &opt, QSize(w, h), this).
-            expandedTo(QApplication::globalStrut()));
-}
-
+// KMultiTabBarTab
+///////////////////////////////////////////////////////////////////////////////
 
 KMultiTabBarTab::KMultiTabBarTab(const QPixmap& pic, const QString& text,
-		int id,QWidget *parent,KMultiTabBar::KMultiTabBarPosition pos,
-		KMultiTabBar::KMultiTabBarStyle style)
-	:KMultiTabBarButton(pic, text,0,id,parent,pos,style),
-	d(new KMultiTabBarTabPrivate())
+                                       int id, QWidget *parent,
+                                       KMultiTabBar::KMultiTabBarPosition pos,
+                                       KMultiTabBar::KMultiTabBarStyle style)
+	: KMultiTabBarButton(pic, text, id, parent), m_style(style), d(0)
 {
-	setIcon(pic);
+	m_position=pos;
+	setToolTip(text);	
 	setCheckable(true);
-	if(parent->layout())
-		parent->layout()->addWidget(this);
+	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	 // shrink down to icon only, but prefer to show text if it's there
 }
 
-KMultiTabBarTab::~KMultiTabBarTab() {
-	delete d;
-}
-
-
-void KMultiTabBarTab::setTabsPosition(KMultiTabBar::KMultiTabBarPosition pos)
+KMultiTabBarTab::~KMultiTabBarTab()
 {
-	if ((pos!=m_position) && ((pos==KMultiTabBar::Left) || (pos==KMultiTabBar::Right))) {
-		if (!d->pix.isNull()) {
-			QMatrix temp;// (1.0F, 0.0F, 0.0F, -1.0F, 0.0F, 0.0F);
-			temp.rotate(180);
-			d->pix=d->pix.transformed(temp);
-			setIcon(d->pix);
-		}
-	}
+}
 
-	setPosition(pos);
+void KMultiTabBarTab::setPosition(KMultiTabBar::KMultiTabBarPosition pos)
+{
+	m_position=pos;
+	updateGeometry();
+}
+
+void KMultiTabBarTab::setStyle(KMultiTabBar::KMultiTabBarStyle style)
+{
+	m_style=style;
+	updateGeometry();
+}
+
+QPixmap KMultiTabBarTab::iconPixmap() const
+{
+	int iconSize = style()->pixelMetric(QStyle::PM_SmallIconSize, 0, this);
+	return icon().pixmap(iconSize);
+}
+
+void KMultiTabBarTab::initStyleOption(QStyleOptionToolButton* opt) const
+{
+	opt->initFrom(this);
+	
+	// Setup icon..
+	if (!icon().isNull()) {
+		opt->iconSize = iconPixmap().size();
+		opt->icon     = icon();
+	}
+		
+	// Should we draw text?
+	if (shouldDrawText())
+		opt->text = text();
+		
+	if (underMouse())
+		opt->state |= QStyle::State_AutoRaise | QStyle::State_MouseOver | QStyle::State_Raised;
+		
+	if (isChecked())
+		opt->state |= QStyle::State_Sunken | QStyle::State_On;
+	
+	opt->font = font();
+	opt->toolButtonStyle = shouldDrawText() ? Qt::ToolButtonTextBesideIcon : Qt::ToolButtonIconOnly;
+	opt->subControls = QStyle::SC_ToolButton;
+}
+
+QSize KMultiTabBarTab::sizeHint() const
+{
+	return computeSizeHint(shouldDrawText());
+}
+
+QSize KMultiTabBarTab::minimumSizeHint() const
+{
+	return computeSizeHint(false);
+}
+
+void KMultiTabBarTab::computeMargins(int* hMargin, int* vMargin) const
+{
+	// Unfortunately, QStyle does not give us enough information to figure out 
+	// where to place things, so we try to reverse-engineer it
+	QStyleOptionToolButton opt;
+	initStyleOption(&opt);
+
+	QPixmap iconPix = iconPixmap();
+	QSize trialSize = iconPix.size();
+	QSize expandSize = style()->sizeFromContents(QStyle::CT_ToolButton, &opt, trialSize, this);
+	
+	*hMargin = (expandSize.width()  - trialSize.width())/2;
+	*vMargin = (expandSize.height() - trialSize.height())/2;
+}
+
+QSize KMultiTabBarTab::computeSizeHint(bool withText) const
+{
+	// Compute as horizontal first, then flip around if need be.	
+	QStyleOptionToolButton opt;
+	initStyleOption(&opt);
+	
+	int hMargin, vMargin;
+	computeMargins(&hMargin, &vMargin);
+	
+	// Compute interior size, starting from pixmap..
+	QPixmap iconPix = iconPixmap();
+	QSize size = iconPix.size();
+	
+	// Always include text height in computation, to avoid resizing the minor direction
+	// when expanding text..
+	QSize textSize = fontMetrics().size(Qt::TextShowMnemonic, text());
+	size.setHeight(qMax(size.height(), textSize.height()));
+	
+	// Pick margins for major/minor direction, depending on orientation
+	int majorMargin = isVertical() ? vMargin : hMargin;
+	int minorMargin = isVertical() ? hMargin : vMargin;
+	
+	size.setWidth (size.width()  + 2*majorMargin);
+	size.setHeight(size.height() + 2*minorMargin);
+
+	if (withText)
+		// Add enough room for the text, and an extra major margin.
+		size.setWidth(size.width() + textSize.width() + majorMargin);
+
+	// flip time?
+	if (isVertical())
+		return QSize(size.height(), size.width());
+	else
+		return size;
+}
+
+void KMultiTabBarTab::setState(bool newState)
+{
+	setChecked(newState);
+	updateGeometry();
 }
 
 void KMultiTabBarTab::setIcon(const QString& icon)
@@ -553,314 +314,136 @@ void KMultiTabBarTab::setIcon(const QString& icon)
 
 void KMultiTabBarTab::setIcon(const QPixmap& icon)
 {
-	if (m_style!=KMultiTabBar::KDEV3) {
-		if ((m_position==KMultiTabBar::Left) || (m_position==KMultiTabBar::Right)) {
-		        QMatrix rotateMatrix;
-			if (m_position==KMultiTabBar::Left)
-		        	rotateMatrix.rotate(90);
-			else
-				rotateMatrix.rotate(-90);
-			QPixmap pic=icon.transformed(rotateMatrix); //TODO FIX THIS, THIS SHOWS WINDOW
-			d->pix=pic;
-			KMultiTabBarButton::setIcon(pic);
-		} else KMultiTabBarButton::setIcon(icon);
-	}
+	QPushButton::setIcon(icon);
 }
 
-void KMultiTabBarTab::slotClicked()
+bool KMultiTabBarTab::shouldDrawText() const
 {
-	updateState();
-	KMultiTabBarButton::slotClicked();
+	return (m_style==KMultiTabBar::KDEV3ICON) || isChecked();
 }
 
-void KMultiTabBarTab::setState(bool b)
+bool KMultiTabBarTab::isVertical() const
 {
-	setChecked(b);
-	updateState();
+	return m_position==KMultiTabBar::Right || m_position==KMultiTabBar::Left;
 }
 
-void KMultiTabBarTab::updateState()
-{
-
-	if (m_style!=KMultiTabBar::KONQSBC) {
-		if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
-			QPushButton::setText(text());
+void KMultiTabBarTab::paintEvent(QPaintEvent*) {
+	QPainter painter(this);
+	
+	QStyleOptionToolButton opt;
+	initStyleOption(&opt);
+	
+	// Paint bevel..
+	if (underMouse() || isChecked())
+		style()->drawPrimitive(QStyle::PE_PanelButtonTool, &opt, &painter);
+		
+	int hMargin, vMargin;
+	computeMargins(&hMargin, &vMargin);
+		
+	// We first figure out how much room we have for the text, based on 
+	// icon size and margin, try to fit in by eliding, and perhaps
+	// give up on drawing the text entirely if we're too short on room
+	QPixmap icon = iconPixmap();
+	int textRoom = 0;
+	int iconRoom = 0;
+	
+	QString t;
+	if (shouldDrawText()) {
+		if (isVertical()) {
+			iconRoom = icon.height() + 2*vMargin;
+			textRoom = height() - iconRoom - vMargin;
 		} else {
-			kDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString***************";
-			QPushButton::setText(QString());
+			iconRoom = icon.width() + 2*hMargin;
+			textRoom = width() - iconRoom - hMargin;
 		}
+		
+		t = painter.fontMetrics().elidedText(text(), Qt::ElideRight, textRoom);
+		
+		// See whether anything is left. Qt will return either 
+		// ... or the ellipsis unicode character, 0x2026
+		if (t == QLatin1String("...") || t == QChar(0x2026))
+			t.clear();
+	}
+	
+	opt.text = t;
+	
+	// Label time.... Simple case: no text, so just plop down the icon right in the center
+	// We only do this when the button never draws the text, to avoid jumps in icon position
+	// when resizing
+ 	if (!shouldDrawText()) {
+ 		style()->drawItemPixmap(&painter, rect(), Qt::AlignCenter | Qt::AlignVCenter, icon);
+ 		return;
+ 	}
 
-		if ((m_position==KMultiTabBar::Right || m_position==KMultiTabBar::Left)) {
-			setFixedWidth(24);
-			if ((m_style==KMultiTabBar::KDEV3)  || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
-				setFixedHeight(KMultiTabBarButton::sizeHint().width());
-			} else setFixedHeight(36);
+	// Now where the icon/text goes depends on text direction and tab position	
+	QRect iconArea;
+	QRect labelArea;
+	
+	bool bottomIcon = false;
+	bool rtl = layoutDirection() == Qt::RightToLeft;
+	if (isVertical()) {
+		if (m_position == KMultiTabBar::Left && !rtl)
+			bottomIcon = true;
+		if (m_position == KMultiTabBar::Right && rtl)
+			bottomIcon = true;
+	}
+	//alignFlags = Qt::AlignLeading | Qt::AlignVCenter;
+
+	if (isVertical()) {
+		if (bottomIcon) {
+			labelArea = QRect(0, vMargin, width(), textRoom);
+			iconArea  = QRect(0, vMargin + textRoom, width(), iconRoom);
 		} else {
-			setFixedHeight(24);
-			if ((m_style==KMultiTabBar::KDEV3)  || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
-				setFixedWidth(KMultiTabBarButton::sizeHint().width());
-			} else setFixedWidth(36);
+			labelArea = QRect(0, iconRoom, width(), textRoom);
+			iconArea  = QRect(0, 0, width(), iconRoom);
 		}
 	} else {
-                if ((!isChecked()) || (!d->m_showActiveTabText))
-                {
-	                setFixedWidth(24);
-	                setFixedHeight(24);
-                        return;
-                }
-                if ((m_position==KMultiTabBar::Right || m_position==KMultiTabBar::Left))
-                        setFixedHeight(d->m_expandedSize);
-                else
-                        setFixedWidth(d->m_expandedSize);
+		// Pretty simple --- depends only on RTL/LTR
+		if (rtl) {
+			labelArea = QRect(hMargin, 0, textRoom, height());
+			iconArea  = QRect(hMargin + textRoom, 0, iconRoom, height());
+		} else {
+			labelArea = QRect(iconRoom, 0, textRoom, height());
+			iconArea  = QRect(0, 0, iconRoom, height());
+		}
 	}
-	QApplication::sendPostedEvents(0,QEvent::Paint | QEvent::Move | QEvent::Resize | QEvent::LayoutRequest);
-	QApplication::flush();
-}
+	
+	style()->drawItemPixmap(&painter, iconArea, Qt::AlignCenter | Qt::AlignVCenter, icon);
+	
+	if (t.isEmpty())
+		return;
 
-int KMultiTabBarTab::neededSize()
-{
-	return (((m_style!=KMultiTabBar::KDEV3)?24:0)+fontMetrics().width(text())+6);
-}
+	QRect labelPaintArea = labelArea;
 
-void KMultiTabBarTab::setSize(int size)
-{
-	d->m_expandedSize=size;
-	updateState();
-}
+	if (isVertical()) {
+		// If we're vertical, we paint to a simple 0,0 origin rect, 
+		// and get the transformations to get us in the right place
+		labelPaintArea = QRect(0, 0, labelArea.height(), labelArea.width());
 
-void KMultiTabBarTab::showActiveTabText(bool show)
-{
-	d->m_showActiveTabText=show;
-}
-
-void KMultiTabBarTab::resize()
-{
-    setSize( neededSize() );
-}
-
-void KMultiTabBarTab::paintEvent(QPaintEvent *) {
-	QPainter painter(this);
-	drawButton(&painter);
-}
-
-void KMultiTabBarTab::drawButtonLabel(QPainter *p) {
-	drawButton(p);
-}
-void KMultiTabBarTab::drawButton(QPainter *paint)
-{
-	if (m_style!=KMultiTabBar::KONQSBC) drawButtonStyled(paint);
-	else  drawButtonClassic(paint);
-}
-
-void KMultiTabBarTab::drawButtonStyled(QPainter *paint) {
-
-	QSize sh;
-	const int width = 36; // rotated
-	const int height = 24;
-	if ((m_style==KMultiTabBar::KDEV3) || (m_style==KMultiTabBar::KDEV3ICON) || (isChecked())) {
-		 if ((m_position==KMultiTabBar::Left) || (m_position==KMultiTabBar::Right))
-			sh=QSize(this->height(),this->width());//KMultiTabBarButton::sizeHint();
-			else sh=QSize(this->width(),this->height());
+		QTransform tr;
+		
+		if (bottomIcon) {
+			tr.translate(labelArea.x(), labelPaintArea.width() + labelArea.y());
+			tr.rotate(-90);
+		} else {
+			tr.translate(labelPaintArea.height() + labelArea.x(), labelArea.y());
+			tr.rotate(90);
+		}
+		painter.setTransform(tr);
 	}
-	else
-		sh=QSize(width,height);
-
-	QPixmap pixmap( sh.width(),height); ///,sh.height());
-	pixmap.fill(palette().color(QPalette::Background));
-	QPainter painter(&pixmap);
-
-
-	QStyle::State st=QStyle::State_None;
-
-	st|=QStyle::State_Enabled;
-
-	if (isChecked()) st|=QStyle::State_On;
-
-	QStyleOptionButton options;
-	options.init(this);
-	options.state = st;
-	options.rect = QRect(0,0,pixmap.width(),pixmap.height());
-	options.palette  = palette();
-	options.text     = text();
-	options.icon     = icon();
-	options.iconSize = iconSize();
-
-	style()->drawControl(QStyle::CE_PushButton, &options, &painter, this);
-
-	switch (m_position) {
-		case KMultiTabBar::Left:
-			paint->rotate(-90);
-			paint->drawPixmap(1-pixmap.width(),0,pixmap);
-			break;
-		case KMultiTabBar::Right:
-			paint->rotate(90);
-			paint->drawPixmap(0,1-pixmap.height(),pixmap);
-			break;
-
-		default:
-			paint->drawPixmap(0,0,pixmap);
-			break;
-	}
+	
+	style()->drawItemText(&painter, labelPaintArea, Qt::AlignLeading | Qt::AlignVCenter,
+	                      palette(), true, t, QPalette::ButtonText);
 }
 
-void KMultiTabBarTab::drawButtonClassic(QPainter *paint)
-{
-        QPixmap pixmap;
-	if ( !icon().isNull())
-        	pixmap = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), QIcon::Normal );
-	paint->fillRect(0, 0, 24, 24, palette().color( QPalette::Background ) );
+// KMultiTabBar
+///////////////////////////////////////////////////////////////////////////////
 
-	if (!isChecked())
-	{
-
-		if (m_position==KMultiTabBar::Right)
-		{
-			paint->fillRect(0,0,21,21,QBrush( palette().color( QPalette::Background ) ));
-
-			paint->setPen( palette().color( QPalette::Background ).dark( 150 ) );
-			paint->drawLine(0,22,23,22);
-
-			paint->drawPixmap(12-pixmap.width()/2,12-pixmap.height()/2,pixmap);
-
-			paint->setPen( palette().color( QPalette::Shadow ) );
-			paint->drawLine(0,0,0,23);
-			paint->setPen( palette().color( QPalette::Background ).dark( 120 ) );
-			paint->drawLine(1,0,1,23);
-
-		}
-		else
-		if ((m_position==KMultiTabBar::Bottom) || (m_position==KMultiTabBar::Top))
-		{
-                        paint->fillRect(0,1,23,22,QBrush(palette().color( QPalette::Background )));
-
-                        paint->drawPixmap(12-pixmap.width()/2,12-pixmap.height()/2,pixmap);
-
-                        paint->setPen(palette().color( QPalette::Background ).dark(120));
-                        paint->drawLine(23,0,23,23);
-
-
-                        paint->setPen(palette().color( QPalette::Light ));
-                        paint->drawLine(0,22,23,22);
-                        paint->drawLine(0,23,23,23);
-                	paint->setPen(palette().color( QPalette::Shadow ));
-                	paint->drawLine(0,0,23,0);
-                        paint->setPen(palette().color( QPalette::Background ).dark(120));
-                        paint->drawLine(0,1,23,1);
-
-		}
-		else
-		{
-			paint->setPen(palette().color(QPalette::Background).dark(120));
-			paint->drawLine(0,23,23,23);
-			paint->fillRect(0,0,23,21,QBrush(palette().color(QPalette::Background)));
-			paint->drawPixmap(12-pixmap.width()/2,12-pixmap.height()/2,pixmap);
-
-			paint->setPen(palette().color(QPalette::Light));
-			paint->drawLine(23,0,23,23);
-			paint->drawLine(22,0,22,23);
-
-			paint->setPen(palette().color(QPalette::Shadow));
-			paint->drawLine(0,0,0,23);
-
-		}
-
-
-	}
-	else
-	{
-		if (m_position==KMultiTabBar::Right)
-		{
-			paint->setPen(palette().color(QPalette::Shadow));
-			paint->drawLine(0,height()-1,23,height()-1);
-			paint->drawLine(0,height()-2,23,height()-2);
-			paint->drawLine(23,0,23,height()-1);
-			paint->drawLine(22,0,22,height()-1);
-			paint->fillRect(0,0,21,height()-3,QBrush(palette().color(QPalette::Light)));
-			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
-
-			if (d->m_showActiveTabText)
-			{
-				if (height()<25+4) return;
-
-				QPixmap tpixmap(height()-25-3, width()-2);
-				QPainter painter(&tpixmap);
-
-				painter.fillRect(0,0,tpixmap.width(),tpixmap.height(),QBrush(palette().color(QPalette::Light)));
-
-				painter.setPen(palette().color(QPalette::Text));
-				painter.drawText(0,+width()/2+fontMetrics().height()/2,text());
-
-				paint->rotate(90);
-				kDebug()<<"tpixmap.width:"<<tpixmap.width();
-				paint->drawPixmap(25,-tpixmap.height()+1,tpixmap);
-			}
-
-		}
-		else
-		if (m_position==KMultiTabBar::Top)
-		{
-			paint->fillRect(0,0,width()-1,23,QBrush(palette().color(QPalette::Light)));
-			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
-			if (d->m_showActiveTabText)
-			{
-				paint->setPen(palette().color(QPalette::Text));
-				paint->drawText(25,height()/2+fontMetrics().height()/2,text());
-			}
-		}
-		else
-		if (m_position==KMultiTabBar::Bottom)
-		{
-			paint->setPen(palette().color(QPalette::Shadow));
-			paint->drawLine(0,23,width()-1,23);
-			paint->drawLine(0,22,width()-1,22);
-			paint->fillRect(0,0,width()-1,21,QBrush(palette().color(QPalette::Light)));
-			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
-			if (d->m_showActiveTabText)
-			{
-				paint->setPen(palette().color(QPalette::Text));
-				paint->drawText(25,height()/2+fontMetrics().height()/2,text());
-			}
-
-		}
-		else
-		{
-
-
-			paint->setPen(palette().color(QPalette::Shadow));
-			paint->drawLine(0,height()-1,23,height()-1);
-			paint->drawLine(0,height()-2,23,height()-2);
-			paint->fillRect(0,0,23,height()-3,QBrush(palette().color(QPalette::Light)));
-			paint->drawPixmap(10-pixmap.width()/2,10-pixmap.height()/2,pixmap);
-			if (d->m_showActiveTabText)
-			{
-
-		       		if (height()<25+4) return;
-
-                                QPixmap tpixmap(height()-25-3, width()-2);
-                                QPainter painter(&tpixmap);
-
-                                painter.fillRect(0,0,tpixmap.width(),tpixmap.height(),QBrush(palette().color(QPalette::Light)));
-
-                                painter.setPen(palette().color(QPalette::Text));
-                                painter.drawText(tpixmap.width()-fontMetrics().width(text()),+width()/2+fontMetrics().height()/2,text());
-
-                                paint->rotate(-90);
-                                kDebug()<<"tpixmap.width:"<<tpixmap.width();
-
-				paint->drawPixmap(-24-tpixmap.width(),2,tpixmap);
-
-			}
-
-		}
-
-	}
-}
-
-KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent)
+KMultiTabBar::KMultiTabBar(KMultiTabBarPosition pos, QWidget *parent)
     : QWidget(parent),
     d(new KMultiTabBarPrivate)
 {
-	if (bm==Vertical)
+	if (pos == Left || pos == Right)
 	{
 		d->m_l=new QVBoxLayout(this);
 		setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding/*, true*/);
@@ -871,9 +454,10 @@ KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent)
 		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed/*, true*/);
 	}
 	d->m_l->setMargin(0);
+	d->m_l->setSpacing(0);
 
-	d->m_internal=new KMultiTabBarInternal(this,bm);
-	setPosition((bm==KMultiTabBar::Vertical)?KMultiTabBar::Right:KMultiTabBar::Bottom);
+	d->m_internal=new KMultiTabBarInternal(this, pos);
+	setPosition(pos);
 	setStyle(VSNET);
 	d->m_l->insertWidget(0,d->m_internal);
 	d->m_l->insertWidget(0,d->m_btnTabSep=new QFrame(this));
@@ -887,15 +471,15 @@ KMultiTabBar::KMultiTabBar(KMultiTabBarMode bm, QWidget *parent)
 
 KMultiTabBar::~KMultiTabBar()
 {
-    qDeleteAll( d->m_buttons );
-    d->m_buttons.clear();
-    delete d;
+	qDeleteAll( d->m_buttons );
+	d->m_buttons.clear();
+	delete d;
 }
 
-int KMultiTabBar::appendButton(const QPixmap &pic ,int id,QMenu *popup,const QString&)
+int KMultiTabBar::appendButton(const QPixmap &pic, int id, QMenu *popup, const QString&)
 {
-	KMultiTabBarButton *btn = new KMultiTabBarButton(pic,QString(),
-                                                          popup,id,this,d->m_position,d->m_internal->m_style);
+	KMultiTabBarButton *btn = new KMultiTabBarButton(pic, QString(), id, this);
+	btn->setMenu(popup);
 	d->m_buttons.append(btn);
 	d->m_l->insertWidget(0,btn);
 	btn->show();
@@ -904,42 +488,42 @@ int KMultiTabBar::appendButton(const QPixmap &pic ,int id,QMenu *popup,const QSt
 }
 
 void KMultiTabBar::updateSeparator() {
-    bool hideSep=true;
-    QListIterator<KMultiTabBarButton*> it(d->m_buttons);
-    while (it.hasNext()){
-        if (it.next()->isVisibleTo(this)) {
-            hideSep=false;
-            break;
-        }
-    }
-    if (hideSep) d->m_btnTabSep->hide();
-    else d->m_btnTabSep->show();
-
+	bool hideSep=true;
+	QListIterator<KMultiTabBarButton*> it(d->m_buttons);
+	while (it.hasNext()){
+		if (it.next()->isVisibleTo(this)) {
+			hideSep=false;
+			break;
+		}
+	}
+	if (hideSep)
+		d->m_btnTabSep->hide();
+	else 
+		d->m_btnTabSep->show();
 }
 
-int KMultiTabBar::appendTab(const QPixmap &pic ,int id ,const QString& text)
+int KMultiTabBar::appendTab(const QPixmap &pic, int id, const QString& text)
 {
-    d->m_internal->appendTab(pic,id,text);
-    return 0;
+	d->m_internal->appendTab(pic,id,text);
+	return 0;
 }
 
 KMultiTabBarButton* KMultiTabBar::button(int id) const
 {
-    QListIterator<KMultiTabBarButton*> it(d->m_buttons);
-    while ( it.hasNext() ) {
-        KMultiTabBarButton *button = it.next();
-        if ( button->id() == id )
-            return button;
-    }
-
-    return 0;
+	QListIterator<KMultiTabBarButton*> it(d->m_buttons);
+	while ( it.hasNext() ) {
+		KMultiTabBarButton *button = it.next();
+		if ( button->id() == id )
+			return button;
+	}
+	
+	return 0;
 }
 
 KMultiTabBarTab* KMultiTabBar::tab(int id) const
 {
     return d->m_internal->tab(id);
 }
-
 
 void KMultiTabBar::removeButton(int id)
 {
@@ -951,7 +535,9 @@ void KMultiTabBar::removeButton(int id)
 			break;
 		}
 	}
-	if (d->m_buttons.count()==0) d->m_btnTabSep->hide();
+	
+	if (d->m_buttons.count()==0)
+		d->m_btnTabSep->hide();
 }
 
 void KMultiTabBar::removeTab(int id)
@@ -963,26 +549,16 @@ void KMultiTabBar::setTab(int id,bool state)
 {
 	KMultiTabBarTab *ttab=tab(id);
 	if (ttab)
-	{
 		ttab->setState(state);
-	}
 }
 
 bool KMultiTabBar::isTabRaised(int id) const
 {
 	KMultiTabBarTab *ttab=tab(id);
 	if (ttab)
-	{
 		return ttab->isChecked();
-	}
 
 	return false;
-}
-
-
-void KMultiTabBar::showActiveTabTexts(bool show)
-{
-	d->m_internal->showActiveTabTexts(show);
 }
 
 void KMultiTabBar::setStyle(KMultiTabBarStyle style)
@@ -999,20 +575,17 @@ void KMultiTabBar::setPosition(KMultiTabBarPosition pos)
 {
 	d->m_position=pos;
 	d->m_internal->setPosition(pos);
-	for (int i=0;i<d->m_buttons.count();i++)
-		d->m_buttons.at(i)->setPosition(pos);
 }
 
 KMultiTabBar::KMultiTabBarPosition KMultiTabBar::position() const
 {
 	return d->m_position;
 }
+
 void KMultiTabBar::fontChange(const QFont& /* oldFont */)
 {
-	foreach( KMultiTabBarTab* tab, * d->m_internal->tabs() )
-		tab->resize();
-	update();
+	updateGeometry();
 }
 
-QList<KMultiTabBarTab*> KMultiTabBar::tabs() const {return * d->m_internal->tabs();}
-QList<KMultiTabBarButton*> KMultiTabBar::buttons() const {return d->m_buttons;}
+// vim: ts=4 sw=4 noet
+// kate: indent-width 4; replace-tabs off; tab-width 4; space-indent off;

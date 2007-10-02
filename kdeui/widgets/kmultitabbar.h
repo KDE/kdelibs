@@ -35,6 +35,7 @@
 class QPixmap;
 class QPainter;
 class QMenu;
+class QStyleOptionToolButton;
 
 class KMultiTabBarPrivate;
 class KMultiTabBarTabPrivate;
@@ -54,18 +55,16 @@ class KDEUI_EXPORT KMultiTabBar: public QWidget
 {
     Q_OBJECT
 public:
-    enum KMultiTabBarMode { Horizontal, Vertical };
     enum KMultiTabBarPosition { Left, Right, Top, Bottom };
 
     /**
      * The list of available styles for KMultiTabBar
-     *   - VSNET - Visual Studio .Net like (only show the text of active tabs
-     *   - KDEV3 - Kdevelop 3 like (always show the text)
-     *   - KONQSBC - konqy's classic sidebar style (unthemed) (currently disabled)
+     *   - VSNET - Visual Studio .Net like, always shows icon, only show the text of active tabs
+     *   - KDEV3ICON - Kdevelop 3 like, always shows the text and icons
      */
-    enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2, KDEV3ICON=3,STYLELAST=0xffff};
+    enum KMultiTabBarStyle{VSNET=0, KDEV3ICON=2,STYLELAST=0xffff};
 
-    explicit KMultiTabBar(KMultiTabBarMode bm,QWidget *parent=0 );
+    explicit KMultiTabBar(KMultiTabBarPosition pos, QWidget *parent=0 );
     virtual ~KMultiTabBar();
 
     /**
@@ -112,40 +111,30 @@ public:
      * get a pointer to a tab within the tab area, identiifed by its ID
      */
     class KMultiTabBarTab *tab(int id) const;
+
     /**
      * set the real position of the widget.
      * @param pos if the mode is horizontal, only use top, bottom, if it is vertical use left or right
      */
     void setPosition(KMultiTabBarPosition pos);
+
     /**
      * get the tabbar position.
      * @return position
      */
     KMultiTabBarPosition position() const;
+
     /**
      * set the display style of the tabs
      */
     void setStyle(KMultiTabBarStyle style);
+
     /**
      * get the display style of the tabs
      * @return display style
      */
     KMultiTabBarStyle tabStyle() const;
-    /**
-     * @return the list of tabs
-     * be careful, don't delete the tabs yourself
-     */
-    QList<KMultiTabBarTab*> tabs() const;
-    /**
-     * @return the list of buttons
-     * be careful, don't delete the buttons yourself
-     */
-    QList<KMultiTabBarButton*> buttons() const;
 
-    /**
-     * might vanish, not sure yet
-     */
-    void showActiveTabTexts(bool show=true);
 protected:
     friend class KMultiTabBarButton;
     virtual void fontChange( const QFont& );
@@ -161,8 +150,42 @@ class KDEUI_EXPORT KMultiTabBarButton: public QPushButton
 {
     Q_OBJECT
 public:
-    virtual ~KMultiTabBarButton();
     int id() const;
+    virtual ~KMultiTabBarButton();
+
+Q_SIGNALS:
+    /**
+     * this is emitted if  the button is clicked
+     * @param id    the ID identifying the button
+     */
+    void clicked(int id);
+protected Q_SLOTS:
+    virtual void slotClicked();
+
+protected:
+    virtual void hideEvent( class QHideEvent*);
+    virtual void showEvent( class QShowEvent*);
+
+    /** Should not be created directly. Use KMultiTabBar::appendButton
+    */
+    KMultiTabBarButton(const QPixmap& pic, const QString&, int id, QWidget *parent);
+private:
+    friend class KMultiTabBar;
+
+    int m_id;
+    KMultiTabBarButtonPrivate * const d;
+};
+
+/**
+ * Use KMultiTabBar::appendTab to append a tab, which creates a KMultiTabBarTab instance
+ */
+class KDEUI_EXPORT KMultiTabBarTab: public KMultiTabBarButton
+{
+    Q_OBJECT
+public:
+    virtual ~KMultiTabBarTab();
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
 
 public Q_SLOTS:
     /**
@@ -170,6 +193,7 @@ public Q_SLOTS:
      * It the according call of KMultiTabBar is invoked though this modifications will be overwritten
      */
     void setPosition(KMultiTabBar::KMultiTabBarPosition);
+
     /**
      * this is used internaly, but can be used by the user, if (s)he wants to
      * It the according call of KMultiTabBar is invoked though this modifications will be overwritten
@@ -177,75 +201,26 @@ public Q_SLOTS:
     void setStyle(KMultiTabBar::KMultiTabBarStyle);
 
     /**
-     * Modifies the text of the button
-     */
-    void setText(const QString &);
-
-    /**
-     * Returns the text of the button
-     */
-    QString text() const;
-
-    QSize sizeHint() const;
-
-Q_SIGNALS:
-    /**
-     * this is emitted if  the button is clicked
-     * @param id	the ID identifying the button
-     */
-    void clicked(int id);
-protected Q_SLOTS:
-    virtual void slotClicked();
-protected:
-    friend class KMultiTabBar;
-    KMultiTabBarButton(const QPixmap& pic,const QString&, QMenu *popup,
-                       int id,QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos, KMultiTabBar::KMultiTabBarStyle style);
-
-    KMultiTabBar::KMultiTabBarPosition m_position;
-    KMultiTabBar::KMultiTabBarStyle m_style;
-
-    virtual void hideEvent( class QHideEvent*);
-    virtual void showEvent( class QShowEvent*);
-private:
-    KMultiTabBarButtonPrivate * const d;
-};
-
-class KDEUI_EXPORT KMultiTabBarTab: public KMultiTabBarButton
-{
-    Q_OBJECT
-public:
-    virtual ~KMultiTabBarTab();
-    /**
      * set the active state of the tab
      * @param  state true==active false==not active
      */
     void setState(bool state);
-    /**
-     * choose if the text should always be displayed
-     * this is only used in classic mode if at all
-     */
-    void showActiveTabText(bool show);
-    void resize();
 
-public Q_SLOTS:
-    virtual void setIcon(const QString&);
-    virtual void setIcon(const QPixmap&);
-
-protected Q_SLOTS:
-    virtual void slotClicked();
-    void setTabsPosition(KMultiTabBar::KMultiTabBarPosition);
-
+    void setIcon(const QString&);
+    void setIcon(const QPixmap&);
 protected:
     virtual void paintEvent(QPaintEvent *);
-    virtual void drawButton(QPainter *);
-    virtual void drawButtonLabel(QPainter *);
-
 private:
-    void setSize(int);
-    int neededSize();
-    void updateState();
-    void drawButtonStyled(QPainter *);
-    void drawButtonClassic(QPainter *);
+    KMultiTabBar::KMultiTabBarPosition m_position;
+    KMultiTabBar::KMultiTabBarStyle m_style;
+    
+    void  computeMargins (int* hMargin, int* vMargin) const;
+    QSize computeSizeHint(bool withText) const;
+    bool shouldDrawText() const;
+    bool isVertical()     const;
+    QPixmap iconPixmap()  const;
+    
+    void initStyleOption(QStyleOptionToolButton* opt) const;
 
     friend class KMultiTabBarInternal;
     /**
@@ -257,3 +232,4 @@ private:
 };
 
 #endif
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

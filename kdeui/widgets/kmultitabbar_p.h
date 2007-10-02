@@ -27,11 +27,11 @@
 #include <QtGui/QScrollArea>
 #include <kmultitabbar.h>
 
-class KMultiTabBarInternal: public QScrollArea
+class KMultiTabBarInternal: public QFrame
 {
     Q_OBJECT
 public:
-    KMultiTabBarInternal(QWidget *parent,KMultiTabBar::KMultiTabBarMode bm);
+    KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarPosition pos);
     virtual ~KMultiTabBarInternal();
     int appendTab(const QPixmap &,int=-1,const QString& =QString());
     KMultiTabBarTab *tab(int) const;
@@ -42,18 +42,11 @@ public:
     QList<KMultiTabBarTab*>* tabs(){return &m_tabs;}
 private:
     friend class KMultiTabBar;
-    QWidget *box;
     QBoxLayout *mainLayout;
     QList<KMultiTabBarTab*> m_tabs;
     enum KMultiTabBar::KMultiTabBarPosition m_position;
-    bool m_showActiveTabTexts;
-    enum  KMultiTabBar::KMultiTabBarStyle m_style;
-    int m_expandedTabSize;
-    int m_lines;
-    KMultiTabBar::KMultiTabBarMode m_barMode;
+    enum KMultiTabBar::KMultiTabBarStyle m_style;
 protected:
-    virtual bool eventFilter(QObject *,QEvent*);
-//        virtual void drawContents ( QPainter *, int, int, int, int);
 
     /**
      * [contentsM|m]ousePressEvent are reimplemented from QScrollView
@@ -62,7 +55,6 @@ protected:
      */
     virtual void contentsMousePressEvent(QMouseEvent *);
     virtual void mousePressEvent(QMouseEvent *);
-    virtual void resizeEvent(QResizeEvent *);
 };
 
 #endif
