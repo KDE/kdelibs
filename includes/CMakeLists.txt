@@ -46,7 +46,6 @@ install( FILES
   K3AboutDialog
   KAboutKdeDialog
   KAboutPerson
-  KAboutTranslator
   K3AboutWidget
   KAcceleratorManager
   KAction
@@ -237,13 +236,6 @@ install( FILES
   KLocalizedString
   KLockFile
   KMD5
-  KMJob
-  KMJobManager
-  KMJobViewer
-  KMMainView
-  KMManager
-  KMPrinter
-  KMTimer
   K3MacroCommand
   KMacroExpanderBase
   KMainWindow
@@ -607,17 +599,6 @@ install( FILES
   KAccelGen/Deref
   KAccelGen/Deref_Key
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KAccelGen )
-
-
-install( FILES
-  KDEPrivate/ConcreteFactory
-  KDEPrivate/If
-  KDEPrivate/InheritanceDetector
-  KDEPrivate/MultiFactory
-  KDEPrivate/PartInheritanceTest
-  KDEPrivate/QWidgetInheritanceTest
-  KDEPrivate/Type2Type
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KDEPrivate )
 
 
 install( FILES
