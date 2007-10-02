@@ -576,7 +576,6 @@ KTreeWidgetSearchLine *KTreeWidgetSearchLineWidget::createSearchLine( QTreeWidge
 void KTreeWidgetSearchLineWidget::createWidgets()
 {
   QLabel *label = new QLabel( i18n("S&earch:"), this );
-  label->setObjectName( QLatin1String("kde toolbar widget") );
 
   searchLine()->show();
 
