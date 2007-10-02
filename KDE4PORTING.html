@@ -66,7 +66,7 @@ KDE 3.x when you want to port them to KDE 4.0.<br>
 <li><a href="#gettingstarted">Getting Started</a></li>
 <li><a href="#globalchanges">Global Changes</a></li>
 <li><a href="#kab">Changes in kab</a></li>
-<li><a href="#kdefx">Changes in kdefx (NOTE: SLATED FOR REMOVAL)</a></li>
+<li><a href="#kdefx">kdefx porting (kdefx has been removed)</a></li>
 <li><a href="#kdecore">Changes in kdecore</a></li>
 <li><a href="#kdeui">Changes in kdeui</a></li>
 <li><a href="#kio">Changes in kio</a></li>
@@ -117,27 +117,24 @@ instead.</li>
 
 <h3><a name="kdefx">Changes in kdefx</a></h3>
 
-<p>NOTE: kdefx is still being discussed. The following text represents "the
-current plan" to the best of my knowledge, and is being provided to inform the
-developement community. Future-tense text is not set in stone. -- mwoehlke</p>
-
-<p>kdefx is slated for removal if possible. If the list of replacements doesn't
-help, and you are not the only user of a particular function, please raise the
-issue on <a href="mailto:kde-core-devel@kde.org">k-c-d</a>. Include what
-function you are using and who else is using it. If you are the only user,
-you should copy the required code to your application.</p>
+<p>kdefx has been removed.</p>
 
 <ul>
 <li>KStyle moved to kdeui</li>
-<li>KCPUInfo is removed (for now it is just not exported, but in the future will probably go away entirely).
-Use Solid::Processor instead.</li>
-<li>Qt has gradients now, please use them if you can</li>
+<li>Use Solid::Processor instead of KCPUInfo.</li>
+<li>Most of KImageEffect is now available in blitz; the bits that aren't can be done with QPainter.
+<ul>
+<li>Qt has gradients now, please use them if you can. Otherwise blitz has gradients ala KImageEffect.</li>
+</ul>
+</li>
+<li>KPixmapEffect was little more than a wrapper around pixmap->image->KImageEffect->image->pixmap. Use the replacements for KImageEffect.</li>
 <li>kdrawutils.h is gone.
 <ul>
 <li>If you already ported your code to KDE4, your code now has a copy of whatever kdrawutil code you were using.</li>
 <li>If you haven't ported your code yet, you get to find a copy of what you need in svn's revision history (or in branches/3.5).</li>
 </ul>
-<li>KPixmapSplitter is going to be removed. Use instead this code, courtesy of Matt Newell:
+</li>
+<li>The functionality of KPixmapSplitter cen be emulated with this code, courtesy of Matt Newell:
 <pre>
 QRect getFlowedRect(int index, const QSize &amp;itemSize,
                     int layoutWidth, int h_spacing, int v_spacing)
@@ -151,10 +148,8 @@ QRect getFlowedRect(int index, const QSize &amp;itemSize,
 }
 </pre>
 </li>
+<li>Use QPixmap instead of KPixmap.</li>
 </ul>
-
-<h4>KPixmap</h4>
-<p>Removed. Use QPixmap instead.</p>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
