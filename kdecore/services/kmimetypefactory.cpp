@@ -292,8 +292,11 @@ QList<KMimeType::Ptr> KMimeTypeFactory::findFromFileNameHelper( const QString &_
 KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriority whichPriority, int* accuracy, QByteArray& beginning)
 {
     Q_ASSERT(device->isOpen());
-    if (device->size() == 0)
+    if (device->size() == 0) {
+        if (accuracy)
+            *accuracy = 100;
         return findMimeTypeByName("application/x-zerosize");
+    }
 
     if (!m_magicFilesParsed) {
         parseMagic();
