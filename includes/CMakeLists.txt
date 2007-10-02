@@ -76,7 +76,6 @@ install( FILES
   KAutoMount
   KAutoUnmount
   KAutostart
-  KBindingPropsPlugin
   KBookmark
   KBookmarkAction
   KBookmarkActionInterface
@@ -155,8 +154,6 @@ install( FILES
   KDateValidator
   KDateWidget
   KDesktopFile
-  KDesktopPropsPlugin
-  KDevicePropsPlugin
   KDialog
   KDialogButtonBox
   KDirLister
@@ -185,8 +182,6 @@ install( FILES
   KFileMetaInfo
   KFileMetaInfoGroup
   KFileMetaInfoItem
-  KFilePermissionsPropsPlugin
-  KFilePropsPlugin
   KFileShare
   KFileSharePropsPlugin
   KFileTreeBranch
@@ -354,7 +349,6 @@ install( FILES
   KSeparator
   KService
   KServiceGroup
-  KServiceSeparator
   KServiceType
   KServiceTypeProfile
   KServiceTypeTrader
@@ -434,7 +428,6 @@ install( FILES
   KUrlLabel
   KUrlNavigator
   KUrlPixmapProvider
-  KUrlPropsPlugin
   KUrlRequester
   KUrlRequesterDialog
   KUser
