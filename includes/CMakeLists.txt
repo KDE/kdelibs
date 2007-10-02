@@ -168,7 +168,6 @@ install( FILES
   KEMailSettings
   KEditListBox
   KEditToolBar
-  KEditToolBarWidget
   KEncodingFileDialog
   KEntry
   KEntryKey
