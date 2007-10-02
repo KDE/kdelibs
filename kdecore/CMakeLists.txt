@@ -69,9 +69,6 @@ if (UNIX)
       network/k3socks.cpp
       network/k3sockssocketdevice.cpp
       network/klocalsocket_unix.cpp
-      io/kpty.cpp
-      io/kptydevice.cpp
-      io/kptyprocess.cpp
       io/klockfile_unix.cpp
       util/kshell_unix.cpp
       util/kuser_unix.cpp
@@ -96,11 +93,6 @@ if (UNIX)
    endif (NOT HAVE_TRUNC)
    install(TARGETS kdefakes DESTINATION ${LIB_INSTALL_DIR} )
 
-   #no ttyname on windows
-   kde4_add_executable(kgrantpty NOGUI io/kgrantpty.c)
-   target_link_libraries(kgrantpty  kdefakes )
-   install(TARGETS kgrantpty DESTINATION ${LIBEXEC_INSTALL_DIR} )
-   
 endif (UNIX)
 
 
@@ -232,7 +224,7 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
 kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${UTIL_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 set_target_properties(kdecore PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 install(TARGETS kdecore
@@ -398,9 +390,6 @@ install( FILES
 
 if (UNIX)
    install( FILES
-      io/kpty.h
-      io/kptydevice.h
-      io/kptyprocess.h
       DESTINATION ${INCLUDE_INSTALL_DIR}
    )
 endif (UNIX)

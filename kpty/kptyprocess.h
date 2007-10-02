@@ -22,7 +22,9 @@
 #ifndef KPTYPROCESS_H
 #define KPTYPROCESS_H
 
-#include "kprocess.h"
+#include <kprocess.h>
+
+#include "kpty_export.h"
 
 class KPtyDevice;
 
@@ -43,7 +45,7 @@ struct KPtyProcessPrivate;
  *
  * @author Oswald Buddenhagen <ossi@kde.org>
  */
-class KDECORE_EXPORT KPtyProcess : public KProcess
+class KPTY_EXPORT KPtyProcess : public KProcess
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KPtyProcess)

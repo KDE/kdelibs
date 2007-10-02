@@ -21,7 +21,7 @@
 #ifndef kpty_h
 #define kpty_h
 
-#include <kdecore_export.h>
+#include "kpty_export.h"
 
 struct KPtyPrivate;
 struct termios;
@@ -30,7 +30,7 @@ struct termios;
  * Provides primitives for opening & closing a pseudo TTY pair, assigning the
  * controlling TTY, utmp registration and setting various terminal attributes.
  */
-class KDECORE_EXPORT KPty {
+class KPTY_EXPORT KPty {
     Q_DECLARE_PRIVATE(KPty)
 
 public:
