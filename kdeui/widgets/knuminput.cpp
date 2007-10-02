@@ -95,11 +95,13 @@ public:
 KNumInput::KNumInput(QWidget* parent)
     : QWidget(parent), d(new KNumInputPrivate(this))
 {
+  setSizePolicy(QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ));
 }
 
 KNumInput::KNumInput(QWidget* parent, KNumInput* below)
     : QWidget(parent), d(new KNumInputPrivate(this, below))
 {
+  setSizePolicy(QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ));
 }
 
 KNumInput::~KNumInput()
@@ -205,11 +207,6 @@ void KNumInput::layout(bool deep)
     }
 
 //    kDebug() << "w1 " << w1 << " w2 " << w2;
-}
-
-QSizePolicy KNumInput::sizePolicy() const
-{
-    return QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed );
 }
 
 QSize KNumInput::sizeHint() const

@@ -102,12 +102,6 @@ public:
     void setSteps(int minor, int major);
 
     /**
-     * Specifies that this widget may stretch horizontally, but is
-     * fixed vertically (like QSpinBox itself).
-     */
-    QSizePolicy sizePolicy() const;
-
-    /**
      * Returns a size which fits the contents of the control.
      *
      * @return the preferred size necessary to show the control
