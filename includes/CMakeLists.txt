@@ -185,6 +185,7 @@ install( FILES
   KFileShare
   KFileSharePropsPlugin
   KFileTreeBranch
+  KFileTreeView
   K3FileTreeView
   K3FileTreeViewItem
   KFileView
