@@ -90,7 +90,6 @@ using namespace DOM;
 #include <kmimetypetrader.h>
 #include <ktemporaryfile.h>
 #include <kglobalsettings.h>
-#include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
@@ -2418,7 +2417,7 @@ void KHTMLPart::slotRedirect()
   if ( openedByJS() && d->m_opener )
       cUrl = d->m_opener->url();
 
-  if (!kapp || !KAuthorized::authorizeUrlAction("redirect", cUrl, url))
+  if (!KAuthorized::authorizeUrlAction("redirect", cUrl, url))
   {
     kWarning(6050) << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl << " to " << url << " REJECTED!";
     emit completed();
@@ -6847,7 +6846,7 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
   bool linkAllowed = true;
 
   if ( d->m_doc )
-    linkAllowed = kapp && KAuthorized::authorizeUrlAction("redirect", url(), linkURL);
+    linkAllowed = KAuthorized::authorizeUrlAction("redirect", url(), linkURL);
 
   if ( !linkAllowed ) {
     khtml::Tokenizer *tokenizer = d->m_doc->tokenizer();

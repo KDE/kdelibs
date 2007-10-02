@@ -66,7 +66,6 @@
 #include "xml/dom2_rangeimpl.h"
 #endif
 
-#include <kapplication.h>
 #include <kcursor.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
@@ -728,7 +727,7 @@ void KHTMLView::resizeEvent (QResizeEvent* e)
     }/*end if*/
 #endif
 
-    KApplication::sendPostedEvents(viewport(), QEvent::Paint);
+    QApplication::sendPostedEvents(viewport(), QEvent::Paint);
 
     if ( m_part && m_part->xmlDocImpl() )
         m_part->xmlDocImpl()->dispatchWindowEvent( EventImpl::RESIZE_EVENT, false, false );
