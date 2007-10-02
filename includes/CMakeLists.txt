@@ -44,7 +44,6 @@ install( FILES
   K3AboutContributor
   KAboutData
   K3AboutDialog
-  KAboutKdeDialog
   KAboutPerson
   K3AboutWidget
   KAcceleratorManager
@@ -89,7 +88,6 @@ install( FILES
   KCMultiDialog
   KCalendarSystem
   KCalendarSystemFactory
-  KCatalog
   KCharMacroExpander
   KCharSelect
   KCharsets
@@ -360,7 +358,6 @@ install( FILES
   KStyle
   KStyleFactory
   KSvgRenderer
-  KSwitchLanguageDialog
   KSycoca
   KSycocaEntry
   KSystemTimeZone
