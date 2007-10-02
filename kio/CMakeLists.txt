@@ -71,7 +71,6 @@ set(kiocore_STAT_SRCS
   kio/kdirnotify.cpp
   kio/kdirwatch.cpp
   kio/kemailsettings.cpp
-  kio/kfilefilter.cpp
   kio/kfileitem.cpp
   kio/kfileitemdelegate.cpp
   kio/kfilemetainfo.cpp
@@ -332,7 +331,6 @@ install( FILES
   kio/kdirnotify.h
   kio/kdirwatch.h
   kio/kemailsettings.h
-  kio/kfilefilter.h
   kio/kfileitem.h
   kio/kfileitemdelegate.h
   kio/kfilemetainfo.h
