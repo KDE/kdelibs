@@ -63,6 +63,9 @@ HistoryProvider::HistoryProvider( QObject *parent )
 
 HistoryProvider::~HistoryProvider()
 {
+    if (!historyProviderPrivate.isDestroyed() &&
+        historyProviderPrivate->q == this)
+        historyProviderPrivate->q = 0;
 }
 
 bool HistoryProvider::contains( const QString& item ) const
