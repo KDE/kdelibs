@@ -54,6 +54,14 @@ set(kde3support_LIB_SRCS
   kparts/dockmainwindow3.cpp
 )
 
+if (UNIX)
+   set(kde3support_LIB_SRCS ${kde3support_LIB_SRCS}
+      kdecore/k3process.cpp
+      kdecore/k3processcontroller.cpp
+      kdecore/k3procio.cpp
+   )
+endif (UNIX)
+
 set(kde3ui_UI
     kdeui/k3spellui.ui
 )
@@ -121,6 +129,15 @@ install( FILES
   kdeui/kstdaction.h
   kdeui/kstdguiitem.h
 DESTINATION  ${INCLUDE_INSTALL_DIR} )
+
+if (UNIX)
+   install( FILES
+      kdecore/k3process.h
+      kdecore/k3processcontroller.h
+      kdecore/k3procio.h
+      DESTINATION ${INCLUDE_INSTALL_DIR}
+   )
+endif (UNIX)
 
 install( FILES
     kio/kio/renamedlg.h

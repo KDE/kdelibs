@@ -69,9 +69,6 @@ if (UNIX)
       network/k3socks.cpp
       network/k3sockssocketdevice.cpp
       network/klocalsocket_unix.cpp
-      io/k3process.cpp
-      io/k3processcontroller.cpp
-      io/k3procio.cpp
       io/kpty.cpp
       io/kptydevice.cpp
       io/kptyprocess.cpp
@@ -401,9 +398,6 @@ install( FILES
 
 if (UNIX)
    install( FILES
-      io/k3process.h
-      io/k3processcontroller.h
-      io/k3procio.h
       io/kpty.h
       io/kptydevice.h
       io/kptyprocess.h

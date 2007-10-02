@@ -27,5 +27,7 @@ KDE3SUPPORT_EXECUTABLE_TESTS(
   kdockwidgettest
   kdocktest
   kaboutdialogtest
+  k3processtest
+  k3prociotest
 )
 

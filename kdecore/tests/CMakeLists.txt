@@ -73,13 +73,6 @@ KDECORE_EXECUTABLE_TESTS(
  startserviceby
 )
 
-if(UNIX)
-KDECORE_EXECUTABLE_TESTS(
- k3processtest
- k3prociotest
-)
-endif(UNIX)
-
 ########### kmimetypetest ###############
 
 # compile kmimemagicrule.cpp into the test since it's not exported and we call match().

@@ -239,13 +239,13 @@ void K3Process::clearArguments()
 bool K3Process::start(RunMode runmode, Communication comm)
 {
   if (runs) {
-    kDebug(175) << "Attempted to start an already running process";
+    kDebug(175) << "Attempted to start an already running process" << endl;
     return false;
   }
 
   uint n = arguments.count();
   if (n == 0) {
-    kDebug(175) << "Attempted to start a process without arguments";
+    kDebug(175) << "Attempted to start a process without arguments" << endl;
     return false;
   }
   char **arglist;
@@ -253,7 +253,7 @@ bool K3Process::start(RunMode runmode, Communication comm)
   if (d->useShell)
   {
       if (d->shell.isEmpty()) {
-        kDebug(175) << "Invalid shell specified";
+        kDebug(175) << "Invalid shell specified" << endl;
         return false;
       }
 
@@ -280,7 +280,7 @@ bool K3Process::start(RunMode runmode, Communication comm)
 
   if (!setupCommunication(comm))
   {
-      kDebug(175) << "Could not setup Communication!";
+      kDebug(175) << "Could not setup Communication!" << endl;
       free(arglist);
       return false;
   }
@@ -307,7 +307,7 @@ bool K3Process::start(RunMode runmode, Communication comm)
         fcntl(fd[1], F_SETFD, FD_CLOEXEC);
 
         if (!commSetupDoneC())
-          kDebug(175) << "Could not finish comm setup in child!";
+          kDebug(175) << "Could not finish comm setup in child!" << endl;
 
         // reset all signal handlers
         struct sigaction act;
@@ -358,7 +358,7 @@ bool K3Process::start(RunMode runmode, Communication comm)
   free(arglist);
 
   if (!commSetupDoneP())
-    kDebug(175) << "Could not finish comm setup in parent!";
+    kDebug(175) << "Could not finish comm setup in parent!" << endl;
 
   // Check whether client could be started.
   close(fd[1]);
@@ -650,11 +650,6 @@ void K3Process::closeAll()
   closePty();
 }
 
-const QList<QByteArray> &K3Process::args() /* const */
-{
-    return arguments;
-}
-
 /////////////////////////////
 // protected slots         //
 /////////////////////////////
@@ -689,7 +684,7 @@ void K3Process::slotSendData(int)
     }
     else if ((errno != EAGAIN) && (errno != EINTR))
     {
-       kDebug(175) << "Error writing to stdin of child process";
+       kDebug(175) << "Error writing to stdin of child process" << endl;
        closeStdin();
     }
   }
@@ -809,7 +804,7 @@ int K3Process::setupCommunication(Communication comm)
   {
     // cannot communicate on both stderr and stdout if they are both on the pty
     if (!(~(comm & d->usePty) & (Stdout | Stderr))) {
-       kWarning(175) << "Invalid usePty/communication combination (" << d->usePty << "/" << comm << ")";
+       kWarning(175) << "Invalid usePty/communication combination (" << d->usePty << "/" << comm << ")" << endl;
        return 0;
     }
     if (!d->pty->open())
