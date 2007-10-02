@@ -18,7 +18,7 @@
 #ifndef K3PROCIO_H
 #define K3PROCIO_H
 
-#include <kdecore_export.h>
+#include <kde3support_export.h>
 #include <k3process.h>
 
 #include <QtCore/QString>
@@ -47,7 +47,7 @@ class QTextCodec;
  **/
 
 
-class KDECORE_EXPORT_DEPRECATED K3ProcIO : public K3Process
+class KDE3SUPPORT_EXPORT_DEPRECATED K3ProcIO : public K3Process
 {
   Q_OBJECT
 

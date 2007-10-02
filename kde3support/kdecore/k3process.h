@@ -20,7 +20,7 @@
 #ifndef K3PROCESS_H
 #define K3PROCESS_H
 
-#include <kdecore_export.h>
+#include <kde3support_export.h>
 
 #include <QtCore/QObject>
 
@@ -124,7 +124,7 @@ class KPty;
  * @author Christian Czezatke e9025461@student.tuwien.ac.at
  *
  **/
-class KDECORE_EXPORT_DEPRECATED K3Process : public QObject
+class KDE3SUPPORT_EXPORT_DEPRECATED K3Process : public QObject
 {
   Q_OBJECT
 
@@ -857,7 +857,7 @@ class K3ShellProcessPrivate;
 *   	processes through a shell.
 *   @author Christian Czezatke <e9025461@student.tuwien.ac.at>
 */
-class KDECORE_EXPORT_DEPRECATED K3ShellProcess : public K3Process
+class KDE3SUPPORT_EXPORT_DEPRECATED K3ShellProcess : public K3Process
 {
   Q_OBJECT
 
