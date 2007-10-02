@@ -441,34 +441,24 @@ Q_SIGNALS:
      */
     void accepted();
 
-private Q_SLOTS:
-    void slotLocationChanged( const QString& text );
-    void urlEntered( const KUrl& );
-    void enterUrl( const KUrl& url );
-    void enterUrl( const QString& url );
-    void locationAccepted( const QString& url );
-
-    void slotFilterChanged();
-    void fileHighlighted(const KFileItem &i);
-    void fileSelected(const KFileItem &i);
-    void slotStatResult(KJob* job);
-    void slotLoadingFinished();
-    void fileCompletion( const QString& );
-    void toggleSpeedbar( bool );
-    void toggleBookmarks(bool show);
-
-    void slotAutoSelectExtClicked();
-    void addToRecentDocuments();
-
-private:
-    /**
-     * Returns the absolute version of the URL specified in locationEdit.
-     */
-    KUrl getCompleteUrl(const QString&);
-
 private:
     friend class KFileWidgetPrivate;
     KFileWidgetPrivate* const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotLocationChanged( const QString& ) )
+    Q_PRIVATE_SLOT( d, void _k_urlEntered( const KUrl& ) )
+    Q_PRIVATE_SLOT( d, void _k_enterUrl( const KUrl& ) )
+    Q_PRIVATE_SLOT( d, void _k_enterUrl( const QString& ) )
+    Q_PRIVATE_SLOT( d, void _k_locationAccepted( const QString& ) )
+    Q_PRIVATE_SLOT( d, void _k_slotFilterChanged() )
+    Q_PRIVATE_SLOT( d, void _k_fileHighlighted( const KFileItem& ) )
+    Q_PRIVATE_SLOT( d, void _k_fileSelected( const KFileItem& ) )
+    Q_PRIVATE_SLOT( d, void _k_slotStatResult( KJob* ) )
+    Q_PRIVATE_SLOT( d, void _k_slotLoadingFinished() )
+    Q_PRIVATE_SLOT( d, void _k_fileCompletion( const QString& ) )
+    Q_PRIVATE_SLOT( d, void _k_toggleSpeedbar( bool ) )
+    Q_PRIVATE_SLOT( d, void _k_toggleBookmarks( bool ) )
+    Q_PRIVATE_SLOT( d, void _k_slotAutoSelectExtClicked() )
 };
 
 #endif /* KABSTRACTFILEWIDGET_H */
