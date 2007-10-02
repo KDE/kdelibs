@@ -36,7 +36,7 @@ public:
     gid_t gid;
     QString loginName;
     QString homeDir, shell;
-    QList<QVariant> properties;
+    QMap<UserProperty, QVariant> properties;
 
     Private() : uid(uid_t(-1)), gid(gid_t(-1)) {}
     Private(const char *name) : uid(uid_t(-1)), gid(gid_t(-1))
