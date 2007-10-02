@@ -60,7 +60,7 @@ add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -D_FILE_OFFSET_BITS=64 -D_
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 # for including config.h and for includes like <kparts/foo.h>
-include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kdefx)
+include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces)
 
 # Those variables for  are only valid inside of kdelibs, of course.
 # Use the one variable for the lib you depend upon.
@@ -88,9 +88,8 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
-# kdeui depends on kdefx+kdecore
-set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx
-                        ${CMAKE_SOURCE_DIR}/kdeui
+# kdeui depends on kdecore
+set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/actions
                         ${CMAKE_SOURCE_DIR}/kdeui/colors
                         ${CMAKE_SOURCE_DIR}/kdeui/config
@@ -154,7 +153,6 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 # list the subdirectories
 
 add_subdirectory( cmake )
-add_subdirectory( kdefx )
 add_subdirectory( kdecore )
 add_subdirectory( kdeui )
 if (UNIX)
