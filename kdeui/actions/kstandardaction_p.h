@@ -45,7 +45,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { OpenRecent,    KStandardShortcut::AccelNone, "file_open_recent", I18N_NOOP("Open &Recent"), 0, "document-open" },
   { Save,          KStandardShortcut::Save, "file_save", I18N_NOOP("&Save"), 0, "document-save" },
   { SaveAs,        KStandardShortcut::AccelNone, "file_save_as", I18N_NOOP("Save &As..."), 0, "document-save-as" },
-  { Revert,        KStandardShortcut::AccelNone, "file_revert", I18N_NOOP("Re&vert"), 0, "file-revert" },
+  { Revert,        KStandardShortcut::AccelNone, "file_revert", I18N_NOOP("Re&vert"), 0, "document-revert" },
   { Close,         KStandardShortcut::Close, "file_close", I18N_NOOP("&Close"), 0, "window-close" },
   { Print,         KStandardShortcut::Print, "file_print", I18N_NOOP("&Print..."), 0, "document-print" },
   { PrintPreview,  KStandardShortcut::AccelNone, "file_print_preview", I18N_NOOP("Print Previe&w..."), 0, "document-print-preview" },
@@ -66,13 +66,13 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { FindPrev,      KStandardShortcut::FindPrev, "edit_find_prev", I18N_NOOP("Find Pre&vious"), 0, "find-previous" },
   { Replace,       KStandardShortcut::Replace, "edit_replace", I18N_NOOP("&Replace..."), 0, 0 },
 
-  { ActualSize,    KStandardShortcut::AccelNone, "view_actual_size", I18N_NOOP("&Actual Size"), 0, 0 },
+  { ActualSize,    KStandardShortcut::AccelNone, "view_actual_size", I18N_NOOP("&Actual Size"), 0, "zoom-original" },
   { FitToPage,     KStandardShortcut::AccelNone, "view_fit_to_page", I18N_NOOP("&Fit to Page"), 0, 0 },
   { FitToWidth,    KStandardShortcut::AccelNone, "view_fit_to_width", I18N_NOOP("Fit to Page &Width"), 0, 0 },
   { FitToHeight,   KStandardShortcut::AccelNone, "view_fit_to_height", I18N_NOOP("Fit to Page &Height"), 0, 0 },
   { ZoomIn,        KStandardShortcut::ZoomIn, "view_zoom_in", I18N_NOOP("Zoom &In"), 0, "zoom-in" },
   { ZoomOut,       KStandardShortcut::ZoomOut, "view_zoom_out", I18N_NOOP("Zoom &Out"), 0, "zoom-out" },
-  { Zoom,          KStandardShortcut::AccelNone, "view_zoom", I18N_NOOP("&Zoom..."), 0, "zoom-original" },
+  { Zoom,          KStandardShortcut::AccelNone, "view_zoom", I18N_NOOP("&Zoom..."), 0, 0 },
   { Redisplay,     KStandardShortcut::Reload, "view_redisplay", I18N_NOOP("&Redisplay"), 0, "view-refresh" },
 
   { Up,            KStandardShortcut::Up, "go_up", I18N_NOOP("&Up"), 0, "go-up" },
@@ -107,7 +107,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   // shortcut
   { Help,          KStandardShortcut::Help, "help", 0, 0, "help-contents" },
   { HelpContents,  KStandardShortcut::Help, "help_contents", I18N_NOOP("%1 &Handbook"), 0, "help-contents" },
-  { WhatsThis,     KStandardShortcut::WhatsThis, "help_whats_this", I18N_NOOP("What's &This?"), 0, "help-whatsthis" },
+  { WhatsThis,     KStandardShortcut::WhatsThis, "help_whats_this", I18N_NOOP("What's &This?"), 0, "help-contextual" },
   { TipofDay,      KStandardShortcut::AccelNone, "help_show_tip", I18N_NOOP("Tip of the &Day"), 0, "idea" },
   { ReportBug,     KStandardShortcut::AccelNone, "help_report_bug", I18N_NOOP("&Report Bug..."), 0, 0 },
   { SwitchApplicationLanguage, KStandardShortcut::AccelNone, "switch_application_language", I18N_NOOP("Switch Application &Language..."), 0, 0 },
