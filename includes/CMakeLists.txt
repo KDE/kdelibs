@@ -1,13 +1,4 @@
 install( FILES
-  DrBase
-  DrBooleanOption
-  DrFloatOption
-  DrGroup
-  DrIntegerOption
-  DrListOption
-  DrMain
-  DrStringOption
-  I18nTypeCheck
   K3BookmarkDrag
   K3ButtonBox
   K3ColorDrag
@@ -173,7 +164,6 @@ install( FILES
   KEntryKey
   KFile
   KFileDialog
-  KFileFilter
   KFileFilterCombo
   KFileItem
   KFileItemList
@@ -359,7 +349,6 @@ install( FILES
   KShellCompletion
   KShortcut
   KShortcutsDialog
-  KSimpleFileFilter
   KSocks
   KSortableItem
   KSortableList
