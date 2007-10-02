@@ -123,7 +123,6 @@ install( FILES
   KConfigSkeletonGenericItem
   KConfigSkeletonItem
   KSharedConfigPtr
-  KCookie
   KCrash
   KCrashBookmarkImporter
   KCrashBookmarkImporterImpl
@@ -284,7 +283,6 @@ install( FILES
   KPixmapProvider
   KPixmapRegionSelectorDialog
   KPixmapRegionSelectorWidget
-  KPixmapSplitter
   KPlotAxis
   KPlotObject
   KPlotPoint
