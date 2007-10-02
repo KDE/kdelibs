@@ -250,8 +250,8 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
 	unsigned long yyyyy = octets[0] & 0x1F;
 	unsigned long zzzzzz = octets[1] & 0x3F;
 	V = (yyyyy << 6) | zzzzzz;
-	// 2-byte sequence overlong for this value?
-	if (V < 0xFF)
+	// 2-byte sequence overlong for this value?       
+	if (V < 0x80)
 	  V = replacementChar;
 	C = UChar((unsigned short)V);
       }
