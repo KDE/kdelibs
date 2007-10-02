@@ -15,4 +15,6 @@ install(FILES
     favicon.ico
     block_title_bottom.png  block_title_mid.png  block_title_top.png
     top-kde.jpg  top-left.jpg  top-right.jpg  top.jpg
+    bottom-left.png bottom-right.png bottom-middle.png kde-default.css kde_logo_bg.png
+    top-middle.png top-right-konqueror.png top-left.png
     DESTINATION ${HTML_INSTALL_DIR}/en/common)
