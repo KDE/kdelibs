@@ -136,15 +136,15 @@ class KDEUI_EXPORT KDialog : public QDialog
     enum ButtonCode
     {
       None    = 0x00000000,
-      Help    = 0x00000001, ///< Show Help button. (this button wil run the help set with setHelp)
+      Help    = 0x00000001, ///< Show Help button. (this button will run the help set with setHelp)
       Default = 0x00000002, ///< Show Default button.
-      Ok      = 0x00000004, ///< Show Ok button. (this button accept the dialog)
+      Ok      = 0x00000004, ///< Show Ok button. (this button accept()s the dialog; result set to QDialog::Accepted)
       Apply   = 0x00000008, ///< Show Apply button.
       Try     = 0x00000010, ///< Show Try button.
-      Cancel  = 0x00000020, ///< Show Cancel-button. (this button reject the dialog)
-      Close   = 0x00000040, ///< Show Close-button. (this button close the dialog)
-      No      = 0x00000080, ///< Show No button. (this button close the dialog and set the result to No)
-      Yes     = 0x00000100, ///< Show Yes button. (this button close the fialog and set the result to Yes)
+      Cancel  = 0x00000020, ///< Show Cancel-button. (this button reject()s the dialog; result set to QDialog::Rejected)
+      Close   = 0x00000040, ///< Show Close-button. (this button closes the dialog)
+      No      = 0x00000080, ///< Show No button. (this button closes the dialog and sets the result to KDialog::No)
+      Yes     = 0x00000100, ///< Show Yes button. (this button closes the fialog and sets the result to KDialog::Yes)
       Details = 0x00000400, ///< Show Details button. (this button will show the detail widget set with setDetailsWidget)
       User1   = 0x00001000, ///< Show User defined button 1.
       User2   = 0x00002000, ///< Show User defined button 2.
