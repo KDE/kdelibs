@@ -121,7 +121,7 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <class T>
-    static T *createInstanceFromQuery(const QString &mimeType, QWidget *parentWidget = 0, QObject *parent = 0,
+    static T *createPartInstanceFromQuery(const QString &mimeType, QWidget *parentWidget = 0, QObject *parent = 0,
                                       const QString &constraint = QString(),
                                       const QVariantList &args = QVariantList(),
                                       QString *error = 0)
@@ -129,6 +129,39 @@ public:
         const KService::List offers = self()->query(mimeType, QString::fromAscii("KParts/ReadOnlyPart"), constraint);
         Q_FOREACH (const KService::Ptr &ptr, offers) {
             T *component = ptr->template createInstance<T>(parentWidget, parent, args, error);
+            if (component) {
+                if (error)
+                    error->clear();
+                return component;
+            }
+        }
+        if (error) 
+            *error = i18n("No service matching the requirements was found");
+        return 0;
+    }
+    
+    /**
+     * This can be used to create a service instance from a mime type query
+     *
+     * @param mimeType A mime type like 'text/plain' or 'text/html'.
+     * @param genericServiceType a basic service type
+     * @param parent the parent object for the plugin itself
+     * @param constraint  A constraint to limit the choices returned, QString() to
+     *                    get all services that can handle the given @p mimetype
+     * @param args A list of arguments passed to the service component
+     * @param error The string passed here will contain an error description.
+     * @return A pointer to the newly created object or a null pointer if the
+     *         factory was unable to create an object of the given type.
+     */
+    template <class T>
+    static T *createInstanceFromQuery(const QString &mimeType, const QString &serviceType, QObject *parent = 0,
+                                      const QString &constraint = QString(),
+                                      const QVariantList &args = QVariantList(),
+                                      QString *error = 0)
+    {
+        const KService::List offers = self()->query(mimeType, serviceType, constraint);
+        Q_FOREACH (const KService::Ptr &ptr, offers) {
+            T *component = ptr->createInstance<T>(parentWidget, parent, args, error);
             if (component) {
                 if (error)
                     error->clear();
