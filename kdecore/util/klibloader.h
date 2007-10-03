@@ -40,8 +40,9 @@
  * KLibLoader follows the singleton pattern. You can not create multiple
  * instances. Use self() to get a pointer to the loader.
  *
- * Note that you probably want to use KPluginLoader or
- * KService::createInstance instead.
+ * @deprecated You have two other possibilites:
+ *       KPluginLoader or KService::createInstance for plugins
+ *       KLibrary for other libraries
  *
  * @see KLibrary
  * @see KPluginLoader
@@ -130,7 +131,7 @@ public:
      * @return a pointer to the loader. If no loader exists until now
      *         then one is created.
      */
-    static KLibLoader* self();
+    static KDE_DEPRECATED KLibLoader* self();
 
     /**
      * Helper method which looks for a library in the standard paths
@@ -189,7 +190,7 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <typename T>
-    static T *createInstance(const QString &keyword, const QString &libname, QObject *parent = 0,
+    static KDE_DEPRECATED T *createInstance(const QString &keyword, const QString &libname, QObject *parent = 0,
                               const QVariantList &args = QVariantList(),
                               int *error = 0 )
     {
@@ -221,7 +222,7 @@ public:
     }
 
     template <typename T>
-    static T *createInstance( const QString &libname, QObject *parent = 0,
+    static KDE_DEPRECATED T *createInstance( const QString &libname, QObject *parent = 0,
                               const QVariantList &args = QVariantList(),
                               int *error = 0 )
     {
