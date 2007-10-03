@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include "k3processcontroller.h"
-#include "kpty.h"
+#include "kpty/kpty.h"
 
 #ifdef __osf__
 #define _OSF_SOURCE
