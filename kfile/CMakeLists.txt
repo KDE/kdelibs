@@ -15,6 +15,7 @@ set(kfile_LIB_SRCS
   k3filetreeview.cpp
   k3filetreeviewitem.cpp
   kdiroperator.cpp
+  kdiroperatordetailview.cpp
   kdirselectdialog.cpp
   kdirsortfilterproxymodel.cpp #used in combination with kio/kio/kdirmodel.cpp
   kfilebookmarkhandler.cpp

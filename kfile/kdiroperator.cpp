@@ -20,6 +20,7 @@
 
 #include "kdiroperator.h"
 #include "kdirmodel.h"
+#include "kdiroperatordetailview_p.h"
 #include "kdirsortfilterproxymodel.h"
 #include "kfileview.h"
 #include "kfileitem.h"
@@ -81,11 +82,11 @@ template class QHash<QString, KFileItem>;
  * Default icon view for KDirOperator using
  * custom view options.
  */
-class DirOperatorIconView : public QListView
+class KDirOperatorIconView : public QListView
 {
 public:
-    DirOperatorIconView(QWidget *parent = 0);
-    virtual ~DirOperatorIconView();
+    KDirOperatorIconView(QWidget *parent = 0);
+    virtual ~KDirOperatorIconView();
 
 protected:
     virtual QStyleOptionViewItem viewOptions() const;
@@ -96,7 +97,7 @@ private:
     QStyleOptionViewItem m_viewOptions;
 };
 
-DirOperatorIconView::DirOperatorIconView(QWidget *parent) :
+KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
         QListView(parent)
 {
     setViewMode(QListView::IconMode);
@@ -117,23 +118,23 @@ DirOperatorIconView::DirOperatorIconView(QWidget *parent) :
     setGridSize(QSize(fontHeight * 10, fontHeight + 4));
 }
 
-DirOperatorIconView::~DirOperatorIconView()
+KDirOperatorIconView::~KDirOperatorIconView()
 {
 }
 
-QStyleOptionViewItem DirOperatorIconView::viewOptions() const
+QStyleOptionViewItem KDirOperatorIconView::viewOptions() const
 {
     return m_viewOptions;
 }
 
-void DirOperatorIconView::dragEnterEvent(QDragEnterEvent* event)
+void KDirOperatorIconView::dragEnterEvent(QDragEnterEvent* event)
 {
     if (event->mimeData()->hasUrls()) {
         event->acceptProposedAction();
     }
 }
 
-void DirOperatorIconView::mousePressEvent(QMouseEvent *event)
+void KDirOperatorIconView::mousePressEvent(QMouseEvent *event)
 {
     if (!indexAt(event->pos()).isValid()) {
         const Qt::KeyboardModifiers modifier = QApplication::keyboardModifiers();
@@ -145,95 +146,7 @@ void DirOperatorIconView::mousePressEvent(QMouseEvent *event)
     QListView::mousePressEvent(event);
 }
 
-/**
- * Default detail view for KDirOperator using
- * custom resizing options and columns.
- */
-class DirOperatorDetailView : public QTreeView
-{
-public:
-    DirOperatorDetailView(QWidget *parent = 0);
-    virtual ~DirOperatorDetailView();
 
-protected:
-    virtual bool event(QEvent *event);
-    virtual void dragEnterEvent(QDragEnterEvent* event);
-    virtual void resizeEvent(QResizeEvent* event);
-};
-
-DirOperatorDetailView::DirOperatorDetailView(QWidget *parent) :
-    QTreeView(parent)
-{
-    setRootIsDecorated(false);
-    setSortingEnabled(true);
-    setUniformRowHeights(true);
-    setDragDropMode(QListView::DragOnly);
-    setSelectionBehavior(QAbstractItemView::SelectRows);
-}
-
-DirOperatorDetailView::~DirOperatorDetailView()
-{
-}
-
-bool DirOperatorDetailView::event(QEvent *event)
-{
-    if (event->type() == QEvent::Polish) {
-        // Assure that by respecting the available width that:
-        // - the 'Name' column is stretched as large as possible
-        // - the remaining columns are as small as possible
-        QHeaderView *headerView = header();
-        headerView->setStretchLastSection(false);
-        headerView->setResizeMode(QHeaderView::ResizeToContents);
-        headerView->setResizeMode(0, QHeaderView::Stretch);
-
-        // hide columns
-        hideColumn(KDirModel::Permissions);
-        hideColumn(KDirModel::Owner);
-        hideColumn(KDirModel::Group);
-    }
-
-    return QTreeView::event(event);
-}
-
-void DirOperatorDetailView::dragEnterEvent(QDragEnterEvent* event)
-{
-    if (event->mimeData()->hasUrls()) {
-        event->acceptProposedAction();
-    }
-}
-
-void DirOperatorDetailView::resizeEvent(QResizeEvent* event)
-{
-    QTreeView::resizeEvent(event);
-
-    // assure that the width of the name-column does not get too small
-    const int minWidth = 120;
-    QHeaderView* headerView = header();
-    bool useFixedWidth = (headerView->sectionSize(KDirModel::Name) <= minWidth)
-                          && (headerView->resizeMode(0) != QHeaderView::Fixed);
-    if (useFixedWidth) {
-        // the current width of the name-column is too small, hence
-        // use a fixed size
-        headerView->setResizeMode(QHeaderView::Fixed);
-        headerView->setResizeMode(0, QHeaderView::Fixed);
-        headerView->resizeSection(KDirModel::Name, minWidth);
-    } else if (headerView->resizeMode(0) != QHeaderView::Stretch) {
-        // check whether there is enough available viewport width
-        // to automatically resize the columns
-        const int availableWidth = viewport()->width();
-
-        int headerWidth = 0;
-        const int count = headerView->count();
-        for (int i = 0; i < count; ++i) {
-            headerWidth += headerView->sectionSize(i);
-        }
-
-        if (headerWidth < availableWidth) {
-            headerView->setResizeMode(QHeaderView::ResizeToContents);
-            headerView->setResizeMode(0, QHeaderView::Stretch);
-        }
-    }
-}
 
 class KDirOperator::Private
 {
@@ -1047,7 +960,7 @@ void KDirOperator::Private::triggerSorting()
     // change of the proxy model hence they must be updated the manually.
     // This is done here by a qobject_cast, but it would be nicer to:
     // - provide a signal 'sortingChanged()'
-    // - connect DirOperatorDetailView() with this signal and update the
+    // - connect KDirOperatorDetailView() with this signal and update the
     //   header internally
     QTreeView* treeView = qobject_cast<QTreeView*>(itemView);
     if (treeView != 0) {
@@ -1255,12 +1168,12 @@ QAbstractItemView* KDirOperator::createView(QWidget* parent, KFile::FileView vie
 {
     QAbstractItemView *itemView = 0;
     if (KFile::isDetailView(viewKind)) {
-        DirOperatorDetailView *detailView = new DirOperatorDetailView(parent);
+        KDirOperatorDetailView *detailView = new KDirOperatorDetailView(parent);
         connect(detailView->header(), SIGNAL(sortIndicatorChanged (int, Qt::SortOrder)),
                 this, SLOT(_k_synchronizeSortingState(int, Qt::SortOrder)));
         itemView = detailView;
     } else {
-        itemView = new DirOperatorIconView(parent);
+        itemView = new KDirOperatorIconView(parent);
     }
 
     return itemView;

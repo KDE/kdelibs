@@ -1,0 +1,100 @@
+/*****************************************************************************
+ * Copyright (C) 2007 by Peter Penz <peter.penz@gmx.at>                      *
+ *                                                                           *
+ * This library is free software; you can redistribute it and/or             *
+ * modify it under the terms of the GNU Library General Public               *
+ * License version 2 as published by the Free Software Foundation.           *
+ *                                                                           *
+ * This library is distributed in the hope that it will be useful,           *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         *
+ * Library General Public License for more details.                          *
+ *                                                                           *
+ * You should have received a copy of the GNU Library General Public License *
+ * along with this library; see the file COPYING.LIB.  If not, write to      *
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,      *
+ * Boston, MA 02110-1301, USA.                                               *
+ *****************************************************************************/
+
+#include "kdiroperatordetailview_p.h"
+
+#include <kdirmodel.h>
+
+#include <QtCore/QEvent>
+#include <QtCore/QTimer>
+#include <QtGui/QHeaderView>
+#include <QtGui/QListView>
+#include <QtGui/QResizeEvent>
+
+KDirOperatorDetailView::KDirOperatorDetailView(QWidget *parent) :
+    QTreeView(parent),
+    m_resizeColumns(true)
+{
+    setRootIsDecorated(false);
+    setSortingEnabled(true);
+    setUniformRowHeights(true);
+    setDragDropMode(QListView::DragOnly);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+}
+
+KDirOperatorDetailView::~KDirOperatorDetailView()
+{
+}
+
+bool KDirOperatorDetailView::event(QEvent *event)
+{
+    if (event->type() == QEvent::Polish) {
+        QHeaderView *headerView = header();
+        headerView->setResizeMode(QHeaderView::Interactive);
+        headerView->resizeSections(QHeaderView::ResizeToContents);
+        headerView->setMovable(false);
+
+        hideColumn(KDirModel::Permissions);
+        hideColumn(KDirModel::Owner);
+        hideColumn(KDirModel::Group);
+
+        // TODO: It would be nice if disabling the automatic column resizing
+        // would only be done after the user has changed the width of at least
+        // one column. But QHeaderView::sectionMoved() does not differ between
+        // user based resizing and internal resizing...
+        QTimer::singleShot(300, this, SLOT(disableColumnResizing()));
+    }
+
+    return QTreeView::event(event);
+}
+
+void KDirOperatorDetailView::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void KDirOperatorDetailView::resizeEvent(QResizeEvent *event)
+{
+    QTreeView::resizeEvent(event);
+
+    if (m_resizeColumns) {
+        QHeaderView *headerView = header();
+        headerView->resizeSections(QHeaderView::ResizeToContents);
+
+        // calculate the required width for all columns except the name column
+        int requiredWidth = 0;
+        for (int i = KDirModel::Size; i < KDirModel::ColumnCount; ++i) {
+            requiredWidth += headerView->sectionSize(i);
+        }
+
+        // try to stretch the name column if enough width is available
+        const int oldNameColumnWidth = headerView->sectionSize(KDirModel::Name);
+        int nameColumnWidth = viewport()->width() - requiredWidth;
+        if (nameColumnWidth < oldNameColumnWidth) {
+            nameColumnWidth = oldNameColumnWidth;
+        }
+        headerView->resizeSection(KDirModel::Name, nameColumnWidth);
+    }
+}
+
+void KDirOperatorDetailView::disableColumnResizing()
+{
+    m_resizeColumns = false;
+}
