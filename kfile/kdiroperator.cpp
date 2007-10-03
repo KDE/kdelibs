@@ -104,7 +104,7 @@ DirOperatorIconView::DirOperatorIconView(QWidget *parent) :
     setResizeMode(QListView::Adjust);
     setSpacing(KDialog::spacingHint());
     setMovement(QListView::Static);
-    setDragDropMode(QListView::DragDrop);
+    setDragDropMode(QListView::DragOnly);
 
     m_viewOptions = QListView::viewOptions();
     m_viewOptions.showDecorationSelected = true;
@@ -157,6 +157,7 @@ public:
 
 protected:
     virtual bool event(QEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void resizeEvent(QResizeEvent* event);
 };
 
@@ -166,6 +167,7 @@ DirOperatorDetailView::DirOperatorDetailView(QWidget *parent) :
     setRootIsDecorated(false);
     setSortingEnabled(true);
     setUniformRowHeights(true);
+    setDragDropMode(QListView::DragOnly);
     setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
@@ -191,6 +193,13 @@ bool DirOperatorDetailView::event(QEvent *event)
     }
 
     return QTreeView::event(event);
+}
+
+void DirOperatorDetailView::dragEnterEvent(QDragEnterEvent* event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
 }
 
 void DirOperatorDetailView::resizeEvent(QResizeEvent* event)
