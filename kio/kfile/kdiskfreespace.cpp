@@ -172,6 +172,7 @@ class KDiskFreeSpace::Private
 {
     public:
         Private(){}
+        void _k_dfDone();
 };
 
 KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
@@ -212,7 +213,7 @@ KDiskFreeSpace *KDiskFreeSpace::findUsageInfo( const QString & path )
     return job;
 }
 
-void KDiskFreeSpace::_k_dfDone()
+void KDiskFreeSpace::Private::_k_dfDone()
 {
 }
 

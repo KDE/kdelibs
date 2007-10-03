@@ -27,6 +27,7 @@
 #include <QtCore/QList>
 
 #include <kicontheme.h> // K3Icon (for pixmapForUrl)
+#include <kiconloader.h>
 #include <QtGui/QPixmap> // for pixmapForUrl
 
 #include <sys/stat.h> // S_ISDIR
