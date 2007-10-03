@@ -36,6 +36,12 @@ namespace KDEPrivate {
 
 struct LanguageRowData
 {
+    LanguageRowData()
+    {
+        label = 0;
+	languageButton = 0;
+	removeButton = 0;
+    }
     QLabel *label;
     KLanguageButton *languageButton;
     KPushButton *removeButton;
