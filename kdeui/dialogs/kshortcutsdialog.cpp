@@ -108,6 +108,7 @@ public:
 	bool isModified(uint column) const;
 
 	KAction *m_action;
+	bool m_isNameBold;
 private:
 	//recheck modified status - could have changed back to initial value
 	void updateModified();
@@ -191,14 +192,18 @@ QSize KShortcutsEditorDelegate::sizeHint(const QStyleOptionViewItem &option,
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
 	//check if we are dealing with a KShortcutsEditorItem
-	if (index.model()->data(index, ItemPointerRole).isNull())
+	const QAbstractItemModel *model = index.model();
+	if (!model)
+		return;
+	KShortcutsEditorItem *item = reinterpret_cast<KShortcutsEditorItem *>(
+	                                 model->data(index, ItemPointerRole).toULongLong());
+	if (!item)
 		return;
 
 	//TODO: make clicking on the Name column do *exactly* the same thing
 	//as clicking on the LocalPrimary column, i.e. select LocalPrimary
 	int column = index.column();
 	if (column == 0) {
-		const QAbstractItemModel *model = index.model();
 		index = model->index(index.row(), 1, index.parent());
 		column = 1;
 	}
@@ -209,7 +214,6 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 			contractItem(m_editingIndex);
 
 		m_editingIndex = index;
-		const QAbstractItemModel *model = index.model();
 		QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
 
 		if (column >= LocalPrimary && column <= GlobalAlternate) {
@@ -230,9 +234,11 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 			return;
 
 		m_editor->installEventFilter(this);
+		item->m_isNameBold = true;
 		extendItem(m_editor, index);
 
 	} else {
+		item->m_isNameBold = false;
 		contractItem(index);
 		m_editingIndex = QModelIndex();
 		m_editor = 0;
@@ -293,11 +299,10 @@ void TabConnectedWidget::paintEvent(QPaintEvent *e)
 	QWidget::paintEvent(e);
 	QPainter p(this);
 	QPen pen(QPalette().highlight().color());
-	pen.setWidth(4);
-	pen.setJoinStyle(Qt::MiterJoin);
-	QRect r(1, 1, width() - 3, height() - 3);
+	pen.setWidth(6);
 	p.setPen(pen);
-	p.drawRect(r);
+	p.drawLine(0, 0, width(), 0);
+	p.drawLine(0, 0, 0, height());
 }
 
 
@@ -495,6 +500,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	ui.list->setSelectionMode(QAbstractItemView::SingleSelection);
 	//we have our own editing mechanism
 	ui.list->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui.list->setAlternatingRowColors(true);
 
 	//TODO listen to changes to global shortcuts
 	QObject::connect(delegate, SIGNAL(shortcutChanged(QVariant, const QModelIndex &)),
@@ -587,7 +593,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 				KGlobalAccel::stealShortcutSystemwide(capture);
 			else
 				return;
-        }
+		}
 	}
 
 	item->setKeySequence(column, capture);
@@ -713,7 +719,7 @@ bool KShortcutsEditorPrivate::stealRockerGesture(KShortcutsEditorItem *item, con
 	                       gst.rockerName(), item->m_action->text());
 
 	if (KMessageBox::warningContinueCancel(q, message, title, KGuiItem(i18n("Reassign")))
-        != KMessageBox::Continue)
+	    != KMessageBox::Continue)
 		return false;
 
 	item->setRockerGesture(KRockerGesture());
@@ -765,6 +771,7 @@ void KShortcutsEditor::allDefault()
 KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action)
 	: QTreeWidgetItem(parent)
 	, m_action(action)
+	, m_isNameBold(false)
 	, m_oldLocalShortcut(0)
 	, m_oldGlobalShortcut(0)
 	, m_oldShapeGesture(0)
@@ -813,13 +820,12 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 	case Qt::ToolTipRole:
 		return m_action->toolTip();
 	case Qt::FontRole:
-		if (!isModified(column)) {
-			break;
-		} else {
+		if (column == Name && m_isNameBold) {
 			QFont modifiedFont = treeWidget()->font();
 			modifiedFont.setBold(true);
 			return modifiedFont;
 		}
+		break;
 	case KExtendableItemDelegate::ShowExtensionIndicatorRole:
 		if (column == Name)
 			return false;
