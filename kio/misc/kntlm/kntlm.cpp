@@ -34,6 +34,13 @@
 
 #include "des.h"
 
+static QByteArray QString2UnicodeLE( const QString &target );
+static QString UnicodeLE2QString( const QChar* data, uint len );
+
+static void addBuf( QByteArray &buf, KNTLM::SecBuf &secbuf, const QByteArray &data );
+static void addString( QByteArray &buf, KNTLM::SecBuf &secbuf, const QString &str, bool unicode = false );
+static void convertKey( unsigned char *key_56, void* ks );
+
 QString KNTLM::getString( const QByteArray &buf, const SecBuf &secbuf, bool unicode )
 {
   //watch for buffer overflows
@@ -67,7 +74,7 @@ QByteArray KNTLM::getBuf( const QByteArray &buf, const SecBuf &secbuf )
   return QByteArray( buf.data() + offset, buf.size() );
 }
 
-void KNTLM::addString( QByteArray &buf, SecBuf &secbuf, const QString &str, bool unicode )
+void addString( QByteArray &buf, KNTLM::SecBuf &secbuf, const QString &str, bool unicode )
 {
   if ( unicode ) {
     addBuf( buf, secbuf, QString2UnicodeLE( str ) );
@@ -76,7 +83,7 @@ void KNTLM::addString( QByteArray &buf, SecBuf &secbuf, const QString &str, bool
   }
 }
 
-void KNTLM::addBuf( QByteArray &buf, SecBuf &secbuf, const QByteArray &data )
+void addBuf( QByteArray &buf, KNTLM::SecBuf &secbuf, const QByteArray &data )
 {
   quint32 offset;
   quint16 len, maxlen;
@@ -337,7 +344,7 @@ QByteArray KNTLM::hmacMD5( const QByteArray &data, const QByteArray &key )
 * turns a 56 bit key into the 64 bit, odd parity key and sets the key.
 * The key schedule ks is also set.
 */
-void KNTLM::convertKey( unsigned char *key_56, void* ks )
+void convertKey( unsigned char *key_56, void* ks )
 {
   unsigned char key[8];
 
@@ -364,7 +371,7 @@ void KNTLM::convertKey( unsigned char *key_56, void* ks )
   memset (&key, 0, sizeof (key));
 }
 
-QByteArray KNTLM::QString2UnicodeLE( const QString &target )
+QByteArray QString2UnicodeLE( const QString &target )
 {
   QByteArray unicode( target.length() * 2, 0 );
   for ( int i = 0; i < target.length(); i++ ) {
@@ -373,7 +380,7 @@ QByteArray KNTLM::QString2UnicodeLE( const QString &target )
   return unicode;
 }
 
-QString KNTLM::UnicodeLE2QString( const QChar* data, uint len )
+QString UnicodeLE2QString( const QChar* data, uint len )
 {
   QString ret;
   for ( uint i = 0; i < len; i++ ) {

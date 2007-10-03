@@ -230,13 +230,6 @@ public:
   static QByteArray createBlob( const QByteArray &targetinfo );
 
   static QByteArray hmacMD5( const QByteArray &data, const QByteArray &key );
-private:
-  static QByteArray QString2UnicodeLE( const QString &target );
-  static QString UnicodeLE2QString( const QChar* data, uint len );
-
-  static void addBuf( QByteArray &buf, SecBuf &secbuf, const QByteArray &data );
-  static void addString( QByteArray &buf, SecBuf &secbuf, const QString &str, bool unicode = false );
-  static void convertKey( unsigned char *key_56, void* ks );
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KNTLM::AuthFlags )
