@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2007-2006 Rafael Fernández López <ereslibre@gmail.com>
+    Copyright (C) 2007-2006 Rafael Fernández López <ereslibre@kde.org>
                             Kevin Ottens <ervin@kde.org>
     Copyright (C) 2000 Matej Koss <koss@miesto.sk>
                        David Faure <faure@kde.org>

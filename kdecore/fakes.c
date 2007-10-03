@@ -4,7 +4,7 @@
    Copyright (c) 2002 Oswald Buddenhagen <ossi@kde.org>
    Copyright (c) 2003 Joseph Wenninger <kde@jowenn.at>
    Copyright (c) 2005 Jaroslaw Staniek <js@iidea.pl>
-   Copyright (c) 2007 Rafael Fernández López <ereslibre@gmail.com>
+   Copyright (c) 2007 Rafael Fernández López <ereslibre@kde.org>
 
    unsetenv() taken from the GNU C Library.
    Copyright (C) 1992,1995-1999,2000-2002 Free Software Foundation, Inc.

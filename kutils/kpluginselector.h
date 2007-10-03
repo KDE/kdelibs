@@ -1,6 +1,6 @@
 /**
   * This file is part of the KDE project
-  * Copyright (C) 2007, 2006 Rafael Fernández López <ereslibre@gmail.com>
+  * Copyright (C) 2007, 2006 Rafael Fernández López <ereslibre@kde.org>
   * Copyright (C) 2002-2003 Matthias Kretz <kretz@kde.org>
   *
   * This library is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ class KPluginInfo;
   * items to the same category, even if plugins are from different categories
   *
   * @author Matthias Kretz <kretz@kde.org>
-  * @author Rafael Fernández López <ereslibre@gmail.com>
+  * @author Rafael Fernández López <ereslibre@kde.org>
   */
 class KUTILS_EXPORT KPluginSelector
     : public QWidget

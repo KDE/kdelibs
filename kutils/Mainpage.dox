@@ -4,7 +4,7 @@ Some utility classes for KSettings, KCModule and KPlugin.
 
 @authors
 Matthias Kretz \<kretz@kde.org\><br>
-Rafael Fernández López \<ereslibre@gmail.com\><br>
+Rafael Fernández López \<ereslibre@kde.org\><br>
 Matthias Elter \<elter@kde.org\><br>
 Daniel Molkentin \<molkentin@kde.org\><br>
 Frans Englich \<frans.englich@telia.com\><br>
