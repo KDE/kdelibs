@@ -48,9 +48,6 @@ Here is an alphabetical list:
     The KDE daemon checks for newly installed software, update files
     or hostname changes and takes according actions.
 
-* kdefx
-    Library with pixmap effects.
-
 * kdeprint
     The very versatile printing subsystem of KDE.
 

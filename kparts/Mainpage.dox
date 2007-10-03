@@ -37,6 +37,6 @@ Michael Koch \<koch@kde.org\>
 
 */
 
-// DOXYGEN_REFERENCES = kdecore kdeui kdefx kio
+// DOXYGEN_REFERENCES = kdecore kdeui kio
 // DOXYGEN_SET_PROJECT_NAME = KParts
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

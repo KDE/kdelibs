@@ -43,7 +43,7 @@ Documented interfaces are:
 
 */
 
-// DOXYGEN_REFERENCES = kdecore kdefx kdeui kio kparts
+// DOXYGEN_REFERENCES = kdecore kdeui kio kparts
 // DOXYGEN_EXCLUDE = khexedit kspeech ktexteditor kmediaplayer
 // DOXYGEN_SET_RECURSIVE = YES
 // DOXYGEN_SET_PROJECT_NAME = Interfaces

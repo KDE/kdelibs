@@ -7,6 +7,6 @@ Name: kdecore
 Description: KDE Core Library
 Version: @VERSION@
 
-Requires: QtCore QtGui kdecore kdefx
+Requires: QtCore QtGui kdecore
 Libs: -L${libdir} -lkdeui
 Cflags: -I${includedir}

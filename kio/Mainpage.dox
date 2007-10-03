@@ -138,7 +138,7 @@ with.
 
 */
 
-// DOXYGEN_REFERENCES = kdecore kdefx kjs kdeui
+// DOXYGEN_REFERENCES = kdecore kjs kdeui
 // DOXYGEN_EXCLUDE = kssl/kssl
 // DOXYGEN_SET_PROJECT_NAME = KIO
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
