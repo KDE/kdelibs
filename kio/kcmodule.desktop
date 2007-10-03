@@ -5,6 +5,7 @@ X-KDE-ServiceType=KCModule
 Name=KDE Configuration Module
 Name[ar]=وحدة تحكم كيدي
 Name[ca]=Mòdul de configuració del KDE
+Name[cs]=Ovládací modul KDE
 Name[csb]=Kòntrolny mòduł pùltu KDE
 Name[de]=KDE-Kontrollmodul
 Name[el]=Άρθρωμα ρύθμισης του KDE

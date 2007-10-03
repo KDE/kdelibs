@@ -2,6 +2,7 @@
 IconName=phonon
 Comment=Phonon: KDE's Multimedia Library
 Comment[ca]=Phonon: biblioteca multimèdia del KDE
+Comment[cs]=Phonon: multimediální knihovna KDE
 Comment[el]=Phonon: Βιβλιοθήκη πολυμέσων του KDE
 Comment[ga]=Phonon: Leabharlann Il-mheán KDE
 Comment[hu]=Phonon: a KDE multimédia modulja
@@ -12,6 +13,7 @@ Comment[pt]=Phonon: A Biblioteca Multimédia do KDE
 Comment[pt_BR]=Phonon: A Biblioteca Multimédia do KDE
 Comment[sv]=Phonon: KDE:s multimediabibliotek
 Comment[x-test]=xxPhonon: KDE's Multimedia Libraryxx
+Comment[zh_TW]=Phonon：KDE 的多媒體函式庫
 
 [Context/Application]
 Name=Application
@@ -85,16 +87,19 @@ Name[zh_TW]=應用程式
 [Event/AudioDeviceFallback]
 Name=Audio Device Fallback
 Name[ca]=Dispositiu d'àudio de reserva
+Name[cs]=Záložní zvukové zařízení
 Name[el]=Εφεδρική συσκευή ήχου
 Name[ga]=Gléas Tacachumais Fuaime
 Name[hu]=Másodlagos hangeszköz
 Name[it]=Ripristino dispositivo audio
 Name[ja]=オーディオデバイスのフォールバック
 Name[nds]=Opback-Klangreedschap
+Name[pa]=ਆਡੀਓ ਜੰਤਰ ਫਾਲਬੈਕ
 Name[pt]=Dispositivo Áudio Alternativo
 Name[pt_BR]=Dispositivo Áudio Alternativo
 Name[sv]=Reservenhet för ljud vald
 Name[x-test]=xxAudio Device Fallbackxx
+Name[zh_TW]=預設音效裝置
 Comment=Notification on automatic fallback if the preferred devices in unavailable
 Comment[ca]=Notificació del funcionament automàtic del de reserva si el dispositiu preferit no és disponible
 Comment[el]=Ειδοποίηση όταν γίνει αυτόματη αλλαγή στην εφεδρική συσκευή ήχου, αν η προκαθορισμένη δεν είναι διαθέσιμη
@@ -107,5 +112,6 @@ Comment[pt]=Notificação automática de último recurso se os dispositivos pref
 Comment[pt_BR]=Notificação automática de último recurso se os dispositivos preferidos estiverem indisponíveis
 Comment[sv]=Underrättelse vid automatisk val av reservenhet om önskad enhet inte är tillgänglig
 Comment[x-test]=xxNotification on automatic fallback if the preferred devices in unavailablexx
+Comment[zh_TW]=如果選用的裝置無法使用，則自動在預設的裝置上通知
 Contexts=Application
 Action=Popup

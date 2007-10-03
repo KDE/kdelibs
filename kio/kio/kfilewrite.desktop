@@ -6,6 +6,7 @@ X-KDE-ServiceType=KFileWrite
 Comment=KFileWrite plugin
 Comment[ar]=ملحق KFileWrite
 Comment[ca]=Connector del KFileWrite
+Comment[cs]=Modul KFileWrite
 Comment[csb]=Plugins KFileWrite
 Comment[de]=KFileWrite-Modul
 Comment[el]=Πρόσθετο KFileWrite

@@ -5,6 +5,7 @@ X-KDE-ServiceType=KCModuleInit
 Name=KDE Configuration Initialization
 Name[ar]=تمهيد إعدادات KDE
 Name[ca]=Inicialització de la configuració del KDE
+Name[cs]=Inicializace nastavení KDE
 Name[csb]=Inicjalëzacëjô kònfigùracëji KDE
 Name[de]=KDE Kontrolmodul-Initialisierung
 Name[el]=Αρχικοποίηση ρυθμίσεων του KDE
