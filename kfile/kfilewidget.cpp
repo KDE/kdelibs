@@ -300,7 +300,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->ops->setObjectName( "KFileWidget::ops" );
     d->ops->setOnlyDoubleClickSelectsFiles( true );
     connect(d->ops, SIGNAL(urlEntered(const KUrl&)),
-            SLOT(urlEntered(const KUrl&)));
+            SLOT(_k_urlEntered(const KUrl&)));
     connect(d->ops, SIGNAL(fileHighlighted(const KFileItem &)),
             SLOT(_k_fileHighlighted(const KFileItem &)));
     connect(d->ops, SIGNAL(fileSelected(const KFileItem &)),
