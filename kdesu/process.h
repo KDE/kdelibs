@@ -22,7 +22,7 @@
 
 #include <kdesu/kdesu_export.h>
 
-#include <kpty.h>
+#include <kpty/kpty.h>
 
 namespace KDESu {
 
