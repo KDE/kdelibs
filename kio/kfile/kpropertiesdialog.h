@@ -31,16 +31,7 @@
 #include <kfileitem.h>
 #include <kpagedialog.h>
 
-class QLabel;
-class QLineEdit;
-class QCheckBox;
-class QPushButton;
-class KLineEdit;
-class KUrlRequester;
-class QPushButton;
-class KIconButton;
 class KPropertiesDialogPlugin;
-class QComboBox;
 
 class KJob;
 namespace KIO { class Job; }
@@ -398,7 +389,11 @@ protected:
    */
   KPropertiesDialog *properties;
 
-  int fontHeight;
+  /**
+   * Returns the font height.
+   */
+  int fontHeight() const;
+
 private:
   class KPropertiesDialogPluginPrivate;
   KPropertiesDialogPluginPrivate* const d;

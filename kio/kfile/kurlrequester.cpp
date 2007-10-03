@@ -71,11 +71,21 @@ private:
 class KUrlRequester::KUrlRequesterPrivate
 {
 public:
-    KUrlRequesterPrivate() {
-        edit = 0L;
-        combo = 0L;
-        fileDialogMode = KFile::File | KFile::ExistingOnly | KFile::LocalOnly;
+    KUrlRequesterPrivate(KUrlRequester *parent)
+        : m_parent(parent),
+          edit(0),
+          combo(0),
+          fileDialogMode(KFile::File | KFile::ExistingOnly | KFile::LocalOnly)
+    {
     }
+
+    ~KUrlRequesterPrivate()
+    {
+        delete myCompletion;
+        delete myFileDialog;
+    }
+
+    void init();
 
     void setText( const QString& text ) {
         if ( combo )
@@ -152,7 +162,9 @@ public:
 
     // slots
     void _k_slotUpdateUrl();
+    void _k_slotOpenDialog();
 
+    KUrlRequester *m_parent;
     KLineEdit *edit;
     KComboBox *combo;
     KFile::Modes fileDialogMode;
@@ -160,12 +172,13 @@ public:
     KEditListBox::CustomEditor editor;
     KUrlDragPushButton *myButton;
     KFileDialog *myFileDialog;
+    KUrlCompletion *myCompletion;
 };
 
 
 
 KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
-  : KHBox( parent),d(new KUrlRequesterPrivate)
+  : KHBox( parent),d(new KUrlRequesterPrivate(this))
 {
     // must have this as parent
     editWidget->setParent( this );
@@ -175,68 +188,66 @@ KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
         d->edit->setClearButtonShown( true );
     }
 
-    init();
+    d->init();
 }
 
 
 KUrlRequester::KUrlRequester( QWidget *parent)
-  : KHBox( parent),d(new KUrlRequesterPrivate)
+  : KHBox( parent),d(new KUrlRequesterPrivate(this))
 {
-    init();
+    d->init();
 }
 
 
 KUrlRequester::KUrlRequester( const KUrl& url, QWidget *parent)
-  : KHBox( parent),d(new KUrlRequesterPrivate)
+  : KHBox( parent),d(new KUrlRequesterPrivate(this))
 {
-    init();
+    d->init();
     setUrl( url );
 }
 
 
 KUrlRequester::~KUrlRequester()
 {
-    delete myCompletion;
-    delete d->myFileDialog;
     delete d;
 }
 
 
-void KUrlRequester::init()
+void KUrlRequester::KUrlRequesterPrivate::init()
 {
-    setMargin(0);
+    m_parent->setMargin(0);
 
-    d->myFileDialog = 0L;
+    myFileDialog = 0L;
 
-    if ( !d->combo && !d->edit ) {
-        d->edit = new KLineEdit( this );
-        d->edit->setClearButtonShown( true );
+    if ( !combo && !edit ) {
+        edit = new KLineEdit( m_parent );
+        edit->setClearButtonShown( true );
     }
 
-    d->myButton = new KUrlDragPushButton(this);
-    d->myButton->setIcon(KIcon(QLatin1String("document-open")));
-    const int pixmapSize = style()->pixelMetric(QStyle::PM_SmallIconSize);
-    d->myButton->setFixedSize(pixmapSize + 8, pixmapSize + 8);
-    d->myButton->setToolTip(i18n("Open file dialog"));
+    myButton = new KUrlDragPushButton(m_parent);
+    myButton->setIcon(KIcon(QLatin1String("document-open")));
+    const int pixmapSize = m_parent->style()->pixelMetric(QStyle::PM_SmallIconSize);
+    myButton->setFixedSize(pixmapSize + 8, pixmapSize + 8);
+    myButton->setToolTip(i18n("Open file dialog"));
 
-    connect(d->myButton, SIGNAL(pressed()), SLOT(_k_slotUpdateUrl()));
+    m_parent->connect(myButton, SIGNAL(pressed()), SLOT(_k_slotUpdateUrl()));
 
-    setSpacing( KDialog::spacingHint() );
+    m_parent->setSpacing( KDialog::spacingHint() );
 
-    QWidget *widget = d->combo ? (QWidget*) d->combo : (QWidget*) d->edit;
-    widget->installEventFilter( this );
-    setFocusProxy( widget );
-    setFocusPolicy(Qt::StrongFocus);
+    QWidget *widget = combo ? (QWidget*) combo : (QWidget*) edit;
+    widget->installEventFilter( m_parent );
+    m_parent->setFocusProxy( widget );
+    m_parent->setFocusPolicy(Qt::StrongFocus);
 
-    d->connectSignals( this );
-    connect(d->myButton, SIGNAL(clicked()), this, SLOT(slotOpenDialog()));
+    connectSignals( m_parent );
+    m_parent->connect(myButton, SIGNAL(clicked()), m_parent, SLOT(_k_slotOpenDialog()));
 
     myCompletion = new KUrlCompletion();
-    d->setCompletionObject( myCompletion );
+    setCompletionObject( myCompletion );
 
-    QAction* openAction = new QAction(this);
+    QAction* openAction = new QAction(m_parent);
     openAction->setShortcut(KStandardShortcut::Open);
-    connect(openAction, SIGNAL(triggered(bool)), SLOT( slotOpenDialog() ));
+    m_parent->connect(openAction, SIGNAL(triggered(bool)), SLOT( _k_slotOpenDialog() ));
 }
 
 void KUrlRequester::setUrl( const KUrl& url )
@@ -264,18 +275,18 @@ KUrl KUrlRequester::url() const
     return d->url();
 }
 
-void KUrlRequester::slotOpenDialog()
+void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
 {
     KUrl newurl;
-    if ( (d->fileDialogMode & KFile::Directory) && !(d->fileDialogMode & KFile::File) ||
+    if ( (fileDialogMode & KFile::Directory) && !(fileDialogMode & KFile::File) ||
          /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
-         (d->myFileDialog && ((d->myFileDialog->mode() & KFile::Directory) &&
-         (d->myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
+         (myFileDialog && ((myFileDialog->mode() & KFile::Directory) &&
+         (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
     {
-        if (d->fileDialogMode & KFile::LocalOnly)
-            newurl = KFileDialog::getExistingDirectory(url(), this);
+        if (fileDialogMode & KFile::LocalOnly)
+            newurl = KFileDialog::getExistingDirectory(m_parent->url(), m_parent);
         else
-            newurl = KFileDialog::getExistingDirectoryUrl(url(), this);
+            newurl = KFileDialog::getExistingDirectoryUrl(m_parent->url(), m_parent);
         if ( !newurl.isValid() )
         {
             return;
@@ -283,10 +294,10 @@ void KUrlRequester::slotOpenDialog()
     }
     else
     {
-      emit openFileDialog( this );
+      emit m_parent->openFileDialog( m_parent );
 
-      KFileDialog *dlg = fileDialog();
-      if ( !d->url().isEmpty() ) {
+      KFileDialog *dlg = m_parent->fileDialog();
+      if ( !url().isEmpty() ) {
           KUrl u( url() );
           // If we won't be able to list it (e.g. http), then don't try :)
           if ( KProtocolManager::supportsListing( u ) )
@@ -301,8 +312,8 @@ void KUrlRequester::slotOpenDialog()
       newurl = dlg->selectedUrl();
     }
 
-    setUrl( newurl );
-    emit urlSelected( d->url() );
+    m_parent->setUrl( newurl );
+    emit m_parent->urlSelected( url() );
 }
 
 void KUrlRequester::setMode( KFile::Modes mode)
@@ -310,7 +321,7 @@ void KUrlRequester::setMode( KFile::Modes mode)
     Q_ASSERT( (mode & KFile::Files) == 0 );
     d->fileDialogMode = mode;
     if ( (mode & KFile::Directory) && !(mode & KFile::File) )
-        myCompletion->setMode( KUrlCompletion::DirCompletion );
+        d->myCompletion->setMode( KUrlCompletion::DirCompletion );
 
     if (d->myFileDialog) {
         d->myFileDialog->setMode(d->fileDialogMode);
@@ -387,7 +398,7 @@ KPushButton * KUrlRequester::button() const
 
 KUrlCompletion *KUrlRequester::completionObject() const
 {
-    return myCompletion;
+    return d->myCompletion;
 }
 
 const KEditListBox::CustomEditor &KUrlRequester::customEditor()
@@ -410,7 +421,7 @@ const KEditListBox::CustomEditor &KUrlRequester::customEditor()
 }
 
 KUrlComboRequester::KUrlComboRequester( QWidget *parent)
-  : KUrlRequester( new KComboBox(false), parent)
+  : KUrlRequester( new KComboBox(false), parent), d(0)
 {
 }
 

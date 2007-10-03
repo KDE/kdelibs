@@ -40,6 +40,9 @@ public:
     {
     }
 
+    void _k_slotResult( KJob* );
+    void _k_slotFailed( const KFileItem& );
+
     KUrl currentURL;
     QLabel *imageLabel;
     KIO::PreviewJob *m_job;
@@ -102,13 +105,13 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
             d->m_job->setIgnoreMaximumSize(true);
 
         connect(d->m_job, SIGNAL(result(KJob *)),
-                 this, SLOT( slotResult( KJob * )));
+                 this, SLOT( _k_slotResult( KJob * )));
         connect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
                                             const QPixmap& )),
                  SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
 
         connect(d->m_job, SIGNAL(failed(const KFileItem&)),
-                 this, SLOT(slotFailed(const KFileItem&)));
+                 this, SLOT(_k_slotFailed(const KFileItem&)));
     }
 }
 
@@ -135,19 +138,19 @@ void KImageFilePreview::gotPreview( const KFileItem& item, const QPixmap& pm )
         d->imageLabel->setPixmap(pm);
 }
 
-void KImageFilePreview::slotFailed( const KFileItem& item )
+void KImageFilePreview::KImageFilePreviewPrivate::_k_slotFailed( const KFileItem& item )
 {
     if ( item.isDir() )
-        d->imageLabel->clear();
-    else if (item.url() == d->currentURL) // should always be the case
-        d->imageLabel->setPixmap(SmallIcon( "file-broken", KIconLoader::SizeLarge,
-                                          KIconLoader::DisabledState ));
+        imageLabel->clear();
+    else if (item.url() == currentURL) // should always be the case
+        imageLabel->setPixmap(SmallIcon( "file-broken", KIconLoader::SizeLarge,
+                                         KIconLoader::DisabledState ));
 }
 
-void KImageFilePreview::slotResult( KJob *job )
+void KImageFilePreview::KImageFilePreviewPrivate::_k_slotResult( KJob *job )
 {
-    if (job == d->m_job) {
-        d->m_job = 0L;
+    if (job == m_job) {
+        m_job = 0L;
     }
 }
 

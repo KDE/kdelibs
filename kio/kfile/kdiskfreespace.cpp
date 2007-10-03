@@ -29,8 +29,6 @@
 #include <kio/global.h>
 #include <config-kfile.h>
 
-#include "kdiskfreespace.moc"
-
 #ifndef Q_OS_WIN
 #define DF_COMMAND    "df"
 #define DF_ARGS       "-k"
@@ -42,9 +40,13 @@
 class KDiskFreeSpace::Private
 {
 public:
-    Private()
+    Private(KDiskFreeSpace *parent)
+        : m_parent(parent)
     {}
 
+    void _k_dfDone();
+
+    KDiskFreeSpace   *m_parent;
     KProcess         *dfProc;
     QString           m_mountPoint;
 };
@@ -53,14 +55,14 @@ public:
   * constructor
 **/
 KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
-    : QObject(parent), d(new Private())
+    : QObject(parent), d(new Private(this))
 {
     d->dfProc = new KProcess(); Q_CHECK_PTR(d->dfProc);
     // we want to parse stdout and to see error messages
     d->dfProc->setOutputChannelMode(KProcess::MergedChannels);
     d->dfProc->setEnv("LANGUAGE", "C");
     connect(d->dfProc,SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(dfDone()));
+            this, SLOT(_k_dfDone()));
 }
 
 
@@ -90,9 +92,9 @@ bool KDiskFreeSpace::readDF( const QString & mountPoint )
 /***************************************************************************
   * is called, when the df-command has finished
 **/
-void KDiskFreeSpace::dfDone()
+void KDiskFreeSpace::Private::_k_dfDone()
 {
-    QByteArray allStdOut = d->dfProc->readAll();
+    QByteArray allStdOut = dfProc->readAll();
     QTextStream t(&allStdOut, QIODevice::ReadOnly);
     QString s = t.readLine();
     if ( (s.isEmpty()) || ( !s.startsWith( QLatin1String("Filesystem") ) ) )
@@ -141,16 +143,16 @@ void KDiskFreeSpace::dfDone()
       QString mountPoint = s.trimmed();
       //kDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]";
 
-      if ( mountPoint == d->m_mountPoint )
+      if ( mountPoint == m_mountPoint )
       {
         //kDebug(kfile_area) << "Found mount point. Emitting";
-        emit foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
+        emit m_parent->foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
       }
     }//if not header
   }//while further lines available
 
-  emit done();
-  deleteLater();
+  emit m_parent->done();
+  m_parent->deleteLater();
 }
 
 KDiskFreeSpace * KDiskFreeSpace::findUsageInfo( const QString & path )
@@ -210,8 +212,11 @@ KDiskFreeSpace *KDiskFreeSpace::findUsageInfo( const QString & path )
     return job;
 }
 
-void KDiskFreeSpace::dfDone()
+void KDiskFreeSpace::_k_dfDone()
 {
 }
 
 #endif
+
+#include "kdiskfreespace.moc"
+

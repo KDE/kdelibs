@@ -87,12 +87,11 @@ Q_SIGNALS:
      */
     void done();
 
-private Q_SLOTS:
-    void dfDone();
-
 private:
     class Private;
     Private * const d;
+
+    Q_PRIVATE_SLOT( d, void _k_dfDone() )
 };
 
 #endif

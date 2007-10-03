@@ -27,36 +27,53 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 {
 	Q_OBJECT
 
-	public:
-        explicit KImageFilePreview(QWidget *parent);
-		~KImageFilePreview();
+    public:
+        /**
+         * Creates a new image file preview.
+         *
+         * @param parent The parent widget.
+         */
+        explicit KImageFilePreview(QWidget *parent = 0);
 
-		virtual QSize sizeHint() const;
+        /**
+         * Destroys the image file preview.
+         */
+        ~KImageFilePreview();
 
-	public Q_SLOTS:
-		virtual void showPreview(const KUrl &url);
-		virtual void clearPreview();
+        /**
+         * Returns the size hint for this widget.
+         */
+        virtual QSize sizeHint() const;
 
-	protected Q_SLOTS:
-		void showPreview();
-		void showPreview( const KUrl& url, bool force );
+    public Q_SLOTS:
+        /**
+         * Shows a preview for the given @p url.
+         */
+        virtual void showPreview(const KUrl &url);
 
-		virtual void gotPreview( const KFileItem&, const QPixmap& );
+        /**
+         * Clears the preview.
+         */
+        virtual void clearPreview();
 
-	protected:
-		virtual void resizeEvent(QResizeEvent *e);
-		virtual KIO::PreviewJob * createJob( const KUrl& url,
-                                                     int w, int h );
+    protected Q_SLOTS:
+        void showPreview();
+        void showPreview( const KUrl& url, bool force );
 
-	private Q_SLOTS:
-		void slotResult( KJob * );
-		virtual void slotFailed( const KFileItem& );
+        virtual void gotPreview( const KFileItem&, const QPixmap& );
 
-        private:
+    protected:
+        virtual void resizeEvent( QResizeEvent *event );
+        virtual KIO::PreviewJob * createJob( const KUrl& url, int width, int height );
+
+    private:
         class KImageFilePreviewPrivate;
         KImageFilePreviewPrivate *const d;
 
         Q_DISABLE_COPY(KImageFilePreview)
+
+        Q_PRIVATE_SLOT( d, void _k_slotResult( KJob* ) )
+        Q_PRIVATE_SLOT( d, void _k_slotFailed( const KFileItem& ) )
 };
 
 #endif // KIMAGEFILEPREVIEW_H

@@ -220,20 +220,9 @@ Q_SIGNALS:
     void urlSelected( const KUrl& );
 
 protected:
-    void init();
-
-    KUrlCompletion * myCompletion;
-
-protected Q_SLOTS:
-    /**
-     * Called when the button is pressed to open the filedialog.
-     * Also called when KStandardShortcut::Open (default is Ctrl-O) is pressed.
-     */
-    void slotOpenDialog();
-
-protected:
     virtual void changeEvent (QEvent *e);
     bool eventFilter( QObject *obj, QEvent *ev );
+
 private:
     class KUrlRequesterPrivate;
     KUrlRequesterPrivate* const d;
@@ -241,6 +230,8 @@ private:
     Q_DISABLE_COPY(KUrlRequester)
 
     Q_PRIVATE_SLOT(d, void _k_slotUpdateUrl())
+    Q_PRIVATE_SLOT(d, void _k_slotOpenDialog())
+
 };
 
 class KIO_EXPORT KUrlComboRequester : public KUrlRequester // krazy:exclude=dpointer (For use in Qt Designer)
@@ -251,6 +242,10 @@ public:
      * Constructs a KUrlRequester widget with a combobox.
      */
     explicit KUrlComboRequester(QWidget *parent = 0);
+
+private:
+    class Private;
+    Private* const d;
 };
 
 #endif // KURLREQUESTER_H

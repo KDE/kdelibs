@@ -637,13 +637,14 @@ public:
   }
 
   bool m_bDirty;
+  int fontHeight;
 };
 
 KPropertiesDialogPlugin::KPropertiesDialogPlugin( KPropertiesDialog *_props )
 : QObject( _props ),d(new KPropertiesDialogPluginPrivate)
 {
   properties = _props;
-  fontHeight = 2*properties->fontMetrics().height();
+  d->fontHeight = 2*properties->fontMetrics().height();
   d->m_bDirty = false;
 }
 
@@ -694,6 +695,11 @@ bool KPropertiesDialogPlugin::isDirty() const
 void KPropertiesDialogPlugin::applyChanges()
 {
   kWarning(250) << "applyChanges() not implemented in page !";
+}
+
+int KPropertiesDialogPlugin::fontHeight() const
+{
+  return d->fontHeight;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2718,7 +2724,7 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropert
   //d->patternEdit->setText( "" );
   d->patternEdit->setMaxLength( 512 );
   d->patternEdit->setMinimumSize( d->patternEdit->sizeHint() );
-  d->patternEdit->setFixedHeight( fontHeight );
+  d->patternEdit->setFixedHeight( fontHeight() );
   mainlayout->addWidget(d->patternEdit, 1);
 
   tmpQLabel = new QLabel( d->m_frame );
@@ -2731,7 +2737,7 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropert
   //d->mimeEdit->setGeometry( 10, 160, 210, 30 );
   d->mimeEdit->setMaxLength( 256 );
   d->mimeEdit->setMinimumSize( d->mimeEdit->sizeHint() );
-  d->mimeEdit->setFixedHeight( fontHeight );
+  d->mimeEdit->setFixedHeight( fontHeight() );
   mainlayout->addWidget(d->mimeEdit, 1);
 
   tmpQLabel = new QLabel( d->m_frame );
@@ -2744,7 +2750,7 @@ KBindingPropsPlugin::KBindingPropsPlugin( KPropertiesDialog *_props ) : KPropert
   //d->commentEdit->setGeometry( 10, 100, 210, 30 );
   d->commentEdit->setMaxLength( 256 );
   d->commentEdit->setMinimumSize( d->commentEdit->sizeHint() );
-  d->commentEdit->setFixedHeight( fontHeight );
+  d->commentEdit->setFixedHeight( fontHeight() );
   mainlayout->addWidget(d->commentEdit, 1);
 
   d->cbAutoEmbed = new QCheckBox( i18n("Left click previews"), d->m_frame );

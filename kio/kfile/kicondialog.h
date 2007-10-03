@@ -32,7 +32,16 @@ class KIO_EXPORT KIconCanvas: public KListWidget
     Q_OBJECT
 
 public:
+    /**
+     * Creates a new icon canvas.
+     *
+     * @param parent The parent widget.
+     */
     explicit KIconCanvas(QWidget *parent=0L);
+
+    /**
+     * Destroys the icon canvas.
+     */
     ~KIconCanvas();
 
     /**
@@ -46,6 +55,9 @@ public:
     QString getCurrent() const;
 
 public Q_SLOTS:
+    /**
+     * Call this slot to stop the loading of the icons.
+     */
     void stopLoading();
 
 Q_SIGNALS:
@@ -54,8 +66,25 @@ Q_SIGNALS:
      */
     void nameChanged(const QString&);
 
-    void startLoading(int);
-    void progress(int);
+    /**
+     * This signal is emitted when the loading of the icons
+     * has started.
+     *
+     * @param count The number of icons to be loaded.
+     */
+    void startLoading(int count);
+
+    /**
+     * This signal is emitted whenever an icon has been loaded.
+     *
+     * @param number The number of the currently loaded item.
+     */
+    void progress(int number);
+
+    /**
+     * This signal is emitted when the loading of the icons
+     * has been finished.
+     */
     void finished();
 
 private:
@@ -82,12 +111,19 @@ class KIO_EXPORT KIconDialog: public KDialog
 public:
     /**
      * Constructs an icon selection dialog using the global iconloader.
+     *
+     * @param parent The parent widget.
      */
     explicit KIconDialog(QWidget *parent=0L);
+
     /**
      * Constructs an icon selection dialog using a specific iconloader.
+     *
+     * @param loader The icon loader to use.
+     * @param parent The parent widget.
      */
     explicit KIconDialog(KIconLoader *loader, QWidget *parent=0);
+
     /**
      * Destructs the dialog.
      */
@@ -215,11 +251,16 @@ class KIO_EXPORT KIconButton: public QPushButton
 public:
     /**
      * Constructs a KIconButton using the global iconloader.
+     *
+     * @param parent The parent widget.
      */
     explicit KIconButton(QWidget *parent=0L);
 
     /**
      * Constructs a KIconButton using a specific KIconLoader.
+     *
+     * @param loader The icon loader to use.
+     * @param parent The parent widget.
      */
     KIconButton(KIconLoader *loader, QWidget *parent);
     /**

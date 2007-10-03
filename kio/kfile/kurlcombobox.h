@@ -178,43 +178,13 @@ Q_SIGNALS:
      */
     void urlActivated( const KUrl& url );
 
-protected Q_SLOTS:
-    void slotActivated( int );
-
-protected:
-    struct _KUrlComboItem {
-	QString text;
-	KUrl url;
-	QIcon icon;
-    };
-    typedef _KUrlComboItem KUrlComboItem;
-    QList<const KUrlComboItem*> itemList;
-    QList<const KUrlComboItem*> defaultList;
-    QMap<int,const KUrlComboItem*> itemMapper;
-
-    void init( Mode mode );
-    void insertUrlItem( const KUrlComboItem * );
-
-    /**
-     * Uses KMimeType::pixmapForUrl() to return a proper pixmap for @p url.
-     * In directory mode, a folder icon is always returned.
-     */
-    QIcon getIcon( const KUrl& url ) const;
-
-    /**
-     * Updates @p item with @p icon and sets the url instead of the text
-     * of the KUrlComboItem.
-     */
-    void updateItem( const KUrlComboItem *item, int index, const QIcon& icon );
-
-    QIcon opendirIcon;
-    int firstItemIndex;
-
 private:
     class KUrlComboBoxPrivate;
     KUrlComboBoxPrivate* const d;
 
     Q_DISABLE_COPY(KUrlComboBox)
+
+    Q_PRIVATE_SLOT( d, void _k_slotActivated( int ) )
 };
 
 
