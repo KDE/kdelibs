@@ -56,6 +56,14 @@ public:
 
     int childCount() const;
 
+    KServiceGroup::List
+    entries(KServiceGroup *group, bool sort, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName);
+  /**
+   * This function parse attributes into menu
+   */
+    void parseAttribute( const QString &item ,  bool &showEmptyMenu, bool &showInline, bool &showInlineHeader, bool & showInlineAlias ,int &inlineValue );
+
+
     bool m_bNoDisplay;
     bool m_bShowEmptyMenu;
     bool m_bShowInlineHeader;

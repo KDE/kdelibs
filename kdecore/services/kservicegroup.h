@@ -20,7 +20,8 @@
 #define KSERVICEGROUP_H
 
 #include <kdecore_export.h>
-#include "ksycocaentry.h"
+#include <ksycocaentry.h>
+#include <kservice.h>
 
 class KBuildServiceGroupFactory;
 
@@ -198,6 +199,29 @@ public:
   List entries(bool sorted = false);
 
   /**
+   * options for groupEntries and serviceEntries
+   */
+    enum EntriesOption
+    {
+      NoOptions = 0x0,
+      SortEntries = 0x1,    /*< sort items */
+      ExcludeNoDisplay = 0x2, /*< exclude items marked "NoDisplay" */
+      AllowSeparators = 0x4, /*< allow separator items to be included */
+      SortByGenericName = 0x8 /*< sort by GenericName+Name instead of Name+GenericName */
+    };
+    Q_DECLARE_FLAGS(EntriesOptions, EntriesOption)
+ 
+    /**
+     * subgroups for this service group
+     */
+    QList<Ptr> groupEntries(EntriesOptions options = ExcludeNoDisplay);
+
+    /**
+     * entries of this service group
+     */
+    KService::List serviceEntries(EntriesOptions options = ExcludeNoDisplay);
+
+  /**
    * Returns a non-empty string if the group is a special base group.
    * By default, "Settings/" is the kcontrol base group ("settings")
    * and "System/Screensavers/" is the screensavers base group ("screensavers").
@@ -242,11 +266,6 @@ public:
    * @return the services group
    */
   static Ptr childGroup(const QString &parent);
-
-  /**
-   * This function parse attributes into menu
-   */
-    void parseAttribute( const QString &item ,  bool &showEmptyMenu, bool &showInline, bool &showInlineHeader, bool & showInlineAlias ,int &inlineValue );
 
 protected:
   /**

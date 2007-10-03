@@ -27,6 +27,11 @@ KSycocaEntryPrivate::KSycocaEntryPrivate(QDataStream &_str, int iOffset)
     KSycocaEntry::read( _str, path );
 }
 
+KSycocaEntry::KSycocaEntry()
+    : d_ptr(0)
+{
+}
+
 KSycocaEntry::KSycocaEntry(KSycocaEntryPrivate &d)
     : d_ptr(&d)
 {
@@ -113,6 +118,11 @@ void KSycocaEntry::setDeleted( bool deleted )
     d->deleted = deleted;
 }
 
+bool KSycocaEntry::isSeparator() const
+{
+    return d_ptr == 0 || isType(KST_KServiceSeparator);
+}
+
 int KSycocaEntry::offset() const
 {
     Q_D(const KSycocaEntry);
@@ -154,4 +164,5 @@ QVariant KSycocaEntry::property(const QString &name) const
     Q_D(const KSycocaEntry);
     return d->property(name);
 }
+
 

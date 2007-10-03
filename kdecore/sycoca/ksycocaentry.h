@@ -42,6 +42,11 @@ class KDECORE_EXPORT KSycocaEntry : public KShared
 {
 
 public:
+   /*
+    * constructs a invalid KSycocaEntry object
+    */
+   KSycocaEntry();
+
    virtual ~KSycocaEntry();
     
    /**
@@ -112,6 +117,12 @@ public:
     */
    void setDeleted( bool deleted );
 
+   
+   /*
+    * @returns true, if this is a separator
+    */
+   bool isSeparator() const;
+
    /**
     * @internal
     * @return the position of the entry in the sycoca file
@@ -128,7 +139,6 @@ public:
 //   KSycocaEntry(const KSycocaEntry &copy);
 //   KSycocaEntry &operator=(const KSycocaEntry &right);
 protected:
-
    KSycocaEntry(KSycocaEntryPrivate &d);
    KSycocaEntryPrivate *d_ptr;
 
