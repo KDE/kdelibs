@@ -117,6 +117,9 @@ set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio
                       ${CMAKE_SOURCE_DIR}/kio/kfile
                       ${KDE4_KDEUI_INCLUDES})
 
+# kpty 
+set(KDE4_KPTY_INCLUDES ${CMAKE_SOURCE_DIR}/kpty ${KDE4_KIO_INCLUDES} )
+
 # kparts depends on kio
 set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts
                          ${KDE4_KIO_INCLUDES})

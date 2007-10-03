@@ -1,7 +1,7 @@
 
 project(kdesu)
 
-include_directories( ${KDE4_KIO_INCLUDES} )
+include_directories( ${KDE4_KPTY_INCLUDES} )
 
 
 ########### next target ###############
