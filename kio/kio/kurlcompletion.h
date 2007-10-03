@@ -157,7 +157,7 @@ public:
 	 * @return the path or URL resulting from this operation. If you
          * want to convert it to a KUrl, use KUrl::fromPathOrUrl.
 	 */
-	QString replacedPath( const QString& text );
+	QString replacedPath( const QString& text ) const;
 
 	/**
 	 * @internal I'll let ossi add a real one to KShell :)
@@ -165,7 +165,6 @@ public:
 	static QString replacedPath( const QString& text,
                                      bool replaceHome, bool replaceEnv = true );
 
-	class MyURL;
 protected:
 	// Called by KCompletion, adds '/' to directories
 	void postProcessMatch( QString *match ) const;
@@ -174,57 +173,11 @@ protected:
 
 	virtual void customEvent( QEvent *e );
 
-protected Q_SLOTS:
-	void slotEntries( KIO::Job *, const KIO::UDSEntryList& );
-	void slotIOFinished( KJob * );
-
-private:
-
-	bool isAutoCompletion();
-
-	bool userCompletion(const MyURL &url, QString *match);
-	bool envCompletion(const MyURL &url, QString *match);
-	bool exeCompletion(const MyURL &url, QString *match);
-	bool fileCompletion(const MyURL &url, QString *match);
-	bool urlCompletion(const MyURL &url, QString *match);
-
-	// List a directory using readdir()
-	void listDir( const QString& dir,
-	              QStringList *matches,
-	              const QString& filter,
-	              bool only_exe,
-	              bool no_hidden );
-
-	// List the next dir in m_dirs
-	QString listDirectories(const QStringList &,
-	                        const QString &,
-	                        bool only_exe = false,
-	                        bool only_dir = false,
-	                        bool no_hidden = false,
-	                        bool stat_files = true);
-
-	void listUrls( const QList<KUrl *> &urls,
-                       const QString &filter = QString(),
-                       bool only_exe = false,
-                       bool no_hidden = false );
-
-	void addMatches( const QStringList & );
-	QString finished();
-
-	void init();
-
-	void setListedUrl(int compl_type /* enum ComplType */,
-	                  const QString& dir = QString(),
-	                  const QString& filter = QString(),
-	                  bool no_hidden = false );
-
-	bool isListedUrl( int compl_type /* enum ComplType */,
-	                  const QString& dir = QString(),
-	                  const QString& filter = QString(),
-	                  bool no_hidden = false );
-
 private:
 	KUrlCompletionPrivate* const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotEntries( KIO::Job*, const KIO::UDSEntryList& ) )
+    Q_PRIVATE_SLOT( d, void _k_slotIOFinished( KJob* ) )
 };
 
 #endif // KURLCOMPLETION_H

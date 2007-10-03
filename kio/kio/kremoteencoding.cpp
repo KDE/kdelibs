@@ -23,26 +23,38 @@
 #include <kdebug.h>
 #include <kstringhandler.h>
 
+
+class KRemoteEncodingPrivate
+{
+  public:
+    KRemoteEncodingPrivate()
+      : m_codec(0)
+    {
+    }
+
+    QTextCodec *m_codec;
+};
+
 KRemoteEncoding::KRemoteEncoding(const char *name)
-  : codec(0), d(0)
+  : d(new KRemoteEncodingPrivate)
 {
   setEncoding(name);
 }
 
 KRemoteEncoding::~KRemoteEncoding()
 {
-  // delete d;		// not necessary yet
+  delete d;
 }
 
 QString KRemoteEncoding::decode(const QByteArray& name) const
 {
 #ifdef CHECK_UTF8
-  if (codec->mibEnum() == 106 && !KStringHandler::isUtf8(name))
+  if (d->m_codec->mibEnum() == 106 && !KStringHandler::isUtf8(name))
     return QLatin1String(name);
 #endif
 
-  QString result = codec->toUnicode(name);
-  if (codec->fromUnicode(result) != name)
+  QString result = d->m_codec->toUnicode(name);
+  if (d->m_codec->fromUnicode(result) != name)
     // fallback in case of decoding failure
     return QLatin1String(name);
 
@@ -51,8 +63,8 @@ QString KRemoteEncoding::decode(const QByteArray& name) const
 
 QByteArray KRemoteEncoding::encode(const QString& name) const
 {
-  QByteArray result = codec->fromUnicode(name);
-  if (codec->toUnicode(result) != name)
+  QByteArray result = d->m_codec->fromUnicode(name);
+  if (d->m_codec->toUnicode(result) != name)
     return name.toLatin1();
 
   return result;
@@ -77,12 +89,12 @@ QByteArray KRemoteEncoding::fileName(const KUrl& url) const
 
 const char *KRemoteEncoding::encoding() const
 {
-    return codec->name();
+    return d->m_codec->name();
 }
 
 int KRemoteEncoding::encodingMib() const
 {
-    return codec->mibEnum();
+    return d->m_codec->mibEnum();
 }
 
 void KRemoteEncoding::setEncoding(const char *name)
@@ -90,16 +102,16 @@ void KRemoteEncoding::setEncoding(const char *name)
   // don't delete codecs
 
   if (name)
-    codec = QTextCodec::codecForName(name);
+    d->m_codec = QTextCodec::codecForName(name);
   else
-    codec = QTextCodec::codecForMib( 106 ); // fallback to UTF-8
+    d->m_codec = QTextCodec::codecForMib( 106 ); // fallback to UTF-8
 
-  if (codec == 0)
-    codec = QTextCodec::codecForMib(4 /* latin-1 */);
+  if (d->m_codec == 0)
+    d->m_codec = QTextCodec::codecForMib(4 /* latin-1 */);
 
-  Q_ASSERT(codec);
+  Q_ASSERT(d->m_codec);
 
-  kDebug() << "setting encoding " << codec->name()
+  kDebug() << "setting encoding " << d->m_codec->name()
 	    << " for name=" << name << endl;
 }
 

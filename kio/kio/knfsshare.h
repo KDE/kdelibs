@@ -77,8 +77,7 @@ private:
   class KNFSSharePrivate;
   KNFSSharePrivate * const d;
   
-private Q_SLOTS:
-  void slotFileChange(const QString&);  
+  Q_PRIVATE_SLOT( d, void _k_slotFileChange(const QString&) )
 };
 
 #endif

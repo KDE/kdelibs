@@ -130,7 +130,7 @@ public:
 	  * @return the value of the setting, or QString() if not 
 	  *         set
 	  **/
-	QString getSetting(KEMailSettings::Setting s);
+	QString getSetting(KEMailSettings::Setting s) const;
 
 	/**
 	  * Set one of the predefined "basic" settings.

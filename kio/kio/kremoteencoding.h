@@ -110,16 +110,12 @@ public:
   void setEncoding(const char* name);
 
 protected:
-  QTextCodec *codec;
-
   virtual void virtual_hook(int id, void* data);
 
 private:
-  // copy constructor
-  KRemoteEncoding(const KRemoteEncoding&);
-
-
   KRemoteEncodingPrivate* const d;
+
+  Q_DISABLE_COPY(KRemoteEncoding)
 };
 
 #endif

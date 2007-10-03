@@ -36,6 +36,10 @@ public:
         m_timer.setSingleShot(true);
     }
 
+    void _k_slotRowsInserted(const QModelIndex&,int,int);
+    void _k_slotViewportAdjusted();
+    void _k_slotProcessMimeIcons();
+
     QModelIndex findVisibleIcon();
 
     QAbstractItemView* m_view;
@@ -83,13 +87,13 @@ KMimeTypeResolver::KMimeTypeResolver(QAbstractItemView* view, KDirModel* model)
     d->m_view = view;
     d->m_dirModel = model;
     connect(d->m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            this, SLOT(slotRowsInserted(QModelIndex,int,int)));
+            this, SLOT(_k_slotRowsInserted(QModelIndex,int,int)));
     connect(&d->m_timer, SIGNAL(timeout()),
-            this, SLOT(slotProcessMimeIcons()));
+            this, SLOT(_k_slotProcessMimeIcons()));
     connect(d->m_view->horizontalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(slotViewportAdjusted()));
+            this, SLOT(_k_slotViewportAdjusted()));
     connect(d->m_view->verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(slotViewportAdjusted()));
+            this, SLOT(_k_slotViewportAdjusted()));
 }
 
 KMimeTypeResolver::~KMimeTypeResolver()
@@ -97,57 +101,57 @@ KMimeTypeResolver::~KMimeTypeResolver()
     delete d;
 }
 
-void KMimeTypeResolver::slotProcessMimeIcons()
+void KMimeTypeResolverPrivate::_k_slotProcessMimeIcons()
 {
-    if (d->m_pendingIndexes.isEmpty()) {
+    if (m_pendingIndexes.isEmpty()) {
         // Finished
         return;
     }
 
     int nextDelay = 0;
-    QModelIndex index = d->findVisibleIcon();
+    QModelIndex index = findVisibleIcon();
     if (index.isValid()) {
         // Found a visible item.
-        const int numFound = d->m_pendingIndexes.removeAll(index);
+        const int numFound = m_pendingIndexes.removeAll(index);
         Q_ASSERT(numFound == 1);
     }
     if (!index.isValid()) {
         // No more visible items.
         // Do the unvisible ones, then, but with a bigger delay, if so configured
-        index = d->m_pendingIndexes.takeFirst();
-        nextDelay = d->m_delayForNonVisibleIcons;
+        index = m_pendingIndexes.takeFirst();
+        nextDelay = m_delayForNonVisibleIcons;
     }
-    KFileItem item = d->m_dirModel->itemForIndex(index);
+    KFileItem item = m_dirModel->itemForIndex(index);
     if (!item.isNull()) { // check that item still exists
         if (!item.isMimeTypeKnown()) { // check if someone did it meanwhile
             //kDebug() << "Determining mimetype for " << item.url();
             item.determineMimeType();
-            d->m_dirModel->itemChanged(index);
+            m_dirModel->itemChanged(index);
         }
     }
-    d->m_timer.start(nextDelay); // singleshot
+    m_timer.start(nextDelay); // singleshot
 }
 
-void KMimeTypeResolver::slotRowsInserted(const QModelIndex& parent, int first, int last)
+void KMimeTypeResolverPrivate::_k_slotRowsInserted(const QModelIndex& parent, int first, int last)
 {
-    KDirModel* model = d->m_dirModel;
+    KDirModel* model = m_dirModel;
     for (int row = first; row <= last; ++row) {
         QModelIndex idx = model->index(row, 0, parent);
         KFileItem item = model->itemForIndex(idx);
         if (!item.isMimeTypeKnown())
-            d->m_pendingIndexes.append(idx);
+            m_pendingIndexes.append(idx);
         // TODO else if (item->isDir() && !item->isLocalFile() /*nor pseudo local...*/ &&
         // TODO   model->data(idx, ChildCountRole).toInt() == KDirModel::ChildCountUnknown)
         // TODO d->m_pendingIndexes.append(idx);
     }
-    d->m_noVisibleIcon = false;
-    d->m_timer.start(d->m_delayForNonVisibleIcons); // singleshot
+    m_noVisibleIcon = false;
+    m_timer.start(m_delayForNonVisibleIcons); // singleshot
 }
 
-void KMimeTypeResolver::slotViewportAdjusted()
+void KMimeTypeResolverPrivate::_k_slotViewportAdjusted()
 {
-    d->m_noVisibleIcon = false;
-    d->m_timer.start(0);
+    m_noVisibleIcon = false;
+    m_timer.start(0);
 }
 
 #include "kmimetyperesolver.moc"

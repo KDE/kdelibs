@@ -30,17 +30,21 @@
 class KSambaShare::KSambaSharePrivate
 {
 public:
-  KSambaSharePrivate();
+  KSambaSharePrivate(KSambaShare *parent);
+
+  void _k_slotFileChange(const QString&);
 
   bool readSmbConf();
   bool findSmbConf();
   bool load();
 
+  KSambaShare *q;
   QSet<QString> sharedPaths;
   QString smbConf;
 };
 
-KSambaShare::KSambaSharePrivate::KSambaSharePrivate()
+KSambaShare::KSambaSharePrivate::KSambaSharePrivate(KSambaShare *parent)
+    : q(parent)
 {
     load();
 }
@@ -180,13 +184,13 @@ bool KSambaShare::KSambaSharePrivate::readSmbConf()
 }
 
 KSambaShare::KSambaShare()
-  : d(new KSambaSharePrivate())
+  : d(new KSambaSharePrivate(this))
 {
   if (QFile::exists(d->smbConf)) {
     KDirWatch::self()->addFile(d->smbConf);
     KDirWatch::self()->addFile(FILESHARECONF);
     connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
-   	        SLOT(slotFileChange(const QString&)));
+   	        SLOT(_k_slotFileChange(const QString&)));
   }
 }
 
@@ -218,15 +222,15 @@ QStringList KSambaShare::sharedDirectories() const
   return d->sharedPaths.values();
 }
 
-void KSambaShare::slotFileChange( const QString & path )
+void KSambaShare::KSambaSharePrivate::_k_slotFileChange( const QString & path )
 {
-  if (path == d->smbConf)
-     d->readSmbConf();
+  if (path == smbConf)
+     readSmbConf();
   else
   if (path == FILESHARECONF)
-     d->load();
+     load();
 
-  emit changed();
+  emit q->changed();
 }
 
 KSambaShare* KSambaShare::instance()

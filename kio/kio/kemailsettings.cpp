@@ -44,7 +44,7 @@ QString KEMailSettings::defaultProfileName() const
 	return p->m_sDefaultProfile;
 }
 
-QString KEMailSettings::getSetting(KEMailSettings::Setting s)
+QString KEMailSettings::getSetting(KEMailSettings::Setting s) const
 {
         KConfigGroup cg( p->m_pConfig, QString("PROFILE_")+p->m_sCurrentProfile);
 	switch (s) {

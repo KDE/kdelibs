@@ -181,6 +181,8 @@ public:
 
   bool useINotify(Entry*);
 #endif
+
+  bool _isStopped;
 };
 
 #endif // KDIRWATCH_P_H

@@ -352,8 +352,6 @@ protected:
      */
     void setRootDir( KArchiveDirectory *rootDir );
 
-private:
-    void abortWriting();
 protected:
     virtual void virtual_hook( int id, void* data );
 private:

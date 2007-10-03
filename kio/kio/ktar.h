@@ -97,38 +97,6 @@ protected:
     virtual bool createDevice( QIODevice::OpenMode mode );
 
 private:
-    /**
-     * @internal
-     */
-    void prepareDevice( const QString & filename, const QString & mimetype, bool forced = false );
-
-    /**
-     * @internal
-     * Fills @p buffer for writing a file as required by the tar format
-     * Has to be called LAST, since it does the checksum
-     * (normally, only the name has to be filled in before)
-     * @param mode is expected to be 6 chars long, [uname and gname 31].
-     */
-    void fillBuffer( char * buffer, const char * mode, qint64 size, time_t mtime,
-                     char typeflag, const char * uname, const char * gname );
-
-    /**
-     * @internal
-     * Writes an overlong name into a special longlink entry. Call this
-     * if the file name or symlink target (or both) are longer than 99 chars.
-     * @p buffer buffer at least 0x200 bytes big to be used as a write buffer
-     * @p name 8-bit encoded file name to be written
-     * @p typeflag specifying the type of the entry, 'L' for filenames or
-     *		'K' for symlink targets.
-     * @p uname user name
-     * @p gname group name
-     */
-    void writeLonglink(char *buffer, const QByteArray &name, char typeflag,
-			const char *uname, const char *gname);
-
-    qint64 readRawHeader(char *buffer);
-    bool readLonglink(char *buffer, QByteArray &longlink);
-    qint64 readHeader(char *buffer, QString &name, QString &symlink);
 
 protected:
     virtual void virtual_hook( int id, void* data );

@@ -78,34 +78,12 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
      */
     QStringList patterns() const;
 
-  private Q_SLOTS:
-    /**
-     * @short edit the current mimetype
-     * Uses KRun to start the KDE mimetype editor for editing the currently
-     * selected mimetype.
-     */
-    void editMimeType();
-
-    /**
-     * @internal disables the "edit" button for groups
-     */
-    void slotCurrentChanged(QTreeWidgetItem* i);
-
-    /**
-     *  @internal called when the sycoca database has changed after
-     * the user edited a mimetype
-     */
-     void slotSycocaDatabaseChanged();
-
   private:
-    /**
-     * @internal Load mime types into the list view
-     * If @p selected is empty, selectedMimeTypesStringList() is called
-     * to fill it in.
-     */
-    void loadMimeTypes( const QStringList &selected=QStringList() );
-
     class KMimeTypeChooserPrivate *d;
+
+    Q_PRIVATE_SLOT( d, void _k_editMimeType() )
+    Q_PRIVATE_SLOT( d, void _k_slotCurrentChanged(QTreeWidgetItem*) )
+    Q_PRIVATE_SLOT( d, void _k_slotSycocaDatabaseChanged() )
 };
 
 /**
@@ -176,8 +154,8 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialog
     KMimeTypeChooser* chooser();
 
   private:
-    void init();
-    KMimeTypeChooser *m_chooser;
+    class Private;
+    Private* const d;
 };
 #endif // _KMIMETYPE_CHOOSER_H_
 // kate: space-indent on; indent-width 2; replace-tabs on;

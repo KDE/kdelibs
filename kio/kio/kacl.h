@@ -70,17 +70,11 @@ public:
 
   virtual ~KACL();
 
-  KACL& operator=( const KACL& rhs ) { 
-    if ( this != &rhs )
-      setACL( rhs.asString() );
-    return *this;
-  }
+  KACL& operator=( const KACL& rhs );
 
   bool operator==( const KACL& rhs ) const;
 
-  bool operator!=( const KACL& rhs ) const {
-    return !operator==( rhs );
-  }
+  bool operator!=( const KACL& rhs ) const;
 
   /**
    * Returns whether the KACL object represents a valid acl.

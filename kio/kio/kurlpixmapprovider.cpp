@@ -21,14 +21,24 @@
 #include "kurlpixmapprovider.h"
 #include <kio/global.h>
 
-QPixmap KUrlPixmapProvider::pixmapFor( const QString& url, int size ) {
+KUrlPixmapProvider::KUrlPixmapProvider()
+    : d(0)
+{
+}
+
+KUrlPixmapProvider::~KUrlPixmapProvider()
+{
+}
+
+QPixmap KUrlPixmapProvider::pixmapFor( const QString& url, int size )
+{
 	KUrl u;
 	if ( url.at(0) == '/' )
 	    u.setPath( url );
 	else
 	    u = url;
 	return KIO::pixmapForUrl( u, 0, KIconLoader::Desktop, size );
-    }
+}
 
 void KUrlPixmapProvider::virtual_hook( int id, void* data )
 { KPixmapProvider::virtual_hook( id, data ); }

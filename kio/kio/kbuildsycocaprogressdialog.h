@@ -43,12 +43,12 @@ private:
    KBuildSycocaProgressDialog(QWidget *parent,
                               const QString &caption, const QString &text);
    ~KBuildSycocaProgressDialog();
-private Q_SLOTS:
-   void slotProgress();
-   void slotFinished();
 
 private:
    KBuildSycocaProgressDialogPrivate * const d;
+
+   Q_PRIVATE_SLOT( d, void _k_slotProgress() )
+   Q_PRIVATE_SLOT( d, void _k_slotFinished() )
 };
 
 #endif

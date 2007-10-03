@@ -52,20 +52,12 @@ public:
 
     ~KMimeTypeResolver();
 
-Q_SIGNALS:
-    // void mimeTypeDeterminationFinished();
-
-private Q_SLOTS:
-    void slotRowsInserted(const QModelIndex&,int,int);
-    void slotViewportAdjusted();
-
-    /**
-     * Connected to the timer
-     */
-    void slotProcessMimeIcons();
-
 private:
     KMimeTypeResolverPrivate *const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotRowsInserted(const QModelIndex&,int,int) )
+    Q_PRIVATE_SLOT( d, void _k_slotViewportAdjusted() )
+    Q_PRIVATE_SLOT( d, void _k_slotProcessMimeIcons() )
 };
 
 #endif /* KMIMETYPERESOLVER_H */

@@ -489,7 +489,7 @@ bool KMountPoint::probablySlow() const
     return false;
 }
 
-bool KMountPoint::testFileSystemFlag(FileSystemFlag flag)
+bool KMountPoint::testFileSystemFlag(FileSystemFlag flag) const
 {
     const bool isMsDos = ( d->mountType == "msdos" || d->mountType == "fat" || d->mountType == "vfat" );
     switch (flag)  {

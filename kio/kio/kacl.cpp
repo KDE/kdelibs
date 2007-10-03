@@ -96,6 +96,13 @@ KACL::~KACL()
     delete d;
 }
 
+KACL& KACL::operator=( const KACL& rhs )
+{
+    if ( this != &rhs )
+      setACL( rhs.asString() );
+    return *this;
+}
+
 bool KACL::operator==( const KACL& rhs ) const {
 #ifdef HAVE_POSIX_ACL
     return ( acl_cmp( d->m_acl, rhs.d->m_acl ) == 0 );
@@ -103,6 +110,11 @@ bool KACL::operator==( const KACL& rhs ) const {
     Q_UNUSED( rhs );
     return true;
 #endif
+}
+
+bool KACL::operator!=( const KACL& rhs ) const
+{
+    return !operator==( rhs );
 }
 
 bool KACL::isValid() const

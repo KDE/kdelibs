@@ -1398,7 +1398,7 @@ KDirWatch::KDirWatch (QObject* parent)
 
   d->ref();
 
-  _isStopped = false;
+  d->_isStopped = false;
 }
 
 KDirWatch::~KDirWatch()
@@ -1422,7 +1422,7 @@ void KDirWatch::addFile( const QString& _path )
   if (d) d->addEntry(this, _path, 0, false);
 }
 
-QDateTime KDirWatch::ctime( const QString &_path )
+QDateTime KDirWatch::ctime( const QString &_path ) const
 {
   KDirWatchPrivate::Entry* e = d->entry(_path);
 
@@ -1466,19 +1466,23 @@ bool KDirWatch::restartDirScan( const QString& _path )
 
 void KDirWatch::stopScan()
 {
-  if (d) d->stopScan(this);
-  _isStopped = true;
+  if (d) {
+    d->stopScan(this);
+    d->_isStopped = true;
+  }
 }
 
 bool KDirWatch::isStopped()
 {
-  return _isStopped;
+  return d->_isStopped;
 }
 
 void KDirWatch::startScan( bool notify, bool skippedToo )
 {
-  _isStopped = false;
-  if (d) d->startScan(this, notify, skippedToo);
+  if (d) {
+    d->_isStopped = false;
+    d->startScan(this, notify, skippedToo);
+  }
 }
 
 

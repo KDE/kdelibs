@@ -49,14 +49,11 @@ public:
      */
     explicit KStatusBarOfflineIndicator( QWidget * parent );
     ~KStatusBarOfflineIndicator();
-protected Q_SLOTS:
-    /**
-     * Hides or shows the widget, depending on the current state of the network service.
-     */
-    void networkStatusChanged( Solid::Networking::Status status );
-    void initialize();
+
 private:
     KStatusBarOfflineIndicatorPrivate * const d;
+
+    Q_PRIVATE_SLOT( d, void _k_networkStatusChanged( Solid::Networking::Status ) )
 };
 
 #endif

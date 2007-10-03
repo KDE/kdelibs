@@ -41,7 +41,14 @@
 class KTar::KTarPrivate
 {
 public:
-    KTarPrivate() : tarEnd( 0 ), tmpFile( 0 ) {}
+    KTarPrivate(KTar *parent)
+      : q(parent),
+        tarEnd( 0 ),
+        tmpFile( 0 )
+    {
+    }
+
+    KTar *q;
     QStringList dirList;
     qint64 tarEnd;
     KTemporaryFile* tmpFile;
@@ -50,16 +57,23 @@ public:
 
     bool fillTempFile(const QString & fileName);
     bool writeBackTempFile( const QString & fileName );
+    void fillBuffer( char * buffer, const char * mode, qint64 size, time_t mtime,
+                     char typeflag, const char * uname, const char * gname );
+    void writeLonglink(char *buffer, const QByteArray &name, char typeflag,
+                       const char *uname, const char *gname);
+    qint64 readRawHeader(char *buffer);
+    bool readLonglink(char *buffer, QByteArray &longlink);
+    qint64 readHeader(char *buffer, QString &name, QString &symlink);
 };
 
 KTar::KTar( const QString& fileName, const QString & _mimetype )
-    : KArchive( fileName ), d(new KTarPrivate)
+    : KArchive( fileName ), d(new KTarPrivate(this))
 {
     d->mimetype = _mimetype;
 }
 
 KTar::KTar( QIODevice * dev )
-    : KArchive( dev ),d(new KTarPrivate)
+    : KArchive( dev ),d(new KTarPrivate(this))
 {
     Q_ASSERT( dev );
 }
@@ -161,9 +175,9 @@ void KTar::setOrigFileName( const QByteArray & fileName ) {
     d->origFileName = fileName;
 }
 
-qint64 KTar::readRawHeader( char *buffer ) {
+qint64 KTar::KTarPrivate::readRawHeader( char *buffer ) {
   // Read header
-  qint64 n = device()->read( buffer, 0x200 );
+  qint64 n = q->device()->read( buffer, 0x200 );
   if ( n == 0x200 && buffer[0] != 0 ) {
     // Make sure this is actually a tar header
     if (strncmp(buffer + 257, "ustar", 5)) {
@@ -199,10 +213,10 @@ qint64 KTar::readRawHeader( char *buffer ) {
   return n;
 }
 
-bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
+bool KTar::KTarPrivate::readLonglink(char *buffer,QByteArray &longlink) {
   qint64 n = 0;
   //kDebug() << "reading longlink from pos " << device()->pos();
-  QIODevice *dev = device();
+  QIODevice *dev = q->device();
   // read size of longlink from size field in header
   // size is in bytes including the trailing null (which we ignore)
   qint64 size = QByteArray( buffer + 0x7c, 12 ).trimmed().toLongLong( 0, 8 /*octal*/ );
@@ -226,7 +240,7 @@ bool KTar::readLonglink(char *buffer,QByteArray &longlink) {
   return true;
 }
 
-qint64 KTar::readHeader( char *buffer, QString &name, QString &symlink ) {
+qint64 KTar::KTarPrivate::readHeader( char *buffer, QString &name, QString &symlink ) {
   name.truncate(0);
   symlink.truncate(0);
   while (true) {
@@ -343,7 +357,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
         QString symlink;
 
         // Read header
-        qint64 n = readHeader( buffer, name, symlink );
+        qint64 n = d->readHeader( buffer, name, symlink );
         if (n < 0) return false;
         if (n == 0x200)
         {
@@ -572,9 +586,9 @@ struct posix_header
 };
 */
 
-void KTar::fillBuffer( char * buffer,
-                       const char * mode, qint64 size, time_t mtime, char typeflag,
-                       const char * uname, const char * gname ) {
+void KTar::KTarPrivate::fillBuffer( char * buffer,
+                                    const char * mode, qint64 size, time_t mtime, char typeflag,
+                                    const char * uname, const char * gname ) {
   // mode (as in stpos())
   assert( strlen(mode) == 6 );
   memcpy( buffer+0x64, mode, 6 );
@@ -635,18 +649,18 @@ void KTar::fillBuffer( char * buffer,
   memcpy( buffer + 0x94, s.constData(), 6 );
 }
 
-void KTar::writeLonglink(char *buffer, const QByteArray &name, char typeflag,
-                         const char *uname, const char *gname) {
+void KTar::KTarPrivate::writeLonglink(char *buffer, const QByteArray &name, char typeflag,
+                                      const char *uname, const char *gname) {
   strcpy( buffer, "././@LongLink" );
   qint64 namelen = name.length() + 1;
   fillBuffer( buffer, "     0", namelen, 0, typeflag, uname, gname );
-  device()->write( buffer, 0x200 ); // TODO error checking
+  q->device()->write( buffer, 0x200 ); // TODO error checking
   qint64 offset = 0;
   while (namelen > 0) {
     int chunksize = qMin(namelen, 0x200LL);
     memcpy(buffer, name.data()+offset, chunksize);
     // write long name
-    device()->write( buffer, 0x200 ); // TODO error checking
+    q->device()->write( buffer, 0x200 ); // TODO error checking
     // not even needed to reclear the buffer, tar doesn't do it
     namelen -= chunksize;
     offset += 0x200;
@@ -702,7 +716,7 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( fileName.length() > 99 )
-        writeLonglink(buffer,encodedFileName,'L',uname,gname);
+        d->writeLonglink(buffer,encodedFileName,'L',uname,gname);
 
     // Write (potentially truncated) name
     strncpy( buffer, encodedFileName, 99 );
@@ -712,7 +726,7 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, '0');
-    fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
+    d->fillBuffer(buffer, permstr, size, mtime, 0x30, uname, gname);
 
     // Write header
     return device()->write( buffer, 0x200 ) == 0x200;
@@ -755,7 +769,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     // If more than 100 chars, we need to use the LongLink trick
     if ( dirName.length() > 99 )
-        writeLonglink(buffer,encodedDirname,'L',uname,gname);
+        d->writeLonglink(buffer,encodedDirname,'L',uname,gname);
 
     // Write (potentially truncated) name
     strncpy( buffer, encodedDirname, 99 );
@@ -765,7 +779,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
-    fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
+    d->fillBuffer( buffer, permstr, 0, mtime, 0x35, uname, gname);
 
     // Write header
     device()->write( buffer, 0x200 );
@@ -807,9 +821,9 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     // If more than 100 chars, we need to use the LongLink trick
     if (target.length() > 99)
-        writeLonglink(buffer,encodedTarget,'K',uname,gname);
+        d->writeLonglink(buffer,encodedTarget,'K',uname,gname);
     if ( fileName.length() > 99 )
-        writeLonglink(buffer,encodedFileName,'L',uname,gname);
+        d->writeLonglink(buffer,encodedFileName,'L',uname,gname);
 
     // Write (potentially truncated) name
     strncpy( buffer, encodedFileName, 99 );
@@ -822,7 +836,7 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
-    fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
+    d->fillBuffer(buffer, permstr, 0, mtime, 0x32, uname, gname);
 
     // Write header
     bool retval = device()->write( buffer, 0x200 ) == 0x200;

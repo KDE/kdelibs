@@ -37,10 +37,11 @@ namespace KIO { class Job; class ListJob; }
 class OrgKdeKDirNotifyInterface;
 
 
-class KDirLister::KDirListerPrivate
+class KDirLister::Private
 {
 public:
-  KDirListerPrivate()
+  Private(KDirLister *parent)
+      : m_parent(parent)
   {
     complete = false;
 
@@ -66,6 +67,27 @@ public:
 
     window = 0;
   }
+
+  void _k_slotInfoMessage( KJob*, const QString& );
+  void _k_slotPercent( KJob*, unsigned long );
+  void _k_slotTotalSize( KJob*, qulonglong );
+  void _k_slotProcessedSize( KJob*, qulonglong );
+  void _k_slotSpeed( KJob*, unsigned long );
+
+  bool doMimeExcludeFilter( const QString& mimeExclude, const QStringList& filters ) const;
+  void jobStarted( KIO::ListJob * );
+  void connectJob( KIO::ListJob * );
+  void jobDone( KIO::ListJob * );
+  uint numJobs();
+  void addNewItem( const KFileItem& item );
+  void addNewItems( const KFileItemList& items );
+  void aboutToRefreshItem( const KFileItem& item );
+  void addRefreshItem( const KFileItem& oldItem, const KFileItem& item );
+  void emitItems();
+  void emitDeleteItem( const KFileItem &item );
+  void redirect( const KUrl& oldUrl, const KUrl& newUrl );
+
+  KDirLister *m_parent;
 
   /**
    * List of dirs handled by this dirlister. The first entry is the base URL.

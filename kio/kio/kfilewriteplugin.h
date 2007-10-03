@@ -46,6 +46,10 @@ public:
      * @brief Write a set of values into a resource pointed to by @p file.
      **/
     virtual bool write(const KUrl& file, const QVariantMap& data) = 0;
+
+private:
+    class Private;
+    Private* const d;
 };
 
 #endif

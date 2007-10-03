@@ -56,8 +56,6 @@ namespace KIO { class Job; class ListJob; }
  */
 class KIO_EXPORT KDirLister : public QObject
 {
-  class KDirListerPrivate;
-  friend class KDirListerPrivate;
   friend class KDirListerCache;
 
   Q_OBJECT
@@ -600,31 +598,16 @@ protected:
   /** Reimplement to customize error handling */
   virtual void handleError( KIO::Job * );
 
-private Q_SLOTS:
-  void slotInfoMessage( KJob *, const QString& );
-  void slotPercent( KJob *, unsigned long );
-  void slotTotalSize( KJob *, qulonglong );
-  void slotProcessedSize( KJob *, qulonglong );
-  void slotSpeed( KJob *, unsigned long );
-
 private:
-  bool doMimeExcludeFilter( const QString& mimeExclude, const QStringList& filters ) const;
+  class Private;
+  Private* const d;
+  friend class Private;
 
-  void jobStarted( KIO::ListJob * );
-  void connectJob( KIO::ListJob * );
-  void jobDone( KIO::ListJob * );
-
-  uint numJobs();
-
-  void addNewItem( const KFileItem& item );
-  void addNewItems( const KFileItemList& items );
-  void aboutToRefreshItem( const KFileItem& item );
-  void addRefreshItem( const KFileItem& oldItem, const KFileItem& item );
-  void emitItems();
-  void emitDeleteItem( const KFileItem &item );
-  void redirect( const KUrl& oldUrl, const KUrl& newUrl );
-
-  KDirListerPrivate* const d;
+  Q_PRIVATE_SLOT( d, void _k_slotInfoMessage( KJob*, const QString& ) )
+  Q_PRIVATE_SLOT( d, void _k_slotPercent( KJob*, unsigned long ) )
+  Q_PRIVATE_SLOT( d, void _k_slotTotalSize( KJob*, qulonglong ) )
+  Q_PRIVATE_SLOT( d, void _k_slotProcessedSize( KJob*, qulonglong ) )
+  Q_PRIVATE_SLOT( d, void _k_slotSpeed( KJob*, unsigned long ) )
 };
 
 #endif

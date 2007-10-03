@@ -122,7 +122,7 @@ class KIO_EXPORT KDirWatch : public QObject
     * @param path the file to check
     * @return the date of the last modification
     */
-   QDateTime ctime(const QString& path);
+   QDateTime ctime(const QString& path) const;
 
    /**
     * Removes a directory from the list of scanned directories.
@@ -289,8 +289,6 @@ class KIO_EXPORT KDirWatch : public QObject
    void deleted (const QString &path );
 
  private:
-   bool _isStopped;
-
    KDirWatchPrivate *const d;
 };
 

@@ -36,6 +36,20 @@
 class KMimeTypeChooserPrivate
 {
   public:
+    KMimeTypeChooserPrivate( KMimeTypeChooser *parent )
+      : q(parent),
+        mimeTypeTree(0),
+        btnEditMimeType(0)
+    {
+    }
+
+    void loadMimeTypes( const QStringList &selected = QStringList() );
+
+    void _k_editMimeType();
+    void _k_slotCurrentChanged(QTreeWidgetItem*);
+    void _k_slotSycocaDatabaseChanged();
+
+    KMimeTypeChooser *q;
     QTreeWidget *mimeTypeTree;
     QPushButton *btnEditMimeType;
 
@@ -52,11 +66,9 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
                               const QStringList &groupsToShow,
                               int visuals,
                               QWidget *parent )
-    : KVBox( parent )
+    : KVBox( parent ),
+      d(new KMimeTypeChooserPrivate(this))
 {
-  d = new KMimeTypeChooserPrivate();
-  d->mimeTypeTree = 0;
-  d->btnEditMimeType = 0;
   d->defaultgroup = defaultGroup;
   d->groups = groupsToShow;
   d->visuals = visuals;
@@ -85,7 +97,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
   d->mimeTypeTree->setColumnCount(headerLabels.count());
   d->mimeTypeTree->setHeaderLabels(headerLabels);
 
-  loadMimeTypes( selMimeTypes );
+  d->loadMimeTypes( selMimeTypes );
 
   if (visuals & EditButton)
   {
@@ -93,12 +105,12 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
     ((QBoxLayout*)btns->layout())->addStretch(1);
     d->btnEditMimeType = new QPushButton( i18n("&Edit..."), btns );
 
-    connect( d->btnEditMimeType, SIGNAL(clicked()), this, SLOT(editMimeType()) );
+    connect( d->btnEditMimeType, SIGNAL(clicked()), this, SLOT(_k_editMimeType()) );
     d->btnEditMimeType->setEnabled( false );
     connect( d->mimeTypeTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-             this, SLOT(editMimeType()));
+             this, SLOT(_k_editMimeType()));
     connect( d->mimeTypeTree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-             this, SLOT(slotCurrentChanged(QTreeWidgetItem*)) );
+             this, SLOT(_k_slotCurrentChanged(QTreeWidgetItem*)) );
 
     d->btnEditMimeType->setWhatsThis(i18n(
         "Click this button to display the familiar KDE mime type editor.") );
@@ -110,16 +122,16 @@ KMimeTypeChooser::~KMimeTypeChooser()
   delete d;
 }
 
-void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
+void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTypes )
 {
   QStringList selMimeTypes;
 
   if ( !_selectedMimeTypes.isEmpty() )
     selMimeTypes = _selectedMimeTypes;
   else
-    selMimeTypes = mimeTypes();
+    selMimeTypes = q->mimeTypes();
 
-  d->mimeTypeTree->clear();
+  mimeTypeTree->clear();
 
   QMap<QString, QTreeWidgetItem*> groupItems;
   const KMimeType::List mimetypes = KMimeType::allMimeTypes();
@@ -134,16 +146,16 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
     const int index = mimetype.indexOf('/');
     const QString maj = mimetype.left(index);
 
-    if ( !d->groups.isEmpty() && !d->groups.contains( maj ) )
+    if ( !groups.isEmpty() && !groups.contains( maj ) )
       continue;
 
     QTreeWidgetItem *groupItem;
     QMap<QString,QTreeWidgetItem*>::Iterator mit = groupItems.find( maj );
     if ( mit == groupItems.end() )
     {
-        groupItem = new QTreeWidgetItem( d->mimeTypeTree, QStringList(maj) );
+        groupItem = new QTreeWidgetItem( mimeTypeTree, QStringList(maj) );
         groupItems.insert( maj, groupItem );
-        if ( maj == d->defaultgroup )
+        if ( maj == defaultgroup )
             idefault = groupItem;
     }
     else
@@ -155,13 +167,13 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
 
     int cl = 1;
 
-    if ( d->visuals & Comments )
+    if ( visuals & KMimeTypeChooser::Comments )
     {
       item->setText( cl, mt->comment() );
       cl++;
     }
 
-    if ( d->visuals & Patterns )
+    if ( visuals & KMimeTypeChooser::Patterns )
       item->setText( cl, mt->patterns().join("; ") );
 
     if ( selMimeTypes.contains(mimetype) ) {
@@ -176,40 +188,40 @@ void KMimeTypeChooser::loadMimeTypes( const QStringList &_selectedMimeTypes )
   }
 
   if ( firstChecked )
-    d->mimeTypeTree->scrollToItem( firstChecked );
+    mimeTypeTree->scrollToItem( firstChecked );
 
   if ( !agroupisopen && idefault )
   {
     idefault->setExpanded( true );
-    d->mimeTypeTree->scrollToItem( idefault );
+    mimeTypeTree->scrollToItem( idefault );
   }
 }
 
-void KMimeTypeChooser::editMimeType()
+void KMimeTypeChooserPrivate::_k_editMimeType()
 {
-    QTreeWidgetItem* item = d->mimeTypeTree->currentItem();
+    QTreeWidgetItem* item = mimeTypeTree->currentItem();
     if ( !item || !item->parent() )
         return;
     QString mt = (item->parent())->text(0) + '/' + item->text(0);
     // thanks to libkonq/konq_operations.cc
-    connect( KSycoca::self(), SIGNAL(databaseChanged()),
-             this, SLOT(slotSycocaDatabaseChanged()) );
+    q->connect( KSycoca::self(), SIGNAL(databaseChanged()),
+                q, SLOT(_k_slotSycocaDatabaseChanged()) );
     QString keditfiletype = QString::fromLatin1("keditfiletype");
     KRun::runCommand( keditfiletype
 #ifndef Q_OS_WIN
-                      + " --parent " + QString::number( (ulong)topLevelWidget()->winId())
+                      + " --parent " + QString::number( (ulong)q->topLevelWidget()->winId())
 #endif
                       + ' ' + KShell::quoteArg(mt),
-                      keditfiletype, keditfiletype /*unused*/, topLevelWidget());
+                      keditfiletype, keditfiletype /*unused*/, q->topLevelWidget());
 }
 
-void KMimeTypeChooser::slotCurrentChanged(QTreeWidgetItem* i)
+void KMimeTypeChooserPrivate::_k_slotCurrentChanged(QTreeWidgetItem* item)
 {
-  if ( d->btnEditMimeType )
-    d->btnEditMimeType->setEnabled( i->parent() );
+  if ( btnEditMimeType )
+    btnEditMimeType->setEnabled( item->parent() );
 }
 
-void KMimeTypeChooser::slotSycocaDatabaseChanged()
+void KMimeTypeChooserPrivate::_k_slotSycocaDatabaseChanged()
 {
   if ( KSycoca::self()->isChanged("mime") )
     loadMimeTypes();
@@ -261,6 +273,24 @@ QStringList KMimeTypeChooser::patterns() const
 }
 //END
 
+//BEGIN KMimeTypeChooserDialog::Private
+
+class KMimeTypeChooserDialog::Private
+{
+    public:
+        Private( KMimeTypeChooserDialog *parent )
+            : q(parent)
+        {
+        }
+
+        void init();
+
+        KMimeTypeChooserDialog *q;
+        KMimeTypeChooser *m_chooser;
+};
+
+//END
+
 //BEGIN KMimeTypeChooserDialog
 KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QString &caption,
@@ -270,15 +300,15 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QStringList &groupsToShow,
                          int visuals,
                          QWidget *parent )
-    : KDialog( parent )
+    : KDialog( parent ), d(new Private(this))
 {
   setCaption( caption );
-  init();
+  d->init();
 
-  m_chooser = new KMimeTypeChooser( text, selMimeTypes,
-                                  defaultGroup, groupsToShow, visuals,
-                                  this );
-  setMainWidget(m_chooser);
+  d->m_chooser = new KMimeTypeChooser( text, selMimeTypes,
+                                       defaultGroup, groupsToShow, visuals,
+                                       this );
+  setMainWidget(d->m_chooser);
 }
 
 KMimeTypeChooserDialog::KMimeTypeChooserDialog(
@@ -287,37 +317,39 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QStringList &selMimeTypes,
                          const QString &defaultGroup,
                          QWidget *parent )
-    : KDialog( parent )
+    : KDialog( parent ), d(new Private(this))
 {
   setCaption( caption );
-  init();
+  d->init();
 
-  m_chooser = new KMimeTypeChooser( text, selMimeTypes,
-                                  defaultGroup, QStringList(),
-                                  KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
-                                  this );
-  setMainWidget(m_chooser);
+  d->m_chooser = new KMimeTypeChooser( text, selMimeTypes,
+                                       defaultGroup, QStringList(),
+                                       KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
+                                       this );
+  setMainWidget(d->m_chooser);
 }
 
 KMimeTypeChooser* KMimeTypeChooserDialog::chooser()
 {
-    return m_chooser;
+    return d->m_chooser;
 }
 
-void KMimeTypeChooserDialog::init()
+void KMimeTypeChooserDialog::Private::init()
 {
-  setButtons( Cancel | Ok );
-  setModal( true );
-  setDefaultButton( Ok );
+  q->setButtons( Cancel | Ok );
+  q->setModal( true );
+  q->setDefaultButton( Ok );
 
   KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
-  resize( group.readEntry("size", QSize(500,400)));
+  q->resize( group.readEntry("size", QSize(500,400)));
 }
 
 KMimeTypeChooserDialog::~KMimeTypeChooserDialog()
 {
   KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
   group.writeEntry("size", size());
+
+  delete d;
 }
 
 //END KMimeTypeChooserDialog

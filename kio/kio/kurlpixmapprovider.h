@@ -44,6 +44,16 @@ class KIO_EXPORT KUrlPixmapProvider : public KPixmapProvider
 {
 public:
     /**
+     * Creates a new url pixmap provider.
+     */
+    KUrlPixmapProvider();
+
+    /**
+     * Destroys the url pixmap provider.
+     */
+    ~KUrlPixmapProvider();
+
+    /**
      * Returns a pixmap for @p url with size @p size.
      * Uses KMimeType::pixmapForURL().
      * @param url the URL to fetch a pixmap for
@@ -54,7 +64,10 @@ public:
     virtual QPixmap pixmapFor( const QString& url, int size = 0 );
 protected:
     virtual void virtual_hook( int id, void* data );
-};
 
+private:
+    class Private;
+    Private* const d;
+};
 
 #endif // KURLPIXMAPPROVIDER_H

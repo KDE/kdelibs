@@ -23,6 +23,15 @@
 class KBuildSycocaProgressDialogPrivate
 {
 public:
+    KBuildSycocaProgressDialogPrivate( KBuildSycocaProgressDialog *parent )
+        : m_parent(parent)
+    {
+    }
+
+    void _k_slotProgress();
+    void _k_slotFinished();
+
+    KBuildSycocaProgressDialog *m_parent;
     QTimer m_timer;
     int m_timeStep;
 };
@@ -37,7 +46,7 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
                               "org.kde.kbuildsycoca");
   if (kbuildsycoca.isValid())
   {
-     kbuildsycoca.callWithCallback("recreate", QVariantList(), &dlg, SLOT(slotFinished()));
+     kbuildsycoca.callWithCallback("recreate", QVariantList(), &dlg, SLOT(_k_slotFinished()));
      dlg.exec();
   }
 }
@@ -45,9 +54,9 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
 KBuildSycocaProgressDialog::KBuildSycocaProgressDialog(QWidget *_parent,
                           const QString &_caption, const QString &text)
  : QProgressDialog(_parent)
- , d( new KBuildSycocaProgressDialogPrivate )
+ , d( new KBuildSycocaProgressDialogPrivate(this) )
 {
-  connect(&d->m_timer, SIGNAL(timeout()), this, SLOT(slotProgress()));
+  connect(&d->m_timer, SIGNAL(timeout()), this, SLOT(_k_slotProgress()));
   setWindowTitle(_caption);
   setModal(true);
   setLabelText(text);
@@ -62,29 +71,27 @@ KBuildSycocaProgressDialog::~KBuildSycocaProgressDialog()
     delete d;
 }
 
-void
-KBuildSycocaProgressDialog::slotProgress()
+void KBuildSycocaProgressDialogPrivate::_k_slotProgress()
 {
-  const int p = value();
+  const int p = m_parent->value();
   if (p == 18)
   {
-     reset();
-     setValue(1);
-     d->m_timeStep = d->m_timeStep * 2;
-     d->m_timer.start(d->m_timeStep);
+     m_parent->reset();
+     m_parent->setValue(1);
+     m_timeStep = m_timeStep * 2;
+     m_timer.start(m_timeStep);
   }
   else
   {
-     setValue(p+1);
+     m_parent->setValue(p+1);
   }
 }
 
-void
-KBuildSycocaProgressDialog::slotFinished()
+void KBuildSycocaProgressDialogPrivate::_k_slotFinished()
 {
-  setValue(20);
-  d->m_timer.stop();
-  QTimer::singleShot(1000, this, SLOT(close()));
+  m_parent->setValue(20);
+  m_timer.stop();
+  QTimer::singleShot(1000, m_parent, SLOT(close()));
 }
 
 

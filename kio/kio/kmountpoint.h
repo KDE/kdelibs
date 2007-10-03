@@ -139,7 +139,7 @@ public:
      * "foo" and "FOO" as being the same file (true for msdos systems)
      *
      */
-    bool testFileSystemFlag(FileSystemFlag flag);
+    bool testFileSystemFlag(FileSystemFlag flag) const;
 
     /**
      * Destructor

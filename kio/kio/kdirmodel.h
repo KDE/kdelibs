@@ -179,22 +179,21 @@ Q_SIGNALS:
      */
     void expand(const QModelIndex& index);
 
-private Q_SLOTS:
-    void slotNewItems(const KFileItemList&);
-    void slotDeleteItem(const KFileItem&);
-    void slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
-    void slotClear();
-
 private:
     // Make those private, they shouldn't be called by applications
-    virtual bool insertRows(int , int, const QModelIndex & = QModelIndex()) { return false; }
-    virtual bool insertColumns(int, int, const QModelIndex & = QModelIndex()) { return false; }
-    virtual bool removeRows(int, int, const QModelIndex & = QModelIndex()) { return false; }
-    virtual bool removeColumns(int, int, const QModelIndex & = QModelIndex()) { return false; }
+    virtual bool insertRows(int , int, const QModelIndex & = QModelIndex());
+    virtual bool insertColumns(int, int, const QModelIndex & = QModelIndex());
+    virtual bool removeRows(int, int, const QModelIndex & = QModelIndex());
+    virtual bool removeColumns(int, int, const QModelIndex & = QModelIndex());
 
 private:
     friend class KDirModelPrivate;
     KDirModelPrivate *const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotNewItems(const KFileItemList&) )
+    Q_PRIVATE_SLOT( d, void _k_slotDeleteItem(const KFileItem&) )
+    Q_PRIVATE_SLOT( d, void _k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&) )
+    Q_PRIVATE_SLOT( d, void _k_slotClear() )
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDirModel::DropsAllowed)

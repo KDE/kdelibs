@@ -109,6 +109,12 @@ public:
     ~KDirModelPrivate() {
         delete m_rootNode;
     }
+
+    void _k_slotNewItems(const KFileItemList&);
+    void _k_slotDeleteItem(const KFileItem&);
+    void _k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
+    void _k_slotClear();
+
     void clear() {
         delete m_rootNode;
         m_rootNode = new KDirModelDirNode(0, KFileItem());
@@ -135,7 +141,7 @@ public:
 };
 
 // If we want to support arbitrary trees like "home:/ as a child of system:/" then,
-// we need to get the parent KFileItem in slotNewItems, and then we can use a QHash<KFileItem,KDirModelNode*> cache.
+// we need to get the parent KFileItem in _k_slotNewItems, and then we can use a QHash<KFileItem,KDirModelNode*> cache.
 // (well there isn't a parent kfileitem, rather a parent url... hmm, back to square one with hashes-of-urls..)
 // For now we'll assume "child url = parent url + filename"
 QPair<int /*row*/, KDirModelNode*> KDirModelPrivate::nodeForUrl(const KUrl& _url, bool returnLastParent) const // O(n*m)
@@ -262,13 +268,13 @@ void KDirModel::setDirLister(KDirLister* dirLister)
     d->m_dirLister = dirLister;
     d->m_dirLister->setParent(this);
     connect( d->m_dirLister, SIGNAL(newItems(KFileItemList)),
-             this, SLOT(slotNewItems(KFileItemList)) );
+             this, SLOT(_k_slotNewItems(KFileItemList)) );
     connect( d->m_dirLister, SIGNAL(deleteItem(KFileItem)),
-             this, SLOT(slotDeleteItem(KFileItem)) );
+             this, SLOT(_k_slotDeleteItem(KFileItem)) );
     connect( d->m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem, KFileItem> >)),
-             this, SLOT(slotRefreshItems(QList<QPair<KFileItem, KFileItem> >)) );
+             this, SLOT(_k_slotRefreshItems(QList<QPair<KFileItem, KFileItem> >)) );
     connect( d->m_dirLister, SIGNAL(clear()),
-             this, SLOT(slotClear()) );
+             this, SLOT(_k_slotClear()) );
 }
 
 KDirLister* KDirModel::dirLister() const
@@ -276,7 +282,7 @@ KDirLister* KDirModel::dirLister() const
     return d->m_dirLister;
 }
 
-void KDirModel::slotNewItems(const KFileItemList& items)
+void KDirModelPrivate::_k_slotNewItems(const KFileItemList& items)
 {
     // Find parent item - it's the same for all the items
     // TODO (if Michael Brade agrees): add parent url to the newItems signal
@@ -286,21 +292,21 @@ void KDirModel::slotNewItems(const KFileItemList& items)
 
     //kDebug(7008) << "dir=" << dir;
 
-    const QPair<int, KDirModelNode*> result = d->nodeForUrl(dir); // O(n*m)
+    const QPair<int, KDirModelNode*> result = nodeForUrl(dir); // O(n*m)
     Q_ASSERT(result.second); // Are you calling KDirLister::openUrl(url,true,false)? Please use expandToUrl() instead.
-    Q_ASSERT(d->isDir(result.second));
+    Q_ASSERT(isDir(result.second));
     KDirModelDirNode* dirNode = static_cast<KDirModelDirNode *>(result.second);
 
-    const QModelIndex index = d->indexForNode(dirNode, result.first); // O(1)
+    const QModelIndex index = indexForNode(dirNode, result.first); // O(1)
     const int newItemsCount = items.count();
     const int newRowCount = dirNode->m_childNodes.count() + newItemsCount;
 #ifndef NDEBUG // debugIndex only defined in debug mode
     kDebug(7008) << items.count() << " in " << dir
              << " index=" << debugIndex(index) << " newRowCount=" << newRowCount << endl;
 #endif
-    beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
+    q->beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
 
-    const KUrl::List urlsBeingFetched = d->m_urlsBeingFetched.value(dirNode);
+    const KUrl::List urlsBeingFetched = m_urlsBeingFetched.value(dirNode);
     //kDebug(7008) << "urlsBeingFetched for dir" << dirNode << dir << ":" << urlsBeingFetched;
 
     KFileItemList::const_iterator it = items.begin();
@@ -317,30 +323,30 @@ void KDirModel::slotNewItems(const KFileItemList& items)
             foreach(const KUrl& urlFetched, urlsBeingFetched) {
                 if (dirUrl.isParentOf(urlFetched)) {
                     //kDebug(7008) << "Listing found" << dirUrl << "which is a parent of fetched url" << urlFetched;
-                    const QModelIndex parentIndex = d->indexForNode(node, dirNode->m_childNodes.count()-1);
+                    const QModelIndex parentIndex = indexForNode(node, dirNode->m_childNodes.count()-1);
                     Q_ASSERT(parentIndex.isValid());
-                    emit expand(parentIndex);
+                    emit q->expand(parentIndex);
                     if (dirUrl != urlFetched) {
-                        fetchMore(parentIndex);
-                        d->m_urlsBeingFetched[node].append(urlFetched);
+                        q->fetchMore(parentIndex);
+                        m_urlsBeingFetched[node].append(urlFetched);
                     }
                 }
             }
         }
     }
 
-    d->m_urlsBeingFetched.remove(dirNode);
+    m_urlsBeingFetched.remove(dirNode);
 
-    endInsertRows();
+    q->endInsertRows();
 }
 
-void KDirModel::slotDeleteItem(const KFileItem& item)
+void KDirModelPrivate::_k_slotDeleteItem(const KFileItem& item)
 {
     //KUrl dir( item->url().upUrl() );
     //dir.adjustPath(KUrl::RemoveTrailingSlash);
 
     Q_ASSERT(!item.isNull());
-    const QPair<int, KDirModelNode*> result = d->nodeForUrl(item.url()); // O(n*m)
+    const QPair<int, KDirModelNode*> result = nodeForUrl(item.url()); // O(n*m)
     const int rowNumber = result.first;
     KDirModelNode* node = result.second;
     Q_ASSERT(node);
@@ -350,21 +356,21 @@ void KDirModel::slotDeleteItem(const KFileItem& item)
     KDirModelDirNode* dirNode = node->parent();
     Q_ASSERT(dirNode);
 
-    QModelIndex parentIndex = d->indexForNode(dirNode); // O(n)
-    beginRemoveRows( parentIndex, rowNumber, rowNumber );
+    QModelIndex parentIndex = indexForNode(dirNode); // O(n)
+    q->beginRemoveRows( parentIndex, rowNumber, rowNumber );
     dirNode->m_childNodes.removeAt(rowNumber);
-    endRemoveRows();
+    q->endRemoveRows();
 }
 
-void KDirModel::slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
+void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 {
     QModelIndex topLeft, bottomRight;
 
     // Solution 1: we could emit dataChanged for one row (if items.size()==1) or all rows
     // Solution 2: more fine-grained, actually figure out the beginning and end rows.
     for ( QList<QPair<KFileItem, KFileItem> >::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
-        const QModelIndex index = indexForUrl( fit->first.url() ); // O(n*m); maybe we could look up to the parent only once
-        d->nodeForIndex(index)->setItem(fit->second);
+        const QModelIndex index = q->indexForUrl( fit->first.url() ); // O(n*m); maybe we could look up to the parent only once
+        nodeForIndex(index)->setItem(fit->second);
         if (!topLeft.isValid() || index.row() < topLeft.row()) {
             topLeft = index;
         }
@@ -375,18 +381,18 @@ void KDirModel::slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >& item
 #ifndef NDEBUG // debugIndex only defined in debug mode
     kDebug(7008) << "slotRefreshItems: dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
 #endif
-    bottomRight = bottomRight.sibling(bottomRight.row(), columnCount(QModelIndex())-1);
-    emit dataChanged(topLeft, bottomRight);
+    bottomRight = bottomRight.sibling(bottomRight.row(), q->columnCount(QModelIndex())-1);
+    emit q->dataChanged(topLeft, bottomRight);
 }
 
-void KDirModel::slotClear()
+void KDirModelPrivate::_k_slotClear()
 {
-    const int numRows = d->m_rootNode->m_childNodes.count();
-    beginRemoveRows( QModelIndex(), 0, numRows );
-    endRemoveRows();
+    const int numRows = m_rootNode->m_childNodes.count();
+    q->beginRemoveRows( QModelIndex(), 0, numRows );
+    q->endRemoveRows();
 
     //emit layoutAboutToBeChanged();
-    d->clear();
+    clear();
     //emit layoutChanged();
 }
 
@@ -732,6 +738,26 @@ void KDirModel::expandToUrl(const KUrl& url)
     const QModelIndex parentIndex = d->indexForNode(result.second, result.first);
     Q_ASSERT(parentIndex.isValid());
     fetchMore(parentIndex);
+}
+
+bool KDirModel::insertRows(int , int, const QModelIndex&)
+{
+    return false;
+}
+
+bool KDirModel::insertColumns(int, int, const QModelIndex&)
+{
+    return false;
+}
+
+bool KDirModel::removeRows(int, int, const QModelIndex&)
+{
+    return false;
+}
+
+bool KDirModel::removeColumns(int, int, const QModelIndex&)
+{
+    return false;
 }
 
 #include "kdirmodel.moc"

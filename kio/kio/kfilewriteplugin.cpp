@@ -23,10 +23,11 @@
 #include <QHash>
 #include <QDebug>
 
-KFileWritePlugin::KFileWritePlugin(QObject* parent, const QStringList& args)
-        :QObject(parent) {
-    Q_UNUSED(args);
+KFileWritePlugin::KFileWritePlugin(QObject* parent, const QStringList&)
+        :QObject(parent), d(0)
+{
 }
+
 KFileWritePlugin::~KFileWritePlugin() {
 }
 

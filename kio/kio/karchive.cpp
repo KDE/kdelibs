@@ -63,6 +63,8 @@ public:
         delete saveFile;
         delete rootDir;
     }
+    void abortWriting();
+
     KArchiveDirectory* rootDir;
     KSaveFile* saveFile;
     QIODevice * dev;
@@ -171,7 +173,7 @@ bool KArchive::close()
     if ( d->dev ) {
         closeSucceeded = closeArchive();
         if ( d->mode == QIODevice::WriteOnly && !closeSucceeded )
-            abortWriting();
+            d->abortWriting();
     }
 
     if ( d->dev )
@@ -334,7 +336,7 @@ bool KArchive::writeData( const char* data, qint64 size )
 {
     bool ok = device()->write( data, size ) == size;
     if ( !ok )
-        abortWriting();
+        d->abortWriting();
     return ok;
 }
 
@@ -367,7 +369,7 @@ bool KArchive::prepareWriting( const QString& name, const QString& user,
 {
     bool ok = doPrepareWriting( name, user, group, size, perm, atime, mtime, ctime );
     if ( !ok )
-        abortWriting();
+        d->abortWriting();
     return ok;
 }
 
@@ -475,13 +477,13 @@ QString KArchive::fileName() const
     return d->fileName;
 }
 
-void KArchive::abortWriting()
+void KArchivePrivate::abortWriting()
 {
-    if ( d->saveFile ) {
-        d->saveFile->abort();
-        delete d->saveFile;
-        d->saveFile = 0;
-        d->dev = 0;
+    if ( saveFile ) {
+        saveFile->abort();
+        delete saveFile;
+        saveFile = 0;
+        dev = 0;
     }
 }
 
