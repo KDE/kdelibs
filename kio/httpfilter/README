@@ -1,0 +1,2 @@
+HTTPFilter and the inherited classes are used by kio_http and
+khtml/kmultipart. The source code is located here for better code sharing.
