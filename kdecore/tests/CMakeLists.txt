@@ -59,7 +59,6 @@ if(UNIX)
  KDECORE_UNIT_TESTS(
   klocalsockettest
   klocalsocketservertest
-  kptyprocesstest
  )
 endif(UNIX)
 

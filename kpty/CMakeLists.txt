@@ -33,3 +33,4 @@ kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
 target_link_libraries(kgrantpty  kdefakes )
 install(TARGETS kgrantpty DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
+add_subdirectory( tests )
