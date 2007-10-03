@@ -89,6 +89,7 @@ public:
 
 protected:
     virtual QStyleOptionViewItem viewOptions() const;
+    virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void mousePressEvent(QMouseEvent *event);
 
 private:
@@ -103,6 +104,7 @@ DirOperatorIconView::DirOperatorIconView(QWidget *parent) :
     setResizeMode(QListView::Adjust);
     setSpacing(KDialog::spacingHint());
     setMovement(QListView::Static);
+    setDragDropMode(QListView::DragDrop);
 
     m_viewOptions = QListView::viewOptions();
     m_viewOptions.showDecorationSelected = true;
@@ -122,6 +124,13 @@ DirOperatorIconView::~DirOperatorIconView()
 QStyleOptionViewItem DirOperatorIconView::viewOptions() const
 {
     return m_viewOptions;
+}
+
+void DirOperatorIconView::dragEnterEvent(QDragEnterEvent* event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
 }
 
 void DirOperatorIconView::mousePressEvent(QMouseEvent *event)
