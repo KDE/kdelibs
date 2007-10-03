@@ -39,7 +39,33 @@
 #undef Unsorted
 #endif
 
-QDir::SortFlags KFileView::defaultSortFlags = (QDir::Name | QDir::IgnoreCase | QDir::DirsFirst);
+void KFileViewSignaler::activate( const KFileItem &item )
+{
+    if ( item.isDir() )
+        dirActivated( item );
+    else
+        fileSelected( item );
+}
+
+void KFileViewSignaler::highlightFile( const KFileItem &item )
+{
+    fileHighlighted( item );
+}
+
+void KFileViewSignaler::activateMenu( const KFileItem &item, const QPoint& pos )
+{
+    activatedMenu( item, pos );
+}
+
+void KFileViewSignaler::changeSorting( QDir::SortFlags sorting )
+{
+    sortingChanged( sorting );
+}
+
+void KFileViewSignaler::dropURLs( const KFileItem &item, QDropEvent *event, const KUrl::List &urls )
+{
+    dropped( item, event, urls );
+}
 
 class KFileView::KFileViewPrivate
 {
@@ -60,25 +86,43 @@ public:
 
     QPointer<KActionCollection> actions;
     int dropOptions;
+
+    const static QDir::SortFlags defaultSortFlags;
+    QDir::SortFlags m_sorting;
+    QString m_viewName;
+
+    /**
+     * counters
+     **/
+    uint filesNumber;
+    uint dirsNumber;
+
+    ViewMode view_mode;
+    KFile::SelectionMode selection_mode;
+
+    bool myOnlyDoubleClickSelectsFiles;
+
 };
+
+const QDir::SortFlags KFileView::KFileViewPrivate::defaultSortFlags = (QDir::Name | QDir::IgnoreCase | QDir::DirsFirst);
 
 
 KFileView::KFileView()
 	:d(new KFileViewPrivate())
 {
-    m_sorting  = KFileView::defaultSortFlags;
+    d->m_sorting  = KFileView::KFileViewPrivate::defaultSortFlags;
 
     sig = new KFileViewSignaler();
     sig->setObjectName("view-signaller");
 
-    filesNumber = 0;
-    dirsNumber = 0;
+    d->filesNumber = 0;
+    d->dirsNumber = 0;
 
-    view_mode = All;
-    selection_mode = KFile::Single;
-    m_viewName = i18n("Unknown View");
+    d->view_mode = All;
+    d->selection_mode = KFile::Single;
+    d->m_viewName = i18n("Unknown View");
 
-    myOnlyDoubleClickSelectsFiles = false;
+    d->myOnlyDoubleClickSelectsFiles = false;
 }
 
 KFileView::~KFileView()
@@ -116,9 +160,9 @@ bool KFileView::updateNumbers(const KFileItem &i)
         return false;
 
     if (i.isDir())
-        dirsNumber++;
+        d->dirsNumber++;
     else
-        filesNumber++;
+        d->filesNumber++;
 
     return true;
 }
@@ -141,26 +185,31 @@ void KFileView::insertItem( const KFileItem& )
 {
 }
 
+QWidget* KFileView::widget() const
+{
+  return const_cast<KFileView*>(this)->widget();
+}
+
 QDir::SortFlags KFileView::sorting() const
 {
-    return m_sorting;
+    return d->m_sorting;
 }
 
 void KFileView::setSorting(QDir::SortFlags new_sort)
 {
-    m_sorting = new_sort;
+    d->m_sorting = new_sort;
 }
 
 void KFileView::clear()
 {
-    filesNumber = 0;
-    dirsNumber = 0;
+    d->filesNumber = 0;
+    d->dirsNumber = 0;
     clearView();
 }
 
 bool KFileView::isReversed() const
 {
-    return (m_sorting & QDir::Reversed);
+    return (d->m_sorting & QDir::Reversed);
 }
 
 void KFileView::sortReversed()
@@ -172,17 +221,17 @@ void KFileView::sortReversed()
 
 uint KFileView::count() const
 {
-    return filesNumber + dirsNumber;
+    return d->filesNumber + d->dirsNumber;
 }
 
 uint KFileView::numFiles() const
 {
-    return filesNumber;
+    return d->filesNumber;
 }
 
 uint KFileView::numDirs() const
 {
-    return dirsNumber;
+    return d->dirsNumber;
 }
 
 #if 0
@@ -308,11 +357,11 @@ KFileItemList KFileView::items() const
 }
 
 void KFileView::setOnlyDoubleClickSelectsFiles( bool enable ) {
-    myOnlyDoubleClickSelectsFiles = enable;
+    d->myOnlyDoubleClickSelectsFiles = enable;
 }
 
 bool KFileView::onlyDoubleClickSelectsFiles() const {
-    return myOnlyDoubleClickSelectsFiles;
+    return d->myOnlyDoubleClickSelectsFiles;
 }
 
 
@@ -330,7 +379,7 @@ KFileItemList KFileView::selectedItems() const
 
 void KFileView::selectAll()
 {
-    if (selection_mode == KFile::NoSelection || selection_mode== KFile::Single)
+    if (d->selection_mode == KFile::NoSelection || d->selection_mode== KFile::Single)
         return;
 
     for ( KFileItem item = firstFileItem(); !item.isNull(); item = nextItem( item ) )
@@ -347,32 +396,32 @@ void KFileView::invertSelection()
 
 void KFileView::setSelectionMode( KFile::SelectionMode sm )
 {
-    selection_mode = sm;
+    d->selection_mode = sm;
 }
 
 KFile::SelectionMode KFileView::selectionMode() const
 {
-    return selection_mode;
+    return d->selection_mode;
 }
 
 void KFileView::setViewMode( KFileView::ViewMode vm )
 {
-    view_mode = vm;
+    d->view_mode = vm;
 }
 
 KFileView::ViewMode KFileView::viewMode() const
 {
-    return view_mode;
+    return d->view_mode;
 }
 
 QString KFileView::viewName() const
 {
-    return m_viewName;
+    return d->m_viewName;
 }
 
 void KFileView::setViewName( const QString& name )
 {
-    m_viewName = name;
+    d->m_viewName = name;
 }
 
 void KFileView::removeItem( const KFileItem &item )
@@ -381,9 +430,9 @@ void KFileView::removeItem( const KFileItem &item )
         return;
 
     if ( item.isDir() )
-        dirsNumber--;
+        d->dirsNumber--;
     else
-        filesNumber--;
+        d->filesNumber--;
 }
 
 void KFileView::listingCompleted()

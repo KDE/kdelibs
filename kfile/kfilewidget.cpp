@@ -27,7 +27,7 @@
 
 #include "kfileplacesview.h"
 #include "kfileplacesmodel.h"
-#include "kfilebookmarkhandler.h"
+#include "kfilebookmarkhandler_p.h"
 #include "kurlcombobox.h"
 #include "kurlnavigator.h"
 #include <config-kfile.h>

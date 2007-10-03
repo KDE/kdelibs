@@ -38,10 +38,7 @@ class QProgressBar;
 class KAction;
 class KActionMenu;
 class KDirLister;
-class KDirModel;
-class KDirSortFilterProxyModel;
 class KPreviewWidgetBase;
-class KToggleAction;
 
 namespace KIO
 {
@@ -753,111 +750,37 @@ Q_SIGNALS:
     void dropped(const KFileItem &item, QDropEvent *event, const KUrl::List &urls);
 
 private:
-    /**
-     * Checks whether we preview support is available for the current
-     * mimetype/namefilter
-     */
-    bool checkPreviewInternal() const;
+    class Private;
+    Private* const d;
 
-    /**
-      * takes action on the new location. If it's a directory, change
-      * into it, if it's a file, correct the name, etc.
-      */
-    void checkPath(const QString &txt, bool takeFiles = false);
-
-    bool openUrl(const KUrl &url, bool keep = false, bool reload = false);
-
-    /**
-     * Returns the column used by KDirModel dependent from d->sortOrder.
-     */
-    int sortColumn() const;
-
-    /**
-     * Returns the sort order dependent from d->sortOrder.
-     */
-    Qt::SortOrder sortOrder() const;
-
-    /**
-     * Sorts the model depending from d->sorting and emits
-     * the signal sortingChanged(). It is assured that the
-     * selected item stays visible.
-     */
-    void triggerSorting();
-
-private Q_SLOTS:
-    /**
-     * @internal
-     */
-    void slotDetailedView();
-    void slotSimpleView();
-    void slotToggleHidden(bool);
-
-    void togglePreview(bool on);
-
-    void slotSortByName();
-    void slotSortBySize();
-    void slotSortByDate();
-    void slotSortByType();
-    void slotSortReversed();
-    void slotToggleDirsFirst();
-    void slotToggleIgnoreCase();
-
-    void slotStarted();
-    void slotProgress(int);
-    void slotShowProgress();
-    void slotIOFinished();
-    void slotCanceled();
-    void slotRedirected(const KUrl&);
-
-    void slotViewActionAdded(KAction *);
-    void slotViewActionRemoved(KAction *);
-
-    void slotProperties();
-
-    void slotPressed(const QModelIndex &index);
-    void slotClicked(const QModelIndex &index);
-    void slotDoubleClicked(const QModelIndex &index);
-    void openContextMenu(const QPoint &pos);
-
-    /**
-     * Triggers a delayed preview of the item \a index.
-     * @see KDirOperator::cancelPreview()
-     * @see KDirOperator::showPreview()
-     */
-    void triggerPreview(const QModelIndex& index);
-
-    /**
-     * Cancels a pending preview (see also KDirOperator::triggerPreview()).
-     */
-    void cancelPreview();
-
-    /**
-     * Tells the preview widget to show the preview for the last
-     * highlighted/selected URL.
-     */
-    void showPreview();
-
-    void slotSplitterMoved(int pos, int index);
-
-    /**
-     * Assures that the selection remains visible for
-     * the current view. This method should get invoked whenever
-     * the view or the layout has been changed.
-     */
-    void assureVisibleSelection();
-
-    /**
-     * Synchronizes the sorting actions with the current
-     * state of the sorting.
-     */
-    void synchronizeSortingState(int logicalIndex, Qt::SortOrder order);
-
-private:
-    static bool isReadable(const KUrl &url);
-
-private:
-    class KDirOperatorPrivate;
-    KDirOperatorPrivate* const d;
+    Q_PRIVATE_SLOT( d, void _k_slotDetailedView() )
+    Q_PRIVATE_SLOT( d, void _k_slotSimpleView() )
+    Q_PRIVATE_SLOT( d, void _k_slotToggleHidden(bool) )
+    Q_PRIVATE_SLOT( d, void _k_togglePreview(bool) )
+    Q_PRIVATE_SLOT( d, void _k_slotSortByName() )
+    Q_PRIVATE_SLOT( d, void _k_slotSortBySize() )
+    Q_PRIVATE_SLOT( d, void _k_slotSortByDate() )
+    Q_PRIVATE_SLOT( d, void _k_slotSortByType() )
+    Q_PRIVATE_SLOT( d, void _k_slotSortReversed() )
+    Q_PRIVATE_SLOT( d, void _k_slotToggleDirsFirst() )
+    Q_PRIVATE_SLOT( d, void _k_slotToggleIgnoreCase() )
+    Q_PRIVATE_SLOT( d, void _k_slotStarted() )
+    Q_PRIVATE_SLOT( d, void _k_slotProgress(int) )
+    Q_PRIVATE_SLOT( d, void _k_slotShowProgress() )
+    Q_PRIVATE_SLOT( d, void _k_slotIOFinished() )
+    Q_PRIVATE_SLOT( d, void _k_slotCanceled() )
+    Q_PRIVATE_SLOT( d, void _k_slotRedirected(const KUrl&) )
+    Q_PRIVATE_SLOT( d, void _k_slotProperties() )
+    Q_PRIVATE_SLOT( d, void _k_slotPressed(const QModelIndex&) )
+    Q_PRIVATE_SLOT( d, void _k_slotClicked(const QModelIndex&) )
+    Q_PRIVATE_SLOT( d, void _k_slotDoubleClicked(const QModelIndex&) )
+    Q_PRIVATE_SLOT( d, void _k_openContextMenu(const QPoint&) )
+    Q_PRIVATE_SLOT( d, void _k_triggerPreview(const QModelIndex&) )
+    Q_PRIVATE_SLOT( d, void _k_cancelPreview() )
+    Q_PRIVATE_SLOT( d, void _k_showPreview() )
+    Q_PRIVATE_SLOT( d, void _k_slotSplitterMoved(int, int) )
+    Q_PRIVATE_SLOT( d, void _k_assureVisibleSelection() )
+    Q_PRIVATE_SLOT( d, void _k_synchronizeSortingState(int, Qt::SortOrder) )
 };
 
 #endif

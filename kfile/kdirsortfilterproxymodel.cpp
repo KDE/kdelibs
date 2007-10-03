@@ -20,7 +20,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kdirsortfilterproxymodel.h>
+#include "kdirsortfilterproxymodel.h"
 
 #include <kdirmodel.h>
 #include <kfileitem.h>
@@ -31,7 +31,7 @@
 // in the form of a separate subclass
 
 KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
-    : KCategorizedSortFilterProxyModel(parent)
+    : KCategorizedSortFilterProxyModel(parent), d(0)
 {
     setDynamicSortFilter(true);
 
@@ -425,3 +425,5 @@ bool KDirSortFilterProxyModel::lessThanGeneralPurpose(const QModelIndex &left,
     }
     return false;
 }
+
+#include "kdirsortfilterproxymodel.moc"

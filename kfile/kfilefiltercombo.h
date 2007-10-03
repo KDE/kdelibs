@@ -25,18 +25,27 @@
 #include <QtCore/QStringList>
 
 #include <kcombobox.h>
-#include <kmimetype.h>
-
-class KFileFilterComboPrivate;
 
 class KFILE_EXPORT KFileFilterCombo : public KComboBox
 {
     Q_OBJECT
 
 public:
+    /**
+     * Creates a new filter combo box.
+     *
+     * @param parent The parent widget.
+     */
     KFileFilterCombo(QWidget *parent=0);
+
+    /**
+     * Destroys the filter combo box.
+     */
     ~KFileFilterCombo();
 
+    /**
+     * Sets the @p filter string.
+     */
     void setFilter(const QString& filter);
 
     /**
@@ -62,7 +71,7 @@ public:
     /**
      * @return true if the filter's first item is the list of all mimetypes
      */
-    bool showsAllTypes() const { return m_allTypes; }
+    bool showsAllTypes() const;
 
     /**
      * This method allows you to set a default-filter, that is used when an
@@ -83,22 +92,22 @@ public:
     /**
      * @return all filters (this can be a list of patterns or a list of mimetypes)
      */
-    QStringList filters() const { return m_filters; }
+    QStringList filters() const;
 
 protected:
-    virtual bool eventFilter( QObject *o, QEvent *e );
+    virtual bool eventFilter( QObject*, QEvent* );
 
 Q_SIGNALS:
+    /**
+     * This signal is emitted whenever the filter has been changed.
+     */
     void filterChanged();
 
-private Q_SLOTS:
-    void slotFilterChanged();
-
 private:
-    QStringList m_filters;
-    bool m_allTypes;
-    class KFileFilterComboPrivate;
-    KFileFilterComboPrivate* const d;
+    class Private;
+    Private* const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotFilterChanged() )
 };
 
 #endif

@@ -91,6 +91,9 @@ protected:
 
     virtual bool lessThanGeneralPurpose(const QModelIndex &left,
                                         const QModelIndex &right) const;
+private:
+    class KDirSortFilterProxyModelPrivate;
+    KDirSortFilterProxyModelPrivate* const d;
 };
 
 

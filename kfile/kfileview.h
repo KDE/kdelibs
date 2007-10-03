@@ -44,43 +44,33 @@ public:
       * Call this method when an item is selected (depends on single click /
       * double click configuration). Emits the appropriate signal.
       **/
-    void activate( const KFileItem &item ) {
-        if ( item.isDir() )
-            dirActivated( item );
-        else
-            fileSelected( item );
-    }
+    void activate( const KFileItem &item );
+
     /**
      * emits the highlighted signal for item. Call this in your view class
      * whenever the selection changes.
      */
-    void highlightFile(const KFileItem &i) { fileHighlighted(i); }
+    void highlightFile( const KFileItem &item );
 
-    void activateMenu( const KFileItem &i, const QPoint& pos ) {
-        activatedMenu( i, pos );
-    }
+    void activateMenu( const KFileItem &item, const QPoint& pos );
 
-    void changeSorting( QDir::SortFlags sorting ) {
-        sortingChanged( sorting );
-    }
+    void changeSorting( QDir::SortFlags sorting );
 
-    void dropURLs(const KFileItem &i, QDropEvent*e, const KUrl::List&urls) {
-        dropped(i, e, urls);
-    }
+    void dropURLs( const KFileItem &item, QDropEvent *event, const KUrl::List &urls);
 
 Q_SIGNALS:
-    void dirActivated(const KFileItem&);
+    void dirActivated( const KFileItem &item );
 
     void sortingChanged( QDir::SortFlags );
 
     /**
-     * the item maybe be 0L, indicating that we're in multiselection mode and
+     * the @p item maybe be a null item, indicating that we're in multiselection mode and
      * the selection has changed.
      */
-    void fileHighlighted(const KFileItem&);
-    void fileSelected(const KFileItem&);
-    void activatedMenu( const KFileItem &i, const QPoint& );
-    void dropped(const KFileItem &, QDropEvent*, const KUrl::List&);
+    void fileHighlighted( const KFileItem &item );
+    void fileSelected( const KFileItem &item );
+    void activatedMenu( const KFileItem &item, const QPoint &pos );
+    void dropped( const KFileItem &item, QDropEvent *event, const KUrl::List &urls );
 };
 
 /**
@@ -99,15 +89,18 @@ Q_SIGNALS:
 class KFILE_EXPORT KFileView {
 
 public:
+    /**
+     * Creates a new file view.
+     */
     KFileView();
 
     /**
-     * Destructor
+     * Destroys the file view.
      */
     virtual ~KFileView();
 
     /**
-     * inserts a list of items.
+     * Inserts a list of items.
      **/
     void addItemList(const KFileItemList &list);
 
@@ -119,9 +112,9 @@ public:
     virtual QWidget *widget() = 0;
 
     /**
-     * ### As const-method, to be fixed in 3.0
+     * Returns the widget.
      */
-    QWidget *widget() const { return const_cast<KFileView*>(this)->widget(); }
+    QWidget *widget() const;
 
     /**
      * Sets @p filename the current item in the view, if available.
@@ -220,9 +213,9 @@ public:
     virtual KFile::SelectionMode selectionMode() const;
 
     enum ViewMode {
-	Files       = 1,
-	Directories = 2,
-	All = Files | Directories
+        Files       = 1,
+        Directories = 2,
+        All = Files | Directories
     };
     virtual void setViewMode( ViewMode vm );
     virtual ViewMode viewMode() const;
@@ -353,7 +346,7 @@ public:
      * for a short while while dragging.
      */
     enum DropOptions {
-	AutoOpenDirs  = 1
+        AutoOpenDirs  = 1
     };
     /**
      * Specify DND options. See DropOptions for details.
@@ -402,22 +395,6 @@ protected:
      * class to distribute the signals
      **/
     KFileViewSignaler *sig;
-
-private:
-    static QDir::SortFlags defaultSortFlags;
-    QDir::SortFlags m_sorting;
-    QString m_viewName;
-
-    /**
-     * counters
-     **/
-    uint filesNumber;
-    uint dirsNumber;
-
-    ViewMode view_mode;
-    KFile::SelectionMode selection_mode;
-
-    bool myOnlyDoubleClickSelectsFiles;
 
 private:
     class KFileViewPrivate;

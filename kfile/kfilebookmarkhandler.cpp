@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kfilebookmarkhandler.h"
+#include "kfilebookmarkhandler_p.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,4 +68,4 @@ QString KFileBookmarkHandler::currentTitle() const
     return m_widget->baseUrl().prettyUrl();
 }
 
-#include "kfilebookmarkhandler.moc"
+#include "kfilebookmarkhandler_p.moc"

@@ -65,7 +65,6 @@ install( FILES
   kfiletreeview.h
   kfileview.h
   kfilewidget.h
-  # kurlbar.h
   kurlnavigator.h
   kfile_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
