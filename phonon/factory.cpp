@@ -61,19 +61,17 @@ bool FactoryPrivate::createBackend()
     if (!m_backendObject) {
         // could not load a backend through the platform plugin. Falling back to the default.
 #if defined(Q_WS_MAC)
-        const QLatin1String pluginName("libphonon_qt7");
-        const QLatin1String suffix("/phonon/");
+        const QLatin1String pluginName("mac_qt7");
 #elif defined(Q_WS_WIN)
 #if defined(QT_NO_DEBUG)
         const QLatin1String pluginName("phonon_ds9");
 #else
         const QLatin1String pluginName("phonon_ds9d");
 #endif
-        const QLatin1String suffix("/phonon_backend/");
 #else
         const QLatin1String pluginName("xine");
-        const QLatin1String suffix("/phonon_backend/");
 #endif
+        const QLatin1String suffix("/phonon_backend/");
         foreach (QString libPath, QCoreApplication::libraryPaths()) {
             libPath += suffix;
             const QDir dir(libPath);
