@@ -25,6 +25,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QListView>
 #include <QtGui/QResizeEvent>
+#include <QtGui/QScrollBar>
 
 KDirOperatorDetailView::KDirOperatorDetailView(QWidget *parent) :
     QTreeView(parent),
@@ -35,6 +36,15 @@ KDirOperatorDetailView::KDirOperatorDetailView(QWidget *parent) :
     setUniformRowHeights(true);
     setDragDropMode(QListView::DragOnly);
     setSelectionBehavior(QAbstractItemView::SelectRows);
+
+// TODO: Remove this check when 4.3.2 is released and KDE requires it... this
+//       check avoids a division by zero happening on versions before 4.3.1.
+//       Right now KDE in theory can be shipped with Qt 4.3.0 and above.
+//       ereslibre
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 3, 2) || defined(QT_KDE_QT_COPY))
+    setVerticalScrollMode(QListView::ScrollPerPixel);
+    setHorizontalScrollMode(QListView::ScrollPerPixel);
+#endif
 }
 
 KDirOperatorDetailView::~KDirOperatorDetailView()
@@ -59,6 +69,17 @@ bool KDirOperatorDetailView::event(QEvent *event)
         // user based resizing and internal resizing...
         QTimer::singleShot(300, this, SLOT(disableColumnResizing()));
     }
+// TODO: Remove this check when 4.3.2 is released and KDE requires it... this
+//       check avoids a division by zero happening on versions before 4.3.1.
+//       Right now KDE in theory can be shipped with Qt 4.3.0 and above.
+//       ereslibre
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 3, 2) || defined(QT_KDE_QT_COPY))
+    else if (event->type() == QEvent::UpdateRequest) {
+        // A wheel movement will scroll 4 items
+        if (model()->rowCount())
+            verticalScrollBar()->setSingleStep((sizeHintForRow(0) / 3) * 4);
+    }
+#endif
 
     return QTreeView::event(event);
 }
