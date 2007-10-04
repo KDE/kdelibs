@@ -20,24 +20,42 @@
 
 #include <kmessagebox.h>
 
+class KMessageBoxMessageHandlerPrivate
+{
+    public:
+        KMessageBoxMessageHandlerPrivate(KMessageBoxMessageHandler *q)
+            : q(q)
+        {
+        }
+
+        void showMessageBox(KMessage::MessageType messageType, const QString &text, const QString &caption);
+        QWidget *parentWidget();
+
+        KMessageBoxMessageHandler *q;
+};
+
+
 KMessageBoxMessageHandler::KMessageBoxMessageHandler(QWidget *parent)
- : QObject(parent), KMessageHandler(), d(0)
-{}
+ : QObject(parent), d(new KMessageBoxMessageHandlerPrivate(this))
+{
+}
 
 KMessageBoxMessageHandler::~KMessageBoxMessageHandler()
 {
+    delete d;
 }
 
 void KMessageBoxMessageHandler::message(KMessage::MessageType messageType, const QString &text, const QString &caption)
 {
-    showMessageBox(messageType, text, caption);
+    d->showMessageBox(messageType, text, caption);
 }
 
-void KMessageBoxMessageHandler::showMessageBox(KMessage::MessageType messageType, const QString &text, const QString &caption)
+void KMessageBoxMessageHandlerPrivate::showMessageBox(KMessage::MessageType messageType,
+                                                      const QString &text, const QString &caption)
 {
     KMessageBox::DialogType dlgType;
 
-    switch(messageType)
+    switch (messageType)
     {
         case KMessage::Information:
         default:
@@ -53,12 +71,12 @@ void KMessageBoxMessageHandler::showMessageBox(KMessage::MessageType messageType
             break;
     }
 
-    KMessageBox::queuedMessageBox( parentWidget(), dlgType, text, caption );
+    KMessageBox::queuedMessageBox(parentWidget(), dlgType, text, caption);
 }
 
-QWidget *KMessageBoxMessageHandler::parentWidget()
+QWidget *KMessageBoxMessageHandlerPrivate::parentWidget()
 {
-    return qobject_cast<QWidget*>( parent() );
+    return qobject_cast<QWidget*>(q->parent());
 }
 
 #include "kmessageboxmessagehandler.moc"

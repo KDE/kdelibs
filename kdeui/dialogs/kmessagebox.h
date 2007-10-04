@@ -1121,9 +1121,6 @@ public:
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
                              QMessageBox::Icon notifyType=QMessageBox::Information);
-
-private:
-    static KConfig* againConfig;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KMessageBox::Options)

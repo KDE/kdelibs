@@ -194,9 +194,9 @@ class KTipDialog::Private
     {
     }
 
-    void nextTip();
-    void prevTip();
-    void showOnStart( bool );
+    void _k_nextTip();
+    void _k_prevTip();
+    void _k_showOnStart( bool );
 
     KTipDialog *parent;
     KTipDatabase *database;
@@ -211,7 +211,7 @@ class KTipDialog::Private
 
 KTipDialog *KTipDialog::Private::mInstance = 0;
 
-void KTipDialog::Private::prevTip()
+void KTipDialog::Private::_k_prevTip()
 {
   database->prevTip();
   tipText->setHtml( QString::fromLatin1( "<qt text=\"%1\" bgcolor=\"%2\">%3</qt>" )
@@ -220,7 +220,7 @@ void KTipDialog::Private::prevTip()
                   .arg( i18n( database->tip().toUtf8() ) ) );
 }
 
-void KTipDialog::Private::nextTip()
+void KTipDialog::Private::_k_nextTip()
 {
   database->nextTip();
   tipText->setHtml( QString::fromLatin1( "<qt text=\"%1\" bgcolor=\"%2\">%3</qt>" )
@@ -229,7 +229,7 @@ void KTipDialog::Private::nextTip()
                   .arg( i18n( database->tip().toUtf8() ) ) );
 }
 
-void KTipDialog::Private::showOnStart( bool on )
+void KTipDialog::Private::_k_showOnStart( bool on )
 {
   parent->setShowOnStart( on );
 }
@@ -401,14 +401,14 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   KConfigGroup config( KGlobal::config(), "TipOfDay" );
   d->tipOnStart->setChecked( config.readEntry( "RunOnStart", true ) );
 
-  connect( next, SIGNAL( clicked() ), this, SLOT( nextTip() ) );
-  connect( prev, SIGNAL( clicked() ), this, SLOT( prevTip() ) );
+  connect( next, SIGNAL( clicked() ), this, SLOT( _k_nextTip() ) );
+  connect( prev, SIGNAL( clicked() ), this, SLOT( _k_prevTip() ) );
   connect( ok, SIGNAL( clicked() ), this, SLOT( accept() ) );
-  connect( d->tipOnStart, SIGNAL( toggled( bool ) ), this, SLOT( showOnStart( bool ) ) );
+  connect( d->tipOnStart, SIGNAL( toggled( bool ) ), this, SLOT( _k_showOnStart( bool ) ) );
 
   ok->setFocus();
 
-  d->nextTip();
+  d->_k_nextTip();
 }
 
 KTipDialog::~KTipDialog()

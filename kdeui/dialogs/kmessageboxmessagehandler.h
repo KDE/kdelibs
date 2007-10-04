@@ -41,6 +41,9 @@ public:
      */
     explicit KMessageBoxMessageHandler(QWidget *parent = 0);
 
+    /**
+     * Destroys the KMessageBoxMessageHandler.
+     */
     virtual ~KMessageBoxMessageHandler();
 
     /**
@@ -49,19 +52,6 @@ public:
     virtual void message(KMessage::MessageType messageType, const QString &text, const QString &caption);
 
 private:
-    /**
-     * @internal Actual call of KMessageBox.
-     * @param messageType Message type.
-     * @param text the text to display.
-     * @param caption the caption of the message box.
-     */
-    void showMessageBox(KMessage::MessageType messageType, const QString &text, const QString &caption);
-    /**
-     * @internal Get the parent widget to be used by the KMessageBox.
-     * @return the parent widget.
-     */
-    QWidget *parentWidget();
-
     KMessageBoxMessageHandlerPrivate * const d;
 };
 

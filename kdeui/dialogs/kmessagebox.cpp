@@ -52,6 +52,8 @@
   */
 
 static bool KMessageBox_queue = false;
+KConfig* KMessageBox_againConfig = 0;
+
 
 static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
 {
@@ -318,7 +320,7 @@ bool KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
     if ( dontShowAgainName.isEmpty() ) {
         return true;
     }
-    KConfigGroup cg( againConfig ? againConfig : KGlobal::config().data(), "Notification Messages" );
+    KConfigGroup cg( KMessageBox_againConfig ? KMessageBox_againConfig : KGlobal::config().data(), "Notification Messages" );
     QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
     if (dontAsk == "yes" || dontAsk == "true") {
         result = Yes;
@@ -336,7 +338,7 @@ bool KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
     if ( dontShowAgainName.isEmpty() ) {
         return true;
     }
-    KConfigGroup cg( againConfig ? againConfig : KGlobal::config().data(), "Notification Messages" );
+    KConfigGroup cg( KMessageBox_againConfig ? KMessageBox_againConfig : KGlobal::config().data(), "Notification Messages" );
     return cg.readEntry(dontShowAgainName, true);
 }
 
@@ -350,7 +352,7 @@ void KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
     if (dontShowAgainName[0] == ':') {
         flags |= KConfigBase::Global;
     }
-    KConfigGroup cg( againConfig? againConfig : KGlobal::config().data(), "Notification Messages" );
+    KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig : KGlobal::config().data(), "Notification Messages" );
     cg.writeEntry( dontShowAgainName, result==Yes, flags );
     cg.sync();
 }
@@ -364,16 +366,14 @@ void KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
     if (dontShowAgainName[0] == ':') {
         flags |= KConfigBase::Global;
     }
-    KConfigGroup cg( againConfig? againConfig: KGlobal::config().data(), "Notification Messages" );
+    KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig: KGlobal::config().data(), "Notification Messages" );
     cg.writeEntry( dontShowAgainName, false, flags );
     cg.sync();
 }
 
-KConfig* KMessageBox::againConfig = NULL;
-
 void KMessageBox::setDontShowAskAgainConfig(KConfig* cfg)
 {
-    againConfig = cfg;
+    KMessageBox_againConfig = cfg;
 }
 
 int KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
@@ -972,7 +972,7 @@ void KMessageBox::informationListWId(WId parent_id,const QString &text, const QS
 
 void KMessageBox::enableAllMessages()
 {
-   KConfig *config = againConfig ? againConfig : KGlobal::config().data();
+   KConfig *config = KMessageBox_againConfig ? KMessageBox_againConfig : KGlobal::config().data();
    if (!config->hasGroup("Notification Messages")) {
       return;
    }
@@ -991,7 +991,7 @@ void KMessageBox::enableAllMessages()
 
 void KMessageBox::enableMessage(const QString &dontShowAgainName)
 {
-   KConfig *config = againConfig ? againConfig : KGlobal::config().data();
+   KConfig *config = KMessageBox_againConfig ? KMessageBox_againConfig : KGlobal::config().data();
    if (!config->hasGroup("Notification Messages")) {
       return;
    }
