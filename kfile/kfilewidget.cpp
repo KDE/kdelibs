@@ -1033,6 +1033,7 @@ void KFileWidgetPrivate::initSpeedbar()
     placesView = new KFilePlacesView( q );
     placesView->setModel(new KFilePlacesModel(placesView));
     placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    placesView->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
     placesView->setObjectName( QLatin1String( "url bar" ) );
     QObject::connect( placesView, SIGNAL( urlChanged( const KUrl& )),
@@ -1057,7 +1058,7 @@ void KFileWidgetPrivate::initGUI()
     boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
 
     placesViewSplitter = new QSplitter(q);
-    placesViewSplitter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    placesViewSplitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     placesViewSplitter->setChildrenCollapsible(false);
     boxLayout->addWidget(placesViewSplitter);
 
@@ -1410,8 +1411,7 @@ void KFileWidget::showEvent(QShowEvent* event)
 {
     if ( !d->hasView ) { // delayed view-creation
         d->ops->setView(KFile::Default);
-        d->ops->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-        d->ops->view()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+        d->ops->view()->setSizePolicy( QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum ) );
         d->hasView = true;
     }
     d->ops->clearHistory();
@@ -1420,8 +1420,8 @@ void KFileWidget::showEvent(QShowEvent* event)
     if (sizes.count() == 2) {
         // restore width of speedbar
         KConfigGroup configGroup( KGlobal::config(), ConfigGroup );
-        const int speedbarWidth = configGroup.readEntry( SpeedbarWidth, 100 );
-        const int availableWidth = sizes[0] + sizes[1];
+        const int speedbarWidth = configGroup.readEntry( SpeedbarWidth, d->placesView->sizeHintForColumn(0) );
+        const int availableWidth = width();
         sizes[0] = speedbarWidth;
         sizes[1] = availableWidth - speedbarWidth;
         d->placesViewSplitter->setSizes( sizes );
@@ -1490,8 +1490,6 @@ void KFileWidgetPrivate::readConfig( const KConfigGroup &configGroup)
     int w2 = toolbar->sizeHint().width() + 10;
     if (w1 < w2)
         q->setMinimumWidth(w2);
-
-    //restoreDialogSize( d->fileWidget->viewConfigGroup() );
 }
 
 void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
@@ -1514,8 +1512,6 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     configGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
     configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
     configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
-
-    ops->writeConfig(configGroup);
 }
 
 
