@@ -10,7 +10,7 @@ set(phononexperimental_LIB_SRCS
     ../abstractvideooutput_p.cpp
    )
 kde4_add_library(phononexperimental SHARED ${phononexperimental_LIB_SRCS})
-target_link_libraries(phononexperimental ${KDE4_PHONON_LIBS})
+target_link_libraries(phononexperimental ${KDE4_PHONON_LIBS} phonon_fake)
 set_target_properties(phononexperimental PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS phononexperimental
              RUNTIME DESTINATION ${BIN_INSTALL_DIR}
