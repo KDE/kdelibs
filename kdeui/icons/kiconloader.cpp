@@ -616,36 +616,53 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
     K3Icon icon;
     const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
 
-   /* JRT: To follow the XDG spec, the order in which we look for an
-       icon 1s:
+    /* To follow the XDG icon theme and icon naming specifications,
+       the order in which we look for an icon is:
 
        png, svgz, svg, xpm exact match
        png, svgz, svg, xpm best match
-       next theme in inheritance tree : png, svgz, svg, xpm exact match
-                                        png, svgz, svg, xpm best match
-       next theme in inheritance tree : png, svgz, svg, xpm exact match
-                                        png, svgz, svg, xpm best match
-       and so on
+       less specific fallback in this theme: png, svgz, svg, xpm exact match
+                                             png, svgz, svg, xpm best match
+       even less specific fallback in this theme: [same order]
+       (...)
 
+       next theme in inheritance tree: png, svgz, svg, xpm exact match
+                                       png, svgz, svg, xpm best match
+       less specific fallbacks in this next theme
+       (...)
+
+       next theme in inheritance tree: png, svgz, svg, xpm exact match
+                                       png, svgz, svg, xpm best match
+       less specific fallbacks in this next theme
+       (...)
+
+       and so on.
        */
     foreach(KIconThemeNode *themeNode, links)
     {
-        for (int i = 0 ; i < 4 ; i++)
-        {
-            icon = themeNode->theme->iconPath(name + ext[i], size, KIconLoader::MatchExact);
-            if (icon.isValid())
-                return icon;
-        }
+        QStringList nameParts = name.split("-");
+        QString currentName = name;
 
-        for (int i = 0 ; i < 4 ; i++)
+        while (!nameParts.isEmpty())
         {
-            icon = themeNode->theme->iconPath(name + ext[i], size, KIconLoader::MatchBest);
-            if (icon.isValid())
-                return icon;
-        }
+            for (int i = 0 ; i < 4 ; i++)
+            {
+                icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchExact);
+                if (icon.isValid())
+                    return icon;
+            }
 
+            for (int i = 0 ; i < 4 ; i++)
+            {
+                icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchBest);
+                if (icon.isValid())
+                    return icon;
+            }
+
+            nameParts.removeLast();
+            currentName = nameParts.join("-");
+        }
     }
-
     return icon;
 }
 
