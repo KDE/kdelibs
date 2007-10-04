@@ -25,6 +25,7 @@
 #include <QPainter>
 #include <QEvent>
 #include <QMouseEvent>
+#include <QApplication>
 
 #include <kdebug.h>
 
@@ -146,22 +147,29 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 	int indicatorX = 0;
 	int indicatorY = 0;
 
-	QStyleOptionViewItem modOption(option);
+	QStyleOptionViewItem indicatorOption(option);
+	QStyleOptionViewItem itemOption(option);
 	bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
 	
 	if (showExtensionIndicator) {
-		indicatorX = option.rect.left();
-		indicatorY = modOption.rect.top() + ((modOption.rect.height() - d->extendIcon.height()) >> 1);
-		modOption.rect.setLeft(modOption.rect.left() + d->extendIcon.width());
+		if (QApplication::isRightToLeft()) {
+			indicatorX = option.rect.right() - d->extendIcon.width();
+			itemOption.rect.setRight(option.rect.right() - d->extendIcon.width());
+			indicatorOption.rect.setLeft(option.rect.right() - d->extendIcon.width());
+		}
+		else {
+			indicatorX = option.rect.left();
+			indicatorOption.rect.setRight(option.rect.left() + d->extendIcon.width());
+			itemOption.rect.setLeft(option.rect.left() + d->extendIcon.width());
+		}
+		indicatorY = option.rect.top() + ((option.rect.height() - d->extendIcon.height()) >> 1);
 	}
 	
 	//fast path
 	if (!d->hasExtenders) {
-		QItemDelegate::paint(painter, modOption, index);
+		QItemDelegate::paint(painter, itemOption, index);
 		if (showExtensionIndicator) {
-			modOption.rect.setLeft(option.rect.left());
-			modOption.rect.setRight(option.rect.left() + d->extendIcon.width());
-			QItemDelegate::drawBackground(painter, modOption, index);
+			QItemDelegate::drawBackground(painter, indicatorOption, index);
 			painter->drawPixmap(indicatorX, indicatorY,  d->extendIcon);
 		}
 		return;
@@ -182,16 +190,15 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 		cachedStateTick = d->stateTick;
 		cachedRow = row;
 		cachedParentIndex = parentIndex;
-		if (extender)
+		if (extender) {
 			extenderHeight = extender->sizeHint().height();
+		}
 	}
 
 	if (!extender) {
-		QItemDelegate::paint(painter, modOption, index);
+		QItemDelegate::paint(painter, itemOption, index);
 		if (showExtensionIndicator) {
-			modOption.rect.setLeft(option.rect.left());
-			modOption.rect.setRight(option.rect.left() + d->extendIcon.width());
-			QItemDelegate::drawBackground(painter, modOption, index);
+			QItemDelegate::drawBackground(painter, indicatorOption, index);
 			painter->drawPixmap(indicatorX, indicatorY, d->extendIcon);
 		}
 		return;
@@ -207,18 +214,16 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 		extender->show();
 	}
 	
-	modOption.rect.setHeight(modOption.rect.height() - extenderHeight);
-	//TODO:make sure that modOption.rect really has the same height as the unchanged
-	//option.rect if no extender is present
-	QItemDelegate::paint(painter, modOption, index);
+	indicatorOption.rect.setHeight(option.rect.height() - extenderHeight);
+	itemOption.rect.setHeight(option.rect.height() - extenderHeight);
+	//TODO:make sure that the modified options' rect properties really have the
+	//same height as the unchanged option.rect if no extender is present
+	QItemDelegate::paint(painter, itemOption, index);
 	
 	if (showExtensionIndicator) {
-		//modOption's height changed, change this too
-		indicatorY = modOption.rect.top() + ((modOption.rect.height() - d->extendIcon.height()) >> 1);
-		
-		modOption.rect.setLeft(option.rect.left());
-		modOption.rect.setRight(option.rect.left() + d->extendIcon.width());
-		QItemDelegate::drawBackground(painter, modOption, index);
+		//indicatorOption's height changed, change this too
+		indicatorY = indicatorOption.rect.top() + ((indicatorOption.rect.height() - d->extendIcon.height()) >> 1);
+		QItemDelegate::drawBackground(painter, indicatorOption, index);
 		
 		if (d->extenders.contains(index))
 			painter->drawPixmap(indicatorX, indicatorY, d->contractIcon);

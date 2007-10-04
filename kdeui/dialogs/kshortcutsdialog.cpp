@@ -182,7 +182,8 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent, bo
 	QStyleOption option;
 	option.rect = pixmap.rect();
 
-	QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowRight, &option, &p );
+	bool isRtl = QApplication::isRightToLeft();
+	QApplication::style()->drawPrimitive( isRtl ? QStyle::PE_IndicatorArrowLeft : QStyle::PE_IndicatorArrowRight, &option, &p );
 	setExtendIcon( pixmap );
 
 	pixmap.fill( QColor( Qt::transparent ) );
