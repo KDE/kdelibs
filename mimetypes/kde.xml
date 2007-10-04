@@ -161,6 +161,10 @@ Notes:
     </magic>
     <glob pattern="*.exr"/>
   </mime-type>
+  <mime-type type="application/vnd.kde.kphotoalbum-import"> <!-- TODO fdo report -->
+    <comment>KPhotoAlbum import</comment>
+    <glob pattern="*.kim"/>
+  </mime-type>
   <mime-type type="image/x-hdr"> <!-- TODO fdo report -->
     <comment>HDR image</comment>
     <acronym>HDR</acronym>
