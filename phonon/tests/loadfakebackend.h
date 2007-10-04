@@ -33,7 +33,7 @@ namespace Phonon
 void loadFakeBackend()
 {
 #ifdef USE_FAKE_BACKEND
-    Factory::setBackend(new Phonon::Fake::Backend);
+    Factory::setBackend(new Fake::Backend);
 #endif
 }
 QUrl testUrl()
