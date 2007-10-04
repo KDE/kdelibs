@@ -209,7 +209,7 @@ namespace KInputDialog
                                           const QString &label, const QStringList &list=QStringList(),
                                           const QStringList &select=QStringList(), bool multiple=false,
                                           bool *ok=0, QWidget *parent=0 );
-};
+}
 
 #endif // KINPUTDIALOG_H
 
