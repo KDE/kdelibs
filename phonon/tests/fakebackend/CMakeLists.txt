@@ -13,5 +13,5 @@ set(phonon_fake_PART_SRCS
    videowidget.cpp
    )
 
-kde4_add_library(phonon_fake ${phonon_fake_PART_SRCS})
+kde4_add_library(phonon_fake SHARED ${phonon_fake_PART_SRCS})
 target_link_libraries(phonon_fake ${KDE4_KDECORE_LIBS} ${KDE4_PHONON_LIBS} phononexperimental)
