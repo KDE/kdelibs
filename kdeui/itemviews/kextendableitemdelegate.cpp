@@ -216,8 +216,9 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 	
 	indicatorOption.rect.setHeight(option.rect.height() - extenderHeight);
 	itemOption.rect.setHeight(option.rect.height() - extenderHeight);
-	//TODO:make sure that the modified options' rect properties really have the
+	//tricky:make sure that the modified options' rect really has the
 	//same height as the unchanged option.rect if no extender is present
+	//(seems to work OK)
 	QItemDelegate::paint(painter, itemOption, index);
 	
 	if (showExtensionIndicator) {
