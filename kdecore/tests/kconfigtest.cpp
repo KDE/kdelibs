@@ -19,6 +19,7 @@
 
 #include <qtest_kde.h>
 #include "kconfigtest.h"
+#include <kstandarddirs.h>
 #include "kconfigtest.moc"
 
 #include <kconfig.h>
@@ -287,7 +288,7 @@ void KConfigTest::testEnums()
   QVERIFY( sc3.readEntry( "flags-bit0", KConfigTest::Flags() ) == KConfigTest::bit0 );
 
   int eid = staticMetaObject.indexOfEnumerator( "Flags" );
-  Q_ASSERT( eid != -1 );
+  QVERIFY( eid != -1 );
   QMetaEnum me = staticMetaObject.enumerator( eid );
   KConfigTest::Flags bitfield = KConfigTest::bit0|KConfigTest::bit1;
 
@@ -398,6 +399,46 @@ void KConfigTest::testDelete()
   QVERIFY( sc.entryMap("FooBar").isEmpty() ); //inexistant group
 }
 
+void KConfigTest::testDefaultGroup()
+{
+    KConfig sc( "kconfigtest" );
+    KConfigGroup defaultGroup(&sc, "<default>");
+    QCOMPARE(defaultGroup.group(), QString("<default>"));
+    QVERIFY(!defaultGroup.exists());
+    defaultGroup.writeEntry("TestKey", "defaultGroup");
+    QVERIFY(defaultGroup.exists());
+    QCOMPARE(defaultGroup.readEntry("TestKey", QString()), QString("defaultGroup"));
+    sc.sync();
+
+#ifdef Q_OS_UNIX
+    QList<QByteArray> lines = readLines();
+    QVERIFY(!lines.contains("[]"));
+    QCOMPARE(lines.first(), QByteArray("TestKey=defaultGroup\n"));
+#endif
+
+    defaultGroup.deleteGroup();
+}
+
+void KConfigTest::testEmptyGroup()
+{
+    KConfig sc( "kconfigtest" );
+    KConfigGroup emptyGroup(&sc, "");
+    QCOMPARE(emptyGroup.group(), QString("<default>")); // confusing, heh?
+    QVERIFY(!emptyGroup.exists());
+    emptyGroup.writeEntry("TestKey", "emptyGroup");
+    QVERIFY(emptyGroup.exists());
+    QCOMPARE(emptyGroup.readEntry("TestKey", QString()), QString("emptyGroup"));
+    sc.sync();
+
+#ifdef Q_OS_UNIX
+    QList<QByteArray> lines = readLines();
+    QVERIFY(!lines.contains("[]")); // there's no support for the [] group, in fact.
+#endif
+
+    emptyGroup.deleteGroup();
+}
+
+
 void KConfigTest::testKAboutDataOrganizationDomain()
 {
     KAboutData data( "app", 0, ki18n("program"), "version",
@@ -411,4 +452,20 @@ void KConfigTest::testKAboutDataOrganizationDomain()
                       ki18n("copyright"), ki18n("hello world"),
                       "http://edu.kde.org/kig" );
     QCOMPARE( data2.organizationDomain(), QString::fromLatin1( "kde.org" ) );
+}
+
+QList<QByteArray> KConfigTest::readLines()
+{
+    const QString path = KStandardDirs::locateLocal("config", "kconfigtest");
+    Q_ASSERT(!path.isEmpty());
+    QFile file(path);
+    Q_ASSERT(file.open(QIODevice::ReadOnly));
+    QList<QByteArray> lines;
+    QByteArray line;
+    do {
+        line = file.readLine();
+        if (!line.isEmpty())
+            lines.append(line);
+    } while(!line.isEmpty());
+    return lines;
 }

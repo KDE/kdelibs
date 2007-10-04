@@ -41,6 +41,8 @@ private Q_SLOTS:
     void testEnums();
     void testInvalid();
     void testDelete();
+    void testDefaultGroup();
+    void testEmptyGroup();
     void testRevertAllEntries();
     void testChangeGroup();
 
@@ -48,6 +50,7 @@ private Q_SLOTS:
     void testKAboutDataOrganizationDomain();
 private:
     void revertEntries();
+    QList<QByteArray> readLines();
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigTest::Flags)
 
