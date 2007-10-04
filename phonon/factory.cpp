@@ -42,14 +42,20 @@ namespace Phonon
 
 PHONON_GLOBAL_STATIC(Phonon::FactoryPrivate, globalFactory)
 
-void Factory::createBackend(const QString &library, const QString &version)
+void Factory::setBackend(QObject *b)
+{
+    Q_ASSERT(globalFactory->m_backendObject == 0);
+    globalFactory->m_backendObject = b;
+}
+
+/*void Factory::createBackend(const QString &library, const QString &version)
 {
     Q_ASSERT(globalFactory->m_backendObject == 0);
     PlatformPlugin *f = globalFactory->platformPlugin();
     if (f) {
         globalFactory->m_backendObject = f->createBackend(library, version);
     }
-}
+}*/
 
 bool FactoryPrivate::createBackend()
 {

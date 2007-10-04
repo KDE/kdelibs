@@ -24,13 +24,16 @@
 #include <QtCore/QUrl>
 #include <QtTest>
 #include <stdlib.h>
+#ifdef USE_FAKE_BACKEND
+#include "fakebackend/backend.h"
+#endif
 
 namespace Phonon
 {
 void loadFakeBackend()
 {
 #ifdef USE_FAKE_BACKEND
-    Factory::createBackend("phonon_fake", "0.1");
+    Factory::setBackend(new Phonon::Fake::Backend);
 #endif
 }
 QUrl testUrl()

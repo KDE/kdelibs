@@ -29,13 +29,19 @@
 
 class KUrl;
 
+#ifdef MAKE_PHONON_FAKE_LIB /* We are building this library */
+# define PHONON_FAKE_EXPORT Q_DECL_EXPORT
+#else /* We are using this library */
+# define PHONON_FAKE_EXPORT Q_DECL_IMPORT
+#endif
+
 namespace Phonon
 {
 namespace Fake
 {
     class AudioOutput;
 
-    class Backend : public QObject, public BackendInterface
+    class PHONON_FAKE_EXPORT Backend : public QObject, public BackendInterface
     {
         Q_OBJECT
         Q_INTERFACES(Phonon::BackendInterface)

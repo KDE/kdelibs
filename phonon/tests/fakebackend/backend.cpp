@@ -31,16 +31,6 @@
 #include <QtCore/QSet>
 #include <QtCore/QVariant>
 
-#ifdef PHONON_MAKE_QT_ONLY_BACKEND
-#include <QtCore/QtPlugin>
-Q_EXPORT_PLUGIN2(phonon_fake, Phonon::Fake::Backend);
-#else
-#include <kpluginfactory.h>
-#include <kpluginloader.h>
-K_PLUGIN_FACTORY(FakeBackendFactory, registerPlugin<Phonon::Fake::Backend>();)
-K_EXPORT_PLUGIN(FakeBackendFactory("fakebackend"))
-#endif
-
 namespace Phonon
 {
 namespace Fake

@@ -172,7 +172,8 @@ namespace Factory
     PHONON_EXPORT void registerFrontendObject(MediaNodePrivate *);
     PHONON_EXPORT void deregisterFrontendObject(MediaNodePrivate *);
 
-    PHONON_EXPORT void createBackend(const QString &library, const QString &version = QString());
+    PHONON_EXPORT void setBackend(QObject *);
+    //PHONON_EXPORT void createBackend(const QString &library, const QString &version = QString());
 
     PlatformPlugin *platformPlugin();
 

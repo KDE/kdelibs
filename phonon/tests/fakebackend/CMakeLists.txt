@@ -13,16 +13,5 @@ set(phonon_fake_PART_SRCS
    videowidget.cpp
    )
 
-
-kde4_add_plugin(phonon_fake ${phonon_fake_PART_SRCS})
-
-
+kde4_add_library(phonon_fake ${phonon_fake_PART_SRCS})
 target_link_libraries(phonon_fake ${KDE4_KDECORE_LIBS} ${KDE4_PHONON_LIBS} phononexperimental)
-
-install(TARGETS phonon_fake  DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-
-########### install files ###############
-
-install( FILES  fake.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/phononbackends )
-
