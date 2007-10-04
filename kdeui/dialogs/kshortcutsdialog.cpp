@@ -175,8 +175,20 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent, bo
    m_editor(0)
 {
 	Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
-	setExtendIcon(SmallIcon("arrow-right"));
-	setContractIcon(SmallIcon("arrow-down"));
+
+	QPixmap pixmap( 16, 16 );
+	pixmap.fill( QColor( Qt::transparent ) );
+	QPainter p( &pixmap );
+	QStyleOption option;
+	option.rect = pixmap.rect();
+
+	QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowRight, &option, &p );
+	setExtendIcon( pixmap );
+
+	pixmap.fill( QColor( Qt::transparent ) );
+	QApplication::style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &option, &p );
+	setContractIcon( pixmap );
+
 	connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
 }
 
