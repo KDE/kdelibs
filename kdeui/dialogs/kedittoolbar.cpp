@@ -383,6 +383,13 @@ public:
       m_accept(false), m_global(false),
       m_collection(0), m_factory(0), m_widget(0) {}
 
+    void init();
+
+    void _k_slotOk();
+    void _k_slotApply();
+    void _k_acceptOK(bool);
+    void _k_slotDefault();
+
     KEditToolBar *q;
     bool m_accept;
     // Save parameters for recreating widget after resetting toolbar
@@ -404,7 +411,7 @@ KEditToolBar::KEditToolBar( KActionCollection *collection,
     d(new KEditToolBarPrivate(this))
 {
     d->m_widget = new KEditToolBarWidget( collection, this);
-    init();
+    d->init();
     d->m_collection = collection;
 }
 
@@ -414,35 +421,35 @@ KEditToolBar::KEditToolBar( KXMLGUIFactory* factory,
       d(new KEditToolBarPrivate(this))
 {
     d->m_widget = new KEditToolBarWidget( this);
-    init();
+    d->init();
     d->m_factory = factory;
 }
 
-void KEditToolBar::init()
+void KEditToolBarPrivate::init()
 {
-    d->m_accept = false;
-    d->m_factory = 0;
+    m_accept = false;
+    m_factory = 0;
 
-    setDefaultToolBar( QString() );
+    q->setDefaultToolBar( QString() );
 
-    setCaption(i18n("Configure Toolbars"));
-    setButtons(Default|Ok|Apply|Cancel);
-    setDefaultButton(Ok);
+    q->setCaption(i18n("Configure Toolbars"));
+    q->setButtons(KDialog::Default|KDialog::Ok|KDialog::Apply|KDialog::Cancel);
+    q->setDefaultButton(KDialog::Ok);
 
-    setModal(false);
+    q->setModal(false);
 
-    setMainWidget(d->m_widget);
+    q->setMainWidget(m_widget);
 
-    connect(d->m_widget, SIGNAL(enableOk(bool)), SLOT(acceptOK(bool)));
-    connect(d->m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
-    enableButtonApply(false);
+    q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(_k_acceptOK(bool)));
+    q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
+    q->enableButtonApply(false);
 
-    connect(this, SIGNAL(okClicked()), SLOT(slotOk()));
-    connect(this, SIGNAL(applyClicked()), SLOT(slotApply()));
-    connect(this, SIGNAL(defaultClicked()), SLOT(slotDefault()));
+    q->connect(q, SIGNAL(okClicked()), SLOT(_k_slotOk()));
+    q->connect(q, SIGNAL(applyClicked()), SLOT(_k_slotApply()));
+    q->connect(q, SIGNAL(defaultClicked()), SLOT(_k_slotDefault()));
 
-    setMinimumSize(sizeHint());
-    KEditToolBarPrivate::s_defaultToolBar = 0L;
+    q->setMinimumSize(q->sizeHint());
+    KEditToolBarPrivate::s_defaultToolBar = 0;
 }
 
 void KEditToolBar::setResourceFile( const QString& file, bool global )
@@ -466,25 +473,25 @@ void KEditToolBar::setDefaultToolBar( const QString& toolBarName )
     }
 }
 
-void KEditToolBar::acceptOK(bool b)
+void KEditToolBarPrivate::_k_acceptOK(bool b)
 {
-    enableButtonOk(b);
-    d->m_accept = b;
+    q->enableButtonOk(b);
+    m_accept = b;
 }
 
-void KEditToolBar::slotDefault()
+void KEditToolBarPrivate::_k_slotDefault()
 {
-    if ( KMessageBox::warningContinueCancel(this, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset ToolBars"),KGuiItem(i18n("Reset")))!=KMessageBox::Continue )
+    if ( KMessageBox::warningContinueCancel(q, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset ToolBars"),KGuiItem(i18n("Reset")))!=KMessageBox::Continue )
         return;
 
-    delete d->m_widget;
-    d->m_widget = 0;
-    d->m_accept = false;
+    delete m_widget;
+    m_widget = 0;
+    m_accept = false;
 
-    if ( d->m_factory )
+    if ( m_factory )
     {
         const QString localPrefix = KStandardDirs::locateLocal("data", "");
-        foreach (KXMLGUIClient* client, d->m_factory->clients())
+        foreach (KXMLGUIClient* client, m_factory->clients())
         {
             QString file = client->xmlFile();
 
@@ -507,61 +514,61 @@ void KEditToolBar::slotDefault()
                     kWarning() << "Could not delete " << file;
         }
 
-        d->m_widget = new KEditToolBarWidget( this );
-        d->m_widget->load( d->m_factory, d->m_defaultToolBar );
-        d->m_widget->rebuildKXMLGUIClients();
+        m_widget = new KEditToolBarWidget( q );
+        m_widget->load( m_factory, m_defaultToolBar );
+        m_widget->rebuildKXMLGUIClients();
     }
     else
     {
-        int slash = d->m_file.lastIndexOf('/')+1;
+        int slash = m_file.lastIndexOf('/')+1;
         if (slash)
-            d->m_file = d->m_file.mid(slash);
-        QString xml_file = KStandardDirs::locateLocal("data", KGlobal::mainComponent().componentName() + '/' + d->m_file);
+            m_file = m_file.mid(slash);
+        QString xml_file = KStandardDirs::locateLocal("data", KGlobal::mainComponent().componentName() + '/' + m_file);
 
         if ( QFile::exists( xml_file ) )
             if ( !QFile::remove( xml_file ) )
                 kWarning() << "Could not delete " << xml_file;
 
-        d->m_widget = new KEditToolBarWidget( d->m_collection, this );
-        setResourceFile( d->m_file, d->m_global );
+        m_widget = new KEditToolBarWidget( m_collection, q );
+        q->setResourceFile( m_file, m_global );
     }
 
-    setMainWidget(d->m_widget);
-    d->m_widget->show();
+    q->setMainWidget(m_widget);
+    m_widget->show();
 
-    connect(d->m_widget, SIGNAL(enableOk(bool)), SLOT(acceptOK(bool)));
-    connect(d->m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
+    q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(_k_acceptOK(bool)));
+    q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
 
-    enableButtonApply(false);
-    emit newToolBarConfig();
-    emit newToolbarConfig(); // compat
+    q->enableButtonApply(false);
+    emit q->newToolBarConfig();
+    emit q->newToolbarConfig(); // compat
 }
 
-void KEditToolBar::slotOk()
+void KEditToolBarPrivate::_k_slotOk()
 {
-  if (!d->m_accept) {
-      reject();
+  if (!m_accept) {
+      q->reject();
       return;
   }
 
-  if (!d->m_widget->save())
+  if (!m_widget->save())
   {
     // some error box here is needed
   }
   else
   {
-    emit newToolBarConfig();
-    emit newToolbarConfig(); // compat
-    accept();
+    emit q->newToolBarConfig();
+    emit q->newToolbarConfig(); // compat
+    q->accept();
   }
 }
 
-void KEditToolBar::slotApply()
+void KEditToolBarPrivate::_k_slotApply()
 {
-    (void)d->m_widget->save();
-    enableButtonApply(false);
-    emit newToolBarConfig();
-    emit newToolbarConfig(); // compat
+    (void)m_widget->save();
+    q->enableButtonApply(false);
+    emit q->newToolBarConfig();
+    emit q->newToolbarConfig(); // compat
 }
 
 void KEditToolBar::setGlobalDefaultToolBar(const char *toolbarName)

@@ -178,26 +178,6 @@ public:
    */
   static void setGlobalDefaultToolBar(const char *toolBarName);
 
-protected Q_SLOTS:
-  /**
-   * Overridden in order to save any changes made to the toolbars
-   */
-  virtual void slotOk();
-  /**
-   * idem
-   */
-  virtual void slotApply();
-
-  /** should OK really save?
-  * @internal
-  **/
-  void acceptOK(bool b);
-
-  /**
-   * Set toolbars to default value
-  **/
-  void slotDefault();
-
 Q_SIGNALS:
   /**
    * Signal emitted when 'apply' or 'ok' is clicked or toolbars were reset.
@@ -213,10 +193,13 @@ protected:
   virtual void hideEvent(QHideEvent* event);
 
 private:
-  void init();
-
   friend class KEditToolBarPrivate;
   KEditToolBarPrivate *const d;
+
+  Q_PRIVATE_SLOT( d, void _k_slotOk() )
+  Q_PRIVATE_SLOT( d, void _k_slotApply() )
+  Q_PRIVATE_SLOT( d, void _k_acceptOK(bool) )
+  Q_PRIVATE_SLOT( d, void _k_slotDefault() )
 
   Q_DISABLE_COPY(KEditToolBar)
 };

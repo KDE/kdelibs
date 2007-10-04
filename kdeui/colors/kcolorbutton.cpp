@@ -39,7 +39,9 @@ class KColorButton::KColorButtonPrivate
 {
 public:
     KColorButtonPrivate(KColorButton *q): q(q) {}
-  
+
+    void _k_chooseColor();
+
     KColorButton *q;
     QColor m_defaultColor;
     bool m_bdefaultColor;
@@ -60,7 +62,7 @@ KColorButton::KColorButton( QWidget *parent )
   setAcceptDrops( true);
 
   // 2000-10-15 (putzer): fixes broken keyboard usage
-  connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
+  connect (this, SIGNAL(clicked()), this, SLOT(_k_chooseColor()));
 }
 
 KColorButton::KColorButton( const QColor &c, QWidget *parent )
@@ -73,7 +75,7 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent )
   setAcceptDrops( true);
 
   // 2000-10-15 (putzer): fixes broken keyboard usage
-  connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
+  connect (this, SIGNAL(clicked()), this, SLOT(_k_chooseColor()));
 }
 
 KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget *parent )
@@ -86,7 +88,7 @@ KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget
   setAcceptDrops( true);
 
   // 2000-10-15 (putzer): fixes broken keyboard usage
-  connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
+  connect (this, SIGNAL(clicked()), this, SLOT(_k_chooseColor()));
 }
 
 KColorButton::~KColorButton()
@@ -227,19 +229,19 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
   }
 }
 
-void KColorButton::chooseColor()
+void KColorButton::KColorButtonPrivate::_k_chooseColor()
 {
-  QColor c = color();
-  if ( d->m_bdefaultColor )
+  QColor c = q->color();
+  if ( m_bdefaultColor )
   {
-      if( KColorDialog::getColor( c, d->m_defaultColor, this ) != QDialog::Rejected ) {
-          setColor( c );
+      if( KColorDialog::getColor( c, m_defaultColor, q ) != QDialog::Rejected ) {
+          q->setColor( c );
       }
   }
   else
   {
-      if( KColorDialog::getColor( c, this ) != QDialog::Rejected ) {
-          setColor( c );
+      if( KColorDialog::getColor( c, q ) != QDialog::Rejected ) {
+          q->setColor( c );
       }
   }
 }

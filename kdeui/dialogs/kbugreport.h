@@ -73,23 +73,23 @@ private:
   /**
    * "Configure email" has been clicked - this calls kcmshell System/email
    */
-  Q_PRIVATE_SLOT(d, void slotConfigureEmail())
+  Q_PRIVATE_SLOT(d, void _k_slotConfigureEmail())
   
   /**
    * Sets the "From" field from the e-mail configuration
    * Called at creation time, but also after "Configure email" is closed.
    */
-  Q_PRIVATE_SLOT(d, void slotSetFrom())
+  Q_PRIVATE_SLOT(d, void _k_slotSetFrom())
 
   /**
    * Application combo selection changed (and was activated)
    */
-  Q_PRIVATE_SLOT(d, void appChanged(int))
+  Q_PRIVATE_SLOT(d, void _k_appChanged(int))
   
   /**
    * Update the url to match the current os, compiler, selected app, etc
    */
-  Q_PRIVATE_SLOT(d, void updateUrl())
+  Q_PRIVATE_SLOT(d, void _k_updateUrl())
 
 protected:
   /**

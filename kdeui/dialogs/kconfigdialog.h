@@ -208,37 +208,14 @@ protected:
    */
   virtual void showEvent(QShowEvent *e);
 
-protected Q_SLOTS:
-  /**
-   * Updates the Apply and Default buttons.
-   */
-  void updateButtons();
-
-  /**
-   * Some setting was changed. Emit the signal with the dialogs name
-   */
-  void settingsChangedSlot();
-
-private:
-  /**
-   * Internal function with common addPage code.
-   */
-  KPageWidgetItem* addPageInternal(QWidget *page, const QString &itemName,
-                           const QString &pixmapName, const QString &header);
-
-  /**
-   * Sets the connections from a manager to the dialog (and the other
-   * way round) up.
-   */
-  void setupManagerConnections(KConfigDialogManager *manager);
-
 private:
   class KConfigDialogPrivate;
   friend class KConfigDialogPrivate;
-  /**
-   * Private class.
-   */
+
   KConfigDialogPrivate *const d;
+
+  Q_PRIVATE_SLOT( d, void _k_updateButtons() )
+  Q_PRIVATE_SLOT( d, void _k_settingsChangedSlot() )
 
   Q_DISABLE_COPY(KConfigDialog)
 };

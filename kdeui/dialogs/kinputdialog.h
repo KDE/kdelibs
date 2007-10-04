@@ -20,68 +20,24 @@
 #ifndef KINPUTDIALOG_H
 #define KINPUTDIALOG_H
 
-class QValidator;
+#include <QtCore/QStringList>
 
-class KLineEdit;
-class KIntSpinBox;
-class KDoubleSpinBox;
-class KComboBox;
-class KTextEdit;
-class KInputDialogPrivate;
-class KListWidget;
+#include <kdeui_export.h>
 
-#include <kdialog.h>
 #include <limits.h>
 #include <float.h>
 
+class QValidator;
+
 /**
- * The KInputDialog class provides a simple dialog to get a single value
+ * The KInputDialog namespace provides simple dialogs to get a single value
  * from the user. The value can be a string, a number (either an integer or
- * a float) or an item from a list. This class is designed to be source
- * compatible with QInputDialog.
- *
- * Five static convenience functions are provided: getText(), getInteger().
- * getDouble(), getItem() and getItemList().
+ * a float) or an item from a list.
  *
  * @author Nadeem Hasan <nhasan@kde.org>
  */
-class KDEUI_EXPORT KInputDialog : public KDialog
+namespace KInputDialog
 {
-  Q_OBJECT
-
-  private:
-
-    /**
-     * Constructor. This class is not designed to be instantiated except
-     * from the static member functions.
-     */
-    KInputDialog( const QString &caption, const QString &label,
-      const QString &value, QWidget *parent,
-      QValidator *validator, const QString &mask );
-    KInputDialog( const QString &caption, const QString &label,
-      const QString &value, QWidget *parent );
-    KInputDialog( const QString &caption, const QString &label, int value,
-      int minValue, int maxValue, int step, int base, QWidget *parent );
-    KInputDialog( const QString &caption, const QString &label, double value,
-      double minValue, double maxValue, double step, int decimals,
-      QWidget *parent );
-    KInputDialog( const QString &caption, const QString &label,
-      const QStringList &list, int current, bool editable, QWidget *parent );
-    KInputDialog( const QString &caption, const QString &label,
-      const QStringList &list, const QStringList &select, bool editable,
-      QWidget *parent );
-
-    ~KInputDialog();
-
-    KLineEdit *lineEdit() const;
-    KIntSpinBox *intSpinBox() const;
-    KDoubleSpinBox *doubleSpinBox() const;
-    KComboBox *comboBox() const;
-    KListWidget *listBox() const;
-    KTextEdit *textEdit() const;
-
-  public:
-
     /**
      * Static convenience function to get a string from the user.
      *
@@ -109,12 +65,12 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @param completionList a list of items which should be used for input completion
      * @return String user entered if Ok was pressed, else a null string
      */
-    static QString getText( const QString &caption, const QString &label,
-        const QString &value=QString(), bool *ok=0, QWidget *parent=0,
-        QValidator *validator=0,
-        const QString &mask=QString(),
-	const QString& whatsThis=QString(),
-        const QStringList &completionList=QStringList()  );
+    KDEUI_EXPORT QString getText( const QString &caption, const QString &label,
+                                  const QString &value=QString(), bool *ok=0, QWidget *parent=0,
+                                  QValidator *validator=0,
+                                  const QString &mask=QString(),
+                                  const QString& whatsThis=QString(),
+                                  const QStringList &completionList=QStringList()  );
 
     /**
      * Static convenience function to get a multiline string from the user.
@@ -132,9 +88,9 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      *
      * @return String user entered if Ok was pressed, else a null string
      */
-    static QString getMultiLineText( const QString &caption,
-        const QString &label, const QString &value=QString(),
-        bool *ok=0, QWidget *parent=0 );
+    KDEUI_EXPORT QString getMultiLineText( const QString &caption,
+                                           const QString &label, const QString &value=QString(),
+                                           bool *ok=0, QWidget *parent=0 );
 
     /**
      * Static convenience function to get an integer from the user.
@@ -159,17 +115,17 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @return Number user entered if Ok was pressed, else 0
      */
 
-    static int getInteger( const QString &caption, const QString &label,
-        int value=0, int minValue=INT_MIN, int maxValue=INT_MAX,
-        int step=1, int base=10, bool *ok=0, QWidget *parent=0 );
+    KDEUI_EXPORT int getInteger( const QString &caption, const QString &label,
+                                 int value=0, int minValue=INT_MIN, int maxValue=INT_MAX,
+                                 int step=1, int base=10, bool *ok=0, QWidget *parent=0 );
 
     /**
      * This is an overloaded convenience function. It behaves exactly same as
      * above except it assumes base to be 10, i.e. accepts decimal numbers.
      */
-    static int getInteger( const QString &caption, const QString &label,
-        int value=0, int minValue=INT_MIN, int maxValue=INT_MAX,
-        int step=1, bool *ok=0, QWidget *parent=0 );
+    KDEUI_EXPORT int getInteger( const QString &caption, const QString &label,
+                                 int value=0, int minValue=INT_MIN, int maxValue=INT_MAX,
+                                 int step=1, bool *ok=0, QWidget *parent=0 );
 
     /**
      * Static convenience function to get a floating point number from the user.
@@ -193,19 +149,19 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      *
      * @return Number user entered if Ok was pressed, else 0
      */
-    static double getDouble( const QString &caption, const QString &label,
-        double value=0, double minValue=-DBL_MAX,
-        double maxValue=DBL_MAX, double step=0.1, int decimals=1,
-        bool *ok=0, QWidget *parent=0 );
+    KDEUI_EXPORT double getDouble( const QString &caption, const QString &label,
+                                   double value=0, double minValue=-DBL_MAX,
+                                   double maxValue=DBL_MAX, double step=0.1, int decimals=1,
+                                   bool *ok=0, QWidget *parent=0 );
 
     /**
      * This is an overloaded convenience function. It behaves exctly like
      * the above function.
      */
-    static double getDouble( const QString &caption, const QString &label,
-        double value=0, double minValue=-DBL_MAX,
-        double maxValue=DBL_MAX, int decimals=1, bool *ok=0,
-        QWidget *parent=0 );
+    KDEUI_EXPORT double getDouble( const QString &caption, const QString &label,
+                                   double value=0, double minValue=-DBL_MAX,
+                                   double maxValue=DBL_MAX, int decimals=1, bool *ok=0,
+                                   QWidget *parent=0 );
 
     /**
      * Static convenience function to let the user select an item from a
@@ -226,9 +182,9 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @return Text of the selected item. If @p editable is true this can be
      *         a text entered by the user.
      */
-    static QString getItem( const QString &caption, const QString &label,
-        const QStringList &list, int current=0, bool editable=false,
-        bool *ok=0, QWidget *parent=0 );
+    KDEUI_EXPORT QString getItem( const QString &caption, const QString &label,
+                                  const QStringList &list, int current=0, bool editable=false,
+                                  bool *ok=0, QWidget *parent=0 );
 
     /**
      * Static convenience function to let the user select one or more
@@ -249,20 +205,10 @@ class KDEUI_EXPORT KInputDialog : public KDialog
      * @return List of selected items if multiple is true, else currently
      *         selected item as a QStringList
      */
-    static QStringList getItemList( const QString &caption,
-        const QString &label, const QStringList &list=QStringList(),
-        const QStringList &select=QStringList(), bool multiple=false,
-        bool *ok=0, QWidget *parent=0 );
-
-  private:
-    Q_PRIVATE_SLOT(d, void slotEditTextChanged( const QString& ))
-    Q_PRIVATE_SLOT(d, void slotUpdateButtons( const QString& ))
-
-  private:
-    KInputDialogPrivate* const d;
-    friend class KInputDialogPrivate;
-    
-    Q_DISABLE_COPY(KInputDialog)
+    KDEUI_EXPORT QStringList getItemList( const QString &caption,
+                                          const QString &label, const QStringList &list=QStringList(),
+                                          const QStringList &select=QStringList(), bool multiple=false,
+                                          bool *ok=0, QWidget *parent=0 );
 };
 
 #endif // KINPUTDIALOG_H

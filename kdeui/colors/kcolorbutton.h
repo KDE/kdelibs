@@ -89,9 +89,6 @@ Q_SIGNALS:
      */
     void changed( const QColor &newColor );
 
-protected Q_SLOTS:
-    void chooseColor();
-
 protected:
     virtual void paintEvent( QPaintEvent *pe );
     virtual void dragEnterEvent( QDragEnterEvent *);
@@ -103,6 +100,8 @@ protected:
 private:
     class KColorButtonPrivate;
     KColorButtonPrivate * const d;
+
+    Q_PRIVATE_SLOT( d, void _k_chooseColor() )
 };
 
 #endif

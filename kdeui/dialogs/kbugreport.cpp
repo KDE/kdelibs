@@ -64,10 +64,10 @@ class KBugReportPrivate {
 public:
     KBugReportPrivate(KBugReport *q): q(q) {}
   
-    void slotConfigureEmail();
-    void slotSetFrom();
-    void appChanged(int);
-    void updateUrl();
+    void _k_slotConfigureEmail();
+    void _k_slotSetFrom();
+    void _k_appChanged(int);
+    void _k_updateUrl();
 
     KBugReport *q;
     QProcess * m_process;
@@ -148,7 +148,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     d->m_configureEmail = new QPushButton( i18n("Configure Email..."),
                                         parent );
     connect( d->m_configureEmail, SIGNAL( clicked() ), this,
-             SLOT( slotConfigureEmail() ) );
+             SLOT( _k_slotConfigureEmail() ) );
     glay->addWidget( d->m_configureEmail, 0, 2, 3, 1, Qt::AlignTop|Qt::AlignRight );
 
     // To
@@ -182,7 +182,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   for (int c = 0; packages[c]; ++c)
     packageList << QString::fromLatin1(packages[c]);
   d->appcombo->addItems(packageList);
-  connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
+  connect(d->appcombo, SIGNAL(activated(int)), SLOT(_k_appChanged(int)));
   d->appname = d->m_aboutData
                                     ? d->m_aboutData->productName()
                                     : qApp->applicationName() ;
@@ -280,7 +280,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     d->m_lineedit->setLineWrapMode(QTextEdit::WidgetWidth);
     lay->addWidget( d->m_lineedit, 10 /*stretch*/ );
 
-    d->slotSetFrom();
+    d->_k_slotSetFrom();
   } else {
     // Point to the web form
 
@@ -295,7 +295,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     lay->addWidget( label );
     lay->addSpacing(10);
 
-    d->updateUrl();
+    d->_k_updateUrl();
     d->submitBugButton->setText( i18n("&Launch Bug Report Wizard") );
     d->submitBugButton->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     lay->addWidget( d->submitBugButton );
@@ -323,7 +323,7 @@ void KBugReport::setMessageBody(const QString &messageBody)
   d->m_lineedit->setPlainText(messageBody);
 }
 
-void KBugReportPrivate::updateUrl()
+void KBugReportPrivate::_k_updateUrl()
 {
     url = KUrl( "http://bugs.kde.org/wizard.cgi" );
     url.addQueryItem( "os", os );
@@ -334,7 +334,7 @@ void KBugReportPrivate::updateUrl()
     url.addQueryItem( "kbugreport", "1" );
 }
 
-void KBugReportPrivate::appChanged(int i)
+void KBugReportPrivate::_k_appChanged(int i)
 {
     QString appName = appcombo->itemText(i);
     int index = appName.indexOf( '/' );
@@ -352,14 +352,14 @@ void KBugReportPrivate::appChanged(int i)
 
     m_version->setText(m_strVersion);
     if ( submitBugButton )
-        updateUrl();
+        _k_updateUrl();
 }
 
-void KBugReportPrivate::slotConfigureEmail()
+void KBugReportPrivate::_k_slotConfigureEmail()
 {
   if (m_process) return;
   m_process = new QProcess;
-  QObject::connect( m_process, SIGNAL(finished( int, QProcess::ExitStatus )), q, SLOT(slotSetFrom()) );
+  QObject::connect( m_process, SIGNAL(finished( int, QProcess::ExitStatus )), q, SLOT(_k_slotSetFrom()) );
   m_process->start( QString::fromLatin1("kcmshell"), QStringList() << QString::fromLatin1("kcm_useraccount") );
   if ( !m_process->waitForStarted() )
   {
@@ -371,7 +371,7 @@ void KBugReportPrivate::slotConfigureEmail()
   m_configureEmail->setEnabled(false);
 }
 
-void KBugReportPrivate::slotSetFrom()
+void KBugReportPrivate::_k_slotSetFrom()
 {
   delete m_process;
   m_process = 0;

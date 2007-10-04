@@ -27,9 +27,18 @@
 class KAssistantDialog::Private
 {
     public:
+        Private(KAssistantDialog *q)
+            : q(q)
+        {
+        }
+
+        KAssistantDialog *q;
         QHash<KPageWidgetItem*, bool> valid;
         QHash<KPageWidgetItem*, bool> appropriate;
         KPageWidgetModel *pageModel;
+
+        void init();
+        void _k_slotCurrentPageChanged();
 
         QModelIndex getNext(QModelIndex nextIndex)
         {
@@ -56,18 +65,20 @@ class KAssistantDialog::Private
         }
 };
 
-KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WFlags flags) : KPageDialog(parent, flags), d(new Private)
+KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WFlags flags)
+    : KPageDialog(parent, flags), d(new Private(this))
 {
-    init();
+    d->init();
     //workaround to get the page model
     KPageWidget *pagewidget=findChild<KPageWidget*>();
     Q_ASSERT(pagewidget);
     d->pageModel=static_cast<KPageWidgetModel*>(pagewidget->model());
 }
 
-KAssistantDialog::KAssistantDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) : KPageDialog(widget, parent, flags), d(new Private)
+KAssistantDialog::KAssistantDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags)
+    : KPageDialog(widget, parent, flags), d(new Private(this))
 {
-    init();
+    d->init();
     d->pageModel=static_cast<KPageWidgetModel*>(widget->model());
 }
 
@@ -76,23 +87,23 @@ KAssistantDialog::~KAssistantDialog()
     delete d;
 }
 
-void KAssistantDialog::init()
+void KAssistantDialog::Private::init()
 {
-    setButtons(Cancel | User1 | User2 | User3 | Help);
-    setButtonGuiItem( User3, KStandardGuiItem::back(KStandardGuiItem::UseRTL) );
-    setButtonText( User2, i18nc("Opposite to Back", "Next") );
-    setButtonText(User1, i18n("Finish"));
-    setButtonIcon( User2, KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon() );
-    setButtonIcon( User1, KIcon("dialog-apply") );
-    setDefaultButton(User2);
-    showButtonSeparator(true);
-    setFaceType(Plain);
+    q->setButtons(KDialog::Cancel | KDialog::User1 | KDialog::User2 | KDialog::User3 | KDialog::Help);
+    q->setButtonGuiItem( KDialog::User3, KStandardGuiItem::back(KStandardGuiItem::UseRTL) );
+    q->setButtonText( KDialog::User2, i18nc("Opposite to Back", "Next") );
+    q->setButtonText(KDialog::User1, i18n("Finish"));
+    q->setButtonIcon( KDialog::User2, KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon() );
+    q->setButtonIcon( KDialog::User1, KIcon("dialog-apply") );
+    q->setDefaultButton(KDialog::User2);
+    q->showButtonSeparator(true);
+    q->setFaceType(KPageDialog::Plain);
 
-    connect(this, SIGNAL(user3Clicked()), this, SLOT(back()));
-    connect(this, SIGNAL(user2Clicked()), this, SLOT(next()));
-    connect(this, SIGNAL(user1Clicked()), this, SLOT(accept()));
+    q->connect(q, SIGNAL(user3Clicked()), q, SLOT(back()));
+    q->connect(q, SIGNAL(user2Clicked()), q, SLOT(next()));
+    q->connect(q, SIGNAL(user1Clicked()), q, SLOT(accept()));
 
-    connect(this, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)), this, SLOT(slotCurrentPageChanged()));
+    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)), q, SLOT(_k_slotCurrentPageChanged()));
 }
 
 
@@ -114,7 +125,7 @@ void KAssistantDialog::setValid(KPageWidgetItem * page, bool enable)
 {
     d->valid[page]=enable;
     if (page == currentPage())
-        slotCurrentPageChanged();
+        d->_k_slotCurrentPageChanged();
 }
 
 bool KAssistantDialog::isValid(KPageWidgetItem * page) const
@@ -122,22 +133,22 @@ bool KAssistantDialog::isValid(KPageWidgetItem * page) const
     return d->valid.value(page, true);
 }
 
-void KAssistantDialog::slotCurrentPageChanged()
+void KAssistantDialog::Private::_k_slotCurrentPageChanged()
 {
-    QModelIndex currentIndex=d->pageModel->index(currentPage());
+    QModelIndex currentIndex=pageModel->index(q->currentPage());
     //change the caption of the next/finish button
-    QModelIndex nextIndex=d->getNext(currentIndex);
-    enableButton(User1, !nextIndex.isValid() && isValid(currentPage()));
-    enableButton(User2, nextIndex.isValid() && isValid(currentPage()));
-    setDefaultButton(nextIndex.isValid() ? User2 : User1);
+    QModelIndex nextIndex=getNext(currentIndex);
+    q->enableButton(KDialog::User1, !nextIndex.isValid() && q->isValid(q->currentPage()));
+    q->enableButton(KDialog::User2, nextIndex.isValid() && q->isValid(q->currentPage()));
+    q->setDefaultButton(nextIndex.isValid() ? KDialog::User2 : KDialog::User1);
     //enable or disable the back button;
-    nextIndex=d->getPrevious(currentIndex);
-    enableButton(User3, nextIndex.isValid());
+    nextIndex=getPrevious(currentIndex);
+    q->enableButton(KDialog::User3, nextIndex.isValid());
 }
 
 void KAssistantDialog::showEvent(QShowEvent * event)
 {
-    slotCurrentPageChanged(); //called because last time that function was called is when the first page was added, so the next button show "finish"
+    d->_k_slotCurrentPageChanged(); //called because last time that function was called is when the first page was added, so the next button show "finish"
     KPageDialog::showEvent(event);
 }
 

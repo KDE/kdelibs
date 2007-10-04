@@ -121,9 +121,6 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
          */
         virtual void next();
 
-    protected Q_SLOTS:
-        void slotCurrentPageChanged();
-
     protected:
         /**
          * Construct an assistant dialog from a single widget.
@@ -141,9 +138,10 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
     private:
         class Private;
         Private * const d;
-        Q_DISABLE_COPY( KAssistantDialog )
 
-        void init();
+        Q_PRIVATE_SLOT( d, void _k_slotCurrentPageChanged() )
+
+        Q_DISABLE_COPY( KAssistantDialog )
 };
 
 

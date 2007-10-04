@@ -18,504 +18,469 @@
 */
 
 #include "kinputdialog.h"
+#include "kinputdialog_p.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
 #include <QtGui/QDoubleValidator>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 
+#include <kcombobox.h>
+#include <kcompletion.h>
 #include <kguiitem.h>
 #include <klineedit.h>
-#include <knuminput.h>
-#include <kcombobox.h>
 #include <klistwidget.h>
+#include <knuminput.h>
 #include <kstandardguiitem.h>
 #include <ktextedit.h>
-#include <kcompletion.h>
 
-class KInputDialogPrivate
+KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
+                                        const QString &value, QWidget *parent,
+                                        QValidator *validator, const QString &mask )
+    : KDialog(parent),
+      m_label(0), m_lineEdit(0), m_intSpinBox(0),
+      m_doubleSpinBox(0), m_comboBox(0)
 {
-  public:
-    KInputDialogPrivate(KInputDialog *q);
+    setCaption(caption);
+    setButtons(Ok | Cancel);
+    setDefaultButton(Ok);
+    showButtonSeparator(true);
+    setModal(true);
 
-    void slotEditTextChanged( const QString& );
-    void slotUpdateButtons( const QString& );
-
-    KInputDialog *q;
-    QLabel *m_label;
-    KLineEdit *m_lineEdit;
-    KIntSpinBox *m_intSpinBox;
-    KDoubleSpinBox *m_doubleSpinBox;
-    KComboBox *m_comboBox;
-    KListWidget *m_listBox;
-    KTextEdit *m_textEdit;
-};
-
-KInputDialogPrivate::KInputDialogPrivate(KInputDialog *q)
-    : q(q), m_label( 0L ), m_lineEdit( 0L ), m_intSpinBox( 0L ),
-      m_doubleSpinBox( 0L ), m_comboBox( 0L )
-{
-}
-
-KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    const QString &value, QWidget *parent,
-    QValidator *validator, const QString &mask )
-    : KDialog( parent ),
-    d( new KInputDialogPrivate(this) )
-{
-  setCaption( caption );
-  setButtons( Ok | Cancel );
-  setDefaultButton( Ok );
-  showButtonSeparator( true );
-  setModal(true);
-
-  QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame );
+    QWidget *frame = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(frame);
     layout->setMargin(0);
-  layout->setSpacing( spacingHint() );
+    layout->setSpacing(spacingHint());
 
-  d->m_label = new QLabel( label, frame );
-  layout->addWidget( d->m_label );
+    m_label = new QLabel(label, frame);
+    layout->addWidget(m_label);
 
-  d->m_lineEdit = new KLineEdit( value, frame );
-  d->m_lineEdit->setClearButtonShown( true );
-  layout->addWidget( d->m_lineEdit );
+    m_lineEdit = new KLineEdit(value, frame);
+    m_lineEdit->setClearButtonShown(true);
+    layout->addWidget(m_lineEdit);
 
-  d->m_lineEdit->setFocus();
-  d->m_label->setBuddy( d->m_lineEdit );
+    m_lineEdit->setFocus();
+    m_label->setBuddy(m_lineEdit);
 
-  layout->addStretch();
+    layout->addStretch();
 
-  if ( validator )
-    d->m_lineEdit->setValidator( validator );
+    if (validator)
+        m_lineEdit->setValidator(validator);
 
-  if ( !mask.isEmpty() )
-    d->m_lineEdit->setInputMask( mask );
+    if (!mask.isEmpty())
+        m_lineEdit->setInputMask(mask);
 
-  connect( d->m_lineEdit, SIGNAL( textChanged( const QString & ) ),
-      SLOT( slotEditTextChanged( const QString & ) ) );
+    connect(m_lineEdit, SIGNAL(textChanged(const QString&)),
+            SLOT(slotEditTextChanged(const QString&)));
 
-  setMainWidget(frame);
-  d->slotEditTextChanged( value );
-  setMinimumWidth( 350 );
+    setMainWidget(frame);
+    slotEditTextChanged(value);
+    setMinimumWidth(350);
 }
 
-KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    const QString &value, QWidget *parent )
-    : KDialog( parent ),
-    d( new KInputDialogPrivate(this) )
+KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
+                                        const QString &value, QWidget *parent )
+    : KDialog(parent),
+      m_label(0), m_lineEdit(0), m_intSpinBox(0),
+      m_doubleSpinBox(0), m_comboBox(0)
 {
-  setCaption( caption );
-  setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KStandardGuiItem::clear() );
-  setDefaultButton( Ok );
-  showButtonSeparator( false );
-  setModal(true);
-  QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame );
+    setCaption(caption);
+    setButtons(Ok | Cancel | User1);
+    setButtonGuiItem(User1, KStandardGuiItem::clear());
+    setDefaultButton(Ok);
+    showButtonSeparator(false);
+    setModal(true);
+    QWidget *frame = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(frame);
     layout->setMargin(0);
-  layout->setSpacing( spacingHint() );
+    layout->setSpacing(spacingHint());
 
-  d->m_label = new QLabel( label, frame );
-  layout->addWidget( d->m_label );
+    m_label = new QLabel(label, frame);
+    layout->addWidget(m_label);
 
-  d->m_textEdit = new KTextEdit( frame );
-  d->m_textEdit->insertPlainText( value );
-  layout->addWidget( d->m_textEdit, 10 );
+    m_textEdit = new KTextEdit(frame);
+    m_textEdit->insertPlainText(value);
+    layout->addWidget(m_textEdit, 10);
 
-  d->m_textEdit->setFocus();
-  d->m_label->setBuddy( d->m_textEdit );
+    m_textEdit->setFocus();
+    m_label->setBuddy(m_textEdit);
 
-  connect( this, SIGNAL( user1Clicked() ), d->m_textEdit, SLOT( clear() ) );
-  connect( this, SIGNAL( user1Clicked() ), d->m_textEdit, SLOT( setFocus() ) );
-  setMainWidget(frame);
-  setMinimumWidth( 400 );
+    connect(this, SIGNAL(user1Clicked()), m_textEdit, SLOT(clear()));
+    connect(this, SIGNAL(user1Clicked()), m_textEdit, SLOT(setFocus()));
+    setMainWidget(frame);
+    setMinimumWidth(400);
 }
 
-KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    int value, int minValue, int maxValue, int step, int base,
-    QWidget *parent )
-    : KDialog( parent ),
-    d( new KInputDialogPrivate(this) )
+KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
+                                        int value, int minValue, int maxValue, int step, int base,
+                                        QWidget *parent )
+    : KDialog(parent),
+      m_label(0), m_lineEdit(0), m_intSpinBox(0),
+      m_doubleSpinBox(0), m_comboBox(0)
 {
-  setCaption( caption );
-  setButtons( Ok | Cancel );
-  showButtonSeparator( true );
-  setModal(true);
+    setCaption(caption);
+    setButtons(Ok | Cancel);
+    showButtonSeparator(true);
+    setModal(true);
 
-  QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame );
-  layout->setSpacing( spacingHint() );
+    QWidget *frame = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(frame);
+    layout->setSpacing(spacingHint());
 
-  d->m_label = new QLabel( label, frame );
-  layout->addWidget( d->m_label );
+    m_label = new QLabel(label, frame);
+    layout->addWidget(m_label);
 
-  d->m_intSpinBox = new KIntSpinBox( minValue, maxValue, step, value, frame,
-      base);
-  layout->addWidget( d->m_intSpinBox );
+    m_intSpinBox = new KIntSpinBox(minValue, maxValue, step, value, frame, base);
+    layout->addWidget(m_intSpinBox);
 
-  layout->addStretch();
+    layout->addStretch();
     layout->setMargin(0);
 
-  d->m_intSpinBox->setFocus();
-  setMainWidget(frame);
-  setMinimumWidth( 300 );
+    m_intSpinBox->setFocus();
+    setMainWidget(frame);
+    setMinimumWidth(300);
 }
 
-KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    double value, double minValue, double maxValue, double step, int decimals,
-    QWidget *parent )
+KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
+                                        double value, double minValue, double maxValue, double step, int decimals,
+                                        QWidget *parent )
     : KDialog( parent ),
-    d( new KInputDialogPrivate(this) )
+      m_label(0), m_lineEdit(0), m_intSpinBox(0),
+      m_doubleSpinBox(0), m_comboBox(0)
 {
-  setCaption( caption );
-  setButtons( Ok | Cancel );
-  showButtonSeparator( true );
-  setModal(true);
+    setCaption(caption);
+    setButtons(Ok | Cancel);
+    showButtonSeparator(true);
+    setModal(true);
 
-  QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame );
-  layout->setSpacing( spacingHint() );
+    QWidget *frame = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(frame);
+    layout->setSpacing(spacingHint());
 
-  d->m_label = new QLabel( label, frame );
-  layout->addWidget( d->m_label );
+    m_label = new QLabel(label, frame);
+    layout->addWidget(m_label);
 
-  d->m_doubleSpinBox = new KDoubleSpinBox( minValue, maxValue, step, value, frame,
-      decimals);
-  layout->addWidget( d->m_doubleSpinBox );
+    m_doubleSpinBox = new KDoubleSpinBox(minValue, maxValue, step, value, frame, decimals);
+    layout->addWidget(m_doubleSpinBox);
 
-  layout->addStretch();
+    layout->addStretch();
     layout->setMargin(0);
 
-  d->m_doubleSpinBox->setFocus();
-  setMainWidget(frame);
-  setMinimumWidth( 300 );
+    m_doubleSpinBox->setFocus();
+    setMainWidget(frame);
+    setMinimumWidth(300);
 }
 
-KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    const QStringList &list, int current, bool editable, QWidget *parent )
-    : KDialog( parent ),
-    d( new KInputDialogPrivate(this) )
+KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
+                                        const QStringList &list, int current, bool editable, QWidget *parent )
+    : KDialog(parent),
+      m_label(0), m_lineEdit(0), m_intSpinBox(0),
+      m_doubleSpinBox(0), m_comboBox(0)
 {
-  setCaption( caption );
-  setButtons( Ok | Cancel );
-  setDefaultButton( Ok );
-  showButtonSeparator( true );
-  setModal(true);
+    setCaption(caption);
+    setButtons(Ok | Cancel);
+    setDefaultButton(Ok);
+    showButtonSeparator(true);
+    setModal(true);
 
-  QWidget *frame = new QWidget( this );
-  QVBoxLayout *layout = new QVBoxLayout( frame );
-  layout->setSpacing( spacingHint() );
+    QWidget *frame = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(frame);
+    layout->setSpacing(spacingHint());
 
-  d->m_label = new QLabel( label, frame );
-  layout->addWidget( d->m_label );
+    m_label = new QLabel(label, frame);
+    layout->addWidget(m_label);
 
-  if ( editable )
-  {
-    d->m_comboBox = new KComboBox( editable, frame );
-    d->m_lineEdit = new KLineEdit( frame );
-    d->m_lineEdit->setClearButtonShown( true );
-    d->m_comboBox->setLineEdit( d->m_lineEdit );
-    d->m_comboBox->insertItems( 0, list );
-    d->m_comboBox->setCurrentIndex( current );
-    layout->addWidget( d->m_comboBox );
+    if (editable) {
+        m_comboBox = new KComboBox(editable, frame);
+        m_lineEdit = new KLineEdit(frame);
+        m_lineEdit->setClearButtonShown(true);
+        m_comboBox->setLineEdit(m_lineEdit);
+        m_comboBox->insertItems(0, list);
+        m_comboBox->setCurrentIndex(current);
+        layout->addWidget(m_comboBox);
 
-    connect( d->m_comboBox, SIGNAL( editTextChanged( const QString & ) ),
-      SLOT( slotUpdateButtons( const QString & ) ) );
-    d->slotUpdateButtons( d->m_comboBox->currentText() );
-    d->m_comboBox->setFocus();
-  } else {
-    d->m_listBox = new KListWidget( frame );
-    d->m_listBox->addItems( list );
-    d->m_listBox->setCurrentRow(current);
-    layout->addWidget( d->m_listBox, 10 );
-    connect( d->m_listBox, SIGNAL( executed( QListWidgetItem * ) ),
-      SLOT( accept() ) );
-    /*connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
-      SLOT( accept() ) );*/
-
-    d->m_listBox->setFocus();
-  }
-
-  layout->addStretch();
-    layout->setMargin(0);
-  setMainWidget(frame);
-  setMinimumWidth( 320 );
-}
-
-KInputDialog::KInputDialog( const QString &caption, const QString &label,
-    const QStringList &list, const QStringList &select, bool multiple,
-    QWidget *parent )
-    : KDialog( parent ),
-    d( new KInputDialogPrivate(this) )
-{
-  setCaption( caption );
-  setButtons( Ok | Cancel );
-  showButtonSeparator( true );
-  setModal(true);
-
-  QWidget *frame = new QWidget(this);
-  QVBoxLayout *layout = new QVBoxLayout( frame );
-  layout->setSpacing( spacingHint() );
-
-  d->m_label = new QLabel( label, frame );
-  layout->addWidget( d->m_label );
-
-  d->m_listBox = new KListWidget( frame );
-  d->m_listBox->addItems( list );
-  layout->addWidget( d->m_listBox );
-
-  if ( multiple )
-  {
-    d->m_listBox->setSelectionMode( QAbstractItemView::ExtendedSelection );
-
-    for ( QStringList::ConstIterator it=select.begin(); it!=select.end(); ++it )
-    {
-      QList<QListWidgetItem*> matches = d->m_listBox->findItems( *it , Qt::MatchCaseSensitive|Qt::MatchExactly);
-      if ( !matches.isEmpty() )
-        d->m_listBox->setCurrentItem( matches.first() );
+        connect(m_comboBox, SIGNAL(editTextChanged(const QString&)),
+                SLOT(slotUpdateButtons(const QString&)));
+        slotUpdateButtons(m_comboBox->currentText());
+        m_comboBox->setFocus();
+    } else {
+        m_listBox = new KListWidget(frame);
+        m_listBox->addItems(list);
+        m_listBox->setCurrentRow(current);
+        layout->addWidget(m_listBox, 10);
+        connect(m_listBox, SIGNAL(executed(QListWidgetItem*)),
+                SLOT(accept()));
+        m_listBox->setFocus();
     }
-  }
-  else
-  {
-    connect( d->m_listBox, SIGNAL( executed( QListWidgetItem * ) ),
-      SLOT( accept() ) );
-    /*connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
-      SLOT( accept() ) );*/
 
-    if(!select.isEmpty())
-    {
-    	QString text = select.first();
-    
-    	QList<QListWidgetItem*> matches = d->m_listBox->findItems(text,Qt::MatchCaseSensitive|Qt::MatchExactly);
-    	if ( !matches.isEmpty() )
-      		d->m_listBox->setCurrentItem( matches.first() );
-    }
-  }
-
-  d->m_listBox->setFocus();
-
-  layout->addStretch();
+    layout->addStretch();
     layout->setMargin(0);
-  setMainWidget(frame);
-  setMinimumWidth( 320 );
+    setMainWidget(frame);
+    setMinimumWidth(320);
 }
 
-KInputDialog::~KInputDialog()
+KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
+                                        const QStringList &list, const QStringList &select, bool multiple,
+                                        QWidget *parent )
+    : KDialog( parent ),
+      m_label(0), m_lineEdit(0), m_intSpinBox(0),
+      m_doubleSpinBox(0), m_comboBox(0)
 {
-  delete d;
-}
+    setCaption(caption);
+    setButtons(Ok | Cancel);
+    showButtonSeparator(true);
+    setModal(true);
 
+    QWidget *frame = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(frame);
+    layout->setSpacing(spacingHint());
 
-QString KInputDialog::getText( const QString &caption,
-    const QString &label, const QString &value, bool *ok, QWidget *parent,
-    QValidator *validator, const QString &mask,
-    const QString &whatsThis,const QStringList &completionList )
-{
-  KInputDialog dlg( caption, label, value, parent, validator, mask );
+    m_label = new QLabel(label, frame);
+    layout->addWidget(m_label);
 
-  if( !whatsThis.isEmpty() )
-    dlg.lineEdit()->setWhatsThis(whatsThis );
+    m_listBox = new KListWidget(frame);
+    m_listBox->addItems(list);
+    layout->addWidget(m_listBox);
 
-  if (!completionList.isEmpty())
-  {
-    KCompletion *comp=dlg.lineEdit()->completionObject();
-    for(QStringList::const_iterator it=completionList.constBegin();it!=completionList.constEnd();++it)
-      comp->addItem(*it);
-  }
+    if (multiple) {
+        m_listBox->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-  bool _ok = ( dlg.exec() == Accepted );
+        for (QStringList::ConstIterator it = select.begin(); it != select.end(); ++it) {
+            QList<QListWidgetItem*> matches = m_listBox->findItems(*it, Qt::MatchCaseSensitive|Qt::MatchExactly);
+            if (!matches.isEmpty())
+                m_listBox->setCurrentItem(matches.first());
+        }
+    } else {
+        connect(m_listBox, SIGNAL(executed(QListWidgetItem*)), SLOT(accept()));
 
-  if ( ok )
-    *ok = _ok;
+        if (!select.isEmpty()) {
+            QString text = select.first();
 
-  QString result;
-  if ( _ok )
-    result = dlg.lineEdit()->text();
-
-  // A validator may explicitly allow leading and trailing whitespace
-  if ( !validator )
-    result = result.trimmed();
-
-  return result;
-}
-
-QString KInputDialog::getMultiLineText( const QString &caption,
-    const QString &label, const QString &value, bool *ok,
-    QWidget *parent )
-{
-  KInputDialog dlg( caption, label, value, parent );
-
-  bool _ok = ( dlg.exec() == Accepted );
-
-  if ( ok )
-    *ok = _ok;
-
-  QString result;
-  if ( _ok )
-    result = dlg.textEdit()->toPlainText();
-
-  return result;
-}
-
-int KInputDialog::getInteger( const QString &caption, const QString &label,
-    int value, int minValue, int maxValue, int step, int base, bool *ok,
-    QWidget *parent )
-{
-  KInputDialog dlg( caption, label, value, minValue,
-    maxValue, step, base, parent );
-
-  bool _ok = ( dlg.exec() == Accepted );
-
-  if ( ok )
-    *ok = _ok;
-
-  int result=0;
-  if ( _ok )
-    result = dlg.intSpinBox()->value();
-
-  return result;
-}
-
-int KInputDialog::getInteger( const QString &caption, const QString &label,
-    int value, int minValue, int maxValue, int step, bool *ok,
-    QWidget *parent )
-{
-  return getInteger( caption, label, value, minValue, maxValue, step,
-    10, ok, parent );
-}
-
-double KInputDialog::getDouble( const QString &caption, const QString &label,
-    double value, double minValue, double maxValue, double step, int decimals,
-    bool *ok, QWidget *parent )
-{
-  KInputDialog dlg( caption, label, value, minValue,
-    maxValue, step, decimals, parent );
-
-  bool _ok = ( dlg.exec() == Accepted );
-
-  if ( ok )
-    *ok = _ok;
-
-  double result=0;
-  if ( _ok )
-    result = dlg.doubleSpinBox()->value();
-
-  return result;
-}
-
-double KInputDialog::getDouble( const QString &caption, const QString &label,
-    double value, double minValue, double maxValue, int decimals,
-    bool *ok, QWidget *parent )
-{
-  return getDouble( caption, label, value, minValue, maxValue, 0.1, decimals,
-    ok, parent );
-}
-
-QString KInputDialog::getItem( const QString &caption, const QString &label,
-    const QStringList &list, int current, bool editable, bool *ok,
-    QWidget *parent )
-{
-  KInputDialog dlg( caption, label, list, current,
-    editable, parent );
-  if ( !editable)
-  {
-      connect( dlg.listBox(),  SIGNAL(executed( QListWidgetItem *)), &dlg, SLOT( accept()));
-  }
-  bool _ok = ( dlg.exec() == Accepted );
-
-  if ( ok )
-    *ok = _ok;
-
-  QString result;
-  if ( _ok ) {
-    
-    if ( editable )
-      result = dlg.comboBox()->currentText();
-    else
-      result = dlg.listBox()->currentItem()->text();
-  }
-
-  return result;
-}
-
-QStringList KInputDialog::getItemList( const QString &caption,
-    const QString &label, const QStringList &list, const QStringList &select,
-    bool multiple, bool *ok, QWidget *parent )
-{
-  KInputDialog dlg( caption, label, list, select,
-    multiple, parent );
-
-  bool _ok = ( dlg.exec() == Accepted );
-
-  if ( ok )
-    *ok = _ok;
-
-  QStringList result;
-  if ( _ok )
-  {
-    for (int i=0 ; i < dlg.listBox()->count() ; i++) {
-
-      QListWidgetItem* item = dlg.listBox()->item(i);
-
-      if ( item->isSelected() )
-        result.append( item->text() );
+            QList<QListWidgetItem*> matches = m_listBox->findItems(text, Qt::MatchCaseSensitive|Qt::MatchExactly);
+            if (!matches.isEmpty())
+                m_listBox->setCurrentItem(matches.first());
+        }
     }
-  }
 
-  return result;
+    m_listBox->setFocus();
+
+    layout->addStretch();
+    layout->setMargin(0);
+    setMainWidget(frame);
+    setMinimumWidth(320);
 }
 
-void KInputDialogPrivate::slotEditTextChanged( const QString &text )
+KInputDialogHelper::~KInputDialogHelper()
 {
-  bool on;
-  if ( m_lineEdit->validator() ) {
-    QString str = m_lineEdit->text();
-    int index = m_lineEdit->cursorPosition();
-    on = ( m_lineEdit->validator()->validate( str, index )
-      == QValidator::Acceptable );
-  } else {
-    on = !text.trimmed().isEmpty();
-  }
-
-  q->enableButton( KDialog::Ok, on );
 }
 
-void KInputDialogPrivate::slotUpdateButtons( const QString &text )
+void KInputDialogHelper::slotEditTextChanged( const QString &text )
 {
-  q->enableButton( KDialog::Ok, !text.isEmpty() );
+    bool on;
+
+    if (m_lineEdit->validator()) {
+        QString str = m_lineEdit->text();
+        int index = m_lineEdit->cursorPosition();
+        on = (m_lineEdit->validator()->validate(str, index) == QValidator::Acceptable);
+    } else {
+        on = !text.trimmed().isEmpty();
+    }
+
+    enableButton(Ok, on);
 }
 
-KLineEdit *KInputDialog::lineEdit() const
+void KInputDialogHelper::slotUpdateButtons( const QString &text )
 {
-  return d->m_lineEdit;
+    enableButton(Ok, !text.isEmpty());
 }
 
-KIntSpinBox *KInputDialog::intSpinBox() const
+KLineEdit *KInputDialogHelper::lineEdit() const
 {
-  return d->m_intSpinBox;
+    return m_lineEdit;
 }
 
-KDoubleSpinBox *KInputDialog::doubleSpinBox() const
+KIntSpinBox *KInputDialogHelper::intSpinBox() const
 {
-  return d->m_doubleSpinBox;
+    return m_intSpinBox;
 }
 
-KComboBox *KInputDialog::comboBox() const
+KDoubleSpinBox *KInputDialogHelper::doubleSpinBox() const
 {
-  return d->m_comboBox;
+    return m_doubleSpinBox;
 }
 
-KListWidget *KInputDialog::listBox() const
+KComboBox *KInputDialogHelper::comboBox() const
 {
-  return d->m_listBox;
+    return m_comboBox;
 }
 
-KTextEdit *KInputDialog::textEdit() const
+KListWidget *KInputDialogHelper::listBox() const
 {
-  return d->m_textEdit;
+    return m_listBox;
 }
 
-#include "kinputdialog.moc"
+KTextEdit *KInputDialogHelper::textEdit() const
+{
+    return m_textEdit;
+}
+
+
+// KInputDialog namespace
+
+namespace KInputDialog {
+
+QString getText( const QString &caption,
+                 const QString &label, const QString &value, bool *ok, QWidget *parent,
+                 QValidator *validator, const QString &mask,
+                 const QString &whatsThis,const QStringList &completionList )
+{
+    KInputDialogHelper dlg(caption, label, value, parent, validator, mask);
+
+    if (!whatsThis.isEmpty())
+        dlg.lineEdit()->setWhatsThis(whatsThis);
+
+    if (!completionList.isEmpty()) {
+        KCompletion *comp=dlg.lineEdit()->completionObject();
+        for (QStringList::const_iterator it = completionList.constBegin(); it != completionList.constEnd(); ++it)
+            comp->addItem(*it);
+    }
+
+    bool _ok = (dlg.exec() == KDialog::Accepted);
+
+    if (ok)
+        *ok = _ok;
+
+    QString result;
+    if (_ok)
+        result = dlg.lineEdit()->text();
+
+    // A validator may explicitly allow leading and trailing whitespace
+    if (!validator)
+        result = result.trimmed();
+
+    return result;
+}
+
+QString getMultiLineText( const QString &caption,
+                          const QString &label, const QString &value, bool *ok,
+                          QWidget *parent )
+{
+    KInputDialogHelper dlg(caption, label, value, parent);
+
+    bool _ok = (dlg.exec() == KDialog::Accepted);
+
+    if (ok)
+        *ok = _ok;
+
+    QString result;
+    if (_ok)
+        result = dlg.textEdit()->toPlainText();
+
+    return result;
+}
+
+int getInteger( const QString &caption, const QString &label,
+                int value, int minValue, int maxValue, int step, int base, bool *ok,
+                QWidget *parent )
+{
+    KInputDialogHelper dlg(caption, label, value, minValue, maxValue, step, base, parent);
+
+    bool _ok = (dlg.exec() == KDialog::Accepted);
+
+    if (ok)
+        *ok = _ok;
+
+    int result = 0;
+    if (_ok)
+        result = dlg.intSpinBox()->value();
+
+    return result;
+}
+
+int getInteger( const QString &caption, const QString &label,
+                int value, int minValue, int maxValue, int step, bool *ok,
+                QWidget *parent )
+{
+    return getInteger(caption, label, value, minValue, maxValue, step, 10, ok, parent);
+}
+
+double getDouble( const QString &caption, const QString &label,
+                  double value, double minValue, double maxValue, double step, int decimals,
+                  bool *ok, QWidget *parent )
+{
+    KInputDialogHelper dlg(caption, label, value, minValue, maxValue, step, decimals, parent);
+
+    bool _ok = (dlg.exec() == KDialog::Accepted);
+
+    if (ok)
+        *ok = _ok;
+
+    double result = 0;
+    if (_ok)
+        result = dlg.doubleSpinBox()->value();
+
+    return result;
+}
+
+double getDouble( const QString &caption, const QString &label,
+                  double value, double minValue, double maxValue, int decimals,
+                  bool *ok, QWidget *parent )
+{
+    return getDouble(caption, label, value, minValue, maxValue, 0.1, decimals, ok, parent);
+}
+
+QString getItem( const QString &caption, const QString &label,
+                 const QStringList &list, int current, bool editable, bool *ok,
+                 QWidget *parent )
+{
+    KInputDialogHelper dlg(caption, label, list, current, editable, parent);
+
+    if (!editable)
+        dlg.connect(dlg.listBox(), SIGNAL(executed(QListWidgetItem*)), &dlg, SLOT(accept()));
+
+    bool _ok = (dlg.exec() == KDialog::Accepted);
+
+    if (ok)
+        *ok = _ok;
+
+    QString result;
+    if (_ok) {
+        if (editable)
+            result = dlg.comboBox()->currentText();
+        else
+            result = dlg.listBox()->currentItem()->text();
+    }
+
+    return result;
+}
+
+QStringList getItemList( const QString &caption,
+                         const QString &label, const QStringList &list, const QStringList &select,
+                         bool multiple, bool *ok, QWidget *parent )
+{
+    KInputDialogHelper dlg(caption, label, list, select, multiple, parent);
+
+    bool _ok = (dlg.exec() == KDialog::Accepted);
+
+    if (ok)
+        *ok = _ok;
+
+    QStringList result;
+    if (_ok) {
+        for (int i=0 ; i < dlg.listBox()->count() ; i++) {
+
+            QListWidgetItem* item = dlg.listBox()->item(i);
+
+            if (item->isSelected())
+                result.append(item->text());
+        }
+    }
+
+    return result;
+}
+
+}
+
+#include "kinputdialog_p.moc"
 
 /* vim: set ai et sw=2 ts=2
 */
