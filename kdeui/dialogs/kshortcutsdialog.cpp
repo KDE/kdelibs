@@ -162,14 +162,13 @@ public:
 
 	Ui::KShortcutsDialog ui;
 
-	bool allowLetterShortcuts;
-
 	KShortcutsEditor::ActionTypes actionTypes;
 };
 
 
-KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
+KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent, bool allowLetterShortcuts)
  : KExtendableItemDelegate(parent),
+   m_allowLetterShortcuts(allowLetterShortcuts),
    m_editor(0)
 {
 	Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
@@ -197,21 +196,24 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 		return;
 	KShortcutsEditorItem *item = reinterpret_cast<KShortcutsEditorItem *>(
 	                                 model->data(index, ItemPointerRole).toULongLong());
-	if (!item)
-		return;
+	Q_ASSERT(item);  //the delegate is for internal use, and this should never trip
 
 	//TODO: make clicking on the Name column do *exactly* the same thing
 	//as clicking on the LocalPrimary column, i.e. select LocalPrimary
 	int column = index.column();
-	if (column == 0) {
-		index = model->index(index.row(), 1, index.parent());
-		column = 1;
+	if (column == Name) {
+		index = model->index(index.row(), LocalPrimary, index.parent());
+		column = LocalPrimary;
 	}
 
 	if (!isExtended(index)) {
 		//we only want maximum ONE extender open at any time.
 		if (m_editingIndex.isValid()) {
-			item->m_isNameBold = false;
+			QModelIndex idx = model->index(m_editingIndex.row(), Name, m_editingIndex.parent());
+			KShortcutsEditorItem *oldItem = reinterpret_cast<KShortcutsEditorItem *>(
+	                                            model->data(idx, ItemPointerRole).toULongLong());
+			Q_ASSERT(oldItem);
+			oldItem->m_isNameBold = false;
 			contractItem(m_editingIndex);
 		}
 
@@ -221,7 +223,8 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 		if (column >= LocalPrimary && column <= GlobalAlternate) {
 			m_editor = new ShortcutEditWidget(viewport,
 			          model->data(index, DefaultShortcutRole).value<QKeySequence>(),
-			          model->data(index, ShortcutRole).value<QKeySequence>());
+			          model->data(index, ShortcutRole).value<QKeySequence>(),
+			          m_allowLetterShortcuts);
 
 			connect(m_editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
 			        this, SLOT(keySequenceChanged(const QKeySequence &)));
@@ -309,7 +312,7 @@ void TabConnectedWidget::paintEvent(QPaintEvent *e)
 
 
 ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq,
-                                       const QKeySequence &activeSeq)
+                                       const QKeySequence &activeSeq, bool allowLetterShortcuts)
  : TabConnectedWidget(viewport),
    m_defaultKeySequence(defaultSeq),
    m_isUpdating(false)
@@ -324,6 +327,7 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 
 	m_customRadio = new QRadioButton(i18n("Custom:"), this);
 	m_customEditor = new KKeySequenceWidget(this);
+	m_customEditor->setModifierlessAllowed(allowLetterShortcuts);
 
 	if (activeSeq == defaultSeq) {
 		m_defaultRadio->setChecked(true);
@@ -384,7 +388,7 @@ void ShortcutEditWidget::setCustom(const QKeySequence &seq)
 //---------------------------------------------------------------------
 
 KShortcutsEditor::KShortcutsEditor(KActionCollection *collection, QWidget *parent, ActionTypes actionType,
-                         LetterShortcuts allowLetterShortcuts )
+                                   LetterShortcuts allowLetterShortcuts )
 : QWidget( parent )
 , d(new KShortcutsEditorPrivate(this))
 {
@@ -479,7 +483,6 @@ void KShortcutsEditor::undoChanges()
 void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KShortcutsEditor::LetterShortcuts allowLetterShortcuts )
 {
 	actionTypes = types;
-	this->allowLetterShortcuts = (allowLetterShortcuts == KShortcutsEditor::LetterShortcutsAllowed);
 
 	ui.setupUi(q);
 	ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
@@ -496,7 +499,8 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 		ui.list->header()->hideSection(LocalAlternate);
 	}
 
-	KShortcutsEditorDelegate *delegate = new KShortcutsEditorDelegate(ui.list);
+	KShortcutsEditorDelegate *delegate = new KShortcutsEditorDelegate(ui.list,
+	                                       allowLetterShortcuts == KShortcutsEditor::LetterShortcutsAllowed);
 	ui.list->setItemDelegate(delegate);
 	ui.list->setSelectionBehavior(QAbstractItemView::SelectItems);
 	ui.list->setSelectionMode(QAbstractItemView::SingleSelection);
