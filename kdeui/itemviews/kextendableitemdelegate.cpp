@@ -176,7 +176,6 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 	int row = index.row();
 	QModelIndex parentIndex = index.parent();
 
-	//for some reason, caching doesn't work on row 0 (in QTreeView).
 	if (row != cachedRow || cachedStateTick != d->stateTick
 		|| cachedParentIndex != parentIndex) {
 		extender = d->extenders.value(indexOfExtendedColumnInSameRow(index));
