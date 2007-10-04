@@ -517,7 +517,6 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 //QTreeWidget::itemFromIndex is protected because... uhm... well, it just is.
 KShortcutsEditorItem *KShortcutsEditorPrivate::itemFromIndex(const QModelIndex &index)
 {
-	//Code suggested on some Qt mailing list. Works on <= 64 bit systems :)
 	return ui.list->model()->data(index, ItemPointerRole).value<KShortcutsEditorItem *>();
 }
 
