@@ -217,19 +217,6 @@ public:
    */
   static QByteArray lmv2Response( const QByteArray &hash,
     const QByteArray &clientData, const unsigned char *challenge );
-
-  /**
-   * Extracts a string field from an NTLM structure.
-   */
-  static QString getString( const QByteArray &buf, const SecBuf &secbuf, bool unicode );
-  /**
-   * Extracts a byte array from an NTLM structure.
-   */
-  static QByteArray getBuf( const QByteArray &buf, const SecBuf &secbuf );
-
-  static QByteArray createBlob( const QByteArray &targetinfo );
-
-  static QByteArray hmacMD5( const QByteArray &data, const QByteArray &key );
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KNTLM::AuthFlags )

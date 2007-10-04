@@ -37,11 +37,15 @@
 static QByteArray QString2UnicodeLE( const QString &target );
 static QString UnicodeLE2QString( const QChar* data, uint len );
 
+static QByteArray getBuf( const QByteArray &buf, const KNTLM::SecBuf &secbuf );
 static void addBuf( QByteArray &buf, KNTLM::SecBuf &secbuf, const QByteArray &data );
+static QString getString( const QByteArray &buf, const KNTLM::SecBuf &secbuf, bool unicode );
 static void addString( QByteArray &buf, KNTLM::SecBuf &secbuf, const QString &str, bool unicode = false );
 static void convertKey( unsigned char *key_56, void* ks );
+static QByteArray createBlob( const QByteArray &targetinfo );
+static QByteArray hmacMD5( const QByteArray &data, const QByteArray &key );
 
-QString KNTLM::getString( const QByteArray &buf, const SecBuf &secbuf, bool unicode )
+QString getString( const QByteArray &buf, const KNTLM::SecBuf &secbuf, bool unicode )
 {
   //watch for buffer overflows
   quint32 offset;
@@ -62,7 +66,7 @@ QString KNTLM::getString( const QByteArray &buf, const SecBuf &secbuf, bool unic
   return str;
 }
 
-QByteArray KNTLM::getBuf( const QByteArray &buf, const SecBuf &secbuf )
+QByteArray getBuf( const QByteArray &buf, const KNTLM::SecBuf &secbuf )
 {
   quint32 offset;
   quint16 len;
@@ -295,11 +299,11 @@ QByteArray KNTLM::lmv2Response( const QByteArray &hash,
   return mac;
 }
 
-QByteArray KNTLM::createBlob( const QByteArray &targetinfo )
+QByteArray createBlob( const QByteArray &targetinfo )
 {
-  QByteArray blob( sizeof(Blob) + 4 + targetinfo.size(), 0 );
+  QByteArray blob( sizeof(KNTLM::Blob) + 4 + targetinfo.size(), 0 );
   
-  Blob *bl = (Blob *) blob.data();
+  KNTLM::Blob *bl = (KNTLM::Blob *) blob.data();
   bl->signature = qToBigEndian( (quint32) 0x01010000 );
   quint64 now = QDateTime::currentDateTime().toTime_t();
   now += (quint64)3600*(quint64)24*(quint64)134774;
@@ -308,11 +312,11 @@ QByteArray KNTLM::createBlob( const QByteArray &targetinfo )
   for ( uint i = 0; i<8; i++ ) {
     bl->challenge[i] = KRandom::random() % 0xff;
   }
-  memcpy( blob.data() + sizeof(Blob), targetinfo.data(), targetinfo.size() );
+  memcpy( blob.data() + sizeof(KNTLM::Blob), targetinfo.data(), targetinfo.size() );
   return blob;
 }
 
-QByteArray KNTLM::hmacMD5( const QByteArray &data, const QByteArray &key )
+QByteArray hmacMD5( const QByteArray &data, const QByteArray &key )
 {
   quint8 ipad[64], opad[64];
   QByteArray ret;
