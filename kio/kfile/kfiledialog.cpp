@@ -69,8 +69,13 @@ static KAbstractFileModule* fileModule()
 class KFileDialogPrivate
 {
 public:
-    KFileDialogPrivate() : w(0) {}
+    KFileDialogPrivate() : w(0)
+    {
+        cfgGroup = KConfigGroup(KGlobal::config(), ConfigGroup);
+    }
+
     KAbstractFileWidget* w;
+    KConfigGroup cfgGroup;
 };
 
 KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
@@ -117,13 +122,13 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
     if (customWidget)
      d->w->setCustomWidget(customWidget);
 
-    KConfigGroup cfgGroup(KGlobal::config(), ConfigGroup);
-    restoreDialogSize(cfgGroup);
+    restoreDialogSize(d->cfgGroup);
 }
 
 
 KFileDialog::~KFileDialog()
 {
+    saveDialogSize(d->cfgGroup);
     hide();
     delete d;
 }
