@@ -417,6 +417,13 @@ void KConfigTest::testDefaultGroup()
 #endif
 
     defaultGroup.deleteGroup();
+    sc.sync();
+
+    // Test if deleteGroup worked
+#ifdef Q_OS_UNIX
+    lines = readLines();
+    QVERIFY(lines.first() != QByteArray("TestKey=defaultGroup\n"));
+#endif
 }
 
 void KConfigTest::testEmptyGroup()
@@ -433,9 +440,17 @@ void KConfigTest::testEmptyGroup()
 #ifdef Q_OS_UNIX
     QList<QByteArray> lines = readLines();
     QVERIFY(!lines.contains("[]")); // there's no support for the [] group, in fact.
+    QCOMPARE(lines.first(), QByteArray("TestKey=emptyGroup\n"));
 #endif
 
     emptyGroup.deleteGroup();
+    sc.sync();
+
+    // Test if deleteGroup worked
+#ifdef Q_OS_UNIX
+    lines = readLines();
+    QVERIFY(lines.first() != QByteArray("TestKey=defaultGroup\n"));
+#endif
 }
 
 
