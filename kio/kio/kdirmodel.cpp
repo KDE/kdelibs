@@ -700,7 +700,7 @@ void KDirModel::fetchMore( const QModelIndex & parent )
 
     //const KUrl url = parentItem.url();
     //kDebug(7008) << "listing" << url;
-    d->m_dirLister->openUrl(parentItem.url(), true, true);
+    d->m_dirLister->openUrl(parentItem.url(), KDirLister::Keep | KDirLister::Reload);
 }
 
 bool KDirModel::dropMimeData( const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent )

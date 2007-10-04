@@ -101,21 +101,21 @@ KDirListerTest::~KDirListerTest()
 void KDirListerTest::startHome()
 {
   KUrl home( QDir::homePath() );
-  lister->openUrl( home, false, false );
+  lister->openUrl( home, KDirLister::NoFlags );
 //  lister->stop();
 }
 
 void KDirListerTest::startRoot()
 {
   KUrl root( QDir::rootPath() );
-  lister->openUrl( root, true, true );
+  lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
 // lister->stop( root );
 }
 
 void KDirListerTest::startTar()
 {
   KUrl root( QDir::homePath()+"/aclocal_1.tgz" );
-  lister->openUrl( root, true, true );
+  lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
 // lister->stop( root );
 }
 
@@ -124,21 +124,21 @@ void KDirListerTest::test()
   KUrl home( QDir::homePath() );
   KUrl root( QDir::rootPath() );
 #ifdef Q_WS_WIN
-  lister->openUrl( home, true, false );
-  lister->openUrl( root, true, true );
+  lister->openUrl( home, KDirLister::Keep );
+  lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
 #else
-/*  lister->openUrl( home, true, false );
-  lister->openUrl( root, true, true );
-  lister->openUrl( KUrl("file:/etc"), true, true );
-  lister->openUrl( root, true, true );
-  lister->openUrl( KUrl("file:/dev"), true, true );
-  lister->openUrl( KUrl("file:/tmp"), true, true );
-  lister->openUrl( KUrl("file:/usr/include"), true, true );
+/*  lister->openUrl( home, KDirLister::Keep );
+  lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( KUrl("file:/etc"), KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( KUrl("file:/dev"), KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( KUrl("file:/tmp"), KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( KUrl("file:/usr/include"), KDirLister::Keep | KDirLister::Reload );
   lister->updateDirectory( KUrl("file:/usr/include") );
   lister->updateDirectory( KUrl("file:/usr/include") );
-  lister->openUrl( KUrl("file:/usr/"), true, true );
+  lister->openUrl( KUrl("file:/usr/"), KDirLister::Keep | KDirLister::Reload );
 */
-  lister->openUrl( KUrl("file:/dev"), true, true );
+  lister->openUrl( KUrl("file:/dev"), KDirLister::Keep | KDirLister::Reload );
 #endif
 }
 

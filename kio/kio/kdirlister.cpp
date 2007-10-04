@@ -1701,15 +1701,15 @@ KDirLister::~KDirLister()
     delete d;
 }
 
-bool KDirLister::openUrl( const KUrl& _url, bool _keep, bool _reload )
+bool KDirLister::openUrl( const KUrl& _url, OpenUrlFlags _flags )
 {
     // emit the current changes made to avoid an inconsistent treeview
-    if ( d->changes != NONE && _keep )
+    if ( d->changes != NONE && ( _flags & Keep ) )
         emitChanges();
 
     d->changes = NONE;
 
-    return kDirListerCache->listDir( this, _url, _keep, _reload );
+    return kDirListerCache->listDir( this, _url, _flags & Keep, _flags & Reload );
 }
 
 void KDirLister::stop()

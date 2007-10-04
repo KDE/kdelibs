@@ -81,7 +81,7 @@ KFileTreeView::KFileTreeView(QWidget *parent)
     setModel(d->mModel);
     setItemDelegate(new KFileItemDelegate(this));
 
-    d->mModel->dirLister()->openUrl(KUrl(QDir::root().absolutePath()), true);
+    d->mModel->dirLister()->openUrl(KUrl(QDir::root().absolutePath()), KDirLister::Keep);
 
     connect(this, SIGNAL(activated(const QModelIndex&)),
             this, SLOT(_k_activated(const QModelIndex&)));

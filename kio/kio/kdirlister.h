@@ -68,6 +68,23 @@ class KIO_EXPORT KDirLister : public QObject
   Q_PROPERTY( QStringList mimeFilter READ mimeFilters WRITE setMimeFilter RESET clearMimeFilter )
 
 public:
+  enum OpenUrlFlag
+  {
+    NoFlags = 0x0,   ///< No additional flags specified.
+
+    Keep = 0x1,      ///< Previous directories aren't forgotten
+                     ///< (they are still watched by kdirwatch and their items
+                     ///< are kept for this KDirLister). This is useful for e.g.
+                     ///< a treeview.
+
+    Reload = 0x2     ///< Indicates whether to use the cache or to reread
+                     ///< the directory from the disk.
+                     ///< Use only when opening a dir not yet listed by this lister
+                     ///< without using the cache. Otherwise use updateDirectory.
+  };
+
+  Q_DECLARE_FLAGS(OpenUrlFlags, OpenUrlFlag)
+
   /**
    * Create a directory lister.
    */
@@ -90,18 +107,11 @@ public:
    * (and isFinished() returns true).
    *
    * @param _url     the directory URL.
-   * @param _keep    if true the previous directories aren't forgotten
-   *                 (they are still watched by kdirwatch and their items
-   *                 are kept for this KDirLister). This is useful for e.g.
-   *                 a treeview.
-   * @param _reload  indicates wether to use the cache (false) or to reread the
-   *                 directory from the disk.
-   *                 Use only when opening a dir not yet listed by this lister
-   *                 without using the cache. Otherwise use updateDirectory.
+   * @param _flags   whether to keep previous directories, and whether to reload, see OpenUrlFlags
    * @return true    if successful,
    *         false   otherwise (e.g. invalid @p _url)
    */
-  virtual bool openUrl( const KUrl& _url, bool _keep = false, bool _reload = false );
+  virtual bool openUrl( const KUrl& _url, OpenUrlFlags _flags = NoFlags );
 
   /**
    * Stop listing all directories currently being listed.
@@ -609,6 +619,8 @@ private:
   Q_PRIVATE_SLOT( d, void _k_slotProcessedSize( KJob*, qulonglong ) )
   Q_PRIVATE_SLOT( d, void _k_slotSpeed( KJob*, unsigned long ) )
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KDirLister::OpenUrlFlags)
 
 #endif
 

@@ -64,7 +64,7 @@ void KDirModelTest::fillModel( bool reload )
 {
     const QString path = m_tempDir.name();
     KDirLister* dirLister = m_dirModel.dirLister();
-    dirLister->openUrl(KUrl(path), false, reload);
+    dirLister->openUrl(KUrl(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
@@ -367,7 +367,7 @@ void KDirModelTest::testExpandToUrl()
     for (int i=0; i < tests.count(); ++i ) {
         KDirModel dirModelForExpand;
         KDirLister* dirListerForExpand = dirModelForExpand.dirLister();
-        dirListerForExpand->openUrl(KUrl(path), false, false); // it gets them from the cache, so this is sync
+        dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // it gets them from the cache, so this is sync
         QSignalSpy spyExpand(&dirModelForExpand, SIGNAL(expand(QModelIndex)));
         KUrl url(tests[i].path);
         dirModelForExpand.expandToUrl(url);

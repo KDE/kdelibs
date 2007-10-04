@@ -522,7 +522,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
                     {
                         KUrl recurseUrl = kfi.url();
                         kDebug(250) << "Starting to recurse NOW " << recurseUrl.prettyUrl();
-                        openUrl( recurseUrl, true );
+                        openUrl( recurseUrl, KDirLister::Keep );
                     }
                 }
                 nextChild = static_cast<K3FileTreeViewItem*>(nextChild->nextSibling());
@@ -555,7 +555,7 @@ bool KFileTreeBranch::populate( const KUrl& url,  K3FileTreeViewItem *currItem )
     if( ! currItem->alreadyListed() )
     {
         /* start the lister */
-        ret = openUrl( url, true );
+        ret = openUrl( url, KDirLister::Keep );
     }
     else
     {

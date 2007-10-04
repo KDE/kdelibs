@@ -106,6 +106,8 @@ KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
     setSpacing(KDialog::spacingHint());
     setMovement(QListView::Static);
     setDragDropMode(QListView::DragOnly);
+    setVerticalScrollMode(QListView::ScrollPerPixel);
+    setHorizontalScrollMode(QListView::ScrollPerPixel);
 
     m_viewOptions = QListView::viewOptions();
     m_viewOptions.showDecorationSelected = true;
@@ -146,8 +148,6 @@ void KDirOperatorIconView::mousePressEvent(QMouseEvent *event)
     QListView::mousePressEvent(event);
 }
 
-
-
 class KDirOperator::Private
 {
 public:
@@ -157,7 +157,7 @@ public:
     // private methods
     bool checkPreviewInternal() const;
     void checkPath(const QString &txt, bool takeFiles = false);
-    bool openUrl(const KUrl &url, bool keep = false, bool reload = false);
+    bool openUrl(const KUrl &url, KDirLister::OpenUrlFlags flags = KDirLister::NoFlags);
     int sortColumn() const;
     Qt::SortOrder sortOrder() const;
     void triggerSorting();
@@ -917,13 +917,13 @@ void KDirOperator::updateDir()
 void KDirOperator::rereadDir()
 {
     pathChanged();
-    d->openUrl(d->currUrl, false, true);
+    d->openUrl(d->currUrl, KDirLister::Reload);
 }
 
 
-bool KDirOperator::Private::openUrl(const KUrl& url, bool keep, bool reload)
+bool KDirOperator::Private::openUrl(const KUrl& url, KDirLister::OpenUrlFlags flags)
 {
-    bool result = dirLister->openUrl(url, keep, reload);
+    bool result = dirLister->openUrl(url, flags);
     if (!result)   // in that case, neither completed() nor canceled() will be emitted by KDL
         _k_slotCanceled();
 

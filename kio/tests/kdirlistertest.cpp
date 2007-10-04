@@ -66,7 +66,7 @@ void KDirListerTest::testOpenUrl()
     QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     // The call to openUrl itself, emits started
-    m_dirLister.openUrl(KUrl(path), false, false /*no reload*/);
+    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
 
     QCOMPARE(spyStarted.count(), 1);
     QCOMPARE(spyCompleted.count(), 0);
@@ -107,7 +107,7 @@ void KDirListerTest::testOpenUrlFromCache()
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     // The call to openUrl itself, emits started, the items, and completed, since it's all in the cache
     // ### Maybe we should get rid of this behavior difference...
-    m_dirLister.openUrl(KUrl(path), false, false /*no reload*/); // TODO turn those bools into an enum
+    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags); // TODO turn those bools into an enum
 
     QCOMPARE(spyStarted.count(), 1);
     QCOMPARE(spyCompleted.count(), 1);
@@ -130,7 +130,7 @@ void KDirListerTest::testOpenUrlFromCache()
         QSignalSpy spyCanceled(&secondDirLister, SIGNAL(canceled()));
         QSignalSpy spyCanceledKUrl(&secondDirLister, SIGNAL(canceled(KUrl)));
         connect(&secondDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
-        secondDirLister.openUrl(KUrl(path), false, false /*no reload*/); // TODO turn those bools into an enum
+        secondDirLister.openUrl(KUrl(path), KDirLister::NoFlags); // TODO turn those bools into an enum
         QCOMPARE(spyStarted.count(), 1);
         QCOMPARE(spyCompleted.count(), 1);
         QCOMPARE(spyCompletedKUrl.count(), 1);
@@ -249,7 +249,7 @@ void KDirListerTest::testDeleteItem()
     // OK now kdirlister told us the file was deleted, let's try a re-listing
     m_items.clear();
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
-    m_dirLister.openUrl(KUrl(path), false, false /*no reload*/);
+    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
     QCOMPARE(m_items.count(), 4);
 
     disconnect(&m_dirLister, 0, this, 0);
@@ -267,7 +267,7 @@ void KDirListerTest::testOpenAndStop()
     QSignalSpy spyCanceled(&m_dirLister, SIGNAL(canceled()));
     QSignalSpy spyCanceledKUrl(&m_dirLister, SIGNAL(canceled(KUrl)));
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
-    m_dirLister.openUrl(KUrl(path), false, false /*no reload*/);
+    m_dirLister.openUrl(KUrl(path), KDirLister::NoFlags);
     m_dirLister.stop(); // we should also test stop(KUrl(path))...
 
     QCOMPARE(spyStarted.count(), 1); // The call to openUrl itself, emits started

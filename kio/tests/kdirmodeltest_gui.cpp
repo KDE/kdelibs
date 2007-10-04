@@ -112,7 +112,7 @@ int main (int argc, char **argv)
 
   for(int i = 0; i < args->count(); i++) {
       kDebug() << "Adding: " << args->url(i);
-      dirmodel->dirLister()->openUrl( args->url(i), true /*keep*/ );
+      dirmodel->dirLister()->openUrl( args->url(i), KDirLister::Keep );
   }
 
   return a.exec();
