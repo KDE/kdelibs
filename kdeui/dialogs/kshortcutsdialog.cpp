@@ -210,8 +210,10 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 
 	if (!isExtended(index)) {
 		//we only want maximum ONE extender open at any time.
-		if (m_editingIndex.isValid())
+		if (m_editingIndex.isValid()) {
+			item->m_isNameBold = false;
 			contractItem(m_editingIndex);
+		}
 
 		m_editingIndex = index;
 		QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
