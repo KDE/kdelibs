@@ -2,7 +2,6 @@ project(konto_test)
 
 include_directories(
   ${nepomukcore_SOURCE_DIR}/ontology
-  ${nepomukmiddleware_SOURCE_DIR}
 )
 
 include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_SOURCE_DIR}/konto )
