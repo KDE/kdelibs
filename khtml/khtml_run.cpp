@@ -48,28 +48,28 @@ KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
 
 void KHTMLRun::foundMimeType( const QString &_type )
 {
-    Q_ASSERT(!m_bFinished);
+    Q_ASSERT(!hasFinished());
     QString mimeType = _type; // this ref comes from the job, we lose it when using KIO again
-    if ( static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, m_strURL, mimeType ) )
-        m_bFinished = true;
+    if ( static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, KRun::url(), mimeType ) )
+        setFinished( true );
     else {
-        if ( m_bFinished ) // abort was called (this happens with the activex fallback for instance)
+        if ( hasFinished() ) // abort was called (this happens with the activex fallback for instance)
             return;
         // Couldn't embed -> call BrowserRun::handleNonEmbeddable()
         KParts::BrowserRun::NonEmbeddableResult res = handleNonEmbeddable( mimeType );
         if ( res == KParts::BrowserRun::Delayed )
             return;
-        m_bFinished = ( res == KParts::BrowserRun::Handled );
-        if ( m_bFinished ) { // saved or canceled -> flag completed
+        setFinished( res == KParts::BrowserRun::Handled );
+        if ( hasFinished() ) { // saved or canceled -> flag completed
             m_child->m_bCompleted = true;
             static_cast<KHTMLPart *>(part())->checkCompleted();
         }
     }
 
-    if ( m_bFinished )
+    if ( hasFinished() )
     {
-        m_timer.setSingleShot( true );
-        m_timer.start( 0 );
+        timer().setSingleShot( true );
+        timer().start( 0 );
         return;
     }
 

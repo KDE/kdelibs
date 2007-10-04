@@ -73,8 +73,16 @@
 class KRun::KRunPrivate
 {
 public:
-    KRunPrivate() { m_showingError = false; }
+    KRunPrivate(KRun *parent)
+      : q(parent),
+        m_showingError(false)
+    {
+    }
 
+    void init (const KUrl& url, QWidget* window, mode_t mode,
+               bool isLocalFile, bool showProgressInfo, const QByteArray& asn);
+
+    KRun *q;
     bool m_showingError;
     bool m_runExecutables;
 
@@ -84,6 +92,29 @@ public:
     QString m_suggestedFileName;
     QPointer <QWidget> m_window;
     QByteArray m_asn;
+    KUrl m_strURL;
+    bool m_bFault;
+    bool m_bAutoDelete;
+    bool m_bProgressInfo;
+    bool m_bFinished;
+    KIO::Job * m_job;
+    QTimer m_timer;
+
+    /**
+     * Used to indicate that the next action is to scan the file.
+     * This action is invoked from slotTimeout.
+     */
+    bool m_bScanFile;
+    bool m_bIsDirectory;
+
+    /**
+     * Used to indicate that the next action is to initialize.
+     * This action is invoked from slotTimeout
+     */
+    bool m_bInit;
+
+    bool m_bIsLocalFile;
+    mode_t m_mode;
 };
 
 bool KRun::isExecutableFile( const KUrl& url, const QString &mimetype )
@@ -753,15 +784,15 @@ bool KRun::runCommand( const QString& cmd, const QString &execName, const QStrin
 
 KRun::KRun( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
             bool showProgressInfo, const QByteArray& asn )
-     : m_timer(), d(new KRunPrivate)
+     : d(new KRunPrivate(this))
 {
-  m_timer.setObjectName( "KRun::timer" );
-  m_timer.setSingleShot( true );
-  init (url, window, mode, isLocalFile, showProgressInfo, asn );
+  d->m_timer.setObjectName( "KRun::timer" );
+  d->m_timer.setSingleShot( true );
+  d->init (url, window, mode, isLocalFile, showProgressInfo, asn );
 }
 
-void KRun::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
-                  bool showProgressInfo, const QByteArray& asn )
+void KRun::KRunPrivate::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
+                               bool showProgressInfo, const QByteArray& asn )
 {
   m_bFault = false;
   m_bAutoDelete = true;
@@ -773,18 +804,18 @@ void KRun::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFil
   m_bIsDirectory = false;
   m_bIsLocalFile = isLocalFile;
   m_mode = mode;
-  d->m_runExecutables = true;
-  d->m_window = window;
-  d->m_asn = asn;
-  setEnableExternalBrowser(true);
+  m_runExecutables = true;
+  m_window = window;
+  m_asn = asn;
+  q->setEnableExternalBrowser(true);
 
   // Start the timer. This means we will return to the event
   // loop and do initialization afterwards.
   // Reason: We must complete the constructor before we do anything else.
   m_bInit = true;
-  connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
+  q->connect( &m_timer, SIGNAL( timeout() ), q, SLOT( slotTimeout() ) );
   m_timer.start( 0 );
-  kDebug(7010) << " new KRun " << this << " " << url.prettyUrl() << " timer=" << &m_timer;
+  kDebug(7010) << " new KRun " << q << " " << url.prettyUrl() << " timer=" << &m_timer;
 
   KGlobal::ref();
 }
@@ -792,73 +823,73 @@ void KRun::init ( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFil
 void KRun::init()
 {
   kDebug(7010) << "INIT called";
-  if ( !m_strURL.isValid() )
+  if ( !d->m_strURL.isValid() )
   {
     d->m_showingError = true;
-    KMessageBoxWrapper::error( d->m_window, i18n( "Malformed URL\n%1" ,  m_strURL.url() ) );
+    KMessageBoxWrapper::error( d->m_window, i18n( "Malformed URL\n%1", d->m_strURL.url() ) );
     d->m_showingError = false;
-    m_bFault = true;
-    m_bFinished = true;
-    m_timer.start( 0 );
+    d->m_bFault = true;
+    d->m_bFinished = true;
+    d->m_timer.start( 0 );
     return;
   }
-  if ( !KAuthorized::authorizeUrlAction( "open", KUrl(), m_strURL))
+  if ( !KAuthorized::authorizeUrlAction( "open", KUrl(), d->m_strURL) )
   {
-    QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, m_strURL.prettyUrl());
+    QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.prettyUrl());
     d->m_showingError = true;
     KMessageBoxWrapper::error( d->m_window, msg );
     d->m_showingError = false;
-    m_bFault = true;
-    m_bFinished = true;
-    m_timer.start( 0 );
+    d->m_bFault = true;
+    d->m_bFinished = true;
+    d->m_timer.start( 0 );
     return;
   }
 
-  if ( !m_bIsLocalFile && m_strURL.isLocalFile() )
-    m_bIsLocalFile = true;
+  if ( !d->m_bIsLocalFile && d->m_strURL.isLocalFile() )
+    d->m_bIsLocalFile = true;
 
   QString exec;
-  if (m_strURL.protocol().startsWith("http"))
+  if (d->m_strURL.protocol().startsWith("http"))
   {
     exec = d->m_externalBrowser;
   }
 
-  if ( m_bIsLocalFile )
+  if ( d->m_bIsLocalFile )
   {
-    if ( m_mode == 0 )
+    if ( d->m_mode == 0 )
     {
       KDE_struct_stat buff;
-      if ( KDE_stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
+      if ( KDE_stat( QFile::encodeName(d->m_strURL.path()), &buff ) == -1 )
       {
         d->m_showingError = true;
-        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ,  Qt::escape(m_strURL.prettyUrl()) ) );
+        KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ,  Qt::escape(d->m_strURL.prettyUrl()) ) );
         d->m_showingError = false;
-        m_bFault = true;
-        m_bFinished = true;
-        m_timer.start( 0 );
+        d->m_bFault = true;
+        d->m_bFinished = true;
+        d->m_timer.start( 0 );
         return;
       }
-      m_mode = buff.st_mode;
+      d->m_mode = buff.st_mode;
     }
 
-    KMimeType::Ptr mime = KMimeType::findByUrl( m_strURL, m_mode, m_bIsLocalFile );
+    KMimeType::Ptr mime = KMimeType::findByUrl( d->m_strURL, d->m_mode, d->m_bIsLocalFile );
     assert( mime );
     kDebug(7010) << "MIME TYPE is " << mime->name();
     foundMimeType( mime->name() );
     return;
   }
-  else if ( !exec.isEmpty() || KProtocolInfo::isHelperProtocol( m_strURL ) ) {
+  else if ( !exec.isEmpty() || KProtocolInfo::isHelperProtocol( d->m_strURL ) ) {
     kDebug(7010) << "Helper protocol";
 
     bool ok = false;
     KUrl::List urls;
-    urls.append( m_strURL );
+    urls.append( d->m_strURL );
     if (exec.isEmpty())
     {
-       exec = KProtocolInfo::exec( m_strURL.protocol() );
+       exec = KProtocolInfo::exec( d->m_strURL.protocol() );
        if (exec.isEmpty())
        {
-          foundMimeType(KProtocolManager::defaultMimetype(m_strURL));
+          foundMimeType(KProtocolManager::defaultMimetype(d->m_strURL));
           return;
        }
        run( exec, urls, d->m_window, false, QString(), d->m_asn );
@@ -883,15 +914,15 @@ void KRun::init()
 
     if (ok)
     {
-       m_bFinished = true;
+       d->m_bFinished = true;
        // will emit the error and autodelete this
-       m_timer.start( 0 );
+       d->m_timer.start( 0 );
        return;
     }
   }
 
   // Did we already get the information that it is a directory ?
-  if ( S_ISDIR( m_mode ) )
+  if ( S_ISDIR( d->m_mode ) )
   {
     foundMimeType( "inode/directory" );
     return;
@@ -899,7 +930,7 @@ void KRun::init()
 
   // Let's see whether it is a directory
 
-  if ( !KProtocolManager::supportsListing( m_strURL ) )
+  if ( !KProtocolManager::supportsListing( d->m_strURL ) )
   {
     //kDebug(7010) << "Protocol has no support for listing";
     // No support for listing => it can't be a directory (example: http)
@@ -910,18 +941,18 @@ void KRun::init()
   kDebug(7010) << "Testing directory (stating)";
 
   // It may be a directory or a file, let's stat
-  KIO::StatJob *job = KIO::stat( m_strURL, KIO::StatJob::SourceSide, 0 /* no details */, m_bProgressInfo );
+  KIO::StatJob *job = KIO::stat( d->m_strURL, KIO::StatJob::SourceSide, 0 /* no details */, d->m_bProgressInfo );
   job->ui()->setWindow (d->m_window);
   connect( job, SIGNAL( result( KJob * ) ),
            this, SLOT( slotStatResult( KJob * ) ) );
-  m_job = job;
-  kDebug(7010) << " Job " << job << " is about stating " << m_strURL.url();
+  d->m_job = job;
+  kDebug(7010) << " Job " << job << " is about stating " << d->m_strURL.url();
 }
 
 KRun::~KRun()
 {
   kDebug(7010) << "KRun::~KRun() " << this;
-  m_timer.stop();
+  d->m_timer.stop();
   killJob();
   KGlobal::deref();
   kDebug(7010) << "KRun::~KRun() done " << this;
@@ -930,14 +961,14 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
-  kDebug(7010) << "###### KRun::scanFile " << m_strURL.url();
+  kDebug(7010) << "###### KRun::scanFile " << d->m_strURL.url();
   // First, let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
-  if ( m_strURL.query().isEmpty() )
+  if ( d->m_strURL.query().isEmpty() )
   {
-    KMimeType::Ptr mime = KMimeType::findByUrl( m_strURL );
+    KMimeType::Ptr mime = KMimeType::findByUrl( d->m_strURL );
     assert( mime );
-    if ( mime->name() != "application/octet-stream" || m_bIsLocalFile )
+    if ( mime->name() != "application/octet-stream" || d->m_bIsLocalFile )
     {
       kDebug(7010) << "Scanfile: MIME TYPE is " << mime->name();
       foundMimeType( mime->name() );
@@ -949,59 +980,59 @@ void KRun::scanFile()
   // We need to apply the 'KIO' method, i.e. either asking the server or
   // getting some data out of the file, to know what mimetype it is.
 
-  if ( !KProtocolManager::supportsReading( m_strURL ) )
+  if ( !KProtocolManager::supportsReading( d->m_strURL ) )
   {
     kError(7010) << "#### NO SUPPORT FOR READING!" << endl;
-    m_bFault = true;
-    m_bFinished = true;
-    m_timer.start( 0 );
+    d->m_bFault = true;
+    d->m_bFinished = true;
+    d->m_timer.start( 0 );
     return;
   }
-  kDebug(7010) << this << " Scanning file " << m_strURL.url();
+  kDebug(7010) << this << " Scanning file " << d->m_strURL.url();
 
-  KIO::TransferJob *job = KIO::get( m_strURL, false /*reload*/, m_bProgressInfo );
+  KIO::TransferJob *job = KIO::get( d->m_strURL, false /*reload*/, d->m_bProgressInfo );
   job->ui()->setWindow (d->m_window);
   connect(job, SIGNAL( result(KJob *)),
           this, SLOT( slotScanFinished(KJob *)));
   connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
           this, SLOT( slotScanMimeType(KIO::Job *, const QString &)));
-  m_job = job;
-  kDebug(7010) << " Job " << job << " is about getting from " << m_strURL.url();
+  d->m_job = job;
+  kDebug(7010) << " Job " << job << " is about getting from " << d->m_strURL.url();
 }
 
 void KRun::slotTimeout()
 {
   kDebug(7010) << this << " slotTimeout called";
-  if ( m_bInit )
+  if ( d->m_bInit )
   {
-    m_bInit = false;
+    d->m_bInit = false;
     init();
     return;
   }
 
-  if ( m_bFault ) {
+  if ( d->m_bFault ) {
       emit error();
   }
-  if ( m_bFinished ) {
+  if ( d->m_bFinished ) {
       emit finished();
   }
   else
   {
-    if ( m_bScanFile )
+    if ( d->m_bScanFile )
     {
-      m_bScanFile = false;
+      d->m_bScanFile = false;
       scanFile();
       return;
     }
-    else if ( m_bIsDirectory )
+    else if ( d->m_bIsDirectory )
     {
-      m_bIsDirectory = false;
+      d->m_bIsDirectory = false;
       foundMimeType( "inode/directory" );
       return;
     }
   }
 
-  if ( m_bAutoDelete )
+  if ( d->m_bAutoDelete )
   {
     delete this;
     return;
@@ -1010,7 +1041,7 @@ void KRun::slotTimeout()
 
 void KRun::slotStatResult( KJob * job )
 {
-  m_job = 0L;
+  d->m_job = 0L;
   if (job->error())
   {
     d->m_showingError = true;
@@ -1019,11 +1050,11 @@ void KRun::slotStatResult( KJob * job )
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
     d->m_showingError = false;
 
-    m_bFault = true;
-    m_bFinished = true;
+    d->m_bFault = true;
+    d->m_bFinished = true;
 
     // will emit the error and autodelete this
-    m_timer.start( 0 );
+    d->m_timer.start( 0 );
 
   } else {
 
@@ -1034,9 +1065,9 @@ void KRun::slotStatResult( KJob * job )
     const KIO::UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     const mode_t mode = entry.numberValue( KIO::UDSEntry::UDS_FILE_TYPE );
     if ( S_ISDIR( mode ) )
-        m_bIsDirectory = true; // it's a dir
+        d->m_bIsDirectory = true; // it's a dir
     else
-        m_bScanFile = true; // it's a file
+        d->m_bScanFile = true; // it's a file
 
     d->m_localPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
 
@@ -1046,16 +1077,16 @@ void KRun::slotStatResult( KJob * job )
     if ( !knownMimeType.isEmpty() )
     {
         foundMimeType( knownMimeType );
-        m_bFinished = true;
+        d->m_bFinished = true;
     }
 
     // We should have found something
-    assert ( m_bScanFile || m_bIsDirectory );
+    assert ( d->m_bScanFile || d->m_bIsDirectory );
 
     // Start the timer. Once we get the timer event this
     // protocol server is back in the pool and we can reuse it.
     // This gives better performance than starting a new slave
-    m_timer.start( 0 );
+    d->m_timer.start( 0 );
   }
 }
 
@@ -1064,12 +1095,12 @@ void KRun::slotScanMimeType( KIO::Job *, const QString &mimetype )
   if ( mimetype.isEmpty() )
     kWarning(7010) << "KRun::slotScanFinished : MimetypeJob didn't find a mimetype! Probably a kioslave bug.";
   foundMimeType( mimetype );
-  m_job = 0;
+  d->m_job = 0;
 }
 
 void KRun::slotScanFinished( KJob *job )
 {
-  m_job = 0;
+  d->m_job = 0;
   if (job->error())
   {
     d->m_showingError = true;
@@ -1078,11 +1109,11 @@ void KRun::slotScanFinished( KJob *job )
     //kDebug(7010) << this << " KRun returning from showErrorDialog, starting timer to delete us";
     d->m_showingError = false;
 
-    m_bFault = true;
-    m_bFinished = true;
+    d->m_bFault = true;
+    d->m_bFinished = true;
 
     // will emit the error and autodelete this
-    m_timer.start( 0 );
+    d->m_timer.start( 0 );
   }
 }
 
@@ -1142,15 +1173,15 @@ void KRun::foundMimeType( const QString& type )
     return;
   }
 */
-  KIO::TransferJob *job = qobject_cast<KIO::TransferJob *>( m_job );
+  KIO::TransferJob *job = qobject_cast<KIO::TransferJob *>( d->m_job );
   if ( job )
   {
      job->putOnHold();
      KIO::Scheduler::publishSlaveOnHold();
-     m_job = 0;
+     d->m_job = 0;
   }
 
-  Q_ASSERT( !m_bFinished );
+  Q_ASSERT( !d->m_bFinished );
 
   KMimeType::Ptr mime = KMimeType::mimeType( type );
   if ( !mime )
@@ -1163,8 +1194,8 @@ void KRun::foundMimeType( const QString& type )
       if ( serv && serv->hasMimeType( mime.data() ) )
       {
           KUrl::List lst;
-          lst.append( m_strURL );
-          m_bFinished = KRun::run( *serv, lst, d->m_window, false, QString(), d->m_asn );
+          lst.append( d->m_strURL );
+          d->m_bFinished = KRun::run( *serv, lst, d->m_window, false, QString(), d->m_asn );
           /// Note: the line above means that if that service failed, we'll
           /// go to runUrl to maybe find another service, even though a dialog
           /// box was displayed. That's good if runUrl tries another service,
@@ -1175,28 +1206,28 @@ void KRun::foundMimeType( const QString& type )
   // Resolve .desktop files from media:/, remote:/, applications:/ etc.
   if ( mime && mime->is( "application/x-desktop" ) && !d->m_localPath.isEmpty() )
   {
-    m_strURL = KUrl();
-    m_strURL.setPath( d->m_localPath );
+    d->m_strURL = KUrl();
+    d->m_strURL.setPath( d->m_localPath );
   }
 
-  if (!m_bFinished && KRun::runUrl( m_strURL, type, d->m_window, false /*tempfile*/, d->m_runExecutables, d->m_suggestedFileName, d->m_asn )){
-    m_bFinished = true;
+  if (!d->m_bFinished && KRun::runUrl( d->m_strURL, type, d->m_window, false /*tempfile*/, d->m_runExecutables, d->m_suggestedFileName, d->m_asn )){
+    d->m_bFinished = true;
   }
   else{
-    m_bFinished = true;
-     m_bFault = true;
+    d->m_bFinished = true;
+    d->m_bFault = true;
   }
 
-  m_timer.start( 0 );
+  d->m_timer.start( 0 );
 }
 
 void KRun::killJob()
 {
-  if ( m_job )
+  if ( d->m_job )
   {
-    kDebug(7010) << "KRun::killJob run=" << this << " m_job=" << m_job;
-    m_job->kill();
-    m_job = 0L;
+    kDebug(7010) << "KRun::killJob run=" << this << " m_job=" << d->m_job;
+    d->m_job->kill();
+    d->m_job = 0L;
   }
 }
 
@@ -1208,33 +1239,33 @@ void KRun::abort()
   // after closing the msgbox -> don't autodelete nor emit signals now.
   if ( d->m_showingError )
     return;
-  m_bFault = true;
-  m_bFinished = true;
-  m_bInit = false;
-  m_bScanFile = false;
+  d->m_bFault = true;
+  d->m_bFinished = true;
+  d->m_bInit = false;
+  d->m_bScanFile = false;
 
   // will emit the error and autodelete this
-  m_timer.start( 0 );
+  d->m_timer.start( 0 );
 }
 
 bool KRun::hasError() const
 {
-    return m_bFault;
+    return d->m_bFault;
 }
 
 bool KRun::hasFinished() const
 {
-    return m_bFinished;
+    return d->m_bFinished;
 }
 
 bool KRun::autoDelete() const
 {
-    return m_bAutoDelete;
+    return d->m_bAutoDelete;
 }
 
 void KRun::setAutoDelete(bool b)
 {
-    m_bAutoDelete = b;
+    d->m_bAutoDelete = b;
 }
 
 void KRun::setEnableExternalBrowser(bool b)
@@ -1271,6 +1302,101 @@ bool KRun::isExecutable( const QString& serviceType )
              serviceType == "application/x-executable" ||
              serviceType == "application/x-ms-dos-executable" ||
              serviceType == "application/x-shellscript" );
+}
+
+void KRun::setUrl( const KUrl &url )
+{
+    d->m_strURL = url;
+}
+
+KUrl KRun::url() const
+{
+    return d->m_strURL;
+}
+
+void KRun::setError( bool error )
+{
+    d->m_bFault = error;
+}
+
+void KRun::setProgressInfo( bool progressInfo )
+{
+    d->m_bProgressInfo = progressInfo;
+}
+
+bool KRun::progressInfo() const
+{
+    return d->m_bProgressInfo;
+}
+
+void KRun::setFinished( bool finished )
+{
+    d->m_bFinished = finished;
+}
+
+void KRun::setJob( KIO::Job *job )
+{
+    d->m_job = job;
+}
+
+KIO::Job* KRun::job()
+{
+    return d->m_job;
+}
+
+QTimer& KRun::timer()
+{
+    return d->m_timer;
+}
+
+void KRun::setDoScanFile( bool scanFile )
+{
+    d->m_bScanFile = scanFile;
+}
+
+bool KRun::doScanFile() const
+{
+    return d->m_bScanFile;
+}
+
+void KRun::setIsDirecory( bool isDirectory )
+{
+    d->m_bIsDirectory = isDirectory;
+}
+
+bool KRun::isDirectory() const
+{
+    return d->m_bIsDirectory;
+}
+
+void KRun::setInitializeNextAction( bool initialize )
+{
+    d->m_bInit = initialize;
+}
+
+bool KRun::initializeNextAction() const
+{
+    return d->m_bInit;
+}
+
+void KRun::setIsLocalFile( bool isLocalFile )
+{
+    d->m_bIsLocalFile = isLocalFile;
+}
+
+bool KRun::isLocalFile() const
+{
+    return d->m_bIsLocalFile;
+}
+
+void KRun::setMode( mode_t mode )
+{
+    d->m_mode = mode;
+}
+
+mode_t KRun::mode() const
+{
+    return d->m_mode;
 }
 
 /****************/

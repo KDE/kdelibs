@@ -345,14 +345,45 @@ Q_SIGNALS:
   void error();
 
 protected Q_SLOTS:
+  /**
+   * All following protected slots are used by subclasses of KRun!
+   */
+
+  /**
+   * This slot is called whenever the internal time has
+   * a timeout.
+   */
   void slotTimeout();
+
+  /**
+   * This slot is called when the scan job is finished.
+   */
   void slotScanFinished( KJob * );
+
+  /**
+   * This slot is called when the scan job has found out
+   * the mime type.
+   */
   void slotScanMimeType( KIO::Job *, const QString &type );
+
+  /**
+   * This slot is called when the 'stat' job has finished.
+   */
   virtual void slotStatResult( KJob * );
 
 protected:
+  /**
+   * All following protected methods are used by subclasses of KRun!
+   */
+
+  /**
+   * Initializes the krun object.
+   */
   virtual void init();
 
+  /**
+   * Start scanning a file.
+   */
   virtual void scanFile();
 
   /**
@@ -362,35 +393,106 @@ protected:
    */
   virtual void foundMimeType( const QString& type );
 
+  /**
+   * Kills the file scanning job.
+   */
   virtual void killJob();
 
-  KUrl m_strURL;
-  bool m_bFault;
-  bool m_bAutoDelete;
-  bool m_bProgressInfo;
-  bool m_bFinished;
-  KIO::Job * m_job;
-  QTimer m_timer;
+  /**
+   * Sets the url.
+   */
+  void setUrl( const KUrl &url );
 
   /**
-   * Used to indicate that the next action is to scan the file.
-   * This action is invoked from slotTimeout.
+   * Returns the url.
    */
-  bool m_bScanFile;
-  bool m_bIsDirectory;
+  KUrl url() const;
 
   /**
-   * Used to indicate that the next action is to initialize.
-   * This action is invoked from slotTimeout
+   * Sets whether an error has occured.
    */
-  bool m_bInit;
+  void setError( bool error );
 
-  bool m_bIsLocalFile;
-  mode_t m_mode;
+  /**
+   * Sets whether progress information shall be shown.
+   */
+  void setProgressInfo( bool progressInfo );
 
-private:
-  void init (const KUrl& url, QWidget* window, mode_t mode,
-             bool isLocalFile, bool showProgressInfo, const QByteArray& asn);
+  /**
+   * Returns whether progress information are shown.
+   */
+  bool progressInfo() const;
+
+  /**
+   * Marks the job as finished.
+   */
+  void setFinished( bool finished );
+
+  /**
+   * Sets the job.
+   */
+  void setJob( KIO::Job *job );
+
+  /**
+   * Returns the job.
+   */
+  KIO::Job* job();
+
+  /**
+   * Returns the timer object.
+   */
+  QTimer& timer();
+
+  /**
+   * Sets whether the file shall be scanned.
+   */
+  void setDoScanFile( bool scanFile );
+
+  /**
+   * Returns whether the file shall be scanned.
+   */
+  bool doScanFile() const;
+
+  /**
+   * Sets whether it is a directory.
+   */
+  void setIsDirecory( bool isDirectory );
+
+  /**
+   * Returns whether it is a directory.
+   */
+  bool isDirectory() const;
+
+  /**
+   * Returns whether the next action shall be initialized.
+   */
+  void setInitializeNextAction( bool initialize );
+
+  /**
+   * Returns whether the next action shall be initialized.
+   */
+  bool initializeNextAction() const;
+
+  /**
+   * Sets whether it is a local file.
+   */
+  void setIsLocalFile( bool isLocalFile );
+
+  /**
+   * Returns whether it is a local file.
+   */
+  bool isLocalFile() const;
+
+  /**
+   * Sets the file mode.
+   */
+  void setMode( mode_t mode );
+
+  /**
+   * Returns the file mode.
+   */
+  mode_t mode() const;
+
 private:
   class KRunPrivate;
   KRunPrivate* const d;
