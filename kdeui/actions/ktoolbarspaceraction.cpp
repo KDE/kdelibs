@@ -30,7 +30,7 @@ class KToolBarSpacerAction::Private
     {
     }
 
-    void spacerDestroyed( QObject* spacer )
+    void _k_spacerDestroyed( QObject* spacer )
     {
       spacers.removeAll( static_cast<QWidget*>( spacer ) );
     }
@@ -103,7 +103,7 @@ QWidget * KToolBarSpacerAction::createWidget( QWidget * _parent )
 
   d->spacers.append( spacer );
   connect( spacer, SIGNAL( destroyed( QObject* ) ),
-           SLOT( spacerDestroyed( QObject* ) ) );
+           SLOT( _k_spacerDestroyed( QObject* ) ) );
 
   return spacer;
 }

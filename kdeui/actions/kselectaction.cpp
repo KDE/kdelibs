@@ -439,29 +439,28 @@ void KSelectAction::setToolButtonPopupMode( QToolButton::ToolButtonPopupMode mod
   d->m_toolButtonPopupMode = mode;
 }
 
-void KSelectAction::comboBoxDeleted(QObject* object)
+void KSelectActionPrivate::_k_comboBoxDeleted(QObject* object)
 {
-  Q_D(KSelectAction);
-  foreach (KComboBox* comboBox, d->m_comboBoxes)
+  foreach (KComboBox* comboBox, m_comboBoxes)
     if (object == comboBox) {
-      d->m_comboBoxes.removeAll(static_cast<KComboBox*>(object));
+      m_comboBoxes.removeAll(static_cast<KComboBox*>(object));
       break;
     }
 }
 
-void KSelectAction::comboBoxCurrentIndexChanged(int index)
+void KSelectActionPrivate::_k_comboBoxCurrentIndexChanged(int index)
 {
-  //kDebug (129) << "KSelectAction::comboBoxCurrentIndexChanged(" << index << ")";
+  //kDebug (129) << "KSelectActionPrivate::_k_comboBoxCurrentIndexChanged(" << index << ")";
 
-  KComboBox *triggeringCombo = qobject_cast <KComboBox *> (sender ());
+  KComboBox *triggeringCombo = qobject_cast <KComboBox *> (q->sender ());
 
-  QAction *a = action(index);
+  QAction *a = q->action(index);
   //kDebug (129) << "\ta=" << a;
   if (a) {
     //kDebug (129) << "\t\tsetting as current action";
     a->trigger();
 
-  } else if (isEditable () &&
+  } else if (q->isEditable () &&
     triggeringCombo && triggeringCombo->count () > 0 &&
     index == triggeringCombo->count () - 1) {
 
@@ -474,12 +473,12 @@ void KSelectAction::comboBoxCurrentIndexChanged(int index)
     triggeringCombo->removeItem (index);
     triggeringCombo->blockSignals (blocked);
 
-    KAction *newAction = addAction (newItemText);
+    KAction *newAction = q->addAction (newItemText);
 
     newAction->trigger();
   } else {
-    if (selectableActionGroup()->checkedAction())
-      selectableActionGroup()->checkedAction()->setChecked(false);
+    if (q->selectableActionGroup()->checkedAction())
+      q->selectableActionGroup()->checkedAction()->setChecked(false);
   }
 }
 
@@ -540,8 +539,8 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
       foreach (QAction* action, selectableActionGroup()->actions())
         comboBox->addAction(action);
 
-      connect(comboBox, SIGNAL(destroyed(QObject*)), SLOT(comboBoxDeleted(QObject*)));
-      connect(comboBox, SIGNAL(currentIndexChanged(int)), SLOT(comboBoxCurrentIndexChanged(int)));
+      connect(comboBox, SIGNAL(destroyed(QObject*)), SLOT(_k_comboBoxDeleted(QObject*)));
+      connect(comboBox, SIGNAL(currentIndexChanged(int)), SLOT(_k_comboBoxCurrentIndexChanged(int)));
       d->m_comboBoxes.append(comboBox);
 
       return comboBox;

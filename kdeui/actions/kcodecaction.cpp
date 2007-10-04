@@ -43,13 +43,19 @@
 class KCodecAction::Private
 {
 public:
-    Private()
-        : defaultAction(0)
-        , currentSubAction(0)
+    Private(KCodecAction *parent)
+        : q(parent),
+          defaultAction(0),
+          currentSubAction(0)
 //         , configureAction(0)
     {
     }
 
+  	void init(bool);
+
+    void _k_subActionTriggered(QAction*);
+
+    KCodecAction *q;
     QAction *defaultAction;
     QAction *currentSubAction;
 //     QAction *configureAction;
@@ -57,23 +63,23 @@ public:
 
 KCodecAction::KCodecAction(QObject *parent,bool showAutoOptions)
     : KSelectAction(parent)
-    , d(new Private)
+    , d(new Private(this))
 {
-    init(showAutoOptions);
+    d->init(showAutoOptions);
 }
 
 KCodecAction::KCodecAction(const QString &text, QObject *parent,bool showAutoOptions)
     : KSelectAction(text, parent)
-    , d(new Private)
+    , d(new Private(this))
 {
-    init(showAutoOptions);
+    d->init(showAutoOptions);
 }
 
 KCodecAction::KCodecAction(const KIcon &icon, const QString &text, QObject *parent,bool showAutoOptions)
     : KSelectAction(icon, text, parent)
-    , d(new Private)
+    , d(new Private(this))
 {
-    init(showAutoOptions);
+    d->init(showAutoOptions);
 }
 
 KCodecAction::~KCodecAction()
@@ -81,21 +87,21 @@ KCodecAction::~KCodecAction()
     delete d;
 }
 
-void KCodecAction::init(bool showAutoOptions)
+void KCodecAction::Private::init(bool showAutoOptions)
 {
-    setToolBarMode(MenuMode);
-    d->defaultAction = addAction(i18n("Default"));
+    q->setToolBarMode(MenuMode);
+    defaultAction = q->addAction(i18n("Default"));
 //     if (showAutoOptions)
-//         d->defaultAction->setData(QVariant((uint)KEncodingDetector::SemiautomaticDetection));
+//         defaultAction->setData(QVariant((uint)KEncodingDetector::SemiautomaticDetection));
 
 
-    //kWarning() << "d->defaultAction.menu()" << (int)d->defaultAction->menu();
+    //kWarning() << "defaultAction.menu()" << (int)defaultAction->menu();
 //     int localeCodec=QTextCodec::codecForLocale()->mibEnum();
 //     bool success;
     int i;
     foreach(const QStringList &encodingsForScript, KGlobal::charsets()->encodingsByScript())
     {
-        KSelectAction* tmp = new KSelectAction(encodingsForScript.at(0),this);
+        KSelectAction* tmp = new KSelectAction(encodingsForScript.at(0),q);
         if (showAutoOptions)
         {
             KEncodingDetector::AutoDetectScript scri=KEncodingDetector::scriptForName(encodingsForScript.at(0));
@@ -111,18 +117,18 @@ void KCodecAction::init(bool showAutoOptions)
             //kWarning() << "encodingsForScript.at(i) "<< success;
             tmp->addAction(encodingsForScript.at(i));
         }
-        connect(tmp,SIGNAL(triggered(QAction*)),this,SLOT(subActionTriggered(QAction*)));
+        q->connect(tmp,SIGNAL(triggered(QAction*)),q,SLOT(_k_subActionTriggered(QAction*)));
         tmp->setCheckable(true);
-        addAction(tmp);
+        q->addAction(tmp);
     }
 #if 0
-    addSeparator();
-    d->configureAction = addAction(i18n("Configure"));
-    d->configureAction->setCheckable(false);
+    q->addSeparator();
+    configureAction = q->addAction(i18n("Configure"));
+    configureAction->setCheckable(false);
 #endif
-    setCurrentItem(0);
+    q->setCurrentItem(0);
 
-//    setEditable(true);
+//    q->setEditable(true);
 }
 
 int KCodecAction::mibForName(const QString &codecName, bool *ok) const
@@ -187,23 +193,23 @@ void KCodecAction::actionTriggered(QAction *action)
 */
 }
 
-void KCodecAction::subActionTriggered(QAction *action)
+void KCodecAction::Private::_k_subActionTriggered(QAction *action)
 {
-    if (d->currentSubAction==action)
+    if (currentSubAction==action)
         return;
-    d->currentSubAction=action;
+    currentSubAction=action;
     bool ok = false;
-    int mib = mibForName(action->text(), &ok);
+    int mib = q->mibForName(action->text(), &ok);
     if (ok)
     {
-        emit triggered(action->text());
-        emit triggered(codecForMib(mib));
+        emit q->triggered(action->text());
+        emit q->triggered(q->codecForMib(mib));
     }
     else
     {
         if (!action->data().isNull())
-            emit triggered((KEncodingDetector::AutoDetectScript) action->data().toUInt());
-        //emit triggered(action->text());
+            emit q->triggered((KEncodingDetector::AutoDetectScript) action->data().toUInt());
+        //emit q->triggered(action->text());
     }
 #if 0
     else

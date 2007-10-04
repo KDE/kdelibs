@@ -37,43 +37,56 @@
 
 #include "kmenu.h"
 
+class KFontSizeAction::Private
+{
+    public:
+        Private(KFontSizeAction *parent)
+            : q(parent)
+        {
+        }
+
+        void init();
+
+        KFontSizeAction *q;
+};
+
 // BEGIN KFontSizeAction
 KFontSizeAction::KFontSizeAction(QObject *parent)
-  : KSelectAction(parent)
-  , d(0L)
+  : KSelectAction(parent),
+    d(new Private(this))
 {
-  init();
+  d->init();
 }
 
 KFontSizeAction::KFontSizeAction(const QString &text, QObject *parent)
-  : KSelectAction(text, parent)
-  , d(0L)
+  : KSelectAction(text, parent),
+    d(new Private(this))
 {
-  init();
+  d->init();
 }
 
 KFontSizeAction::KFontSizeAction(const KIcon &icon, const QString &text, QObject *parent)
-  : KSelectAction(icon, text, parent)
-  , d(0L)
+  : KSelectAction(icon, text, parent),
+    d(new Private(this))
 {
-  init();
+  d->init();
 }
 
 KFontSizeAction::~KFontSizeAction()
 {
-  //delete d;
+  delete d;
 }
 
-void KFontSizeAction::init()
+void KFontSizeAction::Private::init()
 {
-    setEditable( true );
+    q->setEditable( true );
     QFontDatabase fontDB;
     QList<int> sizes = fontDB.standardSizes();
     QStringList lst;
     for ( QList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
         lst.append( QString::number( *it ) );
 
-    setItems( lst );
+    q->setItems( lst );
 }
 
 void KFontSizeAction::setFontSize( int size )

@@ -54,6 +54,7 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include "kaction.h"
+#include "kaction_p.h"
 #include "kactioncollection.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
@@ -180,7 +181,7 @@ void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action, uint flags)
         KShortcut scResult(shortcutFromIntList(result));
 
         if (scResult != action->globalShortcut())
-            action->setActiveGlobalShortcutNoEnable(scResult);
+            action->d->setActiveGlobalShortcutNoEnable(scResult);
     }
 
     if (oldEnabled && !newEnabled) {
@@ -213,7 +214,7 @@ void KGlobalAccel::updateGlobalShortcut(KAction *action, uint flags)
     KShortcut scResult(shortcutFromIntList(result));
 
     if (scResult != action->globalShortcut()) {
-        action->setActiveGlobalShortcutNoEnable(scResult);
+        action->d->setActiveGlobalShortcutNoEnable(scResult);
     }
 
     //We might be able to avoid that call sometimes, but it's neither worth the effort nor
@@ -281,7 +282,7 @@ void KGlobalAccel::shortcutGotChanged(const QStringList &actionId,
     if (!action)
         return;
 
-    action->setActiveGlobalShortcutNoEnable(shortcutFromIntList(keys));
+    action->d->setActiveGlobalShortcutNoEnable(shortcutFromIntList(keys));
 }
 
 

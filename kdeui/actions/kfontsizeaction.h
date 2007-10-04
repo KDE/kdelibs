@@ -59,9 +59,8 @@ protected Q_SLOTS:
     virtual void actionTriggered(QAction* action);
 
 private:
-    void init();
-
-    class KFontSizeActionPrivate* const d;
+    class Private;
+    Private* const d;
 };
 
 #endif

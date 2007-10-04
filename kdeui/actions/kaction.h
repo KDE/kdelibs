@@ -390,7 +390,6 @@ Q_SIGNALS:
 
 private:
     friend class KGlobalAccel;
-    void setActiveGlobalShortcutNoEnable(const KShortcut &cut);
     Q_PRIVATE_SLOT(d, void slotTriggered())
     class KActionPrivate* const d;
     friend class KActionPrivate;

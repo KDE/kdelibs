@@ -161,11 +161,8 @@ Q_SIGNALS:
    */
   void urlSelected( const KUrl& url );
 
-private Q_SLOTS:
-  void urlSelected( QAction* action );
-
 private:
-  void init();
+    Q_PRIVATE_SLOT( d_func(), void _k_urlSelected(QAction*) )
 };
 
 #endif

@@ -45,13 +45,15 @@
 KRecentFilesAction::KRecentFilesAction(QObject *parent)
   : KSelectAction(*new KRecentFilesActionPrivate, parent)
 {
-  init();
+  Q_D(KRecentFilesAction);
+  d->init();
 }
 
 KRecentFilesAction::KRecentFilesAction(const QString &text, QObject *parent)
   : KSelectAction(*new KRecentFilesActionPrivate, parent)
 {
-  init();
+  Q_D(KRecentFilesAction);
+  d->init();
 
   // Want to keep the ampersands
   setText(text);
@@ -60,33 +62,34 @@ KRecentFilesAction::KRecentFilesAction(const QString &text, QObject *parent)
 KRecentFilesAction::KRecentFilesAction(const KIcon &icon, const QString &text, QObject *parent)
   : KSelectAction(*new KRecentFilesActionPrivate, parent)
 {
-  init();
+  Q_D(KRecentFilesAction);
+  d->init();
 
   setIcon(icon);
   // Want to keep the ampersands
   setText(text);
 }
 
-void KRecentFilesAction::init()
+void KRecentFilesActionPrivate::init()
 {
-  Q_D(KRecentFilesAction);
-  delete menu();
-  setMenu(new KMenu());
-  setToolBarMode(MenuMode);
-  d->m_noEntriesAction=new QAction(i18n("No entries"),selectableActionGroup());
-  d->m_noEntriesAction->setEnabled(false);
-  KSelectAction::addAction(d->m_noEntriesAction);
-  connect(this, SIGNAL(triggered(QAction*)), SLOT(urlSelected(QAction*)));
+  Q_Q(KRecentFilesAction);
+  delete q->menu();
+  q->setMenu(new KMenu());
+  q->setToolBarMode(KSelectAction::MenuMode);
+  m_noEntriesAction=new QAction(i18n("No entries"),q->selectableActionGroup());
+  m_noEntriesAction->setEnabled(false);
+  q->KSelectAction::addAction(m_noEntriesAction);
+  q->connect(q, SIGNAL(triggered(QAction*)), SLOT(_k_urlSelected(QAction*)));
 }
 
 KRecentFilesAction::~KRecentFilesAction()
 {
 }
 
-void KRecentFilesAction::urlSelected( QAction* action )
+void KRecentFilesActionPrivate::_k_urlSelected( QAction* action )
 {
-  Q_D(KRecentFilesAction);
-  emit urlSelected(d->m_urls[action]);
+    Q_Q(KRecentFilesAction);
+    emit q->urlSelected(m_urls[action]);
 }
 
 int KRecentFilesAction::maxItems() const

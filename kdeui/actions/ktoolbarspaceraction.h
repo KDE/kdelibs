@@ -89,7 +89,7 @@ class KDEUI_EXPORT KToolBarSpacerAction : public KAction
     class Private;
     Private* const d;
 
-    Q_PRIVATE_SLOT( d, void spacerDestroyed( QObject* ) )
+    Q_PRIVATE_SLOT( d, void _k_spacerDestroyed( QObject* ) )
 };
 
 #endif

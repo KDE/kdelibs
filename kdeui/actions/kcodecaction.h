@@ -108,13 +108,12 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
 	virtual void actionTriggered(QAction*);
-        void subActionTriggered(QAction*);
 
 private:
-	void init(bool);
-
 	class Private;
 	Private* const d;
+
+    Q_PRIVATE_SLOT( d, void _k_subActionTriggered(QAction*) )
 };
 
 #endif

@@ -337,8 +337,6 @@ private:
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient
 
   class KActionCollectionPrivate* const d;
-
-  static QList<KActionCollection*> s_allCollections;
 };
 
 #endif

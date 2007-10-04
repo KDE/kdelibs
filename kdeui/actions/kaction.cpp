@@ -25,37 +25,22 @@
 */
 
 #include "kaction.h"
+#include "kaction_p.h"
 
-#include "kapplication.h"
 #include <kdebug.h>
 
-#include "kglobalaccel.h"
+#include "kapplication.h"
 #include "kguiitem.h"
-#include "kgesturemap.h"
 #include "kicon.h"
+
 //---------------------------------------------------------------------
 // KActionPrivate
 //---------------------------------------------------------------------
 
-class KActionPrivate
+void KActionPrivate::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
 {
-public:
-  KActionPrivate()
-    : globalShortcutAllowed(false), q(0)
-  {
-  }
-
-  void slotTriggered();
-
-  void init(KAction *q_ptr);
-
-  KShortcut globalShortcut, defaultGlobalShortcut;
-  KShapeGesture shapeGesture, defaultShapeGesture;
-  KRockerGesture rockerGesture, defaultRockerGesture;
-
-  bool globalShortcutAllowed;
-  KAction *q;
-};
+    globalShortcut = cut;
+}
 
 void KActionPrivate::init(KAction *q_ptr)
 {
@@ -206,11 +191,6 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
 }
 
 //private
-void KAction::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
-{
-  d->globalShortcut = cut;
-}
-
 bool KAction::globalShortcutAllowed( ) const
 {
   return d->globalShortcutAllowed;

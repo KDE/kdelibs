@@ -47,8 +47,6 @@
 #include <kcomponentdata.h>
 #include <kconfiggroup.h>
 
-QList<KActionCollection*> KActionCollection::s_allCollections;
-
 class KActionCollectionPrivate
 {
 public:
@@ -63,6 +61,8 @@ public:
 
     configGroup = "Shortcuts";
   }
+
+  static QList<KActionCollection*> s_allCollections;
 
   void _k_widgetDestroyed(QObject *obj);
   void _k_actionDestroyed(QObject *obj);
@@ -84,12 +84,14 @@ public:
   KActionCollection *q;
 };
 
+QList<KActionCollection*> KActionCollectionPrivate::s_allCollections;
+
 KActionCollection::KActionCollection(QObject *parent, const KComponentData &cData)
   : QObject( parent )
   , d(new KActionCollectionPrivate)
 {
   d->q = this;
-  s_allCollections.append(this);
+  KActionCollectionPrivate::s_allCollections.append(this);
 
   setComponentData(cData);
 }
@@ -99,7 +101,7 @@ KActionCollection::KActionCollection( const KXMLGUIClient *parent )
   , d(new KActionCollectionPrivate)
 {
   d->q = this;
-  s_allCollections.append(this);
+  KActionCollectionPrivate::s_allCollections.append(this);
 
   d->m_parentGUIClient=parent;
   d->m_componentData = parent->componentData();
@@ -107,7 +109,7 @@ KActionCollection::KActionCollection( const KXMLGUIClient *parent )
 
 KActionCollection::~KActionCollection()
 {
-  s_allCollections.removeAll(this);
+  KActionCollectionPrivate::s_allCollections.removeAll(this);
 
   delete d;
 }
@@ -541,7 +543,7 @@ void KActionCollection::connectNotify ( const char * signal )
 
 const QList< KActionCollection * >& KActionCollection::allCollections( )
 {
-	return s_allCollections;
+	return KActionCollectionPrivate::s_allCollections;
 }
 
 /* vim: et sw=2 ts=2

@@ -36,8 +36,25 @@
 #include <klocale.h>
 #include <kfontchooser.h>
 
+class KFontAction::KFontActionPrivate
+{
+    public:
+        KFontActionPrivate(KFontAction *parent)
+            : q(parent)
+        {
+        }
+
+        void _k_slotFontChanged(const QFont &font)
+        {
+            q->triggered(font.family());
+        }
+
+
+        KFontAction *q;
+};
+
 KFontAction::KFontAction(uint fontListCriteria, QObject *parent)
-  : KSelectAction(parent), d( 0 )
+  : KSelectAction(parent), d(new KFontActionPrivate(this))
 {
     QStringList list;
     KFontChooser::getFontList( list, fontListCriteria );
@@ -46,7 +63,7 @@ KFontAction::KFontAction(uint fontListCriteria, QObject *parent)
 }
 
 KFontAction::KFontAction(QObject *parent)
-  : KSelectAction(parent), d( 0 )
+  : KSelectAction(parent), d(new KFontActionPrivate(this))
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
@@ -55,7 +72,7 @@ KFontAction::KFontAction(QObject *parent)
 }
 
 KFontAction::KFontAction(const QString & text, QObject *parent)
-  : KSelectAction(text, parent), d( 0 )
+  : KSelectAction(text, parent), d(new KFontActionPrivate(this))
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
@@ -64,7 +81,7 @@ KFontAction::KFontAction(const QString & text, QObject *parent)
 }
 
 KFontAction::KFontAction(const KIcon &icon, const QString &text, QObject *parent)
-  : KSelectAction(icon, text, parent), d( 0 )
+  : KSelectAction(icon, text, parent), d(new KFontActionPrivate(this))
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
@@ -74,8 +91,7 @@ KFontAction::KFontAction(const KIcon &icon, const QString &text, QObject *parent
 
 KFontAction::~KFontAction()
 {
-    //Reinstate if d-pointer needed
-    //delete d;
+    delete d;
 }
 
 QString KFontAction::font() const
@@ -93,14 +109,9 @@ QWidget* KFontAction::createWidget(QWidget* _parent)
 #warning FIXME: items need to be converted
 #endif
     QFontComboBox *cb = new QFontComboBox( parent );
-    connect( cb, SIGNAL( currentFontChanged( const QFont & ) ), SLOT(slotFontChanged( const QFont&  ) ) );
+    connect( cb, SIGNAL( currentFontChanged( const QFont & ) ), SLOT(_k_slotFontChanged( const QFont&  ) ) );
     cb->setMinimumWidth( cb->sizeHint().width() );
     return cb;
-}
-
-void KFontAction::slotFontChanged(const QFont& f)
-{
-    triggered(f.family());
 }
 
 /*

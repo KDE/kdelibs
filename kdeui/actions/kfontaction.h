@@ -51,12 +51,11 @@ public:
 
     virtual QWidget* createWidget(QWidget* parent);
 
-private Q_SLOTS:
-    void slotFontChanged(const QFont&);
-
 private:
     class KFontActionPrivate;
     KFontActionPrivate * const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotFontChanged(const QFont&) )
 };
 
 #endif

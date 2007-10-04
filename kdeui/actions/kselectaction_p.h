@@ -57,6 +57,9 @@ public:
     delete m_actionGroup;
   }
 
+  void _k_comboBoxDeleted(QObject*);
+  void _k_comboBoxCurrentIndexChanged(int);
+
   void init(KSelectAction *q_ptr);
 
   bool m_edit, m_menuAccelsEnabled;

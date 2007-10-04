@@ -91,14 +91,11 @@ public:
     */
     void setMixedMode(bool mode);
 
-protected Q_SLOTS:
-    void menuAboutToShow();
-    void slotTriggered(QAction* action);
-
 private:
-    void init();
-
     KPasteTextActionPrivate * const d;
+
+    Q_PRIVATE_SLOT( d, void _k_menuAboutToShow() )
+    Q_PRIVATE_SLOT( d, void _k_slotTriggered(QAction*) )
 };
 
 #endif
