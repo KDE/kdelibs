@@ -119,6 +119,9 @@ private:
 	KRockerGesture *m_oldRockerGesture;
 };
 
+Q_DECLARE_METATYPE(KShortcutsEditorItem *)
+
+
 //---------------------------------------------------------------------
 // KShortcutsEditorPrivate
 //---------------------------------------------------------------------
@@ -194,8 +197,8 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 	const QAbstractItemModel *model = index.model();
 	if (!model)
 		return;
-	KShortcutsEditorItem *item = reinterpret_cast<KShortcutsEditorItem *>(
-	                                 model->data(index, ItemPointerRole).toULongLong());
+	KShortcutsEditorItem *item = model->data(index, ItemPointerRole)
+			                            .value<KShortcutsEditorItem *>();
 	Q_ASSERT(item);  //the delegate is for internal use, and this should never trip
 
 	//TODO: make clicking on the Name column do *exactly* the same thing
@@ -210,8 +213,8 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 		//we only want maximum ONE extender open at any time.
 		if (m_editingIndex.isValid()) {
 			QModelIndex idx = model->index(m_editingIndex.row(), Name, m_editingIndex.parent());
-			KShortcutsEditorItem *oldItem = reinterpret_cast<KShortcutsEditorItem *>(
-	                                            model->data(idx, ItemPointerRole).toULongLong());
+			KShortcutsEditorItem *oldItem = model->data(idx, ItemPointerRole)
+			                                       .value<KShortcutsEditorItem *>();
 			Q_ASSERT(oldItem);
 			oldItem->m_isNameBold = false;
 			contractItem(m_editingIndex);
@@ -274,8 +277,7 @@ bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
 //slot
 void KShortcutsEditorDelegate::keySequenceChanged(const QKeySequence &seq)
 {
-	QVariant ret;
-	ret.setValue(seq);
+	QVariant ret = QVariant::fromValue(seq);
 	emit shortcutChanged(ret, m_editingIndex);
 }
 
@@ -284,8 +286,7 @@ void KShortcutsEditorDelegate::keySequenceChanged(const QKeySequence &seq)
 void KShortcutsEditorDelegate::shapeGestureChanged(const KShapeGesture &gest)
 {
 	//this is somewhat verbose because the gesture types are not "built in" to QVariant
-	QVariant ret;
-	ret.setValue(gest);
+	QVariant ret = QVariant::fromValue(gest);
 	emit shortcutChanged(ret, m_editingIndex);
 }
 
@@ -293,8 +294,7 @@ void KShortcutsEditorDelegate::shapeGestureChanged(const KShapeGesture &gest)
 //slot
 void KShortcutsEditorDelegate::rockerGestureChanged(const KRockerGesture &gest)
 {
-	QVariant ret;
-	ret.setValue(gest);
+	QVariant ret = QVariant::fromValue(gest);
 	emit shortcutChanged(ret, m_editingIndex);
 }
 
@@ -518,7 +518,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 KShortcutsEditorItem *KShortcutsEditorPrivate::itemFromIndex(const QModelIndex &index)
 {
 	//Code suggested on some Qt mailing list. Works on <= 64 bit systems :)
-	return reinterpret_cast<KShortcutsEditorItem *>(ui.list->model()->data(index, ItemPointerRole).toULongLong());
+	return ui.list->model()->data(index, ItemPointerRole).value<KShortcutsEditorItem *>();
 }
 
 
@@ -839,7 +839,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 			return true;
 //the following are custom roles, defined in this source file only
 	case ItemPointerRole:
-		return reinterpret_cast<qulonglong>(this);
+		return QVariant::fromValue(const_cast<KShortcutsEditorItem *>(this));
 
 	case ShortcutRole:
 		switch(column) {

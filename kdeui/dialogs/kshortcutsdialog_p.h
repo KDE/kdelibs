@@ -35,7 +35,7 @@ class KShortcutsEditorDelegate : public KExtendableItemDelegate
 {
 	Q_OBJECT
 public:
-	KShortcutsEditorDelegate(QAbstractItemView *parent);
+	KShortcutsEditorDelegate(QAbstractItemView *parent, bool allowLetterShortcuts);
 	//reimplemented to have some extra height
 	virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 Q_SIGNALS:
@@ -44,6 +44,7 @@ protected:
 	virtual bool eventFilter(QObject *, QEvent *);
 private:
 	mutable QModelIndex m_editingIndex;
+	bool m_allowLetterShortcuts;
 	QWidget *m_editor;
 private Q_SLOTS:
 	void itemActivated(QModelIndex index);
@@ -68,7 +69,8 @@ class ShortcutEditWidget : public TabConnectedWidget
 {
 	Q_OBJECT
 public:
-	ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq, const QKeySequence &activeSeq);
+	ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq, const QKeySequence &activeSeq,
+	                   bool allowLetterShortcuts);
 Q_SIGNALS:
 	void keySequenceChanged(const QKeySequence &);
 private Q_SLOTS:
