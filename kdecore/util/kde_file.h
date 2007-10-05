@@ -30,6 +30,7 @@
  * \since 3.3
  */
 
+#include <sys/stat.h>
 #include <unistd.h>
 #ifdef _WIN32
 #include <kde_file_win.h>
