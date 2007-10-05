@@ -26,6 +26,8 @@
 
 namespace KIO {
 
+    enum LoadType { Reload, NoReload };
+
     class FileJob;
 
     /**
@@ -92,10 +94,10 @@ namespace KIO {
      *
      * @param src The original URL
      * @param dest The final URL
-     * @param overwrite whether to automatically overwrite if the dest exists
+     * @param flags Can be Overwrite here
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * rename( const KUrl& src, const KUrl & dest, bool overwrite );
+    KIO_EXPORT SimpleJob * rename( const KUrl& src, const KUrl & dest, JobFlags flags = DefaultFlags );
 
     /**
      * Create or move a symlink.
@@ -104,11 +106,10 @@ namespace KIO {
      * and it doesn't show rename and skip dialogs - use KIO::link for that.
      * @param target The string that will become the "target" of the link (can be relative)
      * @param dest The symlink to create.
-     * @param overwrite whether to automatically overwrite if the dest exists
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be Overwrite and HideProgressInfo
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * symlink( const QString & target, const KUrl& dest, bool overwrite, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob * symlink( const QString & target, const KUrl& dest, JobFlags flags = DefaultFlags );
 
     /**
      * Execute any command that is specific to one slave (protocol).
@@ -119,10 +120,10 @@ namespace KIO {
      *        which slave to send it to :-)
      * @param data Packed data.  The meaning is completely dependent on the
      *        slave, but usually starts with an int for the command number.
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * special( const KUrl& url, const QByteArray & data, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob * special( const KUrl& url, const QByteArray & data, JobFlags flags = DefaultFlags );
 
     /**
      * Mount filesystem.
@@ -133,10 +134,10 @@ namespace KIO {
      * @param fstype File system type (e.g. "ext2", can be empty).
      * @param dev Device (e.g. /dev/sda0).
      * @param point Mount point, can be @p null.
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob *mount( bool ro, const QByteArray& fstype, const QString& dev, const QString& point, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob *mount( bool ro, const QByteArray& fstype, const QString& dev, const QString& point, JobFlags flags = DefaultFlags );
 
     /**
      * Unmount filesystem.
@@ -144,10 +145,10 @@ namespace KIO {
      * Special job for @p kio_file.
      *
      * @param point Point to unmount.
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob *unmount( const QString & point, bool showProgressInfo = true );
+    KIO_EXPORT SimpleJob *unmount( const QString & point, JobFlags flags = DefaultFlags );
 
     /**
      * HTTP cache update
@@ -164,10 +165,10 @@ namespace KIO {
      * Find all details for one file or directory.
      *
      * @param url the URL of the file
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT StatJob * stat( const KUrl& url, bool showProgressInfo = true );
+    KIO_EXPORT StatJob * stat( const KUrl& url, JobFlags flags = DefaultFlags );
     /**
      * Find all details for one file or directory.
      * This version of the call includes two additional booleans, @p sideIsSource and @p details.
@@ -192,11 +193,11 @@ namespace KIO {
      * too much time, no need to follow symlinks etc.
      * setDetails(0) is used for very simple probing: we'll only get the answer
      * "it's a file or a directory, or it doesn't exist". This is used by KRun.
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
     KIO_EXPORT StatJob * stat( const KUrl& url, KIO::StatJob::StatSide side,
-                               short int details, bool showProgressInfo = true );
+                               short int details, JobFlags flags = DefaultFlags );
     /**
      * Find all details for one file or directory.
      * This version of the call includes two additional booleans, @p sideIsSource and @p details.
@@ -221,22 +222,22 @@ namespace KIO {
      * too much time, no need to follow symlinks etc.
      * setDetails(0) is used for very simple probing: we'll only get the answer
      * "it's a file or a directory, or it doesn't exist". This is used by KRun.
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
     KIO_EXPORT_DEPRECATED StatJob * stat( const KUrl& url, bool sideIsSource,
-                                          short int details, bool showProgressInfo = true );
+                                          short int details, JobFlags flags = DefaultFlags );
 
     /**
      * Get (a.k.a. read).
      *
      * The slave emits the data through data().
      * @param url the URL of the file
-     * @param reload true to reload the file, false if it can be taken from the cache
-     * @param showProgressInfo true to show progress information
+     * @param reload: Reload to reload the file, NoReload if it can be taken from the cache
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT TransferJob *get( const KUrl& url, bool reload=false, bool showProgressInfo = true );
+    KIO_EXPORT TransferJob *get( const KUrl& url, LoadType reload = NoReload, JobFlags flags = DefaultFlags );
 
     /**
      * Open ( random access I/O )
@@ -255,23 +256,20 @@ namespace KIO {
      *
      * @param url Where to write data.
      * @param permissions May be -1. In this case no special permission mode is set.
-     * @param overwrite If true, any existing file will be overwritten.
-     * @param resume true to resume an operation. Warning, setting this to true means
-     *               that the data will be appended to @p dest if @p dest exists.
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo, Overwrite and Resume here. WARNING:
+     * Setting Resume means that the data will be appended to @p dest if @p dest exists.
      * @return the job handling the operation.
      * @see multi_get()
      */
     KIO_EXPORT TransferJob *put( const KUrl& url, int permissions,
-                      bool overwrite, bool resume,
-                      bool showProgressInfo = true );
+                                 JobFlags flags = DefaultFlags );
 
     /**
      * HTTP POST (for form data).
      *
      * Example:
      * \code
-     *    job = KIO::http_post( url, postData, false );
+     *    job = KIO::http_post( url, postData, KIO::HideProgressInfo );
      *    job->addMetaData("content-type", contentType );
      *    job->addMetaData("referrer", referrerURL);
      * \endcode
@@ -291,22 +289,22 @@ namespace KIO {
      *
      * @param url Where to write the data.
      * @param postData Encoded data to post.
-     * @param showProgressInfo true to display
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
     KIO_EXPORT TransferJob *http_post( const KUrl& url, const QByteArray &postData,
-                            bool showProgressInfo = true );
+                                       JobFlags flags = DefaultFlags );
 
     /**
      * Get (a.k.a. read), into a single QByteArray.
      * @see StoredTransferJob
      *
      * @param url the URL of the file
-     * @param reload true to reload the file, false if it can be taken from the cache
-     * @param showProgressInfo true to show progress information
+     * @param reload: Reload to reload the file, NoReload if it can be taken from the cache
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT StoredTransferJob *storedGet( const KUrl& url, bool reload=false, bool showProgressInfo = true );
+    KIO_EXPORT StoredTransferJob *storedGet( const KUrl& url, LoadType reload = NoReload, JobFlags flags = DefaultFlags );
 
     /**
      * Put (a.k.a. write) data from a single QByteArray.
@@ -315,14 +313,12 @@ namespace KIO {
      * @param arr The data to write
      * @param url Where to write data.
      * @param permissions May be -1. In this case no special permission mode is set.
-     * @param overwrite If true, any existing file will be overwritten.
-     * @param resume true to resume an operation. Warning, setting this to true means
-     *               that the data will be appended to @p dest if @p dest exists.
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo, Overwrite and Resume here. WARNING:
+     * Setting Resume means that the data will be appended to @p dest if @p dest exists.
      * @return the job handling the operation.
      */
     KIO_EXPORT StoredTransferJob *storedPut( const QByteArray& arr, const KUrl& url, int permissions,
-                                  bool overwrite, bool resume, bool showProgressInfo = true );
+                                             JobFlags flags = DefaultFlags );
 
     /**
      * Creates a new multiple get job.
@@ -340,11 +336,11 @@ namespace KIO {
      * Find mimetype for one file or directory.
      *
      * @param url the URL of the file
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
     KIO_EXPORT MimetypeJob * mimetype( const KUrl& url,
-                            bool showProgressInfo = true );
+                                       JobFlags flags = DefaultFlags );
 
     /**
      * Copy a single file.
@@ -354,17 +350,13 @@ namespace KIO {
      * @param src Where to get the file.
      * @param dest Where to put the file.
      * @param permissions May be -1. In this case no special permission mode is set.
-     * @param overwrite If true, any existing file will be overwritten.
-     * @param resume true to resume an operation. Warning, setting this to true means
-     *               that @p src will be appended to @p dest if @p dest exists.
-     *               You probably don't want that, so leave it to false :)
-     *
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo, Overwrite and Resume here. WARNING:
+     * Setting Resume means that the data will be appended to @p dest if @p dest exists.
      * @return the job handling the operation.
      */
     KIO_EXPORT FileCopyJob *file_copy( const KUrl& src, const KUrl& dest, int permissions=-1,
-                            bool overwrite=false, bool resume=false,
-                            bool showProgressInfo = true);
+                                       JobFlags flags = DefaultFlags );
+
 
     /**
      * Move a single file.
@@ -374,25 +366,21 @@ namespace KIO {
      * @param src Where to get the file.
      * @param dest Where to put the file.
      * @param permissions May be -1. In this case no special permission mode is set.
-     * @param overwrite If @p true, any existing file will be overwritten.
-     * @param resume true to resume an operation. Warning, setting this to true means
-     *               that @p src will be appended to @p dest if @p dest exists.
-     *               You probably don't want that, so leave it to false :)
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo, Overwrite and Resume here. WARNING:
+     * Setting Resume means that the data will be appended to @p dest if @p dest exists.
      * @return the job handling the operation.
      */
     KIO_EXPORT FileCopyJob *file_move( const KUrl& src, const KUrl& dest, int permissions=-1,
-                            bool overwrite=false, bool resume=false,
-                            bool showProgressInfo = true);
+                                       JobFlags flags = DefaultFlags );
 
     /**
      * Delete a single file.
      *
      * @param src File to delete.
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob *file_delete( const KUrl& src, bool showProgressInfo = true);
+    KIO_EXPORT SimpleJob *file_delete( const KUrl& src, JobFlags flags = DefaultFlags );
 
     /**
      * List the contents of @p url, which is assumed to be a directory.
@@ -401,13 +389,13 @@ namespace KIO {
      *
      *
      * @param url the url of the directory
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @param includeHidden true for all files, false to cull out UNIX hidden
      *                      files/dirs (whose names start with dot)
      * @return the job handling the operation.
      */
-    KIO_EXPORT ListJob *listDir( const KUrl& url, bool showProgressInfo = true,
-                      bool includeHidden = true );
+    KIO_EXPORT ListJob *listDir( const KUrl& url, JobFlags flags = DefaultFlags,
+                                 bool includeHidden = true );
 
     /**
      * The same as the previous method, but recurses subdirectories.
@@ -417,12 +405,12 @@ namespace KIO {
      * Filter them out if you don't want them.
      *
      * @param url the url of the directory
-     * @param showProgressInfo true to show progress information
+     * @param flags Can be HideProgressInfo here
      * @param includeHidden true for all files, false to cull out UNIX hidden
      *                      files/dirs (whose names start with dot)
      * @return the job handling the operation.
      */
-    KIO_EXPORT ListJob *listRecursive( const KUrl& url, bool showProgressInfo = true,
+    KIO_EXPORT ListJob *listRecursive( const KUrl& url, JobFlags flags = DefaultFlags,
                             bool includeHidden = true );
 
 }

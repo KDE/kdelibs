@@ -796,7 +796,8 @@ void KFileWidget::slotOk()
         for ( KUrl::List::ConstIterator it = list.begin();
               it != list.end(); ++it )
         {
-            job = KIO::stat( *it, !(*it).isLocalFile() );
+            KIO::JobFlags flags = !(*it).isLocalFile() ? KIO::DefaultFlags : KIO::HideProgressInfo;
+            job = KIO::stat( *it, flags );
             job->ui()->setWindow (topLevelWidget());
             KIO::Scheduler::scheduleJob( job );
             d->statJobs.append( job );
@@ -806,7 +807,8 @@ void KFileWidget::slotOk()
         return;
     }
 
-    job = KIO::stat(d->url,!d->url.isLocalFile());
+    KIO::JobFlags flags = !d->url.isLocalFile() ? KIO::DefaultFlags : KIO::HideProgressInfo;
+    job = KIO::stat(d->url,flags);
     job->ui()->setWindow (topLevelWidget());
     d->statJobs.append( job );
     connect(job, SIGNAL(result(KJob*)), SLOT(_k_slotStatResult(KJob*)));

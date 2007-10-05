@@ -62,11 +62,11 @@ public:
     Q_DECLARE_PUBLIC(DavJob)
 
     static inline DavJob *newJob(const KUrl &url, int method, const QString &request,
-                                 bool showProgressInfo)
+                                 JobFlags flags)
     {
         DavJob *job = new DavJob(*new DavJobPrivate(url), method, request);
         job->setUiDelegate(new JobUiDelegate);
-        if (showProgressInfo)
+        if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         return job;
     }
@@ -139,21 +139,21 @@ void DavJob::slotFinished()
 
 /* Convenience methods */
 
-DavJob* KIO::davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo )
+DavJob* KIO::davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, JobFlags flags )
 {
-    DavJob *job = DavJobPrivate::newJob(url, (int) KIO::DAV_PROPFIND, properties.toString(), showProgressInfo);
+    DavJob *job = DavJobPrivate::newJob(url, (int) KIO::DAV_PROPFIND, properties.toString(), flags);
     job->addMetaData( "davDepth", depth );
     return job;
 }
 
 
-DavJob* KIO::davPropPatch( const KUrl& url, const QDomDocument& properties, bool showProgressInfo )
+DavJob* KIO::davPropPatch( const KUrl& url, const QDomDocument& properties, JobFlags flags )
 {
     return DavJobPrivate::newJob(url, (int) KIO::DAV_PROPPATCH, properties.toString(),
-                                 showProgressInfo);
+                                 flags);
 }
 
-DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo )
+DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags )
 {
   QDomDocument doc;
   QDomElement searchrequest = doc.createElementNS( "DAV:", "searchrequest" );
@@ -162,7 +162,7 @@ DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qN
   searchelement.appendChild( text );
   searchrequest.appendChild( searchelement );
   doc.appendChild( searchrequest );
-  return DavJobPrivate::newJob(url, KIO::DAV_SEARCH, doc.toString(), showProgressInfo);
+  return DavJobPrivate::newJob(url, KIO::DAV_SEARCH, doc.toString(), flags);
 }
 
 #include "davjob.moc"

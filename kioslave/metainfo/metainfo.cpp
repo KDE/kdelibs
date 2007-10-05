@@ -78,7 +78,7 @@ void MetaInfoProtocol::get(const KUrl &url)
     finished();
 }
 
-void MetaInfoProtocol::put(const KUrl& url, int, bool, bool)
+void MetaInfoProtocol::put(const KUrl& url, int, KIO::JobFlags)
 {
     QString mimeType = metaData("mimeType");
     KFileMetaInfo info;

@@ -705,7 +705,8 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
     }
 
     if (doIt) {
-        KIO::DeleteJob *job = KIO::del(urls, false, showProgress);
+        KIO::JobFlags flags = showProgress ? KIO::DefaultFlags : KIO::HideProgressInfo;
+        KIO::DeleteJob *job = KIO::del(urls, flags);
         job->ui()->setWindow(topLevelWidget());
         job->ui()->setAutoErrorHandlingEnabled(true);
         return job;
@@ -762,7 +763,8 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
     }
 
     if (doIt) {
-        KIO::CopyJob *job = KIO::trash(urls, showProgress);
+        KIO::JobFlags flags = showProgress ? KIO::DefaultFlags : KIO::HideProgressInfo;
+        KIO::CopyJob *job = KIO::trash(urls, flags);
         job->ui()->setWindow(topLevelWidget());
         job->ui()->setAutoErrorHandlingEnabled(true);
         return job;

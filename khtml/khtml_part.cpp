@@ -722,12 +722,12 @@ bool KHTMLPart::openUrl( const KUrl &url )
 
   if ( browserArgs.doPost() && (this->url().protocol().startsWith("http")) )
   {
-      d->m_job = KIO::http_post( this->url(), browserArgs.postData, false );
+      d->m_job = KIO::http_post( this->url(), browserArgs.postData, KIO::HideProgressInfo );
       d->m_job->addMetaData("content-type", browserArgs.contentType() );
   }
   else
   {
-      d->m_job = KIO::get( this->url(), false, false );
+      d->m_job = KIO::get( this->url(), KIO::NoReload, KIO::HideProgressInfo );
       d->m_job->addMetaData("cache", KIO::getCacheControlString(d->m_cachePolicy));
   }
 
@@ -773,7 +773,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   // do a stat to see whether the stylesheet was changed in the meanwhile.
   if ( args.reload() && !settings()->userStyleSheet().isEmpty() ) {
     KUrl url( settings()->userStyleSheet() );
-    KIO::StatJob *job = KIO::stat( url, false /* don't show progress */ );
+    KIO::StatJob *job = KIO::stat( url, KIO::HideProgressInfo );
     connect( job, SIGNAL( result( KJob * ) ),
              this, SLOT( slotUserSheetStatDone( KJob * ) ) );
   }

@@ -98,11 +98,11 @@ namespace KIO
 
         Q_DECLARE_PUBLIC(DeleteJob)
 
-        static inline DeleteJob *newJob(const KUrl::List &src, bool showProgressInfo)
+        static inline DeleteJob *newJob(const KUrl::List &src, JobFlags flags)
         {
             DeleteJob *job = new DeleteJob(*new DeleteJobPrivate(src));
             job->setUiDelegate(new JobUiDelegate);
-            if (showProgressInfo)
+            if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;
         }
@@ -219,7 +219,7 @@ void DeleteJobPrivate::statNextSrc()
         }
         // Stat it
         state = STATE_STATING;
-        KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 1, false );
+        KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 1, KIO::HideProgressInfo );
         Scheduler::scheduleJob(job);
         //kDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL;
         q->addSubjob(job);
@@ -266,7 +266,7 @@ void DeleteJobPrivate::deleteNextFile()
                 }
             } else
             { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
-                job = KIO::file_delete( *it, false /*no GUI*/);
+                job = KIO::file_delete( *it, KIO::HideProgressInfo );
                 Scheduler::scheduleJob(job);
                 m_currentURL=(*it);
             }
@@ -306,7 +306,7 @@ void DeleteJobPrivate::deleteNextDir()
                 if ( KProtocolManager::canDeleteRecursive( *it ) ) {
                     // If the ioslave supports recursive deletion of a directory, then
                     // we only need to send a single CMD_DEL command, so we use file_delete :)
-                    job = KIO::file_delete( *it, false /*no gui*/ );
+                    job = KIO::file_delete( *it, KIO::HideProgressInfo );
                 } else {
                     job = KIO::rmdir( *it );
                 }
@@ -451,7 +451,6 @@ void DeleteJob::slotResult( KJob *job )
         assert( !hasSubjobs() );
         d->m_processedDirs++;
         //emit processedAmount( this, KJob::Directories, d->m_processedDirs );
-        //if (!m_shred)
         //emitPercent( d->m_processedFiles + d->m_processedDirs, d->m_totalFilesDirs );
 
         d->deleteNextDir();
@@ -461,16 +460,16 @@ void DeleteJob::slotResult( KJob *job )
     }
 }
 
-DeleteJob *KIO::del( const KUrl& src, bool /*shred*/, bool showProgressInfo )
+DeleteJob *KIO::del( const KUrl& src, JobFlags flags )
 {
     KUrl::List srcList;
     srcList.append( src );
-    return DeleteJobPrivate::newJob(srcList, showProgressInfo);
+    return DeleteJobPrivate::newJob(srcList, flags);
 }
 
-DeleteJob *KIO::del( const KUrl::List& src, bool /*shred*/, bool showProgressInfo )
+DeleteJob *KIO::del( const KUrl::List& src, JobFlags flags )
 {
-    return DeleteJobPrivate::newJob(src, showProgressInfo);
+    return DeleteJobPrivate::newJob(src, flags);
 }
 
 #include "deletejob.moc"

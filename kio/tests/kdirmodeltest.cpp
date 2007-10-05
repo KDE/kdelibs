@@ -329,7 +329,7 @@ void KDirModelTest::testRenameFile()
     connect( &m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(quit()) );
 
-    KIO::SimpleJob* job = KIO::rename(url, newUrl, true);
+    KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
 
@@ -390,7 +390,7 @@ void KDirModelTest::testDeleteFile()
     connect( &m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(quit()) );
 
-    KIO::DeleteJob* job = KIO::del(url, false, false);
+    KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
 

@@ -132,7 +132,7 @@ void MetaInfoJob::getMetaInfo()
     URL.setProtocol("metainfo");
     URL.setPath(item.url().path());
 
-    KIO::TransferJob* job = KIO::get(URL, false, false);
+    KIO::TransferJob* job = KIO::get(URL, NoReload, HideProgressInfo);
     addSubjob(job);
 
     connect(job,  SIGNAL(data(KIO::Job *, const QByteArray &)),

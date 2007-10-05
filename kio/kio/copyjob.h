@@ -225,11 +225,11 @@ namespace KIO {
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *copy( const KUrl& src, const KUrl& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *copy( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
 
     /**
      * Copy a file or directory @p src into the destination @p dest,
@@ -241,53 +241,53 @@ namespace KIO {
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here 
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *copyAs( const KUrl& src, const KUrl& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *copyAs( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
 
     /**
      * Copy a list of file/dirs @p src into a destination directory @p dest.
      *
      * @param src the list of files and/or directories
      * @param dest the destination
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *copy( const KUrl::List& src, const KUrl& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *copy( const KUrl::List& src, const KUrl& dest, JobFlags flags = DefaultFlags );
 
     /**
      * Moves a file or directory @p src to the given destination @p dest.
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      * @see copy()
      * @see moveAs()
      */
-    KIO_EXPORT CopyJob *move( const KUrl& src, const KUrl& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *move( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
     /**
      * Moves a file or directory @p src to the given destination @p dest. Unlike move()
      * this operation will fail when the directory already exists.
      *
      * @param src the file or directory to copy
      * @param dest the destination
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *moveAs( const KUrl& src, const KUrl& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *moveAs( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
     /**
      * Moves a list of files or directories @p src to the given destination @p dest.
      *
      * @param src the list of files or directories to copy
      * @param dest the destination
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      * @see copy()
      */
-    KIO_EXPORT CopyJob *move( const KUrl::List& src, const KUrl& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *move( const KUrl::List& src, const KUrl& dest, JobFlags flags = DefaultFlags );
 
     /**
      * Create a link.
@@ -296,10 +296,10 @@ namespace KIO {
      *
      * @param src The existing file or directory, 'target' of the link.
      * @param destDir Destination directory where the link will be created.
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *link( const KUrl& src, const KUrl& destDir, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *link( const KUrl& src, const KUrl& destDir, JobFlags flags = DefaultFlags );
 
     /**
      * Create several links
@@ -308,11 +308,11 @@ namespace KIO {
      *
      * @param src The existing files or directories, 'targets' of the link.
      * @param destDir Destination directory where the links will be created.
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      * @see link()
      */
-    KIO_EXPORT CopyJob *link( const KUrl::List& src, const KUrl& destDir, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *link( const KUrl::List& src, const KUrl& destDir, JobFlags flags = DefaultFlags );
 
     /**
      * Create a link. Unlike link() this operation will fail when the directory already
@@ -322,12 +322,12 @@ namespace KIO {
      *
      * @param src The existing file or directory, 'target' of the link.
      * @param dest Destination directory where the link will be created.
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      * @see link ()
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *linkAs( const KUrl& src, const KUrl& dest, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *linkAs( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
 
     /**
      * Trash a file or directory.
@@ -335,20 +335,20 @@ namespace KIO {
      * Use "KUrl src; src.setPath( path );" to create a URL from a path.
      *
      * @param src file to delete
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *trash( const KUrl& src, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *trash( const KUrl& src, JobFlags flags = DefaultFlags );
 
     /**
      * Trash a list of files or directories.
      * This is currently only supported for local files and directories.
      *
      * @param src the files to delete
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *trash( const KUrl::List& src, bool showProgressInfo = true );
+    KIO_EXPORT CopyJob *trash( const KUrl::List& src, JobFlags flags = DefaultFlags );
 
 }
 

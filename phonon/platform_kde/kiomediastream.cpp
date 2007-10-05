@@ -59,7 +59,7 @@ void KioMediaStream::reset()
         connect(d->kiojob, SIGNAL(position(KIO::Job *, KIO::filesize_t)),
                 this, SLOT(_k_bytestreamSeekDone(KIO::Job *, KIO::filesize_t)));
     } else {
-        d->kiojob = KIO::get(d->url, false, false);
+        d->kiojob = KIO::get(d->url, KIO::NoReload, KIO::HideProgressInfo);
         Q_ASSERT(d->kiojob);
         setStreamSeekable(false);
         connect(d->kiojob, SIGNAL(totalSize(KJob *, qulonglong)),

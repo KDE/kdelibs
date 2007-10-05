@@ -318,7 +318,7 @@ void KUrlNavigatorButton::startListJob()
     }
 
     const KUrl& url = urlNavigator()->url(m_index);
-    m_listJob = KIO::listDir(url, false, false);
+    m_listJob = KIO::listDir(url, KIO::HideProgressInfo, false /*no hidden files*/);
     m_subdirs.clear(); // just to be ++safe
 
     connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),

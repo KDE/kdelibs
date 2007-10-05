@@ -945,7 +945,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
                     KHTMLPageCache::self()->saveData(cacheId, &stream);
                     KUrl url2 = KUrl();
                     url2.setPath(destFile.fileName());
-                    KIO::file_move(url2, destURL, -1, true /*overwrite*/);
+                    KIO::file_move(url2, destURL, -1, KIO::Overwrite);
                     saved = true;
                 }
             }
@@ -989,7 +989,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
 
           if ( downloadViaKIO )
           {
-              KIO::Job *job = KIO::file_copy( url, destURL, -1, true /*overwrite*/ );
+              KIO::Job *job = KIO::file_copy( url, destURL, -1, KIO::Overwrite );
               job->setMetaData(metadata);
               job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
               job->addMetaData("cache", "cache"); // Use entry from cache if available.

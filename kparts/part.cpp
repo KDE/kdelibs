@@ -574,7 +574,9 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
 
         KUrl destURL;
         destURL.setPath( d->m_file );
-        d->m_job = KIO::file_copy( d->m_url, destURL, 0600, true, false, d->m_showProgressInfo );
+        KIO::JobFlags flags = d->m_showProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
+        flags |= KIO::Overwrite;
+        d->m_job = KIO::file_copy( d->m_url, destURL, 0600, flags );
         d->m_job->ui()->setWindow( widget() ? widget()->topLevelWidget() : 0 );
         emit started( d->m_job );
         connect( d->m_job, SIGNAL( result( KJob * ) ), this, SLOT( _k_slotJobFinished ( KJob * ) ) );
@@ -907,7 +909,7 @@ bool ReadWritePart::saveToUrl()
             // Uh oh, some error happened.
             return false;
         }
-        d->m_uploadJob = KIO::file_move( uploadUrl, d->m_url, -1, true /*overwrite*/ );
+        d->m_uploadJob = KIO::file_move( uploadUrl, d->m_url, -1, KIO::Overwrite );
         d->m_uploadJob->ui()->setWindow( widget() ? widget()->topLevelWidget() : 0 );
         connect( d->m_uploadJob, SIGNAL( result( KJob * ) ), this, SLOT( _k_slotUploadFinished (KJob *) ) );
         return true;

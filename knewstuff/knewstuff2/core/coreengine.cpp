@@ -255,7 +255,7 @@ void CoreEngine::downloadPreview(Entry *entry)
 	kDebug(550) << "Downloading preview '" << source << "' to '" << destination << "'";
 
 	// FIXME: check for validity
-	KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, true, false, false);
+	KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
 	connect(job,
 		SIGNAL(result(KJob*)),
 		SLOT(slotPreviewResult(KJob*)));
@@ -287,7 +287,7 @@ void CoreEngine::downloadPayload(Entry *entry)
 	kDebug(550) << "Downloading payload '" << source << "' to '" << destination << "'";
 
 	// FIXME: check for validity
-	KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, true, false, false);
+	KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
 	connect(job,
 		SIGNAL(result(KJob*)),
 		SLOT(slotPayloadResult(KJob*)));
@@ -322,7 +322,7 @@ bool CoreEngine::uploadEntry(Provider *provider, Entry *entry)
 
 	destfolder.setFileName(sourcepayload.fileName());
 
-	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepayload, destfolder, -1, true, false, false);
+	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepayload, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
 	connect(fcjob,
 		SIGNAL(result(KJob*)),
 		SLOT(slotUploadPayloadResult(KJob*)));
@@ -451,7 +451,7 @@ void CoreEngine::slotUploadPayloadResult(KJob *job)
 	KUrl sourcepreview = KUrl(m_uploadedentry->preview().representation());
 	KUrl destfolder = m_uploadprovider->uploadUrl();
 
-	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepreview, destfolder, -1, true, false, false);
+	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepreview, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
 	connect(fcjob,
 		SIGNAL(result(KJob*)),
 		SLOT(slotUploadPreviewResult(KJob*)));
@@ -496,7 +496,7 @@ void CoreEngine::slotUploadPreviewResult(KJob *job)
 	metastream << exml;
 	f.close();
 
-	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcemeta, destfolder, -1, true, false, false);
+	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcemeta, destfolder, -1, KIO::Overwrite | KIO::HideProgressInfo);
 	connect(fcjob,
 		SIGNAL(result(KJob*)),
 		SLOT(slotUploadMetaResult(KJob*)));

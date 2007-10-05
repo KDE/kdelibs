@@ -77,12 +77,12 @@ public:
 
   virtual void listDir( const KUrl & url );
   virtual void mkdir( const KUrl & url, int permissions );
-  virtual void rename( const KUrl & src, const KUrl & dst, bool overwrite );
+  virtual void rename( const KUrl & src, const KUrl & dst, KIO::JobFlags flags );
   virtual void del( const KUrl & url, bool isfile );
   virtual void chmod( const KUrl & url, int permissions );
 
   virtual void get( const KUrl& url );
-  virtual void put( const KUrl& url, int permissions, bool overwrite, bool resume);
+  virtual void put( const KUrl& url, int permissions, KIO::JobFlags flags );
   //virtual void mimetype( const KUrl& url );
 
   virtual void slave_status();
@@ -90,7 +90,7 @@ public:
   /**
    * Handles the case that one side of the job is a local file
    */
-  virtual void copy( const KUrl &src, const KUrl &dest, int permissions, bool overwrite );
+  virtual void copy( const KUrl &src, const KUrl &dest, int permissions, KIO::JobFlags flags );
 
 private:
   // ------------------------------------------------------------------------
@@ -259,7 +259,7 @@ private:
    *
    * @return true on success.
    */
-  bool ftpRename( const QString & src, const QString & dst, bool overwrite );
+  bool ftpRename( const QString & src, const QString & dst, KIO::JobFlags flags );
 
   /**
    * Called by openConnection. It opens the control connection to the ftp server.
@@ -306,7 +306,7 @@ private:
    * @param iCopyFile   -1 -or- handle of a local source file
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  StatusCode ftpPut(int& iError, int iCopyFile, const KUrl& url, int permissions, bool overwrite, bool resume);
+  StatusCode ftpPut(int& iError, int iCopyFile, const KUrl& url, int permissions, KIO::JobFlags flags);
 
   /**
    * helper called from copy() to implement FILE -> FTP transfers
@@ -316,7 +316,7 @@ private:
    * @param sCopyFile   path of the local source file
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  StatusCode ftpCopyPut(int& iError, int& iCopyFile, const QString &sCopyFile, const KUrl& url, int permissions, bool overwrite);
+  StatusCode ftpCopyPut(int& iError, int& iCopyFile, const QString &sCopyFile, const KUrl& url, int permissions, KIO::JobFlags flags);
 
   /**
    * helper called from copy() to implement FTP -> FILE transfers
@@ -326,7 +326,7 @@ private:
    * @param sCopyFile   path of the local destination file
    * @return 0 for success, -1 for server error, -2 for client error
    */
-  StatusCode ftpCopyGet(int& iError, int& iCopyFile, const QString &sCopyFile, const KUrl& url, int permissions, bool overwrite);
+  StatusCode ftpCopyGet(int& iError, int& iCopyFile, const QString &sCopyFile, const KUrl& url, int permissions, KIO::JobFlags flags);
 
 private: // data members
 

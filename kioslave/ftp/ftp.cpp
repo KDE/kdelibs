@@ -1027,19 +1027,19 @@ void Ftp::mkdir( const KUrl & url, int permissions )
   finished();
 }
 
-void Ftp::rename( const KUrl& src, const KUrl& dst, bool overwrite )
+void Ftp::rename( const KUrl& src, const KUrl& dst, KIO::JobFlags flags )
 {
   if( !ftpOpenConnection(loginImplicit) )
         return;
 
   // The actual functionality is in ftpRename because put needs it
-  if ( ftpRename( src.path(), dst.path(), overwrite ) )
+  if ( ftpRename( src.path(), dst.path(), flags ) )
     finished();
   else
     error( ERR_CANNOT_RENAME, src.path() );
 }
 
-bool Ftp::ftpRename( const QString & src, const QString & dst, bool /* overwrite */ )
+bool Ftp::ftpRename( const QString & src, const QString & dst, KIO::JobFlags )
 {
   // TODO honor overwrite
   assert( m_bLoggedOn );
@@ -1880,18 +1880,18 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
 // public: put           upload file to server
 // helper: ftpPut        called from put() and copy()
 //===============================================================================
-void Ftp::put(const KUrl& url, int permissions, bool overwrite, bool resume)
+void Ftp::put(const KUrl& url, int permissions, KIO::JobFlags flags)
 {
   kDebug(7102) << "Ftp::put " << url.url();
   int iError = 0;                           // iError gets status
-  ftpPut(iError, -1, url, permissions, overwrite, resume);
+  ftpPut(iError, -1, url, permissions, flags);
   if(iError)                                // can have only server side errs
      error(iError, url.path());
   ftpCloseCommand();                        // must close command!
 }
 
 Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
-                            int permissions, bool overwrite, bool resume)
+                            int permissions, KIO::JobFlags flags)
 {
   if( !ftpOpenConnection(loginImplicit) )
     return statusServerError;
@@ -1920,14 +1920,14 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
         return statusServerError;
       }
     }
-    else if ( !overwrite && !resume )
+    else if ( !(flags & KIO::Overwrite) && !(flags & KIO::Resume) )
     {
        iError = ERR_FILE_ALREADY_EXIST;
        return statusServerError;
     }
     else if ( bMarkPartial )
     { // when using mark partial, append .part extension
-      if ( !ftpRename( dest_orig, dest_part, true ) )
+      if ( !ftpRename( dest_orig, dest_part, KIO::Overwrite ) )
       {
         iError = ERR_CANNOT_RENAME_PARTIAL;
         return statusServerError;
@@ -1948,10 +1948,10 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
         return statusServerError;
       }
     }
-    else if ( !overwrite && !resume )
+    else if ( !(flags & KIO::Overwrite) && !(flags & KIO::Resume) )
     {
-      resume = canResume (m_size);
-      if (!resume)
+      flags |= canResume (m_size) ? KIO::Resume : KIO::DefaultFlags;
+      if (!(flags & KIO::Resume))
       {
         iError = ERR_FILE_ALREADY_EXIST;
         return statusServerError;
@@ -1973,7 +1973,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   KIO::fileoffset_t offset = 0;
 
   // set the mode according to offset
-  if( resume && m_size > 0 )
+  if( (flags & KIO::Resume) && m_size > 0 )
   {
     offset = m_size;
     if(iCopyFile != -1)
@@ -2053,7 +2053,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   if ( bMarkPartial )
   {
     kDebug(7102) << "renaming dest (" << dest << ") back to dest_orig (" << dest_orig << ")";
-    if ( !ftpRename( dest, dest_orig, true ) )
+    if ( !ftpRename( dest, dest_orig, KIO::Overwrite ) )
     {
       iError = ERR_CANNOT_RENAME_PARTIAL;
       return statusServerError;
@@ -2159,7 +2159,7 @@ bool Ftp::ftpFolder(const QString& path, bool bReportError)
 // helper: ftpCopyPut    called from copy() on upload
 // helper: ftpCopyGet    called from copy() on download
 //===============================================================================
-void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, bool overwrite )
+void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, KIO::JobFlags flags )
 {
   int iError = 0;
   int iCopyFile = -1;
@@ -2172,14 +2172,14 @@ void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, bool overwri
   {
     sCopyFile = src.toLocalFile();
     kDebug(7102) << "Ftp::copy local file '" << sCopyFile << "' -> ftp '" << dest.path() << "'";
-    cs = ftpCopyPut(iError, iCopyFile, sCopyFile, dest, permissions, overwrite);
+    cs = ftpCopyPut(iError, iCopyFile, sCopyFile, dest, permissions, flags);
     if( cs == statusServerError) sCopyFile = dest.url();
   }
   else if(!bSrcLocal && bDestLocal)               // Ftp -> File
   {
     sCopyFile = dest.toLocalFile();
     kDebug(7102) << "Ftp::copy ftp '" << src.path() << "' -> local file '" << sCopyFile << "'";
-    cs = ftpCopyGet(iError, iCopyFile, sCopyFile, src, permissions, overwrite);
+    cs = ftpCopyGet(iError, iCopyFile, sCopyFile, src, permissions, flags);
     if( cs == statusServerError ) sCopyFile = src.url();
   }
   else {
@@ -2197,7 +2197,7 @@ void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, bool overwri
 
 
 Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCopyFile,
-                                const KUrl& url, int permissions, bool overwrite)
+                                const KUrl& url, int permissions, KIO::JobFlags flags)
 {
   // check if source is ok ...
   KDE_struct_stat buff;
@@ -2226,15 +2226,15 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
   // delegate the real work (iError gets status) ...
   totalSize(buff.st_size);
 #ifdef  ENABLE_CAN_RESUME
-  return ftpPut(iError, iCopyFile, url, permissions, overwrite, false);
+  return ftpPut(iError, iCopyFile, url, permissions, flags & ~KIO::Resume);
 #else
-  return ftpPut(iError, iCopyFile, url, permissions, overwrite, true);
+  return ftpPut(iError, iCopyFile, url, permissions, flags | KIO::Resume);
 #endif
 }
 
 
 Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCopyFile,
-                                const KUrl& url, int permissions, bool overwrite)
+                                const KUrl& url, int permissions, KIO::JobFlags flags)
 {
   // check if destination is ok ...
   KDE_struct_stat buff;
@@ -2246,7 +2246,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
       iError = ERR_IS_DIRECTORY;
       return statusClientError;
     }
-    if(!overwrite)
+    if(!(flags & KIO::Overwrite))
     {
       iError = ERR_FILE_ALREADY_EXIST;
       return statusClientError;

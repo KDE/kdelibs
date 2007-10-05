@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
   for ( uint i = 0; i < 4 ; ++i ) {
     kDebug() << "file_copy";
-    KIO::Job* job = KIO::file_copy(srcURL, tmpURL, -1, true, false, 0);
+    KIO::Job* job = KIO::file_copy(srcURL, tmpURL, -1, KIO::Overwrite);
     if ( !KIO::NetAccess::synchronousRun(job, 0) )
       kError() << "file_copy failed: " << KIO::NetAccess::lastErrorString() << endl;
     else {

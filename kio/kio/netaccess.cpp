@@ -122,8 +122,7 @@ bool NetAccess::download(const KUrl& u, QString & target, QWidget* window)
   NetAccess kioNet;
   KUrl dest;
   dest.setPath( target );
-  return kioNet.filecopyInternal( u, dest, -1, true /*overwrite*/,
-                                  false, window, false /*copy*/);
+  return kioNet.filecopyInternal( u, dest, -1, KIO::Overwrite, window, false /*copy*/);
 }
 
 bool NetAccess::upload(const QString& src, const KUrl& target, QWidget* window)
@@ -140,14 +139,13 @@ bool NetAccess::upload(const QString& src, const KUrl& target, QWidget* window)
   NetAccess kioNet;
   KUrl s;
   s.setPath(src);
-  return kioNet.filecopyInternal( s, target, -1, true /*overwrite*/,
-                                  false, window, false /*copy*/ );
+  return kioNet.filecopyInternal( s, target, -1, KIO::Overwrite, window, false /*copy*/ );
 }
 
 bool NetAccess::file_copy( const KUrl & src, const KUrl & target, QWidget* window )
 {
   NetAccess kioNet;
-  return kioNet.filecopyInternal( src, target, -1, false /*not overwrite*/, false /*resume*/,
+  return kioNet.filecopyInternal( src, target, -1, KIO::DefaultFlags,
                                   window, false /*copy*/ );
 }
 
@@ -156,22 +154,22 @@ bool NetAccess::copy( const KUrl& src, const KUrl& target, QWidget* window )
     return file_copy( src, target, window );
 }
 
-bool NetAccess::file_copy( const KUrl& src, const KUrl& target, int permissions,
-                           bool overwrite, bool resume, QWidget* window )
-{
-  NetAccess kioNet;
-  return kioNet.filecopyInternal( src, target, permissions, overwrite, resume,
-                                  window, false /*copy*/ );
-}
+// bool NetAccess::file_copy( const KUrl& src, const KUrl& target, int permissions,
+//                            bool overwrite, bool resume, QWidget* window )
+// {
+//   NetAccess kioNet;
+//   return kioNet.filecopyInternal( src, target, permissions, overwrite, resume,
+//                                   window, false /*copy*/ );
+// }
 
 
-bool NetAccess::file_move( const KUrl& src, const KUrl& target, int permissions,
-                           bool overwrite, bool resume, QWidget* window )
-{
-  NetAccess kioNet;
-  return kioNet.filecopyInternal( src, target, permissions, overwrite, resume,
-                                  window, true /*move*/ );
-}
+// bool NetAccess::file_move( const KUrl& src, const KUrl& target, int permissions,
+//                            bool overwrite, bool resume, QWidget* window )
+// {
+//   NetAccess kioNet;
+//   return kioNet.filecopyInternal( src, target, permissions, overwrite, resume,
+//                                   window, true /*move*/ );
+// }
 
 bool NetAccess::dircopy( const KUrl & src, const KUrl & target, QWidget* window )
 {
@@ -303,14 +301,14 @@ void NetAccess::removeTempFile(const QString& name)
 }
 
 bool NetAccess::filecopyInternal(const KUrl& src, const KUrl& target, int permissions,
-                                 bool overwrite, bool resume, QWidget* window, bool move)
+                                 KIO::JobFlags flags, QWidget* window, bool move)
 {
   d->bJobOK = true; // success unless further error occurs
 
   KIO::Scheduler::checkSlaveOnHold(true);
   KIO::Job * job = move
-                   ? KIO::file_move( src, target, permissions, overwrite, resume )
-                   : KIO::file_copy( src, target, permissions, overwrite, resume );
+                   ? KIO::file_move( src, target, permissions, flags )
+                   : KIO::file_copy( src, target, permissions, flags );
   job->ui()->setWindow (window);
   connect( job, SIGNAL( result (KJob *) ),
            this, SLOT( slotResult (KJob *) ) );
@@ -339,7 +337,8 @@ bool NetAccess::statInternal( const KUrl & url, int details, StatSide side,
                               QWidget* window )
 {
   d->bJobOK = true; // success unless further error occurs
-  KIO::StatJob * job = KIO::stat( url, !url.isLocalFile() );
+  KIO::JobFlags flags = url.isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags;
+  KIO::StatJob * job = KIO::stat( url, flags );
   job->ui()->setWindow (window);
   job->setDetails( details );
   job->setSide( side == SourceSide ? StatJob::SourceSide : StatJob::DestinationSide );
@@ -414,7 +413,7 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString &command
 
     stream << int('X') << tempPathUrl << command;
 
-    KIO::Job * job = KIO::special( tempPathUrl, packedArgs, true );
+    KIO::Job * job = KIO::special( tempPathUrl, packedArgs );
     job->ui()->setWindow( window );
     connect( job, SIGNAL( result (KJob *) ),
              this, SLOT( slotResult (KJob *) ) );

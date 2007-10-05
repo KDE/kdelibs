@@ -235,7 +235,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
       if ( lister->d->url == _url )
         lister->d->rootFileItem = KFileItem();
 
-      KIO::ListJob* job = KIO::listDir( _url, false /* no default GUI */ );
+      KIO::ListJob* job = KIO::listDir( _url, KIO::HideProgressInfo );
       jobs.insert( job, KIO::UDSEntryList() );
 
       lister->d->jobStarted( job );
@@ -564,7 +564,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
 
     Q_ASSERT( listers.isEmpty() || killed );
 
-    job = KIO::listDir( _dir, false /* no default GUI */ );
+    job = KIO::listDir( _dir, KIO::HideProgressInfo );
     jobs.insert( job, KIO::UDSEntryList() );
 
     connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),

@@ -162,7 +162,9 @@ bool KMultiPart::openUrl( const KUrl &url )
     // Hmm, args.reload is set to true when reloading, but this doesn't seem to be enough...
     // I get "HOLD: Reusing held slave for <url>", and the old data
 
-    m_job = KIO::get( url, arguments().reload(), false );
+    m_job = KIO::get( url, 
+                      arguments().reload() ? KIO::Reload : KIO::NoReload, 
+                      KIO::HideProgressInfo );
 
     emit started( 0 /*m_job*/ ); // don't pass the job, it would interfere with our own infoMessage
 

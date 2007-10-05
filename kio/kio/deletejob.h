@@ -105,21 +105,19 @@ namespace KIO {
      * Delete a file or directory.
      *
      * @param src file to delete
-     * @param shred obsolete (TODO remove in KDE4)
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT DeleteJob *del( const KUrl& src, bool shred = false, bool showProgressInfo = true );
+    KIO_EXPORT DeleteJob *del( const KUrl& src, JobFlags flags = DefaultFlags );
 
     /**
      * Deletes a list of files or directories.
      *
      * @param src the files to delete
-     * @param shred obsolete (TODO remove in KDE4)
-     * @param showProgressInfo true to show progress information
+     * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT DeleteJob *del( const KUrl::List& src, bool shred = false, bool showProgressInfo = true );
+    KIO_EXPORT DeleteJob *del( const KUrl::List& src, JobFlags flags = DefaultFlags );
 }
 
 #endif

@@ -148,11 +148,11 @@ namespace KIO {
             return job;
         }
         static inline SimpleJob *newJob(const KUrl& url, int command, const QByteArray &packedArgs,
-                                        bool showProgressInfo = false)
+                                        JobFlags flags = HideProgressInfo )
         {
             SimpleJob *job = new SimpleJob(*new SimpleJobPrivate(url, command, packedArgs));
             job->setUiDelegate(new JobUiDelegate);
-            if (showProgressInfo)
+            if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;
         }
@@ -243,11 +243,11 @@ namespace KIO {
         static inline TransferJob *newJob(const KUrl& url, int command,
                                           const QByteArray &packedArgs,
                                           const QByteArray &_staticData,
-                                          bool showProgressInfo)
+                                          JobFlags flags)
         {
             TransferJob *job = new TransferJob(*new TransferJobPrivate(url, command, packedArgs, _staticData));
             job->setUiDelegate(new JobUiDelegate);
-            if (showProgressInfo)
+            if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;
         }

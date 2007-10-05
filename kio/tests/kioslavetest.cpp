@@ -107,10 +107,6 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   opButtons->addButton( rbDelete );
   hbLayout->addWidget( rbDelete, 5 );
 
-  rbShred = new QRadioButton( "Shred", box );
-  opButtons->addButton( rbShred );
-  hbLayout->addWidget( rbShred, 5 );
-
   rbMkdir = new QRadioButton( "Mkdir", box );
   opButtons->addButton( rbMkdir );
   hbLayout->addWidget( rbMkdir, 5 );
@@ -247,9 +243,9 @@ void KioslaveTest::startJob() {
 
   pbStart->setEnabled( false );
 
-  bool observe = true;
+  KIO::JobFlags observe = DefaultFlags;
   if (progressMode != ProgressDefault) {
-    observe = false;
+    observe = HideProgressInfo;
   }
 
   SimpleJob *myJob = 0;
@@ -268,18 +264,18 @@ void KioslaveTest::startJob() {
     break;
 
   case Stat:
-    myJob = KIO::stat( src, false, 2 );
+    myJob = KIO::stat( src, KIO::StatJob::SourceSide, 2 );
     break;
 
   case Get:
-    myJob = KIO::get( src, true );
+    myJob = KIO::get( src, KIO::Reload );
     connect(myJob, SIGNAL( data( KIO::Job*, const QByteArray &)),
             SLOT( slotData( KIO::Job*, const QByteArray &)));
     break;
 
   case Put:
     putBuffer = 0;
-    myJob = KIO::put( src, -1, true, false);
+    myJob = KIO::put( src, -1, KIO::Overwrite );
     connect(myJob, SIGNAL( dataReq( KIO::Job*, QByteArray &)),
             SLOT( slotDataReq( KIO::Job*, QByteArray &)));
     break;
@@ -293,11 +289,7 @@ void KioslaveTest::startJob() {
     break;
 
   case Delete:
-    job = KIO::del( src, false, observe );
-    break;
-
-  case Shred:
-    job = KIO::del(src, true, observe);
+    job = KIO::del( src, observe );
     break;
 
   case Mkdir:
@@ -494,7 +486,7 @@ int main(int argc, char **argv) {
   options.add("d");
   options.add("dest <dest>", ki18n("Destination URL"), "");
   options.add("o");
-  options.add("operation <operation>", ki18n("Operation (list,listrecursive,stat,get,put,copy,move,del,shred,mkdir)"), "copy");
+  options.add("operation <operation>", ki18n("Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)"), "copy");
   options.add("p");
   options.add("progress <progress>", ki18n("Progress Type (none,default,status)"), "default");
 
@@ -532,8 +524,6 @@ int main(int argc, char **argv) {
     op = KioslaveTest::Move;
   } else if ( tmps == "del") {
     op = KioslaveTest::Delete;
-  } else if ( tmps == "shred") {
-    op = KioslaveTest::Shred;
   } else if ( tmps == "mkdir") {
     op = KioslaveTest::Mkdir;
   } else KCmdLineArgs::usage("unknown operation");

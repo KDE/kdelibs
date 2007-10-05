@@ -46,13 +46,13 @@ public:
 
   virtual void get( const KUrl& url );
   virtual void put( const KUrl& url, int _mode,
-		    bool _overwrite, bool _resume );
+		    KIO::JobFlags _flags );
   virtual void copy( const KUrl &src, const KUrl &dest,
-                     int mode, bool overwrite );
+                     int mode, KIO::JobFlags flags );
   virtual void rename( const KUrl &src, const KUrl &dest,
-                       bool overwrite );
+                       KIO::JobFlags flags );
   virtual void symlink( const QString &target, const KUrl &dest,
-                        bool overwrite );
+                        KIO::JobFlags flags );
 
   virtual void stat( const KUrl& url );
   virtual void listDir( const KUrl& url );

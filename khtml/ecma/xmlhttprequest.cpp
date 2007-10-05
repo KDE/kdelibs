@@ -413,7 +413,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
     // for charset.
     QByteArray buf = _body.toUtf8();
 
-    job = KIO::http_post( url, buf, false );
+    job = KIO::http_post( url, buf, KIO::HideProgressInfo );
     if(contentType.isNull())
       job->addMetaData( "content-type", "Content-type: text/plain" );
     else
@@ -421,7 +421,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
 
   }
   else {
-    job = KIO::get( url, false, false );
+    job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
   }
 
   if (!m_requestHeaders.isEmpty()) {

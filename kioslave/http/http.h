@@ -195,15 +195,14 @@ public:
   virtual void slave_status();
 
   virtual void get( const KUrl& url );
-  virtual void put( const KUrl& url, int _mode, bool overwrite,
-                    bool _resume );
+  virtual void put( const KUrl& url, int _mode, KIO::JobFlags flags );
 
 //----------------- Re-implemented methods for WebDAV -----------
   virtual void listDir( const KUrl& url );
   virtual void mkdir( const KUrl& url, int _permissions );
 
-  virtual void rename( const KUrl& src, const KUrl& dest, bool overwrite );
-  virtual void copy( const KUrl& src, const KUrl& dest, int _permissions, bool overwrite );
+  virtual void rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flags );
+  virtual void copy( const KUrl& src, const KUrl& dest, int _permissions, KIO::JobFlags flags );
   virtual void del( const KUrl& url, bool _isfile );
 
   // ask the host whether it supports WebDAV & cache this info

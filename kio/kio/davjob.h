@@ -78,10 +78,10 @@ namespace KIO {
     * @param properties a propfind document that describes the properties that
     *        should be retrieved
     * @param depth the depth of the request. Can be "0", "1" or "infinity"
-    * @param showProgressInfo true to show progress information
+    * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, JobFlags flags = DefaultFlags );
 
    /**
     * Creates a new DavJob that issues a PROPPATCH command. PROPPATCH sets
@@ -90,10 +90,10 @@ namespace KIO {
     * @param url the URL of the resource
     * @param properties a PROPPACTCH document that describes the properties that
     *        should be modified and its new values
-    * @param showProgressInfo true to show progress information
+    * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropPatch( const KUrl& url, const QDomDocument& properties, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davPropPatch( const KUrl& url, const QDomDocument& properties, JobFlags flags = DefaultFlags );
 
    /**
     * Creates a new DavJob that issues a SEARCH command.
@@ -102,10 +102,10 @@ namespace KIO {
     * @param nsURI the URI of the search method's qualified name
     * @param qName the local part of the search method's qualified name
     * @param query the search string
-    * @param showProgressInfo true to show progress information
+    * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davSearch( const KUrl &url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo=true );
+   KIO_EXPORT DavJob* davSearch( const KUrl &url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags = DefaultFlags );
 
 }
 

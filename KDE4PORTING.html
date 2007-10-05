@@ -1937,11 +1937,21 @@ and subjobs.isEmpty() with !hasSubjobs()</li>
 <li>Also note that you must now include &lt;kio/copyjob.h&gt; if you use KIO::copy, KIO::move or KIO::trash,
 and you must include &lt;kio/deletejob.h&gt; if you use KIO::del.</li>
 <li>For Job subclasses, there's no showProgressInfo flag in the constructor anymore. You should use KIO::getJobTracker()-&gt;registerJob(job) instead.</li>
+
+<li>Most boolean parameters have been replaced with enums. So for instance
+  <ul>
+     <li>KIO::file_copy(src, dest, -1, true /*overwrite*/, false /*no resume*/, false) -&gt; KIO::file_copy(src, dest, -1, KIO::Overwrite | KIO::HideProgressInfo)</li>
+     <li>KIO::get(url, false /*no reload*/, false) -&gt; KIO::get(url, KIO::NoReload, KIO::HideProgressInfo)</li>
+     <li>KIO::put(url, -1, true /*overwrite*/, false /*no resume*/, false) -&gt; KIO::put(url, -1, KIO::Overwrite | KIO::HideProgressInfo)</li>
+     <li>KIO::del(url, false /*shred, feature removed*/, false) -&gt; KIO::del(url, KIO::HideProgressInfo)</li>
+     <li>KIO::listDir(url, true /*show progress info*/, true /*include hidden files*/) -&gt; KIO::del(url, KIO::DefaultFlags, true /*include hidden files*/)</li>
+  </ul>
+</li>
 </ul>
 
 <h4>KIO::UDSEntry</h4>
 <ul>
-<li>UDSEntry is now a hash instead of a list. (NOT ANYMORE!!! NOT EVEN A HASH) Use the methods stringValue()
+<li>UDSEntry is now a hash-based class instead of a list. Use the methods stringValue()
 and numberValue() to retrieve fields directly, no loop is needed anymore.
 See the UDSEntry documentation for code examples.</li>
 <li>Also note that UDSEntryListConstIterator is now UDSEntryList::ConstIterator;

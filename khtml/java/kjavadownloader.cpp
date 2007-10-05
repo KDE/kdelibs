@@ -79,7 +79,7 @@ KJavaDownloader::KJavaDownloader( int ID, const QString& url )
     d->loaderID = ID;
     d->url = new KUrl( url );
 
-    d->job = KIO::get( *d->url, false, false );
+    d->job = KIO::get( *d->url, KIO::NoReload, KIO::HideProgressInfo );
     d->job->addMetaData("PropagateHttpHeader", "true");
     connect( d->job,  SIGNAL(data( KIO::Job*, const QByteArray& )),
              this,    SLOT(slotData( KIO::Job*, const QByteArray& )) );
@@ -213,7 +213,7 @@ void KJavaUploader::start()
     kDebug(6100) << "KJavaUploader::start(" << d->loaderID << ")";
     KJavaAppletServer* server = KJavaAppletServer::allocateJavaServer();
     // create a suspended job
-    d->job = KIO::put( *d->url, -1, false, false, false );
+    d->job = KIO::put( *d->url, -1, KIO::HideProgressInfo );
     d->job->suspend();
     connect( d->job, SIGNAL(dataReq( KIO::Job*, QByteArray& )),
             this,   SLOT(slotDataRequest( KIO::Job*, QByteArray& )) );

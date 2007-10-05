@@ -283,7 +283,7 @@ void ByteStreamTest::setMedia()
         QObject::connect(m_job, SIGNAL(position(KIO::Job *, KIO::filesize_t)),
                 this, SLOT(kioSeekDone(KIO::Job *, KIO::filesize_t)));
     } else {
-        m_job = KIO::get(m_url, false, false);
+        m_job = KIO::get(m_url, KIO::NoReload, KIO::HideProgressInfo);
         m_media->setStreamSeekable(false);
         connect(m_job, SIGNAL(totalSize(KJob *, qulonglong)),
                 this, SLOT(kioTotalSize(KJob *,qulonglong)));

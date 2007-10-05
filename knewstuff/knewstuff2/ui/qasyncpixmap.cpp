@@ -37,7 +37,7 @@ QAsyncPixmap::QAsyncPixmap(const QString& url, QObject* parent)
          //KTempFile
         m_dest = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".png";
 
-        KIO::FileCopyJob *job = KIO::file_copy(url, m_dest, -1, true, false, false);
+        KIO::FileCopyJob *job = KIO::file_copy(url, m_dest, -1, KIO::Overwrite | KIO::HideProgressInfo);
         connect(job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
     }
 }

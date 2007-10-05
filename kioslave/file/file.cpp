@@ -582,7 +582,7 @@ same_inode(const KDE_struct_stat &src, const KDE_struct_stat &dest)
    return false;
 }
 
-void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resume )
+void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
 {
     QString dest_orig = url.toLocalFile();
     QByteArray _dest_orig( QFile::encodeName(dest_orig));
@@ -603,7 +603,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
         KDE_struct_stat buff_part;
         bPartExists = (KDE_stat( _dest_part.data(), &buff_part ) != -1);
 
-        if (bPartExists && !_resume && !_overwrite && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
+        if (bPartExists && !(_flags & KIO::Resume) && !(_flags & KIO::Overwrite) && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
             kDebug(7101) << "FileProtocol::put : calling canResume with "
                           << KIO::number(buff_part.st_size);
@@ -611,13 +611,13 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
             // Maybe we can use this partial file for resuming
             // Tell about the size we have, and the app will tell us
             // if it's ok to resume or not.
-            _resume = canResume( buff_part.st_size );
+            _flags |= canResume( buff_part.st_size ) ? KIO::Resume : KIO::DefaultFlags;
 
-            kDebug(7101) << "FileProtocol::put got answer " << _resume;
+            kDebug(7101) << "FileProtocol::put got answer " << (_flags & KIO::Resume);
         }
     }
 
-    if ( bOrigExists && !_overwrite && !_resume)
+    if ( bOrigExists && !(_flags & KIO::Overwrite) && !(_flags & KIO::Resume))
     {
         if (S_ISDIR(buff_orig.st_mode))
             error( KIO::ERR_DIR_ALREADY_EXIST, dest_orig );
@@ -647,7 +647,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
                 {
                     kDebug(7101) << "Appending .part extension to " << dest_orig;
                     dest = dest_part;
-                    if ( bPartExists && !_resume )
+                    if ( bPartExists && !(_flags & KIO::Resume) )
                     {
                         kDebug(7101) << "Deleting partial file " << dest_part;
                         remove( _dest_part.data() );
@@ -657,7 +657,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
                 else
                 {
                     dest = dest_orig;
-                    if ( bOrigExists && !_resume )
+                    if ( bOrigExists && !(_flags & KIO::Resume) )
                     {
                         kDebug(7101) << "Deleting destination file " << dest_orig;
                         remove( _dest_orig.data() );
@@ -667,7 +667,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
 
                 _dest = QFile::encodeName(dest);
 
-                if ( _resume )
+                if ( (_flags & KIO::Resume) )
                 {
                     fd = KDE_open( _dest.data(), O_RDWR );  // append if resuming
                     KDE_lseek(fd, 0, SEEK_END); // Seek to end
@@ -755,7 +755,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
         // If the original URL is a symlink and we were asked to overwrite it,
         // remove the symlink first. This ensures that we do not overwrite the
         // current source if the symlink points to it.
-        if( _overwrite && S_ISLNK( buff_orig.st_mode ) )
+        if( (_flags & KIO::Overwrite) && S_ISLNK( buff_orig.st_mode ) )
           remove( _dest_orig.data() );
 
         if ( ::rename( _dest.data(), _dest_orig.data() ) )
@@ -767,7 +767,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
     }
 
     // set final permissions
-    if ( _mode != -1 && !_resume )
+    if ( _mode != -1 && !(_flags & KIO::Resume) )
     {
         if (::chmod(_dest_orig.data(), _mode) != 0)
         {
@@ -800,7 +800,7 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
 
 
 void FileProtocol::copy( const KUrl &src, const KUrl &dest,
-                         int _mode, bool _overwrite )
+                         int _mode, JobFlags _flags )
 {
     kDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode;
 
@@ -844,7 +844,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 	    return;
 	}
 
-        if (!_overwrite)
+        if (!(_flags & KIO::Overwrite))
         {
            error( KIO::ERR_FILE_ALREADY_EXIST, _dest );
            return;
@@ -853,7 +853,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
         // If the destination is a symlink and overwrite is TRUE,
         // remove the symlink first to prevent the scenario where
         // the symlink actually points to current source!
-        if (_overwrite && S_ISLNK(buff_dest.st_mode))
+        if ((_flags & KIO::Overwrite) && S_ISLNK(buff_dest.st_mode))
         {
             kDebug(7101) << "copy(): LINK DESTINATION";
             remove( _dest.data() );
@@ -1029,7 +1029,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 }
 
 void FileProtocol::rename( const KUrl &src, const KUrl &dest,
-                           bool _overwrite )
+                           KIO::JobFlags _flags )
 {
     QByteArray _src( QFile::encodeName(src.toLocalFile()));
     QByteArray _dest( QFile::encodeName(dest.toLocalFile()));
@@ -1058,7 +1058,7 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
 	    return;
 	}
 
-        if (!_overwrite)
+        if (!(_flags & KIO::Overwrite))
         {
            error( KIO::ERR_FILE_ALREADY_EXIST, _dest );
            return;
@@ -1085,7 +1085,7 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
     finished();
 }
 
-void FileProtocol::symlink( const QString &target, const KUrl &dest, bool overwrite )
+void FileProtocol::symlink( const QString &target, const KUrl &dest, KIO::JobFlags flags )
 {
     // Assume dest is local too (wouldn't be here otherwise)
     if ( ::symlink( QFile::encodeName( target ), QFile::encodeName( dest.path() ) ) == -1 )
@@ -1093,7 +1093,7 @@ void FileProtocol::symlink( const QString &target, const KUrl &dest, bool overwr
         // Does the destination already exist ?
         if ( errno == EEXIST )
         {
-            if ( overwrite )
+            if ( (flags & KIO::Overwrite) )
             {
                 // Try to delete the destination
                 if ( unlink( QFile::encodeName( dest.path() ) ) != 0 )
@@ -1102,7 +1102,7 @@ void FileProtocol::symlink( const QString &target, const KUrl &dest, bool overwr
                     return;
                 }
                 // Try again - this won't loop forever since unlink succeeded
-                symlink( target, dest, overwrite );
+                symlink( target, dest, flags );
             }
             else
             {

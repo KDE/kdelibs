@@ -147,10 +147,12 @@ void BrowserRun::scanFile()
 
   KIO::TransferJob *job;
     if ( d->m_browserArgs.doPost() && KRun::url().protocol().startsWith("http")) {
-        job = KIO::http_post( KRun::url(), d->m_browserArgs.postData, false );
+        job = KIO::http_post( KRun::url(), d->m_browserArgs.postData, KIO::HideProgressInfo );
         job->addMetaData( "content-type", d->m_browserArgs.contentType() );
     } else {
-        job = KIO::get(KRun::url(), d->m_args.reload(), false);
+        job = KIO::get(KRun::url(),
+                       d->m_args.reload() ? KIO::Reload : KIO::NoReload, 
+                       KIO::HideProgressInfo);
   }
 
     if ( d->m_bRemoveReferrer )
@@ -258,7 +260,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 tempFile.open();
                 KUrl destURL;
                 destURL.setPath( tempFile.fileName() );
-                KIO::Job *job = KIO::file_copy( KRun::url(), destURL, 0600, true /*overwrite*/, false /*no resume*/, true /*progress info*/ );
+                KIO::Job *job = KIO::file_copy( KRun::url(), destURL, 0600, KIO::Overwrite );
                 job->ui()->setWindow(d->m_window);
                 connect( job, SIGNAL(result(KJob *)),
                          this, SLOT(slotCopyToTempFileResult(KJob *)) );

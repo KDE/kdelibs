@@ -130,7 +130,7 @@ void Soap::call_soap(QDomElement element, const QString &endpoint)
 	kDebug() << "HTTP-POST " << s;
 
 	KIO::TransferJob *job;
-	job = KIO::http_post(url, data, false);
+	job = KIO::http_post(url, data, KIO::HideProgressInfo);
 	job->addMetaData("content-type", "Content-Type: text/xml");
 
 	kDebug() << "Call!";

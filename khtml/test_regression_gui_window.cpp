@@ -224,7 +224,7 @@ void TestRegressionWindow::initTestsDirectory()
 
 		// Start listing directory...
 		KUrl listUrl = m_testsUrl; listUrl.addPath("tests");
-		KIO::ListJob *job = KIO::listRecursive(listUrl, false /* no progress */, false /* no hidden files */);
+		KIO::ListJob *job = KIO::listRecursive(listUrl, KIO::HideProgressInfo, false /* no hidden files */);
 
 		connect(job, SIGNAL(result(KJob *)), SLOT(directoryListingFinished(KJob *)));
 

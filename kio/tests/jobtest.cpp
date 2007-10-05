@@ -112,7 +112,7 @@ void JobTest::initTestCase()
 }
 
 static void delDir(const QString& pathOrUrl) {
-    KIO::Job* job = KIO::del(KUrl(pathOrUrl), false, false);
+    KIO::Job* job = KIO::del(KUrl(pathOrUrl), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     KIO::NetAccess::synchronousRun(job, 0);
 }
@@ -144,7 +144,7 @@ void JobTest::get()
     createTestFile( filePath );
     KUrl u( filePath );
     m_result = -1;
-    KIO::StoredTransferJob* job = KIO::storedGet( u, false, false );
+    KIO::StoredTransferJob* job = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     connect( job, SIGNAL( result( KJob* ) ),
             this, SLOT( slotGetResult( KJob* ) ) );
@@ -165,7 +165,7 @@ void JobTest::put()
 {
     const QString filePath = homeTmpDir() + "fileFromHome";
     KUrl u(filePath);
-    KIO::TransferJob* job = KIO::put( u, 0600, true /*overwrite*/, false /*no resume*/, false /*no progress info*/ );
+    KIO::TransferJob* job = KIO::put( u, 0600, KIO::Overwrite | KIO::HideProgressInfo );
     QDateTime mtime = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
     job->setModificationTime(mtime);
@@ -216,7 +216,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
     const KUrl d( dest );
 
     // copy the file with file_copy
-    KIO::Job* job = KIO::file_copy(u, d, -1, false, false, false /*no progress info*/);
+    KIO::Job* job = KIO::file_copy(u, d, -1, KIO::HideProgressInfo );
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -240,7 +240,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
 
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
-    job = KIO::copy(u, d, false);
+    job = KIO::copy(u, d, KIO::HideProgressInfo );
     job->setUiDelegate(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -274,7 +274,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
     else
         QVERIFY( !QFile::exists( dest ) );
 
-    KIO::Job* job = KIO::copy(u, d, false);
+    KIO::Job* job = KIO::copy(u, d, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -358,7 +358,7 @@ void JobTest::moveLocalFile( const QString& src, const QString& dest )
     d.setPath( dest );
 
     // move the file with file_move
-    KIO::Job* job = KIO::file_move(u, d, -1, false, false, false);
+    KIO::Job* job = KIO::file_move(u, d, -1, KIO::HideProgressInfo);
     job->setUiDelegate( 0 );
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -366,7 +366,7 @@ void JobTest::moveLocalFile( const QString& src, const QString& dest )
     QVERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
-    job = KIO::move( d, u, false );
+    job = KIO::move( d, u, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -384,7 +384,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     d.setPath( dest );
 
     // move the symlink with move, NOT with file_move
-    KIO::Job* job = KIO::move( u, d, false );
+    KIO::Job* job = KIO::move( u, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     if ( !ok )
@@ -394,7 +394,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     QVERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
-    job = KIO::move( d, u, false );
+    job = KIO::move( d, u, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -416,7 +416,7 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
     KUrl d;
     d.setPath( dest );
 
-    KIO::Job* job = KIO::move( u, d, false );
+    KIO::Job* job = KIO::move( u, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -493,7 +493,7 @@ void JobTest::moveFileNoPermissions()
     KUrl d;
     d.setPath( dest );
 
-    KIO::CopyJob* job = KIO::move( u, d, false );
+    KIO::CopyJob* job = KIO::move( u, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 ); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
@@ -529,7 +529,7 @@ void JobTest::moveDirectoryNoPermissions()
     KUrl d;
     d.setPath( dest );
 
-    KIO::CopyJob* job = KIO::move( u, d, false );
+    KIO::CopyJob* job = KIO::move( u, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 ); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
@@ -550,7 +550,7 @@ void JobTest::listRecursive()
     bool symlinkOk = symlink( "dirFromHome", QFile::encodeName( src + "/dirFromHome_link" ) ) == 0;
     QVERIFY( symlinkOk );
 #endif
-    KIO::ListJob* job = KIO::listRecursive( KUrl(src), false );
+    KIO::ListJob* job = KIO::listRecursive( KUrl(src), KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
              SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
@@ -998,7 +998,7 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
 
     // copy the file with file_copy
     m_mimetype.clear();
-    KIO::FileCopyJob* job = KIO::file_copy(u, d, -1, false, false, false /*no progress info*/);
+    KIO::FileCopyJob* job = KIO::file_copy(u, d, -1, KIO::HideProgressInfo);
     job->setUiDelegate( 0 );
     connect( job, SIGNAL(mimetype(KIO::Job*,const QString&)),
              this, SLOT(slotMimetype(KIO::Job*,const QString&)) );
@@ -1021,7 +1021,7 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
 
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
-    job = KIO::copy(u, d, false);
+    job = KIO::copy(u, d, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -1044,7 +1044,7 @@ void JobTest::getInvalidUrl()
     KUrl url("file://\"\"");
     QVERIFY(!url.isValid());
 
-    KIO::SimpleJob* job = KIO::get(url, false, false);
+    KIO::SimpleJob* job = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
     QVERIFY(job != 0);
     job->setUiDelegate( 0 );
 

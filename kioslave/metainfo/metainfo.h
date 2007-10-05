@@ -29,7 +29,7 @@ public:
 
     virtual void get(const KUrl &url);
     virtual void put(const KUrl& url, int permissions,
-                     bool overwrite, bool resume);
+                     KIO::JobFlags flags);
 
 };
 

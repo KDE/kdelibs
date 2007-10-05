@@ -23,6 +23,7 @@
 #include <kio/global.h>
 #include <kio/udsentry.h>
 #include <kio/authinfo.h>
+#include <kio/jobclasses.h> // for KIO::JobFlags
 
 #include <QtCore/QByteArray>
 
@@ -392,17 +393,17 @@ public:
      *
      * @param url where to write the file
      * @param permissions may be -1. In this case no special permission mode is set.
-     * @param overwrite if true, any existing file will be overwritten.
+     * @param flags: We support Overwrite here. Hopefully, we're going to
+     * support Resume in the future, too.
      * If the file indeed already exists, the slave should NOT apply the
      * permissions change to it.
-     * @param resume currently unused, please ignore.
-     *   The support for resuming using .part files is done by calling canResume().
+     * The support for resuming using .part files is done by calling canResume().
      *
      * IMPORTANT: Use the "modified" metadata in order to set the modification time of the file.
      *
      * @see canResume()
      */
-    virtual void put( const KUrl& url, int permissions, bool overwrite, bool resume );
+    virtual void put( const KUrl& url, int permissions, JobFlags flags );
 
     /**
      * Finds all details for one file or directory.
@@ -449,18 +450,18 @@ public:
      * ask for copy + del instead.
      * @param src where to move the file from
      * @param dest where to move the file to
-     * @param overwrite if true, any existing file will be overwritten
+     * @param flags: We support Overwrite here
      */
-    virtual void rename( const KUrl& src, const KUrl& dest, bool overwrite );
+    virtual void rename( const KUrl& src, const KUrl& dest, JobFlags flags );
 
     /**
      * Creates a symbolic link named @p dest, pointing to @p target, which
      * may be a relative or an absolute path.
      * @param target The string that will become the "target" of the link (can be relative)
      * @param dest The symlink to create.
-     * @param overwrite whether to automatically overwrite if the dest exists
+     * @param flags: We support Overwrite here
      */
-    virtual void symlink( const QString& target, const KUrl& dest, bool overwrite );
+    virtual void symlink( const QString& target, const KUrl& dest, JobFlags flags );
 
     /**
      * Change permissions on @p url
@@ -490,11 +491,11 @@ public:
      * @param src where to copy the file from (decoded)
      * @param dest where to copy the file to (decoded)
      * @param permissions may be -1. In this case no special permission mode is set.
-     * @param overwrite if true, any existing file will be overwritten
+     * @param flags: We support Overwrite here
      *
      * Don't forget to set the modification time of @p dest to be the modification time of @p src.
      */
-    virtual void copy( const KUrl &src, const KUrl &dest, int permissions, bool overwrite );
+    virtual void copy( const KUrl &src, const KUrl &dest, int permissions, JobFlags flags );
 
     /**
      * Delete a file or directory.

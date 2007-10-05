@@ -1269,7 +1269,7 @@ void KUrlCompletionPrivate::_k_slotIOFinished( KJob * job )
 
 //		kDebug() << "Start KIO: " << kurl->prettyUrl();
 
-		list_job = KIO::listDir( *kurl, false );
+		list_job = KIO::listDir( *kurl, KIO::HideProgressInfo );
 		list_job->addMetaData("no-auth-prompt", "true");
 
 		assert( list_job );

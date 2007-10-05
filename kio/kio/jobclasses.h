@@ -35,6 +35,36 @@
 
 namespace KIO {
 
+    /**
+     * Flags for the job properties.
+     * Not all flags are supported in all cases. Please see documentation of 
+     * the calling function!
+     */
+    enum JobFlag {
+      /**
+       * Show a progress info, no Resume and no Overwrite
+       */
+      DefaultFlags = 0,
+
+      /**
+       * Hide Progress info, i.e. don't show a GUI
+       */
+      HideProgressInfo = 1,
+
+      /**
+       * missing description
+       */
+      Resume = 2,
+
+      /**
+       * missing description
+       */
+      Overwrite = 4
+    };
+    Q_DECLARE_FLAGS(JobFlags, JobFlag)
+      Q_DECLARE_OPERATORS_FOR_FLAGS(JobFlags)
+
+
     class JobUiDelegate;
 
     class JobPrivate;

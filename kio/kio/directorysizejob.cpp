@@ -134,7 +134,7 @@ void DirectorySizeJobPrivate::startNextJob( const KUrl & url )
 {
     Q_Q(DirectorySizeJob);
     kDebug(7007) << "DirectorySizeJob::startNextJob " << url;
-    KIO::ListJob * listJob = KIO::listRecursive( url, false /* no GUI */ );
+    KIO::ListJob * listJob = KIO::listRecursive( url, KIO::HideProgressInfo );
     q->connect( listJob, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList& )),
                 SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
     q->addSubjob( listJob );

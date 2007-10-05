@@ -28,6 +28,7 @@
 #include <kio/global.h>
 #include <kio/udsentry.h>
 #include <kurl.h>
+#include <kio/jobclasses.h> // for KIO::JobFlags
 
 class QStringList;
 class QWidget;
@@ -179,22 +180,6 @@ public:
                                      QWidget* window = 0 );
 
     /**
-     * Full-fledged equivalent of KIO::file_copy
-     * @deprecated use KIO::file_copy and then KIO::NetAccess::synchronousRun
-     */
-    static KDE_DEPRECATED bool file_copy( const KUrl& src, const KUrl& dest, int permissions /*=-1*/,
-                                          bool overwrite=false, bool resume=false, QWidget* window = 0L );
-
-    /**
-     * Full-fledged equivalent of KIO::file_move.
-     * Moves or renames *one file*.
-     * @deprecated use KIO::file_move and then KIO::NetAccess::synchronousRun
-     */
-    static KDE_DEPRECATED bool file_move( const KUrl& src, const KUrl& target, int permissions = -1,
-                                          bool overwrite=false, bool resume=false, QWidget* window = 0 );
-
-
-    /**
      * Alternative method for copying over the network.
      *
      * This one takes two URLs and is a direct equivalent
@@ -214,24 +199,24 @@ public:
      *               prompted for passwords as needed.
      * @return true if successful, false for failure
      */
-    static bool dircopy( const KUrl& src, const KUrl& target, QWidget* window ); // TODO deprecate in favor of KIO::copy + synchronousRun
+    static bool dircopy( const KUrl& src, const KUrl& target, QWidget* window ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
 
     /**
      * Overloaded method, which takes a list of source URLs
      */
-    static bool dircopy( const KUrl::List& src, const KUrl& target, QWidget* window = 0L ); // TODO deprecate in favor of KIO::copy + synchronousRun
+    static bool dircopy( const KUrl::List& src, const KUrl& target, QWidget* window = 0L ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
 
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames one file or directory.
-     * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun
+     * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
      */
     static KDE_DEPRECATED bool move( const KUrl& src, const KUrl& target, QWidget* window = 0L );
 
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames a list of files or directories.
-     * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun
+     * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
      */
     static KDE_DEPRECATED bool move( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
 
@@ -363,7 +348,7 @@ public:
      * and after the function returns it will contain all the data fetched by this job.
      *
      * @code
-     * KIO::Job *job = KIO::get( url, false, false );
+     * KIO::Job *job = KIO::get( url );
      * QMap<QString, QString> metaData;
      * metaData.insert( "PropagateHttpHeader", "true" );
      * if ( NetAccess::synchronousRun( job, 0, &data, &url, &metaData ) ) {
@@ -443,7 +428,7 @@ private:
      * Internal methods
      */
     bool filecopyInternal(const KUrl& src, const KUrl& target, int permissions,
-                          bool overwrite, bool resume, QWidget* window, bool move);
+                          KIO::JobFlags flags, QWidget* window, bool move);
     bool dircopyInternal(const KUrl::List& src, const KUrl& target,
                          QWidget* window, bool move);
     bool statInternal(const KUrl & url, int details, StatSide side, QWidget* window = 0);

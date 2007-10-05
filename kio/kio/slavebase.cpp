@@ -751,7 +751,7 @@ void SlaveBase::closeConnection(void)
 { } // No response!
 void SlaveBase::stat(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_STAT)); }
-void SlaveBase::put(KUrl const &, int, bool, bool)
+void SlaveBase::put(KUrl const &, int, JobFlags )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_PUT)); }
 void SlaveBase::special(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SPECIAL)); }
@@ -771,11 +771,11 @@ void SlaveBase::close()
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CLOSE)); }
 void SlaveBase::mimetype(KUrl const &url)
 { get(url); }
-void SlaveBase::rename(KUrl const &, KUrl const &, bool)
+void SlaveBase::rename(KUrl const &, KUrl const &, JobFlags)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_RENAME)); }
-void SlaveBase::symlink(QString const &, KUrl const &, bool)
+void SlaveBase::symlink(QString const &, KUrl const &, JobFlags)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SYMLINK)); }
-void SlaveBase::copy(KUrl const &, KUrl const &, int, bool)
+void SlaveBase::copy(KUrl const &, KUrl const &, int, JobFlags)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_COPY)); }
 void SlaveBase::del(KUrl const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_DEL)); }
@@ -1022,15 +1022,16 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         int permissions;
         qint8 iOverwrite, iResume;
         stream >> url >> iOverwrite >> iResume >> permissions;
-        bool overwrite = ( iOverwrite != 0 );
-        bool resume = ( iResume != 0 );
+        JobFlags flags;
+        if ( iOverwrite != 0 ) flags |= Overwrite;
+        if ( iResume != 0 ) flags |= Resume;
 
         // Remember that we need to send canResume(), TransferJob is expecting
         // it. Well, in theory this shouldn't be done if resume is true.
         //   (the resume bool is currently unused)
         d->needSendCanResume = true   /* !resume */;
 
-        put( url, permissions, overwrite, resume);
+        put( url, permissions, flags);
     } break;
     case CMD_STAT:
         stream >> url;
@@ -1053,16 +1054,18 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         qint8 iOverwrite;
         KUrl url2;
         stream >> url >> url2 >> iOverwrite;
-        bool overwrite = (iOverwrite != 0);
-        rename( url, url2, overwrite );
+        JobFlags flags;
+        if ( iOverwrite != 0 ) flags |= Overwrite;
+        rename( url, url2, flags );
     } break;
     case CMD_SYMLINK:
     {
         qint8 iOverwrite;
         QString target;
         stream >> target >> url >> iOverwrite;
-        bool overwrite = (iOverwrite != 0);
-        symlink( target, url, overwrite );
+        JobFlags flags;
+        if ( iOverwrite != 0 ) flags |= Overwrite;
+        symlink( target, url, flags );
     } break;
     case CMD_COPY:
     {
@@ -1070,8 +1073,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         qint8 iOverwrite;
         KUrl url2;
         stream >> url >> url2 >> permissions >> iOverwrite;
-        bool overwrite = (iOverwrite != 0);
-        copy( url, url2, permissions, overwrite );
+        JobFlags flags;
+        if ( iOverwrite != 0 ) flags |= Overwrite;
+        copy( url, url2, permissions, flags );
     } break;
     case CMD_DEL:
     {

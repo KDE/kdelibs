@@ -97,7 +97,7 @@ public:
     virtual void get(const KUrl &url);
 
     virtual void put(const KUrl &url, int permissions,
-                     bool overwrite, bool resume);
+                     JobFlags flags);
 
     virtual void stat(const KUrl &url);
 
@@ -107,17 +107,17 @@ public:
 
     virtual void mkdir(const KUrl &url, int permissions);
 
-    virtual void rename(const KUrl &src, const KUrl &dest, bool overwrite);
+    virtual void rename(const KUrl &src, const KUrl &dest, JobFlags flags);
 
     virtual void symlink(const QString &target, const KUrl &dest,
-                         bool overwrite);
+                         JobFlags flags);
 
     virtual void chmod(const KUrl &url, int permissions);
 
     virtual void setModificationTime(const KUrl& url, const QDateTime& mtime);
 
     virtual void copy(const KUrl &src, const KUrl &dest,
-                      int permissions, bool overwrite);
+                      int permissions, JobFlags flags);
 
     virtual void del(const KUrl &url, bool isfile);
 

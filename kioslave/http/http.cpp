@@ -1190,7 +1190,7 @@ void HTTPProtocol::get( const KUrl& url )
   retrieveContent();
 }
 
-void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
+void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 {
   kDebug(7113) << url.url();
 
@@ -1198,7 +1198,7 @@ void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
     return;
 
   // Webdav hosts are capable of observing overwrite == false
-  if (!overwrite && m_protocol.startsWith("webdav")) {
+  if (!(flags & KIO::Overwrite) && m_protocol.startsWith("webdav")) {
     // check to make sure this host supports WebDAV
     if ( !davHostOk() )
       return;
@@ -1252,7 +1252,7 @@ void HTTPProtocol::put( const KUrl &url, int, bool overwrite, bool)
     httpError();
 }
 
-void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, bool overwrite )
+void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
 {
   kDebug(7113) << src.url() << "->" << dest.url();
 
@@ -1269,7 +1269,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, bool overwrite 
   m_request.method = DAV_COPY;
   m_request.path = src.path();
   m_request.davData.desturl = newDest.url();
-  m_request.davData.overwrite = overwrite;
+  m_request.davData.overwrite = (flags & KIO::Overwrite);
   m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;
@@ -1283,7 +1283,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, bool overwrite 
     davError();
 }
 
-void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, bool overwrite )
+void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flags )
 {
   kDebug(7113) << src.url() << "->" << dest.url();
 
@@ -1300,7 +1300,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, bool overwrite )
   m_request.method = DAV_MOVE;
   m_request.path = src.path();
   m_request.davData.desturl = newDest.url();
-  m_request.davData.overwrite = overwrite;
+  m_request.davData.overwrite = (flags & KIO::Overwrite);
   m_request.query.clear();
   m_request.cache = CC_Reload;
   m_request.doProxy = m_bUseProxy;

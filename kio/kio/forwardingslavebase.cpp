@@ -174,7 +174,7 @@ void ForwardingSlaveBase::get(const KUrl &url)
     KUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
-        KIO::TransferJob *job = KIO::get(new_url, false, false);
+        KIO::TransferJob *job = KIO::get(new_url, NoReload, HideProgressInfo);
         d->connectTransferJob(job);
 
         d->eventLoop.exec();
@@ -182,15 +182,15 @@ void ForwardingSlaveBase::get(const KUrl &url)
 }
 
 void ForwardingSlaveBase::put(const KUrl &url, int permissions,
-                              bool overwrite, bool resume )
+                              JobFlags flags)
 {
     kDebug() << "ForwardingSlaveBase::put: " << url;
 
     KUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
-        KIO::TransferJob *job = KIO::put(new_url, permissions, overwrite,
-                                         resume, false);
+        KIO::TransferJob *job = KIO::put(new_url, permissions,
+                                         flags | HideProgressInfo);
         d->connectTransferJob(job);
 
         d->eventLoop.exec();
@@ -204,7 +204,7 @@ void ForwardingSlaveBase::stat(const KUrl &url)
     KUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
-        KIO::SimpleJob *job = KIO::stat(new_url, false);
+        KIO::SimpleJob *job = KIO::stat(new_url, KIO::HideProgressInfo);
         d->connectSimpleJob(job);
 
         d->eventLoop.exec();
@@ -218,7 +218,7 @@ void ForwardingSlaveBase::mimetype(const KUrl &url)
     KUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
-        KIO::TransferJob *job = KIO::mimetype(new_url, false);
+        KIO::TransferJob *job = KIO::mimetype(new_url, KIO::HideProgressInfo);
         d->connectTransferJob(job);
 
         d->eventLoop.exec();
@@ -232,7 +232,7 @@ void ForwardingSlaveBase::listDir(const KUrl &url)
     KUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
-        KIO::ListJob *job = KIO::listDir(new_url, false);
+        KIO::ListJob *job = KIO::listDir(new_url, KIO::HideProgressInfo);
         d->connectListJob(job);
 
         d->eventLoop.exec();
@@ -254,14 +254,14 @@ void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
 }
 
 void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
-                                 bool overwrite)
+                                 JobFlags flags)
 {
     kDebug() << "ForwardingSlaveBase::rename: " << src << ", " << dest;
 
     KUrl new_src, new_dest;
     if ( d->internalRewriteUrl(src, new_src) && d->internalRewriteUrl(dest, new_dest) )
     {
-        KIO::Job *job = KIO::rename(new_src, new_dest, overwrite);
+        KIO::Job *job = KIO::rename(new_src, new_dest, flags);
         d->connectJob(job);
 
         d->eventLoop.exec();
@@ -269,14 +269,14 @@ void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
 }
 
 void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
-                                  bool overwrite)
+                                  JobFlags flags)
 {
     kDebug() << "ForwardingSlaveBase::symlink: " << target << ", " << dest;
 
     KUrl new_dest;
     if ( d->internalRewriteUrl(dest, new_dest) )
     {
-        KIO::SimpleJob *job = KIO::symlink(target, new_dest, overwrite, false);
+        KIO::SimpleJob *job = KIO::symlink(target, new_dest, flags & HideProgressInfo);
         d->connectSimpleJob(job);
 
         d->eventLoop.exec();
@@ -312,15 +312,16 @@ void ForwardingSlaveBase::setModificationTime(const KUrl& url, const QDateTime& 
 }
 
 void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
-                               int permissions, bool overwrite)
+                               int permissions, JobFlags flags)
 {
     kDebug() << "ForwardingSlaveBase::copy: " << src << ", " << dest;
 
     KUrl new_src, new_dest;
     if ( d->internalRewriteUrl(src, new_src) && d->internalRewriteUrl(dest, new_dest) )
     {
+      // Are you sure you want to display here a ProgressInfo ???
         KIO::Job *job = KIO::file_copy(new_src, new_dest, permissions,
-                                       overwrite, false);
+                                       (flags & (~Overwrite) & (~HideProgressInfo)) );
         d->connectJob(job);
 
         d->eventLoop.exec();
@@ -336,7 +337,7 @@ void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
     {
         if (isfile)
         {
-            KIO::DeleteJob *job = KIO::del(new_url, false, false);
+            KIO::DeleteJob *job = KIO::del(new_url, HideProgressInfo);
             d->connectJob(job);
         }
         else

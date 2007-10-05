@@ -316,7 +316,7 @@ void PreviewJobPrivate::determineNextFile()
         currentItem = items.first();
         succeeded = false;
         items.removeFirst();
-        KIO::Job *job = KIO::stat( currentItem.item.url(), false );
+        KIO::Job *job = KIO::stat( currentItem.item.url(), KIO::HideProgressInfo );
         job->addMetaData( "no-auth-prompt", "true" );
         q->addSubjob(job);
     }
@@ -430,8 +430,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
         KUrl localURL;
         localURL.setPath( tempName = localFile.fileName() );
         const KUrl currentURL = item.url();
-        KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, true,
-                                         false, false /* No GUI */ );
+        KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, KIO::Overwrite | KIO::HideProgressInfo /* No GUI */ );
         job->addMetaData("thumbnail","1");
         q->addSubjob(job);
     }
@@ -444,7 +443,7 @@ void PreviewJobPrivate::createThumbnail( const QString &pixPath )
     KUrl thumbURL;
     thumbURL.setProtocol("thumbnail");
     thumbURL.setPath(pixPath);
-    KIO::TransferJob *job = KIO::get(thumbURL, false, false);
+    KIO::TransferJob *job = KIO::get(thumbURL, NoReload, HideProgressInfo);
     q->addSubjob(job);
     q->connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotThumbData(KIO::Job *, const QByteArray &)));
     bool save = bSave && currentItem.plugin->property("CacheThumbnail").toBool();

@@ -86,12 +86,12 @@ namespace KIO {
         Q_DECLARE_PUBLIC(ChmodJob)
 
         static inline ChmodJob *newJob(const KFileItemList& lstItems, int permissions, int mask,
-                                       int newOwner, int newGroup, bool recursive, bool showProgressInfo)
+                                       int newOwner, int newGroup, bool recursive, JobFlags flags)
         {
             ChmodJob *job = new ChmodJob(*new ChmodJobPrivate(lstItems,permissions,mask,
                                                               newOwner,newGroup,recursive));
             job->setUiDelegate(new JobUiDelegate());
-            if (showProgressInfo)
+            if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;
         }
@@ -137,7 +137,7 @@ void ChmodJobPrivate::_k_processList()
             if ( item.isDir() && m_recursive )
             {
                 //kDebug(7007) << "ChmodJob::processList dir -> listing";
-                KIO::ListJob * listJob = KIO::listRecursive( item.url(), false /* no GUI */ );
+                KIO::ListJob * listJob = KIO::listRecursive( item.url(), KIO::HideProgressInfo );
                 q->connect( listJob, SIGNAL(entries( KIO::Job *,
                                                      const KIO::UDSEntryList& )),
                             SLOT(_k_slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
@@ -271,7 +271,7 @@ void ChmodJob::slotResult( KJob * job )
 
 ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
                       const QString& owner, const QString& group,
-                      bool recursive, bool showProgressInfo )
+                      bool recursive, JobFlags flags )
 {
     uid_t newOwnerID = uid_t(-1); // chown(2) : -1 means no change
     if ( !owner.isEmpty() )
@@ -292,7 +292,7 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
             newGroupID = g->gr_gid;
     }
     return ChmodJobPrivate::newJob(lstItems, permissions, mask, newOwnerID,
-                                   newGroupID, recursive, showProgressInfo);
+                                   newGroupID, recursive, flags);
 }
 
 #include "chmodjob.moc"

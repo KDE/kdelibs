@@ -43,7 +43,7 @@ namespace KPAC
         m_script.clear();
         m_scriptURL = url;
 
-        KIO::TransferJob* job = KIO::get( url, false, false );
+        KIO::TransferJob* job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
         connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
                  SLOT( data( KIO::Job*, const QByteArray& ) ) );
         connect( job, SIGNAL( result( KJob* ) ), SLOT( result( KJob* ) ) );
