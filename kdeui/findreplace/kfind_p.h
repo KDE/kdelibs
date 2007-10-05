@@ -34,8 +34,9 @@
 
 struct KFind::Private
 {
-    Private()
-        : findDialog(0)
+    Private(KFind *q)
+        : q(q)
+        , findDialog(0)
         , currentId(0)
         , customIds(false)
         , patternChanged(false)
@@ -83,6 +84,16 @@ struct KFind::Private
         bool    dirty;
     };
 
+    void init( const QString& pattern );
+    void startNewIncrementalSearch();
+
+    static bool isInWord( QChar ch );
+    static bool isWholeWords( const QString &text, int starts, int matchedLength );
+
+    void _k_slotFindNext();
+    void _k_slotDialogClosed();
+
+    KFind *q;
     QPointer<QWidget>  findDialog;
     int                   currentId;
     bool                  customIds;

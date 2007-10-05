@@ -358,23 +358,14 @@ protected:
     QWidget* parentWidget() const;
     QWidget* dialogsParent() const;
 
-protected Q_SLOTS:
-
-    void slotFindNext();
-    void slotDialogClosed();
-
 private:
-    void init( const QString& pattern );
-    void startNewIncrementalSearch();
-
-    static bool isInWord( QChar ch );
-    static bool isWholeWords( const QString &text, int starts, int matchedLength );
-
     friend class KReplace;
 
-    // Binary compatible extensibility.
     struct Private;
     Private* const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotFindNext() )
+    Q_PRIVATE_SLOT( d, void _k_slotDialogClosed() )
 };
 
 #endif

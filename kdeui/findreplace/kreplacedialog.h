@@ -129,14 +129,14 @@ public:
      */
     QWidget *replaceExtension() const;
 
-protected Q_SLOTS:
-
-    void slotOk();
-    virtual void showEvent ( QShowEvent * );
+protected:
+    virtual void showEvent( QShowEvent * );
 
 private:
     class KReplaceDialogPrivate;
     KReplaceDialogPrivate* const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotOk() )
 };
 
 #endif // KREPLACEDIALOG_H

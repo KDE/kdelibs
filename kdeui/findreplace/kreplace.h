@@ -212,19 +212,12 @@ Q_SIGNALS:
      */
     void replace(const QString &text, int replacementIndex, int replacedLength, int matchedLength);
 
-protected Q_SLOTS:
-
-    void slotSkip();
-    void slotReplace();
-    void slotReplaceAll();
-
 private:
-    KReplaceNextDialog* dialog();
-    void doReplace();
-    static int replace( QString &text, const QString &replacement, int index, long options, int length );
-
-    // Binary compatible extensibility.
     class KReplacePrivate;
     KReplacePrivate * const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotSkip() )
+    Q_PRIVATE_SLOT( d, void _k_slotReplace() )
+    Q_PRIVATE_SLOT( d, void _k_slotReplaceAll() )
 };
 #endif

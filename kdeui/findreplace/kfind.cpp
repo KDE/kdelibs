@@ -63,31 +63,31 @@ KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
 
 KFind::KFind( const QString &pattern, long options, QWidget *parent )
     : QObject( parent ),
-	d(new KFind::Private)
+	d(new KFind::Private(this))
 {
     d->options = options;
-    init( pattern );
+    d->init( pattern );
 }
 
 KFind::KFind( const QString &pattern, long options, QWidget *parent, QWidget *findDialog )
     : QObject( parent ),
-	d(new KFind::Private)
+	d(new KFind::Private(this))
 {
     d->findDialog = findDialog;
     d->options = options;
-    init( pattern );
+    d->init( pattern );
 }
 
-void KFind::init( const QString& pattern )
+void KFind::Private::init( const QString& _pattern )
 {
-    d->matches = 0;
-    d->pattern = pattern;
-    d->dialog = 0;
-    d->dialogClosed = false;
-    d->index = INDEX_NOMATCH;
-    d->lastResult = NoMatch;
-    d->regExp = 0;
-    setOptions( d->options ); // create d->regExp with the right options
+    matches = 0;
+    pattern = _pattern;
+    dialog = 0;
+    dialogClosed = false;
+    index = INDEX_NOMATCH;
+    lastResult = NoMatch;
+    regExp = 0;
+    q->setOptions( options ); // create d->regExp with the right options
 }
 
 KFind::~KFind()
@@ -158,8 +158,8 @@ KDialog* KFind::findNextDialog( bool create )
     if ( !d->dialog && create )
     {
         d->dialog = new KFindNextDialog( d->pattern, parentWidget() );
-        connect( d->dialog, SIGNAL( user1Clicked() ), this, SLOT( slotFindNext() ) );
-        connect( d->dialog, SIGNAL( finished() ), this, SLOT( slotDialogClosed() ) );
+        connect( d->dialog, SIGNAL( user1Clicked() ), this, SLOT( _k_slotFindNext() ) );
+        connect( d->dialog, SIGNAL( finished() ), this, SLOT( _k_slotDialogClosed() ) );
     }
     return d->dialog;
 }
@@ -241,7 +241,7 @@ KFind::Result KFind::find()
             // substring of the matchedPattern, so we start a new search
             else
             {
-                startNewIncrementalSearch();
+                d->startNewIncrementalSearch();
             }
         }
         // if the new pattern is longer than the matchedPattern we might be
@@ -263,14 +263,14 @@ KFind::Result KFind::find()
             // start a new search
             else
             {
-                startNewIncrementalSearch();
+                d->startNewIncrementalSearch();
             }
         }
         // if the new pattern is as long as the matchedPattern, we reset if
         // they are not equal
         else if ( d->pattern != d->matchedPattern )
         {
-             startNewIncrementalSearch();
+             d->startNewIncrementalSearch();
         }
     }
 
@@ -378,27 +378,27 @@ KFind::Result KFind::find()
     return NoMatch;
 }
 
-void KFind::startNewIncrementalSearch()
+void KFind::Private::startNewIncrementalSearch()
 {
-    Private::Match *match = d->emptyMatch;
+    Private::Match *match = emptyMatch;
     if(match == 0)
     {
-        d->text.clear();
-        d->index = 0;
-        d->currentId = 0;
+        text.clear();
+        index = 0;
+        currentId = 0;
     }
     else
     {
-        d->text = d->data.at(match->dataId).text;
-        d->index = match->index;
-        d->currentId = match->dataId;
+        text = data.at(match->dataId).text;
+        index = match->index;
+        currentId = match->dataId;
     }
-    d->matchedLength = 0;
-    d->incrementalPath.clear();
-    delete d->emptyMatch;
-    d->emptyMatch = 0;
-    d->matchedPattern = d->pattern;
-    d->pattern.clear();
+    matchedLength = 0;
+    incrementalPath.clear();
+    delete emptyMatch;
+    emptyMatch = 0;
+    matchedPattern = pattern;
+    pattern.clear();
 }
 
 // static
@@ -434,7 +434,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
 
                 // Is the match delimited correctly?
                 *matchedLength = pattern.length();
-                if (isWholeWords(text, index, *matchedLength))
+                if (Private::isWholeWords(text, index, *matchedLength))
                     break;
                 index--;
             }
@@ -451,7 +451,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
 
                 // Is the match delimited correctly?
                 *matchedLength = pattern.length();
-                if (isWholeWords(text, index, *matchedLength))
+                if (Private::isWholeWords(text, index, *matchedLength))
                     break;
                 index++;
             }
@@ -497,7 +497,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
                 //pattern.match(text, index, matchedLength, false);
                 /*int pos =*/ pattern.indexIn( text.mid(index) );
                 *matchedLength = pattern.matchedLength();
-                if (isWholeWords(text, index, *matchedLength))
+                if (Private::isWholeWords(text, index, *matchedLength))
                     break;
                 index--;
             }
@@ -516,7 +516,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
                 //pattern.match(text, index, matchedLength, false);
                 /*int pos =*/ pattern.indexIn( text.mid(index) );
                 *matchedLength = pattern.matchedLength();
-                if (isWholeWords(text, index, *matchedLength))
+                if (Private::isWholeWords(text, index, *matchedLength))
                     break;
                 index++;
             }
@@ -545,12 +545,12 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
     return index;
 }
 
-bool KFind::isInWord(QChar ch)
+bool KFind::Private::isInWord(QChar ch)
 {
     return ch.isLetter() || ch.isDigit() || ch == '_';
 }
 
-bool KFind::isWholeWords(const QString &text, int starts, int matchedLength)
+bool KFind::Private::isWholeWords(const QString &text, int starts, int matchedLength)
 {
     if ((starts == 0) || (!isInWord(text.at(starts-1))))
     {
@@ -562,18 +562,18 @@ bool KFind::isWholeWords(const QString &text, int starts, int matchedLength)
     return false;
 }
 
-void KFind::slotFindNext()
+void KFind::Private::_k_slotFindNext()
 {
-    emit findNext();
+    emit q->findNext();
 }
 
-void KFind::slotDialogClosed()
+void KFind::Private::_k_slotDialogClosed()
 {
 #ifdef DEBUG_FIND
     kDebug() << " Begin";
 #endif
-    emit dialogClosed();
-    d->dialogClosed = true;
+    emit q->dialogClosed();
+    dialogClosed = true;
 #ifdef DEBUG_FIND
     kDebug() << " End";
 #endif

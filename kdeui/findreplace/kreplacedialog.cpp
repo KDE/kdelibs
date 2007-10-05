@@ -37,22 +37,28 @@
  * up, otherwise QComboBox will deliver an aweful big sizeHint
  * for long replacement texts.
  */
-class KReplaceDialog::KReplaceDialogPrivate {
+class KReplaceDialog::KReplaceDialogPrivate
+{
   public:
-    KReplaceDialogPrivate()
-    : initialShowDone(false)
+    KReplaceDialogPrivate(KReplaceDialog *q)
+    : q(q)
+    , initialShowDone(false)
     , replaceExtension (0)
-    {}
+    {
+    }
 
+    void _k_slotOk();
+
+    KReplaceDialog *q;
     QStringList replaceStrings;
     bool initialShowDone;
     QWidget *replaceExtension;
 };
 
 KReplaceDialog::KReplaceDialog(QWidget *parent, long options, const QStringList &findStrings,
-                               const QStringList &replaceStrings, bool hasSelection) :
-    KFindDialog(parent, options, findStrings, hasSelection, true /*create replace dialog*/),
-	d(new KReplaceDialogPrivate)
+                               const QStringList &replaceStrings, bool hasSelection)
+    : KFindDialog(parent, options, findStrings, hasSelection, true /*create replace dialog*/),
+      d(new KReplaceDialogPrivate(this))
 {
     d->replaceStrings = replaceStrings;
 }
@@ -130,21 +136,21 @@ void KReplaceDialog::setReplacementHistory(const QStringList &strings)
         KFindDialog::d->replace->clearHistory();
 }
 
-void KReplaceDialog::slotOk()
+void KReplaceDialog::KReplaceDialogPrivate::_k_slotOk()
 {
     // If regex and backrefs are enabled, do a sanity check.
-    if ( KFindDialog::d->regExp->isChecked() && KFindDialog::d->backRef->isChecked() )
+    if ( q->KFindDialog::d->regExp->isChecked() && q->KFindDialog::d->backRef->isChecked() )
     {
-        QRegExp r ( pattern() );
+        QRegExp r ( q->pattern() );
         int caps = r.numCaptures();
         QRegExp check(QString("((?:\\\\)+)(\\d+)"));
         int p = 0;
-        QString rep = replacement();
+        QString rep = q->replacement();
         while ( (p = check.indexIn( rep, p ) ) > -1 )
         {
             if ( check.cap(1).length()%2 && check.cap(2).toInt() > caps )
             {
-                KMessageBox::information( this, i18n(
+                KMessageBox::information( q, i18n(
                         "Your replacement string is referencing a capture greater than '\\%1', ",  caps ) +
                     ( caps ?
                         i18np("but your pattern only defines 1 capture.",
@@ -158,8 +164,8 @@ void KReplaceDialog::slotOk()
 
     }
 
-    KFindDialog::slotOk();
-    KFindDialog::d->replace->addToHistory(replacement());
+    q->KFindDialog::d->_k_slotOk();
+    q->KFindDialog::d->replace->addToHistory(q->replacement());
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

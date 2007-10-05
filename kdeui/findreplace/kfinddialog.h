@@ -23,13 +23,6 @@
 
 #include <kdialog.h>
 
-class KHistoryComboBox;
-class QPushButton;
-class QMenu;
-class QGridLayout;
-class QCheckBox;
-class QGroupBox;
-
 /**
  * @brief A generic "find" dialog.
  *
@@ -207,36 +200,21 @@ Q_SIGNALS:
      */
      void optionsChanged();
 
-protected Q_SLOTS:
-
-    void slotOk();
-    void slotSelectedTextToggled(bool);
-    void showPatterns();
-    void showPlaceholders();
-    void textSearchChanged( const QString &);
-
 protected:
     virtual void showEvent ( QShowEvent * );
 
-private Q_SLOTS:
-    /**
-     * connected to the aboutToShow of the placeholders menu,
-     * updates it according to the text in the pattern.
-     */
-    void slotPlaceholdersAboutToShow();
-
 private:
-
-    // Our dirty little secret is that we also implement the "replace" dialog. But we
-    // keep that fact hidden from all but our friends.
-
     friend class KReplaceDialog;
-
-
-    void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
 
     class KFindDialogPrivate;
     KFindDialogPrivate* const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotPlaceholdersAboutToShow() )
+    Q_PRIVATE_SLOT( d, void _k_slotOk() )
+    Q_PRIVATE_SLOT( d, void _k_slotSelectedTextToggled(bool) )
+    Q_PRIVATE_SLOT( d, void _k_showPatterns() )
+    Q_PRIVATE_SLOT( d, void _k_showPlaceholders() )
+    Q_PRIVATE_SLOT( d, void _k_textSearchChanged(const QString&) )
 };
 
 #endif // KFINDDIALOG_H

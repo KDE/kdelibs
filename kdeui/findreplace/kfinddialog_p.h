@@ -26,15 +26,36 @@
 
 #include <QtCore/QStringList>
 
+class KHistoryComboBox;
+
+class QCheckBox;
+class QGridLayout;
+class QGroupBox;
+class QMenu;
+class QPushButton;
+
 class KFindDialog::KFindDialogPrivate
 {
 public:
-    KFindDialogPrivate() : regexpDialog(0),
+    KFindDialogPrivate(KFindDialog *q)
+        : q(q),
+        regexpDialog(0),
         regexpDialogQueryDone(false),
         enabled(KFind::WholeWordsOnly | KFind::FromCursor |  KFind::SelectedText | KFind::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression),
         initialShowDone(false),
         findExtension(0)
         {}
+
+    void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
+
+    void _k_slotPlaceholdersAboutToShow();
+    void _k_slotOk();
+    void _k_slotSelectedTextToggled(bool);
+    void _k_showPatterns();
+    void _k_showPlaceholders();
+    void _k_textSearchChanged(const QString&);
+
+    KFindDialog *q;
     QDialog *regexpDialog;
     bool regexpDialogQueryDone;
     long enabled; // uses Options to define which search options are enabled
