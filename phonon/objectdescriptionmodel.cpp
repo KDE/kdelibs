@@ -216,7 +216,6 @@ QMimeData *ObjectDescriptionModelData::mimeData(ObjectDescriptionType type, cons
     QModelIndexList::const_iterator index = indexes.constBegin();
     for(; index!=end; ++index) {
         if ((*index).isValid()) {
-            stream << (*index).row();
             stream << d->data.at((*index).row())->index();
         }
     }
@@ -295,6 +294,7 @@ bool ObjectDescriptionModelData::dropMimeData(ObjectDescriptionType type, const 
 {
     Q_UNUSED(action);
     Q_UNUSED(column);
+    Q_UNUSED(parent);
     //pDebug() << Q_FUNC_INFO << data << action << row << column << parent;
 
     QString format = mimeTypes(type).first();
@@ -302,32 +302,21 @@ bool ObjectDescriptionModelData::dropMimeData(ObjectDescriptionType type, const 
         return false;
     }
 
-    if (parent.isValid()) {
-        row = parent.row();
-    } else {
-        if (row == -1) {
-            row = d->data.size();
-        }
+    if (row == -1) {
+        row = d->data.size();
     }
 
     QByteArray encodedData = data->data(format);
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
     QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > toInsert;
     while (!stream.atEnd()) {
-        int previousRow;
         int otherIndex;
-        stream >> previousRow >> otherIndex;
+        stream >> otherIndex;
         ObjectDescriptionData *obj = ObjectDescriptionData::fromIndex(type, otherIndex);
 
         if (obj->isValid()) {
             toInsert << QExplicitlySharedDataPointer<ObjectDescriptionData>(obj);
-            if (previousRow < row) {
-                ++row;
-            }
         }
-    }
-    if (row > d->data.size()) {
-        row = d->data.size();
     }
     d->model->beginInsertRows(QModelIndex(), row, row + toInsert.size() - 1);
     foreach (const QExplicitlySharedDataPointer<ObjectDescriptionData> &obj, toInsert) {
