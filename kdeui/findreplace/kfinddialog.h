@@ -205,7 +205,7 @@ protected:
 
 private:
     friend class KReplaceDialog;
-
+    friend class KReplaceDialogPrivate;
     class KFindDialogPrivate;
     KFindDialogPrivate* const d;
 

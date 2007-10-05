@@ -360,6 +360,7 @@ protected:
 
 private:
     friend class KReplace;
+    friend class KReplacePrivate;
 
     struct Private;
     Private* const d;

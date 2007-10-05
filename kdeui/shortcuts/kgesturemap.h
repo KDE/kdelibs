@@ -53,7 +53,7 @@ private:
     KGestureMap();
     virtual ~KGestureMap();
 
-    friend class KApplication;
+    friend class KApplicationPrivate;
     //intended to be used at application initialization
     void installEventFilterOnMe(KApplication *app);
 

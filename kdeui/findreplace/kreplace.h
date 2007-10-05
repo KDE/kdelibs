@@ -24,6 +24,7 @@
 #include "kfind.h"
 
 class KReplaceNextDialog;
+class KReplacePrivate;
 
 /**
  * @brief A generic implementation of the "replace" function.
@@ -213,7 +214,7 @@ Q_SIGNALS:
     void replace(const QString &text, int replacementIndex, int replacedLength, int matchedLength);
 
 private:
-    class KReplacePrivate;
+    friend class KReplacePrivate;
     KReplacePrivate * const d;
 
     Q_PRIVATE_SLOT( d, void _k_slotSkip() )

@@ -37,7 +37,7 @@
  * up, otherwise QComboBox will deliver an aweful big sizeHint
  * for long replacement texts.
  */
-class KReplaceDialog::KReplaceDialogPrivate
+class KReplaceDialogPrivate
 {
   public:
     KReplaceDialogPrivate(KReplaceDialog *q)
@@ -136,7 +136,7 @@ void KReplaceDialog::setReplacementHistory(const QStringList &strings)
         KFindDialog::d->replace->clearHistory();
 }
 
-void KReplaceDialog::KReplaceDialogPrivate::_k_slotOk()
+void KReplaceDialogPrivate::_k_slotOk()
 {
     // If regex and backrefs are enabled, do a sanity check.
     if ( q->KFindDialog::d->regExp->isChecked() && q->KFindDialog::d->backRef->isChecked() )

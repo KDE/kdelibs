@@ -165,7 +165,7 @@ public:
     QString catalogName() const;
 
 protected:
-    friend class KApplication;
+    friend class KApplicationPrivate;
 
     /**
      * Set name of default config file.

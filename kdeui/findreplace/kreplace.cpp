@@ -36,7 +36,7 @@
 class KReplaceNextDialog : public KDialog
 {
 public:
-    KReplaceNextDialog( QWidget *parent );
+    explicit KReplaceNextDialog( QWidget *parent );
     void setLabel( const QString& pattern, const QString& replacement );
 private:
     QLabel* m_mainLabel;
@@ -66,7 +66,7 @@ void KReplaceNextDialog::setLabel( const QString& pattern, const QString& replac
 
 ////
 
-class KReplace::KReplacePrivate
+class KReplacePrivate
 {
 public:
     KReplacePrivate(KReplace *q, const QString& replacement)
@@ -120,7 +120,7 @@ KDialog* KReplace::replaceNextDialog( bool create )
     return 0L;
 }
 
-KReplaceNextDialog* KReplace::KReplacePrivate::dialog()
+KReplaceNextDialog* KReplacePrivate::dialog()
 {
     if ( !q->KFind::d->dialog )
     {
@@ -244,7 +244,7 @@ int KReplace::replace(QString &text, const QRegExp &pattern, const QString &repl
     return index;
 }
 
-int KReplace::KReplacePrivate::replace(QString &text, const QString &replacement, int index, long options, int length)
+int KReplacePrivate::replace(QString &text, const QString &replacement, int index, long options, int length)
 {
     QString rep (replacement);
     // Backreferences: replace \0 with the right portion of 'text'
@@ -255,7 +255,7 @@ int KReplace::KReplacePrivate::replace(QString &text, const QString &replacement
     return rep.length();
 }
 
-void KReplace::KReplacePrivate::_k_slotReplaceAll()
+void KReplacePrivate::_k_slotReplaceAll()
 {
     doReplace();
     q->KFind::d->options &= ~KReplaceDialog::PromptOnReplace;
@@ -263,7 +263,7 @@ void KReplace::KReplacePrivate::_k_slotReplaceAll()
     emit q->findNext();
 }
 
-void KReplace::KReplacePrivate::_k_slotSkip()
+void KReplacePrivate::_k_slotSkip()
 {
     if (q->KFind::d->options & KFind::FindBackwards)
         q->KFind::d->index--;
@@ -276,7 +276,7 @@ void KReplace::KReplacePrivate::_k_slotSkip()
         emit q->findNext();
 }
 
-void KReplace::KReplacePrivate::_k_slotReplace()
+void KReplacePrivate::_k_slotReplace()
 {
     doReplace();
     if ( q->KFind::d->dialogClosed ) {
@@ -286,7 +286,7 @@ void KReplace::KReplacePrivate::_k_slotReplace()
         emit q->findNext();
 }
 
-void KReplace::KReplacePrivate::doReplace()
+void KReplacePrivate::doReplace()
 {
     int replacedLength = replace(q->KFind::d->text, m_replacement, q->KFind::d->index, q->KFind::d->options, q->KFind::d->matchedLength);
 

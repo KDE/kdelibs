@@ -154,10 +154,10 @@ void KApplication_early_init_mac();
 /*
   Private data to make keeping binary compatibility easier
  */
-class KApplication::Private
+class KApplicationPrivate
 {
 public:
-  Private(KApplication* q, const QByteArray &cName)
+  KApplicationPrivate(KApplication* q, const QByteArray &cName)
       : q(q),
       componentData(cName),
       checkAccelerators(0),
@@ -174,7 +174,7 @@ public:
   {
   }
 
-  Private(KApplication* q, const KComponentData &cData)
+  KApplicationPrivate(KApplication* q, const KComponentData &cData)
       : q(q),
       componentData(cData),
       checkAccelerators(0),
@@ -191,7 +191,7 @@ public:
   {
   }
 
-  Private(KApplication *q)
+  KApplicationPrivate(KApplication *q)
       : q(q),
       componentData(KCmdLineArgs::aboutData()),
       checkAccelerators(0),
@@ -208,7 +208,7 @@ public:
   {
   }
 
-  ~Private()
+  ~KApplicationPrivate()
   {
   }
 
@@ -278,7 +278,7 @@ void KApplication::installX11EventFilter( QWidget* filter )
     x11Filter->append( filter );
 }
 
-void KApplication::Private::_k_x11FilterDestroyed()
+void KApplicationPrivate::_k_x11FilterDestroyed()
 {
     q->removeX11EventFilter( static_cast< const QWidget* >(q->sender()));
 }
@@ -320,7 +320,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     return QApplication::notify(receiver, event);
 }
 
-void KApplication::Private::_k_checkAppStartedSlot()
+void KApplicationPrivate::_k_checkAppStartedSlot()
 {
 #if defined Q_WS_X11
     KStartupInfo::handleAutoAppStartedSending();
@@ -332,7 +332,7 @@ void KApplication::Private::_k_checkAppStartedSlot()
   instance specific config object.
   Syntax:  "session/<appname>_<sessionId>"
  */
-QString KApplication::Private::sessionConfigName() const
+QString KApplicationPrivate::sessionConfigName() const
 {
 #ifdef QT_NO_SESSIONMANAGER
 #error QT_NO_SESSIONMANAGER was set, this will not compile. Reconfigure Qt with Session management support.
@@ -351,8 +351,8 @@ static SmcConn mySmcConnection = 0;
 #endif
 
 KApplication::KApplication(bool GUIenabled)
-    : QApplication((Private::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
-    d(new Private(this))
+    : QApplication((KApplicationPrivate::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
+    d(new KApplicationPrivate(this))
 {
     d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
@@ -363,8 +363,8 @@ KApplication::KApplication(bool GUIenabled)
 
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
-    : QApplication((Private::preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
-    d(new Private(this))
+    : QApplication((KApplicationPrivate::preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
+    d(new KApplicationPrivate(this))
 {
     d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
@@ -374,8 +374,8 @@ KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
 }
 
 KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap, const KComponentData &cData)
-    : QApplication((Private::preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
-    d (new Private(this, cData))
+    : QApplication((KApplicationPrivate::preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
+    d (new KApplicationPrivate(this, cData))
 {
     d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
@@ -386,8 +386,8 @@ KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
 #endif
 
 KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
-    : QApplication((Private::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
-    d (new Private(this, cData))
+    : QApplication((KApplicationPrivate::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
+    d (new KApplicationPrivate(this, cData))
 {
     d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
@@ -399,8 +399,8 @@ KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
         bool GUIenabled)
-    : QApplication((Private::preqapplicationhack(),display)),
-    d(new Private(this, rAppName))
+    : QApplication((KApplicationPrivate::preqapplicationhack(),display)),
+    d(new KApplicationPrivate(this, rAppName))
 {
     Q_UNUSED(GUIenabled);
     d->read_app_startup_id();
@@ -413,7 +413,7 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
 
 // this function is called in KApplication ctors while evaluating arguments to QApplication ctor,
 // i.e. before QApplication ctor is called
-void KApplication::Private::preqapplicationhack()
+void KApplicationPrivate::preqapplicationhack()
 {
     preread_app_startup_id();
 }
@@ -477,7 +477,7 @@ public:
   }
 };
 
-void KApplication::Private::init(bool GUIenabled)
+void KApplicationPrivate::init(bool GUIenabled)
 {
   if ((getuid() != geteuid()) ||
       (getgid() != getegid()))
@@ -490,7 +490,7 @@ void KApplication::Private::init(bool GUIenabled)
   KApplication_early_init_mac();
 #endif
 
-  if ( q->type() == GuiClient )
+  if ( q->type() == KApplication::GuiClient )
   {
     QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
     QStringList::Iterator it = plugins.begin();
@@ -500,7 +500,7 @@ void KApplication::Private::init(bool GUIenabled)
     }
   }
 
-  KApp = q;
+  KApplication::KApp = q;
 
   parseCommandLine();
 
@@ -514,7 +514,7 @@ void KApplication::Private::init(bool GUIenabled)
 
 #ifdef Q_WS_X11 //FIXME(E)
   // create all required atoms in _one_ roundtrip to the X server
-  if ( q->type() == GuiClient ) {
+  if ( q->type() == KApplication::GuiClient ) {
       const int max = 20;
       Atom* atoms[max];
       char* names[max];
@@ -581,7 +581,7 @@ void KApplication::Private::init(bool GUIenabled)
        config->isConfigWritable(true);
   }
 
-  if (q->type() == GuiClient)
+  if (q->type() == KApplication::GuiClient)
   {
 #ifdef Q_WS_X11
     // this is important since we fork() to launch the help (Matthias)
@@ -604,7 +604,7 @@ void KApplication::Private::init(bool GUIenabled)
   }
 
 #ifdef Q_WS_MAC
-  if (q->type() == GuiClient) {
+  if (q->type() == KApplication::GuiClient) {
       QSystemTrayIcon *trayIcon;
       QPixmap pixmap = KIconLoader::global()->loadIcon( KCmdLineArgs::appName(),
               KIconLoader::NoGroup, KIconLoader::SizeEnormous, KIconLoader::DefaultState, QStringList(), false );
@@ -824,7 +824,7 @@ bool KApplication::sessionSaving() const
     return d->session_save;
 }
 
-void KApplication::Private::parseCommandLine( )
+void KApplicationPrivate::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 
@@ -840,16 +840,16 @@ void KApplication::Private::parseCommandLine( )
     }
 #endif
 
-    if ( q->type() != Tty ) {
+    if ( q->type() != KApplication::Tty ) {
         if (args && args->isSet("icon"))
         {
             QPixmap largeIcon = DesktopIcon(args->getOption("icon"));
-            QIcon icon = windowIcon();
+            QIcon icon =  q->windowIcon();
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
             q->setWindowIcon(icon);
         }
         else {
-            QIcon icon = windowIcon();
+            QIcon icon = q->windowIcon();
             QPixmap largeIcon = DesktopIcon(componentData.componentName());
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
             q->setWindowIcon(icon);
@@ -1160,7 +1160,7 @@ void KApplication::clearStartupId()
 // Qt reads and unsets the value and doesn't provide any way to reach the value,
 // so steal it from it beforehand. If Qt gets API for taking (reading and unsetting)
 // the startup id from it, this can be dumped.
-void KApplication::Private::preread_app_startup_id()
+void KApplicationPrivate::preread_app_startup_id()
 {
 #if defined Q_WS_X11
     KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
@@ -1171,7 +1171,7 @@ void KApplication::Private::preread_app_startup_id()
 
 // read the startup notification env variable, save it and unset it in order
 // not to propagate it to processes started from this app
-void KApplication::Private::read_app_startup_id()
+void KApplicationPrivate::read_app_startup_id()
 {
 #if defined Q_WS_X11
     startup_id = *startup_id_tmp;
@@ -1181,7 +1181,7 @@ void KApplication::Private::read_app_startup_id()
 }
 
 // Hook called by KToolInvocation
-void KApplication::Private::_k_slot_KToolInvocation_hook(QStringList& envs,QByteArray& startup_id)
+void KApplicationPrivate::_k_slot_KToolInvocation_hook(QStringList& envs,QByteArray& startup_id)
 {
 #ifdef Q_WS_X11
     if (QX11Info::display()) {

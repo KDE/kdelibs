@@ -54,6 +54,8 @@ class QPixmap;
 
 #define kapp KApplication::kApplication()
 
+class KApplicationPrivate;
+
 /**
 * Controls and provides information to all KDE applications.
 *
@@ -463,8 +465,8 @@ private:
   //### KDE4: This is to catch invalid implicit conversions, may want to reconsider
   KApplication(bool, bool);
 
-  class Private;
-  Private* const d;
+  friend class KApplicationPrivate;
+  KApplicationPrivate* const d;
 
   Q_PRIVATE_SLOT(d, void _k_x11FilterDestroyed())
   Q_PRIVATE_SLOT(d, void _k_checkAppStartedSlot())

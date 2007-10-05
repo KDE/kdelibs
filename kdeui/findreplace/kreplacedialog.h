@@ -24,6 +24,8 @@
 #include "kfinddialog.h"
 
 
+class KReplaceDialogPrivate;
+
 /**
  * @short A generic "replace" dialog.
  *
@@ -133,7 +135,7 @@ protected:
     virtual void showEvent( QShowEvent * );
 
 private:
-    class KReplaceDialogPrivate;
+
     KReplaceDialogPrivate* const d;
 
     Q_PRIVATE_SLOT( d, void _k_slotOk() )
