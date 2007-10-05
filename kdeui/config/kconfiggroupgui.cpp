@@ -34,13 +34,11 @@
  * @returns true if something was handled (even if output was set to clear or default)
  *          or false if nothing was handled (e.g., Core type)
  */
-static bool readEntryGui(const QByteArray& data, const QByteArray& key, const QVariant &input,
+static bool readEntryGui(const KConfigGroup *cg, const char *pKey, const QVariant &input,
                          QVariant &output)
 {
     const QString errString = QString::fromLatin1("\"%1\" - conversion from \"%3\" to %2 failed")
-                              .arg(key.constData())
-                              .arg(QVariant::typeToName(input.type()))
-                              .arg(data.constData());
+                              .arg(pKey).arg(QVariant::typeToName(input.type()));
     const QString formatError = QString::fromLatin1(" (wrong format: expected '%1' items, read '%2')");
 
     // set in case of failure
@@ -48,20 +46,28 @@ static bool readEntryGui(const QByteArray& data, const QByteArray& key, const QV
 
     switch (input.type()) {
     case QVariant::Color: {
-        if (data.isEmpty() || data == "invalid") {
-            output = QColor();  // return what was stored
+        const QString color = cg->readEntry(pKey, QString());
+        if (color.isEmpty()) {
+            output = QColor();  // empty color
             return true;
-        } else if (data.at(0) == '#') {
+        } else if (color.at(0) == '#') {
             QColor col;
-            col.setNamedColor(QString::fromUtf8(data.constData(), data.length()));
+            col.setNamedColor(color);
             output = col;
             return true;
         } else {
-            const QList<QByteArray> list = data.split(',');
+            const QStringList list = cg->readEntry(pKey, QStringList());
             const int count = list.count();
 
             if (count != 3 && count != 4) {
-                kError() << errString << formatError.arg("3' or '4").arg(count) << endl;
+                if (count == 1 && list.first() == QLatin1String("invalid")) {
+                    output = QColor(); // return what was stored
+                    return true;
+                }
+
+                kcbError() << errString.arg(cg->readEntry(pKey))
+                           << formatError.arg("3' or '4").arg(count)
+                           << endl;
                 return true;    // return default
             }
 
@@ -71,7 +77,9 @@ static bool readEntryGui(const QByteArray& data, const QByteArray& key, const QV
                 bool ok;
                 const int j = temp[i] = list.at(i).toInt(&ok);
                 if (!ok) { // failed to convert to int
-                    kError() << errString << " (integer conversion failed)" << endl;
+                    kcbError() << errString.arg(cg->readEntry(pKey))
+                               << " (integer conversion failed)"
+                               << endl;
                     return true; // return default
                 }
                 if (j < 0 || j > 255) {
@@ -79,9 +87,9 @@ static bool readEntryGui(const QByteArray& data, const QByteArray& key, const QV
                         "red", "green", "blue", "alpha"
                     };
                     const QString boundsError = QLatin1String(" (bounds error: %1 component %2)");
-                    kError() << errString
-                             << boundsError.arg(components[i]).arg(j < 0? "< 0": "> 255")
-                             << endl;
+                    kcbError() << errString.arg(cg->readEntry(pKey))
+                               << boundsError.arg(components[i]).arg(j < 0? "< 0": "> 255")
+                               << endl;
                     return true; // return default
                 }
             }
@@ -89,22 +97,15 @@ static bool readEntryGui(const QByteArray& data, const QByteArray& key, const QV
             if (count == 4)
                 aColor.setAlpha(temp[3]);
 
-            if (aColor.isValid())
-                output = aColor;
+            if (!aColor.isValid())
+                kcbError() << errString.arg(cg->readEntry(pKey)) << endl;
             else
-                kError() << errString << endl;
+                output = aColor;
             return true;
         }
     }
 
-    case QVariant::Font: {
-        QVariant tmp = QString::fromUtf8(data.constData(), data.length());
-        if (tmp.convert(QVariant::Font))
-            output = tmp;
-        else
-            kError() << errString << endl;
-        return true;
-    }
+    case QVariant::Font:
     case QVariant::Pixmap:
     case QVariant::Image:
     case QVariant::Brush:
@@ -130,30 +131,29 @@ static bool readEntryGui(const QByteArray& data, const QByteArray& key, const QV
  * @returns true if something was handled (even if an empty value was written)
  *          or false if nothing was handled (e.g., Core type)
  */
-static bool writeEntryGui(KConfigGroup *cg, const QByteArray& key, const QVariant &prop,
-                          KConfigGroup::WriteConfigFlags pFlags)
+static bool writeEntryGui(KConfigGroup *cg, const char *pKey, const QVariant &prop,
+                          KConfigBase::WriteConfigFlags pFlags)
 {
     switch (prop.type()) {
     case QVariant::Color: {
+        QList<int> list;
         const QColor rColor = prop.value<QColor>();
 
         if (!rColor.isValid()) {
-            cg->writeEntry(key, QByteArray("invalid"), pFlags);
+            cg->writeEntry(pKey, "invalid", pFlags);
             return true;
         }
-
-        QList<int> list;
         list.insert(0, rColor.red());
         list.insert(1, rColor.green());
         list.insert(2, rColor.blue());
         if (rColor.alpha() != 255)
             list.insert(3, rColor.alpha());
 
-        cg->writeEntry( key.constData(), list, pFlags );
+        cg->writeEntry( pKey, list, pFlags );
         return true;
     }
     case QVariant::Font:
-        cg->writeEntry( key, prop.toString().toUtf8(), pFlags );
+        cg->writeEntry( pKey, prop.toString(), pFlags );
         return true;
 
     case QVariant::Pixmap:
