@@ -393,7 +393,7 @@ void KConfigTest::testDefaultGroup()
 {
     KConfig sc( "kconfigtest" );
     KConfigGroup defaultGroup(&sc, "<default>");
-    QCOMPARE(defaultGroup.group(), QString("<default>"));
+    QCOMPARE(defaultGroup.name(), QString("<default>"));
     QVERIFY(!defaultGroup.exists());
     defaultGroup.writeEntry("TestKey", "defaultGroup");
     QVERIFY(defaultGroup.exists());
@@ -420,7 +420,7 @@ void KConfigTest::testEmptyGroup()
 {
     KConfig sc( "kconfigtest" );
     KConfigGroup emptyGroup(&sc, "");
-    QCOMPARE(emptyGroup.group(), QString("<default>")); // confusing, heh?
+    QCOMPARE(emptyGroup.name(), QString("<default>")); // confusing, heh?
     QVERIFY(!emptyGroup.exists());
     emptyGroup.writeEntry("TestKey", "emptyGroup");
     QVERIFY(emptyGroup.exists());
