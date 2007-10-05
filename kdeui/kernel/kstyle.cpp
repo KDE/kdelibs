@@ -58,7 +58,6 @@
 #include <QtGui/QScrollBar>
 #include <QtGui/QStyleOption>
 
-
 //### FIXME: Who to credit these to?
 static const qint32 u_arrow[]={-1,-3, 0,-3, -2,-2, 1,-2, -3,-1, 2,-1, -4,0, 3,0, -4,1, 3,1};
 static const qint32 d_arrow[]={-4,-2, 3,-2, -4,-1, 3,-1, -3,0, 2,0, -2,1, 1,1, -1,2, 0,2};
@@ -1529,13 +1528,16 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     }
 
                     //Determine whether any of the buttons is active
-                    if (((slOpt->activeSubControls & SC_ScrollBarAddLine) && leftAdds) ||
-                        ((slOpt->activeSubControls & SC_ScrollBarSubLine) && !leftAdds))
-                        ab = DoubleButtonOption::Left;
+                    if (flags & State_Sunken)
+                    {
+                        if (((slOpt->activeSubControls & SC_ScrollBarAddLine) && leftAdds) ||
+                            ((slOpt->activeSubControls & SC_ScrollBarSubLine) && !leftAdds))
+                            ab = DoubleButtonOption::Left;
 
-                    if (((slOpt->activeSubControls & SC_ScrollBarAddLine) && rightAdds) ||
-                        ((slOpt->activeSubControls & SC_ScrollBarSubLine) && !rightAdds))
-                        ab = DoubleButtonOption::Right;
+                        if (((slOpt->activeSubControls & SC_ScrollBarAddLine) && rightAdds) ||
+                            ((slOpt->activeSubControls & SC_ScrollBarSubLine) && !rightAdds))
+                            ab = DoubleButtonOption::Right;
+                    }
 
                     DoubleButtonOption bOpt(ab);
                     drawKStylePrimitive(WT_ScrollBar, ScrollBar::DoubleButtonHor,
@@ -1571,11 +1573,16 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     DoubleButtonOption::ActiveButton ab = DoubleButtonOption::None;
 
                     //Determine whether any of the buttons is active
-                    if (slOpt->activeSubControls & SC_ScrollBarSubLine)
-                        ab = DoubleButtonOption::Top;
+                    //Qt sets both sunken and activeSubControls for active,
+                    //just activeSubControls for hover. 
+                    if (flags & State_Sunken)
+                    {
+                        if (slOpt->activeSubControls & SC_ScrollBarSubLine)
+                            ab = DoubleButtonOption::Top;
 
-                    if (slOpt->activeSubControls & SC_ScrollBarAddLine)
-                        ab = DoubleButtonOption::Bottom;
+                        if (slOpt->activeSubControls & SC_ScrollBarAddLine)
+                            ab = DoubleButtonOption::Bottom;
+                    }
 
                     //Paint the bevel
                     DoubleButtonOption bOpt(ab);
@@ -1610,7 +1617,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                 }
             }
             else
-            {
+            {   // Single button
                 if (flags & State_Horizontal)
                 {
                     drawKStylePrimitive(WT_ScrollBar, ScrollBar::SingleButtonHor,
@@ -1626,7 +1633,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                         else
                             primitive = Generic::ArrowLeft;
 
-                        if (slOpt->activeSubControls & SC_ScrollBarAddLine)
+                        if ((slOpt->activeSubControls & SC_ScrollBarAddLine) && (flags & State_Sunken))
                             active = true;
                     }
                     else
@@ -1636,7 +1643,7 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                         else
                             primitive = Generic::ArrowRight;
 
-                        if (slOpt->activeSubControls & SC_ScrollBarSubLine)
+                        if ((slOpt->activeSubControls & SC_ScrollBarSubLine) && (flags & State_Sunken))
                             active = true;
                     }
 
@@ -1659,13 +1666,13 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     if (element == CE_ScrollBarAddLine)
                     {
                         primitive = Generic::ArrowDown;
-                        if (slOpt->activeSubControls & SC_ScrollBarAddLine)
+                        if ((slOpt->activeSubControls & SC_ScrollBarAddLine) && (flags & State_Sunken))
                             active = true;
                     }
                     else
                     {
                         primitive = Generic::ArrowUp;
-                        if (slOpt->activeSubControls & SC_ScrollBarSubLine)
+                        if ((slOpt->activeSubControls & SC_ScrollBarSubLine) && (flags & State_Sunken))
                             active = true;
                     }
 
@@ -2503,7 +2510,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
                 QPoint adjustCoords = p->matrix().map(QPoint(0,0)) + QPoint(cX, cY);
                 p->translate(-adjustCoords);
 
-                if (lvOpt->activeSubControls == SC_All && lvOpt->subControls & SC_Q3ListViewExpand) {
+                if (lvOpt->activeSubControls == SC_All && (lvOpt->subControls & SC_Q3ListViewExpand)) {
                     //### CHECKME: this is from KStyle3, and needs to be re-checked/tested
                     // We only need to draw a vertical line
                     //Route through the Qt4 style-call.
@@ -2713,6 +2720,7 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
 
                 return;
             } //option OK
+            break;
         } //CC_Combo
 
         case CC_ToolButton:
@@ -3385,7 +3393,14 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                 size = expandDim(size, WT_PushButton, PushButton::DefaultIndicatorMargin, option, widget);
 
             //### TODO: Handle minimum size limits, extra spacing as in current styles ??
-            return expandDim(size, WT_PushButton, PushButton::ContentsMargin, option, widget);
+            size = expandDim(size, WT_PushButton, PushButton::ContentsMargin, option, widget);
+            
+            if (!bOpt->text.isEmpty() && !bOpt->icon.isNull()) {
+                // Incorporate the spacing between the icon and text. Qt sticks 4 there,
+                // but we use PushButton::TextToIconSpace.
+                size.setWidth(size.width() - 4 + widgetLayoutProp(WT_PushButton, PushButton::TextToIconSpace, option, widget));
+            }
+            return size;
         }
 
         case CT_ToolButton:
@@ -3711,6 +3726,7 @@ KStyle::TextOption::TextOption()
 {
     init();
 }
+
 KStyle::TextOption::TextOption(const QString& _text):
     text(_text)
 {

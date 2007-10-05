@@ -140,11 +140,11 @@ protected:
         QPalette::ColorRole role;
     public:
 
-	/// Constructor, using a the given palette role @p _role
-	/// and a default mode.
+        /// Constructor, using a the given palette role @p _role
+        /// and a default mode.
         ColorMode(QPalette::ColorRole _role);
 
-	/// Constructor with explicit color mode and palette roles.
+        /// Constructor with explicit color mode and palette roles.
         ColorMode(Mode _mode, QPalette::ColorRole _role);
 
         /// Represent as an int to store as a property
@@ -153,8 +153,8 @@ protected:
         /// Decode from an int.
         ColorMode(int encoded);
 
-	/// Return the color corresponding to our role from the palette,
-	/// automatically compensating for the contrast mode.
+        /// Return the color corresponding to our role from the palette,
+        /// automatically compensating for the contrast mode.
         QColor color(const QPalette& palette);
     };
 
