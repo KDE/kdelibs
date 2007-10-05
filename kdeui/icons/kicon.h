@@ -76,6 +76,17 @@ public:
      * Constructor for a null icon.
      */
     KIcon();
+
+    /**
+     * Destroys the icon.
+     */
+    ~KIcon();
+
+    KIcon& operator=( const KIcon &other );
+
+private:
+    class Private;
+    Private* const d;
 };
 
 #endif

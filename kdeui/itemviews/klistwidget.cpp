@@ -25,27 +25,55 @@
 #include <QKeyEvent>
 #include <QApplication>
 
+class KListWidget::KListWidgetPrivate
+{
+    public:
+        KListWidgetPrivate(KListWidget *q)
+            : q(q),
+              m_pCurrentItem(0)
+        {
+        }
+
+        void emitExecute( QListWidgetItem *item, const QPoint &pos );
+
+        void _k_slotItemEntered(QListWidgetItem*);
+        void _k_slotOnViewport();
+        void _k_slotSettingsChanged(int);
+        void _k_slotAutoSelect();
+
+        KListWidget *q;
+        bool m_bUseSingle;
+        bool m_bChangeCursorOverItem;
+
+        QListWidgetItem* m_pCurrentItem;
+        QTimer* m_pAutoSelect;
+        int m_autoSelectDelay;
+};
+
 KListWidget::KListWidget( QWidget *parent )
-    : QListWidget(parent), d(0)
+    : QListWidget(parent), d(new KListWidgetPrivate(this))
 {
     connect( this, SIGNAL( viewportEntered() ),
-	     this, SLOT( slotOnViewport() ) );
+             this, SLOT( _k_slotOnViewport() ) );
     connect( this, SIGNAL( itemEntered( QListWidgetItem * ) ),
-	     this, SLOT( slotItemEntered( QListWidgetItem * ) ) );
-    slotSettingsChanged(KGlobalSettings::SETTINGS_MOUSE);
-    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+             this, SLOT( _k_slotItemEntered( QListWidgetItem * ) ) );
+    d->_k_slotSettingsChanged(KGlobalSettings::SETTINGS_MOUSE);
+    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( _k_slotSettingsChanged(int) ) );
 
-    m_pCurrentItem = 0L;
-
-    m_pAutoSelect = new QTimer( this );
-    connect( m_pAutoSelect, SIGNAL( timeout() ),
-    	     this, SLOT( slotAutoSelect() ) );
+    d->m_pAutoSelect = new QTimer( this );
+    connect( d->m_pAutoSelect, SIGNAL( timeout() ),
+             this, SLOT( _k_slotAutoSelect() ) );
 }
 
-void KListWidget::slotItemEntered( QListWidgetItem *item )
+KListWidget::~KListWidget()
+{
+    delete d;
+}
+
+void KListWidget::KListWidgetPrivate::_k_slotItemEntered( QListWidgetItem *item )
 {
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
-        viewport()->setCursor( QCursor( Qt::OpenHandCursor ) );
+        q->viewport()->setCursor( QCursor( Qt::OpenHandCursor ) );
 
     if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
       m_pAutoSelect->setSingleShot( true );
@@ -54,106 +82,106 @@ void KListWidget::slotItemEntered( QListWidgetItem *item )
     }
 }
 
-void KListWidget::slotOnViewport()
+void KListWidget::KListWidgetPrivate::_k_slotOnViewport()
 {
     if ( m_bChangeCursorOverItem )
-        viewport()->unsetCursor();
+        q->viewport()->unsetCursor();
 
     m_pAutoSelect->stop();
-    m_pCurrentItem = 0L;
+    m_pCurrentItem = 0;
 }
 
 
-void KListWidget::slotSettingsChanged(int category)
+void KListWidget::KListWidgetPrivate::_k_slotSettingsChanged(int category)
 {
     if (category != KGlobalSettings::SETTINGS_MOUSE)
         return;
     m_bUseSingle = KGlobalSettings::singleClick();
 
-    disconnect( this, SIGNAL( itemClicked( QListWidgetItem *)));
-    disconnect( this, SIGNAL( itemDoubleClicked( QListWidgetItem *)));
+    q->disconnect(q, SIGNAL(itemClicked( QListWidgetItem *)));
+    q->disconnect(q, SIGNAL(itemDoubleClicked( QListWidgetItem *)));
 
     if( m_bUseSingle )
     {
-        connect( this, SIGNAL(itemClicked(QListWidgetItem *)),
-                 SIGNAL( executed(QListWidgetItem *)));
+        q->connect(q, SIGNAL(itemClicked(QListWidgetItem *)),
+                   SIGNAL(executed(QListWidgetItem *)));
     }
     else
     {
-        connect( this, SIGNAL(itemDoubleClicked(QListWidgetItem *)),
-                 SIGNAL( executed(QListWidgetItem *)));
+        q->connect(q, SIGNAL(itemDoubleClicked(QListWidgetItem *)),
+                   SIGNAL(executed(QListWidgetItem *)));
     }
 
     m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
     m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
 
     if( !m_bUseSingle || !m_bChangeCursorOverItem )
-        viewport()->unsetCursor();
+        q->viewport()->unsetCursor();
 }
 
-void KListWidget::slotAutoSelect()
+void KListWidget::KListWidgetPrivate::_k_slotAutoSelect()
 {
   // check that the item still exists
-  if( row( m_pCurrentItem ) == -1 )
+  if( q->row( m_pCurrentItem ) == -1 )
     return;
 
   //Give this widget the keyboard focus.
-  if( !hasFocus() )
-    setFocus();
+  if( !q->hasFocus() )
+    q->setFocus();
 
   Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
 
-  QListWidgetItem* previousItem = currentItem();
-  setCurrentItem( m_pCurrentItem );
+  QListWidgetItem* previousItem = q->currentItem();
+  q->setCurrentItem( m_pCurrentItem );
 
   if( m_pCurrentItem ) {
     //Shift pressed?
     if( (keybstate & Qt::ShiftModifier) ) {
-      bool block = signalsBlocked();
-      blockSignals( true );
+      bool block = q->signalsBlocked();
+      q->blockSignals( true );
 
       //No Ctrl? Then clear before!
       if( !(keybstate & Qt::ControlModifier) )
-	clearSelection();
+            q->clearSelection();
 
       bool select = !m_pCurrentItem->isSelected();
-      bool update = viewport()->updatesEnabled();
-      viewport()->setUpdatesEnabled( false );
+      bool update = q->viewport()->updatesEnabled();
+      q->viewport()->setUpdatesEnabled( false );
 
-      bool down = row( previousItem ) < row( m_pCurrentItem );
+      bool down = q->row( previousItem ) < q->row( m_pCurrentItem );
       QListWidgetItem* it = down ? previousItem : m_pCurrentItem;
 
-      for (int i = row(it) ; i < count() ; i++ ) {
-	    if ( down && item(i) == m_pCurrentItem ) {
-	        m_pCurrentItem->setSelected(select);
-	        break;
-	    }
+      for (int i = q->row(it) ; i < q->count() ; i++ ) {
+        if ( down && q->item(i) == m_pCurrentItem ) {
+            m_pCurrentItem->setSelected(select);
+            break;
+        }
 
-	    if ( !down && item(i) == previousItem ) {
-	        previousItem->setSelected(select);
-	        break;
-	    }
-	    it->setSelected(select);
+        if ( !down && q->item(i) == previousItem ) {
+            previousItem->setSelected(select);
+            break;
+        }
+        it->setSelected(select);
     }
 
-      blockSignals( block );
-      viewport()->setUpdatesEnabled( update );
+      q->blockSignals( block );
+      q->viewport()->setUpdatesEnabled( update );
 
-      emit itemSelectionChanged();
+      emit q->itemSelectionChanged();
 
-      if( selectionMode() == QAbstractItemView::SingleSelection )
-	emit itemSelectionChanged();
+      if( q->selectionMode() == QAbstractItemView::SingleSelection )
+        q->emit itemSelectionChanged();
     }
     else if( (keybstate & Qt::ControlModifier) )
       m_pCurrentItem->setSelected(!m_pCurrentItem->isSelected());
     else {
-      bool block = signalsBlocked();
-      blockSignals( true );
+      bool block = q->signalsBlocked();
+      q->blockSignals( true );
 
       if( !m_pCurrentItem->isSelected() )
-	clearSelection();
+        q->clearSelection();
 
-      blockSignals( block );
+      q->blockSignals( block );
 
       m_pCurrentItem->setSelected(true);
     }
@@ -162,7 +190,7 @@ void KListWidget::slotAutoSelect()
     kDebug() << "That's not supposed to happen!!!!";
 }
 
-void KListWidget::emitExecute( QListWidgetItem *item, const QPoint &pos )
+void KListWidget::KListWidgetPrivate::emitExecute( QListWidgetItem *item, const QPoint &pos )
 {
   Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
 
@@ -170,8 +198,8 @@ void KListWidget::emitExecute( QListWidgetItem *item, const QPoint &pos )
 
   //Don't emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & Qt::ShiftModifier) || (keybstate & Qt::ControlModifier)) ) ) {
-    emit executed( item );
-    emit executed( item, pos );
+    emit q->executed( item );
+    emit q->executed( item, pos );
   }
 }
 
@@ -200,14 +228,14 @@ void KListWidget::keyPressEvent(QKeyEvent *e)
 
 void KListWidget::focusOutEvent( QFocusEvent *fe )
 {
-  m_pAutoSelect->stop();
+  d->m_pAutoSelect->stop();
 
   QListWidget::focusOutEvent( fe );
 }
 
 void KListWidget::leaveEvent( QEvent *e )
 {
-  m_pAutoSelect->stop();
+  d->m_pAutoSelect->stop();
 
   QListWidget::leaveEvent( e );
 }
@@ -235,15 +263,9 @@ void KListWidget::mouseDoubleClickEvent ( QMouseEvent * e )
   if( item ) {
     emit doubleClicked( item, e->globalPos() );
 
-    if( (e->button() == Qt::LeftButton) && !m_bUseSingle )
-      emitExecute( item, e->globalPos() );
+    if( (e->button() == Qt::LeftButton) && !d->m_bUseSingle )
+      d->emitExecute( item, e->globalPos() );
   }
-}
-
-void KListWidget::slotMouseButtonClicked( int btn, QListWidgetItem *item, const QPoint &pos )
-{
-  if( (btn == Qt::LeftButton) && item )
-    emitExecute( item, pos );
 }
 
 #include "klistwidget.moc"

@@ -25,6 +25,7 @@
 #include "kicontheme.h"
 #include "kiconeffect.h"
 #include "kiconcache.h"
+#include "k3icon_p.h"
 
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>

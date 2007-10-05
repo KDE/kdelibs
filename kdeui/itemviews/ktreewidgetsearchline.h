@@ -226,40 +226,16 @@ class KDEUI_EXPORT KTreeWidgetSearchLine : public KLineEdit
      */
     virtual bool canChooseColumnsCheck();
 
-  protected Q_SLOTS:
-    /**
-     * When keys are pressed a new search string is created and a timer is
-     * activated.  The most recent search is activated when this timer runs out
-     * if another key has not yet been pressed.
-     *
-     * This method makes @param search the most recent search and starts the
-     * timer.
-     *
-     * Together with activateSearch() this makes it such that searches are not
-     * started until there is a short break in the users typing.
-     *
-     * @see activateSearch()
-     */
-    void queueSearch( const QString &search );
-
-    /**
-     * When the timer started with queueSearch() expires this slot is called.
-     * If there has been another timer started then this slot does nothing.
-     * However if there are no other pending searches this starts the list view
-     * search.
-     *
-     * @see queueSearch()
-     */
-    void activateSearch();
-
   private:
     class Private;
     Private* const d;
 
-    Q_PRIVATE_SLOT( d, void rowsInserted( const QModelIndex&, int, int ) const )
-    Q_PRIVATE_SLOT( d, void treeWidgetDeleted( QObject* ) )
-    Q_PRIVATE_SLOT( d, void slotColumnActivated( QAction* ) )
-    Q_PRIVATE_SLOT( d, void slotAllVisibleColumns() )
+    Q_PRIVATE_SLOT(d, void _k_rowsInserted(const QModelIndex&, int, int) const)
+    Q_PRIVATE_SLOT(d, void _k_treeWidgetDeleted(QObject*))
+    Q_PRIVATE_SLOT(d, void _k_slotColumnActivated(QAction*))
+    Q_PRIVATE_SLOT(d, void _k_slotAllVisibleColumns())
+    Q_PRIVATE_SLOT(d, void _k_queueSearch(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_activateSearch())
 };
 
 /**

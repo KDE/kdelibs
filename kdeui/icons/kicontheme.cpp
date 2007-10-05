@@ -22,6 +22,7 @@
  */
 
 #include "kicontheme.h"
+#include "k3icon_p.h"
 
 #include <sys/stat.h>
 #include <unistd.h>

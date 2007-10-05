@@ -44,6 +44,8 @@ class KDEUI_EXPORT KListWidget : public QListWidget
 public:
   explicit KListWidget( QWidget *parent = 0 );
 
+  ~KListWidget();
+
 Q_SIGNALS:
 
   /**
@@ -87,40 +89,21 @@ Q_SIGNALS:
    */
   void doubleClicked( QListWidgetItem *item, const QPoint &pos );
 
-protected Q_SLOTS:
-  void slotItemEntered( QListWidgetItem *item );
-  void slotOnViewport();
-
-  void slotSettingsChanged(int);
-
-  /**
-   * Auto selection happend.
-   */
-  void slotAutoSelect();
-
 protected:
-  void emitExecute( QListWidgetItem *item, const QPoint &pos );
-
   virtual void keyPressEvent(QKeyEvent *e);
-  virtual void focusOutEvent( QFocusEvent *fe );
-  virtual void leaveEvent( QEvent *e );
-  virtual void mousePressEvent( QMouseEvent *e );
-  virtual void mouseDoubleClickEvent ( QMouseEvent *e );
-
-  bool m_bUseSingle;
-  bool m_bChangeCursorOverItem;
-
-  QListWidgetItem* m_pCurrentItem;
-
-  QTimer* m_pAutoSelect;
-  int m_autoSelectDelay;
-
-private Q_SLOTS:
-  void slotMouseButtonClicked( int btn, QListWidgetItem *item, const QPoint &pos );
+  virtual void focusOutEvent(QFocusEvent *e);
+  virtual void leaveEvent(QEvent *e);
+  virtual void mousePressEvent(QMouseEvent *e);
+  virtual void mouseDoubleClickEvent (QMouseEvent *e);
 
 private:
   class KListWidgetPrivate;
   KListWidgetPrivate* const d;
+
+  Q_PRIVATE_SLOT(d, void _k_slotItemEntered(QListWidgetItem*))
+  Q_PRIVATE_SLOT(d, void _k_slotOnViewport())
+  Q_PRIVATE_SLOT(d, void _k_slotSettingsChanged(int))
+  Q_PRIVATE_SLOT(d, void _k_slotAutoSelect())
 };
 
 #endif // KLISTWIDGET_H

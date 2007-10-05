@@ -97,7 +97,6 @@ public Q_SLOTS:
      */
     void clear();
 
-
 protected:
     /**
      * Returns true if \a item matches the search \a s.  This will be evaluated
@@ -107,63 +106,13 @@ protected:
     virtual bool itemMatches( const QListWidgetItem *item,
                               const QString &s ) const;
 
-
-    /**
-     * Do initialization common to both constructors.
-     */
-    void init( QListWidget *listWidget = 0 );
-
-    /**
-     * Hide item.
-     */
-    void hideItem( QListWidgetItem *item );
-
-    /**
-     * Show item.
-     *
-     * Just unhide it, doesn't necessary show it on screen, for that use
-     * listWidget->scrollToItem()
-     */
-    void showItem( QListWidgetItem *item );
-
-
-protected Q_SLOTS:
-    /**
-     * When keys are pressed a new search string is created and a timer is
-     * activated.  The most recent search is activated when this timer runs out
-     * if another key has not yet been pressed.
-     *
-     * This method makes @param s the most recent search and starts the
-     * timer.
-     *
-     * Together with activateSearch() this makes it such that searches are not
-     * started until there is a short break in the users typing.
-     *
-     * @see activateSearch()
-     */
-    void queueSearch( const QString &s );
-
-    /**
-     * When the timer started with queueSearch() expires this slot is called.
-     * If there has been another timer started then this slot does nothing.
-     * However if there are no other pending searches this starts the list widget
-     * search.
-     *
-     * @see queueSearch()
-     */
-    void activateSearch();
-
-
-private:
-    /**
-     * Take action need when listWidget is deleted.
-     */
-    Q_PRIVATE_SLOT(d, void listWidgetDeleted())
-
-
 private:
     class KListWidgetSearchLinePrivate;
     KListWidgetSearchLinePrivate * const d;
+
+    Q_PRIVATE_SLOT(d, void _k_listWidgetDeleted())
+    Q_PRIVATE_SLOT(d, void _k_queueSearch(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_activateSearch())
 };
 
 

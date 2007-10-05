@@ -59,10 +59,12 @@ class KTreeWidgetSearchLine::Private
     int queuedSearches;
     QList<int> searchColumns;
 
-    void rowsInserted(const QModelIndex & parent, int start, int end) const;
-    void treeWidgetDeleted( QObject *treeWidget );
-    void slotColumnActivated(QAction* action);
-    void slotAllVisibleColumns();
+    void _k_rowsInserted(const QModelIndex & parent, int start, int end) const;
+    void _k_treeWidgetDeleted( QObject *treeWidget );
+    void _k_slotColumnActivated(QAction* action);
+    void _k_slotAllVisibleColumns();
+    void _k_queueSearch(const QString&);
+    void _k_activateSearch();
 
     void checkColumns();
     void checkItemParentsNotVisible(QTreeWidget *treeWidget);
@@ -83,7 +85,7 @@ class QTreeWidgetWorkaround : public QTreeWidget
     }
 };
 
-void KTreeWidgetSearchLine::Private::rowsInserted( const QModelIndex & parentIndex, int start, int end ) const
+void KTreeWidgetSearchLine::Private::_k_rowsInserted( const QModelIndex & parentIndex, int start, int end ) const
 {
   QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>( parent->sender() );
   if ( !model )
@@ -106,13 +108,13 @@ void KTreeWidgetSearchLine::Private::rowsInserted( const QModelIndex & parentInd
   }
 }
 
-void KTreeWidgetSearchLine::Private::treeWidgetDeleted( QObject *object )
+void KTreeWidgetSearchLine::Private::_k_treeWidgetDeleted( QObject *object )
 {
   treeWidgets.removeAll( static_cast<QTreeWidget *>( object ) );
   parent->setEnabled( treeWidgets.isEmpty() );
 }
 
-void KTreeWidgetSearchLine::Private::slotColumnActivated( QAction *action )
+void KTreeWidgetSearchLine::Private::_k_slotColumnActivated( QAction *action )
 {
   if ( !action )
     return;
@@ -151,7 +153,7 @@ void KTreeWidgetSearchLine::Private::slotColumnActivated( QAction *action )
   parent->updateSearch();
 }
 
-void KTreeWidgetSearchLine::Private::slotAllVisibleColumns()
+void KTreeWidgetSearchLine::Private::_k_slotAllVisibleColumns()
 {
   if ( searchColumns.isEmpty() )
     searchColumns.append( 0 );
@@ -218,7 +220,7 @@ KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *parent, QTreeWidget *tree
   : KLineEdit( parent ), d( new Private( this ) )
 {
   connect( this, SIGNAL( textChanged( const QString& ) ),
-           this, SLOT( queueSearch( const QString& ) ) );
+           this, SLOT( _k_queueSearch( const QString& ) ) );
 
   setClearButtonShown( true );
   setTreeWidget( treeWidget );
@@ -233,7 +235,7 @@ KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *parent,
   : KLineEdit( parent ), d( new Private( this ) )
 {
   connect( this, SIGNAL( textChanged( const QString& ) ),
-           this, SLOT( queueSearch( const QString& ) ) );
+           this, SLOT( _k_queueSearch( const QString& ) ) );
 
   setClearButtonShown( true );
   setTreeWidgets( treeWidgets );
@@ -419,7 +421,7 @@ void KTreeWidgetSearchLine::contextMenuEvent( QContextMenuEvent *event )
     QMenu *subMenu = popup->addMenu( i18n("Search Columns") );
 
     QAction* allVisibleColumnsAction = subMenu->addAction( i18n("All Visible Columns"),
-                                                           this, SLOT( slotAllVisibleColumns() ) );
+                                                           this, SLOT( _k_slotAllVisibleColumns() ) );
     allVisibleColumnsAction->setCheckable( true );
     allVisibleColumnsAction->setChecked( !d->searchColumns.count() );
     subMenu->addSeparator();
@@ -428,7 +430,7 @@ void KTreeWidgetSearchLine::contextMenuEvent( QContextMenuEvent *event )
 
     QActionGroup* group = new QActionGroup( popup );
     group->setExclusive( false );
-    connect( group, SIGNAL( triggered( QAction* ) ), SLOT( slotColumnActivated( QAction* ) ) );
+    connect( group, SIGNAL( triggered( QAction* ) ), SLOT( _k_slotColumnActivated( QAction* ) ) );
 
     QHeaderView* const header = d->treeWidgets.first()->header();
     for ( int j = 0; j < header->count(); j++ ) {
@@ -464,19 +466,19 @@ void KTreeWidgetSearchLine::contextMenuEvent( QContextMenuEvent *event )
 void KTreeWidgetSearchLine::connectTreeWidget( QTreeWidget *treeWidget )
 {
   connect( treeWidget, SIGNAL( destroyed( QObject* ) ),
-           this, SLOT( treeWidgetDeleted( QObject* ) ) );
+           this, SLOT( _k_treeWidgetDeleted( QObject* ) ) );
 
   connect( treeWidget->model(), SIGNAL( rowsInserted( const QModelIndex&, int, int) ),
-           this, SLOT( rowsInserted( const QModelIndex&, int, int ) ) );
+           this, SLOT( _k_rowsInserted( const QModelIndex&, int, int ) ) );
 }
 
 void KTreeWidgetSearchLine::disconnectTreeWidget( QTreeWidget *treeWidget )
 {
   disconnect( treeWidget, SIGNAL( destroyed( QObject* ) ),
-              this, SLOT( treeWidgetDeleted( QObject* ) ) );
+              this, SLOT( _k_treeWidgetDeleted( QObject* ) ) );
 
   disconnect( treeWidget->model(), SIGNAL( rowsInserted( const QModelIndex&, int, int) ),
-              this, SLOT( rowsInserted( const QModelIndex&, int, int ) ) );
+              this, SLOT( _k_rowsInserted( const QModelIndex&, int, int ) ) );
 }
 
 bool KTreeWidgetSearchLine::canChooseColumnsCheck()
@@ -522,20 +524,20 @@ bool KTreeWidgetSearchLine::canChooseColumnsCheck()
 // protected slots
 ////////////////////////////////////////////////////////////////////////////////
 
-void KTreeWidgetSearchLine::queueSearch( const QString &search )
+void KTreeWidgetSearchLine::Private::_k_queueSearch( const QString &_search )
 {
-  d->queuedSearches++;
-  d->search = search;
+  queuedSearches++;
+  search = _search;
 
-  QTimer::singleShot( 200, this, SLOT( activateSearch() ) );
+  QTimer::singleShot( 200, parent, SLOT( _k_activateSearch() ) );
 }
 
-void KTreeWidgetSearchLine::activateSearch()
+void KTreeWidgetSearchLine::Private::_k_activateSearch()
 {
-  --(d->queuedSearches);
+  --queuedSearches;
 
-  if ( d->queuedSearches == 0 )
-    updateSearch( d->search );
+  if ( queuedSearches == 0 )
+    parent->updateSearch( search );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

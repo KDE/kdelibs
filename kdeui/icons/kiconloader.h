@@ -33,14 +33,11 @@ class QIcon;
 class QMovie;
 class QPixmap;
 
-struct KIconGroup;
-class KIconThemeNode;
 class KComponentData;
 class KIconLoaderPrivate;
 class KStandardDirs;
 class KIconEffect;
 class KIconTheme;
-
 
 /**
  * Iconloader for KDE.
@@ -522,59 +519,5 @@ KDEUI_EXPORT int IconSize(KIconLoader::Group group);
 
 inline KIconLoader::Group& operator++(KIconLoader::Group& group) { group = static_cast<KIconLoader::Group>(group+1); return group; }
 inline KIconLoader::Group operator++(KIconLoader::Group& group,int) { KIconLoader::Group ret = group; ++group; return ret; }
-
-/**
- * @internal
- * One icon as found by KIconTheme. Also serves as a namespace containing
- * icon related constants.
- * @warning You should not use this class externally. This class is exported because
- *          the KCM needs it.
- * @see KIconEffect
- * @see KIconTheme
- * @see KIconLoader
- *
- * FIXME: This class wants to be removed (ereslibre). It is an implementation
- *        detail of KIconLoader.
- */
-class KDEUI_EXPORT K3Icon
-{
-public:
-    K3Icon();
-    ~K3Icon();
-
-    /**
-     * Return true if this icon is valid, false otherwise.
-     */
-    bool isValid() const;
-
-    /**
-     * The size in pixels of the icon.
-     */
-    int size;
-
-    /**
-     * The context of the icon.
-     */
-    KIconLoader::Context context;
-
-    /**
-     * The type of the icon: Fixed, Scalable or Threshold.
-     **/
-    KIconLoader::Type type;
-
-    /**
-     * The threshold in case type == Threshold
-     */
-    int threshold;
-
-    /**
-     * The full path of the icon.
-     */
-    QString path;
-
-private:
-    class KIconPrivate;
-    KIconPrivate * d;
-};
 
 #endif // KICONLOADER_H

@@ -31,17 +31,23 @@ typedef QList <QListWidgetItem *> QListWidgetItemList;
 class KListWidgetSearchLine::KListWidgetSearchLinePrivate
 {
 public:
-    KListWidgetSearchLinePrivate(KLineEdit *parent) :
-            lineEdit( parent ),
+    KListWidgetSearchLinePrivate(KListWidgetSearchLine *parent) :
+            q( parent ),
             listWidget( 0 ),
             caseSensitivity( DEFAULT_CASESENSITIVE ),
             activeSearch( false ),
             queuedSearches( 0 )
     {}
 
-    void listWidgetDeleted();
+    void _k_listWidgetDeleted();
+    void _k_queueSearch(const QString&);
+    void _k_activateSearch();
 
-    KLineEdit *lineEdit;
+    void init( QListWidget *listWidget = 0 );
+    void hideItem( QListWidgetItem *item );
+    void showItem( QListWidgetItem *item );
+
+    KListWidgetSearchLine *q;
     QListWidget *listWidget;
     Qt::CaseSensitivity caseSensitivity;
     bool activeSearch;
@@ -58,7 +64,7 @@ KListWidgetSearchLine::KListWidgetSearchLine( QWidget *parent, QListWidget *list
         d( new KListWidgetSearchLinePrivate(this) )
 
 {
-    init( listWidget );
+    d->init( listWidget );
 }
 
 KListWidgetSearchLine::~KListWidgetSearchLine()
@@ -97,7 +103,7 @@ void KListWidgetSearchLine::updateSearch( const QString &s )
     while ( index < lw->count() ) {
         QListWidgetItem *item = lw->item(index);
         if ( ! itemMatches( item, search ) ) {
-            hideItem( item );
+            d->hideItem( item );
 
             if ( item == currentItem ) {
                 currentItem = 0; // It's not in listWidget anymore.
@@ -113,7 +119,7 @@ void KListWidgetSearchLine::updateSearch( const QString &s )
         QListWidgetItem *item = hi->at(index); 
         
         if ( itemMatches( item, search ) ) {
-            showItem( item );
+            d->showItem( item );
         } else {
             index++;
         }
@@ -135,7 +141,7 @@ void KListWidgetSearchLine::clear()
         ++it;
         if ( item != 0 ) {
             if ( d->listWidget != 0 )
-                showItem( item );
+                d->showItem( item );
             else
                 delete item;
         }
@@ -159,13 +165,13 @@ void KListWidgetSearchLine::setListWidget( QListWidget *lw )
 {
     if ( d->listWidget != 0 )
         disconnect( d->listWidget, SIGNAL( destroyed() ),
-                    this, SLOT( listWidgetDeleted() ) );
+                    this, SLOT( _k_listWidgetDeleted() ) );
 
     d->listWidget = lw;
 
     if ( lw != 0 ) {
         connect( d->listWidget, SIGNAL( destroyed() ),
-                 this, SLOT( listWidgetDeleted() ) );
+                 this, SLOT( _k_listWidgetDeleted() ) );
         setEnabled( true );
     } else
         setEnabled( false );
@@ -187,72 +193,72 @@ bool KListWidgetSearchLine::itemMatches( const QListWidgetItem *item,
                                    caseSensitive() ? Qt::CaseSensitive : Qt::CaseInsensitive ) >= 0 );
 }
 
-void KListWidgetSearchLine::init( QListWidget *listWidget )
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::init( QListWidget *_listWidget )
 {
-    d->listWidget = listWidget;
+    listWidget = _listWidget;
 
-    connect( this, SIGNAL( textChanged( const QString & ) ),
-             this, SLOT( queueSearch( const QString & ) ) );
+    connect( q, SIGNAL( textChanged( const QString & ) ),
+             q, SLOT( _k_queueSearch( const QString & ) ) );
 
     if ( listWidget != 0 ) {
         connect( listWidget, SIGNAL( destroyed() ),
-                 this, SLOT( listWidgetDeleted() ) );
-        setEnabled( true );
+                 q, SLOT( _k_listWidgetDeleted() ) );
+        q->setEnabled( true );
     } else {
-        setEnabled( false );
+        q->setEnabled( false );
     }
 
-    setClearButtonShown(true);
+    q->setClearButtonShown(true);
 }
 
-void KListWidgetSearchLine::hideItem( QListWidgetItem *item )
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::hideItem( QListWidgetItem *item )
 {
-    if ( ( item == 0 ) || ( d->listWidget == 0 ) )
+    if ( ( item == 0 ) || ( listWidget == 0 ) )
         return ;
 
-    d->hiddenItems.append( item );
-    d->listWidget->takeItem( d->listWidget->row( item ) );
+    hiddenItems.append( item );
+    listWidget->takeItem( listWidget->row( item ) );
 }
 
-void KListWidgetSearchLine::showItem( QListWidgetItem *item )
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::showItem( QListWidgetItem *item )
 {
-    if ( d->listWidget == 0 ) {
+    if ( listWidget == 0 ) {
         kDebug() << __FILE__ << ":" << __LINE__ <<
         "showItem() could not be called while there's no listWidget set." <<
         endl;
         return ;
     }
-    d->listWidget->addItem( item );
-    d->hiddenItems.removeAll( item );
+    listWidget->addItem( item );
+    hiddenItems.removeAll( item );
 }
 
 /******************************************************************************
  * Protected Slots                                                            *
  *****************************************************************************/
-void KListWidgetSearchLine::queueSearch( const QString &s )
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_queueSearch( const QString &s )
 {
-    d->queuedSearches++;
-    d->search = s;
-    QTimer::singleShot( 200, this, SLOT( activateSearch() ) );
+    queuedSearches++;
+    search = s;
+    QTimer::singleShot( 200, q, SLOT( _k_activateSearch() ) );
 }
 
-void KListWidgetSearchLine::activateSearch()
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_activateSearch()
 {
-    d->queuedSearches--;
+    queuedSearches--;
 
-    if ( d->queuedSearches <= 0 ) {
-        updateSearch( d->search );
-        d->queuedSearches = 0;
+    if ( queuedSearches <= 0 ) {
+        q->updateSearch( search );
+        queuedSearches = 0;
     }
 }
 
 /******************************************************************************
  * Private Slots                                                              *
  *****************************************************************************/
-void KListWidgetSearchLine::KListWidgetSearchLinePrivate::listWidgetDeleted()
+void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_listWidgetDeleted()
 {
     listWidget = 0;
-    lineEdit->setEnabled( false );
+    q->setEnabled( false );
 }
 
 #include "klistwidgetsearchline.moc"

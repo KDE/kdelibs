@@ -349,6 +349,7 @@ install( FILES
  fonts/kfontrequester.h
  icons/kiconeffect.h
  icons/kicon.h
+ icons/k3icon_p.h      # we install the private header as it is needed by kcm (tokoe)
  icons/kiconloader.h
  icons/kicontheme.h
  icons/kiconcache.h
