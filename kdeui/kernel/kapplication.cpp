@@ -878,7 +878,7 @@ void KApplicationPrivate::parseCommandLine( )
 #ifdef Q_WS_X11
     if ( args->isSet( "waitforwm" ) ) {
         Atom type;
-        (void) desktop(); // trigger desktop creation, we need PropertyNotify events for the root window
+        (void) q->desktop(); // trigger desktop creation, we need PropertyNotify events for the root window
         int format;
         unsigned long length, after;
         unsigned char *data;
