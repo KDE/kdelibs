@@ -119,10 +119,33 @@ void BackendSelection::save()
         KService::Ptr service = m_services[item->text()];
         services.append(service);
     }
-    KServiceTypeProfile::writeServiceTypeProfile("PhononBackend", services);
 
-    QDBusMessage signal = QDBusMessage::createSignal("/", "org.kde.Phonon.Factory", "phononBackendChanged");
-    QDBusConnection::sessionBus().send(signal);
+    // get the currently used list
+    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
+            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
+
+    // we have to compare the lists manually as KService::Ptr::operator== is not what we want for
+    // comparison
+    if (offers.size() == services.size()) {
+        bool equal = true;
+        for (int i = 0; i < offers.size(); ++i) {
+            if (offers[i]->entryPath() != services[i]->entryPath()) {
+                equal = false;
+                break;
+            }
+        }
+        if (equal) {
+            return;
+        }
+    }
+
+    // be very conservative with this signal as it interrupts all playback:
+    if (offers != services) {
+        KServiceTypeProfile::writeServiceTypeProfile("PhononBackend", services);
+
+        QDBusMessage signal = QDBusMessage::createSignal("/", "org.kde.Phonon.Factory", "phononBackendChanged");
+        QDBusConnection::sessionBus().send(signal);
+    }
 }
 
 void BackendSelection::defaults()
