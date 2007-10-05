@@ -118,7 +118,10 @@ Notes:
   <mime-type type="application/x-vnd.kde.kplato">
     <comment>KPlato project management document</comment>
     <glob pattern="*.kplato"/>
-    <glob pattern="*.kplatot"/>
+  </mime-type>
+  <mime-type type="application/x-vnd.kde.kplato.work">
+    <comment>KPlato project management work package</comment>
+    <glob pattern="*.kplatowork"/>
   </mime-type>
   <mime-type type="application/x-vnd.kde.kugar.mixed">
     <comment>Kugar archive</comment>
