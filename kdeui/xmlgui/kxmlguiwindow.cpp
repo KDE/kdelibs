@@ -139,7 +139,7 @@ void KXmlGuiWindow::setHelpMenuEnabled(bool showHelpMenu)
     d->showHelpMenu = showHelpMenu;
 }
 
-bool KXmlGuiWindow::isHelpMenuEnabled()
+bool KXmlGuiWindow::isHelpMenuEnabled() const
 {
     K_D(const KXmlGuiWindow);
     return d->showHelpMenu;

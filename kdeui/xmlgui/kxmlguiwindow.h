@@ -161,7 +161,7 @@ public:
     /**
      * Return @p true when the help menu is enabled
      */
-    bool isHelpMenuEnabled();
+    bool isHelpMenuEnabled() const;
 
     virtual KXMLGUIFactory *guiFactory();
 
@@ -359,7 +359,7 @@ protected Q_SLOTS:
     * Rebuilds the GUI after KEditToolbar changed the toolbar layout.
     * @see configureToolbars()
     */
-   virtual void saveNewToolbarConfig(); // TODO KDE4: reimplement in KParts::MainWindow
+   virtual void saveNewToolbarConfig();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KXmlGuiWindow::StandardWindowOptions)

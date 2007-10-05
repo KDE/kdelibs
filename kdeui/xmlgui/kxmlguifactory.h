@@ -204,16 +204,6 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
   void clientAdded( KXMLGUIClient *client );
   void clientRemoved( KXMLGUIClient *client );
 
- private:
-
-  QWidget *findRecursive( KXMLGUI::ContainerNode *node, bool tag );
-
-  QList<QWidget*> findRecursive( KXMLGUI::ContainerNode *node, const QString &tagName );
-
-  void applyActionProperties( const QDomElement &element );
-  void configureAction( QAction *action, const QDomNamedNodeMap &attributes );
-  void configureAction( QAction *action, const QDomAttr &attribute );
-
 private:
   KXMLGUIFactoryPrivate *const d;
 };

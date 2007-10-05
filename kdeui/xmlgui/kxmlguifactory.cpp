@@ -75,6 +75,12 @@ public:
         BuildState::operator=( m_stateStack.pop() );
     }
 
+    QWidget *findRecursive( KXMLGUI::ContainerNode *node, bool tag );
+    QList<QWidget*> findRecursive( KXMLGUI::ContainerNode *node, const QString &tagName );
+    void applyActionProperties( const QDomElement &element );
+    void configureAction( QAction *action, const QDomNamedNodeMap &attributes );
+    void configureAction( QAction *action, const QDomAttr &attribute );
+
     ContainerNode *m_rootNode;
 
     QString m_defaultMergingName;
@@ -272,7 +278,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
         actionPropElement = docElement.namedItem( actionPropElementName.toLower() ).toElement();
 
     if ( !actionPropElement.isNull() )
-        applyActionProperties( actionPropElement );
+        d->applyActionProperties( actionPropElement );
 
     BuildHelper( *d, d->m_rootNode ).build( docElement );
 
@@ -376,7 +382,7 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
     d->m_containerName = containerName;
     d->guiClient = client;
 
-    QWidget *result = findRecursive( d->m_rootNode, useTagName );
+    QWidget *result = d->findRecursive( d->m_rootNode, useTagName );
 
     d->guiClient = 0L;
     d->m_containerName.clear();
@@ -388,7 +394,7 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
 
 QList<QWidget*> KXMLGUIFactory::containers( const QString &tagName )
 {
-    return findRecursive( d->m_rootNode, tagName );
+    return d->findRecursive( d->m_rootNode, tagName );
 }
 
 void KXMLGUIFactory::reset()
@@ -417,11 +423,11 @@ void KXMLGUIFactory::resetContainer( const QString &containerName, bool useTagNa
     parent->removeChild( container );
 }
 
-QWidget *KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node, bool tag )
+QWidget *KXMLGUIFactoryPrivate::findRecursive( KXMLGUI::ContainerNode *node, bool tag )
 {
-    if ( ( ( !tag && node->name == d->m_containerName ) ||
-           ( tag && node->tagName == d->m_containerName ) ) &&
-         ( !d->guiClient || node->client == d->guiClient ) )
+    if ( ( ( !tag && node->name == m_containerName ) ||
+           ( tag && node->tagName == m_containerName ) ) &&
+         ( !guiClient || node->client == guiClient ) )
         return node->container;
 
     foreach (ContainerNode* child, node->children)
@@ -434,8 +440,8 @@ QWidget *KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node, bool tag )
     return 0L;
 }
 
-QList<QWidget*> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node,
-                                                 const QString &tagName )
+QList<QWidget*> KXMLGUIFactoryPrivate::findRecursive( KXMLGUI::ContainerNode *node,
+                                                      const QString &tagName )
 {
     QList<QWidget*> res;
 
@@ -476,7 +482,7 @@ void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &nam
     d->popState();
 }
 
-void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement )
+void KXMLGUIFactoryPrivate::applyActionProperties( const QDomElement &actionPropElement )
 {
     static const QString &tagAction = KGlobal::staticQString( "action" );
 
@@ -487,7 +493,7 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
         if ( e.tagName().toLower() != tagAction )
             continue;
 
-        QAction *action = d->guiClient->action( e );
+        QAction *action = guiClient->action( e );
         if ( !action )
             continue;
 
@@ -495,7 +501,7 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
     }
 }
 
-void KXMLGUIFactory::configureAction( QAction *action, const QDomNamedNodeMap &attributes )
+void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomNamedNodeMap &attributes )
 {
     for ( uint i = 0; i < attributes.length(); i++ )
     {
@@ -507,7 +513,7 @@ void KXMLGUIFactory::configureAction( QAction *action, const QDomNamedNodeMap &a
     }
 }
 
-void KXMLGUIFactory::configureAction( QAction *action, const QDomAttr &attribute )
+void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &attribute )
 {
     static const QString &attrShortcut = KGlobal::staticQString( "shortcut" );
 
@@ -535,7 +541,7 @@ void KXMLGUIFactory::configureAction( QAction *action, const QDomAttr &attribute
     else if ( propertyType == QVariant::UInt )
         propertyValue = QVariant( attribute.value().toUInt() );
     else if ( propertyType == QVariant::UserType && action->property( attrName.toLatin1() ).userType() == qMetaTypeId<KShortcut>() )
-	propertyValue =  KShortcut( attribute.value() )  ;
+        propertyValue =  KShortcut( attribute.value() )  ;
     else
         propertyValue = QVariant( attribute.value() );
     action->setProperty( attrName.toLatin1(), propertyValue );

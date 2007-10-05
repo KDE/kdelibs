@@ -322,15 +322,9 @@ protected:
    // Use this one for KDE 4.0
    //virtual void stateChanged(const QString &newstate, bool reverse = false);
 
-private:
-  bool mergeXML( QDomElement &base, const QDomElement &additive,
-                 KActionCollection *actionCollection );
-
-  QDomElement findMatchingElement( const QDomElement &base,
-                                   const QDomElement &additive );
-
 protected:
   virtual void virtual_hook( int id, void* data );
+
 private:
   KXMLGUIClientPrivate * const d;
 };

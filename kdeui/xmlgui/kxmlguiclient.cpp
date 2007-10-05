@@ -60,6 +60,12 @@ public:
   {
   }
 
+  bool mergeXML( QDomElement &base, const QDomElement &additive,
+                 KActionCollection *actionCollection );
+
+  QDomElement findMatchingElement( const QDomElement &base,
+                                   const QDomElement &additive );
+
   KComponentData m_componentData;
 
   QDomDocument m_doc;
@@ -389,7 +395,7 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
     QDomElement e = document.documentElement();
 
     // merge our original (global) xml with our new one
-    mergeXML(base, e, actionCollection());
+    d->mergeXML(base, e, actionCollection());
 
     // reassign our pointer as mergeXML might have done something
     // strange to it
@@ -407,7 +413,7 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
   setXMLGUIBuildDocument( QDomDocument() );
 }
 
-bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KActionCollection *actionCollection )
+bool KXMLGUIClientPrivate::mergeXML( QDomElement &base, const QDomElement &additive, KActionCollection *actionCollection )
 {
   static const QString &tagAction = KGlobal::staticQString( "Action" );
   static const QString &tagMerge = KGlobal::staticQString( "Merge" );
@@ -658,7 +664,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
   return deleteMe;
 }
 
-QDomElement KXMLGUIClient::findMatchingElement( const QDomElement &base, const QDomElement &additive )
+QDomElement KXMLGUIClientPrivate::findMatchingElement( const QDomElement &base, const QDomElement &additive )
 {
   static const QString &tagAction = KGlobal::staticQString( "Action" );
   static const QString &tagMergeLocal = KGlobal::staticQString( "MergeLocal" );
