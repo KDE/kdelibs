@@ -42,28 +42,33 @@ namespace KIO {
      */
     enum JobFlag {
       /**
-       * Show a progress info, no Resume and no Overwrite
+       * Show the progress info GUI, no Resume and no Overwrite
        */
       DefaultFlags = 0,
 
       /**
-       * Hide Progress info, i.e. don't show a GUI
+       * Hide progress information dialog, i.e. don't show a GUI.
        */
       HideProgressInfo = 1,
 
       /**
-       * missing description
+       * When set, automatically append to the destination file if it exists already.
+       * WARNING: this is NOT the builtin support for offering the user to resume a previous
+       * partial download. The Resume option is much less used, it allows to append
+       * to an existing file.
+       * This is used by KIO::put(), KIO::file_copy(), KIO::file_move().
        */
       Resume = 2,
 
       /**
-       * missing description
+       * When set, automatically overwrite the destination if it exists already.
+       * This is used by KIO::rename(), KIO::put(), KIO::file_copy(), KIO::file_move(), KIO::symlink().
+       * Otherwise the operation will fail with ERR_FILE_ALREADY_EXIST or ERR_DIR_ALREADY_EXIST.
        */
       Overwrite = 4
     };
     Q_DECLARE_FLAGS(JobFlags, JobFlag)
-      Q_DECLARE_OPERATORS_FOR_FLAGS(JobFlags)
-
+    Q_DECLARE_OPERATORS_FOR_FLAGS(JobFlags)
 
     class JobUiDelegate;
 
