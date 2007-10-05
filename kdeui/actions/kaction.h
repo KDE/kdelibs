@@ -389,7 +389,7 @@ Q_SIGNALS:
     void triggered(Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
 
 private:
-    friend class KGlobalAccel;
+    friend class KGlobalAccelPrivate;
     Q_PRIVATE_SLOT(d, void slotTriggered())
     class KActionPrivate* const d;
     friend class KActionPrivate;

@@ -130,16 +130,14 @@ public:
     /**
      * Return the opposite of operator==()
      */
-    bool operator!=(const KShapeGesture &other) const
-        {return !operator==(other);}
+    bool operator!=(const KShapeGesture &other) const;
 
     /**
      * Return an opaque value for use in hash tables
      */
     uint hashable() const;
-private:
-    inline float metric(float dx, float dy) const;
 
+private:
     KShapeGesturePrivate * const d;
 };
 
@@ -229,13 +227,13 @@ public:
     /**
      * Return the opposite of operator==()
      */
-    bool operator!=(const KRockerGesture &other) const
-        {return !operator==(other);}
+    bool operator!=(const KRockerGesture &other) const;
 
     /**
      * Return an opaque value for use in hash tables
      */
     uint hashable() const;
+
 private:
     KRockerGesturePrivate * const d;
 };

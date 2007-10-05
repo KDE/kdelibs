@@ -20,8 +20,8 @@
 */
 
 #include "kglobalaccel.h"
+#include "kglobalaccel_p.h"
 #include "kdedglobalaccel.h"
-#include "kdedglobalaccel_interface.h"
 
 // For KGlobalAccelImpl
 #ifdef Q_WS_X11
@@ -36,8 +36,6 @@
 #include "kglobalaccel_emb.h"
 #endif
 
-#include <QtCore/QHash>
-#include <QtCore/QStringList>
 #include <QtCore/QCoreApplication>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
@@ -62,31 +60,16 @@
 
 //TODO what was the problem that got fixed recently in the old version? - forward port if necessary
 
-class KGlobalAccelPrivate
-{
-public:
-    KGlobalAccelPrivate()
+KGlobalAccelPrivate::KGlobalAccelPrivate()
      : isUsingForeignComponentName(false),
        enabled(true),
        iface("org.kde.kded", "/modules/kdedglobalaccel", QDBusConnection::sessionBus())
-    {
-        // Make sure kded is running
-        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
-            KToolInvocation::klauncher(); // this calls startKdeinit
-        }
+{
+    // Make sure kded is running
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+        KToolInvocation::klauncher(); // this calls startKdeinit
     }
-
-    //for all actions with (isEnabled() && globalShortcutAllowed())
-    QHash<QString, KAction *> nameToAction;
-    QHash<KAction *, QString> actionToName;
-
-    QString mainComponentName;
-    bool isUsingForeignComponentName;
-    bool enabled;
-
-    org::kde::KdedGlobalAccelInterface iface;
-};
-
+}
 
 KGlobalAccel::KGlobalAccel()
     : d(new KGlobalAccelPrivate)
@@ -94,9 +77,9 @@ KGlobalAccel::KGlobalAccel()
     qDBusRegisterMetaType<QList<int> >();
 
     connect(&d->iface, SIGNAL(invokeAction(const QStringList &)),
-            SLOT(invokeAction(const QStringList &)));
+            SLOT(_k_invokeAction(const QStringList &)));
     connect(&d->iface, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
-            SLOT(shortcutGotChanged(const QStringList &, const QList<int> &)));
+            SLOT(_k_shortcutGotChanged(const QStringList &, const QList<int> &)));
 
     if (KGlobal::hasMainComponent())
         d->mainComponentName = KGlobal::mainComponent().componentName();
@@ -110,7 +93,7 @@ KGlobalAccel::~KGlobalAccel()
 }
 
 
-bool KGlobalAccel::isEnabled()
+bool KGlobalAccel::isEnabled() const
 {
     return d->enabled;
 }
@@ -149,12 +132,12 @@ KGlobalAccel *KGlobalAccel::self( )
 }
 
 
-void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action, uint flags)
+void KGlobalAccelPrivate::updateGlobalShortcutAllowed(KAction *action, uint flags)
 {
     if (!action)
         return;
 
-    bool oldEnabled = d->actionToName.contains(action);
+    bool oldEnabled = actionToName.contains(action);
     bool newEnabled = action->globalShortcutAllowed();
 
     if (oldEnabled == newEnabled)
@@ -162,7 +145,7 @@ void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action, uint flags)
 
     if (action->text().isEmpty())
         return;
-    QStringList actionId(d->mainComponentName);
+    QStringList actionId(mainComponentName);
     actionId.append(action->text());
     //TODO: what about i18ned names?
 
@@ -173,11 +156,11 @@ void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action, uint flags)
         if (action->globalShortcut(KAction::DefaultShortcut).isEmpty())
             setterFlags |= KdedGlobalAccel::IsDefaultEmpty;
 
-        d->nameToAction.insert(actionId.at(1), action);
-        d->actionToName.insert(action, actionId.at(1));
-        QList<int> result = d->iface.setShortcut(actionId,
-                                                 intListFromShortcut(action->globalShortcut()),
-                                                 setterFlags);
+        nameToAction.insert(actionId.at(1), action);
+        actionToName.insert(action, actionId.at(1));
+        QList<int> result = iface.setShortcut(actionId,
+                                              intListFromShortcut(action->globalShortcut()),
+                                              setterFlags);
         KShortcut scResult(shortcutFromIntList(result));
 
         if (scResult != action->globalShortcut())
@@ -185,20 +168,20 @@ void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action, uint flags)
     }
 
     if (oldEnabled && !newEnabled) {
-        d->nameToAction.remove(d->actionToName.take(action));
-        d->iface.setInactive(actionId);
+        nameToAction.remove(actionToName.take(action));
+        iface.setInactive(actionId);
     }
 }
 
 
-void KGlobalAccel::updateGlobalShortcut(KAction *action, uint flags)
+void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
 {
     if (!action)
         return;
 
     if (action->text().isEmpty())
         return;
-    QStringList actionId(d->mainComponentName);
+    QStringList actionId(mainComponentName);
     actionId.append(action->text());
     //TODO: what about i18ned names?
 
@@ -208,9 +191,9 @@ void KGlobalAccel::updateGlobalShortcut(KAction *action, uint flags)
     if (action->globalShortcut(KAction::DefaultShortcut).isEmpty())
         setterFlags |= KdedGlobalAccel::IsDefaultEmpty;
 
-    QList<int> result = d->iface.setShortcut(actionId,
-                                             intListFromShortcut(action->globalShortcut()),
-                                             setterFlags);
+    QList<int> result = iface.setShortcut(actionId,
+                                          intListFromShortcut(action->globalShortcut()),
+                                          setterFlags);
     KShortcut scResult(shortcutFromIntList(result));
 
     if (scResult != action->globalShortcut()) {
@@ -219,13 +202,13 @@ void KGlobalAccel::updateGlobalShortcut(KAction *action, uint flags)
 
     //We might be able to avoid that call sometimes, but it's neither worth the effort nor
     //the bytes to determine the cases where it's safe to avoid it.
-    if (d->isUsingForeignComponentName) {
-        d->iface.setForeignShortcut(actionId, result);
+    if (isUsingForeignComponentName) {
+        iface.setForeignShortcut(actionId, result);
     }
 }
 
 
-QList<int> KGlobalAccel::intListFromShortcut(const KShortcut &cut)
+QList<int> KGlobalAccelPrivate::intListFromShortcut(const KShortcut &cut)
 {
     QList<int> ret;
     ret.append(cut.primary()[0]);
@@ -236,7 +219,7 @@ QList<int> KGlobalAccel::intListFromShortcut(const KShortcut &cut)
 }
 
 
-KShortcut KGlobalAccel::shortcutFromIntList(const QList<int> &list)
+KShortcut KGlobalAccelPrivate::shortcutFromIntList(const QList<int> &list)
 {
     KShortcut ret;
     if (list.count() > 0)
@@ -247,14 +230,13 @@ KShortcut KGlobalAccel::shortcutFromIntList(const QList<int> &list)
 }
 
 
-//slot
-void KGlobalAccel::invokeAction(const QStringList &actionId)
+void KGlobalAccelPrivate::_k_invokeAction(const QStringList &actionId)
 {
     //TODO: can we make it so that we don't have to check the mainComponentName? (i.e. targeted signals)
-    if (actionId.at(0) != d->mainComponentName || d->isUsingForeignComponentName)
+    if (actionId.at(0) != mainComponentName || isUsingForeignComponentName)
         return;
 
-    KAction *action = d->nameToAction.value(actionId.at(1));
+    KAction *action = nameToAction.value(actionId.at(1));
     if (!action)
         return;
 
@@ -273,12 +255,10 @@ void KGlobalAccel::invokeAction(const QStringList &actionId)
     action->trigger();
 }
 
-
-//slot
-void KGlobalAccel::shortcutGotChanged(const QStringList &actionId,
-                                      const QList<int> &keys)
+void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
+                                                const QList<int> &keys)
 {
-    KAction *action = d->nameToAction.value(actionId.at(1));
+    KAction *action = nameToAction.value(actionId.at(1));
     if (!action)
         return;
 

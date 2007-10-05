@@ -23,6 +23,12 @@
 #include <math.h>
 #include <QStringList>
 
+inline float metric(float dx, float dy)
+{
+    //square root of that or not? - not square root has possible advantages
+    return (dx*dx + dy*dy);
+}
+
 class KShapeGesturePrivate
 {
 public:
@@ -93,13 +99,6 @@ KShapeGesture::KShapeGesture(const KShapeGesture &other)
 KShapeGesture::~KShapeGesture()
 {
     delete d;
-}
-
-
-inline float KShapeGesture::metric(float dx, float dy) const
-{
-    //square root of that or not? - not square root has possible advantages
-    return (dx*dx + dy*dy);
 }
 
 
@@ -377,6 +376,10 @@ bool KShapeGesture::operator==(const KShapeGesture &other) const
     return d->m_shape == other.d->m_shape;
 }
 
+bool KShapeGesture::operator!=(const KShapeGesture &other) const
+{
+    return !operator==(other);
+}
 
 uint KShapeGesture::hashable() const
 {
@@ -591,6 +594,10 @@ bool KRockerGesture::operator==(const KRockerGesture &other) const
     return d->m_hold == other.d->m_hold && d->m_thenPush == other.d->m_thenPush;
 }
 
+bool KRockerGesture::operator!=(const KRockerGesture &other) const
+{
+    return !operator==(other);
+}
 
 uint KRockerGesture::hashable() const
 {

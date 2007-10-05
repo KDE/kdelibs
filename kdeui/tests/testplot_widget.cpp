@@ -18,6 +18,7 @@
 #include <math.h>
 #include <QtGui/QComboBox>
 #include <QtGui/QBoxLayout>
+#include <QtGui/QPen>
 #include <kdebug.h>
 
 #include "kplotwidget.h"

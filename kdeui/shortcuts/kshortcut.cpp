@@ -181,6 +181,11 @@ bool KShortcut::operator==(const KShortcut &other) const
     return (d->primary == other.d->primary && d->alternate == other.d->alternate);
 }
 
+bool KShortcut::operator!=(const KShortcut &other) const
+{
+    return !operator==(other);
+}
+
 KShortcut::operator QList<QKeySequence>() const
 {
     return toList(RemoveEmpty);

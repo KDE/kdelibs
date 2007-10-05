@@ -161,36 +161,40 @@ public:
     void removeEntries(int newsize = 0);
 
 protected:
-    void init();
+    /**
+     * Makes sure that the cache is initialized correctly.
+     */
+    void ensureInited() const;
 
-    bool loadData(int offset, QPixmap& pix);
     /**
      * Can be used by subclasses to write custom data into the the stream.
      **/
     virtual bool loadCustomData(QDataStream& stream);
 
-    int writeData(const QString& key, const QPixmap& pix);
     /**
      * Can be used by subclasses to load custom data from the the stream.
      **/
     virtual bool writeCustomData(QDataStream& stream);
-    void writeIndex(const QString& key, int offset);
 
     /**
      * Can be used by subclasses to write custom data into cache's header.
      **/
     virtual bool loadCustomIndexHeader(QDataStream& stream);
+
     /**
      * Can be used by subclasses to load custom data from cache's header.
      **/
     virtual void writeCustomIndexHeader(QDataStream& stream);
+
     /**
      * Can be used by subclasses to indicate that cache needs some additional
      *  initing before it can be used.
      **/
     void setValid(bool valid);
 
-    void ensureInited() const;
+    /**
+     * Recreates the cache files.
+     */
     bool recreateCacheFiles();
 
 private:

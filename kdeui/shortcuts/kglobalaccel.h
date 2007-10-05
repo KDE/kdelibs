@@ -56,7 +56,7 @@ public:
      * Checks whether the accelerators are enabled.
      * @return true if the KGlobalAccel is enabled
      */
-    bool isEnabled();
+    bool isEnabled() const;
 
     /**
      * Enables or disables the KGlobalAccel
@@ -108,25 +108,7 @@ public:
 
 private:
     friend class KAction;
-    ///Propagate any shortcut changes to the KDED module that does the bookkeeping
-    ///and the key grabbing.
-    ///If this is called with an action that has an empty active global shortcut and
-    ///an empty default shortcut, the record of that action will be deleted.
-    void updateGlobalShortcut(KAction *action, /*KAction::ShortcutTypes*/uint flags);
 
-    ///Register or unregister the action in this class, and notify the KDED module
-    void updateGlobalShortcutAllowed(KAction *action, /*KAction::ShortcutTypes*/uint flags);
-
-    QList<int> intListFromShortcut(const KShortcut &cut);
-    KShortcut shortcutFromIntList(const QList<int> &list);
-
-//slots
-private Q_SLOTS:
-    void invokeAction(const QStringList &actionId);
-    void shortcutGotChanged(const QStringList &actionId,
-                            const QList<int> &shortcut);
-
-private:
     /// Creates a new KGlobalAccel object
     KGlobalAccel();
 
@@ -134,6 +116,9 @@ private:
     ~KGlobalAccel();
 
     class KGlobalAccelPrivate *const d;
+
+    Q_PRIVATE_SLOT(d, void _k_invokeAction(const QStringList&))
+    Q_PRIVATE_SLOT(d, void _k_shortcutGotChanged(const QStringList&, const QList<int>&))
 };
 
 #endif // _KGLOBALACCEL_H_

@@ -166,8 +166,7 @@ public:
 
     bool operator==(const KShortcut &other) const;
 
-    inline bool operator!=(const KShortcut &other) const
-        {return !operator==(other);}
+    bool operator!=(const KShortcut &other) const;
 
     /**
      * Returns shortcut as QList\<QKeySequence\>, and is equivalent to toList(RemoveEmpty).

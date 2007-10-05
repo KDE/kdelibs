@@ -23,13 +23,13 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QColor>
-#include <QtCore/QPointF>
 #include <QtCore/QString>
-#include <QtGui/QPen>
-#include <QtGui/QBrush>
+#include <QtGui/QColor>
 
+class QBrush;
 class QPainter;
+class QPen;
+class QPointF;
 class KPlotWidget;
 class KPlotPoint;
 

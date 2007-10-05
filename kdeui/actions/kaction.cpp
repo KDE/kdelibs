@@ -26,6 +26,7 @@
 
 #include "kaction.h"
 #include "kaction_p.h"
+#include "kglobalaccel_p.h"
 
 #include <QtGui/QApplication>
 
@@ -84,7 +85,7 @@ KAction::~KAction()
       //- removes the action from KGlobalAccel
       //- marks the action as inactive in the KDED module
       d->globalShortcutAllowed = false;
-      KGlobalAccel::self()->updateGlobalShortcutAllowed(this, (ShortcutTypes)0);
+      KGlobalAccel::self()->d->updateGlobalShortcutAllowed(this, (ShortcutTypes)0);
     }
 
     KGestureMap::self()->removeGesture(d->shapeGesture, this);
@@ -179,14 +180,14 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   }
 
   if (changed)
-    KGlobalAccel::self()->updateGlobalShortcut(this, type | load);
+    KGlobalAccel::self()->d->updateGlobalShortcut(this, type | load);
 
   //This *must* be called after setting the shortcut. The shortcut will be fixed as
   //soon as it has been enabled once. If we called updateGlobalShortcutAllowed too
   //early, the shortcut would be fixed to empty.
   if (!d->globalShortcutAllowed) {
     d->globalShortcutAllowed = true;
-    KGlobalAccel::self()->updateGlobalShortcutAllowed(this, type | load);
+    KGlobalAccel::self()->d->updateGlobalShortcutAllowed(this, type | load);
   }
 
 }
@@ -202,7 +203,7 @@ void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading load
   if (d->globalShortcutAllowed != allowed) {
     d->globalShortcutAllowed = allowed;
 
-    KGlobalAccel::self()->updateGlobalShortcutAllowed(this, load);
+    KGlobalAccel::self()->d->updateGlobalShortcutAllowed(this, load);
   }
 }
 

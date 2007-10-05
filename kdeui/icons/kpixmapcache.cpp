@@ -239,6 +239,11 @@ public:
     bool removeEntries(int newsize);
     bool scheduleRemoveEntries(int newsize);
 
+    void init();
+    bool loadData(int offset, QPixmap& pix);
+    int writeData(const QString& key, const QPixmap& pix);
+    void writeIndex(const QString& key, int offset);
+
     // Prepends key's hash to the key. This makes comparisons and key
     //  lookups faster as the beginnings of the keys are more random
     QString indexKey(const QString& key);
@@ -526,7 +531,7 @@ QIODevice* KPixmapCache::Private::indexDevice()
         kDebug(264) << "Cache has changed, reloading";
         delete device;
 
-        q->init();
+        init();
         if (!q->isValid()) {
             return 0;
         } else {
@@ -966,32 +971,32 @@ KPixmapCache::~KPixmapCache()
     delete d;
 }
 
-void KPixmapCache::init()
+void KPixmapCache::Private::init()
 {
-    d->mInited = true;
+    mInited = true;
 
 #ifdef DISABLE_PIXMAPCACHE
-    d->mValid = d->mEnabled = false;
+    mValid = mEnabled = false;
 #else
-    d->mValid = false;
+    mValid = false;
 
     // Find locations of the files
-    d->mIndexFile = KGlobal::dirs()->locateLocal("cache", "kpc/" + d->mName + ".index");
-    d->mDataFile  = KGlobal::dirs()->locateLocal("cache", "kpc/" + d->mName + ".data");
-    d->mLockFileName = KGlobal::dirs()->locateLocal("cache", "kpc/" + d->mName + ".lock");
+    mIndexFile = KGlobal::dirs()->locateLocal("cache", "kpc/" + mName + ".index");
+    mDataFile  = KGlobal::dirs()->locateLocal("cache", "kpc/" + mName + ".data");
+    mLockFileName = KGlobal::dirs()->locateLocal("cache", "kpc/" + mName + ".lock");
 
-    d->mEnabled = true;
-    d->mEnabled &= d->checkLockFile();
-    d->mEnabled &= d->checkFileVersion(d->mDataFile);
-    d->mEnabled &= d->checkFileVersion(d->mIndexFile);
-    if (!d->mEnabled) {
-        kDebug(264) << "Pixmap cache" << d->mName << "is disabled";
+    mEnabled = true;
+    mEnabled &= checkLockFile();
+    mEnabled &= checkFileVersion(mDataFile);
+    mEnabled &= checkFileVersion(mIndexFile);
+    if (!mEnabled) {
+        kDebug(264) << "Pixmap cache" << mName << "is disabled";
     } else {
         // Cache is enabled, but check if it's ready for use
-        d->loadDataHeader();
-        setValid(d->loadIndexHeader());
+        loadDataHeader();
+        q->setValid(loadIndexHeader());
         // Init mmap stuff if mmap is used
-        d->mmapFiles();
+        mmapFiles();
     }
 #endif
 }
@@ -999,7 +1004,7 @@ void KPixmapCache::init()
 void KPixmapCache::ensureInited() const
 {
     if (!d->mInited) {
-        const_cast<KPixmapCache*>(this)->init();
+        const_cast<KPixmapCache*>(this)->d->init();
     }
 }
 
@@ -1177,7 +1182,7 @@ void KPixmapCache::discard()
     d->invalidateMmapFiles();
 
     d->mInited = false;
-    init();
+    d->init();
 }
 
 void KPixmapCache::removeEntries(int newsize)
@@ -1217,7 +1222,7 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
     }
 
     // Load the data
-    bool ret = loadData(offset, pix);
+    bool ret = d->loadData(offset, pix);
     if (ret && d->mUseQPixmapCache) {
         // This pixmap wasn't in QPC, put it there
         QPixmapCache::insert(key, pix);
@@ -1225,10 +1230,10 @@ bool KPixmapCache::find(const QString& key, QPixmap& pix)
     return ret;
 }
 
-bool KPixmapCache::loadData(int offset, QPixmap& pix)
+bool KPixmapCache::Private::loadData(int offset, QPixmap& pix)
 {
     // Open device and datastream on it
-    QIODevice* device = d->dataDevice();
+    QIODevice* device = dataDevice();
     if (!device) {
         return false;
     }
@@ -1259,7 +1264,7 @@ bool KPixmapCache::loadData(int offset, QPixmap& pix)
     img.bits();  // make deep copy since we don't want to keep imgdata around
     pix = QPixmap::fromImage(img);
 
-    if (!loadCustomData(stream)) {
+    if (!q->loadCustomData(stream)) {
         delete device;
         return false;
     }
@@ -1299,13 +1304,13 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
 
     // Insert to cache
     QString indexkey = d->indexKey(key);
-    int offset = writeData(key, pix);
+    int offset = d->writeData(key, pix);
     //kDebug(264) << "data is at offset" << offset;
     if (offset == -1) {
         return;
     }
 
-    writeIndex(indexkey, offset);
+    d->writeIndex(indexkey, offset);
 
     // Make sure the cache size stays within limits
     if (size() > cacheLimit()) {
@@ -1319,10 +1324,10 @@ void KPixmapCache::insert(const QString& key, const QPixmap& pix)
     }
 }
 
-int KPixmapCache::writeData(const QString& key, const QPixmap& pix)
+int KPixmapCache::Private::writeData(const QString& key, const QPixmap& pix)
 {
     // Open device and datastream on it
-    QIODevice* device = d->dataDevice();
+    QIODevice* device = dataDevice();
     if (!device) {
         return -1;
     }
@@ -1338,7 +1343,7 @@ int KPixmapCache::writeData(const QString& key, const QPixmap& pix)
     stream << (qint32)img.format() << (qint32)img.width() << (qint32)img.height() << (qint32)img.bytesPerLine();
     stream << imgdatacompressed;
 
-    writeCustomData(stream);
+    q->writeCustomData(stream);
 
     delete device;
     return offset;
@@ -1349,16 +1354,16 @@ bool KPixmapCache::writeCustomData(QDataStream&)
     return true;
 }
 
-void KPixmapCache::writeIndex(const QString& key, int dataoffset)
+void KPixmapCache::Private::writeIndex(const QString& key, int dataoffset)
 {
     // Open device and datastream on it
-    QIODevice* device = d->indexDevice();
+    QIODevice* device = indexDevice();
     if (!device) {
         return;
     }
     QDataStream stream(device);
 
-    d->writeIndexEntry(stream, key, dataoffset);
+    writeIndexEntry(stream, key, dataoffset);
     delete device;
 }
 
