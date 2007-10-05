@@ -1,6 +1,6 @@
 
 project(kutils)
-include_directories( ${KDE4_KDEUI_INCLUDES} )
+include_directories( ${KDE4_KDEUI_INCLUDES} ${KDE4_KPARTS_INCLUDES} )
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )
 
@@ -26,13 +26,14 @@ kcmoduleproxy.cpp
 kpluginselector.cpp
 kcmodulecontainer.cpp
 ksettingswidgetadaptor.cpp
+kprintpreview.cpp
 ${ksettings_STAT_SRCS}
 )
 
 
 kde4_add_library(kutils SHARED ${kutils_LIB_SRCS})
 
-target_link_libraries(kutils  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(kutils  ${KDE4_KDEUI_LIBS} ${KDE4_KPARTS_LIBS} )
 
 set_target_properties(kutils PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kutils
@@ -51,6 +52,7 @@ install( FILES
  kcmoduleproxy.h
  kpluginselector.h
  kcmodulecontainer.h
+ kprintpreview.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 
