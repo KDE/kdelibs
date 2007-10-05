@@ -449,6 +449,34 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             break;
         }
 
+        case WT_TabBar:
+        {
+            // For vertical text fallback, provide the generic text implementation
+            // a transformed rotated painter, with rect swizzled appropriately
+            if (primitive == TabBar::EastText || primitive == TabBar::WestText)
+            {
+                QTransform tr;
+
+                if (primitive == TabBar::WestText)
+                {
+                    tr.translate(r.x(), r.height() + r.y());
+                    tr.rotate(-90);
+                }
+                else
+                {
+                    tr.translate(r.width() + r.x(), r.y());
+                    tr.rotate(90);
+                }
+
+                p->save();
+                p->setTransform(tr, true);
+                drawKStylePrimitive(WT_TabBar, Generic::Text, opt,
+                    QRect(0, 0, r.height(), r.width()), pal, flags, p, widget, kOpt);
+                p->restore();
+            }
+            break;
+        }
+
         default:
             break;
     }
@@ -534,7 +562,6 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
             poly.translate(r.x() + r.width()/2, r.y() + r.height()/2 + 1);
             p->setPen( pal.color( QPalette::Light ) );
             p->drawPolygon(poly);
-
             poly.translate(-1,-1);
             p->setPen(pal.mid().color());
             p->drawPolygon(poly);
@@ -1852,21 +1879,16 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
             //Draw text
             if (!tabOpt->text.isNull())
             {
-                switch (tabSd)
-                {
-                    case North:
-                    case South:
-                    {
-                        TextOption lbOpt(tabOpt->text);
-                        drawKStylePrimitive(WT_TabBar, Generic::Text, option, labelRect,
-                                            pal, flags, p, widget, &lbOpt);
-                        break;
-                    }
-                    default:
-                        //### TODO
-                        p->setPen(Qt::yellow);
-                        drawInsideRect(p, labelRect);
-                };
+                TextOption lbOpt(tabOpt->text);
+                int primitive = Generic::Text; // For horizontal tabs
+
+                if (tabSd == East)
+                    primitive = TabBar::EastText;
+                else if (tabSd == West)
+                    primitive = TabBar::WestText;
+
+                drawKStylePrimitive(WT_TabBar, primitive, option, labelRect,
+                                    pal, flags, p, widget, &lbOpt);
             }
 
             //If need be, draw focus rect

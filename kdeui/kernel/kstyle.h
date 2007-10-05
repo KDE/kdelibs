@@ -904,8 +904,7 @@ protected:
          */
         enum Primitive
         {
-            EastText,       /**< Special rotated text for east tabs.
-                             * @todo implement it in KStyle...? */
+            EastText,       /**< Special rotated text for east tabs. */
             WestText,       ///< @see EastText
             NorthTab,       ///< @todo say something about triangular shape etc.
             EastTab,
