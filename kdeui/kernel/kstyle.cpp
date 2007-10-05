@@ -1839,9 +1839,8 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     else
                     {
                         //We place icon on the right
-                        iconRect = QRect(labelRect.width() - iconSize, labelRect.y(),
+                        iconRect = QRect(labelRect.x() + labelRect.width() - iconSize, labelRect.y(),
                                          iconSize, labelRect.height());
-
                         //Adjust the text rect
                         labelRect.setWidth(labelRect.width() - iconSize -
                             widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
@@ -1859,12 +1858,12 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
                     {
                         iconRect = QRect(labelRect.x(), labelRect.y(),
                                          labelRect.width(), iconSize);
-                        labelRect.setTop(labelRect.x() + iconSize +
+                        labelRect.setTop(labelRect.y() + iconSize +
                             widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
                     }
                     else
                     {
-                        iconRect = QRect(labelRect.x(), labelRect.height() - iconSize,
+                        iconRect = QRect(labelRect.x(), labelRect.y() + labelRect.height() - iconSize,
                                          labelRect.width(), iconSize);
                         labelRect.setHeight(labelRect.height() - iconSize -
                             widgetLayoutProp(WT_TabBar, TabBar::TabTextToIconSpace, option, widget));
