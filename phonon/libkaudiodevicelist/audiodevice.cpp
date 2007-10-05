@@ -121,7 +121,12 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         d->initialPreference -= 10;
         break;
     case Solid::AudioInterface::Headset:
-        d->icon = QLatin1String("audio-headset");
+        if (d->udi.contains("usb", Qt::CaseInsensitive) ||
+                d->cardName.contains("usb", Qt::CaseInsensitive)) {
+            d->icon = QLatin1String("audio-headset-usb");
+        } else {
+            d->icon = QLatin1String("audio-headset");
+        }
         d->initialPreference -= 10;
         break;
     case Solid::AudioInterface::Modem:
