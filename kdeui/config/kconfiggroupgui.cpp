@@ -149,7 +149,7 @@ static bool writeEntryGui(KConfigGroup *cg, const QByteArray& key, const QVarian
         if (rColor.alpha() != 255)
             list.insert(3, rColor.alpha());
 
-        cg->writeEntry( key, list, pFlags );
+        cg->writeEntry( key.constData(), list, pFlags );
         return true;
     }
     case QVariant::Font:
