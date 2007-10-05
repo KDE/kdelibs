@@ -57,17 +57,12 @@ bool KDirOperatorDetailView::event(QEvent *event)
         QHeaderView *headerView = header();
         headerView->setResizeMode(QHeaderView::Interactive);
         headerView->resizeSections(QHeaderView::ResizeToContents);
+        headerView->setStretchLastSection(false);
         headerView->setMovable(false);
 
         hideColumn(KDirModel::Permissions);
         hideColumn(KDirModel::Owner);
         hideColumn(KDirModel::Group);
-
-        // TODO: It would be nice if disabling the automatic column resizing
-        // would only be done after the user has changed the width of at least
-        // one column. But QHeaderView::sectionMoved() does not differ between
-        // user based resizing and internal resizing...
-        QTimer::singleShot(300, this, SLOT(disableColumnResizing()));
     }
 // TODO: Remove this check when 4.3.2 is released and KDE requires it... this
 //       check avoids a division by zero happening on versions before 4.3.1.
@@ -95,7 +90,7 @@ void KDirOperatorDetailView::resizeEvent(QResizeEvent *event)
 {
     QTreeView::resizeEvent(event);
 
-    if (m_resizeColumns) {
+    if (m_resizeColumns && (model()->rowCount() > 0)) {
         QHeaderView *headerView = header();
         headerView->resizeSections(QHeaderView::ResizeToContents);
 
@@ -112,10 +107,6 @@ void KDirOperatorDetailView::resizeEvent(QResizeEvent *event)
             nameColumnWidth = oldNameColumnWidth;
         }
         headerView->resizeSection(KDirModel::Name, nameColumnWidth);
+        m_resizeColumns = false;
     }
-}
-
-void KDirOperatorDetailView::disableColumnResizing()
-{
-    m_resizeColumns = false;
 }

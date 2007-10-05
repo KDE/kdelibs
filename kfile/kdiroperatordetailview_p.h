@@ -38,9 +38,6 @@ protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
 
-private slots:
-    void disableColumnResizing();
-
 private:
     bool m_resizeColumns;
 };
