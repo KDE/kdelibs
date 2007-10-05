@@ -803,34 +803,6 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
     list = lstSys;
 }
 
-void KFontChooser::addFont( QStringList &list, const char *xfont )
-{
-    const char *ptr = strchr( xfont, '-' );
-    if ( !ptr )
-        return;
-
-    ptr = strchr( ptr + 1, '-' );
-    if ( !ptr )
-        return;
-
-    QString font = QLatin1String(ptr + 1);
-
-    int pos;
-    if ( ( pos = font.indexOf( '-' ) ) > 0 ) {
-        font.truncate( pos );
-
-        if ( font.contains( QLatin1String("open look"), Qt::CaseInsensitive ) )
-            return;
-
-        QStringList::Iterator it = list.begin();
-
-        for ( ; it != list.end(); ++it )
-            if ( *it == font )
-                return;
-        list.append( font );
-    }
-}
-
 void KFontChooser::Private::fillFamilyListBox(bool onlyFixedFonts)
 {
     QStringList fontList;

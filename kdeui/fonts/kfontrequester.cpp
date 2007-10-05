@@ -31,6 +31,11 @@ class KFontRequester::KFontRequesterPrivate
 public:
   KFontRequesterPrivate(KFontRequester *q): q(q) {}
 
+  void displaySampleText();
+  void setToolTip();
+
+  void _k_buttonClicked();
+
   KFontRequester *q;
   bool m_onlyFixed;
   QString m_sampleText, m_title;
@@ -57,10 +62,10 @@ KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed )
   layout->addWidget( d->m_sampleLabel, 1 );
   layout->addWidget( d->m_button );
 
-  connect( d->m_button, SIGNAL( clicked() ), SLOT( buttonClicked() ) );
+  connect( d->m_button, SIGNAL( clicked() ), SLOT( _k_buttonClicked() ) );
 
-  displaySampleText();
-  setToolTip();
+  d->displaySampleText();
+  d->setToolTip();
 }
 
 KFontRequester::~KFontRequester()
@@ -103,71 +108,71 @@ void KFontRequester::setFont( const QFont &font, bool onlyFixed )
   d->m_selFont = font;
   d->m_onlyFixed = onlyFixed;
 
-  displaySampleText();
+  d->displaySampleText();
   emit fontSelected( d->m_selFont );
 }
 
 void KFontRequester::setSampleText( const QString &text )
 {
   d->m_sampleText = text;
-  displaySampleText();
+  d->displaySampleText();
 }
 
 void KFontRequester::setTitle( const QString &title )
 {
   d->m_title = title;
-  setToolTip();
+  d->setToolTip();
 }
 
-void KFontRequester::buttonClicked()
+void KFontRequester::KFontRequesterPrivate::_k_buttonClicked()
 {
     KFontChooser::DisplayFlags flags = KFontChooser::NoDisplayFlags;
-    if ( d->m_onlyFixed ) {
+    if ( m_onlyFixed ) {
         flags |= KFontChooser::FixedFontsOnly;
     }
 
-    int result = KFontDialog::getFont( d->m_selFont, flags, parentWidget() );
+    int result = KFontDialog::getFont( m_selFont, flags, q->parentWidget() );
 
     if ( result == KDialog::Accepted )
     {
         displaySampleText();
-        emit fontSelected( d->m_selFont );
+        emit q->fontSelected( m_selFont );
     }
 }
 
-void KFontRequester::displaySampleText()
+void KFontRequester::KFontRequesterPrivate::displaySampleText()
 {
-  d->m_sampleLabel->setFont( d->m_selFont );
+  m_sampleLabel->setFont( m_selFont );
 
-  int size = d->m_selFont.pointSize();
+  int size = m_selFont.pointSize();
   if(size == -1)
-    size = d->m_selFont.pixelSize();
+    size = m_selFont.pixelSize();
 
-  if ( d->m_sampleText.isEmpty() )
-    d->m_sampleLabel->setText( QString( "%1 %2" ).arg( d->m_selFont.family() )
+  if ( m_sampleText.isEmpty() )
+    m_sampleLabel->setText( QString( "%1 %2" ).arg( m_selFont.family() )
       .arg( size ) );
   else
-    d->m_sampleLabel->setText( d->m_sampleText );
+    m_sampleLabel->setText( m_sampleText );
 }
 
-void KFontRequester::setToolTip()
+void KFontRequester::KFontRequesterPrivate::setToolTip()
 {
-  d->m_button->setToolTip( i18n( "Click to select a font" ) );
+  m_button->setToolTip( i18n( "Click to select a font" ) );
 
-  d->m_sampleLabel->setToolTip( QString() );
-  d->m_sampleLabel->setWhatsThis(QString());
+  m_sampleLabel->setToolTip( QString() );
+  m_sampleLabel->setWhatsThis(QString());
 
-  if ( d->m_title.isNull() )
+  if ( m_title.isNull() )
   {
-    d->m_sampleLabel->setToolTip( i18n( "Preview of the selected font" ) );
-    d->m_sampleLabel->setWhatsThis(        i18n( "This is a preview of the selected font. You can change it"
+    m_sampleLabel->setToolTip( i18n( "Preview of the selected font" ) );
+    m_sampleLabel->setWhatsThis( i18n( "This is a preview of the selected font. You can change it"
         " by clicking the \"Choose...\" button." ) );
   }
   else
   {
-    d->m_sampleLabel->setToolTip( i18n( "Preview of the \"%1\" font" ,  d->m_title ) );
-    d->m_sampleLabel->setWhatsThis(        i18n( "This is a preview of the \"%1\" font. You can change it"
-        " by clicking the \"Choose...\" button." ,  d->m_title ) );
+    m_sampleLabel->setToolTip( i18n( "Preview of the \"%1\" font" ,  m_title ) );
+    m_sampleLabel->setWhatsThis( i18n( "This is a preview of the \"%1\" font. You can change it"
+        " by clicking the \"Choose...\" button." ,  m_title ) );
   }
 }
 

@@ -128,20 +128,13 @@ class KDEUI_EXPORT KFontRequester : public QWidget
      */
     void fontSelected( const QFont &font );
 
-  protected:
-
-    void displaySampleText();
-    void setToolTip();
-
-  protected Q_SLOTS:
-
-    virtual void buttonClicked();
-
   private:
     class KFontRequesterPrivate;
     friend class KFontRequesterPrivate;
     KFontRequesterPrivate *const d;
-    
+
+    Q_PRIVATE_SLOT( d, void _k_buttonClicked() )
+
     Q_DISABLE_COPY(KFontRequester)
 };
 

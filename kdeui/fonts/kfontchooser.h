@@ -246,10 +246,6 @@ Q_SIGNALS:
   void fontSelected( const QFont &font );
 
 private:
-  // This one must be static since getFontList( QStringList, char*) is so
-  static void addFont( QStringList &list, const char *xfont );
-
-private:
     class Private;
     Private * const d;
 
