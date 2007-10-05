@@ -390,26 +390,33 @@ static void getInlineRun(RenderObject* start, RenderObject* stop,
     // We skip any non-inlines we encounter as long as we haven't found any
     // inlines yet.
     //
+    //
     // |stop| indicates a non-inclusive stop point.  Regardless of whether |stop|
-    // is inline or not, we will not include it.  It's as though we encountered
+    // is inline or not, we will not include it in a run with inlines before it.  It's as though we encountered
     // a non-inline.
-    inlineRunStart = inlineRunEnd = 0;
-
-    // Start by skipping as many non-inlines as we can.
+    
     RenderObject * curr = start;
-    while (curr && !curr->isInline())
+    bool sawInline;
+    do {
+        while (curr && !(curr->isInline() || curr->isFloatingOrPositioned()))
+            curr = curr->nextSibling();
+        
+        inlineRunStart = inlineRunEnd = curr;
+        
+        if (!curr)
+            return; // No more inline children to be found.
+        
+        sawInline = curr->isInline();
+        
         curr = curr->nextSibling();
+        while (curr && (curr->isInline() || curr->isFloatingOrPositioned()) && (curr != stop)) {
+            inlineRunEnd = curr;
+            if (curr->isInline())
+                sawInline = true;
+            curr = curr->nextSibling();
+        }
+    } while (!sawInline);
 
-    if (!curr)
-        return; // No more inline children to be found.
-
-    inlineRunStart = inlineRunEnd = curr;
-
-    curr = curr->nextSibling();
-    while (curr && curr->isInline() && (curr != stop)) {
-        inlineRunEnd = curr;
-        curr = curr->nextSibling();
-    }
 }
 
 void RenderBlock::makeChildrenNonInline(RenderObject *insertionPoint)
