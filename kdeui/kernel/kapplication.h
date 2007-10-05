@@ -330,19 +330,6 @@ public:
    */
   void setSynchronizeClipboard(bool synchronize);
 
-public Q_SLOTS:
-  /**
-   * Updates the last user action timestamp to the given time, or to the current time,
-   * if 0 is given. Do not use unless you're really sure what you're doing.
-   * Consult focus stealing prevention section in kdebase/kwin/README.
-   */
-  Q_SCRIPTABLE void updateUserTimestamp( int time = 0 );
-
-  // D-Bus slots:
-  Q_SCRIPTABLE void reparseConfiguration();
-  Q_SCRIPTABLE void quit();
-
-public:
   /**
    * Returns the last user action timestamp or 0 if no user activity has taken place yet.
    * @see updateuserTimestamp
@@ -379,43 +366,6 @@ public:
   }
 #endif
 
-protected:
-  /**
-   * @internal Used by KUniqueApplication
-   */
-  KApplication(bool GUIenabled, const KComponentData &cData);
-
-#ifdef Q_WS_X11
-  /**
-   * @internal Used by KUniqueApplication
-   */
-  KApplication(Display *display, Qt::HANDLE visual, Qt::HANDLE colormap,
-          const KComponentData &cData);
-
-  /**
-   * Used to catch X11 events
-   */
-  bool x11EventFilter( XEvent * );
-#endif
-
-  /// Current application object.
-  static KApplication *KApp;
-
-private Q_SLOTS:
-    void x11FilterDestroyed();
-    void checkAppStartedSlot();
-    void slot_KToolInvocation_hook(QStringList&,QByteArray&);
-private:
-  QString sessionConfigName() const;
-
-  void init(bool GUIenabled=true);
-  void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
-  static void preqapplicationhack();
-  static void preread_app_startup_id();
-  void read_app_startup_id();
-  friend class KAction;
-
-public:
   /**
       @internal
     */
@@ -441,6 +391,18 @@ public:
    */
   static bool loadedByKdeinit;
 
+public Q_SLOTS:
+  /**
+   * Updates the last user action timestamp to the given time, or to the current time,
+   * if 0 is given. Do not use unless you're really sure what you're doing.
+   * Consult focus stealing prevention section in kdebase/kwin/README.
+   */
+  Q_SCRIPTABLE void updateUserTimestamp( int time = 0 );
+
+  // D-Bus slots:
+  Q_SCRIPTABLE void reparseConfiguration();
+  Q_SCRIPTABLE void quit();
+
 Q_SIGNALS:
   /**
       Session management asks you to save the state of your application.
@@ -448,7 +410,7 @@ Q_SIGNALS:
      This signal is provided for compatibility only. For new
      applications, simply use KMainWindow. By reimplementing
      KMainWindow::queryClose(), KMainWindow::saveProperties() and
- KMainWindow::readProperties() you can simply handle session
+     KMainWindow::readProperties() you can simply handle session
      management for applications with multiple toplevel windows.
 
      For purposes without KMainWindow, create an instance of
@@ -471,19 +433,42 @@ Q_SIGNALS:
   */
   void saveYourself();
 
-private:
-#ifndef KDE3_SUPPORT
-  KConfig *config() { return KGlobal::config().data(); }
+protected:
+  /**
+   * @internal Used by KUniqueApplication
+   */
+  KApplication(bool GUIenabled, const KComponentData &cData);
+
+#ifdef Q_WS_X11
+  /**
+   * @internal Used by KUniqueApplication
+   */
+  KApplication(Display *display, Qt::HANDLE visual, Qt::HANDLE colormap,
+          const KComponentData &cData);
+
+  /**
+   * Used to catch X11 events
+   */
+  bool x11EventFilter( XEvent * );
 #endif
 
+  /// Current application object.
+  static KApplication *KApp;
+
+private:
   KApplication(const KApplication&);
   KApplication& operator=(const KApplication&);
+
 private:
   //### KDE4: This is to catch invalid implicit conversions, may want to reconsider
   KApplication(bool, bool);
 
   class Private;
   Private* const d;
+
+  Q_PRIVATE_SLOT(d, void _k_x11FilterDestroyed())
+  Q_PRIVATE_SLOT(d, void _k_checkAppStartedSlot())
+  Q_PRIVATE_SLOT(d, void _k_slot_KToolInvocation_hook(QStringList&, QByteArray&))
 };
 
 #endif

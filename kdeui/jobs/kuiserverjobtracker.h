@@ -60,6 +60,9 @@ public:
     virtual void unregisterJob(KJob *job);
 
 protected Q_SLOTS:
+    /**
+     * The following slots are inherited from KJobTrackerInterface.
+     */
     virtual void finished(KJob *job);
     virtual void suspended(KJob *job);
     virtual void resumed(KJob *job);

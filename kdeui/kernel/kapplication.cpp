@@ -157,8 +157,9 @@ void KApplication_early_init_mac();
 class KApplication::Private
 {
 public:
-  Private(const QByteArray &cName)
-      : componentData(cName),
+  Private(KApplication* q, const QByteArray &cName)
+      : q(q),
+      componentData(cName),
       checkAccelerators(0),
       startup_id("0"),
       app_started_timer(0),
@@ -173,8 +174,9 @@ public:
   {
   }
 
-  Private(const KComponentData &cData)
-      : componentData(cData),
+  Private(KApplication* q, const KComponentData &cData)
+      : q(q),
+      componentData(cData),
       checkAccelerators(0),
       startup_id("0"),
       app_started_timer(0),
@@ -189,8 +191,9 @@ public:
   {
   }
 
-  Private()
-      : componentData(KCmdLineArgs::aboutData()),
+  Private(KApplication *q)
+      : q(q),
+      componentData(KCmdLineArgs::aboutData()),
       checkAccelerators(0),
       startup_id( "0" ),
       app_started_timer( 0 ),
@@ -209,11 +212,28 @@ public:
   {
   }
 
+#ifndef KDE3_SUPPORT
+  KConfig *config() { return KGlobal::config().data(); }
+#endif
+
+  void _k_x11FilterDestroyed();
+  void _k_checkAppStartedSlot();
+  void _k_slot_KToolInvocation_hook(QStringList&, QByteArray&);
+
+  QString sessionConfigName() const;
+  void init(bool GUIenabled=true);
+  void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
+  static void preqapplicationhack();
+  static void preread_app_startup_id();
+  void read_app_startup_id();
+
+  KApplication *q;
   KComponentData componentData;
   KCheckAccelerators* checkAccelerators;
   QByteArray startup_id;
   QTimer* app_started_timer;
   bool session_save;
+
 #ifdef Q_WS_X11
   IceIOErrorHandler oldIceIOErrorHandler;
   int (*oldXErrorHandler)(Display*,XErrorEvent*);
@@ -254,13 +274,13 @@ void KApplication::installX11EventFilter( QWidget* filter )
         return;
     if (!x11Filter)
         x11Filter = new QList<const QWidget *>;
-    connect ( filter, SIGNAL( destroyed() ), this, SLOT( x11FilterDestroyed() ) );
+    connect ( filter, SIGNAL( destroyed() ), this, SLOT( _k_x11FilterDestroyed() ) );
     x11Filter->append( filter );
 }
 
-void KApplication::x11FilterDestroyed()
+void KApplication::Private::_k_x11FilterDestroyed()
 {
-    removeX11EventFilter( static_cast< const QWidget* >( sender()));
+    q->removeX11EventFilter( static_cast< const QWidget* >(q->sender()));
 }
 
 void KApplication::removeX11EventFilter( const QWidget* filter )
@@ -289,7 +309,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
             if( d->app_started_timer == NULL )
             {
                 d->app_started_timer = new QTimer( this );
-                connect( d->app_started_timer, SIGNAL( timeout()), SLOT( checkAppStartedSlot()));
+                connect( d->app_started_timer, SIGNAL( timeout()), SLOT( _k_checkAppStartedSlot()));
             }
             if( !d->app_started_timer->isActive()) {
                 d->app_started_timer->setSingleShot( true );
@@ -300,7 +320,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     return QApplication::notify(receiver, event);
 }
 
-void KApplication::checkAppStartedSlot()
+void KApplication::Private::_k_checkAppStartedSlot()
 {
 #if defined Q_WS_X11
     KStartupInfo::handleAutoAppStartedSending();
@@ -312,15 +332,15 @@ void KApplication::checkAppStartedSlot()
   instance specific config object.
   Syntax:  "session/<appname>_<sessionId>"
  */
-QString KApplication::sessionConfigName() const
+QString KApplication::Private::sessionConfigName() const
 {
 #ifdef QT_NO_SESSIONMANAGER
 #error QT_NO_SESSIONMANAGER was set, this will not compile. Reconfigure Qt with Session management support.
 #endif
-    QString sessKey = sessionKey();
-    if ( sessKey.isEmpty() && !d->sessionKey.isEmpty() )
-        sessKey = d->sessionKey;
-    return QString(QLatin1String("session/%1_%2_%3")).arg(applicationName()).arg(sessionId()).arg(sessKey);
+    QString sessKey = q->sessionKey();
+    if ( sessKey.isEmpty() && !sessionKey.isEmpty() )
+        sessKey = sessionKey;
+    return QString(QLatin1String("session/%1_%2_%3")).arg(q->applicationName()).arg(q->sessionId()).arg(sessKey);
 }
 
 #ifdef Q_WS_X11
@@ -331,69 +351,69 @@ static SmcConn mySmcConnection = 0;
 #endif
 
 KApplication::KApplication(bool GUIenabled)
-    : QApplication((preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
-    d(new Private)
+    : QApplication((Private::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
+    d(new Private(this))
 {
-    read_app_startup_id();
+    d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
-    init(GUIenabled);
+    d->init(GUIenabled);
 }
 
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
-    : QApplication((preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
-    d(new Private)
+    : QApplication((Private::preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
+    d(new Private(this))
 {
-    read_app_startup_id();
+    d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
-    init();
+    d->init();
 }
 
 KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap, const KComponentData &cData)
-    : QApplication((preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
-    d (new Private(cData))
+    : QApplication((Private::preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
+    d (new Private(this, cData))
 {
-    read_app_startup_id();
+    d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
-    init();
+    d->init();
 }
 #endif
 
 KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
-    : QApplication((preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
-    d (new Private(cData))
+    : QApplication((Private::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
+    d (new Private(this, cData))
 {
-    read_app_startup_id();
+    d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
-    init();
+    d->init();
 }
 
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
         bool GUIenabled)
-    : QApplication((preqapplicationhack(),display)),
-    d(new Private(rAppName))
+    : QApplication((Private::preqapplicationhack(),display)),
+    d(new Private(this, rAppName))
 {
     Q_UNUSED(GUIenabled);
-    read_app_startup_id();
+    d->read_app_startup_id();
     setApplicationName(QLatin1String(rAppName));
     installSigpipeHandler();
     KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
-    init();
+    d->init();
 }
 #endif
 
 // this function is called in KApplication ctors while evaluating arguments to QApplication ctor,
 // i.e. before QApplication ctor is called
-void KApplication::preqapplicationhack()
+void KApplication::Private::preqapplicationhack()
 {
     preread_app_startup_id();
 }
@@ -457,7 +477,7 @@ public:
   }
 };
 
-void KApplication::init(bool GUIenabled)
+void KApplication::Private::init(bool GUIenabled)
 {
   if ((getuid() != geteuid()) ||
       (getgid() != getegid()))
@@ -470,17 +490,17 @@ void KApplication::init(bool GUIenabled)
   KApplication_early_init_mac();
 #endif
 
-  if ( type() == GuiClient )
+  if ( q->type() == GuiClient )
   {
     QStringList plugins = KGlobal::dirs()->resourceDirs( "qtplugins" );
     QStringList::Iterator it = plugins.begin();
     while (it != plugins.end()) {
-      addLibraryPath( *it );
+      q->addLibraryPath( *it );
       ++it;
     }
   }
 
-  KApp = this;
+  KApp = q;
 
   parseCommandLine();
 
@@ -494,7 +514,7 @@ void KApplication::init(bool GUIenabled)
 
 #ifdef Q_WS_X11 //FIXME(E)
   // create all required atoms in _one_ roundtrip to the X server
-  if ( type() == GuiClient ) {
+  if ( q->type() == GuiClient ) {
       const int max = 20;
       Atom* atoms[max];
       char* names[max];
@@ -513,7 +533,7 @@ void KApplication::init(bool GUIenabled)
       XInternAtoms( QX11Info::display(), names, n, false, atoms_return );
 
       for (int i = 0; i < n; i++ )
-	  *atoms[i] = atoms_return[i];
+        *atoms[i] = atoms_return[i];
   }
 #endif
 
@@ -528,7 +548,7 @@ void KApplication::init(bool GUIenabled)
   extern bool s_kuniqueapplication_startCalled;
   if ( bus && !s_kuniqueapplication_startCalled ) // don't register again if KUniqueApplication did so already
   {
-      QStringList parts = organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
+      QStringList parts = q->organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);
       QString reversedDomain;
       if (parts.isEmpty())
           reversedDomain = QLatin1String("local.");
@@ -539,13 +559,13 @@ void KApplication::init(bool GUIenabled)
               reversedDomain.prepend(s);
           }
       const QString pidSuffix = QString::number( getpid() ).prepend( QLatin1String("-") );
-      const QString serviceName = reversedDomain + applicationName() + pidSuffix;
+      const QString serviceName = reversedDomain + q->applicationName() + pidSuffix;
       if ( bus->registerService(serviceName) == QDBusConnectionInterface::ServiceNotRegistered ) {
           kError(101) << "Couldn't register name '" << serviceName << "' with DBUS - another process owns it already!" << endl;
           ::exit(126);
       }
   }
-  QDBusConnection::sessionBus().registerObject(QLatin1String("/MainApplication"), this,
+  QDBusConnection::sessionBus().registerObject(QLatin1String("/MainApplication"), q,
                                                QDBusConnection::ExportScriptableSlots |
                                                QDBusConnection::ExportScriptableProperties |
                                                QDBusConnection::ExportAdaptors);
@@ -553,22 +573,22 @@ void KApplication::init(bool GUIenabled)
   // Trigger creation of locale.
   (void) KGlobal::locale();
 
-  KSharedConfig::Ptr config = d->componentData.config();
+  KSharedConfig::Ptr config = componentData.config();
   QByteArray readOnly = getenv("KDE_HOME_READONLY");
-  if (readOnly.isEmpty() && applicationName() != QLatin1String("kdialog"))
+  if (readOnly.isEmpty() && q->applicationName() != QLatin1String("kdialog"))
   {
     if (KAuthorized::authorize(QLatin1String("warn_unwritable_config")))
        config->checkConfigFilesWritable(true);
   }
 
-  if (type() == GuiClient)
+  if (q->type() == GuiClient)
   {
 #ifdef Q_WS_X11
     // this is important since we fork() to launch the help (Matthias)
     fcntl(ConnectionNumber(QX11Info::display()), F_SETFD, FD_CLOEXEC);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
-    d->oldXErrorHandler = XSetErrorHandler( kde_x_errhandler );
-    d->oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
+    oldXErrorHandler = XSetErrorHandler( kde_x_errhandler );
+    oldXIOErrorHandler = XSetIOErrorHandler( kde_xio_errhandler );
 #endif
 
     // Trigger initial settings
@@ -576,21 +596,21 @@ void KApplication::init(bool GUIenabled)
 
     KMessage::setMessageHandler( new KMessageBoxMessageHandler(0) );
 
-    d->checkAccelerators = new KCheckAccelerators( this );
-    KGestureMap::self()->installEventFilterOnMe( this );
+    checkAccelerators = new KCheckAccelerators( q );
+    KGestureMap::self()->installEventFilterOnMe( q );
 
-    connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),
-            this, SLOT(slot_KToolInvocation_hook(QStringList&,QByteArray&)));
+    q->connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),
+               q, SLOT(_k_slot_KToolInvocation_hook(QStringList&,QByteArray&)));
   }
 
 #ifdef Q_WS_MAC
-  if (type() == GuiClient) {
+  if (q->type() == GuiClient) {
       QSystemTrayIcon *trayIcon;
       QPixmap pixmap = KIconLoader::global()->loadIcon( KCmdLineArgs::appName(),
               KIconLoader::NoGroup, KIconLoader::SizeEnormous, KIconLoader::DefaultState, QStringList(), false );
       if (!pixmap.isNull() && QSystemTrayIcon::isSystemTrayAvailable())
       {
-          trayIcon = new QSystemTrayIcon(this);
+          trayIcon = new QSystemTrayIcon(q);
           trayIcon->setIcon(QIcon(pixmap));
           /* it's counter-intuitive, but once you do setIcon it's already set the
              dock icon... ->show actually shows an icon in the menu bar too  :P */
@@ -603,15 +623,15 @@ void KApplication::init(bool GUIenabled)
   // save and restore the RTL setting, as installTranslator calls qt_detectRTLLanguage,
   // which makes it impossible to use the -reverse cmdline switch with KDE apps
   // FIXME is this still needed? it looks like QApplication takes care of this
-  bool rtl = isRightToLeft();
-  installTranslator(new KDETranslator(this));
-  setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
+  bool rtl = q->isRightToLeft();
+  q->installTranslator(new KDETranslator(q));
+  q->setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
   if (i18nc( "Dear Translator! Translate this string to the string 'LTR' in "
 	 "left-to-right languages (as English) or to 'RTL' in right-to-left "
 	 "languages (such as Hebrew and Arabic) to get proper widget layout.",
          "LTR" ) == QLatin1String("RTL"))
       rtl = !rtl;
-  setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
+  q->setLayoutDirection( rtl ? Qt::RightToLeft:Qt::LeftToRight);
 
   qRegisterMetaType<KUrl>();
   qRegisterMetaType<KUrl::List>();
@@ -629,7 +649,7 @@ KApplication* KApplication::kApplication()
 KConfig* KApplication::sessionConfig()
 {
     if (!d->pSessionConfig) // create an instance specific config object
-        d->pSessionConfig = new KConfig( sessionConfigName(), KConfig::NoGlobals );
+        d->pSessionConfig = new KConfig( d->sessionConfigName(), KConfig::NoGlobals );
     return d->pSessionConfig;
 }
 
@@ -785,7 +805,7 @@ void KApplication::saveState( QSessionManager& sm )
     if ( d->pSessionConfig ) {
         d->pSessionConfig->sync();
         QStringList discard;
-        discard  << QLatin1String("rm") << KStandardDirs::locateLocal("config", sessionConfigName());
+        discard  << QLatin1String("rm") << KStandardDirs::locateLocal("config", d->sessionConfigName());
         sm.setDiscardCommand( discard );
     } else {
 	sm.setDiscardCommand( QStringList( QLatin1String("") ) );
@@ -804,7 +824,7 @@ bool KApplication::sessionSaving() const
     return d->session_save;
 }
 
-void KApplication::parseCommandLine( )
+void KApplication::Private::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 
@@ -820,19 +840,19 @@ void KApplication::parseCommandLine( )
     }
 #endif
 
-    if ( type() != Tty ) {
+    if ( q->type() != Tty ) {
         if (args && args->isSet("icon"))
         {
             QPixmap largeIcon = DesktopIcon(args->getOption("icon"));
             QIcon icon = windowIcon();
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
-            setWindowIcon(icon);
+            q->setWindowIcon(icon);
         }
         else {
             QIcon icon = windowIcon();
-            QPixmap largeIcon = DesktopIcon(d->componentData.componentName());
+            QPixmap largeIcon = DesktopIcon(componentData.componentName());
             icon.addPixmap(largeIcon, QIcon::Normal, QIcon::On);
-            setWindowIcon(icon);
+            q->setWindowIcon(icon);
         }
     }
 
@@ -842,7 +862,7 @@ void KApplication::parseCommandLine( )
     if (args->isSet("config"))
     {
         QString config = args->getOption("config");
-        d->componentData.setConfigName(config);
+        componentData.setConfigName(config);
     }
 
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
@@ -879,7 +899,7 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("smkey"))
     {
-        d->sessionKey = args->getOption("smkey");
+        sessionKey = args->getOption("smkey");
     }
 
 }
@@ -1140,7 +1160,7 @@ void KApplication::clearStartupId()
 // Qt reads and unsets the value and doesn't provide any way to reach the value,
 // so steal it from it beforehand. If Qt gets API for taking (reading and unsetting)
 // the startup id from it, this can be dumped.
-void KApplication::preread_app_startup_id()
+void KApplication::Private::preread_app_startup_id()
 {
 #if defined Q_WS_X11
     KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
@@ -1151,17 +1171,17 @@ void KApplication::preread_app_startup_id()
 
 // read the startup notification env variable, save it and unset it in order
 // not to propagate it to processes started from this app
-void KApplication::read_app_startup_id()
+void KApplication::Private::read_app_startup_id()
 {
 #if defined Q_WS_X11
-    d->startup_id = *startup_id_tmp;
+    startup_id = *startup_id_tmp;
     delete startup_id_tmp;
     startup_id_tmp = NULL;
 #endif
 }
 
 // Hook called by KToolInvocation
-void KApplication::slot_KToolInvocation_hook(QStringList& envs,QByteArray& startup_id)
+void KApplication::Private::_k_slot_KToolInvocation_hook(QStringList& envs,QByteArray& startup_id)
 {
 #ifdef Q_WS_X11
     if (QX11Info::display()) {

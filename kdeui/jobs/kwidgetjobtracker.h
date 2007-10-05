@@ -69,6 +69,9 @@ public:
     bool keepOpen(KJob *job) const;
 
 protected Q_SLOTS:
+    /**
+     * The following slots are inherited from KJobTrackerInterface.
+     */
     virtual void infoMessage(KJob *job, const QString &plain, const QString &rich);
     virtual void description(KJob *job, const QString &title,
                              const QPair<QString, QString> &field1,

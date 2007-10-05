@@ -64,10 +64,10 @@
 #  endif
 #endif
 
-bool KUniqueApplication::s_nofork = false;
-bool KUniqueApplication::s_multipleInstances = false;
+bool KUniqueApplication::Private::s_nofork = false;
+bool KUniqueApplication::Private::s_multipleInstances = false;
 bool s_kuniqueapplication_startCalled = false;
-bool KUniqueApplication::s_handleAutoStarted = false;
+bool KUniqueApplication::Private::s_handleAutoStarted = false;
 
 #ifdef Q_WS_MAC
 void KApplication_early_init_mac();
@@ -105,16 +105,16 @@ KUniqueApplication::start()
 
   addCmdLineOptions(); // Make sure to add cmd line options
 #ifdef Q_WS_WIN
-  s_nofork = true;
+  Private::s_nofork = true;
 #else
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kuniqueapp");
 #ifdef Q_WS_MACX
   // avoid focus loss caused by extra fork when launched from Finder
   if(args->isSet("psn"))
-     s_nofork = true;
+     Private::s_nofork = true;
   else
 #endif
-  s_nofork = !args->isSet("fork");
+  Private::s_nofork = !args->isSet("fork");
   delete args;
 #endif
 
@@ -133,11 +133,11 @@ KUniqueApplication::start()
   KApplication_early_init_mac();
 #endif
 
-  if (s_nofork)
+  if (Private::s_nofork)
   {
      QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
 
-     if (s_multipleInstances)
+     if (Private::s_multipleInstances)
      {
         QString pid = QString::number(getpid());
         appName = appName + '-' + pid;
@@ -175,7 +175,7 @@ KUniqueApplication::start()
 
         QDBusConnectionInterface* dbusService = tryToInitDBusConnection();
         ::close(fd[0]);
-        if (s_multipleInstances)
+        if (Private::s_multipleInstances)
            appName.append("-").append(QString::number(getpid()));
 
         QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
@@ -223,7 +223,7 @@ KUniqueApplication::start()
   default:
      // Parent
 
-     if (s_multipleInstances)
+     if (Private::s_multipleInstances)
         appName.append("-").append(QString::number(fork_result));
      ::close(fd[1]);
 
@@ -288,8 +288,8 @@ KUniqueApplication::start()
 
 
 KUniqueApplication::KUniqueApplication(bool GUIenabled, bool configUnique)
-  : KApplication( GUIenabled, initHack( configUnique )),
-    d(new Private)
+  : KApplication( GUIenabled, Private::initHack( configUnique )),
+    d(new Private(this))
 {
   d->processingRequest = false;
   d->firstInstance = true;
@@ -297,17 +297,17 @@ KUniqueApplication::KUniqueApplication(bool GUIenabled, bool configUnique)
   // the sanity checking happened in initHack
   new KUniqueApplicationAdaptor(this);
 
-  if (s_nofork)
+  if (Private::s_nofork)
     // Can't call newInstance directly from the constructor since it's virtual...
-    QTimer::singleShot( 0, this, SLOT(newInstanceNoFork()) );
+    QTimer::singleShot( 0, this, SLOT(_k_newInstanceNoFork()) );
 }
 
 
 #ifdef Q_WS_X11
 KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
 		Qt::HANDLE colormap, bool configUnique)
-  : KApplication( display, visual, colormap, initHack( configUnique )),
-    d(new Private)
+  : KApplication( display, visual, colormap, Private::initHack( configUnique )),
+    d(new Private(this))
 {
   d->processingRequest = false;
   d->firstInstance = true;
@@ -315,9 +315,9 @@ KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
   // the sanity checking happened in initHack
   new KUniqueApplicationAdaptor(this);
 
-  if (s_nofork)
+  if (Private::s_nofork)
     // Can't call newInstance directly from the constructor since it's virtual...
-    QTimer::singleShot( 0, this, SLOT(newInstanceNoFork()) );
+    QTimer::singleShot( 0, this, SLOT(_k_newInstanceNoFork()) );
 }
 #endif
 
@@ -328,7 +328,7 @@ KUniqueApplication::~KUniqueApplication()
 }
 
 // this gets called before even entering QApplication::QApplication()
-KComponentData KUniqueApplication::initHack(bool configUnique)
+KComponentData KUniqueApplication::Private::initHack(bool configUnique)
 {
   KComponentData cData(KCmdLineArgs::aboutData());
   if (configUnique)
@@ -336,17 +336,17 @@ KComponentData KUniqueApplication::initHack(bool configUnique)
      KConfigGroup cg(cData.config(), "KDE");
      s_multipleInstances = cg.readEntry("MultipleInstances", false);
   }
-  if( !start())
+  if( !KUniqueApplication::start())
      // Already running
      ::exit( 0 );
   return cData;
 }
 
-void KUniqueApplication::newInstanceNoFork()
+void KUniqueApplication::Private::_k_newInstanceNoFork()
 {
   s_handleAutoStarted = false;
-  newInstance();
-  d->firstInstance = false;
+  q->newInstance();
+  firstInstance = false;
 #if defined Q_WS_X11
   // KDE4 remove
   // A hack to make startup notification stop for apps which override newInstance()
@@ -387,7 +387,7 @@ int KUniqueApplication::newInstance()
 
 void KUniqueApplication::setHandleAutoStarted()
 {
-    s_handleAutoStarted = false;
+    Private::s_handleAutoStarted = false;
 }
 
 #include "kuniqueapplication.moc"

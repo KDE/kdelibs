@@ -89,6 +89,51 @@ public:
     KStyle();
     ~KStyle();
 
+/** @name QStyle Methods
+ * These are methods reimplemented from QStyle. Usually it's not necessary to
+ * reimplement them yourself.
+ *
+ * Some of them are there for binary compatibility reasons only; all they do is to call
+ * the implementation from QCommonStyle.
+ */
+//@{
+    void drawControl      (ControlElement   elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
+    void drawPrimitive    (PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
+    int  pixelMetric      (PixelMetric    metric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
+    QRect subElementRect  (SubElement    subRect, const QStyleOption* opt, const QWidget* w) const;
+    QSize sizeFromContents(ContentsType     type, const QStyleOption* opt,
+                                                const QSize& contentsSize, const QWidget* w) const;
+    int   styleHint       (StyleHint        hint, const QStyleOption* opt, const QWidget* w,
+                                                               QStyleHintReturn* returnData) const;
+    QRect subControlRect (ComplexControl control, const QStyleOptionComplex* opt,
+                                                    SubControl subControl, const QWidget* w) const;
+    SubControl hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
+                                             const QPoint& pt, const QWidget* w) const;
+    void       drawComplexControl   (ComplexControl cc, const QStyleOptionComplex* opt,
+                                             QPainter *p,      const QWidget* w) const;
+
+    void polish(QWidget *);
+    void unpolish(QWidget *);
+    void polish(QApplication *);
+    void unpolish(QApplication *);
+    void polish(QPalette &);
+    QRect itemTextRect(const QFontMetrics &fm, const QRect &r,
+                           int flags, bool enabled,
+                           const QString &text) const;
+    QRect itemPixmapRect(const QRect &r, int flags, const QPixmap &pixmap) const;
+    void drawItemText(QPainter *painter, const QRect &rect,
+                              int flags, const QPalette &pal, bool enabled,
+                              const QString &text, QPalette::ColorRole textRole = QPalette::NoRole) const;
+    void drawItemPixmap(QPainter *painter, const QRect &rect,
+                                int alignment, const QPixmap &pixmap) const;
+    QPalette standardPalette() const;
+    QPixmap standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt,
+                                   const QWidget *widget = 0) const;
+    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
+                                   const QStyleOption *opt) const;
+    bool eventFilter(QObject *, QEvent *);
+//@}
+//
 protected:
     /** @name Helper Methods
     * These are methods helping with QRect handling, for example.
@@ -1445,97 +1490,7 @@ protected:
                                      const QWidget* widget = 0,
                                      Option* kOpt    = 0) const;
 private:
-    ///Should we use a side text here?
-    bool useSideText(const QStyleOptionProgressBar* opt)     const;
-    int  sideTextWidth(const QStyleOptionProgressBar* pbOpt) const;
-
-    ///Returns true if the tab is vertical
-    bool isVerticalTab (const QStyleOptionTab* tbOpt) const;
-
-    ///Returns true if the tab has reflected layout
-    bool isReflectedTab(const QStyleOptionTab* tbOpt) const;
-
-    enum Side
-    {
-        North,
-        East,
-        West,
-        South
-    };
-
-    Side tabSide(const QStyleOptionTab* tbOpt) const;
-
-    ///Returns the tab rectangle adjusted for the tab direction
-    QRect marginAdjustedTab(const QStyleOptionTab* tbOpt, int property) const;
-
-    ///Wrapper around visualRect for easier use
-    QRect  handleRTL(const QStyleOption* opt, const QRect& subRect) const;
-    QPoint handleRTL(const QStyleOption* opt, const QPoint& pos)    const;
-
-    ///Storage for metrics/flags
-    QVector<QVector<int> > metrics;
-    
-    ///Expands out the dimension to make sure it incorporates the margins
-    QSize expandDim(const QSize& orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
-    
-    ///Calculates the contents rectangle by subtracting out the appropriate margins
-    ///from the outside
-    QRect insideMargin(const QRect &orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
-
-    ///Internal subrect calculations, for e.g. scrollbar arrows,
-    ///where we fake our output to get Qt to do what we want
-    QRect internalSubControlRect (ComplexControl control, const QStyleOptionComplex* opt,
-                                                    SubControl subControl, const QWidget* w) const;
-
-    // fitt's law label support: QLabel focusing its buddy widget
-    const QObject *clickedLabel;
-
-public:
-/** @name QStyle Methods
- * These are methods reimplemented from QStyle. Usually it's not necessary to
- * reimplement them yourself.
- *
- * Some of them are there for binary compatibility reasons only; all they do is to call
- * the implementation from QCommonStyle.
- */
-//@{
-    void drawControl      (ControlElement   elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
-    void drawPrimitive    (PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
-    int  pixelMetric      (PixelMetric    metric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
-    QRect subElementRect  (SubElement    subRect, const QStyleOption* opt, const QWidget* w) const;
-    QSize sizeFromContents(ContentsType     type, const QStyleOption* opt,
-                                                const QSize& contentsSize, const QWidget* w) const;
-    int   styleHint       (StyleHint        hint, const QStyleOption* opt, const QWidget* w,
-                                                               QStyleHintReturn* returnData) const;
-    QRect subControlRect (ComplexControl control, const QStyleOptionComplex* opt,
-                                                    SubControl subControl, const QWidget* w) const;
-    SubControl hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
-                                             const QPoint& pt, const QWidget* w) const;
-    void       drawComplexControl   (ComplexControl cc, const QStyleOptionComplex* opt,
-                                             QPainter *p,      const QWidget* w) const;
-
-    void polish(QWidget *);
-    void unpolish(QWidget *);
-    void polish(QApplication *);
-    void unpolish(QApplication *);
-    void polish(QPalette &);
-    QRect itemTextRect(const QFontMetrics &fm, const QRect &r,
-                           int flags, bool enabled,
-                           const QString &text) const;
-    QRect itemPixmapRect(const QRect &r, int flags, const QPixmap &pixmap) const;
-    void drawItemText(QPainter *painter, const QRect &rect,
-                              int flags, const QPalette &pal, bool enabled,
-                              const QString &text, QPalette::ColorRole textRole = QPalette::NoRole) const;
-    void drawItemPixmap(QPainter *painter, const QRect &rect,
-                                int alignment, const QPixmap &pixmap) const;
-    QPalette standardPalette() const;
-    QPixmap standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt,
-                                   const QWidget *widget = 0) const;
-    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
-                                   const QStyleOption *opt) const;
-    bool eventFilter(QObject *, QEvent *);
-//@}
-private:
+    friend class KStylePrivate;
     KStylePrivate * const d;
 };
 

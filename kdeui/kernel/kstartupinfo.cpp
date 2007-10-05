@@ -88,6 +88,38 @@ class KStartupInfo::Data
         unsigned int age;
     };
 
+struct KStartupInfoId::Private
+    {
+    Private() : id( "" ) {}
+
+        QString to_text() const;
+
+    QByteArray id; // id
+    };
+
+struct KStartupInfoData::Private
+    {
+    Private() : desktop( 0 ), wmclass( "" ), hostname( "" ),
+        silent( KStartupInfoData::Unknown ), timestamp( ~0U ), screen( -1 ), xinerama( -1 ), launched_by( 0 ) {}
+
+        QString to_text() const;
+        void remove_pid( pid_t pid );
+
+    QString bin;
+    QString name;
+    QString description;
+    QString icon;
+    int desktop;
+    QList< pid_t > pids;
+    QByteArray wmclass;
+    QByteArray hostname;
+    KStartupInfoData::TriState silent;
+    unsigned long timestamp;
+    int screen;
+    int xinerama;
+    WId launched_by;
+    };
+
 class KStartupInfo::Private
     {
     public:
@@ -403,7 +435,7 @@ void KStartupInfo::Private::remove_startup_pids( const KStartupInfoId& id_P,
     for( QList< pid_t >::ConstIterator it2 = data_P.pids().begin();
          it2 != data_P.pids().end();
          ++it2 )
-	data->remove_pid( *it2 ); // remove all pids from the info
+	data->d->remove_pid( *it2 ); // remove all pids from the info
     if( data->pids().count() == 0 ) // all pids removed -> remove info
     	remove_startup_info_internal( id_P );
     }
@@ -415,7 +447,7 @@ bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoDa
 #ifdef  Q_WS_X11
     KXMessages msgs;
     QString msg = QString::fromLatin1( "new: %1 %2" )
-        .arg( id_P.to_text()).arg( data_P.to_text());
+        .arg( id_P.d->to_text()).arg( data_P.d->to_text());
 	QX11Info inf;
     msg = Private::check_required_startup_fields( msg, data_P, inf.screen());
     kDebug( 172 ) << "sending " << msg;
@@ -431,7 +463,7 @@ bool KStartupInfo::sendStartupX( Display* disp_P, const KStartupInfoId& id_P,
         return false;
 #ifdef Q_WS_X11
     QString msg = QString::fromLatin1( "new: %1 %2" )
-        .arg( id_P.to_text()).arg( data_P.to_text());
+        .arg( id_P.d->to_text()).arg( data_P.d->to_text());
     msg = Private::check_required_startup_fields( msg, data_P, DefaultScreen( disp_P ));
 #ifdef KSTARTUPINFO_ALL_DEBUG
     kDebug( 172 ) << "sending " << msg;
@@ -466,7 +498,7 @@ bool KStartupInfo::sendChange( const KStartupInfoId& id_P, const KStartupInfoDat
 #ifdef Q_WS_X11
     KXMessages msgs;
     QString msg = QString::fromLatin1( "change: %1 %2" )
-        .arg( id_P.to_text()).arg( data_P.to_text());
+        .arg( id_P.d->to_text()).arg( data_P.d->to_text());
     kDebug( 172 ) << "sending " << msg;
     msgs.broadcastMessage( NET_STARTUP_MSG, msg, -1, false );
 #endif
@@ -480,7 +512,7 @@ bool KStartupInfo::sendChangeX( Display* disp_P, const KStartupInfoId& id_P,
         return false;
 #ifdef Q_WS_X11
     QString msg = QString::fromLatin1( "change: %1 %2" )
-        .arg( id_P.to_text()).arg( data_P.to_text());
+        .arg( id_P.d->to_text()).arg( data_P.d->to_text());
 #ifdef KSTARTUPINFO_ALL_DEBUG
     kDebug( 172 ) << "sending " << msg;
 #endif
@@ -496,7 +528,7 @@ bool KStartupInfo::sendFinish( const KStartupInfoId& id_P )
         return false;
 #ifdef Q_WS_X11
     KXMessages msgs;
-    QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.to_text());
+    QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.d->to_text());
     kDebug( 172 ) << "sending " << msg;
     msgs.broadcastMessage( NET_STARTUP_MSG, msg, -1, false );
 #endif
@@ -508,7 +540,7 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P )
     if( id_P.none())
         return false;
 #ifdef Q_WS_X11
-    QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.to_text());
+    QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.d->to_text());
 #ifdef KSTARTUPINFO_ALL_DEBUG
     kDebug( 172 ) << "sending " << msg;
 #endif
@@ -525,7 +557,7 @@ bool KStartupInfo::sendFinish( const KStartupInfoId& id_P, const KStartupInfoDat
 #ifdef Q_WS_X11
     KXMessages msgs;
     QString msg = QString::fromLatin1( "remove: %1 %2" )
-        .arg( id_P.to_text()).arg( data_P.to_text());
+        .arg( id_P.d->to_text()).arg( data_P.d->to_text());
     kDebug( 172 ) << "sending " << msg;
     msgs.broadcastMessage( NET_STARTUP_MSG, msg, -1, false );
 #endif
@@ -539,7 +571,7 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P,
 //        return false;
 #ifdef Q_WS_X11
     QString msg = QString::fromLatin1( "remove: %1 %2" )
-        .arg( id_P.to_text()).arg( data_P.to_text());
+        .arg( id_P.d->to_text()).arg( data_P.d->to_text());
 #ifdef KSTARTUPINFO_ALL_DEBUG
     kDebug( 172 ) << "sending " << msg;
 #endif
@@ -997,21 +1029,15 @@ QByteArray KStartupInfo::createNewStartupId()
     }
 
 
-struct KStartupInfoId::Private
-    {
-    Private() : id( "" ) {}
-    QByteArray id; // id
-    };
-
 const QByteArray& KStartupInfoId::id() const
     {
     return d->id;
     }
 
 
-QString KStartupInfoId::to_text() const
+QString KStartupInfoId::Private::to_text() const
     {
-    return QString::fromLatin1( " ID=\"%1\" " ).arg( escape_str( id()));
+    return QString::fromLatin1( " ID=\"%1\" " ).arg( escape_str( id));
     }
 
 KStartupInfoId::KStartupInfoId( const QString& txt_P ) : d(new Private)
@@ -1149,61 +1175,42 @@ unsigned long KStartupInfoId::timestamp() const
     return 0;
     }
 
-struct KStartupInfoData::Private
-    {
-    Private() : desktop( 0 ), wmclass( "" ), hostname( "" ),
-        silent( KStartupInfoData::Unknown ), timestamp( ~0U ), screen( -1 ), xinerama( -1 ), launched_by( 0 ) {}
-    QString bin;
-    QString name;
-    QString description;
-    QString icon;
-    int desktop;
-    QList< pid_t > pids;
-    QByteArray wmclass;
-    QByteArray hostname;
-    KStartupInfoData::TriState silent;
-    unsigned long timestamp;
-    int screen;
-    int xinerama;
-    WId launched_by;
-    };
-
-QString KStartupInfoData::to_text() const
+QString KStartupInfoData::Private::to_text() const
     {
     QString ret;
-    if( !d->bin.isEmpty())
-        ret += QString::fromLatin1( " BIN=\"%1\"" ).arg( escape_str( d->bin ));
-    if( !d->name.isEmpty())
-        ret += QString::fromLatin1( " NAME=\"%1\"" ).arg( escape_str( d->name ));
-    if( !d->description.isEmpty())
-        ret += QString::fromLatin1( " DESCRIPTION=\"%1\"" ).arg( escape_str( d->description ));
-    if( !d->icon.isEmpty())
-        ret += QString::fromLatin1( " ICON=%1" ).arg( d->icon );
-    if( d->desktop != 0 )
+    if( !bin.isEmpty())
+        ret += QString::fromLatin1( " BIN=\"%1\"" ).arg( escape_str( bin ));
+    if( !name.isEmpty())
+        ret += QString::fromLatin1( " NAME=\"%1\"" ).arg( escape_str( name ));
+    if( !description.isEmpty())
+        ret += QString::fromLatin1( " DESCRIPTION=\"%1\"" ).arg( escape_str( description ));
+    if( !icon.isEmpty())
+        ret += QString::fromLatin1( " ICON=%1" ).arg( icon );
+    if( desktop != 0 )
         ret += QString::fromLatin1( " DESKTOP=%1" )
 #ifdef Q_WS_X11
-            .arg( d->desktop == NET::OnAllDesktops ? NET::OnAllDesktops : d->desktop - 1 ); // spec counts from 0
+            .arg( desktop == NET::OnAllDesktops ? NET::OnAllDesktops : desktop - 1 ); // spec counts from 0
 #else
             .arg( 0 ); // spec counts from 0
 #endif
-    if( !d->wmclass.isEmpty())
-        ret += QString::fromLatin1( " WMCLASS=\"%1\"" ).arg( QString( d->wmclass ) );
-    if( !d->hostname.isEmpty())
-        ret += QString::fromLatin1( " HOSTNAME=%1" ).arg( QString( d->hostname ) );
-    for( QList< pid_t >::ConstIterator it = d->pids.begin();
-         it != d->pids.end();
+    if( !wmclass.isEmpty())
+        ret += QString::fromLatin1( " WMCLASS=\"%1\"" ).arg( QString( wmclass ) );
+    if( !hostname.isEmpty())
+        ret += QString::fromLatin1( " HOSTNAME=%1" ).arg( QString( hostname ) );
+    for( QList< pid_t >::ConstIterator it = pids.begin();
+         it != pids.end();
          ++it )
         ret += QString::fromLatin1( " PID=%1" ).arg( *it );
-    if( d->silent != Unknown )
-	ret += QString::fromLatin1( " SILENT=%1" ).arg( d->silent == Yes ? 1 : 0 );
-    if( d->timestamp != ~0U )
-        ret += QString::fromLatin1( " TIMESTAMP=%1" ).arg( d->timestamp );
-    if( d->screen != -1 )
-        ret += QString::fromLatin1( " SCREEN=%1" ).arg( d->screen );
-    if( d->xinerama != -1 )
-        ret += QString::fromLatin1( " XINERAMA=%1" ).arg( d->xinerama );
-    if( d->launched_by != 0 )
-        ret += QString::fromLatin1( " LAUNCHED_BY=%1" ).arg( (long)d->launched_by );
+    if( silent != KStartupInfoData::Unknown )
+	ret += QString::fromLatin1( " SILENT=%1" ).arg( silent == KStartupInfoData::Yes ? 1 : 0 );
+    if( timestamp != ~0U )
+        ret += QString::fromLatin1( " TIMESTAMP=%1" ).arg( timestamp );
+    if( screen != -1 )
+        ret += QString::fromLatin1( " SCREEN=%1" ).arg( screen );
+    if( xinerama != -1 )
+        ret += QString::fromLatin1( " XINERAMA=%1" ).arg( xinerama );
+    if( launched_by != 0 )
+        ret += QString::fromLatin1( " LAUNCHED_BY=%1" ).arg( (long)launched_by );
     return ret;
     }
 
@@ -1428,9 +1435,9 @@ void KStartupInfoData::addPid( pid_t pid_P )
         d->pids.append( pid_P );
     }
 
-void KStartupInfoData::remove_pid( pid_t pid_P )
+void KStartupInfoData::Private::remove_pid( pid_t pid_P )
     {
-    d->pids.removeAll( pid_P );
+        pids.removeAll( pid_P );
     }
 
 QList< pid_t > KStartupInfoData::pids() const

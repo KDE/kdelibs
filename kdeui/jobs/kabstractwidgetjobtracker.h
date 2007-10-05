@@ -121,7 +121,7 @@ protected Q_SLOTS:
      *
      * @param job the job that emitted this signal
      */
-    void finished(KJob *job);
+    virtual void finished(KJob *job);
 
     /**
      * This method should be called for correct cancellation of IO operation
@@ -129,7 +129,7 @@ protected Q_SLOTS:
      *
      * @param job The job that is being stopped
      */
-    void slotStop(KJob *job);
+    virtual void slotStop(KJob *job);
 
     /**
      * This method should be called for pause/resume
@@ -137,7 +137,7 @@ protected Q_SLOTS:
      *
      * @param job The job that is being suspended
      */
-    void slotSuspend(KJob *job);
+    virtual void slotSuspend(KJob *job);
 
     /**
      * This method should be called for pause/resume
@@ -145,7 +145,7 @@ protected Q_SLOTS:
      *
      * @param job The job that is being resumed
      */
-    void slotResume(KJob *job);
+    virtual void slotResume(KJob *job);
 
     /**
      * This method is called when the widget should be cleaned (after job is finished).

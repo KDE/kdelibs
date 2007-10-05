@@ -419,7 +419,6 @@ class KDEUI_EXPORT KStartupInfoId
         bool operator<( const KStartupInfoId& id ) const;
     private:
         explicit KStartupInfoId( const QString& txt );
-        QString to_text() const;
         friend class KStartupInfo;
         friend class KStartupInfo::Private;
         struct Private;
@@ -652,8 +651,6 @@ class KDEUI_EXPORT KStartupInfoData
         KStartupInfoData& operator=( const KStartupInfoData& data );
     private:
         explicit KStartupInfoData( const QString& txt );
-        QString to_text() const;
-        void remove_pid( pid_t pid );
         friend class KStartupInfo;
         friend class KStartupInfo::Data;
         friend class KStartupInfo::Private;

@@ -152,7 +152,6 @@ public:
    */
   virtual int newInstance();
 
-public:
   /**
    * Returns whether newInstance() is being called while session
    * restoration is in progress.
@@ -164,20 +163,12 @@ public:
    */
   static void setHandleAutoStarted();
 
-private Q_SLOTS:
-  void newInstanceNoFork();
-
-private:
-  static KComponentData initHack(bool configUnique);
-
-  static bool s_nofork;
-  static bool s_multipleInstances;
-  static bool s_handleAutoStarted;
-
 private:
   friend class KUniqueApplicationAdaptor;
   class Private;
   Private * const d;
+
+  Q_PRIVATE_SLOT(d, void _k_newInstanceNoFork())
 };
 
 #endif

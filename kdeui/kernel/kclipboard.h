@@ -60,10 +60,7 @@ public:
      * changes.
      * @see setSynchronizing
      */
-    static bool isSynchronizing()
-    {
-        return s_sync;
-    }
+    static bool isSynchronizing();
 
     /**
      * Configures KClipboardSynchronizer to copy the Clipboard buffer to the Selection
@@ -83,33 +80,23 @@ public:
      * buffer upon changes.
      * @see setSelectionSetting
      */
-    static bool isReverseSynchronizing()
-    {
-        return s_reverse_sync;
-    }
-
+    static bool isReverseSynchronizing();
 
 protected:
     ~KClipboardSynchronizer();
 
-private Q_SLOTS:
-    void slotSelectionChanged();
-    void slotClipboardChanged();
-    void slotNotifyChange(int, int);
-
-private:
-    explicit KClipboardSynchronizer( QObject *parent = 0 );
-    void setupSignals();
-
-    static void setClipboard( const QMimeData* data, QClipboard::Mode mode );
-
-    static bool s_sync;
-    static bool s_reverse_sync;
-    static bool s_blocked;
-
 private:
     // needed by klipper
     enum Configuration { Synchronize = 1 };
+
+    explicit KClipboardSynchronizer( QObject *parent = 0 );
+
+    class Private;
+    Private* const d;
+
+    Q_PRIVATE_SLOT(d, void _k_slotSelectionChanged())
+    Q_PRIVATE_SLOT(d, void _k_slotClipboardChanged())
+    Q_PRIVATE_SLOT(d, void _k_slotNotifyChange(int, int))
 };
 
 #endif // KCLIPBOARD_H

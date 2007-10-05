@@ -26,8 +26,22 @@
 class KUniqueApplication::Private
 {
 public:
+    Private(KUniqueApplication *q)
+        : q(q)
+    {
+    }
+
+   void _k_newInstanceNoFork();
+
+   static KComponentData initHack(bool configUnique);
+
+   KUniqueApplication *q;
    bool processingRequest;
    bool firstInstance;
+
+   static bool s_nofork;
+   static bool s_multipleInstances;
+   static bool s_handleAutoStarted;
 };
 
 class KUniqueApplicationAdaptor: public QDBusAbstractAdaptor

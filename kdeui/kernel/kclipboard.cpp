@@ -42,9 +42,31 @@
  *  especially the second one.
  */
 
-bool KClipboardSynchronizer::s_sync = false;
-bool KClipboardSynchronizer::s_reverse_sync = false;
-bool KClipboardSynchronizer::s_blocked = false;
+class KClipboardSynchronizer::Private
+{
+    public:
+        Private(KClipboardSynchronizer *q)
+            : q(q)
+        {
+        }
+
+        void setupSignals();
+
+        static void setClipboard( const QMimeData* data, QClipboard::Mode mode );
+
+        void _k_slotSelectionChanged();
+        void _k_slotClipboardChanged();
+        void _k_slotNotifyChange(int, int);
+
+        KClipboardSynchronizer *q;
+        static bool s_sync;
+        static bool s_reverse_sync;
+        static bool s_blocked;
+};
+
+bool KClipboardSynchronizer::Private::s_sync = false;
+bool KClipboardSynchronizer::Private::s_reverse_sync = false;
+bool KClipboardSynchronizer::Private::s_blocked = false;
 
 KClipboardSynchronizer * KClipboardSynchronizer::self()
 {
@@ -53,36 +75,36 @@ KClipboardSynchronizer * KClipboardSynchronizer::self()
 }
 
 KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent )
-    : QObject( parent )
+    : QObject( parent ), d(new Private(this))
 {
     KConfigGroup config( KGlobal::config(), "General" );
-    s_sync = config.readEntry( "SynchronizeClipboardAndSelection", s_sync);
-    s_reverse_sync = config.readEntry( "ClipboardSetSelection",
-                                       s_reverse_sync );
+    Private::s_sync = config.readEntry("SynchronizeClipboardAndSelection", Private::s_sync);
+    Private::s_reverse_sync = config.readEntry("ClipboardSetSelection", Private::s_reverse_sync);
 
-    setupSignals();
+    d->setupSignals();
 }
 
 KClipboardSynchronizer::~KClipboardSynchronizer()
 {
+    delete d;
 }
 
-void KClipboardSynchronizer::setupSignals()
+void KClipboardSynchronizer::Private::setupSignals()
 {
     QClipboard *clip = QApplication::clipboard();
-    disconnect( clip, NULL, this, NULL );
+    disconnect( clip, NULL, q, NULL );
     if( s_sync )
         connect( clip, SIGNAL( selectionChanged() ),
-                 SLOT( slotSelectionChanged() ));
+                 q, SLOT( _k_slotSelectionChanged() ));
     if( s_reverse_sync )
         connect( clip, SIGNAL( dataChanged() ),
-                 SLOT( slotClipboardChanged() ));
+                 q, SLOT( _k_slotClipboardChanged() ));
 
     QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
-                                           "notifyChange", this, SLOT(slotNotifyChange(int,int)) );
+                                           "notifyChange", q, SLOT(_k_slotNotifyChange(int,int)) );
 }
 
-void KClipboardSynchronizer::slotSelectionChanged()
+void KClipboardSynchronizer::Private::_k_slotSelectionChanged()
 {
     QClipboard *clip = QApplication::clipboard();
 
@@ -94,7 +116,7 @@ void KClipboardSynchronizer::slotSelectionChanged()
                   QClipboard::Clipboard );
 }
 
-void KClipboardSynchronizer::slotClipboardChanged()
+void KClipboardSynchronizer::Private::_k_slotClipboardChanged()
 {
     QClipboard *clip = QApplication::clipboard();
 
@@ -106,15 +128,15 @@ void KClipboardSynchronizer::slotClipboardChanged()
                   QClipboard::Selection );
 }
 
-void KClipboardSynchronizer::slotNotifyChange(int changeType, int arg)
+void KClipboardSynchronizer::Private::_k_slotNotifyChange(int changeType, int arg)
 {
     if (changeType == KGlobalSettings::ClipboardConfigChanged) {
         s_sync = (arg & Synchronize);
-        self()->setupSignals();
+        KClipboardSynchronizer::self()->d->setupSignals();
     }
 }
 
-void KClipboardSynchronizer::setClipboard( const QMimeData *data, QClipboard::Mode mode )
+void KClipboardSynchronizer::Private::setClipboard( const QMimeData *data, QClipboard::Mode mode )
 {
 //     qDebug("---> setting clipboard: %p", data);
 
@@ -137,14 +159,24 @@ void KClipboardSynchronizer::setClipboard( const QMimeData *data, QClipboard::Mo
 
 void KClipboardSynchronizer::setSynchronizing( bool sync )
 {
-    s_sync = sync;
-    self()->setupSignals();
+    Private::s_sync = sync;
+    self()->d->setupSignals();
+}
+
+bool KClipboardSynchronizer::isSynchronizing()
+{
+    return Private::s_sync;
 }
 
 void KClipboardSynchronizer::setReverseSynchronizing( bool enable )
 {
-    s_reverse_sync = enable;
-    self()->setupSignals();
+    Private::s_reverse_sync = enable;
+    self()->d->setupSignals();
+}
+
+bool KClipboardSynchronizer::isReverseSynchronizing()
+{
+    return Private::s_reverse_sync;
 }
 
 #include "kclipboard.moc"

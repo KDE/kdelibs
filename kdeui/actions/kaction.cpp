@@ -27,9 +27,10 @@
 #include "kaction.h"
 #include "kaction_p.h"
 
+#include <QtGui/QApplication>
+
 #include <kdebug.h>
 
-#include "kapplication.h"
 #include "kguiitem.h"
 #include "kicon.h"
 

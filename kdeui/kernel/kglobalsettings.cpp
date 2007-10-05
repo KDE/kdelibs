@@ -84,6 +84,55 @@ static QColor *_activeBackground = 0;
 
 static KGlobalSettings::KMouseSettings *s_mouseSettings = 0;
 
+class KGlobalSettings::Private
+{
+    public:
+        Private(KGlobalSettings *q)
+            : q(q)
+        {
+        }
+
+        void _k_slotNotifyChange(int, int);
+
+        void propagateSettings(SettingsCategory category);
+        void kdisplaySetPalette();
+        void kdisplaySetStyle();
+        void kdisplaySetFont();
+        void applyGUIStyle();
+
+        /**
+         * @internal
+         *
+         * Ensures that cursors are loaded from the theme KDE is configured
+         * to use. Note that calling this function doesn't cause existing
+         * cursors to be reloaded. Reloading already created cursors is
+         * handled by the KCM when a cursor theme is applied.
+         *
+         * It is not necessary to call this function when KGlobalSettings
+         * is initialized.
+         */
+        void applyCursorTheme();
+
+        /**
+         * reads in all paths from kdeglobals
+         */
+        static void initPaths();
+        /**
+         * drop cached values for fonts (called by KApplication)
+         */
+        static void rereadFontSettings();
+        /**
+         * drop cached values for paths (called by KApplication)
+         */
+        static void rereadPathSettings();
+        /**
+         * drop cached values for mouse settings (called by KApplication)
+         */
+        static void rereadMouseSettings();
+
+        KGlobalSettings *q;
+};
+
 KGlobalSettings* KGlobalSettings::self()
 {
     K_GLOBAL_STATIC(KGlobalSettings, s_self)
@@ -91,14 +140,19 @@ KGlobalSettings* KGlobalSettings::self()
 }
 
 KGlobalSettings::KGlobalSettings()
-    : QObject(0)
+    : QObject(0), d(new Private(this))
 {
-    kdisplaySetStyle();
-    kdisplaySetFont();
-    propagateSettings(SETTINGS_QT);
+    d->kdisplaySetStyle();
+    d->kdisplaySetFont();
+    d->propagateSettings(SETTINGS_QT);
 
     QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
-                                           "notifyChange", this, SLOT(slotNotifyChange(int,int)) );
+                                           "notifyChange", this, SLOT(_k_slotNotifyChange(int,int)) );
+}
+
+KGlobalSettings::~KGlobalSettings()
+{
+    delete d;
 }
 
 int KGlobalSettings::dndEventDelay()
@@ -446,14 +500,14 @@ QFont KGlobalSettings::smallestReadableFont()
     return *_smallestReadableFont;
 }
 
-void KGlobalSettings::initPaths()
+void KGlobalSettings::Private::initPaths()
 {
     //this code is duplicated in kde_config.cpp.in
 
     if ( s_desktopPath != 0 )
         return;
 
-    self(); // listen to changes
+    KGlobalSettings::self(); // listen to changes
 
     s_desktopPath = new QString();
     s_autostartPath = new QString();
@@ -491,7 +545,7 @@ void KGlobalSettings::initPaths()
     }
 }
 
-void KGlobalSettings::rereadFontSettings()
+void KGlobalSettings::Private::rereadFontSettings()
 {
     delete _generalFont;
     _generalFont = 0L;
@@ -509,7 +563,7 @@ void KGlobalSettings::rereadFontSettings()
     _smallestReadableFont = 0L;
 }
 
-void KGlobalSettings::rereadPathSettings()
+void KGlobalSettings::Private::rereadPathSettings()
 {
     delete s_autostartPath;
     s_autostartPath = 0L;
@@ -569,7 +623,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
     return *s_mouseSettings;
 }
 
-void KGlobalSettings::rereadMouseSettings()
+void KGlobalSettings::Private::rereadMouseSettings()
 {
 #ifndef Q_WS_WIN
     delete s_mouseSettings;
@@ -579,19 +633,19 @@ void KGlobalSettings::rereadMouseSettings()
 
 QString KGlobalSettings::desktopPath()
 {
-    initPaths();
+    Private::initPaths();
     return *s_desktopPath;
 }
 
 QString KGlobalSettings::autostartPath()
 {
-    initPaths();
+    Private::initPaths();
     return *s_autostartPath;
 }
 
 QString KGlobalSettings::documentPath()
 {
-    initPaths();
+    Private::initPaths();
     return *s_documentPath;
 }
 
@@ -706,7 +760,7 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
     QDBusConnection::sessionBus().send(message);
 }
 
-void KGlobalSettings::slotNotifyChange(int changeType, int arg)
+void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
 {
     switch(changeType) {
     case StyleChanged:
@@ -716,7 +770,7 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
 
     case ToolbarStyleChanged:
         KGlobal::config()->reparseConfiguration();
-        emit toolbarAppearanceChanged(arg);
+        emit q->toolbarAppearanceChanged(arg);
         break;
 
     case PaletteChanged:
@@ -726,7 +780,7 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
 
     case FontChanged:
         KGlobal::config()->reparseConfiguration();
-        KGlobalSettings::rereadFontSettings();
+        KGlobalSettings::Private::rereadFontSettings();
         kdisplaySetFont();
         break;
 
@@ -734,9 +788,9 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
         KGlobal::config()->reparseConfiguration();
         SettingsCategory category = static_cast<SettingsCategory>(arg);
         if (category == SETTINGS_PATHS) {
-            KGlobalSettings::rereadPathSettings();
+            KGlobalSettings::Private::rereadPathSettings();
         } else if (category == SETTINGS_MOUSE) {
-            KGlobalSettings::rereadMouseSettings();
+            KGlobalSettings::Private::rereadMouseSettings();
         }
         propagateSettings(category);
         break;
@@ -744,7 +798,7 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
     case IconChanged:
         QPixmapCache::clear();
         KGlobal::config()->reparseConfiguration();
-        emit iconChanged(arg);
+        emit q->iconChanged(arg);
         break;
 
     case CursorChanged:
@@ -754,7 +808,7 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
     case BlockShortcuts:
         // FIXME KAccel port
         //KGlobalAccel::blockShortcuts(arg);
-        emit blockShortcuts(arg); // see kwin
+        emit q->blockShortcuts(arg); // see kwin
         break;
 
     default:
@@ -766,7 +820,7 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
 // In the long run, KGlobalSettings probably belongs to kdeui as well...
 QString kde_overrideStyle;
 
-void KGlobalSettings::applyGUIStyle()
+void KGlobalSettings::Private::applyGUIStyle()
 {
 #ifdef Q_WS_X11
     KConfigGroup pConfig (KGlobal::config(), "General");
@@ -831,7 +885,7 @@ QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &confi
 }
 
 
-void KGlobalSettings::kdisplaySetPalette()
+void KGlobalSettings::Private::kdisplaySetPalette()
 {
     // Added by Sam/Harald (TT) for Mac OS X initially, but why?
     KConfigGroup cg( KGlobal::config(), "General" );
@@ -839,14 +893,14 @@ void KGlobalSettings::kdisplaySetPalette()
         return;
 
     if (qApp && qApp->type() == QApplication::GuiClient) {
-        QApplication::setPalette( createApplicationPalette() );
-        emit kdisplayPaletteChanged();
-        emit appearanceChanged();
+        QApplication::setPalette( q->createApplicationPalette() );
+        emit q->kdisplayPaletteChanged();
+        emit q->appearanceChanged();
     }
 }
 
 
-void KGlobalSettings::kdisplaySetFont()
+void KGlobalSettings::Private::kdisplaySetFont()
 {
     if (qApp && qApp->type() == QApplication::GuiClient) {
         QApplication::setFont(KGlobalSettings::generalFont());
@@ -862,24 +916,24 @@ void KGlobalSettings::kdisplaySetFont()
         sheet->item (QLatin1String("tt"))->setFontFamily (KGlobalSettings::fixedFont().family());
 #endif
 
-        emit kdisplayFontChanged();
-        emit appearanceChanged();
+        emit q->kdisplayFontChanged();
+        emit q->appearanceChanged();
     }
 }
 
 
-void KGlobalSettings::kdisplaySetStyle()
+void KGlobalSettings::Private::kdisplaySetStyle()
 {
     if (qApp && qApp->type() == QApplication::GuiClient) {
         applyGUIStyle();
-        emit kdisplayStyleChanged();
+        emit q->kdisplayStyleChanged();
         // already done by applyGUIStyle -> kdisplaySetPalette
         //emit appearanceChanged();
     }
 }
 
 
-void KGlobalSettings::applyCursorTheme()
+void KGlobalSettings::Private::applyCursorTheme()
 {
 #if defined(Q_WS_X11) && defined(HAVE_XCURSOR)
     KConfig config("kcminputrc");
@@ -903,12 +957,12 @@ void KGlobalSettings::applyCursorTheme()
                     "default" : QFile::encodeName(theme));
     XcursorSetDefaultSize(QX11Info::display(), size);
 
-    emit cursorChanged();
+    emit q->cursorChanged();
 #endif
 }
 
 
-void KGlobalSettings::propagateSettings(SettingsCategory arg)
+void KGlobalSettings::Private::propagateSettings(SettingsCategory arg)
 {
     KConfigGroup cg( KGlobal::config(), "KDE" );
 
@@ -940,7 +994,7 @@ void KGlobalSettings::propagateSettings(SettingsCategory arg)
     //b = !cg.readEntry("EffectNoTooltip", false);
     //QToolTip::setGloballyEnabled( b ); ###
 
-    emit settingsChanged(arg);
+    emit q->settingsChanged(arg);
 }
 
 #include "kglobalsettings.moc"

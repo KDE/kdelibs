@@ -54,6 +54,7 @@ class KDEUI_EXPORT KGlobalSettings : public QObject
     Q_OBJECT
 
 public:
+    ~KGlobalSettings();
 
     /**
      * Returns a threshold in pixels for drag & drop operations.
@@ -537,52 +538,15 @@ Q_SIGNALS:
      */
     void blockShortcuts(int data);
 
-private Q_SLOTS:
-    /**
-     * Used for internal notification of changes.
-     */
-    void slotNotifyChange(int changeType, int arg);
-
 private:
+    friend class KApplication;
+
     KGlobalSettings();
 
-    void propagateSettings(SettingsCategory category);
-    void kdisplaySetPalette();
-    void kdisplaySetStyle();
-    void kdisplaySetFont();
-    void applyGUIStyle();
+    class Private;
+    Private* const d;
 
-    /**
-     * @internal
-     *
-     * Ensures that cursors are loaded from the theme KDE is configured
-     * to use. Note that calling this function doesn't cause existing
-     * cursors to be reloaded. Reloading already created cursors is
-     * handled by the KCM when a cursor theme is applied.
-     *
-     * It is not necessary to call this function when KGlobalSettings
-     * is initialized.
-     */
-    void applyCursorTheme();
-
-    /**
-     * reads in all paths from kdeglobals
-     */
-    static void initPaths();
-    /**
-     * drop cached values for fonts (called by KApplication)
-     */
-    static void rereadFontSettings();
-    /**
-     * drop cached values for paths (called by KApplication)
-     */
-    static void rereadPathSettings();
-    /**
-     * drop cached values for mouse settings (called by KApplication)
-     */
-    static void rereadMouseSettings();
-
-    friend class KApplication;
+    Q_PRIVATE_SLOT(d, void _k_slotNotifyChange(int, int))
 };
 
 #endif
