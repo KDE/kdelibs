@@ -37,6 +37,7 @@ private Q_SLOTS:
     void cleanupTestCase();
     void testSimple();
     void testLists();
+    void testPath();
     void testComplex();
     void testEnums();
     void testInvalid();
@@ -45,6 +46,7 @@ private Q_SLOTS:
     void testEmptyGroup();
     void testRevertAllEntries();
     void testChangeGroup();
+    void testKdeglobals();
 
     // unrelated
     void testKAboutDataOrganizationDomain();

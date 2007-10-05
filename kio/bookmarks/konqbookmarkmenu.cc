@@ -48,10 +48,8 @@ KonqBookmarkContextMenu::~KonqBookmarkContextMenu()
 
 void KonqBookmarkContextMenu::addActions()
 {
-    
-  KConfig config("kbookmarkrc", KConfig::NoGlobals);
-  KConfigGroup cg(&config, "Bookmarks");
-  bool filteredToolbar = cg.readEntry( "FilteredToolbar", false );
+  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig)->group("Bookmarks");
+  bool filteredToolbar = config.readEntry( "FilteredToolbar", false );
 
   if (bookmark().isGroup())
   {
@@ -184,7 +182,7 @@ QAction* KonqBookmarkMenu::actionForBookmark(const KBookmark &bm)
 
 KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QString &id )
 {
-  KConfig bookmarkrc("kbookmarkrc", KConfig::NoGlobals);
+  KConfig bookmarkrc("kbookmarkrc", KConfig::CascadeConfig);
   KConfigGroup config(&bookmarkrc, "Bookmarks");
 
   DynMenuInfo info;
@@ -203,7 +201,7 @@ KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QStr
 }
 QStringList KonqBookmarkMenu::dynamicBookmarksList()
 {
-  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::NoGlobals)->group("Bookmarks");
+  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig)->group("Bookmarks");
 
   QStringList mlist;
   if (config.hasKey("DynamicMenus"))
@@ -214,7 +212,7 @@ QStringList KonqBookmarkMenu::dynamicBookmarksList()
 
 void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &newMenu)
 {
-  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::NoGlobals)->group(QString("DynamicMenu-" + id));
+  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig)->group(QString("DynamicMenu-" + id));
 
   // add group unconditionally
   config.writeEntry("Show", newMenu.show);
@@ -230,7 +228,6 @@ void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo 
   }
 
   // make sure list includes type
-  config.changeGroup("Bookmarks");
   if (!elist.contains(id)) {
     elist << id;
     config.writeEntry("DynamicMenus", elist);

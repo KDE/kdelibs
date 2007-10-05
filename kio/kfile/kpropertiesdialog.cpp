@@ -379,7 +379,7 @@ KPropertiesDialog::~KPropertiesDialog()
     delete d;
 
     KConfigGroup group(KGlobal::config(), "KPropertiesDialog");
-    saveDialogSize(group, KConfigFlags::Persistent);
+    saveDialogSize(group, KConfigBase::Persistent);
 }
 
 void KPropertiesDialog::insertPlugin (KPropertiesDialogPlugin* plugin)
@@ -1434,7 +1434,7 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
           KConfigGroup cg = config.desktopGroup();
           QString nameStr = nameFromFileName(properties->kurl().fileName());
           cg.writeEntry( "Name", nameStr );
-          cg.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS);
+          cg.writeEntry( "Name", nameStr, KConfigGroup::Persistent|KConfigGroup::NLS);
       }
   }
 }
@@ -2671,7 +2671,7 @@ void KUrlPropsPlugin::applyChanges()
   {
     QString nameStr = nameFromFileName(properties->kurl().fileName());
     dg.writeEntry( "Name", nameStr );
-    dg.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS );
+    dg.writeEntry( "Name", nameStr, KConfig::Persistent|KConfig::NLS );
 
   }
 }
@@ -2838,7 +2838,7 @@ void KBindingPropsPlugin::applyChanges()
   dg.writeEntry( "Patterns",  d->patternEdit->text() );
   dg.writeEntry( "Comment", d->commentEdit->text() );
   dg.writeEntry( "Comment",
-		     d->commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
+		     d->commentEdit->text(), KConfigGroup::Persistent|KConfigGroup::NLS ); // for compat
   dg.writeEntry( "MimeType", d->mimeEdit->text() );
   if ( d->cbAutoEmbed->checkState() == Qt::PartiallyChecked )
       dg.deleteEntry( "X-KDE-AutoEmbed" );
@@ -3369,9 +3369,9 @@ void KDesktopPropsPlugin::applyChanges()
   KConfigGroup config = _config.desktopGroup();
   config.writeEntry( "Type", QString::fromLatin1("Application"));
   config.writeEntry( "Comment", d->w->commentEdit->text() );
-  config.writeEntry( "Comment", d->w->commentEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
+  config.writeEntry( "Comment", d->w->commentEdit->text(), KConfigGroup::Persistent|KConfigGroup::NLS ); // for compat
   config.writeEntry( "GenericName", d->w->genNameEdit->text() );
-  config.writeEntry( "GenericName", d->w->genNameEdit->text(), KConfigBase::Persistent|KConfigBase::NLS ); // for compat
+  config.writeEntry( "GenericName", d->w->genNameEdit->text(), KConfigGroup::Persistent|KConfigGroup::NLS ); // for compat
 
   if (d->m_systrayBool)
     config.writePathEntry( "Exec", d->w->commandEdit->text().prepend("ksystraycmd ") );
@@ -3396,7 +3396,7 @@ void KDesktopPropsPlugin::applyChanges()
   if ( !d->w->nameEdit->isHidden() ) {
       QString nameStr = d->w->nameEdit->text();
       config.writeEntry( "Name", nameStr );
-      config.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::NLS );
+      config.writeEntry( "Name", nameStr, KConfigGroup::Persistent|KConfigGroup::NLS );
   }
 
   config.writeEntry("Terminal", d->m_terminalBool);

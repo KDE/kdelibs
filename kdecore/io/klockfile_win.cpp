@@ -19,6 +19,7 @@
 
 #include "klockfile.h"
 #include "kcomponentdata.h"
+#include "kdebug.h"
 
 #include <windows.h>
 
@@ -91,13 +92,13 @@ KLockFile::lock(LockFlags options)
 
     else if (GetLastError() == NO_ERROR) 
 	{
-        kDebug(151) << "'" << d->file << "' locked";
+//        kDebug(151) << "'" << d->file << "' locked";
         result = LockOK;
     }
     else if (GetLastError() == ERROR_ALREADY_EXISTS) 
 	{
         // handle stale lock file 
-        kDebug(151) << "stale lock file '" << d->file << "' found, reused file";
+        //kDebug(151) << "stale lock file '" << d->file << "' found, reused file";
         // we reuse this file
         result = LockOK;
     }
@@ -105,11 +106,11 @@ KLockFile::lock(LockFlags options)
 	{
         CloseHandle(d->h);
         d->h = 0;
-        kDebug(151) << "could not lock file '" << d->file << "' it is locked by another process";
+        //kDebug(151) << "could not lock file '" << d->file << "' it is locked by another process";
         result = LockFail;
     }
     else {
-        kDebug(151) << "could not lock '" << d->file << "' error= " << GetLastError();
+        //kDebug(151) << "could not lock '" << d->file << "' error= " << GetLastError();
         result = LockError;
     }
     
@@ -129,7 +130,7 @@ KLockFile::unlock()
 {
     if (d->isLocked)
     {
-         kDebug(151) << "lock removed for file '" << d->file << "'";
+         //kDebug(151) << "lock removed for file '" << d->file << "'";
          CloseHandle(d->h);
          DeleteFileW((WCHAR *)d->file.utf16());
          d->h = 0;

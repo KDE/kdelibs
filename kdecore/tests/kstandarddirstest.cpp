@@ -112,7 +112,7 @@ void KStandarddirsTest::testFindAllResources()
     const QStringList configFilesRecursiveWithFilter = KGlobal::dirs()->findAllResources( "config", "*rc",
                                                                                           KStandardDirs::Recursive );
     QVERIFY( !configFilesRecursiveWithFilter.isEmpty() );
-    QVERIFY( configFilesRecursiveWithFilter.count() > 5 ); // back to ~ 9
+    QVERIFY( configFilesRecursiveWithFilter.count() >= 5 ); // back to ~ 9
     QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "share/config/kdebugrc" ) );
     QVERIFY( !oneEndsWith( configFilesRecursiveWithFilter, "share/config/colors/Web.colors" ) ); // didn't match the filter
 

@@ -39,7 +39,6 @@
 #include <kglobalsettings.h>
 #include <kshortcut.h>
 #include <kconfig.h>
-#include <kconfigbase.h>
 #include <kapplication.h>
 #include <kstringhandler.h>
 #include <kstandardaction.h>

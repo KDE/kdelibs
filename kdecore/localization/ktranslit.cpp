@@ -17,6 +17,7 @@
 */
 
 #include <ktranslit_p.h>
+#include <kdebug.h>
 
 #include <config.h>
 

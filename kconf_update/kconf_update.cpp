@@ -29,6 +29,7 @@
 #include <QtCore/QTextCodec>
 
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
@@ -65,8 +66,8 @@ public:
    void gotScriptArguments(const QString &_arguments);
    void resetOptions();
 
-   void copyGroup(KConfigBase *cfg1, const QString &group1,
-                  KConfigBase *cfg2, const QString &group2);
+   void copyGroup(KConfig *cfg1, const QString &group1,
+                  KConfig *cfg2, const QString &group2);
 
 protected:
    KConfig *config;
@@ -274,7 +275,7 @@ void KonfUpdate::checkGotFile(const QString &_file, const QString &id)
 
 //   qDebug("File %s, id %s", file.toLatin1().constData(), id.toLatin1().constData());
 
-   KConfig cfg(file, KConfig::OnlyLocal);
+   KConfig cfg(file, KConfig::SimpleConfig);
    KConfigGroup cg(&cfg, "$Version");
    QStringList ids = cg.readEntry("update_info", QStringList());
    if (ids.contains(id))
@@ -499,7 +500,7 @@ void KonfUpdate::gotFile(const QString &_file)
 
    if (!oldFile.isEmpty())
    {
-      oldConfig2 = new KConfig(oldFile, KConfig::NoGlobals);
+      oldConfig2 = new KConfig(oldFile, KConfig::CascadeConfig);
       QString cfg_id = currentFilename + ':' + id;
       KConfigGroup cg(oldConfig2, "$Version");
       QStringList ids = cg.readEntry("update_info", QStringList());
@@ -512,7 +513,7 @@ void KonfUpdate::gotFile(const QString &_file)
 
       if (!newFile.isEmpty())
       {
-         newConfig = new KConfig(newFile, KConfig::NoGlobals);
+         newConfig = new KConfig(newFile, KConfig::CascadeConfig);
          KConfigGroup cg(newConfig, "$Version");
          ids = cg.readEntry("update_info", QStringList());
          if (ids.contains(cfg_id))
@@ -526,7 +527,7 @@ void KonfUpdate::gotFile(const QString &_file)
          newConfig = oldConfig2;
       }
 
-      oldConfig1 = new KConfig(oldFile, KConfig::NoGlobals);
+      oldConfig1 = new KConfig(oldFile, KConfig::CascadeConfig);
    }
    else
    {
@@ -630,7 +631,7 @@ void KonfUpdate::gotKey(const QString &_key)
    KConfigGroup oldGroup2( oldConfig2, oldGroup);
    oldGroup2.deleteEntry(oldKey);
    log() << currentFilename << ": Removing " << oldFile << ":" << oldGroup << ":" << oldKey << ", moved." << endl;
-   /*if (oldConfig2->deleteGroup(oldGroup, KConfigBase::Normal)) { // Delete group if empty.
+   /*if (oldConfig2->deleteGroup(oldGroup, KConfig::Normal)) { // Delete group if empty.
       log() << currentFilename << ": Removing empty group " << oldFile << ":" << oldGroup << endl;
    }  (this should be automatic)  */
 }
@@ -659,7 +660,7 @@ void KonfUpdate::gotRemoveKey(const QString &_key)
    // Delete old entry
    KConfigGroup cg2( oldConfig2, oldGroup);
    cg2.deleteEntry(oldKey);
-   /*if (oldConfig2->deleteGroup(oldGroup, KConfigBase::Normal)) { // Delete group if empty.
+   /*if (oldConfig2->deleteGroup(oldGroup, KConfig::Normal)) { // Delete group if empty.
       log() << currentFilename << ": Removing empty group " << oldFile << ":" << oldGroup << endl;
    }   (this should be automatic)*/
 }
@@ -713,8 +714,8 @@ void KonfUpdate::gotOptions(const QString &_options)
    }
 }
 
-void KonfUpdate::copyGroup(KConfigBase *cfg1, const QString &group1,
-                           KConfigBase *cfg2, const QString &group2)
+void KonfUpdate::copyGroup(KConfig *cfg1, const QString &group1,
+                           KConfig *cfg2, const QString &group2)
 {
    KConfigGroup cg1(cfg1, group1);
    KConfigGroup cg2(cfg2, group2);
@@ -801,7 +802,7 @@ void KonfUpdate::gotScript(const QString &_script)
            tmp1.setAutoRemove(false);
            log() << "Script input stored in " << tmp1.fileName() << endl;
        }
-       KConfig cfg(tmp1.fileName(), KConfig::OnlyLocal);
+       KConfig cfg(tmp1.fileName(), KConfig::SimpleConfig);
 
        if (oldGroup.isEmpty())
        {
@@ -889,7 +890,7 @@ void KonfUpdate::gotScript(const QString &_script)
             KConfigGroup cg(oldConfig2, group);
             cg.deleteEntry(key);
             log() << currentFilename << ": Script removes " << oldFile << ":" << group << ":" << key << endl;
-            /*if (oldConfig2->deleteGroup(group, KConfigBase::Normal)) { // Delete group if empty.
+            /*if (oldConfig2->deleteGroup(group, KConfig::Normal)) { // Delete group if empty.
                log() << currentFilename << ": Removing empty group " << oldFile << ":" << group << endl;
 	    } (this should be automatic)*/
          }
@@ -917,7 +918,7 @@ void KonfUpdate::gotScript(const QString &_script)
      KConfig *saveOldConfig1 = oldConfig1;
      QString saveOldGroup = oldGroup;
      QString saveNewGroup = newGroup;
-     oldConfig1 = new KConfig(tmp2.fileName(), KConfig::NoGlobals);
+     oldConfig1 = new KConfig(tmp2.fileName(), KConfig::CascadeConfig);
 
      // For all groups...
      QStringList grpList = oldConfig1->groupList();

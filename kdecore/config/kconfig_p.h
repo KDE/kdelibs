@@ -1,0 +1,107 @@
+/*
+   This file is part of the KDE libraries
+   Copyright (c) 2006, 2007 Thomas Braxton <kde.braxton@gmail.com>
+   Copyright (c) 2001 Waldo Bastian <bastian@kde.org>
+   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
+
+#ifndef KCONFIG_P_H
+#define KCONFIG_P_H
+
+#include "kconfigdata.h"
+#include <kglobal.h>
+#include "kconfigbackend.h"
+#include "kconfiggroup.h"
+#include "kcomponentdata.h"
+#include "kstandarddirs.h"
+#include "klocale.h"
+
+#include <QtCore/QStringList>
+#include <QtCore/QStack>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
+
+#include <unistd.h>
+
+class KConfigPrivate
+{
+    friend class KConfig;
+public:
+    KConfig::OpenFlags openFlags;
+    const char* resourceType;
+
+    void changeFileName(const QString& fileName, const char* resourceType);
+
+    // functions for KConfigGroup
+    bool canWriteEntry(const QByteArray& group, const QByteArray& key, bool isDefault=false) const;
+    QString lookupData(const QByteArray& group, const QByteArray& key, int flags, bool* expand) const;
+    QByteArray lookupData(const QByteArray& group, const QByteArray& key, int flags) const;
+    void putData(const QByteArray& group, const QByteArray& key,
+        const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand = false);
+    QStringList groupList(const QByteArray& group) const;
+
+protected:
+    KSharedPtr<KConfigBackend> mBackend;
+
+    KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
+           const char* resource);
+    
+    ~KConfigPrivate()
+    {
+    }
+
+    bool bDynamicBackend:1; // do we own the backend?
+private:
+    bool bDirty:1;
+    bool bLocaleInitialized:1;
+    bool bReadDefaults:1;
+    bool bFileImmutable:1;
+    bool bForceGlobal:1;
+
+   static QString sGlobalFileName;
+   static bool mappingsRegistered;
+
+
+    KEntryMap entryMap;
+    QString backendType;
+    QStringList globalFiles;
+    QStack<QString> extraFiles;
+
+    QString locale;
+    QString fileName;
+    KConfigGroup currentGroup;
+    KComponentData componentData;
+    KConfigBase::ConfigState configState;
+
+    bool wantGlobals() const { return openFlags&KConfig::IncludeGlobals; }
+    bool wantDefaults() const { return openFlags&KConfig::CascadeConfig; }
+    bool wantMerge() const { return openFlags&KConfig::MergeOnSync; }
+    bool isSimple() const { return openFlags == KConfig::SimpleConfig; }
+    bool isReadOnly() const { return configState == KConfig::ReadOnly; }
+
+    bool setLocale(const QString& aLocale);
+    void parseGlobalFiles();
+    void parseConfigFiles();
+    void initCustomized(KConfig*);
+    bool lockLocal();
+
+    void setDirty(bool b);
+};
+
+#endif // KCONFIG_H

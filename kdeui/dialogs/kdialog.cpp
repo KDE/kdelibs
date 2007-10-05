@@ -50,6 +50,7 @@
 #include <ktoolinvocation.h>
 #include <kurllabel.h>
 #include <kwhatsthismanager_p.h>
+#include <kglobal.h>
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
@@ -527,7 +528,7 @@ void KDialog::resizeLayout( QLayout *layout, int margin, int spacing ) //static
 static QRect screenRect( QWidget *widget, int screen )
 {
   QDesktopWidget *desktop = QApplication::desktop();
-  KConfig gc( "kdeglobals", KConfig::NoGlobals );
+  KConfig gc( "kdeglobals", KConfig::CascadeConfig );
   KConfigGroup cg(&gc, "Windows" );
   if ( desktop->isVirtualDesktop() &&
        cg.readEntry( "XineramaEnabled", true ) &&
@@ -1016,7 +1017,7 @@ void KDialog::restoreDialogSize( const KConfigGroup& cfg )
   resize( width, height );
 }
 
-void KDialog::saveDialogSize( KConfigGroup& config, KConfigBase::WriteConfigFlags options ) const
+void KDialog::saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options ) const
 {
    int scnum = QApplication::desktop()->screenNumber( parentWidget() );
    QRect desk = QApplication::desktop()->screenGeometry( scnum );

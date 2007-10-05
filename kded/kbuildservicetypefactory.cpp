@@ -27,6 +27,7 @@
 #include <klocale.h>
 #include <assert.h>
 #include <kdesktopfile.h>
+#include <kconfiggroup.h>
 #include <QtCore/QHash>
 
 KBuildServiceTypeFactory::KBuildServiceTypeFactory() :

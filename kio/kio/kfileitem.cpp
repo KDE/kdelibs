@@ -50,6 +50,7 @@
 #include <kde_file.h>
 #include <kdesktopfile.h>
 #include <kmountpoint.h>
+#include <kconfiggroup.h>
 
 class KFileItemPrivate : public QSharedData
 {
@@ -689,7 +690,7 @@ static QString iconFromDesktopFile(const QString& path)
     const QString icon = cfg.readIcon();
     const QString type = cfg.readPath();
 
-    if ( type == "FSDevice" )
+    if ( cfg.hasDeviceType() )
     {
         const QString unmount_icon = group.readEntry( "UnmountIcon" );
         const QString dev = cfg.readDevice();
@@ -699,15 +700,15 @@ static QString iconFromDesktopFile(const QString& path)
             if (!mountPoint) // not mounted?
                 return unmount_icon;
         }
-    } else if ( type == "Link" ) {
+    } else if ( cfg.hasLinkType() ) {
         const QString emptyIcon = group.readEntry( "EmptyIcon" );
         if ( !emptyIcon.isEmpty() ) {
-            const QString u = group.readPathEntry( "URL" );
+            const QString u = cfg.readUrl();
             const KUrl url( u );
             if ( url.protocol() == "trash" ) {
                 // We need to find if the trash is empty, preferrably without using a KIO job.
                 // So instead kio_trash leaves an entry in its config file for us.
-                KConfig trashConfig( "trashrc", KConfig::OnlyLocal );
+                KConfig trashConfig( "trashrc", KConfig::SimpleConfig );
                 if ( trashConfig.group("Status").readEntry( "Empty", true ) ) {
                     return emptyIcon;
                 }

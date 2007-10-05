@@ -28,6 +28,7 @@
 #include <kstandarddirs.h>
 #include <QtGui/QApplication>
 #include <kxmlguifactory.h>
+#include <kconfiggroup.h>
 
 #include <kdebug.h>
 

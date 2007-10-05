@@ -26,6 +26,8 @@
 #include <kuser.h>
 #include <kstandarddirs.h>
 #include <ktempdir.h>
+#include <kconfiggroup.h>
+#include <kdebug.h>
 
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>

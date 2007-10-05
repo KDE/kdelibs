@@ -25,7 +25,7 @@
 #include <QtCore/QRegExp>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kconfig.h>
+#include <kconfiggroup.h>
 
 #include <stdlib.h>
 #include <cups/cups.h>

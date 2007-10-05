@@ -29,6 +29,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kconfiggroup.h>
 
 static void checkInsertPos( QMenu *popup, const QString &str, int &index )
 {
@@ -170,7 +171,7 @@ void KLanguageButton::loadAllLanguages()
   {
     QString fpath = langlist[i].left(langlist[i].length() - 14);
     QString code = fpath.mid(fpath.lastIndexOf('/') + 1);
-    KConfig entry(langlist[i], KConfig::OnlyLocal);
+    KConfig entry(langlist[i], KConfig::SimpleConfig);
     KConfigGroup group(&entry, "KCM Locale");
     QString name = group.readEntry("Name", i18n("without name"));
     insertLanguage(code, name);

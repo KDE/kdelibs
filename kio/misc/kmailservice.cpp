@@ -20,6 +20,7 @@
 #include <ktoolinvocation.h>
 #include <klocale.h>
 #include <kcmdlineargs.h>
+#include <kurl.h>
 
 int main( int argc, char **argv )
 {

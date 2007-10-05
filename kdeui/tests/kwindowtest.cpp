@@ -19,6 +19,7 @@
 #include <kactionmenu.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
+#include <kdebug.h>
 
 TestWindow::TestWindow (QWidget *parent)
     : KXmlGuiWindow (parent)

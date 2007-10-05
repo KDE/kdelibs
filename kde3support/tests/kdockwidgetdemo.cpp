@@ -20,7 +20,7 @@
 //Added by qt3to4:
 #include <QtGui/QPixmap>
 
-#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>

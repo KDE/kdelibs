@@ -578,7 +578,7 @@ void KApplication::Private::init(bool GUIenabled)
   if (readOnly.isEmpty() && q->applicationName() != QLatin1String("kdialog"))
   {
     if (KAuthorized::authorize(QLatin1String("warn_unwritable_config")))
-       config->checkConfigFilesWritable(true);
+       config->isConfigWritable(true);
   }
 
   if (q->type() == GuiClient)
@@ -649,7 +649,7 @@ KApplication* KApplication::kApplication()
 KConfig* KApplication::sessionConfig()
 {
     if (!d->pSessionConfig) // create an instance specific config object
-        d->pSessionConfig = new KConfig( d->sessionConfigName(), KConfig::NoGlobals );
+        d->pSessionConfig = new KConfig( d->sessionConfigName(), KConfig::SimpleConfig );
     return d->pSessionConfig;
 }
 

@@ -24,6 +24,7 @@
 #include <kglobal.h>
 #include <QResizeEvent>
 #include <ktoolbar.h>
+#include <kconfiggroup.h>
 
 QTEST_KDEMAIN( KMainWindow_UnitTest, GUI )
 

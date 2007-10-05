@@ -57,7 +57,7 @@ bool KMSpecialManager::savePrinters()
     } else
         confname = KStandardDirs::locateLocal("data", "kdeprint/specials.desktop");
 
-    KConfig _conf(confname, KConfig::OnlyLocal);
+    KConfig _conf(confname, KConfig::SimpleConfig);
     KConfigGroup conf(&_conf, "General");
     // first clear existing groups
     int n = conf.readEntry("Number", 0);
@@ -127,7 +127,7 @@ bool KMSpecialManager::loadPrinters()
 
 bool KMSpecialManager::loadDesktopFile(const QString& filename)
 {
-    KConfig _conf(filename, KConfig::OnlyLocal);
+    KConfig _conf(filename, KConfig::SimpleConfig);
     KConfigGroup conf(&_conf, "General");
     int n = conf.readEntry("Number", 0);
     for (int i = 0;i < n;i++) {

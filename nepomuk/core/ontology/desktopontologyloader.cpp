@@ -23,6 +23,7 @@
 
 #include <kstandarddirs.h>
 #include <kdesktopfile.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kglobal.h>
 

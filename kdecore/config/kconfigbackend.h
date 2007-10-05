@@ -1,5 +1,6 @@
 /*
    This file is part of the KDE libraries
+   Copyright (c) 2006, 2007 Thomas Braxton <kde.braxton@gmail.com>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Portions copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
 
@@ -22,177 +23,133 @@
 #ifndef KCONFIGBACKEND_H
 #define KCONFIGBACKEND_H
 
+#include <QtCore/QObject>
+#include <QtCore/QString>
+
 #include <kdecore_export.h>
+#include <ksharedptr.h>
 
-#include <kconfigbase.h>
-#include <klockfile.h>
-
-#include <QtCore/QStack>
-
+class KEntryMap;
+class KComponentData;
+class QFile;
 class QByteArray;
+class QDateTime;
 
-/**
- * Abstract base class for KDE configuration file loading/saving.
- *
- * This class forms the base for all classes that implement some
- * manner of loading/saving to configuration files.  It is an
- * abstract base class, meaning that you cannot directly instantiate
- * objects of this class. As of right now, the only back end available
- * is one to read/write to INI-style files, but in the future, other
- * formats may be available, such as XML or a database.
- *
- * @author Preston Brown <pbrown@kde.org>,
- *         Matthias Kalle Dalheimer <kalle@kde.org>
- * @short KDE Configuration file loading/saving abstract base class
- */
-class KDECORE_EXPORT KConfigBackEnd
+class KDECORE_EXPORT KConfigBackend : public QObject, public KShared
 {
-  friend class KConfig;
-  friend class KSharedConfig;
+    Q_OBJECT
+    Q_FLAGS(ParseOption)
+    Q_FLAGS(WriteOption)
+
 public:
-  /**
-   * Constructs a configuration back end.
-   *
-   * @param _config Specifies the configuration object which values
-   *        will be passed to as they are read, or from where values
-   *        to be written to will be obtained from.
-   * @param _fileName The name of the file in which config
-   *        data is stored.  All registered configuration directories
-   *        will be looked in in order of decreasing relevance.
-   * @param _resType the resource type of the fileName specified, _if_
-   *        it is not an absolute path (otherwise this parameter is ignored).
-   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file
-   *        will be imported into the config object.  If false, only
-   *        the filename specified will be dealt with.
-   */
-  KConfigBackEnd(KConfigBase *_config, const QString &_fileName,
-		 const char * _resType, bool _useKDEGlobals);
+    /** returns a KConfigBackend object to be used with KConfig
+     * @param fileName the absolute file name
+     * @param system the configuration system to use. if the given system is
+     *               not found or an empty string is passed in, then it tries to determine the
+     *               correct backend to return.
+     */
+    static KSharedPtr<KConfigBackend> create(const KComponentData& componentData,
+                                             const QString& fileName = QString(),
+                                             const QString& system = QString());
 
-  /**
-   * Destructs the configuration backend.
-   */
-  virtual ~KConfigBackEnd();
+    /** registers mappings from directory to configuration system
+     * @param entryMap the KEntryMap to build the mappings from
+     */
+    static void registerMappings(KEntryMap& entryMap);
 
-  /**
-   * Parses all configuration files for a configuration object.  This
-   * method must be reimplemented by the derived classes.
-   *
-   * @returns Whether or not parsing was successful.
-   */
-  virtual bool parseConfigFiles() = 0;
+    /** destroys the backend */
+    virtual ~KConfigBackend();
 
-  /**
-   * Writes configuration data to file(s).  This method must be
-   * reimplemented by the derived classes.
-   *
-   * @param bMerge Specifies whether the old config file already
-   *        on disk should be merged in with the data in memory.  If true,
-   *        data is read off the disk and merged.  If false, the on-disk
-   *        file is removed and only in-memory data is written out.
-   */
-  virtual void sync(bool bMerge = true) = 0;
+    /** options passed to parseConfig. */
+    enum ParseOption {
+        ParseGlobal = 1, /// entries should be marked as @em global
+        ParseDefaults = 2, /// entries should be marked as @em default
+        ParseExpansions = 4 /// entries are allowed to be marked as @em expandable
+    };
+    /// @typedef typedef QFlags<ParseOption> ParseOptions
+    Q_DECLARE_FLAGS(ParseOptions, ParseOption)
 
-  /**
-   * Changes the filenames associated with this back end.  You should
-   * probably reparse your config info after doing this.
-   *
-   * @param _fileName the new filename to use
-   * @param _resType the resource type of the fileName specified, _if_
-   *        it is not an absolute path (otherwise this parameter is ignored).
-   * @param _useKDEGlobals specifies whether or not to also parse the
-   *        global KDE configuration files.
-   */
-  void changeFileName(const QString &_fileName, const char * _resType,
-		      bool _useKDEGlobals);
+    /** options passed to writeConfig. */
+    enum WriteOption {
+        WriteGlobal = 1 /// only write entries marked as "global"
+    };
+    /// @typedef typedef QFlags<WriteOption> WriteOptions
+    Q_DECLARE_FLAGS(WriteOptions, WriteOption)
 
-  /**
-   * Returns the state of the app-config object.
-   *
-   * @see KConfig::getConfigState
-   */
-  virtual KConfigBase::ConfigState getConfigState() const;
+    /** */
+    enum ParseInfo {
+        ParseImmutable=1, /// object is @em immutable
+        ParseOpenError, /// there was an error opening object
+        ParseError /// there was an error parsing object
+    };
 
-  /**
-   * Returns the filename as passed to the constructor.
-   * @return the filename as passed to the constructor.
-   */
-  QString fileName() const;
+    /**
+     * Read permanent storage.
+     * @param pWriteBackMap the KEntryMap where the entries are placed
+     * @param options @see ParseOptions
+     * @return @see ParseInfo
+     */
+    virtual ParseInfo parseConfig(const QByteArray& locale,
+                                  KEntryMap& pWriteBackMap,
+                                  ParseOptions options = ParseOptions()) = 0;
 
-  /**
-   * Returns the resource type as passed to the constructor.
-   * @return the resource type as passed to the constructor.
-   */
-  const char * resource() const;
+    /**
+     * Write the @em dirty entries to permanent storage.
+     * @param entryMap the KEntryMap containing the @em dirty entries to write.
+     * @param mergeMap the KEntryMap containing the entries
+     * @param options @see WriteOptions
+     */
+    virtual bool writeConfig(const QByteArray& locale,
+                             KEntryMap& entryMap,
+                             const KEntryMap& mergeMap,
+                             WriteOptions options = WriteOptions()) = 0;
 
-  /**
-   * Set the locale string that defines the current language.
-   * @param _localeString the identifier of the language
-   * @see KLocale
-   */
-  void setLocaleString(const QByteArray &_localeString);
+    /**
+     * is this object writable?
+     * @note This function @b MUST be implemented by sub-classes.
+     */
+    virtual bool isWritable() const = 0;
+    /**
+     * create the enclosing object of @em this object.
+     * @note This function @b MUST be implemented by sub-classes.
+     */
+    virtual void createEnclosing() = 0;
 
-  /**
-   * Set the file mode for newly created files.
-   * @param mode the filemode (as in chmod)
-   */
-  void setFileWriteMode(int mode);
+    /** Set the file path.
+     * @param path the absolute file path.
+     * @note @p path @b MUST be @em absolute.
+     * @note This function @b MUST be implemented by sub-classes.
+     */
+    virtual void setFilePath(const QString& path) = 0;
+    
+    /**
+     * lock the file
+     */
+    virtual bool lock(const KComponentData& componentData) = 0;
+    virtual void unlock() = 0;
+    virtual bool isLocked() const = 0;
 
-  /**
-   * Check whether the config files are writable.
-   * @param warnUser Warn the user if the configuration files are not writable.
-   * @return Indicates that all of the configuration files used are writable.
-   */
-  bool checkConfigFilesWritable(bool warnUser);
-
-  /**
-   * Gets the extraConfigFiles in the merge stack.
-   */
-  QStringList extraConfigFiles() const;
-
-  /**
-   * Sets the merge stack to the list of files. The stack is last in first out with
-   * the top of the stack being the most specific config file.
-   * @param files A list of extra config files containing the full path of the
-   * local config file to remove from the stack.
-   */
-  void setExtraConfigFiles( const QStringList &files );
-
-  /**
-   * Remove all files from merge stack. This does not include the local file that
-   * was specified in the constructor.
-   */
-  void removeAllExtraConfigFiles();
-
-  /**
-   * Returns a lock file object for the configuration file
-   * @param bGlobal If true, returns a lock file object for kdeglobals
-   */
-  KLockFile::Ptr lockFile( bool bGlobal = false );
+    /** when was the object last modified?
+     * @return the date/time when the object was last modified.
+     */
+    QDateTime lastModified() const;
+    /** The path to the object. */
+    QString filePath() const;
+    /** The size of the object. */
+    qint64 size() const;
 
 protected:
-  KConfigBase *pConfig;
+    KConfigBackend();
+    void setLastModified(const QDateTime& dt);
+    void setSize(qint64 sz);
+    void setLocalFilePath(const QString& file);
 
-  QString mfileName;
-  QByteArray resType;
-  bool useKDEGlobals : 1;
-  bool bFileImmutable : 1;
-  QByteArray localeString;
-  QString mLocalFileName;
-  QString mGlobalFileName;
-
-  QStack<QString> mMergeStack;
-
-  KConfigBase::ConfigState mConfigState;
-  int mFileMode;
-
-protected:
-  /** Virtual hook, used to add new "virtual" functions while maintaining
-      binary compatibility. Unused in this class.
-  */
-  virtual void virtual_hook( int id, void* data );
-protected:
-  class Private;
-  Private *const d;
+private:
+    class Private;
+    Private *const d;
 };
 
-#endif
+Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigBackend::ParseOptions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigBackend::WriteOptions)
+
+#endif // KCONFIGBACKEND_H

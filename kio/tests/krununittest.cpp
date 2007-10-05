@@ -26,7 +26,7 @@ QTEST_KDEMAIN( KRunUnitTest, NoGUI )
 #include <kshell.h>
 #include <kservice.h>
 #include <kstandarddirs.h>
-
+#include <kconfiggroup.h>
 
 void KRunUnitTest::initTestCase()
 {

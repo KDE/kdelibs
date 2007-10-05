@@ -46,7 +46,6 @@
 #include <kcomponentdata.h>
 #include <kplugininfo.h>
 #include <kstandarddirs.h>
-#include <kconfigbase.h>
 #include <kiconloader.h>
 #include <kcmodule.h>
 #include <kconfiggroup.h>
@@ -59,6 +58,7 @@
 #include <ktoolinvocation.h>
 #include <kmessagebox.h>
 #include <kglobalsettings.h>
+#include <kdebug.h>
 
 static QString details = I18N_NOOP("Settings");
 static QString about = I18N_NOOP("About");

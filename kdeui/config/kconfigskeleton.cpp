@@ -159,7 +159,7 @@ void KConfigSkeleton::ItemString::writeConfig( KConfig *config )
   if ( mReference != mLoadedValue ) // WABA: Is this test needed?
   {
     KConfigGroup cg(config, mGroup );
-    if ((mDefault == mReference) && !config->hasDefault( mKey))
+    if ((mDefault == mReference) && !cg.hasDefault( mKey))
       cg.revertToDefault( mKey );
     else if ( mType == Path )
       cg.writePathEntry( mKey, mReference );
@@ -235,7 +235,7 @@ void KConfigSkeleton::ItemUrl::writeConfig( KConfig *config )
     if ( mReference != mLoadedValue ) // WABA: Is this test needed?
     {
         KConfigGroup cg(config, mGroup );
-        if ((mDefault == mReference) && !config->hasDefault( mKey))
+        if ((mDefault == mReference) && !cg.hasDefault( mKey))
             cg.revertToDefault( mKey );
         else
             cg.writeEntry<QString>( mKey, mReference.url() );

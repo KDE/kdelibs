@@ -22,6 +22,7 @@
 #include <kmimetype.h>
 #include <kstandarddirs.h>
 #include <kmimetypefactory.h>
+#include <kdebug.h>
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
 

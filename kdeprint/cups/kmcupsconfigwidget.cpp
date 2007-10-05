@@ -30,7 +30,7 @@
 
 #include <klocale.h>
 #include <kcursor.h>
-#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kstringhandler.h>
 
 #ifdef __GNUC__
@@ -159,7 +159,7 @@ void KMCupsConfigWidget::saveConfig(KConfig *conf)
     cg.writeEntry("Login", (m_anonymous->isChecked() ? QString() : m_login->text()));
     cg.writeEntry("SavePassword", (m_anonymous->isChecked() ? false : m_savepwd->isChecked()));
     if (m_savepwd->isChecked() && !m_anonymous->isChecked())
-        cg.writeEntry("Password", (m_anonymous->isChecked() ? QString() : KStringHandler::obscure(m_password->text())));
+        cg.writeEntry("Password", (m_anonymous->isChecked() ? QString("") : KStringHandler::obscure(m_password->text())));
     else
         cg.deleteEntry("Password");
     // synchronize CupsInfos object

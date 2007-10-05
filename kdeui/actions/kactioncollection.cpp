@@ -30,7 +30,6 @@
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
 
-#include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kaction.h>
@@ -470,9 +469,9 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
           bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
           // If we're using a global config or this setting
           //  differs from the default, then we want to write.
-          KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
+          KConfigGroup::WriteConfigFlags flags = KConfigGroup::Persistent;
           if (configIsGlobal())
-              flags |= KConfigBase::Global;
+              flags |= KConfigGroup::Global;
           if( writeAll || !bSameAsDefault ) {
               QString s = kaction->shortcut().toString();
               if( s.isEmpty() )

@@ -21,8 +21,10 @@
 #include "kmimetype_p.h"
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
+#include <kconfiggroup.h>
 #include <dirent.h>
 #include <QtCore/QFile>
+#include <QtCore/QSet>
 
 class KFolderMimeTypePrivate : public KMimeTypePrivate
 {

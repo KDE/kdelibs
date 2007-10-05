@@ -25,7 +25,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QValidator>
 #include <klocale.h>
-#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kcursor.h>
 
 KMProxyWidget::KMProxyWidget(QWidget *parent)

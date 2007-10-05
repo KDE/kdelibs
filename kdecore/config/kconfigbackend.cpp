@@ -1,213 +1,182 @@
 /*
-  This file is part of the KDE libraries
-  Copyright (c) 1999 Preston Brown <pbrown@kde.org>
-  Copyright (c) 1997-1999 Matthias Kalle Dalheimer <kalle@kde.org>
+   This file is part of the KDE libraries
+   Copyright (c) 2006 Thomas Braxton <brax108@cox.net>
+   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (c) 1997-1999 Matthias Kalle Dalheimer <kalle@kde.org>
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License as published by the Free Software Foundation; either
-  version 2 of the License, or (at your option) any later version.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
 
-  You should have received a copy of the GNU Library General Public License
-  along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-  Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
-#include "kconfigbackend.h"
-
-#include <config.h>
-
-#include <unistd.h>
-#include <ctype.h>
-#ifdef HAVE_SYS_MMAN_H
-#include <sys/mman.h>
-#endif
-#include <sys/types.h>
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#include <fcntl.h>
-#include <signal.h>
-#include <setjmp.h>
-
-#include <QtCore/QDate>
+#include <QtCore/QDateTime>
+#include <QtCore/QStringList>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtCore/Q_PID>
-#include <QtCore/QTextCodec>
-#include <QtCore/QTextIStream>
+#include <QtCore/QHash>
+#include <QtCore/QDebug>
 
-#include "kconfigbase.h"
-#include "kconfigdata.h"
-#include "kde_file.h"
 #include "kglobal.h"
-#include "kcomponentdata.h"
-#include "klocale.h"
-#include "ksavefile.h"
+//#include "klocale.h"
+#include "kpluginloader.h"
+#include "kservicetypetrader.h"
+//#include "kapplication.h"
+#include "kconfig.h"
+#include "kconfigbackend.h"
+#include "kconfigini_p.h"
+#include "kconfigdata.h"
+#include "kdebug.h"
 #include "kstandarddirs.h"
-#include "kurl.h"
+#include "kconfigbackend.moc"
 
-class KConfigBackEnd::Private
+typedef KSharedPtr<KConfigBackend> BackendPtr;
+
+namespace {
+    typedef QHash<QString, QString> DirMap;
+    Q_GLOBAL_STATIC(DirMap , config_dirs)
+}
+
+class KConfigBackend::Private
 {
 public:
-   KLockFile::Ptr localLockFile;
-   KLockFile::Ptr globalLockFile;
+    qint64 size;
+    QDateTime lastModified;
+    QString localFileName;
+
+    static QString whatSystem(const QString& fileName)
+    {
+        const QString full_path(QFileInfo(fileName).canonicalPath());
+
+        // see if the file has its own backend defined
+        if (config_dirs()->contains(full_path))
+            return config_dirs()->value(full_path);
+
+        // now see if the one of the file's parent directories has a backend defined
+        QDir path(full_path);
+        while (!config_dirs()->contains(path.absolutePath())) {
+            path.cdUp();
+            if (path.isRoot()) { // set to default backend
+                config_dirs()->insert(full_path, QLatin1String("INI"));
+                return QLatin1String("INI");
+            }
+        }
+        return config_dirs()->value(path.absolutePath());
+    }
 };
 
-void KConfigBackEnd::changeFileName(const QString &_fileName,
-                                    const char * _resType,
-                                    bool _useKDEGlobals)
+
+void KConfigBackend::registerMappings(KEntryMap& entryMap)
 {
-    mfileName = _fileName;
-    resType = _resType;
-    useKDEGlobals = _useKDEGlobals;
-    if (mfileName.isEmpty()) {
-        mLocalFileName.clear();
+    if (!entryMap.hasEntry("KConfig", "BackEnds"))
+        return;
+
+    const QStringList backends = entryMap.getEntry("KConfig", "BackEnds").split(';');
+
+    foreach(const QString& backend, backends) {
+        if (backend.isEmpty())
+            continue;
+        QString tmp = backend + QLatin1String("-Directories");
+        const char* key = tmp.toUtf8().constData();
+        const QStringList dirs = entryMap.getEntry("KConfig", key).split(';');
+        foreach(const QString& dir, dirs) {
+            if (!dir.isEmpty())
+                config_dirs()->insert(dir, backend);
+        }
     }
-    else if (QDir::isRelativePath(mfileName)) {
-        mLocalFileName = pConfig->componentData().dirs()->saveLocation(resType) + mfileName;
-    }
+}
+
+BackendPtr KConfigBackend::create(const KComponentData& componentData, const QString& file,
+                                  const QString& system)
+{
+    const QString upperSystem = (system.isEmpty() ?
+            Private::whatSystem(file).toUpper() :
+            system.toUpper());
+    KConfigBackend* backend = 0;
+
+    if (upperSystem == "INI")
+        goto default_backend;
     else {
-        mLocalFileName = mfileName;
+        KService::List offers = KServiceTypeTrader::self()->query("KConfigBackend");
+
+        foreach (const KService::Ptr service, offers) {
+            if (service->name().toUpper() != upperSystem ||
+                service->library().isEmpty())
+                continue;
+
+            backend = KPluginLoader(*service, componentData).factory()->create<KConfigBackend>(QLatin1String("KConfigBackend"));
+//             const char* libraryName = service->library().toLocal8Bit().constData();
+//             int error = 0;
+
+/*            backend = KLibLoader::createInstance<KConfigBackend>(
+                                                   libraryName,
+                                                   0,
+                                                   QStringList(),
+                                                   &error);*/
+            if (backend) {
+                backend->setFilePath(file);
+                return BackendPtr(backend);
+            } else {
+                kDebug(181) << "Could not load config backend " << system
+                            /*<< ". Error code: " << error*/ << endl;
+                goto default_backend;
+            }
+        } // foreach offers
     }
 
-    if (useKDEGlobals)
-        mGlobalFileName = pConfig->componentData().dirs()->saveLocation("config") +
-                          QLatin1String("kdeglobals");
-    else
-        mGlobalFileName.clear();
+default_backend:
 
-    if (d->localLockFile) {
-        d->localLockFile = 0;
-    }
-    if (d->globalLockFile) {
-        d->globalLockFile = 0;
-    }
+    backend = new KConfigIniBackend;
+    backend->setFilePath(file);
+    return BackendPtr(backend);
 }
 
-KConfigBase::ConfigState KConfigBackEnd::getConfigState() const
+KConfigBackend::KConfigBackend()
+ : d(new Private)
 {
-    return mConfigState;
 }
 
-QString KConfigBackEnd::fileName() const
-{
-    return mfileName;
-}
-
-const char * KConfigBackEnd::resource() const
-{
-    return resType;
-}
-
-void KConfigBackEnd::setLocaleString(const QByteArray &_localeString)
-{
-    localeString = _localeString;
-}
-
-QStringList KConfigBackEnd::extraConfigFiles() const
-{
-    return mMergeStack.toList();
-}
-
-void KConfigBackEnd::setExtraConfigFiles( const QStringList &files )
-{
-    removeAllExtraConfigFiles();
-    foreach( const QString &file, files )
-        mMergeStack.push(file);
-}
-
-void KConfigBackEnd::removeAllExtraConfigFiles() { mMergeStack.clear(); }
-
-KLockFile::Ptr KConfigBackEnd::lockFile(bool bGlobal)
-{
-    if (bGlobal)
-    {
-        if (d->globalLockFile)
-            return d->globalLockFile;
-
-        if (!mGlobalFileName.isEmpty())
-        {
-            d->globalLockFile = new KLockFile(mGlobalFileName+".lock", pConfig->componentData());
-            return d->globalLockFile;
-        }
-    }
-    else
-    {
-        if (d->localLockFile)
-            return d->localLockFile;
-
-        QString fileName = mMergeStack.count() ? mMergeStack.top()
-                           : mLocalFileName;
-        if (!fileName.isEmpty())
-        {
-            d->localLockFile = new KLockFile(fileName+".lock", pConfig->componentData());
-            return d->localLockFile;
-        }
-    }
-    return KLockFile::Ptr();
-}
-
-KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
-			       const QString &_fileName,
-			       const char * _resType,
-			       bool _useKDEGlobals)
-    : pConfig(_config), bFileImmutable(false), mConfigState(KConfigBase::ReadWrite), mFileMode(-1),
-      d(new Private)
-{
-    changeFileName(_fileName, _resType, _useKDEGlobals);
-}
-
-KConfigBackEnd::~KConfigBackEnd()
+KConfigBackend::~KConfigBackend()
 {
     delete d;
 }
 
-void KConfigBackEnd::setFileWriteMode(int mode)
+QDateTime KConfigBackend::lastModified() const
 {
-    mFileMode = mode;
+    return d->lastModified;
 }
 
-void KConfigBackEnd::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
-bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
+void KConfigBackend::setLastModified(const QDateTime& dt)
 {
-    // WARNING: Do NOT use the event loop as it may not exist at this time.
-    bool allWritable = true;
-    QString errorMsg;
-    if ( !mLocalFileName.isEmpty() && !bFileImmutable && !KStandardDirs::checkAccess(mLocalFileName,W_OK) )
-    {
-        errorMsg = i18n("Will not save configuration.\n");
-        allWritable = false;
-        errorMsg += i18n("Configuration file \"%1\" not writable.\n", mLocalFileName);
-    }
-    // We do not have an immutability flag for kdeglobals. However, making kdeglobals mutable while making
-    // the local config file immutable is senseless.
-    if ( !mGlobalFileName.isEmpty() && useKDEGlobals && !bFileImmutable && !KStandardDirs::checkAccess(mGlobalFileName,W_OK) )
-    {
-        if ( errorMsg.isEmpty() )
-            errorMsg = i18n("Will not save configuration.\n");
-        errorMsg += i18n("Configuration file \"%1\" not writable.\n", mGlobalFileName);
-        allWritable = false;
-    }
-
-    if (warnUser && !allWritable)
-    {
-        // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
-        errorMsg += i18n("Please contact your system administrator.");
-        QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
-        if (!cmdToExec.isEmpty() && pConfig->componentData().isValid())
-        {
-            QProcess::execute(cmdToExec,QStringList() << "--title" << pConfig->componentData().componentName() << "--msgbox" << errorMsg.toLocal8Bit());
-        }
-    }
-    return allWritable;
+    d->lastModified = dt;
 }
 
+qint64 KConfigBackend::size() const
+{
+    return d->size;
+}
+
+void KConfigBackend::setSize(qint64 sz)
+{
+    d->size = sz;
+}
+
+QString KConfigBackend::filePath() const
+{
+    return d->localFileName;
+}
+
+void KConfigBackend::setLocalFilePath(const QString& file)
+{
+    d->localFileName = file;
+}

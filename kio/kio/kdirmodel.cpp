@@ -25,6 +25,7 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kurl.h>
+#include <kdebug.h>
 #include <QMimeData>
 #include <QFile>
 #include <QFileInfo>

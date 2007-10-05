@@ -21,11 +21,10 @@
 #ifndef KNOTIFYCONFIGELEMENT_H
 #define KNOTIFYCONFIGELEMENT_H
 
-#include "kconfig.h"
-
 #include <QtCore/QMap>
 
-#include <kconfiggroup.h>
+class KConfig;
+class KConfigGroup;
 
 /**
  * Represent the config for an event
@@ -34,8 +33,8 @@
 class KNotifyConfigElement
 {
 	public:
-		KNotifyConfigElement( const QString &eventid, KConfigBase *defaultConfig , KConfigBase *localConfig);
-		~KNotifyConfigElement() {}
+		KNotifyConfigElement( const QString &eventid, KConfig *config);
+		~KNotifyConfigElement();
 
 		QString readEntry(const QString& entry, bool path=false);
 		void writeEntry(const QString& entry, const QString & data);
@@ -44,8 +43,7 @@ class KNotifyConfigElement
 		
 	private:
 		QMap<QString,QString> m_cache;
-		KConfigGroup m_config;
-		KConfigGroup m_default;
+		KConfigGroup* m_config;
 };
 
 #endif

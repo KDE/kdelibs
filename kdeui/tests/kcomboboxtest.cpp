@@ -152,7 +152,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_hc->completionObject()->setItems( list );
 
   // Setup konq's combobox
-  KConfig historyConfig( "konq_history", KConfig::OnlyLocal );
+  KConfig historyConfig( "konq_history", KConfig::SimpleConfig );
   KConfigGroup cg(&historyConfig, "Location Bar" );
   KCompletion * s_pCompletion = new KCompletion;
   s_pCompletion->setOrder( KCompletion::Weighted );

@@ -557,7 +557,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 {
     K_D(KMainWindow);
-    kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.group();
+    kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.name();
 
     // Called by session management - or if we want to save the window size anyway
     if ( d->autoSaveWindowSize )
@@ -582,7 +582,7 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
            cg.writeEntry("MenuBar", mb->isHidden() ? "Disabled" : "Enabled");
     }
 
-    QString configGroup = cg.group();
+    QString configGroup = cg.name();
 
     // Utilise the QMainWindow::saveState() functionality
     QByteArray state = saveState();
@@ -633,7 +633,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 {
     K_D(KMainWindow);
-    kDebug(200) << "KMainWindow::applyMainWindowSettings " << cg.group();
+    kDebug(200) << "KMainWindow::applyMainWindowSettings " << cg.name();
 
     restoreWindowSize(cg);
 
@@ -674,7 +674,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 #endif
     }
 
-    QString configGroup = cg.group();
+    QString configGroup = cg.name();
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
     foreach (KToolBar* toolbar, toolBars()) {

@@ -25,7 +25,7 @@
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
 #include "ktimezonestest.moc"
-
+#include <kconfiggroup.h>
 
 QTEST_KDEMAIN_CORE(KTimeZonesTest)
 

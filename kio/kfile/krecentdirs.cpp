@@ -27,6 +27,7 @@
  */
 #include <krecentdirs.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <ksharedconfig.h>
 #include <kstandarddirs.h>
 #include <kglobalsettings.h>

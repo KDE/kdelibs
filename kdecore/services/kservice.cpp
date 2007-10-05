@@ -358,40 +358,6 @@ bool KService::hasMimeType( const KServiceType* ptr ) const
     return false;
 }
 
-//TODO: make this a KConfigBackend instead
-class KServiceReadProperty : public KConfigBase
-{
-public:
-   KServiceReadProperty(const QString &_key, const QByteArray &_value)
-	: key(_key), value(_value) { }
-
-   bool internalHasGroup(const QByteArray &) const { /*qDebug("hasGroup(const QByteArray &)");*/ return false; }
-
-   QStringList groupList() const { return QStringList(); }
-
-   QMap<QString,QString> entryMap(const QString &) const
-      { return QMap<QString,QString>(); }
-
-   void reparseConfiguration() { }
-
-   KEntryMap internalEntryMap( const QString &) const { return KEntryMap(); }
-
-   KEntryMap internalEntryMap() const { return KEntryMap(); }
-
-   void putData(const KEntryKey &, const KEntry&, bool) { }
-
-   KEntry lookupData(const KEntryKey &) const
-   { KEntry entry; entry.mValue = value; return entry; }
-
-   template <typename T>
-      T readEntry( const QString& pKey, const T& aDefault) const
-   { return internalGroup().readEntry(pKey.toUtf8().constData(), aDefault); }
-
-protected:
-   QString key;
-   QByteArray value;
-};
-
 QVariant KServicePrivate::property( const QString& _name) const
 {
     return property( _name, QVariant::Invalid);
@@ -424,7 +390,7 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
     else if ( _name == "Icon" )
         return makeStringVariant( m_strIcon );
     else if ( _name == "Terminal" )
-        return QVariant( static_cast<int>(m_bTerminal) );
+        return QVariant( m_bTerminal );
     else if ( _name == "TerminalOptions" )
         return makeStringVariant( m_strTerminalOptions );
     else if ( _name == "Path" )
@@ -436,7 +402,7 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
     else if ( _name == "ServiceTypes" )
         return QVariant( m_lstServiceTypes );
     else if ( _name == "AllowAsDefault" )
-        return QVariant( static_cast<int>(m_bAllowAsDefault) );
+        return QVariant( m_bAllowAsDefault );
     else if ( _name == "InitialPreference" )
         return QVariant( m_initialPreference );
     else if ( _name == "Library" )
@@ -464,8 +430,6 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
         }
     }
 
-    // Then we use a homebuild class based on KConfigBase to convert the QString.
-    // For some often used property types we do the conversion ourselves.
     QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
     if ( (it == m_mapProps.end()) || (!it->isValid()))
     {
@@ -476,32 +440,11 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
     switch(t)
     {
     case QVariant::String:
-        return *it;
-    case QVariant::Bool:
-    case QVariant::Int:
-    {
-        QString aValue = it->toString().toLower();
-        int val = 0;
-        if (aValue == "true" || aValue == "on" || aValue == "yes")
-            val = 1;
-        else
-        {
-            bool bOK;
-            val = aValue.toInt( &bOK );
-            if( !bOK )
-                val = 0;
-        }
-        if (t == QVariant::Bool)
-        {
-            return QVariant(bool(val));
-        }
-        return QVariant(val);
-    }
+        return *it; // no conversion necessary
     default:
         // All others
         // For instance properties defined as StringList, like MimeTypes.
-        KServiceReadProperty ksrp(_name, it->toString().toUtf8());
-        return ksrp.readEntry(_name, QVariant(t));
+        return KConfigGroup::convertToQVariant(_name.toUtf8().constData(), it->toString().toUtf8(), t);
     }
 }
 
@@ -612,16 +555,12 @@ QString KService::username() const {
 }
 
 bool KService::noDisplay() const {
-    Q_D(const KService);
-    QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( "NoDisplay" );
-    if ( (it != d->m_mapProps.end()) && (it->isValid()))
-    {
-        QString aValue = it->toString().toLower();
-        if (aValue == "true" || aValue == "on" || aValue == "yes")
-            return true;
-    }
+    if ( qvariant_cast<bool>(property("NoDisplay", QVariant::Bool)) )
+        return true;
 
-    it = d->m_mapProps.find( "OnlyShowIn" );
+    Q_D(const KService);
+
+    QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( "OnlyShowIn" );
     if ( (it != d->m_mapProps.end()) && (it->isValid()))
     {
         QString aValue = it->toString();

@@ -674,7 +674,7 @@ int main(int argc, char *argv[])
     KApplication a;
 //    a.disableAutoDcopRegistration();
     a.setStyle( new TestStyle );
-    KConfig sc1( "cryptodefaults", KConfig::OnlyLocal );
+    KConfig sc1( "cryptodefaults", KConfig::SimpleConfig );
     sc1.setGroup( "Warnings" );
     sc1.writeEntry( "OnUnencrypted",  false );
     KSharedConfigPtr config = KGlobal::mainComponent().config();
@@ -714,7 +714,7 @@ int main(int argc, char *argv[])
 
     bool outputDebug = args->isSet( "debug" );
 
-    KConfig dc( "kdebugrc", KConfig::OnlyLocal );
+    KConfig dc( "kdebugrc", KConfig::SimpleConfig );
     static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
                             6031, 6035, 6036, 6040, 6041, 6045,
                             6050, 6060, 6061, 7000, 7006, 170,

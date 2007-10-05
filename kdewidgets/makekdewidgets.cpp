@@ -126,7 +126,7 @@ int main( int argc, char **argv ) {
 }
 
 void buildFile( QTextStream &ts, const QString& group, const QString& fileName, const QString& pluginName ) {
-    KConfig input( fileName, KConfig::NoGlobals );
+    KConfig input( fileName, KConfig::CascadeConfig );
     KConfigGroup cg(&input, "Global" );
     QHash<QString, QString> MainMap;
     MainMap.insert( "PluginName", cg.readEntry( "PluginName", pluginName ) );

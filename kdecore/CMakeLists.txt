@@ -294,12 +294,8 @@ install( FILES
    config/kconfig.h
    config/kconfigbase.h
    config/kconfiggroup.h
-   config/kconfigbackend.h
-   config/kconfigini.h
-   config/kconfigdata.h
    config/kdesktopfile.h
    config/ksharedconfig.h
-   config/kconfigflags.h
    date/kcalendarsystem.h
    date/kdatetime.h
    date/ksystemtimezone.h

@@ -28,6 +28,8 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
+#include <kurl.h>
 
 int main(int argc, char **argv)
 {

@@ -24,6 +24,7 @@
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kpluginfactory.h>
+#include <kdebug.h>
 
 static inline QString makeLibName( const QString &libname )
 {

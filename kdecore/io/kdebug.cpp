@@ -355,7 +355,7 @@ struct KDebugPrivate
                 return cache.find(0);
             }
 
-            config = new KConfig(QLatin1String("kdebugrc"), KConfig::NoGlobals);
+            config = new KConfig(QLatin1String("kdebugrc"), KConfig::CascadeConfig);
             loadAreaNames();
         }
 

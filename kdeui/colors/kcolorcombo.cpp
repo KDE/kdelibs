@@ -36,6 +36,7 @@
 #include <QtGui/QAbstractItemDelegate>
 #include <QtGui/QStylePainter>
 
+#include <kglobal.h>
 #include <klocale.h>
 
 #include "kcolordialog.h"

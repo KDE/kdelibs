@@ -40,6 +40,7 @@
 #include <kpluginloader.h>
 #include <kpluginfactory.h>
 #include "kabstractfilemodule.h"
+#include <kdebug.h>
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>

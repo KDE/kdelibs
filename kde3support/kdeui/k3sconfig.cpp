@@ -219,13 +219,14 @@ K3SpellConfig::writeGlobalSettings ()
 {
   KConfigGroup cg( kc,"K3Spell" );
 
-  cg.writeEntry ("K3Spell_DoSpellChecking", doSpellChecking(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("K3Spell_NoRootAffix",(int) noRootAffix(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("K3Spell_RunTogether", (int) runTogether(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("K3Spell_Dictionary", dictionary(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("K3Spell_DictFromList",(int) dictFromList(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("K3Spell_Encoding", (int) encoding(), KConfigBase::Global|KConfigBase::Persistent);
-  cg.writeEntry ("K3Spell_Client", client(), KConfigBase::Global|KConfigBase::Persistent);
+  KConfigBase::WriteConfigFlags flags(KConfigBase::Global|KConfigBase::Persistent);
+  cg.writeEntry ("K3Spell_DoSpellChecking", doSpellChecking(), flags);
+  cg.writeEntry ("K3Spell_NoRootAffix",(int) noRootAffix(), flags);
+  cg.writeEntry ("K3Spell_RunTogether", (int) runTogether(), flags);
+  cg.writeEntry ("K3Spell_Dictionary", dictionary(), flags);
+  cg.writeEntry ("K3Spell_DictFromList",(int) dictFromList(), flags);
+  cg.writeEntry ("K3Spell_Encoding", (int) encoding(), flags);
+  cg.writeEntry ("K3Spell_Client", client(), flags);
   kc->sync();
 
   return true;

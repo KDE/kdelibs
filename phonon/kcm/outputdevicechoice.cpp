@@ -32,6 +32,7 @@
 
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <kdebug.h>
 
 #ifndef METATYPE_QLIST_INT_DEFINED
 #define METATYPE_QLIST_INT_DEFINED

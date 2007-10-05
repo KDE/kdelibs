@@ -23,6 +23,7 @@
 #include "kdialog.h"
 #include <QtCore/QSignalMapper>
 #include <QtCore/QSize>
+#include <QtCore/QHash>
 
 class QBoxLayout;
 class KPushButton;

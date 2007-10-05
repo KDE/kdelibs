@@ -51,6 +51,7 @@
 #include <kio/netaccess.h>
 #include <kio/scheduler.h>
 #include <krecentdirs.h>
+#include <kdebug.h>
 
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
@@ -1498,7 +1499,7 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
 {
     KUrlComboBox *pathCombo = urlNavigator->editor();
     configGroup.writePathEntry( RecentURLs, pathCombo->urls() );
-    //saveDialogSize( configGroup, KConfigBase::Persistent | KConfigBase::Global );
+    //saveDialogSize( configGroup, KConfigGroup::Persistent | KConfigGroup::Global );
     configGroup.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
     configGroup.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
 
@@ -1510,7 +1511,6 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
         configGroup.writeEntry( SpeedbarWidth, sizes[0] );
     }
 
-    configGroup.writeEntry( ShowSpeedbar, placesView && !placesView->isHidden() );
     configGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
     configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
     configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );

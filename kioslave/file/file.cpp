@@ -80,6 +80,7 @@
 #include <kurl.h>
 #include <kcomponentdata.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <ktemporaryfile.h>
 #include <klocale.h>
 #include <QtCore/QFile>

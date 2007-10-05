@@ -20,6 +20,7 @@
 */
 
 #include "jobuidelegate.h"
+#include <kdebug.h>
 
 #include <kmessagebox.h>
 #include <kjob.h>

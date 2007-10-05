@@ -21,6 +21,8 @@
 
 #include "kpluginfactory.h"
 #include "kpluginfactory_p.h"
+#include <kdebug.h>
+#include <kglobal.h>
 
 #include <QtCore/QObjectCleanupHandler>
 

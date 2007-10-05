@@ -22,7 +22,8 @@
 #ifndef KSHAREDCONFIG_H
 #define KSHAREDCONFIG_H
 
-#include "kconfig.h"
+#include <kconfig.h>
+#include <ksharedptr.h>
 
 /**
  * KConfig variant using shared memory
@@ -37,41 +38,35 @@ public:
 
 public:
   /**
-   * Constructs a KConfig object.
+   * Constructs a KSharedConfig object.
    *
    * @param fileName A file to parse in addition to the
    *        system-wide file(s).  If it is not provided, only global
    *        KDE configuration data will be read (depending on the value of
-   *        @p bUseKDEGlobals).
-   * @param bReadOnly Set the config object's read-only status. Note that the
-   *        object will automatically become read-only if either the user does not have
-   *        write permission to @p fileName or if no file was specified.
-   * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
-   * @param resType the place to look in (config, data, etc) See KStandardDirs.
+   *        @p mode).
+   * @param mode
+   * @param resourceType the place to look in (config, data, etc) @see KStandardDirs.
+   * @param backend
    */
    static KSharedConfig::Ptr openConfig(const QString& fileName = QString(),
-                                        KConfig::OpenFlags = KConfig::IncludeGlobals,
-                                        const char *resType = "config");
+                                        OpenFlags mode = FullConfig,
+                                        const char *resourceType = "config");
 
    static KSharedConfig::Ptr openConfig(const KComponentData &componentData,
                                         const QString &fileName = QString(),
-                                        KConfig::OpenFlags = KConfig::IncludeGlobals,
-                                        const char *resType = "config");
+                                        OpenFlags mode = FullConfig,
+                                        const char *resourceType = "config");
 
-    ~KSharedConfig();
-
-    KConfigGroup group(const QByteArray &groupName);
-    const KConfigGroup group(const QByteArray &groupName) const;
-    KConfigGroup group(const char* groupName);
-    const KConfigGroup group(const char *groupName) const;
-    KConfigGroup group(const QString& groupName);
-    const KConfigGroup group(const QString& groupName) const;
+    virtual ~KSharedConfig();
 
 private:
-   KSharedConfig(const QString& fileName,
-                 KConfig::OpenFlags,
-                 const char *resType,
-                 const KComponentData &componentData);
+    virtual KConfigGroup groupImpl(const QByteArray& aGroup);
+    virtual const KConfigGroup groupImpl(const QByteArray& aGroup) const;
+
+    KSharedConfig(const KComponentData& componentData, const QString& file, OpenFlags mode,
+                  const char* resourceType);
 };
+
+typedef KSharedConfig::Ptr KSharedConfigPtr;
 
 #endif // multiple inclusion guard

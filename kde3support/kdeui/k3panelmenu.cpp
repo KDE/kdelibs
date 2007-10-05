@@ -23,7 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #include <kglobal.h>
-#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <QTimer>
 
 #include "k3panelmenu.h"

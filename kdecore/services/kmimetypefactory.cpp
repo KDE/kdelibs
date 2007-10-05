@@ -23,6 +23,7 @@
 #include <ksycoca.h>
 #include <ksycocadict.h>
 #include <kshell.h>
+#include <kdebug.h>
 
 ////
 

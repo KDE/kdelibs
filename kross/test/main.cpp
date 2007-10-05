@@ -36,6 +36,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
+#include <kurl.h>
 
 // for std namespace
 #include <string>

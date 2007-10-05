@@ -37,5 +37,5 @@ void KDesktopFileTest::testRead()
     QCOMPARE(df.hasMimeTypeType(), false);
     QCOMPARE(df.hasApplicationType(), false);
     QCOMPARE(df.fileName(), fileName);
-    QCOMPARE(df.resource(), QString("apps")); // I guess it's some default
+    QCOMPARE(df.resource(), "apps"); // default for .desktop files
 }

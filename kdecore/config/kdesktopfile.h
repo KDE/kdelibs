@@ -20,7 +20,9 @@
 #define KDESKTOPFILE_H
 
 #include <kconfig.h>
-#include <kconfiggroup.h>
+
+class KConfigGroup;
+class KDesktopFilePrivate;
 
 /**
  * %KDE Desktop File Management.
@@ -35,23 +37,19 @@ class KDECORE_EXPORT KDesktopFile : public KConfig
 {
 public:
   /**
-   * Constructs a KDesktopFile object
+   * Constructs a KDesktopFile object and make it either read-write
+   * or read-only.
    *
    * @param fileName  The name or path of the desktop file. If it
    *                  is not absolute, it will be located
    *                  using the resource type @p resType.
+   * @param readOnly  Whether the object should be read-only.
    * @param resType   Allows you to change what sort of resource
    *                  to search for if @p fileName is not absolute.  For
    *                  instance, you might want to specify "config".
    */
-  KDesktopFile( const char * resType, const QString &fileName);
-
-  /*
-   * @param fileName  The name or path of the desktop file. If it
-   *                  is not absolute, it will be located
-   *                  using the resource type "apps".
-  */
-  explicit KDesktopFile( const QString &fileName );
+  explicit KDesktopFile( const char * resourceType, const QString &fileName);
+  explicit KDesktopFile( const QString& fileName);
 
   /**
    * Destructs the KDesktopFile object.
@@ -86,6 +84,8 @@ public:
    * should be written to.
    */
   static QString locateLocal(const QString &path);
+
+  KConfigGroup desktopGroup() const;
 
   /**
    * Returns the value of the "Type=" entry.
@@ -144,14 +144,10 @@ public:
   /**
    * Sets the desktop action group.
    * @param group the new action group
-   * @deprecated use actionGroup()
    */
-  KDE_DEPRECATED void setActionGroup(const QString &group);
-
-  /**
-   * Returns the action group with the given name
-   */
-  KConfigGroup actionGroup(const QString &group) const;
+  KConfigGroup actionGroup(const QString &group);
+  
+  const KConfigGroup actionGroup(const QString &group) const;
 
   /**
    * Returns true if the action group exists, false otherwise
@@ -194,21 +190,9 @@ public:
   bool tryExec() const;
 
   /**
-   * Returns the file name.
-   * @return The filename as passed to the constructor.
-   */
-  QString fileName() const;
-
-  /**
-   * Returns the resource.
-   * @return The resource type as passed to the constructor.
-   */
-  QString resource() const;
-
-  /**
    * Returns the value of the "X-DocPath=" Or "DocPath=" entry.
-	 * X-DocPath should be used and DocPath is depreciated and will
-	 * one day be not supported.
+	 * X-DocPath should be used because DocPath is deprecated and will
+	 * one day not be supported.
    * @return The value of the "X-DocPath=" Or "DocPath=" entry.
    */
   QString readDocPath() const;
@@ -230,31 +214,20 @@ public:
    */
   KDesktopFile* copyTo(const QString &file) const;
 
-  /**
-   * Sets the group to the "Desktop Entry" group used for
-   * desktop configuration files for applications, mime types, etc.
-   * @deprecated use desktopGroup() instead.
-   */
-  //void setDesktopGroup();
+  QString fileName() const;
 
-  /**
-   * Returns the raw data for direct access
-   */
-  KConfigGroup desktopGroup();
-
-  const KConfigGroup desktopGroup() const;
+  const char *resource() const;
 
 protected:
   /** Virtual hook, used to add new "virtual" functions while maintaining
       binary compatibility. Unused in this class.
   */
-  virtual void virtual_hook( int id, void* data );
+//  virtual void virtual_hook( int id, void* data );
 private:
 
   Q_DISABLE_COPY(KDesktopFile)
 
-  class Private;
-  Private *const d;
+  Q_DECLARE_PRIVATE(KDesktopFile)
 };
 
 #endif

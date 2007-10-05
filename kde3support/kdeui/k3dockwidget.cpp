@@ -36,7 +36,7 @@
 #include <QStyleOption>
 
 #ifndef NO_KDE2
-#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <ktoolbar.h>
@@ -477,12 +477,14 @@ void K3DockWidgetHeader::setDragEnabled(bool b)
 #ifndef NO_KDE2
 void K3DockWidgetHeader::saveConfig( KConfig* c )
 {
-    c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), stayButton->isChecked() );
+  KConfigGroup cg(c, c->group());
+  cg.writeEntry( QString("%1:stayButton").arg(parent()->name()), stayButton->isChecked() );
 }
 
 void K3DockWidgetHeader::loadConfig( KConfig* c )
 {
-    setDragEnabled( !c->readEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), false ) );
+  KConfigGroup cg(c, c->group());
+  setDragEnabled( !cg.readEntry( QString("%1:stayButton").arg(parent()->name()), false ) );
 }
 #endif
 

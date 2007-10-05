@@ -1,7 +1,9 @@
 /*
    This file is part of the KDE libraries
+   Copyright (c) 2006, 2007 Thomas Braxton <kde.braxton@gmail.com>
+   Copyright (c) 2001 Waldo Bastian <bastian@kde.org>
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
-   Copyright (C) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
+   Copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,311 +24,244 @@
 #ifndef KCONFIG_H
 #define KCONFIG_H
 
-#include <klockfile.h>
 #include <kconfigbase.h>
-#include <kconfiggroup.h>
-#include <kconfigdata.h>
-#include <kglobal.h>
 
-/**
-* Access KDE Configuration entries.
-*
-* This class implements KDE's default configuration system.
-*
-* @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
-* @see KGlobal::config(), KConfigBase, KConfigGroup
-* @short KDE Configuration Management class
-*/
+#include <QtCore/QString>
+#include <QtCore/QVariant>
+#include <QtCore/QByteArray>
+#include <QtCore/QList>
+
+class KConfigGroup;
+class KComponentData;
+class KEntryMap;
+class KConfigPrivate;
+
 class KDECORE_EXPORT KConfig : public KConfigBase
 {
-    friend class KConfigGroup;
 public:
-    enum OpenFlags {
-        NoGlobals = 0x01,
-        OnlyLocal = 0x02,
-        IncludeGlobals= 0x04
+    enum OpenFlag {
+        SimpleConfig     =0x00, ///< no cascading, no globals
+        IncludeGlobals =0x01, ///< read globals
+        CascadeConfig=0x02, ///< cascade
+        MergeOnSync=0x04, ///< merge when sync() called
+        FullConfig=IncludeGlobals|CascadeConfig|MergeOnSync ///< cascade, read globals
     };
+    Q_DECLARE_FLAGS(OpenFlags, OpenFlag)
 
-  /**
-   * Constructs a KConfig object.
-   *
-   * @param fileName A file to parse in addition to the
-   *        system-wide file(s).  If it is not provided, only global
-   *        KDE configuration data will be read (depending on the value of
-   *        @p flags).
-   * @param flags determines how the configuration file is created and accessed. Passing in
-   *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
-   *        merged settings
-   */
-  explicit KConfig( const QString& fileName = QString(),
-                    OpenFlags flags = IncludeGlobals );
+    static const OpenFlag OnlyLocal=SimpleConfig;
+    static const OpenFlag NoGlobals=CascadeConfig;
 
-  /**
-   * Constructs a KConfig object.
-   *
-   * @param resType the place to look in (config, data, etc) See KStandardDirs.
-   * @param fileName A file to parse in addition to the
-   *        system-wide file(s).  If it is not provided, only global
-   *        KDE configuration data will be read (depending on the value of
-   *        @p flags).
-   * @param flags determines how the configuration file is created and accessed. Passing in
-   *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
-   *        merged settings
-   */
-  explicit KConfig( const char *resType,
-                    const QString& fileName,
-                    OpenFlags flags = IncludeGlobals );
+    explicit KConfig(const QString& file = QString(), OpenFlags mode = FullConfig,
+                     const char* resourceType = "config");
 
-  /**
-   * Constructs a KConfig object.
-   *
-   * @param componentData The KComponentData object of your component. If you don't know what this
-   *        is you likely want to use the above constructor.
-   * @param fileName A file to parse in addition to the
-   *        system-wide file(s).  If it is not provided, only global
-   *        KDE configuration data will be read (depending on the value of
-   *        @p flags).
-   * @param flags determines how the configuration file is created and accessed. Passing in
-   *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
-   *        merged settings
-   * @param resType the place to look in (config, data, etc) See KStandardDirs.
-   */
-  explicit KConfig(const KComponentData &componentData, const QString &fileName = QString(),
-                   OpenFlags flags = IncludeGlobals, const char *resType="config");
+    explicit KConfig(const KComponentData& componentData, const QString& file = QString(),
+                     OpenFlags mode = FullConfig, const char* resourceType = "config");
 
-  explicit KConfig(KConfigBackEnd *backEnd);
+    virtual ~KConfig();
 
-  /**
-   * Destructs the KConfig object.
-   *
-   * Writes back any dirty configuration entries, and destroys
-   * dynamically created objects.
-   */
-  virtual ~KConfig();
+    virtual void sync();
 
-  /**
-   * Gets the extraConfigFiles in the merge stack.
-   */
-  QStringList extraConfigFiles() const;
+    const KComponentData &componentData() const; // krazy:exclude=constref
 
-  /**
-   * Sets the merge stack to the list of files. The stack is last in first out with
-   * the top of the stack being the most specific config file.
-   * @param files A list of extra config files containing the full path of the
-   * local config file to remove from the stack.
-   */
-  void setExtraConfigFiles(const QStringList &files);
+    /**
+     * Checks whether the config file contains the update @p id
+     * as contained in @p updateFile. If not, it runs kconf_update
+     * to update the config file.
+     *
+     * If you install config update files with critical fixes
+     * you may wish to use this method to verify that a critical
+     * update has indeed been performed to catch the case where
+     * a user restores an old config file from backup that has
+     * not been updated yet.
+     * @param id the update to check
+     * @param updateFile the file containing the update
+     */
+    void checkUpdate(const QString &id, const QString &updateFile);
 
-  /**
-   * Remove all files from merge stack. This does not include the local file that
-   * was specified in the constructor.
-   */
-  void removeAllExtraConfigFiles();
+    /**
+     * Cleans all entries in the entry map, so the
+     * values will not be written to disk on a later call to
+     * sync().
+     *
+     */
+    void clean();
 
-  /**
-   * Clears all entries out of the @p dirtyEntryMap, so the
-   * values will not be written to disk on a later call to
-   * sync().
-   *
-   * @param bDeep If true, the dirty map is actually emptied.
-   *        otherwise, the config object's global dirty flag is set to
-   *        false, but the dirty entries remain in the dirty entry
-   *        map.
-   *
-   * @see KConfigBase::rollback
-   */
-  virtual void rollback(bool bDeep = true);
+    /**
+     * Copies all entries from this config object to a new config
+     * object that will save itself to @p file.
+     *
+     * Actual saving to @p file happens when the returned object is
+     * destructed or when sync() is called upon it.
+     *
+     * @param file the new config object will save itself to.
+     * @param config optional config object to reuse
+     */
+    KConfig* copyTo(const QString &file, KConfig *config=0) const;
 
+    /**
+     * Clears all internal data structures and then reread
+     * configuration information from persistent storage.
+     */
+    void reparseConfiguration();
 
-  /**
-   * Returns a list of groups that are known.
-   * @return a list of of groups
-   */
-  virtual QStringList groupList() const;
+    /// @{ configuration object state
+    /**
+     * Returns the state of the config object.
+     *
+     * @see  ConfigState
+     * @return the state of the config object
+     */
+    virtual ConfigState getConfigState() const;
 
-  /**
-   * Returns a map (tree) of entries for all entries in a particular
-   * group.
-   *
-   *  Only the actual entry string is returned, none of the
-   * other internal data should be included.
-   *
-   * @param pGroup A group to get keys from.
-   * @return A map of entries in the group specified, indexed by key.
-   *         The returned map may be empty if the group is not found.
-   */
-  virtual QMap<QString, QString> entryMap(const QString &pGroup) const;
+    bool isConfigWritable(bool warnUser);
+    /// @}
 
-  /**
-   * Clears all internal data structures and then reread
-   * configuration information from disk.
-   */
-  virtual void reparseConfiguration();
+    /// @{ extra config files
+    /**
+     * Sets the merge stack to the list of files. The stack is last in first out with
+     * the top of the stack being the most specific config file.
+     * @param files A list of extra config files containing the full paths of the
+     * local config files to set.
+     */
+    void addConfigSources(const QStringList &sources);
+    KDE_DEPRECATED void setExtraConfigFiles(const QStringList &files) { addConfigSources(files); }
 
-  /**
-   * Set the file mode for newly created files.
-   *
-   * @param mode the mode for new files as described in chmod(2)
-   * @see man:chmod(2) for a description of @p mode
-   */
-  void setFileWriteMode(int mode);
+    /// @}
+    /// @{ locales
+    /**
+     * Returns the current locale.
+     */
 
-  /**
-   * Forces all following write-operations being performed on kdeglobals,
-   * independent of the bGlobal flag in writeEntry().
-   * @param force true to force writing in kdeglobals
-   * @see forceGlobal
-   */
-  void setForceGlobal( bool force );
+    QString locale() const;
+    /**
+     * Sets the locale to @p aLocale.
+     * The global locale is used as default.
+     * @note If set to the empty string, @b no locale will be matched. This effectively disables
+     * Native Language Support.
+     * @return @c true if locale was changed and configuration was reparsed.
+     */
+    bool setLocale(const QString& aLocale);
+    /// @}
 
-  /**
-   * Returns true if all entries are being written into kdeglobals.
-   * @return true if all entries are being written into kdeglobals
-   * @see setForceGlobal
-   */
-  bool forceGlobal() const;
+    /// @{ defaults
+    void setReadDefaults(bool b);
+    bool readDefaults() const;
+    /// @}
 
-  /**
-   * Checks whether the config file contains the update @p id
-   * as contained in @p updateFile. If not, it runs kconf_update
-   * to update the config file.
-   *
-   * If you install config update files with critical fixes
-   * you may wish to use this method to verify that a critical
-   * update has indeed been performed to catch the case where
-   * a user restores an old config file from backup that has
-   * not been updated yet.
-   * @param id the update to check
-   * @param updateFile the file containing the update
-   */
-  void checkUpdate(const QString &id, const QString &updateFile);
+    /// @{ immutability
+    bool isImmutable() const;
+    /// @}
 
-  /**
-   * Copies all entries from this config object to a new config
-   * object that will save itself to @p file.
-   *
-   * Actual saving to @p file happens when the returned object is
-   * destructed or when sync() is called upon it.
-   *
-   * @param file the new config object will save itself to.
-   * @param config optional config object to reuse
-   */
-  KConfig* copyTo(const QString &file, KConfig *config=0) const;
+    /// @{ global
+    /**
+     * Forces all following write-operations to be performed on @c kdeglobals,
+     * independent of the @c Global flag in writeEntry().
+     * @param force true to force writing to kdeglobals
+     * @see forceGlobal
+     */
+    KDE_DEPRECATED void setForceGlobal(bool force);
+    /**
+     * Returns whether all entries are being written to @c kdeglobals.
+     * @return @c true if all entries are being written to @c kdeglobals
+     * @see setForceGlobal
+     */
+    KDE_DEPRECATED bool forceGlobal() const;
+    /// @}
 
-  /**
-   * Use this method to change the locale for which the config entries are read.
-   * The default value is KGlobal::locale()->language() if available or
-   * KLocale::defaultLanguage(). If the new locale is different from the previous
-   * one, reparseConfiguration() is called.
-   *
-   * \param locale the code of the new locale
-   * \return true, if the locale changed and the config is reparsed
-   */
-  bool setLocale(const QString &locale);
+    /// @{ groups
+    /**
+     * Specifies the group in which keys will be read and written.
+     *
+     *  Subsequent
+     * calls to readEntry() and writeEntry() will be applied only in the
+     * activated group.
+     *
+     * Switch back to the default group by passing a null string.
+     * @param group The name of the new group.
+     */
+    KDE_DEPRECATED void setGroup( const QString& group );
+    /**
+     * Returns the name of the group in which we are
+     *  searching for keys and from which we are retrieving entries.
+     *
+     * @return The current group.
+     */
+    KDE_DEPRECATED QString group() const;
+    using KConfigBase::group;
 
-  /**
-   * Returns a the current locale.
-   *
-   * @return A string representing the current locale.
-   */
-  QString locale() const;
+    /**
+     * Returns a list of groups that are known.
+     * @return a list of of groups
+     */
+    virtual QStringList groupList() const;
 
-  /**
-   * Returns a lock file object for the configuration file or 0 if
-   * the backend does not support locking.
-   * @param bGlobal if true, return the lock file for the global config file
-   *
-   * NOTE: KConfig::sync() requires a lock on both the normal and global
-   * config file. When calling KConfig::sync() while having a lock on the
-   * global config file, the normal config file MUST be locked AS WELL and the
-   * normal config file MUST be locked BEFORE the global config file!
-   * Otherwise there is a risk of deadlock.
-   */
-  KLockFile::Ptr lockFile( bool bGlobal=false );
+    /**
+     * Does this config object contain @p aGroup?
+     * @return @c true if aGroup exists.
+     */
+    /**
+     * Delete @p aGroup. This marks @p aGroup as @em deleted in the config object. This effectively
+     * removes any cascaded values from config files earlier in the stack.
+     */
 
-  KDE_DEPRECATED QString group() const;
-  KConfigGroup group( const char* s );
-  KConfigGroup group( const QByteArray &b);
-  KConfigGroup group( const QString &str);
-  const KConfigGroup group( const QByteArray &arr) const;
+    /**
+     * Can changes be made to the entries in @p aGroup?
+     * 
+     * @param aGroup The group to check for immutability.
+     * @return @c false if the entries in @p aGroup can be modified.
+     */
+
+    /// @}
+
+    /// @{ entries
+
+    KDE_DEPRECATED QString readEntryUntranslated(const char* aKey, const QString& aDefault=QString()) const;
+    /// @}
+
+    /**
+     * Returns the filename passed to the constructor.
+     */
+    QString name() const;
+    /**
+     * Returns a map (tree) of entries in a particular group.  Only the actual entry as a string
+     * is returned, none of the other internal data is included.
+     *
+     * @param aGroup The group to get keys from
+     * - If @p aGroup is the empty string "", the entries from the @em default group are returned.
+     * - If @p aGroup is null, the entries from the current group are returned.
+     *
+     * @return A map of entries in the group specified, indexed by key.
+     *         The returned map may be empty if the group is empty, or not found.
+     * @see   QMap
+     */
+    QMap<QString, QString> entryMap(const QString &aGroup=QString()) const;
 
 protected:
-  /**
-   * Inserts a (key, value) pair into the internal storage mechanism of
-   * the configuration object.
-   *
-   * @param _key The key to insert.  It contains information both on
-   *        the group of the key and the key itself. If the key already
-   *        exists, the old value will be replaced.
-   * @param _data the KEntry that is to be stored.
-   * @param _checkGroup When false, assume that the group already exists.
-   */
-  virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup=true);
+    virtual bool hasGroupImpl(const QByteArray &group) const;
+    virtual KConfigGroup groupImpl( const QByteArray &b);
+    virtual const KConfigGroup groupImpl(const QByteArray &b) const;
+    virtual void deleteGroupImpl(const QByteArray &group, WriteConfigFlags flags = Normal);
+    virtual bool groupIsImmutableImpl(const QByteArray& aGroup) const;
 
-  /**
-   * Looks up an entry in the config object's internal structure.
-   *
-   * @param _key The key to look up  It contains information both on
-   *        the group of the key and the entry's key itself.
-   * @return the KEntry value (data) found for the key.  KEntry.aValue
-   * will be the null string if nothing was located.
-   */
-  virtual KEntry lookupData(const KEntryKey &_key) const;
+    friend class KConfigGroup;
+    friend class KConfigGroupPrivate;
+
+    /** Virtual hook, used to add new "virtual" functions while maintaining
+     * binary compatibility. Unused in this class.
+     */
+    virtual void virtual_hook( int id, void* data );
+
+    KConfigPrivate *const d_ptr;
+
+    KConfig(KConfigPrivate &d);
 
 private:
-  KConfig( const QString& fileName, bool fal);
+    QStringList keyList(const QString& aGroup=QString()) const;
 
-  /**
-   * @internal
-   * copy-construction and assignment are not allowed
-   */
-  KConfig( const KConfig& );
+    Q_DISABLE_COPY(KConfig)
 
-  /**
-   * @internal
-   * copy-construction and assignment are not allowed
-   */
-  KConfig& operator= ( const KConfig& rConfig );
-
-protected:
-  /**
-   * Returns true if the specified group is known.
-   *
-   * @param group The group to search for.
-   * @returns true if the group exists.
-   */
-  virtual bool internalHasGroup(const QByteArray &group) const;
-
-  /**
-   * @internal
-   * Returns a map (tree) of the entries in the specified group.
-   *
-   * Do not use this function, the implementation / return type are
-   * subject to change.
-   *
-   * @param pGroup the group to provide a KEntryMap for.
-   * @return The map of the entries in the group.
-   */
-  virtual KEntryMap internalEntryMap(const QString &pGroup) const;
-
-  /**
-   * @internal
-   * Returns a copy of the internal map used to hold all entries.
-   *
-   * Do not use this function, the implementation / return type are
-   * subject to change.
-   *
-   * @return The map of the entries in the group.
-   */
-  virtual KEntryMap internalEntryMap() const;
-
-  /** Virtual hook, used to add new "virtual" functions while maintaining
-      binary compatibility. Unused in this class.
-  */
-  virtual void virtual_hook( int id, void* data );
-private:
-  class Private;
-  Private * const d;
+    Q_DECLARE_PRIVATE(KConfig)
 };
+Q_DECLARE_OPERATORS_FOR_FLAGS( KConfig::OpenFlags )
 
-#endif
+#endif // KCONFIG_H

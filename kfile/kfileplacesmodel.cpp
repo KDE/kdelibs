@@ -31,6 +31,7 @@
 #include <kcomponentdata.h>
 #include <kicon.h>
 #include <kmimetype.h>
+#include <kdebug.h>
 
 #include <kdevicelistmodel.h>
 #include <kbookmarkmanager.h>

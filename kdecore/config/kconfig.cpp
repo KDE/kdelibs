@@ -1,486 +1,710 @@
 /*
-  This file is part of the KDE libraries
-  Copyright (c) 1999 Preston Brown <pbrown@kde.org>
-  Copyright (C) 1997-1999 Matthias Kalle Dalheimer (kalle@kde.org)
+   This file is part of the KDE libraries
+   Copyright (c) 2006, 2007 Thomas Braxton <kde.braxton@gmail.com>
+   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (c) 1997-1999 Matthias Kalle Dalheimer <kalle@kde.org>
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License as published by the Free Software Foundation; either
-  version 2 of the License, or (at your option) any later version.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
 
-  You should have received a copy of the GNU Library General Public License
-  along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-  Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
-#include "kconfig.h"
-
-#include <config.h>
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <fcntl.h>
 #include <unistd.h>
 
-#include "kaboutdata.h"
+#include "kconfig.h"
+#include "kconfig_p.h"
 #include "kconfigbackend.h"
-#include "kconfigini.h"
-#include "kglobal.h"
-#include "kstandarddirs.h"
-#include "ktoolinvocation.h"
-#include "kcomponentdata.h"
+#include "kconfiggroup.h"
+#include <kstringhandler.h>
+#include <klocale.h>
+#include <kstandarddirs.h>
+#include <kurl.h>
+#include <kcomponentdata.h>
+#include <ktoolinvocation.h>
+#include <kaboutdata.h>
+#include <kdebug.h>
 
-#include <QtCore/QDir>
-#include <QtCore/QTimer>
-#include <QtCore/QFileInfo>
+#include <qbytearray.h>
+#include <qfile.h>
+#include <qdir.h>
+#include <qdatetime.h>
+#include <qrect.h>
+#include <qsize.h>
+#include <qcolor.h>
+#include <QtCore/QProcess>
+#include <QtCore/QPointer>
+#include <QtCore/QSet>
+#include <QtCore/QStack>
 
-class KConfig::Private
+QString KConfigPrivate::sGlobalFileName;
+bool KConfigPrivate::mappingsRegistered=false;
+
+KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
+           const char* resource)
+    : mBackend(0), resourceType(resource), componentData(componentData_),
+      openFlags(flags), bDirty(false), bReadDefaults(false),
+      bFileImmutable(false), bForceGlobal(false), bDynamicBackend(true)
 {
-public:
-    Private()
-        : groupImmutable( false ),
-          fileImmutable( false ),
-          forceGlobal( false )
-    {
+    // TODO: manage lifetime of these static objects
+    //       possibly create a kshared set of members?
+    if (sGlobalFileName.isEmpty()) {
+        sGlobalFileName = componentData.dirs()->saveLocation("config") +
+                          QString::fromLatin1("kdeglobals");
+    }
+    if (wantGlobals()) {
+        const KStandardDirs *const dirs = componentData.dirs();
+        foreach(const QString& dir, dirs->findAllResources("config", QLatin1String("kdeglobals")) +
+                                    dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
+            globalFiles.push_front(dir);
+    }
+    const QString etc_kderc =
+#ifdef Q_WS_WIN
+        QFile::decodeName( QByteArray(::getenv("WINDIR")) + "\\kde4rc" );
+#else
+        QLatin1String("/etc/kde4rc");
+#endif
+    KEntryMap tmp;
+    // first entry is always /etc/kderc or empty if cannot read
+    if (KStandardDirs::checkAccess(etc_kderc, R_OK)) {
+        if (!globalFiles.contains(etc_kderc))
+            globalFiles.push_front(etc_kderc);
+
+        if (!mappingsRegistered) {
+            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, etc_kderc, QLatin1String("INI"));
+            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseDefaults);
+        }
+    } else {
+        globalFiles.push_front(QString());
+        mappingsRegistered = true;
     }
 
-    bool groupImmutable : 1; // Current group is immutable.
-    bool fileImmutable  : 1; // Current file is immutable.
-    bool forceGlobal    : 1; // Apply everything to kdeglobals.
-
-    /**
-     * Contains all key,value entries, as well as some "special"
-     * keys which indicate the start of a group of entries.
-     *
-     * These special keys will have the .key portion of their KEntryKey
-     * set to QString().
-     */
-    KEntryMap entryMap;
-
-    QString locale;
-};
-
-KConfig::KConfig(const KComponentData &componentData,
-                 const QString &_fileName,
-                 OpenFlags flags,
-                 const char *resType)
-    : KConfigBase(componentData),
-      d( new Private )
-{
-    QString fileName = _fileName;
-
-    if (fileName.isEmpty() &&
-        !componentData.aboutData()->appName().isEmpty()) {
-        fileName = componentData.aboutData()->appName();
-        fileName.append("rc");
+    if (!mappingsRegistered) {
+        const QString kde4rc(QDir::home().filePath(".kde4rc"));
+        if (KStandardDirs::checkAccess(kde4rc, R_OK)) {
+            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, kde4rc, QLatin1String("INI"));
+            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseOptions());
+        }
+        KConfigBackend::registerMappings(tmp);
+        mappingsRegistered = true;
     }
-
-    if ((flags & OnlyLocal) && !fileName.isNull()
-        && QDir::isRelativePath(fileName)) {
-        fileName = componentData.dirs()->saveLocation(resType)+fileName;
-    }
-
-    // for right now we will hardcode that we are using the INI
-    // back end driver.  In the future this should be converted over to
-    // a object factory of some sorts.
-    KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd( this,
-                                                         fileName,
-                                                         resType,
-                                                         flags & IncludeGlobals );
-
-    // set the object's back end pointer to this new backend
-    setBackEnd( aBackEnd );
-
     setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
 }
 
-KConfig::KConfig( const QString& _fileName,
-                  OpenFlags flags )
-  : KConfigBase(),
-    d( new Private )
+
+bool KConfigPrivate::lockLocal()
 {
-    QString fileName = _fileName;
-
-    if (fileName.isEmpty() &&
-        !componentData().aboutData()->appName().isEmpty()) {
-        fileName = componentData().aboutData()->appName();
-        fileName.append("rc");
+    if (mBackend) {
+        if (fileName == QLatin1String("kdeglobals")) { // we don't want to lock "kdeglobals" twice
+            if (wantGlobals()) // "kdeglobals" will be locked with the global lock
+                return true; // so pretend we locked it here
+        }
+        return mBackend->lock(componentData);
     }
-
-    if ((flags & OnlyLocal) && !fileName.isNull()
-        && QDir::isRelativePath(fileName)) {
-        fileName = componentData().dirs()->saveLocation("config")+fileName;
-    }
-
-    // for right now we will hardcode that we are using the INI
-    // back end driver.  In the future this should be converted over to
-    // a object factory of some sorts.
-    KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd( this,
-                                                         fileName,
-                                                         "config",
-                                                         flags & IncludeGlobals );
-
-    // set the object's back end pointer to this new backend
-    setBackEnd( aBackEnd );
-
-    setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
+    // anonymous object - pretend we locked it
+    return true;
 }
 
-KConfig::KConfig( const char* resType,
-                  const QString& _fileName,
-                  OpenFlags flags )
-  : KConfigBase(),
-    d( new Private )
+KConfig::KConfig( const QString& file, OpenFlags mode,
+                  const char* resourceType)
+  : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), mode, resourceType))
 {
-    QString fileName = _fileName;
+    d_ptr->changeFileName(file, resourceType); // set the local file name
 
-    if (fileName.isEmpty() &&
-        !componentData().aboutData()->appName().isEmpty()) {
-        fileName = componentData().aboutData()->appName();
-        fileName.append("rc");
-    }
-
-    if ((flags & OnlyLocal) && !fileName.isNull() &&
-        QDir::isRelativePath(fileName)) {
-        fileName = componentData().dirs()->saveLocation(resType)+fileName;
-    }
-
-    // for right now we will hardcode that we are using the INI
-    // back end driver.  In the future this should be converted over to
-    // a object factory of some sorts.
-    KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd( this,
-                                                         fileName,
-                                                         resType,
-                                                         flags & IncludeGlobals );
-
-    // set the object's back end pointer to this new backend
-    setBackEnd( aBackEnd );
-
-    setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
-}
-
-KConfig::KConfig(KConfigBackEnd *aBackEnd)
-    : d( new Private )
-{
-    setBackEnd( aBackEnd );
+    // read initial information off disk
     reparseConfiguration();
+}
+
+KConfig::KConfig( const KComponentData& componentData, const QString& file, OpenFlags mode,
+                  const char* resourceType)
+    : d_ptr(new KConfigPrivate(componentData, mode, resourceType))
+{
+    d_ptr->changeFileName(file, resourceType); // set the local file name
+
+    // read initial information off disk
+    reparseConfiguration();
+}
+
+KConfig::KConfig(KConfigPrivate &d)
+    : d_ptr(&d)
+{
 }
 
 KConfig::~KConfig()
 {
-    sync();
+    Q_D(KConfig);
+    if (d->mBackend.isUnique())
+        sync();
     delete d;
 }
 
-QStringList KConfig::extraConfigFiles() const
+const KComponentData& KConfig::componentData() const
 {
-    return backEnd()->extraConfigFiles();
-}
-
-void KConfig::setExtraConfigFiles(const QStringList &files)
-{
-    backEnd()->setExtraConfigFiles( files );
-}
-
-void KConfig::removeAllExtraConfigFiles()
-{
-    backEnd()->removeAllExtraConfigFiles();
-}
-
-void KConfig::rollback(bool bDeep)
-{
-    KConfigBase::rollback(bDeep);
-
-    if (!bDeep)
-        return; // object's bDeep flag is set in KConfigBase method
-
-    // clear any dirty flags that entries might have set
-    for (KEntryMapIterator aIt = d->entryMap.begin();
-         aIt != d->entryMap.end(); ++aIt)
-        (*aIt).bDirty = false;
+    Q_D(const KConfig);
+    return d->componentData;
 }
 
 QStringList KConfig::groupList() const
 {
-    QStringList retList;
+    Q_D(const KConfig);
+    QStringList groups;
 
-    KEntryMapConstIterator aIt = d->entryMap.begin();
-    KEntryMapConstIterator aEnd = d->entryMap.end();
-    for (; aIt != aEnd; ++aIt)
-    {
-        while(aIt.key().mKey.isEmpty())
-        {
-            QByteArray _group = aIt.key().mGroup;
-            ++aIt;
-            while (true)
-            {
-                if (aIt == aEnd)
-                    return retList; // done
+    foreach (const KEntryKey& key, d->entryMap.keys())
+        if (key.mKey.isNull() && !key.mGroup.isEmpty() &&
+            key.mGroup != "<default>" && key.mGroup != "$Version")
+            groups << QString::fromUtf8(key.mGroup);
 
-                if (aIt.key().mKey.isEmpty())
-                    break; // Group is empty, next group
+    return groups;
+}
 
-                if (!aIt.key().bDefault && !(*aIt).bDeleted)
-                {
-                    if (_group != "$Version") // Special case!
-                        retList.append(QString::fromUtf8(_group));
-                    break; // Group is non-empty, added, next group
-                }
-                ++aIt;
-            }
+QStringList KConfigPrivate::groupList(const QByteArray& group) const
+{
+    QStringList groups;
+
+    foreach (const KEntryKey& key, entryMap.keys())
+        if (key.mKey.isNull() && key.mGroup.startsWith(group) && key.mGroup != group)
+            groups << QString::fromUtf8(key.mGroup);
+
+    return groups;
+}
+
+QStringList KConfig::keyList(const QString& aGroup) const
+{
+    Q_D(const KConfig);
+    QStringList keys;
+    const QByteArray theGroup(aGroup.isEmpty()?
+            (aGroup.isNull()? d->currentGroup.name().toUtf8(): "<default>"):
+            aGroup.toUtf8());
+
+    const KEntryMapConstIterator theEnd = d->entryMap.constEnd();
+    KEntryMapConstIterator it = d->entryMap.findEntry(theGroup, 0, 0);
+    if (it != theEnd) {
+        ++it; // advance past the special group entry marker
+
+        QSet<QString> tmp;
+        for (; it != theEnd && it.key().mGroup == theGroup; ++it) {
+            const KEntryKey& key = it.key();
+            if (key.mGroup == theGroup && !key.mKey.isNull() && !it->bDeleted)
+                tmp << QString::fromUtf8(key.mKey);
+        }
+        keys = tmp.toList();
+    }
+
+    return keys;
+}
+
+QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
+{
+    Q_D(const KConfig);
+    QMap<QString, QString> theMap;
+    const QByteArray theGroup(aGroup.isEmpty()?
+            (aGroup.isNull()? d->currentGroup.name().toUtf8(): "<default>"):
+            aGroup.toUtf8());
+
+    const KEntryMapConstIterator theEnd = d->entryMap.constEnd();
+    KEntryMapConstIterator it = d->entryMap.findEntry(theGroup, 0, 0);
+    if (it != theEnd) {
+        ++it; // advance past the special group entry marker
+
+        for (; it != theEnd && it.key().mGroup == theGroup; ++it) {
+            // leave the default values and deleted entries out
+            if (!it->bDeleted && !it.key().bDefault)
+                theMap.insert(QString::fromUtf8(it.key().mKey.constData()),
+                              QString::fromUtf8(it->mValue.constData()));
         }
     }
 
-    return retList;
+    return theMap;
 }
 
-QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
+void KConfig::sync()
 {
-    QByteArray pGroup_utf = pGroup.toUtf8();
-    KEntryKey groupKey( pGroup_utf, 0 );
-    QMap<QString, QString> tmpMap;
+    Q_D(KConfig);
+    typedef KConfigBackend::ParseOptions ParseOptions;
+    typedef KConfigBackend::WriteOptions WriteOptions;
+    static const KConfigBackend::ParseOption ParseGlobal = KConfigBackend::ParseGlobal;
+    static const KConfigBackend::WriteOption WriteGlobal = KConfigBackend::WriteGlobal;
 
-    KEntryMapConstIterator aIt = d->entryMap.find(groupKey);
-    if (aIt == d->entryMap.end())
-        return tmpMap;
-    ++aIt; // advance past special group entry marker
-    for (; aIt != d->entryMap.end() && aIt.key().mGroup == pGroup_utf; ++aIt)
-    {
-        // Leave the default values out && leave deleted entries out
-        if (!aIt.key().bDefault && !(*aIt).bDeleted)
-            tmpMap.insert(QString::fromUtf8(aIt.key().mKey),
-                          QString::fromUtf8((*aIt).mValue.data(),
-                                            (*aIt).mValue.length()));
-    }
+    Q_ASSERT(!isImmutable() && !name().isEmpty()); // can't write to an immutable or anonymous file.
 
-    return tmpMap;
-}
+    if (d->bDirty && d->mBackend) {
+        const QByteArray utf8Locale(locale().toUtf8());
 
-void KConfig::reparseConfiguration()
-{
-    // Don't lose pending changes
-    if ( backEnd() && isDirty() ) {
-        backEnd()->sync();
-    }
+        // Check if we can write to the local file.
+        if (!d->mBackend->isWritable()) {
+            // Create the containing dir, maybe it wasn't there
+            d->mBackend->createEnclosing();
+        }
 
-    d->entryMap.clear();
+        // lock the local file
+        if (!d->lockLocal()) {
+            kWarning() << "couldn't lock local file";
+            return;
+        }
 
-    // add the "default group" marker to the map
-    KEntryKey groupKey("<default>", 0);
-    d->entryMap.insert(groupKey, KEntry());
-
-    d->fileImmutable = false;
-    parseConfigFiles();
-
-    //TODO: when backends can tell us if they are isWritable(), port this line
-    //d->fileImmutable = bReadOnly;
-}
-
-KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
-{
-    QByteArray pGroup_utf = pGroup.toUtf8();
-    KEntry aEntry;
-    KEntryMapConstIterator aIt;
-    KEntryKey aKey(pGroup_utf, 0);
-    KEntryMap tmpEntryMap;
-
-    aIt = d->entryMap.find(aKey);
-    //Copy any matching nodes.
-    for (; aIt != d->entryMap.end() && aIt.key().mGroup == pGroup_utf ; ++aIt)
-    {
-        tmpEntryMap.insert(aIt.key(), *aIt);
-    }
-
-    return tmpEntryMap;
-}
-
-KEntryMap KConfig::internalEntryMap() const
-{
-    return d->entryMap;
-}
-
-void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)
-{
-    if (d->fileImmutable && !_key.bDefault)
-        return;
-
-    // check to see if the special group key is present,
-    // and if not, put it in.
-    if (_checkGroup)
-    {
-        KEntryKey groupKey( _key.mGroup, 0);
-        KEntry &entry = d->entryMap[groupKey];
-        d->groupImmutable = entry.bImmutable;
-    }
-    if (d->groupImmutable && !_key.bDefault)
-        return;
-
-    // now either add or replace the data
-    KEntry &entry = d->entryMap[_key];
-    bool immutable = entry.bImmutable;
-    if (immutable && !_key.bDefault)
-        return;
-
-    entry = _data;
-    entry.bImmutable |= immutable;
-    entry.bGlobal |= d->forceGlobal; // force to kdeglobals
-
-    if (_key.bDefault)
-    {
-        // We have added the data as default value,
-        // add it as normal value as well.
-        KEntryKey key(_key);
-        key.bDefault = false;
-        d->entryMap[key] = _data;
+        KEntryMap toMerge;
+        if (d->wantGlobals()) {
+            KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(componentData(), d->sGlobalFileName);
+            if (!tmp->lock(componentData())) {
+                qWarning() << "couldn't lock global file";
+                return;
+            }
+            if (d->wantMerge())
+                tmp->parseConfig(utf8Locale, toMerge, ParseGlobal);
+            tmp->writeConfig(utf8Locale, d->entryMap, toMerge, WriteGlobal);
+            toMerge.clear();
+            if (tmp->isLocked())
+                tmp->unlock();
+        }
+        if (d->wantMerge())
+            d->mBackend->parseConfig(utf8Locale, toMerge, ParseOptions());
+        if (d->mBackend->writeConfig(utf8Locale, d->entryMap, toMerge, WriteOptions()))
+            d->bDirty = false;
+        if (d->mBackend->isLocked())
+            d->mBackend->unlock();
     }
 }
 
-KEntry KConfig::lookupData(const KEntryKey &_key) const
+void KConfig::clean()
 {
-    KEntryMapConstIterator aIt = d->entryMap.find(_key);
-    if (aIt != d->entryMap.end())
-    {
-        if (!aIt->bDeleted)
-            return *aIt;
-    }
+    Q_D(KConfig);
+    d->bDirty = false;
 
-    return KEntry();
-}
-
-bool KConfig::internalHasGroup(const QByteArray &_group) const
-{
-    KEntryKey groupKey( _group, 0);
-
-    KEntryMapConstIterator aIt = d->entryMap.find(groupKey);
-    KEntryMapConstIterator aEnd = d->entryMap.end();
-
-    if (aIt == aEnd)
-        return false;
-    ++aIt;
-    for(; (aIt != aEnd); ++aIt)
-    {
-        if (aIt.key().mKey.isEmpty())
-            break;
-
-        if (!aIt.key().bDefault && !(*aIt).bDeleted)
-            return true;
-    }
-    return false;
-}
-
-void KConfig::setFileWriteMode(int mode)
-{
-    backEnd()->setFileWriteMode(mode);
-}
-
-void KConfig::setForceGlobal( bool force )
-{
-    d->forceGlobal = force;
-}
-
-bool KConfig::forceGlobal() const
-{
-    return d->forceGlobal;
-}
-
-KLockFile::Ptr KConfig::lockFile(bool bGlobal)
-{
-    KConfigINIBackEnd *aBackEnd = dynamic_cast<KConfigINIBackEnd*>(backEnd());
-    if (!aBackEnd) return KLockFile::Ptr();
-    return aBackEnd->lockFile(bGlobal);
+    // clear any dirty flags that entries might have set
+    KEntryMapConstIterator theEnd = d->entryMap.constEnd();
+    for (KEntryMapIterator it = d->entryMap.begin(); it != theEnd; ++it)
+        it->bDirty = false;
 }
 
 void KConfig::checkUpdate(const QString &id, const QString &updateFile)
 {
-    KConfigGroup cg(this, "$Version");
-    QString cfg_id = updateFile+':'+id;
+    const KConfigGroup cg(this, "$Version");
+    const QString cfg_id = updateFile+':'+id;
     QStringList ids = cg.readEntry("update_info", QStringList());
-    if (!ids.contains(cfg_id))
-    {
-        QStringList args;
-        args << "--check" << updateFile;
-        KToolInvocation::kdeinitExecWait("kconf_update", args);
+    if (!ids.contains(cfg_id)) {
+        KToolInvocation::kdeinitExecWait("kconf_update", QStringList() << "--check" << updateFile);
         reparseConfiguration();
     }
 }
 
 KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 {
-    if (!config) {
-        config = new KConfig(QString(), KConfig::NoGlobals);
-    }
-    config->backEnd()->changeFileName(file, "config", false);
-    config->d->fileImmutable = false;
-    config->backEnd()->mConfigState = ReadWrite;
+    Q_D(const KConfig);
+    if (!config)
+        config = new KConfig(componentData(), QString(), SimpleConfig);
+    config->d_func()->changeFileName(file, d->resourceType);
+    config->d_func()->entryMap = d->entryMap;
+    config->d_func()->bFileImmutable = false;
 
-    QStringList groups = groupList();
-    for(QStringList::ConstIterator it = groups.begin();
-        it != groups.end(); ++it)
-    {
-        QMap<QString, QString> map = entryMap(*it);
-        KConfigGroup cg(config, *it);
-        for (QMap<QString,QString>::Iterator it2  = map.begin();
-             it2 != map.end(); ++it2)
-        {
-            cg.writeEntry(it2.key(), it2.value());
-        }
-
-    }
     return config;
 }
 
-QString KConfig::group() const
+QString KConfig::name() const
 {
-    return internalGroup().group();
+    Q_D(const KConfig);
+    return d->fileName;
 }
 
-KConfigGroup KConfig::group( const char *arr)
+void KConfigPrivate::changeFileName(const QString& name, const char* type)
 {
-    return KConfigGroup( this, arr);
+    fileName = name;
+
+    QString file;
+    if (name.isEmpty()) {
+        if (wantDefaults()) { // accessing default app-specific config "appnamerc"
+            const QString appName = componentData.aboutData()->appName();
+            if (!appName.isEmpty()) {
+                fileName = appName + QLatin1String("rc");
+                if (type && *type)
+                    resourceType = type; // only change it if it's not empty
+                file = KStandardDirs::locateLocal(resourceType, fileName, componentData);
+            }
+        } else if (wantGlobals()) { // accessing "kdeglobals"
+            resourceType = "config";
+            fileName = QLatin1String("kdeglobals");
+            file = sGlobalFileName;
+        }
+    } else if (QDir::isAbsolutePath(fileName))
+        file = fileName;
+    else {
+        if (type && *type)
+            resourceType = type; // only change it if it's not empty
+        file = KStandardDirs::locateLocal(resourceType, fileName, componentData);
+
+        if (file == QLatin1String("kdeglobals"))
+            openFlags |= KConfig::IncludeGlobals;
+    }
+
+    bForceGlobal = (fileName == QLatin1String("kdeglobals"));
+
+    if (file.isEmpty()) {
+        openFlags = KConfig::SimpleConfig;
+        return;
+    }
+
+    if (bDynamicBackend || !mBackend) // allow dynamic changing of backend
+        mBackend = KConfigBackend::create(componentData, file);
+    else
+        mBackend->setFilePath(file);
 }
 
-KConfigGroup KConfig::group( const QByteArray &arr)
+void KConfig::reparseConfiguration()
 {
-    return KConfigGroup( this, arr);
+    Q_D(KConfig);
+    // Don't lose pending changes
+    if (!d->isReadOnly() && d->bDirty)
+        sync();
+
+    d->entryMap.clear();
+
+    // add the "default group" marker to the map
+    d->entryMap.setEntry("<default>", 0, QByteArray(), KEntryMap::EntryOptions());
+
+    d->bFileImmutable = false;
+
+    // Parse all desired files from the least to the most specific.
+
+    // lock the local file
+    if (!d->lockLocal()) {
+        qWarning() << "couldn't lock local file";
+//        return;
+    }
+
+    if (d->wantGlobals()) {
+        KSharedPtr<KConfigBackend> global = KConfigBackend::create(componentData(), d->sGlobalFileName);
+        // lock the global file
+        if (!global->lock(componentData())) {
+            qWarning() << "couldn't lock global file";
+//            return;
+        }
+
+        d->parseGlobalFiles();
+
+        // unlock the global file
+        if (global->isLocked())
+            global->unlock();
+    }
+
+    d->parseConfigFiles();
+
+    // unlock local file
+    if (d->mBackend && d->mBackend->isLocked())
+        d->mBackend->unlock();
+
+    if (!d->currentGroup.isValid())
+        d->currentGroup = KConfigGroup(this, QString());
 }
 
-KConfigGroup KConfig::group( const QString &arr)
+void KConfigPrivate::parseGlobalFiles()
 {
-    return KConfigGroup( this, arr);
+    typedef KConfigBackend::ParseOptions ParseOptions;
+    static const KConfigBackend::ParseOption ParseDefaults = KConfigBackend::ParseDefaults;
+    static const KConfigBackend::ParseOption ParseGlobal = KConfigBackend::ParseGlobal;
+    static const KConfigBackend::ParseInfo ParseImmutable = KConfigBackend::ParseImmutable;
+
+//    qDebug() << "parsing global files" << globalFiles;
+
+    // TODO: can we cache the values in etc_kderc / other global files
+    //       on a per-application basis?
+    const QByteArray utf8Locale = locale.toUtf8();
+    foreach(const QString& file, globalFiles) {
+        ParseOptions parseOpts = ParseGlobal;
+        if (file != sGlobalFileName)
+            parseOpts |= ParseDefaults;
+
+        KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
+        if ( backend->parseConfig( utf8Locale, entryMap, parseOpts) == ParseImmutable)
+            break;
+    }
 }
 
-const KConfigGroup KConfig::group( const QByteArray &arr) const
+void KConfigPrivate::parseConfigFiles()
 {
-    return KConfigGroup(const_cast<KConfig*>(this), arr);
+    typedef KConfigBackend::ParseOptions ParseOptions;
+    typedef KConfigBackend::ParseInfo ParseInfo;
+    static const KConfigBackend::ParseOption ParseExpansions = KConfigBackend::ParseExpansions;
+    static const KConfigBackend::ParseOption ParseDefaults = KConfigBackend::ParseDefaults;
+    static const KConfigBackend::ParseInfo ParseImmutable = KConfigBackend::ParseImmutable;
+    static const KConfigBackend::ParseInfo ParseOpenError = KConfigBackend::ParseOpenError;
+
+    if (fileName == QLatin1String("kdeglobals") && wantGlobals())
+        return; // already parsed in parseGlobalFiles()
+
+    // can only read the file if there is a backend and a file name
+    if (mBackend && !fileName.isEmpty()) {
+        
+        // don't do variable expansion for .desktop files
+        bool allowExecutableValues = (qstrcmp(resourceType, "config") == 0) ||
+                    !fileName.endsWith(".desktop");
+
+        bFileImmutable = false;
+        QList<QString> files;
+
+        if (wantDefaults())
+            foreach (const QString& f, componentData.dirs()->findAllResources(resourceType, fileName))
+                files.prepend(f);
+        else
+            files << mBackend->filePath();
+
+        if (!isSimple())
+            files = extraFiles.toList() + files;
+
+//        qDebug() << "parsing local files" << files;
+
+        const QByteArray utf8Locale = locale.toUtf8();
+        foreach(const QString& file, files) {
+            ParseOptions parseOpts = 0;
+            if (allowExecutableValues)
+                parseOpts |= ParseExpansions;
+            if (file == mBackend->filePath()) {
+                ParseInfo info = mBackend->parseConfig(utf8Locale, entryMap, parseOpts);
+                if (info == ParseImmutable)
+                    bFileImmutable = true;
+                else if (info == ParseOpenError)
+                    configState = KConfigBase::NoAccess;
+                else // some other error occurred
+                    ; // FIXME what to do here?
+            } else {
+                parseOpts |= ParseDefaults;
+                KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
+                bFileImmutable = backend->parseConfig(utf8Locale, entryMap, parseOpts) == ParseImmutable;
+            }
+
+            if (bFileImmutable)
+                break;
+        }
+        if (componentData.dirs()->isRestrictedResource(resourceType, fileName))
+            bFileImmutable = true;
+    }
 }
 
-bool KConfig::setLocale(const QString &locale)
+KConfig::ConfigState KConfig::getConfigState() const
 {
-    if (locale != d->locale) {
-        d->locale = locale;
+    Q_D(const KConfig);
+    return d->configState;
+}
 
-        if (backEnd())
-            backEnd()->setLocaleString(locale.toLatin1());
+/*QStringList KConfig::extraConfigFiles() const
+{
+    Q_D(const KConfig);
+    return d->extraFiles.toList();
+}*/
 
+void KConfig::addConfigSources(const QStringList& files)
+{
+    Q_D(KConfig);
+    foreach(const QString& file, files)
+        d->extraFiles.push(file);
+}
+
+QString KConfig::locale() const
+{
+    Q_D(const KConfig);
+    return d->locale;
+}
+
+bool KConfigPrivate::setLocale(const QString& aLocale)
+{
+    if (aLocale != locale) {
+        locale = aLocale;
+        return true;
+    }
+    return false;
+}
+
+bool KConfig::setLocale(const QString& locale)
+{
+    Q_D(KConfig);
+    if (d->setLocale(locale)) {
         reparseConfiguration();
         return true;
     }
     return false;
 }
 
-QString KConfig::locale() const
+void KConfig::setReadDefaults(bool b)
 {
-    return d->locale;
+    Q_D(KConfig);
+    d->bReadDefaults = b;
 }
 
-void KConfig::virtual_hook( int id, void* data )
-{ KConfigBase::virtual_hook( id, data ); }
+bool KConfig::readDefaults() const
+{
+    Q_D(const KConfig);
+    return d->bReadDefaults;
+}
+
+bool KConfig::isImmutable() const
+{
+    Q_D(const KConfig);
+    return d->bFileImmutable;
+}
+
+bool KConfig::groupIsImmutableImpl(const QByteArray& aGroup) const
+{
+    Q_D(const KConfig);
+    return isImmutable()|d->entryMap.getEntryOption(aGroup, 0, 0, KEntryMap::EntryImmutable);
+}
+
+void KConfig::setForceGlobal(bool b)
+{
+    Q_D(KConfig);
+    d->bForceGlobal = b;
+}
+
+bool KConfig::forceGlobal() const
+{
+    Q_D(const KConfig);
+    return d->bForceGlobal;
+}
+
+void KConfig::setGroup(const QString& group)
+{
+    Q_D(KConfig);
+    d->currentGroup = KConfigGroup(this, group);
+}
+
+QString KConfig::group() const
+{
+    Q_D(const KConfig);
+    return d->currentGroup.name();
+}
+
+KConfigGroup KConfig::groupImpl(const QByteArray &arr)
+{
+    return KConfigGroup(this, arr);
+}
+
+const KConfigGroup KConfig::groupImpl(const QByteArray &a) const
+{
+    return KConfigGroup(this, a);
+}
+
+KEntryMap::EntryOptions convertToOptions(KConfig::WriteConfigFlags flags)
+{
+    KEntryMap::EntryOptions options=0;
+
+    if (flags&KConfig::Persistent)
+        options |= KEntryMap::EntryDirty;
+    if (flags&KConfig::Global)
+        options |= KEntryMap::EntryGlobal;
+    if (flags&KConfig::NLS)
+        options |= KEntryMap::EntryLocalized;
+    return options;
+}
+
+void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
+{
+    Q_D(KConfig);
+    KEntryMap::EntryOptions options = convertToOptions(flags)|KEntryMap::EntryDeleted;
+
+    const QStringList keys = keyList(aGroup);
+    bool dirty = false;
+    foreach (const QString& key, keys) {
+        if (d->canWriteEntry(aGroup, key.toUtf8().constData())) {
+           d->entryMap.setEntry(aGroup, key.toUtf8(), QByteArray(), options);
+           dirty = true;
+        }
+    }
+    if (dirty)
+        d->setDirty(true);
+}
+
+bool KConfig::isConfigWritable(bool warnUser)
+{
+    Q_D(KConfig);
+    bool allWritable = (d->mBackend.isNull()? false: d->mBackend->isWritable());
+
+    if (warnUser && !allWritable) {
+        QString errorMsg;
+        // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
+        errorMsg += i18n("Please contact your system administrator.");
+        QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
+        if (!cmdToExec.isEmpty() && componentData().isValid())
+        {
+            QProcess::execute(cmdToExec,QStringList() << "--title" << componentData().componentName()
+                    << "--msgbox" << errorMsg.toLocal8Bit());
+        }
+    }
+
+    d->configState = allWritable ?  ReadWrite : ReadOnly; // update the read/write status
+
+    return allWritable;
+}
+
+void KConfigPrivate::setDirty(bool b)
+{
+    bDirty = b;
+}
+
+bool KConfig::hasGroupImpl(const QByteArray& aGroup) const
+{
+    Q_D(const KConfig);
+    return d->entryMap.hasEntry(aGroup);
+}
+
+bool KConfigPrivate::canWriteEntry(const QByteArray& group, const QByteArray& key, bool isDefault) const
+{
+    if (bFileImmutable ||
+        entryMap.getEntryOption(group, key, KEntryMap::SearchLocalized, KEntryMap::EntryImmutable))
+        return isDefault;
+    return true;
+}
+
+void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
+                      const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand)
+{
+    // the KConfig object is dirty now
+    // set this before any IO takes place so that if any derivative
+    // classes do caching, they won't try and flush the cache out
+    // from under us before we read. A race condition is still
+    // possible but minimized.
+    if( flags &  KConfigBase::Persistent )
+        setDirty(true);
+
+    KEntryMap::EntryOptions options;
+    if (flags& KConfigBase::Global || bForceGlobal)
+        options |= KEntryMap::EntryGlobal;
+    if (flags& KConfigBase::NLS)
+        options |= KEntryMap::EntryLocalized;
+    if (flags& KConfigBase::Persistent)
+        options |= KEntryMap::EntryDirty;
+    if (expand)
+        options |=KEntryMap::EntryExpansion;
+
+    if ( value.isNull() ) // deleting entry
+        options |= KEntryMap::EntryDeleted;
+
+    entryMap.setEntry(group, key, value, options);
+}
+
+QByteArray KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key, int flags) const
+{
+    KEntryMapConstIterator it = entryMap.findEntry(group, key, KEntryMap::SearchFlags(flags));
+    if (it == entryMap.constEnd())
+        return QByteArray();
+    return it->mValue;
+}
+
+QString KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key, int flags, bool *expand) const
+{
+    return entryMap.getEntry(group, key, QString(), KEntryMap::SearchFlags(flags), expand);
+}
+
+void KConfig::virtual_hook(int /*id*/, void* /*data*/)
+{
+	/* nothing */
+}
+

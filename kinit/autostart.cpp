@@ -20,6 +20,7 @@
 #include "autostart.h"
 
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -84,7 +85,7 @@ static bool startCondition(const QString &condition)
   if (list[0].isEmpty() || list[2].isEmpty())
      return true;
 
-  KConfig config(list[0], KConfig::NoGlobals);
+  KConfig config(list[0], KConfig::CascadeConfig);
   KConfigGroup cg(&config, list[1]);
 
   bool defaultValue = (list[3].toLower() == "true");

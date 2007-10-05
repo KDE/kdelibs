@@ -25,6 +25,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QHash>
 #include <QtCore/QCache>
+#include <QtCore/QSet>
 #include <QtGui/QWidget>
 
 #include <kurl.h>

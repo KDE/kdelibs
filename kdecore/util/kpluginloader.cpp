@@ -24,6 +24,7 @@
 #include "kpluginfactory.h"
 #include <kservice.h>
 #include "klibrary.h"
+#include <kdebug.h>
 
 #include <QtCore/QLibrary>
 #include <QtCore/QDir>

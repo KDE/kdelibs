@@ -30,6 +30,7 @@
 #include <kpluginloader.h>
 #include <kservice.h>
 #include <ktempdir.h>
+#include <kdebug.h>
 
 
 class KPrintPreviewPrivate

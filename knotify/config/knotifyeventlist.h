@@ -21,14 +21,13 @@
 #define KNOTIFYEVENTLIST_H
 
 #include "knotifyconfigelement.h"
-#include <kconfig.h>
 
 
 #include <QtGui/QTreeWidget>
 
 class KNotifyConfigElement;
 class KNotifyEventListItem;
-class KConfigBase;
+class KConfig;
 
 /**
 	@author Olivier Goffart <ogoffart at kde.org>
@@ -45,7 +44,6 @@ public:
 	void updateCurrentItem();
 private:
 	KConfig *config;
-	KConfig *loconf;
 	QList<KNotifyEventListItem*> m_elements;
 	
 	class KNotifyEventListDelegate;
@@ -62,7 +60,7 @@ class KNotifyEventListItem : public QTreeWidgetItem
 {
 	public:
 		KNotifyEventListItem(QTreeWidget *parent , const QString & eventName , const QString & name ,
-                         const QString & description , KConfigBase* locconf , KConfigBase *defconf);
+                         const QString & description , KConfig* confir);
 		~KNotifyEventListItem();
 		void save();
 		

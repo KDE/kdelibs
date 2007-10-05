@@ -18,10 +18,8 @@
 */
 
 #include "kplugininfo.h"
-#include <kconfig.h>
 #include <kservicetypetrader.h>
 #include <kdebug.h>
-#include <kconfigbase.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdesktopfile.h>

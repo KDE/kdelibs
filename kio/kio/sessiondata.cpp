@@ -28,6 +28,7 @@
 
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
@@ -262,7 +263,7 @@ void SessionData::reset()
 {
     d->initDone = true;
     // Get Cookie settings...
-    d->useCookie = KConfig("kcookiejarrc", KConfig::NoGlobals).
+    d->useCookie = KConfig("kcookiejarrc", KConfig::CascadeConfig).
                    group("Cookie Policy" ).
                    readEntry("Cookies", true);
 

@@ -25,9 +25,10 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
+#include <kstandarddirs.h>
 
 KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
-KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Flags)
+KCONFIGGROUP_DECLARE_FLAGS_QOBJECT(KConfigTest,Flags)
 
 QTEST_KDEMAIN_CORE( KConfigTest )
 
@@ -53,6 +54,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
 #define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
+#define HOMEPATH QDir::homePath()+"/foo"
 
 void KConfigTest::initTestCase()
 {
@@ -63,8 +65,8 @@ void KConfigTest::initTestCase()
 
   KConfigGroup cg(&sc, "AAA");
   cg.writeEntry("stringEntry1", STRINGENTRY1,
-                KConfigBase::Persistent|KConfigBase::Global);
-  cg.deleteEntry("stringEntry2", KConfigBase::Global);
+                KConfig::Persistent|KConfig::Global);
+  cg.deleteEntry("stringEntry2", KConfig::Global);
 
   cg = KConfigGroup(&sc, "Hello");
   cg.writeEntry( "boolEntry1", BOOLENTRY1 );
@@ -73,58 +75,60 @@ void KConfigTest::initTestCase()
   QByteArray data( UTF8BITENTRY );
   QCOMPARE( data.size(), 12 ); // the source file is in utf8
   QCOMPARE( QString::fromUtf8(data).length(), 9 );
-  cg.writeEntry( "Test", QVariant( data ) ); // passing "data" converts it to char* and KConfigBase calls fromLatin1!
+  cg.writeEntry ("Test", data);
   cg.writeEntry( "bytearrayEntry", BYTEARRAYENTRY );
   cg.writeEntry( ESCAPEKEY, ESCAPEENTRY );
-  cg.writeEntry( "Test2", "");
+  cg.writeEntry( "emptyEntry", "");
   cg.writeEntry( "stringEntry1", STRINGENTRY1 );
   cg.writeEntry( "stringEntry2", STRINGENTRY2 );
   cg.writeEntry( "stringEntry3", STRINGENTRY3 );
   cg.writeEntry( "stringEntry4", STRINGENTRY4 );
   cg.writeEntry( "stringEntry5", STRINGENTRY5 );
-//  cg.writeEntry( "stringEntry6", STRINGENTRY6 );
   cg.writeEntry( "keywith=equalsign", STRINGENTRY1 );
   cg.deleteEntry( "stringEntry5" );
-  cg.deleteEntry( "stringEntry6" );
+  cg.deleteEntry( "stringEntry6" ); // deleting a nonexistant entry
   cg.writeEntry( "byteArrayEntry1", QByteArray( STRINGENTRY1 ),
-                 KConfigBase::Global|KConfigBase::Persistent );
+                 KConfig::Global|KConfig::Persistent );
   cg.writeEntry( "doubleEntry1", DOUBLEENTRY );
 
-  sc.deleteGroup("deleteMe");
+  sc.deleteGroup("deleteMe"); // deleting a nonexistant group
 
-  cg = KConfigGroup(&sc, "ComplexTypes");
+  cg = KConfigGroup(&sc, "Complex Types");
   cg.writeEntry( "rectEntry", RECTENTRY );
   cg.writeEntry( "pointEntry", POINTENTRY );
   cg.writeEntry( "sizeEntry", SIZEENTRY );
   cg.writeEntry( "dateTimeEntry", DATETIMEENTRY );
   cg.writeEntry( "dateEntry", DATETIMEENTRY.date() );
 
-  cg = KConfigGroup(&sc, "ListTypes" );
+  cg = KConfigGroup(&sc, "List Types" );
   cg.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
   cg.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
   cg.writeEntry( "stringListEntry", STRINGLISTENTRY );
   cg.writeEntry( "variantListEntry", VARIANTLISTENTRY );
 
-  cg = KConfigGroup(&sc, "EnumTypes" );
-  cg.writeEntry( "enum-10", KConfigTest::Tens );
+  cg = KConfigGroup(&sc, "Path Type" );
+  cg.writePathEntry( "homepath", HOMEPATH );
+
+  cg = KConfigGroup(&sc, "Enum Types" );
+  cg.writeEntry( "enum-10", Tens );
 
 #ifndef Q_CC_MSVC
-  cg.writeEntry( "enum-100", KConfigTest::Hundreds );
+  cg.writeEntry( "enum-100", Hundreds );
 #else
-  cg.writeEntry( "enum-100", KConfigTest::Hundreds, KConfigBase::Normal );
+  cg.writeEntry( "enum-100", Hundreds, KConfig::Normal );
 #endif
 
-  cg.writeEntry( "flags-bit0", KConfigTest::Flags(KConfigTest::bit0));
+  cg.writeEntry( "flags-bit0", Flags(bit0));
 
 #ifndef Q_CC_MSVC
-  cg.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1));
+  cg.writeEntry( "flags-bit0-bit1", bit0|bit1);
 #else
-  cg.writeEntry( "flags-bit0-bit1", KConfigTest::Flags(KConfigTest::bit0|KConfigTest::bit1), KConfigBase::Normal );
+  cg.writeEntry( "flags-bit0-bit1", Flags(bit0|bit1), KConfig::Normal );
 #endif
 
   sc.sync();
 
-  KConfig sc1("kdebugrc");
+  KConfig sc1("kdebugrc", KConfig::SimpleConfig);
   KConfigGroup sg0(&sc1, "0");
   sg0.writeEntry("AbortFatal", false);
   sg0.writeEntry("WarnOutput", 0);
@@ -157,7 +161,7 @@ void KConfigTest::revertEntries()
   cg.revertToDefault( "boolEntry2" );
 
   cg.revertToDefault( "Test" );
-  cg.revertToDefault( "Test2" );
+  cg.revertToDefault( "emptyEntry" );
   cg.revertToDefault( "stringEntry1" );
   cg.revertToDefault( "stringEntry2" );
   cg.revertToDefault( "stringEntry3" );
@@ -190,19 +194,15 @@ void KConfigTest::testRevertAllEntries()
 
 void KConfigTest::testSimple()
 {
-//  kDebug() ;
-
   KConfig sc2( "kconfigtest" );
+  QCOMPARE(sc2.name(), QString("kconfigtest"));
 
   KConfigGroup sc3( &sc2, "AAA");
-  bool bImmutable = sc3.entryIsImmutable("stringEntry1");
-
-  QVERIFY( !bImmutable );
-  //qDebug("sc3.entryIsImmutable() 1: %s", bImmutable ? "true" : "false");
 
   QVERIFY( sc3.hasKey( "stringEntry1" ) );
+  QVERIFY( !sc3.entryIsImmutable("stringEntry1") );
   QCOMPARE( sc3.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
-  QCOMPARE( sc3.entryIsImmutable("stringEntry1"), bImmutable );
+
   QVERIFY( !sc3.hasKey( "stringEntry2" ) );
   QCOMPARE( sc3.readEntry( "stringEntry2", QString("bla") ), QString( "bla" ) );
 
@@ -213,7 +213,8 @@ void KConfigTest::testSimple()
   QCOMPARE( sc3.readEntry( "bytearrayEntry", QByteArray() ), BYTEARRAYENTRY );
   QCOMPARE( sc3.readEntry( ESCAPEKEY ), QString( ESCAPEENTRY ) );
   QCOMPARE( sc3.readEntry( "Test", QString() ), QString::fromUtf8( UTF8BITENTRY ) );
-  QCOMPARE( sc3.readEntry("Test2", QString("Fietsbel")).isEmpty(), true );
+  QCOMPARE( sc3.readEntry( "emptyEntry"/*, QString("Fietsbel")*/), QString("") );
+  QCOMPARE( sc3.readEntry("emptyEntry", QString("Fietsbel")).isEmpty(), true );
   QCOMPARE( sc3.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
   QCOMPARE( sc3.readEntry( "stringEntry2" ), QString( STRINGENTRY2 ) );
   QCOMPARE( sc3.readEntry( "stringEntry3" ), QString( STRINGENTRY3 ) );
@@ -224,19 +225,7 @@ void KConfigTest::testSimple()
   QCOMPARE( sc3.readEntry( "stringEntry6", QString("foo") ), QString( "foo" ) );
   QCOMPARE( sc3.readEntry( "boolEntry1", BOOLENTRY1 ), BOOLENTRY1 );
   QCOMPARE( sc3.readEntry( "boolEntry2", false ), BOOLENTRY2 );
-
-#if 0
-  QString s;
-  s = sc3.readEntry( "keywith=equalsign" );
-  fprintf(stderr, "comparing keywith=equalsign %s with %s -> ", STRINGENTRY1, s.toLatin1().constData());
-  if (s == STRINGENTRY1)
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
-#endif
-
+  QCOMPARE( sc3.readEntry("keywith=equalsign", QString("wrong")), QString(STRINGENTRY1));
   QCOMPARE( sc3.readEntry( "byteArrayEntry1", QByteArray() ),
             QByteArray( STRINGENTRY1 ) );
   QCOMPARE( sc3.readEntry( "doubleEntry1", 0.0 ), DOUBLEENTRY );
@@ -245,7 +234,7 @@ void KConfigTest::testSimple()
 void KConfigTest::testLists()
 {
   KConfig sc2( "kconfigtest" );
-  KConfigGroup sc3(&sc2, "ListTypes");
+  KConfigGroup sc3(&sc2, "List Types");
 
   QCOMPARE( sc3.readEntry( QString("stringListEntry"), QStringList()),
             STRINGLISTENTRY );
@@ -260,10 +249,18 @@ void KConfigTest::testLists()
   QCOMPARE( sc3.readEntry( "listOfByteArraysEntry1", QList<QByteArray>()), BYTEARRAYLISTENTRY1 );
 }
 
+void KConfigTest::testPath()
+{
+  KConfig sc2( "kconfigtest" );
+  KConfigGroup sc3(&sc2, "Path Type");
+  QString p = sc3.readPathEntry("homepath");
+  QCOMPARE( sc3.readPathEntry( "homepath", QString() ), HOMEPATH );
+}
+
 void KConfigTest::testComplex()
 {
   KConfig sc2( "kconfigtest" );
-  KConfigGroup sc3(&sc2, "ComplexTypes");
+  KConfigGroup sc3(&sc2, "Complex Types");
 
   QCOMPARE( sc3.readEntry( "pointEntry", QPoint() ), POINTENTRY );
   QCOMPARE( sc3.readEntry( "sizeEntry", SIZEENTRY ), SIZEENTRY);
@@ -278,23 +275,22 @@ void KConfigTest::testComplex()
 void KConfigTest::testEnums()
 {
   KConfig sc("kconfigtest");
-  KConfigGroup sc3(&sc, "EnumTypes" );
+  KConfigGroup sc3(&sc, "Enum Types" );
 
   QCOMPARE( sc3.readEntry( "enum-10" ), QString("Tens"));
-  QVERIFY( sc3.readEntry( "enum-100", KConfigTest::Ones) != KConfigTest::Ones);
-  QVERIFY( sc3.readEntry( "enum-100", KConfigTest::Ones) != KConfigTest::Tens);
+  QVERIFY( sc3.readEntry( "enum-100", Ones) != Ones);
+  QVERIFY( sc3.readEntry( "enum-100", Ones) != Tens);
 
   QCOMPARE( sc3.readEntry( "flags-bit0" ), QString("bit0"));
-  QVERIFY( sc3.readEntry( "flags-bit0", KConfigTest::Flags() ) == KConfigTest::bit0 );
+  QVERIFY( sc3.readEntry( "flags-bit0", Flags() ) == bit0 );
 
   int eid = staticMetaObject.indexOfEnumerator( "Flags" );
   QVERIFY( eid != -1 );
   QMetaEnum me = staticMetaObject.enumerator( eid );
-  KConfigTest::Flags bitfield = KConfigTest::bit0|KConfigTest::bit1;
+  Flags bitfield = bit0|bit1;
 
   QCOMPARE( sc3.readEntry( "flags-bit0-bit1" ), QString( me.valueToKeys(bitfield) ) );
-  QVERIFY( sc3.readEntry( "flags-bit0-bit1", KConfigTest::Flags() ) ==
-           bitfield );
+  QVERIFY( sc3.readEntry( "flags-bit0-bit1", Flags() ) == bitfield );
 }
 
 void KConfigTest::testInvalid()
@@ -302,7 +298,7 @@ void KConfigTest::testInvalid()
   KConfig sc( "kconfigtest" );
 
   // all of these should print a message to the kdebug.dbg file
-  KConfigGroup sc3(&sc, "InvalidTypes" );
+  KConfigGroup sc3(&sc, "Invalid Types" );
   sc3.writeEntry( "badList", VARIANTLISTENTRY2 );
 
   QList<int> list;
@@ -310,7 +306,6 @@ void KConfigTest::testInvalid()
   // 1 element list
   list << 1;
   sc3.writeEntry( QString("badList"), list);
-  sc.sync();
 
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
@@ -321,7 +316,6 @@ void KConfigTest::testInvalid()
   // 2 element list
   list << 2;
   sc3.writeEntry( "badList", list);
-  sc.sync();
 
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
   QVERIFY( sc3.readEntry( "badList", QDate() ) == QDate() );
@@ -330,7 +324,6 @@ void KConfigTest::testInvalid()
   // 3 element list
   list << 303;
   sc3.writeEntry( "badList", list);
-  sc.sync();
 
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
@@ -341,7 +334,6 @@ void KConfigTest::testInvalid()
   // 4 element list
   list << 4;
   sc3.writeEntry( "badList", list );
-  sc.sync();
 
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QSize() ) == QSize() );
@@ -352,7 +344,6 @@ void KConfigTest::testInvalid()
   list[2] = 3;
   list << 5;
   sc3.writeEntry( "badList", list);
-  sc.sync();
 
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
@@ -363,7 +354,6 @@ void KConfigTest::testInvalid()
   // 6 element list
   list << 6;
   sc3.writeEntry( "badList", list);
-  sc.sync();
 
   QVERIFY( sc3.readEntry( "badList", QPoint() ) == QPoint() );
   QVERIFY( sc3.readEntry( "badList", QRect() ) == QRect() );
@@ -374,11 +364,11 @@ void KConfigTest::testChangeGroup()
 {
     KConfig sc( "kconfigtest" );
     KConfigGroup sc3(&sc, "Hello");
-    QCOMPARE(sc3.group(), QString("Hello"));
+    QCOMPARE(sc3.name(), QString("Hello"));
     KConfigGroup newGroup(sc3);
     newGroup.changeGroup("FooBar");
-    QCOMPARE(newGroup.group(), QString("FooBar"));
-    QCOMPARE(sc3.group(), QString("Hello")); // unchanged
+    QCOMPARE(newGroup.name(), QString("FooBar"));
+    QCOMPARE(sc3.name(), QString("Hello")); // unchanged
 }
 
 void KConfigTest::testDelete()
@@ -389,11 +379,11 @@ void KConfigTest::testDelete()
   sc3.deleteEntry("Test");
   QCOMPARE( sc3.readEntry("Test", QString("Fietsbel")), QString("Fietsbel") );
 
-  sc.deleteGroup("ComplexTypes");
+  sc.deleteGroup("Complex Types");
 
   KConfigGroup cg(&sc , "AAA" );
   cg.deleteGroup();
-  QVERIFY( sc.entryMap("ComplexTypes").isEmpty() );
+  QVERIFY( sc.entryMap("Complex Types").isEmpty() );
   QVERIFY( sc.entryMap("AAA").isEmpty() );
   QVERIFY( !sc.entryMap("Hello").isEmpty() ); //not deleted group
   QVERIFY( sc.entryMap("FooBar").isEmpty() ); //inexistant group
@@ -453,6 +443,22 @@ void KConfigTest::testEmptyGroup()
 #endif
 }
 
+
+void KConfigTest::testKdeglobals()
+{
+    const QString kdeglobals = KStandardDirs::locateLocal("config", "kdeglobals");
+    KConfig sc("kdeglobals");
+    QVERIFY(sc.forceGlobal());
+    QVERIFY(sc.name() == QLatin1String("kdeglobals"));
+
+    KConfig sc2(QString(), KConfig::IncludeGlobals);
+    QVERIFY(sc2.forceGlobal());
+    QVERIFY(sc2.name() == QLatin1String("kdeglobals"));
+
+    KConfig sc3("kdeglobals", KConfig::SimpleConfig);
+    QVERIFY(sc3.forceGlobal());
+    QVERIFY(sc3.name() == QLatin1String("kdeglobals"));
+}
 
 void KConfigTest::testKAboutDataOrganizationDomain()
 {

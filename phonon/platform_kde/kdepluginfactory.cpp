@@ -36,6 +36,7 @@
 #include <knotification.h>
 #include <kservice.h>
 #include <kservicetypetrader.h>
+#include <kconfiggroup.h>
 
 namespace Phonon
 {

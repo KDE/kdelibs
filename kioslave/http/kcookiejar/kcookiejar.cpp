@@ -65,6 +65,7 @@
 #include <kurl.h>
 #include <kdatetime.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <ksavefile.h>
 #include <kdebug.h>
 
@@ -249,7 +250,7 @@ KCookieJar::KCookieJar()
     m_configChanged = false;
     m_cookiesChanged = false;
 
-    KConfig cfg( "data", "khtml/domain_info", KConfig::NoGlobals );
+    KConfig cfg( "khtml/domain_info", KConfig::CascadeConfig, "data" );
     KConfigGroup group( &cfg, QString() );
     QStringList countries = group.readEntry( "twoLevelTLD", QStringList() );
     foreach ( const QString& country, countries ) {

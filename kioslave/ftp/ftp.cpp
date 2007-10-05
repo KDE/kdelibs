@@ -71,6 +71,7 @@
 #include <kremoteencoding.h>
 #include <ksocketfactory.h>
 #include <kde_file.h>
+#include <kconfiggroup.h>
 
 #ifdef HAVE_STRTOLL
   #define charToLongLong(a) strtoll(a, 0, 10)

@@ -40,7 +40,6 @@
 
 
 #include <kaction.h>
-#include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalaccel.h>
@@ -1076,7 +1075,7 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
 KShortcutsDialog::~KShortcutsDialog()
 {
 	KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
-	group.writeEntry( "Dialog Size", size(), KConfigBase::Global );
+	group.writeEntry( "Dialog Size", size(), KConfigGroup::Global );
 	delete d;
 }
 

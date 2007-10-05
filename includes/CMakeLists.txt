@@ -113,12 +113,10 @@ install( FILES
   KCompletionMatches
   KCompositeJob
   KConfig
-  KConfigBackEnd
   KConfigBase
   KConfigDialog
   KConfigDialogManager
   KConfigGroup
-  KConfigINIBackEnd
   KConfigSkeleton
   KConfigSkeletonGenericItem
   KConfigSkeletonItem

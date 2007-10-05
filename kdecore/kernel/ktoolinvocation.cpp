@@ -21,7 +21,7 @@
 #include "ktoolinvocation.h"
 #include "klauncher_iface.h"
 #include "kdebug.h"
-
+#include "kglobal.h"
 #include <QMutex>
 #include <QMutexLocker>
 #include <QCoreApplication>

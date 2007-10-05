@@ -271,10 +271,10 @@ QString whatstr;
   grid->setMargin( KDialog::marginHint() );
   grid->setSpacing( KDialog::spacingHint() );
   // no need to parse kdeglobals.
-  config = new KConfig("cryptodefaults", KConfig::NoGlobals);
-  policies = new KConfig("ksslpolicies", KConfig::OnlyLocal);
-  pcerts = new KConfig("ksslcertificates", KConfig::OnlyLocal);
-  authcfg = new KConfig("ksslauthmap", KConfig::OnlyLocal);
+  config = new KConfig("cryptodefaults", KConfig::CascadeConfig);
+  policies = new KConfig("ksslpolicies", KConfig::SimpleConfig);
+  pcerts = new KConfig("ksslcertificates", KConfig::SimpleConfig);
+  authcfg = new KConfig("ksslauthmap", KConfig::SimpleConfig);
 
 #ifdef KSSL_HAVE_SSL
   SSLv3Box = new Q3ListView(tabSSL, "v3ciphers");
@@ -962,7 +962,7 @@ void KCryptoConfig::load()
   }
 
   groups = _signers->list();
-  KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
+  KConfig sigcfg( "ksslcalist", KConfig::CascadeConfig );
   caList->clear();
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();
@@ -1976,7 +1976,7 @@ void KCryptoConfig::slotCARestore() {
 
 
   QStringList groups = _signers->list();
-  KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
+  KConfig sigcfg( "ksslcalist", KConfig::CascadeConfig );
 
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();

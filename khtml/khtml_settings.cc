@@ -21,6 +21,7 @@
 #include "khtmldefaults.h"
 #include <kglobalsettings.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
@@ -287,7 +288,7 @@ bool KHTMLSettings::hoverLink() const
 
 void KHTMLSettings::init()
 {
-  KConfig global( "khtmlrc", KConfig::NoGlobals );
+  KConfig global( "khtmlrc", KConfig::CascadeConfig );
   init( &global, true );
 
   KSharedConfig::Ptr local = KGlobal::config();
@@ -740,7 +741,7 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
 
 void KHTMLSettings::addAdFilter( const QString &url )
 {
-    KConfigGroup config = KSharedConfig::openConfig( "khtmlrc", KConfig::NoGlobals )->group( "Filter Settings" );
+    KConfigGroup config = KSharedConfig::openConfig( "khtmlrc", KConfig::CascadeConfig )->group( "Filter Settings" );
 
     QRegExp rx;
     if (url.length()>2 && url[0]=='/' && url[url.length()-1] == '/')

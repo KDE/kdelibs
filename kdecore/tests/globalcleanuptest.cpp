@@ -22,6 +22,7 @@
 #include <kcomponentdata.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
+#include <kglobal.h>
 
 int main(int argc, char **argv)
 {

@@ -959,7 +959,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
           bool downloadViaKIO = true;
           if ( !url.isLocalFile() )
           {
-            KConfigGroup cfg = KSharedConfig::openConfig("konquerorrc", KConfig::NoGlobals)->group("HTML Settings");
+            KConfigGroup cfg = KSharedConfig::openConfig("konquerorrc", KConfig::CascadeConfig)->group("HTML Settings");
             QString downloadManger = cfg.readPathEntry("DownloadManager");
             if (!downloadManger.isEmpty())
             {

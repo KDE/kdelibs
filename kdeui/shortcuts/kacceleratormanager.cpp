@@ -43,6 +43,7 @@
 #include <kstandardaction.h>
 #include <kdebug.h>
 #include <kdeversion.h>
+#include <kglobal.h>
 
 #include "kacceleratormanager_private.h"
 #include <kstandardaction_p.h>

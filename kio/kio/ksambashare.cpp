@@ -26,6 +26,8 @@
 #include <kdirwatch.h>
 #include <kdebug.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
+#include <kglobal.h>
 
 class KSambaShare::KSambaSharePrivate
 {

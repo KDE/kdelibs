@@ -20,6 +20,7 @@
 #include "kprintprocess.h"
 #include <kapplication.h>
 #include <klocale.h>
+#include <kdebug.h>
 #include <QtCore/QFile>
 
 KPrintProcess::KPrintProcess()

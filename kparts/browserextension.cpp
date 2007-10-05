@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kurifilter.h>
+#include <kglobal.h>
 #include <assert.h>
 
 using namespace KParts;

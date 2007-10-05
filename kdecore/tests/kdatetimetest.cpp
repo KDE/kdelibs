@@ -25,6 +25,7 @@
 #include <kcalendarsystemgregorian.h>
 #include <ksystemtimezone.h>
 #include <kdatetime.h>
+#include <kconfiggroup.h>
 #include <QtDBus/QtDBus>
 
 #include "kdatetimetest.moc"

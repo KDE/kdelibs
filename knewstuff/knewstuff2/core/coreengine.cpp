@@ -28,6 +28,7 @@
 #include "security.h"
 
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kcodecs.h>

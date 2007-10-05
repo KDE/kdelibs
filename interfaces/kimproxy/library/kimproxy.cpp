@@ -31,6 +31,7 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kiconloader.h>
 #include <kservice.h>
 #include <kservicetypetrader.h>
@@ -637,7 +638,7 @@ OrgKdeKIMInterface * KIMProxy::stubForProtocol( const QString &protocol)
 
 QString KIMProxy::preferredApp()
 {
-	KConfig cfg( IM_CLIENT_PREFERENCES_FILE, KConfig::OnlyLocal );
+	KConfig cfg( IM_CLIENT_PREFERENCES_FILE, KConfig::SimpleConfig );
 	KConfigGroup cg(&cfg, IM_CLIENT_PREFERENCES_SECTION );
 	QString preferredApp = cg.readEntry( IM_CLIENT_PREFERENCES_ENTRY );
 	//kDebug( 790 ) << "found preferred app: " << preferredApp;

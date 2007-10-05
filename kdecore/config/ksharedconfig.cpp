@@ -21,14 +21,16 @@
 
 #include "ksharedconfig.h"
 #include "kconfigbackend.h"
+#include "kconfiggroup.h"
 #include "kcomponentdata.h"
-#include "kaboutdata.h"
+#include "kglobal.h"
+#include "kconfig_p.h"
 
 K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
 
 KSharedConfigPtr KSharedConfig::openConfig( const QString& fileName,
                                             OpenFlags flags ,
-                                            const char *resType )
+                                            const char *resType)
 {
     return openConfig(KGlobal::mainComponent(), fileName, flags, resType);
 }
@@ -36,34 +38,29 @@ KSharedConfigPtr KSharedConfig::openConfig( const QString& fileName,
 KSharedConfigPtr KSharedConfig::openConfig( const KComponentData &componentData,
                                             const QString& fileName,
                                             OpenFlags flags,
-                                            const char *resType )
+                                            const char *resType)
 {
-    QString myFileName(fileName);
-    if (myFileName.isEmpty())
-        myFileName = componentData.aboutData()->appName() + "rc";
-
-    bool useKDEGlobals = flags & IncludeGlobals;
     QList<KSharedConfig*> *list = globalSharedConfigList;
     if (list) {
         for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
-            if (
-                    (*it)->backEnd()->fileName() == myFileName &&
-                    (*it)->backEnd()->useKDEGlobals == useKDEGlobals &&
-                    (*it)->backEnd()->resType == resType &&
-                    (*it)->componentData() == componentData
+            if ( (*it)->name() == fileName &&
+                 (*it)->d_ptr->openFlags == flags &&
+//                 qstrcmp((*it)->resource(), resType) == 0 &&
+//                 (*it)->backEnd()->type() == backEnd &&
+                 (*it)->componentData() == componentData
                ) {
                 return KSharedConfigPtr(*it);
             }
         }
     }
-    return KSharedConfigPtr(new KSharedConfig(myFileName, flags, resType, componentData));
+    return KSharedConfigPtr(new KSharedConfig(componentData, fileName, flags, resType));
 }
 
 
-KSharedConfig::KSharedConfig( const QString &fileName,
+KSharedConfig::KSharedConfig( const KComponentData &componentData,
+                              const QString &fileName,
                               OpenFlags flags,
-                              const char *resType,
-                              const KComponentData &componentData)
+                              const char *resType)
     : KConfig(componentData, fileName, flags, resType)
 {
     globalSharedConfigList->append(this);
@@ -76,34 +73,14 @@ KSharedConfig::~KSharedConfig()
     }
 }
 
-KConfigGroup KSharedConfig::group(const QByteArray &groupName)
+KConfigGroup KSharedConfig::groupImpl(const QByteArray &groupName)
 {
-    return KConfigGroup( KSharedConfigPtr(this), groupName);
+    KSharedConfigPtr ptr(this);
+    return KConfigGroup( ptr, groupName);
 }
 
-const KConfigGroup KSharedConfig::group(const QByteArray &groupName) const
+const KConfigGroup KSharedConfig::groupImpl(const QByteArray &groupName) const
 {
-    return KConfigGroup( KSharedConfigPtr(const_cast<KSharedConfig*>(this)),
-                         groupName);
+    const KSharedConfigPtr ptr(const_cast<KSharedConfig*>(this));
+    return KConfigGroup( ptr, groupName);
 }
-
-KConfigGroup KSharedConfig::group(const char* groupName)
-{
-    return KConfigGroup( KSharedConfigPtr(this), groupName);
-}
-
-const KConfigGroup KSharedConfig::group(const char *groupName) const
-{
-    return KConfigGroup( KSharedConfigPtr(const_cast<KSharedConfig*>(this)), groupName);
-}
-
-KConfigGroup KSharedConfig::group(const QString& groupName)
-{
-    return KConfigGroup( KSharedConfigPtr(this), groupName);
-}
-
-const KConfigGroup KSharedConfig::group(const QString& groupName) const
-{
-    return KConfigGroup( KSharedConfigPtr(const_cast<KSharedConfig*>(this)), groupName);
-}
-

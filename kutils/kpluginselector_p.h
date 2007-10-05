@@ -29,7 +29,6 @@
 #include <QAbstractListModel>
 
 #include <kservice.h>
-#include <kconfigbase.h>
 #include <klocale.h>
 #include <kutils_export.h>
 #include <kconfiggroup.h>

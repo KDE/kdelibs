@@ -28,6 +28,7 @@
 #include <kdialog.h>
 #include <kshortcutwidget.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 
 #include <QWidget>

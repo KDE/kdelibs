@@ -26,6 +26,7 @@
 #include <kprotocolmanager.h>
 #include <khbox.h>
 #include <kstandardshortcut.h>
+#include <kdebug.h>
 
 #include <QEvent>
 #include <QDrag>

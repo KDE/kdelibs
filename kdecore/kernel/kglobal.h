@@ -40,7 +40,7 @@ class KConfig;
 class KLocale;
 class KStandardDirs;
 class KSharedConfig;
-template<class T>
+template <typename T>
 class KSharedPtr;
 typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
 

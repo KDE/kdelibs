@@ -53,6 +53,7 @@
 #include <kstringhandler.h>
 #include <ktemporaryfile.h>
 #include <kdebug.h>
+#include <kconfiggroup.h>
 #include "ktzfiletimezone.h"
 
 

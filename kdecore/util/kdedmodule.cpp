@@ -24,9 +24,9 @@
 #include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
 
-#include "kconfigdata.h"
 
 #if 0 // KDED_OBJECTS
+#include "kconfigdata.h"
 typedef QMap<KEntryKey, KSharedPtr<KShared> > KDEDObjectMap;
 #endif
 

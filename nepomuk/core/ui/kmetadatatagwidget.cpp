@@ -35,6 +35,7 @@
 #include <QtGui/QBoxLayout>
 #include <QtGui/QMenu>
 #include <QtGui/QAction>
+#include <QtCore/QSet>
 
 
 uint qHash( const Nepomuk::Tag& res )

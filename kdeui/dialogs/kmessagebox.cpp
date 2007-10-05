@@ -348,9 +348,9 @@ void KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
     if ( dontShowAgainName.isEmpty() ) {
         return;
     }
-    KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
+    KConfigGroup::WriteConfigFlags flags = KConfig::Persistent;
     if (dontShowAgainName[0] == ':') {
-        flags |= KConfigBase::Global;
+        flags |= KConfigGroup::Global;
     }
     KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig : KGlobal::config().data(), "Notification Messages" );
     cg.writeEntry( dontShowAgainName, result==Yes, flags );
@@ -362,9 +362,9 @@ void KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
     if ( dontShowAgainName.isEmpty() ) {
         return;
     }
-    KConfigBase::WriteConfigFlags flags = KConfigBase::Persistent;
+    KConfigGroup::WriteConfigFlags flags = KConfigGroup::Persistent;
     if (dontShowAgainName[0] == ':') {
-        flags |= KConfigBase::Global;
+        flags |= KConfigGroup::Global;
     }
     KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig: KGlobal::config().data(), "Notification Messages" );
     cg.writeEntry( dontShowAgainName, false, flags );

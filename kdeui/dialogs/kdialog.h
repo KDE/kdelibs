@@ -29,8 +29,7 @@ class QMenu;
 class KDialogPrivate;
 
 #include <kdeui_export.h>
-
-#include <kconfigbase.h>
+#include <kconfiggroup.h>
 #include <kguiitem.h>
 
 #include <QtGui/QDialog>
@@ -355,9 +354,9 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @note the group must be set before calling
      *
      * @param config The config group to read from.
-     * @param options passed to KConfigBase::writeEntry()
+     * @param options passed to KConfigGroup::writeEntry()
      */
-    void saveDialogSize( KConfigGroup& config, KConfigBase::WriteConfigFlags options = 0 ) const;
+    void saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options = 0 ) const;
 
     /**
      * Returns the help link text.

@@ -20,26 +20,26 @@
 
 #include "knotifyconfigelement.h"
 
+#include <kconfiggroup.h>
 #include <kconfig.h>
 #include <kdebug.h>
 
-KNotifyConfigElement::KNotifyConfigElement(const QString &eventid, KConfigBase *defaultConfig , KConfigBase *localConfig)
-	: m_config( localConfig , "Event/" + eventid ) ,
-	  m_default( defaultConfig , "Event/" + eventid )
+KNotifyConfigElement::KNotifyConfigElement(const QString &eventid, KConfig *config)
+	: m_config( new KConfigGroup(config , "Event/" + eventid) )
 {
 }
 
+KNotifyConfigElement::~KNotifyConfigElement()
+{
+    delete m_config;
+}
 
 QString KNotifyConfigElement::readEntry( const QString & entry, bool path )
 {
 	if(m_cache.contains(entry))
 		return m_cache[entry];
-	QString p=path ?  m_config.readPathEntry(entry.toUtf8().constData()) :
-		m_config.readEntry(entry.toUtf8().constData(), QString());
-	if(!p.isNull())
-		return p;
-	
-	return path ?  m_default.readPathEntry(entry) : m_default.readEntry(entry, QString());
+	return path ?  m_config->readPathEntry(entry) :
+		m_config->readEntry(entry, QString());
 }
 
 void KNotifyConfigElement::writeEntry( const QString & entry, const QString &data )
@@ -52,8 +52,7 @@ void KNotifyConfigElement::save(  )
 	QMap<QString, QString>::const_iterator it = m_cache.constBegin();
 	for ( ; it != m_cache.constEnd() ; ++it)
 	{
-		m_config.writeEntry(it.key() , it.value() );
+		m_config->writeEntry(it.key() , it.value() );
 	}
-	m_config.sync();
+	m_config->sync();
 }
-

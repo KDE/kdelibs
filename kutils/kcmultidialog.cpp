@@ -36,6 +36,7 @@
 #include <kpagewidgetmodel.h>
 #include <kpushbutton.h>
 #include <ktoolinvocation.h>
+#include <kdebug.h>
 
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"

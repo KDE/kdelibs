@@ -29,6 +29,7 @@
 #include <rendering/render_object.h>
 #include <kapplication.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <QtGui/QToolTip>
 #include "css/cssvalues.h"
 
@@ -170,7 +171,7 @@ QColor khtml::colorForCSSValue( int css_value )
 	else if ( css_value == CSS_VAL_INFOTEXT )
 	    return QToolTip::palette().color( QPalette::Inactive, QPalette::Foreground );
 	else if ( css_value == CSS_VAL_BACKGROUND ) {
-	    KConfig bckgrConfig("kdesktoprc", KConfig::NoGlobals);
+	    KConfig bckgrConfig("kdesktoprc", KConfig::CascadeConfig);
 	    // Desktop background.
 	    return bckgrConfig.group( "Desktop0" ).readEntry("Color1", qApp->palette().color( QPalette::Disabled, QPalette::Background ) );
 	}

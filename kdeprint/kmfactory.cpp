@@ -314,7 +314,7 @@ KMFactory::PluginInfo KMFactory::pluginInfo(const QString& name)
     QString path(name);
     if (path[0] != '/')
         path = KStandardDirs::locate("data", QString::fromLatin1("kdeprint/plugins/%1.print").arg(name));
-    KConfig _conf(path, KConfig::OnlyLocal);
+    KConfig _conf(path, KConfig::SimpleConfig);
     PluginInfo info;
 
     KConfigGroup conf(&_conf, "KDE Print Entry");

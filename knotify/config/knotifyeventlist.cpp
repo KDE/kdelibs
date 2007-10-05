@@ -20,6 +20,10 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kconfig.h>
+#include <kconfiggroup.h>
+#include <kglobal.h>
+#include <kstandarddirs.h>
 #include <QtGui/QItemDelegate>
 #include <QtGui/QPainter>
 
@@ -74,7 +78,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 //END KNotifyEventListDelegate
 
 KNotifyEventList::KNotifyEventList(QWidget *parent)
- : QTreeWidget(parent)  , config(0l) , loconf(0l)
+ : QTreeWidget(parent)  , config(0)
 {
   QStringList headerLabels;
   headerLabels << i18nc( "Title of the notified event", "Title" ) << i18nc( "Description of the notified event", "Description" ) << i18nc( "State of the notified event", "State" );
@@ -89,7 +93,6 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
 KNotifyEventList::~KNotifyEventList()
 {
 	delete config;
-	delete loconf;
 }
 
 void KNotifyEventList::fill( const QString & appname , const QString & context_name ,const QString & context_value )
@@ -97,15 +100,16 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 	m_elements.clear();
 	clear();
 	delete config;
-	delete loconf;
-	config= new KConfig("data", appname + '/' + appname + ".notifyrc" , KConfig::NoGlobals),
-	loconf= new KConfig(appname + ".notifyrc" , KConfig::NoGlobals);
+	config = new KConfig(appname + ".notifyrc" , KConfig::CascadeConfig);
+        config->setExtraConfigFiles(KGlobal::dirs()->findAllResources("data",
+                                appname + '/' + appname + ".notifyrc"));
+        config->reparseConfiguration();
 
 	QStringList conflist = config->groupList();
 	QRegExp rx("^Event/([^/]*)$");
 	conflist=conflist.filter( rx );
 
-	foreach (QString group , conflist )
+	foreach (const QString& group , conflist )
 	{
                 KConfigGroup cg(config, group);
 		rx.indexIn(group);
@@ -122,7 +126,7 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 		QString name = cg.readEntry("Name");
 		QString description = cg.readEntry("Comment");
 
-		m_elements << new KNotifyEventListItem(this, id, name, description, loconf , config );
+		m_elements << new KNotifyEventListItem(this, id, name, description, config );
 	}
 }
 
@@ -156,9 +160,9 @@ void KNotifyEventList::updateCurrentItem()
 
 
 KNotifyEventListItem::KNotifyEventListItem( QTreeWidget * parent, const QString & eventName,
-				const QString & name, const QString & description , KConfigBase* locconf , KConfigBase *defconf)
+				const QString & name, const QString & description , KConfig *config)
 	: QTreeWidgetItem(parent) ,
-	m_config(eventName , defconf, locconf )
+	m_config(eventName, config )
 {
   setText( 0, name );
   setText( 1, description );

@@ -31,6 +31,7 @@
 
 #include <kpushbutton.h>
 #include <klocale.h>
+#include <kglobal.h>
 
 KStatusBarJobTracker::KStatusBarJobTracker(QWidget *parent, bool button)
     : KAbstractWidgetJobTracker(parent), d(new Private(parent))

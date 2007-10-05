@@ -1,6 +1,7 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2007 Thiago Macieira <thiago@kde.org>
+   Copyright (c) 1999 Preston Brown <pbrown@kde.org>
+   Copyright (C) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,25 +19,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCONFIGGROUP_P_H
-#define KCONFIGGROUP_P_H
+#ifndef KCONFIGBASE_P_H
+#define KCONFIGBASE_P_H
 
-#include <QtCore/QVariant>
-#include "kconfiggroup.h"
+#include <QtCore/QSharedData>
 
-class KConfigGroup;
-
-struct KConfigGroupGui
+class KConfigBasePrivate : public QSharedData
 {
-    typedef bool (*kReadEntryGui)(const QByteArray& data, const char *key, const QVariant &input,
-                                  QVariant &output);
-    typedef bool (*kWriteEntryGui)(KConfigGroup *, const char *key, const QVariant &input,
-                                   KConfigGroup::WriteConfigFlags flags);
-
-    kReadEntryGui readEntryGui;
-    kWriteEntryGui writeEntryGui;
 };
-
-extern KDECORE_EXPORT KConfigGroupGui _kde_internal_KConfigGroupGui;
-
 #endif

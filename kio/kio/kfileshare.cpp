@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kuser.h>
 
 static KFileShare::Authorization s_authorization = KFileShare::NotInitialized;
@@ -87,6 +88,21 @@ void KFileSharePrivate::slotFileChange(const QString &file)
   }
 }
 
+template <>
+KFileShare::ShareMode KConfigGroup::readEntry(const QByteArray &key, const KFileShare::ShareMode& aDefault) const
+{
+    const QByteArray data=readEntry(key, QByteArray());
+
+    if (!data.isEmpty()) {
+        if (data.toLower() == "simple")
+            return KFileShare::Simple;
+        else if (data.toLower() == "advanced")
+            return KFileShare::Advanced;
+    }
+
+    return aDefault;
+}
+
 void KFileShare::readConfig() // static
 {
     // Create KFileSharePrivate instance
@@ -94,8 +110,8 @@ void KFileShare::readConfig() // static
     KConfig config(QLatin1String(FILESHARECONF));
     KConfigGroup group( &config, QString() );
 
-    s_sharingEnabled = group.readEntry("FILESHARING", "yes") == "yes";
-    s_restricted = group.readEntry("RESTRICT", "yes") == "yes";
+    s_sharingEnabled = group.readEntry("FILESHARING", true);
+    s_restricted = group.readEntry("RESTRICT", true);
     s_fileShareGroup = group.readEntry("FILESHAREGROUP", "fileshare");
 
 
@@ -113,14 +129,11 @@ void KFileShare::readConfig() // static
             s_authorization = UserNotAllowed;
     }
 
-    if (group.readEntry("SHARINGMODE", "simple") == "simple")
-        s_shareMode = Simple;
-    else
-        s_shareMode = Advanced;
+    s_shareMode = group.readEntry("SHARINGMODE", Simple);
 
 
-    s_sambaEnabled = group.readEntry("SAMBA", "yes") == "yes";
-    s_nfsEnabled = group.readEntry("NFS", "yes") == "yes";
+    s_sambaEnabled = group.readEntry("SAMBA", true);
+    s_nfsEnabled = group.readEntry("NFS", true);
 }
 
 KFileShare::ShareMode KFileShare::shareMode() {

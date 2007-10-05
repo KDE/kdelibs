@@ -26,7 +26,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
-
+#include <QtCore/QStringList>
 #include <kcomponentdata.h>
 
 class KPluginFactoryPrivate;

@@ -25,6 +25,7 @@
 #include "kcomponentdata.h"
 #include "kdesktopfile.h"
 #include "kstandarddirs.h"
+#include "kconfiggroup.h"
 
 #include <QtCore/QFile>
 #include <QStringList>
@@ -32,9 +33,8 @@
 class KAutostart::Private
 {
     public:
-        Private()
+        Private() : df(0)
         {
-            df = 0;
         }
 
         ~Private()
@@ -62,7 +62,7 @@ KAutostart::KAutostart(const QString& entryName,
         d->name = entryName;
     }
 
-    if (d->name.right(8) != ".desktop")
+    if (!d->name.endsWith(QLatin1String(".desktop")))
     {
         d->name.append(".desktop");
     }
@@ -83,8 +83,8 @@ void KAutostart::setAutostarts(bool autostart)
 bool KAutostart::autostarts(const QString& environment,
                             Conditions check) const
 {
-    // check if this desktop file actually exists
-    bool starts = d->df->hasGroup("Desktop Entry");
+    // check if this is actually a .desktop file
+    bool starts = d->df->desktopGroup().exists();
 
     // check the hidden field
     starts &= !d->df->desktopGroup().readEntry("Hidden", false);
@@ -109,7 +109,7 @@ QString KAutostart::command() const
 
 void KAutostart::setCommand(const QString& command)
 {
-    return d->df->desktopGroup().writeEntry( "Exec", command );
+    d->df->desktopGroup().writeEntry( "Exec", command );
 }
 
 QString KAutostart::visibleName() const
@@ -137,22 +137,44 @@ void KAutostart::setCommandToCheck(const QString& exec)
     d->df->desktopGroup().writePathEntry( "TryExec", exec );
 }
 
+template <>
+KAutostart::StartPhase KConfigGroup::readEntry(const QByteArray &key, const KAutostart::StartPhase& aDefault) const
+{
+    const QByteArray data = readEntry(key, QByteArray());
+
+    if (data.isNull())
+        return aDefault;
+
+    if (data == "0" || data == "BaseDesktop")
+        return KAutostart::BaseDesktop;
+    else if (data == "1" || data == "DesktopServices")
+        return KAutostart::DesktopServices;
+    else if (data == "2" || data == "Applications")
+        return KAutostart::Applications;
+
+    return aDefault;
+}
+
 KAutostart::StartPhase KAutostart::startPhase() const
 {
-    int phase = d->df->desktopGroup().readEntry("X-KDE-autostart-phase",
-                                                (int)KAutostart::Applications);
-    if (phase < KAutostart::BaseDesktop ||
-        phase > KAutostart::Applications)
-    {
-        phase = KAutostart::Applications;
-    }
-
-    return static_cast<StartPhase>(phase);
+    return d->df->desktopGroup().readEntry("X-KDE-autostart-phase", Applications);
 }
 
 void KAutostart::setStartPhase(KAutostart::StartPhase phase)
 {
-    d->df->desktopGroup().writeEntry( "X-KDE-autostart-phase", (int)phase );
+    QByteArray data = "Applications";
+
+    switch (phase) {
+        case BaseDesktop:
+            data = "BaseDesktop";
+            break;
+        case DesktopServices:
+            data = "DesktopServices";
+            break;
+        case Applications: // This is the default
+            break;
+    }
+    d->df->desktopGroup().writeEntry( "X-KDE-autostart-phase", data );
 }
 
 QStringList KAutostart::allowedEnvironments() const
@@ -175,7 +197,7 @@ void KAutostart::addToAllowedEnvironments(const QString& environment)
     }
 
     envs.append(environment);
-    d->df->desktopGroup().writeEntry( "OnlyShowIn", envs, ';' );
+    setAllowedEnvironments(envs);
 }
 
 void KAutostart::removeFromAllowedEnvironments(const QString& environment)
@@ -189,7 +211,7 @@ void KAutostart::removeFromAllowedEnvironments(const QString& environment)
     }
 
     envs.removeAt(index);
-    d->df->desktopGroup().writeEntry("OnlyShowIn", envs, ';');
+    setAllowedEnvironments(envs);
 }
 
 QStringList KAutostart::excludedEnvironments() const

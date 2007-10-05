@@ -98,7 +98,7 @@ class KSSLSettingsPrivate {
 KSSLSettings::KSSLSettings(bool readConfig)
 	:d(new KSSLSettingsPrivate)
 {
-        m_cfg = new KConfig("cryptodefaults", KConfig::NoGlobals);
+        m_cfg = new KConfig("cryptodefaults", KConfig::CascadeConfig);
 
 	if (!KGlobal::dirs()->addResourceType("kssl", "data", "kssl")) {
 		//kDebug(7029) << "Error adding (kssl, share/apps/kssl)";

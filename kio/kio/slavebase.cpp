@@ -36,12 +36,13 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QList>
+#include <QtCore/QDateTime>
 #include <QtDBus/QtDBus>
 
 #include <kapplication.h>
 #include <kcrash.h>
-#include <kconfigbase.h>
-#include <kconfigdata.h>
+#include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdesu/client.h>
 #include <klocale.h>
 #include <k3streamsocket.h>
@@ -72,41 +73,6 @@ typedef QMap<QString,QByteArray> AuthKeysMap;
 
 namespace KIO {
 
-class SlaveBaseConfig : public KConfigBase
-{
-public:
-   SlaveBaseConfig(SlaveBase *_slave)
-	: slave(_slave) { }
-
-   bool internalHasGroup(const QByteArray &) const { qWarning("hasGroup(const QByteArray &)");
-return false; }
-
-   QStringList groupList() const { return QStringList(); }
-
-   QMap<QString,QString> entryMap(const QString &) const
-      { return QMap<QString,QString>(); }
-
-   void reparseConfiguration() { }
-
-   KEntryMap internalEntryMap( const QString &) const { return KEntryMap(); }
-
-   KEntryMap internalEntryMap() const { return KEntryMap(); }
-
-   void putData(const KEntryKey &, const KEntry&, bool) { }
-
-   KEntry lookupData(const KEntryKey &key) const
-   {
-     KEntry entry;
-     QString value = slave->metaData(key.c_key);
-     if (!value.isNull())
-        entry.mValue = value.toUtf8();
-     return entry;
-   }
-protected:
-   SlaveBase *slave;
-};
-
-
 class SlaveBasePrivate {
 public:
     QString slaveid;
@@ -117,7 +83,7 @@ public:
     bool inOpenLoop:1;
     bool exit_loop:1;
     MetaData configData;
-    SlaveBaseConfig *config;
+    KConfig *config;
     KConfigGroup* configGroup;
     KUrl onHoldUrl;
 
@@ -219,7 +185,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     d->slaveid += QString::number(getpid());
     d->resume = false;
     d->needSendCanResume = false;
-    d->config = new SlaveBaseConfig(this);
+    d->config = new KConfig(QString(), KConfig::SimpleConfig);
     d->configGroup = new KConfigGroup(d->config, QString());
     d->onHold = false;
     d->wasKilled=false;
@@ -996,12 +962,18 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_REPARSECONFIGURATION:
         reparseConfiguration();
         break;
-    case CMD_CONFIG:
-    {
+    case CMD_CONFIG: {
+        if (!d->configData.isEmpty()) { // delete the old data
+            foreach (const QString& key, d->configData.keys())
+                d->configGroup->deleteEntry(key, KConfigGroup::WriteConfigFlags());
+        }
         stream >> d->configData;
 #if 0 //TODO: decide what to do in KDE 4.1
         KSocks::setConfig(d->configGroup);
 #endif
+        const MetaData::ConstIterator end = d->configData.constEnd();
+        for (MetaData::ConstIterator it = d->configData.constBegin(); it != end; ++it)
+            d->configGroup->writeEntry(it.key(), it->toUtf8(), KConfigGroup::WriteConfigFlags());
 	delete d->remotefile;
 	d->remotefile = 0;
         break;
@@ -1103,10 +1075,18 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_SPECIAL:
         special( data );
         break;
-    case CMD_META_DATA:
+    case CMD_META_DATA: {
         //kDebug(7019) << "(" << getpid() << ") Incoming meta-data...";
+        if (!mIncomingMetaData.isEmpty()) { // delete the old data
+            foreach(const QString& key, mIncomingMetaData.keys())
+                d->configGroup->deleteEntry(key, KConfigGroup::WriteConfigFlags());
+        }
         stream >> mIncomingMetaData;
+        MetaData::ConstIterator end = mIncomingMetaData.constEnd();
+        for (MetaData::ConstIterator it=mIncomingMetaData.constBegin(); it != end; ++it)
+            d->configGroup->writeEntry(it.key(), it->toUtf8(), KConfigGroup::WriteConfigFlags());
         break;
+    }
     case CMD_SUBURL:
         stream >> url;
         setSubUrl(url);

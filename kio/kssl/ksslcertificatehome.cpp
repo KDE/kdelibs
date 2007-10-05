@@ -27,7 +27,7 @@
 
 QStringList KSSLCertificateHome::getCertificateList()
 {
-    KConfig cfg("ksslcertificates", KConfig::OnlyLocal);
+    KConfig cfg("ksslcertificates", KConfig::SimpleConfig);
     QStringList list = cfg.groupList();
     QString defaultstr("<default>");
     QString blankstr("");
@@ -41,7 +41,7 @@ QStringList KSSLCertificateHome::getCertificateList()
 
 void KSSLCertificateHome::setDefaultCertificate(const QString & name, const QString &host, bool send, bool prompt)
 {
-    KConfig file("ksslauthmap", KConfig::OnlyLocal);
+    KConfig file("ksslauthmap", KConfig::SimpleConfig);
     KConfigGroup cfg(&file, QString::fromLatin1(QUrl::toAce(host)));
 
     cfg.writeEntry("certificate", name);
@@ -72,7 +72,7 @@ bool KSSLCertificateHome::addCertificate(const QString &filename, const QString 
 bool KSSLCertificateHome::addCertificate(KSSLPKCS12 *cert, const QString &passToStore) {
    if (!cert) return false;
 
-   KConfig file("ksslcertificates", KConfig::OnlyLocal);
+   KConfig file("ksslcertificates", KConfig::SimpleConfig);
    KConfigGroup cfg = file.group(cert->name().toLatin1());
 
    cfg.writeEntry("PKCS12Base64", cert->toString());
@@ -101,7 +101,7 @@ bool KSSLCertificateHome::deleteCertificate(KSSLPKCS12 *cert) {
 bool KSSLCertificateHome::deleteCertificateByName(const QString &name) {
     if (name.isEmpty()) return false;
 
-    KConfig cfg("ksslcertificates", KConfig::OnlyLocal);
+    KConfig cfg("ksslcertificates", KConfig::SimpleConfig);
 
     cfg.deleteGroup(name);
     cfg.sync();
@@ -111,7 +111,7 @@ bool KSSLCertificateHome::deleteCertificateByName(const QString &name) {
 
 KSSLPKCS12* KSSLCertificateHome::getCertificateByName(const QString &name, const QString &password)
 {
-    KConfig cfg("ksslcertificates", KConfig::OnlyLocal);
+    KConfig cfg("ksslcertificates", KConfig::SimpleConfig);
     if (!cfg.hasGroup(name)) return NULL;
 
     KConfigGroup cg(&cfg, name);
@@ -122,7 +122,7 @@ KSSLPKCS12* KSSLCertificateHome::getCertificateByName(const QString &name, const
 
 KSSLPKCS12* KSSLCertificateHome::getCertificateByName(const QString &name)
 {
-    KConfig cfg("ksslcertificates", KConfig::OnlyLocal);
+    KConfig cfg("ksslcertificates", KConfig::SimpleConfig);
     if (!cfg.hasGroup(name)) return NULL;
 
     KConfigGroup cg(&cfg, name);
@@ -132,7 +132,7 @@ KSSLPKCS12* KSSLCertificateHome::getCertificateByName(const QString &name)
 
 
 bool KSSLCertificateHome::hasCertificateByName(const QString &name) {
-  KConfig cfg("ksslcertificates", KConfig::OnlyLocal);
+  KConfig cfg("ksslcertificates", KConfig::SimpleConfig);
   if (!cfg.hasGroup(name)) return false;
   return true;
 }
@@ -146,7 +146,7 @@ KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(const QString &host,
 
 QString KSSLCertificateHome::getDefaultCertificateName(const QString &host, KSSLAuthAction *aa)
 {
-    KConfig file("ksslauthmap", KConfig::OnlyLocal);
+    KConfig file("ksslauthmap", KConfig::SimpleConfig);
     KConfigGroup cfg = file.group(QString::fromLatin1(QUrl::toAce(host)));
 
     if (!cfg.exists()) {
@@ -171,7 +171,7 @@ QString KSSLCertificateHome::getDefaultCertificateName(const QString &host, KSSL
 
 QString KSSLCertificateHome::getDefaultCertificateName(KSSLAuthAction *aa)
 {
-   KConfig _cfg("cryptodefaults", KConfig::NoGlobals);
+   KConfig _cfg("cryptodefaults", KConfig::CascadeConfig);
    KConfigGroup cfg(&_cfg, "Auth");
    if (aa) {
       QString am = cfg.readEntry("AuthMethod", "");
@@ -189,7 +189,7 @@ QString KSSLCertificateHome::getDefaultCertificateName(KSSLAuthAction *aa)
 
 KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(const QString &password, KSSLAuthAction *aa) {
     QString name = KSSLCertificateHome::getDefaultCertificateName(aa);
-    KConfig cfg("ksslcertificates", KConfig::OnlyLocal);
+    KConfig cfg("ksslcertificates", KConfig::SimpleConfig);
 
     if (name.isEmpty()) return NULL;
 
@@ -201,7 +201,7 @@ KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(const QString &password, 
 
 KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(KSSLAuthAction *aa) {
    QString name = KSSLCertificateHome::getDefaultCertificateName(aa);
-   KConfig cfg("ksslcertificates", KConfig::OnlyLocal);
+   KConfig cfg("ksslcertificates", KConfig::SimpleConfig);
 
    if (name.isEmpty()) return NULL;
 
@@ -214,7 +214,7 @@ KSSLPKCS12* KSSLCertificateHome::getDefaultCertificate(KSSLAuthAction *aa) {
 
 void KSSLCertificateHome::setDefaultCertificate(const QString &name, bool send, bool prompt)
 {
-   KConfig cfg("ksslauthmap", KConfig::OnlyLocal);
+   KConfig cfg("ksslauthmap", KConfig::SimpleConfig);
    KConfigGroup cg(&cfg, "<default>");
    cg.writeEntry("defaultCertificate", name);
    cg.writeEntry("send", send);

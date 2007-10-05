@@ -21,6 +21,7 @@
 #include <kmimetypechooser.h>
 #include <klocale.h>
 #include <kcomponentdata.h>
+#include <kdebug.h>
 
 int main( int argc, char** argv ) {
     QApplication app( argc, argv );

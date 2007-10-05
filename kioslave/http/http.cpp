@@ -50,6 +50,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kservice.h>
 #include <kdatetime.h>
 #include <kcodecs.h>

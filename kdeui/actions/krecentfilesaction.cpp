@@ -214,8 +214,8 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
     KUrl        url;
 
     KConfigGroup cg = _config;
-    if ( cg.group().isEmpty())
-        cg = KConfigGroup(cg.config(), "RecentFiles");
+    if ( cg.name().isEmpty())
+        cg.changeGroup("RecentFiles");
 
     bool thereAreEntries=false;
     // read file list
@@ -257,8 +257,8 @@ void KRecentFilesAction::saveEntries( const KConfigGroup &_cg )
     QStringList lst = items();
 
     KConfigGroup cg = _cg;
-    if (cg.group().isEmpty())
-        cg = KConfigGroup(cg.config(), "RecentFiles");
+    if (cg.name().isEmpty())
+        cg.changeGroup("RecentFiles");
 
     cg.deleteGroup();
 

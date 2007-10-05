@@ -26,10 +26,12 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include "k3sconfig.h"
 #include "ui_k3spellui.h"
 #include <kconfiggroup.h>
+#include <kdebug.h>
 
 //to initially disable sorting in the suggestions listview
 #define NONSORTINGCOLUMN 2

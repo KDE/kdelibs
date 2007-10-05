@@ -27,6 +27,7 @@
 #include <QtCore/QList>
 
 #include <kstandarddirs.h>
+#include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <kurl.h>
 #include <kio/global.h>

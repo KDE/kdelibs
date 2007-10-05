@@ -45,6 +45,7 @@
 #include <kmimetype.h>
 #include <kservicegroup.h>
 #include <kserviceoffer.h>
+#include <kdebug.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -52,11 +53,11 @@
 #include <kconfiggroup.h>
 
 template <> inline
-void KConfigGroup::writeEntry( const char *pKey,
+void KConfigGroup::writeEntry( const QByteArray &key,
                               const KGlobalSettings::Completion& aValue,
                               KConfigBase::WriteConfigFlags flags)
 {
-  writeEntry(pKey, int(aValue), flags);
+  writeEntry(key, int(aValue), flags);
 }
 
 class AppNode

@@ -23,11 +23,14 @@
 #include <QtCore/QFileSystemWatcher>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
+#include <QtCore/QSet>
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
 #include <solid/audiointerface.h>
 #include <kconfiggroup.h>
 #include <kio/kdirwatch.h>
+#include <kglobal.h>
+#include <kdebug.h>
 #include <phonon/config-alsa.h>
 
 #ifdef HAVE_LIBASOUND2
@@ -47,7 +50,7 @@ AudioDeviceEnumerator::AudioDeviceEnumerator(AudioDeviceEnumeratorPrivate *dd)
 AudioDeviceEnumeratorPrivate::AudioDeviceEnumeratorPrivate()
     : q(this)
 {
-    config = KSharedConfig::openConfig("phonondevicesrc", KConfig::NoGlobals);
+    config = KSharedConfig::openConfig("phonondevicesrc", KConfig::CascadeConfig);
     findDevices();
     QObject::connect(Solid::DeviceNotifier::instance(), SIGNAL(deviceAdded(const QString &)), &q, SLOT(_k_deviceAdded(const QString &)));
     QObject::connect(Solid::DeviceNotifier::instance(), SIGNAL(deviceRemoved(const QString &)), &q, SLOT(_k_deviceRemoved(const QString &)));

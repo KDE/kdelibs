@@ -27,6 +27,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdesktopfile.h>
+#include <kconfiggroup.h>
 #include <klocale.h>
 #include "kservice.h"
 
@@ -42,8 +43,7 @@ bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
         return false;
 
     KDesktopFile cfg( u.path() );
-    QString type = cfg.desktopGroup().readEntry( "Type" );
-    if ( type.isEmpty() )
+    if ( !cfg.desktopGroup().hasKey("Type") )
     {
         QString tmp = i18n("The desktop entry file %1 "
                            "has no Type=... entry.", u.path() );
@@ -53,17 +53,14 @@ bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
 
     //kDebug(7000) << "TYPE = " << type.data();
 
-    if ( type == "FSDevice" )
+    if ( cfg.hasDeviceType() )
         return runFSDevice( u, cfg );
-    else if ( type == "Application" )
+    else if ( cfg.hasApplicationType() )
         return runApplication( u, u.path() );
-    else if ( type == "Link" )
-    {
-        cfg.setDollarExpansion( true ); // for URL=file:$HOME (Simon)
+    else if ( cfg.hasLinkType() )
         return runLink( u, cfg );
-    }
 
-    QString tmp = i18n("The desktop entry of type\n%1\nis unknown.",  type );
+    QString tmp = i18n("The desktop entry of type\n%1\nis unknown.",  cfg.readType() );
     KMessageBoxWrapper::error( 0, tmp);
 
     return false;
@@ -73,8 +70,7 @@ static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
 {
     bool retval = false;
 
-    KConfigGroup cg = cfg.desktopGroup();
-    QString dev = cg.readEntry( "Dev" );
+    QString dev = cfg.readDevice();
 
     if ( dev.isEmpty() )
     {
@@ -90,6 +86,7 @@ static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
         // Open a new window
         retval = KRun::runUrl( mpURL, QLatin1String("inode/directory"), 0 /*TODO - window*/ );
     } else {
+        KConfigGroup cg = cfg.desktopGroup();
         bool ro = cg.readEntry("ReadOnly", false);
         QString fstype = cg.readEntry( "FSType" );
         if ( fstype == "Default" ) // KDE-1 thing
@@ -147,14 +144,13 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::builtinServices( const 
         return result;
 
     KDesktopFile cfg( _url.path() );
-    KConfigGroup group = cfg.desktopGroup();
-    QString type = group.readEntry( "Type" );
+    QString type = cfg.readType();
 
     if ( type.isEmpty() )
         return result;
 
-    if ( type == "FSDevice" ) {
-        QString dev = group.readEntry( "Dev" );
+    if ( cfg.hasDeviceType() ) {
+        QString dev = cfg.readDevice();
         if ( dev.isEmpty() ) {
             QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.path() );
             KMessageBoxWrapper::error( 0, tmp);
@@ -200,13 +196,8 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
     if ( !cg.hasKey( "Actions" ) && !cg.hasKey( "X-KDE-GetActionMenu") )
         return result;
 
-    if ( cg.hasKey( "TryExec" ) ) {
-        QString tryexec = cg.readPathEntry( "TryExec" );
-        QString exe =  KStandardDirs::findExe( tryexec );
-        if (exe.isEmpty()) {
-            return result;
-        }
-    }
+    if ( cg.hasKey( "TryExec" ) && !cfg.tryExec() )
+        return result;
 
     QStringList keys;
 
@@ -230,7 +221,7 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
 
     }
 
-    keys += cg.readEntry( "Actions", QStringList(), ';' ); //the desktop standard defines ";" as separator!
+    keys += cfg.readActions();
 
     if ( keys.count() == 0 )
         return result;
@@ -250,13 +241,11 @@ QList<KDesktopFileActions::Service> KDesktopFileActions::userDefinedServices( co
             continue;
         }
 
-        group.prepend( "Desktop Action " );
-
         bool bInvalidMenu = false;
 
-        if ( cfg.hasGroup( group ) )
+        if ( cfg.hasActionGroup( group ) )
         {
-            cg.changeGroup( group );
+            cg = cfg.actionGroup( group );
 
             if ( !cg.hasKey( "Name" ) || !cg.hasKey( "Exec" ) )
                 bInvalidMenu = true;
@@ -305,8 +294,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KDesktop
         //kDebug(7000) << "MOUNT&UNMOUNT";
 
         KDesktopFile cfg( path );
-        const KConfigGroup group = cfg.desktopGroup();
-        QString dev = group.readEntry( "Dev" );
+        QString dev = cfg.readDevice();
         if ( dev.isEmpty() ) {
             QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  path );
             KMessageBoxWrapper::error( 0, tmp );
@@ -321,6 +309,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KDesktop
                 return;
             }
 
+            const KConfigGroup group = cfg.desktopGroup();
             bool ro = group.readEntry("ReadOnly", false);
             QString fstype = group.readEntry( "FSType" );
             if ( fstype == "Default" ) // KDE-1 thing

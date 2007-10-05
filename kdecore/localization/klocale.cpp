@@ -83,7 +83,7 @@ public:
    * @param config The configuration object used for init
    * @param useEnv True if we should use environment variables
    */
-  void initLanguageList(KConfigBase *config, bool useEnv);
+  void initLanguageList(KConfig *config, bool useEnv);
 
   /**
    * @internal Figures out which encoding the user prefers.
@@ -202,7 +202,7 @@ public:
   //KSharedConfig::Ptr config;
   int pageSize;
   KLocale::MeasureSystem measureSystem;
-  KConfigBase * languages;
+  KConfig * languages;
 
   QString calendarType;
   KCalendarSystem * calendar;
@@ -274,7 +274,7 @@ void KLocalePrivate::initMainCatalogs(const QString & catalog)
   }
 }
 
-void KLocalePrivate::initLanguageList(KConfigBase *config, bool useEnv)
+void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
 {
   KConfigGroup cg(config, "Locale");
 
@@ -2201,7 +2201,7 @@ bool KLocalePrivate::setEncoding(int mibEnum)
 QStringList KLocale::allLanguagesList() const
 {
   if (!d->languages)
-    d->languages = new KConfig("locale", "all_languages", KConfig::NoGlobals);
+    d->languages = new KConfig("all_languages", KConfig::CascadeConfig, "locale");
 
   return d->languages->groupList();
 }
@@ -2209,7 +2209,7 @@ QStringList KLocale::allLanguagesList() const
 QString KLocale::languageCodeToName(const QString &language) const
 {
   if (!d->languages)
-    d->languages = new KConfig("locale", "all_languages", KConfig::NoGlobals);
+    d->languages = new KConfig("all_languages", KConfig::CascadeConfig, "locale");
 
   KConfigGroup cg(d->languages, language);
   return cg.readEntry("Name");
