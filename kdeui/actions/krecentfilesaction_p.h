@@ -53,8 +53,6 @@ public:
   QMap<QAction*, QString> m_shortNames;
   QMap<QAction*, KUrl> m_urls;
   QPointer<QAction> m_noEntriesAction;
-
-  KRecentFilesAction *q_ptr;
 };
 
 /* vim: et sw=2 ts=2

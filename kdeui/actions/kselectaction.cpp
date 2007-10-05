@@ -100,12 +100,12 @@ KSelectAction::~KSelectAction()
   delete menu();
 }
 
-void KSelectActionPrivate::init(KSelectAction *q_ptr)
+void KSelectActionPrivate::init(KSelectAction *q)
 {
-  q = q_ptr;
-  QObject::connect(q->selectableActionGroup(), SIGNAL(triggered(QAction*)), q, SLOT(actionTriggered(QAction*)));
-  QObject::connect(q, SIGNAL(toggled(bool)),q, SLOT(slotToggled(bool)));
-  q->setMenu(new KMenu());
+  q_ptr = q;
+  QObject::connect(q_ptr->selectableActionGroup(), SIGNAL(triggered(QAction*)), q_ptr, SLOT(actionTriggered(QAction*)));
+  QObject::connect(q_ptr, SIGNAL(toggled(bool)), q_ptr, SLOT(slotToggled(bool)));
+  q_ptr->setMenu(new KMenu());
 }
 
 QActionGroup * KSelectAction::selectableActionGroup( ) const
@@ -450,6 +450,7 @@ void KSelectActionPrivate::_k_comboBoxDeleted(QObject* object)
 
 void KSelectActionPrivate::_k_comboBoxCurrentIndexChanged(int index)
 {
+    Q_Q(KSelectAction);
   //kDebug (129) << "KSelectActionPrivate::_k_comboBoxCurrentIndexChanged(" << index << ")";
 
   KComboBox *triggeringCombo = qobject_cast <KComboBox *> (q->sender ());

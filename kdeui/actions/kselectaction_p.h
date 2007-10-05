@@ -37,10 +37,12 @@
 
 class KSelectActionPrivate
 {
+    Q_DECLARE_PUBLIC(KSelectAction)
+
 public:
   KSelectActionPrivate()
+    : q_ptr(0)
   {
-    q = 0;
     m_edit = false;
     m_menuAccelsEnabled = true;
     m_comboWidth = -1;
@@ -60,7 +62,7 @@ public:
   void _k_comboBoxDeleted(QObject*);
   void _k_comboBoxCurrentIndexChanged(int);
 
-  void init(KSelectAction *q_ptr);
+  void init(KSelectAction*);
 
   bool m_edit, m_menuAccelsEnabled;
   int m_comboWidth;
@@ -90,7 +92,8 @@ public:
       }
       return text;
   }
-  KSelectAction *q;
+
+  KSelectAction *q_ptr;
 };
 
 /* vim: et sw=2 ts=2
