@@ -175,12 +175,12 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
 
     SETUP_TAG(Note, "note", Label, INLINES);
     SETUP_TAG(Warning, "warning", Label, INLINES);
-    SETUP_TAG(Filename, "filename", None, Envar);
+    SETUP_TAG(Filename, "filename", None, Envar << Placeholder);
     SETUP_TAG(Link, "link", Url, None);
     SETUP_TAG(Application, "application", None, None);
     SETUP_TAG(Command, "command", Section, None);
     SETUP_TAG(Resource, "resource", None, None);
-    SETUP_TAG(Icode, "icode", None, Placeholder);
+    SETUP_TAG(Icode, "icode", None, Envar << Placeholder);
     SETUP_TAG(Bcode, "bcode", None, None);
     SETUP_TAG(Shortcut, "shortcut", None, None);
     SETUP_TAG(Interface, "interface", None, None);
