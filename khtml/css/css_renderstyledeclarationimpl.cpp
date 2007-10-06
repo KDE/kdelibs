@@ -270,7 +270,7 @@ DOMString khtml::stringForListStyleType(EListStyleType type)
 static CSSPrimitiveValueImpl* valueForColor(QColor color)
 {
     if (color.isValid())
-        return new CSSPrimitiveValueImpl(color.rgb());//### KDE4: use rgba!
+        return new CSSPrimitiveValueImpl(color.rgba());
     else
         return new CSSPrimitiveValueImpl(khtml::transparentColor);
 }
@@ -374,8 +374,13 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     }
 
     RenderObject *renderer = m_node->renderer();
-    if (!renderer)
+    if (!renderer) {
+        // Handle display:none at the very least.  By definition if we don't have a renderer
+        // we are considered to have no display.
+        if (propertyID == CSS_PROP_DISPLAY)
+            return new CSSPrimitiveValueImpl(CSS_VAL_NONE);
         return 0;
+    }
     RenderStyle *style = renderer->style();
     if (!style)
         return 0;

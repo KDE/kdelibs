@@ -2056,7 +2056,7 @@ static bool parseColor(int unit, const QString &name, QRgb& rgb)
         QColor tc;
         tc.setNamedColor(name.toLower());
         if ( tc.isValid() ) {
-            rgb = tc.rgb();
+            rgb = tc.rgba();
             return true;
         }
     }
