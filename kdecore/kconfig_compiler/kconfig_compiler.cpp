@@ -1173,6 +1173,7 @@ int main( int argc, char **argv )
   bool customAddons = codegenConfig.value("CustomAdditions", false).toBool();
   QString memberVariables = codegenConfig.value("MemberVariables").toString();
   QStringList headerIncludes = codegenConfig.value("IncludeFiles", QStringList()).toStringList();
+  QStringList sourceIncludes = codegenConfig.value("SourceIncludeFiles", QStringList()).toStringList();
   QStringList mutators = codegenConfig.value("Mutators", QStringList()).toStringList();
   bool allMutators = false;
   if ((mutators.count() == 1) && (mutators.at(0).toLower() == "true"))
@@ -1333,7 +1334,10 @@ int main( int argc, char **argv )
   // Includes
   QStringList::ConstIterator it;
   for( it = headerIncludes.begin(); it != headerIncludes.end(); ++it ) {
-    h << "#include <" << *it << ">" << endl;
+    if ( (*it).startsWith('"') )
+      h << "#include " << *it << endl;
+    else
+      h << "#include <" << *it << ">" << endl;
   }
 
   if ( headerIncludes.count() > 0 ) h << endl;
@@ -1346,7 +1350,10 @@ int main( int argc, char **argv )
 
   // Includes
   for( it = includes.begin(); it != includes.end(); ++it ) {
-    h << "#include <" << *it << ">" << endl;
+    if ( (*it).startsWith('"') )
+      h << "#include " << *it << endl;
+    else
+      h << "#include <" << *it << ">" << endl;
   }
 
   if ( !nameSpace.isEmpty() )
@@ -1686,6 +1693,15 @@ int main( int argc, char **argv )
   cpp << "// All changes you do to this file will be lost." << endl << endl;
 
   cpp << "#include \"" << headerFileName << "\"" << endl << endl;
+
+  for( it = sourceIncludes.begin(); it != sourceIncludes.end(); ++it ) {
+    if ( (*it).startsWith('"') )
+      cpp << "#include " << *it << endl;
+    else
+      cpp << "#include <" << *it << ">" << endl;
+  }
+
+  if ( sourceIncludes.count() > 0 ) cpp << endl;
 
   if ( setUserTexts ) cpp << "#include <klocale.h>" << endl << endl;
 
