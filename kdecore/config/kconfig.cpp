@@ -365,9 +365,6 @@ void KConfig::reparseConfiguration()
 
     d->entryMap.clear();
 
-    // add the "default group" marker to the map
-    d->entryMap.setEntry("<default>", 0, QByteArray(), KEntryMap::EntryOptions());
-
     d->bFileImmutable = false;
 
     // Parse all desired files from the least to the most specific.
