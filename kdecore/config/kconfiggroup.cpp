@@ -54,14 +54,14 @@ class KConfigGroupPrivate : public QSharedData
         checkImmutable();
     }
 
-    KConfigGroupPrivate(KSharedConfigPtr owner, const QByteArray& name, bool isConst=false)
-        : mOwner(owner.data()), sOwner(owner), mName(name), bImmutable(false), bConst(false)
+    KConfigGroupPrivate(const KSharedConfigPtr &owner, const QByteArray& name)
+        : sOwner(owner), mOwner(sOwner.data()), mName(name), bImmutable(false), bConst(false)
     {
         checkImmutable();
     }
 
     KConfigGroupPrivate(KConfigGroupPrivate* other, bool isImmutable, bool isConst)
-        : mOwner(other->mOwner), sOwner(other->sOwner), mParent(other->mParent), mName(other->mName),
+        : sOwner(other->sOwner), mOwner(other->mOwner), mParent(other->mParent), mName(other->mName),
           bImmutable(isImmutable), bConst(isConst)
     {
         ;
@@ -69,14 +69,14 @@ class KConfigGroupPrivate : public QSharedData
 
 
     KConfigGroupPrivate(const KConfigGroupPrivate* other, const QByteArray &name)
-        : mOwner(other->mOwner), sOwner(other->sOwner), mParent(other->mParent), mName(name),
+        : sOwner(other->sOwner), mOwner(other->mOwner), mParent(other->mParent), mName(name),
           bImmutable(other->bImmutable), bConst(other->bConst)
     {
         checkImmutable();
     }
 
-    KConfig *mOwner;
     KSharedConfig::Ptr sOwner;
+    KConfig *mOwner;
     QExplicitlySharedDataPointer<KConfigGroupPrivate> mParent;
     QByteArray mName;
 
@@ -190,17 +190,17 @@ KConfigGroup::KConfigGroup(const KConfigBase *master, const char * _group)
 }
 
 KConfigGroup::KConfigGroup(const KSharedConfigPtr &master, const QString &_group)
-    : d(new KConfigGroupPrivate(master, _group.toUtf8(), true))
+    : d(new KConfigGroupPrivate(master, _group.toUtf8()))
 {
 }
 
 KConfigGroup::KConfigGroup(const KSharedConfigPtr &master, const QByteArray &_group)
-    : d(new KConfigGroupPrivate(master, _group, true))
+    : d(new KConfigGroupPrivate(master, _group))
 {
 }
 
 KConfigGroup::KConfigGroup(const KSharedConfigPtr &master, const char * _group)
-    : d(new KConfigGroupPrivate(master, _group, true))
+    : d(new KConfigGroupPrivate(master, _group))
 {
 }
 
