@@ -109,7 +109,8 @@ public:
      * Creates a new shortcut that contains the key sequences described
      * in @p description. The format of description is the same as
      * used in QKeySequence::fromString(const QString&).
-     * Up to two key sequences separated by a semicolon ";" may be given.
+     * Up to two key sequences separated by a semicolon followed by a
+     * space "; " may be given.
      * @param description the description of key sequence(s)
      * @see QKeySequence::fromString(const QString&, SequenceFormat)
      */

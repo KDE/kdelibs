@@ -81,7 +81,7 @@ void KStandardShortcutTest::testKShortcut()
     QVERIFY( zero.primary().isEmpty() );
     QVERIFY( zero.alternate().isEmpty() );
 
-    KShortcut quit( "Ctrl+X, Ctrl+C;Z, Z" ); // quit in emacs vs. quit in vi :)
+    KShortcut quit( "Ctrl+X, Ctrl+C; Z, Z" ); // quit in emacs vs. quit in vi :)
     QCOMPARE( quit.primary().toString(), QString::fromLatin1("Ctrl+X, Ctrl+C") );
     QCOMPARE( quit.alternate().toString(), QString::fromLatin1("Z, Z") );
     QCOMPARE( quit.primary(), QKeySequence(Qt::CTRL + Qt::Key_X, Qt::CTRL + Qt::Key_C) );
