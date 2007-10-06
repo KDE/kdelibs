@@ -40,7 +40,7 @@ struct ImageFormat
                           //note that this is interpreted as normal by
                           //the loader interface, as premultiplied
                           //by the drawing code
-        Image_Palette_8   //8-bit paletted image        
+        Image_Palette_8   //8-bit paletted image
     } type;
     
     int depth() const
@@ -51,7 +51,7 @@ struct ImageFormat
         case Image_RGBA_32:
             return 4;
         default:
-            return 1;    
+            return 1;
         }
     }
 
@@ -73,12 +73,12 @@ struct ImageFormat
 
         return toRet;
     }
-    
+
     bool hasAlpha() const
     {
         return  (type == Image_RGBA_32);
     }
-    
+
     QVector<QRgb> palette;
 
     //A helper for setting up a format descriptor for 8-bit grayscale
@@ -87,7 +87,7 @@ struct ImageFormat
         palette.clear();
         for (int i=0; i<256; i++)
             palette.append(qRgb(i,i,i));
-        type = ImageFormat::Image_Palette_8;    
+        type = ImageFormat::Image_Palette_8;
     }
 };
 

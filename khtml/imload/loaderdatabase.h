@@ -85,7 +85,7 @@ public:
             delete efficientProviders[c];
             
         for (int c = 0; c < foreignProviders.size(); c++)
-            delete foreignProviders[c];            
+            delete foreignProviders[c];
     }
 private:
     QVector<ImageLoaderProvider*> efficientProviders;

@@ -52,11 +52,11 @@ public:
     void switchFrame()
     { shouldSwitchFrame = true; }
     
-    virtual ~AnimProvider() {}
+    virtual ~AnimProvider();
 
     //Must be implemented to create animation provider for the given
     //plane describing the same animation
-    virtual AnimProvider* clone(PixmapPlane* plane) = 0;
+    virtual AnimProvider* clone(PixmapPlane* newParentPlane) = 0;
 
     //Must be implemented to paint the given region. Note that clipping to the
     //overall canvas will be performed already

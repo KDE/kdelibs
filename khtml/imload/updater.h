@@ -32,9 +32,6 @@ namespace khtmlImLoad {
 
 class Image;
 
-#ifdef __GNUC__
-#warning "FIXME: this can dangle pointers!"
-#endif
 /**
  The updater class helps manage timers, to permit update messages to be coalesced (so we don't 
  bug KHTML, or whatever use every 5 pico-seconds.
@@ -52,7 +49,11 @@ public:
      */
     void haveUpdates(Image* frame);
 
-    void unregisterImage(Image* frame);
+    /**
+     Called by image when it's destroyed, and hence should be purged 
+     from the updates list
+    */
+    void destroyed(Image* frame);
 
 private Q_SLOTS:
     void pushUpdates();

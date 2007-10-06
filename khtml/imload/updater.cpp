@@ -54,7 +54,7 @@ void Updater::haveUpdates(Image* frame)
     frames[schedulePortion].append(frame);
 }
 
-void Updater::unregisterImage(Image* frame)
+void Updater::destroyed(Image* frame)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -69,15 +69,15 @@ void Updater::pushUpdates()
     timePortion++;
     if (timePortion >= 10)
         timePortion = 0;
-        
+
     //Notify all images for the given slice.
     QVector<Image*>::const_iterator iter;
     for (iter = frames[timePortion].constBegin();
         iter != frames[timePortion].constEnd()  ; ++iter)
-    {        
+    {
         (*iter)->notifyPerformUpdate();
     }
-    
+
     //Dump the contents of the table, everything delivered
     frames[timePortion].clear();
 }

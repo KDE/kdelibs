@@ -44,7 +44,7 @@ protected:
     ImageLoader()
     {
         image = 0;
-    }   
+    }
 
     /**
      Call to declare canvas geometry and format. May only be called once
@@ -101,7 +101,7 @@ protected:
 public:
     //Some constants. Not consts since some compilers are broken
     enum 
-    { 
+    {
         DefaultFrame   = 0,
         FinalVersionID = 0xff 
     };
@@ -109,7 +109,7 @@ public:
     void setImage(Image* _image)
     {
         image = _image;
-    }    
+    }
     
     virtual ~ImageLoader()
     {}

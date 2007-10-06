@@ -56,7 +56,7 @@ protected:
     {
         std::memset(versions, 0, Tile::TileSize);
     }
-	virtual ~Tile(){}
+    virtual ~Tile(){}
     virtual void discard() = 0;
 
     TileCacheNode* cacheNode;

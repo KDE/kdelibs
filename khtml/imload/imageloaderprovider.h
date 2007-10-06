@@ -38,7 +38,7 @@ class ImageLoaderProvider
 {
 public:
     virtual ~ImageLoaderProvider(){}
-	enum Type
+    enum Type
     {
         Efficient,
         Foreign

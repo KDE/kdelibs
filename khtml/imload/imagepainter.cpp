@@ -28,53 +28,73 @@
 
 namespace khtmlImLoad {
 
-ImagePainter::ImagePainter(Image* _image):image(_image)
+ImagePainter::ImagePainter(Image* _image):image(_image), sizeRefd(false)
 { //No need to ref, default size.
     size = image->size();
 }
 
-ImagePainter::ImagePainter(Image* _image, QSize _size):image(_image), size(_size)
+ImagePainter::ImagePainter(Image* _image, QSize _size):image(_image), size(_size), sizeRefd(false)
 {
-    image->refSize(_size);
 }
 
 ImagePainter::~ImagePainter()
 {
-    image->derefSize(size);
+    if (sizeRefd)
+        image->derefSize(size);
 }
 
 ImagePainter::ImagePainter(const ImagePainter& src)
 {
     image = src.image;
     size  = src.size;
-    image->refSize(size);
+    sizeRefd = false;
 }
 
 ImagePainter& ImagePainter::operator=(const ImagePainter& src)
 {
-    src.image->refSize(src.size);
-    image->derefSize(size);
+    if (sizeRefd)
+        image->derefSize(size);
     image = src.image;
     size  = src.size;
+    sizeRefd = false;
     return *this;
 }
 
 void ImagePainter::setSize(QSize _size)
 {
-    image->refSize(_size);
-    image->derefSize(size);
+    // Don't do anything if size didn't change, 
+    // to avoid dropping the image..
+    if (size == _size)
+        return;
+
+    if (sizeRefd)
+        image->derefSize(size);
     size = _size;
+    sizeRefd = false;
 }
 
 void ImagePainter::setDefaultSize()
 {
-    image->derefSize(size);
+    if (sizeRefd)
+        image->derefSize(size);
     size = image->size();
+    sizeRefd = false;
 }
-    
+
 void ImagePainter::paint(int dx, int dy, QPainter* p, int sx, int sy,
                          int width, int height)
 {
+    if (!image->mayPaint())
+        // ### fallback painting in case bg?
+        return;
+
+    // Do our lazy ref if needed. Safe due to above
+    if (!sizeRefd && size != image->size())
+    {
+        image->refSize(size);
+        sizeRefd = true;
+    }
+
     PixmapPlane* plane = image->getSize(size);
     plane->paint(dx, dy, p, sx, sy, width, height);
 }

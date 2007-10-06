@@ -43,6 +43,9 @@ private:
     
     unsigned int* calcScaleTable(unsigned int orig, unsigned int scaled)
     {
+        if (scaled == 0)
+            return 0; // Don't need to compute origin for 0 pixels..
+
         //### I bet this has all sorts of imprecision problems w/high ratios
         unsigned int* origin = new unsigned int[scaled];
         

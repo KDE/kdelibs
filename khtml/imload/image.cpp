@@ -52,7 +52,7 @@ Image::Image(ImageOwner* _owner)
 
 Image::~Image()
 {
-    ImageManager::updater()->unregisterImage(this);
+    ImageManager::updater()->destroyed(this);
     delete   loader;
     delete   original;
     assert(scaled.isEmpty());
@@ -88,8 +88,6 @@ void Image::loadError()
     inError = true;
     owner->imageError(this);
 }
-
-
 
 bool Image::processData(uchar* data, int length)
 {
@@ -136,8 +134,8 @@ bool Image::processData(uchar* data, int length)
     
     int pos = 0, stat = 0;
     
-    //If we got this far, we have the loader. 
-    //just feed it any buffered data, and the new data. 
+    //If we got this far, we have the loader.
+    //just feed it any buffered data, and the new data.
     if (!bufferPreDetect.isEmpty())
     {
         do
@@ -147,16 +145,16 @@ bool Image::processData(uchar* data, int length)
             if (stat == bufferPreDetect.size() - pos)
                 break;
 
-            pos += stat;                                           
-        }        
-        while (stat > 0);                                               
+            pos += stat;
+        }
+        while (stat > 0);
         bufferPreDetect.resize(0);
     }
-    
+
     if (length) //if there is something we did not feed from the buffer already..
     {
         pos = 0;
-        do 
+        do
         {
             stat = loader->processData(data + pos, length - pos);
         
@@ -173,6 +171,7 @@ bool Image::processData(uchar* data, int length)
     {
         fullyDecoded = true;
         owner->imageDone(this);
+        return false;
     }
     
     if (stat == ImageLoader::Error)
@@ -187,10 +186,10 @@ bool Image::processData(uchar* data, int length)
 void Image::processEOF()
 {
     if (inError) //Input error already - nothing to do
-        return; 
+        return;
 
     //If no loader detected, and we're at EOF, it's an error
-    if (!loader )
+    if (!loader)
     {
         loadError();
         return;
@@ -328,7 +327,9 @@ static QPair<int, int> trSize(QSize size)
 
 PixmapPlane* Image::getSize(QSize size)
 {
-    if (size == this->size())
+    // If we're empty, we use ourselves as a placeholder,
+    // to avoid trying scaling a 0x0 image
+    if (size == this->size() || this->size().isEmpty())
         return original;
 
     return scaled[trSize(size)];
@@ -336,7 +337,9 @@ PixmapPlane* Image::getSize(QSize size)
 
 void Image::derefSize(QSize size)
 {
-    if (size == this->size()) return;
+    assert(original);
+
+    if (size == this->size() || this->size().isEmpty()) return;
 
     QPair<int, int> key = trSize(size);
     PixmapPlane* plane = scaled[key];
@@ -350,7 +353,9 @@ void Image::derefSize(QSize size)
 
 void Image::refSize(QSize size)
 {
-    if (size == this->size()) return;
+    assert(original);
+
+    if (size == this->size() || this->size().isEmpty()) return;
 
     QPair<int, int> key = trSize(size);
     PixmapPlane* plane = scaled[key];
@@ -360,10 +365,12 @@ void Image::refSize(QSize size)
     }
     else
     {
-#ifdef __GNUC__
-#warning "Security paranoia needed here"
-#endif
-        //Compute scaling ratios
+        // To avoid any overflow issues here, we use QImage's width/height to shrink our work
+        // area to something reasonable if stuff overruns. Further, ImagePainter enforces
+        // our maximum image size, much like the load code does.
+
+        // Compute scaling ratios. divide-by-zero should not happen 
+        // due to check above.
         double wRatio = size.width()  / double(width);
         double hRatio = size.height() / double(height);
     
@@ -381,6 +388,8 @@ void Image::refSize(QSize size)
                     static_cast<RawImagePlane*>(cur->parent));
             PixmapPlane*      plane  = new PixmapPlane(
                     image.width(), image.height(), splane);
+            if (cur->animProvider)
+                plane->animProvider = cur->animProvider->clone(plane);
 
             if (prev)
                 prev->nextFrame = plane;
@@ -392,9 +401,6 @@ void Image::refSize(QSize size)
 
         first->refCount = 1;
         scaled[key]     = first;
-#ifdef __GNUC__
-#warning "FIXME: Clone animation controllers"
-#endif
     }
 }
 

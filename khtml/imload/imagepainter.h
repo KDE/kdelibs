@@ -76,8 +76,12 @@ public:
     void paint(int dx, int dy, QPainter* p, int sx = 0, int sy = 0,
                int width = -1, int height = -1);
 private:
+    // Note: we actually request/ref scaled version from Image
+    // lazily. This is because we may be constructed before there
+    // is anything to scale, so we check when painting..
     Image* image;
     QSize  size;
+    bool   sizeRefd;
 };
 
 }

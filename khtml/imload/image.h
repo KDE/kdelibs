@@ -73,15 +73,6 @@ public:
     ~Image();
     
     /**
-     Paints a portion of the current frame on the painter 'p' at dx and dy. 
-     The source rectangle starts at sx, sy and has dimension width * height
-     
-     If timeLimit is passed, the painting code will interrupt itself after that many ms, and use
-     the update notification to trigget a further repaint.
-    */
-    void paint(int dx, int dy, QPainter* p, int sx, int sy, int width, int height, int timeLimit = 0); 
-    
-    /**
      Returns the image's size
     */
     QSize size() const;
@@ -119,8 +110,9 @@ private:
 
     //### FIXME: restore the animprovider interface
 
-private: //Interface to the painter
+private: //Interface to the painter.
     friend class ImagePainter;
+    bool mayPaint() { return original; }
     void derefSize(QSize size);
     void refSize  (QSize size);
     PixmapPlane* getSize(QSize size);

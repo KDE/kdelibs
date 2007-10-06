@@ -45,7 +45,7 @@ private:
     static QPixmap*        emptyPix;
     
     static unsigned int pixmapCacheSize();
-    static unsigned int imageCacheSize();    
+    static unsigned int imageCacheSize();
     
     static void initLoaders();
 public:
@@ -60,14 +60,14 @@ public:
     {
         if (!imgCache)
             imgCache = new TileCache(imageCacheSize());
-        return imgCache;            
+        return imgCache;
     }
     
     static TileCache* pixmapCache()
     {
         if (!pixCache)
             pixCache = new TileCache(pixmapCacheSize());
-        return pixCache;            
+        return pixCache;
     }
     
     static Updater* updater()
@@ -84,15 +84,8 @@ public:
             loaderDB = new LoaderDatabase();
             initLoaders(); //Register built-in decoders
         }
-        return loaderDB;            
+        return loaderDB;
     }
-/*
-    static QPixmap& emptyPixmap()
-    {
-        if (!emptyPix)
-            emptyPix = new QPixmap();
-        return *emptyPix;
-    }*/
 };
 
 }

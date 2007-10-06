@@ -52,15 +52,15 @@ public:
     
     unsigned int tileWidth(unsigned int tileX)
     {
-        if (tileX == (tilesWidth - 1) && (width % Tile::TileSize))
-            return width % Tile::TileSize;
+        if (tileX == (tilesWidth - 1))
+            return width - tileX * Tile::TileSize;
         return Tile::TileSize;
     }
     
     unsigned int tileHeight(unsigned int tileY)
     {
-        if (tileY == (tilesHeight - 1) && (height % Tile::TileSize))
-            return height % Tile::TileSize;
+        if (tileY == (tilesHeight - 1))
+            return height - tileY * Tile::TileSize;
         return Tile::TileSize;
     }
     
