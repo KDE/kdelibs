@@ -101,19 +101,16 @@ struct KEntryKey
  */
 inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
 {
-    if (k1.mGroup != k2.mGroup)
-        return k1.mGroup < k2.mGroup;
-
-    const char *const c_key1 = k1.mKey.constData();
-    const char *const c_key2 = k2.mKey.constData();
-    if (!c_key1 && c_key2)
-        return true;
-
-    int result = 0;
-    if (c_key1 && c_key2)
-        result = qstrcmp(c_key1, c_key2);
-    if (result != 0)
+    int result = qstrcmp(k1.mGroup.constData(), k2.mGroup.constData());
+    if (result != 0) {
         return result < 0;
+    }
+
+    result = qstrcmp(k1.mKey.constData(), k2.mKey.constData());
+    if (result != 0) {
+        return result < 0;
+    }
+
     if (k1.bLocal != k2.bLocal)
         return k2.bLocal;
     return (!k1.bDefault && k2.bDefault);
@@ -157,17 +154,31 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                 theKey.bLocal = true;
 
                 Iterator it = find(theKey);
-                if (it != constEnd())
+                if (it != end())
                     return it;
 
                 theKey.bLocal = false;
             }
             return find(theKey);
         }
+
         ConstIterator findEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
                                 SearchFlags flags = SearchFlags()) const
         {
-            return const_cast<KEntryMap *>(this)->findEntry(group, key, flags);
+            KEntryKey theKey(group, key);
+            theKey.bDefault = (flags&SearchDefaults);
+
+            // try the localized key first
+            if (flags&SearchLocalized) {
+                theKey.bLocal = true;
+
+                ConstIterator it = find(theKey);
+                if (it != constEnd())
+                    return it;
+
+                theKey.bLocal = false;
+            }
+            return find(theKey);
         }
 
         void setEntry(const QByteArray& group, const QByteArray& key,
