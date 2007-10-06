@@ -35,7 +35,7 @@ class QFile;
 class QByteArray;
 class QDateTime;
 
-class KDECORE_EXPORT KConfigBackend : public QObject, public KShared
+class KConfigBackend : public QObject, public KShared
 {
     Q_OBJECT
     Q_FLAGS(ParseOption)

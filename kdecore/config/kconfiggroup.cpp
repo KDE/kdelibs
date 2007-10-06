@@ -657,6 +657,8 @@ QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const
 
     if (data.isNull())
         return aDefault;
+    if (data.isEmpty())
+        return QVariantList();
 
     if (!data.contains("\\,")) { // easy no escaped commas
         QVariantList list;
@@ -697,6 +699,8 @@ QStringList KConfigGroup::readEntry(const QByteArray &key, const QStringList& aD
     const QString data = readEntry(key, QString());
     if (data.isNull())
         return aDefault;
+    if (data.isEmpty())
+        return QStringList();
 
     const QString separator = QChar(sep);
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
@@ -776,7 +780,7 @@ QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) c
     bool expand = false;
     const QString data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchLocalized,
                                              &expand);
-    if (data.isNull())
+    if (data.isEmpty())
         return QStringList();
 
     const QString separator = QChar(sep);
