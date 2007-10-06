@@ -105,6 +105,7 @@ class Scriptface : public JSObject
     JSValue *normKeyf (ExecState *exec, JSValue *phrase);
     JSValue *loadPropsf (ExecState *exec, const List &fnames);
     JSValue *getPropf (ExecState *exec, JSValue *phrase, JSValue *prop);
+    JSValue *toUpperFirstf (ExecState *exec, JSValue *str, JSValue *nalt);
 
     enum {
         Load,
@@ -121,7 +122,8 @@ class Scriptface : public JSObject
         Lscr,
         normKey,
         loadProps,
-        getProp
+        getProp,
+        toUpperFirst
     };
 
     // Virtual implementations.
@@ -558,6 +560,7 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     normKey         Scriptface::normKey         DontDelete|ReadOnly|Function 1
     loadProps       Scriptface::loadProps       DontDelete|ReadOnly|Function 0
     getProp         Scriptface::getProp         DontDelete|ReadOnly|Function 2
+    toUpperFirst    Scriptface::toUpperFirst    DontDelete|ReadOnly|Function 2
 @end
 */
 /* Source for ScriptfaceTable.
@@ -643,6 +646,8 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->loadPropsf(exec, args);
         case Scriptface::getProp:
             return obj->getPropf(exec, CALLARG(0), CALLARG(1));
+        case Scriptface::toUpperFirst:
+            return obj->toUpperFirstf(exec, CALLARG(0), CALLARG(1));
         default:
             return Undefined();
     }
@@ -844,7 +849,7 @@ JSValue *Scriptface::normKeyf (ExecState *exec, JSValue *phrase)
 {
     if (!phrase->isString()) {
         return throwError(exec, TypeError,
-                          SPREF"normKey: expected string as first argument");
+                          SPREF"normKey: expected string as argument");
     }
 
     QString nqphrase = normKeystr(phrase->toString(exec).qstring());
@@ -1038,3 +1043,72 @@ JSValue *Scriptface::getPropf (ExecState *exec, JSValue *phrase, JSValue *prop)
     }
     return Undefined();
 }
+
+JSValue *Scriptface::toUpperFirstf (ExecState *exec,
+                                    JSValue *str, JSValue *nalt)
+{
+    static QString head("~@");
+    static int hlen = head.length();
+
+    if (!str->isString()) {
+        return throwError(exec, TypeError,
+                          SPREF"toUpperFirst: expected string as first argument");
+    }
+    if (!(nalt->isNumber() || nalt->isNull())) {
+        return throwError(exec, TypeError,
+                          SPREF"toUpperFirst: expected number as second argument");
+    }
+
+    QString qstr = str->toString(exec).qstring();
+    int qnalt = nalt->isNull() ? 0 : nalt->toInteger(exec);
+
+    // If the first letter is found within an alternatives directive,
+    // upcase the first letter in each of the alternatives in that directive.
+
+    QString qstruc = qstr;
+    int len = qstr.length();
+    QChar altSep;
+    int remainingAlts = 0;
+    bool checkCase = true;
+    int numUpcased = 0;
+    int i = 0;
+    while (i < len) {
+        QChar c = qstr[i];
+
+        if (qnalt && !remainingAlts && qstr.mid(i, hlen) == head) {
+            // An alternatives directive is just starting.
+            i += 2;
+            if (i >= len) break; // malformed directive, bail out
+            // Record alternatives separator, set number of remaining
+            // alternatives, reactivate case checking.
+            altSep = qstruc[i];
+            remainingAlts = qnalt;
+            checkCase = true;
+        }
+        else if (remainingAlts && c == altSep) {
+            // Alternative separator found, reduce number of remaining
+            // alternatives and reactivate case checking.
+            --remainingAlts;
+            checkCase = true;
+        }
+        else if (checkCase && c.isLetter()) {
+            // Case check is active and the character is a letter; upcase.
+            qstruc[i] = c.toUpper();
+            ++numUpcased;
+            // No more case checks until next alternatives separator.
+            checkCase = false;
+        }
+
+        // If any letter has been upcased, and there are no more alternatives
+        // to be processed, we're done.
+        if (numUpcased > 0 && remainingAlts == 0) {
+            break;
+        }
+
+        // Go to next character.
+        ++i;
+    }
+
+    return String(qstruc);
+}
+
