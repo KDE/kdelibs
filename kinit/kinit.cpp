@@ -56,6 +56,7 @@
 #include <klibloader.h>
 #include <kapplication.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #ifdef Q_OS_LINUX
 #include <sys/prctl.h>
