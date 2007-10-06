@@ -40,7 +40,7 @@ class KDesktopFilePrivate : public KConfigPrivate
 };
 
 KDesktopFilePrivate::KDesktopFilePrivate(const char * resourceType, const QString &fileName)
-    : KConfigPrivate(KGlobal::mainComponent(), 0, resourceType)
+    : KConfigPrivate(KGlobal::mainComponent(), KConfig::CascadeConfig, resourceType)
 {
     mBackend = new KConfigIniBackend();
     bDynamicBackend = false;
