@@ -47,6 +47,7 @@ private Q_SLOTS:
     void testRevertAllEntries();
     void testChangeGroup();
     void testKdeglobals();
+    void testSubGroup();
 
     // unrelated
     void testKAboutDataOrganizationDomain();

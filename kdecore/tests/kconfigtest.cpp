@@ -126,6 +126,15 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "flags-bit0-bit1", Flags(bit0|bit1), KConfig::Normal );
 #endif
 
+  cg = KConfigGroup(&sc, "ParentGroup" );
+  KConfigGroup cg1(&cg, "SubGroup1" );
+  cg1.writeEntry( "somestring", "somevalue" );
+  cg.writeEntry( "parentgrpstring", "somevalue" );
+  KConfigGroup cg2(&cg, "SubGroup2" );
+  cg2.writeEntry( "substring", "somevalue" );
+  KConfigGroup cg3(&cg, "SubGroup/3");
+  cg3.writeEntry( "sub3string", "somevalue" );
+
   sc.sync();
 
   KConfig sc1("kdebugrc", KConfig::SimpleConfig);
@@ -443,6 +452,20 @@ void KConfigTest::testEmptyGroup()
 #endif
 }
 
+void KConfigTest::testSubGroup()
+{
+    KConfig sc( "kconfigtest" );
+    KConfigGroup cg( &sc, "ParentGroup" );
+    QVERIFY(cg.readEntry( "parentgrpstring", "") == QString("somevalue") );
+    KConfigGroup subcg1( &cg, "SubGroup1");
+    QVERIFY(subcg1.readEntry( "somestring", "") == QString("somevalue") );
+    KConfigGroup subcg2( &cg, "SubGroup2");
+    QVERIFY(subcg2.readEntry( "substring", "") == QString("somevalue") );
+    KConfigGroup subcg3( &cg, "SubGroup/3");
+    QVERIFY(subcg3.readEntry( "sub3string", "") == QString("somevalue") );
+    KConfigGroup subcg4( &subcg3, "3");
+    QVERIFY(!subcg4.exists());
+}
 
 void KConfigTest::testKdeglobals()
 {
