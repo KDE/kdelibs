@@ -255,7 +255,6 @@ ol {
 
 li {
         display: list-item;
-        -khtml-flow-mode: -khtml-around-floats;
 }
 
 ul   ul ul,   ul   ol ul,     ul   menu ul,   ul   dir ul, 
