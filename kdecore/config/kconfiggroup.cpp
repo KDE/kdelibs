@@ -55,7 +55,7 @@ class KConfigGroupPrivate : public QSharedData
     }
 
     KConfigGroupPrivate(KSharedConfigPtr owner, bool isConst=false)
-        : mOwner(owner.data()), sOwner(owner), bImmutable(false), bConst(isConst)
+        : mOwner(owner.data()), sOwner(owner), bImmutable(false), bConst(false)
     {
         checkImmutable();
     }
