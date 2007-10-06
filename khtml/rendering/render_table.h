@@ -271,6 +271,8 @@ public:
     QVector<RowStruct> grid;
     QVector<int> rowPos;
 
+    int numColumns() const;
+
     signed short cRow;
     ushort cCol;
     bool needCellRecalc;

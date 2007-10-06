@@ -738,6 +738,20 @@ void RenderTable::recalcSections()
 	}
 	child = child->nextSibling();
     }
+
+    int maxCols = 0;
+    for (RenderObject *child = firstChild(); child; child = child->nextSibling()) {
+        if (child->isTableSection()) {
+            RenderTableSection *section = static_cast<RenderTableSection *>(child);
+            int sectionCols = section->numColumns();
+            if (sectionCols > maxCols)
+                maxCols = sectionCols;
+        }
+    }
+    
+    columns.resize(maxCols);
+    columnPos.resize(maxCols+1);
+    
     needSectionRecalc = false;
     setNeedsLayout(true);
 }
@@ -1774,6 +1788,20 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
     }
 }
 
+int RenderTableSection::numColumns() const
+{
+    int result = 0;
+    
+    for (int r = 0; r < numRows(); ++r) {
+        for (int c = result; c < table()->numEffCols(); ++c) {
+            if (cellAt(r, c))
+                result = c;
+        }
+    }
+    
+    return result + 1;
+}
+ 
 void RenderTableSection::recalcCells()
 {
     cCol = 0;
@@ -2902,7 +2930,7 @@ void RenderTableCell::paintCollapsedBorder(QPainter* p, int _tx, int _ty, int w,
 
 void RenderTableCell::paintBackgroundsBehindCell(PaintInfo& pI, int _tx, int _ty, RenderObject* bgObj)
 {
-    if (!bgObj)
+    if (!bgObj || style()->visibility() != VISIBLE)
         return;
 
     RenderTable* tableElt = table();
