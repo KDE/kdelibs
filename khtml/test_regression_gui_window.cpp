@@ -77,9 +77,10 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 
 	// Load default values for tests directory/khtml directory...
 	KConfig config("testregressiongui", KConfig::SimpleConfig);
+	KConfigGroup grp = config.group("<default>");
 
-	m_testsUrl = KUrl::fromPath(config.readPathEntry("TestsDirectory"));
-	m_khtmlUrl = KUrl::fromPath(config.readPathEntry("KHTMLDirectory"));
+	m_testsUrl = KUrl::fromPath(grp.readPathEntry("TestsDirectory"));
+	m_khtmlUrl = KUrl::fromPath(grp.readPathEntry("KHTMLDirectory"));
 
 	initTestsDirectory();
 
@@ -220,7 +221,8 @@ void TestRegressionWindow::initTestsDirectory()
 
 		// Remember directory...
 		KConfig config("testregressiongui", KConfig::SimpleConfig);
-		config.writePathEntry("TestsDirectory", m_testsUrl.path());
+		KConfigGroup grp = config.group("<default>");
+		grp.writePathEntry("TestsDirectory", m_testsUrl.path());
 
 		// Start listing directory...
 		KUrl listUrl = m_testsUrl; listUrl.addPath("tests");
@@ -254,7 +256,8 @@ void TestRegressionWindow::setKHTMLDirectory()
 
 		// Remember directory...
 		KConfig config("testregressiongui", KConfig::SimpleConfig);
-		config.writePathEntry("KHTMLDirectory", m_khtmlUrl.path());
+		KConfigGroup grp = config.group("<default>");
+		grp.writePathEntry("KHTMLDirectory", m_khtmlUrl.path());
 
 		if(!m_testsUrl.isEmpty() && !m_khtmlUrl.isEmpty())
 			m_ui.actionRun_tests->setEnabled(true);

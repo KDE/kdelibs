@@ -627,6 +627,9 @@ int main(int argc, char *argv[])
     if (baseDir.isEmpty()) baseDir = args->arg(testcase_index++);
 
     QFileInfo bdInfo(baseDir);
+    // font pathes passed to Xvfb must be absolute
+    if (bdInfo.isRelative())
+        baseDir = bdInfo.dir().absolutePath();
 
     const char *subdirs[] = {"tests", "baseline", "output", "resources"};
     for ( int i = 0; i < 3; i++ ) {
@@ -675,29 +678,29 @@ int main(int argc, char *argv[])
 //    a.disableAutoDcopRegistration();
     a.setStyle( new TestStyle );
     KConfig sc1( "cryptodefaults", KConfig::SimpleConfig );
-    sc1.setGroup( "Warnings" );
-    sc1.writeEntry( "OnUnencrypted",  false );
+    KConfigGroup grp = sc1.group("Warnings");
+    grp.writeEntry( "OnUnencrypted",  false );
     KSharedConfigPtr config = KGlobal::mainComponent().config();
-    config->setGroup( "Notification Messages" );
-    config->writeEntry( "kjscupguard_alarmhandler", true );
-    config->setGroup("HTML Settings");
-    config->writeEntry("ReportJSErrors", false);
+    grp = config->group("Notification Messages" );
+    grp.writeEntry( "kjscupguard_alarmhandler", true );
+    grp.writeEntry("ReportJSErrors", false);
     KConfig cfg( "khtmlrc" );
-    cfg.setGroup("HTML Settings");
-    cfg.writeEntry( "StandardFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
-    cfg.writeEntry( "FixedFont", HTML_DEFAULT_VIEW_FIXED_FONT );
-    cfg.writeEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT );
-    cfg.writeEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
-    cfg.writeEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT );
-    cfg.writeEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT );
-    cfg.writeEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
-    cfg.writeEntry( "MediumFontSize", 10 );
-    cfg.writeEntry( "Fonts", QStringList() );
-    cfg.writeEntry( "DefaultEncoding", "" );
-    cfg.setGroup("Java/JavaScript Settings");
-    cfg.writeEntry( "WindowOpenPolicy", (int)KHTMLSettings::KJSWindowOpenAllow);
+    grp = cfg.group("HTML Settings");
+    grp.writeEntry( "StandardFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
+    grp.writeEntry( "FixedFont", HTML_DEFAULT_VIEW_FIXED_FONT );
+    grp.writeEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT );
+    grp.writeEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
+    grp.writeEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT );
+    grp.writeEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT );
+    grp.writeEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
+    grp.writeEntry( "MediumFontSize", 10 );
+    grp.writeEntry( "Fonts", QStringList() );
+    grp.writeEntry( "DefaultEncoding", "" );
+    grp = cfg.group("Java/JavaScript Settings");
+    grp.writeEntry( "WindowOpenPolicy", (int)KHTMLSettings::KJSWindowOpenAllow);
 
     cfg.sync();
+    grp.sync();
 
     KJS::ScriptInterpreter::turnOffCPUGuard();
 
@@ -721,8 +724,9 @@ int main(int argc, char *argv[])
                             171, 7101, 7002, 7019, 7027, 7014,
                             7011, 6070, 6080, 6090, 0};
     for ( int i = 0; areas[i]; ++i ) {
-        dc.setGroup( QString::number( areas[i] ) );
-        dc.writeEntry( "InfoOutput", outputDebug ? 2 : 4 );
+        grp = dc.group( QString::number( areas[i] ) );
+        grp.writeEntry( "InfoOutput", outputDebug ? 2 : 4 );
+        grp.sync();
     }
     dc.sync();
 
