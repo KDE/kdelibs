@@ -50,6 +50,9 @@ drawControl
   CE_PushButton
     QStyleOptionButton::Flat not taken into account (thus the frame is always drawn).
 
+  CE_HeaderSection
+    The sort indicator is the same for both ascending and descending directions.
+
 sizeFromContents:
     CT_CheckBox: OK
     CT_ComboBox:
