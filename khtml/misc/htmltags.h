@@ -114,7 +114,7 @@ KDE_NO_EXPORT const char* getTagName(unsigned short id);
 #define ID_XMP 103
 #define ID_TEXT 104
 #define ID_COMMENT 105
-#define ID_CLOSE_TAG 105
 #define ID_LAST_TAG 105
+#define ID_CLOSE_TAG 16384
 
 #endif

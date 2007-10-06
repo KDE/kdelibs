@@ -1,4 +1,4 @@
-/* ANSI-C code produced by gperf version 3.0.1 */
+/* ANSI-C code produced by gperf version 3.0.2 */
 /* Command-line: gperf -a -L ANSI-C -P -D -E -C -l -o -t -k '*' -NfindTag -Hhash_tag -Wwordlist_tag -Qspool_Tag htmltags.gperf  */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \

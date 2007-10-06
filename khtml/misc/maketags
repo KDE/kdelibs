@@ -68,8 +68,8 @@ $num = $num+1;
 print header "#define ID_TEXT $num\n";
 $num = $num+1;
 print header "#define ID_COMMENT $num\n";
-print header "#define ID_CLOSE_TAG $num\n";
 print header "#define ID_LAST_TAG $num\n";
+print header "#define ID_CLOSE_TAG 16384\n";
 
 print out "%%\n";
 close out;
