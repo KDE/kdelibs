@@ -341,6 +341,7 @@ private Q_SLOTS:
     void tripleClickTimeout();
     void findTimeout();
     void accessKeysTimeout();
+    void delayedInit();
 
     /**
     * @internal

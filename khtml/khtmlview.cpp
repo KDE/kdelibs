@@ -481,6 +481,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
 
     init();
     widget()->setMouseTracking(true);
+    QTimer::singleShot(0, this, SLOT(delayedInit()));
 }
 
 KHTMLView::~KHTMLView()
@@ -512,8 +513,6 @@ void KHTMLView::init()
     if (!widget())
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
-    QSize s = viewport()->size();
-    resizeContents(s.width(), s.height());
 
     // ### we'll enable redirection of khtmlview
     //     when event issues have been thoroughly worked out
@@ -522,6 +521,12 @@ void KHTMLView::init()
 
     m_kwp->setIsRedirected( redirect );
     d->staticWidget = redirect;
+}
+
+void KHTMLView::delayedInit()
+{
+    QSize s = viewport()->size();
+    resizeContents(s.width(), s.height());
 }
 
 void KHTMLView::clear()
@@ -707,16 +712,6 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
-    int dw = e->oldSize().width() - e->size().width();
-    int dh = e->oldSize().height() - e->size().height();
-
-    // if we are shrinking the view, don't allow the content to overflow
-    // before the layout occurs - we don't know if we need scrollbars yet
-    dw = dw>0 ? qMax(0, contentsWidth()-dw) : contentsWidth();
-    dh = dh>0 ? qMax(0, contentsHeight()-dh) : contentsHeight();
-
-    resizeContents(dw, dh);
-
     if (d->layoutSchedulingEnabled)
         layout();
 #ifndef KHTML_NO_CARET

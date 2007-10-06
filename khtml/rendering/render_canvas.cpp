@@ -227,8 +227,8 @@ void RenderCanvas::updateDocumentSize()
 
     if (!m_pagedMode && m_view) {
 
-        bool vss = !m_view->verticalScrollBar()->isHidden();
-        bool hss = !m_view->horizontalScrollBar()->isHidden();
+        bool vss = m_view->verticalScrollBar()->isVisible();
+        bool hss = m_view->horizontalScrollBar()->isVisible();
         QSize s = m_view->maximumViewportSize();
 
         int zoomedDocWidth = m_cachedDocWidth*zLevel/100;
