@@ -55,7 +55,8 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
            const char* resource)
     : openFlags(flags), resourceType(resource), mBackend(0),
       bDynamicBackend(true),  bDirty(false), bReadDefaults(false),
-      bFileImmutable(false), bForceGlobal(false), componentData(componentData_)
+      bFileImmutable(false), bForceGlobal(false), componentData(componentData_),
+      configState(KConfigBase::ReadWrite)
 {
     sGlobalFileName = componentData.dirs()->saveLocation("config") +
                           QString::fromLatin1("kdeglobals");
@@ -179,12 +180,12 @@ QStringList KConfig::keyList(const QString& aGroup) const
 {
     Q_D(const KConfig);
     QStringList keys;
-    const QByteArray theGroup(aGroup.isEmpty()?
-            (aGroup.isNull()? d->currentGroup.name().toUtf8(): "<default>"):
+    const QByteArray theGroup(aGroup.isEmpty() ?
+            (aGroup.isNull()? d->currentGroup.toUtf8(): "<default>"):
             aGroup.toUtf8());
 
     const KEntryMapConstIterator theEnd = d->entryMap.constEnd();
-    KEntryMapConstIterator it = d->entryMap.findEntry(theGroup, 0, 0);
+    KEntryMapConstIterator it = d->entryMap.findEntry(theGroup);
     if (it != theEnd) {
         ++it; // advance past the special group entry marker
 
@@ -205,7 +206,7 @@ QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
     Q_D(const KConfig);
     QMap<QString, QString> theMap;
     const QByteArray theGroup(aGroup.isEmpty()?
-            (aGroup.isNull()? d->currentGroup.name().toUtf8(): "<default>"):
+            (aGroup.isNull()? d->currentGroup.toUtf8(): "<default>"):
             aGroup.toUtf8());
 
     const KEntryMapConstIterator theEnd = d->entryMap.constEnd();
@@ -278,7 +279,7 @@ void KConfig::clean()
     d->bDirty = false;
 
     // clear any dirty flags that entries might have set
-    KEntryMapConstIterator theEnd = d->entryMap.constEnd();
+    const KEntryMapIterator theEnd = d->entryMap.end();
     for (KEntryMapIterator it = d->entryMap.begin(); it != theEnd; ++it)
         it->bDirty = false;
 }
@@ -338,7 +339,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
             resourceType = type; // only change it if it's not empty
         file = KStandardDirs::locateLocal(resourceType, fileName, componentData);
 
-        if (file == QLatin1String("kdeglobals"))
+        if (fileName == QLatin1String("kdeglobals"))
             openFlags |= KConfig::IncludeGlobals;
     }
 
@@ -373,16 +374,14 @@ void KConfig::reparseConfiguration()
 
     // lock the local file
     if (!d->lockLocal()) {
-        qWarning() << "couldn't lock local file";
-//        return;
+        //what do we do now?
     }
 
     if (d->wantGlobals()) {
         KSharedPtr<KConfigBackend> global = KConfigBackend::create(componentData(), d->sGlobalFileName);
         // lock the global file
         if (!global->lock(componentData())) {
-            qWarning() << "couldn't lock global file";
-//            return;
+            //what do we do now?
         }
 
         d->parseGlobalFiles();
@@ -397,9 +396,6 @@ void KConfig::reparseConfiguration()
     // unlock local file
     if (d->mBackend && d->mBackend->isLocked())
         d->mBackend->unlock();
-
-    if (!d->currentGroup.isValid())
-        d->currentGroup = KConfigGroup(this, QString());
 }
 
 void KConfigPrivate::parseGlobalFiles()
@@ -568,13 +564,13 @@ bool KConfig::forceGlobal() const
 void KConfig::setGroup(const QString& group)
 {
     Q_D(KConfig);
-    d->currentGroup = KConfigGroup(this, group);
+    d->currentGroup = group;
 }
 
 QString KConfig::group() const
 {
     Q_D(const KConfig);
-    return d->currentGroup.name();
+    return d->currentGroup;
 }
 
 KConfigGroup KConfig::groupImpl(const QByteArray &arr)

@@ -85,7 +85,7 @@ private:
 
     QString locale;
     QString fileName;
-    KConfigGroup currentGroup;
+    QString currentGroup;
     KComponentData componentData;
     KConfigBase::ConfigState configState;
 
