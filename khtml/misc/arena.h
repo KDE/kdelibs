@@ -40,7 +40,9 @@
 #define ARENA_H
 
 #include <config-khtml.h>
-#if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
+
+// VG annotations for arenas disabled since still buggy
+#if 0 && defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
 
 #include <valgrind/memcheck.h>
 #define VALGRIND_SUPPORT
