@@ -25,6 +25,7 @@
 #include "animprovider.h"
 #include "pixmapplane.h"
 #include "imagemanager.h"
+#include "image.h"
 
 namespace khtmlImLoad {
 
@@ -33,6 +34,12 @@ void AnimProvider::nextFrame()
     curFrame = curFrame->nextFrame;
     if (!curFrame)
         curFrame = frame0;
+}
+
+void AnimProvider::switchFrame()
+{
+    shouldSwitchFrame = true; 
+    image->notifyPerformUpdate();
 }
 
 AnimProvider::~AnimProvider()

@@ -40,11 +40,9 @@ Updater::Updater()
 {
     timePortion = 0;
 
-    QTimer* updatePusher = new QTimer(this);
+    updatePusher = new QTimer(this);
     connect(updatePusher, SIGNAL(timeout()),
             this,         SLOT  (pushUpdates()));
-
-    updatePusher->start(100);                        
 }
 
 void Updater::haveUpdates(Image* frame)
@@ -52,6 +50,17 @@ void Updater::haveUpdates(Image* frame)
     assert(frame);
     int schedulePortion = (timePortion + 1) % 10;
     frames[schedulePortion].append(frame);
+    if (!updatePusher->isActive())
+        updatePusher->start(100);
+}
+
+bool Updater::updatesPending()
+{
+    for (int i = 0; i < 10; ++i)
+        if (!frames[i].isEmpty())
+            return true;
+
+    return false;
 }
 
 void Updater::destroyed(Image* frame)
@@ -62,6 +71,9 @@ void Updater::destroyed(Image* frame)
         if (pos != -1)
           frames[i].remove(pos);
     }
+
+    if (!updatesPending())
+        updatePusher->stop();
 }
 
 void Updater::pushUpdates()
@@ -80,6 +92,9 @@ void Updater::pushUpdates()
 
     //Dump the contents of the table, everything delivered
     frames[timePortion].clear();
+
+    if (!updatesPending())
+        updatePusher->stop();
 }
 
 }

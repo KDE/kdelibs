@@ -28,6 +28,8 @@
 #include <QObject>
 #include <QVector>
 
+class QTimer;
+
 namespace khtmlImLoad {
 
 class Image;
@@ -58,6 +60,8 @@ public:
 private Q_SLOTS:
     void pushUpdates();
 private:
+    QTimer* updatePusher;
+    bool updatesPending();
     QVector<Image*> frames[10];
     int             timePortion;
 };

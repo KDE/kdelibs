@@ -30,6 +30,7 @@ class QPainter;
 namespace khtmlImLoad {
 
 class PixmapPlane;
+class Image;
 
 /**
  A base class for animation support. This should be implemented by decoders
@@ -41,16 +42,16 @@ class AnimProvider
 protected:
     PixmapPlane* frame0;
     PixmapPlane* curFrame;
+    Image*       image;
     bool         shouldSwitchFrame; //Set by AnimTimer
 
     void nextFrame(); //Helper that goes to next frame or wraps around
 public:
-    AnimProvider(PixmapPlane* plane):frame0(plane), curFrame(plane),
-                                     shouldSwitchFrame(true)
+    AnimProvider(PixmapPlane* plane, Image* img):frame0(plane), curFrame(plane),
+                                     image(img), shouldSwitchFrame(true)
     {}
 
-    void switchFrame()
-    { shouldSwitchFrame = true; }
+    void switchFrame();
     
     virtual ~AnimProvider();
 

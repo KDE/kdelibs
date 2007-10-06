@@ -122,6 +122,7 @@ private:
 
     //Update reporting to owner
     friend class Updater;
+    friend class AnimProvider;
     bool updatesPending;
     int updatesStartLine;
     int updatesEndLine;

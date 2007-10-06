@@ -31,6 +31,7 @@
 #include "imageloader.h"
 #include "imagemanager.h"
 #include "pixmapplane.h"
+#include "updater.h"
 
 #include <QByteArray>
 #include <QPainter>
@@ -42,6 +43,9 @@
 extern "C" {
 #include <gif_lib.h>
 }
+
+#include <QDebug>
+
 namespace khtmlImLoad {
 
 static int INTERLACED_OFFSET[] = { 0, 4, 2, 1 };
@@ -63,6 +67,7 @@ enum GIFConstants
     GCE_DisposalLeave       = 0x04,
     GCE_DisposalBG          = 0x08,
     GCE_DisposalRestore     = 0x0C,
+    GCE_UndocumentedMode4   = 0x10,
     GCE_TransColorMask      = 0x01
 };
 
@@ -85,77 +90,105 @@ class GIFAnimProvider: public AnimProvider
 protected:
     QVector<GIFFrameInfo> frameInfo;
     int                   frame;
-    QPixmap               backing;
-    bool                  firstTime;
+
+    // State of gif screen after the previous image.
+    // we paint the current frame on top of it, and don't touch until 
+    // the current frame is disposed
+    QPixmap               canvas; 
     QColor                bgColor;
 public:
-    GIFAnimProvider(PixmapPlane* plane, QVector<GIFFrameInfo> _frames, QColor bg):
-        AnimProvider(plane), bgColor(bg)
+    GIFAnimProvider(PixmapPlane* plane, Image* img, QVector<GIFFrameInfo> _frames, QColor bg):
+        AnimProvider(plane, img), bgColor(bg)
     {
         frameInfo = _frames;
         frame     = 0;
-        backing   = QPixmap(plane->width, plane->height);
-        firstTime = true;
+        canvas    = QPixmap(plane->width, plane->height);
+        canvas.fill(bgColor);
     }
-    
+
+    // Renders a portion of the current frame's image on the painter..
+    void renderCurImage(int dx, int dy, QPainter* p, int sx, int sy, int width, int height)
+    {
+        QRect frameGeom = frameInfo[frame].geom;
+
+        // Take the passed paint rectangle in gif screen coordiantes, and 
+        // clip it to the frame's geometry
+        QRect screenPaintRect = QRect(sx, sy, width, height) & frameGeom;
+
+        // Same thing but in the frame's coordinate system
+        QRect framePaintRect  = screenPaintRect.translated(-frameGeom.topLeft());
+
+        curFrame->paint(dx + screenPaintRect.x(), dy + screenPaintRect.y(), p,
+                framePaintRect.x(), framePaintRect.y(),
+                framePaintRect.width(), framePaintRect.height(), false /* don't get back to us!*/);
+    }
+
+    // Renders current gif screen state on the painter
+    void renderCurScreen(int dx, int dy, QPainter* p, int sx, int sy, int width, int height)
+    {
+        p->drawPixmap (dx, dy, canvas, sx, sy, width, height);
+        renderCurImage(dx, dy, p, sx, sy, width, height);
+    }
+
+    // Update screen, incorporating the dispose operator for current image
+    void updateScreenAfterDispose()
+    {
+        switch (frameInfo[frame].mode)
+        {
+            case GCE_DisposalRestore:
+            case GCE_UndocumentedMode4: // Not in the spec, mozilla inteprets as above
+                // "restore" means the state of the canvas should be the 
+                // same as before the current frame.. But we don't touch it 
+                // when painting, so it's a no-op.
+                return;
+
+            case GCE_DisposalLeave:
+            case GCE_DisposalUnspecified: // Qt3 appears to interpret this as leave
+            {
+                // Update the canvas with current image.
+                QPainter p(&canvas);
+                renderCurImage(0, 0, &p, 0, 0, canvas.width(), canvas.height());
+                return;
+            }
+
+            case GCE_DisposalBG:
+            {
+                // Clear with bg color..
+                canvas.fill(bgColor);
+                return;
+            }
+
+            default:
+                // Including GCE_DisposalUnspecified -- ???
+                break;
+        }
+    }
+
     virtual void paint(int dx, int dy, QPainter* p, int sx, int sy, int width, int height)
     {
         if (!width || !height)
             return; //Nothing to draw.
-            
-        if (!shouldSwitchFrame)
+
+        // Move over to next frame if need be, incorporating 
+        // the change effect of current one onto the screen.
+        if (shouldSwitchFrame) 
         {
-            p->drawPixmap(dx, dy, backing, sx, sy, width, height);
-        }
-        else
-        {
+            updateScreenAfterDispose();
+
+            ++frame;
+            if (frame >= frameInfo.size())
+                frame = 0;
+            nextFrame();
+
             shouldSwitchFrame = false;
 
-            //Prepare backing store.
-            if (firstTime)
-            {
-                //First time: merely fill with background
-                backing.fill(bgColor);
-                firstTime = false;
-            }
-            else
-            {
-                //Perform action required by the previous frame.
-                //### FIXME: test how Unspecified behaves in
-                //Mozilla, IE
-                if (frameInfo[frame].mode == GCE_DisposalBG)
-                    backing.fill(bgColor);
-
-                //Leave requires no work, of course, and for restore,
-                //We merely do not damage the backing store.
-
-                ++frame;
-                if (frame >= frameInfo.size())
-                    frame = 0;
-
-                nextFrame();
-            }
-
-
-            //Paint the frame on the backing store -- unless we're
-            //supposed to leave it untouched
-            if (0 && frameInfo[frame].mode != GCE_DisposalRestore)
-            {
-            }
-            else
-            {
-                //Special case. We draw directly to the painter.
-                //Figure out how much of the frame we're supposed to paint.
-                QRect portion(sx, sy, width, height);
-                portion &= frameInfo[frame].geom;
-                dx += portion.x() - frameInfo[frame].geom.x();
-                dy += portion.y() - frameInfo[frame].geom.y();
-                curFrame->paint(dx, dy, p, portion.x(), portion.y(),
-                                portion.width(), portion.height());
-            }
-
+            // ### FIXME: adjust based on actual interframe timing -- the jitter is 
+            // likely to be quite big 
             ImageManager::animTimer()->nextFrameIn(this, frameInfo[frame].delay);
         }
+
+        // Render the currently active frame
+        renderCurScreen(dx, dy, p, sx, sy, width, height);
     }
 
     virtual AnimProvider* clone(PixmapPlane*)
@@ -174,20 +207,20 @@ public:
     {
         bufferReadPos = 0;
     }
-    
+
     ~GIFLoader()
     {
     }
-    
+
     virtual int processData(uchar* data, int length)
     {
         //Collect data in the buffer
         int pos = buffer.size();
         buffer.resize(buffer.size() + length);
-        memcpy(buffer.data() + pos, data, length);        
+        memcpy(buffer.data() + pos, data, length);
         return length;
     }
-    
+
     static int gifReaderBridge(GifFileType* gifInfo, GifByteType* data, int limit)
     {
         GIFLoader* me = static_cast<GIFLoader*>(gifInfo->UserData);
@@ -215,16 +248,29 @@ public:
         int outPos = 0;
         for (int x = 0; x < w; ++x)
         {
-            QRgb color = format.palette[in[x]];
-            
+            int colorCode = in[x];
+            QRgb color(Qt::black);
+            if (colorCode < format.palette.size())
+                color = format.palette[colorCode];
+
             out[outPos]   = qBlue (color);
             out[outPos+1] = qGreen(color);
             out[outPos+2] = qRed  (color);
             out[outPos+3] = qAlpha(color);
-
             outPos += 4;
         }
-    }    
+    }
+
+    // Read a color from giflib palette, with range checking
+    static QColor colorMapColor(ColorMapObject* map, int index)
+    {
+        QColor col(Qt::black);
+        if (index < map->ColorCount)
+            col = QColor(map->Colors[index].Red,
+                         map->Colors[index].Green,
+                         map->Colors[index].Blue);
+        return col;
+    }
     
     virtual int processEOF()
     {
@@ -249,124 +295,131 @@ public:
         ColorMapObject* globalColorMap = file->Image.ColorMap;
         if (!globalColorMap)
             globalColorMap = file->SColorMap;
-            
-        QColor bg(globalColorMap->Colors[file->SBackGroundColor].Red,
-                  globalColorMap->Colors[file->SBackGroundColor].Green,
-                  globalColorMap->Colors[file->SBackGroundColor].Blue);
-                  
-        bool prevWasBG = false;//true;
+
+        QColor bgColor = colorMapColor(globalColorMap, file->SBackGroundColor);
+
+        bool prevClearedToBG = false;
         
         //Extract out all the frames
         for (int frame = 0; frame < file->ImageCount; ++frame)
         {
-            int w = file->SavedImages[frame].ImageDesc.Width;
-            int h = file->SavedImages[frame].ImageDesc.Height;
+            //Extract colormap, geometry, so that we can create the frame
+            SavedImage* curFrame = &file->SavedImages[frame];
+            int w = curFrame->ImageDesc.Width;
+            int h = curFrame->ImageDesc.Height;
 
             //For non-animated images, use the frame size for dimension
             if (frame == 0 && file->ImageCount == 1)
                 notifyImageInfo(w, h);
-        
-            //Extract colormap, geometry, so that we can create the frame        
-            ColorMapObject* colorMap = file->SavedImages[frame].ImageDesc.ColorMap;
-            if (!colorMap)  colorMap = file->Image.ColorMap;
-            if (!colorMap)  colorMap = file->SColorMap;
-            
+
+            ColorMapObject* colorMap = curFrame->ImageDesc.ColorMap;
+            if (!colorMap)  colorMap = globalColorMap;
+
             GIFFrameInfo frameInf;
             int          trans = -1;
             frameInf.delay = 100;
             frameInf.mode  = GCE_DisposalUnspecified;
-            
-            //Go through the extension blocks to see whether there is a color key            
-            for (int ext = 0; ext < file->SavedImages[frame].ExtensionBlockCount; ++ext)
-            {                
-                qDebug("ext:%d, fun:%x", ext, file->SavedImages[frame].ExtensionBlocks[ext].Function);
-                if ((file->SavedImages[frame].ExtensionBlocks[ext].Function  == GCE_Code) && 
-                    (file->SavedImages[frame].ExtensionBlocks[ext].ByteCount >= GCE_Size))
+
+            //Go through the extension blocks to see whether there is a color key,
+            //and animation info inside the graphics control extension (GCE) block
+            for (int ext = 0; ext < curFrame->ExtensionBlockCount; ++ext)
+            {
+                ExtensionBlock* curExt = &curFrame->ExtensionBlocks[ext];
+                if ((curExt->Function  == GCE_Code) && (curExt->ByteCount >= GCE_Size))
                 {
-                    if (file->SavedImages[frame].ExtensionBlocks[ext].Bytes[GCE_Flags] & GCE_TransColorMask)
-                        trans = ((unsigned char)file->SavedImages[frame].ExtensionBlocks[ext].Bytes[GCE_TransColor]);
-                       
-                    frameInf.mode  = file->SavedImages[frame].ExtensionBlocks[ext].Bytes[GCE_Flags] & GCE_DisposalMask;
-                    frameInf.delay = decode16Bit(&file->SavedImages[frame].ExtensionBlocks[ext].Bytes[GCE_Delay]) * 10;
-                    
+                    if (curExt->Bytes[GCE_Flags] & GCE_TransColorMask)
+                        trans = ((unsigned char)curExt->Bytes[GCE_TransColor]);
+
+                    frameInf.mode  = curExt->Bytes[GCE_Flags] & GCE_DisposalMask;
+                    frameInf.delay = decode16Bit(&curExt->Bytes[GCE_Delay]) * 10;
+
                     qDebug("Specified delay:%dms, disposal mode:%d", frameInf.delay, frameInf.mode);
                     if (frameInf.delay < 100)
                         frameInf.delay = 100;
                 }
             }
-            
-            //Note: trans color for the first frame uses the background color,
-            //otherwise it uses proper transparency, except if the previous frame 
-            //used BG fill.
+
+
+            // If we have transparency, we need to go an RGBA mode, 
+            // with one exception: if the previous frame cleared to 
+            // the background color, we may as well interpret the 
+            // colorkey that wat
             ImageFormat format;
-            if (trans != -1 && !prevWasBG)
+            if (trans != -1 && !prevClearedToBG)
                 format.type = ImageFormat::Image_RGBA_32;
             else
                 format.type = ImageFormat::Image_Palette_8;
-                
-            //Read in colors.
-            for (int c = 0; c < colorMap->ColorCount; ++c)
+
+            // Read in colors for the palette... Don't waste memory on 
+            // any extra ones.
+            for (int c = 0; c < colorMap->ColorCount && c < 256; ++c)
                 format.palette.append(qRgba(colorMap->Colors[c].Red,
                                             colorMap->Colors[c].Green,
                                             colorMap->Colors[c].Blue, 255));
-                                            
-            //Pad with black as a precaution
+
+            // Pad with black as a precaution
             for (int c = colorMap->ColorCount; c < 256; ++c)
                 format.palette.append(qRgba(0, 0, 0, 255));
-                
+
             //Put in the colorkey color 
             if (trans != -1)
             {
-                if (prevWasBG)
-                {
-                    format.palette[trans] = qRgba(colorMap->Colors[file->SBackGroundColor].Red,
-                                                  colorMap->Colors[file->SBackGroundColor].Green,
-                                                  colorMap->Colors[file->SBackGroundColor].Blue, 255);
-                }
+                if (prevClearedToBG)
+                    format.palette[trans] = bgColor.rgb();
                 else
-                {
                     format.palette[trans] = qRgba(0, 0, 0, 0);
-                }
             }
-            
-            
-                        
-            prevWasBG = (frameInf.mode == GCE_DisposalBG);
-                        
+
+            prevClearedToBG = (frameInf.mode == GCE_DisposalBG);
+
             //Now we can declare frame format
             notifyAppendFrame(w, h, format);
             
-            frameInf.bg   = bg;
-            frameInf.geom = QRect(file->SavedImages[frame].ImageDesc.Left,
-                                  file->SavedImages[frame].ImageDesc.Top, 
+            frameInf.bg   = bgColor;
+            frameInf.geom = QRect(curFrame->ImageDesc.Left,
+                                  curFrame->ImageDesc.Top,
                                   w, h);
 
             frameInf.trans  = format.hasAlpha();
-                                                                    
             frameProps.append(frameInf); 
-            
-            qDebug("frame:%d:%d,%d:%dx%d, trans:%d", frame, frameInf.geom.x(), frameInf.geom.y(), w, h, trans);
-                                   
+
+            qDebug("frame:%d:%d,%d:%dx%d, trans:%d, mode:%d", frame, frameInf.geom.x(), frameInf.geom.y(), w, h, trans, frameInf.mode);
+
+            //Decode the scanlines
             uchar* buf;
             if (format.hasAlpha())
                 buf = new uchar[w*4];
             else
                 buf = new uchar[w];
                 
-            if (file->SavedImages[frame].ImageDesc.Interlace)
+            if (curFrame->ImageDesc.Interlace)
             {
-                //Interlaced. Considering we don't do progressive loading of gif's, a useless annoyance...
-                //Fortunately, it's just a shuffle. Unfortunately, the framework sort of sucks at those.
-                int index = 0; //index of line in memory
+                // Interlaced. Considering we don't do progressive loading of gif's, 
+                // a useless annoyance... The way it works is that on the first pass 
+                // it renders scanlines 8*n, on second 8*n + 4, 
+                // third then 4*n + 2, and finally 2*n + 1 (the odd lines)
+                // e.g.:
+                // 0, 8,  16, ...
+                // 4, 12, 20, ...
+                // 2, 6, 10, 14, ...
+                // 1, 3, 5, 7, ...
+                //
+                // Anyway, the bottom line is that INTERLACED_OFFSET contains 
+                // the initial position, and INTERLACED_JUMP has the increment. 
+                // However, imload expects a top-bottom scan of the image... 
+                // so what we do it is keep track of which lines are actually 
+                // new via nextNewLine variable, and leave others unchanged.
+
+                int interlacedImageScanline = 0; // scanline in interlaced image we are reading from
                 for (int pass = 0; pass < 4; ++pass)
-                {                    
+                {
                     int nextNewLine = INTERLACED_OFFSET[pass];
                     
                     for (int line = 0; line < h; ++line)
                     {
                         if (line == nextNewLine)
                         {
-                            uchar* toFeed = (uchar*) file->SavedImages[frame].RasterBits + w*index;
+                            uchar* toFeed = (uchar*) curFrame->RasterBits + w*interlacedImageScanline;
                             if (format.hasAlpha())
                             {
                                 palettedToRGB(buf, toFeed, format, w);
@@ -374,18 +427,19 @@ public:
                             }
                             
                             notifyScanline(pass + 1, toFeed);
-                            ++index;
+                            ++interlacedImageScanline;
                             nextNewLine += INTERLACED_JUMP[pass];
                         }
                         else
                         {
-                            //Get scanline, feed it back in.
+                            // No new information for this scanline, so just 
+                            // get it from loader, and feed it right back in 
                             requestScanline(line, buf);
                             notifyScanline (pass + 1, buf);
                         }
-                    }
-                }
-            }
+                    } // for every scanline
+                } // for pass..
+            } // if interlaced
             else
             {
                 for (int line = 0; line < h; ++line)
@@ -396,31 +450,30 @@ public:
                         palettedToRGB(buf, toFeed, format, w);
                         toFeed = buf;
                     }
-                    
                     notifyScanline(1, toFeed);
                 }
             }
-                            
             delete[] buf;
         }
-        
+
+
         if (file->ImageCount > 1)
-        { //need animation provider
+        {
+            //need animation provider
             PixmapPlane* frame0  = requestFrame0();
-            frame0->animProvider = new GIFAnimProvider(frame0, frameProps, bg);
+            frame0->animProvider = new GIFAnimProvider(frame0, image, frameProps, bgColor);
         }
-         
+
         return Done;
     }
 };
 
 
 ImageLoaderProvider::Type GIFLoaderProvider::type()
-{    
+{
     return Efficient;
 }
 
-    
 ImageLoader* GIFLoaderProvider::loaderFor(const QByteArray& prefix)
 {
     uchar* data = (uchar*)prefix.data();

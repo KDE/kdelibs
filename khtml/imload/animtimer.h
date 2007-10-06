@@ -29,6 +29,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QMap>
 
+class QTimer;
+
 namespace khtmlImLoad {
 
 class AnimProvider;
@@ -53,6 +55,7 @@ public:
 private Q_SLOTS:
     void tick();
 private:
+    QTimer* animTicks;
     QMap<AnimProvider*, int> pending;
     QTime lastTime;
 };

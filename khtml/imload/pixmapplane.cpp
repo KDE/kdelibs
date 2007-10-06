@@ -29,7 +29,7 @@
 namespace khtmlImLoad {
 
 void PixmapPlane::paint(int dx, int dy, QPainter* p,
-                  int sx, int sy, int sWidth, int sHeight)
+                  int sx, int sy, int sWidth, int sHeight, bool useAnimProvider)
 {
     //Do some basic clipping, discarding invalid requests and adjusting sizes of others
     if (sy >= (int)height)
@@ -54,7 +54,7 @@ void PixmapPlane::paint(int dx, int dy, QPainter* p,
     sHeight = ey - sy + 1;
     sWidth  = ex - sx + 1;
 
-    if (animProvider)
+    if (animProvider && useAnimProvider)
     {
         animProvider->paint(dx, dy, p, sx, sy, sWidth, sHeight);
         return;

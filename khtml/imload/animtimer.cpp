@@ -32,14 +32,9 @@ namespace khtmlImLoad {
 
 AnimTimer::AnimTimer()
 {
-    lastTime = QTime::currentTime();
-    
-
-    QTimer* animTicks = new QTimer(this);
+    animTicks = new QTimer(this);
     connect(animTicks, SIGNAL(timeout()),
             this,      SLOT  (tick()));
-
-    animTicks->start(10);
 }
 
 void AnimTimer::nextFrameIn(AnimProvider* provider, int ms)
@@ -48,6 +43,11 @@ void AnimTimer::nextFrameIn(AnimProvider* provider, int ms)
         return;
         
     pending[provider] = ms;
+
+    if (!animTicks->isActive()) {
+        animTicks->start(10); //### lower resolution, perhaps?
+        lastTime = QTime::currentTime();
+    }
 }
 
 void AnimTimer::tick()
@@ -56,7 +56,7 @@ void AnimTimer::tick()
     int   change  = lastTime.msecsTo(newTime);
     lastTime      = newTime;
     if (change < 1) change = 1; //Just in case someone changes the clock or something
-    
+
     QVector<AnimProvider*> toHandle;
     
     for (QMap<AnimProvider*, int>::iterator iter = pending.begin(); 
@@ -75,6 +75,9 @@ void AnimTimer::tick()
         pending.remove(*iter);
         (*iter)->switchFrame();
     }
+
+    if (pending.isEmpty())
+        animTicks->stop();
 }
 
 void AnimTimer::destroyed(AnimProvider* provider)
