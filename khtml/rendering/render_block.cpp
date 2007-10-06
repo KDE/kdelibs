@@ -237,9 +237,9 @@ void RenderBlock::updateFirstLetter()
                 length++;
             begin = length;
             while ( length < oldText->l &&
-                    ( (oldText->s+length)->isPunct()) || (oldText->s+length)->isSpace() )
+                    ( (oldText->s+length)->isPunct() || (oldText->s+length)->isSpace() ))
                 length++;
-            if ( length < oldText->l && 
+            if ( length < oldText->l &&
                     !( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ))
                 length++;
             while ( length < oldText->l && (oldText->s+length)->isMark() )
@@ -281,17 +281,17 @@ void RenderBlock::addChildToFlow(RenderObject* newChild, RenderObject* beforeChi
 
     // If the requested beforeChild is not one of our children, then this is most likely because
     // there is an anonymous block box within this object that contains the beforeChild. So
-    // just insert the child into the anonymous block box instead of here. This may also be 
+    // just insert the child into the anonymous block box instead of here. This may also be
     // needed in cases of things like anonymous tables.
     if (beforeChild && beforeChild->parent() != this) {
 
         KHTMLAssert(beforeChild->parent());
-        
+
         // In the special case where we are prepending a block-level element before
         // something contained inside an anonymous block, we can just prepend it before
         // the anonymous block.
         if (!newChild->isInline() && beforeChild->parent()->isAnonymousBlock() &&
-            beforeChild->parent()->parent() == this && 
+            beforeChild->parent()->parent() == this &&
             beforeChild->parent()->firstChild() == beforeChild)
             return addChildToFlow(newChild, beforeChild->parent());
 
@@ -394,20 +394,20 @@ static void getInlineRun(RenderObject* start, RenderObject* stop,
     // |stop| indicates a non-inclusive stop point.  Regardless of whether |stop|
     // is inline or not, we will not include it in a run with inlines before it.  It's as though we encountered
     // a non-inline.
-    
+
     RenderObject * curr = start;
     bool sawInline;
     do {
         while (curr && !(curr->isInline() || curr->isFloatingOrPositioned()))
             curr = curr->nextSibling();
-        
+
         inlineRunStart = inlineRunEnd = curr;
-        
+
         if (!curr)
             return; // No more inline children to be found.
-        
+
         sawInline = curr->isInline();
-        
+
         curr = curr->nextSibling();
         while (curr && (curr->isInline() || curr->isFloatingOrPositioned()) && (curr != stop)) {
             inlineRunEnd = curr;
@@ -810,7 +810,7 @@ void RenderBlock::adjustPositionedBlock(RenderObject* child, const MarginInfo& m
         int y = m_height;
         if (!marginInfo.canCollapseWithTop()) {
             child->calcVerticalMargins();
-            int marginTop = child->marginTop(); 
+            int marginTop = child->marginTop();
             int collapsedTopPos = marginInfo.posMargin();
             int collapsedTopNeg = marginInfo.negMargin();
             if (marginTop > 0) {
@@ -1988,7 +1988,7 @@ RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *he
 {
     int left = fixedOffset;
     if (canClearLine) *canClearLine = true;
-    
+
     if (m_floatingObjects) {
         if ( heightRemaining ) *heightRemaining = 1;
         FloatingObject* r;
@@ -2139,7 +2139,7 @@ int RenderBlock::lowestAbsolutePosition() const
 {
     if (!m_positionedObjects)
         return 0;
-        
+
     // Fixed positioned objects do not scroll and thus should not constitute
     // part of the lowest position.
     int bottom = 0;
@@ -2243,7 +2243,7 @@ int RenderBlock::leftmostAbsolutePosition() const
     while (it.hasNext()) {
         r = it.next();
         if (r->style()->position() == FIXED)
-            continue;                         
+            continue;
         int lp = r->xPos() + r->leftmostPosition(false);
         left = qMin(left, lp);
     }
@@ -2390,7 +2390,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     // Prevent floats from being added to the canvas by the root element, e.g., <html>.
     if ( !flow->m_floatingObjects || (child && flow->isRoot()) )
         return;
-        
+
     // if I am clear of my floats, don't add them
     // the CSS spec also mentions that child floats
     // are not cleared.
@@ -2403,12 +2403,12 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
     FloatingObject *r;
     while ( it.hasNext() ) {
         r = it.next();
-    
+
         if (!child && r->type == FloatingObject::FloatLeft && style()->clear() == CLEFT )
             continue;
         if (!child && r->type == FloatingObject::FloatRight && style()->clear() == CRIGHT )
             continue;
-            
+
         if ( ( !child && r->endY > offset ) ||
              ( child && flow->yPos() + r->endY > height() ) ) {
             if (child && !r->crossedLayer) {
@@ -2876,7 +2876,7 @@ void RenderBlock::calcInlineMinMaxWidth()
                         m_maxWidth = qMax(inlineMax, (int)m_maxWidth);
                         inlineMax = 0;
                         m_minWidth = qMax(inlineMin, (int)m_minWidth);
-                        inlineMin = 0; 
+                        inlineMin = 0;
                     }
                     prevFloat = child;
                     if (!floatMaxWidth)
@@ -3095,7 +3095,7 @@ void RenderBlock::calcBlockMinMaxWidth()
          }
 
         if (child->isFloating()) {
-             if (!floatMaxWidth) 
+             if (!floatMaxWidth)
                  floatMaxWidth = availableWidth();
              if (style()->floating() & FLEFT) {
                  if (floatLeftWidth + w > floatMaxWidth) {
@@ -3103,7 +3103,7 @@ void RenderBlock::calcBlockMinMaxWidth()
                      floatLeftWidth = w;
                  } else
                      floatLeftWidth += w;
-                 
+
              } else {
                  if (floatRightWidth + w > floatMaxWidth) {
                      m_maxWidth = qMax(floatLeftWidth+floatRightWidth, m_maxWidth);
