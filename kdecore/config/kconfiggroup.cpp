@@ -476,7 +476,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             return QString::fromUtf8(value);
         case QVariant::List:
         case QVariant::StringList:
-            return QString::fromUtf8(value).split(QLatin1Char(','));
+            return value.isEmpty() ? QStringList() : QString::fromUtf8(value).split(QLatin1Char(','));
         case QVariant::ByteArray:
             return value;
         case QVariant::Bool: {
