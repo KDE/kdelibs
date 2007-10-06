@@ -66,6 +66,7 @@ void ScaledImagePlane::ensureUpToDate(unsigned int tileX, unsigned int tileY,
     {
         imageTile.image = parent->format.makeImage(tileWidth (tileX),
                                                    tileHeight(tileY));
+        ImageManager::imageCache()->addEntry(&imageTile);
         std::memset(imageTile.versions, 0, Tile::TileSize);
     }
     else ImageManager::imageCache()->touchEntry(&imageTile);
