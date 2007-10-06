@@ -274,10 +274,7 @@ void KConfigGroup::changeGroup( const QByteArray &group)
 
 QString KConfigGroup::name() const
 {
-    if (d->mName.isEmpty())
-        return QString("");
-    const QByteArray me(d->fullName());
-    return QString::fromUtf8(me.constData(), me.size());
+    return QString::fromUtf8(d->fullName());
 }
 
 bool KConfigGroup::exists() const
