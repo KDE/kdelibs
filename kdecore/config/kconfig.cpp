@@ -53,9 +53,9 @@ bool KConfigPrivate::mappingsRegistered=false;
 
 KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
            const char* resource)
-    : mBackend(0), resourceType(resource), componentData(componentData_),
-      openFlags(flags), bDirty(false), bReadDefaults(false),
-      bFileImmutable(false), bForceGlobal(false), bDynamicBackend(true)
+    : openFlags(flags), resourceType(resource), mBackend(0),
+      bDynamicBackend(true),  bDirty(false), bReadDefaults(false),
+      bFileImmutable(false), bForceGlobal(false), componentData(componentData_)
 {
     sGlobalFileName = componentData.dirs()->saveLocation("config") +
                           QString::fromLatin1("kdeglobals");
