@@ -102,7 +102,7 @@ public:
     virtual bool writeConfig(const QByteArray& locale,
                              KEntryMap& entryMap,
                              const KEntryMap& mergeMap,
-                             WriteOptions options = WriteOptions()) = 0;
+                             WriteOptions options, const KComponentData &data) = 0;
 
     /**
      * is this object writable?

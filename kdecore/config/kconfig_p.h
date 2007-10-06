@@ -74,7 +74,7 @@ private:
     bool bFileImmutable:1;
     bool bForceGlobal:1;
 
-   static QString sGlobalFileName;
+   QString sGlobalFileName;
    static bool mappingsRegistered;
 
 
@@ -91,7 +91,7 @@ private:
 
     bool wantGlobals() const { return openFlags&KConfig::IncludeGlobals; }
     bool wantDefaults() const { return openFlags&KConfig::CascadeConfig; }
-    bool wantMerge() const { return openFlags&KConfig::MergeOnSync; }
+    bool wantMerge() const { return !(openFlags&KConfig::DontMergeOnSync); }
     bool isSimple() const { return openFlags == KConfig::SimpleConfig; }
     bool isReadOnly() const { return configState == KConfig::ReadOnly; }
 

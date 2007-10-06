@@ -42,11 +42,6 @@
 
 typedef KSharedPtr<KConfigBackend> BackendPtr;
 
-namespace {
-    typedef QHash<QString, QString> DirMap;
-    Q_GLOBAL_STATIC(DirMap , config_dirs)
-}
-
 class KConfigBackend::Private
 {
 public:
@@ -56,44 +51,13 @@ public:
 
     static QString whatSystem(const QString& fileName)
     {
-        const QString full_path(QFileInfo(fileName).canonicalPath());
-
-        // see if the file has its own backend defined
-        if (config_dirs()->contains(full_path))
-            return config_dirs()->value(full_path);
-
-        // now see if the one of the file's parent directories has a backend defined
-        QDir path(full_path);
-        while (!config_dirs()->contains(path.absolutePath())) {
-            path.cdUp();
-            if (path.isRoot()) { // set to default backend
-                config_dirs()->insert(full_path, QLatin1String("INI"));
-                return QLatin1String("INI");
-            }
-        }
-        return config_dirs()->value(path.absolutePath());
+        return QLatin1String("INI");
     }
 };
 
 
 void KConfigBackend::registerMappings(KEntryMap& entryMap)
 {
-    if (!entryMap.hasEntry("KConfig", "BackEnds"))
-        return;
-
-    const QStringList backends = entryMap.getEntry("KConfig", "BackEnds").split(';');
-
-    foreach(const QString& backend, backends) {
-        if (backend.isEmpty())
-            continue;
-        QString tmp = backend + QLatin1String("-Directories");
-        const char* key = tmp.toUtf8().constData();
-        const QStringList dirs = entryMap.getEntry("KConfig", key).split(';');
-        foreach(const QString& dir, dirs) {
-            if (!dir.isEmpty())
-                config_dirs()->insert(dir, backend);
-        }
-    }
 }
 
 BackendPtr KConfigBackend::create(const KComponentData& componentData, const QString& file,

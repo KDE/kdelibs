@@ -49,7 +49,6 @@
 #include <QtCore/QSet>
 #include <QtCore/QStack>
 
-QString KConfigPrivate::sGlobalFileName;
 bool KConfigPrivate::mappingsRegistered=false;
 
 KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
@@ -58,12 +57,8 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
       openFlags(flags), bDirty(false), bReadDefaults(false),
       bFileImmutable(false), bForceGlobal(false), bDynamicBackend(true)
 {
-    // TODO: manage lifetime of these static objects
-    //       possibly create a kshared set of members?
-    if (sGlobalFileName.isEmpty()) {
-        sGlobalFileName = componentData.dirs()->saveLocation("config") +
+    sGlobalFileName = componentData.dirs()->saveLocation("config") +
                           QString::fromLatin1("kdeglobals");
-    }
     if (wantGlobals()) {
         const KStandardDirs *const dirs = componentData.dirs();
         foreach(const QString& dir, dirs->findAllResources("config", QLatin1String("kdeglobals")) +
@@ -263,14 +258,14 @@ void KConfig::sync()
             }
             if (d->wantMerge())
                 tmp->parseConfig(utf8Locale, toMerge, ParseGlobal);
-            tmp->writeConfig(utf8Locale, d->entryMap, toMerge, WriteGlobal);
+            tmp->writeConfig(utf8Locale, d->entryMap, toMerge, WriteGlobal, d->componentData);
             toMerge.clear();
             if (tmp->isLocked())
                 tmp->unlock();
         }
         if (d->wantMerge())
             d->mBackend->parseConfig(utf8Locale, toMerge, ParseOptions());
-        if (d->mBackend->writeConfig(utf8Locale, d->entryMap, toMerge, WriteOptions()))
+        if (d->mBackend->writeConfig(utf8Locale, d->entryMap, toMerge, WriteOptions(), d->componentData))
             d->bDirty = false;
         if (d->mBackend->isLocked())
             d->mBackend->unlock();

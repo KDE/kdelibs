@@ -43,8 +43,8 @@ public:
         SimpleConfig     =0x00, ///< no cascading, no globals
         IncludeGlobals =0x01, ///< read globals
         CascadeConfig=0x02, ///< cascade
-        MergeOnSync=0x04, ///< merge when sync() called
-        FullConfig=IncludeGlobals|CascadeConfig|MergeOnSync ///< cascade, read globals
+        DontMergeOnSync=0x04, ///< merge when sync() called
+        FullConfig=IncludeGlobals|CascadeConfig ///< cascade, read globals
     };
     Q_DECLARE_FLAGS(OpenFlags, OpenFlag)
 

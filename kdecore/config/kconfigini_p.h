@@ -41,7 +41,7 @@ public:
     bool writeConfig(const QByteArray& locale, 
                      KEntryMap& entryMap,
                      const KEntryMap& mergeMap,
-                     WriteOptions options);
+                     WriteOptions options, const KComponentData &data);
 
     bool isWritable() const;
     void createEnclosing();

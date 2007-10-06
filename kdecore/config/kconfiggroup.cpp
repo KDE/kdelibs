@@ -49,13 +49,13 @@ class KConfigGroupPrivate : public QSharedData
 {
  public:
     KConfigGroupPrivate(KConfig* owner, bool isConst, const QByteArray &name)
-        : mOwner(owner), bImmutable(false), bConst(isConst), mName(name)
+        : mOwner(owner), mName(name), bImmutable(false), bConst(isConst)
     {
         checkImmutable();
     }
 
-    KConfigGroupPrivate(KSharedConfigPtr owner, bool isConst=false)
-        : mOwner(owner.data()), sOwner(owner), bImmutable(false), bConst(false)
+    KConfigGroupPrivate(KSharedConfigPtr owner, const QByteArray& name, bool isConst=false)
+        : mOwner(owner.data()), sOwner(owner), mName(name), bImmutable(false), bConst(false)
     {
         checkImmutable();
     }
@@ -104,7 +104,7 @@ class KConfigGroupPrivate : public QSharedData
 
     static QString expandString(const QString& value);
 
-    static QExplicitlySharedDataPointer<KConfigGroupPrivate> create(KConfigBase *master, const QByteArray &name, bool isConst, KConfigGroup *q)
+    static QExplicitlySharedDataPointer<KConfigGroupPrivate> create(KConfigBase *master, const QByteArray &name, bool isConst)
     {
         if (dynamic_cast<KConfigGroup *>(master)) {
             KConfigGroup tmp(isConst ? static_cast<const KConfigGroup *>(master)->group(name) :
@@ -115,7 +115,7 @@ class KConfigGroupPrivate : public QSharedData
         }
     }
 
-    void writeListEntry(const QByteArray &key, const QList<QByteArray> &list, char sep , KConfigBase::WriteConfigFlags flags, bool expand = false);
+    static QByteArray convertList(const QList<QByteArray> &list, char sep);
 };
 
 KConfigGroup::KConfigGroup() : d(0)
@@ -128,7 +128,7 @@ bool KConfigGroup::isValid() const
 }
 
 KConfigGroupGui _kde_internal_KConfigGroupGui;
-static inline bool readEntryGui(const QByteArray& data, const char *key, const QVariant &input,
+static inline bool readEntryGui(const QByteArray& data, const QByteArray &key, const QVariant &input,
                                 QVariant &output)
 {
   if (_kde_internal_KConfigGroupGui.readEntryGui)
@@ -136,7 +136,7 @@ static inline bool readEntryGui(const QByteArray& data, const char *key, const Q
   return false;
 }
 
-static inline bool writeEntryGui(KConfigGroup *cg, const char *key, const QVariant &input,
+static inline bool writeEntryGui(KConfigGroup *cg, const QByteArray &key, const QVariant &input,
                                  KConfigGroup::WriteConfigFlags flags)
 {
   if (_kde_internal_KConfigGroupGui.writeEntryGui)
@@ -145,70 +145,63 @@ static inline bool writeEntryGui(KConfigGroup *cg, const char *key, const QVaria
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
-    : d(KConfigGroupPrivate::create(master, _group.toUtf8(), false, this))
+    : d(KConfigGroupPrivate::create(master, _group.toUtf8(), false))
 {
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QByteArray &_group)
- : d(KConfigGroupPrivate::create(master, _group, false, this))
+ : d(KConfigGroupPrivate::create(master, _group, false))
 {
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const char *_group)
- : d(KConfigGroupPrivate::create(master, _group, false, this))
+ : d(KConfigGroupPrivate::create(master, _group, false))
 {
-    changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(KSharedConfigPtr &master, const QString &_group)
- : d(new KConfigGroupPrivate(master))
+ : d(new KConfigGroupPrivate(master, _group.toUtf8()))
 {
-    changeGroup( _group.toUtf8() );
 }
 
 KConfigGroup::KConfigGroup(KSharedConfigPtr &master, const QByteArray &_group)
- : d(new KConfigGroupPrivate(master))
+ : d(new KConfigGroupPrivate(master, _group))
 {
-    changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(KSharedConfigPtr &master, const char * _group)
- : d(new KConfigGroupPrivate(master))
+ : d(new KConfigGroupPrivate(master, _group))
 {
-    changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const QString &_group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group.toUtf8(), true, this))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group.toUtf8(), true))
 {
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const QByteArray &_group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, true, this))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, true))
 {
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const char * _group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, true, this))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, true))
 {
 }
 
 KConfigGroup::KConfigGroup(const KSharedConfigPtr &master, const QString &_group)
-    : d(new KConfigGroupPrivate(master, true))
+    : d(new KConfigGroupPrivate(master, _group.toUtf8(), true))
 {
-    changeGroup( _group.toUtf8() );
 }
 
 KConfigGroup::KConfigGroup(const KSharedConfigPtr &master, const QByteArray &_group)
-    : d(new KConfigGroupPrivate(master, true))
+    : d(new KConfigGroupPrivate(master, _group, true))
 {
-    changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(const KSharedConfigPtr &master, const char * _group)
-    : d(new KConfigGroupPrivate(master, true))
+    : d(new KConfigGroupPrivate(master, _group, true))
 {
-    changeGroup( _group );
 }
 
 KConfigGroup &KConfigGroup::operator=(const KConfigGroup &rhs)
@@ -834,7 +827,8 @@ void KConfigGroup::writeEntry<QString>( const QByteArray &key, const QString& va
 {
     Q_ASSERT(!d->bConst);
 
-    config()->d_func()->putData(d->fullName(), key, value.toUtf8(), flags);
+    writeEntry(key, value.toUtf8(), flags);
+
 }
 
 template<>
@@ -857,7 +851,7 @@ void KConfigGroup::writeEntry<QVariantList>( const QByteArray &key, const QVaria
             data << v.toString().toUtf8();
     }
 
-    d->writeListEntry(key, data, ',', flags);
+    writeEntry(key, KConfigGroupPrivate::convertList(data, ','), flags);
 }
 
 template<>
@@ -890,8 +884,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
 {
     Q_ASSERT(!d->bConst);
 
-    const char * pKey = key.constData();
-    if ( writeEntryGui( this, pKey, value, flags ) )
+    if ( writeEntryGui( this, key, value, flags ) )
         return;                     // GUI type that was handled
 
     QByteArray data;
@@ -916,10 +909,10 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             break;
         case QVariant::List:
             kError(!value.canConvert(QVariant::StringList))
-                << "not all types in \"" << pKey << "\" can convert to QString,"
+                << "not all types in \"" << key << "\" can convert to QString,"
                    " information will be lost" << endl;
         case QVariant::StringList:
-            writeEntry( pKey, value.toList(), flags );
+            writeEntry( key, value.toList(), flags );
             return;
         case QVariant::Point: {
             QVariantList list;
@@ -927,7 +920,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             list.insert( 0, rPoint.x() );
             list.insert( 1, rPoint.y() );
 
-            writeEntry( pKey, list, flags );
+            writeEntry( key, list, flags );
             return;
         }
         case QVariant::Rect:{
@@ -938,7 +931,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             list.insert( 2, rRect.width() );
             list.insert( 3, rRect.height() );
 
-            writeEntry( pKey, list, flags );
+            writeEntry( key, list, flags );
             return;
         }
         case QVariant::Size:{
@@ -947,7 +940,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             list.insert( 0, rSize.width() );
             list.insert( 1, rSize.height() );
 
-            writeEntry( pKey, list, flags );
+            writeEntry( key, list, flags );
             return;
         }
         case QVariant::Date: {
@@ -958,7 +951,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             list.insert( 1, date.month() );
             list.insert( 2, date.day() );
 
-            writeEntry( pKey, list, flags );
+            writeEntry( key, list, flags );
             return;
         }
         case QVariant::DateTime: {
@@ -976,7 +969,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             list.insert( 4, time.minute() );
             list.insert( 5, time.second() );
 
-            writeEntry( pKey, list, flags );
+            writeEntry( key, list, flags );
             return;
         }
 
@@ -1020,21 +1013,19 @@ void KConfigGroup::writeEntry(const QByteArray &key, const QStringList &list, ch
     foreach(const QString &entry, list)
         balist.append(entry.toUtf8());
 
-    d->writeListEntry(key, balist, sep, flags);
+    writeEntry(key, KConfigGroupPrivate::convertList(balist, sep), flags);
 }
 
-void KConfigGroupPrivate::writeListEntry(const QByteArray &key, const QList<QByteArray> &list, char sep , KConfigBase::WriteConfigFlags flags, bool expand)
+QByteArray KConfigGroupPrivate::convertList(const QList<QByteArray> &list, char sep)
 {
-    Q_ASSERT(!bConst);
-
     const QByteArray escaped = QByteArray(1, '\\') + sep;
 
     QByteArray value;
 
-    QList<QByteArray>::ConstIterator it = list.begin();
-    const QList<QByteArray>::ConstIterator end = list.end();
+    if (!list.isEmpty()) {
+        QList<QByteArray>::ConstIterator it = list.constBegin();
+        const QList<QByteArray>::ConstIterator end = list.constEnd();
 
-    if (it != end) {
         value = *it;
         value.reserve(4084);
 
@@ -1048,7 +1039,7 @@ void KConfigGroupPrivate::writeListEntry(const QByteArray &key, const QList<QByt
         value.squeeze(); // release any unused memory
     }
 
-    mOwner->d_func()->putData(fullName(), key, value, flags, expand);
+    return value;
 }
 
 void KConfigGroup::revertToDefault(const QByteArray& key)
@@ -1214,7 +1205,7 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &valu
     foreach(const QString& path, value)
         list << translatePath(path).toUtf8();
 
-    d->writeListEntry(key, list, sep, flags, true);
+    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::convertList(list, sep), flags, true);
 }
 
 QStringList KConfigGroup::groupList() const
