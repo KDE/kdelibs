@@ -914,7 +914,12 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
   // - the pathname and fragment parts are shown in Unicode (as opposed to %-encoding)
   QString result = scheme();
   if (!result.isEmpty())
-    result += QLatin1String("://");
+  {
+    if(!authority().isEmpty() || result == QLatin1String("file"))
+        result += QLatin1String("://");
+    else
+        result += QLatin1String(":");
+  }
 
   QString tmp = userName();
   if (!tmp.isEmpty()) {
