@@ -62,10 +62,6 @@ public:
     KConfigGroup(KConfigBase *master, const QString &group);
     KConfigGroup(KConfigBase *master, const char *group);
 
-    KConfigGroup(KSharedConfigPtr &master, const QByteArray &group);
-    KConfigGroup(KSharedConfigPtr &master, const QString &group);
-    KConfigGroup(KSharedConfigPtr &master, const char *group);
-
     /**
      * Construct a read-only config group. A read-only group will silently ignore
      * any attempts to write to it.

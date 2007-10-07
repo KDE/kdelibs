@@ -159,21 +159,6 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const char *_group)
 {
 }
 
-KConfigGroup::KConfigGroup(KSharedConfigPtr &master, const QString &_group)
- : d(new KConfigGroupPrivate(master, _group.toUtf8()))
-{
-}
-
-KConfigGroup::KConfigGroup(KSharedConfigPtr &master, const QByteArray &_group)
- : d(new KConfigGroupPrivate(master, _group))
-{
-}
-
-KConfigGroup::KConfigGroup(KSharedConfigPtr &master, const char * _group)
- : d(new KConfigGroupPrivate(master, _group))
-{
-}
-
 KConfigGroup::KConfigGroup(const KConfigBase *master, const QString &_group)
     : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group.toUtf8(), true))
 {
