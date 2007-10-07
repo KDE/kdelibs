@@ -52,7 +52,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define STRINGLISTENTRY (QStringList( "Hello," ) << " World")
 #define STRINGLISTESCAPEODDENTRY (QStringList( "Hello\\\\\\" ) << "World")
 #define STRINGLISTESCAPEEVENENTRY (QStringList( "Hello\\\\\\\\" ) << "World")
-#define STRINGLISTESCAPECOMMAENTRY (QStringList( "Hel\\,\\\\,\\,\\\\\\\\,lo" ) << "World")
+#define STRINGLISTESCAPECOMMAENTRY (QStringList( "Hel\\\\\\,\\\\,\\,\\\\\\\\,lo" ) << "World")
 #define INTLISTENTRY1 QList<int>() << 1 << 2 << 3 << 4
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
