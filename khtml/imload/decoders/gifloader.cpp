@@ -45,6 +45,7 @@ extern "C" {
 #include <gif_lib.h>
 }
 
+// #define DEBUG_GIFLOADER
 
 namespace khtmlImLoad {
 
@@ -89,16 +90,20 @@ class GIFAnimProvider: public AnimProvider
 {
 protected:
     QVector<GIFFrameInfo> frameInfo;
-    int                   frame;
+    int                   frame; // refers to the /current/ frame
 
     // State of gif screen after the previous image.
     // we paint the current frame on top of it, and don't touch until 
     // the current frame is disposed
     QPixmap               canvas;
     QColor                bgColor;
+    bool                  firstTime;
+
+    // Previous mode being background seems to trigger an OpSrc rather than OpOver updating
+    bool                  previousWasBG;
 public:
     GIFAnimProvider(PixmapPlane* plane, Image* img, QVector<GIFFrameInfo> _frames, QColor bg):
-        AnimProvider(plane, img), bgColor(bg)
+        AnimProvider(plane, img), bgColor(bg), firstTime(true), previousWasBG(false)
     {
         frameInfo = _frames;
         frame     = 0;
@@ -121,14 +126,14 @@ public:
     {
         QRect frameGeom = frameInfo[frame].geom;
 
-        // Take the passed paint rectangle in gif screen coordiantes, and 
+        // Take the passed paint rectangle in gif screen coordinates, and 
         // clip it to the frame's geometry
         QRect screenPaintRect = QRect(sx, sy, width, height) & frameGeom;
 
         // Same thing but in the frame's coordinate system
         QRect framePaintRect  = screenPaintRect.translated(-frameGeom.topLeft());
 
-        curFrame->paint(dx + screenPaintRect.x(), dy + screenPaintRect.y(), p,
+        curFrame->paint(dx + screenPaintRect.x() - sx, dy + screenPaintRect.y() - sy, p,
                 framePaintRect.x(), framePaintRect.y(),
                 framePaintRect.width(), framePaintRect.height(), false /* don't get back to us!*/);
     }
@@ -136,13 +141,38 @@ public:
     // Renders current gif screen state on the painter
     void renderCurScreen(int dx, int dy, QPainter* p, int sx, int sy, int width, int height)
     {
-        p->drawPixmap (dx, dy, canvas, sx, sy, width, height);
+        // Depending on the previous frame's mode, we make have to cut out a hole when 
+        // painting the canvas, since if previous frame had BG disposal, we have to do OpSrc.
+        if (previousWasBG)
+        {
+            QRegion canvasDrawRegion(sx, sy, width, height);
+            canvasDrawRegion -= frameInfo[frame].geom;
+            QVector<QRect> srcRects = canvasDrawRegion.rects();
+    
+            foreach (const QRect& r, srcRects)
+                p->drawPixmap(QPoint(dx + r.x() - sx, dy + r.y() - sy), canvas, r);
+        }
+        else
+        {
+            p->drawPixmap(dx, dy, canvas, sx, sy, width, height);
+        }
+
+        // Now render the current frame's overlay
         renderCurImage(dx, dy, p, sx, sy, width, height);
     }
 
     // Update screen, incorporating the dispose operator for current image
     void updateScreenAfterDispose()
     {
+        previousWasBG = false;
+
+        // If we're the last frame, just clear the canvas...
+        if (frame == frameInfo.size() - 1)
+        {
+            canvas.fill(bgColor);
+            return;
+        }
+
         switch (frameInfo[frame].mode)
         {
             case GCE_DisposalRestore:
@@ -157,14 +187,19 @@ public:
             {
                 // Update the canvas with current image.
                 QPainter p(&canvas);
+                if (previousWasBG)
+                    p.setCompositionMode(QPainter::CompositionMode_Source);
                 renderCurImage(0, 0, &p, 0, 0, canvas.width(), canvas.height());
                 return;
             }
 
             case GCE_DisposalBG:
             {
-                // Clear with bg color..
-                canvas.fill(bgColor);
+                previousWasBG = true;
+                // Clear with bg color --- the frame rect only
+                QPainter p(&canvas);
+                p.setCompositionMode(QPainter::CompositionMode_Source);
+                p.fillRect(frameInfo[frame].geom, bgColor);
                 return;
             }
 
@@ -189,8 +224,12 @@ public:
             if (frame >= frameInfo.size())
                 frame = 0;
             nextFrame();
+        }
 
+        // Request next frame to be drawn...
+        if (shouldSwitchFrame || firstTime) {
             shouldSwitchFrame = false;
+            firstTime         = false;
 
             // ### FIXME: adjust based on actual interframe timing -- the jitter is 
             // likely to be quite big 
@@ -199,6 +238,10 @@ public:
 
         // Render the currently active frame
         renderCurScreen(dx, dy, p, sx, sy, width, height);
+
+#ifdef DEBUG_GIFLOADER
+        p->drawText(QPoint(dx - sx, dy - sy + p->fontMetrics().height()), QString::number(frame));
+#endif
     }
 
     virtual AnimProvider* clone(PixmapPlane*)
@@ -259,14 +302,11 @@ public:
         for (int x = 0; x < w; ++x)
         {
             int colorCode = in[x];
-            QRgb color(Qt::black);
+            QRgb color = 0;
             if (colorCode < format.palette.size())
                 color = format.palette[colorCode];
 
-            out[outPos]   = qBlue (color);
-            out[outPos+1] = qGreen(color);
-            out[outPos+2] = qRed  (color);
-            out[outPos+3] = qAlpha(color);
+            *reinterpret_cast<QRgb*>(&out[outPos]) = color;
             outPos += 4;
         }
     }
@@ -361,6 +401,10 @@ public:
                 }
             }
 
+#ifdef DEBUG_GIFLOADER
+            frameInf.delay = 1500;
+#endif
+
             // The only thing I found resembling an explanation suggests that we should 
             // set bgColor to transparent if the first frame's GCE is such...
             // Let's hope this is what actually happens.. (Man, I wish testcasing GIFs was manageable)
@@ -403,7 +447,9 @@ public:
             frameInf.trans  = format.hasAlpha();
             frameProps.append(frameInf); 
 
-             //qDebug("frame:%d:%d,%d:%dx%d, trans:%d, mode:%d", frame, frameInf.geom.x(), frameInf.geom.y(), w, h, trans, frameInf.mode);
+#ifdef DEBUG_GIFLOADER
+            qDebug("frame:%d:%d,%d:%dx%d, trans:%d, mode:%d", frame, frameInf.geom.x(), frameInf.geom.y(), w, h, trans, frameInf.mode);
+#endif
 
             //Decode the scanlines
             uchar* buf;

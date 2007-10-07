@@ -48,7 +48,7 @@ protected:
     void nextFrame(); //Helper that goes to next frame or wraps around
 public:
     AnimProvider(PixmapPlane* plane, Image* img):frame0(plane), curFrame(plane),
-                                     image(img), shouldSwitchFrame(true)
+                                     image(img), shouldSwitchFrame(false)
     {}
 
     void switchFrame();
