@@ -434,9 +434,16 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     // work out what nodes to send event to
     Q3PtrList<NodeImpl> nodeChain;
     NodeImpl *n;
-    for (n = this; n; n = n->parentNode()) {
-        n->ref();
-        nodeChain.prepend(n);
+ 
+    if (inDocument()) {
+        for (n = this; n; n = n->parentNode()) {
+            n->ref();
+            nodeChain.prepend(n);
+        } 
+    } else {
+        // if node is not in the document just send event to itself 
+        ref();
+        nodeChain.prepend(this);
     }
 
     // trigger any capturing event handlers on our way down
