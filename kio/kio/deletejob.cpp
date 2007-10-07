@@ -390,7 +390,7 @@ void DeleteJob::slotResult( KJob *job )
                 //kDebug(7007) << " Target is a directory ";
                 // List it
                 d->state = STATE_LISTING;
-                ListJob *newjob = listRecursive( url, false );
+                ListJob *newjob = KIO::listRecursive( url, KIO::HideProgressInfo );
                 newjob->setUnrestricted(true); // No KIOSK restrictions
                 Scheduler::scheduleJob(newjob);
                 connect(newjob, SIGNAL(entries( KIO::Job *,
