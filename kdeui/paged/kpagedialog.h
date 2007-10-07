@@ -86,11 +86,11 @@ class KDEUI_EXPORT KPageDialog : public KDialog
      */
     enum FaceType
     {
-      Auto   = KPageWidget::Auto,
-      Plain  = KPageWidget::Plain,
-      List   = KPageWidget::List,
-      Tree   = KPageWidget::Tree,
-      Tabbed = KPageWidget::Tabbed
+      Auto   = KPageView::Auto,
+      Plain  = KPageView::Plain,
+      List   = KPageView::List,
+      Tree   = KPageView::Tree,
+      Tabbed = KPageView::Tabbed
     };
 
   public:
