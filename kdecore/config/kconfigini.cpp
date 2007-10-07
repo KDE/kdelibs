@@ -302,7 +302,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     bool bGlobal = options & WriteGlobal;
 
     int mergeCount = toMerge.count();
-    const KEntryMapConstIterator end = entryMap.constEnd();
+    const KEntryMapIterator end = entryMap.end();
     for (KEntryMapIterator it=entryMap.begin(); it != end; ++it) {
         const KEntryKey& key = it.key();
         if (key.bDefault) {
