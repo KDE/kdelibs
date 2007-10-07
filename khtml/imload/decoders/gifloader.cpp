@@ -107,18 +107,8 @@ public:
     {
         frameInfo = _frames;
         frame     = 0;
-        if (bg.alpha() != 255)
-        {
-            // Need an alpha channel..
-            QImage canvasImg(img->size(), QImage::Format_ARGB32_Premultiplied);
-            canvasImg.fill(0x00000000); // fully transparent
-            canvas = QPixmap::fromImage(canvasImg);
-        }
-        else
-        {
-            canvas    = QPixmap(img->size());
-            canvas.fill(bgColor);
-        }
+        canvas    = QPixmap(img->size());
+        canvas.fill(bgColor);
     }
 
     // Renders a portion of the current frame's image on the painter..
