@@ -154,8 +154,6 @@ install( FILES
   KEditListBox
   KEditToolBar
   KEncodingFileDialog
-  KEntry
-  KEntryKey
   KFile
   KFileDialog
   KFileFilterCombo
