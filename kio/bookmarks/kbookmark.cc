@@ -148,19 +148,14 @@ KBookmark KBookmarkGroup::addBookmark( const KBookmark &bm )
     return bm;
 }
 
-KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, const QString & _icon )
+KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, const QString & icon )
 {
-    QString icon = _icon;
     //kDebug(7043) << "KBookmarkGroup::addBookmark " << text << " into " << m_address;
     QDomDocument doc = element.ownerDocument();
     QDomElement elem = doc.createElement( "bookmark" );    
     elem.setAttribute( "href", url.url() ); // gives us utf8
 
-    if(icon.isEmpty())
-        icon = KMimeType::favIconForUrl( url );
-    if(icon.isEmpty())
-        icon = KMimeType::iconNameForUrl( url );
-    elem.setAttribute( "icon", icon );
+    elem.setAttribute( "icon", icon.isEmpty ? KMimeType::iconNameForUrl( url ) : icon );
 
     QDomElement textElem = doc.createElement( "title" );
     elem.appendChild( textElem );
