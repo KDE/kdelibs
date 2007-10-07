@@ -8,9 +8,9 @@ The first 2 parameters are what's needed for testregression, the rest are standa
 make sure to do "make confclean" first.
 3. Build & Install Qt
 4. Configure kdelibs:
-cmake /path/to/kdelibs-src/ -DCMAKE_INSTALL_PREFIX=$KDEDIR -DCMAKE_BUILD_TYPE=debug  -DKDE4_BUILD_TESTREGRESSION=true
-Obviously, you may use whatever prefix and other flags you want, but you must pass 
--DKDE4_BUILD_TESTREGRESSION=true and must use a debug or debugfull build type.
+cmake /path/to/kdelibs-src/ -DCMAKE_INSTALL_PREFIX=$KDEDIR -DCMAKE_BUILD_TYPE=debug  -DKHTML_BUILD_TESTREGRESSION=true
+Obviously, you may use whatever prefix and other flags you want, but you must pass
+-DKHTML_BUILD_TESTREGRESSION=true and must use a debug or debugfull build type.
 5. Build & Install kdelibs
 6. You can now use testregression from kdelibs build dirs bin/ directory. Pass it the path to the regression/ directory in khtmltests.
 Don't forget to make install after changing KHTML or KJS!
