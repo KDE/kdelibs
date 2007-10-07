@@ -64,6 +64,7 @@ public:
     DOM::NodeImpl *ownerNode() const { return m_parentNode; }
     StyleSheetImpl *parentStyleSheet() const;
     DOM::DOMString href() const { return m_strHref; }
+    void setHref(const DOM::DOMString& href) { m_strHref = href; }
     DOM::DOMString title() const { return m_strTitle; }
     MediaListImpl *media() const { return m_media; }
     void setMedia( MediaListImpl *media );

@@ -2211,6 +2211,13 @@ void DocumentImpl::rebuildStyleSelector()
     m_styleSelectorDirty = false;
 }
 
+void DocumentImpl::setBaseURL(const KUrl& _baseURL) 
+{ 
+    m_baseURL = _baseURL; 
+    if (m_elemSheet)
+        m_elemSheet->setHref( baseURL().url() );
+}
+
 void DocumentImpl::setHoverNode(NodeImpl *newHoverNode)
 {
     NodeImpl* oldHoverNode = m_hoverNode;

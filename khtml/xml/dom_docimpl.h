@@ -317,7 +317,7 @@ public:
     void setURL(const QString& url) { m_url = url; }
 
     KUrl baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }
-    void setBaseURL(const KUrl& baseURL) { m_baseURL = baseURL; }
+    void setBaseURL(const KUrl& baseURL);
 
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
