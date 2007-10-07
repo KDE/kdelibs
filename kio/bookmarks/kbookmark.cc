@@ -155,7 +155,7 @@ KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, c
     QDomElement elem = doc.createElement( "bookmark" );    
     elem.setAttribute( "href", url.url() ); // gives us utf8
 
-    elem.setAttribute( "icon", icon.isEmpty ? KMimeType::iconNameForUrl( url ) : icon );
+    elem.setAttribute( "icon", icon.isEmpty() ? KMimeType::iconNameForUrl( url ) : icon );
 
     QDomElement textElem = doc.createElement( "title" );
     elem.appendChild( textElem );
