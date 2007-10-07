@@ -642,7 +642,7 @@ QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const
 
     if (data.isNull())
         return aDefault;
-    if (data.isEmpty())
+    if (data.isEmpty() || data == ",")
         return QVariantList();
 
     if (!data.contains("\\,")) { // easy no escaped commas
@@ -689,6 +689,9 @@ QStringList KConfigGroup::readEntry(const QByteArray &key, const QStringList& aD
 
     const QString separator = QChar(sep);
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
+
+    if (data == separator)
+        return QStringList();
 
     if (!data.contains(escaped))
         return data.split(separator); // easy no escaped separators
@@ -771,6 +774,9 @@ QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) c
     const QString separator = QChar(sep);
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
     QStringList value;
+
+    if (data == separator)
+        return QStringList();
 
     if (!data.contains(escaped)) { // easy no escaped separators
         foreach(const QString& s, data.split(separator)) {
@@ -1023,7 +1029,8 @@ QByteArray KConfigGroupPrivate::convertList(const QList<QByteArray> &list, char 
         }
 
         value.squeeze(); // release any unused memory
-    }
+    } else
+        value = sep;
 
     return value;
 }
