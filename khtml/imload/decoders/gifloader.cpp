@@ -94,7 +94,7 @@ protected:
     // State of gif screen after the previous image.
     // we paint the current frame on top of it, and don't touch until 
     // the current frame is disposed
-    QPixmap               canvas; 
+    QPixmap               canvas;
     QColor                bgColor;
 public:
     GIFAnimProvider(PixmapPlane* plane, Image* img, QVector<GIFFrameInfo> _frames, QColor bg):
@@ -102,8 +102,18 @@ public:
     {
         frameInfo = _frames;
         frame     = 0;
-        canvas    = QPixmap(plane->width, plane->height);
-        canvas.fill(bgColor);
+        if (bg.alpha() != 255)
+        {
+            // Need an alpha channel..
+            QImage canvasImg(img->size(), QImage::Format_ARGB32_Premultiplied);
+            canvasImg.fill(0x00000000); // fully transparent
+            canvas = QPixmap::fromImage(canvasImg);
+        }
+        else
+        {
+            canvas    = QPixmap(img->size());
+            canvas.fill(bgColor);
+        }
     }
 
     // Renders a portion of the current frame's image on the painter..
@@ -313,10 +323,6 @@ public:
 
         QColor bgColor = colorMapColor(globalColorMap, file->SBackGroundColor);
 
-        qDebug() << "overall bgColor:" << bgColor;
-
-        bool prevClearedToBG = false;
-        
         //Extract out all the frames
         for (int frame = 0; frame < file->ImageCount; ++frame)
         {
@@ -350,25 +356,27 @@ public:
                     frameInf.mode  = curExt->Bytes[GCE_Flags] & GCE_DisposalMask;
                     frameInf.delay = decode16Bit(&curExt->Bytes[GCE_Delay]) * 10;
 
-                    qDebug("Specified delay:%dms, disposal mode:%d", frameInf.delay, frameInf.mode);
                     if (frameInf.delay < 100)
                         frameInf.delay = 100;
                 }
             }
 
+            // The only thing I found resembling an explanation suggests that we should 
+            // set bgColor to transparent if the first frame's GCE is such...
+            // Let's hope this is what actually happens.. (Man, I wish testcasing GIFs was manageable)
+            if (frame == 0 && trans != -1)
+                bgColor = QColor(Qt::transparent);
 
-            // If we have transparency, we need to go an RGBA mode, 
-            // with one exception: if the previous frame cleared to 
-            // the background color, we may as well interpret the 
-            // colorkey that wat
+
+            // If we have transparency, we need to go an RGBA mode.
             ImageFormat format;
-            if (trans != -1 && !prevClearedToBG)
+            if (trans != -1)
                 format.type = ImageFormat::Image_RGBA_32;
             else
                 format.type = ImageFormat::Image_Palette_8;
 
             // Read in colors for the palette... Don't waste memory on 
-            // any extra ones.
+            // any extra ones beyond 256, though
             int colorCount = colorMap ? colorMap->ColorCount : 0;
             for (int c = 0; c < colorCount && c < 256; ++c) {
                 format.palette.append(qRgba(colorMap->Colors[c].Red,
@@ -382,14 +390,7 @@ public:
 
             //Put in the colorkey color 
             if (trans != -1)
-            {
-                if (prevClearedToBG)
-                    format.palette[trans] = bgColor.rgb();
-                else
-                    format.palette[trans] = qRgba(0, 0, 0, 0);
-            }
-
-            prevClearedToBG = (frameInf.mode == GCE_DisposalBG);
+                format.palette[trans] = qRgba(0, 0, 0, 0);
 
             //Now we can declare frame format
             notifyAppendFrame(w, h, format);
@@ -402,7 +403,7 @@ public:
             frameInf.trans  = format.hasAlpha();
             frameProps.append(frameInf); 
 
-            qDebug("frame:%d:%d,%d:%dx%d, trans:%d, mode:%d", frame, frameInf.geom.x(), frameInf.geom.y(), w, h, trans, frameInf.mode);
+             //qDebug("frame:%d:%d,%d:%dx%d, trans:%d, mode:%d", frame, frameInf.geom.x(), frameInf.geom.y(), w, h, trans, frameInf.mode);
 
             //Decode the scanlines
             uchar* buf;
