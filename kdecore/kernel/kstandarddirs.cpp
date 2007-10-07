@@ -639,7 +639,8 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
                          bool recursive, bool unique)
 {
     if (relpath.isEmpty()) {
-        Q_ASSERT(prefix != "/");
+        if (recursive)
+            Q_ASSERT(prefix != "/"); // we don't want to recursively list the whole disk!
         lookupDirectory(prefix, relPart, regexp, list,
                         relList, recursive, unique);
         return;
