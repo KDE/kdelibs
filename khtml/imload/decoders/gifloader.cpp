@@ -36,6 +36,7 @@
 #include <QByteArray>
 #include <QPainter>
 #include <QVector>
+#include <QDebug>
 
 #include <stdlib.h>
 
@@ -44,7 +45,6 @@ extern "C" {
 #include <gif_lib.h>
 }
 
-#include <QDebug>
 
 namespace khtmlImLoad {
 
@@ -265,11 +265,22 @@ public:
     static QColor colorMapColor(ColorMapObject* map, int index)
     {
         QColor col(Qt::black);
+        if (!map)
+            return col;
+
         if (index < map->ColorCount)
             col = QColor(map->Colors[index].Red,
                          map->Colors[index].Green,
                          map->Colors[index].Blue);
         return col;
+    }
+
+    static void printColorMap(ColorMapObject* map)
+    {
+        for (int c = 0; c < map->ColorCount; ++c)
+            qDebug() << "  " << map << c << map->Colors[c].Red
+                          << map->Colors[c].Green
+                          << map->Colors[c].Blue;
     }
     
     virtual int processEOF()
@@ -292,11 +303,17 @@ public:
         
         QVector<GIFFrameInfo> frameProps;
         
-        ColorMapObject* globalColorMap = file->Image.ColorMap;
+        // First, use the screen color map...
+        ColorMapObject* globalColorMap = file->SColorMap;
+
+        // If for some reason there is none, pick one from an image, 
+        // and pray it works.
         if (!globalColorMap)
-            globalColorMap = file->SColorMap;
+            globalColorMap = file->Image.ColorMap;
 
         QColor bgColor = colorMapColor(globalColorMap, file->SBackGroundColor);
+
+        qDebug() << "overall bgColor:" << bgColor;
 
         bool prevClearedToBG = false;
         
@@ -352,13 +369,15 @@ public:
 
             // Read in colors for the palette... Don't waste memory on 
             // any extra ones.
-            for (int c = 0; c < colorMap->ColorCount && c < 256; ++c)
+            int colorCount = colorMap ? colorMap->ColorCount : 0;
+            for (int c = 0; c < colorCount && c < 256; ++c) {
                 format.palette.append(qRgba(colorMap->Colors[c].Red,
                                             colorMap->Colors[c].Green,
                                             colorMap->Colors[c].Blue, 255));
+            }
 
             // Pad with black as a precaution
-            for (int c = colorMap->ColorCount; c < 256; ++c)
+            for (int c = colorCount; c < 256; ++c)
                 format.palette.append(qRgba(0, 0, 0, 255));
 
             //Put in the colorkey color 
