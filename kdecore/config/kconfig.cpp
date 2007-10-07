@@ -265,7 +265,7 @@ void KConfig::sync()
                 tmp->unlock();
         }
         if (d->wantMerge())
-            d->mBackend->parseConfig(utf8Locale, toMerge, ParseOptions());
+            d->mBackend->parseConfig(utf8Locale, toMerge, KConfigBackend::ParseExpansions);
         if (d->mBackend->writeConfig(utf8Locale, d->entryMap, toMerge, WriteOptions(), d->componentData))
             d->bDirty = false;
         if (d->mBackend->isLocked())
