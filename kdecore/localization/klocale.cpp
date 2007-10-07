@@ -1964,7 +1964,7 @@ void KLocalePrivate::initEncoding()
   codecForEncoding = 0;
 
   // This all made more sense when we still had the EncodingEnum config key.
-#ifdef HAVE_LANGINFO_H && !defined(Q_OS_WIN)
+#if defined(HAVE_LANGINFO_H) && !defined(Q_OS_WIN)
   // Qt since 4.2 always returns 'System' as codecForLocale and KDE (for example KEncodingFileDialog) 
   // expects real encoding name. So on systems that have langinfo.h use nl_langinfo instead,
   // just like Qt compiled without iconv does. Windows already has its own workaround
