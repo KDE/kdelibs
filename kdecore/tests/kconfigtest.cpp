@@ -52,6 +52,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define STRINGLISTENTRY (QStringList( "Hello," ) << " World")
 #define STRINGLISTESCAPEODDENTRY (QStringList( "Hello\\\\\\" ) << "World")
 #define STRINGLISTESCAPEEVENENTRY (QStringList( "Hello\\\\\\\\" ) << "World")
+#define STRINGLISTESCAPECOMMAENTRY (QStringList( "Hel\\,\\lo" ) << "World")
 #define INTLISTENTRY1 QList<int>() << 1 << 2 << 3 << 4
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
@@ -108,6 +109,7 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "stringListEntry", STRINGLISTENTRY );
   cg.writeEntry( "stringListEscapeOddEntry", STRINGLISTESCAPEODDENTRY );
   cg.writeEntry( "stringListEscapeEvenEntry", STRINGLISTESCAPEEVENENTRY );
+  cg.writeEntry( "stringListEscapeCommaEntry", STRINGLISTESCAPECOMMAENTRY );
   cg.writeEntry( "variantListEntry", VARIANTLISTENTRY );
 
   cg = KConfigGroup(&sc, "Path Type" );
@@ -257,6 +259,9 @@ void KConfigTest::testLists()
 
   QCOMPARE( sc3.readEntry( QString("stringListEscapeEvenEntry"), QStringList()), 
             STRINGLISTESCAPEEVENENTRY );
+
+  QCOMPARE( sc3.readEntry( QString("stringListEscapeCommaEntry"), QStringList()), 
+            STRINGLISTESCAPECOMMAENTRY );
 
   QCOMPARE( sc3.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
   QList<int> expectedIntList = INTLISTENTRY1;
