@@ -205,20 +205,24 @@ QSize KShortcutsEditorDelegate::sizeHint(const QStyleOptionViewItem &option,
 //slot
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
-	//check if we are dealing with a KShortcutsEditorItem
 	const QAbstractItemModel *model = index.model();
 	if (!model)
 		return;
 	KShortcutsEditorItem *item = model->data(index, ItemPointerRole)
-			                            .value<KShortcutsEditorItem *>();
-	Q_ASSERT(item);  //the delegate is for internal use, and this should never trip
+	                                    .value<KShortcutsEditorItem *>();
 
-	//TODO: make clicking on the Name column do *exactly* the same thing
-	//as clicking on the LocalPrimary column, i.e. select LocalPrimary
+	if (!item) {
+		//a non-leaf item
+		return;
+	}
+
 	int column = index.column();
 	if (column == Name) {
 		index = model->index(index.row(), LocalPrimary, index.parent());
 		column = LocalPrimary;
+		//As per KExtendableItemDelegate's constructor our parent *is* an abstract itemview
+		QAbstractItemView *view = static_cast<QAbstractItemView *>(parent());
+		view->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
 	}
 
 	if (!isExtended(index)) {
