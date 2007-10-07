@@ -1039,7 +1039,8 @@ void KConfigGroup::revertToDefault(const QByteArray& key)
     const QByteArray theDefault = config()->d_func()->lookupData(d->fullName(), key,
                       KEntryMap::SearchDefaults|KEntryMap::SearchLocalized);
 
-    config()->d_func()->putData(d->fullName(), key, theDefault, KConfig::Normal);
+    config()->d_func()->putData(d->fullName(), key, theDefault, KConfig::Normal,
+                                theDefault.isNull() ? KConfigPrivate::Delete : KConfigPrivate::NoFlag);
 }
 
 void KConfigGroup::revertToDefault(const char *key)

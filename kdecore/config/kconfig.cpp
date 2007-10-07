@@ -669,10 +669,10 @@ void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
         options |= KEntryMap::EntryLocalized;
     if (flags& KConfigBase::Persistent)
         options |= KEntryMap::EntryDirty;
-    if (extendedFlags | Expand)
+    if (extendedFlags & Expand)
         options |=KEntryMap::EntryExpansion;
 
-    if (extendedFlags | Delete) // deleting entry
+    if (extendedFlags & Delete) // deleting entry
         options |= KEntryMap::EntryDeleted;
 
     entryMap.setEntry(group, key, value, options);
