@@ -409,6 +409,23 @@ void KConfigTest::testDefaultGroup()
     QCOMPARE(defaultGroup.readEntry("TestKey", QString()), QString("defaultGroup"));
     sc.sync();
 
+    {
+        // Test reading it
+        KConfig sc2("kconfigtest");
+        KConfigGroup defaultGroup2(&sc2, "<default>");
+        QCOMPARE(defaultGroup2.name(), QString("<default>"));
+        QVERIFY(defaultGroup2.exists());
+        QCOMPARE(defaultGroup2.readEntry("TestKey", QString()), QString("defaultGroup"));
+    }
+    {
+        // Test reading it
+        KConfig sc2("kconfigtest");
+        KConfigGroup emptyGroup(&sc2, "");
+        QCOMPARE(emptyGroup.name(), QString("<default>"));
+        QVERIFY(emptyGroup.exists());
+        QCOMPARE(emptyGroup.readEntry("TestKey", QString()), QString("defaultGroup"));
+    }
+
 #ifdef Q_OS_UNIX
     QList<QByteArray> lines = readLines();
     QVERIFY(!lines.contains("[]"));
@@ -435,6 +452,23 @@ void KConfigTest::testEmptyGroup()
     QVERIFY(emptyGroup.exists());
     QCOMPARE(emptyGroup.readEntry("TestKey", QString()), QString("emptyGroup"));
     sc.sync();
+
+    {
+        // Test reading it
+        KConfig sc2("kconfigtest");
+        KConfigGroup defaultGroup(&sc2, "<default>");
+        QCOMPARE(defaultGroup.name(), QString("<default>"));
+        QVERIFY(defaultGroup.exists());
+        QCOMPARE(defaultGroup.readEntry("TestKey", QString()), QString("emptyGroup"));
+    }
+    {
+        // Test reading it
+        KConfig sc2("kconfigtest");
+        KConfigGroup emptyGroup2(&sc2, "");
+        QCOMPARE(emptyGroup2.name(), QString("<default>"));
+        QVERIFY(emptyGroup2.exists());
+        QCOMPARE(emptyGroup2.readEntry("TestKey", QString()), QString("emptyGroup"));
+    }
 
 #ifdef Q_OS_UNIX
     QList<QByteArray> lines = readLines();
