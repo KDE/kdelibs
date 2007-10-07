@@ -50,6 +50,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )
 #define DATETIMEENTRY QDateTime( QDate( 2002, 06, 23 ), QTime( 12, 55, 40 ) )
 #define STRINGLISTENTRY (QStringList( "Hello," ) << " World")
+#define STRINGLISTESCAPEENTRY (QStringList( "Hello\\" ) << "World")
 #define INTLISTENTRY1 QList<int>() << 1 << 2 << 3 << 4
 #define BYTEARRAYLISTENTRY1 QList<QByteArray>() << "" << "1,2" << "end"
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
@@ -104,6 +105,7 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "listOfIntsEntry1", INTLISTENTRY1 );
   cg.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
   cg.writeEntry( "stringListEntry", STRINGLISTENTRY );
+  cg.writeEntry( "stringListEscapeEntry", STRINGLISTESCAPEENTRY );
   cg.writeEntry( "variantListEntry", VARIANTLISTENTRY );
 
   cg = KConfigGroup(&sc, "Path Type" );
@@ -248,6 +250,8 @@ void KConfigTest::testLists()
   QCOMPARE( sc3.readEntry( QString("stringListEntry"), QStringList()),
             STRINGLISTENTRY );
 
+  QCOMPARE( sc3.readEntry( QString("stringListEscapeEntry"), QStringList()), 
+            STRINGLISTESCAPEENTRY );
   QCOMPARE( sc3.readEntry( "listOfIntsEntry1" ), QString::fromLatin1( "1,2,3,4" ) );
   QList<int> expectedIntList = INTLISTENTRY1;
   QVERIFY( sc3.readEntry( "listOfIntsEntry1", QList<int>() ) == expectedIntList );
