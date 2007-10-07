@@ -52,8 +52,12 @@ public:
     bool canWriteEntry(const QByteArray& group, const QByteArray& key, bool isDefault=false) const;
     QString lookupData(const QByteArray& group, const QByteArray& key, int flags, bool* expand) const;
     QByteArray lookupData(const QByteArray& group, const QByteArray& key, int flags) const;
+
+    enum ExtendedWriteFlag { NoFlag = 0x0, Expand = 0x1, Delete =0x2 };
+    Q_DECLARE_FLAGS(ExtendedWriteFlags, ExtendedWriteFlag)
+
     void putData(const QByteArray& group, const QByteArray& key,
-        const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand = false);
+        const QByteArray& value, KConfigBase::WriteConfigFlags flags, ExtendedWriteFlags = NoFlag);
     QStringList groupList(const QByteArray& group) const;
 
 protected:
@@ -103,5 +107,7 @@ private:
 
     void setDirty(bool b);
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigPrivate::ExtendedWriteFlags)
 
 #endif // KCONFIG_H

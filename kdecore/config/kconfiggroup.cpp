@@ -642,7 +642,7 @@ QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const
 
     if (data.isNull())
         return aDefault;
-    if (data.isEmpty() || data == ",")
+    if (data.isEmpty())
         return QVariantList();
 
     if (!data.contains("\\,")) { // easy no escaped commas
@@ -689,9 +689,6 @@ QStringList KConfigGroup::readEntry(const QByteArray &key, const QStringList& aD
 
     const QString separator = QChar(sep);
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
-
-    if (data == separator)
-        return QStringList();
 
     if (!data.contains(escaped))
         return data.split(separator); // easy no escaped separators
@@ -775,9 +772,6 @@ QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) c
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
     QStringList value;
 
-    if (data == separator)
-        return QStringList();
-
     if (!data.contains(escaped)) { // easy no escaped separators
         foreach(const QString& s, data.split(separator)) {
             if (expand)
@@ -857,7 +851,7 @@ void KConfigGroup::writeEntry<QByteArray>( const QByteArray &key, const QByteArr
 
 void KConfigGroup::deleteEntry(const QByteArray& key, WriteConfigFlags flags)
 {
-   writeEntry(key, QByteArray(), flags);
+   config()->d_func()->putData(d->fullName(), key, QByteArray(), flags, KConfigPrivate::Delete);
 }
 
 void KConfigGroup::deleteEntry( const QString& key, WriteConfigFlags flags)
@@ -1029,8 +1023,7 @@ QByteArray KConfigGroupPrivate::convertList(const QList<QByteArray> &list, char 
         }
 
         value.squeeze(); // release any unused memory
-    } else
-        value = sep;
+    }
 
     return value;
 }
@@ -1177,7 +1170,7 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QString &path, Wr
 {
     Q_ASSERT(!d->bConst);
 
-    config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, true);
+    config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, KConfigPrivate::Expand);
 }
 
 void KConfigGroup::writePathEntry(const QString &key, const QStringList &value, char sep, WriteConfigFlags flags)
@@ -1198,7 +1191,7 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &valu
     foreach(const QString& path, value)
         list << translatePath(path).toUtf8();
 
-    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::convertList(list, sep), flags, true);
+    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::convertList(list, sep), flags, KConfigPrivate::Expand);
 }
 
 QStringList KConfigGroup::groupList() const

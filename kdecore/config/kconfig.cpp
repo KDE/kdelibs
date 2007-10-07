@@ -652,7 +652,7 @@ bool KConfigPrivate::canWriteEntry(const QByteArray& group, const QByteArray& ke
 }
 
 void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
-                      const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand)
+                      const QByteArray& value, KConfigBase::WriteConfigFlags flags, ExtendedWriteFlags extendedFlags)
 {
     // the KConfig object is dirty now
     // set this before any IO takes place so that if any derivative
@@ -669,10 +669,10 @@ void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
         options |= KEntryMap::EntryLocalized;
     if (flags& KConfigBase::Persistent)
         options |= KEntryMap::EntryDirty;
-    if (expand)
+    if (extendedFlags | Expand)
         options |=KEntryMap::EntryExpansion;
 
-    if ( value.isNull() ) // deleting entry
+    if (extendedFlags | Delete) // deleting entry
         options |= KEntryMap::EntryDeleted;
 
     entryMap.setEntry(group, key, value, options);
