@@ -16,6 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 #include "kdesktopfiletest.h"
+#include <kconfiggroup.h>
+#include <ktemporaryfile.h>
 #include "kdesktopfiletest.moc"
 
 #include "kdesktopfile.h"
@@ -38,4 +40,31 @@ void KDesktopFileTest::testRead()
     QCOMPARE(df.hasApplicationType(), false);
     QCOMPARE(df.fileName(), fileName);
     QCOMPARE(df.resource(), "apps"); // default for .desktop files
+}
+
+void KDesktopFileTest::testActionGroup()
+{
+    KTemporaryFile file;
+    file.setPrefix("test1");
+    QVERIFY( file.open() );
+    const QString fileName = file.fileName();
+    QTextStream ts( &file );
+    ts <<
+        "[Desktop Entry]\n"
+        "ServiceTypes=all/allfiles\n"
+        "Actions=encrypt;\n"
+        "[Desktop Action encrypt]\n"
+        "Name=Encrypt file\n"
+        "\n";
+    file.close();
+    QVERIFY(QFile::exists(fileName));
+    KDesktopFile df(fileName);
+    QCOMPARE(df.readType(), QString());
+    QCOMPARE(df.fileName(), fileName);
+    QCOMPARE(df.readActions(), QStringList() << "encrypt");
+    QCOMPARE(df.hasActionGroup("encrypt"), true);
+    QCOMPARE(df.hasActionGroup("doesnotexist"), false);
+    KConfigGroup cg = df.actionGroup("encrypt");
+    QVERIFY(cg.hasKey("Name"));
+    QCOMPARE(cg.readEntry("Name"), QString("Encrypt file"));
 }

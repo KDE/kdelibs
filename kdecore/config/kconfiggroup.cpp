@@ -690,28 +690,31 @@ QStringList KConfigGroup::readEntry(const QByteArray &key, const QStringList& aD
     const QString separator = QChar(sep);
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
 
-    if (!data.contains(escaped))
-        return data.split(separator); // easy no escaped separators
-
-    // now look out for escaped separators
     QStringList value;
-    for(int i=0; i < data.size(); /* nothing */) {
-        int end = data.indexOf(separator, i);
-    again:
-        if (end < 0) { // no more separators found, end of entry
-            value << data.mid(i).replace(escaped, separator);
-            i = data.size();
-        } else if (end == 0) { // empty first element
-            value << QString();
-            i++;
-        } else if (data.at(end-1) == QLatin1Char('\\')) { // escaped separator
-            end = data.indexOf(separator, end+1);
-            goto again;
-        } else {
-            value << data.mid(i, end-i).replace(escaped, separator);
-            i = end+1;
+    if (!data.contains(escaped)) {
+        value = data.split(separator); // easy no escaped separators
+    } else {
+        // now look out for escaped separators
+        for(int i=0; i < data.size(); /* nothing */) {
+            int end = data.indexOf(separator, i);
+        again:
+            if (end < 0) { // no more separators found, end of entry
+                value << data.mid(i).replace(escaped, separator);
+                i = data.size();
+            } else if (end == 0) { // empty first element
+                value << QString();
+                i++;
+            } else if (data.at(end-1) == QLatin1Char('\\')) { // escaped separator
+                end = data.indexOf(separator, end+1);
+                goto again;
+            } else {
+                value << data.mid(i, end-i).replace(escaped, separator);
+                i = end+1;
+            }
         }
     }
+    if (sep == ';' && !value.isEmpty() && value.last().isEmpty())
+        value.removeLast(); // Support for Actions="foo;" as per the desktop entry standard
     return value;
 }
 
