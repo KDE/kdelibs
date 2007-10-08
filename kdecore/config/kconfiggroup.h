@@ -113,9 +113,9 @@ public:
      * not be overused. Prefer another object for another group to avoid mixture of
      * groups. A subgroup can only change to another subgroup of the parent.
      */
-    void changeGroup( const QString &group );
-    void changeGroup( const QByteArray &group);
-    void changeGroup( const char *group);
+    KDE_DEPRECATED void changeGroup( const QString &group );
+    KDE_DEPRECATED void changeGroup( const QByteArray &group);
+    KDE_DEPRECATED void changeGroup( const char *group);
 
     QString name() const;
     bool exists() const;
