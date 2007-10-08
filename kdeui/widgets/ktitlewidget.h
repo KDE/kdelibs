@@ -89,7 +89,7 @@ public:
     };
 
     /**
-     * Constructs a progress bar with the given @param parent.
+     * Constructs a title widget with the given @param parent.
      */
     explicit KTitleWidget(QWidget *parent = 0);
 
