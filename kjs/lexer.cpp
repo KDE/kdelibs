@@ -616,17 +616,45 @@ bool Lexer::isLineTerminator()
   return cr || lf || current == 0x2028 || current == 0x2029;
 }
 
+typedef bool (CharacterCheck)(int c);
+
+static bool isIdentStartLibC(int c)
+{
+  return (category(c) & (Letter_Uppercase | Letter_Lowercase |
+			 Letter_Titlecase | Letter_Modifier | Letter_Other))
+    || c == '$' || c == '_';
+}
+
+static bool isIdentPartLibC(int c)
+{
+  return (category(c) & (Letter_Uppercase | Letter_Lowercase |
+			 Letter_Titlecase | Letter_Modifier | Letter_Other |
+			 Mark_NonSpacing | Mark_SpacingCombining |
+			 Number_DecimalDigit | Punctuation_Connector))
+    || c == '$' || c == '_';
+}
+
+static CharacterCheck *identStart = ::isIdentStartLibC;
+static CharacterCheck *identPart = ::isIdentPartLibC;
+
+void Lexer::setIdentStartChecker(bool (*f)(int c))
+{
+  identStart = f;
+}
+
+void Lexer::setIdentPartChecker(bool (*f)(int c))
+{
+  identPart = f;
+}
+
 bool Lexer::isIdentStart(int c)
 {
-  return (category(c) & (WTF::Unicode::Letter_Uppercase | Letter_Lowercase | Letter_Titlecase | Letter_Modifier | Letter_Other))
-    || c == '$' || c == '_';
+  return (*identStart)(c);
 }
 
 bool Lexer::isIdentPart(int c)
 {
-  return (category(c) & (WTF::Unicode::Letter_Uppercase | Letter_Lowercase | Letter_Titlecase | Letter_Modifier | Letter_Other
-	| Mark_NonSpacing | Mark_SpacingCombining | Number_DecimalDigit | Punctuation_Connector))
-    || c == '$' || c == '_';
+  return (*identPart)(c);
 }
 
 static bool isDecimalDigit(int c)

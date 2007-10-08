@@ -45,9 +45,7 @@
 #include "string_object.h"
 #include "types.h"
 #include "value.h"
-#ifdef KJS_DEBUG_MEM
 #include "lexer.h"
-#endif
 
 #if USE(BINDINGS)
 #include "runtime.h"
@@ -848,6 +846,30 @@ SavedBuiltins::SavedBuiltins() :
 SavedBuiltins::~SavedBuiltins()
 {
   delete _internal;
+}
+
+UnicodeSupport::UnicodeSupport()
+{
+}
+
+void UnicodeSupport::setIdentStartChecker(bool (*f)(int c))
+{
+  Lexer::setIdentStartChecker(f);
+}
+
+void UnicodeSupport::setIdentPartChecker(bool (*f)(int c))
+{
+  Lexer::setIdentPartChecker(f);
+}
+
+void UnicodeSupport::setToLowerFunction(StringConversionFunction f)
+{
+  StringProtoFunc::setToLowerFunction(f);
+}
+
+void UnicodeSupport::setToUpperFunction(StringConversionFunction f)
+{
+  StringProtoFunc::setToUpperFunction(f);
 }
 
 }

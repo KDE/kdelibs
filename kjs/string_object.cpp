@@ -394,6 +394,20 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
   return jsString(source.substr(0, matchPos) + replacementString + source.substr(matchPos + matchLen));
 }
 
+static UnicodeSupport::StringConversionFunction toUpperF = Unicode::toUpper;
+static UnicodeSupport::StringConversionFunction toLowerF = Unicode::toLower;
+
+void StringProtoFunc::setToLowerFunction(UnicodeSupport::StringConversionFunction f)
+{
+  toLowerF = f;
+}
+
+void StringProtoFunc::setToUpperFunction(UnicodeSupport::StringConversionFunction f)
+{
+  toUpperF = f;
+}
+
+
 // ECMA 15.5.4.2 - 15.5.4.20
 JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
@@ -671,7 +685,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
     uint16_t* dataPtr = reinterpret_cast<uint16_t*>(u.rep()->data());
     uint16_t* destIfNeeded;
 
-    int len = Unicode::toLower(dataPtr, u.size(), destIfNeeded);
+    int len = toLowerF(dataPtr, u.size(), destIfNeeded);
     if (len >= 0)
         result = jsString(UString(reinterpret_cast<UChar*>(destIfNeeded ? destIfNeeded : dataPtr), len));
     else
@@ -687,7 +701,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
     uint16_t* dataPtr = reinterpret_cast<uint16_t*>(u.rep()->data());
     uint16_t* destIfNeeded;
 
-    int len = Unicode::toUpper(dataPtr, u.size(), destIfNeeded);
+    int len = toUpperF(dataPtr, u.size(), destIfNeeded);
     if (len >= 0)
         result = jsString(UString(reinterpret_cast<UChar *>(destIfNeeded ? destIfNeeded : dataPtr), len));
     else

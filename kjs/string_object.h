@@ -80,6 +80,9 @@ namespace KJS {
            Fontcolor, Fontsize, Anchor, Link
 #endif
     };
+
+    static void setToLowerFunction(UnicodeSupport::StringConversionFunction f);
+    static void setToUpperFunction(UnicodeSupport::StringConversionFunction f);
   private:
     int id;
   };

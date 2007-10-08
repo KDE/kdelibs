@@ -77,6 +77,9 @@ namespace KJS {
     bool scanRegExp();
     UString pattern, flags;
 
+    static void setIdentStartChecker(bool (*f)(int c));
+    static void setIdentPartChecker(bool (*f)(int c));
+
   private:
     int yylineno;
     UString m_sourceURL;

@@ -445,6 +445,28 @@ private:
 
     return handleTimeout();
   }
+
+  /**
+   * Interface to set enhanced Unicode support functions. By default
+   * the interpreter will use the standard C library functions.
+   *
+   * @internal
+   */
+  class KJS_EXPORT UnicodeSupport
+  {
+  public:
+    UnicodeSupport();
+
+    typedef bool (*CharCategoryFunction)(int c);
+    static void setIdentStartChecker(CharCategoryFunction f);
+    static void setIdentPartChecker(CharCategoryFunction f);
+
+    typedef int (*StringConversionFunction)(uint16_t* str, int strLength,
+					    uint16_t*& destIfNeeded);
+    static void setToLowerFunction(StringConversionFunction f);
+    static void setToUpperFunction(StringConversionFunction f);
+  };
+
   
 } // namespace
 
