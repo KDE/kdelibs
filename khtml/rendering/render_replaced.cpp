@@ -139,6 +139,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
         : RenderReplaced(node)
 {
     m_widget = 0;
+    m_underMouse = 0;
     // a widget doesn't support being anonymous
     assert(!isAnonymous());
     m_view  = node->getDocument()->view();
@@ -536,34 +537,28 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         paintWidget(paintInfo, m_widget, xPos, yPos);
 }
 
+static void setInPaintEventFlag(QWidget* w, bool b = true)
+{
+      w->setAttribute(Qt::WA_WState_InPaintEvent, b);
+      foreach(QObject* cw, w->children()) {
+          if (cw->isWidgetType()) {
+              static_cast<QWidget*>(cw)->setAttribute(Qt::WA_WState_InPaintEvent, false);
+              setInPaintEventFlag(static_cast<QWidget*>(cw), b);
+          }
+      }
+}
+
 static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int ty, bool buffered = false)
 {
     if (r.isNull() || r.isEmpty() )
         return;
 
-    QVector<QWidget*> cw;
-    QVector<QRect> cr;
     QPoint thePoint(tx, ty);
     QMatrix m = p->worldMatrix();
     thePoint = thePoint * m;
-
-    if (!widget->children().isEmpty()) {
-        // build region
-        QList<QObject*> list = widget->children();
-	foreach ( QObject* it, list ) {
-	    QWidget* w = qobject_cast<QWidget* >(it);
-	    if ( w && !w->isTopLevel() && !w->isHidden()) {
-	        QRect r2 = w->geometry();
-		r2 = r2.intersect( r );
-		r2.translate(-w->x(), -w->y());
-		cr.append(r2);
-		cw.append(w);
-	    }
-        }
-    }
-
-    // send paint event
+    QRegion rg = p->clipRegion();
     QPaintDevice *d = p->device();
+    QPaintDevice *x = d;
     if (buffered) {
         if (!widget->size().isValid())
             return;
@@ -572,18 +567,18 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         pp.setCompositionMode(QPainter::CompositionMode_Clear);
         pp.eraseRect(r);
         d = pm;
-    } else
+    } else {
         p->end();
+    }
 
-    QPainter::setRedirected(widget, d, buffered ? QPoint(0,0) : -thePoint);
+    setInPaintEventFlag( widget, false );
 
-    QPaintEvent e( r );
-    QApplication::sendEvent(widget, &e);
-    QPainter::restoreRedirected(widget);
+    widget->render( d, (buffered ? QPoint(0,0) : thePoint), r);
 
     if (!p->isActive())
-        p->begin(p->device());
+        p->begin(x);
     p->setWorldMatrix( m );
+    p->setClipRegion( rg );
 
     if (buffered) {
         // transfer results
@@ -591,13 +586,7 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         PaintBuffer::release();
     }
 
-    widget->setAttribute(Qt::WA_WState_InPaintEvent); // ### horrible hack - FIXME
-
-    QVector<QWidget*>::iterator cwit = cw.begin();
-    QVector<QWidget*>::iterator cwitEnd = cw.end();
-    QVector<QRect>::const_iterator crit = cr.begin();
-    for (; cwit != cwitEnd; ++cwit, ++crit)
-        copyWidget(*crit, p, *cwit, tx+(*cwit)->x(), ty+(*cwit)->y(), buffered);
+    setInPaintEventFlag( widget );
 }
 
 void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
@@ -736,6 +725,7 @@ void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
 bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 {
     bool ret = false;
+    
     switch(ev.id()) {
     case EventImpl::DOMFOCUSIN_EVENT: 
     case EventImpl::DOMFOCUSOUT_EVENT: {
@@ -817,9 +807,33 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                  me.clientY() - absy + m_view->contentsY());
 
         QWidget* target = 0;
+        target = m_widget->childAt(p);
+
+        if (m_underMouse != target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
+            if (m_underMouse) {
+                QEvent moe( QEvent::Leave );
+                QApplication::sendEvent(m_underMouse, &moe);
+//                qDebug() << "sending LEAVE to"<< m_underMouse;
+                if (m_underMouse->testAttribute(Qt::WA_Hover)) {
+                    QHoverEvent he( QEvent::HoverLeave, QPoint(-1,-1), QPoint(0,0) );
+                    QApplication::sendEvent(m_underMouse, &he);
+                }
+            }
+            if (target) {
+	        QEvent moe( QEvent::Enter );
+	        QApplication::sendEvent(target, &moe);
+//                qDebug() << "sending ENTER to" << target;
+                if (target->testAttribute(Qt::WA_Hover)) {
+                    QHoverEvent he( QEvent::HoverEnter, QPoint(0,0), QPoint(-1,-1) );
+                    QApplication::sendEvent(target, &he);
+                }
+                m_underMouse = target;
+            }
+        }
+
         if (ev.id() == EventImpl::MOUSEDOWN_EVENT) {
-            target = m_widget->childAt(p);
-            if (!target || !::qobject_cast<QScrollBar*>(target))
+            if (!target || (!::qobject_cast<QScrollBar*>(target) && 
+                            !::qobject_cast<KUrlRequester*>(m_widget)))
                 target = m_widget;
             view()->setMouseEventsTarget( target );
         } else {
@@ -847,9 +861,9 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         if (needContextMenuEvent) {
             QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
             static_cast<EventPropagator *>(target)->sendEvent(&cme);
-        } else if (type == QEvent::MouseMove && m_widget->testAttribute(Qt::WA_Hover)) {
+        } else if (type == QEvent::MouseMove && target->testAttribute(Qt::WA_Hover)) {
             QHoverEvent he( QEvent::HoverMove, p, p );
-            QApplication::sendEvent(m_widget, &he);
+            QApplication::sendEvent(target, &he);
         }
         if (ev.id() == EventImpl::MOUSEUP_EVENT && button == Qt::LeftButton) {
             view()->setMouseEventsTarget( 0 );
@@ -901,17 +915,21 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 	break;
     }
     case EventImpl::MOUSEOUT_EVENT: {
+        QWidget* target = m_underMouse ? m_underMouse : m_widget;
 	QEvent moe( QEvent::Leave );
-	QApplication::sendEvent(m_widget, &moe);
-	if (m_widget->testAttribute(Qt::WA_Hover)) {
+	QApplication::sendEvent(target, &moe);
+//        qDebug() << "received MOUSEOUT, forwarding to" << target ;
+	if (target->testAttribute(Qt::WA_Hover)) {
             QHoverEvent he( QEvent::HoverLeave, QPoint(-1,-1), QPoint(0,0) );
-            QApplication::sendEvent(m_widget, &he);
+            QApplication::sendEvent(target, &he);
         }
+        m_underMouse = 0;
 	break;
     }
     case EventImpl::MOUSEOVER_EVENT: {
 	QEvent moe( QEvent::Enter );
 	QApplication::sendEvent(m_widget, &moe);
+//        qDebug() << "received MOUSEOVER, forwarding to" << m_widget;
         if (m_widget->testAttribute(Qt::WA_Hover)) {
             QHoverEvent he( QEvent::HoverEnter, QPoint(0,0), QPoint(-1,-1) );
             QApplication::sendEvent(m_widget, &he);

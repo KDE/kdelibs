@@ -344,7 +344,7 @@ public:
 public Q_SLOTS:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
-    void slotUrlSelected(const QString &string);
+    void slotUrlSelected(const KUrl &url);
 
 protected:
     virtual void handleFocusOut();

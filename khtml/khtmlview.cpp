@@ -710,7 +710,7 @@ void KHTMLView::revertTransforms( int& x, int& y ) const
     revertTransforms(x, y, dummy, dummy);
 }
 
-void KHTMLView::resizeEvent (QResizeEvent* e)
+void KHTMLView::resizeEvent (QResizeEvent* /*e*/)
 {
     if (d->layoutSchedulingEnabled)
         layout();
@@ -1926,6 +1926,17 @@ bool  KHTMLView::viewportEvent ( QEvent * e )
     return QScrollArea::viewportEvent(e);
 }
 
+static void setInPaintEventFlag(QWidget* w, bool b = true)
+{
+      w->setAttribute(Qt::WA_WState_InPaintEvent, b);
+      foreach(QObject* cw, w->children()) {
+          if (cw->isWidgetType()) {
+              static_cast<QWidget*>(cw)->setAttribute(Qt::WA_WState_InPaintEvent, false);
+              setInPaintEventFlag(static_cast<QWidget*>(cw), b);
+          }
+      }
+}
+
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::ShortcutOverride ) {
@@ -2003,10 +2014,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
                     bool asap = !isUpdate && !d->contentsMoving && qobject_cast<QAbstractScrollArea*>(c);
 
                     if (isUpdate) {
-                        // ### horrible - FIXME
-                        w->setAttribute(Qt::WA_WState_InPaintEvent, false);
+                        setInPaintEventFlag(w, false);
                         w->update(static_cast<QUpdateLaterEvent*>(e)->region());
-                        w->setAttribute(Qt::WA_WState_InPaintEvent);
+                        setInPaintEventFlag(w);
                         // implicitly call qt_syncBackingStore(w)
                         QEvent fakeEvent(QEvent::UpdateRequest);
                         static_cast<KHTMLBackingStoreHackWidget *>(w)->publicEvent(&fakeEvent);
@@ -2015,11 +2025,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    // QScrollView needs fast repaints
 		    if ( asap && !d->painting && m_part->xmlDocImpl() && m_part->xmlDocImpl()->renderer() &&
 		         !static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer())->needsLayout() ) {
-                        d->painting = true;
 		        repaintContents(x + pr.x(), y + pr.y(),
 	                                        pr.width(), pr.height()+1); // ### investigate that +1 (shows up when
 	                                                                    // updating e.g a textarea's blinking cursor)
-                        d->painting = false;
                     } else if (!d->painting) {
  		        scheduleRepaint(x + pr.x(), y + pr.y(),
  				    pr.width(), pr.height()+1, asap);
@@ -3554,7 +3562,9 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     d->contentsY = verticalScrollBar()->value();
 
     if ( d->staticWidget ) {
-        widget()->repaint();
+        qDebug() << "attr: "<< widget()->testAttribute(Qt::WA_WState_InPaintEvent)<< viewport()->testAttribute(Qt::WA_WState_InPaintEvent);
+        widget()->update();
+        qDebug() << "after: "<< widget()->testAttribute(Qt::WA_WState_InPaintEvent)<< viewport()->testAttribute(Qt::WA_WState_InPaintEvent);
         return;
     }
     QScrollArea::scrollContentsBy(dx, dy);
