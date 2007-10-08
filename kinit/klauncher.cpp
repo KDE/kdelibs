@@ -944,9 +944,9 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
   for(QStringList::ConstIterator it = params.begin();
       it != params.end(); ++it)
   {
-     request->arg_list.append((*it).toLocal8Bit());
+     request->arg_list.append(*it);
   }
-  request->cwd = QFile::encodeName(service->path());
+  request->cwd = service->path();
 }
 
 ///// IO-Slave functions

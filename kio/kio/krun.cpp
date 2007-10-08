@@ -218,7 +218,7 @@ bool KRun::displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool t
     if ( l.exec() )
     {
       KService::Ptr service = l.service();
-      if ( !!service )
+      if ( service )
         return KRun::run( *service, lst, window, tempFiles, suggestedFileName, asn );
 
       kDebug(7010) << "No service set, running " << l.text();
