@@ -202,7 +202,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 
         // place an asynchronous call
         QVariantList args;
-        args << name << qlonglong(w);
+        args << name << qlonglong(w) << appid();
         wallet->d->wallet->callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)));
 
         return wallet;
