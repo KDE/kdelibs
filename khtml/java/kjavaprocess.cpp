@@ -157,9 +157,8 @@ void KJavaProcess::storeSize( QByteArray* buff )
     const QString size_str = QString("%1").arg( size, 8 );
     kDebug(6100) << "KJavaProcess::storeSize, size = " << size_str;
 
-    const char* size_ptr = size_str.toLatin1().constData();
     for( int i = 0; i < 8; ++i )
-        buff->data()[ i ] = size_ptr[i];
+        buff->data()[ i ] = size_str[i].toLatin1();
 }
 
 void KJavaProcess::send( char cmd_code, const QStringList& args )
