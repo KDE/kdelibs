@@ -159,9 +159,9 @@ void KConfigTest::cleanupTestCase()
 {
   QDir local = QDir::homePath() + "/.kde-unit-test/share/config";
 
-//  foreach(const QString &file, local.entryList(QDir::Files))
-//    if(!local.remove(file))
-//      qWarning("%s: removing failed", qPrintable( file ));
+  foreach(const QString &file, local.entryList(QDir::Files))
+    if(!local.remove(file))
+      qWarning("%s: removing failed", qPrintable( file ));
 
   QCOMPARE((int)local.entryList(QDir::Files).count(), 0);
 
