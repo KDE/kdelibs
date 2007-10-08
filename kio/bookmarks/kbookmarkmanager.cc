@@ -66,7 +66,22 @@ private:
     KBookmarkManager *m_manager;
 };
 
-static KBookmarkMap *s_bk_map = 0;
+class KBookmarkMapStatic
+{
+public:
+    KBookmarkMapStatic()
+        : map( 0 )
+    {
+    }
+    ~KBookmarkMapStatic()
+    {
+        delete map;
+    }
+
+    KBookmarkMap *map;
+};
+
+K_GLOBAL_STATIC(KBookmarkMapStatic, s_bk)
 
 KBookmarkMap::KBookmarkMap( KBookmarkManager *manager ) {
     m_manager = manager;
@@ -254,9 +269,9 @@ void KBookmarkManager::parse() const
     }
 
     file.close();
-    if ( !s_bk_map )
-        s_bk_map = new KBookmarkMap( const_cast<KBookmarkManager*>( this ) );
-    s_bk_map->update();
+    if ( !s_bk->map )
+        s_bk->map = new KBookmarkMap( const_cast<KBookmarkManager*>( this ) );
+    s_bk->map->update();
 }
 
 bool KBookmarkManager::save( bool toolbarCache ) const
@@ -497,12 +512,12 @@ void KBookmarkManager::slotEditBookmarksAtAddress( const QString& address )
 ///////
 bool KBookmarkManager::updateAccessMetadata( const QString & url )
 {
-    if (!s_bk_map) {
-        s_bk_map = new KBookmarkMap(this);
-        s_bk_map->update();
+    if (!s_bk->map) {
+        s_bk->map = new KBookmarkMap(this);
+        s_bk->map->update();
     }
 
-    QList<KBookmark> list = s_bk_map->find(url);
+    QList<KBookmark> list = s_bk->map->find(url);
     if ( list.count() == 0 )
         return false;
 
@@ -517,12 +532,12 @@ void KBookmarkManager::updateFavicon( const QString &url, const QString &favicon
 {
     Q_UNUSED(faviconurl);
 
-    if (!s_bk_map) {
-        s_bk_map = new KBookmarkMap(this);
-        s_bk_map->update();
+    if (!s_bk->map) {
+        s_bk->map = new KBookmarkMap(this);
+        s_bk->map->update();
     }
 
-    QList<KBookmark> list = s_bk_map->find(url);
+    QList<KBookmark> list = s_bk->map->find(url);
     for ( QList<KBookmark>::iterator it = list.begin();
           it != list.end(); ++it )
     {
