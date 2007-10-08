@@ -288,6 +288,26 @@ void KConfigTest::testPath()
   QCOMPARE( sc3.readPathEntry( "homepathescape", QString() ), HOMEPATHESCAPE );
 }
 
+void KConfigTest::testPersistenceOfExpandFlagForPath()
+{
+  // This test checks that a path entry starting with $HOME is still flagged
+  // with the expand flag after the config was altered without rewriting the
+  // path entry.
+
+  // 1st step: Open the config, add a new dummy entry and then sync the config
+  // back to the storage.
+  {
+  KConfig sc2( "kconfigtest" );
+  KConfigGroup sc3(&sc2, "Path Type");
+  sc3.writeEntry( "dummy", "dummy" );
+  sc2.sync();
+  }
+
+  // 2nd step: Call testPath() again. Rewriting the config must not break
+  // the testPath() test.
+  testPath();
+}
+
 void KConfigTest::testComplex()
 {
   KConfig sc2( "kconfigtest" );

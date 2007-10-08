@@ -38,6 +38,7 @@ private Q_SLOTS:
     void testSimple();
     void testLists();
     void testPath();
+    void testPersistenceOfExpandFlagForPath();
     void testComplex();
     void testEnums();
     void testInvalid();
