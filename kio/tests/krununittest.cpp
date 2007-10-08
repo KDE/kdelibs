@@ -133,6 +133,7 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
     KUrl::List l1; l1 << KUrl( "file:/tmp" );
     KUrl::List l2; l2 << KUrl( "http://localhost/foo" );
     KUrl::List l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
+    KUrl::List l4; l4 << KUrl( "http://login:password@www.kde.org" );
 
     // A real-world use case would be kate.
     // But I picked kdeinit4 since it's installed by kdelibs
@@ -167,6 +168,7 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
                                    << l1 << false << "/bin/sh -c 'kdeinit4 \\\"/tmp\\\"'";
 
     QTest::newRow("kmailservice %u l1") << "kmailservice %u" << l1 << false << kmailservice + " /tmp";
+    QTest::newRow("kmailservice %u l4") << "kmailservice %u" << l4 << false << kmailservice + " http://login:password@www.kde.org";
 }
 
 void KRunUnitTest::testProcessDesktopExecNoFile()

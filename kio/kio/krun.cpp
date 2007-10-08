@@ -308,7 +308,8 @@ KRunMX2::subst( int option, const KUrl &url, QStringList &ret )
 {
    switch( option ) {
    case 'u':
-      ret << url.pathOrUrl();
+      ret << ((url.isLocalFile() && url.fragment().isNull() && url.encodedQuery().isNull()) ?
+                 url.toLocalFile()  : url.url());
       break;
    case 'd':
       ret << url.directory();
