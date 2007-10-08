@@ -257,6 +257,7 @@
 <!ENTITY kmouth "<application>KMouth</application>">
 <!ENTITY kmousetool "<application>KMouseTool</application>">
 <!ENTITY knetattach     "<application>KNetAttach</application>">
+<!ENTITY knetwalk       "<application>KNetWalk</application>">
 <!ENTITY knewsticker	"<application>KNewsTicker</application>">
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
