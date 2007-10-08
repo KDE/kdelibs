@@ -4,7 +4,8 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2003-2006 Apple Computer, Inc.
+ *           (C) 2003-2007 Apple Computer, Inc.
+ *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -129,21 +130,75 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     return addChildToFlow(newChild, beforeChild);
 }
 
+void RenderFlow::extractLineBox(InlineFlowBox* box)
+{
+    m_lastLineBox = box->prevFlowBox();
+    if (box == m_firstLineBox)
+        m_firstLineBox = 0;
+    if (box->prevLineBox())
+        box->prevLineBox()->setNextLineBox(0);
+    box->setPreviousLineBox(0);
+    for (InlineRunBox* curr = box; curr; curr = curr->nextLineBox())
+        curr->setExtracted();
+}
+
+void RenderFlow::attachLineBox(InlineFlowBox* box)
+{
+    if (m_lastLineBox) {
+        m_lastLineBox->setNextLineBox(box);
+        box->setPreviousLineBox(m_lastLineBox);
+    } else
+        m_firstLineBox = box;
+    InlineFlowBox* last = box;
+    for (InlineFlowBox* curr = box; curr; curr = curr->nextFlowBox()) {
+        curr->setExtracted(false);
+        last = curr;
+    }
+    m_lastLineBox = last;
+}
+
+void RenderFlow::removeInlineBox(InlineBox* _box)
+{
+    if ( _box->isInlineFlowBox() ) {
+        InlineFlowBox* box = static_cast<InlineFlowBox*>(_box);
+        if (box == m_firstLineBox)
+            m_firstLineBox = box->nextFlowBox();
+        if (box == m_lastLineBox)
+            m_lastLineBox = box->prevFlowBox();
+        if (box->nextLineBox())
+            box->nextLineBox()->setPreviousLineBox(box->prevLineBox());
+        if (box->prevLineBox())
+            box->prevLineBox()->setNextLineBox(box->nextLineBox());
+    }
+    RenderBox::removeInlineBox( _box );
+}
+
 void RenderFlow::deleteInlineBoxes(RenderArena* arena)
 {
-    RenderBox::deleteInlineBoxes(arena); //In case we upcalled
-                                         //during construction
     if (m_firstLineBox) {
         if (!arena)
             arena = renderArena();
         InlineRunBox *curr=m_firstLineBox, *next=0;
         while (curr) {
             next = curr->nextLineBox();
-            curr->detach(arena);
+            curr->detach(arena, true /*noRemove*/);
             curr = next;
         }
         m_firstLineBox = 0;
         m_lastLineBox = 0;
+    }
+}
+
+void RenderFlow::dirtyInlineBoxes(bool fullLayout, bool isRootLineBox)
+{
+    if (!isRootLineBox && (isReplaced() || isPositioned()))
+        return RenderBox::dirtyInlineBoxes(fullLayout, isRootLineBox);
+
+    if (fullLayout)
+        deleteInlineBoxes();
+    else {
+        for (InlineRunBox* curr = firstLineBox(); curr; curr = curr->nextLineBox())
+            curr->dirtyInlineBoxes();
     }
 }
 
@@ -192,6 +247,117 @@ InlineBox* RenderFlow::createInlineBox(bool makePlaceHolderBox, bool isRootLineB
     }
 
     return flowBox;
+}
+
+void RenderFlow::dirtyLinesFromChangedChild(RenderObject* child)
+{
+    if (!parent() || (selfNeedsLayout() && !isInlineFlow()) || isTable())
+        return;
+
+    // If we have no first line box, then just bail early.
+    if (!firstLineBox()) {
+        // For an empty inline, propagate the check up to our parent, unless the parent
+        // is already dirty.
+        if (isInline() && !parent()->selfNeedsLayout() && parent()->isInlineFlow())
+            static_cast<RenderFlow*>(parent())->dirtyLinesFromChangedChild(this);
+        return;
+    }
+
+    // Try to figure out which line box we belong in.  First try to find a previous
+    // line box by examining our siblings.  If we didn't find a line box, then use our 
+    // parent's first line box.
+    RootInlineBox* box = 0;
+    RenderObject* curr = 0;
+    for (curr = child->previousSibling(); curr; curr = curr->previousSibling()) {
+        if (curr->isFloatingOrPositioned())
+            continue;
+
+        if (curr->isReplaced() && curr->isBox()) {
+            InlineBox* placeHolderBox = static_cast<RenderBox*>(curr)->placeHolderBox();
+            if (placeHolderBox)
+                box = placeHolderBox->root();
+        } else if (curr->isText()) {
+            InlineTextBox* textBox = static_cast<RenderText*>(curr)->lastTextBox();
+            if (textBox)
+                box = textBox->root();
+        } else if (curr->isInlineFlow()) {
+            InlineRunBox* runBox = static_cast<RenderFlow*>(curr)->lastLineBox();
+            if (runBox)
+                box = runBox->root();
+        }
+
+        if (box)
+            break;
+    }
+    if (!box)
+        box = firstLineBox()->root();
+
+    // If we found a line box, then dirty it.
+    if (box) {
+        RootInlineBox* adjacentBox;
+        box->markDirty();
+
+        // dirty the adjacent lines that might be affected
+        // NOTE: we dirty the previous line because RootInlineBox objects cache
+        // the address of the first object on the next line after a BR, which we may be
+        // invalidating here.  For more info, see how RenderBlock::layoutInlineChildren
+        // calls setLineBreakInfo with the result of findNextLineBreak.  findNextLineBreak,
+        // despite the name, actually returns the first RenderObject after the BR.
+
+        adjacentBox = box->prevRootBox();
+        if (adjacentBox)
+            adjacentBox->markDirty();
+        if (child->isBR() || (curr && curr->isBR())) {
+            adjacentBox = box->nextRootBox();
+            if (adjacentBox)
+                adjacentBox->markDirty();
+        }
+    }
+}
+
+void RenderFlow::detach()
+{
+    if (continuation())
+            continuation()->detach();
+
+    // Make sure to destroy anonymous children first while they are still connected to the rest of the tree, so that they will
+    // properly dirty line boxes that they are removed from.  Effects that do :before/:after only on hover could crash otherwise.
+    detachRemainingChildren();
+
+    if (document()->renderer()) {
+        if (m_firstLineBox) {
+            // We can't wait for RenderContainer::destroy to clear the selection,
+            // because by then we will have nuked the line boxes.
+            if (isSelectionBorder())
+                canvas()->clearSelection();
+
+            // If line boxes are contained inside a root, that means we're an inline.
+            // In that case, we need to remove all the line boxes so that the parent
+            // lines aren't pointing to deleted children. If the first line box does
+            // not have a parent that means they are either already disconnected or
+            // root lines that can just be destroyed without disconnecting.
+            if (m_firstLineBox->parent()) {
+                for (InlineRunBox* box = m_firstLineBox; box; box = box->nextLineBox())
+                    box->remove();
+            }
+
+            // If we are an anonymous block, then our line boxes might have children
+            // that will outlast this block. In the non-anonymous block case those
+            // children will be destroyed by the time we return from this function.
+            if (isAnonymousBlock()) {
+                for (InlineFlowBox* box = m_firstLineBox; box; box = box->nextFlowBox()) {
+                    while (InlineBox* childBox = box->firstChild())
+                        childBox->remove();
+                }
+            }
+        } else if (isInline() && parent())
+            // empty inlines propagate linebox dirtying to the parent
+            parent()->dirtyLinesFromChangedChild(this);
+    }
+
+    deleteInlineBoxes();
+
+    RenderBox::detach(); 
 }
 
 void RenderFlow::paintLines(PaintInfo& i, int _tx, int _ty)

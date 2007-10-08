@@ -71,7 +71,7 @@ FindSelectionResult RenderBR::checkSelectionPoint(int _x, int _y, int _tx, int _
 {
   // Simply take result of previous one
   RenderText *prev = static_cast<RenderText *>(previousSibling());
-  if (!prev || !prev->isText() || !prev->inlineTextBoxCount() || prev->isBR())
+  if (!prev || !prev->isText() || !prev->firstTextBox() || prev->isBR())
     prev = this;
 
   //kDebug(6040) << "delegated to " << prev->renderName() << "@" << prev;

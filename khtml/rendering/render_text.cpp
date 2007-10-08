@@ -65,10 +65,9 @@ using namespace DOM;
 static bool inInlineTextBoxDetach;
 #endif
 
-void InlineTextBox::detach(RenderArena* renderArena)
+void InlineTextBox::detach(RenderArena* renderArena, bool noRemove)
 {
-    if (m_parent)
-        m_parent->removeFromLine(this);
+    if (!noRemove) remove();
 
 #ifndef NDEBUG
     inInlineTextBoxDetach = true;
@@ -319,7 +318,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
         const int thickness = shadow->blur;
         const int w = m_width+2*thickness;
         const int h = m_height+2*thickness;
-        const QRgb color = shadow->color.rgb();
+        const QRgb color = shadow->color.rgba();
         const int gray = qGray(color);
         const bool inverse = (gray < 100);
         const QRgb bgColor = (inverse) ? qRgb(255,255,255) : qRgb(0,0,0);
@@ -583,6 +582,26 @@ long InlineTextBox::maxOffset() const
   return m_start + m_len;
 }
 
+void InlineTextBox::deleteLine(RenderArena* arena)
+{
+    static_cast<RenderText*>(m_object)->removeTextBox(this);
+    detach(arena, true /*noRemove*/);
+}
+
+void InlineTextBox::extractLine()
+{
+    if (m_extracted)
+        return;
+    static_cast<RenderText*>(m_object)->extractTextBox(this);
+}
+
+void InlineTextBox::attachLine()
+{
+    if (!m_extracted)
+        return;
+    static_cast<RenderText*>(m_object)->attachTextBox(this);
+}
+
 int InlineTextBox::placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool& foundBox)
 {
     if (foundBox) {
@@ -629,44 +648,6 @@ int InlineTextBox::placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, 
 
 // -----------------------------------------------------------------------------
 
-// remove this once QVector::bsearch is fixed
-int RenderText::findFirstMatching(InlineTextBoxVector* tboxes, InlineTextBox* d)
-{
-    int len = tboxes->count();
-
-    if ( !len )
-	return -1;
-    if ( !d )
-	return -1;
-    int n1 = 0;
-    int n2 = len - 1;
-    int mid = 0;
-    bool found = false;
-    while ( n1 <= n2 ) {
-	int  res;
-	mid = (n1 + n2)/2;
-	if ( (*tboxes)[mid] == 0 )			// null item greater
-	    res = -1;
-	else
-	    res = d != (*tboxes)[mid] ;
-	if ( res < 0 )
-	    n2 = mid - 1;
-	else if ( res > 0 )
-	    n1 = mid + 1;
-	else {					// found it
-	    found = true;
-	    break;
-	}
-    }
-    /* if ( !found )
-	return -1; */
-    // search to first one equal or bigger
-    while ( found && (mid > 0) && !( d != (*tboxes)[mid-1]) )
-	mid--;
-    return mid;
-}
-
-
 RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
     : RenderObject(node)
 {
@@ -681,6 +662,7 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
     m_selectionState = SelectionNone;
     m_hasReturn = true;
+    m_firstTextBox = m_lastTextBox = 0;
 
 #ifdef DEBUG_LAYOUT
     const QString cstr = QString::fromRawData(str->s, str->l);
@@ -709,28 +691,95 @@ void RenderText::setStyle(RenderStyle *_style)
 
 RenderText::~RenderText()
 {
-    KHTMLAssert(m_lines.count() == 0);
     if(str) str->deref();
+    assert(!m_firstTextBox);
+    assert(!m_lastTextBox);
 }
 
-void RenderText::deleteInlineBoxes(RenderArena* arena)
+void RenderText::detach()
 {
-    // We don't delete the array itself here because its
-    // likely to be used in the same size later again, saves
-    // us reserve() calls
-    int len = m_lines.size();
-    if (len) {
-        if (!arena)
-            arena = renderArena();
-        for(int i = 0; i < len; i++) {
-            InlineTextBox* s = m_lines.at(i);
-            if (s)
-                s->detach(arena);
-        }
-        m_lines.clear();
+    if (document()->renderer()) {
+        if (firstTextBox()) {
+            if (isBR()) {
+                RootInlineBox* next = firstTextBox()->root()->nextRootBox();
+                if (next)
+                    next->markDirty();
+            }
+            for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox())
+                box->remove();
+        } else if (parent())
+            parent()->dirtyLinesFromChangedChild(this);
     }
+    deleteInlineBoxes();
+    RenderObject::detach();
+}
 
-    KHTMLAssert(m_lines.count() == 0);
+void RenderText::extractTextBox(InlineTextBox* box)
+{
+    m_lastTextBox = box->prevTextBox();
+    if (box == m_firstTextBox)
+        m_firstTextBox = 0;
+    if (box->prevTextBox())
+        box->prevTextBox()->setNextLineBox(0);
+    box->setPreviousLineBox(0);
+    for (InlineRunBox* curr = box; curr; curr = curr->nextLineBox())
+        curr->setExtracted();
+}
+
+void RenderText::attachTextBox(InlineTextBox* box)
+{
+    if (m_lastTextBox) {
+        m_lastTextBox->setNextLineBox(box);
+        box->setPreviousLineBox(m_lastTextBox);
+    } else
+        m_firstTextBox = box;
+    InlineTextBox* last = box;
+    for (InlineTextBox* curr = box; curr; curr = curr->nextTextBox()) {
+        curr->setExtracted(false);
+        last = curr;
+    }
+    m_lastTextBox = last;
+}
+
+void RenderText::removeTextBox(InlineTextBox* box)
+{
+    if (box == m_firstTextBox)
+        m_firstTextBox = box->nextTextBox();
+    if (box == m_lastTextBox)
+        m_lastTextBox = box->prevTextBox();
+    if (box->nextTextBox())
+        box->nextTextBox()->setPreviousLineBox(box->prevTextBox());
+    if (box->prevTextBox())
+        box->prevTextBox()->setNextLineBox(box->nextTextBox());
+}
+
+void RenderText::removeInlineBox(InlineBox* _box)
+{
+    KHTMLAssert( _box->isInlineTextBox() );
+    removeTextBox( static_cast<InlineTextBox*>(_box) );
+}
+
+void RenderText::deleteInlineBoxes(RenderArena* /*arena*/)
+{
+    if (firstTextBox()) {
+        RenderArena* arena = renderArena();
+        InlineTextBox* next;
+        for (InlineTextBox* curr = firstTextBox(); curr; curr = next) {
+            next = curr->nextTextBox();
+            curr->detach(arena, true /*noRemove*/);
+        }
+        m_firstTextBox = m_lastTextBox = 0;
+    }
+}
+
+void RenderText::dirtyInlineBoxes(bool fullLayout, bool)
+{
+    if (fullLayout)
+        deleteInlineBoxes();
+    else {
+        for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox())
+            box->dirtyInlineBoxes();
+    }
 }
 
 bool RenderText::isTextFragment() const
@@ -751,54 +800,17 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
     // Find the text box that includes the character at @p offset
     // and return pos, which is the position of the char in the run.
 
-    // FIXME: make this use binary search? Dirk says it won't work :-( (LS)
-    (void)checkFirstLetter;
-#if 0
-    if (checkFirstLetter && forcedMinOffset()) {
-//        kDebug(6040) << "checkFirstLetter: forcedMinOffset: " << forcedMinOffset();
-        RenderFlow *firstLetter = static_cast<RenderFlow *>(previousSibling());
-        if (firstLetter && firstLetter->isFlow() && firstLetter->isFirstLetter()) {
-            RenderText *letterText = static_cast<RenderText *>(firstLetter->firstChild());
-            //kDebug(6040) << "lettertext: " << letterText << " minOfs: " << letterText->minOffset() << " maxOfs: " << letterText->maxOffset();
-	    if (offset >= letterText->minOffset() && offset <= letterText->maxOffset()) {
-	        InlineTextBox *result = letterText->findInlineTextBox(offset, pos, false);
-            //kDebug(6040) << "result: " << result;
-		if (result) return result;
-	    }
-        }
-    }
-#endif
-
-    if ( m_lines.isEmpty() )
+    if ( !m_firstTextBox )
         return 0L;
 
-    // The text boxes don't resemble a contiguous coverage of the text, there
-    // may be holes. Therefore, we snap to the nearest previous text box if
-    // the given offset happens to point to such a hole.
-
-    InlineTextBox* s = m_lines[0];
-    uint count = m_lines.count();
-    uint si = 0;
-    uint nearest_idx = 0;		// index of nearest text box
-    int nearest = INT_MAX;		// nearest distance
-//kDebug(6040) << "s[" << si << "] m_start " << s->m_start << " m_end " << (s->m_start + s->m_len);
-    while(!(offset >= s->m_start && offset <= s->m_start + s->m_len)
-    		&& ++si < count)
-    {
-        int dist = offset - (s->m_start + s->m_len);
-//kDebug(6040) << "dist " << dist << " nearest " << nearest;
-	if (dist >= 0 && dist <= nearest) {
-	    nearest = dist;
-	    nearest_idx = si - 1;
-	}/*end if*/
-        s = m_lines[si];
-//kDebug(6040) << "s[" << si << "] m_start " << s->m_start << " m_end " << (s->m_start + s->m_len);
+    InlineTextBox* s = m_firstTextBox;
+    int off = s->m_len;
+    while (offset > off && s->nextTextBox()) {
+        s = s->nextTextBox();
+        off = s->m_start + s->m_len;
     }
-//kDebug(6040) << "nearest_idx " << nearest_idx << " count " << count;
-    if (si >= count) s = m_lines[nearest_idx];
-    // we are now in the correct text box
-    pos = qMin(offset - s->m_start, int( s->m_len ));
-    //kDebug(6040) << "offset=" << offset << " s->m_start=" << s->m_start;
+    // we are now in the correct text run
+    pos = (offset > off ? s->m_len : s->m_len - (off - offset) );
     return s;
 }
 
@@ -808,16 +820,12 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, H
 
     bool inside = false;
     if (style()->visibility() != HIDDEN) {
-        InlineTextBox *s = m_lines.count() ? m_lines[0] : 0;
-        int si = 0;
-        while(s) {
+        for (InlineTextBox* s = firstTextBox(); s; s = s->nextTextBox()) {
             if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + s->m_height) &&
                (_x >= _tx + s->m_x) && (_x <_tx + s->m_x + s->m_width) ) {
                 inside = true;
                 break;
             }
-
-            s = si < (int) m_lines.count()-1 ? m_lines[++si] : 0;
         }
     }
 
@@ -848,17 +856,16 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 {
 //        kDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                     << " _tx=" << _tx << " _ty=" << _ty << endl;
-//kDebug(6040) << renderName() << "::checkSelectionPoint x=" << xPos() << " y=" << yPos() << " w=" << width() << " h=" << height() << " m_lines.count=" << m_lines.count();
+//kDebug(6040) << renderName() << "::checkSelectionPoint x=" << xPos() << " y=" << yPos() << " w=" << width() << " h=" << height();
 
     NodeImpl *lastNode = 0;
     int lastOffset = 0;
     FindSelectionResult lastResult = SelectionPointAfter;
 
-    for(int si = 0; si < m_lines.count(); si++)
+    for (InlineTextBox* s = firstTextBox(); s; s = s->nextTextBox())
     {
-        InlineTextBox* s = m_lines[si];
         FindSelectionResult result;
-        const Font *f = htmlFont( si==0 );
+        const Font *f = htmlFont( s == m_firstTextBox );
         result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, this, offset, m_lineHeight);
 
 //         kDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset;
@@ -906,7 +913,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 
 void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height)
 {
-  if (!m_lines.count()) {
+  if (!m_firstTextBox) {
     _x = _y = height = -1;
     width = 1;
     return;
@@ -948,25 +955,25 @@ void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, i
 
 long RenderText::minOffset() const
 {
-  if (!m_lines.count()) return 0;
+  if (!m_firstTextBox) return 0;
   // FIXME: it is *not* guaranteed that the first run contains the lowest offset
   // Either make this a linear search (slow),
   // or maintain an index (needs much mem),
   // or calculate and store it in bidi.cpp (needs calculation even if not needed)
   // (LS)
-  return m_lines[0]->m_start;
+  return m_firstTextBox->m_start;
 }
 
 long RenderText::maxOffset() const
 {
-  int count = m_lines.count();
-  if (!count) return str->l;
-  // FIXME: it is *not* guaranteed that the last run contains the highest offset
-  // Either make this a linear search (slow),
-  // or maintain an index (needs much mem),
-  // or calculate and store it in bidi.cpp (needs calculation even if not needed)
-  // (LS)
-  return m_lines[count - 1]->m_start + m_lines[count - 1]->m_len;
+    InlineTextBox* box = m_lastTextBox;
+    if (!box)
+        return str->l;
+    int maxOffset = box->m_start + box->m_len;
+    // ### slow
+    for (box = box->prevTextBox(); box; box = box->prevTextBox())
+        maxOffset = qMax(maxOffset, box->m_start + box->m_len);
+    return maxOffset;
 }
 
 bool RenderText::absolutePosition(int &xPos, int &yPos, bool) const
@@ -991,11 +998,6 @@ bool RenderText::posOfChar(int chr, int &x, int &y)
     }
 
     return false;
-}
-
-void RenderText::paint( PaintInfo& /*pI*/, int /*tx*/, int /*ty*/)
-{
-    KHTMLAssert( false );
 }
 
 void RenderText::calcMinMaxWidth()
@@ -1116,14 +1118,11 @@ void RenderText::calcMinMaxWidth()
 
 int RenderText::minXPos() const
 {
-    if (!m_lines.count())
+    if (!m_firstTextBox)
 	return 0;
     int retval=6666666;
-    int lim = m_lines.count();
-    for (int i = 0; i < lim; i++)
-    {
-	retval = qMin ( retval, int( m_lines[i]->m_x ));
-    }
+    for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox())
+        retval = qMin( retval, static_cast<int>(box->m_x));
     return retval;
 }
 
@@ -1134,7 +1133,7 @@ int RenderText::inlineXPos() const
 
 int RenderText::inlineYPos() const
 {
-    return m_lines.isEmpty() ? 0 : m_lines[0]->yPos();
+    return m_firstTextBox ? m_firstTextBox->yPos() : 0;
 }
 
 const QFont &RenderText::font()
@@ -1212,12 +1211,15 @@ void RenderText::setText(DOMStringImpl *text, bool force)
 
 int RenderText::height() const
 {
-    int retval;
-    if ( m_lines.count() )
-        retval = m_lines[m_lines.count()-1]->m_y + m_lineHeight - m_lines[0]->m_y;
+    int retval = 0;
+    if (firstTextBox())
+#ifdef I_LOVE_UPDATING_TESTREGRESSIONS_BASELINES
+        retval = lastTextBox()->m_y + lastTextBox()->height() - firstTextBox()->m_y;
+#else
+        retval = lastTextBox()->m_y + m_lineHeight - firstTextBox()->m_y;
     else
         retval = metrics( false ).height();
-
+#endif
     return retval;
 }
 
@@ -1239,38 +1241,28 @@ short RenderText::baselinePosition( bool firstLine ) const
 InlineBox* RenderText::createInlineBox(bool, bool isRootLineBox)
 {
     KHTMLAssert( !isRootLineBox );
-    return new (renderArena()) InlineTextBox(this);
+    InlineTextBox* textBox = new (renderArena()) InlineTextBox(this);
+    if (!m_firstTextBox)
+        m_firstTextBox = m_lastTextBox = textBox;
+    else {
+        m_lastTextBox->setNextLineBox(textBox);
+        textBox->setPreviousLineBox(m_lastTextBox);
+        m_lastTextBox = textBox;
+    }
+    return textBox;
 }
 
 void RenderText::position(InlineBox* box, int from, int len, bool reverse)
 {
 //kDebug(6040) << "position: from="<<from<<" len="<<len;
-    // ### should not be needed!!!
-    // asserts sometimes with pre (that unibw-hamburg testcase). ### find out why
-    //KHTMLAssert(!(len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ));
-    // It is now needed. BRs need text boxes too otherwise caret navigation
-    // gets stuck (LS)
-    // if (len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ) return;
 
     reverse = reverse && !style()->visuallyOrdered();
-
-#ifdef DEBUG_LAYOUT
-    QChar *ch = str->s+from;
-    QConstString cstr(ch, len);
-#endif
 
     KHTMLAssert(box->isInlineTextBox());
     InlineTextBox *s = static_cast<InlineTextBox *>(box);
     s->m_start = from;
     s->m_len = len;
     s->m_reversed = reverse;
-    //kDebug(6040) << "m_start: " << s->m_start << " m_len: " << s->m_len;
-
-    if(m_lines.count() == m_lines.capacity())
-        m_lines.reserve(m_lines.capacity()*2+1);
-
-    m_lines.append(s);
-    //kDebug(6040) << this << " " << renderName() << "::position inserted";
 }
 
 unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLine) const
@@ -1302,9 +1294,7 @@ short RenderText::width() const
     int minx = 100000000;
     int maxx = 0;
     // slooow
-    int lim = m_lines.count();
-    for(int si = 0; si < lim; si++) {
-        InlineTextBox* s = m_lines[si];
+    for (InlineTextBox* s = firstTextBox(); s; s = s->nextTextBox()) {
         if(s->m_x < minx)
             minx = s->m_x;
         if(s->m_x + s->m_width > maxx)
@@ -1482,10 +1472,9 @@ void RenderText::dump(QTextStream &stream, const QString &ind) const
 {
     RenderObject::dump( stream, ind );
 
-    int lim = m_lines.count();
-    for (int i = 0; i < lim; i++) {
+    for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox()) {
         stream << endl << ind << "   ";
-        writeTextRun(stream, *this, *m_lines[i]);
+        writeTextRun(stream, *this, *box);
     }
 }
 #endif

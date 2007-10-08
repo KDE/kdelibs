@@ -30,6 +30,8 @@ class EllipsisBox;
 class InlineFlowBox;
 class RootInlineBox;
 class RenderArena;
+class BidiStatus;
+class BidiContext;
 
 // InlineBox represents a rectangle that occurs on a line.  It corresponds to
 // some RenderObject (i.e., it represents a portion of that RenderObject).
@@ -38,7 +40,7 @@ class InlineBox
 public:
     InlineBox(RenderObject* obj)
     :m_object(obj), m_x(0), m_width(0), m_y(0), m_height(0), m_baseline(0),
-     m_firstLine(false), m_constructed(false)
+     m_firstLine(false), m_constructed(false), m_dirty(false), m_extracted(false), m_endsWithBreak(false)
     {
         m_next = 0;
         m_prev = 0;
@@ -47,7 +49,7 @@ public:
 
     virtual ~InlineBox() {}
 
-    void detach(RenderArena* renderArena);
+    virtual void detach(RenderArena* renderArena, bool noRemove=false);
 
     virtual void paint(RenderObject::PaintInfo& i, int _tx, int _ty);
     virtual bool nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int ty);
@@ -111,6 +113,19 @@ public:
     virtual long minOffset() const { return 0; }
     virtual long maxOffset() const { return 0; }
 
+
+    bool isDirty() const { return m_dirty; }
+    void markDirty(bool dirty = true) { m_dirty = dirty; }
+    
+    void setExtracted(bool b = true) { m_extracted = b; }
+    void remove();
+
+    void dirtyInlineBoxes();
+    virtual void deleteLine(RenderArena* arena);
+    virtual void extractLine();
+    virtual void attachLine();
+    void adjustPosition(int dx, int dy);
+
     virtual void clearTruncation() {}
 
     virtual bool canAccommodateEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth);
@@ -128,6 +143,9 @@ public: // FIXME: Would like to make this protected, but methods are accessing t
 
     bool m_firstLine : 1;
     bool m_constructed : 1;
+    bool m_dirty : 1;
+    bool m_extracted : 1;
+    bool m_endsWithBreak : 1;
 
     InlineBox* m_next; // The next element on the same line as us.
     InlineBox* m_prev; // The previous element on the same line as us.
@@ -145,8 +163,8 @@ public:
         m_nextLine = 0;
     }
 
-    InlineRunBox* prevLineBox() { return m_prevLine; }
-    InlineRunBox* nextLineBox() { return m_nextLine; }
+    InlineRunBox* prevLineBox() const { return m_prevLine; }
+    InlineRunBox* nextLineBox() const { return m_nextLine; }
     void setNextLineBox(InlineRunBox* n) { m_nextLine = n; }
     void setPreviousLineBox(InlineRunBox* p) { m_prevLine = p; }
 
@@ -258,6 +276,10 @@ public:
     virtual bool canAccommodateEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth);
     virtual int placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool&);
 
+    virtual void deleteLine(RenderArena* arena);    
+    virtual void extractLine();
+    virtual void attachLine();
+
 protected:
     InlineBox* m_firstChild;
     InlineBox* m_lastChild;
@@ -271,16 +293,17 @@ protected:
 class RootInlineBox : public InlineFlowBox
 {
 public:
-    RootInlineBox(RenderObject* obj) : InlineFlowBox(obj), m_ellipsisBox(0)
+    RootInlineBox(RenderObject* obj) : InlineFlowBox(obj), m_lineBreakObj(0), m_lineBreakPos(0), 
+                                       m_lineBreakContext(0), m_blockHeight(0), m_ellipsisBox(0)
     {
         m_topOverflow = m_bottomOverflow = 0;
     }
 
-    virtual void detach(RenderArena* renderArena);
+    virtual void detach(RenderArena* renderArena, bool noRemove=false);
     void detachEllipsisBox(RenderArena* renderArena);
 
-    RootInlineBox* nextRootBox() { return static_cast<RootInlineBox*>(m_nextLine); }
-    RootInlineBox* prevRootBox() { return static_cast<RootInlineBox*>(m_prevLine); }
+    RootInlineBox* nextRootBox() const { return static_cast<RootInlineBox*>(m_nextLine); }
+    RootInlineBox* prevRootBox() const { return static_cast<RootInlineBox*>(m_prevLine); }
 
     virtual bool isRootInlineBox() const { return true; }
     virtual int topOverflow() const { return m_topOverflow; }
@@ -300,10 +323,40 @@ public:
     virtual void paint(RenderObject::PaintInfo& i, int _tx, int _ty);
     virtual bool nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx, int ty);
 
+    RenderObject* lineBreakObj() const { return m_lineBreakObj; }
+    BidiStatus lineBreakBidiStatus() const;
+    void setLineBreakInfo(RenderObject*, unsigned breakPos, const BidiStatus&, BidiContext* context);
+    
+    BidiContext* lineBreakBidiContext() const { return m_lineBreakContext; }
+            
+    unsigned lineBreakPos() const { return m_lineBreakPos; }
+    void setLineBreakPos(unsigned p) { m_lineBreakPos = p; }
+                    
+    int blockHeight() const { return m_blockHeight; }
+    void setBlockHeight(int h) { m_blockHeight = h; }
+
+    bool endsWithBreak() const { return m_endsWithBreak; }
+    void setEndsWithBreak(bool b) { m_endsWithBreak = b; }
+    
+    void childRemoved(InlineBox* box);
+
 protected:
     int m_topOverflow;
     int m_bottomOverflow;
 
+    // Where this line ended.  The exact object and the position within that object are stored so that
+    // we can create a BidiIterator beginning just after the end of this line.
+    RenderObject* m_lineBreakObj;
+    unsigned m_lineBreakPos;
+    BidiContext* m_lineBreakContext;
+                        
+    // The height of the block at the end of this line.  This is where the next line starts.
+    int m_blockHeight;
+
+    QChar::Direction m_lineBreakBidiStatusEor : 5;
+    QChar::Direction m_lineBreakBidiStatusLastStrong : 5;
+    QChar::Direction m_lineBreakBidiStatusLast : 5;
+    
     // An inline text box that represents our text truncation string.
     EllipsisBox* m_ellipsisBox;
 };

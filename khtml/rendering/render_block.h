@@ -113,14 +113,19 @@ public:
     // the implementation of the following functions is in bidi.cpp
     void bidiReorderLine(const BidiIterator &start, const BidiIterator &end, BidiState &bidi );
     BidiIterator findNextLineBreak(BidiIterator &start, BidiState &info );
-    InlineFlowBox* constructLine(const BidiIterator& start, const BidiIterator& end);
+    RootInlineBox* constructLine(const BidiIterator& start, const BidiIterator& end);
     InlineFlowBox* createLineBoxes(RenderObject* obj);
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiState &bidi);
-    void computeVerticalPositionsForLine(InlineFlowBox* lineBox);
+    void computeVerticalPositionsForLine(RootInlineBox* lineBox);
     bool clearLineOfPageBreaks(InlineFlowBox* lineBox);
     void checkLinesForOverflow();
     void deleteEllipsisLineBoxes();
     void checkLinesForTextOverflow();
+    RootInlineBox* determineStartPosition(bool fullLayout, BidiIterator& start, BidiState& bidi);
+    RootInlineBox* determineEndPosition(RootInlineBox* startLine, BidiIterator& cleanLineStart, BidiStatus& cleanLineBidiStatus, BidiContext* cleanLineBidiContext, int& yPos);
+    bool matchedEndLine(const BidiIterator& start, const BidiStatus& status, BidiContext* context,
+                        const BidiIterator& endLineStart, const BidiStatus& endLineStatus, BidiContext* endLineContext,
+                        RootInlineBox*& endLine, int& endYPos);
     // end bidi.cpp functions
 
     virtual void paint(PaintInfo& i, int tx, int ty);
@@ -342,6 +347,7 @@ protected:
     void handleBottomOfBlock(int top, int bottom, MarginInfo& marginInfo);
     void setCollapsedBottomMargin(const MarginInfo& marginInfo);
     void clearChildOfPageBreaks(RenderObject* child, PageBreakInfo &pageBreakInfo, MarginInfo &marginInfo);
+    void deleteLineBoxTree();
     // End helper functions and structs used by layoutBlockChildren.
 
 protected:

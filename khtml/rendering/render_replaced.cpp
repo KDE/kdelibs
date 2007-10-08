@@ -159,7 +159,12 @@ void RenderWidget::detach()
     
     detachCounters();
     remove();
-    deleteInlineBoxes();
+
+    InlineBox* ph = placeHolderBox();
+    if (ph) {
+        ph->detach(renderArena());
+        setPlaceHolderBox( 0 );
+    }
 
     if ( m_widget ) {
         if ( m_view ) {

@@ -4,7 +4,8 @@
  * Copyright (C) 2001-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2001 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2002-2007 Apple Computer, Inc.
+ *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -49,9 +50,6 @@ RenderContainer::RenderContainer(DOM::NodeImpl* node)
 
 void RenderContainer::detach()
 {
-    if (continuation())
-        continuation()->detach();
-
     // We simulate removeNode calls for all our children
     // and set parent to 0 to avoid removeNode from being called.
     // First call removeLayers and removeFromObjectLists since they assume
@@ -176,6 +174,9 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         oldChild->removeLayers(enclosingLayer());
         // remove the child from any special layout lists
         oldChild->removeFromObjectLists();
+        
+        if (oldChild->isPositioned() && childrenInline())
+            dirtyLinesFromChangedChild(oldChild);
 
         // if oldChild is the start or end of the selection, then clear
         // the selection to avoid problems of invalid pointers
@@ -187,14 +188,8 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         // ### the start or end of the selection is deleted and then
         // ### accessed when the user next selects something.
 
-        if (oldChild->isSelectionBorder()) {
-            RenderObject *root = oldChild;
-            while (root->parent())
-                root = root->parent();
-            if (root->isCanvas()) {
-                static_cast<RenderCanvas*>(root)->clearSelection();
-            }
-        }
+        if (oldChild->isSelectionBorder())
+            canvas()->clearSelection();
     }
 
     // remove the child from the render-tree
@@ -483,9 +478,20 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
         newChild->addLayers(layer, newChild);
     }
 
+    if (!newChild->isFloatingOrPositioned() && childrenInline())
+        dirtyLinesFromChangedChild(newChild);
+
     newChild->setNeedsLayoutAndMinMaxRecalc(); // Goes up the containing block hierarchy.
-    if (!normalChildNeedsLayout())
-        setChildNeedsLayout(true); // We may supply the static position for an absolute positioned child.
+
+    // We may supply the static position for an absolute positioned child.
+    if (!normalChildNeedsLayout() && !newChild->isText()) {
+        if (newChild->firstChild() || newChild->isPosWithStaticDim())
+            setChildNeedsLayout(true);
+        else if (newChild->isPositioned()) {
+            assert(!newChild->inPosObjectList());
+            newChild->containingBlock()->insertPositionedObject(newChild);
+        }
+    }
 }
 
 void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
@@ -514,9 +520,19 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     RenderLayer* layer = enclosingLayer();
     child->addLayers(layer, child);
 
+    if (!child->isFloating() && childrenInline())
+        dirtyLinesFromChangedChild(child);
+
     child->setNeedsLayoutAndMinMaxRecalc();
-    if (!normalChildNeedsLayout())
-        setChildNeedsLayout(true); // We may supply the static position for an absolute positioned child.
+    // We may supply the static position for an absolute positioned child.
+    if (!normalChildNeedsLayout() && !child->isText()) {
+        if (child->firstChild() || child->isPosWithStaticDim())
+            setChildNeedsLayout(true);
+        else if (child->isPositioned()) {
+            assert(!child->inPosObjectList());
+            child->containingBlock()->insertPositionedObject(child);
+        }
+    }
 }
 
 

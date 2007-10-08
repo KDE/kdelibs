@@ -47,17 +47,20 @@ namespace khtml
     class RenderText;
     class RenderStyle;
 
-class InlineTextBox : public InlineBox
+class InlineTextBox : public InlineRunBox
 {
 public:
     InlineTextBox(RenderObject *obj)
-    	:InlineBox(obj),
+    	:InlineRunBox(obj),
     	// ### necessary as some codepaths (<br>) do *not* initialize these (LS)
     	m_start(0), m_len(0), m_truncation(cNoTruncation), m_reversed(false), m_toAdd(0)
     {
     }
 
-    void detach(RenderArena* renderArena);
+    void detach(RenderArena* renderArena, bool noRemove=false);
+
+    InlineTextBox* nextTextBox() const { return static_cast<InlineTextBox*>(nextLineBox()); }
+    InlineTextBox* prevTextBox() const { return static_cast<InlineTextBox*>(prevLineBox()); }
 
     virtual void clearTruncation() { m_truncation = cNoTruncation; }
     virtual int placeEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth, bool& foundBox);
@@ -125,6 +128,11 @@ public:
      */
     const RenderText *renderText() const;
     RenderText *renderText();
+    
+    virtual void extractLine();
+    virtual void deleteLine(RenderArena* arena);
+    virtual void attachLine();
+    
 
     int m_start;
     unsigned short m_len;
@@ -136,14 +144,6 @@ public:
     bool m_reversed : 1;
     unsigned m_toAdd : 14; // for justified text
 private:
-    // this is just for QVector::bsearch. Don't use it otherwise
-    InlineTextBox(int _x, int _y)
-        :InlineBox(0)
-    {
-        m_x = _x;
-        m_y = _y;
-        m_reversed = false;
-    }
     friend class RenderText;
 };
 
@@ -162,10 +162,11 @@ public:
 
     virtual void setStyle(RenderStyle *style);
 
-
-    virtual void paint( PaintInfo& i, int tx, int ty );
+    virtual void detach( ); 
 
     virtual void deleteInlineBoxes(RenderArena* arena=0);
+    virtual void dirtyInlineBoxes(bool fullLayout, bool);
+    virtual void removeInlineBox(InlineBox* _box);
 
     DOM::DOMString data() const { return str; }
     DOM::DOMStringImpl *string() const { return str; }
@@ -238,6 +239,9 @@ public:
 
     virtual void repaint(Priority p=NormalPriority);
 
+    InlineTextBox* firstTextBox() const { return m_firstTextBox; }
+    InlineTextBox* lastTextBox() const { return m_lastTextBox; }
+
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     const QFontMetrics &metrics(bool firstLine) const;
     const Font *htmlFont(bool firstLine) const;
@@ -255,20 +259,9 @@ public:
      */
     virtual long maxOffset() const;
 
-
-    /** container for the inline text boxes
-     */
-    typedef QVector<InlineTextBox*> InlineTextBoxVector;
-
-    /** returns the number of inline text boxes
-     */
-    unsigned inlineTextBoxCount() const { return m_lines.count(); }
-    
-    /** returns the QVector of inline text boxes for this render text.
-     */
-    const InlineTextBoxVector &inlineTextBoxes() const { return m_lines; }
-
-    static int findFirstMatching(InlineTextBoxVector* tboxes, InlineTextBox* d);
+    void removeTextBox(InlineTextBox* box);
+    void attachTextBox(InlineTextBox* box);
+    void extractTextBox(InlineTextBox* box);
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
@@ -286,7 +279,9 @@ public:
     					bool checkFirstLetter = false );
 	
 protected: // members
-    InlineTextBoxVector m_lines;
+    InlineTextBox* m_firstTextBox;
+    InlineTextBox* m_lastTextBox;
+
     DOM::DOMStringImpl *str; //
 
     short m_lineHeight;

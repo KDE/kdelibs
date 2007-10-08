@@ -296,16 +296,16 @@ void RenderTable::layout()
     KHTMLAssert( minMaxKnown() );
     KHTMLAssert( !needSectionRecalc );
 
+    if (markedForRepaint()) {
+        repaintDuringLayout();
+        setMarkedForRepaint(false);
+    }
+
     if (posChildNeedsLayout() && !normalChildNeedsLayout() && !selfNeedsLayout()) {
         // All we have to is lay out our positioned objects.
         layoutPositionedObjects(true);
         setNeedsLayout(false);
         return;
-    }
-
-    if (markedForRepaint()) {
-        repaintDuringLayout();
-        setMarkedForRepaint(false);
     }
 
     m_height = 0;

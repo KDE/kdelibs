@@ -6019,12 +6019,10 @@ static bool firstRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&startN
     for (khtml::RenderObject *n = renderNode; n; n = n->nextSibling()) {
         if (n->isText()) {
             khtml::RenderText* const textRenderer = static_cast<khtml::RenderText *>(n);
-            const khtml::RenderText::InlineTextBoxVector &runs = textRenderer->inlineTextBoxes();
-            const int lim = runs.count();
-            for (int i = 0; i != lim; ++i) {
-                if (runs[i]->m_y == y && textRenderer->element()) {
+            for (khtml::InlineTextBox* box = textRenderer->firstTextBox(); box; box = box->nextTextBox()) {
+                if (box->m_y == y && textRenderer->element()) {
                     startNode = textRenderer->element();
-                    startOffset = runs[i]->m_start;
+                    startOffset = box->m_start;
                     return true;
                 }
             }
@@ -6061,11 +6059,10 @@ static bool lastRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&endNode
 
         if (n->isText()) {
             khtml::RenderText* const textRenderer =  static_cast<khtml::RenderText *>(n);
-            const khtml::RenderText::InlineTextBoxVector &runs = textRenderer->inlineTextBoxes();
-            for (int i = runs.count()-1; i >= 0; --i) {
-                if (runs[i]->m_y == y && textRenderer->element()) {
+            for (khtml::InlineTextBox* box = textRenderer->firstTextBox(); box; box = box->nextTextBox()) {
+                if (box->m_y == y && textRenderer->element()) {
                     endNode = textRenderer->element();
-                    endOffset = runs[i]->m_start + runs[i]->m_len;
+                    endOffset = box->m_start + box->m_len;
                     return true;
                 }
             }

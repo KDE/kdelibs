@@ -100,6 +100,14 @@ public:
     struct BidiIterator;
     struct BidiState;
 
+    struct BidiStatus {
+        BidiStatus() : eor(QChar::DirON), lastStrong(QChar::DirON), last(QChar::DirON) {}
+
+        QChar::Direction eor;
+        QChar::Direction lastStrong;
+        QChar::Direction last;
+    };
+
 }
 
 #endif

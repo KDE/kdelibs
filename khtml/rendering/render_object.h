@@ -181,8 +181,9 @@ public:
 
     // Whether or not a positioned element requires normal flow x/y to be computed
     // to determine its position.
-    bool hasStaticX() const;
-    bool hasStaticY() const;
+    bool hasStaticX() const { return style()->left().isVariable() && style()->right().isVariable(); }
+    bool hasStaticY() const { return style()->top().isVariable() && style()->bottom().isVariable(); }
+    bool isPosWithStaticDim()   const { return isPositioned() && (hasStaticX() || hasStaticY()); }
 
     // Linear tree traversal
     RenderObject *objectBelow() const;
@@ -205,7 +206,7 @@ public:
     //////////////////////////////////////////
     // RenderObject tree manipulation
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
-    void removeChild(RenderObject *oldChild);
+    virtual void removeChild(RenderObject *oldChild);
 
     // raw tree manipulation
     virtual RenderObject* removeChildNode(RenderObject* child);
@@ -360,6 +361,7 @@ public:
     void updateBackgroundImages(RenderStyle* oldStyle);
 
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
+    virtual void removeInlineBox(InlineBox* box) {}
 
     virtual short lineHeight( bool firstLine ) const;
     virtual short verticalPositionHint( bool firstLine ) const;
@@ -750,8 +752,12 @@ public:
 
     virtual void calcVerticalMargins() {}
     void removeFromObjectLists();
+    void setInPosObjectList(bool b = true) { m_inPosObjectList = b; }
+    bool inPosObjectList() const { return m_inPosObjectList; }
 
     virtual void deleteInlineBoxes(RenderArena* arena=0) {(void)arena;}
+    virtual void dirtyInlineBoxes(bool fullLayout, bool isRootLineBox = false) {}
+    virtual void dirtyLinesFromChangedChild(RenderObject*) {}
     virtual void detach( );
 
     const QFont &font(bool firstLine) const {
@@ -784,8 +790,8 @@ protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
     virtual QRect viewRect() const;
-    void remove();
-    void invalidateVerticalPositions();
+    void remove() { if (m_parent) m_parent->removeChild(this); }
+    void invalidateVerticalPosition();
     bool attemptDirectLayerTranslation();
     void updateWidgetMasks();
 
@@ -836,8 +842,9 @@ private:
     bool m_containsPageBreak         : 1;
     
     bool m_hasOverflowClip           : 1;
+    bool m_inPosObjectList           : 1;
 
-    // ### we have 16 + 25 bits.
+    // ### we have 16 + 26 bits.
 
 
     void arenaDelete(RenderArena *arena, void *objectBase);

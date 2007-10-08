@@ -55,6 +55,10 @@ public:
 
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
     virtual void deleteInlineBoxes(RenderArena* arena=0);
+    virtual void dirtyInlineBoxes(bool fullLayout, bool isRootLineBox = false);
+    virtual void removeInlineBox(InlineBox* _box) { if (m_placeHolderBox == _box) m_placeHolderBox = 0; }
+    
+    virtual void removeChild(RenderObject*);
 
     virtual void detach();
 
@@ -127,6 +131,9 @@ public:
     int calcBoxHeight(int h) const;
     int calcContentWidth(int w) const;
     int calcContentHeight(int h) const;
+    
+    InlineBox *placeHolderBox() { return m_placeHolderBox; }
+    void setPlaceHolderBox(InlineBox* placeHolder) { m_placeHolderBox = placeHolder; /* assert !m_placeHolderBox */ }
 
 protected:
     int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
@@ -171,6 +178,7 @@ protected:
     QRect getClipRect(int tx, int ty);
 
     void restructureParentFlow();
+    void detachRemainingChildren();
 
 
     // the actual height of the contents + borders + padding (border-box)

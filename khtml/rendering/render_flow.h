@@ -56,9 +56,18 @@ public:
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
 
     static RenderFlow* createFlow(DOM::NodeImpl* node, RenderStyle* style, RenderArena* arena);
+    
+    virtual void detach();
+
+    void attachLineBox(InlineFlowBox* box);
+    void extractLineBox(InlineFlowBox* box);
 
     virtual void deleteLastLineBox(RenderArena* arena=0);
     virtual void deleteInlineBoxes(RenderArena* arena=0);
+    virtual void removeInlineBox(InlineBox* box);
+    virtual void dirtyInlineBoxes(bool fullLayout, bool isRootLineBox = false);
+    
+    void dirtyLinesFromChangedChild(RenderObject* child);
 
 
     InlineFlowBox* firstLineBox() const { return m_firstLineBox; }

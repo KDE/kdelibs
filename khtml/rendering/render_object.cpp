@@ -180,7 +180,8 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_afterPageBreak( false ),
       m_needsPageClear( false ),
       m_containsPageBreak( false ),
-      m_hasOverflowClip(false)
+      m_hasOverflowClip(false),
+      m_inPosObjectList(false)
 {
   assert( node );
   if (node->getDocument()->documentElement() == node) setIsRoot(true);
@@ -259,8 +260,7 @@ RenderObject* RenderObject::removeChildNode(RenderObject* )
 
 void RenderObject::removeChild(RenderObject *o )
 {
-    setNeedsLayout(true);
-    removeChildNode( o );
+    KHTMLAssert(0);
 }
 
 void RenderObject::appendChildNode(RenderObject*)
@@ -518,16 +518,6 @@ short RenderObject::scrollWidth() const
 int RenderObject::scrollHeight() const
 {
     return (hasOverflowClip() && layer()) ? layer()->scrollHeight() : overflowHeight() - overflowTop();
-}
-
-bool RenderObject::hasStaticX() const
-{
-    return (style()->left().isVariable() && style()->right().isVariable());
-}
-
-bool RenderObject::hasStaticY() const
-{
-    return (style()->top().isVariable() && style()->bottom().isVariable());
 }
 
 void RenderObject::updatePixmap(const QRect& /*r*/, CachedImage* image)
@@ -1616,13 +1606,6 @@ DOM::DocumentImpl* RenderObject::document() const
     return m_node->getDocument();
 }
 
-void RenderObject::remove()
-{
-    if ( parent() )
-        //have parent, take care of the tree integrity
-        parent()->removeChild(this);
-}
-
 void RenderObject::removeFromObjectLists()
 {
     // in destruction mode, don't care.
@@ -1720,7 +1703,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
     for (RenderObject *child = firstChild(); child; child=child->nextSibling()) {
         // ignore empty text boxes, they produce totally bogus information
         // for caret navigation (LS)
-        if (child->isText() && !static_cast<RenderText *>(child)->inlineTextBoxCount())
+        if (child->isText() && !static_cast<RenderText *>(child)->firstTextBox())
             continue;
 
 //        kDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << (child->isText() ? " contains: \"" + QString::fromRawData(static_cast<RenderText *>(child)->text(), qMin(static_cast<RenderText *>(child)->length(), 10u)) + "\"" : QString());
@@ -1936,14 +1919,9 @@ short RenderObject::baselinePosition( bool firstLine ) const
     return fm.ascent() + ( lineHeight( firstLine) - fm.height() ) / 2;
 }
 
-void RenderObject::invalidateVerticalPositions()
+void RenderObject::invalidateVerticalPosition()
 {
     m_verticalPosition = PositionUndefined;
-    RenderObject *child = firstChild();
-    while( child ) {
-        child->invalidateVerticalPositions();
-        child = child->nextSibling();
-    }
 }
 
 void RenderObject::recalcMinMaxWidths()

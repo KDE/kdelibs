@@ -4,8 +4,8 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2003,2005 Apple Computer, Inc.
- *           (C) 2004 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2003,2007 Apple Computer, Inc.
+ *           (C) 2004-2007 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2006 Charles Samuels (charles@kde.org)
  *
@@ -419,6 +419,18 @@ static void getInlineRun(RenderObject* start, RenderObject* stop,
 
 }
 
+void RenderBlock::deleteLineBoxTree()
+{
+    InlineFlowBox* line = m_firstLineBox;
+    InlineFlowBox* nextLine;
+    while (line) {
+        nextLine = line->nextFlowBox();
+        line->deleteLine(renderArena());
+        line = nextLine;
+    }
+    m_firstLineBox = m_lastLineBox = 0;
+}
+
 void RenderBlock::makeChildrenNonInline(RenderObject *insertionPoint)
 {
     // makeChildrenNonInline takes a block whose children are *all* inline and it
@@ -430,6 +442,8 @@ void RenderBlock::makeChildrenNonInline(RenderObject *insertionPoint)
     // splitting them.
     KHTMLAssert(isReplacedBlock() || !isInline());
     KHTMLAssert(!insertionPoint || insertionPoint->parent() == this);
+
+    deleteLineBoxTree();
 
     m_childrenInline = false;
 
@@ -547,6 +561,7 @@ void RenderBlock::removeChild(RenderObject *oldChild)
         prev->setNeedsLayoutAndMinMaxRecalc();
 
         // Nuke the now-empty block.
+        static_cast<RenderBlock*>(next)->deleteLineBoxTree();
         next->detach();
 
         mergedBlocks = true;
@@ -558,7 +573,7 @@ void RenderBlock::removeChild(RenderObject *oldChild)
         // The remerge has knocked us down to containing only a single anonymous
         // box.  We can go ahead and pull the content right back up into our
         // box.
-        RenderObject* anonBlock = removeChildNode(prev);
+        RenderBlock* anonBlock = static_cast<RenderBlock*>(removeChildNode(prev));
         m_childrenInline = true;
         RenderObject* o = anonBlock->firstChild();
         while (o) {
@@ -569,6 +584,7 @@ void RenderBlock::removeChild(RenderObject *oldChild)
         }
 
         // Nuke the now-empty block.
+        anonBlock->deleteLineBoxTree();
         anonBlock->detach();
     }
 }
@@ -636,6 +652,11 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     if (canvas()->pagedMode()) relayoutChildren = true;
 
+    if (markedForRepaint()) {
+        repaintDuringLayout();
+        setMarkedForRepaint(false);
+    }
+
     if (!relayoutChildren && posChildNeedsLayout() && !normalChildNeedsLayout() && !selfNeedsLayout()) {
         // All we have to is lay out our positioned objects.
         layoutPositionedObjects(relayoutChildren);
@@ -643,11 +664,6 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
             m_layer->checkScrollbarsAfterLayout();
         setNeedsLayout(false);
         return;
-    }
-
-    if (markedForRepaint()) {
-        repaintDuringLayout();
-        setMarkedForRepaint(false);
     }
 
     int oldWidth = m_width;
@@ -869,7 +885,8 @@ RenderObject* RenderBlock::handlePositionedChild(RenderObject* child, const Marg
 {
     if (child->isPositioned()) {
         handled = true;
-        child->containingBlock()->insertPositionedObject(child);
+        if (!child->inPosObjectList())
+            child->containingBlock()->insertPositionedObject(child);
         adjustPositionedBlock(child, marginInfo);
         return child->nextSibling();
     }
@@ -1398,7 +1415,7 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         int oldTopNegMargin = m_maxTopNegMargin;
 
         // make sure we relayout children if we need it.
-        if (!child->isPositioned() && (relayoutChildren ||
+        if ((!child->isPositioned()||child->isPosWithStaticDim()) && (relayoutChildren ||
              (child->isReplaced() && (child->style()->width().isPercent() || child->style()->height().isPercent())) ||
              (child->isRenderBlock() && child->style()->height().isPercent()) ||
              (child->isBody() && child->style()->htmlHacks())))
@@ -1599,9 +1616,8 @@ void RenderBlock::layoutPositionedObjects(bool relayoutChildren)
                 r->repaintDuringLayout();
                 r->setMarkedForRepaint(false);
             }
-            if ( relayoutChildren || r->style()->position() == FIXED ||
-                   ((r->hasStaticY()||r->hasStaticX()) && r->parent() != this && r->parent()->isBlockFlow()) ) {
-                r->setChildNeedsLayout(true);
+            if (relayoutChildren || (r->isPosWithStaticDim() && r->parent() != this && r->parent()->isBlockFlow())) {
+                r->setChildNeedsLayout(true, false);
                 r->dirtyFormattingContext(false);
             }
             r->layoutIfNeeded();
@@ -1737,15 +1753,11 @@ void RenderBlock::insertPositionedObject(RenderObject *o)
     if (!m_positionedObjects) {
         m_positionedObjects = new QList<RenderObject*>;
     }
-    else {
-        // Don't insert the object again if it's already in the list
-        if (m_positionedObjects->contains(o))
-            return;
-    }
 
     // Create the special object entry & append it to the list
     setOverhangingContents();
     m_positionedObjects->append(o);
+    o->setInPosObjectList();
 }
 
 void RenderBlock::removePositionedObject(RenderObject *o)
@@ -1757,6 +1769,7 @@ void RenderBlock::removePositionedObject(RenderObject *o)
             m_positionedObjects = 0;
         }
     }
+    o->setInPosObjectList( false );
 }
 
 void RenderBlock::insertFloatingObject(RenderObject *o)

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2002-2007 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2006 Samuel Weinig (sam.weinig@gmail.com)
  *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
@@ -214,24 +214,70 @@ void RenderBox::detach()
     RenderLayer* layer = m_layer;
     RenderArena* arena = renderArena();
 
+    detachRemainingChildren();
+    
+    InlineBox* ph = placeHolderBox();
+    if (ph) {
+        ph->detach(arena);
+        setPlaceHolderBox( 0 );
+    }
+
     RenderContainer::detach();
 
     if (layer)
         layer->detach(arena);
 }
 
+void RenderBox::detachRemainingChildren()
+{
+    while (firstChild()) {
+#ifdef APPLE_CHANGES
+        if (firstChild()->isListMarker() || (firstChild()->style()->styleType() == RenderStyle::FIRST_LETTER && !firstChild()->isText()))
+            firstChild()->remove();  // List markers are owned by their enclosing list and so don't get destroyed by this container. Similarly, first letters are destroyed by their remaining text fragment.
+        else 
+#endif
+        {
+        // Destroy any (most likely anonymous) children remaining in the render tree
+            if (firstChild()->element())
+                firstChild()->element()->setRenderer(0);
+            firstChild()->detach();
+        }
+    }
+}
+
+void RenderBox::removeChild(RenderObject* oldChild)
+{
+    // We do this here instead of in removeChildNode, since the only extremely low-level uses of remove/appendChildNode
+    // cannot affect the positioned object list, and the floating object list is irrelevant (since the list gets cleared on
+    // layout anyway).
+    oldChild->removeFromObjectLists();
+
+    removeChildNode(oldChild);
+}
+
 InlineBox* RenderBox::createInlineBox(bool /*makePlaceHolderBox*/, bool /*isRootLineBox*/)
 {
     if (m_placeHolderBox)
-        m_placeHolderBox->detach(renderArena());
+        m_placeHolderBox->detach(renderArena(), true/*noRemove*/);
     return (m_placeHolderBox = new (renderArena()) InlineBox(this));
 }
 
-void RenderBox::deleteInlineBoxes(RenderArena* arena)
+void RenderBox::deleteInlineBoxes(RenderArena* /*arena*/)
 {
     if (m_placeHolderBox) {
-        m_placeHolderBox->detach( arena ? arena : renderArena() );
+        m_placeHolderBox->detach( renderArena(), true /*noRemove*/ );
         m_placeHolderBox = 0;
+    }
+}
+
+void RenderBox::dirtyInlineBoxes(bool fullLayout, bool /*isRootLineBox*/)
+{
+    if (m_placeHolderBox) {
+        if (fullLayout) {
+            m_placeHolderBox->detach(renderArena(), true /*noRemove*/ );
+            m_placeHolderBox = 0;
+        } else
+            m_placeHolderBox->dirtyInlineBoxes();
     }
 }
 

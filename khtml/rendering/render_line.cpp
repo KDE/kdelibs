@@ -1,8 +1,8 @@
 /**
 * This file is part of the html renderer for KDE.
  *
- * Copyright (C) 2003-2006 Apple Computer, Inc.
- *           (C) 2006 Germain Garand (germain@ebooksfrance.org)
+ * Copyright (C) 2003-2007 Apple Computer, Inc.
+ *           (C) 2006-2007 Germain Garand (germain@ebooksfrance.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -71,10 +71,15 @@ private:
     InlineBox* m_markupBox;
 };
 
-void InlineBox::detach(RenderArena* renderArena)
+void InlineBox::remove()
 {
-    if (m_parent)
-        m_parent->removeFromLine(this);
+    if (m_parent) m_parent->removeFromLine(this);
+}
+
+void InlineBox::detach(RenderArena* renderArena, bool noRemove)
+{
+    if (!noRemove) remove();
+
 #ifndef NDEBUG
     inInlineBoxDetach = true;
 #endif
@@ -106,7 +111,7 @@ static bool needsOutlinePhaseRepaint(RenderObject* o, RenderObject::PaintInfo& i
     QRect r(tx+o->xPos(),ty+o->yPos(),o->width(),o->height());
     if (r.intersects(i.r))
         return false;
-    r.addCoords(-o->style()->outlineSize(),
+    r.adjust(-o->style()->outlineSize(),
                 -o->style()->outlineSize(),
                  o->style()->outlineSize(),
                  o->style()->outlineSize());
@@ -151,18 +156,59 @@ RootInlineBox* InlineBox::root()
 {
     if (m_parent)
         return m_parent->root();
+    assert( isRootInlineBox() );
     return static_cast<RootInlineBox*>(this);
 }
 
 InlineFlowBox::~InlineFlowBox()
 {
-    /* If we're destroyed, set the children free, and break their links */
-    while (m_firstChild)
-        removeFromLine(m_firstChild);
+}
+
+void InlineFlowBox::extractLine()
+{
+    if (!m_extracted)
+        static_cast<RenderFlow*>(m_object)->extractLineBox(this);
+    for (InlineBox* child = firstChild(); child; child = child->nextOnLine())
+        child->extractLine();
+}
+
+void InlineFlowBox::attachLine()
+{
+    if (m_extracted)
+        static_cast<RenderFlow*>(m_object)->attachLineBox(this);
+    for (InlineBox* child = firstChild(); child; child = child->nextOnLine())
+        child->attachLine();
+}
+
+void InlineFlowBox::deleteLine(RenderArena* arena)
+{
+    InlineBox* child = firstChild();
+    InlineBox* next = 0;
+    while (child) {
+        assert(this == child->parent());
+        next = child->nextOnLine();
+#ifndef NDEBUG
+        child->setParent(0);
+#endif
+        child->deleteLine(arena);
+        child = next;
+    }
+#ifndef NDEBUG
+    m_firstChild = 0;
+    m_lastChild = 0;
+#endif
+
+    m_object->removeInlineBox(this);
+    detach(arena, true /*no remove*/);
 }
 
 void InlineFlowBox::removeFromLine(InlineBox *child)
 {
+    if (!m_dirty)
+        dirtyInlineBoxes();
+
+    root()->childRemoved(child);
+
     if (child == m_firstChild) {
         m_firstChild = child->nextOnLine();
     }
@@ -177,6 +223,42 @@ void InlineFlowBox::removeFromLine(InlineBox *child)
     }
 
     child->setParent(0);
+}
+
+void InlineBox::dirtyInlineBoxes()
+{
+    markDirty();
+    for (InlineFlowBox* curr = parent(); curr && !curr->isDirty(); curr = curr->parent())
+        curr->markDirty();
+}
+
+void InlineBox::deleteLine(RenderArena* arena)
+{
+    if (!m_extracted && m_object->isBox())
+        static_cast<RenderBox*>(m_object)->setPlaceHolderBox(0);
+    detach(arena);
+}
+
+void InlineBox::extractLine()
+{
+    m_extracted = true;
+    if (m_object->isBox())
+        static_cast<RenderBox*>(m_object)->setPlaceHolderBox(0);
+}
+
+void InlineBox::attachLine()
+{
+    m_extracted = false;
+    if (m_object->isBox())
+        static_cast<RenderBox*>(m_object)->setPlaceHolderBox(this);
+}
+
+void InlineBox::adjustPosition(int dx, int dy)
+{
+    m_x += dx;
+    m_y += dy;
+    if (m_object->isReplaced() || m_object->isBR())
+        m_object->setPos(m_object->xPos() + dx, m_object->yPos() + dy);
 }
 
 bool InlineBox::canAccommodateEllipsisBox(bool ltr, int blockEdge, int ellipsisWidth)
@@ -911,10 +993,14 @@ bool EllipsisBox::nodeAtPoint(RenderObject::NodeInfo& info, int _x, int _y, int 
     return false;
 }
 
-void RootInlineBox::detach(RenderArena* arena)
+void RootInlineBox::detach(RenderArena* arena, bool noRemove)
 {
+    if (m_lineBreakContext)
+        m_lineBreakContext->deref();
+    m_lineBreakContext = 0;
     detachEllipsisBox(arena);
-    InlineFlowBox::detach(arena);
+    InlineFlowBox::detach(arena, noRemove);
+
 }
 
 void RootInlineBox::detachEllipsisBox(RenderArena* arena)
@@ -996,3 +1082,37 @@ bool RootInlineBox::nodeAtPoint(RenderObject::NodeInfo& i, int x, int y, int tx,
     return InlineFlowBox::nodeAtPoint(i, x, y, tx, ty);
 }
 
+
+BidiStatus RootInlineBox::lineBreakBidiStatus() const
+{
+    BidiStatus st;
+    st.eor = m_lineBreakBidiStatusEor;
+    st.last = m_lineBreakBidiStatusLast;
+    st.lastStrong = m_lineBreakBidiStatusLastStrong;
+    return st;
+}
+
+void RootInlineBox::childRemoved(InlineBox* box)
+{
+    if (box->object() == m_lineBreakObj)
+        setLineBreakInfo(0, 0, BidiStatus(), 0);
+
+    for (RootInlineBox* prev = prevRootBox(); prev && prev->lineBreakObj() == box->object(); prev = prev->prevRootBox()) {
+        prev->setLineBreakInfo(0, 0, BidiStatus(), 0);
+        prev->markDirty();
+    }
+}
+    
+void RootInlineBox::setLineBreakInfo(RenderObject* obj, unsigned breakPos, const BidiStatus& status, BidiContext* context)
+{
+    m_lineBreakObj = obj;
+    m_lineBreakPos = breakPos;
+    m_lineBreakBidiStatusEor = status.eor;
+    m_lineBreakBidiStatusLastStrong = status.lastStrong;
+    m_lineBreakBidiStatusLast = status.last;
+    if (m_lineBreakContext)
+        m_lineBreakContext->deref();
+    m_lineBreakContext = context;
+    if (m_lineBreakContext)
+        m_lineBreakContext->ref();
+}

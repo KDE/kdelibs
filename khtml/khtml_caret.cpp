@@ -284,7 +284,7 @@ static inline bool isUnsuitable(RenderObject *r, ObjectTraversalState trav)
 {
   if (!r) return false;
   return r->isTableCol() || r->isTableSection() || r->isTableRow()
-  	|| (r->isText() && static_cast<RenderText *>(r)->inlineTextBoxCount() == 0);
+  	|| (r->isText() && !static_cast<RenderText *>(r)->firstTextBox());
       ;
   Q_UNUSED(trav);
 }
@@ -991,10 +991,9 @@ static CaretBoxLine* findCaretBoxLine(DOM::NodeImpl *node, long offset,
     // boxes, so we insert the last run as an error correction.
     // If there is no last run, we resort to (B)
     if (!b) {
-      if (t->m_lines.count() > 0)
-        b = t->m_lines[t->m_lines.count() - 1];
-      else
+      if (!t->lastTextBox())
         break;
+      b = t->lastTextBox();
     }/*end if*/
     Q_ASSERT(b);
     outside = false;	// text boxes cannot have outside positions
