@@ -59,6 +59,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define VARIANTLISTENTRY (QVariantList() << true << false << QString("joe") << 10023)
 #define VARIANTLISTENTRY2 (QVariantList() << POINTENTRY << SIZEENTRY)
 #define HOMEPATH QDir::homePath()+"/foo"
+#define HOMEPATHESCAPE QDir::homePath()+"/foo/$HOME"
 
 void KConfigTest::initTestCase()
 {
@@ -116,6 +117,7 @@ void KConfigTest::initTestCase()
 
   cg = KConfigGroup(&sc, "Path Type" );
   cg.writePathEntry( "homepath", HOMEPATH );
+  cg.writePathEntry( "homepathescape", HOMEPATHESCAPE );
 
   cg = KConfigGroup(&sc, "Enum Types" );
   cg.writeEntry( "enum-10", Tens );
@@ -157,9 +159,9 @@ void KConfigTest::cleanupTestCase()
 {
   QDir local = QDir::homePath() + "/.kde-unit-test/share/config";
 
-  foreach(const QString &file, local.entryList(QDir::Files))
-    if(!local.remove(file))
-      qWarning("%s: removing failed", qPrintable( file ));
+//  foreach(const QString &file, local.entryList(QDir::Files))
+//    if(!local.remove(file))
+//      qWarning("%s: removing failed", qPrintable( file ));
 
   QCOMPARE((int)local.entryList(QDir::Files).count(), 0);
 
@@ -283,6 +285,7 @@ void KConfigTest::testPath()
   KConfigGroup sc3(&sc2, "Path Type");
   QString p = sc3.readPathEntry("homepath");
   QCOMPARE( sc3.readPathEntry( "homepath", QString() ), HOMEPATH );
+  QCOMPARE( sc3.readPathEntry( "homepathescape", QString() ), HOMEPATHESCAPE );
 }
 
 void KConfigTest::testComplex()
