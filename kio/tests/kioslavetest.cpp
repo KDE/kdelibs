@@ -180,18 +180,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 	this, SLOT(slotSlaveError()));
 }
 
-
-void KioslaveTest::closeEvent( QCloseEvent * ){
-  slotQuit();
-}
-
-
 void KioslaveTest::slotQuit(){
-  if ( job ) {
-    job->kill( KJob::Quietly );  // kill the job quietly
-  }
-  if (slave)
-    KIO::Scheduler::disconnectSlave(slave);
   qApp->quit();
 }
 
@@ -307,7 +296,7 @@ void KioslaveTest::startJob() {
     job = myJob;
   }
 
-  statusBar()->addPermanentWidget( statusTracker->widget(job), 0 );
+  statusBar()->addWidget( statusTracker->widget(job), 0 );
 
   connect( job, SIGNAL( result( KJob * ) ),
            SLOT( slotResult( KJob * ) ) );
@@ -341,8 +330,11 @@ void KioslaveTest::slotResult( KJob * _job )
 
   if (job == _job)
      job = 0L;
+
   pbStart->setEnabled( true );
   pbStop->setEnabled( false );
+
+  //statusBar()->removeWidget( statusTracker->widget(job) );
 }
 
 void KioslaveTest::slotSlaveConnected()

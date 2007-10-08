@@ -30,16 +30,21 @@ class KioslaveTest : public KMainWindow {
 
 public:
   KioslaveTest( QString src, QString dest, uint op, uint pr );
-  ~KioslaveTest() {}
+
+  ~KioslaveTest()
+  {
+    if ( job ) {
+        job->kill( KJob::Quietly );  // kill the job quietly
+    }
+    if (slave)
+        KIO::Scheduler::disconnectSlave(slave);
+  }
 
   enum Operations { List = 0, ListRecursive, Stat, Get, Put, Copy, Move, Delete, Mkdir, Mimetype };
 
   enum ProgressModes { ProgressNone = 0, ProgressDefault, ProgressStatus };
 
 protected:
-
-  void closeEvent( QCloseEvent * );
-
   void printUDSEntry( const KIO::UDSEntry & entry );
 
   // info stuff

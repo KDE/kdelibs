@@ -52,6 +52,7 @@ void KStatusBarJobTracker::registerJob(KJob *job)
     }
 
     Private::ProgressWidget *vi = new Private::ProgressWidget(job, this, d->parent);
+    d->currentProgressWidget = vi;
 
     d->progressWidget.insert(job, vi);
 }
@@ -63,6 +64,26 @@ QWidget *KStatusBarJobTracker::widget(KJob *job)
     }
 
     return d->progressWidget[job];
+}
+
+void KStatusBarJobTracker::setStatusBarMode(StatusBarModes statusBarMode)
+{
+    if (!d->currentProgressWidget) {
+        return;
+    }
+
+    d->currentProgressWidget->setMode(statusBarMode);
+}
+
+void KStatusBarJobTracker::description(KJob *job, const QString &title,
+                                       const QPair<QString, QString> &field1,
+                                       const QPair<QString, QString> &field2)
+{
+    if (!d->progressWidget.contains(job)) {
+        return;
+    }
+
+    d->progressWidget[job]->description(title, field1, field2);
 }
 
 void KStatusBarJobTracker::totalAmount(KJob *job, KJob::Unit unit, qulonglong amount)
@@ -101,31 +122,29 @@ void KStatusBarJobTracker::slotClean(KJob *job)
     d->progressWidget[job]->slotClean();
 }
 
-void KStatusBarJobTracker::Private::ProgressWidget::init(QWidget *parent)
+void KStatusBarJobTracker::Private::ProgressWidget::killJob()
 {
-    showButton = button;
+    job->kill(KJob::EmitResult); // notify that the job has been killed
+}
 
-    // only clean this dialog
-    q->setAutoDelete(job, false);
-
+void KStatusBarJobTracker::Private::ProgressWidget::init(KJob *job, QWidget *parent)
+{
     widget = new QWidget(parent);
 
     int w = fontMetrics().width( " 999.9 kB/s 00:00:01 " ) + 8;
     box = new QHBoxLayout(widget);
     box->setMargin(0);
     box->setSpacing(0);
+    widget->setLayout(box);
 
-    button = new KPushButton("X", widget);
+    button = new KPushButton("Stop", widget);
     box->addWidget(button);
     stack = new QStackedWidget(widget);
     box->addWidget(stack);
-    connect(button, SIGNAL(clicked()),
-            this, SLOT(slotStop()));
+    connect(button, SIGNAL(clicked(bool)),
+            this, SLOT(killJob()));
 
     progressBar = new QProgressBar(widget);
-//    progressBar->setFrameStyle( QFrame::Box | QFrame::Raised );
-//    progressBar->setLineWidth( 1 );
-    progressBar->setBackgroundRole(QPalette::Window); // ### KDE4: still needed?
     progressBar->installEventFilter(this);
     progressBar->setMinimumWidth(w);
     stack->insertWidget(1, progressBar);
@@ -137,38 +156,47 @@ void KStatusBarJobTracker::Private::ProgressWidget::init(QWidget *parent)
     stack->insertWidget(2, label);
     setMinimumSize(sizeHint());
 
-    setMode(KStatusBarJobTracker::Private::ProgressWidget::None);
+    parent->layout()->addWidget(widget);
+
+    setMode(KStatusBarJobTracker::LabelOnly);
+
+    q->setAutoDelete(job, true);
 }
 
-void KStatusBarJobTracker::Private::ProgressWidget::setMode(Mode newMode)
+void KStatusBarJobTracker::Private::ProgressWidget::setMode(StatusBarModes newMode)
 {
-    switch (newMode)
+    mode = newMode;
+
+    if (newMode == KStatusBarJobTracker::NoInformation)
     {
-    case None:
-        if (showButton) {
-            button->hide();
-        }
         stack->hide();
-        break;
 
-    case Label:
-        if (showButton) {
-            button->show();
-        }
-        stack->show();
-        stack->setCurrentWidget(label);
-        break;
-
-    case Progress:
-        if (showButton) {
-            button->show();
-        }
-        stack->show();
-        stack->setCurrentWidget(progressBar);
-        break;
+        return;
     }
 
-    mode = newMode;
+    if (newMode & KStatusBarJobTracker::LabelOnly)
+    {
+        stack->show();
+        stack->setCurrentWidget(label);
+
+        return; // TODO: we should make possible to show an informative label and the progress bar
+    }
+
+    if (newMode & KStatusBarJobTracker::ProgressOnly)
+    {
+        stack->show();
+        stack->setCurrentWidget(progressBar);
+    }
+}
+
+void KStatusBarJobTracker::Private::ProgressWidget::description(const QString &title,
+                                                                const QPair<QString, QString> &field1,
+                                                                const QPair<QString, QString> &field2)
+{
+    Q_UNUSED(field1);
+    Q_UNUSED(field2);
+
+    label->setText(title);
 }
 
 void KStatusBarJobTracker::Private::ProgressWidget::totalAmount(KJob::Unit unit, qulonglong amount)
@@ -198,7 +226,7 @@ void KStatusBarJobTracker::Private::ProgressWidget::slotClean()
     progressBar->setValue(0);
     label->clear();
 
-    setMode(KStatusBarJobTracker::Private::ProgressWidget::None);
+    setMode(KStatusBarJobTracker::NoInformation);
 }
 
 bool KStatusBarJobTracker::Private::ProgressWidget::eventFilter(QObject *obj, QEvent *event)
@@ -208,11 +236,12 @@ bool KStatusBarJobTracker::Private::ProgressWidget::eventFilter(QObject *obj, QE
         if (event->type() == QEvent::MouseButtonPress) {
             QMouseEvent *e = static_cast<QMouseEvent*>(event);
 
+            // TODO: we should make possible to show an informative label and the progress bar
             if (e->button() == Qt::LeftButton) {    // toggle view on left mouse button
-                if (mode == KStatusBarJobTracker::Private::ProgressWidget::Label) {
-                    setMode(KStatusBarJobTracker::Private::ProgressWidget::Progress);
-                } else if (mode == KStatusBarJobTracker::Private::ProgressWidget::Progress) {
-                    setMode(KStatusBarJobTracker::Private::ProgressWidget::Label);
+                if (mode == KStatusBarJobTracker::LabelOnly) {
+                    setMode(KStatusBarJobTracker::ProgressOnly);
+                } else if (mode == KStatusBarJobTracker::ProgressOnly) {
+                    setMode(KStatusBarJobTracker::LabelOnly);
                 }
                 return true;
             }

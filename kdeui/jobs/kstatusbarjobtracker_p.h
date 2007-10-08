@@ -41,7 +41,8 @@ class KStatusBarJobTracker::Private
 {
 public:
     Private(QWidget *parent)
-        : parent(parent) { }
+        : parent(parent) 
+        , currentProgressWidget(0) { }
 
     ~Private() {
     }
@@ -50,6 +51,7 @@ public:
 
     QWidget *parent;
     QMap<KJob*, ProgressWidget*> progressWidget;
+    ProgressWidget *currentProgressWidget;
 };
 
 
@@ -61,13 +63,14 @@ class KStatusBarJobTracker::Private::ProgressWidget
 public:
     ProgressWidget(KJob *job, KStatusBarJobTracker *object, QWidget *parent)
         : q(object), job(job), widget(0), progressBar(0), label(0), button(0),
-          box(0), stack(0), totalSize(0), mode(None), showButton(false)
+          box(0), stack(0), totalSize(0), mode(NoInformation)
     {
-        init(parent);
+        init(job, parent);
     }
 
     ~ProgressWidget()
     {
+        delete widget;
     }
 
     KStatusBarJobTracker *const q;
@@ -82,20 +85,23 @@ public:
 
     qulonglong totalSize;
 
-    enum Mode { None, Label, Progress };
-    Mode mode;
+    StatusBarModes mode;
 
-    bool showButton;
+    void init(KJob *job, QWidget *parent);
 
-    void init(QWidget *parent);
-
-    void setMode(Mode newMode);
+    void setMode(StatusBarModes newMode);
 
 public Q_SLOTS:
+    virtual void description(const QString &title,
+                             const QPair<QString, QString> &field1,
+                             const QPair<QString, QString> &field2);
     virtual void totalAmount(KJob::Unit unit, qulonglong amount);
     virtual void percent(unsigned long percent);
     virtual void speed(unsigned long value);
     virtual void slotClean();
+
+private Q_SLOTS:
+    void killJob();
 
 protected:
     virtual bool eventFilter(QObject *obj, QEvent *event);

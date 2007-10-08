@@ -32,6 +32,15 @@ class KDEUI_EXPORT KStatusBarJobTracker : public KAbstractWidgetJobTracker
     Q_OBJECT
 
 public:
+    enum StatusBarMode
+    {
+        NoInformation = 0x0000, ///< Does not show any information
+        LabelOnly     = 0x0001, ///< Shows an informative label for job progress
+        ProgressOnly  = 0x0002  ///< Shows a progress bar with the job completion
+    };
+
+    Q_DECLARE_FLAGS(StatusBarModes, StatusBarMode)
+
     /**
      * Creates a new KStatusBarJobTracker
      *
@@ -59,10 +68,21 @@ public:
      */
     virtual QWidget *widget(KJob *job);
 
+    /**
+     * Sets the mode of the status bar.
+     *
+     * @param statusBarMode what information the status bar will show (see StatusBarMode).
+     *                      LabelOnly by default
+     */
+    void setStatusBarMode(StatusBarModes statusBarMode);
+
 public Q_SLOTS:
     /**
      * The following slots are inherited from KJobTrackerInterface.
      */
+    virtual void description(KJob *job, const QString &title,
+                             const QPair<QString, QString> &field1,
+                             const QPair<QString, QString> &field2);
     virtual void totalAmount(KJob *job, KJob::Unit unit, qulonglong amount);
     virtual void percent(KJob *job, unsigned long percent);
     virtual void speed(KJob *job, unsigned long value);
@@ -72,5 +92,7 @@ private:
     class Private;
     Private *const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KStatusBarJobTracker::StatusBarModes)
 
 #endif
