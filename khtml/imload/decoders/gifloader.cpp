@@ -116,7 +116,7 @@ public:
     {
         QRect frameGeom = frameInfo[frame].geom;
 
-        // Take the passed paint rectangle in gif screen coordinates, and 
+        // Take the passed paint rectangle in gif screen coordinates, and
         // clip it to the frame's geometry
         QRect screenPaintRect = QRect(sx, sy, width, height) & frameGeom;
 
@@ -125,13 +125,13 @@ public:
 
         curFrame->paint(dx + screenPaintRect.x() - sx, dy + screenPaintRect.y() - sy, p,
                 framePaintRect.x(), framePaintRect.y(),
-                framePaintRect.width(), framePaintRect.height(), false /* don't get back to us!*/);
+                framePaintRect.width(), framePaintRect.height());
     }
 
     // Renders current gif screen state on the painter
     void renderCurScreen(int dx, int dy, QPainter* p, int sx, int sy, int width, int height)
     {
-        // Depending on the previous frame's mode, we make have to cut out a hole when 
+        // Depending on the previous frame's mode, we may have to cut out a hole when
         // painting the canvas, since if previous frame had BG disposal, we have to do OpSrc.
         if (previousWasBG)
         {
@@ -206,7 +206,7 @@ public:
 
         // Move over to next frame if need be, incorporating 
         // the change effect of current one onto the screen.
-        if (shouldSwitchFrame) 
+        if (shouldSwitchFrame)
         {
             updateScreenAfterDispose();
 

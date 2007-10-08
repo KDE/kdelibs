@@ -96,6 +96,25 @@ void ImagePainter::paint(int dx, int dy, QPainter* p, int sx, int sy,
     }
 
     PixmapPlane* plane = image->getSize(size);
+
+    if (plane->animProvider)
+    {
+        // Clip the request ourselves when animating..
+        QSize imageSize = image->size();
+        
+        if (width == -1)
+            width  = imageSize.width();
+        if (height == -1)
+            height = imageSize.height();
+
+        QRect clippedRect = QRect(0, 0, imageSize.width(), imageSize.height())
+                            & QRect(sx, sy, width, height);
+        plane->animProvider->paint(dx, dy, p, clippedRect.x(), clippedRect.y(),
+                                          clippedRect.width(), clippedRect.height());
+        return;
+    }
+
+    // non-animated, go straight to PixmapPlane; it clips itself
     plane->paint(dx, dy, p, sx, sy, width, height);
 }
 

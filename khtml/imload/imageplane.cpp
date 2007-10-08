@@ -53,7 +53,7 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
                    unsigned char* versions)
 {
     //Determine the range which needs pushing.
-    unsigned int first = 0xFFFF, last;
+    unsigned int first = 0xFFFF, last = 0;
     if (!tile->pixmap)
     {
         //### this can be wasteful if we do conversion
@@ -64,7 +64,8 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
     else
     {
         ImageManager::pixmapCache()->touchEntry(tile);
-    
+
+        // figure out the dirty range
         for (unsigned int line = 0; line < tileHeight(tileY); ++line)
         {
             if (versions[line] > tile->versions[line])
@@ -72,11 +73,12 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
                 last = line;
                 if (first == 0xFFFF)
                     first = line;
-                //Will fix it.
-                tile->versions[line] = versions[line];
             }
         }
     }
+
+    // Now tile will be up-to-date, so sync up w/our versions array
+    std::memcpy(tile->versions, versions, Tile::TileSize);
 
     assert( tile->pixmap );
 

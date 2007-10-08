@@ -68,7 +68,7 @@ public:
      The source rectangle starts at sx, sy and has dimension width * height.
     */
     void paint(int dx, int dy, QPainter* p,
-               int sx, int sy, int width = -1, int height = -1, bool useAnimProvider = true);
+               int sx, int sy, int width = -1, int height = -1);
 };
 
 }

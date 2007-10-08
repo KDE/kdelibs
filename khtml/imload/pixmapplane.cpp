@@ -26,12 +26,13 @@
 
 #include <QPainter>
 
+
 namespace khtmlImLoad {
 
 void PixmapPlane::paint(int dx, int dy, QPainter* p,
-                  int sx, int sy, int sWidth, int sHeight, bool useAnimProvider)
+                  int sx, int sy, int sWidth, int sHeight)
 {
-    //Do some basic clipping, discarding invalid requests and adjusting sizes of others
+    //Do some basic clipping, discarding invalid requests and adjusting sizes of others.
     if (sy >= (int)height)
         return;
     if (sx >= (int)width)
@@ -53,12 +54,6 @@ void PixmapPlane::paint(int dx, int dy, QPainter* p,
 
     sHeight = ey - sy + 1;
     sWidth  = ex - sx + 1;
-
-    if (animProvider && useAnimProvider)
-    {
-        animProvider->paint(dx, dy, p, sx, sy, sWidth, sHeight);
-        return;
-    }
 
     //Calculate the range of tiles to paint, in both directions
     unsigned int startTileY = sy / Tile::TileSize;
@@ -111,12 +106,13 @@ void PixmapPlane::paint(int dx, int dy, QPainter* p,
             {
                 //Scan the versions to see how much to paint.
                 unsigned int h = 0;
-                for (h = 0; h < Tile::TileSize && tile.versions[h]; ++h)
-                {}
+                for (int checkY = startY; checkY < Tile::TileSize && tile.versions[checkY]; ++checkY)
+                    ++h;
 
-                //Draw it.
-                p->drawPixmap(paintX, paintY, *tile.pixmap, startX, startY,
-                              paintWidth, qMin(h, paintHeight));
+                //Draw it, if there is anything (note: Qt would interpret 0 as everything)
+                if (h)
+                    p->drawPixmap(paintX, paintY, *tile.pixmap, startX, startY,
+                                  paintWidth, qMin(h, paintHeight));
             }
             paintX += paintWidth;
         }
