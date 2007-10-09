@@ -69,6 +69,7 @@ set(kdeui_LIB_SRCS
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
  dialogs/kbugreport.cpp
+ dialogs/kdeprintdialog.cpp
  dialogs/kdialog.cpp
  dialogs/kedittoolbar.cpp
  dialogs/kinputdialog.cpp
@@ -327,6 +328,7 @@ install( FILES
  dialogs/kbugreport.h
  dialogs/kconfigdialog.h
  dialogs/kconfigdialogmanager.h
+ dialogs/kdeprintdialog.h
  dialogs/kdialog.h
  dialogs/kedittoolbar.h
  dialogs/kinputdialog.h
