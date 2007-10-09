@@ -64,7 +64,7 @@ namespace KdePrint
      */
     KDEUI_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
                                                       QWidget *parent = 0);
-};
+}
 
 
 #endif // KDEPRINTDIALOG_H
