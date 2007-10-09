@@ -77,8 +77,8 @@ public:
     QMap<QString,QVariant> m_mapProps;
     QStringList m_lstKeywords;
     QString m_strGenName;
-    bool m_bAllowAsDefault;
-    bool m_bTerminal;
-    bool m_bValid;
+    bool m_bAllowAsDefault : 1;
+    bool m_bTerminal : 1;
+    bool m_bValid : 1;
 };
 #endif

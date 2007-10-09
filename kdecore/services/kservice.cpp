@@ -236,8 +236,8 @@ void KServicePrivate::load(QDataStream& s)
       >> m_lstKeywords >> m_strGenName
       >> categories >> menuId;
 
-    m_bAllowAsDefault = def;
-    m_bTerminal = term;
+    m_bAllowAsDefault = (bool)def;
+    m_bTerminal = (bool)term;
     m_DBUSStartusType = (KService::DBusStartupType) dst;
     m_initialPreference = initpref;
 

@@ -49,11 +49,11 @@ public:
   QString docPath;
   QString protClass;
   KProtocolInfo::ExtraFieldList extraFields;
-  bool showPreviews;
-  bool canRenameFromFile;
-  bool canRenameToFile;
-  bool canDeleteRecursive;
-  bool fileNameUsedForCopying; // true if using UDS_NAME, false if using KUrl::fileName() [default]
+  bool showPreviews : 1;
+  bool canRenameFromFile : 1;
+  bool canRenameToFile : 1;
+  bool canDeleteRecursive : 1;
+  bool fileNameUsedForCopying : 1; // true if using UDS_NAME, false if using KUrl::fileName() [default]
   //KUrl::URIMode uriMode;
   QStringList capabilities;
   QString proxyProtocol;

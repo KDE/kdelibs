@@ -64,11 +64,11 @@ public:
     void parseAttribute( const QString &item ,  bool &showEmptyMenu, bool &showInline, bool &showInlineHeader, bool & showInlineAlias ,int &inlineValue );
 
 
-    bool m_bNoDisplay;
-    bool m_bShowEmptyMenu;
-    bool m_bShowInlineHeader;
-    bool m_bInlineAlias;
-    bool m_bAllowInline;
+    bool m_bNoDisplay : 1;
+    bool m_bShowEmptyMenu : 1;
+    bool m_bShowInlineHeader : 1;
+    bool m_bInlineAlias : 1;
+    bool m_bAllowInline : 1;
     int m_inlineValue;
     QStringList suppressGenericNames;
     QString directoryEntryPath;
