@@ -57,6 +57,7 @@ public:
     explicit KPrintPreview(QPrinter *printer, QWidget *parent = 0);
     virtual ~KPrintPreview();
 
+protected:
     void showEvent(QShowEvent *event);
 
 private:
