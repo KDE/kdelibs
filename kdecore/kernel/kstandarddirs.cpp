@@ -67,9 +67,9 @@ public:
           checkRestrictions(true)
     { }
 
-    bool restrictionsActive;
-    bool dataRestrictionActive;
-    bool checkRestrictions;
+    bool restrictionsActive : 1;
+    bool dataRestrictionActive : 1;
+    bool checkRestrictions : 1;
     QMap<QByteArray, bool> restrictions;
     QStringList xdgdata_prefixes;
     QStringList xdgconf_prefixes;

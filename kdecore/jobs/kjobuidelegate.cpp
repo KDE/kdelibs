@@ -33,8 +33,8 @@ public:
     KJobUiDelegate * const q;
 
     KJob *job;
-    bool autoErrorHandling;
-    bool autoWarningHandling;
+    bool autoErrorHandling : 1;
+    bool autoWarningHandling : 1;
 
     void connectJob(KJob *job);
     void _k_result(KJob *job);

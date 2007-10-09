@@ -167,8 +167,8 @@ class KCmdLineArgsStatic {
 
     int argc; // The original argc
     char **argv; // The original argv
-    bool parsed; // Whether we have parsed the arguments since calling init
-    bool ignoreUnknown; // Ignore unknown options and arguments
+    bool parsed : 1; // Whether we have parsed the arguments since calling init
+    bool ignoreUnknown : 1; // Ignore unknown options and arguments
     QString mCwd; // Current working directory. Important for KUnqiueApp!
     KCmdLineArgs::StdCmdLineArgs mStdargs;
 

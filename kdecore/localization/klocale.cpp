@@ -175,8 +175,8 @@ public:
   int fracDigits;
   KLocale::SignPosition positiveMonetarySignPosition;
   KLocale::SignPosition negativeMonetarySignPosition;
-  bool positivePrefixCurrencySymbol;
-  bool negativePrefixCurrencySymbol;
+  bool positivePrefixCurrencySymbol : 1;
+  bool negativePrefixCurrencySymbol : 1;
 
   // Date and time
   QString timeFormat;

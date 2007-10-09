@@ -82,10 +82,10 @@ public:
     KEncodingDetector::EncodingChoiceSource m_source;
     KEncodingDetector::AutoDetectScript m_autoDetectLanguage;
 
-    bool m_visualRTL;
-    bool m_seenBody;
-    bool m_writtingHappened;
-    bool m_analyzeCalled; //for decode()
+    bool m_visualRTL : 1;
+    bool m_seenBody : 1;
+    bool m_writtingHappened : 1;
+    bool m_analyzeCalled : 1; //for decode()
     int m_multiByte;
 
     QByteArray m_bufferForDefferedEncDetection;
