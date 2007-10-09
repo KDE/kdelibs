@@ -132,6 +132,10 @@ void VolumeSlider::setAudioOutput(AudioOutput *output)
         d->slider.setValue(qRound(100 * output->volume()));
         d->slider.setEnabled(true);
         d->muteButton.setEnabled(true);
+
+        d->_k_volumeChanged(output->volume());
+        d->_k_mutedChanged(output->isMuted());
+
         connect(output, SIGNAL(volumeChanged(qreal)), SLOT(_k_volumeChanged(qreal)));
         connect(output, SIGNAL(mutedChanged(bool)), SLOT(_k_mutedChanged(bool)));
     } else {
