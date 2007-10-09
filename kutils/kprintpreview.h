@@ -26,11 +26,34 @@
 
 class KPrintPreviewPrivate;
 
+/**
+ * KPrintPreview provides a print preview dialog.
+ *
+ * Use it like this:
+ *
+ * @code
+ * QPrinter printer;
+ * KPrintPreview preview(&printer);
+ * doPrint(printer); // draws to the QPrinter
+ * preview.exec();
+ * @endcode
+ */
 class KUTILS_EXPORT KPrintPreview : public KDialog
 {
     Q_OBJECT
 
 public:
+    /**
+     * Create a KPrintPreview object.
+     *
+     * This will change the settings on the QPrinter, so you
+     * should not re-use the QPrinter object for printing
+     * normally.
+     *
+     * @param printer pointer to a QPrinter to configure for
+     *                print preview
+     * @param parent  pointer to the parent widget for the dialog
+     */
     explicit KPrintPreview(QPrinter *printer, QWidget *parent = 0);
     virtual ~KPrintPreview();
 
