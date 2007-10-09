@@ -49,8 +49,3 @@ endif (UNIX)
 
 install( FILES apsdriver1 apsdriver2 lprngtooldriver1  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
 install( FILES lpr.print  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint/plugins )
-install( FILES printcapentry.h lprhandler.h lprsettings.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kdeprint/lpr )
-
-
-
-
