@@ -113,6 +113,7 @@ Comment[ga]=Fógairt maidir le gléas tacachumais nuair nach bhfuil do rogha gl�
 Comment[hu]=Értesítés a másodlagos hangeszköz aktiválásáról, ha az elsődleges eszköz nem használható
 Comment[it]=Notifica dopo il ripristino automatico se il dispositivo preferito non è disponibile
 Comment[ja]=優先デバイスが利用できないために自動的にフォールバックしたときの通知
+Comment[km]=ការ​ជូន​ដំណឹង​អំពី fallback ដោយ​ស្វ័យ​ប្រវត្តិ​នៅពេល​ដែល​មិនមាន​ឧបករណ៍​ដែល​ចូលចិត្ត
 Comment[nds]=Bescheed, wenn de vörtrocken Reedschap nich verföögbor is un ansteed de Opbackreedschap bruukt warrt
 Comment[nl]=Melding van automatische terugval als het apparaat van voorkeur niet beschikbaar is
 Comment[pt]=Notificação automática de último recurso se os dispositivos preferidos estiverem indisponíveis
