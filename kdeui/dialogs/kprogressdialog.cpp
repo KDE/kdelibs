@@ -46,12 +46,12 @@ public:
     void slotAutoActions(int percentage);
 
     KProgressDialog *q;
-    bool          cancelButtonShown;
-    bool          mAutoClose;
-    bool          mAutoReset;
-    bool          mCancelled;
-    bool          mAllowCancel;
-    bool          mShown;
+    bool          cancelButtonShown : 1;
+    bool          mAutoClose : 1;
+    bool          mAutoReset : 1;
+    bool          mCancelled : 1;
+    bool          mAllowCancel : 1;
+    bool          mShown : 1;
     QString       mCancelText;
     QLabel*       mLabel;
     QProgressBar* mProgressBar;

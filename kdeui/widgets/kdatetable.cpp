@@ -106,8 +106,8 @@ public:
      */
     int numDayColumns;
 
-    bool popupMenuEnabled;
-    bool useCustomColors;
+    bool popupMenuEnabled : 1;
+    bool useCustomColors : 1;
 
     struct DatePaintingMode
     {

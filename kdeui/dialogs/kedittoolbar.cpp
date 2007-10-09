@@ -355,7 +355,6 @@ public:
   QString            m_globalFile;
   QString            m_rcFile;
   QDomDocument       m_localDoc;
-  bool               m_isPart;
 
   ToolBarList        m_barList;
   ToolBarListView *m_inactiveList;
@@ -368,8 +367,9 @@ public:
   QLabel * m_helpArea;
   KPushButton* m_changeIcon;
   KProcess* m_kdialogProcess;
-  bool m_hasKDialog;
-  bool m_loadedOnce;
+  bool m_isPart : 1;
+  bool m_hasKDialog : 1;
+  bool m_loadedOnce : 1;
 };
 
 }

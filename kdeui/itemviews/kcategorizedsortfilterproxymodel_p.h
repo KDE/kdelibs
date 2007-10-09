@@ -212,10 +212,10 @@ public:
     Qt::SortOrder sortOrder;
     Qt::CaseSensitivity sortCaseSensitivity;
     int sortRole;
-    bool sortLocaleAware;
+    bool sortLocaleAware : 1;
 
-    bool dynamicSortFilter;
-    bool categorizedModel;
+    bool dynamicSortFilter : 1;
+    bool categorizedModel : 1;
 
     int filterColumn;
     QRegExp filterRegExp;

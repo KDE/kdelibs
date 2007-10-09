@@ -53,8 +53,8 @@ class KDialogPrivate
         KPushButton *button( KDialog::ButtonCode code ) const;
 
 
-        bool mDetailsVisible;
-        bool mSettingDetails;
+        bool mDetailsVisible : 1;
+        bool mSettingDetails : 1;
         QWidget *mDetailsWidget;
         QSize mIncSize;
         QSize mMinSize;

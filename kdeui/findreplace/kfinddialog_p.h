@@ -41,8 +41,8 @@ public:
         : q(q),
         regexpDialog(0),
         regexpDialogQueryDone(false),
-        enabled(KFind::WholeWordsOnly | KFind::FromCursor |  KFind::SelectedText | KFind::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression),
         initialShowDone(false),
+        enabled(KFind::WholeWordsOnly | KFind::FromCursor |  KFind::SelectedText | KFind::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression),
         findExtension(0)
         {}
 
@@ -57,9 +57,9 @@ public:
 
     KFindDialog *q;
     QDialog *regexpDialog;
-    bool regexpDialogQueryDone;
+    bool regexpDialogQueryDone : 1;
+    bool initialShowDone : 1;
     long enabled; // uses Options to define which search options are enabled
-    bool initialShowDone;
     QStringList findStrings;
     QString pattern;
     QWidget *findExtension;

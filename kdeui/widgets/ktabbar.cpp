@@ -59,8 +59,8 @@ class KTabBar::Private
 
     //bool mHoverCloseButtonEnabled;
     //bool mHoverCloseButtonDelayed;
-    bool mTabReorderingEnabled;
-    bool mTabCloseActivatePrevious;
+    bool mTabReorderingEnabled : 1;
+    bool mTabCloseActivatePrevious : 1;
 
 };
 

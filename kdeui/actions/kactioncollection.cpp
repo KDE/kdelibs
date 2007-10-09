@@ -75,10 +75,11 @@ public:
 
   QList<QWidget*> associatedWidgets;
 
-  bool configIsGlobal;
   QString configGroup;
+  bool configIsGlobal : 1;
 
-  bool connectTriggered, connectHighlighted;
+  bool connectTriggered : 1;
+  bool connectHighlighted : 1;
 
   KActionCollection *q;
 };

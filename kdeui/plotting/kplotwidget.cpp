@@ -84,7 +84,9 @@ public:
     //Colors
     QColor cBackground, cForeground, cGrid;
     //draw options
-    bool showGrid, showObjectToolTip, useAntialias;
+    bool showGrid : 1;
+    bool showObjectToolTip : 1;
+    bool useAntialias : 1;
     //padding
     int leftPadding, rightPadding, topPadding, bottomPadding;
     // hashmap with the axes we have

@@ -42,8 +42,8 @@ class KListWidget::KListWidgetPrivate
         void _k_slotAutoSelect();
 
         KListWidget *q;
-        bool m_bUseSingle;
-        bool m_bChangeCursorOverItem;
+        bool m_bUseSingle : 1;
+        bool m_bChangeCursorOverItem : 1;
 
         QListWidgetItem* m_pCurrentItem;
         QTimer* m_pAutoSelect;

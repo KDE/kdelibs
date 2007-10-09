@@ -39,10 +39,10 @@ class KCompletionBox::KCompletionBoxPrivate
 public:
     QWidget *m_parent; // necessary to set the focus back
     QString cancelText;
-    bool tabHandling;
-    bool down_workaround;
-    bool upwardBox;
-    bool emitSelected;
+    bool tabHandling : 1;
+    bool down_workaround : 1;
+    bool upwardBox : 1;
+    bool emitSelected : 1;
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent )

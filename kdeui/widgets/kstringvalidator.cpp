@@ -25,8 +25,8 @@ class KStringListValidator::Private
 {
   public:
     QStringList mStringList;
-    bool mRejecting;
-    bool mFixupEnabled;
+    bool mRejecting : 1;
+    bool mFixupEnabled : 1;
 };
 
 //

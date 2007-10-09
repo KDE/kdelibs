@@ -70,8 +70,8 @@ public:
   QMenu *popup;
   QString current;
   const KLocale *locale;
-  bool staticText;
-  bool showCodes;
+  bool staticText : 1;
+  bool showCodes : 1;
 };
 
 KLanguageButton::KLanguageButton( QWidget * parent )

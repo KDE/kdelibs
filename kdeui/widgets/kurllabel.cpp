@@ -74,12 +74,12 @@ class KUrlLabel::Private
     QColor linkColor;
     QColor highlightedLinkColor;
     QCursor* cursor;
-    bool textUnderlined;
-    bool realUnderlined;
-    bool useTips;
-    bool useCursor;
-    bool glowEnabled;
-    bool floatEnabled;
+    bool textUnderlined : 1;
+    bool realUnderlined : 1;
+    bool useTips : 1;
+    bool useCursor : 1;
+    bool glowEnabled : 1;
+    bool floatEnabled : 1;
     QPixmap alternatePixmap;
     QPixmap realPixmap;
     QTimer* timer;

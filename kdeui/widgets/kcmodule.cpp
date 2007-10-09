@@ -51,16 +51,16 @@ public:
     KComponentData _componentData;
     const KAboutData *_about;
     QString _rootOnlyMessage;
-    bool _useRootOnlyMessage;
-    bool _firstshow;
     QList<KConfigDialogManager*> managers;
     QString _quickHelp;
+    bool _useRootOnlyMessage : 1;
+    bool _firstshow : 1;
 
     // this member is used to record the state on non-automatically
     // managed widgets, allowing for mixed KConfigXT-drive and manual
     // widgets to coexist peacefully and do the correct thing with
     // the changed(bool) signal
-    bool _unmanagedWidgetChangeState;
+    bool _unmanagedWidgetChangeState : 1;
 };
 
 KCModule::KCModule( QWidget *parent, const char *name, const QStringList& )

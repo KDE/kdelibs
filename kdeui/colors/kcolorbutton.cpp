@@ -44,9 +44,9 @@ public:
 
     KColorButton *q;
     QColor m_defaultColor;
-    bool m_bdefaultColor;
+    bool m_bdefaultColor : 1;
 
-    bool dragFlag;
+    bool dragFlag : 1;
     QColor col;
     QPoint mPos;
 

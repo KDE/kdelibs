@@ -37,8 +37,8 @@ public:
     KAbstractWidgetJobTracker *const q;
 
     struct MoreOptions {
-        bool stopOnClose;
-        bool autoDelete;
+        bool stopOnClose : 1;
+        bool autoDelete : 1;
     };
 
     QMap<KJob*, MoreOptions> moreOptions;

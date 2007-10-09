@@ -69,9 +69,9 @@ class KTextEdit::Private
     QAction *autoSpellCheckAction;
     QAction *allowTab;
     QAction *spellCheckAction;
-    bool customPalette;
+    bool customPalette : 1;
 
-    bool checkSpellingEnabled;
+    bool checkSpellingEnabled : 1;
     QString originalBuffer;
     QString spellChechingConfigFileName;
     Sonnet::Highlighter *highlighter;

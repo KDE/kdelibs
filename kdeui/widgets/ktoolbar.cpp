@@ -154,8 +154,8 @@ class KToolBar::Private
     // Default Values.
     int IconSizeDefault;
     Qt::ToolButtonStyle ToolButtonStyleDefault;
-    bool HiddenDefault;
-    bool NewLineDefault;
+    bool HiddenDefault : 1;
+    bool NewLineDefault : 1;
     int OffsetDefault;
     QString PositionDefault;
 

@@ -64,8 +64,8 @@ public:
     KActionCollection* actionCollection;
     KMenu* menu;
     QWidget* window;
-    bool onAllDesktops; // valid only when the parent widget was hidden
-    bool hasQuit;
+    bool onAllDesktops : 1; // valid only when the parent widget was hidden
+    bool hasQuit : 1;
 };
 
 KSystemTrayIcon::KSystemTrayIcon( QWidget* parent )

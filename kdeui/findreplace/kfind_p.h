@@ -96,8 +96,8 @@ struct KFind::Private
     KFind *q;
     QPointer<QWidget>  findDialog;
     int                   currentId;
-    bool                  customIds;
-    bool                  patternChanged;
+    bool                  customIds : 1;
+    bool                  patternChanged : 1;
     QString               matchedPattern;
     QHash<QString,Match>  incrementalPath;
     Match *               emptyMatch;
@@ -112,8 +112,8 @@ struct KFind::Private
     QString text; // the text set by setData
     int index;
     int matchedLength;
-    bool dialogClosed;
-    bool lastResult;
+    bool dialogClosed : 1;
+    bool lastResult : 1;
 };
 
 #endif // KFIND_P_H

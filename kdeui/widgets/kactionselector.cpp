@@ -38,10 +38,11 @@ class KActionSelectorPrivate {
   QListWidget *availableListWidget, *selectedListWidget;
   QToolButton *btnAdd, *btnRemove, *btnUp, *btnDown;
   QLabel *lAvailable, *lSelected;
-  bool moveOnDoubleClick, keyboardEnabled;
+  bool moveOnDoubleClick : 1;
+  bool keyboardEnabled : 1;
+  bool showUpDownButtons : 1;
   QString addIcon, removeIcon, upIcon, downIcon;
   KActionSelector::InsertionPolicy availableInsertionPolicy, selectedInsertionPolicy;
-  bool showUpDownButtons;
 
   /**
     Move item @p item to the other listbox

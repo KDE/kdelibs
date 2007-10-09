@@ -60,8 +60,8 @@ public:
 
   QHash<QString, QWidget *> knownWidget;
   QHash<QString, QWidget *> buddyWidget;
-  bool insideGroupBox;
-  bool trackChanges;
+  bool insideGroupBox : 1;
+  bool trackChanges : 1;
 };
 
 KConfigDialogManager::KConfigDialogManager(QWidget *parent, KConfigSkeleton *conf)

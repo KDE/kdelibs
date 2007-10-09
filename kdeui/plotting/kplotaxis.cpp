@@ -38,8 +38,8 @@ class KPlotAxis::Private
 
         KPlotAxis *q;
 
-        bool m_visible; // Property "visible" defines if Axis is drawn or not.
-        bool m_showTickLabels;
+        bool m_visible : 1; // Property "visible" defines if Axis is drawn or not.
+        bool m_showTickLabels : 1;
         char m_labelFmt; // Number format for number labels, see QString::arg()
         QString m_label; // The label of the axis.
         int m_labelFieldWidth; // Field width for number labels, see QString::arg()

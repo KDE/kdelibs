@@ -75,9 +75,6 @@
 class KRuler::KRulerPrivate
 {
 public:
-  bool showpointer;
-  bool showEndL;
-  bool lengthFix;
   int  endOffset_length;  /* marks the offset at the end of the ruler
                            * i.e. right side at horizontal and down side
                            * at vertical rulers.
@@ -96,11 +93,15 @@ public:
   int mmDist;
   int bmDist;
   int offset;
-  bool showtm; /* show tiny, little, medium, big, endmarks */
-  bool showlm;
-  bool showmm;
-  bool showbm;
-  bool showem;
+  bool showtm : 1; /* show tiny, little, medium, big, endmarks */
+  bool showlm : 1;
+  bool showmm : 1;
+  bool showbm : 1;
+  bool showem : 1;
+
+  bool showpointer : 1;
+  bool showEndL : 1;
+  bool lengthFix : 1;
 
   double ppm; /* pixel per mark */
 

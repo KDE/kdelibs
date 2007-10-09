@@ -54,8 +54,8 @@ public:
     QString                myCurrentMatch;
     KCompTreeNode *        myTreeRoot;
     //QStringList            myRotations;
-    bool                   myBeep;
-    bool                   myIgnoreCase;
+    bool                   myBeep : 1;
+    bool                   myIgnoreCase : 1;
     bool                   myHasMultipleMatches;
     int                    myRotationIndex;
 };

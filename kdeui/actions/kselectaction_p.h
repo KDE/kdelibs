@@ -64,7 +64,8 @@ public:
 
   void init(KSelectAction*);
 
-  bool m_edit, m_menuAccelsEnabled;
+  bool m_edit : 1;
+  bool m_menuAccelsEnabled : 1;
   int m_comboWidth;
   int m_maxComboViewCount;
 

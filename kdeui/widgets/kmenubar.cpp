@@ -93,11 +93,11 @@ public:
     int frameStyle; // only valid in toplevel mode
     int lineWidth;  // dtto
     int margin;     // dtto
-    bool fallback_mode; // dtto
+    bool fallback_mode : 1; // dtto
 
-    bool forcedTopLevel;
-    bool topLevel;
-    bool wasTopLevel; // when TLW is fullscreen, remember state
+    bool forcedTopLevel : 1;
+    bool topLevel : 1;
+    bool wasTopLevel : 1; // when TLW is fullscreen, remember state
 
 #ifdef Q_WS_X11
     KSelectionWatcher* selection;
