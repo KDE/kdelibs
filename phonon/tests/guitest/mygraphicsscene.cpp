@@ -23,6 +23,7 @@
 #include "redrectitem.h"
 #include "sinkitem.h"
 #include "pathitem.h"
+#include "effectitem.h"
 
 using Phonon::Path;
 
@@ -47,7 +48,7 @@ void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         if (startItems.size() == 1) {
             m_startItem = qgraphicsitem_cast<MediaObjectItem *>(startItems.first());
             if (!m_startItem) {
-                m_startItem = qgraphicsitem_cast<SinkItem *>(startItems.first());
+                m_startItem = qgraphicsitem_cast<EffectItem *>(startItems.first());
             }
             if (m_startItem) {
                 m_lineItem = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
@@ -76,22 +77,43 @@ void MyGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 endItems = items(QRectF(mouseEvent->scenePos() - offset, mouseEvent->scenePos() + offset));
             }
         }
-        if (endItems.size() == 1) {
+        if (endItems.size() == 1 && endItems.first() != m_startItem) {
             QGraphicsItem *endItem = endItems.first();
+            MediaNode *sourceNode = 0;
+            MediaNode *sinkNode = 0;
+            WidgetRectItem *sourceItem = 0;
+            WidgetRectItem *sinkItem = 0;
+
             MediaObjectItem *source = qgraphicsitem_cast<MediaObjectItem *>(m_startItem);
-            SinkItem *sink = 0;
-            if (!source) {
-                source = qgraphicsitem_cast<MediaObjectItem *>(endItem);
-                sink = qgraphicsitem_cast<SinkItem *>(m_startItem);
+            if (source) {
+                sourceNode = source->mediaNode();
+                sourceItem = source;
             } else {
-                sink = qgraphicsitem_cast<SinkItem *>(endItem);
+                EffectItem *source= qgraphicsitem_cast<EffectItem *>(m_startItem);
+                if (source) {
+                    sourceNode = source->mediaNode();
+                    sourceItem = source;
+                }
             }
-            if (source && sink && endItem != m_startItem) {
-                Path p = Phonon::createPath(source->mediaNode(), sink->mediaNode());
-                if (p.isValid()) {
-                    addItem(new PathItem(source, sink, p));
-                    m_startItem = 0;
-                    return;
+            if (sourceItem && sourceNode) {
+                SinkItem *sink = qgraphicsitem_cast<SinkItem *>(endItem);
+                if (sink) {
+                    sinkNode = sink->mediaNode();
+                    sinkItem = sink;
+                } else {
+                    EffectItem *sink = qgraphicsitem_cast<EffectItem *>(endItem);
+                    if (sink) {
+                        sinkNode = sink->mediaNode();
+                        sinkItem = sink;
+                    }
+                }
+                if (sinkItem && sinkNode) {
+                    Path p = Phonon::createPath(sourceNode, sinkNode);
+                    if (p.isValid()) {
+                        addItem(new PathItem(sourceItem, sinkItem, p));
+                        m_startItem = 0;
+                        return;
+                    }
                 }
             }
         }

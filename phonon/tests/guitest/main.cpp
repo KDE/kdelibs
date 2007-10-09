@@ -17,9 +17,11 @@
 
 */
 
+#include <QtCore/QSignalMapper>
 #include <QtGui/QAction>
 #include <QtGui/QGraphicsView>
 #include <QtGui/QMainWindow>
+#include <QtGui/QMenu>
 #include "mediaobjectitem.h"
 #include "mygraphicsscene.h"
 #include <kaboutdata.h>
@@ -30,6 +32,8 @@
 #include "audiooutputitem.h"
 #include "videowidgetitem.h"
 #include "pathitem.h"
+#include "effectitem.h"
+#include <Phonon/BackendCapabilities>
 
 class MainWindow : public QMainWindow
 {
@@ -40,6 +44,7 @@ class MainWindow : public QMainWindow
     private slots:
         void init();
         void addMediaObject();
+        void addEffect(int);
         void addAudioOutput();
         void addVideoWidget();
 
@@ -153,6 +158,19 @@ MainWindow::MainWindow()
     action = new QAction(i18n("add MediaObject"), m_view);
     connect(action, SIGNAL(triggered()), SLOT(addMediaObject()));
     m_view->addAction(action);
+
+    action = new QAction(i18n("add Effect"), m_view);
+    QMenu *menu = new QMenu("Title", m_view);
+    QList<EffectDescription> effectList = Phonon::BackendCapabilities::availableAudioEffects();
+    QSignalMapper *mapper = new QSignalMapper(menu);
+    connect(mapper, SIGNAL(mapped(int)), SLOT(addEffect(int)));
+    foreach (const EffectDescription &d, effectList) {
+        QAction *subAction = menu->addAction(d.name(), mapper, SLOT(map()));
+        mapper->setMapping(subAction, d.index());
+    }
+    action->setMenu(menu);
+    m_view->addAction(action);
+
     action = new QAction(i18n("add AudioOutput"), m_view);
     connect(action, SIGNAL(triggered()), SLOT(addAudioOutput()));
     m_view->addAction(action);
@@ -180,19 +198,21 @@ void MainWindow::init()
 
 void MainWindow::addMediaObject()
 {
-    kDebug();
     m_scene->addItem(new MediaObjectItem(QCursor::pos(), m_view));
+}
+
+void MainWindow::addEffect(int effectIndex)
+{
+    m_scene->addItem(new EffectItem(EffectDescription::fromIndex(effectIndex), QCursor::pos(), m_view));
 }
 
 void MainWindow::addAudioOutput()
 {
-    kDebug();
     m_scene->addItem(new AudioOutputItem(QCursor::pos(), m_view));
 }
 
 void MainWindow::addVideoWidget()
 {
-    kDebug();
     m_scene->addItem(new VideoWidgetItem(QCursor::pos(), m_view));
 }
 

@@ -4,6 +4,7 @@ kde4_add_executable(guitest TEST
    anglewidget.cpp
    audiooutputitem.cpp
    chapterwidget.cpp
+   effectitem.cpp
    main.cpp
    mediaobjectitem.cpp
    mygraphicsscene.cpp
