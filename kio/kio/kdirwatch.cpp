@@ -217,7 +217,7 @@ KDirWatchPrivate::~KDirWatchPrivate()
 
 void KDirWatchPrivate::inotifyEventReceived()
 {
-  kDebug(7001) << "KDirWatchPrivate::inotifyEventReceived";
+  //kDebug(7001);
 #ifdef HAVE_SYS_INOTIFY_H
   if ( !supports_inotify )
     return;
@@ -1168,7 +1168,7 @@ void KDirWatchPrivate::famEventReceived()
 
   delayRemove = true;
 
-  kDebug(7001) << "Fam event received";
+  //kDebug(7001) << "Fam event received";
 
   while(use_fam && FAMPending(&fc)) {
     if (FAMNextEvent(&fc, &fe) == -1) {
@@ -1196,7 +1196,7 @@ void KDirWatchPrivate::famEventReceived()
 
 void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 {
-  kDebug(7001) << "checkFAMEvent";
+  //kDebug(7001);
 
   // Don't be too verbose ;-)
   if ((fe->code == FAMExists) ||
