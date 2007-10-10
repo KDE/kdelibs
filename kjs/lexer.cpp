@@ -137,6 +137,8 @@ void Lexer::setCode(const UString &sourceURL, int startingLineNumber, const KJS:
 
 void Lexer::shift(unsigned int p)
 {
+  // Here would be a good place to strip Cf characters, but that has caused compatibility problems:
+  // <http://bugs.webkit.org/show_bug.cgi?id=10183>.
   while (p--) {
     current = next1;
     next1 = next2;
