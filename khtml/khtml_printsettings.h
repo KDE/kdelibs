@@ -20,19 +20,20 @@
 #ifndef KHTML_PRINTSETTINGS_H
 #define KHTML_PRINTSETTINGS_H
 
-#include <kdeprint/kprintdialogpage.h>
+#include <QtGui/QWidget>
 
 class QCheckBox;
 
-class KHTMLPrintSettings : public KPrintDialogPage
+class KHTMLPrintSettings : public QWidget
 {
 	Q_OBJECT
 public:
 	KHTMLPrintSettings(QWidget *parent = 0);
 	~KHTMLPrintSettings();
 
-	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
-	void setOptions(const QMap<QString,QString>& opts);
+        bool printFriendly();
+        bool printImages();
+        bool printHeader();
 
 private:
 	QCheckBox	*m_printfriendly;

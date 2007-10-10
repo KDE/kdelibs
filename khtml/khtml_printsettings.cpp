@@ -24,7 +24,7 @@
 #include <QtGui/QLayout>
 
 KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
-    : KPrintDialogPage(parent)
+    : QWidget(parent)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisPrintImages = i18n( "<qt>"
@@ -67,7 +67,7 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
 		"certainly use much more toner or ink."
 		"</p>"
 						" </qt>" );
-	setTitle(i18n("HTML Settings"));
+	setWindowTitle(i18n("HTML Settings"));
 
 	m_printfriendly = new QCheckBox(i18n("Printer friendly mode (black text, no background)"), this);
 	m_printfriendly->setWhatsThis(whatsThisPrinterFriendlyMode);
@@ -80,8 +80,8 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
 	m_printheader->setChecked(true);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this);
-  l0->setMargin(0);
-  l0->setSpacing(10);
+	l0->setMargin(0);
+	l0->setSpacing(10);
 	l0->addWidget(m_printfriendly);
 	l0->addWidget(m_printimages);
 	l0->addWidget(m_printheader);
@@ -92,18 +92,20 @@ KHTMLPrintSettings::~KHTMLPrintSettings()
 {
 }
 
-void KHTMLPrintSettings::getOptions(QMap<QString,QString>& opts, bool /*incldef*/)
+bool KHTMLPrintSettings::printFriendly()
 {
-	opts["app-khtml-printfriendly"] = (m_printfriendly->isChecked() ? "true" : "false");
-	opts["app-khtml-printimages"] = (m_printimages->isChecked() ? "true" : "false");
-	opts["app-khtml-printheader"] = (m_printheader->isChecked() ? "true" : "false");
+	return m_printfriendly->isChecked();
 }
 
-void KHTMLPrintSettings::setOptions(const QMap<QString,QString>& opts)
+bool KHTMLPrintSettings::printImages()
 {
-	m_printfriendly->setChecked(opts["app-khtml-printfriendly"] != "false");
-	m_printimages->setChecked(opts["app-khtml-printimages"] != "false");
-	m_printheader->setChecked(opts["app-khtml-printheader"] != "false");
+	return m_printimages->isChecked();
 }
+
+bool KHTMLPrintSettings::printHeader()
+{
+	return m_printheader->isChecked();
+}
+
 
 #include "khtml_printsettings.moc"

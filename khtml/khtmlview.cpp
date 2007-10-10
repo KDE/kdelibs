@@ -73,7 +73,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <knotification.h>
-#include <kprinter.h>
+#include <kdeprintdialog.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kstandardshortcut.h>
@@ -92,6 +92,8 @@
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QVector>
 #include <QtGui/QAbstractScrollArea>
+#include <QtGui/QPrinter>
+#include <QtGui/QPrintDialog>
 
 //#define DEBUG_FLICKER
 
@@ -2892,29 +2894,32 @@ void KHTMLView::print(bool quick)
     khtml::RenderCanvas *root = static_cast<khtml::RenderCanvas *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
-    KPrinter *printer = new KPrinter(true, QPrinter::ScreenResolution);
-    printer->addDialogPage(new KHTMLPrintSettings());
+    KHTMLPrintSettings printSettings; //XXX: doesn't save settings between prints like this
+    QPrinter printer;
+    QPrintDialog *dialog = KdePrint::createPrintDialog(&printer, QList<QWidget*>() << &printSettings, this);
+
     QString docname = m_part->xmlDocImpl()->URL().prettyUrl();
     if ( !docname.isEmpty() )
         docname = KStringHandler::csqueeze(docname, 80);
-    if(quick || printer->setup(this, i18n("Print %1", docname))) {
+
+    if(quick || dialog->exec()) {
         viewport()->setCursor( Qt::WaitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
-        printer->setFullPage(false);
-        printer->setCreator(QString("KDE %1.%2.%3 HTML Library").arg(KDE_VERSION_MAJOR).arg(KDE_VERSION_MINOR).arg(KDE_VERSION_RELEASE));
-        printer->setDocName(docname);
+        printer.setFullPage(false);
+        printer.setCreator(QString("KDE %1.%2.%3 HTML Library").arg(KDE_VERSION_MAJOR).arg(KDE_VERSION_MINOR).arg(KDE_VERSION_RELEASE));
+        printer.setDocName(docname);
 
         QPainter *p = new QPainter;
-        p->begin( printer );
+        p->begin( &printer );
         khtml::setPrintPainter( p );
 
-        m_part->xmlDocImpl()->setPaintDevice( printer );
+        m_part->xmlDocImpl()->setPaintDevice( &printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
         // We ignore margin settings for html and body when printing
         // and use the default margins from the print-system
         // (In Qt 3.0.x the default margins are hardcoded in Qt)
-        m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("app-khtml-printfriendly") == "true" ?
+        m_part->xmlDocImpl()->setPrintStyleSheet( printSettings.printFriendly() ?
                                                   "* { background-image: none !important;"
                                                   "    background-color: white !important;"
                                                   "    color: black !important; }"
@@ -2924,19 +2929,19 @@ void KHTMLView::print(bool quick)
 						  "html { margin: 0px !important; }"
 						  );
 
-        kDebug(6000) << "printing: physical page width = " << printer->width()
-                      << " height = " << printer->height() << endl;
+        kDebug(6000) << "printing: physical page width = " << printer.width()
+                      << " height = " << printer.height() << endl;
         root->setStaticMode(true);
         root->setPagedMode(true);
-        root->setWidth(printer->width());
-//         root->setHeight(printer->height());
+        root->setWidth(printer.width());
+//         root->setHeight(printer.height());
         root->setPageTop(0);
         root->setPageBottom(0);
         d->paged = true;
 
-        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(printer->logicalDpiY(), 100);
+        m_part->xmlDocImpl()->styleSelector()->computeFontSizes(printer.logicalDpiY(), 100);
         m_part->xmlDocImpl()->updateStyleSelector();
-        root->setPrintImages( printer->option("app-khtml-printimages") == "true");
+        root->setPrintImages(printSettings.printImages());
         root->makePageBreakAvoidBlocks();
 
         root->setNeedsLayoutAndMinMaxRecalc();
@@ -2945,7 +2950,7 @@ void KHTMLView::print(bool quick)
 
         // check sizes ask for action.. (scale or clip)
 
-        bool printHeader = (printer->option("app-khtml-printheader") == "true");
+        bool printHeader = printSettings.printHeader();
 
         int headerHeight = 0;
         QFont headerFont("Sans Serif", 8);
@@ -2963,14 +2968,14 @@ void KHTMLView::print(bool quick)
         // ok. now print the pages.
         kDebug(6000) << "printing: html page width = " << root->docWidth()
                       << " height = " << root->docHeight() << endl;
-        kDebug(6000) << "printing: margins left = " << printer->margins().width()
-                      << " top = " << printer->margins().height() << endl;
-        kDebug(6000) << "printing: paper width = " << printer->width()
-                      << " height = " << printer->height() << endl;
+        kDebug(6000) << "printing: margins left = " << printer.pageRect().left() - printer.paperRect().left()
+                      << " top = " << printer.pageRect().top() - printer.paperRect().top() << endl;
+        kDebug(6000) << "printing: paper width = " << printer.width()
+                      << " height = " << printer.height() << endl;
         // if the width is too large to fit on the paper we just scale
         // the whole thing.
-        int pageWidth = printer->width();
-        int pageHeight = printer->height();
+        int pageWidth = printer.width();
+        int pageHeight = printer.height();
         p->setClipRect(0,0, pageWidth, pageHeight);
 
         pageHeight -= headerHeight;
@@ -2978,9 +2983,9 @@ void KHTMLView::print(bool quick)
         bool scalePage = false;
         double scale = 0.0;
 #ifndef QT_NO_TRANSFORMATIONS
-        if(root->docWidth() > printer->width()) {
+        if(root->docWidth() > printer.width()) {
             scalePage = true;
-            scale = ((double) printer->width())/((double) root->docWidth());
+            scale = ((double) printer.width())/((double) root->docWidth());
             pageHeight = (int) (pageHeight/scale);
             pageWidth = (int) (pageWidth/scale);
             headerHeight = (int) (headerHeight/scale);
@@ -2998,16 +3003,16 @@ void KHTMLView::print(bool quick)
         // Squeeze header to make it it on the page.
         if (printHeader)
         {
-            int available_width = printer->width() - 10 -
-                2 * qMax(p->boundingRect(0, 0, printer->width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerLeft).width(),
-                         p->boundingRect(0, 0, printer->width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerRight).width());
+            int available_width = printer.width() - 10 -
+                2 * qMax(p->boundingRect(0, 0, printer.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerLeft).width(),
+                         p->boundingRect(0, 0, printer.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerRight).width());
             if (available_width < 150)
                available_width = 150;
             int mid_width;
             int squeeze = 120;
             do {
                 headerMid = KStringHandler::csqueeze(docname, squeeze);
-                mid_width = p->boundingRect(0, 0, printer->width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerMid).width();
+                mid_width = p->boundingRect(0, 0, printer.width(), p->fontMetrics().lineSpacing(), Qt::AlignLeft, headerMid).width();
                 squeeze -= 10;
             } while (mid_width > available_width);
         }
@@ -3016,7 +3021,7 @@ void KHTMLView::print(bool quick)
         int bottom = 0;
         int page = 1;
         while(top < root->docHeight()) {
-            if(top > 0) printer->newPage();
+            if(top > 0) printer.newPage();
 #ifdef __GNUC__
 #warning "This could not be tested when merge was done, suspect"
 #endif
@@ -3029,9 +3034,9 @@ void KHTMLView::print(bool quick)
 
                 headerRight = QString("#%1").arg(page);
 
-                p->drawText(0, 0, printer->width(), dy, Qt::AlignLeft, headerLeft);
-                p->drawText(0, 0, printer->width(), dy, Qt::AlignHCenter, headerMid);
-                p->drawText(0, 0, printer->width(), dy, Qt::AlignRight, headerRight);
+                p->drawText(0, 0, printer.width(), dy, Qt::AlignLeft, headerLeft);
+                p->drawText(0, 0, printer.width(), dy, Qt::AlignHCenter, headerMid);
+                p->drawText(0, 0, printer.width(), dy, Qt::AlignRight, headerRight);
             }
 
 
@@ -3077,7 +3082,6 @@ void KHTMLView::print(bool quick)
         m_part->xmlDocImpl()->updateStyleSelector();
         viewport()->unsetCursor();
     }
-    delete printer;
 }
 
 void KHTMLView::slotPaletteChanged()
