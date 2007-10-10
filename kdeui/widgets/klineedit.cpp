@@ -244,7 +244,7 @@ void KLineEdit::updateClearButton()
 
         // we don't need to check for RTL here as Qt does that for us
         // when it comes to style sheets
-        kDebug() << "setting padding right to " << buttonWidth;
+        //kDebug() << "setting padding right to" << buttonWidth;
         setStyleSheet( QString( "QLineEdit { padding-right: %1; }" )
                        .arg( buttonWidth ) );
     }
