@@ -237,7 +237,7 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
             ad->isPresent = true;
             foreach (int key, ad->keys)
                 if (key != 0) {
-                    Q_ASSERT( d->keyToAction.value(key) == ad );
+                    Q_ASSERT(d->keyToAction.value(key) == ad);
                     d->impl->grabKey(key, true);
                 }
         }
@@ -310,7 +310,7 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
 
     if (ad->isPresent)
         foreach (int key, added) {
-            Q_ASSERT( d->keyToAction.value(key) == ad );
+            Q_ASSERT(d->keyToAction.value(key) == ad);
             d->impl->grabKey(key, true);
         }
 
@@ -472,7 +472,7 @@ bool KdedGlobalAccel::keyPressed(int keyQt)
     QStringList data = ad->actionId;
 #ifdef Q_WS_X11
     // pass X11 timestamp
-    data.append( QString::number( QX11Info::appTime()));
+    data.append(QString::number(QX11Info::appTime()));
 #endif
     emit invokeAction(data);
     return true;
