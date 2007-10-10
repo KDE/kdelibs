@@ -575,12 +575,12 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 
     widget->render( d, (buffered ? QPoint(0,0) : thePoint), r);
 
-    if (!p->isActive())
+    if (!buffered) {
         p->begin(x);
-    p->setWorldMatrix( m );
-    p->setClipRegion( rg );
-
-    if (buffered) {
+        if (!rg.isEmpty())
+            p->setClipRegion( rg );
+        p->setWorldMatrix( m );
+    } else {
         // transfer results
         p->drawPixmap(QPoint(tx, ty), static_cast<QPixmap&>(*d), r);
         PaintBuffer::release();
