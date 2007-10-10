@@ -453,7 +453,7 @@ bool keyQtToSymX( int keyQt, int* keySym )
 	int symQt = keyQt & ~Qt::KeyboardModifierMask;
 
 	if( symQt < 0x1000 ) {
-		*keySym = QChar(symQt).toLower().unicode();
+		*keySym = QChar(symQt).toUpper().unicode();
 		return true;
 	}
 
@@ -477,7 +477,7 @@ bool symXToKeyQt( uint keySym, int* keyQt )
 	*keyQt = Qt::Key_unknown;
 	if( keySym < 0x1000 ) {
 		if( keySym >= 'a' && keySym <= 'z' )
-			*keyQt = QChar(keySym).toLower().unicode();
+			*keyQt = QChar(keySym).toUpper().unicode();
 		else
 			*keyQt = keySym;
 	}
