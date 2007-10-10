@@ -1,58 +1,93 @@
 <variablelist>
 <varlistentry>
 <term>
-<menuchoice>
-<shortcut>
-<keycombo action="simul"><keycap>F1</keycap></keycombo>
-</shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
-</menuchoice>
+<menuchoice
+><shortcut
+> <keycombo action="simul"
+><keycap
+>F1</keycap
+></keycombo
+> </shortcut
+> <guimenu
+>ヘルプ</guimenu
+> <guimenuitem
+>&kappname; ハンドブック</guimenuitem
+> </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kappname; help pages. (this document).</para></listitem>
+<listitem
+><para
+>KDE のヘルプシステムを起動して &kappname; のヘルプページ (このドキュメント) を開きます。</para
+></listitem>
 </varlistentry>
 
 <varlistentry>
-<term><menuchoice>
-<shortcut>
-<keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
-</shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
-</menuchoice>
+<term
+><menuchoice
+><shortcut
+> <keycombo action="simul"
+>&Shift;<keycap
+>F1</keycap
+></keycombo
+> </shortcut
+> <guimenu
+>ヘルプ</guimenu
+> <guimenuitem
+>これは何？</guimenuitem
+> </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem
+><para
+>これを選択するとマウスカーソルの形が矢印とクエスチョンマークに変わります。その状態で &kappname; のユーザインターフェースの要素をクリックすると、それぞれの機能を説明するヘルプウィンドウが表示されます (その要素にヘルプがある場合のみ)。</para
+></listitem>
 </varlistentry>
 
 
 <varlistentry>
-<term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
-</menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<term
+><menuchoice
+><guimenu
+>ヘルプ</guimenu
+> <guimenuitem
+>バグを報告...</guimenuitem
+> </menuchoice
+></term>
+<listitem
+><para
+>バグレポート用のダイアログを開きます。これを使ってプログラムの不具合を報告したり、要望を送ったりすることができます。</para
+></listitem>
 </varlistentry>
 
 <varlistentry>
-<term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
-</menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
+<term
+><menuchoice
+><guimenu
+>ヘルプ</guimenu
+> <guimenuitem
+>&kappname; について</guimenuitem
+> </menuchoice
+></term>
+<listitem
+><para
+><action
+>プログラムのバージョンと作者を表示します。</action
+></para
+></listitem>
 </varlistentry>
 
 <varlistentry>
-<term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
-</menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<term
+><menuchoice
+><guimenu
+>ヘルプ</guimenu
+> <guimenuitem
+>KDE について</guimenuitem
+> </menuchoice
+></term>
+<listitem
+><para
+><action
+>KDE のバージョンと基本的な情報を表示します。</action
+></para
+></listitem>
 </varlistentry>
 </variablelist>
