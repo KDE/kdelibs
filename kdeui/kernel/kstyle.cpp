@@ -3135,8 +3135,11 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                         return handleRTL(option,
                                          QRect(buttonsLeft, r.bottom()-bmb-heightDown+1, buttonsWidth, heightDown) );
                     case SC_SpinBoxEditField:
-                        return handleRTL(option,
-                                         QRect(r.left()+fw, r.top()+fw, r.width()-fw-bw, r.height()-2*fw) );
+                    {
+                        QRect labelRect(r.left()+fw, r.top()+fw, r.width()-fw-bw, r.height()-2*fw);
+                        labelRect = insideMargin(labelRect, WT_SpinBox, SpinBox::ContentsMargin, option, widget);
+                        return handleRTL(option, labelRect );
+                    }
                     case SC_SpinBoxFrame:
                         return (sb->frame || !supportFrameless) ? r : QRect();
                     default:
@@ -3149,14 +3152,14 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
         {
             if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)) {
 
-                int fw = widgetLayoutProp(WT_ComboBox, SpinBox::FrameWidth, option, widget);
-                int bw = widgetLayoutProp(WT_ComboBox, SpinBox::ButtonWidth, option, widget);
-                int bm = widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin, option, widget);
-                int bml = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Left, option, widget);
-                int bmr = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Right, option, widget);
-                int bmt = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Top, option, widget);
-                int bmb = bm + widgetLayoutProp(WT_ComboBox, SpinBox::ButtonMargin + Bot, option, widget);
-                bool supportFrameless = widgetLayoutProp(WT_ComboBox, SpinBox::SupportFrameless, option, widget);
+                int fw = widgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth, option, widget);
+                int bw = widgetLayoutProp(WT_ComboBox, ComboBox::ButtonWidth, option, widget);
+                int bm = widgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin, option, widget);
+                int bml = bm + widgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin + Left, option, widget);
+                int bmr = bm + widgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin + Right, option, widget);
+                int bmt = bm + widgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin + Top, option, widget);
+                int bmb = bm + widgetLayoutProp(WT_ComboBox, ComboBox::ButtonMargin + Bot, option, widget);
+                bool supportFrameless = widgetLayoutProp(WT_ComboBox, ComboBox::SupportFrameless, option, widget);
 
                 // ComboBox without a frame, set the corresponding layout values to 0, reduce button width.
                 if (supportFrameless && !cb->frame)
@@ -3173,8 +3176,11 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
                         return handleRTL(option,
                                          QRect(r.right()-bw+bml+1, r.top()+bmt, bw-bml-bmr, r.height()-bmt-bmb) );
                     case SC_ComboBoxEditField:
-                        return handleRTL(option,
-                                         QRect(r.left()+fw, r.top()+fw, r.width()-fw-bw, r.height()-2*fw) );
+                    {
+                        QRect labelRect(r.left()+fw, r.top()+fw, r.width()-fw-bw, r.height()-2*fw);
+                        labelRect = insideMargin(labelRect, WT_ComboBox, ComboBox::ContentsMargin, option, widget);
+                        return handleRTL(option, labelRect );
+                    }
                     case SC_ComboBoxListBoxPopup:
                         // TODO: need to add layoutProps to control the popup rect?
 //                         return cb->popupRect;
@@ -3643,6 +3649,25 @@ QSize KStyle::sizeFromContents(ContentsType type, const QStyleOption* option, co
                 return expandDim(QSize(w, h), WT_Header, Header::ContentsMargin, option, widget);
             }
         }
+
+        case CT_ComboBox:
+        {
+            // TODO: Figure out what to do with the button margins
+            QSize size = contentsSize;
+
+            // Add the contents margin
+            size = expandDim(size, WT_ComboBox, ComboBox::ContentsMargin, option, widget);
+
+            // Add the button width
+            size.rwidth() += widgetLayoutProp(WT_ComboBox, ComboBox::ButtonWidth, option, widget);
+
+            // Add the frame width
+            size.rwidth()  += widgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth, option, widget) * 2;
+            size.rheight() += widgetLayoutProp(WT_ComboBox, ComboBox::FrameWidth, option, widget) * 2;
+
+            return size;
+        }
+
         default:
             break;
     }

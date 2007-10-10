@@ -1051,10 +1051,13 @@ protected:
                                 * spacing of the buttons will be reduced by 1 if
                                 * necessary to avoid rounding problems. Needs to be
                                 * handled in your drawing code. */
-            SupportFrameless   /**< (\b 0) Set to non-zero to indicate that you are able to
+            SupportFrameless,   /**< (\b 0) Set to non-zero to indicate that you are able to
                                 * handle frame-less SpinBoxes. For a SpinBox with no
                                 * frame, FrameWidth and Top/Bottom/Right ButtonMargin
                                 * is ignored. */
+            ContentsMargin
+                                /**< (\b 5) space between the bevel and the spinbox contents
+                                    */
         };
 
         /**
@@ -1104,9 +1107,12 @@ protected:
             FocusMargin = ButtonMargin + MarginInc,
                                 /**< (\b 1) Focus margin for ComboBoxes that aren't
                                  * editable, measured from the EditField rect */
-            SupportFrameless = FocusMargin + MarginInc
+            SupportFrameless = FocusMargin + MarginInc,
                                 /**< (\b 0) @see LP_SpinBox_SupportFrameless same description
                                  * applies here */
+            ContentsMargin
+                                /**< (\b 5) space between the bevel and the combobox contents
+                                    */
         };
 
         /**
