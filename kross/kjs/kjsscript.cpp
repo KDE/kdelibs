@@ -320,24 +320,26 @@ QStringList KjsScript::functionNames()
 
 QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
 {
+    //if( hadError() ) return QVariant(); // check if we had a prev error and abort if that's the case
+
     KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
     KJS::ExecState* exec = kjsinterpreter->globalExec();
     KJS::JSObject* kjsglobal = kjsinterpreter->globalObject();
-    if( ! exec->hadException() ) {
-        //setError()
+    if( exec->hadException() ) {
+        ErrorInterface error = extractError(d->m_engine->completion(), exec);
+        //setError(&error);
+        krossdebug(QString("KjsScript::callFunction(\"%1\") Prev error: %2").arg(name).arg(error.errorMessage()));
         return QVariant();
     }
 
     KJS::Identifier id = KJS::Identifier( KJS::UString(name.toLatin1().data()) );
     KJS::JSValue *functionvalue = kjsglobal->get(exec, id);
-    if( exec->hadException() ) {
-        //setError()
-        return QVariant();
-    }
+    Q_ASSERT( ! exec->hadException() );
 
     KJS::JSObject *function = functionvalue->toObject(exec);
     if ( ! function || ! function->implementsCall() ) {
-        //setError()
+        krossdebug(QString("KjsScript::callFunction(\"%1\") No such function").arg(name));
+        setError(QString("No such function \"%1\"").arg(name));
         return QVariant();
     }
 
@@ -350,7 +352,10 @@ QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
 
     KJS::JSValue *retValue = function->call(exec, kjsglobal, kjsargs);
     if( exec->hadException() ) {
-        //setError()
+        ErrorInterface error = extractError(d->m_engine->completion(), exec);
+        //exec->clearException();
+        krossdebug(QString("KjsScript::callFunction(\"%1\") Call failed: %2").arg(name).arg(error.errorMessage()));
+        setError(&error);
         return QVariant();
     }
 
