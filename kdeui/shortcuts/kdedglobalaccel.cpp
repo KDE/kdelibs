@@ -236,8 +236,10 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
         if (!ad->isPresent && setPresent) {
             ad->isPresent = true;
             foreach (int key, ad->keys)
-                if (key != 0)
+                if (key != 0) {
+                    Q_ASSERT( d->keyToAction.value(key) == ad );
                     d->impl->grabKey(key, true);
+                }
         }
         ad->isDefaultEmpty = isDefaultEmpty;
         return ad->keys;
@@ -307,8 +309,10 @@ QList<int> KdedGlobalAccel::setShortcut(const QStringList &actionId,
     }
 
     if (ad->isPresent)
-        foreach (int key, added)
+        foreach (int key, added) {
+            Q_ASSERT( d->keyToAction.value(key) == ad );
             d->impl->grabKey(key, true);
+        }
 
     scheduleWriteSettings();
 
