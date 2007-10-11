@@ -1104,7 +1104,7 @@ static double parseDate(const UString &date)
     }
 
     // Missing delimiter between month and day (like "January29")?
-    if (month == -1 && dateString && wordStart != dateString)
+    if (month == -1 && wordStart != dateString)
         month = findMonth(wordStart);
 
     dateString = skipSpacesAndComments(dateString);

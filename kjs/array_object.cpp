@@ -106,7 +106,7 @@ bool ArrayInstance::getOwnPropertySlot(ExecState* exec, const Identifier& proper
       return false;
     if (index < storageLength) {
       JSValue *v = storage[index];
-      if (!v || v->isUndefined())
+      if (!v)
         return false;      
       slot.setValueSlot(this, &storage[index]);
       return true;
@@ -125,7 +125,7 @@ bool ArrayInstance::getOwnPropertySlot(ExecState *exec, unsigned index, Property
     return false;
   if (index < storageLength) {
     JSValue *v = storage[index];
-    if (!v || v->isUndefined())
+    if (!v)
       return false;
     slot.setValueSlot(this, &storage[index]);
     return true;
@@ -289,7 +289,7 @@ void ArrayInstance::mark()
   }
 }
 
-static ExecState *execForCompareByStringForQSort;
+static ExecState* execForCompareByStringForQSort;
 
 static int compareByStringForQSort(const void *a, const void *b)
 {
@@ -305,13 +305,14 @@ static int compareByStringForQSort(const void *a, const void *b)
     return compare(va->toString(exec), vb->toString(exec));
 }
 
-void ArrayInstance::sort(ExecState *exec)
+void ArrayInstance::sort(ExecState* exec)
 {
     int lengthNotIncludingUndefined = pushUndefinedObjectsToEnd(exec);
-    
+
+    ExecState* oldExec = execForCompareByStringForQSort;
     execForCompareByStringForQSort = exec;
-    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue *), compareByStringForQSort);
-    execForCompareByStringForQSort = 0;
+    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue*), compareByStringForQSort);
+    execForCompareByStringForQSort = oldExec;
 }
 
 struct CompareWithCompareFunctionArguments {
@@ -330,7 +331,7 @@ struct CompareWithCompareFunctionArguments {
     JSObject *globalObject;
 };
 
-static CompareWithCompareFunctionArguments *compareWithCompareFunctionArguments;
+static CompareWithCompareFunctionArguments* compareWithCompareFunctionArguments;
 
 static int compareWithCompareFunctionForQSort(const void *a, const void *b)
 {
@@ -353,14 +354,15 @@ static int compareWithCompareFunctionForQSort(const void *a, const void *b)
     return compareResult < 0 ? -1 : compareResult > 0 ? 1 : 0;
 }
 
-void ArrayInstance::sort(ExecState *exec, JSObject *compareFunction)
+void ArrayInstance::sort(ExecState* exec, JSObject* compareFunction)
 {
     int lengthNotIncludingUndefined = pushUndefinedObjectsToEnd(exec);
-    
+
+    CompareWithCompareFunctionArguments* oldArgs = compareWithCompareFunctionArguments;
     CompareWithCompareFunctionArguments args(exec, compareFunction);
     compareWithCompareFunctionArguments = &args;
-    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue *), compareWithCompareFunctionForQSort);
-    compareWithCompareFunctionArguments = 0;
+    qsort(storage, lengthNotIncludingUndefined, sizeof(JSValue*), compareWithCompareFunctionForQSort);
+    compareWithCompareFunctionArguments = oldArgs;
 }
 
 unsigned ArrayInstance::pushUndefinedObjectsToEnd(ExecState *exec)
@@ -856,7 +858,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
     if (id == Some || id == Every)
       result = jsBoolean(id == Every);
     else
-      result = thisObj;
+      result = jsUndefined();
     
     for (unsigned k = 0; k < length && !exec->hadException(); ++k) {
       PropertySlot slot;
@@ -903,7 +905,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
     for (; index < length; ++index) {
         JSValue* e = getProperty(exec, thisObj, index);
         if (!e)
-            e = jsUndefined();
+            continue;
         if (strictEqual(exec, searchElement, e))
             return jsNumber(index);
     }
@@ -929,7 +931,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
     for (; index >= 0; --index) {
         JSValue* e = getProperty(exec, thisObj, index);
         if (!e)
-            e = jsUndefined();
+            continue;
         if (strictEqual(exec, searchElement, e))
             return jsNumber(index);
     }

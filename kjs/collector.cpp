@@ -482,6 +482,10 @@ bool Collector::collect()
   markStackObjectsConservatively();
   markProtectedObjects();
   List::markProtectedLists();
+#if USE(MULTIPLE_THREADS)
+  if (!currentThreadIsMainThread)
+    markMainThreadOnlyObjects();
+#endif
 
   // SWEEP: delete everything with a zero refcount (garbage) and unmark everything else
 

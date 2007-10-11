@@ -32,7 +32,6 @@ namespace KJS {
     class Context;
     class Interpreter;
     class FunctionImp;
-    class RuntimeMethodImp;
     class GlobalFuncImp;
     
   /**
@@ -43,7 +42,6 @@ namespace KJS {
   class KJS_EXPORT ExecState {
     friend class Interpreter;
     friend class FunctionImp;
-    friend class RuntimeMethodImp;
     friend class GlobalFuncImp;
   public:
     /**
