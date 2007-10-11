@@ -258,6 +258,7 @@ ode that uses the Q3Data* classes working.For new code, use User in the meta obj
 <li>caption() has moved to KComponentData </li>
 <li>makeStdCaption(const QString&amp;, bool, bool) has moved to KDialog and changed signature to makeStdCaption(const QString&amp;, CaptionFlags) </li>
 <li>addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. with enums SettingsCategory have moved to KGlobalSettings::self() which is now a QObject</li>
+<li>updateRemoteUserTimestamp() now takes DBUS service id instead of dbus name (i.e. something like org.kde. needs to be prepended)</li>
 </ul>
 
 <h4>KAudioPlayer</h4>
