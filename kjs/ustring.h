@@ -34,6 +34,14 @@
 #include <stdint.h>
 #endif
 
+/* On some ARM platforms GCC won't pack structures by default so sizeof(UChar)
+   will end up being != 2 which causes crashes since the code depends on that. */
+#if COMPILER(GCC) && PLATFORM(FORCE_PACK)
+#define PACK_STRUCT __attribute__((packed))
+#else
+#define PACK_STRUCT
+#endif
+
 /**
  * @internal
  */
@@ -89,7 +97,7 @@ namespace KJS {
     unsigned short unicode() const { return uc; }
 
     unsigned short uc;
-  };
+  } PACK_STRUCT;
 
   inline UChar::UChar() { }
   inline UChar::UChar(unsigned char h , unsigned char l) : uc(h << 8 | l) { }
