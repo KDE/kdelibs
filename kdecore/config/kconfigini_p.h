@@ -44,6 +44,7 @@ public:
                      WriteOptions options, const KComponentData &data);
 
     bool isWritable() const;
+    KConfigBase::ConfigState getConfigState() const;
     void createEnclosing();
     void setFilePath(const QString& path);
     bool lock(const KComponentData& componentData);

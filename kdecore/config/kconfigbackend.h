@@ -110,6 +110,11 @@ public:
      */
     virtual bool isWritable() const = 0;
     /**
+     * get the read/write status of the configuration object.
+     * @note This function @b MUST be implemented by sub-classes.
+     */
+    virtual KConfigBase::ConfigState getConfigState() const = 0;
+    /**
      * create the enclosing object of @em this object.
      * @note This function @b MUST be implemented by sub-classes.
      */

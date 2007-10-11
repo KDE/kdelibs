@@ -56,7 +56,7 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
     : openFlags(flags), resourceType(resource), mBackend(0),
       bDynamicBackend(true),  bDirty(false), bReadDefaults(false),
       bFileImmutable(false), bForceGlobal(false), componentData(componentData_),
-      configState(KConfigBase::ReadWrite)
+      configState(KConfigBase::NoAccess)
 {
     sGlobalFileName = componentData.dirs()->saveLocation("config") +
                           QString::fromLatin1("kdeglobals");
@@ -245,15 +245,15 @@ void KConfig::sync()
         }
 
         // lock the local file
-        if (!d->lockLocal()) {
-            kWarning() << "couldn't lock local file";
+        if (d->configState == ReadWrite && !d->lockLocal()) {
+            qWarning() << "couldn't lock local file";
             return;
         }
 
         KEntryMap toMerge;
         if (d->wantGlobals()) {
             KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(componentData(), d->sGlobalFileName);
-            if (!tmp->lock(componentData())) {
+            if (d->configState == ReadWrite && !tmp->lock(componentData())) {
                 qWarning() << "couldn't lock global file";
                 return;
             }
@@ -354,6 +354,8 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
         mBackend = KConfigBackend::create(componentData, file);
     else
         mBackend->setFilePath(file);
+
+    configState = mBackend->getConfigState();
 }
 
 void KConfig::reparseConfiguration()
@@ -368,31 +370,10 @@ void KConfig::reparseConfiguration()
     d->bFileImmutable = false;
 
     // Parse all desired files from the least to the most specific.
-
-    // lock the local file
-    if (!d->lockLocal()) {
-        //what do we do now?
-    }
-
-    if (d->wantGlobals()) {
-        KSharedPtr<KConfigBackend> global = KConfigBackend::create(componentData(), d->sGlobalFileName);
-        // lock the global file
-        if (!global->lock(componentData())) {
-            //what do we do now?
-        }
-
+    if (d->wantGlobals())
         d->parseGlobalFiles();
 
-        // unlock the global file
-        if (global->isLocked())
-            global->unlock();
-    }
-
     d->parseConfigFiles();
-
-    // unlock local file
-    if (d->mBackend && d->mBackend->isLocked())
-        d->mBackend->unlock();
 }
 
 void KConfigPrivate::parseGlobalFiles()

@@ -412,8 +412,21 @@ void KConfigIniBackend::setFilePath(const QString& file)
     }
 }
 
+KConfigBase::ConfigState KConfigIniBackend::getConfigState() const
+{
+    if (filePath().isEmpty())
+        return KConfigBase::NoAccess;
+
+    if (KStandardDirs::checkAccess(filePath(), W_OK))
+        return KConfigBase::ReadWrite;
+
+    return KConfigBase::ReadOnly;
+}
+
 bool KConfigIniBackend::lock(const KComponentData& componentData)
 {
+    Q_ASSERT(!filePath().isEmpty());
+
     lockFile = new KLockFile(filePath() + QLatin1String(".lock"), componentData);
 
     if (lockFile->lock() == KLockFile::LockStale) // attempt to break the lock
