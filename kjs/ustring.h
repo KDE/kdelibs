@@ -30,6 +30,7 @@
 #include <wtf/RefPtr.h>
 #include <wtf/PassRefPtr.h>
 
+#include <assert.h>
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
@@ -467,7 +468,7 @@ namespace KJS {
 #endif
 
     Rep* rep() const { return m_rep.get(); }
-    UString(PassRefPtr<Rep> r) : m_rep(r) { ASSERT(m_rep); }
+    UString(PassRefPtr<Rep> r) : m_rep(r) { assert(m_rep); }
 
     void copyForWriting();
 
