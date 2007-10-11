@@ -227,7 +227,7 @@ const KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup) const
     KConfigGroupPrivate sub = *d;
     sub.mParent = d;
     sub.mName = aGroup;
-    bool subImmutable = config()->groupIsImmutable(sub.fullName().constData());
+    bool subImmutable = config()->groupIsImmutable(sub.fullName());
     newGroup.d = new KConfigGroupPrivate(&sub, subImmutable, true);
 
     return newGroup;
@@ -237,7 +237,7 @@ void KConfigGroup::deleteGroup(WriteConfigFlags flags)
 {
     Q_ASSERT(!d->bConst);
 
-    config()->deleteGroup(d->fullName().constData(), flags);
+    config()->deleteGroup(d->fullName(), flags);
 }
 
 void KConfigGroup::changeGroup( const QString &group )
@@ -306,7 +306,7 @@ bool KConfigGroup::entryIsImmutable(const QString& key) const
 
 QString KConfigGroup::readEntryUntranslated( const QByteArray& key, const QString& aDefault ) const
 {
-    QString result = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::EntryOptions(), 0);
+    QString result = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags(), 0);
     if (result.isNull())
         return aDefault;
     return result;
@@ -410,14 +410,10 @@ QString KConfigGroupPrivate::expandString(const QString& value)
 template <>
 QString KConfigGroup::readEntry<QString>( const QByteArray& key, const QString& aDefault ) const
 {
-    const char *pKey = key.constData();
-    if ( !hasKey(pKey) )
-        return aDefault;
-
     bool expand = false;
 
     // read value from the entry map
-    QString aValue = config()->d_func()->lookupData(d->fullName().constData(), pKey, KEntryMap::SearchLocalized,
+    QString aValue = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchLocalized,
                                            &expand);
     if (aValue.isNull())
         aValue = aDefault;
@@ -624,7 +620,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
 template<>
 QVariant KConfigGroup::readEntry<QVariant>( const QByteArray &key, const QVariant &aDefault ) const
 {
-    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::EntryOptions());
+    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags());
     if (data.isNull())
         return aDefault;
 
@@ -638,7 +634,7 @@ QVariant KConfigGroup::readEntry<QVariant>( const QByteArray &key, const QVarian
 template<>
 QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const QVariantList& aDefault) const
 {
-    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::EntryOptions());
+    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags());
 
     if (data.isNull())
         return aDefault;
@@ -673,8 +669,8 @@ QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const
     }
 
     QVariantList value;
-    foreach(const QByteArray& v, list)
-        value << QString::fromUtf8(QByteArray(v).replace("\\,", ","));
+    foreach(QByteArray v, list)
+        value << QString::fromUtf8(v.replace("\\,", ","));
 
     return value;
 }
@@ -720,7 +716,7 @@ QStringList KConfigGroup::readEntry(const QByteArray &key, const QStringList& aD
 
 QStringList KConfigGroup::readEntry(const QString& pKey, const QStringList& aDefault, char sep) const
 {
-    return readEntry(pKey.toUtf8().constData(), aDefault, sep);
+    return readEntry(pKey.toUtf8(), aDefault, sep);
 }
 
 QStringList KConfigGroup::readEntry(const char *key, const QStringList& aDefault, char sep) const
@@ -849,12 +845,12 @@ void KConfigGroup::writeEntry<QByteArray>( const QByteArray &key, const QByteArr
 {
     Q_ASSERT(!d->bConst);
 
-    config()->d_func()->putData(d->fullName(), key, value, flags);
+    config()->d_func()->putData(d->fullName(), key, value.isNull()? QByteArray(""): value, flags);
 }
 
 void KConfigGroup::deleteEntry(const QByteArray& key, WriteConfigFlags flags)
 {
-   config()->d_func()->putData(d->fullName(), key, QByteArray(), flags, KConfigPrivate::Delete);
+   config()->d_func()->putData(d->fullName(), key, QByteArray(), flags);
 }
 
 void KConfigGroup::deleteEntry( const QString& key, WriteConfigFlags flags)
@@ -1009,7 +1005,7 @@ QByteArray KConfigGroupPrivate::convertList(const QList<QByteArray> &list, char 
 {
     const QByteArray escaped = QByteArray(1, '\\') + sep;
 
-    QByteArray value;
+    QByteArray value = "";
 
     if (!list.isEmpty()) {
         QList<QByteArray>::ConstIterator it = list.constBegin();
@@ -1039,8 +1035,7 @@ void KConfigGroup::revertToDefault(const QByteArray& key)
     const QByteArray theDefault = config()->d_func()->lookupData(d->fullName(), key,
                       KEntryMap::SearchDefaults|KEntryMap::SearchLocalized);
 
-    config()->d_func()->putData(d->fullName(), key, theDefault, KConfig::Normal,
-                                theDefault.isNull() ? KConfigPrivate::Delete : KConfigPrivate::NoFlag);
+    config()->d_func()->putData(d->fullName(), key, theDefault, KConfig::Normal);
 }
 
 void KConfigGroup::revertToDefault(const char *key)
@@ -1056,7 +1051,6 @@ void KConfigGroup::revertToDefault(const QString &key)
 bool KConfigGroup::hasDefault(const QByteArray& key) const
 {
     KEntryMap::SearchFlags flags = KEntryMap::SearchDefaults|KEntryMap::SearchLocalized;
-    flags |= KEntryMap::SearchLocalized;
 
     return !config()->d_func()->lookupData(d->fullName(), key, flags).isNull();
 }
@@ -1174,7 +1168,7 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QString &path, Wr
 {
     Q_ASSERT(!d->bConst);
 
-    config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, KConfigPrivate::Expand);
+    config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, true);
 }
 
 void KConfigGroup::writePathEntry(const QString &key, const QStringList &value, char sep, WriteConfigFlags flags)
@@ -1195,7 +1189,7 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &valu
     foreach(const QString& path, value)
         list << translatePath(path).toUtf8();
 
-    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::convertList(list, sep), flags, KConfigPrivate::Expand);
+    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::convertList(list, sep), flags, true);
 }
 
 QStringList KConfigGroup::groupList() const

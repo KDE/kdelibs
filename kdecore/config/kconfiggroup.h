@@ -548,7 +548,7 @@ void KConfigGroup::writeListCheck( const QByteArray &key, const QList<T>& list,
   Q_FOREACH(const T &value, list)
     vList.append(value);
 
-  writeEntry( key, QVariant(vList), pFlags );
+  writeEntry( key, vList, pFlags );
 }
 
 template <typename T>

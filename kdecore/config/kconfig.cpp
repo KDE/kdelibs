@@ -633,7 +633,7 @@ bool KConfigPrivate::canWriteEntry(const QByteArray& group, const QByteArray& ke
 }
 
 void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
-                      const QByteArray& value, KConfigBase::WriteConfigFlags flags, ExtendedWriteFlags extendedFlags)
+                      const QByteArray& value, KConfigBase::WriteConfigFlags flags, bool expand)
 {
     // the KConfig object is dirty now
     // set this before any IO takes place so that if any derivative
@@ -650,26 +650,28 @@ void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
         options |= KEntryMap::EntryLocalized;
     if (flags& KConfigBase::Persistent)
         options |= KEntryMap::EntryDirty;
-    if (extendedFlags & Expand)
-        options |=KEntryMap::EntryExpansion;
+    if (expand)
+        options |= KEntryMap::EntryExpansion;
 
-    if (extendedFlags & Delete) // deleting entry
+    if (value.isNull()) // deleting entry
         options |= KEntryMap::EntryDeleted;
 
     entryMap.setEntry(group, key, value, options);
 }
 
-QByteArray KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key, int flags) const
+QByteArray KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key,
+                                      KEntryMap::SearchFlags flags) const
 {
-    KEntryMapConstIterator it = entryMap.findEntry(group, key, KEntryMap::SearchFlags(flags));
+    KEntryMapConstIterator it = entryMap.findEntry(group, key, flags);
     if (it == entryMap.constEnd())
         return QByteArray();
     return it->mValue;
 }
 
-QString KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key, int flags, bool *expand) const
+QString KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key,
+                                   KEntryMap::SearchFlags flags, bool *expand) const
 {
-    return entryMap.getEntry(group, key, QString(), KEntryMap::SearchFlags(flags), expand);
+    return entryMap.getEntry(group, key, QString(), flags, expand);
 }
 
 void KConfig::virtual_hook(int /*id*/, void* /*data*/)

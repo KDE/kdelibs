@@ -55,7 +55,7 @@ public:
     /** registers mappings from directory to configuration system
      * @param entryMap the KEntryMap to build the mappings from
      */
-    static void registerMappings(KEntryMap& entryMap);
+    static void registerMappings(const KEntryMap& entryMap);
 
     /** destroys the backend */
     virtual ~KConfigBackend();

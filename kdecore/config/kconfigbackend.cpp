@@ -49,14 +49,14 @@ public:
     QDateTime lastModified;
     QString localFileName;
 
-    static QString whatSystem(const QString& fileName)
+    static QString whatSystem(const QString& /*fileName*/)
     {
         return QLatin1String("INI");
     }
 };
 
 
-void KConfigBackend::registerMappings(KEntryMap& entryMap)
+void KConfigBackend::registerMappings(const KEntryMap& /*entryMap*/)
 {
 }
 
