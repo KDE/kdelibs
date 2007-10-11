@@ -1451,7 +1451,7 @@ CString UString::UTF8String() const
   }
 
   // Return the result as a C string.
-  CString result(buffer, p - buffer);
+  CString result(buffer.data(), p - buffer.data());
 
   return result;
 }
