@@ -84,6 +84,7 @@ KDE 3.x when you want to port them to KDE 4.0.<br>
 <li><a href="#mimetypes">Mime types names</a></li>
 <li><a href="#knewstuff">KNewStuff</a></li>
 <li><a href="#dcop">DCOP</a></li>
+<li><a href="#printing">Printing</a></li>
 </UL>
 
 <h3><a name="gettingstarted">Getting started</a></h3>
@@ -2956,6 +2957,41 @@ knewstuff/doc/porting.txt and knewstuff/doc/tutorial.txt.
 DCOP has been replaced with D-Bus.<br />
 Help with porting from DCOP to D-Bus can be found at
 <a href="http://techbase.kde.org/Development/Tutorials/Porting_to_D-Bus">http://techbase.kde.org/Development/Tutorials/Porting_to_D-Bus</a>
+
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
+
+
+<h3><a name="printing">Printing</a></h3>
+
+<p>libkdeprint has been replaced by enhanced printing support in Qt 4.  Qt 4.3
+is still lacking in a print preview feature and a customisable print dialog.
+KPrintPreview (kutils) provides the former, and KdePrint::createPrintDialog()
+(kdeui) provides the latter, at least for Qt 4.3.2 onwards.</p>
+
+<h4>Porting involves the following</h4>
+<ul>
+<li>using QPrinter instead of KPrinter</li>
+<li>using KdePrint::createPrintDialog() (in kdeui) to get a (customised) QPrintDialog, rather than using KPrinter::setup()</li>
+<li>using KPrintPreview (in kutils) for print preview, rather than KPrinter::setPreviewOnly(true)</li>
+<li>removing the dependency on libkdeprint</li>
+</ul>
+
+<p>If the code uses addDialogPage, you need to change the KPrintDialogPage to a
+QWidget, and you can get rid of the getOptions and setOptions methods in favor
+of a method for each option (since QPrintDialog doesn't do anything with the widget
+except display it). Then the code that called KPrinter::addDialogPage and
+KPrinter::setup needs to use KdePrint::createPrintDialog instead and get the options
+directly from the widgets passed to createPrintDialog rather than from the QPrinter.
+The widgets should also use setWindowTitle() rather than setTitle().</p>
+
+<h4>For more details, see the following:</h4>
+<ul>
+<li><a href="http://doc.trolltech.com/4.3/printing.html">Printing with Qt</a></li>
+<li><a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kutils/html/classKPrintPreview.html">KPrintPreview apidocs</a></li>
+<li><a href="http://api.kde.org/4.0-api/kdelibs-apidocs/kdeui/html/namespaceKdePrint.html">KdePrint::createPrintDialog apidocs</a></li>
+<li><a href="http://techbase.kde.org/Projects/KDEPrint/KDE4#Porting">KDEPrint Porting on TechBase</a></li>
+</ul>
+
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
