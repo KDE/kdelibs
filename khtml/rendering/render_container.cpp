@@ -163,11 +163,12 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
     KHTMLAssert(oldChild->parent() == this);
 
-    // So that we'll get the appropriate dirty bit set (either that a normal flow child got yanked or
-    // that a positioned child got yanked).  We also repaint, so that the area exposed when the child
-    // disappears gets repainted properly.
     if ( document()->renderer() ) {
-        oldChild->setNeedsLayoutAndMinMaxRecalc();
+        oldChild->setNeedsLayoutAndMinMaxRecalc(); // Dirty the containing block chain
+        oldChild->setNeedsLayout( false ); // The child itself does not need to layout - it's going away.
+
+        // Repaint, so that the area exposed when the child
+        // disappears gets repainted properly.
         oldChild->repaint();
 
         // Keep our layer hierarchy updated.
@@ -483,11 +484,11 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
 
     newChild->setNeedsLayoutAndMinMaxRecalc(); // Goes up the containing block hierarchy.
 
-    // We may supply the static position for an absolute positioned child.
-    if (!normalChildNeedsLayout() && !newChild->isText()) {
-        if (newChild->firstChild() || newChild->isPosWithStaticDim())
+    if (!normalChildNeedsLayout()) {
+        // We may supply the static position for an absolute positioned child.
+        if (newChild->firstChild() || newChild->isPosWithStaticDim() || !newChild->isPositioned())
             setChildNeedsLayout(true);
-        else if (newChild->isPositioned()) {
+        else {
             assert(!newChild->inPosObjectList());
             newChild->containingBlock()->insertPositionedObject(newChild);
         }
@@ -524,11 +525,12 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
         dirtyLinesFromChangedChild(child);
 
     child->setNeedsLayoutAndMinMaxRecalc();
-    // We may supply the static position for an absolute positioned child.
-    if (!normalChildNeedsLayout() && !child->isText()) {
-        if (child->firstChild() || child->isPosWithStaticDim())
+
+    if (!normalChildNeedsLayout()) {
+        // We may supply the static position for an absolute positioned child.
+        if (child->firstChild() || child->isPosWithStaticDim() || !child->isPositioned())
             setChildNeedsLayout(true);
-        else if (child->isPositioned()) {
+        else {
             assert(!child->inPosObjectList());
             child->containingBlock()->insertPositionedObject(child);
         }

@@ -1202,7 +1202,7 @@ void RenderText::setText(DOMStringImpl *text, bool force)
     KHTMLAssert(!isBR() || (str->l == 1 && (*str->s) == '\n'));
     KHTMLAssert(!str->l || str->s);
 
-    setNeedsLayoutAndMinMaxRecalc();
+    if (parent()) setNeedsLayoutAndMinMaxRecalc();
 #ifdef BIDI_DEBUG
     QString cstr = QString::fromRawData(str->s, str->l);
     kDebug( 6040 ) << "RenderText::setText( " << cstr.length() << " ) '" << cstr << "'";
