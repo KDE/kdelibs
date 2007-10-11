@@ -26,6 +26,7 @@
 
 #include "JSImmediate.h"
 #include "ustring.h"
+#include <wtf/Noncopyable.h>
 #include <stddef.h> // for size_t
 
 #ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
@@ -52,7 +53,7 @@ class JSCell;
  * only (all of which are provided internally by KJS). Instead, inherit from
  * JSObject.
  */
-class KJS_EXPORT JSValue {
+class KJS_EXPORT JSValue : Noncopyable {
     friend class JSCell; // so it can derive from this class
     friend class Collector; // so it can call asCell()
 
@@ -98,6 +99,9 @@ public:
     int32_t toInt32(ExecState*, bool& ok) const;
     uint32_t toUInt32(ExecState *exec) const;
     uint16_t toUInt16(ExecState *exec) const;
+
+    // Floating point conversions.
+    float toFloat(ExecState*) const;
 
     // Garbage collection.
     void mark();

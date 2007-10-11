@@ -466,12 +466,12 @@ void PrefixErrorNode::streamTo(SourceStream& s) const
 
 void UnaryPlusNode::streamTo(SourceStream &s) const
 {
-  s << '+' << expr;
+  s << "+ " << expr;
 }
 
 void NegateNode::streamTo(SourceStream &s) const
 {
-  s << '-' << expr;
+  s << "- " << expr;
 }
 
 void BitwiseNotNode::streamTo(SourceStream &s) const
@@ -664,14 +664,14 @@ void VarDeclNode::streamTo(SourceStream &s) const
 
 void VarDeclListNode::streamTo(SourceStream &s) const
 {
-  s << var;
+  s << "var " << var;
   for (VarDeclListNode *n = next.get(); n; n = n->next.get())
     s << ", " << n->var;
 }
 
 void VarStatementNode::streamTo(SourceStream &s) const
 {
-  s << SourceStream::Endl << "var " << next << ';';
+  s << SourceStream::Endl << next << ';';
 }
 
 void StaticVarStatementNode::streamTo(SourceStream &s) const
@@ -720,7 +720,7 @@ void WhileNode::streamTo(SourceStream &s) const
 void ForNode::streamTo(SourceStream &s) const
 {
   s << SourceStream::Endl << "for ("
-    << expr1  // TODO: doesn't properly do "var i = 0"
+    << expr1
     << "; " << expr2
     << "; " << expr3
     << ')' << SourceStream::Indent << statement << SourceStream::Unindent;
@@ -734,8 +734,6 @@ void ForInNode::streamTo(SourceStream &s) const
   else
     s << lexpr;
 
-  if (init)
-    s << " = " << init;
   s << " in " << expr << ')' << SourceStream::Indent
     << statement << SourceStream::Unindent;
 }

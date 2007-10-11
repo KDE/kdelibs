@@ -97,6 +97,11 @@ uint16_t JSValue::toUInt16(ExecState *exec) const
     return KJS::toUInt16(const_cast<JSValue*>(this)->toNumber(exec));
 }
 
+float JSValue::toFloat(ExecState* exec) const
+{
+    return static_cast<float>(toNumber(exec));
+}
+
 bool JSCell::getNumber(double &numericValue) const
 {
     if (!isNumber())
