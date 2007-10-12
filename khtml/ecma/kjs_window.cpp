@@ -36,7 +36,6 @@
 #include <config.h>
 
 #include <QtCore/QTimer>
-#include <Qt3Support/Q3PaintDeviceMetrics>
 #include <QtGui/QApplication>
 #include <kdebug.h>
 #include <kmessagebox.h>
