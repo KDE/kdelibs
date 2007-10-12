@@ -435,10 +435,11 @@ public:
      *
      * This is only useful for configuration modules such as krdb and should not be
      * used in normal circumstances.
+     * @param config KConfig from which to load the colors (passed as-is to
+     * ::KColorScheme).
      *
      * @return the QPalette
      */
-    // TODO should the parameter be documented, or should it be hidden from doxygen?
     static QPalette createApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
