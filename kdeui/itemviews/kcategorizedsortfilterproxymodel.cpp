@@ -130,10 +130,10 @@ void KCategorizedSortFilterProxyModel::setSourceModel(QAbstractItemModel *source
 
 void KCategorizedSortFilterProxyModel::sort(int column, Qt::SortOrder order)
 {
+    emit layoutAboutToBeChanged();
+
     d->sortColumn = column;
     d->sortOrder = order;
-
-    emit layoutAboutToBeChanged();
 
     QModelIndexList sourceIndexes = d->storePersistentIndexes();
 
