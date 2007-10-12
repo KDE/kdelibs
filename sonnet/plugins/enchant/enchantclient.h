@@ -25,7 +25,7 @@
 
 #include <QtCore/QSet>
 #include <QtCore/QVariantList>
-#include <enchant/enchant.h>
+#include <enchant.h>
 
 namespace Sonnet {
     class SpellerPlugin;

@@ -22,7 +22,7 @@
 
 #include "spellerplugin_p.h"
 
-#include <enchant/enchant.h>
+#include <enchant.h>
 
 class QSpellEnchantDict : public Sonnet::SpellerPlugin
 {
