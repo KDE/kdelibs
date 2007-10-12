@@ -538,16 +538,7 @@ UString DOMNode::toString(ExecState *) const
 {
   if (m_impl.isNull())
     return "null";
-  UString s;
-
-
-  if ( m_impl->isElementNode() ) {
-    DOM::ElementImpl* e = static_cast<DOM::ElementImpl*>(impl());
-    s = DOMString(e->nodeName().string());
-  } else
-    s = className(); // fallback
-
-  return "[object " + s + "]";	//krazy:exclude=doublequote_chars DOM demands chars
+  return "[object " + className() + "]";	//krazy:exclude=doublequote_chars DOM demands chars
 }
 
 void DOMNode::setListener(ExecState *exec, int eventId, ValueImp* func) const
@@ -1211,7 +1202,7 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   return false;
 }
 
-ValueImp *DOMElement::attributeGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *DOMElement::attributeGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   DOMElement *thisObj = static_cast<DOMElement *>(slot.slotBase());
 
