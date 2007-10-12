@@ -1154,7 +1154,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   button->setIcon( KIcon("color-picker"));
   int commonHeight = addButton->sizeHint().height();
   button->setMinimumHeight( commonHeight );
-  kDebug() << commonHeight;
+  //kDebug() << commonHeight;
   button->setIconSize(QSize(commonHeight, commonHeight));
   l_hbox->addWidget(button, 0, Qt::AlignHCenter );
   connect( button, SIGNAL( clicked()), SLOT( slotColorPicker()));
