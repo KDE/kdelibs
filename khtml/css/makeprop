@@ -49,7 +49,7 @@ do { gsub("-", "_"); print "#define '$NS'CSS_PROP_" toupper($0) " " i; i = i + 1
 print ""; \
 print "#define '$NS'CSS_PROP_TOTAL " (i + 1 - '$num') \
 }' >> "$prefix"cssproperties.h
-perl -e 'my $max = 0; while (<>) { chomp; $max = length if $ ax < length; } print "const size_t max'$NS'CSSPropertyNameLength = $max;\n"' < "$prefix"cssproperties.strip >> "$prefix"cssproperties.h
+perl -e 'my $max = 0; while (<>) { chomp; $max = length if $max < length; } print "const size_t max'$NS'CSSPropertyNameLength = $max;\n"' < "$prefix"cssproperties.strip >> "$prefix"cssproperties.h
 
 gperf -a -L 'ANSI-C' -E -C -c -o -t -k '*' -NfindProp"$NS" -Hhash_prop"$prefix" -Wwordlist_prop"$prefix" -D -s 2 "$prefix"cssproperties.gperf > "$prefix"cssproperties.c || exit 1
 echo -e '#endif\n' >> "$prefix"cssproperties.h
