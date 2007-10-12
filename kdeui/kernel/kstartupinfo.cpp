@@ -640,7 +640,7 @@ void KStartupInfo::handleAutoAppStartedSending()
 
 void KStartupInfo::setNewStartupId( QWidget* window, const QByteArray& startup_id )
     {
-    long activate = true;
+    bool activate = true;
     kapp->setStartupId( startup_id );
 #ifdef Q_WS_X11
     if( window != NULL )
@@ -1018,9 +1018,9 @@ QByteArray KStartupInfo::createNewStartupId()
     if (!gethostname( hostname, 255 ))
 	hostname[sizeof(hostname)-1] = '\0';
 #ifdef Q_WS_X11
-    long qt_x_user_time = QX11Info::appUserTime();
+    unsigned long qt_x_user_time = QX11Info::appUserTime();
 #else
-    long qt_x_user_time = 0;
+    unsigned long qt_x_user_time = 0;
 #endif
     QByteArray id = QString::fromLatin1( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
         .arg( tm.tv_usec ).arg( getpid()).arg( qt_x_user_time ).toUtf8();
@@ -1151,7 +1151,9 @@ unsigned long KStartupInfoId::timestamp() const
     if( pos >= 0 )
         {
         bool ok;
-        long time = QString( d->id.mid( pos + 5 ) ).toLong( &ok );
+        unsigned long time = QString( d->id.mid( pos + 5 ) ).toULong( &ok );
+        if( !ok && d->id[ pos + 5 ] == '-' ) // try if it's as a negative signed number perhaps
+            time = QString( d->id.mid( pos + 5 ) ).toLong( &ok );
         if( ok )
             return time;
         }
@@ -1166,7 +1168,9 @@ unsigned long KStartupInfoId::timestamp() const
         if( pos2 >= 0 )
             {
             bool ok;
-            long time = QString( d->id.mid( pos2 + 1, pos1 - pos2 - 1 ) ).toLong( &ok );
+            unsigned long time = QString( d->id.mid( pos2 + 1, pos1 - pos2 - 1 ) ).toULong( &ok );
+            if( !ok && d->id[ pos2 + 1 ] == '-' )
+                time = QString( d->id.mid( pos2 + 1, pos1 - pos2 - 1 ) ).toLong( &ok );
             if( ok )
                 return time;
             }
