@@ -1393,13 +1393,15 @@ void KDirOperator::setCurrentItem(const QString& filename)
     }
 
     QItemSelectionModel *selModel = d->itemView->selectionModel();
-    selModel->clear();
-    if (!item.isNull()) {
-        const QModelIndex dirIndex = d->dirModel->indexForItem(item);
-        const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
-        selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
-        selModel->select(proxyIndex, QItemSelectionModel::Select);
-        d->_k_assureVisibleSelection();
+    if (selModel) {
+        selModel->clear();
+        if (!item.isNull()) {
+            const QModelIndex dirIndex = d->dirModel->indexForItem(item);
+            const QModelIndex proxyIndex = d->proxyModel->mapFromSource(dirIndex);
+            selModel->setCurrentIndex(proxyIndex, QItemSelectionModel::Select);
+            selModel->select(proxyIndex, QItemSelectionModel::Select);
+            d->_k_assureVisibleSelection();
+        }
     }
 }
 
