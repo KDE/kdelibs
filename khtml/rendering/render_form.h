@@ -402,6 +402,12 @@ class ListBoxWidget: public KListWidget, public KHTMLWidget
 { 
 public:
     ListBoxWidget(QWidget* p): KListWidget(p) { m_kwp->setIsRedirected(true); }
+protected:
+    void scrollContentsBy(int, int)
+    {
+        viewport()->update();
+    }
+        
 };
 
 class RenderSelect : public RenderFormElement
