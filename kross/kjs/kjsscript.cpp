@@ -78,8 +78,15 @@ namespace Kross {
     class KjsScriptPrivate
     {
         public:
-            /// One engine per script to have them clean separated.
+            /**
+            * One engine per script to have them clean separated.
+            */
             KJSEmbed::Engine* m_engine;
+
+            /**
+            * The KJS objects that got published.
+            */
+            QList< KJS::JSObject* > m_publishedObjects;
 
             /**
             * List of QObject instances that should be
@@ -115,15 +122,16 @@ namespace Kross {
             }
 
             /// Publish a QObject to a KJSEmbed::Engine.
-            void publishObject(KJS::ExecState* exec, const QString &name, QObject* object)
+            bool publishObject(KJS::ExecState* exec, const QString &name, QObject* object)
             {
                 Q_UNUSED(exec);
 
                 KJS::JSObject* obj = m_engine->addObject(object, name.isEmpty() ? object->objectName() : name);
                 if( ! obj ) {
                     krosswarning( QString("Failed to publish the QObject name=\"%1\" objectName=\"%2\"").arg(name).arg(object ? object->objectName() : "NULL") );
-                    return;
+                    return false;
                 }
+                m_publishedObjects << obj;
 
                 /*
                 bool restricted = interpreter()->interpreterInfo()->optionValue("restricted", true).toBool();
@@ -143,6 +151,7 @@ namespace Kross {
                     );
                 }
                 */
+                return true;
             }
 
     };
@@ -215,8 +224,24 @@ bool KjsScript::initialize()
 
 void KjsScript::finalize()
 {
+    KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
+    KJS::ExecState* exec = kjsinterpreter->globalExec();
+
+    foreach(KJS::JSObject* kjsobj, d->m_publishedObjects) {
+        KJSEmbed::QObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, kjsobj);
+        Q_ASSERT(imp);
+        QObject* obj = imp->object<QObject>();
+        Q_ASSERT(obj);
+        foreach(QObject* child, obj->children())
+            if( KJSEmbed::SlotProxy* proxy = dynamic_cast< KJSEmbed::SlotProxy* >( child ) )
+                delete proxy;
+        delete kjsobj;
+    }
+    d->m_publishedObjects.clear();
+
     d->m_autoconnect.clear();
     d->m_defaultFunctionNames.clear();
+
     delete d->m_engine;
     d->m_engine = 0;
 }
