@@ -77,8 +77,7 @@ void RenderCanvasImage::createDrawingContext()
         setHeight( cHeight );
     }
     m_drawnImage = new QImage( cWidth, cHeight, QImage::Format_ARGB32_Premultiplied );
-    //### clear color is bogus
-    //m_drawnImage->fill( 0xffffffff );
+    m_drawnImage->fill( 0x00000000 ); // "The canvas must be initially fully transparent black"
     m_drawingContext = new QPainter( m_drawnImage );
     m_drawingContext->setRenderHint( QPainter::Antialiasing );
 }
