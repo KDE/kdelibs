@@ -284,6 +284,8 @@ NodeImpl *HTMLCollectionImpl::nextNamedItem( const DOMString &name ) const
 
 QList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) const
 {
+    if (name.isEmpty())
+        return QList<NodeImpl*>();
     QString key = name.string();
 
     //We use a work-conserving design for the name cache presently -- only

@@ -318,7 +318,7 @@ ValueImp *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier&
   return Undefined();
 }
 
-ValueImp *HTMLDocument::frameNameGetter(ExecState *exec, JSObject*, const Identifier& name, const PropertySlot& slot)
+ValueImp *HTMLDocument::frameNameGetter(ExecState*, JSObject*, const Identifier& name, const PropertySlot& slot)
 {
   HTMLDocument *thisObj = static_cast<HTMLDocument*>(slot.slotBase());
   KHTMLView *view      = thisObj->impl()->view();
@@ -2961,6 +2961,8 @@ bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &
 #ifdef KJS_VERBOSE
   kDebug(6070) << "KJS::HTMLCollection::getOwnPropertySlot " << propertyName.ascii();
 #endif
+  if (propertyName.isEmpty())
+    return false;
   if (propertyName == exec->propertyNames().length)
   {
 #ifdef KJS_VERBOSE
@@ -3008,7 +3010,7 @@ ValueImp* KJS::HTMLCollection::callAsFunction(ExecState *exec, ObjectImp *, cons
     // support for document.all(<index>) etc.
     bool ok;
     UString s = args[0]->toString(exec);
-    unsigned int u = s.toUInt32(&ok);
+    unsigned int u = s.toUInt32(&ok, false);
     if (ok)
       return getDOMNode(exec, collection.item(u));
     // support for document.images('<name>') etc.
@@ -3018,7 +3020,7 @@ ValueImp* KJS::HTMLCollection::callAsFunction(ExecState *exec, ObjectImp *, cons
   {
     bool ok;
     UString s = args[0]->toString(exec);
-    unsigned int u = args[1]->toString(exec).toUInt32(&ok);
+    unsigned int u = args[1]->toString(exec).toUInt32(&ok, false);
     if (ok)
     {
       DOM::DOMString pstr = s.domString();
@@ -3079,7 +3081,7 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
     // support for item(<index>) (DOM)
     UString s = args[0]->toString(exec);
     bool ok;
-    unsigned int u = s.toUInt32(&ok);
+    unsigned int u = s.toUInt32(&ok, false);
     if (ok) {
       return getDOMNode(exec,coll.item(u));
     }
@@ -3141,13 +3143,13 @@ KJS::HTMLSelectCollection::HTMLSelectCollection(ExecState *exec, DOM::HTMLCollec
                                                 DOM::HTMLSelectElementImpl* e)
       : HTMLCollection(HTMLSelectCollectionProto::self(exec), c), element(e) { }
 
-ValueImp *HTMLSelectCollection::selectedIndexGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *HTMLSelectCollection::selectedIndexGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
     return Number(thisObj->element->selectedIndex());
 }
 
-ValueImp *HTMLSelectCollection::selectedValueGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *HTMLSelectCollection::selectedValueGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
     return String(thisObj->element->value());
