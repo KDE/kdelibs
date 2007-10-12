@@ -1195,11 +1195,18 @@ void RenderSelect::layout( )
         int width = 0;
         int height = 0;
 
+        QAbstractItemModel *m = w->model();
+        QAbstractItemDelegate *d = w->itemDelegate();
+        QStyleOptionViewItem so;
+        so.font = w->font();
+
         for ( int rowIndex = 0 ; rowIndex < w->count() ; rowIndex++ ) {
-            QListWidgetItem* p = w->item(0);
-            width = qMax(width, p->listWidget()->visualItemRect(p).width());
-            height = qMax(height, p->listWidget()->visualItemRect(p).height());
+            QModelIndex mi = m->index(rowIndex, 0);
+            QSize s = d->sizeHint( so, mi);
+            width = qMax(width, s.width());
+            height = qMax(height, s.height());
         }
+
         if ( !height )
             height = w->fontMetrics().height();
         if ( !width )
