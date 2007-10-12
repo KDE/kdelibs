@@ -257,15 +257,15 @@ li {
         display: list-item;
 }
 
-ul   ul ul,   ul   ol ul,     ul   menu ul,   ul   dir ul, 
+ul   ul ul,   ul   ol ul,     ul   menu ul,   ul   dir ul,
 ol   ul ul,   ol   ol ul,     ol   menu ul,   ol   dir ul,
 menu ul ul,   menu ol ul,     menu menu ul,   menu dir ul,
 dir  ul ul,   dir  ol ul,     dir  menu ul,   dir  dir ul,
-ul   ul menu, ul   ol menu,   ul   menu menu, ul   dir menu, 
+ul   ul menu, ul   ol menu,   ul   menu menu, ul   dir menu,
 ol   ul menu, ol   ol menu,   ol   menu menu, ol   dir menu,
 menu ul menu, menu ol menu,   menu menu menu, menu dir menu,
 dir  ul menu, dir  ol menu,   dir  menu menu, dir  dir menu,
-ul   ul dir,  ul   ol dir,    ul   menu dir,  ul   dir dir, 
+ul   ul dir,  ul   ol dir,    ul   menu dir,  ul   dir dir,
 ol   ul dir,  ol   ol dir,    ol   menu dir,  ol   dir dir,
 menu ul dir,  menu ol dir,    menu menu dir,  menu dir dir,
 dir  ul dir,  dir  ol dir,    dir  menu dir,  dir  dir dir
@@ -273,10 +273,10 @@ dir  ul dir,  dir  ol dir,    dir  menu dir,  dir  dir dir
   list-style-type: square;
 }
 
-ul   ul, ul   ol, ul   menu, ul   dir,
-ol   ul, ol   ol, ol   menu, ol   dir,
-menu ul, menu ol, menu menu, menu dir,
-dir  ul, dir  ol, dir  menu, dir  dir
+ul   ul, ul   menu, ul   dir,
+ol   ul, ol   menu, ol   dir,
+menu ul, menu menu, menu dir,
+dir  ul, dir  menu, dir  dir
 {
   list-style-type: circle;
 }
