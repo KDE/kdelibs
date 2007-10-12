@@ -31,6 +31,7 @@
 #include <krandom.h>
 
 #include <Soprano/Client/DBusClient>
+#include <Soprano/Client/DBusModel>
 #include <Soprano/Node>
 #include <Soprano/Statement>
 #include <Soprano/DummyModel>
