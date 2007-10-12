@@ -22,6 +22,7 @@
 #include <assert.h>
 
 #include "kurlnavigator.h"
+#include "kdirsortfilterproxymodel.h"
 
 #include <kio/job.h>
 #include <kio/jobclasses.h>
@@ -346,8 +347,14 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
 
         ++it;
     }
+}
 
-    m_subdirs.sort();
+/**
+ * Helper function for listJobFinished
+ */
+static bool naturalLessThan(const QString& s1, const QString& s2)
+{
+    return KDirSortFilterProxyModel::naturalCompare(s1.toLower(), s2.toLower()) < 0;
 }
 
 void KUrlNavigatorButton::listJobFinished(KJob* job)
@@ -362,6 +369,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
         return;
     }
 
+    qSort(m_subdirs.begin(), m_subdirs.end(), naturalLessThan);
     setDisplayHintEnabled(PopupActiveHint, true);
     update(); // ensure the button is drawn highlighted
 
