@@ -3086,7 +3086,7 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
 
     // support for item('<name>') (IE only)
     kWarning() << "non-standard HTMLCollection.item('" << s.ascii() << "') called, use namedItem instead";
-    return getDOMNode(exec,coll.namedItem(s.domString()));
+    return static_cast<HTMLCollection *>(thisObj)->getNamedItems(exec, Identifier(s));
   }
   case KJS::HTMLCollection::Tags:
   {
