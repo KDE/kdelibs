@@ -57,6 +57,7 @@ namespace KJSEmbed
             QByteArray m_stringData;
             KJS::Interpreter *m_interpreter;
             KJS::JSObject *m_object;
+            QVariant m_tmpResult;
     };
 }
 #endif

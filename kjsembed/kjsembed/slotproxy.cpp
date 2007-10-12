@@ -110,6 +110,9 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
     KJS::JSValue *retValue;
     if ( !fun->implementsCall() )
     {
+#ifdef DEBUG_SLOTPROXY
+        qDebug() << "SlotProxy::callMethod got bad handler";
+#endif
         QString msg = i18n( "Bad slot handler: Object %1 Identifier %2 Method %3 Signature: %4.",
                             m_object->className().ascii(),
                             id.ascii(),
@@ -123,6 +126,9 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
     
     if( exec->hadException() )
     {
+#ifdef DEBUG_SLOTPROXY
+        qDebug() << "SlotProxy::callMethod had exception";
+#endif
         if (m_interpreter->shouldPrintExceptions())
         {
             KJS::JSLock lock;
@@ -289,7 +295,7 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
 
 int SlotProxy::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-#if defined(DEBUG_SLOTPROXY) && (DEBUG_SLOTPROXY > 1)
+#ifdef DEBUG_SLOTPROXY
 	qDebug("SlotProxy::qt_metacall(_c=%d, _id=%d, _a=%p _a[0]=%p _a[1]=%p) obj=", _c, _id, _a, _a[0], _a[1], this);
 #endif
     _id = QObject::qt_metacall(_c, _id, _a);
@@ -299,11 +305,16 @@ int SlotProxy::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     {
         switch (_id)
         {
-            case 0:
+            case 0: {
                 // invoke js method here
                 QByteArray method = m_signature.left(m_signature.indexOf('('));
-                callMethod(method, _a);
-                break;
+                KJS::JSValue *result = callMethod(method, _a);
+                m_tmpResult = convertToVariant(m_interpreter->globalExec(), result);
+#ifdef DEBUG_SLOTPROXY
+                qDebug()<<"SlotProxy::qt_metacall result="<<m_tmpResult.toString();
+#endif
+                _a[0] = &(m_tmpResult);
+            } break;
         }
         _id -= 1;
     }
