@@ -23,6 +23,7 @@
 #include <Soprano/Statement>
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
+#include <Soprano/Client/DBusModel>
 #include <Soprano/Client/DBusClient>
 
 #include <QtCore/QDebug>
