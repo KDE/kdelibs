@@ -1096,7 +1096,7 @@ unsigned long KStartupInfoId::timestamp() const
             {
             bool ok;
             unsigned long time = d->id.mid( pos2 + 1, pos1 - pos2 - 1 ).toULong( &ok );
-            if( !ok && d->id[ pos + 5 ] == '-' ) // try if it's as a negative signed number perhaps
+            if( !ok && d->id[ pos2 + 1 ] == '-' ) // try if it's as a negative signed number perhaps
                 time = d->id.mid( pos2 + 1, pos1 - pos2 - 1 ).toLong( &ok );
             if( ok )
                 return time;
