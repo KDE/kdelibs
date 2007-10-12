@@ -215,13 +215,6 @@ void RenderBox::detach()
     RenderArena* arena = renderArena();
 
     detachRemainingChildren();
-    
-    InlineBox* ph = placeHolderBox();
-    if (ph) {
-        ph->detach(arena);
-        setPlaceHolderBox( 0 );
-    }
-
     RenderContainer::detach();
 
     if (layer)

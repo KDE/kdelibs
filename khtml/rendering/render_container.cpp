@@ -193,6 +193,16 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
             canvas()->clearSelection();
     }
 
+    // remove and detach the place holder box
+    if (oldChild->isBox()) {
+        RenderBox* rb = static_cast<RenderBox*>(oldChild);
+        InlineBox* ph = rb->placeHolderBox();
+        if (ph) {
+            ph->detach(rb->renderArena());
+            rb->setPlaceHolderBox( 0 );
+        }
+    }
+
     // remove the child from the render-tree
     if (oldChild->previousSibling())
         oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
