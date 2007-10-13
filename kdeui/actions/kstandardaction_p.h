@@ -101,7 +101,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { KeyBindings,   KStandardShortcut::AccelNone, "options_configure_keybinding", I18N_NOOP("Configure S&hortcuts..."), 0,"configure-shortcuts" },
   { Preferences,   KStandardShortcut::AccelNone, "options_configure", I18N_NOOP("&Configure %1..."), 0, "configure" },
   { ConfigureToolbars, KStandardShortcut::AccelNone, "options_configure_toolbars", I18N_NOOP("Configure Tool&bars..."), 0,"configure-toolbars" },
-  { ConfigureNotifications, KStandardShortcut::AccelNone, "options_configure_notifications", I18N_NOOP("Configure &Notifications..."), 0, "knotify" },
+  { ConfigureNotifications, KStandardShortcut::AccelNone, "options_configure_notifications", I18N_NOOP("Configure &Notifications..."), 0, "preferences-desktop-notification" },
 
   // the idea here is that Contents is used in menus, and Help in dialogs, so both share the same
   // shortcut
