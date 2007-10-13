@@ -1730,19 +1730,33 @@ void KStyle::drawControl(ControlElement element, const QStyleOption* option, QPa
 
         case CE_ScrollBarAddPage:
         {
-            drawKStylePrimitive(WT_ScrollBar,
-                                (flags & State_Horizontal) ? ScrollBar::GrooveAreaHorRight :
-                                        ScrollBar::GrooveAreaVertBottom,
+            const QStyleOptionSlider* slOpt = ::qstyleoption_cast<const QStyleOptionSlider*>(option);
+            if (!slOpt) return;
+
+            if (flags & State_Horizontal)
+                drawKStylePrimitive(WT_ScrollBar,
+                                (slOpt->direction == Qt::LeftToRight) ? ScrollBar::GrooveAreaHorRight :
+                                        ScrollBar::GrooveAreaHorLeft,
                                 option, r, pal, flags, p, widget);
+            else
+                drawKStylePrimitive(WT_ScrollBar, ScrollBar::GrooveAreaVertBottom,
+                                                     option, r, pal, flags, p, widget);
             return;
         }
 
         case CE_ScrollBarSubPage:
         {
-            drawKStylePrimitive(WT_ScrollBar,
-                                (flags & State_Horizontal) ? ScrollBar::GrooveAreaHorLeft :
-                                        ScrollBar::GrooveAreaVertTop,
+            const QStyleOptionSlider* slOpt = ::qstyleoption_cast<const QStyleOptionSlider*>(option);
+            if (!slOpt) return;
+
+            if (flags & State_Horizontal)
+                drawKStylePrimitive(WT_ScrollBar,
+                                (slOpt->direction == Qt::LeftToRight) ? ScrollBar::GrooveAreaHorLeft :
+                                        ScrollBar::GrooveAreaHorRight,
                                 option, r, pal, flags, p, widget);
+            else
+                drawKStylePrimitive(WT_ScrollBar, ScrollBar::GrooveAreaVertTop,
+                                                     option, r, pal, flags, p, widget);
             return;
         }
 
