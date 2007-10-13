@@ -29,7 +29,7 @@
 //
 // KDE HTML Widget - Tokenizers
 
-//#define TOKEN_DEBUG 1
+#define TOKEN_DEBUG 1
 //#define TOKEN_DEBUG 2
 
 #include "htmltokenizer.h"
@@ -843,21 +843,23 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
                 uint tagID = khtml::getTagID(ptr, len);
                 if (!tagID) {
+                    DOMString tagName(ptr);
+                    DocumentImpl *doc = parser->docPtr();
+                    if (Element::khtmlValidQualifiedName(tagName))
+                        tagID = doc->getId(NodeImpl::ElementId, tagName.implementation(), false, false);
 #ifdef TOKEN_DEBUG
                     QByteArray tmp(ptr, len+1);
                     kDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"";
 #endif
-                    dest = buffer;
                 }
-                else
-                {
+                if (tagID) {
 #ifdef TOKEN_DEBUG
                     QByteArray tmp(ptr, len+1);
                     kDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data();
 #endif
                     currToken.tid = beginTag ? tagID : tagID + ID_CLOSE_TAG;
-                    dest = buffer;
                 }
+                dest = buffer;
                 tag = SearchAttribute;
                 cBufferPos = 0;
             }
@@ -1106,7 +1108,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             // unless we are using the HTML parser to parse XHTML
             // The only exception is SCRIPT and priority 0 tokens.
             if (tagID < ID_CLOSE_TAG && tagID != ID_SCRIPT &&
-                DOM::endTag[tagID] == DOM::REQUIRED &&
+                DOM::endTagRequirement(tagID) == DOM::REQUIRED &&
                 parser->doc()->htmlMode() != DocumentImpl::XHtml)
                 currToken.flat = false;
 

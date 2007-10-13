@@ -119,6 +119,8 @@ private:
 
     void pushBlock( int _id, int _level);
 
+    void generateImpliedEndTags( int _id );
+    void popOptionalBlock( int _id );
     void popBlock( int _id );
     void popOneBlock(bool delBlock = true);
     void popInlineBlocks();

@@ -1,3 +1,11 @@
+2007-10-13  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Update HTML-Parser to parse more HTML5 like, and allow custom HTML tags.
+
+        * html/dtd.{h,cpp}: Make all block elements more equal, treat custom tags like <SPAN>
+        * html/htmlparser.{h,cpp}: Treat actual close-tags differently than implicit close.
+        * html/htmltokenizer.cpp: Parse custom HTML tag
+
 2007-10-09  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Optimize the case of double descendant selectors "a b c",

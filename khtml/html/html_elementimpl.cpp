@@ -495,7 +495,7 @@ DOMString HTMLElementImpl::innerText() const
 DocumentFragment HTMLElementImpl::createContextualFragment( const DOMString &html )
 {
     // the following is in accordance with the definition as used by IE
-    if( endTag[id()] == FORBIDDEN )
+    if( endTagRequirement(id()) == FORBIDDEN )
         return DocumentFragment();
     // IE disallows innerHTML on inline elements.
     // I don't see why we should have this restriction, as our
@@ -582,7 +582,7 @@ void HTMLElementImpl::setInnerHTML( const DOMString &html, int &exceptioncode )
 void HTMLElementImpl::setInnerText( const DOMString &text, int& exceptioncode )
 {
     // following the IE specs.
-    if( endTag[id()] == FORBIDDEN ) {
+    if( endTagRequirement(id()) == FORBIDDEN ) {
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
         return;
     }
@@ -653,7 +653,7 @@ DOMString HTMLElementImpl::toString() const
 	DOMString result = openTagStartToString();
 	result += ">";	//krazy:exclude=doublequote_chars DOM demands chars
 
-	if (endTag[id()] == REQUIRED) {
+	if (endTagRequirement(id()) == REQUIRED) {
 	    result += "</";
 	    result += tagName();
 	    result += ">";	//krazy:exclude=doublequote_chars DOM demands chars

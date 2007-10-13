@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 2006 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2006-2007 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,6 @@
  */
 
 #include "html/dtd.h"
-#include "misc/htmlhashes.h"
 
 using namespace DOM;
 
@@ -35,23 +34,22 @@ using namespace DOM;
 //
 // 0 elements with forbidden close tag and text. They don't get pushed
 //   to the stack.
-// 1 inline elements
-// 2 form elements
-// 3 regular block level elements
-// 4 lists (OL UL DIR MENU)
-// 5 TD TH SELECT
-// 6 TR
-// 7 tbody thead tfoot caption  object
-// 8 table
-// 9 body frameset
-// 10 html
+// 1 formatting elements
+// 3 form nobr noscript
+// 5 phrasing elements
+// 6 TD TH SELECT
+// 7 TR
+// 8 tbody thead tfoot
+// 9 table
+// 10 body frameset head noembed noframes
+// 11 html
 
-const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
+const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
     0, // 0
     1, // ID_A == 1
     1, // ID_ABBR
     1, // ID_ACRONYM
-    3, // ID_ADDRESS
+    5, // ID_ADDRESS
     1, // ID_APPLET
     0, // ID_AREA
     1, // ID_B
@@ -70,16 +68,16 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     1, // ID_CODE
     0, // ID_COL
     1, // ID_COLGROUP
-    3, // ID_DD
+    5, // ID_DD
     1, // ID_DEL
     1, // ID_DFN
     5, // ID_DIR
     5, // ID_DIV
     5, // ID_DL
-    3, // ID_DT
+    5, // ID_DT
     1, // ID_EM
     0, // ID_EMBED
-    3, // ID_FIELDSET
+    5, // ID_FIELDSET
     1, // ID_FONT
     3, // ID_FORM
     0, // ID_FRAME
@@ -105,10 +103,10 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     1, // ID_LABEL
     1, // ID_LAYER
     1, // ID_LEGEND
-    3, // ID_LI
+    5, // ID_LI
     0, // ID_LINK
     1, // ID_MAP
-    3, // ID_MARQUEE
+    5, // ID_MARQUEE
     5, // ID_MENU
     0, // ID_META
     5, // ID_NOBR
@@ -120,7 +118,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     5, // ID_OL
     1, // ID_OPTGROUP
     2, // ID_OPTION
-    3, // ID_P
+    5, // ID_P
     0, // ID_PARAM
     5, // ID_PLAINTEXT
     5, // ID_PRE
@@ -136,7 +134,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     1, // ID_STYLE
     1, // ID_SUB
     1, // ID_SUP
-    9,// ID_TABLE
+    9, // ID_TABLE
     8, // ID_TBODY
     6, // ID_TD
     1, // ID_TEXTAREA
@@ -154,7 +152,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriority[] = {
     0, // ID_TEXT
 };
 
-const tagStatus DOM::endTag[] = {
+const tagStatus DOM::endTagArray[] = {
     REQUIRED,  // 0
     REQUIRED,  // ID_A == 1
     REQUIRED,  // ID_ABBR
@@ -372,7 +370,7 @@ static const ushort tag_list_quirk_block[] = {
 };
 
 
-static const ushort tag_list_7[] = {
+static const ushort tag_list_select[] = {
     ID_TEXT,
     ID_OPTGROUP,
     ID_OPTION,
@@ -381,7 +379,7 @@ static const ushort tag_list_7[] = {
     0
 };
 
-static const ushort tag_list_10[] = {
+static const ushort tag_list_frame[] = {
     ID_FRAMESET,
     ID_FRAME,
     ID_NOFRAMES,
@@ -389,7 +387,7 @@ static const ushort tag_list_10[] = {
     0
 };
 
-static const ushort tag_list_11[] = {
+static const ushort tag_list_head[] = {
     ID_SCRIPT,
     ID_STYLE,
     ID_META,
@@ -434,10 +432,13 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
 {
     //kDebug( 6030 ) << "checkChild: " << tagID << "/" << childID;
 
-    if (tagID >= 1000 || childID >= 1000)
-        return true; // one or both of the elements in an XML element; just allow for now
-
     if (childID == ID_COMMENT) return true;
+
+    // Treat custom elements the same as <span>.
+    if (tagID > ID_LAST_TAG)
+        tagID = ID_SPAN;
+    if (childID > ID_LAST_TAG)
+        childID = ID_SPAN;
 
     switch(tagID)
     {
@@ -475,7 +476,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         return check_flow(childID, true);
     case ID_P:
         // P: %inline *
-        return check_inline(childID, strict) || 
+        return check_inline(childID, strict) ||
                (!strict && childID == ID_TABLE );
     case ID_H1:
     case ID_H2:
@@ -507,11 +508,11 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         return check_flow(childID, strict);
     case ID_ADDRESS:
         // ADDRESS: %inline *
-        return check_inline(childID, strict) || 
+        return check_inline(childID, strict) ||
                (!strict && childID == ID_P);
     case ID_DT:
         // DT: %inline *
-        return check_inline(childID, strict) || 
+        return check_inline(childID, strict) ||
               (!strict && check_block(childID, true) && childID != ID_DL);
     case ID_LI:
     case ID_DIV:
@@ -533,7 +534,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         // DIV: %flow *
         return check_flow(childID, strict);
     case ID_MAP:
-        // MAP: ( %block | AREA ) + 
+        // MAP: ( %block | AREA ) +
         return check_block(childID, true) || childID == ID_AREA ||
                (!strict && childID == ID_SCRIPT);
     case ID_OBJECT:
@@ -548,16 +549,14 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         return check_flow(childID, true);
     case ID_DL:
         // DL: DT | DD +
-        return (childID == ID_DT || childID == ID_DD || childID == ID_TEXT) || 
-               (!strict && check_flow(childID, true));
+        return (childID == ID_DT || childID == ID_DD || check_flow(childID, strict));
     case ID_OL:
     case ID_UL:
     case ID_DIR:
     case ID_MENU:
         // OL: LI +
-        // For DIR and MENU, the DTD says - %block, but it contradicts spec language.. 
-        return (childID == ID_LI || childID == ID_TEXT) || 
-               (!strict && check_flow(childID, true));
+        // For DIR and MENU, the DTD says - %block, but it contradicts spec language..
+        return (childID == ID_LI || check_flow(childID, strict));
     case ID_FORM:
         // FORM: %flow * - FORM
         return check_flow(childID, strict);
@@ -572,7 +571,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         // Yes, consider it a hack (Dirk)
     case ID_SELECT:
         // SELECT: _7 +
-        return check_array(childID, tag_list_7);
+        return check_array(childID, tag_list_select);
     case ID_OPTGROUP:
         // OPTGROUP: OPTION +
         if(childID == ID_OPTION) return true;
@@ -624,10 +623,10 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
         return (childID == ID_TH || childID == ID_TD || childID == ID_SCRIPT);
     case ID_FRAMESET:
         // FRAMESET: _10
-        return check_array(childID, tag_list_10);
+        return check_array(childID, tag_list_frame);
     case ID_HEAD:
         // HEAD: _11
-        return check_array(childID, tag_list_11);
+        return check_array(childID, tag_list_head);
     case ID_HTML:
         // HTML: ( HEAD , COMMENT, ( BODY | ( FRAMESET & NOFRAMES ? ) ) )
         switch(childID)

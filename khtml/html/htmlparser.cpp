@@ -25,7 +25,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- HTML Parser
-// #define PARSER_DEBUG
+#define PARSER_DEBUG
 
 #include "htmlparser.h"
 
@@ -259,10 +259,6 @@ void KHTMLParser::parseToken(Token *t)
     {
         ElementImpl *e = static_cast<ElementImpl *>(n);
         e->setAttributeMap(t->attrs);
-
-        // take care of optional close tags
-        if(endTag[e->id()] == DOM::OPTIONAL)
-            popBlock(t->tid);
     }
 
     // if this tag is forbidden inside the current context, pop
@@ -282,7 +278,7 @@ void KHTMLParser::parseToken(Token *t)
     }
 
     // the tokenizer needs the feedback for space discarding
-    if ( tagPriority[t->tid] == 0 )
+    if ( tagPriority(t->tid) == 0 )
 	t->flat = true;
 
     if ( !insertNode(n, t->flat) ) {
@@ -335,13 +331,13 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         }
 
 	// don't push elements without end tag on the stack
-        if(tagPriority[id] != 0 && !flat) {
+        if(tagPriority(id) != 0 && !flat) {
 #if SPEED_DEBUG < 2
             if(!n->attached() && HTMLWidget )
                 n->attach();
 #endif
 	    if(n->isInline()) m_inline = true;
-            pushBlock(id, tagPriority[id]);
+            pushBlock(id, tagPriority(id));
             setCurrent( newNode );
         } else {
 #if SPEED_DEBUG < 2
@@ -359,7 +355,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 
 
 #if SPEED_DEBUG < 1
-        if(tagPriority[id] == 0 && n->renderer())
+        if(tagPriority(id) == 0 && n->renderer())
             n->renderer()->calcMinMaxWidth();
 #endif
         return true;
@@ -452,7 +448,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             if ( head ) {
                 DOM::NodeImpl *newNode = head->addChild(n);
                 if ( newNode ) {
-                    pushBlock(id, tagPriority[id]);
+                    pushBlock(id, tagPriority(id));
                     setCurrent ( newNode );
 #if SPEED_DEBUG < 2
 		    if(!n->attached() && HTMLWidget)
@@ -573,7 +569,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     NodeImpl* table = tsection->parent();
                     int exceptioncode = 0;
                     table->insertBefore(n, tsection, exceptioncode);
-                    pushBlock(id, tagPriority[id]);
+                    pushBlock(id, tagPriority(id));
                     setCurrent(n);
                     inStrayTableContent++;
                     blockStack->strayTableContent = true;
@@ -712,10 +708,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                             kDebug(6035) << "adding content before table failed..";
                         break;
                     }
-                    if ( n->isElementNode() && tagPriority[id] != 0 &&
-                         !flat && endTag[id] != DOM::FORBIDDEN ) {
+                    if ( n->isElementNode() && tagPriority(id) != 0 &&
+                         !flat && endTagRequirement(id) != DOM::FORBIDDEN ) {
 
-                        pushBlock(id, tagPriority[id]);
+                        pushBlock(id, tagPriority(id));
                         setCurrent ( n );
                         inStrayTableContent++;
                         blockStack->strayTableContent = true;
@@ -947,6 +943,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLOptGroupElementImpl(document, form);
         break;
     case ID_OPTION:
+        popOptionalBlock(ID_OPTION);
         n = new HTMLOptionElementImpl(document, form);
         break;
     case ID_SELECT:
@@ -962,14 +959,14 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLDListElementImpl(document);
         break;
     case ID_DD:
+        popOptionalBlock(ID_DT);
+        popOptionalBlock(ID_DD);
         n = new HTMLGenericElementImpl(document, t->tid);
-        popBlock(ID_DT);
-        popBlock(ID_DD);
         break;
     case ID_DT:
+        popOptionalBlock(ID_DD);
+        popOptionalBlock(ID_DT);
         n = new HTMLGenericElementImpl(document, t->tid);
-        popBlock(ID_DD);
-        popBlock(ID_DT);
         break;
     case ID_UL:
     {
@@ -988,7 +985,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLMenuElementImpl(document);
         break;
     case ID_LI:
-        popBlock(ID_LI);
+        popOptionalBlock(ID_LI);
         n = new HTMLLIElementImpl(document);
         break;
 // formatting elements (block)
@@ -1104,16 +1101,16 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
     case ID_TD:
     case ID_TH:
-        popBlock(ID_TH);
-        popBlock(ID_TD);
+        popOptionalBlock(ID_TH);
+        popOptionalBlock(ID_TD);
         n = new HTMLTableCellElementImpl(document, t->tid);
         break;
     case ID_TBODY:
     case ID_THEAD:
     case ID_TFOOT:
-        popBlock( ID_THEAD );
-        popBlock( ID_TBODY );
-        popBlock( ID_TFOOT );
+        popOptionalBlock( ID_THEAD );
+        popOptionalBlock( ID_TBODY );
+        popOptionalBlock( ID_TFOOT );
         n = new HTMLTableSectionElementImpl(document, t->tid, false);
         break;
 
@@ -1162,7 +1159,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
     case ID_WBR:
     case ID_NOBR:
         if ( t->tid == ID_NOBR || t->tid == ID_WBR )
-            popBlock( t->tid );
+            popOptionalBlock( t->tid );
     case ID_BDO:
         n = new HTMLGenericElementImpl(document, t->tid);
         break;
@@ -1203,7 +1200,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new CommentImpl(document, t->text);
         break;
     default:
-        kDebug( 6035 ) << "Unknown tag " << t->tid << "!";
+        n = new HTMLGenericElementImpl(document, t->tid);
+        break;
+//         kDebug( 6035 ) << "Unknown tag " << t->tid << "!";
     }
     return n;
 }
@@ -1246,7 +1245,8 @@ void KHTMLParser::processCloseTag(Token *t)
         child = child->nextSibling();
     }
 #endif
-    popBlock(t->tid-ID_CLOSE_TAG);
+    generateImpliedEndTags( t->tid - ID_CLOSE_TAG );
+    popBlock( t->tid - ID_CLOSE_TAG );
 #ifdef PARSER_DEBUG
     kDebug( 6035 ) << "closeTag --> current = " << current->nodeName().string();
 #endif
@@ -1256,17 +1256,18 @@ bool KHTMLParser::isResidualStyleTag(int _id)
 {
     switch (_id) {
         case ID_A:
+        case ID_B:
+        case ID_BIG:
+        case ID_EM:
         case ID_FONT:
+        case ID_I:
+        case ID_NOBR:
+        case ID_S:
+        case ID_SMALL:
+        case ID_STRIKE:
+        case ID_STRONG:
         case ID_TT:
         case ID_U:
-        case ID_B:
-        case ID_I:
-        case ID_S:
-        case ID_STRIKE:
-        case ID_BIG:
-        case ID_SMALL:
-        case ID_EM:
-        case ID_STRONG:
         case ID_DFN:
         case ID_CODE:
         case ID_SAMP:
@@ -1275,7 +1276,6 @@ bool KHTMLParser::isResidualStyleTag(int _id)
         case ID_DEL:
         case ID_INS:
         case ID_WBR:
-        case ID_NOBR:
             return true;
         default:
             return false;
@@ -1539,6 +1539,45 @@ void KHTMLParser::pushBlock(int _id, int _level)
 
     blockStack = Elem;
     addForbidden(_id, forbiddenTag);
+}
+
+void KHTMLParser::generateImpliedEndTags( int _id )
+{
+    HTMLStackElem *Elem = blockStack;
+
+    int level = tagPriority(_id);
+    while( Elem && Elem->id != _id)
+    {
+        if (endTagRequirement(Elem->id) == DOM::OPTIONAL && Elem->level <= level) {
+            popOneBlock();
+        }
+        else
+            break;
+        Elem = Elem->next;
+    }
+}
+
+void KHTMLParser::popOptionalBlock( int _id )
+{
+    bool found = false;
+    HTMLStackElem *Elem = blockStack;
+
+    int level = tagPriority(_id);
+    while( Elem )
+    {
+        if (Elem->id == _id) {
+            found = true;
+            break;
+        }
+        if (Elem->level > level || (endTagRequirement(Elem->id) != DOM::OPTIONAL && !isResidualStyleTag(Elem->id)) )
+            break;
+        Elem = Elem->next;
+    }
+
+    if (found) {
+        generateImpliedEndTags(_id);
+        popBlock(_id);
+    }
 }
 
 void KHTMLParser::popBlock( int _id )
