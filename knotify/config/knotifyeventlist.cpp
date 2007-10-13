@@ -85,6 +85,8 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
   setHeaderLabels( headerLabels );
 
   setItemDelegate(new KNotifyEventListDelegate);
+  setRootIsDecorated(false);
+  setAlternatingRowColors(true);
 
   connect(this, SIGNAL(currentItemChanged( QTreeWidgetItem * , QTreeWidgetItem *  )) , this , SLOT(slotSelectionChanged( QTreeWidgetItem * , QTreeWidgetItem *)));
 }
