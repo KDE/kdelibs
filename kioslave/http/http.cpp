@@ -2564,10 +2564,10 @@ void HTTPProtocol::forwardHttpResponseHeader()
   // Send the response header if it was requested
   if ( config()->readEntry("PropagateHttpHeader", false) )
   {
-    setMetaData("HTTP-Headers", m_responseHeader);
+    setMetaData("HTTP-Headers", m_responseHeaders.join("\n"));
     sendMetaData();
   }
-  m_responseHeader.clear();
+  m_responseHeaders.clear();
 }
 
 /**
@@ -2584,7 +2584,7 @@ try_again:
   // Check
   if (m_request.bCachedRead)
   {
-     m_responseHeader = QString::fromLatin1("HTTP-CACHE");
+     m_responseHeaders << QLatin1String("HTTP-CACHE");
      forwardHttpResponseHeader();
 
      // Read header from cache...
@@ -2670,9 +2670,9 @@ try_again:
   int maxAge = -1; // -1 = no max age, 0 already expired, > 0 = actual time
   int maxHeaderSize = 64*1024; // 64Kb to catch DOS-attacks
 
-  // read in 4096 bytes at a time (HTTP cookies can be quite large.)
+  // read in 8192 bytes at a time (HTTP cookies can be quite large.)
   int len = 0;
-  char buffer[4097];
+  char buffer[8193];
   bool cont = false;
   bool cacheValidated = false; // Revalidation was successful
   bool mayCache = true;
@@ -2773,7 +2773,7 @@ try_again:
 
     // Store the the headers so they can be passed to the
     // calling application later
-    m_responseHeader += QString::fromLatin1(buf);
+    m_responseHeaders << QString::fromLatin1(buf);
 
     if ((strncasecmp(buf, "HTTP", 4) == 0) ||
         (strncasecmp(buf, "ICY ", 4) == 0)) // Shoutcast support

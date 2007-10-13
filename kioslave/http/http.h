@@ -480,7 +480,7 @@ protected:
   KIO::filesize_t m_iContentLeft; // # of content bytes left
   QByteArray m_bufReceive; // Receive buffer
   char m_lineBuf[1024];
-  char m_rewindBuf[4096];
+  char m_rewindBuf[8192];
   size_t m_rewindCount;
   size_t m_lineCount;
   size_t m_lineCountUnget;
@@ -499,7 +499,7 @@ protected:
 
 //--- Settings related to a single response only
   bool m_bRedirect; // Indicates current request is a redirection
-  QString m_responseHeader; // All response headers
+  QStringList m_responseHeaders; // All headers
 
 
   // Language/Encoding related
