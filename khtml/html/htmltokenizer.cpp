@@ -29,7 +29,7 @@
 //
 // KDE HTML Widget - Tokenizers
 
-#define TOKEN_DEBUG 1
+// #define TOKEN_DEBUG 1
 //#define TOKEN_DEBUG 2
 
 #include "htmltokenizer.h"
