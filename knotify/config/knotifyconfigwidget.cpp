@@ -46,9 +46,9 @@ KNotifyConfigWidget::KNotifyConfigWidget( QWidget * parent )
 	connect(d->actionsconfig,SIGNAL(changed()),this,SLOT(slotActionChanged()));
     
 	QVBoxLayout *layout = new QVBoxLayout(this);
+	layout->setMargin(0);
 	layout->addWidget(d->eventList,1);
 	layout->addWidget(d->actionsconfig);
-	setLayout(layout);
 }
 
 
