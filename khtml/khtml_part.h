@@ -1547,6 +1547,7 @@ private:
   bool restoreURL( const KUrl &url );
   void resetFromScript();
   void emitSelectionChanged();
+  void onFirstData(const QString& firstData);
   // Returns whether callingHtmlPart may access this part
   bool checkFrameAccess(KHTMLPart *callingHtmlPart);
   bool openUrlInFrame(const KUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments);

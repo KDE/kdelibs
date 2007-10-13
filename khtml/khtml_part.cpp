@@ -1914,6 +1914,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 
   d->m_doc->ref();
   d->m_doc->setURL( this->url().url() );
+  d->m_doc->open( );
   if (!d->m_doc->attached())
     d->m_doc->attach( );
   d->m_doc->setBaseURL( KUrl() );
@@ -1929,7 +1930,6 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
     setUserStyleSheet( KUrl( userStyleSheet ) );
 
   d->m_doc->setRestoreState(d->m_extension->browserArguments().docState);
-  d->m_doc->open();
   connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
   emit d->m_extension->enableAction( "print", true );
@@ -1954,19 +1954,7 @@ void KHTMLPart::write( const char *data, int len )
       return;
 
   if(d->m_bFirstData)
-  {
-      // determine the parse mode
-      d->m_doc->determineParseMode( decoded );
-      d->m_bFirstData = false;
-
-  //kDebug(6050) << "KHTMLPart::write haveEnc = " << d->m_haveEncoding;
-      // ### this is still quite hacky, but should work a lot better than the old solution
-      if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
-#if 0
-      d->m_doc->setDecoderCodec(d->m_decoder->codec());
-#endif
-      d->m_doc->recalcStyle( NodeImpl::Force );
-  }
+      onFirstData( decoded );
 
   khtml::Tokenizer* t = d->m_doc->tokenizer();
   if(t)
@@ -1995,15 +1983,26 @@ void KHTMLPart::end()
         {
             QString decoded=d->m_decoder->flush();
             if (d->m_bFirstData)
-            {
-                d->m_bFirstData = false;
-                d->m_doc->determineParseMode(decoded);
-            }
+                onFirstData( decoded );
             if (!decoded.isEmpty())
                 write(decoded);
         }
         d->m_doc->finishParsing();
     }
+}
+
+void KHTMLPart::onFirstData( const QString& firstData )
+{
+      assert( d->m_bFirstData );
+
+      // determine the parse mode
+      d->m_doc->determineParseMode( firstData );
+      d->m_bFirstData = false;
+
+      // ### this is still quite hacky, but should work a lot better than the old solution
+      if (d->m_decoder->visuallyOrdered()) 
+          d->m_doc->setVisuallyOrdered();
+      d->m_doc->recalcStyle( NodeImpl::Force );
 }
 
 bool KHTMLPart::doOpenStream( const QString& mimeType )
