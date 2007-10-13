@@ -32,9 +32,16 @@
 class KNotifyEventList::KNotifyEventListDelegate : public QItemDelegate
 {
 	public:
+		KNotifyEventListDelegate(QObject *parent = 0);
+
 		virtual void paint( QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index ) const;
 	private:
 };
+
+KNotifyEventList::KNotifyEventListDelegate::KNotifyEventListDelegate(QObject *parent)
+	: QItemDelegate(parent)
+{
+}
 
 void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 		 const QStyleOptionViewItem& option, const QModelIndex& index ) const
@@ -84,7 +91,7 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
   headerLabels << i18nc( "Title of the notified event", "Title" ) << i18nc( "Description of the notified event", "Description" ) << i18nc( "State of the notified event", "State" );
   setHeaderLabels( headerLabels );
 
-  setItemDelegate(new KNotifyEventListDelegate);
+  setItemDelegate(new KNotifyEventListDelegate(this));
   setRootIsDecorated(false);
   setAlternatingRowColors(true);
 
