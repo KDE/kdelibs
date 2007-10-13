@@ -4064,7 +4064,9 @@ void KHTMLPart::slotViewPageInfo()
     const QStringList header = (*it).split(QRegExp(":[ ]+"));
     if (header.count() != 2)
        continue;
-    new Q3ListViewItem(ui._headers, header[0], header[1]);
+    QTreeWidgetItem *item = new QTreeWidgetItem(ui._headers);
+    item->setText(0, header[0]);
+    item->setText(1, header[1]);
   }
 
   dlg->show();
