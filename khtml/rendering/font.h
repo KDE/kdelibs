@@ -31,9 +31,6 @@
 #include <QtGui/QFontMetrics>
 #include <QtGui/QPainter>
 
-class Q3PaintDeviceMetrics;
-
-
 namespace khtml
 {
 class RenderStyle;

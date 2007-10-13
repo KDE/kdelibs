@@ -44,7 +44,6 @@
 
 #include <QtGui/QPainter>
 #include <QtGui/QFontDatabase>
-#include <Qt3Support/Q3PaintDeviceMetrics>
 
 using namespace khtml;
 

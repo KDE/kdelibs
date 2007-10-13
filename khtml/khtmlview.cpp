@@ -3566,9 +3566,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     d->contentsY = verticalScrollBar()->value();
 
     if ( d->staticWidget ) {
-        qDebug() << "attr: "<< widget()->testAttribute(Qt::WA_WState_InPaintEvent)<< viewport()->testAttribute(Qt::WA_WState_InPaintEvent);
         widget()->update();
-        qDebug() << "after: "<< widget()->testAttribute(Qt::WA_WState_InPaintEvent)<< viewport()->testAttribute(Qt::WA_WState_InPaintEvent);
         return;
     }
     QScrollArea::scrollContentsBy(dx, dy);
