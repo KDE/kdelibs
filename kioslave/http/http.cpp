@@ -247,7 +247,7 @@ void HTTPProtocol::resetResponseSettings()
   m_bChunked = false;
   m_iSize = NO_SIZE;
 
-  m_responseHeader.clear();
+  m_responseHeaders.clear();
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_sContentMD5.clear();
