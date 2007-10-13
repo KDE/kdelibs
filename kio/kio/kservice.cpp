@@ -109,6 +109,7 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Hidden");
   if (m_bDeleted)
   {
+    //kdDebug() << "Hidden=true for " << entryPath() << endl;
     m_bValid = false;
     return;
   }
@@ -119,6 +120,8 @@ KService::init( KDesktopFile *config )
   {
     if (config->readEntry( "Exec" ).isEmpty())
     {
+      //kdWarning(7012) << "The desktop entry file " << entryPath()
+      //              << " has no Name and no Exec" << endl;
       m_bValid = false;
       return;
     }
@@ -152,6 +155,7 @@ KService::init( KDesktopFile *config )
 
   // In case Try Exec is set, check if the application is available
   if (!config->tryExec()) {
+      //kdDebug(7012) << "tryExec said false for " << entryPath() << endl;
       m_bDeleted = true;
       m_bValid = false;
       return;
@@ -207,7 +211,8 @@ KService::init( KDesktopFile *config )
   m_strGenName = config->readEntry( "GenericName" );
   entryMap.remove("GenericName");
   QString untranslatedGenericName = config->readEntryUntranslated( "GenericName" );
-  entryMap.insert("UntranslatedGenericName", untranslatedGenericName);
+  if (!untranslatedGenericName.isEmpty())
+    entryMap.insert("UntranslatedGenericName", untranslatedGenericName);
 
   m_lstKeywords = config->readListEntry("Keywords");
   entryMap.remove("Keywords");
@@ -254,7 +259,7 @@ KService::init( KDesktopFile *config )
   QMap<QString,QString>::ConstIterator it = entryMap.begin();
   for( ; it != entryMap.end();++it)
   {
-//     qWarning("   Key = %s Data = %s", it.key().latin1(), it.data().latin1());
+     //qDebug("   Key = %s Data = %s", it.key().latin1(), it.data().latin1());
      m_mapProps.insert( it.key(), QVariant( it.data()));
   }
 }
