@@ -24,7 +24,6 @@
 #include <QtGui/QFontMetrics>
 #include <QtGui/QFontInfo>
 #include <QtGui/QPaintDevice>
-#include <Qt3Support/Q3PaintDeviceMetrics>
 #include <QtGui/QFontDatabase>
 
 #include <kcharsets.h>

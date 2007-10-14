@@ -43,7 +43,6 @@
 #include <kdebug.h>
 #include <QtCore/QRegExp>
 #include <QtGui/QPaintDevice>
-#include <Qt3Support/Q3PaintDeviceMetrics>
 
 // Hack for debugging purposes
 extern DOM::DOMString getPropertyName(unsigned short id);
