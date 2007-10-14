@@ -61,7 +61,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
    10, // ID_BODY
     0, // ID_BR
     1, // ID_BUTTON
-    0, // ID_CANVAS
+    1, // ID_CANVAS
     5, // ID_CAPTION
     5, // ID_CENTER
     1, // ID_CITE
@@ -169,7 +169,7 @@ const tagStatus DOM::endTagArray[] = {
     REQUIRED,  // ID_BODY
     FORBIDDEN, // ID_BR
     REQUIRED,  // ID_BUTTON
-    FORBIDDEN, // ID_CANVAS
+    REQUIRED,  // ID_CANVAS
     REQUIRED,  // ID_CAPTION
     REQUIRED,  // ID_CENTER
     REQUIRED,  // ID_CITE
@@ -531,6 +531,7 @@ bool DOM::checkChild(ushort tagID, ushort childID, bool strict)
     case ID_NOSCRIPT:
     case ID_CAPTION:
     case ID_MARQUEE:
+    case ID_CANVAS:
         // DIV: %flow *
         return check_flow(childID, strict);
     case ID_MAP:
