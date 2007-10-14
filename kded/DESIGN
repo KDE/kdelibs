@@ -2,9 +2,9 @@ kded
 ====
 
 kded is responsible for creating the sycoca file, i.e. the binary 
-cache of servicetypes, mimetypes and services, for a particular user.
+cache of servicetypes, mimetypes, and services for a particular user.
 
-It uses KDirWatch to monitor the directories contain the .desktop files.
+It uses KDirWatch to monitor the directories containing .desktop files.
 When a file is added/removed, it waits 5 seconds (in case of series of
 updates), and then launches kbuildsycoca.
 
