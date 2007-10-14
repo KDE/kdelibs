@@ -1136,8 +1136,8 @@ void KHTMLPart::disableJSErrorExtension() {
 
 void KHTMLPart::jsErrorDialogContextMenu() {
   KMenu *m = new KMenu(0L);
-  m->insertItem(i18n("&Hide Errors"), this, SLOT(removeJSErrorExtension()));
-  m->insertItem(i18n("&Disable Error Reporting"), this, SLOT(disableJSErrorExtension()));
+  m->addAction(i18n("&Hide Errors"), this, SLOT(removeJSErrorExtension()));
+  m->addAction(i18n("&Disable Error Reporting"), this, SLOT(disableJSErrorExtension()));
   m->popup(QCursor::pos());
 }
 
@@ -7267,7 +7267,7 @@ void KHTMLPart::walletMenu()
 {
 #ifndef KHTML_NO_WALLET
   KMenu *m = new KMenu(0L);
-  m->insertItem(i18n("&Close Wallet"), this, SLOT(slotWalletClosed()));
+  m->addAction(i18n("&Close Wallet"), this, SLOT(slotWalletClosed()));
   m->popup(QCursor::pos());
 #endif // KHTML_NO_WALLET
 }
@@ -7367,10 +7367,10 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 void KHTMLPart::suppressedPopupMenu() {
   KMenu *m = new KMenu(0L);
   if ( d->m_openableSuppressedPopups )
-      m->insertItem(i18np("&Show Blocked Popup Window","Show %1 Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
-  m->insertItem(i18n("Show Blocked Window Passive Popup &Notification"), this, SLOT(togglePopupPassivePopup()),0,57);
-  m->setItemChecked(57,d->m_settings->jsPopupBlockerPassivePopup());
-  m->insertItem(i18n("&Configure JavaScript New Window Policies..."), this, SLOT(launchJSConfigDialog()));
+      m->addAction(i18np("&Show Blocked Popup Window","Show %1 Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
+  QAction *a = m->addAction(i18n("Show Blocked Window Passive Popup &Notification"), this, SLOT(togglePopupPassivePopup()));
+  a->setChecked(d->m_settings->jsPopupBlockerPassivePopup());
+  m->addAction(i18n("&Configure JavaScript New Window Policies..."), this, SLOT(launchJSConfigDialog()));
   m->popup(QCursor::pos());
 }
 
