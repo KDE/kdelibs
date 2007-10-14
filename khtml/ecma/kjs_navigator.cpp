@@ -625,7 +625,7 @@ Value PluginFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
 /*****************************************************************************/
 
-const ClassInfo MimeType::info = { "MimeType", 0, &MimeTypesTable, 0 };
+const ClassInfo MimeType::info = { "MimeType", 0, &MimeTypeTable, 0 };
 /*
 @begin MimeTypeTable 4
   description  	MimeType_Description    	DontDelete|ReadOnly
