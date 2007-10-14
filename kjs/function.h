@@ -53,6 +53,10 @@ namespace KJS {
 
   private:
     Identifier m_name;
+#ifdef WIN32
+    InternalFunctionImp(const InternalFunctionImp&);
+    InternalFunctionImp& operator=(const InternalFunctionImp&);
+#endif
   };
 
   /**
