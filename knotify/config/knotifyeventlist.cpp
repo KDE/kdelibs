@@ -19,6 +19,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -60,24 +61,25 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 
 	int mc_x=0;
+	QSize iconsSize = option.decorationSize;
 	foreach(QString key , prstring.split ("|"))
 	{
-		QPixmap icon;
+		QIcon icon;
 		if(key == "Sound" )
-			icon = SmallIcon("sound");
+			icon = KIcon("sound");
 		else if(key == "Popup" )
-			icon = SmallIcon("document-properties");
+			icon = KIcon("document-properties");
 		else if(key == "Execute" )
-			icon = SmallIcon("exec");
+			icon = KIcon("exec");
 		else if(key == "Taskbar" )
-			icon = SmallIcon("kicker");
+			icon = KIcon("kicker");
 		else if(key == "Logfile" )
-			icon = SmallIcon("log");
+			icon = KIcon("log");
 		else
 			continue;
 
-		painter->drawPixmap( rect.left() + mc_x +4, rect.top() + (rect.height() - icon.height())/2, icon );
-		mc_x += icon.width()+4;
+		icon.paint(painter, rect.left() + mc_x + 4, rect.top() + (rect.height() - iconsSize.height()) / 2, iconsSize.width(), iconsSize.height());
+		mc_x += iconsSize.width() + 4;
 	}
 
 }
