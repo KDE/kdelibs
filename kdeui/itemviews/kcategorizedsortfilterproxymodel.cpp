@@ -750,7 +750,13 @@ bool KCategorizedSortFilterProxyModel::isCategorizedModel() const
 
 void KCategorizedSortFilterProxyModel::setCategorizedModel(bool categorizedModel)
 {
+    if (categorizedModel == d->categorizedModel)
+    {
+        return;
+    }
+
     d->categorizedModel = categorizedModel;
+    sort(d->sortColumn, d->sortOrder); // items need to be sorted again
 }
 
 void KCategorizedSortFilterProxyModel::setFilterWildcard(const QString &pattern)
