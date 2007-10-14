@@ -263,7 +263,7 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
         struct utsname name;
         int ret = uname(&name);
         if ( ret >= 0 )
-            return String(QString::fromLatin1("%1 %1 X11").arg(name.sysname).arg(name.machine));
+            return String(QString::fromLatin1("%1 %2").arg(name.sysname).arg(name.machine));
         else // can't happen
             return String("Unix X11");
     }
