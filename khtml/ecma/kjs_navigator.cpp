@@ -39,8 +39,6 @@
 #include <khtml_part.h>
 #include <sys/utsname.h>
 
-#include <Qt3Support/Q3PtrList>
-
 using namespace KJS;
 
 namespace KJS {
@@ -66,11 +64,11 @@ namespace KJS {
             QString name;
             QString file;
             QString desc;
-            Q3PtrList<MimeClassInfo> mimes;
+            QList<const MimeClassInfo*> mimes;
         };
 
-        static Q3PtrList<PluginInfo> *plugins;
-        static Q3PtrList<MimeClassInfo> *mimes;
+        static QList<const PluginInfo*> *plugins;
+        static QList<const MimeClassInfo*> *mimes;
 
     private:
         static int m_refCount;
@@ -116,7 +114,7 @@ namespace KJS {
 
     class Plugin : public PluginBase {
     public:
-        Plugin( ExecState *exec, PluginBase::PluginInfo *info )
+        Plugin(ExecState *exec, const PluginBase::PluginInfo *info)
           : PluginBase( exec, true )
         { m_info = info; }
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
@@ -124,9 +122,9 @@ namespace KJS {
         static const ClassInfo info;
         ValueImp *mimeByName(ExecState* exec, const QString& name ) const;
         ValueImp *getValueProperty(ExecState *exec, int token) const;
-        PluginBase::PluginInfo *pluginInfo() const { return m_info; }
+        const PluginBase::PluginInfo *pluginInfo() const { return m_info; }
     private:
-        PluginBase::PluginInfo *m_info;
+        const PluginBase::PluginInfo *m_info;
         static ValueImp *indexGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
         static ValueImp *nameGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot&);
     };
@@ -134,7 +132,7 @@ namespace KJS {
 
     class MimeType : public PluginBase {
     public:
-        MimeType( ExecState *exec, PluginBase::MimeClassInfo *info )
+        MimeType(ExecState *exec, const PluginBase::MimeClassInfo *info)
           : PluginBase( exec, true )
         { m_info = info; }
         virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
@@ -142,15 +140,15 @@ namespace KJS {
         static const ClassInfo info;
         ValueImp *getValueProperty(ExecState *exec, int token) const;
     private:
-        PluginBase::MimeClassInfo *m_info;
+        const PluginBase::MimeClassInfo *m_info;
     };
 
 }
 
 
-Q3PtrList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
-Q3PtrList<PluginBase::MimeClassInfo> *KJS::PluginBase::mimes = 0;
-int KJS::PluginBase::m_refCount = 0;
+QList<const PluginBase::PluginInfo*> *KJS::PluginBase::plugins;
+QList<const PluginBase::MimeClassInfo*> *KJS::PluginBase::mimes;
+int KJS::PluginBase::m_refCount;
 
 const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
 /*
@@ -296,10 +294,8 @@ PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
   : ObjectImp(exec->lexicalInterpreter()->builtinObjectPrototype() )
 {
     if ( loadPluginInfo && !plugins ) {
-        plugins = new Q3PtrList<PluginInfo>;
-        mimes = new Q3PtrList<MimeClassInfo>;
-        plugins->setAutoDelete( true );
-        mimes->setAutoDelete( true );
+        plugins = new QList<const PluginInfo*>;
+        mimes = new QList<const MimeClassInfo*>;
 
         // read in using KServiceTypeTrader
         const KService::List offers = KServiceTypeTrader::self()->query("Browser/View");
@@ -367,6 +363,8 @@ PluginBase::~PluginBase()
 {
     m_refCount--;
     if ( m_refCount==0 ) {
+        qDeleteAll(*plugins);
+        qDeleteAll(*mimes);
         delete plugins;
         delete mimes;
         plugins = 0;
@@ -419,14 +417,15 @@ bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName
     // plugins[#]
     bool ok;
     unsigned int i = propertyName.toUInt32(&ok);
-    if (ok && i < plugins->count()) {
+    if (ok && i < static_cast<unsigned>(plugins->count())) {
       slot.setCustomIndex(this, i, indexGetter);
       return true;
     }
 
     // plugin[name]
-    for (PluginInfo *pl = plugins->first(); pl; pl = plugins->next()) {
-      if (pl->name == propertyName.qstring()) {
+    QList<const PluginInfo*>::const_iterator it, end = plugins->constEnd();
+    for (it = plugins->constBegin(); it != end; ++it) {
+      if ((*it)->name == propertyName.qstring()) {
         slot.setCustom(this, nameGetter);
         return true;
       }
@@ -438,9 +437,10 @@ bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName
 
 ValueImp *Plugins::pluginByName( ExecState* exec, const QString& name )
 {
-  for ( PluginInfo *pl = plugins->first(); pl!=0; pl = plugins->next() ) {
-    if ( pl->name == name )
-      return new Plugin( exec, pl );
+  QList<const PluginInfo*>::const_iterator it, end = plugins->end();
+  for (it = plugins->begin(); it != end; ++it) {
+    if ((*it)->name == name)
+      return new Plugin(exec, *it);
   }
   return Undefined();
 }
@@ -459,7 +459,7 @@ ValueImp *PluginsFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const
   {
     bool ok;
     unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
-    if( ok && i<base->plugins->count() )
+    if (ok && i < static_cast<unsigned>(base->plugins->count()))
       return new Plugin( exec, base->plugins->at(i) );
     return Undefined();
   }
@@ -508,14 +508,15 @@ bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
     // mimeTypes[#]
     bool ok;
     unsigned int i = propertyName.toUInt32(&ok);
-    if (ok && i < mimes->count()) {
+    if (ok && i < static_cast<unsigned>(mimes->count())) {
       slot.setCustomIndex(this, i, indexGetter);
       return true;
     }
 
     // mimeTypes[name]
-    for (MimeClassInfo *m = mimes->first(); m; m = mimes->next()) {
-      if (m->type == propertyName.qstring()) {
+    QList<const MimeClassInfo*>::const_iterator it, end = mimes->end();
+    for (it = mimes->begin(); it != end; ++it) {
+      if ((*it)->type == propertyName.qstring()) {
         slot.setCustom(this, nameGetter);
         return true;
       }
@@ -528,9 +529,10 @@ bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
 ValueImp *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
 {
   //kDebug(6070) << "MimeTypes[" << name << "]";
-  for ( MimeClassInfo *m = mimes->first(); m!=0; m = mimes->next() ) {
-    if ( m->type == name )
-      return new MimeType( exec, m );
+  QList<const MimeClassInfo*>::const_iterator it, end = mimes->end();
+  for (it = mimes->begin(); it != end; ++it) {
+    if ((*it)->type == name)
+      return new MimeType(exec, (*it));
   }
   return Undefined();
 }
@@ -556,7 +558,7 @@ ValueImp *MimeTypesFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, con
   {
     bool ok;
     unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
-    if( ok && i<base->mimes->count() )
+    if (ok && i < static_cast<unsigned>(base->mimes->count()))
       return new MimeType( exec, base->mimes->at(i) );
     return Undefined();
   }
@@ -608,14 +610,15 @@ bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   // plugin[#]
   bool ok;
   unsigned int i = propertyName.toUInt32(&ok);
-  if (ok && i < m_info->mimes.count()) {
+  if (ok && i < static_cast<unsigned>(m_info->mimes.count())) {
     slot.setCustomIndex(this, i, indexGetter);
     return true;
   }
 
   // plugin["name"]
-  for (MimeClassInfo *m=m_info->mimes.first(); m; m = m_info->mimes.next()) {
-    if (m->type == propertyName.qstring()) {
+  QList<const MimeClassInfo*>::const_iterator it, end = mimes->end();
+  for (it = mimes->begin(); it != end; ++it) {
+    if ((*it)->type == propertyName.qstring()) {
       slot.setCustom(this, nameGetter);
       return true;
     }
@@ -626,10 +629,11 @@ bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 
 ValueImp *Plugin::mimeByName(ExecState* exec, const QString& name) const
 {
-  for ( PluginBase::MimeClassInfo *m = m_info->mimes.first();
-        m != 0; m = m_info->mimes.next() ) {
-    if ( m->type == name )
-      return new MimeType(exec, m);
+  const QList<const MimeClassInfo*>& mimes = m_info->mimes;
+  QList<const MimeClassInfo*>::const_iterator it, end = mimes.end();
+  for (it = mimes.begin(); it != end; ++it) {
+    if ((*it)->type == name)
+      return new MimeType(exec, (*it));
   }
   return Undefined();
 }
@@ -660,7 +664,7 @@ ValueImp *PluginFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
   {
     bool ok;
     unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
-    if( ok && i< plugin->pluginInfo()->mimes.count() )
+    if (ok && i< static_cast<unsigned>(plugin->pluginInfo()->mimes.count()))
       return new MimeType( exec, plugin->pluginInfo()->mimes.at(i) );
     return Undefined();
   }
