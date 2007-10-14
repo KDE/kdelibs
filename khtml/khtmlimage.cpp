@@ -98,8 +98,8 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     connect(m_khtml->browserExtension(), SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)),
     		be, SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)));
 
-    connect( m_khtml->browserExtension(), SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t) ),
-             m_ext, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t) ) );
+    connect(m_khtml->browserExtension(), SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
+	    m_ext, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)));
 
     connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
              m_ext, SIGNAL( enableAction( const char *, bool ) ) );
