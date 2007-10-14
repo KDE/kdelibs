@@ -329,8 +329,8 @@ PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
 
                 plugins->append( plugin );
 
-                QStringList types = kc.readEntry("mime", QStringList(), ';');
-                QStringList::Iterator type;
+                const QStringList types = kc.readEntry("mime", QStringList(), ';');
+                QStringList::const_iterator type;
                 for ( type=types.begin(); type!=types.end(); ++type ) {
 
                     // get mime information
@@ -602,7 +602,7 @@ bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 #ifdef KJS_VERBOSE
   kDebug(6070) << "Plugin::getOwnPropertySlot " << propertyName.qstring();
 #endif
-  if (getStaticOwnPropertySlot<PluginFunc, Plugin>(&PluginsTable, this, propertyName, slot))
+  if (getStaticOwnPropertySlot<PluginFunc, Plugin>(&PluginTable, this, propertyName, slot))
       return true;
 
   // plugin[#]
@@ -677,7 +677,7 @@ ValueImp *PluginFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
 
 /*****************************************************************************/
 
-const ClassInfo MimeType::info = { "MimeType", 0, &MimeTypesTable, 0 };
+const ClassInfo MimeType::info = { "MimeType", 0, &MimeTypeTable, 0 };
 /*
 @begin MimeTypeTable 4
   description  	MimeType_Description    	DontDelete|ReadOnly
@@ -692,7 +692,7 @@ bool MimeType::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNam
 #ifdef KJS_VERBOSE
   kDebug(6070) << "MimeType::get " << propertyName.qstring();
 #endif
-  return getStaticValueSlot<MimeType, ObjectImp>(exec, &MimeTypesTable, this, propertyName, slot);
+  return getStaticValueSlot<MimeType, ObjectImp>(exec, &MimeTypeTable, this, propertyName, slot);
 }
 
 ValueImp *MimeType::getValueProperty(ExecState* exec, int token) const
