@@ -73,10 +73,10 @@ namespace KJS {
   inline bool isPosInf(double d) { return isinf(d) && d > 0; }
   inline bool isNegInf(double d) { return isinf(d) && d < 0; }
 #else
-  bool isNaN(double d);
-  bool isInf(double d);
-  bool isPosInf(double d);
-  bool isNegInf(double d);
+  KJS_EXPORT bool isNaN(double d);
+  KJS_EXPORT bool isInf(double d);
+  KJS_EXPORT bool isPosInf(double d);
+  KJS_EXPORT bool isNegInf(double d);
 #endif
 
   bool equal(ExecState *exec, JSValue *v1, JSValue *v2);
