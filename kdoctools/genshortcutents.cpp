@@ -34,60 +34,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QStringList>
 
-static KStandardShortcut::StandardShortcut accelerators[] = {
-	KStandardShortcut::Open,
-	KStandardShortcut::New,
-	KStandardShortcut::Close,
-	KStandardShortcut::Save,
-	KStandardShortcut::Print,
-	KStandardShortcut::Quit,
-	KStandardShortcut::Undo,
-	KStandardShortcut::Redo,
-	KStandardShortcut::Cut,
-	KStandardShortcut::Copy,
-	KStandardShortcut::Paste,
-	KStandardShortcut::SelectAll,
-	KStandardShortcut::Deselect,
-	KStandardShortcut::DeleteWordBack,
-	KStandardShortcut::DeleteWordForward,
-	KStandardShortcut::Find,
-	KStandardShortcut::FindNext,
-	KStandardShortcut::FindPrev,
-	KStandardShortcut::Replace,
-	KStandardShortcut::Home,
-	KStandardShortcut::End,
-	KStandardShortcut::Prior,
-	KStandardShortcut::Next,
-	KStandardShortcut::GotoLine,
-	KStandardShortcut::AddBookmark,
-	KStandardShortcut::ZoomIn,
-	KStandardShortcut::ZoomOut,
-	KStandardShortcut::Up,
-	KStandardShortcut::Back,
-	KStandardShortcut::Forward,
-	KStandardShortcut::Reload,
-	KStandardShortcut::PopupMenuContext,
-	KStandardShortcut::ShowMenubar,
-	KStandardShortcut::Help,
-	KStandardShortcut::WhatsThis,
-	KStandardShortcut::TextCompletion,
-	KStandardShortcut::PrevCompletion,
-	KStandardShortcut::NextCompletion,
-	KStandardShortcut::SubstringCompletion,
-	KStandardShortcut::RotateUp,
-	KStandardShortcut::RotateDown,
-	KStandardShortcut::TabNext,
-	KStandardShortcut::TabPrev,
-	KStandardShortcut::FullScreen,
-	KStandardShortcut::BackwardWord,
-	KStandardShortcut::ForwardWord,
-	KStandardShortcut::BeginningOfLine,
-	KStandardShortcut::EndOfLine,
-	KStandardShortcut::PasteSelection
-};
-static const unsigned int numAccelerators = sizeof( accelerators ) / sizeof( accelerators[ 0 ] );
-
-QString keyAsMarkup( const QString &key )
+static QString keyAsMarkup( const QString &key )
 {
 	if ( key == "Alt" || key == "Ctrl" || key == "Enter" || key == "Esc" ||
 	     key == "Shift" || key == "Tab" ) {
@@ -108,7 +55,7 @@ QString keyAsMarkup( const QString &key )
 	return QString("<keycap>" + key + "</keycap>");
 }
 
-QString entityForAccel( KStandardShortcut::StandardShortcut accel )
+static QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 {
 	QString markup = "<!ENTITY KeyCombo_";
 
@@ -178,6 +125,9 @@ QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 			break;
 		case KStandardShortcut::Home:
 			markup += "Home";
+			break;
+		case KStandardShortcut::Begin:
+			markup += "Begin";
 			break;
 		case KStandardShortcut::End:
 			markup += "End";
@@ -266,6 +216,8 @@ QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 		case KStandardShortcut::PasteSelection:
 			markup += "PastSelection";
 			break;
+		case KStandardShortcut::StandardShortcutCount:
+			break;
 	}
 
 	markup += "\t\"";
@@ -329,8 +281,8 @@ int main( int argc, char **argv )
 	       << "     overwritten as soon as the file is regenerated. -->\n";
 	stream << "\n";
 
-	for ( unsigned int i = 0; i < numAccelerators; ++i ) {
-		stream << entityForAccel( accelerators[ i ] ) << "\n";
+	for ( unsigned int i = 0; i < KStandardShortcut::StandardShortcutCount; ++i ) {
+            stream << entityForAccel( static_cast<KStandardShortcut::StandardShortcut>(i)  ) << "\n";
 	}
 }
 

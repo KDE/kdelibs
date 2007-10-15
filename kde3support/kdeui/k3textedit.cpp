@@ -147,7 +147,7 @@ void K3TextEdit::keyPressEvent( QKeyEvent *e )
       e->accept();
       return;
     }
-    else if ( KStandardShortcut::home().contains( key ) )
+    else if ( KStandardShortcut::begin().contains( key ) )
     {
       moveCursor( MoveHome, false );
       e->accept();
