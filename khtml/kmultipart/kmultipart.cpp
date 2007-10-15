@@ -162,8 +162,8 @@ bool KMultiPart::openUrl( const KUrl &url )
     // Hmm, args.reload is set to true when reloading, but this doesn't seem to be enough...
     // I get "HOLD: Reusing held slave for <url>", and the old data
 
-    m_job = KIO::get( url, 
-                      arguments().reload() ? KIO::Reload : KIO::NoReload, 
+    m_job = KIO::get( url,
+                      arguments().reload() ? KIO::Reload : KIO::NoReload,
                       KIO::HideProgressInfo );
 
     emit started( 0 /*m_job*/ ); // don't pass the job, it would interfere with our own infoMessage
@@ -347,19 +347,10 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments& , const KParts::WindowArgs &, KParts::ReadOnlyPart**) ) );
 
         // Keep in sync with khtml_part.cpp
-        connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
-                 m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
-        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ),
-                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
-        connect( childExtension, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags) ),
-                 m_extension, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags) ) );
-        connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ),
-                 m_extension, SIGNAL( popupMenu( const QPoint &, const KUrl &, const QString &, mode_t ) ) );
-        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ),
-                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KUrl &, const QString &, mode_t ) ) );
-        connect( childExtension, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t) ),
-                 m_extension, SIGNAL( popupMenu(KXMLGUIClient *, const QPoint &, const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments &, KParts::BrowserExtension::PopupFlags, mode_t) ) );
-
+        connect( childExtension, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
+             m_extension, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
+        connect( childExtension, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
+             m_extension, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
 
         if ( m_isHTMLPart )
             connect( childExtension, SIGNAL( infoMessage( const QString & ) ),
