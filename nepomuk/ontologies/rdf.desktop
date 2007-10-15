@@ -2,6 +2,7 @@
 Encoding=UTF-8
 Version=1.0
 Name=RDF
+Name[sr]=РДФ
 Name[x-test]=xxRDFxx
 Comment=RDF Vocabulary Description Language 1.0
 Comment[ar]=لغة وصف المفردات RDF 1.0
@@ -20,6 +21,8 @@ Comment[nds]=Woortsett-Beschrievspraak RDF 1.0
 Comment[ne]=RDF शब्दकोश वर्णन भाषा 1.0
 Comment[nl]=RDF Vocabulaire Beschrijvingstaal 1.0
 Comment[pt_BR]=Linguagem de Descrição de Vocabulário RDF 1.0
+Comment[sr]=РДФ језик за опис речника 1.0
+Comment[sr@latin]=RDF jezik za opis rečnika 1.0
 Comment[sv]=RDF-ordförrådsbeskrivningsspråk 1.0
 Comment[th]=ภาษาสำหรับอธิบายคำศัพท์ RDF 1.0
 Comment[uk]=Мова RDF опису слів 1.0
