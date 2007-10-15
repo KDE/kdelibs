@@ -24,6 +24,7 @@
 #include <kio/kio_export.h>
 #include <kurl.h>
 class KDesktopFile;
+class KService;
 
 /**
  * KDesktopFileActions provides a number of methods related to actions in desktop files.
@@ -39,13 +40,13 @@ namespace KDesktopFileActions
 
     /**
      * Returns a list of services defined by the user as possible actions
-     * on the given .desktop file. May include empty actions which represent where
-     * visual separators should appear in user-visible representations of those actions,
+     * on the given .desktop file. May include separators (see KServiceAction::isSeparator)
+     * which should appear in user-visible representations of those actions,
      * such as separators in a menu.
      * @param path the path to the desktop file describing the services
      * @param bLocalFiles true if those services are to be applied to local files only
      * (if false, services that don't have %u or %U in the Exec line won't be taken into account).
-     * @return the list of user deviced actions
+     * @return the list of user defined actions
      */
     KIO_EXPORT QList<KServiceAction> userDefinedServices( const QString& path, bool bLocalFiles );
 
@@ -57,6 +58,22 @@ namespace KDesktopFileActions
     KIO_EXPORT QList<KServiceAction> userDefinedServices( const QString& path, const KDesktopFile& desktopFile, bool bLocalFiles, const KUrl::List & file_list = KUrl::List());
 
     /**
+     * Returns a list of services defined by the user as possible actions
+     * on the given .desktop file represented by the KService instance.
+     * May include separators (see KServiceAction::isSeparator) which should
+     * appear in user-visible representations of those actions,
+     * such as separators in a menu.
+     * @param path the path to the desktop file describing the services
+     * @param bLocalFiles true if those services are to be applied to local files only
+     * (if false, services that don't have %u or %U in the Exec line won't be taken into account).
+     * @param file_list list of urls; this allows for the menu to be changed depending on the exact files via
+     * the X-KDE-GetActionMenu extension.
+     *
+     * @return the list of user defined actions
+     */
+    KIO_EXPORT QList<KServiceAction> userDefinedServices( const KService& service, bool bLocalFiles, const KUrl::List & file_list = KUrl::List() );
+
+   /**
      * Execute @p service on the list of @p urls.
      * @param urls the list of urls
      * @param service the service to execute

@@ -191,21 +191,22 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const QString& p
 
 QList<KServiceAction> KDesktopFileActions::userDefinedServices( const QString& path, const KDesktopFile& cfg, bool bLocalFiles, const KUrl::List & file_list )
 {
+    Q_UNUSED(path); // this was just for debugging; we use service.entryPath() now.
+    KService service(&cfg);
+    return userDefinedServices(service, bLocalFiles, file_list);
+}
+
+QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& service, bool bLocalFiles, const KUrl::List & file_list )
+{
     QList<KServiceAction> result;
 
-    KConfigGroup cg = cfg.desktopGroup();
-
-    if ( !cg.hasKey( "Actions" ) && !cg.hasKey( "X-KDE-GetActionMenu") )
-        return result;
-
-    KService service(&cfg);
     if (!service.isValid()) // e.g. TryExec failed
         return result;
 
     QStringList keys;
-
-    if( cg.hasKey( "X-KDE-GetActionMenu" )) {
-        const QStringList dbuscall = cg.readEntry("X-KDE-GetActionMenu").split(QChar(' '));
+    const QString actionMenu = service.property("X-KDE-GetActionMenu", QVariant::String).toString();
+    if (!actionMenu.isEmpty()) {
+        const QStringList dbuscall = actionMenu.split(QChar(' '));
         if (dbuscall.count() >= 4) {
             const QString& app       = dbuscall.at( 0 );
             const QString& object    = dbuscall.at( 1 );
@@ -219,7 +220,7 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const QString& p
             if (keys.isEmpty())
                 return result;
         } else {
-            kWarning(7012) << "The desktop file" << path
+            kWarning(7012) << "The desktop file" << service.entryPath()
                            << "has an invalid X-KDE-GetActionMenu entry.";
         }
     }
@@ -290,3 +291,4 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KService
         org::kde::KDirNotify::emitFilesChanged( urls.toStringList() );
     }
 }
+
