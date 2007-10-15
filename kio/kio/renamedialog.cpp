@@ -378,7 +378,7 @@ KUrl RenameDialog::newDestUrl()
 
 void RenameDialog::cancelPressed()
 {
-  done( 0 );
+    done( R_CANCEL );
 }
 
 // Rename
@@ -394,7 +394,7 @@ void RenameDialog::renamePressed()
     return;
   }
 
-  done( 1 );
+  done( R_RENAME );
 }
 
 QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
@@ -453,32 +453,32 @@ void RenameDialog::suggestNewNamePressed()
 
 void RenameDialog::skipPressed()
 {
-  done( 2 );
+  done( R_SKIP );
 }
 
 void RenameDialog::autoSkipPressed()
 {
-  done( 3 );
+  done( R_AUTO_SKIP );
 }
 
 void RenameDialog::overwritePressed()
 {
-  done( 4 );
+  done( R_OVERWRITE );
 }
 
 void RenameDialog::overwriteAllPressed()
 {
-  done( 5 );
+  done( R_OVERWRITE_ALL );
 }
 
 void RenameDialog::resumePressed()
 {
-  done( 6 );
+  done( R_RESUME );
 }
 
 void RenameDialog::resumeAllPressed()
 {
-  done( 7 );
+  done( R_RESUME_ALL );
 }
 
 static QString mime( const KUrl& src )
