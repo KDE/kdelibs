@@ -1196,7 +1196,12 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   stop            KJS::HTMLElement::MarqueeStop                 DontDelete|Function 0
 @end
 
-@begin HTMLCanvasElementTable 1
+@begin HTMLCanvasElementTable 2
+  width           KJS::HTMLElement::CanvasWidth                 DontDelete
+  height          KJS::HTMLElement::CanvasHeight                DontDelete
+@end
+
+@begin HTMLCanvasElementProtoTable 1
   getContext      KJS::HTMLElement::GetContext                  DontDelete|Function 1
 @end
 */
@@ -1828,6 +1833,14 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     }
   }
   break;
+  case ID_CANVAS: {
+    DOM::HTMLCanvasElementImpl& canvas = static_cast<DOM::HTMLCanvasElementImpl&>(element);
+    switch (token) {
+    case CanvasHeight:          return Number(canvas.height());
+    case CanvasWidth:           return Number(canvas.width());
+    }
+  }
+  break;
   case ID_OBJECT: {
     DOM::HTMLObjectElementImpl& object = static_cast<DOM::HTMLObjectElementImpl&>(element);
     switch (token) {
@@ -2294,10 +2307,10 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
     }
   case ID_CANVAS: {
       if (id == KJS::HTMLElement::GetContext) {
-        if (args.size() == 0 || (args.size() == 1 && args[0]->toString(exec).domString().lower() == "2d")) {
-          return new Context2D(&element);
-        }
-        return Undefined();
+        DOM::HTMLCanvasElementImpl& canvasEl = static_cast<DOM::HTMLCanvasElementImpl&>(element);
+        if (args[0]->toString(exec) == "2d")
+          return getWrapper<Context2D>(exec, canvasEl.getContext2D());
+        return jsNull();
       }
       break;
     }
@@ -2541,6 +2554,21 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, ValueImp *va
         }
     }
     break;
+    case ID_CANVAS: {
+        DOM::HTMLCanvasElementImpl& canvas = static_cast<DOM::HTMLCanvasElementImpl&>(element);
+        switch (token) {
+        // ### it may make sense to do something different here, to at least
+        // emulate reflecting properties somewhat.
+        case CanvasWidth:
+            canvas.setAttribute(ATTR_WIDTH, value->toString(exec).domString());
+            return;
+        case CanvasHeight:
+            canvas.setAttribute(ATTR_HEIGHT, value->toString(exec).domString());
+            return;
+        }
+    }
+    break;
+
 
 //    case ID_FIELDSET: {
 //      DOM::HTMLFieldSetElementImpl& fieldSet = static_cast<DOM::HTMLFieldSetElementImpl&>(element);
@@ -2770,6 +2798,11 @@ KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLMarqueeElementProto, HTMLElementProto)
 KJS_IMPLEMENT_PROTOTYPE("HTMLMarqueeElement", HTMLMarqueeElementProto, HTMLElementFunction)
 IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLMarqueeElementPseudoCtor, "HTMLMarqueeElement", HTMLMarqueeElementProto)
 
+KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(HTMLCanvasElementProto, HTMLElementProto)
+KJS_IMPLEMENT_PROTOTYPE("HTMLCanvasElement", HTMLCanvasElementProto, HTMLElementFunction)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HTMLCanvasElementPseudoCtor, "HTMLCanvasElement", HTMLCanvasElementProto)
+
+
 static ObjectImp* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id) {
   switch (id) {
   case ID_HTML:
@@ -2892,6 +2925,8 @@ static ObjectImp* prototypeForID(ExecState* exec, DOM::NodeImpl::Id id) {
     return HTMLIFrameElementProto::self(exec);
   case ID_MARQUEE:
     return HTMLMarqueeElementProto::self(exec);
+  case ID_CANVAS:
+    return HTMLCanvasElementProto::self(exec);
   default:
     return HTMLElementProto::self(exec);
   }

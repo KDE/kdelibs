@@ -38,17 +38,20 @@ public:
     QImage image;
     unsigned char* versions; //Versions of scanlines --- node that this is is padded to be of width / by 64
 
-    RawImagePlane(unsigned int _width, unsigned int _height):
+    RawImagePlane(unsigned int _width, unsigned int _height, char initialVer = 0):
         ImagePlane(_width, _height)
     {
         versions = new unsigned char[tilesHeight * Tile::TileSize];
-        std::memset(versions, 0, tilesHeight * Tile::TileSize);
+        std::memset(versions, initialVer, tilesHeight * Tile::TileSize);
     }
 
     ~RawImagePlane()
     {
         delete[] versions;
     }
+    
+    virtual void flushCache()
+    {} // Nothing caches
 
     /**
      Returns true if the given pixmap tile is up-to-date.

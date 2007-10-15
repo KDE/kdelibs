@@ -156,7 +156,7 @@ namespace KJS {
            IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth,
            IFrameContentDocument, IFrameContentWindow,
            MarqueeStart, MarqueeStop,
-           GetContext,
+           GetContext, CanvasWidth, CanvasHeight,
            LayerTop, LayerLeft, LayerVisibility, LayerBgColor, LayerClip, LayerDocument, LayerLayers,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
            ElementClassName, ElementInnerText, ElementDocument,
@@ -331,6 +331,7 @@ namespace KJS {
   DEFINE_PSEUDO_CONSTRUCTOR(HTMLFrameElementPseudoCtor)
   DEFINE_PSEUDO_CONSTRUCTOR(HTMLIFrameElementPseudoCtor)
   DEFINE_PSEUDO_CONSTRUCTOR(HTMLMarqueeElementPseudoCtor)
+  DEFINE_PSEUDO_CONSTRUCTOR(HTMLCanvasElementPseudoCtor)
 } // namespace
 
 #endif

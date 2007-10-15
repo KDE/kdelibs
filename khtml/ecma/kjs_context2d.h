@@ -27,6 +27,7 @@
 #include <kjs/object.h>
 
 #include "misc/loader_client.h"
+#include "html/html_canvasimpl.h"
 
 #include <QtGui/QPainterPath>
 
@@ -34,159 +35,97 @@ namespace DOM {
    class HTMLElementImpl;
 }
 
-class QGradient;
-
 namespace KJS {
-  ////////////////////// Context2D Object ////////////////////////
+  ////////////////////// Conversion helpers //////////////////////
+  template<typename Wrapper>
+  ValueImp* getWrapper(ExecState *exec, typename Wrapper::wrappedType* g)
+  {
+      DOMObject *ret = 0;
+      if (!g)
+          return Null();
 
-  class Context2D : public DOMObject {
-  friend class Context2DFunction;
+      ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
+      if ((ret = interp->getDOMObject(g)))
+          return ret;
+
+      ret = new Wrapper(exec, g);
+      interp->putDOMObject(g, ret);
+      return ret;
+  }
+
+  template<typename Wrapped>
+  class DOMWrapperObject : public DOMObject
+  {
   public:
-    Context2D(DOM::HTMLElementImpl *e);
-    ~Context2D();
-    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
+    typedef Wrapped wrappedType;
+    typedef DOMWrapperObject<Wrapped> WrapperBase;
+
+    DOMWrapperObject(JSObject* proto, Wrapped* wrapee):
+      DOMObject(proto), m_impl(wrapee)
+    {}
+
+    virtual ~DOMWrapperObject() {
+      ScriptInterpreter::forgetDOMObject(m_impl.get());
+    }
+
     virtual bool toBoolean(ExecState *) const { return true; }
-    virtual void mark();
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
 
-    QPainterPath &path() {
-        return m_path;
-    }
-    void setPath( const QPainterPath &p ) {
-        m_path = p;
-    }
-
-    enum {
-        StrokeStyle,
-        FillStyle,
-        LineWidth,
-        LineCap,
-        LineJoin,
-        MiterLimit,
-        GlobalAlpha,
-        GlobalCompositeOperation,
-        Save, Restore,
-        Scale, Rotate, Translate,
-        BeginPath, ClosePath,
-        SetStrokeColor, SetFillColor, SetLineWidth, SetLineCap, SetLineJoin, SetMiterLimit,
-        Fill, Stroke,
-        MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, ArcTo, Arc, Rect, Clip,
-        ClearRect, FillRect, StrokeRect,
-        DrawImage, DrawImageFromRect,
-        SetAlpha, SetCompositeOperation,
-        CreateLinearGradient,
-        CreateRadialGradient,
-        CreatePattern
-    };
-
-private:
-    QBrush constructBrush(ExecState* exec);
-    QPen constructPen(ExecState* exec);
-
-    void save();
-    void restore();
-
-    QPainter *drawingContext();
-    bool _validStrokeImagePattern;
-    void updateStrokeImagePattern();
-
-    SharedPtr<DOM::HTMLElementImpl> _element;
-    bool _needsFlushRasterCache;
-
-    QPainterPath m_path;
-
-    QList<List*> stateStack;
-
-    ValueImp *_strokeStyle;
-    ValueImp *_fillStyle;
-    ValueImp *_lineWidth;
-    ValueImp *_lineCap;
-    ValueImp *_lineJoin;
-    ValueImp *_miterLimit;
-    ValueImp *_globalAlpha;
-    ValueImp *_globalComposite;
+    Wrapped* impl() { return m_impl.get(); }
+    const Wrapped* impl() const { return m_impl.get(); }
+  private:
+    SharedPtr<Wrapped> m_impl;
   };
 
-    QColor colorFromValue(ExecState *exec, ValueImp *value);
+  ////////////////////// Context2D Object ////////////////////////
+  DEFINE_PSEUDO_CONSTRUCTOR(Context2DPseudoCtor)
 
-    struct ColorStop {
-        float stop;
-        float red;
-        float green;
-        float blue;
-        float alpha;
-
-        ColorStop(float s, float r, float g, float b, float a) : stop(s), red(r), green(g), blue(b), alpha(a) {}
-    };
-
-  class Gradient : public DOMObject {
+  class Context2D : public DOMWrapperObject<DOM::CanvasContext2DImpl> {
   friend class Context2DFunction;
   public:
-    Gradient(float x0, float y0, float x1, float y1);
-    Gradient(float x0, float y0, float r0, float x1, float y1, float r1);
-    ~Gradient();
+    Context2D(ExecState* exec, DOM::CanvasContext2DImpl *ctx);
+    
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     ValueImp *getValueProperty(ExecState *exec, int token) const;
     virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
     void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
-    virtual bool toBoolean(ExecState *) const { return true; }
+
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
 
-    QGradient *qgradient() const { return m_gradient; }
+    enum {
+        Canvas,
+        Save, Restore, // state
+        Scale, Rotate, Translate, Transform, SetTransform, // transformations
+        GlobalAlpha, GlobalCompositeOperation,             // compositing
+        StrokeStyle, FillStyle, CreateLinearGradient, CreateRadialGradient, CreatePattern, // colors and styles.
+        LineWidth, LineCap, LineJoin, MiterLimit, // line properties
+        // TODO: shadows
+        ClearRect, FillRect, StrokeRect,          // rectangle ops
+        BeginPath, ClosePath, MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, ArcTo, Rect, Arc,
+        Fill, Stroke, Clip, IsPointInPath,        // paths
+        DrawImage,  // do we want backwards compat for drawImageFromRect?
+        GetImageData, PutImageData // pixel ops. ewww.
+    };
+  };
 
+  class CanvasGradient : public DOMWrapperObject<DOM::CanvasGradientImpl> {
+  public:
+    CanvasGradient(ExecState* exec, DOM::CanvasGradientImpl* impl);
+
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
 
     enum {
         AddColorStop
     };
-
-    enum {
-        Radial, Linear
-    };
-
-    void addColorStop (float s, float r, float g, float b, float alpha);
-
-    int lastStop;
-    int nextStop;
-
-private:
-    void commonInit();
-    QGradient *m_gradient;
-    float _x0, _y0, _r0, _x1, _y1, _r1;
-
-    int maxStops;
-    int stopCount;
-    ColorStop *stops;
-    mutable int adjustedStopCount;
-    mutable ColorStop *adjustedStops;
-    mutable unsigned stopsNeedAdjusting:1;
   };
 
-  class ImagePattern : public DOMObject {
+  class CanvasPattern : public DOMWrapperObject<DOM::CanvasPatternImpl> {
   public:
-    ImagePattern(HTMLElement *i, int type);
-    virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    ValueImp *getValueProperty(ExecState *exec, int token) const;
-    virtual void put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr = None);
-    void putValueProperty(ExecState *exec, int token, ValueImp *value, int /*attr*/);
-    virtual bool toBoolean(ExecState *) const { return true; }
+    CanvasPattern(ExecState* exec, DOM::CanvasPatternImpl *i);
+    
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-
-    QPixmap pixmap() { return _pixmap; }
-    QBrush createPattern();
-
-    enum {
-        Repeat, RepeatX, RepeatY, NoRepeat
-    };
-
-private:
-    float _rw, _rh;
-    QPixmap _pixmap;
   };
 } // namespace
 

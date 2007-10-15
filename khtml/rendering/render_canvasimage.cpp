@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
  * Copyright (C) 2005 Zack Rusin <zack@kde.org>
+ * Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,6 +42,7 @@
 #include <html/html_canvasimpl.h>
 #include <xml/dom2_eventsimpl.h>
 #include <html/html_documentimpl.h>
+#include <imload/canvasimage.h>
 
 #include <math.h>
 
@@ -49,64 +51,11 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-RenderCanvasImage::RenderCanvasImage(NodeImpl *_node)
-    : RenderImage(_node), m_drawingContext(0),
-      m_drawnImage(0), m_needsImageUpdate(0)
+RenderCanvasImage::RenderCanvasImage(DOM::HTMLCanvasElementImpl* canvasEl)
+    : RenderReplaced(canvasEl), imagePainter(canvasEl->getCanvasImage())
 {
-}
-
-RenderCanvasImage::~RenderCanvasImage()
-{
-    delete m_drawingContext; m_drawingContext = 0;
-    delete m_drawnImage; m_drawnImage = 0;
-}
-
-void RenderCanvasImage::createDrawingContext()
-{
-    delete m_drawingContext;
-    delete m_drawnImage;
-
-    int cWidth = contentWidth();
-    int cHeight = contentHeight();
-    if ( !cWidth ) {
-        cWidth = 300;
-        setWidth( cWidth );
-    }
-    if ( !cHeight ) {
-        cHeight = 200;
-        setHeight( cHeight );
-    }
-    m_drawnImage = new QImage( cWidth, cHeight, QImage::Format_ARGB32_Premultiplied );
-    m_drawnImage->fill( 0x00000000 ); // "The canvas must be initially fully transparent black"
-    m_drawingContext = new QPainter( m_drawnImage );
-    m_drawingContext->setRenderHint( QPainter::Antialiasing );
-}
-
-QPainter *RenderCanvasImage::drawingContext()
-{
-    if (!m_drawingContext) {
-        document()->updateLayout();
-        createDrawingContext();
-    }
-    if ( !m_drawingContext->isActive() ) {
-        //### clear color is bogus
-        //m_drawnImage->fill( 0xffffffff );
-        m_drawingContext->begin( m_drawnImage );
-    }
-
-    return m_drawingContext;
-}
-
-void RenderCanvasImage::setNeedsImageUpdate()
-{
-    m_needsImageUpdate = true;
-    repaint();
-}
-
-
-void RenderCanvasImage::updateDrawnImage()
-{
-    m_drawingContext->end();
+    setIntrinsicWidth (element()->width());
+    setIntrinsicHeight(element()->height());
 }
 
 void RenderCanvasImage::paint(PaintInfo& i, int _tx, int _ty)
@@ -125,9 +74,6 @@ void RenderCanvasImage::paint(PaintInfo& i, int _tx, int _ty)
     if (i.phase != PaintActionForeground && i.phase != PaintActionSelection)
         return;
 
-    //if (!shouldPaintWithinRoot(i))
-    //return;
-
     bool isPrinting = (i.p->device()->devType() == QInternal::Printer);
     bool drawSelectionTint = (selectionState() != SelectionNone) && !isPrinting;
     if (i.phase == PaintActionSelection) {
@@ -140,7 +86,7 @@ void RenderCanvasImage::paint(PaintInfo& i, int _tx, int _ty)
     int cWidth = contentWidth();
     int cHeight = contentHeight();
     if ( !cWidth )  cWidth = 300;
-    if ( !cHeight ) cHeight = 200;
+    if ( !cHeight ) cHeight = 150;
     int leftBorder = borderLeft();
     int topBorder = borderTop();
     int leftPad = paddingLeft();
@@ -149,16 +95,9 @@ void RenderCanvasImage::paint(PaintInfo& i, int _tx, int _ty)
     x += leftBorder + leftPad;
     y += topBorder + topPad;
 
-    if (m_needsImageUpdate) {
-        updateDrawnImage();
-        m_needsImageUpdate = false;
-    }
-    //qDebug()<<"drawing image "<<m_drawnImage;
-    if (m_drawnImage) {
-        HTMLCanvasElementImpl* i = (element() && element()->id() == ID_CANVAS ) ? static_cast<HTMLCanvasElementImpl*>(element()) : 0;
-        p->drawImage( QRectF( x, y, cWidth, cHeight ), *m_drawnImage,
-                      QRectF( 0, 0, m_drawnImage->width(), m_drawnImage->height() ) );
-    }
+    element()->getContext2D()->commit(); // Make sure everything is up-to-date
+    imagePainter.setSize(QSize(cWidth, cHeight));
+    imagePainter.paint(x, y, p, 0, 0);
 
     // if (drawSelectionTint) {
 //         QBrush brush(selectionColor(p));
@@ -172,30 +111,24 @@ void RenderCanvasImage::layout()
     KHTMLAssert( needsLayout());
     KHTMLAssert( minMaxKnown() );
 
-    short oldwidth = m_width;
-    int oldheight = m_height;
-
     calcWidth();
     calcHeight();
 
-    if ( m_width != oldwidth || m_height != oldheight ) {
-        createDrawingContext();
-    }
-
-    // if they are variable width and we calculate a huge height or width, we assume they
-    // actually wanted the intrinsic width.
-    if ( m_width > 4096 && !style()->width().isFixed() )
-	m_width = intrinsicWidth() + paddingLeft() + paddingRight() + borderLeft() + borderRight();
-    if ( m_height > 2048 && !style()->height().isFixed() )
-	m_height = intrinsicHeight() + paddingTop() + paddingBottom() + borderTop() + borderBottom();
-
-    // limit total size to not run out of memory when doing the xform call.
-    if ( ( m_width * m_height > 4096*2048 ) &&
-         ( contentWidth() > intrinsicWidth() || contentHeight() > intrinsicHeight() ) ) {
-	float scale = ::sqrt( m_width*m_height / ( 4096.*2048. ) );
-	m_width = (int) (m_width/scale);
-	m_height = (int) (m_height/scale);
-    }
-
     setNeedsLayout(false);
 }
+
+void RenderCanvasImage::updateFromElement()
+{
+    int newWidth  = element()->width();
+    int newHeight = element()->height();
+    if (intrinsicHeight() != newHeight || intrinsicWidth()  != newWidth) {
+        setIntrinsicWidth (newWidth);
+        setIntrinsicHeight(newHeight);
+        setNeedsLayoutAndMinMaxRecalc();
+    }
+    
+    if (!needsLayout())
+        repaint();
+}
+
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

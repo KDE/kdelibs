@@ -55,6 +55,8 @@ public:
 
     PixmapPlane*  nextFrame;
     AnimProvider* animProvider;
+    
+    void flushCache();
 
     ~PixmapPlane()
     {

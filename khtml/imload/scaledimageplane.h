@@ -67,7 +67,8 @@ private:
     unsigned int* yScaleTable;
 public:
     virtual ~ScaledImagePlane();
-    
+
+    virtual void flushCache();
 
     ScaledImagePlane(unsigned int _width, unsigned int _height, RawImagePlane* _parent):
             ImagePlane(_width, _height), parent(_parent), tiles(tilesWidth, tilesHeight)

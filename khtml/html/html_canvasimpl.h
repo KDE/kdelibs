@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
  * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,32 +26,284 @@
 #ifndef HTML_CANVASIMPL_H
 #define HTML_CANVASIMPL_H
 
-#include "html/html_imageimpl.h"
-#include "html/html_inlineimpl.h"
+#include "dom/dom_string.h"
+#include "html/html_elementimpl.h"
 #include "misc/khtmllayout.h"
 #include "rendering/render_object.h"
 
 #include <QtGui/QRegion>
 #include <QtCore/QMap>
+#include <QtCore/QStack>
 #include <QtGui/QPixmap>
+#include <QtGui/QGradient>
+
+namespace khtmlImLoad {
+    class CanvasImage;
+}
 
 namespace DOM {
 
+class CanvasContext2DImpl;
 
-class HTMLCanvasElementImpl
-    : public HTMLImageElementImpl
+class HTMLCanvasElementImpl : public HTMLElementImpl
 {
 public:
     HTMLCanvasElementImpl(DocumentImpl *doc);
     ~HTMLCanvasElementImpl();
 
+    virtual void parseAttribute(AttributeImpl*);
     virtual Id id() const;
 
     virtual void attach();
-    virtual void detach();
+
+    int width () const { return w; }
+    int height() const { return h; }
+
+    CanvasContext2DImpl* getContext2D();
+
+    // Returns the canvas image, but does not guarantee it's
+    // up-to-date
+    khtmlImLoad::CanvasImage* getCanvasImage();
+private:
+    int w, h;
+    SharedPtr<CanvasContext2DImpl> context;
+};
+
+// Base class for representing styles for fill and stroke.
+// Not part of the DOM
+class CanvasStyleBaseImpl : public khtml::Shared<CanvasStyleBaseImpl>
+{
+public:
+    enum Type {
+        Color,
+        Gradient,
+        Pattern
+    };
+
+    virtual ~CanvasStyleBaseImpl() {}
+    
+    virtual Type   type() const = 0;
+    virtual QBrush toBrush() const = 0;
+};
+
+
+// Not part of the DOM.
+class CanvasColorImpl : public CanvasStyleBaseImpl
+{
+public:
+    QColor color;
+
+    CanvasColorImpl(const QColor& newColor) : color(newColor)
+    {}
+
+    virtual Type type() const { return Color; }
+
+    virtual QBrush toBrush() const {
+        return QBrush(color);
+    }
+
+    DOM::DOMString toString() const;
+
+    // Note: returns 0 if it can not be parsed.
+    static CanvasColorImpl* fromString(const DOM::DOMString &s);
+};
+
+
+class CanvasPatternImpl : public CanvasStyleBaseImpl
+{
+public:
+    CanvasPatternImpl(const QImage& inImg, bool rx, bool ry);
+    
+    virtual Type type() const { return Pattern; }
+    virtual QBrush toBrush() const;
+private:
+    QImage img;
+    bool   repeatX, repeatY;
+};
+
+class CanvasGradientImpl : public CanvasStyleBaseImpl
+{
+public:
+    CanvasGradientImpl(QGradient* newGradient);
+    ~CanvasGradientImpl();
+
+    // Our internal interface..
+    virtual Type type() const { return Gradient; }
+    virtual QBrush toBrush() const;
+
+    // DOM API
+    void addColorStop(float offset, const DOM::DOMString& color, int& exceptionCode);
+private:
+    QGradient* gradient;
+};
+
+class CanvasContext2DImpl : public khtml::Shared<CanvasContext2DImpl>
+{
+public:
+    CanvasContext2DImpl(HTMLCanvasElementImpl* element, int width, int height);
+    ~CanvasContext2DImpl();
+
+    // Note: the native API does not attempt to validate
+    // input for NaN and +/- infinity to raise exceptions;
+    // but it does handle them for transformations
+
+    // For renderer..
+    void commit();
+
+    // Public API, exported via the DOM.
+    HTMLCanvasElementImpl* canvas() const;
+
+    // State management
+    void save();
+    void restore();
+
+    // Transformations
+    void scale(float x, float y);
+    void rotate(float angle);
+    void translate(float x, float y);
+    void transform(float m11, float m12, float m21, float m22, float dx, float dy);
+    void setTransform(float m11, float m12, float m21, float m22, float dx, float dy);
+
+    // Composition state setting
+    float globalAlpha() const;
+    void  setGlobalAlpha(float a);
+    DOMString globalCompositeOperation() const;
+    void  setGlobalCompositeOperation(const DOMString& op);
+
+    // Colors and styles..
+    void setStrokeStyle(CanvasStyleBaseImpl* strokeStyle);
+    CanvasStyleBaseImpl* strokeStyle() const;
+    void setFillStyle(CanvasStyleBaseImpl* fillStyle);
+    CanvasStyleBaseImpl* fillStyle() const;
+    CanvasGradientImpl* createLinearGradient(float x0, float y0, float x1, float y1) const;
+    CanvasGradientImpl* createRadialGradient(float x0, float y0, float r0, float x1, float y1, float r1, int& exceptionCode) const;
+    CanvasPatternImpl*  createPattern(ElementImpl* pat, const DOMString& rpt, int& exceptionCode) const;
+
+    // Line attributes
+    float lineWidth() const;
+    void  setLineWidth(float newLW);
+    DOMString lineCap() const;
+    void  setLineCap(const DOMString& newCap);
+    DOMString lineJoin() const;
+    void  setLineJoin(const DOMString& newJoin);
+    float miterLimit() const;
+    void  setMiterLimit(float newML);
+
+    // Rectangle operations
+    void clearRect (float x, float y, float w, float h, int& exceptionCode);
+    void fillRect  (float x, float y, float w, float h, int& exceptionCode);
+    void strokeRect(float x, float y, float w, float h, int& exceptionCode);
+
+    // Path-based ops
+    void beginPath();
+    void closePath();
+    void moveTo(float x, float y);
+    void lineTo(float x, float y);
+    void quadraticCurveTo(float cpx, float cpy, float x, float y);
+    void bezierCurveTo   (float cp1x, float cp1y, float cp2x, float cp2y, float x, float y);
+    void arcTo(float x1, float y1, float x2, float y2, float radius, int& exceptionCode);
+    void rect(float x, float y, float w, float h, int& exceptionCode);
+    void arc(float x, float y, float radius, float startAngle, float endAngle,
+             bool ccw, int& exceptionCode);
+    void fill();
+    void stroke();
+    void clip();
+    bool isPointInPath(float x, float y);
+
+    // Image ops
+    void drawImage(ElementImpl* image, float dx, float dy, int& exceptionCode);
+    void drawImage(ElementImpl* image, float dx, float dy, float dw, float dh, int& exceptionCode);
+    void drawImage(ElementImpl* image, float sx, float sy, float sw, float sh,
+                   float dx, float dy, float dw, float dh, int& exceptionCode);
+private:
+    friend class HTMLCanvasElementImpl;
+
+    // initialize canvas for new size
+    void resetContext(int width, int height);
+
+    // Cleared by canvas dtor..
+    HTMLCanvasElementImpl* canvasElement;
+    
+    // Helper for methods that take images via elements; this will extract them,
+    // and signal an exception if needed be
+    QImage extractImage(ElementImpl* el, int& exceptionCode) const;
+
+    // This method will prepare a painter for use, making sure it's active,
+    // that all the dirty state got sync'd, etc, and will mark the
+    // canvas as dirty so the renderer can flush everything, etc.
+    QPainter* acquirePainter();
+
+    // We use khtmlImLoad to manage our canvas image, so that
+    // the Renderer can scale easily.
+    khtmlImLoad::CanvasImage* canvasImage;
+
+    // The path is global, and never saved/restored
+    QPainterPath path;
+
+    // We keep track of non-path state ourselves. There are two reasons:
+    // 1) The painter may have to be end()ed so we can not rely on it to remember
+    //    things
+    // 2) The stroke and fill style can actually be DOM objects, so we have to
+    //    be able to hand them back
+    // "The canvas state" section of the spec describes what's included here
+    struct PaintState {
+        // Viewport state (not readable from outside)
+        QTransform    transform;
+        bool          infinityTransform; // Marks that the transform has become invalid,
+                                         // and should be treated as identity.
+        QPainterPath  clipPath; // This is in -physical- coordinates
+
+        // Compositing state
+        float globalAlpha;
+        QPainter::CompositionMode globalCompositeOperation;
+
+        // Stroke and fill styles.
+        SharedPtr<CanvasStyleBaseImpl> strokeStyle;
+        SharedPtr<CanvasStyleBaseImpl> fillStyle;
+
+        // Line stuff
+        float            lineWidth;
+        Qt::PenCapStyle  lineCap;
+        Qt::PenJoinStyle lineJoin;
+        float            miterLimit;
+
+        // ### TODO: shadow stuff
+    };
+
+    // The stack of states. The entry on the top is always the current state.
+    QStack<PaintState> stateStack;
+
+    const PaintState& activeState() const { return stateStack.top(); }
+    PaintState& activeState() { return stateStack.top(); }
+
+    enum DirtyFlags {
+        DrtTransform = 0x01,
+        DrtClip      = 0x02,
+        DrtAlpha     = 0x04,
+        DrtCompOp    = 0x08,
+        DrtStroke    = 0x10,
+        DrtFill      = 0x20,
+        DrtAll       = 0xFF
+    };
+
+    // The painter for working on the QImage. Might not be active.
+    // Should not be used directly, but rather via acquirePainter
+    QPainter workPainter;
+
+    // How out-of-date the painter is, if it is active.
+    int dirty;
+
+    // If we have not committed all the changes to the entire
+    // scaler hierarchy
+    bool needsCommit;
+
+    // Tells the element and then the renderer that we changed, so need
+    // repainting.
+    void needRendererUpdate();
 };
 
 
 } //namespace
 
 #endif
+// kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

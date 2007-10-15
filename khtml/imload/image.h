@@ -81,6 +81,12 @@ public:
      Returns true if the image has been fully loaded
     */
     bool complete() const;
+
+    /**
+     Returns the image of basic content. Should be treated as READ ONLY.
+     (but see CanvasImage)
+    */
+    QImage* qimage()  const;
 private:
     //Interface to the loader.
     friend class ImageLoader;
@@ -117,7 +123,7 @@ private: //Interface to the painter.
     void refSize  (QSize size);
     PixmapPlane* getSize(QSize size);
 
-private:
+protected:
     ImageOwner * owner;
 
     //Update reporting to owner
@@ -137,7 +143,6 @@ private:
      Called by the updater when the image should tell its owners about new changes
     */
     void notifyPerformUpdate();
-
 
     //Loader stuff.
     QByteArray bufferPreDetect;

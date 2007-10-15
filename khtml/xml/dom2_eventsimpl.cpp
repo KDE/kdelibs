@@ -30,6 +30,7 @@
 #include "dom_stringimpl.h"
 #include "dom_nodeimpl.h"
 #include "dom_docimpl.h"
+#include "misc/translator.h"
 #include <rendering/render_layer.h>
 #include <khtmlview.h>
 
@@ -491,47 +492,6 @@ bool MouseEventImpl::isMouseEvent() const
     return true;
 }
 
-//---------------------------------------------------------------------------------------------
-/* This class is used to do remapping between different encodings reasonably compactly */
-
-template<typename L, typename R, typename MemL>
-class IDTranslator
-{
-public:
-    struct Info {
-        MemL l;
-        R    r;
-    };
-
-    IDTranslator(const Info* table) {
-        for (const Info* cursor = table; cursor->l; ++cursor) {
-            m_lToR.insert(cursor->l,  cursor->r);
-            m_rToL.insert(cursor->r,  cursor->l);
-        }
-    }
-
-    L toLeft(R r) {
-        typename QMap<R,L>::iterator i( m_rToL.find(r) );
-        if (i != m_rToL.end())
-            return *i;
-        return L();
-    }
-
-    R toRight(L l) {
-        typename QMap<L,R>::iterator i = m_lToR.find(l);
-        if (i != m_lToR.end())
-            return *i;
-        return R();
-    }
-
-private:
-    QMap<L, R> m_lToR;
-    QMap<R, L> m_rToL;
-};
-
-#define MAKE_TRANSLATOR(name,L,R,MR,table) static IDTranslator<L,R,MR>* s_##name; \
-    static IDTranslator<L,R,MR>* name() { if (!s_##name) s_##name = new IDTranslator<L,R,MR>(table); \
-        return s_##name; }
 //---------------------------------------------------------------------------------------------
 
 /* Mapping between special Qt keycodes and virtual DOM codes */

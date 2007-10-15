@@ -83,7 +83,9 @@ public:
         SYNTAX_ERR = 12,
         INVALID_MODIFICATION_ERR = 13,
         NAMESPACE_ERR = 14,
-        INVALID_ACCESS_ERR = 15
+        INVALID_ACCESS_ERR = 15,
+        VALIDATION_ERR = 16,
+        TYPE_MISMATCH_ERR = 17
     };
     unsigned short code;
 };

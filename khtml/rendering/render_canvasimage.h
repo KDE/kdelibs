@@ -1,6 +1,7 @@
 /*
- * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
+ * Copyright (C) 2004, 2006, 2007 Apple Computer, Inc.  All rights reserved.
  * Copyright (C) 2005 Zack Rusin <zack@kde.org>
+ * Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,44 +29,37 @@
 #define RENDER_CANVASIMAGE_H
 
 #include "html/html_elementimpl.h"
-#include "rendering/render_image.h"
+#include "html/html_canvasimpl.h"
+#include "rendering/render_replaced.h"
 #include "dom/dom_string.h"
 
 #include <QtCore/QMap>
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
 
+#include "imload/imagepainter.h"
+
+
 namespace khtml {
 
 
-class RenderCanvasImage : public RenderImage
+class RenderCanvasImage : public RenderReplaced
 {
 public:
-    RenderCanvasImage(DOM::NodeImpl*);
-    virtual ~RenderCanvasImage();
+    RenderCanvasImage(DOM::HTMLCanvasElementImpl*);
 
     virtual const char *renderName() const { return "RenderCanvasImage"; }
 
     virtual void paint(PaintInfo& i, int tx, int ty);
-
     virtual void layout();
-
-    void setNeedsImageUpdate();
+    virtual void updateFromElement();
 
     // don't even think about making this method virtual!
-    DOM::HTMLElementImpl* element() const
-    { return static_cast<DOM::HTMLElementImpl*>(RenderObject::element()); }
-
-    void updateDrawnImage();
-    QPainter *drawingContext();
+    DOM::HTMLCanvasElementImpl* element() const
+    { return static_cast<DOM::HTMLCanvasElementImpl*>(RenderObject::element()); }
 
 private:
-    void createDrawingContext();
-
-    QPainter *m_drawingContext;
-    QImage   *m_drawnImage;
-
-    unsigned int m_needsImageUpdate:1;
+    khtmlImLoad::ImagePainter imagePainter;
 };
 
 

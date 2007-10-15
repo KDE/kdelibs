@@ -120,6 +120,18 @@ void PixmapPlane::paint(int dx, int dy, QPainter* p,
     }
 }
 
+void PixmapPlane::flushCache()
+{
+    parent->flushCache();
+    for (unsigned tileX = 0; tileX < tilesWidth; ++tileX) {
+        for (unsigned tileY = 0; tileY < tilesHeight; ++tileY) {
+            PixmapTile& pixTile = tiles.at(tileX, tileY);
+            if (pixTile.pixmap)
+                ImageManager::pixmapCache()->removeEntry(&pixTile);
+        }
+    }
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

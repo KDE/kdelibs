@@ -56,6 +56,17 @@ static void scaleLoop(QImage* dst, unsigned int* xScaleTable,
 }
 //### is special version for TileSize worth it?
 
+void ScaledImagePlane::flushCache()
+{
+    for (unsigned tileX = 0; tileX < tilesWidth; ++tileX) {
+        for (unsigned tileY = 0; tileY < tilesHeight; ++tileY) {
+            ImageTile& imageTile = tiles.at(tileX, tileY);
+            if (!imageTile.image.isNull())
+                ImageManager::imageCache()->removeEntry(&imageTile);
+        }
+    }
+}
+
 void ScaledImagePlane::ensureUpToDate(unsigned int tileX, unsigned int tileY,
                             PixmapTile* tile)
 {

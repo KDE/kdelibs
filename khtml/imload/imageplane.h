@@ -42,6 +42,8 @@ public:
 
     ImagePlane(unsigned int _width, unsigned int _height):Plane(_width, _height)
     {}
+    
+    virtual void flushCache() = 0;
 
     /**
      Returns true if the given pixmap tile is up-to-date.
