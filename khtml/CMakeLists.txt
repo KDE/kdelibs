@@ -211,6 +211,7 @@ set(khtmlimload_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/imload/image.cpp
   ${CMAKE_SOURCE_DIR}/khtml/imload/imagemanager.cpp
   ${CMAKE_SOURCE_DIR}/khtml/imload/animtimer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/imload/canvasimage.cpp  
 )
 
 # khtml/imload/decoders/Makefile.am: decoders
