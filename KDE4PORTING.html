@@ -1196,7 +1196,7 @@ replace with
   item-&gt;setIcon( KIcon( "image" ) );
 </pre>
 </li>
-<li>The virtual methods associated with each button (slotOk(), slotCancel(), etc.) have been merged into a single KDialog::slotButtonClicked(int button) virtual method.
+<li>The virtual methods associated with each button (slotOk(), slotCancel(), etc.) have been merged into a single KDialog::slotButtonClicked(int button) virtual method. However, the most direct replacement for slotOk() and slotCancel() is to reimplement QDialog::accept() and QDialog::reject(), respectively. For all other buttons, consider connect()ing to the corresponding signals provided by KDialog (helpClicked(), etc.).
 </li>
 </ul>
 
