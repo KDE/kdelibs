@@ -133,11 +133,11 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
         break;
       }
     }
-    // remove last item if already maxitems in list
+    // remove oldest item if already maxitems in list
     if( d->m_maxItems && selectableActionGroup()->actions().count() == d->m_maxItems )
     {
-        // remove last item
-        delete removeAction(selectableActionGroup()->actions().last());
+        // remove oldest added item
+        delete removeAction(selectableActionGroup()->actions().first());
     }
 
     if (d->m_noEntriesAction) removeAction(d->m_noEntriesAction)->deleteLater();
