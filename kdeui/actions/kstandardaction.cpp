@@ -81,7 +81,7 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
         break;
 
       case Home:
-        sLabel = i18nc( "beginning (of line)", "&Home" );
+        sLabel = i18nc( "home page", "&Home" );
         break;
       case Help:
         sLabel = i18nc( "show help", "&Help" );

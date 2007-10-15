@@ -59,7 +59,7 @@ class KTextEdit::Private
     void spellCheckerCorrected( const QString &, int,const QString &);
     void spellCheckerAutoCorrect(const QString&,const QString&);
     void spellCheckerCanceled();
-    
+
     void spellCheckerFinished();
     void toggleAutoSpellCheck();
     void slotAllowTab();
@@ -226,7 +226,7 @@ void KTextEdit::keyPressEvent( QKeyEvent *event )
     } while ( moved && verticalScrollBar()->value() > targetY );
     event->accept();
     return;
-  } else if ( KStandardShortcut::home().contains( key ) ) {
+  } else if ( KStandardShortcut::begin().contains( key ) ) {
     QTextCursor cursor = textCursor();
     cursor.movePosition( QTextCursor::Start );
     setTextCursor( cursor );

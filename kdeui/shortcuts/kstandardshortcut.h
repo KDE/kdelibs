@@ -36,11 +36,12 @@ namespace KStandardShortcut
 { // STUFF WILL BREAK IF YOU DON'T READ THIS!!!
   /*
    *Always add new std-accels to the end of this enum, never in the middle!
-   *Don't forget to add the corresponding entries in g_infoStandardShortcut[] in kstdaccel.cpp, too.
+   *Don't forget to add the corresponding entries in g_infoStandardShortcut[] in kstandardshortcut.cpp, too.
    *Values of elements here and positions of the corresponding entries in
    *the big array g_infoStandardShortcut[] ABSOLUTELY MUST BE THE SAME.
    * !!!    !!!!   !!!!!    !!!!
    *    !!!!    !!!     !!!!    !!!!
+   * Remember to also update kdoctools/genshortcutents.cpp.
    */
 
   /**
@@ -60,7 +61,7 @@ namespace KStandardShortcut
     SelectAll, Deselect, DeleteWordBack, DeleteWordForward,
     Find, FindNext, FindPrev, Replace,
     // Navigation
-    Home, End, Prior, Next,
+    Home, Begin, End, Prior, Next,
     Up, Back, Forward, Reload,
     // Text Navigation
     BeginningOfLine, EndOfLine, GotoLine,
@@ -75,7 +76,11 @@ namespace KStandardShortcut
     // Text completion
     TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
 
-    RotateUp, RotateDown
+    RotateUp, RotateDown,
+
+    // Insert new items here!
+
+    StandardShortcutCount // number of standard shortcuts
   };
 
   /**
@@ -273,10 +278,16 @@ namespace KStandardShortcut
   KDEUI_EXPORT const KShortcut &insert();
 
   /**
-   * Goto beginning of the document. Default: Ctrl-Home
+   * Goto home page. Default: Alt-Home
    * @return the shortcut of the standard accelerator
    */
   KDEUI_EXPORT const KShortcut &home();
+
+  /**
+   * Goto beginning of the document. Default: Ctrl-Home
+   * @return the shortcut of the standard accelerator
+   */
+  KDEUI_EXPORT const KShortcut &begin();
 
   /**
    * Goto end of the document. Default: Ctrl-End

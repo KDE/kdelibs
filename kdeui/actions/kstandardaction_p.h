@@ -85,7 +85,7 @@ static const KStandardActionInfo g_rgActionInfo[] =
   { Goto,          KStandardShortcut::AccelNone, "go_goto", I18N_NOOP("&Go To..."), 0, 0 },
   { GotoPage,      KStandardShortcut::AccelNone, "go_goto_page", I18N_NOOP("&Go to Page..."), 0, "go-jump" },
   { GotoLine,      KStandardShortcut::GotoLine, "go_goto_line", I18N_NOOP("&Go to Line..."), 0, 0 },
-  { FirstPage,     KStandardShortcut::Home, "go_first", I18N_NOOP("&First Page"), 0, "go-first" },
+  { FirstPage,     KStandardShortcut::Begin, "go_first", I18N_NOOP("&First Page"), 0, "go-first" },
   { LastPage,      KStandardShortcut::End, "go_last", I18N_NOOP("&Last Page"), 0, "go-last" },
 
   { AddBookmark,   KStandardShortcut::AddBookmark, "bookmark_add", I18N_NOOP("&Add Bookmark"), 0, "bookmark-new" },

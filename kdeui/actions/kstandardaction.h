@@ -135,7 +135,7 @@ namespace KStandardAction
     Zoom, Redisplay,
 
     // Go Menu
-    Up, Back, Forward, Home, Prior, Next, Goto, GotoPage, GotoLine,
+    Up, Back, Forward, Home /*Home page*/, Prior, Next, Goto, GotoPage, GotoLine,
     FirstPage, LastPage,
 
     // Bookmarks Menu
@@ -153,7 +153,7 @@ namespace KStandardAction
     Help, HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE,
     TipofDay,
 
-    // Another settings menu item
+    // Other standard actions
     ConfigureNotifications,
     FullScreen,
     Clear,

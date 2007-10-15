@@ -17,7 +17,6 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#define KSTDACCEL_CPP 1
 
 #include "kstandardshortcut.h"
 
@@ -87,8 +86,9 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
 	{ Replace,             I18N_NOOP2("@action","Replace"), 0,  CTRL(R), 0, KShortcut(), false },
 
 //Group Navigation
-	{ Home,                I18N_NOOP2("@action Opposite to End","Home"), 0, CTRL(Home), Qt::Key_HomePage, KShortcut(), false },
-	{ End,                 I18N_NOOP2("@action","End"), 0,      CTRL(End), 0, KShortcut(), false },
+	{ Home,                I18N_NOOP2("@action Go to main page","Home"), 0, ALT(Home), Qt::Key_HomePage, KShortcut(), false },
+	{ Begin,               I18N_NOOP2("@action Beginning of document","Begin"), 0, CTRL(Home), Qt::Key_Home, KShortcut(), false },
+	{ End,                 I18N_NOOP2("@action End of document","End"), 0,      CTRL(End), 0, KShortcut(), false },
 	{ Prior,               I18N_NOOP2("@action","Prior"), 0,    Qt::Key_PageUp, 0,KShortcut(), false },
 	{ Next,                I18N_NOOP2("@action Opposite to Prior","Next"), 0, Qt::Key_PageDown, 0, KShortcut(), false },
 
@@ -277,6 +277,7 @@ const KShortcut& findNext()              { return shortcut( FindNext ); }
 const KShortcut& findPrev()              { return shortcut( FindPrev ); }
 const KShortcut& replace()               { return shortcut( Replace ); }
 const KShortcut& home()                  { return shortcut( Home ); }
+const KShortcut& begin()                 { return shortcut( Begin ); }
 const KShortcut& end()                   { return shortcut( End ); }
 const KShortcut& beginningOfLine()       { return shortcut( BeginningOfLine ); }
 const KShortcut& endOfLine()             { return shortcut( EndOfLine ); }
@@ -308,5 +309,3 @@ const KShortcut& forward()               { return shortcut( Forward ); }
 const KShortcut& showMenubar()           { return shortcut( ShowMenubar ); }
 
 }
-
-#undef KSTDACCEL_CPP

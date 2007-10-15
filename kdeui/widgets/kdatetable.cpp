@@ -7,12 +7,12 @@
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
- 
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
- 
+
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -242,7 +242,7 @@ void KDateTable::initAccels()
     connect( prior, SIGNAL( triggered( bool ) ), SLOT( previousMonth() ) );
 
     QAction* beginMonth = localCollection->addAction( QLatin1String( "beginMonth" ) );
-    beginMonth->setShortcuts( KStandardShortcut::home() );
+    beginMonth->setShortcuts( KStandardShortcut::begin() );
     connect( beginMonth, SIGNAL( triggered( bool ) ), SLOT( beginningOfMonth() ) );
 
     QAction* endMonth = localCollection->addAction( QLatin1String( "endMonth" ) );
@@ -489,7 +489,7 @@ void KDateTable::KDateTablePrivate::beginningOfWeek()
 void KDateTable::KDateTablePrivate::endOfWeek()
 {
     // setDate does validity checking for us
-    q->setDate( q->calendar()->addDays( mDate, 
+    q->setDate( q->calendar()->addDays( mDate,
                 q->calendar()->daysInWeek( mDate ) - q->calendar()->dayOfWeek( mDate ) ) );
 }
 
@@ -638,7 +638,7 @@ bool KDateTable::setDate( const QDate& date_ )
     // set weekday number of first day of this month, but this may not be a valid date so fake
     // it if needed e.g. in QDate Mon 1 Jan -4713 is not valid when it should be, so fake as day 1
     QDate firstDayOfMonth;
-    if ( calendar()->setYMD( firstDayOfMonth, 
+    if ( calendar()->setYMD( firstDayOfMonth,
                              calendar()->year( d->mDate ), calendar()->month( d->mDate ), 1 ) ) {
         d->weekDayFirstOfMonth = calendar()->dayOfWeek( firstDayOfMonth );
     } else {
