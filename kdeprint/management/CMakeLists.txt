@@ -66,8 +66,11 @@ kde4_add_library(kdeprint_management SHARED ${kdeprint_management_LIB_SRCS})
 target_link_libraries(kdeprint_management  ${KDE4_KDECORE_LIBS} kdeprint ${KDE4_KDE3SUPPORT_LIBS} )
 
 set_target_properties(kdeprint_management PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
-install(TARGETS kdeprint_management  DESTINATION ${LIB_INSTALL_DIR} )
-
+install(TARGETS kdeprint_management
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 
 ########### next target ###############
 
@@ -90,7 +93,11 @@ kde4_add_kdeinit_executable( kaddprinterwizard ${kaddprinterwizard_KDEINIT_SRCS}
 
 target_link_libraries(kdeinit_kaddprinterwizard  ${KDE4_KDECORE_LIBS} kdeprint_management)
 
-install(TARGETS kdeinit_kaddprinterwizard  DESTINATION ${LIB_INSTALL_DIR} )
+install(TARGETS kdeinit_kaddprinterwizard 
+             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+)
 
 target_link_libraries( kaddprinterwizard kdeinit_kaddprinterwizard )
 install(TARGETS kaddprinterwizard DESTINATION ${LIBEXEC_INSTALL_DIR} )
