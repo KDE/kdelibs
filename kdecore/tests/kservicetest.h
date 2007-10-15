@@ -37,6 +37,7 @@ private Q_SLOTS:
     void testDefaultOffers();
     void testDeleteServiceTypeProfile();
     void testDBUSStartupType();
+    void testActionsAndDataStream();
 
 private:
     QString m_firstOffer;

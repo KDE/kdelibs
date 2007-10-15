@@ -41,6 +41,7 @@ public:
     }
 
     void init(const KDesktopFile *config, KService* q);
+    void parseActions(const KDesktopFile *config, KService* q);
     void load( QDataStream& );
     virtual void save( QDataStream& );
 
@@ -77,6 +78,7 @@ public:
     QMap<QString,QVariant> m_mapProps;
     QStringList m_lstKeywords;
     QString m_strGenName;
+    QList<KServiceAction> m_actions;
     bool m_bAllowAsDefault : 1;
     bool m_bTerminal : 1;
     bool m_bValid : 1;

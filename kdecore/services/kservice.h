@@ -21,6 +21,7 @@
 #ifndef KSERVICE_H
 #define KSERVICE_H
 
+#include "kserviceaction.h"
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <klibloader.h>
@@ -303,6 +304,11 @@ public:
      * @return true if the service may be used as the default (main) handler
      */
     bool allowAsDefault() const;
+
+    /**
+     * Returns the actions defined in this desktop file
+     */
+    QList<KServiceAction> actions() const;
 
     /**
      * Checks whether this service can handle several files as

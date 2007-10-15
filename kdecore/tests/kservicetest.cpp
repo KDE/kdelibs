@@ -68,6 +68,8 @@ void KServiceTest::testProperty()
     QCOMPARE(kdeprintd->property("ServiceTypes").toStringList().join(","), QString("KDEDModule"));
     QCOMPARE(kdeprintd->property("X-KDE-Kded-autoload").toBool(), false);
     QCOMPARE(kdeprintd->property("X-KDE-Kded-load-on-demand").toBool(), true);
+    QVERIFY(!kdeprintd->property("Name").toString().isEmpty());
+    QVERIFY(!kdeprintd->property("Name[fr]", QVariant::String).isValid());
 
     KService::Ptr kjavaappletviewer = KService::serviceByDesktopPath("kjavaappletviewer.desktop");
     QVERIFY(kjavaappletviewer);
@@ -305,4 +307,40 @@ void KServiceTest::testDeleteServiceTypeProfile()
     if ( m_firstOffer.isEmpty() )
         QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
     QCOMPARE( offers[0]->entryPath(), m_firstOffer );
+}
+
+void KServiceTest::testActionsAndDataStream()
+{
+    const QString servicePath = KStandardDirs::locate( "services", "ScreenSavers/krandom.desktop" );
+    if (servicePath.isEmpty() )
+        QSKIP("kdebase not installed, krandom.desktop not found", SkipAll);
+    KService service( servicePath );
+    QVERIFY(!service.property("Name[fr]", QVariant::String).isValid());
+    const QList<KServiceAction> actions = service.actions();
+    QCOMPARE(actions.count(), 3);
+    const KServiceAction setupAction = actions[0];
+    QCOMPARE(setupAction.name(), QString("Setup"));
+    QCOMPARE(setupAction.exec(), QString("krandom.kss -setup"));
+    QVERIFY(!setupAction.icon().isEmpty());
+    QCOMPARE(setupAction.noDisplay(), false);
+    QVERIFY(!setupAction.isSeparator());
+    const KServiceAction rootAction = actions[2];
+    QCOMPARE(rootAction.name(), QString("Root"));
+
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    service.save(stream);
+    QVERIFY(!data.isEmpty());
+    // The binary size of that KService in ksycoca was 3700 when storing all Name[...] translations!
+    // Now down to 755. This is on x86, so make the assert for 1500 in case x86_64 needs more.
+    QVERIFY(data.size() < 1500);
+    QDataStream loadingStream(data);
+    // loading must first get type, see KSycocaEntryPrivate::save
+    // (the path that save writes out, is read by the KSycocaEntryPrivate ctor)
+    qint32 type;
+    loadingStream >> type;
+    KService loadedService(loadingStream, 0);
+    QCOMPARE(loadedService.name(), service.name());
+    QCOMPARE(loadedService.exec(), service.exec());
+    QCOMPARE(loadedService.actions().count(), 3);
 }

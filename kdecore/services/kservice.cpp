@@ -48,7 +48,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     bool absPath = !QDir::isRelativePath(entryPath);
 
     // TODO: it makes sense to have a KConstConfigGroup I guess
-    KConfigGroup desktopGroup = const_cast<KDesktopFile*>(config)->desktopGroup();
+    const KConfigGroup desktopGroup = const_cast<KDesktopFile*>(config)->desktopGroup();
     QMap<QString, QString> entryMap = desktopGroup.entryMap();
 
     entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
@@ -155,7 +155,8 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     m_strGenName = config->readGenericName();
     entryMap.remove("GenericName");
     QString _untranslatedGenericName = desktopGroup.readEntryUntranslated( "GenericName" );
-    entryMap.insert("UntranslatedGenericName", _untranslatedGenericName);
+    if (!_untranslatedGenericName.isEmpty())
+        entryMap.insert("UntranslatedGenericName", _untranslatedGenericName);
 
     m_lstKeywords = desktopGroup.readEntry("Keywords", QStringList());
     entryMap.remove("Keywords");
@@ -176,6 +177,10 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     if ( m_strType == "Application" && !m_lstServiceTypes.contains("Application") )
         // Applications implement the service type "Application" ;-)
         m_lstServiceTypes += "Application";
+
+    if (entryMap.contains("Actions")) {
+        parseActions(config, q);
+    }
 
     QString dbusStartupType = desktopGroup.readEntry("X-DBUS-StartupType").toLower();
     //Compatibility
@@ -207,18 +212,52 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     // break BC, so we have to store it in m_mapProps.
 //  qDebug("Path = %s", entryPath.toLatin1().constData());
     QMap<QString,QString>::ConstIterator it = entryMap.begin();
-    for( ; it != entryMap.end();++it)
-    {
-//     qDebug("   Key = %s Data = %s", it.key().toLatin1().data(), it->toLatin1().data());
-        m_mapProps.insert( it.key(), QVariant( *it));
+    for( ; it != entryMap.end();++it) {
+        const QString key = it.key();
+        // do not store other translations like Name[fr]; kbuildsycoca will rerun if we change languages anyway
+        if (!key.contains('[')) {
+            //kDebug(7012) << "  Key =" << key << " Data =" << *it;
+            m_mapProps.insert(key, QVariant(*it));
+        }
+    }
+}
+
+void KServicePrivate::parseActions(const KDesktopFile *config, KService* q)
+{
+    const QStringList keys = config->readActions();
+    if (keys.isEmpty())
+        return;
+
+    QStringList::ConstIterator it = keys.begin();
+    const QStringList::ConstIterator end = keys.end();
+    for ( ; it != end; ++it ) {
+        const QString group = *it;
+        if (group == "_SEPARATOR_") {
+            m_actions.append(KServiceAction(group, QString(), QString(), QString(), false));
+            continue;
+        }
+
+        if (config->hasActionGroup(group)) {
+            const KConfigGroup cg = config->actionGroup(group);
+            if ( !cg.hasKey( "Name" ) || !cg.hasKey( "Exec" ) ) {
+                kWarning(7012) << "The action" << group << "in the desktop file" << q->entryPath()
+                               << "has no Name or no Exec key";
+            } else {
+                m_actions.append(KServiceAction(group,
+                                                cg.readEntry("Name"),
+                                                cg.readEntry("Icon"),
+                                                cg.readEntry("Exec"),
+                                                cg.readEntry("NoDisplay", false)));
+            }
+        } else {
+            kWarning(7012) << "The desktop file" << q->entryPath()
+                           << "references the action" << group << "but doesn't define it";
+        }
     }
 }
 
 void KServicePrivate::load(QDataStream& s)
 {
-    // dummies are here because of fields that were removed, to keep bin compat.
-    // Feel free to re-use, but fields for Applications only (not generic services)
-    // should rather be added to application.desktop
     qint8 def, term;
     qint8 dst, initpref;
 
@@ -234,7 +273,7 @@ void KServicePrivate::load(QDataStream& s)
       >> m_strDesktopEntryName
       >> initpref
       >> m_lstKeywords >> m_strGenName
-      >> categories >> menuId;
+      >> categories >> menuId >> m_actions;
 
     m_bAllowAsDefault = (bool)def;
     m_bTerminal = (bool)term;
@@ -263,7 +302,7 @@ void KServicePrivate::save(QDataStream& s)
       << m_strDesktopEntryName
       << initpref
       << m_lstKeywords << m_strGenName
-      << categories << menuId;
+      << categories << menuId << m_actions;
 }
 
 ////
@@ -826,4 +865,10 @@ QStringList & KService::accessServiceTypes()
 {
     Q_D(KService);
     return d->m_lstServiceTypes;
+}
+
+QList<KServiceAction> KService::actions() const
+{
+    Q_D(const KService);
+    return d->m_actions;
 }
