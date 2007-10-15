@@ -28,7 +28,7 @@
 #define DEFAULT_CACHE_EXPIRE            3*60            // 3 MINS
 #define DEFAULT_CLEAN_CACHE_INTERVAL    30*60           // 30 MINS
 #define DEFAULT_CACHE_CONTROL           KIO::CC_Refresh // Verify with remote
-#define CACHE_REVISION                  "8\n"           // Cache version
+#define CACHE_REVISION                  "9\n"           // Cache version
 
 // DEFAULT USER AGENT KEY - ENABLES OS NAME
 #define DEFAULT_USER_AGENT_KEYS         "o"             // Show OS

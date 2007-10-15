@@ -164,10 +164,7 @@ public:
     long bytesCached;
     time_t expireDate; // Date when the cache entry will expire
     time_t creationDate; // Date when the cache entry was created
-    QString strCharset; // Charset
-    QString strLanguage; // Language
-    QString strDisposition;
-    QString strFilename;
+    QString strCharset;
 
     // Cookie flags
     enum { CookiesAuto, CookiesManual, CookiesNone } cookieMode;
@@ -299,6 +296,8 @@ protected:
   void forwardHttpResponseHeader();
 
   bool readHeader();
+  bool readHeaderFromCache();
+  void parseContentDisposition(const QString &disposition);
 
   bool sendBody();
 
