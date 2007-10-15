@@ -664,27 +664,9 @@ bool KToolBar::contextMenuEnabled() const
   return d->enableContext;
 }
 
-QString KToolBar::settingsGroup() const
+void KToolBar::saveSettings( KConfigGroup &cg )
 {
-  QString configGroup;
-  if ( objectName().isEmpty() || d->isMainToolBar() )
-    configGroup = "Toolbar style";
-  else
-    configGroup = QString( objectName() ) + " Toolbar style";
-
-  if ( mainWindow() ) {
-    configGroup.prepend(" ");
-    configGroup.prepend( mainWindow()->objectName() );
-  }
-
-  return configGroup;
-}
-
-void KToolBar::saveSettings( KConfigGroup &_cg )
-{
-  KConfigGroup cg = _cg;
-    if ( cg.name().isEmpty() )
-        cg.changeGroup(settingsGroup());
+    Q_ASSERT(!cg.name().isEmpty());
 
   QString position;
   Qt::ToolButtonStyle ToolButtonStyle;
@@ -932,11 +914,9 @@ void KToolBar::saveState( QDomElement &current ) const
   current.setAttribute( "toolButtonStyleDefault", d->toolButtonStyleToString( d->ToolButtonStyleDefault ) );
 }
 
-void KToolBar::applySettings( const KConfigGroup &_cg, bool force )
+void KToolBar::applySettings( const KConfigGroup &cg, bool force )
 {
-    KConfigGroup cg = _cg;
-    if ( cg.name().isEmpty() )
-        cg.changeGroup(settingsGroup());
+    Q_ASSERT( !cg.name().isEmpty() );
 
   /*
     Let's explain this a bit more in details.
@@ -983,11 +963,9 @@ void KToolBar::applySettings( const KConfigGroup &_cg, bool force )
   }
 }
 
-void KToolBar::applyAppearanceSettings( KConfigGroup &_cg, bool forceGlobal )
+void KToolBar::applyAppearanceSettings( const KConfigGroup &cg, bool forceGlobal )
 {
-    KConfigGroup cg = _cg;
-    if ( cg.name().isEmpty() )
-        cg.changeGroup(settingsGroup());
+    Q_ASSERT(! cg.name().isEmpty() );
 
   // If we have application-specific settings in the XML file,
   // and nothing in the application's config file, then
@@ -1287,14 +1265,14 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
     QAction* act = tb->actions().first();
     if ( event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease ) {
       QMouseEvent* me = static_cast<QMouseEvent*>( event );
-      if ( me->button() == Qt::MidButton /*&& 
+      if ( me->button() == Qt::MidButton /*&&
            act->receivers(SIGNAL(triggered(Qt::MouseButtons,Qt::KeyboardModifiers)))*/ ) {
-        if ( me->type() == QEvent::MouseButtonPress )  
-          tb->setDown(true); 
+        if ( me->type() == QEvent::MouseButtonPress )
+          tb->setDown(true);
         else {
           tb->setDown(false);
           QMetaObject::invokeMethod(act, "triggered", Qt::DirectConnection,
-               Q_ARG(Qt::MouseButtons, me->button()), 
+               Q_ARG(Qt::MouseButtons, me->button()),
                Q_ARG(Qt::KeyboardModifiers, QApplication::keyboardModifiers() ));
         }
       }

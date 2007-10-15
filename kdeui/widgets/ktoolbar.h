@@ -192,8 +192,6 @@ class KDEUI_EXPORT KToolBar : public QToolBar
   protected:
     virtual void contextMenuEvent( QContextMenuEvent* );
     virtual void actionEvent( QActionEvent* );
-    void applyAppearanceSettings( KConfigGroup &cg, bool forceGlobal = false );
-    QString settingsGroup() const;
 
     // Draggable toolbar configuration
     virtual void dragEnterEvent( QDragEnterEvent* );
@@ -205,6 +203,8 @@ class KDEUI_EXPORT KToolBar : public QToolBar
     virtual void mouseReleaseEvent( QMouseEvent* );
 
   private:
+    void applyAppearanceSettings( const KConfigGroup &cg, bool forceGlobal = false );
+
     class Private;
     Private* const d;
 
