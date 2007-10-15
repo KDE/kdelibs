@@ -41,6 +41,7 @@ private Q_SLOTS:
     void testPersistenceOfExpandFlagForPath();
     void testComplex();
     void testEnums();
+    void testEntryMap();
     void testInvalid();
     void testDelete();
     void testDefaultGroup();

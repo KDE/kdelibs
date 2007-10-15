@@ -41,6 +41,7 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define STRINGENTRY5 " "
 #define STRINGENTRY6 ""
 #define UTF8BITENTRY "Hello äöü"
+#define TRANSLATEDSTRINGENTRY1 "bonjour"
 #define BYTEARRAYENTRY QByteArray( "\x00\xff\x7f\x3c abc\x00\x00", 10 )
 #define ESCAPEKEY " []\0017[]==]"
 #define ESCAPEENTRY "[]\170[]]=3=]\\] "
@@ -85,6 +86,7 @@ void KConfigTest::initTestCase()
   cg.writeEntry( ESCAPEKEY, ESCAPEENTRY );
   cg.writeEntry( "emptyEntry", "");
   cg.writeEntry( "stringEntry1", STRINGENTRY1 );
+  cg.writeEntry( "stringEntry1[fr]", TRANSLATEDSTRINGENTRY1 );
   cg.writeEntry( "stringEntry2", STRINGENTRY2 );
   cg.writeEntry( "stringEntry3", STRINGENTRY3 );
   cg.writeEntry( "stringEntry4", STRINGENTRY4 );
@@ -344,6 +346,31 @@ void KConfigTest::testEnums()
   QVERIFY( sc3.readEntry( "flags-bit0-bit1", Flags() ) == bitfield );
 }
 
+void KConfigTest::testEntryMap()
+{
+    KConfig sc("kconfigtest");
+    KConfigGroup cg(&sc, "Hello");
+    QMap<QString, QString> entryMap = cg.entryMap();
+    qDebug() << entryMap.keys();
+    QCOMPARE(entryMap.value("stringEntry1"), QString(STRINGENTRY1));
+    // #### Why is this translated entry here? This just bloats the entryMap.
+    QCOMPARE(entryMap.value("stringEntry1[fr]"), QString(TRANSLATEDSTRINGENTRY1));
+    QCOMPARE(entryMap.value("stringEntry2"), QString(STRINGENTRY2));
+    QCOMPARE(entryMap.value("stringEntry3"), QString(STRINGENTRY3));
+    QCOMPARE(entryMap.value("stringEntry4"), QString(STRINGENTRY4));
+    QVERIFY(!entryMap.contains("stringEntry5"));
+    QVERIFY(!entryMap.contains("stringEntry6"));
+    QCOMPARE(entryMap.value("Test"), QString::fromUtf8(UTF8BITENTRY));
+    QCOMPARE(entryMap.value("bytearrayEntry"), QString::fromUtf8(BYTEARRAYENTRY));
+    QCOMPARE(entryMap.value("emptyEntry"), QString());
+    QVERIFY(entryMap.contains("emptyEntry"));
+    QCOMPARE(entryMap.value("boolEntry1"), QString(BOOLENTRY1?"true":"false"));
+    QCOMPARE(entryMap.value("boolEntry2"), QString(BOOLENTRY2?"true":"false"));
+    QCOMPARE(entryMap.value("keywith=equalsign"), QString(STRINGENTRY1));
+    QCOMPARE(entryMap.value("byteArrayEntry1"), QString(STRINGENTRY1));
+    QCOMPARE(entryMap.value("doubleEntry1"), QString::number(DOUBLEENTRY, 'g', 15));
+}
+
 void KConfigTest::testInvalid()
 {
   KConfig sc( "kconfigtest" );
@@ -417,7 +444,7 @@ void KConfigTest::testChangeGroup()
     KConfigGroup sc3(&sc, "Hello");
     QCOMPARE(sc3.name(), QString("Hello"));
     KConfigGroup newGroup(sc3);
-    newGroup.changeGroup("FooBar");
+    newGroup.changeGroup("FooBar"); // deprecated!
     QCOMPARE(newGroup.name(), QString("FooBar"));
     QCOMPARE(sc3.name(), QString("Hello")); // unchanged
 }
