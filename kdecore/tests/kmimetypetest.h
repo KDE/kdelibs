@@ -35,6 +35,8 @@ private Q_SLOTS:
     void testFindByPathWithContent();
     void testFindByNameAndContent();
     void testFindByContent();
+    void testFindByContent_data();
+    void testFindByFileContent();
     void testAllMimeTypes();
     void testAlias();
     void testMimeTypeParent();

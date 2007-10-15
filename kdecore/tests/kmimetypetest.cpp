@@ -320,34 +320,39 @@ void KMimeTypeTest::testFindByNameAndContent()
     QCOMPARE( mime->name(), QString::fromLatin1("application/x-php") );
 }
 
-void KMimeTypeTest::testFindByContent()
+void KMimeTypeTest::testFindByContent_data()
 {
-    KMimeType::Ptr mime;
-
-    QByteArray textData = "Hello world";
-    mime = KMimeType::findByContent(textData);
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
-
-#if 0 // https://bugs.freedesktop.org/show_bug.cgi?id=11259
-    QByteArray htmlData = "<script>foo</script>";
-    mime = KMimeType::findByContent(htmlData);
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1("text/html") );
+    QTest::addColumn<QByteArray>("data");
+    QTest::addColumn<QString>("expectedMimeType");
+    QTest::newRow("simple text") << QByteArray("Hello world") << "text/plain";
+    QTest::newRow("html: <html>") << QByteArray("<html>foo</html>") << "text/html";
+#if 0 // currently buggy, xml and html have conflicting magic rules, discussed on xdg list.
+    QTest::newRow("html: comment+<html>") << QByteArray("<!--foo--><html>foo</html>") << "text/html";
 #endif
-
-    QByteArray pdfData = "%PDF-";
-    mime = KMimeType::findByContent(pdfData);
-    QVERIFY( mime );
-    QCOMPARE( mime->name(), QString::fromLatin1("application/pdf") );
+#if 0 // https://bugs.freedesktop.org/show_bug.cgi?id=11259
+    QTest::newRow("html: <script>") << QByteArray("<script>foo</script>") << "text/html";
+#endif
+    QTest::newRow("pdf") << QByteArray("%PDF-") << "application/pdf";
 
     QByteArray mswordData = "\320\317\021\340\241\261\032\341";
     QVERIFY(KMimeType::isBufferBinaryData(mswordData));
-    mime = KMimeType::findByContent(mswordData);
-    QVERIFY( mime );
     // We have no magic specific to msword data, so finding x-ole-storage is correct.
-    QCOMPARE( mime->name(), QString::fromLatin1("application/x-ole-storage") );
+    QTest::newRow("msword") << mswordData << "application/x-ole-storage";
+}
 
+void KMimeTypeTest::testFindByContent()
+{
+    QFETCH(QByteArray, data);
+    QFETCH(QString, expectedMimeType);
+
+    KMimeType::Ptr mime = KMimeType::findByContent(data);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), expectedMimeType );
+}
+
+void KMimeTypeTest::testFindByFileContent()
+{
+    KMimeType::Ptr mime;
     // Calling findByContent on a directory
     mime = KMimeType::findByFileContent("/");
     QVERIFY( mime );
