@@ -180,21 +180,35 @@ public:
     QtFontDim m_ascent, m_descent, m_leading;
     bool  ahem;
     int   pixS;
-#if 0
-    virtual glyph_metrics_t boundingBox( const glyph_t *glyphs,
-                                         const advance_t *advances, const qoffset_t *offsets, int numGlyphs );
-    glyph_metrics_t boundingBox( glyph_t glyph );
+    XFontStruct* xfs;
 
-    QFontEngine::Error stringToCMap( const QChar *, int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool ) const;
+    bool stringToCMap(const QChar *str, int len, QGlyphLayout *glyphs, int *nglyphs, QTextEngine::ShaperFlags flags) const
+    {
+        bool res = QFontEngineXLFD::stringToCMap(str, len, glyphs, nglyphs, flags);
+        if (!res)
+            return false;
 
-    int ascent() const;
-    int descent() const;
-    int leading() const;
-    int maxCharWidth() const;
-    int minLeftBearing() const { return 0; }
-    int minRightBearing() const { return 0; }
-    int cmap() const;
-#endif
+        // Go through the glyhs with glyph 0 and fix up their x advance
+        // to make sense (or at least match Qt3)
+        // ### set proper GPLv2 and Qt (c) when committed
+        QtFontDim fallBackWidth = xfs->min_bounds.width;
+        if (xfs->per_char) {
+            if (haveMetrics)
+                fallBackWidth = m_ascent; //### we really should get rid of these and regen..
+            else
+                fallBackWidth = xfs->ascent;
+        }
+
+        QGlyphLayout* g = glyphs + len;
+        while (g != glyphs) {
+            --g;
+            if (!g->glyph) {
+                g->advance.x = fallBackWidth;
+            }
+        }
+
+        return true;
+    }
 
     Type type() const
     {
@@ -293,6 +307,7 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
 QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
     : QFontEngineXLFD( fs,  name,  0)
 {
+    xfs = fs;
     pixS = size;
     this->name = QLatin1String(name);
     ahem = this->name.contains("ahem");
@@ -312,69 +327,7 @@ QFakeFontEngine::QFakeFontEngine( XFontStruct *fs, const char *name, int size )
 QFakeFontEngine::~QFakeFontEngine()
 {
 }
-#if 0
-QFontEngine::Error QFakeFontEngine::stringToCMap( const QChar *str, int len, glyph_t *glyphs, advance_t *advances, int *nglyphs, bool mirrored) const
-{
-    QFontEngine::Error ret = QFontEngineXLFD::stringToCMap( str, len, glyphs, advances, nglyphs, mirrored );
 
-    if ( ret != NoError )
-        return ret;
-
-    *nglyphs = len;
-
-    if ( advances ) {
-        for ( int i = 0; i < len; i++ )
-            *(advances++) = _size;
-    }
-    return NoError;
-}
-
-glyph_metrics_t QFakeFontEngine::boundingBox( const glyph_t *, const advance_t *, const qoffset_t *, int numGlyphs )
-{
-    glyph_metrics_t overall;
-    overall.x = overall.y = 0;
-    overall.width = _size*numGlyphs;
-    overall.height = _size;
-    overall.xoff = overall.width;
-    overall.yoff = 0;
-    return overall;
-}
-
-glyph_metrics_t QFakeFontEngine::boundingBox( glyph_t )
-{
-    return glyph_metrics_t( 0, _size, _size, _size, _size, 0 );
-}
-
-int QFakeFontEngine::ascent() const
-{
-    return _size;
-}
-
-int QFakeFontEngine::descent() const
-{
-    return 0;
-}
-
-int QFakeFontEngine::leading() const
-{
-    // the original uses double and creates quite random results depending
-    // on the compiler flags
-    int l = ( _size * 15 + 50) / 100;
-    // only valid on i386 without -O2 assert(l == int(qRound(_size * 0.15)));
-    return (l > 0) ? l : 1;
-}
-
-int QFakeFontEngine::maxCharWidth() const
-{
-    return _size;
-}
-
-int QFakeFontEngine::cmap() const
-{
-    return -1;
-}
-
-#endif
 
 bool QFakeFontEngine::canRender( const QChar *, int )
 {
@@ -449,9 +402,6 @@ static QFontEngine* loadFont(const QFontDef& request)
     return fe;
 }
 
-#if QT_VERSION >= 0x040100 
-/* Note: you may want the other path with earlier Qt4.1 snapshots */
-
 KDE_EXPORT
 QFontEngine *QFontDatabase::loadXlfd(int /* screen */, int /* script */, 
             const QFontDef &request, int /* force_encoding_id */)
@@ -463,21 +413,6 @@ extern "C" KDE_EXPORT int FcInit() {
     /* Make sure Qt uses the Xlfd path, which we intercept */
     return 0;
 }
-
-#else
-
-
-KDE_EXPORT
-QFontEngine *
-QFontDatabase::findFont( int script, const QFontPrivate *fp,
-			 const QFontDef &request, int ) {
-    QFontEngine* fe = loadFont(request);
-    QFontCache::Key key( request, script, fp->screen );
-    QFontCache::instance->insertEngine( key, fe );
-    return fe;
-}
-
-#endif
 
 KDE_EXPORT bool QFontDatabase::isBitmapScalable( const QString &,
 				      const QString &) const
