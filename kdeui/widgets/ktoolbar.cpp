@@ -704,18 +704,14 @@ void KToolBar::saveSettings( KConfigGroup &cg )
     // The whole set of indexes has to be saved.
     //kDebug(220) << name() << "                writing index " << index;
 
+    KMainWindow* kmw = mainWindow();
+    QList<KToolBar*> toolbarList = kmw->findChildren<KToolBar*>();
+
     // don't save if there's only one toolbar
-
-    // Don't use kmw->toolBarIterator() because you might
-    // mess up someone else's iterator.  Make the list on your own
-
-    /* FIXME KMainWindow port - no replacement
-    QList<KToolBar*> toolbarList = mainWindow()->findChildren<KToolBar*>();
-
     if ( !kmw || toolbarList.count() > 1 )
         cg.writeEntry("Index", index);
     else
-        cg.revertToDefault("Index");*/
+        cg.revertToDefault("Index");
 
     /* FIXME KMainWindow port - no replacement
     if(!cg.hasDefault("Offset") && offset() == d->OffsetDefault )
