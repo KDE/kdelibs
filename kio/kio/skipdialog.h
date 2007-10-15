@@ -39,12 +39,10 @@ public:
   SkipDialog( QWidget *parent, bool _multi, const QString& _error_text );
   ~SkipDialog();
 
-protected:
-
-public Q_SLOTS:
-  void b0Pressed();
-  void b1Pressed();
-  void b2Pressed();
+private Q_SLOTS:
+  void cancelPressed();
+  void skipPressed();
+  void autoSkipPressed();
 
 Q_SIGNALS:
   void result( SkipDialog *_this, int _button );
