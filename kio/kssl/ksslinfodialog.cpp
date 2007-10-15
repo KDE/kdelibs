@@ -136,7 +136,7 @@ KSSLInfoDialog::~KSSLInfoDialog() {
 }
 
 void KSSLInfoDialog::launchConfig() {
-    QProcess::startDetached("kcmshell", QStringList() << "crypto");
+    QProcess::startDetached("kcmshell4", QStringList() << "crypto");
 }
 
 

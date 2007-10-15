@@ -784,7 +784,7 @@ void KCertPart::slotDone() {
 
 
 void KCertPart::slotLaunch() {
-	QProcess::startDetached("kcmshell", QStringList() << "crypto");
+	QProcess::startDetached("kcmshell4", QStringList() << "crypto");
 }
 
 

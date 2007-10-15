@@ -210,7 +210,7 @@ void KFileSharePropsPlugin::slotConfigureFileSharing()
     if (d->m_configProc) return;
 
     d->m_configProc = new KfsProcess(this);
-    (*d->m_configProc) << KStandardDirs::findExe("kdesu") << "kcmshell" << "fileshare";
+    (*d->m_configProc) << KStandardDirs::findExe("kdesu") << "kcmshell4" << "fileshare";
     if (!d->m_configProc->start())
     {
        delete d->m_configProc;

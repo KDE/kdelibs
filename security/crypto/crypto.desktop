@@ -3,7 +3,7 @@ Encoding=UTF-8
 Icon=preferences-desktop-cryptography
 Type=Service
 ServiceTypes=KCModule
-Exec=kcmshell crypto
+Exec=kcmshell4 crypto
 X-DocPath=kcontrol/crypto/index.html
 
 X-KDE-Library=kcm_crypto

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Exec=kcmshell kcm_phonon
+Exec=kcmshell4 kcm_phonon
 Icon=preferences-desktop-sound
 Type=Service
 ServiceTypes=KCModule

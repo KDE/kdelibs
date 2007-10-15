@@ -360,10 +360,10 @@ void KBugReportPrivate::_k_slotConfigureEmail()
   if (m_process) return;
   m_process = new QProcess;
   QObject::connect( m_process, SIGNAL(finished( int, QProcess::ExitStatus )), q, SLOT(_k_slotSetFrom()) );
-  m_process->start( QString::fromLatin1("kcmshell"), QStringList() << QString::fromLatin1("kcm_useraccount") );
+  m_process->start( QString::fromLatin1("kcmshell4"), QStringList() << QString::fromLatin1("kcm_useraccount") );
   if ( !m_process->waitForStarted() )
   {
-    kDebug() << "Couldn't start kcmshell..";
+    kDebug() << "Couldn't start kcmshell4..";
     delete m_process;
     m_process = 0;
     return;
