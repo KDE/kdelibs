@@ -66,7 +66,7 @@ void KonqBookmarkContextMenu::addActions()
   }
   else
   {
-    if(owner()) 
+    if(owner())
     {
       addAction( SmallIcon("window-new"), i18n( "Open in New Window" ), this, SLOT( openInNewWindow() ) );
       addAction( SmallIcon("tab-new"), i18n( "Open in New Tab" ), this, SLOT( openInNewTab() ) );
@@ -182,58 +182,59 @@ QAction* KonqBookmarkMenu::actionForBookmark(const KBookmark &bm)
 
 KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QString &id )
 {
-  KConfig bookmarkrc("kbookmarkrc", KConfig::CascadeConfig);
-  KConfigGroup config(&bookmarkrc, "Bookmarks");
+    KConfig bookmarkrc("kbookmarkrc", KConfig::CascadeConfig);
+    KConfigGroup config(&bookmarkrc, "Bookmarks");
 
-  DynMenuInfo info;
-  info.show = false;
+    DynMenuInfo info;
+    info.show = false;
 
-  if (!config.hasKey("DynamicMenus")) {
-      if (bookmarkrc.hasGroup("DynamicMenu-" + id)) {
-          config.changeGroup("DynamicMenu-" + id);
-          info.show = config.readEntry("Show", false);
-          info.location = config.readPathEntry("Location");
-          info.type = config.readEntry("Type");
-          info.name = config.readEntry("Name");
-      }
-  }
-  return info;
+    if (!config.hasKey("DynamicMenus")) {
+        if (bookmarkrc.hasGroup("DynamicMenu-" + id)) {
+            KConfigGroup dynGroup(&bookmarkrc, "DynamicMenu-" + id);
+            info.show = dynGroup.readEntry("Show", false);
+            info.location = dynGroup.readPathEntry("Location");
+            info.type = dynGroup.readEntry("Type");
+            info.name = dynGroup.readEntry("Name");
+        }
+    }
+    return info;
 }
+
 QStringList KonqBookmarkMenu::dynamicBookmarksList()
 {
-  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig)->group("Bookmarks");
+    KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig)->group("Bookmarks");
 
-  QStringList mlist;
-  if (config.hasKey("DynamicMenus"))
-    mlist = config.readEntry("DynamicMenus", QStringList());
+    QStringList mlist;
+    if (config.hasKey("DynamicMenus"))
+        mlist = config.readEntry("DynamicMenus", QStringList());
 
-  return mlist;
+    return mlist;
 }
 
 void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &newMenu)
 {
-  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig)->group(QString("DynamicMenu-" + id));
+    KSharedConfig::Ptr kbookmarkrc = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig);
+    KConfigGroup dynConfig = kbookmarkrc->group(QString("DynamicMenu-" + id));
 
-  // add group unconditionally
-  config.writeEntry("Show", newMenu.show);
-  config.writePathEntry("Location", newMenu.location);
-  config.writeEntry("Type", newMenu.type);
-  config.writeEntry("Name", newMenu.name);
+    // add group unconditionally
+    dynConfig.writeEntry("Show", newMenu.show);
+    dynConfig.writePathEntry("Location", newMenu.location);
+    dynConfig.writeEntry("Type", newMenu.type);
+    dynConfig.writeEntry("Name", newMenu.name);
 
-  QStringList elist;
+    QStringList elist;
+    KConfigGroup config = kbookmarkrc->group("Bookmarks");
+    if (config.hasKey("DynamicMenus")) {
+        elist = config.readEntry("DynamicMenus", QStringList());
+    }
 
-  config.changeGroup("Bookmarks");
-  if (config.hasKey("DynamicMenus")) {
-    elist = config.readEntry("DynamicMenus", QStringList());
-  }
+    // make sure list includes type
+    if (!elist.contains(id)) {
+        elist << id;
+        config.writeEntry("DynamicMenus", elist);
+    }
 
-  // make sure list includes type
-  if (!elist.contains(id)) {
-    elist << id;
-    config.writeEntry("DynamicMenus", elist);
-  }
-
-  config.sync();
+    config.sync();
 }
 
 KonqBookmarkOwner::~KonqBookmarkOwner()
