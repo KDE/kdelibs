@@ -1045,6 +1045,8 @@ Q_SIGNALS:
 
   /**
    * Emitted when the user clicks the right mouse button on the document.
+   * See KParts::BrowserExtension for two more popupMenu signals emitted by khtml,
+   * with much more information in the signal.
    */
   void popupMenu( const QString &url, const QPoint &point );
 
