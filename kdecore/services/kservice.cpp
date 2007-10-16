@@ -65,11 +65,6 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     entryMap.remove("Name");
     if ( m_strName.isEmpty() )
     {
-        if (desktopGroup.readEntry( "Exec" ).isEmpty())
-        {
-            m_bValid = false;
-            return;
-        }
         // Try to make up a name.
         m_strName = entryPath;
         int i = m_strName.lastIndexOf('/');
@@ -96,6 +91,20 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
                        << " instead of \"Application\" or \"Service\"" << endl;
         m_bValid = false;
         return;
+    }
+
+    m_strExec = desktopGroup.readPathEntry( "Exec" );
+    entryMap.remove("Exec");
+
+    if ( m_strType == "Application" ) {
+        // It's an application? Should have an Exec line then, otherwise we can't run it
+        if (m_strExec.isEmpty()) {
+            kWarning(7012) << "The desktop entry file " << entryPath
+                           << " has Type=" << m_strType
+                           << " but no Exec line" << endl;
+            m_bValid = false;
+            return;
+        }
     }
 
     // In case Try Exec is set, check if the application is available
@@ -138,9 +147,6 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     pos = _name.indexOf('.');
     if (pos != -1)
         _name = _name.left(pos);
-
-    m_strExec = desktopGroup.readPathEntry( "Exec" );
-    entryMap.remove("Exec");
 
     m_strIcon = desktopGroup.readEntry( "Icon" );
     entryMap.remove("Icon");
