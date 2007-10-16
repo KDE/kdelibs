@@ -8,12 +8,12 @@ tutorial I will use "kedit" as example application.
 Configuring for debugging
 =========================
 
-You can use --enable-debug with the configure script, if you want to have
+You can use -DCMAKE_BUILD_TYPE=Debug with the configure script, if you want to have
 debug code in your KDE libs. If you have the space and can stand code that's
 somewhat slower, this is worth it. The extra information really
 helps debugging and thus bugfixing.
 
-On the other hand, --disable-debug removes all debug messages, leading
+On the other hand, -DCMAKE_BUILD_TYPE=None removes all debug messages, leading
 to a faster and cleaner desktop.
 
 
