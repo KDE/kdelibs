@@ -442,7 +442,7 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
                 ((size < dir->minSize()) || (size > dir->maxSize())))
               continue;
             if ((dir->type() == KIconLoader::Threshold) &&
-		(abs(dir->size()-size) > dir->threshold()))
+                (abs(dir->size()-size) > dir->threshold()))
                 continue;
         } else
         {
@@ -471,8 +471,7 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
              it's a downscale, and we only had upscales befores.
              This is to avoid scaling up unless we have to,
              since that looks very ugly */
-          if ((abs(dw) >= abs(delta)) ||
-              (delta > 0 && dw < 0))
+          if ((abs(dw) >= abs(delta)) || dw < 0)
             continue;
         }
 
@@ -480,18 +479,18 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
         if (path.isEmpty())
             continue;
         icon.path = path;
-        icon.size = dir->size();
+        icon.size = size;
         icon.type = dir->type();
-	icon.threshold = dir->threshold();
+        icon.threshold = dir->threshold();
         icon.context = dir->context();
 
         // if we got in MatchExact that far, we find no better
         if (match == KIconLoader::MatchExact)
             return icon;
-	else
+        else
         {
-	    delta = dw;
-	    if (delta==0) return icon; // We won't find a better match anyway
+            delta = dw;
+            if (delta==0) return icon; // We won't find a better match anyway
         }
     }
     return icon;
