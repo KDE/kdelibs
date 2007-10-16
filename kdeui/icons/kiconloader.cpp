@@ -615,35 +615,9 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
     const_cast<KIconLoaderPrivate*>(this)->initIconThemes();
 
     K3Icon icon;
+    const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
 
-    const char * ext1[4] = { ".png", ".svgz", ".svg", ".xpm" };
-    const char * ext2[4] = { ".svgz", ".svg", ".png", ".xpm" };
-    const char ** ext;
-
-    if (size == KIconLoader::SizeSmall ||
-        size == KIconLoader::SizeSmallMedium ||
-        size == KIconLoader::SizeMedium ||
-        size == KIconLoader::SizeLarge ||
-        size == KIconLoader::SizeHuge ||
-        size == KIconLoader::SizeEnormous)
-    {
-        ext = ext1; // size is standard, give preference to PNG over SVG when searching
-    }
-    else
-    {
-        ext = ext2; // size is non-standard, give preference to SVG over PNG when searching
-    }
-
-    /* If size parameter is a standard one, that means:
-
-           - KIconLoader::SizeSmall
-           - KIconLoader::SizeSmallMedium
-           - KIconLoader::SizeMedium
-           - KIconLoader::SizeLarge
-           - KIconLoader::SizeHuge
-           - KIconLoader::SizeEnormous
-
-       To follow the XDG icon theme and icon naming specifications,
+    /* To follow the XDG icon theme and icon naming specifications,
        the order in which we look for an icon is:
 
        png, svgz, svg, xpm exact match
@@ -664,32 +638,7 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
        (...)
 
        and so on.
-
-       If size parameter is a non-standard one, then we give more preference to
-       SVG format since drawing SVG's gives better quality and despite being
-       slower than resizing a PNG image, the cases where non-standard sizes are
-       asked are very rare. For non-standard sizes what we have is:
-
-       svgz, svg, png, xpm exact match
-       svgz, svg, png, xpm best match
-       less specific fallback in this theme: svgz, svg, png, xpm exact match
-                                             svgz, svg, png, xpm best match
-       even less specific fallback in this theme: [same order]
-       (...)
-
-       next theme in inheritance tree: svgz, svg, png, xpm exact match
-                                       svgz, svg, png, xpm best match
-       less specific fallbacks in this next theme
-       (...)
-
-       next theme in inheritance tree: svgz, svg, png, xpm exact match
-                                       svgz, svg, png, xpm best match
-       less specific fallbacks in this next theme
-       (...)
-
-       and so on.
        */
-
     foreach(KIconThemeNode *themeNode, links)
     {
         QStringList nameParts = name.split("-");
@@ -1032,6 +981,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     }
 
     // Scale the icon and apply effects if necessary
+    if (iconType == KIconLoader::Scalable && size != img->width())
+    {
+        *img = img->scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    }
     if (iconType == KIconLoader::Threshold && size != img->width())
     {
         if ( abs(size-img->width())>iconThreshold )
