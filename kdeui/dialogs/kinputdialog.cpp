@@ -446,7 +446,7 @@ QString getItem( const QString &caption, const QString &label,
     if (_ok) {
         if (editable)
             result = dlg.comboBox()->currentText();
-        else
+        else if( dlg.listBox()->currentItem())
             result = dlg.listBox()->currentItem()->text();
     }
 
