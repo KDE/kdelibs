@@ -471,8 +471,7 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
              it's a downscale, and we only had upscales befores.
              This is to avoid scaling up unless we have to,
              since that looks very ugly */
-          if ((abs(dw) >= abs(delta)) ||
-              (delta > 0 && dw < 0))
+          if ((abs(dw) >= abs(delta)) || dw < 0)
             continue;
         }
 
@@ -480,7 +479,14 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
         if (path.isEmpty())
             continue;
         icon.path = path;
+// The following code has been commented out because the Qt SVG renderer needs
+// to be improved. If you are going to change/remove some code from this part,
+// please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
+#if 0
+        icon.size = size;
+#else
         icon.size = dir->size();
+#endif
         icon.type = dir->type();
         icon.threshold = dir->threshold();
         icon.context = dir->context();
