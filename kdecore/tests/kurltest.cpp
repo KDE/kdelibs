@@ -1056,6 +1056,11 @@ void KUrlTest::testSetUser()
   QCOMPARE( emptyUserTest2.user(), QString::fromLatin1( "foo" ) );
   emptyUserTest2.setUser( QString() );
   QCOMPARE( emptyUserTest1==emptyUserTest2, true );
+
+  KUrl uga("ftp://ftp.kde.org");
+  uga.setUser("foo@bar");
+  QCOMPARE(uga.user(), QString::fromLatin1("foo@bar"));
+  QCOMPARE(uga.url(), QString::fromLatin1("ftp://foo%40bar@ftp.kde.org"));
 }
 
 void KUrlTest::testComparisons()
