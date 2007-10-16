@@ -52,8 +52,8 @@ public:
   void addData(const QByteArray &data);
   void endData();
 
-  bool isComplete() {return m_complete;}
-  QString fileName() {return m_fileName;}
+  bool isComplete() const {return m_complete;}
+  QString fileName() const {return m_fileName;}
 
   KHTMLPageCacheDelivery *fetchData(QObject *recvObj, const char *recvSlot);
 private:
