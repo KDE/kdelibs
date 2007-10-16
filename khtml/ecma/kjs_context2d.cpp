@@ -629,6 +629,7 @@ KJS_IMPLEMENT_PROTOTYPE("CanvasPatternProto", CanvasPatternProto, CanvasPatternF
 ValueImp *CanvasPatternFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
     assert(0);
+    return NULL;
 }
 
 CanvasPattern::CanvasPattern(ExecState* exec, DOM::CanvasPatternImpl* impl) :
