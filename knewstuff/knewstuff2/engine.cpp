@@ -46,6 +46,7 @@ public:
         setDxsPolicy(DxsEngine::DxsNever); // FIXME: until KIO/cDXS gets fixed!
         m_entry = NULL;
         m_modal = false;
+        m_parent = parent;
     }
 
     enum Command
@@ -65,6 +66,7 @@ public:
     KNS::Entry *m_entry;
     KNS::Provider::List m_providers;
     bool m_modal;
+    QWidget * m_parent;
 
   private Q_SLOTS:
     void slotProviderLoaded(KNS::Provider *provider);
@@ -128,7 +130,7 @@ void EnginePrivate::workflow()
                 SIGNAL(signalEntriesFeedFinished(const KNS::Feed*)),
                 SLOT(slotEntriesFeedFinished(const KNS::Feed*)));
 
-        m_downloaddialog = new DownloadDialog(this, 0);
+        m_downloaddialog = new DownloadDialog(this,m_parent);
         m_downloaddialog->show();
 
         connect(m_downloaddialog, SIGNAL(finished()), SLOT(slotDownloadDialogClosed()));
