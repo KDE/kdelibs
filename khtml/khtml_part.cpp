@@ -4662,7 +4662,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
   {
     KService::Ptr service = (*it);
 
-    KLibFactory* const factory = KLibLoader::self()->factory( QFile::encodeName(service->library()) );
+    KLibFactory* const factory = KLibLoader::self()->factory( service->library() );
     if ( factory ) {
       KParts::ReadOnlyPart *res = 0L;
 
