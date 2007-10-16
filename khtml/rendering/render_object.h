@@ -361,7 +361,7 @@ public:
     void updateBackgroundImages(RenderStyle* oldStyle);
 
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
-    virtual void removeInlineBox(InlineBox* box) {}
+    virtual void removeInlineBox(InlineBox* /*box*/) {}
 
     virtual short lineHeight( bool firstLine ) const;
     virtual short verticalPositionHint( bool firstLine ) const;
@@ -756,7 +756,7 @@ public:
     bool inPosObjectList() const { return m_inPosObjectList; }
 
     virtual void deleteInlineBoxes(RenderArena* arena=0) {(void)arena;}
-    virtual void dirtyInlineBoxes(bool fullLayout, bool isRootLineBox = false) {}
+    virtual void dirtyInlineBoxes(bool /*fullLayout*/, bool /*isRootLineBox*/ = false) {}
     virtual void dirtyLinesFromChangedChild(RenderObject*) {}
     virtual void detach( );
 
