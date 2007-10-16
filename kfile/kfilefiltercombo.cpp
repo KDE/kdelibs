@@ -130,7 +130,7 @@ QStringList KFileFilterCombo::filters() const
 
 void KFileFilterCombo::setCurrentFilter( const QString& filter )
 {
-    setEditText( filter );
+    setCurrentIndex(d->m_filters.indexOf(filter));
     filterChanged();
 }
 
