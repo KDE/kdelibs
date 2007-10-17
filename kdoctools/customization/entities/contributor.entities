@@ -66,6 +66,8 @@
 <!ENTITY Stephan.Binner.mail '<email>binner@kde.org</email>'>
 <!ENTITY Eric.Bischoff '<personname><firstname>Éric</firstname><surname>Bischoff</surname></personname>'>
 <!ENTITY Eric.Bischoff.mail '<email>e.bischoff@noos.fr</email>'>
+<!ENTITY Aron.Bostrom '<personname><firstname>Aron</firstname><surname>Boström</surname></personname>'>
+<!ENTITY Aron.Bostrom.mail '<email>aron.bostrom@gmail.com</email>'>
 <!ENTITY Michael.Brade '<personname><firstname>Michael</firstname><surname>Brade</surname></personname>'>
 <!ENTITY Michael.Brade.mail '<email>brade@kde.org</email>'>
 <!ENTITY Preston.Brown '<personname><firstname>Preston</firstname><surname>Brown</surname></personname>'>
