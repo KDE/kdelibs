@@ -944,7 +944,7 @@ void KGlobalSettings::Private::kdisplaySetPalette()
         QApplication::setPalette( q->createApplicationPalette() );
         QPalette ttp = createTooltipPalette();
         QToolTip::setPalette( ttp );
-        QWhatsThis::setPalette( ttp ); // TODO (when Qt supports it)
+        // QWhatsThis::setPalette( ttp ); // TODO (when Qt supports it)
         emit q->kdisplayPaletteChanged();
         emit q->appearanceChanged();
     }
