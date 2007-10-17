@@ -76,6 +76,20 @@ public:
   void setTextElideMode( Qt::TextElideMode mode );
 
 public Q_SLOTS:
+  /**
+   * Sets the text. Note that this is not technically a reimplementation of QLabel::setText(),
+   * which is not virtual (in Qt 4.3). Therefore, you may need to cast the object to
+   * KSqueezedTextLabel in some situations:
+   * \Example
+   * \code
+   * KSqueezedTextLabel* squeezed = new KSqueezedTextLabel("text", parent);
+   * QLabel* label = squeezed;
+   * label->setText("new text");	// this will not work
+   * squeezed->setText("new text");	// works as expected
+   * static_cast<KSqueezedTextLabel*>(label)->setText("new text");	// works as expected
+   * \endcode
+   * @param mode The new text.
+   */
   void setText( const QString &text );
 
 protected:
