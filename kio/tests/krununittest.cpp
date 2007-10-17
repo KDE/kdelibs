@@ -94,7 +94,7 @@ void KRunUnitTest::testProcessDesktopExec()
     KUrl::List l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
 
     static const char
-        *execs[] = { "Exec=date -u", "Exec=echo $$PWD" },
+        *execs[] = { "Exec=date -u", "Exec=echo $PWD" },
         *terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
           *sus[] = { "X-KDE-SubstituteUID=false", "X-KDE-SubstituteUID=true\nX-KDE-Username=sprallo" },
         *rslts[] = {
