@@ -991,7 +991,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
 #ifdef MAX_COOKIE_LIMIT
         if (cookieList->count() >= MAX_COOKIES_PER_HOST)
            makeRoom(cookieList, cookiePtr); // Delete a cookie
-#endif           
+#endif
         cookieList->inSort( cookiePtr );
         m_cookiesChanged = true;
     }
@@ -1016,7 +1016,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     extractDomains(cookiePtr->host(), domains);
 
     // If the cookie specifies a domain, check whether it is valid. Otherwise,
-    // accept the cookie anyways but removes the domain="" value to prevent
+    // accept the cookie anyways but remove the domain="" value to prevent
     // cross-site cookie injection.
     if (!cookiePtr->domain().isEmpty())
     {
