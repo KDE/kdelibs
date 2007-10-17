@@ -3290,12 +3290,6 @@ try_again:
 
   } while (!m_bEOF && (len || noHeader) && (headerSize < maxHeaderSize) && (gets(buffer, sizeof(buffer)-1)));
 
-  // Send the current response before processing starts or it
-  // might never get sent...
-  // Except if this is just a validation, then the cached request sends them
-  if (!cacheValidated)
-    forwardHttpResponseHeader();
-
   // Now process the HTTP/1.1 upgrade
   QStringList::Iterator opt = upgradeOffers.begin();
   for( ; opt != upgradeOffers.end(); ++opt) {
@@ -3646,6 +3640,10 @@ try_again:
     kDebug(7113) << "Emitting mimetype " << m_strMimeType;
     mimeType( m_strMimeType );
   }
+
+  // Do not move send response header before any redirection as it seems
+  // to screw up some sites. See BR# 150904.
+  forwardHttpResponseHeader();
 
   if (m_request.method == HTTP_HEAD)
      return true;
