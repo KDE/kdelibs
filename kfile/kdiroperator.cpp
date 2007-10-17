@@ -370,7 +370,7 @@ KDirLister *KDirOperator::dirLister() const
 
 void KDirOperator::resetCursor()
 {
-    if (qApp);
+    if (qApp)
         QApplication::restoreOverrideCursor();
     d->progressBar->hide();
 }
