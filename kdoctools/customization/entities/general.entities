@@ -119,7 +119,8 @@
 <!ENTITY artswrapper	"<application>artswrapper</application>">
 <!ENTITY ATAPI	"<acronym>ATAPI</acronym>">
 <!ENTITY atlantik	"<application>Atlantik</application>">
-<!ENTITY blinken	"<application>blinKen</application>">
+<!ENTITY blinken	"<application>Blinken</application>">
+<!ENTITY bovo	"<application>Bovo</application>">
 <!ENTITY catalogmanager	"<application>Catalog Manager</application>">
 <!ENTITY CD	"<acronym>CD</acronym>">
 <!ENTITY CDE	"<acronym>CDE</acronym>">
