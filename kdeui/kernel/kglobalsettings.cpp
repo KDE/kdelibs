@@ -45,6 +45,10 @@
 #include <QtDBus/QtDBus>
 #include <QtGui/QStyleFactory>
 
+// next two needed so we can set their palettes
+#include <QtGui/QToolTip>
+#include <QtGui/QWhatsThis>
+
 #ifdef Q_WS_WIN
 #include <windows.h>
 #include <kkernel_win.h>
@@ -99,6 +103,9 @@ class KGlobalSettings::Private
         void kdisplaySetStyle();
         void kdisplaySetFont();
         void applyGUIStyle();
+
+        // TODO (4.1?) - make not-private, if used in KStyle
+        static QPalette createTooltipPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
 
         /**
          * @internal
@@ -885,6 +892,47 @@ QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &confi
 }
 
 
+QPalette KGlobalSettings::Private::createTooltipPalette(const KSharedConfigPtr &config)
+{
+    QPalette palette = QToolTip::palette();
+
+    QPalette::ColorGroup setStates[3] = { QPalette::Active, QPalette::Inactive,
+                                          QPalette::Disabled };
+    QPalette::ColorGroup useStates[3] = { QPalette::Active, QPalette::Active,
+                                          QPalette::Disabled };
+
+    for ( int i = 0; i < 3 ; i++ ) {
+        // tooltips are never active (arguably a bug?), but should be drawn as if they were
+        QPalette::ColorGroup state = setStates[i];
+        QPalette::ColorGroup stateUsed = useStates[i];
+        KColorScheme schemeButton(stateUsed, KColorScheme::Button, config);
+        KColorScheme schemeSelection(stateUsed, KColorScheme::Selection, config);
+        KColorScheme schemeTooltip(stateUsed, KColorScheme::Tooltip, config);
+
+        palette.setBrush( state, QPalette::WindowText, schemeTooltip.foreground() );
+        palette.setBrush( state, QPalette::Window, schemeTooltip.background() );
+        palette.setBrush( state, QPalette::Base, schemeTooltip.background() );
+        palette.setBrush( state, QPalette::Text, schemeTooltip.foreground() );
+        palette.setBrush( state, QPalette::Button, schemeButton.background() );
+        palette.setBrush( state, QPalette::ButtonText, schemeButton.foreground() );
+        palette.setBrush( state, QPalette::Highlight, schemeSelection.background() );
+        palette.setBrush( state, QPalette::HighlightedText, schemeSelection.foreground() );
+
+        palette.setColor( state, QPalette::Light, schemeTooltip.shade( KColorScheme::LightShade ) );
+        palette.setColor( state, QPalette::Midlight, schemeTooltip.shade( KColorScheme::MidlightShade ) );
+        palette.setColor( state, QPalette::Mid, schemeTooltip.shade( KColorScheme::MidShade ) );
+        palette.setColor( state, QPalette::Dark, schemeTooltip.shade( KColorScheme::DarkShade ) );
+        palette.setColor( state, QPalette::Shadow, schemeTooltip.shade( KColorScheme::ShadowShade ) );
+
+        palette.setBrush( state, QPalette::AlternateBase, schemeTooltip.background( KColorScheme::AlternateBackground) );
+        palette.setBrush( state, QPalette::Link, schemeTooltip.foreground( KColorScheme::LinkText ) );
+        palette.setBrush( state, QPalette::LinkVisited, schemeTooltip.foreground( KColorScheme::VisitedText ) );
+    }
+
+    return palette;
+}
+
+
 void KGlobalSettings::Private::kdisplaySetPalette()
 {
     // Added by Sam/Harald (TT) for Mac OS X initially, but why?
@@ -894,6 +942,9 @@ void KGlobalSettings::Private::kdisplaySetPalette()
 
     if (qApp && qApp->type() == QApplication::GuiClient) {
         QApplication::setPalette( q->createApplicationPalette() );
+        QPalette ttp = createTooltipPalette();
+        QToolTip::setPalette( ttp );
+        QWhatsThis::setPalette( ttp ); // TODO (when Qt supports it)
         emit q->kdisplayPaletteChanged();
         emit q->appearanceChanged();
     }
