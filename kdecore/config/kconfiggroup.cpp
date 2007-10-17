@@ -418,6 +418,9 @@ QString KConfigGroup::readEntry<QString>( const QByteArray& key, const QString& 
     if (aValue.isNull())
         aValue = aDefault;
 
+    if (expand)
+        return KConfigGroupPrivate::expandString(aValue);
+
     return aValue;
 }
 
@@ -687,8 +690,8 @@ QStringList KConfigGroup::readEntry(const QByteArray &key, const QStringList& aD
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
 
     QStringList value;
-    if (!data.contains(escaped)) {
-        value = data.split(separator); // easy no escaped separators
+    if (!data.contains(escaped)) { // easy no escaped separators
+        value = data.split(separator);
     } else {
         // now look out for escaped separators
         for(int i=0; i < data.size(); /* nothing */) {
@@ -743,10 +746,7 @@ QString KConfigGroup::readPathEntry( const QByteArray &key, const QString& aDefa
     if (aValue.isNull())
         aValue = aDefault;
 
-    // only do dollar expansion if it's an expandable string
-    if (expand)
-        return KConfigGroupPrivate::expandString(aValue);
-    return aValue;
+    return KConfigGroupPrivate::expandString(aValue);
 }
 
 QStringList KConfigGroup::readPathListEntry( const QString& pKey, char sep ) const
@@ -773,10 +773,7 @@ QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) c
 
     if (!data.contains(escaped)) { // easy no escaped separators
         foreach(const QString& s, data.split(separator)) {
-            if (expand)
-                value << KConfigGroupPrivate::expandString(s);
-            else
-                value << s;
+            value << KConfigGroupPrivate::expandString(s);
         }
     } else { // now look out for escaped separators
         QStringList value;
@@ -784,10 +781,7 @@ QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) c
             int end = data.indexOf(separator, i);
     again:
             if (end < 0) { // no more separators found, end of entry
-                if (expand)
-                    value << KConfigGroupPrivate::expandString(data.mid(i).replace(escaped, separator));
-                else
-                    value << data.mid(i).replace(escaped, separator);
+                value << KConfigGroupPrivate::expandString(data.mid(i).replace(escaped, separator));
                 i = data.size();
             } else if (end == 0) { // empty first element
                 value << QString();
@@ -796,10 +790,7 @@ QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) c
                 end = data.indexOf(separator, end+1);
                 goto again;
             } else {
-                if (expand)
-                    value << KConfigGroupPrivate::expandString(data.mid(i, end-i).replace(escaped, separator));
-                else
-                    value << data.mid(i, end-i).replace(escaped, separator);
+                value << KConfigGroupPrivate::expandString(data.mid(i, end-i).replace(escaped, separator));
                 i = end+1;
             }
         }

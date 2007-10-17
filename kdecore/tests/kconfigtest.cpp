@@ -27,6 +27,8 @@
 #include <kconfiggroup.h>
 #include <kstandarddirs.h>
 
+#include <QtNetwork/QHostInfo>
+
 KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
 KCONFIGGROUP_DECLARE_FLAGS_QOBJECT(KConfigTest,Flags)
 
@@ -288,6 +290,28 @@ void KConfigTest::testPath()
   QString p = sc3.readPathEntry("homepath");
   QCOMPARE( sc3.readPathEntry( "homepath", QString() ), HOMEPATH );
   QCOMPARE( sc3.readPathEntry( "homepathescape", QString() ), HOMEPATHESCAPE );
+  
+  {
+      QFile file(KStandardDirs::locateLocal("config", "pathtest"));
+      file.open(QIODevice::WriteOnly|QIODevice::Text);
+      QTextStream out(&file);
+      out.setCodec("UTF-8");
+      out << "[Test Group]" << endl
+              << "homePath=$HOME/foo" << endl
+              << "homePath2=file://$HOME/foo" << endl
+              << "hostname[$e]=$(hostname)" << endl;
+  }
+  KConfig cf2("pathtest");
+  KConfigGroup group = cf2.group("Test Group");
+  QVERIFY(group.hasKey("homePath"));
+  QCOMPARE(group.readPathEntry("homePath"), HOMEPATH);
+  QVERIFY(group.hasKey("homePath2"));
+  QCOMPARE(group.readPathEntry("homePath2"), QString("file://") + HOMEPATH );
+#ifndef Q_OS_WIN32
+  // I don't know if this will work on windows
+  QVERIFY(group.hasKey("hostname"));
+  QCOMPARE(group.readEntry("hostname", QString()), QHostInfo::localHostName());
+#endif
 }
 
 void KConfigTest::testPersistenceOfExpandFlagForPath()
