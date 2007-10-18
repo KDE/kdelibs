@@ -177,10 +177,10 @@ void KMWIppPrinter::slotPrinterSelected(Q3ListViewItem *item)
         if (req.text("printer-make-and-model", value) && !value.isEmpty()) txt.append(i18n("<b>Model</b>: %1<br />", value));
         if (req.enumvalue("printer-state", state)) {
             switch (state) {
-            case IPP_PRINTER_IDLE: value = i18n("Idle"); break;
-            case IPP_PRINTER_STOPPED: value = i18n("Stopped"); break;
-            case IPP_PRINTER_PROCESSING: value = i18n("Processing..."); break;
-            default: value = i18nc("Unknown State", "Unknown"); break;
+            case IPP_PRINTER_IDLE: value = i18nc("@item:intext Printer state", "Idle"); break;
+            case IPP_PRINTER_STOPPED: value = i18nc("@item:intext Printer state", "Stopped"); break;
+            case IPP_PRINTER_PROCESSING: value = i18nc("@item:intext Printer state", "Processing..."); break;
+            default: value = i18nc("@item:intext Printer state", "Unknown"); break;
             }
             txt.append(i18n("<b>State</b>: %1<br />", value));
         }
