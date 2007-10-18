@@ -86,6 +86,9 @@
 <!ENTITY traducteurGuillaumeDuweltzRebert     '<othercredit role="translator"><firstname>Guillaume</firstname><surname>Duweltz</surname><affiliation><address><email>gduwelz-rebert.cs@clearstream.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurGuillaumeDuweltzRebert      '<othercredit role="relecteur"><firstname>Guillaume</firstname><surname>Duweltz</surname><affiliation><address><email>gduwelz-rebert.cs@clearstream.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurGuillaumeFahrner     '<othercredit role="translator"><firstname>Guillaume</firstname><surname>Fahrner</surname><affiliation><address><email>Admin@SecurityHack.Org</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurGuillaumeFahrner      '<othercredit role="relecteur"><firstname>Guillaume</firstname><surname>Fahrner</surname><affiliation><address><email>Admin@SecurityHack.Org</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurSamiFantar    '<othercredit role="translator"><firstname>Sami</firstname><surname>Fantar</surname><affiliation><address><email>sami.fantar@laposte.net</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurSamiFantar     '<othercredit role="reviewer"><firstname>Sami</firstname><surname>Fantar</surname><affiliation><address><email>sami.fantar@laposte.net</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
