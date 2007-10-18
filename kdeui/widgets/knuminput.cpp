@@ -531,10 +531,10 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
         w += priv->m_colw2 + 8;
 
         if(priv->m_slider)
-            priv->m_slider->setGeometry(w, h, e->size().width() - w, d->m_sizeSpin.height());
+            priv->m_slider->setGeometry(w, h, e->size().width() - w, d->m_sizeSpin.height() + KDialog::spacingHint());
     }
     else if(priv->m_slider) {
-        priv->m_slider->setGeometry(w, h, e->size().width() - (w + priv->m_colw2 + KDialog::spacingHint()), d->m_sizeSpin.height());
+        priv->m_slider->setGeometry(w, h, e->size().width() - (w + priv->m_colw2 + KDialog::spacingHint()), d->m_sizeSpin.height() + KDialog::spacingHint());
         d->m_spin->setGeometry(w + priv->m_slider->size().width() + KDialog::spacingHint(), h, priv->m_colw2, d->m_sizeSpin.height());
     }
     else {
@@ -741,12 +741,12 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
         w += priv->m_colw2 + KDialog::spacingHint();
 
         if(priv->m_slider)
-            priv->m_slider->setGeometry(w, h, e->size().width() - w, d->m_sizeEdit.height());
+            priv->m_slider->setGeometry(w, h, e->size().width() - w, d->m_sizeEdit.height() + KDialog::spacingHint());
     }
     else if(priv->m_slider) {
         priv->m_slider->setGeometry(w, h, e->size().width() -
                                     (priv->m_colw1 + priv->m_colw2 + KDialog::spacingHint()),
-                              d->m_sizeEdit.height());
+                              d->m_sizeEdit.height() + KDialog::spacingHint());
         d->spin->setGeometry(w + priv->m_slider->width() + KDialog::spacingHint(), h,
                              priv->m_colw2, d->m_sizeEdit.height());
     }
