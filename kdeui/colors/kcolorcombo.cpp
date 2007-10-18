@@ -155,7 +155,7 @@ QSize KColorComboDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 K_GLOBAL_STATIC_WITH_ARGS(QVector<QColor>, standardPalette, (STANDARD_PAL_SIZE))
 static void createStandardPalette()
 {
-    if ( standardPalette )
+    if ( standardPalette->isEmpty() )
         return;
 
     int i = 0;
