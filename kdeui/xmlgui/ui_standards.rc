@@ -80,7 +80,7 @@
     <Separator/>
     <MergeLocal/>
   </Menu>
-  <Menu name="move"><text>&amp;Move</text>
+  <Menu name="move"><text context="@title:menu Game move">&amp;Move</text>
     <Action name="move_repeat"/>
     <Action name="move_undo"/>
     <Action name="move_redo"/>
