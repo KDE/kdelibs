@@ -56,6 +56,9 @@
 #include <assert.h>
 #include <kconfiggroup.h>
 
+// The following define exists because the Qt SVG renderer needs
+// to be improved. This will be removed soon. (ereslibre)
+#undef KDE_QT_SVG_RENDERER_FIXED
 
 //#define NO_LAZYLOAD_ICONTHEME
 
@@ -619,7 +622,7 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
 // The following code has been commented out because the Qt SVG renderer needs
 // to be improved. If you are going to change/remove some code from this part,
 // please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
-#if 0
+#ifdef KDE_QT_SVG_RENDERER_FIXED
     const char * ext1[4] = { ".png", ".svgz", ".svg", ".xpm" };
     const char * ext2[4] = { ".svgz", ".svg", ".png", ".xpm" };
     const char ** ext;
@@ -704,6 +707,10 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
 
         while (!nameParts.isEmpty())
         {
+// The following code has been commented out because the Qt SVG renderer needs
+// to be improved. If you are going to change/remove some code from this part,
+// please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
+#ifdef KDE_QT_SVG_RENDERER_FIXED
             for (int i = 0 ; i < 4 ; i++)
             {
                 icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchExact);
@@ -717,6 +724,18 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
                 if (icon.isValid())
                     return icon;
             }
+#else
+            for (int i = 0 ; i < 4 ; i++)
+            {
+                icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchExact);
+                if (icon.isValid())
+                    return icon;
+
+                icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchBest);
+                if (icon.isValid())
+                    return icon;
+            }
+#endif
 
             nameParts.removeLast();
             currentName = nameParts.join("-");
@@ -1039,7 +1058,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     }
 
     // Scale the icon and apply effects if necessary
-#if 1
+#ifndef KDE_QT_SVG_RENDERER_FIXED
     // The following code needs to be removed after the SVG rendering has been
     // fixed (please take a look at the comment above). Please do not remove the
     // #if condition as it marks what needs to be removed (ereslibre)

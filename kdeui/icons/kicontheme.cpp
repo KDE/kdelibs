@@ -48,6 +48,10 @@
 
 #include <kconfiggroup.h>
 
+// The following define exists because the Qt SVG renderer needs
+// to be improved. This will be removed soon. (ereslibre)
+#undef KDE_QT_SVG_RENDERER_FIXED
+
 class KIconTheme::KIconThemePrivate
 {
 public:
@@ -482,8 +486,8 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
 // The following code has been commented out because the Qt SVG renderer needs
 // to be improved. If you are going to change/remove some code from this part,
 // please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
-#if 0
-         icon.size = size;
+#ifdef KDE_QT_SVG_RENDERER_FIXED
+        icon.size = size;
 #else
         icon.size = dir->size();
 #endif
