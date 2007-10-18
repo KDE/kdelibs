@@ -1,5 +1,6 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_subdirectory(kconfig_compiler)
+configure_file(config-kxmlguitest.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kxmlguitest.h )
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
