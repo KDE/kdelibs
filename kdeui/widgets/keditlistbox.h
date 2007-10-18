@@ -92,6 +92,8 @@ public:
 
       Q_DECLARE_FLAGS( Buttons, Button )
 
+// ### KDE5: remove name arguments and simplify (merge?!) constructors
+
       /**
        * Create an editable listbox.
        *
