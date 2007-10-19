@@ -164,7 +164,7 @@ KGuiItem adminMode()
 
 KGuiItem clear()
 {
-  return KGuiItem( i18n( "C&lear" ), "locationbar-erase",
+  return KGuiItem( i18n( "C&lear" ), "edit-clear-locationbar",
                    i18n( "Clear input" ),
                    i18n( "Clear the input in the edit field" ) );
 }
