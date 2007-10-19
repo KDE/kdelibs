@@ -372,7 +372,7 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
     bool defaultDir = dir.isEmpty();
     bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
     KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
-    if ( !specialDir ) {
+    if ( !specialDir && !defaultDir ) {
         if (!dir.isLocalFile())
             kWarning() << "KFileDialog::getSaveFileName called with non-local start dir " << dir;
         dlg.setSelection( dir.path() ); // may also be a filename
@@ -406,7 +406,7 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
     // TODO
 #endif
 
-    if ( !specialDir ) {
+    if ( !specialDir && !defaultDir ) {
         if (!dir.isLocalFile())
             kWarning() << "KFileDialog::getSaveFileNameWId called with non-local start dir " << dir;
         dlg.setSelection( dir.path() ); // may also be a filename
