@@ -136,11 +136,6 @@ provides a full web browser component.
         [ <a href="dnssd/html/index.html">Documentation</a> |
           <a href="dnssd/html/classes.html">Classes</a> ]</dd>
 
-    <dt>KDEfx</dt>
-    <dd>KDE's graphic effects library.<br>
-        [ <a href="kdefx/html/index.html">Documentation</a> |
-          <a href="kdefx/html/classes.html">Classes</a> ]</dd>
-
     <dt>KJS</dt>
     <dd>JavaScript (aka. ECMAScript and JScript) support.<br>
         [ <a href="kjs/html/index.html">Documentation</a> |
