@@ -204,7 +204,7 @@ void OutputDeviceChoice::updateAudioOutputDevices()
         QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
         QList<Phonon::AudioOutputDevice> orderedList;
         if (model->rowCount() > 0) {
-            QList<int> order = m_outputModel.value(i)->tupleIndexOrder();
+            QList<int> order = model->tupleIndexOrder();
             foreach (int idx, order) {
                 if (hashCopy.contains(idx)) {
                     orderedList << hashCopy.take(idx);
