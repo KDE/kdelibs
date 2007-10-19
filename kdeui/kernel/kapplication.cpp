@@ -110,7 +110,6 @@
 
 #include <QtGui/QActionEvent>
 #include <kcomponentdata.h>
-#include <klibloader.h>
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
