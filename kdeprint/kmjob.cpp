@@ -107,28 +107,28 @@ QString KMJob::stateString()
     QString str;
     switch (m_state) {
     case KMJob::Printing:
-        str = i18n("Processing...");
+        str = i18nc("@item:intext Job state", "Processing...");
         break;
     case KMJob::Queued:
-        str = i18n("Queued");
+        str = i18nc("@item:intext Job state", "Queued");
         break;
     case KMJob::Held:
-        str = i18n("Held");
+        str = i18nc("@item:intext Job state", "Held");
         break;
     case KMJob::Error:
-        str = i18n("Error");
+        str = i18nc("@item:intext Job state", "Error");
         break;
     case KMJob::Cancelled:
-        str = i18n("Canceled");
+        str = i18nc("@item:intext Job state", "Canceled");
         break;
     case KMJob::Aborted:
-        str = i18n("Aborted");
+        str = i18nc("@item:intext Job state", "Aborted");
         break;
     case KMJob::Completed:
-        str = i18n("Completed");
+        str = i18nc("@item:intext Job state", "Completed");
         break;
     default:
-        str = i18nc("Unknown State", "Unknown");
+        str = i18nc("@item:intext Job state", "Unknown");
         break;
     }
     return str;

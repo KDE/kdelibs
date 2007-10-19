@@ -132,10 +132,10 @@ QString KMPrinter::stateString() const
 {
     QString s;
     switch (state()) {
-    case KMPrinter::Idle: s = i18n("Idle"); break;
-    case KMPrinter::Processing: s = i18n("Processing..."); break;
-    case KMPrinter::Stopped: s = i18n("Stopped"); break;
-    default: return i18nc("Unknown State", "Unknown");
+    case KMPrinter::Idle: s = i18nc("@item:intext Printer state", "Idle"); break;
+    case KMPrinter::Processing: s = i18nc("@item:intext Printer state", "Processing..."); break;
+    case KMPrinter::Stopped: s = i18nc("@item:intext Printer state", "Stopped"); break;
+    default: return i18nc("@item:intext Printer state", "Unknown");
     }
     s += (' ' + (m_state & Rejecting ? i18n("(rejecting jobs)") : i18n("(accepting jobs)")));
     return s;
