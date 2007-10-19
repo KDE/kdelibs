@@ -89,7 +89,11 @@ bool FactoryPrivate::createBackend()
             if (pluginLib.load()) {
                 pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
                 QPluginLoader pluginLoader(pluginLib.fileName());
-                Q_ASSERT(pluginLoader.load());
+                if (!pluginLoader.load()) {
+                    pDebug() << Q_FUNC_INFO << "  load failed:"
+                             << pluginLoader.errorString();
+                    continue;
+                }
                 pDebug() << pluginLoader.instance();
                 m_backendObject = pluginLoader.instance();
                 if (m_backendObject) {
