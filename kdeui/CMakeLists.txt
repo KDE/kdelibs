@@ -477,7 +477,7 @@ if (Q_WS_MAC)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
 endif (Q_WS_MAC)
 
-install( FILES colors/40.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
+install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 set( kded_globalaccel_SRCS shortcuts/kdedglobalaccel.cpp )
 if ( Q_WS_X11 )
