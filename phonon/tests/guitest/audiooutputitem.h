@@ -22,12 +22,15 @@
 
 #include "sinkitem.h"
 #include <Phonon/AudioOutput>
+#include <Phonon/AudioOutputDeviceModel>
 #include <Phonon/VolumeSlider>
 
 class QModelIndex;
+class QListView;
 
 using Phonon::AudioOutput;
 using Phonon::VolumeSlider;
+using Phonon::AudioOutputDeviceModel;
 
 class AudioOutputItem : public SinkItem
 {
@@ -42,11 +45,14 @@ class AudioOutputItem : public SinkItem
         virtual const MediaNode *mediaNode() const { return &m_output; }
 
     private slots:
+        void availableDevicesChanged();
         void deviceChange(const QModelIndex &modelIndex);
 
     private:
         AudioOutput m_output;
         VolumeSlider *m_volslider;
+        AudioOutputDeviceModel *m_model;
+        QListView *m_deviceListView;
 };
 
 #endif // AUDIOOUTPUTITEM_H

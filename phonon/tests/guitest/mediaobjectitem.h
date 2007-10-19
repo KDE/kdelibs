@@ -32,6 +32,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QProgressBar>
 #include <QtGui/QToolButton>
+class QPushButton;
 
 using Phonon::MediaNode;
 using Phonon::SeekSlider;
@@ -69,10 +70,10 @@ class MediaObjectItem : public WidgetRectItem
         QToolButton *m_play;
         QToolButton *m_pause;
         QToolButton *m_stop;
-        QToolButton *m_titleButton;
-        QToolButton *m_chapterButton;
-        QToolButton *m_angleButton;
-        QToolButton *m_navigationButton;
+        QPushButton *m_titleButton;
+        QPushButton *m_chapterButton;
+        QPushButton *m_angleButton;
+        QPushButton *m_navigationButton;
         QLabel *m_statelabel;
         QProgressBar *m_bufferProgress;
         QLabel *m_totaltime;

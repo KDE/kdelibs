@@ -38,105 +38,136 @@ MediaObjectItem::MediaObjectItem(const QPoint &pos, QGraphicsView *widget)
     m_navigationWidget(0)
 {
     setBrush(QColor(255, 100, 100, 150));
+    setTitle("Media Object");
 
     QVBoxLayout *topLayout = new QVBoxLayout(m_frame);
     topLayout->setMargin(0);
 
+    // as wide as possible:
     KLineEdit *file = new KLineEdit(m_frame);
     file->setCompletionObject(new KUrlCompletion(KUrlCompletion::FileCompletion));
     connect(file, SIGNAL(returnPressed(const QString &)), SLOT(loadUrl(const QString &)));
     topLayout->addWidget(file);
 
-    QHBoxLayout *mediaLayout = new QHBoxLayout(m_frame);
-    topLayout->addLayout(mediaLayout);
-    QPushButton *audiocdButton = new QPushButton("CD", m_frame);
-    QPushButton *dvdButton = new QPushButton("DVD", m_frame);
-    mediaLayout->addWidget(audiocdButton);
-    mediaLayout->addWidget(dvdButton);
-    connect(audiocdButton, SIGNAL(clicked()), SLOT(openCD()));
-    connect(dvdButton,     SIGNAL(clicked()), SLOT(openDVD()));
-
     m_seekslider = new SeekSlider(m_frame);
     topLayout->addWidget(m_seekslider);
 
-    QFrame *frame0 = new QFrame(m_frame);
-    topLayout->addWidget(frame0);
-    QHBoxLayout *hlayout = new QHBoxLayout(frame0);
-    hlayout->setMargin(0);
+    // not much need for horizontal space:
+    QHBoxLayout *subLayout = new QHBoxLayout();
+    subLayout->setMargin(0);
+    subLayout->setSpacing(4);
+    topLayout->addLayout(subLayout);
 
-    QFrame *frame1 = new QFrame(frame0);
-    hlayout->addWidget(frame1);
-    QHBoxLayout *vlayout = new QHBoxLayout(frame1);
-    vlayout->setMargin(0);
+    QVBoxLayout *mediaLayout = new QVBoxLayout();
+    mediaLayout->setMargin(0);
+    mediaLayout->setSpacing(4);
+    subLayout->addLayout(mediaLayout);
+
+    QToolButton *audiocdButton = new QToolButton(m_frame);
+    audiocdButton->setIconSize(QSize(32, 32));
+    audiocdButton->setToolTip("CD");
+    audiocdButton->setIcon(KIcon("media-optical-audio"));
+    mediaLayout->addWidget(audiocdButton);
+    connect(audiocdButton, SIGNAL(clicked()), SLOT(openCD()));
+
+    QToolButton *dvdButton = new QToolButton(m_frame);
+    dvdButton->setIconSize(QSize(32, 32));
+    dvdButton->setToolTip("DVD");
+    dvdButton->setIcon(KIcon("media-optical-dvd"));
+    mediaLayout->addWidget(dvdButton);
+    connect(dvdButton,     SIGNAL(clicked()), SLOT(openDVD()));
+
+    mediaLayout->addStretch();
+
+    QVBoxLayout *buttonLayout = new QVBoxLayout();
+    buttonLayout->setMargin(0);
+    buttonLayout->setSpacing(4);
+    subLayout->addLayout(buttonLayout);
+
+    QHBoxLayout *mediaControlsLayout = new QHBoxLayout();
+    mediaControlsLayout->setMargin(0);
+    mediaControlsLayout->setSpacing(2);
+    buttonLayout->addLayout(mediaControlsLayout);
 
     // playback controls
-    m_play = new QToolButton(frame1);
+    m_play = new QToolButton(m_frame);
     m_play->setIconSize(QSize(32, 32));
-    m_play->setText("play");
+    m_play->setFixedSize(36, 36);
+    m_play->setToolTip("play");
     m_play->setIcon(KIcon("media-playback-start"));
-    vlayout->addWidget(m_play);
+    mediaControlsLayout->addWidget(m_play);
 
-    m_pause = new QToolButton(frame1);
+    m_pause = new QToolButton(m_frame);
     m_pause->setIconSize(QSize(32, 32));
-    m_pause->setText("pause");
+    m_pause->setFixedSize(36, 36);
+    m_pause->setToolTip("pause");
     m_pause->setIcon(KIcon("media-playback-pause"));
-    vlayout->addWidget(m_pause);
+    mediaControlsLayout->addWidget(m_pause);
 
-    m_stop = new QToolButton(frame1);
+    m_stop = new QToolButton(m_frame);
     m_stop->setIconSize(QSize(32, 32));
-    m_stop->setText("stop");
+    m_stop->setFixedSize(36, 36);
+    m_stop->setToolTip("stop");
     m_stop->setIcon(KIcon("media-playback-stop"));
-    vlayout->addWidget(m_stop);
+    mediaControlsLayout->addWidget(m_stop);
 
-    m_titleButton = new QToolButton(frame1);
+    m_titleButton = new QPushButton(m_frame);
     m_titleButton->setText("Title");
     m_titleButton->setCheckable(true);
-    vlayout->addWidget(m_titleButton);
-    m_chapterButton = new QToolButton(frame1);
+    buttonLayout->addWidget(m_titleButton);
+    m_chapterButton = new QPushButton(m_frame);
     m_chapterButton->setText("Chapter");
     m_chapterButton->setCheckable(true);
-    vlayout->addWidget(m_chapterButton);
-    m_angleButton = new QToolButton(frame1);
+    buttonLayout->addWidget(m_chapterButton);
+    m_angleButton = new QPushButton(m_frame);
     m_angleButton->setText("Angle");
     m_angleButton->setCheckable(true);
-    vlayout->addWidget(m_angleButton);
-    m_navigationButton = new QToolButton(frame1);
+    buttonLayout->addWidget(m_angleButton);
+    m_navigationButton = new QPushButton(m_frame);
     m_navigationButton->setText("Navigation");
     m_navigationButton->setCheckable(true);
-    vlayout->addWidget(m_navigationButton);
+    buttonLayout->addWidget(m_navigationButton);
     connect(m_titleButton, SIGNAL(toggled(bool)), SLOT(showTitleWidget(bool)));
     connect(m_chapterButton, SIGNAL(toggled(bool)), SLOT(showChapterWidget(bool)));
     connect(m_angleButton, SIGNAL(toggled(bool)), SLOT(showAngleWidget(bool)));
     connect(m_navigationButton, SIGNAL(toggled(bool)), SLOT(showNavigationWidget(bool)));
 
-    QFrame *frame2 = new QFrame(frame0);
-    hlayout->addWidget(frame2);
-    QVBoxLayout *vlayout2 = new QVBoxLayout(frame2);
-    vlayout2->setMargin(0);
+    QVBoxLayout *infoLayout = new QVBoxLayout();
+    infoLayout->setMargin(0);
+    infoLayout->setSpacing(4);
+    subLayout->addLayout(infoLayout);
 
     // state label
-    m_statelabel = new QLabel(frame2);
-    vlayout2->addWidget(m_statelabel);
+    m_statelabel = new QLabel(m_frame);
+    infoLayout->addWidget(m_statelabel);
 
     // buffer progressbar
-    m_bufferProgress = new QProgressBar(frame2);
+    m_bufferProgress = new QProgressBar(m_frame);
     m_bufferProgress->setMaximumSize(100, 16);
     m_bufferProgress->setTextVisible(false);
-    vlayout2->addWidget(m_bufferProgress);
+    infoLayout->addWidget(m_bufferProgress);
 
     // time info
-    m_totaltime = new QLabel(frame2);
-    vlayout2->addWidget(m_totaltime);
+    m_totaltime = new QLabel(m_frame);
+    infoLayout->addWidget(m_totaltime);
 
-    m_currenttime = new QLabel(frame2);
-    vlayout2->addWidget(m_currenttime);
+    m_currenttime = new QLabel(m_frame);
+    infoLayout->addWidget(m_currenttime);
 
-    m_remainingtime = new QLabel(frame2);
-    vlayout2->addWidget(m_remainingtime);
+    m_remainingtime = new QLabel(m_frame);
+    infoLayout->addWidget(m_remainingtime);
+    infoLayout->addStretch();
 
     // meta data
     m_metaDataLabel = new QLabel(m_frame);
-    topLayout->addWidget(m_metaDataLabel);
+    m_metaDataLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    m_metaDataLabel->setWordWrap(true);
+    {
+        QFont f = m_metaDataLabel->font();
+        f.setPointSizeF(f.pointSizeF() * 0.85);
+        m_metaDataLabel->setFont(f);
+    }
+    subLayout->addWidget(m_metaDataLabel);
 
     connect(&m_media, SIGNAL(metaDataChanged()), SLOT(updateMetaData()));
     m_seekslider->setMediaObject(&m_media);

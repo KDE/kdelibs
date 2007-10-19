@@ -25,6 +25,7 @@
 #include <Phonon/EffectDescription>
 
 class QModelIndex;
+class PathItem;
 
 using Phonon::Effect;
 using Phonon::EffectDescription;
@@ -33,6 +34,7 @@ class EffectItem : public SinkItem
 {
     Q_OBJECT
     public:
+        EffectItem(const EffectDescription &, PathItem *pathItem, QGraphicsView *widget);
         EffectItem(const EffectDescription &, const QPoint &pos, QGraphicsView *widget);
 
         enum { Type = UserType + 10 };
@@ -42,6 +44,8 @@ class EffectItem : public SinkItem
         virtual const MediaNode *mediaNode() const { return &m_effect; }
 
     private:
+        void setupUi(const EffectDescription &desc);
+
         Effect m_effect;
 };
 

@@ -29,15 +29,19 @@ using Phonon::MediaNode;
 class SinkItem : public WidgetRectItem
 {
     public:
-        SinkItem(const QPoint &pos, QGraphicsView *widget)
-            : WidgetRectItem(pos, widget)
-        {}
-
         enum { Type = UserType + 3 };
         int type() const { return Type; }
 
         virtual MediaNode *mediaNode() = 0;
         virtual const MediaNode *mediaNode() const = 0;
+
+    protected:
+        SinkItem(QGraphicsItem *parent, QGraphicsView *widget)
+            : WidgetRectItem(parent, widget)
+        {}
+        SinkItem(const QPoint &pos, QGraphicsView *widget)
+            : WidgetRectItem(pos, widget)
+        {}
 };
 
 #endif // SINKITEM_H

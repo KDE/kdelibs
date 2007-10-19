@@ -153,6 +153,8 @@ MainWindow::MainWindow()
     setWindowIcon(KIcon("phonon"));
     m_scene = new MyGraphicsScene(this);
     m_view = new QGraphicsView(m_scene);
+    m_scene->setView(m_view);
+    //m_view->setRenderHints(QPainter::Antialiasing);
     setCentralWidget(m_view);
     QAction *action;
     action = new QAction(i18n("add MediaObject"), m_view);

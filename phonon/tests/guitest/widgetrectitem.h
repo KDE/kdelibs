@@ -29,8 +29,12 @@
 class WidgetRectItem : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
-    public:
+    protected:
+        WidgetRectItem(QGraphicsItem *parent, QGraphicsView *widget);
         WidgetRectItem(const QPoint &pos, QGraphicsView *widget);
+
+    public:
+        ~WidgetRectItem();
 
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
@@ -40,15 +44,20 @@ class WidgetRectItem : public QObject, public QGraphicsRectItem
         QObject *qObject() { return this; }
         const QObject *qObject() const { return this; }
 
+        bool eventFilter(QObject *obj, QEvent *e);
+
     signals:
-        void itemMoved(const QPointF &newSceneCenterPos);
+        void itemMoved(const QRectF &newSceneCenterPos);
 
     protected:
+        void setTitle(const QString &title);
+
         QVariant itemChange(GraphicsItemChange change, const QVariant &value);
         QWidget *m_frame;
 
     private:
         QGraphicsView *m_view;
+        QString m_title;
 };
 
 #endif // WIDGETRECTITEM_H

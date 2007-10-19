@@ -31,8 +31,10 @@ class MyGraphicsScene : public QGraphicsScene
     Q_OBJECT
     public:
         MyGraphicsScene(QObject *parent)
-            : QGraphicsScene(parent),  m_lineItem(0)
+            : QGraphicsScene(parent),  m_lineItem(0), m_view(0)
         {}
+
+        void setView(QGraphicsView *v) { m_view = v; }
 
     protected:
         void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
@@ -42,6 +44,7 @@ class MyGraphicsScene : public QGraphicsScene
     private:
         QGraphicsLineItem *m_lineItem;
         WidgetRectItem *m_startItem;
+        QGraphicsView *m_view;
 };
 
 #endif // MYGRAPHICSSCENE_H

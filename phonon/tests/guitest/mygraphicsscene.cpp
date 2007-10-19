@@ -25,6 +25,12 @@
 #include "pathitem.h"
 #include "effectitem.h"
 
+#include <QtGui/QMenu>
+
+#include <Phonon/BackendCapabilities>
+
+#include <kdebug.h>
+
 using Phonon::Path;
 
 void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -38,26 +44,66 @@ void MyGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void MyGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (mouseEvent->button() == Qt::LeftButton && 0 == itemAt(mouseEvent->scenePos())) {
-        const QPointF offset(12.0, 12.0);
-        QList<QGraphicsItem *> startItems = items(QRectF(mouseEvent->scenePos() - offset, mouseEvent->scenePos() + offset));
-        if (startItems.isEmpty()) {
-            const QPointF offset(25.0, 25.0);
-            startItems = items(QRectF(mouseEvent->scenePos() - offset, mouseEvent->scenePos() + offset));
-        }
-        if (startItems.size() == 1) {
-            m_startItem = qgraphicsitem_cast<MediaObjectItem *>(startItems.first());
-            if (!m_startItem) {
-                m_startItem = qgraphicsitem_cast<EffectItem *>(startItems.first());
+    kDebug() << mouseEvent->button() << mouseEvent->scenePos();
+    if (mouseEvent->button() == Qt::LeftButton) {
+        QGraphicsItem *itemUnderMouse = itemAt(mouseEvent->scenePos());
+        PathItem *pathItem = qgraphicsitem_cast<PathItem *>(itemUnderMouse);
+        if (!pathItem && !itemUnderMouse) {
+            const QPointF offset(12.0, 12.0);
+            QList<QGraphicsItem *> startItems = items(QRectF(mouseEvent->scenePos() - offset, mouseEvent->scenePos() + offset));
+            if (startItems.isEmpty()) {
+                const QPointF offset(25.0, 25.0);
+                startItems = items(QRectF(mouseEvent->scenePos() - offset, mouseEvent->scenePos() + offset));
             }
-            if (m_startItem) {
-                m_lineItem = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
-                addItem(m_lineItem);
+            if (startItems.size() == 1) {
+                m_startItem = qgraphicsitem_cast<MediaObjectItem *>(startItems.first());
+                if (!m_startItem) {
+                    m_startItem = qgraphicsitem_cast<EffectItem *>(startItems.first());
+                }
+                if (m_startItem) {
+                    m_lineItem = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()));
+                    addItem(m_lineItem);
+                    return;
+                }
+                pathItem = qgraphicsitem_cast<PathItem *>(startItems.first());
+            }
+            if (!pathItem) {
+                addItem(new RedRectItem(mouseEvent->scenePos()));
                 return;
             }
         }
-        addItem(new RedRectItem(mouseEvent->scenePos()));
-        return;
+        if (pathItem) {
+            // allow to disconnect or add an effect
+            QMenu popupMenu;
+            QAction *disconnectAction = popupMenu.addAction("disconnect");
+            popupMenu.addSeparator();
+
+            //QMenu *effectMenu = popupMenu.addMenu("add Effect");
+            QList<EffectDescription> effectList = Phonon::BackendCapabilities::availableAudioEffects();
+            QHash<QAction *, EffectDescription> actionHash;
+            foreach (const EffectDescription &d, effectList) {
+                QAction *subAction = popupMenu.addAction("add " + d.name());
+                actionHash.insert(subAction, d);
+            }
+
+            QAction *triggeredAction = popupMenu.exec(mouseEvent->screenPos());
+            if (triggeredAction) {
+                kDebug() << "popupMenu exec triggered action" << triggeredAction->metaObject()->className();
+                if (actionHash.contains(triggeredAction)) {
+                    EffectDescription d = actionHash[triggeredAction];
+                    Q_ASSERT(m_view);
+                    new EffectItem(d, pathItem, m_view);
+                } else {
+                    // disconnect
+                    Q_ASSERT(triggeredAction == disconnectAction);
+                    pathItem->path().disconnect();
+                    delete pathItem;
+                }
+                return;
+            } else {
+                kDebug() << "popupMenu no action";
+            }
+        }
     }
     QGraphicsScene::mousePressEvent(mouseEvent);
 }

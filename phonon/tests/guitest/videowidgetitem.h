@@ -33,6 +33,7 @@ class VideoWidgetItem : public SinkItem
             : SinkItem(pos, widget)
         {
             setBrush(QColor(100, 100, 255, 150));
+            setTitle("Video Widget");
 
             QVBoxLayout *layout = new QVBoxLayout(m_frame);
             layout->setMargin(0);

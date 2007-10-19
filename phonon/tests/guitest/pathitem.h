@@ -21,24 +21,35 @@
 #define PATHITEM_H
 
 #include <QtCore/QObject>
-#include <QtGui/QGraphicsLineItem>
+#include <QtGui/QGraphicsPathItem>
 #include "widgetrectitem.h"
 #include <Phonon/Path>
 
 using Phonon::Path;
 
-class PathItem : public QObject, public QGraphicsLineItem
+class PathItem : public QObject, public QGraphicsPathItem
 {
     Q_OBJECT
     public:
         PathItem(WidgetRectItem *start, WidgetRectItem *end, const Path &path);
 
+        enum { Type = UserType + 20 };
+        int type() const { return Type; }
+
+        Path path() const { return m_path; }
+
+    public slots:
+        void updateChildrenPositions();
+
     private slots:
-        void startMoved(const QPointF &pos);
-        void endMoved(const QPointF &pos);
+        void startMoved(const QRectF &pos);
+        void endMoved(const QRectF &pos);
 
     private:
+        void updatePainterPath();
+
         Path m_path;
+        QPointF m_startPos, m_endPos;
 };
 
 #endif // PATHITEM_H
