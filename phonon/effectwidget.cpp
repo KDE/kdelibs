@@ -30,6 +30,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QSpinBox>
 #include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 
 namespace Phonon
 {
@@ -72,6 +73,7 @@ void EffectWidgetPrivate::autogenerateUi()
 {
     Q_Q(EffectWidget);
     QVBoxLayout *mainLayout = new QVBoxLayout(q);
+    mainLayout->setMargin(0);
     foreach (EffectParameter para, effect->parameters()) {
         QVariant value = effect->parameterValue(para);
         QHBoxLayout *pLayout = new QHBoxLayout;
@@ -83,8 +85,25 @@ void EffectWidgetPrivate::autogenerateUi()
         label->setToolTip(para.description());
 
         QWidget *control;
-        if (para.type() == QVariant::Bool)
-        {
+        if (para.type() == QVariant::List) {
+            QComboBox *cb = new QComboBox(q);
+            control = cb;
+            if (value.type() == QVariant::Int) {
+                foreach (const QVariant &item, para.possibleValues()) {
+                    cb->addItem(item.toString());
+                }
+                cb->setCurrentIndex(value.toInt());
+                QObject::connect(cb, SIGNAL(currentIndexChanged(int)), q, SLOT(_k_setIntParameter(int)));
+            } else {
+                foreach (const QVariant &item, para.possibleValues()) {
+                    cb->addItem(item.toString());
+                    if (item == value) {
+                        cb->setCurrentIndex(cb->count() - 1);
+                    }
+                }
+                QObject::connect(cb, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_setStringParameter(QString)));
+            }
+        } else if (para.type() == QVariant::Bool) {
             QCheckBox *cb = new QCheckBox(q);
             control = cb;
             cb->setChecked(value.toBool());
@@ -146,6 +165,14 @@ void EffectWidgetPrivate::_k_setIntParameter(int value)
 }
 
 void EffectWidgetPrivate::_k_setDoubleParameter(double value)
+{
+    Q_Q(EffectWidget);
+    if (parameterForObject.contains(q->sender())) {
+        effect->setParameterValue(parameterForObject[q->sender()], value);
+    }
+}
+
+void EffectWidgetPrivate::_k_setStringParameter(const QString &value)
 {
     Q_Q(EffectWidget);
     if (parameterForObject.contains(q->sender())) {

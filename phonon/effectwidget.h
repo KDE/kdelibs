@@ -53,6 +53,7 @@ class Effect;
             Q_PRIVATE_SLOT(k_func(), void _k_setToggleParameter(bool checked))
             Q_PRIVATE_SLOT(k_func(), void _k_setIntParameter(int value))
             Q_PRIVATE_SLOT(k_func(), void _k_setDoubleParameter(double value))
+            Q_PRIVATE_SLOT(k_func(), void _k_setStringParameter(const QString &))
     };
 } // namespace Phonon
 #endif // PHONON_UI_EFFECTWIDGET_H

@@ -41,6 +41,7 @@ namespace Phonon
             void _k_setToggleParameter(bool checked);
             void _k_setIntParameter(int value);
             void _k_setDoubleParameter(double value);
+            void _k_setStringParameter(const QString &);
 
             void autogenerateUi();
     };
