@@ -177,9 +177,9 @@ void KKeySequenceWidgetPrivate::init()
 	layout->addWidget(clearButton);
 
 	if (qApp->isLeftToRight())
-		clearButton->setIcon(KIcon("clear-left"));
+		clearButton->setIcon(KIcon("edit-clear-locationbar-rtl"));
 	else
-		clearButton->setIcon(KIcon("locationbar-erase"));
+		clearButton->setIcon(KIcon("edit-clear-locationbar"));
 }
 
 
