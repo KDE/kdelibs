@@ -340,7 +340,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     bool secureRequest = (_url.find( L1("https://"), 0, false) == 0 ||
                           _url.find( L1("webdavs://"), 0, false) == 0);
 
-    kdDebug(7104) << "findCookies: URL= " << _url << ", secure = " << secureRequest << endl;
+    // kdDebug(7104) << "findCookies: URL= " << _url << ", secure = " << secureRequest << endl;
 
     extractDomains(fqdn, domains);
 
