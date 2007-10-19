@@ -756,7 +756,14 @@ void KStyle::drawPrimitive(PrimitiveElement elem, const QStyleOption* option, QP
             return;
         case PE_IndicatorHeaderArrow:
         {
-            drawKStylePrimitive(WT_Header, (flags&State_UpArrow)?Generic::ArrowUp:Generic::ArrowDown, option, r, pal, flags, painter, widget);
+            const QStyleOptionHeader *hOpt = qstyleoption_cast<const QStyleOptionHeader *>(option);
+            int primitive = 0;
+            if (flags&State_UpArrow || (hOpt && hOpt->sortIndicator==QStyleOptionHeader::SortUp))
+                primitive = Generic::ArrowUp;
+            else if (flags&State_DownArrow || (hOpt && hOpt->sortIndicator==QStyleOptionHeader::SortDown))
+                primitive = Generic::ArrowDown;
+            if (primitive != 0)
+                drawKStylePrimitive(WT_Header, primitive, option, r, pal, flags, painter, widget);
             return;
         }
         case PE_FrameTabBarBase:
