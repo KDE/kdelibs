@@ -369,7 +369,8 @@ QString KFileDialog::getSaveFileName(const KUrl& dir, const QString& filter,
                                      QWidget *parent,
                                      const QString& caption)
 {
-    bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
+    bool defaultDir = dir.isEmpty();
+    bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
     KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir ) {
         if (!dir.isLocalFile())
@@ -394,7 +395,8 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
                                      WId parent_id,
                                      const QString& caption)
 {
-    bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
+    bool defaultDir = dir.isEmpty();
+    bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
     QWidget* parent = QWidget::find( parent_id );
     KFileDialog dlg( specialDir ? dir : KUrl(), filter, parent);
 #ifdef Q_WS_X11
@@ -410,7 +412,7 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
         dlg.setSelection( dir.path() ); // may also be a filename
     }
 
-    dlg.setOperationMode( KFileDialog::Saving);
+    dlg.setOperationMode( Saving );
     dlg.setMode( KFile::File );
     dlg.setWindowTitle(caption.isNull() ? i18n("Save As") : caption);
 
@@ -426,7 +428,8 @@ QString KFileDialog::getSaveFileNameWId(const KUrl& dir, const QString& filter,
 KUrl KFileDialog::getSaveUrl(const KUrl& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    bool specialDir = (!dir.isEmpty()) && (dir.protocol() == "kfiledialog");
+    bool defaultDir = dir.isEmpty();
+    bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
     KFileDialog dlg(specialDir ? dir : KUrl(), filter, parent);
     if ( !specialDir )
         dlg.setSelection( dir.url() ); // may also be a filename
