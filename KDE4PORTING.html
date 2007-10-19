@@ -518,6 +518,11 @@ Note that QKeySequence expects multiple shortcuts to be separated by ", " (i.e. 
 Q3MimeSourceFactory being in Qt3Support, and this feature being very rarely used, K3MimeSourceFactory isn't instanciated
 automatically anymore, you need to call K3MimeSourceFactory::install() in your main if you still depend on this feature.</p>
 
+<h4>KMultipleDrag</h4>
+<p>KMultipleDrag is obsolete, use QMimeData directly to provide contents in different mime formats.</p>
+<p>To make porting more incremental, K3MultipleDrag is provided for code that needs to work with
+Q3DragObject until being fully ported.</p>
+
 <h4>KNetwork::KIpAddress</h4>
 <p>Removed. Use QHostAddress instead.</p>
 

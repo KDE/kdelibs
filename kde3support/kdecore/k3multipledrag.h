@@ -49,6 +49,7 @@ class K3MultipleDragPrivate;
  * Note that the drag objects added to the multiple drag become owned by it.
  * For that reason their parent should be 0.
  *
+ * @deprecated use QMimeData instead
  * @author David Faure <faure@kde.org>
  */
 class KDE3SUPPORT_EXPORT K3MultipleDrag : public Q3DragObject
