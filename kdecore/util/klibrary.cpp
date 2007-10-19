@@ -20,6 +20,7 @@
 #include "klibrary.h"
 
 #include <QtCore/QDir>
+#include <QtCore/QPointer>
 
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
@@ -122,6 +123,9 @@ KLibrary::~KLibrary()
 {
 }
 
+typedef QHash<QString, QPointer<KPluginFactory> > FactoryHash;
+K_GLOBAL_STATIC(FactoryHash, s_createdKde3Factories)
+
 static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
 {
     QByteArray symname = "init_";
@@ -129,6 +133,14 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
         symname += factoryname;
     } else {
         symname += QFileInfo(lib->fileName()).fileName().split(".").first().toLatin1();
+    }
+
+    const QString hashKey = lib->fileName() + QLatin1Char(':') + QString::fromAscii(symname);
+    if (s_createdKde3Factories->contains(hashKey)) {
+        KPluginFactory *factory = s_createdKde3Factories->value(hashKey);
+        if (factory) {
+            return factory;
+        }
     }
 
     typedef KPluginFactory* (*t_func)();
@@ -147,6 +159,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
         kDebug(150) << "The library" << lib->fileName() << "does not offer a KDE compatible factory.";
         return 0;
     }
+    s_createdKde3Factories->insert(hashKey, factory);
 
     return factory;
 }
