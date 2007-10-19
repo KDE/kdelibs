@@ -35,7 +35,6 @@
 #include <kpushbutton.h>
 #include <kio/global.h>
 #include <kmimetypetrader.h>
-#include <klibloader.h>
 #include <kdialog.h>
 #include <klocale.h>
 #include <kglobal.h>

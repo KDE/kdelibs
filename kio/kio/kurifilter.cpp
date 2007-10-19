@@ -27,7 +27,6 @@
 #include <kiconloader.h>
 #include <kservicetypetrader.h>
 #include <kmimetype.h>
-#include <klibloader.h>
 
 typedef QList<KUriFilterPlugin *> KUriFilterPluginList;
 

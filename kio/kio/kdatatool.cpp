@@ -21,7 +21,6 @@
 #include "kdatatool.h"
 
 #include <kstandarddirs.h>
-#include <klibloader.h>
 #include <kdebug.h>
 #include <kicon.h>
 #include <kcomponentdata.h>

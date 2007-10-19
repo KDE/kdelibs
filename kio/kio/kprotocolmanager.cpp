@@ -32,7 +32,6 @@
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 #include <kstandarddirs.h>
-#include <klibloader.h>
 #include <kstringhandler.h>
 #include <kurl.h>
 #include <kio/slaveconfig.h>

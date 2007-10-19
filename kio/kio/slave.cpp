@@ -42,7 +42,6 @@
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <ktemporaryfile.h>
-#include <klibloader.h>
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
 

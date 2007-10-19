@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <klibrary.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
@@ -284,7 +285,6 @@ static QString findMostRecentLib(QString dir, QString name)
 KOpenSSLProxy::KOpenSSLProxy()
     : d(new KOpenSSLProxyPrivate())
 {
-    KLibLoader *ll = KLibLoader::self();
     QStringList libpaths, libnamesc, libnamess;
 
    d->cryptoLib = 0L;
@@ -299,8 +299,14 @@ KOpenSSLProxy::KOpenSSLProxy()
 #ifdef __OpenBSD__
    {
    QString libname = findMostRecentLib("/usr/lib" KDELIBSUFF, "crypto");
-   if (!libname.isNull())
-         d->cryptoLib = ll->library(libname, QLibrary::ExportExternalSymbolsHint);
+   if (!libname.isNull()) {
+         d->cryptoLib = new KLibrary(libname);
+         d->cryptoLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
+         if (!d->cryptoLib->load()) {
+             delete d->cryptoLib;
+             d->cryptoLib = 0;
+         }
+   }
    }
 #elif defined(__CYGWIN__)
    libpaths << "/usr/bin/"
@@ -378,12 +384,20 @@ KOpenSSLProxy::KOpenSSLProxy()
          if (!alib.isEmpty() && !alib.endsWith('/'))
             alib += '/';
          alib += *shit;
-	 // someone knows why this is needed?
-	 QString tmpStr(alib.toLatin1().constData());
-	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
-	 if (!access(tmpStr.toLatin1(), R_OK))
-            d->cryptoLib = ll->library(alib, QLibrary::ExportExternalSymbolsHint);
-         if (d->cryptoLib) break;
+	     // someone knows why this is needed?
+	     QString tmpStr(alib.toLatin1().constData());
+	     tmpStr.replace(QRegExp("\\(.*\\)"), "");
+         if (!access(tmpStr.toLatin1(), R_OK)) {
+            d->cryptoLib = new KLibrary(alib);
+            d->cryptoLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
+         }
+         if (d->cryptoLib->load()) {
+             break;
+         }
+         else {
+             delete d->cryptoLib;
+             d->cryptoLib = 0;
+         }
       }
       if (d->cryptoLib) break;
    }
@@ -517,8 +531,14 @@ KOpenSSLProxy::KOpenSSLProxy()
 #ifdef __OpenBSD__
    {
    QString libname = findMostRecentLib("/usr/lib", "ssl");
-   if (!libname.isNull())
-         d->sslLib = ll->library(libname, QLibrary::ExportExternalSymbolsHint);
+   if (!libname.isNull()) {
+         d->sslLib = new KLibrary(libname);
+         d->sslLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
+         if (!d->sslLib->load()) {
+             delete d->sslLib;
+             d->sslLib = 0;
+         }
+   }
    }
 #else
    for (QStringList::Iterator it = libpaths.begin();
@@ -531,11 +551,19 @@ KOpenSSLProxy::KOpenSSLProxy()
          if (!alib.isEmpty() && !alib.endsWith('/'))
             alib += '/';
          alib += *shit;
-	 QString tmpStr(alib.toLatin1());
-	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
-	 if (!access(tmpStr.toLatin1(), R_OK))
-         	d->sslLib = ll->library(alib, QLibrary::ExportExternalSymbolsHint);
-         if (d->sslLib) break;
+	     QString tmpStr(alib.toLatin1());
+	     tmpStr.replace(QRegExp("\\(.*\\)"), "");
+         if (!access(tmpStr.toLatin1(), R_OK)) {
+         	d->sslLib = new KLibrary(alib);
+            d->sslLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
+         }
+         if (d->sslLib->load()) {
+             break;
+         }
+         else {
+             delete d->sslLib;
+             d->sslLib = 0;
+         }
       }
       if (d->sslLib) break;
    }
