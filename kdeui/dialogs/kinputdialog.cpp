@@ -159,7 +159,12 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     m_label = new QLabel(label, frame);
     layout->addWidget(m_label);
 
-    m_doubleSpinBox = new KDoubleSpinBox(minValue, maxValue, step, value, frame, decimals);
+    m_doubleSpinBox = new QDoubleSpinBox(frame);
+    m_doubleSpinBox->setRange(minValue, maxValue);
+    m_doubleSpinBox->setSingleStep(step);
+    m_doubleSpinBox->setValue(value);
+    m_doubleSpinBox->setDecimals(decimals);
+
     layout->addWidget(m_doubleSpinBox);
 
     layout->addStretch();
@@ -303,7 +308,7 @@ KIntSpinBox *KInputDialogHelper::intSpinBox() const
     return m_intSpinBox;
 }
 
-KDoubleSpinBox *KInputDialogHelper::doubleSpinBox() const
+QDoubleSpinBox *KInputDialogHelper::doubleSpinBox() const
 {
     return m_doubleSpinBox;
 }
