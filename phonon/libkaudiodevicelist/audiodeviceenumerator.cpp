@@ -63,31 +63,31 @@ AudioDeviceEnumerator *AudioDeviceEnumerator::self()
 
 void AudioDeviceEnumeratorPrivate::findDevices()
 {
-    // ask Solid for the available audio hardware
     QSet<QString> alreadyFoundCards;
 
-    QList<Solid::Device> devices = Solid::Device::listFromQuery("AudioInterface.deviceType  & 'AudioInput|AudioOutput'");
-    foreach (Solid::Device device, devices) {
+    // ask Solid for the available audio hardware
+    const QList<Solid::Device> devices = Solid::Device::listFromQuery("AudioInterface.deviceType  & 'AudioInput|AudioOutput'");
+    foreach (const Solid::Device &device, devices) {
         AudioDevice dev(device, config);
         if (dev.isValid()) {
             if (dev.isCaptureDevice()) {
                 capturedevicelist << dev;
                 if (dev.isPlaybackDevice()) {
                     playbackdevicelist << dev;
-                    alreadyFoundCards << QLatin1String("AudioIODevice_") + dev.cardName();
+                    alreadyFoundCards << QLatin1String("AudioIODevice_") + dev.udi();
                 } else {
-                    alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.cardName();
+                    alreadyFoundCards << QLatin1String("AudioCaptureDevice_") + dev.udi();
                 }
             } else {
                 playbackdevicelist << dev;
-                alreadyFoundCards << QLatin1String("AudioOutputDevice_") + dev.cardName();
+                alreadyFoundCards << QLatin1String("AudioOutputDevice_") + dev.udi();
             }
         }
     }
 
     // now look in the config file for disconnected devices
     QStringList groupList = config->groupList();
-    foreach (QString groupName, groupList) {
+    foreach (const QString &groupName, groupList) {
         if (alreadyFoundCards.contains(groupName) || !groupName.startsWith(QLatin1String("Audio"))) {
             continue;
         }
@@ -376,8 +376,30 @@ AudioDeviceEnumerator::~AudioDeviceEnumerator()
 {
 }
 
+QDebug operator<<(QDebug &s, const Solid::AudioInterface::AudioDriver &driver)
+{
+    switch (driver) {
+    case Solid::AudioInterface::Alsa:
+        s.nospace() << "ALSA";
+        break;
+    case Solid::AudioInterface::OpenSoundSystem:
+        s.nospace() << "OSS";
+        break;
+    case Solid::AudioInterface::UnknownAudioDriver:
+        s.nospace() << "unknown driver";
+        break;
+    }
+    return s.space();
+}
+QDebug operator<<(QDebug &s, const AudioDevice &dev)
+{
+    s.space() << "\n-" << dev.cardName() << dev.driver() << dev.deviceIds() << "index:" << dev.index() << "preference:" << dev.initialPreference() << "avail:" << dev.isAvailable();
+    return s.space();
+}
+
 QList<AudioDevice> AudioDeviceEnumerator::availablePlaybackDevices()
 {
+    kDebug(603) << audioDeviceEnumeratorPrivate->playbackdevicelist;
     return audioDeviceEnumeratorPrivate->playbackdevicelist;
 }
 

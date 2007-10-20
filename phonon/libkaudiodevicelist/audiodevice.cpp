@@ -154,9 +154,15 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
             groupName = QLatin1String("AudioIODevice_");
         }
     }
-    groupName += d->cardName;
+    {
+        const QString oldGroupName = groupName + d->cardName;
+        if (config->hasGroup(oldGroupName)) {
+            config->deleteGroup(oldGroupName);
+        }
+    }
+    groupName += d->udi;
 
-    KConfigGroup deviceGroup(config.data(), groupName);
+    KConfigGroup deviceGroup(config, groupName);
     if (config->hasGroup(groupName)) {
         d->index = deviceGroup.readEntry("index", -1);
     }
@@ -210,6 +216,7 @@ AudioDevice::AudioDevice(const QString &alsaDeviceName, KSharedConfig::Ptr confi
     d->driver = Solid::AudioInterface::Alsa;
     d->deviceIds << alsaDeviceName;
     d->cardName = alsaDeviceName;
+    d->udi = alsaDeviceName;
     d->deviceInfoFromPcmDevice(alsaDeviceName);
 
     KConfigGroup deviceGroup(config.data(), alsaDeviceName);
@@ -463,7 +470,7 @@ bool AudioDevice::ceaseToExist()
     } else {
         groupName = QLatin1String("AudioOutputDevice_");
     }
-    groupName += d->cardName;
+    groupName += d->udi;
     config->deleteGroup(groupName);
     config->sync();
     return true;
