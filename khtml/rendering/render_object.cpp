@@ -252,13 +252,13 @@ void RenderObject::addChild(RenderObject* , RenderObject *)
     KHTMLAssert(0);
 }
 
-RenderObject* RenderObject::removeChildNode(RenderObject* )
+RenderObject* RenderObject::removeChildNode(RenderObject*)
 {
     KHTMLAssert(0);
     return 0;
 }
 
-void RenderObject::removeChild(RenderObject *o )
+void RenderObject::removeChild(RenderObject*)
 {
     KHTMLAssert(0);
 }

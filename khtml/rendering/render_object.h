@@ -165,10 +165,9 @@ public:
         return isRoot()/* ### */ || isPositioned() || isRelPositioned() || hasOverflowClip() || style()->opacity() < 1.0f;
     }
 
-    // ### rename to overflowClipRect and clipRect
-    virtual QRect getOverflowClipRect(int /*tx*/, int /*ty*/)
+    virtual QRect overflowClipRect(int /*tx*/, int /*ty*/)
 	{ return QRect(0,0,0,0); }
-    virtual QRect getClipRect(int /*tx*/, int /*ty*/) { return QRect(0,0,0,0); }
+    virtual QRect clipRect(int /*tx*/, int /*ty*/) { return QRect(0,0,0,0); }
     bool hasClip() const { return isPositioned() &&  style()->hasClip(); }
     bool hasOverflowClip() const { return m_hasOverflowClip; }
 

@@ -1105,13 +1105,13 @@ void RenderLayer::calculateClipRects(const RenderLayer* rootLayer, QRect& overfl
         convertToLayerCoords(rootLayer, x, y);
 
         if (m_object->hasOverflowClip()) {
-            QRect newOverflowClip = m_object->getOverflowClipRect(x,y);
+            QRect newOverflowClip = m_object->overflowClipRect(x,y);
             overflowClipRect  = newOverflowClip.intersect(overflowClipRect);
             if (m_object->isPositioned() || m_object->isRelPositioned())
                 posClipRect = newOverflowClip.intersect(posClipRect);
         }
         if (m_object->hasClip()) {
-            QRect newPosClip = m_object->getClipRect(x,y);
+            QRect newPosClip = m_object->clipRect(x,y);
             posClipRect = posClipRect.intersect(newPosClip);
             overflowClipRect = overflowClipRect.intersect(newPosClip);
             fixedClipRect = fixedClipRect.intersect(newPosClip);
@@ -1141,11 +1141,11 @@ void RenderLayer::calculateRects(const RenderLayer* rootLayer, const QRect& pain
     if (m_object->hasOverflowClip() || m_object->hasClip()) {
         // This layer establishes a clip of some kind.
         if (m_object->hasOverflowClip())
-            foregroundRect = foregroundRect.intersect(m_object->getOverflowClipRect(x,y));
+            foregroundRect = foregroundRect.intersect(m_object->overflowClipRect(x,y));
 
         if (m_object->hasClip()) {
             // Clip applies to *us* as well, so go ahead and update the damageRect.
-            QRect newPosClip = m_object->getClipRect(x,y);
+            QRect newPosClip = m_object->clipRect(x,y);
             backgroundRect = backgroundRect.intersect(newPosClip);
             foregroundRect = foregroundRect.intersect(newPosClip);
         }

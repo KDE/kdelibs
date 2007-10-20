@@ -174,8 +174,8 @@ protected:
     void calcAbsoluteVerticalReplaced();
     void calcAbsoluteHorizontalReplaced();
 
-    QRect getOverflowClipRect(int tx, int ty);
-    QRect getClipRect(int tx, int ty);
+    QRect overflowClipRect(int tx, int ty);
+    QRect clipRect(int tx, int ty);
 
     void restructureParentFlow();
     void detachRemainingChildren();
