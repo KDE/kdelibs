@@ -46,6 +46,12 @@ QString KShell::joinArgs( const QStringList &args )
     return ret;
 }
 
+#ifdef Q_OS_WIN
+# define ESCAPE '^'
+#else
+# define ESCAPE '\\'
+#endif
+
 QString KShell::tildeExpand( const QString &fname )
 {
     if (fname.length() && fname[0] == QLatin1Char('~')) {
@@ -56,7 +62,7 @@ QString KShell::tildeExpand( const QString &fname )
         if (!ret.isNull())
             ret += fname.mid(pos);
         return ret;
-    } else if (fname.length() > 1 && fname[0] == QLatin1Char('\\') && fname[1] == QLatin1Char('~')) {
+    } else if (fname.length() > 1 && fname[0] == QLatin1Char(ESCAPE) && fname[1] == QLatin1Char('~')) {
         return fname.mid(1);
     }
     return fname;

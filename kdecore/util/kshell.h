@@ -115,8 +115,9 @@ namespace KShell {
 
     /**
      * Performs tilde expansion on @p path. Interprets "~/path" and
-     * "~user/path". If the path starts with "\~" (i.e., an escaped tilde),
-     * the backslash is removed and the path is returned as is.
+     * "~user/path". If the path starts with an escaped tilde ("\~" on UNIX,
+     * "^~" on Windows), the escape char is removed and the path is returned
+     * as is.
      *
      * @param path the path to tilde-expand
      * @return the expanded path

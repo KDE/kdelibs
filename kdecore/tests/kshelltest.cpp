@@ -46,7 +46,11 @@ KShellTest::tildeExpand()
     QCOMPARE(KShell::tildeExpand("~/dir"), QDir::homePath()+"/dir");
     QCOMPARE(KShell::tildeExpand("~" + me), QDir::homePath());
     QCOMPARE(KShell::tildeExpand("~" + me + "/dir"), QDir::homePath()+"/dir");
+#ifdef Q_OS_WIN
+    QCOMPARE(KShell::tildeExpand("^~" + me), "~" + me);
+#else
     QCOMPARE(KShell::tildeExpand("\\~" + me), "~" + me);
+#endif
 }
 
 void
