@@ -110,7 +110,7 @@ public:
      * Returns the URL which represents the directory of \a url. If
      * \a url already is a directory, then just \a url is returned.
      */
-    KUrl directoryUrl(const KUrl& url) const;
+    static KUrl directoryUrl(const KUrl& url);
 
     /**
      * Returns the absolute version of the URL specified in locationEdit.
@@ -976,8 +976,10 @@ void KFileWidgetPrivate::multiSelectionChanged()
     setLocationText( text.trimmed() );
 }
 
-KUrl KFileWidgetPrivate::directoryUrl(const KUrl& url) const
+KUrl KFileWidgetPrivate::directoryUrl(const KUrl& url)
 {
+    if (!url.isValid())
+        return url;
     KFileItem item(S_IFDIR, KFileItem::Unknown, url);
     item.refresh();
     return item.isDir() ? url : url.upUrl();
