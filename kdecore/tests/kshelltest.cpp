@@ -33,6 +33,7 @@ class KShellTest : public QObject
 
   private Q_SLOTS:
     void tildeExpand();
+    void quoteArg();
     void joinArgs();
     void splitJoin();
     void abortOnMeta();
@@ -54,27 +55,30 @@ KShellTest::tildeExpand()
 }
 
 void
+KShellTest::quoteArg()
+{
+#ifdef Q_OS_WIN
+    QCOMPARE(KShell::quoteArg("a space"), QString("\"a space\""));
+    QCOMPARE(KShell::quoteArg("fds\\\""), QString("fds\\\\\\^\""));
+    QCOMPARE(KShell::quoteArg("\\\\foo"), QString("\\\\foo"));
+    QCOMPARE(KShell::quoteArg("\"asdf\""), QString("\\^\"asdf\\^\""));
+    QCOMPARE(KShell::quoteArg("with\\"), QString("\"with\\\\\""));
+    QCOMPARE(KShell::quoteArg("\\\\"), QString("\"\\\\\\\\\""));
+    QCOMPARE(KShell::quoteArg("\"a space\\\""), QString("\\^\"\"a space\"\\\\\\^\""));
+    QCOMPARE(KShell::quoteArg("as df\\"), QString("\"as df\\\\\""));
+    QCOMPARE(KShell::quoteArg("foo bar\"\\\"bla"), QString("\"foo bar\"\\^\"\\\\\\^\"\"bla\""));
+
+#else
+    QCOMPARE(KShell::quoteArg("a space"), QString("'a space'"));
+#endif
+}
+
+void
 KShellTest::joinArgs()
 {
     QStringList list;
-
     list << "this" << "is" << "a" << "test";
     QCOMPARE(KShell::joinArgs(list), QString("this is a test"));
-    list.clear();
-
-#ifdef Q_OS_WIN
-    list << "this" << "is" << "with" << "a space";
-    QCOMPARE(KShell::joinArgs(list), QString("this is with \"a space\""));
-    list.clear();
-
-    list << "fds\\\"" << "\"asdf\"" << "with\\" << "\\\\" << "\"a space\\\"" << "as df\\";
-    QCOMPARE(KShell::joinArgs(list), QString("fds\\\\\\\" \\\"asdf\\\" with\\ \\\\ \"\\\"a space\\\\\\\"\" \"as df\"\\"));
-    list.clear();
-#else
-    list << "this" << "is" << "with" << "a space";
-    QCOMPARE(KShell::joinArgs(list), QString("this is with 'a space'"));
-    list.clear();
-#endif
 }
 
 static QString sj(const QString& str, KShell::Options flags, KShell::Errors* ret)
@@ -93,7 +97,7 @@ KShellTest::splitJoin()
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj(" ha\\ lo ", KShell::NoOptions, &err),
-             QString("ha\\ lo"));
+             QString("\"ha\\\\\" lo"));
     QVERIFY(err == KShell::NoError);
 
     QCOMPARE(sj("say \" error", KShell::NoOptions, &err),

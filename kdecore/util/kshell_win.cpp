@@ -121,32 +121,68 @@ QStringList KShell::splitArgs(const QString &args, Options flags, Errors *err)
     //not reached
 }
 
+static QString quoteArg(const QString &arg)
+{
+    // Escape quotes, preceding backslashes are doubled. Surround with quotes.
+    // Note that cmd does not understand quote escapes in quoted strings,
+    // so the quoting needs to be "suspended".
+    const QLatin1Char bs('\\'), dq('\"');
+    QString ret;
+    bool inquote = false;
+    int bslashes = 0;
+    for (int p = 0; p < arg.length(); p++) {
+        if (arg[p] == bs) {
+            bslashes++;
+        } else if (arg[p] == dq) {
+            if (inquote) {
+                ret.append(dq);
+                inquote = false;
+            }
+            for (; bslashes; bslashes--)
+                ret.append(QLatin1String("\\\\"));
+            ret.append(QLatin1String("\\^\""));
+        } else {
+            if (!inquote) {
+                ret.append(dq);
+                inquote = true;
+            }
+            for (; bslashes; bslashes--)
+                ret.append(bs);
+            ret.append(arg[p]);
+        }
+    }
+    if (bslashes) {
+        // Ensure that we don't have directly trailing backslashes,
+        // so concatenating with another string won't cause surprises.
+        if (!inquote) {
+            ret.append(dq);
+            inquote = true;
+        }
+        for (; bslashes; bslashes--)
+            ret.append(QLatin1String("\\\\"));
+    }
+    if (inquote)
+        ret.append(dq);
+    return ret;
+}
+
 QString KShell::quoteArg(const QString &arg)
 {
     if (arg.isEmpty())
         return QString::fromLatin1("\"\"");
 
+    // Ensure that we don't have directly trailing backslashes,
+    // so concatenating with another string won't cause surprises.
+    if (arg.endsWith(QLatin1Char('\\')))
+        return ::quoteArg(arg);
+
+    for (int x = arg.length() - 1; x >= 0; --x)
+        if (isSpecialChar(arg[x].unicode()))
+            return ::quoteArg(arg);
+
+    // Escape quotes. Preceding backslashes are doubled.
     QString ret(arg);
-    ret.replace(QLatin1String("\\\""), QLatin1String("\\\\\""));
-    ret.replace(QLatin1Char('\"'), QLatin1String("\\\""));
-
-    for (int x = arg.length() - 1; x >= 0; --x) {
-        if (isSpecialChar(arg[x].unicode())) {
-
-            ret.prepend(QLatin1Char('\"'));
-
-            if (ret.endsWith(QLatin1Char('\\'))) {
-                ret.truncate(ret.length() - 1);
-                ret.append(QLatin1String("\"\\"));
-            }
-            else {
-                ret.append(QLatin1Char('\"'));
-            }
-
-            break;
-        }
-    }
-
+    ret.replace(QRegExp(QLatin1String("(\\\\*)\"")), QLatin1String("\\1\\1\\^\""));
     return ret;
 }
 
