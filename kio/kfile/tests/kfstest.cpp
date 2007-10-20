@@ -72,10 +72,9 @@ int main(int argc, char **argv)
         op->setView(KFile::Simple);
         op->show();
         a.exec();
-    }
+    } else
 #endif
-
-    else if (argv1 == QLatin1String("justone")) {
+    if (argv1 == QLatin1String("justone")) {
         QString name = KFileDialog::getOpenFileName(startDir);
         qDebug("filename=%s",name.toLatin1().constData());
     }
