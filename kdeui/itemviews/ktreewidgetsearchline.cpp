@@ -39,20 +39,18 @@
 class KTreeWidgetSearchLine::Private
 {
   public:
-    Private( KTreeWidgetSearchLine *_parent )
-      : parent( _parent ),
+    Private( KTreeWidgetSearchLine *_q )
+      : q( _q ),
         caseSensitive( Qt::CaseInsensitive ),
-        activeSearch( false ),
         keepParentsVisible( true ),
         canChooseColumns( true ),
         queuedSearches( 0 )
     {
     }
 
-    KTreeWidgetSearchLine *parent;
+    KTreeWidgetSearchLine *q;
     QList<QTreeWidget *> treeWidgets;
     Qt::CaseSensitivity caseSensitive;
-    bool activeSearch;
     bool keepParentsVisible;
     bool canChooseColumns;
     QString search;
@@ -87,7 +85,7 @@ class QTreeWidgetWorkaround : public QTreeWidget
 
 void KTreeWidgetSearchLine::Private::_k_rowsInserted( const QModelIndex & parentIndex, int start, int end ) const
 {
-  QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>( parent->sender() );
+  QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>( q->sender() );
   if ( !model )
     return;
 
@@ -104,14 +102,14 @@ void KTreeWidgetSearchLine::Private::_k_rowsInserted( const QModelIndex & parent
   QTreeWidgetWorkaround* widgetWorkaround = static_cast<QTreeWidgetWorkaround *>( widget );
   for ( int i = start; i <= end; ++i ) {
     if ( QTreeWidgetItem* item = widgetWorkaround->itemFromIndex( model->index( i, 0, parentIndex ) ) )
-      item->treeWidget()->setItemHidden( item, !parent->itemMatches( item, parent->text() ) );
+      item->treeWidget()->setItemHidden( item, !q->itemMatches( item, q->text() ) );
   }
 }
 
 void KTreeWidgetSearchLine::Private::_k_treeWidgetDeleted( QObject *object )
 {
   treeWidgets.removeAll( static_cast<QTreeWidget *>( object ) );
-  parent->setEnabled( treeWidgets.isEmpty() );
+  q->setEnabled( treeWidgets.isEmpty() );
 }
 
 void KTreeWidgetSearchLine::Private::_k_slotColumnActivated( QAction *action )
@@ -150,7 +148,7 @@ void KTreeWidgetSearchLine::Private::_k_slotColumnActivated( QAction *action )
     }
   }
 
-  parent->updateSearch();
+  q->updateSearch();
 }
 
 void KTreeWidgetSearchLine::Private::_k_slotAllVisibleColumns()
@@ -160,7 +158,7 @@ void KTreeWidgetSearchLine::Private::_k_slotAllVisibleColumns()
   else
     searchColumns.clear();
 
-  parent->updateSearch();
+  q->updateSearch();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -170,7 +168,7 @@ void KTreeWidgetSearchLine::Private::_k_slotAllVisibleColumns()
 
 void KTreeWidgetSearchLine::Private::checkColumns()
 {
-  canChooseColumns = parent->canChooseColumnsCheck();
+  canChooseColumns = q->canChooseColumnsCheck();
 }
 
 void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible( QTreeWidget *treeWidget )
@@ -179,7 +177,7 @@ void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible( QTreeWidget *tr
 
   for ( ; *it; ++it ) {
     QTreeWidgetItem *item = *it;
-    item->treeWidget()->setItemHidden( item, !parent->itemMatches( item, search ) );
+    item->treeWidget()->setItemHidden( item, !q->itemMatches( item, search ) );
   }
 }
 
@@ -201,7 +199,7 @@ bool KTreeWidgetSearchLine::Private::checkItemParentsVisible( QTreeWidgetItem* i
     childMatch |= checkItemParentsVisible( item->child( i ) );
 
   // Should this item be shown? It should if any children should be, or if it matches.
-  if ( childMatch || parent->itemMatches( item, search ) ) {
+  if ( childMatch || q->itemMatches( item, search ) ) {
     treeWidget->setItemHidden( item, false );
     return true;
   }
@@ -216,8 +214,8 @@ bool KTreeWidgetSearchLine::Private::checkItemParentsVisible( QTreeWidgetItem* i
 // public methods
 ////////////////////////////////////////////////////////////////////////////////
 
-KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *parent, QTreeWidget *treeWidget )
-  : KLineEdit( parent ), d( new Private( this ) )
+KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *q, QTreeWidget *treeWidget )
+  : KLineEdit( q ), d( new Private( this ) )
 {
   connect( this, SIGNAL( textChanged( const QString& ) ),
            this, SLOT( _k_queueSearch( const QString& ) ) );
@@ -230,9 +228,9 @@ KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *parent, QTreeWidget *tree
   }
 }
 
-KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *parent,
+KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *q,
                                               const QList<QTreeWidget *> &treeWidgets )
-  : KLineEdit( parent ), d( new Private( this ) )
+  : KLineEdit( q ), d( new Private( this ) )
 {
   connect( this, SIGNAL( textChanged( const QString& ) ),
            this, SLOT( _k_queueSearch( const QString& ) ) );
@@ -529,7 +527,7 @@ void KTreeWidgetSearchLine::Private::_k_queueSearch( const QString &_search )
   queuedSearches++;
   search = _search;
 
-  QTimer::singleShot( 200, parent, SLOT( _k_activateSearch() ) );
+  QTimer::singleShot( 200, q, SLOT( _k_activateSearch() ) );
 }
 
 void KTreeWidgetSearchLine::Private::_k_activateSearch()
@@ -537,7 +535,7 @@ void KTreeWidgetSearchLine::Private::_k_activateSearch()
   --queuedSearches;
 
   if ( queuedSearches == 0 )
-    parent->updateSearch( search );
+    q->updateSearch( search );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
