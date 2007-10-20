@@ -494,22 +494,7 @@ void KFilePlacesView::Private::updateHiddenRows()
 
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 {
-    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
-
-    if (placesModel==0) return;
-
-    lastClickedIndex = QPersistentModelIndex();
-
-    if (placesModel->setupNeeded(index)) {
-        QObject::connect(placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
-                         q, SLOT(_k_storageSetupDone(const QModelIndex &, bool)));
-
-        lastClickedIndex = index;
-        placesModel->requestSetup(index);
-        return;
-    }
-
-    setCurrentIndex(index);
+    _k_placeActivated(index);
 }
 
 void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
@@ -520,7 +505,7 @@ void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
 
     lastClickedIndex = QPersistentModelIndex();
 
-    if (placesModel->isDevice(index)) {
+    if (placesModel->setupNeeded(index)) {
         QObject::connect(placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
                          q, SLOT(_k_storageSetupDone(const QModelIndex &, bool)));
 
