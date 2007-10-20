@@ -67,6 +67,8 @@ public:
             m_timeline->setDuration(250);
         }
 
+        if (m_timeline->state() == QTimeLine::Running)
+            m_timeline->stop();
         m_timeline->start();
     }
 
