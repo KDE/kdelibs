@@ -111,6 +111,12 @@ WhatsThis=A widget to pick a KShortcut.
 IncludeFile=kshortcutwidget.h
 Group=Buttons (KDE)
 
+[KLanguageButton]
+ToolTip=Language Button (KDE)
+WhatsThis=KDE's language button.
+IncludeFile=klanguagebutton.h
+Group=Buttons (KDE)
+
 [KDialogButtonBox]
 ToolTip=Button Box (KDE)
 WhatsThis=KDE's button box.
