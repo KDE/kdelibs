@@ -39,9 +39,9 @@ public:
 	QHash<QWidget *, QPersistentModelIndex> extenderIndices;
 	QPixmap extendIcon;
 	QPixmap contractIcon;
+	int stateTick;
 	//mostly for quick startup - don't look for extenders while the view
 	//is being populated.
-	int stateTick;
 	bool hasExtenders;
 };
 
