@@ -96,6 +96,7 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
     QStyleOptionViewItem opt = option;
     opt.decorationSize = QSize(iconSize, iconSize);
+    opt.state|= QStyle::State_Active;
     QItemDelegate::paint(painter, opt, index);
 }
 
