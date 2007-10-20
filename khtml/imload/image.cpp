@@ -412,6 +412,13 @@ QImage* Image::qimage() const
     return &static_cast<RawImagePlane*>(original->parent)->image;
 }
 
+bool Image::hasAlpha() const
+{
+    if (!original || !original->parent)
+        return false;
+    return original->parent->format.hasAlpha();
+}
+
 }
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

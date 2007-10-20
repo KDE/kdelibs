@@ -83,6 +83,11 @@ public:
     bool complete() const;
 
     /**
+     Returns true if the image may have an alpha channel
+    */
+    bool hasAlpha() const;
+
+    /**
      Returns the image of basic content. Should be treated as READ ONLY.
      (but see CanvasImage)
     */

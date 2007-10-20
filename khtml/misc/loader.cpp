@@ -597,14 +597,24 @@ QPixmap CachedImage::pixmap( ) const
 
     int w = i->size().width();
     int h = i->size().height();
-    QImage im(w, h, QImage::Format_ARGB32_Premultiplied);
 
-    QPainter paint(&im);
-    paint.setCompositionMode(QPainter::CompositionMode_Source);
-    ImagePainter pi(i);
-    pi.paint(0, 0, &paint);
-    paint.end();
-    return QPixmap::fromImage( im );
+    if (i->hasAlpha()) {
+        QImage im(w, h, QImage::Format_ARGB32_Premultiplied);
+        
+        QPainter paint(&im);
+        paint.setCompositionMode(QPainter::CompositionMode_Source);
+        ImagePainter pi(i);
+        pi.paint(0, 0, &paint);
+        paint.end();
+        return QPixmap::fromImage( im );
+    } else {
+        QPixmap pm(w, h);
+        QPainter paint(&pm);
+        ImagePainter pi(i);
+        pi.paint(0, 0, &paint);
+        paint.end();
+        return pm;
+    }
 }
 
 
