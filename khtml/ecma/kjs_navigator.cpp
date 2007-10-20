@@ -363,8 +363,10 @@ PluginBase::~PluginBase()
 {
     m_refCount--;
     if ( m_refCount==0 ) {
-        qDeleteAll(*plugins);
-        qDeleteAll(*mimes);
+        if (plugins)
+            qDeleteAll(*plugins);
+        if (mimes)
+            qDeleteAll(*mimes);
         delete plugins;
         delete mimes;
         plugins = 0;
