@@ -536,14 +536,20 @@ void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &at
 
     QVariant::Type propertyType = action->property( attrName.toLatin1() ).type();
 
-    if ( propertyType == QVariant::Int )
+    if ( propertyType == QVariant::Int ) {
         propertyValue = QVariant( attribute.value().toInt() );
-    else if ( propertyType == QVariant::UInt )
+    } else if ( propertyType == QVariant::UInt ) {
         propertyValue = QVariant( attribute.value().toUInt() );
-    else if ( propertyType == QVariant::UserType && action->property( attrName.toLatin1() ).userType() == qMetaTypeId<KShortcut>() )
+    } else if ( propertyType == QVariant::UserType && action->property( attrName.toLatin1() ).userType() == qMetaTypeId<KShortcut>() ) {
+        // Setting the shortcut by property also sets the default shortcut (which is incorrect), so we have to do it directly
+        if (KAction* ka = qobject_cast<KAction*>(action)) {
+            ka->setShortcut(KShortcut(attribute.value()), KAction::ActiveShortcut);
+            return;
+        }
         propertyValue =  KShortcut( attribute.value() )  ;
-    else
+    } else {
         propertyValue = QVariant( attribute.value() );
+    }
     action->setProperty( attrName.toLatin1(), propertyValue );
 }
 
