@@ -839,7 +839,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 	case Qt::WhatsThisRole:
 		return m_action->whatsThis();
 	case Qt::ToolTipRole:
-		return i18nc("@info:tooltip Action name in shortcuts configuration", "%1", m_action->toolTip());
+		return i18nc("@info:tooltip Action tooltip in shortcuts configuration", "%1", m_action->toolTip());
 	case Qt::FontRole:
 		if (column == Name && m_isNameBold) {
 			QFont modifiedFont = treeWidget()->font();
