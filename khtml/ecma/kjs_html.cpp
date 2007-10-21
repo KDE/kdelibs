@@ -1207,15 +1207,12 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 */
 KJS_IMPLEMENT_PROTOFUNC(HTMLElementFunction)
 
-static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElementImpl* element)
+static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElementImpl &element)
 {
-  if (!element)
-    return 0L;
-
-  DOM::DocumentImpl* doc = element->getDocument();
+  DOM::DocumentImpl* doc = element.getDocument();
   KHTMLView *view = doc->view();
   if (view)
-    return view->part()->liveConnectExtension(static_cast<khtml::RenderPart*>(element->renderer()));
+    return view->part()->liveConnectExtension(static_cast<khtml::RenderPart*>(element.renderer()));
   return 0L;
 }
 
@@ -2354,10 +2351,6 @@ void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, Valu
       }
       break;
     }
-#ifdef __GNUC__
-#warning "FIXME: LiveConnect!"
-#endif
-#if 0
     case ID_APPLET:
     case ID_OBJECT:
     case ID_EMBED: {
@@ -2366,7 +2359,6 @@ void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, Valu
         return;
       break;
     }
-#endif
     default:
       break;
   }
