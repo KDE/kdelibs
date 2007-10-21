@@ -1273,6 +1273,16 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
         }
       }
     }
+
+    // CJK languages use more verbose accelerator marker: they add a Latin
+    // letter in parenthesis, and put accelerator on that. Hence, the default
+    // removal of ampersand only may not be enough there, instead the whole
+    // parenthesis construct should be removed. Provide these filtering i18n
+    // messages so that translators can use Transcript for custom removal.
+    if ( event->type() == QEvent::Show ) {
+      tb->setText(i18nc("@action:intoolbar Text label of toolbar button", "%1", tb->text()));
+      tb->setToolTip(i18nc("@info:tooltip Tooltip of toolbar button", "%1", tb->toolTip()));
+    }
   }
 
   found:
