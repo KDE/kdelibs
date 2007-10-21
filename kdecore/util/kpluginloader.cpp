@@ -52,7 +52,7 @@ protected:
     KLibrary *lib;
 };
 
-static inline QString makeLibName( const QString &libname )
+inline QString makeLibName( const QString &libname )
 {
 #ifdef Q_OS_WIN
     if (!libname.endsWith(".dll"))
@@ -73,7 +73,7 @@ static inline QString makeLibName( const QString &libname )
 #endif
 }
 
-static inline QString findLibraryInternal(const QString &name, const KComponentData &cData)
+inline QString findLibraryInternal(const QString &name, const KComponentData &cData)
 {
     QString libname = makeLibName(name);
 

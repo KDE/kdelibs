@@ -27,49 +27,9 @@
 #include <kpluginfactory.h>
 #include <kdebug.h>
 
-static inline QString makeLibName( const QString &libname )
-{
-#ifdef Q_OS_WIN
-    if (!libname.endsWith(".dll"))
-        return libname + ".dll";
-    return libname;
-#else
-    int pos = libname.lastIndexOf('/');
-    if (pos < 0)
-      pos = 0;
-    if (libname.indexOf('.', pos) < 0) {
-        const char* const extList[] = { ".so", ".dylib", ".bundle", ".sl" };
-        for (uint i = 0; i < sizeof(extList) / sizeof(*extList); ++i) {
-           if (QLibrary::isLibrary(libname + extList[i]))
-               return libname + extList[i];
-        }
-    }
-    return libname;
-#endif
-}
+extern QString makeLibName( const QString &libname );
 
-static inline QString findLibraryInternal(const QString &name, const KComponentData &cData)
-{
-    QString libname = makeLibName( name );
-
-    // only look up the file if it is not an absolute filename
-    // (mhk, 20000228)
-    QString libfile;
-    if (QDir::isRelativePath(libname)) {
-      libfile = cData.dirs()->findResource("module", libname);
-      if ( libfile.isEmpty() )
-      {
-        libfile = cData.dirs()->findResource("lib", libname);
-#ifndef NDEBUG
-        if ( !libfile.isEmpty() && libname.startsWith( "lib" ) ) // don't warn for kdeinit modules
-          kDebug(150) << "library" << libname << "not found under 'module' but under 'lib'";
-#endif
-      }
-    } else {
-      libfile = libname;
-    }
-    return libfile;
-}
+extern QString findLibraryInternal(const QString &name, const KComponentData &cData);
 
 //static
 QString findLibrary(const QString &name, const KComponentData &cData)
