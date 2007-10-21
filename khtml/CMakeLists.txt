@@ -156,17 +156,6 @@ set(khtmlrender_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/rendering/render_canvasimage.cpp
 )
 
-# khtml/java/Makefile.am: kjava
-
-set(kjava_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/khtml/java/kjavaapplet.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/java/kjavaappletcontext.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/java/kjavaappletserver.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/java/kjavaappletwidget.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/java/kjavaprocess.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/java/kjavadownloader.cpp
-)
-
 # khtml/css/Makefile.am: khtmlcss
 
 set(khtmlcss_STAT_SRCS
@@ -283,7 +272,6 @@ set(khtml_LIB_SRCS
    ${khtmldom_STAT_SRCS}
    ${khtmlimload_STAT_SRCS}
    ${decoders_STAT_SRCS}
-   ${kjava_STAT_SRCS}
    )
 
 
