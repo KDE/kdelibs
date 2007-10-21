@@ -171,7 +171,13 @@ KPluginFactory* KLibLoader::factory( const QString &_name, QLibrary::LoadHints h
     if ( !lib )
         return 0;
 
-    return lib->factory();
+    KPluginFactory* fac = lib->factory();
+    if ( !fac ) {
+        kLibLoaderPrivate->errorString = errorString( ErrNoFactory );
+        return 0;
+    }
+
+    return fac;
 }
 
 QString KLibLoader::errorString( int componentLoadingError )
