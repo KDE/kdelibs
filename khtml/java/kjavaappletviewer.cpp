@@ -231,6 +231,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
 {
     m_view = new CoverWidget (wparent);
     QString classname, classid, codebase, khtml_codebase, src_param;
+    QString appletname;
     int width = -1;
     int height = -1;
     KJavaApplet* const applet = m_view->appletWidget()->applet ();
@@ -269,7 +270,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
                          name_lower.startsWith ("cache_archive"))
                     applet->setArchives (value);
                 else if (name_lower == QLatin1String("name"))
-                    applet->setAppletName (value);
+                    appletname = value;
                 else if (name_lower == QLatin1String("width"))
                     width = value.toInt();
                 else if (name_lower == QLatin1String("height"))
@@ -306,6 +307,9 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
         m_view->resize (width, height);
         applet->setSize( QSize( width, height ) );
     }
+    if (appletname.isEmpty())
+        appletname = classname;
+    applet->setAppletName (appletname);
     applet->setBaseURL (baseurl);
     // check codebase first
     const KUrl kbaseURL( baseurl );
