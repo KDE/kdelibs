@@ -1548,12 +1548,13 @@ void KHTMLParser::generateImpliedEndTags( int _id )
     int level = tagPriority(_id);
     while( Elem && Elem->id != _id)
     {
+        HTMLStackElem *NextElem = Elem->next;
         if (endTagRequirement(Elem->id) == DOM::OPTIONAL && Elem->level <= level) {
             popOneBlock();
         }
         else
             break;
-        Elem = Elem->next;
+        Elem = NextElem;
     }
 }
 
