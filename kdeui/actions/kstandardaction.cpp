@@ -108,10 +108,10 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
 
     if ( QApplication::isRightToLeft() ) {
       if ( id == Prior )
-        iconName = "find-next";
+        iconName = "edit-find-next";
 
       if ( id == Next )
-        iconName = "find-previous";
+        iconName = "edit-find-previous";
     }
 
     QIcon icon = iconName.isEmpty() ? KIcon() : KIcon(iconName);
