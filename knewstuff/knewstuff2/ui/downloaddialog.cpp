@@ -389,7 +389,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     sortCombo->setEnabled( false );
     sortCombo->addItem( SmallIcon( "text" ), i18n("Name") );
     sortCombo->addItem( SmallIcon( "favorites" ), i18n("Rating") );
-    sortCombo->addItem( SmallIcon( "calendar-today" ), i18n("Most recent") );
+    sortCombo->addItem( SmallIcon( "go-jump-today" ), i18n("Most recent") );
     sortCombo->addItem( SmallIcon( "cdcopy" ), i18n("Most downloads") );
     connect( sortCombo, SIGNAL( activated(int) ), SLOT( slotSortingSelected(int) ) );
 

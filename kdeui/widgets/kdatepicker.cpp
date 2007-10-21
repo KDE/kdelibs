@@ -269,7 +269,7 @@ void KDatePicker::init( const QDate &date_ )
 
     d->selectWeek = new KComboBox( this );  // read only week selection
     d->todayButton = new QToolButton( this );
-    d->todayButton->setIcon( KIcon( "calendar-today" ) );
+    d->todayButton->setIcon( KIcon( "go-jump-today" ) );
 
     d->yearForward->setToolTip( i18n( "Next year" ) );
     d->yearBackward->setToolTip( i18n( "Previous year" ) );
