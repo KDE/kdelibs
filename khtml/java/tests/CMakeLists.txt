@@ -11,7 +11,7 @@ set(testserver_SRCS testkjavaappletserver.cpp
     ../kjavaappletserver.cpp)
 
 
-kde4_add_executable(testserver ${testserver_SRCS})
+kde4_add_executable(testserver TEST ${testserver_SRCS})
 
 target_link_libraries(testserver  ${KDE4_KDECORE_LIBS}
     ${KDE4_KPARTS_LIBS}
