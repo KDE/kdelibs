@@ -166,9 +166,6 @@ public:
     m_jsedlg = 0;
     m_formNotification = KHTMLPart::NoNotification;
 
-#ifndef Q_WS_QWS
-    m_javaContext = 0;
-#endif
     m_cacheId = 0;
     m_frameNameId = 1;
 
@@ -296,10 +293,6 @@ public:
   bool m_bWalletOpened;
   bool m_urlSelectedOpenedURL; // KDE4: remove
   int m_frameNameId;
-
-#ifndef Q_WS_QWS
-  KJavaAppletContext *m_javaContext;
-#endif
 
   KHTMLSettings *m_settings;
 

@@ -402,17 +402,6 @@ public:
   bool javaEnabled() const;
 
   /**
-   * Returns the java context of the applets. If no applet exists, 0 is returned.
-   */
-  KJavaAppletContext *javaContext();
-
-  /**
-   * Returns the java context of the applets. If no context exists yet, a
-   * new one is created.
-   */
-  KJavaAppletContext *createJavaContext();
-
-  /**
    * Enables or disables plugins, default is enabled
    */
   void setPluginsEnabled( bool enable );

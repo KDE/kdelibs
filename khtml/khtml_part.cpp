@@ -1283,16 +1283,6 @@ bool KHTMLPart::javaEnabled() const
 #endif
 }
 
-KJavaAppletContext *KHTMLPart::javaContext()
-{
-  return 0;
-}
-
-KJavaAppletContext *KHTMLPart::createJavaContext()
-{
-  return 0;
-}
-
 void KHTMLPart::setPluginsEnabled( bool enable )
 {
   d->m_bPluginsForce = enable;

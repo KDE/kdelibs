@@ -40,7 +40,6 @@
 #include "css/csshelper.h"
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
-#include "rendering/render_applet.h"
 #include "rendering/render_frames.h"
 #include "rendering/render_image.h"
 #include "xml/dom2_eventsimpl.h"
