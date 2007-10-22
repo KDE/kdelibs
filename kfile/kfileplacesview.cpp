@@ -22,6 +22,7 @@
 #include <QtCore/QTimeLine>
 #include <QtCore/QTimer>
 #include <QtGui/QMenu>
+#include <QtGui/QPainter>
 #include <QtGui/QItemDelegate>
 #include <QtGui/QKeyEvent>
 
@@ -55,7 +56,7 @@ public:
     void setIconSize(int newSize);
 
     void addAppearingItem(const QModelIndex &index);
-    void setAppearingIconSize(int newSize);
+    void setAppearingItemProgress(qreal value);
 
 private:
     KFilePlacesView *m_view;
@@ -63,6 +64,7 @@ private:
 
     QList<QPersistentModelIndex> m_appearingItems;
     int m_appearingIconSize;
+    qreal m_appearingOpacity;
 };
 
 KFilePlacesViewDelegate::KFilePlacesViewDelegate(KFilePlacesView *parent) :
@@ -89,15 +91,18 @@ QSize KFilePlacesViewDelegate::sizeHint(const QStyleOptionViewItem &option,
 
 void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    int iconSize = m_iconSize;
+    painter->save();
+
     if (m_appearingItems.contains(index)) {
-        iconSize = m_appearingIconSize;
+        painter->setOpacity(m_appearingOpacity);
     }
 
     QStyleOptionViewItem opt = option;
-    opt.decorationSize = QSize(iconSize, iconSize);
+    opt.decorationSize = QSize(m_iconSize, m_iconSize);
     opt.state|= QStyle::State_Active;
     QItemDelegate::paint(painter, opt, index);
+
+    painter->restore();
 }
 
 int KFilePlacesViewDelegate::iconSize() const
@@ -115,13 +120,22 @@ void KFilePlacesViewDelegate::addAppearingItem(const QModelIndex &index)
     m_appearingItems << index;
 }
 
-void KFilePlacesViewDelegate::setAppearingIconSize(int newSize)
+void KFilePlacesViewDelegate::setAppearingItemProgress(qreal value)
 {
-    m_appearingIconSize = newSize;
+    if (value<=0.25) {
+        m_appearingOpacity = 0.0;
+        m_appearingIconSize = iconSize()*value*4;
 
-    if (m_appearingIconSize>=m_iconSize) {
-        m_appearingItems.clear();
+        if (m_appearingIconSize>=m_iconSize) {
+            m_appearingIconSize = m_iconSize;
+        }
+    } else {
         m_appearingIconSize = m_iconSize;
+        m_appearingOpacity = (value-0.25)*4/3;
+
+        if (value>=1.0) {
+            m_appearingItems.clear();
+        }
     }
 }
 
@@ -186,15 +200,15 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     connect(&d->adaptItemsTimeline, SIGNAL(valueChanged(qreal)),
             this, SLOT(_k_adaptItemsUpdate(qreal)));
-    d->adaptItemsTimeline.setDuration(150);
-    d->adaptItemsTimeline.setUpdateInterval(30);
+    d->adaptItemsTimeline.setDuration(500);
+    d->adaptItemsTimeline.setUpdateInterval(5);
     d->adaptItemsTimeline.setCurveShape(QTimeLine::EaseInOutCurve);
 
     connect(&d->itemAppearTimeline, SIGNAL(valueChanged(qreal)),
             this, SLOT(_k_itemAppearUpdate(qreal)));
-    d->itemAppearTimeline.setDuration(150);
-    d->itemAppearTimeline.setUpdateInterval(30);
-    d->itemAppearTimeline.setCurveShape(QTimeLine::EaseOutCurve);
+    d->itemAppearTimeline.setDuration(500);
+    d->itemAppearTimeline.setUpdateInterval(5);
+    d->itemAppearTimeline.setCurveShape(QTimeLine::EaseInOutCurve);
 }
 
 KFilePlacesView::~KFilePlacesView()
@@ -216,7 +230,7 @@ void KFilePlacesView::setUrl(const KUrl &url)
             delegate->addAppearingItem(index);
 
             if (d->itemAppearTimeline.state()!=QTimeLine::Running) {
-                delegate->setAppearingIconSize(1);
+                delegate->setAppearingItemProgress(0.0);
                 d->itemAppearTimeline.start();
             }
         }
@@ -253,7 +267,7 @@ void KFilePlacesView::setShowAll(bool showAll)
         }
 
         if (d->itemAppearTimeline.state()!=QTimeLine::Running) {
-            delegate->setAppearingIconSize(1);
+            delegate->setAppearingItemProgress(0.0);
             d->itemAppearTimeline.start();
         }
     }
@@ -360,7 +374,6 @@ void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end
     QListView::rowsInserted(parent, start, end);
     setUrl(d->currentUrl);
 
-#if 0 // Disable until the model is fixed and sane again signals wise
     KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
 
     for (int i=start; i<=end; ++i) {
@@ -369,10 +382,9 @@ void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end
     }
 
     if (d->itemAppearTimeline.state()!=QTimeLine::Running) {
-        delegate->setAppearingIconSize(1);
+        delegate->setAppearingItemProgress(0.0);
         d->itemAppearTimeline.start();
     }
-#endif
 }
 
 QSize KFilePlacesView::sizeHint() const
@@ -553,7 +565,7 @@ void KFilePlacesView::Private::_k_itemAppearUpdate(qreal value)
     KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(q->itemDelegate());
     int size = delegate->iconSize()*value;
 
-    delegate->setAppearingIconSize(size);
+    delegate->setAppearingItemProgress(value);
     q->scheduleDelayedItemsLayout();
 }
 
