@@ -26,6 +26,7 @@
  */
 
 #include "kcrash.h"
+#include <kstandarddirs.h>
 
 #include <config.h>
 
@@ -61,6 +62,7 @@ static KCrash::HandlerType s_emergencySaveFunction = 0;
 static KCrash::HandlerType s_crashHandler = 0;
 static char *s_appName = 0;
 static char *s_appPath = 0;
+static char *s_drkonqiPath = 0;
 static KCrash::CrashFlags s_flags = 0;
 
 namespace KCrash
@@ -84,6 +86,9 @@ KCrash::setEmergencySaveFunction (HandlerType saveFunction)
    */
   if (s_emergencySaveFunction && !s_crashHandler)
     s_crashHandler = defaultCrashHandler;
+
+  if (!s_drkonqiPath)
+        s_drkonqiPath = qstrdup(KStandardDirs::findExe("drkonqi").toLatin1().constData());
 }
 
 KCrash::HandlerType
@@ -208,7 +213,7 @@ KCrash::defaultCrashHandler (int sig)
           int i = 0;
 
           // argument 0 has to be drkonqi
-          argv[i++] = "drkonqi";
+          argv[i++] = s_drkonqiPath;
 
 #if defined Q_WS_X11
           // start up on the correct display
@@ -378,7 +383,7 @@ void KCrash::startDirectly( const char* argv[], int )
       _exit(253);
     if (s_flags & KeepFDs)
       closeAllFDs();
-    execvp("drkonqi", const_cast< char** >( argv ));
+    execvp(s_drkonqiPath, const_cast< char** >( argv ));
     fprintf( stderr, "KCrash failed to exec(), errno = %d\n", errno );
     _exit(253);
   default:
@@ -563,6 +568,7 @@ static int openSocket()
 
   server.sun_family = AF_UNIX;
   strcpy(server.sun_path, sock_file);
+  printf("sock_file=%s\n", sock_file);
   socklen = sizeof(server);
   if(connect(s, (struct sockaddr *)&server, socklen) == -1)
   {
