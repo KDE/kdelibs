@@ -115,6 +115,7 @@ bool Path::insertEffect(Effect *newEffect, Effect *insertBefore)
         //append
         rightNode = d->sinkNode->k_ptr->backendObject();
     } else {
+        Q_ASSERT(insertBefore);
         rightNode = insertBefore->k_ptr->backendObject();
     }
 
