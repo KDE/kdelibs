@@ -29,11 +29,11 @@
 #undef Always
 #endif
 #include <QtCore/QDir>
-#include <Qt3Support/Q3Table>
 #include <QtCore/QPair>
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
 #include <QtGui/QLabel>
+#include <QtGui/QTableWidget>
 #include <QtDBus/QtDBus>
 
 #include <kauthorized.h>
@@ -132,31 +132,40 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
     setModal( true );
 
     KJavaApplet* const applet = parent->applet ();
-    table = new Q3Table (30, 2, this);
+    table = new QTableWidget (30, 2, this);
     table->setMinimumSize (QSize (600, 400));
     table->setColumnWidth (0, 200);
     table->setColumnWidth (1, 340);
-    Q3Header* const header = table->horizontalHeader();
-    header->setLabel (0, i18n ("Parameter"));
-    header->setLabel (1, i18n ("Value"));
-    Q3TableItem * tit = new Q3TableItem (table, Q3TableItem::Never, i18n("Class"));
+    QTableWidgetItem* const header1 = new QTableWidgetItem(i18n ("Parameter"));
+    QTableWidgetItem* const header2 = new QTableWidgetItem(i18n ("Value"));
+    table->setHorizontalHeaderItem(1, header1);
+    table->setHorizontalHeaderItem(2, header2);
+    QTableWidgetItem * tit = new QTableWidgetItem(i18n("Class"));
+    tit->setFlags( tit->flags()^Qt::ItemIsEditable );
     table->setItem (0, 0, tit);
-    tit = new Q3TableItem(table, Q3TableItem::Always, applet->appletClass());
+    tit = new QTableWidgetItem(applet->appletClass());
+    tit->setFlags( tit->flags()|Qt::ItemIsEditable );
     table->setItem (0, 1, tit);
-    tit = new Q3TableItem (table, Q3TableItem::Never, i18n ("Base URL"));
+    tit = new QTableWidgetItem (i18n ("Base URL"));
+    tit->setFlags( tit->flags()^Qt::ItemIsEditable );
     table->setItem (1, 0, tit);
-    tit = new Q3TableItem(table, Q3TableItem::Always, applet->baseURL());
+    tit = new QTableWidgetItem(applet->baseURL());
+    tit->setFlags( tit->flags()|Qt::ItemIsEditable );
     table->setItem (1, 1, tit);
-    tit = new Q3TableItem (table, Q3TableItem::Never, i18n ("Archives"));
+    tit = new QTableWidgetItem(i18n ("Archives"));
+    tit->setFlags( tit->flags()^Qt::ItemIsEditable );
     table->setItem (2, 0, tit);
-    tit = new Q3TableItem(table, Q3TableItem::Always, applet->archives());
+    tit = new QTableWidgetItem(applet->archives());
+    tit->setFlags( tit->flags()|Qt::ItemIsEditable );
     table->setItem (2, 1, tit);
     QMap<QString,QString>::const_iterator it = applet->getParams().begin();
     const QMap<QString,QString>::const_iterator itEnd = applet->getParams().end();
     for (int count = 2; it != itEnd; ++it) {
-        tit = new Q3TableItem (table, Q3TableItem::Always, it.key ());
+        tit = new QTableWidgetItem (it.key ());
+        tit->setFlags( tit->flags()|Qt::ItemIsEditable );
         table->setItem (++count, 0, tit);
-        tit = new Q3TableItem(table, Q3TableItem::Always, it.value ());
+        tit = new QTableWidgetItem(it.value());
+        tit->setFlags( tit->flags()|Qt::ItemIsEditable );
         table->setItem (count, 1, tit);
     }
     setMainWidget (table);
@@ -164,12 +173,12 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
 }
 
 void AppletParameterDialog::slotClose () {
-    table->selectCells (0, 0, 0, 0);
+    table->setRangeSelected(QTableWidgetSelectionRange(0, 0, 0, 0), true);
     KJavaApplet* const applet = m_appletWidget->applet ();
     applet->setAppletClass (table->item (0, 1)->text ());
     applet->setBaseURL (table->item (1, 1)->text ());
     applet->setArchives (table->item (2, 1)->text ());
-    const int lim = table->numRows();
+    const int lim = table->rowCount();
     for (int i = 3; i < lim; ++i) {
         if (table->item (i, 0) && table->item (i, 1) && !table->item (i, 0)->text ().isEmpty ())
             applet->setParameter (table->item (i, 0)->text (),

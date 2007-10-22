@@ -94,12 +94,12 @@ HTMLFormElementImpl::~HTMLFormElementImpl()
     if (getDocument() && getDocument()->view() && getDocument()->view()->part()) {
         getDocument()->view()->part()->dequeueWallet(this);
     }
-    Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements);
-    for (; it.current(); ++it)
-        it.current()->m_form = 0;
-    Q3PtrListIterator<HTMLImageElementImpl> it2(imgElements);
-    for (; it2.current(); ++it2)
-        it2.current()->m_form = 0;
+    QListIterator<HTMLGenericFormElementImpl*> it(formElements);
+    while (it.hasNext())
+        it.next()->m_form = 0;
+    QListIterator<HTMLImageElementImpl*> it2(imgElements);
+    while (it2.hasNext())
+        it2.next()->m_form = 0;
 }
 
 NodeImpl::Id HTMLFormElementImpl::id() const
@@ -126,9 +126,9 @@ DOMString HTMLFormElementImpl::action() const
 long HTMLFormElementImpl::length() const
 {
     int len = 0;
-    Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements);
-    for (; it.current(); ++it)
-	if (it.current()->isEnumeratable())
+    QListIterator<HTMLGenericFormElementImpl*> it(formElements);
+    while (it.hasNext())
+	if (it.next()->isEnumeratable())
 	    ++len;
 
     return len;
@@ -274,8 +274,8 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
     QStringList fileUploads, fileNotUploads;
 
-    for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
-        HTMLGenericFormElementImpl* const current = it.current();
+    for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
+        HTMLGenericFormElementImpl* const current = it.next();
         khtml::encodingList lst;
 
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
@@ -468,9 +468,10 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
     if (w->readMap(key, map))
         return; // failed, abort
 
-    for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
-        if (it.current()->id() == ID_INPUT) {
-            HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl*>(it.current());
+    for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
+        HTMLGenericFormElementImpl* const cur = it.next();
+        if (cur->id() == ID_INPUT) {
+            HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl*>(cur);
             if ((current->inputType() == HTMLInputElementImpl::PASSWORD ||
                     current->inputType() == HTMLInputElementImpl::TEXT) &&
                     !current->readOnly() &&
@@ -489,15 +490,16 @@ void HTMLFormElementImpl::submitFromKeyboard()
     // if there is none, do a submit anyway if not more
     // than one <input type=text> or <input type=password>
     unsigned int inputtext = 0;
-    for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
-        if (it.current()->id() == ID_BUTTON) {
-            HTMLButtonElementImpl* const current = static_cast<HTMLButtonElementImpl *>(it.current());
+    for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
+        HTMLGenericFormElementImpl* const cur = it.next();
+        if (cur->id() == ID_BUTTON) {
+            HTMLButtonElementImpl* const current = static_cast<HTMLButtonElementImpl *>(cur);
             if (current->buttonType() == HTMLButtonElementImpl::SUBMIT && !current->disabled()) {
                 current->click();
                 return;
             }
-        } else if (it.current()->id() == ID_INPUT) {
-            HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl *>(it.current());
+        } else if (cur->id() == ID_INPUT) {
+            HTMLInputElementImpl* const current = static_cast<HTMLInputElementImpl *>(cur);
             switch(current->inputType())  {
             case HTMLInputElementImpl::SUBMIT:
             case HTMLInputElementImpl::IMAGE:
@@ -530,9 +532,10 @@ void HTMLFormElementImpl::gatherWalletData()
     m_haveTextarea = false;
     const KUrl formUrl(getDocument()->URL());
     if (view && !view->nonPasswordStorableSite(formUrl.host())) {
-        for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
-            if (it.current()->id() == ID_INPUT)  {
-                HTMLInputElementImpl* const c = static_cast<HTMLInputElementImpl*> (it.current());
+        for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
+            HTMLGenericFormElementImpl* const cur = it.next();
+            if (cur->id() == ID_INPUT)  {
+                HTMLInputElementImpl* const c = static_cast<HTMLInputElementImpl*> (cur);
                 if ((c->inputType() == HTMLInputElementImpl::TEXT ||
                         c->inputType() == HTMLInputElementImpl::PASSWORD) &&
                         !c->readOnly())  {
@@ -542,7 +545,7 @@ void HTMLFormElementImpl::gatherWalletData()
                         m_havePassword = true;
                 }
             }
-            else if (it.current()->id() == ID_TEXTAREA)
+            else if (cur->id() == ID_TEXTAREA)
                 m_haveTextarea = true;
         }
     }
@@ -701,8 +704,8 @@ void HTMLFormElementImpl::reset(  )
         return;
     }
 
-    for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it)
-        it.current()->reset();
+    for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();)
+        it.next()->reset();
 
     m_inreset = false;
 }
@@ -780,8 +783,8 @@ void HTMLFormElementImpl::addId   (const QString& id)
 
 void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
 {
-    for (Q3PtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
-        HTMLGenericFormElementImpl* const current = it.current();
+    for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
+        HTMLGenericFormElementImpl* const current = it.next();
         if (current->id() == ID_INPUT &&
             static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::RADIO &&
             current != caller && current->form() == caller->form() && current->name() == caller->name())
@@ -796,7 +799,9 @@ void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
 
 void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 {
-    formElements.remove(e);
+    int i = formElements.indexOf(e); 
+    if (i != -1)
+        formElements.removeAt(i);
 }
 
 void HTMLFormElementImpl::registerImgElement(HTMLImageElementImpl *e)
@@ -806,7 +811,9 @@ void HTMLFormElementImpl::registerImgElement(HTMLImageElementImpl *e)
 
 void HTMLFormElementImpl::removeImgElement(HTMLImageElementImpl *e)
 {
-    imgElements.remove(e);
+    int i = imgElements.indexOf(e); 
+    if (i != -1)
+        imgElements.removeAt(i);
 }
 
 // -------------------------------------------------------------------------
@@ -2910,15 +2917,15 @@ DOMString HTMLTextAreaElementImpl::defaultValue()
 void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
 {
     // there may be comments - remove all the text nodes and replace them with one
-    Q3PtrList<NodeImpl> toRemove;
+    QList<NodeImpl*> toRemove;
     NodeImpl *n;
     for (n = firstChild(); n; n = n->nextSibling())
         if (n->isTextNode())
             toRemove.append(n);
-    Q3PtrListIterator<NodeImpl> it(toRemove);
+    QListIterator<NodeImpl*> it(toRemove);
     int exceptioncode = 0;
-    for (; it.current(); ++it) {
-        removeChild(it.current(), exceptioncode);
+    while (it.hasNext()) {
+        removeChild(it.next(), exceptioncode);
     }
     insertBefore(getDocument()->createTextNode(_defaultValue.implementation()),firstChild(), exceptioncode);
     setValue(_defaultValue);

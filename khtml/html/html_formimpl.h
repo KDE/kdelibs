@@ -29,8 +29,6 @@
 #include "html/html_imageimpl.h"
 #include "dom/html_element.h"
 
-#include <Qt3Support/Q3PtrList>
-
 class QTextCodec;
 
 namespace khtml
@@ -110,8 +108,8 @@ public:
 
 private:
     void gatherWalletData();
-    Q3PtrList<HTMLGenericFormElementImpl> formElements;
-    Q3PtrList<HTMLImageElementImpl> imgElements;
+    QList<HTMLGenericFormElementImpl*> formElements;
+    QList<HTMLImageElementImpl*> imgElements;
     DOMString m_target;
     DOMString m_enctype;
     QString m_boundary;

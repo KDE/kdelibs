@@ -36,7 +36,7 @@
 
 #include "kjavaappletwidget.h"
 
-class Q3Table;
+class QTableWidget;
 class QLabel;
 class KJavaProcess;
 class KJavaAppletViewer;
@@ -141,7 +141,7 @@ protected Q_SLOTS:
     void slotClose ();
 private:
     KJavaAppletWidget * m_appletWidget;
-    Q3Table * table;
+    QTableWidget * table;
 };
 
 #endif

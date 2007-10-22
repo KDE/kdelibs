@@ -26,7 +26,6 @@
 #include "html_tableimpl.h"
 #include "html_formimpl.h"
 #include "html_documentimpl.h"
-#include <Qt3Support/Q3Dict>
 
 #include <misc/htmlhashes.h>
 #include <dom/dom_node.h>
@@ -55,17 +54,14 @@ struct CollectionCache: public NodeListImpl::Cache
 {
     static Cache* make() { return new CollectionCache; }
 
-    Q3Dict<QList<NodeImpl*> > nameCache;
+    QHash<QString,QList<NodeImpl*>* > nameCache;
 
-    CollectionCache(): nameCache(127)
-    {
-        nameCache.setAutoDelete(true);
-    }
+    CollectionCache(): nameCache(){}
 
     virtual void clear(DocumentImpl* doc)
     {
         Cache::clear(doc);
-        //qDeleteAll here in Qt4 when fully ported
+        qDeleteAll(nameCache);
         nameCache.clear();
     }
 };
@@ -293,7 +289,7 @@ QList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) const
     //remember stuff about elements we were asked for.
     m_cache->updateNodeListInfo(m_refNode->getDocument());
     CollectionCache* cache = static_cast<CollectionCache*>(m_cache);
-    if (QList<NodeImpl*>* info = cache->nameCache.find(key)) {
+    if (QList<NodeImpl*>* info = cache->nameCache.value(key)) {
         return *info;
     }
     else {
@@ -305,7 +301,7 @@ QList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) const
             match = nextNamedItem(name);
         }
 
-        cache->nameCache.insert(key, newInfo);
+        cache->nameCache.insertMulti(key, newInfo);
         return *newInfo;
     }
 }
@@ -328,8 +324,8 @@ NodeImpl *HTMLFormCollectionImpl::item( unsigned long index ) const
         strt = m_cache->current.index;
     }
 
-    Q3PtrList<HTMLGenericFormElementImpl>& l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
-    for (unsigned i = strt; i < l.count(); i++)
+    QList<HTMLGenericFormElementImpl*>& l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
+    for (unsigned i = strt; i < (unsigned)l.count(); i++)
     {
         if (l.at( i )->isEnumeratable())
         {
@@ -349,9 +345,10 @@ NodeImpl *HTMLFormCollectionImpl::item( unsigned long index ) const
 
 unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl *start) const
 {
+    Q_UNUSED(start);
     unsigned length = 0;
-    Q3PtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
-    for ( unsigned i = 0; i < l.count(); i++ )
+    QList<HTMLGenericFormElementImpl*> l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
+    for ( unsigned i = 0; i < (unsigned)l.count(); i++ )
         if ( l.at( i )->isEnumeratable() )
             ++length;
     return length;
@@ -367,10 +364,10 @@ NodeImpl *HTMLFormCollectionImpl::namedItem( const DOMString &name ) const
 
 NodeImpl *HTMLFormCollectionImpl::nextNamedItem( const DOMString &name ) const
 {
-    Q3PtrList<HTMLGenericFormElementImpl>& l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
+    QList<HTMLGenericFormElementImpl*>& l = static_cast<HTMLFormElementImpl*>( m_refNode )->formElements;
 
     //Go through the list, trying to find the appropriate named form element.
-    for ( ; currentNamePos < l.count(); ++currentNamePos )
+    for ( ; currentNamePos < (unsigned)l.count(); ++currentNamePos )
     {
         HTMLGenericFormElementImpl* el = l.at(currentNamePos);
         if (el->isEnumeratable() &&
@@ -387,8 +384,8 @@ NodeImpl *HTMLFormCollectionImpl::nextNamedItem( const DOMString &name ) const
     //but only if no input tags were matched
     if (foundInput) return 0;
 
-    Q3PtrList<HTMLImageElementImpl>& il = static_cast<HTMLFormElementImpl*>( m_refNode )->imgElements;
-    for ( ; currentNameImgPos < il.count(); ++currentNameImgPos )
+    QList<HTMLImageElementImpl*>& il = static_cast<HTMLFormElementImpl*>( m_refNode )->imgElements;
+    for ( ; currentNameImgPos < (unsigned)il.count(); ++currentNameImgPos )
     {
         HTMLImageElementImpl* el = il.at(currentNameImgPos);
         if ((el->getAttribute(ATTR_ID)   == name) ||
