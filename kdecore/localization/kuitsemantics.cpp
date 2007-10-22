@@ -640,11 +640,11 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
 
     // -------> Icode
     SET_PATTERN(Tag::Icode, Att::None, Fmt::Plain,
-                XXXX_NOOP2("@icode/plain",
+                I18N_NOOP2("@icode/plain",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
                            "“%1”"));
     SET_PATTERN(Tag::Icode, Att::None, Fmt::Rich,
-                XXXX_NOOP2("@icode/rich",
+                I18N_NOOP2("@icode/rich",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
                            "<tt>%1</tt>"));
 
@@ -652,7 +652,7 @@ void KuitSemanticsPrivate::setFormattingPatterns (const KCatalog &cat)
     SET_PATTERN(Tag::Bcode, Att::None, Fmt::Plain,
                 XXXX_NOOP2("@bcode/plain",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
-                           "%1"));
+                           "\n%1\n"));
     SET_PATTERN(Tag::Bcode, Att::None, Fmt::Rich,
                 XXXX_NOOP2("@bcode/rich",
     // i18n: KUIT pattern, see the comment to the first of these entries above.
