@@ -24,6 +24,7 @@
 #include <klocale.h>
 
 #include <QLayout>
+#include <fixx11h.h> // for enable-final
 #include <QPrintDialog>
 #include <QStyle>
 #include <QTabWidget>
