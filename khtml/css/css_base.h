@@ -209,7 +209,7 @@ namespace DOM {
 	virtual bool isRuleList() const { return false; }
 	virtual bool isRule() const { return false; }
 	virtual bool isStyleRule() const { return false; }
-	virtual bool isCharetRule() const { return false; }
+	virtual bool isCharsetRule() const { return false; }
 	virtual bool isImportRule() const { return false; }
 	virtual bool isMediaRule() const { return false; }
 	virtual bool isFontFaceRule() const { return false; }

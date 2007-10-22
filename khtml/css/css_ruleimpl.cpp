@@ -273,13 +273,6 @@ unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule,
     return newRule ? m_lstCSSRules->insertRule( newRule, index ) : 0;
 }
 
-CSSRuleListImpl::~CSSRuleListImpl()
-{
-    CSSRuleImpl* rule;
-    while ( !m_lstCSSRules.isEmpty() && ( rule = m_lstCSSRules.take( 0 ) ) )
-        rule->deref();
-}
-
 // ---------------------------------------------------------------------------
 
 CSSPageRuleImpl::CSSPageRuleImpl(StyleBaseImpl *parent)
@@ -365,6 +358,29 @@ void CSSStyleRuleImpl::setNonCSSHints()
 	s->nonCSSHint = true;
 	s = m_selector->next();
     }
+}
+
+// --------------------------------------------------------------------
+
+CSSRuleListImpl::CSSRuleListImpl(StyleListImpl* const lst, bool omitCharsetRules)
+{
+     if (lst) {
+         unsigned len = lst->length();
+         for (unsigned i = 0; i < len; ++i) {
+             StyleBaseImpl* rule = lst->item(i);
+             if (rule->isRule() && !(omitCharsetRules && rule->isCharsetRule())) {
+                 append(static_cast<CSSRuleImpl*>(rule));
+                 rule->ref();
+             }
+         }
+     }
+}
+
+CSSRuleListImpl::~CSSRuleListImpl()
+{
+    CSSRuleImpl* rule;
+    while ( !m_lstCSSRules.isEmpty() && ( rule = m_lstCSSRules.take( 0 ) ) )
+        rule->deref();
 }
 
 void CSSRuleListImpl::deleteRule ( unsigned long index )

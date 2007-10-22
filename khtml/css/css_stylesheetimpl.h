@@ -42,7 +42,7 @@ class CSSStyleSheet;
 class CSSParser;
 class MediaListImpl;
 class CSSRuleImpl;
-class CSSRuleList;
+class CSSRuleListImpl;
 class NodeImpl;
 class DocumentImpl;
 
@@ -94,7 +94,7 @@ public:
     virtual DOM::DOMString type() const { return "text/css"; }
 
     CSSRuleImpl *ownerRule() const;
-    CSSRuleList cssRules();
+    CSSRuleListImpl *cssRules(bool omitCharsetRule = false);
     unsigned long insertRule ( const DOM::DOMString &rule, unsigned long index, int &exceptioncode );
     void deleteRule ( unsigned long index, int &exceptioncode );
 

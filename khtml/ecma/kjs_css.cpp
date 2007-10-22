@@ -612,15 +612,16 @@ DOMCSSStyleSheet::~DOMCSSStyleSheet()
 ValueImp* DOMCSSStyleSheet::getValueProperty(ExecState *exec, int token)
 {
   CSSStyleSheetImpl& cssStyleSheet = *impl();
+  // MSIE does not list the charset rules in its proprietary extension
+  bool omitCharsetRules = true;
   switch (token) {
     case OwnerRule:
       return getDOMCSSRule(exec,cssStyleSheet.ownerRule());
     case CssRules:
+        omitCharsetRules = false;
+        // nobreak
     case Rules: {
-      //### this is a bit odd -- why is the impl returning the wrapper?
-      DOM::CSSRuleList rules = cssStyleSheet.cssRules();
-      SharedPtr<CSSRuleListImpl> ri = static_cast<CSSRuleListImpl*>(rules.handle());
-      return getDOMCSSRuleList(exec, ri.get());
+        return getDOMCSSRuleList(exec, cssStyleSheet.cssRules(omitCharsetRules));
     }
     default:
       assert(0);
@@ -651,7 +652,7 @@ ValueImp *DOMCSSStyleSheetProtoFunc::callAsFunction(ExecState *exec, ObjectImp *
       //Unpassed/-1 means append. Since insertRule is picky (throws exceptions)
       //we adjust it to the desired length
       unsigned long index  = args[2]->toInteger(exec);
-      unsigned long length = styleSheet.cssRules().length();
+      unsigned long length = styleSheet.length();
       if (args[2]->type() == UndefinedType) index = length;
       if (index > length)                   index = length;
       DOM::DOMString str = args[0]->toString(exec).domString() + " { " + args[1]->toString(exec).domString() + " } ";

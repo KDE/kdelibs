@@ -40,6 +40,7 @@ class CSSRule;
 class CSSStyleSheet;
 class CSSStyleSheetImpl;
 class CSSStyleDeclarationImpl;
+class CSSStyleListImpl;
 class MediaListImpl;
 
 class CSSRuleImpl : public StyleBaseImpl
@@ -68,12 +69,14 @@ class CSSCharsetRuleImpl : public CSSRuleImpl
 public:
     CSSCharsetRuleImpl(StyleBaseImpl *parent)
         : CSSRuleImpl(parent) { m_type = CSSRule::CHARSET_RULE; }
+    CSSCharsetRuleImpl(StyleBaseImpl *parent, const DOM::DOMString &encoding)
+        : CSSRuleImpl(parent), m_encoding(encoding) {  m_type = CSSRule::CHARSET_RULE; }
 
     virtual bool isCharsetRule() const { return true; }
 
     DOMString encoding() const { return m_encoding; }
     void setEncoding(DOMString _encoding) { m_encoding = _encoding; }
-
+    virtual DOM::DOMString cssText() const { return DOMString("@charset \"") + m_encoding + "\";"; }
 protected:
     DOMString m_encoding;
 };
@@ -133,6 +136,7 @@ class CSSRuleListImpl : public khtml::Shared<CSSRuleListImpl>
 {
 public:
     CSSRuleListImpl() {}
+    CSSRuleListImpl(StyleListImpl* const lst, bool omitCharsetRules = false);
 
     ~CSSRuleListImpl();
 

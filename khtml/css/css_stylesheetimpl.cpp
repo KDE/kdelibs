@@ -200,9 +200,9 @@ unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned lon
     return index;
 }
 
-CSSRuleList CSSStyleSheetImpl::cssRules()
+CSSRuleListImpl *CSSStyleSheetImpl::cssRules(bool omitCharsetRules)
 {
-    return this;
+    return new CSSRuleListImpl(this, omitCharsetRules);
 }
 
 void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )

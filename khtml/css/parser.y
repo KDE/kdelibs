@@ -203,6 +203,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %type <relation> combinator
 
+%type <rule> charset
 %type <rule> ruleset
 %type <rule> media
 %type <rule> import
@@ -315,13 +316,26 @@ maybe_sgml:
 
 maybe_charset:
    /* empty */
- | CHARSET_SYM maybe_space STRING maybe_space ';' {
+  | charset
+ ;
+charset:
+  CHARSET_SYM maybe_space STRING maybe_space ';' {
 #ifdef CSS_DEBUG
      kDebug( 6080 ) << "charset rule: " << qString($3) << endl;
 #endif
+     CSSParser* p = static_cast<CSSParser*>(parser);
+     if ($$ && p->styleElement && p->styleElement->isCSSStyleSheet()) {
+         $$ = new CSSCharsetRuleImpl(p->styleElement, domString($3));
+         p->styleElement->append($$);
+     } else
+         $$ = 0;
  }
-  | CHARSET_SYM error invalid_block
-  | CHARSET_SYM error ';'
+  | CHARSET_SYM error invalid_block {
+      $$ = 0;
+ }
+  | CHARSET_SYM error ';' {
+      $$ = 0;
+ }
  ;
 
 import_list:
