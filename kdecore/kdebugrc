@@ -19,7 +19,7 @@
 # For file output you can give a filename by *Filename=<file>
 # otherwise kdebug.dbg in the current directory is used.
 #
-# ekzample:
+# example:
 #
 # For the debug area 100 you want output of debug messages
 # to a file /var/log/dbg.log and error messages as message boxes.
