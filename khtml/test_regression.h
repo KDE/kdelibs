@@ -26,6 +26,7 @@
 #include <khtml_part.h>
 #include <kurl.h>
 #include <QtCore/QObject>
+#include <QtCore/QStack>
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
@@ -33,6 +34,7 @@
 
 class RegressionTest;
 class QTimer;
+class QEventLoop;
 
 /**
  * @internal
@@ -44,7 +46,10 @@ public:
     PartMonitor(KHTMLPart *_part);
     ~PartMonitor();
     void waitForCompletion();
+    void enterLoop();
+    void exitLoop();
     static PartMonitor* sm_highestMonitor;
+    QStack<QEventLoop*> m_eventLoopStack;
     bool m_completed;
     KHTMLPart *m_part;
     int m_timer_waits;

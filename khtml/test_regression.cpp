@@ -37,6 +37,7 @@
 #include <kstandarddirs.h>
 #include <QtGui/QImage>
 #include <QtCore/QFile>
+#include <QtCore/QEventLoop>
 #include <stdio.h>
 
 #include "css/cssstyleselector.h"
@@ -190,7 +191,7 @@ public:
         case CT_PushButton:
             return QSize(size.width(), size.height() - 1);
         case CT_LineEdit:
-	    if (widget && widget->parentWidget() && !qstricmp(widget->parentWidget()->className(), "KUrlRequester"))
+	    if (widget && widget->parentWidget() && !qstricmp(widget->parentWidget()->metaObject()->className(), "KUrlRequester"))
 		return QSize(size.width() + 1, size.height());
             return QSize(size.width() + 2, size.height() + 2);
         case CT_ComboBox:
@@ -277,6 +278,7 @@ PartMonitor::~PartMonitor()
 {
    if (this == sm_highestMonitor)
 	sm_highestMonitor = 0;
+   qDeleteAll(m_eventLoopStack);
 }
 
 
@@ -289,7 +291,7 @@ void PartMonitor::waitForCompletion()
 
 	sm_highestMonitor = this;
 
-        qApp->enter_loop();
+        enterLoop();
 
         //connect(m_timeout_timer, SIGNAL(timeout()), this, SLOT( timeout() ) );
         //m_timeout_timer->stop();
@@ -297,12 +299,27 @@ void PartMonitor::waitForCompletion()
     }
 
     QTimer::singleShot( 0, this, SLOT( finishTimers() ) );
-    qApp->enter_loop();
+    enterLoop();
+}
+
+void PartMonitor::enterLoop()
+{
+    if (m_eventLoopStack.isEmpty() || m_eventLoopStack.top()->isRunning())
+        m_eventLoopStack.push(new QEventLoop());
+    m_eventLoopStack.top()->exec();
+}
+
+void PartMonitor::exitLoop()
+{
+    while (!m_eventLoopStack.isEmpty() && !m_eventLoopStack.top()->isRunning())
+        delete m_eventLoopStack.pop();
+    if (!m_eventLoopStack.isEmpty())
+        m_eventLoopStack.top()->exit();
 }
 
 void PartMonitor::timeout()
 {
-    qApp->exit_loop();
+    exitLoop();
 }
 
 void PartMonitor::finishTimers()
@@ -314,7 +331,7 @@ void PartMonitor::finishTimers()
         QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
         return;
     }
-    qApp->exit_loop();
+    exitLoop();
 }
 
 void PartMonitor::partCompleted()
@@ -749,7 +766,7 @@ int main(int argc, char *argv[])
 	visual = true;
 
     a.setTopWidget(part->widget());
-    a.setMainWidget( toplevel );
+    part->widget()->resize( 800, 598 );
     if ( visual )
         toplevel->show();
 
@@ -1141,7 +1158,7 @@ QImage RegressionTest::renderToImage()
     if (ew * eh > 4000 * 4000) // don't DoS us
         return QImage();
 
-    QImage img( ew, eh, 32 );
+    QImage img( ew, eh, QImage::Format_ARGB32 );
     img.fill( 0xff0000 );
     if (!m_paintBuffer )
         m_paintBuffer = new QPixmap( 512, 128 );
@@ -1435,7 +1452,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
 void RegressionTest::testStaticFile(const QString & filename)
 {
-    qApp->mainWidget()->resize( 800, 598 ); // restore size
+    m_part->widget()->resize( 800, 598 ); // restore size
 
     // Set arguments
     KParts::OpenUrlArguments args;
@@ -1587,7 +1604,7 @@ public:
 
 void RegressionTest::testJSFile(const QString & filename )
 {
-    qApp->mainWidget()->resize( 800, 598 ); // restore size
+   m_part->widget()->resize( 800, 598 ); // restore size
 
     // create interpreter
     // note: this is different from the interpreter used by the part,
@@ -1824,7 +1841,7 @@ bool RegressionTest::svnIgnored( const QString &filename )
 
 void RegressionTest::resizeTopLevelWidget( int w, int h )
 {
-    qApp->mainWidget()->resize( w, h );
+    m_part->widget()->resize( w, h );
     // Since we're not visible, this doesn't have an immediate effect, QWidget posts the event
     QApplication::sendPostedEvents( 0, QEvent::Resize );
 }
