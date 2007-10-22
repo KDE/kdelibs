@@ -21,25 +21,39 @@
 
 
 #include <QtCore/QModelIndex>
+#include <kbookmark.h>
+#include <solid/device.h>
 
 class KFilePlacesItem
 {
 public:
-    KFilePlacesItem();
+    KFilePlacesItem(KBookmarkManager *manager,
+                    const QString &address,
+                    const QString &udi = QString());
     ~KFilePlacesItem();
 
+    QString id() const;
+
     bool isDevice() const;
+    KBookmark bookmark() const;
+    Solid::Device device() const;
+    QVariant data(int role) const;
 
-    QString bookmarkAddress() const;
-    void setBookmarkAddress(const QString &address);
-
-    QPersistentModelIndex deviceIndex() const;
-    void setDeviceIndex(const QPersistentModelIndex &index);
+    static KFilePlacesItem createBookmarkPlace(KBookmarkManager *manager,
+                                               const QString &label,
+                                               const KUrl &url,
+                                               const QString &iconName);
+    static KFilePlacesItem createDevicePlace(KBookmarkManager *manager,
+                                             const QString &udi);
 
 private:
-    bool m_isDevice;
-    QString m_bookmarkAddress;
-    QPersistentModelIndex m_deviceIndex;
+    QVariant bookmarkData(int role) const;
+    QVariant deviceData(int role) const;
+
+    static QString generateNewId();
+
+    KBookmarkManager *m_manager;
+    KBookmark m_bookmark;
 };
 
 #endif

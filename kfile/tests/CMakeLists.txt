@@ -19,3 +19,9 @@ KFILE_EXECUTABLE_TESTS(
   kfiletreeviewtest
 )
 
+add_definitions(-DTEST_DATA="\\"${CMAKE_SOURCE_DIR}/solid/solid/backends/fakehw/fakecomputer.xml\\"")
+
+KFILE_UNIT_TESTS(
+  kfileplacesmodeltest
+)
+

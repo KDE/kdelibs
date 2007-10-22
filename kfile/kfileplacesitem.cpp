@@ -18,39 +18,158 @@
 */
 
 #include "kfileplacesitem_p.h"
+#include "kfileplacesmodel.h"
 
-KFilePlacesItem::KFilePlacesItem()
-    : m_isDevice(false)
+#include <QtCore/QDateTime>
+
+#include <kbookmarkmanager.h>
+#include <solid/storageaccess.h>
+
+
+
+KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
+                                 const QString &address,
+                                 const QString &udi)
+    : m_manager(manager)
 {
+    m_bookmark = m_manager->findByAddress(address);
+
+    if (udi.isEmpty() && m_bookmark.metaDataItem("ID").isEmpty()) {
+        m_bookmark.setMetaDataItem("ID", generateNewId());
+    }
 }
 
 KFilePlacesItem::~KFilePlacesItem()
 {
 }
 
+QString KFilePlacesItem::id() const
+{
+    if (isDevice()) {
+        return bookmark().metaDataItem("UDI");
+    } else {
+        return bookmark().metaDataItem("ID");
+    }
+}
+
 bool KFilePlacesItem::isDevice() const
 {
-    return m_isDevice;
+    return !bookmark().metaDataItem("UDI").isEmpty();
 }
 
-QString KFilePlacesItem::bookmarkAddress() const
+KBookmark KFilePlacesItem::bookmark() const
 {
-    return m_bookmarkAddress;
+    return m_bookmark;
 }
 
-void KFilePlacesItem::setBookmarkAddress(const QString &address)
+Solid::Device KFilePlacesItem::device() const
 {
-    m_bookmarkAddress = address;
+    return Solid::Device(bookmark().metaDataItem("UDI"));
 }
 
-QPersistentModelIndex KFilePlacesItem::deviceIndex() const
+QVariant KFilePlacesItem::data(int role) const
 {
-    return m_deviceIndex;
+    QVariant returnData;
+
+    if (isDevice() && role!=KFilePlacesModel::HiddenRole && role!=Qt::BackgroundRole) {
+        returnData = deviceData(role);
+    } else {
+        returnData = bookmarkData(role);
+    }
+
+    return returnData;
 }
 
-void KFilePlacesItem::setDeviceIndex(const QPersistentModelIndex &index)
+QVariant KFilePlacesItem::bookmarkData(int role) const
 {
-    m_deviceIndex = index;
-    m_isDevice = index.isValid();
+    KBookmark b = bookmark();
+
+    if (b.isNull()) return QVariant();
+
+    switch (role)
+    {
+    case Qt::DisplayRole:
+        return b.text();
+    case Qt::DecorationRole:
+        return KIcon(b.icon());
+    case Qt::BackgroundRole:
+        if (b.metaDataItem("IsHidden")=="true") {
+            return Qt::lightGray;
+        } else {
+            return QVariant();
+        }
+    case KFilePlacesModel::UrlRole:
+        return QUrl(b.url());
+    case KFilePlacesModel::SetupNeededRole:
+        return false;
+    case KFilePlacesModel::HiddenRole:
+        return b.metaDataItem("IsHidden")=="true";
+    default:
+        return QVariant();
+    }
 }
 
+QVariant KFilePlacesItem::deviceData(int role) const
+{
+    Solid::Device d = device();
+
+    if (d.isValid()) {
+        const Solid::StorageAccess *access = d.as<Solid::StorageAccess>();
+
+        switch (role)
+        {
+        case Qt::DisplayRole:
+            return d.product();
+        case Qt::DecorationRole:
+            return KIcon(d.icon());
+        case KFilePlacesModel::UrlRole:
+            if (access) {
+                return QUrl(KUrl(access->filePath()));
+            } else {
+                return QVariant();
+            }
+        case KFilePlacesModel::SetupNeededRole:
+            if (access) {
+                return !access->isAccessible();
+            } else {
+                return QVariant();
+            }
+        default:
+            return QVariant();
+        }
+    } else {
+        return QVariant();
+    }
+}
+
+KFilePlacesItem KFilePlacesItem::createBookmarkPlace(KBookmarkManager *manager,
+                                                     const QString &label,
+                                                     const KUrl &url,
+                                                     const QString &iconName)
+{
+    KBookmarkGroup root = manager->root();
+    KBookmark bookmark = root.addBookmark(label, url, iconName);
+    bookmark.setMetaDataItem("ID", generateNewId());
+
+    return KFilePlacesItem(manager, bookmark.address());
+}
+
+KFilePlacesItem KFilePlacesItem::createDevicePlace(KBookmarkManager *manager,
+                                                   const QString &udi)
+{
+    KBookmarkGroup root = manager->root();
+    KBookmark bookmark = root.createNewSeparator();
+    bookmark.setMetaDataItem("UDI", udi);
+
+    return KFilePlacesItem(manager, bookmark.address(), udi);
+}
+
+QString KFilePlacesItem::generateNewId()
+{
+    static int count = 0;
+
+    return QString::number(count++);
+
+//    return QString::number(QDateTime::currentDateTime().toTime_t())
+//         + '/' + QString::number(qrand());
+}
