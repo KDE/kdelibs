@@ -190,6 +190,7 @@ public:
 
     DOMImplementationImpl *implementation() const;
     ElementImpl *documentElement() const;
+    virtual void childrenChanged();
     virtual ElementImpl *createElement ( const DOMString &tagName, int* pExceptioncode = 0 );
     virtual AttrImpl *createAttribute( const DOMString &tagName, int* pExceptioncode = 0 );
     DocumentFragmentImpl *createDocumentFragment ();
@@ -650,6 +651,8 @@ protected:
     DOMString m_title;
     DOMString m_preferredStylesheetSet;
     khtml::CachedCSSStyleSheet *m_loadingXMLDoc;
+    
+    mutable ElementImpl* m_documentElement;
 
     //int m_decoderMibEnum;
 

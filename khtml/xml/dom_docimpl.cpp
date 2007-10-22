@@ -376,6 +376,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_docLoading = false;
     m_inSyncLoad = false;
     m_loadingXMLDoc = 0;
+    m_documentElement = 0;
     m_cssTarget = 0;
     m_dynamicDomRestyler = new khtml::DynamicDomRestyler();
 }
@@ -419,6 +420,11 @@ void DocumentImpl::removedLastRef()
         if (m_activeNode) {
             m_activeNode->deref();
             m_activeNode = 0;
+        }
+        
+        if (m_documentElement) {
+            m_documentElement->deref();
+            m_documentElement = 0;
         }
 
         removeChildren();
@@ -468,6 +474,8 @@ DocumentImpl::~DocumentImpl()
         m_hoverNode->deref();
     if (m_activeNode)
         m_activeNode->deref();
+    if (m_documentElement)
+        m_documentElement->deref();
 
     m_renderArena.reset();
 
@@ -485,12 +493,25 @@ DOMImplementationImpl *DocumentImpl::implementation() const
     return m_implementation;
 }
 
+void DocumentImpl::childrenChanged()
+{
+    // invalidate the document element we have cached in case it was replaced
+    if (m_documentElement)
+        m_documentElement->deref();
+    m_documentElement = 0;
+}
+
 ElementImpl *DocumentImpl::documentElement() const
 {
-    NodeImpl *n = firstChild();
-    while (n && n->nodeType() != Node::ELEMENT_NODE)
-      n = n->nextSibling();
-    return static_cast<ElementImpl*>(n);
+    if (!m_documentElement) {
+        NodeImpl* n = firstChild();
+        while (n && n->nodeType() != Node::ELEMENT_NODE)
+            n = n->nextSibling();
+        m_documentElement = static_cast<ElementImpl*>(n);
+        if (m_documentElement)
+            m_documentElement->ref();
+    }
+    return m_documentElement;
 }
 
 ElementImpl *DocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
