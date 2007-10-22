@@ -21,8 +21,10 @@
 
 #include "kswitchlanguagedialog_p.moc"
 
+#include <QtGui/QApplication>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
+#include <QtCore/QEvent>
 #include <QtCore/QMap>
 
 #include <klanguagebutton.h>
@@ -231,6 +233,8 @@ void KSwitchLanguageDialog::slotOk()
             i18n("Application language changed"), //caption
             "ApplicationLanguageChangedWarning" //dontShowAgainName
             );
+        QEvent ev(QEvent::LanguageChange);
+        QApplication::sendEvent(qApp, &ev);
     }
 
     accept();
