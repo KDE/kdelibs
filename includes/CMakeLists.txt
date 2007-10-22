@@ -290,9 +290,6 @@ install( FILES
   KPopupFrame
   KPreviewWidgetBase
   KPrintAction
-  KPrintDialog
-  KPrintDialogPage
-  KPrinter
   KProcess
   KProgressDialog
   KPropertiesDialog
