@@ -2217,16 +2217,38 @@ int RenderBox::highestPosition(bool /*includeOverflowInterior*/, bool includeSel
 int RenderBox::lowestPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {
     return includeSelf ? m_height : 0;
+    if (!includeSelf || !m_width)
+        return 0;
+    int bottom = m_height;
+    if (isRelPositioned()) {
+        int x;
+        relativePositionOffset(x, bottom);
+    }
+    return bottom;
 }
 
 int RenderBox::rightmostPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {
-    return includeSelf ? m_width : 0;
+    if (!includeSelf || !m_height)
+        return 0;
+    int right = m_width;
+    if (isRelPositioned()) {
+        int y;
+        relativePositionOffset(right, y);
+    }
+    return right;
 }
 
 int RenderBox::leftmostPosition(bool /*includeOverflowInterior*/, bool includeSelf) const
 {
-    return includeSelf ? 0 : m_width;
+    if (!includeSelf || !m_height)
+        return m_width;
+    int left = 0;
+    if (isRelPositioned()) {
+        int y;
+        relativePositionOffset(left, y);
+    }
+    return left;
 }
 
 int RenderBox::pageTopAfter(int y) const

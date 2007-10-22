@@ -479,7 +479,7 @@ void RenderFlow::repaint(Priority prior)
 int
 RenderFlow::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int bottom = RenderBox::lowestPosition(includeOverflowInterior, includeSelf);
+    int bottom = includeSelf && m_width > 0 ? m_height : 0;;
     if (!includeOverflowInterior && hasOverflowClip())
         return bottom;
 
@@ -504,7 +504,7 @@ RenderFlow::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 
 int RenderFlow::rightmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int right = RenderBox::rightmostPosition(includeOverflowInterior, includeSelf);
+    int right = includeSelf && m_height > 0 ? m_width : 0;
     if (!includeOverflowInterior && hasOverflowClip())
         return right;
 
@@ -529,7 +529,7 @@ int RenderFlow::rightmostPosition(bool includeOverflowInterior, bool includeSelf
 
 int RenderFlow::leftmostPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int left = RenderBox::leftmostPosition(includeOverflowInterior, includeSelf);
+    int left = includeSelf && m_height > 0 ? 0 : m_width;
     if (!includeOverflowInterior && hasOverflowClip())
         return left;
 
