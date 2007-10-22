@@ -286,7 +286,7 @@ void KMJobViewer::initActions()
 
     KAction *dact = new KAction(i18n("Remo&ve"), this);
     actionCollection()->addAction("job_remove", dact);
-    dact->setIcon(KIcon("edit-trash"));
+    dact->setIcon(KIcon("user-trash"));
     dact->setShortcut(QKeySequence(Qt::Key_Delete));
     connect(dact, SIGNAL(triggered(bool)), this, SLOT(slotRemove()));
 

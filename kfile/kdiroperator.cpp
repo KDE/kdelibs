@@ -751,14 +751,14 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
                     i18n("<qt>Do you really want to trash\n <b>'%1'</b>?</qt>" ,
                          files.first()),
                     i18n("Trash File"),
-                    KGuiItem(i18nc("to trash", "&Trash"), "edit-trash"),
+                    KGuiItem(i18nc("to trash", "&Trash"), "user-trash"),
                     KStandardGuiItem::cancel(), "AskForTrash");
         } else
             ret = KMessageBox::warningContinueCancelList(parent,
                     i18np("translators: not called for n == 1", "Do you really want to trash these %1 items?", items.count()),
                     files,
                     i18n("Trash Files"),
-                    KGuiItem(i18nc("to trash", "&Trash"), "edit-trash"),
+                    KGuiItem(i18nc("to trash", "&Trash"), "user-trash"),
                     KStandardGuiItem::cancel(), "AskForTrash");
         doIt = (ret == KMessageBox::Continue);
     }
@@ -1482,7 +1482,7 @@ void KDirOperator::setupActions()
 
     KAction* trash = new KAction(i18n("Move to Trash"), this);
     d->actionCollection->addAction("trash", trash);
-    trash->setIcon(KIcon("edit-trash"));
+    trash->setIcon(KIcon("user-trash"));
     trash->setShortcuts(KShortcut(Qt::Key_Delete));
     connect(trash, SIGNAL(triggered(bool)), SLOT(trashSelected()));
 

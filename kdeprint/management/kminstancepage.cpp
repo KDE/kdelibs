@@ -88,7 +88,7 @@ void KMInstancePage::initActions()
 {
     addButton(i18n("New..."), "document-new", SLOT(slotNew()));
     addButton(i18n("Copy..."), "edit-copy", SLOT(slotCopy()));
-    addButton(i18n("Remove"), "edit-trash", SLOT(slotRemove()));
+    addButton(i18n("Remove"), "user-trash", SLOT(slotRemove()));
     m_buttons.append(0);
     addButton(i18n("Set as Default"), "exec", SLOT(slotDefault()));
     addButton(i18n("Settings"), "configure", SLOT(slotSettings()));

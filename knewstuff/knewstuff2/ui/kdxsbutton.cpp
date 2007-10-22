@@ -102,7 +102,7 @@ KDXSButton::KDXSButton(QWidget *parent)
 		i18n("Translate"));
 	action_collabsubscribe = pcollab->addAction(SmallIcon("news-subscribe"),
 		i18n("Subscribe"));
-	action_collabremoval = pcollab->addAction(SmallIcon("edit-trash"),
+	action_collabremoval = pcollab->addAction(SmallIcon("user-trash"),
 		i18n("Report bad entry"));
 	pcollab->addMenu(m_contact);
 

@@ -224,7 +224,7 @@ void KMMainView::initActions()
 
     action = new KAction(i18n("&Remove"), this);
     m_actions->addAction("printer_remove", action);
-    action->setIcon(KIcon("edit-trash"));
+    action->setIcon(KIcon("user-trash"));
     connect(action, SIGNAL(triggered(bool)), this, SLOT(slotRemove()));
 
     action = new KAction(i18n("&Configure..."), this);
