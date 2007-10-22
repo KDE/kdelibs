@@ -761,9 +761,8 @@ QStringList KConfigGroup::readPathListEntry( const char *pKey, char sep ) const
 
 QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) const
 {
-    bool expand = false;
-    const QString data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchLocalized,
-                                             &expand);
+    const QString data = readPathEntry(key, QString());
+
     if (data.isEmpty())
         return QStringList();
 
@@ -771,17 +770,15 @@ QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) c
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
     QStringList value;
 
-    if (!data.contains(escaped)) { // easy no escaped separators
-        foreach(const QString& s, data.split(separator)) {
-            value << KConfigGroupPrivate::expandString(s);
-        }
-    } else { // now look out for escaped separators
+    if (!data.contains(escaped)) // easy no escaped separators
+        return data.split(separator);
+    else { // now look out for escaped separators
         QStringList value;
         for(int i=0; i < data.size(); /* nothing */) {
             int end = data.indexOf(separator, i);
     again:
             if (end < 0) { // no more separators found, end of entry
-                value << KConfigGroupPrivate::expandString(data.mid(i).replace(escaped, separator));
+                value << data.mid(i).replace(escaped, separator);
                 i = data.size();
             } else if (end == 0) { // empty first element
                 value << QString();
@@ -790,7 +787,7 @@ QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) c
                 end = data.indexOf(separator, end+1);
                 goto again;
             } else {
-                value << KConfigGroupPrivate::expandString(data.mid(i, end-i).replace(escaped, separator));
+                value << data.mid(i, end-i).replace(escaped, separator);
                 i = end+1;
             }
         }
