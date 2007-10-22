@@ -51,8 +51,8 @@ namespace KIO {
     };
 
     enum ChmodJobState {
-        STATE_LISTING,
-        STATE_CHMODING
+        CHMODJOB_STATE_LISTING,
+        CHMODJOB_STATE_CHMODING
     };
 
     class ChmodJobPrivate: public KIO::JobPrivate
@@ -60,7 +60,7 @@ namespace KIO {
     public:
         ChmodJobPrivate(const KFileItemList& lstItems, int permissions, int mask,
                         int newOwner, int newGroup, bool recursive)
-            : state( STATE_LISTING )
+            : state( CHMODJOB_STATE_LISTING )
             , m_permissions( permissions )
             , m_mask( mask )
             , m_newOwner( newOwner )
@@ -149,7 +149,7 @@ void ChmodJobPrivate::_k_processList()
     }
     kDebug(7007) << "ChmodJob::processList -> going to STATE_CHMODING";
     // We have finished, move on
-    state = STATE_CHMODING;
+    state = CHMODJOB_STATE_CHMODING;
     chmodNextFile();
 }
 
@@ -252,13 +252,13 @@ void ChmodJob::slotResult( KJob * job )
     //kDebug(7007) << " ChmodJob::slotResult( KJob * job ) d->m_lstItems:" << d->m_lstItems.count();
     switch ( d->state )
     {
-        case STATE_LISTING:
+        case CHMODJOB_STATE_LISTING:
             removeSubjob(job);
             d->m_lstItems.removeFirst();
             kDebug(7007) << "ChmodJob::slotResult -> processList";
             d->_k_processList();
             return;
-        case STATE_CHMODING:
+        case CHMODJOB_STATE_CHMODING:
             removeSubjob(job);
             kDebug(7007) << "ChmodJob::slotResult -> chmodNextFile";
             d->chmodNextFile();

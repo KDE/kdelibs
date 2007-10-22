@@ -24,8 +24,6 @@
 #include <QTimer>
 #include <assert.h>
 
-using namespace SafeSite;
-
 namespace SafeSite {
 class Service {
 public:
@@ -79,7 +77,7 @@ public:
 
 namespace {
 
-static QList<Service*> *servicesList = 0;
+static QList<SafeSite::Service*> *servicesList = 0;
 
 static void cleanupServicesList() {
     qDeleteAll(*servicesList);
@@ -87,10 +85,10 @@ static void cleanupServicesList() {
     servicesList = 0;
 }
 
-static QList<Service*> *services() {
+static QList<SafeSite::Service*> *services() {
     if (!servicesList) {
-        servicesList = new QList<Service*>;
-        servicesList->append(new DummyService);
+        servicesList = new QList<SafeSite::Service*>;
+        servicesList->append(new SafeSite::DummyService);
         qAddPostRoutine(cleanupServicesList);
     }
     return servicesList;

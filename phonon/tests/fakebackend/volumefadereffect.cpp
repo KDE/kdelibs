@@ -24,8 +24,7 @@ namespace Phonon
 {
 namespace Fake
 {
-static const int SAMPLE_RATE = 44100;
-static const float SAMPLE_RATE_FLOAT = 44100.0f;
+static const int VOLUMEFADEREFFECT_SAMPLE_RATE = 44100;
 
 VolumeFaderEffect::VolumeFaderEffect(QObject *parent)
     : Effect(-1, parent), m_fadeTime(0)
@@ -76,7 +75,7 @@ void VolumeFaderEffect::fadeTo(float volume, int fadeTime)
     m_fadeTime = fadeTime;
     m_endvolume = volume;
     m_fadePosition = 0;
-    m_fadeLength = fadeTime * SAMPLE_RATE;
+    m_fadeLength = fadeTime * VOLUMEFADEREFFECT_SAMPLE_RATE;
 }
 
 void VolumeFaderEffect::processBuffer(QVector<float> &buffer)

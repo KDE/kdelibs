@@ -47,17 +47,17 @@
 namespace KIO
 {
     enum DeleteJobState {
-        STATE_STATING,
-        STATE_LISTING,
-        STATE_DELETING_FILES,
-        STATE_DELETING_DIRS
+        DELETEJOB_STATE_STATING,
+        DELETEJOB_STATE_LISTING,
+        DELETEJOB_STATE_DELETING_FILES,
+        DELETEJOB_STATE_DELETING_DIRS
     };
 
     class DeleteJobPrivate: public KIO::JobPrivate
     {
     public:
         DeleteJobPrivate(const KUrl::List& src)
-            : state( STATE_STATING )
+            : state( DELETEJOB_STATE_STATING )
             , m_totalSize( 0 )
             , m_processedSize( 0 )
             , m_fileProcessedSize( 0 )
@@ -147,17 +147,17 @@ void DeleteJobPrivate::slotReport()
    JobPrivate::emitDeleting( q, m_currentURL);
 
    switch( state ) {
-        case STATE_STATING:
-        case STATE_LISTING:
+        case DELETEJOB_STATE_STATING:
+        case DELETEJOB_STATE_LISTING:
             q->setTotalAmount(KJob::Bytes, m_totalSize);
             q->setTotalAmount(KJob::Files, files.count());
             q->setTotalAmount(KJob::Directories, dirs.count());
             break;
-        case STATE_DELETING_DIRS:
+        case DELETEJOB_STATE_DELETING_DIRS:
             q->setProcessedAmount(KJob::Directories, m_processedDirs);
             q->emitPercent( m_processedFiles + m_processedDirs, m_totalFilesDirs );
             break;
-        case STATE_DELETING_FILES:
+        case DELETEJOB_STATE_DELETING_FILES:
             q->setProcessedAmount(KJob::Files, m_processedFiles);
             q->emitPercent( m_processedFiles, m_totalFilesDirs );
             break;
@@ -218,7 +218,7 @@ void DeleteJobPrivate::statNextSrc()
             return;
         }
         // Stat it
-        state = STATE_STATING;
+        state = DELETEJOB_STATE_STATING;
         KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 1, KIO::HideProgressInfo );
         Scheduler::scheduleJob(job);
         //kDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL;
@@ -233,7 +233,7 @@ void DeleteJobPrivate::statNextSrc()
         // used by e.g. kdirlister).
         for ( QStringList::Iterator it = m_parentDirs.begin() ; it != m_parentDirs.end() ; ++it )
             KDirWatch::self()->stopDirScan( *it );
-        state = STATE_DELETING_FILES;
+        state = DELETEJOB_STATE_DELETING_FILES;
         deleteNextFile();
     }
 }
@@ -281,7 +281,7 @@ void DeleteJobPrivate::deleteNextFile()
             // loop only if direct deletion worked (job=0) and there is something else to delete
         } while (!job && (!files.isEmpty() || !symlinks.isEmpty()));
     }
-    state = STATE_DELETING_DIRS;
+    state = DELETEJOB_STATE_DELETING_DIRS;
     deleteNextDir();
 }
 
@@ -361,7 +361,7 @@ void DeleteJob::slotResult( KJob *job )
     Q_D(DeleteJob);
     switch ( d->state )
     {
-    case STATE_STATING:
+    case DELETEJOB_STATE_STATING:
     {
         // Was there an error while stating ?
         if (job->error() )
@@ -389,7 +389,7 @@ void DeleteJob::slotResult( KJob *job )
             if ( !KProtocolManager::canDeleteRecursive( url ) ) {
                 //kDebug(7007) << " Target is a directory ";
                 // List it
-                d->state = STATE_LISTING;
+                d->state = DELETEJOB_STATE_LISTING;
                 ListJob *newjob = KIO::listRecursive( url, KIO::HideProgressInfo );
                 newjob->setUnrestricted(true); // No KIOSK restrictions
                 Scheduler::scheduleJob(newjob);
@@ -419,7 +419,7 @@ void DeleteJob::slotResult( KJob *job )
         }
     }
         break;
-    case STATE_LISTING:
+    case DELETEJOB_STATE_LISTING:
         if ( job->error() )
         {
             // Try deleting nonetheless, it may be empty (and non-listable)
@@ -429,7 +429,7 @@ void DeleteJob::slotResult( KJob *job )
         ++d->m_currentStat;
         d->statNextSrc();
         break;
-    case STATE_DELETING_FILES:
+    case DELETEJOB_STATE_DELETING_FILES:
         if ( job->error() )
         {
             Job::slotResult( job ); // will set the error and emit result(this)
@@ -441,7 +441,7 @@ void DeleteJob::slotResult( KJob *job )
 
         d->deleteNextFile();
         break;
-    case STATE_DELETING_DIRS:
+    case DELETEJOB_STATE_DELETING_DIRS:
         if ( job->error() )
         {
             Job::slotResult( job ); // will set the error and emit result(this)

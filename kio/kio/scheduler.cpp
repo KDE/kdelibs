@@ -43,10 +43,12 @@
 
 using namespace KIO;
 
+#ifndef KDE_USE_FINAL // already defined in job.cpp
 static inline Slave *jobSlave(SimpleJob *job)
 {
     return SimpleJobPrivate::get(job)->m_slave;
 }
+#endif
 
 static inline int jobCommand(SimpleJob *job)
 {
