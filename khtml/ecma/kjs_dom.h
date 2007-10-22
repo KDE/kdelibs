@@ -64,7 +64,7 @@ namespace KJS {
            OnMouseMove, OnMouseOut, OnMouseOver, OnMouseUp, OnMove, OnReset,
            OnResize, OnSelect, OnSubmit, OnUnload,
            OffsetLeft, OffsetTop, OffsetWidth, OffsetHeight, OffsetParent,
-           ClientWidth, ClientHeight, ScrollLeft, ScrollTop,
+           ClientLeft, ClientTop, ClientWidth, ClientHeight, ScrollLeft, ScrollTop,
 	   ScrollWidth, ScrollHeight, SourceIndex, TextContent };
 
     //### toNode? virtual

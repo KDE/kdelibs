@@ -174,6 +174,8 @@ bool DOMNode::toBoolean(ExecState *) const
   offsetParent	DOMNode::OffsetParent		DontDelete|ReadOnly
   clientWidth	DOMNode::ClientWidth		DontDelete|ReadOnly
   clientHeight	DOMNode::ClientHeight		DontDelete|ReadOnly
+  clientLeft    DOMNode::ClientLeft		DontDelete|ReadOnly
+  clientTop	DOMNode::ClientTop		DontDelete|ReadOnly
   scrollLeft	DOMNode::ScrollLeft		DontDelete
   scrollTop	DOMNode::ScrollTop		DontDelete
   scrollWidth   DOMNode::ScrollWidth            DontDelete|ReadOnly
@@ -218,6 +220,8 @@ static khtml::RenderObject* handleBodyRootQuirk(const DOM::NodeImpl* node, khtml
       break;
     case DOMNode::ClientHeight:
     case DOMNode::ClientWidth:
+    case DOMNode::ClientLeft:
+    case DOMNode::ClientTop:
       needViewport = true;
       break;
   }
@@ -366,6 +370,10 @@ ValueImp* DOMNode::getValueProperty(ExecState *exec, int token) const
       return rend ? Number( rend->clientWidth() ) : Undefined();
     case ClientHeight:
       return rend ? Number( rend->clientHeight() ) : Undefined();
+    case ClientLeft:
+      return rend ? Number( rend->clientLeft() ) : Undefined();
+    case ClientTop:
+      return rend ? Number( rend->clientTop() ) : Undefined();
     case ScrollWidth:
       return rend ? Number(rend->scrollWidth()) : Undefined();
     case ScrollHeight:

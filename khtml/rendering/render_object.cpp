@@ -503,6 +503,16 @@ short RenderObject::clientWidth() const
         (layer() ? layer()->verticalScrollbarWidth() : 0);
 }
 
+int RenderObject::clientLeft() const
+{
+    return borderLeft();
+}
+
+int RenderObject::clientTop() const
+{
+    return borderTop();
+}
+
 int RenderObject::clientHeight() const
 {
     return height() - borderTop() - borderBottom() -

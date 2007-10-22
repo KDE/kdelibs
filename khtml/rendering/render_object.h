@@ -622,6 +622,8 @@ public:
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
     virtual RenderObject* offsetParent() const;
+    int clientLeft() const;
+    int clientTop() const;
     short clientWidth() const;
     int clientHeight() const;
     short scrollWidth() const;
