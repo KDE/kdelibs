@@ -29,17 +29,17 @@ my $file = $ARGV[0];
 shift;
 my $findSize = 0;
 my $includelookup = 0;
+my $useNameSpace;
 
 # Use -s as second argument to make it try many hash sizes
-$findSize = 1 if (defined($ARGV[0]) && $ARGV[0] eq "-s");
+if (defined($ARGV[0]) && $ARGV[0] eq "-s") { $findSize = 1; shift; }
 
 # Use -i as second argument to make it include "lookup.h"
-$includelookup = 1 if (defined($ARGV[0]) && $ARGV[0] eq "-i");
+if (defined($ARGV[0]) && $ARGV[0] eq "-i") { $includelookup = 1; shift; }
 
 # Use -n as second argument to make it use the third argument as namespace parameter ie. -n KDOM
-my $useNameSpace = $ARGV[1] if (defined($ARGV[0]) && $ARGV[0] eq "-n");
+if (defined($ARGV[0]) && $ARGV[0] eq "-n") { $useNameSpace = $ARGV[1]; shift; shift; }
 
-print STDERR "Creating hashtable for $file\n";
 open(IN, $file) or die "No such file $file";
 
 my @keys = ();
