@@ -5128,7 +5128,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArgum
   if ( child && child->m_type != khtml::ChildFrame::Object ) {
       // Inform someone that we are about to show something else.
       child->m_bNotify = true;
-      requestObject( child, url, args );
+      requestObject( child, url, args, browserArgs );
   }  else if ( frameName== "_self" ) // this is for embedded objects (via <object>) which want to replace the current document
   {
       KParts::BrowserArguments newBrowserArgs( browserArgs );
@@ -5323,7 +5323,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart,
      if (childPart == this)
         return childFrame;
 
-     childPart->requestObject( childFrame, url, args );
+     childPart->requestObject( childFrame, url, args, browserArgs );
      return 0;
   }
 
@@ -5332,7 +5332,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart,
      khtml::ChildFrame *res = parentPart()->recursiveFrameRequest( callingHtmlPart, url, args, browserArgs, callParent );
 
      if ( res )
-       parentPart()->requestObject( res, url, args );
+       parentPart()->requestObject( res, url, args, browserArgs );
   }
 
   return 0L;
