@@ -62,6 +62,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_storageSetupDone(const QModelIndex &, bool))
     Q_PRIVATE_SLOT(d, void _k_adaptItemsUpdate(qreal))
     Q_PRIVATE_SLOT(d, void _k_itemAppearUpdate(qreal))
+    Q_PRIVATE_SLOT(d, void _k_itemDisappearUpdate(qreal))
     Q_PRIVATE_SLOT(d, void _k_enableSmoothItemResizing())
 
     class Private;
