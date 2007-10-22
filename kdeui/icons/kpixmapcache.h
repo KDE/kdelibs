@@ -32,10 +32,46 @@ class QPixmap;
 
 
 /**
- * General-purpose pixmap cache for KDE.
+ * @brief General-purpose pixmap cache for KDE.
  *
- * It can be used e.g. by applications wanting to cache pixmaps rendered from
- *  SVGs.
+ * The pixmap cache can be used to store pixmaps which can later be loaded
+ *  from the cache very quickly.
+ *
+ * It's most common use is storing SVG images which might be expensive to
+ *  render every time they are used. With the cache you can render each SVG
+ *  only once and later use the stored version unless the SVG file or requested
+ *  pixmap size changes.
+ *
+ * KPixmapCache's API is similar to that of the QPixmapCache so if you're
+ *  already using the latter then all you need to do is creating a KPixmapCache
+ *  object (unlike QPixmapCache, KPixmapCache doesn't have many static methods)
+ *  and calling @ref insert() and @ref find() method on that object:
+ *  @code
+ *  // Create KPixmapCache object
+ *  KPixmapCache* cache = new KPixmapCache("myapp-pixmaps");
+ *  // Load a pixmap
+ *  QPixmap pix;
+ *  if (!cache->find("pixmap-1", pix)) {
+ *      // Pixmap isn't in the cache, create it and insert to cache
+ *      pix = createPixmapFromData();
+ *      cache->insert("pixmap-1", pix);
+ *  }
+ *  // Use pix
+ *  @endcode
+ *
+ * The above example illustrates that you can also cache pixmaps created from
+ *  some data. In case such data is updated, you might need to discard cache
+ *  contents using @ref discard() method:
+ * @code
+ * // Discard the cache if it's too old
+ * if (cache->timestamp() < mydataTimestamp()) {
+ *     cache->discard();
+ * }
+ * // Now the cache contains up-to-date data
+ * @endcode
+ * As demonstrated, you can use cache's @ref timestamp() method to see when
+ *  the cache was created. If necessary, you can also change the timestamp
+ *  using @ref setTimestamp() method.
  */
 class KDEUI_EXPORT KPixmapCache
 {
@@ -48,12 +84,14 @@ public:
     virtual ~KPixmapCache();
 
     /**
-     * Tries to load the specified pixmap from cache.
+     * Tries to load pixmap with the specified key from cache.
      * @return true when pixmap was found and loaded from cache, false otherwise
      **/
     virtual bool find(const QString& key, QPixmap& pix);
     /**
      * Insert specified pixmap into the cache.
+     * If the cache already contains pixmap with the specified key then it is
+     *  overwritten.
      **/
     virtual void insert(const QString& key, const QPixmap& pix);
 
@@ -79,12 +117,13 @@ public:
     /**
      * Sets the timestamp of app-specific cache. It's saved in the cache file
      *  and can later be retrieved using @p timestamp() method.
+     * By default the timestamp is set to the cache creation time.
      **/
     void setTimestamp(unsigned int time);
     /**
      * Sets whether QPixmapCache (memory caching) should be used in addition
      * to disk cache.
-     * QPixmapCache is used by default
+     * QPixmapCache is used by default.
      **/
     void setUseQPixmapCache(bool use);
     /**
@@ -114,6 +153,9 @@ public:
     void setCacheLimit(int kbytes);
     /**
      * Describes which entries will be removed first during cache cleanup.
+     * @li RemoveOldest oldest entries are removed first.
+     * @li RemoveSeldomUsed least used entries are removed first.
+     * @li RemoveLeastRecentlyUsed least recently used entries are removed first.
      **/
     enum RemoveStrategy { RemoveOldest, RemoveSeldomUsed, RemoveLeastRecentlyUsed };
     /**
@@ -128,7 +170,7 @@ public:
 
     /**
      * @return true when the cache is enabled.
-     * Cache will be disabled when e.g.it's data file cannot be created or
+     * Cache will be disabled when e.g. it's data file cannot be created or
      *  read.
      **/
     bool isEnabled() const;
