@@ -39,6 +39,20 @@ namespace KuitFormats {
     QString toNumberEuro (const QString &numstr);
 
     /**
+     * Reformat raw number string to Euro2 standard.
+     * @param numstr raw number string
+     * @returns number string in proper format
+     */
+    QString toNumberEuro2 (const QString &numstr);
+
+    /**
+     * Reformat raw number string to Euro2ct standard.
+     * @param numstr raw number string
+     * @returns number string in proper format
+     */
+    QString toNumberEuro2ct (const QString &numstr);
+
+    /**
      * Reformat keyboard shortcut. The first of encountered of '+' or '-'
      * is taken for key delimiter, and the supplied delimiter is used instead.
      * A dictionary of replacement key names can also be provided, which can

@@ -94,7 +94,7 @@ namespace Kuit {
 
     namespace Numfmt { // number formats
         typedef enum {
-            Posix, US, Euro
+            Posix, US, Euro, Euro2, Euro2ct
         } Var;
     }
 
@@ -313,6 +313,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_NUMFMT(Posix, "posix");
     SETUP_NUMFMT(US, "us");
     SETUP_NUMFMT(Euro, "euro");
+    SETUP_NUMFMT(Euro2ct, "euro2ct");
 
     // Known XML entities, direct/inverse mapping.
     xmlEntities["lt"] = '<';
@@ -754,7 +755,14 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
 
     m_numfmtInt = Kuit::Numfmt::Posix;
     // i18n: Decide how integer-valued amounts will be formatted in your
-    // language. For possible formats, see translation documentation.
+    // language. Currently available number formats are:
+    //   posix   - decimal point
+    //   us      - thousands separation by comma, decimal point
+    //   euro    - thousands separation by point, decimal comma
+    //   euro2   - thousands separation by space, decimal comma
+    //   euro2ct - as euro2, except thousand not separated when <10000
+    // If none of the existing formats is appropriate for your language,
+    // write to kde-i18n-doc@kde.org to arrange for a new format.
     QString fmtnameInt = cat.translate("number-format:integer", "us").toLower();
     if (s->knownNumfmts.contains(fmtnameInt)) {
         m_numfmtInt = s->knownNumfmts[fmtnameInt];
@@ -767,7 +775,7 @@ void KuitSemanticsPrivate::setTextTransformData (const KCatalog &cat)
 
     m_numfmtReal = Kuit::Numfmt::Posix;
     // i18n: Decide how real-valued amounts will be formatted in your
-    // language. For possible formats, see translation documentation.
+    // language. See the comment to previous entry.
     QString fmtnameReal = cat.translate("number-format:real", "us").toLower();
     if (s->knownNumfmts.contains(fmtnameReal)) {
         m_numfmtReal = s->knownNumfmts[fmtnameReal];
@@ -1317,40 +1325,30 @@ QString KuitSemanticsPrivate::modifyTagText (Kuit::TagVar tag,
                                              Kuit::FmtVar fmt) const
 {
     // numctx < 1 means that the number is not in numeric-id context.
-    if (tag == Kuit::Tag::NumIntg && numctx < 1) {
-        if (m_numfmtInt == Kuit::Numfmt::US) {
+    if (   (tag == Kuit::Tag::NumIntg || tag == Kuit::Tag::NumReal) \
+        && numctx < 1)
+    {
+        int numfmt = (tag == Kuit::Tag::NumIntg ? m_numfmtInt : m_numfmtReal);
+        switch (numfmt) {
+        case Kuit::Numfmt::US:
             return KuitFormats::toNumberUS(text);
-        }
-        else if (m_numfmtInt == Kuit::Numfmt::Euro) {
+        case Kuit::Numfmt::Euro:
             return KuitFormats::toNumberEuro(text);
-        }
-        else {
+        case Kuit::Numfmt::Euro2:
+            return KuitFormats::toNumberEuro2(text);
+        case Kuit::Numfmt::Euro2ct:
+            return KuitFormats::toNumberEuro2ct(text);
+        default:
             return text;
         }
     }
-
-    // numctx < 1 means that the number is not in numeric-id context.
-    if (tag == Kuit::Tag::NumReal && numctx < 1) {
-        if (m_numfmtReal == Kuit::Numfmt::US) {
-            return KuitFormats::toNumberUS(text);
-        }
-        else if (m_numfmtReal == Kuit::Numfmt::Euro) {
-            return KuitFormats::toNumberEuro(text);
-        }
-        else {
-            return text;
-        }
-    }
-
-    if (tag == Kuit::Tag::Filename) {
+    else if (tag == Kuit::Tag::Filename) {
         return QDir::toNativeSeparators(text);
     }
-
-    if (tag == Kuit::Tag::Shortcut) {
+    else if (tag == Kuit::Tag::Shortcut) {
         return KuitFormats::toKeyCombo(text, m_comboKeyDelim[fmt], m_keyNames);
     }
-
-    if (tag == Kuit::Tag::Interface) {
+    else if (tag == Kuit::Tag::Interface) {
         return KuitFormats::toInterfacePath(text, m_guiPathDelim[fmt]);
     }
 

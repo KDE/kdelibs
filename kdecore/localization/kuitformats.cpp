@@ -44,7 +44,9 @@ static QString insertIntegerSeparators (const QString &istr,
     return fistr;
 }
 
-QString KuitFormats::toNumberUS (const QString &numstr)
+static QString toNumberGeneric (const QString &numstr,
+                                const QChar &thosep, const QChar &decsep,
+                                int thosepGE = 0)
 {
     int len = numstr.length();
     int p1 = 0;
@@ -58,38 +60,41 @@ QString KuitFormats::toNumberUS (const QString &numstr)
     while (p2 < len && numstr[p2].isDigit()) {
         ++p2;
     }
+    QString intpart = numstr.mid(p1, p2 - p1);
+    int intval = intpart.toInt();
 
     QString pre = numstr.left(p1);
-    QString mid = insertIntegerSeparators(numstr.mid(p1, p2 - p1), ',', 3);
+    QString mid = intpart;
+    if (intval >= thosepGE) {
+        mid = insertIntegerSeparators(intpart, thosep, 3);
+    }
+
     QString post = numstr.mid(p2);
+    if (post.startsWith('.')) {
+        post[0] = decsep;
+    }
 
     return pre + mid + post;
 }
 
+QString KuitFormats::toNumberUS (const QString &numstr)
+{
+    return toNumberGeneric(numstr, ',', '.');
+}
+
 QString KuitFormats::toNumberEuro (const QString &numstr)
 {
-    int len = numstr.length();
-    int p1 = 0;
-    while (p1 < len && !numstr[p1].isDigit()) {
-        ++p1;
-    }
-    if (p1 == len) {
-        return numstr;
-    }
-    int p2 = p1 + 1;
-    while (p2 < len && numstr[p2].isDigit()) {
-        ++p2;
-    }
+    return toNumberGeneric(numstr, '.', ',');
+}
 
-    QString pre = numstr.left(p1);
-    QString mid = insertIntegerSeparators(numstr.mid(p1, p2 - p1), '.', 3);
+QString KuitFormats::toNumberEuro2 (const QString &numstr)
+{
+    return toNumberGeneric(numstr, ' ', ',');
+}
 
-    QString post = numstr.mid(p2);
-    if (post.startsWith('.')) {
-        post[0] = ',';
-    }
-
-    return pre + mid + post;
+QString KuitFormats::toNumberEuro2ct (const QString &numstr)
+{
+    return toNumberGeneric(numstr, ' ', ',', 10000);
 }
 
 QString KuitFormats::toKeyCombo (const QString &shstr, const QString &delim,
