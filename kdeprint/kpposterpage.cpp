@@ -190,7 +190,7 @@ KPPosterPage::KPPosterPage(QWidget *parent)
     selectionlab->setWhatsThis(whatsThisTileOrderSelectionPosterPage);
     selectionlab->setBuddy(m_selection);
     m_lockbtn->setCheckable(true);
-    m_lockbtn->setIcon(QIcon(SmallIcon("encrypted")));
+    m_lockbtn->setIcon(QIcon(SmallIcon("document-encrypt")));
     m_lockbtn->setChecked(true);
     m_lockbtn->setFixedSize(m_lockbtn->sizeHint());
     m_lockbtn->setToolTip(i18n("Link/unlink poster and print size"));
@@ -332,7 +332,7 @@ void KPPosterPage::slotMarginChanged(int value)
 
 void KPPosterPage::slotLockToggled(bool on)
 {
-    m_lockbtn->setIcon(QIcon(SmallIcon(on ? "encrypted" : "decrypted")));
+    m_lockbtn->setIcon(QIcon(SmallIcon(on ? "document-encrypt" : "document-decrypt")));
     if (on)
         m_printsize->setCurrentIndex(m_postersize->currentIndex());
 }
