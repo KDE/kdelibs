@@ -177,7 +177,7 @@ void BrowserRun::slotBrowserScanFinished(KJob *job)
       // assumed it was a file.
       kDebug(1000) << "It is in fact a directory!";
       // Update our URL in case of a redirection
-      KRun::url() = static_cast<KIO::TransferJob *>(job)->url();
+      KRun::setUrl( static_cast<KIO::TransferJob *>(job)->url() );
       setJob( 0 );
       foundMimeType( "inode/directory" );
   }
@@ -197,7 +197,7 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
   // Update our URL in case of a redirection
   //kDebug(1000) << "old URL=" << KRun::url();
   //kDebug(1000) << "new URL=" << job->url();
-  KRun::url() = job->url();
+  setUrl( job->url() );
   kDebug(1000) << "slotBrowserMimetype: found" << type << "for" << KRun::url();
 
   // Suggested filename given by the server (e.g. HTTP content-disposition)
@@ -488,11 +488,12 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
     KUrl newURL(QString("error:/?error=%1&errText=%2")
                 .arg( error )
                 .arg( QString::fromUtf8( QUrl::toPercentEncoding( errorText ) ) ) );
-    KRun::url().setPass( QString() ); // don't put the password in the error URL
+    KUrl runURL = KRun::url();
+    runURL.setPass( QString() ); // don't put the password in the error URL
 
     KUrl::List lst;
-    lst << newURL << KRun::url();
-    KRun::url() = KUrl::join( lst );
+    lst << newURL << runURL;
+    KRun::setUrl( KUrl::join( lst ) );
     //kDebug(1202) << "BrowserRun::handleError KRun::url()=" << ;
 
     setJob( 0 );
