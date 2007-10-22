@@ -30,8 +30,6 @@
 #include "misc/loader_client.h"
 #include "misc/shared.h"
 
-#include <Qt3Support/Q3IntDict>
-
 namespace khtml {
     class RenderStyle;
     class CachedImage;
@@ -51,7 +49,7 @@ class CSSStyleDeclarationImpl : public StyleBaseImpl
 {
 public:
     CSSStyleDeclarationImpl(CSSRuleImpl *parentRule);
-    CSSStyleDeclarationImpl(CSSRuleImpl *parentRule, Q3PtrList<CSSProperty> *lstValues);
+    CSSStyleDeclarationImpl(CSSRuleImpl *parentRule, QList<CSSProperty*> *lstValues);
     virtual ~CSSStyleDeclarationImpl();
 
     CSSStyleDeclarationImpl& operator=( const CSSStyleDeclarationImpl&);
@@ -86,7 +84,7 @@ public:
     virtual DOMString getPropertyValue( int propertyID ) const;
     virtual bool getPropertyPriority( int propertyID ) const;
 
-    Q3PtrList<CSSProperty> *values() const { return m_lstValues; }
+    QList<CSSProperty*> *values() const { return m_lstValues; }
     void setNode(NodeImpl *_node) { m_node = _node; }
 
     void setChanged();
@@ -97,7 +95,7 @@ protected:
     DOMString getShortHandValue( const int* properties, int number ) const;
     DOMString get4Values( const int* properties ) const;
 
-    Q3PtrList<CSSProperty> *m_lstValues;
+    QList<CSSProperty*> *m_lstValues;
     NodeImpl *m_node;
 
 private:
@@ -153,7 +151,7 @@ public:
     virtual DOM::DOMString cssText() const;
 
 protected:
-    Q3PtrList<CSSValueImpl> m_values;
+    QList<CSSValueImpl*> m_values;
 };
 
 

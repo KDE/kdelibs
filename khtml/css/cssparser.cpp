@@ -303,8 +303,7 @@ void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
 
 CSSStyleDeclarationImpl *CSSParser::createStyleDeclaration( CSSStyleRuleImpl *rule )
 {
-    Q3PtrList<CSSProperty> *propList = new Q3PtrList<CSSProperty>;
-    propList->setAutoDelete( true );
+    QList<CSSProperty*> *propList = new QList<CSSProperty*>;
     for ( int i = 0; i < numParsedProperties; i++ )
         propList->append( parsedProperties[i] );
 

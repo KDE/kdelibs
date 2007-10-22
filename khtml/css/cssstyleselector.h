@@ -23,12 +23,10 @@
 #ifndef _CSS_cssstyleselector_h_
 #define _CSS_cssstyleselector_h_
 
-#include <Qt3Support/Q3PtrList>
-#include <Qt3Support/Q3MemArray>
-
 #include "rendering/render_style.h"
 #include "dom/dom_string.h"
 #include "xml/dom_restyler.h"
+#include <QtCore/QVarLengthArray>
 
 class KHTMLSettings;
 class KHTMLView;
@@ -53,7 +51,6 @@ namespace khtml
 {
     class CSSStyleSelectorList;
     class CSSOrderedRule;
-    class CSSOrderedProperty;
     class CSSOrderedPropertyList;
     class RenderStyle;
 
@@ -71,6 +68,46 @@ namespace khtml
 	AuthorImportant = 5,
 	InlineImportant = 6,
 	UserImportant =7
+    };
+
+    /*
+     * List of properties that get applied to the Element. We need to collect them first
+     * and then apply them one by one, because we have to change the apply order.
+     * Some properties depend on other one already being applied (for example all properties specifying
+     * some length need to have already the correct font size. Same applies to color
+     *
+     * While sorting them, we have to take care not to mix up the original order.
+     */
+    class CSSOrderedProperty
+    {
+    public:
+	CSSOrderedProperty(DOM::CSSProperty *_prop, uint _selector,
+			   bool first, Source source, unsigned int specificity,
+			   unsigned int _position )
+	    : prop ( _prop ), pseudoId( RenderStyle::NOPSEUDO ), selector( _selector ),
+	      position( _position )
+	{
+	    priority = (!first << 30) | (source << 24) | specificity;
+	}
+	CSSOrderedProperty(): prop( 0 ), pseudoId( RenderStyle::NOPSEUDO ), selector(0),
+	      position( 0 )
+        {
+        
+        }
+
+	bool operator < ( const CSSOrderedProperty &other ) const {
+             if (priority < other.priority) return true;
+             if (priority > other.priority) return false;
+             if (position < other.position) return true;
+             return false;
+	}
+
+	DOM::CSSProperty *prop;
+	RenderStyle::PseudoId pseudoId;
+	unsigned int selector;
+	unsigned int position;
+
+	quint32 priority;
     };
 
     /**
@@ -232,7 +269,7 @@ public:
 	SelectorCache *selectorCache;
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
-	Q3MemArray<CSSOrderedProperty> inlineProps;
+	QVarLengthArray<CSSOrderedProperty> inlineProps;
         QString m_medium;
 	CSSOrderedProperty **propsToApply;
 	CSSOrderedProperty **pseudoProps;
@@ -259,48 +296,13 @@ public:
     };
 
     /*
-     * List of properties that get applied to the Element. We need to collect them first
-     * and then apply them one by one, because we have to change the apply order.
-     * Some properties depend on other one already being applied (for example all properties specifying
-     * some length need to have already the correct font size. Same applies to color
-     *
-     * While sorting them, we have to take care not to mix up the original order.
-     */
-    class CSSOrderedProperty
-    {
-    public:
-	CSSOrderedProperty(DOM::CSSProperty *_prop, uint _selector,
-			   bool first, Source source, unsigned int specificity,
-			   unsigned int _position )
-	    : prop ( _prop ), pseudoId( RenderStyle::NOPSEUDO ), selector( _selector ),
-	      position( _position )
-	{
-	    priority = (!first << 30) | (source << 24) | specificity;
-	}
-
-	bool operator < ( const CSSOrderedProperty &other ) const {
-             if (priority < other.priority) return true;
-             if (priority > other.priority) return false;
-             if (position < other.position) return true;
-             return false;
-	}
-
-	DOM::CSSProperty *prop;
-	RenderStyle::PseudoId pseudoId;
-	unsigned int selector;
-	unsigned int position;
-
-	quint32 priority;
-    };
-
-    /*
      * This is the list we will collect all properties we need to apply in.
      * It will get sorted once before applying.
      */
-    class CSSOrderedPropertyList : public Q3PtrList<CSSOrderedProperty>
+    class CSSOrderedPropertyList : public QList<CSSOrderedProperty*>
     {
     public:
-	virtual int compareItems(Q3PtrCollection::Item i1, Q3PtrCollection::Item i2);
+	static bool compareItems(const CSSOrderedProperty* i1, const CSSOrderedProperty* i2);
 	void append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
 		    Source regular, Source important );
     };
@@ -316,7 +318,7 @@ public:
 	int index;
     };
 
-    class CSSStyleSelectorList : public Q3PtrList<CSSOrderedRule>
+    class CSSStyleSelectorList : public QList<CSSOrderedRule*>
     {
     public:
 	CSSStyleSelectorList();
@@ -325,7 +327,7 @@ public:
 	void append( DOM::CSSStyleSheetImpl *sheet,
 		     const DOM::DOMString &medium = "screen" );
 
-	void collect( Q3PtrList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
+	void collect( QList<DOM::CSSSelector*> *selectorList, CSSOrderedPropertyList *propList,
 		      Source regular, Source important );
     };
 

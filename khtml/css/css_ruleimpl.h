@@ -150,7 +150,7 @@ public:
 
     void append( CSSRuleImpl *rule ) { m_lstCSSRules.append( rule ); }
 protected:
-    Q3PtrList<CSSRuleImpl> m_lstCSSRules;
+    QList<CSSRuleImpl*> m_lstCSSRules;
 };
 
 class CSSMediaRuleImpl : public CSSRuleImpl
@@ -213,17 +213,17 @@ public:
 
     virtual bool parseString( const DOMString &string, bool = false );
 
-    void setSelector( Q3PtrList<CSSSelector> *selector) { m_selector = selector; }
+    void setSelector( QList<CSSSelector*> *selector) { m_selector = selector; }
     void setDeclaration( CSSStyleDeclarationImpl *style);
 
-    Q3PtrList<CSSSelector> *selector() { return m_selector; }
+    QList<CSSSelector*> *selector() { return m_selector; }
     CSSStyleDeclarationImpl *declaration() { return m_style; }
 
     void setNonCSSHints();
 
 protected:
     CSSStyleDeclarationImpl *m_style;
-    Q3PtrList<CSSSelector> *m_selector;
+    QList<CSSSelector*> *m_selector;
 };
 
 

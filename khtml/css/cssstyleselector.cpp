@@ -763,8 +763,8 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
     if (!decl && !addDecls)
         return numProps;
 
-    Q3PtrList<CSSProperty>* values = decl ? decl->values() : 0;
-    Q3PtrList<CSSProperty>* addValues = addDecls ? addDecls->values() : 0;
+    QList<CSSProperty*>* values = decl ? decl->values() : 0;
+    QList<CSSProperty*>* addValues = addDecls ? addDecls->values() : 0;
     if (!values && !addValues)
         return numProps;
 
@@ -772,7 +772,7 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e,
     int secondLen = addValues ? addValues->count() : 0;
     uint totalLen = firstLen + secondLen;
 
-    if (inlineProps.size() < totalLen)
+    if ((unsigned)inlineProps.size() < totalLen)
 	{
         inlineProps.resize(totalLen + 1);
 	}
@@ -1663,7 +1663,7 @@ void CSSStyleSelector::buildLists()
     clearLists();
     // collect all selectors and Properties in lists. Then transfer them to the array for faster lookup.
 
-    Q3PtrList<CSSSelector> selectorList;
+    QList<CSSSelector*> selectorList;
     CSSOrderedPropertyList propertyList;
 
     if(m_medium == "print" && defaultPrintStyle)
@@ -1680,13 +1680,9 @@ void CSSStyleSelector::buildLists()
 
     selectors_size = selectorList.count();
     selectors = new CSSSelector *[selectors_size];
-    CSSSelector *s = selectorList.first();
     CSSSelector **sel = selectors;
-    while ( s ) {
-	*sel = s;
-	s = selectorList.next();
-	++sel;
-    }
+    for (QListIterator<CSSSelector*> sit(selectorList); sit.hasNext(); ++sel)
+	*sel = sit.next();
 
     selectorCache = new SelectorCache[selectors_size];
     for ( unsigned int i = 0; i < selectors_size; i++ ) {
@@ -1696,16 +1692,12 @@ void CSSStyleSelector::buildLists()
     }
 
     // presort properties. Should make the sort() calls in styleForElement faster.
-    propertyList.sort();
+    qSort(propertyList.begin(), propertyList.end(), CSSOrderedPropertyList::compareItems);
     properties_size = propertyList.count() + 1;
     properties = new CSSOrderedProperty *[ properties_size ];
-    CSSOrderedProperty *p = propertyList.first();
     CSSOrderedProperty **prop = properties;
-    while ( p ) {
-	*prop = p;
-	p = propertyList.next();
-	++prop;
-    }
+    for (QListIterator<CSSOrderedProperty*> pit(propertyList); pit.hasNext(); ++prop)
+        *prop = pit.next();
     *prop = 0;
 
     unsigned int* offsets = new unsigned int[selectors_size];
@@ -1754,12 +1746,13 @@ CSSOrderedRule::~CSSOrderedRule()
 // -----------------------------------------------------------------
 
 CSSStyleSelectorList::CSSStyleSelectorList()
-    : Q3PtrList<CSSOrderedRule>()
+    : QList<CSSOrderedRule*>()
 {
-    setAutoDelete(true);
 }
 CSSStyleSelectorList::~CSSStyleSelectorList()
 {
+    qDeleteAll(*this);
+    clear();
 }
 
 void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
@@ -1773,18 +1766,17 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
         return; // style sheet not applicable for this medium
 
     int len = sheet->length();
-
     for(int i = 0; i< len; i++)
     {
         StyleBaseImpl *item = sheet->item(i);
         if(item->isStyleRule())
         {
             CSSStyleRuleImpl *r = static_cast<CSSStyleRuleImpl *>(item);
-            Q3PtrList<CSSSelector> *s = r->selector();
+            QList<CSSSelector*> *s = r->selector();
             for(int j = 0; j < (int)s->count(); j++)
             {
                 CSSOrderedRule *rule = new CSSOrderedRule(r, s->at(j), count());
-		Q3PtrList<CSSOrderedRule>::append(rule);
+		QList<CSSOrderedRule*>::append(rule);
                 //kDebug( 6080 ) << "appending StyleRule!";
             }
         }
@@ -1826,12 +1818,12 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                         CSSStyleRuleImpl *styleRule =
                                 static_cast<CSSStyleRuleImpl *>( childItem );
 
-                        Q3PtrList<CSSSelector> *s = styleRule->selector();
+                        QList<CSSSelector*> *s = styleRule->selector();
                         for( int j = 0; j < ( int ) s->count(); j++ )
                         {
                             CSSOrderedRule *orderedRule = new CSSOrderedRule(
                                             styleRule, s->at( j ), count() );
-                	    Q3PtrList<CSSOrderedRule>::append( orderedRule );
+                	    QList<CSSOrderedRule*>::append( orderedRule );
                         }
                     }
                     else
@@ -1852,42 +1844,46 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
 }
 
 
-void CSSStyleSelectorList::collect( Q3PtrList<CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
+void CSSStyleSelectorList::collect( QList<CSSSelector*> *selectorList, CSSOrderedPropertyList *propList,
 				    Source regular, Source important )
 {
-    CSSOrderedRule *r = first();
-    while( r ) {
-	CSSSelector *sel = selectorList->first();
+    CSSOrderedRule *r;
+    QListIterator<CSSOrderedRule*> tIt(*this);
+    CSSSelector *sel;
+
+    while( tIt.hasNext() ) {
+        r = tIt.next();
 	int selectorNum = 0;
-	while( sel ) {
-	    if ( *sel == *(r->selector) )
+	sel = 0;
+        bool found = false;
+        // already in list?
+	QListIterator<CSSSelector*> it(*selectorList);
+	while( it.hasNext() ) {
+	    sel = it.next();
+	    if ( *sel == *(r->selector) ) {
+	        found = true;
 		break;
-	    sel = selectorList->next();
+            }
 	    selectorNum++;
 	}
-	if ( !sel )
+	if ( !found )
+	    // nope.
 	    selectorList->append( r->selector );
-//	else
-//	    qDebug("merged one selector");
 	propList->append(r->rule->declaration(), selectorNum, r->selector->specificity(), regular, important );
-	r = next();
     }
 }
 
 // -------------------------------------------------------------------------
 
-int CSSOrderedPropertyList::compareItems(Q3PtrCollection::Item i1, Q3PtrCollection::Item i2)
+bool CSSOrderedPropertyList::compareItems(const CSSOrderedProperty * i1, const CSSOrderedProperty *i2)
 {
-    int diff =  static_cast<CSSOrderedProperty *>(i1)->priority
-        - static_cast<CSSOrderedProperty *>(i2)->priority;
-    return diff ? diff : static_cast<CSSOrderedProperty *>(i1)->position
-        - static_cast<CSSOrderedProperty *>(i2)->position;
+    return *i1 < *i2;
 }
 
 void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
 				    Source regular, Source important )
 {
-    Q3PtrList<CSSProperty> *values = decl->values();
+    QList<CSSProperty*> *values = decl->values();
     if(!values) return;
     int len = values->count();
     for(int i = 0; i < len; i++)
@@ -1919,7 +1915,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
             break;
         }
 
-	Q3PtrList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, selector,
+	QList<CSSOrderedProperty*>::append(new CSSOrderedProperty(prop, selector,
 								 first, source, specificity,
 								 count() ));
     }

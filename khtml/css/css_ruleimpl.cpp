@@ -321,8 +321,8 @@ DOM::DOMString CSSStyleRuleImpl::selectorText() const
 {
     if (m_selector) {
         DOMString str;
-        for (CSSSelector *s = m_selector->first(); s; s = m_selector->next()) {
-            if (s != m_selector->getFirst())
+        foreach (CSSSelector *s, *m_selector) {
+            if (s != m_selector->at(0))
                 str += ", ";
             str += s->selectorText();
         }
@@ -353,11 +353,9 @@ void CSSStyleRuleImpl::setDeclaration( CSSStyleDeclarationImpl *style)
 
 void CSSStyleRuleImpl::setNonCSSHints()
 {
-    CSSSelector *s = m_selector->first();
-    while ( s ) {
-	s->nonCSSHint = true;
-	s = m_selector->next();
-    }
+    QListIterator<CSSSelector*> it(*m_selector);
+    while (it.hasNext())
+        it.next()->nonCSSHint = true;
 }
 
 // --------------------------------------------------------------------
@@ -379,30 +377,35 @@ CSSRuleListImpl::CSSRuleListImpl(StyleListImpl* const lst, bool omitCharsetRules
 CSSRuleListImpl::~CSSRuleListImpl()
 {
     CSSRuleImpl* rule;
-    while ( !m_lstCSSRules.isEmpty() && ( rule = m_lstCSSRules.take( 0 ) ) )
+    while ( !m_lstCSSRules.isEmpty() && ( rule = m_lstCSSRules.takeFirst() ) )
         rule->deref();
 }
 
 void CSSRuleListImpl::deleteRule ( unsigned long index )
 {
-    CSSRuleImpl *rule = m_lstCSSRules.take( index );
-    if( rule )
-        rule->deref();
-    else {
-         // ### Throw INDEX_SIZE_ERR exception here (TODO)
+    if (index+1 > (unsigned) m_lstCSSRules.size()) {
+        return;
+        // ### Throw INDEX_SIZE_ERR exception here (TODO)
     }
+    CSSRuleImpl *rule = m_lstCSSRules.takeAt( index );
+    rule->deref();
 }
 
 unsigned long CSSRuleListImpl::insertRule( CSSRuleImpl *rule,
                                            unsigned long index )
 {
-    if( rule && m_lstCSSRules.insert( index, rule ) )
+    if (index > (unsigned) m_lstCSSRules.size()) {
+        return 0;
+        // ### Throw INDEX_SIZE_ERR exception here (TODO)
+    }
+    
+    if( rule )
     {
+        m_lstCSSRules.insert( index, rule );
         rule->ref();
         return index;
     }
 
-    // ### Should throw INDEX_SIZE_ERR exception instead! (TODO)
     return 0;
 }
 

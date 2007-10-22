@@ -76,16 +76,19 @@ KUrl StyleBaseImpl::baseURL()
 }
 
 void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
-				   bool important, bool nonCSSHint, Q3PtrList<CSSProperty> *propList)
+				   bool important, bool nonCSSHint, QList<CSSProperty*> *propList)
 {
-    Q3PtrListIterator<CSSProperty> propIt(*propList);
-    propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property
-    while (propIt.current() &&
-           ( propIt.current()->m_id != propId || propIt.current()->nonCSSHint != nonCSSHint ||
-             propIt.current()->m_important != important) )
-        --propIt;
-    if (propIt.current())
-        propList->removeRef(propIt.current());
+    QMutableListIterator<CSSProperty*> propIt(*propList);
+    propIt.toBack(); // just remove the top one - not sure what should happen if we have multiple instances of the property
+    CSSProperty* p;
+    while (propIt.hasPrevious()) {
+        p = propIt.previous();
+        if (p->m_id == propId && p->nonCSSHint == nonCSSHint && p->m_important == important ) {
+            delete propIt.value();
+            propIt.remove();
+            break;
+        }
+    }
 
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propId;

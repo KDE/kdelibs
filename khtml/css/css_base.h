@@ -31,7 +31,6 @@
 #include "misc/shared.h"
 #include <kdemacros.h>
 #include <QtCore/QDate>
-#include <Qt3Support/Q3PtrList>
 
 namespace DOM {
 
@@ -224,7 +223,7 @@ namespace DOM {
 	void setParent(StyleBaseImpl *parent) { m_parent = parent; }
 
 	static void setParsedValue(int propId, const CSSValueImpl *parsedValue,
-				   bool important, bool nonCSSHint, Q3PtrList<CSSProperty> *propList);
+				   bool important, bool nonCSSHint, QList<CSSProperty*> *propList);
 
 	virtual bool parseString(const DOMString &/*cssString*/, bool = false) { return false; }
 

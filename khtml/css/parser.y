@@ -90,7 +90,7 @@ int DOM::getValueID(const char *tagStr, int len)
 %union {
     CSSRuleImpl *rule;
     CSSSelector *selector;
-    Q3PtrList<CSSSelector> *selectorList;
+    QList<CSSSelector*> *selectorList;
     bool ok;
     MediaListImpl *mediaList;
     CSSMediaRuleImpl *mediaRule;
@@ -131,7 +131,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %destructor { delete $$; $$ = 0; } expr;
 %destructor { delete $$; $$ = 0; } maybe_media_list media_list;
-%destructor { delete $$; $$ = 0; } selector_list;
+%destructor { if ($$) qDeleteAll(*$$); delete $$; $$ = 0; } selector_list;
 %destructor { delete $$; $$ = 0; } ruleset_list;
 %destructor { delete $$; $$ = 0; } specifier specifier_list simple_selector selector class attrib pseudo;
 
@@ -285,18 +285,18 @@ khtml_value:
 	    p->valueList = $4;
 #ifdef CSS_DEBUG
 	    kDebug( 6080 ) << "   got property for " << p->id <<
-		(p->important?" important":"")<< endl;
+		(p->important?" important":"");
 	    bool ok =
 #endif
 		p->parseValue( p->id, p->important );
 #ifdef CSS_DEBUG
 	    if ( !ok )
-		kDebug( 6080 ) << "     couldn't parse value!" << endl;
+		kDebug( 6080 ) << "     couldn't parse value!";
 #endif
 	}
 #ifdef CSS_DEBUG
 	else
-	    kDebug( 6080 ) << "     no value found!" << endl;
+	    kDebug( 6080 ) << "     no value found!";
 #endif
 	delete p->valueList;
 	p->valueList = 0;
@@ -321,7 +321,7 @@ maybe_charset:
 charset:
   CHARSET_SYM maybe_space STRING maybe_space ';' {
 #ifdef CSS_DEBUG
-     kDebug( 6080 ) << "charset rule: " << qString($3) << endl;
+     kDebug( 6080 ) << "charset rule: " << qString($3);
 #endif
      CSSParser* p = static_cast<CSSParser*>(parser);
      if ($$ && p->styleElement && p->styleElement->isCSSStyleSheet()) {
@@ -353,7 +353,7 @@ import_list:
 import:
     IMPORT_SYM maybe_space string_or_uri maybe_space maybe_media_list ';' {
 #ifdef CSS_DEBUG
-	kDebug( 6080 ) << "@import: " << qString($3) << endl;
+	kDebug( 6080 ) << "@import: " << qString($3);
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $5 && p->styleElement && p->styleElement->isCSSStyleSheet() )
@@ -377,7 +377,7 @@ namespace_list:
 namespace:
 NAMESPACE_SYM maybe_space maybe_ns_prefix string_or_uri maybe_space ';' {
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "@namespace: " << qString($4) << endl;
+    kDebug( 6080 ) << "@namespace: " << qString($4);
 #endif
       CSSParser *p = static_cast<CSSParser *>(parser);
     if (p->styleElement && p->styleElement->isCSSStyleSheet())
@@ -523,7 +523,7 @@ unary_operator:
 ruleset:
     selector_list declaration_block {
 #ifdef CSS_DEBUG
-	kDebug( 6080 ) << "got ruleset" << endl << "  selector:" << endl;
+	kDebug( 6080 ) << "got ruleset" << endl << "  selector:";
 #endif
 	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $1 && $2 && p->numParsedProperties ) {
@@ -534,7 +534,9 @@ ruleset:
 	    $$ = rule;
 	} else {
 	    $$ = 0;
+	    if ($1) qDeleteAll(*$1);
 	    delete $1;
+	    $1 = 0;
 	    p->clearProperties();
 	}
     }
@@ -543,10 +545,9 @@ ruleset:
 selector_list:
     selector %prec UNIMPORTANT_TOK {
 	if ( $1 ) {
-	    $$ = new Q3PtrList<CSSSelector>;
-            $$->setAutoDelete( true );
+	    $$ = new QList<CSSSelector*>;
 #ifdef CSS_DEBUG
-	    kDebug( 6080 ) << "   got simple selector:" << endl;
+	    kDebug( 6080 ) << "   got simple selector:";
 	    $1->print();
 #endif
 	    $$->append( $1 );
@@ -561,17 +562,22 @@ selector_list:
 	    $$->append( $4 );
 	    khtml::CSSStyleSelector::precomputeAttributeDependencies(static_cast<CSSParser *>(parser)->document(), $4);
 #ifdef CSS_DEBUG
-	    kDebug( 6080 ) << "   got simple selector:" << endl;
+	    kDebug( 6080 ) << "   got simple selector:";
 	    $4->print();
 #endif
 	} else {
+            if ($1) qDeleteAll(*$1);
 	    delete $1;
+	    $1=0;
+
 	    delete $4;
 	    $$ = 0;
 	}
     }
   | selector_list error {
+        if ($1) qDeleteAll(*$1);
 	delete $1;
+	$1 = 0;
 	$$ = 0;
     }
    ;
@@ -888,14 +894,14 @@ declaration:
 	    p->valueList = $4;
 #ifdef CSS_DEBUG
 	    kDebug( 6080 ) << "   got property: " << $1 <<
-		($5?" important":"")<< endl;
+		($5?" important":"");
 #endif
 	        bool ok = p->parseValue( $1, $5 );
                 if ( ok )
 		    $$ = ok;
 #ifdef CSS_DEBUG
 	        else
-		    kDebug( 6080 ) << "     couldn't parse value!" << endl;
+		    kDebug( 6080 ) << "     couldn't parse value!";
 #endif
 	} else {
             delete $4;
@@ -1031,13 +1037,13 @@ invalid_at:
     '@' error invalid_block {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
+	kDebug( 6080 ) << "skipped invalid @-rule";
 #endif
     }
   | '@' error ';' {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kDebug( 6080 ) << "skipped invalid @-rule" << endl;
+	kDebug( 6080 ) << "skipped invalid @-rule";
 #endif
     }
     ;
@@ -1046,7 +1052,7 @@ invalid_rule:
     error invalid_block {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kDebug( 6080 ) << "skipped invalid rule" << endl;
+	kDebug( 6080 ) << "skipped invalid rule";
 #endif
     }
 /*
@@ -1056,13 +1062,13 @@ invalid_rule:
   | error ';' {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kDebug( 6080 ) << "skipped invalid rule" << endl;
+	kDebug( 6080 ) << "skipped invalid rule";
 #endif
     }
   | error '}' {
 	$$ = 0;
 #ifdef CSS_DEBUG
-	kDebug( 6080 ) << "skipped invalid rule" << endl;
+	kDebug( 6080 ) << "skipped invalid rule";
 #endif
     }
 */

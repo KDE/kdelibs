@@ -184,7 +184,7 @@ CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const
 unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned long index, int &exceptioncode )
 {
     exceptioncode = 0;
-    if(index > (unsigned int) m_lstChildren->count()) {
+    if (index > (unsigned) m_lstChildren->count()) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return 0;
     }
@@ -212,11 +212,12 @@ CSSRuleListImpl *CSSStyleSheetImpl::cssRules(bool omitCharsetRules)
 void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
 {
     exceptioncode = 0;
-    StyleBaseImpl *b = m_lstChildren->takeAt(index);
-    if(!b) {
+    if (index+1 > (unsigned) m_lstChildren->count()) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return;
     }
+    StyleBaseImpl *b = m_lstChildren->takeAt(index);
+
     // TreeShared requires delete not deref when removed from tree
     b->setParent(0);
     if( !b->refCount() ) delete b;
@@ -224,7 +225,7 @@ void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
         m_doc->updateStyleSelector(true /*shallow*/);
 }
 
-void CSSStyleSheetImpl::addNamespace(CSSParser* p, const DOM::DOMString& prefix, const DOM::DOMString& uri)
+void CSSStyleSheetImpl::addNamespace(CSSParser* /*p*/, const DOM::DOMString& prefix, const DOM::DOMString& uri)
 {
     int exceptioncode = 0;
     if (uri.isEmpty())
