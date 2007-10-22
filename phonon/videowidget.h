@@ -36,8 +36,9 @@ class AbstractVideoOutput;
      * This widget shows the video signal.
      *
      * \code
-     * VideoWidget *vwidget = new VideoWidget(this);
-     * videoPath->addOutput(vwidget);
+     * MediaObject *media = new MediaObject(parent);
+     * VideoWidget *vwidget = new VideoWidget(parent);
+     * Phonon::createPath(media, vwidget);
      * \endcode
      *
      * \ingroup PhononVideo
