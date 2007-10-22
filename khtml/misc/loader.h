@@ -36,8 +36,6 @@
 
 #include <stdlib.h>
 #include <QtCore/QObject>
-#include <Qt3Support/Q3PtrDict>
-#include <Qt3Support/Q3Dict>
 #include <QtGui/QPixmap>
 #include <QtCore/QBuffer>
 #include <QtCore/QStringList>
@@ -161,7 +159,7 @@ namespace khtml
 
     protected:
         void setSize(int size);
-        Q3PtrDict<CachedObjectClient> m_clients;
+        QHash<CachedObjectClient*,CachedObjectClient*> m_clients;
 	DOM::DOMString m_url;
         QString m_accept;
         Request *m_request;
@@ -406,7 +404,7 @@ namespace khtml
         friend class ::KHTMLPart;
 
         QStringList m_reloadedURLs;
-        mutable Q3PtrDict<CachedObject> m_docObjects;
+        mutable QSet<CachedObject*> m_docObjects;
 	time_t m_expireDate;
 	time_t m_creationDate;
 	KIO::CacheControl m_cachePolicy;
@@ -461,7 +459,7 @@ namespace khtml
 
     protected:
 	QLinkedList<Request*> m_requestsPending;
-	Q3PtrDict<Request> m_requestsLoading;
+	QHash<KIO::Job*,Request*> m_requestsLoading;
 #ifdef HAVE_LIBJPEG
         // TODO KJPEGFormatType m_jpegloader;
 #endif
@@ -534,7 +532,7 @@ namespace khtml
 
         friend class CachedObject;
 
-	static Q3Dict<CachedObject> *cache;
+	static QHash<QString,CachedObject*> *cache;
         static QLinkedList<DocLoader*>* docloader;
         static QLinkedList<CachedObject*> *freeList;
         static void insertInLRUList(CachedObject*);

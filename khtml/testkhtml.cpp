@@ -31,7 +31,6 @@
 #include <ktoggleaction.h>
 #include <kactioncollection.h>
 #include <kicon.h>
-#include "domtreeview.h"
 #include "kxmlguifactory.h"
 
 int main(int argc, char *argv[])
@@ -69,13 +68,8 @@ int main(int argc, char *argv[])
 
     doc->openUrl( args->url(0) );
 
-//     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
-//     dtv->show();
-
     toplevel->setCentralWidget( doc->widget() );
     toplevel->resize( 800, 600);
-
-//     dtv->resize(toplevel->width()/2, toplevel->height());
 
     QDomDocument d = doc->domDocument();
     QDomElement viewMenu = d.documentElement().firstChild().childNodes().item( 2 ).toElement();

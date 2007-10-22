@@ -354,7 +354,6 @@ if(NOT MSVC)
 
     set(testkhtml_SRCS
         testkhtml.cpp
-        domtreeview.cpp
     )
 
 
@@ -366,7 +365,6 @@ if(NOT MSVC)
 
     set(testkhtml_static_SRCS
         testkhtml.cpp
-        domtreeview.cpp
     )
 
 

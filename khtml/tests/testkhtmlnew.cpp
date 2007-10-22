@@ -39,7 +39,6 @@
 #include "rendering/render_style.h"
 
 #include "khtml_part.h"
-#include "domtreeview.h"
 
 // to be able to delete a static protected member pointer in kbrowser...
 // just for memory debugging
@@ -275,10 +274,6 @@ int main(int argc, char *argv[])
 
     test->openUrl(args->url(0));
     test->show();
-
-//     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
-//     dtv->show();
-//     dtv->resize(toplevel->width()/2, toplevel->height());
 
     return app.exec();
 }

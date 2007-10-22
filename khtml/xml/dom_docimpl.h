@@ -39,6 +39,7 @@
 #include <QtCore/QObject>
 #include <Qt3Support/Q3IntDict>
 #include <Qt3Support/Q3Dict>
+#include <Qt3Support/Q3PtrDict>
 #include <QtCore/QMap>
 //Added by qt3to4:
 #include <QTimerEvent>

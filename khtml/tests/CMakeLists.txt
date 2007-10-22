@@ -9,7 +9,6 @@ if(NOT MSVC)
     ########### next target ###############
     set(khtmltest_SRCS
         testkhtmlnew.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../domtreeview.cpp
     )
 
     qt4_add_resources( khtmltest_SRCS testkhtml.qrc )

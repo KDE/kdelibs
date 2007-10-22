@@ -26,8 +26,8 @@
 #include <kstandarddirs.h>
 
 #include <QQueue>
-#include <Qt3Support/Q3IntDict>
-#include <Qt3Support/Q3PtrList>
+#include <QHash>
+#include <QList>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <errno.h>
@@ -40,7 +40,7 @@
 #define KHTML_PAGE_CACHE_SIZE 12
 #endif
 
-template class Q3PtrList<KHTMLPageCacheDelivery>;
+template class QList<KHTMLPageCacheDelivery*>;
 class KHTMLPageCacheEntry
 {
   friend class KHTMLPageCache;
@@ -69,8 +69,8 @@ class KHTMLPageCachePrivate
 public:
   long newId;
   bool deliveryActive;
-  Q3IntDict<KHTMLPageCacheEntry> dict;
-  Q3PtrList<KHTMLPageCacheDelivery> delivery;
+  QHash<int, KHTMLPageCacheEntry*> dict;
+  QList<KHTMLPageCacheDelivery*> delivery;
   QQueue<long> expireQueue;
 };
 
@@ -142,8 +142,8 @@ KHTMLPageCache::KHTMLPageCache()
 
 KHTMLPageCache::~KHTMLPageCache()
 {
-  d->delivery.setAutoDelete(true);
-  d->dict.setAutoDelete(true);
+  qDeleteAll(d->dict);
+  qDeleteAll(d->delivery);
   delete d;
 }
 
@@ -163,7 +163,7 @@ void
 KHTMLPageCache::addData(long id, const QByteArray &data)
 {
 
-  KHTMLPageCacheEntry *entry = d->dict.find(id);
+  KHTMLPageCacheEntry *entry = d->dict.value( id );
   if (entry)
      entry->addData(data);
 }
@@ -171,7 +171,7 @@ KHTMLPageCache::addData(long id, const QByteArray &data)
 void
 KHTMLPageCache::endData(long id)
 {
-  KHTMLPageCacheEntry *entry = d->dict.find(id);
+  KHTMLPageCacheEntry *entry = d->dict.value( id );
   if (entry)
      entry->endData();
 }
@@ -179,7 +179,7 @@ KHTMLPageCache::endData(long id)
 void
 KHTMLPageCache::cancelEntry(long id)
 {
-  KHTMLPageCacheEntry *entry = d->dict.take(id);
+  KHTMLPageCacheEntry *entry = d->dict.take( id );
   if (entry)
   {
      d->expireQueue.removeAll(entry->m_id);
@@ -190,13 +190,13 @@ KHTMLPageCache::cancelEntry(long id)
 bool
 KHTMLPageCache::isValid(long id)
 {
-  return (d->dict.find(id) != 0);
+  return d->dict.contains(id);
 }
 
 bool
 KHTMLPageCache::isComplete(long id)
 {
-  KHTMLPageCacheEntry *entry = d->dict.find(id);
+  KHTMLPageCacheEntry *entry = d->dict.value( id );
   if (entry)
      return entry->isComplete();
   return false;
@@ -205,7 +205,7 @@ KHTMLPageCache::isComplete(long id)
 void
 KHTMLPageCache::fetchData(long id, QObject *recvObj, const char *recvSlot)
 {
-  KHTMLPageCacheEntry *entry = d->dict.find(id);
+  KHTMLPageCacheEntry *entry = d->dict.value( id );
   if (!entry || !entry->isComplete()) return;
 
   // Make this entry the most recent entry.
@@ -223,16 +223,13 @@ KHTMLPageCache::fetchData(long id, QObject *recvObj, const char *recvSlot)
 void
 KHTMLPageCache::cancelFetch(QObject *recvObj)
 {
-  KHTMLPageCacheDelivery *next;
-  for(KHTMLPageCacheDelivery* delivery = d->delivery.first();
-      delivery;
-      delivery = next)
-  {
-      next = d->delivery.next();
+  QMutableListIterator<KHTMLPageCacheDelivery*> it( d->delivery );
+  while (it.hasNext()) {
+      KHTMLPageCacheDelivery* delivery = it.next();
       if (delivery->recvObj == recvObj)
       {
-         d->delivery.removeRef(delivery);
          delete delivery;
+         it.remove();
       }
   }
 }
@@ -246,7 +243,7 @@ KHTMLPageCache::sendData()
      return;
   }
 
-  KHTMLPageCacheDelivery *delivery = d->delivery.take(0);
+  KHTMLPageCacheDelivery *delivery = d->delivery.takeFirst();
   assert(delivery);
 
   QByteArray byteArray(delivery->file->read(64*1024));
@@ -269,8 +266,8 @@ KHTMLPageCache::sendData()
 void
 KHTMLPageCache::saveData(long id, QDataStream *str)
 {
-  KHTMLPageCacheEntry *entry = d->dict.find(id);
-  assert(entry);
+  assert(d->dict.contains( id ));
+  KHTMLPageCacheEntry *entry = d->dict.value( id );
 
   if (!entry->isComplete())
   {
