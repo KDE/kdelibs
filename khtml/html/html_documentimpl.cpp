@@ -136,7 +136,7 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    QString fake_header("Set-Cookie: ");
+    QByteArray fake_header("Set-Cookie: ");
     fake_header.append(value.string().toLatin1().constData());
     fake_header.append("\n");
     QDBusInterface *kcookiejar = new QDBusInterface("org.kde.kded", "/modules/kcookiejar",
