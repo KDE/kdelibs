@@ -31,7 +31,7 @@
 #elif defined(Q_WS_WIN)
 #include "kglobalaccel_win.h"
 #else
-#include "kglobalaccel_emb.h"
+#include "kglobalaccel_qws.h"
 #endif
 
 #include <QtCore/QHash>
