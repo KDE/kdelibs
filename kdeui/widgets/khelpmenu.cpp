@@ -308,6 +308,8 @@ void KHelpMenu::switchApplicationLanguage()
     connect( d->mSwitchApplicationLanguage, SIGNAL(finished()), this, SLOT( dialogFinished()) );
   }
   d->mSwitchApplicationLanguage->show();
+  QEvent ev(QEvent::LanguageChange);
+  QApplication::sendEvent(qApp, &ev);
 }
 
 
