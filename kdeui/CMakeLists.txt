@@ -32,10 +32,7 @@ add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
 
 ########### next target ###############
-# Workaround to make kdeui compiles with enable-final: don't move kxmlguibuilder.cpp to an other place
-# until we remove qt3 support into this file
 set(kdeui_LIB_SRCS
- xmlgui/kxmlguibuilder.cpp
  actions/kactioncollection.cpp
  actions/kaction.cpp
  actions/kactionmenu.cpp
@@ -207,6 +204,7 @@ set(kdeui_LIB_SRCS
  widgets/kurllabel.cpp
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
+ xmlgui/kxmlguibuilder.cpp
  xmlgui/kxmlguiwindow.cpp
  xmlgui/kmainwindowiface.cpp
  xmlgui/kmenumenuhandler_p.cpp

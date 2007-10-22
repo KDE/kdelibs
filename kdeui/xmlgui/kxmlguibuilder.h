@@ -32,10 +32,11 @@ class QStringList;
 class QWidget;
 
 /**
- * Abstract interface for a "GUI builder", used by the GUIFactory
- * This interface is implemented by KMainWindow for the case where
- * the toplevel widget is a KMainWindow. Other implementations may appear
- * in the future (dialogs for instance)
+ * Implements the creation of the GUI (menubar, menus and toolbars)
+ * as requested by the GUI factory.
+ *
+ * The virtual methods are mostly for historical reasons, there isn't really
+ * a need to derive from KXMLGUIBuilder anymore.
  */
 class KDEUI_EXPORT KXMLGUIBuilder
 {
@@ -67,10 +68,10 @@ class KDEUI_EXPORT KXMLGUIBuilder
    * @param element The element from the DOM tree describing the
    *                container (use it to access container specified
    *                attributes or child elements)
-   * @param id The id to be used for this container
+   * @param action The action created for this container; used for e.g. passing to removeContainer.
    */
   virtual QWidget *createContainer( QWidget *parent, int index,
-          const QDomElement &element, int &id );
+          const QDomElement &element, QAction* &containerAction );
 
   /**
    * Removes the given (and previously via createContainer )
@@ -78,7 +79,7 @@ class KDEUI_EXPORT KXMLGUIBuilder
    *
    */
   virtual void removeContainer( QWidget *container, QWidget *parent,
-				QDomElement &element, int id );
+				QDomElement &element, QAction* containerAction );
 
   virtual QStringList customTags() const;
 

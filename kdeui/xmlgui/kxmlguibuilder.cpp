@@ -18,9 +18,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#define QT3_SUPPORT
-#define QT3_SUPPORT_WARNINGS
-
 #include "kxmlguibuilder.h"
 
 #include "kapplication.h"
@@ -125,33 +122,27 @@ QStringList KXMLGUIBuilder::containerTags() const
   return res;
 }
 
-QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, int &id )
+QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDomElement &element, QAction*& containerAction )
 {
-  id = -1;
-  if ( element.tagName().toLower() == d->tagMainWindow )
-  {
-    KMainWindow *mainwindow = 0;
-    if ( qobject_cast<KMainWindow*>( d->m_widget ) )
-      mainwindow = static_cast<KMainWindow *>(d->m_widget);
+    containerAction = 0;
+    const QString tagName = element.tagName().toLower();
+    if ( tagName == d->tagMainWindow ) {
+        KMainWindow *mainwindow = qobject_cast<KMainWindow*>( d->m_widget ); // could be 0
+        return mainwindow;
+    }
 
-    return mainwindow;
-  }
+    if ( tagName == d->tagMenuBar ) {
+        KMainWindow *mainWin = qobject_cast<KMainWindow*>( d->m_widget );
+        KMenuBar *bar = 0;
+        if (mainWin)
+            bar = mainWin->menuBar();
+        if (!bar)
+            bar = new KMenuBar( d->m_widget );
+        bar->show();
+        return bar;
+    }
 
-  if ( element.tagName().toLower() == d->tagMenuBar )
-  {
-    KMenuBar *bar;
-
-    if ( qobject_cast<KMainWindow*>( d->m_widget ) )
-      bar = static_cast<KMainWindow *>(d->m_widget)->menuBar();
-    else
-      bar = new KMenuBar( d->m_widget );
-
-    bar->show();
-    return bar;
-  }
-
-  if ( element.tagName().toLower() == d->tagMenu )
-  {
+  if ( tagName == d->tagMenu ) {
     // Look up to see if we are inside a mainwindow. If yes, then
     // use it as parent widget (to get kaction to plug itself into the
     // mainwindow). Don't use a popupmenu as parent widget, otherwise
@@ -176,8 +167,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     QDomElement textElem = element.namedItem( d->attrText1 ).toElement();
     if ( textElem.isNull() ) // try with capital T
       textElem = element.namedItem( d->attrText2 ).toElement();
-    QByteArray text = textElem.text().toUtf8();
-    QByteArray context = textElem.attribute(d->attrContext).toUtf8();
+    const QByteArray text = textElem.text().toUtf8();
+    const QByteArray context = textElem.attribute(d->attrContext).toUtf8();
 
     if ( text.isEmpty() ) // still no luck
       i18nText = i18n( "No text" );
@@ -186,33 +177,28 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     else
       i18nText = i18nc( context, text );
 
-    QString icon (element.attribute( d->attrIcon ));
+    const QString icon = element.attribute( d->attrIcon );
     KIcon pix;
-
     if (!icon.isEmpty()) {
         pix = KIcon( icon );
     }
 
-    if ( parent && qobject_cast<KMenuBar*>( parent ) )
-    {
-      if ( !icon.isEmpty() )
-        id = static_cast<KMenuBar *>(parent)->insertItem( pix, i18nText, popup, -1, index );
-      else
-        id = static_cast<KMenuBar *>(parent)->insertItem( i18nText, popup, -1, index );
-    }
-    else if ( parent && qobject_cast<QMenu*>( parent ) )
-    {
-      if ( !icon.isEmpty() )
-        id = static_cast<QMenu *>(parent)->insertItem( pix, i18nText, popup, -1, index );
-      else
-        id = static_cast<QMenu *>(parent)->insertItem( i18nText, popup, -1, index );
+    if ( parent ) {
+        QAction* act = popup->menuAction();
+        if ( !icon.isEmpty() )
+            act->setIcon(pix);
+        act->setText(i18nText);
+        if (index == -1 || index >= parent->actions().count())
+            parent->addAction(act);
+        else
+            parent->insertAction(parent->actions().value(index), act);
+        containerAction = act;
     }
 
     return popup;
   }
 
-  if ( element.tagName().toLower() == d->tagToolBar )
-  {
+  if ( tagName == d->tagToolBar ) {
     bool honor = (element.attribute( d->attrName ) == "mainToolBar");
 
     QByteArray name = element.attribute( d->attrName ).toUtf8();
@@ -235,33 +221,27 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     return bar;
   }
 
-  if ( element.tagName().toLower() == d->tagStatusBar )
-  {
-      if ( qobject_cast<KMainWindow*>( d->m_widget ) )
-    {
-      KMainWindow *mainWin = static_cast<KMainWindow *>(d->m_widget);
-      mainWin->statusBar()->show();
-      return mainWin->statusBar();
-    }
-    KStatusBar *bar = new KStatusBar( d->m_widget );
-    return bar;
+  if ( tagName == d->tagStatusBar ) {
+      KMainWindow *mainWin = qobject_cast<KMainWindow *>(d->m_widget);
+      if ( mainWin ) {
+          mainWin->statusBar()->show();
+          return mainWin->statusBar();
+      }
+      KStatusBar *bar = new KStatusBar( d->m_widget );
+      return bar;
   }
 
   return 0L;
 }
 
-void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomElement &element, int id )
+void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomElement &element, QAction* containerAction )
 {
   // Warning parent can be 0L
 
   if ( qobject_cast<QMenu*>( container ) )
   {
-    if ( parent )
-    {
-        if ( qobject_cast<KMenuBar*>( parent ) )
-            static_cast<KMenuBar *>(parent)->removeItem( id );
-        else if ( qobject_cast<QMenu*>( parent ) )
-            static_cast<QMenu *>(parent)->removeItem( id );
+    if ( parent ) {
+        parent->removeAction( containerAction );
     }
 
     delete container;

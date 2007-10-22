@@ -20,10 +20,6 @@
     */
 
 
-#ifndef INCLUDE_MENUITEM_DEF
-#define INCLUDE_MENUITEM_DEF
-#endif
-
 #include "kmenubar.h"
 
 #include <config.h>

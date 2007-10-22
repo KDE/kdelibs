@@ -18,7 +18,6 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#define INCLUDE_MENUITEM_DEF
 #include "klanguagebutton.moc"
 
 #include <QtGui/QMenu>

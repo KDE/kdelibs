@@ -108,7 +108,7 @@ struct ContainerNode
 {
     ContainerNode( QWidget *_container, const QString &_tagName, const QString &_name,
                    ContainerNode *_parent = 0L, KXMLGUIClient *_client = 0L,
-                   KXMLGUIBuilder *_builder = 0L, int id = -1,
+                   KXMLGUIBuilder *_builder = 0L, QAction* containerAction = 0,
                    const QString &_mergingName = QString(),
                    const QString &groupName = QString(),
                    const QStringList &customTags = QStringList(),
@@ -121,7 +121,7 @@ struct ContainerNode
     QStringList builderCustomTags;
     QStringList builderContainerTags;
     QWidget *container;
-    int containerId;
+    QAction* containerAction;
 
     QString tagName;
     QString name;
@@ -201,7 +201,7 @@ private:
 
 
     QWidget *createContainer( QWidget *parent, int index, const QDomElement &element,
-                              int &id, KXMLGUIBuilder **builder );
+                              QAction*& containerAction, KXMLGUIBuilder **builder );
 
     int calcMergingIndex( const QDomElement &element, MergingIndexList::Iterator &it, QString &group );
 

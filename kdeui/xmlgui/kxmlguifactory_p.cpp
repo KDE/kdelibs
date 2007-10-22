@@ -55,12 +55,12 @@ void ActionList::unplug( QWidget *container ) const
 ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
                               const QString &_name, ContainerNode *_parent,
                               KXMLGUIClient *_client, KXMLGUIBuilder *_builder,
-                              int id, const QString &_mergingName,
+                              QAction* _containerAction, const QString &_mergingName,
                               const QString &_groupName, const QStringList &customTags,
                               const QStringList &containerTags )
     : parent( _parent ), client( _client ), builder( _builder ),
       builderCustomTags( customTags ), builderContainerTags( containerTags ),
-      container( _container ), containerId( id ), tagName( _tagName ), name( _name ),
+      container( _container ), containerAction( _containerAction ), tagName( _tagName ), name( _name ),
       groupName( _groupName ), index( 0 ), mergingName( _mergingName )
 {
     if ( parent )
@@ -342,7 +342,7 @@ bool ContainerNode::destruct( QDomElement element, BuildState &state ) //krazy:e
 
         assert( builder );
 
-        builder->removeContainer( container, parentContainer, element, containerId );
+        builder->removeContainer( container, parentContainer, element, containerAction );
 
         client = 0L;
 
@@ -762,11 +762,11 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 
         int idx = calcMergingIndex( e, it, group );
 
-        int id;
+        QAction* containerAction;
 
         KXMLGUIBuilder *builder;
 
-        QWidget *container = createContainer( parentNode->container, idx, e, id, &builder );
+        QWidget *container = createContainer( parentNode->container, idx, e, containerAction, &builder );
 
         // no container? (probably some <text> tag or so ;-)
         if ( !container )
@@ -791,7 +791,7 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
         }
 
         containerNode = new ContainerNode( container, tag, name, parentNode,
-                                           m_state.guiClient, builder, id,
+                                           m_state.guiClient, builder, containerAction,
                                            mergingName, group, cusTags, conTags );
     }
 
@@ -804,14 +804,14 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 }
 
 QWidget *BuildHelper::createContainer( QWidget *parent, int index,
-                                       const QDomElement &element, int &id,
+                                       const QDomElement &element, QAction*& containerAction,
                                        KXMLGUIBuilder **builder )
 {
     QWidget *res = 0L;
 
     if ( m_state.clientBuilder )
     {
-        res = m_state.clientBuilder->createContainer( parent, index, element, id );
+        res = m_state.clientBuilder->createContainer( parent, index, element, containerAction );
 
         if ( res )
         {
@@ -825,7 +825,7 @@ QWidget *BuildHelper::createContainer( QWidget *parent, int index,
 
     m_state.builder->setBuilderClient( m_state.guiClient );
 
-    res = m_state.builder->createContainer( parent, index, element, id );
+    res = m_state.builder->createContainer( parent, index, element, containerAction );
 
     m_state.builder->setBuilderComponentData(oldInstance);
     m_state.builder->setBuilderClient( oldClient );
