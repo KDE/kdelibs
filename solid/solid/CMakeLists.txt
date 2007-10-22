@@ -107,6 +107,7 @@ set(solid_LIB_SRCS
    backends/fakehw/fakeportablemediaplayer.cpp
    backends/fakehw/fakeprocessor.cpp
    backends/fakehw/fakestorage.cpp
+   backends/fakehw/fakestorageaccess.cpp
    backends/fakehw/fakevolume.cpp
 )
 

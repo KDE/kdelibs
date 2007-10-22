@@ -118,7 +118,7 @@
                 <!-- A (generally) virtual volume tracking the floppy drive state -->
                 <device udi="/org/kde/solid/fakehw/platform_floppy_0_storage_virt_volume">
                     <property key="name">Floppy Disk</property>
-                    <property key="interfaces">Block,StorageVolume</property>
+                    <property key="interfaces">Block,StorageVolume,StorageAccess</property>
                     <property key="parent">/org/kde/solid/fakehw/platform_floppy_0_storage</property>
 
                     <property key="minor">0</property>
@@ -173,14 +173,14 @@
                     -->
                     <device udi="/org/kde/solid/fakehw/volume_uuid_feedface">
                         <property key="name">/</property>
-                        <property key="interfaces">Block,StorageVolume</property>
+                        <property key="interfaces">Block,StorageVolume,StorageAccess</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">1</property>
                         <property key="major">3</property>
                         <property key="device">/dev/hda1</property>
 
-                        <property key="isIgnored">false</property>
+                        <property key="isIgnored">true</property>
                         <property key="isMounted">true</property>
                         <property key="mountPoint">/</property>
                         <property key="usage">filesystem</property>
@@ -191,14 +191,14 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_uuid_c0ffee">
                         <property key="name">/home</property>
-                        <property key="interfaces">Block,StorageVolume</property>
+                        <property key="interfaces">Block,StorageVolume,StorageAccess</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">6</property>
                         <property key="major">3</property>
                         <property key="device">/dev/hda6</property>
 
-                        <property key="isIgnored">false</property>
+                        <property key="isIgnored">true</property>
                         <property key="isMounted">true</property>
                         <property key="mountPoint">/home</property>
                         <property key="usage">filesystem</property>
@@ -209,7 +209,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_uuid_f00ba7">
                         <property key="name">/foreign</property>
-                        <property key="interfaces">Block,StorageVolume</property>
+                        <property key="interfaces">Block,StorageVolume,StorageAccess</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">7</property>
@@ -227,7 +227,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_part2_size_1024">
                         <property key="name">StorageVolume</property>
-                        <property key="interfaces">Block,StorageVolume</property>
+                        <property key="interfaces">Block,StorageVolume,StorageAccess</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">2</property>
@@ -241,7 +241,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_part5_size_1048576">
                         <property key="name">StorageVolume (swap)</property>
-                        <property key="interfaces">Block,StorageVolume</property>
+                        <property key="interfaces">Block,StorageVolume,StorageAccess</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">5</property>
@@ -295,7 +295,7 @@
                     <!-- ... with a cd-r in it -->
                     <device udi="/org/kde/solid/fakehw/volume_uuid_5011">
                         <property key="name">FooDistro i386</property>
-                        <property key="interfaces">Block,StorageVolume,OpticalDisc</property>
+                        <property key="interfaces">Block,StorageVolume,OpticalDisc,StorageAccess</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_model_solid_writer</property>
 
                         <property key="discType">cd_rw</property>
@@ -339,7 +339,7 @@
                     <!-- ... with a DVD Video in it -->
                     <device udi="/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS">
                         <property key="name">SolidMan Begins</property>
-                        <property key="interfaces">Block,StorageVolume,OpticalDisc</property>
+                        <property key="interfaces">Block,StorageVolume,OpticalDisc,StorageAccess</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_model_solid_reader</property>
 
                         <property key="discType">dvd_rom</property>
@@ -414,7 +414,7 @@
                                     <!-- ... with a partition since it's a USB Mass Storage device -->
                                     <device udi="/org/kde/solid/fakehw/volume_part1_size_993284096">
                                         <property key="name">StorageVolume (vfat)</property>
-                                        <property key="interfaces">Block,StorageVolume</property>
+                                        <property key="interfaces">Block,StorageVolume,StorageAccess</property>
                                         <property key="parent">/org/kde/solid/fakehw/storage_serial_XOY4_5206</property>
 
                                         <property key="minor">1</property>

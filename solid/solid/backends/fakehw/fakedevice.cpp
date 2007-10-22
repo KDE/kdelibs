@@ -26,6 +26,7 @@
 #include "fakecdrom.h"
 #include "fakevolume.h"
 #include "fakeopticaldisc.h"
+#include "fakestorageaccess.h"
 #include "fakecamera.h"
 #include "fakeportablemediaplayer.h"
 #include "fakenetworkinterface.h"
@@ -252,6 +253,9 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
         break;
     case Solid::DeviceInterface::OpticalDisc:
         iface = new FakeOpticalDisc(this);
+        break;
+    case Solid::DeviceInterface::StorageAccess:
+        iface = new FakeStorageAccess(this);
         break;
     case Solid::DeviceInterface::Camera:
         iface = new FakeCamera(this);
