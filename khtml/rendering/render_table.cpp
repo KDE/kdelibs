@@ -2315,8 +2315,14 @@ Length RenderTableCell::styleOrColWidth()
     if (colSpan() > 1 || !w.isVariable())
         return w;
     RenderTableCol* col = table()->colElement(_col);
-    if (col)
+    if (col) {
         w = col->style()->width();
+
+        // Column widths specified on <col> apply to the border box of the cell.
+        // Percentages don't need to be handled since they're always treated this way (even when specified on the cells).
+        if (w.isFixed() && w.value() > 0)
+            w = Length(qMax(0, w.value() - borderLeft() - borderRight() - paddingLeft() - paddingRight()), Fixed);
+    }
     return w;
 }
 
