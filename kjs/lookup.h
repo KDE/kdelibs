@@ -331,8 +331,8 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     ClassProto(KJS::ExecState *exec) \
       : KJS::JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()) { } \
     \
-    static Identifier* s_name; \
-    static Identifier* name(); \
+    static KJS::Identifier* s_name;           \
+    static KJS::Identifier* name(); \
   };
 
 #define KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(ClassProto, ClassProtoProto) \
@@ -347,40 +347,40 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
         ClassProto(KJS::ExecState* exec) \
             : KJS::JSObject(ClassProtoProto::self(exec)) { } \
     \
-    static Identifier* s_name; \
-    static Identifier* name(); \
+    static KJS::Identifier* s_name; \
+    static KJS::Identifier* name(); \
     };
 
 
 #define KJS_IMPLEMENT_PROTOTYPE(ClassName, ClassProto,ClassFunc) \
-    const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
-    Identifier* ClassProto::s_name = 0; \
-    JSObject *ClassProto::self(ExecState *exec) \
+    const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
+    KJS::Identifier* ClassProto::s_name = 0; \
+    KJS::JSObject *ClassProto::self(ExecState *exec) \
     { \
       return ::cacheGlobalObject<ClassProto>(exec, *name()); \
     } \
-    bool ClassProto::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
+    bool ClassProto::getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot) \
     { \
-      return getStaticFunctionSlot<ClassFunc, JSObject>(exec, &ClassProto##Table, this, propertyName, slot); \
+      return getStaticFunctionSlot<ClassFunc, KJS::JSObject>(exec, &ClassProto##Table, this, propertyName, slot); \
     } \
-    Identifier* ClassProto::name() \
+    KJS::Identifier* ClassProto::name() \
     { \
-      if (!s_name) s_name = new Identifier("[[" ClassName ".prototype]]"); \
+      if (!s_name) s_name = new KJS::Identifier("[[" ClassName ".prototype]]"); \
       return s_name; \
     }
 
 
 #define KJS_IMPLEMENT_PROTOFUNC(ClassFunc) \
-  class ClassFunc : public InternalFunctionImp { \
+  class ClassFunc : public KJS::InternalFunctionImp {   \
   public: \
-    ClassFunc(ExecState* exec, int i, int len, const Identifier& name) \
-      : InternalFunctionImp(static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), name) \
+    ClassFunc(KJS::ExecState* exec, int i, int len, const KJS::Identifier& name) \
+      : InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), name) \
       , id(i) \
     { \
-       put(exec, exec->propertyNames().length, jsNumber(len), DontDelete|ReadOnly|DontEnum); \
+       put(exec, exec->propertyNames().length, KJS::jsNumber(len), KJS::DontDelete|KJS::ReadOnly|KJS::DontEnum); \
     } \
     /* Macro user needs to implement the callAsFunction function. */ \
-    virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args); \
+      virtual KJS::JSValue *callAsFunction(KJS::ExecState *exec, KJS::JSObject *thisObj, const KJS::List &args); \
   private: \
     int id; \
   };
