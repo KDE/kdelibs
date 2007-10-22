@@ -37,7 +37,8 @@
 #include <kmessagebox.h>
 #include <kreplace.h>
 #include <kreplacedialog.h>
-#include <k3spell.h>
+#include <dialog.h>
+#include <backgroundchecker.h>
 #include <kurlcompletion.h>
 #include <kwindowsystem.h>
 #include <kstandardaction.h>
@@ -377,7 +378,7 @@ public:
 };
 
 LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view, QWidget* parent)
-    : KLineEdit(parent), m_input(input), m_view(view), m_spell(0)
+    : KLineEdit(parent), m_input(input), m_view(view)
 {
     m_kwp->setIsRedirected( true );
     setMouseTracking(true);
@@ -391,8 +392,6 @@ LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view
 
 LineEditWidget::~LineEditWidget()
 {
-    delete m_spell;
-    m_spell = 0L;
 }
 
 void LineEditWidget::slotCheckSpelling()
@@ -400,16 +399,17 @@ void LineEditWidget::slotCheckSpelling()
     if ( text().isEmpty() ) {
         return;
     }
-
-    delete m_spell;
-    m_spell = new K3Spell( this, i18n( "Spell Checking" ), this, SLOT( slotSpellCheckReady( K3Spell *) ), 0, true, true);
-
-    connect( m_spell, SIGNAL( death() ),this, SLOT( spellCheckerFinished() ) );
-    connect( m_spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
-    connect( m_spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
+    Sonnet::Dialog *spellDialog = new Sonnet::Dialog(new Sonnet::BackgroundChecker(this), 0);
+    connect(spellDialog, SIGNAL(replace( const QString&, int,const QString&)), this, SLOT(spellCheckerCorrected( const QString&, int,const QString&)));
+    connect(spellDialog, SIGNAL(misspelling( const QString&, int)), this, SLOT(spellCheckerMisspelling(const QString &,int)));
+    connect(spellDialog, SIGNAL(done(const QString&)), this, SLOT(spellCheckerDone(const QString&)));
+    connect(spellDialog, SIGNAL(cancel()), this, SLOT(spellCheckerFinished()));
+    connect(spellDialog, SIGNAL(stop()), this, SLOT(spellCheckerFinished()));
+    spellDialog->setBuffer(text());
+    spellDialog->show();
 }
 
-void LineEditWidget::spellCheckerMisspelling( const QString &_text, const QStringList &, unsigned int pos)
+void LineEditWidget::spellCheckerMisspelling( const QString &_text, int pos)
 {
     highLightWord( _text.length(),pos );
 }
@@ -425,7 +425,7 @@ void LineEditWidget::highLightWord( unsigned int length, unsigned int pos )
     setSelection ( pos, length );
 }
 
-void LineEditWidget::spellCheckerCorrected( const QString &old, const QString &corr, unsigned int pos )
+void LineEditWidget::spellCheckerCorrected( const QString &old, int pos, const QString &corr )
 {
     if( old!= corr )
     {
@@ -437,12 +437,6 @@ void LineEditWidget::spellCheckerCorrected( const QString &old, const QString &c
 
 void LineEditWidget::spellCheckerFinished()
 {
-}
-
-void LineEditWidget::slotSpellCheckReady( K3Spell *s )
-{
-    s->check( text() );
-    connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
 }
 
 void LineEditWidget::slotSpellCheckDone( const QString &s )
@@ -505,7 +499,7 @@ bool LineEditWidget::event( QEvent *e )
 {
     if (KLineEdit::event(e))
 	return true;
-
+#if 0
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
         if ( ke->modifiers() & Qt::ControlModifier ) {
@@ -522,6 +516,7 @@ bool LineEditWidget::event( QEvent *e )
             }
         }
     }
+#endif
     return false;
 }
 
@@ -1626,6 +1621,7 @@ void TextAreaWidget::slotReplace()
 
 bool TextAreaWidget::event( QEvent *e )
 {
+#if 0
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
         if ( ke->modifiers() & Qt::ControlModifier ) {
@@ -1642,6 +1638,7 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
+#endif
     return KTextEdit::event( e );
 }
 

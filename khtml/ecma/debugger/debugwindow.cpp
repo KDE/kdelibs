@@ -111,7 +111,7 @@ void DebugWindow::setNextSourceInfo(QString url, int baseLine)
 // ----------------------------------------------
 
 DebugWindow::DebugWindow(QWidget *parent)
-  : KXmlGuiWindow(parent, Qt::WType_TopLevel),
+  : KXmlGuiWindow(parent, Qt::Window),
     KComponentData("kjs_debugger")
 {
     setObjectName(QLatin1String("DebugWindow"));
@@ -463,6 +463,7 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
     kDebug() << "  sourceId: " << sourceId << endl
              << "lineNumber: " << lineno << endl;
 
+    Q_UNUSED( exec );
     DebugDocument *document = m_sourceIdLookup[sourceId];
     if (document)
     {

@@ -40,7 +40,7 @@ bool checkChild(ushort tagID, ushort childID, bool strict = false);
 extern const unsigned short tagPriorityArray[];
 extern const tagStatus endTagArray[];
 
-inline unsigned short tagPriority(Q_UINT32 tagId)
+inline unsigned short tagPriority(quint32 tagId)
 {
     // Treat custom elements the same as <span>; also don't read past the end of the array.
     if (tagId > ID_LAST_TAG)
@@ -48,7 +48,7 @@ inline unsigned short tagPriority(Q_UINT32 tagId)
     return tagPriorityArray[tagId];
 }
 
-inline tagStatus endTagRequirement(Q_UINT32 tagId)
+inline tagStatus endTagRequirement(quint32 tagId)
 {
     // Treat custom elements the same as <span>; also don't read past the end of the array.
     if (tagId > ID_LAST_TAG)

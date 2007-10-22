@@ -119,7 +119,7 @@ public:
 protected:
     DocumentImpl *m_doc;
     bool m_implicit;
-    Q_UINT32 m_defaultNamespace;
+    quint32 m_defaultNamespace;
     CSSNamespace* m_namespaces;
     DOMString m_charset;
 };

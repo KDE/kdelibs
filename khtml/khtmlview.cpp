@@ -1295,6 +1295,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
           default:              cursorIcon = "error";      break;
 	}
         QPixmap icon_pixmap = KHTMLFactory::iconLoader()->loadIcon( cursorIcon, KIconLoader::Small, 0, KIconLoader::DefaultState, QStringList(), 0, true );
+#if 0
 	if (d->cursor_icon_widget)
 	{
 	    const QPixmap *pm = d->cursor_icon_widget->backgroundPixmap();
@@ -1304,10 +1305,11 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 		d->cursor_icon_widget = NULL;
 	    }
 	}
+#endif
 
         if( !d->cursor_icon_widget ) {
 #ifdef Q_WS_X11
-            d->cursor_icon_widget = new QWidget( 0, Qt::WX11BypassWM );
+            d->cursor_icon_widget = new QWidget( 0, Qt::X11BypassWindowManagerHint );
             XSetWindowAttributes attr;
             attr.save_under = True;
             XChangeWindowAttributes( QX11Info::display(), d->cursor_icon_widget->winId(), CWSaveUnder, &attr );
@@ -1323,7 +1325,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
             QPalette palette;
             palette.setBrush( d->cursor_icon_widget->backgroundRole(), QBrush( icon_pixmap ) );
             d->cursor_icon_widget->setPalette( palette );
-            d->cursor_icon_widget->erase();
+            d->cursor_icon_widget->update();
         }
         QPoint c_pos = QCursor::pos();
         d->cursor_icon_widget->move( c_pos.x() + 15, c_pos.y() + 15 );
@@ -1870,7 +1872,7 @@ void KHTMLView::doAutoScroll()
 
 static void handleWidget(QWidget* w, KHTMLView* view)
 {
-    if (w->isTopLevel())
+    if (w->isWindow())
         return;
 
     if (!qobject_cast<QFrame*>(w))
@@ -1932,7 +1934,8 @@ static void setInPaintEventFlag(QWidget* w, bool b = true)
 {
       w->setAttribute(Qt::WA_WState_InPaintEvent, b);
       foreach(QObject* cw, w->children()) {
-          if (cw->isWidgetType()) {
+          if (cw->isWidgetType() && !(static_cast<QWidget*>(cw)->windowFlags() & Qt::Window) 
+                                 &&  !(static_cast<QWidget*>(cw)->windowModality() & Qt::ApplicationModal)) {
               static_cast<QWidget*>(cw)->setAttribute(Qt::WA_WState_InPaintEvent, false);
               setInPaintEventFlag(static_cast<QWidget*>(cw), b);
           }
@@ -2087,7 +2090,6 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
     return QScrollArea::eventFilter(o, e);
 }
 
-
 bool KHTMLView::widgetEvent(QEvent* e)
 {
     switch (e->type()) {
@@ -2105,14 +2107,14 @@ bool KHTMLView::widgetEvent(QEvent* e)
       case QEvent::DragLeave:
       case QEvent::Drop:
         return QFrame::event(e);
-      case QEvent::ChildInserted: {
+      case QEvent::ChildPolished: {
         // we need to install an event filter on all children of the widget() to
         // be able to get correct stacking of children within the document.
         QObject *c = static_cast<QChildEvent *>(e)->child();
         if (c->isWidgetType()) {
             QWidget *w = static_cast<QWidget *>(c);
 	    // don't install the event filter on toplevels
-	    if (w->parentWidget() == widget()) {
+	    if (!(w->windowFlags() & Qt::Window) && !(w->windowModality() & Qt::ApplicationModal)) {
 	        KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(w);
 	        if (k && k->m_kwp->isRedirected()) {
 	            w->unsetCursor();
@@ -2403,7 +2405,8 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
             }
             if( !accesskey.isNull()) {
 	        QRect rec=en->getRect();
-	        QLabel *lab=new QLabel(accesskey,viewport(),Qt::WDestructiveClose);
+	        QLabel *lab=new QLabel(accesskey,viewport());
+	        lab->setAttribute(Qt::WA_DeleteOnClose);
 	        connect( origview, SIGNAL(hideAccessKeys()), lab, SLOT(close()) );
 	        connect( this, SIGNAL(repaintAccessKeys()), lab, SLOT(repaint()));
 	        lab->setPalette(QToolTip::palette());

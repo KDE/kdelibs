@@ -4007,7 +4007,8 @@ void KHTMLPart::slotViewPageInfo()
 {
   Ui_KHTMLInfoDlg ui;
 
-  QDialog *dlg = new QDialog(0, Qt::WDestructiveClose);
+  QDialog *dlg = new QDialog(0);
+  dlg->setAttribute(Qt::WA_DeleteOnClose);
   dlg->setObjectName("KHTML Page Info Dialog");
   ui.setupUi(dlg);
 

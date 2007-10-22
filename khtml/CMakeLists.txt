@@ -1,7 +1,6 @@
 
 project(khtml)
 KDE4_NO_ENABLE_FINAL(khtml)
-add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 add_subdirectory( tests )
 
@@ -217,7 +216,7 @@ add_subdirectory( ecma )
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
-include_directories( ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui ${CMAKE_BINARY_DIR}/phonon)
+include_directories( ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_BINARY_DIR}/phonon)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/misc
@@ -281,7 +280,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kde3support kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION} )
 

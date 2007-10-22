@@ -280,7 +280,7 @@ QString toUpperGreek( int number ) {
 
 static inline QString toNumeric( int number, int base ) {
     QString letter = QString::number(number);
-    for(unsigned int i = 0; i < letter.length(); i++) {
+    for(int i = 0; i < letter.length(); i++) {
         if (letter[i].isDigit())
         letter[i] = QChar(letter[i].digitValue()+base);
     }

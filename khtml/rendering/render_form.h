@@ -43,7 +43,6 @@ class QWidget;
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
 
-class K3Spell;
 class KFindDialog;
 class KReplaceDialog;
 class KFind;
@@ -283,10 +282,9 @@ protected:
 private Q_SLOTS:
     void clearHistoryActivated();
     void slotCheckSpelling();
-    void slotSpellCheckReady( K3Spell *s );
     void slotSpellCheckDone( const QString &s );
-    void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos);
-    void spellCheckerCorrected( const QString &, const QString &, unsigned int );
+    void spellCheckerMisspelling( const QString &text, int pos);
+    void spellCheckerCorrected( const QString &, int, const QString &);
     void spellCheckerFinished();
 
 private:
@@ -295,7 +293,6 @@ private:
     };
     DOM::HTMLInputElementImpl* m_input;
     KHTMLView* m_view;
-    K3Spell *m_spell;
     KAction *m_spellAction;
 };
 

@@ -48,7 +48,6 @@
 #include <QtCore/QStack>
 //Added by qt3to4:
 #include <QTimerEvent>
-#include <Q3PtrList>
 #include <QtCore/QList>
 #include <kdebug.h>
 #include <klocale.h>
@@ -379,7 +378,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_async = true;
     m_hadLoadError = false;
     m_docLoading = false;
-    m_inSyncLoad = false;
+    m_inSyncLoad = 0;
     m_loadingXMLDoc = 0;
     m_documentElement = 0;
     m_cssTarget = 0;
@@ -2352,7 +2351,9 @@ void DocumentImpl::attachNodeIterator(NodeIteratorImpl *ni)
 
 void DocumentImpl::detachNodeIterator(NodeIteratorImpl *ni)
 {
-    m_nodeIterators.remove(ni);
+    int i = m_nodeIterators.indexOf(ni);
+    if (i != -1)
+        m_nodeIterators.removeAt(i);
 }
 
 void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
@@ -2436,8 +2437,8 @@ CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl* /*elt*/, DO
 void DocumentImpl::abort()
 {
     if (m_inSyncLoad) {
-	m_inSyncLoad = false;
-	qApp->exit_loop();
+        assert(m_inSyncLoad->isRunning());
+        m_inSyncLoad->exit();
     }
 
     if (m_loadingXMLDoc)
@@ -2448,8 +2449,8 @@ void DocumentImpl::abort()
 void DocumentImpl::load(const DOMString &uri)
 {
     if (m_inSyncLoad) {
-	m_inSyncLoad = false;
-	qApp->exit_loop();
+        assert(m_inSyncLoad->isRunning());
+        m_inSyncLoad->exit();
     }
 
     m_hadLoadError = false;
@@ -2474,8 +2475,13 @@ void DocumentImpl::load(const DOMString &uri)
     m_loadingXMLDoc->ref(this);
 
     if (!m_async && m_docLoading) {
-	m_inSyncLoad = true;
-	qApp->enter_loop();
+        assert(!m_inSyncLoad);
+	m_inSyncLoad = new QEventLoop();
+	m_inSyncLoad->exec();
+	// returning from event loop:
+	assert(!m_inSyncLoad->isRunning());
+	delete m_inSyncLoad;
+	m_inSyncLoad = 0;
     }
 }
 
@@ -2497,8 +2503,8 @@ void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString
 
     m_docLoading = false;
     if (m_inSyncLoad) {
-	m_inSyncLoad = false;
-	qApp->exit_loop();
+        assert(m_inSyncLoad->isRunning());
+        m_inSyncLoad->exit();
     }
 
     assert(m_loadingXMLDoc != 0);
@@ -2510,8 +2516,8 @@ void DocumentImpl::error(int err, const QString &text)
 {
     m_docLoading = false;
     if (m_inSyncLoad) {
-	m_inSyncLoad = false;
-	qApp->exit_loop();
+        assert(m_inSyncLoad->isRunning());
+        m_inSyncLoad->exit();
     }
 
     m_hadLoadError = true;

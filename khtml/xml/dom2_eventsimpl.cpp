@@ -517,8 +517,8 @@ IDTranslator<unsigned, unsigned, unsigned>::Info virtKeyToQtKeyTable[] =
     {KeyEventBaseImpl::DOM_VK_RIGHT,        Qt::Key_Right},
     {KeyEventBaseImpl::DOM_VK_UP,           Qt::Key_Up},
     {KeyEventBaseImpl::DOM_VK_DOWN,         Qt::Key_Down},
-    {KeyEventBaseImpl::DOM_VK_PAGE_DOWN,    Qt::Key_Next},
-    {KeyEventBaseImpl::DOM_VK_PAGE_UP,      Qt::Key_Prior},
+    {KeyEventBaseImpl::DOM_VK_PAGE_DOWN,    Qt::Key_PageDown},
+    {KeyEventBaseImpl::DOM_VK_PAGE_UP,      Qt::Key_PageUp},
     {KeyEventBaseImpl::DOM_VK_F1,           Qt::Key_F1},
     {KeyEventBaseImpl::DOM_VK_F2,           Qt::Key_F2},
     {KeyEventBaseImpl::DOM_VK_F3,           Qt::Key_F3},
@@ -686,10 +686,10 @@ MAKE_TRANSLATOR(keyIdentifiersToVirtKeys, QByteArray, unsigned, const char*, key
 
 /** These are the modifiers we currently support */
 static const IDTranslator<QByteArray, unsigned, const char*>::Info keyModifiersToCodeTable[] = {
-    {"Alt",         Qt::AltButton},
-    {"Control",     Qt::ControlButton},
-    {"Shift",       Qt::ShiftButton},
-    {"Meta",        Qt::MetaButton},
+    {"Alt",         Qt::AltModifier},
+    {"Control",     Qt::ControlModifier},
+    {"Shift",       Qt::ShiftModifier},
+    {"Meta",        Qt::MetaModifier},
     {0,             0}
 };
 

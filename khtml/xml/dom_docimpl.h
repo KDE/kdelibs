@@ -48,6 +48,7 @@
 class QPaintDevice;
 class QTextCodec;
 class KHTMLView;
+class QEventLoop;
 
 namespace khtml {
     class Tokenizer;
@@ -639,7 +640,8 @@ protected:
     bool m_async;
     bool m_hadLoadError;
     bool m_docLoading;
-    bool m_inSyncLoad;
+
+    QEventLoop* m_inSyncLoad;
 
     DOMString m_title;
     DOMString m_preferredStylesheetSet;
