@@ -21,8 +21,8 @@
 */
 
 
-#ifndef BUILTINS_H
-#define BUILTINS_h
+#ifndef KJSEMBED_BUILTINS_H
+#define KJSEMBED_BUILTINS_H
 
 #include <kjs/object.h>
 #include <kjsembed/object_binding.h>

@@ -34,7 +34,6 @@
 //#define DEBUG_SLOTPROXY 1
 
 using namespace KJSEmbed;
-using namespace KJS;
 
 SlotProxy::SlotProxy(KJS::JSObject *obj, KJS::Interpreter *interpreter, QObject *parent, const QByteArray &signature)
     : QObject(parent), m_interpreter(interpreter), m_object(obj)
@@ -118,12 +117,12 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
                             id.ascii(),
                             methodName.data(),
                             QString(m_signature));
-        
+
         retValue = throwError(exec, KJS::TypeError, msg);
     }
     else
         retValue = fun->call(exec, m_object, args);
-    
+
     if( exec->hadException() )
     {
 #ifdef DEBUG_SLOTPROXY
@@ -143,7 +142,7 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
 
         // clear it so it doesn't stop other things
         exec->clearException();
-        
+
         return KJS::jsNull();
     }
     else
