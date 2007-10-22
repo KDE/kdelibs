@@ -110,8 +110,10 @@ StyleListImpl::~StyleListImpl()
 
     if(!m_lstChildren) return;
 
-    for( n = m_lstChildren->first(); n != 0; n = m_lstChildren->next() )
+    QListIterator<StyleBaseImpl*> it( *m_lstChildren );
+    while ( it.hasNext() )
     {
+        n = it.next();
         n->setParent(0);
         if( !n->refCount() ) delete n;
     }

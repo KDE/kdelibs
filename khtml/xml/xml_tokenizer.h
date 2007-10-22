@@ -24,8 +24,8 @@
 #define _XML_Tokenizer_h_
 
 #include <Qt/qxml.h>
-#include <Qt3Support/Q3PtrList>
 #include <QtCore/QStack>
+#include <QtCore/QLinkedList>
 #include <QMap>
 #include <QtCore/QObject>
 #include "misc/loader_client.h"
@@ -183,8 +183,8 @@ protected:
     void executeScripts();
     void addScripts(DOM::NodeImpl *n);
 
-    Q3PtrList<DOM::HTMLScriptElementImpl> m_scripts;
-    Q3PtrListIterator<DOM::HTMLScriptElementImpl> *m_scriptsIt;
+    QLinkedList<DOM::HTMLScriptElementImpl*> m_scripts;
+    QLinkedListIterator<DOM::HTMLScriptElementImpl*> *m_scriptsIt;
     khtml::CachedScript *m_cachedScript;
 
     XMLHandler m_handler;

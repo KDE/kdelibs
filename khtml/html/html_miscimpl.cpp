@@ -26,6 +26,7 @@
 #include "html_tableimpl.h"
 #include "html_formimpl.h"
 #include "html_documentimpl.h"
+#include <Qt3Support/Q3Dict>
 
 #include <misc/htmlhashes.h>
 #include <dom/dom_node.h>

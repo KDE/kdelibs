@@ -35,12 +35,11 @@
 #include "misc/seed.h"
 
 #include <QtCore/QStringList>
-#include <Qt3Support/Q3PtrList>
 #include <QtCore/QObject>
-#include <Qt3Support/Q3IntDict>
-#include <Qt3Support/Q3Dict>
-#include <Qt3Support/Q3PtrDict>
+#include <QtCore/QList>
+#include <QtCore/QHash>
 #include <QtCore/QMap>
+
 //Added by qt3to4:
 #include <QTimerEvent>
 
@@ -145,6 +144,7 @@ public:
     };
 
     ElementMappingCache();
+    ~ElementMappingCache();
 
     /**
      Add a pointer as just one of candidates, not neccesserily the proper one
@@ -171,7 +171,7 @@ public:
     */
     ItemInfo* get(const QString& id);
 private:
-    Q3Dict<ItemInfo> m_dict;
+    QHash<QString,ItemInfo*> m_dict;
 };
 
 
@@ -273,7 +273,7 @@ public:
     QStringList docState();
     bool unsubmittedFormChanges();
     void registerMaintainsState(NodeImpl* e) { m_maintainsState.append(e); }
-    void deregisterMaintainsState(NodeImpl* e) { m_maintainsState.removeRef(e); }
+    void deregisterMaintainsState(NodeImpl* e) { int i; if ((i = m_maintainsState.indexOf(e)) != -1) m_maintainsState.removeAt(i); }
 
     // Set the state the document should restore to
     void setRestoreState( const QStringList &s);
@@ -518,9 +518,9 @@ public:
     void incDOMTreeVersion() { ++m_domtree_version; }
     unsigned int domTreeVersion() const { return m_domtree_version; }
 
-    Q3Dict<khtml::CounterNode>* counters(const khtml::RenderObject* o) { return m_counterDict[(void*)o]; }
-    void setCounters(const khtml::RenderObject* o, Q3Dict<khtml::CounterNode> *dict) { m_counterDict.insert((void*)o, dict);}
-    void removeCounters(const khtml::RenderObject* o) { m_counterDict.remove((void*)o); }
+    QHash<QString,khtml::CounterNode*>* counters(const khtml::RenderObject* o) { return m_counterDict.value(o); }
+    void setCounters(const khtml::RenderObject* o, QHash<QString,khtml::CounterNode*> *dict) { m_counterDict.insert(o, dict);}
+    void removeCounters(const khtml::RenderObject* o) { delete m_counterDict.take(o); }
 
 
     ElementMappingCache& underDocNamedCache() {
@@ -589,21 +589,14 @@ protected:
         IdNameMapping(unsigned short _start)
             : idStart(_start), count(0) {}
         ~IdNameMapping() {
-            Q3IntDictIterator<DOM::DOMStringImpl> it(names);
-            for (; it.current() ; ++it)
-                it.current()->deref();
+            QHashIterator<long,DOM::DOMStringImpl*> it(names);
+            while (it.hasNext())
+                it.next().value()->deref();
         }
         unsigned short idStart;
         unsigned short count;
-        Q3IntDict<DOM::DOMStringImpl> names;
-        Q3Dict<void> ids;
-
-        void expandIfNeeded() {
-            if (ids.size() <= ids.count() && ids.size() != khtml_MaxSeed)
-                ids.resize( khtml::nextSeed(ids.count()) );
-            if (names.size() <= names.count() && names.size() != khtml_MaxSeed)
-                names.resize( khtml::nextSeed(names.count()) );
-        }
+        QHash<long,DOM::DOMStringImpl*> names;
+        QHash<QString,void*> ids;
 
         void addAlias(DOMStringImpl* _prefix, DOMStringImpl* _name, bool cs, NodeImpl::Id id) {
             if(_prefix && _prefix->l) {
@@ -611,11 +604,10 @@ protected:
                 QString px( _prefix->s, _prefix->l );
                 QString name = cs ? n : n.toUpper();
                 QString qn("aliases: " + (cs ? px : px.toUpper()) + ":" + name);
-                if (!ids.find( qn )) {
+                if (!ids.contains( qn )) {
                     ids.insert( qn, (void*)id );
                 }
             }
-            expandIfNeeded();
         }
 
     };
@@ -624,7 +616,7 @@ protected:
     IdNameMapping *m_elementMap;
     IdNameMapping *m_namespaceMap;
 
-    Q3PtrList<NodeIteratorImpl> m_nodeIterators;
+    QList<NodeIteratorImpl*> m_nodeIterators;
     AbstractViewImpl *m_defaultView;
 
     unsigned short m_listenerTypes;
@@ -632,10 +624,10 @@ protected:
     StyleSheetListImpl *m_addedStyleSheets; // programmatically added style sheets
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
     RegisteredListenerList m_windowEventListeners;
-    Q3PtrList<NodeImpl> m_maintainsState;
+    QList<NodeImpl*> m_maintainsState;
 
     // ### evaluate for placement in RenderStyle
-    Q3PtrDict<Q3Dict<khtml::CounterNode> > m_counterDict;
+    QHash<const khtml::RenderObject*,QHash<QString,khtml::CounterNode*> *> m_counterDict;
 
     khtml::DynamicDomRestyler *m_dynamicDomRestyler;
 
@@ -661,10 +653,10 @@ protected:
     ElementMappingCache m_underDocNamedCache;
 
     //Cache for nodelists and collections.
-    Q3IntDict<NodeListImpl::Cache> m_nodeListCache;
+    QHash<long,NodeListImpl::Cache*> m_nodeListCache;
 
-    Q3PtrList<HTMLImageElementImpl> m_imageLoadEventDispatchSoonList;
-    Q3PtrList<HTMLImageElementImpl> m_imageLoadEventDispatchingList;
+    QLinkedList<HTMLImageElementImpl*> m_imageLoadEventDispatchSoonList;
+    QLinkedList<HTMLImageElementImpl*> m_imageLoadEventDispatchingList;
     int m_imageLoadEventTimer;
 
     //Cache for getElementById

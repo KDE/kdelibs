@@ -256,7 +256,7 @@ namespace DOM {
 	void append(StyleBaseImpl *item) { m_lstChildren->append(item); }
 
     protected:
-	Q3PtrList<StyleBaseImpl> *m_lstChildren;
+	QList<StyleBaseImpl*> *m_lstChildren;
     };
 
     KDE_NO_EXPORT int getPropertyID(const char *tagStr, int len);

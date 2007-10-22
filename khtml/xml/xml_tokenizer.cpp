@@ -520,7 +520,7 @@ void XMLTokenizer::finish()
         // Parsing was successful. Now locate all html <script> tags in the document and execute them
         // one by one
         addScripts(m_doc);
-        m_scriptsIt = new Q3PtrListIterator<HTMLScriptElementImpl>(m_scripts);
+        m_scriptsIt = new QLinkedListIterator<HTMLScriptElementImpl*>(m_scripts);
         executeScripts();
     }
 
@@ -546,14 +546,14 @@ void XMLTokenizer::executeScripts()
     // start loading the script and return (executeScripts() will be called again once the script is loaded
     // and continue where it left off). For scripts that don't have a src attribute, execute the code
     // inside the tag
-    while (m_scriptsIt->current()) {
-        DOMString scriptSrc = m_scriptsIt->current()->getAttribute(ATTR_SRC);
-        QString charset = m_scriptsIt->current()->getAttribute(ATTR_CHARSET).string();
+    while (m_scriptsIt->hasNext()) {
+        HTMLScriptElementImpl* script = m_scriptsIt->next();
+        DOMString scriptSrc = script->getAttribute(ATTR_SRC);
+        QString charset = script->getAttribute(ATTR_CHARSET).string();
 
         if (!scriptSrc.isEmpty()) {
             // we have a src attribute
             m_cachedScript = m_doc->docLoader()->requestScript(scriptSrc, charset);
-            ++(*m_scriptsIt);
             if (m_cachedScript) {
                 m_cachedScript->ref(this); // will call executeScripts() again if already cached
                 return;
@@ -563,7 +563,7 @@ void XMLTokenizer::executeScripts()
             // no src attribute - execute from contents of tag
             QString scriptCode = "";
             NodeImpl *child;
-            for (child = m_scriptsIt->current()->firstChild(); child; child = child->nextSibling()) {
+            for (child = script->firstChild(); child; child = child->nextSibling()) {
                 if ( ( child->nodeType() == Node::TEXT_NODE || child->nodeType() == Node::CDATA_SECTION_NODE) &&
                      static_cast<TextImpl*>(child)->string() )
                     scriptCode += QString::fromRawData(static_cast<TextImpl*>(child)->string()->s,
@@ -576,7 +576,6 @@ void XMLTokenizer::executeScripts()
             if (m_view) {
                 m_view->part()->executeScript(DOM::Node(), scriptCode);
             }
-            ++(*m_scriptsIt);
         }
     }
 

@@ -23,8 +23,6 @@
 #ifndef _CSS_css_stylesheetimpl_h_
 #define _CSS_css_stylesheetimpl_h_
 
-#include <Qt3Support/Q3PtrList>
-
 #include "dom/dom_string.h"
 #include "css/css_base.h"
 #include "misc/loader_client.h"
@@ -141,7 +139,7 @@ public:
     void add(StyleSheetImpl* s);
     void remove(StyleSheetImpl* s);
 
-    Q3PtrList<StyleSheetImpl> styleSheets;
+    QList<StyleSheetImpl*> styleSheets;
 };
 
 // ----------------------------------------------------------------------------

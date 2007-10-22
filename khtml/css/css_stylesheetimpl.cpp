@@ -110,7 +110,7 @@ void StyleSheetImpl::setDisabled( bool disabled )
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString href)
     : StyleSheetImpl(parentSheet, href)
 {
-    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
+    m_lstChildren = new QList<StyleBaseImpl*>;
     m_doc = parentSheet ? parentSheet->doc() : 0;
     m_implicit = false;
     m_namespaces = 0;
@@ -120,7 +120,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, bool _implicit)
     : StyleSheetImpl(parentNode, href)
 {
-    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
+    m_lstChildren = new QList<StyleBaseImpl*>;
     m_doc = parentNode->getDocument();
     m_implicit = _implicit;
     m_namespaces = 0;
@@ -130,7 +130,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     : StyleSheetImpl(ownerRule, href)
 {
-    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
+    m_lstChildren = new QList<StyleBaseImpl*>;
     m_doc = static_cast<CSSStyleSheetImpl*>(ownerRule->stylesheet())->doc();
     m_implicit = false;
     m_namespaces = 0;
@@ -140,10 +140,12 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
     : StyleSheetImpl(parentNode, orig->m_strHref)
 {
-    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
+    m_lstChildren = new QList<StyleBaseImpl*>;
     StyleBaseImpl *rule;
-    for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
+    QListIterator<StyleBaseImpl*> it( *orig->m_lstChildren );
+    while ( it.hasNext() )
     {
+        rule = it.next();
         m_lstChildren->append(rule);
         rule->setParent(this);
     }
@@ -157,10 +159,12 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
     : StyleSheetImpl(ownerRule, orig->m_strHref)
 {
     // m_lstChildren is deleted in StyleListImpl
-    m_lstChildren = new Q3PtrList<StyleBaseImpl>;
+    m_lstChildren = new QList<StyleBaseImpl*>;
     StyleBaseImpl *rule;
-    for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
+    QListIterator<StyleBaseImpl*> it( *orig->m_lstChildren );
+    while ( it.hasNext() )
     {
+        rule = it.next();
         m_lstChildren->append(rule);
         rule->setParent(this);
     }
@@ -180,7 +184,7 @@ CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const
 unsigned long CSSStyleSheetImpl::insertRule( const DOMString &rule, unsigned long index, int &exceptioncode )
 {
     exceptioncode = 0;
-    if(index > m_lstChildren->count()) {
+    if(index > (unsigned int) m_lstChildren->count()) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return 0;
     }
@@ -208,7 +212,7 @@ CSSRuleListImpl *CSSStyleSheetImpl::cssRules(bool omitCharsetRules)
 void CSSStyleSheetImpl::deleteRule( unsigned long index, int &exceptioncode )
 {
     exceptioncode = 0;
-    StyleBaseImpl *b = m_lstChildren->take(index);
+    StyleBaseImpl *b = m_lstChildren->takeAt(index);
     if(!b) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
         return;
@@ -274,8 +278,10 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
 bool CSSStyleSheetImpl::isLoading() const
 {
     StyleBaseImpl *rule;
-    for ( rule = m_lstChildren->first(); rule != 0; rule = m_lstChildren->next() )
+    QListIterator<StyleBaseImpl*> it( *m_lstChildren );
+    while ( it.hasNext() )
     {
+        rule = it.next();
         if(rule->isImportRule())
         {
             CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(rule);
@@ -303,12 +309,14 @@ void CSSStyleSheetImpl::checkLoaded() const
 
 void CSSStyleSheetImpl::setNonCSSHints()
 {
-    StyleBaseImpl *rule = m_lstChildren->first();
-    while(rule) {
+    StyleBaseImpl *rule;
+    QListIterator<StyleBaseImpl*> it( *m_lstChildren );
+    while ( it.hasNext() )
+    {
+        rule = it.next();                
         if(rule->isStyleRule()) {
             static_cast<CSSStyleRuleImpl *>(rule)->setNonCSSHints();
         }
-        rule = m_lstChildren->next();
     }
 }
 
@@ -318,13 +326,13 @@ void CSSStyleSheetImpl::setNonCSSHints()
 
 StyleSheetListImpl::~StyleSheetListImpl()
 {
-    for ( Q3PtrListIterator<StyleSheetImpl> it ( styleSheets ); it.current(); ++it )
-        it.current()->deref();
+    foreach (StyleSheetImpl* sh, styleSheets)
+        sh->deref();
 }
 
 void StyleSheetListImpl::add( StyleSheetImpl* s )
 {
-    if ( !styleSheets.containsRef( s ) ) {
+    if ( !styleSheets.contains( s ) ) {
         s->ref();
         styleSheets.append( s );
     }
@@ -332,7 +340,7 @@ void StyleSheetListImpl::add( StyleSheetImpl* s )
 
 void StyleSheetListImpl::remove( StyleSheetImpl* s )
 {
-    if ( styleSheets.removeRef( s ) )
+    if ( styleSheets.removeAll( s ) )
         s->deref();
 }
 
@@ -340,9 +348,8 @@ unsigned long StyleSheetListImpl::length() const
 {
     // hack so implicit BODY stylesheets don't get counted here
     unsigned long l = 0;
-    Q3PtrListIterator<StyleSheetImpl> it(styleSheets);
-    for (; it.current(); ++it) {
-        if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit())
+    foreach (StyleSheetImpl* sh, styleSheets) {
+        if (!sh->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(sh)->implicit())
             ++l;
     }
     return l;
@@ -351,11 +358,10 @@ unsigned long StyleSheetListImpl::length() const
 StyleSheetImpl *StyleSheetListImpl::item ( unsigned long index )
 {
     unsigned long l = 0;
-    Q3PtrListIterator<StyleSheetImpl> it(styleSheets);
-    for (; it.current(); ++it) {
-        if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit()) {
+    foreach (StyleSheetImpl* sh, styleSheets) {
+        if (!sh->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(sh)->implicit()) {
             if (l == index)
-                return it.current();
+                return sh;
             ++l;
         }
     }

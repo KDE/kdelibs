@@ -34,7 +34,6 @@
 // The namespace used for XHTML elements
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
 
-template <class type> class Q3PtrList;
 template <class type> class QList;
 class KHTMLView;
 class QRect;
@@ -740,7 +739,7 @@ public:
 
 protected:
     DocumentImpl* m_doc;
-    Q3PtrList<NodeImpl> *m_contents;
+    QList<NodeImpl*> *m_contents;
 };
 
 } //namespace

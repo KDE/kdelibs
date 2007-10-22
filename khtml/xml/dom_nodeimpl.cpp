@@ -48,7 +48,6 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QEvent>
-#include <Q3PtrList>
 
 // from khtml_caret_p.h
 namespace khtml {
@@ -432,7 +431,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     // ### check that type specified
 
     // work out what nodes to send event to
-    Q3PtrList<NodeImpl> nodeChain;
+    QList<NodeImpl*> nodeChain;
     NodeImpl *n;
  
     if (inDocument()) {
@@ -448,40 +447,50 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     // trigger any capturing event handlers on our way down
     evt->setEventPhase(Event::CAPTURING_PHASE);
-    Q3PtrListIterator<NodeImpl> it(nodeChain);
-    for (; it.current() && it.current() != this && !evt->propagationStopped(); ++it) {
-        evt->setCurrentTarget(it.current());
-        it.current()->handleLocalEvents(evt,true);
+    QListIterator<NodeImpl*> it(nodeChain);
+    while (it.hasNext()) {
+        NodeImpl* cur = it.next();
+        if (cur == this || evt->propagationStopped())
+            break;
+        cur->handleLocalEvents(evt,true);
     }
 
     // dispatch to the actual target node
-    it.toLast();
+    it.toBack();
+    NodeImpl* curn = it.hasPrevious() ? it.previous() : 0;
     NodeImpl* propagationSentinel = 0;
-    if (!evt->propagationStopped()) {
+    if (curn && !evt->propagationStopped()) {
         evt->setEventPhase(Event::AT_TARGET);
-        evt->setCurrentTarget(it.current());
-        it.current()->handleLocalEvents(evt, true);
+        evt->setCurrentTarget(curn);
+        curn->handleLocalEvents(evt, true);
         if (!evt->propagationStopped())
-            it.current()->handleLocalEvents(evt,false);
+            curn->handleLocalEvents(evt,false);
         else
-            propagationSentinel = it.current();
+            propagationSentinel = curn;
     }
-    --it;
+
+    curn = it.hasPrevious() ? it.previous() : 0;
 
     if (evt->bubbles()) {
         evt->setEventPhase(Event::BUBBLING_PHASE);
-        for (; it.current() && !evt->propagationStopped(); --it) {
-            if (evt->propagationStopped()) propagationSentinel = it.current();
-            evt->setCurrentTarget(it.current());
-            it.current()->handleLocalEvents(evt,false);
+        while (curn && !evt->propagationStopped()) {
+            if (evt->propagationStopped()) propagationSentinel = curn;
+            evt->setCurrentTarget(curn);
+            curn->handleLocalEvents(evt,false);
+            curn = it.hasPrevious() ? it.previous() : 0;
         }
 
         // now we call all default event handlers (this is not part of DOM - it is internal to khtml)
         evt->setCurrentTarget(0);
         evt->setEventPhase(0); // I guess this is correct, the spec does not seem to say
-        for (it.toLast(); it.current() && it.current() != propagationSentinel &&
-                 !evt->defaultPrevented() && !evt->defaultHandled(); --it)
-            it.current()->defaultEventHandler(evt);
+
+        it.toBack();
+        while (it.hasPrevious()) {
+            curn = it.previous();
+            if (curn == propagationSentinel || evt->defaultPrevented() || evt->defaultHandled())
+                break;
+            curn->defaultEventHandler(evt);
+        }
 
         if (evt->id() == EventImpl::CLICK_EVENT && !evt->defaultPrevented() &&
              static_cast<MouseEventImpl*>( evt )->button() == 0) // LMB click
@@ -493,9 +502,9 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     doc->ref();
 
     // deref all nodes in chain
-    it.toFirst();
-    for (; it.current(); ++it)
-        it.current()->deref(); // this may delete us
+    it.toFront();
+    while (it.hasNext())
+        it.next()->deref(); // this may delete us
 
     DocumentImpl::updateDocumentsRendering();
     doc->deref();
@@ -2034,13 +2043,13 @@ GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl(DocumentImpl* doc)
     : NamedNodeMapImpl()
 {
     m_doc = doc;
-    m_contents = new Q3PtrList<NodeImpl>;
+    m_contents = new QList<NodeImpl*>;
 }
 
 GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
 {
     while (!m_contents->isEmpty())
-        m_contents->take(0)->deref();
+        m_contents->takeLast()->deref();
 
     delete m_contents;
 }
@@ -2048,10 +2057,10 @@ GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
 NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( NodeImpl::Id id, bool /*nsAware*/, DOMStringImpl* /*qName*/ ) const
 {
     // ## do we need namespace support in this class?
-    Q3PtrListIterator<NodeImpl> it(*m_contents);
-    for (; it.current(); ++it)
-        if (it.current()->id() == id)
-            return it.current();
+    QListIterator<NodeImpl*> it(*m_contents);
+    while (it.hasNext())
+        if (it.next()->id() == id)
+            return it.peekPrevious();
     return 0;
 }
 
@@ -2073,7 +2082,7 @@ Node GenericRONamedNodeMapImpl::removeNamedItem ( NodeImpl::Id /*id*/, bool /*ns
 
 NodeImpl *GenericRONamedNodeMapImpl::item ( unsigned long index ) const
 {
-    if (index >= m_contents->count())
+    if (index >= (unsigned int) m_contents->count())
         return 0;
 
     return m_contents->at(index);

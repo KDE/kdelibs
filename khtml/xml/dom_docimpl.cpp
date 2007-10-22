@@ -237,16 +237,20 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
-ElementMappingCache::ElementMappingCache():m_dict(257)
+ElementMappingCache::ElementMappingCache():m_dict()
 {
-    m_dict.setAutoDelete(true);
+}
+
+ElementMappingCache::~ElementMappingCache()
+{
+    qDeleteAll( m_dict );
 }
 
 void ElementMappingCache::add(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
-    ItemInfo* info = m_dict.find(id);
+    ItemInfo* info = m_dict.value(id);
     if (info)
     {
         info->ref++;
@@ -265,7 +269,8 @@ void ElementMappingCache::set(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
-    ItemInfo* info = m_dict.find(id);
+    assert(m_dict.contains(id));
+    ItemInfo* info = m_dict.value(id);
     info->nd = nd;
 }
 
@@ -273,7 +278,8 @@ void ElementMappingCache::remove(const QString& id, ElementImpl* nd)
 {
     if (id.isEmpty()) return;
 
-    ItemInfo* info = m_dict.find(id);
+    assert(m_dict.contains(id));
+    ItemInfo* info = m_dict.value(id);
     info->ref--;
     if (info->ref == 0)
     {
@@ -290,13 +296,13 @@ void ElementMappingCache::remove(const QString& id, ElementImpl* nd)
 bool ElementMappingCache::contains(const QString& id)
 {
     if (id.isEmpty()) return false;
-    return m_dict.find(id);
+    return m_dict.contains(id);
 }
 
 ElementMappingCache::ItemInfo* ElementMappingCache::get(const QString& id)
 {
     if (id.isEmpty()) return 0;
-    return m_dict.find(id);
+    return m_dict.value(id);
 }
 
 typedef QList<DocumentImpl*> ChangedDocuments ;
@@ -304,7 +310,7 @@ K_GLOBAL_STATIC(ChangedDocuments, s_changedDocuments)
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( 0 ), m_domtree_version(0), m_counterDict(257),
+    : NodeBaseImpl( 0 ), m_domtree_version(0), m_counterDict(),
       m_imageLoadEventTimer(0)
 {
     m_document.resetSkippingRef(this); //Make getDocument return us..
@@ -366,7 +372,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_inDocument = true;
     m_styleSelectorDirty = false;
     m_styleSelector = 0;
-    m_counterDict.setAutoDelete(true);
 
     m_inStyleRecalc = false;
     m_pendingStylesheets = 0;
@@ -442,9 +447,9 @@ DocumentImpl::~DocumentImpl()
     //you may also have to fix removedLastRef() above - M.O.
     assert( !m_render );
 
-    Q3IntDictIterator<NodeListImpl::Cache> it(m_nodeListCache);
-    for (; it.current(); ++it)
-        it.current()->deref();
+    QHashIterator<long,NodeListImpl::Cache*> it(m_nodeListCache);
+    while (it.hasNext())
+        it.next().value()->deref();
 
     if (m_loadingXMLDoc)
 	m_loadingXMLDoc->deref(this);
@@ -476,6 +481,7 @@ DocumentImpl::~DocumentImpl()
         m_activeNode->deref();
     if (m_documentElement)
         m_documentElement->deref();
+    qDeleteAll(m_counterDict);
 
     m_renderArena.reset();
 
@@ -1077,16 +1083,16 @@ QString DocumentImpl::nextState()
 QStringList DocumentImpl::docState()
 {
     QStringList s;
-    for (Q3PtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
-        s.append(it.current()->state());
+    for (QListIterator<NodeImpl*> it(m_maintainsState); it.hasNext();)
+        s.append(it.next()->state());
 
     return s;
 }
 
 bool DocumentImpl::unsubmittedFormChanges()
 {
-    for (Q3PtrListIterator<NodeImpl> it(m_maintainsState); it.current(); ++it)
-        if (it.current()->state().endsWith('M'))
+    for (QListIterator<NodeImpl*> it(m_maintainsState); it.hasNext();)
+        if (it.next()->state().endsWith('M'))
             return true;
 
     return false;
@@ -1898,17 +1904,17 @@ NodeImpl::Id DocumentImpl::getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI,
     QString name = cs ? n : n.toUpper();
 
     if (!_nsURI) {
-        id = (NodeImpl::Id)(long) map->ids.find( name );
+        id = (NodeImpl::Id)(long)map->ids.value( name );
         if (!id && _type != NodeImpl::NamespaceId) {
-            id = (NodeImpl::Id)(long) map->ids.find( "aliases: " + name );
+            id = (NodeImpl::Id)(long)map->ids.value( "aliases: " + name );
 	}
     } else {
-        id = (NodeImpl::Id)(long) map->ids.find( name );
+        id = (NodeImpl::Id)(long)map->ids.value( name );
         if (!readonly && id && _prefix && _prefix->l) {
             // we were called in registration mode... check if the alias exists
             const QString px = QString::fromRawData( _prefix->s, _prefix->l );
             QString qn("aliases: " + (cs ? px : px.toUpper()) + ":" + name);	//krazy:exclude=doublequote_chars DOM demands chars
-            if (!map->ids.find( qn )) {
+            if (!map->ids.contains( qn )) {
                 map->ids.insert( qn, (void*)id );
             }
         }
@@ -2034,7 +2040,7 @@ void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
 
     if (m_addedStyleSheets) {
         bool in_main_list = !sheet->hasOneRef();
-        removed = m_addedStyleSheets->styleSheets.removeRef(sheet);
+        removed = m_addedStyleSheets->styleSheets.removeAll(sheet);
         sheet->deref();
 
         if (m_addedStyleSheets->styleSheets.count() == 0) {
@@ -2082,7 +2088,7 @@ void DocumentImpl::recalcStyleSelector()
 
     assert(m_pendingStylesheets==0);
 
-    Q3PtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
+    QList<StyleSheetImpl*> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     QString sheetUsed = view() ? view()->part()->d->m_sheetUsed.replace("&&", "&") : QString();
     bool autoselect = sheetUsed.isEmpty();
@@ -2204,17 +2210,15 @@ void DocumentImpl::recalcStyleSelector()
 
     // Include programmatically added style sheets
     if (m_addedStyleSheets) {
-        Q3PtrListIterator<StyleSheetImpl> it = m_addedStyleSheets->styleSheets;
-        for (; *it; ++it) {
-            if ((*it)->isCSSStyleSheet() && !(*it)->disabled())
-                m_styleSheets->add(*it);
+        foreach (StyleSheetImpl* sh, m_addedStyleSheets->styleSheets) {
+            if (sh->isCSSStyleSheet() && !sh->disabled())
+                m_styleSheets->add(sh);
         }
     }
 
     // De-reference all the stylesheets in the old list
-    Q3PtrListIterator<StyleSheetImpl> it(oldStyleSheets);
-    for (; it.current(); ++it)
-	it.current()->deref();
+    foreach ( StyleSheetImpl* sh, oldStyleSheets)
+        sh->deref();
 
     rebuildStyleSelector();
 }
@@ -2353,9 +2357,9 @@ void DocumentImpl::detachNodeIterator(NodeIteratorImpl *ni)
 
 void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
 {
-    Q3PtrListIterator<NodeIteratorImpl> it(m_nodeIterators);
-    for (; it.current(); ++it)
-        it.current()->notifyBeforeNodeRemoval(n);
+    QListIterator<NodeIteratorImpl*> it(m_nodeIterators);
+    while (it.hasNext())
+        it.next()->notifyBeforeNodeRemoval(n);
 }
 
 bool DocumentImpl::isURLAllowed(const QString& url) const
@@ -2594,9 +2598,8 @@ void DocumentImpl::dispatchImageLoadEventSoon(HTMLImageElementImpl *image)
 void DocumentImpl::removeImage(HTMLImageElementImpl *image)
 {
     // Remove instances of this image from both lists.
-    // Use loops because we allow multiple instances to get into the lists.
-    while (m_imageLoadEventDispatchSoonList.removeRef(image)) { }
-    while (m_imageLoadEventDispatchingList.removeRef(image)) { }
+    m_imageLoadEventDispatchSoonList.removeAll(image);
+    m_imageLoadEventDispatchingList.removeAll(image);
     if (m_imageLoadEventDispatchSoonList.isEmpty() && m_imageLoadEventTimer) {
         killTimer(m_imageLoadEventTimer);
         m_imageLoadEventTimer = 0;
@@ -2619,15 +2622,8 @@ void DocumentImpl::dispatchImageLoadEventsNow()
 
     m_imageLoadEventDispatchingList = m_imageLoadEventDispatchSoonList;
     m_imageLoadEventDispatchSoonList.clear();
-    for (Q3PtrListIterator<HTMLImageElementImpl> it(m_imageLoadEventDispatchingList); it.current(); ) {
-        HTMLImageElementImpl* image = it.current();
-        // Must advance iterator *before* dispatching call.
-        // Otherwise, it might be advanced automatically if dispatching the call had a side effect
-        // of destroying the current HTMLImageElementImpl, and then we would advance past the *next*
-        // item, missing one altogether.
-        ++it;
-        image->dispatchLoadEvent();
-    }
+    for (QLinkedListIterator<HTMLImageElementImpl*> it(m_imageLoadEventDispatchingList); it.hasNext(); )
+        it.next()->dispatchLoadEvent();
     m_imageLoadEventDispatchingList.clear();
 }
 
@@ -2723,7 +2719,7 @@ NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
 
     //Check to see if we have this sort of item cached.
     NodeListImpl::Cache* cached =
-        (type == NodeListImpl::UNCACHEABLE) ? 0 : m_nodeListCache.find(key.hash());
+        (type == NodeListImpl::UNCACHEABLE) ? 0 : m_nodeListCache.value(key.hash());
 
     if (cached) {
         if (cached->key == key) {
@@ -2743,7 +2739,7 @@ NodeListImpl::Cache* DOM::DocumentImpl::acquireCachedNodeListInfo(
 
     if (type != NodeListImpl::UNCACHEABLE) {
         newInfo->ref(); //Add the cache's reference
-        m_nodeListCache.replace(key.hash(), newInfo);
+        m_nodeListCache.insert(key.hash(), newInfo);
     }
 
     return newInfo;

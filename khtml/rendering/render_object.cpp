@@ -2222,34 +2222,31 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
 
 CounterNode* RenderObject::lookupCounter(const QString& counter) const
 {
-    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
-    if (counters)
-        return counters->find(counter);
-    else
-        return 0;
+    QHash<QString,khtml::CounterNode*>* counters = document()->counters(this);
+    return counters ? counters->value(counter) : 0;
 }
 
 void RenderObject::detachCounters()
 {
-    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
+    QHash<QString,khtml::CounterNode*>* counters = document()->counters(this);
     if (!counters) return;
 
-    Q3DictIterator<khtml::CounterNode> i(*counters);
+    QHashIterator<QString,khtml::CounterNode*> i(*counters);
 
-    while (i.current()) {
-        (*i)->remove();
-        delete (*i);
-        ++i;
+    while (i.hasNext()) {
+        i.next();
+        i.value()->remove();
+        delete i.value();
     }
     document()->removeCounters(this);
 }
 
 void RenderObject::insertCounter(const QString& counter, CounterNode* val)
 {
-    Q3Dict<khtml::CounterNode>* counters = document()->counters(this);
+    QHash<QString,khtml::CounterNode*>* counters = document()->counters(this);
 
     if (!counters) {
-        counters = new Q3Dict<khtml::CounterNode>(11);
+        counters = new QHash<QString,khtml::CounterNode*>();
         document()->setCounters(this, counters);
     }
 

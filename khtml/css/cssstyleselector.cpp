@@ -240,11 +240,9 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
 
-
-    Q3PtrListIterator<StyleSheetImpl> it( styleSheets->styleSheets );
-    for ( ; it.current(); ++it ) {
-        if ( it.current()->isCSSStyleSheet() && !it.current()->disabled()) {
-            authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ), m_medium );
+    foreach (StyleSheetImpl* sh, styleSheets->styleSheets) {
+        if ( sh->isCSSStyleSheet() && !sh->disabled()) {
+            authorStyle->append( static_cast<CSSStyleSheetImpl*>( sh ), m_medium );
         }
     }
 
