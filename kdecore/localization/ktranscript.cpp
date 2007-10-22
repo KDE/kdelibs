@@ -244,23 +244,19 @@ int countLines (const QString &s, int p)
 // Normalize string key for hash lookups,
 QString normKeystr (const QString &raw)
 {
-    // NOTE: Regexes are not used here for performance reasons.
+    // NOTE: Regexes should not be used here for performance reasons.
     // This function may potentially be called thousands of times
     // on application startup.
 
     QString key = raw;
 
     // Strip all whitespace.
-    // Convert all non-alphanumeric sequences to single underscore.
     int len = key.length();
     QString nkey;
     for (int i = 0; i < len; ++i) {
         QChar c = key[i];
-        if (c.isLetter() || c.isDigit()) {
+        if (!c.isSpace()) {
             nkey.append(c);
-        }
-        else if (!c.isSpace() && !nkey.endsWith('_')) {
-            nkey.append('_');
         }
     }
     key = nkey;
