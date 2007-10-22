@@ -99,10 +99,15 @@ void KTreeWidgetSearchLine::Private::_k_rowsInserted( const QModelIndex & parent
   if ( !widget )
     return;
 
-  QTreeWidgetWorkaround* widgetWorkaround = static_cast<QTreeWidgetWorkaround *>( widget );
-  for ( int i = start; i <= end; ++i ) {
-    if ( QTreeWidgetItem* item = widgetWorkaround->itemFromIndex( model->index( i, 0, parentIndex ) ) )
-      item->treeWidget()->setItemHidden( item, !q->itemMatches( item, q->text() ) );
+  QTreeWidgetWorkaround* widgetW = static_cast<QTreeWidgetWorkaround *>(widget);
+  for (int i = start; i <= end; ++i) {
+      if (QTreeWidgetItem *item = widgetW->itemFromIndex(model->index(i, 0, parentIndex))) {
+          bool newHidden = !q->itemMatches(item, q->text());
+          if (item->isHidden() != newHidden) {
+              item->setHidden(newHidden);
+              emit q->hiddenChanged(item, newHidden);
+          }
+      }
   }
 }
 
@@ -171,14 +176,16 @@ void KTreeWidgetSearchLine::Private::checkColumns()
   canChooseColumns = q->canChooseColumnsCheck();
 }
 
-void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible( QTreeWidget *treeWidget )
+void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible(QTreeWidget *treeWidget)
 {
-  QTreeWidgetItemIterator it( treeWidget );
-
-  for ( ; *it; ++it ) {
-    QTreeWidgetItem *item = *it;
-    item->treeWidget()->setItemHidden( item, !q->itemMatches( item, search ) );
-  }
+    for (QTreeWidgetItemIterator it(treeWidget); *it; ++it) {
+        QTreeWidgetItem *item = *it;
+        bool newHidden = !q->itemMatches(item, search);
+        if (item->isHidden() != newHidden) {
+            item->setHidden(newHidden);
+            emit q->hiddenChanged(item, newHidden);
+        }
+    }
 }
 
 #include <kvbox.h>
@@ -190,23 +197,23 @@ void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible( QTreeWidget *tr
  *  \return \c true if an item which should be visible is found, \c false if all items found should be hidden. If this function
  *             returns true and \p highestHiddenParent was not 0, highestHiddenParent will have been shown.
  */
-bool KTreeWidgetSearchLine::Private::checkItemParentsVisible( QTreeWidgetItem* item )
+bool KTreeWidgetSearchLine::Private::checkItemParentsVisible(QTreeWidgetItem *item)
 {
-  QTreeWidget* treeWidget = item->treeWidget();
+    QTreeWidget *treeWidget = item->treeWidget();
 
-  bool childMatch = false;
-  for ( int i = 0; i < item->childCount(); ++i )
-    childMatch |= checkItemParentsVisible( item->child( i ) );
+    bool childMatch = false;
+    for (int i = 0; i < item->childCount(); ++i) {
+        childMatch |= checkItemParentsVisible(item->child(i));
+    }
 
-  // Should this item be shown? It should if any children should be, or if it matches.
-  if ( childMatch || q->itemMatches( item, search ) ) {
-    treeWidget->setItemHidden( item, false );
-    return true;
-  }
+    // Should this item be shown? It should if any children should be, or if it matches.
+    bool newHidden = !childMatch && !q->itemMatches(item, search);
+    if (item->isHidden() != newHidden) {
+        item->setHidden(newHidden);
+        emit q->hiddenChanged(item, newHidden);
+    }
 
-  treeWidget->setItemHidden( item, true );
-
-  return false;
+    return !newHidden;
 }
 
 

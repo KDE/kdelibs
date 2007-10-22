@@ -83,10 +83,15 @@ enum ColumnDesignation {
 };
 
 
-enum myRoles {
+enum MyRoles {
 	ShortcutRole = Qt::UserRole,
-	DefaultShortcutRole,
-	ItemPointerRole = Qt::UserRole + 2342
+	DefaultShortcutRole
+};
+
+
+enum ItemTypes {
+	NonActionItem = 0,
+	ActionItem = 1
 };
 
 
@@ -134,12 +139,10 @@ public:
 
 	void initGUI( KShortcutsEditor::ActionTypes actionTypes, KShortcutsEditor::LetterShortcuts allowLetterShortcuts );
 	void appendToView( uint nList, const QString &title = QString() );
-
-	static void readGlobalKeys( QMap< QString, KShortcut >& map );
-
-	KShortcutsEditorItem *itemFromIndex(const QModelIndex &index);
-
+	//used in appendToView
 	QTreeWidgetItem *findOrMakeItem(QTreeWidgetItem *parent, const QString &name);
+
+	static KShortcutsEditorItem *itemFromIndex(QTreeWidget *const w, const QModelIndex &index);
 
 	//helper functions for conflict resolution
 	bool stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq);
@@ -168,7 +171,16 @@ public:
 };
 
 
-KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent, bool allowLetterShortcuts)
+//a gross hack to make a protected method public
+class QTreeWidgetHack : public QTreeWidget
+{
+public:
+	QTreeWidgetItem *itemFromIndex(const QModelIndex &index) const
+		{ return QTreeWidget::itemFromIndex(index); }
+};
+
+
+KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool allowLetterShortcuts)
  : KExtendableItemDelegate(parent),
    m_allowLetterShortcuts(allowLetterShortcuts),
    m_editor(0)
@@ -208,11 +220,12 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 	const QAbstractItemModel *model = index.model();
 	if (!model)
 		return;
-	KShortcutsEditorItem *item = model->data(index, ItemPointerRole)
-	                                    .value<KShortcutsEditorItem *>();
+	//As per our constructor our parent *is* a QTreeWidget
+	QTreeWidget *view = static_cast<QTreeWidget *>(parent());
 
+	KShortcutsEditorItem *item = KShortcutsEditorPrivate::itemFromIndex(view, index);
 	if (!item) {
-		//a non-leaf item
+		//that probably was a non-leaf (type() !=ActionItem) item
 		return;
 	}
 
@@ -220,8 +233,6 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 	if (column == Name) {
 		index = model->index(index.row(), LocalPrimary, index.parent());
 		column = LocalPrimary;
-		//As per KExtendableItemDelegate's constructor our parent *is* an abstract itemview
-		QAbstractItemView *view = static_cast<QAbstractItemView *>(parent());
 		view->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
 	}
 
@@ -229,9 +240,9 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 		//we only want maximum ONE extender open at any time.
 		if (m_editingIndex.isValid()) {
 			QModelIndex idx = model->index(m_editingIndex.row(), Name, m_editingIndex.parent());
-			KShortcutsEditorItem *oldItem = model->data(idx, ItemPointerRole)
-			                                       .value<KShortcutsEditorItem *>();
-			Q_ASSERT(oldItem);
+			KShortcutsEditorItem *oldItem = KShortcutsEditorPrivate::itemFromIndex(view, idx);
+			Q_ASSERT(oldItem); //here we really expect nothing but a real KShortcutsEditorItem
+
 			oldItem->m_isNameBold = false;
 			contractItem(m_editingIndex);
 		}
@@ -262,10 +273,26 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 		extendItem(m_editor, index);
 
 	} else {
+		//the item is extended, and clicking on it again closes it
 		item->m_isNameBold = false;
 		contractItem(index);
+		view->selectionModel()->select(index, QItemSelectionModel::Clear);
 		m_editingIndex = QModelIndex();
 		m_editor = 0;
+	}
+}
+
+
+//slot
+void KShortcutsEditorDelegate::hiddenBySearchLine(QTreeWidgetItem *item, bool hidden)
+{
+	if (!hidden || !item) {
+		return;
+	}
+	QTreeWidget *view = static_cast<QTreeWidget *>(parent());
+	QTreeWidgetItem *editingItem = KShortcutsEditorPrivate::itemFromIndex(view, m_editingIndex);
+	if (editingItem == item) {
+		itemActivated(m_editingIndex); //this will *close* the item's editor because it's already open
 	}
 }
 
@@ -527,13 +554,21 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	//TODO listen to changes to global shortcuts
 	QObject::connect(delegate, SIGNAL(shortcutChanged(QVariant, const QModelIndex &)),
 	                 q, SLOT(capturedShortcut(QVariant, const QModelIndex &)));
+	//hide the editor widget chen its item becomes hidden
+	QObject::connect(ui.searchFilter->searchLine(), SIGNAL(hiddenChanged(QTreeWidgetItem *, bool)),
+	                 delegate, SLOT(hiddenBySearchLine(QTreeWidgetItem *, bool)));
 }
 
 
-//QTreeWidget::itemFromIndex is protected because... uhm... well, it just is.
-KShortcutsEditorItem *KShortcutsEditorPrivate::itemFromIndex(const QModelIndex &index)
+//static
+KShortcutsEditorItem *KShortcutsEditorPrivate::itemFromIndex(QTreeWidget *const w,
+                                                             const QModelIndex &index)
 {
-	return ui.list->model()->data(index, ItemPointerRole).value<KShortcutsEditorItem *>();
+	QTreeWidgetItem *item = static_cast<QTreeWidgetHack *>(w)->itemFromIndex(index);
+	if (item && item->type() == ActionItem) {
+		return static_cast<KShortcutsEditorItem *>(item);
+	}
+	return 0;
 }
 
 
@@ -544,7 +579,7 @@ QTreeWidgetItem *KShortcutsEditorPrivate::findOrMakeItem(QTreeWidgetItem *parent
 		if (child->text(0) == name)
 			return child;
 	}
-	QTreeWidgetItem *ret = new QTreeWidgetItem(parent);
+	QTreeWidgetItem *ret = new QTreeWidgetItem(parent, NonActionItem);
 	ret->setText(0, name);
 	ui.list->expandItem(ret);
 	ret->setFlags(ret->flags() & ~Qt::ItemIsSelectable);
@@ -559,7 +594,8 @@ void KShortcutsEditorPrivate::capturedShortcut(const QVariant &newShortcut, cons
 	if (!index.isValid())
 		return;
 	int column = index.column();
-	KShortcutsEditorItem *item = itemFromIndex(index);
+	KShortcutsEditorItem *item = itemFromIndex(ui.list, index);
+	Q_ASSERT(item);
 
 	if (column >= LocalPrimary && column <= GlobalAlternate)
 		changeKeyShortcut(item, column, newShortcut.value<QKeySequence>());
@@ -790,7 +826,7 @@ void KShortcutsEditor::allDefault()
 
 //---------------------------------------------------
 KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action)
-	: QTreeWidgetItem(parent)
+	: QTreeWidgetItem(parent, ActionItem)
 	, m_action(action)
 	, m_isNameBold(false)
 	, m_oldLocalShortcut(0)
@@ -853,9 +889,6 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 		else
 			return true;
 //the following are custom roles, defined in this source file only
-	case ItemPointerRole:
-		return QVariant::fromValue(const_cast<KShortcutsEditorItem *>(this));
-
 	case ShortcutRole:
 		switch(column) {
 		case LocalPrimary:

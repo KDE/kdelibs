@@ -107,6 +107,13 @@ class KDEUI_EXPORT KTreeWidgetSearchLine : public KLineEdit
      */
     QList<QTreeWidget *> treeWidgets() const;
 
+Q_SIGNALS:
+    /**
+     * This signal is emitted whenever an item gets hidden or unhidden due
+     * to it not matching or matching the search string.
+     */
+    void hiddenChanged(QTreeWidgetItem *, bool);
+
   public Q_SLOTS:
     /**
      * Adds a QTreeWidget to the list of listviews filtered by this search line.
@@ -145,6 +152,10 @@ class KDEUI_EXPORT KTreeWidgetSearchLine : public KLineEdit
      *
      * If this is set to true (the default) then the parents of matching items
      * will be shown.
+     *
+     * \warning setKeepParentsVisible(true) does not have the expected effect
+     * on items being added to or removed from the view while a search is active.
+     * When a new search starts afterwards the behavior will be normal.
      *
      * @see keepParentsVisible
      */

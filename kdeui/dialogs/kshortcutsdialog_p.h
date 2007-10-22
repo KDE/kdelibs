@@ -27,19 +27,23 @@
 #include <QModelIndex>
 #include <QMetaType>
 
-class QAbstractItemView;
+class QTreeWidget;
+class QTreeWidgetItem;
 class QRadioButton;
 class KKeySequenceWidget;
+
 
 class KShortcutsEditorDelegate : public KExtendableItemDelegate
 {
 	Q_OBJECT
 public:
-	KShortcutsEditorDelegate(QAbstractItemView *parent, bool allowLetterShortcuts);
+	KShortcutsEditorDelegate(QTreeWidget *parent, bool allowLetterShortcuts);
 	//reimplemented to have some extra height
 	virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 Q_SIGNALS:
 	void shortcutChanged(QVariant, const QModelIndex &);
+public Q_SLOTS:
+	void hiddenBySearchLine(QTreeWidgetItem *, bool);
 protected:
 	virtual bool eventFilter(QObject *, QEvent *);
 private:
