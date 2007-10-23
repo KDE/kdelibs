@@ -74,11 +74,10 @@ static int qIconModeToKIconState( QIcon::Mode mode )
 QSize KIconEngine::actualSize( const QSize & size, QIcon::Mode mode, QIcon::State state )
 {
     Q_UNUSED(state)
-
     const int kstate = qIconModeToKIconState(mode);
-    // We ignore overlays here
-
-    QPixmap pix = iconLoader()->loadIcon(d->iconName, KIconLoader::Desktop, qMin(size.width(), size.height()), kstate);
+    QPixmap pix = iconLoader()->loadIcon(d->iconName, KIconLoader::Desktop,
+                                         qMin(size.width(), size.height()),
+                                         kstate, d->overlays);
     return pix.size();
 }
 
