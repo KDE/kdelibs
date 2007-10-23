@@ -335,6 +335,7 @@ void KFilePlacesView::setShowAll(bool showAll)
 void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 {
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(model());
+    KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
 
     if (placesModel==0) return;
 
@@ -400,6 +401,15 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         placesModel->removePlace(index);
     } else if (hide != 0 && result == hide) {
         placesModel->setPlaceHidden(index, hide->isChecked());
+
+        if (!d->showAll && hide->isChecked()) {
+            delegate->addDisappearingItem(index);
+
+            if (d->itemDisappearTimeline.state()!=QTimeLine::Running) {
+                delegate->setDisappearingItemProgress(0.0);
+                d->itemDisappearTimeline.start();
+            }
+        }
     } else if (showAll != 0 && result == showAll) {
         setShowAll(showAll->isChecked());
     } else if (teardown != 0 && result == teardown) {
@@ -648,7 +658,7 @@ void KFilePlacesView::Private::_k_enableSmoothItemResizing()
 
 void KFilePlacesView::dataChanged(const QModelIndex &/*topLeft*/, const QModelIndex &/*bottomRight*/)
 {
-    d->updateHiddenRows();
+
 }
 
 #include "kfileplacesview.moc"
