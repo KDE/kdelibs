@@ -170,7 +170,7 @@ namespace KJS {
            HTMLTableElementCtor, HTMLTableCaptionElementCtor, HTMLTableColElementCtor,
            HTMLTableSectionElementCtor, HTMLTableRowElementCtor, HTMLTableCellElementCtor,
            HTMLFrameSetElementCtor, HTMLLayerElementCtor, HTMLFrameElementCtor, HTMLIFrameElementCtor,
-           CSSStyleDeclarationCtor};
+           CSSStyleDeclarationCtor, HTMLCanvasElementCtor, Context2DCtor};
     WindowQObject *winq;
 
     void forgetSuppressedWindows();

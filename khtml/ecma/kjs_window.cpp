@@ -66,6 +66,7 @@
 #include "kjs_events.h"
 #include "kjs_views.h"
 #include "kjs_audio.h"
+#include "kjs_context2d.h"
 #include "xmlhttprequest.h"
 #include "xmlserializer.h"
 #include "domparser.h"
@@ -397,7 +398,9 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   HTMLLayerElement Window::HTMLLayerElementCtor DontDelete
   HTMLFrameElement Window::HTMLFrameElementCtor DontDelete
   HTMLIFrameElement Window::HTMLIFrameElementCtor DontDelete
+  HTMLCanvasElement Window::HTMLCanvasElementCtor DontDelete
   CSSStyleDeclaration Window::CSSStyleDeclarationCtor DontDelete
+  CanvasRenderingContext2D Window::Context2DCtor DontDelete
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
@@ -888,6 +891,10 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
       return HTMLFrameElementPseudoCtor::self(exec);
     case HTMLIFrameElementCtor:
       return HTMLIFrameElementPseudoCtor::self(exec);
+    case HTMLCanvasElementCtor:
+      return HTMLCanvasElementPseudoCtor::self(exec);
+    case Context2DCtor:
+      return Context2DPseudoCtor::self(exec);
     case DocumentCtor:
       return DocumentPseudoCtor::self(exec);
     case HTMLDocumentCtor:
@@ -2157,11 +2164,11 @@ void ScheduledAction::mark()
 {
   if (func && !func->marked())
     func->mark();
-  args.mark();
 }
 
 ScheduledAction::~ScheduledAction()
 {
+  args.reset();
   //kDebug(6070) << "ScheduledAction::~ScheduledAction " << this;
 }
 
