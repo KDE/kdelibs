@@ -230,6 +230,14 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
 
     int count = 0;
     foreach (const QString& overlay, overlays) {
+        // Ensure empty strings fill up a emblem spot
+        // Needed when you have several emblems to ensure they're always painted
+        // at the same place, even if one is not here
+        if (overlay.isEmpty()) {
+            ++count;
+            continue;
+        }
+
         //TODO: should we pass in the kstate? it results in a slower
         //      path, and perhaps emblems should remain in the default state
         //      anyways?
@@ -245,16 +253,20 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
         case 0:
             // bottom left corner
             startPoint = QPoint(2, iconSize - overlaySize - 2);
+            break;
         case 1:
             // bottom right corner
             startPoint = QPoint(iconSize - overlaySize - 2,
                                 iconSize - overlaySize - 2);
+            break;
         case 2:
             // top right corner
             startPoint = QPoint(2, iconSize - overlaySize - 2);
+            break;
         case 3:
             // top left corner
             startPoint = QPoint(2, 2);
+            break;
         }
 
         painter.drawPixmap(startPoint, pixmap);
