@@ -634,7 +634,7 @@ void KUrlTest::testPrettyURL()
   KUrl urlWithPass("ftp://user:password@ftp.kde.org/path");
   QCOMPARE( urlWithPass.pass(), QString::fromLatin1( "password" ) );
   QCOMPARE( urlWithPass.prettyUrl(), QString::fromLatin1( "ftp://user@ftp.kde.org/path" ) );
-  
+
   KUrl xmppUri("xmpp:ogoffart@kde.org");
   QCOMPARE( xmppUri.prettyUrl(), QString::fromLatin1( "xmpp:ogoffart@kde.org" ) );
 }
@@ -961,6 +961,11 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   KUrl sadEagleCombined( sadEagleBase, "/personal/diary/rpc.php?C=jsrs1&F=getDiaryDay&P0=[2006-3-8]&U=1141858921458" );
   QCOMPARE( sadEagleCombined.url(), sadEagleExpectedResult.url() );
 
+  KUrl dxOffEagle( KUrl("http://something/other.html"), "newpage.html?[{\"foo: bar\"}]" );
+  QEXPECT_FAIL("","Issue N183630", Continue);
+  QVERIFY(dxOffEagle.isValid());
+  QEXPECT_FAIL("","Issue N183630", Continue);
+  QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
 }
 
 void KUrlTest::testSubURL()
@@ -1279,13 +1284,30 @@ void KUrlTest::testBrokenStuff()
 
   broken = "ptal://mlc:usb:PC_970";
   QVERIFY( !broken.isValid() );
-  QSKIP( "QUrl doesn't provide the initial string if it's an invalid url; asked for 4.2...", SkipSingle );
+  QEXPECT_FAIL( "", "QUrl doesn't provide the initial string if it's an invalid url...", Continue );
   QCOMPARE( broken.url(), QString("ptal://mlc:usb:PC_970") ); // FAILS - but we need it...
 
   QUrl brokenUrl( "ptal://mlc:usb:PC_970" );
   QVERIFY( !brokenUrl.isValid() );
+  QEXPECT_FAIL( "", "QUrl doesn't provide the initial string if it's an invalid url...", Continue );
   QCOMPARE( brokenUrl.toString(), QString("ptal://mlc:usb:PC_970") );
+  QEXPECT_FAIL( "", "QUrl doesn't provide the initial string if it's an invalid url...", Continue );
   QCOMPARE( brokenUrl.toEncoded(), QByteArray("ptal://mlc:usb:PC_970") );
+
+  QUrl dxOffEagle( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
+  QVERIFY(dxOffEagle.isValid());
+  QCOMPARE(QString(dxOffEagle.toEncoded()), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D"));
+  QUrl dxOffEagle2;
+  dxOffEagle2.setUrl( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
+  QVERIFY(dxOffEagle2.isValid());
+  QCOMPARE(dxOffEagle.toEncoded(), dxOffEagle2.toEncoded());
+
+  QUrl dxOffEagle3;
+  dxOffEagle3.setEncodedUrl( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
+  QEXPECT_FAIL("","Issue N183630", Continue);
+  QVERIFY(dxOffEagle3.isValid());
+  QEXPECT_FAIL("","Issue N183630", Continue);
+  QCOMPARE(dxOffEagle.toEncoded(), dxOffEagle3.toEncoded());
 }
 
 void KUrlTest::testMailto()
