@@ -1233,7 +1233,6 @@ void KToolBar::mouseReleaseEvent( QMouseEvent *event )
 
 bool KToolBar::eventFilter( QObject * watched, QEvent * event )
 {
-  kWarning() << "----------------> " << event->type() << endl;
   // Generate context menu events for disabled buttons too...
   if ( event->type() == QEvent::MouseButtonPress ) {
     QMouseEvent* me = static_cast<QMouseEvent*>( event );
