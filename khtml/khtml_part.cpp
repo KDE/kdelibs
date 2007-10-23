@@ -1990,7 +1990,7 @@ void KHTMLPart::onFirstData( const QString& firstData )
       d->m_bFirstData = false;
 
       // ### this is still quite hacky, but should work a lot better than the old solution
-      if (d->m_decoder->visuallyOrdered()) 
+      if (d->m_decoder->visuallyOrdered())
           d->m_doc->setVisuallyOrdered();
       d->m_doc->recalcStyle( NodeImpl::Force );
 }
@@ -4439,11 +4439,14 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
     if ( child->m_type != khtml::ChildFrame::Object )
     {
       QString suggestedFileName;
-      if ( child->m_run )
+      int disposition = 0;
+      if ( child->m_run ) {
         suggestedFileName = child->m_run->suggestedFileName();
+        disposition = (child->m_run->serverSuggestsSave()) ? KParts::BrowserRun::AttachmentDisposition : KParts::BrowserRun::InlineDisposition;
+      }
 
       KParts::BrowserRun::AskSaveResult res = KParts::BrowserRun::askEmbedOrSave(
-        url, mimetype, suggestedFileName  );
+        url, mimetype, suggestedFileName, disposition );
       switch( res ) {
       case KParts::BrowserRun::Save:
         KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString(), 0, suggestedFileName );
