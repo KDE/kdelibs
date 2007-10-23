@@ -862,6 +862,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         key = "$kicou_";
         key += QString::number(size); key += '_';
         key += name;
+        key.append(overlays.join("_")); // krazy:exclude=doublequote_chars
+
         if (d->mIconCache->find(key, pix, path_store)) {
             //kDebug(264) << "KIL: " << "found the icon from KIC";
             return pix;
@@ -893,6 +895,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
             img=img.scaled(size,size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
         pix = QPixmap::fromImage(img);
+        d->drawOverlays(this, KIconLoader::Desktop, state, pix, overlays);
         d->mIconCache->insert(key, pix, path);
         return pix;
     }
