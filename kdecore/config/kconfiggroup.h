@@ -511,7 +511,7 @@ QList<T> KConfigGroup::readListCheck(const QByteArray &key, const QList<T> &defa
   QList<T> list;
   if (!vList.isEmpty()) {
     Q_FOREACH (const QVariant &aValue, vList) {
-      Q_ASSERT(aValue.canConvert<T>());
+      Q_ASSERT(qVariantCanConvert<T>(aValue));
       list.append( qvariant_cast<T>(aValue) );
     }
   }
