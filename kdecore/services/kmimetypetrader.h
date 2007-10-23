@@ -161,7 +161,7 @@ public:
     {
         const KService::List offers = self()->query(mimeType, serviceType, constraint);
         Q_FOREACH (const KService::Ptr &ptr, offers) {
-            T *component = ptr->createInstance<T>(parent, args, error);
+            T *component = ptr->template createInstance<T>(parent, args, error);
             if (component) {
                 if (error)
                     error->clear();
