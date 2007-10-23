@@ -264,7 +264,6 @@ install( FILES
   KOperaBookmarkExporterImpl
   KOperaBookmarkImporter
   KOperaBookmarkImporterImpl
-  KPReloadObject
   KPageDialog
   KPageModel
   KPageView
@@ -289,7 +288,6 @@ install( FILES
   KPluginSelector
   KPopupFrame
   KPreviewWidgetBase
-  KPrintAction
   KProcess
   KProgressDialog
   KPropertiesDialog
