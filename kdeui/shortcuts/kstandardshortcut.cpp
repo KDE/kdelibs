@@ -87,7 +87,7 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
 
 //Group Navigation
 	{ Home,                I18N_NOOP2("@action Go to main page","Home"), 0, ALT(Home), Qt::Key_HomePage, KShortcut(), false },
-	{ Begin,               I18N_NOOP2("@action Beginning of document","Begin"), 0, CTRL(Home), Qt::Key_Home, KShortcut(), false },
+	{ Begin,               I18N_NOOP2("@action Beginning of document","Begin"), 0, CTRL(Home), 0, KShortcut(), false },
 	{ End,                 I18N_NOOP2("@action End of document","End"), 0,      CTRL(End), 0, KShortcut(), false },
 	{ Prior,               I18N_NOOP2("@action","Prior"), 0,    Qt::Key_PageUp, 0,KShortcut(), false },
 	{ Next,                I18N_NOOP2("@action Opposite to Prior","Next"), 0, Qt::Key_PageDown, 0, KShortcut(), false },
