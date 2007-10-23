@@ -39,6 +39,8 @@ public:
     typedef QPair<QObject*, const char*> Slot;
     QList<Slot> slotList;
     int count;
+
+    ComponentInfo() : count(0) {}
 };
 
 class DispatcherPrivate : public QObject

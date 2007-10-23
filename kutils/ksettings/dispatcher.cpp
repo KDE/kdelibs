@@ -104,10 +104,11 @@ void syncConfiguration()
 
 void DispatcherPrivate::unregisterComponent(QObject *obj)
 {
-    kDebug(701) ;
     QString name = m_componentName[obj];
     m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
     --(m_componentInfo[name].count);
+    kDebug(701) << "componentName=" << name << "refcount=" << m_componentInfo[name].count;
+    Q_ASSERT(m_componentInfo[name].count >= 0);
     if (m_componentInfo[name].count == 0) {
         m_componentInfo.remove(name);
     }
