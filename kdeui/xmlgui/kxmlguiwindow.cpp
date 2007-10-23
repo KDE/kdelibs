@@ -312,6 +312,12 @@ void KXmlGuiWindow::createStandardStatusBarAction(){
         KStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
         connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setVisible(bool)));
         d->showStatusBarAction->setChecked(sb->isHidden());
+    } else {
+        // If the language has changed, we'll need to grab the new text and whatsThis
+	KAction *tmpStatusBar = KStandardAction::showStatusbar(NULL, NULL, NULL);
+        d->showStatusBarAction->setText(tmpStatusBar->text());
+        d->showStatusBarAction->setWhatsThis(tmpStatusBar->whatsThis());
+	delete tmpStatusBar;
     }
 }
 
