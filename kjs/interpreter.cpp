@@ -214,15 +214,17 @@ static inline InterpreterMap &interpreterMap()
 }
     
 Interpreter::Interpreter(JSObject* globalObject)
-    : m_globalExec(this, 0)
-    , m_globalObject(globalObject)
+    : m_globalExec(this, 0),
+      m_globalObject(globalObject),
+      globPkg(0)
 {
     init();
 }
 
 Interpreter::Interpreter()
-    : m_globalExec(this, 0)
-    , m_globalObject(new JSObject())
+    : m_globalExec(this, 0),
+      m_globalObject(new JSObject()),
+      globPkg(0)
 {
     init();
 }
