@@ -204,23 +204,17 @@ void KSwitchLanguageDialog::languageOnButtonChanged(const QString & languageCode
 
 void KSwitchLanguageDialog::slotOk()
 {
-    QString languageString;
-    bool first = true;
+    QStringList languages;
 
     for ( int i = 0, count = d->languageButtons.count(); i < count; ++i )
     {
         KLanguageButton *languageButton = d->languageButtons[i];
-
-        if (!first)
-        {
-            languageString += ':';
-        }
-        languageString += languageButton->current();
-        first = false;
+	languages << languageButton->current();
     }
 
-    if (d->applicationLanguageList().join(":") != languageString)
+    if (d->applicationLanguageList() != languages)
     {
+        QString languageString = languages.join(":");
         //list is different from defaults or saved languages list
         KConfigGroup group(KGlobal::config(), "Locale");
 
@@ -233,6 +227,8 @@ void KSwitchLanguageDialog::slotOk()
             i18n("Application language changed"), //caption
             "ApplicationLanguageChangedWarning" //dontShowAgainName
             );
+
+	KGlobal::locale()->setLanguage(d->applicationLanguageList());
         QEvent ev(QEvent::LanguageChange);
         QApplication::sendEvent(qApp, &ev);
     }
