@@ -26,6 +26,7 @@
 
 #include "JSImmediate.h"
 #include "ustring.h"
+#include "collector.h"
 #include <wtf/Noncopyable.h>
 #include <stddef.h> // for size_t
 
@@ -128,7 +129,7 @@ class KJS_EXPORT JSCell : public JSValue {
     friend class JSObject;
     friend class GetterSetterImp;
 private:
-    explicit JSCell(bool destructorIsThreadSafe = true);
+    explicit JSCell();
     virtual ~JSCell();
 public:
     // Querying the type.
@@ -160,15 +161,6 @@ public:
     void *operator new(size_t);
     virtual void mark();
     bool marked() const;
-
-    bool isLocalInjected()  const { return m_localInjected; }
-    void setLocalInjected()       { m_localInjected = true; }
-
-private:
-    bool m_destructorIsThreadSafe : 1;
-    bool m_marked : 1;
-    bool m_localInjected : 1; // Used when this object is the active scope,
-                              // to denote dynamic addition of local variables
 };
 
 KJS_EXPORT JSValue *jsNumberCell(double);
@@ -217,10 +209,7 @@ inline JSValue::~JSValue()
 {
 }
 
-inline JSCell::JSCell(bool destructorIsThreadSafe)
-    : m_destructorIsThreadSafe(destructorIsThreadSafe)
-    , m_marked(false)
-    , m_localInjected(false)
+inline JSCell::JSCell()
 {
 }
 
@@ -245,12 +234,12 @@ inline bool JSCell::isObject() const
 
 inline bool JSCell::marked() const
 {
-    return m_marked;
+    return Collector::isCellMarked(this);
 }
 
 inline void JSCell::mark()
 {
-    m_marked = true;
+    return Collector::markCell(this);
 }
 
 inline JSCell *JSValue::asCell()

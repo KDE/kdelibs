@@ -97,7 +97,7 @@ namespace KJS {
       
   private:
     JSObject *getter;
-    JSObject *setter;  
+    JSObject *setter;
   };
   
   class KJS_EXPORT JSObject : public JSCell {
@@ -107,13 +107,13 @@ namespace KJS {
      *
      * @param proto The prototype
      */
-    explicit JSObject(JSValue* proto, bool destructorIsThreadSafe = true);
+    explicit JSObject(JSValue* proto);
 
     /**
      * Creates a new JSObject with a prototype of jsNull()
      * (that is, the ECMAScript "null" value, not a null object pointer).
      */
-    explicit JSObject(bool destructorIsThreadSafe = true);
+    explicit JSObject();
 
     virtual void mark();
     virtual JSType type() const;
@@ -457,9 +457,17 @@ namespace KJS {
     void restoreProperties(const SavedProperties &p) { _prop.restore(p); }
 
     virtual bool isActivation() const { return false; }
+
+    // This is used to keep track of whether scope object have local
+    // variables introduced by something other than 'var'
+    bool isLocalInjected()  const { return _prop.m_objLocalInjected; }
+    void setLocalInjected()       { _prop.m_objLocalInjected = true; }
+
   protected:
     PropertyMap _prop;
   private:
+
+  
     const HashEntry* findPropertyHashEntry( const Identifier& propertyName ) const;
     JSValue *_proto;
 #ifdef WIN32
@@ -509,18 +517,15 @@ KJS_EXPORT JSObject *throwError(ExecState *, ErrorType, const UString &message);
 KJS_EXPORT JSObject *throwError(ExecState *, ErrorType, const char *message);
 KJS_EXPORT JSObject *throwError(ExecState *, ErrorType);
 
-inline JSObject::JSObject(JSValue* proto, bool destructorIsThreadSafe)
-    : JSCell(destructorIsThreadSafe)
-    , _proto(proto)
+inline JSObject::JSObject(JSValue* proto)
+    : _proto(proto)
 {
     assert(proto);
 }
 
-inline JSObject::JSObject(bool destructorIsThreadSafe)
-    : JSCell(destructorIsThreadSafe)
-    , _proto(jsNull())
-{
-}
+inline JSObject::JSObject()
+    :_proto(jsNull())
+{}
 
 inline JSValue *JSObject::prototype() const
 {

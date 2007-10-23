@@ -1,7 +1,8 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 2004, 2005, 2006 Apple Computer, Inc.
+ *  Copyright (C) 2004, 2005, 2006, 2007 Apple Computer, Inc.
+ *  Copyright (C) 2007 Christopher E. Hyde <C.Hyde@parableuk.force9.co.uk>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -57,8 +58,7 @@ namespace KJS {
         PropertyMapHashTableEntry() : key(0) { }
         UString::Rep *key;
         JSValue *value;
-        short attributes;
-        short globalGetterSetterFlag;
+        int attributes;
         int index;
     };
 
@@ -66,6 +66,7 @@ namespace KJS {
 * Javascript Property Map.
 */
     class KJS_EXPORT PropertyMap {
+        friend class JSObject;
     public:
         PropertyMap();
         ~PropertyMap();
@@ -87,9 +88,13 @@ namespace KJS {
 
         bool isEmpty() const;
 
-        bool hasGetterSetterProperties() const { return (_singleEntry.globalGetterSetterFlag != 0); }
-        void setHasGetterSetterProperties(bool f) { _singleEntry.globalGetterSetterFlag = f; }
+        bool hasGetterSetterProperties() const { return m_getterSetterFlag; }
+        void setHasGetterSetterProperties(bool f) { m_getterSetterFlag = f; }
 
+        // This /computes/ whether the table has getters or setters, while the above is
+        // used to cache the result. In other words, one usually does
+        // setHasGetterSetterProperties(containsGettersOrSetters()) whenver
+        // there is a reason to believe that the result has changed
         bool containsGettersOrSetters() const;
     private:
         static bool keysMatch(const UString::Rep *, const UString::Rep *);
@@ -104,16 +109,29 @@ namespace KJS {
         typedef PropertyMapHashTableEntry Entry;
         typedef PropertyMapHashTable Table;
 
-        Table *_table;
-        
-        Entry _singleEntry;
+        UString::Rep* m_singleEntryKey;
+        union {
+          JSValue* singleEntryValue;
+          Table* table;
+        } m_u;
+
+
+        short m_singleEntryAttributes;
+
+        bool m_getterSetterFlag : 1;
+        bool m_usingTable       : 1;
+
+        // We also stick some of the object's
+        // bitflags here. Kind of ugly, but saves memory...
+        bool m_objLocalInjected : 1;
     };
 
-inline PropertyMap::PropertyMap() : _table(0)
-{
-    _singleEntry.globalGetterSetterFlag = 0;
-}
-
+    inline PropertyMap::PropertyMap() :
+          m_singleEntryKey(0), 
+          m_getterSetterFlag(false),
+          m_usingTable(false),
+          m_objLocalInjected(false)
+    {}
 } // namespace
 
 #endif // _KJS_PROPERTY_MAP_H_

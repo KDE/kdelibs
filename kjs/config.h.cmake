@@ -32,3 +32,4 @@
 #cmakedefine HAVE_FUNC_FINITE 1
 #cmakedefine HAVE_FUNC_ISINF 1
 #cmakedefine HAVE_FUNC_ISNAN 1
+#cmakedefine HAVE_FUNC_POSIX_MEMALIGN 1

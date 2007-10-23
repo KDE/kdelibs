@@ -140,13 +140,14 @@ namespace KJS {
 
     virtual void mark();
     virtual bool isActivation() const { return true; }
+    void releaseArguments() { _arguments.reset(); }
 
     void setupLocals();
     void setupFunctionLocals(ExecState *exec);
   private:
     static PropertySlot::GetValueFunc getArgumentsGetter();
     static JSValue *argumentsGetter(ExecState *exec, JSObject *, const Identifier &, const PropertySlot& slot);
-    void createArgumentsObject(ExecState *exec) const;
+    void createArgumentsObject(ExecState *exec);
 
     struct Local {
       JSValue* value;

@@ -63,6 +63,8 @@ namespace KJS {
     RegExp *reg;
   };
 
+  struct RegExpObjectImpPrivate;
+
   class RegExpObjectImp : public InternalFunctionImp {
   public:
     enum { Dollar1, Dollar2, Dollar3, Dollar4, Dollar5, Dollar6, Dollar7, Dollar8, Dollar9, 
@@ -97,11 +99,7 @@ namespace KJS {
     JSValue *getLeftContext() const;
     JSValue *getRightContext() const;
 
-    // Global search cache / settings
-    UString lastInput;
-    OwnArrayPtr<int> lastOvector;
-    unsigned lastNumSubPatterns : 31;
-    bool multiline              : 1;
+    OwnPtr<RegExpObjectImpPrivate> d;
     
     static const ClassInfo info;
   };
