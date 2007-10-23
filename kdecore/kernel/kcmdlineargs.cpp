@@ -681,6 +681,8 @@ KCmdLineArgsStatic::findOption(const KCmdLineOptions &options, QString &opt,
                int p = nextOption.indexOf(' ');
                if (p > 0)
                   nextOption = nextOption.left(p);
+               if (nextOption.startsWith('!'))
+                  nextOption = nextOption.mid(1);
                if (nextOption.startsWith("no"))
                {
                   nextOption = nextOption.mid(2);
