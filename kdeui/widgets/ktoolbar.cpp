@@ -1233,6 +1233,7 @@ void KToolBar::mouseReleaseEvent( QMouseEvent *event )
 
 bool KToolBar::eventFilter( QObject * watched, QEvent * event )
 {
+  kWarning() << "----------------> " << event->type() << endl;
   // Generate context menu events for disabled buttons too...
   if ( event->type() == QEvent::MouseButtonPress ) {
     QMouseEvent* me = static_cast<QMouseEvent*>( event );
@@ -1279,7 +1280,7 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
     // removal of ampersand only may not be enough there, instead the whole
     // parenthesis construct should be removed. Provide these filtering i18n
     // messages so that translators can use Transcript for custom removal.
-    if ( event->type() == QEvent::Show ) {
+    if ( event->type() == QEvent::Show || event->type() == QEvent::EnabledChange ) {
       tb->setText(i18nc("@action:intoolbar Text label of toolbar button", "%1", tb->text()));
       tb->setToolTip(i18nc("@info:tooltip Tooltip of toolbar button", "%1", tb->toolTip()));
     }
