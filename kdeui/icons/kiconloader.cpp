@@ -241,8 +241,7 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
         //TODO: should we pass in the kstate? it results in a slower
         //      path, and perhaps emblems should remain in the default state
         //      anyways?
-        QPixmap pixmap = iconLoader->loadIcon("emblem-" + overlay,
-                                              group, overlaySize, state, QStringList(), 0, true);
+        QPixmap pixmap = iconLoader->loadIcon(overlay, group, overlaySize, state, QStringList(), 0, true);
 
         if (pixmap.isNull()) {
             continue;
