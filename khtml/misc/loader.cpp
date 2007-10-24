@@ -396,7 +396,7 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     //pixPart = 0;
     bg = 0;
     scaled = 0;
-    bgColor = qRgba( 0, 0, 0, 0xFF );
+    bgColor = qRgba( 0, 0, 0, 0 );
     typeChecked = false;
     isFullyTransparent = false;
     monochrome = false;
@@ -463,7 +463,7 @@ QPixmap CachedImage::tiled_pixmap(const QColor& newc, int xWidth, int xHeight)
 #warning "Needs some additional performance work"
 #endif
 
-    static QRgb bgTransparent = qRgba( 0, 0, 0, 0xFF );
+    static QRgb bgTransparent = qRgba( 0, 0, 0, 0 );
 
     QSize s(pixmap_size());
     int w = xWidth;
