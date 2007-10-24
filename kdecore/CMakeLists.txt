@@ -292,6 +292,7 @@ install( FILES
    kdecore_export.h
    compression/kfilterbase.h
    compression/kfilterdev.h
+   config/conversion_check.h
    config/kconfig.h
    config/kconfigbase.h
    config/kconfiggroup.h
@@ -361,7 +362,6 @@ install( FILES
    text/kascii.h
    text/kcodecs.h
    text/kstringhandler.h
-   util/conversion_check.h
    util/kallocator.h
    util/kde_file.h
    util/kdedmodule.h
