@@ -702,6 +702,16 @@ bool KConfigGroup::isEntryImmutable(const QString& key) const
     return isEntryImmutable(key.toUtf8());
 }
 
+QString KConfigGroup::readEntryUntranslated(const QString& pKey, const QString& aDefault) const
+{
+    return readEntryUntranslated(pKey.toUtf8(), aDefault);
+}
+
+QString KConfigGroup::readEntryUntranslated(const char *key, const QString& aDefault) const
+{
+    return readEntryUntranslated(QByteArray(key), aDefault);
+}
+
 QString KConfigGroup::readEntryUntranslated( const QByteArray& key, const QString& aDefault ) const
 {
     QString result = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags(), 0);
@@ -710,7 +720,17 @@ QString KConfigGroup::readEntryUntranslated( const QByteArray& key, const QStrin
     return result;
 }
 
-QString KConfigGroup::readEntry( const QByteArray &key, const char* aDefault) const
+QString KConfigGroup::readEntry(const char *key, const char* aDefault) const
+{
+    return readEntry(QByteArray(key), aDefault);
+}
+
+QString KConfigGroup::readEntry(const QString &key, const char* aDefault) const
+{
+    return readEntry(key.toUtf8(), aDefault);
+}
+
+QString KConfigGroup::readEntry(const QByteArray &key, const char* aDefault) const
 {
     return readEntry(key, QString::fromUtf8(aDefault));
 }
@@ -815,7 +835,17 @@ QStringList KConfigGroup::readXdgListEntry(const QByteArray &key, const QStringL
     return value;
 }
 
-QString KConfigGroup::readPathEntry( const QByteArray &key, const QString& aDefault ) const
+QString KConfigGroup::readPathEntry(const QString& pKey, const QString & aDefault) const
+{
+    return readPathEntry(pKey.toUtf8(), aDefault);
+}
+
+QString KConfigGroup::readPathEntry(const char *key, const QString & aDefault) const
+{
+    return readPathEntry(QByteArray(key), aDefault);
+}
+
+QString KConfigGroup::readPathEntry(const QByteArray &key, const QString& aDefault) const
 {
     bool expand = false;
 
@@ -825,6 +855,16 @@ QString KConfigGroup::readPathEntry( const QByteArray &key, const QString& aDefa
         aValue = aDefault;
 
     return KConfigGroupPrivate::expandString(aValue);
+}
+
+QStringList KConfigGroup::readPathEntry(const QString& pKey, const QStringList& aDefault) const
+{
+    return readPathEntry(pKey.toUtf8(), aDefault);
+}
+
+QStringList KConfigGroup::readPathEntry(const char *key, const QStringList& aDefault) const
+{
+    return readPathEntry(QByteArray(key), aDefault);
 }
 
 QStringList KConfigGroup::readPathEntry( const QByteArray &key, const QStringList& aDefault ) const
@@ -843,6 +883,21 @@ void KConfigGroup::writeEntry<QString>( const QByteArray &key, const QString& va
 
     writeEntry(key, value.toUtf8(), flags);
 
+}
+
+void KConfigGroup::writeEntry(const QByteArray &key, const char *value, WriteConfigFlags pFlags)
+{
+    writeEntry<const char *>(key, value, pFlags);
+}
+
+void KConfigGroup::writeEntry(const QString &key, const char *value, WriteConfigFlags pFlags)
+{
+    writeEntry<const char *>(key.toUtf8(), value, pFlags);
+}
+
+void KConfigGroup::writeEntry(const char *key, const char *value, WriteConfigFlags pFlags)
+{
+    writeEntry<const char *>(QByteArray(key), value, pFlags);
 }
 
 template<>
@@ -1006,6 +1061,16 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
     writeEntry(key, data, flags);
 }
 
+void KConfigGroup::writeXdgListEntry(const QString& pKey, const QStringList &value, WriteConfigFlags pFlags)
+{
+    writeXdgListEntry(pKey.toUtf8(), value, pFlags);
+}
+
+void KConfigGroup::writeXdgListEntry(const char *pKey, const QStringList &value, WriteConfigFlags pFlags)
+{
+    writeXdgListEntry(QByteArray(pKey), value, pFlags);
+}
+
 void KConfigGroup::writeXdgListEntry(const QByteArray &key, const QStringList &list, WriteConfigFlags flags)
 {
     Q_ASSERT(!d->bConst);
@@ -1027,11 +1092,31 @@ void KConfigGroup::writeXdgListEntry(const QByteArray &key, const QStringList &l
     writeEntry(key, value, flags);
 }
 
+void KConfigGroup::writePathEntry(const QString& pKey, const QString & path, WriteConfigFlags pFlags)
+{
+    writePathEntry(pKey.toUtf8(), path, pFlags);
+}
+
+void KConfigGroup::writePathEntry(const char *pKey, const QString & path, WriteConfigFlags pFlags)
+{
+    writePathEntry(QByteArray(pKey), path, pFlags);
+}
+
 void KConfigGroup::writePathEntry(const QByteArray &key, const QString &path, WriteConfigFlags flags)
 {
     Q_ASSERT(!d->bConst);
 
     config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, true);
+}
+
+void KConfigGroup::writePathEntry(const QString& pKey, const QStringList &value, WriteConfigFlags pFlags)
+{
+    writePathEntry(pKey.toUtf8(), value, pFlags);
+}
+
+void KConfigGroup::writePathEntry(const char *pKey, const QStringList &value, WriteConfigFlags pFlags)
+{
+    writePathEntry(QByteArray(pKey), value, pFlags);
 }
 
 void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &value, WriteConfigFlags flags)
