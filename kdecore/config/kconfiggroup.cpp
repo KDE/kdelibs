@@ -377,7 +377,6 @@ QString KConfigGroupPrivate::expandString(const QString& value)
 
     // check for environment variables and make necessary translations
     int nDollarPos = aValue.indexOf( '$' );
-
     while( nDollarPos != -1 && nDollarPos+1 < aValue.length()) {
         // there is at least one $
         if( aValue[nDollarPos+1] == '(' ) {
@@ -403,6 +402,7 @@ QString KConfigGroupPrivate::expandString(const QString& value)
             }
             setenv( "PATH", oldpath, 1/*overwrite*/ );
             aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
+            nDollarPos += result.length();
         } else if( aValue[nDollarPos+1] != '$' ) {
             int nEndPos = nDollarPos+1;
             // the next character is not $
@@ -435,8 +435,8 @@ QString KConfigGroupPrivate::expandString(const QString& value)
                     // locale specified encoding or UTF8 encoding
                         env = KStringHandler::from8Bit( pEnv );
                 }
-                if (!env.isEmpty())
-                    aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
+                aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
+                nDollarPos += env.length();
             } else
                 aValue.remove( nDollarPos, nEndPos-nDollarPos );
         } else {
