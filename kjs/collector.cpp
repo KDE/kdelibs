@@ -51,6 +51,7 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <pthread.h> //krazy:exclude=includes (yes, it's duplicate, but in a different #if branch)
+#include <unistd.h>
 
 #if HAVE(PTHREAD_NP_H)
 #include <pthread_np.h>

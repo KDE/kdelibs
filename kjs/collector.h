@@ -26,6 +26,7 @@
 #define KJSCOLLECTOR_H_
 
 #include <wtf/HashCountedSet.h>
+#include <cstring>
 
 #define KJS_MEM_LIMIT 500000
 
