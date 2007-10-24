@@ -44,12 +44,26 @@ QString FakeStorageAccess::filePath() const
 
 bool FakeStorageAccess::setup()
 {
-    return false;
+    if (fakeDevice()->isBroken() || isAccessible()) {
+        return false;
+    } else {
+        fakeDevice()->setProperty("isMounted", true);
+        emit setupDone(Solid::NoError, QVariant());
+        emit accessibilityChanged(true);
+        return true;
+    }
 }
 
 bool FakeStorageAccess::teardown()
 {
-    return false;
+    if (fakeDevice()->isBroken() || !isAccessible()) {
+        return false;
+    } else {
+        fakeDevice()->setProperty("isMounted", false);
+        emit teardownDone(Solid::NoError, QVariant());
+        emit accessibilityChanged(false);
+        return true;
+    }
 }
 
 #include "backends/fakehw/fakestorageaccess.moc"
