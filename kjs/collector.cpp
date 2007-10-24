@@ -60,6 +60,18 @@
 
 #define DEBUG_COLLECTOR 0
 
+#if HAVE(VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
+
+#include <valgrind/memcheck.h>
+#define VG_DEFINED(p) VALGRIND_MAKE_MEM_DEFINED(&p, sizeof(void*))
+
+#else
+
+#define VG_DEFINED(p)
+
+#endif
+
+
 using std::max;
 
 namespace KJS {
@@ -419,6 +431,7 @@ void Collector::markStackObjectsConservatively(void *start, void *end)
 
   while (p != e) {
     char *x = *p++;
+    VG_DEFINED(x);
     if (IS_CELL_ALIGNED(x) && x) {
       uintptr_t offset = reinterpret_cast<uintptr_t>(x) & BLOCK_OFFSET_MASK;
       CollectorBlock* blockAddr = reinterpret_cast<CollectorBlock*>(x - offset);

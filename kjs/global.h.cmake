@@ -86,4 +86,7 @@
 #cmakedefine HAVE_STDINT_H 1
 #endif
 
+/* Valgrind memcheck presence */
+#cmakedefine HAVE_VALGRIND_MEMCHECK_H 1
+
 #endif
