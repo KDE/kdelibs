@@ -766,7 +766,6 @@ int main(int argc, char *argv[])
 	visual = true;
 
     a.setTopWidget(part->widget());
-    part->widget()->resize( 800, 598 );
     if ( visual )
         toplevel->show();
 
@@ -870,6 +869,7 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
   : QObject(part)
 {
     m_part = part;
+
     m_baseDir = baseDir;
     m_baseDir = m_baseDir.replace( "//", "/" );
     if ( m_baseDir.endsWith( "/" ) )	//krazy:exclude=duoblequote_chars DOM demands chars
@@ -904,6 +904,7 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
 
     curr = this;
     m_part->view()->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
+    resizeTopLevelWidget(800, 598 );
 }
 
 
@@ -1452,7 +1453,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
 void RegressionTest::testStaticFile(const QString & filename)
 {
-    m_part->widget()->resize( 800, 598 ); // restore size
+    resizeTopLevelWidget( 800, 598 ); // restore size
 
     // Set arguments
     KParts::OpenUrlArguments args;
@@ -1604,7 +1605,7 @@ public:
 
 void RegressionTest::testJSFile(const QString & filename )
 {
-   m_part->widget()->resize( 800, 598 ); // restore size
+    resizeTopLevelWidget( 800, 598 ); // restore size
 
     // create interpreter
     // note: this is different from the interpreter used by the part,
@@ -1841,7 +1842,7 @@ bool RegressionTest::svnIgnored( const QString &filename )
 
 void RegressionTest::resizeTopLevelWidget( int w, int h )
 {
-    m_part->widget()->resize( w, h );
+    m_part->widget()->parentWidget()->resize( w, h );
     // Since we're not visible, this doesn't have an immediate effect, QWidget posts the event
     QApplication::sendPostedEvents( 0, QEvent::Resize );
 }
