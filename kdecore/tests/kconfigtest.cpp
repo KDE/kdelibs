@@ -54,6 +54,8 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define DATETIMEENTRY QDateTime( QDate( 2002, 06, 23 ), QTime( 12, 55, 40 ) )
 #define STRINGLISTENTRY (QStringList( "Hello," ) << " World")
 #define STRINGLISTEMPTYENTRY (QStringList())
+#define STRINGLISTJUSTEMPTYELEMENT (QStringList(QString()) )
+#define STRINGLISTEMPTYTRAINLINGELEMENT (QStringList( "Hi" ) << QString())
 #define STRINGLISTESCAPEODDENTRY (QStringList( "Hello\\\\\\" ) << "World")
 #define STRINGLISTESCAPEEVENENTRY (QStringList( "Hello\\\\\\\\" ) << "World")
 #define STRINGLISTESCAPECOMMAENTRY (QStringList( "Hel\\\\\\,\\\\,\\,\\\\\\\\,lo" ) << "World")
@@ -114,6 +116,8 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "listOfByteArraysEntry1", BYTEARRAYLISTENTRY1 );
   cg.writeEntry( "stringListEntry", STRINGLISTENTRY );
   cg.writeEntry( "stringListEmptyEntry", STRINGLISTEMPTYENTRY );
+  cg.writeEntry( "stringListJustEmptyElement", STRINGLISTJUSTEMPTYELEMENT );
+  cg.writeEntry( "stringListEmptyTrailingElement", STRINGLISTEMPTYTRAINLINGELEMENT );
   cg.writeEntry( "stringListEscapeOddEntry", STRINGLISTESCAPEODDENTRY );
   cg.writeEntry( "stringListEscapeEvenEntry", STRINGLISTESCAPEEVENENTRY );
   cg.writeEntry( "stringListEscapeCommaEntry", STRINGLISTESCAPECOMMAENTRY );
@@ -262,7 +266,14 @@ void KConfigTest::testLists()
   QCOMPARE( sc3.readEntry( QString("stringListEntry"), QStringList()),
             STRINGLISTENTRY );
 
-  QVERIFY( sc3.hasKey( QString("stringListEmptyEntry") ) );
+  QCOMPARE( sc3.readEntry( QString("stringListEmptyEntry"), QStringList("wrong") ),
+            STRINGLISTEMPTYENTRY );
+
+  QCOMPARE( sc3.readEntry( QString("stringListJustEmptyElement"), QStringList() ),
+            STRINGLISTJUSTEMPTYELEMENT );
+
+  QCOMPARE( sc3.readEntry( QString("stringListEmptyTrailingElement"), QStringList() ),
+            STRINGLISTEMPTYTRAINLINGELEMENT );
 
   QCOMPARE( sc3.readEntry( QString("stringListEscapeOddEntry"), QStringList()),
             STRINGLISTESCAPEODDENTRY );
