@@ -17,10 +17,6 @@ Note that using KHTMLPart may introduce security vulnerabilities
 and unnecessary bloat to your application.  Qt's text widgets are
 rich-text capable, and will interpret a limited subset of HTML.
 
-KHTML is likely to be superseded by <a href="http://webkit.org">WebKit</a>
-in %KDE 4.1 / Qt 4.4.
-
-
 @authors
 Torben Weis \<weis@stud.uni-frankfurt.de\><br>
 Josip A. Gracin \<grac@fly.cc.fer.hr\><br>
@@ -29,12 +25,16 @@ Waldo Bastian \<bastian@kde.org\><br>
 Lars Knoll \<knoll@kde.org\><br>
 Antti Koivisto \<koivisto@iki.fi\><br>
 Dirk Mueller \<mueller@kde.org\><br>
-Peter Kelly \<pmk@post.com\>
-
+Peter Kelly \<pmk@post.com\><br>
+George Staikos \<staikos@kde.org\><br>
+Allan Sandfeld Jensen \<kde@carewolf.com\><br>
+Germain Garand \<germain@ebooksfrance.org\><br>
+Maksim Orlovich \<maksim@kde.org\><br>
+KHTML has also heavily benefited from the work of Apple Computer, Inc.
 @maintainers
-Lars Knoll<br>
-Dirk Mueller<br>
-Antti Koivisto
+Allan Sandfeld Jensen <br>
+Germain Garand<br>
+Maksim Orlovich
 
 @licenses
 @lgpl
