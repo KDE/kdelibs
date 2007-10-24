@@ -213,8 +213,10 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
   if (propertyName == exec->propertyNames().underscoreProto) {
     JSObject* proto = value->getObject();
     while (proto) {
-      if (proto == this)
+      if (proto == this) {
         throwError(exec, GeneralError, "cyclic __proto__ value");
+        return;
+      }
       proto = proto->prototype() ? proto->prototype()->getObject() : 0;
     }
     
