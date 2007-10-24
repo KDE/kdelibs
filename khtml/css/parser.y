@@ -205,6 +205,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %type <rule> charset
 %type <rule> ruleset
+%type <rule> ruleset_or_import
 %type <rule> media
 %type <rule> import
 %type <rule> page
@@ -265,8 +266,13 @@ stylesheet:
   | khtml_value maybe_space
   ;
 
+ruleset_or_import:
+    ruleset |
+    import
+;
+
 khtml_rule:
-    KHTML_RULE_SYM '{' maybe_space ruleset maybe_space '}' {
+    KHTML_RULE_SYM '{' maybe_space ruleset_or_import maybe_space '}' {
         CSSParser *p = static_cast<CSSParser *>(parser);
 	p->rule = $4;
     }

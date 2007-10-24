@@ -109,6 +109,7 @@ public:
     void setNonCSSHints();
 
     virtual void checkLoaded() const;
+    bool processed() const { return m_processed; }
 
     // ### remove? (clients should use sheet->doc()->docLoader())
     khtml::DocLoader *docLoader() const
@@ -119,6 +120,7 @@ public:
 protected:
     DocumentImpl *m_doc;
     bool m_implicit;
+    mutable bool m_processed;
     quint32 m_defaultNamespace;
     CSSNamespace* m_namespaces;
     DOMString m_charset;

@@ -205,6 +205,12 @@ void CSSImportRuleImpl::init()
 
     if (m_cachedSheet)
     {
+      // if the import rule is issued dynamically, the sheet may have already been
+      // removed from the pending sheet count, so let the doc know
+      // the sheet being imported is pending.
+      if (parentSheet && parentSheet->processed())
+          parentSheet->doc()->addPendingSheet();
+
       m_cachedSheet->ref(this);
 
       // If the imported sheet is in the cache, then setStyleSheet gets called,

@@ -115,6 +115,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
+    m_processed = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, bool _implicit)
@@ -125,6 +126,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, 
     m_implicit = _implicit;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
+    m_processed = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
@@ -135,6 +137,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
+    m_processed = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
@@ -153,6 +156,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
+    m_processed = false;
 }
 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
@@ -172,6 +176,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *
     m_implicit = false;
     m_namespaces = 0;
     m_defaultNamespace = anyNamespace;
+    m_processed = false;
 }
 
 CSSRuleImpl *CSSStyleSheetImpl::ownerRule() const
@@ -306,6 +311,7 @@ void CSSStyleSheetImpl::checkLoaded() const
     if(isLoading()) return;
     if(m_parent) m_parent->checkLoaded();
     if(m_parentNode) m_parentNode->sheetLoaded();
+    m_processed = true;
 }
 
 void CSSStyleSheetImpl::setNonCSSHints()
