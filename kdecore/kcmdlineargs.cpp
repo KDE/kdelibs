@@ -396,6 +396,8 @@ findOption(const KCmdLineOptions *options, QCString &opt,
                int p = nextOption.find(' ');
                if (p > 0)
                   nextOption = nextOption.left(p);
+               if (nextOption[0] == '!')
+                  nextOption = nextOption.mid(1);
                if (strncmp(nextOption.data(), "no", 2) == 0)
                {
                   nextOption = nextOption.mid(2);
