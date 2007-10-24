@@ -412,7 +412,7 @@ void KConfigIniBackend::setFilePath(const QString& file)
     }
 }
 
-KConfigBase::ConfigState KConfigIniBackend::getConfigState() const
+KConfigBase::AccessMode KConfigIniBackend::accessMode() const
 {
     if (filePath().isEmpty())
         return KConfigBase::NoAccess;

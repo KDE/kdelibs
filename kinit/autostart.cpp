@@ -85,7 +85,7 @@ static bool startCondition(const QString &condition)
   if (list[0].isEmpty() || list[2].isEmpty())
      return true;
 
-  KConfig config(list[0], KConfig::CascadeConfig);
+  KConfig config(list[0], KConfig::NoGlobals);
   KConfigGroup cg(&config, list[1]);
 
   bool defaultValue = (list[3].toLower() == "true");
@@ -113,12 +113,12 @@ AutoStart::loadAutoStartList()
 
        if (grp.hasKey("OnlyShowIn"))
        {
-          if (!grp.readEntry("OnlyShowIn",QStringList(), ';').contains("KDE"))
+          if (!grp.readXdgListEntry("OnlyShowIn").contains("KDE"))
               continue;
        }
        if (grp.hasKey("NotShowIn"))
        {
-           if (grp.readEntry("NotShowIn", QStringList(),';').contains("KDE"))
+           if (grp.readXdgListEntry("NotShowIn").contains("KDE"))
                continue;
        }
 

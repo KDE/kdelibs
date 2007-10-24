@@ -45,7 +45,7 @@ too? This seems to be mostly a transition issue.
 <Changed during KDE 3.0 / 3.2>
 Extra functions:
 
-bool entryIsImmutable(key); // Can entry be modified?
+bool isEntryImmutable(key); // Can entry be modified?
 bool hasDefault(key); // Is there a system wide default set for the entry?
 void revertToDefault(key); // Restore to default
 void deleteEntry(key); // Remove entry

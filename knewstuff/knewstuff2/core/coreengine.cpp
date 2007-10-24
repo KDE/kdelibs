@@ -69,12 +69,12 @@ bool CoreEngine::init(const QString &configfile)
 	kDebug(550) << "Initializing KNS::CoreEngine from '" << configfile << "'";
 
 	KConfig conf(configfile);
-	if(conf.getConfigState() == KConfig::NoAccess)
+	if(conf.accessMode() == KConfig::NoAccess)
 	{
 		kError(550) << "No knsrc file named '" << configfile << "' was found." << endl;
 		return false;
 	}
-	// FIXME: getConfigState() doesn't return NoAccess for non-existing files
+	// FIXME: accessMode() doesn't return NoAccess for non-existing files
 	// - bug in kdecore?
 	// - this needs to be looked at again until KConfig backend changes for KDE 4
 	// the check below is a workaround

@@ -269,7 +269,7 @@ QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
         KConfigGroup group(config, "Locale");
         if (group.hasKey("Language"))
         {
-            languagesList = group.readEntry("Language", QStringList(), ':');
+            languagesList = group.readEntry("Language", QString()).split(':');
         }
     }
     return languagesList.isEmpty() ? KGlobal::locale()->languageList() : languagesList;

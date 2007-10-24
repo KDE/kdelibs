@@ -48,7 +48,7 @@ KonqBookmarkContextMenu::~KonqBookmarkContextMenu()
 
 void KonqBookmarkContextMenu::addActions()
 {
-  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig)->group("Bookmarks");
+  KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::NoGlobals)->group("Bookmarks");
   bool filteredToolbar = config.readEntry( "FilteredToolbar", false );
 
   if (bookmark().isGroup())
@@ -182,7 +182,7 @@ QAction* KonqBookmarkMenu::actionForBookmark(const KBookmark &bm)
 
 KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QString &id )
 {
-    KConfig bookmarkrc("kbookmarkrc", KConfig::CascadeConfig);
+    KConfig bookmarkrc("kbookmarkrc", KConfig::NoGlobals);
     KConfigGroup config(&bookmarkrc, "Bookmarks");
 
     DynMenuInfo info;
@@ -192,7 +192,7 @@ KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QStr
         if (bookmarkrc.hasGroup("DynamicMenu-" + id)) {
             KConfigGroup dynGroup(&bookmarkrc, "DynamicMenu-" + id);
             info.show = dynGroup.readEntry("Show", false);
-            info.location = dynGroup.readPathEntry("Location");
+            info.location = dynGroup.readPathEntry("Location", QString());
             info.type = dynGroup.readEntry("Type");
             info.name = dynGroup.readEntry("Name");
         }
@@ -202,7 +202,7 @@ KonqBookmarkMenu::DynMenuInfo KonqBookmarkMenu::showDynamicBookmarks( const QStr
 
 QStringList KonqBookmarkMenu::dynamicBookmarksList()
 {
-    KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig)->group("Bookmarks");
+    KConfigGroup config = KSharedConfig::openConfig("kbookmarkrc", KConfig::NoGlobals)->group("Bookmarks");
 
     QStringList mlist;
     if (config.hasKey("DynamicMenus"))
@@ -213,7 +213,7 @@ QStringList KonqBookmarkMenu::dynamicBookmarksList()
 
 void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo &newMenu)
 {
-    KSharedConfig::Ptr kbookmarkrc = KSharedConfig::openConfig("kbookmarkrc", KConfig::CascadeConfig);
+    KSharedConfig::Ptr kbookmarkrc = KSharedConfig::openConfig("kbookmarkrc", KConfig::NoGlobals);
     KConfigGroup dynConfig = kbookmarkrc->group(QString("DynamicMenu-" + id));
 
     // add group unconditionally

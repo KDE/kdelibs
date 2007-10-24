@@ -111,9 +111,9 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 	m_elements.clear();
 	clear();
 	delete config;
-	config = new KConfig(appname + ".notifyrc" , KConfig::CascadeConfig);
-        config->setExtraConfigFiles(KGlobal::dirs()->findAllResources("data",
-                                appname + '/' + appname + ".notifyrc"));
+	config = new KConfig(appname + ".notifyrc" , KConfig::NoGlobals);
+        config->addConfigSources(KGlobal::dirs()->findAllResources("data",
+                                 appname + '/' + appname + ".notifyrc"));
         config->reparseConfiguration();
 
 	QStringList conflist = config->groupList();

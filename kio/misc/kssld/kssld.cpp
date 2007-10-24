@@ -699,7 +699,7 @@ QFile out(path);
 	if (!out.open(QIODevice::WriteOnly))
 		return false;
 
-        KConfig cfg("ksslcalist", KConfig::CascadeConfig);
+        KConfig cfg("ksslcalist", KConfig::NoGlobals);
 
         const QStringList x = cfg.groupList();
 
@@ -735,7 +735,7 @@ bool KSSLD::caAdd(QString certificate, bool ssl, bool email, bool code) {
 
 	if (!x) return false;
 
-        KConfig cfgFile("ksslcalist", KConfig::CascadeConfig);
+        KConfig cfgFile("ksslcalist", KConfig::NoGlobals);
 
         KConfigGroup cfg(&cfgFile, x->getSubject());
 	cfg.writeEntry("x509", certificate);
@@ -825,7 +825,7 @@ bool KSSLD::caRemoveFromFile(QString filename) {
 
 QStringList KSSLD::caList() {
 QStringList x;
-KConfig cfg("ksslcalist", KConfig::CascadeConfig);
+KConfig cfg("ksslcalist", KConfig::NoGlobals);
 
 	x = cfg.groupList();
 	x.removeAll("<default>");
@@ -835,7 +835,7 @@ return x;
 
 
 bool KSSLD::caUseForSSL(QString subject) {
-    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::CascadeConfig)->group(subject);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
     return cg.readEntry("site", false);
 }
@@ -843,7 +843,7 @@ bool KSSLD::caUseForSSL(QString subject) {
 
 
 bool KSSLD::caUseForEmail(QString subject) {
-    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::CascadeConfig)->group(subject);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
     return cg.readEntry("email", false);
 }
@@ -851,14 +851,14 @@ bool KSSLD::caUseForEmail(QString subject) {
 
 
 bool KSSLD::caUseForCode(QString subject) {
-    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::CascadeConfig)->group(subject);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
     return cg.readEntry("code", false);
 }
 
 
 bool KSSLD::caRemove(QString subject) {
-    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::CascadeConfig)->group(subject);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
     if (!cg.exists())
         return false;
@@ -871,14 +871,14 @@ bool KSSLD::caRemove(QString subject) {
 
 
 QString KSSLD::caGetCert(QString subject) {
-    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::CascadeConfig)->group(subject);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
     return cg.readEntry("x509", QString());
 }
 
 
 bool KSSLD::caSetUse(QString subject, bool ssl, bool email, bool code) {
-    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::CascadeConfig)->group(subject);
+    KConfigGroup cg = KSharedConfig::openConfig("ksslcalist", KConfig::NoGlobals)->group(subject);
 
     if (!cg.exists())
         return false;

@@ -171,7 +171,7 @@ QString KSSLCertificateHome::getDefaultCertificateName(const QString &host, KSSL
 
 QString KSSLCertificateHome::getDefaultCertificateName(KSSLAuthAction *aa)
 {
-   KConfig _cfg("cryptodefaults", KConfig::CascadeConfig);
+   KConfig _cfg("cryptodefaults", KConfig::NoGlobals);
    KConfigGroup cfg(&_cfg, "Auth");
    if (aa) {
       QString am = cfg.readEntry("AuthMethod", "");

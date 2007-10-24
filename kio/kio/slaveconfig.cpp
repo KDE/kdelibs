@@ -82,7 +82,7 @@ SlaveConfigProtocol* SlaveConfigPrivate::readProtocolConfig(const QString &_prot
    {
       QString filename = KProtocolInfo::config(_protocol);
       scp = new SlaveConfigProtocol;
-      scp->configFile = new KConfig(filename, KConfig::CascadeConfig);
+      scp->configFile = new KConfig(filename, KConfig::NoGlobals);
       protocol.insert(_protocol, scp);
    }
    // Read global stuff...

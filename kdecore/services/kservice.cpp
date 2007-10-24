@@ -93,7 +93,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
         return;
     }
 
-    m_strExec = desktopGroup.readPathEntry( "Exec" );
+    m_strExec = desktopGroup.readPathEntry( "Exec", QString() );
     entryMap.remove("Exec");
 
     if ( m_strType == "Application" ) {
@@ -154,7 +154,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     entryMap.remove("Terminal");
     m_strTerminalOptions = desktopGroup.readEntry( "TerminalOptions" ); // should be a property IMHO
     entryMap.remove("TerminalOptions");
-    m_strPath = desktopGroup.readPathEntry( "Path" );
+    m_strPath = desktopGroup.readPathEntry( "Path", QString() );
     entryMap.remove("Path");
     m_strComment = config->readComment();
     entryMap.remove("Comment");
@@ -168,7 +168,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     entryMap.remove("Keywords");
     m_lstKeywords += desktopGroup.readEntry("X-KDE-Keywords", QStringList());
     entryMap.remove("X-KDE-Keywords");
-    categories = desktopGroup.readEntry("Categories", QStringList(), ';');
+    categories = desktopGroup.readXdgListEntry("Categories");
     entryMap.remove("Categories");
     m_strLibrary = desktopGroup.readEntry( "X-KDE-Library" );
     entryMap.remove("X-KDE-Library");
@@ -177,7 +177,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     entryMap.remove("ServiceTypes");
     m_lstServiceTypes += desktopGroup.readEntry( "X-KDE-ServiceTypes", QStringList() );
     entryMap.remove("X-KDE-ServiceTypes");
-    m_lstServiceTypes += desktopGroup.readEntry( "MimeType", QStringList(), ';' ); // freedesktop.org standard
+    m_lstServiceTypes += desktopGroup.readXdgListEntry( "MimeType" );
     entryMap.remove("MimeType");
 
     if ( m_strType == "Application" && !m_lstServiceTypes.contains("Application") )
@@ -489,6 +489,7 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
     default:
         // All others
         // For instance properties defined as StringList, like MimeTypes.
+        // XXX This API is accessible only through a friend declaration.
         return KConfigGroup::convertToQVariant(_name.toUtf8().constData(), it->toString().toUtf8(), t);
     }
 }

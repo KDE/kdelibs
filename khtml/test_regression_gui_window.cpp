@@ -79,8 +79,8 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	KConfig config("testregressiongui", KConfig::SimpleConfig);
 	KConfigGroup grp = config.group("<default>");
 
-	m_testsUrl = KUrl::fromPath(grp.readPathEntry("TestsDirectory"));
-	m_khtmlUrl = KUrl::fromPath(grp.readPathEntry("KHTMLDirectory"));
+	m_testsUrl = KUrl::fromPath(grp.readPathEntry("TestsDirectory", QString()));
+	m_khtmlUrl = KUrl::fromPath(grp.readPathEntry("KHTMLDirectory", QString()));
 
 	initTestsDirectory();
 

@@ -50,7 +50,7 @@ AudioDeviceEnumerator::AudioDeviceEnumerator(AudioDeviceEnumeratorPrivate *dd)
 AudioDeviceEnumeratorPrivate::AudioDeviceEnumeratorPrivate()
     : q(this)
 {
-    config = KSharedConfig::openConfig("phonondevicesrc", KConfig::CascadeConfig);
+    config = KSharedConfig::openConfig("phonondevicesrc", KConfig::NoGlobals);
     findDevices();
     QObject::connect(Solid::DeviceNotifier::instance(), SIGNAL(deviceAdded(const QString &)), &q, SLOT(_k_deviceAdded(const QString &)));
     QObject::connect(Solid::DeviceNotifier::instance(), SIGNAL(deviceRemoved(const QString &)), &q, SLOT(_k_deviceRemoved(const QString &)));

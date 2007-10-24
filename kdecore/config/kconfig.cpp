@@ -180,9 +180,7 @@ QStringList KConfig::keyList(const QString& aGroup) const
 {
     Q_D(const KConfig);
     QStringList keys;
-    const QByteArray theGroup(aGroup.isEmpty() ?
-            (aGroup.isNull()? d->currentGroup.toUtf8(): "<default>"):
-            aGroup.toUtf8());
+    const QByteArray theGroup(aGroup.isEmpty() ? "<default>" : aGroup.toUtf8());
 
     const KEntryMapConstIterator theEnd = d->entryMap.constEnd();
     KEntryMapConstIterator it = d->entryMap.findEntry(theGroup);
@@ -205,9 +203,7 @@ QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
 {
     Q_D(const KConfig);
     QMap<QString, QString> theMap;
-    const QByteArray theGroup(aGroup.isEmpty()?
-            (aGroup.isNull()? d->currentGroup.toUtf8(): "<default>"):
-            aGroup.toUtf8());
+    const QByteArray theGroup(aGroup.isEmpty() ? "<default>" : aGroup.toUtf8());
 
     const KEntryMapConstIterator theEnd = d->entryMap.constEnd();
     KEntryMapConstIterator it = d->entryMap.findEntry(theGroup, 0, 0);
@@ -273,7 +269,7 @@ void KConfig::sync()
     }
 }
 
-void KConfig::clean()
+void KConfig::markAsClean()
 {
     Q_D(KConfig);
     d->bDirty = false;
@@ -355,7 +351,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
     else
         mBackend->setFilePath(file);
 
-    configState = mBackend->getConfigState();
+    configState = mBackend->accessMode();
 }
 
 void KConfig::reparseConfiguration()
@@ -459,7 +455,7 @@ void KConfigPrivate::parseConfigFiles()
     }
 }
 
-KConfig::ConfigState KConfig::getConfigState() const
+KConfig::AccessMode KConfig::accessMode() const
 {
     Q_D(const KConfig);
     return d->configState;
@@ -521,7 +517,7 @@ bool KConfig::isImmutable() const
     return d->bFileImmutable;
 }
 
-bool KConfig::groupIsImmutableImpl(const QByteArray& aGroup) const
+bool KConfig::isGroupImmutableImpl(const QByteArray& aGroup) const
 {
     Q_D(const KConfig);
     return isImmutable()|d->entryMap.getEntryOption(aGroup, 0, 0, KEntryMap::EntryImmutable);
@@ -537,18 +533,6 @@ bool KConfig::forceGlobal() const
 {
     Q_D(const KConfig);
     return d->bForceGlobal;
-}
-
-void KConfig::setGroup(const QString& group)
-{
-    Q_D(KConfig);
-    d->currentGroup = group;
-}
-
-QString KConfig::group() const
-{
-    Q_D(const KConfig);
-    return d->currentGroup;
 }
 
 KConfigGroup KConfig::groupImpl(const QByteArray &arr)
@@ -569,7 +553,7 @@ KEntryMap::EntryOptions convertToOptions(KConfig::WriteConfigFlags flags)
         options |= KEntryMap::EntryDirty;
     if (flags&KConfig::Global)
         options |= KEntryMap::EntryGlobal;
-    if (flags&KConfig::NLS)
+    if (flags&KConfig::Localized)
         options |= KEntryMap::EntryLocalized;
     return options;
 }
@@ -646,7 +630,7 @@ void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
     KEntryMap::EntryOptions options;
     if (flags& KConfigBase::Global || bForceGlobal)
         options |= KEntryMap::EntryGlobal;
-    if (flags& KConfigBase::NLS)
+    if (flags& KConfigBase::Localized)
         options |= KEntryMap::EntryLocalized;
     if (flags& KConfigBase::Persistent)
         options |= KEntryMap::EntryDirty;

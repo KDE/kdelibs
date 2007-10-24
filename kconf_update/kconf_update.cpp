@@ -500,7 +500,7 @@ void KonfUpdate::gotFile(const QString &_file)
 
    if (!oldFile.isEmpty())
    {
-      oldConfig2 = new KConfig(oldFile, KConfig::CascadeConfig);
+      oldConfig2 = new KConfig(oldFile, KConfig::NoGlobals);
       QString cfg_id = currentFilename + ':' + id;
       KConfigGroup cg(oldConfig2, "$Version");
       QStringList ids = cg.readEntry("update_info", QStringList());
@@ -513,7 +513,7 @@ void KonfUpdate::gotFile(const QString &_file)
 
       if (!newFile.isEmpty())
       {
-         newConfig = new KConfig(newFile, KConfig::CascadeConfig);
+         newConfig = new KConfig(newFile, KConfig::NoGlobals);
          KConfigGroup cg(newConfig, "$Version");
          ids = cg.readEntry("update_info", QStringList());
          if (ids.contains(cfg_id))
@@ -527,7 +527,7 @@ void KonfUpdate::gotFile(const QString &_file)
          newConfig = oldConfig2;
       }
 
-      oldConfig1 = new KConfig(oldFile, KConfig::CascadeConfig);
+      oldConfig1 = new KConfig(oldFile, KConfig::NoGlobals);
    }
    else
    {
@@ -918,7 +918,7 @@ void KonfUpdate::gotScript(const QString &_script)
      KConfig *saveOldConfig1 = oldConfig1;
      QString saveOldGroup = oldGroup;
      QString saveNewGroup = newGroup;
-     oldConfig1 = new KConfig(tmp2.fileName(), KConfig::CascadeConfig);
+     oldConfig1 = new KConfig(tmp2.fileName(), KConfig::NoGlobals);
 
      // For all groups...
      QStringList grpList = oldConfig1->groupList();

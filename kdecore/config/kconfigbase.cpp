@@ -86,20 +86,20 @@ void KConfigBase::deleteGroup(const char *group, WriteConfigFlags flags)
     deleteGroupImpl(group, flags);
 }
 
-bool KConfigBase::groupIsImmutable(const QByteArray& aGroup) const
+bool KConfigBase::isGroupImmutable(const QByteArray& aGroup) const
 {
-    return groupIsImmutableImpl(aGroup);
+    return isGroupImmutableImpl(aGroup);
 }
 
-bool KConfigBase::groupIsImmutable(const QString& aGroup) const
+bool KConfigBase::isGroupImmutable(const QString& aGroup) const
 {
-    return groupIsImmutableImpl(aGroup.toUtf8());
+    return isGroupImmutableImpl(aGroup.toUtf8());
 }
 
 
-bool KConfigBase::groupIsImmutable(const char *aGroup) const
+bool KConfigBase::isGroupImmutable(const char *aGroup) const
 {
-    return groupIsImmutableImpl(aGroup);
+    return isGroupImmutableImpl(aGroup);
 }
 
 KConfigBase::~KConfigBase()

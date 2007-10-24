@@ -221,7 +221,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
     QString jvm_path = "java";
 
-    QString jPath = config.readPathEntry( "JavaPath" );
+    QString jPath = config.readPathEntry( "JavaPath", QString() );
     if ( !jPath.isEmpty() && jPath != "java" )
     {
         // Cut off trailing slash if any

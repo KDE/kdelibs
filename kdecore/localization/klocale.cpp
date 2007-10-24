@@ -301,7 +301,7 @@ void KLocalePrivate::initLanguageList(KConfig *config, bool useEnv)
     list += QFile::decodeName(getenv("KDE_LANG")).split(':');
 
   // Collect languages set by KDE config.
-  list += cg.readEntry("Language", QStringList(), ':');
+  list += cg.readEntry("Language", QString()).split(':');
 
   // Collect languages read from environment variables by gettext(3).
   if (useEnv) {
@@ -2201,7 +2201,7 @@ bool KLocalePrivate::setEncoding(int mibEnum)
 QStringList KLocale::allLanguagesList() const
 {
   if (!d->languages)
-    d->languages = new KConfig("all_languages", KConfig::CascadeConfig, "locale");
+    d->languages = new KConfig("all_languages", KConfig::NoGlobals, "locale");
 
   return d->languages->groupList();
 }
@@ -2209,7 +2209,7 @@ QStringList KLocale::allLanguagesList() const
 QString KLocale::languageCodeToName(const QString &language) const
 {
   if (!d->languages)
-    d->languages = new KConfig("all_languages", KConfig::CascadeConfig, "locale");
+    d->languages = new KConfig("all_languages", KConfig::NoGlobals, "locale");
 
   KConfigGroup cg(d->languages, language);
   return cg.readEntry("Name");

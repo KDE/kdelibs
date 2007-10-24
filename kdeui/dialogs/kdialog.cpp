@@ -528,7 +528,7 @@ void KDialog::resizeLayout( QLayout *layout, int margin, int spacing ) //static
 static QRect screenRect( QWidget *widget, int screen )
 {
   QDesktopWidget *desktop = QApplication::desktop();
-  KConfig gc( "kdeglobals", KConfig::CascadeConfig );
+  KConfig gc( "kdeglobals", KConfig::NoGlobals );
   KConfigGroup cg(&gc, "Windows" );
   if ( desktop->isVirtualDesktop() &&
        cg.readEntry( "XineramaEnabled", true ) &&

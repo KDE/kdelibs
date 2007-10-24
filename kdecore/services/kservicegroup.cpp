@@ -65,12 +65,12 @@ void KServiceGroupPrivate::load(const QString &cfg)
   QStringList tmpList;
   if (config.hasKey("OnlyShowIn"))
   {
-     if (!config.readEntry("OnlyShowIn", QStringList(), ';').contains("KDE"))
+     if (!config.readXdgListEntry("OnlyShowIn").contains("KDE"))
         m_bNoDisplay = true;
   }
   if (config.hasKey("NotShowIn"))
   {
-     if (config.readEntry("NotShowIn", QStringList(), ';').contains("KDE"))
+     if (config.readXdgListEntry("NotShowIn").contains("KDE"))
         m_bNoDisplay = true;
   }
 

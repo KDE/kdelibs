@@ -61,7 +61,7 @@ bool KNFSShare::KNFSSharePrivate::findExportsFile()
 {
   KConfig knfsshare("knfsshare");
   KConfigGroup config(&knfsshare, "General");
-  exportsFile = config.readPathEntry("exportsFile");
+  exportsFile = config.readPathEntry("exportsFile", QString());
 
   if ( QFile::exists(exportsFile) )
     return true;

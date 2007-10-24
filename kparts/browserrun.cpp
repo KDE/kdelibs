@@ -393,8 +393,8 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
     // only use the downloadmanager for non-local urls
     if ( !url.isLocalFile() )
     {
-        KConfigGroup cfg = KSharedConfig::openConfig("konquerorrc", KConfig::CascadeConfig)->group("HTML Settings");
-        QString downloadManger = cfg.readPathEntry("DownloadManager");
+        KConfigGroup cfg = KSharedConfig::openConfig("konquerorrc", KConfig::NoGlobals)->group("HTML Settings");
+        QString downloadManger = cfg.readPathEntry("DownloadManager", QString());
         if (!downloadManger.isEmpty())
         {
             // then find the download manager location

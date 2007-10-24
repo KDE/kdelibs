@@ -320,12 +320,12 @@ PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
                 PluginInfo *plugin = new PluginInfo;
 
                 plugin->name = kc.readEntry("name");
-                plugin->file = kc.readPathEntry("file");
+                plugin->file = kc.readPathEntry("file", QString());
                 plugin->desc = kc.readEntry("description");
 
                 plugins->append( plugin );
 
-                const QStringList types = kc.readEntry("mime", QStringList(), ';');
+                const QStringList types = kc.readXdgListEntry("mime");
                 QStringList::const_iterator type;
                 for ( type=types.begin(); type!=types.end(); ++type ) {
 

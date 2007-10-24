@@ -271,7 +271,7 @@ QString whatstr;
   grid->setMargin( KDialog::marginHint() );
   grid->setSpacing( KDialog::spacingHint() );
   // no need to parse kdeglobals.
-  config = new KConfig("cryptodefaults", KConfig::CascadeConfig);
+  config = new KConfig("cryptodefaults", KConfig::NoGlobals);
   policies = new KConfig("ksslpolicies", KConfig::SimpleConfig);
   pcerts = new KConfig("ksslcertificates", KConfig::SimpleConfig);
   authcfg = new KConfig("ksslauthmap", KConfig::SimpleConfig);
@@ -877,12 +877,12 @@ void KCryptoConfig::load()
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setPath(cg.readPathEntry("EGDPath"));
+  mEGDPath->setPath(cg.readPathEntry("EGDPath", QString()));
 
 
 #ifdef KSSL_HAVE_SSL
   cg.changeGroup("OpenSSL");
-  oPath->setUrl(cg.readPathEntry("Path"));
+  oPath->setUrl(cg.readPathEntry("Path", QString()));
 #endif
 
   KConfigGroup sslV3(config, "SSLv3");
@@ -962,7 +962,7 @@ void KCryptoConfig::load()
   }
 
   groups = _signers->list();
-  KConfig sigcfg( "ksslcalist", KConfig::CascadeConfig );
+  KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
   caList->clear();
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();
@@ -1976,7 +1976,7 @@ void KCryptoConfig::slotCARestore() {
 
 
   QStringList groups = _signers->list();
-  KConfig sigcfg( "ksslcalist", KConfig::CascadeConfig );
+  KConfig sigcfg( "ksslcalist", KConfig::NoGlobals );
 
   for (QStringList::Iterator i = groups.begin();
                              i != groups.end();

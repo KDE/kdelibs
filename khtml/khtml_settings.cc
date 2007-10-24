@@ -288,7 +288,7 @@ bool KHTMLSettings::hoverLink() const
 
 void KHTMLSettings::init()
 {
-  KConfig global( "khtmlrc", KConfig::CascadeConfig );
+  KConfig global( "khtmlrc", KConfig::NoGlobals );
   init( &global, true );
 
   KSharedConfig::Ptr local = KGlobal::config();
@@ -741,7 +741,7 @@ bool KHTMLSettings::isAdFiltered( const QString &url ) const
 
 void KHTMLSettings::addAdFilter( const QString &url )
 {
-    KConfigGroup config = KSharedConfig::openConfig( "khtmlrc", KConfig::CascadeConfig )->group( "Filter Settings" );
+    KConfigGroup config = KSharedConfig::openConfig( "khtmlrc", KConfig::NoGlobals )->group( "Filter Settings" );
 
     QRegExp rx;
     if (url.length()>2 && url[0]=='/' && url[url.length()-1] == '/')

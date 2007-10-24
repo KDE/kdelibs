@@ -894,10 +894,10 @@ void KOpenWithDialogPrivate::_k_slotOK()
 
     if (bRemember || saveNewApps)
   {
-    QStringList mimeList = cg.readEntry("MimeType", QStringList(), ';');
+    QStringList mimeList = cg.readXdgListEntry("MimeType");
     if (!qMimeType.isEmpty() && !mimeList.contains(qMimeType))
       mimeList.append(qMimeType);
-    cg.writeEntry("MimeType", mimeList, ';');
+    cg.writeXdgListEntry("MimeType", mimeList);
 
     if ( !qMimeType.isEmpty() )
     {

@@ -557,7 +557,7 @@ KBookmarkSettings* KBookmarkSettings::s_self = 0;
 
 void KBookmarkSettings::readSettings()
 {
-   KConfig config("kbookmarkrc", KConfig::CascadeConfig);
+   KConfig config("kbookmarkrc", KConfig::NoGlobals);
    KConfigGroup cg(&config, "Bookmarks");
 
    // add bookmark dialog usage - no reparse

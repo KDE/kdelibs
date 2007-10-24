@@ -40,7 +40,7 @@ class KDesktopFilePrivate : public KConfigPrivate
 };
 
 KDesktopFilePrivate::KDesktopFilePrivate(const char * resourceType, const QString &fileName)
-    : KConfigPrivate(KGlobal::mainComponent(), KConfig::CascadeConfig, resourceType)
+    : KConfigPrivate(KGlobal::mainComponent(), KConfig::NoGlobals, resourceType)
 {
     mBackend = new KConfigIniBackend();
     bDynamicBackend = false;
@@ -192,7 +192,7 @@ QString KDesktopFile::readGenericName() const
 QString KDesktopFile::readPath() const
 {
   Q_D(const KDesktopFile);
-  return d->desktopGroup.readPathEntry("Path");
+  return d->desktopGroup.readPathEntry("Path", QString());
 }
 
 QString KDesktopFile::readDevice() const
@@ -207,7 +207,7 @@ QString KDesktopFile::readUrl() const
     if (hasDeviceType()) {
         return d->desktopGroup.readEntry("MountPoint", QString());
     } else {
-	QString url = d->desktopGroup.readPathEntry("URL");
+	QString url = d->desktopGroup.readPathEntry("URL", QString());
         if ( !url.isEmpty() && !QDir::isRelativePath(url) )
         {
             // Handle absolute paths as such (i.e. we need to escape them)
@@ -220,7 +220,7 @@ QString KDesktopFile::readUrl() const
 QStringList KDesktopFile::readActions() const
 {
     Q_D(const KDesktopFile);
-    return d->desktopGroup.readEntry("Actions", QStringList(), ';');
+    return d->desktopGroup.readXdgListEntry("Actions");
 }
 
 KConfigGroup KDesktopFile::actionGroup(const QString &group)
@@ -262,7 +262,7 @@ bool KDesktopFile::tryExec() const
 {
   Q_D(const KDesktopFile);
   // Test for TryExec and "X-KDE-AuthorizeAction"
-  QString te = d->desktopGroup.readPathEntry("TryExec");
+  QString te = d->desktopGroup.readPathEntry("TryExec", QString());
 
   if (!te.isEmpty()) {
     if (!QDir::isRelativePath(te)) {
@@ -342,8 +342,8 @@ QString KDesktopFile::readDocPath() const
 {
   Q_D(const KDesktopFile);
   if(d->desktopGroup.hasKey( "DocPath" ))
-    return d->desktopGroup.readPathEntry( "DocPath" );
-  return d->desktopGroup.readPathEntry( "X-DocPath" );
+    return d->desktopGroup.readPathEntry( "DocPath", QString() );
+  return d->desktopGroup.readPathEntry( "X-DocPath", QString() );
 }
 
 KDesktopFile* KDesktopFile::copyTo(const QString &file) const

@@ -87,12 +87,11 @@ private:
 
     QString locale;
     QString fileName;
-    QString currentGroup;
     KComponentData componentData;
-    KConfigBase::ConfigState configState;
+    KConfigBase::AccessMode configState;
 
     bool wantGlobals() const { return openFlags&KConfig::IncludeGlobals; }
-    bool wantDefaults() const { return openFlags&KConfig::CascadeConfig; }
+    bool wantDefaults() const { return openFlags&KConfig::NoGlobals; }
     bool wantMerge() const { return !(openFlags&KConfig::DontMergeOnSync); }
     bool isSimple() const { return openFlags == KConfig::SimpleConfig; }
     bool isReadOnly() const { return configState == KConfig::ReadOnly; }

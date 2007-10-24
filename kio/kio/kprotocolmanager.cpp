@@ -103,7 +103,7 @@ KSharedConfig::Ptr KProtocolManager::config()
     PRIVATE_DATA;
   if (!d->config)
   {
-     d->config = KSharedConfig::openConfig("kioslaverc", KConfig::CascadeConfig);
+     d->config = KSharedConfig::openConfig("kioslaverc", KConfig::NoGlobals);
   }
   return d->config;
 }
@@ -112,7 +112,7 @@ static KConfigGroup http_config()
 {
     PRIVATE_DATA;
   if (!d->http_config) {
-     d->http_config = KSharedConfig::openConfig("kio_httprc", KConfig::CascadeConfig);
+     d->http_config = KSharedConfig::openConfig("kio_httprc", KConfig::NoGlobals);
   }
   return KConfigGroup(d->http_config, QString());
 }
@@ -492,7 +492,7 @@ QString KProtocolManager::acceptLanguagesHeader()
 
   // Some languages may have web codes different from locale codes,
   // read them from the config and insert in proper order.
-  KConfig acclangConf("accept-languages.codes", KConfig::CascadeConfig);
+  KConfig acclangConf("accept-languages.codes", KConfig::NoGlobals);
   KConfigGroup replacementCodes(&acclangConf, "ReplacementCodes");
   QStringList languageListFinal;
   foreach (const QString &lang, languageList)

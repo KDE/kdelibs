@@ -198,10 +198,10 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     }
 
     d->hidden = cfg.readEntry("Hidden", false);
-    d->example = cfg.readPathEntry("Example");
-    d->screenshot = cfg.readPathEntry("ScreenShot");
+    d->example = cfg.readPathEntry("Example", QString());
+    d->screenshot = cfg.readPathEntry("ScreenShot", QString());
 
-    QStringList dirs = cfg.readPathListEntry("Directories");
+    QStringList dirs = cfg.readPathEntry("Directories", QStringList());
     for (it=dirs.begin(); it!=dirs.end(); ++it)
     {
         KConfigGroup cg(d->sharedConfig, *it);

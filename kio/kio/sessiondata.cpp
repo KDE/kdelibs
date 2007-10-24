@@ -263,7 +263,7 @@ void SessionData::reset()
 {
     d->initDone = true;
     // Get Cookie settings...
-    d->useCookie = KConfig("kcookiejarrc", KConfig::CascadeConfig).
+    d->useCookie = KConfig("kcookiejarrc", KConfig::NoGlobals).
                    group("Cookie Policy" ).
                    readEntry("Cookies", true);
 

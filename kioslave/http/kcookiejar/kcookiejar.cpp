@@ -250,7 +250,7 @@ KCookieJar::KCookieJar()
     m_configChanged = false;
     m_cookiesChanged = false;
 
-    KConfig cfg( "khtml/domain_info", KConfig::CascadeConfig, "data" );
+    KConfig cfg( "khtml/domain_info", KConfig::NoGlobals, "data" );
     KConfigGroup group( &cfg, QString() );
     QStringList countries = group.readEntry( "twoLevelTLD", QStringList() );
     foreach ( const QString& country, countries ) {

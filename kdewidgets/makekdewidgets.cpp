@@ -126,7 +126,7 @@ int main( int argc, char **argv ) {
 }
 
 void buildFile( QTextStream &ts, const QString& group, const QString& fileName, const QString& pluginName ) {
-    KConfig input( fileName, KConfig::CascadeConfig );
+    KConfig input( fileName, KConfig::NoGlobals );
     KConfigGroup cg(&input, "Global" );
     QHash<QString, QString> MainMap;
     MainMap.insert( "PluginName", cg.readEntry( "PluginName", pluginName ) );
@@ -135,7 +135,7 @@ void buildFile( QTextStream &ts, const QString& group, const QString& fileName, 
     MainMap.insert( "Destroy", cg.readEntry( "Destroy", "" ) );
     ts << classHeader << endl;
 
-    QStringList includes = cg.readEntry( "Includes", QStringList(), ',' );
+    QStringList includes = cg.readEntry( "Includes", QStringList() );
     QStringList classes = input.groupList();
     classes.removeAll( "Global" );
 

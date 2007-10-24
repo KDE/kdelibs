@@ -751,7 +751,7 @@ void KCertPart::slotImport() {
 		if (!_silentImport)
 			KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 	} else if (_ca) {
-		KConfig cfg("ksslcalist", KConfig::CascadeConfig);
+		KConfig cfg("ksslcalist", KConfig::NoGlobals);
 		if (cfg.hasGroup(_ca->getSubject())) {
 			QString msg = _curName + '\n' + i18n("A certificate with that name already exists. Are you sure that you wish to replace it?");
 			int rc= KMessageBox::warningContinueCancel(_frame, msg, i18n("Certificate Import"),KGuiItem(i18n("Replace")));

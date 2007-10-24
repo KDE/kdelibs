@@ -290,9 +290,9 @@ KOpenSSLProxy::KOpenSSLProxy()
    d->cryptoLib = 0L;
    d->sslLib = 0L;
 
-   KConfig cfg("cryptodefaults", KConfig::CascadeConfig );
+   KConfig cfg("cryptodefaults", KConfig::NoGlobals );
    KConfigGroup cg(&cfg, "OpenSSL");
-   QString upath = cg.readPathEntry("Path");
+   QString upath = cg.readPathEntry("Path", QString());
    if (!upath.isEmpty())
       libpaths << upath;
 

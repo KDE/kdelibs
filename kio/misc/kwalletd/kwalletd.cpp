@@ -505,7 +505,7 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 
 	if (!implicitAllow(wallet, thisApp)) {
 		KConfigGroup cfg = KSharedConfig::openConfig("kwalletrc")->group("Auto Allow");
-		if (!cfg.entryIsImmutable(wallet)) {
+		if (!cfg.isEntryImmutable(wallet)) {
 		    KBetterThanKDialog *dialog = new KBetterThanKDialog;
 		    if (appid.isEmpty()) {
 			dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.</qt>", Qt::escape(wallet)));
@@ -523,7 +523,7 @@ bool KWalletD::isAuthorizedApp(const QString& appid, const QString& wallet, WId 
 			KConfigGroup cfg = KSharedConfig::openConfig("kwalletrc")->group("Auto Allow");
 			QStringList apps = cfg.readEntry(wallet, QStringList());
 			if (!apps.contains(thisApp)) {
-				if (cfg.entryIsImmutable(wallet)) {
+				if (cfg.isEntryImmutable(wallet)) {
 					return false;
 				}
 				apps += thisApp;

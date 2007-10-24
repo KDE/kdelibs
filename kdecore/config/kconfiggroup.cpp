@@ -99,7 +99,7 @@ class KConfigGroupPrivate : public QSharedData
         if (mName.isEmpty())
             bImmutable = mOwner->isImmutable();
         else
-            bImmutable = mOwner->groupIsImmutable(fullName());
+            bImmutable = mOwner->isGroupImmutable(fullName());
     }
 
     static QString expandString(const QString& value);
@@ -213,7 +213,7 @@ KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup)
     KConfigGroupPrivate sub = *d;
     sub.mParent = d;
     sub.mName = aGroup;
-    bool subImmutable = config()->groupIsImmutable(sub.fullName());
+    bool subImmutable = config()->isGroupImmutable(sub.fullName());
     newGroup.d = new KConfigGroupPrivate(&sub, subImmutable, d->bConst);
 
     return newGroup;
@@ -227,7 +227,7 @@ const KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup) const
     KConfigGroupPrivate sub = *d;
     sub.mParent = d;
     sub.mName = aGroup;
-    bool subImmutable = config()->groupIsImmutable(sub.fullName());
+    bool subImmutable = config()->isGroupImmutable(sub.fullName());
     newGroup.d = new KConfigGroupPrivate(&sub, subImmutable, true);
 
     return newGroup;
@@ -288,20 +288,20 @@ const KConfig* KConfigGroup::config() const
     return d->mOwner;
 }
 
-bool KConfigGroup::entryIsImmutable(const QByteArray& key) const
+bool KConfigGroup::isEntryImmutable(const QByteArray& key) const
 {
     return (isImmutable() ||
         !config()->d_func()->canWriteEntry(d->fullName(), key, config()->readDefaults()));
 }
 
-bool KConfigGroup::entryIsImmutable(const char* key) const
+bool KConfigGroup::isEntryImmutable(const char* key) const
 {
-    return entryIsImmutable(QByteArray(key));
+    return isEntryImmutable(QByteArray(key));
 }
 
-bool KConfigGroup::entryIsImmutable(const QString& key) const
+bool KConfigGroup::isEntryImmutable(const QString& key) const
 {
-    return entryIsImmutable(key.toUtf8());
+    return isEntryImmutable(key.toUtf8());
 }
 
 QString KConfigGroup::readEntryUntranslated( const QByteArray& key, const QString& aDefault ) const
@@ -310,17 +310,6 @@ QString KConfigGroup::readEntryUntranslated( const QByteArray& key, const QStrin
     if (result.isNull())
         return aDefault;
     return result;
-}
-
-QString KConfigGroup::readEntryUntranslated( const QString& key, const QString& aDefault ) const
-{
-   return readEntryUntranslated(key.toUtf8(), aDefault);
-}
-
-
-QString KConfigGroup::readEntryUntranslated( const char *key, const QString& aDefault ) const
-{
-    return readEntryUntranslated(QByteArray(key), aDefault);
 }
 
 QString KConfigGroup::readEntry( const QByteArray &key, const char* aDefault) const
@@ -678,8 +667,54 @@ QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const
     return value;
 }
 
-QStringList KConfigGroup::readEntry(const QByteArray &key, const QStringList& aDefault, char sep) const
+QStringList KConfigGroup::readXdgListEntry(const QByteArray &key, const QStringList& aDefault) const
 {
+    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags());
+
+    if (data.isNull())
+        return aDefault;
+
+    QStringList value;
+    QString val;
+    val.reserve(data.size());
+    // XXX List serialization being a separate layer from low-level parsing is
+    // probably a bug. No affected entries are defined, though.
+    bool quoted = false;
+    for (int p = 0; p < data.length(); p++) {
+        if (quoted) {
+            val += data[p];
+            quoted = false;
+        } else if (data[p] == '\\') {
+            quoted = true;
+        } else if (data[p] == ';') {
+            value.append(val);
+            val.clear();
+            val.reserve(data.size() - p);
+        } else {
+            val += data[p];
+        }
+    }
+    if (!val.isEmpty()) {
+        kWarning() << "List entry" << key << "is not compliant with XDG standard (missing trailing semicolon).";
+        value.append(val);
+    }
+    return value;
+}
+
+QStringList KConfigGroup::readXdgListEntry(const QString& pKey, const QStringList& aDefault) const
+{
+    return readXdgListEntry(pKey.toUtf8(), aDefault);
+}
+
+QStringList KConfigGroup::readXdgListEntry(const char *key, const QStringList& aDefault) const
+{
+    return readXdgListEntry(QByteArray(key), aDefault);
+}
+
+template<>
+QStringList KConfigGroup::readEntry<QStringList>(const QByteArray &key, const QStringList& aDefault) const
+{
+    char sep = ',';
     const QString data = readEntry(key, QString());
     if (data.isNull())
         return aDefault;
@@ -717,26 +752,6 @@ QStringList KConfigGroup::readEntry(const QByteArray &key, const QStringList& aD
     return value;
 }
 
-QStringList KConfigGroup::readEntry(const QString& pKey, const QStringList& aDefault, char sep) const
-{
-    return readEntry(pKey.toUtf8(), aDefault, sep);
-}
-
-QStringList KConfigGroup::readEntry(const char *key, const QStringList& aDefault, char sep) const
-{
-    return readEntry(QByteArray(key), aDefault, sep);
-}
-
-QString KConfigGroup::readPathEntry( const QString& pKey, const QString& pDefault ) const
-{
-    return readPathEntry(pKey.toUtf8(), pDefault);
-}
-
-QString KConfigGroup::readPathEntry( const char *pKey, const QString& aDefault ) const
-{
-    return readPathEntry(QByteArray(pKey), aDefault);
-}
-
 QString KConfigGroup::readPathEntry( const QByteArray &key, const QString& aDefault ) const
 {
     bool expand = false;
@@ -749,24 +764,16 @@ QString KConfigGroup::readPathEntry( const QByteArray &key, const QString& aDefa
     return KConfigGroupPrivate::expandString(aValue);
 }
 
-QStringList KConfigGroup::readPathListEntry( const QString& pKey, char sep ) const
-{
-    return readPathListEntry(pKey.toUtf8(), sep);
-}
-
-QStringList KConfigGroup::readPathListEntry( const char *pKey, char sep ) const
-{
-    return readPathListEntry(QByteArray(pKey), sep);
-}
-
-QStringList KConfigGroup::readPathListEntry( const QByteArray &key, char sep ) const
+QStringList KConfigGroup::readPathEntry( const QByteArray &key, const QStringList& aDefault ) const
 {
     const QString data = readPathEntry(key, QString());
 
+    if (data.isNull())
+        return aDefault;
     if (data.isEmpty())
         return QStringList();
 
-    const QString separator = QChar(sep);
+    const QString separator = QChar(',');
     const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
     QStringList value;
 
@@ -967,17 +974,29 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
     writeEntry(key, data, flags);
 }
 
-void KConfigGroup::writeEntry(const QString& pKey, const QStringList &value, char sep, WriteConfigFlags flags)
+void KConfigGroup::writeXdgListEntry(const QByteArray &key, const QStringList &list, WriteConfigFlags flags)
 {
-    writeEntry( pKey.toUtf8(), value, sep, flags );
+    Q_ASSERT(!d->bConst);
+
+    QString value;
+    value.reserve(4096);
+
+    // XXX List serialization being a separate layer from low-level escaping is
+    // probably a bug. No affected entries are defined, though.
+    QStringList::ConstIterator it = list.constBegin();
+    const QStringList::ConstIterator end = list.constEnd();
+    for (; it != end; ++it) {
+        QString val(*it);
+        val.replace('\\', "\\\\").replace(';', "\\;");
+        value += val;
+        value += ';';
+    }
+
+    writeEntry(key, value, flags);
 }
 
-void KConfigGroup::writeEntry(const char *pKey, const QStringList &value, char sep, WriteConfigFlags flags)
-{
-    writeEntry(QByteArray(pKey), value, sep, flags );
-}
-
-void KConfigGroup::writeEntry(const QByteArray &key, const QStringList &list, char sep, WriteConfigFlags flags)
+template<>
+void KConfigGroup::writeEntry<QStringList>(const QByteArray &key, const QStringList &list, WriteConfigFlags flags)
 {
     Q_ASSERT(!d->bConst);
 
@@ -986,7 +1005,7 @@ void KConfigGroup::writeEntry(const QByteArray &key, const QStringList &list, ch
     foreach(const QString &entry, list)
         balist.append(entry.toUtf8());
 
-    writeEntry(key, KConfigGroupPrivate::convertList(balist, sep), flags);
+    writeEntry(key, KConfigGroupPrivate::convertList(balist, ','), flags);
 }
 
 QByteArray KConfigGroupPrivate::convertList(const QList<QByteArray> &list, char sep)
@@ -1142,16 +1161,6 @@ QString translatePath( QString path ) // krazy:exclude=passbyvalue
    return path;
 }
 
-void KConfigGroup::writePathEntry(const QString &key, const QString & path, WriteConfigFlags flags)
-{
-   writePathEntry(key.toUtf8(), path, flags);
-}
-
-void KConfigGroup::writePathEntry(const char *key, const QString & path, WriteConfigFlags flags)
-{
-   writePathEntry(QByteArray(key), path, flags);
-}
-
 void KConfigGroup::writePathEntry(const QByteArray &key, const QString &path, WriteConfigFlags flags)
 {
     Q_ASSERT(!d->bConst);
@@ -1159,17 +1168,7 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QString &path, Wr
     config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, true);
 }
 
-void KConfigGroup::writePathEntry(const QString &key, const QStringList &value, char sep, WriteConfigFlags flags)
-{
-  writePathEntry(key.toUtf8(), value, sep, flags);
-}
-
-void KConfigGroup::writePathEntry(const char *key, const QStringList &value, char sep, WriteConfigFlags flags)
-{
-  writePathEntry(QByteArray(key), value, sep, flags);
-}
-
-void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &value, char sep, WriteConfigFlags flags)
+void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &value, WriteConfigFlags flags)
 {
     Q_ASSERT(!d->bConst);
 
@@ -1177,7 +1176,7 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &valu
     foreach(const QString& path, value)
         list << translatePath(path).toUtf8();
 
-    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::convertList(list, sep), flags, true);
+    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::convertList(list, ','), flags, true);
 }
 
 QStringList KConfigGroup::groupList() const
@@ -1190,14 +1189,14 @@ QStringList KConfigGroup::keyList() const
     return entryMap().keys();
 }
 
-void KConfigGroup::clean()
+void KConfigGroup::markAsClean()
 {
-    config()->clean();
+    config()->markAsClean();
 }
 
-KConfigGroup::ConfigState KConfigGroup::getConfigState() const
+KConfigGroup::AccessMode KConfigGroup::accessMode() const
 {
-    return config()->getConfigState();
+    return config()->accessMode();
 }
 
 bool KConfigGroup::hasGroupImpl(const QByteArray & b) const
@@ -1212,7 +1211,7 @@ void KConfigGroup::deleteGroupImpl(const QByteArray &b, WriteConfigFlags flags)
     config()->deleteGroup(d->fullName() + '/' + b, flags);
 }
 
-bool KConfigGroup::groupIsImmutableImpl(const QByteArray& b) const
+bool KConfigGroup::isGroupImmutableImpl(const QByteArray& b) const
 {
     return groupImpl(b).d->bImmutable;
 }

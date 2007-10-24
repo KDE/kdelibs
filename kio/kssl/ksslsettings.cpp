@@ -98,7 +98,7 @@ class KSSLSettingsPrivate {
 KSSLSettings::KSSLSettings(bool readConfig)
 	:d(new KSSLSettingsPrivate)
 {
-        m_cfg = new KConfig("cryptodefaults", KConfig::CascadeConfig);
+        m_cfg = new KConfig("cryptodefaults", KConfig::NoGlobals);
 
 	if (!KGlobal::dirs()->addResourceType("kssl", "data", "kssl")) {
 		//kDebug(7029) << "Error adding (kssl, share/apps/kssl)";
@@ -198,7 +198,7 @@ void KSSLSettings::load() {
 	cfg.changeGroup("EGD");
 	d->m_bUseEGD = cfg.readEntry("UseEGD", false);
 	d->m_bUseEFile = cfg.readEntry("UseEFile", false);
-	d->m_EGDPath = cfg.readPathEntry("EGDPath");
+	d->m_EGDPath = cfg.readPathEntry("EGDPath", QString());
 
 	cfg.changeGroup("Auth");
 	d->m_bSendX509 = ("send" == cfg.readEntry("AuthMethod", ""));

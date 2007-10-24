@@ -1452,7 +1452,7 @@ void KFileWidgetPrivate::readConfig( const KConfigGroup &configGroup)
     ops->readConfig(configGroup);
 
     KUrlComboBox *combo = urlNavigator->editor();
-    combo->setUrls( configGroup.readPathListEntry( RecentURLs ), KUrlComboBox::RemoveTop );
+    combo->setUrls( configGroup.readPathEntry( RecentURLs, QStringList() ), KUrlComboBox::RemoveTop );
     combo->setMaxItems( configGroup.readEntry( RecentURLsNumber,
                                        DefaultRecentURLsNumber ) );
     combo->setUrl( ops->url() );
@@ -1520,7 +1520,7 @@ void KFileWidgetPrivate::readRecentFiles( KConfig *kc )
 
     locationEdit->setMaxItems( cg.readEntry( RecentFilesNumber,
                                              DefaultRecentURLsNumber ) );
-    locationEdit->setUrls( cg.readPathListEntry( RecentFiles ),
+    locationEdit->setUrls( cg.readPathEntry( RecentFiles, QStringList() ),
                            KUrlComboBox::RemoveBottom );
     locationEdit->insertItem(0, QString()); // dummy item without pixmap
     locationEdit->setCurrentIndex( 0 );

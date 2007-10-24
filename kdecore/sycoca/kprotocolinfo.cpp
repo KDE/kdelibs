@@ -41,7 +41,7 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   KConfigGroup config(&sconfig, "Protocol" );
 
   m_name = config.readEntry( "protocol" );
-  m_exec = config.readPathEntry( "exec" );
+  m_exec = config.readPathEntry( "exec", QString() );
   m_isSourceProtocol = config.readEntry( "source", true );
   m_isHelperProtocol = config.readEntry( "helper", false );
   m_supportsReading = config.readEntry( "reading", false );
@@ -85,9 +85,9 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   else
     m_outputType = KProtocolInfo::T_NONE;
 
-  d->docPath = config.readPathEntry( "X-DocPath" );
+  d->docPath = config.readPathEntry( "X-DocPath", QString() );
   if (d->docPath.isEmpty())
-    d->docPath = config.readPathEntry( "DocPath" );
+    d->docPath = config.readPathEntry( "DocPath", QString() );
   d->protClass = config.readEntry( "Class" ).toLower();
   if (d->protClass[0] != ':')
      d->protClass.prepend(QLatin1Char(':'));

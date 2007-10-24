@@ -129,7 +129,7 @@ bool KAutostart::isServiceRegistered(const QString& entryName)
 
 QString KAutostart::commandToCheck() const
 {
-    return d->df->desktopGroup().readPathEntry( "TryExec" );
+    return d->df->desktopGroup().readPathEntry( "TryExec", QString() );
 }
 
 void KAutostart::setCommandToCheck(const QString& exec)
@@ -179,12 +179,12 @@ void KAutostart::setStartPhase(KAutostart::StartPhase phase)
 
 QStringList KAutostart::allowedEnvironments() const
 {
-    return d->df->desktopGroup().readEntry( "OnlyShowIn", QStringList(), ';' );
+    return d->df->desktopGroup().readXdgListEntry( "OnlyShowIn" );
 }
 
 void KAutostart::setAllowedEnvironments(const QStringList& environments)
 {
-    d->df->desktopGroup().writeEntry( "OnlyShowIn", environments, ';' );
+    d->df->desktopGroup().writeXdgListEntry( "OnlyShowIn", environments );
 }
 
 void KAutostart::addToAllowedEnvironments(const QString& environment)
@@ -216,12 +216,12 @@ void KAutostart::removeFromAllowedEnvironments(const QString& environment)
 
 QStringList KAutostart::excludedEnvironments() const
 {
-    return d->df->desktopGroup().readEntry("NotShowIn", QStringList(), ';');
+    return d->df->desktopGroup().readXdgListEntry("NotShowIn");
 }
 
 void KAutostart::setExcludedEnvironments(const QStringList& environments)
 {
-    d->df->desktopGroup().writeEntry("NotShowIn", environments, ';');
+    d->df->desktopGroup().writeXdgListEntry("NotShowIn", environments);
 }
 
 void KAutostart::addToExcludedEnvironments(const QString& environment)

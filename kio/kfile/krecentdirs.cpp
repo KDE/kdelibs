@@ -49,7 +49,7 @@ static KConfigGroup recentdirs_readList(QString &key, QStringList &result)
       key = key.mid(1);
    }
 
-   result=cg.readPathListEntry(key);
+   result=cg.readPathEntry(key, QStringList());
    if (result.isEmpty())
    {
       result.append(KGlobalSettings::documentPath());

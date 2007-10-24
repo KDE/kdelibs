@@ -141,7 +141,7 @@ bool KConfigSkeletonItem::isImmutable() const
 
 void KConfigSkeletonItem::readImmutability( const KConfigGroup &group )
 {
-  d->mIsImmutable = group.entryIsImmutable( mKey );
+  d->mIsImmutable = group.isEntryImmutable( mKey );
 }
 
 
@@ -937,7 +937,7 @@ void KConfigSkeleton::ItemPathList::readConfig( KConfig *config )
   if ( !cg.hasKey( mKey ) )
     mReference = mDefault;
   else
-    mReference = cg.readPathListEntry( mKey );
+    mReference = cg.readPathEntry( mKey, QStringList() );
   mLoadedValue = mReference;
 
   readImmutability( cg );

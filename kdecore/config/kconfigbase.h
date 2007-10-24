@@ -30,6 +30,7 @@
 
 class QStringList;
 class KConfigGroup;
+class KConfigBasePrivate;
 
 class KDECORE_EXPORT KConfigBase
 {
@@ -49,7 +50,6 @@ public:
          * application specific config file.
          */
         Localized = 0x04,
-        NLS = Localized,
         /**<
          * Add the locale tag to the key when writing it.
          */
@@ -62,11 +62,17 @@ public:
     };
     Q_DECLARE_FLAGS(WriteConfigFlags, WriteConfigFlag)
 
-
     /**
      * Destructs the KConfigBase object.
      */
     virtual ~KConfigBase();
+
+    /**
+     * Returns a list of groups that are known about.
+     *
+     * @return The list of groups.
+     **/
+    virtual QStringList groupList() const = 0;
 
     /**
      * Returns true if the specified group is known about.
@@ -78,71 +84,77 @@ public:
     bool hasGroup(const char *group) const;
     bool hasGroup(const QByteArray &group) const;
 
-  /**
-   * Returns a list of groups that are known about.
-   *
-   * @return The list of groups.
-   **/
-    virtual QStringList groupList() const = 0;
-
-    KConfigGroup group( const QByteArray &b);
-    KConfigGroup group( const QString &str);
-    KConfigGroup group( const char *str);
-
-    const KConfigGroup group( const QByteArray &b ) const;
-    const KConfigGroup group( const QString &s ) const;
-    const KConfigGroup group( const char *s ) const;
-
-
-  /**
-   * Mark the config object as "clean," i.e. don't write dirty entries
-   * at destruction time. If @p bDeep is false, only the global dirty
-   * flag of the KConfig object gets cleared. If you then call
-   * writeEntry() again, the global dirty flag is set again and all
-   * dirty entries will be written at a subsequent sync() call.
-   *
-   */
-    virtual void clean() = 0;
-
-    KDE_DEPRECATED void rollback() { clean(); }
-
-  /**
-   * Checks whether this configuration object can be modified.
-   * @return whether changes may be made to this configuration object.
-   */
-    virtual bool isImmutable() const = 0;
+    /**
+     * Returns an object for the named subgroup.
+     *
+     * @param group the group to open. Pass a null string on to the KConfig
+     *   object to obtain a handle on the root group.
+     * @return The list of groups.
+     **/
+    KConfigGroup group(const QByteArray &group);
+    KConfigGroup group(const QString &group);
+    KConfigGroup group(const char *group);
 
     /**
-     * Possible return values for getConfigState().
-     *
-     * @see  getConfigState()
+     * @overload
+     **/
+    const KConfigGroup group(const QByteArray &group) const;
+    const KConfigGroup group(const QString &group) const;
+    const KConfigGroup group(const char *group) const;
+
+    /**
+     * Delete @p aGroup. This marks @p aGroup as @em deleted in the config object. This effectively
+     * removes any cascaded values from config files earlier in the stack.
      */
-    enum ConfigState { NoAccess, ReadOnly, ReadWrite };
-
-  /**
-   * Returns the state of the app-config object.
-   *
-   * Possible return values
-   * are NoAccess (the application-specific config file could not be
-   * opened neither read-write nor read-only), ReadOnly (the
-   * application-specific config file is opened read-only, but not
-   * read-write) and ReadWrite (the application-specific config
-   * file is opened read-write).
-   *
-   * @see  ConfigState()
-   * @return the state of the app-config object
-   */
-    virtual ConfigState getConfigState() const = 0;
-
     void deleteGroup(const QByteArray &group, WriteConfigFlags flags = Normal);
     void deleteGroup(const QString &group, WriteConfigFlags flags = Normal);
     void deleteGroup(const char *group, WriteConfigFlags flags = Normal);
 
-    bool groupIsImmutable(const QByteArray& aGroup) const;
-    bool groupIsImmutable(const QString& aGroup) const;
-    bool groupIsImmutable(const char *aGroup) const;
-
+    /**
+     * Syncs the configuration object that this group belongs to.
+     */
     virtual void sync() = 0;
+
+    /**
+     * Reset the dirty flags of all entries in the entry map, so the
+     * values will not be written to disk on a later call to sync().
+     */
+    virtual void markAsClean() = 0;
+
+    /**
+     * Possible return values for accessMode().
+     */
+    enum AccessMode { NoAccess, ReadOnly, ReadWrite };
+
+    /**
+     * Returns the access mode of the app-config object.
+     *
+     * Possible return values
+     * are NoAccess (the application-specific config file could not be
+     * opened neither read-write nor read-only), ReadOnly (the
+     * application-specific config file is opened read-only, but not
+     * read-write) and ReadWrite (the application-specific config
+     * file is opened read-write).
+     *
+     * @return the access mode of the app-config object
+     */
+    virtual AccessMode accessMode() const = 0;
+
+    /**
+     * Checks whether this configuration object can be modified.
+     * @return whether changes may be made to this configuration object.
+     */
+    virtual bool isImmutable() const = 0;
+
+    /**
+     * Can changes be made to the entries in @p aGroup?
+     * 
+     * @param aGroup The group to check for immutability.
+     * @return @c false if the entries in @p aGroup can be modified.
+     */
+    bool isGroupImmutable(const QByteArray& aGroup) const;
+    bool isGroupImmutable(const QString& aGroup) const;
+    bool isGroupImmutable(const char *aGroup) const;
 
 protected:
     KConfigBase();
@@ -151,7 +163,7 @@ protected:
     virtual KConfigGroup groupImpl( const QByteArray &b) = 0;
     virtual const KConfigGroup groupImpl(const QByteArray &b) const = 0;
     virtual void deleteGroupImpl(const QByteArray &group, WriteConfigFlags flags = Normal) = 0;
-    virtual bool groupIsImmutableImpl(const QByteArray& aGroup) const = 0;
+    virtual bool isGroupImmutableImpl(const QByteArray& aGroup) const = 0;
 
     /** Virtual hook, used to add new "virtual" functions while maintaining
      * binary compatibility. Unused in this class.

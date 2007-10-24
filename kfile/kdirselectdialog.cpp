@@ -92,7 +92,7 @@ void KDirSelectDialog::Private::readConfig(const KSharedConfig::Ptr &config, con
     m_urlCombo->clear();
 
     KConfigGroup conf( config, group );
-    m_urlCombo->setHistoryItems( conf.readPathListEntry( "History Items" ));
+    m_urlCombo->setHistoryItems( conf.readPathEntry( "History Items", QStringList() ));
 
     m_parent->resize( conf.readEntry( "DirSelectDialog Size", QSize( 400, 450 ) ) );
 }
@@ -101,7 +101,7 @@ void KDirSelectDialog::Private::saveConfig(KSharedConfig::Ptr config, const QStr
 {
     KConfigGroup conf( config, group );
     KConfigGroup::WriteConfigFlags flags(KConfigGroup::Persistent|KConfigGroup::Global);
-    conf.writePathEntry( "History Items", m_urlCombo->historyItems(), ',', flags );
+    conf.writePathEntry( "History Items", m_urlCombo->historyItems(), flags );
     conf.writeEntry( "DirSelectDialog Size", m_parent->size(), flags );
 
     config->sync();

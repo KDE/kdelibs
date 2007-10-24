@@ -223,7 +223,7 @@ void KConfigTest::testSimple()
   KConfigGroup sc3( &sc2, "AAA");
 
   QVERIFY( sc3.hasKey( "stringEntry1" ) );
-  QVERIFY( !sc3.entryIsImmutable("stringEntry1") );
+  QVERIFY( !sc3.isEntryImmutable("stringEntry1") );
   QCOMPARE( sc3.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
 
   QVERIFY( !sc3.hasKey( "stringEntry2" ) );
@@ -287,7 +287,7 @@ void KConfigTest::testPath()
 {
   KConfig sc2( "kconfigtest" );
   KConfigGroup sc3(&sc2, "Path Type");
-  QString p = sc3.readPathEntry("homepath");
+  QString p = sc3.readPathEntry("homepath", QString());
   QCOMPARE( sc3.readPathEntry( "homepath", QString() ), HOMEPATH );
   QCOMPARE( sc3.readPathEntry( "homepathescape", QString() ), HOMEPATHESCAPE );
   
@@ -304,9 +304,9 @@ void KConfigTest::testPath()
   KConfig cf2("pathtest");
   KConfigGroup group = cf2.group("Test Group");
   QVERIFY(group.hasKey("homePath"));
-  QCOMPARE(group.readPathEntry("homePath"), HOMEPATH);
+  QCOMPARE(group.readPathEntry("homePath", QString()), HOMEPATH);
   QVERIFY(group.hasKey("homePath2"));
-  QCOMPARE(group.readPathEntry("homePath2"), QString("file://") + HOMEPATH );
+  QCOMPARE(group.readPathEntry("homePath2", QString()), QString("file://") + HOMEPATH );
 #ifndef Q_OS_WIN32
   // I don't know if this will work on windows
   QVERIFY(group.hasKey("hostname"));

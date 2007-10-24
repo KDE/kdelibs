@@ -91,7 +91,7 @@ static void initStatic()
         // See writeServiceTypeProfile for a description of the file format.
         // ### Since this new format names groups after servicetypes maybe we can even
         // avoid doing any init upfront, and just look up the group when asked...
-        KConfig configFile( "servicetype_profilerc", KConfig::CascadeConfig );
+        KConfig configFile( "servicetype_profilerc", KConfig::NoGlobals );
         const QStringList tmpList = configFile.groupList();
         for (QStringList::const_iterator aIt = tmpList.begin();
              aIt != tmpList.end(); ++aIt) {
@@ -115,7 +115,7 @@ static void initStatic()
         }
     }
 
-    KConfig profilerc( "profilerc", KConfig::CascadeConfig );
+    KConfig profilerc( "profilerc", KConfig::NoGlobals );
 
     const QStringList tmpList = profilerc.groupList();
     for (QStringList::const_iterator aIt = tmpList.begin();

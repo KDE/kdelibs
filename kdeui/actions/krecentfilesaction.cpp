@@ -222,7 +222,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
     for( int i = 1 ; i <= d->m_maxItems ; i++ )
     {
         key = QString( "File%1" ).arg( i );
-        value = cg.readPathEntry( key );
+        value = cg.readPathEntry( key, QString() );
 	if (value.isEmpty()) continue;
         url = KUrl( value );
 

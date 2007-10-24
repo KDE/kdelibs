@@ -459,7 +459,7 @@ bool AudioDevice::ceaseToExist()
         return false; // you cannot remove devices that are plugged in
     }
     d->valid = false;
-    KSharedConfig::Ptr config = KSharedConfig::openConfig("phonondevicesrc", KConfig::CascadeConfig);
+    KSharedConfig::Ptr config = KSharedConfig::openConfig("phonondevicesrc", KConfig::NoGlobals);
     QString groupName;
     if (d->captureDevice) {
         if (d->playbackDevice) {

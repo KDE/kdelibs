@@ -1435,7 +1435,7 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
           KConfigGroup cg = config.desktopGroup();
           QString nameStr = nameFromFileName(properties->kurl().fileName());
           cg.writeEntry( "Name", nameStr );
-          cg.writeEntry( "Name", nameStr, KConfigGroup::Persistent|KConfigGroup::NLS);
+          cg.writeEntry( "Name", nameStr, KConfigGroup::Persistent|KConfigGroup::Localized);
       }
   }
 }
@@ -2615,7 +2615,7 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
 
   KDesktopFile config( path );
   const KConfigGroup dg = config.desktopGroup();
-  d->URLStr = dg.readPathEntry( "URL" );
+  d->URLStr = dg.readPathEntry( "URL", QString() );
 
   if ( !d->URLStr.isEmpty() )
     d->URLEdit->setUrl( KUrl(d->URLStr) );
@@ -2672,7 +2672,7 @@ void KUrlPropsPlugin::applyChanges()
   {
     QString nameStr = nameFromFileName(properties->kurl().fileName());
     dg.writeEntry( "Name", nameStr );
-    dg.writeEntry( "Name", nameStr, KConfig::Persistent|KConfig::NLS );
+    dg.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::Localized );
 
   }
 }
@@ -2839,7 +2839,7 @@ void KBindingPropsPlugin::applyChanges()
   dg.writeEntry( "Patterns",  d->patternEdit->text() );
   dg.writeEntry( "Comment", d->commentEdit->text() );
   dg.writeEntry( "Comment",
-		     d->commentEdit->text(), KConfigGroup::Persistent|KConfigGroup::NLS ); // for compat
+		     d->commentEdit->text(), KConfigGroup::Persistent|KConfigGroup::Localized ); // for compat
   dg.writeEntry( "MimeType", d->mimeEdit->text() );
   if ( d->cbAutoEmbed->checkState() == Qt::PartiallyChecked )
       dg.deleteEntry( "X-KDE-AutoEmbed" );
@@ -3214,7 +3214,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   QString nameStr = _config.readName();
   QString genNameStr = _config.readGenericName();
   QString commentStr = _config.readComment();
-  QString commandStr = config.readPathEntry( "Exec" );
+  QString commandStr = config.readPathEntry( "Exec", QString() );
   if (commandStr.startsWith(QLatin1String("ksystraycmd ")))
   {
     commandStr.remove(0, 12);
@@ -3224,7 +3224,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     d->m_systrayBool = false;
 
   d->m_origCommandStr = commandStr;
-  QString pathStr = config.readPathEntry( "Path" );
+  QString pathStr = config.readPathEntry( "Path", QString() );
   d->m_terminalBool = config.readEntry( "Terminal", false );
   d->m_terminalOptionStr = config.readEntry( "TerminalOptions" );
   d->m_suidBool = config.readEntry( "X-KDE-SubstituteUID", false );
@@ -3238,7 +3238,7 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   if( d->m_dbusStartusType.isEmpty() && config.hasKey("X-DCOP-ServiceType"))
          d->m_dbusStartusType = config.readEntry("X-DCOP-ServiceType").toLower();
 
-  QStringList mimeTypes = config.readEntry( "MimeType", QStringList(), ';' );
+  QStringList mimeTypes = config.readXdgListEntry( "MimeType" );
 
   if ( nameStr.isEmpty() || bKDesktopMode ) {
     // We'll use the file name if no name is specified
@@ -3370,9 +3370,9 @@ void KDesktopPropsPlugin::applyChanges()
   KConfigGroup config = _config.desktopGroup();
   config.writeEntry( "Type", QString::fromLatin1("Application"));
   config.writeEntry( "Comment", d->w->commentEdit->text() );
-  config.writeEntry( "Comment", d->w->commentEdit->text(), KConfigGroup::Persistent|KConfigGroup::NLS ); // for compat
+  config.writeEntry( "Comment", d->w->commentEdit->text(), KConfigGroup::Persistent|KConfigGroup::Localized ); // for compat
   config.writeEntry( "GenericName", d->w->genNameEdit->text() );
-  config.writeEntry( "GenericName", d->w->genNameEdit->text(), KConfigGroup::Persistent|KConfigGroup::NLS ); // for compat
+  config.writeEntry( "GenericName", d->w->genNameEdit->text(), KConfigGroup::Persistent|KConfigGroup::Localized ); // for compat
 
   if (d->m_systrayBool)
     config.writePathEntry( "Exec", d->w->commandEdit->text().prepend("ksystraycmd ") );
@@ -3392,12 +3392,12 @@ void KDesktopPropsPlugin::applyChanges()
   }
 
   kDebug() << mimeTypes;
-  config.writeEntry( "MimeType", mimeTypes, ';' );
+  config.writeXdgListEntry( "MimeType", mimeTypes );
 
   if ( !d->w->nameEdit->isHidden() ) {
       QString nameStr = d->w->nameEdit->text();
       config.writeEntry( "Name", nameStr );
-      config.writeEntry( "Name", nameStr, KConfigGroup::Persistent|KConfigGroup::NLS );
+      config.writeEntry( "Name", nameStr, KConfigGroup::Persistent|KConfigGroup::Localized );
   }
 
   config.writeEntry("Terminal", d->m_terminalBool);

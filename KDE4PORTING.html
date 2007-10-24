@@ -323,7 +323,7 @@ unless you use change it</li>
 <li>The KConfig constructors were changed to receive flags instead of boolean values, i.e.
   <ul>
     <li><tt>KConfig("file", false /* read-write */, false /* no globals */);</tt> becomes
-            <tt>KConfig("file", KConfig::CascadeConfig);</tt> (note the read-write flag is gone)</li>
+            <tt>KConfig("file", KConfig::NoGlobals);</tt> (note the read-write flag is gone)</li>
      <li><tt>KConfig("file", true);</tt>becomes <tt>KConfig("file");</tt></li>
   </ul>
 </li>

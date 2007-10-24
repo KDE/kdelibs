@@ -240,7 +240,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     QString group = defaultsGrp.readEntry("Profile","Default");
 
     KConfigGroup profileGrp(&config, QString("PROFILE_%1").arg(group) );
-    QString command = profileGrp.readPathEntry("EmailClient");
+    QString command = profileGrp.readPathEntry("EmailClient", QString());
 
     QString to, cc, bcc;
     if (command.isEmpty() || command == QLatin1String("kmail")
