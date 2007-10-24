@@ -30,7 +30,7 @@ class EllipsisBox;
 class InlineFlowBox;
 class RootInlineBox;
 class RenderArena;
-class BidiStatus;
+struct BidiStatus;
 class BidiContext;
 
 // InlineBox represents a rectangle that occurs on a line.  It corresponds to
