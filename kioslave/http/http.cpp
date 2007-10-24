@@ -2597,7 +2597,7 @@ bool HTTPProtocol::readHeaderFromCache() {
     m_responseHeaders << buffer;
     // then the headers
     while(true) {
-        if (!gzgets(m_request.fcache, buffer, 4096) )
+        if (!gzgets(m_request.fcache, buffer, 8192) )
         {
             // Error, delete cache entry
             kDebug(7113) << "Could not access cached data! ";
