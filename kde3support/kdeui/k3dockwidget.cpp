@@ -475,16 +475,14 @@ void K3DockWidgetHeader::setDragEnabled(bool b)
 }
 
 #ifndef NO_KDE2
-void K3DockWidgetHeader::saveConfig( KConfig* c )
+void K3DockWidgetHeader::saveConfig( KConfigGroup* cg )
 {
-  KConfigGroup cg(c, c->group());
-  cg.writeEntry( QString("%1:stayButton").arg(parent()->name()), stayButton->isChecked() );
+  cg->writeEntry( QString("%1:stayButton").arg(parent()->name()), stayButton->isChecked() );
 }
 
-void K3DockWidgetHeader::loadConfig( KConfig* c )
+void K3DockWidgetHeader::loadConfig( KConfigGroup* cg )
 {
-  KConfigGroup cg(c, c->group());
-  setDragEnabled( !cg.readEntry( QString("%1:stayButton").arg(parent()->name()), false ) );
+  setDragEnabled( !cg->readEntry( QString("%1:stayButton").arg(parent()->name()), false ) );
 }
 #endif
 
@@ -2683,7 +2681,7 @@ void K3DockManager::writeConfig( KConfig* c, const QString &_group )
     obj = getDockWidgetFromName( *nListIt );
     QString cname = obj->name();
     if ( obj->header ){
-      obj->header->saveConfig( c );
+      obj->header->saveConfig( &cg );
     }
     if (obj->d->isContainer) {
        K3DockContainer* x = dynamic_cast<K3DockContainer*>(obj->widget);
@@ -2852,7 +2850,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
 		removeFromAutoCreateList(obj);
     }
     if ( obj && obj->header){
-      obj->header->loadConfig( c );
+      obj->header->loadConfig( &cg );
     }
   }
 
@@ -2902,7 +2900,7 @@ void K3DockManager::readConfig( KConfig* c, const QString &_group )
 
     if (obj && obj->d->isContainer)  dynamic_cast<K3DockContainer*>(obj->widget)->load(c,group);
     if ( obj && obj->header){
-      obj->header->loadConfig( c );
+      obj->header->loadConfig( &cg );
     }
   }
 

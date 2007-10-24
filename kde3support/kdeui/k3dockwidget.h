@@ -79,7 +79,7 @@ class QHBoxLayout;
 class QPixmap;
 
 #ifndef NO_KDE2
-class KConfig;
+class KConfigGroup;
 #else
 #endif
 
@@ -124,12 +124,12 @@ public:
   /**
    * Provides saving the current configuration. Must be overridden by an inheriting class.
    */
-  virtual void saveConfig( KConfig* ){}
+  virtual void saveConfig( KConfigGroup* ){}
 
   /**
    * Provides loading the current configuration.  Must be overridden by an inheriting class
    */
-  virtual void loadConfig( KConfig* ){}
+  virtual void loadConfig( KConfigGroup* ){}
 #endif
 
 protected:
@@ -280,14 +280,14 @@ public:
    *
    * @param c the configuration safe
    */
-  virtual void saveConfig( KConfig* c);
+  virtual void saveConfig( KConfigGroup* c);
 
   /**
    * Loads the current button state from a KDE config container object.
    *
    * @param c the configuration safe
    */
-  virtual void loadConfig( KConfig* c);
+  virtual void loadConfig( KConfigGroup* c);
 #endif
 
    /**
