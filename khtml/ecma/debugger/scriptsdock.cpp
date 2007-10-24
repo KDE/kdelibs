@@ -94,7 +94,7 @@ void ScriptsDock::addDocument(KJS::DebugDocument *document)
     m_widget->invisibleRootItem()->addChild(parent);
 }
 
-void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int column)
+void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int /*column*/)
 {
     KJS::DebugDocument *doc = m_documents.key(item);
     if (doc)
