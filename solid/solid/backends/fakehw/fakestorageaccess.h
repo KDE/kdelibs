@@ -48,6 +48,9 @@ Q_SIGNALS:
     void accessibilityChanged(bool accessible);
     void setupDone(Solid::ErrorType error, QVariant errorData);
     void teardownDone(Solid::ErrorType error, QVariant errorData);
+
+private Q_SLOTS:
+    void onPropertyChanged(const QMap<QString,int> &changes);
 };
 }
 }
