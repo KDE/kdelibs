@@ -98,7 +98,7 @@ class PHONON_EXPORT Path
          * You may insert effects of the same class as often as you like,
          * but if you insert the same object, the call will fail.
          *
-         * \param newEffect An Effect object.
+         * \param desc The EffectDescription object for the effect to be inserted.
          *
          * \param insertBefore If you already inserted an effect you can
          * tell with this parameter in which order the data gets
@@ -106,8 +106,8 @@ class PHONON_EXPORT Path
          * the processing list. If the effect has not been inserted before
          * the method will do nothing and return \c false.
          *
-         * \return Returns whether the effect could be inserted at the
-         * specified position. If \c false is returned the effect was not
+         * \return Returns a pointer to the effect object if it could be inserted
+         * at the specified position. If \c 0 is returned the effect was not
          * inserted.
          *
          * \see removeEffect
@@ -153,7 +153,7 @@ class PHONON_EXPORT Path
          * \see insertEffect
          * \see effects
          */
-        bool removeEffect(Effect *);
+        bool removeEffect(Effect *effect);
 
         /**
          * Returns a list of Effect objects that are currently
