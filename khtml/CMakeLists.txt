@@ -276,6 +276,10 @@ set(khtml_LIB_SRCS
 
 qt4_add_dbus_adaptor(khtml_LIB_SRCS org.kde.KHTMLPart.xml khtml_iface.h KHTMLPartIface)
 
+set(kcookiejar_XML ${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/org.kde.KCookieServer.xml)
+set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "html/kcookiejar_include.h")
+qt4_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
+
 kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})

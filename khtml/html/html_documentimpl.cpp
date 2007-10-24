@@ -51,6 +51,7 @@
 #include <kglobalsettings.h>
 #include <ktoolinvocation.h>
 #include <QtDBus/QtDBus>
+#include <kcookiejar_interface.h>
 
 #include "css/cssproperties.h"
 #include "css/cssstyleselector.h"
@@ -114,10 +115,8 @@ DOMString HTMLDocumentImpl::cookie() const
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    QDBusInterface kcookiejar("org.kde.kded", "/modules/kcookiejar",
-                              "org.kde.KCookieServer");
-    QDBusReply<QString> reply = kcookiejar.call("findDOMCookies",
-                                                URL().url(), qlonglong(windowId));
+    org::kde::KCookieServer kcookiejar("org.kde.kded", "/modules/kcookiejar", QDBusConnection::sessionBus());
+    QDBusReply<QString> reply = kcookiejar.findDOMCookies(URL().url(), qlonglong(windowId));
 
     if ( !reply.isValid() )
     {
@@ -139,21 +138,11 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
     QByteArray fake_header("Set-Cookie: ");
     fake_header.append(value.string().toLatin1().constData());
     fake_header.append("\n");
-    QDBusInterface *kcookiejar = new QDBusInterface("org.kde.kded", "/modules/kcookiejar",
-                                                    "org.kde.KCookieServer");
-    if (!kcookiejar->isValid())
-    {
-        // Maybe it wasn't running (e.g. we're opening local html files)
-        QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("loadModule", QByteArray("kcookiejar"));
-        delete kcookiejar;
-        kcookiejar = new QDBusInterface("org.kde.kded", "/modules/kcookiejar",
-                                        "org.kde.KCookieServer");
-    }
-
-    kcookiejar->call(QDBus::NoBlock, "addCookies",
+    // Note that kded modules are autoloaded so we don't need to call loadModule ourselves.
+    org::kde::KCookieServer kcookiejar("org.kde.kded", "/modules/kcookiejar", QDBusConnection::sessionBus());
+    // Can't use kcookiejar.addCookies because then we can't pass NoBlock...
+    kcookiejar.call(QDBus::NoBlock, "addCookies",
                      URL().url(), fake_header, qlonglong(windowId));
-
-    delete kcookiejar;
 }
 
 
