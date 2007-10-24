@@ -24,6 +24,7 @@
 
 #include <kbookmarkmanager.h>
 #include <solid/storageaccess.h>
+#include <solid/storagevolume.h>
 
 
 
@@ -115,13 +116,23 @@ QVariant KFilePlacesItem::deviceData(int role) const
 
     if (d.isValid()) {
         const Solid::StorageAccess *access = d.as<Solid::StorageAccess>();
+        const Solid::StorageVolume *volume = d.as<Solid::StorageVolume>();
+        QStringList overlays;
 
         switch (role)
         {
         case Qt::DisplayRole:
             return d.product();
         case Qt::DecorationRole:
-            return KIcon(d.icon());
+            if (access->isAccessible()) {
+                overlays << "emblem-mounted";
+            } else {
+                overlays << QString(); // We have to guarantee the placement of the next emblem
+            }
+            if (volume && volume->usage()==Solid::StorageVolume::Encrypted) {
+                overlays << "security-high";
+            }
+            return KIcon(d.icon(), 0, overlays);
         case KFilePlacesModel::UrlRole:
             if (access) {
                 return QUrl(KUrl(access->filePath()));
