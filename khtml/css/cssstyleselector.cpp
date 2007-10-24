@@ -3457,15 +3457,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 // shorthand properties
     case CSS_PROP_BACKGROUND:
         if (isInitial) {
-            style->clearBackgroundLayers();
+            style->setBackgroundColor(QColor());
             return;
         }
         else if (isInherit) {
-            if (parentStyle)
-                style->inheritBackgroundLayers(*parentStyle->backgroundLayers());
-            else
-                style->clearBackgroundLayers();
-            return;
+            style->inheritBackgroundLayers(*parentStyle->backgroundLayers());
+            style->setBackgroundColor(parentStyle->backgroundColor());
         }
         break;
     case CSS_PROP_BORDER:
