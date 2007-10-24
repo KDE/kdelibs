@@ -3,9 +3,7 @@
  * Initial implementation:
  *     Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
  * Rewritten and maintained by:
- *     Copyright (c) 2000 Dirk A. Mueller <mueller@kde.org>
- * KDoubleSpinBox:
- *     Copyright (c) 2002 Marc Mutz <mutz@kde.org>
+ *     Copyright (c) 2000 Dirk Mueller <mueller@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -604,7 +602,7 @@ public:
 	: spin( 0 ),
 	  referencePoint( r ),
 	  blockRelative ( 0 ) {}
-    KDoubleSpinBox * spin;
+    QDoubleSpinBox * spin;
     double referencePoint;
     short blockRelative;
     QSize m_sizeEdit;
@@ -650,7 +648,12 @@ QString KDoubleNumInput::specialValueText() const
 void KDoubleNumInput::init(double value, double lower, double upper,
 			   double step, int precision )
 {
-    d->spin = new KDoubleSpinBox(lower, upper, step, value, this,precision);
+    d->spin = new QDoubleSpinBox(this);
+    d->spin->setRange(lower, upper);
+    d->spin->setSingleStep(step);
+    d->spin->setValue(value);
+    d->spin->setDecimals(precision);
+
     d->spin->setObjectName("KDoubleNumInput::d->spin" );
     setFocusProxy(d->spin);
     connect( d->spin, SIGNAL(valueChanged(double)),
@@ -795,15 +798,16 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
   
     if( priv->m_slider ) {
 	// don't update the slider to avoid an endless recursion
-	QSpinBox * spin = d->spin;
+	QDoubleSpinBox * spin = d->spin;
 	disconnect(spin, SIGNAL(valueChanged(int)),
 		priv->m_slider, SLOT(setValue(int)) );
     }
-    d->spin->setRange( lower, upper, step, d->spin->precision() );
+    d->spin->setRange( lower, upper);
+    d->spin->setSingleStep(step);
 
     if(slider) {
 	// upcast to base type to get the minimum/maximum in int form:
-	QSpinBox * spin = d->spin;
+	QDoubleSpinBox * spin = d->spin;
         int slmax = spin->maximum();
 	int slmin = spin->minimum();
         int slvalue = spin->value();
@@ -902,16 +906,16 @@ void KDoubleNumInput::setPrefix(const QString &prefix)
     layout(true);
 }
 
-void KDoubleNumInput::setPrecision(int precision)
+void KDoubleNumInput::setDecimals(int decimals)
 {
-    d->spin->setPrecision( precision );
+    d->spin->setDecimals(decimals);
 
     layout(true);
 }
 
-int KDoubleNumInput::precision() const
+int KDoubleNumInput::decimals() const
 {
-    return d->spin->precision();
+    return d->spin->decimals();
 }
 
 void KDoubleNumInput::setSpecialValueText(const QString& text)
@@ -932,290 +936,5 @@ void KDoubleNumInput::setLabel(const QString & label, Qt::Alignment a)
         priv->m_label->setBuddy(d->spin);
 
 }
-
-// ----------------------------------------------------------------------------
-
-
-class KDoubleSpinBoxValidator : public KDoubleValidator
-{
-public:
-    KDoubleSpinBoxValidator( KDoubleSpinBox *sb,double bottom, double top, int decimals)
-        : KDoubleValidator( bottom, top, decimals, sb), spinBox( sb ) { }
-
-    virtual State validate( QString& str, int& pos ) const;
-
-private:
-    KDoubleSpinBox *spinBox;
-};
-
-QValidator::State KDoubleSpinBoxValidator::validate( QString& str, int& pos ) const
-{
-    QString pref = spinBox->prefix();
-    QString suff = spinBox->suffix();
-    QString suffStriped = suff.trimmed();
-    int overhead = pref.length() + suff.length();
-    State state = Invalid;
-
-    if ( overhead == 0 ) {
-        state = KDoubleValidator::validate( str, pos );
-    } else {
-        bool stripedVersion = false;
-        if ( str.length() >= overhead && str.startsWith(pref)
-             && (str.endsWith(suff)
-                 || (stripedVersion = str.endsWith(suffStriped))) ) {
-            if ( stripedVersion )
-                overhead = pref.length() + suffStriped.length();
-            QString core = str.mid( pref.length(), str.length() - overhead );
-            int corePos = pos - pref.length();
-            state = KDoubleValidator::validate( core, corePos );
-            pos = corePos + pref.length();
-            str.replace( pref.length(), str.length() - overhead, core );
-        } else {
-            state = KDoubleValidator::validate( str, pos );
-            if ( state == Invalid ) {
-                // trimmed(), cf. QSpinBox::interpretText()
-                QString special = spinBox->specialValueText().trimmed();
-                QString candidate = str.trimmed();
-
-                if ( special.startsWith(candidate) ) {
-                    if ( candidate.length() == special.length() ) {
-                        state = Acceptable;
-                    } else {
-                        state = Intermediate;
-                    }
-                }
-            }
-        }
-    }
-    return state;
-}
-
-// We use a kind of fixed-point arithmetic to represent the range of
-// doubles [mLower,mUpper] in steps of 10^(-mPrecision). Thus, the
-// following relations hold:
-//
-// 1. factor = 10^mPrecision
-// 2. basicStep = 1/factor = 10^(-mPrecision);
-// 3. lowerInt = lower * factor;
-// 4. upperInt = upper * factor;
-// 5. lower = lowerInt * basicStep;
-// 6. upper = upperInt * basicStep;
-class KDoubleSpinBox::Private {
-public:
-  Private( int precision=1 )
-    : mPrecision( precision ),
-      mValidator( 0 )
-  {
-  }
-
-  int factor() const {
-    int f = 1;
-    for ( int i = 0 ; i < mPrecision ; ++i ) f *= 10;
-    return f;
-  }
-
-  double basicStep() const {
-    return 1.0/double(factor());
-  }
-
-  int mapToInt( double value, bool * ok ) const {
-    assert( ok );
-    const double f = factor();
-    if ( value > double(INT_MAX) / f ) {
-      kWarning() << "KDoubleSpinBox: can't represent value " << value
-		  << "in terms of fixed-point numbers with precision "
-		  << mPrecision << endl;
-      *ok = false;
-      return INT_MAX;
-    } else if ( value < double(INT_MIN) / f ) {
-      kWarning() << "KDoubleSpinBox: can't represent value " << value
-		  << "in terms of fixed-point numbers with precision "
-		  << mPrecision << endl;
-      *ok = false;
-      return INT_MIN;
-    } else {
-      *ok = true;
-      return int( value * f + ( value < 0 ? -0.5 : 0.5 ) );
-    }
-  }
-
-  double mapToDouble( int value ) const {
-    return double(value) * basicStep();
-  }
-
-  int mPrecision;
-  KDoubleSpinBoxValidator * mValidator;
-};
-
-KDoubleSpinBox::KDoubleSpinBox( QWidget * parent)
-  : QSpinBox( parent), d(new Private())
-{
-  lineEdit()->setAlignment( Qt::AlignRight );
-  updateValidator();
-  connect( this, SIGNAL(valueChanged(int)), SLOT(slotValueChanged(int)) );
-}
-
-KDoubleSpinBox::KDoubleSpinBox( double lower, double upper, double step,
-				double value, QWidget *parent, int precision)
-  : QSpinBox( parent), d(new Private())
-{
-  lineEdit()->setAlignment( Qt::AlignRight );
-  setRange( lower, upper, step, precision );
-  setValue( value );
-  connect( this, SIGNAL(valueChanged(int)), SLOT(slotValueChanged(int)) );
-}
-
-KDoubleSpinBox::~KDoubleSpinBox() {
-  delete d;
-}
-
-bool KDoubleSpinBox::acceptLocalizedNumbers() const {
-  if ( !d->mValidator ) return true; // we'll set one that does;
-                                     // can't do it now, since we're const
-  return d->mValidator->acceptLocalizedNumbers();
-}
-
-void KDoubleSpinBox::setAcceptLocalizedNumbers( bool accept ) {
-  if ( !d->mValidator ) updateValidator();
-  d->mValidator->setAcceptLocalizedNumbers( accept );
-}
-
-void KDoubleSpinBox::setRange( double lower, double upper, double step,
-			       int precision ) {
-  lower = qMin(upper, lower);
-  upper = qMax(upper, lower);
-  setPrecision( precision, true ); // disable bounds checking, since
-  setMinimum( lower );            // it's done in set{Minimum,Maximum}
-  setMaximum( upper );            // anyway and we want lower, upper
-  setSingleStep( step );             // and step to have the right precision
-}
-
-int KDoubleSpinBox::precision() const {
-  return d->mPrecision;
-}
-
-void KDoubleSpinBox::setPrecision( int precision ) {
-    setPrecision( precision, false );
-}
-
-void KDoubleSpinBox::setPrecision( int precision, bool force ) {
-  if ( precision < 1 ) return;
-  if ( !force ) {
-    int maxPrec = maxPrecision();
-    if ( precision > maxPrec )
-      precision = maxPrec;
-  }
-  d->mPrecision = precision;
-  updateValidator();
-}
-
-int KDoubleSpinBox::maxPrecision() const {
-    // INT_MAX must be > maxAbsValue * 10^precision
-    // ==> 10^precision < INT_MAX / maxAbsValue
-    // ==> precision < log10 ( INT_MAX / maxAbsValue )
-    // ==> maxPrecision = floor( log10 ( INT_MAX / maxAbsValue ) );
-    double maxAbsValue = qMax( fabs(minimum()), fabs(maximum()) );
-    if ( maxAbsValue == 0 ) return 6; // return arbitrary value to avoid dbz...
-
-    return int( floor( log10( double(INT_MAX) / maxAbsValue ) ) );
-}
-
-double KDoubleSpinBox::value() const {
-  return d->mapToDouble( base::value() );
-}
-
-void KDoubleSpinBox::setValue( double value ) {
-    if ( value == this->value() ) return;
-    if ( value < minimum() )
-	base::setValue( base::minimum() );
-    else if ( value > maximum() )
-	base::setValue( base::maximum() );
-    else {
-	bool ok = false;
-	base::setValue( d->mapToInt( value, &ok ) );
-	assert( ok );
-    }
-}
-
-double KDoubleSpinBox::minimum() const {
-  return d->mapToDouble( base::minimum() );
-}
-
-void KDoubleSpinBox::setMinimum( double value ) {
-  bool ok = false;
-  int min = d->mapToInt( value, &ok );
-  if ( !ok ) return;
-  base::setMinimum( min );
-  updateValidator();
-}
-
-
-double KDoubleSpinBox::maximum() const {
-  return d->mapToDouble( base::maximum() );
-}
-
-void KDoubleSpinBox::setMaximum( double value ) {
-  bool ok = false;
-  int max = d->mapToInt( value, &ok );
-  if ( !ok ) return;
-  base::setMaximum( max );
-  updateValidator();
-}
-
-double KDoubleSpinBox::singleStep() const {
-  return d->mapToDouble( base::singleStep() );
-}
-
-void KDoubleSpinBox::setSingleStep( double step ) {
-  bool ok = false;
-  if ( step > maximum() - minimum() )
-    base::setSingleStep( 1 );
-  else
-    base::setSingleStep( qMax( d->mapToInt( step, &ok ), 1 ) );
-}
-
-QString KDoubleSpinBox::textFromValue( int value ) const{
-  if ( acceptLocalizedNumbers() )
-    return KGlobal::locale()
-      ->formatNumber( d->mapToDouble( value ), d->mPrecision );
-  else
-    return QString().setNum( d->mapToDouble( value ), 'f', d->mPrecision );
-}
-
-int KDoubleSpinBox::valueFromText( const QString &text ) const{
-  double value;
-  bool ok;
-  if ( acceptLocalizedNumbers() )
-    value = KGlobal::locale()->readNumber( text, &ok );
-  else
-    value = cleanText().toDouble( &ok );
-  if ( !ok ) return 0;
-  if ( value > maximum() )
-    value = maximum();
-  else if ( value < minimum() )
-    value = minimum();
-  return d->mapToInt( value, &ok );
-}
-
-void KDoubleSpinBox::setValidator( const QValidator * ) {
-  // silently discard the new validator. We don't want another one ;-)
-}
-
-void KDoubleSpinBox::slotValueChanged( int value ) {
-  emit valueChanged( d->mapToDouble( value ) );
-}
-
-void KDoubleSpinBox::updateValidator() {
-  if ( !d->mValidator ) {
-    d->mValidator =  new KDoubleSpinBoxValidator(this, minimum(), maximum(), precision());
-    d->mValidator->setObjectName("d->mValidator" );
-#ifdef __GNUC__
-#warning KDE4 we NEED to fix the validation of values here
-#endif
-//    base::setValidator( d->mValidator );
-  } else
-    d->mValidator->setRange( minimum(), maximum(), precision() );
-}
-
 
 #include "knuminput.moc"

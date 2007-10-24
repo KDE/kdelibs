@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
  *  Copyright (c) 1997 Patrick Dowler <dowler@morgul.fsh.uvic.ca>
- *  Copyright (c) 2000 Dirk A. Mueller <mueller@kde.org>
+ *  Copyright (c) 2000 Dirk Mueller <mueller@kde.org>
  *  Copyright (c) 2002 Marc Mutz <mutz@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
@@ -419,7 +419,7 @@ class KDEUI_EXPORT KDoubleNumInput : public KNumInput
     Q_PROPERTY( QString suffix READ suffix WRITE setSuffix )
     Q_PROPERTY( QString prefix READ prefix WRITE setPrefix )
     Q_PROPERTY( QString specialValueText READ specialValueText WRITE setSpecialValueText )
-    Q_PROPERTY( int precision READ precision WRITE setPrecision )
+    Q_PROPERTY( int decimals READ decimals WRITE setDecimals )
     Q_PROPERTY( double referencePoint READ referencePoint WRITE setReferencePoint )
     Q_PROPERTY( double relativeValue READ relativeValue  WRITE setRelativeValue )
 
@@ -492,10 +492,10 @@ public:
     QString prefix() const;
 
     /**
-     * @return the precision.
-     * @see setPrecision()
+     * @return number of decimals.
+     * @see setDecimals()
      */
-    int precision() const;
+    int decimals() const;
 
     /**
      * @return the string displayed for a special value.
@@ -530,7 +530,9 @@ public:
     /**
      * Specifies the number of digits to use.
      */
-    void setPrecision(int precision);
+    void setDecimals(int decimals);
+
+    KDE_DEPRECATED void setPrecision(int precision) { setDecimals(precision); }
 
     /**
      * @return the reference point for relativeValue calculation
@@ -707,180 +709,6 @@ private:
     KIntSpinBoxPrivate *const d;
     
     Q_DISABLE_COPY(KIntSpinBox)
-};
-
-
-/* --------------------------------------------------------------------------- */
-
-/**
-   @short A spin box for fractional numbers.
-
-   This class provides a spin box for fractional numbers.
-
-   \image html kdoublespinbox.png "KDE Fractional Number Spinbox"
-
-   See below for code examples on how to use this class.
-
-   \b Parameters \n
-
-   To make successful use of KDoubleSpinBox, you need to understand the
-   relationship between precision and available range.
-
-   @li precision: The number of digits after the decimal point.
-   @li maximum/minimum: upper and lower bounds of the valid range
-   @li lineStep: the size of the step that is made when the user hits
-                 the up or down buttons
-
-   Since we work with fixed-point numbers internally, the maximum
-   precision is a function of the valid range and vice versa. More
-   precisely, the following relationships hold:
-   \code
-   max( abs(minimum()), abs(maximum() ) <= INT_MAX/10^precision
-   maxPrecision = floor( log10( INT_MAX/max(abs(minimum()),abs(maximum())) ) )
-   \endcode
-
-   Since the value, bounds and lineStep are rounded to the current
-   precision, you may find that the order of setting these
-   parameters matters. As an example, the following are @em not equivalent (try
-   it!):
-
-   \code
-   // sets precision,
-   // then min/max value (rounded to precision and clipped to obtainable range if needed)
-   // then value and lineStep
-   KDoubleSpinBox * spin = new KDoubleSpinBox( 0, 9.999, 0.001, 4.321, 3, this );
-
-   // sets minimum to 0; maximum to 10.00(!); value to 4.32(!) and only then
-   // increases the precision - too late, since e.g. value has already been rounded...
-   KDoubleSpinBox * spin = new KDoubleSpinBox( this );
-   spin->setMinimum( 0 );
-   spin->setMaximum( 9.999 );
-   spin->setValue( 4.321 );
-   spin->setPrecision( 3 );
-   \endcode
-
-   @author Marc Mutz <mutz@kde.org>
-**/
-
-class KDEUI_EXPORT KDoubleSpinBox : public QSpinBox {
-  Q_OBJECT
-  Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
-  Q_OVERRIDE( double maximum READ maximum WRITE setMaximum )
-  Q_OVERRIDE( double minimum READ minimum WRITE setMinimum )
-  Q_OVERRIDE( double singleStep READ singleStep WRITE setSingleStep )
-  Q_OVERRIDE( double value READ value WRITE setValue )
-  Q_PROPERTY( int precision READ precision WRITE setPrecision )
-
-public:
-  /** Constructs a KDoubleSpinBox with parent @p parent and
-      default values for range and value (whatever QRangeControl
-      uses) and precision (2). */
-  explicit KDoubleSpinBox( QWidget * parent = 0 );
-
-  /** Constructs a KDoubleSpinBox with parent @p parent, range
-      [ @p lower, @p upper ], lineStep @p step, precision @p
-      precision and initial value @p value. */
-  KDoubleSpinBox( double lower, double upper, double step, double value,
-		  QWidget *parent,int precision=2);
-
-  virtual ~KDoubleSpinBox();
-
-  /** @return whether the spinbox uses localized numbers */
-  bool acceptLocalizedNumbers() const;
-
-  /** Sets whether to use and accept localized numbers as returned by
-      KLocale::formatNumber() */
-  virtual void setAcceptLocalizedNumbers( bool accept );
-
-  /** Sets a new range for the spin box values. Note that @p lower, @p
-      upper and @p step are rounded to @p precision decimal points
-      first. */
-  void setRange( double lower, double upper, double step=0.01, int precision=2 );
-
-  /** @return the current number of digits displayed to the right of the
-      decimal point. */
-  int precision() const;
-
-  /** Equivalent to setPrecision( @p precision, @p false ); Needed
-      since Qt's moc doesn't ignore trailing parameters with default
-      args when searching for a property setter method. */
-  void setPrecision( int precision );
-
-  /** Sets the precision (number of digits to the right of the decimal point). Note
-      that there is a tradeoff between the precision used and the available range of
-      values. See the class documentation above for more information on this.
-
-      @param precision the new precision to use
-
-      @param force if true, disables checking of bounds violations that can
-             arise if you increase the precision so much that the
-             minimum and maximum values can't be represented
-             anymore. Disabling is useful if you were going to disable range
-             control in any case.
-  **/
-  virtual void setPrecision( int precision, bool force );
-
-  /** @return the current value */
-  double value() const;
-
-  /** @return the current lower bound */
-  double minimum() const;
-
-  /** Sets the lower bound of the range to @p value, subject to the
-      contraints that @p value is first rounded to the current
-      precision and then clipped to the maximum range interval that can
-      be handled at that precision.
-      @see maximum, minimum, setMaximum, setRange
-  */
-  void setMinimum( double value );
-
-  /** @return the current upper bound */
-  double maximum() const;
-
-  /** Sets the upper bound of the range to @p value, subject to the
-      contraints that @p value is first rounded to the current
-      precision and then clipped to the maximum range interval
-      that can be handled at that precision.
-      @see minimum, maximum, setMinimum, setRange
-  */
-  void setMaximum( double value );
-
-  /** @return the current step size */
-  double singleStep() const;
-
-  /** Sets the step size for clicking the up/down buttons to @p step,
-      subject to the constraints that @p step is first rounded to the
-      current precision and then clipped to the meaningful interval
-      [ 1, @p maximum() - @p minimum() ]. */
-  void setSingleStep( double step );
-
-  /** Overridden to ignore any setValidator() calls. */
-  void setValidator( const QValidator * );
-
-Q_SIGNALS:
-  /** Emitted whenever QSpinBox::valueChanged( int ) is emitted. */
-  void valueChanged( double value );
-
-public Q_SLOTS:
-  /** Sets the current value to @p value, subject to the constraints
-      that @p value is first rounded to the current precision and then
-      clipped to the interval [ @p minimum() , @p maximum() ]. */
-  virtual void setValue( double value );
-
-protected:
-  virtual QString textFromValue(int) const;
-  virtual int valueFromText(const QString &text) const;
-
-protected Q_SLOTS:
-  void slotValueChanged( int value );
-
-private:
-  typedef QSpinBox base;
-  void updateValidator();
-  int maxPrecision() const;
-
-  class Private;
-  Private * const d;
 };
 
 #endif // K_NUMINPUT_H
