@@ -59,6 +59,7 @@ private Q_SLOTS:
     void testPlacesLifecycle();
     void testDevicePlugging();
     void testDragAndDrop();
+    void testDeviceSetupTeardown();
 
 private:
     QDBusInterface *fakeManager();
@@ -577,6 +578,27 @@ void KFilePlacesModelTest::testDevicePlugging()
     QCOMPARE(args.at(1).toInt(), 3);
     QCOMPARE(args.at(2).toInt(), 3);
 }
+
+void KFilePlacesModelTest::testDeviceSetupTeardown()
+{
+    QList<QVariant> args;
+    QSignalSpy spy_changed(m_places, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+
+    fakeDevice("/org/kde/solid/fakehw/volume_part1_size_993284096/StorageAccess")->call("teardown");
+
+    QCOMPARE(spy_changed.count(), 1);
+    args = spy_changed.takeFirst();
+    QCOMPARE(args.at(0).value<QModelIndex>().row(), 6);
+    QCOMPARE(args.at(1).value<QModelIndex>().row(), 6);
+
+    fakeDevice("/org/kde/solid/fakehw/volume_part1_size_993284096/StorageAccess")->call("setup");
+
+    QCOMPARE(spy_changed.count(), 1);
+    args = spy_changed.takeFirst();
+    QCOMPARE(args.at(0).value<QModelIndex>().row(), 6);
+    QCOMPARE(args.at(1).value<QModelIndex>().row(), 6);
+}
+
 
 QTEST_KDEMAIN_CORE(KFilePlacesModelTest)
 

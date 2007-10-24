@@ -20,12 +20,14 @@
 #define KFILEPLACESITEM_P_H
 
 
+#include <QtCore/QObject>
 #include <QtCore/QModelIndex>
 #include <kbookmark.h>
 #include <solid/device.h>
 
-class KFilePlacesItem
+class KFilePlacesItem : public QObject
 {
+    Q_OBJECT
 public:
     KFilePlacesItem(KBookmarkManager *manager,
                     const QString &address,
@@ -39,12 +41,18 @@ public:
     Solid::Device device() const;
     QVariant data(int role) const;
 
-    static KFilePlacesItem createBookmarkPlace(KBookmarkManager *manager,
-                                               const QString &label,
-                                               const KUrl &url,
-                                               const QString &iconName);
-    static KFilePlacesItem createDevicePlace(KBookmarkManager *manager,
-                                             const QString &udi);
+    static KBookmark createBookmark(KBookmarkManager *manager,
+                                    const QString &label,
+                                    const KUrl &url,
+                                    const QString &iconName);
+    static KBookmark createDeviceBookmark(KBookmarkManager *manager,
+                                          const QString &udi);
+
+Q_SIGNALS:
+    void deviceChanged(const QString &udi);
+
+private Q_SLOTS:
+    void onAccessibilityChanged();
 
 private:
     QVariant bookmarkData(int role) const;

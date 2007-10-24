@@ -66,6 +66,7 @@ public:
     void _k_initDeviceList();
     void _k_deviceAdded(const QString &udi);
     void _k_deviceRemoved(const QString &udi);
+    void _k_deviceChanged(const QString &udi);
     void _k_reloadBookmarks();
     void _k_storageSetupDone(Solid::ErrorType error, QVariant errorData);
     void _k_storageTeardownDone(Solid::ErrorType error, QVariant errorData);
@@ -80,20 +81,20 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     // Let's put some places in there if it's empty
     KBookmarkGroup root = d->bookmarkManager->root();
     if (root.first().isNull()) {
-        KFilePlacesItem::createBookmarkPlace(d->bookmarkManager,
-                                             i18n("Home"), KUrl(KUser().homeDir()), "user-home");
-        KFilePlacesItem::createBookmarkPlace(d->bookmarkManager,
-                                             i18n("Network"), KUrl("remote:/"), "network-local");
+        KFilePlacesItem::createBookmark(d->bookmarkManager,
+                                        i18n("Home"), KUrl(KUser().homeDir()), "user-home");
+        KFilePlacesItem::createBookmark(d->bookmarkManager,
+                                        i18n("Network"), KUrl("remote:/"), "network-local");
 #ifdef Q_OS_WIN
 	//c:\ as root for windows
-        KFilePlacesItem::createBookmarkPlace(d->bookmarkManager,
-                                             i18n("Root"), KUrl("C:\\"), "folder-red");
+        KFilePlacesItem::createBookmark(d->bookmarkManager,
+                                        i18n("Root"), KUrl("C:\\"), "folder-red");
 #else
-        KFilePlacesItem::createBookmarkPlace(d->bookmarkManager,
-                                             i18n("Root"), KUrl("/"), "folder-red");
+        KFilePlacesItem::createBookmark(d->bookmarkManager,
+                                        i18n("Root"), KUrl("/"), "folder-red");
 #endif
-        KFilePlacesItem::createBookmarkPlace(d->bookmarkManager,
-                                             i18n("Trash"), KUrl("trash:/"), "user-trash");
+        KFilePlacesItem::createBookmark(d->bookmarkManager,
+                                        i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
 
     d->predicate = Solid::Predicate::fromString(
@@ -283,6 +284,19 @@ void KFilePlacesModel::Private::_k_deviceRemoved(const QString &udi)
     }
 }
 
+void KFilePlacesModel::Private::_k_deviceChanged(const QString &udi)
+{
+    if (availableDevices.contains(udi)) {
+        for (int row = 0; row<items.size(); ++row) {
+            Solid::Device dev = items.at(row)->device();
+            if (dev.isValid() && dev.udi()==udi) {
+                QModelIndex index = q->index(row, 0);
+                emit q->dataChanged(index, index);
+            }
+        }
+    }
+}
+
 void KFilePlacesModel::Private::_k_reloadBookmarks()
 {
     QList<KFilePlacesItem*> currentItems = loadBookmarkList();
@@ -367,6 +381,8 @@ QList<KFilePlacesItem *> KFilePlacesModel::Private::loadBookmarkList()
             KFilePlacesItem *item;
             if (deviceAvailable) {
                 item = new KFilePlacesItem(bookmarkManager, bookmark.address(), udi);
+                connect(item, SIGNAL(deviceChanged(const QString&)),
+                        q, SLOT(_k_deviceChanged(const QString&)));
                 // TODO: Update bookmark internal element
             } else {
                 item = new KFilePlacesItem(bookmarkManager, bookmark.address());
@@ -379,10 +395,12 @@ QList<KFilePlacesItem *> KFilePlacesModel::Private::loadBookmarkList()
 
     // Add bookmarks for the remaining devices, they were previously unknown
     foreach (QString udi, devices) {
-        bookmark = KFilePlacesItem::createDevicePlace(bookmarkManager, udi).bookmark();
+        bookmark = KFilePlacesItem::createDeviceBookmark(bookmarkManager, udi);
 
         KFilePlacesItem *item = new KFilePlacesItem(bookmarkManager,
                                                     bookmark.address(), udi);
+        connect(item, SIGNAL(deviceChanged(const QString&)),
+                q, SLOT(_k_deviceChanged(const QString&)));
         // TODO: Update bookmark internal element
         items << item;
     }
@@ -512,9 +530,9 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
                 continue;
             }
 
-            KBookmark bookmark = KFilePlacesItem::createBookmarkPlace(d->bookmarkManager,
-                                                                      url.fileName(), url,
-                                                                      mimetype->iconName()).bookmark();
+            KBookmark bookmark = KFilePlacesItem::createBookmark(d->bookmarkManager,
+                                                                 url.fileName(), url,
+                                                                 mimetype->iconName());
             group.moveBookmark(bookmark, afterBookmark);
             afterBookmark = bookmark;
         }
@@ -533,8 +551,8 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
                                 const QString &iconName, const QString &appName)
 {
-    KBookmark bookmark = KFilePlacesItem::createBookmarkPlace(d->bookmarkManager,
-                                                              text, url, iconName).bookmark();
+    KBookmark bookmark = KFilePlacesItem::createBookmark(d->bookmarkManager,
+                                                         text, url, iconName);
 
     if (!appName.isEmpty()) {
         bookmark.setMetaDataItem("OnlyInApp", appName);

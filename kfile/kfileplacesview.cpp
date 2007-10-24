@@ -656,9 +656,9 @@ void KFilePlacesView::Private::_k_enableSmoothItemResizing()
     smoothItemResizing = true;
 }
 
-void KFilePlacesView::dataChanged(const QModelIndex &/*topLeft*/, const QModelIndex &/*bottomRight*/)
+void KFilePlacesView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
 {
-
+    QListView::dataChanged(topLeft, bottomRight);
 }
 
 #include "kfileplacesview.moc"

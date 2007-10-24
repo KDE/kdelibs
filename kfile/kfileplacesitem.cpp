@@ -37,6 +37,10 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
 
     if (udi.isEmpty() && m_bookmark.metaDataItem("ID").isEmpty()) {
         m_bookmark.setMetaDataItem("ID", generateNewId());
+    } else if (!udi.isEmpty()) {
+        Solid::Device dev(udi);
+        connect(dev.as<Solid::StorageAccess>(), SIGNAL(accessibilityChanged(bool)),
+                this, SLOT(onAccessibilityChanged()));
     }
 }
 
@@ -153,26 +157,26 @@ QVariant KFilePlacesItem::deviceData(int role) const
     }
 }
 
-KFilePlacesItem KFilePlacesItem::createBookmarkPlace(KBookmarkManager *manager,
-                                                     const QString &label,
-                                                     const KUrl &url,
-                                                     const QString &iconName)
+KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
+                                          const QString &label,
+                                          const KUrl &url,
+                                          const QString &iconName)
 {
     KBookmarkGroup root = manager->root();
     KBookmark bookmark = root.addBookmark(label, url, iconName);
     bookmark.setMetaDataItem("ID", generateNewId());
 
-    return KFilePlacesItem(manager, bookmark.address());
+    return bookmark;
 }
 
-KFilePlacesItem KFilePlacesItem::createDevicePlace(KBookmarkManager *manager,
-                                                   const QString &udi)
+KBookmark KFilePlacesItem::createDeviceBookmark(KBookmarkManager *manager,
+                                                const QString &udi)
 {
     KBookmarkGroup root = manager->root();
     KBookmark bookmark = root.createNewSeparator();
     bookmark.setMetaDataItem("UDI", udi);
 
-    return KFilePlacesItem(manager, bookmark.address(), udi);
+    return bookmark;
 }
 
 QString KFilePlacesItem::generateNewId()
@@ -184,3 +188,10 @@ QString KFilePlacesItem::generateNewId()
 //    return QString::number(QDateTime::currentDateTime().toTime_t())
 //         + '/' + QString::number(qrand());
 }
+
+void KFilePlacesItem::onAccessibilityChanged()
+{
+    emit deviceChanged(id());
+}
+
+#include "kfileplacesitem_p.moc"
