@@ -139,10 +139,14 @@ QString HalDevice::icon() const
 
     } else if (category=="storage") {
 
-        if (property("storage.hotpluggable").toBool()) {
+        if (property("storage.drive_type").toString()=="floppy") {
+            return "media-floppy";
+        } else if (property("storage.drive_type").toString()=="cdrom") {
+            return "drive-optical";
+        } else if (property("storage.hotpluggable").toBool()) {
             if (property("storage.bus").toString()=="usb") {
                 if (property("storage.no_partitions_hint").toBool()
-                 || property("storage.removable.media_size").toLongLong()<1000000000) {
+                 || property("storage.removable.media_size").toLongLong()<4000000000) {
                     return "drive-removable-media-usb-pendrive";
                 } else {
                     return "drive-removable-media-usb";
@@ -189,6 +193,9 @@ QString HalDevice::icon() const
 
             return "drive-harddisk";
         }
+
+    } else if (category=="camera") {
+        return "camera-photo";
 
     } else if (category=="input") {
         QStringList capabilities = property("info.capabilities").toStringList();
