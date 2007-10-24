@@ -50,6 +50,7 @@
 #include "khtmlview.h"
 #include <khtml_part.h>
 #include <QBitmap>
+#include <QPaintEngine>
 
 #include <assert.h>
 using namespace DOM;
@@ -750,8 +751,16 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     if(!c.isValid()) {
         if(invalidisInvert)
         {
-            p->setCompositionMode(QPainter::CompositionMode_Difference);
-            c = Qt::white;
+            // handle 'outline-color: invert'
+            if (p->paintEngine()->hasFeature(QPaintEngine::BlendModes)) {
+                p->setCompositionMode(QPainter::CompositionMode_Difference);
+                c = Qt::white;
+            } else {
+                // 'invert' is not supported on this platform (for instance XRender)
+                // CSS3 UI 8.4: If the UA does not support the 'invert' value then the initial value of
+                // the 'outline-color' property is the 'currentColor' [CSS3COLOR] keyword.
+                c = m_style->color();
+            }
         }
         else {
             if(style == INSET || style == OUTSET || style == RIDGE || style ==
@@ -768,7 +777,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
     case BNONE:
     case BHIDDEN:
         // should not happen
-        if(invalidisInvert && p->compositionMode() == QPainter::CompositionMode_Xor)
+        if(invalidisInvert && p->compositionMode() == QPainter::CompositionMode_Difference)
             p->setCompositionMode(QPainter::CompositionMode_SourceOver);
 
         return;
@@ -978,7 +987,7 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2,
         break;
     }
 
-    if(invalidisInvert && p->compositionMode() == QPainter::CompositionMode_Xor)
+    if(invalidisInvert && p->compositionMode() == QPainter::CompositionMode_Difference)
         p->setCompositionMode(QPainter::CompositionMode_SourceOver);
 }
 
