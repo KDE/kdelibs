@@ -889,9 +889,12 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, Priority p, bool f)
 
 void RenderBox::relativePositionOffset(int &tx, int &ty) const
 {
-    if(!style()->left().isVariable())
-        tx += style()->left().width(containingBlockWidth());
-    else if(!style()->right().isVariable())
+    if (!style()->left().isVariable()) {
+        if (!style()->right().isVariable() && containingBlock()->style()->direction() == RTL)
+            tx -= style()->right().width(containingBlockWidth());
+        else
+            tx +=  style()->left().width(containingBlockWidth());
+    } else if (!style()->right().isVariable())
         tx -= style()->right().width(containingBlockWidth());
     if(!style()->top().isVariable())
     {
