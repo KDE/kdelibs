@@ -119,6 +119,403 @@ class KConfigGroupPrivate : public QSharedData
     static QStringList deserializeList(const QString &data);
 };
 
+QByteArray KConfigGroupPrivate::serializeList(const QList<QByteArray> &list)
+{
+    QByteArray value = "";
+
+    if (!list.isEmpty()) {
+        QList<QByteArray>::ConstIterator it = list.constBegin();
+        const QList<QByteArray>::ConstIterator end = list.constEnd();
+
+        value = QByteArray(*it).replace('\\', "\\\\").replace(',', "\\,");
+
+        while (++it != end) {
+            // In the loop, so it is not done when there is only one element.
+            // Doing it repeatedly is a pretty cheap operation.
+            value.reserve(4096);
+
+            value += ',';
+            value += QByteArray(*it).replace('\\', "\\\\").replace(',', "\\,");
+        }
+
+        // To be able to distinguish an empty list from a list with one empty element.
+        if (value.isEmpty())
+            value = "\\0";
+    }
+
+    return value;
+}
+
+QStringList KConfigGroupPrivate::deserializeList(const QString &data)
+{
+    if (data.isEmpty())
+        return QStringList();
+    if (data == "\\0")
+        return QStringList(QString());
+    QStringList value;
+    QString val;
+    val.reserve(data.size());
+    bool quoted = false;
+    for (int p = 0; p < data.length(); p++) {
+        if (quoted) {
+            val += data[p];
+            quoted = false;
+        } else if (data[p] == '\\') {
+            quoted = true;
+        } else if (data[p] == ',') {
+            val.squeeze(); // release any unused memory
+            value.append(val);
+            val.clear();
+            val.reserve(data.size() - p);
+        } else {
+            val += data[p];
+        }
+    }
+    value.append(val);
+    return value;
+}
+
+static QList<int> asIntList(const QByteArray& string)
+{
+    QList<int> list;
+    Q_FOREACH(const QByteArray& s, string.split(','))
+        list << s.toInt();
+    return list;
+}
+
+static QList<qreal> asRealList(const QByteArray& string)
+{
+    QList<qreal> list;
+    Q_FOREACH(const QByteArray& s, string.split(','))
+        list << s.toDouble();
+    return list;
+}
+
+QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& value, const QVariant& aDefault)
+{
+    const QString errString = QString::fromLatin1("\"%1\" - conversion of \"%3\" to %2 failed")
+            .arg(pKey).arg(QVariant::typeToName(aDefault.type())).arg(value.constData());
+    const QString formatError = QString::fromLatin1(" (wrong format: expected %1 items, got %2)");
+    QVariant tmp = aDefault;
+
+    // if a type handler is added here you must add a QVConversions definition
+    // to conversion_check.h, or ConversionCheck::to_QVariant will not allow
+    // readEntry<T> to convert to QVariant.
+    switch( aDefault.type() ) {
+        case QVariant::Invalid:
+            return QVariant();
+        case QVariant::String:
+            // this should return the raw string not the dollar expanded string.
+            // imho if processed string is wanted should call
+            // readEntry(key, QString) not readEntry(key, QVariant)
+            return QString::fromUtf8(value);
+        case QVariant::List:
+        case QVariant::StringList:
+            return KConfigGroupPrivate::deserializeList(QString::fromUtf8(value));
+        case QVariant::ByteArray:
+            return value;
+        case QVariant::Bool: {
+            const QByteArray lower(value.toLower());
+            if (lower == "false" || lower == "no" || lower == "off" || lower == "0")
+                return false;
+            return true;
+        }
+        case QVariant::Double:
+        case QVariant::Int:
+        case QVariant::UInt:
+        case QVariant::LongLong:
+        case QVariant::ULongLong:
+            tmp = value;
+            if ( !tmp.convert(aDefault.type()) )
+                tmp = aDefault;
+            return tmp;
+        case QVariant::Point: {
+            const QList<int> list = asIntList(value);
+
+            if ( list.count() != 2 ) {
+                kError() << errString
+                         << formatError.arg(2).arg(list.count())
+                         << endl;
+                return aDefault;
+            }
+            return QPoint(list.at( 0 ), list.at( 1 ));
+        }
+        case QVariant::PointF: {
+            const QList<qreal> list = asRealList(value);
+
+            if ( list.count() != 2 ) {
+                kError() << errString
+                         << formatError.arg(2).arg(list.count())
+                         << endl;
+                return aDefault;
+            }
+            return QPointF(list.at( 0 ), list.at( 1 ));
+        }
+        case QVariant::Rect: {
+            const QList<int> list = asIntList(value);
+
+            if ( list.count() != 4 ) {
+                kError() << errString
+                         << formatError.arg(4).arg(list.count())
+                         << endl;
+                return aDefault;
+            }
+            const QRect rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
+            if ( !rect.isValid() ) {
+                kError() << errString << endl;
+                return aDefault;
+            }
+            return rect;
+        }
+        case QVariant::RectF: {
+            const QList<qreal> list = asRealList(value);
+
+            if ( list.count() != 4 ) {
+                kError() << errString
+                         << formatError.arg(4).arg(list.count())
+                         << endl;
+                return aDefault;
+            }
+            const QRectF rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
+            if ( !rect.isValid() ) {
+                kError() << errString << endl;
+                return aDefault;
+            }
+            return rect;
+        }
+        case QVariant::Size: {
+            const QList<int> list = asIntList(value);
+
+            if ( list.count() != 2 ) {
+                kError() << errString
+                         << formatError.arg(2).arg(list.count())
+                         << endl;
+                return aDefault;
+            }
+            const QSize size(list.at( 0 ), list.at( 1 ));
+            if ( !size.isValid() ) {
+                kError() << errString << endl;
+                return aDefault;
+            }
+            return size;
+        }
+        case QVariant::SizeF: {
+            const QList<qreal> list = asRealList(value);
+
+            if ( list.count() != 2 ) {
+                kError() << errString
+                         << formatError.arg(2).arg(list.count())
+                         << endl;
+                return aDefault;
+            }
+            const QSizeF size(list.at( 0 ), list.at( 1 ));
+            if ( !size.isValid() ) {
+                kError() << errString << endl;
+                return aDefault;
+            }
+            return size;
+        }
+        case QVariant::DateTime: {
+            const QList<int> list = asIntList(value);
+            if ( list.count() != 6 ) {
+                kError() << errString
+                         << formatError.arg(6).arg(list.count())
+                         << endl;
+                return aDefault;
+            }
+            const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
+            const QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
+            const QDateTime dt( date, time );
+            if ( !dt.isValid() ) {
+                kError() << errString << endl;
+                return aDefault;
+            }
+            return dt;
+        }
+        case QVariant::Date: {
+            QList<int> list = asIntList(value);
+            if ( list.count() == 6 )
+                list = list.mid(0, 3); // don't break config files that stored QDate as QDateTime
+            if ( list.count() != 3 ) {
+                kError() << errString
+                         << formatError.arg(3).arg(list.count())
+                         << endl;
+                return aDefault;
+            }
+            const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
+            if ( !date.isValid() ) {
+                kError() << errString << endl;
+                return aDefault;
+            }
+            return date;
+        }
+        case QVariant::Color:
+        case QVariant::Font:
+            kFatal() << "KConfigGroup::readEntry was passed GUI type '"
+                    << aDefault.typeName()
+                    << "' but kdeui isn't linked! If it is linked to your program, "
+                    "this is a platform bug. Please inform the KDE developers" << endl;
+            break;
+        case QVariant::Url:
+            return QUrl(QString::fromUtf8(value));
+
+        default:
+            if( aDefault.canConvert<KUrl>() ) {
+                const KUrl url(QString::fromUtf8(value));
+                return qVariantFromValue<KUrl>( url );
+            }
+            break;
+    }
+
+    kFatal() << "unhandled type " << aDefault.typeName() << endl;
+    return QVariant();
+}
+
+QString KConfigGroupPrivate::expandString(const QString& value)
+{
+    QString aValue = value;
+
+    // check for environment variables and make necessary translations
+    int nDollarPos = aValue.indexOf( '$' );
+
+    while( nDollarPos != -1 && nDollarPos+1 < aValue.length()) {
+        // there is at least one $
+        if( aValue[nDollarPos+1] == '(' ) {
+            int nEndPos = nDollarPos+1;
+            // the next character is not $
+            while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!=')') )
+                nEndPos++;
+            nEndPos++;
+            QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
+
+            QString result;
+            QByteArray oldpath = qgetenv( "PATH" );
+            QByteArray newpath = QFile::encodeName( KGlobal::dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
+            if( !newpath.isEmpty() && !oldpath.isEmpty() )
+                newpath += KPATH_SEPARATOR;
+            newpath += oldpath;
+            setenv( "PATH", newpath, 1/*overwrite*/ );
+            FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
+            if (fs) {
+                QTextStream ts(fs, QIODevice::ReadOnly);
+                result = ts.readAll().trimmed();
+                pclose(fs);
+            }
+            setenv( "PATH", oldpath, 1/*overwrite*/ );
+            aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
+        } else if( aValue[nDollarPos+1] != '$' ) {
+            int nEndPos = nDollarPos+1;
+            // the next character is not $
+            QString aVarName;
+            if ( aValue[nEndPos]=='{' ) {
+                while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!='}') )
+                    nEndPos++;
+                nEndPos++;
+                aVarName = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
+            } else {
+                while ( nEndPos <= aValue.length() &&
+                        (aValue[nEndPos].isNumber() ||
+                        aValue[nEndPos].isLetter() ||
+                        aValue[nEndPos]=='_' ) )
+                    nEndPos++;
+                aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
+            }
+            QString env;
+            if (!aVarName.isEmpty()) {
+#ifdef Q_OS_WIN
+                if (aVarName == "HOME")
+                    env = QDir::homePath();
+                else
+#endif
+                {
+                    const char* pEnv = getenv( aVarName.toAscii() );
+                    if( pEnv )
+                    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
+                    // An environment variable may contain values in 8bit
+                    // locale specified encoding or UTF8 encoding
+                        env = KStringHandler::from8Bit( pEnv );
+                }
+                if (!env.isEmpty())
+                    aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
+            } else
+                aValue.remove( nDollarPos, nEndPos-nDollarPos );
+        } else {
+            // remove one of the dollar signs
+            aValue.remove( nDollarPos, 1 );
+            nDollarPos++;
+        }
+        nDollarPos = aValue.indexOf( '$', nDollarPos );
+    }
+
+    return aValue;
+}
+
+#ifdef Q_WS_WIN
+# include <QtCore/QDir>
+#endif
+
+static bool cleanHomeDirPath( QString &path, const QString &homeDir )
+{
+#ifdef Q_WS_WIN //safer
+   if (!QDir::convertSeparators(path).startsWith(QDir::convertSeparators(homeDir)))
+        return false;
+#else
+   if (!path.startsWith(homeDir))
+        return false;
+#endif
+
+   int len = homeDir.length();
+   // replace by "$HOME" if possible
+   if (len && (path.length() == len || path[len] == '/')) {
+        path.replace(0, len, QString::fromLatin1("$HOME"));
+        return true;
+   } else
+        return false;
+}
+
+static QString translatePath( QString path ) // krazy:exclude=passbyvalue
+{
+   if (path.isEmpty())
+       return path;
+
+   // only "our" $HOME should be interpreted
+   path.replace('$', "$$");
+
+   bool startsWithFile = path.startsWith(QLatin1String("file:"), Qt::CaseInsensitive);
+
+   // return original path, if it refers to another type of URL (e.g. http:/), or
+   // if the path is already relative to another directory
+   if ((!startsWithFile && QFileInfo(path).isRelative()) ||
+       (startsWithFile && QFileInfo(path.mid(5)).isRelative()))
+	return path;
+
+   if (startsWithFile)
+        path.remove(0,5); // strip leading "file:/" off the string
+
+   // keep only one single '/' at the beginning - needed for cleanHomeDirPath()
+   while (path[0] == '/' && path[1] == '/')
+	path.remove(0,1);
+
+   // we can not use KGlobal::dirs()->relativeLocation("home", path) here,
+   // since it would not recognize paths without a trailing '/'.
+   // All of the 3 following functions to return the user's home directory
+   // can return different paths. We have to test all them.
+   const QString homeDir0 = QFile::decodeName(getenv("HOME"));
+   const QString homeDir1 = QDir::homePath();
+   const QString homeDir2 = QDir(homeDir1).canonicalPath();
+   if (cleanHomeDirPath(path, homeDir0) ||
+       cleanHomeDirPath(path, homeDir1) ||
+       cleanHomeDirPath(path, homeDir2) ) {
+     // kDebug() << "Path was replaced\n";
+   }
+
+   if (startsWithFile)
+      path.prepend( "file://" );
+
+   return path;
+}
+
+
 KConfigGroup::KConfigGroup() : d(0)
 {
 }
@@ -318,85 +715,6 @@ QString KConfigGroup::readEntry( const QByteArray &key, const char* aDefault) co
     return readEntry(key, QString::fromUtf8(aDefault));
 }
 
-QString KConfigGroupPrivate::expandString(const QString& value)
-{
-    QString aValue = value;
-
-    // check for environment variables and make necessary translations
-    int nDollarPos = aValue.indexOf( '$' );
-
-    while( nDollarPos != -1 && nDollarPos+1 < aValue.length()) {
-        // there is at least one $
-        if( aValue[nDollarPos+1] == '(' ) {
-            int nEndPos = nDollarPos+1;
-            // the next character is not $
-            while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!=')') )
-                nEndPos++;
-            nEndPos++;
-            QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
-
-            QString result;
-            QByteArray oldpath = qgetenv( "PATH" );
-            QByteArray newpath = QFile::encodeName( KGlobal::dirs()->resourceDirs( "exe" ).join( QChar( KPATH_SEPARATOR ) ) );
-            if( !newpath.isEmpty() && !oldpath.isEmpty() )
-                newpath += KPATH_SEPARATOR;
-            newpath += oldpath;
-            setenv( "PATH", newpath, 1/*overwrite*/ );
-            FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
-            if (fs) {
-                QTextStream ts(fs, QIODevice::ReadOnly);
-                result = ts.readAll().trimmed();
-                pclose(fs);
-            }
-            setenv( "PATH", oldpath, 1/*overwrite*/ );
-            aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
-        } else if( aValue[nDollarPos+1] != '$' ) {
-            int nEndPos = nDollarPos+1;
-            // the next character is not $
-            QString aVarName;
-            if ( aValue[nEndPos]=='{' ) {
-                while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!='}') )
-                    nEndPos++;
-                nEndPos++;
-                aVarName = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
-            } else {
-                while ( nEndPos <= aValue.length() &&
-                        (aValue[nEndPos].isNumber() ||
-                        aValue[nEndPos].isLetter() ||
-                        aValue[nEndPos]=='_' ) )
-                    nEndPos++;
-                aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
-            }
-            QString env;
-            if (!aVarName.isEmpty()) {
-#ifdef Q_OS_WIN
-                if (aVarName == "HOME")
-                    env = QDir::homePath();
-                else
-#endif
-                {
-                    const char* pEnv = getenv( aVarName.toAscii() );
-                    if( pEnv )
-                    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
-                    // An environment variable may contain values in 8bit
-                    // locale specified encoding or UTF8 encoding
-                        env = KStringHandler::from8Bit( pEnv );
-                }
-                if (!env.isEmpty())
-                    aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
-            } else
-                aValue.remove( nDollarPos, nEndPos-nDollarPos );
-        } else {
-            // remove one of the dollar signs
-            aValue.remove( nDollarPos, 1 );
-            nDollarPos++;
-        }
-        nDollarPos = aValue.indexOf( '$', nDollarPos );
-    }
-
-    return aValue;
-}
-
 template <>
 QString KConfigGroup::readEntry<QString>( const QByteArray& key, const QString& aDefault ) const
 {
@@ -414,200 +732,14 @@ QString KConfigGroup::readEntry<QString>( const QByteArray& key, const QString& 
     return aValue;
 }
 
-static QList<int> asIntList(const QByteArray& string)
+template<>
+QStringList KConfigGroup::readEntry<QStringList>(const QByteArray &key, const QStringList& aDefault) const
 {
-    QList<int> list;
-    Q_FOREACH(const QByteArray& s, string.split(','))
-        list << s.toInt();
-    return list;
-}
+    const QString data = readEntry(key, QString());
+    if (data.isNull())
+        return aDefault;
 
-static QList<qreal> asRealList(const QByteArray& string)
-{
-    QList<qreal> list;
-    Q_FOREACH(const QByteArray& s, string.split(','))
-        list << s.toDouble();
-    return list;
-}
-
-QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& value, const QVariant& aDefault)
-{
-    const QString errString = QString::fromLatin1("\"%1\" - conversion of \"%3\" to %2 failed")
-            .arg(pKey).arg(QVariant::typeToName(aDefault.type())).arg(value.constData());
-    const QString formatError = QString::fromLatin1(" (wrong format: expected %1 items, got %2)");
-    QVariant tmp = aDefault;
-
-    // if a type handler is added here you must add a QVConversions definition
-    // to conversion_check.h, or ConversionCheck::to_QVariant will not allow
-    // readEntry<T> to convert to QVariant.
-    switch( aDefault.type() ) {
-        case QVariant::Invalid:
-            return QVariant();
-        case QVariant::String:
-            // this should return the raw string not the dollar expanded string.
-            // imho if processed string is wanted should call
-            // readEntry(key, QString) not readEntry(key, QVariant)
-            return QString::fromUtf8(value);
-        case QVariant::List:
-        case QVariant::StringList:
-            return KConfigGroupPrivate::deserializeList(QString::fromUtf8(value));
-        case QVariant::ByteArray:
-            return value;
-        case QVariant::Bool: {
-            const QByteArray lower(value.toLower());
-            if (lower == "false" || lower == "no" || lower == "off" || lower == "0")
-                return false;
-            return true;
-        }
-        case QVariant::Double:
-        case QVariant::Int:
-        case QVariant::UInt:
-        case QVariant::LongLong:
-        case QVariant::ULongLong:
-            tmp = value;
-            if ( !tmp.convert(aDefault.type()) )
-                tmp = aDefault;
-            return tmp;
-        case QVariant::Point: {
-            const QList<int> list = asIntList(value);
-
-            if ( list.count() != 2 ) {
-                kError() << errString
-                         << formatError.arg(2).arg(list.count())
-                         << endl;
-                return aDefault;
-            }
-            return QPoint(list.at( 0 ), list.at( 1 ));
-        }
-        case QVariant::PointF: {
-            const QList<qreal> list = asRealList(value);
-
-            if ( list.count() != 2 ) {
-                kError() << errString
-                         << formatError.arg(2).arg(list.count())
-                         << endl;
-                return aDefault;
-            }
-            return QPointF(list.at( 0 ), list.at( 1 ));
-        }
-        case QVariant::Rect: {
-            const QList<int> list = asIntList(value);
-
-            if ( list.count() != 4 ) {
-                kError() << errString
-                         << formatError.arg(4).arg(list.count())
-                         << endl;
-                return aDefault;
-            }
-            const QRect rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
-            if ( !rect.isValid() ) {
-                kError() << errString << endl;
-                return aDefault;
-            }
-            return rect;
-        }
-        case QVariant::RectF: {
-            const QList<qreal> list = asRealList(value);
-
-            if ( list.count() != 4 ) {
-                kError() << errString
-                         << formatError.arg(4).arg(list.count())
-                         << endl;
-                return aDefault;
-            }
-            const QRectF rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
-            if ( !rect.isValid() ) {
-                kError() << errString << endl;
-                return aDefault;
-            }
-            return rect;
-        }
-        case QVariant::Size: {
-            const QList<int> list = asIntList(value);
-
-            if ( list.count() != 2 ) {
-                kError() << errString
-                         << formatError.arg(2).arg(list.count())
-                         << endl;
-                return aDefault;
-            }
-            const QSize size(list.at( 0 ), list.at( 1 ));
-            if ( !size.isValid() ) {
-                kError() << errString << endl;
-                return aDefault;
-            }
-            return size;
-        }
-        case QVariant::SizeF: {
-            const QList<qreal> list = asRealList(value);
-
-            if ( list.count() != 2 ) {
-                kError() << errString
-                         << formatError.arg(2).arg(list.count())
-                         << endl;
-                return aDefault;
-            }
-            const QSizeF size(list.at( 0 ), list.at( 1 ));
-            if ( !size.isValid() ) {
-                kError() << errString << endl;
-                return aDefault;
-            }
-            return size;
-        }
-        case QVariant::DateTime: {
-            const QList<int> list = asIntList(value);
-            if ( list.count() != 6 ) {
-                kError() << errString
-                         << formatError.arg(6).arg(list.count())
-                         << endl;
-                return aDefault;
-            }
-            const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
-            const QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
-            const QDateTime dt( date, time );
-            if ( !dt.isValid() ) {
-                kError() << errString << endl;
-                return aDefault;
-            }
-            return dt;
-        }
-        case QVariant::Date: {
-            QList<int> list = asIntList(value);
-            if ( list.count() == 6 )
-                list = list.mid(0, 3); // don't break config files that stored QDate as QDateTime
-            if ( list.count() != 3 ) {
-                kError() << errString
-                         << formatError.arg(3).arg(list.count())
-                         << endl;
-                return aDefault;
-            }
-            const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
-            if ( !date.isValid() ) {
-                kError() << errString << endl;
-                return aDefault;
-            }
-            return date;
-        }
-        case QVariant::Color:
-        case QVariant::Font:
-            kFatal() << "KConfigGroup::readEntry was passed GUI type '"
-                    << aDefault.typeName()
-                    << "' but kdeui isn't linked! If it is linked to your program, "
-                    "this is a platform bug. Please inform the KDE developers" << endl;
-            break;
-        case QVariant::Url:
-            return QUrl(QString::fromUtf8(value));
-
-        default:
-            if( aDefault.canConvert<KUrl>() ) {
-                const KUrl url(QString::fromUtf8(value));
-                return qVariantFromValue<KUrl>( url );
-            }
-            break;
-    }
-
-    kFatal() << "unhandled type " << aDefault.typeName() << endl;
-    return QVariant();
+    return KConfigGroupPrivate::deserializeList(data);
 }
 
 template<>
@@ -638,6 +770,16 @@ QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const
         value << v;
 
     return value;
+}
+
+QStringList KConfigGroup::readXdgListEntry(const QString& pKey, const QStringList& aDefault) const
+{
+    return readXdgListEntry(pKey.toUtf8(), aDefault);
+}
+
+QStringList KConfigGroup::readXdgListEntry(const char *key, const QStringList& aDefault) const
+{
+    return readXdgListEntry(QByteArray(key), aDefault);
 }
 
 QStringList KConfigGroup::readXdgListEntry(const QByteArray &key, const QStringList& aDefault) const
@@ -671,26 +813,6 @@ QStringList KConfigGroup::readXdgListEntry(const QByteArray &key, const QStringL
         value.append(val);
     }
     return value;
-}
-
-QStringList KConfigGroup::readXdgListEntry(const QString& pKey, const QStringList& aDefault) const
-{
-    return readXdgListEntry(pKey.toUtf8(), aDefault);
-}
-
-QStringList KConfigGroup::readXdgListEntry(const char *key, const QStringList& aDefault) const
-{
-    return readXdgListEntry(QByteArray(key), aDefault);
-}
-
-template<>
-QStringList KConfigGroup::readEntry<QStringList>(const QByteArray &key, const QStringList& aDefault) const
-{
-    const QString data = readEntry(key, QString());
-    if (data.isNull())
-        return aDefault;
-
-    return KConfigGroupPrivate::deserializeList(data);
 }
 
 QString KConfigGroup::readPathEntry( const QByteArray &key, const QString& aDefault ) const
@@ -730,6 +852,28 @@ void KConfigGroup::writeEntry<const char *>(const QByteArray &key, const char* c
 }
 
 template<>
+void KConfigGroup::writeEntry<QByteArray>( const QByteArray &key, const QByteArray& value,
+                     WriteConfigFlags flags )
+{
+    Q_ASSERT(!d->bConst);
+
+    config()->d_func()->putData(d->fullName(), key, value.isNull()? QByteArray(""): value, flags);
+}
+
+template<>
+void KConfigGroup::writeEntry<QStringList>(const QByteArray &key, const QStringList &list, WriteConfigFlags flags)
+{
+    Q_ASSERT(!d->bConst);
+
+    QList<QByteArray> balist;
+
+    foreach(const QString &entry, list)
+        balist.append(entry.toUtf8());
+
+    writeEntry(key, KConfigGroupPrivate::serializeList(balist), flags);
+}
+
+template<>
 void KConfigGroup::writeEntry<QVariantList>( const QByteArray &key, const QVariantList& list, WriteConfigFlags flags )
 {
     Q_ASSERT(!d->bConst);
@@ -744,30 +888,6 @@ void KConfigGroup::writeEntry<QVariantList>( const QByteArray &key, const QVaria
     }
 
     writeEntry(key, KConfigGroupPrivate::serializeList(data), flags);
-}
-
-template<>
-void KConfigGroup::writeEntry<QByteArray>( const QByteArray &key, const QByteArray& value,
-                     WriteConfigFlags flags )
-{
-    Q_ASSERT(!d->bConst);
-
-    config()->d_func()->putData(d->fullName(), key, value.isNull()? QByteArray(""): value, flags);
-}
-
-void KConfigGroup::deleteEntry(const QByteArray& key, WriteConfigFlags flags)
-{
-   config()->d_func()->putData(d->fullName(), key, QByteArray(), flags);
-}
-
-void KConfigGroup::deleteEntry( const QString& key, WriteConfigFlags flags)
-{
-    deleteEntry(key.toUtf8(), flags);
-}
-
-void KConfigGroup::deleteEntry( const char *key, WriteConfigFlags flags)
-{
-    deleteEntry(QByteArray(key), flags);
 }
 
 template<>
@@ -907,73 +1027,37 @@ void KConfigGroup::writeXdgListEntry(const QByteArray &key, const QStringList &l
     writeEntry(key, value, flags);
 }
 
-template<>
-void KConfigGroup::writeEntry<QStringList>(const QByteArray &key, const QStringList &list, WriteConfigFlags flags)
+void KConfigGroup::writePathEntry(const QByteArray &key, const QString &path, WriteConfigFlags flags)
 {
     Q_ASSERT(!d->bConst);
 
-    QList<QByteArray> balist;
-
-    foreach(const QString &entry, list)
-        balist.append(entry.toUtf8());
-
-    writeEntry(key, KConfigGroupPrivate::serializeList(balist), flags);
+    config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, true);
 }
 
-QByteArray KConfigGroupPrivate::serializeList(const QList<QByteArray> &list)
+void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &value, WriteConfigFlags flags)
 {
-    QByteArray value = "";
+    Q_ASSERT(!d->bConst);
 
-    if (!list.isEmpty()) {
-        QList<QByteArray>::ConstIterator it = list.constBegin();
-        const QList<QByteArray>::ConstIterator end = list.constEnd();
+    QList<QByteArray> list;
+    foreach(const QString& path, value)
+        list << translatePath(path).toUtf8();
 
-        value = QByteArray(*it).replace('\\', "\\\\").replace(',', "\\,");
-
-        while (++it != end) {
-            // In the loop, so it is not done when there is only one element.
-            // Doing it repeatedly is a pretty cheap operation.
-            value.reserve(4096);
-
-            value += ',';
-            value += QByteArray(*it).replace('\\', "\\\\").replace(',', "\\,");
-        }
-
-        // To be able to distinguish an empty list from a list with one empty element.
-        if (value.isEmpty())
-            value = "\\0";
-    }
-
-    return value;
+    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::serializeList(list), flags, true);
 }
 
-QStringList KConfigGroupPrivate::deserializeList(const QString &data)
+void KConfigGroup::deleteEntry(const QByteArray& key, WriteConfigFlags flags)
 {
-    if (data.isEmpty())
-        return QStringList();
-    if (data == "\\0")
-        return QStringList(QString());
-    QStringList value;
-    QString val;
-    val.reserve(data.size());
-    bool quoted = false;
-    for (int p = 0; p < data.length(); p++) {
-        if (quoted) {
-            val += data[p];
-            quoted = false;
-        } else if (data[p] == '\\') {
-            quoted = true;
-        } else if (data[p] == ',') {
-            val.squeeze(); // release any unused memory
-            value.append(val);
-            val.clear();
-            val.reserve(data.size() - p);
-        } else {
-            val += data[p];
-        }
-    }
-    value.append(val);
-    return value;
+   config()->d_func()->putData(d->fullName(), key, QByteArray(), flags);
+}
+
+void KConfigGroup::deleteEntry( const QString& key, WriteConfigFlags flags)
+{
+    deleteEntry(key.toUtf8(), flags);
+}
+
+void KConfigGroup::deleteEntry( const char *key, WriteConfigFlags flags)
+{
+    deleteEntry(QByteArray(key), flags);
 }
 
 void KConfigGroup::revertToDefault(const QByteArray& key)
@@ -1038,89 +1122,6 @@ bool KConfigGroup::isImmutable() const
     return d->bImmutable;
 }
 
-
-
-#include <QtCore/QDir>
-
-static bool cleanHomeDirPath( QString &path, const QString &homeDir )
-{
-#ifdef Q_WS_WIN //safer
-   if (!QDir::convertSeparators(path).startsWith(QDir::convertSeparators(homeDir)))
-        return false;
-#else
-   if (!path.startsWith(homeDir))
-        return false;
-#endif
-
-   int len = homeDir.length();
-   // replace by "$HOME" if possible
-   if (len && (path.length() == len || path[len] == '/')) {
-        path.replace(0, len, QString::fromLatin1("$HOME"));
-        return true;
-   } else
-        return false;
-}
-
-QString translatePath( QString path ) // krazy:exclude=passbyvalue
-{
-   if (path.isEmpty())
-       return path;
-
-   // only "our" $HOME should be interpreted
-   path.replace('$', "$$");
-
-   bool startsWithFile = path.startsWith(QLatin1String("file:"), Qt::CaseInsensitive);
-
-   // return original path, if it refers to another type of URL (e.g. http:/), or
-   // if the path is already relative to another directory
-   if ((!startsWithFile && QFileInfo(path).isRelative()) ||
-       (startsWithFile && QFileInfo(path.mid(5)).isRelative()))
-	return path;
-
-   if (startsWithFile)
-        path.remove(0,5); // strip leading "file:/" off the string
-
-   // keep only one single '/' at the beginning - needed for cleanHomeDirPath()
-   while (path[0] == '/' && path[1] == '/')
-	path.remove(0,1);
-
-   // we can not use KGlobal::dirs()->relativeLocation("home", path) here,
-   // since it would not recognize paths without a trailing '/'.
-   // All of the 3 following functions to return the user's home directory
-   // can return different paths. We have to test all them.
-   const QString homeDir0 = QFile::decodeName(getenv("HOME"));
-   const QString homeDir1 = QDir::homePath();
-   const QString homeDir2 = QDir(homeDir1).canonicalPath();
-   if (cleanHomeDirPath(path, homeDir0) ||
-       cleanHomeDirPath(path, homeDir1) ||
-       cleanHomeDirPath(path, homeDir2) ) {
-     // kDebug() << "Path was replaced\n";
-   }
-
-   if (startsWithFile)
-      path.prepend( "file://" );
-
-   return path;
-}
-
-void KConfigGroup::writePathEntry(const QByteArray &key, const QString &path, WriteConfigFlags flags)
-{
-    Q_ASSERT(!d->bConst);
-
-    config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, true);
-}
-
-void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &value, WriteConfigFlags flags)
-{
-    Q_ASSERT(!d->bConst);
-
-    QList<QByteArray> list;
-    foreach(const QString& path, value)
-        list << translatePath(path).toUtf8();
-
-    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::serializeList(list), flags, true);
-}
-
 QStringList KConfigGroup::groupList() const
 {
     return config()->d_func()->groupList(d->fullName());
@@ -1157,3 +1158,4 @@ bool KConfigGroup::isGroupImmutableImpl(const QByteArray& b) const
 {
     return groupImpl(b).d->bImmutable;
 }
+
