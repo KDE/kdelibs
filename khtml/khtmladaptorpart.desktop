@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=KHTML Extension Adaptor
+X-KDE-Library=khtmladaptorpart
+MimeType=application/x-kde-widget-container;
+ServiceTypes=KParts/ReadOnlyPart,Browser/View
+Type=Service
+InitialPreference=4

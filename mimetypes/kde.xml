@@ -47,6 +47,9 @@ Notes:
   <mime-type type="application/x-java-applet">
     <comment>Java applet</comment>
   </mime-type>
+  <mime-type type="application/x-khtml-adaptor">
+    <comment>KHTML Extension Adaptor</comment>
+  </mime-type>
   <mime-type type="application/x-kcsrc">
     <comment>KDE color scheme</comment>
     <acronym>KDE</acronym>
