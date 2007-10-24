@@ -1335,6 +1335,12 @@ void KDateTimeTest::toClockTime()
 
 void KDateTimeTest::toZone()
 {
+    QEventLoop loop;
+    QTimer timer;
+    timer.setSingleShot(true);
+    QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
+
     // This test relies on kded running, and on kdebase/runtime being installed
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
         QSKIP("kded not running", SkipSingle);
@@ -1359,6 +1365,8 @@ void KDateTimeTest::toZone()
     config.sync();
     QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "configChanged");
     QDBusConnection::sessionBus().send(message);
+    timer.start(1000);
+    loop.exec();
 
     // Zone -> Zone
     KDateTime londonWinter(QDate(2005,1,1), QTime(0,0,0), london);
@@ -1436,6 +1444,8 @@ void KDateTimeTest::toZone()
     group.writeEntry("LocalZone", QString::fromLatin1("America/Los_Angeles"));
     config.sync();
     QDBusConnection::sessionBus().send(message);
+    timer.start(1000);
+    loop.exec();
 }
 
 void KDateTimeTest::toTimeSpec()
