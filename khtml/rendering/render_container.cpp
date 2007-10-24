@@ -33,6 +33,7 @@
 #include "rendering/render_canvas.h"
 #include "rendering/render_generated.h"
 #include "rendering/render_inline.h"
+#include "rendering/render_layer.h"
 #include "xml/dom_docimpl.h"
 #include "css/css_valueimpl.h"
 
@@ -171,8 +172,18 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         // disappears gets repainted properly.
         oldChild->repaint();
 
-        // Keep our layer hierarchy updated.
-        oldChild->removeLayers(enclosingLayer());
+        // if we remove visible child from an invisible parent, we don't know the layer visibility any more
+        RenderLayer* layer = 0;
+        if (m_style->visibility() != VISIBLE && oldChild->style()->visibility() == VISIBLE && !oldChild->layer()) {
+            layer = enclosingLayer();
+            layer->dirtyVisibleContentStatus();
+        }
+
+         // Keep our layer hierarchy updated.
+        if (oldChild->firstChild() || oldChild->layer()) {
+            if (!layer) layer = enclosingLayer();            
+            oldChild->removeLayers(layer);
+        }
         // remove the child from any special layout lists
         oldChild->removeFromObjectLists();
         
@@ -484,9 +495,17 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
 
     // Keep our layer hierarchy updated.  Optimize for the common case where we don't have any children
     // and don't have a layer attached to ourselves.
+    RenderLayer* layer = 0;
     if (newChild->firstChild() || newChild->layer()) {
-        RenderLayer* layer = enclosingLayer();
+        layer = enclosingLayer();
         newChild->addLayers(layer, newChild);
+    }
+
+    // if the new child is visible but this object was not, tell the layer it has some visible content
+    // that needs to be drawn and layer visibility optimization can't be used
+    if (style()->visibility() != VISIBLE && newChild->style()->visibility() == VISIBLE && !newChild->layer()) {
+        if (!layer) layer = enclosingLayer();
+        layer->setHasVisibleContent(true);
     }
 
     if (!newChild->isFloatingOrPositioned() && childrenInline())
@@ -527,9 +546,20 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     child->setPreviousSibling(prev);
     child->setParent(this);
 
-    // Keep our layer hierarchy updated.
-    RenderLayer* layer = enclosingLayer();
-    child->addLayers(layer, child);
+    // Keep our layer hierarchy updated.  Optimize for the common case where we don't have any children
+    // and don't have a layer attached to ourselves.
+    RenderLayer* layer = 0;
+    if (child->firstChild() || child->layer()) {
+        layer = enclosingLayer();
+        child->addLayers(layer, child);
+    }
+
+    // if the new child is visible but this object was not, tell the layer it has some visible content
+    // that needs to be drawn and layer visibility optimization can't be used
+    if (style()->visibility() != VISIBLE && child->style()->visibility() == VISIBLE && !child->layer()) {
+        if (!layer) layer = enclosingLayer();
+        layer->setHasVisibleContent(true);
+    }
 
     if (!child->isFloating() && childrenInline())
         dirtyLinesFromChangedChild(child);

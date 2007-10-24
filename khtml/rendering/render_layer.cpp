@@ -102,8 +102,16 @@ m_overflowListDirty(true),
 m_isOverflowOnly( shouldBeOverflowOnly() ),
 m_markedForRepaint( false ),
 m_hasOverlaidWidgets( false ),
+m_visibleContentStatusDirty( true ),
+m_hasVisibleContent( false ),
+m_visibleDescendantStatusDirty( false ),
+m_hasVisibleDescendant( false ),
 m_marquee( 0 )
 {
+    if (!object->firstChild() && object->style()) {
+        m_visibleContentStatusDirty = false;
+        m_hasVisibleContent = object->style()->visibility() == VISIBLE;
+    }
 }
 
 RenderLayer::~RenderLayer()
@@ -164,7 +172,7 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
 {
     updateZOrderLists();
     QRegion r;
-    if (m_negZOrderList) {
+    if (m_negZOrderList && m_hasVisibleDescendant) {
         uint count = m_negZOrderList->count();
         for (uint i = 0; i < count; i++) {
             RenderLayer* child = m_negZOrderList->at(i);
@@ -172,19 +180,19 @@ QRegion RenderLayer::paintedRegion(RenderLayer* rootLayer)
         }
     }
     const RenderStyle *s= renderer()->style();
-    if (s->visibility() == VISIBLE) {
+    if (m_hasVisibleContent) {
         int x = 0; int y = 0;
         convertToLayerCoords(rootLayer,x,y);
         QRect cr(x,y,width(),height());
-        if ( s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || 
-             renderer()->scrollsOverflow() || renderer()->isReplaced() ) {
+        if (s->visibility() == VISIBLE && (s->backgroundImage() || s->backgroundColor().isValid() || s->hasBorder() || 
+             renderer()->scrollsOverflow() || renderer()->isReplaced()) ) {
             r += cr;
         } else {
             r += renderer()->visibleFlowRegion(x, y);
         }
     }
     
-    if (m_posZOrderList) {
+    if (m_posZOrderList && m_hasVisibleDescendant) {
         uint count = m_posZOrderList->count();
         for (uint i = 0; i < count; i++) {
             RenderLayer* child = m_posZOrderList->at(i);
@@ -229,12 +237,9 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
         positionScrollbars(layerBounds);
     }
 
-#ifdef APPLE_CHANGES
-    // FIXME: Child object could override visibility.
-    if (checkForRepaint && (m_object->style()->visibility() == VISIBLE))
-        m_object->repaintAfterLayoutIfNeeded(m_repaintRect, m_fullRepaintRect);
-#else    
-    if (checkForRepaint && m_markedForRepaint) {
+    updateVisibilityStatus();
+
+    if (m_hasVisibleContent && checkForRepaint && m_markedForRepaint) {
         QRect layerBounds, damageRect, fgrect;
         calculateRects(rootLayer, renderer()->viewRect(), layerBounds, damageRect, fgrect);
         QRect vr = damageRect.intersect( layerBounds );
@@ -244,7 +249,6 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
         }
     }
     m_markedForRepaint = false;   
-#endif
     
     for	(RenderLayer* child = firstChild(); child; child = child->nextSibling())
         child->updateLayerPositions(rootLayer, doFullRepaint, checkForRepaint);
@@ -252,6 +256,92 @@ void RenderLayer::updateLayerPositions(RenderLayer* rootLayer, bool doFullRepain
     // With all our children positioned, now update our marquee if we need to.
     if (m_marquee)
         m_marquee->updateMarqueePosition();
+}
+
+ 
+void RenderLayer::setHasVisibleContent(bool b) 
+{ 
+    if (m_hasVisibleContent == b && !m_visibleContentStatusDirty)
+        return;
+    m_visibleContentStatusDirty = false; 
+    m_hasVisibleContent = b;
+    if (parent())
+        parent()->childVisibilityChanged(m_hasVisibleContent);
+}
+
+void RenderLayer::dirtyVisibleContentStatus() 
+{ 
+    m_visibleContentStatusDirty = true; 
+    if (parent())
+        parent()->dirtyVisibleDescendantStatus();
+}
+
+void RenderLayer::childVisibilityChanged(bool newVisibility) 
+{ 
+    if (m_hasVisibleDescendant == newVisibility || m_visibleDescendantStatusDirty)
+        return;
+    if (newVisibility) {
+        RenderLayer* l = this;
+        while (l && !l->m_visibleDescendantStatusDirty && !l->m_hasVisibleDescendant) {
+            l->m_hasVisibleDescendant = true;
+            l = l->parent();
+        }
+    } else 
+        dirtyVisibleDescendantStatus();
+}
+
+void RenderLayer::dirtyVisibleDescendantStatus()
+{
+    RenderLayer* l = this;
+    while (l && !l->m_visibleDescendantStatusDirty) {
+        l->m_visibleDescendantStatusDirty = true;
+        l = l->parent();
+    }
+}
+
+void RenderLayer::updateVisibilityStatus()
+{
+    if (m_visibleDescendantStatusDirty) {
+        m_hasVisibleDescendant = false;
+        for (RenderLayer* child = firstChild(); child; child = child->nextSibling()) {
+            child->updateVisibilityStatus();        
+            if (child->m_hasVisibleContent || child->m_hasVisibleDescendant) {
+                m_hasVisibleDescendant = true;
+                break;
+            }
+        }
+        m_visibleDescendantStatusDirty = false;
+    }
+
+    if (m_visibleContentStatusDirty) {
+        if (m_object->style()->visibility() == VISIBLE)
+            m_hasVisibleContent = true;
+        else {
+            // layer may be hidden but still have some visible content, check for this
+            m_hasVisibleContent = false;
+            RenderObject* r = m_object->firstChild();
+            while (r) {
+                if (r->style()->visibility() == VISIBLE && !r->layer()) {
+                    m_hasVisibleContent = true;
+                    break;
+                }
+                if (r->firstChild() && !r->layer())
+                    r = r->firstChild();
+                else if (r->nextSibling())
+                    r = r->nextSibling();
+                else {
+                    do {
+                        r = r->parent();
+                        if (r==m_object)
+                            r = 0;
+                    } while (r && !r->nextSibling());
+                    if (r)
+                        r = r->nextSibling();
+                }
+            }
+        }    
+        m_visibleContentStatusDirty = false; 
+    }
 }
 
 void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer) 
@@ -384,6 +474,9 @@ void RenderLayer::addChild(RenderLayer *child, RenderLayer* beforeChild)
         if (stackingContext)
             stackingContext->dirtyZOrderLists();
     }
+    child->updateVisibilityStatus();
+    if (child->m_hasVisibleContent || child->m_hasVisibleDescendant)
+        childVisibilityChanged(true);
 }
 
 RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
@@ -413,6 +506,10 @@ RenderLayer* RenderLayer::removeChild(RenderLayer* oldChild)
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
+
+    oldChild->updateVisibilityStatus();
+    if (oldChild->m_hasVisibleContent || oldChild->m_hasVisibleDescendant)
+        childVisibilityChanged(false);
 
     return oldChild;
 }
@@ -1367,14 +1464,10 @@ void RenderLayer::updateOverflowList()
 
 void RenderLayer::collectLayers(QVector<RenderLayer*>*& posBuffer, QVector<RenderLayer*>*& negBuffer)
 {
-    // FIXME: A child render object or layer could override visibility.  Don't remove this
-    // optimization though until RenderObject's nodeAtPoint is patched to understand what to do
-    // when visibility is overridden by a child.
-    if (renderer()->style()->visibility() != VISIBLE)
-        return;
+    updateVisibilityStatus();
 
     // Overflow layers are just painted by their enclosing layers, so they don't get put in zorder lists.
-    if (!isOverflowOnly()) {
+    if (m_hasVisibleContent && !isOverflowOnly()) {
         // Determine which buffer the child should be in.
         QVector<RenderLayer*>*& buffer = (zIndex() >= 0) ? posBuffer : negBuffer;
 
@@ -1388,7 +1481,7 @@ void RenderLayer::collectLayers(QVector<RenderLayer*>*& posBuffer, QVector<Rende
 
     // Recur into our children to collect more layers, but only if we don't establish
     // a stacking context.
-    if (!isStackingContext()) {
+    if (m_hasVisibleDescendant && !isStackingContext()) {
         for (RenderLayer* child = firstChild(); child; child = child->nextSibling())
             child->collectLayers(posBuffer, negBuffer);
     }

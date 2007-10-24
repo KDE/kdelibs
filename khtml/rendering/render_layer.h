@@ -214,6 +214,11 @@ public:
     void updateOverflowList();
     QVector<RenderLayer*>* overflowList() const { return m_overflowList; }
 
+    bool hasVisibleContent() const { return m_hasVisibleContent; }
+    void setHasVisibleContent(bool b);
+    void dirtyVisibleContentStatus();
+    
+
     void setHasOverlaidWidgets(bool b=true) { m_hasOverlaidWidgets = b; }
     bool hasOverlaidWidgets() const { return m_hasOverlaidWidgets; }
     QRegion getMask() const { return m_region; }
@@ -280,6 +285,10 @@ private:
                                      int x, int y, const QRect& hitTestRect);
     bool shouldBeOverflowOnly() const;
 
+    void childVisibilityChanged(bool newVisibility);
+    void dirtyVisibleDescendantStatus();
+    void updateVisibilityStatus();
+
 protected:
     RenderObject* m_object;
 
@@ -321,7 +330,11 @@ protected:
     bool m_overflowListDirty: 1;
     bool m_isOverflowOnly: 1;
     bool m_markedForRepaint: 1;
-    bool m_hasOverlaidWidgets: 1; 
+    bool m_hasOverlaidWidgets: 1;
+    bool m_visibleContentStatusDirty : 1;
+    bool m_hasVisibleContent : 1;
+    bool m_visibleDescendantStatusDirty : 1;
+    bool m_hasVisibleDescendant : 1;
 
     QRect m_visibleRect;
 
