@@ -109,6 +109,7 @@ void KPageWidget::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *item )
 
 void KPageWidget::removePage( KPageWidgetItem *item )
 {
+    emit pageRemoved(item); // emit signal before we remove it, because the item will be deleted in the model
     d_func()->model()->removePage(item);
 }
 

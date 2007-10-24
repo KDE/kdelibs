@@ -140,6 +140,12 @@ class KDEUI_EXPORT KPageWidget : public KPageView
      * when the @param page is checked, or false if the @param page is unchecked.
      */
     void pageToggled( KPageWidgetItem *page, bool checked );
+    
+    /**
+     * This signal is emitted when a page is removed.
+     * @param page The page which is removed
+     * */
+    void pageRemoved( KPageWidgetItem *page );
 
     protected:
         KPageWidget(KPageWidgetPrivate &dd, QWidget *parent);

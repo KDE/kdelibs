@@ -86,6 +86,7 @@ KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
   connect(this, SIGNAL(cancelClicked()), this, SLOT(updateWidgets()));
   connect(this, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
   connect(this, SIGNAL(defaultClicked()), this, SLOT(_k_updateButtons()));
+  connect(this, SIGNAL(pageRemoved(KPageWidgetItem*)), this, SLOT(onPageRemoved(KPageWidgetItem*)));
 
   d->manager = new KConfigDialogManager(this, config);
   d->setupManagerConnections(d->manager);
@@ -164,6 +165,24 @@ void KConfigDialog::KConfigDialogPrivate::setupManagerConnections(KConfigDialogM
     q->connect(q, SIGNAL(applyClicked()), manager, SLOT(updateSettings()));
     q->connect(q, SIGNAL(cancelClicked()), manager, SLOT(updateWidgets()));
     q->connect(q, SIGNAL(defaultClicked()), manager, SLOT(updateWidgetsDefault()));
+}
+
+void KConfigDialog::onPageRemoved( KPageWidgetItem *item )
+{	
+	QMap<QWidget *, KConfigDialogManager *>::iterator j = d->managerForPage.begin();
+	while (j != d->managerForPage.end())
+	{
+		// there is a manager for this page, so remove it
+		if (item->widget()->isAncestorOf(j.key())) 
+		{
+			KConfigDialogManager* manager = j.value();
+			d->managerForPage.erase(j);
+			delete manager;
+			d->_k_updateButtons();
+			break;
+		}
+		j++;
+	}
 }
 
 KConfigDialog* KConfigDialog::exists(const QString& name)

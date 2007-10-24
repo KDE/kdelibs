@@ -193,6 +193,13 @@ class KDEUI_EXPORT KPageDialog : public KDialog
      */
     void currentPageChanged( KPageWidgetItem *current, KPageWidgetItem *before );
 
+    /**
+     * This signal is emitted whenever a page has been removed.
+     *
+     * @param page The page which has been removed
+     **/
+    void pageRemoved( KPageWidgetItem *page );
+
   protected:
     /**
      * This constructor can be used by subclasses to provide a custom page widget.

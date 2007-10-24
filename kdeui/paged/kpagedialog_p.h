@@ -40,6 +40,8 @@ class KDEUI_EXPORT KPageDialogPrivate : public KDialogPrivate
             Q_Q(KPageDialog);
             q->connect(mPageWidget, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)),
                     q, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)));
+            q->connect(mPageWidget, SIGNAL(pageRemoved(KPageWidgetItem *)), 
+                    q, SIGNAL(pageRemoved(KPageWidgetItem *)));
 
             q->setMainWidget(mPageWidget);
             mPageWidget->layout()->setMargin(0);

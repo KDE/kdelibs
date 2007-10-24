@@ -208,6 +208,12 @@ protected:
    */
   virtual void showEvent(QShowEvent *e);
 
+private Q_SLOTS:
+  /**
+   * Slot which cleans up the KConfigDialogManager of the page.
+   * */
+  void onPageRemoved(KPageWidgetItem* item);
+
 private:
   class KConfigDialogPrivate;
   friend class KConfigDialogPrivate;
