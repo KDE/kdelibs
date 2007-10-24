@@ -52,6 +52,12 @@ private:
     inline KdedGlobalAccel *p()
         { return static_cast<KdedGlobalAccel *>(parent()); }
 public Q_SLOTS:
+    //get all registered keys (mainly for debugging)
+    inline QList<int> allKeys()
+        { return p()->allKeys(); }
+    //get all registered keys as strings (mainly for debugging)
+    inline QStringList allKeysAsString()
+        { return p()->allKeysAsString(); }
     //get the action that has key registered for it
     inline QStringList action(int key)
         { return p()->actionId(key); }

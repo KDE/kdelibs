@@ -21,6 +21,7 @@
 
 
 #include "kdedglobalaccel.h"
+#include <kdebug.h>
 #include "kdedglobalaccel_adaptor.h"
 
 // For KGlobalAccelImpl
@@ -81,7 +82,7 @@ public:
     QList<actionData *> componentActions(const QString &mainComponentName);
 
     //helpers
-    static bool isEmpty(QList<int>);
+    static bool isEmpty(const QList<int>&);
     static QList<int> nonemptyOnly(const QList<int> &);
 
     KGlobalAccelImpl *impl;
@@ -151,7 +152,7 @@ actionData *KdedGlobalAccelPrivate::takeAction(const QStringList &actionId)
 
 //return if a list of keys is *logically* empty
 //static
-bool KdedGlobalAccelPrivate::isEmpty(QList<int> keys)
+bool KdedGlobalAccelPrivate::isEmpty(const QList<int>& keys)
 {
     const int count = keys.count();
     for (int i = 0; i < count; i++)
@@ -200,6 +201,20 @@ KdedGlobalAccel::~KdedGlobalAccel()
     delete d;
 }
 
+QList<int> KdedGlobalAccel::allKeys()
+{
+    QList<int> ret = d->keyToAction.keys();
+    kDebug() << ret;
+    return ret;
+}
+
+QStringList KdedGlobalAccel::allKeysAsString()
+{
+    QStringList ret;
+    foreach(int keyQt, d->keyToAction.keys())
+        ret << QKeySequence(keyQt).toString();
+    return ret;
+}
 
 QStringList KdedGlobalAccel::actionId(int key)
 {

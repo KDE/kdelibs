@@ -43,6 +43,9 @@ public:
     KdedGlobalAccel();
     ~KdedGlobalAccel();
 
+    QList<int> allKeys();
+    QStringList allKeysAsString();
+
     QStringList actionId(int key);
     //to be called by main components not owning the action
     QList<int> shortcut(const QStringList &actionId);
