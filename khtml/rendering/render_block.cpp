@@ -2610,33 +2610,35 @@ void RenderBlock::calcMinMaxWidth()
 #ifdef DEBUG_LAYOUT
     kDebug( 6040 ) << renderName() << "(RenderBlock)::calcMinMaxWidth() this=" << this;
 #endif
-
-    m_minWidth = 0;
-    m_maxWidth = 0;
-
-    bool noWrap = !style()->autoWrap();
-    if (childrenInline())
-        calcInlineMinMaxWidth();
-    else
-        calcBlockMinMaxWidth();
-
-    if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
-
-    if (noWrap && childrenInline()) {
-         m_minWidth = m_maxWidth;
-
-        // A horizontal marquee with inline children has no minimum width.
-        if (style()->overflowX() == OMARQUEE && m_layer && m_layer->marquee() &&
-            m_layer->marquee()->isHorizontal() && !m_layer->marquee()->isUnfurlMarquee())
-            m_minWidth = 0;
-    }
-
-    if (isTableCell()) {
-        Length w = static_cast<RenderTableCell*>(this)->styleOrColWidth();
-        if (w.isFixed() && w.value() > 0)
-            m_maxWidth = qMax((int)m_minWidth, calcContentWidth(w.value()));
-    } else if (style()->width().isFixed() && style()->width().value() > 0)
+    if (!isTableCell() && style()->width().isFixed() && style()->width().value() > 0)
         m_minWidth = m_maxWidth = calcContentWidth(style()->width().value());
+    else {
+        m_minWidth = 0;
+        m_maxWidth = 0;
+
+        bool noWrap = !style()->autoWrap();
+        if (childrenInline())
+            calcInlineMinMaxWidth();
+        else
+            calcBlockMinMaxWidth();
+
+        if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
+
+        if (noWrap && childrenInline()) {
+             m_minWidth = m_maxWidth;
+
+            // A horizontal marquee with inline children has no minimum width.
+            if (style()->overflowX() == OMARQUEE && m_layer && m_layer->marquee() &&
+                m_layer->marquee()->isHorizontal() && !m_layer->marquee()->isUnfurlMarquee())
+                m_minWidth = 0;
+        }
+
+        if (isTableCell()) {
+            Length w = static_cast<RenderTableCell*>(this)->styleOrColWidth();
+            if (w.isFixed() && w.value() > 0)
+                m_maxWidth = qMax((int)m_minWidth, calcContentWidth(w.value()));
+        }
+    }
 
     if (style()->minWidth().isFixed() && style()->minWidth().value() > 0) {
         m_maxWidth = qMax(m_maxWidth, (int)calcContentWidth(style()->minWidth().value()));
