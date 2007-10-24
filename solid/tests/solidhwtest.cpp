@@ -25,6 +25,7 @@
 #include <solid/device.h>
 #include <solid/genericinterface.h>
 #include <solid/processor.h>
+#include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
 #include <solid/predicate.h>
 #include "solid/managerbase_p.h"
@@ -444,10 +445,36 @@ void SolidHwTest::testPredicate()
     QCOMPARE(list.size(), 0);
 }
 
+void SolidHwTest::testSetupTeardown()
+{
+    Solid::StorageAccess *access;
+    {
+        Solid::Device device("/org/kde/solid/fakehw/volume_part1_size_993284096");
+        access = device.as<Solid::StorageAccess>();
+    }
+
+    QList<QVariant> args;
+    QSignalSpy spy(access, SIGNAL(accessibilityChanged(bool)));
+
+    access->teardown();
+
+    QCOMPARE(spy.count(), 1);
+    args = spy.takeFirst();
+    QCOMPARE(args.at(0).toBool(), false);
+
+    access->setup();
+
+    QCOMPARE(spy.count(), 1);
+    args = spy.takeFirst();
+    QCOMPARE(args.at(0).toBool(), true);
+
+}
+
 void SolidHwTest::slotPropertyChanged(const QMap<QString,int> &changes)
 {
     m_changesList << changes;
 }
+
 
 #include "solidhwtest.moc"
 

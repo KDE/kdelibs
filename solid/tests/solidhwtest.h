@@ -46,6 +46,7 @@ private slots:
     void testDeviceInterfaceIntrospectionCornerCases();
     void testDeviceInterfaces();
     void testPredicate();
+    void testSetupTeardown();
 
     void slotPropertyChanged(const QMap<QString,int> &changes);
 private:
