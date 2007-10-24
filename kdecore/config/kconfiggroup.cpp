@@ -115,7 +115,8 @@ class KConfigGroupPrivate : public QSharedData
         }
     }
 
-    static QByteArray convertList(const QList<QByteArray> &list, char sep);
+    static QByteArray serializeList(const QList<QByteArray> &list);
+    static QStringList deserializeList(const QString &data);
 };
 
 KConfigGroup::KConfigGroup() : d(0)
@@ -431,9 +432,9 @@ static QList<qreal> asRealList(const QByteArray& string)
 
 QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& value, const QVariant& aDefault)
 {
-    const QString errString = QString::fromLatin1("\"%1\" - conversion from \"%3\" to %2 failed")
+    const QString errString = QString::fromLatin1("\"%1\" - conversion of \"%3\" to %2 failed")
             .arg(pKey).arg(QVariant::typeToName(aDefault.type())).arg(value.constData());
-    const QString formatError = QString::fromLatin1(" (wrong format: expected '%1' items, read '%2')");
+    const QString formatError = QString::fromLatin1(" (wrong format: expected %1 items, got %2)");
     QVariant tmp = aDefault;
 
     // if a type handler is added here you must add a QVConversions definition
@@ -449,7 +450,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             return QString::fromUtf8(value);
         case QVariant::List:
         case QVariant::StringList:
-            return value.isEmpty() ? QStringList() : QString::fromUtf8(value).split(QLatin1Char(','));
+            return KConfigGroupPrivate::deserializeList(QString::fromUtf8(value));
         case QVariant::ByteArray:
             return value;
         case QVariant::Bool: {
@@ -626,51 +627,22 @@ QVariant KConfigGroup::readEntry<QVariant>( const QByteArray &key, const QVarian
 template<>
 QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const QVariantList& aDefault) const
 {
-    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags());
-
+    const QString data = readEntry(key, QString());
     if (data.isNull())
         return aDefault;
-    if (data.isEmpty())
-        return QVariantList();
 
-    if (!data.contains("\\,")) { // easy no escaped commas
-        QVariantList list;
-        foreach (const QByteArray& v, data.split(','))
-            list << QString::fromUtf8(v.constData(), v.length());
-        return list;
-    }
-
-    // now look out for escaped commas
-    QList<QByteArray> list;
-    for (int i=0; i < data.size(); /* nothing */) {
-        int end = data.indexOf(',', i);
-    again:
-        if (end < 0) { // no more commas found, end of entry
-            list << data.mid(i);
-            i = data.size();
-        } else if (end == 0) { // empty first element
-            list << QByteArray();
-            i++;
-        } else if (data.at(end-1) == '\\') { // escaped comma
-            end = data.indexOf(',', end+1);
-            goto again;
-        } else {
-            list << data.mid(i, end-i);
-            i = end+1;
-        }
-    }
+    QStringList list = KConfigGroupPrivate::deserializeList(data);
 
     QVariantList value;
-    foreach(QByteArray v, list)
-        value << QString::fromUtf8(v.replace("\\,", ","));
+    foreach(QString v, list)
+        value << v;
 
     return value;
 }
 
 QStringList KConfigGroup::readXdgListEntry(const QByteArray &key, const QStringList& aDefault) const
 {
-    const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags());
-
+    const QString data = readEntry(key, QString());
     if (data.isNull())
         return aDefault;
 
@@ -714,42 +686,11 @@ QStringList KConfigGroup::readXdgListEntry(const char *key, const QStringList& a
 template<>
 QStringList KConfigGroup::readEntry<QStringList>(const QByteArray &key, const QStringList& aDefault) const
 {
-    char sep = ',';
     const QString data = readEntry(key, QString());
     if (data.isNull())
         return aDefault;
-    if (data.isEmpty())
-        return QStringList();
 
-    const QString separator = QChar(sep);
-    const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
-
-    QStringList value;
-    if (!data.contains(escaped)) { // easy no escaped separators
-        value = data.split(separator);
-    } else {
-        // now look out for escaped separators
-        for(int i=0; i < data.size(); /* nothing */) {
-            int end = data.indexOf(separator, i);
-        again:
-            if (end < 0) { // no more separators found, end of entry
-                value << data.mid(i).replace(escaped, separator);
-                i = data.size();
-            } else if (end == 0) { // empty first element
-                value << QString();
-                i++;
-            } else if (data.at(end-1) == QLatin1Char('\\')) { // escaped separator
-                end = data.indexOf(separator, end+1);
-                goto again;
-            } else {
-                value << data.mid(i, end-i).replace(escaped, separator);
-                i = end+1;
-            }
-        }
-    }
-    if (sep == ';' && !value.isEmpty() && value.last().isEmpty())
-        value.removeLast(); // Support for Actions="foo;" as per the desktop entry standard
-    return value;
+    return KConfigGroupPrivate::deserializeList(data);
 }
 
 QString KConfigGroup::readPathEntry( const QByteArray &key, const QString& aDefault ) const
@@ -767,39 +708,10 @@ QString KConfigGroup::readPathEntry( const QByteArray &key, const QString& aDefa
 QStringList KConfigGroup::readPathEntry( const QByteArray &key, const QStringList& aDefault ) const
 {
     const QString data = readPathEntry(key, QString());
-
     if (data.isNull())
         return aDefault;
-    if (data.isEmpty())
-        return QStringList();
 
-    const QString separator = QChar(',');
-    const QString escaped = QString(separator).prepend(QLatin1Char('\\'));
-    QStringList value;
-
-    if (!data.contains(escaped)) // easy no escaped separators
-        return data.split(separator);
-    else { // now look out for escaped separators
-        QStringList value;
-        for(int i=0; i < data.size(); /* nothing */) {
-            int end = data.indexOf(separator, i);
-    again:
-            if (end < 0) { // no more separators found, end of entry
-                value << data.mid(i).replace(escaped, separator);
-                i = data.size();
-            } else if (end == 0) { // empty first element
-                value << QString();
-                i++;
-            } else if (data.at(end-1) == QLatin1Char('\\')) { // escaped separator
-                end = data.indexOf(separator, end+1);
-                goto again;
-            } else {
-                value << data.mid(i, end-i).replace(escaped, separator);
-                i = end+1;
-            }
-        }
-    }
-    return value;
+    return KConfigGroupPrivate::deserializeList(data);
 }
 
 template<>
@@ -831,7 +743,7 @@ void KConfigGroup::writeEntry<QVariantList>( const QByteArray &key, const QVaria
             data << v.toString().toUtf8();
     }
 
-    writeEntry(key, KConfigGroupPrivate::convertList(data, ','), flags);
+    writeEntry(key, KConfigGroupPrivate::serializeList(data), flags);
 }
 
 template<>
@@ -1005,32 +917,62 @@ void KConfigGroup::writeEntry<QStringList>(const QByteArray &key, const QStringL
     foreach(const QString &entry, list)
         balist.append(entry.toUtf8());
 
-    writeEntry(key, KConfigGroupPrivate::convertList(balist, ','), flags);
+    writeEntry(key, KConfigGroupPrivate::serializeList(balist), flags);
 }
 
-QByteArray KConfigGroupPrivate::convertList(const QList<QByteArray> &list, char sep)
+QByteArray KConfigGroupPrivate::serializeList(const QList<QByteArray> &list)
 {
-    const QByteArray escaped = QByteArray(1, '\\') + sep;
-
     QByteArray value = "";
 
     if (!list.isEmpty()) {
         QList<QByteArray>::ConstIterator it = list.constBegin();
         const QList<QByteArray>::ConstIterator end = list.constEnd();
 
-        value = *it;
-        value.reserve(4084);
-
-        value.replace(sep, escaped);
+        value = QByteArray(*it).replace('\\', "\\\\").replace(',', "\\,");
 
         while (++it != end) {
-            value += sep;
-            value += QByteArray(*it).replace(sep, escaped);
+            // In the loop, so it is not done when there is only one element.
+            // Doing it repeatedly is a pretty cheap operation.
+            value.reserve(4096);
+
+            value += ',';
+            value += QByteArray(*it).replace('\\', "\\\\").replace(',', "\\,");
         }
 
-        value.squeeze(); // release any unused memory
+        // To be able to distinguish an empty list from a list with one empty element.
+        if (value.isEmpty())
+            value = "\\0";
     }
 
+    return value;
+}
+
+QStringList KConfigGroupPrivate::deserializeList(const QString &data)
+{
+    if (data.isEmpty())
+        return QStringList();
+    if (data == "\\0")
+        return QStringList(QString());
+    QStringList value;
+    QString val;
+    val.reserve(data.size());
+    bool quoted = false;
+    for (int p = 0; p < data.length(); p++) {
+        if (quoted) {
+            val += data[p];
+            quoted = false;
+        } else if (data[p] == '\\') {
+            quoted = true;
+        } else if (data[p] == ',') {
+            val.squeeze(); // release any unused memory
+            value.append(val);
+            val.clear();
+            val.reserve(data.size() - p);
+        } else {
+            val += data[p];
+        }
+    }
+    value.append(val);
     return value;
 }
 
@@ -1176,7 +1118,7 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &valu
     foreach(const QString& path, value)
         list << translatePath(path).toUtf8();
 
-    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::convertList(list, ','), flags, true);
+    config()->d_func()->putData(d->fullName(), key, KConfigGroupPrivate::serializeList(list), flags, true);
 }
 
 QStringList KConfigGroup::groupList() const
