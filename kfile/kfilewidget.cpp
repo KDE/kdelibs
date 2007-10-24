@@ -1032,7 +1032,6 @@ void KFileWidgetPrivate::initSpeedbar()
     placesView = new KFilePlacesView( q );
     placesView->setModel(new KFilePlacesModel(placesView));
     placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-    placesView->setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
 
     placesView->setObjectName( QLatin1String( "url bar" ) );
     QObject::connect( placesView, SIGNAL( urlChanged( const KUrl& )),
@@ -1510,6 +1509,8 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     configGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
     configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
     configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
+
+    ops->writeConfig(configGroup);
 }
 
 
