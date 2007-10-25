@@ -97,7 +97,7 @@ public:
 
 
 KdedGlobalAccelPrivate::KdedGlobalAccelPrivate()
- : configGroup(KGlobal::config(), "Global Shortcuts")
+ : configGroup(KGlobal::config(), "KDE Global Shortcuts")
 {
 }
 
