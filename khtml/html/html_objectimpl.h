@@ -42,6 +42,7 @@ public:
 
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
+    virtual void defaultEventHandler(EventImpl *e);
 
     virtual void recalcStyle( StyleChange ch );
 

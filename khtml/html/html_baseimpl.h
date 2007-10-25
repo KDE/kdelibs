@@ -199,6 +199,7 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
     virtual void recalcStyle( StyleChange ch );
+    virtual void defaultEventHandler(EventImpl *evt);
 
 protected:
 

@@ -34,6 +34,7 @@
 class QPainter;
 class QRect;
 template< typename T > class QVector;
+template <class T> class QStack;
 
 namespace DOM {
     class HTMLDocumentImpl;
@@ -59,6 +60,7 @@ namespace khtml {
         class RenderLineEdit;
     class RenderPartObject;
     class RenderWidget;
+    class RenderLayer;
     class CSSStyleSelector;
     class LineEditWidget;
     class CaretBox;
@@ -103,6 +105,7 @@ class KHTML_EXPORT KHTMLView : public QScrollArea, public khtml::KHTMLWidget
     friend class khtml::RenderLineEdit;
     friend class khtml::RenderPartObject;
     friend class khtml::RenderWidget;
+    friend class khtml::RenderLayer;
     friend class khtml::CSSStyleSelector;
     friend class khtml::LineEditWidget;
     friend class KJS::WindowFunc;
@@ -364,6 +367,9 @@ private:
 
     void setMouseEventsTarget( QWidget* w );
     QWidget* mouseEventsTarget() const;
+    
+    QStack<QRegion>* clipHolder() const;
+    void setClipHolder( QStack<QRegion>* ch );
 
     /**
      * Paints the HTML document to a QPainter.

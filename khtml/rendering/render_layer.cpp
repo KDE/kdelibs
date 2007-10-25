@@ -66,7 +66,6 @@ using namespace DOM;
 using namespace khtml;
 
 ScrollBarWidget* RenderLayer::gScrollBar = 0;
-QStack<QRegion>* RenderLayer::s_clipHolder = 0;
 
 #ifndef NDEBUG
 static bool inRenderLayerDetach;
@@ -914,28 +913,30 @@ void RenderLayer::paint(QPainter *p, const QRect& damageRect, bool selectionOnly
     paintLayer(this, p, damageRect, selectionOnly);
 }
 
-static void setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool setup = false)
+void RenderLayer::setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool setup)
 {
     if (paintDirtyRect == clipRect)
         return;
-    if (!RenderLayer::s_clipHolder)
-        RenderLayer::s_clipHolder = new QStack<QRegion>;
+    KHTMLView* v = m_object->canvas()->view();
+    if (!v->clipHolder())
+        v->setClipHolder(new QStack<QRegion>);
 
     QRegion r = clipRect;
-    if (!RenderLayer::s_clipHolder->isEmpty())
-        r &= RenderLayer::s_clipHolder->top();
+    if (!v->clipHolder()->isEmpty())
+        r &= v->clipHolder()->top();
     
     p->setClipRegion( r );
-    RenderLayer::s_clipHolder->push( r );
+    v->clipHolder()->push( r );
 }
 
-static void restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool cleanup = false)
+void RenderLayer::restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool cleanup)
 {
     if (paintDirtyRect == clipRect)
         return;
-    RenderLayer::s_clipHolder->pop();
-    if (!RenderLayer::s_clipHolder->isEmpty())
-        p->setClipRegion( RenderLayer::s_clipHolder->top() );
+    KHTMLView* v = m_object->element()->getDocument()->view();
+    v->clipHolder()->pop();
+    if (!v->clipHolder()->isEmpty())
+        p->setClipRegion( v->clipHolder()->top() );
     else
         p->setClipRegion( QRegion(), Qt::NoClip );
 }
@@ -943,7 +944,7 @@ static void restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& c
 void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
                         const QRect& paintDirtyRect, bool selectionOnly)
 {
-    assert( rootLayer != this || !s_clipHolder );
+    assert( rootLayer != this || !m_object->canvas()->view()->clipHolder() );
 
     // Calculate the clip rects we should use.
     QRect layerBounds, damageRect, clipRectToApply;
@@ -1058,10 +1059,11 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
     if (isTransparent())
         p->setOpacity(previousOpacity);
 
-    if (s_clipHolder && rootLayer == this) {
-        assert(s_clipHolder->isEmpty());
-        delete s_clipHolder;
-        s_clipHolder = 0;
+    if (rootLayer == this && m_object->canvas()->view()->clipHolder()) {
+        KHTMLView* const v = m_object->canvas()->view();
+        assert(v->clipHolder()->isEmpty());
+        delete v->clipHolder();
+        v->setClipHolder(0);
     }
 }
 

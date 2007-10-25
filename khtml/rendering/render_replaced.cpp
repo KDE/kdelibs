@@ -568,6 +568,8 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     setInPaintEventFlag( widget, false );
 
     widget->render( d, (buffered ? QPoint(0,0) : thePoint), r);
+    
+    setInPaintEventFlag( widget );
 
     if (!buffered) {
         p->begin(x);
@@ -579,8 +581,6 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         p->drawPixmap(QPoint(tx, ty), static_cast<QPixmap&>(*d), r);
         PaintBuffer::release();
     }
-
-    setInPaintEventFlag( widget );
 }
 
 void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
@@ -684,6 +684,9 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 
 void RenderWidget::EventPropagator::sendEvent(QEvent *e) {
     switch(e->type()) {
+    case QEvent::Wheel:
+        wheelEvent ( static_cast<QWheelEvent *> (e) );
+        break;
     case QEvent::MouseButtonPress:
         mousePressEvent(static_cast<QMouseEvent *>(e));
         break;
@@ -801,6 +804,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                  me.clientY() - absy + m_view->contentsY());
 
         QWidget* target = 0;
+        KHTMLView* itsaview = qobject_cast<KHTMLView*>(m_widget);
         target = m_widget->childAt(p);
 
         if (m_underMouse != target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {

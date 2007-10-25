@@ -252,6 +252,7 @@ public:
 
         emitCompletedAfterRepaint = CSNone;
         m_mouseEventsTarget = 0;
+        m_clipHolder = 0;
     }
     void newScrollTimer(QWidget *view, int tid)
     {
@@ -384,6 +385,7 @@ public:
     QTimer *m_mouseScrollTimer;
     QWidget *m_mouseScrollIndicator;
     QPointer<QWidget> m_mouseEventsTarget;
+    QStack<QRegion>* m_clipHolder;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -516,13 +518,8 @@ void KHTMLView::init()
         setWidget( new QWidget(this) );
     widget()->setAttribute( Qt::WA_NoSystemBackground );
 
-    // ### we'll enable redirection of khtmlview
-    //     when event issues have been thoroughly worked out
-
-    bool redirect = false; // m_part->parentPart() && !isFrame() ...
-
+    bool redirect = m_part->parentPart();
     m_kwp->setIsRedirected( redirect );
-    d->staticWidget = redirect;
 }
 
 void KHTMLView::delayedInit()
@@ -553,6 +550,13 @@ void KHTMLView::clear()
     QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
     verticalScrollBar()->setEnabled( false );
     horizontalScrollBar()->setEnabled( false );
+
+    bool redirect = m_part->parentPart() && m_kwp->renderWidget() && m_kwp->renderWidget()->element() && 
+                    m_kwp->renderWidget()->element()->id() != ID_FRAME; 
+
+    m_kwp->setIsRedirected( redirect );
+    if (redirect)
+        setHasStaticBackground();
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
@@ -577,6 +581,16 @@ void KHTMLView::setMouseEventsTarget( QWidget* w )
 QWidget* KHTMLView::mouseEventsTarget() const
 {
     return d->m_mouseEventsTarget;
+}
+
+void KHTMLView::setClipHolder( QStack<QRegion>* ch )
+{
+    d->m_clipHolder = ch;
+}
+
+QStack<QRegion>* KHTMLView::clipHolder() const
+{
+    return d->m_clipHolder;
 }
 
 int KHTMLView::contentsWidth() const
@@ -1209,6 +1223,14 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     m_part->executeScheduledScript();
 
     khtml::RenderObject* r = target ? target->renderer() : 0;
+    bool setCursor = true;
+    if (r && r->isWidget()) {
+        RenderWidget* rw = static_cast<RenderWidget*>(r);
+        KHTMLWidget* kw = qobject_cast<KHTMLView*>(rw->widget())? dynamic_cast<KHTMLWidget*>(rw->widget()) : 0;
+        if (kw && kw->m_kwp->isRedirected())
+            setCursor = false;
+        kDebug() << "setCursor is " << setCursor << "for khmtlview" << this;
+    }
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
     LinkCursor linkCursor = LINK_NORMAL;
@@ -1274,14 +1296,21 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     case CURSOR_DEFAULT:
         break;
     }
+    
+    if (!setCursor && style && style->cursor() != CURSOR_AUTO)
+        setCursor = true;
 
-    if ( viewport()->cursor().handle() != c.handle() ) {
-        if( c.handle() == QCursor(Qt::ArrowCursor).handle()) {
+    QWidget* vp = viewport();
+    for (KHTMLPart* p = m_part; p; p = p->parentPart())
+        if (!p->parentPart())
+            vp = p->view()->viewport();
+    if ( setCursor && vp->cursor().handle() != c.handle() ) {
+        if( c.shape() == Qt::ArrowCursor) {
             for (KHTMLPart* p = m_part; p; p = p->parentPart())
                 p->view()->viewport()->unsetCursor();
         }
         else {
-            viewport()->setCursor( c );
+            vp->setCursor( c );
         }
     }
 
@@ -1295,6 +1324,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
           default:              cursorIcon = "error";      break;
 	}
         QPixmap icon_pixmap = KHTMLFactory::iconLoader()->loadIcon( cursorIcon, KIconLoader::Small, 0, KIconLoader::DefaultState, QStringList(), 0, true );
+
 #if 0
 	if (d->cursor_icon_widget)
 	{

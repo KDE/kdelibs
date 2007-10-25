@@ -663,6 +663,33 @@ NodeImpl::Id HTMLIFrameElementImpl::id() const
     return ID_IFRAME;
 }
 
+void HTMLIFrameElementImpl::defaultEventHandler(EventImpl *e)
+{
+     // ### duplicated in HTMLObjectBaseElementImpl
+     if ( e->target() == this && m_render && m_render->isWidget() 
+                                    && static_cast<RenderWidget*>(m_render)->isRedirectedWidget() 
+                                    && qobject_cast<KHTMLView*>(static_cast<RenderWidget*>(m_render)->widget())) {
+        switch(e->id())  {
+        case EventImpl::MOUSEDOWN_EVENT:
+        case EventImpl::MOUSEUP_EVENT:
+        case EventImpl::MOUSEMOVE_EVENT:
+        case EventImpl::MOUSEOUT_EVENT:
+        case EventImpl::MOUSEOVER_EVENT:
+        case EventImpl::KHTML_MOUSEWHEEL_EVENT:
+        case EventImpl::KEYDOWN_EVENT:
+        case EventImpl::KEYUP_EVENT:
+        case EventImpl::KEYPRESS_EVENT:
+        case EventImpl::DOMFOCUSIN_EVENT:
+        case EventImpl::DOMFOCUSOUT_EVENT:
+            if (static_cast<RenderWidget*>(m_render)->handleEvent(*e))
+                e->setDefaultHandled();
+        default:
+            break;
+        }
+    }
+    HTMLFrameElementImpl::defaultEventHandler(e);
+}
+
 void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
 {
     switch (  attr->id() )

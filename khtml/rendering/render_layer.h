@@ -51,7 +51,6 @@
 #include "render_object.h"
 
 //template <class T*> class QVector;
-template <class T> class QStack;
 
 namespace khtml {
     class RenderObject;
@@ -123,7 +122,6 @@ class RenderLayer
 {
 public:
     static ScrollBarWidget* gScrollBar;
-    static QStack<QRegion>* s_clipHolder;
 
     RenderLayer(RenderObject* object);
     ~RenderLayer();
@@ -290,6 +288,9 @@ private:
     void updateVisibilityStatus();
 
 protected:
+    void setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool setup = false);
+    void restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool cleanup = false);
+
     RenderObject* m_object;
 
     RenderLayer* m_parent;
