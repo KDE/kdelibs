@@ -91,13 +91,14 @@ public:
     QHash<QString, QHash<QString, actionData *> *> mainComponentHashes;
     QList<actionData *> deletionQueue;
 
+    KConfig config;
     KConfigGroup configGroup;
     QTimer writeoutTimer;
 };
 
 
 KdedGlobalAccelPrivate::KdedGlobalAccelPrivate()
- : configGroup(KGlobal::config(), "KDE Global Shortcuts")
+ : config("kglobalshortcutsrc"), configGroup(&config, "KDE Global Shortcuts")
 {
 }
 
