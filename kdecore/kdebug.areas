@@ -62,7 +62,7 @@
 700        kutils (KSettings::Dialog)
 701        kutils (KSettings::Dispatcher)
 702        kutils (KPluginSelector)
-703        kutils (KPluginInfo)
+703        kdecore (KPluginInfo)
 704        kutils (KSettings::ComponentsDialog)
 710        kutils (KCMultiDialog)
 711        kutils (KCModuleProxy)
