@@ -829,12 +829,17 @@ QString kde_overrideStyle;
 
 void KGlobalSettings::Private::applyGUIStyle()
 {
-//#ifdef Q_WS_X11
-    KConfigGroup pConfig (KGlobal::config(), "General");
+#ifdef Q_WS_X11
     QString defaultStyle = QLatin1String("plastique");// = KStyle::defaultStyle(); ### wait for KStyle4
+#else
+    QString defaultStyle; // Mac, Windows: no change for style by default
+#endif
+    KConfigGroup pConfig (KGlobal::config(), "General");
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
     if (kde_overrideStyle.isEmpty()) {
+        if (styleStr.isEmpty())
+            return;
         // ### add check whether we already use the correct style to return then
         // (workaround for Qt misbehavior to avoid double style initialization)
 
@@ -851,7 +856,6 @@ void KGlobalSettings::Private::applyGUIStyle()
         qApp->setStyle(kde_overrideStyle);
     // Reread palette from config file.
     kdisplaySetPalette();
-//#endif
 }
 
 QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &config)
