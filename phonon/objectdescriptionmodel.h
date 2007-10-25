@@ -31,7 +31,8 @@ namespace Phonon
 {
     class ObjectDescriptionModelDataPrivate;
 
-    /** \class ObjectDescriptionModelData objectdescriptionmodel.h Phonon/ObjectDescriptionModelData
+    /** \internal
+     * \class ObjectDescriptionModelData objectdescriptionmodel.h Phonon/ObjectDescriptionModelData
      * \brief Data class for models for ObjectDescription objects.
      *
      * \author Matthias Kretz <kretz@kde.org>
