@@ -46,7 +46,7 @@
 #include <kio/directorysizejob.h>
 #include <kio/copyjob.h>
 #include <kio/deletejob.h>
-#include "kiotesthelper.h"
+#include "kiotesthelper.h" // createTestFile etc.
 
 QTEST_KDEMAIN( JobTest, NoGUI )
 
@@ -144,14 +144,15 @@ void JobTest::get()
     createTestFile( filePath );
     KUrl u( filePath );
     m_result = -1;
+
     KIO::StoredTransferJob* job = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     connect( job, SIGNAL( result( KJob* ) ),
             this, SLOT( slotGetResult( KJob* ) ) );
     enterLoop();
-    QVERIFY( m_result == 0 ); // no error
-    QVERIFY( m_data.size() == 11 );
-    QVERIFY( QByteArray( m_data ) == "Hello world" );
+    QCOMPARE( m_result, 0 ); // no error
+    QCOMPARE( m_data, QByteArray("Hello\0world", 11) );
+    QCOMPARE( m_data.size(), 11 );
 }
 
 void JobTest::slotGetResult( KJob* job )
@@ -768,7 +769,7 @@ void JobTest::newApiPerformance()
         KIO::filesize_t size;
         KUrl url;
 
-		
+
         for (int i = 0; i < lookupIterations; ++i) {
             OldUDSEntry::ConstIterator it2 = entry.begin();
             for( ; it2 != entry.end(); it2++ ) {

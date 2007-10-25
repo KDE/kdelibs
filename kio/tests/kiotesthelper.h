@@ -45,7 +45,9 @@ static void createTestFile( const QString& path )
     QFile f( path );
     if ( !f.open( QIODevice::WriteOnly ) )
         kFatal() << "Can't create " << path;
-    f.write( QByteArray( "Hello world" ) );
+    QByteArray data("Hello\0world", 11);
+    QCOMPARE( data.size(), 11 );
+    f.write(data);
     f.close();
     setTimeStamp( path, s_referenceTimeStamp );
 }

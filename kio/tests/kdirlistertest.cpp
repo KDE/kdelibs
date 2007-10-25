@@ -200,10 +200,12 @@ void KDirListerTest::testRefreshItems()
     connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
             this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
 
-    QFile file(path+"toplevelfile_2");
+    QString fileName = path+"toplevelfile_2";
+    QFile file(fileName);
     QVERIFY(file.open(QIODevice::Append));
     file.write("foo");
     file.close();
+    QCOMPARE(QFileInfo(fileName).size(), 11LL /*Hello world*/ + 3 /*foo*/);
 
     // KDirWatch doesn't make this work when using FAM :(
     //KDirWatch::self()->setDirty(path+"toplevelfile_2"); // hack
