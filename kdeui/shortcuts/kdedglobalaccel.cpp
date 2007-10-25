@@ -186,6 +186,7 @@ KdedGlobalAccel::KdedGlobalAccel()
     //shortcuts from triggering when the user is entering a shortcut
     d->impl->setEnabled(true);
     connect(&d->writeoutTimer, SIGNAL(timeout()), SLOT(writeSettings()));
+    d->writeoutTimer.setSingleShot(true);
     connect(this, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(writeSettings()));
 
     loadSettings();
