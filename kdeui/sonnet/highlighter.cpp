@@ -88,7 +88,7 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     d->loader->settings()->restore(&conf);
     d->filter->setSettings(d->loader->settings());
     d->dict   = new Sonnet::Speller();
-    if(d->dict->isValid()) {
+    if(!d->dict->isValid()) {
 	d->spellCheckerFound = false;
     } else {
         d->dictCache.insert(d->dict->language(),
