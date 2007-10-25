@@ -146,7 +146,7 @@ QString HalDevice::icon() const
         } else if (property("storage.hotpluggable").toBool()) {
             if (property("storage.bus").toString()=="usb") {
                 if (property("storage.no_partitions_hint").toBool()
-                 || property("storage.removable.media_size").toLongLong()<4000000000) {
+                 || property("storage.removable.media_size").toLongLong()<4000000000LL) {
                     return "drive-removable-media-usb-pendrive";
                 } else {
                     return "drive-removable-media-usb";
