@@ -390,8 +390,8 @@ KOpenSSLProxy::KOpenSSLProxy()
          if (!access(tmpStr.toLatin1(), R_OK)) {
             d->cryptoLib = new KLibrary(alib);
             d->cryptoLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
-         }
-         if (d->cryptoLib->load()) {
+         } 
+         if (d->cryptoLib && d->cryptoLib->load()) {
              break;
          }
          else {
@@ -557,7 +557,7 @@ KOpenSSLProxy::KOpenSSLProxy()
          	d->sslLib = new KLibrary(alib);
             d->sslLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
          }
-         if (d->sslLib->load()) {
+         if (d->sslLib && d->sslLib->load()) {
              break;
          }
          else {
