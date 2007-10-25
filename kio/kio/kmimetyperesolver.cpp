@@ -109,13 +109,14 @@ void KMimeTypeResolverPrivate::_k_slotProcessMimeIcons()
     }
 
     int nextDelay = 0;
+    bool isVisible = false;
     QModelIndex index = findVisibleIcon();
     if (index.isValid()) {
         // Found a visible item.
         const int numFound = m_pendingIndexes.removeAll(index);
         Q_ASSERT(numFound == 1);
-    }
-    if (!index.isValid()) {
+        isVisible = true;
+    } else {
         // No more visible items.
         // Do the unvisible ones, then, but with a bigger delay, if so configured
         index = m_pendingIndexes.takeFirst();
@@ -126,7 +127,9 @@ void KMimeTypeResolverPrivate::_k_slotProcessMimeIcons()
         if (!item.isMimeTypeKnown()) { // check if someone did it meanwhile
             //kDebug() << "Determining mimetype for " << item.url();
             item.determineMimeType();
-            m_dirModel->itemChanged(index);
+            if (isVisible) {
+                m_dirModel->itemChanged(index);
+            }
         }
     }
     m_timer.start(nextDelay); // singleshot
