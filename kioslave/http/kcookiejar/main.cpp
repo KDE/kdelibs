@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
    }
    if (args->isSet("shutdown"))
    {
-      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("unloadModule", QByteArray("kcookiejar"));
+      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("unloadModule", QString("kcookiejar"));
    }
    else if(args->isSet("reload-config"))
    {
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
    }
    else
    {
-      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("loadModule", QByteArray("kcookiejar"));
+      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("loadModule", QString("kcookiejar"));
    }
    delete kcookiejar;
 
