@@ -97,11 +97,16 @@ QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) con
     if (defaultList.size() > 1) {
         // initial order is important
         QMap<int, int> orderedList;
+        QList<int> noPrefList; //list with no preference
         foreach (int index, defaultList) {
             const QHash<QByteArray, QVariant> properties = backendIface->objectDescriptionProperties(Phonon::AudioOutputDeviceType, index);
-            orderedList.insertMulti(-properties.value("initialPreference").toInt(), index);
+            QVariant var = properties.value("initialPreference");
+            if (var.isValid())
+                orderedList.insertMulti(-var.toInt(), index);
+            else
+                noPrefList += index;
         }
-        defaultList = orderedList.values();
+        defaultList = orderedList.values() + noPrefList;
     }
     deviceList += defaultList;
 
