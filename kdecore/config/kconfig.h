@@ -168,6 +168,7 @@ public:
      * Returns whether all entries are being written to @c kdeglobals.
      * @return @c true if all entries are being written to @c kdeglobals
      * @see setForceGlobal
+     * @deprecated
      */
     KDE_DEPRECATED bool forceGlobal() const;
     /// @}
@@ -186,6 +187,8 @@ public:
      * @return A map of entries in the group specified, indexed by key.
      *         The returned map may be empty if the group is empty, or not found.
      * @see   QMap
+     * 
+     * @deprecated
      */
     KDE_DEPRECATED QMap<QString, QString> entryMap(const QString &aGroup=QString()) const;
 
