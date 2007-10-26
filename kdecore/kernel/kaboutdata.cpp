@@ -133,14 +133,12 @@ public:
         {}
     QString _appName;
     KLocalizedString _programName;
-    QString _version;
     KLocalizedString _shortDescription;
     QString _catalogName;
     enum KAboutData::LicenseKey  _licenseKey;
     KLocalizedString _copyrightStatement;
     KLocalizedString _otherText;
     QString _homepageAddress;
-    QString _bugEmailAddress;
     QList<KAboutPerson> _authorList;
     QList<KAboutPerson> _creditList;
     KLocalizedString _licenseText;
@@ -151,8 +149,14 @@ public:
     QVariant programLogo;
     KLocalizedString customAuthorPlainText, customAuthorRichText;
     bool customAuthorTextEnabled;
-    QString _translatedProgramName;
+
     QString organizationDomain;
+
+    // Everything dr.konqi needs, we store as utf-8, so we 
+    // can just give it a pointer, w/o any allocations.
+    QByteArray _translatedProgramName; // ### I don't see it ever being translated, and I did not change that
+    QByteArray _version;
+    QByteArray _bugEmailAddress;
 };
 
 
@@ -178,6 +182,7 @@ KAboutData::KAboutData( const QByteArray &_appName,
 
     d->_catalogName = _catalogName;
     d->_programName = _programName;
+    d->_translatedProgramName = _programName.toString(0).toUtf8();
     d->_version = _version;
     d->_shortDescription = _shortDescription;
     d->_licenseKey = licenseType;
@@ -283,7 +288,7 @@ KAboutData::setProgramName( const KLocalizedString &_programName )
 KAboutData &
 KAboutData::setVersion( const QByteArray &_version )
 {
-  d->_version = QString::fromUtf8(_version);
+  d->_version = _version;
   return *this;
 }
 
@@ -332,7 +337,7 @@ KAboutData::setHomepage( const QByteArray &_homepage )
 KAboutData &
 KAboutData::setBugAddress( const QByteArray &_bugAddress )
 {
-  d->_bugEmailAddress = QString::fromUtf8(_bugAddress);
+  d->_bugEmailAddress = _bugAddress;
   return *this;
 }
 
@@ -373,16 +378,12 @@ KAboutData::programName() const
 }
 
 /// @internal
-/// Gracefully handle cases where the program name is not
-/// translated (yet) and return the untranslated name then.
+/// Return the program name. It is always pre-allocated.
 /// Needed for KCrash in particular.
 const char*
 KAboutData::internalProgramName() const
 {
-   if (!d->_translatedProgramName.isEmpty())
-      return d->_translatedProgramName.toUtf8().data();
-   else
-      return d->_programName.toString(0).toUtf8().data();
+   return d->_translatedProgramName.constData();
 }
 
 /// @internal
@@ -413,7 +414,7 @@ KAboutData::setProgramLogo(const QVariant& image)
 QString
 KAboutData::version() const
 {
-   return d->_version;
+   return QString::fromUtf8(d->_version);
 }
 
 /// @internal
@@ -422,7 +423,7 @@ KAboutData::version() const
 const char*
 KAboutData::internalVersion() const
 {
-   return d->_version.toUtf8().data();
+   return d->_version.constData();
 }
 
 QString
@@ -451,7 +452,7 @@ KAboutData::homepage() const
 QString
 KAboutData::bugAddress() const
 {
-   return d->_bugEmailAddress;
+   return QString::fromUtf8(d->_bugEmailAddress);
 }
 
 QString
@@ -467,7 +468,9 @@ KAboutData::organizationDomain() const
 const char*
 KAboutData::internalBugAddress() const
 {
-   return d->_bugEmailAddress.toUtf8().data();
+   if (d->_bugEmailAddress.isEmpty())
+      return 0;
+   return d->_bugEmailAddress.constData();
 }
 
 QList<KAboutPerson>
