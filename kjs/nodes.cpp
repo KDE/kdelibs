@@ -1014,6 +1014,8 @@ JSValue *FunctionCallReferenceNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   JSObject *thisObj = ref.base;
+  if (thisObj->isActivation())
+    thisObj =  exec->dynamicInterpreter()->globalObject();
 
   return func->call(exec, thisObj, argList);
 }
