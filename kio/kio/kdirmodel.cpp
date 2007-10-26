@@ -612,7 +612,7 @@ QVariant KDirModel::headerData( int section, Qt::Orientation orientation, int ro
         case Size:
             return i18nc("@title:column","Size");
         case ModifiedTime:
-            return i18nc("@title:column","Modified"); // was called "Date" in kde3's kfiledialog - which one is better?
+            return i18nc("@title:column","Date");
         case Permissions:
             return i18nc("@title:column","Permissions");
         case Owner:
