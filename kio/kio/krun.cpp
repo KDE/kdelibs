@@ -943,7 +943,7 @@ void KRun::init()
   kDebug(7010) << "Testing directory (stating)";
 
   // It may be a directory or a file, let's stat
-  KIO::JobFlags flags = d->m_bProgressInfo ? KIO::HideProgressInfo : KIO::DefaultFlags;
+  KIO::JobFlags flags = d->m_bProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
   KIO::StatJob *job = KIO::stat( d->m_strURL, KIO::StatJob::SourceSide, 0 /* no details */, flags );
   job->ui()->setWindow (d->m_window);
   connect( job, SIGNAL( result( KJob * ) ),
@@ -993,7 +993,7 @@ void KRun::scanFile()
   }
   kDebug(7010) << this << " Scanning file " << d->m_strURL.url();
 
-  KIO::JobFlags flags = d->m_bProgressInfo ? KIO::HideProgressInfo : KIO::DefaultFlags;
+  KIO::JobFlags flags = d->m_bProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
   KIO::TransferJob *job = KIO::get( d->m_strURL, KIO::NoReload /*reload*/, flags );
   job->ui()->setWindow (d->m_window);
   connect(job, SIGNAL( result(KJob *)),
