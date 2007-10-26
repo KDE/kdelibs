@@ -80,22 +80,23 @@ public:
      */
     enum ColorSet {
         /**
-         * Views; e.g. frames, input fields, etc.
+         * Views; for example, frames, input fields, etc.
          *
          * If it contains things that can be selected, it is probably a View.
          */
         View,
         /**
-         * Non-editable window elements; e.g. menus.
+         * Non-editable window elements; for example, menus.
          *
          * If it isn't a Button, View, or Tooltip, it is probably a Window.
          */
         Window,
         /**
-         * Buttons.
+         * Buttons and button-like controls.
          *
          * In addition to buttons, "button-like" controls such as non-editable
-         * dropdowns should also use this role.
+         * dropdowns, scrollbar sliders, slider handles, etc. should also use
+         * this role.
          */
         Button,
         /**
@@ -132,35 +133,44 @@ public:
          */
         NormalBackground = 0,
         /**
-         * Alternate background, e.g. for use in lists. May be the same as
-         * BackgroundNormal, especially in sets other than View and Window.
+         * Alternate background; for example, for use in lists.
+         *
+         * This color may be the same as BackgroundNormal, especially in sets
+         * other than View and Window.
          */
         AlternateBackground = 1,
         /**
-         * Third color, e.g. items which are new, active, requesting
-         * attention, etc. Alerting the user that a certain field must be
-         * filled out would be a good usage. (Unlike ActiveText, this should
-         * not be used for mouseover effects.)
+         * Third color; for example, items which are new, active, requesting
+         * attention, etc.
+         *
+         * Alerting the user that a certain field must be filled out would be a
+         * good usage (although NegativeBackground could be used to the same
+         * effect, depending on what you are trying to achieve). Unlike
+         * ActiveText, this should not be used for mouseover effects.
          */
         ActiveBackground = 2,
         /**
-         * Fourth color, e.g. (unvisited) links or other clickable items.
+         * Fourth color; corresponds to (unvisited) links.
+         *
+         * Exactly what this might be used for is somewhat harder to qualify;
+         * it might be used as a 'you can click here' indicator, or to
+         * highlight recent content (i.e. in a most-recently-accessed list).
          */
         LinkBackground = 3,
         /**
-         * Fifth color, e.g. (visited) links.
+         * Fifth color; corresponds to visited links.
          */
         VisitedBackground = 4,
         /**
-         * Sixth color, e.g. errors, untrusted content, etc.
+         * Sixth color; for example, errors, untrusted content, etc.
          */
         NegativeBackground = 5,
         /**
-         * Seventh color, e.g. warnings, secure/encrypted content.
+         * Seventh color; for example, warnings, secure/encrypted content.
          */
         NeutralBackground = 6,
         /**
-         * Eigth color, e.g. success messages, trusted content.
+         * Eigth color; for example, success messages, trusted content.
          */
         PositiveBackground = 7
     };
@@ -169,8 +179,17 @@ public:
      * This enumeration describes the foreground color being selected from the
      * given set.
      *
-     * Foreground colors are suitable for drawing text, and should never be
-     * used to draw backgrounds.
+     * Foreground colors are suitable for drawing text or glyphs (such as the
+     * symbols on window decoration buttons, assuming a suitable background
+     * brush is used), and should never be used to draw backgrounds.
+     *
+     * For window decorations, the following is suggested, but not set in
+     * stone:
+     * @li Maximize - PositiveText
+     * @li Minimize - NeutralText
+     * @li Close - NegativeText
+     * @li WhatsThis - LinkText
+     * @li Sticky - ActiveText
      */
     enum ForegroundRole {
         /**
@@ -178,33 +197,37 @@ public:
          */
         NormalText = 0,
         /**
-         * Second color, e.g. comments, items which are old, inactive or
-         * disabled.
+         * Second color; for example, comments, items which are old, inactive
+         * or disabled. InactiveText is not the same role as NormalText in the
+         * inactive state.
          */
         InactiveText = 1,
         /**
-         * Third color, e.g. items which are new, active, requesting
+         * Third color; for example items which are new, active, requesting
          * attention, etc. May be used as a hover color for clickable items.
          */
         ActiveText = 2,
         /**
-         * Fourth color, e.g. (unvisited) links or other clickable items.
+         * Fourth color; use for (unvisited) links. May also be used for other
+         * clickable items.
          */
         LinkText = 3,
         /**
-         * Fifth color, e.g. (visited) links.
+         * Fifth color; used for (visited) links. As with LinkText, may be used
+         * for clickable items that have been clicked, or otherwise accessed,
+         * already.
          */
         VisitedText = 4,
         /**
-         * Sixth color, e.g. errors, untrusted content, etc.
+         * Sixth color; for example, errors, untrusted content, etc.
          */
         NegativeText = 5,
         /**
-         * Seventh color, e.g. warnings, secure/encrypted content.
+         * Seventh color; for example, warnings, secure/encrypted content.
          */
         NeutralText = 6,
         /**
-         * Eigth color, e.g. success messages, trusted content.
+         * Eigth color; for example, success messages, trusted content.
          */
         PositiveText = 7
     };
