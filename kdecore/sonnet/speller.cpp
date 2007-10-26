@@ -78,6 +78,7 @@ Speller::Speller(const QString &lang)
 
 Speller::~Speller()
 {
+    //qDebug()<<"deleting "<<this;
     delete d;
 }
 
@@ -113,7 +114,7 @@ bool Speller::isMisspelled(const QString &word) const
     return d->dict->isMisspelled(word);
 }
 
-QStringList Sonnet::Speller::suggest(const QString &word) const
+QStringList Speller::suggest(const QString &word) const
 {
     if (!d->isValid())
         return QStringList();

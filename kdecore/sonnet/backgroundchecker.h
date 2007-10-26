@@ -69,7 +69,6 @@ namespace Sonnet
 
         Speller speller() const;
         void setSpeller(const Speller &speller);
-        void changeLanguage(const QString &lang);
 
         bool checkWord(const QString &word);
         QStringList suggest(const QString &word) const;
@@ -79,6 +78,7 @@ namespace Sonnet
         virtual void stop();
         void replace(int start, const QString &oldText,
                      const QString &newText);
+        void changeLanguage(const QString &lang);
 
         /**
          * After emitting misspelling signal the background

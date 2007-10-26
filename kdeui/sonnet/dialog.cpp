@@ -57,23 +57,24 @@ public:
     bool restart;//used when text is distributed across several qtextedits, eg in KAider
 };
 
-Dialog::Dialog( BackgroundChecker *checker,
-                QWidget *parent )
-    : KDialog( parent ),d(new Private)
+Dialog::Dialog(BackgroundChecker *checker,
+               QWidget *parent)
+    : KDialog(parent),
+      d(new Private)
 {
-    setModal( true );
-    setCaption( i18nc("@title:window", "Check Spelling" ) );
-    setButtons( Help | Cancel | User1 );
-    setButtonGuiItem( User1, KGuiItem(i18nc("@action:button", "&Finished" )) );
-    setDefaultButton( Cancel );
-    showButtonSeparator( true );
+    setModal(true);
+    setCaption(i18nc("@title:window", "Check Spelling"));
+    setButtons(Help | Cancel | User1);
+    setButtonGuiItem(User1, KGuiItem(i18nc("@action:button", "&Finished")));
+    setDefaultButton(Cancel);
+    showButtonSeparator(true);
 
-    setDefaultButton( Cancel );
+    setDefaultButton(Cancel);
     d->checker = checker;
 
     initGui();
     initConnections();
-    setMainWidget( d->wdg );
+    setMainWidget(d->wdg);
 }
 
 Dialog::~Dialog()
@@ -128,7 +129,7 @@ void Dialog::initGui()
     d->ui.m_language->insertItems(0, speller.availableLanguageNames());
     d->ui.m_language->setCurrentIndex(speller.availableLanguages().indexOf(
                                           speller.language()));
-    d->restart=false;
+    d->restart = false;
 }
 
 void Dialog::activeAutoCorrect( bool _active )
@@ -172,11 +173,11 @@ QString Dialog::buffer() const
     return d->checker->text();
 }
 
-void Dialog::setBuffer( const QString& buf )
+void Dialog::setBuffer(const QString &buf)
 {
     d->originalBuffer = buf;
     //it is possible to change buffer inside slot connected to done() signal
-    d->restart=true;
+    d->restart = true;
 }
 
 

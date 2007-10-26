@@ -72,7 +72,11 @@ SpellerPlugin *QSpellEnchantClient::createSpeller(
 #endif
         return 0;
     } else {
-        return new QSpellEnchantDict(m_broker, dict, language);
+        //Enchant caches dictionaries, so it will always return the same one.
+        int refs = m_dictRefs[dict];
+        ++refs;
+        m_dictRefs[dict] = refs;
+        return new QSpellEnchantDict(this, m_broker, dict, language);
     }
 }
 
@@ -84,6 +88,17 @@ QStringList QSpellEnchantClient::languages() const
 void QSpellEnchantClient::addLanguage(const QString &lang)
 {
     m_languages.insert(lang);
+}
+
+void QSpellEnchantClient::removeDictRef(EnchantDict *dict)
+{
+    int refs = m_dictRefs[dict];
+    --refs;
+    m_dictRefs[dict] = refs;
+    if (refs <= 0) {
+        m_dictRefs.remove(dict);
+        enchant_broker_free_dict(m_broker, dict);
+    }
 }
 
 #include "enchantclient.moc"

@@ -24,6 +24,8 @@
 
 #include <enchant.h>
 
+class QSpellEnchantClient;
+
 class QSpellEnchantDict : public Sonnet::SpellerPlugin
 {
 public:
@@ -39,13 +41,15 @@ public:
     virtual bool addToSession(const QString &word);
 protected:
     friend class QSpellEnchantClient;
-    QSpellEnchantDict(EnchantBroker *broker,
+    QSpellEnchantDict(QSpellEnchantClient *client,
+                      EnchantBroker *broker,
                       EnchantDict *dict,
                       const QString &language);
 
 private:
     EnchantBroker *m_broker;
     EnchantDict   *m_dict;
+    QSpellEnchantClient *m_client;
 };
 
 #endif

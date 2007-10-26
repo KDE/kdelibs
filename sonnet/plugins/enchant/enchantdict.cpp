@@ -18,25 +18,31 @@
  * 02110-1301  USA
  */
 #include "enchantdict.h"
+#include "enchantclient.h"
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QDebug>
 
 using namespace Sonnet;
 
-QSpellEnchantDict::QSpellEnchantDict(EnchantBroker *broker,
+QSpellEnchantDict::QSpellEnchantDict(QSpellEnchantClient *client, 
+                                     EnchantBroker *broker,
                                      EnchantDict *dict,
                                      const QString &language)
     : SpellerPlugin(language),
       m_broker(broker),
-      m_dict(dict)
+      m_dict(dict),
+      m_client(client)
 {
-    qDebug()<<"Enchant dict for"<<language;
+    qDebug()<<"Enchant dict for"<<language << dict;
 }
 
 QSpellEnchantDict::~QSpellEnchantDict()
 {
-    enchant_broker_free_dict(m_broker, m_dict);
+    //Enchant caches dictionaries, so it will always return the same one.
+    // therefore we do not want to delete the EnchantDict here but in the
+    // client when it knows that nothing is using it anymore
+    m_client->removeDictRef(m_dict);
 }
 
 bool QSpellEnchantDict::isCorrect(const QString &word) const

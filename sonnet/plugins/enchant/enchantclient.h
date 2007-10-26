@@ -53,9 +53,12 @@ public:
 
     void addLanguage(const QString &lang);
 
+    void removeDictRef(EnchantDict *dict);
+
 private:
     EnchantBroker *m_broker;
     QSet<QString>  m_languages;
+    QHash<EnchantDict*, int> m_dictRefs;
 };
 
 #endif

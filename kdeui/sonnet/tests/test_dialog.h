@@ -35,8 +35,6 @@ public:
 public Q_SLOTS:
     void check( const QString& buffer );
     void doneChecking( const QString& );
-private:
-    Sonnet::Loader *m_loader;
 };
 
 #endif
