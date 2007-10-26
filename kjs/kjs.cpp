@@ -86,8 +86,6 @@ static UString readFile(const char* fileName)
     return s;
 }
 
-static ExitCode evaluateFile(Interpreter *interp, const char *fileName);
-
 class GlobalImp : public JSObject {
 public:
     virtual UString className() const { return "global"; }
@@ -99,7 +97,7 @@ public:
     virtual bool implementsCall() const { return true; }
     virtual JSValue* callAsFunction(ExecState* exec,
                                     JSObject* thisObj, const List &args);
-    enum { Print, Quit, Load, GC };
+    enum { Print, Quit };
 
 private:
     int id;
@@ -121,12 +119,6 @@ JSValue* TestFunctionImp::callAsFunction(ExecState* exec,
         return jsUndefined();
     case Quit:
         exit(0);
-    case GC:
-        while (Interpreter::collect()) {}
-        break;
-    case Load:
-        evaluateFile(exec->dynamicInterpreter(), args[0]->toString(exec).UTF8String().c_str());
-        break;
     default:
         abort();
     }
@@ -215,17 +207,11 @@ static ExitCode parseArgs(int argc, char** argv)
                 new TestFunctionImp(TestFunctionImp::Print, 1));
     global->put(gexec, "quit",
                 new TestFunctionImp(TestFunctionImp::Quit, 0));
-    global->put(gexec, "load",
-                new TestFunctionImp(TestFunctionImp::Load, 1));
-    global->put(gexec, "gc",
-                new TestFunctionImp(TestFunctionImp::GC, 0));
-
 
     // enable package support
     interp->setGlobalPackage(new StandardGlobalPackage());
 
     const char *script = 0, *command = 0;
-    bool ranOtherScript = false
     int ai = 1;
     for (ai = 1; ai < argc; ++ai) {
         const char* a = argv[ai];
@@ -242,16 +228,6 @@ static ExitCode parseArgs(int argc, char** argv)
             command = argv[ai];
             ++ai;
             break;
-        } else if (strcmp(a, "-f") == 0) { // Compatibility mode, for SunSpider
-            ++ai;
-            if (argc <= ai) {
-                fprintf(stderr, "Missing -f argument.\n");
-                return ErrorMissingArg;
-            }
-            ExitCode result = evaluateFile(interp.get(), argv[ai]);
-            if (result != ErrorNone)
-                return result;
-            ranOtherScript = true;
         } else if (a[0] == '-') {
             fprintf(stderr, "Unknown switch %s.\n", a);
             return ErrorUnknownSwitch;
@@ -270,10 +246,9 @@ static ExitCode parseArgs(int argc, char** argv)
         return evaluateFile(interp.get(), script);
     } else if (command) {
         return evaluateString(interp.get(), "(eval)", command);
-    } else if (!ranOtherScript) {
+    } else {
         return evaluateInteractive(interp.get());
     }
-    return ErrorNone;
 }
 
 int main(int argc, char** argv)
