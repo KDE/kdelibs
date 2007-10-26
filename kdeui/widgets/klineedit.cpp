@@ -42,6 +42,8 @@
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kicon.h>
+#include <kaction.h>
+#include <kstandardaction.h>
 
 #include <QtCore/QTimer>
 #include <QtGui/QClipboard>
@@ -1013,6 +1015,24 @@ void KLineEdit::tripleClickTimeout()
 QMenu* KLineEdit::createStandardContextMenu()
 {
     QMenu *popup = QLineEdit::createStandardContextMenu();
+    
+    if( !isReadOnly() )
+    {
+        QList<QAction *> actionList = popup->actions();
+        enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs }; 
+        QAction *separatorAction = 0L;
+        int idx = actionList.indexOf( actionList[SelectAllAct] ) + 1;
+        if ( idx < actionList.count() )
+            separatorAction = actionList.at( idx );         
+        if ( separatorAction )
+        {
+            KAction *clearAllAction = KStandardAction::clear( this, SLOT( clear() ), this) ;
+            if ( text().isEmpty() )
+                clearAllAction->setEnabled( false );    
+            popup->insertAction( separatorAction, clearAllAction );
+        }
+    }
+
     KIconTheme::assignIconsToContextMenu( KIconTheme::TextEditor, popup->actions () );
 
     // If a completion object is present and the input

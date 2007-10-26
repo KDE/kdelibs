@@ -27,8 +27,10 @@
 #include <QTextCursor>
 #include <dialog.h>
 #include "backgroundchecker.h"
+#include <kaction.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
+#include <kstandardaction.h>
 #include <kstandardshortcut.h>
 #include <kicon.h>
 #include <kiconloader.h>
@@ -288,6 +290,23 @@ void KTextEdit::contextMenuEvent( QContextMenuEvent *event )
   QMenu *popup = createStandardContextMenu();
   connect( popup, SIGNAL( triggered ( QAction* ) ),
            this, SLOT( menuActivated( QAction* ) ) );
+
+  if( !isReadOnly() )
+  {
+      QList<QAction *> actionList = popup->actions();
+      enum { UndoAct, RedoAct, CutAct, CopyAct, PasteAct, ClearAct, SelectAllAct, NCountActs }; 
+      QAction *separatorAction = 0L;
+      int idx = actionList.indexOf( actionList[SelectAllAct] ) + 1;
+      if ( idx < actionList.count() )
+          separatorAction = actionList.at( idx );         
+      if ( separatorAction )
+      {
+          KAction *clearAllAction = KStandardAction::clear( this, SLOT( clear() ), this) ;
+          if ( toPlainText().isEmpty() )
+              clearAllAction->setEnabled( false );    
+          popup->insertAction( separatorAction, clearAllAction );
+      }
+  }
 
   KIconTheme::assignIconsToContextMenu( isReadOnly() ? KIconTheme::ReadOnlyText
                                                      : KIconTheme::TextEditor,
