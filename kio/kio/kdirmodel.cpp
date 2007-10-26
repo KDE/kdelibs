@@ -355,7 +355,8 @@ void KDirModelPrivate::_k_slotDeleteItem(const KFileItem& item)
         return;
 
     KDirModelDirNode* dirNode = node->parent();
-    Q_ASSERT(dirNode);
+    if (!dirNode)
+        return;
 
     QModelIndex parentIndex = indexForNode(dirNode); // O(n)
     q->beginRemoveRows( parentIndex, rowNumber, rowNumber );
