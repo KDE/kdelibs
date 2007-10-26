@@ -70,6 +70,9 @@ Context::Context(JSObject* glob, Interpreter* interpreter, JSObject* thisV,
         m_thisVal = thisV;
         break;
     }
+    
+    if (m_thisVal)
+      assert(!(m_thisVal->getObject() && m_thisVal->getObject()->isActivation()));
 
     m_interpreter->setContext(this);
 }
