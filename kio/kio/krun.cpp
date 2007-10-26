@@ -385,7 +385,9 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
   // Check if we need "tempexec" (kioexec in fact)
   appHasTempFileOption = tempFiles && _service.property("X-KDE-HasTempFileOption").toBool();
   if( tempFiles && !appHasTempFileOption && _urls.size() ) {
-    result << "kioexec" << "--tempfiles" << exec;
+    const QString kioexec = KStandardDirs::findExe("kioexec");
+    Q_ASSERT(!kioexec.isEmpty());
+    result << kioexec << "--tempfiles" << exec;
     if ( !suggestedFileName.isEmpty() ) {
         result << "--suggestedfilename";
         result << suggestedFileName;
@@ -399,7 +401,9 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     for( KUrl::List::ConstIterator it = _urls.begin(); it != _urls.end(); ++it )
       if ( !(*it).isLocalFile() && !KProtocolInfo::isHelperProtocol(*it) ) {
         // We need to run the app through kioexec
-        result << "kioexec";
+        const QString kioexec = KStandardDirs::findExe("kioexec");
+        Q_ASSERT(!kioexec.isEmpty());
+        result << kioexec;
         if ( tempFiles )
             result << "--tempfiles";
         if ( !suggestedFileName.isEmpty() ) {
