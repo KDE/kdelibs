@@ -66,15 +66,15 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 	{
 		QIcon icon;
 		if(key == "Sound" )
-			icon = KIcon("sound");
+			icon = KIcon("speaker");
 		else if(key == "Popup" )
 			icon = KIcon("document-properties");
 		else if(key == "Execute" )
 			icon = KIcon("exec");
 		else if(key == "Taskbar" )
-			icon = KIcon("kicker");
+			icon = KIcon("services");
 		else if(key == "Logfile" )
-			icon = KIcon("log");
+			icon = KIcon("text-plain");
 		else
 			continue;
 
