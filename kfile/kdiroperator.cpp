@@ -436,6 +436,10 @@ void KDirOperator::setPreviewWidget(KPreviewWidgetBase *w)
     delete d->preview;
     d->preview = w;
 
+    if (w) {
+        d->splitter->addWidget(w);
+    }
+
     KToggleAction *previewAction = static_cast<KToggleAction*>(d->actionCollection->action("preview"));
     previewAction->setEnabled(showPreview);
     previewAction->setChecked(showPreview);
@@ -1822,6 +1826,10 @@ void KDirOperator::Private::_k_slotIOFinished()
     progressBar->hide();
     emit parent->finishedLoading();
     parent->resetCursor();
+
+    if (preview) {
+        preview->clearPreview();
+    }
 }
 
 void KDirOperator::Private::_k_slotCanceled()
