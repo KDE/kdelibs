@@ -84,13 +84,13 @@ class KPluginLoaderPrivate;
  *
  * This class is reentrant, you can load plugins from different threads. You can also have multiple
  * PluginLoaders for one library without negative effects.
- * The object obtained with factory() or the inherited methode QPluginLoader::instance() is
+ * The object obtained with factory() or the inherited method QPluginLoader::instance() is
  * cached inside the library. If you call factory() or instance() multiple times, you will always get
  * the same object, even from different threads and different KPluginLoader instances.
  * You can delete this object easily, a new one will be created if factory() or instance() is called
  * afterwards. factory() uses instance() internally.
  *
- * KPluginLoader inherits QPluginLoader::unload(). It safe to call this methode if you loaded a plugin
+ * KPluginLoader inherits QPluginLoader::unload(). It safe to call this method if you loaded a plugin
  * and decide not to use it for some reason. But as soon as you start to use the factory from the plugin,
  * you should stay away from it. It's nearly impossible to keep track of all objects created directly or
  * indirectly from the plugin and all other pointers into plugin code. Using unload() in this case is asking
@@ -134,7 +134,7 @@ public:
 
     /**
      * Used to obtain the factory object of the plugin. You have to give a class which inherits KPluginFactory
-     * to K_EXPORT_PLUGIN to use this methode.
+     * to K_EXPORT_PLUGIN to use this method.
      * 
      * \returns The factory of the plugin or 0 on error.
      */
