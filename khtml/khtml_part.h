@@ -498,18 +498,6 @@ public:
    */
   void setCaretDisplayPolicyNonFocused(CaretDisplayPolicy policy);
 
-#ifndef KDE_NO_COMPAT
-  void enableJScript( bool e ) { setJScriptEnabled(e); }
-  void enableJava( bool e ) { setJavaEnabled(e); }
-  void enablePlugins( bool e ) { setPluginsEnabled(e); }
-  void autoloadImages( bool e ) { setAutoloadImages(e); }
-  void enableMetaRefresh( bool e ) { setMetaRefreshEnabled(e); }
-  bool setCharset( const QString &, bool ) { return true; }
-
-  KUrl baseURL() const;
-  QString baseTarget() const;
-#endif
-
   /**
    * Returns the URL for the background Image (used by save background)
    */
