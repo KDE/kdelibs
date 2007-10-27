@@ -1,4 +1,4 @@
-include_directories( ${ENCHANT_INCLUDE_DIR}  )
+include_directories( ${ENCHANT_INCLUDE_DIR} "${ENCHANT_INCLUDE_DIR}/.." )
 
 
 ########### next target ###############
