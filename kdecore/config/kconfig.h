@@ -187,10 +187,8 @@ public:
      * @return A map of entries in the group specified, indexed by key.
      *         The returned map may be empty if the group is empty, or not found.
      * @see   QMap
-     * 
-     * @deprecated
      */
-    KDE_DEPRECATED QMap<QString, QString> entryMap(const QString &aGroup=QString()) const;
+    QMap<QString, QString> entryMap(const QString &aGroup=QString()) const;
 
 protected:
     virtual bool hasGroupImpl(const QByteArray &group) const;
