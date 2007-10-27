@@ -67,6 +67,7 @@ Entry& Entry::operator=(const Entry& other)
 
 Entry::~Entry()
 {
+     delete d;
 }
 
 void Entry::setName(const KTranslatable& name)

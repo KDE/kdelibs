@@ -37,6 +37,7 @@ Category::Category()
 
 Category::~Category()
 {
+  delete d;
 }
 
 void Category::setId(const QString& id)

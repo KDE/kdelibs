@@ -37,6 +37,7 @@ Feed::Feed()
 
 Feed::~Feed()
 {
+   delete d;
 }
 
 void Feed::setName(const KTranslatable& name)
