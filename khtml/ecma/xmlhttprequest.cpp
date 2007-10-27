@@ -246,7 +246,7 @@ static bool isValidFieldName(const QString& name)
     return true;
 }
 
-static bool isValidFieldValue(const QString& name)
+static bool isValidFieldValue(const QString& /*name*/)
 {
     // ### what is invalid?
     return true;
