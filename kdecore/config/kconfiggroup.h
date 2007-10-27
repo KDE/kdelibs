@@ -395,6 +395,12 @@ public:
      * Only the actual entry string is returned, none of the
      * other internal data should be included.
      *
+     * Instead of using this to iterate over all entries in the config group
+     * it is recommended to iterate over all keys as returned by keyList()
+     * and get each value using readEntry(), preferably a variant that suits
+     * your config data better than the QString variant, e.g. readPathEntry()
+     * if your group only contains paths.
+     *
      * @return A map of entries in this group, indexed by key.
      */
     KDE_DEPRECATED QMap<QString, QString> entryMap() const;
