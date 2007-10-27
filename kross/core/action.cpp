@@ -443,16 +443,18 @@ void Action::slotTriggered()
 
     if( hadError() ) {
         #ifdef KROSS_ACTION_DEBUG
-            krossdebug( QString("Action::slotTriggered() errorMessage=%2").arg(errorMessage()) );
+            krossdebug( QString("Action::slotTriggered() on init, errorMessage=%2").arg(errorMessage()) );
         #endif
-        emit finished(this);
-        return;
     }
-
-    d->script->execute();
-    if( d->script->hadError() ) {
-        setError(d->script);
-        finalize();
+    else {
+        d->script->execute();
+        if( d->script->hadError() ) {
+            #ifdef KROSS_ACTION_DEBUG
+                krossdebug( QString("Action::slotTriggered() after exec, errorMessage=%2").arg(errorMessage()) );
+            #endif
+            setError(d->script);
+            finalize();
+        }
     }
 
     emit finished(this);
