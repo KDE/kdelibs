@@ -86,7 +86,7 @@ void ConnectionPrivate::commandReceived(const Task &task)
 {
     //kDebug() << "Command " << task.cmd << " added to the queue";
     incomingTasks.enqueue(task);
-    emit q->readyRead();
+    QMetaObject::invokeMethod(q, "readyRead", Qt::QueuedConnection);
 }
 
 void ConnectionPrivate::disconnected()
