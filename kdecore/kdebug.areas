@@ -32,12 +32,12 @@
 230        kdeui (KCommand)
 240        kdeui (kdelibs)
 250        kfile (kdelibs)
-264        kdecore (KIconLoader)
-265        kdecore (KIconEffect)
+264        kdeui (KIconLoader)
+265        kdeui (KIconEffect)
 270        kdeui (KRootPixmap)
 280        kdeui (KSharedPixmap)
 281        kdeui (KCModule)
-282        kdeui (K3DockWidget)
+282        kde3support (K3DockWidget)
 283        kdeui (K*Gesture*)
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
@@ -91,7 +91,6 @@
 1206        kdesu
 1207        kdesktop (Minicli)
 1208        kcontrol
-1210        kicker
 1211        konsole
 1212        kwin
 1213        kappfinder
@@ -100,7 +99,6 @@
 1216        kwin (client errors)
 1217        khotkeys
 1218        ksmserver
-1219        media kioslave
 1220        remote kioslave
 1221        ktimezoned
 1222        networkstatus
@@ -162,7 +160,6 @@
 5001        kget
 5002        kppp
 5003        knode
-5004        kdict
 5005        knewsticker
 5006        kmail
 5007        kpf
@@ -255,7 +252,7 @@
 7016        kio (KLauncher)
 7017        kio (KIOConnection)
 7019        kio (kioslave)
-7020        kded
+7020        kded4
 7021        kbuildsycoca4
 7022        kurifilter
 7023        kurifilter (plugins)
@@ -600,7 +597,6 @@
 67200   kmid
 
 # kdebindings
-#70001	dcoppython
 80001	kjsembed
 
 # kdeaddons
@@ -616,7 +612,6 @@
 90170   konq-plugins (kimgalleryplugin)
 90180   konq-plugins (domtreeviewer)
 90190   konq-plugins (dirfilter)
-90200   kicker-applets (mediacontrol)
 90210   konq-plugins (rellinks)
 
 
