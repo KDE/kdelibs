@@ -24,6 +24,7 @@
 #include <kdialog.h>
 
 #include <knewstuff2/core/providerloader.h>
+#include <knewstuff2/knewstuff_export.h>
 
 class QComboBox;
 

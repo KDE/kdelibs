@@ -34,6 +34,7 @@ class KJob;
 class KLineEdit;
 class QComboBox;
 class QLabel;
+class QProgressIndicator;
 
 namespace KNS
 {
@@ -109,7 +110,7 @@ private:
  *
  * @internal
  */
-class DownloadDialog : public KDialog
+class KNEWSTUFF_EXPORT DownloadDialog : public KDialog
 {
     Q_OBJECT
 
@@ -147,6 +148,7 @@ private Q_SLOTS:
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );
+    void slotPayloadProgress(KUrl payload, int percentage);
 
 private:
     // Contents
@@ -156,6 +158,7 @@ private:
     QComboBox * sortCombo;
     QLabel    * statusLabel;
     ItemsView * itemsView;
+    QProgressIndicator * m_progress;
 
     // other classes
     QTimer * messageTimer;

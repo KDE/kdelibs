@@ -32,6 +32,8 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kcodecs.h>
+#include <kprocess.h>
+#include <kshell.h>
 
 #include <kio/job.h>
 #include <krandom.h>
@@ -92,7 +94,6 @@ bool CoreEngine::init(const QString &configfile)
 
 	KConfigGroup group = conf.group("KNewStuff2");
 	m_providersurl = group.readEntry("ProvidersUrl", QString());
-	m_localregistrydir = group.readEntry("LocalRegistryDir", QString());
 	//m_componentname = group.readEntry("ComponentName", QString());
 	m_componentname = configfile.section(".", 0, 0);
 
@@ -180,13 +181,7 @@ void CoreEngine::start()
 #endif
 	}
 
-	// FIXME: LocalRegistryDir must be created in $KDEHOME if missing?
-	// FIXME: if registry dir is per application, make cache dir per app too?
-
-	if(!m_localregistrydir.isEmpty())
-	{
-		loadRegistry(m_localregistrydir);
-	}
+	loadRegistry();
 
 	// FIXME: also return if CacheResident and its conditions fulfilled
 	if(m_cachepolicy == CacheOnly)
@@ -292,6 +287,9 @@ void CoreEngine::downloadPayload(Entry *entry)
 	connect(job,
 		SIGNAL(result(KJob*)),
 		SLOT(slotPayloadResult(KJob*)));
+	connect(job,
+		SIGNAL(percent(KJob*, unsigned long)),
+		SLOT(slotPayloadProgress(KJob*, unsigned long)));
 
 	m_entry_jobs[job] = entry;
 }
@@ -369,6 +367,11 @@ void CoreEngine::slotEntriesFailed()
 	m_activefeeds--;
 
 	emit signalEntriesFailed();
+}
+
+void CoreEngine::slotPayloadProgress(KJob *job, unsigned long percent)
+{
+	emit signalPayloadProgress((qobject_cast<KIO::FileCopyJob*>(job))->srcUrl(), percent);
 }
 
 void CoreEngine::slotPayloadResult(KJob *job)
@@ -526,13 +529,14 @@ void CoreEngine::slotUploadMetaResult(KJob *job)
 	}
 }
 
-void CoreEngine::loadRegistry(const QString &registrydir)
+void CoreEngine::loadRegistry()
 {
 	KStandardDirs d;
 
-	kDebug(550) << "Loading registry in all directories named '" + registrydir + "'.";
+	kDebug(550) << "Loading registry in all directories named 'knewstuff2-entries.registry'.";
 
-	QStringList dirs = d.findDirs("data", registrydir);
+	// this must be same as in registerEntry()
+	QStringList dirs = d.findDirs("data", "knewstuff2-entries.registry");
 	for(QStringList::Iterator it = dirs.begin(); it != dirs.end(); ++it)
 	{
 		kDebug(550) << " + Load from directory '" + (*it) + "'.";
@@ -1157,13 +1161,13 @@ void CoreEngine::registerEntry(Entry *entry)
 
 	kDebug(550) << "Registering entry.";
 
-	// FIXME: this directory must match loadRegistry!
+	// NOTE: this directory must match loadRegistry
 	QString registrydir = d.saveLocation("data", "knewstuff2-entries.registry");
 
 	kDebug(550) << " + Save to directory '" + registrydir + "'.";
 
 	// FIXME: see cacheEntry() for naming-related discussion
-	QString registryfile = id(entry) + ".meta";
+	QString registryfile = QString(id(entry).toUtf8().toBase64()) + ".meta";
 
 	kDebug(550) << " + Save to file '" + registryfile + "'.";
 
@@ -1393,19 +1397,16 @@ bool CoreEngine::install(const QString &payloadfile)
 
 	if(!m_installation->command().isEmpty())
 	{
-		kDebug(550) << "Postinstallation: execute command";
-		kDebug(550) << "Command is: " << m_installation->command();
+		KProcess process;
+		QString command(m_installation->command());
+		QString fileArg(KShell::quoteArg(installpath));
+		command.replace("%f", fileArg);
 
-		// FIXME: knewstuff1 comment mentions kmacroexpander and kshell
-		//        but how would they help much here?
-		QStringList args;
-		QStringList list = m_installation->command().split(" ");
-		for(QStringList::iterator it = list.begin(); it != list.end(); ++it)
-		{
-			args << (*it).replace("%f", installpath);
-		}
-		QString exe(args.takeFirst());
-		int exitcode = QProcess::execute(exe, args);
+		kDebug(550) << "Postinstallation: execute command";
+		kDebug(550) << "Command is: " << command;
+
+		process.setShellCommand(command);
+		int exitcode = process.execute();
 
 		if(exitcode)
 		{

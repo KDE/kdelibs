@@ -35,6 +35,7 @@ set(knewstuff2_ui_SRCS
   ui/qasyncpixmap.cpp
   ui/qstarframe.cpp
   ui/qnowtooltip.cpp
+  ui/qprogressindicator.cpp
   ui/uploaddialog.cpp
   ui/providerdialog.cpp
   ui/knewstuffbutton.cpp

@@ -228,6 +228,8 @@ KNS::Entry *Engine::upload(const QString& file)
 #endif
 #if 0
     return d->upload(file);
+#else
+    Q_UNUSED(file);
 #endif
     Q_ASSERT(false);
     return 0;

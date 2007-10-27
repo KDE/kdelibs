@@ -111,7 +111,7 @@ void KNewStuff2Test::engineTest()
 {
 	kDebug() << "-- test kns2 engine";
 
-	m_engine = new KNS::CoreEngine();
+	m_engine = new KNS::CoreEngine(NULL);
 	bool ret = m_engine->init("knewstuff2_test.knsrc");
 
 	kDebug() << "-- engine test result: " << ret;

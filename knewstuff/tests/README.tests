@@ -1,6 +1,8 @@
 KNewStuff2 test applications
 ============================
 
+If you want the test apps, set -DKDE4_BUILD_TESTS=ON for cmake.
+
 In order to understand the test structure, remember the engine class
 hierarchy of the library:
  KNS::CoreEngine    - GHNS provider loading/upload/download

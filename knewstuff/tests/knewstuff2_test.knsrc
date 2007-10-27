@@ -1,5 +1,6 @@
 [KNewStuff2]
-ProvidersUrl = http://edu.kde.org/kalzium/molecules.xml
+#ProvidersUrl = http://edu.kde.org/kalzium/molecules.xml
+ProvidersUrl = http://new.kstuff.org/provider-kalzium.xml
 LocalRegistryDir = /tmp/knewstuff2.metafiles
 
 TargetDir = knewstuff2_test

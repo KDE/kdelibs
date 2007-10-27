@@ -1,4 +1,4 @@
-#include <knewstuff2/ui/kdxsview.h>
+#include "kdxsview.h"
 
 #include <kapplication.h>
 #include <kaboutdata.h>

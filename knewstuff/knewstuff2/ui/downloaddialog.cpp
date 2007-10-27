@@ -61,6 +61,8 @@
 
 #include "knewstuff2/dxs/dxs.h"
 
+#include "knewstuff2/ui/qprogressindicator.h"
+
 // local includes
 #include "kdxsbutton.h"
 #include "qasyncpixmap.h"
@@ -400,6 +402,9 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
     searchLine->setEnabled( false );
     searchLine->setClearButtonShown(true);
 
+    m_progress = new QProgressIndicator( this );
+    panelLayout->addWidget( m_progress, 2, 0, 2, 4 );
+
     // create the ItemsView used to display available items
     itemsView = new ItemsView( this, _mainWidget );
     itemsView->setEngine(m_engine);
@@ -420,7 +425,9 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
                                   "%1 Add On Installer",
                                   KGlobal::mainComponent().aboutData()->programName()));
     titleWidget->setPixmap(KGlobal::mainComponent().aboutData()->appName());
+
     connect( this, SIGNAL( closeClicked() ), SLOT( accept() ) );
+    connect( m_engine, SIGNAL( signalPayloadProgress( KUrl, int ) ), SLOT( slotPayloadProgress( KUrl, int ) ) );
 }
 
 DownloadDialog::~DownloadDialog()
@@ -578,6 +585,11 @@ XXX update item status
 XXX inform the user
     displayMessage( i18n("Installing '%1', this could take some time ...").arg( item->name().representation() ), 3000 );
 */
+}
+
+void DownloadDialog::slotPayloadProgress(KUrl payload, int percentage)
+{
+    m_progress->addProgress(payload, percentage);
 }
 
 /*void DownloadDialog::slotItemMessage( KJob * job, const QString & message )

@@ -134,6 +134,8 @@ void Security::slotFinished(int exitCode, QProcess::ExitStatus exitStatus)
    m_gpgRunning = false;
    delete m_process;
    m_process = 0;
+
+   Q_UNUSED(exitCode);
 }
 
 void Security::slotReadyReadStandardOutput()

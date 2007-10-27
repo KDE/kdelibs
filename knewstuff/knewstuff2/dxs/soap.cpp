@@ -35,8 +35,8 @@ using namespace KNS;
 Soap::Soap(QObject* parent)
     : QObject(parent)
 {
-    m_model = canonicaltree;
-    //m_model = soap;
+    //m_model = canonicaltree;
+    m_model = soap;
     m_socket = NULL;
     m_inprogress = false;
 }

@@ -122,7 +122,7 @@ and further details such as data security policies.
 
 # # What to do after installation? Any number of the lines below
 # Uncompress=true # unpack the downloaded archive
-# InstallationCommand=dbus-send ... '%f' ... # post-installation command
+# InstallationCommand=dbus-send ... %f ... # post-installation command
 
 Downloading data
 ----------------

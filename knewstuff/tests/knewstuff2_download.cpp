@@ -184,7 +184,7 @@ void KNewStuff2Download::run()
 {
     kDebug() << "-- test kns2 engine";
 
-    m_engine = new KNS::CoreEngine();
+    m_engine = new KNS::CoreEngine(NULL);
     bool success = m_engine->init("knewstuff2_test.knsrc");
 
     kDebug() << "-- engine test result: " << success;

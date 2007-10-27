@@ -43,7 +43,7 @@ class Installation;
  *
  * @internal
  */
-class CoreEngine : public QObject
+class KNEWSTUFF_EXPORT CoreEngine : public QObject
 {
     Q_OBJECT
   public:
@@ -259,6 +259,8 @@ class CoreEngine : public QObject
     void signalInstallationFinished();
     void signalInstallationFailed();
 
+    void signalPayloadProgress(KUrl payload, int percentage);
+
   private Q_SLOTS:
     void slotProvidersLoaded(KNS::Provider::List list);
     void slotProvidersFailed();
@@ -269,11 +271,12 @@ class CoreEngine : public QObject
     void slotUploadPayloadResult(KJob *job);
     void slotUploadPreviewResult(KJob *job);
     void slotUploadMetaResult(KJob *job);
+    void slotPayloadProgress(KJob *job, unsigned long percent);
 
     void slotInstallationVerification(int result);
 
   private:
-    void loadRegistry(const QString &registrydir);
+    void loadRegistry();
     void loadProvidersCache();
     KNS::Entry *loadEntryCache(const QString& filepath);
 #if 0
@@ -306,7 +309,6 @@ class CoreEngine : public QObject
     Provider *m_uploadprovider;
 
     QString m_providersurl;
-    QString m_localregistrydir;
     QString m_componentname;
 
     QMap<Entry*, QString> m_previewfiles;

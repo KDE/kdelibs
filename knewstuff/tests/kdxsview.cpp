@@ -20,9 +20,8 @@
 
 #include "kdxsview.h"
 
-#include "downloaddialog.h"
-
-#include "knewstuff2/dxs/dxs.h"
+#include <knewstuff2/ui/downloaddialog.h>
+#include <knewstuff2/dxs/dxs.h>
 
 #include <klocale.h>
 #include <kiconloader.h>
