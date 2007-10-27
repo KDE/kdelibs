@@ -4558,7 +4558,8 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
   {
     KService::Ptr service = (*it);
 
-    KLibFactory* const factory = KLibLoader::self()->factory( service->library() );
+    KPluginLoader loader( *service, KHTMLFactory::componentData() );
+    KPluginFactory* const factory = loader.factory();
     if ( factory ) {
       KParts::ReadOnlyPart *res = 0L;
 
@@ -4566,8 +4567,9 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
       if ( service->serviceTypes().contains( "Browser/View" ) )
         className = "Browser/View";
 
-      if ( factory->inherits( "KParts::Factory" ) )
-        res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, parent, className, params ));
+      KParts::Factory *partsFact = qobject_cast<KParts::Factory*>( factory );
+      if ( partsFact )
+        res = static_cast<KParts::ReadOnlyPart *>(partsFact->createPart( parentWidget, parent, className, params ));
       else
         res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, className ));
 
@@ -4579,7 +4581,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
     } else {
       // TODO KMessageBox::error and i18n, like in KonqFactory::createView?
       kWarning() << QString("There was an error loading the module %1.\nThe diagnostics is:\n%2")
-                      .arg(service->name()).arg(KLibLoader::self()->lastErrorMessage()) << endl;
+                      .arg(service->name()).arg(loader.errorString()) << endl;
     }
   }
   return 0;
