@@ -152,11 +152,11 @@ namespace KJS {
           link = newLink;
     }
 
-    Completion createErrorCompletion(ExecState *, ErrorType, const char *msg);
-    Completion createErrorCompletion(ExecState *, ErrorType, const char *msg, const Identifier &);
+    Completion createErrorCompletion(ExecState *, ErrorType, const UString& msg);
+    Completion createErrorCompletion(ExecState *, ErrorType, const UString& msg, const Identifier &);
 
-    Node* createErrorNode(ErrorType e, const char *msg);
-    Node* createErrorNode(ErrorType e, const char *msg, const Identifier &ident);
+    Node* createErrorNode(ErrorType e, const UString& msg);
+    Node* createErrorNode(ErrorType e, const UString& msg, const Identifier &ident);
 
     JSValue *throwError(ExecState *, ErrorType, const char *msg);
     JSValue *throwError(ExecState *, ErrorType, const char *msg, const char* string);

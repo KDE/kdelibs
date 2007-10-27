@@ -216,24 +216,24 @@ static inline const UString& currentSourceURL(ExecState* exec)
     return exec->context()->currentBody()->sourceURL();
 }
 
-Completion Node::createErrorCompletion(ExecState* exec, ErrorType e, const char *msg)
+Completion Node::createErrorCompletion(ExecState* exec, ErrorType e, const UString& msg)
 {
     return Completion(Throw, Error::create(exec, e, msg, lineNo(), currentSourceId(exec), currentSourceURL(exec)));
 }
 
-Completion Node::createErrorCompletion(ExecState *exec, ErrorType e, const char *msg, const Identifier &ident)
+Completion Node::createErrorCompletion(ExecState *exec, ErrorType e, const UString& msg, const Identifier &ident)
 {
     UString message = msg;
     substitute(message, ident.ustring());
     return Completion(Throw, Error::create(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec)));
 }
 
-Node* Node::createErrorNode(ErrorType e, const char *msg)
+Node* Node::createErrorNode(ErrorType e, const UString& msg)
 {
     return new ErrorNode(this, e, msg);
 }
 
-Node* Node::createErrorNode(ErrorType e, const char *msg, const Identifier &ident)
+Node* Node::createErrorNode(ErrorType e, const UString& msg, const Identifier &ident)
 {
     UString message = msg;
     substitute(message, ident.ustring());
@@ -2986,7 +2986,7 @@ ProgramNode::ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s)
 
 Completion ErrorNode::execute(ExecState *exec)
 {
-    return createErrorCompletion(exec, SyntaxError, message.cstring().c_str());
+    return createErrorCompletion(exec, SyntaxError, message);
 }
 
 // ------------------------------ PackageNameNode ------------------------------
