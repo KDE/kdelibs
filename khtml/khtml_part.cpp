@@ -7303,11 +7303,6 @@ void KHTMLPart::setDebugScript( bool enable )
   d->m_bJScriptDebugEnabled = enable;
 }
 
-void KHTMLPart::setSuppressedPopupIndicator( bool enable )
-{
-    setSuppressedPopupIndicator( enable, 0 );
-}
-
 void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart )
 {
     if ( parentPart() ) {

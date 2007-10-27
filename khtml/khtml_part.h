@@ -1000,14 +1000,8 @@ public:
 
   /**
    * Shows or hides the suppressed popup indicator
-   * @deprecated
    */
-  void setSuppressedPopupIndicator( bool enable );
-
-  /**
-   * Shows or hides the suppressed popup indicator
-   */
-  void setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart );
+  void setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart = 0 );
 
   /**
    * @internal
