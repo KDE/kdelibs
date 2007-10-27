@@ -148,7 +148,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
                 authorPageText = aboutData->customAuthorRichText();
         }
 
-        authorPageText += "<br /><br />";
+        authorPageText += "<br />";
 
         QList<KAboutPerson> lst = aboutData->authors();
         for (int i = 0; i < lst.size(); ++i) {
