@@ -158,15 +158,15 @@ namespace KJS {
     Node* createErrorNode(ErrorType e, const UString& msg);
     Node* createErrorNode(ErrorType e, const UString& msg, const Identifier &ident);
 
-    JSValue *throwError(ExecState *, ErrorType, const char *msg);
-    JSValue *throwError(ExecState *, ErrorType, const char *msg, const char* string);
-    JSValue *throwError(ExecState *, ErrorType, const char *msg, JSValue *, Node *);
-    JSValue *throwError(ExecState *, ErrorType, const char *msg, const Identifier &);
-    JSValue *throwError(ExecState *, ErrorType, const char *msg, JSValue *, const Identifier &);
-    JSValue *throwError(ExecState *, ErrorType, const char *msg, JSValue *, Node *, Node *);
-    JSValue *throwError(ExecState *, ErrorType, const char *msg, JSValue *, Node *, const Identifier &);
+    JSValue* throwError(ExecState*, ErrorType, const UString& msg);
+    JSValue* throwError(ExecState*, ErrorType, const UString& msg, const char* string);
+    JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, Node*);
+    JSValue* throwError(ExecState*, ErrorType, const UString& msg, const Identifier&);
+    JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, const Identifier&);
+    JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, Node*, Node*);
+    JSValue* throwError(ExecState*, ErrorType, const UString& msg, JSValue*, Node*, const Identifier&);
 
-    JSValue *throwUndefinedVariableError(ExecState *, const Identifier &);
+    JSValue* throwUndefinedVariableError(ExecState*, const Identifier&);
 
     void handleException(ExecState*);
     void handleException(ExecState*, JSValue*);

@@ -240,19 +240,19 @@ Node* Node::createErrorNode(ErrorType e, const UString& msg, const Identifier &i
     return new ErrorNode(this, e, message);
 }
 
-JSValue *Node::throwError(ExecState* exec, ErrorType e, const char *msg)
+JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg)
 {
     return KJS::throwError(exec, e, msg, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
 
-JSValue *Node::throwError(ExecState* exec, ErrorType e, const char* msg, const char* string) 
+JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, const char* string) 
 { 
     UString message = msg; 
     substitute(message, string); 
     return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec)); 
 }
 
-JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue *v, Node *expr)
+JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, Node* expr)
 {
     UString message = msg;
     substitute(message, v->toString(exec));
@@ -261,14 +261,14 @@ JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue
 }
 
 
-JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, const Identifier &label)
+JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, const Identifier& label)
 {
     UString message = msg;
     substitute(message, label.ustring());
     return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
 
-JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue *v, Node *e1, Node *e2)
+JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, Node* e1, Node* e2)
 {
     UString message = msg;
     substitute(message, v->toString(exec));
@@ -277,7 +277,7 @@ JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue
     return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
 
-JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue *v, Node *expr, const Identifier &label)
+JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, Node* expr, const Identifier& label)
 {
     UString message = msg;
     substitute(message, v->toString(exec));
@@ -286,7 +286,7 @@ JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue
     return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
 
-JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue *v, const Identifier &label)
+JSValue* Node::throwError(ExecState* exec, ErrorType e, const UString& msg, JSValue* v, const Identifier& label)
 {
     UString message = msg;
     substitute(message, v->toString(exec));
@@ -294,7 +294,7 @@ JSValue *Node::throwError(ExecState *exec, ErrorType e, const char *msg, JSValue
     return KJS::throwError(exec, e, message, lineNo(), currentSourceId(exec), currentSourceURL(exec));
 }
 
-JSValue *Node::throwUndefinedVariableError(ExecState *exec, const Identifier &ident)
+JSValue* Node::throwUndefinedVariableError(ExecState* exec, const Identifier& ident)
 {
     return throwError(exec, ReferenceError, "Can't find variable: %s", ident);
 }
@@ -3075,7 +3075,7 @@ PackageObject* PackageNameNode::resolvePackage(ExecState* exec,
 	    if (err.isEmpty()) {
 		throwError(exec, GeneralError, "Package not found");
 	    } else {
-		throwError(exec, GeneralError, err.ascii());
+		throwError(exec, GeneralError, err);
 	    }
 	    return 0;
 	}
