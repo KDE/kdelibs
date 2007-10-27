@@ -1442,6 +1442,33 @@ void LogicalNotNode::recurseVisit(NodeVisitor *visitor)
 
 // ------------------------ BinaryOperatorNode -------------------------------
 
+static inline JSValue *add(ExecState *exec, JSValue *v1, JSValue *v2)
+{
+    // exception for the Date exception in defaultValue()
+    JSValue *p1 = v1->toPrimitive(exec, UnspecifiedType);
+    JSValue *p2 = v2->toPrimitive(exec, UnspecifiedType);
+    
+    if (p1->isString() || p2->isString()) {
+        UString value = p1->toString(exec) + p2->toString(exec);
+        if (value.isNull()) {
+            JSObject *error = Error::create(exec, GeneralError, "Out of memory");
+            exec->setException(error);
+            return error;
+        } else
+            return jsString(value);
+    }
+    
+    return jsNumber(p1->toNumber(exec) + p2->toNumber(exec));
+}
+
+static inline JSValue *sub(ExecState *exec, JSValue *v1, JSValue *v2)
+{
+    JSValue *p1 = v1->toPrimitive(exec, NumberType);
+    JSValue *p2 = v2->toPrimitive(exec, NumberType);
+
+    return jsNumber(p1->toNumber(exec) - p2->toNumber(exec));
+}
+
 JSValue* BinaryOperatorNode::evaluate(ExecState* exec)
 {
   JSValue* v1 = expr1->evaluate(exec);
@@ -1452,14 +1479,20 @@ JSValue* BinaryOperatorNode::evaluate(ExecState* exec)
 
   switch (oper) {
   case OpMult:
+      // operator *
+      return jsNumber(v1->toNumber(exec) * v2->toNumber(exec));
   case OpDiv:
+      // operator /
+      return jsNumber(v1->toNumber(exec) / v2->toNumber(exec));
   case OpMod:
-      // operators *, / and %
-      return mult(exec, v1, v2, oper);
+      // operator %
+      return jsNumber(fmod(v1->toNumber(exec), v2->toNumber(exec)));
   case OpPlus:
+      // operator +
+      return add(exec, v1, v2);
   case OpMinus:
-      // operators + and -
-      return add(exec, v1, v2, oper);
+      // operator -
+      return sub(exec, v1, v2);
   case OpLShift:
       // operator <<
       return jsNumber(v1->toInt32(exec) << (v2->toUInt32(exec) & 0x1f));
@@ -1623,16 +1656,16 @@ static ALWAYS_INLINE JSValue *valueForReadModifyAssignment(ExecState * exec, JSV
   unsigned int ui;
   switch (oper) {
   case OpMultEq:
-    v = mult(exec, v1, v2, OpMult);
+    v = jsNumber(v1->toNumber(exec) * v2->toNumber(exec));
     break;
   case OpDivEq:
-    v = mult(exec, v1, v2, OpDiv);
+    v = jsNumber(v1->toNumber(exec) / v2->toNumber(exec));
     break;
   case OpPlusEq:
-    v = add(exec, v1, v2, OpPlus);
+    v = add(exec, v1, v2);
     break;
   case OpMinusEq:
-    v = add(exec, v1, v2, OpMinus);
+    v = sub(exec, v1, v2);
     break;
   case OpLShift:
     i1 = v1->toInt32(exec);

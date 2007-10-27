@@ -150,7 +150,9 @@ static Node* makeAddNode(Node* n1, Node* n2, Operator op)
 #endif
 	    NumberNode* number1 = static_cast< NumberNode * >(n1);
 	    NumberNode* number2 = static_cast< NumberNode * >(n2);
-	    number1->setValue(add(number1->value(), number2->value(), op));
+	    double d1 = number1->value();
+	    double d2 = number2->value();
+	    number1->setValue(op == OpPlus ? d1 + d2 : d1 - d2);
 	    return number1;
 	}
 #ifdef TRACE_OPTIMIZER
@@ -185,7 +187,16 @@ static Node* makeMultNode(Node* n1, Node* n2, Operator op)
 #endif
 	    NumberNode* number1 = static_cast< NumberNode * >(n1);
 	    NumberNode* number2 = static_cast< NumberNode * >(n2);
-	    number1->setValue(mult(number1->value(), number2->value(), op));
+	    double d1 = number1->value();
+	    double d2 = number2->value();
+	    double res;
+	    if (op == OpMult)
+		res = d1 * d2;
+	    else if (op == OpDiv)
+		res = d1 / d2;
+	    else // OpMod
+		res = fmod(d1, d2);
+	    number1->setValue(res);
 	    return number1;
 	}
 #ifdef TRACE_OPTIMIZER
