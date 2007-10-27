@@ -697,13 +697,6 @@ public:
   void findTextBegin();
 
   /**
-   * Finds the next occurrence of the string or expression.
-   * If isRegExp is @p true then str is converted to a QRegExp, and caseSensitive is ignored.
-   * @deprecated, use findText( str, options, parent, findDialog )
-   */
-  bool findTextNext( const QString &str, bool forward, bool caseSensitive, bool isRegExp );
-
-  /**
    * Finds the next occurrence of a string set by @ref findText()
    * @param reverse if @p true, revert seach direction (only if no find dialog is used)
    * @return @p true if a new match was found.
