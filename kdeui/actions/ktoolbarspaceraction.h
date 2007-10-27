@@ -44,6 +44,8 @@ class KDEUI_EXPORT KToolBarSpacerAction : public KAction
      */
     explicit KToolBarSpacerAction(QObject *parent);
 
+    ~KToolBarSpacerAction();
+
     /**
      * Returns the width of the spacer item.
      */

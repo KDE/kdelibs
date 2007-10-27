@@ -85,6 +85,11 @@ KFontDialog::KFontDialog( QWidget *parent,
     setMainWidget( d->chooser );
 }
 
+KFontDialog::~KFontDialog()
+{
+   delete d;
+}
+
 void KFontDialog::setFont( const QFont &font, bool onlyFixed)
 {
     d->chooser->setFont(font, onlyFixed);

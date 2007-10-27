@@ -45,6 +45,11 @@ KToolBarSpacerAction::KToolBarSpacerAction(QObject *parent)
 {
 }
 
+KToolBarSpacerAction::~KToolBarSpacerAction()
+{
+    delete d;
+}
+
 int KToolBarSpacerAction::width() const
 {
   return d->width;

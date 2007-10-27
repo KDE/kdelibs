@@ -53,6 +53,7 @@ KShortcutWidget::KShortcutWidget(QWidget *parent)
 
 KShortcutWidget::~KShortcutWidget()
 {
+  delete d;
 }
 
 
