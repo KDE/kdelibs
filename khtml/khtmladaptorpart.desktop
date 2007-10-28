@@ -2,9 +2,11 @@
 Encoding=UTF-8
 Name=KHTML Extension Adaptor
 Name[ca]=Adaptador d'extensió KHTML
+Name[de]=Adapter für KHTML-Erweiterungen
 Name[pt]=Adaptação da Extensão KHTML
 Name[pt_BR]=Adaptador de Extensão KHTML
 Name[sv]=KHTML-utökningsanpassning
+Name[zh_CN]=KHTML 扩展适配器
 Name[zh_TW]=KHTML 延伸裝置
 X-KDE-Library=khtmladaptorpart
 MimeType=application/x-khtml-adaptor;
