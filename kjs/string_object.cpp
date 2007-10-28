@@ -280,11 +280,28 @@ static inline UString substituteBackreferences(const UString &replacement, const
   return substitutedReplacement;
 }
 
-// ### use as fallback only. implement locale aware version.
-static inline int localeCompare(const UString &a, const UString &b)
+static inline int localeCompare(const UString& a, const UString& b)
 {
-  // ### other browsers have more detailed return values than -1, 0 and 1
-  return compare(a, b);
+#if PLATFORM(WIN_OS)
+    int retval = CompareStringW(LOCALE_USER_DEFAULT, 0,
+                                reinterpret_cast<LPCWSTR>(a.data()), a.size(),
+                                reinterpret_cast<LPCWSTR>(b.data()), b.size());
+    return !retval ? retval : retval - 2;
+#elif PLATFORM(CF)
+    CFStringRef sa = CFStringCreateWithCharactersNoCopy(kCFAllocatorDefault, reinterpret_cast<const UniChar*>(a.data()), a.size(), kCFAllocatorNull);
+    CFStringRef sb = CFStringCreateWithCharactersNoCopy(kCFAllocatorDefault, reinterpret_cast<const UniChar*>(b.data()), b.size(), kCFAllocatorNull);
+
+    int retval = CFStringCompare(sa, sb, kCFCompareLocalized);
+
+    CFRelease(sa);
+    CFRelease(sb);
+
+    return retval;
+#else
+    // ### use as fallback only. implement locale aware version.
+    // ### other browsers have more detailed return values than -1, 0 and 1
+    return compare(a, b);
+#endif
 }
 
 static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern, JSValue *replacement)
