@@ -44,6 +44,7 @@
 #include "halbutton.h"
 #include "halaudiointerface.h"
 #include "haldvbinterface.h"
+#include "halvideo.h"
 
 using namespace Solid::Backends::Hal;
 
@@ -222,6 +223,8 @@ QString HalDevice::icon() const
         return "battery";
     } else if (category=="processor") {
         return "ksim-cpu"; // FIXME: Doesn't follow icon spec
+    } else if (category=="video4linux") {
+        return "camera-web";
     }
 
     return QString();
@@ -390,6 +393,9 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         break;
     case Solid::DeviceInterface::DvbInterface:
         iface = new DvbInterface(this);
+        break;
+    case Solid::DeviceInterface::Video:
+        iface = new Video(this);
         break;
     case Solid::DeviceInterface::Unknown:
         break;

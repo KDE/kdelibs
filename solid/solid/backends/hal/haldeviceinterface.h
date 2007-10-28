@@ -99,6 +99,9 @@ public:
         case Solid::DeviceInterface::DvbInterface:
             list << "dvb";
             break;
+        case Solid::DeviceInterface::Video:
+            list << "video4linux";
+            break;
         case Solid::DeviceInterface::Unknown:
             break;
         }
@@ -136,6 +139,8 @@ public:
             return Solid::DeviceInterface::AudioInterface;
         else if (capability == "dvb")
             return Solid::DeviceInterface::DvbInterface;
+        else if (capability == "video4linux")
+            return Solid::DeviceInterface::Video;
         else
             return Solid::DeviceInterface::Unknown;
     }

@@ -49,6 +49,7 @@ set(solid_LIB_SRCS
    predicate_parser.c
    powermanagement.cpp
    networking.cpp
+   video.cpp
 
    ifaces/acadapter.cpp
    ifaces/audiointerface.cpp
@@ -69,6 +70,7 @@ set(solid_LIB_SRCS
    ifaces/storagedrive.cpp
    ifaces/storagevolume.cpp
    ifaces/storageaccess.cpp
+   ifaces/video.cpp
 
    backends/hal/halacadapter.cpp
    backends/hal/halaudiointerface.cpp
@@ -88,6 +90,7 @@ set(solid_LIB_SRCS
    backends/hal/halprocessor.cpp
    backends/hal/halstorageaccess.cpp
    backends/hal/halstorage.cpp
+   backends/hal/halvideo.cpp
    backends/hal/halvolume.cpp
 
    backends/fakehw/fakeacadapter.cpp
@@ -108,6 +111,7 @@ set(solid_LIB_SRCS
    backends/fakehw/fakeprocessor.cpp
    backends/fakehw/fakestorage.cpp
    backends/fakehw/fakestorageaccess.cpp
+   backends/fakehw/fakevideo.cpp
    backends/fakehw/fakevolume.cpp
 )
 
@@ -145,7 +149,7 @@ if(WIN32)
 endif(WIN32)
 ########### install files ###############
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h video.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 
