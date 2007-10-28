@@ -83,17 +83,17 @@
      FOR = 264,
      NEW = 265,
      VAR = 266,
-     CONST = 267,
+     CONSTTOKEN = 267,
      CONTINUE = 268,
      FUNCTION = 269,
      RETURN = 270,
-     VOID = 271,
-     DELETE = 272,
+     VOIDTOKEN = 271,
+     DELETETOKEN = 272,
      IF = 273,
-     THIS = 274,
+     THISTOKEN = 274,
      DO = 275,
      WHILE = 276,
-     IN = 277,
+     INTOKEN = 277,
      INSTANCEOF = 278,
      TYPEOF = 279,
      SWITCH = 280,
@@ -148,17 +148,17 @@
 #define FOR 264
 #define NEW 265
 #define VAR 266
-#define CONST 267
+#define CONSTTOKEN 267
 #define CONTINUE 268
 #define FUNCTION 269
 #define RETURN 270
-#define VOID 271
-#define DELETE 272
+#define VOIDTOKEN 271
+#define DELETETOKEN 272
 #define IF 273
-#define THIS 274
+#define THISTOKEN 274
 #define DO 275
 #define WHILE 276
-#define IN 277
+#define INTOKEN 277
 #define INSTANCEOF 278
 #define TYPEOF 279
 #define SWITCH 280
@@ -805,9 +805,9 @@ static const yytype_uint16 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "NULLTOKEN", "TRUETOKEN", "FALSETOKEN",
-  "BREAK", "CASE", "DEFAULT", "FOR", "NEW", "VAR", "CONST", "CONTINUE",
-  "FUNCTION", "RETURN", "VOID", "DELETE", "IF", "THIS", "DO", "WHILE",
-  "IN", "INSTANCEOF", "TYPEOF", "SWITCH", "WITH", "RESERVED", "THROW",
+  "BREAK", "CASE", "DEFAULT", "FOR", "NEW", "VAR", "CONSTTOKEN", "CONTINUE",
+  "FUNCTION", "RETURN", "VOIDTOKEN", "DELETETOKEN", "IF", "THISTOKEN", "DO", "WHILE",
+  "INTOKEN", "INSTANCEOF", "TYPEOF", "SWITCH", "WITH", "RESERVED", "THROW",
   "TRY", "CATCH", "FINALLY", "DEBUGGER", "IMPORT", "IF_WITHOUT_ELSE",
   "ELSE", "EQEQ", "NE", "STREQ", "STRNEQ", "LE", "GE", "OR", "AND",
   "PLUSPLUS", "MINUSMINUS", "LSHIFT", "RSHIFT", "URSHIFT", "PLUSEQUAL",

@@ -52,13 +52,13 @@
      CONTINUE = 268,
      FUNCTION = 269,
      RETURN = 270,
-     VOID = 271,
-     DELETE = 272,
+     VOIDTOKEN = 271,
+     DELETETOKEN = 272,
      IF = 273,
-     THIS = 274,
+     THISTOKEN = 274,
      DO = 275,
      WHILE = 276,
-     IN = 277,
+     INTOKEN = 277,
      INSTANCEOF = 278,
      TYPEOF = 279,
      SWITCH = 280,
@@ -113,7 +113,7 @@
 #define FOR 264
 #define NEW 265
 #define VAR 266
-#define CONST 267
+#define CONSTTOKEN 267
 #define CONTINUE 268
 #define FUNCTION 269
 #define RETURN 270
