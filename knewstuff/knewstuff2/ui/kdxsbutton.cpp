@@ -65,8 +65,8 @@ KDXSButton::KDXSButton(QWidget *parent)
 	m_p = new KMenu(this);
 	action_install = m_p->addAction(SmallIcon("get-hot-new-stuff"),
 		i18n("Install"));
-	action_deinstall = m_p->addAction(SmallIcon("get-hot-new-stuff"),
-		i18n("Deinstall"));
+	action_uninstall = m_p->addAction(SmallIcon("get-hot-new-stuff"),
+		i18n("Uninstall"));
 	action_comments = m_p->addAction(SmallIcon("leftjust"),
 		i18n("Comments"));
 	action_changes = m_p->addAction(SmallIcon("leftjust"),
@@ -142,13 +142,13 @@ void KDXSButton::setEntry(Entry *e)
 	Entry::Status status = e->status();
 	if(status == Entry::Installed)
 	{
-		setText(i18n("Deinstall"));
+		setText(i18n("Uninstall"));
 		action_install->setVisible(false);
 	}
 	else
 	{
 		setText(i18n("Install"));
-		action_deinstall->setVisible(false);
+		action_uninstall->setVisible(false);
 	}
 
 	Author author = e->author();
@@ -481,7 +481,7 @@ void KDXSButton::slotTriggered(QAction *action)
 		if(authenticate())
 			m_dxs->call_subscription(0, true);
 	}
-	if(action == action_deinstall)
+	if(action == action_uninstall)
 	{
 		m_engine->uninstall(m_entry);
 	}
@@ -548,7 +548,7 @@ void KDXSButton::slotClicked()
 	if(action_install->isVisible())
 		slotTriggered(action_install);
 	else
-		slotTriggered(action_deinstall);
+		slotTriggered(action_uninstall);
 }
 
 bool KDXSButton::authenticate()
@@ -578,13 +578,13 @@ void KDXSButton::slotPayloadLoaded(KUrl url)
 	Entry::Status status = m_entry->status();
 	if(status == Entry::Installed)
 	{
-		setText(i18n("Deinstall"));
+		setText(i18n("Uninstall"));
 		action_install->setVisible(false);
 	}
 	else
 	{
 		setText(i18n("Install"));
-		action_deinstall->setVisible(false);
+		action_uninstall->setVisible(false);
 	}
 
 	m_engine->install(url.path());

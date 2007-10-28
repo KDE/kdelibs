@@ -96,7 +96,7 @@ private:
  * KNewStuff download dialog.
  *
  * The download dialog will present several categories of items to the user
- * for installation, deinstallation and updates.
+ * for installation, uninstallation and updates.
  * Preview images as well as other meta information can be seen.
  * If the GHNS provider supports DXS, then the dialog will offer an extended
  * popup menu with collaborative interactions such as ratings, removal

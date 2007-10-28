@@ -41,7 +41,7 @@ class Category;
  *
  * This button and its associated popup menu appear beside each item
  * in the download dialog. The user may use it to perform all the actions
- * on the item including installation, deinstallation and collaborative
+ * on the item including installation, uninstallation and collaborative
  * actions.
  *
  * This class is used internally by the DownloadDialog class.
@@ -89,7 +89,7 @@ private:
 	/*QAction *Items
 	{
 		install,
-		deinstall,
+		uninstall,
 		comments,
 		changes,
 		info,
@@ -109,7 +109,7 @@ private:
 	};*/
 
 	QAction *action_install;
-	QAction *action_deinstall;
+	QAction *action_uninstall;
 	QAction *action_comments;
 	QAction *action_changes;
 	QAction *action_info;
