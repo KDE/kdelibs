@@ -350,8 +350,8 @@ void ArrayInstance::sort(ExecState* exec)
         JSValue** storageCopy = static_cast<JSValue**>(fastMalloc(capacity * sizeof(JSValue*)));
         memcpy(storageCopy, storage, capacity * sizeof(JSValue*));
         mergesort(storageCopy, lengthNotIncludingUndefined, sizeof(JSValue *), compareByStringForQSort);
-        storage = storageCopy;
         fastFree(storage);
+        storage = storageCopy;
         execForCompareByStringForQSort = oldExec;
         return;
     }
@@ -417,6 +417,7 @@ void ArrayInstance::sort(ExecState* exec, JSObject* compareFunction)
         JSValue** storageCopy = static_cast<JSValue**>(fastMalloc(capacity * sizeof(JSValue*)));
         memcpy(storageCopy, storage, capacity * sizeof(JSValue*));
         mergesort(storageCopy, lengthNotIncludingUndefined, sizeof(JSValue *), compareWithCompareFunctionForQSort);
+        fastFree(storage);
         storage = storageCopy;
         compareWithCompareFunctionArguments = oldArgs;
         return;
