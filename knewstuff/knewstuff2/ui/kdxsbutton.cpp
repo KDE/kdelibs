@@ -575,6 +575,18 @@ void KDXSButton::slotPayloadLoaded(KUrl url)
 {
 	kDebug() << "PAYLOAD: success; try to install";
 
+	Entry::Status status = m_entry->status();
+	if(status == Entry::Installed)
+	{
+		setText(i18n("Deinstall"));
+		action_install->setVisible(false);
+	}
+	else
+	{
+		setText(i18n("Install"));
+		action_deinstall->setVisible(false);
+	}
+
 	m_engine->install(url.path());
 }
 
