@@ -963,7 +963,9 @@ bool CoreEngine::entryCached(Entry *entry)
 
 bool CoreEngine::entryChanged(Entry *oldentry, Entry *entry)
 {
-	if((!oldentry) || (entry->releaseDate() > oldentry->releaseDate()))
+	if((!oldentry) || (entry->releaseDate() > oldentry->releaseDate())
+	 || (entry->version() > oldentry->version())
+	 || (entry->release() > oldentry->release()))
 		return true;
 	return false;
 }
@@ -978,7 +980,16 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
 		// set it to Installed if it's in the registry
 		if (m_entry_index.contains(id(e)))
 		{
-			e->setStatus(Entry::Installed);
+			// see if the one online is newer (higher version, release, or release date)
+			Entry *oldentry = m_entry_index[id(e)];
+			if (entryChanged(oldentry, e))
+			{
+				e->setStatus(Entry::Updateable);
+			}
+			else
+			{
+				e->setStatus(Entry::Installed);
+			}
 			emit signalEntryLoaded(e, feed, provider);
 		}
 		else
