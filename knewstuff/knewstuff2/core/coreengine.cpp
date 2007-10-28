@@ -975,38 +975,47 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
 		// TODO: find entry in entrycache, replace if needed
 		// don't forget marking as 'updateable'
 		Entry *e = (*it);
-		e->setStatus(Entry::Downloadable);
-
-		if(entryCached(e))
+		// set it to Installed if it's in the registry
+		if (m_entry_index.contains(id(e)))
 		{
-			kDebug(550) << "CACHE: hit entry " << e->name().representation();
-			// FIXME: separate version updates from server-side translation updates?
-			Entry *oldentry = m_entry_index[id(e)];
-			if(entryChanged(oldentry, e))
-			{
-				kDebug(550) << "CACHE: update entry";
-				e->setStatus(Entry::Updateable);
-				// entry has changed
-				// FIXME: important: for cache filename, whole-content comparison
-				// is harmful, still needs id-based one!
-				cacheEntry(e);
-				emit signalEntryChanged(e);
-				// FIXME: oldentry can now be deleted, but it's still in the list!
-				// FIXME: better: assigne all values to 'e', keeps refs intact
-			}
+			e->setStatus(Entry::Installed);
+			emit signalEntryLoaded(e, feed, provider);
 		}
 		else
 		{
-			if(m_cachepolicy != CacheNever)
-			{
-				kDebug(550) << "CACHE: miss entry " << e->name().representation();
-				cacheEntry(e);
-			}
-			emit signalEntryLoaded(e, feed, provider);
-		}
+			e->setStatus(Entry::Downloadable);
 
-		m_entry_cache.append(e);
-		m_entry_index[id(e)] = e;
+			if(entryCached(e))
+			{
+				kDebug(550) << "CACHE: hit entry " << e->name().representation();
+				// FIXME: separate version updates from server-side translation updates?
+				Entry *oldentry = m_entry_index[id(e)];
+				if(entryChanged(oldentry, e))
+				{
+					kDebug(550) << "CACHE: update entry";
+					e->setStatus(Entry::Updateable);
+					// entry has changed
+					// FIXME: important: for cache filename, whole-content comparison
+					// is harmful, still needs id-based one!
+					cacheEntry(e);
+					emit signalEntryChanged(e);
+					// FIXME: oldentry can now be deleted, but it's still in the list!
+					// FIXME: better: assigne all values to 'e', keeps refs intact
+				}
+			}
+			else
+			{
+				if(m_cachepolicy != CacheNever)
+				{
+					kDebug(550) << "CACHE: miss entry " << e->name().representation();
+					cacheEntry(e);
+				}
+				emit signalEntryLoaded(e, feed, provider);
+			}
+
+			m_entry_cache.append(e);
+			m_entry_index[id(e)] = e;
+		}
 	}
 
 	if(m_cachepolicy != CacheNever)
@@ -1437,6 +1446,7 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
 {
 	entry->setStatus(Entry::Deleted);
 	// FIXME: remove payload file, and maybe unpacked files
+	// FIXME: also remove registry for this file?
 	return true;
 }
 
