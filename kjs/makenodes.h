@@ -59,7 +59,7 @@ static Node* makePrefixNode(Node *expr, Operator op)
     Node *n = expr->nodeInsideAllParens();
 
     if (!n->isLocation())
-        return new PrefixErrorNode(n, op);
+        return new PrefixErrorNode(expr, op);
 
     LocationNode *l = static_cast<LocationNode*>(n);
     return new PrefixNode(l, op);
@@ -70,7 +70,7 @@ static Node* makePostfixNode(Node* expr, Operator op)
     Node *n = expr->nodeInsideAllParens();
 
     if (!n->isLocation())
-        return new PostfixErrorNode(n, op);
+        return new PostfixErrorNode(expr, op);
 
     LocationNode *l = static_cast<LocationNode*>(n);
     return new PostfixNode(l, op);
@@ -110,7 +110,7 @@ static Node *makeTypeOfNode(Node *expr)
     if (n->isVarAccessNode())
         return new TypeOfReferenceNode(static_cast<LocationNode*>(n));
     else
-        return new TypeOfValueNode(n);
+        return new TypeOfValueNode(expr);
 }
 
 static Node *makeDeleteNode(Node *expr)
