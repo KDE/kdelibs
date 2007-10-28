@@ -399,7 +399,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->updateLocationWhatsThis();
     d->locationLabel->setBuddy(d->locationEdit);
 
-    d->locationEdit->setFocus();
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
     QString dir = d->url.url(KUrl::AddTrailingSlash);
 
@@ -443,6 +442,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->ops->setViewConfig(*d->viewConfigGroup);
     d->readConfig(* d->viewConfigGroup);
     setSelection(d->selection);
+    d->locationEdit->setFocus();
 }
 
 KFileWidget::~KFileWidget()
