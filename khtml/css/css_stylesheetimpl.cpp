@@ -253,7 +253,7 @@ void CSSStyleSheetImpl::determineNamespace(quint32& id, const DOM::DOMString& pr
         return;
 
     if (prefix.isEmpty())
-         id = makeId(emptyNamespace, localNamePart(id)); // No namespace. If an element/attribute has a namespace, we won't match it.
+         id = makeId(::defaultNamespace, localNamePart(id)); // No namespace. If an element/attribute has a namespace, we won't match it.
     else if (prefix == "*")
         id = makeId(anyNamespace, localNamePart(id)); // We'll match any namespace.
     else {
@@ -320,7 +320,7 @@ void CSSStyleSheetImpl::setNonCSSHints()
     QListIterator<StyleBaseImpl*> it( *m_lstChildren );
     while ( it.hasNext() )
     {
-        rule = it.next();                
+        rule = it.next();
         if(rule->isStyleRule()) {
             static_cast<CSSStyleRuleImpl *>(rule)->setNonCSSHints();
         }
