@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
  *  Copyright (C) 2006 Apple Computer, Inc.
+ *  Copyright (C) 2007 Cameron Zwarich (cwzwarich@uwaterloo.ca)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -29,6 +30,7 @@
 #include <limits.h>
 
 #include "dtoa.h"
+#include "function.h"
 #include "interpreter.h"
 #include "nodes.h"
 #include <wtf/unicode/libc/UnicodeLibC.h>
@@ -481,6 +483,10 @@ int Lexer::lex()
       dval *= 16;
       dval += convertHex(c);
     }
+
+    if (dval >= mantissaOverflowLowerBound)
+      dval = parseIntOverflow(buffer8 + 2, p - (buffer8 + 3), 16);
+
     state = Number;
   } else if (state == Octal) {   // scan octal number
     const char *p = buffer8 + 1;
@@ -488,6 +494,10 @@ int Lexer::lex()
       dval *= 8;
       dval += c - '0';
     }
+
+    if (dval >= mantissaOverflowLowerBound)
+      dval = parseIntOverflow(buffer8 + 1, p - (buffer8 + 2), 8);
+
     state = Number;
   }
 

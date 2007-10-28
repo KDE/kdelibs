@@ -182,6 +182,9 @@ namespace KJS {
     int id;
   };
 
+  static const double mantissaOverflowLowerBound = 9007199254740992.0;
+  double parseIntOverflow(const char* s, int length, int radix);
+
 } // namespace
 
 #endif
