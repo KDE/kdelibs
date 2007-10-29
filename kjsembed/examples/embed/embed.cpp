@@ -56,8 +56,10 @@ int main( int argc, char **argv )
     {
         KJS::Completion jsres = kernel->completion();
         qDebug() << KJSEmbed::toQString(jsres.value()->toString(exec));
+        delete kernel;
         return 0;
     }
+    delete kernel;
     return result;
 }
 
