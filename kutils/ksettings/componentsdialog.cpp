@@ -89,6 +89,7 @@ ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
 
 ComponentsDialog::~ComponentsDialog()
 {
+    delete d;
 }
 
 void ComponentsDialog::addPluginInfo( KPluginInfo * info )
