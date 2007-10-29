@@ -4,7 +4,7 @@ Type=Service
 
 ServiceTypes=KDEDModule
 X-KDE-Library=globalaccel
-X-KDE-Factory=globalaccel
+X-KDE-FactoryName=globalaccel
 X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true
 
