@@ -190,7 +190,12 @@ void KDirListerTest::testNewItems()
 void KDirListerTest::testRefreshItems()
 {
     m_refreshedItems.clear();
+
     const QString path = m_tempDir.name();
+    const QString fileName = path+"toplevelfile_2";
+    KFileItem cachedItem = m_dirLister.findByUrl(KUrl(fileName));
+    QCOMPARE(cachedItem.mimetype(), QString("application/octet-stream"));
+
     QSignalSpy spyStarted(&m_dirLister, SIGNAL(started(KUrl)));
     QSignalSpy spyClear(&m_dirLister, SIGNAL(clear()));
     QSignalSpy spyClearKUrl(&m_dirLister, SIGNAL(clear(KUrl)));
@@ -201,12 +206,11 @@ void KDirListerTest::testRefreshItems()
     connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
             this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
 
-    QString fileName = path+"toplevelfile_2";
     QFile file(fileName);
     QVERIFY(file.open(QIODevice::Append));
-    file.write("foo");
+    file.write("<html>");
     file.close();
-    QCOMPARE(QFileInfo(fileName).size(), 11LL /*Hello world*/ + 3 /*foo*/);
+    QCOMPARE(QFileInfo(fileName).size(), 11LL /*Hello world*/ + 6 /*<html>*/);
 
     // KDirWatch doesn't make this work when using FAM :(
     //KDirWatch::self()->setDirty(path+"toplevelfile_2"); // hack
@@ -228,12 +232,17 @@ void KDirListerTest::testRefreshItems()
     QCOMPARE(spyClearKUrl.count(), 0);
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
-    QCOMPARE(entry.second.size(), KIO::filesize_t(11 /*Hello world*/ + 3 /*foo*/));
+    QCOMPARE(entry.first.size(), KIO::filesize_t(11));
+    QCOMPARE(entry.first.url().path(), fileName);
+    QCOMPARE(entry.first.mimetype(), QString("application/octet-stream"));
+    QCOMPARE(entry.second.size(), KIO::filesize_t(11 /*Hello world*/ + 6 /*<html>*/));
+    QCOMPARE(entry.second.url().path(), fileName);
+    QCOMPARE(entry.second.mimetype(), QString("text/html"));
     disconnect(&m_dirLister, 0, this, 0);
 
     // Let's see what KDirLister has in cache now
-    KFileItem cachedItem = m_dirLister.findByUrl(KUrl(fileName));
-    QCOMPARE(cachedItem.size(), KIO::filesize_t(11 /*Hello world*/ + 3 /*foo*/));
+    cachedItem = m_dirLister.findByUrl(KUrl(fileName));
+    QCOMPARE(cachedItem.size(), KIO::filesize_t(11 /*Hello world*/ + 6 /*<html>*/));
     m_refreshedItems.clear();
 }
 
@@ -271,14 +280,15 @@ void KDirListerTest::testRenameItem()
     connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
             this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
     const QString path = dirPath+"toplevelfile_2";
-    const QString newPath = dirPath+"toplevelfile_2_renamed";
+    const QString newPath = dirPath+"toplevelfile_2.renamed.html";
 
     KIO::SimpleJob* job = KIO::rename(path, newPath, KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
 
     if (m_refreshedItems.isEmpty()) {
-        qDebug("waiting for refreshItems");
+        // Wait for refreshItems. Could come from KDirWatch or KDirNotify.
+        //qDebug("waiting for refreshItems");
         connect(this, SIGNAL(refreshItemsReceived()), this, SLOT(exitLoop()));
         enterLoop();
     }
@@ -286,7 +296,9 @@ void KDirListerTest::testRenameItem()
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
     QCOMPARE(entry.first.url().path(), path);
+    QCOMPARE(entry.first.mimetype(), QString("application/octet-stream"));
     QCOMPARE(entry.second.url().path(), newPath);
+    QCOMPARE(entry.second.mimetype(), QString("text/html"));
     disconnect(&m_dirLister, 0, this, 0);
 
     // Let's see what KDirLister has in cache now
