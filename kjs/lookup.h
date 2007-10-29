@@ -355,13 +355,13 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
 #define KJS_IMPLEMENT_PROTOTYPE(ClassName, ClassProto,ClassFunc) \
     const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
     KJS::Identifier* ClassProto::s_name = 0; \
-    KJS::JSObject *ClassProto::self(ExecState *exec) \
+    KJS::JSObject *ClassProto::self(KJS::ExecState *exec) \
     { \
       return ::cacheGlobalObject<ClassProto>(exec, *name()); \
     } \
     bool ClassProto::getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot) \
     { \
-      return getStaticFunctionSlot<ClassFunc, KJS::JSObject>(exec, &ClassProto##Table, this, propertyName, slot); \
+      return KJS::getStaticFunctionSlot<ClassFunc, KJS::JSObject>(exec, &ClassProto##Table, this, propertyName, slot); \
     } \
     KJS::Identifier* ClassProto::name() \
     { \

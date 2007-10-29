@@ -226,11 +226,10 @@ sub output() {
   print "\n#include \"lookup.h\"\n" if ($includelookup);
   if ($useNameSpace) {
     print "\nnamespace ${useNameSpace}\n{\n";
-    print "\nusing namespace KJS;";
   } else {
     print "\nnamespace KJS {\n";
   }
-  print "\nstatic const struct HashEntry ".$nameEntries."[] = {\n";
+  print "\nstatic const struct KJS::HashEntry ".$nameEntries."[] = {\n";
   my $i = 0;
   #print STDERR "writing out table with ".($#table+1)." entries\n";
   
@@ -246,7 +245,11 @@ sub output() {
         my $key = $keys[$entry];
         print "   \{ \"" . $key . "\"";
         print ", " . $values[$entry];
-        print ", " . $attrs[$entry];
+        my $kjsattrs = $attrs[$entry];
+        if ($kjsattrs ne "0") {
+         $kjsattrs =~ s/([^|]+)/KJS::$1/g; # DontDelete|Function -> KJS::DontDelete|KJS::Function
+        }
+        print ", " . $kjsattrs;
         print ", " . $params[$entry];
         print ", ";
         if (defined($links[$i])) {
@@ -264,7 +267,7 @@ sub output() {
     }
   }
   print "};\n\n";
-  print "const struct HashTable $name = ";
+  print "const struct KJS::HashTable $name = ";
   print "\{ 2, $size, ".$nameEntries.", $hashsize \};\n\n";
   print "} // namespace\n";
 }
