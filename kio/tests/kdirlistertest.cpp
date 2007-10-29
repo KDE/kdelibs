@@ -27,6 +27,7 @@ QTEST_KDEMAIN( KDirListerTest, NoGUI )
 #include <kdebug.h>
 #include "kiotesthelper.h"
 #include <kdirwatch.h>
+#include <kio/job.h>
 
 void KDirListerTest::initTestCase()
 {
@@ -229,6 +230,11 @@ void KDirListerTest::testRefreshItems()
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
     QCOMPARE(entry.second.size(), KIO::filesize_t(11 /*Hello world*/ + 3 /*foo*/));
     disconnect(&m_dirLister, 0, this, 0);
+
+    // Let's see what KDirLister has in cache now
+    KFileItem cachedItem = m_dirLister.findByUrl(KUrl(fileName));
+    QCOMPARE(cachedItem.size(), KIO::filesize_t(11 /*Hello world*/ + 3 /*foo*/));
+    m_refreshedItems.clear();
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
@@ -255,6 +261,40 @@ void KDirListerTest::testDeleteItem()
     QCOMPARE(m_items.count(), 4);
 
     disconnect(&m_dirLister, 0, this, 0);
+}
+
+void KDirListerTest::testRenameItem()
+{
+    m_refreshedItems.clear();
+    const QString dirPath = m_tempDir.name();
+    qRegisterMetaType<KFileItem>("KFileItem");
+    connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
+            this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
+    const QString path = dirPath+"toplevelfile_2";
+    const QString newPath = dirPath+"toplevelfile_2_renamed";
+
+    KIO::SimpleJob* job = KIO::rename(path, newPath, KIO::HideProgressInfo);
+    bool ok = job->exec();
+    QVERIFY(ok);
+
+    if (m_refreshedItems.isEmpty()) {
+        qDebug("waiting for refreshItems");
+        connect(this, SIGNAL(refreshItemsReceived()), this, SLOT(exitLoop()));
+        enterLoop();
+    }
+
+    QCOMPARE(m_refreshedItems.count(), 1);
+    QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
+    QCOMPARE(entry.first.url().path(), path);
+    QCOMPARE(entry.second.url().path(), newPath);
+    disconnect(&m_dirLister, 0, this, 0);
+
+    // Let's see what KDirLister has in cache now
+    KFileItem cachedItem = m_dirLister.findByUrl(KUrl(newPath));
+    QCOMPARE(cachedItem.url().path(), newPath);
+    KFileItem oldCachedItem = m_dirLister.findByUrl(KUrl(path));
+    QVERIFY(oldCachedItem.isNull());
+    m_refreshedItems.clear();
 }
 
 void KDirListerTest::testOpenAndStop()
@@ -303,4 +343,5 @@ void KDirListerTest::slotNewItems(const KFileItemList& lst)
 void KDirListerTest::slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > & lst)
 {
     m_refreshedItems += lst;
+    emit refreshItemsReceived();
 }

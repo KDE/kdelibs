@@ -35,6 +35,7 @@ private Q_SLOTS:
     void testNewItems();
     void testRefreshItems();
     void testDeleteItem();
+    void testRenameItem();
     void testOpenAndStop();
     // TODO test filtering
     // TODO test concurrent listings from two KDirListers
@@ -43,6 +44,9 @@ protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtest
     void exitLoop();
     void slotNewItems(const KFileItemList&);
     void slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
+
+Q_SIGNALS:
+    void refreshItemsReceived();
 
 private:
     void enterLoop();
