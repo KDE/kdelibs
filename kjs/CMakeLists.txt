@@ -3,6 +3,7 @@ project(kjs)
 
 add_subdirectory(tests)
 
+# Conflict between KJS::HashTable and WTF::HashTable, due to "using namespace" of both namespaces.
 KDE4_NO_ENABLE_FINAL(kjs)
 
 # Configuration checks
