@@ -449,15 +449,14 @@ void KDXSButton::slotTriggered(QAction *action)
 	}
 	if(action == action_contactbymail)
 	{
-		// FIXME: use real data
-		QString address = "spillner@kde.org";
+		QString address = m_entry->author().email();
 		KToolInvocation::invokeMailer(address, i18n("KNewStuff contributions"), "");
 	}
 	if(action == action_contactbyjabber)
 	{
-		// FIXME: use real data
-		QString address = QLatin1String("josef@jabber.org");
-		// FIXME: search for kopete in kde paths?
+		QString address = m_entry->author().jabber().toLatin1();
+		// FIXME: search for kopete in kde paths? or extend KToolInvocation with IM
+		// FIXME: get rid of the latin1 stuff, but only after testing it
 		QStringList args = QStringList() << QLatin1String("--autoconnect") << address;
 		KProcess::startDetached(QLatin1String("kopete"), args);
 	}
