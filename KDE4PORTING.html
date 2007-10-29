@@ -183,7 +183,7 @@ See also <a href="#i18n">the I18N section below</a>.</p>
 
 <h4>KAccel</h4>
 <p>Removed. Replaced by the new KAction/QAction framework.
-See KActionCollection::setAssociatedWidget() if you need the old KAccel widget-binding behavior.</p>
+See KActionCollection::associateWidget() if you need the old KAccel widget-binding behavior.</p>
 
 <h4>KAccelAction</h4>
 <ul>
@@ -926,7 +926,7 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 
 <h4>KActionCollection</h4>
 <ul>
-<li>constructor (QWidget* watch, ..) and setWidget() replaced by {set|add|remove}AssociatedWidget() - allows actions to respond to matching key presses on a widget level (basically a convenience method to have all actions in the collection added to the associated widget(s) and their shortcut scopes set to Qt::WidgetShortcut).</li>
+<li>constructor (QWidget* watch, ..) and setWidget() replaced by associateWidget() - allows actions to respond to matching key presses on a widget level (basically a convenience method to have all actions in the collection added to the associated widget(s) and their shortcut scopes set to Qt::WidgetShortcut). (note: associateWidget() replaces {set|add|remove}AssociatedWidget() from kde4 beta)</li>
 <li>*AutoConnectShortcuts removed - irrelevant</li>
 <li>*accel() removed - irrelevant (KAccel no longer handles key presses)</li>
 <li>New functions setConfigGroup(), setConfigGlobal(), configGroup(), configIsGlobal() - the action collection now stores the group whether the config is global. referenced in readSettings() / writeSettings()</li>
