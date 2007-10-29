@@ -45,7 +45,7 @@ typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
  * object, which are not associated with any group, use an
  * empty group name.
  * A KConfigGroup can be read-only if it is constructed from a const config object
- * or from a read-only group.
+ * or from another read-only group.
  */
 class KDECORE_EXPORT KConfigGroup : public KConfigBase
 {
@@ -445,17 +445,17 @@ template <>                                                                \
 inline Class::Enum KConfigGroup::readEntry(const QByteArray &key, const Class::Enum& def) const\
 {                                                                          \
 const QMetaObject* M_obj = &Class::staticMetaObject;                       \
-int M_index = M_obj->indexOfEnumerator(#Enum);                             \
+const int M_index = M_obj->indexOfEnumerator(#Enum);                       \
 kFatal(M_index == -1) << KCONFIGGROUP_ENUMERATOR_ERROR(#Enum) << endl;     \
 const QMetaEnum M_enum = M_obj->enumerator(M_index);                       \
-const QByteArray str = readEntry(key, QByteArray(M_enum.valueToKey(def))); \
-return static_cast<Class::Enum>(M_enum.keyToValue(str.constData()));       \
+const QByteArray M_data = readEntry(key, QByteArray(M_enum.valueToKey(def)));\
+return static_cast<Class::Enum>(M_enum.keyToValue(M_data.constData()));    \
 }                                                                          \
 template <>                                                                \
 inline void KConfigGroup::writeEntry(const QByteArray &key, const Class::Enum& value, WriteConfigFlags flags)\
 {                                                                          \
 const QMetaObject* M_obj = &Class::staticMetaObject;                       \
-int M_index = M_obj->indexOfEnumerator(#Enum);                             \
+const int M_index = M_obj->indexOfEnumerator(#Enum);                       \
 kFatal(M_index == -1) << KCONFIGGROUP_ENUMERATOR_ERROR(#Enum) << endl;     \
 const QMetaEnum M_enum = M_obj->enumerator(M_index);                       \
 writeEntry(key, QByteArray(M_enum.valueToKey(value)), flags);              \
@@ -466,17 +466,17 @@ template <>                                                                 \
 inline Class::Flags KConfigGroup::readEntry(const QByteArray &key, const Class::Flags& def) const\
 {                                                                           \
 const QMetaObject* M_obj = &Class::staticMetaObject;                        \
-int M_index = M_obj->indexOfEnumerator(#Flags);                             \
+const int M_index = M_obj->indexOfEnumerator(#Flags);                       \
 kFatal(M_index == -1) << KCONFIGGROUP_ENUMERATOR_ERROR(#Flags) << endl;     \
 const QMetaEnum M_enum = M_obj->enumerator(M_index);                        \
-const QByteArray str = readEntry(key, QByteArray(M_enum.valueToKeys(def))); \
-return static_cast<Class::Flags>(M_enum.keysToValue(str.constData()));      \
+const QByteArray M_data = readEntry(key, QByteArray(M_enum.valueToKeys(def)));\
+return static_cast<Class::Flags>(M_enum.keysToValue(M_data.constData()));   \
 }                                                                           \
 template <>                                                                 \
 inline void KConfigGroup::writeEntry(const QByteArray &key, const Class::Flags& value, WriteConfigFlags flags)\
 {                                                                           \
 const QMetaObject* M_obj = &Class::staticMetaObject;                        \
-int M_index = M_obj->indexOfEnumerator(#Flags);                             \
+const int M_index = M_obj->indexOfEnumerator(#Flags);                       \
 kFatal(M_index == -1) << KCONFIGGROUP_ENUMERATOR_ERROR(#Flags) << endl;     \
 const QMetaEnum M_enum = M_obj->enumerator(M_index);                        \
 writeEntry(key, QByteArray(M_enum.valueToKeys(value)), flags);              \
@@ -497,7 +497,7 @@ template<class T>
 T KConfigGroup::readListCheck(const QByteArray &key, const T &defaultValue) const
 {
     ConversionCheck::to_QVariant<T>();
-    return qVariantValue<T>(readEntry(key, QVariant::fromValue(defaultValue)));
+    return qvariant_cast<T>(readEntry(key, qVariantFromValue(defaultValue)));
 }
 
 template <typename T>
@@ -506,23 +506,15 @@ QList<T> KConfigGroup::readListCheck(const QByteArray &key, const QList<T> &defa
   ConversionCheck::to_QVariant<T>();
   ConversionCheck::to_QString<T>();
 
-  if (!hasKey(key))
-    return defaultValue;
+  QVariantList data;
 
-  QVariantList vList;
-
-  if (!defaultValue.isEmpty()) {
-    Q_FOREACH (const T &aValue, defaultValue)
-      vList.append( aValue );
-  }
-  vList = readEntry( key, vList );
+  Q_FOREACH(const T& value, defaultValue)
+    data.append(qVariantFromValue(value));
 
   QList<T> list;
-  if (!vList.isEmpty()) {
-    Q_FOREACH (const QVariant &aValue, vList) {
-      Q_ASSERT(qVariantCanConvert<T>(aValue));
-      list.append( qvariant_cast<T>(aValue) );
-    }
+  Q_FOREACH (const QVariant &value, readEntry(key, data)) {
+    Q_ASSERT(qVariantCanConvert<T>(value));
+    list.append( qvariant_cast<T>(value) );
   }
 
   return list;
@@ -548,11 +540,11 @@ void KConfigGroup::writeListCheck( const QByteArray &key, const QList<T>& list,
   ConversionCheck::to_QVariant<T>();
   ConversionCheck::to_QString<T>();
 
-  QVariantList vList;
+  QVariantList data;
   Q_FOREACH(const T &value, list)
-    vList.append(value);
+    data.append(qVariantFromValue(value));
 
-  writeEntry( key, vList, pFlags );
+  writeEntry( key, data, pFlags );
 }
 
 template <typename T>

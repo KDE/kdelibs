@@ -48,31 +48,27 @@
 class KConfigGroupPrivate : public QSharedData
 {
  public:
-    KConfigGroupPrivate(KConfig* owner, bool isConst, const QByteArray &name)
-        : mOwner(owner), mName(name), bImmutable(false), bConst(isConst)
+    KConfigGroupPrivate(KConfig* owner, bool isImmutable, bool isConst, const QByteArray &name)
+        : mOwner(owner), mName(name), bImmutable(isImmutable), bConst(isConst)
     {
-        checkImmutable();
     }
 
     KConfigGroupPrivate(const KSharedConfigPtr &owner, const QByteArray& name)
-        : sOwner(owner), mOwner(sOwner.data()), mName(name), bImmutable(false), bConst(false)
+        : sOwner(owner), mOwner(sOwner.data()), mName(name),
+          bImmutable(name.isEmpty()? owner->isImmutable(): owner->groupIsImmutable(name)), bConst(false)
     {
-        checkImmutable();
     }
 
-    KConfigGroupPrivate(KConfigGroupPrivate* other, bool isImmutable, bool isConst)
-        : sOwner(other->sOwner), mOwner(other->mOwner), mParent(other->mParent), mName(other->mName),
+    KConfigGroupPrivate(KConfigGroup* parent, bool isImmutable, bool isConst, const QByteArray& name)
+        : sOwner(parent->d->sOwner), mOwner(parent->d->mOwner), mParent(parent->d), mName(name),
           bImmutable(isImmutable), bConst(isConst)
     {
-        ;
     }
 
-
-    KConfigGroupPrivate(const KConfigGroupPrivate* other, const QByteArray &name)
+    KConfigGroupPrivate(const KConfigGroupPrivate* other, bool isImmutable, const QByteArray &name)
         : sOwner(other->sOwner), mOwner(other->mOwner), mParent(other->mParent), mName(name),
-          bImmutable(other->bImmutable), bConst(other->bConst)
+          bImmutable(isImmutable), bConst(other->bConst)
     {
-        checkImmutable();
     }
 
     KSharedConfig::Ptr sOwner;
@@ -81,7 +77,7 @@ class KConfigGroupPrivate : public QSharedData
     QByteArray mName;
 
     /* bitfield */
-    bool bImmutable:1; // is this group immutable?
+    const bool bImmutable:1; // is this group immutable?
     const bool bConst:1; // is this group read-only?
 
     QByteArray fullName() const
@@ -91,28 +87,27 @@ class KConfigGroupPrivate : public QSharedData
                 return "<default>";
             return mName;
         }
-        return mParent->fullName() + '/' + mName;
+        return mParent->fullName(mName);
     }
 
-    void checkImmutable()
+    QByteArray fullName(const QByteArray& aGroup) const
     {
-        if (mName.isEmpty())
-            bImmutable = mOwner->isImmutable();
-        else
-            bImmutable = mOwner->isGroupImmutable(fullName());
+        return fullName() + '/' + aGroup;
     }
 
     static QString expandString(const QString& value);
 
-    static QExplicitlySharedDataPointer<KConfigGroupPrivate> create(KConfigBase *master, const QByteArray &name, bool isConst)
+    static QExplicitlySharedDataPointer<KConfigGroupPrivate> create(KConfigBase *master,
+                                                                    const QByteArray &name,
+                                                                    bool isImmutable,
+                                                                    bool isConst)
     {
-        if (dynamic_cast<KConfigGroup *>(master)) {
-            KConfigGroup tmp(isConst ? static_cast<const KConfigGroup *>(master)->group(name) :
-                        static_cast<KConfigGroup *>(master)->group(name));
-            return tmp.d;
-        } else {
-            return QExplicitlySharedDataPointer<KConfigGroupPrivate>(new KConfigGroupPrivate(dynamic_cast<KConfig*>(master), isConst, name));
-        }
+        QExplicitlySharedDataPointer<KConfigGroupPrivate> data;
+        if (dynamic_cast<KConfigGroup*>(master))
+            data = new KConfigGroupPrivate(dynamic_cast<KConfigGroup*>(master), isImmutable, isConst, name);
+        else
+            data = new KConfigGroupPrivate(dynamic_cast<KConfig*>(master), isImmutable, isConst, name);
+        return data;
     }
 
     static QByteArray serializeList(const QList<QByteArray> &list);
@@ -543,32 +538,32 @@ static inline bool writeEntryGui(KConfigGroup *cg, const QByteArray &key, const 
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
-    : d(KConfigGroupPrivate::create(master, _group.toUtf8(), false))
+    : d(KConfigGroupPrivate::create(master, _group.toUtf8(), master->groupIsImmutable(_group), false))
 {
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QByteArray &_group)
- : d(KConfigGroupPrivate::create(master, _group, false))
+ : d(KConfigGroupPrivate::create(master, _group, master->groupIsImmutable(_group), false))
 {
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const char *_group)
- : d(KConfigGroupPrivate::create(master, _group, false))
+ : d(KConfigGroupPrivate::create(master, _group, master->groupIsImmutable(_group), false))
 {
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const QString &_group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group.toUtf8(), true))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group.toUtf8(), master->groupIsImmutable(_group), true))
 {
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const QByteArray &_group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, true))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, master->groupIsImmutable(_group), true))
 {
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const char * _group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, true))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, master->groupIsImmutable(_group), true))
 {
 }
 
@@ -605,35 +600,35 @@ KConfigGroup::~KConfigGroup()
 
 KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup)
 {
-    Q_ASSERT(isValid() && !d->mName.isEmpty());
+    Q_ASSERT_X(isValid(), "KConfigGroup::groupImpl", "accessing an invalid group");
+    Q_ASSERT_X(!d->mName.isEmpty(), "KConfigGroup::groupImpl", "the default group is not allowed to have children");
+    Q_ASSERT_X(!aGroup.isEmpty(), "KConfigGroup::groupImpl", "can not have an unnamed child group");
+
     KConfigGroup newGroup;
 
-    KConfigGroupPrivate sub = *d;
-    sub.mParent = d;
-    sub.mName = aGroup;
-    bool subImmutable = config()->isGroupImmutable(sub.fullName());
-    newGroup.d = new KConfigGroupPrivate(&sub, subImmutable, d->bConst);
+    newGroup.d = new KConfigGroupPrivate(this, groupIsImmutableImpl(aGroup), d->bConst, aGroup);
 
     return newGroup;
 }
 
 const KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup) const
 {
-    Q_ASSERT(isValid() && !d->mName.isEmpty());
+    Q_ASSERT_X(isValid(), "KConfigGroup::groupImpl", "accessing an invalid group");
+    Q_ASSERT_X(!d->mName.isEmpty(), "KConfigGroup::groupImpl", "the default group is not allowed to have children");
+    Q_ASSERT_X(!aGroup.isEmpty(), "KConfigGroup::groupImpl", "can not have an unnamed child group");
+
     KConfigGroup newGroup;
 
-    KConfigGroupPrivate sub = *d;
-    sub.mParent = d;
-    sub.mName = aGroup;
-    bool subImmutable = config()->isGroupImmutable(sub.fullName());
-    newGroup.d = new KConfigGroupPrivate(&sub, subImmutable, true);
+    newGroup.d = new KConfigGroupPrivate(const_cast<KConfigGroup*>(this), groupIsImmutableImpl(aGroup),
+                                         true, aGroup);
 
     return newGroup;
 }
 
 void KConfigGroup::deleteGroup(WriteConfigFlags flags)
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::deleteGroup", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::deleteGroup", "deleting a read-only group");
 
     config()->deleteGroup(d->fullName(), flags);
 }
@@ -650,44 +645,60 @@ void KConfigGroup::changeGroup( const char *group )
 
 void KConfigGroup::changeGroup( const QByteArray &group)
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::changeGroup", "accessing an invalid group");
+
     // detach (QExplicitlySharedDataPointer takes care of deleting the old d if necessary)
     // ### temporary solution until QExplicitlySharedDataPointer has detach()
-    d = new KConfigGroupPrivate(d, group);
+    d = new KConfigGroupPrivate(d, config()->groupIsImmutable(group), group);
 }
 
 QString KConfigGroup::name() const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::name", "accessing an invalid group");
+
     return QString::fromUtf8(d->fullName());
 }
 
 bool KConfigGroup::exists() const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::exists", "accessing an invalid group");
+
     return config()->hasGroup( d->fullName() );
 }
 
 void KConfigGroup::sync()
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::sync", "accessing an invalid group");
+
     if (!d->bConst)
         config()->sync();
 }
 
 QMap<QString, QString> KConfigGroup::entryMap() const
 {
-  return config()->entryMap(d->fullName());
+    Q_ASSERT_X(isValid(), "KConfigGroup::entryMap", "accessing an invalid group");
+
+    return config()->entryMap(d->fullName());
 }
 
 KConfig* KConfigGroup::config()
 {
-  return d->mOwner;
+    Q_ASSERT_X(isValid(), "KConfigGroup::config", "accessing an invalid group");
+
+    return d->mOwner;
 }
 
 const KConfig* KConfigGroup::config() const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::config", "accessing an invalid group");
+
     return d->mOwner;
 }
 
 bool KConfigGroup::isEntryImmutable(const QByteArray& key) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::isEntryImmutable", "accessing an invalid group");
+
     return (isImmutable() ||
         !config()->d_func()->canWriteEntry(d->fullName(), key, config()->readDefaults()));
 }
@@ -714,6 +725,8 @@ QString KConfigGroup::readEntryUntranslated(const char *key, const QString& aDef
 
 QString KConfigGroup::readEntryUntranslated( const QByteArray& key, const QString& aDefault ) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::readEntryUntranslated", "accessing an invalid group");
+
     QString result = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags(), 0);
     if (result.isNull())
         return aDefault;
@@ -738,6 +751,8 @@ QString KConfigGroup::readEntry(const QByteArray &key, const char* aDefault) con
 template <>
 QString KConfigGroup::readEntry<QString>( const QByteArray& key, const QString& aDefault ) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::readEntry", "accessing an invalid group");
+
     bool expand = false;
 
     // read value from the entry map
@@ -755,6 +770,8 @@ QString KConfigGroup::readEntry<QString>( const QByteArray& key, const QString& 
 template<>
 QStringList KConfigGroup::readEntry<QStringList>(const QByteArray &key, const QStringList& aDefault) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::readEntry", "accessing an invalid group");
+
     const QString data = readEntry(key, QString());
     if (data.isNull())
         return aDefault;
@@ -765,6 +782,8 @@ QStringList KConfigGroup::readEntry<QStringList>(const QByteArray &key, const QS
 template<>
 QVariant KConfigGroup::readEntry<QVariant>( const QByteArray &key, const QVariant &aDefault ) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::readEntry", "accessing an invalid group");
+
     const QByteArray data = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchFlags());
     if (data.isNull())
         return aDefault;
@@ -779,14 +798,14 @@ QVariant KConfigGroup::readEntry<QVariant>( const QByteArray &key, const QVarian
 template<>
 QVariantList KConfigGroup::readEntry<QVariantList>( const QByteArray &key, const QVariantList& aDefault) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::readEntry", "accessing an invalid group");
+
     const QString data = readEntry(key, QString());
     if (data.isNull())
         return aDefault;
 
-    QStringList list = KConfigGroupPrivate::deserializeList(data);
-
     QVariantList value;
-    foreach(QString v, list)
+    foreach(const QString& v, KConfigGroupPrivate::deserializeList(data))
         value << v;
 
     return value;
@@ -804,6 +823,8 @@ QStringList KConfigGroup::readXdgListEntry(const char *key, const QStringList& a
 
 QStringList KConfigGroup::readXdgListEntry(const QByteArray &key, const QStringList& aDefault) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::readXdgListEntry", "accessing an invalid group");
+
     const QString data = readEntry(key, QString());
     if (data.isNull())
         return aDefault;
@@ -847,6 +868,8 @@ QString KConfigGroup::readPathEntry(const char *key, const QString & aDefault) c
 
 QString KConfigGroup::readPathEntry(const QByteArray &key, const QString& aDefault) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::readPathEntry", "accessing an invalid group");
+
     bool expand = false;
 
     QString aValue = config()->d_func()->lookupData(d->fullName(), key, KEntryMap::SearchLocalized,
@@ -869,6 +892,8 @@ QStringList KConfigGroup::readPathEntry(const char *key, const QStringList& aDef
 
 QStringList KConfigGroup::readPathEntry( const QByteArray &key, const QStringList& aDefault ) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::readPathEntry", "accessing an invalid group");
+
     const QString data = readPathEntry(key, QString());
     if (data.isNull())
         return aDefault;
@@ -879,10 +904,10 @@ QStringList KConfigGroup::readPathEntry( const QByteArray &key, const QStringLis
 template<>
 void KConfigGroup::writeEntry<QString>( const QByteArray &key, const QString& value, WriteConfigFlags flags )
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::writeEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writeEntry", "writing to a read-only group");
 
     writeEntry(key, value.toUtf8(), flags);
-
 }
 
 void KConfigGroup::writeEntry(const QByteArray &key, const char *value, WriteConfigFlags pFlags)
@@ -892,6 +917,9 @@ void KConfigGroup::writeEntry(const QByteArray &key, const char *value, WriteCon
 
 void KConfigGroup::writeEntry(const QString &key, const char *value, WriteConfigFlags pFlags)
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::writeEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writeEntry", "writing to a read-only group");
+
     writeEntry<const char *>(key.toUtf8(), value, pFlags);
 }
 
@@ -910,7 +938,8 @@ template<>
 void KConfigGroup::writeEntry<QByteArray>( const QByteArray &key, const QByteArray& value,
                      WriteConfigFlags flags )
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::writeEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writeEntry", "writing to a read-only group");
 
     config()->d_func()->putData(d->fullName(), key, value.isNull()? QByteArray(""): value, flags);
 }
@@ -918,7 +947,8 @@ void KConfigGroup::writeEntry<QByteArray>( const QByteArray &key, const QByteArr
 template<>
 void KConfigGroup::writeEntry<QStringList>(const QByteArray &key, const QStringList &list, WriteConfigFlags flags)
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::writeEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writeEntry", "writing to a read-only group");
 
     QList<QByteArray> balist;
 
@@ -931,7 +961,8 @@ void KConfigGroup::writeEntry<QStringList>(const QByteArray &key, const QStringL
 template<>
 void KConfigGroup::writeEntry<QVariantList>( const QByteArray &key, const QVariantList& list, WriteConfigFlags flags )
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::writeEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writeEntry", "writing to a read-only group");
 
     QList<QByteArray> data;
 
@@ -949,7 +980,8 @@ template<>
 void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant &value,
                                WriteConfigFlags flags )
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::writeEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writeEntry", "writing to a read-only group");
 
     if ( writeEntryGui( this, key, value, flags ) )
         return;                     // GUI type that was handled
@@ -1073,7 +1105,8 @@ void KConfigGroup::writeXdgListEntry(const char *pKey, const QStringList &value,
 
 void KConfigGroup::writeXdgListEntry(const QByteArray &key, const QStringList &list, WriteConfigFlags flags)
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::writeXdgListEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writeXdgListEntry", "writing to a read-only group");
 
     QString value;
     value.reserve(4096);
@@ -1104,7 +1137,8 @@ void KConfigGroup::writePathEntry(const char *pKey, const QString & path, WriteC
 
 void KConfigGroup::writePathEntry(const QByteArray &key, const QString &path, WriteConfigFlags flags)
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::writePathEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writePathEntry", "writing to a read-only group");
 
     config()->d_func()->putData(d->fullName(), key, translatePath(path).toUtf8(), flags, true);
 }
@@ -1121,7 +1155,8 @@ void KConfigGroup::writePathEntry(const char *pKey, const QStringList &value, Wr
 
 void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &value, WriteConfigFlags flags)
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::writePathEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::writePathEntry", "writing to a read-only group");
 
     QList<QByteArray> list;
     foreach(const QString& path, value)
@@ -1132,7 +1167,10 @@ void KConfigGroup::writePathEntry(const QByteArray &key, const QStringList &valu
 
 void KConfigGroup::deleteEntry(const QByteArray& key, WriteConfigFlags flags)
 {
-   config()->d_func()->putData(d->fullName(), key, QByteArray(), flags);
+    Q_ASSERT_X(isValid(), "KConfigGroup::deleteEntry", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::deleteEntry", "deleting from a read-only group");
+
+    config()->d_func()->putData(d->fullName(), key, QByteArray(), flags);
 }
 
 void KConfigGroup::deleteEntry( const QString& key, WriteConfigFlags flags)
@@ -1147,8 +1185,8 @@ void KConfigGroup::deleteEntry( const char *key, WriteConfigFlags flags)
 
 void KConfigGroup::revertToDefault(const QByteArray& key)
 {
-    if (d->bConst)
-        return;
+    Q_ASSERT_X(isValid(), "KConfigGroup::revertToDefault", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst, "KConfigGroup::revertToDefault", "writing to a read-only group");
 
     const QByteArray theDefault = config()->d_func()->lookupData(d->fullName(), key,
                       KEntryMap::SearchDefaults|KEntryMap::SearchLocalized);
@@ -1168,6 +1206,8 @@ void KConfigGroup::revertToDefault(const QString &key)
 
 bool KConfigGroup::hasDefault(const QByteArray& key) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::hasDefault", "accessing an invalid group");
+
     KEntryMap::SearchFlags flags = KEntryMap::SearchDefaults|KEntryMap::SearchLocalized;
 
     return !config()->d_func()->lookupData(d->fullName(), key, flags).isNull();
@@ -1185,6 +1225,8 @@ bool KConfigGroup::hasDefault(const QString &key) const
 
 bool KConfigGroup::hasKey(const QByteArray& key) const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::hasKey", "accessing an invalid group");
+
     KEntryMap::SearchFlags flags = KEntryMap::SearchLocalized;
     if ( config()->readDefaults() )
         flags |= KEntryMap::SearchDefaults;
@@ -1204,43 +1246,60 @@ bool KConfigGroup::hasKey(const char *key) const
 
 bool KConfigGroup::isImmutable() const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::isImmutable", "accessing an invalid group");
+
     return d->bImmutable;
 }
 
 QStringList KConfigGroup::groupList() const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::groupList", "accessing an invalid group");
+
     return config()->d_func()->groupList(d->fullName());
 }
 
 QStringList KConfigGroup::keyList() const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::keyList", "accessing an invalid group");
+
     return entryMap().keys();
 }
 
 void KConfigGroup::markAsClean()
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::markAsClean", "accessing an invalid group");
+
     config()->markAsClean();
 }
 
 KConfigGroup::AccessMode KConfigGroup::accessMode() const
 {
+    Q_ASSERT_X(isValid(), "KConfigGroup::accessMode", "accessing an invalid group");
+
     return config()->accessMode();
 }
 
 bool KConfigGroup::hasGroupImpl(const QByteArray & b) const
 {
-    return groupImpl(b).exists();
+    Q_ASSERT_X(isValid(), "KConfigGroup::hasGroupImpl", "accessing an invalid group");
+
+    return config()->hasGroup(d->fullName(b));
 }
 
 void KConfigGroup::deleteGroupImpl(const QByteArray &b, WriteConfigFlags flags)
 {
-    Q_ASSERT(!d->bConst);
+    Q_ASSERT_X(isValid(), "KConfigGroup::deleteGroupImpl", "accessing an invalid group");
+    Q_ASSERT_X(!d->bConst,"KConfigGroup::deleteGroupImpl", "deleting from a read-only group");
 
-    config()->deleteGroup(d->fullName() + '/' + b, flags);
+    config()->deleteGroup(d->fullName(b), flags);
 }
 
 bool KConfigGroup::isGroupImmutableImpl(const QByteArray& b) const
 {
-    return groupImpl(b).d->bImmutable;
-}
+    Q_ASSERT_X(isValid(), "KConfigGroup::isGroupImmutableImpl", "accessing an invalid group");
 
+    if (!hasGroupImpl(b)) // group doesn't exist yet
+        return d->bImmutable; // child groups are immutable if the parent is immutable.
+
+    return config()->groupIsImmutable(d->fullName(b));
+}
