@@ -200,4 +200,50 @@ void KFileItemTest::testCmp()
     QVERIFY(fileItem.cmp(fileItem2));
 }
 
+
+void KFileItemTest::testDecodeFileName_data()
+{
+    QTest::addColumn<QString>("filename");
+    QTest::addColumn<QString>("expectedText");
+
+    QTest::newRow("no %") << "filename" << "filename";
+    QTest::newRow("%2f at end") << "foo%2f" << "foo/";
+    QTest::newRow("%2f at begin") << "%2f" << "/";
+    QTest::newRow("%%") << "%%" << "%";
+    QTest::newRow("%%%%") << "%%%%" << "%%";
+    QTest::newRow("%x") << "%x" << "%x";
+    QTest::newRow("%x%") << "%x%" << "%x%";
+    QTest::newRow("%2f as result") << "foo%%2f" << "foo%2f";
+}
+
+
+void KFileItemTest::testDecodeFileName()
+{
+    QFETCH(QString, filename);
+    QFETCH(QString, expectedText);
+    QCOMPARE(KIO::decodeFileName(filename), expectedText);
+}
+
+void KFileItemTest::testEncodeFileName_data()
+{
+    QTest::addColumn<QString>("text");
+    QTest::addColumn<QString>("expectedFileName");
+
+    QTest::newRow("no %") << "filename" << "filename";
+    QTest::newRow("%2f at end") << "foo/" << "foo%2f";
+    QTest::newRow("%2f at begin") << "/" << "%2f";
+    QTest::newRow("%%") << "%" << "%%";
+    QTest::newRow("%%%%") << "%%" << "%%%%";
+    QTest::newRow("%x") << "%x" << "%%x";
+    QTest::newRow("%x%") << "%x%" << "%%x%%";
+    QTest::newRow("%2f as input") << "foo%2f" << "foo%%2f";
+}
+
+void KFileItemTest::testEncodeFileName()
+{
+    QFETCH(QString, text);
+    QFETCH(QString, expectedFileName);
+    QCOMPARE(KIO::encodeFileName(text), expectedFileName);
+}
+
 // TODO test KFileItem(UDSEntry), for instance doing a synchronous kio listing or stat.

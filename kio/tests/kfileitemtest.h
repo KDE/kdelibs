@@ -33,6 +33,11 @@ private Q_SLOTS:
     void testBasic();
     void testMimeTypeOnDemand();
     void testCmp();
+
+    void testDecodeFileName_data();
+    void testDecodeFileName();
+    void testEncodeFileName_data();
+    void testEncodeFileName();
 };
 
 
