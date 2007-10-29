@@ -296,7 +296,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
         if (!lib)
         {
             kWarning() << "Could not load library. [ "
-                       << loader->lastErrorMessage() << " ]" << endl;
+                       << loader->lastErrorMessage() << " ]";
             libname.prepend("lib");
             lib = loader->library(libname);
         }
@@ -316,7 +316,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
                     m_modules.insert(obj, module);
                     m_libs.insert(obj, lib);
                     connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));
-                    kDebug(7020) << "Successfully loaded module '" << obj << "'\n";
+                    kDebug(7020) << "Successfully loaded module" << obj;
                     return module;
                 }
             }
@@ -325,9 +325,9 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
         else
         {
             kWarning() << "Could not load library. [ "
-                       << loader->lastErrorMessage() << " ]" << endl;
+                       << loader->lastErrorMessage() << " ]";
         }
-        kDebug(7020) << "Could not load module '" << obj << "'\n";
+        kDebug(7020) << "Could not load module" << obj;
     }
     return 0;
 }
@@ -337,7 +337,7 @@ bool Kded::unloadModule(const QString &obj)
   KDEDModule *module = m_modules.value(obj, 0);
   if (!module)
      return false;
-  kDebug(7020) << "Unloading module '" << obj << "'\n";
+  kDebug(7020) << "Unloading module" << obj;
   m_modules.remove(obj);
   delete module;
   return true;
@@ -550,7 +550,7 @@ void Kded::readDirectory( const QString& _path )
 
   if ( !d.exists() )                            // exists&isdir?
   {
-    kDebug(7020) << QString("Does not exist! (%1)").arg(_path);
+    kDebug(7020) << "Does not exist:" << _path;
     return;                             // return false
   }
 
@@ -791,13 +791,13 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
         checkStamps = cg.readEntry("CheckFileStamps", true);
         runBuildSycoca();
         runKonfUpdate();
-        exit(0);
+        return 0;
      }
 
      if (!KUniqueApplication::start())
      {
         fprintf(stderr, "KDE Daemon (kded) already running.\n");
-        exit(0);
+        return 0;
      }
 
      // Thiago: reenable if such a thing exists in QtDBus in the future
