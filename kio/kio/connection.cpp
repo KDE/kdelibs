@@ -47,6 +47,7 @@ public:
 
     void dequeue();
     void commandReceived(const Task &task);
+    void emitReadyRead();
     void disconnected();
     void setBackend(AbstractConnectionBackend *b);
 
@@ -84,9 +85,15 @@ void ConnectionPrivate::dequeue()
 
 void ConnectionPrivate::commandReceived(const Task &task)
 {
-    //kDebug() << "Command " << task.cmd << " added to the queue";
+    //kDebug() << this << "Command " << task.cmd << " added to the queue";
     incomingTasks.enqueue(task);
-    QMetaObject::invokeMethod(q, "readyRead", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(q, "emitReadyRead", Qt::QueuedConnection);
+}
+
+void ConnectionPrivate::emitReadyRead()
+{
+    if (!incomingTasks.isEmpty())
+        emit q->readyRead();
 }
 
 void ConnectionPrivate::disconnected()
@@ -507,8 +514,10 @@ bool Connection::waitForIncomingTask(int ms)
 int Connection::read( int* _cmd, QByteArray &data )
 {
     // if it's still empty, then it's an error
-    if (d->incomingTasks.isEmpty())
+    if (d->incomingTasks.isEmpty()) {
+        //kWarning() << this << "Task list is empty!";
         return -1;
+    }
     const Task task = d->incomingTasks.dequeue();
     //kDebug() << this << "Command " << task.cmd << " removed from the queue (size "
     //         << task.data.size() << ")" << endl;
