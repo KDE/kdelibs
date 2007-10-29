@@ -54,16 +54,16 @@ void KServiceTest::testByName()
     QVERIFY( s0 );
     QCOMPARE( s0->name(), QString::fromLatin1("KParts/ReadOnlyPart") );
 
-    KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kdeprintd.desktop");
-    QCOMPARE( kdeprintd->name(), QString::fromLatin1("KDE Print Daemon"));
+    KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kwalletd.desktop");
+    QCOMPARE( kdeprintd->name(), QString::fromLatin1("KWallet Daemon Module"));
 }
 
 
 void KServiceTest::testProperty()
 {
-    KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kdeprintd.desktop");
+    KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kwalletd.desktop");
     QVERIFY(kdeprintd);
-    QCOMPARE(kdeprintd->entryPath(), QString("kded/kdeprintd.desktop"));
+    QCOMPARE(kdeprintd->entryPath(), QString("kded/kwalletd.desktop"));
 
     QCOMPARE(kdeprintd->property("ServiceTypes").toStringList().join(","), QString("KDEDModule"));
     QCOMPARE(kdeprintd->property("X-KDE-Kded-autoload").toBool(), false);
