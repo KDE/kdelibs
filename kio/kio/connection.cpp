@@ -47,7 +47,6 @@ public:
 
     void dequeue();
     void commandReceived(const Task &task);
-    void emitReadyRead();
     void disconnected();
     void setBackend(AbstractConnectionBackend *b);
 
@@ -71,7 +70,7 @@ public:
 
 void ConnectionPrivate::dequeue()
 {
-    if (!backend)
+    if (!backend || suspended)
 	return;
 
     if (!incomingTasks.isEmpty())
@@ -86,14 +85,9 @@ void ConnectionPrivate::dequeue()
 void ConnectionPrivate::commandReceived(const Task &task)
 {
     //kDebug() << this << "Command " << task.cmd << " added to the queue";
+    if (!suspended && incomingTasks.isEmpty())
+        QMetaObject::invokeMethod(q, "dequeue", Qt::QueuedConnection);
     incomingTasks.enqueue(task);
-    QMetaObject::invokeMethod(q, "emitReadyRead", Qt::QueuedConnection);
-}
-
-void ConnectionPrivate::emitReadyRead()
-{
-    if (!incomingTasks.isEmpty())
-        emit q->readyRead();
 }
 
 void ConnectionPrivate::disconnected()
@@ -523,6 +517,11 @@ int Connection::read( int* _cmd, QByteArray &data )
     //         << task.data.size() << ")" << endl;
     *_cmd = task.cmd;
     data = task.data;
+
+    // if we didn't empty our reading queue, emit again
+    if (!d->suspended && !d->incomingTasks.isEmpty())
+        QMetaObject::invokeMethod(this, "dequeue", Qt::QueuedConnection);
+
     return data.size();
 }
 
