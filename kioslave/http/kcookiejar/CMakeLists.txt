@@ -12,6 +12,9 @@ main.cpp
 )
 
 
+qt4_generate_dbus_interface( ${CMAKE_SOURCE_DIR}/kded/kdedadaptor.h org.kde.kded.xml )
+qt4_add_dbus_interfaces(kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml)
+
 qt4_add_dbus_interfaces(kcookiejar_SRCS org.kde.KCookieServer.xml)
 
 kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})

@@ -6,7 +6,9 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 ########### next target ###############
 
-set(kded_KDEINIT_SRCS kded.cpp )
+set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml # just so that it gets generated
+)
 
 
 if (WIN32)
@@ -25,6 +27,12 @@ install(TARGETS kdeinit_kded4
 target_link_libraries( kded4 kdeinit_kded4 )
 install(TARGETS kded4 DESTINATION ${BIN_INSTALL_DIR} )
 
+
+qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded.xml )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
+
+
 ########### next target ###############
 
 set(kbuildsycoca_KDEINIT_SRCS
@@ -41,7 +49,7 @@ set(kbuildsycoca_KDEINIT_SRCS
    )
 
 
-# We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde3 one.
+# We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
 kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
 # needs kio for KServiceGroup

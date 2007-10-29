@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <klocale.h>
 #include <kapplication.h>
 #include "kcookieserverinterface.h"
+#include "kdedinterface.h"
 
 int main(int argc, char *argv[])
 {
@@ -59,7 +60,8 @@ int main(int argc, char *argv[])
    }
    if (args->isSet("shutdown"))
    {
-      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("unloadModule", QString("kcookiejar"));
+      org::kde::kded kded("org.kde.kded", "/kded", QDBusConnection::sessionBus());
+      kded.unloadModule("kcookiejar");
    }
    else if(args->isSet("reload-config"))
    {
@@ -67,7 +69,8 @@ int main(int argc, char *argv[])
    }
    else
    {
-      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("loadModule", QString("kcookiejar"));
+      org::kde::kded kded("org.kde.kded", "/kded", QDBusConnection::sessionBus());
+      kded.loadModule("kcookiejar");
    }
    delete kcookiejar;
 

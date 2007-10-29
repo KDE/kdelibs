@@ -18,6 +18,7 @@
  **/
 
 #include "kded.h"
+#include "kdedadaptor.h"
 #include "kdedmodule.h"
 
 #include "kresourcelist.h"
@@ -735,52 +736,6 @@ void KBuildsycocaAdaptor::recreate(const QDBusMessage &msg)
    Kded::self()->recreate(msg);
 }
 
-KdedAdaptor::KdedAdaptor(QObject *parent)
-   : QDBusAbstractAdaptor(parent)
-{
-}
-
-bool KdedAdaptor::loadModule(const QString &module)
-{
-   return Kded::self()->loadModule(module, false) != 0;
-}
-
-bool KdedAdaptor::unloadModule(const QString &module)
-{
-   return Kded::self()->unloadModule(module);
-}
-
-void KdedAdaptor::registerWindowId(qlonglong windowId, const QDBusMessage &msg)
-{
-   Kded::self()->registerWindowId(windowId, msg.service());
-}
-
-void KdedAdaptor::unregisterWindowId(qlonglong windowId, const QDBusMessage &msg)
-{
-   Kded::self()->unregisterWindowId(windowId, msg.service());
-}
-
-QStringList KdedAdaptor::loadedModules()
-{
-   return Kded::self()->loadedModules();
-}
-
-void KdedAdaptor::reconfigure()
-{
-   KGlobal::config()->reparseConfiguration();
-   Kded::self()->initModules();
-}
-
-void KdedAdaptor::loadSecondPhase()
-{
-   Kded::self()->loadSecondPhase();
-}
-
-void KdedAdaptor::quit()
-{
-   QCoreApplication::instance()->quit();
-}
-
 class KDEDApplication : public KUniqueApplication
 {
 public:
@@ -805,7 +760,7 @@ public:
 
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
-     KAboutData aboutData( "kded" /*don't change this one to kded4! dbus registration should be org.kde.kded etc.*/, 
+     KAboutData aboutData( "kded" /*don't change this one to kded4! dbus registration should be org.kde.kded etc.*/,
         "kdelibs4", ki18n("KDE Daemon"),
         "$Id$",
         ki18n("KDE Daemon - triggers Sycoca database updates when needed"));
