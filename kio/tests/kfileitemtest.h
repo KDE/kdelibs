@@ -29,7 +29,7 @@ private Q_SLOTS:
     void testPermissionsString();
     void testNull();
     void testDoesNotExist();
-    void testDetach();
+    void testSharing();
     void testBasic();
     void testMimeTypeOnDemand();
     void testCmp();

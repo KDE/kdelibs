@@ -84,7 +84,7 @@ void KFileItemTest::testDoesNotExist()
     QVERIFY(fileItem.group().isEmpty());
 }
 
-void KFileItemTest::testDetach()
+void KFileItemTest::testSharing()
 {
     KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);
     fileItem.setExtraData(this, this);
@@ -94,8 +94,8 @@ void KFileItemTest::testDetach()
     QVERIFY(fileItem == fileItem2);
     fileItem2.mark();
     QVERIFY(fileItem2.isMarked());
-    QVERIFY(!fileItem.isMarked());
-    QVERIFY(fileItem != fileItem2);
+    QVERIFY(fileItem.isMarked());
+    QVERIFY(fileItem == fileItem2);
 
     fileItem = fileItem2;
     QVERIFY(fileItem2.isMarked());
