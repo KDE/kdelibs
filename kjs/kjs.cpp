@@ -209,7 +209,8 @@ static ExitCode parseArgs(int argc, char** argv)
                 new TestFunctionImp(TestFunctionImp::Quit, 0));
 
     // enable package support
-    interp->setGlobalPackage(new StandardGlobalPackage());
+    StandardGlobalPackage package;
+    interp->setGlobalPackage(&package);
 
     const char *script = 0, *command = 0;
     int ai = 1;
