@@ -74,7 +74,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
             m_strName = m_strName.left(i);
     }
 
-    m_strType = desktopGroup.readEntry( "Type" );
+    m_strType = config->readType();
     entryMap.remove("Type");
     if ( m_strType.isEmpty() )
     {
@@ -148,13 +148,13 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     if (pos != -1)
         _name = _name.left(pos);
 
-    m_strIcon = desktopGroup.readEntry( "Icon" );
+    m_strIcon = config->readIcon();
     entryMap.remove("Icon");
     m_bTerminal = desktopGroup.readEntry( "Terminal", false); // should be a property IMHO
     entryMap.remove("Terminal");
     m_strTerminalOptions = desktopGroup.readEntry( "TerminalOptions" ); // should be a property IMHO
     entryMap.remove("TerminalOptions");
-    m_strPath = desktopGroup.readPathEntry( "Path", QString() );
+    m_strPath = config->readPath();
     entryMap.remove("Path");
     m_strComment = config->readComment();
     entryMap.remove("Comment");
