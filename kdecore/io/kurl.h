@@ -984,6 +984,7 @@ public:
 
 private:
   void _setQuery( const QString& query );
+  void _setEncodedUrl(const QByteArray& url);
   QString toString() const; // forbidden, use url(), prettyUrl(), or pathOrUrl() instead.
   operator QString() const; // forbidden, use url(), prettyUrl(), or pathOrUrl() instead.
 private:

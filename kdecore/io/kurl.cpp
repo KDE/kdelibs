@@ -323,8 +323,9 @@ KUrl::KUrl( const QString &str )
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
       setPath( str );
 #endif
-    else
-      setEncodedUrl( str.toUtf8(), QUrl::TolerantMode );
+    else {
+      _setEncodedUrl( str.toUtf8() );
+    }
   }
 }
 
@@ -344,7 +345,7 @@ KUrl::KUrl( const char * str )
       setPath( QString::fromUtf8( str ) );
 #endif
     else
-      setEncodedUrl( str, QUrl::TolerantMode );
+      _setEncodedUrl( str );
   }
 }
 
@@ -363,7 +364,7 @@ KUrl::KUrl( const QByteArray& str )
       setPath( QString::fromUtf8( str ) );
 #endif
     else
-      setEncodedUrl( str, QUrl::TolerantMode );
+      _setEncodedUrl( str );
   }
 }
 
@@ -924,8 +925,8 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
   QString tmp = userName();
   if (!tmp.isEmpty()) {
     if (!hasPass())
-      tmp = KStringHandler::csqueeze(tmp, 16);  
-      
+      tmp = KStringHandler::csqueeze(tmp, 16);
+
     result += QUrl::toPercentEncoding(tmp);
     result += QLatin1Char('@');
   }
@@ -1392,6 +1393,13 @@ QString KUrl::query() const
     return QString();
   }
   return QString( QChar( '?' ) ) + QString::fromAscii( encodedQuery() );
+}
+
+void KUrl::_setEncodedUrl(const QByteArray& url)
+{
+  setEncodedUrl(url, QUrl::TolerantMode);
+  if (!isValid()) // see unit tests referring to N183630/task 183874
+    setUrl(url, QUrl::TolerantMode);
 }
 
 bool urlcmp( const QString& _url1, const QString& _url2 )

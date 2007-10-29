@@ -962,10 +962,18 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QCOMPARE( sadEagleCombined.url(), sadEagleExpectedResult.url() );
 
   KUrl dxOffEagle( KUrl("http://something/other.html"), "newpage.html?[{\"foo: bar\"}]" );
-  QEXPECT_FAIL("","Issue N183630", Continue);
+  //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
   QVERIFY(dxOffEagle.isValid());
-  QEXPECT_FAIL("","Issue N183630", Continue);
+  //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
   QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
+
+  // Shows up in nspluginviewer/flash
+  QString flashRel = "javascript:window.location+\"__flashplugin_unique__\"";
+  KUrl flashUrl(flashRel);
+  QVERIFY(flashUrl.isValid());
+  KUrl flashBase("http://www.youtube.com/?v=JvOSnRD5aNk");
+  KUrl flashComposed(flashBase, flashRel);
+  QCOMPARE(flashComposed.url(), QString("javascript:window.location+%22__flashplugin_unique__%22"));
 }
 
 void KUrlTest::testSubURL()
@@ -1239,8 +1247,8 @@ void KUrlTest::testBrokenStuff()
   QVERIFY( !weird.isValid() );
 
   weird = "http://strange<username>@ok_hostname/";
-  QVERIFY( !weird.isValid() ); // KDE3: was valid. bah...
-  //QCOMPARE( weird.host(), QString("ok_hostname") );
+  QVERIFY( weird.isValid() ); // KDE3: was valid. Fixed by _setEncodedUrl.
+  QCOMPARE( weird.host(), QString("ok_hostname") );
 
   weird = "http://strange;hostname/";
   QVERIFY( weird.isValid() ); // KDE3: was invalid. bah*2.
@@ -1304,10 +1312,17 @@ void KUrlTest::testBrokenStuff()
 
   QUrl dxOffEagle3;
   dxOffEagle3.setEncodedUrl( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
-  QEXPECT_FAIL("","Issue N183630", Continue);
+  QEXPECT_FAIL("","Issue N183630, task ID 183874; works with setUrl so we do that in _setEncodedUrl now", Continue);
   QVERIFY(dxOffEagle3.isValid());
-  QEXPECT_FAIL("","Issue N183630", Continue);
-  QCOMPARE(dxOffEagle.toEncoded(), dxOffEagle3.toEncoded());
+  //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue);
+  //QCOMPARE(dxOffEagle.toEncoded(), dxOffEagle3.toEncoded());
+
+  QUrl javascript;
+  javascript.setUrl("javascript:window.location+\"__flashplugin_unique__\"", QUrl::TolerantMode);
+  QVERIFY(javascript.isValid());
+  javascript.setEncodedUrl("javascript:window.location+\"__flashplugin_unique__\"", QUrl::TolerantMode);
+  QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue);
+  QVERIFY(javascript.isValid());
 }
 
 void KUrlTest::testMailto()
