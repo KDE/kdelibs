@@ -377,8 +377,10 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
   KRunMX1 mx1( _service );
   KRunMX2 mx2( _urls );
 
-  if( !mx1.expandMacrosShellQuote( exec ) )
-    goto synerr; // error in shell syntax
+  if( !mx1.expandMacrosShellQuote( exec ) ) { // Error in shell syntax
+    kWarning() << "KRun: syntax error in command" << _service.exec() << ", service" << _service.name();
+    return QStringList();
+  }
 
   // FIXME: the current way of invoking kioexec disables term and su use
 
@@ -463,39 +465,33 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
   }
 
   KShell::Errors err;
+  QStringList execlist = KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
+  if (err == KShell::NoError && !execlist.isEmpty()) { // mx1 checked for syntax errors already
+    // Resolve the executable to ensure that helpers in lib/kde4/libexec/ are found.
+    // Too bad for commands that need a shell - they must reside in $PATH.
+    const QString exePath = KStandardDirs::findExe(execlist[0]);
+    if (!exePath.isEmpty())
+      execlist[0] = exePath;
+  }
   if (_service.substituteUid()) {
     if (_service.terminal())
       result << "su";
     else
-      result << "kdesu" << "-u";
+      result << KStandardDirs::findExe("kdesu") << "-u";
     result << _service.username() << "-c";
-    KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
-    if (err == KShell::FoundMeta) {
+    if (err == KShell::FoundMeta)
       exec = "/bin/sh -c " + KShell::quoteArg(exec);
-    } else if (err != KShell::NoError)
-      goto synerr;
+    else
+      exec = KShell::joinArgs(execlist);
     result << exec;
   } else {
-    result += KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
     if (err == KShell::FoundMeta)
       result << "/bin/sh" << "-c" << exec;
-    else if (err != KShell::NoError)
-      goto synerr;
-    else {
-      if (!result.isEmpty()) {
-        // resolve the executable according to the path, which also makes it possible to find kde4/libexec helpers.
-        const QString exePath = KStandardDirs::findExe(result[0]);
-        if (!exePath.isEmpty())
-          result[0] = exePath;
-      }
-    }
+    else
+      result += execlist;
   }
 
   return result;
-
- synerr:
-  kWarning() << "KRun: syntax error in command `" << _service.exec() << "', service `" << _service.name() << "'";
-  return QStringList();
 }
 
 //static

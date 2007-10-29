@@ -74,6 +74,7 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
     str += QByteArray(sus) + '\n';
     out.write( str );
     out.close();
+
     KService service(QDir::currentPath() + "/kruntest.desktop");
     /*qDebug() << QString().sprintf(
         "processDesktopExec( "
@@ -83,13 +84,13 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
         KShell::joinArgs(urls.toStringList()).toLatin1().constData(), bt(tf));
     */
     QCOMPARE(KShell::joinArgs(KRun::processDesktopExec(service,urls,tf)), b);
+
     QFile::remove("kruntest.desktop");
 }
 
 void KRunUnitTest::testProcessDesktopExec()
 {
     KUrl::List l0;
-
     static const char
         *execs[] = { "Exec=date -u", "Exec=echo $PWD" },
         *terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
@@ -97,17 +98,19 @@ void KRunUnitTest::testProcessDesktopExec()
         *rslts[] = {
             "/bin/date -u", // 0
             "/bin/sh -c 'echo $PWD '", // 1
-            "x-term -T ' - just_a_test' -e date -u", // 2
+            "x-term -T ' - just_a_test' -e /bin/date -u", // 2
             "x-term -T ' - just_a_test' -e /bin/sh -c 'echo $PWD '", // 3
-            "kdesu -u sprallo -c 'date -u '", // 4
-            "kdesu -u sprallo -c '/bin/sh -c '\\''echo $PWD '\\'''", // 5
-            "x-term -T ' - just_a_test' -e su sprallo -c 'date -u '", // 6
+            /* kdesu */ " -u sprallo -c '/bin/date -u'", // 4
+            /* kdesu */ " -u sprallo -c '/bin/sh -c '\\''echo $PWD '\\'''", // 5
+            "x-term -T ' - just_a_test' -e su sprallo -c '/bin/date -u'", // 6
             "x-term -T ' - just_a_test' -e su sprallo -c '/bin/sh -c '\\''echo $PWD '\\'''", // 7
         };
     for (int su = 0; su < 2; su++)
         for (int te = 0; te < 2; te++)
             for (int ex = 0; ex < 2; ex++) {
-                checkPDE( execs[ex], terms[te], sus[su], l0, false, rslts[ex+te*2+su*4]);
+                int pt = ex+te*2+su*4;
+                checkPDE( execs[ex], terms[te], sus[su], l0, false,
+                    ((pt == 4 || pt == 5) ? KStandardDirs::findExe("kdesu") : QString()) + rslts[pt]);
             }
 }
 
@@ -129,6 +132,9 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
     QString kdeinit = KStandardDirs::findExe("kdeinit4");
     if (kdeinit.isEmpty()) kdeinit = "kdeinit4";
 
+    QString kioexec = KStandardDirs::findExe("kioexec");
+    if (kioexec.isEmpty()) kioexec = "kioexec";
+
     QString kmailservice = KStandardDirs::findExe("kmailservice");
     if (kmailservice.isEmpty()) kmailservice = "kmailservice";
     if (!kdeinit.isEmpty()) {
@@ -148,10 +154,10 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
 
     QTest::newRow("%F l0") << "kdeinit4 %F" << l0 << false << kdeinit;
     QTest::newRow("%F l1") << "kdeinit4 %F" << l1 << false << kdeinit + " /tmp";
-    QTest::newRow("%F l2") << "kdeinit4 %F" << l2 << false << "kioexec 'kdeinit4 %F' http://localhost/foo";
-    QTest::newRow("%F l3") << "kdeinit4 %F" << l3 << false << "kioexec 'kdeinit4 %F' file:///local/file http://remotehost.org/bar";
+    QTest::newRow("%F l2") << "kdeinit4 %F" << l2 << false << kioexec + " 'kdeinit4 %F' http://localhost/foo";
+    QTest::newRow("%F l3") << "kdeinit4 %F" << l3 << false << kioexec + " 'kdeinit4 %F' file:///local/file http://remotehost.org/bar";
 
-    QTest::newRow("%F l1 tempfile") << "kdeinit4 %F" << l1 << true << "kioexec --tempfiles 'kdeinit4 %F' file:///tmp";
+    QTest::newRow("%F l1 tempfile") << "kdeinit4 %F" << l1 << true << kioexec + " --tempfiles 'kdeinit4 %F' file:///tmp";
 
     QTest::newRow("sh -c kdeinit4 %F") << "sh -c \"kdeinit4 \"'\\\"'\"%F\"'\\\"'"
                                    << l1 << false << "/bin/sh -c 'kdeinit4 \\\"/tmp\\\"'";
