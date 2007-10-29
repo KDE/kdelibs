@@ -362,7 +362,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             break;
     }
 
-    kFatal() << "unhandled type " << aDefault.typeName() << endl;
+    kFatal() << "unhandled type " << aDefault.typeName();
     return QVariant();
 }
 
@@ -1087,7 +1087,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
                 data = qvariant_cast<KUrl>(value).url().toUtf8();
                 break;
             }
-            kFatal() << "KConfigGroup::writeEntry - unhandled type" << endl;
+            kFatal() << "KConfigGroup::writeEntry - unhandled type" << value.typeName() << "in group" << name();
         }
 
     writeEntry(key, data, flags);
