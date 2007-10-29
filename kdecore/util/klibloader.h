@@ -31,7 +31,7 @@
 #include "klibrary.h"
 
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
-    extern "C" { KDE_EXPORT KLibFactory *init_##libname() { return new factory; } }
+    extern "C" { KDE_EXPORT KPluginFactory *init_##libname() { return new factory; } }
 
 /**
  * The KLibLoader allows you to load libraries dynamically at runtime.
