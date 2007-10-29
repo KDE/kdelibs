@@ -93,7 +93,8 @@ public:
 
     bool mShowWhatsThis;
 
-    QAction *mHandBookAction, *mWhatsThisAction, *mReportBugAction, *mSwitchApplicationLanguageAction, *mAboutAppAction, *mAboutKDEAction;
+    KAction *mHandBookAction, *mWhatsThisAction;
+    QAction *mReportBugAction, *mSwitchApplicationLanguageAction, *mAboutAppAction, *mAboutKDEAction;
 
     const KAboutData *mAboutData;
 };
@@ -149,14 +150,18 @@ KMenu* KHelpMenu::menu()
     bool need_separator = false;
     if (KAuthorized::authorizeKAction("help_contents"))
     {
-      d->mHandBookAction = d->mMenu->addAction( KIcon("help-contents"),
-                     i18n("%1 &Handbook", appName), this, SLOT(appHelpActivated()), KStandardShortcut::shortcut(KStandardShortcut::Help).primary());
+      d->mHandBookAction = new KAction(KIcon("help-contents"), i18n("%1 &Handbook", appName), d->mMenu);
+      d->mHandBookAction->setShortcut(KStandardShortcut::shortcut(KStandardShortcut::Help));
+      connect(d->mHandBookAction, SIGNAL(triggered(bool)), this, SLOT(appHelpActivated()));
+      d->mMenu->addAction(d->mHandBookAction);
       need_separator = true;
     }
 
     if( d->mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
     {
-      d->mWhatsThisAction = d->mMenu->addAction( KIcon("help-whatsthis"),i18n( "What's &This" ),this, SLOT(contextHelpActivated()), Qt::SHIFT + Qt::Key_F1);
+      d->mWhatsThisAction = new KAction(KIcon("help-whatsthis"), i18n( "What's &This" ), d->mMenu);
+      d->mWhatsThisAction->setShortcut(Qt::SHIFT + Qt::Key_F1);
+      connect(d->mWhatsThisAction, SIGNAL(triggered(bool)), this, SLOT(contextHelpActivated()));
       need_separator = true;
     }
 
