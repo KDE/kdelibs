@@ -55,7 +55,7 @@ class KConfigGroupPrivate : public QSharedData
 
     KConfigGroupPrivate(const KSharedConfigPtr &owner, const QByteArray& name)
         : sOwner(owner), mOwner(sOwner.data()), mName(name),
-          bImmutable(name.isEmpty()? owner->isImmutable(): owner->groupIsImmutable(name)), bConst(false)
+          bImmutable(name.isEmpty()? owner->isImmutable(): owner->isGroupImmutable(name)), bConst(false)
     {
     }
 
@@ -538,32 +538,32 @@ static inline bool writeEntryGui(KConfigGroup *cg, const QByteArray &key, const 
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
-    : d(KConfigGroupPrivate::create(master, _group.toUtf8(), master->groupIsImmutable(_group), false))
+    : d(KConfigGroupPrivate::create(master, _group.toUtf8(), master->isGroupImmutable(_group), false))
 {
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QByteArray &_group)
- : d(KConfigGroupPrivate::create(master, _group, master->groupIsImmutable(_group), false))
+ : d(KConfigGroupPrivate::create(master, _group, master->isGroupImmutable(_group), false))
 {
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const char *_group)
- : d(KConfigGroupPrivate::create(master, _group, master->groupIsImmutable(_group), false))
+ : d(KConfigGroupPrivate::create(master, _group, master->isGroupImmutable(_group), false))
 {
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const QString &_group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group.toUtf8(), master->groupIsImmutable(_group), true))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group.toUtf8(), master->isGroupImmutable(_group), true))
 {
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const QByteArray &_group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, master->groupIsImmutable(_group), true))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, master->isGroupImmutable(_group), true))
 {
 }
 
 KConfigGroup::KConfigGroup(const KConfigBase *master, const char * _group)
-    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, master->groupIsImmutable(_group), true))
+    : d(KConfigGroupPrivate::create(const_cast<KConfigBase*>(master), _group, master->isGroupImmutable(_group), true))
 {
 }
 
@@ -606,7 +606,7 @@ KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup)
 
     KConfigGroup newGroup;
 
-    newGroup.d = new KConfigGroupPrivate(this, groupIsImmutableImpl(aGroup), d->bConst, aGroup);
+    newGroup.d = new KConfigGroupPrivate(this, isGroupImmutableImpl(aGroup), d->bConst, aGroup);
 
     return newGroup;
 }
@@ -619,7 +619,7 @@ const KConfigGroup KConfigGroup::groupImpl(const QByteArray& aGroup) const
 
     KConfigGroup newGroup;
 
-    newGroup.d = new KConfigGroupPrivate(const_cast<KConfigGroup*>(this), groupIsImmutableImpl(aGroup),
+    newGroup.d = new KConfigGroupPrivate(const_cast<KConfigGroup*>(this), isGroupImmutableImpl(aGroup),
                                          true, aGroup);
 
     return newGroup;
@@ -649,7 +649,7 @@ void KConfigGroup::changeGroup( const QByteArray &group)
 
     // detach (QExplicitlySharedDataPointer takes care of deleting the old d if necessary)
     // ### temporary solution until QExplicitlySharedDataPointer has detach()
-    d = new KConfigGroupPrivate(d, config()->groupIsImmutable(group), group);
+    d = new KConfigGroupPrivate(d, config()->isGroupImmutable(group), group);
 }
 
 QString KConfigGroup::name() const
@@ -1033,6 +1033,17 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             writeEntry( key, list, flags );
             return;
         }
+        case QVariant::RectF:{
+            QVariantList list;
+            const QRectF rRectF = value.toRectF();
+            list.insert(0, rRectF.left());
+            list.insert(1, rRectF.top());
+            list.insert(2, rRectF.width());
+            list.insert(3, rRectF.height());
+
+            writeEntry(key, list, flags);
+            return;
+        }
         case QVariant::Size:{
             QVariantList list;
             const QSize rSize = value.toSize();
@@ -1040,6 +1051,15 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             list.insert( 1, rSize.height() );
 
             writeEntry( key, list, flags );
+            return;
+        }
+        case QVariant::SizeF:{
+            QVariantList list;
+            const QSizeF rSizeF = value.toSize();
+            list.insert(0, rSizeF.width());
+            list.insert(1, rSizeF.height());
+
+            writeEntry(key, list, flags);
             return;
         }
         case QVariant::Date: {
@@ -1301,5 +1321,5 @@ bool KConfigGroup::isGroupImmutableImpl(const QByteArray& b) const
     if (!hasGroupImpl(b)) // group doesn't exist yet
         return d->bImmutable; // child groups are immutable if the parent is immutable.
 
-    return config()->groupIsImmutable(d->fullName(b));
+    return config()->isGroupImmutable(d->fullName(b));
 }
