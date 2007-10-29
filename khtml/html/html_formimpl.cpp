@@ -963,7 +963,7 @@ bool HTMLGenericFormElementImpl::isFocusable() const
     if (id() == ID_BUTTON)
 	return true;
 
-    if (!m_render)
+    if (!m_render || !m_render->isWidget())
 	return false;
 
     QWidget* widget = static_cast<RenderWidget*>(m_render)->widget();
