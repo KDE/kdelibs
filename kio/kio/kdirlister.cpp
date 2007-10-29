@@ -811,6 +811,7 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
         else
             fileitem->setUrl( dst );
         fileitem->refreshMimeType();
+        fileitem->determineMimeType();
         emitRefreshItem( oldItem, *fileitem );
     }
   }
