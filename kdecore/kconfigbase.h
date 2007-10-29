@@ -2008,6 +2008,12 @@ protected:
 private:
   class KConfigBasePrivate;
   KConfigBasePrivate *d;
+
+  void writeEntry( const char *pKey, const QString &rValue,
+    bool bPersistent, bool bGlobal, bool bNLS, bool bExpand );
+  void writeEntry( const char *pKey, const QStringList &rValue,
+    char sep, bool bPersistent, bool bGlobal, bool bNLS, bool bExpand );
+
 };
 
 class KConfigGroupSaverPrivate;

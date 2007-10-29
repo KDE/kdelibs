@@ -1022,6 +1022,15 @@ void KConfigBase::writeEntry( const char *pKey, const QString& value,
                                  bool bGlobal,
                                  bool bNLS )
 {
+   writeEntry(pKey, value, bPersistent,  bGlobal, bNLS, false);
+}
+
+void KConfigBase::writeEntry( const char *pKey, const QString& value,
+                                 bool bPersistent,
+                                 bool bGlobal,
+                                 bool bNLS,
+                                 bool bExpand )
+{
   // the KConfig object is dirty now
   // set this before any IO takes place so that if any derivative
   // classes do caching, they won't try and flush the cache out
@@ -1040,6 +1049,7 @@ void KConfigBase::writeEntry( const char *pKey, const QString& value,
   aEntryData.mValue = value.utf8();  // set new value
   aEntryData.bGlobal = bGlobal;
   aEntryData.bNLS = bNLS;
+  aEntryData.bExpand = bExpand;
 
   if (bPersistent)
     aEntryData.bDirty = true;
@@ -1121,7 +1131,7 @@ void KConfigBase::writePathEntry( const char *pKey, const QString & path,
                                   bool bPersistent, bool bGlobal,
                                   bool bNLS)
 {
-   writeEntry(pKey, translatePath(path), bPersistent, bGlobal, bNLS);
+   writeEntry(pKey, translatePath(path), bPersistent, bGlobal, bNLS, true);
 }
 
 void KConfigBase::writePathEntry ( const QString& pKey, const QStringList &list,
@@ -1147,7 +1157,7 @@ void KConfigBase::writePathEntry ( const char *pKey, const QStringList &list,
       QString value = *it;
       new_list.append( translatePath(value) );
     }
-  writeEntry( pKey, new_list, sep, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, new_list, sep, bPersistent, bGlobal, bNLS, true );
 }
 
 void KConfigBase::deleteEntry( const QString& pKey,
@@ -1364,6 +1374,13 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
                                char sep , bool bPersistent,
                                bool bGlobal, bool bNLS )
 {
+  writeEntry(pKey, list, sep, bPersistent, bGlobal, bNLS, false);
+}
+
+void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
+                               char sep, bool bPersistent,
+                               bool bGlobal, bool bNLS, bool bExpand )
+{
   if( list.isEmpty() )
     {
       writeEntry( pKey, QString::fromLatin1(""), bPersistent );
@@ -1387,7 +1404,7 @@ void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
     }
   if( str_list.at(str_list.length() - 1) == sep )
     str_list.truncate( str_list.length() -1 );
-  writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS );
+  writeEntry( pKey, str_list, bPersistent, bGlobal, bNLS, bExpand );
 }
 
 void KConfigBase::writeEntry ( const QString& pKey, const QValueList<int> &list,
