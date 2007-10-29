@@ -145,6 +145,11 @@ void KDXSButton::setEntry(Entry *e)
 		setText(i18n("Uninstall"));
 		action_install->setVisible(false);
 	}
+	else if (status == Entry::Updateable)
+	{
+		setText(i18n("Update"));
+		action_uninstall->setVisible(false);
+	}
 	else
 	{
 		setText(i18n("Install"));
