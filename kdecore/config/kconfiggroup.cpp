@@ -1022,6 +1022,15 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
             writeEntry( key, list, flags );
             return;
         }
+        case QVariant::PointF: {
+            QVariantList list;
+            const QPointF point = value.toPointF();
+            list.insert( 0, point.x() );
+            list.insert( 1, point.y() );
+
+            writeEntry( key, list, flags );
+            return;
+        }
         case QVariant::Rect:{
             QVariantList list;
             const QRect rRect = value.toRect();
@@ -1055,7 +1064,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
         }
         case QVariant::SizeF:{
             QVariantList list;
-            const QSizeF rSizeF = value.toSize();
+            const QSizeF rSizeF = value.toSizeF();
             list.insert(0, rSizeF.width());
             list.insert(1, rSizeF.height());
 
