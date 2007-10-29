@@ -70,6 +70,7 @@ KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, const QString&
 
 KUrlRequesterDialog::~KUrlRequesterDialog()
 {
+    delete d;
 }
 
 void KUrlRequesterDialogPrivate::initDialog(const QString &text,const QString &urlName)

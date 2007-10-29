@@ -123,6 +123,7 @@ void KFileMetaInfoWidgetPrivate::init(KFileMetaInfoItem item, KFileMetaInfoWidge
 
 KFileMetaInfoWidget::~KFileMetaInfoWidget()
 {
+    delete d;
 }
 
 bool KFileMetaInfoWidget::apply()

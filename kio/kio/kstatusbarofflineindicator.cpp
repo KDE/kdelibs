@@ -59,6 +59,7 @@ KStatusBarOfflineIndicator::KStatusBarOfflineIndicator( QWidget * parent)
 
 KStatusBarOfflineIndicator::~KStatusBarOfflineIndicator()
 {
+    delete d;
 }
 
 void KStatusBarOfflineIndicatorPrivate::initialize()
