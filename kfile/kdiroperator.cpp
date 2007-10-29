@@ -1460,7 +1460,6 @@ void KDirOperator::setupActions()
 {
     d->actionCollection = new KActionCollection(this);
     d->actionCollection->setObjectName("KDirOperator::actionCollection");
-    d->actionCollection->setAssociatedWidget(topLevelWidget());
 
     d->actionMenu = new KActionMenu(i18n("Menu"), this);
     d->actionCollection->addAction("popupMenu", d->actionMenu);
@@ -1562,6 +1561,8 @@ void KDirOperator::setupActions()
     viewMenu->addAction(detailedAction);
     // TODO: QAbstractItemView does not offer an action collection. Provide
     // an interface to add a custom action collection.
+
+    d->actionCollection->associateWidget(topLevelWidget());
 }
 
 void KDirOperator::setupMenu()

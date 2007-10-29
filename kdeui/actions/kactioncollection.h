@@ -81,48 +81,16 @@ public:
   void clear();
 
   /**
-   * Set an associated widget (clears any others).  Associated widgets automatically have all actions
-   * in the action collection added to themselves.
+   * Associate all actions in this collection to the given \a widget, and set all
+   * shortcutContexts to Qt::WidgetShortcut.  This has the effect of making the actions
+   * only trigger when:
+   * 1) the widget (or its children, it Qt 4.4 and above) has focus
+   * 2) the shortcut is pressed.
    *
-   * \sa addAssociatedWidget(), removeAssociatedWidget(), clearAssociatedWidgets() and associatedWidgets().
+   * This is important particularly when actions only apply to a specific widget, and
+   * when the application is a kpart and needs to respect other parts' shortcuts.
    */
-  void setAssociatedWidget(QWidget* widget);
-
-  /**
-   * Add an associated widget.  Associated widgets automatically have all actions
-   * in the action collection added to themselves.
-   *
-   * \sa setAssociatedWidget(), removeAssociatedWidget(), clearAssociatedWidgets() and associatedWidgets().
-   */
-  void addAssociatedWidget(QWidget* widget);
-
-  /**
-   * Remove an associated widget.  Removes all actions in this collection from
-   * the removed associated widget.
-   *
-   * \sa addAssociatedWidget(), setAssociatedWidget(), clearAssociatedWidgets(), and associatedWidgets().
-   */
-  void removeAssociatedWidget(QWidget* widget);
-
-  /**
-   * Clears all associated widgets.  All actions in this collection will be removed
-   * from associated widgets.
-   *
-   * \sa addAssociatedWidget(), setAssociatedWidget(), removeAssociatedWidget(), and associatedWidgets().
-   */
-  void clearAssociatedWidgets();
-
-  /**
-   * Returns a list of widgets currently associated with this action collection.
-   *
-   * Associations are created to enable custom widgets to provide keyboard interactivity
-   * via KActions without having to use QWidget::grabShortcut().  An example of its use
-   * is katepart, which creates actions for each editor command and then sets its view
-   * as an associated widget.
-   *
-   * \sa addAssociatedWidget(), setAssociatedWidget(), removeAssociatedWidget(), and clearAssociatedWidgets().
-   */
-  QList<QWidget*> associatedWidgets() const;
+  void associateWidget(QWidget* widget) const;
 
   /**
    * Returns the KConfig group with which settings will be loaded and saved.
@@ -269,6 +237,7 @@ public:
    * @param action The action to add.
    */
   QAction *addAction(const QString &name, QAction *action);
+  KAction *addAction(const QString &name, KAction *action);
 
   /**
    * Removes an action from the collection and deletes it.
@@ -289,14 +258,14 @@ public:
    * The action can be retrieved later from the collection by its standard name as per
    * KStandardAction::stdName.
    */
-  QAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
+  KAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
   /**
    * Creates a new standard action, adds to the collection under the given name and connects the action's triggered() signal to the
    * specified receiver/member. The newly created action is also returned.
    *
    * The action can be retrieved later from the collection by the specified name.
    */
-  QAction *addAction(KStandardAction::StandardAction actionType, const QString &name,
+  KAction *addAction(KStandardAction::StandardAction actionType, const QString &name,
                      const QObject *receiver = 0, const char *member = 0);
 
   /**
@@ -313,7 +282,7 @@ public:
    * @param name The name by which the action be retrieved again from the collection.
    * @param action The action to add.
    */
-  QAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
+  KAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
 
   /**
    * Creates a new action under the given name, adds it to the collection and connects the action's triggered()
@@ -331,7 +300,6 @@ public:
   }
 
 private:
-  Q_PRIVATE_SLOT(d, void _k_widgetDestroyed(QObject *))
   Q_PRIVATE_SLOT(d, void _k_actionDestroyed(QObject *))
 
   KActionCollection( const KXMLGUIClient* parent ); // used by KXMLGUIClient

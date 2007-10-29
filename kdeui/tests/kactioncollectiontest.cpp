@@ -63,10 +63,10 @@ void tst_KActionCollection::deleted()
     // and that widget gets deleted first.
     myWidget = new QWidget(0);
     QWidget* myAssociatedWidget = new QWidget(myWidget); // child widget
-    collection->setAssociatedWidget(myAssociatedWidget);
     action = new KAction( /*i18n()*/ "Foo", myWidget); // child action
     collection->addAction("foo", action);
-    QVERIFY(myAssociatedWidget->actions().contains(action)); // auto-added
+    collection->associateWidget(myAssociatedWidget);
+    QVERIFY(myAssociatedWidget->actions().contains(action));
     delete myAssociatedWidget; // would be done by the line below, but let's make sure it happens first
     delete myWidget;
     QVERIFY(collection->isEmpty());

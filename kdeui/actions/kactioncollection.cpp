@@ -7,7 +7,7 @@
               (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
               (C) 2002 Joseph Wenninger <jowenn@kde.org>
-              (C) 2005-2006 Hamish Rodda <rodda@kde.org>
+              (C) 2005-2007 Hamish Rodda <rodda@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <kcomponentdata.h>
 #include <kconfiggroup.h>
+#include <kdeversion.h>
 
 class KActionCollectionPrivate
 {
@@ -72,8 +73,6 @@ public:
   QHash<QAction *, QString> nameByAction;
 
   const KXMLGUIClient *m_parentGUIClient;
-
-  QList<QWidget*> associatedWidgets;
 
   QString configGroup;
   bool configIsGlobal : 1;
@@ -190,6 +189,13 @@ const QList< QActionGroup * > KActionCollection::actionGroups( ) const
   return set.toList();
 }
 
+KAction *KActionCollection::addAction(const QString &name, KAction *action)
+{
+    QAction* ret = addAction(name, static_cast<QAction*>(action));
+    Q_ASSERT(ret == action);
+    return action;
+}
+
 QAction *KActionCollection::addAction(const QString &name, QAction *action)
 {
     if (!action)
@@ -241,11 +247,6 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     if (d->connectTriggered)
         connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
 
-    if (d->associatedWidgets.count()) {
-        foreach (QWidget* w, d->associatedWidgets)
-            w->addAction(action);
-    }
-
     emit inserted( action );
     return action;
 }
@@ -272,70 +273,42 @@ QAction* KActionCollection::takeAction(QAction *action)
   if (d->connectTriggered)
     disconnect(action, SIGNAL(triggered(bool)), this, SLOT(slotActionTriggered()));
 
-  if (!d->associatedWidgets.isEmpty())
-    foreach (QWidget* w, d->associatedWidgets)
-      w->removeAction(action);
-
   emit removed( action );
   return action;
 }
 
-QAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QObject *receiver, const char *member)
+KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QObject *receiver, const char *member)
 {
-  QAction *action = KStandardAction::create(actionType, receiver, member, this);
+  KAction *action = KStandardAction::create(actionType, receiver, member, this);
   return addAction(action->objectName(), action);
 }
 
-QAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QString &name,
+KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QString &name,
                                       const QObject *receiver, const char *member)
 {
-  QAction *action = KStandardAction::create(actionType, receiver, member, this);
+  KAction *action = KStandardAction::create(actionType, receiver, member, this);
   return addAction(name, action);
 }
 
-QAction *KActionCollection::addAction(const QString &name, const QObject *receiver, const char *member)
+KAction *KActionCollection::addAction(const QString &name, const QObject *receiver, const char *member)
 {
-  QAction *a = new KAction(this);
+  KAction *a = new KAction(this);
   if (receiver && member)
     connect(a, SIGNAL(triggered()), receiver, member);
   return addAction(name, a);
 }
 
-void KActionCollection::setAssociatedWidget(QWidget* widget)
+void KActionCollection::associateWidget(QWidget* widget) const
 {
-  clearAssociatedWidgets();
-  addAssociatedWidget(widget);
-}
-
-void KActionCollection::addAssociatedWidget(QWidget* widget)
-{
-  d->associatedWidgets.append(widget);
-  connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(_k_widgetDestroyed(QObject*)));
-
   foreach (QAction* action, actions()) {
-    action->setShortcutContext(Qt::WidgetShortcut);
-    widget->addAction(action);
+#if QT_VERSION < KDE_MAKE_VERSION(4,4,0)
+    action->setShortcutContext(Qt::WidgetShortcut); // remove after Qt4.4 becomes mandatory
+#else
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+#endif
+    if (!widget->actions().contains(action))
+      widget->addAction(action);
   }
-}
-
-void KActionCollection::removeAssociatedWidget(QWidget* widget)
-{
-  d->associatedWidgets.removeAll(widget);
-  disconnect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(_k_widgetDestroyed(QObject*)));
-
-  foreach (QAction* action, actions())
-    widget->removeAction(action);
-}
-
-void KActionCollection::clearAssociatedWidgets()
-{
-  while (d->associatedWidgets.count())
-    removeAssociatedWidget(d->associatedWidgets.first());
-}
-
-QList<QWidget*> KActionCollection::associatedWidgets() const
-{
-  return d->associatedWidgets;
 }
 
 QString KActionCollection::configGroup( ) const
@@ -424,7 +397,7 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
       QString actionName = it.key();
 
       bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
-      //kDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal();
+      kDebug(129) << "name = " << actionName << " shortcut = " << kaction->shortcut(KAction::ActiveShortcut).toString() << " def = " << kaction->shortcut(KAction::DefaultShortcut).toString();
 
       // now see if this element already exists
       // and create it if necessary (unless bSameAsDefault)
@@ -510,12 +483,6 @@ void KActionCollectionPrivate::_k_actionDestroyed( QObject *obj )
 {
     QAction *action = static_cast<QAction*>(obj);
     q->takeAction(action);
-}
-
-void KActionCollectionPrivate::_k_widgetDestroyed( QObject *obj )
-{
-    QWidget *widget = static_cast<QWidget*>(obj);
-    associatedWidgets.removeAll(widget);
 }
 
 void KActionCollection::connectNotify ( const char * signal )

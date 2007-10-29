@@ -128,7 +128,7 @@ void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
   }
 
   if (type & ActiveShortcut) {
-      setShortcuts(shortcut);
+      QAction::setShortcuts(shortcut);
   }
 }
 
@@ -142,6 +142,11 @@ void KAction::setShortcut( const QKeySequence & keySeq, ShortcutTypes type )
   if (type & ActiveShortcut) {
       QAction::setShortcut(keySeq);
   }
+}
+
+void KAction::setShortcuts(const QList<QKeySequence>& shortcuts, ShortcutTypes type)
+{
+  setShortcut(KShortcut(shortcuts), type);
 }
 
 void KActionPrivate::slotTriggered()

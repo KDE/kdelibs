@@ -295,6 +295,20 @@ public:
     void setShortcut(const QKeySequence& shortcut, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
 
     /**
+     * \overload void setShortcuts(const QList\<QKeySequence\>& shortcuts).
+     *
+     * Set the shortcuts for this action.
+     *
+     * This function is there to explicitly override QAction::setShortcut(const QList\<QKeySequence\>&).
+     * QAction::setShortcuts() will bypass everything in KAction and may lead to unexpected behavior.
+     *
+     * \param shortcut shortcut(s) to use for this action in its specified shortcutContext()
+     * \param type type of shortcut to be set: active shortcut,
+     *  default shortcut, or both (default argument value).
+     */
+    void setShortcuts(const QList<QKeySequence>& shortcuts, ShortcutTypes type = ShortcutTypes(ActiveShortcut | DefaultShortcut));
+
+    /**
      * Returns true if this action's shortcut is configurable.
      */
     bool isShortcutConfigurable() const;

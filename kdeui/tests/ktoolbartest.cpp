@@ -37,7 +37,7 @@ int main( int argc, char **argv )
     action3->setSeparator(true);
     action7->setSeparator(true);
 
-    coll.setAssociatedWidget(tb);
+    coll.associateWidget(tb);
 
     mw->show();
 

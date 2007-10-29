@@ -231,7 +231,6 @@ KDateTable::~KDateTable()
 void KDateTable::initAccels()
 {
     KActionCollection * localCollection = new KActionCollection( this );
-    localCollection->setAssociatedWidget( this );
 
     QAction* next = localCollection->addAction( QLatin1String( "next" ) );
     next->setShortcuts( KStandardShortcut::next() );
@@ -258,6 +257,7 @@ void KDateTable::initAccels()
     connect( endWeek, SIGNAL( triggered( bool ) ), SLOT( endOfWeek() ) );
 
     localCollection->readSettings();
+    localCollection->associateWidget( this );
 }
 
 int KDateTable::posFromDate( const QDate &date_ )

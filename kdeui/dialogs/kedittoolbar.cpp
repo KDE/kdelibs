@@ -671,7 +671,6 @@ void KEditToolBarWidgetPrivate::initKPart( KXMLGUIFactory* factory,
   QDomElement elem;
 
   m_widget->setFactory( factory );
-  m_widget->actionCollection()->setAssociatedWidget( m_widget );
 
   // add all of the client data
   bool first = true;
@@ -705,6 +704,8 @@ void KEditToolBarWidgetPrivate::initKPart( KXMLGUIFactory* factory,
   loadToolBarCombo( defaultToolBar );
   m_widget->adjustSize();
   m_widget->setMinimumSize( m_widget->sizeHint() );
+
+  m_widget->actionCollection()->associateWidget( m_widget );
 }
 
 bool KEditToolBarWidget::save()
