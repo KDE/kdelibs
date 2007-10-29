@@ -192,7 +192,9 @@ QString KDesktopFile::readGenericName() const
 QString KDesktopFile::readPath() const
 {
   Q_D(const KDesktopFile);
-  return d->desktopGroup.readPathEntry("Path", QString());
+  // NOT readPathEntry, it is not XDG-compliant. Path entries written by
+  // KDE4 will be still treated as such, though.
+  return d->desktopGroup.readEntry("Path", QString());
 }
 
 QString KDesktopFile::readDevice() const
@@ -207,7 +209,8 @@ QString KDesktopFile::readUrl() const
     if (hasDeviceType()) {
         return d->desktopGroup.readEntry("MountPoint", QString());
     } else {
-	QString url = d->desktopGroup.readPathEntry("URL", QString());
+        // NOT readPathEntry (see readPath())
+        QString url = d->desktopGroup.readEntry("URL", QString());
         if ( !url.isEmpty() && !QDir::isRelativePath(url) )
         {
             // Handle absolute paths as such (i.e. we need to escape them)
@@ -262,7 +265,8 @@ bool KDesktopFile::tryExec() const
 {
   Q_D(const KDesktopFile);
   // Test for TryExec and "X-KDE-AuthorizeAction"
-  QString te = d->desktopGroup.readPathEntry("TryExec", QString());
+  // NOT readPathEntry (see readPath())
+  QString te = d->desktopGroup.readEntry("TryExec", QString());
 
   if (!te.isEmpty()) {
     if (!QDir::isRelativePath(te)) {
@@ -342,7 +346,8 @@ QString KDesktopFile::readDocPath() const
 {
   Q_D(const KDesktopFile);
   if(d->desktopGroup.hasKey( "DocPath" ))
-    return d->desktopGroup.readPathEntry( "DocPath", QString() );
+    // NOT readPathEntry (see readPath())
+    return d->desktopGroup.readEntry( "DocPath", QString() );
   return d->desktopGroup.readPathEntry( "X-DocPath", QString() );
 }
 

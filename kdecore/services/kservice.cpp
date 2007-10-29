@@ -93,7 +93,9 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
         return;
     }
 
-    m_strExec = desktopGroup.readPathEntry( "Exec", QString() );
+    // NOT readPathEntry, it is not XDG-compliant. Path entries written by
+    // KDE4 will be still treated as such, though.
+    m_strExec = desktopGroup.readEntry( "Exec", QString() );
     entryMap.remove("Exec");
 
     if ( m_strType == "Application" ) {
