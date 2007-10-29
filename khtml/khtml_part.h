@@ -222,7 +222,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
-  
+
   /*
    *
    * Don't add setOnlyLocalReferences here. It shouldn't be accessible via DBus.
@@ -498,6 +498,10 @@ public:
    */
   void setCaretDisplayPolicyNonFocused(CaretDisplayPolicy policy);
 
+#ifndef KDE_NO_COMPAT
+  KUrl baseURL() const;
+#endif
+
   /**
    * Returns the URL for the background Image (used by save background)
    */
@@ -720,7 +724,7 @@ public:
   int zoomFactor() const;
 
   /**
-   * Sets the scale factor to be applied to fonts. The value is given in percent, 
+   * Sets the scale factor to be applied to fonts. The value is given in percent,
    * larger values mean generally larger fonts.
    *
    * The given value should be in the range of 20..300, values outside that

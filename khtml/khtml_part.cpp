@@ -2329,6 +2329,15 @@ const KHTMLSettings *KHTMLPart::settings() const
   return d->m_settings;
 }
 
+#ifndef KDE_NO_COMPAT
+KUrl KHTMLPart::baseURL() const
+{
+  if ( !d->m_doc ) return KUrl();
+
+  return d->m_doc->baseURL();
+}
+#endif
+
 KUrl KHTMLPart::completeURL( const QString &url )
 {
   if ( !d->m_doc ) return KUrl( url );
