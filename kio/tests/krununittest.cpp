@@ -89,9 +89,6 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
 void KRunUnitTest::testProcessDesktopExec()
 {
     KUrl::List l0;
-    KUrl::List l1; l1 << KUrl( "file:/tmp" );
-    KUrl::List l2; l2 << KUrl( "http://localhost/foo" );
-    KUrl::List l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
 
     static const char
         *execs[] = { "Exec=date -u", "Exec=echo $PWD" },
@@ -106,14 +103,6 @@ void KRunUnitTest::testProcessDesktopExec()
             "kdesu -u sprallo -c '/bin/sh -c '\\''echo $PWD '\\'''", // 5
             "x-term -T ' - just_a_test' -e su sprallo -c 'date -u '", // 6
             "x-term -T ' - just_a_test' -e su sprallo -c '/bin/sh -c '\\''echo $PWD '\\'''", // 7
-            "'date -u '", // 8
-            "'echo $PWD '", // 9
-            "'x-term -T \" - just_a_test\"' -e 'date -u '", // a
-            "'x-term -T \" - just_a_test\"' -e '/bin/sh -c '\\''echo $PWD '\\'''", // b
-            "kdesu -u sprallo -c ''\\''date -u '\\'''", // c
-            "kdesu -u sprallo -c ''\\''/bin/sh -c '\\''\\'\\'''\\''echo $PWD '\\''\\'\\'''\\'''\\'''", // d
-            "'x-term -T \" - just_a_test\"' -e su sprallo -c ''\\''date -u '\\'''", // e
-            "'x-term -T \" - just_a_test\"' -e su sprallo -c ''\\''/bin/sh -c '\\''\\'\\'''\\''echo $PWD '\\''\\'\\'''\\'''\\'''", // f
         };
     for (int su = 0; su < 2; su++)
         for (int te = 0; te < 2; te++)
