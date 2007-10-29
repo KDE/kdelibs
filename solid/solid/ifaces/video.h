@@ -71,7 +71,7 @@ namespace Ifaces
          */
         virtual QVariant driverHandle(const QString &driver) const = 0;
     };
-};
+}
 }
 
 Q_DECLARE_INTERFACE(Solid::Ifaces::Video, "org.kde.Solid.Ifaces.Video/0.1")
