@@ -33,12 +33,14 @@ class ProviderPrivate
 };
 
 Provider::Provider()
+  :d(0)
 {
 }
 
 Provider::~Provider()
 {
   //qDeleteAll(mFeeds);
+  //delete d;
 }
 
 void Provider::addDownloadUrlFeed( const QString& feedtype, Feed *feed )
