@@ -175,7 +175,7 @@ public:
 
   KFileItem findByName( const KDirLister *lister, const QString &_name ) const;
   // if lister is set, it is checked that the url is held by the lister
-  KFileItem findByUrl( const KDirLister *lister, const KUrl &_url ) const;
+  KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
 
 public Q_SLOTS:
   /**

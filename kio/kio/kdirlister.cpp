@@ -622,7 +622,12 @@ bool KDirListerCache::checkUpdate( const QString& _dir )
 
 KFileItem KDirListerCache::itemForUrl( const KUrl& url ) const
 {
-  return findByUrl( 0, url );
+    KFileItem *item = findByUrl( 0, url );
+    if (item) {
+        return *item;
+    } else {
+        return KFileItem();
+    }
 }
 
 KFileItemList *KDirListerCache::itemsForDir( const KUrl& _dir ) const
@@ -649,7 +654,7 @@ KFileItem KDirListerCache::findByName( const KDirLister *lister, const QString& 
   return KFileItem();
 }
 
-KFileItem KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u ) const
+KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u ) const
 {
   KUrl _url(_u);
   _url.adjustPath(KUrl::RemoveTrailingSlash);
@@ -659,13 +664,23 @@ KFileItem KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u )
 
   // If lister is set, check that it contains this dir
   if ( lister && !lister->d->lstDirs.contains( parentDir ) )
-      return KFileItem();
+      return 0;
 
-  const KFileItemList *itemList = itemsForDir( parentDir );
+  KFileItemList *itemList = itemsForDir( parentDir );
   if ( itemList )
-    return itemList->findByUrl( _url );
+  {
+    KFileItemList::iterator it = itemList->begin();
+    const KFileItemList::iterator end = itemList->end();
+    for ( ; it != end ; ++it )
+    {
+      if ( (*it).url() == _u )
+      {
+        return &*it;
+      }
+    }
+  }
 
-  return KFileItem();
+  return 0;
 }
 
 void KDirListerCache::slotFilesAdded( const QString &dir ) // from KDirNotify signals
@@ -728,14 +743,14 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
     if ( url.isLocalFile() )
     {
       kDebug(7004) << "KDirListerCache::slotFilesChanged " << url;
-      KFileItem fileitem = findByUrl( 0, url );
-      if ( !fileitem.isNull() )
+      KFileItem *fileitem = findByUrl( 0, url );
+      if ( fileitem )
       {
           // we need to refresh the item, because e.g. the permissions can have changed.
-          aboutToRefreshItem( fileitem );
-          KFileItem oldItem = fileitem;
-          fileitem.refresh();
-          emitRefreshItem( oldItem, fileitem );
+          aboutToRefreshItem( *fileitem );
+          KFileItem oldItem = *fileitem;
+          fileitem->refresh();
+          emitRefreshItem( oldItem, *fileitem );
       }
       else
           kDebug(7004) << "item not found";
@@ -767,13 +782,13 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
 
   KUrl oldurl( src );
   oldurl.adjustPath( KUrl::RemoveTrailingSlash );
-  KFileItem fileitem = findByUrl( 0, oldurl );
+  KFileItem *fileitem = findByUrl( 0, oldurl );
 
   // If the item had a UDS_URL as well as UDS_NAME set, the user probably wants
   // to be updating the name only (since they can't see the URL).
   // Check to see if a URL exists, and if so, if only the file part has changed,
   // only update the name and not the underlying URL.
-  bool nameOnly = !fileitem.isNull() && !fileitem.entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
+  bool nameOnly = fileitem && !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
   nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
                 dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
 
@@ -783,20 +798,20 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
         renameDir( src, dst );
 
   // Now update the KFileItem representing that file or dir (not exclusive with the above!)
-  if ( !fileitem.isNull() )
+  if ( fileitem )
   {
-    if ( !fileitem.isLocalFile() && !fileitem.localPath().isEmpty() ) // it uses UDS_LOCAL_PATH? ouch, needs an update then
+    if ( !fileitem->isLocalFile() && !fileitem->localPath().isEmpty() ) // it uses UDS_LOCAL_PATH? ouch, needs an update then
         slotFilesChanged( QStringList() << src.url() );
     else
     {
-        aboutToRefreshItem( fileitem );
-        KFileItem oldItem = fileitem;
+        aboutToRefreshItem( *fileitem );
+        KFileItem oldItem = *fileitem;
         if( nameOnly )
-            fileitem.setName( dst.fileName() );
+            fileitem->setName( dst.fileName() );
         else
-            fileitem.setUrl( dst );
-        fileitem.refreshMimeType();
-        emitRefreshItem( oldItem, fileitem );
+            fileitem->setUrl( dst );
+        fileitem->refreshMimeType();
+        emitRefreshItem( oldItem, *fileitem );
     }
   }
 #ifdef DEBUG_CACHE
@@ -1614,13 +1629,13 @@ void KDirListerCache::processPendingUpdates()
     foreach(const QString& file, pendingUpdates) {
         kDebug(7004) << file;
         KUrl u(file);
-        KFileItem item = findByUrl( 0, u ); // search all items
-        if ( !item.isNull() ) {
+        KFileItem *item = findByUrl( 0, u ); // search all items
+        if ( item ) {
             // we need to refresh the item, because e.g. the permissions can have changed.
-            aboutToRefreshItem( item );
-            KFileItem oldItem = item;
-            item.refresh();
-            emitRefreshItem( oldItem, item );
+            aboutToRefreshItem( *item );
+            KFileItem oldItem = *item;
+            item->refresh();
+            emitRefreshItem( oldItem, *item );
         }
     }
     pendingUpdates.clear();
@@ -1897,7 +1912,12 @@ KFileItem KDirLister::rootItem() const
 
 KFileItem KDirLister::findByUrl( const KUrl& _url ) const
 {
-  return kDirListerCache->findByUrl( this, _url );
+  KFileItem *item = kDirListerCache->findByUrl( this, _url );
+  if (item) {
+      return *item;
+  } else {
+      return KFileItem();
+  }
 }
 
 KFileItem KDirLister::findByName( const QString& _name ) const

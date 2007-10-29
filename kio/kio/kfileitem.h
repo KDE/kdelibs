@@ -40,9 +40,7 @@ class KFileItemPrivate;
  * (UDSEntry isn't very friendly to use).
  * It includes many file attributes such as mimetype, icon, text, mode, link...
  *
- * Warning: KFileItem is explicitly shared, i.e. it works like a pointer. Changes
- * made to a copy will affect the original too. Example: KFileItem i1; KFileItem i2 = i1;
- * i2.mark(); will result in i1 being marked too.
+ * KFileItem is implicitly shared, i.e. it can be used as a value and copied around at almost no cost.
  */
 class KIO_EXPORT KFileItem
 {
@@ -562,7 +560,7 @@ public:
     bool isNull() const;
 
 private:
-    QExplicitlySharedDataPointer<KFileItemPrivate> d;
+    QSharedDataPointer<KFileItemPrivate> d;
 
 private:
     KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
