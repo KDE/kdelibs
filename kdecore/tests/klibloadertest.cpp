@@ -62,7 +62,7 @@ void KLibLoaderTest::testFindLibrary()
 }
 
 // old loader, old plugin
-void KLibLoaderTest::testWorking_KLibrary_KGenericFactory()
+void KLibLoaderTest::testWorking_KLibLoader_KGenericFactory()
 {
     int error = 0;
     QObject* obj = KLibLoader::createInstance<QObject>( s_kgenericFactoryModule, 0, QStringList(), &error );
@@ -74,7 +74,7 @@ void KLibLoaderTest::testWorking_KLibrary_KGenericFactory()
 }
 
 // old loader, old plugin
-void KLibLoaderTest::testWrongClass_KLibrary_KGenericFactory()
+void KLibLoaderTest::testWrongClass_KLibLoader_KGenericFactory()
 {
     int error = 0;
 
@@ -89,7 +89,7 @@ void KLibLoaderTest::testWrongClass_KLibrary_KGenericFactory()
 static const char* s_kpluginFactoryModule = "klibloadertestmodule4";
 
 // old loader, new plugin
-void KLibLoaderTest::testWorking_KLibrary_KPluginFactory()
+void KLibLoaderTest::testWorking_KLibLoader_KPluginFactory()
 {
     int error = 0;
     QObject* obj = KLibLoader::createInstance<QObject>( s_kpluginFactoryModule, 0, QStringList(), &error );
