@@ -30,3 +30,8 @@ KLibLoaderTestObject::KLibLoaderTestObject( QObject* parent, const QList<QVarian
 {
     qDebug( "KLibLoaderTestObject created with KPluginFactory" );
 }
+
+KLibLoaderTestObject::~KLibLoaderTestObject()
+{
+    qDebug( "KLibLoaderTestObject created with KPluginFactory, now deleted" );
+}

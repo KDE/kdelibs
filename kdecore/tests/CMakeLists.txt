@@ -83,8 +83,7 @@ target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 
 set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
 
-
-kde4_add_plugin(klibloadertestmodule WITH_PREFIX ${klibloadertestmodule_PART_SRCS})
+kde4_add_plugin(klibloadertestmodule ${klibloadertestmodule_PART_SRCS})
 
 target_link_libraries(klibloadertestmodule  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 

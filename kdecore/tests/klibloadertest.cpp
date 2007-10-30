@@ -46,7 +46,7 @@ void KLibLoaderTest::testNonWorking()
 }
 
 // We need a module to dlopen, which uses a standard factory (e.g. not an ioslave)
-static const char* s_kgenericFactoryModule = "libklibloadertestmodule";
+static const char* s_kgenericFactoryModule = "klibloadertestmodule";
 
 void KLibLoaderTest::testFindLibrary()
 {
@@ -84,8 +84,6 @@ void KLibLoaderTest::testWrongClass_KLibrary_KGenericFactory()
     QString errorString = KLibLoader::errorString( error );
     kDebug() << errorString;
     QVERIFY( !errorString.isEmpty() );
-    // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
-    //delete obj;
 }
 
 static const char* s_kpluginFactoryModule = "klibloadertestmodule4";
@@ -102,6 +100,24 @@ void KLibLoaderTest::testWorking_KLibrary_KPluginFactory()
     //delete obj;
 }
 
+// new loader, old plugin
+void KLibLoaderTest::testWorking_KPluginLoader_KGenericFactory()
+{
+    KPluginLoader loader(s_kgenericFactoryModule);
+    KPluginFactory* factory = loader.factory();
+    if (!factory) {
+        kWarning() << "error=" << loader.errorString();
+        QVERIFY(factory);
+    } else {
+        QObject* obj = factory->create<QObject>();
+        if (!obj) {
+            kWarning() << "Error creating object";
+        }
+        QVERIFY(obj);
+        delete obj;
+    }
+}
+
 // new loader, new plugin
 void KLibLoaderTest::testWorking_KPluginLoader_KPluginFactory()
 {
@@ -116,5 +132,6 @@ void KLibLoaderTest::testWorking_KPluginLoader_KPluginFactory()
             kWarning() << "Error creating object";
         }
         QVERIFY(obj);
+        delete obj;
     }
 }

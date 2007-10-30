@@ -31,6 +31,7 @@ private Q_SLOTS:
     void testWorking_KLibrary_KGenericFactory();
     void testWrongClass_KLibrary_KGenericFactory();
     void testWorking_KLibrary_KPluginFactory();
+    void testWorking_KPluginLoader_KGenericFactory();
     void testWorking_KPluginLoader_KPluginFactory();
 };
 

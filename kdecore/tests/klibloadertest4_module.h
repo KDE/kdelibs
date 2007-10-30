@@ -24,7 +24,7 @@ class KLibLoaderTestObject : public QObject
 {
 public:
     KLibLoaderTestObject( QObject* parent, const QList<QVariant>& );
-
+    ~KLibLoaderTestObject();
 };
 
 #endif
