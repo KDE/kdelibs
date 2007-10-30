@@ -258,9 +258,12 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
             file.write(locale); // Locale tag
             file.putChar(']');
         }
-        if (currentEntry.bDeleted)
-            file.write("[$d]", 4); // Deleted
-        else {
+        if (currentEntry.bDeleted) {
+            if (currentEntry.bImmutable)
+                file.write("[$di]", 5); // Deleted + immutable
+            else
+                file.write("[$d]", 4); // Deleted
+        } else {
             if (currentEntry.bImmutable || currentEntry.bExpand) {
                 file.write("[$", 2);
                 if (currentEntry.bImmutable)
