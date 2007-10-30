@@ -557,6 +557,23 @@ void KConfigTest::testDelete()
   QVERIFY( sc.entryMap("AAA").isEmpty() );
   QVERIFY( !sc.entryMap("Hello").isEmpty() ); //not deleted group
   QVERIFY( sc.entryMap("FooBar").isEmpty() ); //inexistant group
+  
+  // test for entries that are marked as deleted when there is no default
+  KConfig cf("kconfigtest", KConfig::SimpleConfig); // make sure there are no defaults
+  cg = cf.group("Portable Devices");
+  cg.writeEntry("devices|manual|(null)", "whatever");
+  cg.writeEntry("devices|manual|/mnt/ipod", "/mnt/ipod");
+  cf.sync();
+  
+  int count=0;
+  foreach(const QByteArray& item, readLines())
+      if (item.startsWith("devices|"))
+          count++;
+  QVERIFY(count == 2);
+  cg.deleteEntry("devices|manual|/mnt/ipod");
+  cf.sync();
+  foreach(const QByteArray& item, readLines())
+      QVERIFY(!item.contains("ipod"));
 }
 
 void KConfigTest::testDefaultGroup()
