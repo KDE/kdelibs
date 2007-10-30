@@ -163,25 +163,6 @@ const int normalStatBufferSize = 4096;
 static char *statBuffer = 0;
 static int statBufferSize = 0;
 
-UCharReference& UCharReference::operator=(UChar c)
-{
-  str->copyForWriting();
-  if (offset < str->rep()->len)
-    *(str->rep()->data() + offset) = c;
-  /* TODO: lengthen string ? */
-  return *this;
-}
-
-UChar& UCharReference::ref() const
-{
-  if (offset < str->rep()->len)
-    return *(str->rep()->data() + offset);
-  else {
-    static UChar callerBetterNotModifyThis('\0');
-    return callerBetterNotModifyThis;
-  }
-}
-
 UString::Rep&
 UString::Rep::createCopying (const UChar* d, int length)
 {
@@ -978,17 +959,11 @@ bool UString::is8Bit() const
   return true;
 }
 
-UChar UString::operator[](int pos) const
+const UChar UString::operator[](int pos) const
 {
   if (pos >= size())
     return '\0';
   return data()[pos];
-}
-
-UCharReference UString::operator[](int pos)
-{
-  /* TODO: boundary check */
-  return UCharReference(this, pos);
 }
 
 double UString::toDouble(bool tolerateTrailingJunk, bool tolerateEmptyString) const

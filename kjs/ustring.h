@@ -55,7 +55,6 @@ class QConstString;
 
 namespace KJS {
 
-  class UCharReference;
   class UString;
 
   /**
@@ -83,7 +82,6 @@ namespace KJS {
     UChar(char u);
     UChar(unsigned char u);
     UChar(unsigned short u);
-    UChar(const UCharReference &c);
     /**
      * @return The higher byte of the character.
      */
@@ -105,55 +103,6 @@ namespace KJS {
   inline UChar::UChar(char u) : uc((unsigned char)u) { }
   inline UChar::UChar(unsigned char u) : uc(u) { }
   inline UChar::UChar(unsigned short u) : uc(u) { }
-
-  /**
-   * @short Dynamic reference to a string character.
-   *
-   * UCharReference is the dynamic counterpart of UChar. It's used when
-   * characters retrieved via index from a UString are used in an
-   * assignment expression (and therefore can't be treated as being const):
-   * \code
-   * UString s("hello world");
-   * s[0] = 'H';
-   * \endcode
-   *
-   * If that sounds confusing your best bet is to simply forget about the
-   * existence of this class and treat is as being identical to UChar.
-   */
-  class KJS_EXPORT UCharReference {
-    friend class UString;
-    UCharReference(UString *s, unsigned int off) : str(s), offset(off) { }
-  public:
-    /**
-     * Set the referenced character to c.
-     */
-    UCharReference& operator=(UChar c);
-    /**
-     * Same operator as above except the argument that it takes.
-     */
-    UCharReference& operator=(char c) { return operator=(UChar(c)); }
-    /**
-     * @return Unicode value.
-     */
-    unsigned short unicode() const { return ref().uc; }
-    /**
-     * @return Lower byte.
-     */
-    unsigned char low() const { return static_cast<unsigned char>(ref().uc); }
-    /**
-     * @return Higher byte.
-     */
-    unsigned char high() const { return ref().uc >> 8; }
-  private:
-    // not implemented, can only be constructed from UString
-    UCharReference();
-
-    UChar& ref() const;
-    UString *str;
-    int offset;
-  };
-
-  inline UChar::UChar(const UCharReference &c) : uc(c.unicode()) { }
 
   /**
    * @short 8 bit char based string class
@@ -404,12 +353,7 @@ namespace KJS {
     /**
      * Const character at specified position.
      */
-    UChar operator[](int pos) const;
-    /**
-     * Writable reference to character at specified position.
-     */
-    UCharReference operator[](int pos);
-
+    const UChar operator[](int pos) const;
     /**
      * Attempts an conversion to a number. Apart from floating point numbers,
      * the algorithm will recognize hexadecimal representations (as
@@ -488,7 +432,7 @@ namespace KJS {
     return (c1.uc == c2.uc);
   }
   KJS_EXPORT bool operator==(const UString& s1, const UString& s2);
-  KJS_EXPORT  inline bool operator!=(const UString& s1, const UString& s2) {
+  KJS_EXPORT inline bool operator!=(const UString& s1, const UString& s2) {
     return !KJS::operator==(s1, s2);
   }
   KJS_EXPORT bool operator<(const UString& s1, const UString& s2);
