@@ -184,7 +184,6 @@ void KLineEdit::setClearButtonShown(bool show)
 
         updateClearButtonIcon(text());
         updateClearButton();
-        d->clearButton->animateVisible(false);
         connect(this, SIGNAL(textChanged(QString)), this, SLOT(updateClearButtonIcon(QString)));
     } else {
         disconnect(this, SIGNAL(textChanged(QString)), this, SLOT(updateClearButtonIcon(QString)));
