@@ -62,14 +62,14 @@
 #define DEBUG_COLLECTOR 0
 
 #if HAVE(VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
-
-#include <valgrind/memcheck.h>
-#define VG_DEFINED(p) VALGRIND_MAKE_MEM_DEFINED(&p, sizeof(void*))
-
+   #include <valgrind/memcheck.h>
+   #if defined(VALGRIND_MAKE_MEM_DEFINED)
+      #define VG_DEFINED(p) VALGRIND_MAKE_MEM_DEFINED(&p, sizeof(void*))
+   #else
+      #define VG_DEFINED(p)
+   #endif
 #else
-
-#define VG_DEFINED(p)
-
+   #define VG_DEFINED(p)
 #endif
 
 
