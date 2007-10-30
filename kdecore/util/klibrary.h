@@ -29,7 +29,9 @@ class KLibraryPrivate;
 class KPluginFactory;
 
 /**
- * @deprecated use KPluginLoader
+ * Thin wrapper around QLibrary; you should rarely use this directly, see KPluginLoader for higher-level loading of plugins.
+ * KLibrary adds kde3-factory and kde4-factory support to QLibrary (for the deprecated KLibLoader)
+ * KLibrary also searches libs in the kde search paths.
  */
 class KDECORE_EXPORT KLibrary : public QLibrary
 {

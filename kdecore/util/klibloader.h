@@ -130,6 +130,8 @@ public:
      * of KLibLoader.
      * @return a pointer to the loader. If no loader exists until now
      *         then one is created.
+     *
+     * @deprecated use KPluginLoader
      */
     static KDE_DEPRECATED KLibLoader* self();
 
@@ -266,14 +268,9 @@ public:
     }
 
 private:
-    /**
-     * You should NEVER destruct an instance of KLibLoader
-     * until you know what you are doing. This will release
-     * the loaded libraries.
-     */
     ~KLibLoader();
 
-    KLibLoader(QObject *parent = 0);
+    KLibLoader();
 };
 
 #endif

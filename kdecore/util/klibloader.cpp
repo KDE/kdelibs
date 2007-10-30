@@ -48,8 +48,8 @@ KLibLoader* KLibLoader::self()
     return &kLibLoaderPrivate->instance;
 }
 
-KLibLoader::KLibLoader( QObject* _parent )
-    : QObject(_parent)
+KLibLoader::KLibLoader()
+    : QObject(0)
 {
 }
 
@@ -155,7 +155,7 @@ QString KLibLoader::errorString( int componentLoadingError )
     case ErrServiceProvidesNoLibrary:
         return i18n( "The service provides no library, the Library key is missing in the .desktop file" );
     case ErrNoLibrary:
-        return KLibLoader::self()->lastErrorMessage();
+        return kLibLoaderPrivate->instance.lastErrorMessage();
     case ErrNoFactory:
         return i18n( "The library does not export a factory for creating components" );
     case ErrNoComponent:

@@ -164,9 +164,7 @@ KPluginFactory* KLibrary::factory(const char* factoryname)
 
 void *KLibrary::resolveSymbol( const char* symname )
 {
-    void *sym = resolve( symname );
-
-    return sym;
+    return resolve( symname );
 }
 
 KLibrary::void_function_ptr KLibrary::resolveFunction( const char* symname )
