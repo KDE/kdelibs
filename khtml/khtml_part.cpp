@@ -4580,7 +4580,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
       if ( partsFact )
         res = static_cast<KParts::ReadOnlyPart *>(partsFact->createPart( parentWidget, parent, className, params ));
       else
-        res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, className ));
+        res = factory->create<KParts::ReadOnlyPart>( parentWidget );
 
       if ( res ) {
         serviceTypes = service->serviceTypes();
