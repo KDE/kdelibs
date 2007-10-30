@@ -55,18 +55,22 @@ const float piOverFourFloat = 0.785398163397448309616f;
 #else
 const double piOverFourDouble = M_PI_4;
 const float piOverFourFloat = static_cast<float>(M_PI_4);
-#endif
+#endif     // !BUILDING_KDE__
 
 #if COMPILER(MSVC)
 
 inline bool isinf(double num) { return !_finite(num) && !_isnan(num); }
-inline bool isnan(double num) { return _isnan(num); }
-inline long lround(double num) { return num > 0 ? num + 0.5 : ceil(num - 0.5); }
-inline long lroundf(float num) { return num > 0 ? num + 0.5f : ceilf(num - 0.5f); }
-inline double round(double num) { return num > 0 ? floor(num + 0.5) : ceil(num - 0.5); }
-inline float roundf(float num) { return num > 0 ? floorf(num + 0.5f) : ceilf(num - 0.5f); }
+#ifndef BUILDING_KDE__
+ inline bool isnan(double num) { return _isnan(num); }
+ inline long lround(double num) { return num > 0 ? num + 0.5 : ceil(num - 0.5); }
+ inline long lroundf(float num) { return num > 0 ? num + 0.5f : ceilf(num - 0.5f); }
+ inline double round(double num) { return num > 0 ? floor(num + 0.5) : ceil(num - 0.5); }
+ inline float roundf(float num) { return num > 0 ? floorf(num + 0.5f) : ceilf(num - 0.5f); }
+#endif
 inline bool signbit(double num) { return _copysign(1.0, num) < 0; }
 
+#ifndef BUILDING_KDE__
+// FIXME: where to get std::numeric_limits from?
 // Work around a bug in Win, where atan2(+-infinity, +-infinity) yields NaN instead of specific values.
 inline double wtf_atan2(double x, double y)
 {
@@ -88,6 +92,11 @@ inline double wtf_atan2(double x, double y)
 
     return result;
 }
+#else      // !BUILDING_KDE__
+
+#define wtf_atan2(x, y) atan2(x, y)
+
+#endif     // !BUILDING_KDE__
 
 #if COMPILER(MSVC)
 

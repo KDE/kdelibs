@@ -28,26 +28,6 @@
 #include <math.h>
 #include <time.h>
 
-#if COMPILER(MSVC)
-
-#include <float.h>
-#ifndef __FP_SIGNBIT
-# define __FP_SIGNBIT  0x0200
-#endif
-static __inline int signbit(double x)
-{
-    unsigned short sw;
-    __asm {
-        fld x
-        fxam
-        fstsw sw
-        fstp st
-    }
-    return sw & __FP_SIGNBIT;
-}
-
-#endif
-
 #if PLATFORM(SOLARIS_OS)
 static inline int signbit(double x)
 {

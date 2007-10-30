@@ -564,7 +564,7 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
     int id = _function->body->lookupSymbolID(propertyName);
 
     if (validLocal(id)) {
-      slot.setValueSlot(this, &_locals[id].value, _locals[id].attr & ReadOnly);
+      slot.setValueSlot(this, &_locals[id].value, (_locals[id].attr & ReadOnly) != 0);
       return true;
     }
 
