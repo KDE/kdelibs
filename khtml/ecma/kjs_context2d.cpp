@@ -138,15 +138,23 @@ static bool enoughArguments(ExecState* exec, const List& args, int limit)
     return true;
 }
 
+// Verifies that a float value is not NaN or a plus/minus infinity (unless infOK)
+static bool valFloatOK(ExecState* exec, const JSValue* v, bool infOK)
+{
+    float val = v->toFloat(exec);
+    if (KJS::isNaN(val) || (!infOK && KJS::isInf(val))) {
+        setDOMException(exec, DOMException::NOT_SUPPORTED_ERR);
+        return false;
+    }
+    return true;
+}
+
 // Verifies that float arguments are not NaN or a plus/minus infinity (unless infOK)
 static bool argFloatsOK(ExecState* exec, const List& args, int minArg, int maxArg, bool infOK)
 {
     for (int c = minArg; c <= maxArg; ++c) {
-        float val = args[c]->toFloat(exec);
-        if (KJS::isNaN(val) || (!infOK && KJS::isInf(val))) {
-            setDOMException(exec, DOMException::NOT_SUPPORTED_ERR);
+        if (!valFloatOK(exec, args[c], infOK))
             return false;
-        }
     }
     return true;
 }
@@ -155,6 +163,7 @@ static bool argFloatsOK(ExecState* exec, const List& args, int minArg, int maxAr
 #define KJS_REQUIRE_ARGS(n) do { if (!enoughArguments(exec, args,n)) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_ARGS(min,max) do { if (!argFloatsOK(exec, args, min, max, false )) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_OR_INF_ARGS(min,max) do { if (!argFloatsOK(exec, args, min, max, true)) return jsUndefined(); } while(0);
+#define KJS_CHECK_FLOAT_VAL(v) if (!valFloatOK(exec, v, false)) return;
 
 ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
 {
@@ -397,6 +406,13 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         ctx->clip();
         break;
     }
+    
+    case Context2D::IsPointInPath: {
+        KJS_REQUIRE_ARGS(2);
+        KJS_CHECK_FLOAT_ARGS(0, 1);
+        return jsBoolean(ctx->isPointInPath(args[0]->toFloat(exec),
+                                            args[1]->toFloat(exec)));
+    }
 
     case Context2D::DrawImage: {
         ElementImpl* el = toElement(args[0]);
@@ -440,7 +456,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         break;
     }
 
-    //### TODO: isPointInPath, shadows, ImageData
+    //### TODO: ImageData
     }
 
     return Undefined();
@@ -465,6 +481,11 @@ const ClassInfo Context2D::info = { "CanvasRenderingContext2D", 0, &Context2DTab
    lineCap                  Context2D::LineCap                     DontDelete
    lineJoin                 Context2D::LineJoin                    DontDelete
    miterLimit               Context2D::MiterLimit                  DontDelete
+   # shadow properties
+   shadowOffsetX            Context2D::ShadowOffsetX               DontDelete
+   shadowOffsetY            Context2D::ShadowOffsetY               DontDelete
+   shadowBlur               Context2D::ShadowBlur                  DontDelete
+   shadowColor              Context2D::ShadowColor                 DontDelete
    @end
 */
 
@@ -530,6 +551,18 @@ ValueImp* Context2D::getValueProperty(ExecState* exec, int token) const
     case MiterLimit:
         return jsNumber(ctx->miterLimit());
 
+    case ShadowOffsetX:
+        return jsNumber(ctx->shadowOffsetX());
+
+    case ShadowOffsetY:
+        return jsNumber(ctx->shadowOffsetY());
+
+    case ShadowBlur:
+        return jsNumber(ctx->shadowBlur());
+
+    case ShadowColor:
+        return jsString(ctx->shadowColor());
+
     default:
         assert(0);
         return jsUndefined();
@@ -558,6 +591,7 @@ void Context2D::putValueProperty(ExecState *exec, int token, ValueImp *value, in
         ctx->setFillStyle(decodeStyle(exec, value));
         break;
     case LineWidth:
+        KJS_CHECK_FLOAT_VAL(value);
         ctx->setLineWidth(value->toFloat(exec));
         break;
     case LineCap:
@@ -567,7 +601,23 @@ void Context2D::putValueProperty(ExecState *exec, int token, ValueImp *value, in
         ctx->setLineJoin(value->toString(exec).domString());
         break;
     case MiterLimit:
+        KJS_CHECK_FLOAT_VAL(value);
         ctx->setMiterLimit(value->toFloat(exec));
+        break;
+    case ShadowOffsetX:
+        KJS_CHECK_FLOAT_VAL(value);
+        ctx->setShadowOffsetX(value->toFloat(exec));
+        break;
+    case ShadowOffsetY:
+        KJS_CHECK_FLOAT_VAL(value);
+        ctx->setShadowOffsetY(value->toFloat(exec));
+        break;
+    case ShadowBlur:
+        KJS_CHECK_FLOAT_VAL(value);
+        ctx->setShadowBlur(value->toFloat(exec));
+        break;
+    case ShadowColor:
+        ctx->setShadowColor(value->toString(exec).domString());
         break;
     default:
         {} // huh?

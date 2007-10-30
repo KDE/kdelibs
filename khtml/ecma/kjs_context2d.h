@@ -99,7 +99,7 @@ namespace KJS {
         GlobalAlpha, GlobalCompositeOperation,             // compositing
         StrokeStyle, FillStyle, CreateLinearGradient, CreateRadialGradient, CreatePattern, // colors and styles.
         LineWidth, LineCap, LineJoin, MiterLimit, // line properties
-        // TODO: shadows
+        ShadowOffsetX, ShadowOffsetY, ShadowBlur, ShadowColor, // shadow properties
         ClearRect, FillRect, StrokeRect,          // rectangle ops
         BeginPath, ClosePath, MoveTo, LineTo, QuadraticCurveTo, BezierCurveTo, ArcTo, Rect, Arc,
         Fill, Stroke, Clip, IsPointInPath,        // paths

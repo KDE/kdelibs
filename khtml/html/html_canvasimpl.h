@@ -2,6 +2,23 @@
  * Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
  * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
  *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * Portions of this code are (c) by Apple Computer, Inc. and were licensed 
+ * under the following terms:
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -188,6 +205,16 @@ public:
     void  setLineJoin(const DOMString& newJoin);
     float miterLimit() const;
     void  setMiterLimit(float newML);
+    
+    // Shadow attributes
+    float shadowOffsetX() const;
+    void  setShadowOffsetX(float newOX);
+    float shadowOffsetY() const;
+    void  setShadowOffsetY(float newOY);
+    float shadowBlur() const;
+    void  setShadowBlur(float newBlur);
+    DOMString shadowColor() const;
+    void  setShadowColor(const DOMString& newColor);
 
     // Rectangle operations
     void clearRect (float x, float y, float w, float h, int& exceptionCode);
@@ -208,13 +235,14 @@ public:
     void fill();
     void stroke();
     void clip();
-    bool isPointInPath(float x, float y);
+    bool isPointInPath(float x, float y) const;
 
     // Image ops
     void drawImage(ElementImpl* image, float dx, float dy, int& exceptionCode);
     void drawImage(ElementImpl* image, float dx, float dy, float dw, float dh, int& exceptionCode);
     void drawImage(ElementImpl* image, float sx, float sy, float sw, float sh,
                    float dx, float dy, float dw, float dh, int& exceptionCode);
+
 private:
     friend class HTMLCanvasElementImpl;
 
@@ -267,7 +295,11 @@ private:
         Qt::PenJoinStyle lineJoin;
         float            miterLimit;
 
-        // ### TODO: shadow stuff
+        // Shadow stuff
+        float shadowOffsetX;
+        float shadowOffsetY;
+        float shadowBlur;
+        QColor shadowColor;
     };
 
     // The stack of states. The entry on the top is always the current state.

@@ -1,7 +1,24 @@
 /*
  * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
- *  Copyright (C) 2005 Zack Rusin <zack@kde.org>
- *  Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
+ * Copyright (C) 2005 Zack Rusin <zack@kde.org>
+ * Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * Portions of this code are (c) by Apple Computer, Inc. and were licensed
+ * under the following terms:
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -199,6 +216,11 @@ void CanvasContext2DImpl::resetContext(int width, int height)
     defaultState.lineCap    = Qt::FlatCap;
     defaultState.lineJoin   = Qt::MiterJoin;
     defaultState.miterLimit = 10.0f;
+    
+    defaultState.shadowOffsetX = 0.0f;
+    defaultState.shadowOffsetY = 0.0f;
+    defaultState.shadowBlur    = 0.0f;
+    defaultState.shadowColor   = QColor(0, 0, 0, 0); // Transparent black
     
     stateStack.push(defaultState);
 
@@ -484,9 +506,9 @@ static QList<qreal> parseNumbersList(QString::const_iterator &itr)
     return points;
 }
 
-static QColor colorFromValue(DOM::DOMString domStr)
+static QColor colorFromString(DOM::DOMString domStr)
 {
-    QString name = domStr.string().trimmed();
+    QString name = domStr.string().trimmed().toLower();
     QString::const_iterator itr = name.constBegin();
     QList<qreal> compo;
     if ( name.startsWith( "rgba(" ) || name.startsWith( "hsva(" ) ) {
@@ -509,14 +531,14 @@ static QColor colorFromValue(DOM::DOMString domStr)
             QColor::fromRgb( compo[0], compo[1], compo[2] );
     } else {
         QRgb color;
-        DOM::CSSParser::parseColor(name, color);
-        return QColor(color);
+        if (DOM::CSSParser::parseColor(name, color))
+            return QColor(color);
+        else
+            return QColor();
     }
 }
 
-//-------
-
-DOM::DOMString CanvasColorImpl::toString() const
+static DOMString colorToString(const QColor& color)
 {
     QString str;
     if (color.alpha() == 255)
@@ -527,9 +549,16 @@ DOM::DOMString CanvasColorImpl::toString() const
     return str;
 }
 
+//-------
+
+DOM::DOMString CanvasColorImpl::toString() const
+{
+    return colorToString(color);
+}
+
 CanvasColorImpl* CanvasColorImpl::fromString(const DOM::DOMString& str)
 {
-    QColor cl = colorFromValue(str);
+    QColor cl = colorFromString(str);
     if (!cl.isValid())
         return 0;
     return new CanvasColorImpl(cl);
@@ -569,7 +598,7 @@ void CanvasGradientImpl::addColorStop(float offset, const DOM::DOMString& color,
         return;
     }
 
-    QColor qcolor = colorFromValue(color);
+    QColor qcolor = colorFromString(color);
     if (!qcolor.isValid()) {
         exceptionCode = DOMException::SYNTAX_ERR;
         return;
@@ -758,6 +787,55 @@ void CanvasContext2DImpl::setMiterLimit(float newML)
     dirty |= DrtStroke;
 }
 
+// Shadow settings
+//
+float CanvasContext2DImpl::shadowOffsetX() const
+{
+    return activeState().shadowOffsetX;
+}
+
+void  CanvasContext2DImpl::setShadowOffsetX(float newOX)
+{
+    activeState().shadowOffsetX = newOX;
+}
+
+float CanvasContext2DImpl::shadowOffsetY() const
+{
+    return activeState().shadowOffsetY;
+}
+
+void  CanvasContext2DImpl::setShadowOffsetY(float newOY)
+{
+    activeState().shadowOffsetY = newOY;
+}
+
+float CanvasContext2DImpl::shadowBlur() const
+{
+    return activeState().shadowBlur;
+}
+
+void  CanvasContext2DImpl::setShadowBlur(float newBlur)
+{
+    if (newBlur < 0)
+        return;
+
+    activeState().shadowBlur = newBlur;
+}
+
+DOMString CanvasContext2DImpl::shadowColor() const
+{
+    return colorToString(activeState().shadowColor);
+}
+
+void CanvasContext2DImpl::setShadowColor(const DOMString& newColor)
+{
+    // This not specified, it seems, but I presume setting 
+    // and invalid color does not change the state
+    QColor cl = colorFromString(newColor);
+    if (cl.isValid())
+        activeState().shadowColor = cl;
+}
+
 // Rectangle ops
 //
 void CanvasContext2DImpl::clearRect (float x, float y, float w, float h, int& exceptionCode)
@@ -858,13 +936,8 @@ void CanvasContext2DImpl::stroke()
     p->strokePath(path, p->pen());
 }
 
-
-static int cnt = 0;
-
 void CanvasContext2DImpl::clip()
 {
-    ++cnt;
-
     PaintState& state = activeState();
     QPainterPath pathCopy = path;
     pathCopy.closeSubpath();
@@ -877,6 +950,11 @@ void CanvasContext2DImpl::clip()
     state.clipPath = state.clipPath.intersected(state.transform.map(pathCopy));
     state.clipPath.setFillRule(Qt::WindingFill);
     dirty |= DrtClip;
+}
+
+bool CanvasContext2DImpl::isPointInPath(float x, float y) const
+{
+    return activeState().transform.map(path).contains(QPointF(x, y));
 }
 
 void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float radius, int& exceptionCode)
