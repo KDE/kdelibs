@@ -85,7 +85,7 @@ int main(int argc, char **argv)
    if(argc == 0)
       return 1;
    argv[0] = "start_kdeinit";
-   execv("start_kdeinit",argv);
+   execvp("start_kdeinit",argv);
    perror("start_kdeinit");
    return 1;
 }
