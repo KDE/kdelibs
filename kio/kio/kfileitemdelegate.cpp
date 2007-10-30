@@ -626,7 +626,7 @@ QBrush KFileItemDelegate::Private::backgroundBrush(const QStyleOptionViewItem &o
     if ((option.state & QStyle::State_MouseOver) && index.column() == KDirModel::Name)
     {
         // Use a lighter version of the highlight color with 1/3 opacity
-        QColor hover = option.palette.color(QPalette::Highlight).light();
+        QColor hover = option.palette.color(QPalette::Highlight);
         hover.setAlpha(88);
 
         background = composite(hover, background);
