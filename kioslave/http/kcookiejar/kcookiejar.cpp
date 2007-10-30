@@ -1474,11 +1474,11 @@ void KCookieJar::saveConfig(KConfig *_config)
     if (!m_configChanged)
         return;
 
-    KConfigGroup cg(_config, "Cookie Dialog");
-    cg.writeEntry("PreferredPolicy", m_preferredPolicy);
-    cg.writeEntry("ShowCookieDetails", m_showCookieDetails );
-    cg.changeGroup("Cookie Policy");
-    cg.writeEntry("CookieGlobalAdvice", adviceToStr( m_globalAdvice));
+    KConfigGroup dlgGroup(_config, "Cookie Dialog");
+    dlgGroup.writeEntry("PreferredPolicy", m_preferredPolicy);
+    dlgGroup.writeEntry("ShowCookieDetails", m_showCookieDetails );
+    KConfigGroup policyGroup(_config,"Cookie Policy");
+    policyGroup.writeEntry("CookieGlobalAdvice", adviceToStr( m_globalAdvice));
 
     QStringList domainSettings;
     for ( QStringList::Iterator it=m_domainList.begin();
@@ -1495,8 +1495,8 @@ void KCookieJar::saveConfig(KConfig *_config)
              domainSettings.append(value);
          }
     }
-    cg.writeEntry("CookieDomainAdvice", domainSettings);
-    cg.sync();
+    policyGroup.writeEntry("CookieDomainAdvice", domainSettings);
+    _config->sync();
     m_configChanged = false;
 }
 
@@ -1510,16 +1510,16 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     if ( reparse )
         _config->reparseConfiguration();
 
-    KConfigGroup cg(_config, "Cookie Dialog");
-    m_showCookieDetails = cg.readEntry( "ShowCookieDetails" , false );
-    m_preferredPolicy = cg.readEntry( "PreferredPolicy", 0 );
+    KConfigGroup dlgGroup(_config, "Cookie Dialog");
+    m_showCookieDetails = dlgGroup.readEntry( "ShowCookieDetails" , false );
+    m_preferredPolicy = dlgGroup.readEntry( "PreferredPolicy", 0 );
 
-    cg.changeGroup("Cookie Policy");
-    QStringList domainSettings = cg.readEntry("CookieDomainAdvice", QStringList());
-    m_rejectCrossDomainCookies = cg.readEntry("RejectCrossDomainCookies", true);
-    m_autoAcceptSessionCookies = cg.readEntry("AcceptSessionCookies", true);
-    m_ignoreCookieExpirationDate = cg.readEntry("IgnoreExpirationDate", false);
-    QString value = cg.readEntry("CookieGlobalAdvice", L1("Ask"));
+    KConfigGroup policyGroup(_config,"Cookie Policy");
+    QStringList domainSettings = policyGroup.readEntry("CookieDomainAdvice", QStringList());
+    m_rejectCrossDomainCookies = policyGroup.readEntry("RejectCrossDomainCookies", true);
+    m_autoAcceptSessionCookies = policyGroup.readEntry("AcceptSessionCookies", true);
+    m_ignoreCookieExpirationDate = policyGroup.readEntry("IgnoreExpirationDate", false);
+    QString value = policyGroup.readEntry("CookieGlobalAdvice", L1("Ask"));
     m_globalAdvice = strToAdvice(value);
 
     // Reset current domain settings first.
