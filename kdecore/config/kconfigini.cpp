@@ -297,19 +297,19 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
 
     const KEntryMapIterator end = entryMap.end();
     for (KEntryMapIterator it=entryMap.begin(); it != end; ++it) {
-        if (!it->bDirty) // not dirty, doesn't overwrite entry in writeMap
+        if (!it->bDirty) // not dirty, doesn't overwrite entry in writeMap. skips default entries, too.
             continue;
 
         const KEntryKey& key = it.key();
 
-        // only write back dirty entries that have the same "globality" as the file
+        // only write entries that have the same "globality" as the file
         if (it->bGlobal == bGlobal) {
             KEntryKey defaultKey = key;
             defaultKey.bDefault = true;
             if (it->bDeleted && !entryMap.contains(defaultKey))
                 writeMap.remove(key); // remove the deleted entry if there is no default
             else
-                writeMap[key] = *it;
+                writeMap[key] = *it; // otherwise write an explicitly deleted entry
 
             it->bDirty = false;
         }
