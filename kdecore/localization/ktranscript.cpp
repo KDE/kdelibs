@@ -409,7 +409,7 @@ QString KTranscriptImp::eval (const QStringList &argv,
     // Execute function.
     List arglist;
     for (int i = 1; i < argc; ++i)
-        arglist.append(String(argv[i]));
+        arglist.append(jsString(argv[i]));
     JSValue *val;
     if (fval->isObject())
         val = func->callAsFunction(exec, fval->getObject(), arglist);
@@ -496,7 +496,7 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
         // Load the module.
         ExecState *exec = m_jsi[mlang]->globalExec();
         List alist;
-        alist.append(String(fname));
+        alist.append(jsString(fname));
 
         m_sface[mlang]->loadf(exec, alist);
 
@@ -588,7 +588,7 @@ JSValue *Scriptface::getValueProperty (ExecState * /*exec*/, int token) const
         default:
             dbgout("Scriptface::getValueProperty: Unknown property id %1", token);
     }
-    return Undefined();
+    return jsUndefined();
 }
 
 void Scriptface::put (ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
@@ -604,7 +604,7 @@ void Scriptface::putValueProperty (ExecState * /*exec*/, int token, JSValue * /*
     }
 }
 
-#define CALLARG(i) (args.size() > i ? args[i] : Null())
+#define CALLARG(i) (args.size() > i ? args[i] : jsNull())
 JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj, const List &args)
 {
     if (!thisObj->inherits(&Scriptface::info)) {
@@ -645,7 +645,7 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
         case Scriptface::toUpperFirst:
             return obj->toUpperFirstf(exec, CALLARG(0), CALLARG(1));
         default:
-            return Undefined();
+            return jsUndefined();
     }
 }
 
@@ -706,7 +706,7 @@ JSValue *Scriptface::loadf (ExecState *exec, const List &fnames)
         dbgout("Loaded module: %1", qfpath);
     }
 
-    return Undefined();
+    return jsUndefined();
 }
 
 JSValue *Scriptface::setcallf (ExecState *exec, JSValue *name,
@@ -735,7 +735,7 @@ JSValue *Scriptface::setcallf (ExecState *exec, JSValue *name,
     // in case it contains load subcalls.
     fpaths[qname] = globalKTI->currentModulePath;
 
-    return Undefined();
+    return jsUndefined();
 }
 
 JSValue *Scriptface::callForallf (ExecState *exec, JSValue *name,
@@ -767,7 +767,7 @@ JSValue *Scriptface::callForallf (ExecState *exec, JSValue *name,
     // Put in the queue order for execution on all messages.
     nameForalls.append(qname);
 
-    return Undefined();
+    return jsUndefined();
 }
 
 JSValue *Scriptface::fallbackf (ExecState *exec)
@@ -775,13 +775,13 @@ JSValue *Scriptface::fallbackf (ExecState *exec)
     Q_UNUSED(exec);
     if (fallback != NULL)
         *fallback = true;
-    return Undefined();
+    return jsUndefined();
 }
 
 JSValue *Scriptface::nsubsf (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return Number(subs->size());
+    return jsNumber(subs->size());
 }
 
 JSValue *Scriptface::subsf (ExecState *exec, JSValue *index)
@@ -795,31 +795,31 @@ JSValue *Scriptface::subsf (ExecState *exec, JSValue *index)
         return throwError(exec, RangeError,
                           SPREF"subs: index out of range");
 
-    return String(subs->at(i));
+    return jsString(subs->at(i));
 }
 
 JSValue *Scriptface::msgctxtf (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return String(*msgctxt);
+    return jsString(*msgctxt);
 }
 
 JSValue *Scriptface::msgidf (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return String(*msgid);
+    return jsString(*msgid);
 }
 
 JSValue *Scriptface::msgkeyf (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return String(*msgctxt + '|' + *msgid);
+    return jsString(*msgctxt + '|' + *msgid);
 }
 
 JSValue *Scriptface::msgstrff (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return String(*final);
+    return jsString(*final);
 }
 
 JSValue *Scriptface::dbgputsf (ExecState *exec, JSValue *str)
@@ -832,13 +832,13 @@ JSValue *Scriptface::dbgputsf (ExecState *exec, JSValue *str)
 
     dbgout("(JS) " + qstr);
 
-    return Undefined();
+    return jsUndefined();
 }
 
 JSValue *Scriptface::lscrf (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return String(*lscr);
+    return jsString(*lscr);
 }
 
 JSValue *Scriptface::normKeyf (ExecState *exec, JSValue *phrase)
@@ -849,7 +849,7 @@ JSValue *Scriptface::normKeyf (ExecState *exec, JSValue *phrase)
     }
 
     QString nqphrase = normKeystr(phrase->toString(exec).qstring());
-    return String(nqphrase);
+    return jsString(nqphrase);
 }
 
 JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
@@ -1015,7 +1015,7 @@ JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
         dbgout("Loaded property map: %1", qfpath);
     }
 
-    return Undefined();
+    return jsUndefined();
 }
 
 JSValue *Scriptface::getPropf (ExecState *exec, JSValue *phrase, JSValue *prop)
@@ -1034,10 +1034,10 @@ JSValue *Scriptface::getPropf (ExecState *exec, JSValue *phrase, JSValue *prop)
 
     if (phraseProps.contains(qphrase)) {
         if (phraseProps[qphrase].contains(qprop)) {
-            return String(phraseProps[qphrase][qprop]);
+            return jsString(phraseProps[qphrase][qprop]);
         }
     }
-    return Undefined();
+    return jsUndefined();
 }
 
 JSValue *Scriptface::toUpperFirstf (ExecState *exec,
@@ -1105,6 +1105,6 @@ JSValue *Scriptface::toUpperFirstf (ExecState *exec,
         ++i;
     }
 
-    return String(qstruc);
+    return jsString(qstruc);
 }
 
