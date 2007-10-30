@@ -96,8 +96,7 @@ if (NOT WIN32) # TODO: reenable for win32
 
 set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 
-
-kde4_add_plugin(klibloadertestmodule4 WITH_PREFIX ${klibloadertestmodule4_PART_SRCS})
+kde4_add_plugin(klibloadertestmodule4 ${klibloadertestmodule4_PART_SRCS})
 
 target_link_libraries(klibloadertestmodule4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 

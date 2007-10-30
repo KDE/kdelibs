@@ -46,25 +46,26 @@ void KLibLoaderTest::testNonWorking()
 }
 
 // We need a module to dlopen, which uses a standard factory (e.g. not an ioslave)
-static const char* s_module = "libklibloadertestmodule";
+static const char* s_kgenericFactoryModule = "libklibloadertestmodule";
 
 void KLibLoaderTest::testFindLibrary()
 {
-    const QString library = KLibLoader::findLibrary( s_module );
+    const QString library = KLibLoader::findLibrary( s_kgenericFactoryModule );
     QVERIFY( !library.isEmpty() );
     const QString libraryPath = QFileInfo( library ).canonicalFilePath();
 #ifdef Q_OS_WIN
-    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_module + ".dll" ).canonicalFilePath();
+    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_kgenericFactoryModule + ".dll" ).canonicalFilePath();
 #else
-    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_module + ".so" ).canonicalFilePath();
+    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_kgenericFactoryModule + ".so" ).canonicalFilePath();
 #endif
     QCOMPARE( library, expectedPath );
 }
 
-void KLibLoaderTest::testWorking()
+// old loader, old plugin
+void KLibLoaderTest::testWorking_KLibrary_KGenericFactory()
 {
     int error = 0;
-    QObject* obj = KLibLoader::createInstance<QObject>( s_module, 0, QStringList(), &error );
+    QObject* obj = KLibLoader::createInstance<QObject>( s_kgenericFactoryModule, 0, QStringList(), &error );
     if ( error )
         kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
     QVERIFY( obj != 0 );
@@ -72,22 +73,12 @@ void KLibLoaderTest::testWorking()
     //delete obj;
 }
 
-void KLibLoaderTest::testWorking4()
-{
-    int error = 0;
-    QObject* obj = KLibLoader::createInstance<QObject>( "libklibloadertestmodule4", 0, QStringList(), &error );
-    if ( error )
-        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
-    QVERIFY( obj != 0 );
-    // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
-    //delete obj;
-}
-
-void KLibLoaderTest::testWrongClass()
+// old loader, old plugin
+void KLibLoaderTest::testWrongClass_KLibrary_KGenericFactory()
 {
     int error = 0;
 
-    KLibLoaderTest* obj = KLibLoader::createInstance<KLibLoaderTest>( s_module, 0, QStringList(), &error );
+    KLibLoaderTest* obj = KLibLoader::createInstance<KLibLoaderTest>( s_kgenericFactoryModule, 0, QStringList(), &error );
     QCOMPARE( obj, (KLibLoaderTest*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoComponent );
     QString errorString = KLibLoader::errorString( error );
@@ -95,4 +86,35 @@ void KLibLoaderTest::testWrongClass()
     QVERIFY( !errorString.isEmpty() );
     // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
     //delete obj;
+}
+
+static const char* s_kpluginFactoryModule = "klibloadertestmodule4";
+
+// old loader, new plugin
+void KLibLoaderTest::testWorking_KLibrary_KPluginFactory()
+{
+    int error = 0;
+    QObject* obj = KLibLoader::createInstance<QObject>( s_kpluginFactoryModule, 0, QStringList(), &error );
+    if ( error )
+        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
+    QVERIFY( obj != 0 );
+    // Usually you should delete obj, too. But if you don't, KLibLoader deletes it on exit anyway.
+    //delete obj;
+}
+
+// new loader, new plugin
+void KLibLoaderTest::testWorking_KPluginLoader_KPluginFactory()
+{
+    KPluginLoader loader(s_kpluginFactoryModule);
+    KPluginFactory* factory = loader.factory();
+    if (!factory) {
+        kWarning() << "error=" << loader.errorString();
+        QVERIFY(factory);
+    } else {
+        QObject* obj = factory->create<QObject>();
+        if (!obj) {
+            kWarning() << "Error creating object";
+        }
+        QVERIFY(obj);
+    }
 }
