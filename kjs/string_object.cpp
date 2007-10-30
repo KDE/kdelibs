@@ -31,6 +31,10 @@
 #include "regexp_object.h"
 #include <wtf/unicode/libc/UnicodeLibC.h>
 
+#if PLATFORM(WIN_OS)
+#include <Windows.h>
+#endif
+
 using namespace WTF;
 
 namespace KJS {
