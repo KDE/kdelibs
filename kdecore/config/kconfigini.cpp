@@ -65,7 +65,7 @@ KConfigBackend::ParseInfo
 KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entryMap,
                                ParseOptions options)
 {
-    if (filePath().isEmpty())
+    if (filePath().isEmpty() || !QFile::exists(filePath()))
         return ParseInfo();
 
     bool bDefault = options&ParseDefaults;
