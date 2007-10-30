@@ -234,28 +234,11 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
         if ((key.mGroup != "<default>") == defaultGroup)
             continue; // skip
 
-        // Skip default values and group headers
-        if (key.bDefault || key.mKey.isNull())
+        // Skip group headers
+        if (key.mKey.isNull())
             continue; // skip
 
         const KEntry& currentEntry = *it;
-        KEntryMapConstIterator testIt = it;
-        ++testIt;
-        if (testIt != end) { // might have a default
-            const KEntryKey& defaultKey = testIt.key();
-            if (defaultKey.bDefault ||
-                 defaultKey.mGroup != key.mGroup ||
-                 defaultKey.mKey != key.mKey ||
-                 defaultKey.bLocal != key.bLocal) {
-                if (currentEntry.bDeleted)
-                    continue; // Don't write deleted entries if there is no default
-            } else {
-                if (currentEntry.mValue == testIt->mValue &&
-                    currentEntry.bDeleted == testIt->bDeleted)
-                    continue; // same as default, don't write
-            }
-        }
-
         if (!defaultGroup && currentGroup != key.mGroup) {
             if (!firstEntry)
                 file.putChar('\n');
@@ -298,29 +281,30 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
 {
     Q_ASSERT(!filePath().isEmpty());
 
-    KEntryMap tempMap = toMerge;
+    KEntryMap writeMap = toMerge;
     bool bGlobal = options & WriteGlobal;
 
-    int mergeCount = toMerge.count();
     const KEntryMapIterator end = entryMap.end();
     for (KEntryMapIterator it=entryMap.begin(); it != end; ++it) {
-        const KEntryKey& key = it.key();
-        if (key.bDefault) {
-            tempMap[key] = *it; // store default values in tempMap
-            continue;
-        }
-        if (mergeCount > 0 && !it->bDirty)
+        if (!it->bDirty) // not dirty, doesn't overwrite entry in writeMap
             continue;
 
-        // only write back dirty entries that have the same
-        // "globality" as the file
-        if (it->bGlobal == bGlobal && it->bDirty) {
-            tempMap[key] = *it;
+        const KEntryKey& key = it.key();
+
+        // only write back dirty entries that have the same "globality" as the file
+        if (it->bGlobal == bGlobal) {
+            KEntryKey defaultKey = key;
+            defaultKey.bDefault = true;
+            if (it->bDeleted && !entryMap.contains(defaultKey))
+                writeMap.remove(key); // remove the deleted entry if there is no default
+            else
+                writeMap[key] = *it;
+
             it->bDirty = false;
         }
     }
 
-    // now tempMap should contain all entries to be written
+    // now writeMap should contain only entries to be written
     // so write it out to disk
 
     // check if file exists
@@ -352,11 +336,14 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     if (createNew)
         file.setPermissions(QFile::ReadUser|QFile::WriteUser);
 
-    writeEntries(locale, file, tempMap);
+    writeEntries(locale, file, writeMap);
 
     if ( !file.size() && ((fileMode == -1) || (fileMode == 0600)) ) {
         // File is empty and doesn't have special permissions: delete it.
         file.abort();
+        // and the original file.
+        if (QFile::exists(filePath()))
+            QFile::remove(filePath());
     }
 
     return file.finalize();
