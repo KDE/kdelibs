@@ -207,9 +207,11 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                     insert(KEntryKey(group), KEntry());
 
                 k = KEntryKey(group, key);
-                k.bLocal = (options&EntryLocalized);
-                k.bDefault = (options&EntryDefault);
             }
+
+            // set these here, since we may be changing the type of key from the one we found
+            k.bLocal = (options&EntryLocalized);
+            k.bDefault = (options&EntryDefault);
 
 /*            qDebug() << "changing" << QString("[%1,%2]").arg(group).arg(key).toLatin1().constData()
                     << '=' << maybeNull(e.mValue)
