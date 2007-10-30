@@ -257,7 +257,6 @@ KDEDModule *Kded::loadModule(const QString &obj, bool onDemand)
 
 KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
 {
-    KDEDModule *module = 0;
     if (s && !s->library().isEmpty())
     {
         QString obj = s->desktopEntryName();
@@ -274,60 +273,42 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
                 return 0;
             }
         }
-        // get the library loader instance
 
-        KLibLoader *loader = KLibLoader::self();
-
-        QVariant v = s->property("X-KDE-FactoryName", QVariant::String);
-        QString factory = v.isValid() ? v.toString() : QString();
-        if (factory.isEmpty())
-        {
-            // Stay bugward compatible
-            v = s->property("X-KDE-Factory", QVariant::String);
-            factory = v.isValid() ? v.toString() : QString();
-        }
-        if (factory.isEmpty())
-            factory = s->library();
-
-        factory = "create_" + factory;
+        KDEDModule *module = 0;
         QString libname = "kded_"+s->library();
+        KPluginLoader loader(libname);
 
-        KLibrary *lib = loader->library(libname);
-        if (!lib)
-        {
-            kWarning() << "Could not load library. [ "
-                       << loader->lastErrorMessage() << " ]";
-            libname.prepend("lib");
-            lib = loader->library(libname);
-        }
-        if (lib)
-        {
-            // get the create_ function
+        KPluginFactory *factory = loader.factory();
+        if (!factory) {
+            // kde3 compat
+            QString factoryName = s->property("X-KDE-FactoryName", QVariant::String).toString();
+            if (factoryName.isEmpty())
+                factoryName = s->library();
+            factoryName = "create_" + factoryName;
+            KLibrary* lib = KLibLoader::self()->library(libname);
             KDEDModule* (*create)();
-            create = (KDEDModule* (*)())lib->resolveFunction(QFile::encodeName(factory));
-
+            create = (KDEDModule* (*)())lib->resolveFunction(QFile::encodeName(factoryName));
             if (create)
-            {
-                // create the module
                 module = create();
-                if (module)
-                {
-                    module->setModuleName(obj);
-                    m_modules.insert(obj, module);
-                    m_libs.insert(obj, lib);
-                    connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));
-                    kDebug(7020) << "Successfully loaded module" << obj;
-                    return module;
-                }
+            if (!module) {
+                kWarning() << "Could not load library. [ "
+                           << loader.errorString() << " ]";
             }
-            loader->unloadLibrary(libname);
+        } else {
+            // create the module
+            module = factory->create<KDEDModule>(this);
         }
-        else
-        {
-            kWarning() << "Could not load library. [ "
-                       << loader->lastErrorMessage() << " ]";
+        if (module) {
+            module->setModuleName(obj);
+            m_modules.insert(obj, module);
+            //m_libs.insert(obj, lib);
+            connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));
+            kDebug(7020) << "Successfully loaded module" << obj;
+            return module;
+        } else {
+            kDebug(7020) << "Could not load module" << obj;
+            //loader.unload();
         }
-        kDebug(7020) << "Could not load module" << obj;
     }
     return 0;
 }
@@ -351,9 +332,9 @@ QStringList Kded::loadedModules()
 void Kded::slotKDEDModuleRemoved(KDEDModule *module)
 {
   m_modules.remove(module->moduleName());
-  KLibrary *lib = m_libs.take(module->moduleName());
-  if (lib)
-     lib->unload();
+  //KLibrary *lib = m_libs.take(module->moduleName());
+  //if (lib)
+  //   lib->unload();
 }
 
 void Kded::slotApplicationRemoved(const QString &name, const QString &oldOwner,

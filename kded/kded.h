@@ -145,7 +145,7 @@ protected:
    bool m_recreateBusy;
 
    QHash<QString,KDEDModule *> m_modules;
-   QHash<QString,KLibrary *> m_libs;
+    //QHash<QString,KLibrary *> m_libs;
    QHash<QString,QObject *> m_dontLoad;
    QHash<QString,QList<qlonglong> > m_windowIdList;
 
