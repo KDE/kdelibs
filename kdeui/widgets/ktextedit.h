@@ -28,9 +28,13 @@
  * @short A KDE'ified QTextEdit
  *
  * This is just a little subclass of QTextEdit, implementing
- * some standard KDE features, like Cursor auto-hiding, configurable
- * wheelscrolling (fast-scroll or zoom) and deleting of entire
+ * some standard KDE features, like cursor auto-hiding, configurable
+ * wheelscrolling (fast-scroll or zoom), spell checking and deleting of entire
  * words with Ctrl-Backspace or Ctrl-Delete.
+ *
+ * This text edit provides two ways of spell checking: background checking,
+ * which will mark incorrectly spelled words red, and a spell check dialog,
+ * which lets the user check and correct all incorrectly spelled words.
  *
  * Basic rule: whenever you want to use QTextEdit, use KTextEdit!
  *
@@ -65,8 +69,11 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     virtual void setReadOnly( bool readOnly );
 
     /**
-     * Turns spell checking for this text edit on or off. Note that spell
-     * checking is only available in read-writable KTextEdits.
+     * Turns background spell checking for this text edit on or off.
+     * Note that spell checking is only available in read-writable KTextEdits.
+     *
+     * Enabling spell checking will set back the current highlighter to the one
+     * returned by createHighlighter().
      *
      * @see checkSpellingEnabled()
      * @see isReadOnly()
@@ -75,25 +82,81 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     void setCheckSpellingEnabled( bool check );
 
     /**
-     * Returns true if spell checking is enabled for this text edit.
+     * Returns true if background spell checking is enabled for this text edit.
      * Note that it even returns true if this is a read-only KTextEdit,
-     * where spell checking is actually disabled.  By default spell checking is disabled.
+     * where spell checking is actually disabled.
+     * By default spell checking is disabled.
      *
-     @ see setCheckSpellingEnabled()
+     * @see setCheckSpellingEnabled()
      */
     bool checkSpellingEnabled() const;
 
+    /**
+     * Selects the characters at the specified position. Any previous
+     * selection will be lost. The cursor is moved to the first character
+     * of the new selection.
+     * 
+     * @param length The length of the selection, in number of characters
+     * @param pos The position of the first character of the selection
+     */
     void highlightWord( int length, int pos );
 
-    void setSpellCheckingConfigFileName(const QString &);
     /**
-     * Allow to create specific Highlighter
+     * Allows to override the config file where the settings for spell checking,
+     * like the current language or encoding, are stored.
+     * By default, the global config file (kdeglobals) is used, to share
+     * spell check settings between all applications.
+     *
+     * This has to be called before any spell checking is initiated.
+     *
+     * @param fileName the URL of the config file which will be used to
+     *                 read spell settings
+     * @bug this has no effect for the spell dialog, only for the background
+     *      check
+     */
+    void setSpellCheckingConfigFileName(const QString &fileName);
+
+    /**
+     * Allows to create a specific highlighter if reimplemented.
+     *
+     * By default, it creates a normal highlighter, based on the config
+     * file given to setSpellCheckingConfigFileName().
+     *
+     * This highlighter is set each time spell checking is toggled on by
+     * calling setCheckSpellingEnabled(), but can later be overridden by calling
+     * setHighlighter().
+     *
+     * @see setHighlighter()
+     * @see highlighter()
+     * @see setSpellCheckingConfigFileName()
      */
     virtual void createHighlighter();
 
+    /**
+     * Returns the current highlighter, which is 0 if spell checking is disabled.
+     * The default highlighter is the one created by createHighlighter(), but
+     * might be overridden by setHighlighter().
+     *
+     * @see setHighlighter()
+     * @see createHighlighter()
+     */
     Sonnet::Highlighter* highlighter() const;
 
+    /**
+     * Sets a custom backgound spell highlighter for this text edit.
+     * Normally, the highlighter returned by createHighlighter() will be
+     * used to detect and highlight incorrectly spelled words, but this
+     * function allows to set a custom highlighter.
+     *
+     * This has to be called after enabling spell checking with
+     * setCheckSpellingEnabled(), otherwise it has no effect.
+     *
+     * @see highlighter()
+     * @see createHighlighter()
+     * @param highLighter the new highlighter which will be used now
+     */
     void setHighlighter(Sonnet::Highlighter *_highLighter);
+
   public Q_SLOTS:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return
