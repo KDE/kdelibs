@@ -82,7 +82,7 @@ ValueImp *DOMParserProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj
   case DOMParser::ParseFromString:
     {
       if (args.size() != 2) {
-				return Undefined();
+	return jsUndefined();
       }
 
       QString str = args[0]->toString(exec).qstring();
@@ -101,7 +101,7 @@ ValueImp *DOMParserProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj
     }
   }
 
-  return Undefined();
+  return jsUndefined();
 }
 
 } // end namespace

@@ -101,7 +101,7 @@ ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisO
   switch (id) {
   case HTMLDocument::Clear: // even IE doesn't support that one...
     //doc.clear(); // TODO
-    return Undefined();
+    return jsUndefined();
   case HTMLDocument::Open:
     if (args.size() >= 3) // IE extension for document.open: it means window.open if it has 3 args or more
     {
@@ -115,11 +115,11 @@ ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisO
     }
 
     doc.open();
-    return Undefined();
+    return jsUndefined();
   case HTMLDocument::Close:
     // see khtmltests/ecma/tokenizer-script-recursion.html
     doc.close();
-    return Undefined();
+    return jsUndefined();
   case HTMLDocument::Write:
   case HTMLDocument::WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
@@ -133,7 +133,7 @@ ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisO
     kDebug(6070) << "document.write: " << str.qstring();
 #endif
     doc.write(str.qstring());
-    return Undefined();
+    return jsUndefined();
   }
   case HTMLDocument::GetElementsByName:
     return getDOMNodeList(exec,doc.getElementsByName(args[0]->toString(exec).domString()));
@@ -142,9 +142,9 @@ ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisO
     // http://docs.sun.com/source/816-6408-10/document.htm#1195981
     KHTMLView *view = doc.view();
     if ( view && view->part() )
-       return String(view->part()->selectedText());
+       return jsString(view->part()->selectedText());
     else
-       return Undefined();
+       return jsUndefined();
   }
   case HTMLDocument::CaptureEvents:
   case HTMLDocument::ReleaseEvents:
@@ -152,7 +152,7 @@ ValueImp* KJS::HTMLDocFunction::callAsFunction(ExecState *exec, ObjectImp *thisO
     break;
   }
 
-  return Undefined();
+  return jsUndefined();
 }
 
 const ClassInfo KJS::HTMLDocument::info =
@@ -315,7 +315,7 @@ ValueImp *HTMLDocument::nameGetter(ExecState *exec, JSObject*, const Identifier&
   }
 
   assert(0);
-  return Undefined();
+  return jsUndefined();
 }
 
 ValueImp *HTMLDocument::frameNameGetter(ExecState*, JSObject*, const Identifier& name, const PropertySlot& slot)
@@ -349,22 +349,22 @@ ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
 
   switch (token) {
     case Title:
-      return String(doc.title());
+      return jsString(doc.title());
     case Referrer:
-      return String(doc.referrer());
+      return jsString(doc.referrer());
     case Domain:
-      return String(doc.domain());
+      return jsString(doc.domain());
     case URL:
-      return String(doc.URL().url());
+      return jsString(doc.URL().url());
     case Body:
       return getDOMNode(exec,doc.body());
     case Location:
       if (win)
         return win->location();
       else
-        return Undefined();
+        return jsUndefined();
     case Cookie:
-      return String(doc.cookie());
+      return jsString(doc.cookie());
     case Images:
       return getHTMLCollection(exec,doc.images());
     case Applets:
@@ -383,38 +383,38 @@ ValueImp* HTMLDocument::getValueProperty(ExecState *exec, int token)
     case All:
       // Disable document.all when we try to be Netscape-compatible
       if ( exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat )
-        return Undefined();
+        return jsUndefined();
       else
       if ( exec->dynamicInterpreter()->compatMode() == Interpreter::IECompat )
         return getHTMLCollection(exec,doc.all());
       else // enabled but hidden
         return getHTMLCollection(exec,doc.all(), true);
     case CompatMode:
-      return String(doc.parseMode()
+      return jsString(doc.parseMode()
               == DocumentImpl::Compat ? "BackCompat" : "CSS1Compat");
     case BgColor:
-      return String(body->getAttribute(ATTR_BGCOLOR));
+      return jsString(body->getAttribute(ATTR_BGCOLOR));
     case FgColor:
-      return String(body->getAttribute(ATTR_TEXT));
+      return jsString(body->getAttribute(ATTR_TEXT));
     case AlinkColor:
-      return String(body->getAttribute(ATTR_ALINK));
+      return jsString(body->getAttribute(ATTR_ALINK));
     case LinkColor:
-      return String(body->getAttribute(ATTR_LINK));
+      return jsString(body->getAttribute(ATTR_LINK));
     case VlinkColor:
-      return String(body->getAttribute(ATTR_VLINK));
+      return jsString(body->getAttribute(ATTR_VLINK));
     case LastModified:
-      return String(doc.lastModified());
+      return jsString(doc.lastModified());
     case Height: // NS-only, not available in IE
-      return Number(view ? view->contentsHeight() : 0);
+      return jsNumber(view ? view->contentsHeight() : 0);
     case Width: // NS-only, not available in IE
-      return Number(view ? view->contentsWidth() : 0);
+      return jsNumber(view ? view->contentsWidth() : 0);
     case Dir:
-      return String(body->getAttribute(ATTR_DIR));
+      return jsString(body->getAttribute(ATTR_DIR));
     case Frames:
       if ( win )
         return win->frames(exec);
       else
-        return Undefined();
+        return jsUndefined();
   }
   assert(0);
   return 0;
@@ -1295,7 +1295,7 @@ ValueImp* HTMLElement::indexGetter(ExecState *exec, unsigned index)
     }
   default:
     assert(0);
-    return Undefined();
+    return jsUndefined();
   }
 }
 
@@ -1615,19 +1615,19 @@ ValueImp* KJS::HTMLElement::handleBoundRead(ExecState* exec, int token) const
 
   switch (prop->type & ~T_ReadOnly) {
     case T_String:
-      return String(impl()->getAttribute(prop->attrId));
+      return jsString(impl()->getAttribute(prop->attrId));
     case T_StrOrNl:
       return getStringOrNull(impl()->getAttribute(prop->attrId));
     case T_Bool:
-      return Boolean(!impl()->getAttribute(prop->attrId).isNull());
+      return jsBoolean(!impl()->getAttribute(prop->attrId).isNull());
     case T_Int:
-      return Number(impl()->getAttribute(prop->attrId).toInt());
+      return jsNumber(impl()->getAttribute(prop->attrId).toInt());
     case T_URL:
-      return String(getURLArg(prop->attrId));
+      return jsString(getURLArg(prop->attrId));
     case T_TabIdx:
-      return Number(impl()->tabIndex());
+      return jsNumber(impl()->tabIndex());
     case T_Res:
-      return String("");
+      return jsString("");
     case T_Coll:
       return getHTMLCollection(exec, new HTMLCollectionImpl(impl(), prop->attrId));
   }
@@ -1652,7 +1652,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_TITLE: {
     DOM::HTMLTitleElementImpl& title = static_cast<DOM::HTMLTitleElementImpl&>(element);
     switch (token) {
-    case TitleText:                 return String(title.text());
+    case TitleText:                 return jsString(title.text());
     }
   }
   break;
@@ -1660,7 +1660,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLIsIndexElementImpl& isindex = static_cast<DOM::HTMLIsIndexElementImpl&>(element);
     switch (token) {
     case IsIndexForm:            return getDOMNode(exec,isindex.form()); // type HTMLFormElement
-    case IsIndexPrompt:          return String(isindex.prompt());
+    case IsIndexPrompt:          return jsString(isindex.prompt());
     }
   }
   break;
@@ -1677,7 +1677,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     case BodyOnLoad: {
         DOM::DocumentImpl *doc = impl()->getDocument();
         if (!doc || !checkNodeSecurity(exec, impl()))
-          return Undefined();
+          return jsUndefined();
         DOMNode* kjsDocNode = new DOMNode(exec, doc);
         // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
         //Value nodeValue(kjsDocNode);
@@ -1691,7 +1691,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLFormElementImpl& form = static_cast<DOM::HTMLFormElementImpl&>(element);
     switch (token) {
     case FormElements:        return getHTMLCollection(exec,form.elements());
-    case FormLength:          return Number(form.length());
+    case FormLength:          return jsNumber(form.length());
     }
   }
   break;
@@ -1699,13 +1699,13 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_SELECT: {
     DOM::HTMLSelectElementImpl& select = static_cast<DOM::HTMLSelectElementImpl&>(element);
     switch (token) {
-    case SelectType:            return String(select.type());
-    case SelectSelectedIndex:   return Number(select.selectedIndex());
-    case SelectValue:           return String(select.value());
-    case SelectLength:          return Number(select.length());
+    case SelectType:            return jsString(select.type());
+    case SelectSelectedIndex:   return jsNumber(select.selectedIndex());
+    case SelectValue:           return jsString(select.value());
+    case SelectLength:          return jsNumber(select.length());
     case SelectForm:            return getDOMNode(exec,select.form()); // type HTMLFormElement
     case SelectOptions:         return getSelectHTMLCollection(exec, select.options(), &select); // type HTMLCollection
-    case SelectName:            return String(select.name());
+    case SelectName:            return jsString(select.name());
     }
   }
   break;
@@ -1713,10 +1713,10 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLOptionElementImpl& option = static_cast<DOM::HTMLOptionElementImpl&>(element);
     switch (token) {
     case OptionForm:            return getDOMNode(exec,option.form()); // type HTMLFormElement
-    case OptionText:            return String(option.text());
-    case OptionIndex:           return Number(option.index());
-    case OptionSelected:        return Boolean(option.selected());
-    case OptionValue:           return String(option.value());
+    case OptionText:            return jsString(option.text());
+    case OptionIndex:           return jsNumber(option.index());
+    case OptionSelected:        return jsBoolean(option.selected());
+    case OptionValue:           return jsString(option.value());
     }
   }
   break;
@@ -1725,24 +1725,24 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLInputElementImpl& input = static_cast<DOM::HTMLInputElementImpl&>(element);
     switch (token) {
     case InputForm:            return getDOMNode(exec,input.form()); // type HTMLFormElement
-    case InputChecked:         return Boolean(input.checked());
-    case InputIndeterminate:   return Boolean(input.indeterminate());
-    case InputName:            return String(input.name()); // NOT getString (IE gives empty string)
-    case InputType:            return String(input.type());
-    case InputValue:           return String(input.value());
+    case InputChecked:         return jsBoolean(input.checked());
+    case InputIndeterminate:   return jsBoolean(input.indeterminate());
+    case InputName:            return jsString(input.name()); // NOT getString (IE gives empty string)
+    case InputType:            return jsString(input.type());
+    case InputValue:           return jsString(input.value());
     case InputSelectionStart:  {
         long val = input.selectionStart();
         if (val != -1)
-          return Number(val);
+          return jsNumber(val);
         else
-          return Undefined();
+          return jsUndefined();
       }
     case InputSelectionEnd:  {
         long val = input.selectionEnd();
         if (val != -1)
-          return Number(val);
+          return jsNumber(val);
         else
-          return Undefined();
+          return jsUndefined();
       }
     }
   }
@@ -1750,14 +1750,14 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_TEXTAREA: {
     DOM::HTMLTextAreaElementImpl& textarea = static_cast<DOM::HTMLTextAreaElementImpl&>(element);
     switch (token) {
-    case TextAreaDefaultValue:    return String(textarea.defaultValue());
+    case TextAreaDefaultValue:    return jsString(textarea.defaultValue());
     case TextAreaForm:            return getDOMNode(exec,textarea.form()); // type HTMLFormElement
-    case TextAreaName:            return String(textarea.name());
-    case TextAreaType:            return String(textarea.type());
-    case TextAreaValue:           return String(textarea.value());
-    case TextAreaSelectionStart:  return Number(textarea.selectionStart());
-    case TextAreaSelectionEnd:    return Number(textarea.selectionEnd());
-    case TextAreaTextLength:      return Number(textarea.textLength());
+    case TextAreaName:            return jsString(textarea.name());
+    case TextAreaType:            return jsString(textarea.type());
+    case TextAreaValue:           return jsString(textarea.value());
+    case TextAreaSelectionStart:  return jsNumber(textarea.selectionStart());
+    case TextAreaSelectionEnd:    return jsNumber(textarea.selectionEnd());
+    case TextAreaTextLength:      return jsNumber(textarea.textLength());
     }
   }
   break;
@@ -1766,7 +1766,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLButtonElementImpl& button = static_cast<DOM::HTMLButtonElementImpl&>(element);
     switch (token) {
     case ButtonForm:            return getDOMNode(exec,button.form()); // type HTMLFormElement
-    case ButtonType:            return String(button.type());
+    case ButtonType:            return jsString(button.type());
     }
   }
   break;
@@ -1795,46 +1795,46 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
     QString href = getURLArg(ATTR_HREF);
     switch (token) {
-    case AnchorHash:            return String('#'+KUrl(href).ref());
-    case AnchorHost:            return String(KUrl(href).host());
+    case AnchorHash:            return jsString('#'+KUrl(href).ref());
+    case AnchorHost:            return jsString(KUrl(href).host());
     case AnchorHostname: {
       KUrl url(href);
       kDebug(6070) << "anchor::hostname uses:" <<url.url();
       if (url.port()<=0)
-        return String(url.host());
+        return jsString(url.host());
       else
-        return String(url.host() + ":" + QString::number(url.port()));	//krazy:exclude=doublequote_chars DOM demands chars
+        return jsString(url.host() + ":" + QString::number(url.port()));	//krazy:exclude=doublequote_chars DOM demands chars
     }
-    case AnchorPathName:        return String(KUrl(href).path());
-    case AnchorPort:            return String(QString::number(KUrl(href).port()));
-    case AnchorProtocol:        return String(KUrl(href).protocol()+":");	//krazy:exclude=doublequote_chars DOM demands chars
+    case AnchorPathName:        return jsString(KUrl(href).path());
+    case AnchorPort:            return jsString(QString::number(KUrl(href).port()));
+    case AnchorProtocol:        return jsString(KUrl(href).protocol()+":");	//krazy:exclude=doublequote_chars DOM demands chars
     case AnchorSearch:          { KUrl u(href);
                                   QString q = u.query();
                                   if (q.length() == 1)
-                                    return String("");
-                                  return String(q); }
+                                    return jsString("");
+                                  return jsString(q); }
     // Not specified in http://msdn.microsoft.com/workshop/author/dhtml/reference/objects/a.asp
     // Mozilla returns the inner text.
-    case AnchorText:            return String(anchor.innerText());
+    case AnchorText:            return jsString(anchor.innerText());
     }
   }
   break;
   case ID_IMG: {
     DOM::HTMLImageElementImpl& image = static_cast<DOM::HTMLImageElementImpl&>(element);
     switch (token) {
-    case ImageComplete:        return Boolean(image.complete());
-    case ImageHeight:          return Number(image.height());
-    case ImageWidth:           return Number(image.width());
-    case ImageX:               return Number(image.x());
-    case ImageY:               return Number(image.y());
+    case ImageComplete:        return jsBoolean(image.complete());
+    case ImageHeight:          return jsNumber(image.height());
+    case ImageWidth:           return jsNumber(image.width());
+    case ImageX:               return jsNumber(image.x());
+    case ImageY:               return jsNumber(image.y());
     }
   }
   break;
   case ID_CANVAS: {
     DOM::HTMLCanvasElementImpl& canvas = static_cast<DOM::HTMLCanvasElementImpl&>(element);
     switch (token) {
-    case CanvasHeight:          return Number(canvas.height());
-    case CanvasWidth:           return Number(canvas.width());
+    case CanvasHeight:          return jsNumber(canvas.height());
+    case CanvasWidth:           return jsNumber(canvas.width());
     }
   }
   break;
@@ -1843,7 +1843,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch (token) {
     case ObjectForm:            return getDOMNode(exec,object.form()); // type HTMLFormElement
     case ObjectContentDocument: return checkNodeSecurity(exec,object.contentDocument()) ?
-				       getDOMNode(exec, object.contentDocument()) : Undefined();
+				       getDOMNode(exec, object.contentDocument()) : jsUndefined();
     }
   }
   break;
@@ -1860,28 +1860,28 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     }
     switch(token) {
       case AreaHref:
-        return String(url.url());
-      case AreaHash:            return String(url.isEmpty() ? "" : '#'+url.ref());
-      case AreaHost:            return String(url.host());
+        return jsString(url.url());
+      case AreaHash:            return jsString(url.isEmpty() ? "" : '#'+url.ref());
+      case AreaHost:            return jsString(url.host());
       case AreaHostName: {
         if (url.port()<=0)
-          return String(url.host());
+          return jsString(url.host());
         else
-          return String(url.host() + ":" + QString::number(url.port()));	//krazy:exclude=doublequote_chars DOM demands chars
+          return jsString(url.host() + ":" + QString::number(url.port()));	//krazy:exclude=doublequote_chars DOM demands chars
       }
       case AreaPathName:        {
-        return String(url.path());
+        return jsString(url.path());
       }
-      case AreaPort:            return String(QString::number(url.port()));
-      case AreaProtocol:        return String(url.isEmpty() ? "" : url.protocol()+":");	//krazy:exclude=doublequote_chars DOM demands chars
-      case AreaSearch:          return String(url.query());
+      case AreaPort:            return jsString(QString::number(url.port()));
+      case AreaProtocol:        return jsString(url.isEmpty() ? "" : url.protocol()+":");	//krazy:exclude=doublequote_chars DOM demands chars
+      case AreaSearch:          return jsString(url.query());
     }
   }
   break;
   case ID_SCRIPT: {
     DOM::HTMLScriptElementImpl& script = static_cast<DOM::HTMLScriptElementImpl&>(element);
     switch (token) {
-    case ScriptText:            return String(script.text());
+    case ScriptText:            return jsString(script.text());
     }
   }
   break;
@@ -1897,8 +1897,8 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_TR: {
    DOM::HTMLTableRowElementImpl& tableRow = static_cast<DOM::HTMLTableRowElementImpl&>(element);
    switch (token) {
-   case TableRowRowIndex:        return Number(tableRow.rowIndex());
-   case TableRowSectionRowIndex: return Number(tableRow.sectionRowIndex());
+   case TableRowRowIndex:        return jsNumber(tableRow.rowIndex());
+   case TableRowSectionRowIndex: return jsNumber(tableRow.sectionRowIndex());
    }
   }
   break;
@@ -1906,7 +1906,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   case ID_TD: {
     DOM::HTMLTableCellElementImpl& tableCell = static_cast<DOM::HTMLTableCellElementImpl&>(element);
     switch (token) {
-    case TableCellCellIndex:       return Number(tableCell.cellIndex());
+    case TableCellCellIndex:       return jsNumber(tableCell.cellIndex());
     }
   }
   break;
@@ -1914,7 +1914,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLLayerElementImpl& layerElement = static_cast<DOM::HTMLLayerElementImpl&>(element);
     switch (token) {
     /*case LayerClip:           return getLayerClip(exec, layerElement); */
-    case LayerDocument:       return Undefined();
+    case LayerDocument:       return jsUndefined();
     }
   }
   break;
@@ -1922,7 +1922,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLFrameElementImpl& frameElement = static_cast<DOM::HTMLFrameElementImpl&>(element);
     switch (token) {
       case FrameContentDocument: return checkNodeSecurity(exec,frameElement.contentDocument()) ?
-				      getDOMNode(exec, frameElement.contentDocument()) : Undefined();
+				      getDOMNode(exec, frameElement.contentDocument()) : jsUndefined();
     case FrameContentWindow:   {
         KHTMLPart* part = frameElement.contentPart();
         if (part) {
@@ -1930,7 +1930,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
           if (w)
             return w;
         }
-        return Undefined();
+        return jsUndefined();
       }
     // IE only
     case FrameWidth:
@@ -1938,7 +1938,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
       {
           frameElement.getDocument()->updateLayout();
           khtml::RenderObject* r = frameElement.renderer();
-          return Number( r ? (token == FrameWidth ? r->width() : r->height()) : 0 );
+          return jsNumber( r ? (token == FrameWidth ? r->width() : r->height()) : 0 );
       }
     }
   }
@@ -1947,7 +1947,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLIFrameElementImpl& iFrame = static_cast<DOM::HTMLIFrameElementImpl&>(element);
     switch (token) {
     case IFrameContentDocument: return checkNodeSecurity(exec,iFrame.contentDocument()) ?
-				       getDOMNode(exec, iFrame.contentDocument()) : Undefined();
+				       getDOMNode(exec, iFrame.contentDocument()) : jsUndefined();
     case IFrameContentWindow:       {
         KHTMLPart* part = iFrame.contentPart();
         if (part) {
@@ -1955,7 +1955,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
           if (w)
             return w;
         }
-        return Undefined();
+        return jsUndefined();
     }
     }
     break;
@@ -1966,15 +1966,15 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   // generic properties
   switch (token) {
   case ElementInnerHTML:
-    return String(element.innerHTML());
+    return jsString(element.innerHTML());
   case ElementInnerText:
-    return String(element.innerText());
+    return jsString(element.innerText());
   case ElementDocument:
     return getDOMNode(exec,element.ownerDocument());
   case ElementAll:
     // Disable element.all when we try to be Netscape-compatible
     if ( exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat )
-      return Undefined();
+      return jsUndefined();
     else
     if ( exec->dynamicInterpreter()->compatMode() == Interpreter::IECompat )
       return getHTMLCollection(exec,new HTMLCollectionImpl(&element, HTMLCollectionImpl::DOC_ALL));
@@ -1983,7 +1983,7 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   // ### what about style? or is this used instead for DOM2 stylesheets?
   }
   kError() << "HTMLElement::getValueProperty unhandled token " << token << endl;
-  return Undefined();
+  return jsUndefined();
 }
 
 UString KJS::HTMLElement::toString(ExecState *exec) const
@@ -2136,11 +2136,11 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
         if( !block )
           form.submit();
 
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::FormReset) {
         form.reset();
-        return Undefined();
+        return jsUndefined();
       }
     }
     break;
@@ -2148,19 +2148,19 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
       DOM::HTMLSelectElementImpl& select = static_cast<DOM::HTMLSelectElementImpl&>(element);
       if (id == KJS::HTMLElement::SelectAdd) {
         select.add(toHTMLElement(args[0]),toHTMLElement(args[1]),exception);
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::SelectRemove) {
         select.remove(int(args[0]->toNumber(exec)));
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::SelectBlur) {
         select.blur();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::SelectFocus) {
         select.focus();
-        return Undefined();
+        return jsUndefined();
       }
     }
     break;
@@ -2168,23 +2168,23 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
       DOM::HTMLInputElementImpl& input = static_cast<DOM::HTMLInputElementImpl&>(element);
       if (id == KJS::HTMLElement::InputBlur) {
         input.blur();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::InputFocus) {
         input.focus();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::InputSelect) {
         input.select();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::InputClick) {
         input.click();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::InputSetSelectionRange) {
         input.setSelectionRange(args[0]->toNumber(exec), args[1]->toNumber(exec));
-        return Undefined();
+        return jsUndefined();
       }
     }
     break;
@@ -2192,11 +2192,11 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
       DOM::HTMLButtonElementImpl& button = static_cast<DOM::HTMLButtonElementImpl&>(element);
       if (id == KJS::HTMLElement::ButtonBlur) {
         button.blur();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::ButtonFocus) {
         button.focus();
-        return Undefined();
+        return jsUndefined();
       }
     }
     break;
@@ -2204,19 +2204,19 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
       DOM::HTMLTextAreaElementImpl& textarea = static_cast<DOM::HTMLTextAreaElementImpl&>(element);
       if (id == KJS::HTMLElement::TextAreaBlur) {
         textarea.blur();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::TextAreaFocus) {
         textarea.focus();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::TextAreaSelect) {
         textarea.select();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::TextAreaSetSelectionRange) {
         textarea.setSelectionRange(args[0]->toNumber(exec), args[1]->toNumber(exec));
-        return Undefined();
+        return jsUndefined();
       }
 
     }
@@ -2225,15 +2225,15 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
       DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
       if (id == KJS::HTMLElement::AnchorBlur) {
         anchor.blur();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::AnchorFocus) {
         anchor.focus();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::AnchorClick) {
         anchor.click();
-        return Undefined();
+        return jsUndefined();
       }
     }
     break;
@@ -2243,25 +2243,25 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
         return getDOMNode(exec,table.createTHead());
       else if (id == KJS::HTMLElement::TableDeleteTHead) {
         table.deleteTHead();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::TableCreateTFoot)
         return getDOMNode(exec,table.createTFoot());
       else if (id == KJS::HTMLElement::TableDeleteTFoot) {
         table.deleteTFoot();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::TableCreateCaption)
         return getDOMNode(exec,table.createCaption());
       else if (id == KJS::HTMLElement::TableDeleteCaption) {
         table.deleteCaption();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::TableInsertRow)
         return getDOMNode(exec,table.insertRow(args[0]->toInteger(exec),exception));
       else if (id == KJS::HTMLElement::TableDeleteRow) {
         table.deleteRow(args[0]->toInteger(exec), exception);
-        return Undefined();
+        return jsUndefined();
       }
     }
     break;
@@ -2273,7 +2273,7 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
         return getDOMNode(exec,tableSection.insertRow(args[0]->toInteger(exec), exception));
       else if (id == KJS::HTMLElement::TableSectionDeleteRow) {
         tableSection.deleteRow(args[0]->toInteger(exec),exception);
-        return Undefined();
+        return jsUndefined();
       }
     }
     break;
@@ -2283,7 +2283,7 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
         return getDOMNode(exec,tableRow.insertCell(args[0]->toInteger(exec), exception));
       else if (id == KJS::HTMLElement::TableRowDeleteCell) {
         tableRow.deleteCell(args[0]->toInteger(exec), exception);
-        return Undefined();
+        return jsUndefined();
       }
       break;
     }
@@ -2292,13 +2292,13 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
         element.renderer()->layer() &&
         element.renderer()->layer()->marquee()) {
         element.renderer()->layer()->marquee()->start();
-        return Undefined();
+        return jsUndefined();
       }
       else if (id == KJS::HTMLElement::MarqueeStop && element.renderer() &&
               element.renderer()->layer() &&
               element.renderer()->layer()->marquee()) {
         element.renderer()->layer()->marquee()->stop();
-        return Undefined();
+        return jsUndefined();
       }
       break;
     }
@@ -2318,10 +2318,10 @@ ValueImp* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, ObjectImp *t
     if (args.size() > 0)
       alignToTop = args[0]->toBoolean(exec);
     element.scrollIntoView(alignToTop);
-    return Undefined();
+    return jsUndefined();
   }
 
-  return Undefined();
+  return jsUndefined();
 }
 
 void KJS::HTMLElement::put(ExecState *exec, const Identifier &propertyName, ValueImp *value, int attr)
@@ -2972,7 +2972,7 @@ void KJS::HTMLCollection::getPropertyNames(ExecState* exec, PropertyNameArray& p
 ValueImp *HTMLCollection::lengthGetter(ExecState *, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   HTMLCollection *thisObj = static_cast<HTMLCollection *>(slot.slotBase());
-  return Number(thisObj->m_impl->length());
+  return jsNumber(thisObj->m_impl->length());
 }
 
 
@@ -3060,7 +3060,7 @@ ValueImp* KJS::HTMLCollection::callAsFunction(ExecState *exec, ObjectImp *, cons
       }
     }
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &propertyName) const
@@ -3094,7 +3094,7 @@ ValueImp* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &
 #ifdef KJS_VERBOSE
   kDebug(6070) << "not found";
 #endif
-  return Undefined();
+  return jsUndefined();
 }
 
 ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
@@ -3145,12 +3145,12 @@ ValueImp* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, ObjectIm
     // Must return null when asking for a named item that isn't in the collection
     // (DOM2 testsuite, HTMLCollection12 test)
     if ( val->type() == KJS::UndefinedType )
-      return Null();
+      return jsNull();
     else
       return val;
   }
   default:
-    return Undefined();
+    return jsUndefined();
   }
 }
 
@@ -3173,13 +3173,13 @@ KJS::HTMLSelectCollection::HTMLSelectCollection(ExecState *exec, DOM::HTMLCollec
 ValueImp *HTMLSelectCollection::selectedIndexGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
-    return Number(thisObj->element->selectedIndex());
+    return jsNumber(thisObj->element->selectedIndex());
 }
 
 ValueImp *HTMLSelectCollection::selectedValueGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
     HTMLSelectCollection *thisObj = static_cast<HTMLSelectCollection *>(slot.slotBase());
-    return String(thisObj->element->value());
+    return jsString(thisObj->element->value());
 }
 
 bool KJS::HTMLSelectCollection::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertySlot& slot)
@@ -3310,13 +3310,13 @@ ValueImp* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, Ob
       int dummy;
       element->insertBefore(option, items.at(pos), dummy);
     }
-    return Undefined();
+    return jsUndefined();
     break;
   }
   default:
     break;
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 
@@ -3330,7 +3330,7 @@ OptionConstructorImp::OptionConstructorImp(ExecState *exec, DOM::DocumentImpl* d
 
   // no. of arguments for constructor
   // ## is 4 correct ? 0 to 4, it seems to be
-  put(exec, exec->propertyNames().length, Number(4), ReadOnly|DontDelete|DontEnum);
+  put(exec, exec->propertyNames().length, jsNumber(4), ReadOnly|DontDelete|DontEnum);
 }
 
 bool OptionConstructorImp::implementsConstruct() const
@@ -3417,7 +3417,7 @@ ValueImp* getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, D
 {
   assert(!c || c->getType() == HTMLCollectionImpl::SELECT_OPTIONS);
   DOMObject *ret;
-  if (!c) return Null();
+  if (!c) return jsNull();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
   if ((ret = interp->getDOMObject(c)))
     return ret;

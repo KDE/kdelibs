@@ -459,7 +459,7 @@ ValueImp *KJS::Context2DFunction::callAsFunction(ExecState *exec, ObjectImp *thi
     //### TODO: ImageData
     }
 
-    return Undefined();
+    return jsUndefined();
 }
 
 const ClassInfo Context2D::info = { "CanvasRenderingContext2D", 0, &Context2DTable, 0 };
@@ -655,7 +655,7 @@ ValueImp *CanvasGradientFunction::callAsFunction(ExecState *exec, ObjectImp *thi
         assert(0);
     }
 
-    return Undefined();
+    return jsUndefined();
 }
 
 CanvasGradient::CanvasGradient(ExecState* exec, DOM::CanvasGradientImpl* impl) :

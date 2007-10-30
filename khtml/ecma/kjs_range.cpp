@@ -88,19 +88,19 @@ ValueImp *DOMRange::getValueProperty(ExecState *exec, int token) const
   case StartContainer:
     return getDOMNode(exec,range.startContainer(exception));
   case StartOffset:
-    return Number(range.startOffset(exception));
+    return jsNumber(range.startOffset(exception));
   case EndContainer:
     return getDOMNode(exec,range.endContainer(exception));
   case EndOffset:
-    return Number(range.endOffset(exception));
+    return jsNumber(range.endOffset(exception));
   case Collapsed:
-    return Boolean(range.collapsed(exception));
+    return jsBoolean(range.collapsed(exception));
   case CommonAncestorContainer: {
     return getDOMNode(exec,range.commonAncestorContainer(exception));
   }
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMRange::getValueProperty : " << token;
-    return Null();
+    return jsNull();
   }
 }
 
@@ -110,7 +110,7 @@ ValueImp *DOMRangeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj,
   DOMExceptionTranslator exception(exec);
   DOM::RangeImpl &range = *static_cast<DOMRange *>(thisObj)->impl();
   
-  ValueImp *result = Undefined();
+  ValueImp *result = jsUndefined();
 
   switch (id) {
     case DOMRange::SetStart:
@@ -141,7 +141,7 @@ ValueImp *DOMRangeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj,
       range.selectNodeContents(toNode(args[0]), exception);
       break;
     case DOMRange::CompareBoundaryPoints:
-      result = Number(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0]->toInt32(exec)),toRange(args[1]), exception));
+      result = jsNumber(range.compareBoundaryPoints(static_cast<DOM::Range::CompareHow>(args[0]->toInt32(exec)),toRange(args[1]), exception));
       break;
     case DOMRange::DeleteContents:
       range.deleteContents(exception);
@@ -162,7 +162,7 @@ ValueImp *DOMRangeProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj,
       result = getDOMRange(exec,range.cloneRange(exception));
       break;
     case DOMRange::ToString:
-      result = String(UString(range.toString(exception)));
+      result = jsString(UString(range.toString(exception)));
       break;
     case DOMRange::Detach:
       range.detach(exception);
@@ -207,7 +207,7 @@ bool RangeConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& pro
 
 ValueImp *RangeConstructor::getValueProperty(ExecState *, int token) const
 {
-  return Number(token);
+  return jsNumber(token);
 }
 
 ValueImp *KJS::getRangeConstructor(ExecState *exec)

@@ -62,7 +62,7 @@ ValueImp *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) 
   switch (token) {
   default:
     kDebug(6070) << "WARNING: Unhandled token in MozillaSidebarExtension::getValueProperty : " << token;
-    return Null();
+    return jsNull();
   }
 }
 
@@ -73,7 +73,7 @@ ValueImp *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, ObjectImp
 
   KHTMLPart *part = mse->part();
   if (!part)
-    return Undefined();
+    return jsUndefined();
 
   // addPanel()  id == 0
   KParts::BrowserExtension *ext = part->browserExtension();
@@ -87,13 +87,13 @@ ValueImp *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, ObjectImp
       url = args[1]->toString(exec).qstring();
       // 2 is the "CURL" which I don't understand and don't think we need.
     } else {
-      return Boolean(false);
+      return jsBoolean(false);
     }
     emit ext->addWebSideBar(KUrl( url ), name);
-    return Boolean(true);
+    return jsBoolean(true);
   }
 
-  return Undefined();
+  return jsUndefined();
 }
 
 

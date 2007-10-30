@@ -193,41 +193,41 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
   userAgent = KProtocolManager::userAgentForHost(userAgent);
   switch (token) {
   case AppCodeName:
-    return String("Mozilla");
+    return jsString("Mozilla");
   case AppName:
     // If we find "Mozilla" but not "(compatible, ...)" we are a real Netscape
     if (userAgent.indexOf(QLatin1String("Mozilla")) >= 0 &&
         userAgent.indexOf(QLatin1String("compatible")) == -1)
     {
       //kDebug() << "appName -> Mozilla";
-      return String("Netscape");
+      return jsString("Netscape");
     }
     if (userAgent.indexOf(QLatin1String("Microsoft")) >= 0 ||
         userAgent.indexOf(QLatin1String("MSIE")) >= 0)
     {
       //kDebug() << "appName -> IE";
-      return String("Microsoft Internet Explorer");
+      return jsString("Microsoft Internet Explorer");
     }
     //kDebug() << "appName -> Konqueror";
-    return String("Konqueror");
+    return jsString("Konqueror");
   case AppVersion:
     // We assume the string is something like Mozilla/version (properties)
-    return String(userAgent.mid(userAgent.indexOf('/') + 1));
+    return jsString(userAgent.mid(userAgent.indexOf('/') + 1));
   case Product:
     // We are pretending to be Mozilla or Safari
     if (userAgent.indexOf(QLatin1String("Mozilla")) >= 0 &&
         userAgent.indexOf(QLatin1String("compatible")) == -1)
     {
-        return String("Gecko");
+        return jsString("Gecko");
     }
-    // When spoofing as IE, we use Undefined().
+    // When spoofing as IE, we use jsUndefined().
     if (userAgent.indexOf(QLatin1String("Microsoft")) >= 0 ||
         userAgent.indexOf(QLatin1String("MSIE")) >= 0)
     {
-        return Undefined();
+        return jsUndefined();
     }
     // We are acting straight
-    return String("Konqueror/khtml");
+    return jsString("Konqueror/khtml");
   case ProductSub:
     {
       int ix = userAgent.indexOf("Gecko");
@@ -235,56 +235,56 @@ ValueImp *Navigator::getValueProperty(ExecState *exec, int token) const
           userAgent.indexOf(QRegExp("\\d{8}"), ix+6) == ix+6)
       {
           // We have Gecko/<productSub> in the UA string
-          return String(userAgent.mid(ix+6, 8));
+          return jsString(userAgent.mid(ix+6, 8));
       }
       else if (ix >= 0)
       {
-          return String("20040107");
+          return jsString("20040107");
       }
     }
-    return Undefined();
+    return jsUndefined();
   case Vendor:
-    return String("KDE");
+    return jsString("KDE");
   case BrowserLanguage:
   case Language:
   case UserLanguage:
-    return String(KGlobal::locale()->language());
+    return jsString(KGlobal::locale()->language());
   case UserAgent:
-    return String(userAgent);
+    return jsString(userAgent);
   case Platform:
     // yet another evil hack, but necessary to spoof some sites...
     if ( (userAgent.indexOf(QLatin1String("Win"),0,Qt::CaseInsensitive)>=0) )
-      return String("Win32");
+      return jsString("Win32");
     else if ( (userAgent.indexOf(QLatin1String("Macintosh"),0,Qt::CaseInsensitive)>=0) ||
               (userAgent.indexOf(QLatin1String("Mac_PowerPC"),0,Qt::CaseInsensitive)>=0) )
-      return String("MacPPC");
+      return jsString("MacPPC");
     else
     {
         struct utsname name;
         int ret = uname(&name);
         if ( ret >= 0 )
-            return String(QString::fromLatin1("%1 %2").arg(name.sysname).arg(name.machine));
+            return jsString(QString::fromLatin1("%1 %2").arg(name.sysname).arg(name.machine));
         else // can't happen
-            return String("Unix X11");
+            return jsString("Unix X11");
     }
   case CpuClass:
   {
     struct utsname name;
     int ret = uname(&name);
     if ( ret >= 0 )
-      return String(name.machine);
+      return jsString(name.machine);
     else // can't happen
-      return String("unknown");
+      return jsString("unknown");
   }
   case _Plugins:
     return new Plugins(exec, m_part->pluginsEnabled());
   case _MimeTypes:
     return new MimeTypes(exec, m_part->pluginsEnabled());
   case CookieEnabled:
-    return Boolean(true); /// ##### FIXME
+    return jsBoolean(true); /// ##### FIXME
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token;
-    return Null();
+    return jsNull();
   }
 }
 
@@ -392,9 +392,9 @@ ValueImp *Plugins::getValueProperty(ExecState*, int token) const
 {
   assert(token == Plugins_Length);
   if (pluginsEnabled())
-    return Number(plugins->count());
+    return jsNumber(plugins->count());
   else
-    return Number(0);
+    return jsNumber(0);
 }
 
 ValueImp *Plugins::indexGetter(ExecState* exec, JSObject*, const Identifier& /*propertyName*/, const PropertySlot& slot)
@@ -444,7 +444,7 @@ ValueImp *Plugins::pluginByName( ExecState* exec, const QString& name )
     if ((*it)->name == name)
       return new Plugin(exec, *it);
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 ValueImp *PluginsFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
@@ -456,14 +456,14 @@ ValueImp *PluginsFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const
 
   switch( id ) {
   case Plugins_Refresh:
-    return Undefined(); //## TODO
+    return jsUndefined(); //## TODO
   case Plugins_Item:
   {
     bool ok;
     unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
     if (ok && i < static_cast<unsigned>(base->plugins->count()))
       return new Plugin( exec, base->plugins->at(i) );
-    return Undefined();
+    return jsUndefined();
   }
   case Plugins_NamedItem:
   {
@@ -472,7 +472,7 @@ ValueImp *PluginsFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const
   }
   default:
     kDebug(6070) << "WARNING: Unhandled token in PluginsFunc::callAsFunction : " << id;
-    return Undefined();
+    return jsUndefined();
   }
 }
 
@@ -536,16 +536,16 @@ ValueImp *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
     if ((*it)->type == name)
       return new MimeType(exec, (*it));
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 ValueImp *MimeTypes::getValueProperty(ExecState* /*exec*/, int token) const
 {
   assert(token == MimeTypes_Length);
   if (pluginsEnabled())
-    return Number(mimes->count());
+    return jsNumber(mimes->count());
   else
-    return Number(0);
+    return jsNumber(0);
 }
 
 ValueImp *MimeTypesFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args)
@@ -562,7 +562,7 @@ ValueImp *MimeTypesFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, con
     unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
     if (ok && i < static_cast<unsigned>(base->mimes->count()))
       return new MimeType( exec, base->mimes->at(i) );
-    return Undefined();
+    return jsUndefined();
   }
   case MimeTypes_NamedItem:
   {
@@ -571,7 +571,7 @@ ValueImp *MimeTypesFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, con
   }
   default:
     kDebug(6070) << "WARNING: Unhandled token in MimeTypesFunc::callAsFunction : " << id;
-    return Undefined();
+    return jsUndefined();
   }
 }
 
@@ -637,23 +637,23 @@ ValueImp *Plugin::mimeByName(ExecState* exec, const QString& name) const
     if ((*it)->type == name)
       return new MimeType(exec, (*it));
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 ValueImp *Plugin::getValueProperty(ExecState* /*exec*/, int token) const
 {
   switch( token ) {
   case Plugin_Name:
-    return String( UString(m_info->name) );
+    return jsString( UString(m_info->name) );
   case Plugin_FileName:
-    return String( UString(m_info->file) );
+    return jsString( UString(m_info->file) );
   case Plugin_Description:
-    return String( UString(m_info->desc) );
+    return jsString( UString(m_info->desc) );
   case Plugin_Length:
-    return Number( m_info->mimes.count() );
+    return jsNumber( m_info->mimes.count() );
   default:
     kDebug(6070) << "WARNING: Unhandled token in Plugin::getValueProperty : " << token;
-    return Undefined();
+    return jsUndefined();
   }
 }
 
@@ -668,7 +668,7 @@ ValueImp *PluginFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
     unsigned int i = args[0]->toString(exec).toArrayIndex(&ok);
     if (ok && i< static_cast<unsigned>(plugin->pluginInfo()->mimes.count()))
       return new MimeType( exec, plugin->pluginInfo()->mimes.at(i) );
-    return Undefined();
+    return jsUndefined();
   }
   case Plugin_NamedItem:
   {
@@ -677,7 +677,7 @@ ValueImp *PluginFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
   }
   default:
     kDebug(6070) << "WARNING: Unhandled token in PluginFunc::callAsFunction : " << id;
-    return Undefined();
+    return jsUndefined();
   }
 }
 
@@ -705,16 +705,16 @@ ValueImp *MimeType::getValueProperty(ExecState* exec, int token) const
 {
   switch( token ) {
   case MimeType_Type:
-    return String( UString(m_info->type) );
+    return jsString( UString(m_info->type) );
   case MimeType_Suffixes:
-    return String( UString(m_info->suffixes) );
+    return jsString( UString(m_info->suffixes) );
   case MimeType_Description:
-    return String( UString(m_info->desc) );
+    return jsString( UString(m_info->desc) );
   case MimeType_EnabledPlugin:
     return new Plugin(exec, m_info->plugin);
   default:
     kDebug(6070) << "WARNING: Unhandled token in MimeType::getValueProperty : " << token;
-    return Undefined();
+    return jsUndefined();
   }
 }
 
@@ -724,5 +724,5 @@ ValueImp *NavigatorFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, con
   KJS_CHECK_THIS( KJS::Navigator, thisObj );
   Navigator *nav = static_cast<Navigator *>(thisObj);
   // javaEnabled()
-  return Boolean(nav->part()->javaEnabled());
+  return jsBoolean(nav->part()->javaEnabled());
 }

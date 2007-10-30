@@ -137,7 +137,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case ReadyState:
-    return Number(m_state);
+    return jsNumber(m_state);
   case ResponseText:
     return ::getStringOrNull(DOM::DOMString(response));
   case ResponseXML:
@@ -172,7 +172,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     }
 
     if (!typeIsXML) {
-      return Null();
+      return jsNull();
     }
 
     return getDOMNode(exec,responseXML.get());
@@ -184,13 +184,13 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
    if (onReadyStateChangeListener && onReadyStateChangeListener->listenerObj()) {
      return onReadyStateChangeListener->listenerObj();
    } else {
-     return Null();
+     return jsNull();
    }
   case Onload:
    if (onLoadListener && onLoadListener->listenerObj()) {
      return onLoadListener->listenerObj();
    } else {
-     return Null();
+     return jsNull();
    }
   default:
     kWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token;
@@ -562,22 +562,22 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
 ValueImp *XMLHttpRequest::getAllResponseHeaders() const
 {
   if (responseHeaders.isEmpty()) {
-    return Undefined();
+    return jsUndefined();
   }
 
   int endOfLine = responseHeaders.indexOf("\n");
 
   if (endOfLine == -1) {
-    return Undefined();
+    return jsUndefined();
   }
 
-  return String(responseHeaders.mid(endOfLine + 1) + '\n');
+  return jsString(responseHeaders.mid(endOfLine + 1) + '\n');
 }
 
 ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
 {
   if (responseHeaders.isEmpty()) {
-    return Undefined();
+    return jsUndefined();
   }
 
   QRegExp headerLinePattern(name + ':', Qt::CaseInsensitive);
@@ -596,18 +596,18 @@ ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
 
 
   if (headerLinePos == -1) {
-    return Null();
+    return jsNull();
   }
 
   int endOfLine = responseHeaders.indexOf("\n", headerLinePos + matchLength);
 
-  return String(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).trimmed());
+  return jsString(responseHeaders.mid(headerLinePos + matchLength, endOfLine - (headerLinePos + matchLength)).trimmed());
 }
 
 static ValueImp *httpStatus(const QString& response, bool textStatus = false)
 {
   if (response.isEmpty()) {
-    return Undefined();
+    return jsUndefined();
   }
 
   int endOfLine = response.indexOf("\n");
@@ -616,12 +616,12 @@ static ValueImp *httpStatus(const QString& response, bool textStatus = false)
   int codeEnd = firstLine.indexOf(" ", codeStart + 1);
 
   if (codeStart == -1 || codeEnd == -1) {
-    return Undefined();
+    return jsUndefined();
   }
 
   if (textStatus) {
     QString statusText = firstLine.mid(codeEnd + 1, endOfLine - (codeEnd + 1)).trimmed();
-    return String(statusText);
+    return jsString(statusText);
   }
 
   QString number = firstLine.mid(codeStart + 1, codeEnd - (codeStart + 1));
@@ -629,10 +629,10 @@ static ValueImp *httpStatus(const QString& response, bool textStatus = false)
   bool ok = false;
   int code = number.toInt(&ok);
   if (!ok) {
-    return Undefined();
+    return jsUndefined();
   }
 
-  return Number(code);
+  return jsNumber(code);
 }
 
 ValueImp *XMLHttpRequest::getStatus() const
@@ -769,7 +769,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
   switch (id) {
   case XMLHttpRequest::Abort:
     request->abort();
-    return Undefined();
+    return jsUndefined();
   case XMLHttpRequest::GetAllResponseHeaders:
     return request->getAllResponseHeaders();
   case XMLHttpRequest::GetResponseHeader:
@@ -785,7 +785,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
       QString method = args[0]->toString(exec).qstring();
       KHTMLPart *part = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
       if (!part)
-        return Undefined();
+        return jsUndefined();
       KUrl url = KUrl(part->document().completeURL(args[1]->toString(exec).qstring()).string());
 
       bool async = true;
@@ -803,7 +803,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
 
       request->open(method, url, async);
 
-      return Undefined();
+      return jsUndefined();
     }
   case XMLHttpRequest::Send:
     {
@@ -853,7 +853,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
       return jsUndefined();
   }
 
-  return Undefined();
+  return jsUndefined();
 }
 
 } // end namespace

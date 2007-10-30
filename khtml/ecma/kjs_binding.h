@@ -261,7 +261,7 @@ namespace KJS {
   {
     DOMObject *ret;
     if (!domObj)
-      return Null();
+      return jsNull();
     ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
     if ((ret = interp->getDOMObject(domObj)))
       return ret;
@@ -313,7 +313,7 @@ namespace KJS {
   ValueImp* getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
   // convenience function
-  inline JSCell* String(const QString& s) { return jsString(s.toLocal8Bit().constData()); }
+  inline JSCell* jsString(const QString& s) { return jsString(s.toLocal8Bit().constData()); }
 
 // This is used to create pseudo-constructor objects, like Mozillaish
 // Element, HTMLDocument, etc., which do not act like real constructors,
@@ -371,7 +371,7 @@ namespace KJS {
      }\
      ValueImp* Class::getValueProperty(ExecState * /*exec*/, int token) const { \
         /* We use the token as the value to return directly*/ \
-        return Number((unsigned int)token); \
+        return jsNumber((unsigned int)token); \
      }  \
      ObjectImp* Class::self(ExecState *exec) { \
         return cacheGlobalObject<Class>(exec,  *name()); \

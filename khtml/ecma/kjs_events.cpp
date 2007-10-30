@@ -175,8 +175,8 @@ void JSLazyEventListener::parseCode() const
 
       static KJS::UString eventString("event");
 
-      args.append(KJS::String(eventString));
-      args.append(KJS::String(code));
+      args.append(jsString(eventString));
+      args.append(jsString(code));
       listener = constr->construct(exec, args); // ### is globalExec ok ?
 
       if (exec->hadException()) {
@@ -274,25 +274,25 @@ ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
   DOM::EventImpl& event = *impl();
   switch (token) {
   case Type:
-    return String(event.type());
+    return jsString(event.type());
   case Target:
   case SrcElement: /*MSIE extension - "the object that fired the event"*/
     return getDOMNode(exec,event.target());
   case CurrentTarget:
     return getDOMNode(exec,event.currentTarget());
   case EventPhase:
-    return Number((unsigned int)event.eventPhase());
+    return jsNumber((unsigned int)event.eventPhase());
   case Bubbles:
-    return Boolean(event.bubbles());
+    return jsBoolean(event.bubbles());
   case Cancelable:
-    return Boolean(event.cancelable());
+    return jsBoolean(event.cancelable());
   case TimeStamp:
-    return Number((long unsigned int)event.timeStamp()); // ### long long ?
+    return jsNumber((long unsigned int)event.timeStamp()); // ### long long ?
   case ReturnValue: // MSIE extension
     // return false == cancel, so this returns the -opposite- of defaultPrevented
-    return Boolean(!event.defaultPrevented());
+    return jsBoolean(!event.defaultPrevented());
   case CancelBubble: // MSIE extension
-    return Boolean(event.propagationStopped());
+    return jsBoolean(event.propagationStopped());
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token;
     return 0;
@@ -302,7 +302,7 @@ ValueImp *DOMEvent::getValueProperty(ExecState *exec, int token) const
 ValueImp *DOMEvent::defaultValue(ExecState *exec, KJS::JSType hint) const
 {
   if (m_impl->id() == EventImpl::ERROR_EVENT && !m_impl->message().isNull()) {
-    return String(m_impl->message());
+    return jsString(m_impl->message());
   }
   else
     return DOMObject::defaultValue(exec,hint);
@@ -338,21 +338,21 @@ ValueImp *DOMEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj,
   switch (id) {
     case DOMEvent::StopPropagation:
       event.stopPropagation(true);
-      return Undefined();
+      return jsUndefined();
     case DOMEvent::PreventDefault:
       event.preventDefault(true);
-      return Undefined();
+      return jsUndefined();
     case DOMEvent::InitEvent:
       event.initEvent(args[0]->toString(exec).domString(),args[1]->toBoolean(exec),args[2]->toBoolean(exec));
-      return Undefined();
+      return jsUndefined();
   };
-  return Undefined();
+  return jsUndefined();
 }
 
 ValueImp *KJS::getDOMEvent(ExecState *exec, DOM::EventImpl* ei)
 {
   if (!ei)
-    return Null();
+    return jsNull();
   ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
   DOMObject *ret = interp->getDOMObject(ei);
   if (!ret) {
@@ -436,7 +436,7 @@ bool EventExceptionConstructor::getOwnPropertySlot(ExecState *exec, const Identi
 ValueImp *EventExceptionConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
-  return Number(token);
+  return jsNumber(token);
 }
 
 ValueImp *KJS::getEventExceptionConstructor(ExecState *exec)
@@ -489,31 +489,31 @@ ValueImp *DOMUIEvent::getValueProperty(ExecState *exec, int token) const
   case View:
     return getDOMAbstractView(exec,event.view());
   case Detail:
-    return Number(event.detail());
+    return jsNumber(event.detail());
   case KeyCode:
     // IE-compatibility
-    return Number(event.keyCode());
+    return jsNumber(event.keyCode());
   case CharCode:
     // IE-compatibility
-    return Number(event.charCode());
+    return jsNumber(event.charCode());
   case LayerX:
     // NS-compatibility
-    return Number(event.layerX());
+    return jsNumber(event.layerX());
   case LayerY:
     // NS-compatibility
-    return Number(event.layerY());
+    return jsNumber(event.layerY());
   case PageX:
     // NS-compatibility
-    return Number(event.pageX());
+    return jsNumber(event.pageX());
   case PageY:
     // NS-compatibility
-    return Number(event.pageY());
+    return jsNumber(event.pageY());
   case Which:
     // NS-compatibility
-    return Number(event.which());
+    return jsNumber(event.which());
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMUIEvent::getValueProperty : " << token;
-    return Undefined();
+    return jsUndefined();
   }
 }
 
@@ -530,9 +530,9 @@ ValueImp *DOMUIEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisOb
                                                      v,
                                                      args[4]->toInteger(exec));
       }
-      return Undefined();
+      return jsUndefined();
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 // -------------------------------------------------------------------------
@@ -587,15 +587,15 @@ ValueImp *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
   DOM::MouseEventImpl& event = *impl();
   switch (token) {
   case ScreenX:
-    return Number(event.screenX());
+    return jsNumber(event.screenX());
   case ScreenY:
-    return Number(event.screenY());
+    return jsNumber(event.screenY());
   case ClientX:
   case X:
-    return Number(event.clientX());
+    return jsNumber(event.clientX());
   case ClientY:
   case Y:
-    return Number(event.clientY());
+    return jsNumber(event.clientY());
   case OffsetX:
   case OffsetY: // MSIE extension
   {
@@ -621,26 +621,26 @@ ValueImp *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
         y += cYPos;
       }
     }
-    return Number( token == OffsetX ? x : y );
+    return jsNumber( token == OffsetX ? x : y );
   }
   case CtrlKey:
-    return Boolean(event.ctrlKey());
+    return jsBoolean(event.ctrlKey());
   case ShiftKey:
-    return Boolean(event.shiftKey());
+    return jsBoolean(event.shiftKey());
   case AltKey:
-    return Boolean(event.altKey());
+    return jsBoolean(event.altKey());
   case MetaKey:
-    return Boolean(event.metaKey());
+    return jsBoolean(event.metaKey());
   case Button:
   {
     if ( exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat ) {
-        return Number(event.button());
+        return jsNumber(event.button());
     }
     // Tricky. The DOM (and khtml) use 0 for LMB, 1 for MMB and 2 for RMB
     // but MSIE uses 1=LMB, 2=RMB, 4=MMB, as a bitfield
     int domButton = event.button();
     int button = domButton==0 ? 1 : domButton==1 ? 4 : domButton==2 ? 2 : 0;
-    return Number( (unsigned int)button );
+    return jsNumber( (unsigned int)button );
   }
   case ToElement:
     // MSIE extension - "the object toward which the user is moving the mouse pointer"
@@ -682,9 +682,9 @@ ValueImp *DOMMouseEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thi
                                 args[12]->toBoolean(exec), // metaKeyArg
                                 args[13]->toInteger(exec), // buttonArg
                                 toNode(args[14])); // relatedTargetArg
-      return Undefined();
+      return jsUndefined();
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 // -------------------------------------------------------------------------
@@ -721,22 +721,22 @@ ValueImp* DOMKeyEventBase::getValueProperty(ExecState *, int token) const
   DOM::KeyEventBaseImpl* tevent = impl();
   switch (token) {
   case Key:
-    return Number(tevent->keyVal());
+    return jsNumber(tevent->keyVal());
   case VirtKey:
-    return Number(tevent->virtKeyVal());
+    return jsNumber(tevent->virtKeyVal());
   // these modifier attributes actually belong into a KeyboardEvent interface,
   // but we want them on "keypress" as well.
   case CtrlKey:
-    return Boolean(tevent->ctrlKey());
+    return jsBoolean(tevent->ctrlKey());
   case ShiftKey:
-    return Boolean(tevent->shiftKey());
+    return jsBoolean(tevent->shiftKey());
   case AltKey:
-    return Boolean(tevent->altKey());
+    return jsBoolean(tevent->altKey());
   case MetaKey:
-    return Boolean(tevent->metaKey());
+    return jsBoolean(tevent->metaKey());
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMKeyEventBase::getValueProperty : " << token;
-    return KJS::Undefined();
+    return jsUndefined();
   }
 }
 
@@ -777,10 +777,10 @@ ValueImp *DOMTextEvent::getValueProperty(ExecState *, int token) const
   DOM::TextEventImpl& tevent = *impl();
   switch (token) {
   case Data:
-    return String(tevent.data());
+    return jsString(tevent.data());
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token;
-    return KJS::Undefined();
+    return jsUndefined();
   }
 }
 
@@ -796,9 +796,9 @@ ValueImp *DOMTextEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *this
                             args[2]->toBoolean(exec), // cancelableArg
                             toAbstractView(args[3]), // viewArg
                             args[4]->toString(exec).domString()); // dataArg
-      return Undefined();
+      return jsUndefined();
   }
-  return Undefined();
+  return jsUndefined();
 }
 // -------------------------------------------------------------------------
 const ClassInfo DOMKeyboardEvent::info = { "KeyboardEvent", &DOMKeyEventBase::info, &DOMKeyboardEventTable, 0 };
@@ -837,12 +837,12 @@ ValueImp* DOMKeyboardEvent::getValueProperty(ExecState *, int token) const
   DOM::KeyboardEventImpl* tevent = impl();
   switch (token) {
   case KeyIdentifier:
-    return String(tevent->keyIdentifier());
+    return jsString(tevent->keyIdentifier());
   case KeyLocation:
-    return Number(tevent->keyLocation());
+    return jsNumber(tevent->keyLocation());
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMKeyboardEvent::getValueProperty : " << token;
-    return KJS::Undefined();
+    return jsUndefined();
   }
 }
 
@@ -861,9 +861,9 @@ ValueImp* DOMKeyboardEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp* 
                             args[6]->toString(exec).domString()); //modifiersList
       break;
     case DOMKeyboardEvent::GetModifierState:
-      return Boolean(keyEvent->getModifierState(args[0]->toString(exec).domString()));
+      return jsBoolean(keyEvent->getModifierState(args[0]->toString(exec).domString()));
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 // -------------------------------------------------------------------------
@@ -892,7 +892,7 @@ bool KeyboardEventConstructor::getOwnPropertySlot(ExecState *exec, const Identif
 ValueImp* KeyboardEventConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
-  return Number(token);
+  return jsNumber(token);
 }
 
 ValueImp* KJS::getKeyboardEventConstructor(ExecState *exec)
@@ -923,7 +923,7 @@ bool MutationEventConstructor::getOwnPropertySlot(ExecState *exec, const Identif
 ValueImp *MutationEventConstructor::getValueProperty(ExecState *, int token) const
 {
   // We use the token as the value to return directly
-  return Number(token);
+  return jsNumber(token);
 }
 
 ValueImp *KJS::getMutationEventConstructor(ExecState *exec)
@@ -971,13 +971,13 @@ ValueImp *DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
     return getDOMNode(exec,relatedNode.handle());
   }
   case PrevValue:
-    return String(event.prevValue());
+    return jsString(event.prevValue());
   case NewValue:
-    return String(event.newValue());
+    return jsString(event.newValue());
   case AttrName:
-    return String(event.attrName());
+    return jsString(event.attrName());
   case AttrChange:
-    return Number((unsigned int)event.attrChange());
+    return jsNumber((unsigned int)event.attrChange());
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMMutationEvent::getValueProperty : " << token;
     return 0;
@@ -998,7 +998,7 @@ ValueImp *DOMMutationEventProtoFunc::callAsFunction(ExecState *exec, ObjectImp *
                                       args[5]->toString(exec).domString(), // newValueArg
                                       args[6]->toString(exec).domString(), // attrNameArg
                                       args[7]->toInteger(exec)); // attrChangeArg
-      return Undefined();
+      return jsUndefined();
   }
-  return Undefined();
+  return jsUndefined();
 }

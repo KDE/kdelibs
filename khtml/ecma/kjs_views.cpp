@@ -73,12 +73,12 @@ ValueImp *DOMAbstractViewProtoFunc::callAsFunction(ExecState *exec, ObjectImp *t
     case DOMAbstractView::GetComputedStyle: {
         DOM::ElementImpl *arg0 = toElement(args[0]);
         if (!arg0)
-          return Undefined(); // throw exception?
+          return jsUndefined(); // throw exception?
         else
           return getDOMCSSStyleDeclaration(exec, abstractView.getComputedStyle(arg0, args[1]->toString(exec).domString().implementation()));
       }
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 ValueImp *KJS::getDOMAbstractView(ExecState *exec, DOM::AbstractViewImpl* av)

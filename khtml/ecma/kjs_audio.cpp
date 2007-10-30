@@ -112,13 +112,13 @@ ValueImp *Audio::getValueProperty(ExecState * /*exec*/, int token) const
         if (m_onErrorListener && m_onErrorListener->listenerObj()) {
             return m_onErrorListener->listenerObj();
         } else {
-            return Null();
+            return jsNull();
         }
       case Onload:
         if (m_onLoadListener && m_onLoadListener->listenerObj()) {
             return m_onLoadListener->listenerObj();
         } else {
-            return Null();
+            return jsNull();
         }
       default:
         kWarning() << "Audio::getValueProperty unhandled token " << token;
@@ -225,7 +225,7 @@ ValueImp *AudioProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, co
       default:
           break;      
     }
-    return Undefined();
+    return jsUndefined();
 }
 
 using namespace Phonon;

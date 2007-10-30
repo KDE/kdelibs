@@ -228,9 +228,9 @@ DOM::NodeImpl* toNode(ValueImp *val)
 ValueImp* getStringOrNull(DOM::DOMString s)
 {
   if (s.isNull())
-    return Null();
+    return jsNull();
   else
-    return String(s);
+    return jsString(s);
 }
 
 DOM::DOMString valueToStringWithNullCheck(ExecState* exec, JSValue* val)
@@ -282,7 +282,7 @@ void setDOMException(ExecState *exec, int DOMExceptionCode)
   snprintf(buffer, 99, "%s Exception %d", type, code);
 
   ObjectImp *errorObject = throwError(exec, GeneralError, buffer);
-  errorObject->put(exec, "code", Number(code));
+  errorObject->put(exec, "code", jsNumber(code));
 }
 
 
@@ -319,8 +319,8 @@ ValueImp *getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & 
       bool ok;
       int i = value.toInt(&ok);
       if (ok)
-        return Boolean(i);
-      return Boolean(!strcasecmp(value.toLatin1(), "true"));
+        return jsBoolean(i);
+      return jsBoolean(!strcasecmp(value.toLatin1(), "true"));
     }
     case KParts::LiveConnectExtension::TypeObject:
     case KParts::LiveConnectExtension::TypeFunction:
@@ -329,15 +329,15 @@ ValueImp *getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & 
       bool ok;
       int i = value.toInt(&ok);
       if (ok)
-        return Number(i);
+        return jsNumber(i);
       else
-        return Number(value.toDouble(&ok));
+        return jsNumber(value.toDouble(&ok));
     }
     case KParts::LiveConnectExtension::TypeString:
-      return String(value);
+      return jsString(value);
     case KParts::LiveConnectExtension::TypeVoid:
     default:
-      return Undefined();
+      return jsUndefined();
   }
 }
 
@@ -396,7 +396,7 @@ ValueImp* EmbedLiveConnect::callAsFunction(ExecState *exec, ObjectImp*, const Li
     if (m_liveconnect->call(objid, name.qstring(), qargs, rtype, robjid, rval))
       return getLiveConnectValue(m_liveconnect, name.qstring(), rtype, rval, robjid);
   }
-  return Undefined();
+  return jsUndefined();
 }
 
 KDE_NO_EXPORT
@@ -406,7 +406,7 @@ bool EmbedLiveConnect::toBoolean(ExecState *) const {
 
 KDE_NO_EXPORT
 ValueImp *EmbedLiveConnect::toPrimitive(ExecState *exec, JSType) const {
-  return String(toString(exec));
+  return jsString(toString(exec));
 }
 
 KDE_NO_EXPORT

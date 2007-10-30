@@ -42,7 +42,7 @@ namespace KJS {
   {
       DOMObject *ret = 0;
       if (!g)
-          return Null();
+          return jsNull();
 
       ScriptInterpreter* interp = static_cast<ScriptInterpreter *>(exec->dynamicInterpreter());
       if ((ret = interp->getDOMObject(g)))

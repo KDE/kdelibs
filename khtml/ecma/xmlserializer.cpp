@@ -71,17 +71,17 @@ ValueImp *XMLSerializerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thi
   case XMLSerializer::SerializeToString:
     {
       if (args.size() != 1) {
-	return Undefined();
+	return jsUndefined();
       }
 
       if (!args[0]->toObject(exec)->inherits(&DOMNode::info)) {
-	return Undefined();
+	return jsUndefined();
       }
 
       DOM::NodeImpl* node = static_cast<KJS::DOMNode *>(args[0]->toObject(exec))->impl();
 
       if (!node) {
-	return Undefined();
+	return jsUndefined();
       }
 
       QString body;
@@ -98,7 +98,7 @@ ValueImp *XMLSerializerProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thi
     }
   }
 
-  return Undefined();
+  return jsUndefined();
 }
 
 } // end namespace
