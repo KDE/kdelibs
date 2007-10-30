@@ -627,13 +627,9 @@ void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
     if( flags &  KConfigBase::Persistent )
         setDirty(true);
 
-    KEntryMap::EntryOptions options;
-    if (flags& KConfigBase::Global || bForceGlobal)
+    KEntryMap::EntryOptions options = convertToOptions(flags);
+    if (bForceGlobal)
         options |= KEntryMap::EntryGlobal;
-    if (flags& KConfigBase::Localized)
-        options |= KEntryMap::EntryLocalized;
-    if (flags& KConfigBase::Persistent)
-        options |= KEntryMap::EntryDirty;
     if (expand)
         options |= KEntryMap::EntryExpansion;
 
