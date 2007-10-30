@@ -202,10 +202,8 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
             if (!locale.isEmpty()) {
                 if (locale != currentLocale) {
                     // backward compatibility. C == en_US
-                    if (locale.at(0) != 'C' || currentLocale != "en_US") {
-                        aKey += '[' + locale + ']';
-                        locale = QByteArray();
-                    }
+                    if (locale.at(0) != 'C' || currentLocale != "en_US")
+                        goto next_line;
                 }
             }
 
@@ -270,7 +268,7 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
 
         file.write(stringToPrintable(key.mKey)); // Key
 
-        if (currentEntry.bNLS) {
+        if (currentEntry.bNLS && locale != "C") { // locale 'C' == untranslated
             file.putChar('[');
             file.write(locale); // Locale tag
             file.putChar(']');

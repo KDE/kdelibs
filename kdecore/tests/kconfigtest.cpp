@@ -90,7 +90,6 @@ void KConfigTest::initTestCase()
   cg.writeEntry( ESCAPEKEY, ESCAPEENTRY );
   cg.writeEntry( "emptyEntry", "");
   cg.writeEntry( "stringEntry1", STRINGENTRY1 );
-  cg.writeEntry( "stringEntry1[fr]", TRANSLATEDSTRINGENTRY1 );
   cg.writeEntry( "stringEntry2", STRINGENTRY2 );
   cg.writeEntry( "stringEntry3", STRINGENTRY3 );
   cg.writeEntry( "stringEntry4", STRINGENTRY4 );
@@ -258,6 +257,28 @@ void KConfigTest::testSimple()
   QCOMPARE( sc3.readEntry( "doubleEntry1", 0.0 ), DOUBLEENTRY );
 }
 
+void KConfigTest::testLocale()
+{
+    KConfig config("kconfigtest.locales", KConfig::SimpleConfig);
+    const QString Translated(TRANSLATEDSTRINGENTRY1);
+    const QString Untranslated(STRINGENTRY1);
+
+    KConfigGroup group = config.group("Hello");
+    group.writeEntry("stringEntry1", Untranslated);
+    config.setLocale("fr");
+    group.writeEntry("stringEntry1", Translated, KConfig::Localized|KConfig::Persistent);
+    config.sync();
+
+    QCOMPARE(group.readEntry("stringEntry1", QString()), Translated);
+    QCOMPARE(group.readEntryUntranslated("stringEntry1"), Untranslated);
+
+    config.setLocale("C"); // strings written in the "C" locale are written as nonlocalized
+    group.writeEntry("stringEntry1", Untranslated, KConfig::Localized|KConfig::Persistent);
+    config.sync();
+
+    QCOMPARE(group.readEntry("stringEntry1", QString()), Untranslated);
+}
+
 void KConfigTest::testLists()
 {
   KConfig sc2( "kconfigtest" );
@@ -388,8 +409,6 @@ void KConfigTest::testEntryMap()
     QMap<QString, QString> entryMap = cg.entryMap();
     qDebug() << entryMap.keys();
     QCOMPARE(entryMap.value("stringEntry1"), QString(STRINGENTRY1));
-    // #### Why is this translated entry here? This just bloats the entryMap.
-    QCOMPARE(entryMap.value("stringEntry1[fr]"), QString(TRANSLATEDSTRINGENTRY1));
     QCOMPARE(entryMap.value("stringEntry2"), QString(STRINGENTRY2));
     QCOMPARE(entryMap.value("stringEntry3"), QString(STRINGENTRY3));
     QCOMPARE(entryMap.value("stringEntry4"), QString(STRINGENTRY4));

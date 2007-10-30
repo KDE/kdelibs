@@ -37,6 +37,7 @@ private Q_SLOTS:
     void cleanupTestCase();
     void testSimple();
     void testLists();
+    void testLocale();
     void testPath();
     void testPersistenceOfExpandFlagForPath();
     void testComplex();
