@@ -28,6 +28,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 #include <kcomponentdata.h>
+#include <kglobal.h>
 
 class KPluginFactoryPrivate;
 namespace KParts { class Part; }
@@ -211,7 +212,7 @@ KComponentData name::componentData() \
  * \endcode
  *
  * If you want to load a library use KPluginLoader.
- * The application that wants to instantiate plugin classes later on can do the following:
+ * The application that wants to instantiate plugin classes can do the following:
  * \code
  * KPluginFactory *factory = KPluginLoader("libraryname").factory();
  * if (factory) {
@@ -415,7 +416,7 @@ protected:
      */
     virtual KDE_DEPRECATED KParts::Part *createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args);
 
-    
+
     /**
      * This method sets the component data of the plugin. You can access the component data object
      * later with componentData().

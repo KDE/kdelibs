@@ -83,7 +83,15 @@ KLibrary::~KLibrary()
 {
 }
 
-typedef QHash<QString, QPointer<KPluginFactory> > FactoryHash;
+class FactoryHash : public QHash<QString, QPointer<KPluginFactory> >
+{
+public:
+    ~FactoryHash() {
+        //qDebug() << "deleting" << count() << "kde3 factories";
+        qDeleteAll(*this);
+    }
+};
+
 K_GLOBAL_STATIC(FactoryHash, s_createdKde3Factories)
 
 static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
@@ -96,11 +104,9 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
     }
 
     const QString hashKey = lib->fileName() + QLatin1Char(':') + QString::fromAscii(symname);
-    if (s_createdKde3Factories->contains(hashKey)) {
-        KPluginFactory *factory = s_createdKde3Factories->value(hashKey);
-        if (factory) {
-            return factory;
-        }
+    KPluginFactory *factory = s_createdKde3Factories->value(hashKey);
+    if (factory) {
+        return factory;
     }
 
     typedef KPluginFactory* (*t_func)();
@@ -112,7 +118,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
         return 0;
     }
 
-    KPluginFactory* factory = func();
+    factory = func();
 
     if( !factory )
     {

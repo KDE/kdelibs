@@ -61,7 +61,7 @@ Q_EXTERN_C KDE_EXPORT const quint32 kde_plugin_version = version;
 
 /**
  * \relates KPluginLoader
- * This macro exports the main object of the plugin. Most times, this will be a KPluginFactory 
+ * This macro exports the main object of the plugin. Most times, this will be a KPluginFactory
  * or derived class, but any QObject derived class can be used.
  * Take a look at the documentation of Q_EXPORT_PLUGIN2 for some details.
  */
@@ -99,8 +99,22 @@ class KPluginLoaderPrivate;
  * the factory of the plugin, otherwise you will create a leak.
  * The destructor of KPluginLoader doesn't call unload.
  *
+ * Sample code:
+ * \code
+ *  KPluginLoader loader( ...library or kservice... );
+ *  KPluginFactory* factory = loader.factory();
+ *  if (!factory) {
+ *      kWarning() << "Error loading plugin:" << loader.errorString();
+ *  } else {
+ *      MyInterface* obj = factory->create<MyInterface>();
+ *      if (!obj) {
+ *          kWarning() << "Error creating object";
+ *      }
+ *  }
+ * \endcode
+ *
  * \see KPluginFactory
- * 
+ *
  * \author Bernhard Loos <nhuh.put@web.de>
  */
 class KDECORE_EXPORT KPluginLoader : public QPluginLoader
@@ -117,7 +131,7 @@ public:
      * \param parent A parent object.
      */
     explicit KPluginLoader(const QString &plugin, const KComponentData &componentdata = KGlobal::mainComponent(), QObject *parent = 0);
- 
+
     /**
      * Used this constructor to load a plugin from a service. The service must contain a library.
      *
@@ -135,7 +149,7 @@ public:
     /**
      * Used to obtain the factory object of the plugin. You have to give a class which inherits KPluginFactory
      * to K_EXPORT_PLUGIN to use this method.
-     * 
+     *
      * \returns The factory of the plugin or 0 on error.
      */
     KPluginFactory *factory();
@@ -151,7 +165,7 @@ public:
      * \returns The version given to K_EXPORT_PLUGIN_VERSION or (quint32) -1 if not set.
      */
     quint32 pluginVersion() const;
- 
+
     /**
      * Queries the last error.
      * \returns The description of the last error.
@@ -161,7 +175,7 @@ public:
     bool isLoaded() const;
 
 protected:
-    /** 
+    /**
      * Performs the loading of the plugin.
      */
     bool load();

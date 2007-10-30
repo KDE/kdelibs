@@ -170,7 +170,7 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
     }
 
     QList<KPluginFactoryPrivate::Plugin> canidates(d->createInstanceHash.values(keyword));
-    // for !keyword.isEmpty() canidates.count() is 0 or 1
+    // for !keyword.isEmpty() candidates.count() is 0 or 1
 
     foreach (const KPluginFactoryPrivate::Plugin &plugin, canidates) {
         for (const QMetaObject *current = plugin.first; current; current = current->superClass()) {
@@ -211,7 +211,7 @@ QStringList KPluginFactory::variantListToStringList(const QVariantList &list)
     QVariantList copy(list);
     QStringList stringlist;
 
-    while (!copy.isEmpty()) 
+    while (!copy.isEmpty())
         stringlist << copy.takeFirst().toString();
 
     return stringlist;
@@ -222,7 +222,7 @@ QVariantList KPluginFactory::stringListToVariantList(const QStringList &list)
     QStringList copy(list);
     QVariantList variantlist;
 
-    while (!copy.isEmpty()) 
+    while (!copy.isEmpty())
         variantlist << QVariant(copy.takeFirst());
 
     return variantlist;

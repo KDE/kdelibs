@@ -28,7 +28,9 @@ class KLibraryPrivate;
 
 class KPluginFactory;
 
-
+/**
+ * @deprecated use KPluginLoader
+ */
 class KDECORE_EXPORT KLibrary : public QLibrary
 {
     Q_OBJECT
@@ -39,7 +41,7 @@ public:
     explicit KLibrary(QObject *parent = 0);
     explicit KLibrary(const QString &name, const KComponentData &cData = KGlobal::mainComponent(), QObject *parent = 0);
     KLibrary(const QString &name, int verNum, const KComponentData &cData = KGlobal::mainComponent(), QObject *parent = 0);
-    
+
     virtual ~KLibrary();
 
     /**
@@ -48,6 +50,7 @@ public:
      * factory object. It corresponds to the first parameter to
      * K_EXPORT_COMPONENT_FACTORY.
      * @return The factory of the library if there is any, otherwise 0
+     * @deprecated use KPluginLoader::factory
      */
     KDE_DEPRECATED KPluginFactory* factory( const char* factoryname = 0 );
 
@@ -71,7 +74,7 @@ public:
 
     bool unload() { return false; } //this is only temporary. i will remove it as soon as I have removed all dangerous users of it
 private:
-    KLibraryPrivate *d_ptr;  
+    KLibraryPrivate *d_ptr;
 };
 
 #endif
