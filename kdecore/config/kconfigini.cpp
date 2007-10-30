@@ -276,6 +276,17 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
     }
 }
 
+void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file, const KEntryMap& map)
+{
+    bool firstEntry = true;
+
+    // write default group
+    writeEntries(locale, file, map, true, firstEntry);
+
+    // write all other groups
+    writeEntries(locale, file, map, false, firstEntry);
+}
+
 bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMap,
                                     const KEntryMap& toMerge, WriteOptions options, const KComponentData &data)
 {
@@ -347,17 +358,6 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     }
 
     return file.finalize();
-}
-
-void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file, const KEntryMap& map)
-{
-    bool firstEntry = true;
-
-    // write default group
-    writeEntries(locale, file, map, true, firstEntry);
-
-    // write all other groups
-    writeEntries(locale, file, map, false, firstEntry);
 }
 
 bool KConfigIniBackend::isWritable() const
