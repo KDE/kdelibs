@@ -916,10 +916,7 @@ KCmdLineArgsStatic::parseAllArgs()
            if (s->about->bugAddress().isEmpty() || s->about->bugAddress() == "submit@bugs.kde.org" )
              s->printQ( i18n( "Please use http://bugs.kde.org to report bugs.\n" ) );
            else {
-             if( s->about->authors().count() == 1 && s->about->authors().first().emailAddress() == s->about->bugAddress() )
-               s->printQ( i18n( "Please report bugs to %1.\n" ,  s->about->authors().first().emailAddress() ) );
-             else
-               s->printQ( i18n( "Please report bugs to %1.\n" , s->about->bugAddress()) );
+             s->printQ( i18n( "Please report bugs to %1.\n" , s->about->bugAddress()) );
            }
          }
          else
