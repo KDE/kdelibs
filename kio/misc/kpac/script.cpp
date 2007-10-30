@@ -112,7 +112,7 @@ namespace
 
         JSValue *checkRange( double value, double min, double max )
         {
-            return Boolean(( min <= max && value >= min && value <= max ) || ( min > max && ( value <= min || value >= max ) ));
+            return jsBoolean(( min <= max && value >= min && value <= max ) || ( min > max && ( value <= min || value >= max ) ));
         }
     };
 
@@ -122,8 +122,8 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() != 1 ) return Undefined();
-            return Boolean( args[ 0 ]->toString( exec ).qstring().indexOf( "." ) == -1 );
+            if ( args.size() != 1 ) return jsUndefined();
+            return jsBoolean( args[ 0 ]->toString( exec ).qstring().indexOf( "." ) == -1 );
         }
     };
 
@@ -133,10 +133,10 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() != 2 ) return Undefined();
+            if ( args.size() != 2 ) return jsUndefined();
             QString host = args[ 0 ]->toString( exec ).qstring().toLower();
             QString domain = args[ 1 ]->toString( exec ).qstring().toLower();
-            return Boolean( host.endsWith( domain ) );
+            return jsBoolean( host.endsWith( domain ) );
         }
     };
 
@@ -146,11 +146,11 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() != 2 ) return Undefined();
+            if ( args.size() != 2 ) return jsUndefined();
             UString host = args[ 0 ]->toString( exec ).qstring().toLower();
-            if ( host.find( "." ) == -1 ) return Boolean( true );
+            if ( host.find( "." ) == -1 ) return jsBoolean( true );
             UString fqdn = args[ 1 ]->toString( exec ).qstring().toLower();
-            return Boolean( host == fqdn );
+            return jsBoolean( host == fqdn );
         }
     };
 
@@ -160,10 +160,10 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() != 1 ) return Undefined();
+            if ( args.size() != 1 ) return jsUndefined();
             try { Address::resolve( args[ 0 ]->toString( exec ) ); }
-            catch ( const Address::Error& ) { return Boolean( false ); }
-            return Boolean( true );
+            catch ( const Address::Error& ) { return jsBoolean( false ); }
+            return jsBoolean( true );
         }
     };
 
@@ -174,19 +174,19 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() != 3 ) return Undefined();
+            if ( args.size() != 3 ) return jsUndefined();
             try
             {
                 QHostAddress host = Address::resolve( args[ 0 ]->toString( exec ) );
                 QHostAddress subnet = Address::parse( args[ 1 ]->toString( exec ) );
                 QHostAddress mask = Address::parse( args[ 2 ]->toString( exec ) );
 
-                return Boolean( ( host.toIPv4Address() & mask.toIPv4Address() ) ==
+                return jsBoolean( ( host.toIPv4Address() & mask.toIPv4Address() ) ==
                                 ( subnet.toIPv4Address() & mask.toIPv4Address() ) );
             }
             catch ( const Address::Error& )
             {
-                return Undefined();
+                return jsUndefined();
             }
         }
     };
@@ -197,9 +197,9 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() != 1 ) return Undefined();
-            try { return String(Address::resolve( args[ 0 ]->toString( exec ) )); }
-            catch ( const Address::Error& ) { return Undefined(); }
+            if ( args.size() != 1 ) return jsUndefined();
+            try { return jsString(Address::resolve( args[ 0 ]->toString( exec ) )); }
+            catch ( const Address::Error& ) { return jsUndefined(); }
         }
     };
 
@@ -209,12 +209,12 @@ namespace
     {
         virtual JSValue *call( ExecState*, JSObject*, const List& args )
         {
-            if ( args.size() ) return Undefined();
+            if ( args.size() ) return jsUndefined();
             char hostname[ 256 ];
             gethostname( hostname, 255 );
             hostname[ 255 ] = 0;
-            try { return String(Address::resolve( hostname )); }
-            catch ( const Address::Error& ) { return Undefined(); }
+            try { return jsString(Address::resolve( hostname )); }
+            catch ( const Address::Error& ) { return jsUndefined(); }
         }
     };
 
@@ -224,9 +224,9 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() != 1 ) return Undefined();
+            if ( args.size() != 1 ) return jsUndefined();
             UString host = args[ 0 ]->toString( exec );
-            if ( host.isNull() ) return Number( 0 );
+            if ( host.isNull() ) return jsNumber( 0 );
 #ifdef __SUNPRO_CC
             /* 
              * Under Solaris, the default STL is the old broken interface 
@@ -234,9 +234,9 @@ namespace
              */
             int c = 0;
             std::count( host.data(), host.data() + host.size(), '.', c );
-            return Number(c);
+            return jsNumber(c);
 #else
-            return Number( std::count(
+            return jsNumber( std::count(
                 host.data(), host.data() + host.size(), '.' ) );
 #endif
         }
@@ -248,9 +248,9 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() != 2 ) return Undefined();
+            if ( args.size() != 2 ) return jsUndefined();
             QRegExp pattern( args[ 1 ]->toString( exec ).qstring(), Qt::CaseSensitive, QRegExp::Wildcard );
-            return Boolean( pattern.exactMatch(args[ 0 ]->toString( exec ).qstring()) );
+            return jsBoolean( pattern.exactMatch(args[ 0 ]->toString( exec ).qstring()) );
         }
     };
 
@@ -262,11 +262,11 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() < 1 || args.size() > 3 ) return Undefined();
+            if ( args.size() < 1 || args.size() > 3 ) return jsUndefined();
             static const char* const days[] =
                 { "sun", "mon", "tue", "wed", "thu", "fri", "sat", 0 };
             int d1 = findString( args[ 0 ]->toString( exec ), days );
-            if ( d1 == -1 ) return Undefined();
+            if ( d1 == -1 ) return jsUndefined();
 
             int d2 = findString( args[ 1 ]->toString( exec ), days );
             if ( d2 == -1 ) d2 = d1;
@@ -289,7 +289,7 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() < 1 || args.size() > 7 ) return Undefined();
+            if ( args.size() < 1 || args.size() > 7 ) return jsUndefined();
             static const char* const months[] =
                 { "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "nov", "dec", 0 };
 
@@ -354,7 +354,7 @@ namespace
             else if ( values.size() == 1 )
                 return checkRange( now->tm_mon, values[ 0 ], values[ 0 ] );
 
-            else return Undefined();
+            else return jsUndefined();
         }
     };
 
@@ -368,7 +368,7 @@ namespace
     {
         virtual JSValue *call( ExecState* exec, JSObject*, const List& args )
         {
-            if ( args.size() < 1 || args.size() > 7 ) return Undefined();
+            if ( args.size() < 1 || args.size() > 7 ) return jsUndefined();
 
             std::vector< double > values;
             for ( int i = 0; i < args.size(); ++i )
@@ -398,7 +398,7 @@ namespace
             else if ( values.size() == 1 )
                 return checkRange( now->tm_hour, values[ 0 ], values[ 0 ] );
 
-            else return Undefined();
+            else return jsUndefined();
         }
     };
 
@@ -449,8 +449,8 @@ namespace KPAC
     
         JSObject *thisObj = 0;
         List args;
-        args.append(String(url.url()));
-        args.append(String(url.host()));
+        args.append(jsString(url.url()));
+        args.append(jsString(url.host()));
         JSValue *retval = findObj->call( exec, thisObj, args );
         
         if ( exec->hadException() ) {
