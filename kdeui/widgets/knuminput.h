@@ -259,9 +259,16 @@ public:
      * @param min  minimum value
      * @param max  maximum value
      * @param step step size for the QSlider
-     * @param slider whether the slider is created or not
      */
-    void setRange(int min, int max, int step=1, bool slider=true);
+    void setRange(int min, int max, int step=1);
+    KDE_DEPRECATED void setRange(int min, int max, int step, bool slider);
+
+    /**
+      * @param enabled Show the slider
+      * @default enabled
+      */
+    void setSliderEnabled(bool enabled=true);
+
     /**
      * Sets the minimum value.
      */
@@ -606,6 +613,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void sliderMoved(int);
+    void spinBoxChanged(double);
     void slotEmitRelativeValueChanged(double);
 
 protected:

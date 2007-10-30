@@ -68,15 +68,17 @@ TopLevel::TopLevel(QWidget *parent)
 
     i5 = new KIntNumInput(i4, 10, b1,10);
     i5->setLabel("Width (keeps aspect ratio):");
-    i5->setRange(0, 200, 1, false);
+    i5->setRange(0, 200);
+    i5->setSliderEnabled(false);
     i5->setReferencePoint( 5 );
     b1->layout()->addWidget(i5);
 
 
     i6 = new KIntNumInput(i5, 20, b1, 10);
     i6->setLabel("Height (should be 2xWidth):");
-    i6->setRange(0, 200, 1, false);
+    i6->setRange(0, 200);
     i6->setReferencePoint( 10 );
+    i6->setSliderEnabled(false);
     b1->layout()->addWidget(i6);
 
     connect( i5, SIGNAL(relativeValueChanged(double)),

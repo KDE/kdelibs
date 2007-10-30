@@ -375,37 +375,25 @@ void KIntNumInput::slotEmitRelativeValueChanged( int value ) {
     emit relativeValueChanged( double( value ) / double( d->referencePoint ) );
 }
 
-void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
+void KIntNumInput::setSliderEnabled(bool slider)
 {
     K_USING_KNUMINPUT_P(priv);
-  
-    upper = qMax(upper, lower);
-    lower = qMin(upper, lower);
-    d->m_spin->setMinimum(lower);
-    d->m_spin->setMaximum(upper);
-    d->m_spin->setSingleStep(step);
-
-    step = d->m_spin->singleStep(); // maybe QRangeControl didn't like out lineStep?
-
     if(slider) {
-	if (priv->m_slider)
-	    priv->m_slider->setRange(lower, upper);
-	else {
-	    priv->m_slider = new QSlider(Qt::Horizontal, this);
-	    priv->m_slider->setMinimum(lower);
-	    priv->m_slider->setMaximum(upper);
-	    priv->m_slider->setPageStep(step);
-	    priv->m_slider->setValue(d->m_spin->value());
-	    priv->m_slider->setTickPosition(QSlider::TicksBelow);
-	    connect(priv->m_slider, SIGNAL(valueChanged(int)),
-		    d->m_spin, SLOT(setValue(int)));
-	}
+        if (!priv->m_slider) {
+            priv->m_slider = new QSlider(Qt::Horizontal, this);
+            connect(priv->m_slider, SIGNAL(valueChanged(int)),
+                    d->m_spin, SLOT(setValue(int)));
+            priv->m_slider->setTickPosition(QSlider::TicksBelow);
+        }
 
-	// calculate (upper-lower)/10 without overflowing int's:
-        int major = calcDiffByTen( upper, lower );
-	if ( major==0 ) major = step; // #### workaround Qt bug in 2.1-beta4
+        priv->m_slider->setRange(d->m_spin->minimum(), d->m_spin->maximum());
+        priv->m_slider->setPageStep(d->m_spin->singleStep());
+        priv->m_slider->setValue(d->m_spin->value());
 
-        priv->m_slider->setSingleStep(step);
+        // calculate (upper-lower)/10 without overflowing int's:
+        int major = calcDiffByTen( d->m_spin->maximum(), d->m_spin->minimum() );
+
+        priv->m_slider->setSingleStep(d->m_spin->singleStep());
         priv->m_slider->setPageStep(major);
         priv->m_slider->setTickInterval(major);
     }
@@ -413,6 +401,20 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
         delete priv->m_slider;
         priv->m_slider = 0;
     }
+}
+
+void KIntNumInput::setRange(int lower, int upper, int step)
+{
+    K_USING_KNUMINPUT_P(priv);
+
+    upper = qMax(upper, lower);
+    lower = qMin(upper, lower);
+    d->m_spin->setMinimum(lower);
+    d->m_spin->setMaximum(upper);
+    d->m_spin->setSingleStep(step);
+
+    step = d->m_spin->singleStep(); // maybe QRangeControl didn't like out lineStep?
+    setSliderEnabled(true);
 
     // check that reference point is still inside valid range:
     setReferencePoint( referencePoint() );
@@ -420,10 +422,16 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
     layout(true);
 }
 
+void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
+{
+    setRange(lower, upper, step);
+    setSliderEnabled(slider);
+}
+
 void KIntNumInput::setMinimum(int min)
 {
     K_USING_KNUMINPUT_P(priv);
-    setRange(min, d->m_spin->maximum(), d->m_spin->singleStep(), priv->m_slider);
+    setRange(min, d->m_spin->maximum(), d->m_spin->singleStep());
 }
 
 int KIntNumInput::minimum() const
@@ -434,7 +442,7 @@ int KIntNumInput::minimum() const
 void KIntNumInput::setMaximum(int max)
 {
     K_USING_KNUMINPUT_P(priv);
-    setRange(d->m_spin->minimum(), max, d->m_spin->singleStep(), priv->m_slider);
+    setRange(d->m_spin->minimum(), max, d->m_spin->singleStep());
 }
 
 int KIntNumInput::maximum() const
@@ -689,6 +697,24 @@ void KDoubleNumInput::sliderMoved(int val)
     d->spin->setValue( mapSliderToSpin( val ) );
 }
 
+void KDoubleNumInput::spinBoxChanged(double val)
+{
+    K_USING_KNUMINPUT_P(priv);
+
+    double spinmin = d->spin->minimum();
+    double spinmax = d->spin->maximum();
+    double slidemin = priv->m_slider->minimum(); // cast int to double to avoid
+    double slidemax = priv->m_slider->maximum(); // overflow in rel denominator
+
+    double rel = ( val - spinmin) / (spinmax - spinmin);
+
+    if (priv->m_slider) {
+        priv->m_slider->blockSignals(true);
+        priv->m_slider->setValue(int(slidemin + rel * (slidemax - slidemin)));
+        priv->m_slider->blockSignals(false);
+    }
+}
+
 void KDoubleNumInput::slotEmitRelativeValueChanged( double value )
 {
     if ( !d->referencePoint ) return;
@@ -827,8 +853,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
             connect(priv->m_slider, SIGNAL(valueChanged(int)),
                     SLOT(sliderMoved(int)) );
         }
-	connect(spin, SIGNAL(valueChanged(int)),
-			priv->m_slider, SLOT(setValue(int)) );
+	connect(spin, SIGNAL(valueChanged(double)), SLOT(spinBoxChanged(double)) );
 	// calculate ( slmax - slmin ) / 10 without overflowing ints:
 	int major = calcDiffByTen( slmax, slmin );
 	if ( !major ) major = slstep; // ### needed?
@@ -866,7 +891,7 @@ double KDoubleNumInput::maximum() const
     return d->spin->maximum();
 }
 
-double  KDoubleNumInput::value() const
+double KDoubleNumInput::value() const
 {
     return d->spin->value();
 }
