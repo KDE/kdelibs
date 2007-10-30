@@ -209,6 +209,8 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
 
             if (options&ParseGlobal)
                 entryOptions |= KEntryMap::EntryGlobal;
+            if (bDefault)
+                entryOptions |= KEntryMap::EntryDefault;
             if (!locale.isNull())
                 entryOptions |= KEntryMap::EntryLocalized;
             entryMap.setEntry(currentGroup, aKey, printableToString(line, file, lineNo), entryOptions);
