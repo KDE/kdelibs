@@ -346,7 +346,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
         }
         case QVariant::Color:
         case QVariant::Font:
-            kFatal() << "KConfigGroup::readEntry was passed GUI type '"
+            kWarning() << "KConfigGroup::readEntry was passed GUI type '"
                     << aDefault.typeName()
                     << "' but kdeui isn't linked! If it is linked to your program, "
                     "this is a platform bug. Please inform the KDE developers" << endl;
@@ -362,7 +362,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             break;
     }
 
-    kFatal() << "unhandled type " << aDefault.typeName();
+    kWarning() << "unhandled type " << aDefault.typeName();
     return QVariant();
 }
 
@@ -1103,7 +1103,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
 
         case QVariant::Color:
         case QVariant::Font:
-            kFatal() << "KConfigGroup::writeEntry was passed GUI type '"
+            kWarning() << "KConfigGroup::writeEntry was passed GUI type '"
                      << value.typeName()
                      << "' but kdeui isn't linked! If it is linked to your program, this is a platform bug. "
                         "Please inform the KDE developers" << endl;
@@ -1116,7 +1116,7 @@ void KConfigGroup::writeEntry<QVariant> ( const QByteArray &key, const QVariant 
                 data = qvariant_cast<KUrl>(value).url().toUtf8();
                 break;
             }
-            kFatal() << "KConfigGroup::writeEntry - unhandled type" << value.typeName() << "in group" << name();
+            kWarning() << "KConfigGroup::writeEntry - unhandled type" << value.typeName() << "in group" << name();
         }
 
     writeEntry(key, data, flags);
