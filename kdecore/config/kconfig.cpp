@@ -646,7 +646,9 @@ void KConfigPrivate::putData( const QByteArray& group, const QByteArray& key,
 QByteArray KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key,
                                       KEntryMap::SearchFlags flags) const
 {
-    KEntryMapConstIterator it = entryMap.findEntry(group, key, flags);
+    if (bReadDefaults)
+        flags |= KEntryMap::SearchDefaults;
+    const KEntryMapConstIterator it = entryMap.findEntry(group, key, flags);
     if (it == entryMap.constEnd())
         return QByteArray();
     return it->mValue;
@@ -655,6 +657,8 @@ QByteArray KConfigPrivate::lookupData(const QByteArray& group, const QByteArray&
 QString KConfigPrivate::lookupData(const QByteArray& group, const QByteArray& key,
                                    KEntryMap::SearchFlags flags, bool *expand) const
 {
+    if (bReadDefaults)
+        flags |= KEntryMap::SearchDefaults;
     return entryMap.getEntry(group, key, QString(), flags, expand);
 }
 
