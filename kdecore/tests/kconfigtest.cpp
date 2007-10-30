@@ -257,6 +257,44 @@ void KConfigTest::testSimple()
   QCOMPARE( sc3.readEntry( "doubleEntry1", 0.0 ), DOUBLEENTRY );
 }
 
+void KConfigTest::testDefaults()
+{
+    KConfig config("defaulttest", KConfig::NoGlobals);
+#define DEFAULTS "defaulttest.defaults"
+    KConfig defaults(DEFAULTS, KConfig::SimpleConfig);
+
+    const QString Default("Default");
+    const QString NotDefault("Not Default");
+    const QString Value1(STRINGENTRY1);
+    const QString Value2(STRINGENTRY2);
+
+    KConfigGroup group = defaults.group("any group");
+    group.writeEntry("entry1", Default);
+    group.sync();
+
+    group = config.group("any group");
+    group.writeEntry("entry1", Value1);
+    group.writeEntry("entry2", Value2);
+    group.sync();
+
+    config.addConfigSources(QStringList() << KStandardDirs::locateLocal("config", DEFAULTS));
+    config.reparseConfiguration();
+
+    config.setReadDefaults(true);
+    QCOMPARE(group.readEntry("entry1", QString()), Default);
+    QCOMPARE(group.readEntry("entry2", NotDefault), NotDefault); // no default for entry2
+
+    config.setReadDefaults(false);
+    QCOMPARE(group.readEntry("entry1", Default), Value1);
+    QCOMPARE(group.readEntry("entry2", NotDefault), Value2);
+
+    group.revertToDefault("entry1");
+    QCOMPARE(group.readEntry("entry1", QString()), Default);
+    group.revertToDefault("entry2");
+    QCOMPARE(group.readEntry("entry2", QString()), QString());
+#undef DEFAULTS
+}
+
 void KConfigTest::testLocale()
 {
     KConfig config("kconfigtest.locales", KConfig::SimpleConfig);

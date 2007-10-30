@@ -36,6 +36,7 @@ private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void testSimple();
+    void testDefaults();
     void testLists();
     void testLocale();
     void testPath();
