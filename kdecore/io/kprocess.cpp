@@ -23,6 +23,8 @@
 
 #include <kstandarddirs.h>
 
+#include <qfile.h>
+
 #ifdef Q_OS_WIN
 # include <windows.h>
 #else
@@ -252,18 +254,31 @@ void KProcess::setShellCommand(const QString &cmd)
     d->args.clear();
 
 #ifdef Q_OS_UNIX
-    d->prog = QString::fromLatin1(
 // #ifdef NON_FREE // ... as they ship non-POSIX /bin/sh
 # if !defined(__linux__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__DragonFly__) && !defined(__GNU__)
-        !access("/usr/xpg4/bin/sh", X_OK) ? // Solaris POSIX ...
-            "/usr/xpg4/bin/sh" :
-        !access("/bin/ksh", X_OK) ? // ... which links here anyway
-            "/bin/ksh" :
-        !access("/usr/ucb/sh", X_OK) ? // dunno, maybe superfluous?
-            "/usr/ucb/sh" :
+    // If /bin/sh is a symlink, we can be pretty sure that it points to a
+    // POSIX shell - the original bourne shell is about the only non-POSIX
+    // shell still in use and it is always installed natively as /bin/sh.
+    d->prog = QFile::symLinkTarget(QString::fromLatin1("/bin/sh"));
+    if (d->prog.isEmpty()) {
+        // Try some known POSIX shells.
+        d->prog = KStandardDirs::findExe("ksh");
+        if (d->prog.isEmpty()) {
+            d->prog = KStandardDirs::findExe("ash");
+            if (d->prog.isEmpty()) {
+                d->prog = KStandardDirs::findExe("bash");
+                if (d->prog.isEmpty()) {
+                    d->prog = KStandardDirs::findExe("zsh");
+                    if (d->prog.isEmpty())
+                        // We're pretty much screwed, to be honest ...
+                        d->prog = QString::fromLatin1("/bin/sh");
+                }
+            }
+        }
+    }
+# else
+    d->prog = QString::fromLatin1("/bin/sh");
 # endif
-            "/bin/sh"
-    );
 
     d->args << "-c" << cmd;
 #else // Q_OS_UNIX
