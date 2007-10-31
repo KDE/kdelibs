@@ -212,6 +212,31 @@ void EntryView::buildContents()
 
     t += "<qt>";
 
+    // precalc the status icon
+    Entry::Status status = m_entry->status();
+    QString statusIcon;
+    KIconLoader *loader = KIconLoader::global();
+
+    switch (status)
+    {
+        case Entry::Invalid:
+            statusIcon = "<img src='" + loader->iconPath("dialog-error", -KIconLoader::SizeSmall) + "' />";
+            break;
+        case Entry::Downloadable:
+            // find a good icon to represent downloadable data
+            //statusIcon = "<img src='" + loader->iconPath("network-server", -KIconLoader::SizeSmall) + "' />";
+            break;
+        case Entry::Installed:
+            statusIcon = "<img src='" + loader->iconPath("ok", -KIconLoader::SizeSmall) + "' />";
+            break;
+        case Entry::Updateable:
+            statusIcon = "<img src='" + loader->iconPath("xclock", -KIconLoader::SizeSmall) + "' />";
+            break;
+        case Entry::Deleted:
+            statusIcon = "<img src='" + loader->iconPath("user-trash", -KIconLoader::SizeSmall) + "' />";
+            break;
+    }
+
     // precalc the image string
     QString imageString = m_entry->preview().representation();
     if ( !imageString.isEmpty() )
@@ -241,7 +266,7 @@ void EntryView::buildContents()
     // write the HTML code for the current item
     t += QLatin1String("<table class='contentsHeader' cellspacing='2' cellpadding='0'>")
          + "<tr>"
-         +   "<td>" + Qt::escape(titleString) + "</td>"
+         +   "<td>" + statusIcon + Qt::escape(titleString) + "</td>"
          +   "<td align='right'>" + starsString +  "</td>"
          + "</tr>"
          + "<tr>"
@@ -575,7 +600,8 @@ void DownloadDialog::refresh()
 //BEGIN File(s) Transferring
 void DownloadDialog::slotDownloadItem( Entry *entry )
 {
-Q_UNUSED(entry);
+//Q_UNUSED(entry);
+    itemsView->updateItem(entry);
 /*
 XXX update item status
     item->setState( AvailableItem::Installing );

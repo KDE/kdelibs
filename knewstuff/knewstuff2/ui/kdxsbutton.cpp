@@ -120,8 +120,6 @@ KDXSButton::KDXSButton(QWidget *parent)
 	//connect(m_history, SIGNAL(activated(int)), SLOT(slotVersionsActivated(int)));
 	//connect(m_history, SIGNAL(highlighted(int)), SLOT(slotVersionsHighlighted(int)));
 
-	QPixmap pix = SmallIcon("get-hot-new-stuff");
-	setIcon(pix);
 	setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	setPopupMode(QToolButton::MenuButtonPopup);
 	setMenu(m_p);
@@ -145,15 +143,11 @@ void KDXSButton::setEntry(Entry *e)
 	{
 		setText(i18n("Uninstall"));
 		action_install->setVisible(false);
-		QPixmap pix = SmallIcon("get-hot-new-stuff");
-		setIcon(pix);
 	}
 	else if (status == Entry::Updateable)
 	{
 		setText(i18n("Update"));
 		action_uninstall->setVisible(false);
-		QPixmap pix = SmallIcon("clock");
-		setIcon(pix);
 	}
 	else
 	{
