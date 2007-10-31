@@ -111,12 +111,10 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/jshighlighter.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/breakpointsdock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/callstackdock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/localvariabledock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/watchesdock.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/execstatemodel.cpp
 )
 
