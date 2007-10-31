@@ -90,14 +90,16 @@ namespace Solid
         /**
          * Mounts the volume.
          *
-         * @return the job handling the operation
+         * @return false if the operation is not supported, true if the
+         * operation is attempted
          */
         bool setup();
 
         /**
          * Unmounts the volume.
          *
-         * @return the job handling the operation
+         * @return false if the operation is not supported, true if the
+         * operation is attempted
          */
         bool teardown();
 
