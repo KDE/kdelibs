@@ -376,7 +376,7 @@ bool RegTestFunction::implementsCall() const
 
 ValueImp* RegTestFunction::callAsFunction(ExecState *exec, ObjectImp* /*thisObj*/, const List &args)
 {
-    ValueImp* result = Undefined();
+    ValueImp* result = jsUndefined();
     if ( m_regTest->ignore_errors )
         return result;
 
@@ -490,13 +490,13 @@ bool KHTMLPartFunction::implementsCall() const
 
 ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj*/, const List &args)
 {
-    ValueImp* result = Undefined();
+    ValueImp* result = jsUndefined();
 
     switch (id) {
         case OpenPage: {
 	    if (args[0]->type() == NullType || args[0]->type() == NullType) {
 		exec->setException(Error::create(exec, GeneralError,"No filename specified"));
-		return Undefined();
+		return jsUndefined();
 	    }
 
             QString filename = args[0]->toString(exec).qstring();
@@ -513,11 +513,11 @@ ValueImp* KHTMLPartFunction::callAsFunction(ExecState *exec, ObjectImp*/*thisObj
 	case OpenPageAsUrl: {
 	    if (args[0]->type() == NullType || args[0]->type() == UndefinedType) {
 		exec->setException(Error::create(exec, GeneralError,"No filename specified"));
-		return Undefined();
+		return jsUndefined();
 	    }
 	    if (args[1]->type() == NullType || args[1]->type() == UndefinedType) {
 		exec->setException(Error::create(exec, GeneralError,"No url specified"));
-		return Undefined();
+		return jsUndefined();
 	    }
 
             QString filename = args[0]->toString(exec).qstring();
@@ -1453,6 +1453,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
 void RegressionTest::testStaticFile(const QString & filename)
 {
+    qDebug("TESTING:%s", filename.toLatin1().data());
     resizeTopLevelWidget( 800, 598 ); // restore size
 
     // Set arguments
@@ -1605,6 +1606,7 @@ public:
 
 void RegressionTest::testJSFile(const QString & filename )
 {
+    qDebug("TEST JS:%s", filename.toLatin1().data());
     resizeTopLevelWidget( 800, 598 ); // restore size
 
     // create interpreter
