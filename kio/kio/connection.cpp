@@ -248,8 +248,10 @@ bool SocketConnectionBackend::waitForIncomingTask(int ms)
 {
     Q_ASSERT(state == Connected);
     Q_ASSERT(socket);
-    if (socket->state() != QAbstractSocket::ConnectedState)
+    if (socket->state() != QAbstractSocket::ConnectedState) {
+        state = Idle;
         return false;           // socket has probably closed, what do we do?
+    }
 
     signalEmitted = false;
     if (socket->bytesAvailable())
@@ -268,6 +270,8 @@ bool SocketConnectionBackend::waitForIncomingTask(int ms)
 
     if (signalEmitted)
         return true;
+    if (socket->state() != QAbstractSocket::ConnectedState)
+        state = Idle;
     return false;
 }
 
