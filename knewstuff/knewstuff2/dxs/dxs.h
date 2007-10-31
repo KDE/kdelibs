@@ -46,7 +46,7 @@ class Category;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT Dxs : public QObject
+class Dxs : public QObject
 {
 Q_OBJECT
 public:

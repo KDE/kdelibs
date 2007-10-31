@@ -42,7 +42,7 @@ namespace KNS {
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT ProviderHandler
+class ProviderHandler
 {
   public:
     ProviderHandler(const QDomElement &providerxml);

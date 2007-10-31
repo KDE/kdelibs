@@ -41,7 +41,7 @@ namespace KNS
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT EntryHandler
+class EntryHandler
 {
 public:
     EntryHandler(const QDomElement& entryxml);

@@ -43,7 +43,7 @@ class Installation;
  *
  * @internal
  */
-class KNEWSTUFF_EXPORT CoreEngine : public QObject
+class CoreEngine : public QObject
 {
     Q_OBJECT
   public:
