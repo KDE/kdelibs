@@ -842,13 +842,11 @@ void KFileItemDelegate::Private::drawTextItems(QPainter *painter, const QStyleOp
 
     if (!infoLayout.text().isEmpty())
     {
-        QColor color;
-        if (option.state & QStyle::State_Selected)
-        {
-            color = option.palette.color(QPalette::HighlightedText);
-            color.setAlphaF(.5);
-        } else
-            color = option.palette.color(QPalette::Highlight);
+        // TODO - for apps not doing funny things with the color palette,
+        // KColorScheme::InactiveText would be a much more correct choice. We
+        // should provide an API to specify what color to use for information.
+        QColor color = pen.color();
+        color.setAlphaF(0.6);
 
         painter->setPen(color);
         infoLayout.draw(painter, QPoint());
