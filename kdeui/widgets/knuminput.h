@@ -150,8 +150,8 @@ private:
  * which can have many such combinated controls.
  *
  * The slider is created only when the user specifies a range
- * for the control using the setRange function with the slider
- * parameter set to "true".
+ * for the control using the setRange function or when the user
+ * calls setSliderEnabled.
  *
  * A special feature of KIntNumInput, designed specifically for
  * the situation when there are several KIntNumInputs in a column,
@@ -256,11 +256,21 @@ public:
     QString specialValueText() const;
 
     /**
+     * Sets the allowed input range and the step size for the slider and the
+     * spin box.
+     *
+     * Calling this function unconditionally enables the slider. If you don't
+     * want a slider, you need to call setSliderEnabled(false) afterwards.
+     *
      * @param min  minimum value
      * @param max  maximum value
-     * @param step step size for the QSlider
+     * @param step step size
      */
     void setRange(int min, int max, int step=1);
+
+    /**
+     * @deprecated Use the other setRange function and setSliderEnabled instead
+     */
     KDE_DEPRECATED void setRange(int min, int max, int step, bool slider);
 
     /**
