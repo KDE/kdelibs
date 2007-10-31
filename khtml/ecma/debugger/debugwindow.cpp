@@ -126,7 +126,7 @@ DebugWindow::DebugWindow(QWidget *parent)
         kapp->exit(1);
     }
 
-    m_watches = new WatchesDock;
+//     m_watches = new WatchesDock;
     m_localVariables = new LocalVariablesDock;
     m_scripts = new ScriptsDock;
     m_callStack = new CallStackDock;
@@ -138,7 +138,7 @@ DebugWindow::DebugWindow(QWidget *parent)
     addDockWidget(Qt::LeftDockWidgetArea, m_localVariables);
     addDockWidget(Qt::LeftDockWidgetArea, m_callStack);
     addDockWidget(Qt::LeftDockWidgetArea, m_breakpoints);
-    addDockWidget(Qt::LeftDockWidgetArea, m_watches);
+//     addDockWidget(Qt::LeftDockWidgetArea, m_watches);
 
     QFrame *mainFrame = new QFrame;
     QVBoxLayout *layout = new QVBoxLayout(mainFrame);
@@ -146,6 +146,8 @@ DebugWindow::DebugWindow(QWidget *parent)
     QSplitter *splitter = new QSplitter(Qt::Vertical);
     splitter->addWidget(m_docFrame);
     splitter->addWidget(m_console);
+    splitter->setStretchFactor(0, 10);
+    splitter->setStretchFactor(1, 1);
     layout->addWidget(splitter);
 
     setCentralWidget(mainFrame);
@@ -212,8 +214,8 @@ void DebugWindow::createMenus()
 
     menuBar()->insertItem("&Debug", debugMenu);
 */
-    KMenu *fileMenu = new KMenu("F&ile", this);
-    menuBar()->addMenu(fileMenu);
+    // ### KDE4.1: proper debug menu. Don't want to 
+    // add strings right now.
 }
 
 void DebugWindow::createToolBars()
@@ -237,7 +239,7 @@ void DebugWindow::createTabWidget()
     closeTabButton->setAutoRaise(true);
     closeTabButton->setIcon(QIcon(":/images/removetab.png"));
     connect(closeTabButton, SIGNAL(clicked()), this, SLOT(closeTab()));
-    closeTabButton->setToolTip(tr("Close source"));
+    closeTabButton->setToolTip(i18n("Close source"));
     closeTabButton->setEnabled(true);
     layout->addWidget(m_tabWidget);
 }
@@ -290,7 +292,7 @@ DebugWindow::~DebugWindow()
 
 // -------------------------------------------------------------
 bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sourceURL,
-                               const UString &source, int /* startingLineNumber */, int errorLine, const UString &/* errorMsg */)
+                               const UString &source, int startingLineNumber , int errorLine, const UString &/* errorMsg */)
 {
     Q_UNUSED(exec);
 
@@ -305,22 +307,15 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString &sou
 
     // Determine key
     QString key = QString("%1|%2").arg((long)exec->dynamicInterpreter()).arg(m_nextUrl);
-
+    
     DebugDocument *document = 0;
     if (!m_nextUrl.isEmpty())
         document = m_documents[key];
     if (!document)
     {
-//        if (!m_nextUrl.isEmpty()) // Not in our cache, but has a URL
-//        {
-            document = new DebugDocument(m_nextUrl, exec->dynamicInterpreter());
-            m_documents[key] = document;
-            m_sourceIdLookup[sourceId] = document;
-//        }
-    }
-    else
-    {
-        // interpreter should already be there, if it isn't then we should look above to the problem
+        document = new DebugDocument(m_nextUrl, exec->dynamicInterpreter());
+        m_documents[key] = document;
+        m_sourceIdLookup[sourceId] = document;
     }
 
 
@@ -348,6 +343,7 @@ bool DebugWindow::sourceUnused(ExecState *exec, int sourceId)
         m_scripts->documentDestroyed(document);
         if (!document->deleteFragment(sourceId))   // this means we've removed all the source fragments
             delete document;
+        m_sourceIdLookup.remove(sourceId);
     }
 
     return (m_mode != Stop);
@@ -501,7 +497,7 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
 {
     if (m_tabWidget->isHidden())
         m_tabWidget->show();
-
+        
     if (m_openDocuments.contains(document))
     {
         int idx = m_openDocuments.indexOf(document);
@@ -522,18 +518,43 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
 
     enableKateHighlighting(doc);
     QList<SourceFragment> fragments = document->fragments();
+
+    // Below makes the assumption that we parse top->bottom....
+    // ...which is wrong w/lazily parsed event handles. urgh.
+    // So the list should actually be sorted, w/some sort of left-to
+    // right ordering, too.
+    doc->setReadWrite(true);
+    doc->clear();
+    
     foreach (SourceFragment fragment, fragments)
     {
-        kDebug() << "fragment: " << fragment.source;
+        // Note: the KTextEditor interface counts the lines/columns from 0,
+        // but the UI shows them from 1,1.
+        // KHTML appears to report lines from 1 up.
+        int line = fragment.baseLine - 1;
+        if (line < 0)
+            line = 0;
 
-        int line = fragment.baseLine;
-        int col = 1;
+        // We have to be a bit careful here, since
+        // in an ultra-stupid HTML documents, there may be more than
+        // one script tag on a line. So we try to append things. 
+        QString source = fragment.source + "  ";
 
-        KTextEditor::Cursor cur;
-        cur.setPosition(line, col);
-        doc->insertText(cur, fragment.source);
+        if (line == doc->lines() - 1) {
+            // We want to append to the end, so join up with the line, 
+            // remove it, and then re-append the whole chunk
+            source = doc->line(line) + source;
+            doc->removeLine(line);
+        }
+        
+        // Insert enough blank lines to get us to the end. Kind of sucks.
+        while (doc->lines() - 1 < line) {
+            doc->insertLine(doc->lines(), "");
+        }
+        
+        // ### can we guarantee this as a separator? probably not
+        doc->insertLines(line, source.split("\n"));
     }
-//    doc->setText(document->source());
 
     KTextEditor::View *view = qobject_cast<KTextEditor::View*>(doc->createView(this));
     KTextEditor::ConfigInterface *configInterface = qobject_cast<KTextEditor::ConfigInterface*>(view);
@@ -550,13 +571,15 @@ void DebugWindow::displayScript(KJS::DebugDocument *document)
     KTextEditor::MarkInterface *markInterface = qobject_cast<KTextEditor::MarkInterface*>(doc);
     if (markInterface)
     {
-//        markInterface->setEditableMarks(KTextEditor::MarkInterface::BreakpointActive);
+        markInterface->setEditableMarks(KTextEditor::MarkInterface::BreakpointActive);
         connect(doc, SIGNAL(markChanged(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)),
                 this, SLOT(markSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
     }
 
+    doc->setReadWrite(false);
     m_openDocuments.append(document);
-    m_tabWidget->addTab(view, document->name());
+    int idx = m_tabWidget->addTab(view, document->name());
+    m_tabWidget->setCurrentIndex(idx);
 }
 
 void DebugWindow::markSet(KTextEditor::Document *document, KTextEditor::Mark mark,

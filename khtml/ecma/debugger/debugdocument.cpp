@@ -37,17 +37,6 @@ DebugDocument::DebugDocument(const QString &url, Interpreter *interpreter)
     }
     else
         d->name = "undefined";
-
-    if (d->interpreter)
-    {
-        ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(d->interpreter);
-        KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
-        if (part &&
-            d->url == part->url().url())
-        {
-//            connect(part, SIGNAL(completed()), this, SLOT(readSource()));
-        }
-    }
 }
 
 DebugDocument::DebugDocument(const DebugDocument &other)
@@ -132,21 +121,6 @@ bool DebugDocument::hasBreakpoint(int lineNumber)
 QVector<int> DebugDocument::breakpoints()
 {
     return d->breakpoints;
-}
-
-void DebugDocument::readSource()
-{
-    if (d->interpreter)
-    {
-        ScriptInterpreter *scriptInterpreter = static_cast<ScriptInterpreter*>(d->interpreter);
-        KHTMLPart *part = qobject_cast<KHTMLPart*>(scriptInterpreter->part());
-        if (part &&
-            d->url == part->url().url() &&
-            !part->inProgress())
-        {
-            d->source = part->documentSource();
-        }
-    }
 }
 
 QVector<CallStackEntry> DebugDocument::callStack()

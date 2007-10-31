@@ -25,14 +25,16 @@
 #include <QHeaderView>
 
 #include <kdebug.h>
+#include <klocale.h>
 
 #include "debugdocument.h"
 
 CallStackDock::CallStackDock(QWidget *parent)
-    : QDockWidget("Call Stack", parent)
+    : QDockWidget(i18n("Call Stack"), parent)
 {
+    setFeatures(DockWidgetMovable | DockWidgetFloatable);
     m_view = new QTableWidget(0, 2);
-    m_view->setHorizontalHeaderLabels(QStringList() << "Call" << "Line");
+    m_view->setHorizontalHeaderLabels(QStringList() << i18n("Call") << i18n("Line"));
     m_view->verticalHeader()->hide();
     m_view->setShowGrid(false);
     m_view->setAlternatingRowColors(true);
@@ -55,9 +57,9 @@ void CallStackDock::displayStack(KJS::DebugDocument *document)
     int row = 0;
     foreach (KJS::CallStackEntry entry, entries)
     {
-        QTableWidgetItem *function = new QTableWidgetItem(QString("%1").arg(entry.name));
+        QTableWidgetItem *function = new QTableWidgetItem(entry.name);
         m_view->setItem(row, 0, function);
-        QTableWidgetItem *lineNumber = new QTableWidgetItem(QString("%1").arg(entry.lineNumber));
+        QTableWidgetItem *lineNumber = new QTableWidgetItem(QString::number(entry.lineNumber));
         m_view->setItem(row, 1, lineNumber);
         row++;
     }

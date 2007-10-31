@@ -21,6 +21,7 @@
 #include "execstatemodel.moc"
 
 #include <kdebug.h>
+#include <klocale.h>
 
 #include <kjs/context.h>
 #include <kjs/value.h>
@@ -234,11 +235,11 @@ QVariant ExecStateModel::headerData(int section, Qt::Orientation orientation,
         switch (section)
         {
             case 0:
-                return tr("Reference");
+                return i18n("Reference");
             case 1:
-                return tr("Type");
+                return i18n("Type");
             case 2:
-                return tr("Value");
+                return i18n("Value");
             default:
                 return QVariant();
         }

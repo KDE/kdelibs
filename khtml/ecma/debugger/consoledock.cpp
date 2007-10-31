@@ -25,15 +25,18 @@
 #include <QTextEdit>
 #include <QPushButton>
 
+#include <klocale.h>
+
 ConsoleDock::ConsoleDock(QWidget *parent)
-    : QDockWidget("Console", parent)
+    : QDockWidget(i18n("Console"), parent)
 {
+    setFeatures(DockWidgetMovable | DockWidgetFloatable);
     QFrame *mainFrame = new QFrame;
 
     consoleEdit = new QTextEdit;
     consoleEdit->setReadOnly(true);
     consoleInput = new QLineEdit;
-    consoleInputButton = new QPushButton("Enter");
+    consoleInputButton = new QPushButton(i18n("Enter"));
 
     QHBoxLayout *bottomLayout = new QHBoxLayout;
     bottomLayout->setSpacing(0);

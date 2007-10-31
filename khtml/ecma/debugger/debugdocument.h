@@ -40,8 +40,6 @@ public:
     void removeCall(const QString&, int);
 
 private:
-    void readSource();
-
     class Private;
     QSharedDataPointer<Private> d;
 

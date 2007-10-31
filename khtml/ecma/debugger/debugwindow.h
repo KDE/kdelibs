@@ -146,7 +146,7 @@ private:
     // Text editing stuff
     KTextEditor::Editor *m_editor;
 
-    WatchesDock *m_watches;
+//     WatchesDock *m_watches;
     LocalVariablesDock *m_localVariables;
     ScriptsDock *m_scripts;
     CallStackDock *m_callStack;

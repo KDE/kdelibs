@@ -34,8 +34,9 @@
 using namespace KJS;
 
 ScriptsDock::ScriptsDock(QWidget *parent)
-    : QDockWidget("Loaded Scripts", parent)
+    : QDockWidget(i18n("Loaded Scripts"), parent)
 {
+    setFeatures(DockWidgetMovable | DockWidgetFloatable);
     m_widget = new QTreeWidget;
 
     connect(m_widget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),

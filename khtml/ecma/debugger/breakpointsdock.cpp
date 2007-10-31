@@ -22,10 +22,12 @@
 
 #include <QVBoxLayout>
 #include <QListWidget>
+#include <klocale.h>
 
 BreakpointsDock::BreakpointsDock(QWidget *parent)
-    : QDockWidget("Breakpoints", parent)
+    : QDockWidget(i18n("Breakpoints"), parent)
 {
+    setFeatures(DockWidgetMovable | DockWidgetFloatable);
     QListWidget *widget = new QListWidget;
     setWidget(widget);
 }

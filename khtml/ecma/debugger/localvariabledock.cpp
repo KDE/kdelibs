@@ -32,13 +32,15 @@
 #include <kjs/scope_chain.h>
 #include <kjs/object.h>
 #include <kdebug.h>
+#include <klocale.h>
 
 #include "objectmodel.h"
 #include "execstatemodel.h"
 
 LocalVariablesDock::LocalVariablesDock(QWidget *parent)
-    : QDockWidget("Local Variables", parent), m_execModel(0)
+    : QDockWidget(i18n("Local Variables"), parent), m_execModel(0)
 {
+    setFeatures(DockWidgetMovable | DockWidgetFloatable);
     m_view = new QTreeView;
 //    m_model = new ObjectModel;
 //    m_view->setModel(m_model);
