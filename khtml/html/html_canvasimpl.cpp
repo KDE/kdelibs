@@ -886,6 +886,13 @@ void CanvasContext2DImpl::beginPath()
 {
     path = QPainterPath();
     path.setFillRule(Qt::WindingFill);
+
+    // Unfortunately QPainterPath always contains an intial MoveTo element to (0, 0),
+    // so we have no reliable way to check if the path is empty. We'll therefor
+    // insert a MoveTo to (-INT_MAX, -INT_MAX) each time the path is reset, and check
+    // the current position for this value in all functions that are supposed to do
+    // nothing when the path is empty.
+    path.moveTo(-INT_MAX, -INT_MAX);
 }
 
 void CanvasContext2DImpl::closePath()
@@ -900,17 +907,20 @@ void CanvasContext2DImpl::moveTo(float x, float y)
 
 void CanvasContext2DImpl::lineTo(float x, float y)
 {
-    path.lineTo(x, y);
+    if (path.currentPosition() != QPointF(-INT_MAX, -INT_MAX))
+        path.lineTo(x, y);
 }
 
 void CanvasContext2DImpl::quadraticCurveTo(float cpx, float cpy, float x, float y)
 {
-    path.quadTo(cpx, cpy, x, y);
+    if (path.currentPosition() != QPointF(-INT_MAX, -INT_MAX))
+        path.quadTo(cpx, cpy, x, y);
 }
 
 void CanvasContext2DImpl::bezierCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, float x, float y)
 {
-    path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y);
+    if (path.currentPosition() != QPointF(-INT_MAX, -INT_MAX))
+        path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y);
 }
 
 void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptionCode)
