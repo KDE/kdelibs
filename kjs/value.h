@@ -408,14 +408,6 @@ inline JSValue *jsTwo()
     return JSImmediate::fromDouble(2.0);
 }
 
-inline JSValue *Undefined() { return jsUndefined(); }
-inline JSValue *Null() { return jsNull(); }
-inline JSValue *Boolean(bool b) { return jsBoolean(b); }
-inline JSValue *Number(double n) { return jsNumber(n); }
-inline JSValue *String(const UString& s) { return jsString(s); }
-inline JSValue *String(const char *s) { return jsString(s); }
-
-
 } // namespace
 
 #endif // KJS_VALUE_H
