@@ -77,6 +77,7 @@
 #include <QtGui/QImage>
 #include <QDebug>
 #include <cmath>
+#include <climits>
 
 using namespace DOM;
 using namespace khtml;
