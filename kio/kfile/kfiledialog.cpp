@@ -129,7 +129,7 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
 
 KFileDialog::~KFileDialog()
 {
-    saveDialogSize(d->cfgGroup);
+    saveDialogSize(d->cfgGroup, KConfigBase::Persistent);
     hide();
     delete d;
 }
@@ -192,7 +192,7 @@ void KFileDialog::accept()
     setResult( QDialog::Accepted ); // keep old behavior; probably not needed though
     d->w->accept();
     KConfigGroup cfgGroup(KGlobal::config(), ConfigGroup);
-    saveDialogSize(cfgGroup);
+    saveDialogSize(cfgGroup, KConfigBase::Persistent);
     KDialog::accept();
     emit okClicked();
 }
