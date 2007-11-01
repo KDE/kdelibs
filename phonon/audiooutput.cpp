@@ -37,20 +37,35 @@ AudioOutput::AudioOutput(Phonon::Category category, QObject *parent)
     : AbstractAudioOutput(*new AudioOutputPrivate, parent)
 {
     K_D(AudioOutput);
-    d->category = category;
+    d->init(category);
+}
+
+AudioOutput::AudioOutput(QObject *parent) 
+    : AbstractAudioOutput(*new AudioOutputPrivate, parent)
+{
+    K_D(AudioOutput);
+    d->init(NoCategory);
+}
+
+void AudioOutputPrivate::init(Phonon::Category c)
+{
+    Q_Q(AudioOutput);
+    category = c;
 
     // select hardware device according to the category
-    d->outputDeviceIndex = GlobalConfig().audioOutputDeviceFor(d->category);
+    outputDeviceIndex = GlobalConfig().audioOutputDeviceFor(category);
 
-    d->createBackendObject();
+    createBackendObject();
 #ifndef QT_NO_DBUS
-    new AudioOutputAdaptor(this);
+    new AudioOutputAdaptor(q);
     static unsigned int number = 0;
     QDBusConnection::sessionBus().registerObject("/AudioOutputs/" + QString::number(number++), this);
 #endif
 
-    connect(Factory::sender(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(_k_deviceListChanged()));
+    q->connect(Factory::sender(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(_k_deviceListChanged()));
 }
+
+
 
 void AudioOutputPrivate::createBackendObject()
 {

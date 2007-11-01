@@ -38,6 +38,8 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
             }
             return 0;
         }
+        void init(Phonon::Category c);
+
 
     protected:
         AudioOutputPrivate(CastId castId = MediaNodePrivate::AudioOutputType)
