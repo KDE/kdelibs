@@ -33,6 +33,8 @@ namespace Phonon
     {
         switch(c)
         {
+        case Phonon::NoCategory:
+            break;
         case Phonon::NotificationCategory:
             return QCoreApplication::translate("Phonon::", "Notifications");
         case Phonon::MusicCategory:

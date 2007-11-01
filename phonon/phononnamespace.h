@@ -131,6 +131,10 @@ namespace Phonon
     enum Category
     {
         /**
+         * Will make use of the default device.
+         */
+        NoCategory = -1,
+        /**
          * If the sounds produced are notifications (bing, beep and such) you
          * should use this category.
          */
