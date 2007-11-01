@@ -60,5 +60,5 @@ Comment[wa]=Li lingaedje di reprezintåcion nepomuk (NRL) est on lingaedje di re
 Comment[x-test]=xxNRL is a Representational Language that addresses certain limitations on the part of RDF/S. It is itself designed on top of RDF. In particular it includes support for Named Graphs for modularization of data. Although being a widely-popular notion, named graphs have not been supported by any Representational Language so far. It is also based on a view concept for the tailoring of ontologies. This view concept turned out to be of additional value, as it also provides a mechanism to impose different semantics on the same syntactical structure.xx
 URL=http://semanticdesktop.org/ontologies/2006/11/24/nrl#
 Path=nrl.rdfs
-MimeType=application/rdf+xml
+MimeType=application/rdf+xml;
 Type=Link

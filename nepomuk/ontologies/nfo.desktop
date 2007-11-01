@@ -64,5 +64,5 @@ Comment[zh_CN]=Nepomuk 文件实体定义了基本文件类型
 Comment[zh_TW]=Nepomuk File Ontology 定義基本的檔案型態
 URL=http://ont.semanticdesktop.org/2007/03/22/nfo#
 Path=nfo.rdfs
-MimeType=application/rdf+xml
+MimeType=application/rdf+xml;
 Type=Link
