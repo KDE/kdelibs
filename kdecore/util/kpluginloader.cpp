@@ -78,17 +78,17 @@ inline QString findLibraryInternal(const QString &name, const KComponentData &cD
     QString libname = makeLibName(name);
 
     QFileInfo fileinfo(name);
-    bool hasPraefix = fileinfo.fileName().startsWith("lib");
+    bool hasPrefix = fileinfo.fileName().startsWith("lib");
 
-    if (hasPraefix)
-        kDebug(150) << "plugins shouldn't have a 'lib' suffix:" << libname;
+    if (hasPrefix)
+        kDebug(150) << "plugins should not have a 'lib' prefix:" << libname;
 
     QString libfile;
     if (QDir::isRelativePath(libname)) {
         libfile = cData.dirs()->findResource("module", libname);
         if (libfile.isEmpty()) {
 #ifndef Q_OS_WIN
-            if (!hasPraefix)
+            if (!hasPrefix)
                 libname = fileinfo.path() + QLatin1String("/lib") + fileinfo.fileName();
 #endif
             libfile = cData.dirs()->findResource("lib", libname);
