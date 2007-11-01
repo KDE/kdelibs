@@ -981,7 +981,7 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
     path.arcTo(x1, y1, x2-x1, y2-y1, radius, 90);
 }
 
-void CanvasContext2DImpl::arc(float xc, float yc, float radius, float sar, float ear,
+void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, float endAngle,
                               bool counterClockWise, int& exceptionCode)
 {
     exceptionCode = 0;
@@ -990,42 +990,47 @@ void CanvasContext2DImpl::arc(float xc, float yc, float radius, float sar, float
         exceptionCode = DOMException::INDEX_SIZE_ERR;
         return;
     }
-    
-    //### HACK
-    // In Qt we don't switch the coordinate system for degrees
-    // and still use the 0,0 as bottom left for degrees so we need
-    // to switch
-    sar = -sar;
-    ear = -ear;
-    counterClockWise = !counterClockWise;
-    //end hack
 
-    float sa = degrees( sar );
-    float ea = degrees( ear );
+    const QRectF rect(x - radius, y - radius, radius * 2, radius * 2);
 
-    double span = 0;
+    float sweepLength = -degrees(endAngle - startAngle);
+    startAngle = -degrees(startAngle);
 
-    double xs     = xc - radius;
-    double ys     = yc - radius;
-    double width  = radius*2;
-    double height = radius*2;
-
-    if ( !counterClockWise && ( ea < sa ) ) {
-        span += 360;
-    } else if ( counterClockWise && ( sa < ea ) ) {
-        span -= 360;
+    if (counterClockWise && (sweepLength < 0 || sweepLength > 360))
+    {
+        sweepLength = 360 + std::fmod(sweepLength, float(360.0));
+        if (qFuzzyCompare(sweepLength, 0))
+            sweepLength = 360;
+    }
+    else if (!counterClockWise && (sweepLength > 0 || sweepLength < -360))
+    {
+        sweepLength = -(360 - std::fmod(sweepLength, float(360.0)));
+        if (qFuzzyCompare(sweepLength, 0))
+            sweepLength = 360;
     }
 
-    //### this is also due to switched coordinate system
-    // we would end up with a 0 span instead of 360
-    if ( !( qFuzzyCompare( span + ( ea - sa ), 0.0 ) &&
-            qFuzzyCompare( fabs( span ), 360.0 ) ) ) {
-        span   += ea - sa;
+    if (path.currentPosition() == QPointF(-INT_MAX, -INT_MAX))
+    {
+        QPointF initialPoint(x + std::cos(startAngle) * radius,
+                             y + std::sin(startAngle) * radius);
+        path.moveTo(initialPoint);
     }
 
-    path.moveTo( QPointF( xc + radius  * cos( sar ),
-                          yc - radius  * sin( sar ) ) );
-    path.arcTo(xs, ys, width, height, sa, span);
+    path.arcTo(rect, startAngle, sweepLength);
+
+    // When drawing the arc, Safari will loop around the circle several times if the
+    // sweep length is greater than 360 degrees, leaving the current position in
+    // the path at endAngle. QPainterPath::arcTo() will stop when it reaches 360
+    // degrees, leaving the current position at that point. To match Safari behavior,
+    // we insert an extra MoveTo element in the path, to make sure that the current
+    // position is where the script expects it to be after the arc is completed.
+    if (sweepLength > 360.0 || sweepLength < -360.0)
+    {
+        QPointF endPoint(x + std::cos(endAngle) * radius,
+                         y + std::sin(endAngle) * radius);
+        if (path.currentPosition() != endPoint)
+            path.moveTo(endPoint);
+    }
 }
 
 // Image stuff
