@@ -55,7 +55,7 @@
         <bool>false</bool>
        </property>
        <property name="text" >
-        <string>prefer</string>
+        <string>Prefer</string>
        </property>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -68,7 +68,7 @@
         <bool>false</bool>
        </property>
        <property name="text" >
-        <string>defer</string>
+        <string>Defer</string>
        </property>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>

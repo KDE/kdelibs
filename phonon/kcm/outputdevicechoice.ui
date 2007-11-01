@@ -98,7 +98,7 @@ so on.</string>
         <string>no preference for the selected device</string>
        </property>
        <property name="text" >
-        <string>defer</string>
+        <string>Defer</string>
        </property>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -111,7 +111,7 @@ so on.</string>
         <bool>false</bool>
        </property>
        <property name="text" >
-        <string>remove</string>
+        <string>Remove</string>
        </property>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -127,7 +127,7 @@ so on.</string>
         <string>prefer the selected device</string>
        </property>
        <property name="text" >
-        <string>prefer</string>
+        <string>Prefer</string>
        </property>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>
