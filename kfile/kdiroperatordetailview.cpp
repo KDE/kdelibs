@@ -18,10 +18,12 @@
 
 #include "kdiroperatordetailview_p.h"
 
+#include <kdirlister.h>
 #include <kdirmodel.h>
 
 #include <QtCore/QEvent>
 #include <QtCore/QTimer>
+#include <QtGui/QAbstractProxyModel>
 #include <QtGui/QHeaderView>
 #include <QtGui/QListView>
 #include <QtGui/QResizeEvent>
@@ -51,12 +53,27 @@ KDirOperatorDetailView::~KDirOperatorDetailView()
 {
 }
 
+void KDirOperatorDetailView::setModel(QAbstractItemModel *model)
+{
+    if (model->rowCount() == 0) {
+        // The model is empty. Assure that the columns get automatically resized
+        // until the loading has been finished.
+        QAbstractProxyModel *proxyModel = static_cast<QAbstractProxyModel*>(model);
+        KDirModel *dirModel = static_cast<KDirModel*>(proxyModel->sourceModel());
+        connect(dirModel->dirLister(), SIGNAL(completed()),
+                this, SLOT(resetResizing()));
+    } else {
+        resetResizing();
+    }
+
+    QTreeView::setModel(model);
+}
+
 bool KDirOperatorDetailView::event(QEvent *event)
 {
     if (event->type() == QEvent::Polish) {
         QHeaderView *headerView = header();
         headerView->setResizeMode(QHeaderView::Interactive);
-        headerView->resizeSections(QHeaderView::ResizeToContents);
         headerView->setStretchLastSection(false);
         headerView->setMovable(false);
 
@@ -90,13 +107,14 @@ void KDirOperatorDetailView::resizeEvent(QResizeEvent *event)
 {
     QTreeView::resizeEvent(event);
 
-    if (m_resizeColumns && (model()->rowCount() > 0)) {
+    if (m_resizeColumns) {
         QHeaderView *headerView = header();
         headerView->resizeSections(QHeaderView::ResizeToContents);
 
         // calculate the required width for all columns except the name column
         int requiredWidth = 0;
-        for (int i = KDirModel::Size; i < KDirModel::ColumnCount; ++i) {
+        const int count = headerView->count();
+        for (int i = 1; i < count; ++i) {
             requiredWidth += headerView->sectionSize(i);
         }
 
@@ -107,6 +125,15 @@ void KDirOperatorDetailView::resizeEvent(QResizeEvent *event)
             nameColumnWidth = oldNameColumnWidth;
         }
         headerView->resizeSection(KDirModel::Name, nameColumnWidth);
-        m_resizeColumns = false;
     }
+}
+
+void KDirOperatorDetailView::resetResizing()
+{
+    QTimer::singleShot(300, this, SLOT(disableColumnResizing()));
+}
+
+void KDirOperatorDetailView::disableColumnResizing()
+{
+    m_resizeColumns = false;
 }

@@ -21,6 +21,8 @@
 
 #include <QtGui/QTreeView>
 
+class QAbstractItemModel;
+
 /**
  * Default detail view for KDirOperator using
  * custom resizing options and columns.
@@ -32,11 +34,16 @@ class KDirOperatorDetailView : public QTreeView
 public:
     KDirOperatorDetailView(QWidget *parent = 0);
     virtual ~KDirOperatorDetailView();
+    virtual void setModel(QAbstractItemModel *model);
 
 protected:
     virtual bool event(QEvent *event);
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
+
+private slots:
+    void resetResizing();
+    void disableColumnResizing();
 
 private:
     bool m_resizeColumns;
