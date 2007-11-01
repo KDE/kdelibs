@@ -1006,7 +1006,6 @@ static bool createJScript(khtml::ChildFrame *frame)
   frame->m_kjs_lib = lib;
 #else
   frame->m_jscript = kjs_html_init(frame);
-  // frame->m_kjs_lib remains 0L.
 #endif
   return true;
 }

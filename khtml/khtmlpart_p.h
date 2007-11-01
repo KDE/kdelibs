@@ -80,7 +80,9 @@ namespace khtml
       ChildFrame() : QObject (0) {
           setObjectName( "khtml_child_frame" );
           m_jscript = 0L;
+#ifndef DIRECT_LINKAGE_TO_ECMA
           m_kjs_lib = 0;
+#endif
           m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false;
           m_bPendingRedirection = false;
       }
@@ -88,8 +90,10 @@ namespace khtml
       ~ChildFrame() {
           if (m_run) m_run->abort();
           delete m_jscript;
+#ifndef DIRECT_LINKAGE_TO_ECMA
           if ( m_kjs_lib)
               m_kjs_lib->unload();
+#endif
       }
 
     QPointer<khtml::RenderPart> m_frame;
@@ -99,7 +103,9 @@ namespace khtml
     QString m_serviceName;
     QString m_serviceType;
     KJSProxy *m_jscript;
+#ifndef DIRECT_LINKAGE_TO_ECMA
     KLibrary *m_kjs_lib;
+#endif
     bool m_bCompleted;
     QString m_name;
     KParts::OpenUrlArguments m_args;
