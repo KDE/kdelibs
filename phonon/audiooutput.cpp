@@ -59,7 +59,7 @@ void AudioOutputPrivate::init(Phonon::Category c)
 #ifndef QT_NO_DBUS
     new AudioOutputAdaptor(q);
     static unsigned int number = 0;
-    QDBusConnection::sessionBus().registerObject("/AudioOutputs/" + QString::number(number++), this);
+    QDBusConnection::sessionBus().registerObject("/AudioOutputs/" + QString::number(number++), q);
 #endif
 
     q->connect(Factory::sender(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(_k_deviceListChanged()));
