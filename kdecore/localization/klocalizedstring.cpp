@@ -206,7 +206,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     // Assure the message has been supplied.
     if (msg.isEmpty())
     {
-        kDebug(173) << QString("Trying to convert empty KLocalizedString to QString.");
+        kDebug(173) << "Trying to convert empty KLocalizedString to QString.";
         #ifndef NDEBUG
         return QString("(I18N_EMPTY_MESSAGE)");
         #else

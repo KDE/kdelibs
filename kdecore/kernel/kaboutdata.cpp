@@ -152,7 +152,7 @@ public:
 
     QString organizationDomain;
 
-    // Everything dr.konqi needs, we store as utf-8, so we 
+    // Everything dr.konqi needs, we store as utf-8, so we
     // can just give it a pointer, w/o any allocations.
     QByteArray _translatedProgramName; // ### I don't see it ever being translated, and I did not change that
     QByteArray _version;
@@ -182,7 +182,8 @@ KAboutData::KAboutData( const QByteArray &_appName,
 
     d->_catalogName = _catalogName;
     d->_programName = _programName;
-    d->_translatedProgramName = _programName.toString(0).toUtf8();
+    if (!d->_programName.isEmpty()) // KComponentData("klauncher") gives empty program name
+        d->_translatedProgramName = _programName.toString(0).toUtf8();
     d->_version = _version;
     d->_shortDescription = _shortDescription;
     d->_licenseKey = licenseType;
@@ -398,7 +399,7 @@ KAboutData::translateInternalProgramName() const
       d->_translatedProgramName = programName().toUtf8();
 }
 
-QVariant 
+QVariant
 KAboutData::programLogo() const
 {
     return d->programLogo;
