@@ -1229,7 +1229,6 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         KHTMLWidget* kw = qobject_cast<KHTMLView*>(rw->widget())? dynamic_cast<KHTMLWidget*>(rw->widget()) : 0;
         if (kw && kw->m_kwp->isRedirected())
             setCursor = false;
-        kDebug() << "setCursor is " << setCursor << "for khmtlview" << this;
     }
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
@@ -1966,7 +1965,6 @@ static void setInPaintEventFlag(QWidget* w, bool b = true)
       foreach(QObject* cw, w->children()) {
           if (cw->isWidgetType() && !(static_cast<QWidget*>(cw)->windowFlags() & Qt::Window) 
                                  &&  !(static_cast<QWidget*>(cw)->windowModality() & Qt::ApplicationModal)) {
-              static_cast<QWidget*>(cw)->setAttribute(Qt::WA_WState_InPaintEvent, false);
               setInPaintEventFlag(static_cast<QWidget*>(cw), b);
           }
       }

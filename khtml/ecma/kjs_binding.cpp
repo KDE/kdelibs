@@ -357,14 +357,14 @@ EmbedLiveConnect::~EmbedLiveConnect() {
 #endif
 #endif
 KDE_NO_EXPORT
-bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, PropertySlot& slot)
+bool EmbedLiveConnect::getOwnPropertySlot(ExecState *, const Identifier& prop, PropertySlot& /*slot*/)
 {
   if (m_liveconnect) {
     KParts::LiveConnectExtension::Type rettype;
     QString retval;
     unsigned long retobjid;
     if (m_liveconnect->get(objid, prop.qstring(), rettype, retobjid, retval)) {
-      ValueImp* val = getLiveConnectValue(m_liveconnect, prop.qstring(), rettype, retval, retobjid);
+      getLiveConnectValue(m_liveconnect, prop.qstring(), rettype, retval, retobjid);
       return true;
     }
   }

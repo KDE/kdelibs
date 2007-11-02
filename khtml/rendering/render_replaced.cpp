@@ -534,10 +534,11 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
 static void setInPaintEventFlag(QWidget* w, bool b = true)
 {
       w->setAttribute(Qt::WA_WState_InPaintEvent, b);
-      foreach(QObject* cw, w->children()) {
-          if (cw->isWidgetType()) {
-              static_cast<QWidget*>(cw)->setAttribute(Qt::WA_WState_InPaintEvent, false);
-              setInPaintEventFlag(static_cast<QWidget*>(cw), b);
+      foreach(QObject* o, w->children()) {
+          QWidget* const cw = static_cast<QWidget*>(o);
+          if (o->isWidgetType() && !(cw->windowFlags() & Qt::Window)
+                                && !(cw->windowModality() & Qt::ApplicationModal)) {
+              setInPaintEventFlag(cw, b);
           }
       }
 }
@@ -804,7 +805,6 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                  me.clientY() - absy + m_view->contentsY());
 
         QWidget* target = 0;
-        KHTMLView* itsaview = qobject_cast<KHTMLView*>(m_widget);
         target = m_widget->childAt(p);
 
         if (m_underMouse != target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {

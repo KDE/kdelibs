@@ -2494,7 +2494,7 @@ void DocumentImpl::loadXML(const DOMString &source)
     dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
-void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &charset)
+void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &/*charset*/)
 {
     if (!m_hadLoadError) {
 	m_url = url.string();

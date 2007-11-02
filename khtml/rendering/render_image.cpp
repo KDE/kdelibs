@@ -352,8 +352,8 @@ void RenderImage::layout()
     KHTMLAssert( needsLayout());
     KHTMLAssert( minMaxKnown() );
 
-    short oldwidth = m_width;
-    int oldheight = m_height;
+    short m_width = 0;
+    int m_height;
 
     // minimum height
     m_height = m_cachedImage && m_cachedImage->isErrorImage() ? intrinsicHeight() : 0;

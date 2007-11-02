@@ -776,8 +776,6 @@ void RenderLayer::positionScrollbars(const QRect& absBounds)
     if (w <= 0 || h <= 0 || (!m_vBar && !m_hBar))
 	return;
 
-    KHTMLView* view = m_object->element()->getDocument()->view();
-
     tx += bl;
     ty += bt;
 
@@ -887,16 +885,9 @@ void RenderLayer::checkScrollbarsAfterLayout()
 
 void RenderLayer::paintScrollbars(RenderObject::PaintInfo& pI)
 {
-#ifdef APPLE_CHANGES
-    if (m_hBar)
-        m_hBar->paint(p, damageRect);
-    if (m_vBar)
-        m_vBar->paint(p, damageRect);
-#else
     if (!m_object->element())
        return;
 
-    KHTMLView* view = m_object->element()->getDocument()->view();
     if (m_hBar) {
 	QPoint p = m_hBar->m_kwp->absolutePos();
 	RenderWidget::paintWidget(pI, m_hBar, p.x(), p.y());
@@ -905,7 +896,6 @@ void RenderLayer::paintScrollbars(RenderObject::PaintInfo& pI)
         QPoint p = m_vBar->m_kwp->absolutePos();
 	RenderWidget::paintWidget(pI, m_vBar, p.x(), p.y());
     }
-#endif
 }
 
 void RenderLayer::paint(QPainter *p, const QRect& damageRect, bool selectionOnly)
@@ -913,7 +903,7 @@ void RenderLayer::paint(QPainter *p, const QRect& damageRect, bool selectionOnly
     paintLayer(this, p, damageRect, selectionOnly);
 }
 
-void RenderLayer::setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool setup)
+void RenderLayer::setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool /*setup*/)
 {
     if (paintDirtyRect == clipRect)
         return;
@@ -929,7 +919,7 @@ void RenderLayer::setClip(QPainter* p, const QRect& paintDirtyRect, const QRect&
     v->clipHolder()->push( r );
 }
 
-void RenderLayer::restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool cleanup)
+void RenderLayer::restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool /*cleanup*/)
 {
     if (paintDirtyRect == clipRect)
         return;

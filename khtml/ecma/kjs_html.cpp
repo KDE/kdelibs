@@ -1672,7 +1672,6 @@ ValueImp* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   }
   break;
   case ID_BODY: {
-    DOM::HTMLBodyElementImpl& body = static_cast<DOM::HTMLBodyElementImpl&>(element);
     switch (token) {
     case BodyOnLoad: {
         DOM::DocumentImpl *doc = impl()->getDocument();

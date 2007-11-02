@@ -1741,7 +1741,7 @@ RootInlineBox* RenderBlock::determineStartPosition(bool fullLayout, BidiIterator
         int cnt = 0;
         for (curr = firstRootBox(); curr && !curr->isDirty(); curr = curr->nextRootBox()) cnt++;
         if (curr) {
-            kDebug( 6040 ) << "found dirty line at " << cnt;
+            // kDebug( 6040 ) << "found dirty line at " << cnt;
             // We have a dirty line.
             if (RootInlineBox* prevRootBox = curr->prevRootBox()) {
                 // We have a previous line.
@@ -1751,7 +1751,7 @@ RootInlineBox* RenderBlock::determineStartPosition(bool fullLayout, BidiIterator
                     curr = prevRootBox;
             }
         } else {
-            kDebug( 6040 ) << "No dirty line found";
+            // kDebug( 6040 ) << "No dirty line found";
             // No dirty lines were found.
             // If the last line didn't break cleanly, treat it as dirty.
             if (lastRootBox() && !lastRootBox()->endsWithBreak())
