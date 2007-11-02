@@ -270,11 +270,11 @@ void RenderWidget::setQWidget(QWidget *widget)
             if (k)
                 k->m_kwp->setRenderWidget(this);
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
-            m_widget->installEventFilter(this);
-
-            if ( isRedirectedWidget() && !qobject_cast<QFrame*>(m_widget))
-                m_widget->setAttribute( Qt::WA_NoSystemBackground );
-
+            if (isRedirectedWidget()) {
+                m_widget->installEventFilter(this);
+                if (!qobject_cast<QFrame*>(m_widget))
+                    m_widget->setAttribute( Qt::WA_NoSystemBackground );
+            }
             if (m_widget->focusPolicy() > Qt::StrongFocus)
                 m_widget->setFocusPolicy(Qt::StrongFocus);
             // if we've already received a layout, apply the calculated space to the
@@ -703,19 +703,6 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
             filtered = true;
         break;
 
-    case QEvent::Wheel:
-        if (widget()->parentWidget() == view()->widget()) {
-            // don't allow the widget to react to wheel event unless its
-            // currently focused. this avoids accidentally changing a select box
-            // or something while wheeling a webpage.
-            if (qApp->focusWidget() != widget() &&
-                widget()->focusPolicy() <= Qt::StrongFocus)  {
-                static_cast<QWheelEvent*>(e)->ignore();
-                QApplication::sendEvent(view(), e);
-                filtered = true;
-            }
-        }
-        break;
     default:
         break;
     };
@@ -895,8 +882,33 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         p = target->mapFrom(m_widget, p);
 
         bool needContextMenuEvent = (type == QMouseEvent::MouseButtonPress && button == Qt::RightButton);
+        bool isMouseWheel = (ev.id() == EventImpl::KHTML_MOUSEWHEEL_EVENT);
+        if (isMouseWheel) {
+            // don't allow the widget to react to wheel event unless it's
+            // currently focused. this avoids accidentally changing a select box
+            // or something while wheeling a webpage.
+            // This does not apply if the webpage has no valid scroll range in the given wheel event orientation.
+            if ( ((orient == Qt::Vertical && (view()->contentsHeight() > view()->visibleHeight()))  ||
+                  (orient == Qt::Horizontal && (view()->contentsWidth() > view()->visibleWidth()))) &&
+                  (!document()->focusNode() || document()->focusNode()->renderer() != this) )  {
+                ret = false;
+                break;
+            }
+            QPoint gp = QCursor::pos();
+            QRect r = target->rect();
+            QPoint glob = view()->mapToGlobal( QPoint(0,0) );
+            int x, y;
+            absolutePosition(x,y);
+            glob.setX( glob.x() + x );
+            glob.setY( glob.y() + y );
+            r.translate( glob );
+            if (!r.contains(gp)) {
+                ret = false;
+                break;
+            }
+        }
 
-        QEvent *e = (ev.id() == EventImpl::KHTML_MOUSEWHEEL_EVENT) ?
+        QEvent *e = isMouseWheel ?
                     static_cast<QEvent*>(new QWheelEvent(p, -me.detail()*40, buttons, state, orient)) :
                     static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state));
         static_cast<EventPropagator *>(target)->sendEvent(e);

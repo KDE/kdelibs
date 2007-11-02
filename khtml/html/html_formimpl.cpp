@@ -1086,7 +1086,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	    // combobox shouldn't emit onblur)
 	}
     }
-    if (evt->target() == this && evt->isMouseEvent() && renderer())
+    if (evt->target() == this && evt->isMouseEvent() && evt->id() != EventImpl::KHTML_MOUSEWHEEL_EVENT && renderer())
         evt->setDefaultHandled();
 
     HTMLElementImpl::defaultEventHandler(evt);
