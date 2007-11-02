@@ -125,7 +125,7 @@ Wallet::Wallet(int handle, const QString& name)
     connect(QDBusConnection::sessionBus().interface(),
             SIGNAL(serviceOwnerChanged(QString,QString,QString)),
             this,
-            SLOT(slotAppUnregistered(QString,QString,QString)));
+            SLOT(slotServiceOwnerChanged(QString,QString,QString)));
 
     connect(d->wallet, SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
     connect(d->wallet, SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
@@ -639,8 +639,9 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 }
 
 
-void Wallet::slotAppUnregistered(const QString& app,const QString&,const QString&) {
-    if (d->handle >= 0 && app == "org.kde.kded") {
+void Wallet::slotServiceOwnerChanged(const QString& name,const QString& oldOwner,const QString& newOwner) {
+    Q_UNUSED(oldOwner);
+    if (d->handle >= 0 && newOwner.isEmpty() && name == "org.kde.kded") {
         slotWalletClosed(d->handle);
     }
 }
