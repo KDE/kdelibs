@@ -92,6 +92,7 @@ int main(int argc, char *argv[])
   check( "KURL::isValid()", emptyURL.isValid() ? "TRUE":"FALSE", "FALSE");
   check( "KURL::isEmpty()", emptyURL.isEmpty() ? "TRUE":"FALSE", "TRUE");
   check( "prettyURL()", emptyURL.prettyURL(), "");
+  check( "isLocalFile()", emptyURL.isLocalFile()?"TRUE":"FALSE", "FALSE" );
 
   emptyURL = "";
   check( "KURL::isMalformed()", emptyURL.isMalformed() ? "TRUE":"FALSE", "TRUE");
@@ -158,6 +159,15 @@ int main(int argc, char *argv[])
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "no");
   check("KURL::encodedHtmlRef()", url1.ref(), "%6a");
   check("KURL::htmlRef()", url1.htmlRef(), "j");
+
+  KURL dxOffEagle( KURL("http://something/other.html"), "newpage.html?[{\"foo: bar\"}]" );
+  check("isValid", dxOffEagle.isValid() ? "OK" : "KO", "OK");
+  check("url", dxOffEagle.url(), QString("http://something/newpage.html?[{\"foo:%20bar\"}]") );
+
+  KURL javascript( KURL("javascript:window.location+\"__flashplugin_unique__\"") );
+  check("isValid", javascript.isValid() ? "OK" : "KO", "OK");
+  check("url", javascript.url(), QString("javascript:window.location+\"__flashplugin_unique__\"") );
+
 
   u1 = "file:///home/dfaure/my#myref";
   url1 = u1;
@@ -287,6 +297,10 @@ int main(int argc, char *argv[])
   KURL url15582("http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
   check("KURL::prettyURL()", url15582.prettyURL(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%in%url.html");
   check("KURL::url()", url15582.url(), "http://alain.knaff.linux.lu/bug-reports/kde/percentage%25in%25url.html");
+
+  KURL longUserName("http://thisisaverylongusername@foobar.com/");
+  check("KURL::prettyURL()", longUserName.prettyURL(), "http://thisisaverylongusername@foobar.com/");
+  check("KURL(KURL::prettyURL())", KURL(longUserName.prettyURL()).url(), "http://thisisaverylongusername@foobar.com/");
 
   KURL whitespaceInUser("http://google.com%20%20%20@foobar.com/");
   check("KURL::prettyURL()", whitespaceInUser.prettyURL(), "http://google.com%20%20%20@foobar.com/");
@@ -609,7 +623,7 @@ int main(int argc, char *argv[])
          "www.meinestadt.de&url_plain=http");
   check("http: URL with empty path string", waba1.htmlURL(),
          "http://www.meinestadt.de&amp;url_plain=http");
- 
+
   check("http: URL with empty path string", waba1.path(),
          "");
 

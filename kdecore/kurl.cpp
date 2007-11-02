@@ -30,7 +30,6 @@
 #include <kglobal.h>
 #include <kidna.h>
 #include <kprotocolinfo.h>
-#include <kstringhandler.h>
 #endif
 
 #include <stdio.h>
@@ -1541,13 +1540,7 @@ QString KURL::prettyURL( int _trailing ) const
     u += "//";
     if ( hasUser() )
     {
-      QString s = m_strUser;
-#ifndef KDE_QT_ONLY
-      // shorten the username, its unlikely to be valid without password anyway
-      if (!hasPass())
-          s = KStringHandler::csqueeze(s, 16);
-#endif
-      u += encode(s, 0, 0);
+      u += encode(m_strUser, 0, 0);
       // Don't show password!
       u += "@";
     }
