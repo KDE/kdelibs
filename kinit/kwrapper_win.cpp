@@ -31,8 +31,9 @@
     into lib instead of bin. This requires to have the lib directory 
     in the PATH environment variable too (required for all pathes in KDEDIRS)
 
- TODO: There is an initial concept of setting KDEDIRS environment variable from 
-       a cache file located on a well known relative from the request application 
+ TODO: There is an prelimary concept of setting KDEDIRS environment variable 
+       from a cache file located on a well known path relative from the requested 
+       application. 
        The recent implementation expects a file name 'kdedirs.cache' two level 
        above this executable which will be <ProgramFiles> in case kwrapper4 lives 
        in <Programfiles>/kde4/bin. 
