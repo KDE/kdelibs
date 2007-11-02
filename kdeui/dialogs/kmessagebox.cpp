@@ -260,6 +260,13 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
         dialog->layout()->setSizeConstraint( QLayout::SetFixedSize );
     }
 
+    if ( (options & KMessageBox::Dangerous) ) {
+        if (dialog->isButtonEnabled(KDialog::Cancel))
+            dialog->setDefaultButton(KDialog::Cancel);
+        else if (dialog->isButtonEnabled(KDialog::No))
+            dialog->setDefaultButton(KDialog::No);
+    }
+
     KDialog::ButtonCode defaultCode = dialog->defaultButton();
     if ( defaultCode != KDialog::NoDefault ) {
         dialog->setButtonFocus( defaultCode );
