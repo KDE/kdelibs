@@ -133,6 +133,7 @@ Comment[de]=Benachrichtigung bei automatischem Ausweichen, wenn das bevorzugte G
 Comment[el]=Ειδοποίηση όταν γίνει αυτόματη αλλαγή στην εφεδρική συσκευή ήχου, αν η προκαθορισμένη δεν είναι διαθέσιμη
 Comment[ga]=Fógairt maidir le gléas tacachumais nuair nach bhfuil do rogha gléis ar fáil
 Comment[ja]=優先デバイスが利用できないために自動的にフォールバックしたときの通知
+Comment[km]=ការ​ជូន​ដំណឹង​អំពី fallback ស្វ័យ​ប្រវត្តិ​នៅពេល​ដែល​មិនមាន​ឧបករណ៍​ដែល​ចូលចិត្ត
 Comment[nds]=Bescheed, wenn de vörtrocken Reedschap nich verföögbor is un ansteed de Opbackreedschap bruukt warrt
 Comment[pt]=Notificação automática de último recurso se o dispositivo preferido estiver indisponível
 Comment[pt_BR]=Notificação de "fallback" automático se os dispositivos preferidos estiverem indisponíveis
