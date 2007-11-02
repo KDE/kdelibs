@@ -268,9 +268,20 @@ void KFilePlacesView::setUrl(const KUrl &url)
     if (placesModel==0) return;
 
     QModelIndex index = placesModel->closestItem(url);
+    QModelIndex current = selectionModel()->currentIndex();
 
     if (index.isValid()) {
-        if (d->currentUrl!=url && placesModel->isHidden(index)) {
+        if (current!=index && placesModel->isHidden(current)) {
+            KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
+            delegate->addDisappearingItem(current);
+
+            if (d->itemDisappearTimeline.state()!=QTimeLine::Running) {
+                delegate->setDisappearingItemProgress(0.0);
+                d->itemDisappearTimeline.start();
+            }
+        }
+
+        if (current!=index && placesModel->isHidden(index)) {
             KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
             delegate->addAppearingItem(index);
 
@@ -278,6 +289,8 @@ void KFilePlacesView::setUrl(const KUrl &url)
                 delegate->setAppearingItemProgress(0.0);
                 d->itemAppearTimeline.start();
             }
+
+            setRowHidden(index.row(), false);
         }
 
         d->currentUrl = url;
@@ -287,7 +300,9 @@ void KFilePlacesView::setUrl(const KUrl &url)
         selectionModel()->clear();
     }
 
-    d->updateHiddenRows();
+    if (!current.isValid()) {
+        d->updateHiddenRows();
+    }
 }
 
 void KFilePlacesView::setShowAll(bool showAll)
@@ -401,8 +416,9 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         placesModel->removePlace(index);
     } else if (hide != 0 && result == hide) {
         placesModel->setPlaceHidden(index, hide->isChecked());
+        QModelIndex current = placesModel->closestItem(d->currentUrl);
 
-        if (!d->showAll && hide->isChecked()) {
+        if (index!=current && !d->showAll && hide->isChecked()) {
             delegate->addDisappearingItem(index);
 
             if (d->itemDisappearTimeline.state()!=QTimeLine::Running) {
@@ -448,7 +464,11 @@ void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end
 
     for (int i=start; i<=end; ++i) {
         QModelIndex index = placesModel->index(i, 0, parent);
-        delegate->addAppearingItem(index);
+        if (d->showAll || !placesModel->isHidden(index)) {
+            delegate->addAppearingItem(index);
+        } else {
+            setRowHidden(i, true);
+        }
     }
 
     if (d->itemAppearTimeline.state()!=QTimeLine::Running) {
