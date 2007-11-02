@@ -162,12 +162,11 @@ class KSSLCNode {
 
 
 void KSSLD::cacheSaveToDisk() {
-    KSSLCNode *node;
 
-        KConfigGroup cg(cfg, "General");
+    KConfigGroup cg(cfg, "General");
 	cg.writeEntry("policies version", 2);
 
-	Q_FOREACH( node , certList ) {
+	Q_FOREACH( const KSSLCNode *node , certList ) {
 		if (node->permanent ||
 			node->expires > QDateTime::currentDateTime()) {
 			// First convert to a binary format and then write the
@@ -175,7 +174,7 @@ void KSSLD::cacheSaveToDisk() {
 			// KConfig
 			cg.changeGroup(node->cert->getMD5Digest());
 			cg.writeEntry("Certificate", node->cert->toString());
-			cg.writeEntry("Policy", node->policy);
+			cg.writeEntry("Policy", (int)node->policy);   // cast to avoid ICE in msvc
 			cg.writeEntry("Expires", node->expires);
 			cg.writeEntry("Permanent", node->permanent);
 			cg.writeEntry("Hosts", node->hosts);

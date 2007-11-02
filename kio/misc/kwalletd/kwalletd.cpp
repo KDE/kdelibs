@@ -231,7 +231,7 @@ int KWalletD::openPath(const QString& path, qlonglong wId, const QString& appid)
 	}
 
 	// FIXME: setup transaction
-	int rc = internalOpen(appid, path, true, wId, false);
+	int rc = internalOpen(appid, path, true, (WId)wId, false);
 	return rc;
 }
 
@@ -306,7 +306,7 @@ int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlo
 	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
 		// First use wizard
 		KWalletWizard *wiz = new KWalletWizard(0);
-		setupDialog( wiz, wId, appid, modal );
+		setupDialog( wiz, (WId)wId, appid, modal );
 		int rc = wiz->exec();
 		if (rc == QDialog::Accepted) {
 			bool useWallet = wiz->field("useWallet").toBool();
@@ -592,7 +592,7 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 	if (!w) {
 		handle = doTransactionOpen(appid, wallet, wId, false);
 		if (-1 == handle) {
-			KMessageBox::sorryWId(wId, i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
+			KMessageBox::sorryWId((WId)wId, i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
 			return;
 		}
 
@@ -606,19 +606,19 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.</qt>", Qt::escape(wallet)));
 	kpd->setCaption(i18n("KDE Wallet Service"));
 	kpd->setAllowEmptyPasswords(true);
-	setupDialog( kpd, wId, appid, false );
+	setupDialog( kpd, (WId)wId, appid, false );
 	if (kpd->exec() == KDialog::Accepted) {
 		QString p = kpd->password();
 		if (!p.isNull()) {
 			_passwords[wallet] = p.toUtf8();
 			int rc = w->close(p.toUtf8());
 			if (rc < 0) {
-				KMessageBox::sorryWId(wId, i18n("Error re-encrypting the wallet. Password was not changed."), i18n("KDE Wallet Service"));
+				KMessageBox::sorryWId((WId)wId, i18n("Error re-encrypting the wallet. Password was not changed."), i18n("KDE Wallet Service"));
 				reclose = true;
 			} else {
 				rc = w->open(p.toUtf8());
 				if (rc < 0) {
-					KMessageBox::sorryWId(wId, i18n("Error reopening the wallet. Data may be lost."), i18n("KDE Wallet Service"));
+					KMessageBox::sorryWId((WId)wId, i18n("Error reopening the wallet. Data may be lost."), i18n("KDE Wallet Service"));
 					reclose = true;
 				}
 			}
