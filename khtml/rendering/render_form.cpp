@@ -363,15 +363,32 @@ public:
             KCompletionBox::popup();
             return;
         }
-        bool blocked = pw->signalsBlocked();
         QPoint p = pw->pos();
-        pw->blockSignals(true);
-        pw->move( kwp->m_kwp->absolutePos() );
+        QPoint dest = p + QPoint(0, 500000);
+
+        bool blocked = pw->blockSignals(true);
+        QWidget* parent = pw->parentWidget();
+        QWidget* v = kwp->m_kwp->renderWidget()->view();
+        QWidget* last = 0;
+        // compute real on-screen position
+        while (KHTMLWidget*kw = dynamic_cast<KHTMLWidget*>(v)) {
+            if (!kw->m_kwp->isRedirected()) { break; }
+            dest += (v->pos() + QPoint(0, 500000));
+            KHTMLView* kv = static_cast<KHTMLView*>(v);        
+            v = kv->part()->parentPart() ? kv->part()->parentPart()->view() : 0;
+            last = v;
+        }
+        if (last)
+            pw->setParent(last);
+        pw->move( dest );
         pw->blockSignals(blocked);
 
         KCompletionBox::popup();
-        
-        pw->blockSignals(true);
+
+        blocked = pw->blockSignals(true);
+        v = kwp->m_kwp->renderWidget()->view();
+        if (last)
+            pw->setParent( parent );
         pw->move( p );
         pw->blockSignals(blocked);
     }
@@ -961,13 +978,31 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
 void ComboBoxWidget::showPopup()
 {
     QPoint p = pos();
+    QPoint dest = p + QPoint(0, 500000);
+
     bool blocked = blockSignals(true);
-    move( m_kwp->absolutePos() );
+    QWidget* parent = parentWidget();
+    QWidget* v = m_kwp->renderWidget()->view();
+    QWidget* last = 0;
+    // compute real on-screen position
+    while (KHTMLWidget*kw = dynamic_cast<KHTMLWidget*>(v)) {
+        if (!kw->m_kwp->isRedirected()) { break; }
+        dest += (v->pos() + QPoint(0, 500000));
+        KHTMLView* kv = static_cast<KHTMLView*>(v);        
+        v = kv->part()->parentPart() ? kv->part()->parentPart()->view() : 0;
+        last = v;
+    }
+    if (last)
+        setParent(last);
+    move( dest );
     blockSignals(blocked);
 
     KComboBox::showPopup();
 
     blocked = blockSignals(true);
+    v = m_kwp->renderWidget()->view();
+    if (last)
+        setParent( parent );
     move( p );
     blockSignals(blocked);
 }
