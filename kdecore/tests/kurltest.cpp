@@ -296,6 +296,9 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   carsten.setPath("/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
   QCOMPARE( carsten.path(), QString("/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18") );
 
+  KUrl longUserName("http://thisisaverylongusername@foobar.com/");
+  QCOMPARE(longUserName.prettyUrl(), QString("http://thisisaverylongusername@foobar.com/"));
+  QCOMPARE(KUrl(longUserName.prettyUrl()).url(), QString("http://thisisaverylongusername@foobar.com/"));
   KUrl whitespaceInUser("http://www.google.com%20%20%20%20%20@foobar.com/");
   QCOMPARE(whitespaceInUser.prettyUrl(), QString("http://www.go...m%20%20%20%20%20@foobar.com/"));
   KUrl whitespaceInPath("http://www.google.com/foo%20bar/");

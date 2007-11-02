@@ -924,9 +924,6 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 
   QString tmp = userName();
   if (!tmp.isEmpty()) {
-    if (!hasPass())
-      tmp = KStringHandler::csqueeze(tmp, 16);
-
     result += QUrl::toPercentEncoding(tmp);
     result += QLatin1Char('@');
   }
