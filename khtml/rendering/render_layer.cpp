@@ -908,15 +908,14 @@ void RenderLayer::setClip(QPainter* p, const QRect& paintDirtyRect, const QRect&
     if (paintDirtyRect == clipRect)
         return;
     KHTMLView* v = m_object->canvas()->view();
-    if (!v->clipHolder())
-        v->setClipHolder(new QStack<QRegion>);
-
     QRegion r = clipRect;
-    if (!v->clipHolder()->isEmpty())
+    if (p->hasClipping()) {
+        if (!v->clipHolder())
+            v->setClipHolder(new QStack<QRegion>);
+        v->clipHolder()->push( p->clipRegion() );
         r &= v->clipHolder()->top();
-    
+    }
     p->setClipRegion( r );
-    v->clipHolder()->push( r );
 }
 
 void RenderLayer::restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool /*cleanup*/)
@@ -924,9 +923,8 @@ void RenderLayer::restoreClip(QPainter* p, const QRect& paintDirtyRect, const QR
     if (paintDirtyRect == clipRect)
         return;
     KHTMLView* v = m_object->element()->getDocument()->view();
-    v->clipHolder()->pop();
-    if (!v->clipHolder()->isEmpty())
-        p->setClipRegion( v->clipHolder()->top() );
+    if (v->clipHolder() && !v->clipHolder()->isEmpty())
+        p->setClipRegion( v->clipHolder()->pop() );
     else
         p->setClipRegion( QRegion(), Qt::NoClip );
 }

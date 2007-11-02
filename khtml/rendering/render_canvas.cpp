@@ -211,7 +211,8 @@ void RenderCanvas::setNeedsWidgetMasks( bool b )
         return;
     m_needsWidgetMasks = b;
     KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(m_view);
-    if (k)
+    // ### should be reversible
+    if (k && b && k->m_kwp->isRedirected())
         k->m_kwp->setIsRedirected(!b);
 }
 

@@ -682,7 +682,12 @@ void KHTMLView::updateContents( const QRect& r )
 void KHTMLView::repaintContents(int x, int y, int w, int h)
 {
     applyTransforms(x, y, w, h);
-    widget()->repaint(x, y, w, h);
+    if (m_kwp->isRedirected()) {
+        QPoint off = m_kwp->absolutePos();
+        KHTMLView* pview = m_part->parentPart()->view();
+        pview->repaintContents(x+off.x(), y+off.y(), w, h);
+    } else
+        widget()->repaint(x, y, w, h);
 }
 
 void KHTMLView::repaintContents( const QRect& r )
@@ -1899,16 +1904,43 @@ void KHTMLView::doAutoScroll()
     }
 }
 
-static void handleWidget(QWidget* w, KHTMLView* view)
+// KHTML defines its own stacking order for any object and thus takes 
+// control of widget painting whenever it can. This is called "redirection".
+//
+// Redirected widgets are placed off screen. When they are declared as a child of our view (ChildPolished event),
+// an event filter is installed, so as to catch any paint event and translate them as update() of the view's main widget.
+//
+// Painting also happens spontaneously within widgets. In this case, the widget would update() parts of itself.
+// While this ordinarily results in a paintEvent being schedduled, it is not the case with off screen widgets. 
+// Thus update() is monitored by using the mechanism that deffers any update call happening during a paint event,
+// transforming it into a posted UpdateLater event. Hence the need to set Qt::WA_WState_InPaintEvent on redirected widgets.
+//
+// Once the UpdateLater event has been received, Qt::WA_WState_InPaintEvent is removed and the process continues
+// with the update of the corresponding rect on the view. That in turn will make our painting subsystem render() 
+// the widget at the correct stacking position.
+//
+// For non-redirected (e.g. external) widgets, z-order is honoured through masking. cf.RenderLayer::updateWidgetMasks
+
+static void handleWidget(QWidget* w, KHTMLView* view, bool recurse=true)
 {
     if (w->isWindow())
         return;
 
     if (!qobject_cast<QFrame*>(w))
 	w->setAttribute( Qt::WA_NoSystemBackground );
-    w->setAttribute(Qt::WA_WState_InPaintEvent); // ### horrible - FIXME (needs Qt change to Widget::update)
+
+    w->setAttribute(Qt::WA_WState_InPaintEvent);
     w->setAttribute(Qt::WA_OpaquePaintEvent);
     w->installEventFilter(view);
+    
+    if (!recurse)
+        return;
+    if (qobject_cast<KHTMLView*>(w)) {
+        handleWidget(static_cast<KHTMLView*>(w)->widget(), view, false);
+        handleWidget(static_cast<KHTMLView*>(w)->horizontalScrollBar(), view, false);
+        handleWidget(static_cast<KHTMLView*>(w)->verticalScrollBar(), view, false);
+        return;        
+    }
 
     QObjectList children = w->children();
     foreach (QObject* object, children) {
@@ -1959,12 +1991,22 @@ bool  KHTMLView::viewportEvent ( QEvent * e )
     return QScrollArea::viewportEvent(e);
 }
 
-static void setInPaintEventFlag(QWidget* w, bool b = true)
+static void setInPaintEventFlag(QWidget* w, bool b = true, bool recurse=true)
 {
       w->setAttribute(Qt::WA_WState_InPaintEvent, b);
+
+      if (!recurse)
+          return;
+      if (qobject_cast<KHTMLView*>(w)) {
+          setInPaintEventFlag(static_cast<KHTMLView*>(w)->widget(), b, false);
+          setInPaintEventFlag(static_cast<KHTMLView*>(w)->horizontalScrollBar(), b, false);
+          setInPaintEventFlag(static_cast<KHTMLView*>(w)->verticalScrollBar(), b, false);
+          return;
+      }
+
       foreach(QObject* cw, w->children()) {
-          if (cw->isWidgetType() && !(static_cast<QWidget*>(cw)->windowFlags() & Qt::Window) 
-                                 &&  !(static_cast<QWidget*>(cw)->windowModality() & Qt::ApplicationModal)) {
+          if (cw->isWidgetType() && ! static_cast<QWidget*>(cw)->isWindow() 
+                                 && !(static_cast<QWidget*>(cw)->windowModality() & Qt::ApplicationModal)) {
               setInPaintEventFlag(static_cast<QWidget*>(cw), b);
           }
       }
@@ -3161,6 +3203,40 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     m_part->xmlDocImpl()->setPaintDevice( this );
 }
 
+void KHTMLView::render(QPainter* p, const QRect& r, const QPoint& off)
+{
+
+    QRect clip(off.x()+r.x(), off.y()+r.y(),r.width(),r.height());
+    if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
+        p->fillRect(clip, palette().brush(QPalette::Active, QPalette::Base));
+        return;
+    }
+    m_part->xmlDocImpl()->setPaintDevice(p->device());
+
+    QRegion creg = p->clipRegion();
+    QTransform t = p->worldTransform();
+    QRect w = p->window();
+    QRect v = p->viewport();
+    bool vte = p->viewTransformEnabled();
+    bool wme = p->worldMatrixEnabled();
+
+    p->setClipRect(clip);
+    QRect rect = r.translated(contentsX(),contentsY());
+    p->translate(off.x()-contentsX(), off.y()-contentsY());
+
+    m_part->xmlDocImpl()->renderer()->layer()->paint(p, rect);
+
+    p->setWorldTransform(t);
+    p->setWindow(w);
+    p->setViewport(v);
+    p->setViewTransformEnabled( vte );
+    p->setWorldMatrixEnabled( wme );
+    if (!creg.isEmpty())
+        p->setClipRegion( creg );
+    else
+        p->setClipRegion(QRegion(), Qt::NoClip);
+    m_part->xmlDocImpl()->setPaintDevice( this );
+}
 
 void KHTMLView::setHasStaticBackground()
 {

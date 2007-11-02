@@ -531,12 +531,22 @@ void RenderWidget::paint(PaintInfo& paintInfo, int _tx, int _ty)
         paintWidget(paintInfo, m_widget, xPos, yPos);
 }
 
-static void setInPaintEventFlag(QWidget* w, bool b = true)
+static void setInPaintEventFlag(QWidget* w, bool b = true, bool recurse=true)
 {
       w->setAttribute(Qt::WA_WState_InPaintEvent, b);
+
+      if (!recurse)
+          return;
+      if (qobject_cast<KHTMLView*>(w)) {
+          setInPaintEventFlag(static_cast<KHTMLView*>(w)->widget(), b, false);
+          setInPaintEventFlag(static_cast<KHTMLView*>(w)->horizontalScrollBar(), b, false);
+          setInPaintEventFlag(static_cast<KHTMLView*>(w)->verticalScrollBar(), b, false);
+          return;
+      }
+
       foreach(QObject* o, w->children()) {
           QWidget* const cw = static_cast<QWidget*>(o);
-          if (o->isWidgetType() && !(cw->windowFlags() & Qt::Window)
+          if (o->isWidgetType() && ! cw->isWindow()
                                 && !(cw->windowModality() & Qt::ApplicationModal)) {
               setInPaintEventFlag(cw, b);
           }
@@ -547,13 +557,18 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
 {
     if (r.isNull() || r.isEmpty() )
         return;
-
+ 
     QPoint thePoint(tx, ty);
-    QMatrix m = p->worldMatrix();
-    thePoint = thePoint * m;
+    QTransform t = p->worldTransform();
+    bool vte = p->viewTransformEnabled();
+    bool wme = p->worldMatrixEnabled();
+    QRect w = p->window();
+    QRect v = p->viewport();
+    thePoint = thePoint * t;
     QRegion rg = p->clipRegion();
     QPaintDevice *d = p->device();
     QPaintDevice *x = d;
+    qreal op = p->opacity();
     if (buffered) {
         if (!widget->size().isValid())
             return;
@@ -569,17 +584,23 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
     setInPaintEventFlag( widget, false );
 
     widget->render( d, (buffered ? QPoint(0,0) : thePoint), r);
-    
+
     setInPaintEventFlag( widget );
 
     if (!buffered) {
         p->begin(x);
+        p->setWorldTransform(t);
+        p->setWindow(w);
+        p->setViewport(v);
+        p->setViewTransformEnabled( vte );
+        p->setWorldMatrixEnabled( wme );
         if (!rg.isEmpty())
-            p->setClipRegion( rg );
-        p->setWorldMatrix( m );
+            p->setClipRegion(rg);
+        if (op < 1.0f)
+            p->setOpacity(op);
     } else {
         // transfer results
-        p->drawPixmap(QPoint(tx, ty), static_cast<QPixmap&>(*d), r);
+        p->drawPixmap(thePoint, static_cast<QPixmap&>(*d), r);
         PaintBuffer::release();
     }
 }
@@ -594,8 +615,34 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
     QRect rr = pI.r;
     rr.translate(-tx, -ty);
     const QRect r = widget->rect().intersect( rr );
-    copyWidget(r, p, widget, tx, ty, buffered);
-
+    if ( KHTMLView* v = qobject_cast<KHTMLView*>( widget ) ) {
+        QPoint thePoint(tx, ty);
+        QTransform t  = p->worldTransform();
+        thePoint = thePoint * t;
+        if (v->verticalScrollBar()->isVisible()) {
+            QRect vbr = v->verticalScrollBar()->rect();
+            QPoint of = v->verticalScrollBar()->mapTo(v, QPoint(vbr.x(), vbr.y()));
+            vbr.translate( of );
+            vbr &= r;
+            vbr.translate( -of );
+            if (vbr.isValid() && !vbr.isEmpty())
+                copyWidget(vbr, p, v->verticalScrollBar(), tx+of.x(), ty+of.y(), buffered);
+        }
+        if (v->horizontalScrollBar()->isVisible()) {
+            QRect hbr = v->horizontalScrollBar()->rect();
+            QPoint of = v->horizontalScrollBar()->mapTo(v, QPoint(hbr.x(), hbr.y()));
+            hbr.translate( of );
+            hbr &= r;
+            hbr.translate( -of );
+            if (hbr.isValid() && !hbr.isEmpty())
+                copyWidget(hbr, p, v->horizontalScrollBar(), tx+ of.x(), ty+ of.y(), buffered);
+        }
+        QRect vr = (r & v->viewport()->rect());
+        if (vr.isValid() && !vr.isEmpty())
+            v->render(p, vr, thePoint);
+    } else {
+        copyWidget(r, p, widget, tx, ty, buffered);
+    }
     allowWidgetPaintEvents = false;
 }
 
