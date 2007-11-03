@@ -557,6 +557,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	//hide the editor widget chen its item becomes hidden
 	QObject::connect(ui.searchFilter->searchLine(), SIGNAL(hiddenChanged(QTreeWidgetItem *, bool)),
 	                 delegate, SLOT(hiddenBySearchLine(QTreeWidgetItem *, bool)));
+	ui.searchFilter->setFocus();
 }
 
 

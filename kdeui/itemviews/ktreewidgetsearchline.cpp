@@ -567,7 +567,8 @@ KTreeWidgetSearchLineWidget::KTreeWidgetSearchLineWidget( QWidget *parent, QTree
 {
   d->treeWidget = treeWidget;
 
-  QTimer::singleShot( 0, this, SLOT( createWidgets() ) );
+  createWidgets();
+
 }
 
 KTreeWidgetSearchLineWidget::~KTreeWidgetSearchLineWidget()
@@ -594,6 +595,7 @@ void KTreeWidgetSearchLineWidget::createWidgets()
   layout->setMargin( 0 );
   layout->addWidget( label );
   layout->addWidget( d->searchLine );
+  setFocusProxy( searchLine() );
 }
 
 KTreeWidgetSearchLine *KTreeWidgetSearchLineWidget::searchLine() const
