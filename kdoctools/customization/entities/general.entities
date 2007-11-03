@@ -228,6 +228,7 @@
 <!ENTITY kig	"<application>Kig</application>">
 <!ENTITY kikbd	"<application>kikbd</application>">
 <!ENTITY kinfocenter    "<application>KInfoCenter</application>">
+<!ENTITY kiriki	"<application>Kiriki</application>">
 <!ENTITY kit	"<application>Kit</application>">
 <!ENTITY kitchensync        "<application>KitchenSync</application>">
 <!ENTITY kiten	"<application>Kiten</application>">
