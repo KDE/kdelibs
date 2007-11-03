@@ -45,29 +45,32 @@ public:
     }
 
     void updateOntologyCache() {
-        ontoCache.clear();
+//        ontoCache.clear();
 
         QStringList allOntologies = KGlobal::dirs()->findAllResources( "data", "nepomuk/ontologies/*.desktop" );
         foreach( QString ontoDesktopFilePath, allOntologies ) {
             KDesktopFile ontoDesktopFile( ontoDesktopFilePath );
 
             if ( ontoDesktopFile.hasLinkType() ) {
-                QString uri = ontoDesktopFile.readUrl();
-                QString path = ontoDesktopFile.readPath();
+                QUrl uri = ontoDesktopFile.readUrl();
 
-                // make it an absolute path
-                if ( path[0] != QDir::separator() ) {
-                    path.prepend( ontoDesktopFilePath.section( QDir::separator(),
-                                                               0, -2,
-                                                               QString::SectionIncludeLeadingSep|QString::SectionIncludeTrailingSep ) );
+                if ( !ontoCache.contains( uri ) ) {
+                    QString path = ontoDesktopFile.readPath();
+
+                    // make it an absolute path
+                    if ( path[0] != QDir::separator() ) {
+                        path.prepend( ontoDesktopFilePath.section( QDir::separator(),
+                                                                   0, -2,
+                                                                   QString::SectionIncludeLeadingSep|QString::SectionIncludeTrailingSep ) );
+                    }
+
+                    OntoBuffer onto;
+                    onto.fileName = path;
+                    onto.serialization = Soprano::mimeTypeToSerialization( ontoDesktopFile.desktopGroup().readEntry( "MimeType", "application/rdf+xml" ) );
+
+                    kDebug() << "(Nepomuk::DesktopOntologyLoader) found ontology " << uri;
+                    ontoCache.insert( uri, onto );
                 }
-
-                OntoBuffer onto;
-                onto.fileName = path;
-                onto.serialization = Soprano::mimeTypeToSerialization( ontoDesktopFile.desktopGroup().readEntry( "MimeType", "application/rdf+xml" ) );
-
-                kDebug() << "(Nepomuk::DesktopOntologyLoader) found ontology " << QUrl(uri);
-                ontoCache.insert( QUrl( uri ), onto );
             }
         }
     }
