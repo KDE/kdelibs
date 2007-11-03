@@ -320,7 +320,7 @@ void EntryView::setTheAaronnesqueStyle()
 
 void EntryView::urlSelected( const QString &link)
 {
-    kDebug() << "Clicked on URL " << link;
+    //kDebug() << "Clicked on URL " << link;
 
     KUrl url( link );
     QString urlProtocol = url.protocol();
@@ -469,7 +469,7 @@ void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::MessageT
 
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
-        kDebug() << "starting the message timer for " << timeOutMs;
+        //kDebug() << "starting the message timer for " << timeOutMs;
         messageTimer->start( timeOutMs );
     }
 }
@@ -533,7 +533,7 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
     for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); ++it)
     {
         KNS::Category *category = (*it);
-        kDebug() << "Category: " << category->name().representation();
+        //kDebug() << "Category: " << category->name().representation();
         QPixmap icon = DesktopIcon(category->icon().url(), 16);
         // FIXME: use icon from remote URLs (see non-DXS providers as well)
         typeCombo->addItem(icon, category->name().representation());
@@ -568,7 +568,7 @@ void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *pr
 	// FIXME: what if entry belongs to more than one provider at once?
 	providers[entry] = provider;
 
-	kDebug() << "downloaddialog: addEntry to list of size " << entries.size();
+	//kDebug() << "downloaddialog: addEntry to list of size " << entries.size();
 }
 
 void DownloadDialog::refresh()
@@ -582,7 +582,7 @@ void DownloadDialog::refresh()
 		const Feed *feed = entries.keys().at(i);
 		if(!feed)
 		{
-			kDebug() << "INVALID FEED?!";
+			//kDebug() << "INVALID FEED?!";
 			continue;
 		}
 		//QPixmap icon = DesktopIcon(QString(), 16);

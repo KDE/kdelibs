@@ -41,7 +41,7 @@ EntryLoader::EntryLoader(QObject* parent)
 
 void EntryLoader::load(const Provider *provider, const Feed *feed)
 {
-  kDebug(550) << "EntryLoader::load()";
+  //kDebug(550) << "EntryLoader::load()";
 
   m_provider = provider;
   m_feed = feed;
@@ -50,7 +50,7 @@ void EntryLoader::load(const Provider *provider, const Feed *feed)
   m_jobdata.clear();
 
   KUrl stuffurl = feed->feedUrl();
-  kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl.url();
+  //kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl.url();
   
   KIO::TransferJob *job = KIO::get( stuffurl, KIO::NoReload, KIO::HideProgressInfo );
   connect( job, SIGNAL( result( KJob * ) ),
@@ -71,7 +71,7 @@ const Provider *EntryLoader::provider() const
 
 void EntryLoader::slotJobData( KIO::Job *, const QByteArray &data )
 {
-  kDebug(550) << "EntryLoader::slotJobData()";
+  //kDebug(550) << "EntryLoader::slotJobData()";
 
   m_jobdata.append(data);
 }
@@ -85,9 +85,9 @@ void EntryLoader::slotJobResult( KJob *job )
 
   //QString contents = QString::fromUtf8(m_jobdata);
 
-  kDebug(550) << "--ENTRIES-START--";
-  kDebug(550) << QString::fromUtf8(m_jobdata);
-  kDebug(550) << "--ENTRIES-END--";
+  //kDebug(550) << "--ENTRIES-START--";
+  //kDebug(550) << QString::fromUtf8(m_jobdata);
+  //kDebug(550) << "--ENTRIES-END--";
 
   QDomDocument doc;
   if ( !doc.setContent( m_jobdata ) ) {

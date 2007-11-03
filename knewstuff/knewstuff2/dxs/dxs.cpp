@@ -180,7 +180,7 @@ void Dxs::slotError()
 
 void Dxs::slotResult(QDomNode node)
 {
-	kDebug() << "LOCALNAME: " << m_soap->localname(node);
+	//kDebug() << "LOCALNAME: " << m_soap->localname(node);
 
 	bool success = true;
 	if(m_soap->localname(node) == "Fault")
@@ -237,7 +237,7 @@ void Dxs::slotResult(QDomNode node)
 
 			entries << entry;
 
-			kDebug() << "ENTRY: " << entry->name().representation() << " by " << entry->author().name();
+			//kDebug() << "ENTRY: " << entry->name().representation() << " by " << entry->author().name();
 		}
 
 		emit signalEntries(entries);
@@ -265,7 +265,7 @@ void Dxs::slotResult(QDomNode node)
 
 			QString version = m_soap->xpath(node, "/version");
 			QString changelog = m_soap->xpath(node, "/changelog");
-			kDebug() << "CHANGELOG: " << version << " " << changelog;
+			//kDebug() << "CHANGELOG: " << version << " " << changelog;
 
 			changes << changelog;
 		}

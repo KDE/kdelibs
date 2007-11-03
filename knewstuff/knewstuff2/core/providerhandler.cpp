@@ -214,7 +214,7 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
 
   if((provider.noUploadUrl().isValid()) && (provider.uploadUrl().isValid()))
   {
-  	kWarning(550) << "ProviderHandler: both uploadurl and nouploadurl given";
+  	//kWarning(550) << "ProviderHandler: both uploadurl and nouploadurl given";
   	return provider;
   }
 
@@ -222,7 +222,7 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
   {
   	if(!provider.webService().isValid())
 	{
-  		kWarning(550) << "ProviderHandler: neither uploadurl nor nouploadurl nor DXS given";
+  		//kWarning(550) << "ProviderHandler: neither uploadurl nor nouploadurl nor DXS given";
   		return provider;
 	}
   }

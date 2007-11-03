@@ -44,7 +44,7 @@ QAsyncPixmap::QAsyncPixmap(const QString& url, QObject* parent)
 
 void QAsyncPixmap::slotDownload(KJob *job)
 {
-    kDebug(550) << "DOWNLOAD";
+    //kDebug(550) << "DOWNLOAD";
     if(job->error())
     {
         // XXX ???
@@ -52,8 +52,8 @@ void QAsyncPixmap::slotDownload(KJob *job)
     }
     bool ret = load(m_dest);
 //    QFile::remove(m_dest);
-    kDebug(550) << "DOWNLOADed to " << m_dest;
-    kDebug(550) << "ret = " << ret;
+    //kDebug(550) << "DOWNLOADed to " << m_dest;
+    //kDebug(550) << "ret = " << ret;
 
     emit signalLoaded(*this);
 }

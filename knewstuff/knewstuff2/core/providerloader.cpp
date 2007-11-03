@@ -39,12 +39,12 @@ ProviderLoader::ProviderLoader(QObject* parent)
 
 void ProviderLoader::load(const QString &providersurl)
 {
-  kDebug(550) << "ProviderLoader::load()";
+  //kDebug(550) << "ProviderLoader::load()";
 
   m_providers.clear();
   m_jobdata.clear();
 
-  kDebug(550) << "ProviderLoader::load(): providersUrl: " << providersurl;
+  //kDebug(550) << "ProviderLoader::load(): providersUrl: " << providersurl;
   
   KIO::TransferJob *job = KIO::get( KUrl( providersurl ), KIO::NoReload, KIO::HideProgressInfo );
   connect( job, SIGNAL( result( KJob * ) ),
@@ -55,7 +55,7 @@ void ProviderLoader::load(const QString &providersurl)
 
 void ProviderLoader::slotJobData( KIO::Job *, const QByteArray &data )
 {
-  kDebug(550) << "ProviderLoader::slotJobData()";
+  //kDebug(550) << "ProviderLoader::slotJobData()";
 
   m_jobdata.append(data);
 }
@@ -67,9 +67,9 @@ void ProviderLoader::slotJobResult( KJob *job )
     return;
   }
 
-  kDebug(550) << "--PROVIDERS-START--";
-  kDebug(550) << QString::fromUtf8(m_jobdata);
-  kDebug(550) << "--PROVIDERS-END--";
+  //kDebug(550) << "--PROVIDERS-START--";
+  //kDebug(550) << QString::fromUtf8(m_jobdata);
+  //kDebug(550) << "--PROVIDERS-END--";
 
   QDomDocument doc;
   if ( !doc.setContent( m_jobdata ) ) {
