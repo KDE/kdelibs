@@ -1099,8 +1099,6 @@ void KHTMLView::mousePressEvent( QMouseEvent *_mouse )
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
 
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
-    if (r && r->isWidget())
-	_mouse->ignore();
 
     if (!swallowEvent) {
 	emit m_part->nodeActivated(mev.innerNode);
