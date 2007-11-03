@@ -383,7 +383,7 @@ Connection::Connection(QObject *parent)
 Connection::~Connection()
 {
     close();
-    delete d;
+//    delete d;  deleting causes crashes
 }
 
 void Connection::suspend()
