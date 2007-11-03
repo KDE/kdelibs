@@ -364,31 +364,20 @@ public:
             return;
         }
         QPoint p = pw->pos();
-        QPoint dest = p + QPoint(0, 500000);
-
-        bool blocked = pw->blockSignals(true);
+        QPoint dest;
         QWidget* parent = pw->parentWidget();
-        QWidget* v = kwp->m_kwp->renderWidget()->view();
-        QWidget* last = 0;
-        // compute real on-screen position
-        while (KHTMLWidget*kw = dynamic_cast<KHTMLWidget*>(v)) {
-            if (!kw->m_kwp->isRedirected()) { break; }
-            dest += (v->pos() + QPoint(0, 500000));
-            KHTMLView* kv = static_cast<KHTMLView*>(v);        
-            v = kv->part()->parentPart() ? kv->part()->parentPart()->view() : 0;
-            last = v;
-        }
-        if (last)
-            pw->setParent(last);
+        KHTMLView* v = kwp->m_kwp->rootViewPos(dest);
+        bool blocked = pw->blockSignals(true);
+        if (v != parent)
+            pw->setParent(v);
         pw->move( dest );
         pw->blockSignals(blocked);
 
         KCompletionBox::popup();
 
         blocked = pw->blockSignals(true);
-        v = kwp->m_kwp->renderWidget()->view();
-        if (last)
-            pw->setParent( parent );
+        if (v != parent)
+            pw->setParent(parent);
         pw->move( p );
         pw->blockSignals(blocked);
     }
@@ -966,6 +955,18 @@ RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
 
 // -------------------------------------------------------------------------------
 
+bool ListBoxWidget::event( QEvent * event )
+{
+    // accept all wheel events so that they are not propagated to the view
+    // once either end of the list is reached.
+    bool ret = KListWidget::event(event);
+    if (event->type() == QEvent::Wheel) {
+        event->accept();
+        ret = true;
+    }
+    return ret;
+}
+
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
     : KComboBox(false, parent)
 {
@@ -978,31 +979,20 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
 void ComboBoxWidget::showPopup()
 {
     QPoint p = pos();
-    QPoint dest = p + QPoint(0, 500000);
-
-    bool blocked = blockSignals(true);
+    QPoint dest;
     QWidget* parent = parentWidget();
-    QWidget* v = m_kwp->renderWidget()->view();
-    QWidget* last = 0;
-    // compute real on-screen position
-    while (KHTMLWidget*kw = dynamic_cast<KHTMLWidget*>(v)) {
-        if (!kw->m_kwp->isRedirected()) { break; }
-        dest += (v->pos() + QPoint(0, 500000));
-        KHTMLView* kv = static_cast<KHTMLView*>(v);        
-        v = kv->part()->parentPart() ? kv->part()->parentPart()->view() : 0;
-        last = v;
-    }
-    if (last)
-        setParent(last);
+    KHTMLView* v = m_kwp->rootViewPos(dest);
+    bool blocked = blockSignals(true);
+    if (v != parent)
+        setParent(v);
     move( dest );
     blockSignals(blocked);
 
     KComboBox::showPopup();
 
     blocked = blockSignals(true);
-    v = m_kwp->renderWidget()->view();
-    if (last)
-        setParent( parent );
+    if (v != parent)
+        setParent(parent);
     move( p );
     blockSignals(blocked);
 }
@@ -1674,7 +1664,14 @@ bool TextAreaWidget::event( QEvent *e )
         }
     }
 #endif
-    return KTextEdit::event( e );
+    // accept all wheel events so that they are not propagated to the view
+    // once either end of the widget is reached.
+    bool ret = KTextEdit::event(e);
+    if (e->type() == QEvent::Wheel) {
+        e->accept();
+        ret = true;
+    }
+    return ret;
 }
 
 // -------------------------------------------------------------------------

@@ -405,7 +405,7 @@ private:
     bool focusNodeWithAccessKey(QChar c, KHTMLView* caller = NULL);
     QMap< DOM::ElementImpl*, QChar > buildFallbackAccessKeys() const;
     void displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVector< QChar >& taken, bool use_fallbacks );
-
+    bool isScrollingFromMouseWheel() const;
     void setHasStaticBackground();
     void applyTransforms( int& x, int& y, int& w, int& h) const;
     void revertTransforms( int& x, int& y, int& w, int& h) const;

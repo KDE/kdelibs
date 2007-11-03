@@ -143,6 +143,7 @@ public:
 	m_editorContext = 0;
 #endif // KHTML_NO_CARET
         postponed_autorepeat = NULL;
+        scrollingFromWheelTimerId = 0;
         reset();
         vpolicy = Qt::ScrollBarAsNeeded;
  	hpolicy = Qt::ScrollBarAsNeeded;
@@ -208,6 +209,7 @@ public:
         scrollBarMoved = false;
         contentsMoving = false;
         ignoreWheelEvents = false;
+        scrollingFromWheel = QPoint(-1,-1);
 	borderX = 30;
 	borderY = 30;
         paged = false;
@@ -382,6 +384,8 @@ public:
     // scrolling activated by MMB
     short m_mouseScroll_byX;
     short m_mouseScroll_byY;
+    QPoint scrollingFromWheel;
+    int scrollingFromWheelTimerId;
     QTimer *m_mouseScrollTimer;
     QWidget *m_mouseScrollIndicator;
     QPointer<QWidget> m_mouseEventsTarget;
@@ -2511,7 +2515,10 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
         m_part->parentPart()->view()->displayAccessKeys( this, origview, taken, use_fallbacks );
 }
 
-
+bool KHTMLView::isScrollingFromMouseWheel() const
+{
+    return d->scrollingFromWheel != QPoint(-1,-1);
+}
 
 void KHTMLView::accessKeysTimeout()
 {
@@ -3497,6 +3504,11 @@ void KHTMLView::setIgnoreWheelEvents( bool e )
 
 void KHTMLView::wheelEvent(QWheelEvent* e)
 {
+    // check if we should reset the state of the indicator describing if 
+    // we are currently scrolling the view as a result of wheel events
+    if (d->scrollingFromWheel != QPoint(-1,-1) && d->scrollingFromWheel != QCursor::pos())
+        d->scrollingFromWheel = d->scrollingFromWheelTimerId ? QCursor::pos() : QPoint(-1,-1);
+
     if (d->accessKeysEnabled && d->accessKeysPreActivate) d->accessKeysPreActivate=false;
 
     if ( ( e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier )
@@ -3508,7 +3520,8 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
     {
         e->accept();
     }
-    else if( (   (e->orientation() == Qt::Vertical &&
+    else if( !m_kwp->isRedirected() && 
+             (   (e->orientation() == Qt::Vertical &&
                    ((d->ignoreWheelEvents && !verticalScrollBar()->isVisible())
                      || e->delta() > 0 && contentsY() <= 0
                      || e->delta() < 0 && contentsY() >= contentsHeight() - visibleHeight()))
@@ -3525,20 +3538,29 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
     }
     else
     {
+        int xm = e->x();
+        int ym = e->y();
+        revertTransforms(xm, ym);
+
         DOM::NodeImpl::MouseEvent mev( e->buttons(), DOM::NodeImpl::MouseWheel );
-        m_part->xmlDocImpl()->prepareMouseEvent( false, e->x(), e->y(), &mev );
+        m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
         MouseEventImpl::Orientation o = MouseEventImpl::OVertical;
         if (e->orientation() == Qt::Horizontal)
             o = MouseEventImpl::OHorizontal;
-
-        QMouseEvent _mouse(QEvent::MouseMove, e->pos(), Qt::NoButton, e->buttons(), e->modifiers());
+       
+        QMouseEvent _mouse(QEvent::MouseMove, QPoint(xm,ym), Qt::NoButton, e->buttons(), e->modifiers());
         bool swallow = dispatchMouseEvent(EventImpl::KHTML_MOUSEWHEEL_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),
                                                true,-e->delta()/40,&_mouse,true,DOM::NodeImpl::MouseWheel,o);
+
         if (swallow)
             return;
 
         d->scrollBarMoved = true;
+        d->scrollingFromWheel = QCursor::pos();
+        if (d->scrollingFromWheelTimerId)
+            killTimer(d->scrollingFromWheelTimerId);
+        d->scrollingFromWheelTimerId = startTimer(200);
         QScrollArea::wheelEvent( e );
     }
 
@@ -3729,7 +3751,10 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         }
         return;
     }
-    else if ( e->timerId() == d->layoutTimerId ) {
+    else if ( e->timerId() == d->scrollingFromWheelTimerId ) {
+        killTimer( d->scrollingFromWheelTimerId );
+        d->scrollingFromWheelTimerId = 0;
+    } else if ( e->timerId() == d->layoutTimerId ) {
         d->dirtyLayout = true;
         layout();
         if (d->firstRelayout) {

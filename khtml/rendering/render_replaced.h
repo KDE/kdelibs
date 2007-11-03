@@ -170,6 +170,7 @@ class KHTMLWidgetPrivate
 public:
     KHTMLWidgetPrivate(): m_rw(0), m_redirected(false) {}
     QPoint absolutePos();
+    KHTMLView* rootViewPos(QPoint& pos);
     RenderWidget* renderWidget() const { return m_rw; }
     void setRenderWidget(RenderWidget* rw) { m_rw = rw; }
     bool isRedirected() const { return m_redirected; }

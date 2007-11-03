@@ -35,6 +35,7 @@
 #include <QtGui/QActionEvent>
 #include <QtGui/QApplication>
 #include <QtGui/QLineEdit>
+#include <QtGui/QComboBox>
 #include <kglobalsettings.h>
 #include <kurlrequester.h>
 #include <QtCore/QObject>
@@ -270,8 +271,8 @@ void RenderWidget::setQWidget(QWidget *widget)
             if (k)
                 k->m_kwp->setRenderWidget(this);
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
+            m_widget->installEventFilter(this);
             if (isRedirectedWidget()) {
-                m_widget->installEventFilter(this);
                 if (!qobject_cast<QFrame*>(m_widget))
                     m_widget->setAttribute( Qt::WA_NoSystemBackground );
             }
@@ -649,7 +650,7 @@ void RenderWidget::paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty)
 bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 {
     // no special event processing if this is a frame (in which case KHTMLView handles it all)
-    if ( qobject_cast<KHTMLView*>( m_widget ) )
+    if ( qobject_cast<KHTMLView*>( m_widget ) || isRedirectedWidget() )
         return false;
     if ( !element() ) return true;
 
@@ -695,6 +696,22 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 //             if ( ext )  ext->editableWidgetFocused( m_widget );
 //         }
         break;
+    case QEvent::Wheel: {
+       if (widget()->parentWidget() == view()->widget()) {
+            bool vertical = ( static_cast<QWheelEvent*>(e)->orientation() == Qt::Vertical );
+            // don't allow the widget to react to wheel event if
+            // the view is being scrolled by mouse wheel
+            // This does not apply if the webpage has no valid scroll range in the given wheel event orientation.
+            if ( ((vertical && (view()->contentsHeight() > view()->visibleHeight()))  ||
+                  (!vertical && (view()->contentsWidth() > view()->visibleWidth()))) &&
+                   view()->isScrollingFromMouseWheel() )  {
+                static_cast<QWheelEvent*>(e)->ignore();
+                QApplication::sendEvent(view(), e);
+                filtered = true;
+            }
+        }
+        break;
+    }
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
     // TODO this seems wrong - Qt events are not correctly translated to DOM ones,
@@ -867,7 +884,8 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             if (!target || (!::qobject_cast<QScrollBar*>(target) && 
                             !::qobject_cast<KUrlRequester*>(m_widget)))
                 target = m_widget;
-            view()->setMouseEventsTarget( target );
+            if ( button == Qt::LeftButton )
+                view()->setMouseEventsTarget( target );
         } else {
             target = view()->mouseEventsTarget();
             if (target) {
@@ -883,26 +901,17 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
 
         bool needContextMenuEvent = (type == QMouseEvent::MouseButtonPress && button == Qt::RightButton);
         bool isMouseWheel = (ev.id() == EventImpl::KHTML_MOUSEWHEEL_EVENT);
+
         if (isMouseWheel) {
-            // don't allow the widget to react to wheel event unless it's
-            // currently focused. this avoids accidentally changing a select box
-            // or something while wheeling a webpage.
+            // don't allow the widget to react to wheel event if
+            // a) the view is being scrolled by mouse wheel
+            // b) it's an unfocused ComboBox (for extra security against unwanted changes to formulars)
             // This does not apply if the webpage has no valid scroll range in the given wheel event orientation.
             if ( ((orient == Qt::Vertical && (view()->contentsHeight() > view()->visibleHeight()))  ||
                   (orient == Qt::Horizontal && (view()->contentsWidth() > view()->visibleWidth()))) &&
-                  (!document()->focusNode() || document()->focusNode()->renderer() != this) )  {
-                ret = false;
-                break;
-            }
-            QPoint gp = QCursor::pos();
-            QRect r = target->rect();
-            QPoint glob = view()->mapToGlobal( QPoint(0,0) );
-            int x, y;
-            absolutePosition(x,y);
-            glob.setX( glob.x() + x );
-            glob.setY( glob.y() + y );
-            r.translate( glob );
-            if (!r.contains(gp)) {
+                  ( view()->isScrollingFromMouseWheel() ||
+                    (qobject_cast<QComboBox*>(m_widget) && 
+                     (!document()->focusNode() || document()->focusNode()->renderer() != this) )))  {
                 ret = false;
                 break;
             }
@@ -922,7 +931,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             QHoverEvent he( QEvent::HoverMove, p, p );
             QApplication::sendEvent(target, &he);
         }
-        if (ev.id() == EventImpl::MOUSEUP_EVENT && button == Qt::LeftButton) {
+        if (ev.id() == EventImpl::MOUSEUP_EVENT) {
             view()->setMouseEventsTarget( 0 );
         }
         delete e;
@@ -1034,6 +1043,28 @@ QPoint KHTMLWidgetPrivate::absolutePos()
         x += m_rw->borderLeft()+m_rw->paddingLeft();
         y += m_rw->borderTop()+m_rw->paddingTop();
         return QPoint(x, y);
+}
+
+KHTMLView* KHTMLWidgetPrivate::rootViewPos(QPoint& pos)
+{
+    if (!m_rw || !m_rw->widget()) {
+        pos = QPoint();
+        return 0;
+    }
+    pos = absolutePos();
+    KHTMLView* v = m_rw->view();
+    KHTMLView* last = 0;
+    while (v) {
+        last = v;
+        pos.setX( pos.x() - v->contentsX() );
+        pos.setY( pos.y() - v->contentsY() );
+        KHTMLWidget*kw = dynamic_cast<KHTMLWidget*>(v);
+        if (!kw || !kw->m_kwp->isRedirected()) 
+            break;
+        pos += kw->m_kwp->absolutePos();
+        v = v->part()->parentPart() ? v->part()->parentPart()->view() : 0;
+    }
+    return last;
 }
 
 // -----------------------------------------------------------------------------

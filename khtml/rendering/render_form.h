@@ -404,7 +404,7 @@ protected:
     {
         viewport()->update();
     }
-        
+    virtual bool event( QEvent * event );
 };
 
 class RenderSelect : public RenderFormElement
