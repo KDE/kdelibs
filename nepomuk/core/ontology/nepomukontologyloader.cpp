@@ -56,7 +56,7 @@ QList<Soprano::Statement> Nepomuk::NepomukOntologyLoader::loadOntology( const QU
     if ( Soprano::Model* model = d->client.createModel( "main" ) ) {
         // get the complete named graph describing the ontology
         Soprano::QueryResultIterator it = model->executeQuery( QString( "construct {?s ?p ?o} "
-                                                                        "where GRAPH <%1> { ?s ?p ?o. }" )
+                                                                        "where { GRAPH <%1> { ?s ?p ?o } . }" )
                                                                .arg( uri.toString() ),
                                                                Soprano::Query::QUERY_LANGUAGE_SPARQL );
         while ( it.next() ) {
