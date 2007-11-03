@@ -471,7 +471,7 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 
     if (m_input->autoComplete()) {
         popup->addSeparator();
-        QAction* act = popup->addAction( KIcon("history-clear"), i18n("Clear &History"));
+        QAction* act = popup->addAction( KIcon("edit-clear-history"), i18n("Clear &History"));
         act->setEnabled(compObj() && !compObj()->isEmpty());
         connect(act, SIGNAL(triggered()),
                 this, SLOT(clearHistoryActivated()));
