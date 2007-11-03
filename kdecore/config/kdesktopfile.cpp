@@ -345,9 +345,9 @@ KDesktopFile::sortOrder() const
 QString KDesktopFile::readDocPath() const
 {
   Q_D(const KDesktopFile);
+  // Both keys are KDE extensions
   if(d->desktopGroup.hasKey( "DocPath" ))
-    // NOT readPathEntry (see readPath())
-    return d->desktopGroup.readEntry( "DocPath", QString() );
+    return d->desktopGroup.readPathEntry( "DocPath", QString() );
   return d->desktopGroup.readPathEntry( "X-DocPath", QString() );
 }
 
