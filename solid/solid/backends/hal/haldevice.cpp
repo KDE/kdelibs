@@ -222,7 +222,7 @@ QString HalDevice::icon() const
     } else if (category=="battery") {
         return "battery";
     } else if (category=="processor") {
-        return "ksim-cpu"; // FIXME: Doesn't follow icon spec
+        return "cpu"; // FIXME: Doesn't follow icon spec
     } else if (category=="video4linux") {
         return "camera-web";
     }

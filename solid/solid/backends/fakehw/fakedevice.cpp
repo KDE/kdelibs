@@ -113,7 +113,7 @@ QString FakeDevice::icon() const
     } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
         return "camera-unmount";
     } else if(queryDeviceInterface(Solid::DeviceInterface::Processor)) {
-        return "ksim-cpu";
+        return "cpu";
     } else if (queryDeviceInterface(Solid::DeviceInterface::StorageDrive)) {
         return "hdd-unmount";
     } else if (queryDeviceInterface(Solid::DeviceInterface::Block)) {
