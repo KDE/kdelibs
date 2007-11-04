@@ -55,7 +55,7 @@ check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, 
 check_include_files(alloca.h      HAVE_ALLOCA_H)                       # kdecore, khtml
 check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kdecore
 check_include_files(limits.h      HAVE_LIMITS_H)                       # various
-check_include_files(mntent.h      HAVE_MNTENT_H)                       # kio, kdecore
+check_include_files(mntent.h      HAVE_MNTENT_H)                       # solid, kio, kdecore
 check_include_files(sysent.h      HAVE_SYSENT_H)                       # kdecore
 check_include_files(sys/bitypes.h HAVE_SYS_BITYPES_H)                  # kwallet
 check_include_files("sys/types.h;sys/mman.h" HAVE_SYS_MMAN_H)          # kdecore
@@ -65,7 +65,7 @@ check_include_files(sys/types.h   HAVE_SYS_TYPES_H)                    # various
 check_include_files(sys/select.h  HAVE_SYS_SELECT_H)                   # various
 check_include_files(sys/param.h   HAVE_SYS_PARAM_H)                    # various
 check_include_files("stdio.h;sys/mnttab.h"  HAVE_SYS_MNTTAB_H)         # kio, kdecore
-check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)                   # kio, kdecore
+check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)                   # solid, kio, kdecore
 check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
 check_include_files(unistd.h      HAVE_UNISTD_H)                       # various
 check_include_files(stdint.h      HAVE_STDINT_H)                       # various
@@ -184,7 +184,7 @@ check_function_exists(strlcat    HAVE_STRLCAT)           # kdecore/fakes.c
 check_function_exists(strcasestr HAVE_STRCASESTR)        # kdecore/fakes.c
 check_function_exists(setenv     HAVE_SETENV)            # kdecore/fakes.c
 check_function_exists(seteuid    HAVE_SETEUID)           # kdecore/fakes.c
-check_function_exists(setmntent  HAVE_SETMNTENT)         # kio, kdecore
+check_function_exists(setmntent  HAVE_SETMNTENT)         # solid, kio, kdecore
 check_function_exists(unsetenv   HAVE_UNSETENV)          # kdecore/fakes.c
 check_function_exists(usleep     HAVE_USLEEP)            # kdecore/fakes.c, kdeui/qxembed
 

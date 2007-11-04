@@ -25,6 +25,8 @@
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
 
+#include "halfstabhandling.h"
+
 using namespace Solid::Backends::Hal;
 
 StorageAccess::StorageAccess(HalDevice *device)
@@ -80,8 +82,10 @@ bool StorageAccess::setup()
 
     if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
         return requestPassphrase();
+    } else if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
+        return callSystemMount();
     } else {
-        return callVolumeMount();
+        return callHalVolumeMount();
     }
 }
 
@@ -94,8 +98,10 @@ bool StorageAccess::teardown()
 
     if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto")) {
         return callCryptoTeardown();
+    } else if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
+        return callSystemUnmount();
     } else {
-        return callVolumeUnmount();
+        return callHalVolumeUnmount();
     }
 }
 
@@ -130,6 +136,30 @@ void StorageAccess::slotDBusError(const QDBusError &error)
         emit teardownDone(Solid::UnauthorizedOperation,
                           error.name()+": "+error.message());
     }
+}
+
+void Solid::Backends::Hal::StorageAccess::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    if (m_setupInProgress) {
+        m_setupInProgress = false;
+
+        if (exitCode==0) {
+            emit setupDone(Solid::NoError, QVariant());
+        } else {
+            emit setupDone(Solid::UnauthorizedOperation,
+                           m_process->readAllStandardError());
+        }
+    } else if (m_teardownInProgress) {
+        m_teardownInProgress = false;
+        if (exitCode==0) {
+            emit teardownDone(Solid::NoError, QVariant());
+        } else {
+            emit teardownDone(Solid::UnauthorizedOperation,
+                              m_process->readAllStandardError());
+        }
+    }
+
+    delete m_process;
 }
 
 QString generateReturnObjectPath()
@@ -179,7 +209,7 @@ void StorageAccess::passphraseReply(const QString &passphrase)
     }
 }
 
-bool StorageAccess::callVolumeMount()
+bool StorageAccess::callHalVolumeMount()
 {
     QDBusConnection c = QDBusConnection::systemBus();
     QString udi = m_device->udi();
@@ -194,7 +224,7 @@ bool StorageAccess::callVolumeMount()
                               SLOT(slotDBusError(const QDBusError &)));
 }
 
-bool StorageAccess::callVolumeUnmount()
+bool StorageAccess::callHalVolumeUnmount()
 {
     QDBusConnection c = QDBusConnection::systemBus();
     QString udi = m_device->udi();
@@ -207,6 +237,24 @@ bool StorageAccess::callVolumeUnmount()
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(const QDBusMessage &)),
                               SLOT(slotDBusError(const QDBusError &)));
+}
+
+bool Solid::Backends::Hal::StorageAccess::callSystemMount()
+{
+    const QString device = m_device->property("block.device").toString();
+    m_process = FstabHandling::callSystemCommand("mount", device,
+                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+
+    return m_process!=0;
+}
+
+bool Solid::Backends::Hal::StorageAccess::callSystemUnmount()
+{
+    const QString device = m_device->property("block.device").toString();
+    m_process = FstabHandling::callSystemCommand("umount", device,
+                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+
+    return m_process!=0;
 }
 
 void StorageAccess::callCryptoSetup(const QString &passphrase)

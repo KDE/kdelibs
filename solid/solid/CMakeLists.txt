@@ -81,6 +81,7 @@ set(solid_LIB_SRCS
    backends/hal/halcdrom.cpp
    backends/hal/haldeviceinterface.cpp
    backends/hal/haldvbinterface.cpp
+   backends/hal/halfstabhandling.cpp
    backends/hal/halgenericinterface.cpp
    backends/hal/haldevice.cpp
    backends/hal/halmanager.cpp

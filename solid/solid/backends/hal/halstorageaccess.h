@@ -23,6 +23,7 @@
 #include <solid/ifaces/storageaccess.h>
 #include "haldeviceinterface.h"
 
+#include <QtCore/QProcess>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>
 
@@ -55,13 +56,18 @@ private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);
     void slotDBusReply(const QDBusMessage &reply);
     void slotDBusError(const QDBusError &error);
+    void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
 
 public Q_SLOTS:
     Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString &passphrase);
 
 private:
-    bool callVolumeMount();
-    bool callVolumeUnmount();
+    bool callHalVolumeMount();
+    bool callHalVolumeUnmount();
+
+    bool callSystemMount();
+    bool callSystemUnmount();
 
     bool requestPassphrase();
     void callCryptoSetup(const QString &passphrase);
@@ -72,6 +78,7 @@ private:
     bool m_teardownInProgress;
     bool m_passphraseRequested;
     QString m_lastReturnObject;
+    QProcess *m_process;
 };
 }
 }

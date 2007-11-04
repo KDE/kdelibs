@@ -23,6 +23,7 @@
 #include <solid/ifaces/opticaldrive.h>
 #include "halstorage.h"
 
+#include <QtCore/QProcess>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>
 
@@ -55,9 +56,14 @@ private Q_SLOTS:
     void slotCondition(const QString &name, const QString &reason);
     void slotDBusReply(const QDBusMessage &reply);
     void slotDBusError(const QDBusError &error);
+    void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
+    bool callHalDriveEject();
+    bool callSystemEject();
+
     bool m_ejectInProgress;
+    QProcess *m_process;
 };
 }
 }

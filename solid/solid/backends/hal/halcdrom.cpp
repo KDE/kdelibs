@@ -24,6 +24,8 @@
 #include <QtDBus/QDBusReply>
 #include <QtDBus/QDBusError>
 
+#include "halfstabhandling.h"
+
 using namespace Solid::Backends::Hal;
 
 Cdrom::Cdrom(HalDevice *device)
@@ -110,6 +112,15 @@ bool Cdrom::eject()
     }
     m_ejectInProgress = true;
 
+    if (FstabHandling::isInFstab(m_device->property("block.device").toString())) {
+        return callSystemEject();
+    } else {
+        return callHalDriveEject();
+    }
+}
+
+bool Cdrom::callHalDriveEject()
+{
     QString udi = m_device->udi();
     QString interface = "org.freedesktop.Hal.Device.Storage";
 
@@ -145,6 +156,15 @@ bool Cdrom::eject()
                               SLOT(slotDBusError(const QDBusError &)));
 }
 
+bool Solid::Backends::Hal::Cdrom::callSystemEject()
+{
+    const QString device = m_device->property("block.device").toString();
+    m_process = FstabHandling::callSystemCommand("eject", device,
+                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+
+    return m_process!=0;
+}
+
 void Cdrom::slotDBusReply(const QDBusMessage &/*reply*/)
 {
     m_ejectInProgress = false;
@@ -160,5 +180,20 @@ void Cdrom::slotDBusError(const QDBusError &error)
                    error.name()+": "+error.message());
 }
 
+void Solid::Backends::Hal::Cdrom::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    if (m_ejectInProgress) {
+        m_ejectInProgress = false;
+
+        if (exitCode==0) {
+            emit ejectDone(Solid::NoError, QVariant());
+        } else {
+            emit ejectDone(Solid::UnauthorizedOperation,
+                           m_process->readAllStandardError());
+        }
+    }
+
+    delete m_process;
+}
 
 #include "backends/hal/halcdrom.moc"
