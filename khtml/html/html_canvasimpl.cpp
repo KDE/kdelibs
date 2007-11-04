@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Apple Computer, Inc.  All rights reserved.
  * Copyright (C) 2005 Zack Rusin <zack@kde.org>
  * Copyright (C) 2007 Maksim Orlovich <maksim@kde.org>
+ * Copyright (C) 2007 Fredrik Höglund <fredrik@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -977,9 +978,95 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
         return;
     }
 
-    //### FIXME busted
-    //me no feely like doing math to convert this correctly, yo
-    path.arcTo(x1, y1, x2-x1, y2-y1, radius, 90);
+    if (path.currentPosition() == QPointF(-INT_MAX, -INT_MAX))
+        return;
+
+    QLineF line1(QPointF(x1, y1), path.currentPosition());
+    QLineF line2(QPointF(x1, y1), QPointF(x2, y2));
+
+    // If the first line is a point, we'll do nothing.
+    if (line1.p1() == line1.p2())
+        return;
+
+    // If the second line is a point, we'll add a line segment to (x1, y1).
+    if (line2.p1() == line2.p2())
+    {
+        path.lineTo(x1, y1);
+        return;
+    }
+
+    float angle1 = M_PI_2 - std::atan2(line1.dx(), line1.dy());
+    float angle2 = M_PI_2 - std::atan2(line2.dx(), line2.dy());
+
+    // The angle between by line1 and line2
+    float span = angle2 - angle1;
+    if (span < -M_PI)
+        span = (2 * M_PI + span);
+    else if (span > M_PI)
+        span = -(2 * M_PI - span);
+
+    // If the angle between the lines is 180 degrees, we'll just add a line
+    // segment to (x1, y1).
+    if (qFuzzyCompare(qAbs(span), float(M_PI)))
+    {
+        path.lineTo(x1, y1);
+        return;
+    }
+
+    // If the angle between the lines is 0 degrees, we'll add an infinitely
+    // long line segment from the current position in the direction of line2.
+    // This is to match Safari behavior.
+    if (qFuzzyCompare(span, float(0.0)))
+    {
+        // ### We'll define infinity as 100,000 coordinate space units from
+        //     the current position for now.
+        QLineF line(path.currentPosition(),
+                    path.currentPosition() + QPointF(line2.dx(), line2.dy()));
+        line.setLength(100000.0);
+        path.lineTo(line.p2());
+        return;
+    }
+
+    // The angle to the center of the circle
+    float angle = angle1 + span / 2.0;
+
+    // The length of the hypotenuse of the right triangle formed by the points
+    // (x1, y1), the center point of the circle, and one of the tangent points.
+    float h = radius / std::sin(qAbs(angle1 - angle));
+
+    // The distance from (x1, y1) to the tangent points on line1 and line2.
+    float tDist = std::cos(qAbs(angle1 -angle)) * h;
+
+    // QLineF::length() uses sqrt() to compute the length, so we'll save the results
+    // since we need them twice.
+    float line1Len = line1.length();
+    float line2Len = line2.length();
+
+    // If either of the lines is too short, we can't do it
+    if (line1Len < tDist || (line2Len + .01) < tDist)
+    {
+       path.lineTo(x1, y1);
+       return;
+    }
+
+    // The center point of the circle
+    QPointF centerPoint(x1 + std::cos(angle) * h, y1 + std::sin(angle) * h);
+
+    // The tangent points on line1 and line2
+    QPointF t1 = line1.pointAt(tDist / line1Len);
+    QPointF t2 = line2.pointAt(tDist / line2Len);
+
+    // The lines from the center point of the circle to the tangent points on line1 and line2.
+    QLineF toT1(centerPoint, t1);
+    QLineF toT2(centerPoint, t2);
+
+    // The start and end angles of the arc
+    float startAngle = M_PI_2 - std::atan2(toT1.dx(), toT1.dy());
+    float endAngle   = M_PI_2 - std::atan2(toT2.dx(), toT2.dy());
+    bool counterClockWise = span > 0;
+
+    int dummy; // Exception code from arc()
+    arc(centerPoint.x(), centerPoint.y(), radius, startAngle, endAngle, counterClockWise, dummy);
 }
 
 void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, float endAngle,
