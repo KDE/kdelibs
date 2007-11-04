@@ -132,6 +132,10 @@ endif (NOT DEFINED QT_ONLY)
 
 kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
 
+if(WIN32)
+   target_link_libraries(${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
+endif(WIN32) 
+
 if(CMAKE_THREAD_LIBS_INIT)
    target_link_libraries(${KJSLIBNAME} ${CMAKE_THREAD_LIBS_INIT})
 endif(CMAKE_THREAD_LIBS_INIT)
