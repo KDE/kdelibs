@@ -82,11 +82,9 @@ set(kiocore_STAT_SRCS
   kio/kmimetypechooser.cpp
   kio/kmimetyperesolver.cpp
   kio/kmountpoint.cpp
-  kio/knfsshare.cpp
   kio/kprotocolmanager.cpp
   kio/kremoteencoding.cpp
   kio/krun.cpp
-  kio/ksambashare.cpp
   kio/kscan.cpp
   kio/kshellcompletion.cpp
   kio/kstatusbarofflineindicator.cpp
@@ -117,7 +115,11 @@ set(kiocore_STAT_SRCS
 )
 
 if(UNIX)
-   set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/kio/kautomount.cpp)
+   set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
+       kio/kautomount.cpp
+       kio/knfsshare.cpp
+       kio/ksambashare.cpp
+   )
 endif(UNIX)
 
 set(kbookmarks_STAT_SRCS
