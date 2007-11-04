@@ -26,6 +26,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QTextEdit>
 #include <QtGui/QListWidget>
+#include <QtGui/QScrollArea>
 
 #include <kapplication.h>
 #include <kconfig.h>
@@ -154,66 +155,18 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     lay->addWidget( label1, 0, Qt::AlignCenter );
     lay->addSpacing(KDialog::spacingHint());
 
-    QLabel *label2 = new QLabel( text, contents );
+    QLabel *label2 = new QLabel( text, 0 );
     label2->setOpenExternalLinks(options & KMessageBox::AllowLink);
     label2->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     label2->setWordWrap(true);
+    QRect d = KGlobalSettings::desktopGeometry(dialog);
+    label2->setMargin( 10 );
 
-    int pref_width = 0;
-    int pref_height = 0;
-    // Calculate a proper size for the text.
-    {
-        QTextDocument document;
-        QTextOption option;
-        option.setWrapMode(QTextOption::WordWrap);
-        document.setDefaultTextOption(option);
-        //Text with HTML tags will be displayed correctly.
-        document.setHtml( text );
-        document.setDefaultFont( dialog->font() );
+    QScrollArea* textArea = new QScrollArea( contents );
+    textArea->setWidget( label2 );
+    textArea->setFrameShape( QFrame::NoFrame );
 
-        QRect d = KGlobalSettings::desktopGeometry(dialog);
-
-        pref_width = d.width() / 3;
-        pref_height = label2->heightForWidth(pref_width);
-
-        document.setTextWidth(pref_width);
-        qreal used_width = document.idealWidth();
-        pref_height = (int) document.size().height();
-        if (3*pref_height > 2*d.height()) {
-            // Very high dialog.. make it wider
-            pref_width = d.width() / 2;
-            document.setTextWidth(pref_width);
-            used_width = document.idealWidth();
-            pref_height = (int) document.size().height();
-        }
-        if (used_width && used_width <= pref_width) {
-            while (true) {
-                int new_width = (int) (used_width * 9) / 10;
-                document.setTextWidth(new_width);
-                int new_height = (int) document.size().height();
-                if (new_height > pref_height) {
-                    break;
-                }
-                used_width = document.idealWidth();
-                if (used_width > new_width) {
-                    break;
-                }
-            }
-            pref_width = (int) used_width;
-        } else {
-            if (used_width > (pref_width *2)) {
-                pref_width = pref_width *2;
-            } else {
-                pref_width = (int) used_width;
-            }
-        }
-    }
-
-    //Reverting portion of commit 559160 to restore the extra 10 pixels margin (same as KDE3)
-    //See commit log for more information, this is not a definitive fix
-    label2->setFixedSize(QSize(pref_width + 10, pref_height + 10));
-
-    lay->addWidget( label2 );
+    lay->addWidget( textArea );
     lay->addStretch();
 
     QListWidget *listwidget = 0;
