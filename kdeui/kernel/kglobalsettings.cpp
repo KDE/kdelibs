@@ -830,7 +830,7 @@ QString kde_overrideStyle;
 void KGlobalSettings::Private::applyGUIStyle()
 {
 #ifdef Q_WS_X11
-    QString defaultStyle = QLatin1String("plastique");// = KStyle::defaultStyle(); ### wait for KStyle4
+    QString defaultStyle = KStyle::defaultStyle();
 #else
     QString defaultStyle; // Mac, Windows: no change for style by default
 #endif

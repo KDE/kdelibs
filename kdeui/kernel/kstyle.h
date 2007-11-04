@@ -89,6 +89,11 @@ public:
     KStyle();
     ~KStyle();
 
+    /**
+     * Returns the default widget style.
+     */
+    static QString defaultStyle();
+
 protected:
     /** @name Helper Methods
     * These are methods helping with QRect handling, for example.
