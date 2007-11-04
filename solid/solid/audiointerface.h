@@ -170,10 +170,13 @@ namespace Solid
          * For Alsa devices it is a list with (card, device, subdevice).
          * \code
          * QVariantList list = dev->driverHandle().toList();
-         * int card = list[0].toInt();
+         * QString card = list[0].toString();
          * int device = list[1].toInt();
          * int subdevice = list[2].toInt();
          * \endcode
+         * The card entry sometimes can be converted to an integer, but it may just as well be the
+         * textual id for the card. So don't rely on it to work with QVariant::toInt().
+         *
          * For OSS devices it is simply a string like "/dev/dsp". Use QVariant::toString() to
          * retrieve the string.
          *
