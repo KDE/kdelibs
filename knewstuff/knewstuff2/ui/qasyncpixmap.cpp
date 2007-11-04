@@ -50,7 +50,8 @@ void QAsyncPixmap::slotDownload(KJob *job)
         // XXX ???
         return;
     }
-    bool ret = load(m_dest);
+    load(m_dest);
+    //bool ret = load(m_dest);
 //    QFile::remove(m_dest);
     //kDebug(550) << "DOWNLOADed to " << m_dest;
     //kDebug(550) << "ret = " << ret;
