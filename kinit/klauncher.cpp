@@ -1030,7 +1030,7 @@ KLauncher::requestSlave(const QString &protocol,
     arg_list << protocol;
     arg_list << mConnectionServer.address();
     arg_list << app_socket;
-    name = "kioslave";
+    name = KStandardDirs::findExe("kioslave");
 #else
     QString arg1 = protocol;
     QString arg2 = mConnectionServer.address();
