@@ -216,7 +216,7 @@ KStyle::~KStyle()
 
 QString KStyle::defaultStyle()
 {
-    return QString("plastique"); // TODO define KDE4 default style (oxygen ?)
+    return QString("oxygen");
 }
 
 void KStyle::polish(QWidget *w)
