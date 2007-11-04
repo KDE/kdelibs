@@ -202,6 +202,27 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
         return KMimeType::mimeType( "inode/fifo" );
     if ( S_ISSOCK( mode ) )
         return KMimeType::mimeType( "inode/socket" );
+#ifdef Q_OS_WIN
+    // FIXME: distinguish between mounted & unmounted
+    int size = path.size();
+    if ( size == 2 || size == 3 ) {
+        unsigned int type = GetDriveType( (LPCWSTR) path.utf16() );
+        switch( type ) {
+            case DRIVE_REMOVABLE:
+                return KMimeType::mimeType( "media/floppy_mounted" );
+            case DRIVE_FIXED:
+                return KMimeType::mimeType( "media/hdd_mounted" );
+            case DRIVE_REMOTE:
+                return KMimeType::mimeType( "media/smb_mounted" );
+            case DRIVE_CDROM:
+                return KMimeType::mimeType( "media/cdrom_mounted" );
+            case DRIVE_RAMDISK:
+                return KMimeType::mimeType( "media/hdd_mounted" );
+            default:
+                break;
+        };
+    }
+#endif
     // remote executable file? stop here (otherwise findFromContent can do that better for local files)
     if ( !is_local_file && S_ISREG( mode ) && ( mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
         return KMimeType::mimeType( "application/x-executable" );

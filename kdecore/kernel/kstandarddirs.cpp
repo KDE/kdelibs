@@ -530,6 +530,14 @@ QString KStandardDirs::findResourceDir( const char *type,
 
 bool KStandardDirs::exists(const QString &fullPath)
 {
+#ifdef Q_OS_WIN
+    // access() and stat() give a stupid error message to the user
+    // if the path is not accessible at all (e.g. no disk in A:/ and
+    // we do stat("A:/.directory")
+    if(fullPath.at(fullPath.length() - 1) == '/')
+        return QDir(fullPath).exists();
+    return QFileInfo(fullPath).exists();
+#else
     KDE_struct_stat buff;
     if (access(QFile::encodeName(fullPath), R_OK) == 0 && KDE_stat( QFile::encodeName(fullPath), &buff ) == 0)
         if (fullPath.at(fullPath.length() - 1) != '/') {
@@ -539,6 +547,7 @@ bool KStandardDirs::exists(const QString &fullPath)
             if (S_ISDIR( buff.st_mode ))
                 return true;
     return false;
+#endif
 }
 
 static void lookupDirectory(const QString& path, const QString &relPart,
