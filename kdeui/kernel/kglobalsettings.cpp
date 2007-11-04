@@ -30,6 +30,10 @@
 #include <kcomponentdata.h>
 #include <kcolorscheme.h>
 
+#ifdef Q_WS_X11
+#include <kstyle.h>
+#endif
+
 #include <QtGui/QColor>
 #include <QtGui/QCursor>
 #include <QtGui/QDesktopWidget>
