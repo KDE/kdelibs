@@ -418,6 +418,10 @@ KTipDialog::~KTipDialog()
   delete d;
 }
 
+/**
+ * use the one with a parent window as parameter instead of this one
+ * or you will get focus problems
+ */
 void KTipDialog::showTip( const QString &tipFile, bool force )
 {
   showTip( 0, tipFile, force );
@@ -438,7 +442,10 @@ void KTipDialog::showMultiTip( QWidget *parent, const QStringList &tipFiles, boo
     if ( !runOnStart )
       return;
 
-    bool hasLastShown = configGroup.hasKey( "TipLastShown" );
+    // showing the tooltips on startup suggests the tooltip
+    // will be shown *each time* on startup, not $random days later
+    // TODO either remove or uncomment this code, but make the situation clear
+    /*bool hasLastShown = configGroup.hasKey( "TipLastShown" );
     if ( hasLastShown ) {
       const int oneDay = 24 * 60 * 60;
       QDateTime lastShown = configGroup.readEntry( "TipLastShown", QDateTime() );
@@ -451,7 +458,7 @@ void KTipDialog::showMultiTip( QWidget *parent, const QStringList &tipFiles, boo
     configGroup.writeEntry( "TipLastShown", QDateTime::currentDateTime() );
 
     if ( !hasLastShown )
-      return; // Don't show tip on first start
+      return; // Don't show tip on first start*/
   }
 
   if ( !Private::mInstance )
