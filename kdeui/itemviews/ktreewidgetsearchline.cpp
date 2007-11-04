@@ -199,8 +199,6 @@ void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible(QTreeWidget *tre
  */
 bool KTreeWidgetSearchLine::Private::checkItemParentsVisible(QTreeWidgetItem *item)
 {
-    QTreeWidget *treeWidget = item->treeWidget();
-
     bool childMatch = false;
     for (int i = 0; i < item->childCount(); ++i) {
         childMatch |= checkItemParentsVisible(item->child(i));
