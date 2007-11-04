@@ -48,6 +48,7 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   if ( !db )
       db = KSystemTimeZones::timeZones();
 
+  setRootIsDecorated(false);
   setHeaderLabels( QStringList() << i18n( "Area" ) << i18n( "Region" ) << i18n( "Comment" ) );
 
   const KTimeZones::ZoneMap zones = db->zones();
