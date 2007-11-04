@@ -81,7 +81,9 @@ KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal)
     : QWizard(parent), d(new KSSLKeyGenPrivate)
 {
     // TODO remove name argument
+    Q_UNUSED( name );
     // TODO remove modal argument
+    Q_UNUSED( modal);
 #ifdef KSSL_HAVE_SSL
 
     QWizardPage* page1 = new QWizardPage(this);
