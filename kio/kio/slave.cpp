@@ -240,7 +240,7 @@ void Slave::deref()
     Q_D(Slave);
     d->m_refCount--;
     if (!d->m_refCount)
-        delete this;
+        deleteLater();
 }
 
 time_t Slave::idleTime()
