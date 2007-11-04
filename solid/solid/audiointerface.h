@@ -165,12 +165,19 @@ namespace Solid
         AudioDriver driver() const;
 
         /**
-         * Retrieves a driver specific string allowing to access the device.
+         * Retrieves a driver specific handle to access the device.
          *
-         * For example for Alsa devices it is of the form "hw:0,0"
-         * while for OSS it is "/dev/foo".
+         * For Alsa devices it is a list with (card, device, subdevice).
+         * \code
+         * QVariantList list = dev->driverHandle().toList();
+         * int card = list[0].toInt();
+         * int device = list[1].toInt();
+         * int subdevice = list[2].toInt();
+         * \endcode
+         * For OSS devices it is simply a string like "/dev/dsp". Use QVariant::toString() to
+         * retrieve the string.
          *
-         * @return the driver specific string to handle this device
+         * @return the driver specific data to handle this device
          */
         QVariant driverHandle() const;
 
