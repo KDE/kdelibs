@@ -73,13 +73,13 @@ void ConnectionPrivate::dequeue()
     if (!backend || suspended)
 	return;
 
-    if (!incomingTasks.isEmpty())
-        emit q->readyRead();
-
     while (!outgoingTasks.isEmpty()) {
        const Task task = outgoingTasks.dequeue();
        q->sendnow(task.cmd, task.data);
     }
+
+    if (!incomingTasks.isEmpty())
+        emit q->readyRead();
 }
 
 void ConnectionPrivate::commandReceived(const Task &task)
@@ -383,7 +383,7 @@ Connection::Connection(QObject *parent)
 Connection::~Connection()
 {
     close();
-//    delete d;  deleting causes crashes
+    delete d;
 }
 
 void Connection::suspend()
