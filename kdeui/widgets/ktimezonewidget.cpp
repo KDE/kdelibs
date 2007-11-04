@@ -108,7 +108,7 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
 
   // Loop through all entries.
   foreach ( QTreeWidgetItem* listItem, findItems( zone, Qt::MatchExactly, Private::ZoneColumn ) ) {
-    setItemSelected( listItem, selected );
+    listItem->setSelected( selected );
 
     // Ensure the selected item is visible as appropriate.
     scrollTo( indexFromItem( listItem ) );
