@@ -25,6 +25,8 @@
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
 
+#include <unistd.h>
+
 #include "halfstabhandling.h"
 
 using namespace Solid::Backends::Hal;
@@ -216,8 +218,14 @@ bool StorageAccess::callHalVolumeMount()
     QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
                                                       "org.freedesktop.Hal.Device.Volume",
                                                       "Mount");
+    QStringList options;
+    QStringList halOptions = m_device->property("volume.mount.valid_options").toStringList();
 
-    msg << "" << "" << QStringList();
+    if (halOptions.contains("uid=")) {
+        options << "uid="+QString::number(::getuid());
+    }
+
+    msg << "" << "" << options;
 
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(const QDBusMessage &)),
