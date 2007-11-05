@@ -165,12 +165,11 @@ public:
     bool isBackRightClickEnabled();
 
     // Java and JavaScript
-    // ### BIC make these const
-    bool isJavaEnabled( const QString& hostname = QString() );
-    bool isJavaScriptEnabled( const QString& hostname = QString() );
-    bool isJavaScriptDebugEnabled( const QString& hostname = QString() );
+    bool isJavaEnabled( const QString& hostname = QString() ) const;
+    bool isJavaScriptEnabled( const QString& hostname = QString() ) const;
+    bool isJavaScriptDebugEnabled( const QString& hostname = QString() ) const;
     bool isJavaScriptErrorReportingEnabled( const QString& hostname = QString() ) const;
-    bool isPluginsEnabled( const QString& hostname = QString() );
+    bool isPluginsEnabled( const QString& hostname = QString() ) const;
 
     // AdBlocK Filtering
     bool isAdFiltered( const QString &url ) const;

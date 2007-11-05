@@ -778,17 +778,17 @@ void KHTMLSettings::addAdFilter( const QString &url )
     }
 }
 
-bool KHTMLSettings::isJavaEnabled( const QString& hostname )
+bool KHTMLSettings::isJavaEnabled( const QString& hostname ) const
 {
   return lookup_hostname_policy(d,hostname.toLower()).m_bEnableJava;
 }
 
-bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
+bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname ) const
 {
   return lookup_hostname_policy(d,hostname.toLower()).m_bEnableJavaScript;
 }
 
-bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
+bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ ) const
 {
   // debug setting is global for now, but could change in the future
   return d->m_bEnableJavaScriptDebug;
@@ -800,7 +800,7 @@ bool KHTMLSettings::isJavaScriptErrorReportingEnabled( const QString& /*hostname
   return d->m_bEnableJavaScriptErrorReporting;
 }
 
-bool KHTMLSettings::isPluginsEnabled( const QString& hostname )
+bool KHTMLSettings::isPluginsEnabled( const QString& hostname ) const
 {
   return lookup_hostname_policy(d,hostname.toLower()).m_bEnablePlugins;
 }
