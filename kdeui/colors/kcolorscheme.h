@@ -299,9 +299,11 @@ public:
      * Construct a palette from given color set and state, using the colors
      * from the given KConfig (if null, the system colors are used).
      *
-     * @note Don't construct a KColorScheme unless you understand why you are
-     * doing so, and how you will deal with widget states (or why you don't
-     * need to). You probably want a ::KStatefulBrush instead.
+     * @note KColorScheme provides direct access to the color scheme for users
+     * that deal directly with widget states. Unless you are a low-level user
+     * or have a legitimate reason to only care about a fixed, limited number
+     * of states (e.g. windows that cannot be inactive), consider using a
+     * ::KStatefulBrush instead.
      */
     explicit KColorScheme(QPalette::ColorGroup, ColorSet = View, KSharedConfigPtr = KSharedConfigPtr());
 
@@ -497,20 +499,24 @@ public:
     KStatefulBrush& operator=(const KStatefulBrush&);
 
     /**
-     * Retrieve the brush for the specified widget state.
+     * Retrieve the brush for the specified widget state. This is used when you
+     * know explicitly what state is wanted. Otherwise one of overloads is
+     * often more convenient.
      */
     QBrush brush(QPalette::ColorGroup) const;
 
     /**
      * Retrieve the brush, using a QPalette reference to determine the correct
      * state. Use when your painting code has easy access to the QPalette that
-     * it is supposed to be using.
+     * it is supposed to be using. The state used in this instance is the
+     * currentColorGroup of the palette.
      */
     QBrush brush(const QPalette&) const;
 
     /**
      * Retrieve the brush, using a QWidget pointer to determine the correct
      * state. Use when you have a pointer to the widget that you are painting.
+     * The state used is the current state of the widget.
      *
      * @note If you pass an invalid widget, you will get a default brush (i.e.
      * <tt>QBrush()</tt>).
