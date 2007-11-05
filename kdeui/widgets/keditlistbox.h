@@ -52,7 +52,7 @@ class KDEUI_EXPORT KEditListBox : public QGroupBox
 
 public:
     class CustomEditorPrivate;
-  
+
     /**
      * Custom editor class
      **/
@@ -63,17 +63,17 @@ public:
         CustomEditor( QWidget *repWidget, KLineEdit *edit );
         CustomEditor( KComboBox *combo );
         virtual ~CustomEditor();
-      
+
         void setRepresentationWidget( QWidget *repWidget );
         void setLineEdit( KLineEdit *edit );
-      
+
         virtual QWidget *representationWidget() const;
         virtual KLineEdit *lineEdit() const;
-        
+
     private:
         friend class CustomEditorPrivate;
         CustomEditorPrivate *const d;
-        
+
         Q_DISABLE_COPY(CustomEditor)
     };
 
@@ -92,10 +92,25 @@ public:
 
       Q_DECLARE_FLAGS( Buttons, Button )
 
+      /**
+       * Create an editable listbox.
+       */
+      explicit KEditListBox(QWidget *parent = 0);
+
+      /**
+       * Create an editable listbox.
+       *
+       * The same as the other constructor, additionally it takes
+       * @p title, which will be the title of the groupbox around the listbox.
+       */
+      explicit KEditListBox(const QString& title, QWidget *parent = 0);
+
 // ### KDE5: remove name arguments and simplify (merge?!) constructors
 
       /**
        * Create an editable listbox.
+       *
+       * \deprecated
        *
        * If @p checkAtEntering is true, after every character you type
        * in the line edit KEditListBox will enable or disable
@@ -106,17 +121,19 @@ public:
        * it will be checked if you press the Add-button. It is not
        * possible to enter items twice into the listbox.
        */
-      explicit KEditListBox(QWidget *parent = 0, const char *name = 0,
-		   bool checkAtEntering=false, Buttons buttons = All );
+      explicit KDE_DEPRECATED KEditListBox(QWidget *parent, const char *name,
+                            bool checkAtEntering = false, Buttons buttons = All );
       /**
        * Create an editable listbox.
+       *
+       * \deprecated
        *
        * The same as the other constructor, additionally it takes
        * @p title, which will be the title of the frame around the listbox.
        */
-      explicit KEditListBox(const QString& title, QWidget *parent = 0,
-		   const char *name = 0, bool checkAtEntering=false,
-		   Buttons buttons = All );
+      explicit KDE_DEPRECATED KEditListBox(const QString& title, QWidget *parent,
+                            const char *name, bool checkAtEntering = false,
+                            Buttons buttons = All );
 
       /**
        * Another constructor, which allows to use a custom editing widget
@@ -210,6 +227,24 @@ public:
        */
       void setButtons( Buttons buttons );
 
+      /**
+       * If @p check is true, after every character you type
+       * in the line edit KEditListBox will enable or disable
+       * the Add-button, depending whether the current content of the
+       * line edit is already in the listbox. Maybe this can become a
+       * performance hit with large lists on slow machines.
+       * If @p check is false,
+       * it will be checked if you press the Add-button. It is not
+       * possible to enter items twice into the listbox.
+       * Default is false.
+       */
+      void setCheckAtEntering(bool check);
+
+      /**
+       * Returns true if check at entering is enabled.
+       */
+      bool checkAtEntering();
+
    Q_SIGNALS:
       void changed();
 
@@ -226,7 +261,6 @@ public:
       void removed( const QString & text );
 
    protected Q_SLOTS:
-      //the names should be self-explaining
       void moveItemUp();
       void moveItemDown();
       void addItem();
@@ -236,14 +270,13 @@ public:
 
    private:
       //this is called in both ctors, to avoid code duplication
-      void init( bool checkAtEntering, Buttons buttons,
+      void init( bool checkAtEntering = false, Buttons buttons = All,
                  QWidget *representationWidget = 0 );
-      
+
    private:
-      //our lovely private d-pointer
       friend class KEditListBoxPrivate;
       KEditListBoxPrivate* const d;
-      
+
       Q_DISABLE_COPY(KEditListBox)
 };
 

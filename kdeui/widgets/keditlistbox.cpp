@@ -37,13 +37,13 @@
 
 class KEditListBoxPrivate
 {
-public:  
+public:
     QListView *m_listView;
     QPushButton *servUpButton, *servDownButton;
     QPushButton *servNewButton, *servRemoveButton;
     KLineEdit *m_lineEdit;
     QStringListModel *m_model;
-      
+
     bool m_checkAtEntering;
     KEditListBox::Buttons buttons;
 };
@@ -55,7 +55,7 @@ public:
         q(q),
         m_representationWidget(0),
         m_lineEdit(0) {}
-  
+
     KEditListBox::CustomEditor *q;
     QWidget *m_representationWidget;
     KLineEdit *m_lineEdit;
@@ -106,6 +106,17 @@ KLineEdit *KEditListBox::CustomEditor::lineEdit() const
     return d->m_lineEdit;
 }
 
+KEditListBox::KEditListBox(QWidget *parent)
+    :QGroupBox(parent), d(new KEditListBoxPrivate)
+{
+    init();
+}
+
+KEditListBox::KEditListBox(const QString &title, QWidget *parent)
+    :QGroupBox(title, parent), d(new KEditListBoxPrivate)
+{
+    init();
+}
 
 KEditListBox::KEditListBox(QWidget *parent, const char *name,
                            bool checkAtEntering, Buttons buttons )
@@ -187,7 +198,7 @@ QListView *KEditListBox::listView() const
     return d->m_listView;
 }
 
-KLineEdit *KEditListBox::lineEdit() const     
+KLineEdit *KEditListBox::lineEdit() const
 {
     return d->m_lineEdit;
 }
@@ -268,6 +279,16 @@ void KEditListBox::setButtons( Buttons buttons )
     d->buttons = buttons;
 }
 
+void KEditListBox::setCheckAtEntering(bool check)
+{
+    d->m_checkAtEntering = check;
+}
+
+bool KEditListBox::checkAtEntering()
+{
+    return d->m_checkAtEntering;
+}
+
 void KEditListBox::typedSomething(const QString& text)
 {
     if(currentItem() >= 0) {
@@ -301,7 +322,7 @@ void KEditListBox::typedSomething(const QString& text)
         else
         {
             QStringList list = d->m_model->stringList();
-            bool enable = list.contains( text, Qt::CaseSensitive );
+            bool enable = !list.contains( text, Qt::CaseSensitive );
             d->servNewButton->setEnabled( enable );
         }
     }
@@ -397,7 +418,7 @@ void KEditListBox::addItem()
     d->m_lineEdit->blockSignals(true);
     d->m_lineEdit->clear();
     d->m_lineEdit->blockSignals(block);
-   
+
     selection->setCurrentIndex(currentIndex, QItemSelectionModel::Deselect);
 
     if (!alreadyInList)
@@ -406,13 +427,12 @@ void KEditListBox::addItem()
 
         if ( currentIndex.isValid() ) {
           d->m_model->setData(currentIndex, currentTextLE );
+        } else {
+            QStringList lst;
+            lst<<currentTextLE;
+            lst<<d->m_model->stringList();
+            d->m_model->setStringList(lst);
         }
-	else{
-	  QStringList lst;
-	  lst<<currentTextLE;
-	  lst<<d->m_model->stringList();
-	  d->m_model->setStringList(lst);
-	}
         emit changed();
         emit added( currentTextLE );
     }
@@ -556,10 +576,5 @@ KEditListBox::Buttons KEditListBox::buttons() const
 {
   return d->buttons;
 }
-
-
-
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
 
 #include "keditlistbox.moc"
