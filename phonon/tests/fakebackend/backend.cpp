@@ -115,26 +115,26 @@ QStringList Backend::availableMimeTypes() const
     return m_supportedMimeTypes;
 }
 
-QSet<int> Backend::objectDescriptionIndexes(ObjectDescriptionType type) const
+QList<int> Backend::objectDescriptionIndexes(ObjectDescriptionType type) const
 {
-    QSet<int> set;
+    QList<int> list;
     switch(type)
     {
     case Phonon::AudioOutputDeviceType:
-        set << 10000 << 10001
+        list << 10000 << 10001
             << 10002 << 10003
             << 10004 << 10005
             << 10006 << 10007
             << 10008 << 10009;
         break;
 /*    case Phonon::AudioCaptureDeviceType:
-        set << 20000 << 20001;
+        list << 20000 << 20001;
         break;
     case Phonon::VideoOutputDeviceType:
-        set << 40000 << 40001 << 40002 << 40003;
+        list << 40000 << 40001 << 40002 << 40003;
         break;
     case Phonon::VideoCaptureDeviceType:
-        set << 30000 << 30001;
+        list << 30000 << 30001;
         break;
     case Phonon::VisualizationType:
     case Phonon::AudioCodecType:
@@ -142,10 +142,10 @@ QSet<int> Backend::objectDescriptionIndexes(ObjectDescriptionType type) const
     case Phonon::ContainerFormatType:
         break;*/
     case Phonon::EffectType:
-        set << 0x7F000001;
+        list << 0x7F000001;
         break;
     }
-    return set;
+    return list;
 }
 
 QHash<QByteArray, QVariant> Backend::objectDescriptionProperties(ObjectDescriptionType type, int index) const

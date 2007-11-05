@@ -59,7 +59,7 @@ namespace Fake
 
             void freeSoundcardDevices();
 
-            QSet<int> objectDescriptionIndexes(ObjectDescriptionType type) const;
+            QList<int> objectDescriptionIndexes(ObjectDescriptionType type) const;
             QHash<QByteArray, QVariant> objectDescriptionProperties(ObjectDescriptionType type, int index) const;
 
             bool startConnectionChange(QSet<QObject *>);
