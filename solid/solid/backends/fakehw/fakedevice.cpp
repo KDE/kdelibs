@@ -281,7 +281,11 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     case Solid::DeviceInterface::DvbInterface:
         iface = new FakeDvbInterface(this);
         break;
+    case Solid::DeviceInterface::Video:
+        break;
     case Solid::DeviceInterface::Unknown:
+        break;
+    default:
         break;
     }
 
