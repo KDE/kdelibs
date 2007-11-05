@@ -261,7 +261,6 @@ install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_
 
 
 install( FILES data.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
-install( FILES kpasswdserver.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
 install( FILES
  application.desktop
  kcmodule.desktop

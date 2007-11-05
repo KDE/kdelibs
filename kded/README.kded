@@ -88,19 +88,19 @@ Example kdeglobals fragment:
 PollInterval=500
 NFSPollInterval=5000
 
-Tasks loaded on demand
+Creating a KDED module
 ======================
 Some things can be greatly simplified if they can be coordinated from a 
 central place. KDED has support for modules that will be demand-loaded 
-whenever an application attempts to make DCOP call to the module.
+whenever an application attempts to make DBus call to the module.
 This can be useful for central administration tasks.
 
-An example of a KDED module is the print module. When an application prints
-a file, the print module will watch over the print-job while the file
-is being printed. This allows you to close the application after submitting
-your print-command to the printer, the print module will make sure to
-inform the user when a print problem occurs (printer out of paper, printer
-on fire)
+Here are examples of KDED modules:
+ kdelibs/kioslave/http/kcookiejar/kcookieserver.cpp  Cookie-handling module (including GUI)
+ kdelibs/kio/misc/kwalletd/kwalletd.cpp              KWallet module, handles the wallet file
+ kdelibs/kdeui/shortcuts/kdedglobalaccel.cpp         Global-shortcuts module, for desktop-wide key shortcuts like Alt+F2
+ kdebase/apps/lib/konq/favicons/favicons.cpp         Favicons module, for downloading favicon.ico files when browsing
+ kdebase/runtime/kpasswdserver/kpasswdserver.cpp     Password-caching module
 
 A KDED module should install a .desktop file with
 	ServicesTypes=KDEDModule
@@ -118,10 +118,9 @@ the following line in the .desktop file:
 
 Further it should contain:
 	X-KDE-Library=foo
-	X-KDE-FactoryName=foo
 
-Which means that kded_foo.la is the name of the library that contains 
-the module and KDEDModule *create_foo() is the factory 
-function that should be called.
+Which means that kded_foo.so is the name of the library that contains
+the module.
 
-The .desktop file should be installed to ${kde_servicesdir}/kded
+The .desktop file should be installed to ${SERVICES_INSTALL_DIR}/kded
+
