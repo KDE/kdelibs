@@ -17,7 +17,6 @@
 */
 
 #include <kpluginfactory.h> // K_PLUGIN_FACTORY
-#include <kpluginloader.h> // K_EXPORT_PLUGIN
 #include "klibloadertest4_module.h"
 
 K_PLUGIN_FACTORY(KLibLoaderTestFactory,
