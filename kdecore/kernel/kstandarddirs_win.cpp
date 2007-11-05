@@ -53,7 +53,7 @@ QString KStandardDirs::installPath(const char *type)
             break;
         case 'e':
             if (strcmp("exe", type) == 0)
-                return prefix + '/';
+                return prefix + QLatin1String("/bin/");
             break;
         case 'h':
             if (strcmp("html", type) == 0)
