@@ -224,7 +224,7 @@ class BackendInterface
          *
          * \param type see \ref ObjectDescriptionType
          */
-        virtual QSet<int> objectDescriptionIndexes(ObjectDescriptionType type) const = 0;
+        virtual QList<int> objectDescriptionIndexes(ObjectDescriptionType type) const = 0;
 
         /**
          * Given a unique identifier that was returned from objectDescriptionIndexes this function

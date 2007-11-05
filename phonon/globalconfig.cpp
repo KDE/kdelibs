@@ -25,7 +25,6 @@
 #include "backendinterface.h"
 
 #include <QtCore/QList>
-#include <QtCore/QSet>
 #include <QtCore/QVariant>
 
 namespace Phonon
@@ -75,9 +74,7 @@ QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) con
     if (!backendIface) {
         return QList<int>();
     }
-    QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
-
-    QList<int> defaultList = deviceIndexes.toList();
+    QList<int> defaultList = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
 
     //Now the list from m_config
     const QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(category));
@@ -128,10 +125,9 @@ int GlobalConfig::audioOutputDeviceFor(Phonon::Category category) const
     if (!backendIface) {
         return QList<int>();
     }
-    QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
+    QList<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
 
-    QList<int> defaultList = deviceIndexes.toList();
-    qSort(defaultList);
+    QList<int> defaultList = deviceIndexes;
 
     //Now the list from m_config
     //The devices need to be stored independently for every backend
