@@ -28,6 +28,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 #include <kcomponentdata.h>
+#include <kexportplugin.h>
 #include <kglobal.h>
 
 class KPluginFactoryPrivate;

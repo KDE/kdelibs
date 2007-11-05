@@ -20,54 +20,11 @@
 
 #include <kglobal.h>
 #include <kdeversion.h>
+#include <kexportplugin.h>
 
 #include <QtCore/QPluginLoader>
 #include <QtCore/QtPlugin>
 
-/**
- * \internal
- * Stores KDE version informations in a plugin library.
- * \see K_PLUGIN_VERIFICATION_DATA
- */
-struct KDEPluginVerificationData
-{
-    /**
-     * \internal
-     * The version of this structure. Increase it in the K_EXPORT_PLUGIN_VERSION macro whenever you
-     * make changes to this structure.
-     */
-    quint8 dataVersion;
-    quint32 KDEVersion;
-    const char *KDEVersionString;
-};
-
-/**
- * \internal
- * Used to export the KDE version a plugin was compiled against.
- * \see KDEPluginVerificationData
- */
-#define K_PLUGIN_VERIFICATION_DATA \
-Q_EXTERN_C KDE_EXPORT const KDEPluginVerificationData kde_plugin_verification_data = \
-{ 1, KDE_VERSION, KDE_VERSION_STRING };
-
-/**
- * \relates KPluginLoader
- * Use this macro if you want to give your plugin a version number.
- * You can later access the version number with KPluginLoader::pluginVersion()
- */
-#define K_EXPORT_PLUGIN_VERSION(version) \
-Q_EXTERN_C KDE_EXPORT const quint32 kde_plugin_version = version;
-
-
-/**
- * \relates KPluginLoader
- * This macro exports the main object of the plugin. Most times, this will be a KPluginFactory
- * or derived class, but any QObject derived class can be used.
- * Take a look at the documentation of Q_EXPORT_PLUGIN2 for some details.
- */
-#define K_EXPORT_PLUGIN(factory) \
-Q_EXPORT_PLUGIN(factory) \
-K_PLUGIN_VERIFICATION_DATA
 
 class KComponentData;
 class KPluginFactory;

@@ -371,6 +371,7 @@ install( FILES
    util/klibloader.h
    util/klibrary.h
    util/kmacroexpander.h
+   util/kexportplugin.h
    util/kpluginfactory.h
    util/kpluginloader.h
    util/kshell.h
