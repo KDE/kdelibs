@@ -30,14 +30,12 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QLabel>
 #include <QtGui/QApplication>
-#include <QtCore/QTextIStream>
 #include <QTreeWidget>
 #include <QMimeData>
 
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kicon.h>
-#include <kicontheme.h>
 #include <kiconloader.h>
 #include <kcomponentdata.h>
 #include <kmessagebox.h>
@@ -56,14 +54,6 @@ static const char * const separatorstring = I18N_NOOP("--- separator ---");
 
 #define SEPARATORSTRING i18n(separatorstring)
 
-
-static void dump_xml(const QDomDocument& doc)
-{
-    QString str;
-    QTextStream ts(&str, QIODevice::WriteOnly);
-    ts << doc;
-    kDebug() << str;
-}
 
 typedef QList<QDomElement> ToolBarList;
 
@@ -221,9 +211,9 @@ public:
   void loadToolBarCombo( const QString& defaultToolbar );
   void loadActionList(QDomElement& elem);
 
-  QString xmlFile(const QString& xml_file)
+  QString xmlFile(const QString& xml_file) const
   {
-    return xml_file.isNull() ? QString(m_componentData.componentName()) + "ui.rc" :
+    return xml_file.isEmpty() ? QString(m_componentData.componentName()) + "ui.rc" :
                                xml_file;
   }
 
@@ -495,7 +485,7 @@ void KEditToolBarPrivate::_k_slotDefault()
         {
             QString file = client->xmlFile();
 
-            if (file.isNull())
+            if (file.isNull()) // ##### should be isEmpty?
                 continue;
 
             if (QDir::isRelativePath(file))
@@ -722,7 +712,7 @@ bool KEditToolBarWidget::save()
     if ( (*it).m_type == XmlData::Merged )
       continue;
 
-    dump_xml((*it).m_document);
+    kDebug() << (*it).m_document.toString();
 
     kDebug(240) << "Saving " << (*it).m_xmlFile;
     // if we got this far, we might as well just save it
