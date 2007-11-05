@@ -36,8 +36,7 @@ class Kded;
  * KDED modules are realized as shared
  * libraries that are loaded on-demand into kded at runtime.
  *
- * See the section "Creating a KDED module" in kdelibs/kded/README.kded
- * for more detailed documentation.
+ * See kdelibs/kded/HOWTO for documentation about writing kded modules.
  *
  * @author Waldo Bastian <bastian@kde.org>
  */

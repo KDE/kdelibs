@@ -1,18 +1,34 @@
-HOWTO Make KDED Modules.
+HOWTO Make KDED Modules
+=======================
 
-KDED Modules are very similar to modules for the control center. A KDED Module
-is loaded when a call is made to it.
+KDED Modules are very similar to modules for the control center. 
+A KDED Module is loaded when a call is made to it.
 
-A KDED Module needs to provide a factory method that creates an object that
-is derived from KDEDModule. The name of a factory method always starts with 
-"create_".
+Here are examples of KDED modules:
+ kdelibs/kioslave/http/kcookiejar/kcookieserver.cpp  Cookie-handling module (including GUI)
+ kdelibs/kio/misc/kwalletd/kwalletd.cpp              KWallet module, handles the wallet file
+ kdelibs/kdeui/shortcuts/kdedglobalaccel.cpp         Global-shortcuts module, for desktop-wide key shortcuts like Alt+F2
+ kdebase/apps/lib/konq/favicons/favicons.cpp         Favicons module, for downloading favicon.ico files when browsing
+ kdebase/runtime/kpasswdserver/kpasswdserver.cpp     Password-caching module
 
-It also needs to provide a desktop file that defines the service provided by
-the module. The desktop file needs to be installed under 
-$KDEDIR/share/services/kded/. The name of the desktop file must match with 
-the name of the DCOP object that is implemented by the module.
+A KDED module should install a .desktop file with
+	ServicesTypes=KDEDModule
 
-The desktop file needs to define the library in which the module is 
-implemented. The name of the library always starts with kded_.
+A KDED module will be loaded on KDE startup if it has a line
+	X-KDE-Kded-autoload=true
 
-The kdelibs/kded/test/ directory contains a sample implementation.
+Note that this flag doesn't cause the module to be loaded if the KDE desktop
+is not running (i.e. when running a KDE application in another environment).
+
+Normally KDED modules are loaded whenever they are accessed, so you don't
+need autoloading enabled. On demand loading can be disabled by putting
+the following line in the .desktop file:
+	X-KDE-Kded-load-on-demand=false
+
+Further it should contain:
+	X-KDE-Library=foo
+
+Which means that kded_foo.so is the name of the library that contains
+the module. Note that the name of the library always starts with kded_.
+
+The .desktop file should be installed to ${SERVICES_INSTALL_DIR}/kded
