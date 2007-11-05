@@ -206,7 +206,7 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
     // FIXME: distinguish between mounted & unmounted
     int size = path.size();
     if ( size == 2 || size == 3 ) {
-        unsigned int type = GetDriveType( (LPCTSTR) path.utf16() );
+        unsigned int type = GetDriveTypeW( (LPCWSTR) path.utf16() );
         switch( type ) {
             case DRIVE_REMOVABLE:
                 return KMimeType::mimeType( "media/floppy_mounted" );
