@@ -41,7 +41,7 @@
 #include <soprano/dummymodel.h>
 namespace Soprano {
    namespace Util {
-   class Dummy {};
+      class Dummy {};
    }
 }
 
@@ -56,7 +56,7 @@ class Nepomuk::ResourceManager::Private
 {
 public:
     Private( ResourceManager* manager )
-        : client( "org.kde.nepomuk.DataRepository" ),
+        : client( "org.kde.NepomukServer" ),
           mainModel( 0 ),
           dummyModel( 0 ),
           m_parent(manager) {
