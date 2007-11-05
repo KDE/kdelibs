@@ -42,7 +42,7 @@ class KSSLD : public KDEDModule
 
 public:
 
-  KSSLD();
+  KSSLD(QObject* parent, const QList<QVariant>&);
 
   virtual ~KSSLD();
 

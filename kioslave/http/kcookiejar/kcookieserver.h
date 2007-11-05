@@ -40,7 +40,7 @@ class KCookieServer : public KDEDModule, protected QDBusContext
 {
   Q_OBJECT
 public:
-  KCookieServer();
+  KCookieServer(QObject* parent, const QList<QVariant>&);
   ~KCookieServer();
 
 public Q_SLOTS:

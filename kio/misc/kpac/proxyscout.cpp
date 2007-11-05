@@ -21,15 +21,22 @@
 #include <cstdlib>
 #include <ctime>
 
-#include <kapplication.h>
 #include <klocale.h>
 #include <knotification.h>
 #include <kprotocolmanager.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 #include <QtDBus/QtDBus>
 
 #include "proxyscout.moc"
 #include "discovery.h"
 #include "script.h"
+
+K_PLUGIN_FACTORY(ProxyScoutFactory,
+                 registerPlugin<KPAC::ProxyScout>();
+    )
+K_EXPORT_PLUGIN(ProxyScoutFactory("KProxyScoutd"))
+
 
 namespace KPAC
 {
@@ -38,8 +45,8 @@ namespace KPAC
     {
     }
 
-    ProxyScout::ProxyScout()
-        : KDEDModule(),
+    ProxyScout::ProxyScout(QObject* parent, const QList<QVariant>&)
+        : KDEDModule(parent),
           m_componentData("proxyscout"),
           m_downloader( 0 ),
           m_script( 0 ),
@@ -188,11 +195,6 @@ namespace KPAC
 		n->sendEvent();
         }
         return "DIRECT";
-    }
-
-    extern "C" KDE_EXPORT KDEDModule* create_proxyscout()
-    {
-        return new ProxyScout();
     }
 }
 

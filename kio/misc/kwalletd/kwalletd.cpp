@@ -41,23 +41,21 @@
 #include <kstandarddirs.h>
 #include <kwalletentry.h>
 #include <kwindowsystem.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 
 #include <QtCore/QDir>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
+#include <QtGui/QTextDocument> // Qt::escape
 #include <QtCore/QRegExp>
-#include <QtGui/QTextDocument>
 
 #include <assert.h>
 
 #include "kwalletdadaptor.h"
 
-extern "C" {
-   KDE_EXPORT KDEDModule *create_kwalletd() {
-	   return new KWalletD();
-   }
-}
+K_PLUGIN_FACTORY(KWalletDFactory,
+                 registerPlugin<KWalletD>();
+    )
+K_EXPORT_PLUGIN(KWalletDFactory("kwalletd"))
 
 class KWalletTransaction {
 	public:
@@ -77,8 +75,8 @@ class KWalletTransaction {
 		bool modal;
 };
 
-KWalletD::KWalletD()
-: KDEDModule(), _failed(0) {
+KWalletD::KWalletD(QObject* parent, const QList<QVariant>&)
+	: KDEDModule(parent), _failed(0) {
 	srand(time(0));
 	_showingFailureNotify = false;
 	_timeouts = new KTimeout();

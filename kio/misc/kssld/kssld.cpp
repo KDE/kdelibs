@@ -44,19 +44,20 @@
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include <QtCore/QDate>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 
 #include <kcodecs.h>
 #include <kopenssl.h>
 
 // See design notes at end
 
-extern "C" {
-	KDE_EXPORT KDEDModule *create_kssld() {
-		return new KSSLD();
-	}
+K_PLUGIN_FACTORY(KSSLDFactory,
+                 registerPlugin<KSSLD>();
+    )
+K_EXPORT_PLUGIN(KSSLDFactory("kssld"))
 
-	KDE_EXPORT void *__kde_do_unload;
-}
+    //KDE_EXPORT void *__kde_do_unload; // TODO re-add support for this?
 
 template <> inline
 void KConfigGroup::writeEntry( const char *pKey,
@@ -67,9 +68,9 @@ void KConfigGroup::writeEntry( const char *pKey,
 }
 
 static void updatePoliciesConfig(KConfig *cfg) {
-	QStringList groups = cfg->groupList();
+	const QStringList groups = cfg->groupList();
 
-	for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
+	for (QStringList::ConstIterator i = groups.begin(); i != groups.end(); ++i) {
 		if ((*i).isEmpty() || *i == "General") {
 			continue;
 		}
@@ -78,14 +79,14 @@ static void updatePoliciesConfig(KConfig *cfg) {
 
 		// remove it if it has expired
 		if (!cg.readEntry("Permanent", false) &&
-					 cg.readEntry("Expires", QDateTime()) < QDateTime::currentDateTime()) {
+			cg.readEntry("Expires", QDateTime()) < QDateTime::currentDateTime()) {
 			cfg->deleteGroup(*i);
 			continue;
 		}
 
 		QString encodedCertStr = cg.readEntry("Certificate");
 		QByteArray encodedCert = encodedCertStr.toLocal8Bit();
-			KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
+		KSSLCertificate *newCert = KSSLCertificate::fromString(encodedCert);
 		if (!newCert) {
 			cfg->deleteGroup(*i);
 			continue;
@@ -98,29 +99,30 @@ static void updatePoliciesConfig(KConfig *cfg) {
 		QStringList chain = cg.readEntry("Chain", QStringList());
 		cfg->deleteGroup(*i);
 
-		cg.changeGroup(newCert->getMD5Digest());
-		cg.writeEntry("Certificate", encodedCertStr);
-		cg.writeEntry("Policy", policy);
-		cg.writeEntry("Permanent", permanent);
-		cg.writeEntry("Expires", expires);
-		cg.writeEntry("Hosts", hosts);
-		cg.writeEntry("Chain", chain);
+		KConfigGroup certGroup(cfg, newCert->getMD5Digest());
+		certGroup.writeEntry("Certificate", encodedCertStr);
+		certGroup.writeEntry("Policy", policy);
+		certGroup.writeEntry("Permanent", permanent);
+		certGroup.writeEntry("Expires", expires);
+		certGroup.writeEntry("Hosts", hosts);
+		certGroup.writeEntry("Chain", chain);
 		delete newCert;
 	}
 
-	KConfigGroup cg(cfg, "General");
-	cg.writeEntry("policies version", 2);
+	KConfigGroup generalGroup(cfg, "General");
+	generalGroup.writeEntry("policies version", 2);
 
-	cg.sync();
+	cfg->sync();
 }
 
 
-KSSLD::KSSLD() : KDEDModule()
+KSSLD::KSSLD(QObject* parent, const QList<QVariant>&)
+    : KDEDModule(parent)
 {
 // ----------------------- FOR THE CACHE ------------------------------------
     cfg = new KConfig("ksslpolicies", KConfig::SimpleConfig);
-    KConfigGroup cg(cfg, "General");
-    if (2 != cg.readEntry("policies version", 0)) {
+    KConfigGroup generalGroup(cfg, "General");
+    if (2 != generalGroup.readEntry("policies version", 0)) {
         ::updatePoliciesConfig(cfg);
     }
     KGlobal::dirs()->addResourceType("kssl", "data", "kssl");
@@ -163,8 +165,8 @@ class KSSLCNode {
 
 void KSSLD::cacheSaveToDisk() {
 
-    KConfigGroup cg(cfg, "General");
-	cg.writeEntry("policies version", 2);
+	KConfigGroup generalGroup(cfg, "General");
+	generalGroup.writeEntry("policies version", 2);
 
 	Q_FOREACH( const KSSLCNode *node , certList ) {
 		if (node->permanent ||
@@ -172,12 +174,12 @@ void KSSLD::cacheSaveToDisk() {
 			// First convert to a binary format and then write the
 			// kconfig entry write the (CN, policy, cert) to
 			// KConfig
-			cg.changeGroup(node->cert->getMD5Digest());
-			cg.writeEntry("Certificate", node->cert->toString());
-			cg.writeEntry("Policy", (int)node->policy);   // cast to avoid ICE in msvc
-			cg.writeEntry("Expires", node->expires);
-			cg.writeEntry("Permanent", node->permanent);
-			cg.writeEntry("Hosts", node->hosts);
+			KConfigGroup certGroup(cfg, node->cert->getMD5Digest());
+			certGroup.writeEntry("Certificate", node->cert->toString());
+			certGroup.writeEntry("Policy", (int)node->policy);  // cast to avoid ICE in msvc
+			certGroup.writeEntry("Expires", node->expires);
+			certGroup.writeEntry("Permanent", node->permanent);
+			certGroup.writeEntry("Hosts", node->hosts);
 
 			// Also write the chain
 			QStringList qsl;
@@ -190,7 +192,7 @@ void KSSLD::cacheSaveToDisk() {
 			}
 
 			qDeleteAll(cl);
-			cg.writeEntry("Chain", qsl);
+			certGroup.writeEntry("Chain", qsl);
 		}
 	}
 

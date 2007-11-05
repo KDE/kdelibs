@@ -38,21 +38,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kstandarddirs.h>
 
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 #include "kcookieserveradaptor.h"
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 
-extern "C" {
-    KDE_EXPORT KDEDModule *create_kcookiejar()
-    {
-       return new KCookieServer();
-    }
-}
-
+K_PLUGIN_FACTORY(KdedCookieServerFactory,
+                 registerPlugin<KCookieServer>();
+    )
+K_EXPORT_PLUGIN(KdedCookieServerFactory("kcookiejar"))
 
 // Cookie field indexes
 enum CookieDetails { CF_DOMAIN=0, CF_PATH, CF_NAME, CF_HOST,
@@ -75,8 +73,8 @@ public:
    RequestList() : QList<CookieRequest*>() { }
 };
 
-KCookieServer::KCookieServer()
-              :KDEDModule()
+KCookieServer::KCookieServer(QObject* parent, const QList<QVariant>&)
+    : KDEDModule(parent)
 {
    (void)new KCookieServerAdaptor(this);
    mCookieJar = new KCookieJar;

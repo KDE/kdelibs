@@ -41,7 +41,7 @@ namespace KPAC
         Q_OBJECT
         Q_CLASSINFO("D-Bus Interface", "org.kde.KPAC.ProxyScout")
     public:
-        ProxyScout();
+        ProxyScout(QObject* parent, const QList<QVariant>&);
         virtual ~ProxyScout();
 
     public Q_SLOTS:

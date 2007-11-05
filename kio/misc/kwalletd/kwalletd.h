@@ -42,7 +42,7 @@ class KWalletTransaction;
 class KWalletD : public KDEDModule {
 	Q_OBJECT
 	public:
-		KWalletD();
+		KWalletD(QObject* parent, const QList<QVariant>&);
 		virtual ~KWalletD();
 
 	public Q_SLOTS:

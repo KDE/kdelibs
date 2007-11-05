@@ -135,6 +135,5 @@ Exec=kcookiejar4
 X-DBUS-StartupType=Unique
 X-KDE-StartupNotify=false
 X-KDE-Library=kcookiejar
-X-KDE-FactoryName=kcookiejar
 X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true

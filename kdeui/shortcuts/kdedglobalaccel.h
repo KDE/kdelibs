@@ -40,7 +40,7 @@ public:
         NoAutoloading = 4
     };
 
-    KdedGlobalAccel();
+    KdedGlobalAccel(QObject*, const QList<QVariant>&);
     ~KdedGlobalAccel();
 
     QList<int> allKeys();

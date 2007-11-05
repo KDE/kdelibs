@@ -45,18 +45,17 @@
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <ksharedconfig.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 
-//TODO: clear isPresent when an action's application/mainComponent disappears
-
-extern "C"
-KDE_EXPORT KDEDModule *create_globalaccel()
-{
-    return new KdedGlobalAccel();
-}
-
+K_PLUGIN_FACTORY(KdedGlobalAccelFactory,
+                 registerPlugin<KdedGlobalAccel>();
+    )
+K_EXPORT_PLUGIN(KdedGlobalAccelFactory("globalaccel"))
 
 struct actionData
 {
+//TODO: clear isPresent when an action's application/mainComponent disappears
     bool isPresent : 1;
     bool isDefaultEmpty : 1;
     QStringList actionId;
@@ -177,8 +176,8 @@ QList<int> KdedGlobalAccelPrivate::nonemptyOnly(const QList<int> &keys)
 }
 
 
-KdedGlobalAccel::KdedGlobalAccel()
- : d(new KdedGlobalAccelPrivate)
+KdedGlobalAccel::KdedGlobalAccel(QObject* parent, const QList<QVariant>&)
+    : KDEDModule(parent), d(new KdedGlobalAccelPrivate)
 {
     qDBusRegisterMetaType<QList<int> >();
 

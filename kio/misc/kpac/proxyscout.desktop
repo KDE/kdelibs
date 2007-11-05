@@ -119,6 +119,5 @@ Comment[zh_HK]=自動代理伺服器組態
 Comment[zh_TW]=自動代理組態
 ServiceTypes=KDEDModule
 X-KDE-Library=proxyscout
-X-KDE-FactoryName=proxyscout
 X-KDE-Kded-autoload=false
 X-KDE-Kded-load-on-demand=true
