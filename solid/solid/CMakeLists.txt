@@ -125,10 +125,15 @@ org.kde.Solid.PowerManagement.Inhibit.xml )
 qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
     org_kde_solid_networking_client)
 
+set(solid_OPTIONAL_LIBS)
+
+if(WIN32)
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN32_LIBRARIES})
+endif(WIN32)
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY})
+target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS})
 
 set_target_properties(solid PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS solid
