@@ -36,19 +36,8 @@ class Kded;
  * KDED modules are realized as shared
  * libraries that are loaded on-demand into kded at runtime.
  *
- * To write a config module, you have to create a library
- * that contains at least one factory function like this:
- *
- * \code
- *   extern "C" {
- *     KDE_EXPORT KDEDModule *create_xyz()
- *     {
- *       return new XYZ();
- *     }
- *   }
- * \endcode
- *
- * See kdelibs/kded/HOWTO for more detailed documentation.
+ * See the section "Creating a KDED module" in kdelibs/kded/README.kded
+ * for more detailed documentation.
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
@@ -63,7 +52,7 @@ public:
   /**
    * Constructor
    */
-  KDEDModule(QObject* parent = 0);
+  explicit KDEDModule(QObject* parent = 0);
 
   virtual ~KDEDModule();
 
