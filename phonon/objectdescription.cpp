@@ -100,7 +100,7 @@ ObjectDescriptionData *ObjectDescriptionData::fromIndex(ObjectDescriptionType ty
     QObject *b = Factory::backend();
     BackendInterface *iface = qobject_cast<BackendInterface *>(b);
     if (iface) {
-        QSet<int> indexes = iface->objectDescriptionIndexes(type);
+        QList<int> indexes = iface->objectDescriptionIndexes(type);
         if (indexes.contains(index)) {
             QHash<QByteArray, QVariant> properties = iface->objectDescriptionProperties(type, index);
             return new ObjectDescriptionData(new ObjectDescriptionPrivate(index, properties));

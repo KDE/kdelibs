@@ -97,7 +97,7 @@ QList<T> BackendCapabilities::available ## T ## s() \
     BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend()); \
     QList<T> ret; \
     if (backendIface) { \
-        QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
+        QList<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
         foreach (int i, deviceIndexes) \
             ret.append(T::fromIndex(i)); \
     } \
@@ -111,7 +111,7 @@ QList<T ## Description> BackendCapabilities::available ## T ## s() \
     BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend()); \
     QList<T ## Description> ret; \
     if (backendIface) { \
-        QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
+        QList<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
         foreach (int i, deviceIndexes) \
             ret.append(T ## Description::fromIndex(i)); \
     } \
@@ -132,7 +132,7 @@ QList<EffectDescription> BackendCapabilities::availableAudioEffects()
     BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
     QList<EffectDescription> ret;
     if (backendIface) {
-        QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::EffectType);
+        QList<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::EffectType);
         foreach (int i, deviceIndexes) {
             ret.append(EffectDescription::fromIndex(i));
         }
