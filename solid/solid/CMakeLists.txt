@@ -128,7 +128,7 @@ qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN32_LIBRARIES})
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN32_LIBRARY})
 endif(WIN32)
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
