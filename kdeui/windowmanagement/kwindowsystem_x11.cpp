@@ -527,19 +527,7 @@ WId KWindowSystem::transientFor( WId win )
 void KWindowSystem::setMainWindow( QWidget* subwindow, WId mainwindow )
 {
     if( mainwindow != 0 )
-    {
-        /*
-         Grmbl. See QDialog::show(). That should get fixed in Qt somehow.
-        */
-        if( qobject_cast< QDialog* >( subwindow ) != NULL
-            && subwindow->parentWidget() == NULL
-            && qApp->activeWindow() != NULL )
-        {
-            kWarning() << "KWindowSystem::setMainWindow(): There either mustn't be qApp->mainWidget(),"
-                " or the dialog must have a non-NULL parent, otherwise Qt will reset the change. Bummer." << endl;
-        }
         XSetTransientForHint( QX11Info::display(), subwindow->winId(), mainwindow );
-    }
     else
         XDeleteProperty( QX11Info::display(), subwindow->winId(), XA_WM_TRANSIENT_FOR );
 }
