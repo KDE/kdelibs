@@ -67,6 +67,7 @@ namespace DOM
 namespace KJS
 {
   class Interpreter;
+  class HTMLElement;
 }
 
 namespace khtml
@@ -203,6 +204,7 @@ class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
   friend class KJS::JSEventListener;
   friend class KJS::JSLazyEventListener;
   friend class KJS::DOMDocument;
+  friend class KJS::HTMLElement;
   friend class KJS::SourceFile;
   friend class KJS::DebugDocument;
   friend class KJSProxy;
@@ -302,7 +304,6 @@ public:
    * Returns a pointer to the KParts::BrowserExtension.
    */
   KParts::BrowserExtension *browserExtension() const;
-  KParts::LiveConnectExtension *liveConnectExtension( const khtml::RenderPart *) const;
   KParts::BrowserHostExtension *browserHostExtension() const;
 
   /**
@@ -1527,6 +1528,7 @@ private:
   void resetHoverText(); // Undo overURL and reset HoverText
 
   bool processObjectRequest( khtml::ChildFrame *child, const KUrl &url, const QString &mimetype );
+  KParts::LiveConnectExtension *liveConnectExtension( const khtml::RenderPart *);
 
   KWallet::Wallet* wallet();
 

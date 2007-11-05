@@ -4187,7 +4187,7 @@ void KHTMLPart::updateActions()
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
 }
 
-KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) const {
+KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) {
     const ConstFrameIt end = d->m_objects.end();
     for(ConstFrameIt it = d->m_objects.begin(); it != end; ++it )
         if ((*it)->m_frame == frame)

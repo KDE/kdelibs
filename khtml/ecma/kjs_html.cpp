@@ -1207,7 +1207,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 */
 KJS_IMPLEMENT_PROTOFUNC(HTMLElementFunction)
 
-static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElementImpl &element)
+KParts::LiveConnectExtension *HTMLElement::getLiveConnectExtension(const DOM::HTMLElementImpl &element)
 {
   DOM::DocumentImpl* doc = element.getDocument();
   KHTMLView *view = doc->view();
