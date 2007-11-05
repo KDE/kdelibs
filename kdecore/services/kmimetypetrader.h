@@ -25,9 +25,6 @@ class KServiceOffer;
 
 /**
  * KDE's trader for services associated to a given mimetype.
- * 
- * Note: If Service means Application or Component/Plugin, see
- * KServiceTypeTrader and KService.
  *
  * Example: say that you want to the list of all KParts components that can handle HTML.
  * Our code would look like:
@@ -38,7 +35,7 @@ class KServiceOffer;
  *
  * If you want to get the preferred KParts component for text/html you could use
  * preferredService("text/html", "KParts/ReadOnlyPart"), although if this is about
- * loading that component you would rather use KParts::ComponentFactory directly.
+ * loading that component you would use createPartInstanceFromQuery directly.
  *
  * @see KServiceTypeTrader, KService
  */
@@ -135,11 +132,11 @@ public:
                 return component;
             }
         }
-        if (error) 
+        if (error)
             *error = i18n("No service matching the requirements was found");
         return 0;
     }
-    
+
     /**
      * This can be used to create a service instance from a mime type query
      *
@@ -168,7 +165,7 @@ public:
                 return component;
             }
         }
-        if (error) 
+        if (error)
             *error = i18n("No service matching the requirements was found");
         return 0;
     }
