@@ -169,7 +169,7 @@ namespace KJS {
 
     QString getURLArg(unsigned id) const;
 
-    KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElementImpl &element);
+    static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElementImpl &element);
 
     /* Many of properties in the DOM bindings can be implemented by merely returning
       an attribute as the right type, and setting it in similar manner; or perhaps
