@@ -46,11 +46,8 @@ public:
     /**
      *  Construct a keygen dialog.
      *  @param parent the parent widget
-     *  @param name the internal name of this instance
-     *  @param modal true if the dialog should be modal
      */
-    explicit KSSLKeyGen(QWidget *parent=0L, const char *name=0L,
-                        bool modal=false);
+    explicit KSSLKeyGen(QWidget *parent=0L);
 
     /**
      *  Destroy this dialog.

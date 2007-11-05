@@ -2554,7 +2554,9 @@ bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
     encoded_values += enc_name;
 
     // pop up the fancy certificate creation dialog here
-    KSSLKeyGen* const kg = new KSSLKeyGen(static_cast<RenderWidget *>(m_render)->widget(), "Key Generator", true);
+    KSSLKeyGen* const kg = new KSSLKeyGen(static_cast<RenderWidget *>(m_render)->widget());
+    kg->setWindowTitle(i18n("Key Generator"));
+    kg->setModal(true);
 
     kg->setKeySize(0);
     successful = (QDialog::Accepted == kg->exec());
