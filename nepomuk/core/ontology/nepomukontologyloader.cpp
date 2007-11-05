@@ -32,6 +32,9 @@
 class Nepomuk::NepomukOntologyLoader::Private
 {
 public:
+    Private()
+        : client("org.kde.NepomukServer") {
+    }
     Soprano::Client::DBusClient client;
 };
 
