@@ -104,6 +104,8 @@ public:
             break;
         case Solid::DeviceInterface::Unknown:
             break;
+        default:
+            break;
         }
 
         return list;

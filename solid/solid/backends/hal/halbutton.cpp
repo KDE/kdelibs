@@ -69,7 +69,7 @@ void Button::slotConditionRaised(const QString &name, const QString &/*reason */
 {
     if (name == "ButtonPressed")
     {
-        emit pressed(type());
+        emit pressed(type(), m_device->udi());
     }
 }
 

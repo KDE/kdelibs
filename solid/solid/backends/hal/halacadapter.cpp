@@ -42,7 +42,7 @@ void AcAdapter::slotPropertyChanged(const QMap<QString,int> &changes)
 {
     if (changes.contains("ac_adapter.present"))
     {
-        emit plugStateChanged(isPlugged());
+        emit plugStateChanged(isPlugged(), m_device->udi());
     }
 }
 

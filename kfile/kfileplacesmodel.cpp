@@ -674,14 +674,14 @@ void KFilePlacesModel::requestTeardown(const QModelIndex &index)
     Solid::OpticalDrive *drive = device.parent().as<Solid::OpticalDrive>();
 
     if (drive!=0) {
-        connect(drive, SIGNAL(ejectDone(Solid::ErrorType, QVariant)),
+        connect(drive, SIGNAL(ejectDone(Solid::ErrorType, QVariant, const QString &)),
                 this, SLOT(_k_storageTeardownDone(Solid::ErrorType, QVariant)));
 
         drive->eject();
     } else {
         Solid::StorageAccess *access = device.as<Solid::StorageAccess>();
 
-        connect(access, SIGNAL(teardownDone(Solid::ErrorType, QVariant)),
+        connect(access, SIGNAL(teardownDone(Solid::ErrorType, QVariant, const QString &)),
                 this, SLOT(_k_storageTeardownDone(Solid::ErrorType, QVariant)));
 
         device.as<Solid::StorageAccess>()->teardown();
@@ -700,7 +700,7 @@ void KFilePlacesModel::requestSetup(const QModelIndex &index)
 
         d->setupInProgress[access] = index;
 
-        connect(access, SIGNAL(setupDone(Solid::ErrorType, QVariant)),
+        connect(access, SIGNAL(setupDone(Solid::ErrorType, QVariant, const QString &)),
                 this, SLOT(_k_storageSetupDone(Solid::ErrorType, QVariant)));
 
         access->setup();

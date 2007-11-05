@@ -45,9 +45,9 @@ public Q_SLOTS:
     virtual bool teardown();
 
 Q_SIGNALS:
-    void accessibilityChanged(bool accessible);
-    void setupDone(Solid::ErrorType error, QVariant errorData);
-    void teardownDone(Solid::ErrorType error, QVariant errorData);
+    void accessibilityChanged(bool accessible, const QString &udi);
+    void setupDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
+    void teardownDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
 
 private Q_SLOTS:
     void onPropertyChanged(const QMap<QString,int> &changes);

@@ -27,7 +27,7 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This device interface is available on A/C adapters.
+     * This device interface is available on AC adapters.
      */
     class AcAdapter : virtual public DeviceInterface
     {
@@ -39,7 +39,7 @@ namespace Ifaces
 
 
         /**
-         * Indicates if this A/C adapter is plugged.
+         * Indicates if this AC adapter is plugged.
          *
          * @return true if the adapter is plugged, false otherwise
          */
@@ -48,11 +48,12 @@ namespace Ifaces
     protected:
     //Q_SIGNALS:
         /**
-         * This signal is emitted when the A/C adapter is plugged or unplugged.
+         * This signal is emitted when the AC adapter is plugged or unplugged.
          *
-         * @param newState true if the A/C adapter is plugged is mounted, false otherwise
+         * @param newState true if the AC adapter is plugged is mounted, false otherwise
+         * @param udi the UDI of the AC adapter with the changed plugging state
          */
-        virtual void plugStateChanged(bool newState) = 0;
+        virtual void plugStateChanged(bool newState, const QString &udi) = 0;
     };
 }
 }

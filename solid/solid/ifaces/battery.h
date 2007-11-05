@@ -89,8 +89,9 @@ namespace Ifaces
          * battery has changed.
          *
          * @param value the new charge percent value of the battery
+         * @param udi the UDI of the battery with the new charge percent
          */
-        virtual void chargePercentChanged(int value) = 0;
+        virtual void chargePercentChanged(int value, const QString &udi) = 0;
 
         /**
          * This signal is emitted when the charge state of this battery
@@ -99,16 +100,18 @@ namespace Ifaces
          * @param newState the new charge state of the battery, it's one of
          * the type Solid::Battery::ChargeState
          * @see Solid::Battery::ChargeState
+         * @param udi the UDI of the battery with the new charge state
          */
-        virtual void chargeStateChanged(int newState) = 0;
+        virtual void chargeStateChanged(int newState, const QString &udi) = 0;
 
         /**
          * This signal is emitted if the battery get plugged in/out of the
          * battery bay.
          *
          * @param newState the new plugging state of the battery, type is boolean
+         * @param udi the UDI of the battery with thew new plugging state
          */
-        virtual void plugStateChanged(bool newState) = 0;
+        virtual void plugStateChanged(bool newState, const QString &udi) = 0;
 
     };
 }

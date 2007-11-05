@@ -45,7 +45,7 @@ public Q_SLOTS:
     void unplug();
 
 Q_SIGNALS:
-    void plugStateChanged(bool newState);
+    void plugStateChanged(bool newState, const QString &udi);
 };
 }
 }

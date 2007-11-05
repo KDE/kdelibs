@@ -111,7 +111,7 @@ void StorageAccess::slotPropertyChanged(const QMap<QString,int> &changes)
 {
     if (changes.contains("volume.is_mounted"))
     {
-        emit accessibilityChanged(isAccessible());
+        emit accessibilityChanged(isAccessible(), m_device->udi());
     }
 }
 
@@ -119,10 +119,10 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
 {
     if (m_setupInProgress) {
         m_setupInProgress = false;
-        emit setupDone(Solid::NoError, QVariant());
+        emit setupDone(Solid::NoError, QVariant(), m_device->udi());
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
-        emit teardownDone(Solid::NoError, QVariant());
+        emit teardownDone(Solid::NoError, QVariant(), m_device->udi());
     }
 }
 
@@ -132,32 +132,37 @@ void StorageAccess::slotDBusError(const QDBusError &error)
     if (m_setupInProgress) {
         m_setupInProgress = false;
         emit setupDone(Solid::UnauthorizedOperation,
-                       error.name()+": "+error.message());
+                       error.name()+": "+error.message(),
+                       m_device->udi());
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
         emit teardownDone(Solid::UnauthorizedOperation,
-                          error.name()+": "+error.message());
+                          error.name()+": "+error.message(),
+                          m_device->udi());
     }
 }
 
 void Solid::Backends::Hal::StorageAccess::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    Q_UNUSED(exitStatus);
     if (m_setupInProgress) {
         m_setupInProgress = false;
 
         if (exitCode==0) {
-            emit setupDone(Solid::NoError, QVariant());
+            emit setupDone(Solid::NoError, QVariant(), m_device->udi());
         } else {
             emit setupDone(Solid::UnauthorizedOperation,
-                           m_process->readAllStandardError());
+                           m_process->readAllStandardError(),
+                           m_device->udi());
         }
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
         if (exitCode==0) {
-            emit teardownDone(Solid::NoError, QVariant());
+            emit teardownDone(Solid::NoError, QVariant(), m_device->udi());
         } else {
             emit teardownDone(Solid::UnauthorizedOperation,
-                              m_process->readAllStandardError());
+                              m_process->readAllStandardError(),
+                              m_device->udi());
         }
     }
 
@@ -206,7 +211,7 @@ void StorageAccess::passphraseReply(const QString &passphrase)
             callCryptoSetup(passphrase);
         } else {
             m_setupInProgress = false;
-            emit setupDone(Solid::NoError, QVariant());
+            emit setupDone(Solid::NoError, QVariant(), m_device->udi());
         }
     }
 }

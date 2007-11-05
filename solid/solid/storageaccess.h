@@ -109,8 +109,9 @@ namespace Solid
          * has changed.
          *
          * @param accessible true if the volume is accessible, false otherwise
+         * @param udi the UDI of the volume
          */
-        void accessibilityChanged(bool accessible);
+        void accessibilityChanged(bool accessible, const QString &udi);
 
         /**
          * This signal is emitted when the attempted setting up of this
@@ -118,8 +119,9 @@ namespace Solid
          *
          * @param error type of error that occurred, if any
          * @param errorData more information about the error, if any
+         * @param udi the UDI of the volume
          */
-        void setupDone(Solid::ErrorType error, QVariant errorData);
+        void setupDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
 
         /**
          * This signal is emitted when the attempted tearing down of this
@@ -127,8 +129,9 @@ namespace Solid
          *
          * @param error type of error that occurred, if any
          * @param errorData more information about the error, if any
+         * @param udi the UDI of the volume
          */
-        void teardownDone(Solid::ErrorType error, QVariant errorData);
+        void teardownDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
 
     protected:
         /**

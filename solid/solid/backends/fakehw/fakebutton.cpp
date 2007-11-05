@@ -67,7 +67,7 @@ bool FakeButton::stateValue() const
 void FakeButton::press()
 {
     if (hasState()) fakeDevice()->setProperty("stateValue", !stateValue());
-    emit pressed(type());
+    emit pressed(type(), fakeDevice()->udi());
 }
 
 #include "backends/fakehw/fakebutton.moc"

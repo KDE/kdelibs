@@ -30,7 +30,7 @@ namespace Solid
     class Device;
 
     /**
-     * This device interface is available on A/C adapters.
+     * This device interface is available on AC adapters.
      */
     class SOLID_EXPORT AcAdapter : public DeviceInterface
     {
@@ -66,7 +66,7 @@ namespace Solid
         static Type deviceInterfaceType() { return DeviceInterface::AcAdapter; }
 
         /**
-         * Indicates if this A/C adapter is plugged.
+         * Indicates if this AC adapter is plugged.
          *
          * @return true if the adapter is plugged, false otherwise
          */
@@ -74,11 +74,12 @@ namespace Solid
 
     Q_SIGNALS:
         /**
-         * This signal is emitted when the A/C adapter is plugged or unplugged.
+         * This signal is emitted when the AC adapter is plugged or unplugged.
          *
-         * @param newState true if the A/C adapter is plugged, false otherwise
+         * @param newState true if the AC adapter is plugged, false otherwise
+         * @param udi the UDI of the AC adapter
          */
-        void plugStateChanged(bool newState);
+        void plugStateChanged(bool newState, const QString &udi);
     };
 }
 

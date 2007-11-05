@@ -47,9 +47,9 @@ public:
     virtual Solid::Battery::ChargeState chargeState() const;
 
 Q_SIGNALS:
-    void chargePercentChanged(int value);
-    void chargeStateChanged(int newState);
-    void plugStateChanged(bool newState);
+    void chargePercentChanged(int value, const QString &udi);
+    void chargeStateChanged(int newState, const QString &udi);
+    void plugStateChanged(bool newState, const QString &udi);
 
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);

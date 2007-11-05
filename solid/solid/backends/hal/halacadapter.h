@@ -41,7 +41,7 @@ public:
     virtual bool isPlugged() const;
 
 Q_SIGNALS:
-    void plugStateChanged(bool newState);
+    void plugStateChanged(bool newState, const QString &udi);
 
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);

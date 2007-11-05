@@ -118,8 +118,9 @@ namespace Solid
          * @param type the type of button device, it's one of
          * the type Solid::Button::ButtonType
          * @see Solid::Button::ButtonType
+         * @param udi the UDI of the button
          */
-        void pressed(Solid::Button::ButtonType type);
+        void pressed(Solid::Button::ButtonType type, const QString &udi);
     };
 }
 

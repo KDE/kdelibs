@@ -26,10 +26,10 @@
 Solid::OpticalDrive::OpticalDrive(QObject *backendObject)
     : StorageDrive(*new OpticalDrivePrivate(), backendObject)
 {
-    connect(backendObject, SIGNAL(ejectPressed()),
-            this, SIGNAL(ejectPressed()));
-    connect(backendObject, SIGNAL(ejectDone(Solid::ErrorType, QVariant)),
-            this, SIGNAL(ejectDone(Solid::ErrorType, QVariant)));
+    connect(backendObject, SIGNAL(ejectPressed(const QString &)),
+            this, SIGNAL(ejectPressed(const QString &)));
+    connect(backendObject, SIGNAL(ejectDone(Solid::ErrorType, QVariant, const QString &)),
+            this, SIGNAL(ejectDone(Solid::ErrorType, QVariant, const QString &)));
 }
 
 Solid::OpticalDrive::~OpticalDrive()

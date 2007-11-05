@@ -101,7 +101,7 @@ void Cdrom::slotCondition(const QString &name, const QString &/*reason */)
 {
     if (name == "EjectPressed")
     {
-        emit ejectPressed();
+        emit ejectPressed(m_device->udi());
     }
 }
 
@@ -168,7 +168,7 @@ bool Solid::Backends::Hal::Cdrom::callSystemEject()
 void Cdrom::slotDBusReply(const QDBusMessage &/*reply*/)
 {
     m_ejectInProgress = false;
-    emit ejectDone(Solid::NoError, QVariant());
+    emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
 }
 
 void Cdrom::slotDBusError(const QDBusError &error)
@@ -177,19 +177,22 @@ void Cdrom::slotDBusError(const QDBusError &error)
 
     // TODO: Better error reporting here
     emit ejectDone(Solid::UnauthorizedOperation,
-                   error.name()+": "+error.message());
+                   error.name()+": "+error.message(),
+                   m_device->udi());
 }
 
 void Solid::Backends::Hal::Cdrom::slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    Q_UNUSED(exitStatus);
     if (m_ejectInProgress) {
         m_ejectInProgress = false;
 
         if (exitCode==0) {
-            emit ejectDone(Solid::NoError, QVariant());
+            emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
         } else {
             emit ejectDone(Solid::UnauthorizedOperation,
-                           m_process->readAllStandardError());
+                           m_process->readAllStandardError(),
+                           m_device->udi());
         }
     }
 

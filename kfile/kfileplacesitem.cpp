@@ -39,7 +39,7 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
         m_bookmark.setMetaDataItem("ID", generateNewId());
     } else if (!udi.isEmpty()) {
         Solid::Device dev(udi);
-        connect(dev.as<Solid::StorageAccess>(), SIGNAL(accessibilityChanged(bool)),
+        connect(dev.as<Solid::StorageAccess>(), SIGNAL(accessibilityChanged(bool, const QString &)),
                 this, SLOT(onAccessibilityChanged()));
     }
 }

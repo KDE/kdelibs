@@ -46,8 +46,8 @@ public Q_SLOTS:
     virtual bool eject();
 
 Q_SIGNALS:
-    void ejectPressed();
-    void ejectDone(Solid::ErrorType error, QVariant errorData);
+    void ejectPressed(const QString &udi);
+    void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
 };
 }
 }

@@ -86,10 +86,11 @@ namespace Ifaces
          * on the drive.
          *
          * Please note that some (broken) drives doesn't report this event.
+         * @param udi the UDI of the drive
          */
-        virtual void ejectPressed() = 0;
+        virtual void ejectPressed(const QString &udi) = 0;
 
-        virtual void ejectDone(Solid::ErrorType error, QVariant errorData) = 0;
+        virtual void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi) = 0;
     };
 }
 }

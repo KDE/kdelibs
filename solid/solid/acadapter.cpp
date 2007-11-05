@@ -26,8 +26,8 @@
 Solid::AcAdapter::AcAdapter(QObject *backendObject)
     : DeviceInterface(*new AcAdapterPrivate(), backendObject)
 {
-    connect(backendObject, SIGNAL(plugStateChanged(bool)),
-             this, SIGNAL(plugStateChanged(bool)));
+    connect(backendObject, SIGNAL(plugStateChanged(bool, const QString &)),
+             this, SIGNAL(plugStateChanged(bool, const QString &)));
 }
 
 Solid::AcAdapter::~AcAdapter()

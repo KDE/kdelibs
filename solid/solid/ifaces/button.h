@@ -78,7 +78,7 @@ namespace Ifaces
          * the type Solid::Button::ButtonType
          * @see Solid::Button::ButtonType
          */
-        virtual void pressed(Solid::Button::ButtonType type) = 0;
+        virtual void pressed(Solid::Button::ButtonType type, const QString &udi) = 0;
     };
 }
 }

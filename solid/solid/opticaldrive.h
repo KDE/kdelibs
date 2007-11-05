@@ -153,10 +153,11 @@ namespace Solid
          * on the drive.
          *
          * Please note that some (broken) drives doesn't report this event.
+         * @param udi the UDI of the drive
          */
-        void ejectPressed();
+        void ejectPressed(const QString &udi);
 
-        void ejectDone(Solid::ErrorType error, QVariant errorData);
+        void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
 
     };
 }
