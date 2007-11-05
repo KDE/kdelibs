@@ -468,10 +468,8 @@ public Q_SLOTS:
      * Example (adding a help button to the first toolbar):
      *
      * \code
-     * KIconLoader &loader = *KGlobal::iconLoader();
-     * QPixmap pixmap = loader.loadIcon( "help-contents" );
-     * toolBar(0)->insertButton( pixmap, 0, SIGNAL(clicked()),
-     *   this, SLOT(appHelpActivated()), true, i18n("Help") );
+     * toolBar(0)->addAction(KIcon("help-contents"), i18n("Help"),
+     *                       this, SLOT(appHelpActivated()));
      * \endcode
      *
      */
