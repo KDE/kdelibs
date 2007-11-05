@@ -597,30 +597,12 @@ bool KIconLoader::extraDesktopThemesAdded() const
 
 QString KIconLoaderPrivate::removeIconExtension(const QString &name) const
 {
-    int extensionLength=0;
-
-    QString ext = name.right(4);
-
-    if (ext == ".png" || ext == ".xpm" )
-      extensionLength=4;
-    else
-    {
-        static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-        if (name.endsWith(svgz_ext))
-            extensionLength=5;
-        else if (ext == ".svg")
-            extensionLength=4;
+    if (name.endsWith(".png") || name.endsWith(".xpm") || name.endsWith(".svg")) {
+        return name.left(name.length() - 4);
+    } else if (name.endsWith(".svgz")) {
+        return name.left(name.length() - 5);
     }
 
-    if ( extensionLength > 0 )
-    {
-#ifndef NDEBUG
-        kDebug(264) << "Application " << KGlobal::mainComponent().componentName()
-                     << " loads icon " << name << " with extension." << endl;
-#endif
-
-        return name.left(name.length() - extensionLength);
-    }
     return name;
 }
 
@@ -779,8 +761,14 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
         return QString();
     }
 
-    if (!QDir::isRelativePath(_name))
+#ifdef Q_WS_WIN
+    if (QDir::isRelativePath(name)) {
+#else
+    if (_name.isEmpty() || _name[0] == '/') {
+#endif
+        // we have either an absolute path or nothing to work with
         return _name;
+    }
 
     QString name = d->removeIconExtension( _name );
 
@@ -854,8 +842,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     QString name = _name;
     QString path;
     QPixmap pix;
-    QString key;
-    bool absolutePath=false, favIconOverlay=false;
+    bool absolutePath = false;
+    bool favIconOverlay = false;
 
     // Special case for absolute path icons.
     if (name.startsWith("favicons/"))
@@ -863,16 +851,24 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
        favIconOverlay = true;
        name = KStandardDirs::locateLocal("cache", name+".png");
     }
-    if (!QDir::isRelativePath(name)) absolutePath=true;
+
+#ifdef Q_WS_WIN
+    if (QDir::isRelativePath(name)) {
+#else
+    if (!name.isEmpty() && name[0] == '/') {
+#endif
+        absolutePath = true;
+    }
 
     static const QString &str_unknown = KGlobal::staticQString("unknown");
 
     // Special case for "User" icons.
     if (group == KIconLoader::User)
     {
-        key = "$kicou_";
-        key += QString::number(size); key += '_';
-        key += name;
+        QString key;
+        key.reserve(200);
+        key.append("$kicou_");
+        key.append(name).append('_').append(QString::number(size));
         key.append(overlays.join("_")); // krazy:exclude=doublequote_chars
 
         if (d->mIconCache->find(key, pix, path_store)) {
@@ -948,20 +944,22 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     // Generate a unique cache key for the icon.
 
-    key = "$kico_";
-    key += name; key += '_';
-    key += QString::number(size); key += '_';
+    QString key;
+    key.reserve(100);
+    key.append("$kico_");
+    key.append(name).append('_').append(QString::number(size));
 
     QString overlayKey = overlays.join("_"); // krazy:exclude=doublequote_chars
     QString noEffectKey = key + overlayKey;
 
     if (group >= 0)
     {
-        key += d->mpEffect.fingerprint(group, state);
+        key.append(d->mpEffect.fingerprint(group, state));
         if (d->mpGroups[group].dblPixels)
-            key += QLatin1String(":dblsize");
-    } else
-        key += QLatin1String("noeffect");
+            key.append(QLatin1String(":dblsize"));
+    } else {
+        key.append(QLatin1String("noeffect"));
+    }
     key.append(overlayKey);
 
     // Is the icon in the cache?
