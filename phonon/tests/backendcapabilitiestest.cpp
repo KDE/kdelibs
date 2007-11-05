@@ -72,7 +72,7 @@ do { \
     for (int i = 0; i < BackendCapabilities::available##T##s().size(); ++i) { \
         ObjectDescription<T ## Type> device = BackendCapabilities::available##T##s().at(i); \
         QVERIFY(device.index() >= 0); \
-        QSet<int> indexes = iface->objectDescriptionIndexes(Phonon::T##Type);\
+        QList<int> indexes = iface->objectDescriptionIndexes(Phonon::T##Type);\
         QVERIFY(indexes.contains(device.index())); \
         QVERIFY(!device.name().isEmpty()); \
     } \
@@ -96,7 +96,7 @@ void BackendCapabilitiesTest::sensibleValues()
     for (int i = 0; i < BackendCapabilities::availableAudioEffects().size(); ++i) {
         ObjectDescription<EffectType> device = BackendCapabilities::availableAudioEffects().at(i);
         QVERIFY(device.index() >= 0);
-        QSet<int> indexes = iface->objectDescriptionIndexes(Phonon::EffectType);
+        QList<int> indexes = iface->objectDescriptionIndexes(Phonon::EffectType);
         QVERIFY(indexes.contains(device.index()));
         QVERIFY(!device.name().isEmpty());
     }
