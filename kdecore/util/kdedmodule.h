@@ -63,7 +63,7 @@ public:
   /**
    * Constructor
    */
-  KDEDModule();
+  KDEDModule(QObject* parent = 0);
 
   virtual ~KDEDModule();
 

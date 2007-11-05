@@ -41,8 +41,8 @@ public:
 #endif
 };
 
-KDEDModule::KDEDModule()
-    : d(new KDEDModulePrivate)
+KDEDModule::KDEDModule(QObject* parent)
+    : QObject(parent), d(new KDEDModulePrivate)
 {
 #if 0 // KDED_OBJECTS
    d->objMap = 0;
