@@ -1,3 +1,24 @@
+/* This file is part of the KDE libraries
+   Copyright (C) 2000 Simon Hausmann <hausmann@kde.org>
+   Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
+   Copyright     2007 David Faure <faure@kde.org>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public License
+   along with this library; see the file COPYING.LIB.  If not, write to
+   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
+*/
+
 #include "kxmlguifilemerger_p.h"
 #include <QFile>
 #include <QDomDocument>
@@ -30,11 +51,10 @@ static ActionPropertiesMap extractActionProperties( const QDomDocument &doc )
     if ( e.isNull() )
       continue;
 
-    if ( e.tagName().toLower() != "action" )
+    if ( e.tagName().compare("action", Qt::CaseInsensitive) != 0 )
       continue;
 
-    QString actionName = e.attribute( "name" );
-
+    const QString actionName = e.attribute( "name" );
     if ( actionName.isEmpty() )
       continue;
 
@@ -80,16 +100,16 @@ static void storeActionProperties( QDomDocument &doc,
     actionPropElement.removeChild( actionPropElement.firstChild() );
 
   ActionPropertiesMap::ConstIterator it = properties.begin();
-  ActionPropertiesMap::ConstIterator end = properties.end();
+  const ActionPropertiesMap::ConstIterator end = properties.end();
   for (; it != end; ++it )
   {
     QDomElement action = doc.createElement( "Action" );
     action.setAttribute( "name", it.key() );
     actionPropElement.appendChild( action );
 
-    QMap<QString, QString> attributes = (*it);
+    const QMap<QString, QString> attributes = (*it);
     QMap<QString, QString>::ConstIterator attrIt = attributes.begin();
-    QMap<QString, QString>::ConstIterator attrEnd = attributes.end();
+    const QMap<QString, QString>::ConstIterator attrEnd = attributes.end();
     for (; attrIt != attrEnd; ++attrIt )
       action.setAttribute( attrIt.key(), attrIt.value() );
   }
