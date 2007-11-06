@@ -579,6 +579,7 @@ void Context2D::putValueProperty(ExecState *exec, int token, ValueImp *value, in
     CanvasContext2DImpl* ctx = impl();
     switch(token) {
     case GlobalAlpha:
+        KJS_CHECK_FLOAT_VAL(value);
         ctx->setGlobalAlpha(value->toFloat(exec));
         break;
     case GlobalCompositeOperation:

@@ -1719,6 +1719,8 @@ const ClassInfo DOMExceptionConstructor::info = { "DOMExceptionConstructor", 0, 
   INVALID_MODIFICATION_ERR	DOM::DOMException::INVALID_MODIFICATION_ERR	DontDelete|ReadOnly
   NAMESPACE_ERR			DOM::DOMException::NAMESPACE_ERR		DontDelete|ReadOnly
   INVALID_ACCESS_ERR		DOM::DOMException::INVALID_ACCESS_ERR	DontDelete|ReadOnly
+  VALIDATION_ERR               DOM::DOMException::VALIDATION_ERR      DontDelete|ReadOnly
+  TYPE_MISMATCH_ERR            DOM::DOMException::TYPE_MISMATCH_ERR   DontDelete|ReadOnly
 @end
 */
 

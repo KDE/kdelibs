@@ -694,9 +694,13 @@ CanvasPatternImpl* CanvasContext2DImpl::createPattern(ElementImpl* pat, const DO
     // Decode repetition..
     bool repeatX;
     bool repeatY;
-    if (rpt == "repeat") {
+
+    if (rpt == "repeat" || rpt.isEmpty()) {
         repeatX = true;
         repeatY = true;
+    } else if (rpt == "repeat-x") {
+        repeatX = true;
+        repeatY = false;
     } else if (rpt == "repeat-y") {
         repeatX = false;
         repeatY = true;

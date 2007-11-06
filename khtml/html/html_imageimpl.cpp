@@ -317,14 +317,14 @@ void HTMLImageElementImpl::setHeight(long height)
 
 QImage HTMLImageElementImpl::currentImage() const
 {
-    RenderImage *r = static_cast<RenderImage*>(renderer());
-#ifdef __GNUC__
-#warning "FIXME"
-#endif
-    //if(r)
-    //    return r->pixmap().convertToImage();
-
-    return QImage();
+    if (!complete() || !m_image || !m_image->image())
+        return QImage();
+        
+    QImage* im = m_image->image()->qimage();
+    if (im)
+        return *im;
+    else
+        return QImage();
 }
 
 long HTMLImageElementImpl::x() const
