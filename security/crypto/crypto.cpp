@@ -854,10 +854,10 @@ void KCryptoConfig::load()
   yourCertDelList.clear();
   authDelList.clear();
   caDelList.clear();
-  cg.changeGroup("Warnings");
-  mWarnOnEnter->setChecked(cg.readEntry("OnEnter", false));
-  mWarnOnLeave->setChecked(cg.readEntry("OnLeave", true));
-  mWarnOnUnencrypted->setChecked(cg.readEntry("OnUnencrypted", true));
+  KConfigGroup cgWarning(config, "Warnings");
+  mWarnOnEnter->setChecked(cgWarning.readEntry("OnEnter", false));
+  mWarnOnLeave->setChecked(cgWarning.readEntry("OnLeave", true));
+  mWarnOnUnencrypted->setChecked(cgWarning.readEntry("OnUnencrypted", true));
 
 #if 0 // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnMixed->setChecked(cg.readEntry("OnMixed", true));
@@ -868,21 +868,21 @@ void KCryptoConfig::load()
   mWarnRevoked->setChecked(cg.readEntry("WarnRevoked", true));
 #endif
 
-  cg.changeGroup("EGD");
+  KConfigGroup cgEGD(config,"EGD");
   slotUseEGD();  // set the defaults
-  if (cg.readEntry("UseEGD", false)) {
+  if (cgEGD.readEntry("UseEGD", false)) {
     mUseEGD->setChecked(true);
     slotUseEGD();
-  } else if (cg.readEntry("UseEFile", false)) {
+  } else if (cgEGD.readEntry("UseEFile", false)) {
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setPath(cg.readPathEntry("EGDPath", QString()));
+  mEGDPath->setPath(cgEGD.readPathEntry("EGDPath", QString()));
 
 
 #ifdef KSSL_HAVE_SSL
-  cg.changeGroup("OpenSSL");
-  oPath->setUrl(cg.readPathEntry("Path", QString()));
+  KConfigGroup cgSSL( config, "OpenSSL");
+  oPath->setUrl(cgSSL.readPathEntry("Path", QString()));
 #endif
 
   KConfigGroup sslV3(config, "SSLv3");
@@ -992,15 +992,15 @@ void KCryptoConfig::save()
 {
   KConfigGroup cg(config, QByteArray(""));
 #ifdef KSSL_HAVE_SSL
-  cg.changeGroup("Warnings");
-  cg.writeEntry("OnEnter", mWarnOnEnter->isChecked());
-  cg.writeEntry("OnLeave", mWarnOnLeave->isChecked());
-  cg.writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
+  KConfigGroup cgWarning(config, "Warnings");
+  cgWarning.writeEntry("OnEnter", mWarnOnEnter->isChecked());
+  cgWarning.writeEntry("OnLeave", mWarnOnLeave->isChecked());
+  cgWarning.writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
 
-  cg.changeGroup("EGD");
-  cg.writeEntry("UseEGD", mUseEGD->isChecked());
-  cg.writeEntry("UseEFile", mUseEFile->isChecked());
-  cg.writePathEntry("EGDPath", mEGDPath->url().path());
+  KConfigGroup cgEGD(config,"EGD");
+  cgEGD.writeEntry("UseEGD", mUseEGD->isChecked());
+  cgEGD.writeEntry("UseEFile", mUseEFile->isChecked());
+  cgEGD.writePathEntry("EGDPath", mEGDPath->url().path());
 
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
   cg.writeEntry("OnMixed", mWarnOnMixed->isChecked());
@@ -1012,18 +1012,18 @@ void KCryptoConfig::save()
 #endif
 
 #ifdef KSSL_HAVE_SSL
-  cg.changeGroup("OpenSSL");
-  cg.writePathEntry("Path", oPath->url().path());
+  KConfigGroup cgSSL(config,"OpenSSL");
+  cgSSL.writePathEntry("Path", oPath->url().path());
 #endif
 
   int ciphercount = 0;
-  cg.changeGroup("SSLv3");
+  KConfigGroup cgSSLV3(config,"SSLv3");
   CipherItem *item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
     if (item->isOn()) {
-      cg.writeEntry(item->configName(), true);
+      cgSSLV3.writeEntry(item->configName(), true);
       ciphercount++;
-    } else cg.writeEntry(item->configName(), false);
+    } else cgSSLV3.writeEntry(item->configName(), false);
 
     item = static_cast<CipherItem *>(item->nextSibling());
   }
@@ -1099,18 +1099,18 @@ void KCryptoConfig::save()
   if (doGen) genCAList();
 
 
-  cg.changeGroup("Auth");
-  QString whichAuth = cg.readEntry("AuthMethod", "none");
+  KConfigGroup cgAuth(config,"Auth");
+  QString whichAuth = cgAuth.readEntry("AuthMethod", "none");
   if (defCertBG->selected() == defSend)
-    cg.writeEntry("AuthMethod", "send");
+    cgAuth.writeEntry("AuthMethod", "send");
   else if (defCertBG->selected() == defPrompt)
-    cg.writeEntry("AuthMethod", "prompt");
+    cgAuth.writeEntry("AuthMethod", "prompt");
   else
-    cg.writeEntry("AuthMethod", "none");
+    cgAuth.writeEntry("AuthMethod", "none");
 
   if (defCertBox->currentIndex() == 0)
-     cg.writeEntry("DefaultCert", QString());
-  else cg.writeEntry("DefaultCert", defCertBox->currentText());
+     cgAuth.writeEntry("DefaultCert", QString());
+  else cgAuth.writeEntry("DefaultCert", defCertBox->currentText());
 
   for (HostAuthItem *x = authDelList.first(); x != 0; x = authDelList.next()) {
      authcfg->deleteGroup(x->configName());
