@@ -212,6 +212,7 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguiclient.cpp
  xmlgui/kxmlguifactory.cpp
  xmlgui/kxmlguifactory_p.cpp
+ xmlgui/kxmlguifilemerger.cpp
 )
 
 if (Q_WS_X11)
