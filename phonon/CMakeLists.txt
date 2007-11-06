@@ -9,7 +9,10 @@ add_subdirectory(examples)
 add_subdirectory(experimental)
 add_subdirectory(platform_kde)
 add_subdirectory(libkaudiodevicelist)
-add_subdirectory( kcm )
+if(NOT MINGW)
+  # ICE in outputdevicechoice.cpp:262
+  add_subdirectory( kcm )
+endif(NOT MINGW)
 ########### next target ###############
 
 set(phonon_LIB_SRCS
