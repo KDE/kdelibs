@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Version=1.0
 Name=RDF-Schema
 Name[ar]=مخطط RDF
@@ -63,6 +62,6 @@ Comment[x-test]=xxRDF Vocabulary Description Language 1.0: RDF Schemaxx
 Comment[zh_CN]=RDF 词汇描述语言 1.0：RDF Schema
 Comment[zh_TW]=RDF 字彙描述語言 1.0：RDF 概要
 URL=http://www.w3.org/2000/01/rdf-schema#
-Path=rdfs.rdfs
+Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/rdfs.rdfs
 MimeType=application/rdf+xml;
-Type=Link
+Type=Data

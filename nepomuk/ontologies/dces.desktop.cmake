@@ -1,6 +1,5 @@
 [Desktop Entry]
-Encoding=UTF-8
-Version=1.1
+Version=1.0
 Name=The Dublin Core Element Set
 Name[ar]=مجموعة العناصر الجوهرية دابلن
 Name[ca]=Conjunt d'elements 'Dublin Core'
@@ -68,6 +67,6 @@ Comment[x-test]=xxThe Dublin Core Element Set v1.1 namespace providing access to
 Comment[zh_CN]=都柏林核心元素集 1.1 版本命名空间通过一种 RDF Schma的方式提供了对于它的内容的访问
 Comment[zh_TW]=Dublin 核心元素集 1.1 版命名空間以 RDF 摘要方式提供其內容的存取
 URL=http://purl.org/dc/elements/1.1/
-Path=dces.rdf
+Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/dces.rdf
 MimeType=application/rdf+xml;
-Type=Link
+Type=Data

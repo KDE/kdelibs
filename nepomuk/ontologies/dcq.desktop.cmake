@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Version=1.0
 Name=The Dublin Core Terms
 Name[ar]=مفردات دابلن الجوهرية
@@ -66,6 +65,6 @@ Comment[x-test]=xxThe Dublin Core Termsxx
 Comment[zh_CN]=都柏林核心术语
 Comment[zh_TW]=Dublin 核心術語
 URL=http://purl.org/dc/terms/
-Path=dcq.rdf
+Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/dcq.rdf
 MimeType=application/rdf+xml;
-Type=Link
+Type=Data

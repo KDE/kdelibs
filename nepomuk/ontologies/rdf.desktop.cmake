@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Version=1.0
 Name=RDF
 Name[sr]=РДФ
@@ -34,6 +33,6 @@ Comment[x-test]=xxRDF Vocabulary Description Language 1.0xx
 Comment[zh_CN]=RDF 词汇描述语言 1.0
 Comment[zh_TW]=RDF 字彙描述語言 1.0
 URL=http://www.w3.org/1999/02/22-rdf-syntax-ns#
-Path=rdf.rdfs
+Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/rdf.rdfs
 MimeType=application/rdf+xml;
-Type=Link
+Type=Data

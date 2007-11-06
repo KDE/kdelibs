@@ -1,6 +1,5 @@
 [Desktop Entry]
-Encoding=UTF-8
-Version=0.4
+Version=1.0
 Name=Nepomuk File Ontology
 Name[ar]=عريف نيبوموك للملفات
 Name[ca]=Ontologia de fitxers del Nepomuk
@@ -65,6 +64,6 @@ Comment[x-test]=xxThe Nepomuk File Ontology defines basic file typesxx
 Comment[zh_CN]=Nepomuk 文件实体定义了基本文件类型
 Comment[zh_TW]=Nepomuk File Ontology 定義基本的檔案型態
 URL=http://ont.semanticdesktop.org/2007/03/22/nfo#
-Path=nfo.rdfs
+Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/nfo.rdfs
 MimeType=application/rdf+xml;
-Type=Link
+Type=Data

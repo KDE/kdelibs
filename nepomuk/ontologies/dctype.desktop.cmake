@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Version=1.0
 Name=The DCMI Types
 Name[ar]=أنواع DCMI
@@ -71,6 +70,6 @@ Comment[x-test]=xxThe Dublin Core Types namespace provides URIs for the entries 
 Comment[zh_CN]=都柏林核心类型命名空间为 DCMI 类型词汇的条目提供了 URI
 Comment[zh_TW]=Dublin 核心型態命名空間提供了 DCMI 型態字彙的項目的 URI
 URL=http://purl.org/dc/dcmitype/
-Path=dctype.rdf
+Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/dctype.rdf
 MimeType=application/rdf+xml;
-Type=Link
+Type=Data

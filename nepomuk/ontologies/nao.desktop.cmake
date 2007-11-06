@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Version=1.0
 Name=Nepomuk Annotation Ontology
 Name[ar]=التحشية العريفية لنيبوموك
@@ -65,6 +64,6 @@ Comment[x-test]=xxThe Nepomuk Annotation Ontology defines the basic annotation p
 Comment[zh_CN]=Nepomuk 注释实体定义了像标签或者等级这样的基本注释属性。
 Comment[zh_TW]=Nepomuk Annotation Ontology 定義基本的 annotation 屬性，如標籤等。
 URL=http://semanticdesktop.org/ontologies/2007/03/31/nao#
-Path=nao.nrl
+Path=${DATA_INSTALL_DIR}/nepomuk/ontologies/nao.nrl
 MimeType=application/rdf+xml;
-Type=Link
+Type=Data
