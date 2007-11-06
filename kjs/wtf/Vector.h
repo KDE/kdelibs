@@ -549,8 +549,9 @@ namespace WTF {
         const U* ptr = &val;
         if (size() == capacity())
             ptr = expandCapacity(size() + 1, ptr);
-#if !defined(_MSC_VER)
-        //TODO this does not compile for msvc 7.1
+#if defined(_MSC_VER)
+        new (end()) T(static_cast<T>(*ptr));
+#else
         new (end()) T(*ptr);
 #endif
         ++m_size;
