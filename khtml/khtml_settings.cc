@@ -310,20 +310,21 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         d->m_bBackRightClick = cg.readEntry( "BackRightClick", false );
   }
 
-  cg.changeGroup( "Access Keys" );
-  if (reset || cg.exists() ) {
-      d->m_accessKeysEnabled = cg.readEntry( "Enabled", true );
+  KConfigGroup cgAccess(config,"Access Keys" );
+  if (reset || cgAccess.exists() ) {
+      d->m_accessKeysEnabled = cgAccess.readEntry( "Enabled", true );
   }
 
-  cg.changeGroup( "Filter Settings" );
-  if (reset || cg.exists() )
+  KConfigGroup cgFilter( config, "Filter Settings" );
+  
+  if (reset || cgFilter.exists() )
   {
-      d->m_adFilterEnabled = cg.readEntry("Enabled", false);
-      d->m_hideAdsEnabled = cg.readEntry("Shrink", false);
+      d->m_adFilterEnabled = cgFilter.readEntry("Enabled", false);
+      d->m_hideAdsEnabled = cgFilter.readEntry("Shrink", false);
 
       d->adFilters.clear();
 
-      QMap<QString,QString> entryMap = cg.entryMap();
+      QMap<QString,QString> entryMap = cgFilter.entryMap();
       QMap<QString,QString>::ConstIterator it;
       d->adFilters.reserve(entryMap.count());
       for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it )
@@ -359,64 +360,64 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       }
   }
 
-  cg.changeGroup( "HTML Settings" );
-  if (reset || cg.exists() )
+  KConfigGroup cgHtml( config, "HTML Settings" );
+  if (reset || cgHtml.exists() )
   {
     // Fonts and colors
     if( reset ) {
         d->defaultFonts = QStringList();
-        d->defaultFonts.append( cg.readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
-        d->defaultFonts.append( cg.readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
-        d->defaultFonts.append( cg.readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
-        d->defaultFonts.append( cg.readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
-        d->defaultFonts.append( cg.readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );
-        d->defaultFonts.append( cg.readEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT ) );
+        d->defaultFonts.append( cgHtml.readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
+        d->defaultFonts.append( cgHtml.readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
+        d->defaultFonts.append( cgHtml.readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
+        d->defaultFonts.append( cgHtml.readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
+        d->defaultFonts.append( cgHtml.readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );
+        d->defaultFonts.append( cgHtml.readEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT ) );
         d->defaultFonts.append( QString( "0" ) ); // font size adjustment
     }
 
-    if ( reset || cg.hasKey( "MinimumFontSize" ) )
-        d->m_minFontSize = cg.readEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
+    if ( reset || cgHtml.hasKey( "MinimumFontSize" ) )
+        d->m_minFontSize = cgHtml.readEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
 
-    if ( reset || cg.hasKey( "MediumFontSize" ) )
-        d->m_fontSize = cg.readEntry( "MediumFontSize", 12 );
+    if ( reset || cgHtml.hasKey( "MediumFontSize" ) )
+        d->m_fontSize = cgHtml.readEntry( "MediumFontSize", 12 );
 
-    d->fonts = cg.readEntry( "Fonts", QStringList() );
+    d->fonts = cgHtml.readEntry( "Fonts", QStringList() );
 
-    if ( reset || cg.hasKey( "DefaultEncoding" ) )
-        d->m_encoding = cg.readEntry( "DefaultEncoding", "" );
+    if ( reset || cgHtml.hasKey( "DefaultEncoding" ) )
+        d->m_encoding = cgHtml.readEntry( "DefaultEncoding", "" );
 
-    if ( reset || cg.hasKey( "EnforceDefaultCharset" ) )
-        d->enforceCharset = cg.readEntry( "EnforceDefaultCharset", false );
+    if ( reset || cgHtml.hasKey( "EnforceDefaultCharset" ) )
+        d->enforceCharset = cgHtml.readEntry( "EnforceDefaultCharset", false );
 
     // Behavior
-    if ( reset || cg.hasKey( "ChangeCursor" ) )
-        d->m_bChangeCursor = cg.readEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
+    if ( reset || cgHtml.hasKey( "ChangeCursor" ) )
+        d->m_bChangeCursor = cgHtml.readEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
-    if ( reset || cg.hasKey("UnderlineLinks") )
-        d->m_underlineLink = cg.readEntry( "UnderlineLinks", true );
+    if ( reset || cgHtml.hasKey("UnderlineLinks") )
+        d->m_underlineLink = cgHtml.readEntry( "UnderlineLinks", true );
 
-    if ( reset || cg.hasKey( "HoverLinks" ) )
+    if ( reset || cgHtml.hasKey( "HoverLinks" ) )
     {
-        if ( (d->m_hoverLink = cg.readEntry( "HoverLinks", false )))
+        if ( (d->m_hoverLink = cgHtml.readEntry( "HoverLinks", false )))
             d->m_underlineLink = false;
     }
 
-    if ( reset || cg.hasKey( "AllowTabulation" ) )
-        d->m_allowTabulation = cg.readEntry( "AllowTabulation", false );
+    if ( reset || cgHtml.hasKey( "AllowTabulation" ) )
+        d->m_allowTabulation = cgHtml.readEntry( "AllowTabulation", false );
 
-    if ( reset || cg.hasKey( "AutoSpellCheck" ) )
-        d->m_autoSpellCheck = cg.readEntry( "AutoSpellCheck", true );
+    if ( reset || cgHtml.hasKey( "AutoSpellCheck" ) )
+        d->m_autoSpellCheck = cgHtml.readEntry( "AutoSpellCheck", true );
 
     // Other
-    if ( reset || cg.hasKey( "AutoLoadImages" ) )
-      d->m_bAutoLoadImages = cg.readEntry( "AutoLoadImages", true );
+    if ( reset || cgHtml.hasKey( "AutoLoadImages" ) )
+      d->m_bAutoLoadImages = cgHtml.readEntry( "AutoLoadImages", true );
 
-    if ( reset || cg.hasKey( "UnfinishedImageFrame" ) )
-      d->m_bUnfinishedImageFrame = cg.readEntry( "UnfinishedImageFrame", true );
+    if ( reset || cgHtml.hasKey( "UnfinishedImageFrame" ) )
+      d->m_bUnfinishedImageFrame = cgHtml.readEntry( "UnfinishedImageFrame", true );
 
-    if ( reset || cg.hasKey( "ShowAnimations" ) )
+    if ( reset || cgHtml.hasKey( "ShowAnimations" ) )
     {
-      QString value = cg.readEntry( "ShowAnimations").toLower();
+      QString value = cgHtml.readEntry( "ShowAnimations").toLower();
       if (value == "disabled")
          d->m_showAnimations = KAnimationDisabled;
       else if (value == "looponce")
@@ -425,16 +426,16 @@ void KHTMLSettings::init( KConfig * config, bool reset )
          d->m_showAnimations = KAnimationEnabled;
     }
 
-    if ( cg.readEntry( "UserStyleSheetEnabled", false ) == true ) {
-        if ( reset || cg.hasKey( "UserStyleSheet" ) )
-            d->m_userSheet = cg.readEntry( "UserStyleSheet", "" );
+    if ( cgHtml.readEntry( "UserStyleSheetEnabled", false ) == true ) {
+        if ( reset || cgHtml.hasKey( "UserStyleSheet" ) )
+            d->m_userSheet = cgHtml.readEntry( "UserStyleSheet", "" );
     }
 
-    d->m_formCompletionEnabled = cg.readEntry("FormCompletion", true);
-    d->m_maxFormCompletionItems = cg.readEntry("MaxFormCompletionItems", 10);
-    d->m_autoDelayedActionsEnabled = cg.readEntry ("AutoDelayedActions", true);
-    d->m_jsErrorsEnabled = cg.readEntry("ReportJSErrors", true);
-    QStringList accesskeys = cg.readEntry("FallbackAccessKeysAssignments", QStringList());
+    d->m_formCompletionEnabled = cgHtml.readEntry("FormCompletion", true);
+    d->m_maxFormCompletionItems = cgHtml.readEntry("MaxFormCompletionItems", 10);
+    d->m_autoDelayedActionsEnabled = cgHtml.readEntry ("AutoDelayedActions", true);
+    d->m_jsErrorsEnabled = cgHtml.readEntry("ReportJSErrors", true);
+    QStringList accesskeys = cgHtml.readEntry("FallbackAccessKeysAssignments", QStringList());
     d->m_fallbackAccessKeysAssignments.clear();
     for( QStringList::ConstIterator it = accesskeys.begin(); it != accesskeys.end(); ++it )
         if( (*it).length() > 2 && (*it)[ 1 ] == ':' )
@@ -442,52 +443,52 @@ void KHTMLSettings::init( KConfig * config, bool reset )
   }
 
   // Colors
-
+  //In which group ?????
   if ( reset || cg.hasKey( "FollowSystemColors" ) )
       d->m_follow_system_colors = cg.readEntry( "FollowSystemColors", false );
 
-  cg.changeGroup( "General" );
-  if ( reset || cg.exists( ) )
+  KConfigGroup cgGeneral( config, "General" );
+  if ( reset || cgGeneral.exists( ) )
   {
-    if ( reset || cg.hasKey( "foreground" ) ) {
+    if ( reset || cgGeneral.hasKey( "foreground" ) ) {
       QColor def(HTML_DEFAULT_TXT_COLOR);
-      d->m_textColor = cg.readEntry( "foreground", def );
+      d->m_textColor = cgGeneral.readEntry( "foreground", def );
     }
 
-    if ( reset || cg.hasKey( "linkColor" ) ) {
+    if ( reset || cgGeneral.hasKey( "linkColor" ) ) {
       QColor def(HTML_DEFAULT_LNK_COLOR);
-      d->m_linkColor = cg.readEntry( "linkColor", def );
+      d->m_linkColor = cgGeneral.readEntry( "linkColor", def );
     }
 
-    if ( reset || cg.hasKey( "visitedLinkColor" ) ) {
+    if ( reset || cgGeneral.hasKey( "visitedLinkColor" ) ) {
       QColor def(HTML_DEFAULT_VLNK_COLOR);
-      d->m_vLinkColor = cg.readEntry( "visitedLinkColor", def);
+      d->m_vLinkColor = cgGeneral.readEntry( "visitedLinkColor", def);
     }
 
-    if ( reset || cg.hasKey( "background" ) ) {
+    if ( reset || cgGeneral.hasKey( "background" ) ) {
       QColor def(HTML_DEFAULT_BASE_COLOR);
-      d->m_baseColor = cg.readEntry( "background", def);
+      d->m_baseColor = cgGeneral.readEntry( "background", def);
     }
   }
 
-  cg.changeGroup( "Java/JavaScript Settings" );
-  if( reset || cg.exists() )
+  KConfigGroup cgJava( config, "Java/JavaScript Settings" );
+  if( reset || cgJava.exists() )
   {
     // The global setting for JavaScript debugging
     // This is currently always enabled by default
-    if ( reset || cg.hasKey( "EnableJavaScriptDebug" ) )
-      d->m_bEnableJavaScriptDebug = cg.readEntry( "EnableJavaScriptDebug", false );
+    if ( reset || cgJava.hasKey( "EnableJavaScriptDebug" ) )
+      d->m_bEnableJavaScriptDebug = cgJava.readEntry( "EnableJavaScriptDebug", false );
 
     // The global setting for JavaScript error reporting
-    if ( reset || cg.hasKey( "ReportJavaScriptErrors" ) )
-      d->m_bEnableJavaScriptErrorReporting = cg.readEntry( "ReportJavaScriptErrors", false );
+    if ( reset || cgJava.hasKey( "ReportJavaScriptErrors" ) )
+      d->m_bEnableJavaScriptErrorReporting = cgJava.readEntry( "ReportJavaScriptErrors", false );
 
     // The global setting for popup block passive popup
-    if ( reset || cg.hasKey( "PopupBlockerPassivePopup" ) )
-      d->m_jsPopupBlockerPassivePopup = cg.readEntry("PopupBlockerPassivePopup", true );
+    if ( reset || cgJava.hasKey( "PopupBlockerPassivePopup" ) )
+      d->m_jsPopupBlockerPassivePopup = cgJava.readEntry("PopupBlockerPassivePopup", true );
 
     // Read options from the global "domain"
-    readDomainSettings(cg,reset,true,d->global);
+    readDomainSettings(cgJava,reset,true,d->global);
 #ifdef DEBUG_SETTINGS
     d->global.dump("init global");
 #endif
@@ -502,10 +503,10 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     // merge all domains into one list
     QMap<QString,int> domainList;	// why can't Qt have a QSet?
     for (unsigned i = 0; i < sizeof domain_keys/sizeof domain_keys[0]; ++i) {
-      if ( reset || cg.hasKey(domain_keys[i]) ) {
+      if ( reset || cgJava.hasKey(domain_keys[i]) ) {
         if (i == 0) check_old_ecma_settings = false;
 	else if (i == 1) check_old_java_settings = false;
-        const QStringList dl = cg.readEntry( domain_keys[i], QStringList() );
+        const QStringList dl = cgJava.readEntry( domain_keys[i], QStringList() );
 	const QMap<QString,int>::Iterator notfound = domainList.end();
 	QStringList::ConstIterator it = dl.begin();
 	const QStringList::ConstIterator itEnd = dl.end();
@@ -535,11 +536,11 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     }
 
     bool check_old_java = true;
-    if( ( reset || cg.hasKey( "JavaDomainSettings" ) )
+    if( ( reset || cgJava.hasKey( "JavaDomainSettings" ) )
     	&& check_old_java_settings )
     {
       check_old_java = false;
-      const QStringList domainList = cg.readEntry( "JavaDomainSettings", QStringList() );
+      const QStringList domainList = cgJava.readEntry( "JavaDomainSettings", QStringList() );
       QStringList::ConstIterator it = domainList.begin();
       const QStringList::ConstIterator itEnd = domainList.end();
       for ( ; it != itEnd; ++it)
@@ -557,11 +558,11 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     }
 
     bool check_old_ecma = true;
-    if( ( reset || cg.hasKey( "ECMADomainSettings" ) )
+    if( ( reset || cgJava.hasKey( "ECMADomainSettings" ) )
 	&& check_old_ecma_settings )
     {
       check_old_ecma = false;
-      const QStringList domainList = cg.readEntry( "ECMADomainSettings", QStringList() );
+      const QStringList domainList = cgJava.readEntry( "ECMADomainSettings", QStringList() );
       QStringList::ConstIterator it = domainList.begin();
       const QStringList::ConstIterator itEnd = domainList.end();
       for ( ; it != itEnd; ++it)
@@ -578,11 +579,11 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       }
     }
 
-    if( ( reset || cg.hasKey( "JavaScriptDomainAdvice" ) )
+    if( ( reset || cgJava.hasKey( "JavaScriptDomainAdvice" ) )
              && ( check_old_java || check_old_ecma )
 	     && ( check_old_ecma_settings || check_old_java_settings ) )
     {
-      const QStringList domainList = cg.readEntry( "JavaScriptDomainAdvice", QStringList() );
+      const QStringList domainList = cgJava.readEntry( "JavaScriptDomainAdvice", QStringList() );
       QStringList::ConstIterator it = domainList.begin();
       const QStringList::ConstIterator itEnd = domainList.end();
       for ( ; it != itEnd; ++it)
