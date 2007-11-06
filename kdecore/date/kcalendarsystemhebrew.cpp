@@ -455,6 +455,7 @@ KCalendarSystemHebrew::KCalendarSystemHebrew( const KLocale * locale )
 // Ok
 KCalendarSystemHebrew::~KCalendarSystemHebrew()
 {
+    delete d;
 }
 
 QString KCalendarSystemHebrew::calendarType() const
