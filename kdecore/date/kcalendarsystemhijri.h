@@ -33,7 +33,7 @@ class KCalendarSystemHijriPrivate;
  * The Hijri calendar is the traditional Islamic calendar used in the Middle
  * East.
  *
- * @b license GNU-GPL v.2
+ * @b license GNU-LGPL v2+
  *
  * @see KLocale,KCalendarSystem
  *
