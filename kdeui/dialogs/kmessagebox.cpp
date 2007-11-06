@@ -144,6 +144,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     lay->setMargin(0);
     lay->setSpacing(KDialog::spacingHint());
     toplayout->addWidget(contents);
+    toplayout->addStretch();
 
     QLabel *label1 = new QLabel( contents);
 
@@ -160,14 +161,14 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     label2->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     label2->setWordWrap(true);
     QRect d = KGlobalSettings::desktopGeometry(dialog);
-    label2->setMargin( 10 );
 
     QScrollArea* textArea = new QScrollArea( contents );
     textArea->setWidget( label2 );
     textArea->setFrameShape( QFrame::NoFrame );
+    textArea->setWidgetResizable(true);
+    textArea->setStyleSheet("QAbstractScrollArea { background-color: none; }");
 
     lay->addWidget( textArea );
-    lay->addStretch();
 
     QListWidget *listwidget = 0;
     if (!strlist.isEmpty()) {
