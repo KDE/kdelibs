@@ -89,7 +89,8 @@ public:
           m_statusText(statusText),
           m_isSeparator(false)
     {
-        setFlags(flags() | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+        // Drop between items, not onto items
+        setFlags((flags() | Qt::ItemIsDragEnabled) & ~Qt::ItemIsDropEnabled);
     }
 
     void setInternalTag(const QString &tag) { m_internalTag = tag; }
@@ -235,7 +236,7 @@ public:
   void initNonKPart( const QString& file, bool global, const QString& defaultToolbar );
   void initKPart( KXMLGUIFactory* factory, const QString& defaultToolbar );
   void loadToolBarCombo( const QString& defaultToolbar );
-  void loadActionList(QDomElement& elem);
+  void loadActions(const QDomElement& elem);
 
   QString xmlFile(const QString& xml_file) const
   {
@@ -318,6 +319,7 @@ public:
   QDomElement findElementForToolBarItem( const ToolBarItem* item ) const
   {
     static const QString &attrName    = KGlobal::staticQString( "name" );
+    //kDebug(240) << "looking for name=" << item->internalName() << "and tag=" << item->internalTag();
     for(QDomNode n = m_currentToolBarElem.firstChild(); !n.isNull(); n = n.nextSibling())
     {
       QDomElement elem = n.toElement();
@@ -325,6 +327,7 @@ public:
           (elem.tagName() == item->internalTag()))
         return elem;
     }
+    //kDebug(240) << "no item found in the DOM with name=" << item->internalName() << "and tag=" << item->internalTag();
     return QDomElement();
   }
 
@@ -640,7 +643,7 @@ void KEditToolBarWidgetPrivate::initNonKPart( const QString& resourceFile,
   if (global)
     m_widget->setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc"));
   QString localXML = loadXMLFile( resourceFile );
-  m_widget->setXML(localXML, true);
+  m_widget->setXML(localXML, global ? true /*merge*/ : false);
 
   // reusable vars
   QDomElement elem;
@@ -991,11 +994,12 @@ void KEditToolBarWidgetPrivate::loadToolBarCombo( const QString& defaultToolBar 
   slotToolBarSelected(m_toolbarCombo->currentText());
 }
 
-void KEditToolBarWidgetPrivate::loadActionList(QDomElement& elem)
+void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
 {
   const QLatin1String tagSeparator( "Separator" );
   const QLatin1String tagMerge( "Merge" );
   const QLatin1String tagActionList( "ActionList" );
+  const QLatin1String tagAction( "Action" );
   const QLatin1String attrName( "name" );
 
   int     sep_num = 0;
@@ -1078,7 +1082,7 @@ void KEditToolBarWidgetPrivate::loadActionList(QDomElement& elem)
     if (active_list.contains(action->objectName()))
       continue;
 
-    ToolBarItem *act = new ToolBarItem(m_inactiveList, tagActionList, action->objectName(), action->toolTip());
+    ToolBarItem *act = new ToolBarItem(m_inactiveList, tagAction, action->objectName(), action->toolTip());
     act->setText(nameFilter.subs(action->text().remove(QChar('&'))).toString());
     act->setIcon(!action->icon().isNull() ? action->icon() : m_emptyIcon);
   }
@@ -1116,7 +1120,7 @@ void KEditToolBarWidgetPrivate::slotToolBarSelected(const QString& _text)
         m_currentToolBarElem = (*it);
 
         // load in our values
-        loadActionList(m_currentToolBarElem);
+        loadActions(m_currentToolBarElem);
 
         if ((*xit).m_type == XmlData::Part || (*xit).m_type == XmlData::Shell)
           m_widget->setDOMDocument( (*xit).m_document );
@@ -1143,16 +1147,15 @@ void KEditToolBarWidgetPrivate::slotInactiveSelectionChanged()
 
 void KEditToolBarWidgetPrivate::slotActiveSelectionChanged()
 {
-  ToolBarItem* toolitem = 0L;
-  if (m_activeList->selectedItems().count())
+  ToolBarItem* toolitem = 0;
+  if (!m_activeList->selectedItems().isEmpty())
     toolitem = static_cast<ToolBarItem *>(m_activeList->selectedItems().first());
 
   m_removeAction->setEnabled( toolitem );
 
-  static const QString &tagAction = KGlobal::staticQString( "Action" );
   m_changeIcon->setEnabled( toolitem &&
-                               m_hasKDialog &&
-                               toolitem->internalTag() == tagAction );
+                            m_hasKDialog &&
+                            toolitem->internalTag() == "Action" );
 
   if (toolitem)
   {
@@ -1210,6 +1213,8 @@ void KEditToolBarWidgetPrivate::insertActive(ToolBarItem *item, ToolBarItem *bef
     new_item = m_widget->domDocument().createElement(tagAction);
 
   new_item.setAttribute(attrName, item->internalName());
+
+  Q_ASSERT(!m_currentToolBarElem.isNull());
 
   if (before)
   {
@@ -1373,6 +1378,7 @@ void KEditToolBarWidgetPrivate::updateLocal(QDomElement& elem)
 
     // just append it
     QDomElement toolbar = (*xit).m_document.documentElement().toElement();
+    Q_ASSERT(!toolbar.isNull());
     toolbar.appendChild(elem);
   }
 }
@@ -1461,20 +1467,24 @@ void KEditToolBarWidgetPrivate::slotProcessExited()
 
 void KEditToolBarWidgetPrivate::slotDropped(ToolBarListWidget* list, int index, ToolBarItem* item, bool sourceIsActiveList)
 {
+    //kDebug() << "slotDropped list=" << (list==m_activeList?"activeList":"inactiveList")
+    //         << "index=" << index << "sourceIsActiveList=" << sourceIsActiveList;
     if (list == m_activeList) {
-        ToolBarItem* after = static_cast<ToolBarItem *>(list->item(index));
+        ToolBarItem* after = index > 0 ? static_cast<ToolBarItem *>(list->item(index-1)) : 0;
+        //kDebug() << "after" << after->text() << after->internalTag();
         if (sourceIsActiveList) {
             // has been dragged within the active list (moved).
             moveActive(item, after);
         } else {
+            // dragged from the inactive list to the active list
             insertActive(item, after, true);
         }
-    } else if (!sourceIsActiveList) {
+    } else if (list == m_inactiveList) {
         // has been dragged to the inactive list -> remove from the active list.
         removeActive(item);
     }
 
-    delete item; item = 0; // not needed anymore
+    delete item; // not needed anymore. must be deleted before slotToolBarSelected clears the lists
 
     // we're modified, so let this change
     emit m_widget->enableOk(true);

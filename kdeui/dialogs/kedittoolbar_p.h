@@ -50,7 +50,7 @@ Q_SIGNALS:
 protected:
     virtual Qt::DropActions supportedDropActions() const
     {
-        return Qt::MoveAction;
+        return Qt::MoveAction | Qt::CopyAction /*workaround for Qt-4.3.2 bug*/;
     }
     virtual QStringList mimeTypes() const
     {
