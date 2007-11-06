@@ -87,6 +87,9 @@ KDECORE_EXPORT QString kRealBacktrace(int);
 /**
  * \relates KGlobal
  * Returns a backtrace.
+ * Note: Hidden symbol visibility may negatively affect the information provided
+ * by kBacktrace - you may want to pass -D__KDE_HAVE_GCC_VISIBILITY=0 to cmake
+ * to turn hidden symbol visibility off.
  * @param levels the number of levels of the backtrace
  * @return a backtrace
  */
