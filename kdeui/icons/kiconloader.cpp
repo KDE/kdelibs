@@ -762,8 +762,11 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     }
 
     if (_name.isEmpty()
-#ifdef Q_WS_WIN
-        || !QDir::isRelativePath(_name))
+#ifdef Q_OS_WIN
+        || (_name.length() > 1 &&
+            (_name[0].isLetter() && _name[1] == QLatin1Char(':') ||
+             _name[0] == '/'     && _name[1] == '/' ||
+             _name[0] == '\\'    && _name[1] == '\\')))
 #else
         || _name[0] == '/')
 #endif
