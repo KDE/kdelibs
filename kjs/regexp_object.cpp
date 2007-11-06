@@ -264,7 +264,7 @@ JSObject *RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result
   // The returned array contains 'result' as first item, followed by the list of matches
   list.append(jsString(result));
   if ( d->lastOvector )
-    for ( unsigned int i = 1 ; i < d->lastNumSubPatterns + 1 ; ++i )
+    for ( int i = 1 ; i < d->lastNumSubPatterns + 1 ; ++i )
     {
       int start = d->lastOvector[2*i];
       if (start == -1)
