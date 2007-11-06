@@ -507,6 +507,8 @@
 30005        koffice (lib kopainter)
 30006        koffice (lib flake)
 30007        koffice (lib koproperty)
+30008        koffice (lib pigment)
+30009        koffice (lib resources)
 30500        koffice (filter manager)
 30501        csvfilter
 30502        asciifilter
