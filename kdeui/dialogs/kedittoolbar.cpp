@@ -1,7 +1,7 @@
-// -*- mode: c++; c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
    Copyright (C) 2006 Hamish Rodda <rodda@kde.org>
+   Copyright     2007 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -30,7 +30,6 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QLabel>
 #include <QtGui/QApplication>
-#include <QTreeWidget>
 #include <QMimeData>
 
 #include <kstandarddirs.h>
@@ -80,86 +79,108 @@ public:
 
 typedef QList<XmlData> XmlDataList;
 
-class ToolBarItem : public QTreeWidgetItem
+class ToolBarItem : public QListWidgetItem
 {
 public:
-  ToolBarItem(QTreeWidget *parent, const QString& tag = QString(), const QString& name = QString(), const QString& statusText = QString())
-    : QTreeWidgetItem(parent)
-  {
-    setInternalTag(tag);
-    setInternalName(name);
-    setStatusText(statusText);
+    ToolBarItem(QListWidget *parent, const QString& tag = QString(), const QString& name = QString(), const QString& statusText = QString())
+        : QListWidgetItem(parent),
+          m_internalTag(tag),
+          m_internalName(name),
+          m_statusText(statusText),
+          m_isSeparator(false)
+    {
+        setFlags(flags() | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+    }
 
-    setFlags(flags() | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
-  }
+    void setInternalTag(const QString &tag) { m_internalTag = tag; }
+    void setInternalName(const QString &name) { m_internalName = name; }
+    void setStatusText(const QString &text) { m_statusText = text; }
+    void setSeparator(bool sep) { m_isSeparator = sep; }
+    QString internalTag() const { return m_internalTag; }
+    QString internalName() const { return m_internalName; }
+    QString statusText() const { return m_statusText; }
+    bool isSeparator() const { return m_isSeparator; }
 
-  void setInternalTag(const QString &tag) { setText(2, tag); }
-  void setInternalName(const QString &name) { setText(3, name); }
-  void setStatusText(const QString &text) { setText(4, text); }
-  QString internalTag() const { return text(2); }
-  QString internalName() const { return text(3); }
-  QString statusText() const { return text(4); }
+    int index() const { return listWidget()->row(const_cast<ToolBarItem*>(this)); }
 
-  int index() const { return treeWidget()->indexOfTopLevelItem(const_cast<ToolBarItem*>(this)); }
+private:
+    QString m_internalTag;
+    QString m_internalName;
+    QString m_statusText;
+    bool m_isSeparator;
 };
 
-class ToolBarListView : public QTreeWidget
+static QDataStream & operator<< ( QDataStream & s, const ToolBarItem & item ) {
+    s << item.internalTag();
+    s << item.internalName();
+    s << item.statusText();
+    s << item.isSeparator();
+    return s;
+}
+static QDataStream & operator>> ( QDataStream & s, ToolBarItem & item ) {
+    QString internalTag;
+    s >> internalTag;
+    item.setInternalTag(internalTag);
+    QString internalName;
+    s >> internalName;
+    item.setInternalName(internalName);
+    QString statusText;
+    s >> statusText;
+    item.setStatusText(statusText);
+    bool sep;
+    s >> sep;
+    item.setSeparator(sep);
+    return s;
+}
+
+////
+
+ToolBarListWidget::ToolBarListWidget(QWidget *parent)
+    : QListWidget(parent),
+      m_activeList(true)
 {
-public:
-  ToolBarListView(QWidget *parent=0)
-    : QTreeWidget(parent)
-  {
     setAcceptDrops(true);
     setDragEnabled(true);
+}
 
-    setColumnCount(5);
-    header()->hideSection(2);
-    header()->hideSection(3);
-    header()->hideSection(4);
-    header()->setStretchLastSection(true);
-    header()->hide();
-
-    setIndentation(0);
-  }
-
-  void makeVisible(QTreeWidgetItem* item)
-  {
-    scrollTo(indexFromItem(item));
-  }
-
-  ToolBarItem* currentItem() const
-  {
-    return static_cast<ToolBarItem*>(QTreeWidget::currentItem());
-  }
-
-protected:
-  virtual Qt::DropActions supportedDropActions() const
-  {
-    return Qt::MoveAction;
-  }
-
-  virtual QMimeData* mimeData(const QList<QTreeWidgetItem*> items) const
-  {
+QMimeData* ToolBarListWidget::mimeData(const QList<QListWidgetItem*> items) const
+{
+    if (items.isEmpty())
+        return 0;
     QMimeData* mimedata = new QMimeData();
 
     QByteArray data;
     {
       QDataStream stream(&data, QIODevice::WriteOnly);
-
-      QStringList actionNames;
-      foreach (QTreeWidgetItem* item, items) {
-        if (!item->text(3).isEmpty())
-          actionNames.append(item->text(3));
-      }
-
-      stream << actionNames;
+      // we only support single selection
+      ToolBarItem* item = static_cast<ToolBarItem *>(items.first());
+      stream << *item;
     }
 
     mimedata->setData("application/x-kde-action-list", data);
+    mimedata->setData("application/x-kde-source-treewidget", m_activeList ? "active" : "inactive");
 
     return mimedata;
-  }
-};
+}
+
+bool ToolBarListWidget::dropMimeData(int index, const QMimeData * mimeData, Qt::DropAction action)
+{
+    Q_UNUSED(action)
+    const QByteArray data = mimeData->data("application/x-kde-action-list");
+    if (data.isEmpty())
+        return false;
+    QDataStream stream(data);
+    const bool sourceIsActiveList = mimeData->data("application/x-kde-source-treewidget") == "active";
+    ToolBarItem* item = new ToolBarItem(this); // needs parent, use this temporarily
+    stream >> *item;
+    emit dropped(this, index, item, sourceIsActiveList);
+    return true;
+}
+
+ToolBarItem* ToolBarListWidget::currentItem() const
+{
+    return static_cast<ToolBarItem*>(QListWidget::currentItem());
+}
 
 class KEditToolBarWidgetPrivate
 {
@@ -181,6 +202,11 @@ public:
     m_isPart   = false;
     m_helpArea = 0L;
     m_kdialogProcess = 0;
+    // We want items with an icon to align with items without icon
+    // So we use an empty QPixmap for that
+    const int iconSize = widget->style()->pixelMetric(QStyle::PM_SmallIconSize);
+    m_emptyIcon = QPixmap(iconSize, iconSize);
+    m_emptyIcon.fill(Qt::transparent);
   }
   ~KEditToolBarWidgetPrivate()
   {
@@ -201,7 +227,7 @@ public:
 
   void slotProcessExited();
 
-
+  void slotDropped(ToolBarListWidget* list, int index, ToolBarItem* item, bool sourceIsActiveList);
 
 
   void setupLayout();
@@ -237,13 +263,13 @@ public:
   /**
    * Return a list of toolbar elements given a toplevel element
    */
-  ToolBarList findToolBars(QDomNode n) //krazy:exclude=passbyvalue
+  ToolBarList findToolBars(const QDomNode& start) const
   {
     static const QString &tagToolBar = KGlobal::staticQString( "ToolBar" );
     static const QString &attrNoEdit = KGlobal::staticQString( "noEdit" );
     ToolBarList list;
 
-    for( ; !n.isNull(); n = n.nextSibling() )
+    for( QDomNode n = start; !n.isNull(); n = n.nextSibling() )
     {
       QDomElement elem = n.toElement();
       if (elem.isNull())
@@ -338,6 +364,8 @@ public:
   KEditToolBarWidget* m_widget;
   KComponentData m_componentData;
 
+    QPixmap m_emptyIcon;
+
   XmlData*     m_currentXmlData;
   QDomElement m_currentToolBarElem;
 
@@ -347,8 +375,8 @@ public:
   QDomDocument       m_localDoc;
 
   ToolBarList        m_barList;
-  ToolBarListView *m_inactiveList;
-  ToolBarListView *m_activeList;
+  ToolBarListWidget *m_inactiveList;
+  ToolBarListWidget *m_activeList;
 
   XmlDataList m_xmlFiles;
 
@@ -796,9 +824,9 @@ void KEditToolBarWidgetPrivate::setupLayout()
 
   // our list of inactive actions
   QLabel *inactive_label = new QLabel(i18n("A&vailable actions:"), m_widget);
-  m_inactiveList = new ToolBarListView(m_widget);
+  m_inactiveList = new ToolBarListWidget(m_widget);
   m_inactiveList->setDragEnabled(true);
-  //m_inactiveList->setAcceptDrops(true);
+  m_inactiveList->setActiveList(false);
 
   //KDE4: no replacement?
   //m_inactiveList->setDropVisualizer(false);
@@ -808,14 +836,16 @@ void KEditToolBarWidgetPrivate::setupLayout()
   inactive_label->setBuddy(m_inactiveList);
   QObject::connect(m_inactiveList, SIGNAL(itemSelectionChanged()),
                    m_widget,       SLOT(slotInactiveSelectionChanged()));
-  QObject::connect(m_inactiveList, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
+  QObject::connect(m_inactiveList, SIGNAL(itemDoubleClicked(QListWidgetItem*, int)),
                    m_widget,       SLOT(slotInsertButton()));
+  QObject::connect(m_inactiveList, SIGNAL(dropped(ToolBarListWidget*, int, ToolBarItem*, bool)),
+                   m_widget,       SLOT(slotDropped(ToolBarListWidget*, int, ToolBarItem*, bool)));
 
   // our list of active actions
   QLabel *active_label = new QLabel(i18n("Curr&ent actions:"), m_widget);
-  m_activeList = new ToolBarListView(m_widget);
+  m_activeList = new ToolBarListWidget(m_widget);
   m_activeList->setDragEnabled(true);
-  //m_activeList->setAcceptDrops(true);
+  m_activeList->setActiveList(true);
 
   //KDE4: no replacement?
   //m_activeList->setDropVisualizer(true);
@@ -827,8 +857,10 @@ void KEditToolBarWidgetPrivate::setupLayout()
 
   QObject::connect(m_activeList, SIGNAL(itemSelectionChanged()),
                    m_widget,     SLOT(slotActiveSelectionChanged()));
-  QObject::connect(m_activeList, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
+  QObject::connect(m_activeList, SIGNAL(itemDoubleClicked(QListWidgetItem*, int)),
                    m_widget,     SLOT(slotRemoveButton()));
+  QObject::connect(m_activeList, SIGNAL(dropped(ToolBarListWidget*, int, ToolBarItem*, bool)),
+                   m_widget,     SLOT(slotDropped(ToolBarListWidget*, int, ToolBarItem*, bool)));
 
   // "change icon" button
   m_changeIcon = new KPushButton(i18n( "Change &Icon..." ), m_widget);
@@ -995,7 +1027,8 @@ void KEditToolBarWidgetPrivate::loadActionList(QDomElement& elem)
     if (it.tagName() == tagSeparator)
     {
       ToolBarItem *act = new ToolBarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString());
-      act->setText(1, SEPARATORSTRING);
+      act->setSeparator(true);
+      act->setText(SEPARATORSTRING);
       it.setAttribute( attrName, act->internalName() );
       continue;
     }
@@ -1006,16 +1039,16 @@ void KEditToolBarWidgetPrivate::loadActionList(QDomElement& elem)
       QString name = it.attribute( attrName );
       ToolBarItem *act = new ToolBarItem(m_activeList, tagMerge, name, i18n("This element will be replaced with all the elements of an embedded component."));
       if ( name.isEmpty() )
-          act->setText(1, i18n("<Merge>"));
+          act->setText(i18n("<Merge>"));
       else
-          act->setText(1, i18n("<Merge %1>", name));
+          act->setText(i18n("<Merge %1>", name));
       continue;
     }
 
     if (it.tagName() == tagActionList)
     {
       ToolBarItem *act = new ToolBarItem(m_activeList, tagActionList, it.attribute(attrName), i18n("This is a dynamic list of actions. You can move it, but if you remove it you will not be able to re-add it.") );
-      act->setText(1, i18n("ActionList: %1", it.attribute(attrName)));
+      act->setText(i18n("ActionList: %1", it.attribute(attrName)));
       continue;
     }
 
@@ -1029,9 +1062,8 @@ void KEditToolBarWidgetPrivate::loadActionList(QDomElement& elem)
       {
         // we have a match!
         ToolBarItem *act = new ToolBarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
-        act->setText(1, nameFilter.subs(action->text().remove(QChar('&'))).toString());
-        act->setIcon(0, !action->icon().isNull() ? action->icon() : KIcon());
-        act->setIcon(1, KIcon());
+        act->setText(nameFilter.subs(action->text().remove(QChar('&'))).toString());
+        act->setIcon(!action->icon().isNull() ? action->icon() : m_emptyIcon);
 
         active_list.insert(action->objectName(), true);
         break;
@@ -1047,20 +1079,17 @@ void KEditToolBarWidgetPrivate::loadActionList(QDomElement& elem)
       continue;
 
     ToolBarItem *act = new ToolBarItem(m_inactiveList, tagActionList, action->objectName(), action->toolTip());
-    act->setText(1, nameFilter.subs(action->text().remove(QChar('&'))).toString());
-    act->setIcon(0, !action->icon().isNull() ? action->icon() : KIcon());
-    act->setIcon(1, KIcon());
+    act->setText(nameFilter.subs(action->text().remove(QChar('&'))).toString());
+    act->setIcon(!action->icon().isNull() ? action->icon() : m_emptyIcon);
   }
 
-  m_inactiveList->sortItems(1, Qt::AscendingOrder);
+  m_inactiveList->sortItems(Qt::AscendingOrder);
 
   // finally, add default separators to the inactive list
   ToolBarItem *act = new ToolBarItem(0L, tagSeparator, sep_name.arg(sep_num++), QString());
-  act->setText(1, SEPARATORSTRING);
-  m_inactiveList->insertTopLevelItem(0, act);
-
-  m_inactiveList->resizeColumnToContents(0);
-  m_activeList->resizeColumnToContents(0);
+  act->setSeparator(true);
+  act->setText(SEPARATORSTRING);
+  m_inactiveList->insertItem(0, act);
 }
 
 KActionCollection *KEditToolBarWidget::actionCollection() const
@@ -1128,7 +1157,7 @@ void KEditToolBarWidgetPrivate::slotActiveSelectionChanged()
   if (toolitem)
   {
     m_upAction->setEnabled(toolitem->index() != 0);
-    m_downAction->setEnabled(toolitem->index() != toolitem->treeWidget()->topLevelItemCount() - 1);
+    m_downAction->setEnabled(toolitem->index() != toolitem->listWidget()->count() - 1);
 
     QString statusText = toolitem->statusText();
     m_helpArea->setText( statusText );
@@ -1175,7 +1204,7 @@ void KEditToolBarWidgetPrivate::insertActive(ToolBarItem *item, ToolBarItem *bef
 
   QDomElement new_item;
   // let's handle the separator specially
-  if (item->text(1) == SEPARATORSTRING)
+  if (item->isSeparator())
     new_item = m_widget->domDocument().createElement(tagSeparator);
   else
     new_item = m_widget->domDocument().createElement(tagAction);
@@ -1240,7 +1269,7 @@ void KEditToolBarWidgetPrivate::slotUpButton()
     return;
   }
 
-  int row = item->treeWidget()->indexOfTopLevelItem(item) - 1;
+  int row = item->listWidget()->row(item) - 1;
   // make sure we're not the top item already
   if (row < 0) {
     Q_ASSERT(false);
@@ -1250,7 +1279,7 @@ void KEditToolBarWidgetPrivate::slotUpButton()
   // we're modified, so let this change
   emit m_widget->enableOk(true);
 
-  moveActive( item, static_cast<ToolBarItem*>(item->treeWidget()->topLevelItem(row - 1)) );
+  moveActive( item, static_cast<ToolBarItem*>(item->listWidget()->item(row - 1)) );
 }
 
 void KEditToolBarWidgetPrivate::moveActive( ToolBarItem* item, ToolBarItem* before )
@@ -1261,10 +1290,10 @@ void KEditToolBarWidgetPrivate::moveActive( ToolBarItem* item, ToolBarItem* befo
     return;
 
   // remove item
-  m_activeList->takeTopLevelItem(m_activeList->indexOfTopLevelItem(item));
+  m_activeList->takeItem(m_activeList->row(item));
 
   // put it where it's supposed to go
-  m_activeList->insertTopLevelItem(m_activeList->indexOfTopLevelItem(before) + 1, item);
+  m_activeList->insertItem(m_activeList->row(before) + 1, item);
 
   // make it selected again
   m_activeList->setCurrentItem(item);
@@ -1293,8 +1322,8 @@ void KEditToolBarWidgetPrivate::slotDownButton()
   }
 
   // make sure we're not the bottom item already
-  int newRow = item->treeWidget()->indexOfTopLevelItem(item) + 1;
-  if (newRow >= item->treeWidget()->topLevelItemCount()) {
+  int newRow = item->listWidget()->row(item) + 1;
+  if (newRow >= item->listWidget()->count()) {
     Q_ASSERT(false);
     return;
   }
@@ -1302,7 +1331,7 @@ void KEditToolBarWidgetPrivate::slotDownButton()
   // we're modified, so let this change
   emit m_widget->enableOk(true);
 
-  moveActive( item, static_cast<ToolBarItem*>(item->treeWidget()->topLevelItem(newRow)) );
+  moveActive( item, static_cast<ToolBarItem*>(item->listWidget()->item(newRow)) );
 }
 
 void KEditToolBarWidgetPrivate::updateLocal(QDomElement& elem)
@@ -1363,7 +1392,7 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   QString kdialogExe = KStandardDirs::findExe(QLatin1String("kdialog"));
   (*m_kdialogProcess) << kdialogExe;
   (*m_kdialogProcess) << "--embed";
-  (*m_kdialogProcess) << QString::number( (ulong)m_widget->topLevelWidget()->winId() );
+  (*m_kdialogProcess) << QString::number( (ulong)m_widget->window()->winId() );
   (*m_kdialogProcess) << "--geticon";
   (*m_kdialogProcess) << "Toolbar";
   (*m_kdialogProcess) << "Actions";
@@ -1409,7 +1438,7 @@ void KEditToolBarWidgetPrivate::slotProcessExited()
   ToolBarItem *item = m_activeList->currentItem();
   kDebug() << item;
   if(item){
-    item->setIcon(0, KIcon(icon));
+    item->setIcon(KIcon(icon));
 
     Q_ASSERT( m_currentXmlData->m_type != XmlData::Merged );
 
@@ -1429,6 +1458,30 @@ void KEditToolBarWidgetPrivate::slotProcessExited()
   delete m_kdialogProcess;
   m_kdialogProcess = 0;
 }
+
+void KEditToolBarWidgetPrivate::slotDropped(ToolBarListWidget* list, int index, ToolBarItem* item, bool sourceIsActiveList)
+{
+    if (list == m_activeList) {
+        ToolBarItem* after = static_cast<ToolBarItem *>(list->item(index));
+        if (sourceIsActiveList) {
+            // has been dragged within the active list (moved).
+            moveActive(item, after);
+        } else {
+            insertActive(item, after, true);
+        }
+    } else if (!sourceIsActiveList) {
+        // has been dragged to the inactive list -> remove from the active list.
+        removeActive(item);
+    }
+
+    delete item; item = 0; // not needed anymore
+
+    // we're modified, so let this change
+    emit m_widget->enableOk(true);
+
+    slotToolBarSelected( m_toolbarCombo->currentText() );
+}
+
 
 void KEditToolBar::showEvent( QShowEvent * event )
 {
