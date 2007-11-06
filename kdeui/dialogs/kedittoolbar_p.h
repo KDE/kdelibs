@@ -52,6 +52,10 @@ protected:
     {
         return Qt::MoveAction;
     }
+    virtual QStringList mimeTypes() const
+    {
+        return QStringList() << "application/x-kde-action-list";
+    }
 
     virtual QMimeData* mimeData(const QList<QListWidgetItem*> items) const;
 

@@ -836,7 +836,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
   inactive_label->setBuddy(m_inactiveList);
   QObject::connect(m_inactiveList, SIGNAL(itemSelectionChanged()),
                    m_widget,       SLOT(slotInactiveSelectionChanged()));
-  QObject::connect(m_inactiveList, SIGNAL(itemDoubleClicked(QListWidgetItem*, int)),
+  QObject::connect(m_inactiveList, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
                    m_widget,       SLOT(slotInsertButton()));
   QObject::connect(m_inactiveList, SIGNAL(dropped(ToolBarListWidget*, int, ToolBarItem*, bool)),
                    m_widget,       SLOT(slotDropped(ToolBarListWidget*, int, ToolBarItem*, bool)));
@@ -857,7 +857,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
 
   QObject::connect(m_activeList, SIGNAL(itemSelectionChanged()),
                    m_widget,     SLOT(slotActiveSelectionChanged()));
-  QObject::connect(m_activeList, SIGNAL(itemDoubleClicked(QListWidgetItem*, int)),
+  QObject::connect(m_activeList, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
                    m_widget,     SLOT(slotRemoveButton()));
   QObject::connect(m_activeList, SIGNAL(dropped(ToolBarListWidget*, int, ToolBarItem*, bool)),
                    m_widget,     SLOT(slotDropped(ToolBarListWidget*, int, ToolBarItem*, bool)));
