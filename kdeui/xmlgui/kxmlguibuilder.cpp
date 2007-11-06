@@ -405,7 +405,7 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
     KToolBar *toolbar = 0;
     QListIterator<KToolBar> it( ( (KMainWindow*)d->m_widget )->toolBarIterator() );
     while ( ( toolbar = it.current() ) ) {
-        kDebug() << "KXMLGUIBuilder::finalizeGUI toolbar=" << (void*)toolbar;
+        kDebug(260) << "KXMLGUIBuilder::finalizeGUI toolbar=" << (void*)toolbar;
         ++it;
         toolbar->positionYourself();
     }

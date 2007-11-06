@@ -619,7 +619,7 @@ bool BuildHelper::processActionElement( const QDomElement &e, int idx )
     // look up the action and plug it in
     QAction *action = m_state.guiClient->action( e );
 
-    //kDebug() << "BuildHelper::processActionElement " << e.attribute( "name" ) << " -> " << action << " (in " << m_state.guiClient->actionCollection() << ")";
+    //kDebug(260) << "BuildHelper::processActionElement " << e.attribute( "name" ) << " -> " << action << " (in " << m_state.guiClient->actionCollection() << ")";
     if ( !action )
         return false;
 

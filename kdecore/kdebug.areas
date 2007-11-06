@@ -32,6 +32,7 @@
 230        kdeui (KCommand)
 240        kdeui (kdelibs)
 250        kfile (kdelibs)
+260        kdeui (KXmlGui)
 264        kdeui (KIconLoader)
 265        kdeui (KIconEffect)
 270        kdeui (KRootPixmap)

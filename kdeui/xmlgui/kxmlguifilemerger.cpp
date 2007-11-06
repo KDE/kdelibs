@@ -20,6 +20,7 @@
 */
 
 #include "kxmlguifilemerger_p.h"
+#include <kdebug.h>
 #include <QFile>
 #include <QDomDocument>
 #include "kxmlguifactory.h"
@@ -117,68 +118,65 @@ static void storeActionProperties( QDomDocument &doc,
 
 static QString findVersionNumber( const QString &xml )
 {
-  enum { ST_START, ST_AFTER_OPEN, ST_AFTER_GUI,
-               ST_EXPECT_VERSION, ST_VERSION_NUM} state = ST_START;
-  for (int pos = 0; pos < xml.length(); pos++)
-  {
-    switch (state)
-    {
-      case ST_START:
-        if (xml[pos] == '<')
-          state = ST_AFTER_OPEN;
-        break;
-      case ST_AFTER_OPEN:
-      {
-        //Jump to gui..
-        int guipos = xml.indexOf("gui", pos, Qt::CaseInsensitive/*case-insensitive*/);
-        if (guipos == -1)
-          return QString(); //Reject
-
-        pos = guipos + 2; //Position at i, so we're moved ahead to the next character by the ++;
-        state = ST_AFTER_GUI;
-        break;
-      }
-      case ST_AFTER_GUI:
-        state = ST_EXPECT_VERSION;
-        break;
-      case ST_EXPECT_VERSION:
-      {
-        int verpos =  xml.indexOf("version=\"", pos, Qt::CaseInsensitive /*case-insensitive*/);
-        if (verpos == -1)
-          return QString(); //Reject
-
-        pos = verpos +  8; //v = 0, e = +1, r = +2, s = +3 , i = +4, o = +5, n = +6, = = +7, " = + 8
-        state = ST_VERSION_NUM;
-        break;
-      }
-      case ST_VERSION_NUM:
-      {
-        int endpos;
-        for (endpos = pos; endpos <  xml.length(); endpos++)
-        {
-          if (xml[endpos].unicode() >= '0' && xml[endpos].unicode() <= '9')
-            continue; //Number..
-          if (xml[endpos].unicode() == '"') //End of parameter
+    enum { ST_START, ST_AFTER_OPEN, ST_AFTER_GUI,
+           ST_EXPECT_VERSION, ST_VERSION_NUM} state = ST_START;
+    const int length = xml.length();
+    for (int pos = 0; pos < length; pos++) {
+        switch (state) {
+        case ST_START:
+            if (xml[pos] == '<')
+                state = ST_AFTER_OPEN;
             break;
-          else //This shouldn't be here..
-          {
-            endpos = xml.length();
-          }
-        }
-
-        if (endpos != pos && endpos < xml.length() )
+        case ST_AFTER_OPEN:
         {
-          QString matchCandidate = xml.mid(pos, endpos - pos); //Don't include " ".
-          return matchCandidate;
+            //Jump to gui..
+            const int guipos = xml.indexOf("gui", pos, Qt::CaseInsensitive);
+            if (guipos == -1)
+                return QString(); //Reject
+
+            pos = guipos + 2; //Position at i, so we're moved ahead to the next character by the ++;
+            state = ST_AFTER_GUI;
+            break;
         }
+        case ST_AFTER_GUI:
+            state = ST_EXPECT_VERSION;
+            break;
+        case ST_EXPECT_VERSION:
+        {
+            const int verpos = xml.indexOf("version=\"", pos, Qt::CaseInsensitive);
+            if (verpos == -1)
+                return QString(); //Reject
 
-        state = ST_EXPECT_VERSION; //Try to match a well-formed version..
-        break;
-      } //case..
-    } //switch
-  } //for
+            pos = verpos + 8; //v = 0, e = +1, r = +2, s = +3 , i = +4, o = +5, n = +6, = = +7, " = + 8
+            state = ST_VERSION_NUM;
+            break;
+        }
+        case ST_VERSION_NUM:
+        {
+            int endpos;
+            for (endpos = pos; endpos < length; endpos++) {
+                const ushort ch = xml[endpos].unicode();
+                if (ch >= '0' && ch <= '9')
+                    continue; //Number..
+                if (ch == '"') //End of parameter
+                    break;
+                else { //This shouldn't be here..
+                    endpos = length;
+                }
+            }
 
-  return QString();
+            if (endpos != pos && endpos < length ) {
+                const QString matchCandidate = xml.mid(pos, endpos - pos); //Don't include " ".
+                return matchCandidate;
+            }
+
+            state = ST_EXPECT_VERSION; //Try to match a well-formed version..
+            break;
+        } //case..
+        } //switch
+    } //for
+
+    return QString();
 }
 
 
@@ -200,18 +198,20 @@ KXmlGuiFileMerger::KXmlGuiFileMerger(const QStringList& files)
     const QList<DocStruct>::const_iterator docEnd = allDocuments.end();
     for (; docIt != docEnd; ++docIt ) {
         const QString versionStr = findVersionNumber( (*docIt).data );
-        if ( versionStr.isEmpty() )
+        if ( versionStr.isEmpty() ) {
+            kDebug(260) << "found no version in" << (*docIt).file;
             continue;
+        }
 
         bool ok = false;
         uint version = versionStr.toUInt( &ok );
         if ( !ok )
             continue;
-        //kDebug() << "FOUND VERSION " << version;
+        //kDebug(260) << "found version" << version << "for" << (*docIt).file;
 
         if ( version > bestVersion ) {
             best = docIt;
-            //kDebug() << "best version is now " << version;
+            //kDebug(260) << "best version is now " << version;
             bestVersion = version;
         }
     }
@@ -259,7 +259,7 @@ KXmlGuiFileMerger::KXmlGuiFileMerger(const QStringList& files)
         m_doc = (*best).data;
         m_file = (*best).file;
     } else if ( !files.isEmpty() ) {
-        //kDebug() << "returning first one...";
+        //kDebug(260) << "returning first one...";
         m_doc = (*allDocuments.begin()).data;
         m_file = (*allDocuments.begin()).file;
     }

@@ -636,7 +636,7 @@ void KXMLGUIClient::addStateActionEnabled(const QString& state,
   StateChange stateChange = getActionsToChangeForState(state);
 
   stateChange.actionsToEnable.append( action );
-  //kDebug() << "KXMLGUIClient::addStateActionEnabled( " << state << ", " << action << ")";
+  //kDebug(260) << "KXMLGUIClient::addStateActionEnabled( " << state << ", " << action << ")";
 
   d->m_actionsStateMap.insert( state, stateChange );
 }
@@ -648,7 +648,7 @@ void KXMLGUIClient::addStateActionDisabled(const QString& state,
   StateChange stateChange = getActionsToChangeForState(state);
 
   stateChange.actionsToDisable.append( action );
-  //kDebug() << "KXMLGUIClient::addStateActionDisabled( " << state << ", " << action << ")";
+  //kDebug(260) << "KXMLGUIClient::addStateActionDisabled( " << state << ", " << action << ")";
 
   d->m_actionsStateMap.insert( state, stateChange );
 }
