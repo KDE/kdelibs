@@ -104,8 +104,8 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
   }
 
 #ifdef Q_WS_WIN // prepend drive letter if exists (js)
-  if (orig_pos >= 2 && isalpha(path[0].toLatin1()) && path[1]==':') {
-    result.prepend(QString(path[0])+':');
+  if (orig_pos >= 2 && path[0].isLetter() && path[1] == QLatin1Char(':') ) {
+    result.prepend(QString(path[0]) + QLatin1Char(':') );
   }
 #endif
 
@@ -306,19 +306,20 @@ KUrl::KUrl( const QString &str )
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
-   kDebug(126) << "KUrl::KUrl " << str.toAscii().data();
-    if ( str.startsWith("file:///") ) {
+    int len = str.length();
+    kDebug(126) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
+    if ( str.startsWith( QLatin1String( "file:///" ) ) ) {
       kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(8).toLatin1() );
       setPath( QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) );
    	}
-    else if ( str.length() > 9 && str.startsWith("file://") && str[7].isLetter() && str[8] == QLatin1Char(':') ) {
+    else if ( len > 9 && str.startsWith("file://") && str[7].isLetter() && str[8] == QLatin1Char(':') ) {
       kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(7).toLatin1() );
       setPath( QUrl::fromPercentEncoding( str.mid(7).toLatin1() ) );
     }
-    else if ( str.length() > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
+    else if ( len > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
       setPath(str.mid(2));
-    else if ( str.length() > 2 && str[0].isLetter() &&  str[1] == QLatin1Char(':') )
-      setPath( str );
+    else if ( len >= 2 && str[0].isLetter() &&  str[1] == QLatin1Char(':') )
+        setPath( len > 2 ? str : str + QLatin1Char('/') );
 #else
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
       setPath( str );
