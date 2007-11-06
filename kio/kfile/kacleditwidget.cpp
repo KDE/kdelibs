@@ -113,6 +113,11 @@ KACLEditWidget::KACLEditWidget( QWidget *parent )
     d->_k_slotUpdateButtons();
 }
 
+KACLEditWidget::~KACLEditWidget()
+{
+    delete d;
+}
+
 void KACLEditWidget::KACLEditWidgetPrivate::_k_slotUpdateButtons()
 {
     bool atLeastOneIsNotDeletable = false;
