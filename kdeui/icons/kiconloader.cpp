@@ -761,11 +761,13 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
         return QString();
     }
 
+    if (_name.isEmpty()
 #ifdef Q_WS_WIN
-    if (QDir::isRelativePath(name)) {
+        || !QDir::isRelativePath(_name))
 #else
-    if (_name.isEmpty() || _name[0] == '/') {
+        || _name[0] == '/')
 #endif
+    {
         // we have either an absolute path or nothing to work with
         return _name;
     }
@@ -852,11 +854,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
        name = KStandardDirs::locateLocal("cache", name+".png");
     }
 
+    if (name.isEmpty()
 #ifdef Q_WS_WIN
-    if (QDir::isRelativePath(name)) {
+        && !QDir::isRelativePath(name))
 #else
-    if (!name.isEmpty() && name[0] == '/') {
+        && name[0] == '/')
 #endif
+    {
         absolutePath = true;
     }
 
