@@ -102,12 +102,7 @@ public:
     BuildStateStack m_stateStack;
 };
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponentData &componentData )
-{
-    return readConfigFile( filename, false, componentData );
-}
-
-QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null, const KComponentData &_componentData )
+QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponentData &_componentData )
 {
     KComponentData componentData = _componentData.isValid() ? _componentData : KGlobal::mainComponent();
     QString xml_file;
@@ -125,10 +120,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     if ( !file.open( QIODevice::ReadOnly ) )
     {
         kError(240) << "No such XML file " << filename << endl;
-        if ( never_null )
-            return QLatin1String( "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>" );
-        else
-            return QString();
+        return QString();
     }
 
     QByteArray buffer(file.readAll());
@@ -160,25 +152,10 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     return true;
 }
 
-QString KXMLGUIFactory::documentToXML( const QDomDocument& doc )
-{
-    QString str;
-    QTextStream ts(&str, QIODevice::WriteOnly);
-    ts.setCodec( QTextCodec::codecForName( "UTF-8" ) );
-    ts << doc;
-    return str;
-}
-
-QString KXMLGUIFactory::elementToXML( const QDomElement& elem )
-{
-    QString str;
-    QTextStream ts(&str, QIODevice::WriteOnly);
-    ts.setCodec( QTextCodec::codecForName( "UTF-8" ) );
-    ts << elem;
-    return str;
-}
-
-void KXMLGUIFactory::removeDOMComments( QDomNode &node )
+/**
+ * Removes all QDomComment objects from the specified node and all its children.
+ */
+static void removeDOMComments( QDomNode &node )
 {
     QDomNode n = node.firstChild();
     while ( !n.isNull() )
@@ -440,12 +417,23 @@ QWidget *KXMLGUIFactoryPrivate::findRecursive( KXMLGUI::ContainerNode *node, boo
     return 0L;
 }
 
+// Case insensitive equality without calling toLower which allocates a new string
+static inline bool equals(const QString& str1, const char* str2)
+{
+    return str1.compare(QLatin1String(str2), Qt::CaseInsensitive) == 0;
+}
+static inline bool equals(const QString& str1, const QString& str2)
+{
+    return str1.compare(str2, Qt::CaseInsensitive) == 0;
+}
+
+
 QList<QWidget*> KXMLGUIFactoryPrivate::findRecursive( KXMLGUI::ContainerNode *node,
                                                       const QString &tagName )
 {
     QList<QWidget*> res;
 
-    if ( node->tagName == tagName.toLower() )
+    if ( equals(node->tagName, tagName) )
         res.append( node->container );
 
     foreach (KXMLGUI::ContainerNode* child, node->children)
@@ -484,13 +472,11 @@ void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &nam
 
 void KXMLGUIFactoryPrivate::applyActionProperties( const QDomElement &actionPropElement )
 {
-    static const QString &tagAction = KGlobal::staticQString( "action" );
-
     for (QDomNode n = actionPropElement.firstChild();
          !n.isNull(); n = n.nextSibling() )
     {
         QDomElement e = n.toElement();
-        if ( e.tagName().toLower() != tagAction )
+        if ( !equals(e.tagName(), "action") )
             continue;
 
         QAction *action = guiClient->action( e );
@@ -519,15 +505,14 @@ void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &at
 
     QString attrName = attribute.name();
     // If the attribute is a deprecated "accel", change to "shortcut".
-    if ( attrName.toLower() == QLatin1String("accel") )
+    if ( equals(attrName, "accel") )
         attrName = attrShortcut;
 
     // No need to re-set name, particularly since it's "objectName" in Qt4
-    if ( attrName.toLower() == QLatin1String("name") )
+    if ( equals(attrName, "name") )
         return;
 
-    if ( attrName.toLower() == QLatin1String("icon") )
-    {
+    if ( equals(attrName, "icon") ) {
         action->setIcon( KIcon( attribute.value() ) );
         return;
     }
@@ -546,7 +531,7 @@ void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &at
             ka->setShortcut(KShortcut(attribute.value()), KAction::ActiveShortcut);
             return;
         }
-        propertyValue =  KShortcut( attribute.value() )  ;
+        propertyValue = KShortcut( attribute.value() );
     } else {
         propertyValue = QVariant( attribute.value() );
     }

@@ -333,12 +333,11 @@ void KActionCollection::setConfigGlobal( bool global )
 
 void KActionCollection::readSettings( KConfigGroup* config )
 {
-  kDebug(125) << " ( \"" << configGroup() << "\", " << config << " ) start";
   KConfigGroup cg( KGlobal::config(), configGroup() );
   if( !config )
       config = &cg;
 
-  kDebug(125) << "\treadSettings( \"" << configGroup() << "\", " << config << " )";
+  kDebug(125) << configGroup() << config->exists();
   if( !config->exists())
     return;
 
@@ -361,24 +360,24 @@ void KActionCollection::readSettings( KConfigGroup* config )
           else // default shortcut
               kaction->setShortcut( kaction->shortcut(KAction::DefaultShortcut) );
 
-          kDebug(125) << "\t" << actionName << " = '" << entry << "'";
+          kDebug(125) << actionName << "=" << entry;
       }
   }
 
-  kDebug(125) << " done";
+  //kDebug(125) << " done";
 }
 
 void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAction* oneAction ) const
 {
-  kDebug(125) << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal() << " )";
+  kDebug(125) << configGroup() << ", " << config << ", " << writeAll << ", " << configIsGlobal();
 
   if (parentGUIClient() && !parentGUIClient()->xmlFile().isEmpty()) {
-    kDebug(129) << "KActionCollection::save(): xmlFile = " << parentGUIClient()->xmlFile();
+    kDebug(129) << "xmlFile=" << parentGUIClient()->xmlFile();
 
-    QString attrShortcut  = QLatin1String("shortcut");
+    QString attrShortcut = QLatin1String("shortcut");
 
     // Read XML file
-    QString sXml(KXMLGUIFactory::readConfigFile(parentGUIClient()->xmlFile(), false, componentData()));
+    QString sXml(KXMLGUIFactory::readConfigFile(parentGUIClient()->xmlFile(), componentData()));
     QDomDocument doc;
     doc.setContent( sXml );
 
@@ -510,7 +509,7 @@ void KActionCollection::connectNotify ( const char * signal )
 
 const QList< KActionCollection * >& KActionCollection::allCollections( )
 {
-	return KActionCollectionPrivate::s_allCollections;
+    return KActionCollectionPrivate::s_allCollections;
 }
 
 /* vim: et sw=2 ts=2

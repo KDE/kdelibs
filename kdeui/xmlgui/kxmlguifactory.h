@@ -83,20 +83,12 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
   ~KXMLGUIFactory();
 
   // XXX move to somewhere else? (Simon)
-  static QString readConfigFile(const QString &filename, bool never_null,
-          const KComponentData &componentData = KComponentData());
+  /// @internal
   static QString readConfigFile(const QString &filename,
           const KComponentData &componentData = KComponentData());
+  /// @internal
   static bool saveConfigFile(const QDomDocument& doc, const QString& filename,
           const KComponentData &componentData = KComponentData());
-
-  static QString documentToXML( const QDomDocument& doc );
-  static QString elementToXML( const QDomElement& elem );
-
-  /**
-   * Removes all QDomComment objects from the specified node and all its children.
-   */
-  static void removeDOMComments( QDomNode &node );
 
   /**
    * @internal
