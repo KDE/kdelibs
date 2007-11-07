@@ -68,8 +68,8 @@ namespace KParts {
         bool hideErrorDialog() const;
 
         /**
-    	 * @return Suggested disposition by the server (e.g. HTTP content-disposition)
-    	 */
+        * @return Suggested disposition by the server (e.g. HTTP content-disposition)
+        */
         QString contentDisposition() const;
 
         bool serverSuggestsSave() const { return contentDisposition() == QString::fromLatin1("attachment"); }
