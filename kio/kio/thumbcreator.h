@@ -75,7 +75,7 @@ class QImage;
  * Type=Service
  * Name=Name of the type of files your ThumbCreator supports
  * ServiceTypes=ThumbCreator
- * MimeTypes=application/x-somemimetype
+ * MimeType=application/x-somemimetype;
  * CacheThumbnail=true
  * X-KDE-Library=yourthumbcreator
  * \endcode

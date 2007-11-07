@@ -176,7 +176,7 @@ void PreviewJobPrivate::startPreview()
     for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         if (!enabledPlugins || enabledPlugins->contains((*it)->desktopEntryName()))
     {
-        const QStringList mimeTypes = (*it)->property("MimeTypes").toStringList();
+        const QStringList mimeTypes = (*it)->serviceTypes();
         for (QStringList::ConstIterator mt = mimeTypes.begin(); mt != mimeTypes.end(); ++mt)
             mimeMap.insert(*mt, *it);
     }
@@ -192,6 +192,7 @@ void PreviewJobPrivate::startPreview()
         const QString mimeType = item.item.mimetype();
         QMap<QString, KService::Ptr>::ConstIterator plugin = mimeMap.find(mimeType);
         if (plugin == mimeMap.end())
+
         {
             QString groupMimeType = mimeType;
             groupMimeType.replace(QRegExp("/.*"), "/*");
@@ -548,7 +549,7 @@ QStringList PreviewJob::supportedMimeTypes()
     QStringList result;
     const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
-        result += (*it)->property("MimeTypes").toStringList();
+        result += (*it)->serviceTypes();
     return result;
 }
 
