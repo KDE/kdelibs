@@ -1462,37 +1462,37 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
   switch ( m_request.method ) {
     case DAV_PROPFIND:
-      action = i18n( "retrieve property values" );
+      action = i18nc( "request type", "retrieve property values" );
       break;
     case DAV_PROPPATCH:
-      action = i18n( "set property values" );
+      action = i18nc( "request type", "set property values" );
       break;
     case DAV_MKCOL:
-      action = i18n( "create the requested folder" );
+      action = i18nc( "request type", "create the requested folder" );
       break;
     case DAV_COPY:
-      action = i18n( "copy the specified file or folder" );
+      action = i18nc( "request type", "copy the specified file or folder" );
       break;
     case DAV_MOVE:
-      action = i18n( "move the specified file or folder" );
+      action = i18nc( "request type", "move the specified file or folder" );
       break;
     case DAV_SEARCH:
-      action = i18n( "search in the specified folder" );
+      action = i18nc( "request type", "search in the specified folder" );
       break;
     case DAV_LOCK:
-      action = i18n( "lock the specified file or folder" );
+      action = i18nc( "request type", "lock the specified file or folder" );
       break;
     case DAV_UNLOCK:
-      action = i18n( "unlock the specified file or folder" );
+      action = i18nc( "request type", "unlock the specified file or folder" );
       break;
     case HTTP_DELETE:
-      action = i18n( "delete the specified file or folder" );
+      action = i18nc( "request type", "delete the specified file or folder" );
       break;
     case HTTP_OPTIONS:
-      action = i18n( "query the server's capabilities" );
+      action = i18nc( "request type", "query the server's capabilities" );
       break;
     case HTTP_GET:
-      action = i18n( "retrieve the contents of the specified file or folder" );
+      action = i18nc( "request type", "retrieve the contents of the specified file or folder" );
       break;
     case HTTP_PUT:
     case HTTP_POST:
@@ -1504,7 +1504,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
   // default error message if the following code fails
   kError = ERR_INTERNAL;
-  errorString = i18n("An unexpected error (%1) occurred while attempting to %2.",
+  errorString = i18nc( "%1: code, %2: request type", "An unexpected error (%1) occurred while attempting to %2.",
                         code ,  action );
 
   switch ( code )
@@ -1553,7 +1553,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
       }
 
       //kError = ERR_SLAVE_DEFINED;
-      errorString = i18n("An error occurred while attempting to %1, %2. A "
+      errorString = i18nc( "%1: request type, %2: url", "An error occurred while attempting to %1, %2. A "
                          "summary of the reasons is below.<ul>",  action ,  url );
 
       for ( QStringList::Iterator it = errors.begin(); it != errors.end(); ++it )
@@ -1565,7 +1565,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
     case 500: // hack: Apache mod_dav returns this instead of 403 (!)
       // 403 Forbidden
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Access was denied while attempting to %1.",  action );
+      errorString = i18nc( "%1: request type", "Access was denied while attempting to %1.",  action );
       break;
     case 405:
       // 405 Method Not Allowed
@@ -1608,7 +1608,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
     case 423:
       // 423 Locked
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Unable to %1 because the resource is locked.",  action );
+      errorString = i18nc( "%1: request type", "Unable to %1 because the resource is locked.",  action );
       break;
     case 425:
       // 424 Failed Dependency
@@ -1619,7 +1619,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
       if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE )
       {
         kError = ERR_WRITE_ACCESS_DENIED;
-        errorString = i18n("Unable to %1 because the destination server refuses "
+        errorString = i18nc( "%1: request type", "Unable to %1 because the destination server refuses "
                            "to accept the file or folder.",  action );
       }
       break;
@@ -1648,7 +1648,7 @@ void HTTPProtocol::httpError()
 
   switch ( m_request.method ) {
     case HTTP_PUT:
-      action = i18n( "upload %1" , m_request.url.prettyUrl());
+      action = i18nc( "request type", "upload %1" , m_request.url.prettyUrl());
       break;
     default:
       // this should not happen, this function is for http errors only
@@ -1657,7 +1657,7 @@ void HTTPProtocol::httpError()
 
   // default error message if the following code fails
   kError = ERR_INTERNAL;
-  errorString = i18n("An unexpected error (%1) occurred while attempting to %2.",
+  errorString = i18nc( "%1: response code, %2: request type", "An unexpected error (%1) occurred while attempting to %2.",
                         m_responseCode ,  action );
 
   switch ( m_responseCode )
@@ -1668,7 +1668,7 @@ void HTTPProtocol::httpError()
       // 403 Forbidden
       // 405 Method Not Allowed
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Access was denied while attempting to %1.",  action );
+      errorString = i18nc( "%1: request type", "Access was denied while attempting to %1.",  action );
       break;
     case 409:
       // 409 Conflict
@@ -1680,12 +1680,12 @@ void HTTPProtocol::httpError()
     case 423:
       // 423 Locked
       kError = ERR_ACCESS_DENIED;
-      errorString = i18n("Unable to %1 because the resource is locked.",  action );
+      errorString = i18nc( "%1: request type", "Unable to %1 because the resource is locked.",  action );
       break;
     case 502:
       // 502 Bad Gateway
       kError = ERR_WRITE_ACCESS_DENIED;
-      errorString = i18n("Unable to %1 because the destination server refuses "
+      errorString = i18nc( "%1: request type", "Unable to %1 because the destination server refuses "
                          "to accept the file or folder.",  action );
       break;
     case 507:
