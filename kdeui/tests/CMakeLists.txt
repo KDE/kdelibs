@@ -35,6 +35,7 @@ KDEUI_UNIT_TESTS(
   kuniqueapptest
   kapplication_unittest
   kcolorutilstest
+  kxmlgui_unittest
 )
 
 KDEUI_EXECUTABLE_TESTS(

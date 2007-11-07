@@ -33,9 +33,45 @@ struct DocStruct
     QString data;
 };
 
+static QList<QDomElement> extractToolBars(const QDomDocument& doc)
+{
+    QList<QDomElement> toolbars;
+    QDomElement parent = doc.documentElement();
+    for (QDomElement e = parent.firstChildElement(); !e.isNull(); e = e.nextSiblingElement()) {
+        if (e.tagName() == "ToolBar") {
+            toolbars.append(e);
+        }
+    }
+    return toolbars;
+}
+
+static void removeAllToolBars(QDomDocument& doc)
+{
+    QDomElement parent = doc.documentElement();
+    const QList<QDomElement> toolBars = extractToolBars(doc);
+    foreach(const QDomElement& e, toolBars) {
+        parent.removeChild(e);
+    }
+}
+
+static void insertToolBars(QDomDocument& doc, const QList<QDomElement>& toolBars)
+{
+    QDomElement parent = doc.documentElement();
+    QDomElement menuBar = parent.namedItem("MenuBar").toElement();
+    QDomElement insertAfter = menuBar;
+    if (menuBar.isNull())
+        insertAfter = parent.firstChildElement(); // if null, insertAfter will do an append
+    foreach(const QDomElement& e, toolBars) {
+        QDomNode result = parent.insertAfter(e, insertAfter);
+        Q_ASSERT(!result.isNull());
+    }
+}
+
+//
+
 typedef QMap<QString, QMap<QString, QString> > ActionPropertiesMap;
 
-static ActionPropertiesMap extractActionProperties( const QDomDocument &doc )
+static ActionPropertiesMap extractActionProperties(const QDomDocument &doc)
 {
   ActionPropertiesMap properties;
 
@@ -225,17 +261,24 @@ KXmlGuiFileMerger::KXmlGuiFileMerger(const QStringList& files)
                 QDomDocument document;
                 document.setContent( (*local).data );
 
-                const ActionPropertiesMap properties = extractActionProperties( document );
+                const ActionPropertiesMap properties = extractActionProperties(document);
+                const QList<QDomElement> toolbars = extractToolBars(document);
 
                 // in case the document has a ActionProperties section
                 // we must not delete it but copy over the global doc
                 // to the local and insert the ActionProperties section
-                if ( !properties.isEmpty() ) {
+                if ( !properties.isEmpty() || !toolbars.isEmpty() ) {
                     // now load the global one with the higher version number
                     // into memory
                     document.setContent( (*best).data );
                     // and store the properties in there
                     storeActionProperties( document, properties );
+                    if (!toolbars.isEmpty()) {
+                        // remove application toolbars
+                        removeAllToolBars(document);
+                        // add user toolbars
+                        insertToolBars(document, toolbars);
+                    }
 
                     (*local).data = document.toString();
                     // make sure we pick up the new local doc, when we return later
@@ -250,6 +293,7 @@ KXmlGuiFileMerger::KXmlGuiFileMerger(const QStringList& files)
                         f.close();
                     }
                 } else {
+                    // Move away the outdated local file, to speed things up next time
                     const QString f = (*local).file;
                     const QString backup = f + QLatin1String( ".backup" );
                     QFile::rename( f, backup );
