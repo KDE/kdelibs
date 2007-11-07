@@ -104,7 +104,7 @@ public:
             break;
         case Solid::DeviceInterface::Unknown:
             break;
-        default:
+        case Solid::DeviceInterface::Last:
             break;
         }
 

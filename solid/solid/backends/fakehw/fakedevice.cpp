@@ -285,7 +285,7 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
         break;
     case Solid::DeviceInterface::Unknown:
         break;
-    default:
+    case Solid::DeviceInterface::Last:
         break;
     }
 
