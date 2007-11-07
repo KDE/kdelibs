@@ -49,6 +49,7 @@ VideoPlayer::VideoPlayer(Phonon::Category category, QWidget *parent)
     , d(new VideoPlayerPrivate)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setMargin(0);
 
     d->aoutput = new AudioOutput(category, this);
 
