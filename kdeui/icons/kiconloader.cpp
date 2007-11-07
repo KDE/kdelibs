@@ -1003,8 +1003,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
                 if (!name.isEmpty()) {
                     pix = loadIcon(name, KIconLoader::User, size, state, overlays, path_store, true);
                 }
-                if (!pix.isNull() || canReturnNull)
+                if (!pix.isNull() || canReturnNull) {
+                    d->mIconCache->insert(key, pix, path);
                     return pix;
+                }
 
                 icon = d->findMatchingIcon(str_unknown, size);
                 if (!icon.isValid())
