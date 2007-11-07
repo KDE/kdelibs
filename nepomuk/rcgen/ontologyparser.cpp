@@ -123,7 +123,9 @@ bool OntologyParser::parse( const QString& filename )
     }
 
     // FIXME: the serialization should be somehow specified
-    Soprano::StatementIterator it = d->rdfParser->parseFile( filename, QUrl(), Soprano::SerializationRdfXml );
+    Soprano::StatementIterator it = d->rdfParser->parseFile( filename,
+                                                             QUrl("http://org.kde.nepomuk/dummybaseuri"),
+                                                             Soprano::SerializationRdfXml );
     bool success = true;
 
     while( it.next() ) {
