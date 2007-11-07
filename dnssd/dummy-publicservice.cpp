@@ -56,6 +56,11 @@ void PublicService::setType(const QString& type)
 	d->m_type = type;
 }
 
+void PublicService::setSubTypes(const QStringList&)
+{
+    // dummy and empty
+}
+
 void PublicService::setPort(unsigned short port)
 {
 	d->m_port = port;

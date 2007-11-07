@@ -116,7 +116,7 @@ public:
 	Sets subtypetypes of service. Pass empty list to remove subtype.  If service is 
 	currently published, it will be re-announced with new data.
 	 */
-	void setSubTypes(const QStringList& type);
+	void setSubTypes(const QStringList& subtypes);
 
 	/** 
 	Sets port. If service is currently published, it will be re-announced with new data.
