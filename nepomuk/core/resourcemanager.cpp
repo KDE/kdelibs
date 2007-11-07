@@ -36,17 +36,9 @@
 #include <Soprano/Statement>
 #include <Soprano/Vocabulary/RDF>
 #include <Soprano/StatementIterator>
-
-// just to be sure nobody hits me due to the API change in Soprano
-#include <soprano/dummymodel.h>
-namespace Soprano {
-   namespace Util {
-      class Dummy {};
-   }
-}
+#include <Soprano/Util/DummyModel>
 
 using namespace Soprano;
-using namespace Soprano::Util;
 
 
 static const char* NEPOMUK_NAMESPACE = "http://nepomuk.kde.org/resources#";
@@ -65,7 +57,7 @@ public:
     Soprano::Client::DBusClient client;
     Soprano::Model* mainModel;
 
-    DummyModel* dummyModel;
+    Soprano::Util::DummyModel* dummyModel;
 
 private:
     ResourceManager* m_parent;
@@ -226,7 +218,7 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
 
     if ( !d->mainModel ) {
         if ( !d->dummyModel ) {
-            d->dummyModel = new DummyModel();
+            d->dummyModel = new Soprano::Util::DummyModel();
         }
         return d->dummyModel;
     }
