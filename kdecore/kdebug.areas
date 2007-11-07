@@ -371,6 +371,7 @@
 9508        kdevplatform (util)
 9509        kdevplatform (vcs)
 9510        kdevplatform (subversion)
+9511        kdevplatform (projectmanagerview)
 
 # toys and games
 10000        amor
