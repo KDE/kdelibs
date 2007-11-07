@@ -316,6 +316,10 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
         return property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume")
             || property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume.Crypto");
     }
+    else if (type==Solid::DeviceInterface::Video) {
+        if (!property("video4linux.device").toString().contains("video" ) )
+          return false;
+    }
 
     QStringList cap_list = DeviceInterface::toStringList(type);
     QStringList result;
@@ -398,6 +402,7 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         iface = new Video(this);
         break;
     case Solid::DeviceInterface::Unknown:
+    case Solid::DeviceInterface::Last:
         break;
     }
 
