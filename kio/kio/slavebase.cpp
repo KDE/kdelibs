@@ -974,8 +974,8 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         const MetaData::ConstIterator end = d->configData.constEnd();
         for (MetaData::ConstIterator it = d->configData.constBegin(); it != end; ++it)
             d->configGroup->writeEntry(it.key(), it->toUtf8(), KConfigGroup::WriteConfigFlags());
-	delete d->remotefile;
-	d->remotefile = 0;
+        delete d->remotefile;
+        d->remotefile = 0;
         break;
     }
     case CMD_GET:
