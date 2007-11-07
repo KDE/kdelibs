@@ -103,7 +103,7 @@ NEPOMUK_OTHERCLASSES
          * \param type The URI identifying the type of the resource. If it is empty
          *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
          *             in case the resource already exists the type will be read from the
-         *             store.
+         *             store. (This is a QString instead of a QUrl for historical reasons)
          *
          * Example:
          *
@@ -120,6 +120,18 @@ NEPOMUK_OTHERCLASSES
          * the related resource.
          */
         Resource( const QString& uriOrIdentifier, const QString& type = QString() );
+
+        /**
+         * Creates a new Resource object.
+         *
+         * \param url The URI of the resource. If no resource with this URI exists, a new one is
+         * created.
+         * \param type The URI identifying the type of the resource. If it is empty
+         *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
+         *             in case the resource already exists the type will be read from the
+         *             store.
+         */
+        Resource( const QUrl& uri, const QUrl& type = QUrl() );
 
         /**
          * Constructor used internally.

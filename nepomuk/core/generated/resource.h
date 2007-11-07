@@ -3,7 +3,7 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@
 #ifndef _NEPOMUK_RESOURCE_H_
 #define _NEPOMUK_RESOURCE_H_
 
-#include <QtCore/QStringList>
+#include <QtCore>
 
 #include "nepomuk_export.h"
 
@@ -105,7 +105,7 @@ namespace Nepomuk {
          * \param type The URI identifying the type of the resource. If it is empty
          *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
          *             in case the resource already exists the type will be read from the
-         *             store.
+         *             store. (This is a QString instead of a QUrl for historical reasons)
          *
          * Example:
          *
@@ -121,7 +121,19 @@ namespace Nepomuk {
          * the file is saved as a \a hasIdentifier relation which means that it can be used to easily find
          * the related resource.
          */
-        explicit Resource( const QString& uriOrIdentifier, const QString& type = QString() );
+        Resource( const QString& uriOrIdentifier, const QString& type = QString() );
+
+        /**
+         * Creates a new Resource object.
+         *
+         * \param url The URI of the resource. If no resource with this URI exists, a new one is
+         * created.
+         * \param type The URI identifying the type of the resource. If it is empty
+         *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
+         *             in case the resource already exists the type will be read from the
+         *             store.
+         */
+        Resource( const QUrl& uri, const QUrl& type = QUrl() );
 
         /**
          * Constructor used internally.
@@ -225,48 +237,21 @@ namespace Nepomuk {
 
         // do not remove. Will be replaced with method declarations by the Nepomuk class generator.
             /**
-             * Get property 'label'. 
+             * Get property 'description'. Everything can be annotated with 
+             * a simple string comment. 
              */
-            QString label() const;
+            QString description() const;
 
             /**
-             * Set property 'label'. 
+             * Set property 'description'. Everything can be annotated with 
+             * a simple string comment. 
              */
-            void setLabel( const QString& value );
+            void setDescription( const QString& value );
 
             /**
-             * \return The URI of the property 'label'. 
+             * \return The URI of the property 'description'. 
              */
-            static QString labelUri();
-
-            /**
-             * Get property 'Symbol'. Each resource can have a symbol assigned. 
-             * For now this is a simple string which can either be the patch to 
-             * an actual pixmap file or just the name of an icon as defined by 
-             * the freedesktop.org standard. 
-             */
-            QStringList symbols() const;
-
-            /**
-             * Set property 'Symbol'. Each resource can have a symbol assigned. 
-             * For now this is a simple string which can either be the patch to 
-             * an actual pixmap file or just the name of an icon as defined by 
-             * the freedesktop.org standard. 
-             */
-            void setSymbols( const QStringList& value );
-
-            /**
-             * Add a value to property 'Symbol'. Each resource can have a symbol 
-             * assigned. For now this is a simple string which can either be 
-             * the patch to an actual pixmap file or just the name of an icon as 
-             * defined by the freedesktop.org standard. 
-             */
-            void addSymbol( const QString& value );
-
-            /**
-             * \return The URI of the property 'Symbol'. 
-             */
-            static QString symbolUri();
+            static QString descriptionUri();
 
             /**
              * Get property 'Identifier'. 
@@ -289,26 +274,6 @@ namespace Nepomuk {
             static QString identifierUri();
 
             /**
-             * Get property 'isRelated'. 
-             */
-            QList<Resource> isRelateds() const;
-
-            /**
-             * Set property 'isRelated'. 
-             */
-            void setIsRelateds( const QList<Resource>& value );
-
-            /**
-             * Add a value to property 'isRelated'. 
-             */
-            void addIsRelated( const Resource& value );
-
-            /**
-             * \return The URI of the property 'isRelated'. 
-             */
-            static QString isRelatedUri();
-
-            /**
              * Get property 'altLabel'. 
              */
             QStringList altLabels() const;
@@ -327,58 +292,6 @@ namespace Nepomuk {
              * \return The URI of the property 'altLabel'. 
              */
             static QString altLabelUri();
-
-            /**
-             * Get property 'Rating'. 
-             */
-            quint32 rating() const;
-
-            /**
-             * Set property 'Rating'. 
-             */
-            void setRating( const quint32& value );
-
-            /**
-             * \return The URI of the property 'Rating'. 
-             */
-            static QString ratingUri();
-
-            /**
-             * Get property 'description'. Everything can be annotated with 
-             * a simple string comment. 
-             */
-            QString description() const;
-
-            /**
-             * Set property 'description'. Everything can be annotated with 
-             * a simple string comment. 
-             */
-            void setDescription( const QString& value );
-
-            /**
-             * \return The URI of the property 'description'. 
-             */
-            static QString descriptionUri();
-
-            /**
-             * Get property 'isTopicOf'. 
-             */
-            QList<Resource> isTopicOfs() const;
-
-            /**
-             * Set property 'isTopicOf'. 
-             */
-            void setIsTopicOfs( const QList<Resource>& value );
-
-            /**
-             * Add a value to property 'isTopicOf'. 
-             */
-            void addIsTopicOf( const Resource& value );
-
-            /**
-             * \return The URI of the property 'isTopicOf'. 
-             */
-            static QString isTopicOfUri();
 
             /**
              * Get property 'annotation'. 
@@ -443,6 +356,105 @@ namespace Nepomuk {
              * \return The URI of the property 'Topic'. 
              */
             static QString topicUri();
+
+            /**
+             * Get property 'isTopicOf'. 
+             */
+            QList<Resource> isTopicOfs() const;
+
+            /**
+             * Set property 'isTopicOf'. 
+             */
+            void setIsTopicOfs( const QList<Resource>& value );
+
+            /**
+             * Add a value to property 'isTopicOf'. 
+             */
+            void addIsTopicOf( const Resource& value );
+
+            /**
+             * \return The URI of the property 'isTopicOf'. 
+             */
+            static QString isTopicOfUri();
+
+            /**
+             * Get property 'isRelated'. 
+             */
+            QList<Resource> isRelateds() const;
+
+            /**
+             * Set property 'isRelated'. 
+             */
+            void setIsRelateds( const QList<Resource>& value );
+
+            /**
+             * Add a value to property 'isRelated'. 
+             */
+            void addIsRelated( const Resource& value );
+
+            /**
+             * \return The URI of the property 'isRelated'. 
+             */
+            static QString isRelatedUri();
+
+            /**
+             * Get property 'label'. 
+             */
+            QString label() const;
+
+            /**
+             * Set property 'label'. 
+             */
+            void setLabel( const QString& value );
+
+            /**
+             * \return The URI of the property 'label'. 
+             */
+            static QString labelUri();
+
+            /**
+             * Get property 'Rating'. 
+             */
+            quint32 rating() const;
+
+            /**
+             * Set property 'Rating'. 
+             */
+            void setRating( const quint32& value );
+
+            /**
+             * \return The URI of the property 'Rating'. 
+             */
+            static QString ratingUri();
+
+            /**
+             * Get property 'Symbol'. Each resource can have a symbol assigned. 
+             * For now this is a simple string which can either be the patch to 
+             * an actual pixmap file or just the name of an icon as defined by 
+             * the freedesktop.org standard. 
+             */
+            QStringList symbols() const;
+
+            /**
+             * Set property 'Symbol'. Each resource can have a symbol assigned. 
+             * For now this is a simple string which can either be the patch to 
+             * an actual pixmap file or just the name of an icon as defined by 
+             * the freedesktop.org standard. 
+             */
+            void setSymbols( const QStringList& value );
+
+            /**
+             * Add a value to property 'Symbol'. Each resource can have a symbol 
+             * assigned. For now this is a simple string which can either be 
+             * the patch to an actual pixmap file or just the name of an icon as 
+             * defined by the freedesktop.org standard. 
+             */
+            void addSymbol( const QString& value );
+
+            /**
+             * \return The URI of the property 'Symbol'. 
+             */
+            static QString symbolUri();
 
             /**
              * Get all resources that have this resource set as property 'annotation'. 

@@ -37,7 +37,8 @@ namespace Nepomuk {
     class ResourceData
     {
     public:
-        explicit ResourceData( const QString& uri_ = QString(), const QString& type_ = QString() );
+        explicit ResourceData( const QString& kickoffId_ = QString(), const QUrl& type_ = QString() );
+        explicit ResourceData( const QUrl& uri, const QUrl& type_ = QString() );
         ~ResourceData();
 
         /**
@@ -75,7 +76,7 @@ namespace Nepomuk {
          */
         QString uri() const;
 
-        QString type() const;
+        QUrl type() const;
 
         QHash<QString, Variant> allProperties();
 
@@ -141,9 +142,24 @@ namespace Nepomuk {
          * created at all times. This method searches for an existing data object to reuse or creates
          * a new one if none exists.
          *
+         * \param uriOrId The URI or identifier of the resource is question.
+         * \type The type of the resource.
+         *
          * The Resource constructors use this method in combination with ref()
          */
-        static ResourceData* data( const QString& uriOrId, const QString& type );
+        static ResourceData* data( const QString& uriOrId, const QUrl& type );
+
+        /**
+         * The KMetaData lib is based on the fact that for each uri only one ResourceData object is
+         * created at all times. This method searches for an existing data object to reuse or creates
+         * a new one if none exists.
+         *
+         * \param uri The URI of the resource is question.
+         * \type The type of the resource.
+         *
+         * The Resource constructors use this method in combination with ref()
+         */
+        static ResourceData* data( const QUrl& uri, const QUrl& type );
 
         static QList<ResourceData*> allResourceData();
 
@@ -156,7 +172,7 @@ namespace Nepomuk {
          * to identify it.
          */
         QString m_kickoffUriOrId;
-        QString m_uri;
+        QUrl m_uri;
 
         /**
          * The kickoffIdentifier is the identifier used to construct the resource object.
@@ -164,7 +180,7 @@ namespace Nepomuk {
          * yet this value is empty. Otherwise it equals m_kickoffUriOrId
          */
         QString m_kickoffIdentifier;
-        QString m_type;
+        QUrl m_type;
 
         int m_ref;
 

@@ -54,6 +54,13 @@ Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 }
 
 
+Nepomuk::Resource::Resource( const QUrl& uri, const QUrl& type )
+{
+    m_data = ResourceData::data( uri, type );
+    m_data->ref();
+}
+
+
 Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 {
     m_data = data;
@@ -93,7 +100,7 @@ QString Nepomuk::Resource::uri() const
 QString Nepomuk::Resource::type() const
 {
     m_data->determineUri();
-    return m_data->type();
+    return m_data->type().toString();
 }
 
 

@@ -13,24 +13,29 @@
  */
 
 #include "speedtest.h"
-#include "../kmetadata/kmetadata.h"
+#include "../resourcemanager.h"
+#include "../generated/resource.h"
+#include "../variant.h"
 
-#include <knepomuk/knepomuk.h>
-#include <knepomuk/services/rdfrepository.h>
+#include <Soprano/Model>
+#include <Soprano/Statement>
+#include <Soprano/StatementIterator>
+#include <Soprano/Node>
+#include <Soprano/LiteralValue>
+#include <Soprano/QueryResultIterator>
 
 #include <qtest_kde.h>
 
-using namespace Nepomuk::Services;
 using namespace Soprano;
-using namespace Nepomuk::KMetaData;
-
+using namespace Nepomuk;
 
 
 void SpeedTest::testKMetaData()
 {
-    const int TESTCNT = 1000;
+    return;
+    const int TESTCNT = 10;
 
-    RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
+    Soprano::Model* rr = ResourceManager::instance()->mainModel();
 
     QTime t;
     t.start();
@@ -47,7 +52,7 @@ void SpeedTest::testKMetaData()
 
     // check that everything has been saved properly
     foreach( Resource r, rl ) {
-        QVERIFY( !rr.listStatements( defaultGraph(), Statement( QUrl( r.uri() ), Node(), Node() ) ).isEmpty() );
+        QVERIFY( rr->containsAnyStatement( Statement( QUrl( r.uri() ), Node(), Node() ) ) );
     }
 
     t.start();
@@ -60,9 +65,76 @@ void SpeedTest::testKMetaData()
 
     // check that there actually is nothing left
     foreach( Resource r, rl ) {
-        QVERIFY( rr.listStatements( defaultGraph(), Statement( QUrl( r.uri() ), Node(), Node() ) ).isEmpty() );
+        QVERIFY( !rr->containsAnyStatement( Statement( QUrl( r.uri() ), Node(), Node() ) ) );
     }
 }
+
+
+void SpeedTest::compareToPlain_data()
+{
+    QTest::addColumn<QUrl>( "uri" );
+    QTest::addColumn<QString>( "identifier" );
+
+    QTest::newRow( "simple" ) << QUrl( "http://test.kde.org/A" ) << "testA";
+    QTest::newRow( "file" ) << QUrl( "file:///tmp" ) << "/tmp";
+}
+
+void SpeedTest::compareToPlain()
+{
+    QFETCH( QUrl, uri );
+    QFETCH( QString,  identifier );
+
+    // first we add some data
+    Soprano::Model* rr = ResourceManager::instance()->mainModel();
+
+    QVERIFY( rr->addStatement( Statement( uri, QUrl(Resource::identifierUri()), LiteralValue(identifier) ) ) == Soprano::Error::ErrorNone );
+    QVERIFY( rr->addStatement( Statement( uri, QUrl("http://test.kde.org/hasSomething"), LiteralValue(17) ) ) == Soprano::Error::ErrorNone );
+
+    QTime t;
+    t.start();
+
+    // now read the thing with Nepomuk
+    {
+        Resource res( identifier );
+        Variant val = res.property( "http://test.kde.org/hasSomething" );
+
+        qDebug( "Read property with nepomuk and identifier in %d ms", t.elapsed() );
+
+        QCOMPARE( val.toInt(), 17 );
+    }
+
+    t.start();
+
+    {
+        Resource res2( uri.toString() );
+        Variant val2 = res2.property( "http://test.kde.org/hasSomething" );
+
+        qDebug( "Read property with nepomuk and URI in %d ms", t.elapsed() );
+
+        QCOMPARE( val2.toInt(), 17 );
+    }
+
+    // now read it with plain Soprano
+    t.start();
+
+    StatementIterator it = rr->listStatements( Statement( uri, QUrl("http://test.kde.org/hasSomething"), Node() ) );
+    qDebug( "Read property with Soprano and URI in %d ms", t.elapsed() );
+
+    QVERIFY( it.next() );
+    QCOMPARE( it.current().object().literal().toInt(), 17 );
+
+
+    t.start();
+    QueryResultIterator qr = rr->executeQuery( QString( "select ?x where { ?r <%1> \"%2\"^^<http://www.w3.org/2001/XMLSchema#string> . "
+                                                        "?r <http://test.kde.org/hasSomething> ?x . }" )
+                                               .arg( Resource::identifierUri() )
+                                               .arg( identifier ),
+                                               Soprano::Query::QUERY_LANGUAGE_SPARQL );
+    qDebug( "Read property with Soprano and identifier in %d ms", t.elapsed() );
+    QVERIFY( qr.next() );
+    QCOMPARE( qr.binding( "x" ).literal().toInt(),  17 );
+}
+
 
 QTEST_KDEMAIN(SpeedTest, NoGUI)
 

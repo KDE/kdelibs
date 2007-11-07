@@ -73,3 +73,4 @@ install(FILES
 
 add_subdirectory(ui)
 add_subdirectory(ontology)
+add_subdirectory(test)

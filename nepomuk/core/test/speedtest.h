@@ -15,14 +15,16 @@
 #ifndef _NEPOMUK_SPEED_TEST_H_
 #define _NEPOMUK_SPEED_TEST_H_
 
-#include "testbase.h"
+#include <QtCore/QObject>
 
-class SpeedTest : public TestBase
+class SpeedTest : public QObject
 {
     Q_OBJECT
 
  private Q_SLOTS:
     void testKMetaData();
+    void compareToPlain_data();
+    void compareToPlain();
 };
 
 #endif
