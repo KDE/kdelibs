@@ -32,6 +32,9 @@ public:
 	ServiceBasePrivate(const QString& name, const QString& type, const QString& domain, 
 		const QString& host, unsigned short port) : m_serviceName(name), m_type(type),
 		m_domain(domain), m_hostName(host), m_port(port) {}
+
+    virtual ~ServiceBasePrivate() {}
+
 	QString m_serviceName;
 	QString m_type;
 	QString m_domain;
