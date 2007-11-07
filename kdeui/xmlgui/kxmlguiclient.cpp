@@ -18,7 +18,7 @@
 */
 
 #include "kxmlguiclient.h"
-#include "kxmlguifilemerger_p.h"
+#include "kxmlguiversionhandler_p.h"
 #include "kxmlguifactory.h"
 #include "kxmlguibuilder.h"
 
@@ -625,9 +625,9 @@ void KXMLGUIClient::unplugActionList( const QString &name )
 
 QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString &doc )
 {
-    KXmlGuiFileMerger merger(files);
-    doc = merger.finalDocument();
-    return merger.finalFile();
+    KXmlGuiVersionHandler versionHandler(files);
+    doc = versionHandler.finalDocument();
+    return versionHandler.finalFile();
 }
 
 void KXMLGUIClient::addStateActionEnabled(const QString& state,

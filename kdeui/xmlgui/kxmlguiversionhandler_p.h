@@ -19,8 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KXMLGUIFILEMERGER_P_H
-#define KXMLGUIFILEMERGER_P_H
+#ifndef KXMLGUIVERSIONHANDLER_P_H
+#define KXMLGUIVERSIONHANDLER_P_H
 
 #include <QStringList>
 
@@ -34,12 +34,11 @@
  * This is about handling upgrades (a new version of the application
  * has been installed, with a new xmlgui file, and the user might have
  * a local modified version of an older xmlgui file).
- * This class is unrelated to the more known "xmlgui merging" mechanism.
  */
-class KXmlGuiFileMerger
+class KXmlGuiVersionHandler
 {
 public:
-    KXmlGuiFileMerger(const QStringList& files);
+    KXmlGuiVersionHandler(const QStringList& files);
 
     QString finalFile() const { return m_file; }
     QString finalDocument() const { return m_doc; }
@@ -49,6 +48,4 @@ private:
     QString m_doc;
 };
 
-
-#endif /* KXMLGUIFILEMERGER_P_H */
-
+#endif /* KXMLGUIVERSIONHANDLER_P_H */

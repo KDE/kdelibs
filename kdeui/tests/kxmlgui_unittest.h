@@ -27,9 +27,9 @@ class KXmlGui_UnitTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
-    void testFileMergerSameVersion();
-    void testFileMergerNewVersionNothingKept();
-    void testFileMergerNewVersionUserChanges();
+    void testVersionHandlerSameVersion();
+    void testVersionHandlerNewVersionNothingKept();
+    void testVersionHandlerNewVersionUserChanges();
 };
 
 #endif

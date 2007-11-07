@@ -19,7 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kxmlguifilemerger_p.h"
+#include "kxmlguiversionhandler_p.h"
 #include <kdebug.h>
 #include <QFile>
 #include <QDomDocument>
@@ -216,7 +216,7 @@ static QString findVersionNumber( const QString &xml )
 }
 
 
-KXmlGuiFileMerger::KXmlGuiFileMerger(const QStringList& files)
+KXmlGuiVersionHandler::KXmlGuiVersionHandler(const QStringList& files)
 {
     QList<DocStruct> allDocuments;
 
@@ -267,6 +267,10 @@ KXmlGuiFileMerger::KXmlGuiFileMerger(const QStringList& files)
                 // in case the document has a ActionProperties section
                 // we must not delete it but copy over the global doc
                 // to the local and insert the ActionProperties section
+
+                // TODO: kedittoolbar should mark toolbars as modified so that
+                // we don't keep old toolbars just because the user defined a shortcut
+
                 if ( !properties.isEmpty() || !toolbars.isEmpty() ) {
                     // now load the global one with the higher version number
                     // into memory

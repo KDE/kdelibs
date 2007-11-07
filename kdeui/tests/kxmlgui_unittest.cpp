@@ -22,8 +22,8 @@
 #include "kxmlgui_unittest.h"
 #include <ktemporaryfile.h>
 #include "kxmlgui_unittest.moc"
-#include <kxmlguifilemerger_p.h>
-#include <kxmlguifilemerger.cpp> // it's not exported, so we need to include the code here
+#include <kxmlguiversionhandler_p.h>
+#include <kxmlguiversionhandler.cpp> // it's not exported, so we need to include the code here
 
 QTEST_KDEMAIN(KXmlGui_UnitTest, NoGUI)
 
@@ -85,7 +85,7 @@ static void createXmlFile(QFile& file, int version, int flags)
     file.write("</gui>\n");
 }
 
-void KXmlGui_UnitTest::testFileMergerSameVersion()
+void KXmlGui_UnitTest::testVersionHandlerSameVersion()
 {
     // This emulates the case where the user has modified stuff locally
     // and the application hasn't changed since, so the version number is unchanged.
@@ -105,9 +105,9 @@ void KXmlGui_UnitTest::testFileMergerSameVersion()
     userFile.close();
     appFile.close();
 
-    KXmlGuiFileMerger merger(files);
-    QCOMPARE(merger.finalFile(), firstFile);
-    QString finalDoc = merger.finalDocument();
+    KXmlGuiVersionHandler versionHandler(files);
+    QCOMPARE(versionHandler.finalFile(), firstFile);
+    QString finalDoc = versionHandler.finalDocument();
     QVERIFY(finalDoc.startsWith("<?xml"));
     // Check that the shortcuts defined by the user were kept
     QVERIFY(finalDoc.contains("<ActionProperties>"));
@@ -120,7 +120,7 @@ void KXmlGui_UnitTest::testFileMergerSameVersion()
     QCOMPARE(finalDoc, userFileContents);
 }
 
-void KXmlGui_UnitTest::testFileMergerNewVersionNothingKept()
+void KXmlGui_UnitTest::testVersionHandlerNewVersionNothingKept()
 {
     // This emulates the case where the application has been upgraded
     // and the user has a local ui.rc file, but without shortcuts or toolbar changes.
@@ -155,9 +155,9 @@ void KXmlGui_UnitTest::testFileMergerNewVersionNothingKept()
     fileV5.close();
     fileV1.close();
 
-    KXmlGuiFileMerger merger(files);
-    QCOMPARE(fileToVersionMap.value(merger.finalFile()), 5);
-    QString finalDoc = merger.finalDocument();
+    KXmlGuiVersionHandler versionHandler(files);
+    QCOMPARE(fileToVersionMap.value(versionHandler.finalFile()), 5);
+    QString finalDoc = versionHandler.finalDocument();
     QVERIFY(finalDoc.startsWith("<?xml"));
     QVERIFY(finalDoc.contains("version=\"5\""));
 
@@ -166,7 +166,7 @@ void KXmlGui_UnitTest::testFileMergerNewVersionNothingKept()
     QCOMPARE(finalDoc, fileV5Contents);
 }
 
-void KXmlGui_UnitTest::testFileMergerNewVersionUserChanges()
+void KXmlGui_UnitTest::testVersionHandlerNewVersionUserChanges()
 {
     // This emulates the case where the application has been upgraded
     // after the user has changed shortcuts and toolbars
@@ -199,11 +199,11 @@ void KXmlGui_UnitTest::testFileMergerNewVersionUserChanges()
     fileV5.close();
     fileV1.close();
 
-    KXmlGuiFileMerger merger(files);
+    KXmlGuiVersionHandler versionHandler(files);
     // We selected the local file, so in our map it has version 2.
     // But of course by now it says "version=5" in it :)
-    QCOMPARE(fileToVersionMap.value(merger.finalFile()), 2);
-    const QString finalDoc = merger.finalDocument();
+    QCOMPARE(fileToVersionMap.value(versionHandler.finalFile()), 2);
+    const QString finalDoc = versionHandler.finalDocument();
     //kDebug() << finalDoc;
     QVERIFY(finalDoc.startsWith("<?xml"));
     QVERIFY(finalDoc.contains("version=\"5\""));
