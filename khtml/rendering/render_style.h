@@ -1034,6 +1034,7 @@ public:
     bool        isFloating() const { return !(noninherited_flags.f._floating == FNONE); }
     bool        hasMargin() const { return surround->margin.nonZero(); }
     bool        hasBorder() const { return surround->border.hasBorder(); }
+    bool        hasPadding() const { return surround->padding.nonZero(); }
     bool        hasOffset() const { return surround->offset.nonZero(); }
 
     bool hasBackground() const {

@@ -90,7 +90,7 @@ protected:
     struct Layout {
 	Layout() : minWidth( 1 ), maxWidth( 1 ),
 		   effMinWidth( 0 ), effMaxWidth( 0 ),
-		   calcWidth( 0 ) {}
+		   calcWidth( 0 ), emptyCellsOnly(true) {}
 	Length width;
 	Length effWidth;
 	short minWidth;
@@ -98,6 +98,7 @@ protected:
 	short effMinWidth;
 	int effMaxWidth;
 	short calcWidth;
+	bool emptyCellsOnly;
     };
 
     QVector<Layout> layoutStruct;
