@@ -1098,8 +1098,6 @@ void KHTMLView::mousePressEvent( QMouseEvent *_mouse )
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),mev.innerNonSharedNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
 
-    khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
-
     if (!swallowEvent) {
 	emit m_part->nodeActivated(mev.innerNode);
 
