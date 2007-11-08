@@ -359,12 +359,6 @@ inline QChar::Direction BidiIterator::direction() const
     RenderText *renderTxt = static_cast<RenderText *>( obj );
     if ( pos >= renderTxt->stringLength() )
         return QChar::DirON;
-#ifdef __GNUC__
-	#warning "KDE4: hack for testregression, remove when main branch"
-#endif
-    if (renderTxt->text()[pos].unicode() == 0x2D)
-        return QChar::DirET;
-
 
     return renderTxt->text()[pos].direction();
 }
