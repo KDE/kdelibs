@@ -136,6 +136,7 @@ Comment[ca]=Notificació del funcionament automàtic del de reserva si el dispos
 Comment[de]=Benachrichtigung bei automatischem Ausweichen, wenn das bevorzugte Gerätnicht verfügbar ist.
 Comment[el]=Ειδοποίηση όταν γίνει αυτόματη αλλαγή στην εφεδρική συσκευή ήχου, αν η προκαθορισμένη δεν είναι διαθέσιμη
 Comment[ga]=Fógairt maidir le gléas tacachumais nuair nach bhfuil do rogha gléis ar fáil
+Comment[hu]=Értesítés a másodlagos eszköz aktiválásáról, ha az elsődleges eszköz nem használható
 Comment[ja]=優先デバイスが利用できないために自動的にフォールバックしたときの通知
 Comment[km]=ការ​ជូន​ដំណឹង​អំពី fallback ស្វ័យ​ប្រវត្តិ​នៅពេល​ដែល​មិនមាន​ឧបករណ៍​ដែល​ចូលចិត្ត
 Comment[nb]=Varsling ved automatisk overgang til reservelydenhet hvis foretrukket enhet ikke er tilgjengelig
