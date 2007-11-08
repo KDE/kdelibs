@@ -211,7 +211,7 @@ RenderListMarker::~RenderListMarker()
 
 void RenderListMarker::setStyle(RenderStyle *s)
 {
-    if ( style() && s->listStylePosition() != style()->listStylePosition() )
+    if ( style() && (s->listStylePosition() != style()->listStylePosition()  || s->listStyleType() != style()->listStyleType()) )
         setNeedsLayoutAndMinMaxRecalc();
 
     RenderBox::setStyle(s);
