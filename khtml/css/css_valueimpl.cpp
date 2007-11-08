@@ -174,14 +174,14 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
         // ## Is this correct? The code in cssparser.cpp is confusing
         const int properties[2] = { CSS_PROP_BACKGROUND_POSITION_X,
                                     CSS_PROP_BACKGROUND_POSITION_Y };
-        return getShortHandValue( properties, 2 );
+        return getLayeredShortHandValue( properties, 2 );
     }
     case CSS_PROP_BACKGROUND:
     {
-        const int properties[5] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
-                                    CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,
-                                    CSS_PROP_BACKGROUND_COLOR };
-        return getShortHandValue( properties, 5 );
+        const int properties[6] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
+                                    CSS_PROP_BACKGROUND_ATTACHMENT,CSS_PROP_BACKGROUND_POSITION_X,
+                                    CSS_PROP_BACKGROUND_POSITION_Y, CSS_PROP_BACKGROUND_COLOR };
+        return getLayeredShortHandValue( properties, 6 );
     }
     case CSS_PROP_BORDER:
     {
@@ -272,6 +272,65 @@ DOMString CSSStyleDeclarationImpl::get4Values( const int* properties ) const
             res += " ";	//krazy:exclude=doublequote_chars DOM demands chars
         res += value->cssText();
     }
+    return res;
+}
+
+DOMString CSSStyleDeclarationImpl::getLayeredShortHandValue(const int* properties, unsigned number) const
+{
+    DOMString res;
+    unsigned i;
+    unsigned j;
+
+    // Begin by collecting the properties into an array.
+    QVector<CSSValueImpl*> values(number);
+    unsigned numLayers = 0;
+    
+    for (i = 0; i < number; ++i) {
+        values[i] = getPropertyCSSValue(properties[i]);
+        if (values[i]) {
+            if (values[i]->isValueList()) {
+                CSSValueListImpl* valueList = static_cast<CSSValueListImpl*>(values[i]);
+                numLayers = qMax(valueList->length(), (unsigned long)numLayers);
+            } else
+                numLayers = qMax(1U, numLayers);
+        }
+    }
+    
+    // Now stitch the properties together.  Implicit initial values are flagged as such and
+    // can safely be omitted.
+    for (i = 0; i < numLayers; i++) {
+        DOMString layerRes;
+        for (j = 0; j < number; j++) {
+            CSSValueImpl* value = 0;
+            if (values[j]) {
+                if (values[j]->isValueList())
+                    value = static_cast<CSSValueListImpl*>(values[j])->item(i);
+                else {
+                    value = values[j];
+                    
+                    // Color only belongs in the last layer.
+                    if (properties[j] == CSS_PROP_BACKGROUND_COLOR) {
+                        if (i != numLayers - 1)
+                            value = 0;
+                    } else if (i != 0) // Other singletons only belong in the first layer.
+                        value = 0;
+                }
+            }
+            
+            if (value && !value->isImplicitInitialValue()) {
+                if (!layerRes.isNull())
+                    layerRes += " ";
+                layerRes += value->cssText();
+            }
+        }
+        
+        if (!layerRes.isNull()) {
+            if (!res.isNull())
+                res += ", ";
+            res += layerRes;
+        }
+    }
+
     return res;
 }
 

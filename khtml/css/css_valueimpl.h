@@ -94,6 +94,7 @@ public:
 
 protected:
     DOMString getShortHandValue( const int* properties, int number ) const;
+    DOMString getLayeredShortHandValue(const int* properties, unsigned number) const;
     DOMString get4Values( const int* properties ) const;
 
     QList<CSSProperty*> *m_lstValues;
@@ -115,6 +116,7 @@ public:
 
     virtual bool isValue() const { return true; }
     virtual bool isFontValue() const { return false; }
+    virtual bool isImplicitInitialValue() const { return false; }
 };
 
 class CSSInheritedValueImpl : public CSSValueImpl
@@ -130,8 +132,15 @@ public:
 class CSSInitialValueImpl : public CSSValueImpl
 {
 public:
+    CSSInitialValueImpl(bool implicit)
+     :m_implicit(implicit)
+    {}
     virtual unsigned short cssValueType() const;
     virtual DOM::DOMString cssText() const;
+
+    virtual bool isImplicitInitialValue() const { return m_implicit; }
+private:
+    bool m_implicit;          
 };
 
 class CSSValueListImpl : public CSSValueImpl

@@ -402,7 +402,7 @@ bool CSSParser::parseValue( int propId, bool important )
     } else if (id == CSS_VAL_INITIAL ) {
         if (num != 1)
             return false;
-        addProperty(propId, new CSSInitialValueImpl(), important);
+        addProperty(propId, new CSSInitialValueImpl(false/*implicit initial*/), important);
         return true;
     }
 
@@ -1146,9 +1146,9 @@ bool CSSParser::parseBackgroundShorthand(bool important)
                     goto fail;
 
                 if (!parsedProperty[i] && properties[i] != CSS_PROP_BACKGROUND_COLOR) {
-                    addBackgroundValue(values[i], new CSSInitialValueImpl());
+                    addBackgroundValue(values[i], new CSSInitialValueImpl(true/*implicit initial*/));
                     if (properties[i] == CSS_PROP_BACKGROUND_POSITION)
-                        addBackgroundValue(positionYValue, new CSSInitialValueImpl());
+                        addBackgroundValue(positionYValue, new CSSInitialValueImpl(true/*implicit initial*/));
                 }
                 parsedProperty[i] = false;
             }
@@ -1179,9 +1179,9 @@ bool CSSParser::parseBackgroundShorthand(bool important)
     // Fill in any remaining properties with the initial value.
     for (i = 0; i < numProperties; ++i) {
         if (!parsedProperty[i]) {
-            addBackgroundValue(values[i], new CSSInitialValueImpl());
+            addBackgroundValue(values[i], new CSSInitialValueImpl(true/*implicit initial*/));
             if (properties[i] == CSS_PROP_BACKGROUND_POSITION)
-                addBackgroundValue(positionYValue, new CSSInitialValueImpl());
+                addBackgroundValue(positionYValue, new CSSInitialValueImpl(true/*implicit initial*/));
         }
     }
 
@@ -1237,7 +1237,7 @@ bool CSSParser::parseShortHand(int propId, const int *properties, int numPropert
     m_implicitShorthand = true;
     for (int i = 0; i < numProperties; ++i) {
         if (!fnd[i])
-            addProperty(properties[i], new CSSInitialValueImpl(), important);
+            addProperty(properties[i], new CSSInitialValueImpl(true/*implicit initial*/), important);
     }
     m_implicitShorthand = false;
 
