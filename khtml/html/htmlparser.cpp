@@ -558,37 +558,11 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             else
                 return false;
         }
-        case ID_CAPTION: {
-            switch (current->id()) {
-                case ID_THEAD:
-                case ID_TBODY:
-                case ID_TFOOT:
-                case ID_TR:
-                case ID_TH:
-                case ID_TD: {
-                    NodeImpl* tsection = current;
-                    if (current->id() == ID_TR)
-                        tsection = current->parent();
-                    else if (current->id() == ID_TD || current->id() == ID_TH)
-                        tsection = current->parent()->parent();
-                    NodeImpl* table = tsection->parent();
-                    int exceptioncode = 0;
-                    table->insertBefore(n, tsection, exceptioncode);
-                    pushBlock(id, tagPriority(id));
-                    setCurrent(n);
-                    inStrayTableContent++;
-                    blockStack->strayTableContent = true;
-                    return true;
-                }
-                default:
-                    break;
-            }
-            break;
-        }
 
         case ID_THEAD:
         case ID_TBODY:
         case ID_TFOOT:
+        case ID_CAPTION:
         case ID_COLGROUP: {
             if (isTableRelatedTag(current->id())) {
                 while (blockStack && current->id() != ID_TABLE && isTableRelatedTag(current->id()))
