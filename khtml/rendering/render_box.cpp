@@ -970,6 +970,13 @@ void RenderBox::calcWidth()
                     m_width = minW;
                     widthType = minWidthType;
                 }
+                if (short iw = intrinsicWidth()) {
+                    // some elements (e.g. Fieldset) have pseudo-replaced behaviour in quirk mode
+                    if (m_width < iw) {
+                        m_width = iw;
+                        widthType = Fixed;
+                    }
+                }
             }
 
             if (widthType == Variable) {
@@ -1521,6 +1528,15 @@ void RenderBox::calcAbsoluteHorizontal()
             m_marginRight = minMarginRight;
             m_x = minXPos;
         }
+    }
+ 
+    if (short iw = intrinsicWidth()) {
+        // some elements (e.g. Fieldset) have pseudo-replaced behaviour in quirk mode
+        if (m_width < iw - bordersPlusPadding)
+            calcAbsoluteHorizontalValues(Length(iw - bordersPlusPadding, Fixed), containerBlock, containerDirection, 
+                                     containerWidth, bordersPlusPadding,
+                                     left, right, marginLeft, marginRight,
+                                     m_width, m_marginLeft, m_marginRight, m_x);
     }
 
     // Put m_width into correct form.

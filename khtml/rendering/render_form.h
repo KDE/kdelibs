@@ -303,6 +303,7 @@ class RenderFieldset : public RenderBlock
 public:
     RenderFieldset(DOM::HTMLGenericFormElementImpl *element);
 
+    virtual void calcMinMaxWidth();
     virtual const char *renderName() const { return "RenderFieldSet"; }
     virtual RenderObject* layoutLegend(bool relayoutChildren);
     virtual void setStyle(RenderStyle* _style);
@@ -310,8 +311,10 @@ public:
 protected:
     virtual void paintBoxDecorations(PaintInfo& pI, int _tx, int _ty);
     void paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w,
-                                  int h, const RenderStyle *style, int lx, int lw);
-    RenderObject* findLegend();
+                                  int h, const RenderStyle *style, int lx, int lw, int lb);
+    RenderObject* findLegend() const;
+    virtual short intrinsicWidth() const { return m_intrinsicWidth; }
+    int m_intrinsicWidth;
 };
 
 // -------------------------------------------------------------------------

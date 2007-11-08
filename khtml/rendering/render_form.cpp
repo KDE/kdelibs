@@ -5,7 +5,8 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *           (C) 2006 Maksim Orlovich (maksim@kde.org)
- *           (C) 2006 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2007 Germain Garand (germain@ebooksfrance.org)
+ *           (C) 2007 Mitz Pettel (mitz@webkit.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -718,6 +719,26 @@ void RenderLineEdit::setSelectionRange(long start, long end)
 RenderFieldset::RenderFieldset(HTMLGenericFormElementImpl *element)
     : RenderBlock(element)
 {
+    m_intrinsicWidth = 0;
+}
+ 
+void RenderFieldset::calcMinMaxWidth()
+{
+    RenderBlock::calcMinMaxWidth();
+    if (style()->htmlHacks()){ if (RenderObject* legend = findLegend()) {
+        int legendMinWidth = legend->minWidth();
+
+        Length legendMarginLeft = legend->style()->marginLeft();
+        Length legendMarginRight = legend->style()->marginLeft();
+
+        if (legendMarginLeft.isFixed())
+            legendMinWidth += legendMarginLeft.value();
+
+        if (legendMarginRight.isFixed())
+            legendMinWidth += legendMarginRight.value();
+
+        m_intrinsicWidth = qMax((int)m_minWidth, legendMinWidth + paddingLeft() + paddingRight() + borderLeft() + borderRight());
+    }}
 }
 
 RenderObject* RenderFieldset::layoutLegend(bool relayoutChildren)
@@ -739,7 +760,7 @@ RenderObject* RenderFieldset::layoutLegend(bool relayoutChildren)
     return legend;
 }
 
-RenderObject* RenderFieldset::findLegend()
+RenderObject* RenderFieldset::findLegend() const
 {
     for (RenderObject* legend = firstChild(); legend; legend = legend->nextSibling()) {
       if (!legend->isFloatingOrPositioned() && legend->element() &&
@@ -760,6 +781,7 @@ void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
     int yOff = (legend->yPos() > 0) ? 0 : (legend->height()-borderTop())/2;
+    int legendBottom = _ty + legend->yPos() + legend->height();
     h -= yOff;
     _ty += yOff - borderTopExtra();
 
@@ -767,11 +789,11 @@ void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
     paintBackground(pI.p, style()->backgroundColor(), style()->backgroundLayers(), cr, _tx, _ty, w, h);
 
     if ( style()->hasBorder() )
-	    paintBorderMinusLegend(pI.p, _tx, _ty, w, h, style(), legend->xPos(), legend->width());
+	    paintBorderMinusLegend(pI.p, _tx, _ty, w, h, style(), legend->xPos(), legend->width(), legendBottom);
 }
 
 void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,
-                                            const RenderStyle* style, int lx, int lw)
+                                            const RenderStyle* style, int lx, int lw, int lb)
 {
 
     const QColor& tc = style->borderTopColor();
@@ -787,10 +809,15 @@ void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
     bool render_r = rs > BHIDDEN;
     bool render_b = bs > BHIDDEN;
 
+    int borderLeftWidth = style->borderLeftWidth();
+    int borderRightWidth = style->borderRightWidth();
+
     if(render_t) {
-        drawBorder(p, _tx, _ty, _tx + lx, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
+        if (lx >= borderLeftWidth)
+            drawBorder(p, _tx, _ty, _tx + lx, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
                    (render_l && (ls == DOTTED || ls == DASHED || ls == DOUBLE)?style->borderLeftWidth():0), 0);
-        drawBorder(p, _tx+lx+lw, _ty, _tx + w, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
+        if (lx + lw <=  w - borderRightWidth)
+            drawBorder(p, _tx+lx+lw, _ty, _tx + w, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
                    0, (render_r && (rs == DOTTED || rs == DASHED || rs == DOUBLE)?style->borderRightWidth():0));
     }
 
@@ -813,7 +840,14 @@ void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
 	  (ls >= OUTSET) &&
 	  (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET);
 
-        drawBorder(p, _tx, _ty, _tx + style->borderLeftWidth(), _ty + h, BSLeft, lc, style->color(), ls,
+        int startY = _ty;
+        if (lx < borderLeftWidth && lx + lw > 0) {
+            // The legend intersects the border.
+            ignore_top = true;
+            startY = lb;
+        }
+
+        drawBorder(p, _tx, startY, _tx + borderLeftWidth, _ty + h, BSLeft, lc, style->color(), ls,
 		   ignore_top?0:style->borderTopWidth(),
 		   ignore_bottom?0:style->borderBottomWidth());
     }
@@ -832,7 +866,14 @@ void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
 	  (rs >= DOTTED || rs == INSET) &&
 	  (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET);
 
-        drawBorder(p, _tx + w - style->borderRightWidth(), _ty, _tx + w, _ty + h, BSRight, rc, style->color(), rs,
+        int startY = _ty;
+        if (lx < w && lx + lw > w - borderRightWidth) {
+            // The legend intersects the border.
+            ignore_top = true;
+            startY = lb;
+        }
+
+        drawBorder(p, _tx + w - borderRightWidth, startY, _tx + w, _ty + h, BSRight, rc, style->color(), rs,
 		   ignore_top?0:style->borderTopWidth(),
 		   ignore_bottom?0:style->borderBottomWidth());
     }
