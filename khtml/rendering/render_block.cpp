@@ -4,7 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999-2003 Antti Koivisto (koivisto@kde.org)
  *           (C) 2002-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2003,2007 Apple Computer, Inc.
+ *           (C) 2003-2007 Apple Computer, Inc.
  *           (C) 2004-2007 Germain Garand (germain@ebooksfrance.org)
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *           (C) 2006 Charles Samuels (charles@kde.org)
@@ -2852,6 +2852,11 @@ void RenderBlock::calcInlineMinMaxWidth()
 
                     inlineMin += childMin;
                     inlineMax += childMax;
+                    if (child->isWordBreak()) {
+                        // End a line and start a new line.
+                        m_minWidth = qMax(inlineMin, (int)m_minWidth);
+                        inlineMin = 0;
+                    }
                 }
                 else {
                     // Inline replaced elements add in their margins to their min/max values.

@@ -38,6 +38,7 @@
 #include "xml/dom2_eventsimpl.h"
 #include "rendering/render_br.h"
 #include "rendering/render_image.h"
+#include "rendering/render_inline.h"
 
 #include <kdebug.h>
 
@@ -243,6 +244,32 @@ void HTMLBRElementImpl::attach()
         style->ref();
         if( style->display() != NONE ) {
           m_render = new (getDocument()->renderArena()) RenderBR(this);
+          m_render->setStyle(style);
+          parentNode()->renderer()->addChild(m_render, nextRenderer());
+        }
+        style->deref();
+    }
+    NodeImpl::attach();
+}
+
+// -------------------------------------------------------------------------
+
+NodeImpl::Id HTMLWBRElementImpl::id() const
+{
+    return ID_WBR;
+}
+
+void HTMLWBRElementImpl::attach()
+{
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
+
+    if (parentNode()->renderer()) {
+        RenderStyle* style = getDocument()->styleSelector()->styleForElement( this );
+        style->ref();
+        if( style->display() != NONE ) {
+          m_render = new (getDocument()->renderArena()) RenderInline(this);
           m_render->setStyle(style);
           parentNode()->renderer()->addChild(m_render, nextRenderer());
         }

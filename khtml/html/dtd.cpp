@@ -147,7 +147,7 @@ const unsigned short KDE_NO_EXPORT DOM::tagPriorityArray[] = {
     1, // ID_U
     5, // ID_UL
     1, // ID_VAR
-    1, // ID_WBR
+    0, // ID_WBR
     5, // ID_XMP
     0, // ID_TEXT
 };
@@ -255,7 +255,7 @@ const tagStatus DOM::endTagArray[] = {
     REQUIRED,  // ID_U
     REQUIRED,  // ID_UL
     REQUIRED,  // ID_VAR
-    OPTIONAL,  // ID_WBR
+    FORBIDDEN,  // ID_WBR
     REQUIRED,  // ID_XMP
     REQUIRED   // ID_TEXT
 };

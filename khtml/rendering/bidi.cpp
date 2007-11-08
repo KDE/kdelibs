@@ -2011,6 +2011,12 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         } else if (o->isInlineFlow()) {
             // Only empty inlines matter.  We treat those similarly to replaced elements.
             KHTMLAssert(!o->firstChild());
+            if (o->isWordBreak()) {
+                w += tmpW;
+                tmpW = 0;
+                lBreak.obj = o;
+                lBreak.pos = 0;
+            }
             tmpW += o->marginLeft()+o->borderLeft()+o->paddingLeft()+
                     o->marginRight()+o->borderRight()+o->paddingRight();
         } else if ( o->isReplaced() || o->isGlyph() ) {

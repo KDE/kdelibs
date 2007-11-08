@@ -62,6 +62,18 @@ public:
 
 // -------------------------------------------------------------------------
 
+class HTMLWBRElementImpl : public HTMLElementImpl
+{
+public:
+    HTMLWBRElementImpl(DocumentImpl *doc)
+        : HTMLElementImpl(doc) {}
+
+    virtual Id id() const;
+    virtual void attach();
+};
+
+// -------------------------------------------------------------------------
+
 class HTMLFontElementImpl : public HTMLElementImpl
 {
 public:

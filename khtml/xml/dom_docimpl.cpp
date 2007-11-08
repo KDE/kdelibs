@@ -1009,6 +1009,9 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_BR:
         n = new HTMLBRElementImpl(docPtr());
         break;
+    case ID_WBR:
+        n = new HTMLWBRElementImpl(docPtr());
+        break;
     case ID_Q:
         n = new HTMLGenericElementImpl(docPtr(), id);
         break;
@@ -1048,7 +1051,6 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_SUP:
     case ID_SPAN:
     case ID_NOBR:
-    case ID_WBR:
     case ID_BDO:
     case ID_NOFRAMES:
         n = new HTMLGenericElementImpl(docPtr(), id);
