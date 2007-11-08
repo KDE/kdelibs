@@ -52,6 +52,7 @@ public:
     unsigned long length() const;
 
     DOM::DOMString removeProperty( int propertyID, bool NonCSSHints = false );
+    bool setProperty ( int propertyId, const DOM::DOMString &value, bool important, bool nonCSSHint, int &ec);
     bool setProperty ( int propertyId, const DOM::DOMString &value, bool important = false,
                        bool nonCSSHint = false);
     void setProperty ( int propertyId, int value, bool important = false, bool nonCSSHint = false);

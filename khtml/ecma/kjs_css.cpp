@@ -241,17 +241,16 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
 #ifdef KJS_VERBOSE
     kDebug(6070) << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue;
 #endif
-    // Look whether the property is known.d In that case add it as a CSS property.
+    // Look whether the property is known. In that case add it as a CSS property.
     if (int pId = cssPropertyId(prop)) {
       if (propvalue.isEmpty())
         styleDecl.removeProperty(pId);
       else {
         int important = propvalue.indexOf("!important", 0, Qt::CaseInsensitive);
-	int exception_value = exception;
-        if (important == -1)
-            styleDecl.setProperty(pId, DOM::DOMString(propvalue), "", exception_value);
-        else
-            styleDecl.setProperty(pId, DOM::DOMString(propvalue.left(important - 1)), "important", exception_value);
+        if (important == -1) {
+            styleDecl.setProperty(pId, DOM::DOMString(propvalue), false /*important*/, false /*NonCSSHint*/, exception);
+        } else
+            styleDecl.setProperty(pId, DOM::DOMString(propvalue.left(important - 1)), true /*important*/, false /*NonCSSHint*/, exception);
       }
     }
     else

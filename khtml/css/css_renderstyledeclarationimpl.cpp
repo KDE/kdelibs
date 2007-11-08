@@ -27,6 +27,8 @@
 #include "cssproperties.h"
 #include "cssvalues.h"
 
+#include <dom/dom_exception.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -1097,6 +1099,13 @@ DOM::DOMString RenderStyleDeclarationImpl::removeProperty( int, bool )
 {
     // ### emit error since we're read-only
     return DOMString();
+}
+
+bool RenderStyleDeclarationImpl::setProperty ( int, const DOM::DOMString &, bool,
+                                               bool, int &ec)
+{
+    ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    return false;
 }
 
 bool RenderStyleDeclarationImpl::setProperty ( int, const DOM::DOMString&, bool,

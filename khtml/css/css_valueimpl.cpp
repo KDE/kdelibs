@@ -2,7 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- *           (C) 2004, 2005, 2006 Apple Computer, Inc.
+ *           (C) 2004-2007 Apple Computer, Inc.
  *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
@@ -366,6 +366,27 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID ) const
 	}
     }
     return false;
+}
+
+bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint, int &ec)
+{
+    ec = 0;
+
+    // Setting the value to an empty string just removes the property in both IE and Gecko.
+    // Setting it to null seems to produce less consistent results, but we treat it just the same.
+    if (value.isEmpty()) {
+        removeProperty(id, nonCSSHint);
+        return true;
+    }
+
+    bool success = setProperty(id, value, important, nonCSSHint);
+#if 0
+    if (!success) {
+        // CSS DOM requires raising SYNTAX_ERR here, but this is too dangerous for compatibility,
+        // see <http://bugs.webkit.org/show_bug.cgi?id=7296>.
+    }
+#endif
+    return success;
 }
 
 bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
