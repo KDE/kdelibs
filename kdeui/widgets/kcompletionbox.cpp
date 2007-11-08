@@ -48,13 +48,13 @@ public:
 KCompletionBox::KCompletionBox( QWidget *parent )
  :KListWidget( parent), d(new KCompletionBoxPrivate)
 {
-    setWindowFlags(Qt::Popup);
-
     d->m_parent        = parent;
     d->tabHandling     = true;
     d->down_workaround = false;
     d->upwardBox       = false;
     d->emitSelected    = true;
+
+    setWindowFlags(Qt::Popup); // calls setVisible, so must be done after initializations
 
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );
