@@ -453,7 +453,7 @@ void KDXSButton::slotTriggered(QAction *action)
 	}
 	if(action == action_contactbyjabber)
 	{
-		QString address = m_entry->author().jabber().toLatin1();
+		QString address = m_entry->author().jabber().toUtf8();
 		// FIXME: search for kopete in kde paths? or extend KToolInvocation with IM
 		// FIXME: get rid of the latin1 stuff, but only after testing it
 		QStringList args = QStringList() << QLatin1String("--autoconnect") << address;
