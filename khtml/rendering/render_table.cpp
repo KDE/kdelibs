@@ -1474,6 +1474,13 @@ int RenderTableSection::layoutRows( int toAdd )
                                                    cell->borderBottom() - cell->paddingBottom()));
                 cell->layoutIfNeeded();
 
+                // If the baseline moved, we may have to update the data for our row. Find out the new baseline.
+                EVerticalAlign va = cell->style()->verticalAlign();
+                if (va == BASELINE || va == TEXT_BOTTOM || va == TEXT_TOP || va == SUPER || va == SUB) {
+                    int b = cell->baselinePosition();
+                    if (b > cell->borderTop() + cell->paddingTop())
+                        grid[r].baseLine = qMax(grid[r].baseLine, b);
+                }
             }
             {
 #ifdef DEBUG_LAYOUT
