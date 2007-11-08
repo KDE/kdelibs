@@ -204,6 +204,18 @@ CSSRuleImpl *CSSParser::parseRule( DOM::CSSStyleSheetImpl *sheet, const DOM::DOM
     return result;
 }
 
+static void addParsedProperties( DOM::CSSStyleDeclarationImpl *declaration, CSSProperty** parsedProperties,
+                                 int numProperties, bool nonCSSHint = false)
+{
+    for ( int i = 0; i < numProperties; i++ ) {
+        // Only add properties that have no !important counterpart present
+        if (!declaration->getPropertyPriority(parsedProperties[i]->id()) || parsedProperties[i]->isImportant()) {
+            declaration->removeProperty(parsedProperties[i]->m_id, nonCSSHint);
+            declaration->values()->append( parsedProperties[i] );
+        }
+    }
+}
+
 bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, const DOM::DOMString &string,
                             bool _important, bool _nonCSSHint )
 {
@@ -236,10 +248,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
     bool ok = false;
     if ( numParsedProperties ) {
         ok = true;
-        for ( int i = 0; i < numParsedProperties; i++ ) {
-            declaration->removeProperty(parsedProperties[i]->m_id, nonCSSHint);
-            declaration->values()->append( parsedProperties[i] );
-        }
+        addParsedProperties(declaration, parsedProperties, numParsedProperties, nonCSSHint);
         numParsedProperties = 0;
     }
 
@@ -275,10 +284,7 @@ bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, con
     bool ok = false;
     if ( numParsedProperties ) {
         ok = true;
-        for ( int i = 0; i < numParsedProperties; i++ ) {
-            declaration->removeProperty(parsedProperties[i]->m_id, false);
-            declaration->values()->append( parsedProperties[i] );
-        }
+        addParsedProperties(declaration, parsedProperties, numParsedProperties, false);
         numParsedProperties = 0;
     }
 
