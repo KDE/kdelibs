@@ -3,7 +3,7 @@
 *
 * Copyright 1999 by Dirk A. Mueller <dmuell@gmx.net>
 *
-* Licensed under the GNU General Public License version 2
+* Licensed under the GNU General Public License version 2 or later
 */
 
 #include <QtGui/QLayout>
