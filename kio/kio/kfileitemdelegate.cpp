@@ -417,7 +417,11 @@ QString KFileItemDelegate::Private::elidedText(QTextLayout &layout, const QStyle
             break;
         }
         else if (line.naturalTextWidth() > maxWidth)
+        {
             elided += metrics.elidedText(text.mid(start, length), option.textElideMode, maxWidth);
+            if (!elided.endsWith(QChar::LineSeparator))
+                elided += QChar::LineSeparator;
+        }
         else
             elided += text.mid(start, length);
 
@@ -906,7 +910,7 @@ KFileItemDelegate::KFileItemDelegate(QObject *parent)
     d->setHorizontalMargin(Private::ItemMargin, 0, 0);
 
     // Margins for vertical mode (icon views)
-    d->setVerticalMargin(Private::TextMargin, 6, 2);
+    d->setVerticalMargin(Private::TextMargin, 2, 2);
     d->setVerticalMargin(Private::IconMargin, focusHMargin, focusVMargin);
     d->setVerticalMargin(Private::ItemMargin, 0, 0);
 
