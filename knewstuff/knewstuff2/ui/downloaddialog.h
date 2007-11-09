@@ -40,6 +40,7 @@ namespace KNS
 {
 
     class DownloadDialog;
+    class EntryView;
 
 /** GUI/CORE: HTML Widget to operate on AvailableItem::List */
 class ItemsView : public QScrollArea
@@ -67,6 +68,7 @@ private:
     int m_sorting;
     QMap<QPixmap*, QWidget*> m_pixmaps;
     DxsEngine *m_engine;
+    QMap<Entry*, EntryView*> m_views;
 };
 
 
@@ -144,7 +146,7 @@ private Q_SLOTS:
     void slotFault();
     void slotError();
     // file downloading
-    void slotDownloadItem( Entry * );
+    void slotDownloadItem( KNS::Entry * );
     //void slotItemMessage( KJob *, const QString & );
     //void slotItemPercentage( KJob *, unsigned long );
     //void slotItemResult( KJob * );

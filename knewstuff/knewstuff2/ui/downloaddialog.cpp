@@ -107,9 +107,8 @@ void ItemsView::setSorting( int sortType )
 
 void ItemsView::updateItem( Entry *entry )
 {
-    Q_UNUSED(entry);
-    // XXX ???
-    // TODO: proxy over
+    // FIXME: change this to call updateEntry once it is complete
+    m_views[entry]->setEntry(entry);
 }
 
 void ItemsView::buildContents()
@@ -125,6 +124,8 @@ void ItemsView::buildContents()
         // FIXME: warning?
         return;
     }
+
+    m_views.clear();
 
     m_root = new QWidget(this);
     m_root->setBackgroundRole(QPalette::Base);
@@ -162,6 +163,7 @@ void ItemsView::buildContents()
         _layout->addWidget(dxsbutton, row*2+1, 0);
 
         part->setEntry(entry);
+        m_views.insert(entry, part);
     }
 
     setWidget(m_root);
@@ -453,6 +455,7 @@ DownloadDialog::DownloadDialog( DxsEngine* _engine, QWidget * _parent )
 
     connect( this, SIGNAL( closeClicked() ), SLOT( accept() ) );
     connect( m_engine, SIGNAL( signalPayloadProgress( KUrl, int ) ), SLOT( slotPayloadProgress( KUrl, int ) ) );
+    connect( m_engine, SIGNAL( signalEntryChanged( KNS::Entry* ) ), SLOT( slotDownloadItem( KNS::Entry* ) ));
 }
 
 DownloadDialog::~DownloadDialog()
@@ -598,7 +601,7 @@ void DownloadDialog::refresh()
 ///////////////// DXS ////////////////////
 
 //BEGIN File(s) Transferring
-void DownloadDialog::slotDownloadItem( Entry *entry )
+void DownloadDialog::slotDownloadItem( KNS::Entry *entry )
 {
 //Q_UNUSED(entry);
     itemsView->updateItem(entry);

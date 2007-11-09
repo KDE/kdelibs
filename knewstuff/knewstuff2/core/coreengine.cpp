@@ -1367,11 +1367,6 @@ bool CoreEngine::install(const QString &payloadfile)
 		return false;
 	}
 
-	m_payloadfiles[entry] = installpath;
-	registerEntry(entry);
-	// FIXME: hm, do we need to update the cache really?
-	// only registration is probably be needed here
-
 	if(!m_installation->uncompression().isEmpty())
 	{
 		//kDebug(550) << "Postinstallation: uncompress the file";
@@ -1449,6 +1444,13 @@ bool CoreEngine::install(const QString &payloadfile)
 
 	// FIXME: change to accept filename + signature
 	sec->checkValidity(QString());
+
+	m_payloadfiles[entry] = installpath;
+	registerEntry(entry);
+	// FIXME: hm, do we need to update the cache really?
+	// only registration is probably be needed here
+
+	emit signalEntryChanged(entry);
 
 	return true;
 }
