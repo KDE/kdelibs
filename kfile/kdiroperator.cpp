@@ -285,7 +285,7 @@ KDirOperator::Private::~Private()
     configGroup = 0;
 
     delete progressDelayTimer;
-    progressDelayTimer;
+    progressDelayTimer = 0;
 }
 
 KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
