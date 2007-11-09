@@ -41,6 +41,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kcursor.h>
+#include <krun.h>
 
 #include <kmenu.h>
 #include <kiconloader.h>
@@ -453,11 +454,7 @@ void KDXSButton::slotTriggered(QAction *action)
 	}
 	if(action == action_contactbyjabber)
 	{
-		QString address = m_entry->author().jabber().toUtf8();
-		// FIXME: search for kopete in kde paths? or extend KToolInvocation with IM
-		// FIXME: get rid of the latin1 stuff, but only after testing it
-		QStringList args = QStringList() << QLatin1String("--autoconnect") << address;
-		KProcess::startDetached(QLatin1String("kopete"), args);
+		new KRun(KUrl(QLatin1String("xmpp:") + m_entry->author().jabber()), this );
 	}
 	if(action == action_collabtranslation)
 	{
