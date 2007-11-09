@@ -46,7 +46,14 @@ qt4_add_resources(kdewidgets_PART_SRCS kdewidgets.qrc)
 kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
 target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS} kde3support)
-set_target_properties(kdewidgets PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE  SKIP_BUILD_RPATH TRUE BUILD_WITH_INSTALL_RPATH TRUE INSTALL_RPATH ${LIB_INSTALL_DIR})
+if(NOT WIN32)
+  set_target_properties(kdewidgets PROPERTIES
+                                   INSTALL_RPATH_USE_LINK_PATH TRUE
+                                   SKIP_BUILD_RPATH TRUE
+                                   BUILD_WITH_INSTALL_RPATH TRUE
+                                   INSTALL_RPATH ${LIB_INSTALL_DIR}
+                       )
+endif(NOT WIN32)
 
 install(TARGETS kdewidgets  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
 
