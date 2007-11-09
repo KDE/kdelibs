@@ -1299,9 +1299,6 @@ void KDirOperator::setView(QAbstractItemView *view)
             this, SLOT(_k_triggerPreview(const QModelIndex&)));
     connect(d->itemView, SIGNAL(viewportEntered()),
             this, SLOT(_k_cancelPreview()));
-    connect(d->itemView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            this, SLOT(_k_slotSelectionChanged()));
     // assure that the sorting state d->sorting matches with the current action
     const bool descending = d->actionCollection->action("descending")->isChecked();
     if (!descending && d->sorting & QDir::Reversed) {
@@ -1326,6 +1323,9 @@ void KDirOperator::setView(QAbstractItemView *view)
         d->itemView->setSelectionModel(selectionModel);
         QMetaObject::invokeMethod(this, "_k_assureVisibleSelection", Qt::QueuedConnection);
     }
+    connect(d->itemView->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            this, SLOT(_k_slotSelectionChanged()));
 
     emit viewChanged(view);
 }
@@ -1939,7 +1939,15 @@ void KDirOperator::Private::_k_slotDoubleClicked(const QModelIndex& index)
 
 void KDirOperator::Private::_k_slotSelectionChanged()
 {
-    if (!itemView->selectionModel()->hasSelection()) {
+    Q_ASSERT(itemView != 0);
+
+    // In the multiselection mode each selection change is indicated by
+    // emitting a null item. Also when the selection has been cleared, a
+    // null item must be emitted (see _k_slotClicked()).
+    const bool multiSelectionMode = (itemView->selectionMode() == QAbstractItemView::ExtendedSelection);
+    const QItemSelectionModel* selModel = itemView->selectionModel();
+    const bool hasSelection = (selModel != 0) && selModel->hasSelection();
+    if (multiSelectionMode || !hasSelection) {
         KFileItem nullItem;
         parent->highlightFile(nullItem);
     }
