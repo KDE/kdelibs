@@ -51,7 +51,6 @@ void KDesktopFileTest::testActionGroup()
     QTextStream ts( &file );
     ts <<
         "[Desktop Entry]\n"
-        "ServiceTypes=all/allfiles\n"
         "Actions=encrypt;\n"
         "[Desktop Action encrypt]\n"
         "Name=Encrypt file\n"
