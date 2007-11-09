@@ -267,6 +267,7 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
 KDirOperator::Private::~Private()
 {
     delete itemView;
+    itemView = 0;
 
     // TODO:
     // if (configGroup) {
@@ -276,11 +277,15 @@ KDirOperator::Private::~Private()
     qDeleteAll(backStack);
     qDeleteAll(forwardStack);
     delete preview;
+    preview = 0;
 
     delete dirLister;
+    dirLister = 0;
     delete configGroup;
+    configGroup = 0;
 
     delete progressDelayTimer;
+    progressDelayTimer;
 }
 
 KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
@@ -1939,14 +1944,15 @@ void KDirOperator::Private::_k_slotDoubleClicked(const QModelIndex& index)
 
 void KDirOperator::Private::_k_slotSelectionChanged()
 {
-    Q_ASSERT(itemView != 0);
+    if (itemView == 0) {
+        return;
+    }
 
     // In the multiselection mode each selection change is indicated by
     // emitting a null item. Also when the selection has been cleared, a
     // null item must be emitted (see _k_slotClicked()).
     const bool multiSelectionMode = (itemView->selectionMode() == QAbstractItemView::ExtendedSelection);
-    const QItemSelectionModel* selModel = itemView->selectionModel();
-    const bool hasSelection = (selModel != 0) && selModel->hasSelection();
+    const bool hasSelection = itemView->selectionModel()->hasSelection();
     if (multiSelectionMode || !hasSelection) {
         KFileItem nullItem;
         parent->highlightFile(nullItem);
