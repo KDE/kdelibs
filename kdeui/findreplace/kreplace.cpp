@@ -56,7 +56,6 @@ KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
 
     m_mainLabel = new QLabel( this );
     setMainWidget( m_mainLabel );
-    resize(minimumSize());
 }
 
 void KReplaceNextDialog::setLabel( const QString& pattern, const QString& replacement )
