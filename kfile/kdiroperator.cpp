@@ -98,7 +98,7 @@ private:
 };
 
 KDirOperatorIconView::KDirOperatorIconView(QWidget *parent) :
-        QListView(parent)
+    QListView(parent)
 {
     setViewMode(QListView::IconMode);
     setFlow(QListView::TopToBottom);
@@ -139,8 +139,8 @@ void KDirOperatorIconView::dragEnterEvent(QDragEnterEvent* event)
 void KDirOperatorIconView::mousePressEvent(QMouseEvent *event)
 {
     if (!indexAt(event->pos()).isValid()) {
-        const Qt::KeyboardModifiers modifier = QApplication::keyboardModifiers();
-        if (!(modifier & Qt::ShiftModifier) && !(modifier & Qt::ControlModifier)) {
+        const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
+        if (!(modifiers & Qt::ShiftModifier) && !(modifiers & Qt::ControlModifier)) {
             clearSelection();
         }
     }
@@ -186,6 +186,7 @@ public:
     void _k_slotPressed(const QModelIndex&);
     void _k_slotClicked(const QModelIndex&);
     void _k_slotDoubleClicked(const QModelIndex&);
+    void _k_slotSelectionChanged();
     void _k_openContextMenu(const QPoint&);
     void _k_triggerPreview(const QModelIndex&);
     void _k_cancelPreview();
@@ -1298,7 +1299,9 @@ void KDirOperator::setView(QAbstractItemView *view)
             this, SLOT(_k_triggerPreview(const QModelIndex&)));
     connect(d->itemView, SIGNAL(viewportEntered()),
             this, SLOT(_k_cancelPreview()));
-
+    connect(d->itemView->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            this, SLOT(_k_slotSelectionChanged()));
     // assure that the sorting state d->sorting matches with the current action
     const bool descending = d->actionCollection->action("descending")->isChecked();
     if (!descending && d->sorting & QDir::Reversed) {
@@ -1378,8 +1381,7 @@ void KDirOperator::selectFile(const KFileItem &item)
 
 void KDirOperator::highlightFile(const KFileItem &item)
 {
-    Q_ASSERT(!item.isNull());
-    if (d->preview != 0) {
+    if ((d->preview != 0) && !item.isNull()) {
         d->preview->showPreview(item.url());
     }
 
@@ -1899,18 +1901,22 @@ void KDirOperator::Private::_k_slotPressed(const QModelIndex&)
 
 void KDirOperator::Private::_k_slotClicked(const QModelIndex& index)
 {
-    if (!leftButtonPressed) {
+    if (!leftButtonPressed || (index.column() != KDirModel::Name)) {
         return;
     }
 
     const QModelIndex dirIndex = proxyModel->mapToSource(index);
     KFileItem item = dirModel->itemForIndex(dirIndex);
+    bool selectDir = false;
     if (item.isDir()) {
-        if (KGlobalSettings::singleClick()) {
-            parent->selectDir(item);
-        } else {
-            parent->highlightFile(item);
-        }
+        const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
+        selectDir = KGlobalSettings::singleClick() &&
+                    !(modifiers & Qt::ShiftModifier) &&
+                    !(modifiers & Qt::ControlModifier);
+    }
+
+    if (selectDir) {
+        parent->selectDir(item);
     } else {
         parent->highlightFile(item);
     }
@@ -1928,6 +1934,14 @@ void KDirOperator::Private::_k_slotDoubleClicked(const QModelIndex& index)
         parent->selectDir(item);
     } else {
         parent->selectFile(item);
+    }
+}
+
+void KDirOperator::Private::_k_slotSelectionChanged()
+{
+    if (!itemView->selectionModel()->hasSelection()) {
+        KFileItem nullItem;
+        parent->highlightFile(nullItem);
     }
 }
 

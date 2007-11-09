@@ -40,6 +40,7 @@ protected:
     virtual bool event(QEvent *event);
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
 
 private slots:
     void resetResizing();

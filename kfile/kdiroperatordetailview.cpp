@@ -24,6 +24,7 @@
 #include <QtCore/QEvent>
 #include <QtCore/QTimer>
 #include <QtGui/QAbstractProxyModel>
+#include <QtGui/QApplication>
 #include <QtGui/QHeaderView>
 #include <QtGui/QListView>
 #include <QtGui/QResizeEvent>
@@ -125,6 +126,19 @@ void KDirOperatorDetailView::resizeEvent(QResizeEvent *event)
             nameColumnWidth = oldNameColumnWidth;
         }
         headerView->resizeSection(KDirModel::Name, nameColumnWidth);
+    }
+}
+
+void KDirOperatorDetailView::mousePressEvent(QMouseEvent *event)
+{
+    QTreeView::mousePressEvent(event);
+
+    const QModelIndex index = indexAt(event->pos());
+    if (!index.isValid() || (index.column() != KDirModel::Name)) {
+        const Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
+        if (!(modifiers & Qt::ShiftModifier) && !(modifiers & Qt::ControlModifier)) {
+            clearSelection();
+        }
     }
 }
 
