@@ -617,7 +617,7 @@ int KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text
                        dontAskAgainName.isEmpty() ? QString() : i18n("Do not ask again"),
                        &checkboxResult, options);
 
-    if ( result == KDialog::No ) {
+    if ( result != KDialog::Yes ) {
         return Cancel;
     }
     if (checkboxResult) {
