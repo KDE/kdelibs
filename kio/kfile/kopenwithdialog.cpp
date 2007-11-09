@@ -60,6 +60,8 @@ void KConfigGroup::writeEntry( const QByteArray &key,
   writeEntry(key, int(aValue), flags);
 }
 
+namespace KDEPrivate {
+
 class AppNode
 {
 public:
@@ -84,7 +86,7 @@ public:
     QList<AppNode*> children;
 };
 
-static bool AppNodeLessThan(AppNode *n1, AppNode *n2)
+bool AppNodeLessThan(KDEPrivate::AppNode *n1, KDEPrivate::AppNode *n2)
 {
     if (n1->isDir) {
         if (n2->isDir) {
@@ -102,12 +104,14 @@ static bool AppNodeLessThan(AppNode *n1, AppNode *n2)
     return true;
 }
 
+}
+
 
 class KApplicationModelPrivate
 {
 public:
     KApplicationModelPrivate(KApplicationModel *qq)
-        : q(qq), root(new AppNode())
+        : q(qq), root(new KDEPrivate::AppNode())
     {
     }
     ~KApplicationModelPrivate()
@@ -115,14 +119,14 @@ public:
         delete root;
     }
 
-    void fillNode(const QString &relPath, AppNode *node);
+    void fillNode(const QString &relPath, KDEPrivate::AppNode *node);
 
     KApplicationModel *q;
 
-    AppNode *root;
+    KDEPrivate::AppNode *root;
 };
 
-void KApplicationModelPrivate::fillNode(const QString &_relPath, AppNode *node)
+void KApplicationModelPrivate::fillNode(const QString &_relPath, KDEPrivate::AppNode *node)
 {
    KServiceGroup::Ptr root = KServiceGroup::group(_relPath);
    if (!root || !root->isValid()) return;
@@ -167,7 +171,7 @@ void KApplicationModelPrivate::fillNode(const QString &_relPath, AppNode *node)
          continue;
       }
 
-      AppNode *newnode = new AppNode();
+      KDEPrivate::AppNode *newnode = new KDEPrivate::AppNode();
       newnode->icon = icon;
       newnode->text = text;
       newnode->relPath = relPath;
@@ -176,7 +180,7 @@ void KApplicationModelPrivate::fillNode(const QString &_relPath, AppNode *node)
       newnode->parent = node;
       node->children.append(newnode);
    }
-   qStableSort(node->children.begin(), node->children.end(), AppNodeLessThan);
+   qStableSort(node->children.begin(), node->children.end(), KDEPrivate::AppNodeLessThan);
 }
 
 
@@ -197,7 +201,7 @@ bool KApplicationModel::canFetchMore(const QModelIndex &parent) const
     if (!parent.isValid())
         return false;
 
-    AppNode *node = static_cast<AppNode*>(parent.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(parent.internalPointer());
     return node->isDir && !node->fetched;
 }
 
@@ -212,7 +216,7 @@ QVariant KApplicationModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(index.internalPointer());
 
     switch (role) {
     case Qt::DisplayRole:
@@ -234,7 +238,7 @@ void KApplicationModel::fetchMore(const QModelIndex &parent)
     if (!parent.isValid())
         return;
 
-    AppNode *node = static_cast<AppNode*>(parent.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(parent.internalPointer());
     if (!node->isDir)
         return;
 
@@ -249,7 +253,7 @@ bool KApplicationModel::hasChildren(const QModelIndex &parent) const
     if (!parent.isValid())
         return true;
 
-    AppNode *node = static_cast<AppNode*>(parent.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(parent.internalPointer());
     return node->isDir;
 }
 
@@ -272,9 +276,9 @@ QModelIndex KApplicationModel::index(int row, int column, const QModelIndex &par
     if (row < 0 || column != 0)
         return QModelIndex();
 
-    AppNode *node = d->root;
+    KDEPrivate::AppNode *node = d->root;
     if (parent.isValid())
-        node = static_cast<AppNode*>(parent.internalPointer());
+        node = static_cast<KDEPrivate::AppNode*>(parent.internalPointer());
 
     if (row >= node->children.count())
         return QModelIndex();
@@ -287,7 +291,7 @@ QModelIndex KApplicationModel::parent(const QModelIndex &index) const
     if (!index.isValid())
         return QModelIndex();
 
-    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(index.internalPointer());
     if (node->parent->parent) {
         int id = node->parent->parent->children.indexOf(node->parent);
 
@@ -305,7 +309,7 @@ int KApplicationModel::rowCount(const QModelIndex &parent) const
     if (!parent.isValid())
         return d->root->children.count();
 
-    AppNode *node = static_cast<AppNode*>(parent.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(parent.internalPointer());
     return node->children.count();
 }
 
@@ -314,7 +318,7 @@ QString KApplicationModel::nameFor(const QModelIndex &index) const
     if (!index.isValid())
         return QString();
 
-    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(index.internalPointer());
     return node->text;
 }
 
@@ -323,7 +327,7 @@ QString KApplicationModel::execFor(const QModelIndex &index) const
     if (!index.isValid())
         return QString();
 
-    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(index.internalPointer());
     return node->exec;
 }
 
@@ -332,7 +336,7 @@ bool KApplicationModel::isDirectory(const QModelIndex &index) const
     if (!index.isValid())
         return false;
 
-    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    KDEPrivate::AppNode *node = static_cast<KDEPrivate::AppNode*>(index.internalPointer());
     return node->isDir;
 }
 
