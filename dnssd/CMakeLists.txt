@@ -62,11 +62,7 @@ else (HAVE_DNSSD)
 endif (HAVE_DNSSD)
 
 set_target_properties(kdnssd PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kdnssd
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS kdnssd  DESTINATION ${LIB_INSTALL_DIR})
 
 ########### install files ###############
 install( FILES dnssd_export.h domainbrowser.h remoteservice.h servicetypebrowser.h  publicservice.h servicebase.h servicebrowser.h ${CMAKE_CURRENT_BINARY_DIR}/settings.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd )

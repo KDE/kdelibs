@@ -15,11 +15,7 @@ kde4_add_kdeinit_executable(kded4  ${kded_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} )
 
-install(TARGETS kdeinit_kded4
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS kdeinit_kded4  DESTINATION ${LIB_INSTALL_DIR})
 
 target_link_libraries( kded4 kdeinit_kded4 )
 install(TARGETS kded4 DESTINATION ${BIN_INSTALL_DIR} )
@@ -52,11 +48,7 @@ kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 # needs kio for KServiceGroup
 target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KIO_LIBS} )
 
-install(TARGETS kdeinit_kbuildsycoca4
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS kdeinit_kbuildsycoca4  DESTINATION ${LIB_INSTALL_DIR})
 
 target_link_libraries( kbuildsycoca4 kdeinit_kbuildsycoca4 )
 install(TARGETS kbuildsycoca4 DESTINATION ${BIN_INSTALL_DIR} )

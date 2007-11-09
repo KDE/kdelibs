@@ -21,11 +21,7 @@ kde4_add_library(knotifyconfig SHARED ${knotifyconfig_LIB_SRCS})
 target_link_libraries(knotifyconfig  ${KDE4_KIO_LIBS} ${KDE4_PHONON_LIBS}  )
 
 set_target_properties(knotifyconfig PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS knotifyconfig
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS knotifyconfig  DESTINATION ${LIB_INSTALL_DIR})
 
 ########### install files ###############
 install( FILES knotifyconfig_export.h knotifyconfigwidget.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )

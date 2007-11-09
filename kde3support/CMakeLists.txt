@@ -75,11 +75,7 @@ kde4_add_library(kde3support SHARED ${kde3support_LIB_SRCS})
 target_link_libraries(kde3support  ${KDE4_KPARTS_LIBS} ${KDE4_KPTY_LIBS} ${QT_QTXML_LIBRARY} ${QT_QT3SUPPORT_LIBRARY})
 
 set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kde3support
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS kde3support  DESTINATION ${LIB_INSTALL_DIR})
 
 ########### install files ###############
 

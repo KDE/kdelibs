@@ -38,11 +38,7 @@ kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_clean
 
 target_link_libraries(kdeinit_kio_http_cache_cleaner  ${KDE4_KIO_LIBS} )
 
-install(TARGETS kdeinit_kio_http_cache_cleaner
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS kdeinit_kio_http_cache_cleaner  DESTINATION ${LIB_INSTALL_DIR})
 
 target_link_libraries( kio_http_cache_cleaner kdeinit_kio_http_cache_cleaner )
 install(TARGETS kio_http_cache_cleaner DESTINATION ${LIBEXEC_INSTALL_DIR} )

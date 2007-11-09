@@ -134,11 +134,7 @@ set_target_properties(kdeinit_klauncher PROPERTIES DEFINE_SYMBOL MAKE_KLAUNCHER)
 
 target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} )
 
-install(TARGETS kdeinit_klauncher
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS kdeinit_klauncher  DESTINATION ${LIB_INSTALL_DIR})
 
 target_link_libraries( klauncher kdeinit_klauncher )
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )

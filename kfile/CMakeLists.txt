@@ -47,11 +47,7 @@ target_link_libraries(kfile
 )
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS kfile
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS kfile  DESTINATION ${LIB_INSTALL_DIR})
 
 install( FILES
   k3filetreeview.h

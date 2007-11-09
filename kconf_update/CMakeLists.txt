@@ -13,11 +13,7 @@ kde4_add_kdeinit_executable( kconf_update NOGUI ${kconf_update_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kconf_update  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kdeinit_kconf_update
-             RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-             LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-             ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-)
+install(TARGETS kdeinit_kconf_update  DESTINATION ${LIB_INSTALL_DIR})
 
 target_link_libraries( kconf_update kdeinit_kconf_update )
 install(TARGETS kconf_update DESTINATION ${LIBEXEC_INSTALL_DIR} )
