@@ -157,29 +157,64 @@ void KDatePicker::KDatePickerPrivate::fillWeeksCombo()
 
     int thisYear = q->calendar()->year( q->date() );
 
-    // Note we need this roundabout way to calculate lastDayOfYear instead of simply taking
-    // 1st day of next year - 1 day, as next year may not be a valid date
-    // JPL still leaves open what to do if we start or end part way through year.
-    QDate lastDayOfYear;
-    q->calendar()->setYMD( lastDayOfYear, thisYear, q->calendar()->monthsInYear( q->date() ), 1 );
-    q->calendar()->setYMD( lastDayOfYear, thisYear, q->calendar()->monthsInYear( q->date() ),
-                           q->calendar()->daysInMonth( lastDayOfYear ) );
+    // Calculate the last day of this year
 
-    // JPL this won't always be a valid date!
+    // We know the set date is valid as this gets called after it is successfully set.
+    // If we cannot successfully create lastDayOfYear, this can only mean that the
+    // last day is after the last valid date in the current calendar system, so use
+    // the latestValidDate as the last day.
+
+    // Note we need this two step way to calculate lastDayOfYear instead of simply taking
+    // ( 1st day of next year - 1 day ), as 1st day of next year may not be a valid date.
+    // Instead, get a valid date in the last month of the year and use that to find out
+    // the number of days in the last month
+
+    // JPL: may be worth adding method to KCalendarSystem for this in 4.1, and perhaps
+    //      a version of monthsInYear that takes a year and month number?
+
+    int lastMonthThisYear = q->calendar()->monthsInYear( q->date() );
+    QDate dayInLastMonthOfYear = validDateInYearMonth( thisYear, lastMonthThisYear );
+
+    QDate lastDayOfYear;
+    if ( ! q->calendar()->isValid( dayInLastMonthOfYear ) ||
+         ! q->calendar()->setYMD( lastDayOfYear, thisYear, lastMonthThisYear,
+                                  q->calendar()->daysInMonth( dayInLastMonthOfYear ) ) ) {
+        lastDayOfYear = q->calendar()->latestValidDate();
+    }
+
+    // Calculate the first day of this year
+
+    // We know the set date is valid as this gets called after it is successfully set.
+    // If we cannot successfully create the 1st of the year, this can only mean that
+    // the 1st is before the earliest valid date in the current calendar system, so use
+    // the earliestValidDate as the first day.
+    // In particular covers the case of Gregorian where 1/1/-4713 is not a valid QDate
+
     QDate day;
-    q->calendar()->setYMD( day, thisYear, 1, 1 );
+    if ( ! q->calendar()->setYMD( day, thisYear, 1, 1 ) ) {
+        day = q->calendar()->earliestValidDate();
+    }
 
     selectWeek->clear();
 
-    for ( ; day <= lastDayOfYear ; day = q->calendar()->addDays( day, q->calendar()->daysInWeek( day ) ) ) {
-        QString week = i18n( "Week %1", q->calendar()->weekNumber( day, &thisYear ) );
+    // Starting from the first day in the year, loop through the year a week at a time
+    // adding an entry to the week combo for each week in the year
+
+    for ( ; q->calendar()->isValid( day ) && day <= lastDayOfYear;
+            day = q->calendar()->addDays( day, q->calendar()->daysInWeek( day ) ) ) {
+
+        // Get the ISO week number for the current day and what year that week is in
+        // e.g. 1st day of this year may fall in week 53 of previous year
+        int weekYear = thisYear;
+        int weekNum = q->calendar()->weekNumber( day, &weekYear );
+        QString weekString = i18n( "Week %1", weekNum );
 
         // show that this is a week from a different year
-        if ( q->calendar()->year( day ) != thisYear ) {
-            week += '*';
+        if ( weekYear != thisYear ) {
+            weekString += '*';
         }
 
-        selectWeek->addItem( week );
+        selectWeek->addItem( weekString );
 
         // make sure that the week of the lastDayOfYear is always inserted: in Chinese calendar
         // system, this is not always the case
@@ -360,8 +395,14 @@ void KDatePicker::dateChangedSlot( const QDate &date_ )
 
     // calculate the item num in the week combo box; normalize selected day so as if 1.1. is the first day of the week
     QDate firstDay;
-    // JPL may not always be valid!
-    calendar()->setYMD( firstDay, calendar()->year( date_ ), 1, 1 );
+    // If we cannot successfully create the 1st of the year, this can only mean that
+    // the 1st is before the earliest valid date in the current calendar system, so use
+    // the earliestValidDate as the first day.
+    // In particular covers the case of Gregorian where 1/1/-4713 is not a valid QDate
+    QDate day;
+    if ( ! calendar()->setYMD( firstDay, calendar()->year( date_ ), 1, 1 ) ) {
+        firstDay = calendar()->earliestValidDate();
+    }
     d->selectWeek->setCurrentIndex( ( calendar()->dayOfYear( date_ ) + calendar()->dayOfWeek( firstDay ) - 2 ) /
                                     calendar()->daysInWeek( date_ ) );
     d->selectYear->setText( calendar()->yearString( date_, KCalendarSystem::LongFormat ) );
