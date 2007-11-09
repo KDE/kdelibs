@@ -118,7 +118,10 @@ void KMimeType::checkEssentialMimeTypes()
   // Lets do some rescue here.
   if ( !KMimeTypeFactory::self()->checkMimeTypes() )
   {
-    KMessage::message( KMessage::Error, i18n( "No mime types installed." ) );
+    // Note that this messagebox is queued, so it will only be shown once getting back to the event loop
+
+    // No mimetypes installed? Are you setting XDG_DATA_DIRS without including /usr/share in it?
+    KMessage::message( KMessage::Error, i18n( "No mime types installed. Check that shared-mime-info is installed, and that XDG_DATA_DIRS is not set, or includes /usr/share" ) );
     return; // no point in going any further
   }
 
@@ -364,9 +367,12 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
         if ( def.isEmpty() ) {
             // Assume inode/directory, if the protocol supports listing.
             KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _url.protocol() );
-            if ( prot && prot->supportsListing() )
-                return mimeType( QLatin1String("inode/directory") );
-            else
+            if ( prot && prot->supportsListing() ) {
+                KMimeType::Ptr mime = mimeType( QLatin1String("inode/directory") );
+                if (mime) { // only 0 if no mimetypes installed
+                    return mime;
+                }
+            } else
                 return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"
         }
     }
@@ -424,6 +430,8 @@ KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
 
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
 {
+    checkEssentialMimeTypes();
+
     QFile device(fileName);
     // Look at mode first
     KMimeType::Ptr mimeFromMode = findFromMode( fileName, 0, true );
@@ -503,7 +511,9 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
 {
     const KMimeType::Ptr mt = findByUrl( _url, mode, _url.isLocalFile(),
                                          false /*HACK*/);
-    assert( mt );
+    if (!mt) {
+        return QString();
+    }
     static const QString& unknown = KGlobal::staticQString("unknown");
     const QString mimeTypeIcon = mt->iconName( _url );
     QString i = mimeTypeIcon;
