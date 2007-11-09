@@ -1587,7 +1587,8 @@ void TextAreaWidget::slotReplaceNext()
 
     if (res == KFind::NoMatch) {
         m_replace->displayFinalDialog();
-        delete m_replace;
+        m_replace->disconnect(this);
+        m_replace->deleteLater(); // we are in a slot connected to m_replace, don't delete it right away
         m_replace = 0;
         ensureCursorVisible();
         //or           if ( m_replace->shouldRestart() ) { reinit (w/o FromCursor) and call slotReplaceNext(); }
@@ -1635,7 +1636,8 @@ void TextAreaWidget::slotFindNext()
 
     if (res == KFind::NoMatch) {
         m_find->displayFinalDialog();
-        delete m_find;
+        m_find->disconnect(this);
+        m_find->deleteLater(); // we are in a slot connected to m_find, don't delete right away
         m_find = 0;
         //or           if ( m_find->shouldRestart() ) { reinit (w/o FromCursor) and call slotFindNext(); }
     } else {
