@@ -356,7 +356,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * @param config The config group to read from.
      * @param options passed to KConfigGroup::writeEntry()
      */
-    void saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options = 0 ) const;
+    void saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options = KConfigGroup::Normal ) const;
 
     /**
      * Returns the help link text.
