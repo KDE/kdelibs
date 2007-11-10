@@ -6,7 +6,11 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 ########### next target ###############
 
-set(kio_file_PART_SRCS file.cpp )
+if(WIN32)
+  set(kio_file_PART_SRCS file.cpp file_win.cpp )
+else(WIN32)
+  set(kio_file_PART_SRCS file.cpp )
+endif(WIN32)
 
 
 kde4_add_plugin(kio_file ${kio_file_PART_SRCS})

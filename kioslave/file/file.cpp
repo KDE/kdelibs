@@ -71,9 +71,10 @@
 #include <QtCore/QVarLengthArray>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QRegExp>
+#include <QtCore/QFile>
 #ifdef Q_WS_WIN
-#include <QDir>
-#include <QFileInfo>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #endif
 
 #include <kdebug.h>
@@ -83,7 +84,6 @@
 #include <kconfiggroup.h>
 #include <ktemporaryfile.h>
 #include <klocale.h>
-#include <QtCore/QFile>
 #include <limits.h>
 #include <kshell.h>
 #include <kmountpoint.h>
@@ -799,6 +799,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
     finished();
 }
 
+#ifndef Q_OS_WIN
 
 void FileProtocol::copy( const KUrl &src, const KUrl &dest,
                          int _mode, JobFlags _flags )
@@ -1168,6 +1169,8 @@ void FileProtocol::del( const KUrl& url, bool isfile)
 
     finished();
 }
+
+#endif  // Q_OS_WIN
 
 QString FileProtocol::getUserName( uid_t uid ) const
 {
