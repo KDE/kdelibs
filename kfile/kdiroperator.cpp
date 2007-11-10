@@ -1552,7 +1552,7 @@ void KDirOperator::setupActions()
 
     KToggleAction *previewAction = new KToggleAction(i18n("Show Preview"), this);
     d->actionCollection->addAction("preview", previewAction);
-    previewAction->setIcon(KIcon("thumbnail-show"));
+    previewAction->setIcon(KIcon("view-preview"));
     connect(previewAction, SIGNAL(toggled(bool)),
             SLOT(_k_togglePreview(bool)));
 
