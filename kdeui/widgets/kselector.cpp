@@ -75,6 +75,8 @@ KSelector::KSelector( Qt::Orientation o, QWidget *parent )
  , d(new Private)
 {
     setOrientation(o);
+    if(o == Qt::Horizontal)
+        setArrowDirection(Qt::UpArrow);
 }
 
 KSelector::~KSelector()
