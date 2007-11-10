@@ -120,6 +120,7 @@ Keywords[sl]=zvok,Phonon,audio,avdio,video,izhod,naprava,glasba,komunikacija,NMM
 Keywords[sr]=Sound,Phonon,Audio,Video,Output,Device,Notification,Music,Communication,Media,NMM,GStreamer,Xine,Фонон,звук,аудио,видео,излаз,уређај,обавештења,музика,комуникација,медија,Ксине,Гстример
 Keywords[sr@latin]=Sound,Phonon,Audio,Video,Output,Device,Notification,Music,Communication,Media,NMM,GStreamer,Xine,Phonon,zvuk,audio,video,izlaz,uređaj,obaveštenja,muzika,komunikacija,medija,Xine,GStreamer
 Keywords[sv]=Ljud,Phonon,video,utmatning,enhet,underrättelse,musik,kommunikation,media,NMM,GStreamer,Xine
+Keywords[ta]=ஓசை,போஃனான்,பதிவொலி,பதிவொளி,வெளியீடு,கருவி,அறிவிப்பு,இசை,தகவல் பரிமாற்றம்,ஊடகம்,என்எம்எம்,ஜிஸ்டரீமர்,ஸைைன்
 Keywords[th]=เสียง,Phonon,เสียง,วิดีโอ,แสดงผล,อุปกรณ์,การแจ้งเตือน,ดนตรี,การสื่อสาร, สื่อ,NMM,Gstreamer,Xine
 Keywords[vi]=Sound,Âm thanh,Phonon,Phô-non,Audio,Video,Ảnh động,Output,Xuất,Device,Thiết bị,Notification,Thông báo,Music,Nhạc,Communication,Liên lạc,Giao thông,Media,Vật chứa,Phương tiện,NMM,GStreamer,Xine
 Keywords[wa]=son,Phonon,odio,videyo,rexhowe,éndjin,notifiaedje,muzike,comunicåcion,media,medias,NMM,GStreamer,Xine

@@ -149,6 +149,7 @@ Comment[nn]=Varsling om automatisk overgang til reservelydeining ved den føretr
 Comment[pt]=Notificação automática de último recurso se o dispositivo preferido estiver indisponível
 Comment[pt_BR]=Notificação de "fallback" automático se os dispositivos preferidos estiverem indisponíveis
 Comment[sv]=Underrättelse vid automatisk val av reservenhet om önskad enhet inte är tillgänglig
+Comment[ta]=விருப்பப்பட்ட கருவி கிடைக்கவில்லையெனில் பின்னடைவு குறித்து தகவல் அறிவிக்கவும்.
 Comment[th]=แจ้งเตือนการใช้อุปกรณ์สำรองโดยอัตโนมัติ ถ้าไม่มีอุปกรณ์หลักที่เลือกไว้
 Comment[x-test]=xxNotification on automatic fallback if the preferred device is unavailablexx
 Comment[zh_CN]=如果首选的设备不可用，在自动默认设备上通知
