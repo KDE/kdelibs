@@ -104,6 +104,11 @@ void syncConfiguration()
 
 void DispatcherPrivate::unregisterComponent(QObject *obj)
 {
+    if (!m_componentName.contains(obj)) {
+      kWarning(701) << k_funcinfo << "Tried to unregister an object which is not already registered.";
+      return;
+    }
+
     QString name = m_componentName[obj];
     m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
     --(m_componentInfo[name].count);
