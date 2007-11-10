@@ -688,7 +688,7 @@ void
 KColorTable::KColorTablePrivate::slotSetColors( const QString &_collectionName )
 {
   q->setColors( _collectionName );
-  if( mNamedColorList->isVisible() )
+  if( mNamedColorList->count() && mNamedColorList->isVisible() )
   {
     int item = mNamedColorList->currentRow();
     mNamedColorList->setCurrentRow( item < 0 ? 0 : item );
@@ -792,7 +792,7 @@ KColorTable::setColors( const QString &_collectionName )
 void
 KColorTable::KColorTablePrivate::slotColorCellSelected( int index , const QColor& /*color*/ )
 {
-    if (!mPalette || (index >= mPalette->count()))
+  if (!mPalette || (index >= mPalette->count()))
      return;
   emit q->colorSelected( mPalette->color(index), mPalette->name(index) );
 }
