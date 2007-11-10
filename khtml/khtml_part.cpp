@@ -392,7 +392,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), this );
   actionCollection()->addAction( "printFrame", d->m_paPrintFrame );
-  d->m_paPrintFrame->setIcon( KIcon( "print-frame" ) );
+  d->m_paPrintFrame->setIcon( KIcon( "document-print-frame" ) );
   connect( d->m_paPrintFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotPrintFrame() ) );
   d->m_paPrintFrame->setWhatsThis( i18n( "Print Frame<br /><br />"
 					 "Some pages have several frames. To print only a single frame, click "

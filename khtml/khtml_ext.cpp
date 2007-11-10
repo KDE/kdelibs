@@ -589,7 +589,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
             action = new KAction( i18n( "Print Frame..." ), this );
             d->m_actionCollection->addAction( "printFrame", action );
-            action->setIcon( KIcon( "print-frame" ) );
+            action->setIcon( KIcon( "document-print-frame" ) );
             connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( print() ) );
             menu->addAction(action);
 
