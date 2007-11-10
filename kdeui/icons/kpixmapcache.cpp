@@ -1260,9 +1260,13 @@ bool KPixmapCache::Private::loadData(int offset, QPixmap& pix)
     //  want 32-bit aligned data. QByteArray uses malloc() to allocate it's
     //  data, which _probably_ returns 32-bit aligned data.
     QByteArray imgdata = qUncompress(imgdatacompressed);
-    QImage img((const uchar*)imgdata.constData(), w, h, bpl, (QImage::Format)format);
-    img.bits();  // make deep copy since we don't want to keep imgdata around
-    pix = QPixmap::fromImage(img);
+    if (!imgdata.isEmpty()) {
+        QImage img((const uchar*)imgdata.constData(), w, h, bpl, (QImage::Format)format);
+        img.bits();  // make deep copy since we don't want to keep imgdata around
+        pix = QPixmap::fromImage(img);
+    } else {
+        pix = QPixmap(w, h);
+    }
 
     if (!q->loadCustomData(stream)) {
         delete device;
