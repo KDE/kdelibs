@@ -38,6 +38,7 @@
 
 #include <QMetaObject>
 #include <QMetaMethod>
+#include <QPointer>
 
 using namespace Kross;
 
@@ -86,7 +87,7 @@ namespace Kross {
             /**
             * The KJS objects that got published.
             */
-            QList< KJS::JSObject* > m_publishedObjects;
+            QList< QPair<KJS::JSObject*, QPointer<QObject> > > m_publishedObjects;
 
             /**
             * List of QObject instances that should be
@@ -131,7 +132,7 @@ namespace Kross {
                     krosswarning( QString("Failed to publish the QObject name=\"%1\" objectName=\"%2\"").arg(name).arg(object ? object->objectName() : "NULL") );
                     return false;
                 }
-                m_publishedObjects << obj;
+                m_publishedObjects << QPair<KJS::JSObject*, QPointer<QObject> >(obj, object);
 
                 /*
                 bool restricted = interpreter()->interpreterInfo()->optionValue("restricted", true).toBool();
@@ -227,15 +228,29 @@ void KjsScript::finalize()
     KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
     KJS::ExecState* exec = kjsinterpreter->globalExec();
 
-    foreach(KJS::JSObject* kjsobj, d->m_publishedObjects) {
+    QList< QPair<KJS::JSObject*, QPointer<QObject> > >::Iterator it( d->m_publishedObjects.begin() );
+    QList< QPair<KJS::JSObject*, QPointer<QObject> > >::Iterator end( d->m_publishedObjects.end() );
+    for(; it != end; ++it) {
+        QObject* obj = (*it).second;
+        if( ! obj )
+            continue;
+        KJS::JSObject* kjsobj = (*it).first;
+        krossdebug(QString("KjsScript::finalize published object=%1").arg( kjsobj->className().ascii() ));
+        /*
         KJSEmbed::QObjectBinding *imp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, kjsobj);
         Q_ASSERT(imp);
         QObject* obj = imp->object<QObject>();
         Q_ASSERT(obj);
-        foreach(QObject* child, obj->children())
-            if( KJSEmbed::SlotProxy* proxy = dynamic_cast< KJSEmbed::SlotProxy* >( child ) )
+        */
+
+        // try to remove all pending slotproxy's the dirty way... please note, that we can't
+        // do it using findChildren since the slotproxy's are handcraftet QObject's and don't
+        // implement all of the QObject functionality. Also it seems KjsEmbed does some wired
+        // things with the slotproxy's what prevents us from doing it another more nicer way.
+        foreach( QObject* child, obj->children() )
+            if( KJSEmbed::SlotProxy* proxy = dynamic_cast< KJSEmbed::SlotProxy* >(child) )
                 delete proxy;
-        delete kjsobj;
+        //delete kjsobj; //don't delete since that will be done by kjs, right?
     }
     d->m_publishedObjects.clear();
 
