@@ -26,6 +26,7 @@
 
 namespace Sonnet
 {
+    /// The sonnet ConfigDialog
     class KDEUI_EXPORT ConfigDialog : public KDialog
     {
         Q_OBJECT

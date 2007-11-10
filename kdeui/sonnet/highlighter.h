@@ -28,8 +28,10 @@
 
 class QTextEdit;
 
+/// The sonnet namespace
 namespace Sonnet
 {
+    /// The Sonnet Highlighter
     class KDEUI_EXPORT Highlighter : public QSyntaxHighlighter
     {
 	Q_OBJECT
