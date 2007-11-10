@@ -186,7 +186,7 @@ QString KUriFilterData::iconName()
                     d->strIconName = exeName;
                 else
                     // not found, use default
-                    d->strIconName = QLatin1String("exec");
+                    d->strIconName = QLatin1String("system-run");
                 break;
             }
             case KUriFilterData::Help:

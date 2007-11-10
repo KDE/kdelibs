@@ -70,7 +70,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 		else if(key == "Popup" )
 			icon = KIcon("document-properties");
 		else if(key == "Execute" )
-			icon = KIcon("exec");
+			icon = KIcon("system-run");
 		else if(key == "Taskbar" )
 			icon = KIcon("services");
 		else if(key == "Logfile" )
@@ -200,7 +200,7 @@ void KNotifyEventListItem::update()
 /*	QString prstring=m_config.readEntry( "Action" );
 	QStringList actions=prstring.split ("|");
 
-	QPixmap pexec = SmallIcon("exec");
+	QPixmap pexec = SmallIcon("system-run");
 	QPixmap pstderr = SmallIcon("terminal");
 	QPixmap pmessage = SmallIcon("document-properties");
 	QPixmap plogfile = SmallIcon("log");
