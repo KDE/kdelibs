@@ -762,12 +762,12 @@ void KUrlNavigator::Private::deleteButtons()
 
 QString KUrlNavigator::Private::retrievePlacePath(const QString& path) const
 {
-    int idx = path.indexOf(QString("///"));
+    int idx = path.indexOf(QLatin1String("///"));
     if (idx >= 0) {
         idx += 3;
     } else {
-        idx = path.indexOf(QString("//"));
-        idx = path.indexOf("/", (idx < 0) ? 0 : idx + 2);
+        idx = path.indexOf(QLatin1String("//"));
+        idx = path.indexOf(QLatin1Char('/'), (idx < 0) ? 0 : idx + 2);
     }
     return (idx < 0) ? path : path.left(idx);
 }
@@ -855,7 +855,11 @@ KUrl KUrlNavigator::url(int index) const
         if (index == 0) {
             // prevent the last "/" from being stripped
             // or we end up with an empty path
-            pathOrUrl = "/";
+#ifdef Q_OS_WIN
+            pathOrUrl = pathOrUrl.length() > 2 ? pathOrUrl.left(3) : QDir::rootPath();
+#else
+            pathOrUrl = QLatin1String("/");
+#endif
         } else {
             pathOrUrl = pathOrUrl.section('/', 0, index);
         }

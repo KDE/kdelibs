@@ -47,9 +47,10 @@
 
 static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool decodeDots )
 {
-  if (_path.isEmpty()) return QString();
+  if (_path.isEmpty())
+      return QString();
 
-  if (QDir::isRelativePath(_path))
+  if (QFileInfo(_path).isRelative())
      return _path; // Don't mangle mailto-style URLs
 
   QString path = _path;
@@ -457,11 +458,7 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
     else
     {
        if ( strPath.isEmpty() )
-#ifdef Q_WS_WIN
-          strPath = QLatin1Char('\\');
-#else
           strPath = QLatin1Char('/');
-#endif
     }
     setPath( strPath );
     //kDebug(126) << "url()=" << url() << " rUrl=" << rUrl;
@@ -604,7 +601,7 @@ void KUrl::setFileName( const QString& _txt )
   //QString path = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
   QString path = this->path();
   if ( path.isEmpty() )
-    path = "/";
+    path = QDir::rootPath();
   else
   {
     int lastSlash = path.lastIndexOf( QLatin1Char('/') );
@@ -661,7 +658,7 @@ static QString trailingSlash( KUrl::AdjustPathOption trailing, const QString &pa
   }
   else if ( trailing == KUrl::RemoveTrailingSlash )
   {
-    if ( result == "/" )
+    if ( result == QLatin1String("/") )
       return result;
     int len = result.length();
     while (len > 1 && result[ len - 1 ] == QLatin1Char('/'))
@@ -1236,7 +1233,11 @@ bool KUrl::cd( const QString& _dir )
   }
 
   // absolute path ?
+#ifdef Q_OS_WIN
+  if ( !QFileInfo(_dir).isRelative() )
+#else
   if ( _dir[0] == QLatin1Char('/') )
+#endif
   {
     //m_strPath_encoded.clear();
     setPath( _dir );
@@ -1360,10 +1361,10 @@ bool KUrl::hasHTMLRef() const
 
 void KUrl::setDirectory( const QString &dir)
 {
-  if ( dir.endsWith('/'))
+  if ( dir.endsWith(QLatin1Char('/')))
      setPath(dir);
   else
-     setPath(dir+'/');
+     setPath(dir + QLatin1Char('/'));
 }
 
 void KUrl::setQuery( const QString &_txt )
