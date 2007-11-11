@@ -24,6 +24,7 @@
 
 #include <qtest_kde.h>
 #include <kprotocolinfo.h>
+#include <kdebug.h>
 #include <kservicetypetrader.h>
 #include <kservicetype.h>
 #include <kservicetypeprofile.h>
@@ -57,7 +58,6 @@ void KServiceTest::testByName()
     KService::Ptr kdeprintd = KService::serviceByDesktopPath("kded/kwalletd.desktop");
     QCOMPARE( kdeprintd->name(), QString::fromLatin1("KWallet Daemon Module"));
 }
-
 
 void KServiceTest::testProperty()
 {
@@ -171,6 +171,27 @@ void KServiceTest::testDBUSStartupType()
     QCOMPARE(konsole->menuId(), QString("kde4-konsole.desktop"));
     //qDebug() << konsole->entryPath();
     QCOMPARE((int)konsole->dbusStartupType(), (int)KService::DBusUnique);
+}
+
+void KServiceTest::testByStorageId()
+{
+    if ( !KSycoca::isAvailable() )
+        QSKIP("ksycoca not available", SkipAll);
+    if (!m_hasKde4Konsole)
+        QSKIP("kdebase not installed", SkipAll);
+    QVERIFY(KService::serviceByMenuId("kde4-systemsettings.desktop"));
+    QVERIFY(!KService::serviceByMenuId("kde4-systemsettings")); // doesn't work, extension mandatory
+    QVERIFY(KService::serviceByStorageId("kde4-systemsettings.desktop"));
+    //QVERIFY(!KService::serviceByStorageId("kde4-systemsettings")); // doesn't work, extension mandatory; also shows a debug
+    // This one fails here; probably because there are two such files, so this would be too
+    // ambiguous... According to the testAllServices output, the entryPaths are
+    // entryPath="/d/kde/inst/kde4/share/applications/kde4/systemsettings.desktop"
+    // entryPath= "/usr/share/applications/kde/systemsettings.desktop"
+    //
+    //QVERIFY(KService::serviceByDesktopPath("systemsettings.desktop"));
+    QVERIFY(KService::serviceByDesktopName("systemsettings"));
+    // Fails here, finds the kde3 systemsettings from /usr/share
+    //QCOMPARE(KService::serviceByDesktopName("systemsettings")->menuId(), QString("kde4-systemsettings,desktop"));
 }
 
 void KServiceTest::testServiceTypeTraderForReadOnlyPart()
