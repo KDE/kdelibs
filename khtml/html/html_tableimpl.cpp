@@ -904,31 +904,6 @@ void HTMLTableCellElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLTableCellElementImpl::attach()
 {
-    HTMLElementImpl* p = static_cast<HTMLElementImpl*>(parentNode());
-    while(p && p->id() != ID_TABLE)
-        p = static_cast<HTMLElementImpl*>(p->parentNode());
-
-    if(p) {
-        HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
-        if (table->rules == HTMLTableElementImpl::None) {
-            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_NONE);
-            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_NONE);
-            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_NONE);
-            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_NONE);
-        }
-        else {
-            addCSSProperty(CSS_PROP_BORDER_WIDTH, "1px");
-            int v = (table->m_solid || m_solid) ? CSS_VAL_SOLID : CSS_VAL_INSET;
-            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, v);
-            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, v);
-            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, v);
-            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
-
-            if (!m_solid)
-                addCSSProperty(CSS_PROP_BORDER_COLOR, CSS_VAL_INHERIT);
-        }
-    }
-
     HTMLTablePartElementImpl::attach();
 }
 
