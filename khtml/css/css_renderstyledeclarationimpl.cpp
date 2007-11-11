@@ -1013,7 +1013,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         return new CSSPrimitiveValueImpl(style->wordSpacing(), CSSPrimitiveValue::CSS_PX);
     case CSS_PROP_Z_INDEX:
         if (style->hasAutoZIndex())
-            return new CSSPrimitiveValueImpl(CSS_VAL_NORMAL);
+            return new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
         return new CSSPrimitiveValueImpl(style->zIndex(), CSSPrimitiveValue::CSS_NUMBER);
     case CSS_PROP_BACKGROUND:
         break;
