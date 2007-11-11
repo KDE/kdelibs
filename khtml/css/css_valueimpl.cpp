@@ -721,13 +721,42 @@ DOM::DOMString CSSStyleDeclarationImpl::cssText() const
 {
     DOMString result;
 
+    const CSSProperty* positionXProp = 0;
+    const CSSProperty* positionYProp = 0;
+
     if ( m_lstValues) {
 	QListIterator<CSSProperty*> lstValuesIt(*m_lstValues);
 	while (lstValuesIt.hasNext()) {
-	    result += lstValuesIt.next()->cssText();
+	    const CSSProperty* cur = lstValuesIt.next();
+            if (cur->id() == CSS_PROP_BACKGROUND_POSITION_X)
+                positionXProp = cur;
+            else if (cur->id() == CSS_PROP_BACKGROUND_POSITION_Y)
+                positionYProp = cur;
+            else
+                result += cur->cssText();
 	}
     }
 
+    // FIXME: This is a not-so-nice way to turn x/y positions into single background-position in output.
+    // It is required because background-position-x/y are non-standard properties and generated output
+    // would not work in Firefox
+    // It would be a better solution if background-position was CSS_PAIR.
+    if (positionXProp && positionYProp && positionXProp->isImportant() == positionYProp->isImportant()) {
+        DOMString positionValue;
+        const int properties[2] = { CSS_PROP_BACKGROUND_POSITION_X, CSS_PROP_BACKGROUND_POSITION_Y };
+        if (positionXProp->value()->isValueList() || positionYProp->value()->isValueList())
+            positionValue = getLayeredShortHandValue(properties, 2);
+        else
+            positionValue = positionXProp->value()->cssText() + " " + positionYProp->value()->cssText();
+        result += DOMString("background-position: ") + positionValue 
+                                                     + DOMString((positionXProp->isImportant() ? " !important" : ""))
+                                                     + "; ";
+    } else {
+        if (positionXProp)
+            result += positionXProp->cssText();
+        if (positionYProp)
+            result += positionYProp->cssText();
+    }
     return result;
 }
 
