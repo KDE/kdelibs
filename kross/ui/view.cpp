@@ -298,7 +298,7 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
 
     d->collection = new KActionCollection(this);
 
-    KAction* runaction = new KAction(KIcon("launch"), i18n("Run"), this);
+    KAction* runaction = new KAction(KIcon("system-run"), i18n("Run"), this);
     runaction->setObjectName("run");
     runaction->setToolTip( i18n("Execute the selected script.") );
     runaction->setEnabled(false);
