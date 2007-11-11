@@ -54,7 +54,7 @@ class KLocalePrivate;
   * Use KGlobal::locale() to get pointer to the global KLocale object,
   * containing the applications current locale settings.
   *
-  * For example, to format the date May 17, 1996 in the current locale, use:
+  * For example, to format the date May 17, 1995 in the current locale, use:
   *
   * \code
   *   QString date = KGlobal::locale()->formatDate(QDate(1995,5,17));
