@@ -145,6 +145,7 @@ Comment[ko]=선호하는 장치를 사용할 수 없을 때 자동으로 다음 
 Comment[nb]=Varsling ved automatisk overgang til reservelydenhet hvis foretrukket enhet ikke er tilgjengelig
 Comment[nds]=Bescheed, wenn de vörtrocken Reedschap nich verföögbor is un ansteed de Opbackreedschap bruukt warrt
 Comment[ne]=यदि रूचाइएको यन्त्र अनुपलब्ध छ भने स्वचालन फलब्याकमा सूचना
+Comment[nl]=Melding van automatische terugval als het apparaat van voorkeur niet beschikbaar is
 Comment[nn]=Varsling om automatisk overgang til reservelydeining ved den føretrekne eininga ikkje er tilgjengelig
 Comment[pt]=Notificação automática de último recurso se o dispositivo preferido estiver indisponível
 Comment[pt_BR]=Notificação de "fallback" automático se os dispositivos preferidos estiverem indisponíveis
