@@ -592,7 +592,7 @@ void AutoTableLayout::calcMinMaxWidth()
     }
 
     if (shouldScaleColumns(table)) {
-        maxNonPercent = (maxNonPercent * 100 + 50) / qMax(remainingPercent, 1);
+        maxNonPercent = (maxNonPercent * 100) / qMax(remainingPercent, 1);
 	maxWidth = qMax( maxNonPercent, maxWidth );
 	maxWidth = qMax( maxWidth, maxPercent );
     }
