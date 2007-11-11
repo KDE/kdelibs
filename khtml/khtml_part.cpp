@@ -7115,7 +7115,7 @@ void KHTMLPart::walletOpened(KWallet::Wallet *wallet) {
     d->m_statusBarWalletLabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
     d->m_statusBarWalletLabel->setUseCursor(false);
     d->m_statusBarExtension->addStatusBarItem(d->m_statusBarWalletLabel, 0, false);
-    d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet_open"));
+    d->m_statusBarWalletLabel->setPixmap(SmallIcon("wallet-open"));
     connect(d->m_statusBarWalletLabel, SIGNAL(leftClickedUrl()), SLOT(launchWalletManager()));
     connect(d->m_statusBarWalletLabel, SIGNAL(rightClickedUrl()), SLOT(walletMenu()));
   }
