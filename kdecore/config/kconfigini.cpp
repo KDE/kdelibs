@@ -253,7 +253,7 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
 
         file.write(stringToPrintable(key.mKey)); // Key
 
-        if (currentEntry.bNLS && locale != "C") { // locale 'C' == untranslated
+        if (key.bLocal && locale != "C") { // locale 'C' == untranslated
             file.putChar('[');
             file.write(locale); // Locale tag
             file.putChar(']');

@@ -35,7 +35,7 @@ struct KEntry
 {
   /** Constructor. @internal */
   KEntry()
-    : mValue(), bDirty(false), bNLS(false),
+    : mValue(), bDirty(false),
       bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
   /** @internal */
   QByteArray mValue;
@@ -43,10 +43,6 @@ struct KEntry
    * Must the entry be written back to disk?
    */
   bool    bDirty :1;
-  /**
-   * Entry should be written with locale tag
-   */
-  bool    bNLS   :1;
   /**
    * Entry should be written to the global config file
    */
@@ -218,7 +214,6 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                     << entryDataToQString(e).toLatin1().constData();*/
             e.mValue = value;
             e.bDirty = e.bDirty || (options&EntryDirty);
-            e.bNLS = e.bNLS || (options&EntryLocalized);
             e.bGlobal = (options&EntryGlobal);  //we can't use || here, because changes to entries in
                                                 //kdeglobals would be written to kdeglobals instead
                                                 //of the local config file, regardless of the globals flag
@@ -283,7 +278,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                     case EntryDirty:
                         return it->bDirty;
                     case EntryLocalized:
-                        return it->bNLS;
+                        return it.key().bLocal;
                     case EntryGlobal:
                         return it->bGlobal;
                     case EntryImmutable:
@@ -311,9 +306,6 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
                 switch (option) {
                     case EntryDirty:
                         it->bDirty = bf;
-                        break;
-                    case EntryLocalized:
-                        it->bNLS = bf;
                         break;
                     case EntryGlobal:
                         it->bGlobal = bf;
