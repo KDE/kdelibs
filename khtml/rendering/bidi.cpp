@@ -1864,6 +1864,37 @@ static void setStaticPosition( RenderBlock* p, RenderObject *o, bool *needToSetS
       if (needToSetStaticY) *needToSetStaticY = nssy;
 }
 
+static inline bool requiresLineBox(BidiIterator& it)
+{
+    if (it.obj->isFloatingOrPositioned() || it.obj->isInlineFlow())
+        return false;
+    
+    if (it.obj->style()->preserveWS() || it.obj->isBR())
+        return true;
+
+    switch (it.current().unicode()) {
+        case 0x0009: // ASCII tab
+        case 0x000A: // ASCII line feed
+        case 0x000C: // ASCII form feed
+        case 0x0020: // ASCII space
+        case 0x200B: // Zero-width space
+            return false;
+    }
+    return true;
+}
+
+bool RenderBlock::inlineChildNeedsLineBox(RenderObject* inlineObj) // WC: generatesLineBoxesForInlineChild
+{
+    assert(inlineObj->parent() == this);
+
+    BidiIterator it(this, inlineObj, 0);
+    BidiState state;
+    while (!it.atEnd() && !requiresLineBox(it))
+        it.increment(state);
+
+    return !it.atEnd();
+}
+
 BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi)
 {
     int width = lineWidth(m_height);
@@ -1877,21 +1908,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     BidiIterator posStart = start;
     bool hadPosStart = false;
 
-    // eliminate spaces at beginning of line
-    // remove leading spaces.  Any inline flows we encounter will be empty and should also
-    // be skipped.
-    while (!start.atEnd() && (start.obj->isInlineFlow() || (!start.obj->style()->preserveWS() && !start.obj->isBR() &&
-#ifndef QT_NO_UNICODETABLES
-        ( (start.current().unicode() == (ushort)0x0020) || // ASCII space
-          (start.current().unicode() == (ushort)0x0009) || // ASCII tab
-          (start.current().unicode() == (ushort)0x000A) || // ASCII line feed
-          (start.current().unicode() == (ushort)0x000C) || // ASCII form feed
-          (start.current().unicode() == (ushort)0x200B) || // Zero-width space
-          start.obj->isFloatingOrPositioned() )
-#else
-	      ( start.current() == ' ' || start.current() == '\n' || start.obj->isFloatingOrPositioned() )
-#endif
-            ))) {
+    while (!start.atEnd() && !requiresLineBox(start)) {
         if( start.obj->isFloating() || start.obj->isPosWithStaticDim()) {
             RenderObject *o = start.obj;
             // add to special objects...

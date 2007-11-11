@@ -115,6 +115,7 @@ public:
     BidiIterator findNextLineBreak(BidiIterator &start, BidiState &info );
     RootInlineBox* constructLine(const BidiIterator& start, const BidiIterator& end);
     InlineFlowBox* createLineBoxes(RenderObject* obj);
+    bool inlineChildNeedsLineBox(RenderObject* obj);
     void computeHorizontalPositionsForLine(InlineFlowBox* lineBox, BidiState &bidi);
     void computeVerticalPositionsForLine(RootInlineBox* lineBox);
     bool clearLineOfPageBreaks(InlineFlowBox* lineBox);
